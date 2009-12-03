@@ -1,0 +1,124 @@
+
+{form_declaration}
+
+<table class="tableBorderLeft" cellpadding='5' cellspacing='0' border='0' style="width:100%;">
+<tr>
+<td class ="tableHeadingBG" colspan="3"><div class="tableHeading">{lang:advanced_search}</div></td>
+
+</tr><tr>
+
+<td style="width:48%;" class="tableCellTwo">
+
+<fieldset class="searchBox">
+<legend class="searchBoxTitle">{lang:search_by_keyword}</legend>
+
+<input type="text" class="input" maxlength="100" size="40" name="keywords" style="width:100%;" />
+
+	<div class="itempadbig">
+	<select name="search_in">
+	<option value="titles">{lang:search_in_titles}</option>
+	<option value="posts" >{lang:search_in_posts}</option>
+	<option value="all"  selected="selected">{lang:search_in_title_and_posts}</option>
+	</select>
+	&nbsp;
+	<select name="search_criteria">
+	<option value="any">{lang:search_any_words}</option>
+	<option value="all"  selected="selected">{lang:search_all_words}</option>
+	<option value="exact">{lang:exact_match}</option>
+	</select>
+	</div>
+
+</fieldset>
+
+<fieldset class="searchBox">
+<legend class="searchBoxTitle">{lang:search_in_forums}</legend>
+
+<select name='forum_id[]' class='multiselect' size='12' style="width:100%;" multiple='multiple'>
+{forum_select_options}
+</select>
+
+</fieldset>
+
+</td>
+
+<td style="width:4%;"  class="tableCellTwo">&nbsp;</td>
+
+<td style="width:48%;" valign="top"  class="tableCellTwo">
+
+<script type="text/javascript" charset="utf-8">
+	function switchto(el)
+	{
+		if (el == 'byMemberGroup')
+		{
+			document.getElementById('byMemberGroup').style.display = "";
+			document.getElementById('byMemberName').style.display = "none";
+		}
+		else
+		{
+			document.getElementById('byMemberGroup').style.display = "none";
+			document.getElementById('byMemberName').style.display = "";				
+		}
+	}
+</script>
+
+<fieldset id="byMemberName" class="searchBox">
+<legend class="searchBoxTitle">{lang:search_by_member_name} - (<a href="#" onclick="switchto('byMemberGroup'); return false;">{lang:switch_to_group}</a>)</legend>
+
+<input type="text" class="input" maxlength="100" size="40" name="member_name" style="width:100%;" />
+<div class="searchpad"><input type="checkbox" class="checkbox" name="exact_match" value="y"  /> {lang:exact_name_match}</div>
+</fieldset>
+
+<fieldset id="byMemberGroup" class="searchBox" style="display: none;">
+<legend class="searchBoxTitle">{lang:search_by_member_group} - (<a href="#" onclick="switchto('byMemberName'); return false;">{lang:switch_to_name}</a>)</legend>
+
+<select name='member_group[]' class='multiselect' size='5' style="width:100%;" multiple='multiple'>
+{member_group_select_options}
+</select>
+</fieldset>
+
+<fieldset class="searchBox">
+<legend class="searchBoxTitle">{lang:search_posts_from}</legend>
+
+<select name="date" style="width:150px">
+<option value="0" selected="selected">{lang:any_date}</option>
+<option value="1" >{lang:today_and}</option>
+<option value="7" >{lang:this_week_and}</option>
+<option value="30" >{lang:one_month_ago_and}</option>
+<option value="90" >{lang:three_months_ago_and}</option>
+<option value="180" >{lang:six_months_ago_and}</option>
+<option value="365" >{lang:one_year_ago_and}</option>
+</select>
+
+<div class="itempadbig">
+<input type='radio' name='date_order' value='newer' class='radio' checked="checked" />&nbsp;{lang:newer}
+<input type='radio' name='date_order' value='older' class='radio' />&nbsp;{lang:older}
+</div>
+</fieldset>
+
+
+<fieldset class="searchBox">
+<legend class="searchBoxTitle">{lang:sort_results_by}</legend>
+
+<select name="order_by">
+<option value="date" >{lang:date}</option>
+<option value="title" >{lang:title}</option>
+<option value="most_posts" >{lang:most_posts}</option>
+<option value="recent_post" >{lang:recent_post}</option>
+</select>
+
+<div class="itempadbig">
+<input type='radio' name='sort_order' class="radio" value='desc' checked="checked" /> {lang:descending}
+<input type='radio' name='sort_order' class="radio" value='asc' /> {lang:ascending}
+</div>
+</fieldset>
+
+</td>
+</tr>
+<tr>
+<td colspan="3" class="tableRowHeadingBold">
+<div class="defaultCenter"><input type='submit' value='{lang:search}' class='submit' /></div>
+</td>
+</tr>
+</table>
+
+</form>

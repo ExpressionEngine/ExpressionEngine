@@ -1,0 +1,22 @@
+<div id='topbar'>
+	<ul>
+		{if logged_out}
+		<li class="welcome">{lang:welcome}</li>
+		<li><a href="{path:login}">{lang:login}</a></li>
+		<li><a href="{path:register}">{lang:register}</a></li>	
+		<li><a href="{path:memberlist}">{lang:memberlist}</a></li>
+		{/if}
+		{if logged_in}
+		<li class="welcome">{lang:logged_in_as} <strong>{screen_name}</strong></li>
+		{include:private_message_box}
+		<li><a href="{path:your_profile}">{lang:your_profile}</a></li>
+		<li><a href="{path:your_control_panel}">{lang:your_control_panel}</a></li>
+		<li><a href="{path:memberlist}">{lang:memberlist}</a></li>
+		<li><a href="{path:logout}">{lang:logout}</a></li>
+		{/if}
+	</ul>
+     {if logged_out}
+     {include:login_form_mini}
+     {/if}
+<hr class="clear" />
+</div><!--topbar-->

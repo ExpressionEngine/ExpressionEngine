@@ -1,0 +1,89 @@
+<!-- Template: Private Message - Message Folder -->				
+{include:hidden_js}
+{include:toggle_js}
+
+<h3>{lang:folder_name}</h3>
+
+<table class="member_table">
+<tr>
+<td>
+
+<table style='width:300px;'>
+<tr>
+<td><h4>{lang:storage_percentage}</h4></td>
+</tr>
+<tr>
+<td>
+<div style="width:{image:messages_graph:width}px; height:{image:messages_graph:height}px; background-color: #666699; border:1px solid #000;"></div>
+</td>
+</tr>
+<tr>
+<td>0%</td>
+<td>
+50%
+</td>
+<td>
+100%
+</td>
+</tr>
+</table>
+
+</td>
+<td>
+<ul style="list-style: none;">
+<li><a href='{path:compose_message}'  onmouseover="window.status='{lang:compose_messages}';" onmouseout="window.status='';" >{lang:compose_message}</a></li>
+
+<li><a href='{path:erase_messages}' onclick='if(!confirm("{lang:erase_popup}")) return false;'>{lang:erase_messages}</a></li>
+
+<li>{lang:switch_folder} {include:folder_pulldown:change}</li>
+</ul>
+
+</td>
+</tr>
+</table>
+
+
+{form:form_declaration:modify_messages}
+
+
+{if paginate}
+<table>
+<tr>
+<td>
+{include:pagination_link}
+</td>
+</tr>
+</table>
+{/if}
+
+
+<table class="member_table">
+	<tr>
+		<td>&nbsp;</td>
+		<td>{lang:message_subject}</td>
+		<td>{lang:message_sender}</td>
+		<td>{lang:message_date}</td>
+		<td><input class='checkbox' type='checkbox' name='toggleflag' value='' onclick="toggle(this);" /></td>
+	</tr>
+
+{include:folder_rows}
+</table>
+
+</div>
+
+{if paginate}
+	<table>
+		<tr>
+			<td>{include:pagination_link}</td>
+		</tr>
+	</table>
+{/if}
+{include:folder_pulldown:move}
+
+{include:folder_pulldown:copy}
+
+<p>{form:copy_button}{form:move_button}{form:delete_button}
+</form>
+
+{lang:storage_status}
+<!-- End Template: Private Message - Message Folder -->

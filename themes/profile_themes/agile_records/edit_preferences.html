@@ -1,0 +1,29 @@
+<!-- Template: Edit Preferences -->
+<form method="post" action="{path:update_edit_preferences}">
+
+<table class="member_table">
+<tr>
+<th>{lang:edit_preferences}</th>
+
+</tr><tr>
+<td><input type='checkbox' name='accept_messages' value='y' {state:accept_messages} />&nbsp;&nbsp;{lang:accept_messages}</td>
+
+</tr><tr>
+<td><input type='checkbox' name='display_avatars' value='y' {state:display_avatars} />&nbsp;&nbsp;{lang:display_avatars}</td>
+
+</tr><tr>
+<td><input type='checkbox' name='display_signatures' value='y' {state:display_signatures} />&nbsp;&nbsp;{lang:display_signatures}</td>
+
+</tr><tr>
+<td><input type='checkbox' name='parse_smileys' value='y' {state:parse_smileys} />&nbsp;&nbsp;{lang:parse_smileys}</td>
+
+</tr><tr>
+<td>
+<input type='submit' class='submit' value='{lang:update}' />
+</td>
+
+</tr>
+</table>
+
+</form>
+<!-- End Template: Edit Preferences -->

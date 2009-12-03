@@ -1,0 +1,74 @@
+
+<form method="post" action="{path:update_profile}">
+
+<table border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+<tr>
+<td class='profileHeadingBG'colspan='2'><div class="tableHeading">{lang:edit_your_profile}</div></td>
+
+</tr><tr>
+
+<td class='tableCellTwo' style="width:25%;"><div class='defaultBold'>{lang:url}</div></td>
+<td class='tableCellOne' style="width:75%;"><input type='text' class='input' name='url' value='{url}' maxlength='75' style='width:100%'/></td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:birthday}</div></td>
+<td class='tableCellOne'>{form:birthday_year} {form:birthday_month} {form:birthday_day}</td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:location}</div></td>
+<td class='tableCellOne'><input type='text' class='input' name='location' value='{location}' maxlength='50' style='width:100%'/></td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:occupation}</div></td>
+<td class='tableCellOne'><input type='text' class='input' name='occupation' value='{occupation}' maxlength='80' style='width:100%'/></td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:interests}</div></td>
+<td class='tableCellOne'><input type='text' class='input' name='interests' value='{interests}' maxlength='120' style='width:100%'/></td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:aol_im}</div></td>
+<td class='tableCellOne'><input type='text' class='input' name='aol_im' value='{aol_im}' maxlength='50' style='width:100%'/></td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:icq}</div></td>
+<td class='tableCellOne'><input type='text' class='input' name='icq' value='{icq}' maxlength='50' style='width:100%'/></td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:yahoo_im}</div></td>
+<td class='tableCellOne'><input type='text' class='input' name='yahoo_im' value='{yahoo_im}' maxlength='50' style='width:100%'/></td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:msn_im}</div></td>
+<td class='tableCellOne'><input type='text' class='input' name='msn_im' value='{msn_im}' maxlength='50' style='width:100%'/></td>
+
+</tr><tr>
+
+<td class='tableCellTwo' valign='top'><div class='defaultBold'>{lang:bio}</div></td>
+<td class='tableCellOne'><textarea name='bio' style='width:100%' class='textarea' rows='12' cols='90'>{bio}</textarea></td>
+
+
+{custom_profile_fields}
+
+
+<tr>
+<td class='tableCellTwo' colspan="2">
+<div class='marginpad'>
+<input type='submit' class='submit' value='{lang:update}' />
+<br /><br />
+<span class="alert">*</span> {lang:required}
+</div>
+
+</td>
+</tr>
+</table>
+
+</form>

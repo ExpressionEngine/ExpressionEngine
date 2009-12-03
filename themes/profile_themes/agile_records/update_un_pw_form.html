@@ -1,0 +1,61 @@
+<!-- Template: Update Username and Password Form -->
+{form_declaration}
+<h3>{lang:settings_update}</h3>
+<table class="member_table">
+<tr>
+
+<td>{lang:access_notice}</td>
+
+</tr><tr>
+
+<td>
+
+{if invalid_username}{lang:username_length}{/if}
+{if invalid_password}{lang:password_length}{/if}
+</td>
+
+</tr><tr>
+
+{if invalid_username}
+	<th>{lang:choose_new_un}</th>
+	<td><input type="text" style="width:80%" class="input" name="new_username" size="20" value="" maxlength="50" /></td>
+	</tr><tr>
+{/if}
+
+{if invalid_password}
+	<th>{lang:choose_new_pw}</th>
+	<td><input type="password" style="width:80%" class="input" name="new_password" size="20" value="" maxlength="32" /></td>
+	</tr><tr>
+	
+	<th>{lang:confirm_new_pw}</th>
+	<td><input type="password" style="width:80%" class="input" name="new_password_confirm" size="20" value="" maxlength="32" /></td>
+	</tr><tr>
+{/if}
+
+</tr>
+</table>
+
+
+<table>
+<tr>
+<th>{lang:your_current_un_pw}</th>
+</td>
+
+</tr><tr>
+
+<th>{lang:existing_username}</th>
+<td><input type="text" style="width:80%" class="input" name="username" size="20" value="" maxlength="50" /></td>
+
+</tr><tr>
+
+<th>{lang:existing_password}</th>
+<td><input type="password" style="width:80%" class="input" name="password" size="20" value="" maxlength="32" /></td>
+
+</tr><tr>
+
+<td><input type="submit" class="submit" value="{lang:submit}" /></td>
+</tr>
+</table>
+
+</form>
+<!-- End Template: Update Username and Password Form -->

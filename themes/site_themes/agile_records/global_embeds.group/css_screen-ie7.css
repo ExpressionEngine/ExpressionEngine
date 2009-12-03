@@ -1,0 +1,29 @@
+body {position:relative;}
+div#branding {margin:0 auto;}
+
+
+div#content_wrapper {position:relative;}
+
+div.feature_end {margin-top:0; }
+div#content_pri {float:left;margin:0 30px 0 10px;width:600px; padding-left:10px;}
+div#content_sec {float:left;width:270px; position:relative; z-index:999;}
+
+div#content_pri.contact {width:520px; margin-right:110px;}
+div#content_sec.contact {float:right; margin: 0 10px -140px auto; }
+
+
+div#page_header {position:relative;z-index:1;}
+
+div#feature{top:-10px;float:none;margin-bottom:30px;padding-top:25px;padding-top:10px;position:relative;width:950px;z-index:900;display:block;}
+
+div.feature_end {clear:none;height:35px;margin-bottom:20px;margin-top:-40px;width:950px;}
+
+/*#content_wrapper.member_cp {padding:0 10px;} */
+#content_wrapper.member_cp table {width:550px;}
+
+div#navigation_sec.member_cp { 
+	width:150px; 
+	left:10px;
+}
+
+div#content_wrapper.member_cp form {margin-left:200px;}

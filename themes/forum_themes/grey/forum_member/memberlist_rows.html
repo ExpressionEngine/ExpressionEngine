@@ -1,0 +1,44 @@
+<tr>
+
+<td class='{member_css}' width="20%">
+<span class="defaultBold"><a href="{path:profile}">{name}</a></span>
+</td>
+
+<td class='{member_css}'>{total_forum_posts}</td>
+
+<td class='{member_css}'>
+{if accept_email}
+<a href="#" {email_console}><img src="{path:image_url}icon_email.gif" width="56" height="14" alt="{lang:email_console}" title="{lang:email_console}" border="0" /></a>
+{/if}
+</td>
+
+<td class='{member_css}'>
+{if url}
+<a href="{url}" target="_blank"><img src="{path:image_url}icon_www.gif" width="56" height="14" border="0" alt="{url}" title="{url}" /></a>
+{/if}
+</td>
+
+<td class='{member_css}'>
+{if aol_im}
+<a href="#" {aim_console}><img src="{path:image_url}icon_aim.gif" width="56" height="14" border="0" alt="{lang:mbr_aim_console}" title="{lang:mbr_aim_console}" /></a>
+{/if}
+</td>
+
+<td class='{member_css}'>
+{if icq}
+<a href="#" {icq_console}><img src="{path:image_url}icon_icq.gif" width="56" height="14" border="0" alt="{lang:mbr_icq}" title="{lang:mbr_icq}" /></a>
+{/if}
+</td>
+
+<td class='{member_css}'>
+{if yahoo_im}
+<a href="{yahoo_console}" target="_blank"><img src="{path:image_url}icon_yim.gif" width="56" height="14" border="0" alt="{lang:mbr_yahoo}" title="{lang:mbr_yahoo}" /></a>
+{/if}
+</td>
+
+
+<td class='{member_css}'>{join_date  format="%m/%d/%Y"}</td>
+
+<td class='{member_css}'>{last_visit  format="%m/%d/%Y"}</td>
+
+</tr>

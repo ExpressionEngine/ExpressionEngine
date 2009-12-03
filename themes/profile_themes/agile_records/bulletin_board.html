@@ -1,0 +1,30 @@
+<!-- Template: Bulletin Board -->	
+{if message}
+<p>{include:message}</p>
+{/if}
+	
+<h3>{lang:bulletin_board}</h3>
+
+{if can_post_bulletin}
+<p><a href='{path:send_bulletin}' >{lang:send_bulletin}</a></p>
+{/if}
+
+{if no_bulletins}
+<td>{lang:message_no_bulletins}</td>
+{/if}
+
+
+{if bulletins}
+{include:bulletins}
+{/if}
+
+{if paginate}
+<table>
+<tr>
+<td>
+{include:pagination_link}
+</td>
+</tr>
+</table>
+{/if}
+<!-- End Template: Bulletin Board -->

@@ -1,0 +1,65 @@
+<!-- Template: Member Profile Form -->
+<form method="post" action="{path:update_profile}">
+<h3>{lang:edit_your_profile}</h3>
+
+	<table>
+		<tr>
+			<th>{lang:url}</th>
+			<td><input type='text' class='input' name='url' value='{url}' maxlength='75' style='width:90%' /></td>
+		</tr>
+
+		<tr>
+			<th>{lang:birthday}</th>
+			<td>{form:birthday_year} {form:birthday_month} {form:birthday_day}</td>
+		</tr>
+
+		<tr>
+			<th>{lang:location}</th>
+			<td><input type='text' class='input' name='location' value='{location}' maxlength='50' style='width:90%' /></td>
+		</tr>
+
+
+		<tr>
+			<th>{lang:occupation}</th>
+			<td><input type='text' class='input' name='occupation' value='{occupation}' maxlength='80' style='width:90%'/></td>
+		</tr>
+
+		<tr>
+			<th>{lang:interests}</th>
+			<td><input type='text' class='input' name='interests' value='{interests}' maxlength='120' style='width:90%'/></td>
+		</tr>
+
+		<tr>
+			<th>{lang:aol_im}</th>
+			<td ><input type='text' class='input' name='aol_im' value='{aol_im}' maxlength='50' style='width:90%'/></td>
+
+		</tr>
+		<tr>
+			<th>{lang:icq}</th>
+			<td ><input type='text' class='input' name='icq' value='{icq}' maxlength='50' style='width:90%'/></td>
+
+		</tr>
+		<tr>
+			<th>{lang:yahoo_im}</th>
+			<td ><input type='text' class='input' name='yahoo_im' value='{yahoo_im}' maxlength='50' style='width:90%'/></td>
+		</tr>
+		<tr>
+			<th>{lang:msn_im}</th>
+			<td ><input type='text' class='input' name='msn_im' value='{msn_im}' maxlength='50' style='width:90%'/></td>
+		</tr>
+		<tr>
+			<th>{lang:bio}</th>
+			<td ><textarea name='bio' style='width:90%' class='textarea' rows='12' cols='90'>{bio}</textarea></td>
+		</tr>
+{custom_profile_fields}
+
+<tr>
+<td colspan="2">
+<input type='submit' class='submit' value='{lang:update}' />
+<br /><br />
+<span class="alert">*</span> {lang:required}
+</td>
+</tr>
+</table>
+</form>
+<!-- End Template: Member Profile Form -->

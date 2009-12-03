@@ -1,0 +1,31 @@
+<!-- Template: Localization Preferences Form -->
+<form method="post" action="{path:update_localization}">
+<h3>{lang:localization_settings}</h3>
+<table class="member_table">
+<tr>
+
+<th>{lang:timezone}</th>
+<td>{form:localization}</td>
+
+</tr><tr>
+<th> {lang:daylight_savings_time}</th>
+<td><input type='checkbox' name='daylight_savings' value='y' {state:daylight_savings} /></td>
+
+</tr><tr>
+
+<th>{lang:time_format}</th>
+<td>{form:time_format}</td>
+
+</tr><tr>
+
+<th>{lang:language}</th>
+<td>{form:language}</td>
+
+</tr><tr>
+
+<td><input type='submit' class='submit' value='{lang:update}' /></td>
+</tr>
+</table>
+
+</form>
+<!-- End Template: Localization Preferences Form -->

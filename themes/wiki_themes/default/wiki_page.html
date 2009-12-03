@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>{title} | {wiki_name}</title>
+<meta http-equiv="content-type" content="text/html; charset={charset}" />
+<meta name='MSSmartTagsPreventParsing' content='TRUE' />
+<meta http-equiv='expires' content='-1' />
+<meta http-equiv= 'pragma' content='no-cache' />
+<meta name='robots' content='all' />
+
+<link rel="stylesheet" href="{path:wiki_base_url}{special_namespace}:css" type="text/css" media="screen" title="Global Styles" charset="utf-8" />
+
+</head>
+<body>
+<div id='topBar'>
+<div class='topBarLinks'>
+
+{if logged_out}
+	<a href="{path:login}">Login</a>	
+	&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+	<a href="{path:register}">Register</a>	
+	&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+	<a href="{path:memberlist}">Member List</a>
+{/if}
+
+{if logged_in}
+	Logged in as:&nbsp;&nbsp;<b>{screen_name}</b>
+	&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+	<a href="{path:your_profile}">Your Profile</a>
+	&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+	<a href="{path:your_control_panel}">Your Control Panel</a>
+	&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+	<a href="{path:memberlist}">Member List</a>
+	&nbsp;&nbsp;&middot;&nbsp;&nbsp;
+	<a href="{path:logout}">Log-Out</a>
+{/if}
+
+</div>
+</div>
+
+<!-- END Subheader -->
+
+<div id="subheader">
+<div class="itempadbig"><div class="breadcrumb">
+
+<a href="{path:wiki_home}">Wiki Home</a>
+<span class="breadcrumbspacer">&nbsp;&nbsp;&gt;&nbsp;&nbsp;</span>
+
+{if edit_article}
+<a href="{path:view_article}">{title}</a>
+{if can_edit}<span class="breadcrumbspacer">&nbsp;&nbsp;&gt;&nbsp;&nbsp;</span>Editing{/if}
+{if cannot_edit}<span class="breadcrumbspacer">&nbsp;&nbsp;&gt;&nbsp;&nbsp;</span>Source{/if}
+
+{if:elseif article_history}
+<a href="{path:view_article}">{title}</a>
+<span class="breadcrumbspacer">&nbsp;&nbsp;&gt;&nbsp;&nbsp;</span>History
+
+{if:elseif revision}
+<a href="{path:view_article}">{title}</a>
+<span class="breadcrumbspacer">&nbsp;&nbsp;&gt;&nbsp;&nbsp;</span>Revision - {revision_id}
+
+{if:else}
+{title}
+{/if}
+
+</div></div>
+</div>
+
+<!-- END Subheader -->
+
+<div id="maincontent">
+
+<div class="left220">
+
+<h2>Navigation</h2>
+<div class="marginpad">
+&nbsp;&#183;&nbsp;&nbsp; <a href="{path:wiki_home}">Wiki Home</a><br />
+&nbsp;&#183;&nbsp;&nbsp; <a href="http://expressionengine.com/docs/modules/wiki/getting_started.html">Wiki Help</a><br />
+&nbsp;&#183;&nbsp;&nbsp; <a href="{path:wiki_base_url}{special_namespace}:Categories" title="{special_namespace}:Categories">Categories</a><br />
+&nbsp;&#183;&nbsp;&nbsp; <a href="{path:wiki_base_url}{special_namespace}:Titles" title="List of Titles">Title List</a><br />
+&nbsp;&#183;&nbsp;&nbsp; <a href="{path:wiki_base_url}{special_namespace}:Uncategorized" title="Uncategorized Pages">Uncategorized Pages</a><br />
+&nbsp;&#183;&nbsp;&nbsp; <a href="{path:wiki_base_url}{special_namespace}:Random_page" title="Random Page">Random Page</a><br />
+{if uploads}
+&nbsp;&#183;&nbsp;&nbsp; <a href="{path:wiki_base_url}{special_namespace}:Uploads" title="Uploads">File Upload</a><br />
+&nbsp;&#183;&nbsp;&nbsp; <a href="{path:wiki_base_url}{special_namespace}:Files" title="Uploaded Files">Uploaded Files</a><br />
+{/if}
+&nbsp;&#183;&nbsp;&nbsp; <a href="{path:wiki_base_url}{special_namespace}:Recentchanges" title="Recent Changes Page">Recent Changes</a><br />
+&nbsp;&#183;&nbsp;&nbsp; <a href="{path:wiki_base_url}{special_namespace}:Recentchanges_RSS" title="Recent Changes in RSS">RSS</a><br />
+&nbsp;&#183;&nbsp;&nbsp; <a href="{path:wiki_base_url}{special_namespace}:Recentchanges_Atom" title="Recent Changes in Atom">Atom</a><br />
+{if article}&nbsp;&#183;&nbsp;&nbsp; <a href="{path:wiki_base_url}{special_namespace}:Associated_Pages/{url_title}" title="What Links Here">What Links Here</a><br />{/if}
+</div>
+
+<h2>Active Members:</h2>
+
+<div class="marginpad">
+{wiki:active_members}
+&nbsp;&middot;&nbsp;&nbsp;<a href="{path:member_profile}">{name}</a><br />
+{/wiki:active_members}
+</div>
+
+<h2>Search:</h2>
+<div class="marginpad">
+<form method="post" action="{path:wiki_base_url}{special_namespace}:Search_results">
+<div><input type="hidden" name="XID" value="{XID_HASH}" /></div>
+<input type="text" class="input" name="keywords" size="20" value="" maxlength="80" style="width:130px" />
+&nbsp;<input type="submit" class="submit" value="Search" />
+</form>
+</div>
+
+<h2>Create or Find Page:</h2>
+<div class="marginpad">
+<form method="post" action="{path:wiki_base_url}{special_namespace}:Find_page">
+<div><input type="hidden" name="XID" value="{XID_HASH}" /></div>
+<input type="text" class="input" name="title" size="20" value="" maxlength="80" style="width:130px" />
+&nbsp;<input type="submit" class="submit" value="Go" />
+
+</form>
+</div>
+
+<div class="spacer"></div>
+</div>
+
+
+<div class="right720">
+<div id="article">
+
+
+<h2>
+
+<span style="float:right; font-size: 11px; font-family: Verdana, Geneva, Sans-serif; margin: 2px 5px 0 0; clear:both;">
+{if special_page}
+<a href="{path:view_article}">Special Page</a>
+{if:elseif file_page}
+<a href="{path:view_article}">File Page</a>
+{if:else}
+<a href="{path:view_article}">View</a>
+{if can_edit}
+ - <a href="{path:edit_article}{if revision}revision/{revision_id}{/if}">Edit</a> - <a href="{path:article_history}">History</a>
+{/if}
+{/if}
+</span>
+
+{if edit_article}
+{if can_edit}Editing: {/if}
+{if cannot_edit}View Source: {/if}
+{/if}
+
+{if article_history}
+Viewing History: 
+{/if}
+{if revision}
+Revision: 
+{/if}
+
+{if topic == 'index'}
+{wiki_name}
+{if:else}
+{title}
+{/if}
+</h2>
+
+<!-- Begin Main Content of Page -->
+
+{if redirected}
+<div class="lighttext">Redirected from: <a href="{path:original_page}">{original_page}</a></div>
+{/if}
+
+{if redirect_page}
+<div class="lighttext">Page Redirects To: <a href="{path:redirect_page}">{redirect_page}</a></div>
+{/if}
+
+
+<div id="content">
+
+{if new_article}
+<strong>This Article Does Not Exist Yet.</strong><br /><br />
+{if can_edit}
+Click Edit to Create!
+{/if}
+{if cannot_edit}
+You are unable to add articles to the wiki. Sorry!
+{/if}
+{/if}
+
+
+{wiki:page}
+
+
+</div>
+
+</div>
+<div class="clear"></div>
+
+</div>
+</div>
+
+<div id="footer">
+<a href="http://expressionengine.com/">Powered by ExpressionEngine</a><br />
+ExpressionEngine Wiki - Version {module_version}<br />
+Script Executed in {elapsed_time} seconds
+</div>
+
+</body>
+</html>
+	

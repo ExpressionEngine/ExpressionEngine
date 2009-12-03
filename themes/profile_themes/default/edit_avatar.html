@@ -1,0 +1,49 @@
+
+{form_declaration}
+
+<table border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+<tr>
+<td class='profileHeadingBG' colspan='2'><div class="tableHeading">{lang:edit_avatar}</div></td>
+
+</tr><tr>
+
+<td class='tableCellTwo' style="width:35%;"><div class="itempadbig"><div class='defaultBold'>{lang:current_avatar}</div></div></td>
+<td class='tableCellTwo' style="width:65%;">
+{if avatar}<img src="{path:avatar_image}" border="0" width="{avatar_width}" height="{avatar_height}" title="{lang:my_avatar}" alt="{lang:my_avatar}" />{/if}
+{if no_avatar}{lang:no_avatar}{/if}
+</td>
+
+{if installed_avatars}
+	</tr><tr>
+	<td class='tableCellTwo' style="width:35%;"><div class="itempadbig"><div class='defaultBold'>{lang:choose_installed_avatar}</div></div></td>
+	<td class='tableCellTwo' style="width:65%;">{include:avatar_folder_list}</td>
+{/if}
+
+
+{if can_upload_avatar}
+	</tr><tr>
+	<td class="tableCellTwo" style="width:35%;" valign="top">
+	<div class="itempadbig"><b>{lang:upload_an_avatar}</b></div>
+	</td>
+	<td class="tableCellTwo" style="width:65%;" valign="bottom">
+	<div class="itempad"><input type="file" name="userfile" size="20" class="input" /></div>
+	</td>
+	
+	</tr><tr>
+	<td class="tableCellTwo" style="width:35%;" valign="top">
+	<div class="lighttext">{lang:max_image_size}</div>
+	</td>
+	<td class="tableCellTwo" style="width:65%;" valign="bottom">
+	<div class="lighttext">{lang:allowed_image_types}</div>
+	</td>	
+{/if}
+
+</tr><tr>
+
+<td class='tableCellOne' colspan='2'>
+<div class='marginpad'>{if can_upload_avatar}<input type='submit' class='submit' value='{lang:upload_avatar}' name="submit" />{/if} &nbsp;&nbsp;<input type='submit' class='submit' value='{lang:remove_avatar}' name="remove" /></div>
+</td>
+</tr>
+</table>
+
+</form>

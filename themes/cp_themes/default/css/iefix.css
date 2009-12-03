@@ -1,0 +1,92 @@
+/**
+ *
+ * This just fixes some issues with IE
+ *
+ */
+ 
+#publish_tab .publish_textarea textarea, .publish_input input {
+	width:				99%;
+}
+
+/* Force the logout link to be white */
+#activeUser a.logOutButton:link, #activeUser a.logOutButton:visited {
+  color:#fff;
+}
+
+.contentMenu li.submission a {
+  background-position: 17px -158px;
+}
+
+.contentMenu li.submission a:hover {
+  background-position:17px -177px;
+}
+
+/* Table Footer */
+#mainContent .tableFooter {
+  background-color:#ECF1F4;
+  padding:12px 11px 20px;
+}
+
+#mainContent .pageContents {
+ margin-bottom:-11px;
+}
+
+/* Submit Button */
+.submit {
+  height:25px;
+}
+
+.button a:link, .button a:visited {
+  height:23px;
+  padding:2px 20px 0 20px;
+}
+
+#mainContent .formArea #templates .formHeading .newTemplate a {
+  height:10px;
+  padding:2px 10px 0 10px;
+}
+
+/* CP Button */
+.cp_button {
+  height:15px;
+}
+
+/* Communicate */
+#communicate_compose {
+  margin-right:27%;
+  width:  70%;
+}
+
+#communicate_info {
+  float:right;
+  width:25%;
+}
+
+table.mainTable .headerSortUp,
+table.mainTable th.headerSortDown {
+  background-color:#C60047;
+}
+
+/* Navigation */
+ul#navigationTabs {
+	height:33px;
+}
+
+#navigationTabs li ul a:hover {
+	color:#fff!important;
+}
+
+
+#navigationTabs li ul li.active a,
+#navigationTabs li.parent .active ul li.parent .active .hover ul li.active a {
+	color:#fff;
+}
+
+#navigationTabs li.parent ul li.parent ul li a {
+	color:#5F6C74;
+}
+
+/* Notepad */
+#notePad #notePadTextEdit {
+	min-height:				36px;
+}

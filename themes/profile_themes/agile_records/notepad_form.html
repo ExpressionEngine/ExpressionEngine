@@ -1,0 +1,30 @@
+<!-- Template: Notepad Form -->
+<form method="post" action="{path:update_notepad}">
+<h3>{lang:notepad}</h3>
+<table class="member_table">
+<tr>
+
+<th>{lang:notepad_blurb}</th>
+
+</tr><tr>
+
+<td><textarea name='notepad' style='width:100%' class='textarea' rows='{notepad_size}' cols='90'>{notepad_data}</textarea></td>
+
+</tr><tr>
+
+<th>{lang:notepad_size}</th>
+<td><input type='text' class='input' name='notepad_size' value='{notepad_size}' maxlength='2' /></td>
+
+</tr><tr>
+
+<td>
+<input type='submit' class='submit' value='{lang:update}' />
+
+
+
+</td>
+</tr>
+</table>
+
+</form>
+<!-- End Template: Notepad Form -->

@@ -1,0 +1,22 @@
+<div id='topBar' class="clearfix">
+				{if logged_out}
+				<table border="0" cellspacing="0" cellpadding="0" align="right">
+					<tr>
+						<td><span>{lang:welcome}</span></td>
+						<td><a id="nav_login" href="{path:login}">{lang:login}</a></td>
+						<td><a id="nav_register" href="{path:register}">{lang:register}</a></td>
+						<td><a id="nav_memberlist" href="{path:memberlist}">{lang:memberlist}</a></td>
+					</tr>
+				</table>
+				{/if}
+				{if logged_in}
+				<table border="0" cellspacing="0" cellpadding="0" align="right">
+					<tr>
+						<td><span id="s2">{lang:logged_in_as}&nbsp;&nbsp;<b>{screen_name}</b></span></td>
+						<td><a id="nav_logout" href="{path:logout}">{lang:logout}</a></td>
+						<td><a id="nav_profile" href="{path:your_profile}">{lang:your_profile}</a></td>
+						<td><a id="nav_cp" href="{path:your_control_panel}">{lang:your_control_panel}</a></td>
+						<td><a id="nav_memberlist2" href="{path:memberlist}">{lang:memberlist}</a></td>
+					</tr>
+				</table>
+				{/if}</div><!-- END topBar -->

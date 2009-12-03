@@ -1,0 +1,161 @@
+/* main vertical scroll */
+#file_manager_main {
+	position:relative;
+	overflow:hidden;
+	height: 450px;
+}
+
+#file_manager > div {
+	background: #B7C0C7 url(<?=$cp_theme_url?>images/publish_file_manager_bg.jpg) repeat-y 0px 0px;
+/*	background: #B7C0C7;*/
+}
+
+/* root element for pages */
+#file_manager_main #pages {
+	position:absolute;
+	height:20000em;
+}
+
+/* single page */
+.page {
+	padding:10px 10px 10px 0px;
+	height: 450px;
+	width:500px;
+}
+
+/* root element for horizontal scrollables */
+.vertscrollable {
+	position:relative;
+	overflow:hidden;
+	width: 500px;
+	height: 410px;
+}
+
+/* root element for scrollable items */
+.vertscrollable .items {
+	width:20000em;
+	position:absolute;
+	clear:both;
+}
+
+/* single scrollable item */
+.item {
+	float:left;
+	width:500px;
+	height:450px;
+	padding: 10px 0;
+	background: none!important;
+}
+
+.item div {
+	text-align: center;
+	width: 75px;
+	height:75px;
+	float: left;
+	overflow: hidden;
+	margin: 0 10px 20px 10px;
+	font-size: 10px;
+	line-height: 15px;
+	cursor:pointer;
+}
+
+.item div > div {
+	border:1px solid #8EA1AD;
+	height:60px;
+	width: 73px;
+	overflow: hidden;
+	margin: 0;
+}
+
+/* main navigator */
+#main_navi {
+	float:left;
+	padding:0px !important;
+	margin:0px !important;
+}
+
+#main_navi li {
+	background: #27343C;
+	clear:both;
+	color:#FFFFFF;
+	height:40px;
+	line-height: 40px;
+	list-style-type:none;
+	width:160px;
+	cursor:pointer;
+	padding-left: 20px;
+	border-bottom: 1px solid #B7C0C7;
+}
+
+/*#main_navi li:hover {
+	background-color:#0072BC;
+}*/
+
+#main_navi li.active {
+	background: #95A700 url(<?=$cp_theme_url?>images/publish_file_manager_nav_arrow.jpg) no-repeat right;
+	width:180px;
+}
+
+#main_navi strong {
+	display:block;
+}
+
+#file_manager_main .navi {
+	padding-top: 5px;
+}
+
+#file_manager_main div.navi a {
+	background: #27343C url(<?=$cp_theme_url?>images/publish_file_manager_nav_button_inactive.jpg) no-repeat center center;
+	cursor:pointer;
+	width:15px;
+	height: 15px;
+	display: block;
+	float: left;
+	margin: 0 2px 0 2px;
+}
+#file_manager_main div.navi a.active {
+	background: #95A700 url(<?=$cp_theme_url?>images/publish_file_manager_nav_button_active.jpg) no-repeat center center;
+}
+
+.navi_area {
+	background:#27343C;
+	height:35px;
+	margin-top:-35px;
+	margin-left:180px;
+	line-height: 35px;
+}
+
+.prevThumbs {
+	float:left;
+	height:27px;
+	width: 27px;
+	background: #5AB400 url(<?=$cp_theme_url?>images/publish_file_manager_prevthumbs.jpg) no-repeat center center;
+	cursor: pointer;
+	margin-top: -1px;
+	margin-right: 5px;
+}
+
+.newThumbs {
+	display:block;
+	height:27px;
+	width: 27px;
+	background: #5AB400 url(<?=$cp_theme_url?>images/publish_file_manager_newthumbs.jpg) no-repeat center center;
+	cursor: pointer;
+	margin-top: -6px;
+	margin-left: 5px;
+	float: left;
+}
+
+.nav_controls {
+	display: none;
+}
+
+p.custom_field_add {
+	padding: 			0;
+	margin: 			0;
+}
+
+
+#file_manager_body button {
+	padding: 5px;
+}

@@ -1,0 +1,123 @@
+
+{if can_edit}
+
+{if moderated && cannot_admin}
+<div class="defaultBold">Submissions to this topic are moderated and will not go live until approved by an Admin.</div><br />
+{/if}
+
+{if old_revision}
+<div class="defaultBold">WARNING: You are editing an out of date revision and submitting will overwrite more recent versions of this article.</div><br />
+{/if}
+
+{if preview}
+<div class="defaultBold">WARNING: You are viewing a preview of your submission.  No changes to the article have been made.</div>
+<div class="preview">{preview}</div>
+{/if}
+
+{form_declaration:wiki:edit}
+<textarea style='width:98%;' name='article_content' id='article_content' cols='90' rows='25' class='textarea'>{content}</textarea>
+
+<!-- Little Help for Uploading/Linking Files -->
+
+{if uploads}
+<script type="text/javascript">
+
+function show_uploads()
+{
+	var obj = document.getElementById('recent_uploads');
+
+	if (obj.style.display == "block")
+		obj.style.display = "none";
+	else
+		obj.style.display = "block";
+}
+
+function add_tag (ourTag)
+{
+	var theField = document.getElementById('article_content');
+
+	if (document.selection) 
+	{
+		theSelection = document.selection.createRange().text;
+		theField.focus();
+		document.selection.createRange().text = ourTag;
+		theSelection = '';
+		theField.blur();
+		theField.focus();
+		return;
+	}
+	else if ( ! isNaN(theField.selectionEnd))
+	{
+		var selLength = theField.textLength;
+		var selStart = theField.selectionStart;
+		var selEnd = theField.selectionEnd;
+		if (selEnd <= 2 && typeof(selLength) != 'undefined')
+			selEnd = selLength;
+
+		var s1 = (theField.value).substring(0,selStart);
+		var s2 = (theField.value).substring(selStart, selEnd)
+		var s3 = (theField.value).substring(selEnd, selLength);
+
+		var newStart = selStart + ourTag.length;
+		theField.value = s1 + ourTag + s3;
+
+		theField.focus();
+		theField.selectionStart = newStart;
+		theField.selectionEnd = newStart;
+		return;
+	}
+
+	theField.value += ourTag;
+}
+
+</script>
+
+&nbsp;<a href="javascript:void(0);" onclick="show_uploads();return false;">View 10 Most Recent File Uploads</a>
+
+<div class="codeblock" id="recent_uploads" style="display:none;">
+<div class="defaultBold">Recent Files:</div>
+{wiki:files limit="10" orderby="upload_date" sort="desc"}
+<div class="itempad"><a href="{path:view_file}">{file_name}</a> - Uploaded: {upload_date format="%j %M %Y"}: 
+[<a href="javascript:void(0);" onclick="add_tag('[[{file_namespace}:{file_name}]]');return false;">Add File</a>]
+{if is_image} - [<a href="javascript:void(0);" onclick="add_tag('[[{image_namespace}:{file_name}]]');return false;">Add Image</a>]{/if}</div>
+{/wiki:files}
+</div>
+{/if}
+
+<div class="codeblock">
+Notes:&nbsp; <input class="input" name="revision_notes" id="revision_notes" value="{revision_notes}" type="text" size="50" maxlength="80" />
+</div>
+
+<div class="codeblock">
+Redirect:&nbsp; <input class="input" name="redirect" id="redirect" type="text" value="{redirect_page}" size="50" maxlength="80" />
+</div>
+
+{if can_admin}
+<div class="codeblock">
+Rename:&nbsp; <input class="input" name="rename" id="rename" type="text" value="{rename}" size="50" maxlength="80" />
+</div>
+
+<div class="codeblock">
+<input name="lock_article" id="lock_article" class="checkbox" type="checkbox" value="y" {if locked}checked="checked"{/if} /> Lock Article
+&nbsp;&nbsp;&nbsp;
+<input name="moderate_article" id="moderate_article" class="checkbox" type="checkbox" value="y" {if moderated}checked="checked"{/if} /> Moderate Article
+&nbsp;&nbsp;&nbsp;
+<input name="delete_article" id="delete_article" class="checkbox" type="checkbox" value="y" /> {if namespace == category_namespace}Delete Category{if:else}Delete Article{/if}
+</div>
+{/if}
+
+<input name="submit" class="submit" type="submit" value="Submit" onclick="is_preview = false;" />
+<input name="preview" class="submit" type="submit" value="Preview" onclick="is_preview = true;" />
+{/if}
+
+
+{if cannot_edit}
+<p><strong>You are not allowed to edit this page.</strong></p>
+
+<textarea style='width:98%;' cols='90' rows='25' class='textarea' readonly="readonly">{content}</textarea>
+
+{/if}
+
+
+</form>
+	

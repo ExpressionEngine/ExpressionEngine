@@ -1,0 +1,19 @@
+{include:html_header}
+{include:top_bar}
+{include:page_header}
+{include:page_subheader}
+<div id="content">
+
+{if logged_in}
+	<ul class="forumnav">
+		<li><a href="{path:view_new_topics}">{lang:view_new_topics}</a></li>
+		<li><a href="{path:view_active_topics}">{lang:view_active_topics}</a></li>
+		<li><a href="{path:view_pending_topics}">{lang:view_pending_topics}</a></li>
+		<li><a href="{path:mark_all_read}">{lang:mark_all_read}</a></li>
+	</ul>
+{/if}
+{include:main_forum_list}
+{include:visitor_stats}
+{include:forum_legend}
+</div><!--content-->
+{include:html_footer}

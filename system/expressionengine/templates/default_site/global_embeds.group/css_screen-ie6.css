@@ -1,0 +1,259 @@
+/*
+
+	AGILE RECORDS, EE2.0 EXAMPLE SITE by ERSKINE DESIGN
+	VERSION 1.0
+	IE6 OVERRIDE STYLES
+	
+	CONTENTS ----------
+	
+	
+	
+	-------------------
+	
+*/
+
+
+
+ul#nav_access { position:static; display:none; }
+
+div#feature { margin-bottom:10px !important; }
+hr.legend_start,
+hr.feature_end { display:none !important; }
+
+/* TABLES */
+
+table { background-image:none; background-color:#ddd; font-size:12px; }
+tr.alt { background-image:none; background-color:#eee; }
+th { background-image:none; background-color:#ddd; }
+
+
+
+/* LAYOUT */
+
+div#feature { width:950px; overflow:hidden; float:none; padding:30px 0; position:static; margin:0; background:url({site_url}themes/site_themes/agile_records/images/feature_bg.jpg); margin-bottom:30px; }
+div#page_header { background-image:none; background-color:#6b5f57; height:40px; z-index:3; position:static; top:0px; margin-bottom:0; padding-bottom:10px; }
+
+div#branding { height:290px; background:url({site_url}themes/site_themes/agile_records/images/ie_branding_bg.gif) repeat-x center top; position:relative; z-index:2; }
+div#branding_sub { width:930px; margin:0 auto; position:relative; }
+
+div#page { background:url({site_url}themes/site_themes/agile_records/images/page_bg.jpg); }
+
+div#content_pri { display:inline; }
+div#content_sec { }
+
+
+
+/* BRANDING/MASTHEAD */
+
+div#branding_logo { background:url({site_url}themes/site_themes/agile_records/images/ie_branding_sub_bg.gif) no-repeat left top; }
+div#branding_sub h1 a { position:static; background:url({site_url}themes/site_themes/agile_records/images/logo_bg.jpg) no-repeat bottom left; }
+div#branding_sub div#member { background:none; }
+div#branding_sub form { background:url({site_url}themes/site_themes/agile_records/images/ie_search_bg.jpg) no-repeat; }
+
+
+
+
+/* NAVIGATION */
+
+ul#navigation_pri { background-image:none; background-color:#2f261d; }
+ul#navigation_pri li { height:auto; text-indent:0; font-family:"Cooper Black",Arial; font-weight:bold; }
+ul#navigation_pri li a:link,
+ul#navigation_pri li a:visited { background:none; text-decoration:none; color:#a09f9d;}
+ul#navigation_pri li a:hover,
+ul#navigation_pri li a:focus { color:#ccc;}
+ul#navigation_pri li.cur a:link,
+ul#navigation_pri li.cur a:visited,
+ul#navigation_pri li.cur a:hover,
+ul#navigation_pri li.cur a:focus { color:#d55401; }
+ul#navigation_pri li#home,
+ul#navigation_pri li#events,
+ul#navigation_pri li#contact { top:8px; }
+ul#navigation_pri li#bands,
+ul#navigation_pri li#news,
+ul#navigation_pri li#forums { top:30px; }
+ul#navigation_pri li#releases,
+ul#navigation_pri li#about,
+ul#navigation_pri li#wiki { top:54px; }
+
+
+
+/* HEADINGS */
+div#page_header { height:1px; z-index:99; position:static; top:0; margin-bottom:0; }
+div#page_header h2 { text-indent:0 !important; background:none !important; color:#e6e6e6 !important; padding-top:15px !important; float:left;}
+div#page_header ol#breadcrumbs { margin-top:10px; padding:0; background:none; }
+div#page_header ol#breadcrumbs li { margin-left:10px; }
+
+h2,h3 { text-indent:0 !important; background:none !important; width:auto !important; height:auto !important; }
+
+
+
+/* HOMEPAGE */
+
+.home div#feature div#featured_band { width:450px; float:left; position:static; margin:0px; }
+.home div#feature div#featured_band h2 { margin-bottom:5px; width:auto; height:auto; text-indent:0; background:none; }
+
+.home div#content_sec { display:inline; margin:0 30px 0 10px; }
+
+.home div#feature div#featured_band div.image { width:300px; height:200px; left:0; bottom:-10px; margin:0 10px 0 10px; padding:0; display:inline; }
+.home div#feature div#featured_band div.image h4 { height:auto; width:auto; background:none; margin:0; top:auto; bottom:0; }
+.home div#feature div#featured_band div.image h4 span { position:static; background:none; }
+.home div#feature div#featured_band div.image img { top:0; left:0; }
+
+.home div#homepage_events ul { padding-bottom:30px; }
+.home div#homepage_events ul li a { background:none !important; text-indent:0 !important; text-align:center; color:#fff; font-weight:bold; }
+
+.home div#homepage_forums ul,
+.home div#homepage_rss p,
+.home div#homepage_rss ul { background-image:none; background-color:#eee; }
+
+
+
+/* BANDS */
+
+.bands ul#bands1 li.one { width:450px; height:300px; left:-480px; top:0; margin-right:-450px; margin-bottom:30px; }
+.bands ul#bands1 li.one img { top:0; left:0; }
+ 
+.bands ul#bands1 li.two img,
+.bands ul#bands1 li.three img { padding:0; background:none; position:static; margin:0; margin:0 10px; }
+
+.band div#band_image { width:450px; height:300px; float:left; position:relative; left:10px; top:0px; margin:0 30px 30px 0; display:inline; }
+.band div#band_image img { top:0; left:0; }
+
+div#band_latestrelease { padding:20px; overflow:hidden; color:#d6d6d6; margin-left:10px; }
+div#band_latestrelease h3 { padding-top:20px; }
+
+.band div#content_pri { display:inline; }
+
+.band div#band_events ul { padding-bottom:30px; }
+.band div#band_events ul li a { background:none !important; text-indent:0 !important; text-align:center; color:#fff; font-weight:bold; }
+
+.band div#band_more ul { background-image:none; background-color:#eee; }
+
+
+
+/* RELEASES */
+
+.releases div#content_pri table th { background:none; text-indent:0; color:#fff; }
+.releases div#content_pri table th.release_details { width:360px; padding-right:30px; background:none; }
+.releases div#content_pri table th.release_catno { width:80px; background:none; }
+.releases div#content_pri table th.release_format { width:120px; background:none; text-align:center; }
+
+.releases div#content_pri table tr { background-image:none; background-color:#a3a39c; }
+.releases div#content_pri table tr.releases_head { background:none; }
+.releases div#content_pri table tr.alt { background-image:none; background-color:#c1c1bc; }
+
+.release div#content_pri { display:inline; padding-top:30px;}
+.release div#content_sec { padding:0; padding-top:30px; background:none; position:relative; left:-10px; }
+
+.release div#release_details { border-bottom:1px solid blue; }
+.release div#release_details span { font-family:Georgia,serif; font-style:italic; }
+.release div#release_details ul { list-style:url({site_url}themes/site_themes/agile_records/images/pixel.gif); }
+
+.release div#release_tracks div.release_format { float:left; padding-bottom:20px; margin-bottom:20px; }
+
+
+
+/* EVENTS */
+
+.events div#content_pri { display:inline; }
+
+
+
+/* NEWS */
+
+.news div#content_pri { display:inline; padding:30px 0; }
+.news div#content_sec { margin:30px 0 ; }
+
+.news div#news_calendar h6 a.prev { position:static; }
+.news div#news_calendar h6 a.next { position:static; }
+
+.news div#news_calendar { background-image:none; background-color:#cfcfcb; }
+.news div#news_calendar table td.post { background-image:none; background-color:#d7d7d3; }
+
+.news div#news_rss { background-image:none; background-color:#cfcfcb; }
+
+div#news_comments ol li { background-image:none; background-color:#f1f1f1; }
+div#news_comments ol li.alt { background-image:none; background-color:#e7e7e7; }
+
+div#news_comments fieldset#comment_fields label { display:block; width:320px; }
+div#news_comments fieldset#comment_fields label.comment { width:530px; }
+div#news_comments fieldset#comment_fields label span { width:80px; float:none; position:relative; top:20px; }
+div#news_comments fieldset#comment_fields label input { float:right; }
+div#news_comments fieldset#comment_fields label textarea { float:right; }
+
+div#news_comments fieldset#comment_fields label input,
+div#news_comments fieldset#comment_fields label textarea { background-image:none; background-color:#f1f1f1; }
+
+
+
+/* FORUMS */
+
+.forums div#content_pri { display:inline; }
+.forums div#content_sec { background-image:none; background-color:#f1f1f1; }
+
+.forums #page_header form { position:absolute; left:770px; padding-top:5px; }
+.forums #page_header form input.search { padding:1px; margin-right:10px;}
+.forums #page_header form input.submit { padding:0; position:relative; top:5px; }
+
+.forums div#content_pri h3 { background-color:#71715f !important; }
+
+div.forum_posts { background-image:none; background-color:#9e9e94; }
+div.forum_posts table tr td { background-image:none; background-color:#d0d0cc;}
+div.forum_posts table tr.alt td { background-image:none; background-color:#b3b3ab; }
+
+div.forum_posts table tr th { text-indent:0; color:#fff; }
+div.forum_posts table tr th.forum_name,
+div.forum_posts table tr th.forum_topics,
+div.forum_posts table tr th.forum_replies,
+div.forum_posts table tr th.forum_latest { background-image:none; }
+
+div.forum_posts table td.forum_newpostindicator img { position:static; }
+
+.forums div#legend div#forum_stats ul.legend { float:left; background-image:none; background-color:#cecec8; }
+.forums div#legend div#forum_stats p.most_visitors { background-image:none; background-color:#ecd2c3; }
+
+
+
+/* WIKI */
+
+.wiki div#navigation_sec { padding-top:57px; display:inline;  behavior: url(css/iepngfix/iepngfix.htc); }
+.wiki div#navigation_sec ul { background:url({site_url}themes/site_themes/agile_records/images/ie_wiki_menubg.jpg) repeat-y 5px top ; }
+.wiki div#navigation_sec div.bottom { behavior: url(css/iepngfix/iepngfix.htc); }
+
+
+
+/* MEMBERS CONTROL PANEL */
+
+.member_cp div#navigation_sec { display:inline; background-image:none; background-color:#9c9b92; }
+.member_cp div#navigation_sec h4 a.expand { display:none; }
+
+.member_cp div#content_pri table tr { background-image:none; background-color:#f1f1f1; }
+.member_cp div#content_pri table tr.alt { background-image:none; background-color:#e7e7e7; }
+.member_cp div#content_pri table tr th { background-image:none; background-color:#f1f1f1; }
+.member_cp div#content_pri table tr.alt th { background-image:none; background-color:#e7e7e7; }
+
+
+
+/* MEMBER PROFILE */
+
+.member_profile div#feature div#memberprofile_main { background-image:none; background-color:#cecec8; margin:20px 0 0 10px; }
+.member_profile div#feature div#memberprofile_main ul { padding:0 0 10px 0; }
+
+.member_profile div#feature div#memberprofile_photo { float:left; width:210px; height:180px; background:none; position:relative; left:-20px; }
+.member_profile div#feature div#memberprofile_photo img { width:206px; height:176px; border:3px solid #6b5f57; position:static; }
+
+.member_profile div#feature div#memberprofile_communicate { background-image:none; background-color:#adada3; margin-top:5px; } 
+.member_profile div#feature div#memberprofile_communicate table tr { background-image:none; background-color:#cdcdc7; }
+.member_profile div#feature div#memberprofile_communicate table tr.alt { background-image:none; background-color:#bebeb7; }
+
+.member_profile div#content_pri table tr,
+.member_profile div#content_sec table tr { background-image:none; background-color:#f1f1f1; }
+.member_profile div#content_pri table tr.alt,
+.member_profile div#content_sec table tr.alt { background-image:none; background-color:#e7e7e7; }
+
+.member_profile div#content_pri table tr th,
+.member_profile div#content_sec table tr th { background-image:none; background-color:#f1f1f1; }
+.member_profile div#content_pri table tr.alt th,
+.member_profile div#content_sec table tr.alt th { background-image:none; background-color:#e7e7e7; }
+
+

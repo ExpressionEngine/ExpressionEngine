@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="{charset}"?>	
+<rss version="2.0"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+    xmlns:admin="http://webns.net/mvcb/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:content="http://purl.org/rss/1.0/modules/content/">
+
+    <channel>
+    
+    <title>{exp:xml_encode}{wiki_name}{/exp:xml_encode}</title>
+    <link>{path:wiki_home}</link>
+    <description>{exp:xml_encode}{wiki_name}{/exp:xml_encode}</description>
+    <dc:language>{language}</dc:language>
+    <dc:creator>{webmaster_email}</dc:creator>
+    <dc:rights>Copyright 2009</dc:rights>
+    <dc:date>{gmt_last_updated format="%Y-%m-%dT%H:%i:%s%Q"}</dc:date>
+    <admin:generatorAgent rdf:resource="http://expressionengine.com/" />
+    
+{wiki:recent_changes}
+    <item>
+      <title>{exp:xml_encode}{title}{/exp:xml_encode}</title>
+      <link>{exp:xml_encode}{path:view_article}{/exp:xml_encode}</link>
+      <guid>{exp:xml_encode}{path:view_article}{/exp:xml_encode}</guid>
+      <description><![CDATA[{article}]]></description>
+      <dc:subject>{exp:xml_encode}{title}{/exp:xml_encode}</dc:subject>
+      <dc:date>{gmt_revision_date format="%Y-%m-%dT%H:%i:%s%Q"}</dc:date>
+    </item>
+{/wiki:recent_changes}
+    
+    </channel>
+</rss>
+	

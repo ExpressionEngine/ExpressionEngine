@@ -1,0 +1,245 @@
+<?php
+if ($EE_view_disable !== TRUE)
+{
+	$this->load->view('_shared/header');
+	$this->load->view('_shared/main_menu');
+	$this->load->view('_shared/sidebar');
+	$this->load->view('_shared/breadcrumbs');
+}
+?>
+
+<div id="mainContent"<?=$maincontent_state?>>
+	<?php $this->load->view('_shared/right_nav')?>
+	<div class="contents">
+		<div class="heading"><h2><?=lang('template_management')?></h2></div>
+				<div class="pageContents">
+		<div class="formArea">
+
+			<div id="templateGroups">
+				<div class="column">
+		
+	
+					<div class="formHeading">
+						<div class="newTemplate">
+						<?php if ($can_admin_templates): ?>
+							<a href="<?=BASE.AMP.'C=design'.AMP.'M=new_template_group'?>"><?=lang('new_template_group')?></a>
+						<?php endif; ?></div>
+
+						<?=lang('template_groups')?>
+					</div>
+					
+					<div class="groupList">
+						<h3><?=lang('choose_group')?></h3>
+						
+						<ul id="sortable_template_groups">
+							<?php foreach ($template_groups as $row): ?>
+							<li id="template_group_<?=$row['group_id']?>"><a class="templateGroupName" href="#"><?php if ($row['is_site_default'] == 'y'):?><span class="defaultIndicator">*&nbsp;</span><?php endif?><?=$row['group_name']?></a></li>
+							<?php endforeach; ?>
+						</ul>
+												
+<!-- @confirm: remove these?
+						<div class="editLink"><a id="edit_group_order_lock" href="#"><?=lang('edit_template_group_order')?></a></div>
+						<div class="editLink"><a href="#"><?=lang('edit').' '.lang('default_template_group')?></a></div>
+-->
+						<span class="defaultIndicator">*&nbsp;</span><?=lang('default_template_group')?> <span class="defaultGroupName"><?=$default_group?></span>
+					</div>					
+				</div>
+			</div>
+
+			<div id="templates">
+				<div class="column">					
+					<div class="linkBar">
+						<?php if ($search_terms):?><div style="float:left;"><h2><?=lang('search_terms')?> <?=$search_terms?></h2></div><?php endif;?>
+							
+						<div class="search">
+							<?=form_open('C=design'.AMP.'M=manager')?>
+								<input type="text" id="template_keywords" name="template_keywords" value="" maxlength="80" class="input" />
+							</form>
+
+							<script type="text/javascript" charset="utf-8">
+							// <![CDATA[
+								if (document.getElementById('template_keywords'))
+								{
+									if ((parseInt(navigator.productSub)>=20020000)&&(navigator.vendor.indexOf("Apple Computer")!=-1))
+									{
+										searchField = document.getElementById('template_keywords');
+										searchField.setAttribute('type', 'search');
+										searchField.setAttribute('autosave', 'ee_template_search');
+										searchField.setAttribute('results', '10');
+										searchField.setAttribute('placeholder', 'Search templates');
+									}
+								}
+							// ]]>
+							</script>
+						</div>
+					</div>
+
+					<?=$this->load->view('_shared/message')?>
+					
+				<?php if ($can_admin_templates): ?>
+					<div id="prefRowTemplate" style="display:none">
+						<table class="templateTable accessTable" border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<th class="template_manager_template_name"><?=lang('name_of_template')?></th>
+								<th class="template_manager_template_type"><?=lang('type')?></th>
+								<th class="template_manager_enable_caching"><?=lang('cache_enable')?></th>
+								<th class="template_manager_refresh_interval">
+								    <?=lang('refresh_interval')?><br />
+								    <span style="font-weight:normal; font-size:80%">(<?=lang('refresh_in_minutes')?>)</span>
+								</th>
+								<th class="template_manager_enable_php"><?=lang('enable_php')?></th>
+								<th class="template_manager_parse_stage"><?=lang('parse_stage')?></th>
+								<th class="template_manager_hits"><?=lang('hit_counter')?></th>
+							</tr>
+							<tr>
+								<td><input name="group_name" class="group_name" type="text" size="15" value="" /></td>
+								<td><select class="template_type" name="template_type" id="template_type_">
+									<option value="css"><?=lang('css_stylesheet')?></option>
+									<option value="js"><?=lang('js')?></option>
+									<option value="feed"><?=lang('rss')?></option>
+									<option value="static"><?=lang('static')?></option>
+									<option value="webpage"><?=lang('webpage')?></option>
+									<option value="xml"><?=lang('xml')?></option>
+								</select></td>
+								<td>
+								    <?=form_dropdown('cache', array('y' => lang('yes'), 'n' => lang('no')))?>
+								</td>
+								<td>
+										<input class="refresh" name="refresh" type="text" size="4" value="" />
+								</td>
+								<td>
+								    <?=form_dropdown('allow_php', array('y' => lang('yes'), 'n' => lang('no')))?>
+								</td>
+								<td>
+								    <?=form_dropdown('php_parse_location', array('i' => lang('input'), 'o' => lang('output')))?>
+								</td>
+								<td><input name="hits" class="hits" type="text" size="8" value="" /></td>
+							</tr>
+						</table>
+					</div>
+					<div id="accessRowTemplate" style="display:none">
+						<table class="templateTable accessTable" border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								<th><?=lang('member_group')?></th>
+								<th><?=lang('can_view_template')?></th>
+							</tr>
+							<tr>
+								<td><?=lang('select_all')?></td>
+								<td><?=lang('yes')?> <input type="radio" name="select_all_top" id="select_all_top_y" class="ignore_radio" value="y" /> &nbsp; <?=lang('no')?> <input type="radio" name="select_all_top" id="select_all_top_n" class="ignore_radio" value="n" /></td>
+							</tr>
+							<?php foreach($member_groups as $id => $group):?>
+							<tr>
+								<td><?=$group->group_title?></td>
+								<td><?=lang('yes')?> <input type="radio" name="access_<?=$id?>" id="access_<?=$id?>_y" value="y" /> &nbsp; <?=lang('no')?> <input type="radio" name="access_<?=$id?>" id="access_<?=$id?>_n" value="n" /></td>
+							</tr>
+							<?php endforeach; ?>
+							<tr>
+								<td>Select All</td>
+								<td><?=lang('yes')?> <input type="radio" name="select_all_bottom" id="select_all_bottom_y" class="ignore_radio" value="y" /> &nbsp; <?=lang('no')?> <input type="radio" name="select_all_bottom" id="select_all_bottom_n" class="ignore_radio" value="n" /></td>
+							</tr>
+						</table>
+					</div>
+				<?php endif; ?>
+
+				<?php if ($no_results):?><?=$no_results?><?php endif;?>
+
+					<?php
+					
+					$prefs_json = array();
+					
+					$this->table->set_template($table_template);
+						foreach ($templates as $group): 
+							$temp = current($group);
+							$group_id = $temp['group_id'];
+							unset($temp);
+							?>
+							<div id="template_group_<?=$group_id?>_templates" class="templateGrouping">
+							<div class="formHeading">
+							<?php if ($can_admin_templates): ?>									
+								<div style="margin-left:15px" class="newTemplate"><a href="<?=BASE.AMP.'C=design'.AMP.'M=new_template'.AMP.'group_id='.$group_id?>"><?=lang('create_new_template')?></a></div>
+								<div style="margin-left:15px" class="newTemplate"><a href="<?=BASE.AMP.'C=design'.AMP.'M=template_group_delete_confirm'.AMP.'group_id='.$group_id?>"><?=lang('delete_template_group')?></a></div>
+								<div class="newTemplate"><a href="<?=BASE.AMP.'C=design'.AMP.'M=edit_template_group'.AMP.'group_id='.$group_id?>"><?=lang('edit_template_group')?></a></div>
+							<?php endif; ?>								
+								
+								<?=lang('name_of_template_group')?>: <?=$groups[$group_id]?>
+							</div>
+
+							<?php
+							$main_table_headings = array(lang('edit_template'), lang('view'));
+							
+							if ($can_admin_templates)
+							{
+								$main_table_headings = array_merge($main_table_headings, array(lang('access'), lang('preferences')));
+							}
+							
+							$main_table_headings = array_merge($main_table_headings, array(array('data' => lang('hits'), 'style' => 'text-align:right;'), array('data' => lang('delete'), 'style' => 'font-size:11px;', 'class' => 'cellRight')));
+							
+							$this->table->set_heading($main_table_headings);
+
+							foreach ($group as $template):
+								$prefs_json[$template['template_id']] = array(
+									'id' => $template['template_id'],
+									'group_id' => $template['group_id'],
+									'name' => $template['template_name'],
+									'type' => $template['template_type'],
+									'cache' => $template['cache'],
+									'refresh' => $template['refresh'],
+									'allow_php' => $template['allow_php'],
+									'php_parsing' => $template['php_parse_location'],
+									'hits' => $template['hits'],
+									'access' => $template['access']
+								);
+								
+								$delete_link = ($template['template_name'] == 'index') ? '--' :
+								'<a href="'.BASE.AMP.'C=design'.AMP.'M=template_delete_confirm'.AMP.
+								'template_id='.$template['template_id'].'"><img src="'.$cp_theme_url.'images/content_custom_tab_delete.gif" alt="'.lang('delete').'" width="19" height="18" /></a>';
+								$main_table_data = 	array(
+									    array('data' => '<a id="templateId_'.$template['template_id'].'" href="'.BASE.AMP.'C=design'.AMP.'M=edit_template'.AMP.'id='.$template['template_id'].'">'.$template['template_name'].'</a>',
+									 'class' => 'templateName '.$template['class']),
+									'<a rel="external" href="'.$template['view_path'].'">'.lang('view').'</a>');
+									
+
+								if ($can_admin_templates)
+								{
+									$main_table_data = array_merge($main_table_data, array('<a href="#" class="show_access_link" id="show_access_link_'.$template['template_id'].'">'.lang('access').'</a>',
+									'<a href="#" class="show_prefs_link" id="show_prefs_link_'.$template['template_id'].'">'.lang('edit_preferences').'</a>'));
+								}
+									
+								$main_table_data = array_merge($main_table_data, array(
+									array('data' => $template['hits'], 'style' => 'text-align:right;', 'id'=>'hitsId_'.$template['template_id']),
+									array('data' => $delete_link, 'class' => 'cellRight')));
+								
+								$this->table->add_row($main_table_data);
+							endforeach;
+						
+							echo $this->table->generate();
+							$this->table->clear(); ?>
+							</div>
+						<?php
+						endforeach;
+						
+						$prefs_json = $this->javascript->generate_json($prefs_json);
+					?>
+					<script type="text/javascript" charset="utf-8">
+					
+						// @todo this needs to move into the controller...
+						EE.pref_json = <?=$prefs_json?>;
+					</script>
+				</div>
+			</div>
+			
+		<div class="clear_left">&nbsp;</div>
+		</div>
+		</div> <!-- pageContents -->
+	</div> <!-- contents -->
+</div> <!-- mainContent -->
+
+<?php
+if ($EE_view_disable !== TRUE)
+{
+	$this->load->view('_shared/accessories');
+	$this->load->view('_shared/footer');
+}
+
+/* End of file manager.php */
+/* Location: ./themes/cp_themes/corporate/design/manager.php */

@@ -1,0 +1,26 @@
+<!-- Template: Ignore List Form -->
+{include:toggle_js}
+
+<h3>{include:member_search} {lang:ignore_list}</h3>
+
+{if success_message}{lang:message}{/if}
+
+{form:form_declaration}
+
+<table width="60%">
+
+<tr>
+
+<th>{lang:screen_name}</th>
+<td><input class='checkbox' type='checkbox' name='toggleflag' value='' onclick="toggle(this);" /></td>
+
+</tr>
+
+{include:edit_ignore_list_rows}
+
+<tr>
+<td>{form:add_button}&nbsp;&nbsp;{form:delete_button}</td>
+</tr>
+</table>
+</form>
+<!-- End Template: Ignore List Form -->

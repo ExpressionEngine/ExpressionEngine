@@ -1,0 +1,21 @@
+<div id="pageheader" class="clearfix">
+
+<div id="logo">
+        	<a href="{path:forum_home}" title="{forum_name}"><img src="{path:image_url}logo.gif" width="216" height="52" border="0" alt="{lang:ee_forums}" /></a>
+        	</div>
+        	
+<div id="search">
+{include:quick_search_form}
+</div>
+
+{if logged_in}
+{include:private_message_box}
+{/if}
+
+{if logged_out}
+{include:login_form_mini}
+{/if}
+
+</div>
+
+

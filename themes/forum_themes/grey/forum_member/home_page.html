@@ -1,0 +1,69 @@
+<table border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+<tr>
+<td class='profileHeadingBG' colspan='2'><div class="tableHeading">{lang:your_stats}</div></td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:email}</div></td>
+<td class='tableCellTwo'><a href='mailto:{email}'><b>{email}</b></a></td>
+
+</tr><tr>
+
+<td class='tableCellOne'><div class='defaultBold'>{lang:join_date}</div></td>
+<td class='tableCellOne'>{join_date}</td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:last_visit}</div></td>
+<td class='tableCellTwo'>{last_visit_date}</td>
+
+{if forum_installed}
+
+</tr><tr>
+
+<td class='tableCellOne'><div class='defaultBold'>{lang:most_recent_forum_post}</div></td>
+<td class='tableCellOne'>{recent_forum_post_date}</td>
+
+{/if}
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:most_recent_entry}</div></td>
+<td class='tableCellTwo'>{recent_entry_date}</td>
+
+</tr><tr>
+
+<td class='tableCellOne'><div class='defaultBold'>{lang:most_recent_comment}</div></td>
+<td class='tableCellOne'>{recent_comment_date}</td>
+
+{if forum_installed}
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:total_forum_topics}</div></td>
+<td class='tableCellTwo'>{total_topics}</td>
+
+</tr><tr>
+
+<td class='tableCellOne'><div class='defaultBold'>{lang:total_forum_replies}</div></td>
+<td class='tableCellOne'>{total_replies}</td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:total_forum_posts}</div></td>
+<td class='tableCellTwo'>{total_posts}</td>
+
+{/if}
+
+</tr><tr>
+
+<td class='tableCellOne'><div class='defaultBold'>{lang:total_entries}</div></td>
+<td class='tableCellOne'>{total_entries}</td>
+
+</tr><tr>
+
+<td class='tableCellTwo'><div class='defaultBold'>{lang:total_comments}</div></td>
+<td class='tableCellTwo'>{total_comments}</td>
+
+</tr>
+</table>

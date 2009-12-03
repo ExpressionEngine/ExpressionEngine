@@ -1,0 +1,13 @@
+/**
+ *
+ * This just fixes some issues with IE
+ *
+ */
+ 
+#publish_tab .publish_textarea textarea, .publish_input input {
+	width:				99%;
+}
+#mainContent #showToolbarLink {
+	margin-right: 		24px;
+
+}

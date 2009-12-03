@@ -1,0 +1,10 @@
+{include:html_header}
+{include:top_bar}
+{include:page_header_simple}
+{include:page_subheader_simple}
+<div id="content">
+{if logged_in}{include:error_message}{/if}
+{if logged_out}{include:login_form}{/if}
+
+</div>
+{include:html_footer}

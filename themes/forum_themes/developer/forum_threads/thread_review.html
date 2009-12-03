@@ -1,0 +1,57 @@
+
+<script type="text/javascript">
+<!--
+function showimage(loc, width, height)
+{
+	window.open(loc,'Image','width='+width+',height='+height+',screenX=0,screenY=0,top=0,left=0,toolbar=0,status=0,scrollbars=0,location=0,menubar=1,resizable=1');
+	return false;
+}
+
+function showhide_topic_review()
+{
+    if (document.getElementById('review_on').style.display == "block")
+    {
+        document.getElementById('review_on').style.display = "none";
+        document.getElementById('review_off').style.display = "block";	
+    }
+    else
+    {
+        document.getElementById('review_on').style.display = "block";
+        document.getElementById('review_off').style.display = "none";
+    }
+}
+
+function showHideRow(el)
+{
+    if (document.getElementById(el).style.display == "")
+    {
+        document.getElementById(el).style.display = "none";
+    }
+    else
+    {
+        document.getElementById(el).style.display = "";
+    }	
+}
+//-->
+</script>
+
+
+<div class="spacer"></div>
+
+<div id="review_on" style="display: block; padding:0; margin: 0;">
+<div class="buttonLarge" id="reviewon" onclick="showhide_topic_review();return false;" onmouseover="navHover(this);" onmouseout="navReset(this);"><img src="{path:image_url}expand.gif" width="10" height="10" border="0" alt="{lang:expand}" />&nbsp;&nbsp;{lang:thread_review}</div>
+</div>
+
+<div id="review_off" style="display: none; padding:0; margin: 0;">
+<div class="buttonLarge" id="reviewoff" onclick="showhide_topic_review();return false;" onmouseover="navHover(this);" onmouseout="navReset(this);"><img src="{path:image_url}collapse.gif" width="10" height="10" border="0" alt="{lang:collapse}" />&nbsp;&nbsp;{lang:thread_review}</div>
+
+<div class="itempadbig">{lang:last_ten_posts}&nbsp;&nbsp;<a href="{path:thread_review}" target="_blank">{lang:thread_review_link}</a></div>
+
+<table class="tableBorder" cellpadding="0" cellspacing="0" border="0" style="width:100%;" >
+<tr>
+<td class="tableHeadingBG" colspan="3"><div class="tableHeading">{topic_title}</div></td>
+</tr>
+{include:thread_review_rows}
+</table>
+
+</div>

@@ -1,0 +1,48 @@
+<!-- Template: Bulletin Form -->
+{form:form_declaration:sending_bulletin}
+
+{if message}
+<div class='tableCellOne'><div class='success'>{include:message}</div></div>
+{/if}
+
+<h3>{lang:send_bulletin}</h3>
+<table class="member_table">
+
+<tr>
+<th>{lang:member_group}</th>
+<td>
+<select name="group_id">
+{group_id_options}
+</select>
+</td>
+</tr>
+
+<tr>
+<th>{lang:bulletin_message}</th>
+<td><textarea name='bulletin_message' style='width:90%' class='textarea' rows='10' cols='90'></textarea></td>
+</tr>
+
+<tr>
+<th>{lang:bulletin_date}</th>
+<td>
+<input type="text" style="width:80%" class="input" name="bulletin_date" size="20" value="{input:bulletin_date}" maxlength="50" />
+</td>
+</tr>
+
+
+<tr>
+<th>{lang:bulletin_expires}</th>
+<td>
+<input type="text" style="width:80%" class="input" name="bulletin_expires" size="20" value="{input:bulletin_expires}" maxlength="50" />
+</td>
+</tr>
+
+<tr>
+<td><input type='submit' class='submit' value='{lang:submit}' />
+</td>
+</tr>
+
+</table>
+
+</form>
+<!-- End Template: Bulletin Form -->

@@ -1,0 +1,40 @@
+
+{form_declaration:forum:move_topic}
+
+<table class="tableBorder" cellpadding="0" cellspacing="0" border="0" style="width:700px;" align="center">
+<tr>
+<td class="tableHeadingBG"><div class="tableHeading">{lang:move_topic}</div></td>
+
+</tr><tr>
+
+<td class="tableRowHeadingBold">{lang:choose_destination_forum}</td>
+
+</tr><tr>
+
+<td class="tableCellOne"><div class="itempad">{lang:you_may_rename}</div>
+<div class="itempadbig"><input type="text" class="input" name="title" value="{title}" style="width:100%" size="50" maxlength="120" /></div>
+</td>
+
+</tr><tr>
+
+<td class="tableCellOne"><div class="itempadbig">
+<select name="forum_id" class="select">
+{move_select_options}
+</select>
+</div></td>
+
+</tr><tr>
+
+<td class="tableCellTwo">
+<div class="itempad"><input type="checkbox" class="checkbox" name="redirect" value="1" checked="checked" /> {lang:retain_move_link}</div>
+<div class="itempad"><input type="checkbox" class="checkbox" name="notify" value="1" checked="checked" /> {lang:notify_thread_owner}</div>
+</td>
+
+</tr><tr>
+
+<td class="tableCellOne"><div class="itempadbig"><input type="submit" name="submit" class="submit" value="{lang:move}" /></div></td>
+
+</tr>
+</table>
+
+</form>

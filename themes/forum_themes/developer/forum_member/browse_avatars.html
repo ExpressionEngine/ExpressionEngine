@@ -1,0 +1,35 @@
+
+{form_declaration}
+
+<table border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+<tr>
+<td class='profileHeadingBG'><div class="tableHeading">{lang:browse_avatars}</div></td>
+
+</tr><tr>
+
+<td class='tableRowHeadingBold'>{lang:current_avatar_set}&nbsp; {avatar_set}</td>
+
+</tr><tr>
+
+<td class="tableCellTwo">
+
+<table border="0" cellpadding="3" cellspacing="3" style="width:100%;">
+{avatar_table_rows}
+</table>
+
+</td>
+
+{if pagination}
+</tr><tr>
+<td class="tableCellTwo"><div class='itempad'><div class='defaultCenter'>{pagination}</div></div></td>
+{/if}
+
+</tr><tr>
+
+<td class='tableCellOne'>
+<div class='marginpad'><input type='submit' class='submit' value='{lang:choose_selected}' /></div>
+</td>
+</tr>
+</table>
+
+</form>

@@ -1,0 +1,45 @@
+<?php $this->load->view('account/_account_header');?>
+
+	<div>
+		<h3><?=lang('subscriptions')?></h3>
+
+		<?=form_open('C=myaccount'.AMP.'M=unsubscribe', '', $form_hidden)?>
+
+		<?php
+			$this->table->set_template($cp_table_template);
+			$this->table->set_heading(
+				lang('title'), 
+				lang('type'), 
+				array('style'=>'width:2%','data'=>form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"'))
+			);
+
+			if (count($subscriptions) == 0) // No results?  Bah, how boring...
+			{
+				$this->table->add_row(array('colspan'=>4, 'data'=>lang('no_subscriptions')));
+			}
+			else
+			{
+				foreach ($subscriptions as $subscription)
+				{
+					$this->table->add_row(
+											'<a href="'.$subscription['path'].'">'.$subscription['title'].'</a>',
+//											anchor($subscription['path'] ,$subscription['title']),
+											$subscription['type'],
+											'<input class="toggle" type="checkbox" name="toggle[]" value="'.$subscription['id'].'" />'
+										);
+				}
+			}
+		?>
+
+		<?=$this->table->generate()?>
+
+		<?=$pagination?>
+
+		<?php if (count($subscriptions) > 0):?>
+		<p class="submit"><?=form_submit('unsubscribe', lang('unsubscribe'), 'class="submit"')?></p>
+		<?php endif;?>
+
+		<?=form_close()?>
+	</div>
+
+<?php $this->load->view('account/_account_footer');

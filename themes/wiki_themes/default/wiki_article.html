@@ -1,0 +1,59 @@
+{if revision}
+<span class="lighttext">Revision from: {revision_date format="%H:%i, %j %M %Y"}</span><br /><br />
+{/if}
+
+{article}
+
+<!-- BEGIN 'Category' Namespace Stuff -->
+
+{if namespace == category_namespace}
+
+<div>
+{wiki:category_subcategories style="nested"}
+
+{header}
+<h3>Subcategories:</h3>
+There {if subcategory_total == '1'}is 1 subcategory{if:else}are {subcategory_total} subcategories{/if} for this category
+{/header}
+
+<a href="{path:view_category}">{category_name}</a>
+
+{/wiki:category_subcategories}
+</div>
+
+
+
+<div>
+{wiki:category_articles limit="100"}
+
+{header}
+<h3>Articles in category "{topic}":</h3>
+<div>There {if articles_total == '1'}is 1 article{if:else}are {articles_total} articles{/if} for this category</div>
+<div class="itempadbig">
+{/header}
+
+{letter_header}<div class="defaultBold">{letter}</div>{/letter_header}
+
+<p> - <a href="{path:view_article}">{title}</a></p>
+
+{footer}</div>{/footer}
+{/wiki:category_articles}
+</div>
+
+{/if}
+
+<!-- END 'Category' Namespace Stuff -->
+
+
+<!-- BEGIN Categories for Page -->
+
+{if categories}
+<h3>Categories:</h3>
+{wiki:categories style="nested"}
+<a href="{path:view_category}">{category_name}</a>
+{/wiki:categories}
+{/if}
+
+<!-- END Categories for Page -->
+
+	

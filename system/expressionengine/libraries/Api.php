@@ -1,0 +1,272 @@
+<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2009, EllisLab, Inc.
+ * @license		http://expressionengine.com/docs/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine API Class
+ *
+ * Parent class to unify code for accessing and modifying data in EE
+ * The parent class handles tasks common to many child classes including returning output
+ * 
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
+class Api {
+	
+	var $errors	= array();  // holds any and all errors on failure
+	var $apis	= array(	// apis available to initialize when loading the parent Api class
+						'channel_structure', 'channel_entries', 'channel_fields',
+						'channel_categories', 'channel_statuses', 'channel_uploads',
+						'template_structure',
+						'members'
+						);
+	
+	/**
+	 * Constructor
+	 *
+	 */
+	function Api($which = '')
+	{
+		// Set the EE super object to a class variable
+		$this->EE =& get_instance();
+		
+		// Removed for now - can only be used once per request,
+		// not worth the debugging hassle.
+		// $this->instantiate($which);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Instantiate another API
+	 *
+	 * Loads a child API after an API has been instantiated, since libraries
+	 * in CI are singletons.
+	 *
+	 * @access	private
+	 * @param	array
+	 * @return	void
+	 */
+	function instantiate($which = '')
+	{
+		if ( ! is_array($which) && $which != '')
+		{
+			$which = array($which);
+		}
+		
+		if (is_array($which))
+		{
+			foreach ($which as $api)
+			{
+				if (in_array($api, $this->apis))
+				{
+					$this->EE->load->library('api/api_'.$api);
+				}				
+			}
+		}
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Initialize
+	 *
+	 * Reset the errors array and any config options
+	 *
+	 * @access	private
+	 * @param	array
+	 * @return	void
+	 */
+	function _initialize($params = array())
+	{
+		$this->errors = array();
+		
+		foreach ($params as $param => $val)
+		{
+			$this->{$param} = $val;
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Error Count
+	 *
+	 * Just a way to keep syntax simple and not have to access
+	 * $this->errors directly in the child libraries
+	 *
+	 * @access	public
+	 * @return	int
+	 */
+	function error_count()
+	{
+		return count($this->errors);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Set Error
+	 *
+	 * Adds an error to the API error array
+	 *
+	 * @access	private
+	 * @param	string
+	 * @return	void
+	 */
+	function _set_error($error_msg)
+	{
+		$this->errors[] = ($this->EE->lang->line($error_msg) != '') ? $this->EE->lang->line($error_msg) : str_replace('_', ' ', ucfirst($error_msg));
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Make URL Safe
+	 *
+	 * Makes a string safe for use in a URL segment - similar restrictions on short names
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	string
+	 */
+	function make_url_safe($str)
+	{
+		return preg_replace("/[^a-zA-Z0-9_\-\.]+$/i", '', $str);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Is URL Safe?
+	 *
+	 * Checks if a string is safe for use in a URL segment - similar restrictions on short names
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	bool
+	 */
+	function is_url_safe($str)
+	{
+		return preg_match("/^[a-zA-Z0-9_\-\.]+$/i", $str);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Unique URL Title
+	 * 
+	 * Useful for those database tables that work the same as regards url_titles.  Takes the original
+	 * string and which type of data we are checking against and returns a valid URL Title or FALSE
+	 * if it is unable to create one.
+	 *
+	 * @param	string
+	 * @param	string integer
+	 * @param	string integer
+	 * @param	string
+	 * @return	string
+	 */	
+	function _unique_url_title($url_title, $self_id, $type_id = '', $type = 'channel')
+	{
+		if ($type_id == '')
+		{
+			return FALSE;
+		}
+	
+		switch($type)
+		{
+			case 'gallery'	: $table = 'gallery_entries';	$url_title_field = 'url_title';		$type_field = 'gallery_id';	$self_field = 'entry_id';
+				break;
+			case 'category'	: $table = 'categories';		$url_title_field = 'cat_url_title';	$type_field = 'group_id';	$self_field = 'category_id';
+				break;
+			default			: $table = 'channel_titles';	$url_title_field = 'url_title';		$type_field = 'channel_id'; $self_field = 'entry_id';
+				break;
+		}
+	
+		// Field is limited to 75 characters, so trim url_title before querying
+		$url_title = substr($url_title, 0, 75);
+
+		if ($self_id != '')
+		{
+			$this->EE->db->where(array($self_field.' !=' => $self_id));
+		}
+
+		$this->EE->db->where(array($url_title_field => $url_title, $type_field => $type_id));
+		$count = $this->EE->db->count_all_results($table);
+		
+		if ($count > 0)
+		{
+			// We may need some room to add our numbers- trim url_title to 70 characters
+			$url_title = substr($url_title, 0, 70);
+			
+			// Check again
+			if ($self_id != '')
+			{
+				$this->EE->db->where(array($self_field.' !=' => $self_id));
+			}
+
+			$this->EE->db->where(array($url_title_field => $url_title, $type_field => $type_id));
+			$count = $this->EE->db->count_all_results($table);
+			
+			if ($count > 0)
+			{
+				if ($self_id != '')
+				{
+					$this->EE->db->where(array($self_field.' !=' => $self_id));
+				}
+			
+				$this->EE->db->select("{$url_title_field}, MID({$url_title_field}, ".(strlen($url_title) + 1).") + 1 AS next_suffix", FALSE);
+				$this->EE->db->where("{$url_title_field} REGEXP('".preg_quote($this->EE->db->escape_str($url_title))."[0-9]*$')");
+				$this->EE->db->where(array($type_field => $type_id));
+				$this->EE->db->order_by('next_suffix', 'DESC');
+				$this->EE->db->limit(1);
+				$query = $this->EE->db->get($table);
+			
+				// Did something go tragically wrong?  Is the appended number going to kick us over the 75 character limit?
+				if ($query->num_rows() == 0 OR ($query->row('next_suffix') > 99999))
+				{
+					return FALSE;
+				}
+			
+				$url_title = $url_title.$query->row('next_suffix');
+			
+				// little double check for safety
+			
+				if ($self_id != '')
+				{
+					$this->EE->db->where(array($self_field.' !=' => $self_id));
+				}
+			
+				$this->EE->db->where(array($url_title_field => $url_title, $type_field => $type_id));
+				$count = $this->EE->db->count_all_results($table);
+			
+				if ($count > 0)
+				{
+					return FALSE;
+				}
+			}
+		}
+		
+		return $url_title;
+	}
+	
+	// --------------------------------------------------------------------	
+}
+// END CLASS
+
+/* End of file Api.php */
+/* Location: ./system/expressionengine/libraries/api/Api.php */

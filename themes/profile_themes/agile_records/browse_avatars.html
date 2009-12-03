@@ -1,0 +1,37 @@
+<!-- Template: Browse Avatar Page -->
+
+{form_declaration}
+
+<table>
+<tr>
+<td>{lang:browse_avatars}</td>
+
+</tr><tr>
+
+<td class='tableRowHeadingBold'>{lang:current_avatar_set}&nbsp; {avatar_set}</td>
+
+</tr><tr>
+
+<td>
+
+<table>
+{avatar_table_rows}
+</table>
+
+</td>
+
+{if pagination}
+</tr><tr>
+<td>{pagination}</td>
+{/if}
+
+</tr><tr>
+
+<td>
+<input type='submit' class='submit' value='{lang:choose_selected}' /></div>
+</td>
+</tr>
+</table>
+
+</form>
+<!-- End Template: Browse Avatar Page -->

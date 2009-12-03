@@ -1,0 +1,862 @@
+/* =Basic Style -----------------------------------------*/
+
+* {
+	margin: 0;
+	padding: 0;
+	}
+	
+body {
+	font: 78% Helvetica, Arial, sans-serif;
+	text-align: center;
+	color: #036;
+	background: #344;
+    line-height:1.4em;
+	}
+#wrapper {
+	text-align: left;
+	min-width: 760px;
+	margin: .5em 2em;
+	color: #fff;
+	background: #036 url({path:image_url}background.gif) 50% 0% repeat-y;
+	border: 6px solid #233;
+	}
+#content {
+	padding: .5em 1.5% 0 1.5%;
+	border-right: 3px solid #047;
+	border-left: 3px solid #047;
+	}
+#content ul {
+	list-style: none;
+	line-height: 1.5em;
+	margin: .25em 0;
+}
+p {
+	margin: 0 10px;
+	line-height:1.4em;
+	}
+a:link {
+	color: #adf;
+	border: none;
+    }
+a:visited {
+	color: #ccc;
+	}
+a:hover, a:active {
+	text-decoration: none;
+	}
+#topbar a, #footer a, #subhead a {
+	text-decoration: none;
+	padding: .25em .5em;
+	}
+#topbar a:hover, #footer a:hover, #subhead a:hover {
+	background: #047;
+	}
+h1, h2, h3, h4, h5, h6 {
+	font-weight: bold;
+	}
+h2 {
+	font-size: 2em;
+	}
+hr.clear {
+	clear: both;
+	margin: 0;
+	padding: 0;
+	visibility: hidden;
+	border: none;
+	}
+img {
+	border: none;
+	}
+	
+#address_book, #address_book td, #emoticons
+	{
+		background: #3cf;
+	}
+	
+#emoticons a, #address_book a
+	{
+		color: #00f;
+		padding: 3px;
+	}
+
+
+/* =Top Bar ------------------------------------------------------ */ 
+
+div#topbar {
+	padding: .5em 1.5%;
+	border-top: 3px solid #047;
+	border-right: 3px solid #047;
+	border-left: 3px solid #047;
+	background: #025 url({path:image_url}background-dk.gif) 50% 0% repeat-y;
+	}
+#topbar ul {
+	float: left;
+	display: inline;
+	text-align: left;
+	list-style: none;
+	line-height: 1em;
+	font-size: 1em;
+	display: inline;
+	}
+#topbar ul li {
+	display: inline;
+	margin-right: .5em;
+	}
+#topbar form {	
+	text-align: right;
+	}
+#topbar form fieldset {
+	padding-bottom: .5em;
+	}
+#topbar form input {
+	margin: 0 .25em;
+	}
+#topbar form div {
+	display: none;
+	}
+
+
+/* =Page Header ------------------------------------------------------ */ 
+
+#header {  
+	clear: both;
+	padding: .5em 1.5% 0 1.5%;
+	border-right: 3px solid #047;
+	border-bottom: 1px solid #047;
+	border-left: 3px solid #047;
+	background: #025 url({path:image_url}background-dk.gif) 50% 0% repeat-y;
+	}
+#header h1 {
+	float: left;
+ 	display: inline;
+ 	text-transform: uppercase;
+	font-weight: normal;
+	font-size: 2.5em;
+	line-height: 1em;
+	}
+#header h1 a {
+	color: #69c;
+	text-decoration: none;
+	}
+#header h1 a:hover {
+	color:#adf;			
+    }
+#header form {
+	text-align: right;
+	padding: .25em;
+	}
+#header form input {
+	width: 8em;
+	}
+#header form .submit {
+	width: 5em;
+	margin: 0 .5em;
+	}
+#header form div {
+	display: none;
+	}
+
+
+/* =Page Subhead ------------------------------------------------------ */ 
+
+#subhead {  
+	clear: both;
+	padding: .5em 1.5%;
+	border-right: 3px solid #047;
+	border-left: 3px solid #047;	
+	background: #025 url({path:image_url}background-dk.gif) 50% 0% repeat-y;
+	}
+
+
+/* =Breadcrumb Links ------------------------------------------------------ */ 
+	
+div.breadcrumb {
+	display: inline;
+	}
+.currentcrumb {
+	font-weight: bold;
+	}
+
+
+/* =Forum Nav ------------------------------------------------------ */ 
+
+ul.forumnav {
+	list-style: none;
+	margin-bottom: 1em;
+	}
+ul.forumnav li {
+	display: inline;
+	margin-right: 1em;
+	}
+ul.forumnav li a {
+	padding: .25em .5em;
+	text-decoration: none;
+	}
+ul.forumnav li a:hover {
+	background: #025;
+	}
+	
+
+/* =Page Footer ------------------------------------------------------ */ 
+
+#footer {
+	clear: both;
+	padding: 1.5%;
+	text-align: center;
+	font-size: .9em;
+	color: #69c;
+	border-top: 1px solid #047;
+	border-right: 3px solid #047;
+	border-bottom: 3px solid #047;
+	border-left: 3px solid #047;
+	background: #025 url({path:image_url}background-dk.gif) 50% 0% repeat-y;
+	}
+#footer a {
+	font-weight: bold;
+	}
+#footer ul {
+	list-style: none;
+	line-height: 1.5em;
+	margin: .25em 0;
+	}
+#footer ul li {
+	display: inline;
+	padding: .5em;
+	}
+#footer select {
+	margin: .5em;
+	}
+	
+/* =Forum related text formatting ------------------------------------------------------ */ 
+
+.forumName {
+	letter-spacing:    .1em;
+	}
+.forumDescription {
+	padding:           3px 0 0 0;
+	}
+.forumLightLinks {
+	padding:           4px 0 2px 0;
+	}
+.topicTitle {
+	letter-spacing:    .1em;
+	}
+.userBlock {
+	padding:	2px 0 2px 0;
+	}
+
+/* =Misc. Formatting Items ------------------------------------------------------ */ 
+.spacer {
+	height: .5em;
+	margin-bottom: 1em;
+	}
+.itempad {
+	padding: 2px 0 2px 0;
+	}
+.itempadbig {
+	padding: 5px 0 5px 0;
+	}
+.bottompad {
+	padding: 0 0 2px 0;
+	}
+.marginpad {
+	margin: 12px 0 10px 3px;
+	}
+.leftpad {
+ 	padding: 0 0 0 4px;
+	}
+
+
+/* =Table Formatting ------------------------------------------------------ */ 
+table {
+	border-collapse: collapse;
+	}
+.legend {
+	margin-top: 1em;
+	padding: .5em 0;
+	background: #036;
+	}
+.tableBorder {
+	padding: 0;
+	margin-top: 1px;
+	margin-bottom: 3px;
+	}
+.tablePad {
+	padding:  0 2px 4px 2px;
+	}
+.tableHeading {
+	letter-spacing: .1em;
+	font-size: 1.1em;
+	font-weight: bold;
+	text-transform: uppercase;
+	color: #69c;
+	white-space: nowrap;
+	margin: 1em 0 0 0;
+	}
+.tableHeadingSmall {
+	font-size: .9em;
+	color: #69c;
+	white-space: nowrap;
+	margin: 0 0 .5em 0;
+	}
+.tableHeadingBG {
+	background: #036;
+	border-top: 1px solid #025;
+	font-size: 1em;
+	padding: 1em .5em 0 .5em;
+	}
+.tableRowHeading, .tableRowHeadingBold {
+	padding: .25em .5em;
+	border-bottom: 1px solid #025;
+	background: #047;
+	color: #69c;
+	font-size: .8em;
+	text-transform: uppercase;
+	letter-spacing: .2em;
+	}
+.tableRowSpacer {
+	}
+.threadBorder {
+	border: 1px solid #025;
+	margin: 1em 0;
+	padding: .25em 0;
+	}
+.tableCellOne {
+	padding:           3px 6px 3px 6px;
+	}
+.tableCellTwo {
+	padding:           3px 6px 3px 6px;
+	}
+.tablePostInfo {
+	margin-bottom: .75em;
+	}
+.ignored {
+	border: 1px solid #69c;
+	padding: 0;
+	margin-top: 1px;
+	margin-bottom: 3px;
+	}
+
+/*
+    Button Formatting
+	This controls the look of the various buttons, like
+	the "NEW TOPIC" and "POST REPLY" buttons
+------------------------------------------------------ */ 
+
+.button {
+	width: 80px;
+	background-color: transparent;
+	}
+.button40 {
+	width: 40px;
+	background-color: transparent;
+	}
+.button80 {
+	width: 80px;
+	background-color: transparent;
+	}
+.button100 {
+	width: 100px;
+	background-color: transparent;
+	}
+.button150 {
+	width: 150px;
+	background-color: transparent;
+	}
+.button210 {
+	width: 210px;
+	background-color: transparent;
+	}
+.buttonSpacer{
+	margin:	0 0 0 6px;
+	}
+.buttonLarge {
+	background: #025 url({path:image_url}background-dk.gif) 50% 50% repeat-y;
+	border: 1px solid #69c;
+	text-transform: uppercase;
+	text-align: center;
+	color: #fff;
+	font-weight: bold;
+	padding: 2px 4px 2px 4px;
+	margin: .25em 0 .25em 0;
+	white-space: nowrap;
+	cursor: pointer;
+	}
+.buttonLargeHover {
+	background: #047 url({path:image_url}background-lt.gif) 50% 50% repeat-y;
+	border: 1px solid #69c;
+	text-transform: uppercase;
+	text-align: center;
+	color: #fff;
+	font-weight: bold;
+	padding: 2px 4px 2px 4px;
+	margin: .25em 0 .25em 0;
+	white-space: nowrap;
+	cursor: pointer;
+	}
+.buttonSmall {
+	border: 1px solid #69c;
+	font-size: .9em;
+	text-transform: uppercase;
+	text-align:	center;
+	color: #69c;
+	padding: 0px 1px 0px 1px;
+	margin: 0 2px 0 2px;
+	white-space: nowrap;
+	cursor: pointer;
+	}
+.buttonSmallHover {
+	background: #047 url({path:image_url}background-lt.gif) 50% 50% repeat-y;
+	border: 1px solid #69c;
+	font-size: .9em;
+	text-transform: uppercase;
+	text-align:	center;
+	color: #fff;
+	padding: 0px 1px 0px 1px;
+	margin: 0 2px 0 2px;
+	white-space: nowrap;
+	cursor: pointer;
+	}
+
+
+/* =User Rank Text in Post ------------------------------------------------------ */ 
+
+.rankAdmin, .rankModerator, .rankMember {
+	font-weight: bold;
+	color: #69c;
+	padding: 2px 0 3px 0;
+	}
+.rankImage {
+	margin: 0;
+	padding: 0;
+	border:  0;
+	}
+.userBlock {
+	color: #69c;
+	}
+
+
+.post {
+	margin: 1em 0;
+	line-height: 1.5em;
+	}
+
+/* =Edit Date ------------------------------------------------------ */ 
+
+.edited {
+	font-size:		9px;
+	color:			#69c;
+}
+
+/* =Special formatting for quotes, <code>, <pre> etc..------------------------------------------------------ */ 
+
+code {
+	white-space: normal;
+	}
+pre {
+	background: #def;
+	border: 1px solid #69c;
+	color: #69c;
+	margin: 8px 2px 10px 6px;
+	padding: 10px 10px 10px 6px;
+	white-space: normal;
+	}
+.codeblock {
+	background: #def;
+	border: 1px solid #69c;
+	color: #69c;
+	margin: 8px 4px 10px 3px;
+	padding: 10px 10px 10px 6px;
+	}
+blockquote {
+	background: #036;
+	border:	1px solid #69c;
+	color: #69c;
+	margin: 8px 2px 10px 6px;
+	padding: 5px 10px 10px 6px;
+	}
+.quote_author {
+	font-weight: bold;
+	color: #69c;
+	margin:	0 0 4px 0;
+	background-color: transparent;
+	}
+.signature {
+	margin: 1em .5em .5em .5em;
+	padding: .25em;
+	border: 1px solid #69c;
+	}
+.signatureTitle {
+	color: #69c;
+	}
+
+
+/* =Formatting Buttons ------------------------------------------------------ */ 
+
+.buttonMode {
+	white-space: 		nowrap;
+	}
+.htmlButtonOuter, .htmlButtonOuterL {
+	padding:           0;
+	border-top:        #025 1px solid;
+	border-right:      #025 1px solid;
+	border-bottom:     #025 1px solid;
+	}
+.htmlButtonOuterL  {
+	border-left:       #025 1px solid;
+	}
+.htmlButtonInner {
+	background-color:  transparent; 
+	text-align:		center;
+	padding:			0 3px 0 3px;
+	}
+.htmlButtonOff {
+	padding:           1px 2px 2px 2px;
+	white-space:       nowrap;
+	}
+.htmlButtonOff a:link { 
+	color:             #69c;
+	text-decoration:   none;
+	white-space:       nowrap;
+	}
+.htmlButtonOff  a:visited { 
+	text-decoration:   none;
+	}
+.htmlButtonOff a:active { 
+	text-decoration:   none;
+	color:             #fff;
+	}
+.htmlButtonOff a:hover { 
+	text-decoration:   none;
+	background:        #047;
+	color:             #fff;
+	}
+.htmlButtonOn {
+	background:        #047;
+	padding:           1px 2px 2px 2px;
+	white-space:       nowrap;
+	}
+.htmlButtonOn a:link { 
+	color:             #990000;
+	text-decoration:   none;
+	white-space:       nowrap;
+	}  
+.htmlButtonOn  a:visited { 
+	text-decoration:   none;
+	} 
+.htmlButtonOn a:active { 
+	text-decoration:   none;
+	color:             #999;
+	}
+.htmlButtonOn a:hover { 
+	color:             #999;
+	text-decoration:   none;
+	}
+
+
+/* =File Attachments ------------------------------------------------------ */ 
+
+.attachTitle {
+	font-weight:		bold;
+	color:             #fff;
+	padding:           4px;
+	margin:			10px 0 1px 0;
+	}
+.attachBody {
+	padding:           4px;
+	margin-bottom:		10px;
+	}
+.attachThumb {
+	margin: 3px 6px 3px 3px;
+	border: 1px solid 	#025;
+	}
+
+
+/* =Post Preview ------------------------------------------------------ */ 
+
+.preview {
+	padding:           10px;
+	margin:			0 0 12px 0;
+	border:       		1px solid #025;
+	}
+.previewheading {
+	font-weight:		bold;
+	color: #69c;
+	text-transform: uppercase;
+	padding:           5px 0 5px 10px;
+	border-top:     	1px solid #025;
+	border-right:     	1px solid #025;
+	border-left:     	1px solid #025;
+	}
+
+/*
+    Moderator Highlight
+    This controls the look of the name of moderators
+    that appear in the stats area.  The idea is that
+    moderators appear in the list differently than
+    regular members
+------------------------------------------------------ */ 
+.activeModerator {
+	font-weight: bold;
+	}
+
+
+/* =Form Field Formatting ------------------------------------------------------ */ 
+
+form {
+	margin:            0;
+	padding:           0;
+	border:            0;
+	}
+fieldset {
+	border: none;
+	}
+.hidden {
+	margin:            0;
+	padding:           0;
+	border:            0;
+	}
+.input {
+	border:        1px solid #69c;
+	color:             #69c;
+	height:            1.5em;
+	padding:           0;
+	margin:        	0;
+	} 
+.textarea {
+	border:        1px solid #69c;
+	color:             #333;
+	font-size:         11px;
+	padding:           0;
+	margin:        	0;
+	}
+.select {
+	background-color:  #fff;
+	font-weight:       normal;
+	letter-spacing:    .1em;
+	color:             #333;
+	margin-top:        2px;
+	margin-bottom:     2px;
+	} 
+.multiselect {
+	border:        1px solid #69c;
+	background-color:  #fff;
+	color:             #333;
+	font-size:         11px;
+	margin-top:        2px;
+	margin-top:        2px;
+	} 
+.radio {
+	background-color:  transparent;
+	margin-top:        4px;
+	margin-bottom:     4px;
+	padding:           0;
+	border:            0;
+	}
+.checkbox {
+	background-color:  transparent;
+	padding:           0;
+	border:            0;
+	}
+.buttons {
+	font-weight:       bold;
+	border:        1px solid #69c;
+	letter-spacing:    .1em;
+	margin:        	0;
+	padding:			1px 6px 3px 6px;
+	color:             #69c;
+	background: #025;
+	cursor: pointer;
+	}
+.submit {
+	font-weight:       normal;
+	border:        1px solid #69c;
+	letter-spacing:    .1em;
+	margin:        	0;
+	padding:			1px 4px 1px 4px;
+	color:             #69c;
+	background: #025;
+	cursor: pointer;
+	}  
+
+
+/* =Error messages ------------------------------------------------------ */ 
+
+.errorHeading {
+	background: 		#025;
+	color:             #fff;
+	padding:           6px 6px 6px 6px;
+	border-bottom:     1px solid #fff;
+	letter-spacing:    .1em;
+	font-weight:		bold;
+	}
+.errorMessage {
+	color:             #f00;
+	padding:           10px 0 10px 0;
+	}
+.errorBox {
+	color: #f00;
+	padding: 10px;
+	margin: 0 0 12px 0;
+	border: 1px solid #f00;
+	background: #fcc;
+	}
+.alert {
+	color:             #f00;
+	font-weight:		bold;
+	}
+.highlight {
+	color:             #f00;
+	}
+
+
+/* =Member Profile Page ------------------------------------------------------ */ 
+
+.profileTitle {
+	font-size: 1.5em;
+	font-weight: bold;
+	margin: .5em 0;
+	}
+.memberlistHead {
+	padding: .25em .5em;
+	border-bottom: 1px solid #025;
+ 	background: #047;
+	color: #69c;
+	font-size: .8em;
+	text-transform: uppercase;
+	}
+.memberlistRowOne {
+	padding: .5em;
+	background: #047;
+	}
+.memberlistRowTwo {
+	padding: .5em;
+	}
+.memberlistFooter {
+	padding: 1em .5em;
+	}
+.profileHeadingBG {
+	background: #036;
+	padding:           6px 6px 6px 6px;
+	border-bottom:     #025 1px solid;
+	}
+.profileTopBox {
+	margin:		0;
+	padding:		7px 5px 5px 5px;
+	}
+.profileTitle {
+	font-weight:		bold;
+	padding: 			3px 5px 3px 0;
+	margin:			0;
+	background-color: transparent;  
+	}
+.profileItem {
+	background:		transparent;
+	margin: 			2px 0 2px 0;
+	background-color: transparent;  
+	}
+.profilePhoto {
+	padding:			1px 1px 1px 20px;
+	margin-top:        1px;
+	margin-bottom:     3px;
+	}
+.avatar {
+	background:	transparent;
+	margin:		3px 14px 0 3px;
+	}
+.photo {
+	background:	transparent;
+	margin:		6px 14px 0 3px;
+	}
+.profileHead {
+	font-weight:		bold;
+	text-transform:	uppercase;
+	padding:			3px 4px 3px 10px;  
+	margin:			0 0 0 0;
+	}
+.menuHeadingBG {
+	background: #036;
+	padding:           6px 6px 6px 6px;
+	}
+.profileMenu {
+	background: 		#036;
+	border:            1px solid #025;
+	padding:			1px;
+	margin-top:        1px;
+	margin-bottom:     3px;
+	}
+.profileMenuInner {
+	padding-left:		10px;
+	padding-right:		8px;
+	margin-bottom:		4px;
+	margin-top:		4px;
+	}
+.menuItem {
+	padding:			3px 0 3px 0;
+	background-color:	transparent;  
+	}
+.borderTopBot {
+	border-top:	1px solid #025;
+	border-bottom:	1px solid #025;
+	}
+.borderBot {
+	border-bottom:	1px solid #025;
+	}
+.success {
+	font-weight:		bold;
+	padding:			3px 0 3px 0;
+	background-color:	transparent; 
+	}
+.innerShade {
+	background-color:	#036;
+	margin:			0;
+	padding:			10px;
+	}
+
+
+/* =Search Formatting ------------------------------------------------------ */ 
+
+.searchBox {
+	background: transparent;
+	margin: 16px 0 0 0;
+	padding: 8px 5px 5px 5px;
+	}
+.searchBoxTitle {
+	font-weight: bold;
+	background-color: transparent;  
+	}
+.searchpad {
+	padding: 6px 0 8px 0;
+	}
+.searchspacer {
+	margin-bottom: 6px;
+	}
+
+	
+/* =SPELL CHECK CSS --------------------------------------------------------------- */
+
+.iframe {
+	border:1px solid #025;
+	background: #def;
+	color: #036;
+	}
+.wordSuggestion {
+	border: 1px solid #036; 
+	padding: 4px; 
+	background: #def;
+	color: #036;
+	}
+.wordSuggestion a, .wordSuggestion a:active {
+	color: #036;
+	cursor: pointer;
+	}
+.spellchecked_word {
+	cursor: pointer;
+	background-color: #def;
+	color:#036;
+	border-bottom: 1px dashed #036;
+	}
+.spellchecked_word_selected {
+	cursor: pointer;
+	background-color: #69c;
+	}

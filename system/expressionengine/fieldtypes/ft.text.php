@@ -1,0 +1,111 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Text_ft extends EE_Fieldtype {
+
+	var $info = array(
+		'name'		=> 'Text Input',
+		'version'	=> '1.0'
+	);
+
+	// Parser Flag (preparse pairs?)
+	var $has_array_data = FALSE;
+
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
+	function Text_ft()
+	{
+		parent::EE_Fieldtype();
+	}
+	
+	// --------------------------------------------------------------------
+	
+	function validate($data)
+	{
+		if ( ! isset($this->field_content_types))
+		{
+			$this->field_content_types = $this->EE->field_model->get_field_content_types();
+		}
+		
+		if ( ! isset($this->settings['field_content_type']))
+		{
+			return TRUE;
+		}
+		
+		$content_type = $this->settings['field_content_type'];
+		
+		if (in_array($content_type, $this->field_content_types['text']) && $content_type != 'any')
+		{
+			if ( ! $this->EE->validation->$content_type())
+			{
+				return $this->EE->lang->line($content_type);
+			}
+		}
+		
+		return TRUE;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	function display_field($data)
+	{
+		return form_input(array(
+			'name'	=> $this->field_name,
+			'id'	=> $this->field_name,
+			'value'	=> $data
+		));
+	}
+	
+	// --------------------------------------------------------------------
+	
+	function replace_tag($data, $params = '', $tagdata = '')
+	{
+		return $this->EE->typography->parse_type(
+			$this->EE->functions->encode_ee_tags($data),
+			array(
+				'text_format'	=> $this->row['field_ft_'.$this->field_id],
+				'html_format'	=> $this->row['channel_html_formatting'],
+				'auto_links'	=> $this->row['channel_auto_link_urls'],
+				'allow_img_url' => $this->row['channel_allow_img_urls']
+			)
+		);
+	}
+	
+	// --------------------------------------------------------------------
+
+	function display_settings($data)
+	{
+		$field_maxl			= ($data['field_maxl'] == '') ? 128 : $data['field_maxl'];
+		$field_content_text	= ($data['field_content_text'] == '') ? 'any' : $data['field_content_text'];
+		
+		$this->EE->table->add_row(
+			lang('field_max_length', 'field_max1'),
+			form_input(array('id'=>'field_maxl','name'=>'field_maxl', 'size'=>4,'value'=>$field_maxl))
+		);
+		
+		$this->field_formatting_row($data);
+		$this->text_direction_row($data);
+
+		$this->EE->table->add_row(
+			lang('field_content_text', 'field_content_text'),
+			form_dropdown('field_content_text', $data['field_content_options_text'], $field_content_text, 'id="field_content_text"')
+		);
+	}
+
+	// --------------------------------------------------------------------
+
+	function save_settings($data)
+	{
+		return array(
+			'field_maxl'			=> $this->EE->input->post('field_maxl'),
+			'field_content_text'	=> $this->EE->input->post('field_content_text')
+		);
+	}
+}
+
+// END Text_Ft class
+
+/* End of file ft.text.php */
+/* Location: ./system/expressionengine/fieldtypes/ft.text.php */

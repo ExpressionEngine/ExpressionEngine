@@ -1,0 +1,7 @@
+<div id="siteinfo">
+    <p>Copyright @ {exp:channel:entries limit="1" sort="asc" disable="custom_fields|comments|pagination|categories"}
+
+{if "{entry_date format='%Y'}" != "{current_time format='%Y'}"}{entry_date format="%Y"} - {/if}{/exp:channel:entries} {current_time format="%Y"}, powered by <a href="http://expressionengine.com">ExpressionEngine</a></p>
+    <p class="logo"><a href="#">Agile Records</a></p>
+	{if group_id == "1"}<p>{total_queries} queries in {elapsed_time} seconds</p>{/if}
+</div> <!-- ending #siteinfo -->

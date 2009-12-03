@@ -1,0 +1,39 @@
+<?php
+if ($EE_view_disable !== TRUE)
+{
+	$this->load->view('_shared/header');
+	$this->load->view('_shared/main_menu');
+	$this->load->view('_shared/sidebar');
+	$this->load->view('_shared/breadcrumbs');
+}
+?>
+
+<div id="mainContent"<?=$maincontent_state?>>
+	<?php $this->load->view('_shared/right_nav')?>
+	<div class="contents">
+		
+		<div class="heading"><h2><?=$cp_page_title?></h2></div>
+
+		<div class="pageContents">
+
+			<?php $this->load->view('_shared/message');?>
+
+			<?php
+				$this->table->set_template($cp_pad_table_template);
+				$this->table->set_heading($table_headings);
+				echo $this->table->generate($modules);
+			?>
+
+		</div> <!-- pageContents -->
+	</div> <!-- contents -->
+</div> <!-- mainContent -->
+
+<?php
+if ($EE_view_disable !== TRUE)
+{
+	$this->load->view('_shared/accessories');
+	$this->load->view('_shared/footer');
+}
+
+/* End of file modules.php */
+/* Location: ./themes/cp_themes/corporate/addons/modules.php */

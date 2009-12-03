@@ -1,0 +1,217 @@
+Build: NEXT
+* Deja vu: fixed a bug with the display of submission form errors when running the forum through normal templates.
+* Fixed a bug with the {auto_thread_path} links (#4575).
+* Changed the behaviour of search so that closed posts are not excluded.
+
+Build: 20080421
+* Fixed a bug where Super Admins and Moderators with edit privileges could not delete others' file attachments.
+* Fixed a bug in Member Ranks that would not allow zero rank stars to be assigned to a Member Rank.
+* Fixed a bug where Moderators could move topics to forums that they were not allowed to view.
+* Fixed a bug where browsing behind a proxy might make it impossible to view search results.
+
+Version 2.1
+Build: 20080317
+Release Date: March 17, 2008
+* Fixed an undefined variable PHP error on search thread pages.
+* Fixed a bug (#3429) on New Topic Search not properly tracking read topics.
+* Fixed a bug when using multiple Boards with empty Forum Triggers.
+* Fixed a bug where keywords in searches were not being properly prepared for display.
+* Fixed a bug (#4286) where users could delete forum attachments that another user uploaded.
+* Fixed a bug where moved replies would display the wrong forum in the breadcrumb links when edited.
+
+Build: 20080125
+* Removed some code added in 1.6 that wasn't compatible with PHP < 4.3
+* Fixed a bug where the removal of rank stars from a theme was also setting the rank title variable to empty
+* Fixed a bug where Super Admins could not view HTTP Authentication feeds
+
+Build:  20070918
+* Added {lang} global variable to Forum theme templates
+* Fixed a bug with the display of submission form errors when running the forum through normal templates
+* Fixed a bug with mini login form return paths on profile pages
+* Fixed a bug where an announcement would have a broken breadcrumb when the forum_id was not included in the URL
+* Fixed a bug where board, forum, and category names, and their descriptions were not having special characters converted to entities.
+
+Build:  20070724
+* Fixed a bug where setting the forum trigger to a member profile segment word would prevent the profile pages from working.
+* Fixed a bug where email notification templates would not be created for Sites other than the primary Site.
+* Fixed a bug when deleting forum boards that would not log the board label in the Control Panel Log
+* Fixed a bug with authorization permissions on moving replies
+* Fixed a bug with reply results in searches that could incorrectly report no results found
+* Fixed a bug with reply results in searches involving the display of multi-byte characters.
+* Updated the install script to include indexes for all board_id fields.
+
+Build: 20070626
+
+* Modified some XSS Clean calls to be compatible with changes made in ExpressionEngine 1.6 - Build 20070626 (requires both ExpressionEngine and Discussion Forum module to be running most current builds)
+* Fixed a bug with viewreply pagination when using "Most Recent First" post display order
+* Fixed a very minor bug with topic title typography in forum feeds.
+* Fixed a bug where a PHP error could occur when previewing a new topic when the forum currently has no topics
+* Fixed a bug with forum attachment display when running user sessions as "Session ID Only"
+
+Build: 20070622
+Release Date: June 19, 2007
+
+* Added Forum Boards
+* Added new forum theme: Grey
+* Added Text Formatting preference for posts
+* Added ability to move individual replies between threads
+* Added ability to link directly to reply in search results where the search terms were found in a reply.
+* Added forums= and boards= parameters to the Topic Titles tag
+* Added {auto_thread_path}, {board_label}, {board_name}, {body}, {forum_name}, {forum_url}, and {last_reply} variables to the Topic Titles tag
+* Added Basic HTTP Authentication for feeds when accessing a feed for a forum that you do not have permission to view.  Authentication is only requested once so as to not be overly annoying.
+* Added separate preferences for email notification addresses to distinguish between replies and topics.
+* Modified Subscription Removal to ask for confirmation when canceling a topic subscription via email notification link
+* Removed SuperAdmins from the forum permissions page as they are omnipotent in EE and can do as they please.
+* Fixed a bug where XML headers were being sent on RSS and Atom HTML error pages.
+* Fixed a bug where a PHP error would occur when using the Recent Topics tag on a disabled forum when not logged in as a SuperAdmin
+* Fixed a bug where {forum_name} was not being XML encoded in feed templates.
+* Fixed a bug in the install script where the initial category was getting invalid search permissions.
+* Fixed a bug in forum email notifications where typography was not being performed.
+
+Version 1.3.2
+Build: 20070302
+* Added {site_url} as an available variable to the Forum templates
+* Fixed a bug with file attachments when permissions on the server were not set properly.
+* Fixed a bug with "Edited By" on Announcements.
+* Fixed a javascript bug in the Forum control panel.
+* Fixed a bug with last post information that could occur when splitting threads.
+* Fixed a bug where titles used in next/previous topic links were not correctly encoded. 
+* Modified feeds to encode email addresses in a human readable format to avoid potential XML parsing errors. (Requires Build NEXT of ExpressionEngine)
+
+Build: 20070102
+* Modified the forum themes to use language variables for "Edited":
+		Edited: {edit_date format="%d %F %Y %h:%i %A"} by
+	change to:
+		{lang:edited}: {edit_date format="%d %F %Y %h:%i %A"} {lang:by}
+* Fixed a bug where the Forum's overall topic, reply, and post stats were being improperly calculated in the Visitor Stats template.
+* Fixed a bug where certain globals were still being parsed in the Preview page's textarea field
+* Fixed a problem with split threads when they spanned more than two pages
+
+Build 20061128
+Release Date: November 28, 2006
+
+NOTE: This version requires that you are using ExpressionEngine version 1.5.2 or greater.
+* Added an ignore member feature.
+* Added the ability for users to report posts to moderators.
+* Added a "switch" variable to the Thread Rows, Thread Review Rows, Topic Rows, and Search Results Rows templates.  Syntax: {switch="one|two|..."}
+* Added ability to search by member group in Advanced Search Form
+* Added {if is_author}{/if} conditional to Thread Rows, Thread Review Rows, and Topic Rows templates to allow special content or markup to be used when the post was made by the currently logged in member.
+* Added a new variable, {post_id} to the admin and user forum notification templates, which will dynamically point to either the topic, or the specific reply that triggered the notification.
+* Added new preference "Display Edit Dates" that works in conjunction with a new template conditional {if edited}{edit_date format=}{/if}
+* Added new preference "Notify Moderators of New Replies?" and modified "Notify Moderators of New Posts?" to "Notify Moderators of New Topics?"
+* Added new extension hooks: forum_topics_loop_start, forum_topics_loop_end, forum_topics_absolute_end, forum_thread_rows_loop_start, forum_thread_rows_loop_end, forum_thread_rows_absolute_end, forum_submit_post_end
+* Added form option to not send notification emails with moderation actions.  Please see the update notes for theme changes.
+* Refined nomenclature for topics, replies, and posts (which is now consistently used as the sum of the topics and replies).  Please see the update notes for theme changes.
+* Modified the theme switcher to return you to the page you switched themes from, instead of the forum home page.
+* Fixed a bug where the word 'of' was hardcoded into the themes instead of using a language variable.
+* Fixed a bug where posting a new reply would return you to the topic's first page instead of the last page.
+* Fixed a bug where an image attachment thumbnail would mistakenly increase the dimensions of the image.
+* Fixed a bug where deleting a user's topics when banning them would cause other users' posts to the affected topics to be orphaned.
+* Fixed a bug where merging two topics would result in the topic being set by the newer thread instead of the older one.
+* Fixed a bug where attachments were not being connected properly on merge or split.
+* Fixed a bug where pagination was being added to the Topic Rows recent thread link when the Forum Post Order was set to "Most Recent First"
+* Fixed a bug where a Topic's edit date would change when any action was taken on the thread instead of only when the title or body was edited
+* Fixed a bug with one of the search form templates
+* Fixed a bug that would allow posting and editing of posts in Read Only forums.
+
+Version 1.3.1
+Build 20060906
+Release Date: September 06, 2006
+* Added new email notification and template for Discussion Forum moderation actions (move, split, and merge)
+* Added the ability to use post anchors.  See version specific notes in the User Guide for details.
+* Added pagination for when you are splitting long threads
+* Added theme switcher feature
+* Modified Private Message and Discussion Forum file attachments to use a hashed URL so file attachments have URLs that are difficult (nigh impossible) to guess.
+* Modified Private Message Box unread topics: it will now decrease the number of unread topics displayed when reading a new message instead of on the following page load.
+* Fixed a bug where previewing a new topic or reply would not observe the forum's HTML and auto/image link preferences
+* Fixed a bug where there was a colon missing from the Total Posts language variable in the forum
+* Fixed a bug where in certain circumstances the last post info was not being updated on a forum topic.
+* Fixed a bug that in the merging feature that prevented merging an earlier topic into a later one.
+* Fixed a bug with splitting threads where the original thread was not having its last_update field reset.
+* Fixed a bug where the forums in a hidden category were still shown to those unable to view Hidden Forums.
+* Fixed a bug where Discussion Forum administrator groups were not seen as such in their public profiles
+* Fixed a bug with Quote Reply and the navigation breadcrumb, again
+* Fixed a bug where comment counts were not updated when a member was deleted through the forum.
+* Fixed a validation bug with attachment URLs.
+
+Version 1.3
+Build 20060531
+Release Date: May 31, 2006
+* Fixed a bug where the forum was being run from a subdomain and the mini login form was not redirecting correctly.
+* Fixed a bug where the forum would occasionally set a cookie that was too big for Mozilla based browsers
+
+Version 1.3
+Release Date: May 20, 2006
+
+* Added "merge threads" feature
+* Added "split thread" feature
+* Added "next/previous thread" links in thread view page.
+* Added RSS support.  Individual threads can be subscribed to, or the entire forum globally.
+* Added Show/hide capability to forum man page, enabling specific forum clusters you are interested to be shown.
+* Added "view today's active topics" link to main forum page.
+* Added search form to individual threads that is restricted to searching in that thread only.
+* Added "new topic" button in the thread view.
+* Added database storage of "read topic" IDs (rather then with cookies) so that you can use different browsers with different computers and retain your read topic info.
+* Changed the behavior of the input filter such that tabs are converted to four spaces so that code examples posted in the forums will retain indenting.
+* Fixed a bug with breadcrumbs when editing a reply.
+* Fixed a bug that was making the page scroll when the smileys link was opened.
+* Fixed a bug in which child forums were not always respecting the parent permissions (just like in real life...).
+* Fixed a bug when running the forum through the Templates and adding multiple attachments by clicking Preview
+
+
+Version 1.2.1
+Release Date: March 08, 2006
+* Fixed a bug that was preventing closed forum topics to be searched for.
+* Fixed a bug where the {exp:forum} tag was used in a template of the default site group without the template group being in the URL
+* Changed it so the member area in the forum will have its URL structure based of the Member module's trigger word
+
+Version 1.2
+Release Date: November 30, 2005
+* Improved the "read topic" tracker so that it works with non-logged-in users (Note: requires the EE 1.4 core)
+* Changed the "max post characters" limit to 5 characters
+* Fixed a problem that can occur if a user edits a post after a moderator has enabled it as sticky, closed, etc.
+* Fixed a problem displaying attachments if the attachment has a file extension in uppercase.
+* Added Post Reply and Post Topic permissions instead of the single Post permission
+* Added notification preferences for categories
+
+Version 1.1.1
+Build: 20050918
+Release Date: September 18, 2005
+* Made some internal changes to the template handler to allow more flexibility when nesting templates.
+* Removed references which were causing trouble with PHP version 4.4.0
+* Changed how the "last visit" date is calculated. It is now based on the "last activity" of a user, which is shows the time a given user visited within 5 minutes.
+* Change the submit button when editing posts and topics so that is displays "Update post".
+* Fixed a URL bug that was not returning users to the correct page when editing posts that spanned multiple pages.
+* Fixed an admin notification bug that we preventing notifications when new topics were posted.
+* Fixed a bug that causes screen names quoted in forum posts to be truncated if the name is two words.
+* Fixed a bug related to user Rank titles that can occur under certain conditions.
+* Fixed a bug that permitted polls to be submitted in announcements when they shouldn't be allowed to.
+* Fixed a javascript bug that prevented the "announcement" checkbox to be unchecked.
+* Added a few new variables that can be used in forum templates:
+* Fixed a bug that was incorrectly showing pending members in the "newest member" list.
+* Fixed a small oversight in which the text counter in the submission form was not retaining the value during previews.
+* Fixed a bug in the "backspace" parameter in the member stats function.
+* Fixed a small bug in the text counter on the submission page.  The previous bug fix did not correct it properly.
+
+{forum_name}
+{path:viewforum}
+{last_poster}
+{path:last_poster_profile}
+{last_post_excerpt} or {last_post_excerpt limit="200"}
+
+
+Version 1.1
+Build 20070730
+Release Date: July 30, 2005
+* Added forum support to the channel module.  You can now submit forum posts directly from the PUBLISH page of the control panel, or you can link existing forum posts with channel entries.  This enables you to have a "discuss this in our forums" link in your channel entries.
+* Internally reconfigured how the member profile section is being triggered by the forum in order to reduce memory consumption.
+* Updated the preview page.  It now honors the display preferences for the parent forum, and it renders [quotes]
+* Updated the [quote] feature so that the date is not required, only the author.
+* Fixed a problem in which some forum template variables were being rendered in posts instead of shown literally.
+* Fixed a problem with the secure forms feature that affected searching when no results were found.
+* Fixed a breadcrumb error in the "new topic" form
+* Fixed an admin notification problem.
+* Fixed an error message that occurs when deleting the only post in a forum
+* Fixed an error message when posting due to a bug in the notification function.
+* Removed all "posting" buttons when a user is not logged in, even if a guest member group is given privileges, since non-logged-in users can not post.
+* Removed posting permissions checkboxes for guests, pending, and banned members in the forum control panel since they don't apply.

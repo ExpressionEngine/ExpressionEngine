@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{lang}" lang="{lang}">
+
+<head>
+<title>{lang:search}</title>
+
+<meta http-equiv="content-type" content="text/html; charset={charset}" />
+
+<link rel='stylesheet' type='text/css' media='all' href='{stylesheet=search/search_css}' />
+<style type='text/css' media='screen'>@import "{stylesheet=search/search_css}";</style>
+
+</head>
+<body>
+
+<div id='pageheader'>
+<div class="heading">{lang:search_results}</div>
+</div>
+
+<div id="content">
+
+<table class='breadcrumb' border='0' cellpadding='0' cellspacing='0' width='99%'>
+<tr>
+<td><span class="defaultBold">&nbsp; <a href="{homepage}">{site_name}</a>&nbsp;&#8250;&nbsp;&nbsp;<a href="{path=search/index}">{lang:search}</a>&nbsp;&#8250;&nbsp;&nbsp;{lang:search_results}</span></td>
+<td align="center"><span class="defaultBold">{lang:keywords} {exp:search:keywords}</span></td>
+<td align="right"><span class="defaultBold">{lang:total_search_results} {exp:search:total_results}</span></td>
+</tr>
+</table>
+
+<div class='outerBorder'>
+<div class='tablePad'>
+
+<table border="0" cellpadding="6" cellspacing="1" width="100%">
+<tr>
+<td class="resultHead">{lang:title}</td>
+<td class="resultHead">{lang:excerpt}</td>
+<td class="resultHead">{lang:author}</td>
+<td class="resultHead">{lang:date}</td>
+<td class="resultHead">{lang:total_comments}</td>
+<td class="resultHead">{lang:recent_comments}</td>
+</tr>
+
+{exp:search:search_results switch="resultRowOne|resultRowTwo"}
+
+<tr>
+<td class="{switch}" width="30%" valign="top"><b><a href="{auto_path}">{title}</a></b></td>
+<td class="{switch}" width="30%" valign="top">{excerpt}</td>
+<td class="{switch}" width="10%" valign="top"><a href="{member_path=member/index}">{author}</a></td>
+<td class="{switch}" width="10%" valign="top">{entry_date format="%m/%d/%y"}</td>
+<td class="{switch}" width="10%" valign="top">{comment_total}</td>
+<td class="{switch}" width="10%" valign="top">{recent_comment_date format="%m/%d/%y"}</td>
+</tr>
+
+{/exp:search:search_results}
+
+</table>
+
+
+{if paginate}
+
+<div class='paginate'>
+
+<span class='pagecount'>{page_count}</span>&nbsp; {paginate}
+
+</div>
+
+{/if}
+
+
+</td>
+</tr>
+</table>
+
+<div class='copyright'><a href="http://expressionengine.com/">Powered by ExpressionEngine</a></div>
+
+</div>
+</div>
+</div>
+
+</body>
+</html>

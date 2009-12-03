@@ -1,0 +1,34 @@
+<!-- Template: Private Message - Member Search Results -->    
+<script type="text/javascript"> 
+//<![CDATA[
+        
+function insert_name(name)
+{
+	if (opener.document.getElementById('submit_message').{which_field}.value != '')
+	{
+		opener.document.getElementById('submit_message').{which_field}.value += ', ';
+}
+	
+	opener.document.getElementById('submit_message').{which_field}.value += name;
+}
+
+//]]>
+</script>
+<h3>{lang:search_results}</h3>
+<table class="member_console">
+<tr>
+<th>
+{include:search_results}
+</th>
+
+<td>{lang:insert_member_instructions}</td>
+
+</tr>
+
+<tr>
+<th><a href="{path:new_search_url}">{lang:new_search}</a></th>
+<td><a href="JavaScript:window.close();opener.document.getElementById('submit_message').{which_field}.focus();">{lang:close_window}</a></td>
+</td>
+</tr>
+</table>
+<!-- End Template: Private Message - Member Search Results -->

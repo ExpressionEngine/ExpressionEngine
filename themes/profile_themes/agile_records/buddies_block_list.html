@@ -1,0 +1,28 @@
+<!-- Template: Private Message - Buddies and Block List -->
+{include:toggle_js}
+{include:buddy_search_js}
+
+<h3>{include:member_search} {lang:list_title}</h3>
+
+{form:form_declaration:list}
+
+<table class="member_data">
+
+<tr>
+
+<th>{lang:screen_name}</th>
+
+
+<td>{lang:member_description}</td>
+
+</tr><tr>
+<td><input class='checkbox' type='checkbox' name='toggleflag' value='' onclick="toggle(this);" /></td>
+
+</tr>
+
+{include:list_rows}
+<tr><td>{form:add_button}&nbsp;&nbsp;{form:delete_button}</td></tr>
+</table>
+
+</form>
+<!-- End Template: Private Message - Buddies and Block List -->

@@ -1,0 +1,9 @@
+<div id="welcome">
+    {exp:channel:entries channel="about" url_title="about_the_label" dynamic="no"  limit="1" disable="pagination|member_date|categories|category_fields|trackbacks"}
+    {if about_image != ""}
+        <img src="{about_image}" alt="map" width="210" height="170" />
+    {/if}
+    {about_body}
+    <a href="{comment_url_title_auto_path}">Read more about us</a>
+    {/exp:channel:entries}
+</div>

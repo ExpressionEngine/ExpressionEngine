@@ -1,0 +1,68 @@
+
+    <div id="forumstatson">
+                <table cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td>
+                            <div class="tableHeading">
+                                {lang:visitor_stats}
+                            </div>
+                        </td>
+                        <td></td>
+						<td><div class="tableHeading">{lang:legend}</div></td>
+					</tr>
+                    <tr>
+                        <td class="itempadbig2" colspan="2">
+                            {lang:most_users_ever} {most_visitors}, {lang:visited_on} {most_visitor_date format="%F %d, %Y %h:%i %A"}
+                        </td>
+						<td class="legend" rowspan="2">
+						<table cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td><img src="{path:image_url}marker_new_topic.gif" width="20" height="20" border="0" alt="{lang:legend_new_posts}" /></td>
+								<td valign="middle">{lang:legend_new_posts}</td>
+								<td><img src="{path:image_url}marker_old_topic.gif" width="20" height="20" border="0" alt="{lang:legend_no_new_posts}" /></td>
+								<td valign="middle">{lang:legend_no_new_posts}</td>
+							</tr>
+						</table>
+								</td>
+							</tr>
+                    <tr>
+                        <td valign="top">
+                            <div class="itempad2">
+                                {lang:total_registered_members} {total_members}
+                            </div>
+                            <div class="itempad2">{lang:total_topics} {total_forum_topics}</div>
+                            <div class="itempad2">{lang:total_replies} {total_forum_replies}</div>
+							<div class="itempad2">{lang:total_posts} {total_forum_posts}</div>
+                        </td>
+								<td>
+                            <div class="itempad2">
+                                {lang:total_logged_in} {total_logged_in}
+                            </div>
+                            <div class="itempad2">
+                                {lang:total_anonymous} {total_anon}
+                            </div>
+                            <div class="itempad2">
+                                {lang:total_guests} {total_guests}
+                            </div>
+							<div class="itempad2">&nbsp;</div>
+                        </td>
+							</tr>
+                    <tr>
+								<td colspan="3">
+                            <div class="itempadbig2">
+										{lang:newest_members} {recent_member_names limit='10' backspace='8'}<a href="{path:member_profile}">{name}</a>,&nbsp; {/recent_member_names}
+                            </div>
+                        </td>
+							</tr>
+                    <tr>
+								<td colspan="3">
+                            <div class="itempadbig2">
+										{if member_names}{lang:active_members} {member_names backspace='8'}<a href="{path:member_profile}">{name}</a>,&nbsp; {/member_names}{/if}</div>
+                        </td>
+							</tr>
+                </table>
+            </div>
+            
+            
+            
+

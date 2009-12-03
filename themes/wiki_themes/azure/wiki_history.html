@@ -1,0 +1,21 @@
+
+{if no_history}
+There is no history for this page.
+{/if}
+
+{if history}
+{wiki:revisions}
+<div class="itempad">
+<a href="{path:revision_link}">{revision_date format="%H:%i, %j %M %Y"}</a> 
+&nbsp; - &nbsp;
+<a href="{path:member_profile}">{revision_author}</a> 
+{if notes}({revision_notes}){/if} 
+
+{if can_admin}
+{if revision_status == 'closed'} [<a href="{path:open_revision}">Closed</a>] {/if}{if revision_status == 'open'} [<a href="{path:close_revision}">Open</a>] {/if}
+{/if}
+</div>
+{/wiki:revisions}
+{/if}
+
+	

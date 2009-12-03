@@ -1,0 +1,521 @@
+/*---------------------------------
+	Default Body Attributes
+---------------------------------*/
+html, body {
+	margin:            0;
+	padding:           0;
+}
+
+body {
+	font-family:       Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:         12px;
+	color:             #38394B;
+	background-color:  #F3FBFE;
+}
+
+/*---------------------------------
+	Main Layout Positioning
+---------------------------------*/
+#sidebar {
+	float:				left;
+	width:				200px;
+	padding:			10px 0px 10px 15px;
+}
+
+#wrapper {
+	float:				right;
+	width:				100%;
+	margin-left:		-220px;
+}
+
+#mainContent {
+	margin-left:		220px;
+}
+
+#content {
+	margin:				0 12px;
+	padding:			10px 15px;
+	background-color:	#fff;
+	border-left:		1px dotted #96B7DD;
+	border-right:		1px dotted #96B7DD;
+	border-bottom:		1px dotted #96B7DD;
+}
+
+/*---------------------------------
+	Default Link Styles
+---------------------------------*/
+
+a, a:visited {
+	text-decoration:   none;
+	color:             #3B6CB5;
+	background-color:  transparent;
+}
+
+a:hover {
+	color:             #8AD5F5;
+	text-decoration:   underline;
+	background-color:  #000;
+}
+
+a.noArticle, a.noArticle:visited {
+	background:			url({path:image_url}broken_link.gif) center left no-repeat;
+	padding-left:		10px;
+}
+
+/*---------------------------------
+	Default Tag and Misc Styles
+---------------------------------*/
+
+p {
+	background:			transparent;
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			12px;
+	color:				#38394B;
+	margin:				4px 0 8px 0;
+}
+
+img {
+	border:				none;
+}
+
+p,li,dt,dd {
+	margin-left:		0;
+	padding-left:		0;
+	line-height:		1.7em;
+}
+
+p {
+	margin-bottom:		0.8em;
+	margin-top:			0;
+}
+
+ul {
+	padding-left:		24px;
+}
+
+form p {
+	margin:				0;
+}
+
+.hidden {
+	display:			none;
+	visibility:			hidden;
+}
+
+hr {
+	height:				0px;
+	border:				dotted 0px;
+	border-top-width:	1px;
+}
+
+h3 {
+	font-weight:		normal;
+	font-size:			14px;
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	color:				#0F3A7F;
+	margin:				20px 0 7px 0;
+	padding:			8px 0 8px 0;
+	border-top:			1px solid #0F3A7F;
+	border-bottom:		1px solid #0F3A7F;
+}
+
+.lighttext {
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			10px;
+	color:				#73769D;
+	padding:			4px 0 2px 0;
+	background-color:	transparent;  
+}
+
+code {
+	white-space:		normal;
+}
+
+pre {
+	background:			#E8F7FD;
+	border:				1px solid #96B7DD;
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			11px;
+	color:				#38394B;
+	margin:				8px 2px 10px 6px;
+	padding:			10px 10px 10px 6px;
+	white-space:		normal;
+}
+
+.codeblock {
+	background:			#E8F7FD;
+	border-left:		1px solid #96B7DD;
+	border-top:			1px solid #96B7DD;
+	border-bottom:		1px solid #96B7DD;
+	border-right:		1px solid #96B7DD;
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			11px;
+	color:				#38394B;
+	margin:				8px 4px 10px 3px;
+	padding:			10px 10px 10px 6px;
+	overflow:			auto;
+}
+
+blockquote {
+	background:			#E8F7FD;
+	border-left:		4px solid #5087C6;
+	border-top:			1px solid #96B7DD;
+	border-bottom:		1px solid #96B7DD;
+	border-right:		1px solid #96B7DD;
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			11px;
+	color:				#38394B;
+	margin:				8px 2px 10px 6px;
+	padding:			5px 10px 10px 6px;
+}
+
+/*---------------------------------
+		Header Presentation
+---------------------------------*/
+
+#topBar {  
+	background:			#3c6695 url({path:image_url}header_bg.gif) repeat-x left top;
+}
+
+.topBarLinks { 
+	color:				#fff;
+	background:			transparent;
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			11px;
+	text-align:			center;
+	padding:			15px 30px 6px 20px;
+}
+
+.topBarLinks a:link { 
+	color:				#fff;
+	background:			transparent;
+	text-decoration:	underline;
+} 
+
+.topBarLinks a:visited { 
+	color:				#fff;
+	background:			transparent;
+	text-decoration:	underline;
+}
+
+.topBarLinks a:hover { 
+	color:				#B8BDED;    
+	background:			transparent;
+	text-decoration:	none;
+}
+
+#pageheader {  
+	background:			#3F4585 url({path:image_url}bg_header.jpg) repeat-x left top;
+	border-bottom:		1px solid #000;
+}
+
+/*---------------------------------
+	Sub-Header Presentation
+---------------------------------*/
+
+#subheader {
+	background-color:	#000;
+	color:				#fff;
+	padding:			4px 25px 3px 27px;
+	border-bottom:		1px solid #8285AE;
+	margin:				0 0 10px 0;
+}
+
+.breadcrumb {  
+	background-color:	transparent;
+	font-weight:		bold;
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			10px;
+}
+
+.breadcrumb a, .breadcrumb a:link { 
+	color:				#8AD5F5;
+	font-weight:		normal;
+	background:			transparent;
+	text-decoration:	none;
+} 
+
+.breadcrumb a:visited { 
+	color:				#8AD5F5;
+	background:			transparent;
+	text-decoration:	none;
+}
+
+.breadcrumb a:hover { 
+	color:				#C5EAFA;    
+	background:			transparent;
+	text-decoration:	underline;
+}
+
+.breadcrumbspacer {
+	color:				#fff;
+}
+
+/*---------------------------------
+		Nav Menu Styles
+---------------------------------*/
+
+.navMenu {
+	margin:				0;
+	padding:			0;
+}
+
+.navMenu ul {
+	list-style:			none;
+	text-align:			center;
+	margin:				0;
+	padding:			0;
+}
+
+.navMenu li {
+	padding: 			0;
+	margin: 			0;
+	display:			inline;
+}
+
+.navMenu a, .navMenu a:link, .navMenu a:visited {
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			11px;
+	font-weight:		bold;
+	display: 			block;
+	color: 				#2C3467;
+	border-top: 		1px solid #8EBDE2;
+	border-bottom: 		2px solid #DCF2FC;
+	background-color: 	#C5EAFA;
+	padding:			2px;
+	text-decoration: 	none;
+}
+
+.navMenu a:hover {
+	color:				#fff;
+	background-color:	#68A7D9;
+	border-top:			1px solid #68A7D9;
+	border-bottom:		2px solid #5F9CD2;
+}
+
+/*---------------------------------
+		Sidebar Item Styles
+---------------------------------*/
+
+#wikiLogo {
+	text-align:			center;
+	margin:				0 0 15px 0;
+
+}
+
+.sideItem {
+	margin: 			0 0 15px 0;
+	background-color:	#C5EAFA;
+	border-right:		1px solid #5087C6;
+	border-left:		1px solid #5087C6;
+	border-bottom:		1px solid #5087C6;
+}
+
+ul.activeMembers {
+	margin:				0;
+	padding:			10px 10px 10px 30px;
+	list-style:			square;
+}
+
+.itemHeader {
+	background:			url({path:image_url}item_head_bg_right.gif) top right no-repeat;
+	clear: both;
+	margin: 0;
+}
+
+.itemHeader h2 {
+	background:			url({path:image_url}item_head_bg_left.gif) top left no-repeat;
+}
+
+/*---------------------------------
+	Article Action Menu Styles
+---------------------------------*/
+
+#actMenu {
+	float:				right;
+	clear:				both;
+}
+
+#actMenu ul {
+	list-style: 		none;
+	margin: 			0;
+	padding: 			0;
+}
+
+#actMenu li {
+	float:				left;
+	text-align:			center;
+	margin:				0;
+	padding:			0;
+	background: 		url({path:image_url}act_menu_bg_right.gif) top right no-repeat;
+}
+
+#actMenu a, #actMenu:link, #actMenu:visited {
+	display:			block;
+	padding:			5px 18px 5px 15px;
+	min-width:			80px;
+	background:			url({path:image_url}act_menu_bg_left.gif) top left no-repeat;
+	text-decoration:	none;
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			11px;
+	font-weight:		bold;
+	color: 				#2C3467;
+}
+
+#actMenu a:hover {
+	color:				#fff;
+}
+
+/*---------------------------------
+		Article Titles
+---------------------------------*/
+
+#articleTitle {
+	background:			#5087C6 url({path:image_url}title_bg_top.gif) top left no-repeat;
+	clear:				both;
+}
+
+
+h2 {
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			14px;
+	font-weight:		bold;
+	color: 				#fff;
+	margin:				0;
+	padding:			8px 20px;
+	background:			url({path:image_url}title_bg_bottom.gif) bottom left no-repeat;
+	border:				0;
+}
+
+/*---------------------------------
+		Footer Presentation
+---------------------------------*/
+
+#footer {
+	border:				1px solid #eee;
+	padding:			5px 0 5px 0;
+	clear:				both;
+	text-align:			center;
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			9px;
+	color:				#889;
+	line-height:		15px;
+	margin-top:			20px;
+	margin-bottom:		15px;
+}
+
+/*---------------------------------
+		Form Styles
+---------------------------------*/
+
+form {
+	margin:				0;
+	padding:			10px;
+	border:				0;
+}
+
+.input {
+	border-top:			2px solid #979AC2;
+	border-left:		2px solid #979AC2;
+	border-bottom:		1px solid #979AC2;
+	border-right:		1px solid #979AC2;
+	color:				#333;
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			11px;
+	height:				1.7em;
+	padding:			0;
+	margin:				0;
+}
+
+.textarea {
+	border-top:			2px solid #979AC2;
+	border-left:		2px solid #979AC2;
+	border-bottom:		1px solid #979AC2;
+	border-right:		1px solid #979AC2;
+	color:				#333;
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			11px;
+	padding:			0;
+	margin:				5px;
+}
+
+.checkbox {
+	background-color:	transparent;
+	padding:			0;
+	border:				0;
+}
+
+.submit {
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			11px;
+	font-weight:		bold;
+	border-top:			1px solid #9EA3D5;
+	border-left:		1px solid #9EA3D5;
+	border-right:		1px solid #000;
+	border-bottom:		1px solid #000;
+	letter-spacing:		.1em;
+	margin:				0;
+	padding:			1px 4px 1px 4px;
+	background-color:	#3F4471;
+	color:				#fff;
+	cursor:				pointer;
+}
+
+/*---------------------------------
+		Misc Class Styles
+---------------------------------*/
+
+.spacer {
+	margin-bottom:		12px;
+}
+
+.itempad {
+	padding:			2px 0 2px 0;
+}
+
+.itempadbig {
+	padding:			5px 0 5px 0;
+}
+
+.bottompad {
+	padding:			0 0 2px 0;
+}
+
+.marginpad {
+	margin:				12px 0 10px 3px;
+}
+
+.leftpad {
+	margin:				0;
+	padding:			0 0 0 4px;
+}
+
+.default, .defaultBold, .defaultRight, .defaultCenter {
+	background:			transparent;
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			11px;
+	color:				#38394B;
+}
+
+.defaultBold {
+	font-weight:		bold;
+}
+
+.defaultRight {
+	text-align:			right;
+}
+
+.defaultCenter {
+	text-align:			center;
+}  
+
+.alert {
+	font-family:		Lucida Grande, Lucida Sans Unicode, Sans-serif;
+	font-size:			11px;
+	color:				#990000;
+	font-weight:		bold;
+}
+
+.highlight {
+	color:				#990000;
+}

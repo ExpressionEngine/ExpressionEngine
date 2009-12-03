@@ -1,0 +1,41 @@
+<!-- Template: Private Message - Member Search -->
+
+<style type="text/css">
+#siteinfo {
+display: none;
+}
+</style>
+	
+{form:form_declaration:do_member_search}
+<h3>{lang:member_search}</h3>
+<table class="member_console">
+
+{if message}
+<tr>
+</td>
+{include:message}
+</td>
+</tr>
+{/if}
+<tr>
+
+<th>{lang:screen_name}</th>
+<td><input style='width:90%' type='text' name='screen_name' id='screen_name' value='' size='35' maxlength='100' class='input'  /></td>
+</tr><tr>
+<th>{lang:email}</th>
+<td><input style='width:90%' type='text' name='email' id='email' value='' size='35' maxlength='100' class='input'  /></td>
+</tr><tr>
+<th>{lang:member_group}</th>
+<td>
+<select name='group_id' class='select' >
+<option value='any'>{lang:any}</option>
+{include:member_group_options}</select>
+</td>
+</tr><tr>
+<td><input type="submit" value="{lang:submit}" class="submit" /></td>
+</tr><tr><td><a href="JavaScript:window.close();">{lang:close_window}</a></td>
+</tr>
+</table>
+
+</form>
+<!-- End Template: Private Message - Member Search -->

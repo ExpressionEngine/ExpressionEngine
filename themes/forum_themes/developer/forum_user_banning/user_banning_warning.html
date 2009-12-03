@@ -1,0 +1,52 @@
+{form_declaration}
+
+
+<table class="tableBorder" cellpadding="0" cellspacing="0" border="0" style="width:100%;" align="center">
+<tr>
+<td class="errorHeading">{lang:member_banning_form}</td>
+
+</tr><tr>
+
+<td class="tableRowHeadingBold">
+<div class="itempad">{lang:member_name}&nbsp;&nbsp;{name}</div>
+</td>
+
+
+{if user_is_banned}
+</tr><tr>
+<td class="tableCellTwo">
+<div class="itempadbig"><div class="alert">{lang:member_is_banned}</div></div>
+</td>
+{/if}
+
+
+</tr><tr>
+<td class="tableCellTwo">
+
+{if user_not_banned}
+<div class="itempadbig"><input type='radio' name='action' value='suspend' checked="checked" /> <b>{lang:suspend_account}</b></div>
+{/if}
+
+{if user_is_banned}
+<div class="itempadbig"><input type='radio' name='action' value='reinstate' checked="checked" /> <b>{lang:reinstate_account}</b></div>
+{/if}
+
+<div class="itempadbig"><input type='radio' name='action' value='delete' /> <b>{lang:delete_account}</b>&nbsp;&nbsp; <span class="alert">{lang:ban_warning}</span></div>
+</td>
+
+
+</tr><tr>
+<td class="tableCellOne">
+<div class="itempadbig"><input type='checkbox' name='ban_ip' value='y' /> {lang:ban_ip_addresses}</div>
+</td>
+
+
+</tr><tr>
+<td class="tableCellTwo">
+<div class="itempadbig"><input type="submit" name="submit" class="submit" value="{lang:submit}" /></div>
+</td>
+
+</tr>
+</table>
+
+</form>

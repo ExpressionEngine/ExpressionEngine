@@ -1,0 +1,6 @@
+-- Changes as of June 7th, 2009 --
+
+YUICompressor.java	- 4 changes
+PrepComments.java	- file added
+
+Note: Changes marked with @ee comments.

@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{lang}" lang="{lang}">
+<head>
+<meta http-equiv="content-type" content="text/html; charset={charset}" />
+<title>Smileys</title>
+
+<style type="text/css">
+
+body {
+ background-color: #ffffff;
+ margin-left: 40px;
+ margin-right: 40px;
+ margin-top: 30px;
+ font-size: 11px;
+ font-family: verdana,trebuchet,sans-serif;
+}
+a:link {
+ color: #990000;
+ font-size: 11px;
+ font-weight: normal;
+ text-decoration: underline;
+}
+a:visited {
+ color: #990000;
+ font-size: 11px;
+ font-weight: normal;
+ text-decoration: underline;
+}
+a:active {
+ color: #990000;
+ font-size: 11px;
+ font-weight: normal;
+ text-decoration: underline;
+}
+a:hover {
+ color: #990000;
+ font-size: 11px;
+ font-weight: normal;
+ text-decoration: none;
+}
+
+</style>
+
+<script language="javascript">
+<!--
+
+function add_smiley(smiley)
+{
+	var el = opener.document.getElementById('comment_form').comment;
+
+	if ('selectionStart' in el) {
+		newStart = el.selectionStart + smiley.length;
+
+		el.value = el.value.substr(0, el.selectionStart) +
+						smiley +
+						el.value.substr(el.selectionEnd, el.value.length);
+		el.setSelectionRange(newStart, newStart);
+	}
+	else if (opener.document.selection) {
+		opener.document.selection.createRange().text = text;
+	}
+	else {
+		el.value += " " + smiley + " ";
+	}
+
+	el.focus();
+	window.close();
+}
+
+//-->
+</script>
+
+</head>
+<body>
+
+<p>Click on an image to add it to your comment</p>
+
+<table border="0" width="100%" cellpadding="6" cellspacing="1">
+
+{exp:emoticon columns="4"}
+<tr>
+<td><div>{smiley}</div></td>
+</tr>
+{/exp:emoticon}
+
+</table>
+
+</body>
+</html>

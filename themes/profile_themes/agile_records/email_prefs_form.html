@@ -1,0 +1,46 @@
+<!-- Template: Email Preferences Form -->
+<form method="post" action="{path:update_email_settings}">
+<h3>{lang:email_settings}</h3>
+<table class="member_table">
+<tr>
+
+<th>{lang:email}</th>
+<td><input type='text' class='input' name='email' value='{email}' maxlength='75' style='width:300px'/></td>
+
+</tr><tr>
+<th>{lang:accept_admin_email}</th>
+<td><input type='checkbox' name='accept_admin_email' value='y' {state:accept_admin_email} /></td>
+
+</tr><tr>
+<th>{lang:accept_user_email}</th>
+<td><input type='checkbox' name='accept_user_email' value='y' {state:accept_user_email} /></td>
+
+</tr><tr>
+<th>{lang:notify_by_default}</th>
+<td><input type='checkbox' name='notify_by_default' value='y' {state:notify_by_default} /></td>
+
+</tr><tr>
+<th>{lang:notify_of_pm}</th>
+<td><input type='checkbox' name='notify_of_pm' value='y' {state:notify_of_pm} /></td>
+
+</tr><tr>
+<th>{lang:enable_smart_notifications}</th>
+<td><input type='checkbox' name='smart_notifications' value='y' {state:smart_notifications} /></td>
+
+</tr><tr>
+
+<th> <h4><span class='alert'>*</span>&nbsp;{lang:existing_password}</h4>
+{lang:existing_password_email}</th>
+<td><input type='password' class='input' name='password' value='' maxlength='32' style='width:300px;'  /></td>
+
+</tr><tr>
+<td>
+<input type='submit' class='submit' value='{lang:update}' />
+<span class="alert">*</span> {lang:required}
+
+</td>
+</tr>
+</table>
+
+</form>
+<!-- End Template: Email Preferences Form -->

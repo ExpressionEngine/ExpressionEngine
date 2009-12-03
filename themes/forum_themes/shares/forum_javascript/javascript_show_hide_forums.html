@@ -1,0 +1,67 @@
+
+<script type="text/javascript"> 
+<!--
+
+function show_element(which)
+{	
+	document.getElementById(which + 'on').style.display = "block";
+	document.getElementById(which + 'off').style.display = "none";
+	set_cookie(which, 'on');
+}
+
+
+function hide_element(which)
+{
+	document.getElementById(which + 'on').style.display = "none";
+	document.getElementById(which + 'off').style.display = "block";
+	set_cookie(which, 'off');
+}
+
+function set_cookie(which, state)
+{
+	document.cookie = "{cookie_name}" + which + "=" + state + "; path=" + "/" + ';';
+}
+
+function fetch_cookie(which)
+{
+	thecookie = "{cookie_name}" + which + '=';
+	str_pos  = document.cookie.indexOf(thecookie);
+	cc = false;
+	
+	if (str_pos != -1)
+	{
+		cstart = str_pos + thecookie.length;
+		cend   = document.cookie.indexOf(";", cstart);
+		
+		if (cend == -1)
+			cend = document.cookie.length;
+		
+		cc = unescape(document.cookie.substring(cstart, cend));		
+	}
+
+	return cc;
+}
+
+function set_display()
+{			
+	var el = new Array();
+	{include:javascript_forum_array}
+	
+	for (i = 0 ; i < el.length; i++ )
+	{
+		if (fetch_cookie(el[i]) != false)
+		{
+			if (fetch_cookie(el[i]) == 'on')
+			{
+				show_element(el[i]);
+			}
+			else
+			{
+				hide_element(el[i]);
+			}
+		}
+	}
+}
+
+-->
+</script>

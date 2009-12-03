@@ -1,0 +1,19 @@
+<!-- Template: Bulletin -->
+<table class="member_table">
+<tr>
+<th>{lang:message_sender}</th>
+<td>{bulletin_sender}</td>
+</tr><tr>
+<th>{lang:message_date}</th>
+<td> {bulletin_date}</td>
+{if can_delete_bulletin}
+</tr><tr>
+<th>{lang:delete_bulletin}</th>
+<td><a href='{path:delete_bulletin}' onclick='if(!confirm("{lang:delete_bulletin_popup}")) return false;'>{lang:yes}</a></strong></td>
+{/if}
+</tr><tr>
+
+<td><textarea name='bulletin_{bulletin_id}' readonly='readonly' style='width:100%' class='textarea' rows='8' cols='90'>{bulletin_message}</textarea></td>
+</tr>
+</table>
+<!--  End Template: Bulletin -->

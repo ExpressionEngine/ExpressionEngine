@@ -1,0 +1,27 @@
+<div id='topBar'>
+<div class='topBarLinks'>
+
+{if logged_out}
+	{lang:welcome}
+	{include:top_bar_spacer}
+	<a href="{path:login}">{lang:login}</a>	
+	{include:top_bar_spacer}
+	<a href="{path:register}">{lang:register}</a>	
+	{include:top_bar_spacer}
+	<a href="{path:memberlist}">{lang:memberlist}</a>
+{/if}
+
+{if logged_in}
+	{lang:logged_in_as}&nbsp;&nbsp;<b>{screen_name}</b>
+	{include:top_bar_spacer}
+	<a href="{path:your_profile}">{lang:your_profile}</a>
+	{include:top_bar_spacer}
+	<a href="{path:your_control_panel}">{lang:your_control_panel}</a>
+	{include:top_bar_spacer}
+	<a href="{path:memberlist}">{lang:memberlist}</a>
+	{include:top_bar_spacer}
+	<a href="{path:logout}">{lang:logout}</a>
+{/if}
+
+</div>
+</div>

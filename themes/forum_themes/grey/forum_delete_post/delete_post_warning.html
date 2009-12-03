@@ -1,0 +1,41 @@
+{form_declaration:forum:delete_post}
+
+<table class="tableBorderLeft" cellpadding="0" cellspacing="0" border="0" style="width:100%;" align="center">
+<tr>
+<td class="errorHeading">{lang:delete_confirm}</td>
+
+</tr><tr>
+
+<td class="tableRowHeadingBold">
+{if is_topic}{lang:thread_delete_warning}{/if}
+{if is_reply}{lang:post_delete_warning}{/if}
+</td>
+
+</tr><tr>
+
+<td class="tableCellTwo">
+<div class="itempadbig">
+<div class="alert">
+{if is_topic}{lang:thread_delete_info} &nbsp; {/if}
+{lang:action_can_not_be_undone}
+</div>
+</div>
+</td>
+
+</tr><tr>
+
+<td class="tableCellTwo">
+<div class="itempadbig"><input type="submit" name="submit" class="submit" value="{lang:delete}" /></div>
+</td>
+
+</tr><tr>
+
+<td class="tableCellOne">
+{if is_topic}<h2>{title}</h2>{/if}
+{body}
+</td>
+
+</tr>
+</table>
+
+</form>

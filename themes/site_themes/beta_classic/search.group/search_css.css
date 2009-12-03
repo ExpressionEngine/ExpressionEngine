@@ -1,0 +1,252 @@
+body {
+ margin:0;
+ padding:0;
+ font-family:Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:11px;
+ color:#000;
+ background-color:#fff;
+}
+
+a {
+ text-decoration:none; color:#330099; background-color:transparent;
+}
+a:visited {
+ color:#330099; background-color:transparent;
+}
+a:hover {
+ color:#000; text-decoration:underline; background-color:transparent;
+}
+
+#pageheader {  
+ background-color: #4C5286;
+ border-top: 1px solid #fff;
+ border-bottom: 1px solid #fff;
+ padding:  20px 0 20px 0;
+}
+
+.heading {  
+ font-family:		Georgia, Times New Roman, Times, Serif, Arial;
+ font-size: 		16px;
+ font-weight:		bold;
+ letter-spacing:	.05em;
+ color:			#fff;
+ margin: 			0;
+ padding:			0 0 0 28px;
+}
+
+#content {
+ left:				0px;
+ right:				10px;
+ margin:			10px 25px 10px 25px;
+ padding:			8px 0 0 0;
+}
+
+.outerBorder {
+ border:		1px solid #4B5388;
+}
+
+.header {
+ margin:			0 0 14px 0;
+ padding:			2px 0 2px 0;
+ border:			1px solid #000770;
+ background-color:	#797EB8;
+ text-align:		center;
+}
+
+h1 {
+ font-family:		Georgia, Times New Roman, Times, Serif, Arial;
+ font-size: 		20px;
+ font-weight:		bold;
+ letter-spacing:	.05em;
+ color:				#fff;
+ margin: 			3px 0 3px 0;
+ padding:			0 0 0 10px;
+}
+
+p {
+ font-family:	Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:		11px;
+ font-weight:	normal;
+ color:			#000;
+ background:	transparent;
+ margin: 		6px 0 6px 0;
+}
+
+.searchSubmit {
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         11px;
+ color:             #000;
+ text-align: center;
+ padding:           6px 10px 6px 6px;
+ border-top:        1px solid #4B5388;
+ border-bottom:     1px solid #4B5388;
+ background-color:  #C6C9CF;
+}
+
+.fieldset {
+ border:        1px solid #999;
+ padding: 10px;
+}
+
+.breadcrumb {
+ margin:			0 0 10px 0;
+ background-color:	transparent;
+ font-family:		Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:			10px;
+}
+
+.default, .defaultBold {
+ font-family:		Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:			11px;
+ color:				#000;
+ padding:			3px 0 3px 0;
+ background-color:	transparent;
+}
+
+.defaultBold {
+ font-weight:		bold;
+}
+
+.paginate {
+ font-family:		Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:			12px;
+ font-weight: 		normal;
+ letter-spacing:	.1em;
+ padding:			10px 6px 10px 4px;
+ margin:			0;
+ background-color:	transparent;
+}
+
+.pagecount {
+ font-family:		Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:			10px;
+ color:				#666;
+ font-weight:		normal;
+ background-color: transparent;
+}
+
+.tablePad {
+ padding:			3px 3px 5px 3px;
+ background-color:	#fff;
+}
+
+.resultRowOne {
+ font-family:		Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:			11px;
+ color:				#000;
+ padding:           6px 6px 6px 8px;
+ background-color:	#DADADD;
+}
+
+.resultRowTwo {
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         11px;
+ color:             #000;
+ padding:           6px 6px 6px 8px;
+ background-color:  #eee;
+}
+
+.resultHead {
+ font-family:		Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size: 		11px;
+ font-weight: 		bold;
+ color:				#000;
+ padding: 			8px 0 8px 8px;
+ border-bottom:		1px solid #999;
+ background-color:	transparent;
+}
+
+.copyright {
+ text-align:        center;
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         9px;
+ color:             #999;
+ margin-top:        15px;
+ margin-bottom:     15px;
+}
+
+
+form {
+ margin:            0;
+ padding:           0;
+ border:            0;
+}
+.hidden {
+ margin:            0;
+ padding:           0;
+ border:            0;
+}
+.input {
+ border-top:        2px solid #979AC2;
+ border-left:       2px solid #979AC2;
+ border-bottom:     1px solid #979AC2;
+ border-right:      1px solid #979AC2;
+ color:             #333;
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         11px;
+ height:            1.7em;
+ padding:           0;
+ margin:        	0;
+} 
+.textarea {
+ border-top:        2px solid #979AC2;
+ border-left:       2px solid #979AC2;
+ border-bottom:     1px solid #979AC2;
+ border-right:      1px solid #979AC2;
+ color:             #333;
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         11px;
+ padding:           0;
+ margin:        	0;
+}
+.select {
+ background-color:  #fff;
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         11px;
+ font-weight:       normal;
+ letter-spacing:    .1em;
+ color:             #333;
+ margin-top:        2px;
+ margin-bottom:     2px;
+} 
+.multiselect {
+ border-top:        2px solid #979AC2;
+ border-left:       2px solid #979AC2;
+ border-bottom:     1px solid #979AC2;
+ border-right:      1px solid #979AC2;
+ background-color:  #fff;
+ color:             #333;
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         11px;
+ margin-top:        2px;
+ margin-top:        2px;
+} 
+.radio {
+ color:             transparent;
+ background-color:  transparent;
+ margin-top:        4px;
+ margin-bottom:     4px;
+ padding:           0;
+ border:            0;
+}
+.checkbox {
+ background-color:  transparent;
+ color:				transparent;
+ padding:           0;
+ border:            0;
+}
+.submit {
+ background-color:  #fff;
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         11px;
+ font-weight:       normal;
+ border-top:		1px solid #989AB6;
+ border-left:		1px solid #989AB6;
+ border-right:		1px solid #434777;
+ border-bottom:		1px solid #434777;
+ letter-spacing:    .1em;
+ padding:           1px 3px 2px 3px;
+ margin:        	0;
+ background-color:  #6C73B4;
+ color:             #fff;
+}

@@ -1,0 +1,940 @@
+/*
+    Default Body
+------------------------------------------------------ */ 
+body {
+ margin:            0;
+ padding:           0;
+ font-family:       "Lucida Grande", "Trebuchet MS", Verdana, Arial, Geneva, Sans-serif;
+ font-size:         11px;
+ color:             #115b02;
+ background-color:  #fffbeb;
+}
+/*
+    Default Links
+------------------------------------------------------ */ 
+a {
+ text-decoration:   none;
+ color:             #f25800;
+ text-decoration:   none;
+ background-color:  transparent;
+}
+  
+a:visited {
+ color:             #f25800;
+ text-decoration:   none;
+ background-color:  transparent;
+}
+
+a:hover {
+ color:             #c02e15;
+ text-decoration:   underline;
+ background-color:  transparent;
+}
+
+/*
+    Larger Links 
+------------------------------------------------------ */ 
+
+.largeLinks { background:        transparent; font-family:       Verdana, Geneva, Tahoma, "Trebuchet MS", Arial, Sans-serif; font-size:         12px; padding-left: 12px; }
+.largeLinks a:link { 
+ background:        transparent;
+ text-decoration:   none;
+} 
+.largeLinks a:visited { 
+ background:        transparent;
+ text-decoration:   none;
+}
+.largeLinks a:hover { 
+ background:        transparent;
+ text-decoration:   underline;
+}
+
+
+
+/*
+    Alternate links in opposit color
+------------------------------------------------------ */ 
+
+.altLinks { 
+ background:        transparent;
+ font-family:       Verdana, Geneva, Tahoma, "Trebuchet MS", Arial, Sans-serif;
+ font-size:         11px;
+}
+.altLinks a:link { color: #b37548; background:        transparent; text-decoration:   underline; } 
+.altLinks a:visited { 
+ background:        transparent;
+ text-decoration:   none;
+}
+.altLinks a:hover { color: #c02e15; background:        transparent; text-decoration:   underline; }
+
+/*
+    Small links
+------------------------------------------------------ */ 
+.smallLinks {
+ font-family:       Verdana, Geneva, Tahoma, "Trebuchet MS", Arial, Sans-serif;
+ font-size:         10px;
+ background-color:  transparent;  
+}
+
+.smallLinks a:link { 
+ color:             #a09f9f;
+ background:        transparent;
+ text-decoration:   none;
+} 
+.smallLinks a:visited { color: #a09f9f; background:        transparent; text-decoration:   none; }
+.smallLinks a:hover { 
+ color:             #c02e15;    
+ background:        transparent;
+ text-decoration:   underline;
+}
+
+/*
+  Links in forum posts
+------------------------------------------------------ */
+p { background:		transparent; font-size:         12px; color:             #703219; line-height: 17px; margin:			4px 0 8px; }
+.post {  padding: 0 0 0 20px; }
+.post a { background-color:  transparent; text-decoration: none; }
+  
+.post a:visited {
+ color:             #330099;
+ text-decoration:   underline;
+ background-color:  transparent;
+}
+
+.post a:hover {
+ text-decoration:   none;
+ background-color:  transparent;
+}
+/*
+    Basic stuff
+------------------------------------------------------ */
+.default, .defaultBold, .defaultRight, .defaultCenter {
+ background:		transparent;
+ font-size:         11px;
+ color:             #703219;
+}
+
+.defaultBold {
+ font-weight: bold;
+}
+
+.defaultRight {
+ text-align: right;
+}
+
+.defaultCenter {
+text-align: center;
+}
+
+
+h2 {
+ background:		transparent;
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         13px;
+ color:             #38394B;
+ margin:			0 0 6px 0;
+}
+
+h3 {
+ background:		transparent;
+ font-size:         12px;
+ color:             #703219;
+ margin:			3px 0;
+}
+
+.lighttext {
+ font-family:       Verdana, Geneva, Tahoma, "Trebuchet MS", Arial, Sans-serif;
+ font-size:         10px;
+ padding:           4px 0 2px;
+ background-color:  transparent;  
+}
+
+/*
+    Special formatting for quotes, <code>, <pre> etc..
+------------------------------------------------------ */ 
+
+code {
+  white-space: normal;
+ }
+
+ pre {
+ background: 		#EFEFF4;
+ border:			1px solid #B2B3CE;
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         11px;
+ color:             #38394B;
+ margin:			8px 2px 10px 6px;
+ padding:			10px 10px 10px 6px;
+ white-space: 		normal;
+}
+
+.codeblock { background: 		white; font-family:       Verdana, Geneva, Tahoma, "Trebuchet MS", Arial, Sans-serif; font-size:         11px; color:             #38394b; margin:			8px 0 10px; padding:			10px 10px 10px 6px; border: solid 1px #b2b3ce; }
+
+blockquote { color: #115b02; background: 		#f8fbf3; font-size:         12px; line-height: 17px; margin:			8px 0 10px; padding:			5px 10px; border-color: #b2b3ce #b2b3ce #b2b3ce #668c5e; border-style: none none none solid; border-width: 1px 1px 1px 4px; }
+blockquote p { color: #115b02; }
+.quote_author { color: #115b02; font-size:         10px; font-weight:		bold; margin:			0 0 4px; background-color:  transparent; }
+
+/*
+    Top Bar 
+------------------------------------------------------ */ 
+
+#topBar { text-align: right; position: relative; top: 0; right: 0; width: 763px; height: 29px; z-index: 20; padding: 0 0 19px; }
+#topBar span { margin-right: 20px; white-space: nowrap; }
+#topBar span#s2 { float: right; }
+#nav_login { width: 64px; display: block; padding: 0; overflow: hidden; background-image: url({path:image_url}nav_login.gif); background-repeat: no-repeat; text-align: left; text-indent: -900em; height: 29px !important; height /**/:29px; margin: 0; }
+#nav_register { background-image: url({path:image_url}nav_register.gif); background-repeat: no-repeat; text-align: left; text-indent: -900em; display: block; padding: 0; width: 76px; height: 29px !important; overflow: hidden; margin: 0; }
+#nav_memberlist2 { background-image: url({path:image_url}nav_memberlist2.gif); background-repeat: no-repeat; text-align: left; text-indent: -900em; display: block; margin: 0; padding: 0; width: 102px; height: 29px !important; overflow: hidden; }
+#nav_memberlist { background-image: url({path:image_url}nav_memberlist.gif); background-repeat: no-repeat; text-align: left; text-indent: -900em; display: block; width: 102px; height: 29px !important; margin: 0; padding: 0; }
+#nav_logout { background-image: url({path:image_url}nav_logout.gif); background-repeat: no-repeat; text-align: left; text-indent: -900em; display: block; margin: 0; padding: 0; width: 70px; height: 29px !important; overflow: hidden; }
+#nav_cp { background-image: url({path:image_url}nav_cp.gif); background-repeat: no-repeat; text-align: left; text-indent: -900em; display: block; margin: 0; padding: 0; width: 104px; height: 29px !important; overflow: hidden; }
+#nav_profile { background-image: url({path:image_url}nav_profile.gif); background-repeat: no-repeat; text-align: left; text-indent: -900em; display: block; margin: 0; padding: 0; width: 66px; height: 29px !important; overflow: hidden; }
+/*
+    Page Header 
+------------------------------------------------------ */ 
+
+#pageheader { margin: 0; padding: 0; }
+#logo { width: 216px; height: 52px; float: left; margin: 0 0 20px; padding: 0; }
+#search { background-color: transparent; text-align: right; position: relative; right: -20px; width: 530px; float: left; margin: 6px 0 0; padding: 0; }
+#search table { text-align: right; float: right; }
+.searchinput { color: #6d6d6d; font-size: 11px; text-align: left; width: 150px; margin: 0; padding: 2px; border-color: #8c8b8b #c4c4c4 #c4c4c4 #8c8b8b; border-style: solid; border-width: 1px; }
+.submitimg { float: right; margin: 0 0 0 6px; padding: 0; }
+a.advanced_search, a.advanced_search:visited, a.advanced_search:active { color: #a09f9f; width: 120px; float: right; padding-top: 3px; padding-bottom: 0; }
+#login { background: url({path:image_url}bg_login.jpg) no-repeat; width: 763px; clear: both; padding: 17px 0 19px; }
+* htlm #login { text-align: left; padding: 17px 0 0; }
+#login table { width: 100%; margin-left: 18px; }
+#login table td { color: #6986a0; text-align: left; padding: 4px 10px 4px 4px; }
+#login table .logpass { color: #6986a0; line-height: 19px; width: 144px; height: 13px; margin: 0; padding: 2px 0 2px 2px; border-color: #aec9d2 #e2f1f4 #e2f1f4 #aec9d2; border-style: solid; border-width: 1px; }
+#postlinks { width: 250px; margin: 0; padding: 0; }
+#postlinks ul { margin: 0 0 20px 46px; padding: 0; }
+#postlinks ul li { line-height: 16px; margin: 0; padding: 0; list-style-image: url({path:image_url}bl_orange_arrow.gif); }
+/*
+    Right side of page banner
+------------------------------------------------------ */ 
+.rightheader {  
+ background-color:  transparent;
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         11px;
+ color:				#fff;
+ text-align:		left;
+ padding:			0 22px 0 20px;
+}
+.rightheader a:link { 
+ color:             #fff;
+ background:        transparent;
+ text-decoration:   underline;
+} 
+.rightheader a:visited { 
+ color:             #fff;
+ background:        transparent;
+ text-decoration:   underline;
+}
+.rightheader a:hover { 
+ color:             #B9BDD4;    
+ background:        transparent;
+ text-decoration:   none;
+}
+/*
+    Private message box
+------------------------------------------------------ */ 
+
+.privatemessagebox{
+ background:        #303466;
+ padding:			3px;
+ border-top:		1px solid #181B3C;
+ border-left:		1px solid #181B3C;
+ border-bottom:		1px solid #4E548F;
+ border-right:		1px solid #4E548F;
+}
+
+/*
+    Member Signature
+------------------------------------------------------ */ 
+
+.signature { font-size:         11px; color:             #38394b; margin:			15px 18px 0 20px; padding:			10px 0 4px; border-color: #fbedc3 transparent transparent; border-style: solid none none; border-width: 1px; }
+.signature p { color: #b37548; }
+.signatureTitle { font-size:         10px; color:             #f5d49f; background-color:  transparent; margin: 0; padding: 0 6px 1px 0; }
+
+/*
+    Sub-header Bar
+    Contains the breadcrumb links
+------------------------------------------------------ */ 
+#subheader {
+ background: 		#F0F0F2 url({path:image_url}bg_breadcrumb.jpg) repeat-x left top;
+ padding: 			4px 25px 3px 27px;
+ border-bottom:		1px solid #8285AE;
+}
+/*
+    Breadcrumb Links
+------------------------------------------------------ */
+#login table td .breadcrumb { color: #b37548; font-size: 11px; line-height: 14px; background-color: transparent; text-align: left; text-indent: -75px; margin: 0; padding: 30px 0 0 75px; }
+.breadcrumb a:link { 
+ background:        transparent;
+ text-decoration:   none;
+} 
+.breadcrumb a:visited { 
+ background:        transparent;
+ text-decoration:   none;
+}
+.breadcrumb a:hover { 
+ background:        transparent;
+ text-decoration:   underline;
+}
+
+.currentcrumb {
+ font-weight: bold;
+}
+.breadcrumbspacer {
+ color:  #6B6B85;
+}
+/*
+    Misc. Formatting Items
+------------------------------------------------------ */ 
+.spacer {
+ margin-bottom: 5px;
+}
+
+.itempad { color: #115b02; font-size: 11px; padding: 4px 0; }
+.itempad2 { color: #115b02; font-size: 11px; padding: 4px 0; border-top: 1px solid #fbedc3; }
+.itempadbig { color: #7a371c; font-size: 12px; font-weight: normal; padding: 5px 0; }
+.itempadbig2 { color: #7a371c; font-size: 12px; font-weight: normal; padding: 5px 0; border-top: 1px solid #fbedc3; }
+.bottompad {
+padding: 0 0 2px 0;
+}
+
+.marginpad {
+ margin: 12px 0 10px 3px;
+}
+
+.leftpad {
+ padding: 0 0 0 4px;
+}
+
+/*
+    Main Content Wrapper
+------------------------------------------------------ */
+#header { width: 763px; margin: 0 auto; }
+#content { text-align: left; left: 0; right: 0; margin: 0 auto; padding: 0; width:763px; }
+#mainwrap { background-color: white; text-align: center; }
+#footerwrap { background: #fffbeb url({path:image_url}bg_footer.gif) repeat-x; text-align: center; padding: 76px 0 0; }
+/*
+   Forum related text formatting
+------------------------------------------------------ */ 
+
+.forumName {
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         12px;
+ letter-spacing:    .1em;
+ color:             #333449;
+ background-color:  transparent;  
+}
+
+.forumDescription { font-size:         11px; padding:           0; background-color:  transparent; width: 330px; }
+
+.forumLightLinks { color: #668c5e; font-size:         10px; padding:           3px 0 2px; background-color:  transparent; }
+
+.forumLightLinks a:link { 
+ background:        transparent;
+ text-decoration:   none;
+} 
+.forumLightLinks a:visited { 
+ background:        transparent;
+ text-decoration:   none;
+}
+.forumLightLinks a:hover { 
+ background:        transparent;
+ text-decoration:   underline;
+}
+.topicTitle {
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         12px;
+ letter-spacing:    .1em;
+ color:             #333449;
+ background-color:  transparent;  
+}
+
+.userBlock {
+ padding:	2px 0 2px 0;
+}
+
+.edited {
+	font-size:		9px;
+	color:			#f5d49f;
+	margin:			15px 18px 0 20px;
+	padding:		10px 0 4px;
+}
+
+/*
+    File Attachments
+------------------------------------------------------ */ 
+
+.attachTitle { font-size:         10px; font-weight:		normal; color:             #f5d49f; padding:           4px 4px 4px 0; margin:			0 20px 6px; border-bottom: 1px solid #fbedc3; }
+.attachBody { font-family:       Verdana, Geneva, Tahoma, "Trebuchet MS", Arial, Sans-serif; font-size:         11px; color:             #73769d; padding:           4px 4px 4px 0; margin: 0 0 0 20px; }
+
+.attachThumb { margin: 3px 6px 3px 0; border: solid 1px #fbedc3; background-color:  white; padding: 0; }
+
+/*
+    User Rank Text in Post
+------------------------------------------------------ */ 
+.rankAdmin {
+ font-size:         10px;
+ font-weight:		bold;
+ color:             #115b02;
+ padding:           2px 0 3px;
+ background-color:  transparent;  
+}
+
+.rankModerator {
+ font-size:         10px;
+ font-weight:		bold;
+ color:             #990000;
+ padding:           2px 0 3px;
+ background-color:  transparent;  
+}
+
+.rankMember{
+ font-size:         10px;
+ font-weight:		bold;
+ padding:           2px 0 3px;
+ background-color:  transparent;  
+}
+
+.rankImage {
+ margin: 0;
+ padding: 0;
+ border:  0;
+}
+
+/*
+    Button Formatting
+	This controls the look of the various buttons, like
+	the "NEW TOPIC" and "POST REPLY" buttons
+------------------------------------------------------ */ 
+
+.button { width:				96px; background-color: 	transparent; display: block; }
+.lastTD { background: #5c5fa0 url({path:image_url}nav_tab_bg.jpg) repeat-x left top; width: 500px; margin: 0; border-color: #6266a6 #44488e #44488e #6266a6; border-style: solid; border-width: 1px; }
+.button40 {
+ width:				34px;
+ background-color: 	transparent;
+}
+.button80 {
+ width:				80px;
+ background-color: 	transparent;
+}
+.button100 {
+ width:				70px;
+ background-color: 	transparent;
+}
+.button210 {
+ width:				210px;
+ background-color: 	transparent;
+}
+.buttonSpacer{
+ margin:	0 0 0 6px;
+}
+.buttonLarge { text-transform:    uppercase; font-size:         10px; text-align:		center; color:				#fff; font-weight:		bold; background-color: #e96934; letter-spacing: 0.1em; padding:           4px 6px; margin:     		2px 0 4px; border: solid 1px #e95011; white-space: 		nowrap; cursor: pointer; }
+.buttonLargeHover { text-transform:    uppercase; font-size:         10px; text-align:		center; color:				white; font-weight:		bold; background-color: #e9855b; letter-spacing: 0.1em; padding:           4px 6px; margin:     		2px 0 4px; border: solid 1px #e9855b; white-space: 		nowrap; cursor: pointer; }
+
+
+.buttonSmall { font-size:         10px; font-weight:		bold; text-align:		center; color:				#6986a0; background-color: white; padding:           2px 3px; margin:     		0; border: solid 1px transparent; white-space: 		nowrap; cursor: pointer; }
+
+.buttonSmallHover {
+ background: 		#DCE0F6 url({path:image_url}nav_tab_bg_on.jpg) repeat-x left top;
+ border-top:		#7B7EB4 1px solid;
+ border-left:		#7B7EB4 1px solid;
+ border-right:		#66699D 1px solid;
+ border-bottom:		#66699D 1px solid;
+ text-transform:    uppercase;
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         10px;
+ font-weight:		bold;
+ text-align:		center;
+ color:				#D0D2E8;
+ padding:           2px 2px 2px 3px;
+ margin:     		0 3px 0 3px;
+ white-space: 		nowrap;
+ cursor: pointer;
+}
+td.button150 { width: 763px; height: 26px; overflow: hidden; padding-bottom: 20px; }
+td.button150 img { float: right; margin-left: 10px; }
+/*
+    Post Preview
+------------------------------------------------------ */ 
+
+.preview { background:		#fbfdfe; font-size:         11px; padding:           10px; margin:			0 0 12px; border-color: #e3f1f4; border-style: none solid solid; border-width: 1px; }
+.previewheading { background: 		#fffae2; font-weight:		bold; font-size:         11px; color:             #703219; padding:           5px 0 5px 10px; border-top:     	1px solid #fbeece; border-right:     	1px solid #fbeece; border-left:     	1px solid #fbeece; border-bottom-color: #fbeece; }
+/*
+    Moderator Highlight
+    This controls the look of the name of moderators
+    that appear in the stats area.  The idea is that
+    moderators appear in the list differently than
+    regular members
+------------------------------------------------------ */ 
+.activeModerator {
+ font-weight: bold;
+}
+
+/*
+    Table Formatting
+------------------------------------------------------ */ 
+.border {
+ border:     		1px solid #B2B3CE;
+ padding:			0;
+ margin-top:        1px;
+ margin-bottom:     3px;
+}
+.ignored {color: #b37548; padding:			0; margin:			0 0 8px; }
+.tableBorder, .tableBorderLeft { background: url({path:image_url}bg_category.jpg) no-repeat; width: 763px; margin: 0; padding: 0; }
+.tableBorderTopLeft { padding:			0; margin-top:        1px; margin-bottom:     3px; border-color: #fbedc3; border-style: none solid solid; border-width: 1px; }
+.tableBorderPad {
+ 
+}
+.threadBorder { color: #b37548; padding:			0; margin:			0 0 8px; }
+.tableBG {
+ background-color: #F0F0F0;
+}
+
+.tablePad {
+ padding:  0 2px 4px 2px;
+}
+td.tablePad2 { padding: 0 13px 0 18px; }
+td.tablePad3 { padding: 0 9px 0 20px; }
+.tableHeadingBG { background: #fffbe5 url({path:image_url}bg_category.jpg) no-repeat left top; margin: 0; padding:           15px 18px 11px; border-bottom: 1px solid #fbeece; }
+.BGright { background-position: right top; margin: 0; padding: 15px 18px 11px; border-bottom: 1px solid #fbeece; }
+.tableHeading {
+ font-size:         15px;
+ letter-spacing:    0.1em;
+ font-weight:		normal;
+ padding:           0;
+ margin:			0;
+ background-color:  transparent; 
+ white-space: 		nowrap;
+}
+.tableHeadingSmall { font-size:         11px; font-weight:		normal; line-height: 13px; padding:           0; margin:			0; background-color:  transparent; }
+.tableRowHeading, .tableRowHeadingBold { color: #b37548; font-size:         11px; padding:           8px 10px 8px 6px; }
+.tableRowHeadingBold { color: #b37548; font-size: 13px; font-weight: normal; background-color: white; }
+.tableRowSpacer {
+ background: 		#FBFBFD;
+ padding:           0;
+}
+
+.tableCellOne { background: white url({path:image_url}bg_forum.gif) repeat-x left top; padding:           12px 0 12px 0; }
+.tableCellTwo { background: white url({path:image_url}bg_forum.gif) repeat-x left top; padding:           12px 0 12px 0; }
+.tableCellThree { background: url({path:image_url}bg_threadbuttons.gif) no-repeat left bottom; margin: 0; padding: 10px 0 10px 13px; }
+* html .tableCellThree { padding: 9px 0 6px 13px; }
+.tableCellFour { background: url({path:image_url}bg_threadbuttons.gif) no-repeat right bottom; padding: 10px 13px 10px 0; }
+* html .tableCellFour { padding: 9px 13px 6px 0; }
+.leftcol { background: #fffbe7 url({path:image_url}bg_category.jpg) no-repeat; padding: 18px 10px 18px 18px; }
+.tablePostInfo { font-family:       Verdana, Geneva, Tahoma, "Trebuchet MS", Arial, Sans-serif; font-size:         10px; color:             #668c5e; background-color:  transparent; padding: 0 10px 0 20px; }
+td.T1 { width: 20px; }
+td.T2 { width: 350px; }
+td.T3 { width: auto; }
+td.T4 { width: auto; }
+td.T5 { width: 200px; }
+.postcount { color: #b37548; font-size: 15px; width: 50px; display: block; }
+td.secondcell { width: 330px; }
+/*
+    Member Profile Page
+------------------------------------------------------ */ 
+
+.profileHeadingBG {
+ background: 		#fffae2 url({path:image_url}bg_category.jpg) no-repeat right top;
+ color:             #115b02;
+ padding:           10px 6px 6px 18px;
+}
+
+.profileAlertHeadingBG {
+ background: 		#fffae2 url({path:image_url}bg_category.jpg) no-repeat right top;
+ color:             #c00;
+ padding:           10px 6px 6px 18px;
+}
+
+.profileTopBox {
+ background:	#fffae2 url({path:image_url}bg_category.jpg) no-repeat left top;
+ margin:		0;
+ padding:		6px 5px 5px 18px;
+}
+
+.profileTitle {
+ font-size:			14px;
+ font-weight:		bold;
+ color:				#703219;
+ padding: 			10px 5px 3px 0;
+ margin:			0;
+ background-color: transparent;  
+}
+
+.profileItem { background:		transparent; font-size:         11px; color:           #38394b; margin: 			2px 0;  
+}
+
+.profilePhoto { background: #fffae2 url({path:image_url}bg_category.jpg) no-repeat right top; padding:			1px; margin-top:        1px; margin-bottom:     3px; }
+
+.avatar {
+ background:	transparent;
+ margin:		3px 14px 3px 0;
+}
+
+.photo {
+ background:	transparent;
+ margin:		6px 14px 0 3px;
+}
+
+.profileHead {
+ font-size:			10px;
+ font-weight:		bold;
+ text-transform:	uppercase;
+ color:				#b37548;
+ padding:			3px 4px 3px 10px;
+ background-color:	white;  
+ border-top:		1px solid #fbedc3;
+ border-bottom:		1px solid #fbedc3;
+ margin:			0;
+}
+
+.menuHeadingBG {
+ background: 		url({path:image_url}bg_category.jpg) no-repeat left top;
+ color:             #115b02;
+ padding:           10px 6px 6px 12px;
+}
+
+.profileMenu {
+ background: 		#fffae2 url({path:image_url}bg_category.jpg) no-repeat;
+}
+
+.profileMenuInner {
+ padding-left:		10px;
+ padding-right:		8px;
+ margin-bottom:		4px;
+ margin-top:		4px;
+}
+
+.menuItem { font-size:			11px; background: url({path:image_url}bl_orange_arrow.gif) no-repeat left center; padding:			3px 0 3px 15px; }
+
+.borderTopBot {
+ border-top:	1px solid #4B5388;
+ border-bottom:	1px solid #4B5388;
+}
+
+.borderBot {
+ border-bottom:	1px solid #4B5388;
+}
+
+.success {
+ font-size:			11px;
+ color:				#115b02;
+ font-weight:		bold;
+ padding:			3px 0;
+ background-color:	transparent; 
+}
+
+.memberlistRowOne { background: url({path:image_url}bg_forum.gif) repeat-x left top; font-size:11px; padding:5px 6px; border-color: #fff #fff #b2b3ce #fbedc3; border-style: none solid; border-width: 1px; }
+.memberlistRowTwo { background: url({path:image_url}bg_forum.gif) repeat-x left top; font-size:         11px; padding: 5px 6px; border-color: #fff #fff #b2b3ce #fbedc3; border-style: none solid; border-width: 1px; }
+
+.memberlistHead { color: #703219; font-size: 		11px; font-weight: 		bold; background-color: transparent; border-bottom:     1px none white; padding: 			8px 0 8px 8px; }
+
+.memberlistFooter {
+ font-size:         11px;
+ color:             #000;
+ padding:           20px 10px 20px 6px;  
+}
+
+.innerShade {
+ background-color:	#f8fbf3;
+ border:      	 	solid 1px #668c5e;
+ margin:			0;
+ padding:			10px;
+}
+
+/*
+    Search Formatting
+------------------------------------------------------ */ 
+
+.searchBox {
+ background: 		transparent;
+ border:			0 transparent;
+ font-size:         11px;
+ margin:			16px 0 0;
+ padding:			8px 5px 5px;
+}
+
+.searchBoxTitle {
+ font-size:         10px;
+ font-weight:		bold;
+ color:             #703219;
+ background-color:  transparent;  
+}
+
+.searchpad {
+ padding:  6px 0 8px 0;
+}
+
+.searchspacer {
+ margin-bottom:     6px;
+}
+
+
+
+/*
+    Pagination Links
+------------------------------------------------------ */ 
+.paginateBorder { margin-bottom:		7px; margin-left: 10px; }
+.paginate {
+ font-size:         11px;
+ padding:           2px 4px;
+ margin:		 	0;
+ }
+.paginateStat {
+ font-size:         11px;
+ padding:           2px 10px;
+ margin:			0;
+ white-space: 		nowrap; 
+ }
+.paginateCur {
+ font-size:         11px;
+ padding:           2px 6px;
+ margin:			0;
+ }
+ 
+.paginate a:link {
+ text-decoration:   none;
+ text-decoration:   none;
+ background-color:  transparent;
+}
+  
+.paginatea:visited {
+ text-decoration:   none;
+ background-color:  transparent;
+}
+
+.paginate a:hover {
+ text-decoration:   none;
+ background-color:  transparent;
+}
+
+/*
+
+    Form Field Formatting
+------------------------------------------------------ */ 
+
+form {
+ margin:            0;
+ padding:           0;
+ border:            0;
+}
+.hidden {
+ margin:            0;
+ padding:           0;
+ border:            0;
+}
+.input { color:             #333; font-family:       Verdana, Geneva, Tahoma, "Trebuchet MS", Arial, Sans-serif; font-size:         11px; height:            1.5em; padding:           0; margin:        	0; border-color: #8c8b8b #c4c4c4 #c4c4c4 #8c8b8b; border-style: solid; border-width: 2px 1px 1px 2px; } 
+.textarea { color:             #333; font-family:       Verdana, Geneva, Tahoma, "Trebuchet MS", Arial, Sans-serif; font-size:         11px; padding:           0; margin:        	0; border-color: #8c8b8b #c4c4c4 #c4c4c4 #8c8b8b; border-style: solid; border-width: 2px 1px 1px 2px; }
+.select { background-color:  #fff; font-size:         11px; font-weight:       normal; letter-spacing:    0.1em; color:             #7b3118; margin-top:        2px; margin-bottom:     2px; border: solid 1px #b1b1b1; } 
+.multiselect {
+ border-top:        2px solid #979AC2;
+ border-left:       2px solid #979AC2;
+ border-bottom:     1px solid #979AC2;
+ border-right:      1px solid #979AC2;
+ background-color:  #fff;
+ color:             #333;
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         11px;
+ margin-top:        2px;
+ margin-top:        2px;
+} 
+.radio {
+ background-color:  transparent;
+ margin-top:        4px;
+ margin-bottom:     4px;
+ padding:           0;
+ border:            0;
+}
+.checkbox {
+ background-color:  transparent;
+ padding:           0;
+ border:            0;
+}
+.buttons { margin:        	0; padding:			1px 1px 3px; border: 0 transparent; cursor: pointer; }
+button#copy { background: url({path:image_url}bt_vsmall_copy.gif) no-repeat; text-indent: -9000px; width: 61px; height: 22px; }
+button#move { background: url({path:image_url}bt_vsmall_move.gif) no-repeat; text-indent: -9000px; width: 61px; height: 22px; }
+button#delete { background: url({path:image_url}bt_vsmall_delete.gif) no-repeat; text-indent: -9000px; width: 61px; height: 22px; }
+button#reply_all { background: url({path:image_url}bt_vsmall_reply_all.gif) no-repeat; text-indent: -9000px; width: 88px; height: 22px; }
+button#reply { background: url({path:image_url}bt_vsmall_reply.gif) no-repeat; text-indent: -9000px; width: 61px; height: 22px; }
+button#forward { background: url({path:image_url}bt_vsmall_forward.gif) no-repeat; text-indent: -9000px; width: 80px; height: 22px; }
+button#add { background: url({path:image_url}bt_vsmall_add_member.gif) no-repeat; text-indent: -9000px; width: 107px; height: 22px; }
+a.pm img { margin: 0; }
+* html a.pm img { margin-top: -3px; }
+.submit { font-size:         11px; font-weight:       normal; letter-spacing:    0.1em; margin:        	0; padding:			1px 4px; background-color:  #ededed; color:             #1d1c1c; border-color: white #e0e0e0 #e0e0e0 white; border-style: solid; border-width: 1px; cursor: pointer; }  
+/*
+    Error messages
+------------------------------------------------------ */ 
+
+.errorHeading {
+ background: 		#f25800;
+ color:             #fff;
+ padding:           6px;
+ border-bottom:     1px solid #fff;
+ font-size:         12px;
+ letter-spacing:    0.1em;
+ font-weight:		bold;
+}
+
+.errorMessage {
+ font-size:         11px;
+ color:             #990000;
+ padding:           10px 0;
+}
+
+.errorBox {
+ background:		#f9f9f9;
+ font-size:         11px;
+ color:             #990000;
+ padding:           10px;
+ margin:			0 0 12px;
+ border:       		solid 1px;
+}
+
+.alert {
+ font-family:       Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+ font-size:         11px;
+ color:             #990000;
+ font-weight:		bold;
+}
+
+.highlight {
+ color:             #990000;
+}
+
+/*
+    Page Footer
+------------------------------------------------------ */ 
+#footer { clear: 			both; text-align:        center; font-family:       Verdana, Geneva, Tahoma, "Trebuchet MS", Arial, Sans-serif; font-size:         9px; color:             #999; line-height:       15px; background-color: transparent; width: 763px; margin: 0 auto; }
+#footer table { text-align: left; width: 100%; }
+td.legend { background: #fffceb url({path:image_url}bg_legend_right.gif) no-repeat right bottom; vertical-align: top; position: relative; width: 320px; margin: 0; padding: 18px 0 0 20px; border-color: #fbedc3; border-style: solid solid none; border-width: 1px; }
+td.legend2 { color: #115b02; font-size: 11px; background: #fffceb url({path:image_url}bg_legend_right.gif) no-repeat right bottom; margin: 0; padding: 18px 0 10px 20px; position: relative; vertical-align: top; border: solid 1px #fbedc3; }
+td.legend2 td { font-size: 11px; padding: 0 0 10px; }
+td.legend table { color: #115b02; font-size: 11px; }
+#footer .tableHeading { color: #115b02; font-size: 15px; font-weight: normal; background-color: transparent; letter-spacing: 0.1em; white-space: nowrap; margin: 0 0 13px; padding: 0; }
+#credits { text-align: left; margin: 0 0 25px; padding: 20px 0 0; }
+#credits p#f1 { color: #7a371c; font-size: 11px; line-height: 17px; float: left; }
+#credits p#f2 { color: #7a371c; font-size: 9px; line-height: 17px; float: left; margin-left: 60px; }
+#credits p#f3 { text-align: right; float: right; }
+#credits img { margin-bottom: 3px; }
+/*
+    Formatting Buttons
+------------------------------------------------------ */ 
+
+.buttonMode {
+ font-size:         10px;
+ color:             #668c5e;
+ background-color:  transparent; 
+ white-space: 		nowrap;
+}
+
+.htmlButtonOuter, .htmlButtonOuterL {
+ background-color:  #f6f6f6;  
+ padding:           0;
+ border-top:        #333 1px solid;
+ border-right:      #333 1px solid;
+ border-bottom:     #333 1px solid;
+}
+.htmlButtonOuterL  {
+ border-left:       #333 1px solid;
+}
+.htmlButtonInner {
+ background-color:  transparent; 
+ text-align:		center;
+ padding:			0 3px 0 3px;
+ border-left:       #fff 1px solid;
+ border-top:        #fff 1px solid;
+ border-right:      #ccc 1px solid;
+ border-bottom:     #ccc 1px solid;
+}
+.htmlButtonOff {
+ font-family:       Verdana, Arial, Trebuchet MS, Tahoma, Sans-serif;
+ font-size:         11px;
+ font-weight:       bold;
+ padding:           1px 2px 2px 2px;
+ white-space:       nowrap;
+}
+.htmlButtonOff a:link { 
+ color:             #000;
+ text-decoration:   none;
+ white-space:       nowrap;
+}
+.htmlButtonOff  a:visited { 
+ text-decoration:   none;
+}
+.htmlButtonOff a:active { 
+ text-decoration:   none;
+ color:             #999;
+}
+.htmlButtonOff a:hover { 
+ text-decoration:   none;
+ color:             #999;
+}
+.htmlButtonOn {
+ font-family:       Verdana, Arial, Trebuchet MS, Tahoma, Verdana, Sans-serif;
+ font-size:         11px;
+ font-weight:       bold;
+ background:        #f6f6f6;
+ padding:           1px 2px 2px 2px;
+ white-space:       nowrap;
+}
+.htmlButtonOn a:link { 
+ color:             #990000;
+ text-decoration:   none;
+ white-space:       nowrap;
+}  
+.htmlButtonOn  a:visited { 
+ text-decoration:   none;
+} 
+.htmlButtonOn a:active { 
+ text-decoration:   none;
+ color:             #999;
+}
+.htmlButtonOn a:hover { 
+ color:             #999;
+ text-decoration:   none;
+}
+
+/*
+    SPELL CHECK CSS
+--------------------------------------------------------------- */
+
+.iframe {border:1px solid #6666CC;}
+
+.wordSuggestion
+{
+	background-color: #f4f4f4; 
+	border: 1px solid #ccc; 
+	padding: 4px; 
+}
+
+.wordSuggestion a, .wordSuggestion a:active
+{
+	cursor: pointer;
+}
+
+.spellchecked_word
+{
+	cursor: pointer;
+	background-color: #fff;
+	border-bottom: 1px dashed #ff0000;
+}
+
+.spellchecked_word_selected
+{
+	cursor: pointer;
+	background-color: #ADFF98;
+}
+
+.clearfix:after {content:".";display:block;height:0;clear:both;visibility:hidden}
+.clearfix {display:inline-table}
+* html .clearfix {height:1%;margin:0 15px 20px 0;display:block}
+.clearfix {display:block}
+/*
+    FAST REPLY
+--------------------------------------------------------------- */
+#fastreply .tableCellTwo, .pad18 .tableCellOne, .pad18 .tableRowHeadingBold, .pad18 .tableCellTwo { padding-right: 18px; padding-left: 18px; }
+#email_console_form { padding-top: 30px; }
+.class { color: #f23a04; }
+table td { font-size: 11px; }

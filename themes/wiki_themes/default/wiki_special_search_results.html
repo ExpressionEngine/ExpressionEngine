@@ -1,0 +1,25 @@
+
+<div class="marginpad">
+{if no_results}
+<strong>No Results for Your Search:</strong>  {keywords}
+{/if}
+
+{if results}
+<strong>Keywords:</strong> {keywords}
+{/if}
+</div>
+
+<div class="marginpad">
+{wiki:search_results limit="20"}
+
+<a href="{path:view_article}">{title}</a> - Last Updated: {revision_date format="%j %M %Y"} by <a href="{path:author_profile}">{author}</a> {if notes}({notes}){/if}<br />
+({excerpt})<br /><br />
+
+{paginate}
+<br /><div>Page {current_page} of {total_pages} pages {pagination_links}</div>
+{/paginate}
+
+{/wiki:search_results}
+</div>
+
+	

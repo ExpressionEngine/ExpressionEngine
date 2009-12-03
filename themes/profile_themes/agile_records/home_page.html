@@ -1,0 +1,76 @@
+<!-- Template: Member Profile Home Page -->
+<div id="content_pri" class="member_cp">
+	<h3>{lang:your_stats}</h3>
+<table>
+	<tr>
+		<th>{lang:email}</th>
+		<td><a href='mailto:{email}'>{email}</a></td>
+	</tr>
+	<tr>
+		<th>{lang:join_date}</th>
+		<td>{join_date}</td>
+	</tr>
+	<tr>
+		<th>{lang:last_visit}</th>
+		<td>{last_visit_date}</td>
+
+{if forum_installed}
+
+	</tr>
+	<tr>
+
+		<th>{lang:most_recent_forum_post}</th>
+		<td>{recent_forum_post_date}</td>
+
+{/if}
+
+	</tr>
+	<tr>
+
+		<th>{lang:most_recent_entry}</th>
+		<td>{recent_entry_date}</td>
+
+	</tr>
+	<tr>
+
+		<th>{lang:most_recent_comment}</th>
+		<td>{recent_comment_date}</td>
+
+{if forum_installed}
+
+	</tr>
+	<tr>
+
+		<th>{lang:total_forum_topics}</th>
+		<td>{total_topics}</td>
+
+	</tr>
+	<tr>
+
+		<th>{lang:total_forum_replies}</th>
+		<td>{total_replies}</td>
+
+	</tr>
+	<tr>
+
+		<th>{lang:total_forum_posts}</th>
+		<td>{total_posts}</td>
+
+{/if}
+
+	</tr>
+	<tr>
+
+		<th>{lang:total_entries}</th>
+		<td>{total_entries}</td>
+
+	</tr>
+	<tr>
+
+		<th>{lang:total_comments}</th>
+		<td>{total_comments}</td>
+
+</tr>
+</table>
+</div> <!-- ending #content_pri -->
+<!-- End Template: Member Profile Home Page -->

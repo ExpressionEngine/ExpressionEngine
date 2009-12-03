@@ -1,0 +1,47 @@
+
+{form_declaration}
+
+<table border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+<tr>
+<td class='profileHeadingBG' colspan='2'><div class="tableHeading">{lang:edit_photo}</div></td>
+
+</tr><tr>
+
+<td class='tableCellTwo' style="width:35%;"><div class="itempadbig"><div class='defaultBold'>{lang:current_photo}</div></div></td>
+<td class='tableCellTwo' style="width:65%;">
+
+{if photo}
+<div class="itempad"><img src="{path:member_photo}" border="0" width="{photo_width}" height="{photo_height}" title="{lang:my_photo}" alt="{lang:my_photo}" /></div>
+{/if}
+{if no_photo}
+<div class="itempad"><img src="{path:image_url}icon_profile.gif" width="50" height="50" border="0" title="{name}" alt="{lang:no_photo}" /></div>
+<div class="lighttext">{lang:no_photo_exists}</div>
+{/if}
+
+</td>
+
+</tr><tr>
+<td class="tableCellTwo" style="width:35%;" valign="top">
+<div class="itempadbig"><b>{lang:upload_photo}</b></div>
+</td>
+<td class="tableCellTwo" style="width:65%;" valign="bottom">
+<div class="itempad"><input type="file" name="userfile" size="20" class="input" /></div>
+</td>
+
+</tr><tr>
+<td class="tableCellTwo" style="width:35%;" valign="top">
+<div class="lighttext">{lang:max_image_size}</div>
+</td>
+<td class="tableCellTwo" style="width:65%;" valign="bottom">
+<div class="lighttext">{lang:allowed_image_types}</div>
+</td>	
+
+</tr><tr>
+
+<td class='tableCellOne' colspan='2'>
+<div class='marginpad'><input type='submit' class='submit' value='{lang:upload_photo}' name="submit" /> &nbsp;&nbsp;<input type='submit' class='submit' value='{lang:remove_photo}' name="remove" /></div>
+</td>
+</tr>
+</table>
+
+</form>

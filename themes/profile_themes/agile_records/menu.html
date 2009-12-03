@@ -1,0 +1,38 @@
+<!-- Template: Member Profile Menu -->
+<div id="navigation_sec" class="member_cp">
+	<h4>{lang:personal_settings}</h4>
+
+	<ul>
+		<li><a href='{path:profile}'>{lang:edit_profile}</a></li>
+		<li><a href='{path:signature}'>{lang:edit_signature}</a></li>
+		<li><a href='{path:avatar}'>{lang:edit_avatar}</a></li>
+		<li><a href='{path:photo}'>{lang:edit_photo}</a></li>
+		<li><a href='{path:email}'>{lang:email_settings}</a></li>
+		<li><a href='{path:username}'>{lang:username_and_password}</a></li>
+		<li><a href='{path:edit_preferences}'>{lang:edit_preferences}</a></li>
+
+	{if allow_localization}
+		<li><a href='{path:localization}'>{lang:localization}</a></li>
+	{/if}
+
+	{if can_delete}
+		<li><a href="{path:delete}">{lang:mbr_delete}</a></li>
+	{/if}
+	</ul>
+
+	<h4>{lang:utilities}</h4>
+
+	<ul>
+		<li><a href='{path:subscriptions}' >{lang:edit_subscriptions}</a></li>
+		<li><a href='{path:ignore_list}' >{lang:ignore_list}</a></li> 
+	</ul>
+
+{include:messages_menu}
+
+<h4>{lang:extras}</h4>
+
+	<ul>
+		<li><a href='{path:notepad}' >{lang:notepad}</a></li>
+	</ul>
+</div> <!-- ending ul#navigation_sec -->
+<!-- End Template: Member Profile Menu -->

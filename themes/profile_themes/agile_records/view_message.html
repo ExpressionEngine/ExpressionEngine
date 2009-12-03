@@ -1,0 +1,77 @@
+<!-- Template: Private Message - View Message -->		
+{form:form_declaration:view_message}
+
+{include:hidden_js}
+{include:folder_pulldown:move}
+{include:folder_pulldown:copy}
+
+
+<!--- Action Buttons for Message Top -->
+
+<table class="member_table">
+<tr>
+<td>
+
+{form:reply_button} {form:reply_all_button} {form:forward_button} {form:move_button} {form:copy_button} {form:delete_button}
+
+</td>
+</tr>
+</table>
+
+<!--- Contents of Message Message -->
+
+
+<table class="member_table">
+<br />
+<h3>{lang:private_message}</h3>
+<tr>
+<th>{lang:message_sender}:</th>
+<td>{include:sender}</td>
+</tr>
+
+<tr>
+<th>{lang:message_subject}:</th>
+<td>{include:subject}</td>
+</tr>
+
+<tr>
+<th>{lang:message_date}:</th>
+<td>{include:date}</td>
+</tr>
+
+<tr>
+<th>{lang:message_recipients}:</th>
+<td>{include:recipients}</td>
+</tr>
+
+
+{if show_cc}
+
+<tr>
+<th>{lang:cc}:</th>
+<td>{include:cc}</td>
+</tr>
+
+{/if}
+
+
+
+{if attachments_exist}
+
+<tr>
+<th>{lang:attachments}:</th>
+<td>{include:attachment_links}</td>
+</tr>
+
+{/if}
+
+
+<tr>
+<td>{include:parsed_message}</div></td>
+</tr>
+
+</table>
+
+
+</form>
+<!-- End Template: Private Message - View Message -->

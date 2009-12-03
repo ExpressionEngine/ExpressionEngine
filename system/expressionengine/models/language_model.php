@@ -1,0 +1,65 @@
+<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2009, EllisLab, Inc.
+ * @license		http://expressionengine.com/docs/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Language Model
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Model
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
+class Language_model extends CI_Model {
+
+	function Language_model()
+	{
+		parent::CI_Model();
+		$this->EE =& get_instance();
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Language Pack Names
+	 *
+	 * @access	public
+	 * @return	array
+	 */
+	function language_pack_names()
+	{
+		$source_dir = APPPATH.'language/';
+
+		$dirs = array();
+
+		if ($fp = @opendir($source_dir))
+		{
+			while (FALSE !== ($file = readdir($fp)))
+			{
+				if (is_dir($source_dir.$file) && substr($file, 0, 1) != ".")
+				{
+					$dirs[$file] = ucfirst($file);
+				}
+			}
+			closedir($fp);
+		}
+
+		 return $dirs;
+	}
+
+}
+
+/* End of file language_model.php */
+/* Location: ./system/expressionengine/models/language_model.php */

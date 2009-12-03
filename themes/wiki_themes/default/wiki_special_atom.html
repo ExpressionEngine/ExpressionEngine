@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="{charset}"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="{language}">
+
+    <title type="text">{exp:xml_encode}{wiki_name}{/exp:xml_encode}</title>
+    <subtitle type="text">{exp:xml_encode}{wiki_name}{/exp:xml_encode}</subtitle>
+    <link rel="alternate" type="text/html" href="{path:wiki_home}" />
+    <link rel="self" type="application/atom+xml" href="{path:wiki_base_url}{special_namespace}:Recentchanges_Atom" />
+    <updated>{gmt_last_updated format='%Y-%m-%dT%H:%i:%sZ'}</updated>
+    <rights>Copyright (c) 2009, {webmaster_email}</rights>
+    <generator uri="http://expressionengine.com/" version="{version}">ExpressionEngine</generator>
+    <id>tag:{trimmed_url},{gmt_last_updated format="%Y:%m:%d"}:wiki</id>
+
+{wiki:recent_changes}
+    <entry>
+      <title>{exp:xml_encode}{title}{/exp:xml_encode}</title>
+      <link rel="alternate" type="text/html" href="{path:view_article}" />
+      <id>tag:{trimmed_url},{gmt_revision_date format="%Y"}:wiki:{exp:xml_encode}{title}{/exp:xml_encode}/{page_id}.{revision_id}</id>
+      <published>{gmt_revision_date format="%Y-%m-%dT%H:%i:%sZ"}</published>
+      <updated>{gmt_revision_date format='%Y-%m-%dT%H:%i:%sZ'}</updated>
+      <author>
+            <name>{author}</name>
+            <email></email>
+      </author>
+      <content type="html"><![CDATA[
+        {article}
+      ]]></content>
+    </entry>
+{/wiki:recent_changes}
+
+</feed>
+
+
+	

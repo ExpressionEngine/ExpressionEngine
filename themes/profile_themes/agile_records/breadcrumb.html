@@ -1,0 +1,33 @@
+<!--  Template: Breadcrumb -->
+<table class="member_table">
+<tr>
+<td>
+{breadcrumb_links}
+</td>
+
+{if logged_in}
+<td>
+
+{lang:logged_in_as}&nbsp; <a href="{profile_path=member/index}">{name}</a>
+
+&nbsp;|&nbsp;
+
+<a href="{path=member/profile}">{lang:your_control_panel}</a>
+
+&nbsp;|&nbsp;
+
+<a href="{path=member/memberlist}">{lang:memberlist}</a>
+
+&nbsp;|&nbsp;
+
+<a href="{path="LOGOUT"}">{lang:logout}</a>
+
+&nbsp;&nbsp;
+
+</td>
+{/if}
+
+</tr>
+</table>
+
+<!-- End Template: Breadcrumb -->

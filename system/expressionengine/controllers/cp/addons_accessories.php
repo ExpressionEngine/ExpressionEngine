@@ -1,0 +1,577 @@
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2009, EllisLab, Inc.
+ * @license		http://expressionengine.com/docs/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine CP Home Page Class
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Control Panel
+ * @category	Control Panel
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
+class Addons_accessories extends Controller {
+	
+	var $human_names = array();
+	
+	// Note: the ignored_controllers array is treated as static by the installer
+	
+	var $parent_controllers = array('addons', 'admin', 'content', 'tools');
+
+	function Addons_accessories()
+	{
+		// Call the Controller constructor.  
+		// Without this, the world as we know it will end!
+		parent::Controller();
+
+		// Does the "core" class exist?  Normally it's initialized
+		// automatically via the autoload.php file.  If it doesn't
+		// exist it means there's a problem.
+		if ( ! isset($this->core) OR ! is_object($this->core))
+		{
+			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
+		}
+		
+		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}		
+		
+		// make sure the files have the right extension for matching
+		for ($i = 0, $tot = count($this->accessories->ignored_controllers); $i < $tot; $i++)
+		{
+			$this->accessories->ignored_controllers[$i] = str_replace('.php', EXT, $this->accessories->ignored_controllers[$i]);
+		}
+		
+		$this->load->vars(array('cp_page_id'=>'addons'));
+		
+		$this->human_names = $this->_fetch_human_names();
+		
+		$this->load->library('addons');
+		$files = $this->addons->get_files();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Index function
+	 * 
+	 * Every controller must have an index function, which gets called
+	 * automatically by CodeIgniter when the URI does not contain a call to
+	 * a specific method call
+	 *
+	 * @access	public
+	 * @return	mixed
+	 */	
+	function index()
+	{
+		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}		
+		
+		$this->load->library('table');
+		$this->load->helper('html');
+
+		$this->cp->set_variable('cp_page_title', $this->lang->line('accessories'));
+
+		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', $this->lang->line('addons'));
+
+		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
+
+		$this->jquery->tablesorter('.mainTable', '{
+			widgets: ["zebra"]
+		}');
+	
+		$this->load->library('addons');
+		
+		$accessories = $this->addons->get_files('accessories');
+		$installed = $this->addons->get_installed('accessories');
+	
+		$data = $this->human_names;
+		$num_all_member_groups = count($data['member_groups']);
+		$num_all_controllers = count($data['controllers']);
+		
+		foreach ($accessories as $name => $info)
+		{
+			// Grab the version and description
+			if ( ! class_exists($accessories[$name]['class']))
+			{
+				include $accessories[$name]['path'].$accessories[$name]['file'];
+			}
+
+			$ACC = new $accessories[$name]['class']();
+
+			$accessories[$name]['name'] = $ACC->name;
+			$accessories[$name]['version'] = $ACC->version;
+			$accessories[$name]['description'] = $ACC->description;
+
+			if (isset($installed[$name]))
+			{				
+				$accessories[$name]['acc_pref_url'] = BASE.AMP.'C=addons_accessories'.AMP.'M=edit_prefs'.AMP.'accessory='.$name;
+				$accessories[$name]['acc_install'] = array(
+														'href' => BASE.AMP.'C=addons_accessories'.AMP.'M=uninstall'.AMP.'accessory='.$name,
+														'title' => $this->lang->line('uninstall')
+														);
+
+				// Work out the human names (if needed)
+				$installed[$name]['member_groups'] = explode('|', $installed[$name]['member_groups']);
+				$num_member_groups = count($installed[$name]['member_groups']);
+
+				if ($num_member_groups == 0)
+				{
+					// no member groups selected
+					$accessories[$name]['acc_member_groups'] = $this->lang->line('none');
+				}
+				elseif ($num_member_groups == $num_all_member_groups)
+				{
+					// every member group selected, shorten the list to simply say "all"
+					$accessories[$name]['acc_member_groups'] = $this->lang->line('all');
+				}
+				elseif ($num_member_groups < 4)
+				{
+					// there's less then 4, show them all
+					$accessories[$name]['acc_member_groups'] = array_map(array($this, '_get_human_name'), $installed[$name]['member_groups']);
+				}
+				else
+				{
+					// over 3 listed, and this starts to get a bit out of hand, so we'll show the first 3, and say how
+					// many others there are, and offer the option of looking at them
+					$member_groups = array_map(array($this, '_get_human_name'), $installed[$class]['member_groups']);
+					$member_groups = array_slice($member_groups, 0, 3);
+					$member_groups[] = '<a href="'.$accessories[$key]->acc_pref_url.'">'.str_replace("%x", ($num_member_groups-3), $this->lang->line('and_more')).'</a>';
+
+					$accessories[$key]->acc_member_groups = $member_groups;
+				}
+
+				// work out controller names (if needed)
+				$installed[$name]['controllers'] = explode('|', $installed[$name]['controllers']);
+				$num_controllers = count($installed[$name]['controllers']);
+
+				if ($num_controllers == 0)
+				{
+					// no controllers
+					$accessories[$name]['acc_controller'] = $this->lang->line('none');
+				}
+				elseif ($num_controllers == $num_all_controllers)
+				{
+					// all controllers selected, let's just say "all"
+					$accessories[$name]['acc_controller'] = $this->lang->line('all');
+				}
+				elseif ($num_controllers < 4)
+				{
+					// less then 4, list them all
+					$accessories[$name]['acc_controller'] = array_map(array($this, '_get_human_name'), $installed[$name]['controllers']);
+				}
+				else
+				{
+					// over 3 listed, and this starts to get a bit out of hand, so we'll show the first 3, and say how
+					// many others there are, and offer the option of looking at them
+					$controllers = array_map(array($this, '_get_human_name'), $installed[$name]['controllers']);
+					$controllers = array_slice($controllers, 0, 3);
+					$controllers[] = '<a href="'.$accessories[$name]['acc_pref_url'].'">'.str_replace("%x", ($num_controllers-3), $this->lang->line('and_more')).'</a>';
+
+					$accessories[$name]['acc_controller'] = $controllers;
+				}
+			}
+			else
+			{
+				$accessories[$name]['acc_pref_url'] = '';
+				$accessories[$name]['acc_install'] = array(
+														'href' => BASE.AMP.'C=addons_accessories'.AMP.'M=install'.AMP.'accessory='.$name,
+														'title' => $this->lang->line('install')
+														);
+				$accessories[$name]['acc_member_groups'] = '--';
+				$accessories[$name]['acc_controller'] = '--';
+			}
+		}
+
+		$this->javascript->compile();
+
+		$this->load->view('addons/accessories', array('accessories' => $accessories));
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get a human name
+	 *
+	 * Callback for array_map
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	string
+	 */
+	function _get_human_name($key)
+	{
+		if (is_numeric($key))
+		{
+			return isset($this->human_names['member_groups'][$key]) ? $this->human_names['member_groups'][$key] : $key;
+		}
+		return isset($this->human_names['controllers'][$key]) ? $this->human_names['controllers'][$key] : $key;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Process Request
+	 *
+	 * Process a request for an Accessory
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	void
+	 */
+	function process_request()
+	{
+		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		// only methods beginning with 'process_' are allowed to be called via this method
+		if (($name = $this->input->get_post('accessory')) === FALSE
+		OR ($method = $this->input->get_post('method')) === FALSE
+		OR strncmp($method, 'process_', 8) != 0)
+		{
+			return $this->index();
+		}
+		
+		$this->load->library('accessories');
+		$class = $this->accessories->_get_accessory_class($name);
+		
+		$ACC = new $class();
+		
+		// execute the requested method
+		if ( ! method_exists($ACC, $method))
+		{
+			return $this->index();
+		}
+		else
+		{
+			return $ACC->$method();
+		}
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Install
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function install()
+	{
+		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		$this->load->library('addons/addons_installer');
+		
+		$accessory = $this->input->get_post('accessory');
+
+		if ($this->addons_installer->install($accessory, 'accessory'))
+		{
+			$this->session->set_flashdata('message_success', $this->lang->line('installed'));
+			$this->functions->redirect(BASE.AMP.'C=addons_accessories');
+		}
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Uninstall Accessory
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function uninstall()
+	{
+		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+		
+		$this->load->library('addons/addons_installer');
+		
+		$accessory = $this->input->get_post('accessory');
+		
+		if ($this->addons_installer->uninstall($accessory, 'accessory'))
+		{
+			$this->session->set_flashdata('message_success', $this->lang->line('uninstalled'));
+			$this->functions->redirect(BASE.AMP.'C=addons_accessories');
+		}
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Edit visibility preferences
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function edit_prefs()
+	{
+		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		if ( ! $name = $this->input->get_post('accessory'))
+		{
+			$this->functions->redirect(BASE.AMP.'C=addons_accessories');
+		}
+
+		$class = ucfirst($name).'_acc';
+
+		$this->db->where('class', $class);
+
+		if ($this->db->count_all_results('accessories') == 0)
+		{
+			$this->functions->redirect(BASE.AMP.'C=addons_accessories');
+		}
+
+		if ($accessory = $this->accessories->fetch_path_by_name($name))
+		{
+			@include_once($accessory);
+			$acc = new $class();
+		}
+
+		$this->cp->set_variable('cp_page_title', lang('edit_accessory_preferences').': '.$acc->name);
+
+		// a bit of a breadcrumb override is needed
+		$this->cp->set_variable('cp_breadcrumbs', array(
+			BASE.AMP.'C=addons' => $this->lang->line('addons'),
+			BASE.AMP.'C=addons_accessories'=> $this->lang->line('addons_accessories')
+		));
+
+		$this->load->library('table');
+		$this->load->model('member_model');
+		$this->load->helper('form');
+
+		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=tablesorter', TRUE);
+
+		$this->javascript->output('
+
+			// Za Toggles, zey do nuffink!
+
+			$(".toggle_controllers").toggle(
+				function(){
+					$("input[class=toggle_controller]").each(function() {
+						this.checked = true;
+					});
+				}, function (){
+					$("input[class=toggle_controller]").each(function() {
+						this.checked = false;
+					});
+				}
+			);
+
+			$(".toggle_groups").toggle(
+				function(){
+					$("input[class=toggle_group]").each(function() {
+						this.checked = true;
+					});
+				}, function (){
+					$("input[class=toggle_group]").each(function() {
+						this.checked = false;
+					});
+				}
+			);
+
+			// hide sub controllers
+			$(".sub_addons, .sub_admin_, .sub_conten, .sub_tools_").hide();
+
+			// add plus sign to parent controllers
+			$(".addons td:first, .admin td:first, .content td:first, .tools td:first").prepend("<img class=\"acc_toggle\" width=\"11\" height=\"10\" src=\"'.$this->cp->cp_theme_url.'images/publish_plus.png\" alt=\"\" style=\"float:left;position:absolute;\" />");
+			$(".sub_addons td.controller_label, .sub_admin_ td.controller_label, .sub_conten td.controller_label, .sub_tools_ td.controller_label").css("padding-left", "36px");
+
+			$(".acc_toggle").css("cursor", "pointer"); // just styling it like a link
+
+			// toggle visible and invisible
+			$(".acc_toggle").toggle(
+				function(){
+					var class_name = prep_class($(this));
+					$(this).attr("src", "'.$this->cp->cp_theme_url.'images/publish_minus.gif");
+					$(class_name).each(function() {
+						$(this).show();
+					});
+					table_stripe();
+				}, function (){
+					var class_name = prep_class($(this));
+					$(this).attr("src", "'.$this->cp->cp_theme_url.'images/publish_plus.png");
+					$(class_name).each(function() {
+						$(this).hide();
+					});
+					table_stripe();
+				}
+			);
+
+			// toggle checkboxes for groups
+			// toggle visible and invisible
+			$(".addons input, .admin input, .content input, .tools input").click(function(){
+				var checked = $(this).attr("checked");
+				var class_name = prep_class($(this)) + " input";
+				$(class_name).each(function() {
+						$(this).attr("checked", checked);
+				});
+			});
+
+			function prep_class(obj)
+			{
+				var class_name = $(obj).parent().parent().attr("class").replace(/even/, "").replace(/odd/, "").replace(/ /, "").substring(0,6);
+				if (class_name.length < 6)
+				{
+					class_name += "_";
+				}
+				return ".sub_"+class_name;
+			}
+
+			function table_stripe()
+			{
+				$("table tbody tr:visible:even").addClass("even");
+				$("table tbody tr:visible:odd").addClass("odd");
+			}
+
+			table_stripe();
+		');
+
+		$this->javascript->compile();
+
+		$vars['member_groups'] = $this->human_names['member_groups'];
+		$controllers = $this->human_names['controllers'];
+		$parent_controllers = $this->parent_controllers;
+
+		$vars['controllers'] = array();
+
+		foreach ($controllers as $file => $c_name)
+		{
+			$vars['controllers'][$file]['file'] = $file;
+			$vars['controllers'][$file]['name'] = $c_name;
+			$vars['controllers'][$file]['class'] = (in_array($file, $this->parent_controllers)) ? $file : 'sub_controller sub_'.substr($file, 0, 6);
+		}
+
+		// Info for this accessory
+		$vars['name'] = $name;
+		
+		$installed = $this->addons->get_installed('accessories');
+
+		$vars['acc_controllers'] = explode('|', $installed[$name]['controllers']);
+		$vars['acc_member_groups'] = explode('|', $installed[$name]['member_groups']);
+
+		$this->load->view('addons/accessory_preferences', $vars);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Update Preferences
+	 *
+	 * @access	public
+	 * @param	type	description
+	 * @return	description
+	 */
+	function update_prefs()
+	{
+		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+		
+		if ( ! $name = $this->input->get_post('accessory'))
+		{
+			$this->functions->redirect(BASE.AMP.'C=addons_accessories');
+		}
+
+		$class = ucfirst(strtolower(str_replace(' ', '_', $name))).'_acc';
+		
+		$this->db->where('class', $class);
+
+		if ($this->db->count_all_results('accessories') == 0)
+		{
+			$this->functions->redirect(BASE.AMP.'C=addons_accessories');
+		}
+
+		$member_groups = $this->input->post('groups');
+		$controllers = $this->input->post('controllers');
+
+		$this->accessories->update_placement($class, $member_groups, $controllers);
+
+		$this->session->set_flashdata('message_success', $this->lang->line('preferences_updated'));
+		$this->functions->redirect(BASE.AMP.'C=addons_accessories');
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get arrays for controllers or groups, create human readable
+	 * controller names on the fly.
+	 *
+	 * @access	private
+	 * @return	mixed	final array
+	 */
+	function _fetch_human_names()
+	{
+		$this->load->helper('directory');
+		
+		$data['controllers'] = array();
+		$data['member_groups'] = array();
+		
+		// Controllers
+
+		foreach(directory_map(APPPATH.'controllers/cp') as $file)
+		{
+			if (in_array($file, $this->accessories->ignored_controllers))
+			{
+				continue;
+			}
+
+			$file = str_replace(EXT, '', $file);
+			$name = str_replace('_', ' - ', $file);
+			$data['controllers'][$file] = ucwords($name);
+		}
+		
+		ksort($data['controllers']);
+
+		// Member Groups
+
+		// @todo: model
+
+		$this->db->select("group_id, group_title");
+		$this->db->from("member_groups");
+		$this->db->where("site_id", $this->config->item('site_id'));
+		$this->db->where_not_in('group_id', $this->accessories->ignored_member_groups);
+		$this->db->order_by('group_id');
+
+		$member_groups = $this->db->get();
+		$member_groups = $member_groups->result();
+
+		foreach ($member_groups as $group)
+		{
+			$data['member_groups'][$group->group_id] = $group->group_title;
+		}
+	
+		return $data;
+	}
+
+	// --------------------------------------------------------------------
+}
+// END CLASS
+
+/* End of file accessories.php */
+/* Location: ./system/expressionengine/controllers/cp/accessories.php */
