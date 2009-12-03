@@ -1355,6 +1355,10 @@ class Content_publish extends Controller {
 				$field_data = $this->bm_qstr_decode( $this->input->get('tb_url')."\n\n".$field_data );
 				$field_fmt	= $row['field_fmt'];
 			}
+			else // New entry- use the default setting
+			{
+				$field_fmt	= $row['field_fmt'];
+			}
 
 			// Settings that need to be prepped			
 			$settings = array(
@@ -1394,7 +1398,6 @@ class Content_publish extends Controller {
 				$get_format[] = $row['field_id'];
 			}
 		}
-
 
 		// Field formatting
 
