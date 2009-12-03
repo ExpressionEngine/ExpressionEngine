@@ -2189,13 +2189,13 @@ class Content_publish extends Controller {
 				{
 					if ($this->session->userdata['group_id'] == 1 OR in_array($row['channel_id'], $assigned_channels))
 					{
-						if (isset($_POST['new_channel']) && is_numeric($_POST['new_channel']))
+						if (isset($_POST['new_channel']) && is_numeric($_POST['new_channel']) && $_POST['new_channel'] == $row['channel_id'])
 						{
-							$vars['menu_channel_selected'] = ($_POST['new_channel'] == $row['channel_id']) ? $row['channel_id'] : '';
+							$vars['menu_channel_selected'] = $row['channel_id'];
 						}
-						else
+						elseif ($channel_id == $row['channel_id'])
 						{
-							$vars['menu_channel_selected'] = ($channel_id == $row['channel_id']) ? $row['channel_id'] : '';
+							$vars['menu_channel_selected'] =  $row['channel_id'];
 						}
 
 						$vars['menu_channel_options'][$row['channel_id']] = form_prep($row['channel_title']);
