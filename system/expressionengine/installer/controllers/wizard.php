@@ -2124,8 +2124,8 @@ PAPAYA;
 			{
 				include EE_APPPATH.'accessories/acc.'.strtolower($acc).EXT;
 				$_static_vars = get_class_vars($acc.'_acc');
-				// this seems silly since this is a first party accessory, but the Zend Trial version
-				// seems to have a problem with get_class_vars() here, so, safety net
+				// this seems silly since this is a first party accessory, but the Zend Optimizer
+				// apparently has problem with get_class_vars() on PHP 5.2.1x, so, safety net
 				$accessories[$acc] = (isset($_static_vars['version'])) ? $_static_vars['version'] : $version;
 			}
 		}
@@ -2147,7 +2147,10 @@ PAPAYA;
 		// $ignored_controllers = EE_Accessories::$ignored_controllers;
 		
 		$_static_vars = get_class_vars('EE_Accessories');
-		$ignored_controllers = $_static_vars['ignored_controllers'];
+		// again, silly, but the Zend Optimizer apparently has problem with get_class_vars() on PHP 5.2.1x, so, safety net
+		$ignored_controllers = (isset ($_static_vars['ignored_controllers'])) ?
+								$_static_vars['ignored_controllers'] :
+								array('css.php', 'javascript.php', 'login.php', 'search.php', 'index.html');
 
 		$this->load->helper('directory');
 
