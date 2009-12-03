@@ -308,6 +308,24 @@ ul.bulleted {
 	margin-left:		15px;
 }
 
+
+.button {
+	float:				left;
+	margin-right:		6px;
+}
+
+.button a:link, .button a:visited {
+	display:			block;
+	color:				#5f6c74;
+	padding:			5px 9px 5px 9px;
+}
+
+.button a:hover {
+	color:				#005EB0;
+	text-decoration: underline;
+}
+
+
 p.custom_field_add a.submit_alt {
 	background:			#FFF url('<?=$cp_theme_url?>images/submit_alt_button_bg.jpg') bottom left repeat-x!important;
 	padding:			6px 8px 5px 15px;
