@@ -71,14 +71,14 @@ if ($EE_view_disable !== TRUE)
 				  'value'		=> 'library',
 				  'checked'		=> FALSE)).' '.
 				lang('template_from_library').'</label></li>
-				<li><label>'.
+				<li><label style="display:inline">'.
 				form_radio(array(
 				  'name'		=> 'template_data',
 				  'value'		=> 'existing_template',
 				  'checked'		=> FALSE)).' ' .
-				lang('an_existing_template').' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.
+				lang('an_existing_template').'</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.
 				form_dropdown('existing_template', $templates).'
-				</label></li>
+				</li>
 			</ul>';
 
 		$this->table->add_row(array(
