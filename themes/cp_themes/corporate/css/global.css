@@ -1004,8 +1004,8 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 	text-shadow:		0px 1px 1px #024b86;
 }
 .cp_button {
-	padding:			25px;
-
+	float:left;
+	margin:15px 14px 14px;
 }
 .buttonRightHeader {
 	float:				right;
