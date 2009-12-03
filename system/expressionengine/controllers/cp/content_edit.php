@@ -461,6 +461,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	oTable = $(".mainTable").dataTable( {	
 			"sPaginationType": "full_numbers",
 			"bLengthChange": false,
+			"aaSorting": [[ 0, "desc" ]],
 			"bFilter": false,
 			"sWrapper": false,
 			"sInfo": false,
