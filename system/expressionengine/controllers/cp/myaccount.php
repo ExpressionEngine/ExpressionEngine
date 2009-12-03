@@ -1052,7 +1052,9 @@ class MyAccount extends Controller {
 
 			if ($button_count == 0)
 			{
-				foreach ($this->admin_model->get_html_buttons()->result_array() as $data)
+				$buttons = $this->admin_model->get_html_buttons();
+				
+				foreach ($buttons->result_array() as $data)
 				{
 					unset($data['id']); // unsetting from default id for insertion
 					$data['member_id'] = $this->id; // override member id from default to this user for insertion
