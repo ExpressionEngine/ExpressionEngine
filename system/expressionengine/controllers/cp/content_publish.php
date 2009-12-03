@@ -1272,7 +1272,7 @@ class Content_publish extends Controller {
 				'field_id'				=> 'pages_template_id',
 				'field_label'			=> $this->lang->line('template'),
 				'field_required' 		=> 'n',
-				'field_data'			=> '',
+				'field_data'			=> $vars['pages_dropdown_selected'],
 				'field_list_items'		=> $vars['pages_dropdown'],
 				'options'				=> $vars['pages_dropdown'],		// @todo this one or field_list_items?
 				'selected'				=> $vars['pages_dropdown_selected'],

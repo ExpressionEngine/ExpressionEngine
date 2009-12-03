@@ -31,7 +31,6 @@ class Select_ft extends EE_Fieldtype {
 	function display_field($data)
 	{
 		$text_direction = ($this->settings['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr';
-
 		$selected = $data;
 
 		$field_options = array();
@@ -87,7 +86,7 @@ class Select_ft extends EE_Fieldtype {
 			}
 		}
 
-		return form_dropdown($this->field_name, $field_options, set_value($this->field_name, $this->settings['selected']), 'dir="'.$text_direction.'" id="'.$this->field_id.'"');
+		return form_dropdown($this->field_name, $field_options, $selected, 'dir="'.$text_direction.'" id="'.$this->field_id.'"');
 	}
 	
 	// --------------------------------------------------------------------
