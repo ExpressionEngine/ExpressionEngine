@@ -2112,20 +2112,21 @@ PAPAYA;
 	function _install_accessories()
 	{
 		// Make sure we have something to install
-		$accessories = array('Expressionengine_info');
+		$accessories = array('Expressionengine_info' => '1.0');
 		
-		foreach($accessories as $key => $acc)
+		foreach($accessories as $acc => $version)
 		{
 			if ( ! file_exists(EE_APPPATH.'accessories/acc.'.strtolower($acc).EXT))
 			{
-				unset($accessories[$key]);
+				unset($accessories[$acc]);
 			}
 			else
 			{
 				include EE_APPPATH.'accessories/acc.'.strtolower($acc).EXT;
 				$_static_vars = get_class_vars($acc.'_acc');
-				unset($accessories[$key]);
-				$accessories[$acc] = $_static_vars['version'];
+				// this seems silly since this is a first party accessory, but the Zend Trial version
+				// seems to have a problem with get_class_vars() here, so, safety net
+				$accessories[$acc] = (isset($_static_vars['version'])) ? $_static_vars['version'] : $version;
 			}
 		}
 
