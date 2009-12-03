@@ -734,7 +734,7 @@ class Login extends Controller {
 					$this->dsp->nl(2).
 					$this->lang->line('reset_link').
 					$this->dsp->nl(2).
-					$this->config->item('cp_url')."?C=login&M=reset_password&id=".$rand.
+					$this->config->item('cp_url')."?D=cp&C=login&M=reset_password&id=".$rand.
 					$this->dsp->nl(2).
 					$this->lang->line('password_will_be_reset').
 					$this->dsp->nl(2).
