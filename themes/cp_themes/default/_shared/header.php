@@ -6,7 +6,7 @@
 	<title><?=$cp_page_title?> | ExpressionEngine</title>
 
 	<link rel="stylesheet" href="<?=base_url()?>themes/jquery_ui/default/jquery-ui-1.7.2.custom.css" type="text/css" media="screen" />
-	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'theme='.$cp_theme?>" type="text/css" media="screen" title="Global Styles" charset="utf-8" />
+	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'theme=default'?>" type="text/css" media="screen" title="Global Styles" charset="utf-8" />
 	<!--[if lte IE 7]>
 	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'M=iefix'?>" type="text/css" media="screen" charset="utf-8" />
 	<![endif]-->
@@ -20,7 +20,7 @@
 	?>
 	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'?>"></script>
 	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=corner'?>"></script>
-	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=css'?>"></script>
+	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=css'.AMP.'theme=default'?>"></script>
 
 	<?php
 	if (isset($script_head))
