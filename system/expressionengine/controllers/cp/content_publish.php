@@ -3713,13 +3713,20 @@ class Content_publish extends Controller {
 			$(".delete_field").toggle(
 				function()
 				{
-					field_id = $(this).attr("id").substring(13);
-					$("#hold_field_"+field_id).slideUp();
+					var field_id = $(this).attr("id").substring(13),
+						field = $("#hold_field_"+field_id);
+					
+					// If the field is not in the active tab - slideUp has no effect
+					if (field.is(":hidden")) {
+						field.css("display", "none");
+					}
+					
+					field.slideUp();
 					$(this).children().attr("src", "'.$this->cp->cp_theme_url.'images/closed_eye.png");
 				},
 				function()
 				{
-					field_id = $(this).attr("id").substring(13);
+					var field_id = $(this).attr("id").substring(13);
 					$("#hold_field_"+field_id).slideDown();
 					$(this).children().attr("src", "'.$this->cp->cp_theme_url.'images/open_eye.png");
 				}
