@@ -218,9 +218,9 @@ if ($EE_view_disable !== TRUE)
 							<?php if ($f['field_type'] == 'text' && count($file_list) > 0):?>
 							<img class="file_manipulate js_show" src="<?=$cp_theme_url?>images/publish_format_picture.gif" alt="<?=lang('file')?>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							<?php endif;?>
-
+							<?php if ($smileys_enabled):?>
 							<a href="#" class="smiley_link" title="<?=lang('emoticons')?>"><?=lang('emoticons')?></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
+							<?php endif; ?>
 							<?php if ($f['field_show_fmt'] == 'y' && count($f['field_fmt_options']) > 0):?>
 							<div class="label">	
 								<?=lang('formatting', 'formatting')?>
@@ -241,8 +241,10 @@ if ($EE_view_disable !== TRUE)
 						// only text field types get these options
 						if(($f['field_type'] == 'text' OR $f['field_type'] == 'textarea') && $f['field_id'] != 'title' && $f['field_id'] != 'url_title' && $f['field_id'] != 'pages_uri' && $f['field_id'] != 'forum_topic_id' && ( ! isset($f['field_content_type']) OR $f['field_content_type'] == 'any'))
 						{
-
-							echo $smiley_table[$f['field_id']];
+							if ($smileys_enabled)
+							{
+								echo $smiley_table[$f['field_id']];								
+							}
 						}
 						?>
 					</div>

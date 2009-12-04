@@ -190,8 +190,9 @@ if ($EE_view_disable !== TRUE)
 								<a href="#" class="spellcheck_link" id="spelltrigger_field_id_<?=$f['field_id']?>" title="<?=lang('check_spelling')?>"><img src="<?=$cp_theme_url.'images/spell_check_icon.png'?>" style="margin-bottom: -8px;" alt="<?=lang('check_spelling')?>" /></a>
 								<?php endif;?>
 								<a href="#" class="glossary_link" title="<?=lang('glossary')?>"><img src="<?=$cp_theme_url.'images/spell_check_glossary.png'?>" style="margin-bottom: -8px;" alt="<?=lang('glossary')?>" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<?php if ($smileys_enabled):?>
 								<a href="#" class="smiley_link" title="<?=lang('emoticons')?>"><?=lang('emoticons')?></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
+								<?php endif; ?>
 								<?php if ($f['field_show_fmt'] == 'y' && count($f['field_fmt_options']) > 0):?>
 								<?=lang('formatting')?>
 								<?=form_dropdown('field_ft_'.$f['field_id'], $f['field_fmt_options'], $f['field_fmt'], 'id="formatting"')?> 
@@ -214,7 +215,10 @@ if ($EE_view_disable !== TRUE)
 									echo build_spellcheck('field_id_'.$f['field_id']);
 								}
 								echo $glossary_items;
-								echo $smiley_table[$f['field_id']];
+								if ($smileys_enabled)
+								{
+									echo $smiley_table[$f['field_id']];									
+								}
 							}
 							?>
 

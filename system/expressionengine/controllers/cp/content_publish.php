@@ -265,6 +265,7 @@ class Content_publish extends Controller {
 			'show_author_menu'		=> FALSE
 		);
 
+		$vars['smileys_enabled'] = (isset($this->installed_modules['emoticon']) ? TRUE : FALSE);
 
 		if ($this->config->item('site_pages') !== FALSE)
 		{
@@ -1156,22 +1157,25 @@ class Content_publish extends Controller {
 					$vars['forum_id']	= form_dropdown('forum_id', $forums, $this->input->get_post('forum_id'));
 
 					$vars['forum_topic_id_descp']	= $this->lang->line('forum_topic_id_exitsts');
-										
-					//	Smileys Panes
-					$this->table->set_template(array(	// @todo remove inline styles
-						'table_open'			=> '<table style="text-align: center; margin-top: 5px;" class="mainTable padTable smileyTable" border="0" cellspacing="0" cellpadding="0">'
-					));
-					
-					$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), 'forum_title');
-					$col_array = $this->table->make_columns($image_array, 8);
-					$vars['smiley_table']['forum_title'] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
-					$this->table->clear(); // clear out tables for the next smiley
+
+					//	Smileys Panes									
+					if ($vars['smileys_enabled'])
+					{
+						$this->table->set_template(array(	// @todo remove inline styles
+							'table_open'			=> '<table style="text-align: center; margin-top: 5px;" class="mainTable padTable smileyTable" border="0" cellspacing="0" cellpadding="0">'
+						));
+
+						$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), 'forum_title');
+						$col_array = $this->table->make_columns($image_array, 8);
+						$vars['smiley_table']['forum_title'] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
+						$this->table->clear(); // clear out tables for the next smiley
 
 					
-					$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), 'forum_body');
-					$col_array = $this->table->make_columns($image_array, 8);
-					$vars['smiley_table']['forum_body'] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
-					$this->table->clear(); // clear out tables for the next smiley
+						$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), 'forum_body');
+						$col_array = $this->table->make_columns($image_array, 8);
+						$vars['smiley_table']['forum_body'] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
+						$this->table->clear(); // clear out tables for the next smiley						
+					}				
 				}
 			}
 			else
@@ -1837,26 +1841,28 @@ class Content_publish extends Controller {
 	
 		$this->javascript->click("a.reveal_formatting_buttons", "$(this).parent().parent().children('.close_container').slideDown(); $(this).hide();");
 
-		$this->javascript->click("a.glossary_link", "$(this).parent().siblings('.glossary_content').slideToggle(\"fast\");$(this).parent().siblings('.smileyContent .spellcheck_content').hide();");
+		if ($vars['smileys_enabled'])
+		{
+			$this->javascript->click("a.glossary_link", "$(this).parent().siblings('.glossary_content').slideToggle(\"fast\");$(this).parent().siblings('.smileyContent .spellcheck_content').hide();");	
 
-		$this->javascript->output("
+			$this->javascript->output("
 
-			$('a.smiley_link').toggle(
-				function() {
-					$(this).parent().siblings('.smileyContent').slideDown('fast', function() { $(this).css('display', ''); });
-				}, function() {
-					$(this).parent().siblings('.smileyContent').slideUp('fast');
-				}
-			);
-			$(this).parent().siblings('.glossary_content, .spellcheck_content').hide();
+				$('a.smiley_link').toggle(
+					function() {
+						$(this).parent().siblings('.smileyContent').slideDown('fast', function() { $(this).css('display', ''); });
+					}, function() {
+						$(this).parent().siblings('.smileyContent').slideUp('fast');
+					}
+				);
+				$(this).parent().siblings('.glossary_content, .spellcheck_content').hide();
 
-			$('.glossary_content a').click(function(){
-				$.markItUp({ replaceWith:$(this).attr('title')} );
-				return false;
-			});
+				$('.glossary_content a').click(function(){
+					$.markItUp({ replaceWith:$(this).attr('title')} );
+					return false;
+				});
 
-		");
-
+			");
+		}
 
 		$this->javascript->output(array(
 										$this->javascript->hide("#write_mode_header .reveal_formatting_buttons"),
@@ -1959,7 +1965,11 @@ class Content_publish extends Controller {
 		if ($this->form_validation->run() == FALSE)
 		{
 			$this->cp->add_to_foot($inline_js.$this->insert_javascript());
-			$this->cp->add_to_foot(smiley_js());
+			
+			if ($vars['smileys_enabled'])
+			{
+				$this->cp->add_to_foot(smiley_js());				
+			}
 			
 			foreach($this->api_channel_fields->settings as $field => $field_info)
 			{
@@ -1968,10 +1978,13 @@ class Content_publish extends Controller {
 					$vars['field_output'][$field] = $opts;
 				}
 				
-				$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), $field_info['field_name']);
-				$col_array = $this->table->make_columns($image_array, 8);
-				$vars['smiley_table'][$field] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
-				$this->table->clear(); // clear out tables for the next smiley
+				if ($vars['smileys_enabled'])
+				{
+					$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), $field_info['field_name']);
+					$col_array = $this->table->make_columns($image_array, 8);
+					$vars['smiley_table'][$field] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
+					$this->table->clear(); // clear out tables for the next smiley					
+				}
 				
 				$this->api_channel_fields->setup_handler($field);
 				$field_value = set_value($field_info['field_name'], $field_info['field_data']);
@@ -1994,7 +2007,11 @@ class Content_publish extends Controller {
 		else
 		{
 			$this->cp->add_to_foot($inline_js.$this->insert_javascript());
-			$this->cp->add_to_foot(smiley_js());
+			
+			if ($vars['smileys_enabled'])
+			{
+				$this->cp->add_to_foot(smiley_js());				
+			}
 			
 			foreach($this->api_channel_fields->settings as $field => $field_info)
 			{
@@ -2003,10 +2020,13 @@ class Content_publish extends Controller {
 					$vars['field_output'][$field] = $opts;
 				}
 				
-				$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), $field_info['field_name']);
-				$col_array = $this->table->make_columns($image_array, 8);
-				$vars['smiley_table'][$field] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
-				$this->table->clear(); // clear out tables for the next smiley
+				if ($vars['smileys_enabled'])
+				{				
+					$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), $field_info['field_name']);
+					$col_array = $this->table->make_columns($image_array, 8);
+					$vars['smiley_table'][$field] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
+					$this->table->clear(); // clear out tables for the next smiley	
+				}
 				
 				$this->api_channel_fields->setup_handler($field);
 				$field_value = set_value($field_info['field_name'], $field_info['field_data']);
