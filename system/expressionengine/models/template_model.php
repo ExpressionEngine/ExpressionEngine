@@ -636,7 +636,7 @@ class Template_model extends CI_Model {
 	 * @param	string
 	 * @return	string
 	 */
-	function update_specialty_template($template_id, $template_data, $enable_template)
+	function update_specialty_template($template_id, $template_data, $enable_template = 'y')
 	{
 		$this->db->set('template_data', $template_data);
 		$this->db->set('enable_template', $enable_template);
