@@ -550,7 +550,7 @@ class Admin_content extends Controller {
 		{
 			$create_templates	= $this->input->get_post('create_templates');
 			$old_group_id		= $this->input->get_post('old_group_id');
-			$group_name			= strtolower($this->input->post('group_name'));
+			$group_name			= $this->input->post('group_name');
 
 			$template_theme	= $this->functions->sanitize_filename($this->input->get_post('template_theme'));
 
