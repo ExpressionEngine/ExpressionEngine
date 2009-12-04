@@ -18,6 +18,17 @@ if ($EE_view_disable !== TRUE)
 
 		<?php $this->load->view('_shared/message');?>
 
+		<?php
+			// Edit categories from the publish page works by ajax loading
+			// this view into itself. The "create new category" link is only
+			// available in the right_nav, but the loaded content is entirely
+			// contained inside of "pageContents", this the right_nav needs
+			// to be available in here if its called from the publish page.
+			if ($this->input->get('modal') == 'yes')
+			{
+				$this->load->view('_shared/right_nav');
+			}
+		?>
 
 		<?php
 			$this->table->set_template($cp_pad_table_template);
@@ -35,7 +46,6 @@ if ($EE_view_disable !== TRUE)
 				$down	= '<img src="'.PATH_CP_GBL_IMG.'arrow_down.gif" border="0"  width="16" height="16" alt="" title="" />';
 
 				foreach ($categories as $category)
-				
 				{
 					$link = $this->dsp->anchor(BASE.AMP.'C=admin_content'.AMP.'M=change_category_order'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.AMP.'order=up', $up).NBS.							$this->dsp->anchor(BASE.AMP.'C=admin_content'.AMP.'M=change_category_order'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.AMP.'order=down', $down);
 					$spcr = '<img src="'.PATH_CP_GBL_IMG.'clear.gif" border="0"  width="24" height="14" alt="" title="" />';
