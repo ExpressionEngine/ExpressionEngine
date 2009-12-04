@@ -4407,8 +4407,10 @@ class Admin_content extends Controller {
 			$error[] = $this->lang->line('duplicate_field_name');
 		}
 
+		$field_type = $_POST['field_type'];
+
 		// If they are setting a file type, ensure there is at least one upload directory available
-		if ($_POST['field_type'] == 'file')
+		if ($field_type == 'file')
 		{
 			$this->load->model('tools_model');
 			$upload_dir_prefs = $this->tools_model->get_upload_preferences();
@@ -4464,22 +4466,37 @@ class Admin_content extends Controller {
 		unset($_POST['field_related_channel_id']);
 		unset($_POST['field_pre_populate_id']);
 
-		if ( ! in_array($_POST['field_type'], array('text', 'textarea', 'select', 'rel')))
+		if ( ! in_array($field_type, array('text', 'textarea', 'select', 'rel')))
 		{
 			$_POST['field_text_direction'] = 'ltr';
 		}
 		
 		// Field Content Types
-		if (in_array($_POST['field_type'], array('text', 'file')))
+		if (in_array($field_type, array('text', 'file')))
 		{
-			$_POST['field_content_type'] = $_POST['field_content_'.$_POST['field_type']];
+			$_POST['field_content_type'] = $_POST[$field_type.'_'.'field_content_type'];
+
+		}
+	
+		unset($_POST['text_field_content_type']);
+		unset($_POST['file_field_content_type']);
+
+		// Field Text Direction
+		if (in_array($field_type, array('text', 'textarea')))
+		{
+			$_POST['field_text_direction'] = (isset($_POST[$field_type.'_'.'field_text_direction'])) ? $_POST[$field_type.'_'.'field_text_direction'] : 'ltr';
+			$_POST['field_fmt'] = (isset($_POST[$field_type.'_'.'field_fmt'])) ? $_POST[$field_type.'_'.'field_fmt'] : 'xhtml';
+			$_POST['field_show_fmt'] = (isset($_POST[$field_type.'_'.'field_show_fmt'])) ? $_POST[$field_type.'_'.'field_show_fmt'] : 'y';
 		}
 		
-		unset($_POST['field_content_text']);
-		unset($_POST['field_content_file']);
-
+		unset($_POST['text_field_text_direction']);
+		unset($_POST['textarea_field_text_direction']);
+		unset($_POST['text_field_fmt']);		
+		unset($_POST['textarea_field_fmt']);
+		unset($_POST['text_field_show_fmt']);
+		unset($_POST['textarea_field_show_fmt']);
+		
 		// Construct the query based on whether we are updating or inserting
-
 		if ($edit === TRUE)
 		{
 			$cp_message = $this->lang->line('custom_field_edited');

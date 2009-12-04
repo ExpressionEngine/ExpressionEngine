@@ -56,6 +56,8 @@ class Textarea_ft extends EE_Fieldtype {
 	
 	function display_settings($data)
 	{
+		$prefix = 'textarea';
+
 		$field_rows	= ($data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows'];
 		
 		$this->EE->table->add_row(
@@ -63,8 +65,8 @@ class Textarea_ft extends EE_Fieldtype {
 			form_input(array('id'=>'field_ta_rows','name'=>'field_ta_rows', 'size'=>4,'value'=>$field_rows))
 		);
 		
-		$this->field_formatting_row($data);
-		$this->text_direction_row($data);
+		$this->field_formatting_row($data, $prefix);
+		$this->text_direction_row($data, $prefix);
 	}
 
 	// --------------------------------------------------------------------

@@ -235,10 +235,8 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function display_settings($data)
 	{
-		$this->EE->table->add_row(
-			lang('field_content_file', 'field_content_file'),
-			form_dropdown('field_content_file', $data['field_content_options_file'], $data['field_content_file'], 'id="field_content_file"')
-		);
+		$prefix = 'file';
+		$this->field_content_type_row($data, $prefix);
 	}
 	
 	// --------------------------------------------------------------------

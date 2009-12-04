@@ -65,36 +65,50 @@ class EE_Fieldtype {
 	
 	// --------------------------------------------------------------------
 	
-	function field_formatting_row($data)
+	function field_formatting_row($data, $prefix = FALSE)
 	{
 		// @todo
 		$edit_format_link = '';
-		
+		$prefix = ($prefix) ? $prefix.'_' : '';
+
 		$this->EE->table->add_row(
-			lang('deft_field_formatting', 'field_fmt'),
-			form_dropdown('field_fmt', $data['field_fmt_options'], $data['field_fmt'], 'id="field_fmt"').
+			lang('deft_field_formatting', $prefix.'field_fmt'),
+			form_dropdown($prefix.'field_fmt', $data['field_fmt_options'], $data['field_fmt'], 'id="'.$prefix.'field_fmt"').
 				$edit_format_link.BR.BR.
 				'<strong>'.lang('show_formatting_buttons').'</strong>'.BR.
-				form_radio('field_show_fmt', 'y', $data['field_show_fmt_y'], 'id="field_show_fmt_y"').
+				form_radio($prefix.'field_show_fmt', 'y', $data['field_show_fmt_y'], 'id="'.$prefix.'field_show_fmt_y"').
 				lang('yes', 'field_show_fmt_y').NBS.NBS.NBS.NBS.NBS.
-				form_radio('field_show_fmt', 'n', $data['field_show_fmt_n'], 'id="field_show_fmt_n"').
+				form_radio($prefix.'field_show_fmt', 'n', $data['field_show_fmt_n'], 'id="'.$prefix.'field_show_fmt_n"').
 				lang('no', 'field_show_fmt_n')
 		);
 	}
 	
 	// --------------------------------------------------------------------
 	
-	function text_direction_row($data)
+	function text_direction_row($data, $prefix = FALSE)
 	{
+		$prefix = ($prefix) ? $prefix.'_' : '';
+
 		$this->EE->table->add_row(
 			'<strong>'.lang('text_direction').'</strong>',
-			form_radio('field_text_direction', 'ltr', $data['field_text_direction_ltr'], 'id="field_text_direction_ltr"').
+			form_radio($prefix.'field_text_direction', 'ltr', $data['field_text_direction_ltr'], 'id="field_text_direction_ltr"').
 				lang('ltr', 'field_text_direction_ltr').'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.
-				form_radio('field_text_direction', 'rtl', $data['field_text_direction_rtl'], 'id="field_text_direction_rtl"').
+				form_radio($prefix.'field_text_direction', 'rtl', $data['field_text_direction_rtl'], 'id="field_text_direction_rtl"').
 				lang('rtl', 'field_text_direction_rtl')
 		);		
 	}
 	
+	function field_content_type_row($data, $prefix = FALSE)
+	{
+		$suf = $prefix;
+		$prefix = ($prefix) ? $prefix.'_' : '';
+		
+		$this->EE->table->add_row(
+			lang('field_content_'.$suf, 'field_content_'.$suf),
+			form_dropdown($prefix.'field_content_type', $data['field_content_options_'.$suf], $data['field_content_'.$suf], 'id="'.$prefix.'field_content_type"')
+		);				
+	}
+
 	// --------------------------------------------------------------------
 	
 	function multi_item_row($data)

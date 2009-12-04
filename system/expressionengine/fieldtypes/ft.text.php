@@ -77,6 +77,8 @@ class Text_ft extends EE_Fieldtype {
 
 	function display_settings($data)
 	{
+		$prefix = 'text';
+		
 		$field_maxl			= ($data['field_maxl'] == '') ? 128 : $data['field_maxl'];
 		$field_content_text	= ($data['field_content_text'] == '') ? 'any' : $data['field_content_text'];
 		
@@ -85,13 +87,9 @@ class Text_ft extends EE_Fieldtype {
 			form_input(array('id'=>'field_maxl','name'=>'field_maxl', 'size'=>4,'value'=>$field_maxl))
 		);
 		
-		$this->field_formatting_row($data);
-		$this->text_direction_row($data);
-
-		$this->EE->table->add_row(
-			lang('field_content_text', 'field_content_text'),
-			form_dropdown('field_content_text', $data['field_content_options_text'], $field_content_text, 'id="field_content_text"')
-		);
+		$this->field_formatting_row($data, $prefix);
+		$this->text_direction_row($data, $prefix);
+		$this->field_content_type_row($data, $prefix);
 	}
 
 	// --------------------------------------------------------------------
