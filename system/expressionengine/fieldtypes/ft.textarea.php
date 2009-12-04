@@ -25,20 +25,21 @@ class Textarea_ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function display_field($data)
 	{
 		return form_textarea(array(
 			'name'	=> $this->field_name,
 			'id'	=> $this->field_name,
-			'value'	=> $data
+			'value'	=> $data,
+			'rows'	=> $this->settings['field_ta_rows']
 		));
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
 		return $this->EE->typography->parse_type(
