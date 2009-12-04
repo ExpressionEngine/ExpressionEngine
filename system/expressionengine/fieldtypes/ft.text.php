@@ -38,7 +38,7 @@ class Text_ft extends EE_Fieldtype {
 		
 		if (in_array($content_type, $this->field_content_types['text']) && $content_type != 'any')
 		{
-			if ( ! $this->EE->validation->$content_type())
+			if ( ! $this->EE->form_validation->$content_type($data))
 			{
 				return $this->EE->lang->line($content_type);
 			}
