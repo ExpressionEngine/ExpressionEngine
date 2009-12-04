@@ -522,7 +522,7 @@ class EE_Functions {
 	function form_backtrack($offset = '')
 	{
 		$ret = $this->fetch_site_index();
-		
+
 		if ($offset != '')
 		{
 			if (isset($this->EE->session->tracker[$offset]))
@@ -544,7 +544,7 @@ class EE_Functions {
 				{
 					if ($this->EE->session->tracker[$return] != 'index')
 					{
-						$ret = $this->fetch_site_index().$this->EE->session->tracker[$return];
+						$ret = $this->fetch_site_index().'/'.$this->EE->session->tracker[$return];
 					}
 				}
 			}
