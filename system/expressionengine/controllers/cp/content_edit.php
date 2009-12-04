@@ -217,9 +217,6 @@ class Content_edit extends Controller {
 			}
 		});');
 
-	
-	
-
 		$cp_theme  = ( ! $this->session->userdata('cp_theme')) ? $this->config->item('cp_theme') : $this->session->userdata('cp_theme');
 		$turn_on_robot = FALSE;
 
@@ -232,7 +229,7 @@ class Content_edit extends Controller {
 				'id'		=> 'extra',
 				'width'		=> '228',
 				'height'	=> '157',
-				'style'		=>'position: absolute; top: 49px; left: 790px'
+				'style'		=> 'z-index: 1000; position: absolute; top: 49px; left: 790px'
 			);
 			$this->javascript->output(array(
 				'$("#mainMenu").append(\''.img($image_properties).'\')',
@@ -456,12 +453,10 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	}
 }
 
-
-		
 	oTable = $(".mainTable").dataTable( {	
 			"sPaginationType": "full_numbers",
 			"bLengthChange": false,
-			"aaSorting": [[ 0, "desc" ]],
+			"aaSorting": [[ 5, "desc" ]],
 			"bFilter": false,
 			"sWrapper": false,
 			"sInfo": false,
@@ -921,7 +916,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$vars['entries'] = array();
 
-		
 		foreach($query_results as $row)
 		{
 			$style = ''; $tr = ''; //@todo: remove this
