@@ -1224,7 +1224,7 @@ class Content_publish extends Controller {
 
 				if ($query->num_rows() > 0)
 				{
-					$pages_template_id = $query->row('configuration_value') ;
+					$pages_template_id = $query->row('configuration_value');
 				}
 			}
 
@@ -1238,57 +1238,86 @@ class Content_publish extends Controller {
 			}
 
 			$vars['pages_uri']	= $pages_uri;
+			$vars['pages_dropdown_selected'] = $pages_template_id;
 
 			$tquery = $this->template_model->get_templates($this->config->item('site_id'));
 
-			$vars['pages_dropdown_selected'] = $pages_template_id;
-
-			foreach ($tquery->result() as $template)
+			if ($tquery->num_rows())
 			{
-				$vars['pages_dropdown'][$template->group_name][$template->template_id] = $template->template_name;
+				foreach ($tquery->result() as $template)
+				{
+					$vars['pages_dropdown'][$template->group_name][$template->template_id] = $template->template_name;
+				}
+
+				// pages_uri options
+				$settings = array(
+							'field_id'				=> 'pages_uri',
+							'field_label'			=> $this->lang->line('pages_uri'),
+							'field_required'		=> 'n',
+							'field_data'			=> $vars['pages_uri'],
+							'field_fmt'				=> 'text',
+							'field_instructions'	=> '',
+							'field_show_fmt'		=> 'n',
+							'field_text_direction'	=> 'ltr',
+							'field_type'			=> 'text',
+							'field_maxl'			=> 100
+				);
+
+				$this->api_channel_fields->set_settings('pages_uri', $settings);
+
+				$rules = 'call_field_validation['.$settings['field_id'].']';
+				$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
+
+
+				$settings = array(
+					'field_id'				=> 'pages_template_id',
+					'field_label'			=> $this->lang->line('template'),
+					'field_required' 		=> 'n',
+					'field_data'			=> $vars['pages_dropdown_selected'],
+					'field_list_items'		=> $vars['pages_dropdown'],
+					'options'				=> $vars['pages_dropdown'],		// @todo this one or field_list_items?
+					'selected'				=> $vars['pages_dropdown_selected'],
+					'field_fmt'				=> 'text',
+					'field_instructions' 	=> '',
+					'field_show_fmt'		=> 'n',
+					'field_pre_populate'	=> 'n',
+					'field_text_direction'	=> 'ltr',
+					'field_type' 			=> 'select'
+				);
+
+
+				$this->api_channel_fields->set_settings('pages_template_id', $settings);
+
+				$rules = 'call_field_validation['.$settings['field_id'].']';
+				$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
 			}
-			
-			// pages_uri options
-			$settings = array(
-						'field_id'				=> 'pages_uri',
-						'field_label'			=> $this->lang->line('pages_uri'),
-						'field_required'		=> 'n',
-						'field_data'			=> $vars['pages_uri'],
-						'field_fmt'				=> 'text',
-						'field_instructions'	=> '',
-						'field_show_fmt'		=> 'n',
-						'field_text_direction'	=> 'ltr',
-						'field_type'			=> 'text',
-						'field_maxl'			=> 100
-			);
+			else
+			{
+				$vars['show_pages_cluster'] = $show_pages_cluster = 'n';
+				
+				$vars['publish_tabs']['pages']['pages_uri'] = array(
+								'visible'		=> TRUE,
+								'collapse'		=> FALSE,
+								'html_buttons'	=> TRUE,
+								'is_hidden'		=> FALSE,
+								'width'			=> '100%'
+				);
 
-			$this->api_channel_fields->set_settings('pages_uri', $settings);
+				$this->field_definitions['pages_uri'] = array(
+					'string_override'		=> 'No Templates', // @todo language key
+					'field_id'				=> 'pages_uri',
+					'field_label'			=> $this->lang->line('pages_uri'),
+					'field_name'			=> 'pages_uri',
+					'field_required'		=> 'n',
+					'field_type'			=> 'text',
+					'field_text_direction'	=> 'ltr',
+					'field_data'			=> '',
+					'field_fmt'				=> 'text',
+					'field_instructions'	=> '',
+					'field_show_fmt'		=> 'n'
+				);
+			}
 
-			$rules = 'call_field_validation['.$settings['field_id'].']';
-			$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
-			
-			
-			$settings = array(
-				'field_id'				=> 'pages_template_id',
-				'field_label'			=> $this->lang->line('template'),
-				'field_required' 		=> 'n',
-				'field_data'			=> $vars['pages_dropdown_selected'],
-				'field_list_items'		=> $vars['pages_dropdown'],
-				'options'				=> $vars['pages_dropdown'],		// @todo this one or field_list_items?
-				'selected'				=> $vars['pages_dropdown_selected'],
-				'field_fmt'				=> 'text',
-				'field_instructions' 	=> '',
-				'field_show_fmt'		=> 'n',
-				'field_pre_populate'	=> 'n',
-				'field_text_direction'	=> 'ltr',
-				'field_type' 			=> 'select'
-			);
-			
-			
-			$this->api_channel_fields->set_settings('pages_template_id', $settings);
-
-			$rules = 'call_field_validation['.$settings['field_id'].']';
-			$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
 		}
 
 
@@ -1443,7 +1472,7 @@ class Content_publish extends Controller {
 		}
 
 		$vars['form_additional']['id'] = 'publishForm';
-
+		
 		// get all member groups with cp access for the layout list
 		$vars['member_groups'] = $this->member_model->get_member_groups(array('can_access_admin'), array('can_access_cp'=>'y'));
 
@@ -3413,42 +3442,6 @@ class Content_publish extends Controller {
 			'field_instructions'	=> '',
 			'field_show_fmt'		=> 'n'
 		);
-	}
-
-	function _define_pages_fields($vars)
-	{
-		if (($pages = $this->config->item('site_pages')) !== FALSE)
-		{
-			// Pages tab
-			$this->field_definitions['pages_uri'] = array(
-				'field_id'				=> 'pages_uri',
-				'field_label'			=> $this->lang->line('pages_uri'),
-				'field_name'			=> 'pages_uri',
-				'field_required' 		=> 'n',
-				'field_data'			=> $vars['pages_uri'],
-				'field_fmt'				=> 'text',
-				'field_instructions' 	=> '',
-				'field_show_fmt'		=> 'n',
-				'field_text_direction'	=> 'ltr',
-				'field_type' 			=> 'text',
-				'field_maxl' 			=> 100
-			);
-
-			$this->field_definitions['pages_template_id'] = array(
-				'field_id'				=> 'pages_template_id',
-				'field_label'			=> $this->lang->line('template'),
-				'field_name'			=> 'pages_template_id',
-				'field_required' 		=> 'n',
-				'field_data'			=> '',
-				'options'				=> $vars['pages_dropdown'],
-				'selected'				=> $vars['pages_dropdown_selected'],
-				'field_fmt'				=> 'text',
-				'field_instructions' 	=> '',
-				'field_show_fmt'		=> 'n',
-				'field_text_direction'	=> 'ltr',
-				'field_type' 			=> 'select'
-			);
-		}
 	}
 	
 	function _define_forum_fields(&$vars)
