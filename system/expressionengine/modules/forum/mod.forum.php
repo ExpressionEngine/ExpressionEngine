@@ -27,8 +27,8 @@ if ( ! defined('EXT'))
 class Forum {
 
 
-	var $version			= '2.1.0';
-	var $build				= '20070317';
+	var $version			= '3.0.0';
+	var $build				= '20091202';
 	var $use_site_profile	= FALSE;
 	var $search_limit		= 500; // Maximum number of search results
 	var $return_data 		= '';
