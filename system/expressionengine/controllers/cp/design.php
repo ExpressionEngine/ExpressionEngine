@@ -2217,15 +2217,10 @@ class Design extends Controller {
 		{
 			if (strncmp($tag, 'exp:', 4) === 0)
 			{
-				$name = substr($tag, 4, strcspn($tag, ':', 4));
+				$name = substr($tag, 4, strcspn($tag, ': ', 4));	// :<space>, leave the space in there!
 
 				if ( ! in_array($name, $installed) && ! in_array($name, $plugins))
 				{
-					if (strpos($name, ' ') !== FALSE)
-					{
-						$name = substr($name, 0, strpos($name, ' '));
-					}
-					
 					if (in_array($name, $modules))
 					{
 						$this->_add_warning($name, $tag, 'install');
