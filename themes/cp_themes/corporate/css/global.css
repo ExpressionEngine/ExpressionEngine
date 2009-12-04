@@ -2281,7 +2281,12 @@ ul.tab_menu li.current a, ul.tab_menu li.current a:active, ul.tab_menu li.adminH
 	padding:			7px 10px 7px 10px;
 	margin:				0 1px 0 0;
 	display:block;
+}
 
+.publishTabSortPlaceholder {
+	margin:				50px !important;
+	background:			transparent !important;
+	border:				none !important;
 }
 
 

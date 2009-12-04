@@ -2037,6 +2037,12 @@ table.accessTable div.tableCellHeading {
 	color: 					#E11842;
 }
 
+.publishTabSortPlaceholder {
+	margin:					20px;
+	background:				transparent !important;
+	border:					none !important;
+}
+
 #mainContent #publishForm h3 {
 	padding:			0 10px;
 }

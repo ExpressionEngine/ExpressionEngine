@@ -3641,7 +3641,12 @@ class Content_publish extends Controller {
 					// disable all form elements
 					disable_fields(true);
 
-					$(".tab_menu").sortable();
+					$(".tab_menu").sortable({
+						axis: "x",
+						tolerance: "pointer",	// feels easier in this case
+						placeholder: "publishTabSortPlaceholder",
+						items: "li:not(.addTabButton)",
+					});
 					
 					$("a span", "#showToolbarLink").text("'.$this->lang->line('hide_toolbar').'");
 					$("#showToolbarLink").animate({
@@ -3722,9 +3727,9 @@ class Content_publish extends Controller {
 
 			_delete_tab_hide = function() {
 				tab_to_delete = $(this).attr("href").substring(1);
-				$(".menu_"+tab_to_delete).parent().fadeOut(); // hide the tab
-				$(this).parent().fadeOut(); // remove from sidebar
-				$("#"+tab_to_delete).fadeOut(); // hide the fields
+				$(".menu_"+tab_to_delete).parent().fadeOut();	// hide the tab
+				$(this).parent().fadeOut();						// remove from sidebar
+				$("#"+tab_to_delete).fadeOut();					// hide the fields
 
 				// If the tab is selected - move focus to the left
 				selected_tab = get_selected_tab();
@@ -3770,7 +3775,7 @@ class Content_publish extends Controller {
 			{
 				tab_name = $("#tab_name").val();
 
-				var legalChars = /^[a-zA-Z0-9_]+$/; // allow only letters, numbers, underscores
+				var legalChars = /^[a-zA-Z0-9 _-]+$/; // allow only letters, numbers, spaces, underscores, and dashes
 
 				if ( ! legalChars.test(tab_name))
 				{
@@ -3798,7 +3803,7 @@ class Content_publish extends Controller {
 				tab_name_filtered = tab_name.replace(/ /g, "_");
 
 				// ensure there are no duplicate ids provided
-				if ($("#"+tab_name_filtered.toLowerCase()).length) {
+				if ($("#"+tab_name_filtered).length) {
 					return false;
 				}
 
@@ -3808,7 +3813,7 @@ class Content_publish extends Controller {
 				// add the tab to the list in the toolbar
 				$("#publish_tab_list").append("<li><a class=\"menu_focus\" title=\"menu_"+tab_name_filtered+"\" href=\"#\">"+tab_name+" </a> <a href=\"#"+tab_name_filtered+"\" class=\"delete delete_tab\"><img src=\"'.$this->theme_img_url.'content_custom_tab_delete.png\" alt=\"Delete\" width=\"19\" height=\"18\" /></a></li>");
 
-				new_tab = $("<div class=\"main_tab\"><div class=\"insertpoint\"></div><div class=\"clear\"></div></div>").attr("id", tab_name_filtered.toLowerCase());
+				new_tab = $("<div class=\"main_tab\"><div class=\"insertpoint\"></div><div class=\"clear\"></div></div>").attr("id", tab_name_filtered);
 				new_tab.prependTo("#holder");
 
 				// If this is the only tab on the interface, we should move focus into it
