@@ -4153,7 +4153,7 @@ class Design extends Controller {
 		if ($this->config->item('save_tmpl_files') != 'y' OR $this->config->item('tmpl_file_basepath') == '')
 		{
 			$message = $this->lang->line('sync_not_allowed_1');
-			$message .= '<a href="'.str_replace('&amp;', '&', BASE).'&C=admin_content&M=global_template_preferences">'.$this->lang->line('sync_not_allowed_2').'</a>';
+			$message .= '<a href="'.str_replace('&amp;', '&', BASE).'&C=design&M=global_template_preferences">'.$this->lang->line('sync_not_allowed_2').'</a>';
 		}
 						
 		$vars['table_template'] = array('table_open' => '<table id="entries" class="templateTable" border="0" cellspacing="0" cellpadding="0">',

@@ -1593,7 +1593,7 @@ class Content_publish extends Controller {
 
 				if ($show_status_menu == 'y')
 				{
-				$vars['publish_tabs']['options']['status'] = $field_display;
+					$vars['publish_tabs']['options']['status'] = $field_display;
 				}
 
 				if ($vars['show_author_menu'])
