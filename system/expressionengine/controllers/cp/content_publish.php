@@ -1373,7 +1373,7 @@ class Content_publish extends Controller {
 			
 			$rules = 'call_field_validation['.$row['field_id'].']';
 			
-			if ($row['field_required'] == 'y')
+			if ($row['field_required'] == 'y' && $row['field_type'] != 'file') 	// @todo figure out a way to remove the file exception
 			{
 				$rules = 'required|'.$rules;
 			}

@@ -82,6 +82,11 @@ class File_ft extends EE_Fieldtype {
 		$_POST[$dir_field] = $filedir;
 		unset($_POST[$hidden_field]);
 		
+		if ($this->settings['field_required'] == 'y' && ! $_POST[$this->field_name])
+		{
+			return $this->EE->lang->line('required');
+		}
+		
 		return TRUE;
 	}
 	
