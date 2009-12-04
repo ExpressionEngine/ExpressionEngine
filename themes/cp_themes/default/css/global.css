@@ -543,11 +543,7 @@ ul#navigationTabs li #addQuickTab:active {
 }
 
 #navigationTabs ul ul li:first-child > a {
-	background:			transparent url('<?=$cp_theme_url?>images/nav_submenu_arrow.png') center left no-repeat;
-}
-
-#navigationTabs ul ul:first-child.hover > a {
-	background:			#F81A53 url('<?=$cp_theme_url?>images/nav_submenu_arrow.png') center left no-repeat;
+	background:			transparent url('<?=$cp_theme_url?>images/nav_submenu_arrow.png') top left no-repeat;
 }
 
 #navigationTabs li.active ul ul,
@@ -2072,7 +2068,7 @@ table.accessTable div.tableCellHeading {
 	z-index:			3;
 }
 
-.publish_field p, .publish_field h3 {
+.publish_field p, .publish_field h3, .publish_field .notice {
 	margin: 5px 17px 0px 12px;
 }
 .publish_field p {

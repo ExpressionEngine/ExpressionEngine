@@ -2388,7 +2388,8 @@ ul.tab_menu li.addTabButton a {
 	border-right:		4px solid #cfd5d9;
 }
 
-#holder p{
+#holder p,
+#holder .notice {
 	margin: 			4px 25px 5px 19px;
 	padding:			0;
 }

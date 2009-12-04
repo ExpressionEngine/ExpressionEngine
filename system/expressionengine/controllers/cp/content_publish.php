@@ -1944,7 +1944,7 @@ class Content_publish extends Controller {
 		$this->form_validation->set_message('title', $this->lang->line('missing_title'));
 		$this->form_validation->set_message('entry_date', $this->lang->line('missing_date'));
 
-		$this->form_validation->set_error_delimiters('<div class="notice" style="margin:0;">', '</div>');
+		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
 		
 		$vars['which'] = $which;
 		$vars['channel_id'] = $channel_id;
