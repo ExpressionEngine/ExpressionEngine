@@ -158,8 +158,10 @@ class Expressionengine_info_acc {
 			fwrite($fp,"GET {$path} HTTP/1.0\r\n" );
 			fwrite($fp,"Host: {$host}\r\n" );
 			fwrite($fp,"User-Agent: EE/EllisLab PHP/\r\n\r\n");
-
-			while($datum = fread($fp, 4096))
+			
+			// There is evidently a bug in PHP < 5.2 with SSL and fsockopen() when the $length is
+			// greater than the remaining data - so distasteful as it is, we'll suppress errors
+			while($datum = @fread($fp, 4096))
 			{
 				$ret .= $datum;
 			}
