@@ -191,6 +191,34 @@ class Cp {
 								'cp_accessories'		=> $this->EE->accessories->generate_accessories(),
 								'EE_view_disable'		=> FALSE
 								));
+
+		if ($this->EE->config->item('use_compressed_js') == 'n')
+		{
+			define('PATH_JQUERY', APPPATH.'javascript/src/jquery/');
+			define('PATH_JAVASCRIPT', APPPATH.'javascript/src/');
+		}
+		else
+		{
+			define('PATH_JQUERY', APPPATH.'javascript/compressed/jquery/');
+			define('PATH_JAVASCRIPT', APPPATH.'javascript/compressed/');
+		}
+		
+		$cp_theme = $this->EE->session->userdata('cp_theme');
+
+		if (file_exists(PATH_CP_THEME.$cp_theme.'/css/advanced.css'))
+		{
+			$this->EE->load->vars(array(
+								'advanced_css_mtime' => filemtime(PATH_CP_THEME.$cp_theme.'/css/advanced.css')
+							));
+		}
+
+		// Get File mtimes to force good browser caching		
+		$this->EE->load->vars(array(
+									'jquery_mtime' 		=> filemtime(PATH_JQUERY.'jquery.js'),
+									'corner_mtime' 		=> filemtime(PATH_JQUERY.'plugins/corner.js'),
+									'theme_css_mtime'	=> filemtime(PATH_CP_THEME.$cp_theme.'/css/global.css'),
+									'global_js_mtime'	=> filemtime(PATH_JAVASCRIPT.'cp/global.js')
+								));
 		
 		if ($this->EE->router->method != 'index')
 		{

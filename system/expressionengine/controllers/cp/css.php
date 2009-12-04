@@ -78,7 +78,7 @@ class Css extends Controller {
 
 			if ($this->config->item('send_headers') == 'y')
 			{
-				$max_age		= 172800;
+				$max_age		= 5184000;
 				$modified		= filemtime($path);
 				$modified_since	= $this->input->server('HTTP_IF_MODIFIED_SINCE');
 
@@ -109,6 +109,7 @@ class Css extends Controller {
 
 				$this->output->set_status_header(200);
 				@header("Cache-Control: max-age={$max_age}, must-revalidate");
+				@header('Vary: Accept-Encoding');
 				@header('Last-Modified: '.$modified);
 				@header('Expires: '.$expires);
 			}

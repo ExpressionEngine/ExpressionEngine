@@ -360,6 +360,7 @@ class Javascript extends Controller {
 
 		$this->output->set_status_header(200);
 		@header("Cache-Control: max-age={$max_age}, must-revalidate");
+		@header('Vary: Accept-Encoding');
 		@header('Last-Modified: '.$modified);
 		@header('Expires: '.$expires);        
     }
