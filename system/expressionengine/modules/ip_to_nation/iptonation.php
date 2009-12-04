@@ -223,6 +223,7 @@ $cc[] = 'tl';
 $cc[] = 'tm';
 $cc[] = 'tn';
 $cc[] = 'to';
+$cc[] = 'tp';
 $cc[] = 'tr';
 $cc[] = 'tt';
 $cc[] = 'tv';
