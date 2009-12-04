@@ -184,7 +184,7 @@ class Ip_to_nation_upd {
 
 		if ($current < 1.3)
 		{
-			if ( ! include_once($this->_ee_path.'modules/ip_to_nation/iptonations.php'))
+			if ( ! include_once($this->_ee_path.'modules/ip_to_nation/iptonation.php'))
 			{
 				$this->EE->lang->loadfile('ip_to_nation');
 				show_error($this->EE->lang->line('iptonation_missing'));
