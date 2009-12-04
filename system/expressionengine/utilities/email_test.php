@@ -123,5 +123,6 @@ color:  #339900;
 	{
 		echo "</body></html>";
 	}
-	
-?>
+
+/* End of file email_test.php */
+/* Location: ./system/expressionengine/utilities/email_test.php */

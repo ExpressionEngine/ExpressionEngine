@@ -34,3 +34,6 @@ else
 {
 	echo 'Your database was selected.';
 }
+
+/* End of file dbtest.php */
+/* Location: ./system/expressionengine/utilities/dbtest.php */
