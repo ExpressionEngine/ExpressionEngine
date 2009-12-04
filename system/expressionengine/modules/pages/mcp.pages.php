@@ -40,8 +40,10 @@ class Pages_mcp {
 		
 		$query = $this->EE->pages_model->fetch_configuration();
 
+
 		$default_channel = 0;
-		$this->homepage_display = 'not_nested';
+
+		$this->homepage_display = 'not_nested';		
 
 		if ($query->num_rows() > 0)
 		{
@@ -49,8 +51,10 @@ class Pages_mcp {
 			{
 				$$row['configuration_name'] = $row['configuration_value'];
 			}
+			
+			$this->homepage_display = $homepage_display;
 		}
-        
+
         $new_page_location = '';
         
 		if ($default_channel != 0)
