@@ -532,7 +532,7 @@ $lang = array(
 'Snippets',
 
 'snippets_explanation' =>
-'Snippets are handy when you need small bits of resuable template or tag parts.  For static content that does not include
+'Snippets are handy when you need small bits of reusable template or tag parts.  For static content that does not include
 ExpressionEngine tags, variables, or PHP, consider <a href ="%s">Global Variables</a>.',
 
 'create_new_snippet' =>
