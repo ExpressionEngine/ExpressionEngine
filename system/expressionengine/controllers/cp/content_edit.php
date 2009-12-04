@@ -218,9 +218,8 @@ class Content_edit extends Controller {
 		});');
 
 		$cp_theme  = ( ! $this->session->userdata('cp_theme')) ? $this->config->item('cp_theme') : $this->session->userdata('cp_theme');
-		$turn_on_robot = FALSE;
 
-		if (($cp_theme == 'default' AND mt_rand(0, 5000) == 42 && $this->session->userdata['group_id'] == 1) OR $turn_on_robot) 
+		if ((mt_rand(0, 5000) == 42 && $this->session->userdata['group_id'] == 1) OR $this->config->item('kill_all_humans'))
 		{
 			$this->load->helper('html');
 			$image_properties = array(
@@ -231,6 +230,7 @@ class Content_edit extends Controller {
 				'height'	=> '157',
 				'style'		=> 'z-index: 1000; position: absolute; top: 49px; left: 790px'
 			);
+
 			$this->javascript->output(array(
 				'$("#mainMenu").append(\''.img($image_properties).'\')',
 				$this->javascript->animate("#extra", array("left"=>0), 4000, 'function(){$(\'#extra\').fadeOut(3000)}')
