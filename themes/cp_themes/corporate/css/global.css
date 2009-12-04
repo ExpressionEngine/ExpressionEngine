@@ -2284,7 +2284,7 @@ ul.tab_menu li.current a, ul.tab_menu li.current a:active, ul.tab_menu li.adminH
 }
 
 .publishTabSortPlaceholder {
-	margin:				50px !important;
+	margin:				0px 50px !important;
 	background:			transparent !important;
 	border:				none !important;
 }

@@ -1985,10 +1985,9 @@ table.accessTable div.tableCellHeading {
 }
 
 #mainContent .tab_menu li {
-/*	float: 				left;*/
+	float: 				left;
 	display:			inline;
 	background:			#3a4850 url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -217px;
-	padding:			7px 12px 5px 12px;
 	border-right: 		1px solid #505f66;
 	border-left: 		4px solid #2d383e;
 	border-top:			1px solid #4f5e65;
@@ -1996,6 +1995,9 @@ table.accessTable div.tableCellHeading {
 
 #mainContent .tab_menu li a {
 /*	margin-top:			12px;*/
+	float:				left;
+	display:			block;
+	padding:			7px 12px 5px 12px;
 	font-size:			13px;
 	color:				#ffffff;
 	font-weight: 		bold;
@@ -2038,7 +2040,7 @@ table.accessTable div.tableCellHeading {
 }
 
 .publishTabSortPlaceholder {
-	margin:					20px;
+	margin:					10px 50px;
 	background:				transparent !important;
 	border:					none !important;
 }
