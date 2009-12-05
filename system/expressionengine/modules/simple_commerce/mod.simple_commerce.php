@@ -660,8 +660,9 @@ class Simple_commerce {
 		$new_member_group			= $row->new_member_group;
 			
         //  Type Specific Actions
-
-		if ($type == 'subscr_eot' OR $type == 'subscr_cancel')
+		
+		// we ignore subscr_cancel actions since they do not affect the current subscription
+		if ($type == 'subscr_eot')
 		{
 			$new_member_group			= $row->member_group_unsubscribe;
 			$admin_email_template		= $row->admin_email_template_unsubscribe;
