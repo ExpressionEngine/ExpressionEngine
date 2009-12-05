@@ -3693,7 +3693,10 @@ class Admin_content extends Controller {
 				{
 					$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_dt_".$field->field_id);
 				}
-				
+
+				$this->db->query("DELETE FROM exp_field_formatting WHERE field_id = '".$this->db->escape_str($field->field_id)."'");
+		        $this->db->query("UPDATE exp_channels SET search_excerpt = NULL WHERE search_excerpt = '".$this->db->escape_str($field->field_id)."'");
+						
 				$tabs[] = $field->field_id;
 			}
 		}
@@ -4761,6 +4764,7 @@ class Admin_content extends Controller {
 		$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_ft_".$this->db->escape_str($field_id));
 		$this->db->query("DELETE FROM exp_channel_fields WHERE field_id = '".$this->db->escape_str($field_id)."'");
 		$this->db->query("DELETE FROM exp_field_formatting WHERE field_id = '".$this->db->escape_str($field_id)."'");
+        $this->db->query("UPDATE exp_channels SET search_excerpt = NULL WHERE search_excerpt = '".$this->db->escape_str($field_id)."'");		       
 
 		// Drop from custom layouts
 		$query = $this->field_model->get_assigned_channels($group_id);
