@@ -1516,9 +1516,6 @@ $lang = array(
 "file_type" =>
 "File Type: ",
 
-"plain_text" =>
-"Plain text",
-
 "zip" =>
 "Zip",
 
