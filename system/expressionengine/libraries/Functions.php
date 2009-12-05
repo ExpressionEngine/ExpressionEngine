@@ -206,20 +206,20 @@ class EE_Functions {
 	 */
 	function encode_ee_tags($str, $convert_curly = FALSE)
 	{
-		if ($str == '')
+		if ($str != '')
 		{
-			return '';
+			if ($convert_curly === TRUE)
+			{
+				$str = str_replace(array('{', '}'), array('&#123;', '&#125;'), $str);
+			}
+			else
+			{
+				$str = preg_replace("/\{(\/){0,1}exp:(.+?)\}/", "&#123;\\1exp:\\2&#125;", $str);
+				$str = preg_replace("/\{embed=(.+?)\}/", "&#123;embed=\\1&#125;", $str);
+				$str = preg_replace("/\{path:(.+?)\}/", "&#123;path:\\1&#125;", $str);
+				$str = preg_replace("/\{redirect=(.+?)\}/", "&#123;redirect=\\1&#125;", $str);
+			}
 		}
-		
-		if ($convert_curly === TRUE)
-		{
-			return str_replace(array('{', '}'), array('&#123;', '&#125;'), $str);
-		}
-
-		$str = preg_replace("/\{(\/){0,1}exp:(.+?)\}/", "&#123;\\1exp:\\2&#125;", $str);
-		$str = preg_replace("/\{embed=(.+?)\}/", "&#123;embed=\\1&#125;", $str);
-		$str = preg_replace("/\{redirect=(.+?)\}/", "&#123;redirect=\\1&#125;", $str);
-		$str = preg_replace("/\{path:(.+?)\}/", "&#123;path:\\1&#125;", $str);
 		
 		return $str;
 	}
