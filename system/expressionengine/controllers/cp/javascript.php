@@ -343,7 +343,7 @@ class Javascript extends Controller {
 		// Send a custom ETag to maintain a useful cache in
 		// load-balanced environments
 		
-        header("ETag: ".md5($modified));
+        header("ETag: ".md5($modified.$file));
 		
 		// If the file is in the client cache, we'll
 		// send a 304 and be done with it.

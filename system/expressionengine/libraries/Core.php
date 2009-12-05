@@ -393,7 +393,6 @@ class EE_Core {
 			$agent = $this->EE->security->sanitize_filename($agent);
 
 			$cp_theme = (is_dir(PATH_CP_THEME.'mobile_'.$agent)) ? 'mobile_'.$agent : 'mobile';
-			$this->EE->session->userdata['cp_theme'] = $cp_theme;
 		}
 		else
 		{
@@ -405,6 +404,9 @@ class EE_Core {
 		{
 			$cp_theme = 'default';
 		}
+
+		// go ahead and set this so we can use it from here on out
+		$this->EE->session->userdata['cp_theme'] = $cp_theme;
 		
 		// We explicitly set the view path since the theme files need to reside
 		// above the "system" folder.
