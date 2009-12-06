@@ -1241,6 +1241,10 @@ class Content_publish extends Controller {
 				$pages_uri = '/example/pages/uri/';
 			}
 
+			$this->javascript->output('
+				$("#pages_uri").focus(function() {$(this).val("")});
+			');
+
 			$vars['pages_uri']	= $pages_uri;
 			$vars['pages_dropdown_selected'] = $pages_template_id;
 
