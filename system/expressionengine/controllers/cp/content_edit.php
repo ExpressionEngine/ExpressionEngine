@@ -2860,7 +2860,9 @@ MAGIC;
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-		
+
+		$this->load->helper('text');
+
 		$perpage = '75';
 		$this->cp->add_js_script(array('plugin' => 'dataTables'));
 
@@ -2897,8 +2899,6 @@ MAGIC;
 		
 		$validate = ($this->input->get('validate') == 1) ? TRUE : FALSE;
 		$filter_data['validate'] = 'false';
-		
-
 
 		$filter_data['channel_id'] = ($this->input->get_post('channel_id') && $this->input->get_post('channel_id') != 'null') ? $this->input->get_post('channel_id') : '';
 		$filter_data['cat_id'] = $this->input->get_post('cat_id');
