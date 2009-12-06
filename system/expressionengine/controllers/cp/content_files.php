@@ -232,13 +232,13 @@ class Content_files extends Controller {
 		$this->javascript->output('
 			$(".toggle_all").toggle(
 				function(){
-					$(".mainTable tbody tr").addClass("selected");
-					$("input[class=toggle]").each(function() {
+					$(this).closest("table").find("tbody tr").addClass("selected");
+					$(this).closest("table").find("input[class=toggle]").each(function() {
 						this.checked = true;
 					});
 				}, function (){
-					$(".mainTable tbody tr").removeClass("selected");
-					$("input[class=toggle]").each(function() {
+					$(this).closest("table").find("tbody tr").removeClass("selected");
+					$(this).closest("table").find("input[class=toggle]").each(function() {
 						this.checked = false;
 					});
 				}
