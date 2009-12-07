@@ -69,13 +69,6 @@ class Textarea_ft extends EE_Fieldtype {
 		$this->field_formatting_row($data, $prefix);
 		$this->text_direction_row($data, $prefix);
 	}
-
-	// --------------------------------------------------------------------
-
-	function save_settings($data)
-	{
-		// nothin'
-	}
 }
 
 // END Textarea_ft class

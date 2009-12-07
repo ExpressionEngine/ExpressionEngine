@@ -108,11 +108,6 @@ class Select_ft extends EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
-
-	function save_settings($data)
-	{
-		// nothin'
-	}
 	
 	function _get_field_options()
 	{

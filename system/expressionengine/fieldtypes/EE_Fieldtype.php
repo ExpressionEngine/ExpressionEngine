@@ -141,6 +141,20 @@ class EE_Fieldtype {
 	{
 		return $data;
 	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Save Settings
+	 *
+	 * @access	public
+	 * @param	array
+	 * @return	void
+	 */
+	function save_settings($data)
+	{
+		return array();
+	}
 }
 
 // END EE_Fieldtype class

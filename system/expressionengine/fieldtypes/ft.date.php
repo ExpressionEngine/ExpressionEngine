@@ -123,13 +123,6 @@ class Date_ft extends EE_Fieldtype {
 			return $tagdata;
 		}
 	}
-	
-	// --------------------------------------------------------------------
-	
-	function save_settings($data)
-	{
-		// nothing special =)
-	}
 }
 
 // END Date_ft class

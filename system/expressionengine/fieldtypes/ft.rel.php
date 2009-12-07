@@ -142,20 +142,6 @@ class Rel_ft extends EE_Fieldtype {
 					lang('limit').NBS.form_dropdown('field_related_max', $field_related_max_options, $data['field_related_max'], 'id="field_related_max"')
 		);
 	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Save Settings
-	 *
-	 * @access	public
-	 * @param	array
-	 * @return	void
-	 */
-	function save_settings($data)
-	{
-		// nothing to do here for now
-	}
 }
 
 // END Rel_ft class

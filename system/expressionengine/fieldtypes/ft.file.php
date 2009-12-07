@@ -243,18 +243,6 @@ class File_ft extends EE_Fieldtype {
 		$prefix = 'file';
 		$this->field_content_type_row($data, $prefix);
 	}
-	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Save settings
-	 *
-	 * @access	public
-	 */
-	function save_settings($data)
-	{
-		// nothing special =)
-	}
 }
 
 // END File_ft class
