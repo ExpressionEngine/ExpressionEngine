@@ -828,7 +828,7 @@ class Member_images extends Member {
 			$query = $this->EE->db->query("SELECT avatar_filename FROM exp_members WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
 			$old_filename = ($query->row('avatar_filename')  == '') ? '' : $query->row('avatar_filename') ;
 
-			if (strpos($old_filname, '/') !== FALSE)
+			if (strpos($old_filename, '/') !== FALSE)
 			{
 				$xy = explode('/', $old_filename);
 				$old_filename =  end($xy);
