@@ -524,7 +524,7 @@ $lang = array(
 */
 
 "config_editor" =>
-"Config File Manager",
+"Config File Editor",
 
 "image_cfg" =>
 "Image Resizing Preferences",

@@ -139,8 +139,8 @@ $lang = array(
 	'nav_import_utilities_short_desc'	=> 'Import Content',
 	"nav_php_info"					=> "PHP Info",
 	'nav_php_info_short_desc'	=> 'Detailed PHP Information',
-	"nav_config_editor"				=> "Config Editor",
-	'nav_config_editor_short_desc'	=> 'Configuration Editor',
+	"nav_config_editor"				=> "Config File Editor",
+	'nav_config_editor_short_desc'	=> 'Configuration File Editor',
 
 "nav_tools_data"	   			=> "Data",
 	"nav_sql_manager"				=> "SQL Manager",
