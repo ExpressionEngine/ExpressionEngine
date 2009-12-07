@@ -1978,17 +1978,22 @@ class Forum_Core extends Forum {
 			
 				if (isset($this->moderators[$row['forum_id']]))
 				{
+					$plural = FALSE;
+					$i = 0;
 					foreach ($this->moderators[$row['forum_id']] as $mod)
 					{
 						$temp = $match2['1'];
 						
 						if ($mod['mod_group_name'] == '')
 						{
+							$plural = ($i++ > 1) ? TRUE : $plural;
 							$temp = str_replace('{path:member_profile}', $this->_profile_path($mod['mod_member_id']), $temp);
 							$temp = str_replace('{name}', $mod['mod_member_name'], $temp);
 						}
 						else
 						{
+							// member groups are always plural since it describes people
+							$plural = TRUE;							
 							$gid = 'memberlist/'.$mod['mod_group_id'].'-total_posts-desc-20-0';
 							$temp = str_replace('{path:member_profile}', $this->_profile_path($gid), $temp);
 							$temp = str_replace('{name}', $mod['mod_group_name'], $temp);
@@ -2005,8 +2010,13 @@ class Forum_Core extends Forum {
 				}
 							
 				$match['1'] = ($mods != '') ? str_replace($match2['0'], $mods, $match['1']) : '';
-				
+							
 				$table_rows = str_replace($match['0'], $match['1'], $table_rows);
+
+				if ($plural)
+				{
+					$table_rows = str_replace('{lang:moderated_by}', '{lang:moderated_by_plural}', $table_rows);
+				}
 			}
 		}
 

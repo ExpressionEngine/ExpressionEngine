@@ -353,6 +353,9 @@ $lang = array(
 "Views",
 
 "moderated_by" =>
+"Moderator:",
+
+"moderated_by_plural" =>
 "Moderators:",
 
 "recent_post" =>
