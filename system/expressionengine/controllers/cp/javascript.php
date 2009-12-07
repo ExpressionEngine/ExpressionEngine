@@ -378,7 +378,7 @@ class Javascript extends Controller {
 	 */
 	function _css_javascript()
 	{
-		return '(function($) {
+		$js = '(function($) {
 			var adv_css = '.$this->_advanced_css().', selector,
 				css_radii = {
 					"border-radius": "",
@@ -391,7 +391,8 @@ class Javascript extends Controller {
 			function process_css(key, value) {
 				if (key.indexOf("@") == -1) {
 
-					var apply_radius = "";
+					var apply_radius = "",
+						jQel = $(key);
 										
 					for (radius in css_radii)
 					{
@@ -401,10 +402,8 @@ class Javascript extends Controller {
 						}
 					}
 					
-					var jQel = $(key);
-					
 					if (apply_radius) {
-						jQel.uncorner();	// yuck, but needed to allow for proper css inheritance
+						jQel.uncorner();	/* allow for proper css inheritance */
 						jQel.corner(apply_radius);
 					}
 
@@ -418,11 +417,11 @@ class Javascript extends Controller {
 			}
 			
 			$(document).ready(function() {
-				for (selector in adv_css) {
-					process_css(selector, adv_css[selector]);
-				}
+				$.each(adv_css, process_css);
 			});
 		})(jQuery)';
+		
+		return str_replace(array("\t", "\n"), '', $js);
 	}
 
 	// --------------------------------------------------------------------
