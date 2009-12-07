@@ -4497,11 +4497,15 @@ class Admin_content extends Controller {
 		
 		// If they returned a native field value as part of their settings instead of changing the post array,
 		// we'll merge those changes into our native settings
-		$ft_native_override	= array_intersect_key($ft_settings, array_flip($native));
-		$native_settings	= array_merge($native_settings, $ft_native_override);
-		$ft_settings		= array_diff_key($ft_settings, $ft_native_override);
 		
-		unset($ft_native_override);
+		foreach($ft_settings as $key => $val)
+		{
+			if (in_array($key, $native))
+			{
+				unset($ft_settings[$key]);
+				$native_settings[$key] = $val;
+			}
+		}
 		
 		// Add our serialized settings @todo we're missing a column - ::facepalm::
 		// $native_settings['field_settings'] = base64_encode(serialize($ft_settings));
