@@ -2205,6 +2205,7 @@ class Forum_mcp {
 		else
 		{
 			$_POST['mod_member_id']	= 0;
+			$_POST['mod_member_name'] = ''; // should go in as NULL but an early version of the Public Beta did not have a default value
 		}
 
 		unset($_POST['mod_id']);

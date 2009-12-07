@@ -788,7 +788,18 @@ class Forum_upd {
 			$this->EE->db->query("ALTER TABLE `exp_forums` CHANGE `forum_notify_emails` `forum_notify_emails` VARCHAR(255) NULL DEFAULT NULL");
 			$this->EE->db->query("ALTER TABLE `exp_forums` CHANGE `forum_notify_emails_topics` `forum_notify_emails_topics` VARCHAR(255) NULL DEFAULT NULL");
 			$this->EE->db->query("ALTER TABLE `exp_forums` CHANGE `forum_order` `forum_order` INT(6) NULL DEFAULT NULL");
+			$this->EE->db->query("ALTER TABLE `exp_forum_moderators` CHANGE `mod_member_name` `mod_member_name` VARCHAR(50) NULL DEFAULT NULL");
 		}
+		
+		/*
+		if ($current < 3.1)
+		{
+			// this ALTER appears in 3.0 update as well, but did not in the initial release of the Public Beta.  So let's do it again in 3.1
+			// to ensure everyone's tables are fine.  At that point, the code in forum_update_moderator() of mcp.forum.php can remove the
+			// setting of 'mod_member_name' to an empty string.
+			$this->EE->db->query("ALTER TABLE `exp_forum_moderators` CHANGE `mod_member_name` `mod_member_name` VARCHAR(50) NULL DEFAULT NULL");
+		}
+		/*
 	}
 
 }
