@@ -4225,6 +4225,7 @@ class Admin_content extends Controller {
 
 		// Prep our own fields
 		$default_values = array(
+			'field_type'			=> 'text',
 			'field_show_fmt'		=> 'n',
 			'field_required'		=> 'n',
 			'field_search'			=> 'n',
