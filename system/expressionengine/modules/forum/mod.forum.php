@@ -1329,8 +1329,7 @@ class Forum {
 				'merge_interface'				=> 'forum_merge',
 			// --------------------------------------------------------
 				'split_page'					=> 'forum_split',
-				'split_form'					=> 'forum_split',
-				'split_thread_data'				=> 'forum_split',
+				'split_data'					=> 'forum_split',
 				'split_thread_rows'				=> 'forum_split',
 			// --------------------------------------------------------
 				'report_page'					=> 'forum_report',
