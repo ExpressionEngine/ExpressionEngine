@@ -1064,7 +1064,6 @@ class Forum_mcp {
 			}
 		}
 
-
 		$topic_ids = array();
 
 		foreach ($del_ids as $id)
@@ -1145,7 +1144,6 @@ class Forum_mcp {
 		
 		$this->EE->db->select('forum_id');
 		$query = $this->EE->db->get('forums');
-		exit($this->EE->db->last_query());
 		$total_topics = 0;
 		$total_posts  = 0;
 		
