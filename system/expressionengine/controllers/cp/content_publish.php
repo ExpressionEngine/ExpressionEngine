@@ -557,14 +557,11 @@ class Content_publish extends Controller {
 		// Create author menu
 		$vars = array_merge_recursive($vars, $this->_build_author_vars($author_id, $channel_id, $show_author_menu));
 
-
-
 		$this->cp->add_js_script(array(
 		        'ui'        => array('datepicker', 'resizable', 'draggable', 'droppable'),
 		        'plugin'    => array('markitup', 'thickbox')
 		    )
-		);
-		
+		);		
 		
 		//	HTML formatting buttons
 		$vars['show_button_cluster'] = $show_button_cluster;
@@ -2508,6 +2505,9 @@ class Content_publish extends Controller {
 		$data = $_POST;
 		$data['cp_call'] = TRUE;
 		$data['revision_post'] = $_POST;
+		$data['author_id'] = $this->input->post('author');
+
+		unset($data['author']);
 
 		$return_url	= ( ! $this->input->post('return_url')) ? '' : $this->input->get_post('return_url');
 		unset($_POST['return_url']);
