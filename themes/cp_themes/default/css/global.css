@@ -842,6 +842,12 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
   text-decoration:underline;
 }
 
+.pageContents a.submit {
+	color:#fff;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+}
+
 /*.pageContents h3 {
 	margin-bottom: 		0!important;
 	border: 			1px solid #ECF1F4;

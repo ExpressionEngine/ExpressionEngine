@@ -77,7 +77,7 @@ if ($EE_view_disable !== TRUE)
 									<?php endforeach; ?>
 								</p>
 							</td>
-							<td style="padding: 5px; font-weight: bold;">
+							<td style="padding: 5px;">
 								<p>
 									<?php if (in_array('tag_install_error', $info['errors'])): ?>
 									<a href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=module_installer'.AMP.'module='.ucfirst($tag_name)?>" rel="external" id="install_<?=$tag_name?>" class="submit install_module">Install Module</a>
