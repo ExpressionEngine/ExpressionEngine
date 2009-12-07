@@ -6519,7 +6519,7 @@ class Forum_Core extends Forum {
 						$data['topic_edit_author']	= $this->EE->session->userdata['member_id'];
 						$data['topic_edit_date']	= $this->EE->localize->now;
 					
-						$this->EE->db->query($this->EE->db->update_string('exp_forum_topics', $data, "topic_id='".$this->EE->input->get_post('topic_id')."'"));
+						$this->EE->db->query($this->EE->db->update_string('exp_forum_topics', $data, array('topic_id' => $this->EE->input->get_post('topic_id'))));
 						$data['topic_id'] = $this->current_id;
 			
 						if ($announcement == 'n')
@@ -6542,7 +6542,7 @@ class Forum_Core extends Forum {
 						}
 						
 						// Update the recent thread title on the home page if necessary
-						$this->EE->db->query("UPDATE exp_forums SET forum_last_post_title = '{$data['title']}' WHERE forum_last_post_id = '{$data['topic_id']}' AND forum_id = '{$fdata['forum_id']}' ");
+						$this->EE->db->update('forums', array('forum_last_post_title' => $data['title']), array('forum_last_post_id' => $data['topic_id'], 'forum_id' => $fdata['forum_id']));
 					}
 										
 				break;
