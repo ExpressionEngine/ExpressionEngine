@@ -799,7 +799,7 @@ class Forum_upd {
 			// setting of 'mod_member_name' to an empty string.
 			$this->EE->db->query("ALTER TABLE `exp_forum_moderators` CHANGE `mod_member_name` `mod_member_name` VARCHAR(50) NULL DEFAULT NULL");
 		}
-		/*
+		*/
 	}
 
 }
