@@ -391,12 +391,6 @@ $lang = array(
 "enable_lock" =>
 "Enable Group Security Lock",
 
-"locked" =>
-"Locked",
-
-"locked" =>
-"Unlocked",
-
 "lock_description" =>
 "When a group is locked, only a Super Admin can assign a member to that group.  If you allow other users to administrate member accounts, it is highly recommended that you ONLY unlock groups you want them to be able to assign other users to.",
 
