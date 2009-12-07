@@ -7012,14 +7012,13 @@ class Forum_Core extends Forum {
 		
 		
 		$data['poll_question']	= $_POST['poll_question'];
-		$data['poll_answers']	= addslashes(serialize($answers));	
+		$data['poll_answers']	= serialize($answers);	
 		
 
 		$query = $this->EE->db->query("SELECT count(*) AS count FROM exp_forum_polls WHERE topic_id = '{$topic_id}'");
 	
 		if ($query->row('count')  == 0)
 		{
-			$data['poll_id']		= '';	
 			$data['author_id']		= $this->EE->session->userdata('member_id');
 			$data['poll_date']		= $this->EE->localize->now;
 			$data['topic_id']		= $topic_id;
