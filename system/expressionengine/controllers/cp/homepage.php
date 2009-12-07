@@ -131,35 +131,7 @@ class Homepage extends Controller {
 					submenu.slideToggle("fast");
 					that.toggleClass("open");
 				}
-				else {
-					var loading = $("<img src=\''.$this->config->slash_item('theme_folder_url').'cp_global_images/loader.gif\' />")
-							.appendTo(document.body)
-							.css({
-								"position" : "absolute",
-								"left" : that.offset().left - 20,
-								"top" : that.offset().top + that.height() / 2 - 8		// offset, center to element, center image
-							});
-					
-					that.siblings(".open").removeClass("open").children("ul").slideUp("fast");
-
-					$.get(url+"&print_redirect", function(response) {
-
-						if (response.substring(0, 9) == "index.php") {
-							window.location.href = response;
-							return;
-						}
-						
-						loading.hide();
-
-						submenu = $("<ul class=\'submenu\'></ul>");
-						instructions = $(response).find(".pageContents h3").text();
-						$("<li><p>"+instructions+"</p></li>").appendTo(submenu);
-
-						$(response).find(".pageContents ul li").appendTo(submenu);
-						submenu.appendTo(that).hide().slideDown("fast");
-						that.addClass("open");
-					}, "html");
-				}
+				
 				$(this).data("working", false);
 			}
 			else {
