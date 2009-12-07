@@ -41,6 +41,8 @@
 	</p>
 	<?=form_close()?>
 
+	<div class="shun"></div>
+
 	<?php if(count($mailinglists) > 0):?>
 
 		<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=view')?>
@@ -58,13 +60,14 @@
 
 		<?=form_close()?>
 
+		<div class="shun"></div>
 
 		<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=subscribe')?>
 
 		<h3><?=lang('ml_batch_subscribe')?></h3>
 
 		<p>
-			<?=lang('ml_add_email_addresses_cont', 'addresses')?>
+			<?=lang('ml_add_email_addresses_cont', 'addresses')?><br />
 			<?=form_textarea('addresses')?>
 		</p>
 
