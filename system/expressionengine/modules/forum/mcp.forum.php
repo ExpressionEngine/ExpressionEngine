@@ -1088,13 +1088,12 @@ class Forum_mcp {
 			$this->EE->db->delete('forum_moderators', array('mod_forum_id' => $id));
 		}
 
-
 		// Kill subscriptions, attachments, and poll votes
 		
 		if (count($topic_ids) > 0)
 		{
 			$this->EE->db->where_in('topic_id', $topic_ids);
-			$this->EE->db->delete(array('forum_subscriptions, forum_attachments, forum_polls, forum_pollvotes'));	
+			$this->EE->db->delete(array('forum_subscriptions', 'forum_attachments', 'forum_polls', 'forum_pollvotes'));	
 		}
 
 		/** -------------------------------------
