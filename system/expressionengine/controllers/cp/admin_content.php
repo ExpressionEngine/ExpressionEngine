@@ -4105,7 +4105,15 @@ class Admin_content extends Controller {
 			
 			foreach ($field_query->row_array() as $key => $val)
 			{
-				$vars[$key] = $val;
+				if ($key == 'field_settings')
+				{
+					$ft_settings = unserialize(base64_decode($val));
+					$vars = array_merge($vars, $ft_settings);
+				}
+				else
+				{
+					$vars[$key] = $val;
+				}
 			}
 			
 			$vars['update_formatting']	= FALSE;
@@ -4181,7 +4189,7 @@ class Admin_content extends Controller {
 				'none'		=> $this->lang->line('none'),
 				'br'		=> $this->lang->line('auto_br'),
 				'xhtml'		=> $this->lang->line('xhtml')
-			);			
+			);
 		}
 		else
 		{
@@ -4212,8 +4220,6 @@ class Admin_content extends Controller {
 				}
 			}
 		}
-
-
 
 		$vars['field_fmt'] = (isset($field_fmt) && $field_fmt != '') ? $field_fmt : 'xhtml';
 
@@ -4438,102 +4444,101 @@ class Admin_content extends Controller {
 
 			show_error($str);
 		}
+		
+		
+		// @todo unset any that aren't our fields and weren't returned by
+		// save settings. Then split between saved_settings and our own fields
+		// and serialize the former to save them.
+		
+		$native = array(
+			'field_id', 'site_id', 'group_id',
+			'field_name', 'field_label', 'field_instructions',
+			'field_type', 'field_list_items', 'field_pre_populate',
+			'field_pre_channel_id', 'field_pre_field_id',
+			'field_related_id', 'field_related_orderby', 'field_related_sort', 'field_related_max',
+			'field_ta_rows', 'field_maxl', 'field_required',
+			'field_text_direction', 'field_search', 'field_is_hidden', 'field_fmt', 'field_show_fmt',
+			'field_order', 'field_content_type'
+		);
 
-		unset($_POST['field_edit_submit']); //submit button
-
-		$_POST['field_list_items'] = isset($_POST['field_list_items']) ? $_POST['field_list_items'] : '';
-
-		if ($_POST['field_list_items'] != '')
+		// Get the field type settings
+		$this->api_channel_fields->fetch_all_fieldtypes();
+		$this->api_channel_fields->setup_handler($field_type);
+		$ft_settings = $this->api_channel_fields->apply('save_settings', $_POST);
+		
+		// Now that they've had a chance to mess with the POST array,
+		// grab post values for the native fields (and check namespaced fields)
+		foreach($native as $key)
 		{
-			// Load the string helper
+			$native_settings[$key] = $this->_get_ft_post_data($field_type, $key);
+		}
+		
+		// Set some defaults
+		$native_settings['field_related_id']		= ($tmp = $this->_get_ft_post_data($field_type, 'field_related_channel_id')) ? $tmp : '0';
+		$native_settings['field_list_items']		= ($tmp = $this->_get_ft_post_data($field_type, 'field_list_items')) ? $tmp : '';
+				
+		$native_settings['field_text_direction']	= ($native_settings['field_text_direction'] !== FALSE) ? $native_settings['field_text_direction'] : 'ltr';
+		$native_settings['field_show_fmt']			= ($native_settings['field_show_fmt'] !== FALSE) ? $native_settings['field_show_fmt'] : 'y';
+		$native_settings['field_fmt']				= ($native_settings['field_fmt'] !== FALSE) ? $native_settings['field_fmt'] : 'xhtml';
+		
+		if ($native_settings['field_list_items'] != '')
+		{
 			$this->load->helper('string');
-
-			$_POST['field_list_items'] = quotes_to_entities($_POST['field_list_items']);
-		}
-
-		if ( ! $this->input->post('field_pre_populate_id'))
-		{
-			$_POST['field_pre_populate'] = 'n';
-		}
-
-		if ($_POST['field_pre_populate'] == 'y')
-		{
-			$x = explode('_', $_POST['field_pre_populate_id']);
-
-			$_POST['field_pre_channel_id']	= $x['0'];
-			$_POST['field_pre_field_id'] = $x['1'];
-		}
-
-		$_POST['field_related_id'] =  (isset($_POST['field_related_channel_id'])) ? $_POST['field_related_channel_id'] : '0';
-
-		unset($_POST['field_related_channel_id']);
-		unset($_POST['field_pre_populate_id']);
-
-		if ( ! in_array($field_type, array('text', 'textarea', 'select', 'rel')))
-		{
-			$_POST['field_text_direction'] = 'ltr';
+			$native_settings['field_list_items'] = quotes_to_entities($native_settings['field_list_items']);
 		}
 		
-		// Field Content Types
-		if (in_array($field_type, array('text', 'file')))
+		if ($native_settings['field_pre_populate'] == 'y')
 		{
-			$_POST['field_content_type'] = $_POST[$field_type.'_'.'field_content_type'];
+			$x = explode('_', $this->_get_ft_post_data($field_type, 'field_pre_populate_id'));
 
-		}
-	
-		unset($_POST['text_field_content_type']);
-		unset($_POST['file_field_content_type']);
-
-		// Field Text Direction
-		if (in_array($field_type, array('text', 'textarea')))
-		{
-			$_POST['field_text_direction'] = (isset($_POST[$field_type.'_'.'field_text_direction'])) ? $_POST[$field_type.'_'.'field_text_direction'] : 'ltr';
-			$_POST['field_fmt'] = (isset($_POST[$field_type.'_'.'field_fmt'])) ? $_POST[$field_type.'_'.'field_fmt'] : 'xhtml';
-			$_POST['field_show_fmt'] = (isset($_POST[$field_type.'_'.'field_show_fmt'])) ? $_POST[$field_type.'_'.'field_show_fmt'] : 'y';
+			$native_settings['field_pre_channel_id']	= $x['0'];
+			$native_settings['field_pre_field_id'] = $x['1'];
 		}
 		
-		unset($_POST['text_field_text_direction']);
-		unset($_POST['textarea_field_text_direction']);
-		unset($_POST['text_field_fmt']);		
-		unset($_POST['textarea_field_fmt']);
-		unset($_POST['text_field_show_fmt']);
-		unset($_POST['textarea_field_show_fmt']);
+		// If they returned a native field value as part of their settings instead of changing the post array,
+		// we'll merge those changes into our native settings
+		$ft_native_override	= array_intersect_key($ft_settings, array_flip($native));
+		$native_settings	= array_merge($native_settings, $ft_native_override);
+		$ft_settings		= array_diff_key($ft_settings, $ft_native_override);
+		
+		unset($ft_native_override);
+		
+		// Add our serialized settings @todo we're missing a column - ::facepalm::
+		// $native_settings['field_settings'] = base64_encode(serialize($ft_settings));
 		
 		// Construct the query based on whether we are updating or inserting
 		if ($edit === TRUE)
 		{
 			$cp_message = $this->lang->line('custom_field_edited');
 
-			if ( ! is_numeric($_POST['field_id']))
+			if ( ! is_numeric($native_settings['field_id']))
 			{
 				return FALSE;
 			}
 			
 			// Date or relationship types don't need formatting.
-			if ($_POST['field_type'] == 'date' OR $_POST['field_type'] == 'rel')
+			if ($field_type == 'date' OR $field_type == 'rel')
 			{
-				$_POST['field_fmt'] = 'none';
-				$_POST['update_formatting'] = 'y';
+				$native_settings['field_fmt'] = 'none';
+				$native_settings['update_formatting'] = 'y';
 			}
 
 			// Update the formatting for all existing entries
 			if (isset($_POST['update_formatting']))
 			{
-				$this->db->query("UPDATE exp_channel_data SET field_ft_".$_POST['field_id']." = '".$this->db->escape_str($_POST['field_fmt'])."'");
+				$this->db->update('channel_data', array('field_ft_'.$native_settings['field_id'], $native_settings['field_fmt']));
 			}
-
-			unset($_POST['group_id']);
-			unset($_POST['update_formatting']);
 
 			// Do we need to alter the table in order to deal with a new data type?
 
-			$query = $this->db->query("SELECT field_type FROM exp_channel_fields WHERE field_id = '".$this->db->escape_str($_POST['field_id'])."'");
+			$this->db->select('field_type');
+			$query = $this->db->get_where('channel_fields', array('field_id' => $native_settings['field_id']));
 
-			if ($query->row('field_type')  != $_POST['field_type'])
+			if ($query->row('field_type') != $field_type)
 			{
 				if ($query->row('field_type')  == 'rel')
 				{
-					$rquery = $this->db->query("SELECT field_id_".$this->db->escape_str($_POST['field_id'])." AS rel_id FROM exp_channel_data WHERE field_id_".$this->db->escape_str($_POST['field_id'])." != '0'");
+					$rquery = $this->db->query("SELECT field_id_".$this->db->escape_str($native_settings['field_id'])." AS rel_id FROM exp_channel_data WHERE field_id_".$this->db->escape_str($native_settings['field_id'])." != '0'");
 
 					if ($rquery->num_rows() > 0)
 					{
@@ -4544,44 +4549,42 @@ class Admin_content extends Controller {
 							$rel_ids[] = $row['rel_id'];
 						}
 
-						$REL_IDS = "('".implode("', '", $rel_ids)."')";
-						$this->db->query("DELETE FROM exp_relationships WHERE rel_id IN {$REL_IDS}");
+						$this->db->where_in('rel_id', $rel_ids);
+						$this->db->delete('relationships');
 					}
 				}
 
 				if ($query->row('field_type')  == 'date')
 				{
-					$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN `field_dt_".$this->db->escape_str($_POST['field_id'])."`");
+					$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN `field_dt_".$this->db->escape_str($native_settings['field_id'])."`");
 				}
 
-				switch($_POST['field_type'])
+				switch($field_type)
 				{
 					case 'date'	:
-						$this->db->query("ALTER IGNORE TABLE exp_channel_data CHANGE COLUMN field_id_".$this->db->escape_str($_POST['field_id'])." field_id_".$this->db->escape_str($_POST['field_id'])." int(10) NOT NULL DEFAULT 0");
-						$this->db->query("ALTER table exp_channel_data CHANGE COLUMN field_ft_".$this->db->escape_str($_POST['field_id'])." field_ft_".$this->db->escape_str($_POST['field_id'])." tinytext NULL");
-						$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_dt_".$this->db->escape_str($_POST['field_id'])." varchar(8) AFTER field_ft_".$this->db->escape_str($_POST['field_id'])."");
+						$this->db->query("ALTER IGNORE TABLE exp_channel_data CHANGE COLUMN field_id_".$this->db->escape_str($native_settings['field_id'])." field_id_".$this->db->escape_str($native_settings['field_id'])." int(10) NOT NULL DEFAULT 0");
+						$this->db->query("ALTER TABLE exp_channel_data CHANGE COLUMN field_ft_".$this->db->escape_str($native_settings['field_id'])." field_ft_".$this->db->escape_str($native_settings['field_id'])." tinytext NULL");
+						$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_dt_".$this->db->escape_str($native_settings['field_id'])." varchar(8) AFTER field_ft_".$this->db->escape_str($native_settings['field_id'])."");
 					break;
 					case 'rel'	:
-						$this->db->query("ALTER IGNORE TABLE exp_channel_data CHANGE COLUMN field_id_".$this->db->escape_str($_POST['field_id'])." field_id_".$this->db->escape_str($_POST['field_id'])." int(10) NOT NULL DEFAULT 0");
-						$this->db->query("ALTER table exp_channel_data CHANGE COLUMN field_ft_".$this->db->escape_str($_POST['field_id'])." field_ft_".$this->db->escape_str($_POST['field_id'])." tinytext NULL");
+						$this->db->query("ALTER IGNORE TABLE exp_channel_data CHANGE COLUMN field_id_".$this->db->escape_str($native_settings['field_id'])." field_id_".$this->db->escape_str($native_settings['field_id'])." int(10) NOT NULL DEFAULT 0");
+						$this->db->query("ALTER TABLE exp_channel_data CHANGE COLUMN field_ft_".$this->db->escape_str($native_settings['field_id'])." field_ft_".$this->db->escape_str($native_settings['field_id'])." tinytext NULL");
 					break;
 					default		:
-						$this->db->query("ALTER TABLE exp_channel_data CHANGE COLUMN field_id_".$this->db->escape_str($_POST['field_id'])." field_id_".$this->db->escape_str($_POST['field_id'])." text");
-						$this->db->query("ALTER table exp_channel_data CHANGE COLUMN field_ft_".$this->db->escape_str($_POST['field_id'])." field_ft_".$this->db->escape_str($_POST['field_id'])." tinytext NULL");
+						$this->db->query("ALTER TABLE exp_channel_data CHANGE COLUMN field_id_".$this->db->escape_str($native_settings['field_id'])." field_id_".$this->db->escape_str($native_settings['field_id'])." text");
+						$this->db->query("ALTER TABLE exp_channel_data CHANGE COLUMN field_ft_".$this->db->escape_str($native_settings['field_id'])." field_ft_".$this->db->escape_str($native_settings['field_id'])." tinytext NULL");
 					break;
 				}
 			}
-			
-			$this->api_channel_fields->fetch_all_fieldtypes();
-			$this->api_channel_fields->setup_handler($_POST['field_type']);
-			$this->api_channel_fields->apply('save_settings', $_POST);
 
-			$this->db->query($this->db->update_string('exp_channel_fields', $_POST, 'field_id='.$this->db->escape_str($_POST['field_id']).' AND group_id='.$group_id));
+			unset($native_settings['group_id']);
+
+			$this->db->where('field_id', $native_settings['field_id']);
+			$this->db->where('group_id', $group_id);
+			$this->db->update('channel_fields', $native_settings);
 		}
 		else
 		{
-			unset($_POST['update_formatting']);
-			
 			$cp_message = $this->lang->line('custom_field_created');
 
 			if ($_POST['field_order'] == 0 OR $_POST['field_order'] == '')
@@ -4590,24 +4593,24 @@ class Admin_content extends Controller {
 				$_POST['field_order'] = $query->row('count')  + 1;
 			}
 			
-			if ( ! $_POST['field_ta_rows'])
+			if ( ! $native_settings['field_ta_rows'])
 			{
-				$_POST['field_ta_rows'] = 0;
+				$native_settings['field_ta_rows'] = 0;
 			}
 
-			// as its new, there wll be no field id, unset it to prevent an empty string from attempting to pass
-			unset($_POST['field_id']);
-
-			$this->db->query($this->db->insert_string('exp_channel_fields', $_POST));
+			// as its new, there will be no field id, unset it to prevent an empty string from attempting to pass
+			unset($native_settings['field_id']);
+			
+			$this->db->insert('channel_fields', $native_settings);
 
 			$insert_id = $this->db->insert_id();
 
-			if ($_POST['field_type'] == 'date' OR $_POST['field_type'] == 'rel')
+			if ($field_type == 'date' OR $field_type == 'rel')
 			{
 				$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$insert_id." int(10) NOT NULL DEFAULT 0");
 				$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_ft_".$insert_id." tinytext NULL");
 
-				if ($_POST['field_type'] == 'date')
+				if ($field_type == 'date')
 				{
 					$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_dt_".$insert_id." varchar(8)");
 				}
@@ -4616,7 +4619,7 @@ class Admin_content extends Controller {
 			{
 				$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$insert_id." text");
 				$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_ft_".$insert_id." tinytext NULL");
-				$this->db->query("UPDATE exp_channel_data SET field_ft_".$insert_id." = '".$this->db->escape_str($_POST['field_fmt'])."'");
+				$this->db->query("UPDATE exp_channel_data SET field_ft_".$insert_id." = '".$this->db->escape_str($native_settings['field_fmt'])."'");
 			}
 
 			// @todo fix it! nonsense...
@@ -4652,6 +4655,11 @@ class Admin_content extends Controller {
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=field_management'.AMP.'group_id='.$group_id);
 
+	}
+	
+	function _get_ft_post_data($field_type, $key)
+	{
+		return (isset($_POST[$key])) ? $_POST[$key] : $this->input->post($field_type.'_'.$key);
 	}
 
 	// --------------------------------------------------------------------

@@ -1402,8 +1402,15 @@ class Content_publish extends Controller {
 				'field_data'			=> $field_data,
 				'field_name'			=> 'field_id_'.$row['field_id'],
 			);
+			
+			$ft_settings = array();
+			
+			if (isset($row['field_settings']) && strlen($row['field_settings']))
+			{
+				$ft_settings = unserialize(base64_decode($row['field_settings']));
+			}
 
-			$settings = array_merge($row, $settings);
+			$settings = array_merge($row, $settings, $ft_settings);
 			
 			$rules = 'call_field_validation['.$row['field_id'].']';
 			
