@@ -1015,16 +1015,15 @@ class Forum_mcp {
 		$this->EE->db->select('forum_name, forum_is_cat');
 		$query = $this->EE->db->get_where('forums', array('forum_id' => $forum_id));
 
-		$r = $this->EE->dsp->delete_confirmation(
-										array(
-												'url'		=> 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum'.AMP.'method=forum_delete',
-												'heading'	=> ($query->row('forum_is_cat')  == 'n') ? 'forum_delete_confirm' : 'forum_delete_cat_confirm',
-												'message'	=> ($query->row('forum_is_cat')  == 'n') ? 'forum_delete_msg' : 'forum_delete_cat_msg',
-												'item'		=> $query->row('forum_name') ,
-												'extra'		=> ($query->row('forum_is_cat')  == 'n') ? 'forum_delete_warning' : 'forum_delete_cat_warning',
-												'hidden'	=> array('forum_is_cat' => $query->row('forum_is_cat') , 'forum_id' => $forum_id)
-											)
-										);
+		$vars = array(
+						'url'		=> 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum'.AMP.'method=forum_delete',
+						'heading'	=> ($query->row('forum_is_cat')  == 'n') ? 'forum_delete_confirm' : 'forum_delete_cat_confirm',
+						'message'	=> ($query->row('forum_is_cat')  == 'n') ? 'forum_delete_msg' : 'forum_delete_cat_msg',
+						'item'		=> $query->row('forum_name') ,
+						'extra'		=> ($query->row('forum_is_cat')  == 'n') ? 'forum_delete_warning' : 'forum_delete_cat_warning',
+						'hidden'	=> array('forum_is_cat' => $query->row('forum_is_cat') , 'forum_id' => $forum_id),
+						'msg'		=> $this->EE->lang->line('forum_delete_confirm')
+				);
 
 		$title = ($query->row('forum_is_cat')  == 'n') ? $this->EE->lang->line('forum_delete_confirm') : $this->EE->lang->line('forum_delete_cat_confirm');
 	
@@ -1032,8 +1031,8 @@ class Forum_mcp {
 						$this->EE->lang->line('forum_manager') => $this->id_base.AMP.'method=forum_management',
 						$title => ''
 					  );
-			
-		return $this->content_wrapper($title, $crumb, $r);
+
+		return $this->content_wrapper('confirm', $title, $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1146,7 +1145,7 @@ class Forum_mcp {
 		
 		$this->EE->db->select('forum_id');
 		$query = $this->EE->db->get('forums');
-		
+		exit($this->EE->db->last_query());
 		$total_topics = 0;
 		$total_posts  = 0;
 		
