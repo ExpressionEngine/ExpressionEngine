@@ -5,9 +5,7 @@
 	{if forum_description}<div class="forumDescription">{forum_description}</div>{/if}
 	{if forum_moderators}
 		<div class="forumLightLinks">{lang:moderated_by}
-			{moderators backspace='1'}
-				<a href="{path:member_profile}">{name}</a>,
-			{/moderators}
+			{moderators backspace='1'}<a href="{path:member_profile}">{name}</a>,{/moderators}
 		</div>
 	{/if}
 </td>
