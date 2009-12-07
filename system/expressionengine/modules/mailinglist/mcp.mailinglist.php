@@ -811,32 +811,28 @@ $("#email").keyup(function() {
 		$j_response['sEcho'] = $sEcho;
 		$j_response['iTotalRecords'] = $total;
 		$j_response['iTotalDisplayRecords'] = $f_total;
-					
 
-		
 		$tdata = array();
 		$i = 0;
-		
+
 		foreach ($query->result_array() as $subscriber)
 		{
-		
 			$m[] = '<a href="mailto:'.$subscriber['email'].'">'.$subscriber['email'].'</a>';
 			$m[] =  $subscriber['ip_address'];
 			$m[] =	isset($lists[$subscriber['list_id']]) ?  $lists[$subscriber['list_id']] : '';
-			$m[] = '<input class="toggle" type="checkbox" name="email[]" value="'.$subscriber['user_id'].'" />';		
+			$m[] = '<input class="toggle" type="checkbox" name="toggle[]" value="'.$subscriber['user_id'].'" />';
 
 			$tdata[$i] = $m;
 			$i++;
 			unset($m);
-		}		
+		}
 
 		$j_response['aaData'] = $tdata;	
 		$sOutput = $this->EE->javascript->generate_json($j_response, TRUE);
-	
+
 		die($sOutput);
-		
 	}
-	
+
 	function mailinglist_search($list_id = '', $email = '', $order = array(), $rownum = 0, $perpage = '')
 	{
 		$perpage = ($perpage == '') ? $this->perpage: $perpage;
