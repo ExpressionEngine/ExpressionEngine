@@ -175,7 +175,7 @@ class Admin_model extends CI_Model {
 										 ),
 
 			'template_cfg'		=>	array(
-											'strict_urls'				=> array('r', array('y' => 'yes', 'n' => 'no')),
+											'strict_urls'				=> array('d', array('y' => 'yes', 'n' => 'no')),
 											'site_404'					=> array('f', 'site_404'),
 											'save_tmpl_revisions'		=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'max_tmpl_revisions'		=> array('i', ''),

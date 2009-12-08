@@ -22,10 +22,17 @@ $lang = array(
 //----------------------------
 
 "404_page" =>
-"Send 404 headers",
+"404 Page",
 
 "site_404_exp" =>
 "Determines which template should be displayed when someone tries to access an invalid URL. Note: If you choose \"None\", your default channel will be shown when an invalid URL is requested.",
+
+"strict_urls" =>
+"Enable Strict URLs",
+
+"strict_urls_exp" =>
+"This feature enforces stricter rules for your URLs, and interacts with the 404 feature below.  Please see user guide for info.",
+
 
 "none" =>
 "None",

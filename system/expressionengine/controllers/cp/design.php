@@ -513,7 +513,6 @@ class Design extends Controller {
 			$vars[$conf] = $this->config->item($conf);
 		}
 
-
         $vars['save_tmpl_revisions_options'] = array(
                                                 'n'    => lang('no'),
                                                 'y'   => lang('yes') 
@@ -523,24 +522,29 @@ class Design extends Controller {
                                                 'n'    => lang('no'),
                                                 'y'   => lang('yes') 
                                                 );
-
-
+		
         $vars['save_tmpl_files_n'] = TRUE;
         $vars['save_tmpl_files_y'] = FALSE;  
         $vars['save_tmpl_revisions_n'] = TRUE;
         $vars['save_tmpl_revisions_y'] = FALSE;  
-        
-        if ($vars['save_tmpl_files'] && $vars['save_tmpl_files'] == 'y')
-        {
-         $vars['save_tmpl_files_n'] = FALSE;
-         $vars['save_tmpl_files_y'] = TRUE;    
-        }
 
-        if ($vars['save_tmpl_revisions'] && $vars['save_tmpl_revisions'] == 'y')
-        {
-         $vars['save_tmpl_revisions_n'] = FALSE;
-         $vars['save_tmpl_revisions_y'] = TRUE;          
-        }
+
+		$vars['strict_urls_options'] = array(
+									            'n'    => lang('no'),
+									            'y'   => lang('yes') 
+											);
+        
+		if ($vars['save_tmpl_files'] && $vars['save_tmpl_files'] == 'y')
+		{
+			$vars['save_tmpl_files_n'] = FALSE;
+			$vars['save_tmpl_files_y'] = TRUE;    
+		}
+
+		if ($vars['save_tmpl_revisions'] && $vars['save_tmpl_revisions'] == 'y')
+		{
+			$vars['save_tmpl_revisions_n'] = FALSE;
+			$vars['save_tmpl_revisions_y'] = TRUE;          
+		}
 
 		$this->javascript->compile();
 		$this->load->view('design/global_template_preferences', $vars);

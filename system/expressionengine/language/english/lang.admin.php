@@ -796,12 +796,6 @@ $lang = array(
 "channel_nomenclature_exp" =>
 "By default, ExpressionEngine uses the word \"channel\" throughout the control panel.  You can change it if you prefer something more generic, like \"section\".  Please note: This word will not change in your templates, only in the control panel.",
 
-"strict_urls" =>
-"Enable Strict URLs",
-
-"strict_urls_info" =>
-"This feature enforces stricter rules for your URLs, and interacts with the 404 feature below.  Please see user guide for info.",
-
 "site_404" =>
 "404 Page",
 

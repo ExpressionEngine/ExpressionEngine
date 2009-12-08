@@ -22,9 +22,18 @@ if ($EE_view_disable !== TRUE)
                 array('data' => lang('preference'), 'style' => 'width:60%;'),
 				lang('setting')
 			);
+
+			// Strict URLs
+			$label = lang('strict_urls', 'strict_urls');
+			$label .= '<div class="subtext">'.lang('strict_urls_exp').'</div>';
+		
+			$this->table->add_row(array(
+					$label,
+					form_dropdown('strict_urls', $strict_urls_options, $strict_urls)
+				)
+			);
 			
 		    // 404 Template
-	
 	        $label = lang('404_page', '404_page').'<br />';
 	        $label .= lang('site_404_exp');
 	
