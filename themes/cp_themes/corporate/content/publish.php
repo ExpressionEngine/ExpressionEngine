@@ -10,10 +10,13 @@ if ($EE_view_disable !== TRUE)
 
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
-	<div class="contents">
+	<div class="contents">		
 		<div class="publishheading">
 			<h2><?=$cp_page_title?></h2>
 		</div>
+		
+		<?php $this->load->view('_shared/message');?>
+		
 		<div class="publishPageContents">      
 <?php if (isset($submission_error)):?>
 		<fieldset class="previewBox" id="previewBox"><legend class="previewItemTitle">&nbsp;<span class='alert'><?=lang('error')?></span>&nbsp;</legend>
