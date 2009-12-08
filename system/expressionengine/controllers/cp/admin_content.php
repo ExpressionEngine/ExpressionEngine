@@ -4522,7 +4522,7 @@ class Admin_content extends Controller {
 			{
 				return FALSE;
 			}
-			
+
 			// Date or relationship types don't need formatting.
 			if ($field_type == 'date' OR $field_type == 'rel')
 			{
