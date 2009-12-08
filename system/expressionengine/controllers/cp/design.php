@@ -3837,13 +3837,17 @@ class Design extends Controller {
 
 		$this->load->model('template_model');
 		
-		if ($no_auth_bounce = $this->input->get_post('no_auth_bounce'))
+		if ($member_group = $this->input->get_post('member_group_id'))
 		{
-			if ( ! ctype_digit($no_auth_bounce))
+			$new_status = $this->input->get_post('new_status');
+			$no_auth_bounce = $this->input->get_post('no_auth_bounce');
+			
+			if (($new_status != 'y' && $new_status != 'n') OR ! ctype_digit($no_auth_bounce))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}
-			
+
+			$this->template_model->update_access_ajax($template_id, $member_group, $new_status);
 			$this->template_model->update_template_ajax($template_id, array('no_auth_bounce' => $no_auth_bounce));
 		}
 		elseif ($enable_http_auth = $this->input->get_post('enable_http_auth'))
@@ -3855,17 +3859,18 @@ class Design extends Controller {
 			
 			$this->template_model->update_template_ajax($template_id, array('enable_http_auth' => $enable_http_auth));
 		}
-		else
+		elseif ($no_auth_bounce = $this->input->get_post('no_auth_bounce'))
 		{
-			$member_group = $this->input->get_post('member_group_id');
-			$new_status = $this->input->get_post('new_status');
-
-			if ($new_status != 'y' && $new_status != 'n')
+			if ( ! ctype_digit($no_auth_bounce))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}
-
-			$this->template_model->update_access_ajax($template_id, $member_group, $new_status);			
+			
+			$this->template_model->update_template_ajax($template_id, array('no_auth_bounce' => $no_auth_bounce));
+		}
+		else
+		{
+			show_error($this->lang->line('unauthorized_access'));
 		}
 
 		exit($this->lang->line('preferences_updated'));

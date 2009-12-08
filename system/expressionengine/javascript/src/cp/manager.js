@@ -268,15 +268,9 @@
 		else
 		{
 			var ids = el.attr('name').replace('access_', '').split('_'),
-				template_id;
+				template_id = (ids.length < 2) ? $('input:hidden[name=template_id]').val() : ids[1];
 
-			if (ids.length < 2) {
-				template_id = $('input:hidden[name=template_id]').val();
-				_access_edit_ajax(el, template_id, ids[0], 'access');
-			}
-			else {
-				_access_edit_ajax(el, ids[1], ids[0], 'access');
-			}			
+			_access_edit_ajax(el, template_id, ids[0], 'access');
 		}
 	}
 
@@ -297,10 +291,14 @@
 				});
 				break;
 			case 'access':
+				var no_auth_bounce = ( ! $(el).closest('.accessTable').length) ?
+										$('.no_auth_bounce').val() :
+										$(el).closest('.accessTable').find('.no_auth_bounce').val();
 				var str = jQuery.param({
 					'template_id': template_id,
 					'member_group_id': m_group_id,
-					'new_status': el.val()
+					'new_status': el.val(),
+					'no_auth_bounce' : no_auth_bounce
 				});
 				break;
 		}
