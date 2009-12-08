@@ -75,6 +75,7 @@ class Design extends Controller {
 		{
 			$this->sub_breadcrumbs = array(
 				'global_variables'				=> BASE.AMP.'C=design'.AMP.'M=global_variables',
+				'snippets'						=> BASE.AMP.'C=design'.AMP.'M=snippets',
 				'sync_templates'				=> BASE.AMP.'C=design'.AMP.'M=sync_templates',
 				'global_template_preferences'	=> BASE.AMP.'C=design'.AMP.'M=global_template_preferences',
 				'template_preferences_manager'	=> BASE.AMP.'C=design'.AMP.'M=template_preferences_manager'
