@@ -298,7 +298,7 @@ class Category_model extends CI_Model {
 	{
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->where('cat_url_title', $cat_url_title);
-		$this->db->where('group_id != '.$group_id);
+		$this->db->where('group_id', $group_id);
 		$this->db->from('categories');
 
 		if ($cat_id != '')

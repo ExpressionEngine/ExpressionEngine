@@ -2293,6 +2293,7 @@ class Admin_content extends Controller {
 			$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_management');
 		}
 
+		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 		$this->load->library('api');
 		$this->api->instantiate('channel_categories');
