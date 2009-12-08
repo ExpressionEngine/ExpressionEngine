@@ -26,7 +26,7 @@ if ( ! defined('EXT'))
 
 class Ip_to_nation_upd {
 
-	var $version = '2.0';
+	var $version = '2.1';
 
 	/**
 	  * Constructor
@@ -180,9 +180,9 @@ class Ip_to_nation_upd {
 			return FALSE;
 		}
 
-		// Version 1.3 uses data based on 11/02/2009 sql from ip2nation.com
+		// Version 2.1 uses data based on 11/02/2009 sql from ip2nation.com + some love for East Timor
 
-		if ($current < 1.3)
+		if ($current < 2.1)
 		{
 			if ( ! include_once($this->_ee_path.'modules/ip_to_nation/iptonation.php'))
 			{
