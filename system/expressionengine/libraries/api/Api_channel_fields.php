@@ -256,8 +256,10 @@ class Api_channel_fields extends Api {
 	function apply($method, $parameters = array())
 	{
 		$this->EE->load->add_package_path($this->ft_paths[$this->field_type]);
-		return call_user_func_array(&array($this->field_types[$this->field_type], $method), $parameters);
+		$res = call_user_func_array(array(&$this->field_types[$this->field_type], $method), $parameters);
 		$this->EE->load->remove_package_path($this->ft_paths[$this->field_type]);
+		
+		return $res;
 	}
 }
 
