@@ -5741,12 +5741,12 @@ class Admin_content extends Controller {
 		if ($type == 'edit')
 		{
 			$this->cp->set_variable('cp_page_title', $this->lang->line('edit_file_upload_preferences'));
-			$vars['lang_line'] = 'edit_file_upload_preferences';
+			$vars['lang_line'] = 'update';
 		}
 		else
 		{
 			$this->cp->set_variable('cp_page_title', $this->lang->line('new_file_upload_preferences'));
-			$vars['lang_line'] = 'create_new_upload_pref';
+			$vars['lang_line'] = 'submit';
 		}
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences', $this->lang->line('file_upload_preferences'));
