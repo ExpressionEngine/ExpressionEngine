@@ -1484,6 +1484,12 @@ if they are all converted, delete this */
 	position: relative;
 }
 
+#templates label {
+	font-weight: bold;
+	line-height:140%;
+	margin-bottom:3px;
+}
+
 #templateGroups .column {
 	padding:			0 12px 0 18px;
 }

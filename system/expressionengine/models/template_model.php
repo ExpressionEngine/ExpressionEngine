@@ -152,11 +152,10 @@ class Template_model extends CI_Model {
 	 * @access	public
 	 * @return	array
 	 */
-	function update_template_ajax($template_id, $group_id, $data)
+	function update_template_ajax($template_id, $data)
 	{
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->where('template_id', $template_id);
-		$this->db->where('group_id', $group_id);
 
 		$this->db->update('templates', $data);
 
@@ -217,7 +216,7 @@ class Template_model extends CI_Model {
 	 * Update Access Ajax Details
 	 *
 	 * Used when editing template access prefs inline from the manager
-	 *
+	 * @confirm - this isn't used?
 	 * @access	public
 	 * @return	bool
 	 */

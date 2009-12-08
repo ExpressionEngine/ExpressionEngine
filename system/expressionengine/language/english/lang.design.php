@@ -616,14 +616,7 @@ ExpressionEngine tags, variables, or PHP, consider <a href ="%s">Global Variable
 
 'enable_http_authentication_subtext' =>
 "If turned on, users from the allowed groups above will have to login via their 
-username and password to view the template.  This would allow you, for example, 
-to protect an RSS/Atom feed for a restricted channel from unauthorized users, 
-but Feed Readers with HTTP Authentication support will be able to retrieve the feed.
-There are security considerations with HTTP Authentication, so please read the documentation.",
-
-'enable_http_authentication_note' =>
-"If the login fails, the user will receive a 401 Not Authorized page and not the redirect template above.
-Also, this ability is typically only available when PHP is run as an Apache module.",
+username and password to view the template.",
 
 'http_auth_protected' =>
 'HTTP Auth Protected',

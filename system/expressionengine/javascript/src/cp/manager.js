@@ -206,12 +206,26 @@
 	function createAccessRow(template_id, currentrow, rowdata) {
 		var headerrow = $('<tr class="accessRowHeader"><td colspan="6">'+access_template+'</td></tr>');
 
+		// no_auth_bounce field
+		headerrow.find('.no_auth_bounce').val(rowdata.no_auth_bounce);
+		headerrow.find('.no_auth_bounce').attr({
+			'id': 'no_auth_bounce_'+template_id,
+			'name': 'no_auth_bounce_'+template_id
+		});
+		
+		// http auth
+		headerrow.find(".enable_http_auth").val(rowdata.enable_http_auth);
+		headerrow.find('.enable_http_auth').attr({
+			'id': 'enable_http_auth_'+template_id,
+			'name': 'enable_http_auth_'+template_id
+		});
+		
 		// Set data, ids, and names
 	
 		// Radio Buttons
 		set_radio_buttons(headerrow, template_id);
 	
-		$.each(rowdata, function(id, data) {
+		$.each(rowdata.access, function(id, data) {
 			var radio_y = headerrow.find('#access_'+id+'_'+template_id+'_y');
 			var radio_n = headerrow.find('#access_'+id+'_'+template_id+'_n');
 		
@@ -241,25 +255,54 @@
 	function access_edit_ajax(el)
 	{
 		// access_gid_tid
-		var ids = el.attr('name').replace('access_', '').split('_'),
-			template_id;
-		
-		if (ids.length < 2) {
-			template_id = $('input:hidden[name=template_id]').val();
-			_access_edit_ajax(el, template_id, ids[0]);
+		if (el.attr('name').substr(0, 14) == 'no_auth_bounce')
+		{
+			_access_edit_ajax(el, el.attr('name').substr(15), '', 'no_auth_bounce');
 		}
-		else {
-			_access_edit_ajax(el, ids[1], ids[0]);
+		else if (el.attr('name').substr(0, 16) == 'enable_http_auth')
+		{
+			_access_edit_ajax(el, el.attr('name').substr(17), '', 'enable_http_auth');
+		}
+		else
+		{
+			var ids = el.attr('name').replace('access_', '').split('_'),
+				template_id;
+
+			if (ids.length < 2) {
+				template_id = $('input:hidden[name=template_id]').val();
+				_access_edit_ajax(el, template_id, ids[0], 'access');
+			}
+			else {
+				_access_edit_ajax(el, ids[1], ids[0], 'access');
+			}			
 		}
 	}
 
-	function _access_edit_ajax(el, template_id, m_group_id)
+	function _access_edit_ajax(el, template_id, m_group_id, kind)
 	{
-		var str = jQuery.param({
-			'template_id': template_id,
-			'member_group_id': m_group_id,
-			'new_status': el.val()
-		});
+		switch (kind)
+		{
+			case 'no_auth_bounce':
+				var str = jQuery.param({
+					'template_id': template_id,
+					'no_auth_bounce': el.val()
+				});
+				break;
+			case 'enable_http_auth':
+				var str = jQuery.param({
+					'template_id': template_id,
+					'enable_http_auth': el.val()
+				});
+				break;
+			case 'access':
+				var str = jQuery.param({
+					'template_id': template_id,
+					'member_group_id': m_group_id,
+					'new_status': el.val()
+				});
+				break;
+		}
+		
 
 		$.ajax({
 			type: "POST",
@@ -280,7 +323,7 @@
 			holder_data,
 			template_id, group_id, group_name, template_type,
 			cache, refresh, allow_php, php_parse_location, hits;
-	
+
 		if (holder.length < 1) {
 			holder = $(this).closest('.templateEditorTable');
 		}

@@ -136,6 +136,17 @@ if ($EE_view_disable !== TRUE)
 							<tr>
 								<td>Select All</td>
 								<td><?=lang('yes')?> <input type="radio" name="select_all_bottom" id="select_all_bottom_y" class="ignore_radio" value="y" /> &nbsp; <?=lang('no')?> <input type="radio" name="select_all_bottom" id="select_all_bottom_n" class="ignore_radio" value="n" /></td>
+							<tr>
+								<td><?=lang('no_access_select_blurb', 'no_auth_bounce')?><div class="subtext"><?=lang('no_access_instructions')?></div></td>
+								<td><?=form_dropdown('no_auth_bounce', $no_auth_bounce_options, '', 'class="no_auth_bounce"')?></td>
+							</tr>
+							<tr>
+								<td>
+									<?=lang('enable_http_authentication', 'enable_http_auth')?>
+									<div class="subtext"><?=lang('enable_http_authentication_subtext')?></div>
+								</td>
+								<td><?=form_dropdown('enable_http_auth',  array('y' => lang('yes'), 'n' => lang('no')), '', 'class="enable_http_auth"')?></td>
+							</tr>
 							</tr>
 						</table>
 					</div>
@@ -187,7 +198,9 @@ if ($EE_view_disable !== TRUE)
 									'allow_php' => $template['allow_php'],
 									'php_parsing' => $template['php_parse_location'],
 									'hits' => $template['hits'],
-									'access' => $template['access']
+									'access' => $template['access'],
+									'no_auth_bounce' => $template['no_auth_bounce'],
+									'enable_http_auth' => $template['enable_http_auth']
 								);
 								
 								$delete_link = ($template['template_name'] == 'index') ? '--' :

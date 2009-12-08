@@ -2699,7 +2699,7 @@ class Design extends Controller {
 	/** -----------------------------
 	/**  Template Member Access
 	/** -----------------------------*/
-	
+	// @confirm - remove no longer used
 	function template_access($template_id = '')
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
@@ -3515,7 +3515,7 @@ class Design extends Controller {
 
 			$(".show_access_link").click(function() {
 				id = $(this).attr("id").replace("show_access_link_","");					
-				EE.manager.showAccessRow(id, EE.pref_json[id]["access"], this);
+				EE.manager.showAccessRow(id, EE.pref_json[id], this);
 				return false;
 			});
 		');
@@ -3701,6 +3701,17 @@ class Design extends Controller {
 			}
 		}
 		
+		$vars['no_auth_bounce_options'] = array();
+		if ($this->cp->allowed_group('can_admin_templates'))
+		{
+			$query = $this->template_model->get_templates();
+			
+			foreach ($query->result_array() as $row)
+			{
+				$vars['no_auth_bounce_options'][$row['template_id']] = $row['group_name'].'/'.$row['template_name'];
+			}
+		}
+		
 		//$first_template = reset($vars['template_groups']->result_array());
 		$first_template = reset($vars['template_groups']);
 		$vars['first_template'] = $first_template['group_id'];
@@ -3740,11 +3751,11 @@ class Design extends Controller {
 			exit($this->lang->line('unauthorized_access'));
 		}
 
-		$group_id = $this->input->get_post('group_id');
-		
+		$template_id = $this->input->get_post('template_id');
+				
 		// in an ajax call this doesn't make too much sense, but it'll stop
 		// anything from running and prevent direct malicious page access
-		if ( ! $this->_template_access_privs(array('group_id' => $group_id)))
+		if ( ! $this->_template_access_privs(array('template_id' => $template_id)))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -3752,8 +3763,6 @@ class Design extends Controller {
 		$this->output->enable_profiler(FALSE);
 
 		$this->load->model('template_model');
-
-		$template_id = $this->input->get_post('template_id');
 
 		$data = array(
 						'template_name' 		=> $this->input->get_post('group_name'),
@@ -3779,7 +3788,7 @@ class Design extends Controller {
 			}
 		}
 
-		if ($this->template_model->update_template_ajax($template_id, $group_id, $data) OR $trigger_preference_notice)
+		if ($this->template_model->update_template_ajax($template_id, $data) OR $trigger_preference_notice)
 		{
 			exit($this->lang->line('preferences_updated'));
 		}
@@ -3813,15 +3822,37 @@ class Design extends Controller {
 
 		$this->load->model('template_model');
 		
-		$member_group = $this->input->get_post('member_group_id');
-		$new_status = $this->input->get_post('new_status');
-		
-		if ($new_status != 'y' && $new_status != 'n')
+		if ($no_auth_bounce = $this->input->get_post('no_auth_bounce'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			if ( ! ctype_digit($no_auth_bounce))
+			{
+				show_error($this->lang->line('unauthorized_access'));
+			}
+			
+			$this->template_model->update_template_ajax($template_id, array('no_auth_bounce' => $no_auth_bounce));
 		}
-						
-		$this->template_model->update_access_ajax($template_id, $member_group, $new_status);
+		elseif ($enable_http_auth = $this->input->get_post('enable_http_auth'))
+		{
+			if ($enable_http_auth != 'y' && $enable_http_auth != 'n')
+			{
+				show_error($this->lang->line('unauthorized_access'));
+			}
+			
+			$this->template_model->update_template_ajax($template_id, array('enable_http_auth' => $enable_http_auth));
+		}
+		else
+		{
+			$member_group = $this->input->get_post('member_group_id');
+			$new_status = $this->input->get_post('new_status');
+
+			if ($new_status != 'y' && $new_status != 'n')
+			{
+				show_error($this->lang->line('unauthorized_access'));
+			}
+
+			$this->template_model->update_access_ajax($template_id, $member_group, $new_status);			
+		}
+
 		exit($this->lang->line('preferences_updated'));
 	}
 
