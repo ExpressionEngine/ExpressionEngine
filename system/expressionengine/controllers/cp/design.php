@@ -1737,6 +1737,8 @@ class Design extends Controller {
 		$vars['template_name']		= $query->row('template_name') ; 
 		$vars['template_notes']		= $query->row('template_notes') ; 
 		$vars['save_template_file'] = ($query->row('save_template_file') != 'y') ? FALSE : TRUE ; 
+		$vars['no_auth_bounce']		= $query->row('no_auth_bounce');
+		$vars['enable_http_auth']	= $query->row('enable_http_auth');
 		
 		foreach(array('template_type', 'cache', 'refresh', 'allow_php', 'php_parse_location', 'hits') as $pref)
 		{
@@ -1745,6 +1747,8 @@ class Design extends Controller {
 
 		$vars['prefs']['template_size'] = $this->session->userdata('template_size');
 
+
+		
 		// now that we have the info, we can set the breadcrumb and page titles
 		$this->cp->set_variable('cp_page_title', $this->lang->line('edit_template').' ('.$vars['template_group'].' / '.$vars['template_name'].')');
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, $this->lang->line('template_manager'));
@@ -1990,6 +1994,17 @@ class Design extends Controller {
 		foreach($vars['member_groups'] as $mgroup_id => $group)
 		{
 			$vars['access'][$mgroup_id] = isset($denied_groups[$template_id][$mgroup_id]) ? FALSE : TRUE;
+		}
+
+		$vars['no_auth_bounce_options'] = array();
+		if ($this->cp->allowed_group('can_admin_templates'))
+		{
+			$query = $this->template_model->get_templates();
+			
+			foreach ($query->result_array() as $row)
+			{
+				$vars['no_auth_bounce_options'][$row['template_id']] = $row['group_name'].'/'.$row['template_name'];
+			}
 		}
 		
 		$vars['warnings'] = $warnings;
