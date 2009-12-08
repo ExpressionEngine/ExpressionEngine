@@ -1630,7 +1630,11 @@ class Sites extends Controller {
 		
 		$this->config->core_ini['site_id'] = $site_id;
 		
-		$this->stats->update_comment_stats();
+		if ($do_comments === TRUE)
+		{
+			$this->stats->update_comment_stats();			
+		}
+
 		$this->stats->update_member_stats();
 		$this->stats->update_channel_stats();
         
