@@ -883,7 +883,7 @@ class EE_Typography extends CI_Typography {
 			
 			$bad_things	 = array("'",'"', ';', '[', '(', ')', '!', '*', '>', '<', "\t", "\r", "\n", 'document.cookie'); // everything else
 			$bad_things2 = array('[', '(', ')', '!', '*', '>', '<', "\t", 'document.cookie'); // style,title attributes
-			$exceptions	 = array('http://', 'https://', 'irc://', 'feed://', 'ftp://', 'ftps://', 'mailto:', '/');
+			$exceptions	 = array('http://', 'https://', 'irc://', 'feed://', 'ftp://', 'ftps://', 'mailto:', '/', '#');
 			$allowed	 = array('rel', 'title', 'class', 'style', 'target');
 			
 			if (preg_match_all("/\[url(.*?)\](.*?)\[\/url\]/i", $str, $matches))
