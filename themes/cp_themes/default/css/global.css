@@ -1147,7 +1147,6 @@ table.mainTable th {
 	padding:			9px 8px 10px 8px;
 	border-left:		1px solid #45555f;
 	cursor:				pointer;
-	white-space:		nowrap;
 }
 
 table.mainTable thead {
