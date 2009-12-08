@@ -1977,10 +1977,10 @@ class Forum_Core extends Forum {
 			if (preg_match("/\{moderators.*?\}(.*?){\/moderators\}/s", $match['1'], $match2))
 			{	
 				$mods = '';
-			
+				$plural = FALSE;
+								
 				if (isset($this->moderators[$row['forum_id']]))
 				{
-					$plural = FALSE;
 					$i = 0;
 					foreach ($this->moderators[$row['forum_id']] as $mod)
 					{
