@@ -850,7 +850,7 @@ class Member_images extends Member {
 		/** -------------------------------------*/
 		require APPPATH.'_to_be_replaced/lib.upload'.EXT;
 
-		$UP = new Upload();
+		$this->EE->UP = new Upload();
 
 		$this->EE->UP->new_name = $new_filename;
 
