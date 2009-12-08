@@ -1373,6 +1373,8 @@ class Api_channel_entries extends Api {
 			$this->_cache['dst_enabled'] = (isset($data['dst_enabled']) && $data['dst_enabled'] == 'y') ? 'y' : 'n';
 		}
 		
+		$this->instantiate('channel_fields');
+
 		foreach($this->EE->api_channel_fields->settings as $field_id => $settings)
 		{
 			$field_name = $settings['field_name'];
@@ -1383,17 +1385,6 @@ class Api_channel_entries extends Api {
 				$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
 			}
 		}
-/*
-		// Call custom field save method
-		foreach($data as $field_name => $value)
-		{
-			if (is_string($value) && isset($this->EE->api_channel_fields->settings[$value]))
-			{
-				$this->EE->api_channel_fields->setup_handler($field_name);
-				$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($value));
-			}
-		}
-*/
 	}
 	
 	// --------------------------------------------------------------------
