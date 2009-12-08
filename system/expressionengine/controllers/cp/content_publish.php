@@ -1806,7 +1806,14 @@ class Content_publish extends Controller {
 		');
 
 		$this->javascript->click(".write_mode_trigger", array(
-																'field_for_writemode_publish = "field_"+$(this).attr("id");',
+																'if ($(this).attr("id").match(/^id_\d+$/))
+																{
+																	field_for_writemode_publish = "field_"+$(this).attr("id");
+																}
+																else
+																{
+																	field_for_writemode_publish = $(this).attr("id").replace(/id_/, \'\');
+																}',
 																'// put contents from other page into here',
 																'$("#write_mode_textarea").val($("#"+field_for_writemode_publish).val());',
 																'$("#write_mode_textarea").focus();'
@@ -3517,9 +3524,9 @@ class Content_publish extends Controller {
 					'field_type' 			=> 'text',
 					'field_maxl' 			=> 100
 				);
-				
+
 				$this->field_definitions['forum_body'] = array(
-					'string_override'		=> form_textarea('forum_body', $vars['forum_body']),
+					'string_override'		=> form_textarea(array('name' => 'forum_body', 'id' => 'forum_body'), $vars['forum_body']),
 					'field_id'				=> 'forum_body',
 					'field_label'			=> $this->lang->line('forum_body'),
 					'field_name'			=> 'forum_body',

@@ -187,7 +187,7 @@ if ($EE_view_disable !== TRUE)
 								<?php endif;?>
 
 								<?php if($spell_enabled):?>
-								<a href="#" class="spellcheck_link" id="spelltrigger_field_id_<?=$f['field_id']?>" title="<?=lang('check_spelling')?>"><img src="<?=$cp_theme_url.'images/spell_check_icon.png'?>" style="margin-bottom: -8px;" alt="<?=lang('check_spelling')?>" /></a>
+								<a href="#" class="spellcheck_link" id="spelltrigger_<?=(ctype_digit($f['field_id']))?'field_id_':''?><?=$f['field_id']?>" title="<?=lang('check_spelling')?>"><img src="<?=$cp_theme_url.'images/spell_check_icon.png'?>" style="margin-bottom: -8px;" alt="<?=lang('check_spelling')?>" /></a>
 								<?php endif;?>
 								<a href="#" class="glossary_link" title="<?=lang('glossary')?>"><img src="<?=$cp_theme_url.'images/spell_check_glossary.png'?>" style="margin-bottom: -8px;" alt="<?=lang('glossary')?>" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 								<?php if ($smileys_enabled):?>
@@ -212,7 +212,7 @@ if ($EE_view_disable !== TRUE)
 							{
 								if ($spell_enabled)
 								{
-									echo build_spellcheck('field_id_'.$f['field_id']);
+									echo (ctype_digit($f['field_id'])) ? build_spellcheck('field_id_'.$f['field_id']) : build_spellcheck($f['field_id']);
 								}
 								echo $glossary_items;
 								if ($smileys_enabled)
