@@ -4527,7 +4527,8 @@ class Admin_content extends Controller {
 			if ($field_type == 'date' OR $field_type == 'rel')
 			{
 				$native_settings['field_fmt'] = 'none';
-				$native_settings['update_formatting'] = 'y';
+				$native_settings['field_show_fmt'] = 'n';
+				$_POST['update_formatting'] = 'y';
 			}
 
 			// Update the formatting for all existing entries
