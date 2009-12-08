@@ -4533,7 +4533,7 @@ class Admin_content extends Controller {
 			// Update the formatting for all existing entries
 			if (isset($_POST['update_formatting']))
 			{
-				$this->db->update('channel_data', array('field_ft_'.$native_settings['field_id'], $native_settings['field_fmt']));
+				$this->db->update('channel_data', array('field_ft_'.$native_settings['field_id'] => $native_settings['field_fmt']));
 			}
 
 			// Do we need to alter the table in order to deal with a new data type?
