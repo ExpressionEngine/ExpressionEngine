@@ -111,7 +111,7 @@ h3 {
 .lighttext {
 	font-family:		Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
 	font-size:			10px;
-	color:				#73769D;
+	color:				#8F9A9C;
 	padding:			4px 0 2px 0;
 	background-color:	transparent;
 }
@@ -233,6 +233,7 @@ padding: 0 0 0 4px;
 	border-bottom:		#585C9C 1px solid;
 }
 
+/*
 .profileTopBox {
 	background:	#F0F0F2 url({path:image_url}bg_profile_box.jpg) repeat-x left top;
 	margin:		0;
@@ -255,6 +256,21 @@ padding: 0 0 0 4px;
 	padding:			1px;
 	margin-top:		1px;
 	margin-bottom:		3px;
+}
+*/
+
+.profileTopBox, .profilePhoto, .innerShade {
+	background:#F4F6F6 none repeat scroll 0 0;
+	border:1px solid #98A5AD;
+	padding:10px;
+}
+
+.profileTopBox {
+	border-right: 0;
+}
+
+.profilePhoto {
+	border-left: 0;
 }
 
 .avatar {
@@ -288,7 +304,7 @@ padding: 0 0 0 4px;
 	border-bottom:			1px solid #98A5AD;
 }
 
-.menuHeadingBG, .tableHeadingBG, .profileHeadingBG {
+.menuHeadingBG, .tableHeadingBG, .profileHeadingBG, tableRowHeading, .tableRowHeadingBold {
 	background:		#95A5AE;
 	color:				#fff;
 	padding:			6px 6px 6px 6px;
@@ -296,6 +312,10 @@ padding: 0 0 0 4px;
 	-moz-border-radius-topright: 10px;
 	-webkit-border-top-right-radius: 10px;
 	-webkit-border-top-left-radius: 10px;
+	text-shadow:		0 1px 0 #666666;
+	font-family:		Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+	font-size:20px;
+	font-weight:normal;
 }
 
 .profileMenu {
@@ -388,14 +408,14 @@ padding: 0 0 0 4px;
 	border-right:		1px solid #fff;
 	background-color:	#B8B9D1;
 }
-
+/*
 .innerShade {
 	background-color:	#DDE1E7;
 	border:			1px solid #74779D;
 	margin:			0;
 	padding:			10px;
 }
-
+*/
 /*
 	Table Formatting
 ------------------------------------------------------ */
@@ -428,17 +448,8 @@ padding: 0 0 0 4px;
 	padding:			6px 6px 6px 6px;
 	border-bottom:		1px solid #fff;
 }*/
-.tableHeading {
-	font-family:		Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
-	font-size:20px;
-	font-weight:normal;
 
-	color:				#fff;
-	padding:			0;
-	margin:			0;
-	background-color:	transparent;
-	text-shadow:		0 1px 0 #666666;
-}
+/*
 .tableRowHeading, .tableRowHeadingBold {
 	background: #C9CAE2 url({path:image_url}bg_table_row_heading.jpg) repeat-x left top;
 	font-family:		Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
@@ -453,7 +464,7 @@ padding: 0 0 0 4px;
 .tableRowHeadingBold {
 font-weight: bold;
 }
-
+*/
 /*
 .tableCellOne {
 	background: #F0F0F2 url({path:image_url}bg_table_td_one.jpg) repeat-x left top;
