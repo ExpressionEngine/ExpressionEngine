@@ -1193,6 +1193,13 @@ table.mainTable td.id {
 	border-left:		0;
 }
 
+table.mainTable th:last-child {
+	border-right: 1px solid #45555f!important;
+}
+
+table.mainTable td:last-child {
+	border-right: 1px solid #d0d7df!important;
+}
 
 #mainContent .mainTable th a,
 #mainContent .mainTable th a:visited,
