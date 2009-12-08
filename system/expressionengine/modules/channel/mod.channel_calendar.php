@@ -772,9 +772,9 @@ class Channel_calendar extends Channel {
 				{
 					$str = str_replace(LD.$k.RD, $v, $str);
 				}
-
+				
 				// Day path
-				foreach ($val['10'] as $k => $v)
+				foreach ($val['9'] as $k => $v)
 				{
 					$str = str_replace(LD.$k.RD, $v, $str);
 				}
