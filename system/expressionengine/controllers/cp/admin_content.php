@@ -970,7 +970,9 @@ class Admin_content extends Controller {
 		$channel_id = $this->input->post('channel_id');
 		$data['field_group'] = ($this->input->post('field_group') != FALSE && $this->input->post('field_group') != '') ? $this->input->post('field_group') : NULL;
 		$data['status_group'] = ($this->input->post('status_group') != FALSE && $this->input->post('status_group') != '') ? $this->input->post('status_group') : NULL;
-		
+
+		$this->lang->loadfile('admin_content');
+
 		if (isset($_POST['cat_group']) && is_array($_POST['cat_group']))
 		{
 			$data['cat_group'] = implode('|', $_POST['cat_group']);
