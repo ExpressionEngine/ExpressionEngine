@@ -13,6 +13,18 @@ jQuery(document).ready(function() {
 var $ = jQuery;
 
 
+// Setup Global Ajax Events
+
+// A 401 in combination with a url indicates a redirect, we use this
+// on the login page to catch periodic ajax requests (e.g. autosave)
+
+$(document).bind('ajaxComplete', function(evt, xhr) {
+	if (xhr.hasOwnProperty('status') && xhr.status == 401) {
+		document.location = EE.BASE+'&'+xhr.responseText;
+	}
+});
+
+
 // OS X Style Search Boxes for Webkit
 
 function safari_search_boxes() {
@@ -46,7 +58,7 @@ function show_hide_sidebar() {
 	var w = {'revealSidebarLink': '77%', 'hideSidebarLink': '100%'},
 		main_content = $("#mainContent");
 	
-	$('#revealSidebarLink, #hideSidebarLink', '#sideBar').click(function() {
+		$('#revealSidebarLink, #hideSidebarLink').click(function() {
 		var that = $(this),
 			other = $(this).siblings('a');
 		
@@ -233,7 +245,7 @@ $("#activeUser").one("mouseover", function() {
 		// Won't redirect on unload
 		$.ajax({
 			url: EE.BASE+"&C=login&M=logout",
-			async: ($.browser.safari) ? false : true
+			async: ( ! $.browser.safari)
 		});
 
 		// Redirect

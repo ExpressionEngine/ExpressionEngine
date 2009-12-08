@@ -71,6 +71,14 @@ class Login extends Controller {
 	 */	
 	function login_form()
 	{
+		// If an ajax request ends up here the user is probably logged out
+		if ($this->input->server('HTTP_X_REQUESTED_WITH') && ($this->input->server('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'))
+		{
+			$this->output->set_status_header(401);
+			die('C=login');
+		}
+		
+		
 		$this->load->helper('form');
 		
 		$message = $this->session->flashdata('message');
