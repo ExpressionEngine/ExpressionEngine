@@ -4105,7 +4105,7 @@ class Admin_content extends Controller {
 			
 			foreach ($field_query->row_array() as $key => $val)
 			{
-				if ($key == 'field_settings')
+				if ($key == 'field_settings' && $val)
 				{
 					$ft_settings = unserialize(base64_decode($val));
 					$vars = array_merge($vars, $ft_settings);
@@ -4168,15 +4168,12 @@ class Admin_content extends Controller {
 			$this->db->where('group_id', $row['field_group']);
 			$this->db->order_by('field_label','ASC');
 			$rez = $this->db->get('channel_fields');
+			
+			$vars['field_pre_populate_id_options'][$row['channel_title']] = array();
 
-			if ($rez->num_rows() > 0)
+			foreach ($rez->result_array() as $frow)
 			{
-				$vars['field_pre_populate_id_options'][$row['channel_title']] = array();
-
-				foreach ($rez->result_array() as $frow)
-				{
-					$vars['field_pre_populate_id_options'][$row['channel_title']][$row['channel_id'].'_'.$frow['field_id']] = $frow['field_label'];
-				}
+				$vars['field_pre_populate_id_options'][$row['channel_title']][$row['channel_id'].'_'.$frow['field_id']] = $frow['field_label'];
 			}
 		}
 
