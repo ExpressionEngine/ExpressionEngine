@@ -602,6 +602,7 @@ class Design extends Controller {
 			widgets: ["zebra"]
 		}');
 
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', $this->lang->line('template_manager'));
 		$this->cp->set_variable('cp_page_title', $this->lang->line('snippets'));
 
 		$vars['snippets'] = $this->template_model->get_snippets();
@@ -666,7 +667,8 @@ class Design extends Controller {
 		}
 
 		$this->cp->set_variable('cp_page_title', $vars['create_edit']);
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=snippets', lang('snippets'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', $this->lang->line('template_manager'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=snippets', $this->lang->line('snippets'));
 		
 		$this->javascript->compile();
 		$this->load->view('design/snippets_edit', $vars);
@@ -801,6 +803,9 @@ class Design extends Controller {
 		}
 		else
 		{
+			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', $this->lang->line('template_manager'));
+			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=snippets', $this->lang->line('snippets'));
+			
 			$this->cp->set_variable('cp_page_title', $this->lang->line('delete_snippet'));				
 			$this->load->view('design/snippets_delete', $snippet);
 		}
