@@ -45,6 +45,11 @@ class Text_ft extends EE_Fieldtype {
 	
 	function validate($data)
 	{
+		if ($data == '')
+		{
+			return TRUE;
+		}
+		
 		if ( ! isset($this->field_content_types))
 		{
 			$this->field_content_types = $this->EE->field_model->get_field_content_types();
