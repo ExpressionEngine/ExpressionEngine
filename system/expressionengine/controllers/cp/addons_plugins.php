@@ -86,12 +86,12 @@ class Addons_plugins extends Controller {
 			$(".toggle_all").toggle(
 				function(){
 					$(".mainTable tbody tr").addClass("selected");
-					$("input[class=toggle]").each(function() {
+					$("input.toggle").each(function() {
 						this.checked = true;
 					});
 				}, function (){
 					$(".mainTable tbody tr").removeClass("selected");
-					$("input[class=toggle]").each(function() {
+					$("input.toggle").each(function() {
 						this.checked = false;
 					});
 				}

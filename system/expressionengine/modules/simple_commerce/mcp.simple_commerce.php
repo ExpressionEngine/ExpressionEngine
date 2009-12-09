@@ -540,12 +540,12 @@ class Simple_commerce_mcp {
 			$this->EE->javascript->output(array(
 					'$(".toggle_all").toggle(
 						function(){
-							$("input[class=toggle]").each(function() {
+							$("input.toggle").each(function() {
 								this.checked = true;
 							});
 						}, function (){
 							var checked_status = this.checked;
-							$("input[class=toggle]").each(function() {
+							$("input.toggle").each(function() {
 								this.checked = false;
 							});
 						}
@@ -996,12 +996,12 @@ class Simple_commerce_mcp {
 			$this->EE->javascript->output(array(
 					'$(".toggle_all").toggle(
 						function(){
-							$("input[class=toggle]").each(function() {
+							$("input.toggle").each(function() {
 								this.checked = true;
 							});
 						}, function (){
 							var checked_status = this.checked;
-							$("input[class=toggle]").each(function() {
+							$("input.toggle").each(function() {
 								this.checked = false;
 							});
 						}
@@ -1547,12 +1547,12 @@ class Simple_commerce_mcp {
 			$this->EE->javascript->output(array(
 					'$(".toggle_all").toggle(
 						function(){
-							$("input[class=toggle]").each(function() {
+							$("input.toggle").each(function() {
 								this.checked = true;
 							});
 						}, function (){
 							var checked_status = this.checked;
-							$("input[class=toggle]").each(function() {
+							$("input.toggle").each(function() {
 								this.checked = false;
 							});
 						}
@@ -2252,12 +2252,12 @@ MAGIC;
 		$this->EE->javascript->output('
 			$(".toggle_all").toggle(
 				function(){		
-					$("input[class=toggle]").each(function() {
+					$("input.toggle").each(function() {
 						this.checked = true;
 					});
 				}, function (){
 					var checked_status = this.checked;
-					$("input[class=toggle]").each(function() {
+					$("input.toggle").each(function() {
 						this.checked = false;
 					});
 				}

@@ -130,12 +130,12 @@ class Members extends Controller {
 		
 			$(".toggle_all").toggle(
 				function(){		
-					$("input[class=toggle]").each(function() {
+					$("input.toggle").each(function() {
 						this.checked = true;
 					});
 				}, function (){
 					var checked_status = this.checked;
-					$("input[class=toggle]").each(function() {
+					$("input.toggle").each(function() {
 						this.checked = false;
 					});
 				}
@@ -3739,7 +3739,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$this->javascript->output('
 			$("#toggle_all").click(function() {
 				var checked_status = this.checked;
-				$("input[class=toggle]").each(function() {
+				$("input.toggle").each(function() {
 					this.checked = checked_status;
 				});
 			});

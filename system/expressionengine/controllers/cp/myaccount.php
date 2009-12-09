@@ -1226,12 +1226,12 @@ class MyAccount extends Controller {
 		$this->javascript->output('
 			$(".toggle_all").toggle(
 				function(){
-					$("input[class=toggle]").each(function() {
+					$("input.toggle").each(function() {
 						this.checked = true;
 					});
 				}, function (){
 					var checked_status = this.checked;
-					$("input[class=toggle]").each(function() {
+					$("input.toggle").each(function() {
 						this.checked = false;
 					});
 				}
@@ -2982,12 +2982,12 @@ class MyAccount extends Controller {
 		$this->javascript->output('
 			$(".toggle_all").toggle(
 				function(){
-					$("input[class=toggle]").each(function() {
+					$("input.toggle").each(function() {
 						this.checked = true;
 					});
 				}, function (){
 					var checked_status = this.checked;
-					$("input[class=toggle]").each(function() {
+					$("input.toggle").each(function() {
 						this.checked = false;
 					});
 				}

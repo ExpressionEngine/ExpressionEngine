@@ -233,18 +233,18 @@ class Content_files extends Controller {
 			$(".toggle_all").toggle(
 				function(){
 					$(this).closest("table").find("tbody tr").addClass("selected");
-					$(this).closest("table").find("input[class=toggle]").each(function() {
+					$(this).closest("table").find("input.toggle").each(function() {
 						this.checked = true;
 					});
 				}, function (){
 					$(this).closest("table").find("tbody tr").removeClass("selected");
-					$(this).closest("table").find("input[class=toggle]").each(function() {
+					$(this).closest("table").find("input.toggle").each(function() {
 						this.checked = false;
 					});
 				}
 			);
 
-			$("input[class=toggle]").each(function() {
+			$("input.toggle").each(function() {
 				this.checked = false;
 			});
 
@@ -883,16 +883,6 @@ class Content_files extends Controller {
 				}
 			);
 
-			// Submission validation, basically we just want to make sure they
-			// have tried at least 1 "edit" before they submit
-			$("#image_edit_form").submit(function (){
-				if ($("#crop_fieldset").is(":hidden") && $("#resize_fieldset").is(":hidden") && $("#rotate_fieldset").is(":hidden"))
-				{
-					$.ee_notice("'.$this->lang->line('no_edit_selected').'", {"type" : "notice"});
-					return false; // kill the form submission
-				}
-			});
-
 			function cropCoords(coords)
 			{
 				$("#crop_x").val(Math.floor(coords.x));
@@ -1357,7 +1347,6 @@ class Content_files extends Controller {
 		}
 		else
 		{
-			$this->session->set_flashdata('message_success', $this->lang->line('image_edit_success'));
 			$this->functions->redirect($url);
 		}
 	}
