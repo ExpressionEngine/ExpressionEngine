@@ -972,10 +972,10 @@ username and password to view the template.",
 'The Module is not Installed',
 
 'tag_no_closing_tag_error' =>
-'No closing tag found.  Note: some modules have tags that do not require closing tags.',
+'No closing tag found.  Note: some tags do not require closing.',
 
 'tag_docs_link_error' =>
-'If you experience problems, please consult the module\'s <a href="%s">documentation</a>.',
+'Please consult the module\'s <a href="%s">documentation</a> if you experience problems.',
 
 'tag_class_error' =>
 'Invalid tag (no such plugin or module)',
