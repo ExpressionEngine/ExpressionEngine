@@ -870,7 +870,7 @@ class Content_publish extends Controller {
 		
 		$edit_categories_link = FALSE; //start off as false, meaning user does not have privs
 
-		if ($which == 'new' AND $deft_category != '')
+		if ($which == 'new' AND $deft_category != '' AND $show_categories_menu == 'n')
 		{
 			$vars['form_hidden']['category'][] = $deft_category;
 		}
@@ -993,7 +993,7 @@ class Content_publish extends Controller {
 				});
 			');
 		}
-		
+
 		$this->_define_category_fields($vars['categories'], $edit_categories_link);
 
 		// ----------------------------------------------
@@ -1806,14 +1806,7 @@ class Content_publish extends Controller {
 		');
 
 		$this->javascript->click(".write_mode_trigger", array(
-																'if ($(this).attr("id").match(/^id_\d+$/))
-																{
-																	field_for_writemode_publish = "field_"+$(this).attr("id");
-																}
-																else
-																{
-																	field_for_writemode_publish = $(this).attr("id").replace(/id_/, \'\');
-																}',
+																'field_for_writemode_publish = "field_"+$(this).attr("id");',
 																'// put contents from other page into here',
 																'$("#write_mode_textarea").val($("#"+field_for_writemode_publish).val());',
 																'$("#write_mode_textarea").focus();'
@@ -3524,10 +3517,10 @@ class Content_publish extends Controller {
 					'field_type' 			=> 'text',
 					'field_maxl' 			=> 100
 				);
-
+				
 				$this->field_definitions['forum_body'] = array(
-					'string_override'		=> form_textarea(array('name' => 'forum_body', 'id' => 'forum_body'), $vars['forum_body']),
-					'field_id'				=> 'forum_body',
+					'string_override'		=> form_textarea('forum_body', $vars['forum_body']),
+					'field_id'				=> 'a',
 					'field_label'			=> $this->lang->line('forum_body'),
 					'field_name'			=> 'forum_body',
 					'field_required' 		=> 'n',
