@@ -262,19 +262,19 @@ class Member_settings extends Member {
 			$is_admin = FALSE;
 			if ($admin_query->num_rows() > 0)
 			{
-				foreach ($admin_query->result_array() as $row)
+				foreach ($admin_query->result_array() as $admin)
 				{
-					if ($row['admin_member_id'] != 0)
+					if ($admin['admin_member_id'] != 0)
 					{
-						if ($row['admin_member_id'] == $this->cur_id)
+						if ($admin['admin_member_id'] == $this->cur_id)
 						{
 							$is_admin = TRUE;
 							break;
 						}
 					}
-					elseif ($row['admin_group_id'] != 0)
+					elseif ($admin['admin_group_id'] != 0)
 					{
-						if ($row['admin_group_id'] == $row['group_id'] )
+						if ($admin['admin_group_id'] == $row['group_id'] )
 						{
 							$is_admin = TRUE;
 							break;
