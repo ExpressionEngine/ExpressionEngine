@@ -31,7 +31,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->set_heading(
 									lang('server_name'),
 									lang('server_url'),
-									lang('port'),
+									array('data' => lang('port'), 'style' => 'width:30px'),
 									lang('protocol'),
 									lang('is_default'),
 									lang('server_order'),
@@ -41,9 +41,9 @@ if ($EE_view_disable !== TRUE)
 			foreach($ping_servers as $i => $server)
 			{
 				$this->table->add_row(
-					form_input("server_name_$i", $server['server_name']),
-					form_input("server_url_$i", $server['server_url']),
-					form_input("server_port_$i", $server['port']),
+					form_input(array('name' => "server_name_{$i}", 'value' => $server['server_name'], 'class' => 'field')),
+					form_input(array('name' => "server_url_{$i}", 'value' => $server['server_url'], 'class' => 'field     ')),
+					form_input(array('name' => "server_port_{$i}", 'value' => $server['port'], 'style' => 'width:30px')),
 					form_dropdown('ping_protocol_'.$i, $protocols, $server['ping_protocol']),
 					form_dropdown('is_default_'.$i, $is_default_options, $server['is_default']),
 					array(
@@ -59,9 +59,9 @@ if ($EE_view_disable !== TRUE)
 			}
 
 			$this->table->add_row(
-				form_input("server_name_$blank_count", ''),
-				form_input("server_url_$blank_count", ''),
-				form_input("server_port_$blank_count", '80'),
+				form_input(array('name' => "server_name_{$blank_count}", 'value' => '', 'class' => 'field')),
+				form_input(array('name' => "server_url_{$blank_count}", 'value' => '', 'class' => 'field')),
+				form_input(array('name' => "server_port_{$blank_count}", 'value'=>'80', 'style' => 'width:30px')),
 				form_dropdown('ping_protocol_'.$blank_count, $protocols),
 				form_dropdown('is_default_'.$blank_count, $is_default_options),
 				array(
