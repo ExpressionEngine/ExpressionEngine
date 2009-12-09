@@ -36,6 +36,8 @@ class Cp {
 
 	var $footer_item = array();
 	
+	var $installed_modules = FALSE;
+	
 	/**
 	 * Constructor
 	 *
@@ -633,6 +635,39 @@ class Cp {
 		{
 			return TRUE;			
 		}
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Is Module Installed?
+	 *
+	 * Returns array of installed modules.
+	 *
+	 * @access public
+	 * @return array
+	 */
+
+	function get_installed_modules()
+	{
+	    if ( ! is_array($this->installed_modules))
+	    {
+	        $this->installed_modules = array();
+
+	        $this->EE->db->select('LOWER(module_name) AS name');
+	        $this->EE->db->order_by('module_name');
+	        $query = $this->EE->db->get('modules');
+
+	        if ($query->num_rows())
+	        {
+				foreach($query->result_array() as $row)
+				{
+					$this->installed_modules[$row['name']] = $row['name'];					
+				}
+	        }
+	    }
+
+	    return $this->installed_modules;
 	}
 
 	// --------------------------------------------------------------------
