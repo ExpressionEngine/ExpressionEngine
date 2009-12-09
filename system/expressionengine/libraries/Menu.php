@@ -248,8 +248,6 @@ class EE_Menu {
 		{
 			$menu['design']['themes']['member_profile_templates'] = BASE.AMP."C=design".AMP."M=member_profile_templates";
 		}
-	
-		$menu['help'] = $this->generate_help_link();
 
 		$menu = $this->_remove_blocked_menu_items($menu);
 		$menu = $this->_add_overviews($menu);
@@ -261,6 +259,11 @@ class EE_Menu {
 
 		$menu_string = $this->_process_menu($menu);
 		$menu_string .= $this->_process_menu($this->_fetch_quick_tabs(), 0, FALSE);
+
+		// Help link comes last
+		$menu_string .= $this->_process_menu(array('help' => $this->generate_help_link()));
+		
+		// Visit Site / MSM Switcher gets an extra class
 		$menu_string .= $this->_process_menu($this->_fetch_site_list(), 0, FALSE, 'msm_sites');
 
 		$this->EE->load->vars('menu_string', $menu_string);
