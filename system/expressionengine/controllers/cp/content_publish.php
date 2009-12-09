@@ -1634,7 +1634,9 @@ class Content_publish extends Controller {
 					$vars['publish_tabs']['publish'][$field] = $field_display;
 				}
 			}
-
+			
+			$field_display['is_hidden'] = FALSE;
+			
 			// show options tab?
 			if ($show_options_cluster != 'n')
 			{
