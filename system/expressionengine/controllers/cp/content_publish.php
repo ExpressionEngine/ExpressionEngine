@@ -3734,15 +3734,14 @@ class Content_publish extends Controller {
 
 			$("#toggle_member_groups_all").toggle(
 				function(){
-					$("input[class=toggle_member_groups]").each(function() {
+					$("input.toggle_member_groups").each(function() {
 						this.checked = true;
 					});
 				}, function (){
-					$("input[class=toggle_member_groups]").each(function() {
+					$("input.toggle_member_groups").each(function() {
 						this.checked = false;
 					});
-				},
-				false
+				}
 			);
 
 			$(".delete_field").toggle(
