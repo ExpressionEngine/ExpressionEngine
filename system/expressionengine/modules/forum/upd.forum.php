@@ -770,6 +770,24 @@ class Forum_upd {
 				
 		if ($current < 3.0)
 		{
+			// the forum subscription table now uses a primary key of topic_id-member_id, so there may be
+			// multiple identical rows if a member was subscribed to two or more threads that were later merged.
+			// Find them.  Eliminate them!
+			$query = $this->EE->db->query("SELECT COUNT(*) AS count, topic_id, member_id
+											FROM exp_forum_subscriptions
+											GROUP BY topic_id
+											HAVING count > 1
+											ORDER BY count DESC");
+
+			if ($query->num_rows() > 0)
+			{
+				foreach ($query->result_array() as $row)
+				{
+					// delete all but one subscription matching this topic_id-member_id combo
+					$this->EE->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '{$row['topic_id']}' AND member_id = '{$row['member_id']}' LIMIT ".($row['count'] - 1));
+				}
+			}
+
 			$this->EE->db->query("ALTER TABLE `exp_forum_read_topics` DROP KEY `member_id`");
 			$this->EE->db->query("ALTER TABLE `exp_forum_read_topics` ADD PRIMARY KEY `member_id_board_id` (`member_id`, `board_id`)");
 			$this->EE->db->query("ALTER TABLE `exp_forum_subscriptions` DROP KEY `topic_id`");
