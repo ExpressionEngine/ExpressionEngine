@@ -180,7 +180,7 @@ if ($EE_view_disable !== TRUE)
 								&& $f['field_id'] != 'pages_uri' 
 								&& $f['field_id'] != 'forum_title' 
 								&& $f['field_id'] != 'forum_topic_id' 
-								&& ( ! isset($f['field_content_type']) OR $f['field_content_type'] == 'any')):
+								&& (empty($f['field_content_type']) OR $f['field_content_type'] == 'any')):
 							?>
 							<p class="spellcheck">
 								<?php if ($f['field_type'] == 'textarea'):?>

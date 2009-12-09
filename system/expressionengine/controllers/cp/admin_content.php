@@ -4485,6 +4485,8 @@ class Admin_content extends Controller {
 		$native_settings['field_show_fmt']			= ($native_settings['field_show_fmt'] !== FALSE) ? $native_settings['field_show_fmt'] : 'y';
 		$native_settings['field_fmt']				= ($native_settings['field_fmt'] !== FALSE) ? $native_settings['field_fmt'] : 'xhtml';
 		
+		$native_settings['field_content_type']		= ($native_settings['field_content_type'] !== FALSE) ? $native_settings['field_content_type'] : 'any';
+		
 		if ($native_settings['field_list_items'] != '')
 		{
 			$this->load->helper('string');
