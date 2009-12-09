@@ -27,7 +27,7 @@ class Content_publish extends Controller {
 	var $SPELL				= FALSE;
 	var $autosave_error		= FALSE;
 	
-	var $installed_modules	= array();
+	var $installed_modules	= FALSE;
 	var $field_definitions	= array();
 
 	var $theme_img_url		= ''; // Path to the cp theme images, set up during init
@@ -52,12 +52,7 @@ class Content_publish extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		$query = $this->db->query("SELECT LOWER(module_name) as name FROM exp_modules");
-
-		foreach($query->result_array() as $row)
-		{
-			$this->installed_modules[$row['name']] = $row['name'];
-		}
+		$this->installed_modules = $this->cp->get_installed_modules();
 
 		$cp_theme = ($this->session->userdata['cp_theme'] == '') ? $this->config->item('cp_theme') : $this->session->userdata['cp_theme'];
 
@@ -772,14 +767,17 @@ class Content_publish extends Controller {
 		// ----------------------------------------------
 		//	DATE BLOCK
 		// ----------------------------------------------
-		
-		if ($comment_expiration_date == '' OR $comment_expiration_date == 0)
+		if (isset($this->installed_modules['comment']))
 		{
-			if ($comment_expiration > 0 AND $which != 'edit')
+			if ($comment_expiration_date == '' OR $comment_expiration_date == 0)
 			{
-				$comment_expiration_date = $comment_expiration * 86400;
-				$comment_expiration_date = $comment_expiration_date + $this->localize->now;
+				if ($comment_expiration > 0 AND $which != 'edit')
+				{
+					$comment_expiration_date = $comment_expiration * 86400;
+					$comment_expiration_date = $comment_expiration_date + $this->localize->now;
+				}
 			}
+			
 		}
 
 		if ($which == 'edit')
@@ -800,10 +798,13 @@ class Content_publish extends Controller {
 			{
 				$expiration_date = $this->localize->offset_entry_dst($expiration_date, $dst_enabled, FALSE);
 			}
-
-			if ($comment_expiration_date != '' AND $comment_expiration_date != 0)
+			if (isset($this->installed_modules['comment']))
 			{
-				$comment_expiration_date = $this->localize->offset_entry_dst($comment_expiration_date, $dst_enabled, FALSE);
+				if ($comment_expiration_date != '' AND $comment_expiration_date != 0)
+				{
+					$comment_expiration_date = $this->localize->offset_entry_dst($comment_expiration_date, $dst_enabled, FALSE);
+				}
+				
 			}
 		}
 
@@ -813,18 +814,28 @@ class Content_publish extends Controller {
 
 		$cal_entry_date = ($this->localize->set_localized_time($entry_date) * 1000);
 		$cal_expir_date = ($expiration_date == '' OR $expiration_date == 0) ? $this->localize->set_localized_time() * 1000 : $this->localize->set_localized_time($expiration_date) * 1000;
-		$cal_com_expir_date = ($comment_expiration_date == '' OR $comment_expiration_date == 0) ? $this->localize->set_localized_time() * 1000: $this->localize->set_localized_time($comment_expiration_date) * 1000;
+		if (isset($this->installed_modules['comment']))
+		{
+			$cal_com_expir_date = ($comment_expiration_date == '' OR $comment_expiration_date == 0) ? $this->localize->set_localized_time() * 1000: $this->localize->set_localized_time($comment_expiration_date) * 1000;			
+		}
 
 		if ($show_date_menu == 'n' OR ! array_key_exists('date', $layout_info))
 		{
 			$vars['form_hidden']['entry_date'] = $loc_entry_date;
 			$vars['form_hidden']['expiration_date'] = $loc_expiration_date;
-			$vars['form_hidden']['comment_expiration_date'] = $loc_comment_expiration_date;
+
+			if (isset($this->installed_modules['comment']))
+			{
+				$vars['form_hidden']['comment_expiration_date'] = $loc_comment_expiration_date;				
+			}
 		}
 		
 		$this->_define_default_date_field('entry_date', $this->localize->convert_human_date_to_gmt($loc_entry_date));
 		$this->_define_default_date_field('expiration_date', $this->localize->convert_human_date_to_gmt($loc_expiration_date));
-		$this->_define_default_date_field('comment_expiration_date', $this->localize->convert_human_date_to_gmt($loc_comment_expiration_date));
+		if (isset($this->installed_modules['comment']))
+		{
+			$this->_define_default_date_field('comment_expiration_date', $this->localize->convert_human_date_to_gmt($loc_comment_expiration_date));			
+		}
 
 
 		// ----------------------------------------------
