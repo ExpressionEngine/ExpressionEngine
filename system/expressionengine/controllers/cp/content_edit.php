@@ -25,7 +25,7 @@
 class Content_edit extends Controller {
 
 	var $nest_categories	= 'y';
-	var $installed_modules	= array();
+	var $installed_modules	= FALSE;
 	
 	var $comment_chars			= 25;
 	var $comment_leave_breaks	= 'n';
@@ -310,12 +310,18 @@ class Content_edit extends Controller {
 
 		// If we're filtering using ajax, we redirect comment only searches
 		// So- pass along the filter in the url
+		if (isset($this->installed_modules['comment']))
+		{
+			$comment_url = '&ajax=true';
+
+			$comment_url .= ($filter_data['channel_id'] != '') ? '&channel_id='.$filter_data['channel_id'] : '';
+			$comment_url .= ($filter_data['keywords'] != '') ? '&keywords='.base64_encode($filter_data['keywords']) : '';
+		}
 		
-		$comment_url = '&ajax=true';
+		$table_columns = (isset($this->installed_modules['comment'])) ? '"aoColumns": [null, null, { "bSortable" : false }, null, null, null, null, null, { "bSortable" : false } ],' : '"aoColumns": [null, null, { "bSortable" : false }, null, null, null, null, { "bSortable" : false } ],';
 
-		$comment_url .= ($filter_data['channel_id'] != '') ? '&channel_id='.$filter_data['channel_id'] : '';
-		$comment_url .= ($filter_data['keywords'] != '') ? '&keywords='.base64_encode($filter_data['keywords']) : '';
 
+		
 	
 	$this->javascript->output('
 var oCache = {
@@ -463,7 +469,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			"bAutoWidth": false,
 			"iDisplayLength": '.$perpage.',  
 
-		"aoColumns": [null, null, { "bSortable" : false }, null, null, null, null, null, { "bSortable" : false } ],
+		'.$table_columns.'
 			
 			
 		"oLanguage": {
@@ -759,7 +765,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		{		
 			$rownum = 0;
 		}
-		
+
 		if ($filter_data['search_in'] == 'comments')
 		{
 			$rownum = $this->input->get('current_page') ? $this->input->get('current_page') : 0;
