@@ -3528,9 +3528,9 @@ class Content_publish extends Controller {
 					'field_type' 			=> 'text',
 					'field_maxl' 			=> 100
 				);
-				
+
 				$this->field_definitions['forum_body'] = array(
-					'string_override'		=> form_textarea('forum_body', $vars['forum_body']),
+					'string_override'		=> form_textarea(array('name' => 'forum_body', 'value' => $vars['forum_body'], 'id' => 'forum_body')),
 					'field_id'				=> 'forum_body',
 					'field_label'			=> $this->lang->line('forum_body'),
 					'field_name'			=> 'forum_body',
