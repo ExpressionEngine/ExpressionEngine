@@ -592,7 +592,7 @@ class EE_Config Extends CI_Config {
 		}
 
 		// Do path checks if needed
-		$paths = array('sig_img_path', 'avatar_path', 'photo_path', 'captcha_path', 'prv_msg_upload_path');
+		$paths = array('sig_img_path', 'avatar_path', 'photo_path', 'captcha_path', 'prv_msg_upload_path', 'theme_folder_path');
 
 		foreach ($paths as $val)
 		{
