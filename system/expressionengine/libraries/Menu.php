@@ -921,7 +921,7 @@ class EE_Menu {
 		}
 
 
-		if ($class == 'addons_modules' && $module !== FALSE OR ($module = $this->EE->input->get('module')) !== FALSE)
+		if ($class == 'addons_modules' && ($module !== FALSE OR ($module = $this->EE->input->get('module')) !== FALSE))
 		{
 			// check for native / third-party, build link accordingly
 			if (in_array($module, $this->EE->core->native_modules))
@@ -935,7 +935,7 @@ class EE_Menu {
 				// as well as something useful to do when they have not done so
 				// -- maybe not display a help button when it's a guess?
 				
-				$module = $this->EE->functions->sanitize_filename($this->EE->input->get('module'));
+				$module = $this->EE->functions->sanitize_filename($module);
 
 				if (file_exists(PATH_THIRD.$module.'/config/help_menu'.EXT))
 				{

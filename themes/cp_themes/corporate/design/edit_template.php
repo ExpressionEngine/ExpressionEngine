@@ -72,12 +72,15 @@ if ($EE_view_disable !== TRUE)
 					<?php foreach($warnings as $tag_name => $info): ?>
 						<tr>
 							<td>
-								{exp:<?=$tag_name?> &hellip;<br />
-								<p style="font-weight: bold;">
+								<strong>{exp:<?=$tag_name?> &hellip;</strong><br />
+								<ul>
 									<?php foreach(array_unique($info['errors']) as $error): ?>
-									<?=lang($error)?><br />
+									<li><?=($error == 'tag_docs_link_error') ?
+										str_replace('%s', $this->menu->generate_help_link('addons_modules', '', FALSE, $tag_name), lang($error)) :
+										lang($error)?>
+									</li>
 									<?php endforeach; ?>
-								</p>
+								</ul>
 							</td>
 							<td style="padding: 5px; font-weight: bold;">
 								<p>
