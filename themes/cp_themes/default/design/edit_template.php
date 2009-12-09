@@ -71,11 +71,14 @@ if ($EE_view_disable !== TRUE)
 						<tr>
 							<td>
 								{exp:<?=$tag_name?> &hellip;<br />
-								<p style="font-weight: bold;">
+								<ul style="font-weight: bold;">
 									<?php foreach(array_unique($info['errors']) as $error): ?>
-									<?=lang($error)?><br />
+									<li><?=($error == 'tag_docs_link_error') ?
+										str_replace('%s', $this->menu->generate_help_link('addons_modules', '', FALSE, $tag_name), lang($error)) :
+										lang($error)?>
+									</li>
 									<?php endforeach; ?>
-								</p>
+								</ul>
 							</td>
 							<td style="padding: 5px;">
 								<p>

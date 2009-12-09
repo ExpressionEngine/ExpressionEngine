@@ -2233,7 +2233,15 @@ class Design extends Controller {
 				
 				if ( ! in_array($name, $plugins))
 				{
-					$this->_add_warning($name, $tag, 'class');
+					if (in_array($name, $modules))
+					{
+						$this->_add_warning($name, $tag, 'no_closing_tag');
+						$this->_add_warning($name, $tag, 'docs_link');
+					}
+					else
+					{
+						$this->_add_warning($name, $tag, 'class');
+					}
 				}
 			}
 		}

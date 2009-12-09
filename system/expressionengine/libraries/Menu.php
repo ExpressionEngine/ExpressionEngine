@@ -739,7 +739,7 @@ class EE_Menu {
 	 * @access	public
 	 * @return	string
 	 */
-	function generate_help_link($class = '', $method = '', $override = FALSE)
+	function generate_help_link($class = '', $method = '', $override = FALSE, $module = FALSE)
 	{
 		if ($class == '')
 		{
@@ -921,7 +921,7 @@ class EE_Menu {
 		}
 
 
-		if ($class == 'addons_modules' && ($module = $this->EE->input->get('module')) !== FALSE)
+		if ($class == 'addons_modules' && $module !== FALSE OR ($module = $this->EE->input->get('module')) !== FALSE)
 		{
 			// check for native / third-party, build link accordingly
 			if (in_array($module, $this->EE->core->native_modules))
