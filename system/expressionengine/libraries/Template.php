@@ -299,7 +299,27 @@ class EE_Template {
 						
 			return;
 		}
-	
+
+		/** -------------------------------------
+		/**  Parse manual variables and Snippets
+		/** -------------------------------------*/
+		
+		// These are variables that can be set in the path.php file
+		
+		if (count($this->EE->config->_global_vars) > 0)
+		{
+			$this->log_item("Snippets (Keys): ".implode('|', array_keys($this->EE->config->_global_vars)));
+			$this->log_item("Snippets (Values): ".trim(implode('|', $this->EE->config->_global_vars)));
+		
+			foreach ($this->EE->config->_global_vars as $key => $val)
+			{
+				$this->template = str_replace(LD.$key.RD, $val, $this->template);
+			}
+			
+			// in case any of these variables have EE comments of their own
+			$this->template = $this->remove_ee_comments($this->template);
+		}
+			
 		/** -------------------------------------
 		/**  Parse URI segments
 		/** -------------------------------------*/
@@ -349,26 +369,7 @@ class EE_Template {
 			$this->global_vars[$site_var] = stripslashes($this->EE->config->item($site_var));
 		}
 		
-		/** -------------------------------------
-		/**  Parse manual variables
-		/** -------------------------------------*/
-		
-		// These are variables that can be set in the path.php file
-		
-		if (count($this->EE->config->_global_vars) > 0)
-		{
-			$this->log_item("Global Path.php Variables (Keys): ".implode('|', array_keys($this->EE->config->_global_vars)));
-			$this->log_item("Global Path.php Variables (Values): ".trim(implode('|', $this->EE->config->_global_vars)));
-		
-			foreach ($this->EE->config->_global_vars as $key => $val)
-			{
-				$this->template = str_replace(LD.$key.RD, $val, $this->template);
-			}
-			
-			// in case any of these variables have EE comments of their own
-			$this->template = $this->remove_ee_comments($this->template);
-		}
-		
+	
 		/** -------------------------------------
 		/**  Parse date format string "constants"
 		/** -------------------------------------*/
