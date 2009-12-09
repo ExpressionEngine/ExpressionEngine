@@ -29,7 +29,7 @@
 
 /* Top radius 10 */
 #accessoryTabs li,
-.heading, {
+.heading {
 	overflow: hidden;	/* our headings have images in them where rounding won't work */
 	border-top-right-radius: 10px;
 	border-top-left-radius: 10px;

@@ -359,6 +359,7 @@ class Javascript extends Controller {
 		$expires = gmdate('D, d M Y H:i:s', time() + $max_age).' GMT';
 
 		$this->output->set_status_header(200);
+		@header("Content-Type: text/javascript");
 		@header("Cache-Control: max-age={$max_age}, must-revalidate");
 		@header('Vary: Accept-Encoding');
 		@header('Last-Modified: '.$modified);
@@ -380,47 +381,91 @@ class Javascript extends Controller {
 	{
 		$js = '(function($) {
 			var adv_css = '.$this->_advanced_css().', selector,
-				css_radii = {
-					"border-radius": "",
-					"border-top-right-radius": "tr",
-					"border-top-left-radius": "tl",
-					"border-bottom-right-radius": "br",
-					"border-bottom-left-radius": "bl"
-				};
-			
-			function process_css(key, value) {
-				if (key.indexOf("@") == -1) {
+				inline_css = [],
+				moz = false,
+				webkit =  false,
+				prefix = "",
+				suffix = "",
+				css_radii = {};
 
+			/* Safari */
+			if ($.browser.safari) {
+				webkit = true;
+				prefix = "-webkit-border";
+				suffix = "-radius";
+			}
+
+			/* Feature detection for gecko */
+			try {
+				if (document.body.style.MozBorderRadius !== undefined) {
+					moz = true;
+					prefix = "-moz-border-radius";
+				}
+			} catch(e){}
+			
+			/* Webkit: border-bottom-left-radius, Moz: border-radius-bottomleft, Plugin: bl */
+			
+			var p = /^-(.)(.*?)-(.)(.*)/,
+				r = (moz) ? "-$1$2$3$4" : "$1$3";
+			
+			$.each(["", "-top-right", "-top-left", "-bottom-right", "-bottom-left"], function(i, v) {
+				if ( ! webkit) {
+					v = v.replace(p, r);
+				}
+				
+				css_radii["border"+this+"-radius"] = prefix+v+suffix;
+			});
+
+			function process_css(key, value) {
+				
+				if (key.indexOf("@") == -1) {
 					var apply_radius = "",
-						jQel = $(key);
+						sep = (webkit || moz) ? ":" : " ",
+						jQel;
 										
-					for (radius in css_radii)
-					{
+					for (radius in css_radii) {
 						if (value[radius]) {
-							apply_radius += css_radii[radius]+" "+value[radius]+" ";
+							apply_radius += css_radii[radius]+sep+value[radius]+";";
 							delete(value[radius]);
 						}
 					}
 					
-					if (apply_radius) {
-						jQel.uncorner();	/* allow for proper css inheritance */
-						jQel.corner(apply_radius);
+					if (webkit || moz) {
+						apply_radius += value;
+						inline_css.push(key+"{"+apply_radius+"}");
 					}
-
-					jQel.css(value);
+					else {
+						jQel = $(key).css(value);
+						
+						if (apply_radius) {
+							jQel.uncorner().corner(apply_radius);
+						}
+					}
 				}
 				else if (key.indexOf("@"+EE.router_class) != -1) {
-					for (var s in value) {
-						process_css(s, value[s]);
-					}
+					$.each(value, process_css);
 				}
 			}
 			
-			$(document).ready(function() {
+			if (webkit || moz) {
 				$.each(adv_css, process_css);
-			});
+				
+				var head = document.getElementsByTagName("head")[0],
+					ss_txt = document.createTextNode(inline_css.join("\n")),
+					ss_el = document.createElement("style");
+				
+				ss_el.setAttribute("type", "text/css");
+				ss_el.appendChild(ss_txt);
+				head.appendChild(ss_el);
+			}
+			else {
+				$(document).ready(function() {
+					$.each(adv_css, process_css);
+				});
+			}
+			
 		})(jQuery)';
-		
+
 		return str_replace(array("\t", "\n"), '', $js);
 	}
 
