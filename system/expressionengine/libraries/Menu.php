@@ -764,7 +764,7 @@ class EE_Menu {
 															'edit_category_group'				=> 'cp/admin/content_admin/category_create_group.html',
 															'category_editor'					=> 'cp/admin/content_admin/category_edit.html',
 															'category_custom_field_group_manager'	=> 'cp/admin/content_admin/category_field_management.html',
-															'category_management'				=>	'cp/admin/content_admin/category_management',
+															'category_management'				=>	'cp/admin/content_admin/category_management.html',
 															'channel_add'						=> 'cp/admin/content_admin/channel_create.html',
 															'channel_delete_confirm'			=> 'cp/admin/content_admin/channel_delete.html',
 															'channel_edit'						=> 'cp/admin/content_admin/channel_edit_preferences.html',
