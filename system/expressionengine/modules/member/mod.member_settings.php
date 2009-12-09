@@ -116,7 +116,7 @@ class Member_settings extends Member {
 						m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.url, m.location, m.occupation, m.interests,
 						m.icq, m.aol_im, m.yahoo_im, m.msn_im, m.bio, m.join_date, m.last_visit, m.last_activity, m.last_entry_date,
 						m.last_comment_date, m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics,
-						m.total_forum_posts, m.language, m.timezone, m.daylight_savings, m.bday_d, m.bday_m, m.bday_y, m.accept_user_email,
+						m.total_forum_posts, m.language, m.timezone, m.daylight_savings, m.bday_d, m.bday_m, m.bday_y, m.accept_user_email, m.accept_messages,
 						g.group_title, g.can_send_private_messages
 				 FROM exp_members m, exp_member_groups g
 				 WHERE m.member_id = '".$this->cur_id."'
@@ -420,7 +420,7 @@ class Member_settings extends Member {
 			/** ----------------------------------------*/
 			if (stristr($val['0'], 'can_private_message'))
 			{
-				if ($row['can_send_private_messages'] == 'n')
+				if ($row['can_send_private_messages'] == 'n' OR $row['accept_messages'] == 'n')
 				{
 					$content = preg_replace("/".LD.$val['0'].RD."(.+?)".LD.'\/if'.RD."/s", "", $content);
 				}

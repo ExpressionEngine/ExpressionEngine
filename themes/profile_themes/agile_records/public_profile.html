@@ -20,20 +20,24 @@
 	<div id="memberprofile_communicate">
 		<h3 class="communicate">{lang:communications}</h3>
 			<table>
-				{if url}<tr>
-					<th>{lang:url}</th>
+				{if url}
+				<tr>
+					<th{switch='| class="alt"'}>{lang:url}</th>
 					<td><a href="{url}">{url}</a></td>
-					</tr>
+				</tr>
 				{/if}
-				<tr class="alt">
+				{if accept_email}
+				<tr{switch='| class="alt"'}>
 					<th>{lang:email}</th>
 					<td><a href="#" {email_console}>{lang:email}</a></td>
 				</tr>
-				<tr>
+				{/if}
+				{if can_private_message}
+				<tr{switch='| class="alt"'}>
 					<th>{lang:private_message}</th>
 					<td><a href="{send_private_message}">{lang:private_message}</a></td>
 				</tr>
-				
+				{/if}
 			</table>
 	</div>
 </div>

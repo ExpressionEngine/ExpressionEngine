@@ -3066,6 +3066,30 @@ class Member {
 		{
 			$this->css_file_path = $this->EE->config->slash_item('theme_folder_url', 1).'profile_themes/'.$this->EE->config->item('member_theme').'profile.css';
 		}
+		
+		/** ----------------------------------------
+		/**  Parse {switch="foo|bar"} variables
+		/** ----------------------------------------*/
+
+		if (preg_match_all("/".LD."(switch\s*=.+?)".RD."/i", $str, $matches, PREG_SET_ORDER))
+		{
+			foreach ($matches as $match)
+			{
+				$sparam = $this->EE->functions->assign_parameters($match[1]);
+
+				if (isset($sparam['switch']))
+				{
+					$sopt = explode("|", $sparam['switch']);
+
+					$i = 1;
+					while (($pos = strpos($str, LD.$match[1].RD)) !== FALSE)
+					{
+						$str = substr_replace($str, $sopt[($i++ + count($sopt) - 1) % count($sopt)], $pos, strlen(LD.$match[1].RD));
+					}
+				}				
+			}
+		}
+
 
 		/** ----------------------------------------
 		/**  Finalize the output
