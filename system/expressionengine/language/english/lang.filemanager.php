@@ -61,6 +61,7 @@ $lang = array(
 'done'					=> 'Exit',
 'edit_image'			=> 'Save Image',
 'image_edit_success'	=> 'Image Successfully Edited',
+'no_edit_selected'		=> 'No Edit Operation Selected',
 
 
 

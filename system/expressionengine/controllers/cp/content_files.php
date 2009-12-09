@@ -883,6 +883,16 @@ class Content_files extends Controller {
 				}
 			);
 
+			// Submission validation, basically we just want to make sure they
+			// have tried at least 1 "edit" before they submit
+			$("#image_edit_form").submit(function (){
+				if ($("#crop_fieldset").is(":hidden") && $("#resize_fieldset").is(":hidden") && $("#rotate_fieldset").is(":hidden"))
+				{
+					$.ee_notice("'.$this->lang->line('no_edit_selected').'", {"type" : "notice"});
+					return false; // kill the form submission
+				}
+			});
+
 			function cropCoords(coords)
 			{
 				$("#crop_x").val(Math.floor(coords.x));
