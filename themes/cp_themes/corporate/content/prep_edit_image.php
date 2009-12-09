@@ -13,6 +13,8 @@ if ($EE_view_disable !== TRUE)
 	
 		<div class="heading"><h2><?=$cp_page_title?></h2></div>
 
+		<?php $this->load->view('_shared/message');?>
+
 		<div id="file_manager">
 
 			<div id="file_manager_tools">

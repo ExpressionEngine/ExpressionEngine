@@ -772,7 +772,7 @@ class Filemanager {
 		$this->EE->image_lib->clear();
 
 		// Rebuild thumb
-		exit($this->create_thumb(array('server_path'=>$path), array('name'=>$image_name_reference)));
+//		exit($this->create_thumb(array('server_path'=>$path), array('name'=>$image_name_reference)));
 
 
 		exit($image_name_reference);

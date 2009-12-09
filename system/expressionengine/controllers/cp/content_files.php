@@ -1347,6 +1347,7 @@ class Content_files extends Controller {
 		}
 		else
 		{
+			$this->session->set_flashdata('message_success', $this->lang->line('image_edit_success'));
 			$this->functions->redirect($url);
 		}
 	}

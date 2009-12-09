@@ -59,7 +59,8 @@ $lang = array(
 'exit_apply_changes'	=> 'You are about to exit this edit mode.  Permanently apply changes first?',
 'processing_image'		=> 'Processing Image',
 'done'					=> 'Exit',
-'edit_image'            => 'Save Image',
+'edit_image'			=> 'Save Image',
+'image_edit_success'	=> 'Image Successfully Edited',
 
 
 
