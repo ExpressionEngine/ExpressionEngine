@@ -135,25 +135,39 @@ class EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 	
-	function multi_item_row($data)
+	function multi_item_row($data, $prefix = FALSE)
 	{
+		$prefix = ($prefix) ? $prefix.'_' : '';
+		
 		$this->EE->table->add_row(
-			'@todo option toggle things',
+			'<p class="field_format_option select_format">'.
+				form_radio($prefix.'field_pre_populate', 'n', $data['field_pre_populate_n'], 'id="field_pre_populate_n"').
+				lang('field_populate_manually', 'field_pre_populate_n').BR.
+				form_radio($prefix.'field_pre_populate', 'y', $data['field_pre_populate_y'], 'id="field_pre_populate_y"').
+				lang('field_populate_from_channel', 'field_pre_populate_y').
+			'</p>',
 			'<p class="field_format_option select_format_n">'.
-				lang('field_list_items', 'select_list_items').
+	//			lang('field_list_items', 'select_list_items').
 				lang('multi_list_items', 'multi_select_list_items').BR.
 				lang('field_list_instructions').BR.
-				form_textarea(array('id'=>'field_list_items','name'=>'field_list_items', 'rows'=>10, 'cols'=>50, 'value'=>$field_list_items)).
+				form_textarea(array('id'=>'field_list_items','name'=>$prefix.'field_list_items', 'rows'=>10, 'cols'=>50, 'value'=>$data['field_list_items'])).
 			'</p>
 			<p class="field_format_option select_format_y">'.
 				lang('select_channel_for_field', 'field_pre_populate_id').
-				form_dropdown('field_pre_populate_id', $field_pre_populate_id_options, $field_pre_populate_id_select, 'id="field_pre_populate_id"').
+				form_dropdown($prefix.'field_pre_populate_id', $data['field_pre_populate_id_options'], $data['field_pre_populate_id_select'], 'id="field_pre_populate_id"').
 			'</p>'
 		);
 	}
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Display Field Settings
+	 *
+	 * @access	public
+	 * @param	array
+	 * @return	string
+	 */
 	function display_settings($data)
 	{
 		return '';
@@ -161,6 +175,13 @@ class EE_Fieldtype {
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Save Field
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	string
+	 */
 	function save($data)
 	{
 		return $data;

@@ -101,9 +101,7 @@ class Select_ft extends EE_Fieldtype {
 
 	function display_settings($data)
 	{
-		
-		$this->EE->load->helper('custom_field_helper');
-		create_multi_select_thing($data);
+		$this->multi_item_row($data, 'select');
 	}
 
 	// --------------------------------------------------------------------

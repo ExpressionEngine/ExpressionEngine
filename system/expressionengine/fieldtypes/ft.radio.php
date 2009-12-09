@@ -132,8 +132,7 @@ class Radio_ft extends EE_Fieldtype {
 
 	function display_settings($data)
 	{
-		
-		$this->EE->load->helper('custom_field_helper');
+		$this->multi_item_row($data, 'radio');
 	}
 }
 

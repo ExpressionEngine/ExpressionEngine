@@ -3947,7 +3947,7 @@ class Admin_content extends Controller {
 			'group_id' => $this->input->get_post('group_id'),
 			'field_id' => $this->input->get_post('field_id')
 		);
-			
+		
 		$this->db->select('f.*');
 		$this->db->from('channel_fields AS f, field_groups AS g');
 		$this->db->where('f.group_id = g.group_id');
@@ -3998,59 +3998,6 @@ class Admin_content extends Controller {
 			formatting_available();
 			direction_available();
 		');
-
-		$this->javascript->change('#field_type', '
-			// hide all field format options
-			$(".field_format_option").hide();
-			
-			var sel = $(this).val();
-			var multis = sel;
-
-			if (sel == "multi_select"  || sel == "option_group" || sel == "radio")
-			{
-				sel = "select";
-			}			
-
-			// reveal selected option
-			$("."+sel+"_format").show();
-
-			
-			// field type specific considerations
-			if (sel == "text" || sel == "textarea")
-			{
-				formatting_available();
-				direction_available();
-			}
-			else if (sel == "select")
-			{
-				formatting_available();
-				direction_available();
-
-				// flip out the label
-				$("label[for]"+multis+"_list_items").hide();
-
-				// select dropdown has 2 possible options
-				$("."+sel+"_format_"+$("input[name=field_pre_populate]:checked").val()).show();
-			}
-			else if (sel == "date" || sel == "file")
-			{
-				formatting_available(false);
-				direction_available(false);
-			}
-			else if (sel == "rel")
-			{
-				formatting_available(false);
-				direction_available(true);
-			}
-
-			if ($("#update_formatting_div"))
-			{
-				$("#update_formatting_div").show();
-			}
-		');
-		
-		$this->javascript->click('#field_pre_populate_n', '$(".select_format_n").show();$(".select_format_y").hide();', FALSE);
-		$this->javascript->click('#field_pre_populate_y', '$(".select_format_y").show();$(".select_format_n").hide();', FALSE);
 
 		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
@@ -4259,8 +4206,6 @@ class Admin_content extends Controller {
 		$vars['field_text_direction_'.$current] = TRUE;
 		$vars['field_text_direction_'.$other] = FALSE;
 		
-		$this->javascript->output('$("#field_type").trigger("change");'); // trigger the change in case there was a form error
-
 
 		// Grab Field Type Settings
 		
@@ -4308,15 +4253,8 @@ class Admin_content extends Controller {
 				ft_dropdown = $("#field_type");
 		
 			ft_dropdown.change(function() {
-				
-				var type = this.value;
-
-				if (type == "multi_select" || type == "radio" || type == "option_group") {
-					type = "select";
-				}
-				
 				ft_divs.hide();
-				$("#ft_"+type)
+				$("#ft_"+this.value)
 					.show()
 					.find("table").trigger("applyWidgets");
 					
