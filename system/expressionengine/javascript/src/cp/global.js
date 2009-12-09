@@ -131,7 +131,7 @@ EE.notepad = (function() {
 				notepad_text.html(current_content.replace(/</ig, '&lt;').replace(/>/ig, '&gt;').replace(/\n/ig, '<br />'));
 			}
 			
-			notepad.click(EE.notepad.shows);
+			notepad.click(EE.notepad.show);
 			notepad_controls.find('a.cancel').click(EE.notepad.hide);
 			
 			notepad_form.submit(EE.notepad.submit);
