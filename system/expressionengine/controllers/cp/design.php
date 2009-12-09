@@ -942,6 +942,8 @@ class Design extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
+		
+		$this->load->library('table');
 
 		$variable_name = $this->input->get_post('variable_name');
 		$variable_data = $this->input->get_post('variable_data');
