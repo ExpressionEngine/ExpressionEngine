@@ -3531,7 +3531,7 @@ class Content_publish extends Controller {
 				
 				$this->field_definitions['forum_body'] = array(
 					'string_override'		=> form_textarea('forum_body', $vars['forum_body']),
-					'field_id'				=> 'a',
+					'field_id'				=> 'forum_body',
 					'field_label'			=> $this->lang->line('forum_body'),
 					'field_name'			=> 'forum_body',
 					'field_required' 		=> 'n',
