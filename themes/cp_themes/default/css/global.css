@@ -142,9 +142,7 @@ a:hover {
 em.alert {
 	color:				#ce0000;
 	font-weight: 		bold;
-	}
-input#clear_versioning_data {
-	}
+}
 
 .failure {
 	color:				#ce0000;
@@ -388,7 +386,7 @@ table td a {
 	list-style:			none;
 }
 
-ul#navigationTabs {
+#navigationTabs {
 	margin-left:		25px;
 	margin-top:			-6px;
 	padding-top:		2px;
@@ -396,17 +394,17 @@ ul#navigationTabs {
 
 /* Style the top level */
 
-ul#navigationTabs > li {
+#navigationTabs > li {
 	line-height: 		13px;
 }
 
-ul#navigationTabs > li.active {
+#navigationTabs > li.active {
 	background: 		url('<?=$cp_theme_url?>images/nav_active_arrow.png') bottom center no-repeat;
 }
 
-ul#navigationTabs li a.first_level,
-ul#navigationTabs li a.first_level:link,
-ul#navigationTabs li a.first_level:visited {
+#navigationTabs li a.first_level,
+#navigationTabs li a.first_level:link,
+#navigationTabs li a.first_level:visited {
 	background:			#27343C url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -79px;
 	color:				#fff;
 	display:			block;
@@ -419,13 +417,13 @@ ul#navigationTabs li a.first_level:visited {
 	text-decoration:	none;
 }
 
-ul#navigationTabs li a.first_level:hover {
+#navigationTabs li a.first_level:hover {
 	background:	#27343C url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -103px;
 	color:				#E7174B;
 }
 
-ul#navigationTabs li.active a.first_level,
-ul#navigationTabs li:active a.first_level {
+#navigationTabs li.active a.first_level,
+#navigationTabs li:active a.first_level {
 	background:	#F23055 url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -127px;
 	color:				#fff;
 }
@@ -439,25 +437,25 @@ ul#navigationTabs li ul ul ul ul {
 
 /* Style the add tab link */
 
-ul#navigationTabs li #addQuickTab,
-ul#navigationTabs li #addQuickTab:link {
+#navigationTabs li #addQuickTab,
+#navigationTabs li #addQuickTab:link {
 	background-image:	none;
 	color:				#E7174B;
 	font-weight:		normal;
 	padding-bottom:		0;	/* prevents it from pushing down the breadcrumb in Safari & Opera */
 }
 
-ul#navigationTabs li #addQuickTab:first-letter {
+#navigationTabs li #addQuickTab:first-letter {
 	font-weight:		bold;
 	font-size:			14px;
 	text-shadow:		#000 0px 1px 0px;
 }
 
-ul#navigationTabs li #addQuickTab:hover {
+#navigationTabs li #addQuickTab:hover {
 	text-shadow:		#000 0px 1px 0px;
 }
 
-ul#navigationTabs li #addQuickTab:active {
+#navigationTabs li #addQuickTab:active {
 	color:				#fff;
 	background:			#27343C;
 }
@@ -694,7 +692,7 @@ ul#navigationTabs li #addQuickTab:active {
 	margin-bottom:		25px;
 }
 
-a#hideSidebarLink, a#revealSidebarLink {
+#hideSidebarLink, #revealSidebarLink {
 	display:       	 	none;
 	border-top:			1px solid #a0aaa4;
 	background:			transparent url('<?=$cp_theme_url?>images/hide_sidebar_arrow.gif') top right no-repeat;
@@ -705,12 +703,12 @@ a#hideSidebarLink, a#revealSidebarLink {
 	text-align:			right;
 }
 
-a#revealSidebarLink {
+#revealSidebarLink {
 	border-top:			none;
 }
 
-a#hideSidebarLink:link, a#hideSidebarLink:visited,
-a#revealSidebarLink:link, a#revealSidebarLink:visited  {
+#hideSidebarLink:link, #hideSidebarLink:visited,
+#revealSidebarLink:link, #revealSidebarLink:visited  {
 	color:				#a0aaa4;
 }
 
@@ -1281,17 +1279,17 @@ table.mainTable td:last-child {
 	width: 240px;
 }
 
-ul#menu.side_navigation {
+#menu.side_navigation {
 	background-color:#f4f6f6;
 	padding-bottom:1px;
 	border-right:1px solid #d0d7df;
 	border-left:1px solid #d0d7df;
 	border-bottom:1px solid #d0d7df;
 	}
-ul#menu.side_navigation li li {
+#menu.side_navigation li li {
 	padding:.2em 0
 	}	
-ul#menu span, #myAccount h3 {
+#menu span, #myAccount h3 {
 	display:			block;
 	background:			#3f4d55 url('<?=$cp_theme_url?>images/form_area_heading_bg.gif') bottom left repeat-x;
 	border-left: 0;
@@ -1304,7 +1302,7 @@ ul#menu span, #myAccount h3 {
 	margin-bottom: 3px!important;
 }
 
-ul#menu ul {
+#menu ul {
 	margin: 8px 0 10px 15px;
 }
 #registerUser {
@@ -1826,19 +1824,9 @@ table#entries {
 #files_form table{
 	margin:15px 0;
 }
+
 table#entries td select {
   width:98%;
-}
-
-table#entries td select#field_type,
-table#entries td select#field_content_text,
-table#entries td select#field_fmt,
-table#entries td select#field_related_channel_id,
-table#entries td select#field_related_orderby,
-table#entries td select#field_related_sort,
-table#entries td select#field_related_max
-table#entries td select#field_content_file {
-  width:auto;
 }
 
 select.template_type {
@@ -2157,7 +2145,7 @@ table.accessTable div.tableCellHeading {
 	padding-top: 12px;
 }
 
-#mainContent div#tools {
+#mainContent #tools {
 	width:				196px;
 	float: 				right;
 	clear: 				left;
@@ -2213,15 +2201,18 @@ table.accessTable div.tableCellHeading {
 	border:				1px solid #b7c7d2; /*  won't work with rounded corners, but looks best for non js */
 	text-align:			left;
 }
-input#upload_file.field {
-	width:196px;
-	margin:8px 0 8px 4px;
-	padding:3px;
-	}
+
+#upload_file.field {
+	width:				196px;
+	margin:				8px 0 8px 4px;
+	padding:			3px;
+}
+
 select#upload_dir {
-	width:274px;
-	margin:8px 0 0 0;
-	}	
+	width:				274px;
+	margin:				8px 0 0 0;
+}
+
 #mainContent #tools .submit_alt img, #mainContent #file_manager_tools .submit_alt img {
 	vertical-align: text-top;
 }
@@ -2561,7 +2552,7 @@ a#refresh_categories {
 }
 
 /* Show Entry */
-div#view_content_entry_links {
+#view_content_entry_links {
 	margin-top:		15px;
 	width:				125px;
 	padding:			10px;
@@ -3032,18 +3023,18 @@ input#ip_address {
 	color:				#B20000;
 }
 
-#mainContent #file_manager_tools h3 {
+#file_manager_tools h3 {
 	background:			url('<?=$cp_theme_url?>images/content_custom_tab.jpg') repeat-x top;
 	height: 			27px;
 	margin-bottom:		0px;
 	border-bottom:		0px solid #D2D7DB;
 }
 
-#mainContent #file_manager_tools h3 a.closed {
+#file_manager_tools h3 a.closed {
 	background-image:	url('<?=$cp_theme_url?>images/content_custom_tab_arrow_closed.jpg')!important;
 }
 
-#mainContent #file_manager_tools h3 a {
+#file_manager_tools h3 a {
 	background:			url('<?=$cp_theme_url?>images/content_custom_tab_arrow_open.jpg') no-repeat left top;
 	padding: 			0 0 0 20px;
 	margin: 			0;
@@ -3053,11 +3044,11 @@ input#ip_address {
 	line-height: 		26px;
 }
 
-#mainContent #file_manager_tools h3 a.open {
+#file_manager_tools h3 a.open {
 	background:			url('<?=$cp_theme_url?>images/content_custom_tab_arrow_open.jpg') no-repeat left top;
 }
 
-#mainContent #file_manager_tools li a {
+#file_manager_tools li a {
 	display: 			block;
 }
 
@@ -3072,10 +3063,6 @@ input#ip_address {
 	margin-bottom: 		5px;
 	padding-bottom: 	5px;
 
-}
-
-#mainContent #file_manager #file_information_hold label{
-	
 }
 
 #mainContent #file_manager #file_information_hold ul {
@@ -3103,28 +3090,24 @@ input#ip_address {
 	color:				#34424b;
 }
 
-#mainContent #file_manager .f_m_s ul {
-	
-}
-
 #mainContent #file_manager .f_m_s ul li {
 	margin-bottom:10px;
 	padding-left:20px;
 }
 
-#mainContent #file_manager .f_m_s ul li#download_selected {
+#mainContent #file_manager .f_m_s ul #download_selected {
 	background: transparent url(<?=$cp_theme_url?>/images/icon-download-file.png) no-repeat;
 }
 
-#mainContent #file_manager .f_m_s ul li#delete_selected_files {
+#mainContent #file_manager .f_m_s ul #delete_selected_files {
 	background: transparent url(<?=$cp_theme_url?>/images/icon-delete.png) no-repeat;
 }
 
-#mainContent #file_manager .f_m_s ul li#create_new_upload_pref {
+#mainContent #file_manager .f_m_s ul #create_new_upload_pref {
 	background: transparent url(<?=$cp_theme_url?>/images/icon-create-upload-file.png) no-repeat;
 }
 
-#mainContent #file_manager .f_m_s ul li#upload_item {
+#mainContent #file_manager .f_m_s ul #upload_item {
 	background: transparent url(<?=$cp_theme_url?>/images/upload_item.png) no-repeat;
 }
 
@@ -3138,9 +3121,10 @@ input#ip_address {
 .file_info {
 	display: 			block;
 }
-form#files_form {
+
+#files_form {
 	margin:0 10px 0 0;
-	}
+}
 
 #file_manager_holder {
 	margin-right: 		300px;
@@ -3168,7 +3152,7 @@ form#files_form {
 	padding-left: 		35px;
 	padding:			5px 20px;
 	cursor:				pointer;
-	border-bottom: 1px solid #d0d7df;
+	border-bottom:		1px solid #d0d7df;
 }
 
 #file_manager_list h3.closed {
@@ -3176,10 +3160,11 @@ form#files_form {
 }
 #file_manager_list p {
 	margin-bottom:10px;
-	}
+}
 #file_manager_list input.submit {
 	margin:15px 0;
-	}
+}
+
 table.solo {
 	border-top: 1px solid #d0d7df;
 	border-right: 1px solid #d0d7df;
@@ -3243,15 +3228,15 @@ table.solo {
 	font-size:			11px;
 }
 
-.image_edit_form_options #image_edit_form fieldset#rotate_fieldset ul {
+.image_edit_form_options #image_edit_form #rotate_fieldset ul {
 	display: block;
 }
 
-#image_edit_form fieldset#rotate_fieldset ul {
+#image_edit_form #rotate_fieldset ul {
 	display: none;
 }
 
-#image_edit_form fieldset#rotate_fieldset li {
+#image_edit_form #rotate_fieldset li {
 	display: inline;
 	cursor: pointer;
 }
@@ -3325,13 +3310,13 @@ table.solo {
  * pagination
  */
 
-div.dataTables_paginate span.first,
-div.dataTables_paginate span.previous,
-div.dataTables_paginate span.next {
+.dataTables_paginate span.first,
+.dataTables_paginate span.previous,
+.dataTables_paginate span.next {
 	margin-right:5px;
 }
 
-div.dataTables_paginate span.next {
+.dataTables_paginate span.next {
 	margin-left:5px;
 }
 
@@ -3841,7 +3826,7 @@ position: absolute;
 margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = document.documentElement && document.documentElement.scrollTop || document.body.scrollTop) + 'px');
 }
 
-#TB_window img#TB_Image {
+#TB_window #TB_Image {
 	display:block;
 	margin: 15px 0 0 15px;
 	border-right: 1px solid #ccc;
