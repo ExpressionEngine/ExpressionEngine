@@ -161,7 +161,11 @@
 		});
 	
 		// Name field
-		headerrow.find('.group_name').val(rowdata.name);
+		headerrow.find('.template_name').val(rowdata.name);
+		if (rowdata.name == 'index')
+		{
+			headerrow.find('.template_name').attr({readonly:'readonly'});
+		}
 
 		// Refresh Interval
 		headerrow.find('.refresh').val(rowdata.refresh);
@@ -311,7 +315,13 @@
 			success: function(msg){
 				if (msg != '') {
 					$.ee_notice.destroy();
-					$.ee_notice(msg, {duration: 3000});
+					$.ee_notice(msg, {duration: 3000, type: 'success'});
+				}
+			},
+			error: function(req, error){
+				if (req.responseText != '') {
+					$.ee_notice.destroy();
+					$.ee_notice(req.responseText, {duration: 3000, type: 'error'});
 				}
 			}
 		});
@@ -321,7 +331,7 @@
 	{
 		var holder = $(this).closest('.accessRowHeader'),
 			holder_data,
-			template_id, group_id, group_name, template_type,
+			template_id, group_id, template_name, template_type,
 			cache, refresh, allow_php, php_parse_location, hits;
 
 		if (holder.length < 1) {
@@ -340,7 +350,7 @@
 		template_id = holder_data.id;
 		group_id = holder_data.group_id;
 
-		group_name = holder.find(".group_name").val();
+		template_name = holder.find(".template_name").val();
 		template_type = holder.find(".template_type").val();
 		cache = holder.find("select[name^=cache]").val();
 		refresh = holder.find(".refresh").val();
@@ -349,18 +359,9 @@
 		hits = holder.find(".hits").val();
 		template_size = holder.find(".template_size").val();
 
-		// change the displayed template name
-		$("#templateId_"+template_id).text(group_name);
-
-		// change the displayed template size
-		$("#template_data").attr('rows', template_size);
-
-		// change the displayed hits
-		$("#hitsId_"+template_id).text(hits);
-
 		str = jQuery.param({
 			'template_id': template_id, 'group_id': group_id,
-			'group_name': group_name, 'template_type': template_type,
+			'template_name': template_name, 'template_type': template_type,
 			'cache': cache, 'refresh': refresh, 'hits': hits,
 			'allow_php': allow_php, 'php_parse_location': php_parse_location,
 			'template_size': template_size
@@ -371,9 +372,24 @@
 			url: EE.template_edit_url,
 			data: "is_ajax=TRUE&XID="+EE.XID+"&" + str,
 			success: function(msg){
+				// change the displayed template name
+				$("#templateId_"+template_id).text(template_name);
+
+				// change the displayed template size
+				$("#template_data").attr('rows', template_size);
+
+				// change the displayed hits
+				$("#hitsId_"+template_id).text(hits);
+				
 				if (msg != '') {
 					$.ee_notice.destroy();
-					$.ee_notice(msg, {duration: 3000});
+					$.ee_notice(msg, {duration: 3000, type: 'success'});
+				}
+			},
+			error: function(req, error){
+				if (req.responseText != '') {
+					$.ee_notice.destroy();
+					$.ee_notice(req.responseText, {duration: 3000, type: 'error'});
 				}
 			}
 		});

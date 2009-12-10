@@ -2091,6 +2091,7 @@ select.template_type {
 }
 
 input.group_name,
+input.template_name,
 input.hits {
   width:98%;
 }

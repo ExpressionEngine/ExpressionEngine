@@ -134,7 +134,10 @@ $lang = array(
 "Unable to save your template as a text file",
 
 "template_file_not_deleted" =>
-"Unable to delete the associated text file",
+"Unable to delete the associated template file",
+
+"template_file_not_renamed" =>
+"Unable to rename the associated template file",
 
 "template_group_taken" =>
 "The template group name you submitted is already taken",

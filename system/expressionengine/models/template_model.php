@@ -145,6 +145,34 @@ class Template_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Rename Template File
+	 *
+	 * @access	public
+	 * @return	bool
+	 */
+	function rename_template_file($template_group, $template_type, $old_name, $new_name)
+	{
+		$this->load->library('api');
+		$this->api->instantiate('template_structure');
+		$ext = $this->api_template_structure->file_extensions($template_type);
+		
+		$basepath  = $this->config->slash_item('tmpl_file_basepath');
+		$basepath .= $this->config->item('site_short_name');
+		$basepath .= '/'.$template_group.'.group';
+		
+		$existing_path = $basepath.'/'.$old_name.$ext;
+		
+		if ( ! file_exists($existing_path))
+		{
+			return FALSE;
+		}
+		
+		return rename($existing_path, $basepath.'/'.$new_name.$ext);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Update Template Ajax
 	 *
 	 * Used when editing template prefs inline from the manager
@@ -159,14 +187,12 @@ class Template_model extends CI_Model {
 
 		$this->db->update('templates', $data);
 
-		if ($this->db->affected_rows() == 1)
-		{
-			return TRUE;
-		}
-		else
+		if ($this->db->affected_rows() != 1)
 		{
 			return FALSE;
 		}
+		
+		return TRUE;
 	}
 	
 	// --------------------------------------------------------------------

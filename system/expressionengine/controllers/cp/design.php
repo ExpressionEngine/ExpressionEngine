@@ -3773,6 +3773,7 @@ class Design extends Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
+			$this->output->set_status_header(500);
 			exit($this->lang->line('unauthorized_access'));
 		}
 
@@ -3782,15 +3783,14 @@ class Design extends Controller {
 		// anything from running and prevent direct malicious page access
 		if ( ! $this->_template_access_privs(array('template_id' => $template_id)))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			$this->output->set_status_header(500);
+			exit($this->lang->line('unauthorized_access'));
 		}
 
 		$this->output->enable_profiler(FALSE);
 
-		$this->load->model('template_model');
-
 		$data = array(
-						'template_name' 		=> $this->input->get_post('group_name'),
+						'template_name' 		=> $this->input->get_post('template_name'),
 						'template_type' 		=> ($this->input->get_post('template_type') == '') ? 'webpage' : $this->input->get_post('template_type'),
 						'cache' 				=> ($this->input->get_post('cache') == 'y') ? 'y' : 'n',
 						'refresh' 				=> ($this->input->get_post('refresh') == '') ? 0 : $this->input->get_post('refresh'),
@@ -3798,6 +3798,56 @@ class Design extends Controller {
 						'php_parse_location' 	=> ($this->input->get_post('php_parse_location') == 'i') ? 'i' : 'o',
 						'hits'					=> $this->input->get_post('hits')
 		);
+		
+		$this->load->model('template_model');
+		
+		$this->db->select('template_name, template_type, save_template_file, group_name, templates.group_id');
+		$this->db->join('template_groups', 'template_groups.group_id = templates.group_id');
+		$this->db->where('template_id', $template_id);
+		$this->db->where('templates.site_id', $this->config->item('site_id'));
+		$query = $this->db->get('templates');
+
+		$template_info = $query->row_array();
+
+		// safety
+		if (count($template_info) == 0)
+		{
+			$this->output->set_status_header(500);
+			exit($this->lang->line('unauthorized_access'));
+		}
+
+		$rename_file = FALSE;
+		
+		if ($data['template_name'] != $template_info['template_name'])
+		{
+			if ($template_info['template_name'] == 'index')
+			{
+				$this->output->set_status_header(500);
+				exit($this->lang->line('index_delete_disallowed'));
+			}
+			
+			$this->db->where('group_id', $template_info['group_id']);
+			$this->db->where('template_name', $data['template_name']);
+			
+			// unique?
+			if ($this->db->count_all_results('templates'))
+			{
+				$this->output->set_status_header(500);
+				exit($this->lang->line('template_name_taken'));
+			}
+
+			// reserved?
+			if (in_array($data['template_name'], $this->reserved_names))
+			{
+				$this->output->set_status_header(500);
+				exit($this->lang->line('reserved_name'));
+			}
+			
+			if ($template_info['save_template_file'] == 'y')
+			{
+				$rename_file = TRUE;
+			}
+		}
 
 		$trigger_preference_notice = FALSE;
 
@@ -3815,6 +3865,15 @@ class Design extends Controller {
 
 		if ($this->template_model->update_template_ajax($template_id, $data) OR $trigger_preference_notice)
 		{
+			if ($rename_file === TRUE)
+			{
+				if ($this->template_model->rename_template_file($template_info['group_name'], $template_info['template_type'], $template_info['template_name'], $data['template_name']) == FALSE)
+				{
+					$this->output->set_status_header(500);
+					exit($this->lang->line('template_file_not_renamed'));
+				}
+			}
+			
 			exit($this->lang->line('preferences_updated'));
 		}
 	}

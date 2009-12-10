@@ -91,7 +91,7 @@ if ($EE_view_disable !== TRUE)
 								<th class="template_manager_hits"><?=lang('hit_counter')?></th>
 							</tr>
 							<tr>
-								<td><input name="group_name" class="group_name" type="text" size="15" value="" /></td>
+								<td><input name="template_name" class="template_name" type="text" size="15" value="" /></td>
 								<td><select class="template_type" name="template_type" id="template_type_">
 									<option value="css"><?=lang('css_stylesheet')?></option>
 									<option value="js"><?=lang('js')?></option>

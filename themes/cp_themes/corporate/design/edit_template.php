@@ -14,7 +14,7 @@ if ($EE_view_disable !== TRUE)
 
 	<?php $this->load->view('_shared/message')?>
 		
-        <div class="lightHeading"><h2><?=lang('edit_template')?>: <?=$template_group?>/<?=$template_name?></h2></div>
+        <div class="lightHeading"><h2><?=lang('edit_template')?>: <?=$template_group?>/<span id="templateId_<?=$template_id?>"><?=$template_name?></span></h2></div>
         
         <div class="templatePageContents">
         	
@@ -118,7 +118,7 @@ if ($EE_view_disable !== TRUE)
 							<th><?=lang('template_size')?></th>
 						</tr>
 						<tr>
-							<td><input name="group_name" class="group_name" type="text" size="15" value="<?=$template_name?>" /></td>
+							<td><input name="template_name" class="template_name" type="text" size="15" value="<?=$template_name?>" /></td>
 							<td><select class="template_type" name="template_type" id="template_type">
 								<option value="css" <?=($prefs['template_type'] == 'css') ? 'selected="selected"':''?>><?=lang('css_stylesheet')?></option>
 								<option value="js" <?=($prefs['template_type'] == 'js') ? 'selected="selected"':''?>><?=lang('js')?></option>
