@@ -53,6 +53,9 @@ $lang = array(
 "hide_formatting_buttons" =>
 "Hide Formatting Menu",
 
+'field_options' =>
+'Field Options',
+
 "date_field" =>
 "Date Field",
 

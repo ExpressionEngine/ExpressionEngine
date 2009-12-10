@@ -43,24 +43,26 @@ if ($EE_view_disable !== TRUE)
 				)
 			);
 
-			$this->table->add_row(array(
-					lang('field_max_length', 'field_max1'),
-					form_input(array('id'=>'field_maxl','name'=>'field_maxl', 'size'=>4,'value'=>$field_maxl))
-				)
-			);
+			$text_format = '<div class="field_format_option" id="text_format">'.
+			lang('field_max_length', 'field_max1').'<br />'.
+			form_input(array('id'=>'field_maxl','name'=>'field_maxl', 'size'=>4,'value'=>$field_maxl)).'</div>';
+
+			$textarea_format = '<div class="field_format_option" id="textarea_format">'.
+			lang('textarea_rows', 'field_ta_rows').'<br />'.
+			form_input(array('id'=>'field_ta_rows','name'=>'field_ta_rows', 'size'=>4,'value'=>$field_ta_rows)).'</div>';
+
+			$select_format = '<div class="field_format_option" id="select_format">'.
+				lang('field_list_items', 'field_list_items').
+				'<div class="subtext">'.lang('field_list_instructions').'</div>'.
+				form_textarea(array('id'=>'field_list_items','name'=>'field_list_items', 'rows'=>10, 'cols'=>50, 'value'=>$field_list_items)).'</div>';
+
 
 			$this->table->add_row(array(
-					lang('textarea_rows', 'field_ta_rows'),
-					form_input(array('id'=>'field_ta_rows','name'=>'field_ta_rows', 'size'=>4,'value'=>$field_ta_rows))
+					lang('field_options', 'field_options'),
+					$text_format.$textarea_format.$select_format
 				)
 			);
 			
-			$this->table->add_row(array(
-					lang('field_list_items', 'field_list_items').
-					'<div class="subtext">'.lang('field_list_instructions').'</div>',
-					form_textarea(array('id'=>'field_list_items','name'=>'field_list_items', 'rows'=>10, 'cols'=>50, 'value'=>$field_list_items))
-				)
-			);
 			
 			$this->table->add_row(array(
 					form_label(lang('deft_field_formatting'), 'field_default_fmt'),

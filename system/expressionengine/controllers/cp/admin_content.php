@@ -3038,7 +3038,7 @@ class Admin_content extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-
+		
 		$vars['group_id'] = $this->input->get_post('group_id');
 		$group_id = $vars['group_id'];
 
@@ -3060,7 +3060,7 @@ class Admin_content extends Controller {
 		$this->javascript->change('#field_type', '
 			// hide all field format options
 			$(".field_format_option").hide();
-
+			console.log("#"+$(this).val()+"_format"); //return false;
 			// reveal selected option
 			$("#"+$(this).val()+"_format").show();
 		');
@@ -3105,8 +3105,9 @@ class Admin_content extends Controller {
 
 			$this->javascript->change('#field_default_fmt', '
 				// give formatting change notice and checkbox
+
 				$("#formatting_notice_info").show();
-				$("#formatting_notice").show();
+				$("#show_formatting_buttons").show();
 			');
 
 			$query = $this->db->query("SELECT field_id, group_id FROM exp_category_fields WHERE group_id = '".$this->db->escape_str($group_id)."' AND field_id = '".$this->db->escape_str($field_id)."'");
