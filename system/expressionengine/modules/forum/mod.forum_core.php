@@ -6795,7 +6795,7 @@ class Forum_Core extends Forum {
 			
 			$this->EE->load->helper('string');
 			// Remove multiple commas
-			$notify_address = reduce_multiples($notify_address, ',', TRUE);
+			$notify_addresses = reduce_multiples($notify_addresses, ',', TRUE);
 		}
 		
 		/** ----------------------------
