@@ -707,7 +707,7 @@ class EE_Menu {
 				$site_backlink = AMP."page=".strtr(base64_encode($site_backlink), '+=', '-_');
 			}
 			
-			$menu[$this->EE->config->item('site_name')][lang('view_site')] = $this->EE->config->item('base_url').$this->EE->config->item('index_page').'?URL='.$this->EE->config->item('base_url').$this->EE->config->item('index_page');
+			$menu[$this->EE->config->item('site_name')][lang('view_site')] = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'URL='.$this->EE->functions->fetch_site_index();
 			
 			if ($this->EE->cp->allowed_group('can_admin_sites'))
 			{
