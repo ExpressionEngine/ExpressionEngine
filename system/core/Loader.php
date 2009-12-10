@@ -762,19 +762,13 @@ class CI_Loader {
 		// Was the path included with the class name?
 		// We look for a slash to determine this
 		$subdir = '';
-		if (strpos($class, '/') !== FALSE)
+		if (($last_slash = strrpos($class, '/')) !== FALSE)
 		{
-			// explode the path so we can separate the filename from the path
-			$x = explode('/', $class);	
+			// Extract the path
+			$subdir = substr($class, 0, $last_slash + 1);
 			
-			// Reset the $class variable now that we know the actual filename
-			$class = end($x);
-			
-			// Kill the filename from the array
-			unset($x[count($x)-1]);
-			
-			// Glue the path back together, sans filename
-			$subdir = implode($x, '/').'/';
+			// Get the filename from the path
+			$class = substr($class, $last_slash + 1);
 		}
 
 		// We'll test for both lowercase and capitalized versions of the file name
