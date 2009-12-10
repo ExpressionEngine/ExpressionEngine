@@ -129,18 +129,6 @@ if ($EE_view_disable !== TRUE)
 		
 		<?php endforeach;?>
 
-		<?php if ($field_id != ''):?>
-
-			<div id="update_formatting_div">
-				<p class="notice"><?=lang('fmt_has_changed')?><p>
-				<p class="notice">
-					<?=form_checkbox('update_formatting', 'y', FALSE, 'id="update_formatting"')?>
-					<?=lang('update_existing_fields')?>
-				</p>
-			</div>
-
-		<?php endif;?>
-
 		<p><?=form_submit('field_edit_submit', lang($submit_lang_key), 'class="submit"')?></p>
 		
 		<?=form_close()?>

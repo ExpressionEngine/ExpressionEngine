@@ -3956,49 +3956,6 @@ class Admin_content extends Controller {
 		
 		$field_query = $this->db->get();
 
-		$this->javascript->output('
-			
-			if ($("#update_formatting_div"))
-			{
-				$("#update_formatting_div").hide();
-			}
-
-			function formatting_available(show)
-			{
-				show = (show == false) ? false : true;
-				if (show)
-				{
-					$("#formatting_available").show();
-					$("#formatting_unavailable").hide();
-				}
-				else
-				{
-					$("#formatting_available").hide();
-					$("#formatting_unavailable").show();
-				}
-			}
-
-			function direction_available(show)
-			{
-				show = (show == false) ? false : true;
-
-				if (show)
-				{
-					$("#direction_available").show();
-					$("#direction_unavailable").hide();
-				}
-				else
-				{
-					$("#direction_available").hide();
-					$("#direction_unavailable").show();
-				}
-			}
-
-			// default to these options being available
-			formatting_available();
-			direction_available();
-		');
-
 		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -4189,10 +4146,9 @@ class Admin_content extends Controller {
 			$vars[$key] = ($vars[$key] == '') ? $val : $vars[$key];
 		}
 		
-		
 		foreach(array('field_pre_populate', 'field_required', 'field_search', 'field_show_fmt') as $key)
 		{
-			$current = $vars[$key];
+			$current = ($vars[$key] == 'y') ? 'y' : 'n';
 			$other = ($current == 'y') ? 'n' : 'y';
 			
 			$vars[$key.'_'.$current] = TRUE;
@@ -4243,9 +4199,6 @@ class Admin_content extends Controller {
 
 		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
-		$this->javascript->click('#field_pre_populate_n', '$(".select_format_n").show();$(".select_format_y").hide();', FALSE);
-		$this->javascript->click('#field_pre_populate_y', '$(".select_format_y").show();$(".select_format_n").hide();', FALSE);
-
  		$ft_selector = "#ft_".implode(", #ft_", array_keys($fts));
 		
 		$this->javascript->output('
@@ -4256,6 +4209,7 @@ class Admin_content extends Controller {
 				ft_divs.hide();
 				$("#ft_"+this.value)
 					.show()
+					.trigger("activate")
 					.find("table").trigger("applyWidgets");
 					
 					$("#field_pre_populate_'.$vars['field_pre_populate'].'").trigger("click");
@@ -4606,6 +4560,18 @@ class Admin_content extends Controller {
 
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get fieldtype specific post data
+	 *
+	 * Different from input->post in that it checks for a fieldtype prefixed
+	 * value as well.
+	 *
+	 * @access	public
+	 * @param	fieldtype, key
+	 * @return	mixed
+	 */
 	function _get_ft_post_data($field_type, $key)
 	{
 		return (isset($_POST[$key])) ? $_POST[$key] : $this->input->post($field_type.'_'.$key);
