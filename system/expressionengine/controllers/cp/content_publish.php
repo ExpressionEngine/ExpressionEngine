@@ -1497,7 +1497,7 @@ class Content_publish extends Controller {
 		$vars['form_additional']['id'] = 'publishForm';
 		
 		// get all member groups with cp access for the layout list
-		$vars['member_groups'] = $this->member_model->get_member_groups(array('can_access_admin'), array('can_access_cp'=>'y'));
+		$vars['member_groups'] = $this->member_model->get_member_groups(array('can_access_admin'), array('can_access_publish'=>'y'));
 
 		// If fields have been hidden by an admin, then they won't get "drawn" into the document, however without
 		// them, they can't be moved at a later time into a tab. What we'll do is store all revealed fields in an
