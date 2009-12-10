@@ -1215,7 +1215,7 @@ $lang = array(
 'NetPBM',
 
 'imagemagick' =>
-'ImageMagik',
+'ImageMagick',
 
 'thumbnail_prefix' =>
 'Image Thumbnail Suffix',
