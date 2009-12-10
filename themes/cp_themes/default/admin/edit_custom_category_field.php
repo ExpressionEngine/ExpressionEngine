@@ -65,7 +65,7 @@ if ($EE_view_disable !== TRUE)
 			
 			if ($update_formatting)
 			{
-				$warning = '<div class="formatting_notice_info">'.
+				$warning = '<div class="formatting_notice_info notice">'.
 							lang('update_existing_cat_fields', 'update_formatting').NBS.NBS.NBS.
 							form_checkbox('update_formatting', 'y', FALSE, 'id="update_formatting"').'</div>';				
 			}

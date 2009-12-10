@@ -2100,6 +2100,8 @@ class Admin_content extends Controller {
 				$vars['cat_custom_fields'][$row['field_id']]['field_type'] = $row['field_type'];
 				$vars['cat_custom_fields'][$row['field_id']]['field_text_direction'] = ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr';
 				$vars['cat_custom_fields'][$row['field_id']]['field_show_fmt'] = 'n'; // no by default, over-ridden later when appropriate
+				
+				$vars['field_fmt'] = $row['field_default_fmt'];
 
 				//	Textarea field types
 
@@ -2110,7 +2112,7 @@ class Admin_content extends Controller {
 
 					if ($row['field_show_fmt'] != 'y')
 					{
-						$vars['form_hidden']['field_ft_'.$row['field_id']] = $field_fmt;
+						$vars['form_hidden']['field_ft_'.$row['field_id']] = $vars['field_fmt'];
 					}
 					else
 					{
@@ -2125,7 +2127,7 @@ class Admin_content extends Controller {
 
 					if ($row['field_show_fmt'] == 'n')
 					{
-						$vars['form_hidden']['field_ft_'.$row['field_id']] = $field_fmt;
+						$vars['form_hidden']['field_ft_'.$row['field_id']] = $vars['field_fmt'];
 					}
 				}
 

@@ -16,37 +16,30 @@ if ($EE_view_disable !== TRUE)
 
 		<div class="pageContents">
 
-		<?=form_open('C=admin_content'.AMP.'M=category_update', '', $form_hidden)?>
-		<div class="category_field">
+			<?=form_open('C=admin_content'.AMP.'M=category_update', '', $form_hidden)?>
+
 			<p>
 				<?=form_label(lang('category_name'), 'cat_name')?>
 				<?=form_input(array('id'=>'cat_name','name'=>'cat_name','class'=>'fullfield','value'=>$cat_name))?>
 			</p>
-		</div>
-		<div class="category_field">
+
 			<p>
 				<?=form_label(lang('category_url_title'), 'cat_url_title')?>
 				<?=form_input(array('id'=>'cat_url_title','name'=>'cat_url_title','class'=>'fullfield','value'=>$cat_url_title))?>
 			</p>
-		</div>
 
-		<div class="category_field">
 			<p>
 				<?=form_label(lang('category_description'), 'cat_description')?>
 				<?=form_textarea(array('id'=>'cat_description','name'=>'cat_description','class'=>'fullfield','value'=>$cat_description))?>
 			</p>
-		</div>
 
-		<div class="category_field">
 			<p>
-				<?=form_label(lang('category_image'), 'cat_image')?><?=lang('category_img_blurb')?>
+				<?=form_label(lang('category_image'), 'cat_image')?><br /><?=lang('category_img_blurb')?>
 				<?=form_input(array('id'=>'cat_image','name'=>'cat_image','class'=>'fullfield','value'=>$cat_image))?>
 			</p>
-		</div>
 
-		<div class="category_field">
 			<p>
-				<?=form_label(lang('category_parent'), 'parent_id')?>
+				<?=form_label(lang('category_parent'), 'parent_id')?><br />
 				<?php 
 				$options['0'] = $this->lang->line('none');
 				foreach($parent_id_options as $val)
@@ -58,65 +51,62 @@ if ($EE_view_disable !== TRUE)
 				?>
 
 			</p>
-		</div>
 
 
-				<?php foreach($cat_custom_fields as $field):?>
-					<div class="category_field publish_<?=$field['field_type']?>" id="hold_field_<?=$field['field_id']?>" style="width: <?=(isset($field['width'])) ? $field['width'] : '100%' ?>;">
+					<?php foreach($cat_custom_fields as $field):?>
 
-						<p>
-							<label for="<?=$field['field_id']?>">
-								<?php if ($field['field_required'] == 'y'):?><span class="required">*</span><?php endif;?>
-								<?=$field['field_label']?>
-							</label> 
-						</p>
+							<p>
+								<label for="<?=$field['field_id']?>">
+									<?php if ($field['field_required'] == 'y'):?><span class="required">*</span><?php endif;?>
+									<?=$field['field_label']?>
+								</label> 
+							</p>
 
-						<?php
-						// only text field types get these options
-						if($field['field_type'] == 'text'):
-							$data = array(
-              					'name'        => 'field_id_'.$field['field_id'],
-              					'id'          => 'field_id_'.$field['field_id'],
-              					'value'       => $field['field_content'],
-              					'maxlength'   => $field['field_maxl'],
-              					'size'        => '50',
-              					'style'       => 'width:50%;margin-left:20px;',
-            					);						
-						?>
-			<?=form_input($data)?>							
-						<?php elseif ($field['field_type'] == 'textarea'):
-							$data = array(
-              					'name'        => 'field_id_'.$field['field_id'],
-              					'id'          => 'field_id_'.$field['field_id'],
-              					'value'       => $field['field_content'],
-              					'rows'   	  => $field['rows'],
-              					'cols'        => '50',
-              					'style'       => 'width:50%;margin-left:20px;',
-            					);
-						?>
-			<?=form_textarea($data)?>							
+							<?php
+							// only text field types get these options
+							if($field['field_type'] == 'text'):
+								$data = array(
+	              					'name'        => 'field_id_'.$field['field_id'],
+	              					'id'          => 'field_id_'.$field['field_id'],
+	              					'value'       => $field['field_content'],
+	              					'maxlength'   => $field['field_maxl'],
+	              					'size'        => '50',
+	              					'style'       => 'width:50%',
+	            					);						
+							?>
+				<p><?=form_input($data)?></p>							
+							<?php elseif ($field['field_type'] == 'textarea'):
+								$data = array(
+	              					'name'        => 'field_id_'.$field['field_id'],
+	              					'id'          => 'field_id_'.$field['field_id'],
+	              					'value'       => $field['field_content'],
+	              					'rows'   	  => $field['rows'],
+	              					'cols'        => '50',
+	              					'style'       => 'width:50%',
+	            					);
+							?>
+				<p><?=form_textarea($data)?></p>
 
-						<?php elseif ($field['field_type'] == 'select'):
-						?>
-			<?=form_dropdown('field_id_'.$field['field_id'], $field['field_options'], $field['field_content'],'style="margin-left:20px;"')?>
-						<?php endif;?>
+							<?php elseif ($field['field_type'] == 'select'):
+							?>
+				<p><?=form_dropdown('field_id_'.$field['field_id'], $field['field_options'], $field['field_content'])?></p>
+							<?php endif;?>
 
-						<?php
-						if($field['field_show_fmt'] == 'y'):
-						?>						
-						<p class="spellcheck">
-							Formatting:
-			<?=form_dropdown('field_ft_'.$field['field_id'], $custom_format_options, $field['field_fmt'])?>
-						</p>
-						<?php endif;?>
-					
-						</div>
+							<?php
+							if($field['field_show_fmt'] == 'y'):
+							?>						
+							<p>
+								Formatting:
 
-				<?php endforeach;?>
+				<?=form_dropdown('field_ft_'.$field['field_id'], $custom_format_options, $field['field_fmt'])?>
+							</p>
+							<?php endif;?>
 
-				<p><?=form_submit('category_edit', lang('submit'), 'class="submit"')?></p>
-		
-				<?=form_close()?>
+					<?php endforeach;?>
+
+			<p><?=form_submit('category_edit', lang($submit_lang_key), 'class="submit"')?></p>
+
+			<?=form_close()?>
 		
 			</div> <!-- pageContents -->
 		</div> <!-- contents -->

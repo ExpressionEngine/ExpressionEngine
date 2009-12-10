@@ -53,10 +53,6 @@ if ($EE_view_disable !== TRUE)
 
 
 				<?php foreach($cat_custom_fields as $field):?>
-					<?php /*
-							@todo, figure out if this needs to be here for the publish page.
-								   doesn't seem like it, and it messes up the display of the categories page.?>
-					<div class="publish_field publish_<?=$field['field_type']?>" id="hold_field_<?=$field['field_id']?>" style="width: <?=(isset($field['width'])) ? $field['width'] : '100%' ?>;"> */?>
 
 						<p>
 							<label for="<?=$field['field_id']?>">
@@ -77,7 +73,7 @@ if ($EE_view_disable !== TRUE)
               					'style'       => 'width:50%',
             					);						
 						?>
-			<?=form_input($data)?>							
+			<p><?=form_input($data)?></p>							
 						<?php elseif ($field['field_type'] == 'textarea'):
 							$data = array(
               					'name'        => 'field_id_'.$field['field_id'],
@@ -88,25 +84,22 @@ if ($EE_view_disable !== TRUE)
               					'style'       => 'width:50%',
             					);
 						?>
-			<?=form_textarea($data)?>							
+			<p><?=form_textarea($data)?></p>
 
 						<?php elseif ($field['field_type'] == 'select'):
 						?>
-			<?=form_dropdown('field_id_'.$field['field_id'], $field['field_options'], $field['field_content'])?>
+			<p><?=form_dropdown('field_id_'.$field['field_id'], $field['field_options'], $field['field_content'])?></p>
 						<?php endif;?>
 
 						<?php
 						if($field['field_show_fmt'] == 'y'):
 						?>						
-						<p class="spellcheck">
+						<p>
 							Formatting:
+
 			<?=form_dropdown('field_ft_'.$field['field_id'], $custom_format_options, $field['field_fmt'])?>
 						</p>
 						<?php endif;?>
-					
-					<?php /*
-							see the @todo above
-							</div> */?>
 
 				<?php endforeach;?>
 
