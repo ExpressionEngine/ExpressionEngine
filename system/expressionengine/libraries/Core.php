@@ -585,11 +585,19 @@ class EE_Core {
 			
 			$this->EE->TMPL = new EE_Template();
 						
+			// Legacy, unsupported, but still functional
 			// Templates and Template Groups can be hard-coded
 			// within either the main triggering file or via an include.
-						
-			if ( ! isset($template_group)) $template_group = '';
-			if ( ! isset($template)) $template = '';
+			
+			$template_group = (string) $this->EE->config->item('template_group');
+			$template = (string) $this->EE->config->item('template');
+
+			// if there's a URI, disable let the override 
+			if (( ! empty($template_group) && ! empty($template)) && $this->EE->uri->uri_string != '' && $this->EE->uri->uri_string != '/')
+			{
+				$template_group = '';
+				$template = '';
+			}
 			
 			// Parse the template
 			$this->EE->TMPL->run_template_engine($template_group, $template);
