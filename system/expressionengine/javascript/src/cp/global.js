@@ -43,10 +43,12 @@ EE.create_searchbox = (function() {
 			orig_color = jqEl.css('color');
 		
 		jqEl.focus(function() {
+			// Reset color & remove placeholder text
 			jqEl.css('color', orig_color);
 			(jqEl.val() == placeholder && jqEl.val(''));
 		})
 		.blur(function() {
+			// If no user content -> add placeholder text and dim
 			if (jqEl.val() == '' || jqEl.val == placeholder) {
 				jqEl.val(placeholder).css('color', '#888');
 			}
