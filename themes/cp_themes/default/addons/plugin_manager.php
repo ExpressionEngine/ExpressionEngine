@@ -19,7 +19,7 @@ if ($EE_view_disable !== TRUE)
 
 			<?php $this->load->view('_shared/message');?>
 
-			<ul id="remote_plugins">
+		<ul id="remote_plugins">
 
 		<?php if (count($remote) > 1):?>
 		
@@ -49,7 +49,9 @@ if ($EE_view_disable !== TRUE)
 			<li>
 				<?=$this->pagination->create_links()?>
 			</li>
-			
+		
+		<?php else: ?>
+			<li>Plugin Feed Disabled in Beta Version.</li>
 		<?php endif;?>
 			</ul>
 		

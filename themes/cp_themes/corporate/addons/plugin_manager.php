@@ -48,7 +48,8 @@ if ($EE_view_disable !== TRUE)
 			<li>
 				<?=$this->pagination->create_links()?>
 			</li>
-			
+		<?php else: ?>
+			<li>Plugin Feed Disabled in Beta Version.</li>
 		<?php endif;?>
 			</ul>
 		
