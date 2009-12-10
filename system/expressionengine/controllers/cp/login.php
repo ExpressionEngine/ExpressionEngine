@@ -633,6 +633,10 @@ class Login extends Controller {
 	 */
 	function logout()
 	{
+		if ($this->session->userdata('group_id') == 3) {
+			$this->functions->redirect(SELF);
+		}
+		
 		$this->db->where('ip_address', $this->input->ip_address());
 		$this->db->where('member_id', $this->session->userdata('member_id'));
 		$this->db->delete('online_users');

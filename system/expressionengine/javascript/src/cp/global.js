@@ -215,19 +215,20 @@ EE.notepad.init();
 // Show / hide accessories
 
 $('#accessoryTabs li a').click(function() {
-	var parent = $(this).parent("li");
+	var parent = $(this).parent("li"),
+		accessory = $("#" + this.className);
 	
 	if (parent.hasClass("current")) {
-		$("#" + this.className).hide();
+		accessory.hide();
 		parent.removeClass("current");
 	}
 	else {
 		if (parent.siblings().hasClass("current")) {
-			$("#" + this.className).show().siblings(":not(#accessoryTabs)").hide();
+			accessory.show().siblings(":not(#accessoryTabs)").hide();
 			parent.siblings().removeClass("current");
 		}
 		else {
-			$("#" + this.className).slideDown();
+			accessory.slideDown();
 		}
 		parent.addClass("current");
 	}
@@ -315,8 +316,8 @@ $("#activeUser").one("mouseover", function() {
 	}
 	
 	function delay_logout() {
-		if (ttl < 1) {					
-			setTimeout(log_me_out, 0);
+		if (ttl < 1) {
+			return setTimeout(log_me_out, 0);
 		}
 		else if (ttl == orig_ttl) {
 			$(window).bind("unload.logout", log_me_out);
