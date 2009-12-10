@@ -53,7 +53,10 @@ if ($EE_view_disable !== TRUE)
 
 
 				<?php foreach($cat_custom_fields as $field):?>
-					<div class="publish_field publish_<?=$field['field_type']?>" id="hold_field_<?=$field['field_id']?>" style="width: <?=(isset($field['width'])) ? $field['width'] : '100%' ?>;">
+					<?php /*
+							@todo, figure out if this needs to be here for the publish page.
+								   doesn't seem like it, and it messes up the display of the categories page.?>
+					<div class="publish_field publish_<?=$field['field_type']?>" id="hold_field_<?=$field['field_id']?>" style="width: <?=(isset($field['width'])) ? $field['width'] : '100%' ?>;"> */?>
 
 						<p>
 							<label for="<?=$field['field_id']?>">
@@ -101,7 +104,9 @@ if ($EE_view_disable !== TRUE)
 						</p>
 						<?php endif;?>
 					
-						</div>
+					<?php /*
+							see the @todo above
+							</div> */?>
 
 				<?php endforeach;?>
 

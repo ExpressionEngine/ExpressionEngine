@@ -63,21 +63,22 @@ if ($EE_view_disable !== TRUE)
 				)
 			);
 			
+			if ($update_formatting)
+			{
+				$warning = '<div class="formatting_notice_info">'.
+							lang('update_existing_cat_fields', 'update_formatting').NBS.NBS.NBS.
+							form_checkbox('update_formatting', 'y', FALSE, 'id="update_formatting"').'</div>';				
+			}
+			else
+			{
+				$warning = false;
+			}
 			
 			$this->table->add_row(array(
-					form_label(lang('deft_field_formatting'), 'field_default_fmt'),
+					form_label(lang('deft_field_formatting'), 'field_default_fmt').$warning,
 					form_dropdown('field_default_fmt', $field_default_fmt_options, $field_default_fmt, 'id="field_default_fmt"')
 				)
 			);
-
-			if ($update_formatting)
-			{
-				$this->table->add_row(array(
-						lang('update_existing_cat_fields', 'update_formatting'),
-						form_checkbox('update_formatting', 'y', FALSE, 'id="update_formatting"')
-					)
-				);
-			}
 			
 			$this->table->add_row(array(
 					lang('show_formatting_buttons', 'show_formatting_buttons'),

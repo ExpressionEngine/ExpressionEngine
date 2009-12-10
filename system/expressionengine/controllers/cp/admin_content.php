@@ -3060,14 +3060,14 @@ class Admin_content extends Controller {
 		$this->javascript->change('#field_type', '
 			// hide all field format options
 			$(".field_format_option").hide();
-			console.log("#"+$(this).val()+"_format"); //return false;
+
 			// reveal selected option
 			$("#"+$(this).val()+"_format").show();
 		');
 
 		if ($vars['field_id'] == '')
 		{
-			$vars['update_formatting'] = TRUE;
+			$vars['update_formatting'] = FALSE;
 			$this->cp->set_variable('cp_page_title', $this->lang->line('create_new_cat_field'));
 
 			$vars['submit_lang_key'] = 'submit';
@@ -3098,7 +3098,10 @@ class Admin_content extends Controller {
 		}
 		else
 		{
-			$vars['update_formatting'] = FALSE;
+			$vars['update_formatting'] = TRUE;
+			
+			$this->javascript->output('$(".formatting_notice_info").hide();');
+			
 			$this->cp->set_variable('cp_page_title', $this->lang->line('edit_cat_field'));
 
 			$vars['submit_lang_key'] = 'update';
@@ -3106,7 +3109,7 @@ class Admin_content extends Controller {
 			$this->javascript->change('#field_default_fmt', '
 				// give formatting change notice and checkbox
 
-				$("#formatting_notice_info").show();
+				$(".formatting_notice_info").show();
 				$("#show_formatting_buttons").show();
 			');
 
