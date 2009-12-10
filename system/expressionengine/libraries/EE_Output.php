@@ -348,6 +348,31 @@ class EE_Output extends CI_Output {
 	} 
 
 	// --------------------------------------------------------------------
+
+	/**
+	 * Send AJAX response
+	 *
+	 * Outputs and exits content, makes sure profiler is disabled
+	 * and sends 500 status header on error
+	 *
+	 * @access	public
+	 * @param	string
+	 * @param	bool	whether or not the response is an error
+	 * @return	void
+	 */
+	function send_ajax_response($msg, $error = FALSE)
+	{
+		$this->enable_profiler(FALSE);
+		
+		if ($error === TRUE)
+		{
+			$this->set_status_header(500);
+		}
+		
+		exit($msg);
+	}
+
+	// --------------------------------------------------------------------
 	
 }
 // END CLASS

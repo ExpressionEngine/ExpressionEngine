@@ -3773,18 +3773,15 @@ class Design extends Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			$this->output->set_status_header(500);
-			exit($this->lang->line('unauthorized_access'));
+			$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
 		}
 
 		$template_id = $this->input->get_post('template_id');
 				
-		// in an ajax call this doesn't make too much sense, but it'll stop
-		// anything from running and prevent direct malicious page access
+		// check access privs
 		if ( ! $this->_template_access_privs(array('template_id' => $template_id)))
 		{
-			$this->output->set_status_header(500);
-			exit($this->lang->line('unauthorized_access'));
+			$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
 		}
 
 		$this->output->enable_profiler(FALSE);
@@ -3812,8 +3809,7 @@ class Design extends Controller {
 		// safety
 		if (count($template_info) == 0)
 		{
-			$this->output->set_status_header(500);
-			exit($this->lang->line('unauthorized_access'));
+			$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
 		}
 
 		$rename_file = FALSE;
@@ -3822,8 +3818,7 @@ class Design extends Controller {
 		{
 			if ($template_info['template_name'] == 'index')
 			{
-				$this->output->set_status_header(500);
-				exit($this->lang->line('index_delete_disallowed'));
+				$this->output->send_ajax_response($this->lang->line('index_delete_disallowed'), TRUE);
 			}
 			
 			$this->db->where('group_id', $template_info['group_id']);
@@ -3832,15 +3827,13 @@ class Design extends Controller {
 			// unique?
 			if ($this->db->count_all_results('templates'))
 			{
-				$this->output->set_status_header(500);
-				exit($this->lang->line('template_name_taken'));
+				$this->output->send_ajax_response($this->lang->line('template_name_taken'), TRUE);
 			}
 
 			// reserved?
 			if (in_array($data['template_name'], $this->reserved_names))
 			{
-				$this->output->set_status_header(500);
-				exit($this->lang->line('reserved_name'));
+				$this->output->send_ajax_response($this->lang->line('reserved_name'), TRUE);
 			}
 			
 			if ($template_info['save_template_file'] == 'y')
@@ -3869,12 +3862,11 @@ class Design extends Controller {
 			{
 				if ($this->template_model->rename_template_file($template_info['group_name'], $template_info['template_type'], $template_info['template_name'], $data['template_name']) == FALSE)
 				{
-					$this->output->set_status_header(500);
-					exit($this->lang->line('template_file_not_renamed'));
+					$this->output->send_ajax_response($this->lang->line('template_file_not_renamed'), TRUE);
 				}
 			}
 			
-			exit($this->lang->line('preferences_updated'));
+			$this->output->send_ajax_response($this->lang->line('preferences_updated'));
 		}
 	}
 	
@@ -3892,14 +3884,14 @@ class Design extends Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			exit($this->lang->line('unauthorized_access'));
+			$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
 		}	
 
 		$template_id = $this->input->get_post("template_id");
 		
 		if ( ! $this->_template_access_privs(array('template_id' => $template_id)))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
 		}
 
 		$this->output->enable_profiler(FALSE);
@@ -3913,7 +3905,7 @@ class Design extends Controller {
 			
 			if (($new_status != 'y' && $new_status != 'n') OR ! ctype_digit($no_auth_bounce))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
 			}
 
 			$this->template_model->update_access_ajax($template_id, $member_group, $new_status);
@@ -3923,7 +3915,7 @@ class Design extends Controller {
 		{
 			if ($enable_http_auth != 'y' && $enable_http_auth != 'n')
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
 			}
 			
 			$this->template_model->update_template_ajax($template_id, array('enable_http_auth' => $enable_http_auth));
@@ -3932,17 +3924,17 @@ class Design extends Controller {
 		{
 			if ( ! ctype_digit($no_auth_bounce))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
 			}
 			
 			$this->template_model->update_template_ajax($template_id, array('no_auth_bounce' => $no_auth_bounce));
 		}
 		else
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
 		}
 
-		exit($this->lang->line('preferences_updated'));
+		$this->output->send_ajax_response($this->lang->line('preferences_updated'));
 	}
 
 	// --------------------------------------------------------------------
