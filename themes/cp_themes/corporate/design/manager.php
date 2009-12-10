@@ -55,22 +55,6 @@ if ($EE_view_disable !== TRUE)
 							<?=form_open('C=design'.AMP.'M=manager')?>
 								<input type="text" id="template_keywords" name="template_keywords" value="" maxlength="80" class="input" />
 							</form>
-
-							<script type="text/javascript" charset="utf-8">
-							// <![CDATA[
-								if (document.getElementById('template_keywords'))
-								{
-									if ((parseInt(navigator.productSub)>=20020000)&&(navigator.vendor.indexOf("Apple Computer")!=-1))
-									{
-										searchField = document.getElementById('template_keywords');
-										searchField.setAttribute('type', 'search');
-										searchField.setAttribute('autosave', 'ee_template_search');
-										searchField.setAttribute('results', '10');
-										searchField.setAttribute('placeholder', 'Search templates');
-									}
-								}
-							// ]]>
-							</script>
 						</div>
 					</div>
 

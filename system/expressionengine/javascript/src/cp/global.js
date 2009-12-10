@@ -27,21 +27,45 @@ $(document).bind('ajaxComplete', function(evt, xhr) {
 
 // OS X Style Search Boxes for Webkit
 
-function safari_search_boxes() {
-	var box = document.getElementById('cp_search_keywords');
-
-	box.setAttribute('type', 'search');
+EE.create_searchbox = (function() {
 	
-	$(box).attr({
-		autosave: 		'ee_cp_search',
-		results:		'10',
-		placeholder:	'Search'		// @todo language file
-	});
-}
+	function webkit_search(el, placeholder, save) {
+		el.setAttribute('type', 'search');
+		$(el).attr({
+			autosave: 		save,
+			results:		'10',
+			placeholder:	placeholder
+		});
+	}
+	
+	function generic_search(el, placeholder) {
+		var jqEl = $(el),
+			orig_color = jqEl.css('color');
+		
+		jqEl.focus(function() {
+			jqEl.css('color', orig_color);
+			(jqEl.val() == placeholder && jqEl.val(''));
+		})
+		.blur(function() {
+			if (jqEl.val() == '' || jqEl.val == placeholder) {
+				jqEl.val(placeholder).css('color', '#888');
+			}
+		})
+		.trigger('blur');
+	}
+	
+	var create_func = (parseInt(navigator.productSub) >= 20020000 &&
+					  navigator.vendor.indexOf('Apple Computer') != -1) ? webkit_search : generic_search;
 
-if ((parseInt(navigator.productSub)>=20020000)&&(navigator.vendor.indexOf('Apple Computer')!=-1)) {
-	safari_search_boxes();
-}
+	return function(id, placeholder, save) {
+			var el = document.getElementById(id);
+			(el && create_func(el, placeholder, save));
+	}
+})();
+
+// @todo Language keys
+EE.create_searchbox('cp_search_keywords', 'Search', 'ee_cp_search');
+EE.create_searchbox('template_keywords', 'Search Templates', 'ee_template_search');
 
 
 // External links open in new window
