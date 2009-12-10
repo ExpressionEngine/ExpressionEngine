@@ -48,7 +48,8 @@ if ($EE_view_disable !== TRUE)
 
 				foreach ($categories as $category)
 				{
-					$link = $this->dsp->anchor(BASE.AMP.'C=admin_content'.AMP.'M=change_category_order'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.AMP.'order=up', $up).NBS.							$this->dsp->anchor(BASE.AMP.'C=admin_content'.AMP.'M=change_category_order'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.AMP.'order=down', $down);
+					$link = '<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=change_category_order'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.AMP.'order=up" class="edit_cat_order_trigger">'.$up.'</a>'.NBS;
+					$link .= '<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=change_category_order'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.AMP.'order=down" class="edit_cat_order_trigger">'.$down.'</a>';
 					$spcr = '<img src="'.PATH_CP_GBL_IMG.'clear.gif" border="0"  width="24" height="14" alt="" title="" />';
 					$cat_marker = '<img src="'.PATH_CP_GBL_IMG.'cat_marker.gif" border="0"  width="18" height="14" alt="" title="" />';					
 					$indent = ($category['5'] != 1) ? repeater($spcr, $category['5']).$cat_marker : '';
