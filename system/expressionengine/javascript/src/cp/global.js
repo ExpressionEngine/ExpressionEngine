@@ -357,12 +357,4 @@ $("#activeUser").one("mouseover", function() {
 	});
 });
 
-
-// @todo move to accessory!
-$('a.entryLink', '#newsAndStats').click(function() {
-	$(this).siblings(".fullEntry").toggle();
-	return false;
-});
-
-
 });

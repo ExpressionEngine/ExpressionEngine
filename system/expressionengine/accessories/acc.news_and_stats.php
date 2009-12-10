@@ -53,6 +53,13 @@ class News_and_stats_acc {
 	{
 		$this->sections['News'] = $this->_fetch_news();
 		$this->sections[$this->EE->lang->line('site_statistics')] = $this->_fetch_stats();
+		
+		$this->EE->javascript->output('
+			$("#newsAndStats").find("a.entryLink").click(function() {
+				$(this).siblings(".fullEntry").toggle();
+				return false;
+			});
+		');
 	}
 
 	// --------------------------------------------------------------------
