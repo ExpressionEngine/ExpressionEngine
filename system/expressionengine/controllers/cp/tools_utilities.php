@@ -915,7 +915,7 @@ class Tools_utilities extends Controller {
 				
 
 			//  Add a unique_id for each member
-			$data['unique_id'] = random_string();  //$this->functions->random('encrypt');
+			$data['unique_id'] = random_string('encrypt');
 			
 			/* -------------------------------------
 			/*  See if we've already imported a member with this member_id -
