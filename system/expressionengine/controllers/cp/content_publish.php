@@ -547,6 +547,7 @@ class Content_publish extends Controller {
 		$vars = array_merge_recursive($vars, $this->_build_channel_vars($which, $status_group, $cat_group, $field_group, $assigned_channels, $channel_id));
 
 		// Create status menu
+
 		$vars = array_merge_recursive($vars, $this->_build_status_vars($status_group, $status, $deft_status, $show_status_menu));
 
 		// Create author menu
