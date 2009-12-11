@@ -4096,9 +4096,9 @@ class Admin_content extends Controller {
 		$vars['submit_lang_key']	= ($type == 'new') ? 'submit' : 'update';
 
 		// Content types
-		$content_types = $this->field_model->get_field_content_types();
+		$all_content_types = $this->field_model->get_field_content_types();
 		
-		foreach($content_types as $parent => $content_types)
+		foreach($all_content_types as $parent => $content_types)
 		{
 			$vars['field_content_options_'.$parent]['any'] = $this->lang->line('any');
 			
