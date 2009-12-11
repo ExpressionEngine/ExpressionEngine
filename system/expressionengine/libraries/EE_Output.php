@@ -369,7 +369,8 @@ class EE_Output extends CI_Output {
 			$this->set_status_header(500);
 		}
 		
-		exit($msg);
+		$EE =& get_instance();
+		exit($EE->javascript->generate_json($msg, TRUE));
 	}
 
 	// --------------------------------------------------------------------
