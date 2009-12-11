@@ -2302,7 +2302,7 @@ class Content_publish extends Controller {
 			$status = $deft_status;
 		}
 
-		$vars['menu_status_options'] = '';
+		$vars['menu_status_options'] = array();
 		$vars['menu_status_selected'] = '';
 
 		if ($show_status_menu == 'n')
