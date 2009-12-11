@@ -81,15 +81,19 @@ class Jquery {
 		{
 			if ($plugin !== FALSE OR ($plugin = $this->EE->input->get_post('plugin')) !== FALSE)
 			{
-				$file = PATH_JQUERY.'plugins/'.$plugin.'.js';
+				$file = PATH_JQUERY.'plugins/'.$this->EE->security->sanitize_filename($plugin).'.js';
 			}
 			elseif ($ui !== FALSE OR ($ui = $this->EE->input->get_post('ui')) !== FALSE)
 			{
-				$file = PATH_JQUERY.'ui/ui.'.$ui.'.js';
+				$file = PATH_JQUERY.'ui/ui.'.$this->EE->security->sanitize_filename($ui).'.js';
 			}
 			elseif ($effect !== FALSE OR ($effect = $this->EE->input->get_post('effect')) !== FALSE)
 			{
-				$file = PATH_JQUERY.'ui/effect.'.$effect.'.js';
+				$file = PATH_JQUERY.'ui/effect.'.$this->EE->security->sanitize_filename($effect).'.js';
+			}
+			elseif (($file = $this->EE->input->get_post('file')) !== FALSE)
+			{
+				$file = APPPATH.'javascript/'.$this->EE->security->sanitize_filename($file).'.js';
 			}
 			else
 			{
@@ -98,14 +102,7 @@ class Jquery {
 		}
 		else
 		{
-			if ($this->EE->config->item('use_compressed_js') == 'n')
-			{
-				$file = APPPATH.'javascript/src/'.$loadfile.'.js';
-			}
-			else
-			{
-				$file = APPPATH.'javascript/compressed/'.$loadfile.'.js';
-			}
+			$file = APPPATH.'javascript/'.$this->EE->security->sanitize_filename($file).'.js';
 		}
 
 		if ( ! file_exists($file))
