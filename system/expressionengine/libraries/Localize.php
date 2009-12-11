@@ -334,8 +334,11 @@ class EE_Localize {
 	 */
 	function set_human_time($now = '', $localize = TRUE, $seconds = FALSE)
 	{
-		// If seconds not explicitly set and $conf['include_seconds'] is set 
-		//  to 'y', then we include the seconds on our human time.		
+		/* -------------------------------------------
+		/*	Hidden Configuration Variables
+		/*	- include_seconds => Determines whether to include seconds in our human time.
+		/* -------------------------------------------*/		
+			
 		if (func_num_args() != 3 && $this->EE->config->item('include_seconds') == 'y')
 		{
 			$seconds = TRUE;
