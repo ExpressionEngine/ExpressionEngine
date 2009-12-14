@@ -6544,12 +6544,12 @@ class Channel {
 		// parse custom fields
 		foreach($this->catfields as $ccv)
 		{
-			if (isset($query->row['field_id_'.$ccv['field_id']]) AND $query->row['field_id_'.$ccv['field_id']] != '')
+			if ($query->row('field_id_'.$ccv['field_id']) AND $query->row('field_id_'.$ccv['field_id']) != '')
 			{
-				$field_content = $this->EE->typography->parse_type($query->row['field_id_'.$ccv['field_id']],
+				$field_content = $this->EE->typography->parse_type($query->row('field_id_'.$ccv['field_id']),
 															array(
-																  'text_format'		=> $query->row['field_ft_'.$ccv['field_id']],
-																  'html_format'		=> $query->row['field_html_formatting'],
+																  'text_format'		=> $query->row('field_ft_'.$ccv['field_id']),
+																  'html_format'		=> $query->row('field_html_formatting'),
 																  'auto_links'		=> 'n',
 																  'allow_img_url'	=> 'y'
 																)
