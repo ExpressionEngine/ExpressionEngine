@@ -364,7 +364,7 @@ a:hover .submit_alt{
 	padding-top:		2px;
 }
 
-input.submit {
+input.submit, a.submit {
 	background:			#80a210 url('<?=$cp_theme_url?>images/btn_grad.png') top left repeat-x;
 	display: 			inline-block;
 	padding:			3px 31px 3px 31px;
@@ -383,6 +383,11 @@ input.submit {
 	-moz-box-shadow:	0 1px 2px #999;
 	-webkit-box-shadow:	0 1px 2px #999;
 	text-shadow:		-1px -1px 1px #4d5c08;
+}
+
+a.submit {
+	height:20px;
+	padding:8px 10px 0 10px;
 }
 
 input.submit{
@@ -886,10 +891,12 @@ a#hideSidebarLink, a#revealSidebarLink {
 	padding:			2px 25px 0 25px;
 	margin-right:		0;
 	text-align:			left;
+	height:16px;
 }
 
 a#revealSidebarLink {
 	border-top:			none;
+	height:12px;
 }
 
 a#hideSidebarLink:link, a#hideSidebarLink:visited,
@@ -970,6 +977,7 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 #mainWrapper {
 	margin:				0 25px 25px 25px;	
 	background:			#fff url('<?=$cp_theme_url?>images/subnav_bg.gif') top left repeat-x;
+	position:relative;
 }
 
 
@@ -1053,7 +1061,7 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 	float:				left;
 	width:				29%;
 	margin-right:		3%;
-
+	margin-top:10px;
 
 }
 .contentMenu .heading {
@@ -1185,7 +1193,8 @@ h2.innerHeading{
 	font-weight:		bold;
 	font-size:			24px;
 	color:				#434343;
-	padding:			0 11px 3px 28px;
+	padding:			4px 11px 3px 28px;
+	height:25px;
 }
 
 #mainContent .create  {
@@ -1257,7 +1266,7 @@ width:100%;
 	background:			none;
 }
 
-input.submit,input.delete {
+input.submit,input.delete, a.submit {
 	cursor:				pointer;
 }
 
@@ -1642,6 +1651,103 @@ h2 a:hover {
 	color:				#E7174B;
 	background-color:	#ECF1F4;
 }
+
+
+/** Important Messages **/
+#ee_important_message {
+	overflow:hidden;
+	margin-left:3.3%;
+	margin-right:3.3%;
+	margin-bottom:3.3%;
+}
+
+#ee_important_message a {
+	color:#005EB0;
+}
+
+#ee_homepage_notice.contents {
+	padding:0;
+}
+
+#ee_homepage_notice.contents .heading h2 {
+	background: none;
+}
+
+#noticeContents.closed {
+	display:none;
+}
+
+.heading span.msg_open_close {
+	float:right;
+	text-indent:-5000em;
+	display:block;
+	height:15px;
+	width:15px;
+	cursor:pointer;
+}
+
+#ee_important_message .closedHeading {
+	display:none;
+}
+
+.heading span.msg_open_close {
+	background:transparent url('../themes/jquery_ui/corporate/images/ui-icons_27343C_256x240.png') -15px -192px no-repeat;
+}
+
+#ee_important_message.closed {
+	position:absolute;
+	width:120px;
+	height:20px;
+	top:32px;
+	left:-20px;
+}
+
+#ee_important_message.closed .heading h2 {
+	display:none;
+}
+
+#ee_important_message.closed .closedHeading {
+	display:block;
+	height:15px;
+	width:119px;
+	background:transparent url('<?=$cp_theme_url?>images/notice_toolbar.png') no-repeat;
+	color:#fff;
+	padding:2px 5px 0 5px;
+	cursor: pointer;
+}
+
+#mainContent .pageContents p#newVersionNotice {
+	margin-bottom:15px;
+}
+
+#checksumFailure {
+	margin-bottom:10px;
+	font-weight:bold;
+	color:#005EB0;
+	float:left;
+}
+
+#checksumFailure ul li {
+	margin: 0 0 5px 15px;
+	font-weight:normal;
+	color:#5F6C74;
+	padding:0;
+}
+
+.pageContents ul#checksumFailure {
+	padding-top:0;
+}
+
+#ee_important_message a.submit {
+	float:left;
+	margin-left:15px;
+	color:#fff;
+	
+}
+
+
+
+
 
 /*
 @todo: this is only here for a few modules that aren't fully converted

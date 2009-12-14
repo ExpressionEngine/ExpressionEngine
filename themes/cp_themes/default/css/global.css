@@ -804,6 +804,7 @@ ul#navigationTabs li ul ul ul ul {
 
 #mainContent {
 	width:				77%;
+	position:relative;
 }
 
 #mainContent .pageContents {
