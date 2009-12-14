@@ -115,7 +115,8 @@ class Expressionengine_info_acc {
 		}
 		
 		// no cache, so get current downloadable version
-		$version = $this->_fsockopen_process('http://expressionengine.com/eeversion.txt');
+		$version = $this->_fsockopen_process('http://expressionengine.com/eeversion2.txt');
+		
 		$version = 'v'.trim(str_replace('Version:', '', $version));
 		
 		$build = $this->_fsockopen_process('https://secure.expressionengine.com/extra/ee_current_build/');
@@ -126,7 +127,7 @@ class Expressionengine_info_acc {
 							'build'		=> $build
 						);
 
-		$this->_write_cache($details);
+		// $this->_write_cache($details);
 		return str_replace(array('%v', '%b'), array($details['version'], $details['build']), $this->EE->lang->line('version_info'));
 	}
 
@@ -173,7 +174,7 @@ class Expressionengine_info_acc {
 			$this->_write_cache(array('error' => $this->EE->lang->line('error_getting_version')));
 			return $this->EE->lang->line('error_getting_version');
 		}
-		
+
 		// and get rid of headers
 		if ($pos = strpos($ret, "\r\n\r\n"))
 		{

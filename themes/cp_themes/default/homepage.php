@@ -7,24 +7,43 @@ if ($EE_view_disable !== TRUE)
 	$this->load->view('_shared/breadcrumbs');
 }
 ?>
-
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
-	<?php if (isset($new_checksums) && is_array($new_checksums)): ?>
-	<div class="contents">
-		<div class="notice">
-			<p><?=lang('checksum_changed_warning')?></p>
-			<?php foreach($new_checksums as $path): ?>
-			<?=NBS.NBS.NBS.NBS.NBS.$path; ?><br />
-			<?php endforeach; ?>
+
+	<?php if ($version OR isset($new_checksums)):?>
+		<div id="ee_important_message" class="<?=$open_close_msg?>">
+			<div class="contents" id="ee_homepage_notice">
+				<div class="heading">
+		            <h2><?=lang('important_messages')?><span class="msg_open_close">Ignore Button</span></h2>
+		        </div>
+				<div class="closedHeading msg_open_close">
+						<?=lang('important_messages')?>
+				</div>
+				<div class="pageContents <?=$msg_class?>" id="noticeContents">
+					<?php // New Version Notice
+					if ($version):?>
+					<p id="newVersionNotice"><?=$version?></p>
+					<?php endif; ?>
+					<?php // Bootstrap Checksum Failure Notice?>
+					<?php if (isset($new_checksums)):?>
+						<ul id="checksumFailure">
+							<li><?=lang('checksum_changed_warning')?>
+								<ul>
+									<?php foreach($new_checksums as $path): ?>
+									<li><?=$path; ?></li>
+									<?php endforeach; ?>
+								</ul>
+						<?php if ($this->session->userdata('group_id') == 1): ?>
+							</li>
+						</ul>
+						<a class="submit" href="<?=BASE.AMP.'C=homepage'.AMP.'M=accept_checksums'?>"><?=lang('checksum_changed_accept')?></a>
+						<?php endif; ?>
+					<?php endif; ?>
+					<div class="clear"></div>
+				</div>
+			</div>
 		</div>
-		
-		<?php if ($this->session->userdata('group_id') == 1): ?>
-		<p><span class="button"><a class="submit" href="<?=BASE.AMP.'C=homepage'.AMP.'M=accept_checksums'?>"><?=lang('checksum_changed_accept')?></a></p>
-		<?php endif; ?>
-		<div class="clear_left"></div>
-	</div>
-	<?php endif; ?>
+	<?php endif;?>
 
 <?php if ($can_access_content == TRUE): ?>
 

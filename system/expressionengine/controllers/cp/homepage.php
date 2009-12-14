@@ -65,22 +65,11 @@ class Homepage extends Controller {
 		}
 		// -- End Demo Code
 		
-		/** --------------------------------
-		/**  Version Check
-		/** --------------------------------*/
 		
-		if (($ver = $this->_version_check()) !== FALSE)
-		{
-			if ($ver > APP_VER)
-			{
-				$qm = ($this->config->item('force_query_string') == 'y') ? '' : '?';	
-				$this->messages[] = $this->dsp->qdiv('success', $this->dsp->anchor($this->functions->fetch_site_index().$qm.'URL=https://secure.expressionengine.com/download.php', $line));
-			}
-		}
 
 		$this->load->vars(array('cp_page_id'=>'homepage'));
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -95,8 +84,17 @@ class Homepage extends Controller {
 	 */	
 	function index($message = '')
 	{
+		$vars['version'] = FALSE;
+
+
 		$this->_checksum_bootstrap_files();
 		
+		
+		if ($this->session->userdata['group_id'] == 1 AND $this->config->item('new_version_check') == 'y')
+		{
+			$vars['version'] = $this->_version_check();
+		}
+
 		$this->cp->set_variable('cp_page_title', $this->lang->line('main_menu'));
 		
 		$this->javascript->output('
@@ -147,6 +145,49 @@ class Homepage extends Controller {
 			return false;
 		});
 		');
+		
+		$vars['msg_class'] = ($this->input->cookie('home_msg_state') == 'closed') ? 'closed' : 'open';		
+		$vars['open_close_msg'] = $vars['msg_class'];
+
+		// Ignore version update javascript
+		$this->javascript->output('
+			var messageBoxState = "'.$vars['msg_class'].'";
+			
+			var messageContainer = $("#ee_important_message");
+		
+			$("#ee_homepage_notice .msg_open_close").click( function() {
+				if (messageBoxState == "open") {
+					messageBoxState = "closed";
+				} else if (messageBoxState == "closed") {
+					messageBoxState = "open";
+				}
+
+				$.ajax({
+					url: "'.str_replace("&amp;", "&", BASE.AMP."C=homepage&M=hide_message_box").'",
+					data: "state="+messageBoxState,
+					cache: true,
+					success: collapseHomepageNotice(messageContainer, messageBoxState)
+				});
+			});
+		
+			function collapseHomepageNotice(messageContainer, messageBoxState)
+			{	
+				$("#ee_important_message").hide();
+	
+				if (messageBoxState == "open") {
+					$(messageContainer).removeClass("closed");
+					$(messageContainer).addClass("open");
+					$("#noticeContents").show();
+				} else if (messageBoxState == "closed"){
+					$(messageContainer).removeClass("open");
+					$(messageContainer).addClass("closed");
+					$("#noticeContents").hide();
+				}
+				
+				$("#ee_important_message").fadeIn("slow");
+			}
+		
+		');
 
 		$this->javascript->compile();
 
@@ -183,56 +224,6 @@ class Homepage extends Controller {
 
 	// --------------------------------------------------------------------
 
-	/**
-	 * Return recently edited <entry/template>
-	 *
-	 * Used as a json callback for the sidebar - no point in doing this on
-	 * page load everywhere, it's not relevant enough.
-	 *
-	 * @access	public
-	 * @param	type
-	 * @return	void
-	 */
-	function recently_edited()
-	{
-		// @todo this whole function would be better off in a model, but which one?
-		$response = array();
-
-		$this->db->select('entry_id, channel_id');
-		$this->db->order_by('edit_date', 'desc');
-
-		if ($this->session->userdata['can_edit_other_entries'] != 'y')
-		{
-			$this->db->where('author_id', $this->session->userdata['member_id']);
-		}
-
-		$this->db->where('site_id', $this->config->item('site_id'));
-
-		$query = $this->db->get('channel_titles', 1);
-
-		if ($query->num_rows() > 0)
-		{
-			$url = BASE.AMP.'C=content_publish&M=view_entry&channel_id='.$query->row('channel_id').'&entry_id='.$query->row('entry_id');
-			$response[$this->lang->line('most_recent_edited_entry')] = $url;
-		}
-
-		$this->db->select('template_id');
-		$this->db->order_by('edit_date', 'desc');
-		$this->db->where('site_id', $this->config->item('site_id'));
-				
-		$query = $this->db->get('templates', 1);
-
-		if ($query->num_rows() > 0 AND $this->session->userdata['can_admin_templates'] == 'y')
-		{
-			$url = BASE.AMP.'C=design&M=edit_template&id='.$query->row('template_id');
-			$response[$this->lang->line('most_recent_edited_template')] = $url;
-		}
-
-		echo $this->javascript->generate_json($response);
-		exit;
-	}
-	
-	// --------------------------------------------------------------------
 
 	/**
 	 * Accept Bootstrap Checksum Changes
@@ -268,59 +259,6 @@ class Homepage extends Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * EE Version Check function
-	 * 
-	 * Requests a file from ExpressionEngine.com that informs us what the current available version
-	 * of ExpressionEngine.  In the future, we might put the build number in there as well.
-	 *
-	 * @access	private
-	 * @return	bool|string
-	 */
-	function _version_check()
-	{
-		/** --------------------------------
-		/**  Version Check
-		/** --------------------------------*/
-		
-		if ($this->session->userdata['group_id'] == 1 AND $this->config->item('new_version_check') == 'y')
-		{
-			$page_url = 'http://expressionengine.com/eeversion.txt';
-			$target = parse_url($page_url);
-
-			$fp = @fsockopen($target['host'], 80, $errno, $errstr, 3);
-
-			if (is_resource($fp))
-			{
-				fputs ($fp,"GET ".$page_url." HTTP/1.0\r\n" );
-				fputs ($fp,"Host: ".$target['host'] . "\r\n" );
-				fputs ($fp,"User-Agent: EE/EllisLab PHP/\r\n");
-				fputs ($fp,"If-Modified-Since: Fri, 01 Jan 2004 12:24:04\r\n\r\n");
-
-				$ver = '';
-
-				while ( ! feof($fp))
-				{
-					$ver .= trim(fgets($fp, 128));
-				}
-
-				fclose($fp);
-
-				if ($ver != '')
-				{
-					return trim(str_replace('Version:', '', strstr($ver, 'Version:')));
-				}
-			}
-			else
-			{
-				$this->conn_failure = TRUE;
-				return FALSE;
-			}
-		}
-	}
-	
-	// --------------------------------------------------------------------
-
-	/**
 	 * Bootstrap Checksum Validation
 	 * 
 	 * Creates a checksum for our bootstrap files and checks their
@@ -347,6 +285,173 @@ class Homepage extends Controller {
 				$this->file_integrity->send_site_admin_warning($changed);
 			}
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	
+	function hide_message_box()
+	{
+		$msg_state = $this->input->get_post('state');
+		
+		$this->functions->set_cookie('home_msg_state', "{$msg_state}", 86400);
+		exit;
+	}
+	
+	
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * EE Version Check function
+	 * 
+	 * Requests a file from ExpressionEngine.com that informs us what the current available version
+	 * of ExpressionEngine.  In the future, we might put the build number in there as well.
+	 *
+	 * @access	private
+	 * @return	bool|string
+	 */
+	function _version_check()
+	{
+		// Attempt to grab the local cached file
+		$cached = $this->_check_version_cache();
+
+		$download_url = $this->functions->fetch_site_index().QUERY_MARKER.'URL=https://secure.expressionengine.com/download.php';
+
+		$ver = '';
+		
+		// Is the cache current?
+		if ( ! $cached)
+		{
+			$details['timestamp'] = time();
+			
+			$dl_page_url = 'http://expressionengine.com/eeversion2.txt';
+			$target = parse_url($dl_page_url);
+			
+			$fp = @fsockopen($target['host'], 80, $errno, $errstr, 3);
+			
+			if (is_resource($fp))
+			{
+				fputs ($fp,"GET ".$dl_page_url." HTTP/1.0\r\n" );
+				fputs ($fp,"Host: ".$target['host'] . "\r\n" );
+				fputs ($fp,"User-Agent: EE/EllisLab PHP/\r\n");
+				fputs ($fp,"If-Modified-Since: Fri, 01 Jan 2004 12:24:04\r\n\r\n");
+				
+				while ( ! feof($fp))
+				{
+					$ver .= trim(fgets($fp, 128));
+				}
+
+				fclose($fp);
+				
+				if ($ver != '')
+				{
+					$details['version'] = trim(str_replace('Version:', '', strstr($ver, 'Version:')));
+				
+					if ($details['version'] != '')
+					{
+						// We have the version from ExpressionEngine.com, write a cache file
+						$this->_write_version_cache($details);						
+					}
+					else
+					{
+						// Something went wrong.
+						unset($details['version']);
+
+						$details['error'] = TRUE;
+
+						$this->_write_version_cache($details);						
+					}
+				}
+				else
+				{
+					$details['error'] = TRUE;
+					$this->_write_version_cache($details);
+				}
+			}
+			else
+			{
+				// Something went wrong.
+				$details['error'] = TRUE;
+				
+				$this->_write_version_cache($details);	
+			}
+		}
+		else
+		{
+			$details = $cached;
+		}
+		
+		$vars['message'] = FALSE;
+		
+		if (isset($details['version']))
+		{
+			if (($details['version'] > APP_VER))
+			{
+				return sprintf($this->lang->line('new_version_notice'),
+							   $details['version'],
+							   $download_url,
+							   $this->config->item('doc_url').'installation/update.html');
+			}
+		}
+		else 
+		{
+			return sprintf($this->lang->line('new_version_error'),
+							$download_url);
+		}
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Check EE Version Cache.  
+	 *
+	 * 
+	 *
+	 */
+	function _check_version_cache()
+	{
+		// check cache first
+		//$cache_expire = 60 * 60 * 24;	// only do this once per day
+		$cache_expire = 60;
+		$this->load->helper('file');	
+		$contents = read_file(APPPATH.'cache/ee_version/current_version');
+
+		if ($contents !== FALSE)
+		{
+			$details = unserialize($contents);
+
+			if (($details['timestamp'] + $cache_expire) > $this->localize->now)
+			{
+				return $details;
+			}
+			else
+			{
+				return FALSE;
+			}
+		}
+		
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Write EE Version Cache
+	 *
+	 * @param array - details of version needed to be cached.
+	 * @return void
+	 */
+	function _write_version_cache($details)
+	{
+		$this->load->helper('file');
+		
+		if ( ! is_dir(APPPATH.'cache/ee_version'))
+		{
+			mkdir(APPPATH.'cache/ee_version', DIR_WRITE_MODE);
+		}
+
+		write_file(APPPATH.'cache/ee_version/current_version', serialize($details));
 	}
 }
 

@@ -32,6 +32,16 @@ http://expressionengine.com/forums/viewcategory/4/
 Please review the support policy before posting to the forums:
 http://expressionengine.com/support/policy/",
 
+'new_version_notice' =>
+"ExpressionEngine version %s is now available.\n
+Download <a href=\"%s\" title=\"Download Here\">here</a> and follow the <a href=\"%s\" title=\"Version Update Docs\">Version Update Docs</a>.",
+
+'new_version_error' =>
+'An unexpected error occurred attempting to download the current ExpressionEngine version number.  Please visit your <a href="%s" title="download account">Download Account</a> to verify you are on the current version.  If this error persists, please contact your system administrator',
+
+'important_messages' =>
+'Notice',
+
 "cp_home" =>
 "My Home Page",
 
