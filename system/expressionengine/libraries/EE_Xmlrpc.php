@@ -103,7 +103,7 @@ class EE_Xmlrpc extends CI_Xmlrpc {
 					$rss_url
 				));
 				
-				if ( ! $this->xmlrpc->send_request())
+				if ( ! $this->EE->xmlrpc->send_request())
 				{
 					$this->method('weblogUpdates.ping');
 					$this->request(array(
