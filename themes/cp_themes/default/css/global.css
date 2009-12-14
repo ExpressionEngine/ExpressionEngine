@@ -1371,10 +1371,10 @@ h2 a:hover {
 }
 
 #ee_important_message.closed {
-	position:fixed;
+	position:absolute;
 	width:120px;
-	height:20px;
-	top:80px;
+	height:18px;
+	top:-35px;
 	left:-5px;
 }
 

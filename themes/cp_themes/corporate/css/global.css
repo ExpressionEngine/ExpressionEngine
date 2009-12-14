@@ -1697,7 +1697,7 @@ h2 a:hover {
 #ee_important_message.closed {
 	position:absolute;
 	width:120px;
-	height:20px;
+	height:18px;
 	top:32px;
 	left:-20px;
 }
