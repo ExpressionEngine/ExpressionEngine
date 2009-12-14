@@ -1049,36 +1049,39 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		/** -------------------------------------*/
 		
 		$channel_ids = array();
-		
-		$IDS = str_replace('member_id', 'author_id', $IDS);
-		
-		$query = $this->db->query("SELECT DISTINCT(entry_id), channel_id FROM exp_comments WHERE ".$IDS);
-		
-		if ($query->num_rows() > 0)
+
+		if ($this->db->table_exists('comments'))
 		{
-			foreach ($query->result_array() as $row)
-			{
-				$channel_ids[] = $row['channel_id'];
-				
-				$query = $this->db->query("SELECT MAX(comment_date) AS max_date FROM exp_comments WHERE status = 'o' AND entry_id = '".$this->db->escape_str($row['entry_id'])."'");
-				
-				$comment_date = ($query->num_rows() == 0 OR ! is_numeric($query->row('max_date') )) ? 0 : $query->row('max_date') ;
-				
-				$query = $this->db->query("SELECT COUNT(*) AS count FROM exp_comments WHERE entry_id = '{$row['entry_id']}' AND status = 'o'");		
-				
-				$this->db->query("UPDATE exp_channel_titles
-							SET comment_total = '".$this->db->escape_str($query->row('count') )."', recent_comment_date = '$comment_date'
-							WHERE entry_id = '{$row['entry_id']}'");
-			}
-			
-			$this->db->query("DELETE FROM exp_comments WHERE ".$IDS);
-		}
+			$IDS = str_replace('member_id', 'author_id', $IDS);
 		
-		if (count($channel_ids) > 0)
-		{	
-			foreach (array_unique($channel_ids) as $channel_id)
+			$query = $this->db->query("SELECT DISTINCT(entry_id), channel_id FROM exp_comments WHERE ".$IDS);
+		
+			if ($query->num_rows() > 0)
 			{
-				$this->stats->update_comment_stats($channel_id);
+				foreach ($query->result_array() as $row)
+				{
+					$channel_ids[] = $row['channel_id'];
+				
+					$query = $this->db->query("SELECT MAX(comment_date) AS max_date FROM exp_comments WHERE status = 'o' AND entry_id = '".$this->db->escape_str($row['entry_id'])."'");
+				
+					$comment_date = ($query->num_rows() == 0 OR ! is_numeric($query->row('max_date') )) ? 0 : $query->row('max_date') ;
+				
+					$query = $this->db->query("SELECT COUNT(*) AS count FROM exp_comments WHERE entry_id = '{$row['entry_id']}' AND status = 'o'");		
+				
+					$this->db->query("UPDATE exp_channel_titles
+								SET comment_total = '".$this->db->escape_str($query->row('count') )."', recent_comment_date = '$comment_date'
+								WHERE entry_id = '{$row['entry_id']}'");
+				}
+			
+				$this->db->query("DELETE FROM exp_comments WHERE ".$IDS);
+			}
+		
+			if (count($channel_ids) > 0)
+			{	
+				foreach (array_unique($channel_ids) as $channel_id)
+				{
+					$this->stats->update_comment_stats($channel_id);
+				}
 			}
 		}
 
