@@ -3963,7 +3963,14 @@ class Content_publish extends Controller {
 			// File fields
 			function file_field_changed(file, field) {
 				var container = $("input[name="+field+"]").closest(".publish_field");
-				container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" alt=\""+file.name+"\" /><br />"+file.name);
+
+				if (file.is_image == false) {
+					container.find(".file_set").show().find(".filename").html("<img src=\""+EE.PATH_CP_GBL_IMG+"default.png\" alt=\""+EE.PATH_CP_GBL_IMG+"default.png\" /><br />"+file.name);
+				}
+				else
+				{
+					container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" alt=\""+file.name+"\" /><br />"+file.name);
+				}
 
 				$("input[name="+field+"_hidden]").val(file.name);
 				$("select[name="+field+"_directory]").val(file.directory);
