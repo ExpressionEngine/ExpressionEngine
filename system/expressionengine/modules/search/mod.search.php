@@ -1117,7 +1117,7 @@ class Search {
 		else
 		{
 			$search_id = substr($this->EE->uri->query_string, 0, 32);
-			$cur_page  = substr($this->EE->uri->query_string, 32);
+			$cur_page  = substr($this->EE->uri->query_string, 33);
 		}
 
 		/** ----------------------------------------
