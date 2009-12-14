@@ -998,7 +998,7 @@ class MyAccount extends Controller {
 						});
 						$.ajax({
 							type: "POST",
-							url: "'.str_replace('&amp;', '&', BASE).'&C=myaccount&M=reorder_html_buttons",
+							url: EE.BASE+"&C=myaccount&M=reorder_html_buttons",
 							data: "XID='.$xid.'"+tag_order
 						});
 					}
@@ -1121,7 +1121,7 @@ class MyAccount extends Controller {
 	function delete_html_button()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) {
+		if ( ! $this->input->get_post('button_id')) {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
@@ -1140,7 +1140,8 @@ class MyAccount extends Controller {
 	function reorder_html_buttons()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) {
+		if (empty($_POST)) 
+		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
 

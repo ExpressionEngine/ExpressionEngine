@@ -244,6 +244,29 @@ class Cp {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Mask URL.
+	 *
+	 * To be used to create url's that "mask" the real location of the 
+	 * users control panel.  Eg:  http://example.com/index.php?URL=http://example2.com
+	 *
+	 * @access public
+	 * @param string	URL
+	 * @return string	Masked URL
+	 */
+
+	function masked_url($url)
+	{
+		if ( ! $url)
+		{
+			return FALSE;
+		}
+		
+		return $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'URL='.$url;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Add JS Script
 	 *
 	 * Adds a javascript file to the javascript combo loader

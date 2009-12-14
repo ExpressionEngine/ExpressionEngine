@@ -303,7 +303,7 @@ class Homepage extends Controller {
 		// Attempt to grab the local cached file
 		$cached = $this->_check_version_cache();
 
-		$download_url = $this->functions->fetch_site_index().QUERY_MARKER.'URL=https://secure.expressionengine.com/download.php';
+		$download_url = $this->cp->masked_url('https://secure.expressionengine.com/download.php');
 
 		$ver = '';
 		
@@ -376,7 +376,7 @@ class Homepage extends Controller {
 				return sprintf($this->lang->line('new_version_notice'),
 							   $details['version'],
 							   $download_url,
-							   $this->functions->fetch_site_index().QUERY_MARKER.'URL='.$this->config->item('doc_url').'installation/update.html');
+							   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));
 			}
 		}
 		else 
