@@ -181,7 +181,7 @@ class Cp {
 		if ($this->EE->router->class != 'ee')
 		{
 			// load the base language file for the requested controller
-			$langfile = array_shift($temp = explode('_', $this->EE->router->class, 2));
+			$langfile = substr($this->EE->router->class, 0, strcspn($this->EE->router->class, '_'));
 			$this->EE->lang->loadfile($langfile);
 		}
 		
