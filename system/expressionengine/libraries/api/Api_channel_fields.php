@@ -259,7 +259,7 @@ class Api_channel_fields extends Api {
 		$_old_view_path = $this->EE->load->_ci_view_path;
 		$_ft_path = $this->ft_paths[$this->field_type];
 		
-		$this->EE->load->_ci_view_path = $_ft_path.'/views/';
+		$this->EE->load->_ci_view_path = $_ft_path.'views/';
 		$this->EE->load->add_package_path($_ft_path);
 		
 		$res = call_user_func_array(array(&$this->field_types[$this->field_type], $method), $parameters);
