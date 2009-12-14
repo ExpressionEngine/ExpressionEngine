@@ -382,8 +382,6 @@ class Homepage extends Controller {
 			$details = $cached;
 		}
 		
-		$vars['message'] = FALSE;
-		
 		if (isset($details['version']))
 		{
 			if (($details['version'] > APP_VER))
@@ -391,7 +389,7 @@ class Homepage extends Controller {
 				return sprintf($this->lang->line('new_version_notice'),
 							   $details['version'],
 							   $download_url,
-							   $this->config->item('doc_url').'installation/update.html');
+							   $this->functions->fetch_site_index().QUERY_MARKER.'URL='.$this->config->item('doc_url').'installation/update.html');
 			}
 		}
 		else 
