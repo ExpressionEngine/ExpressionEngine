@@ -157,19 +157,20 @@ class Api_channel_fields extends Api {
 		if ( ! isset($this->field_types[$field_type]))
 		{
 			$file = 'ft.'.$field_type.EXT;
-			$path = PATH_FT.$file;
+			$path = PATH_FT;
 			
-			// @todo hardcode first party array so we only need to check on dir?
-			if ( ! file_exists($path))
+			// @todo hardcode first party array so we only need to check one dir?
+			if ( ! file_exists($path.$file))
 			{
-				$path = PATH_THIRD.$field_type.'/'.$file;
-				if ( ! file_exists($path))
+				$path = PATH_THIRD.$field_type.'/';
+				if ( ! file_exists($path.$file))
 				{
 					return FALSE;
 				}
 			}
 			
-			require $path;
+			require $path.$file;
+						
 			$this->ft_paths[$field_type] = $path;
 			$this->field_types[$field_type] = ucfirst($field_type.'_ft');
 		}
@@ -255,9 +256,16 @@ class Api_channel_fields extends Api {
 	 */
 	function apply($method, $parameters = array())
 	{
-		$this->EE->load->add_package_path($this->ft_paths[$this->field_type]);
+		$_old_view_path = $this->EE->load->_ci_view_path;
+		$_ft_path = $this->ft_paths[$this->field_type];
+		
+		$this->EE->load->_ci_view_path = $_ft_path.'/views/';
+		$this->EE->load->add_package_path($_ft_path);
+		
 		$res = call_user_func_array(array(&$this->field_types[$this->field_type], $method), $parameters);
-		$this->EE->load->remove_package_path($this->ft_paths[$this->field_type]);
+		
+		$this->EE->load->remove_package_path($_ft_path);
+		$this->EE->load->_ci_view_path = $_old_view_path;
 		
 		return $res;
 	}
