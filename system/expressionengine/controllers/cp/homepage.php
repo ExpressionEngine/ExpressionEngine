@@ -151,9 +151,7 @@ class Homepage extends Controller {
 
 		// Ignore version update javascript
 		$this->javascript->output('
-			var messageBoxState = "'.$vars['msg_class'].'";
-			
-			var messageContainer = $("#ee_important_message");
+			var messageBoxState = "'.$vars['msg_class'].'", messageContainer = $("#ee_important_message");
 		
 			$("#ee_homepage_notice .msg_open_close").click( function() {
 				if (messageBoxState == "open") {
@@ -163,7 +161,7 @@ class Homepage extends Controller {
 				}
 
 				$.ajax({
-					url: "'.str_replace("&amp;", "&", BASE.AMP."C=homepage&M=hide_message_box").'",
+					url: EE.BASE+"&C=homepage&M=hide_message_box",
 					data: "state="+messageBoxState,
 					cache: true,
 					success: collapseHomepageNotice(messageContainer, messageBoxState)
@@ -172,19 +170,19 @@ class Homepage extends Controller {
 		
 			function collapseHomepageNotice(messageContainer, messageBoxState)
 			{	
-				$("#ee_important_message").hide();
+				messageContainer.hide();
 	
 				if (messageBoxState == "open") {
-					$(messageContainer).removeClass("closed");
-					$(messageContainer).addClass("open");
+					messageContainer.removeClass("closed");
+					messageContainer.addClass("open");
 					$("#noticeContents").show();
 				} else if (messageBoxState == "closed"){
-					$(messageContainer).removeClass("open");
-					$(messageContainer).addClass("closed");
+					messageContainer.removeClass("open");
+					messageContainer.addClass("closed");
 					$("#noticeContents").hide();
 				}
 				
-				$("#ee_important_message").fadeIn("slow");
+				messageContainer.fadeIn("slow");
 			}
 		
 		');
