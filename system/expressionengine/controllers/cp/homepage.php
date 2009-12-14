@@ -408,8 +408,7 @@ class Homepage extends Controller {
 	function _check_version_cache()
 	{
 		// check cache first
-		//$cache_expire = 60 * 60 * 24;	// only do this once per day
-		$cache_expire = 60;
+		$cache_expire = 60 * 60 * 24;	// only do this once per day
 		$this->load->helper('file');	
 		$contents = read_file(APPPATH.'cache/ee_version/current_version');
 
