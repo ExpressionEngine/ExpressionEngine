@@ -523,6 +523,9 @@ class EE_Core {
 		// This permits the forum to be more light-weight as the template engine is 
 		// not needed under normal circumstances. 
 		
+		$template_group = FALSE;
+		$template = FALSE;
+		
 		if ($this->EE->config->item('forum_is_installed') == "y" AND  $this->EE->config->item('forum_trigger') != '' AND in_array($this->EE->uri->segment(1), preg_split('/\|/', $this->EE->config->item('forum_trigger'), -1, PREG_SPLIT_NO_EMPTY)) && ! IS_FREELANCER)
 		{
 			require PATH_MOD.'forum/mod.forum'.EXT;
@@ -588,12 +591,19 @@ class EE_Core {
 			// Legacy, unsupported, but still functional
 			// Templates and Template Groups can be hard-coded
 			// within either the main triggering file or via an include.
-			
-			$template_group = (string) $this->EE->config->item('template_group');
-			$template = (string) $this->EE->config->item('template');
 
-			// if there's a URI, disable let the override 
-			if (( ! empty($template_group) && ! empty($template)) && $this->EE->uri->uri_string != '' && $this->EE->uri->uri_string != '/')
+			if ($this->EE->config->item('template_group'))
+			{
+				$template_group = (string) $this->EE->config->item('template_group');
+			}
+
+			if ($this->EE->config->item('template'))
+			{
+				$template_group = (string) $this->EE->config->item('template');
+			}
+
+			// if there's a URI, disable let the override
+			if (( ! $template_group && ! $template) && $this->EE->uri->uri_string != '' && $this->EE->uri->uri_string != '/')
 			{
 				$template_group = '';
 				$template = '';
