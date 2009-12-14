@@ -146,45 +146,34 @@ class Homepage extends Controller {
 		});
 		');
 		
-		$vars['msg_class'] = ($this->input->cookie('home_msg_state') == 'closed') ? 'closed' : 'open';		
-		$vars['open_close_msg'] = $vars['msg_class'];
+		$vars['open_close_msg'] = ($this->input->cookie('home_msg_state') == 'closed') ? 'closed' : 'open';
+		$vars['msg_class'] = $this->javascript->generate_json(($vars['open_close_msg'] == 'closed'));		
 
 		// Ignore version update javascript
 		$this->javascript->output('
-			var messageBoxState = "'.$vars['msg_class'].'", messageContainer = $("#ee_important_message");
+			var msgBoxState = '.$vars['msg_class'].',
+				msgContainer = $("#ee_important_message"),
+				msgContents = $("#noticeContents");
 		
-			$("#ee_homepage_notice .msg_open_close").click( function() {
-				if (messageBoxState == "open") {
-					messageBoxState = "closed";
-				} else if (messageBoxState == "closed") {
-					messageBoxState = "open";
-				}
-
+			msgContainer.find(".msg_open_close").click(function() {
 				$.ajax({
 					url: EE.BASE+"&C=homepage&M=hide_message_box",
-					data: "state="+messageBoxState,
-					cache: true,
-					success: collapseHomepageNotice(messageContainer, messageBoxState)
+					data: "state="+(msgBoxState ? "open" : "closed"),
+					success: collapseHomepageNotice
 				});
 			});
 		
-			function collapseHomepageNotice(messageContainer, messageBoxState)
-			{	
-				messageContainer.hide();
-	
-				if (messageBoxState == "open") {
-					messageContainer.removeClass("closed");
-					messageContainer.addClass("open");
-					$("#noticeContents").show();
-				} else if (messageBoxState == "closed"){
-					messageContainer.removeClass("open");
-					messageContainer.addClass("closed");
-					$("#noticeContents").hide();
-				}
+			function collapseHomepageNotice() {
+				msgContents.toggle(msgBoxState);
 				
-				messageContainer.fadeIn("slow");
+				msgContainer.hide()
+							.toggleClass("open", msgBoxState)
+							.toggleClass("closed", ! msgBoxState)
+							.fadeIn("slow");
+				
+				// Flip it for future clicks
+				msgBoxState = ! msgBoxState;
 			}
-		
 		');
 
 		$this->javascript->compile();
