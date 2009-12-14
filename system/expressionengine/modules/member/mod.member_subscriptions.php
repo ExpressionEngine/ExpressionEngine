@@ -145,7 +145,7 @@ class Member_subscriptions extends Member {
 
 				if ($query->num_rows() > 0)
 				{
-					foreach ($query->result as $row)
+					foreach ($query->result() as $row)
 					{
 						$result_ids[$row['last_post_date'].'f'] = $row['topic_id'];
 					}
