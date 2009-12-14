@@ -610,7 +610,7 @@ class EE_Config Extends CI_Config {
 					show_error(array($this->EE->lang->line('invalid_path'), $new_values[$val]));
 				}
 
-				if ( ! is_really_writable($fp))
+				if ( (! is_really_writable($fp)) && ($val != 'theme_folder_path'))
 				{
 					show_error(array($this->EE->lang->line('not_writable_path'), $new_values[$val]));
 				}
