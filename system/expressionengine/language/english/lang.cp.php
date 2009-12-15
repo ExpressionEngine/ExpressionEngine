@@ -426,11 +426,13 @@ $lang = array(
 
 'videos'						=>	"Videos",
 'community_tutorials'			=>	"Community Tutorials",
+'community_resources'			=> 'Community Resources',
 'support'						=>	"Support",
+
 
 'installing_ee'					=>	"Installing ExpressionEngine",
 'introduction_to_templates'		=>	"Introduction to Templates",
-'channels_custom_fields'			=>	"Channels and Custom Fields",
+'channels_custom_fields'		=>	"Channels and Custom Fields",
 'channel_template_relationship'	=>	"Channel Template Relationship",
 'building_ee_site_01'			=>	"Building An ExpressionEngine Site - Chapter 01",
 'designing_ee_architecture'		=>	"Designing and ExpressionEngine Architecture",
@@ -442,7 +444,11 @@ $lang = array(
 'knowledge_base'				=>	"Knowledge Base",
 'documentation'					=>	"Documentation",
 'my_downloads'					=>	"My Downloads",
-
+'train_ee'						=> 'Train-EE',
+'ee_screencasts'				=> 'EE Screencasts',
+'ee_insider'					=> 'EE Insider',
+'devot_ee'						=> 'Devot-EE',
+'ee_podcast'					=> 'EE Podcast',
 
 
 ''=>''
