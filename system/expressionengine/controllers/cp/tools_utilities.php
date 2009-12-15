@@ -273,7 +273,7 @@ class Tools_utilities extends Controller {
 		if ($query->num_rows() > 0)
 		{
 			$row = $query->row_array();
-			$row['group_title'];
+			$group_title = $row['group_title'];
 			
 		}
 
