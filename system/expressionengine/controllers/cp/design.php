@@ -1084,11 +1084,7 @@ class Design extends Controller {
 		$this->load->helper('form');
 		$this->load->library('table');
 	
-		$this->javascript->output('
-			// We are not using table sorter here, so manually add the striping
-			$("table tbody tr:visible:even").addClass("even");
-			$("table tbody tr:visible:odd").addClass("odd");
-
+		$this->javascript->output('		
 			// select all options for template access restrictions
 			$("input.select_all").click(function(){
 				$("input[class="+$(this).val()+"]").each(function() {
@@ -1097,7 +1093,7 @@ class Design extends Controller {
 			});
 			
 			var the_templates = $(\'div[id^="template_group_div_"]\');
-
+		
 			$("#template_groups").click(function() {
 				the_templates.hide();
 				var openDivs = $(this).val().toString()
@@ -1108,7 +1104,7 @@ class Design extends Controller {
 				{
 					$("#template_group_div_"+ids[i]).show();
 				}
-
+		
 				return false;
 			});
 		');
@@ -1178,24 +1174,26 @@ class Design extends Controller {
 		}
 
 		// Template Preference Headings
-
-		$vars['headings'] = array();
-		$vars['headings'][] = $this->lang->line('type');
-		$vars['headings'][] = $this->lang->line('cache_enable');
-		$vars['headings'][] = $this->lang->line('refresh_interval').' <small>('.$this->lang->line('refresh_in_minutes').')</small>';
+		$headings = array(
+						array('template_type', $this->lang->line('type')),
+						array('cache', $this->lang->line('cache_enable')),
+						array('refresh', $this->lang->line('refresh_interval').' <small>('.$this->lang->line('refresh_in_minutes').')</small>')
+		);
 
 		if ($this->session->userdata['group_id'] == 1)
 		{
-			$vars['headings'][] = $this->lang->line('enable_php').' <span class="notice">*</span>';
-			$vars['headings'][] = $this->lang->line('parse_stage');
+			$headings[] = array('enable_php', $this->lang->line('enable_php').' <span class="notice">*</span>');
+			$headings[] = array('parse_stage', $this->lang->line('parse_stage'));
 		}
 
 		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
 		{
-			$vars['headings'][] = $this->lang->line('save_template_file');
+			$headings[] = array('save_tmpl_files', $this->lang->line('save_template_file'));
 		}
 
-		$vars['headings'][] = $this->lang->line('hit_counter');
+		$headings[] = array('hit_counter', $this->lang->line('hit_counter'));	
+
+		$vars['headings'] = $headings;
 
 		// Template Preference Options
 
@@ -1211,7 +1209,7 @@ class Design extends Controller {
 			'xml'		=> $this->lang->line('xml')
 		);
 
-		$vars['template_prefs'][] = form_dropdown('template_type', $template_type_options, 'null', 'id="template_type"');
+		$vars['template_prefs']['template_type'] = form_dropdown('template_type', $template_type_options, 'null', 'id="template_type"');
 
 		$yes_no_options = array(
 			'null'	=> $this->lang->line('do_not_change'),
@@ -1219,8 +1217,8 @@ class Design extends Controller {
 			'n'		=> $this->lang->line('no')
 		);
 
-		$vars['template_prefs'][] = form_dropdown('cache', $yes_no_options, 'null', 'id="cache"');
-		$vars['template_prefs'][] = form_input(array('name'=>'refresh', 'value'=>'0', 'size'=>5));
+		$vars['template_prefs']['cache'] = form_dropdown('cache', $yes_no_options, 'null', 'id="cache"');
+		$vars['template_prefs']['refresh'] = form_input(array('name'=>'refresh', 'value'=>'0', 'size'=>5));
 
 		if ($this->session->userdata['group_id'] == 1)
 		{
@@ -1230,16 +1228,16 @@ class Design extends Controller {
 				'o'		=> $this->lang->line('output')
 			);
 
-			$vars['template_prefs'][] = form_dropdown('allow_php', $yes_no_options, 'null', 'id="allow_php"');
-			$vars['template_prefs'][] = form_dropdown('php_parse_location', $php_i_o_options, 'null', 'id="php_parse_location"');
+			$vars['template_prefs']['allow_php'] = form_dropdown('allow_php', $yes_no_options, 'null', 'id="allow_php"');
+			$vars['template_prefs']['php_parse_location'] = form_dropdown('php_parse_location', $php_i_o_options, 'null', 'id="php_parse_location"');
 		}
 
 		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
 		{
-			$vars['template_prefs'][] = form_dropdown('save_template_file', $yes_no_options, 'null', 'id="save_template_file"');
+			$vars['template_prefs']['save_template_file'] = form_dropdown('save_template_file', $yes_no_options, 'null', 'id="save_template_file"');
 		}
 
-		$vars['template_prefs'][] = form_input(array('name'=>'hits', 'value'=>'', 'size'=>5));
+		$vars['template_prefs']['hits'] = form_input(array('name'=>'hits', 'value'=>'', 'size'=>5));
 
 		// Template Access Restrictions
 
