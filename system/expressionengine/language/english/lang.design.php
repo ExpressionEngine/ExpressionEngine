@@ -185,7 +185,7 @@ $lang = array(
 "New Template",
 
 "security_warning" =>
-"Note: Allowing PHP in templates has security implications. Please consult the documentation.",
+"Note: Allowing PHP in templates has security implications. Please consult the <a href=\"%s\" title=\"Documentation\">documentation</a>.",
 
 "hit_counter" =>
 "Hit Counter",

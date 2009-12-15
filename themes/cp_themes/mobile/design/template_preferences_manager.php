@@ -47,7 +47,7 @@ if ($EE_view_disable !== TRUE)
 		?>
 
 		<?php if ($this->session->userdata['group_id'] == 1):?>
-			<p class="pad"><?=lang('security_warning')?></p>
+			<p class="notice"><?=str_replace('%s', $this->config->item('doc_url').'templates/php_templates.html', lang('security_warning'))?></p>
 		<?php endif;?>
 
 		<h3 class="pad"><?=lang('template_access')?></h3>
