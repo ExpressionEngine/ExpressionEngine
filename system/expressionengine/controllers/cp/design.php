@@ -1182,16 +1182,16 @@ class Design extends Controller {
 
 		if ($this->session->userdata['group_id'] == 1)
 		{
-			$headings[] = array('enable_php', $this->lang->line('enable_php').' <span class="notice">*</span>');
-			$headings[] = array('parse_stage', $this->lang->line('parse_stage'));
+			$headings[] = array('allow_php', $this->lang->line('enable_php').' <span class="notice">*</span>');
+			$headings[] = array('php_parse_location', $this->lang->line('parse_stage'));
 		}
 
 		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
 		{
-			$headings[] = array('save_tmpl_files', $this->lang->line('save_template_file'));
+			$headings[] = array('save_template_file', $this->lang->line('save_template_file'));
 		}
 
-		$headings[] = array('hit_counter', $this->lang->line('hit_counter'));	
+		$headings[] = array('hits', $this->lang->line('hit_counter'));	
 
 		$vars['headings'] = $headings;
 

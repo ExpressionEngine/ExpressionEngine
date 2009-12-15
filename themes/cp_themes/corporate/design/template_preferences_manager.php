@@ -51,10 +51,25 @@ if ($EE_view_disable !== TRUE)
 
 			<?php
 				$this->table->set_template($cp_pad_table_template);
-				$this->table->set_heading($headings);
-				$this->table->add_row($template_prefs);
+				$this->table->set_heading(array(
+						array('data' => lang('preference'), 'width' => '50%'),
+						lang('setting')
+					)
+				);
+				
+				$i = 0; 
+				foreach ($template_prefs as $key => $val)
+				{
+					$this->table->add_row(array(
+							lang($headings[$i][1], $headings[$i][0]),
+							$val
+						)
+					);	
+					$i++;
+				}
 				echo $this->table->generate();
 			?>
+
 
 			<?php if ($this->session->userdata['group_id'] == 1):?>
 				<p class="notice"><?=str_replace('%s', $this->config->item('doc_url').'templates/php_templates.html', lang('security_warning'))?></p>

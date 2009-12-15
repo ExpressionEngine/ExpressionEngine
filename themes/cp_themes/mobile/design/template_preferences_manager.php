@@ -34,17 +34,17 @@ if ($EE_view_disable !== TRUE)
 		</ul>
 
 		<?php
-			foreach ($headings as $num => $heading):?>
-			<div class="label">
-				<label><?=$heading?></label>
-			</div>
-			<ul>
-				<li><?=$template_prefs[$num]?></li>
-			</ul>
+			foreach ($headings as $num => $heading):
+			?>
+				<div class="label">
+					<label><?=$heading[1]?></label>
+				</div>
+				<ul>
+					<li><?=$template_prefs[$heading[0]]?></li>
+				</ul>
 
-			<?php endforeach;
-
-		?>
+			<?php 
+			 endforeach;?>
 
 		<?php if ($this->session->userdata['group_id'] == 1):?>
 			<p class="notice"><?=str_replace('%s', $this->config->item('doc_url').'templates/php_templates.html', lang('security_warning'))?></p>
