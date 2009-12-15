@@ -16,13 +16,27 @@ if ($EE_view_disable !== TRUE)
 			
 			<div class="pageContents">
 	
-			<p><?=lang('member_import_welcome')?></p>
-			
-			<h3><a href="<?=BASE.AMP."C=tools_utilities".AMP."M=import_from_xml"?>"><?=lang('import_from_xml')?></a></h3>
-			<p><?=lang('import_from_xml_blurb')?></p>
-			
-			<h3><a href="<?=BASE.AMP."C=tools_utilities".AMP."M=convert_from_delimited"?>"><?=lang('convert_from_delimited')?></a></h3>
-			<p><?=lang('convert_from_delimited_blurb')?></p>		
+				<h3 style="margin-bottom:10px"><?=lang('member_import_welcome')?></h3>
+
+				<?php 
+
+				$this->table->set_template($cp_pad_table_template);
+
+				$this->table->add_row(array(
+						lang('import_from_xml').' '.lang('import_from_xml_blurb'),
+						'<a title="'.lang('import_from_xml').'" href="'.BASE.AMP.'"C=tools_utilities"'.AMP.'"M=import_from_xml">'.lang('import_from_xml').'</a>'					
+					)
+				);
+
+				$this->table->add_row(array(
+						lang('convert_from_delimited').' '.lang('convert_from_delimited_blurb'),
+						'<a title="'.lang('convert_from_delimited').'" href="'.BASE.AMP.'"C=tools_utilities"'.AMP.'"M=convert_from_delimited">'.lang('convert_from_delimited').'</a>'
+					)
+				);
+
+
+				echo $this->table->generate();
+				?>		
 	
 			</div> <!-- pageContents -->
 		</div> <!-- contents -->
