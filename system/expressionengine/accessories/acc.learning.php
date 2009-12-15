@@ -74,7 +74,7 @@ class Learning_acc {
 					</ul>
 			',
 			$this->EE->lang->line('support') => '<ul>
-						<li><a href="http://expressionengine.com/docs/" title="'.$this->EE->lang->line('documentation').'">'.$this->EE->lang->line('documentation').'</a></li>
+						<li><a href="'.$this->EE->config->item('doc_url').'" title="'.$this->EE->lang->line('documentation').'">'.$this->EE->lang->line('documentation').'</a></li>
 						<li><a href="http://expressionengine.com/forums/" title="'.$this->EE->lang->line('support_forums').'">'.$this->EE->lang->line('support_forums').'</a></li>
 						<li><a href="http://expressionengine.com/wiki/" title="'.$this->EE->lang->line('wiki').'" title="'.$this->EE->lang->line('wiki').'">'.$this->EE->lang->line('wiki').'</a></li>
 					</ul>'			
