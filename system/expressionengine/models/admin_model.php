@@ -394,6 +394,8 @@ class Admin_model extends CI_Model {
 	 */ 
 	function get_cp_theme_list()
 	{
+		$this->load->library('user_agent');
+		
 		static $themes;
 		
 		if ( ! isset($themes))
@@ -406,10 +408,17 @@ class Admin_model extends CI_Model {
 				{
 					if (is_dir(PATH_CP_THEME.$file) && $file[0] != '.')
 					{
-						$themes[$file] = ucfirst(str_replace('_', ' ', $file));
+						if (substr($file, 0, 6) == 'mobile' && ! $this->agent->is_mobile())
+						{
+							continue;
+						}
+						else
+						{
+							$themes[$file] = ucfirst(str_replace('_', ' ', $file));
+							
+						}
 					}
 				}
-			
 				ksort($themes);
 			}			
 		}
