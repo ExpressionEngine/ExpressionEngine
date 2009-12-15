@@ -45,18 +45,7 @@ class Content_edit extends Controller {
 			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
 		}
 
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		// @todo: ar/model
-		$query = $this->db->query("SELECT LOWER(module_name) as name FROM exp_modules");
-
-		foreach($query->result_array() as $row)
-		{
-			$this->installed_modules[$row['name']] = $row['name'];
-		}
+		$this->installed_modules = $this->cp->get_installed_modules();
 		
 		$this->load->library('api');
 
