@@ -19,58 +19,61 @@ if ($EE_view_disable !== TRUE)
 			<?php $this->load->view('_shared/message');?>
 
 			<?=form_open('C=tools_utilities'.AMP.'M=confirm_xml_form')?>
-	
-			<p><?=lang('import_from_xml_blurb')?></p>		
-
-			<p class="go_notice"><?=lang('info_blurb')?></p>
-
-			<h3><?=lang('xml_file_loc')?></h3>
-			<p>
-				<label for="xml_file"><?=lang('xml_file_loc')?></label> 
-				<?=form_input(array('id'=>'xml_file','name'=>'xml_file', 'class'=>'field', 'value'=>set_value('xml_file')))?>
-				<br /><?=form_error('xml_file')?>
-			</p>
-
-			<h3><?=lang('default_settings')?></h3>
-			<p class="instructional_notice"><?=lang('default_settings_blurb')?></p>	
-				
-			<table class="mainTable" width="100%" border="0" cellspacing="0" cellpadding="0" summary="Default Options">
-				<thead>
-					<tr>
-						<th width="50%"><?=lang('preference')?></th>
-						<th width="50%"><?=lang('Options')?></th>
-					</tr>
-				</thead>
-				<tbody>
-				<tr>
-					<td><strong><?=lang('default_group_id')?></strong></td>
+			<h4 style="margin:10px"><?=lang('import_from_xml_blurb')?></h4>
+			<table cellspacing="0" cellpadding="0" border="0" class="mainTable padTable">
+			<tbody>
+				<tr class="even">
+					<td colspan="2"><h3 style="margin:15px 0 0 0"><?=lang('import_info')?></h3></td>
+				</tr>
+				<tr class="odd">
+					<td colspan="2"><?=lang('info_blurb')?></td>
+				</tr>
+				<tr class="even">
+					<td width="50%">
+						<?=lang('xml_file_loc', 'xml_file')?>
+					</td>
+					<td>
+						<?=form_error('xml_file')?>
+						<?=form_input(array('id'=>'xml_file','name'=>'xml_file', 'class'=>'field', 'value'=>set_value('xml_file')))?>
+					</td>
+				</tr>
+				<tr class="odd">
+					<td colspan="2">
+						<strong><?=lang('default_settings')?></strong><br />
+						<?=lang('default_settings_blurb')?>
+					</td>
+				</tr>
+				<tr class="even">
+					<td><?=lang('default_group_id', 'group_id')?></td>
 					<td><?=form_dropdown('group_id', $member_groups, set_value('group_id'))?></td>
 				</tr>
-				<tr>
-					<td><strong><?=lang('language')?></strong></td>
+				<tr class="odd">
+					<td><?=lang('language', 'language')?></td>
 					<td><?=form_dropdown('language', $language_options, set_value('language'))?></td>
 				</tr>
-				<tr>
-					<td><strong><?=lang('timezone')?></strong></td>
-					<td class="timezoneSelect"><?=timezone_menu()?></td>
+				<tr class="even">
+					<td><?=lang('timezone', 'timezone')?></td>
+					<td><?=timezone_menu()?></td>
 				</tr>
-				<tr>
-					<td><strong><?=lang('time_format')?></strong></td>
+				<tr class="odd">
+					<td><?=lang('time_format', 'time_format')?></td>
 					<td><?=form_dropdown('time_format', array(lang('united_states'),lang('european')), set_value('time_format'))?></td>
 				</tr>
-				<tr>
-					<td><strong><?=lang('daylight_savings')?></strong></td>
-					<td><input type="checkbox" name="daylight_savings" value="y" <?php echo set_checkbox('daylight_savings', 'y', $dst_enabled); ?> />&nbsp;<?=lang('dst_enabled')?>	</td>
+				<tr class="even">
+					<td><?=lang('daylight_savings', 'daylight_savings')?></td>
+					<td><label for="dst_enabled"><input type="checkbox" name="daylight_savings" value="y" <?php echo set_checkbox('daylight_savings', 'y', $dst_enabled); ?> />		
+					<?=lang('dst_enabled')?></label></td>
 				</tr>
-				<tr>
-					<td><strong><?=lang('auto_custom_field')?></strong><br />
-					<div class="subtext"><?=lang('auto_custom_field_blurb')?></div></td>
-					<td><input type="checkbox" name="auto_custom_field" value="y" <?php echo set_checkbox('auto_custom_field', 'y'); ?> />&nbsp;<?=lang('auto_custom_field')?>	</td>
+				<tr class="odd">
+					<td><?=lang('auto_custom_field', 'auto_custom_field')?></td>
+					<td><?=lang('auto_custom_field_blurb')?><br />
+					<label for="auto_custom_field"><input type="checkbox" name="auto_custom_field" value="y" <?php echo set_checkbox('auto_custom_field', 'y'); ?> />		
+					<?=lang('auto_custom_field')?></label></td>
 				</tr>
-				</tbody>
+			</tbody>
 			</table>
 
-			<p class="centerSubmit"><?=form_submit('convert_from_delimited', lang('submit'), 'class="submit"')?></p> 
+			<p class="centerSubmit"><?=form_submit('convert_from_delimited', lang('submit'), 'class="submit"')?> </p>
 
 			<?=form_close()?>
 

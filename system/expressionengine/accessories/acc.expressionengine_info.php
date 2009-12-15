@@ -100,17 +100,23 @@ class Expressionengine_info_acc {
 		if ($contents !== FALSE)
 		{
 			$details = unserialize($contents);
-
-			if (($details['timestamp'] + $cache_expire) > $this->EE->localize->now)
+			if (isset($details['timestamp'])) 
 			{
-				if (isset($details['error']))
+				if (($details['timestamp'] + $cache_expire) > $this->EE->localize->now)
 				{
-					return $details['error'];
+					if (isset($details['error']))
+					{
+						return $details['error'];
+					}
+					else
+					{
+						return str_replace(array('%v', '%b'), array($details['version'], $details['build']), $this->EE->lang->line('version_info'));
+					}
 				}
-				else
-				{
-					return str_replace(array('%v', '%b'), array($details['version'], $details['build']), $this->EE->lang->line('version_info'));
-				}
+			}
+			else
+			{
+				return $details['error'];
 			}
 		}
 		

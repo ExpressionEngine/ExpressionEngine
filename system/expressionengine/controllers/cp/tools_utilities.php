@@ -154,6 +154,8 @@ class Tools_utilities extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
+		
+		$this->load->library('table');
 
 		$this->lang->loadfile('member_import');
 
