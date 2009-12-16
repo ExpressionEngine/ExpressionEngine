@@ -83,11 +83,11 @@ class EE_Fieldtype {
 		$tmp = $this->EE->load->_ci_view_path;
 		$this->EE->load->_ci_view_path = PATH_THEMES.'cp_themes/default/';
 				
-		$vars['glossary_items'] = $this->EE->load->view('content/_assets/glossary_items');
+		$vars['glossary_items'] = $this->EE->load->view('content/_assets/glossary_items', '', TRUE);
 		$this->EE->load->vars($vars);
 		
 		$this->EE->load->_ci_view_path = $tmp;
-	
+		
 		return $this->display_field($data);
 	}
 	
