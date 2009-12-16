@@ -3670,7 +3670,7 @@ class Design extends Controller {
 		
 		$vars['templates'] = array();
 		$displayed_groups = array();
-		
+
 		foreach ($query->result_array() as $row)
 		{
 			$displayed_groups[$row['group_id']] = $row['group_id'];
