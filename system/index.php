@@ -94,7 +94,7 @@
 	$assign_to_config['subclass_prefix'] = 'EE_';
 	$assign_to_config['directory_trigger'] = 'D';	
 	$assign_to_config['controller_trigger'] = 'C';	
-	$assign_to_config['method_trigger'] = 'M';
+	$assign_to_config['function_trigger'] = 'M';
 
 /*
  * --------------------------------------------------------------------
