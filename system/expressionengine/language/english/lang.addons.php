@@ -17,11 +17,14 @@ $lang = array(
 'addons_modules'				=>		"Modules",
 'addons_plugins'				=>		"Plugins",
 'addons_extensions'				=>		"Extensions",
+'addons_fieldtypes'				=>		"Fieldtypes",
 
 'accessory_name' 				=> 		"Accessory Name",
+'fieldtype_name'				=>		"Fieldtype Name",
 'install'						=>		"Install",
 'uninstall'						=>		"Uninstall",
 'installed'						=>		"Installed",
+'not_installed'					=>		"Not Installed",
 'uninstalled'					=>		"Uninstalled",
 'remove'						=>		"Remove",
 'preferences_updated'			=>		"Preferences Updated",
@@ -36,6 +39,8 @@ $lang = array(
 
 'available_to_member_groups'	=>		"Available to Member Groups",
 'specific_page'					=>		"Specific Page?",
+'description'					=>		"Description",
+'version'						=>		"Version",
 'status'						=>		"Status",
 
 'edit_accessory_preferences'	=>		"Edit Accessory Preferences",

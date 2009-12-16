@@ -55,6 +55,8 @@ $lang = array(
 'nav_plugins_short_desc'	=> 'Install and Remove Plugins.  Review Plugin Usage Docs',
 "nav_modules"	   	   			=> "Modules",
 'nav_modules_short_desc'	=> 'Manage Module Preferences',
+"nav_fieldtypes"				=> "Fieldtypes",
+'nav_fieldtypes_short_desc'	=> 'Manage Fieldtypes and Fieldtypes Preferences.',
 
 "nav_members"	   	   			=> "Members",
 "nav_view_all_members"			=> "View All",
