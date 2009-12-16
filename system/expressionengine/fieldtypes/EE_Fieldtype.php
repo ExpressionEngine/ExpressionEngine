@@ -79,8 +79,14 @@ class EE_Fieldtype {
 	
 	function display_publish_field($data)
 	{
-		$vars['glossary_items'] = $this->EE->load->view('content/_assets/glossary_items', '', TRUE);
+		// @todo hack fix
+		$tmp = $this->EE->load->_ci_view_path;
+		$this->EE->load->_ci_view_path = PATH_THEMES.'cp_themes/default/';
+				
+		$vars['glossary_items'] = $this->EE->load->view('content/_assets/glossary_items');
 		$this->EE->load->vars($vars);
+		
+		$this->EE->load->_ci_view_path = $tmp;
 	
 		return $this->display_field($data);
 	}
@@ -228,6 +234,9 @@ class EE_Fieldtype {
 	{
 		return array();
 	}
+	
+	// --------------------------------------------------------------------
+
 }
 
 // END EE_Fieldtype class
