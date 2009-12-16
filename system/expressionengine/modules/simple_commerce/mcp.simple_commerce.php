@@ -346,9 +346,12 @@ class Simple_commerce_mcp {
 				$vars['items'][$row['entry_id']]['customer_email_template'] = $row['customer_email_template'];
 				$vars['items'][$row['entry_id']]['new_member_group'] = $row['new_member_group'];
 				$vars['items'][$row['entry_id']]['subscription_frequency'] = $row['subscription_frequency'];
+				$vars['items'][$row['entry_id']]['subscription_frequency_unit'] = $row['subscription_frequency_unit'];
 				$vars['items'][$row['entry_id']]['current_subscriptions'] = $row['current_subscriptions'];
-				$vars['items'][$row['entry_id']]['entry_id'] = $row['entry_id'];			
-
+				$vars['items'][$row['entry_id']]['entry_id'] = $row['entry_id'];	
+				$vars['items'][$row['entry_id']]['member_group_unsubscribe'] = $row['member_group_unsubscribe'];		
+				$vars['items'][$row['entry_id']]['customer_email_template_unsubscribe'] = $row['customer_email_template_unsubscribe'];
+				$vars['items'][$row['entry_id']]['admin_email_template_unsubscribe'] = $row['admin_email_template_unsubscribe'];
 			}
 		}
 

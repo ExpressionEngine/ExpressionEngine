@@ -46,19 +46,19 @@ foreach ($items as $key => $val):
 	$this->table->add_row(array(
 			lang('admin_email_template', 'admin_email_template['.$key.']'),
 			form_error('admin_email_template['.$key.']').
-			form_dropdown('admin_email_template['.$key.']', $email_templates_dropdown, set_value('admin_email_template['.$key.']'))
+			form_dropdown('admin_email_template['.$key.']', $email_templates_dropdown, set_value('admin_email_template['.$key.']', $val['admin_email_template']))
 		)
 	);
 	
 	$this->table->add_row(array(
 			lang('customer_email', 'customer_email_template['.$key.']'),
-			form_dropdown('customer_email_template['.$key.']', $email_templates_dropdown, set_value('customer_email_template['.$key.']'))
+			form_dropdown('customer_email_template['.$key.']', $email_templates_dropdown, set_value('customer_email_template['.$key.']', $val['customer_email_template']))
 		)
 	);
 
 	$this->table->add_row(array(
 			lang('member_group', 'member_group['.$key.']'),
-			form_dropdown('member_group['.$key.']', $member_groups_dropdown, set_value('member_group['.$key.']'))
+			form_dropdown('member_group['.$key.']', $member_groups_dropdown, set_value('member_group['.$key.']', $val['new_member_group']))
 		)
 	);
 	
@@ -77,26 +77,26 @@ foreach ($items as $key => $val):
 
 	$this->table->add_row(array(
 			lang('subscription_frequency_unit', 'subscription_frequency_unit['.$key.']'),
-			form_dropdown('subscription_frequency_unit['.$key.']', $subscription_frequency_unit, set_value('subscription_frequency_unit['.$key.']'))
+			form_dropdown('subscription_frequency_unit['.$key.']', $subscription_frequency_unit, set_value('subscription_frequency_unit['.$key.']', $val['subscription_frequency_unit']))
 		)
 	);
 
 	$this->table->add_row(array(
 			lang('admin_email_template_unsubscribe', 'admin_email_template_unsubscribe['.$key.']'),
 			form_error('admin_email_template_unsubscribe['.$key.']').
-			form_dropdown('admin_email_template_unsubscribe['.$key.']', $email_templates_dropdown, set_value('admin_email_template_unsubscribe['.$key.']'))
+			form_dropdown('admin_email_template_unsubscribe['.$key.']', $email_templates_dropdown, set_value('admin_email_template_unsubscribe['.$key.']', $val['admin_email_template_unsubscribe']))
 		)
 	);
 
 	$this->table->add_row(array(
 			lang('customer_email_unsubscribe', 'customer_email_template_unsubscribe['.$key.']'),
-			form_dropdown('customer_email_template_unsubscribe['.$key.']', $email_templates_dropdown, set_value('customer_email_template_unsubscribe['.$key.']'))
+			form_dropdown('customer_email_template_unsubscribe['.$key.']', $email_templates_dropdown, set_value('customer_email_template_unsubscribe['.$key.']', $val['customer_email_template_unsubscribe']))
 		)
 	);
 
 	$this->table->add_row(array(
 			lang('member_group_unsubscribe', 'member_group_unsubscribe['.$key.']'),
-			form_dropdown('member_group_unsubscribe['.$key.']', $member_groups_dropdown, set_value('member_group_unsubscribe['.$key.']'))
+			form_dropdown('member_group_unsubscribe['.$key.']', $member_groups_dropdown, set_value('member_group_unsubscribe['.$key.']', $val['member_group_unsubscribe']))
 		)
 	);
 
