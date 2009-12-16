@@ -367,6 +367,8 @@ class MyAccount extends Controller {
 		if (empty($_POST)) {
 			show_error($this->lang->line('unauthorized_access'));
 		}
+		
+		$id = $_POST['id'];
 
 		unset($_POST['id']);
 		unset($_POST['edit_profile']);
@@ -427,9 +429,11 @@ class MyAccount extends Controller {
 			$this->db->where('author_id', $this->id);
 			$this->db->update('comments', $data);
 		}
+		
+		$id = ($id == '') ? '' : AMP.'id='.$id;
 
 		$this->session->set_flashdata('message_success', $this->lang->line('profile_updated'));
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_profile');
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_profile'.$id);			
 	}
 
 	// --------------------------------------------------------------------
