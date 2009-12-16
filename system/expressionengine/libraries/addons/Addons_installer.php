@@ -34,6 +34,7 @@ class Addons_installer {
 	function Addons_installer()
 	{
 		$this->EE =& get_instance();
+		$this->EE->load->library('api');
 		$this->EE->load->library('addons');
 	}
 	
@@ -197,7 +198,7 @@ class Addons_installer {
 		$this->EE->db->insert('accessories', array(
 				'class'				=> $class,
 				'accessory_version'	=> $ACC->version
-		)); 
+		));
 
 		$this->EE->accessories->update_placement($class);
 	}
@@ -272,6 +273,58 @@ class Addons_installer {
 		if (method_exists($EXT, 'disable_extension') === TRUE)
 		{
 			$disable = $EXT->disable_extension();
+		}
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fieldtype Installer
+	 *
+	 * @access	private
+	 * @param	string
+	 * @return	void
+	 */
+	function install_fieldtype($fieldtype)
+	{
+		$this->EE->api->instantiate('channel_fields');
+		
+		if ($this->EE->api_channel_fields->include_handler($fieldtype))
+		{
+			$default_settings = array();
+			
+			$FT = $this->EE->api_channel_fields->setup_handler($fieldtype, TRUE);
+			
+			$default_settings = $FT->install();
+			
+			$this->EE->db->insert('fieldtypes', array(
+					'fieldtype_name'		=> $fieldtype,
+					'fieldtype_version'		=> $FT->info['version'],
+					'fieldtype_settings'	=> base64_encode(serialize($default_settings)),
+					'has_global_settings'	=> method_exists($FT, 'global_settings') ? 'y' : 'n'
+			));
+		}
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fieldtype Uninstaller
+	 *
+	 * @access	private
+	 * @param	string
+	 * @return	void
+	 */
+	function uninstall_fieldtype($fieldtype)
+	{
+		$this->EE->api->instantiate('channel_fields');
+		
+		if ($this->EE->api_channel_fields->include_handler($fieldtype))
+		{
+			$FT = $this->EE->api_channel_fields->setup_handler($fieldtype, TRUE);
+			$FT->uninstall();
+			
+			$this->EE->db->delete('fieldtypes', array('fieldtype_name' => $fieldtype)); 
 		}
 	}
 
