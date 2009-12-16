@@ -190,8 +190,11 @@ if ($EE_view_disable !== TRUE)
 								$delete_link = ($template['template_name'] == 'index') ? '--' :
 								'<a href="'.BASE.AMP.'C=design'.AMP.'M=template_delete_confirm'.AMP.
 								'template_id='.$template['template_id'].'"><img src="'.$cp_theme_url.'images/content_custom_tab_delete.gif" alt="'.lang('delete').'" width="19" height="18" /></a>';
+
+								$auth_key = ($template['enable_http_auth'] == 'y') ? '<img style="float:right" class="auth_icon" src="'.$cp_theme_url.'images/key_10.gif" /> ' : FALSE;
+
 								$main_table_data = 	array(
-									    array('data' => '<a id="templateId_'.$template['template_id'].'" href="'.BASE.AMP.'C=design'.AMP.'M=edit_template'.AMP.'id='.$template['template_id'].'">'.$template['template_name'].'</a>',
+									    array('data' => '<a id="templateId_'.$template['template_id'].'" href="'.BASE.AMP.'C=design'.AMP.'M=edit_template'.AMP.'id='.$template['template_id'].'">'.$template['template_name'].'</a> '.$auth_key,
 									 'class' => 'templateName '.$template['class']),
 									'<a rel="external" href="'.$template['view_path'].'">'.lang('view').'</a>');
 									
