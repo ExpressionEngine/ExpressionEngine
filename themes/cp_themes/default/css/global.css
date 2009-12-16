@@ -2067,6 +2067,7 @@ table.accessTable div.tableCellHeading {
 
 #mainContent .tab_menu {
 	margin-bottom: 6px;
+	height:24px;
 }
 
 #mainContent .tab_menu li {
