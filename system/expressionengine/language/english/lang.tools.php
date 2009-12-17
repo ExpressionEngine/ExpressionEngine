@@ -66,9 +66,9 @@ $lang = array(
 'invalid_path' 			=> 'The path you submitted is not valid:',
 'file_saved'			=> 'The translation file has been saved to system/expressionengine/translations/',
 
-
 'import_from_mt' 		=> 'Movable Type Import Utility',
 'member_import' 		=> 'Member Import Utility',
+'missing_password_type'	=> 'The required type attribute is missing in the password element for user: %x. Please consult the documentation for the correct import format.',
 
 'united_states' 		=> 'United States',
 'european' 				=> 'European',
@@ -1417,11 +1417,6 @@ $lang = array(
 'default_html_buttons' => 
 'Default HTML Buttons',
 
-'import_from_mt' =>
-'Movable Type Import Utility',
-
-'member_import' =>
-'Member Import Utility',
 
 'specialty_templates' =>
 'Specialty Templates',

@@ -775,6 +775,13 @@ class Tools_utilities extends Controller {
 								}
 								break;
 							case 'password':
+								// We require a type attribute here, as outlined in the docs.
+								// This is a quick error check to ensure its present.
+								if ( ! @$tag->attributes['type'])
+								{
+									show_error(str_replace('%x', $this->validate->username, $this->lang->line('missing_password_type')));
+								}
+
 								// encode password if it is type="text"
 								$this->members[$i][$tag->tag] = ($tag->attributes['type'] == 'text') ? do_hash($tag->value) : $tag->value;
 								break;
