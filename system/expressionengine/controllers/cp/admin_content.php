@@ -1867,11 +1867,6 @@ class Admin_content extends Controller {
 	 */
 	function category_edit()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		$this->load->model('category_model');
 		$this->lang->loadfile('admin_content');
 		$this->load->helper('form');
