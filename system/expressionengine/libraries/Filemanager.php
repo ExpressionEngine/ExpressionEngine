@@ -410,7 +410,7 @@ class Filemanager {
 
 		$config['source_image']		= $img_path.$data['name'];
 		$config['new_image']		= $thumb_path.'thumb_'.$data['name'];
-		$config['maintain_ratio']	= FALSE;
+		$config['maintain_ratio']	= TRUE;
 		$config['image_library']	= $this->EE->config->item('image_resize_protocol');
 		$config['library_path']		= $this->EE->config->item('image_library_path');
 		$config['width']			= 73;
