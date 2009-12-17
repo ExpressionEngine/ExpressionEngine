@@ -14,7 +14,7 @@ if ($EE_view_disable !== TRUE)
 		<?php if ($view_email_cache): ?>
 			<div class="heading"><h2><?=lang('view_email_cache')?></h2></div>
 		<?php else: ?>
-			<div class="heading"><h2><?=lang('send_an_email')?> <span class="headingSubtext">(<a href="<?=BASE.AMP.'C=tools_communicate'.AMP.'M=view_cache'?>">View Previously Sent Email</a>)</span></h2></div>
+			<div class="heading"><h2><?=lang('send_an_email')?> <span class="headingSubtext">(<a href="<?=BASE.AMP.'C=tools_communicate'.AMP.'M=view_cache'?>"><?= lang('view_email_cache')?></a>)</span></h2></div>
 		<?php endif; ?>
 
 			<div class="pageContents">
