@@ -544,7 +544,7 @@ class Email {
 					$temp = '';
 					foreach($_POST[$val] as $post_value)
 					{
-						$temp .= $this->EE->input->clean_input_data($post_value)."\n";
+						$temp .= $this->EE->input->_clean_input_data($post_value)."\n";
 					}
 
 					$_POST[$val] = $temp;
