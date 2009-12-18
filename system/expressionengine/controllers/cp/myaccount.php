@@ -964,11 +964,6 @@ class MyAccount extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
-		if (count($this->functions->fetch_assigned_channels()) == 0)
-		{
-			show_error($this->lang->line('no_channels_assigned_to_user'));
-		}
-
 		$this->load->helper(array('form', 'url'));
 		$this->load->library('table');
 		$this->lang->loadfile('admin');
