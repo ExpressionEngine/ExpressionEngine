@@ -959,9 +959,14 @@ class MyAccount extends Controller {
 	{
 		// Is the user authorized to access the publish page? And does the user have
 		// at least one channel assigned? If not, show the no access message
-		if ( ! $this->cp->allowed_group('can_access_publish') OR ! count($this->functions->fetch_assigned_channels()) > 0)
+		if ( ! $this->cp->allowed_group('can_access_publish'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
+		}
+		
+		if (count($this->functions->fetch_assigned_channels()) == 0)
+		{
+			show_error($this->lang->line('no_channels_assigned_to_user'));
 		}
 
 		$this->load->helper(array('form', 'url'));
