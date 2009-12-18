@@ -1351,6 +1351,35 @@ class Content_publish extends Controller {
 			}
 
 		}
+		
+
+		// ----------------------------------------------
+		//	Custom Blocks
+		// ----------------------------------------------		
+
+		$module_data = $this->api_channel_fields->get_module_fields($channel_id, $entry_id);
+		
+$module_tabs = array();
+	
+		if ($module_data && is_array($module_data))
+		{
+			foreach ($module_data as $tab => $v)
+			{
+				foreach ($v as $val)
+				{			
+$module_tabs[$tab][] = $val['field_id'];
+
+					$this->api_channel_fields->set_settings($val['field_id'], $val);
+
+
+					$rules = 'call_field_validation['.$val['field_id'].']';
+					$this->form_validation->set_rules($val['field_id'], $val['field_label'], $rules);
+
+
+				}
+			}
+		}
+
 
 
 		// Title options
@@ -1647,6 +1676,16 @@ class Content_publish extends Controller {
 				}
 				else
 				{
+					foreach ($module_tabs as $m_tab => $m_fields)
+					{
+						if (in_array($field, $m_fields))
+						{
+							$vars['publish_tabs'][$m_tab][$field] = $field_display;
+							continue 2;
+						}
+					
+					}
+					
 					$vars['publish_tabs']['publish'][$field] = $field_display;
 				}
 			}
