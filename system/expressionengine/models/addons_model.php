@@ -191,13 +191,18 @@ class Addons_model extends CI_Model {
 	 * @access	public
 	 * @return	array
 	 */
-	function get_installed_modules($has_cp = FALSE)
+	function get_installed_modules($has_cp = FALSE, $has_tab = FALSE)
 	{
 		$this->db->select('LOWER(module_name) AS module_name, module_version, has_cp_backend, module_id', FALSE);
 		
 		if ($has_cp === TRUE)
 		{
 			$this->db->where('has_cp_backend', 'y');
+		}
+
+		if ($has_tab === TRUE)
+		{
+			$this->db->where('has_publish_fields', 'y');
 		}
 		
 		return $this->db->get('modules');
