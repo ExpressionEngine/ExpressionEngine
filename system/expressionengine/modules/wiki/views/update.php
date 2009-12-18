@@ -1,66 +1,90 @@
+<?php 
+	$this->table->set_template($cp_table_template);
+	$this->table->set_heading(array(
+			array('data' => lang('setting'), 'width' => '50%'),
+			lang('preference')
+		)
+	);
+?>
+
 <?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP.'method=update', '', $form_hidden)?>
 
-	<div class="prefSettings">
-		<p>
-			<?=lang('label_name', 'wiki_label_name')?> 
-			<?=form_error('wiki_label_name')?>
-			<?=form_input('wiki_label_name', set_value('wiki_label_name', $wiki_label_name_value), 'id="wiki_label_name"')?>
-		</p>
+	<?php 
+	
+		$this->table->add_row(array(
+				lang('label_name', 'wiki_label_name'),
+				form_error('wiki_label_name').
+				form_input('wiki_label_name', set_value('wiki_label_name', $wiki_label_name_value), 'id="wiki_label_name"')
+			)
+		);
+		
+		$this->table->add_row(array(
+				lang('short_name', 'wiki_short_name'),
+				form_error('wiki_short_name').
+				form_input('wiki_short_name', set_value('wiki_short_name', $wiki_short_name_value), 'id="wiki_short_name"')
+			)
+		);
 
-		<p>
-			<?=lang('short_name', 'wiki_short_name')?>
-			<?=form_input('wiki_short_name', set_value('wiki_short_name', $wiki_short_name_value), 'id="wiki_short_name"')?>
-			<?=form_error('wiki_short_name')?>
-		</p>
+		$this->table->add_row(array(
+				lang('text_format', 'wiki_text_format'),
+				form_error('wiki_text_format').
+				form_dropdown('wiki_text_format', $wiki_text_format_options, set_value('wiki_text_format', $wiki_text_format_value), 'id="wiki_text_format"')
+			)
+		);
+		
 
-		<p>
-			<?=lang('text_format', 'wiki_text_format')?> 
-			<?=form_dropdown('wiki_text_format', $wiki_text_format_options, set_value('wiki_text_format', $wiki_text_format_value), 'id="wiki_text_format"')?>
-			<?=form_error('wiki_text_format')?>
-		</p>
+		$this->table->add_row(array(
+				lang('html_format', 'wiki_html_format'),
+				form_error('wiki_html_format').
+				form_dropdown('wiki_html_format', $wiki_html_format_options, set_value('wiki_html_format', $wiki_html_format_value), 'id="wiki_html_format"')
+			)
+		);
 
-		<p>
-			<?=lang('html_format', 'wiki_html_format')?> 
-			<?=form_dropdown('wiki_html_format', $wiki_html_format_options, set_value('wiki_html_format', $wiki_html_format_value), 'id="wiki_html_format"')?>
-			<?=form_error('wiki_html_format')?>
-		</p>
+		$this->table->add_row(array(
+				lang('upload_dir', 'wiki_upload_dir'),
+				form_error('wiki_upload_dir').
+				form_dropdown('wiki_upload_dir', $wiki_upload_dir_options, set_value('wiki_upload_dir', $wiki_upload_dir_value), 'id="wiki_upload_dir"')
+			)
+		);
 
-		<p>
-			<?=lang('upload_dir', 'wiki_upload_dir')?> 
-			<?=form_dropdown('wiki_upload_dir', $wiki_upload_dir_options, set_value('wiki_upload_dir', $wiki_upload_dir_value), 'id="wiki_upload_dir"')?>
-			<?=form_error('wiki_upload_dir')?>
-		</p>
+		$this->table->add_row(array(
+				lang('admins', 'wiki_admins[]'),
+				form_error('wiki_admins').
+				form_dropdown('wiki_admins[]', $wiki_admins_options, set_value('wiki_admins', $wiki_admins_value), 'id="wiki_admins"')
+			)
+		);
 
-		<p>
-			<?=lang('admins', 'wiki_admins[]')?> 
-			<?=form_dropdown('wiki_admins[]', $wiki_admins_options, set_value('wiki_admins', $wiki_admins_value), 'id="wiki_admins"')?>
-			<?=form_error('wiki_admins')?>
-		</p>
+		$this->table->add_row(array(
+				lang('users', 'wiki_users[]'),
+				form_error('wiki_users').
+				form_dropdown('wiki_users[]', $wiki_users_options, set_value('wiki_users', $wiki_users_value), 'id="wiki_users"')
+			)
+		);
 
-		<p>
-			<?=lang('users', 'wiki_users[]')?> 
-			<?=form_dropdown('wiki_users[]', $wiki_users_options, set_value('wiki_users', $wiki_users_value), 'id="wiki_users"')?>
-			<?=form_error('wiki_users')?>
-		</p>
+		$this->table->add_row(array(
+				lang('revision_limit', 'wiki_revision_limit'),
+				form_error('wiki_revision_limit').
+				form_input('wiki_revision_limit', set_value('wiki_revision_limi', $wiki_revision_limit_value), 'id="wiki_revision_limit"')
+			)
+		);
 
-		<p>
-			<?=lang('revision_limit', 'wiki_revision_limit')?> 
-			<?=form_input('wiki_revision_limit', set_value('wiki_revision_limi', $wiki_revision_limit_value), 'id="wiki_revision_limit"')?>
-			<?=form_error('wiki_revision_limit')?>
-		</p>
 
-		<p>
-			<?=lang('author_limit', 'wiki_author_limit')?> 
-			<?=form_input('wiki_author_limit', set_value('wiki_author_limit', $wiki_author_limit_value), 'id="wiki_author_limit"')?>
-			<?=form_error('wiki_author_limit')?>
-		</p>
+		$this->table->add_row(array(
+				lang('author_limit', 'wiki_author_limit'),
+				form_error('wiki_author_limit').
+				form_input('wiki_author_limit', set_value('wiki_author_limit', $wiki_author_limit_value), 'id="wiki_author_limit"')
+			)
+		);
 
-		<p>
-			<?=lang('moderation_emails', 'wiki_moderation_emails')?> 
-			<?=form_input('wiki_moderation_emails', set_value('wiki_moderation_emails', $wiki_moderation_emails_value), 'id="wiki_moderation_emails"')?>
-			<?=form_error('wiki_moderation_emails')?>
-		</p>
-	</div>
+		$this->table->add_row(array(
+				lang('moderation_emails', 'wiki_moderation_emails'),
+				form_error('wiki_moderation_emails').
+				form_input('wiki_moderation_emails', set_value('wiki_moderation_emails', $wiki_moderation_emails_value), 'id="wiki_moderation_emails"')
+			)
+		);
+		
+		echo $this->table->generate();
+		$this->table->clear()?>
 
 	<h3><?=lang('namespaces')?></h3>
 	<p><?=lang('namespaces_list_subtext')?></p>
