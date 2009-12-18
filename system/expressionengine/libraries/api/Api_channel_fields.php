@@ -213,7 +213,6 @@ class Api_channel_fields extends Api {
 		if ( ! is_object($this->field_types[$field_type]))
 		{
 			$class = $this->field_types[$field_type];
-			
 			$this->include_handler($field_type);
 			$this->field_types[$field_type] = new $class();
 		}
@@ -268,6 +267,168 @@ class Api_channel_fields extends Api {
 		$this->EE->load->_ci_view_path = $_old_view_path;
 		
 		return $res;
+	}
+
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get custom field info from modules
+	 *
+	 * @access	public
+	 */	
+	function get_module_fields($channel_id, $entry_id = '')
+	{
+		$tab_modules = $this->get_modules();
+		
+		$set = FALSE;
+		
+		if ($tab_modules == FALSE)
+		{
+			return FALSE;
+		}
+		
+		foreach ($tab_modules as $class_name)
+		{
+			//  Call Module
+			$third_party = FALSE;
+
+			if ( ! class_exists($class_name))
+			{
+				if (file_exists(APPPATH.'modules/'.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT))
+				{
+					@include_once(APPPATH.'modules/'.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT);				
+				}
+				elseif (file_exists(PATH_THIRD.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT))
+				{
+					$third_party = TRUE;
+					@include_once(PATH_THIRD.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT);
+				}
+			}
+
+			$new_name = $class_name.'_mcp';
+		
+			$mod_base_path = ($third_party) ? PATH_THIRD : APPPATH.'modules/';
+			$this->EE->load->add_package_path($mod_base_path.strtolower($class_name).'/');
+
+			$OBJ = new $new_name();
+
+			if (method_exists($OBJ, 'publish_tabs') === TRUE)
+			{
+			// we're going to wipe the view vars here in a sec
+			//$file = $vars['file'];
+			
+				$mod_base_path = ($third_party) ? PATH_THIRD : APPPATH.'modules/';
+			
+				// add the view paths
+				$orig_view_path = $this->EE->load->_ci_view_path;
+				$this->EE->load->_ci_view_path = $mod_base_path.strtolower($class_name).'/views/';
+
+				// fetch the content
+				$set[$class_name] = $OBJ->publish_tabs($channel_id, $entry_id);
+			
+				// restore our package and view paths
+				$this->EE->load->_ci_view_path = $orig_view_path;
+
+			}
+		
+		// restore our package and view paths
+		$this->EE->load->remove_package_path($mod_base_path.strtolower($class_name).'/');
+		
+		}
+		
+		return $set;
+	}
+	
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get custom field info from modules
+	 *
+	 * @access	public
+	 */	
+	function get_module_methods($method, $params = array())
+	{
+		$tab_modules = $this->get_modules();
+		
+		$set = FALSE;
+		
+		if ($tab_modules == FALSE)
+		{
+			return FALSE;
+		}
+		
+		foreach ($tab_modules as $class_name)
+		{
+			//  Call Module
+			$third_party = FALSE;
+
+			if ( ! class_exists($class_name))
+			{
+				if (file_exists(APPPATH.'modules/'.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT))
+				{
+					@include_once(APPPATH.'modules/'.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT);				
+				}
+				elseif (file_exists(PATH_THIRD.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT))
+				{
+					$third_party = TRUE;
+					@include_once(PATH_THIRD.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT);
+				}
+			}
+
+			$new_name = $class_name.'_mcp';
+		
+			$mod_base_path = ($third_party) ? PATH_THIRD : APPPATH.'modules/';
+			$this->EE->load->add_package_path($mod_base_path.strtolower($class_name).'/');
+
+			$OBJ = new $new_name();
+
+			if (method_exists($OBJ, $method) === TRUE)
+			{
+			// we're going to wipe the view vars here in a sec
+			//$file = $vars['file'];
+			
+				$mod_base_path = ($third_party) ? PATH_THIRD : APPPATH.'modules/';
+			
+				// add the view paths
+				$orig_view_path = $this->EE->load->_ci_view_path;
+				$this->EE->load->_ci_view_path = $mod_base_path.strtolower($class_name).'/views/';
+
+				// fetch the content
+				$set[$class_name] = $OBJ->$method($params);
+			
+				// restore our package and view paths
+				$this->EE->load->_ci_view_path = $orig_view_path;
+
+			}
+		
+		// restore our package and view paths
+		$this->EE->load->remove_package_path($mod_base_path.strtolower($class_name).'/');
+		
+		}
+		
+		return $set;
+	}
+
+
+	function get_modules()
+	{
+		// Do we have modules in play
+		$this->EE->load->model('addons_model');
+		$custom_field_modules = FALSE;
+		
+		$mquery = $this->EE->addons_model->get_installed_modules(FALSE, TRUE);
+			
+		if ($mquery->num_rows > 0)
+		{
+			foreach($mquery->result_array() as $row)
+			{
+				$custom_field_modules[] = $row['module_name'];
+			}
+		}
+		
+		return $custom_field_modules;
 	}
 }
 
