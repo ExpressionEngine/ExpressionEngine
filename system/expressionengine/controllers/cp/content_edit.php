@@ -4529,7 +4529,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$this->functions->redirect(BASE.AMP.'C=content_edit'.AMP.'M=view_comments'.AMP.'validate=1');
 		}
 
-		if ($this->input->get_post('keywords') !== FALSE)
+		if ($this->input->get_post('keywords') != '')
 		{
 			$url = BASE.AMP.'C=content_publish'.
 						AMP.'M=edit_entries'.
