@@ -83,7 +83,7 @@ if ($EE_view_disable !== TRUE)
 			<li class="group"><a href="<?=BASE.AMP.'C=design'.AMP.'M=new_template_group'?>"><?=lang('template_group')?></a></li>
 		<?php endif;?>
 		<?php if ($show_page_option):?>
-			<li class="item"><a href="<?=BASE.AMP.'C=content_publish'?>" class="submenu accordion"><?=lang('page')?></a></li>
+			<li class="item"><a href="<?=BASE.AMP.'C=content_publish'?>"><?=lang('page')?></a></li>
 		<?php endif;?>
 		<?php if ($this->session->userdata['can_admin_channels'] == 'y'):?>
 			<li class="group"><a href="<?=BASE.AMP.'C=admin_content'.AMP.'M=channel_add'?>"><?=lang('channel')?></a></li>
