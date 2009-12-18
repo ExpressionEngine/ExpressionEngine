@@ -1251,8 +1251,23 @@ class Content_publish extends Controller {
 			}
 
 			$this->javascript->output('
-				$("#pages_uri").focus(function() {$(this).val("")});
-			');
+				var pagesUri 		= $("#pages_uri"),
+					placeholderText = "'.$pages_uri.'";
+				
+				if ( ! pagesUri.value) {
+					pagesUri.val(placeholderText);
+				}
+				
+				pagesUri.focus(function() {					
+					if (this.value == placeholderText) {
+						$(this).val("");
+					}	
+				}).blur(function() {
+					if (this.value == "") {
+						$(this).val(placeholderText);
+					}
+				});
+			');		
 
 			$vars['pages_uri']	= $pages_uri;
 			$vars['pages_dropdown_selected'] = $pages_template_id;
