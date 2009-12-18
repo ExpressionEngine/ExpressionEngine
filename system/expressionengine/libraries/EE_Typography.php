@@ -878,14 +878,14 @@ class EE_Typography extends CI_Typography {
 		/** -------------------------------------*/
 		
 		if (strpos($str, '[url') !== FALSE)
-		{		
+		{			
 			$bounce	= ((REQ == 'CP' && $this->EE->input->get('M') != 'send_email') OR $this->EE->config->item('redirect_submitted_links') == 'y') ? $this->EE->functions->fetch_site_index().QUERY_MARKER.'URL=' : '';
-			
+
 			$bad_things	 = array("'",'"', ';', '[', '(', ')', '!', '*', '>', '<', "\t", "\r", "\n", 'document.cookie'); // everything else
 			$bad_things2 = array('[', '(', ')', '!', '*', '>', '<', "\t", 'document.cookie'); // style,title attributes
 			$exceptions	 = array('http://', 'https://', 'irc://', 'feed://', 'ftp://', 'ftps://', 'mailto:', '/', '#');
 			$allowed	 = array('rel', 'title', 'class', 'style', 'target');
-			
+
 			if (preg_match_all("/\[url(.*?)\](.*?)\[\/url\]/i", $str, $matches))
 			{
 				for($i=0, $s=count($matches['0']), $add=TRUE; $i < $s; ++$i)
@@ -973,7 +973,9 @@ class EE_Typography extends CI_Typography {
 		// [img] and [/img]
 		
 		if (strpos($str, '[img]') !== FALSE)
-		{			
+		{
+			$bad_things	 = array("'",'"', ';', '[', '(', ')', '!', '*', '>', '<', "\t", "\r", "\n", 'document.cookie');
+
 			if ($this->allow_img_url == 'y')
 			{		
 				$str = preg_replace_callback("/\[img\](.*?)\[\/img\]/i", array($this, "image_sanitize"), $str);
@@ -985,9 +987,9 @@ class EE_Typography extends CI_Typography {
 				{
 					for($i=0, $s=count($matches['0']); $i < $s; ++$i)
 					{
-						$str = str_replace($matches['0'][$i], '<a href="'.$bounce.str_replace($bad_things, '', $matches['1'][$i]).'">'.str_replace($bad_things, '', $matches['1'][$i])."</a>", $str);
+						$str = str_replace($matches['0'][$i], '<a href="'.str_replace($bad_things, '', $matches['1'][$i]).'">'.str_replace($bad_things, '', $matches['1'][$i])."</a>", $str);
 					}
-				}
+				}					
 			}
 			else
 			{
