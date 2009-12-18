@@ -4244,7 +4244,7 @@ class Admin_content extends Controller {
 			}
 		}
 		
-		
+
 		asort($vars['field_type_options']);	// sort by title
 
 		$vars['form_hidden'] = array(
@@ -4483,7 +4483,7 @@ class Admin_content extends Controller {
 			}
 
 			// Update the formatting for all existing entries
-			if (isset($_POST['update_formatting']))
+			if ($this->_get_ft_post_data($field_type, 'update_formatting') == 'y')
 			{
 				$this->db->update('channel_data', array('field_ft_'.$native_settings['field_id'] => $native_settings['field_fmt']));
 			}
