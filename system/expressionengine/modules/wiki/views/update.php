@@ -50,14 +50,14 @@
 		$this->table->add_row(array(
 				lang('admins', 'wiki_admins[]'),
 				form_error('wiki_admins').
-				form_dropdown('wiki_admins[]', $wiki_admins_options, set_value('wiki_admins', $wiki_admins_value), 'id="wiki_admins"')
+				form_multiselect('wiki_admins[]', $wiki_admins_options, set_value('wiki_admins', $wiki_admins_value), 'id="wiki_admins"')
 			)
 		);
 
 		$this->table->add_row(array(
 				lang('users', 'wiki_users[]'),
 				form_error('wiki_users').
-				form_dropdown('wiki_users[]', $wiki_users_options, set_value('wiki_users', $wiki_users_value), 'id="wiki_users"')
+				form_multiselect('wiki_users[]', $wiki_users_options, set_value('wiki_users', $wiki_users_value), 'id="wiki_users"')
 			)
 		);
 
