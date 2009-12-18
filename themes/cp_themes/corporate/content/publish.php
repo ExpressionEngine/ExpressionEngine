@@ -197,15 +197,16 @@ if ($EE_view_disable !== TRUE)
 								<a href="#" class="smiley_link" title="<?=lang('emoticons')?>"><?=lang('emoticons')?></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 								<?php endif; ?>
 								<?php if ($f['field_show_fmt'] == 'y' && count($f['field_fmt_options']) > 0):?>
+									
 								<?=lang('formatting')?>
-								<?=form_dropdown('field_ft_'.$f['field_id'], $f['field_fmt_options'], $f['field_fmt'], 'id="formatting"')?> 
+								<?=form_dropdown('field_ft_'.$f['field_id'], $f['field_fmt_options'], $f['field_fmt'])?> 
 								<?php endif;?>
 
 							</p>
 						<?php elseif ($f['field_show_fmt'] == 'y' && count($f['field_fmt_options']) > 0):?>
 							<p class="spellcheck">
 							<?=lang('formatting')?>
-							<?=form_dropdown('field_ft_'.$f['field_id'], $f['field_fmt_options'], $f['field_fmt'], 'id="formatting"')?> 
+							<?=form_dropdown('field_ft_'.$f['field_id'], $f['field_fmt_options'], $f['field_fmt'])?> 
 							</p>
 						<?php endif;?>
 
