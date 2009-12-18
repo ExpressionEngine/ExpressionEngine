@@ -530,7 +530,7 @@ class EE_Functions {
 			{
 				if ($this->EE->session->tracker[$offset] != 'index')
 				{
-					return $this->remove_double_slashes($this->fetch_site_index().$this->EE->session->tracker[$offset]);
+					return $this->remove_double_slashes($this->fetch_site_index().'/'.$this->EE->session->tracker[$offset]);
 				}
 			}
 		}
