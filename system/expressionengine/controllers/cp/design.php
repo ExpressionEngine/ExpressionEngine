@@ -1519,7 +1519,7 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		if ( ! preg_match("#^[a-zA-Z0-9_\-/\.]+$#i", $template_name))
+		if ( ! preg_match("#^[a-zA-Z0-9_\.-]+$#i", $template_name))
 		{
 			show_error($this->lang->line('illegal_characters'));
 		}
@@ -3780,6 +3780,15 @@ class Design extends Controller {
 		if ( ! $this->_template_access_privs(array('template_id' => $template_id)))
 		{
 			$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
+		}
+		
+		// Do we just have alpha num + . ?
+		if ($this->input->get_post('template_name'))
+		{
+			if ( ! preg_match("#^[a-zA-Z0-9_\.-]+$#i", $this->input->get_post('template_name')))
+			{
+				$this->output->send_ajax_response($this->lang->line('illegal_characters'), TRUE);
+			}			
 		}
 
 		$this->output->enable_profiler(FALSE);
