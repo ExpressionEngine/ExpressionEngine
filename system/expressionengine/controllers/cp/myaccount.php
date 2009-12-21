@@ -1661,21 +1661,35 @@ class MyAccount extends Controller {
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['form_hidden']['id'] = $this->id;
-
-		// We already grab this data for the sidebar, so we'll use those values
-		if ( ! $this->load->_ci_cached_vars['cp_avatar_path'])
+		
+		// Are we a superadmin & looking at our profile, or another users?
+		if ($this->id != $this->session->userdata('member_id'))
 		{
-			$cur_avatar_url = '';
-			$avatar_width	= '';
-			$avatar_height	= '';
-			$vars['avatar'] = $this->lang->line('no_avatar');
+			$member_avatar = $this->member_model->get_member_data($this->id, array('avatar_filename', 'avatar_width', 'avatar_height', 'screen_name'));
+			
+			$cur_avatar_url = $member_avatar->row('avatar_filename') ? $this->config->slash_item('avatar_url').$member_avatar->row('avatar_filename') : '';
+			$avatar_width   = $member_avatar->row('avatar_filename') ? $member_avatar->row('avatar_width') : '';
+			$avatar_height  = $member_avatar->row('avatar_filename') ? $member_avatar->row('avatar_height') : '';
+			$vars['avatar'] = '<img src="'.$cur_avatar_url.'" border="0" width="'.$avatar_width.'" height="'.$avatar_height.'" alt="'.$this->lang->line('my_avatar').'" title="'.$this->lang->line('my_avatar').'" />';
+			
 		}
 		else
 		{
-			$cur_avatar_url = $this->load->_ci_cached_vars['cp_avatar_path'];
-			$avatar_width	= $this->load->_ci_cached_vars['cp_avatar_width'];
-			$avatar_height	= $this->load->_ci_cached_vars['cp_avatar_height'];
-			$vars['avatar'] = '<img src="'.$cur_avatar_url.'" border="0" width="'.$avatar_width.'" height="'.$avatar_height.'" alt="'.$this->lang->line('my_avatar').'" title="'.$this->lang->line('my_avatar').'" />';
+			// We already grab this data for the sidebar, so we'll use those values
+			if ( ! $this->load->_ci_cached_vars['cp_avatar_path'])
+			{
+				$cur_avatar_url = '';
+				$avatar_width	= '';
+				$avatar_height	= '';
+				$vars['avatar'] = $this->lang->line('no_avatar');
+			}
+			else
+			{
+				$cur_avatar_url = $this->load->_ci_cached_vars['cp_avatar_path'];
+				$avatar_width	= $this->load->_ci_cached_vars['cp_avatar_width'];
+				$avatar_height	= $this->load->_ci_cached_vars['cp_avatar_height'];
+				$vars['avatar'] = '<img src="'.$cur_avatar_url.'" border="0" width="'.$avatar_width.'" height="'.$avatar_height.'" alt="'.$this->lang->line('my_avatar').'" title="'.$this->lang->line('my_avatar').'" />';
+			}			
 		}
 
 		// Are there pre-installed avatars? We'll make a list of all folders in the "avatar" folder,
@@ -2028,7 +2042,7 @@ class MyAccount extends Controller {
 				}
 
 				$this->session->set_flashdata('message_success', $this->lang->line($removed));
-				$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_avatar');
+				$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_avatar'.AMP.'id='.$id);
 			}
 			elseif ($type == 'photo')
 			{
@@ -2059,7 +2073,7 @@ class MyAccount extends Controller {
 				@unlink($this->config->slash_item('sig_img_path').$query->row('sig_img_filename') );
 
 				$this->session->set_flashdata('message_success', $this->lang->line($removed));
-				$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature');
+				$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature'.AMP.'id='.$id);
 			}
 		}
 
