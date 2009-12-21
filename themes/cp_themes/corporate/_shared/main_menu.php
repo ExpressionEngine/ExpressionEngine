@@ -4,7 +4,7 @@
 
 			<?php echo $menu_string; ?>
 
-			<li><a class="addTab first_level" id="addQuickTab" href="<?=generate_quicktab($cp_page_title)?>"> Add</a></li>
+			<li><a class="addTab first_level" id="addQuickTab" href="<?=generate_quicktab($cp_page_title)?>" title="<?=lang('nav_add_tab')?>"><?=lang('nav_add_tab')?></a></li>
 		</ul>
 		<div class="clear"></div>
 </div>
