@@ -46,6 +46,12 @@ class Cp {
 	{
 		$this->EE =& get_instance();
 		
+		if ($this->EE->router->class == 'ee')
+		{
+			show_error("The CP library is only available on Control Panel requests.");
+		}
+		
+		// @confirm uhhh.. what?
 		$this->EE->load->vars(array('cp_page_id' => 'Whatever'));
 	}
 
@@ -60,74 +66,41 @@ class Cp {
 	 */		
 	function set_default_view_variables()
 	{
-		$cp_theme  = ( ! $this->EE->session->userdata('cp_theme')) ? $this->EE->config->item('cp_theme') : $this->EE->session->userdata('cp_theme'); 
+		$cp_theme	= ( ! $this->EE->session->userdata('cp_theme')) ? $this->EE->config->item('cp_theme') : $this->EE->session->userdata('cp_theme'); 
+		$js_folder	= ($this->EE->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';		
+		$langfile	= substr($this->EE->router->class, 0, strcspn($this->EE->router->class, '_'));
 		
 		$this->cp_theme_url = $this->EE->config->slash_item('theme_folder_url').'cp_themes/'.$cp_theme.'/';
-
-		// load the javascript stuff needed for the CP to behave right
-		// this could/should also be set from the config file
 		
- 		$this->EE->load->library('javascript', array('autoload' => FALSE));
+		$this->EE->load->library('menu');
+		$this->EE->load->library('accessories');
+		$this->EE->load->library('javascript', array('autoload' => FALSE));
  		$this->EE->load->helper('url');
 
-		// $this->EE->jquery->script(BASE.AMP.'C=javascript'.AMP.'M=load', TRUE);
-		// $this->EE->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=corner', TRUE);
-		// $this->EE->jquery->script(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=css', TRUE);
-
-		$this->add_js_script(array(
-					'ui'        => array('core', 'sortable', 'dialog'),
-					'file'      => array('ee_txtarea'),
-					'plugin'    => array('ee_focus', 'ee_notice')
-					)
-		);	
-		
-		if ( ! isset($this->EE->session->userdata['cp_theme']) OR $this->EE->session->userdata['cp_theme'] != 'mobile')
-		{
-			$this->add_js_script(array('plugin' => 'ee_navigation'));
-		}
-		
-		
-		$this->EE->javascript->output('$(".js_show").show();');
-		$this->EE->javascript->compile();
-		
-		$js_lang_keys = array(
-			'logout_confirm'	=> $this->EE->lang->line('logout_confirm'),
-			'logout'			=> $this->EE->lang->line('logout')
-		);
-		
-		// The base javascript variables that will be available globally through EE.varname
-		// this really could be made easier - ideally it would show up right below the main
-		// jQuery script tag - before the plugins, so that it has access to jQuery.
-
-		// If you use it in your js, please uniquely identify your variables - or create
-		// another object literal:
-		// Bad: EE.test = "foo";
-		// Good: EE.unique_foo = "bar"; EE.unique = { foo : "bar"};
-		
-		$this->EE->javascript->set_global(array(
-			'BASE'				=> str_replace(AMP, '&', BASE),
-			'XID'				=> (defined('XID_SECURE_HASH')) ? XID_SECURE_HASH : "",
-			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
-			'CP_SIDEBAR_STATE'	=> ($this->EE->input->cookie('cp_sidebar_state') == 'off') ? 'off' : 'on',
-			'flashdata'			=> $this->EE->session->flashdata,
-			'username'			=> $this->EE->session->userdata('username'),
-			'router_class'		=> $this->EE->router->class,				// advanced css
-			'lang'				=> $js_lang_keys
-		));
-		
 		$this->EE->load->model('member_model'); // for screen_name, quicklinks
 		$this->EE->load->model('channel_model'); // for most recent entry/comment quicklinks
-
-		$recent['entry'] = $this->EE->channel_model->get_most_recent_id('entry');
 		
-		if ($this->EE->db->table_exists('comments'))
-		{
-			$recent['comment'] = $this->EE->channel_model->get_most_recent_id('comment');	
-		}
-		else
-		{
-			$recent['comment'] = FALSE;
-		}
+		$this->EE->lang->loadfile($langfile);
+		
+		
+		// Javascript Path Constants
+		
+		define('PATH_JQUERY', APPPATH.'javascript/'.$js_folder.'/jquery/');
+		define('PATH_JAVASCRIPT', APPPATH.'javascript/'.$js_folder.'/');
+		
+		
+		// Most recent comment and most recent entry
+		// (@confirm not needed on every page)
+		
+		$comments_installed = $this->EE->db->table_exists('comments');
+		
+		$recent = array(
+			'entry'		=> $this->EE->channel_model->get_most_recent_id('entry'),
+			'comment'	=> $comments_installed ? $this->EE->channel_model->get_most_recent_id('comment') : FALSE
+		);
+		
+
+		// Success/failure messages
 		
 		$cp_messages = array();
 		
@@ -140,105 +113,121 @@ class Cp {
 			}
 		}
 
+
+		// Table templates
+
 		$cp_table_template = array(
-									'table_open'			=> '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">',
-									'row_start'           => '<tr class="even">',
-									'row_alt_start'       => '<tr class="odd">'				
+									'table_open'		=> '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">',
+									'row_start'			=> '<tr class="even">',
+									'row_alt_start'		=> '<tr class="odd">'				
 								);
-								
-		$cp_pad_table_template = array(
-									'table_open'			=> '<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">',
-									'row_start'           => '<tr class="even">',
-									'row_alt_start'       => '<tr class="odd">'
-								);
-				
+
+		$cp_pad_table_template = $cp_table_template;
+		$cp_pad_table_template['table_open'] = '<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">';
+
 		$user_q = $this->EE->member_model->get_member_data($this->EE->session->userdata('member_id'), array('avatar_filename', 'avatar_width', 'avatar_height', 'screen_name'));
 		$notepad_content = $this->EE->member_model->get_notepad_content();
 
-		$this->EE->load->vars(array('cp_page_id'			=> '',
-									'cp_page_onload'		=> '',
-									'cp_page_title'			=> '',
-									'cp_current_site_label'	=> $this->EE->config->item('site_name'),
-									'cp_breadcrumbs'		=> array(),
-									'cp_theme_url'			=> $this->cp_theme_url,
-									'cp_screen_name'		=> $user_q->row('screen_name'),
-									'cp_avatar_path'		=> $user_q->row('avatar_filename') ? $this->EE->config->slash_item('avatar_url').$user_q->row('avatar_filename') : '',
-									'cp_avatar_width'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_width') : '',
-									'cp_avatar_height'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_height') : '',
-									'cp_table_template'		=> $cp_table_template,
-									'cp_pad_table_template'	=> $cp_pad_table_template,
-									'is_super_admin'		=> ($this->EE->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
-									'cp_quicklinks'			=> $this->EE->member_model->get_member_quicklinks($this->EE->session->userdata('member_id')),
-									'cp_recent_ids'			=> $recent,
-									'cp_messages'			=> $cp_messages,
-									'cp_notepad_content'	=> $notepad_content,
-									'cp_right_nav'			=> array()
-									));
 
+		// Global view variables
 
+		$vars =	array(
+					'cp_page_id'			=> '',
+					'cp_page_onload'		=> '',
+					'cp_page_title'			=> '',
+					'cp_breadcrumbs'		=> array(),
+					'cp_right_nav'			=> array(),
+					'cp_recent_ids'			=> $recent,
+					'cp_messages'			=> $cp_messages,
+					'cp_notepad_content'	=> $notepad_content,
+					'cp_table_template'		=> $cp_table_template,
+					'cp_pad_table_template'	=> $cp_pad_table_template,
+					'cp_theme_url'			=> $this->cp_theme_url,
+					'cp_current_site_label'	=> $this->EE->config->item('site_name'),
+					'cp_screen_name'		=> $user_q->row('screen_name'),
+					'cp_avatar_path'		=> $user_q->row('avatar_filename') ? $this->EE->config->slash_item('avatar_url').$user_q->row('avatar_filename') : '',
+					'cp_avatar_width'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_width') : '',
+					'cp_avatar_height'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_height') : '',
+					'cp_quicklinks'			=> $this->EE->member_model->get_member_quicklinks($this->EE->session->userdata('member_id')),
+					
+					'EE_view_disable'		=> FALSE,
+					'is_super_admin'		=> ($this->EE->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
+										
+					// Menu
+					'cp_menu_items'			=> $this->EE->menu->generate_menu(),
+					'cp_accessories'		=> $this->EE->accessories->generate_accessories(),
+					
+					// Sidebar state (overwritten below if needed)
+					'sidebar_state'			=> '',
+					'maincontent_state'		=> '',
 
-		// we need to load the request's language file before generating menus
-		if ($this->EE->router->class != 'ee')
-		{
-			// load the base language file for the requested controller
-			$langfile = substr($this->EE->router->class, 0, strcspn($this->EE->router->class, '_'));
-			$this->EE->lang->loadfile($langfile);
-		}
-		
-		$this->EE->load->library('menu');
-		$this->EE->load->library('accessories');
-			
-		$this->EE->load->vars(array(
-								'cp_menu_items'			=> $this->EE->menu->generate_menu(),
-								'cp_accessories'		=> $this->EE->accessories->generate_accessories(),
-								'EE_view_disable'		=> FALSE
-								));
+					// Asset mtimes to force caching
+					'jquery_mtime' 		=> filemtime(PATH_JQUERY.'jquery.js'),
+					'corner_mtime' 		=> filemtime(PATH_JQUERY.'plugins/corner.js'),
+					'theme_css_mtime'	=> filemtime(PATH_CP_THEME.$cp_theme.'/css/global.css'),
+					'global_js_mtime'	=> filemtime(PATH_JAVASCRIPT.'cp/global.js')
+		);
 
-		if ($this->EE->config->item('use_compressed_js') == 'n')
-		{
-			define('PATH_JQUERY', APPPATH.'javascript/src/jquery/');
-			define('PATH_JAVASCRIPT', APPPATH.'javascript/src/');
-		}
-		else
-		{
-			define('PATH_JQUERY', APPPATH.'javascript/compressed/jquery/');
-			define('PATH_JAVASCRIPT', APPPATH.'javascript/compressed/');
-		}
-		
-		$cp_theme = $this->EE->session->userdata('cp_theme');
 
 		if (file_exists(PATH_CP_THEME.$cp_theme.'/css/advanced.css'))
 		{
-			$this->EE->load->vars(array(
-								'advanced_css_mtime' => filemtime(PATH_CP_THEME.$cp_theme.'/css/advanced.css')
-							));
+			$vars['advanced_css_mtime'] = filemtime(PATH_CP_THEME.$cp_theme.'/css/advanced.css');
 		}
-
-		// Get File mtimes to force good browser caching		
-		$this->EE->load->vars(array(
-									'jquery_mtime' 		=> filemtime(PATH_JQUERY.'jquery.js'),
-									'corner_mtime' 		=> filemtime(PATH_JQUERY.'plugins/corner.js'),
-									'theme_css_mtime'	=> filemtime(PATH_CP_THEME.$cp_theme.'/css/global.css'),
-									'global_js_mtime'	=> filemtime(PATH_JAVASCRIPT.'cp/global.js')
-								));
 		
 		if ($this->EE->router->method != 'index')
 		{
 			$this->set_breadcrumb(BASE.AMP.'C='.$this->EE->router->class, $this->EE->lang->line($this->EE->router->class));
 		}
 		
-        if ($this->EE->input->cookie('cp_sidebar_state') == 'off')
-        {
-            $this->EE->load->vars(array(
-                                    'sidebar_state'     => ' style="display:none"',
-                                    'maincontent_state' => ' style="width:100%; display:block"'));
+		if ($this->EE->input->cookie('cp_sidebar_state') == 'off')
+		{
+			$vars['sidebar_state']		= ' style="display:none"';
+			$vars['maincontent_state']	= ' style="width:100%; display:block"';
         }
-        else
-        {
-            $this->EE->load->vars(array(
-                                    'sidebar_state'     => '',
-                                    'maincontent_state' => ''));            
-        }
+		
+		
+		// The base javascript variables that will be available globally through EE.varname
+		// this really could be made easier - ideally it would show up right below the main
+		// jQuery script tag - before the plugins, so that it has access to jQuery.
+
+		// If you use it in your js, please uniquely identify your variables - or create
+		// another object literal:
+		// Bad: EE.test = "foo";
+		// Good: EE.unique_foo = "bar"; EE.unique = { foo : "bar"};
+		
+		$js_lang_keys = array(
+			'logout_confirm'	=> $this->EE->lang->line('logout_confirm'),
+			'logout'			=> $this->EE->lang->line('logout')
+		);
+		
+		$this->EE->javascript->set_global(array(
+			'BASE'				=> str_replace(AMP, '&', BASE),
+			'XID'				=> (defined('XID_SECURE_HASH')) ? XID_SECURE_HASH : "",
+			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
+			'CP_SIDEBAR_STATE'	=> ($this->EE->input->cookie('cp_sidebar_state') == 'off') ? 'off' : 'on',
+			'flashdata'			=> $this->EE->session->flashdata,
+			'username'			=> $this->EE->session->userdata('username'),
+			'router_class'		=> $this->EE->router->class,				// advanced css
+			'lang'				=> $js_lang_keys
+		));
+		
+		// Combo-load the javascript files we need for every request
+
+		$js_scripts = array(
+						'ui'		=> array('core', 'sortable', 'dialog'),
+						'file'		=> array('ee_txtarea'),
+						'plugin'	=> array('ee_focus', 'ee_notice')
+		);
+		
+		if ($cp_theme != 'mobile')
+		{
+			$js_scripts['plugin'][] = 'ee_navigation';
+		}
+		
+		$this->add_js_script($js_scripts);
+		
+		$this->EE->load->vars($vars);
+		$this->EE->javascript->compile();
 	}
 
 	// --------------------------------------------------------------------
@@ -580,18 +569,38 @@ class Cp {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Load Module JS
+	 * Load Package JS
 	 *
-	 * Load a javascript file from a module
+	 * Load a javascript file from a package
 	 *
 	 * @access	public
 	 * @param	string
-	 * @return	string
+	 * @return	void
 	 */
 	function load_package_js($file)
 	{
 		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $this->EE->load->_ci_view_path), '/');
 		$this->EE->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'package='.$package.AMP.'file='.$file, TRUE);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Load Package CSS
+	 *
+	 * Load a stylesheet from a package
+	 * @pk Hack for Brandon. Check with DJ -- css controller, <link> tag, filemtime caching, documentation
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	void
+	 */
+	function load_package_css($file)
+	{
+		$package = realpath($this->EE->load->_ci_view_path.'../');
+		$this->add_to_head('<style type="text/css" media="screen">'.
+			file_get_contents($package.'/css/'.$file.'.css').
+		'</style>');
 	}
 	
 	// --------------------------------------------------------------------
