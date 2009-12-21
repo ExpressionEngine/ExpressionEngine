@@ -6046,7 +6046,7 @@ class Admin_content extends Controller {
 
 			function update_ping_servers(refresh) {
 				$.post(
-					"'.str_replace('&amp;', '&', BASE).'&C=admin_content&M=save_ping_servers&refresh="+refresh,
+					EE.BASE+"&C=admin_content&M=save_ping_servers&refresh="+refresh,
 					$("#ping_server_form").serializeArray(),
 					function(res) {
 						if ($(res).find("#ping_server_form").length > 0) {

@@ -726,7 +726,8 @@ class Content_publish extends Controller {
 			$vars['sticky_data'] = array(
 										  'name'		=> 'sticky',
 										  'id'			=> 'sticky',
-										  'value'		=> 'y'
+										  'value'		=> 'y',
+										  'checked'		=> ($sticky == 'y') ? TRUE : FALSE
 										);
 
 
