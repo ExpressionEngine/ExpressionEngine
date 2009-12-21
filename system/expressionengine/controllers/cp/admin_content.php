@@ -305,7 +305,7 @@ class Admin_content extends Controller {
 		// If we don't have the $channel_id variable, bail out.
 		if ($channel_id == '' OR ! is_numeric($channel_id))
 		{
-			show_error('channel id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 		
 		$this->_channel_validation_rules();
@@ -1078,7 +1078,7 @@ class Admin_content extends Controller {
 
 		if ($channel_id == '' OR ! is_numeric($channel_id))
 		{
-			show_error('channel id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->lang->loadfile('admin_content');
@@ -1182,7 +1182,7 @@ class Admin_content extends Controller {
 
 		if ($channel_id == '' OR ! is_numeric($channel_id))
 		{
-			show_error('channel id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->helper('form');
@@ -1232,7 +1232,7 @@ class Admin_content extends Controller {
 
 		if ($channel_id == '' OR ! is_numeric($channel_id))
 		{
-			show_error('channel id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->lang->loadfile('admin_content');
@@ -1601,7 +1601,7 @@ class Admin_content extends Controller {
 
 		if ($group_id == '' OR ! is_numeric($group_id))
 		{
-			show_error('group id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->helper('form');
@@ -1651,7 +1651,7 @@ class Admin_content extends Controller {
 
 		if ($group_id == '' OR ! is_numeric($group_id))
 		{
-			show_error('group id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->lang->loadfile('admin_content');
@@ -1661,7 +1661,7 @@ class Admin_content extends Controller {
 
 		if ($category->num_rows() == 0)
 		{
-			show_error('group id not there'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$name = $category->row('group_name');
@@ -2122,7 +2122,7 @@ class Admin_content extends Controller {
 
 			if ($zquery->num_rows() == 0)
 			{
-				show_error('no such categories'); //@todo: lang key
+				show_error(lang('not_authorized'));
 			}
 
 			$can_delete = explode('|', rtrim($zquery->row('can_delete_categories') , '|'));
@@ -2144,7 +2144,7 @@ class Admin_content extends Controller {
 
 		if ($cat_id == '' OR ! is_numeric($cat_id))
 		{
-			show_error('category id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 
@@ -2208,7 +2208,7 @@ class Admin_content extends Controller {
 
 			if ($zquery->num_rows() == 0)
 			{
-				show_error('no such categories'); //@todo: lang key
+				show_error(lang('not_authorized'));
 			}
 
 			$can_delete = explode('|', rtrim($zquery->row('can_delete_categories') , '|'));
@@ -2230,7 +2230,7 @@ class Admin_content extends Controller {
 
 		if ($cat_id == '' OR ! is_numeric($cat_id))
 		{
-			show_error('category id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 
@@ -2961,7 +2961,7 @@ class Admin_content extends Controller {
 
 		if ($vars['group_id'] == '' OR ! is_numeric($vars['group_id']))
 		{
-			show_error('group id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->library('table');
@@ -3045,7 +3045,7 @@ class Admin_content extends Controller {
 
 		if ($vars['group_id'] == '' OR ! is_numeric($vars['group_id']))
 		{
-			show_error('group id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->model('addons_model');
@@ -3414,14 +3414,14 @@ class Admin_content extends Controller {
 
 		if ($group_id == '' OR ! is_numeric($group_id))
 		{
-			show_error('group id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$field_id = $this->input->get_post('field_id');
 
 		if ($field_id == '' OR ! is_numeric($field_id))
 		{
-			show_error('field id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->helper('form');
@@ -3469,14 +3469,14 @@ class Admin_content extends Controller {
 
 		if ($group_id == '' OR ! is_numeric($group_id))
 		{
-			show_error('group id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$field_id = $this->input->get_post('field_id');
 
 		if ($field_id == '' OR ! is_numeric($field_id))
 		{
-			show_error('field id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->model('category_model');
@@ -3581,7 +3581,7 @@ class Admin_content extends Controller {
 
 			if ( ! is_numeric($group_id))
 			{
-				show_error('group id needed'); //@todo: lang key
+				show_error(lang('not_authorized'));
 			}
 
 			$query = $this->field_model->get_field_group($group_id);
@@ -3623,7 +3623,7 @@ class Admin_content extends Controller {
 
 		if ($group_id == '' OR ! is_numeric($group_id))
 		{
-			show_error('group id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->helper('form');
@@ -3674,7 +3674,7 @@ class Admin_content extends Controller {
 
 		if ($group_id == '' OR ! is_numeric($group_id))
 		{
-			show_error('group id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->model('field_model');
@@ -3848,7 +3848,7 @@ class Admin_content extends Controller {
 
 		if ($vars['group_id'] == '' OR ! is_numeric($vars['group_id']))
 		{
-			show_error('group id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->cp->set_right_nav(array(
@@ -4604,7 +4604,7 @@ class Admin_content extends Controller {
 
 		if ($field_id == '' OR ! is_numeric($field_id))
 		{
-			show_error('field id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->helper('form');
@@ -4653,7 +4653,7 @@ class Admin_content extends Controller {
 
 		if ($field_id == '' OR ! is_numeric($field_id))
 		{
-			show_error('field id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->model('field_model');
@@ -4931,7 +4931,7 @@ class Admin_content extends Controller {
 
 			if ( ! is_numeric($group_id))
 			{
-				show_error('group id needed'); //@todo: lang key
+				show_error(lang('not_authorized'));
 			}
 
 			$query = $this->status_model->get_status_group($group_id);
@@ -4972,7 +4972,7 @@ class Admin_content extends Controller {
 
 		if ($group_id == '' OR ! is_numeric($group_id))
 		{
-			show_error('group id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->helper('form');
@@ -5022,7 +5022,7 @@ class Admin_content extends Controller {
 
 		if ($group_id == '' OR ! is_numeric($group_id))
 		{
-			show_error('group id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->model('status_model');
@@ -5156,7 +5156,7 @@ class Admin_content extends Controller {
 
 		if ($group_id == '' OR ! is_numeric($group_id))
 		{
-			show_error('group id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->model('status_model');
@@ -5208,7 +5208,7 @@ class Admin_content extends Controller {
 
 		if ($status_id != '' AND ! is_numeric($status_id))
 		{
-			show_error('invalid status_id'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->library('table');
@@ -5435,7 +5435,7 @@ class Admin_content extends Controller {
 
 		if ($status_id == '' OR ! is_numeric($status_id))
 		{
-			show_error('status id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->helper('form');
@@ -5483,7 +5483,7 @@ class Admin_content extends Controller {
 
 		if ($status_id == '' OR ! is_numeric($status_id))
 		{
-			show_error('status id needed'); //@todo: lang key
+			show_error(lang('not_authorized'));
 		}
 
 		$this->load->model('status_model');
