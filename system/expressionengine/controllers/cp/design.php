@@ -1649,7 +1649,7 @@ class Design extends Controller {
 							'template_data'		=> '',
 							'edit_date'			=> $this->localize->now,
 							'site_id'			=> $this->config->item('site_id'),
-							'last_author_id'	=> 0
+							'last_author_id'	=> $this->session->userdata['member_id']
 						 );
 
 			$this->db->query($this->db->insert_string('exp_templates', $data));
