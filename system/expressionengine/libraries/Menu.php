@@ -82,6 +82,7 @@ class EE_Menu {
 			'modules'				   			=> BASE.AMP.'C=addons_modules',
 			'accessories'			   			=> BASE.AMP.'C=addons_accessories',
 			'extensions'			   			=> BASE.AMP.'C=addons_extensions',
+			'fieldtypes'			   			=> BASE.AMP.'C=addons_fieldtypes',
 			'plugins'				   			=> BASE.AMP.'C=addons_plugins'
 		);
 
