@@ -778,7 +778,7 @@ class Member_register extends Member {
 
 			$cutoff		= $this->EE->localize->now - (15 * 60);
 
-			$this->EE->db->query("DELETE FROM exp_online_users WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND ((ip_address = '$this->EE->input->ip_address()' AND member_id = '0') OR date < $cutoff)");
+			$this->EE->db->query("DELETE FROM exp_online_users WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND ((ip_address = '".$this->EE->input->ip_address()."' AND member_id = '0') OR date < $cutoff)");
 
 			$data = array(
 							'member_id'		=> $this->EE->session->userdata('member_id'),
