@@ -377,6 +377,17 @@ class EE_Core {
 	{
 		// set the CP Theme
 		define('PATH_CP_THEME', PATH_THEMES.'cp_themes/');
+		
+		// Define the BASE constant containing the CP URL with the session ID
+		$s = ($this->EE->config->item('admin_session_type') != 'c') ? $this->EE->session->userdata('session_id') : 0;
+		
+		define('BASE', SELF.'?S='.$s.'&amp;D=cp');
+		
+		// Show the control panel home page in the event that a controller class isn't found in the URL
+		if ($this->EE->router->fetch_class() == 'ee' OR $this->EE->router->fetch_class() == '')
+		{
+			$this->EE->functions->redirect(BASE.'&C=homepage');
+		}
 
 		// load the user agent lib to check for mobile
 		$this->EE->load->library('user_agent');
@@ -412,11 +423,6 @@ class EE_Core {
 		// above the "system" folder.
 		$this->EE->load->_ci_view_path = PATH_CP_THEME.$cp_theme.'/';	
 		
-		// Define the BASE constant containing the CP URL with the session ID
-		$s = ($this->EE->config->item('admin_session_type') != 'c') ? $this->EE->session->userdata('session_id') : 0;
-		
-		define('BASE', SELF.'?S='.$s.'&amp;D=cp');
-		
 		// Fetch control panel language file	
 		$this->EE->lang->loadfile('cp');
 		
@@ -448,7 +454,6 @@ class EE_Core {
 		if ($this->EE->session->userdata('admin_sess') == 0 && $this->EE->router->fetch_class() != 'login' && $this->EE->router->fetch_class() != 'css')
 		{
 			$this->EE->functions->redirect(BASE.'&C=login&M=login_form');
-			exit;
 		}		
 
 		// Secure forms stuff
@@ -469,14 +474,6 @@ class EE_Core {
 		{
 			return $this->EE->output->fatal_error($this->EE->lang->line('not_authorized'));
 		}
-
-
-		// Show the control panel home page in the event that a controller class isn't found in the URL
-		if ($this->EE->router->fetch_class() == 'ee' OR $this->EE->router->fetch_class() == '')
-		{
-			$this->EE->functions->redirect(BASE.'&C=homepage');
-		}
-	
 	}
 	
 	// ------------------------------------------------------------------------
