@@ -36,8 +36,6 @@ class Admin_content extends Controller {
 
 	var $temp;
 
-	var $custom_layout_fields = array();
-
 	function Admin_content()
 	{
 		// Call the Controller constructor.
@@ -516,61 +514,9 @@ class Admin_content extends Controller {
 
 		$edit = (isset($_POST['channel_id'])) ? TRUE : FALSE;
 
-		// if this is an edit, we'll want to update the layout
-		if ($edit === TRUE)
-		{
-			$this->load->model('member_model');
-
-			// Grab each member group that's allowed to publish
-			$member_groups = $this->member_model->get_member_groups('can_access_publish', array('can_access_publish'=>'y'));
-
-			// Loop through each member group, looking for a custom layout
-			// Counting results isn't needed here, at least super admin will be here
-			foreach ($member_groups->result() as $group)
-			{
-				// Get any custom layout
-				$this->custom_layout_fields = $this->member_model->get_group_layout($group->group_id, $this->input->post('channel_id'));
-
-				// If there is a layout, we need to re-create it, as the channel prefs
-				// might be hiding the url_title or something.
-				if ( ! empty($this->custom_layout_fields))
-				{
-					// This is a list of everything that an admin could choose to hide in Channel Prefs
-					// with a corresponding list of which fields need to be stricken from a custom layout
-					$check_field = array(
-									'show_url_title' => array('url_title'),
-									'show_author_menu' => array('author'),
-									'show_status_menu' => array('status'),
-									'show_date_menu' => array('entry_date', 'expiration_date', 'comment_expiration_date'),
-									'show_options_cluster' => array('options'),
-									'show_ping_cluster' => array('ping'),
-									'show_categories_menu' => array('category'),
-									'show_forum_cluster' => array('forum_title', 'forum_body', 'forum_id', 'forum_topic_id')
-								);
-
-					foreach ($check_field as $post_key => $fields_to_remove)
-					{
-						// If the field is set to 'n', then we need it stripped from the custom layout
-						if ($this->input->post($post_key) == 'n')
-						{
-							foreach ($this->custom_layout_fields as $tab => $fields)
-							{
-								foreach ($fields as $field => $data)
-								{
-									if (array_search($field, $fields_to_remove) !== FALSE)
-									{
-										unset($this->custom_layout_fields[$tab][$field]);
-									}
-								}
-							}
-						}
-					}
-
-					// All fields have been removed that need to be, reconstruct the layout
-					$this->member_model->insert_group_layout($group->group_id, $this->input->post('channel_id'), $this->custom_layout_fields);
-				}
-			}
-		}
+		// Load the layout Library & update the layouts
+		$this->load->library('layout');
+		$this->layout->update_layout($edit);
 
 		$add_rss = (isset($_POST['add_rss'])) ? TRUE : FALSE;
 		unset($_POST['add_rss']);
@@ -3870,6 +3816,10 @@ class Admin_content extends Controller {
 
 			$cp_message = $this->lang->line('field_group_updated').NBS.$group_name;
 		}
+		
+		// Load the layout Library & update the layouts
+		$this->load->library('layout');
+		$this->layout->update_layout($edit);
 
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=field_group_management');
