@@ -590,7 +590,7 @@ class EE_Core {
 			// within either the main triggering file or via an include.
 			if ($template_group == '')
 			{
-				$template_group = (string) $this->EE->config->item('template_group')	
+				$template_group = (string) $this->EE->config->item('template_group');	
 			}
 
 			if ($template == '')
