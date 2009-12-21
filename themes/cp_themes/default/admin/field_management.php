@@ -38,7 +38,7 @@ if ($EE_view_disable !== TRUE)
 						$field['field_order'],
 						$field['field_name'],
 						$field['field_type'],
-						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=field_delete_confirm'.AMP.'field_id='.$field['field_id'].'">'.lang('delete').'</a>'
+						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=field_delete_confirm'.AMP.'field_id='.$field['field_id'].AMP.'group_id='.$group_id.'">'.lang('delete').'</a>'
 					);
 				}
 			}

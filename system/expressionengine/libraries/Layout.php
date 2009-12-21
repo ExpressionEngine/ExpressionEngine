@@ -59,13 +59,28 @@ class EE_Layout {
 		$member_groups = $this->EE->member_model->get_member_groups('can_access_publish', 
 																	array('can_access_publish'=>'y'));
 
+		// Do we have a channel id?
+		if ($this->EE->input->post('channel_id'))
+		{
+			$channel_id = $this->EE->input->post('channel_id');
+		}
+		else
+		{
+			$this->EE->db->select('channel_id');
+			$this->EE->db->where('field_group', $this->EE->input->post('group_id'));
+			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+			$query = $this->EE->db->get('channels');
+			
+			$channel_id = $query->row('channel_id');
+		}
+
 		// Loop through each member group, looking for a custom layout
 		// Counting results isn't needed here, at least super admin will be here
 		foreach ($member_groups->result() as $group)
 		{
 			// Get any custom layout
 			$this->custom_layout_fields = $this->EE->member_model->get_group_layout($group->group_id,
-				 																	$this->EE->input->post('channel_id'));
+				 																	$channel_id);
 
 			// If there is a layout, we need to re-create it, as the channel prefs
 			// might be hiding the url_title or something.
@@ -87,7 +102,7 @@ class EE_Layout {
 				foreach ($check_field as $post_key => $fields_to_remove)
 				{
 					// If the field is set to 'n', then we need it stripped from the custom layout
-					if ($this->input->post($post_key) == 'n')
+					if ($this->EE->input->post($post_key) == 'n')
 					{
 						foreach ($this->custom_layout_fields as $tab => $fields)
 						{
@@ -103,15 +118,12 @@ class EE_Layout {
 				}
 
 				// All fields have been removed that need to be, reconstruct the layout
-				$this->member_model->insert_group_layout($group->group_id, 
-														 $this->input->post('channel_id'), 
-														 $this->custom_layout_fields
+				$this->EE->member_model->insert_group_layout($group->group_id, 
+														 	 $channel_id, 
+														 	 $this->custom_layout_fields
 														);
 			}
-		}
-		
-		
-		
+		}	
 	}
 	
 	// --------------------------------------------------------------------

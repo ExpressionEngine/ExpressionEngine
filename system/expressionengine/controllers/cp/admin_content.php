@@ -4617,6 +4617,7 @@ class Admin_content extends Controller {
 		$vars['form_action'] = 'C=admin_content'.AMP.'M=field_delete';
 		$vars['form_extra'] = '';
 		$vars['form_hidden']['field_id'] = $field_id;
+		$vars['form_hidden']['group_id'] = $this->input->get('group_id');
 		$vars['message'] = $this->lang->line('delete_field_confirmation');
 
 		// Grab status with this id
@@ -4713,6 +4714,9 @@ class Admin_content extends Controller {
 		$this->logger->log_action($cp_message);
 
 		$this->functions->clear_caching('all', '', TRUE);
+
+		$this->load->library('layout');
+		$this->layout->update_layout(TRUE);
 
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=field_management'.AMP.'group_id='.$group_id);
