@@ -42,6 +42,13 @@
 	document.body.className = "js";
 //]]>
 </script>
+<noscript>
+<div class="js_notification" style="top: 0;">
+	<div class="notice_inner js_error">
+		<span><?=lang('no_js_warning')?></span>
+	</div>
+</div>
+</noscript>
 
 
 <?php

@@ -2,6 +2,11 @@
 
 $lang = array(
 
+/* no Javascript Warning */
+'no_js_warning'	=> 
+'Javascript must be enabled in order for this theme to function properly.  Please check your browser settings.',
+
+
 //----------------------------
 // Main Menu
 //----------------------------
