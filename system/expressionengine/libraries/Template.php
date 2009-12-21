@@ -857,8 +857,8 @@ class EE_Template {
 							$match[0] = $this->EE->functions->full_tag($match[0], $block, LD.'if', LD.'\/'."if".RD);
 						}
 						
-						$no_results = substr($match[0], strlen(LD."if no_results".RD), -strlen(LD.'\/'."if".RD));
-						
+						$no_results = substr($match[0], strlen(LD."if no_results".RD), -strlen(LD.'/'."if".RD));
+
 						$no_results_block = $match[0];
 					}
 							
