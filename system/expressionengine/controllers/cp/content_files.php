@@ -104,7 +104,7 @@ class Content_files extends Controller {
 
 				$("#file_information_hold").html("<p style=\"text-align: center;\"><img src=\"'. $this->cp->cp_theme_url.'images/indicator.gif\" alt=\"'.$this->lang->line('loading').'\" /><br />'.$this->lang->line('loading').'...</p>");
 
-				$.get("'.str_replace('&amp;', '&', BASE).'&C=content_files&M=file_info",
+				$.get(EE.BASE+"&C=content_files&M=file_info",
 					{file: file},
 					function(data){
 						$("#file_information_hold").html(data);
@@ -168,7 +168,7 @@ class Content_files extends Controller {
 			}
 		
 			$("input[type=file]").ee_upload({
-				url: "'.str_replace('&amp;', '&', BASE).'&C=content_files&M=upload_file&is_ajax=true",
+				url: EE.BASE+"&C=content_files&M=upload_file&is_ajax=true",
 				onStart:function(el) {
 					$("#progress").html("<p><img src=\"'. $this->cp->cp_theme_url.'images/indicator.gif\" alt=\"'.$this->lang->line('loading').'\" />Uploading File...</p>").show();
 					
@@ -182,7 +182,7 @@ class Content_files extends Controller {
 
 							// @confirm this is a bit ugly - cannot think of an easy way to send this as part of the
 							// response without forcing a layout
-							var refresh_url = "'.str_replace('&amp;', '&', BASE).'&C=content_files&ajax=true&directory="+opt.upload_dir+"&enc_path="+res.enc_path;
+							var refresh_url = EE.BASE+"&C=content_files&ajax=true&directory="+opt.upload_dir+"&enc_path="+res.enc_path;
 
 							$.get(refresh_url, function(response) {
 								var tmp = $("<div></div>");
