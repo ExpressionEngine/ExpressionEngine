@@ -85,7 +85,7 @@ class Content_files extends Controller {
 		$this->cp->add_to_head('<link type="text/css" rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=fancybox" />');
 
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {4: {sorter: false}, 5: {sorter: false}, 6: {sorter: false}},
+			headers: {2: {sorter: "digit"}, 4: {sorter: false}, 5: {sorter: false}, 6: {sorter: false}},
 			widgets: ["zebra"],
 			sortList: [[0,0]] 
 		}');
