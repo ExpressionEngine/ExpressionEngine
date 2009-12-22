@@ -2,12 +2,12 @@
 /**
  * ExpressionEngine - by EllisLab
  *
- * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2009, EllisLab, Inc.
- * @license		http://expressionengine.com/docs/license.html
- * @link		http://expressionengine.com
- * @since		Version 2.0
+ * @package     ExpressionEngine
+ * @author      ExpressionEngine Dev Team
+ * @copyright   Copyright (c) 2003 - 2009, EllisLab, Inc.
+ * @license     http://expressionengine.com/docs/license.html
+ * @link        http://expressionengine.com
+ * @since       Version 2.0
  * @filesource
  */
  
@@ -16,1099 +16,1199 @@
 /**
  * ExpressionEngine Update Class
  *
- * @package		ExpressionEngine
- * @subpackage	Core
- * @category	Core
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
+ * @package     ExpressionEngine
+ * @subpackage  Core
+ * @category    Core
+ * @author      ExpressionEngine Dev Team
+ * @link        http://expressionengine.com
  */
 class Updater {
 
-	var $version_suffix = 'pb01';
-	
-	function Updater()
-	{
-		$this->EE =& get_instance();
-	
-		// Grab the config file
-		if ( ! @include($this->EE->config->config_path))
-		{
-			show_error('Your config'.EXT.' file is unreadable. Please make sure the file exists and that the file permissions to 666 on the following file: expressionengine/config/config.php');
-		}
-		
-		if (isset($conf))
-		{
-			$config = $conf;
-		}
-		
-		// Does the config array exist?
-		if ( ! isset($config) OR ! is_array($config))
-		{
-			show_error('Your config'.EXT.'file does not appear to contain any data.');
-		}
-		
-		$this->EE->load->library('progress');
-		
-		$this->config =& $config;
-	}
+    var $version_suffix = 'pb01';
+    
+    function Updater()
+    {
+        $this->EE =& get_instance();
+    
+        // Grab the config file
+        if ( ! @include($this->EE->config->config_path))
+        {
+            show_error('Your config'.EXT.' file is unreadable. Please make sure the file exists and that the file permissions to 666 on the following file: expressionengine/config/config.php');
+        }
+        
+        if (isset($conf))
+        {
+            $config = $conf;
+        }
+        
+        // Does the config array exist?
+        if ( ! isset($config) OR ! is_array($config))
+        {
+            show_error('Your config'.EXT.'file does not appear to contain any data.');
+        }
+        
+        $this->EE->load->library('progress');
+        
+        $this->config =& $config;
+    }
 
-	function do_update()
-	{
-		$this->EE->progress->update_state("Starting 200 Update");
+    function do_update()
+    {
+        $this->EE->progress->update_state("Starting 200 Update");
+        
+        // turn off extensions
+        $this->EE->db->update('extensions', array('enabled' => 'n'));
+        
+        // Load the string helper
+        $this->EE->load->helper('string');
+        
+        // Update Flat File Templates if we have any
+        if ($this->_update_templates_saved_as_files() === FALSE)
+        {
+            show_error('A problem occurred');
+        }
+        
+        // set charset to PHP default so non-latin characters stored in preferences are retreived correctly
+        // @todo - might do a little dance for people who hacked version 1.x to use utf8 charset with MySQL
+        $this->EE->db->db_set_charset('latin1', 'latin1_swedish_ci');
+        $query = $this->EE->db->query("SELECT es.* FROM exp_sites AS es");
+        
+        foreach($query->result_array() as $row)
+        {
+            foreach($row as $name => $data)
+            {
+                if (substr($name, -12) == '_preferences')
+                {
+                    // base64 encode the serialized arrays
+                    $data = strip_slashes(unserialize($data));
+                    
+                    // one quick path adjustment if they were using the old default location for template files
+                    if (isset($data['tmpl_file_basepath']) && trim($data['tmpl_file_basepath'], '/') == BASEPATH.'templates')
+                    {
+                        $data['tmpl_file_basepath'] = BASEPATH.'expressionengine/templates/';
+                    }
+                    // also, make sure they start with the default cp theme
+                    elseif (isset($data['cp_theme']) && $data['cp_theme'] != 'default')
+                    {
+                        $data['cp_theme'] = 'default';
+                    }
+                    // new name for a debugging preference
+                    elseif (isset($data['show_queries']))
+                    {
+                        $data['show_profiler'] = $data['show_queries'];
+                        unset($data['show_queries']);
+                    }
+                    // public beta docs location
+                    elseif (isset($data['doc_url']))
+                    {
+                        $data['doc_url'] = 'http://expressionengine.com/public_beta/docs/';
+                    }
+                    
+                    $data = base64_encode(serialize($data));
+                    $row[$name] = $data;
+                }
+            }
+            
+            // change the charset back to utf-8
+            $this->EE->db->db_set_charset($this->EE->db->char_set, $this->EE->db->dbcollat);
+            
+            $this->EE->db->query($this->EE->db->update_string('exp_sites', $row, "site_id = '".$this->EE->db->escape_str($row['site_id'])."'"));
+        }
+        
+        // there's another step yet
+        return 'convert_db_to_utf8';
+        
+    }
+
+    // ------------------------------------------------------------------------
+    
+    /**
+     * Look for any templates saved as files, sync them with the database
+     * And move them out of the way.
+     *
+     * @access private
+     * @return void
+     */
+    function _update_templates_saved_as_files()
+    {
+		$this->EE->db->select('templates.template_id, templates.template_name, 
+							   templates.template_data, template_groups.group_name');
+        $this->EE->db->where('save_template_file', 'y');
+		$this->EE->db->join('template_groups', 'template_groups.group_id = templates.group_id');
+        $query = $this->EE->db->get('templates');
+
+        if ($query->num_rows == 0)
+        {
+            return TRUE;
+        }
+        
+        $this->EE->progress->update_state("Updating templates saved as files");     
+        
+		define('TEMPLATE_PATH', EE_APPPATH.'templates/');
+
+
+        // Error Array
+        $template_errors = array();
+        
+        // Templates to move
+        $templates_to_move = array();
+        
+        foreach ($query->result() as $row)
+        {
+            if ( ! file_exists(TEMPLATE_PATH.$row->group_name.'/'.$row->template_name.EXT))
+            {
+                $template_errors[] = $template_name;
+            }
+            else
+            {
+                $templates_to_move[] = $row;
+            }
+        }
+
+		// @todo - Check for errors, and error out if there are any
 		
-		// turn off extensions
-		$this->EE->db->update('extensions', array('enabled' => 'n'));
 		
-		// Load the string helper
-		$this->EE->load->helper('string');
+		// Create a new directory for old files.
 		
-		// set charset to PHP default so non-latin characters stored in preferences are retreived correctly
-		// @todo - might do a little dance for people who hacked version 1.x to use utf8 charset with MySQL
-		$this->EE->db->db_set_charset('latin1', 'latin1_swedish_ci');
-		$query = $this->EE->db->query("SELECT es.* FROM exp_sites AS es");
+		define(OLD_TEMPLATE_FOLDER, TEMPLATE_PATH.'/1.6_templates/');
 		
-		foreach($query->result_array() as $row)
-		{
-			foreach($row as $name => $data)
+		mkdir(OLD_TEMPLATE_FOLDER);
+
+        foreach ($templates_to_move as $key => $val)
+        {
+			$one_six_file = read_file(TEMPLATE_PATH.$val->group_name.'/'.$val->template_name.EXT);
+
+			if ( ! $one_six_file)
 			{
-				if (substr($name, -12) == '_preferences')
-				{
-					// base64 encode the serialized arrays
-					$data = strip_slashes(unserialize($data));
-					
-					// one quick path adjustment if they were using the old default location for template files
-					if (isset($data['tmpl_file_basepath']) && trim($data['tmpl_file_basepath'], '/') == BASEPATH.'templates')
-					{
-						$data['tmpl_file_basepath'] = BASEPATH.'expressionengine/templates/';
-					}
-					// also, make sure they start with the default cp theme
-					elseif (isset($data['cp_theme']) && $data['cp_theme'] != 'default')
-					{
-						$data['cp_theme'] = 'default';
-					}
-					// new name for a debugging preference
-					elseif (isset($data['show_queries']))
-					{
-						$data['show_profiler'] = $data['show_queries'];
-						unset($data['show_queries']);
-					}
-					// public beta docs location
-					elseif (isset($data['doc_url']))
-					{
-						$data['doc_url'] = 'http://expressionengine.com/public_beta/docs/';
-					}
-					
-					$data = base64_encode(serialize($data));
-					$row[$name] = $data;
-				}
+				show_error('unable to read file ' . $val->group_name.'/'.$val->template_name.EXT);
 			}
 			
-			// change the charset back to utf-8
-			$this->EE->db->db_set_charset($this->EE->db->char_set, $this->EE->db->dbcollat);
+			$this->EE->db->where('template_id', $val->template_id);
+			$this->EE->db->update('templates', array('template_data' => $one_six_file));
 			
-			$this->EE->db->query($this->EE->db->update_string('exp_sites', $row, "site_id = '".$this->EE->db->escape_str($row['site_id'])."'"));
-		}
-		
-		// there's another step yet
-		return 'convert_db_to_utf8';
-		
-	}
-	
-	function convert_db_to_utf8()
-	{
-		// this step can be a doozy.  Set time limit to infinity.
-		// Server process timeouts are out of our control, unfortunately
-		@set_time_limit(0);
-		$this->EE->db->save_queries = FALSE;
-		
-		$this->EE->progress->update_state('Converting Database Tables to UTF-8');
-				
-		// make sure STRICT MODEs aren't in use, at least on servers that don't default to that
-		$this->EE->db->query('SET SESSION sql_mode=""');
-		
-	    $tables = $this->EE->db->list_tables(TRUE);
-		$batch = 100;
-		
-		foreach ($tables as $table)
-		{
-			$progress	= "Converting Database Table {$table}: %s";
-			$count		= $this->EE->db->count_all($table);
-			$offset		= 0;
-			
-			if ($count > 0)
+			// Move the file over to a new directory, so we're keeping the original file.
+			if ( ! is_dir(OLD_TEMPLATE_FOLDER.$val->group_name))
 			{
-				for ($i = 0; $i < $count; $i = $i + $batch)
-				{
-					$this->EE->progress->update_state(str_replace('%s', "{$offset} of {$count} queries", $progress));
-										
-					// set charset to latin1 to read 1.x's written values properly
-					$this->EE->db->db_set_charset('latin1', 'latin1_swedish_ci');
-					$query = $this->EE->db->query("SELECT * FROM {$table} LIMIT $offset, $batch");
-					$data = $query->result_array();
-					$query->free_result();
-					
-					// set charset to utf8 to write them back to the database properly
-					$this->EE->db->db_set_charset('utf8', 'utf8_general_ci');
-					
-					foreach ($data as $row)
-					{
-						$where = array();
-						$update = FALSE;
-						
-						foreach ($row as $field => $value)
-						{
-							// Wet the WHERE using all numeric fields to ensure accuracy
-							// since we have no clue what the keys for the current table are.
-							//
-							// Also check to see if this row contains any fields that have
-							// characters not shared between latin1 and utf8 (7-bit ASCII shared only).
-							// If it does, then we need to update this row.
-							if (is_numeric($value))
-							{
-								$where[$field] = $value;
-							}
-							elseif (preg_match('/[^\x00-\x7F]/S', $value) > 0)
-							{
-								$update = TRUE;
-							}
-						}
-
-						if ($update === TRUE)
-						{
-							$this->EE->db->where($where);
-							$this->EE->db->update($table, $row, $where);	
-						}
-					}
-					
-					$offset = $offset + $batch;			
-				}
+				mkdir(OLD_TEMPLATE_FOLDER.$val->group_name);
 			}
 			
-			// finally, set the table's charset and collation in MySQL to utf8
-			$this->EE->db->query("ALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci");
-		}
-		
-		// more work to do
-		return 'standardize_datetime';
-	}
-	
-	function standardize_datetime()
-	{
-		$this->EE->progress->update_state("Standardizing Timestamps");		
-		
-		// @todo - doesn't work for entries made in the DST period opposite of that of
-		// when you run this script!!  Blargh!
-		
-		/**
-		 * What's the Offset, Kenneth?
-		 */
-
-		$now = time();
-
-		$new = gmmktime(gmdate("H", $now),
-						gmdate("i", $now),
-						gmdate("s", $now),
-						gmdate("m", $now),
-						gmdate("d", $now),
-						gmdate("Y", $now)
-						);   
-
-		$old = mktime(	gmdate("H", $now),
-						gmdate("i", $now),
-						gmdate("s", $now),
-						gmdate("m", $now),
-						gmdate("d", $now),
-						gmdate("Y", $now)
-						);   
-
-		$add_time = $new - $old;
-
-		/**
-		 * EE's default timestamp fields
-		 */
-	
-		$tables = $this->EE->db->list_tables(TRUE);	
-
-		$field_list = array('exp_captcha'					=> array('date'),
-							'exp_comments'					=> array('comment_date'),
-							'exp_cp_log'					=> array('act_date'),
-							'exp_email_cache'				=> array('cache_date'),
-							'exp_email_console_cache'		=> array('cache_date'),
-							'exp_email_tracker'				=> array('email_date'),
-							'exp_entry_versioning'			=> array('version_date'),
-							'exp_forum_attachments'			=> array('attachment_date'),
-							'exp_forum_boards'				=> array('board_install_date'),
-							'exp_forum_polls'				=> array('poll_date'),
-							'exp_forum_posts'				=> array('post_date', 'post_edit_date'),
-							'exp_forum_read_topics'			=> array('last_visit'),
-							'exp_forum_search'				=> array('search_date'),
-							'exp_forum_subscriptions'		=> array('subscription_date'),
-							'exp_forum_topics'				=> array('topic_date', 'last_post_date', 'topic_edit_date'),
-							'exp_forums'					=> array('forum_last_post_date'),
-							'exp_gallery_categories'		=> array('recent_entry_date', 'recent_comment_date'),
-							'exp_gallery_comments'			=> array('comment_date'),
-							'exp_gallery_entries'			=> array('entry_date', 'recent_comment_date', 'comment_expiration_date'),
-							'exp_mailing_list_queue'		=> array('date'),
-							'exp_member_search'				=> array('search_date'),
-							'exp_member_bulletin_board'		=> array('bulletin_date', 'bulletin_expires'),
-							'exp_members'					=> array('last_view_bulletins', 'last_bulletin_date', 'join_date', 'last_visit', 'last_activity', 'last_entry_date', 'last_forum_post_date', 'last_comment_date', 'last_email_date'),
-							'exp_message_attachments'		=> array('attachment_date'),
-							'exp_message_copies'			=> array('message_time_read'),
-							'exp_message_data'				=> array('message_date'),
-							'exp_online_users'				=> array('date'),
-							'exp_referrers'					=> array('ref_date'),
-							'exp_reset_password'			=> array('date'),
-							'exp_revision_tracker'			=> array('item_date'),
-							'exp_search'					=> array('search_date'),
-							'exp_search_log'				=> array('search_date'),
-							'exp_sessions'					=> array('last_activity'),
-							'exp_simple_commerce_purchases'	=> array('purchase_date'),
-							'exp_stats'						=> array('last_entry_date', 'last_visitor_date', 'most_visitor_date', 'last_cache_clear', 'last_forum_post_date', 'last_comment_date', 'last_trackback_date'),
-							'exp_templates'					=> array('edit_date'),
-							'exp_throttle'					=> array('last_activity'),
-							'exp_trackbacks'				=> array('trackback_date'),
-							'exp_updated_site_pings'		=> array('ping_date'),
-							'exp_weblog_data'				=> array(),
-							'exp_weblog_titles'				=> array('entry_date', 'expiration_date', 'comment_expiration_date', 'recent_comment_date', 'recent_trackback_date'),
-							'exp_weblogs'					=> array('last_entry_date', 'last_comment_date', 'last_trackback_date'),
-							'exp_wiki_page'					=> array('last_updated'),
-							'exp_wiki_revisions'			=> array('revision_date'),
-							'exp_wiki_uploads'				=> array('upload_date'),
-							);
-
-		$query = $this->EE->db->query("SELECT field_id FROM exp_weblog_fields WHERE field_type = 'date'");
-
-		if ($query->num_rows() > 0)
-		{
-			foreach($query->result_array() as $row)
-			{
-				$field_list['exp_weblog_data'][] = 'field_id_'.$row['field_id'];
-			}
-		}
-
-
-		$not_field_list = array();
-		$table_keys = array();
-		
-		/**
-		 * Get a list of our timestamp fields
-		 * Use some logic to determine 3rd party
-		 */
-
-		foreach($tables as $num => $table)
-		{			
-			$query = $this->EE->db->query("SHOW FIELDS FROM `".$this->EE->db->escape_str($table)."`");
-
-			if ($query->num_rows() > 0)
-			{
-				foreach($query->result_array() as $row)
-				{
-					if (strtolower($row['Key']) == 'pri')
-					{
-						$table_keys[$table] = $row['Field'];
-					}
-					
-					if (isset($field_list[$table]) && in_array($row['Type'], $field_list[$table]))
-					{
-						continue;
-					}
-
-					if (stristr($row['Type'], 'int(10)') && strtolower($row['Key']) !== 'pri' &&
-						! stristr($row['Field'], '_id') && ! stristr($row['Field'], 'view') && 
-						! stristr($row['Field'], 'size') && ! stristr($row['Field'], 'hits'))
-					{
-						$result = $this->EE->db->query("SELECT MAX(`".$this->EE->db->escape_str($row['Field'])."`) AS test FROM `".$this->EE->db->escape_str($table)."`");
-						
-						$res_row = $result->row_array(); // Instead of no results, MySQL can return 1 row with the field value NULL  ::boggle::
-						
-						if ($result->num_rows() > 0 && isset($res_row['test']) && strlen($res_row['test']) == 10 && strncmp($res_row['test'], '1' , 1) == 0)
-						{
-							$field_list[$table][] = $row['Field'];
-						}
-						elseif( ! isset($field_list[$table]) OR ! in_array($row['Field'], $field_list[$table]))
-						{
-							$not_field_list[$table][] = $row['Field'];
-						}
-					}
-				}
-
-				if (isset($field_list[$table]))
-				{
-					$field_list[$table] = array_unique($field_list[$table]);
-				}
-
-				if (isset($not_field_list[$table]))
-				{
-					$not_field_list[$table] = array_unique($not_field_list[$table]);
-				}
-			}
-		}
-
-		if (count($field_list) == 0)
-		{
-			show_error('There are no DateTime Fields to Update.');
-		}
-		
-		/**
-		 * Perform the Updates
-		 */
-
-		foreach($field_list as $table => $fields)
-		{
-			if ( ! in_array($table, $tables))
-			{
-				continue;
-			}
+			// write the file to a new temp location where the user can have them for safe keeping.
+			write_file(OLD_TEMPLATE_FOLDER.$val->group_name.'/'.$val->template_name.EXT, $one_six_file);
 			
-			$table = $this->EE->db->escape_str($table);
-			
-			foreach($fields as $field)
-			{	
-				$field = $this->EE->db->escape_str($field);
-				
-				/**
-				 * Compensate for 1.x's $LOC->now DST behavior by adding an hour
-				 * to all dates that the server considers to have been in DST
-				 */
-				
-				if (isset($table_keys[$table]))
-				{
-					$dst_dates = array();
-
-					$query = $this->EE->db->query("SELECT `{$field}`, `".$this->EE->db->escape_str($table_keys[$table])."`
-													FROM `{$table}`");
-					
-					if ($query->num_rows() > 0)
-					{
-						foreach ($query->result_array() as $row)
-						{
-							if (date('I', $row[$field]) == 1)
-							{
-								$dst_dates[] = $row[$table_keys[$table]];
-							}
-						}
-						
-						if ( ! empty($dst_dates))
-						{
-							$this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + 3600
-													WHERE `".$this->EE->db->escape_str($table_keys[$table])."` IN ('".implode("','", $dst_dates)."')");
-						}
-					}
-				}
-				
-				// add the offset, which may be a negative number
-				$this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + {$add_time} WHERE `{$field}` != 0");
-			}
-		}
+			// Destroy the file in the we just moved.
+			unlink(TEMPLATE_PATH.$val->group_name.'/'.$val->template_name.EXT);
+        }
 		
-		// Do we need to consider trackbacks?
-		if (( ! isset($this->config['trackbacks_to_comments']) OR $this->config['trackbacks_to_comments'] != 'y') AND
-			( ! isset($this->config['archive_trackbacks']) OR $this->config['archive_trackbacks'] != 'y'))
-		{
-			// Remove temporary keys
-			$this->EE->config->_update_config(array(), array('trackbacks_to_comments' => '', 'archive_trackbacks' => ''));
-			
-			// continue with general database changes
-			return 'database_changes';
-		}
-		
-		// deal with trackbacks
-		return 'backup_trackbacks';
-	}
-	
-	function backup_trackbacks()
-	{
-		$next_step = 'database_changes';
-		
-		// Grab the main table
-		$t_query = $this->EE->db->get('trackbacks');
+		// unlink(TEMPLATE_PATH.$)
 
-		if ($t_query->num_rows() == 0)
-		{
-			// Whee - that was easy, remove config keys
-			$this->EE->config->_update_config(array(), array('trackbacks_to_comments' => '', 'archive_trackbacks' => '', 'trackback_zip_path' => ''));
-			return $next_step;
-		}
-		
-		if (isset($this->config['trackbacks_to_comments']) && $this->config['trackbacks_to_comments'] == 'y')
-		{
-			$this->EE->progress->update_state('Converting Trackbacks to Comments');
-			
-			$data = array();
-			$weblogs = array();
-			$entry_count = array();
+        
+        die('here');
+    }
+    
+    
+    
+    // ------------------------------------------------------------------------ 
+    
+    function convert_db_to_utf8()
+    {
+        // this step can be a doozy.  Set time limit to infinity.
+        // Server process timeouts are out of our control, unfortunately
+        @set_time_limit(0);
+        $this->EE->db->save_queries = FALSE;
+        
+        $this->EE->progress->update_state('Converting Database Tables to UTF-8');
+                
+        // make sure STRICT MODEs aren't in use, at least on servers that don't default to that
+        $this->EE->db->query('SET SESSION sql_mode=""');
+        
+        $tables = $this->EE->db->list_tables(TRUE);
+        $batch = 100;
+        
+        foreach ($tables as $table)
+        {
+            $progress   = "Converting Database Table {$table}: %s";
+            $count      = $this->EE->db->count_all($table);
+            $offset     = 0;
+            
+            if ($count > 0)
+            {
+                for ($i = 0; $i < $count; $i = $i + $batch)
+                {
+                    $this->EE->progress->update_state(str_replace('%s', "{$offset} of {$count} queries", $progress));
+                                        
+                    // set charset to latin1 to read 1.x's written values properly
+                    $this->EE->db->db_set_charset('latin1', 'latin1_swedish_ci');
+                    $query = $this->EE->db->query("SELECT * FROM {$table} LIMIT $offset, $batch");
+                    $data = $query->result_array();
+                    $query->free_result();
+                    
+                    // set charset to utf8 to write them back to the database properly
+                    $this->EE->db->db_set_charset('utf8', 'utf8_general_ci');
+                    
+                    foreach ($data as $row)
+                    {
+                        $where = array();
+                        $update = FALSE;
+                        
+                        foreach ($row as $field => $value)
+                        {
+                            // Wet the WHERE using all numeric fields to ensure accuracy
+                            // since we have no clue what the keys for the current table are.
+                            //
+                            // Also check to see if this row contains any fields that have
+                            // characters not shared between latin1 and utf8 (7-bit ASCII shared only).
+                            // If it does, then we need to update this row.
+                            if (is_numeric($value))
+                            {
+                                $where[$field] = $value;
+                            }
+                            elseif (preg_match('/[^\x00-\x7F]/S', $value) > 0)
+                            {
+                                $update = TRUE;
+                            }
+                        }
 
-			// convert to comments
-			foreach($t_query->result_array() as $row)
-			{
-				$data[] = array(
-					'site_id'		=> $row['site_id'],
-					'entry_id'		=> $row['entry_id'],
-					'weblog_id'		=> $row['weblog_id'],
-					'author_id'		=> 0,
-					'status'		=> 'o',
-					'name'			=> $row['trackback_url'],
-					'email'			=> '',
-					'url'			=> $row['trackback_url'],
-					'location'		=> '',
-					'ip_address'	=> $row['trackback_ip'],
-					'comment_date'	=> $row['trackback_date'],
-					'comment'		=> $row['content'],
-					'notify'		=> 'n'
-				);
+                        if ($update === TRUE)
+                        {
+                            $this->EE->db->where($where);
+                            $this->EE->db->update($table, $row, $where);    
+                        }
+                    }
+                    
+                    $offset = $offset + $batch;         
+                }
+            }
+            
+            // finally, set the table's charset and collation in MySQL to utf8
+            $this->EE->db->query("ALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci");
+        }
+        
+        // more work to do
+        return 'standardize_datetime';
+    }
+    
+    function standardize_datetime()
+    {
+        $this->EE->progress->update_state("Standardizing Timestamps");      
+        
+        // @todo - doesn't work for entries made in the DST period opposite of that of
+        // when you run this script!!  Blargh!
+        
+        /**
+         * What's the Offset, Kenneth?
+         */
 
-				if ( ! in_array($row['weblog_id'], $weblogs))
-				{
-					$weblogs[] = $row['weblog_id'];
-				}
+        $now = time();
 
-				if ( ! isset($entry_count[$row['entry_id']]))
-				{
-					$entry_count[$row['entry_id']] = 0;
-				}
+        $new = gmmktime(gmdate("H", $now),
+                        gmdate("i", $now),
+                        gmdate("s", $now),
+                        gmdate("m", $now),
+                        gmdate("d", $now),
+                        gmdate("Y", $now)
+                        );   
 
-				$entry_count[$row['entry_id']] += 1;
-			}
-			
-			$this->EE->progress->update_state('Recounting Comments');
+        $old = mktime(  gmdate("H", $now),
+                        gmdate("i", $now),
+                        gmdate("s", $now),
+                        gmdate("m", $now),
+                        gmdate("d", $now),
+                        gmdate("Y", $now)
+                        );   
 
-			// Update entry comment totals
-			foreach($entry_count as $entry_id => $add)
-			{
-				$this->EE->db->set('comment_total', 'comment_total + '.$add, FALSE);
-				$this->EE->db->where('entry_id', $entry_id);
+        $add_time = $new - $old;
 
-				$this->EE->db->update('weblog_titles');
-			}
-			
-			// Update weblog comment totals
-			foreach($weblogs as $weblog_id)
-			{
-				$query = $this->EE->db->query("SELECT COUNT(comment_id) AS count FROM exp_comments WHERE status = 'o' AND weblog_id = '$weblog_id'");
-				$total = $query->row('count');
+        /**
+         * EE's default timestamp fields
+         */
+    
+        $tables = $this->EE->db->list_tables(TRUE); 
 
-				$query = $this->EE->db->query("SELECT last_comment_date, site_id FROM exp_weblogs WHERE weblog_id = '$weblog_id'");
-				$date = ($newtime > $query->row('last_comment_date') ) ? $newtime : $query->row('last_comment_date');
-				
-				$this->EE->db->query("UPDATE exp_weblogs SET total_comments = '$total', last_comment_date = '$date' WHERE weblog_id = '$weblog_id'");
-			}
+        $field_list = array('exp_captcha'                   => array('date'),
+                            'exp_comments'                  => array('comment_date'),
+                            'exp_cp_log'                    => array('act_date'),
+                            'exp_email_cache'               => array('cache_date'),
+                            'exp_email_console_cache'       => array('cache_date'),
+                            'exp_email_tracker'             => array('email_date'),
+                            'exp_entry_versioning'          => array('version_date'),
+                            'exp_forum_attachments'         => array('attachment_date'),
+                            'exp_forum_boards'              => array('board_install_date'),
+                            'exp_forum_polls'               => array('poll_date'),
+                            'exp_forum_posts'               => array('post_date', 'post_edit_date'),
+                            'exp_forum_read_topics'         => array('last_visit'),
+                            'exp_forum_search'              => array('search_date'),
+                            'exp_forum_subscriptions'       => array('subscription_date'),
+                            'exp_forum_topics'              => array('topic_date', 'last_post_date', 'topic_edit_date'),
+                            'exp_forums'                    => array('forum_last_post_date'),
+                            'exp_gallery_categories'        => array('recent_entry_date', 'recent_comment_date'),
+                            'exp_gallery_comments'          => array('comment_date'),
+                            'exp_gallery_entries'           => array('entry_date', 'recent_comment_date', 'comment_expiration_date'),
+                            'exp_mailing_list_queue'        => array('date'),
+                            'exp_member_search'             => array('search_date'),
+                            'exp_member_bulletin_board'     => array('bulletin_date', 'bulletin_expires'),
+                            'exp_members'                   => array('last_view_bulletins', 'last_bulletin_date', 'join_date', 'last_visit', 'last_activity', 'last_entry_date', 'last_forum_post_date', 'last_comment_date', 'last_email_date'),
+                            'exp_message_attachments'       => array('attachment_date'),
+                            'exp_message_copies'            => array('message_time_read'),
+                            'exp_message_data'              => array('message_date'),
+                            'exp_online_users'              => array('date'),
+                            'exp_referrers'                 => array('ref_date'),
+                            'exp_reset_password'            => array('date'),
+                            'exp_revision_tracker'          => array('item_date'),
+                            'exp_search'                    => array('search_date'),
+                            'exp_search_log'                => array('search_date'),
+                            'exp_sessions'                  => array('last_activity'),
+                            'exp_simple_commerce_purchases' => array('purchase_date'),
+                            'exp_stats'                     => array('last_entry_date', 'last_visitor_date', 'most_visitor_date', 'last_cache_clear', 'last_forum_post_date', 'last_comment_date', 'last_trackback_date'),
+                            'exp_templates'                 => array('edit_date'),
+                            'exp_throttle'                  => array('last_activity'),
+                            'exp_trackbacks'                => array('trackback_date'),
+                            'exp_updated_site_pings'        => array('ping_date'),
+                            'exp_weblog_data'               => array(),
+                            'exp_weblog_titles'             => array('entry_date', 'expiration_date', 'comment_expiration_date', 'recent_comment_date', 'recent_trackback_date'),
+                            'exp_weblogs'                   => array('last_entry_date', 'last_comment_date', 'last_trackback_date'),
+                            'exp_wiki_page'                 => array('last_updated'),
+                            'exp_wiki_revisions'            => array('revision_date'),
+                            'exp_wiki_uploads'              => array('upload_date'),
+                            );
 
-			$this->EE->db->insert_batch('comments', $data);
-		}
-		
-		if (isset($this->config['archive_trackbacks']) && $this->config['archive_trackbacks'] == 'y')
-		{
-			$this->EE->progress->update_state('Backing up Trackbacks');
-			
-			// Dump the whole lot into xml files, zip it up, and save it to disk
-			
-			$this->EE->load->library('zip');
-			$this->EE->load->dbutil();
+        $query = $this->EE->db->query("SELECT field_id FROM exp_weblog_fields WHERE field_type = 'date'");
 
-			$this->EE->zip->add_data('exp_trackbacks.xml', $this->EE->dbutil->xml_from_result($t_query));
+        if ($query->num_rows() > 0)
+        {
+            foreach($query->result_array() as $row)
+            {
+                $field_list['exp_weblog_data'][] = 'field_id_'.$row['field_id'];
+            }
+        }
 
-			$query = $this->EE->db->get_where('specialty_templates', array('template_name' => 'admin_notify_trackback'));
-			if ($query->num_rows() > 0)
-			{
-				$this->EE->zip->add_data('exp_specialty_templates.xml', $this->EE->dbutil->xml_from_result($query));
-			}
 
-			$trackback_fields = array(
-				'stats'	=> array(
-					'weblog_id',
-					'total_trackbacks',
-					'last_trackback_date'
-				),
-				'weblogs' => array(
-					'weblog_id',
-					'total_trackbacks',
-					'last_trackback_date',
-					'enable_trackbacks',
-					'trackback_use_url_title',
-					'trackback_max_hits',
-					'trackback_field',
-					'deft_trackbacks',
-					'trackback_system_enabled',
-					'show_trackback_field',
-					'trackback_use_captcha',
-					'tb_return_url'
-				),
-				'weblog_titles' => array(
-					'entry_id',
-					'allow_trackbacks',
-					'trackback_total',
-					'sent_trackbacks',
-					'recent_trackback_date'
-				)
-			);
+        $not_field_list = array();
+        $table_keys = array();
+        
+        /**
+         * Get a list of our timestamp fields
+         * Use some logic to determine 3rd party
+         */
 
-			foreach($trackback_fields as $table => $fields)
-			{
-				$this->EE->db->select($fields);
-				$query = $this->EE->db->get($table);
+        foreach($tables as $num => $table)
+        {           
+            $query = $this->EE->db->query("SHOW FIELDS FROM `".$this->EE->db->escape_str($table)."`");
 
-				if ($query->num_rows() > 0)
-				{
-					$this->EE->zip->add_data('exp_'.$table.'.xml', $this->EE->dbutil->xml_from_result($query));
-				}
-			}
+            if ($query->num_rows() > 0)
+            {
+                foreach($query->result_array() as $row)
+                {
+                    if (strtolower($row['Key']) == 'pri')
+                    {
+                        $table_keys[$table] = $row['Field'];
+                    }
+                    
+                    if (isset($field_list[$table]) && in_array($row['Type'], $field_list[$table]))
+                    {
+                        continue;
+                    }
 
-			$this->EE->zip->archive($this->config['trackback_zip_path']);
-		}
-		
-		// Remove temporary keys
-		$this->EE->config->_update_config(array(), array('trackbacks_to_comments' => '', 'archive_trackbacks' => '', 'trackback_zip_path' => ''));
+                    if (stristr($row['Type'], 'int(10)') && strtolower($row['Key']) !== 'pri' &&
+                        ! stristr($row['Field'], '_id') && ! stristr($row['Field'], 'view') && 
+                        ! stristr($row['Field'], 'size') && ! stristr($row['Field'], 'hits'))
+                    {
+                        $result = $this->EE->db->query("SELECT MAX(`".$this->EE->db->escape_str($row['Field'])."`) AS test FROM `".$this->EE->db->escape_str($table)."`");
+                        
+                        $res_row = $result->row_array(); // Instead of no results, MySQL can return 1 row with the field value NULL  ::boggle::
+                        
+                        if ($result->num_rows() > 0 && isset($res_row['test']) && strlen($res_row['test']) == 10 && strncmp($res_row['test'], '1' , 1) == 0)
+                        {
+                            $field_list[$table][] = $row['Field'];
+                        }
+                        elseif( ! isset($field_list[$table]) OR ! in_array($row['Field'], $field_list[$table]))
+                        {
+                            $not_field_list[$table][] = $row['Field'];
+                        }
+                    }
+                }
 
-		return $next_step;
-	}
-		
-	function database_changes()
-	{
-		$this->EE->progress->update_state("Creating and updating database tables");
+                if (isset($field_list[$table]))
+                {
+                    $field_list[$table] = array_unique($field_list[$table]);
+                }
 
-		$Q[] = "INSERT INTO `exp_actions` (`class`, `method`) VALUES ('Jquery', 'output_javascript')";
-		
-		$Q[] = "UPDATE `exp_templates` SET template_type = 'feed' WHERE template_type = 'rss'";
+                if (isset($not_field_list[$table]))
+                {
+                    $not_field_list[$table] = array_unique($not_field_list[$table]);
+                }
+            }
+        }
 
-		$Q[] = "CREATE TABLE `exp_snippets` (
-				`snippet_id` int(10) unsigned NOT NULL auto_increment,
-				`site_id` int(4) NOT NULL,
-				`snippet_name` varchar(75) NOT NULL,
-				`snippet_contents` text NULL,
-				PRIMARY KEY (`snippet_id`),
-				KEY `site_id` (`site_id`)
-				)";
-		
-		$Q[] = "CREATE TABLE `exp_accessories` (
-				`accessory_id` int(10) unsigned NOT NULL auto_increment,
-				`class` varchar(75) NOT NULL default '',
-				`member_groups` varchar(50) NOT NULL default 'all',
-				`controllers` text NULL,
-				`accessory_version` VARCHAR(12) NOT NULL,
-				PRIMARY KEY `accessory_id` (`accessory_id`)
-				)";
+        if (count($field_list) == 0)
+        {
+            show_error('There are no DateTime Fields to Update.');
+        }
+        
+        /**
+         * Perform the Updates
+         */
 
-		// Layout Publish
-		// Custom layout for for the publish page.
-		$Q[] = "CREATE TABLE exp_layout_publish (
-			  layout_id int(10) UNSIGNED NOT NULL auto_increment,
-			  site_id int(4) UNSIGNED NOT NULL default 1,
-			  member_group int(4) UNSIGNED NOT NULL default 0,
-			  channel_id int(4) UNSIGNED NOT NULL default 0,
-			  field_layout text,
-			  PRIMARY KEY  (`layout_id`),
-			  KEY `site_id` (`site_id`),
-			  KEY `member_group` (`member_group`),
-			  KEY `channel_id` (`channel_id`)
-		)";
-		
-		// CP Search Index
-		$Q[] = "CREATE TABLE `exp_cp_search_index` (
-				`search_id` int(10) UNSIGNED NOT NULL auto_increment, 
-				`controller` varchar(20) default NULL, 
-				`method` varchar(50) default NULL,
-				`language` varchar(20) default NULL, 
-				`access` varchar(50) default NULL, 
-				`keywords` text, 
-				PRIMARY KEY `search_id` (`search_id`),
-				FULLTEXT(`keywords`) 
-		) TYPE=MyISAM ";
+        foreach($field_list as $table => $fields)
+        {
+            if ( ! in_array($table, $tables))
+            {
+                continue;
+            }
+            
+            $table = $this->EE->db->escape_str($table);
+            
+            foreach($fields as $field)
+            {   
+                $field = $this->EE->db->escape_str($field);
+                
+                /**
+                 * Compensate for 1.x's $LOC->now DST behavior by adding an hour
+                 * to all dates that the server considers to have been in DST
+                 */
+                
+                if (isset($table_keys[$table]))
+                {
+                    $dst_dates = array();
 
-		// Channel Titles Autosave
-		// Used for the autosave functionality
-		$Q[] = "CREATE TABLE exp_channel_entries_autosave (
-			 entry_id int(10) unsigned NOT NULL auto_increment,
-			 original_entry_id int(10) unsigned NOT NULL,
-			 site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
-			 channel_id int(4) unsigned NOT NULL,
-			 author_id int(10) unsigned NOT NULL default 0,
-			 pentry_id int(10) NOT NULL default 0,
-			 forum_topic_id int(10) unsigned NULL DEFAULT NULL,
-			 ip_address varchar(16) NOT NULL,
-			 title varchar(100) NOT NULL,
-			 url_title varchar(75) NOT NULL,
-			 status varchar(50) NOT NULL,
-			 versioning_enabled char(1) NOT NULL default 'n',
-			 view_count_one int(10) unsigned NOT NULL default 0,
-			 view_count_two int(10) unsigned NOT NULL default 0,
-			 view_count_three int(10) unsigned NOT NULL default 0,
-			 view_count_four int(10) unsigned NOT NULL default 0,
-			 allow_comments varchar(1) NOT NULL default 'y',
-			 sticky varchar(1) NOT NULL default 'n',
-			 entry_date int(10) NOT NULL,
-			 dst_enabled varchar(1) NOT NULL default 'n',
-			 year char(4) NOT NULL,
-			 month char(2) NOT NULL,
-			 day char(3) NOT NULL,
-			 expiration_date int(10) NOT NULL default 0,
-			 comment_expiration_date int(10) NOT NULL default 0,
-			 edit_date bigint(14),
-			 recent_comment_date int(10) NULL DEFAULT NULL,
-			 comment_total int(4) unsigned NOT NULL default 0,
-			 entry_data text NULL,
-			 PRIMARY KEY `entry_id` (`entry_id`),
-			 KEY `channel_id` (`channel_id`),
-			 KEY `author_id` (`author_id`),
-			 KEY `url_title` (`url_title`),
-			 KEY `status` (`status`),
-			 KEY `entry_date` (`entry_date`),
-			 KEY `expiration_date` (`expiration_date`),
-			 KEY `site_id` (`site_id`)
-			)";
+                    $query = $this->EE->db->query("SELECT `{$field}`, `".$this->EE->db->escape_str($table_keys[$table])."`
+                                                    FROM `{$table}`");
+                    
+                    if ($query->num_rows() > 0)
+                    {
+                        foreach ($query->result_array() as $row)
+                        {
+                            if (date('I', $row[$field]) == 1)
+                            {
+                                $dst_dates[] = $row[$table_keys[$table]];
+                            }
+                        }
+                        
+                        if ( ! empty($dst_dates))
+                        {
+                            $this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + 3600
+                                                    WHERE `".$this->EE->db->escape_str($table_keys[$table])."` IN ('".implode("','", $dst_dates)."')");
+                        }
+                    }
+                }
+                
+                // add the offset, which may be a negative number
+                $this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + {$add_time} WHERE `{$field}` != 0");
+            }
+        }
+        
+        // Do we need to consider trackbacks?
+        if (( ! isset($this->config['trackbacks_to_comments']) OR $this->config['trackbacks_to_comments'] != 'y') AND
+            ( ! isset($this->config['archive_trackbacks']) OR $this->config['archive_trackbacks'] != 'y'))
+        {
+            // Remove temporary keys
+            $this->EE->config->_update_config(array(), array('trackbacks_to_comments' => '', 'archive_trackbacks' => ''));
+            
+            // continue with general database changes
+            return 'database_changes';
+        }
+        
+        // deal with trackbacks
+        return 'backup_trackbacks';
+    }
+    
+    function backup_trackbacks()
+    {
+        $next_step = 'database_changes';
+        
+        // Grab the main table
+        $t_query = $this->EE->db->get('trackbacks');
 
-		// Channel fields can now have content restrictions
-		$Q[] = "ALTER TABLE `exp_weblog_fields` ADD COLUMN `field_content_type` VARCHAR(20) NOT NULL default 'any'";
+        if ($t_query->num_rows() == 0)
+        {
+            // Whee - that was easy, remove config keys
+            $this->EE->config->_update_config(array(), array('trackbacks_to_comments' => '', 'archive_trackbacks' => '', 'trackback_zip_path' => ''));
+            return $next_step;
+        }
+        
+        if (isset($this->config['trackbacks_to_comments']) && $this->config['trackbacks_to_comments'] == 'y')
+        {
+            $this->EE->progress->update_state('Converting Trackbacks to Comments');
+            
+            $data = array();
+            $weblogs = array();
+            $entry_count = array();
 
-		// get rid of 'blog_encoding from exp_weblogs' - everything's utf-8 now
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `blog_encoding`";
-		
-		$Q[] = "ALTER TABLE `exp_members` ADD `parse_smileys` CHAR(1) NOT NULL DEFAULT 'y' AFTER `display_signatures`";
-		$Q[] = "ALTER TABLE `exp_members` ADD `crypt_key` varchar(40) NULL DEFAULT NULL AFTER `unique_id`";
+            // convert to comments
+            foreach($t_query->result_array() as $row)
+            {
+                $data[] = array(
+                    'site_id'       => $row['site_id'],
+                    'entry_id'      => $row['entry_id'],
+                    'weblog_id'     => $row['weblog_id'],
+                    'author_id'     => 0,
+                    'status'        => 'o',
+                    'name'          => $row['trackback_url'],
+                    'email'         => '',
+                    'url'           => $row['trackback_url'],
+                    'location'      => '',
+                    'ip_address'    => $row['trackback_ip'],
+                    'comment_date'  => $row['trackback_date'],
+                    'comment'       => $row['content'],
+                    'notify'        => 'n'
+                );
 
-		// HTML buttons now have an identifying classname
-		$Q[] = "ALTER TABLE `exp_html_buttons` ADD `classname` varchar(20) NULL DEFAULT NULL";
+                if ( ! in_array($row['weblog_id'], $weblogs))
+                {
+                    $weblogs[] = $row['weblog_id'];
+                }
 
-		// The sites table now stores bootstrap file checksums
-		$Q[] = "ALTER TABLE `exp_sites` ADD `site_bootstrap_checksums` text NOT NULL";
+                if ( ! isset($entry_count[$row['entry_id']]))
+                {
+                    $entry_count[$row['entry_id']] = 0;
+                }
 
-		// insert default buttons
-		include(EE_APPPATH.'config/html_buttons.php');
+                $entry_count[$row['entry_id']] += 1;
+            }
+            
+            $this->EE->progress->update_state('Recounting Comments');
 
-		// Remove EE 1.6.X default button set
-		$Q[] = "DELETE FROM `exp_html_buttons` WHERE `member_id`=0";
+            // Update entry comment totals
+            foreach($entry_count as $entry_id => $add)
+            {
+                $this->EE->db->set('comment_total', 'comment_total + '.$add, FALSE);
+                $this->EE->db->where('entry_id', $entry_id);
 
-		// Add in the EE 2 default button set (as determined by expressionengine/config/html_buttons.php)
-		$buttoncount = 1;
+                $this->EE->db->update('weblog_titles');
+            }
+            
+            // Update weblog comment totals
+            foreach($weblogs as $weblog_id)
+            {
+                $query = $this->EE->db->query("SELECT COUNT(comment_id) AS count FROM exp_comments WHERE status = 'o' AND weblog_id = '$weblog_id'");
+                $total = $query->row('count');
 
-		foreach ($installation_defaults as $button)
-		{
-			$Q[] = "INSERT INTO exp_html_buttons (site_id, member_id, tag_name, tag_open, tag_close, accesskey, tag_order, tag_row, classname)
-											values (1, '0', '".$predefined_buttons[$button]['tag_name']."', '".$predefined_buttons[$button]['tag_open']."', '".$predefined_buttons[$button]['tag_close']."', '".$predefined_buttons[$button]['accesskey']."', '".$buttoncount++."', '1', '".$predefined_buttons[$button]['classname']."')";
-		}
+                $query = $this->EE->db->query("SELECT last_comment_date, site_id FROM exp_weblogs WHERE weblog_id = '$weblog_id'");
+                $date = ($newtime > $query->row('last_comment_date') ) ? $newtime : $query->row('last_comment_date');
+                
+                $this->EE->db->query("UPDATE exp_weblogs SET total_comments = '$total', last_comment_date = '$date' WHERE weblog_id = '$weblog_id'");
+            }
 
-		// Any current HTML buttons need to be changed up now to match the EE2 styles.
-		// This means classes added, and tag_names escaped.
+            $this->EE->db->insert_batch('comments', $data);
+        }
+        
+        if (isset($this->config['archive_trackbacks']) && $this->config['archive_trackbacks'] == 'y')
+        {
+            $this->EE->progress->update_state('Backing up Trackbacks');
+            
+            // Dump the whole lot into xml files, zip it up, and save it to disk
+            
+            $this->EE->load->library('zip');
+            $this->EE->load->dbutil();
 
-		$buttons = array('<b>', '<i>', '<bq>', '<strike>', '<em>', '<ins>', '<ul>', '<ol>', '<li>', '<p>', '<blockquote>', '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>');
+            $this->EE->zip->add_data('exp_trackbacks.xml', $this->EE->dbutil->xml_from_result($t_query));
 
-		foreach ($buttons as $button)
-		{
-			$Q[] = "UPDATE `exp_html_buttons` SET `classname`='btn_".str_replace(array('<', '>'), array(''), $button)."' WHERE `tag_name`='".$button."'";
-			$Q[] = "UPDATE `exp_html_buttons` SET `tag_name`='".str_replace(array('<', '>'), array('&lt;', '&gt;'), $button)."' WHERE `tag_name`='".$button."'";
-		}
+            $query = $this->EE->db->get_where('specialty_templates', array('template_name' => 'admin_notify_trackback'));
+            if ($query->num_rows() > 0)
+            {
+                $this->EE->zip->add_data('exp_specialty_templates.xml', $this->EE->dbutil->xml_from_result($query));
+            }
 
-		// increase path fields to 150 characters
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `server_path` `server_path` VARCHAR(150) NOT NULL default ''";
-		$Q[] = "ALTER TABLE `exp_message_attachments` CHANGE `attachment_location` `attachment_location` VARCHAR(150) NOT NULL default ''";			
-			
-		// drop user weblog related fields
-		$Q[] = "ALTER TABLE `exp_members` DROP COLUMN `weblog_id`";
-		$Q[] = "ALTER TABLE `exp_members` DROP COLUMN `tmpl_group_id`";
-		$Q[] = "ALTER TABLE `exp_members` DROP COLUMN `upload_id`";
-		$Q[] = "ALTER TABLE `exp_template_groups` DROP COLUMN `is_user_blog`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `is_user_blog`";
-		$Q[] = "ALTER TABLE `exp_global_variables` DROP COLUMN `user_blog_id`";
-		$Q[] = "ALTER TABLE `exp_online_users` DROP COLUMN `weblog_id`";
-		
-		// drop trackback related fields
-		$Q[] = "ALTER TABLE `exp_stats` DROP COLUMN `total_trackbacks`";
-		$Q[] = "ALTER TABLE `exp_stats` DROP COLUMN `last_trackback_date`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `total_trackbacks`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `last_trackback_date`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `enable_trackbacks`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `trackback_use_url_title`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `trackback_max_hits`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `trackback_field`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `deft_trackbacks`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `trackback_system_enabled`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `show_trackback_field`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `trackback_use_captcha`";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `tb_return_url`";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` DROP COLUMN `allow_trackbacks`";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` DROP COLUMN `trackback_total`";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` DROP COLUMN `sent_trackbacks`";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` DROP COLUMN `recent_trackback_date`";
-		$Q[] = "DROP TABLE IF EXISTS `exp_trackbacks`";
-		
-		// Add primary keys as needed for normalization of all tables
-		$Q[] = "ALTER TABLE `exp_throttle` ADD COLUMN `throttle_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-		$Q[] = "ALTER TABLE `exp_stats` ADD COLUMN `stat_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-		$Q[] = "ALTER TABLE `exp_online_users` ADD COLUMN `online_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-		$Q[] = "ALTER TABLE `exp_security_hashes` ADD COLUMN `hash_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-		$Q[] = "ALTER TABLE `exp_password_lockout` ADD COLUMN `lockout_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-		$Q[] = "ALTER TABLE `exp_reset_password` ADD COLUMN `reset_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-		$Q[] = "ALTER TABLE `exp_email_cache_mg` DROP KEY `cache_id`";
-		$Q[] = "ALTER TABLE `exp_email_cache_mg` ADD PRIMARY KEY `cache_id_group_id` (`cache_id`, `group_id`)";
-		$Q[] = "ALTER TABLE `exp_email_cache_ml` DROP KEY `cache_id`";
-		$Q[] = "ALTER TABLE `exp_email_cache_ml` ADD PRIMARY KEY `cache_id_list_id` (`cache_id`, `list_id`)";
-		$Q[] = "ALTER TABLE `exp_member_homepage` DROP KEY `member_id`";
-		$Q[] = "ALTER TABLE `exp_member_homepage` ADD PRIMARY KEY `member_id` (`member_id`)";
-		$Q[] = "ALTER TABLE `exp_member_groups` DROP KEY `group_id`";
-		$Q[] = "ALTER TABLE `exp_member_groups` DROP KEY `site_id`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)";
-		$Q[] = "ALTER TABLE `exp_weblog_member_groups` DROP KEY `group_id`";
-		$Q[] = "ALTER TABLE `exp_weblog_member_groups` ADD PRIMARY KEY `group_id_weblog_id` (`group_id`, `weblog_id`)";
-		$Q[] = "ALTER TABLE `exp_module_member_groups` DROP KEY `group_id`";
-		$Q[] = "ALTER TABLE `exp_module_member_groups` ADD PRIMARY KEY `group_id_module_id` (`group_id`, `module_id`)";
-		$Q[] = "ALTER TABLE `exp_template_member_groups` DROP KEY `group_id`";
-		$Q[] = "ALTER TABLE `exp_template_member_groups` ADD PRIMARY KEY `group_id_template_group_id` (`group_id`, `template_group_id`)";
-		$Q[] = "ALTER TABLE `exp_member_data` DROP KEY `member_id`";
-		$Q[] = "ALTER TABLE `exp_member_data` ADD PRIMARY KEY `member_id` (`member_id`)";
-		$Q[] = "ALTER TABLE `exp_field_formatting` DROP KEY `field_id`";
-		$Q[] = "ALTER TABLE `exp_field_formatting` ADD COLUMN `formatting_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
-		$Q[] = "ALTER TABLE `exp_weblog_data` DROP KEY `entry_id`";
-		$Q[] = "ALTER TABLE `exp_weblog_data` ADD PRIMARY KEY `entry_id` (`entry_id`)";
-		$Q[] = "ALTER TABLE `exp_entry_ping_status` ADD PRIMARY KEY `entry_id_ping_id` (`entry_id`, `ping_id`)";
-		$Q[] = "ALTER TABLE `exp_status_no_access` ADD PRIMARY KEY `status_id_member_group` (`status_id`, `member_group`)";
-		$Q[] = "ALTER TABLE `exp_category_posts` DROP KEY `entry_id`";
-		$Q[] = "ALTER TABLE `exp_category_posts` DROP KEY `cat_id`";
-		$Q[] = "ALTER TABLE `exp_category_posts` ADD PRIMARY KEY `entry_id_cat_id` (`entry_id`, `cat_id`)";
-		$Q[] = "ALTER TABLE `exp_template_no_access` DROP KEY `template_id`";
-		$Q[] = "ALTER TABLE `exp_template_no_access` ADD PRIMARY KEY `template_id_member_group` (`template_id`, `member_group`)";
-		$Q[] = "ALTER TABLE `exp_upload_no_access` ADD PRIMARY KEY `upload_id_member_group` (`upload_id`, `member_group`)";
-		$Q[] = "ALTER TABLE `exp_message_folders` DROP KEY `member_id`";
-		$Q[] = "ALTER TABLE `exp_message_folders` ADD PRIMARY KEY `member_id` (`member_id`)";
-		
-		// Add default values for a few columns and switch some to NULL
-		$Q[] = "ALTER TABLE `exp_templates` CHANGE `template_data` `template_data` MEDIUMTEXT NULL";
-		$Q[] = "ALTER TABLE `exp_templates` CHANGE `template_notes` `template_notes` TEXT NULL";
-		$Q[] = "ALTER TABLE `exp_templates` CHANGE `last_author_id` `last_author_id` INT(10) NOT NULL DEFAULT 0";
-		$Q[] = "ALTER TABLE `exp_templates` CHANGE `refresh` `refresh` INT(6) UNSIGNED NOT NULL DEFAULT 0";
-		$Q[] = "ALTER TABLE `exp_templates` CHANGE `no_auth_bounce` `no_auth_bounce` VARCHAR(50) NOT NULL DEFAULT ''";
-		$Q[] = "ALTER TABLE `exp_templates` CHANGE `hits` `hits` INT(10) UNSIGNED NOT NULL DEFAULT 0";
-		$Q[] = "ALTER TABLE `exp_member_groups` CHANGE `mbr_delete_notify_emails` `mbr_delete_notify_emails` varchar(255) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_pre_field_id` `field_pre_field_id` int(6) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` CHANGE `recent_comment_date` `recent_comment_date` int(10) NULL DEFAULT NULL";
-		
-		// Add moar!
-		$Q[] = "ALTER TABLE `exp_sites` CHANGE `site_description` `site_description` TEXT NULL";		
-		$Q[] = "ALTER TABLE `exp_category_groups` CHANGE `can_edit_categories` `can_edit_categories` TEXT NULL";
-		$Q[] = "ALTER TABLE `exp_category_groups` CHANGE `can_delete_categories` `can_delete_categories` TEXT NULL";
-		$Q[] = "ALTER TABLE `exp_categories` CHANGE `cat_description` `cat_description` TEXT NULL";
-		$Q[] = "ALTER TABLE `exp_categories` CHANGE `cat_image` `cat_image` varchar(120) NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `max_size` `max_size` varchar(16) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `max_height` `max_height` varchar(6) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `max_width` `max_width` varchar(6) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `properties` `properties` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `pre_format` `pre_format` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `post_format` `post_format` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `file_properties` `file_properties` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `file_pre_format` `file_pre_format` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `file_post_format` `file_post_format` varchar(120) NULL DEFAULT NULL";
+            $trackback_fields = array(
+                'stats' => array(
+                    'weblog_id',
+                    'total_trackbacks',
+                    'last_trackback_date'
+                ),
+                'weblogs' => array(
+                    'weblog_id',
+                    'total_trackbacks',
+                    'last_trackback_date',
+                    'enable_trackbacks',
+                    'trackback_use_url_title',
+                    'trackback_max_hits',
+                    'trackback_field',
+                    'deft_trackbacks',
+                    'trackback_system_enabled',
+                    'show_trackback_field',
+                    'trackback_use_captcha',
+                    'tb_return_url'
+                ),
+                'weblog_titles' => array(
+                    'entry_id',
+                    'allow_trackbacks',
+                    'trackback_total',
+                    'sent_trackbacks',
+                    'recent_trackback_date'
+                )
+            );
 
-		$Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_instructions` `field_instructions` TEXT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_pre_field_id` `field_pre_field_id` int(6) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_maxl` `field_maxl` smallint(3) NULL DEFAULT NULL";
+            foreach($trackback_fields as $table => $fields)
+            {
+                $this->EE->db->select($fields);
+                $query = $this->EE->db->get($table);
 
-		$Q[] = "ALTER TABLE `exp_weblog_titles` CHANGE `forum_topic_id` `forum_topic_id` int(10) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` CHANGE `recent_comment_date` `recent_comment_date` int(10) NULL DEFAULT NULL";			
+                if ($query->num_rows() > 0)
+                {
+                    $this->EE->zip->add_data('exp_'.$table.'.xml', $this->EE->dbutil->xml_from_result($query));
+                }
+            }
 
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `cat_group` `cat_group` varchar(225) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `status_group` `status_group` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `field_group` `field_group` int(4) unsigned NULL DEFAULT NULL";				
+            $this->EE->zip->archive($this->config['trackback_zip_path']);
+        }
+        
+        // Remove temporary keys
+        $this->EE->config->_update_config(array(), array('trackbacks_to_comments' => '', 'archive_trackbacks' => '', 'trackback_zip_path' => ''));
 
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `search_excerpt` `search_excerpt` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `deft_category` `deft_category` varchar(60) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `comment_url` `comment_url` varchar(80) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `comment_max_chars` `comment_max_chars` int(5) unsigned NULL DEFAULT '5000'";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `comment_notify_emails` `comment_notify_emails` varchar(255) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `search_results_url` `search_results_url` varchar(80) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `ping_return_url` `ping_return_url` varchar(80) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `rss_url` `rss_url` varchar(80) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `enable_qucksave_versioning`";
+        return $next_step;
+    }
+    
+    // ------------------------------------------------------------------------ 
+        
+    function database_changes()
+    {
+        $this->EE->progress->update_state("Creating and updating database tables");
 
-		// members table default tweaks
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `authcode` `authcode` varchar(10) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `url` `url` varchar(150) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `location` `location`  varchar(50) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `occupation` `occupation` varchar(80) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `interests` `interests` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `bday_d` `bday_d` int(2) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `bday_m` `bday_m` int(2) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `bday_y` `bday_y` int(4) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `aol_im` `aol_im` varchar(50) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `yahoo_im` `yahoo_im` varchar(50) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `msn_im` `msn_im` varchar(50) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `icq` `icq` varchar(50) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `bio` `bio` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `signature` `signature` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `avatar_filename` `avatar_filename` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `avatar_width` `avatar_width` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `avatar_height` `avatar_height` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `photo_filename` `photo_filename` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `photo_width` `photo_width` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `photo_height` `photo_height` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `sig_img_filename` `sig_img_filename` varchar(120) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `sig_img_width` `sig_img_width` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `sig_img_height` `sig_img_height` int(4) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `ignore_list` `ignore_list` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `cp_theme` `cp_theme` varchar(32) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `profile_theme` `profile_theme` varchar(32) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `forum_theme` `forum_theme` varchar(32) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `tracker` `tracker` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `notepad` `notepad` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `quick_links` `quick_links` text NULL";
-		$Q[] = "ALTER TABLE `exp_members` CHANGE `quick_tabs` `quick_tabs` text NULL";
+        $Q[] = "INSERT INTO `exp_actions` (`class`, `method`) VALUES ('Jquery', 'output_javascript')";
+        
+        $Q[] = "UPDATE `exp_templates` SET template_type = 'feed' WHERE template_type = 'rss'";
 
-		// Remove trackback actions
-		$Q[] = "DELETE FROM `exp_actions` WHERE `class` = 'Trackback'";
-		$Q[] = "DELETE FROM `exp_actions` WHERE `class` = 'Trackback_CP'";
-		
-		// Update CP action names
-		$query = $this->EE->db->query("SELECT action_id, class FROM exp_actions");
+        $Q[] = "CREATE TABLE `exp_snippets` (
+                `snippet_id` int(10) unsigned NOT NULL auto_increment,
+                `site_id` int(4) NOT NULL,
+                `snippet_name` varchar(75) NOT NULL,
+                `snippet_contents` text NULL,
+                PRIMARY KEY (`snippet_id`),
+                KEY `site_id` (`site_id`)
+                )";
+        
+        $Q[] = "CREATE TABLE `exp_accessories` (
+                `accessory_id` int(10) unsigned NOT NULL auto_increment,
+                `class` varchar(75) NOT NULL default '',
+                `member_groups` varchar(50) NOT NULL default 'all',
+                `controllers` text NULL,
+                `accessory_version` VARCHAR(12) NOT NULL,
+                PRIMARY KEY `accessory_id` (`accessory_id`)
+                )";
 
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result() as $row)
-			{
-				if (substr($row->class, -3) == '_CP')
-				{
-					$Q[] = "UPDATE `exp_actions` SET `class` = '".substr($row->class, 0, -3)."_mcp' WHERE `action_id` = '{$row->action_id}'";	
-				}
-			}
-		}
+        // Layout Publish
+        // Custom layout for for the publish page.
+        $Q[] = "CREATE TABLE exp_layout_publish (
+              layout_id int(10) UNSIGNED NOT NULL auto_increment,
+              site_id int(4) UNSIGNED NOT NULL default 1,
+              member_group int(4) UNSIGNED NOT NULL default 0,
+              channel_id int(4) UNSIGNED NOT NULL default 0,
+              field_layout text,
+              PRIMARY KEY  (`layout_id`),
+              KEY `site_id` (`site_id`),
+              KEY `member_group` (`member_group`),
+              KEY `channel_id` (`channel_id`)
+        )";
+        
+        // CP Search Index
+        $Q[] = "CREATE TABLE `exp_cp_search_index` (
+                `search_id` int(10) UNSIGNED NOT NULL auto_increment, 
+                `controller` varchar(20) default NULL, 
+                `method` varchar(50) default NULL,
+                `language` varchar(20) default NULL, 
+                `access` varchar(50) default NULL, 
+                `keywords` text, 
+                PRIMARY KEY `search_id` (`search_id`),
+                FULLTEXT(`keywords`) 
+        ) TYPE=MyISAM ";
 
-		// Update category custom fields to allow null
-		$query = $this->EE->db->query("SELECT field_id FROM exp_category_fields");
+        // Channel Titles Autosave
+        // Used for the autosave functionality
+        $Q[] = "CREATE TABLE exp_channel_entries_autosave (
+             entry_id int(10) unsigned NOT NULL auto_increment,
+             original_entry_id int(10) unsigned NOT NULL,
+             site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
+             channel_id int(4) unsigned NOT NULL,
+             author_id int(10) unsigned NOT NULL default 0,
+             pentry_id int(10) NOT NULL default 0,
+             forum_topic_id int(10) unsigned NULL DEFAULT NULL,
+             ip_address varchar(16) NOT NULL,
+             title varchar(100) NOT NULL,
+             url_title varchar(75) NOT NULL,
+             status varchar(50) NOT NULL,
+             versioning_enabled char(1) NOT NULL default 'n',
+             view_count_one int(10) unsigned NOT NULL default 0,
+             view_count_two int(10) unsigned NOT NULL default 0,
+             view_count_three int(10) unsigned NOT NULL default 0,
+             view_count_four int(10) unsigned NOT NULL default 0,
+             allow_comments varchar(1) NOT NULL default 'y',
+             sticky varchar(1) NOT NULL default 'n',
+             entry_date int(10) NOT NULL,
+             dst_enabled varchar(1) NOT NULL default 'n',
+             year char(4) NOT NULL,
+             month char(2) NOT NULL,
+             day char(3) NOT NULL,
+             expiration_date int(10) NOT NULL default 0,
+             comment_expiration_date int(10) NOT NULL default 0,
+             edit_date bigint(14),
+             recent_comment_date int(10) NULL DEFAULT NULL,
+             comment_total int(4) unsigned NOT NULL default 0,
+             entry_data text NULL,
+             PRIMARY KEY `entry_id` (`entry_id`),
+             KEY `channel_id` (`channel_id`),
+             KEY `author_id` (`author_id`),
+             KEY `url_title` (`url_title`),
+             KEY `status` (`status`),
+             KEY `entry_date` (`entry_date`),
+             KEY `expiration_date` (`expiration_date`),
+             KEY `site_id` (`site_id`)
+            )";
 
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result() as $row)
-			{
-				$Q[] = "ALTER TABLE `exp_category_field_data` CHANGE `field_id_{$row->field_id}` `field_id_{$row->field_id}` text NULL";
-				$Q[] = "ALTER TABLE `exp_category_field_data` CHANGE `field_ft_{$row->field_id}` `field_ft_{$row->field_id}` varchar(40) NULL DEFAULT 'none'";
-			}
-		}
+        // Channel fields can now have content restrictions
+        $Q[] = "ALTER TABLE `exp_weblog_fields` ADD COLUMN `field_content_type` VARCHAR(20) NOT NULL default 'any'";
 
-		// Update custom fields to allow null
-		$query = $this->EE->db->query("SELECT field_id, field_type FROM exp_weblog_fields");
+        // get rid of 'blog_encoding from exp_weblogs' - everything's utf-8 now
+        $Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `blog_encoding`";
+        
+        $Q[] = "ALTER TABLE `exp_members` ADD `parse_smileys` CHAR(1) NOT NULL DEFAULT 'y' AFTER `display_signatures`";
+        $Q[] = "ALTER TABLE `exp_members` ADD `crypt_key` varchar(40) NULL DEFAULT NULL AFTER `unique_id`";
 
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result() as $row)
-			{
-				if ($row->field_type == 'date' OR $row->field_type == 'rel')
-				{
-					$Q[] = "ALTER TABLE `exp_weblog_data` CHANGE `field_id_{$row->field_id}` `field_id_{$row->field_id}` int(10) NOT NULL DEFAULT 0";	
-				
-					if ($row->field_type == 'date')
-					{
-						$Q[] = "ALTER TABLE `exp_weblog_data` CHANGE `field_dt_{$row->field_id}` `field_dt_{$row->field_id}` varchar(8) NULL";	
-					}				
-				}
-				else
-				{
-					$Q[] = "ALTER TABLE `exp_weblog_data` CHANGE `field_id_{$row->field_id}` `field_id_{$row->field_id}` text NULL";				
-				}
-			}		
-		}
+        // HTML buttons now have an identifying classname
+        $Q[] = "ALTER TABLE `exp_html_buttons` ADD `classname` varchar(20) NULL DEFAULT NULL";
 
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_content` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_cp`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_files` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_edit`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_addons` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_design`";
-		$Q[] = "ALTER TABLE `exp_member_groups` MODIFY COLUMN `can_access_modules` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_addons`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_extensions` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_modules`";
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_accessories` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_extensions`";		
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_plugins` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_accessories`";		
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_members` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_plugins`";	
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_sys_prefs` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_admin`";	
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_content_prefs` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_sys_prefs`";	
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_tools` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_content_prefs`";	
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_utilities` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_comm`";									
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_data` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_utilities`";	
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_logs` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_data`";					
-		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_admin_design` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_admin_weblogs`";		
+        // The sites table now stores bootstrap file checksums
+        $Q[] = "ALTER TABLE `exp_sites` ADD `site_bootstrap_checksums` text NOT NULL";
 
-		//  Update access priveleges for 2.0
-		// resync member groups.  In 1.x, a bug existed where deleting a member group would only delete it from the currently logged in site,
-		// leaving orphaned member groups in the member groups table.
-		$query = $this->EE->db->query("SELECT group_id, site_id, can_access_publish, can_access_edit, can_access_modules, can_admin_utilities, can_admin_members, can_admin_preferences, can_access_admin, can_access_comm FROM exp_member_groups");
-		$groups = array();
-		
-		foreach ($query->result() as $row)
-		{
-			$new_privs = '';
+        // insert default buttons
+        include(EE_APPPATH.'config/html_buttons.php');
 
-			if ($row->can_admin_utilities == 'y')
-			{
-				$new_privs .= "`can_access_addons` = 'y', `can_access_extensions` = 'y', `can_access_plugins` = 'y', `can_access_tools` = 'y', `can_access_utilities` = 'y', `can_access_data` = 'y', `can_access_logs` = 'y', ";
-			}
-			elseif ($row->can_access_comm == 'y')
-			{
-				$new_privs .= "`can_access_tools` = 'y', ";	
-			}
-			
-			if ($row->can_access_modules == 'y')
-			{
-				$new_privs .= "`can_access_addons` = 'y', ";				
-			}
+        // Remove EE 1.6.X default button set
+        $Q[] = "DELETE FROM `exp_html_buttons` WHERE `member_id`=0";
 
-			if ($row->can_access_publish == 'y' OR $row->can_access_edit == 'y')
-			{
-				$new_privs .= "`can_access_content` = 'y', ";				
-			}			
+        // Add in the EE 2 default button set (as determined by expressionengine/config/html_buttons.php)
+        $buttoncount = 1;
 
-			if ($row->can_admin_members == 'y')
-			{
-				$new_privs .= "`can_access_members` = 'y', ";				
-			}
+        foreach ($installation_defaults as $button)
+        {
+            $Q[] = "INSERT INTO exp_html_buttons (site_id, member_id, tag_name, tag_open, tag_close, accesskey, tag_order, tag_row, classname)
+                                            values (1, '0', '".$predefined_buttons[$button]['tag_name']."', '".$predefined_buttons[$button]['tag_open']."', '".$predefined_buttons[$button]['tag_close']."', '".$predefined_buttons[$button]['accesskey']."', '".$buttoncount++."', '1', '".$predefined_buttons[$button]['classname']."')";
+        }
 
-			if ($row->can_admin_preferences == 'y')
-			{
-				$new_privs .= "`can_access_sys_prefs` = 'y', ";				
-				$new_privs .= "`can_admin_design` = 'y', ";	
-			}
+        // Any current HTML buttons need to be changed up now to match the EE2 styles.
+        // This means classes added, and tag_names escaped.
 
-			if ($row->can_access_admin == 'y')
-			{
-				$new_privs .= "`can_access_content_prefs` = 'y', ";				
-			}
+        $buttons = array('<b>', '<i>', '<bq>', '<strike>', '<em>', '<ins>', '<ul>', '<ol>', '<li>', '<p>', '<blockquote>', '<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>');
 
-			if ($row->group_id == 1)
-			{
-				$new_privs .= "`can_access_accessories` = 'y', `can_access_files` = 'y', ";				
-			}			
+        foreach ($buttons as $button)
+        {
+            $Q[] = "UPDATE `exp_html_buttons` SET `classname`='btn_".str_replace(array('<', '>'), array(''), $button)."' WHERE `tag_name`='".$button."'";
+            $Q[] = "UPDATE `exp_html_buttons` SET `tag_name`='".str_replace(array('<', '>'), array('&lt;', '&gt;'), $button)."' WHERE `tag_name`='".$button."'";
+        }
 
-			
-			if ($new_privs != '')
-			{
-				$new_privs = substr($new_privs, 0, -2);
-				
-				$Q[] = "UPDATE `exp_member_groups` SET {$new_privs} WHERE `group_id` = '{$row->group_id}'";
-			}
-			
-			$groups[$row->group_id][] = $row->site_id;
-		}
+        // increase path fields to 150 characters
+        $Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `server_path` `server_path` VARCHAR(150) NOT NULL default ''";
+        $Q[] = "ALTER TABLE `exp_message_attachments` CHANGE `attachment_location` `attachment_location` VARCHAR(150) NOT NULL default ''";         
+            
+        // drop user weblog related fields
+        $Q[] = "ALTER TABLE `exp_members` DROP COLUMN `weblog_id`";
+        $Q[] = "ALTER TABLE `exp_members` DROP COLUMN `tmpl_group_id`";
+        $Q[] = "ALTER TABLE `exp_members` DROP COLUMN `upload_id`";
+        $Q[] = "ALTER TABLE `exp_template_groups` DROP COLUMN `is_user_blog`";
+        $Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `is_user_blog`";
+        $Q[] = "ALTER TABLE `exp_global_variables` DROP COLUMN `user_blog_id`";
+        $Q[] = "ALTER TABLE `exp_online_users` DROP COLUMN `weblog_id`";
+        
+        // drop trackback related fields
+        $Q[] = "ALTER TABLE `exp_stats` DROP COLUMN `total_trackbacks`";
+        $Q[] = "ALTER TABLE `exp_stats` DROP COLUMN `last_trackback_date`";
+        $Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `total_trackbacks`";
+        $Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `last_trackback_date`";
+        $Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `enable_trackbacks`";
+        $Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `trackback_use_url_title`";
+        $Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `trackback_max_hits`";
+        $Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `trackback_field`";
+        $Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `deft_trackbacks`";
+        $Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `trackback_system_enabled`";
+        $Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `show_trackback_field`";
+        $Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `trackback_use_captcha`";
+        $Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `tb_return_url`";
+        $Q[] = "ALTER TABLE `exp_weblog_titles` DROP COLUMN `allow_trackbacks`";
+        $Q[] = "ALTER TABLE `exp_weblog_titles` DROP COLUMN `trackback_total`";
+        $Q[] = "ALTER TABLE `exp_weblog_titles` DROP COLUMN `sent_trackbacks`";
+        $Q[] = "ALTER TABLE `exp_weblog_titles` DROP COLUMN `recent_trackback_date`";
+        $Q[] = "DROP TABLE IF EXISTS `exp_trackbacks`";
+        
+        // Add primary keys as needed for normalization of all tables
+        $Q[] = "ALTER TABLE `exp_throttle` ADD COLUMN `throttle_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
+        $Q[] = "ALTER TABLE `exp_stats` ADD COLUMN `stat_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
+        $Q[] = "ALTER TABLE `exp_online_users` ADD COLUMN `online_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
+        $Q[] = "ALTER TABLE `exp_security_hashes` ADD COLUMN `hash_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
+        $Q[] = "ALTER TABLE `exp_password_lockout` ADD COLUMN `lockout_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
+        $Q[] = "ALTER TABLE `exp_reset_password` ADD COLUMN `reset_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
+        $Q[] = "ALTER TABLE `exp_email_cache_mg` DROP KEY `cache_id`";
+        $Q[] = "ALTER TABLE `exp_email_cache_mg` ADD PRIMARY KEY `cache_id_group_id` (`cache_id`, `group_id`)";
+        $Q[] = "ALTER TABLE `exp_email_cache_ml` DROP KEY `cache_id`";
+        $Q[] = "ALTER TABLE `exp_email_cache_ml` ADD PRIMARY KEY `cache_id_list_id` (`cache_id`, `list_id`)";
+        $Q[] = "ALTER TABLE `exp_member_homepage` DROP KEY `member_id`";
+        $Q[] = "ALTER TABLE `exp_member_homepage` ADD PRIMARY KEY `member_id` (`member_id`)";
+        $Q[] = "ALTER TABLE `exp_member_groups` DROP KEY `group_id`";
+        $Q[] = "ALTER TABLE `exp_member_groups` DROP KEY `site_id`";
+        $Q[] = "ALTER TABLE `exp_member_groups` ADD PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)";
+        $Q[] = "ALTER TABLE `exp_weblog_member_groups` DROP KEY `group_id`";
+        $Q[] = "ALTER TABLE `exp_weblog_member_groups` ADD PRIMARY KEY `group_id_weblog_id` (`group_id`, `weblog_id`)";
+        $Q[] = "ALTER TABLE `exp_module_member_groups` DROP KEY `group_id`";
+        $Q[] = "ALTER TABLE `exp_module_member_groups` ADD PRIMARY KEY `group_id_module_id` (`group_id`, `module_id`)";
+        $Q[] = "ALTER TABLE `exp_template_member_groups` DROP KEY `group_id`";
+        $Q[] = "ALTER TABLE `exp_template_member_groups` ADD PRIMARY KEY `group_id_template_group_id` (`group_id`, `template_group_id`)";
+        $Q[] = "ALTER TABLE `exp_member_data` DROP KEY `member_id`";
+        $Q[] = "ALTER TABLE `exp_member_data` ADD PRIMARY KEY `member_id` (`member_id`)";
+        $Q[] = "ALTER TABLE `exp_field_formatting` DROP KEY `field_id`";
+        $Q[] = "ALTER TABLE `exp_field_formatting` ADD COLUMN `formatting_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
+        $Q[] = "ALTER TABLE `exp_weblog_data` DROP KEY `entry_id`";
+        $Q[] = "ALTER TABLE `exp_weblog_data` ADD PRIMARY KEY `entry_id` (`entry_id`)";
+        $Q[] = "ALTER TABLE `exp_entry_ping_status` ADD PRIMARY KEY `entry_id_ping_id` (`entry_id`, `ping_id`)";
+        $Q[] = "ALTER TABLE `exp_status_no_access` ADD PRIMARY KEY `status_id_member_group` (`status_id`, `member_group`)";
+        $Q[] = "ALTER TABLE `exp_category_posts` DROP KEY `entry_id`";
+        $Q[] = "ALTER TABLE `exp_category_posts` DROP KEY `cat_id`";
+        $Q[] = "ALTER TABLE `exp_category_posts` ADD PRIMARY KEY `entry_id_cat_id` (`entry_id`, `cat_id`)";
+        $Q[] = "ALTER TABLE `exp_template_no_access` DROP KEY `template_id`";
+        $Q[] = "ALTER TABLE `exp_template_no_access` ADD PRIMARY KEY `template_id_member_group` (`template_id`, `member_group`)";
+        $Q[] = "ALTER TABLE `exp_upload_no_access` ADD PRIMARY KEY `upload_id_member_group` (`upload_id`, `member_group`)";
+        $Q[] = "ALTER TABLE `exp_message_folders` DROP KEY `member_id`";
+        $Q[] = "ALTER TABLE `exp_message_folders` ADD PRIMARY KEY `member_id` (`member_id`)";
+        
+        // Add default values for a few columns and switch some to NULL
+        $Q[] = "ALTER TABLE `exp_templates` CHANGE `template_data` `template_data` MEDIUMTEXT NULL";
+        $Q[] = "ALTER TABLE `exp_templates` CHANGE `template_notes` `template_notes` TEXT NULL";
+        $Q[] = "ALTER TABLE `exp_templates` CHANGE `last_author_id` `last_author_id` INT(10) NOT NULL DEFAULT 0";
+        $Q[] = "ALTER TABLE `exp_templates` CHANGE `refresh` `refresh` INT(6) UNSIGNED NOT NULL DEFAULT 0";
+        $Q[] = "ALTER TABLE `exp_templates` CHANGE `no_auth_bounce` `no_auth_bounce` VARCHAR(50) NOT NULL DEFAULT ''";
+        $Q[] = "ALTER TABLE `exp_templates` CHANGE `hits` `hits` INT(10) UNSIGNED NOT NULL DEFAULT 0";
+        $Q[] = "ALTER TABLE `exp_member_groups` CHANGE `mbr_delete_notify_emails` `mbr_delete_notify_emails` varchar(255) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_pre_field_id` `field_pre_field_id` int(6) unsigned NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblog_titles` CHANGE `recent_comment_date` `recent_comment_date` int(10) NULL DEFAULT NULL";
+        
+        // Add moar!
+        $Q[] = "ALTER TABLE `exp_sites` CHANGE `site_description` `site_description` TEXT NULL";        
+        $Q[] = "ALTER TABLE `exp_category_groups` CHANGE `can_edit_categories` `can_edit_categories` TEXT NULL";
+        $Q[] = "ALTER TABLE `exp_category_groups` CHANGE `can_delete_categories` `can_delete_categories` TEXT NULL";
+        $Q[] = "ALTER TABLE `exp_categories` CHANGE `cat_description` `cat_description` TEXT NULL";
+        $Q[] = "ALTER TABLE `exp_categories` CHANGE `cat_image` `cat_image` varchar(120) NULL";
+        $Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `max_size` `max_size` varchar(16) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `max_height` `max_height` varchar(6) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `max_width` `max_width` varchar(6) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `properties` `properties` varchar(120) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `pre_format` `pre_format` varchar(120) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `post_format` `post_format` varchar(120) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `file_properties` `file_properties` varchar(120) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `file_pre_format` `file_pre_format` varchar(120) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_upload_prefs` CHANGE `file_post_format` `file_post_format` varchar(120) NULL DEFAULT NULL";
 
-		$Q[] = "ALTER TABLE `exp_member_groups` DROP COLUMN `can_admin_preferences`";		
-		$Q[] = "ALTER TABLE `exp_member_groups` DROP COLUMN `can_admin_utilities`";	
-		
-		$query = $this->EE->db->query("SELECT site_id FROM exp_sites");
-		
-		foreach ($query->result() as $row)
-		{
-			foreach ($groups as $group_id => $group_site_ids)
-			{
-				if ( ! in_array($row->site_id, $group_site_ids))
-				{
-					// vanquish!
-					$this->EE->db->query("DELETE FROM exp_member_groups WHERE group_id = {$group_id}");
-				}
-			}
-		}
-		
-		$count = count($Q);
-		
-		foreach ($Q as $num => $sql)
-		{
-			$this->EE->progress->update_state("Creating and updating database tables (Query $num of $count)");
-			
-			$this->EE->db->query($sql);
-		}
-			
-		$this->EE->progress->update_state("Installing default Accessories");
-		$this->EE->_install_accessories();	
-		
-		// port over old Fresh Variables to Snippets?
-		$this->EE->progress->update_state('Checking for Fresh Variables');
-		$this->EE->db->select('settings');
-		$this->EE->db->where('class', 'Fresh_variables');
-		$query = $this->EE->db->get('extensions', 1);
-		
-		if ($query->num_rows() > 0 && $query->row('settings') != '')
-		{
-			// Load the string helper
-			$this->EE->load->helper('string');
-			
-			$snippets = strip_slashes(unserialize($query->row('settings')));
+        $Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_instructions` `field_instructions` TEXT NULL";
+        $Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_pre_field_id` `field_pre_field_id` int(6) unsigned NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_maxl` `field_maxl` smallint(3) NULL DEFAULT NULL";
 
-			foreach ($snippets as $site_id => $vars)
-			{
-				foreach ($vars as $var)
-				{
-					$this->EE->progress->update_state('Adding Snippet: '.$var['var_name']);
-					$data = array(
-									'site_id'				=> ($site_id == 'all') ? 0 : $site_id,
-									'snippet_name'		=> $var['var_name'],
-									'snippet_contents'	=> $var['var_value']
-								);
-								
-					$this->EE->db->insert('snippets', $data);
-				}
-			}
-			
-			unset($snippets);
-			
-			$this->EE->progress->update_state('Deleting Fresh Variables');
-			
-			// uninstall Fresh Variables
-			$this->EE->db->query("DELETE FROM exp_extensions WHERE class = 'Fresh_variables'");
-			$query = $this->EE->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Fresh_variables'"); 
+        $Q[] = "ALTER TABLE `exp_weblog_titles` CHANGE `forum_topic_id` `forum_topic_id` int(10) unsigned NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblog_titles` CHANGE `recent_comment_date` `recent_comment_date` int(10) NULL DEFAULT NULL";          
 
-			$this->EE->db->query("DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id')."'");        
-			$this->EE->db->query("DELETE FROM exp_modules WHERE module_name = 'Fresh_variables'");
-			$this->EE->db->query("DELETE FROM exp_actions WHERE class = 'Fresh_variables'");
-		}
-		
-		// weblogs are channels!
-		return 'weblog_terminology_changes';
-	}
-	
-	function weblog_terminology_changes()
-	{
-		$this->EE->progress->update_state("Replacing weblog with channel.");
-		
-		$Q[] = "ALTER TABLE `exp_sites` CHANGE `site_weblog_preferences` `site_channel_preferences` TEXT NOT NULL";
-		$Q[] = "ALTER TABLE `exp_member_groups` CHANGE `can_admin_weblogs` `can_admin_channels` CHAR(1) NOT NULL DEFAULT 'n'";
-		$Q[] = "ALTER TABLE `exp_weblog_member_groups` CHANGE `weblog_id` `channel_id` INT(6) UNSIGNED NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_member_groups` RENAME TO `exp_channel_member_groups`";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_id` `channel_id` int(6) unsigned NOT NULL auto_increment";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `blog_name` `channel_name` varchar(40) NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `blog_title` `channel_title` varchar(100) NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `blog_url` `channel_url` varchar(100) NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `blog_description`	`channel_description` varchar(225) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `blog_lang` `channel_lang` varchar(12) NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_max_chars`	`channel_max_chars` int(5) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_notify` `channel_notify` CHAR(1) NOT NULL default 'n'";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_require_membership` `channel_require_membership` char(1) NOT NULL default 'y'";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_html_formatting` `channel_html_formatting` char(4) NOT NULL default 'all'";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_allow_img_urls` `channel_allow_img_urls` char(1) NOT NULL default 'y'";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_auto_link_urls` `channel_auto_link_urls` char(1) NOT NULL default 'y'";
-		$Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_notify_emails`	`channel_notify_emails` varchar(255) NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblogs` RENAME TO `exp_channels`";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` CHANGE `weblog_id` `channel_id` int(4) unsigned NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_titles` RENAME TO `exp_channel_titles`";
-		$Q[] = "ALTER TABLE `exp_entry_versioning` CHANGE `weblog_id` `channel_id` int(4) unsigned NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_pre_blog_id` `field_pre_channel_id` int(6) unsigned NULL DEFAULT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_related_to` `field_related_to` varchar(12) NOT NULL default 'channel'";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `cat_group` `cat_group` varchar(225) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `status_group` `status_group` int(4) unsigned NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `field_group` `field_group` int(4) unsigned NULL DEFAULT NULL";                
 
-		// @todo DROP column field_related_to once gallery is gone
-		$Q[] = "UPDATE `exp_weblog_fields` SET `field_related_to` = 'channel' WHERE `field_related_to` = 'blog'";	
-		$Q[] = "ALTER TABLE `exp_weblog_fields` RENAME TO `exp_channel_fields`";
-		$Q[] = "ALTER TABLE `exp_weblog_data` CHANGE `weblog_id` `channel_id` int(4) unsigned NOT NULL";
-		$Q[] = "ALTER TABLE `exp_weblog_data` RENAME TO `exp_channel_data`";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'weblog:weblog_name', 'channel:channel_name')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'exp:weblog', 'exp:channel')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{assign_variable:', '{preload_replace:')"; 	// this is necessary before the following query
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{preload_replace:my_weblog=', '{preload_replace:my_channel=')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{my_weblog}', '{my_channel}')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'weblog_', 'channel_')";
-		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'weblog=', 'channel=')";
-		$Q[] = "UPDATE `exp_modules` SET `module_name` = 'Channel' WHERE `module_name` = 'Weblog'";
-		
-		$count = count($Q);
-		
-		foreach ($Q as $num => $sql)
-		{
-			$this->EE->progress->update_state("Replacing weblog with channel (Query $num of $count)");
-			
-			$this->EE->db->query($sql);
-		}
-		
-		// Finished!
-		return TRUE;
-	}
-}	
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `search_excerpt` `search_excerpt` int(4) unsigned NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `deft_category` `deft_category` varchar(60) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `comment_url` `comment_url` varchar(80) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `comment_max_chars` `comment_max_chars` int(5) unsigned NULL DEFAULT '5000'";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `comment_notify_emails` `comment_notify_emails` varchar(255) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `search_results_url` `search_results_url` varchar(80) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `ping_return_url` `ping_return_url` varchar(80) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `rss_url` `rss_url` varchar(80) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `enable_qucksave_versioning`";
+
+        // members table default tweaks
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `authcode` `authcode` varchar(10) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `url` `url` varchar(150) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `location` `location`  varchar(50) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `occupation` `occupation` varchar(80) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `interests` `interests` varchar(120) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `bday_d` `bday_d` int(2) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `bday_m` `bday_m` int(2) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `bday_y` `bday_y` int(4) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `aol_im` `aol_im` varchar(50) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `yahoo_im` `yahoo_im` varchar(50) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `msn_im` `msn_im` varchar(50) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `icq` `icq` varchar(50) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `bio` `bio` text NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `signature` `signature` text NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `avatar_filename` `avatar_filename` varchar(120) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `avatar_width` `avatar_width` int(4) unsigned NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `avatar_height` `avatar_height` int(4) unsigned NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `photo_filename` `photo_filename` varchar(120) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `photo_width` `photo_width` int(4) unsigned NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `photo_height` `photo_height` int(4) unsigned NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `sig_img_filename` `sig_img_filename` varchar(120) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `sig_img_width` `sig_img_width` int(4) unsigned NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `sig_img_height` `sig_img_height` int(4) unsigned NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `ignore_list` `ignore_list` text NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `cp_theme` `cp_theme` varchar(32) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `profile_theme` `profile_theme` varchar(32) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `forum_theme` `forum_theme` varchar(32) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `tracker` `tracker` text NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `notepad` `notepad` text NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `quick_links` `quick_links` text NULL";
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `quick_tabs` `quick_tabs` text NULL";
+
+        // Remove trackback actions
+        $Q[] = "DELETE FROM `exp_actions` WHERE `class` = 'Trackback'";
+        $Q[] = "DELETE FROM `exp_actions` WHERE `class` = 'Trackback_CP'";
+        
+        // Update CP action names
+        $query = $this->EE->db->query("SELECT action_id, class FROM exp_actions");
+
+        if ($query->num_rows() > 0)
+        {
+            foreach ($query->result() as $row)
+            {
+                if (substr($row->class, -3) == '_CP')
+                {
+                    $Q[] = "UPDATE `exp_actions` SET `class` = '".substr($row->class, 0, -3)."_mcp' WHERE `action_id` = '{$row->action_id}'";   
+                }
+            }
+        }
+
+        // Update category custom fields to allow null
+        $query = $this->EE->db->query("SELECT field_id FROM exp_category_fields");
+
+        if ($query->num_rows() > 0)
+        {
+            foreach ($query->result() as $row)
+            {
+                $Q[] = "ALTER TABLE `exp_category_field_data` CHANGE `field_id_{$row->field_id}` `field_id_{$row->field_id}` text NULL";
+                $Q[] = "ALTER TABLE `exp_category_field_data` CHANGE `field_ft_{$row->field_id}` `field_ft_{$row->field_id}` varchar(40) NULL DEFAULT 'none'";
+            }
+        }
+
+        // Update custom fields to allow null
+        $query = $this->EE->db->query("SELECT field_id, field_type FROM exp_weblog_fields");
+
+        if ($query->num_rows() > 0)
+        {
+            foreach ($query->result() as $row)
+            {
+                if ($row->field_type == 'date' OR $row->field_type == 'rel')
+                {
+                    $Q[] = "ALTER TABLE `exp_weblog_data` CHANGE `field_id_{$row->field_id}` `field_id_{$row->field_id}` int(10) NOT NULL DEFAULT 0";   
+                
+                    if ($row->field_type == 'date')
+                    {
+                        $Q[] = "ALTER TABLE `exp_weblog_data` CHANGE `field_dt_{$row->field_id}` `field_dt_{$row->field_id}` varchar(8) NULL";  
+                    }               
+                }
+                else
+                {
+                    $Q[] = "ALTER TABLE `exp_weblog_data` CHANGE `field_id_{$row->field_id}` `field_id_{$row->field_id}` text NULL";                
+                }
+            }       
+        }
+
+        $Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_content` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_cp`";
+        $Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_files` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_edit`";
+        $Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_addons` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_design`";
+        $Q[] = "ALTER TABLE `exp_member_groups` MODIFY COLUMN `can_access_modules` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_addons`";
+        $Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_extensions` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_modules`";
+        $Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_accessories` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_extensions`";       
+        $Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_plugins` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_accessories`";      
+        $Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_members` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_plugins`";  
+        $Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_sys_prefs` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_admin`";  
+        $Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_content_prefs` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_sys_prefs`";  
+        $Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_tools` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_content_prefs`";  
+        $Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_utilities` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_comm`";                                   
+        $Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_data` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_utilities`";   
+        $Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_logs` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_access_data`";                    
+        $Q[] = "ALTER TABLE `exp_member_groups` ADD `can_admin_design` CHAR(1) NOT NULL DEFAULT 'n' AFTER `can_admin_weblogs`";     
+
+        //  Update access priveleges for 2.0
+        // resync member groups.  In 1.x, a bug existed where deleting a member group would only delete it from the currently logged in site,
+        // leaving orphaned member groups in the member groups table.
+        $query = $this->EE->db->query("SELECT group_id, site_id, can_access_publish, can_access_edit, can_access_modules, can_admin_utilities, can_admin_members, can_admin_preferences, can_access_admin, can_access_comm FROM exp_member_groups");
+        $groups = array();
+        
+        foreach ($query->result() as $row)
+        {
+            $new_privs = '';
+
+            if ($row->can_admin_utilities == 'y')
+            {
+                $new_privs .= "`can_access_addons` = 'y', `can_access_extensions` = 'y', `can_access_plugins` = 'y', `can_access_tools` = 'y', `can_access_utilities` = 'y', `can_access_data` = 'y', `can_access_logs` = 'y', ";
+            }
+            elseif ($row->can_access_comm == 'y')
+            {
+                $new_privs .= "`can_access_tools` = 'y', "; 
+            }
+            
+            if ($row->can_access_modules == 'y')
+            {
+                $new_privs .= "`can_access_addons` = 'y', ";                
+            }
+
+            if ($row->can_access_publish == 'y' OR $row->can_access_edit == 'y')
+            {
+                $new_privs .= "`can_access_content` = 'y', ";               
+            }           
+
+            if ($row->can_admin_members == 'y')
+            {
+                $new_privs .= "`can_access_members` = 'y', ";               
+            }
+
+            if ($row->can_admin_preferences == 'y')
+            {
+                $new_privs .= "`can_access_sys_prefs` = 'y', ";             
+                $new_privs .= "`can_admin_design` = 'y', "; 
+            }
+
+            if ($row->can_access_admin == 'y')
+            {
+                $new_privs .= "`can_access_content_prefs` = 'y', ";             
+            }
+
+            if ($row->group_id == 1)
+            {
+                $new_privs .= "`can_access_accessories` = 'y', `can_access_files` = 'y', ";             
+            }           
+
+            
+            if ($new_privs != '')
+            {
+                $new_privs = substr($new_privs, 0, -2);
+                
+                $Q[] = "UPDATE `exp_member_groups` SET {$new_privs} WHERE `group_id` = '{$row->group_id}'";
+            }
+            
+            $groups[$row->group_id][] = $row->site_id;
+        }
+
+        $Q[] = "ALTER TABLE `exp_member_groups` DROP COLUMN `can_admin_preferences`";       
+        $Q[] = "ALTER TABLE `exp_member_groups` DROP COLUMN `can_admin_utilities`"; 
+        
+        $query = $this->EE->db->query("SELECT site_id FROM exp_sites");
+        
+        foreach ($query->result() as $row)
+        {
+            foreach ($groups as $group_id => $group_site_ids)
+            {
+                if ( ! in_array($row->site_id, $group_site_ids))
+                {
+                    // vanquish!
+                    $this->EE->db->query("DELETE FROM exp_member_groups WHERE group_id = {$group_id}");
+                }
+            }
+        }
+        
+        $count = count($Q);
+        
+        foreach ($Q as $num => $sql)
+        {
+            $this->EE->progress->update_state("Creating and updating database tables (Query $num of $count)");
+            
+            $this->EE->db->query($sql);
+        }
+            
+        $this->EE->progress->update_state("Installing default Accessories");
+        $this->EE->_install_accessories();  
+        
+        // port over old Fresh Variables to Snippets?
+        $this->EE->progress->update_state('Checking for Fresh Variables');
+        $this->EE->db->select('settings');
+        $this->EE->db->where('class', 'Fresh_variables');
+        $query = $this->EE->db->get('extensions', 1);
+        
+        if ($query->num_rows() > 0 && $query->row('settings') != '')
+        {
+            // Load the string helper
+            $this->EE->load->helper('string');
+            
+            $snippets = strip_slashes(unserialize($query->row('settings')));
+
+            foreach ($snippets as $site_id => $vars)
+            {
+                foreach ($vars as $var)
+                {
+                    $this->EE->progress->update_state('Adding Snippet: '.$var['var_name']);
+                    $data = array(
+                                    'site_id'               => ($site_id == 'all') ? 0 : $site_id,
+                                    'snippet_name'      => $var['var_name'],
+                                    'snippet_contents'  => $var['var_value']
+                                );
+                                
+                    $this->EE->db->insert('snippets', $data);
+                }
+            }
+            
+            unset($snippets);
+            
+            $this->EE->progress->update_state('Deleting Fresh Variables');
+            
+            // uninstall Fresh Variables
+            $this->EE->db->query("DELETE FROM exp_extensions WHERE class = 'Fresh_variables'");
+            $query = $this->EE->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Fresh_variables'"); 
+
+            $this->EE->db->query("DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id')."'");        
+            $this->EE->db->query("DELETE FROM exp_modules WHERE module_name = 'Fresh_variables'");
+            $this->EE->db->query("DELETE FROM exp_actions WHERE class = 'Fresh_variables'");
+        }
+        
+        // weblogs are channels!
+        return 'weblog_terminology_changes';
+    }
+
+
+    // ------------------------------------------------------------------------
+    
+    function weblog_terminology_changes()
+    {
+        $this->EE->progress->update_state("Replacing weblog with channel.");
+        
+        $Q[] = "ALTER TABLE `exp_sites` CHANGE `site_weblog_preferences` `site_channel_preferences` TEXT NOT NULL";
+        $Q[] = "ALTER TABLE `exp_member_groups` CHANGE `can_admin_weblogs` `can_admin_channels` CHAR(1) NOT NULL DEFAULT 'n'";
+        $Q[] = "ALTER TABLE `exp_weblog_member_groups` CHANGE `weblog_id` `channel_id` INT(6) UNSIGNED NOT NULL";
+        $Q[] = "ALTER TABLE `exp_weblog_member_groups` RENAME TO `exp_channel_member_groups`";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_id` `channel_id` int(6) unsigned NOT NULL auto_increment";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `blog_name` `channel_name` varchar(40) NOT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `blog_title` `channel_title` varchar(100) NOT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `blog_url` `channel_url` varchar(100) NOT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `blog_description` `channel_description` varchar(225) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `blog_lang` `channel_lang` varchar(12) NOT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_max_chars` `channel_max_chars` int(5) unsigned NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_notify` `channel_notify` CHAR(1) NOT NULL default 'n'";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_require_membership` `channel_require_membership` char(1) NOT NULL default 'y'";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_html_formatting` `channel_html_formatting` char(4) NOT NULL default 'all'";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_allow_img_urls` `channel_allow_img_urls` char(1) NOT NULL default 'y'";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_auto_link_urls` `channel_auto_link_urls` char(1) NOT NULL default 'y'";
+        $Q[] = "ALTER TABLE `exp_weblogs` CHANGE `weblog_notify_emails` `channel_notify_emails` varchar(255) NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblogs` RENAME TO `exp_channels`";
+        $Q[] = "ALTER TABLE `exp_weblog_titles` CHANGE `weblog_id` `channel_id` int(4) unsigned NOT NULL";
+        $Q[] = "ALTER TABLE `exp_weblog_titles` RENAME TO `exp_channel_titles`";
+        $Q[] = "ALTER TABLE `exp_entry_versioning` CHANGE `weblog_id` `channel_id` int(4) unsigned NOT NULL";
+        $Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_pre_blog_id` `field_pre_channel_id` int(6) unsigned NULL DEFAULT NULL";
+        $Q[] = "ALTER TABLE `exp_weblog_fields` CHANGE `field_related_to` `field_related_to` varchar(12) NOT NULL default 'channel'";
+
+        // @todo DROP column field_related_to once gallery is gone
+        $Q[] = "UPDATE `exp_weblog_fields` SET `field_related_to` = 'channel' WHERE `field_related_to` = 'blog'";   
+        $Q[] = "ALTER TABLE `exp_weblog_fields` RENAME TO `exp_channel_fields`";
+        $Q[] = "ALTER TABLE `exp_weblog_data` CHANGE `weblog_id` `channel_id` int(4) unsigned NOT NULL";
+        $Q[] = "ALTER TABLE `exp_weblog_data` RENAME TO `exp_channel_data`";
+        $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'weblog:weblog_name', 'channel:channel_name')";
+        $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'exp:weblog', 'exp:channel')";
+        $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{assign_variable:', '{preload_replace:')";   // this is necessary before the following query
+        $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{preload_replace:my_weblog=', '{preload_replace:my_channel=')";
+        $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{my_weblog}', '{my_channel}')";
+        $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'weblog_', 'channel_')";
+        $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'weblog=', 'channel=')";
+        $Q[] = "UPDATE `exp_modules` SET `module_name` = 'Channel' WHERE `module_name` = 'Weblog'";
+        
+        $count = count($Q);
+        
+        foreach ($Q as $num => $sql)
+        {
+            $this->EE->progress->update_state("Replacing weblog with channel (Query $num of $count)");
+            
+            $this->EE->db->query($sql);
+        }
+        
+        // Finished!
+        return TRUE;
+    }
+}   
 /* END CLASS */
 
 
