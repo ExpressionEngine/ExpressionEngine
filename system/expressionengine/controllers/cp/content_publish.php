@@ -1353,14 +1353,13 @@ class Content_publish extends Controller {
 
 		}
 		
-
 		// ----------------------------------------------
 		//	Custom Blocks
 		// ----------------------------------------------		
 
 		$module_data = $this->api_channel_fields->get_module_fields($channel_id, $entry_id);
 		
-$module_tabs = array();
+		$module_tabs = array();
 	
 		if ($module_data && is_array($module_data))
 		{
@@ -1368,20 +1367,15 @@ $module_tabs = array();
 			{
 				foreach ($v as $val)
 				{			
-$module_tabs[$tab][] = $val['field_id'];
+					$module_tabs[$tab][] = $val['field_id'];
 
 					$this->api_channel_fields->set_settings($val['field_id'], $val);
 
-
 					$rules = 'call_field_validation['.$val['field_id'].']';
 					$this->form_validation->set_rules($val['field_id'], $val['field_label'], $rules);
-
-
 				}
 			}
 		}
-
-
 
 		// Title options
 		$settings = array(
