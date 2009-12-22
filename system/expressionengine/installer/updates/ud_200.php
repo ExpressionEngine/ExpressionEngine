@@ -193,11 +193,14 @@ class Updater {
 		}
 
 		// Create a new directory for old files.
-		define('OLD_TEMPLATE_FOLDER', TEMPLATE_PATH.'/1.6_templates/');
+		define('OLD_TEMPLATE_FOLDER', TEMPLATE_PATH.'1.x_templates/');
 		
 		if ( ! (is_dir(OLD_TEMPLATE_FOLDER)))
 		{
-			mkdir(OLD_TEMPLATE_FOLDER);			
+			if (mkdir(OLD_TEMPLATE_FOLDER) === FALSE)
+			{
+				show_error('Could Not Create folder');
+			}
 		}
 
         foreach ($templates_to_move as $key => $val)
@@ -215,7 +218,10 @@ class Updater {
 			// Move the file over to a new directory, so we're keeping the original file.
 			if ( ! is_dir(OLD_TEMPLATE_FOLDER.$val->group_name))
 			{
-				mkdir(OLD_TEMPLATE_FOLDER.$val->group_name);
+				if (mkdir(OLD_TEMPLATE_FOLDER.$val->group_name, DIR_WRITE_MODE))
+				{
+					show_error('Could not create folder for ' . OLD_TEMPLATE_FOLDER.$val->group_name . '.  Please make sure ' . OLD_TEMPLATE_FOLDER . ' is writable');
+				}
 			}
 			
 			// write the file to a new temp location where the user can have them for safe keeping.
