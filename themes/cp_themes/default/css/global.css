@@ -2154,7 +2154,7 @@ table.accessTable div.tableCellHeading {
 	width:				100%;
 	padding-bottom: 	9px;
 	padding-top:		3px;
-	overflow: 			hidden;
+/*	overflow: 			hidden;*/
 	z-index:			3;
 }
 

@@ -3893,7 +3893,7 @@ body.js #revealSidebarLink {
 	width:22px; height:5px;
 	margin-left:auto;
 	margin-right:auto;
-	background: transparent url(<?=$cp_theme_url?>images/cp_sprite.png) no-repeat left -34px;
+	background: transparent url(<?=$cp_theme_url?>images/publish_handle.png) no-repeat;
 	cursor:n-resize;
 }
 /***************************************************************************************/
