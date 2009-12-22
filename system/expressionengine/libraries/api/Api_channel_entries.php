@@ -78,6 +78,8 @@ class Api_channel_entries extends Api {
 	function submit_new_entry($channel_id, $data)
 	{
 		$this->data =& $data;
+		$mod_data = array();
+		
 		$this->_initialize(array('channel_id', 'entry_id', 'autosave'));
 
 		if ( ! $this->_base_prep($data))
@@ -95,6 +97,9 @@ class Api_channel_entries extends Api {
 		$this->_cache = array();
 		
 		$this->_fetch_channel_preferences();
+
+		$this->_fetch_module_data($data);
+
 		$this->_check_for_data_errors($data);
 				
 		// Lets make sure those went smoothly
@@ -104,7 +109,7 @@ class Api_channel_entries extends Api {
 			return FALSE;
 		}
 		
-		$this->_prepare_data($data);
+		$this->_prepare_data($data, $mod_data);
 		$this->_build_relationships($data);
 
 		$meta = array(
@@ -145,6 +150,12 @@ class Api_channel_entries extends Api {
 		}
 
 		$this->_insert_entry($meta, $data);
+		
+		if (count($mod_data) > 0)
+		{
+			$this->_set_mod_data($meta, $data, $mod_data);
+		}
+		
 		$this->_create_forum_post($meta, $data);
 		$this->_sync_related($meta, $data);
 		
@@ -196,6 +207,7 @@ class Api_channel_entries extends Api {
 	function update_entry($entry_id, $data, $autosave = FALSE)
 	{
 		$this->data =& $data;
+		$mod_data = array();
 		$this->_initialize(array('channel_id', 'autosave'));
 
 		$this->entry_id = $entry_id;
@@ -218,6 +230,9 @@ class Api_channel_entries extends Api {
 				
 		$this->_fetch_channel_preferences();
 		$this->_do_channel_switch($data);
+		
+		$this->_fetch_module_data($data);		
+		
 		$this->_check_for_data_errors($data);
 		
 		// Lets make sure those went smoothly
@@ -227,7 +242,7 @@ class Api_channel_entries extends Api {
 			return ($this->autosave) ? $this->errors : FALSE;
 		}
 		
-		$this->_prepare_data($data);
+		$this->_prepare_data($data, $mod_data);
 		$this->_build_relationships($data);
 		
 		$meta = array(
@@ -277,6 +292,13 @@ class Api_channel_entries extends Api {
 		}
 
 		$this->_update_entry($meta, $data);
+
+		if (count($mod_data) > 0)
+		{
+			$this->_set_mod_data($meta, $data, $mod_data);
+		}		
+		
+		
 		$this->_update_forum_post($meta, $data);
 		$this->_sync_related($meta, $data);
 
@@ -884,6 +906,56 @@ class Api_channel_entries extends Api {
 			}
 		}
 	}
+
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get module data
+	 *
+	 * Get module information
+	 *
+	 * @access	private
+	 * @param	mixed
+	 * @return	void
+	 */
+	function _fetch_module_data($data)
+	{
+		//$errors = $this->EE->api_channel_fields->get_module_methods('validate_publish', array('data' => $data));
+
+		$methods = array('validate_publish', 'publish_tabs');
+		$params = array('validate_publish' => array($data), 'publish_tabs' => array($data['channel_id'], $this->entry_id));
+		
+		$module_data = $this->EE->api_channel_fields->get_module_methods($methods, $params);
+		
+
+		
+		foreach ($module_data as $class => $m)
+		{
+		
+		if (is_array($m['validate_publish']))
+		{
+			foreach($m['validate_publish'] as $k => $v)
+			{
+				$this->_set_error($k, $v);
+			}
+		}
+		
+		if (is_array($m['publish_tabs']))
+		{
+			foreach($m['publish_tabs'] as $tab => $v)
+			{
+				//foreach ($v as $val)
+				//{			
+					$this->mod_fields[$v['field_id']] = '';
+					
+					//print_r($v);
+				//}
+			}
+		}		
+		}
+		
+	}
 	
 	// --------------------------------------------------------------------
 	
@@ -1317,7 +1389,7 @@ class Api_channel_entries extends Api {
 	 * @param	mixed
 	 * @return	void
 	 */
-	function _prepare_data(&$data)
+	function _prepare_data(&$data, &$mod_data)
 	{
 		// Category parents - we toss the rest
 		
@@ -1382,9 +1454,24 @@ class Api_channel_entries extends Api {
 			if (isset($data[$field_name]))
 			{
 				$this->EE->api_channel_fields->setup_handler($field_id);
-				$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
+				
+				// Break out module fields here
+				if (isset($this->mod_fields[$field_name]))
+				{
+					$mod_data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
+					unset($data[$field_name]);
+				}
+				else
+				{
+					$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
+				}
 			}
 		}
+		
+		//print_r($mod_data);
+		//print_r($data);
+		//echo 'donage';
+		//exit;
 	}
 	
 	// --------------------------------------------------------------------
@@ -1751,6 +1838,24 @@ class Api_channel_entries extends Api {
 			
 			$this->EE->channel_entries_model->prune_revisions($this->entry_id, $max);
 		}
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Create a forum post if forum data was passed in
+	 *
+	 * @access	private
+	 * @param	string
+	 * @return	string
+	 */
+	function _set_mod_data($meta, $data, $mod_data)
+	{
+		$methods = array('publish_data_db');
+		$params = array('publish_data_db' => array('meta' => $meta, 'data' => $data, 'mod_data' => $mod_data, 'entry_id' => $this->entry_id));
+		
+		$module_data = $this->EE->api_channel_fields->get_module_methods($methods, $params);
+
 	}
 	
 	// --------------------------------------------------------------------
