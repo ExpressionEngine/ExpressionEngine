@@ -22,6 +22,10 @@
  * @author      ExpressionEngine Dev Team
  * @link        http://expressionengine.com
  */
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 class Updater {
 
     var $version_suffix = 'pb01';
@@ -63,10 +67,7 @@ class Updater {
         $this->EE->load->helper('string');
         
         // Update Flat File Templates if we have any
-        if ($this->_update_templates_saved_as_files() === FALSE)
-        {
-            show_error('A problem occurred');
-        }
+        $this->_update_templates_saved_as_files();
         
         // set charset to PHP default so non-latin characters stored in preferences are retreived correctly
         // @todo - might do a little dance for people who hacked version 1.x to use utf8 charset with MySQL
@@ -128,6 +129,7 @@ class Updater {
      *
      * @access private
      * @return void
+	 * @todo language keys.
      */
     function _update_templates_saved_as_files()
     {
@@ -139,40 +141,64 @@ class Updater {
 
         if ($query->num_rows == 0)
         {
-            return TRUE;
+            return;
         }
-        
+
         $this->EE->progress->update_state("Updating templates saved as files");     
         
 		define('TEMPLATE_PATH', EE_APPPATH.'templates/');
 
+		if ( ! is_really_writable(TEMPLATE_PATH))
+		{
+			show_error('sorry, the template folder is not writeable.');
+		}
 
         // Error Array
         $template_errors = array();
         
         // Templates to move
         $templates_to_move = array();
-        
+
+        // Tempalte Groups
+		$template_groups = array();
+
         foreach ($query->result() as $row)
         {
             if ( ! file_exists(TEMPLATE_PATH.$row->group_name.'/'.$row->template_name.EXT))
             {
-                $template_errors[] = $template_name;
+                $template_errors[] = $row->group_name.'/'.$row->template_name;
             }
             else
             {
                 $templates_to_move[] = $row;
+				$template_groups[] = $row->group_name;
             }
         }
 
-		// @todo - Check for errors, and error out if there are any
-		
-		
+		$template_groups = array_unique($template_groups);
+
+		// Are there errors?
+		if ( ! empty($template_errors))
+		{
+			$error_str = '<ul>';
+			
+			foreach ($template_errors as $key => $val)
+			{
+				$error_str .= '<li>'.$val.'</li>';
+			}
+			
+			$error_str .= '</ul>';
+			
+			show_error('The following template files could not be located.'.$error_str);
+		}
+
 		// Create a new directory for old files.
+		define('OLD_TEMPLATE_FOLDER', TEMPLATE_PATH.'/1.6_templates/');
 		
-		define(OLD_TEMPLATE_FOLDER, TEMPLATE_PATH.'/1.6_templates/');
-		
-		mkdir(OLD_TEMPLATE_FOLDER);
+		if ( ! (is_dir(OLD_TEMPLATE_FOLDER)))
+		{
+			mkdir(OLD_TEMPLATE_FOLDER);			
+		}
 
         foreach ($templates_to_move as $key => $val)
         {
@@ -199,10 +225,13 @@ class Updater {
 			unlink(TEMPLATE_PATH.$val->group_name.'/'.$val->template_name.EXT);
         }
 		
-		// unlink(TEMPLATE_PATH.$)
+		// Remove old folders for each template group
+		foreach ($template_groups as $group)
+		{
+			rmdir(TEMPLATE_PATH.$group);
+		}
 
-        
-        die('here');
+		return;
     }
     
     
