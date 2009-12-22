@@ -134,5 +134,13 @@ $lang['path_must_be_writable'] = 'The path must be writable and must not contain
 $lang['trackback_not_writable'] = 'The trackback path is not writable or already contains a file called trackback.zip';
 $lang['update_ee'] = 'Update ExpressionEngine!';
 
+// Template Updater Lang
+$lang['updating_template_as_files'] = 'Updating templates saved as files.';
+$lang['template_files_not_located'] = 'The following template files could not be located:';
+$lang['proper_template_files_location'] = 'Please make sure your template group folders are located in %s and the template folder has permissions of 777';
+$lang['template_folder_not_writeable'] = 'The template folder is not writeable, make sure permissions are set to 777 on %s';
+$lang['unable_to_read_tmpl_file'] = 'Unable to read the following file:  %s Verify it exists.';
+$lang['could_not_create_folder'] = 'Could not create folder for %s.  Please make sure %s is writable';
+
 /* End of file installer_lang.php */
 /* Location: ./system/expressionengine/installer/language/english/installer_lang.php */

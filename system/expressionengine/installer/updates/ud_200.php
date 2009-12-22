@@ -144,13 +144,13 @@ class Updater {
             return;
         }
 
-        $this->EE->progress->update_state("Updating templates saved as files");     
+        $this->EE->progress->update_state($this->EE->lang->line('updating_templates_as_files'));     
         
 		define('TEMPLATE_PATH', EE_APPPATH.'templates/');
 
 		if ( ! is_really_writable(TEMPLATE_PATH))
 		{
-			show_error('sorry, the template folder is not writeable.');
+			show_error(sprintf($this->EE->lang->line('template_folder_not_writeable'), TEMPLATE_PATH));
 		}
 
         // Error Array
@@ -189,7 +189,8 @@ class Updater {
 			
 			$error_str .= '</ul>';
 			
-			show_error('The following template files could not be located.'.$error_str);
+			show_error($this->EE->lang->line('template_files_not_located').$error_str
+						.sprintf($this->EE->lang->line('proper_template_files_location'), TEMPLATE_PATH));
 		}
 
 		// Create a new directory for old files.
@@ -199,7 +200,8 @@ class Updater {
 		{
 			if (mkdir(OLD_TEMPLATE_FOLDER) === FALSE)
 			{
-				show_error('Could Not Create folder');
+				show_error(sprintf($this->EE->lang->line('template_folder_not_writeable'),
+								   TEMPLATE_PATH));
 			}
 		}
 
@@ -209,7 +211,7 @@ class Updater {
 
 			if ( ! $one_six_file)
 			{
-				show_error('unable to read file ' . $val->group_name.'/'.$val->template_name.EXT);
+				show_error(sprintf($this->EE->lang->line('unable_to_read_tmpl_file', $val->group_name.'/'.$val->template_name.EXT)));
 			}
 			
 			$this->EE->db->where('template_id', $val->template_id);
@@ -218,10 +220,14 @@ class Updater {
 			// Move the file over to a new directory, so we're keeping the original file.
 			if ( ! is_dir(OLD_TEMPLATE_FOLDER.$val->group_name))
 			{
-				if (mkdir(OLD_TEMPLATE_FOLDER.$val->group_name, DIR_WRITE_MODE))
-				{
-					show_error('Could not create folder for ' . OLD_TEMPLATE_FOLDER.$val->group_name . '.  Please make sure ' . OLD_TEMPLATE_FOLDER . ' is writable');
+				if (mkdir(OLD_TEMPLATE_FOLDER.$val->group_name) === FALSE)
+				{	
+					show_error(sprintf($this->EE->lang->line('could_not_create_folder'),
+										OLD_TEMPLATE_FOLDER.$val->group_name,
+										OLD_TEMPLATE_FOLDER));
 				}
+				
+				chmod(OLD_TEMPLATE_FOLDER.$val->group_name, DIR_WRITE_MODE);
 			}
 			
 			// write the file to a new temp location where the user can have them for safe keeping.
