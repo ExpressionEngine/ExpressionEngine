@@ -887,8 +887,8 @@ class Member_register extends Member {
 
 		$group_id = $this->EE->config->item('default_member_group');
 
-		// Is there even an account for this particular user?
-		$query = $this->EE->db->query("SELECT member_id, group_id, email FROM exp_members WHERE authcode = '".$this->EE->db->escape_str($id)."'");
+		// Is there even a Pending (group 4) account for this particular user?
+		$query = $this->EE->db->query("SELECT member_id, group_id, email FROM exp_members WHERE group_id = 4 AND authcode = '".$this->EE->db->escape_str($id)."'");
 
 		if ($query->num_rows() == 0)
 		{
