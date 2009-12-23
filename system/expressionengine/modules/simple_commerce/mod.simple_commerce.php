@@ -842,7 +842,7 @@ class Simple_commerce {
         /**  Check for Subscription
         /** --------------------------------------------*/
         
-        $query = $this->EE->db->query("SELECT purchase_id
+        $query = $this->EE->db->query("SELECT purchase_id, item_id
         					 FROM exp_simple_commerce_purchases
         					 WHERE member_id = '".$this->EE->db->escape_str($this->post['custom'])."'
         					 AND paypal_subscriber_id = '".$this->EE->db->escape_str($this->post['subscr_id'])."'");
@@ -863,7 +863,7 @@ class Simple_commerce {
 		
 		$this->EE->db->query("UPDATE exp_simple_commerce_items 
 					SET current_subscriptions = current_subscriptions - 1 
-					WHERE item_id = '".$this->EE->db->escape_str($item_id)."'");
+					WHERE item_id = '".$this->EE->db->escape_str($query->row('item_id'))."'");
 					
 		return TRUE;
     }
@@ -921,8 +921,8 @@ class Simple_commerce {
 					  'paypal_subscriber_id'	=> $this->post['subscr_id']);
 		
 		$this->EE->db->query($this->EE->db->insert_string('exp_simple_commerce_purchases', $data));
-		$this->EE->db->query("UPDATE exp_simple_commerce_items SET item_purchases = item_purchases + 1 WHERE item_id = '".$this->EE->db->escape_str($item_id)."'");
-		$this->EE->db->query("UPDATE exp_simple_commerce_items SET current_subscriptions = current_subscriptions + 1 WHERE item_id = '".$this->EE->db->escape_str($item_id)."'");
+		$this->EE->db->query("UPDATE exp_simple_commerce_items SET item_purchases = item_purchases + 1 WHERE item_id = '".$this->EE->db->escape_str($row->item_id)."'");
+		$this->EE->db->query("UPDATE exp_simple_commerce_items SET current_subscriptions = current_subscriptions + 1 WHERE item_id = '".$this->EE->db->escape_str($row->item_id)."'");
     
     	return TRUE;
     } 
