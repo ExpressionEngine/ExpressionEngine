@@ -6165,10 +6165,6 @@ class Admin_content extends Controller {
 		// @todo: remove this.  I was experimenting with a js delete interface... but I've changed my mind.
 		// leaving here for reference
 		$this->javascript->output('
-//			$(".mainTable tr").each(function(e){
-//				$(this).children().eq(5).css("backgroundColor", "red");
-//			});
-
 			$(".mainTable .tag_order input").hide();
 
 			$(".mainTable tbody").sortable(
@@ -6176,15 +6172,26 @@ class Admin_content extends Controller {
 					axis:"y",
 					containment:"parent",
 					placeholder:"tablesize",
+					start: function() {
+						$(".submit input.submit").attr("disabled", true).addClass("disabled_field");
+					},
 					stop: function(){
 						var tag_order = "";
-						$(".mainTable .tag_order").each(function(){
+						$(".mainTable input.tag_order").each(function(){
 							tag_order += "&" + $(this).attr("name") + "=" + $(this).val();
 						});
 						$.ajax({
 							type: "POST",
-							url: "'.str_replace('&amp;', '&', BASE).'&C=admin_content&M=reorder_html_buttons",
-							data: "XID='.$xid.'"+tag_order
+							url: EE.BASE+"&C=myaccount&M=reorder_html_buttons",
+							data: "XID='.$xid.'"+tag_order,
+							complete: function() {
+								$(".submit input.submit").attr("disabled", false).removeClass("disabled_field");
+							},
+							success: function () {
+								$(".tag_order input[type=text]").each(function(i) {
+									$(this).val(i);
+								});
+							}
 						});
 					}
 				}
@@ -6202,7 +6209,6 @@ class Admin_content extends Controller {
 				// stay here
 				return false;
 			});
-
 
 			$("#add_new_html_button").hide();
 			$(".del_instructions").hide();
