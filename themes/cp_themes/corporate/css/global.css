@@ -1927,11 +1927,6 @@ select.smallSelect {
 	margin:0;
 }
 
-#templateGroups .linkBar, #templates .linkBar, #templateEditor .linkBar {
-	min-height:			28px;
-	padding:			0 0 10px 0;
-}
-
 #templateGroups .groupList {
 	background-color:	#fafafc;
 	padding:			8px;
