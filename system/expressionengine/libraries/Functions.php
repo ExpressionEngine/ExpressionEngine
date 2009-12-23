@@ -237,10 +237,8 @@ class EE_Functions {
 	 * @return	string
 	 */
 	function remove_double_slashes($str)
-	{  
-		$str = preg_replace("#([^:])//+#", "\\1/", $str);
-	
-		return $str;
+	{
+		return preg_replace("#(^|[^:])//+#", "\\1/", $str);
 	}
 	
 	// --------------------------------------------------------------------
