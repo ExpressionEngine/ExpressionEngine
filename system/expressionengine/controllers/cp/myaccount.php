@@ -995,6 +995,9 @@ class MyAccount extends Controller {
 					axis:"y",
 					containment:"parent",
 					placeholder:"tablesize",
+					start: function() {
+						$(".submit input.submit").attr("disabled", true).addClass("disabled_field");
+					},
 					stop: function(){
 						var tag_order = "";
 						$(".mainTable input.tag_order").each(function(){
@@ -1003,7 +1006,15 @@ class MyAccount extends Controller {
 						$.ajax({
 							type: "POST",
 							url: EE.BASE+"&C=myaccount&M=reorder_html_buttons",
-							data: "XID='.$xid.'"+tag_order
+							data: "XID='.$xid.'"+tag_order,
+							complete: function() {
+								$(".submit input.submit").attr("disabled", false).removeClass("disabled_field");
+							},
+							success: function () {
+								$(".tag_order input[type=text]").each(function(i) {
+									$(this).val(i);
+								});
+							}
 						});
 					}
 				}
