@@ -12,7 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=$cp_page_title?></h2>
+		<div class="heading"><h2><?=$cp_page_title?></h2></div>
         
 		<div class="pageContents">
 			<h3><?=lang('field_group').': '.$group_name?></h3>
