@@ -1143,6 +1143,8 @@ class MyAccount extends Controller {
 	 */
 	function reorder_html_buttons()
 	{
+		$this->output->enable_profiler(FALSE);
+		
 		// validate for unallowed blank values
 		if (empty($_POST)) 
 		{
@@ -1155,6 +1157,7 @@ class MyAccount extends Controller {
 			$this->db->where('id', $tag_id);
 			$this->db->update('html_buttons');
 		}
+		exit();
 	}
 
 	// --------------------------------------------------------------------

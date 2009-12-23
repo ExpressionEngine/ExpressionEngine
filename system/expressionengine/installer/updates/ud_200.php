@@ -22,10 +22,6 @@
  * @author      ExpressionEngine Dev Team
  * @link        http://expressionengine.com
  */
-
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 class Updater {
 
     var $version_suffix = 'pb01';
@@ -129,7 +125,6 @@ class Updater {
      *
      * @access private
      * @return void
-	 * @todo language keys.
      */
     function _update_templates_saved_as_files()
     {
