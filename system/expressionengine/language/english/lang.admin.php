@@ -1522,6 +1522,12 @@ $lang = array(
 "recount_stats" => 
 "Recount Statistics",
 
+'recount_prefs' =>
+'Recount Preferences',
+
+'recount_batch_total' =>
+'Total number of database rows processed per batch.',
+
 "preference_updated" =>
 "Preference Updated",
 

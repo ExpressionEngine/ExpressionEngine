@@ -787,6 +787,8 @@ class Tools_data extends Controller {
 			headers: {2: {sorter: false}},
 			widgets: ["zebra"]
 		}');
+		
+		$this->cp->set_right_nav(array($this->lang->line('recount_prefs') => BASE.AMP.'C=admin_system'.AMP.'M=recount_preferences'));
 
 		// Do the forums exist?
 		$forum_exists = FALSE;

@@ -181,7 +181,8 @@ class Admin_system extends Controller {
 									'emoticon_cfg',
 									'tracking_cfg',
 									'avatar_cfg',
-									'search_log_cfg'
+									'search_log_cfg',
+									'recount_prefs'
 									)
 						)
 		)
@@ -463,6 +464,24 @@ class Admin_system extends Controller {
 		}
 
 		$this->_config_manager('db_cfg', __FUNCTION__);
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Recount Preferences
+	 *
+	 * @access public
+	 * @return void
+	 */
+	function recount_preferences()
+	{
+		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_system_prefs'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+		
+		$this->_config_manager('recount_prefs', __FUNCTION__);
 	}
 
 	// --------------------------------------------------------------------

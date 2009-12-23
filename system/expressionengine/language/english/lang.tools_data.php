@@ -62,7 +62,7 @@ $lang = array(
 'forums'				=> 'Forums',
 'forum_topics'			=> 'Forum Topics',
 'recount_completed'		=> 'Recount Completed',
-
+'recount_prefs' 		=> 'Recount Preferences',
 ''=>''
 );
 

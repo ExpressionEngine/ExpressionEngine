@@ -205,7 +205,10 @@ class Admin_model extends CI_Model {
 											'log_referrers'					=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'max_referrers'					=> array('i', ''),
 											'dynamic_tracking_disabling'	=> array('i', '')
-										 )
+										 ),
+			'recount_prefs'		=>  array(
+											'recount_batch_total'			=> array('i', array('1000')),
+										)
 						);
 		
 		// don't show or edit the CP URL from masked CPs
