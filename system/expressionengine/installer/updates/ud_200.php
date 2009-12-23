@@ -1230,7 +1230,13 @@ class Updater {
         $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{my_weblog}', '{my_channel}')";
         $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'weblog_', 'channel_')";
         $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'weblog=', 'channel=')";
+		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{blog_title}', '{channel_title}')";
+		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{blog_description}', '{channel_description}')";
+		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{blog_encoding}', '{channel_encoding}')";
+		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{blog_lang}', '{channel_lang}')";
+		$Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{blog_url}', '{channel_url}')";
         $Q[] = "UPDATE `exp_modules` SET `module_name` = 'Channel' WHERE `module_name` = 'Weblog'";
+
         
         $count = count($Q);
         
