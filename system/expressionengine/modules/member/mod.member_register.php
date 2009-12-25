@@ -681,8 +681,9 @@ class Member_register extends Member {
 		// -------------------------------------------
 		// 'member_member_register' hook.
 		//  - Additional processing when a member is created through the User Side
+		//  - $member_id added in 2.0.1
 		//
-			$edata = $this->EE->extensions->call('member_member_register', $data);
+			$edata = $this->EE->extensions->call('member_member_register', $data, $member_id);
 			if ($this->EE->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
