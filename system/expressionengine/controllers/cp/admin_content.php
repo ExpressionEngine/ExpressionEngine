@@ -6335,6 +6335,8 @@ class Admin_content extends Controller {
 			$this->db->where('id', $tag_id);
 			$this->db->update('html_buttons');
 		}
+
+		$this->output->send_ajax_response($this->lang->line('preferences_updated'));
 	}
 
 	// --------------------------------------------------------------------

@@ -1154,10 +1154,8 @@ class MyAccount extends Controller {
 	 */
 	function reorder_html_buttons()
 	{
-		$this->output->enable_profiler(FALSE);
-		
 		// validate for unallowed blank values
-		if (empty($_POST)) 
+		if (empty($_POST))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1168,7 +1166,8 @@ class MyAccount extends Controller {
 			$this->db->where('id', $tag_id);
 			$this->db->update('html_buttons');
 		}
-		exit();
+
+		$this->output->send_ajax_response($this->lang->line('preferences_updated'));
 	}
 
 	// --------------------------------------------------------------------
