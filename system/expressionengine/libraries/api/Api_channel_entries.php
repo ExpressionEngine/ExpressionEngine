@@ -463,26 +463,29 @@ class Api_channel_entries extends Api {
 			}
 
 			// @todo model
-
 			$this->EE->db->where('member_id', $authors[$val]);
 			$this->EE->db->update('members', array('total_entries' => $tot));
 
-			$this->EE->db->where('status', 'o');
-			$this->EE->db->where('entry_id', $val);
-			$this->EE->db->where('author_id', $authors[$val]);
-			$count = $this->EE->db->count_all_results('comments');
-
-			if ($count > 0)
+			if (isset($this->EE->cp->installed_modules['comment']))
 			{
-				$this->EE->db->select('total_comments');
-				$query = $this->EE->db->get_where('members', array('member_id' => $authors[$val]));
+				$this->EE->db->where('status', 'o');
+				$this->EE->db->where('entry_id', $val);
+				$this->EE->db->where('author_id', $authors[$val]);
+				$count = $this->EE->db->count_all_results('comments');
 
-				$this->EE->db->where('member_id', $authors[$val]);
-				$this->EE->db->update('members', array('total_comments' => ($query->row('total_comments') - $count)));
+				if ($count > 0)
+				{
+					$this->EE->db->select('total_comments');
+					$query = $this->EE->db->get_where('members', array('member_id' => $authors[$val]));
+
+					$this->EE->db->where('member_id', $authors[$val]);
+					$this->EE->db->update('members', array('total_comments' => ($query->row('total_comments') - $count)));
+				}
+
+				$this->EE->db->delete('comments', array('entry_id' => $val));
+				
 			}
-
-			$this->EE->db->delete('comments', array('entry_id' => $val));
-
+			
 			// -------------------------------------------
 			// 'delete_entries_loop' hook.
 			//  - Add additional processing for entry deletion in loop
@@ -495,7 +498,11 @@ class Api_channel_entries extends Api {
 
 			// Update statistics
 			$this->EE->stats->update_channel_stats($channel_id);
-			$this->EE->stats->update_comment_stats($channel_id);
+			
+			if ( ! isset($this->EE->cp->installed_modules['comment']))
+			{
+				$this->EE->stats->update_comment_stats($channel_id);
+			}
 		}
 
 		// Delete Pages Stored in Database For Entries
