@@ -2817,7 +2817,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		                                        'y'   => lang('yes') 
 		                                        );
 		                                        
-        $vars['m_field_required_yes'] = ($m_field_required == 'y') ? TRUE : FALSE;
+        $vars['m_field_required_yes'] = ($m_field_required == 'y') ? 'y' : 'n';
 
 		/**  Is field public? **/
 		
@@ -2826,7 +2826,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
                                                 'y'   => lang('yes')
 		                                        );
         
-        $vars['m_field_public_yes'] = ($m_field_public == 'y') ? TRUE : FALSE;
+        $vars['m_field_public_yes'] = ($m_field_public == 'y') ? 'y' : 'n';
 
 
 		/**  Is field visible in reg page? **/
@@ -2836,7 +2836,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
                                                 'y'   => lang('yes')
 		                                        );
 
-        $vars['m_field_reg_yes'] = ($m_field_reg == 'y') ? TRUE : FALSE;
+        $vars['m_field_reg_yes'] = ($m_field_reg == 'y') ? 'y' : 'n';
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line($title));
 
