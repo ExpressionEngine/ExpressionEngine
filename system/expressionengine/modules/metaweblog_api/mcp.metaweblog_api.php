@@ -540,6 +540,7 @@ class Metaweblog_api_mcp {
 		}
 
 		$channel_info = $this->EE->javascript->generate_json($channel_info, TRUE);
+		$none_text = $this->EE->lang->line('none');
 
 		$javascript = <<<MAGIC
 
@@ -547,7 +548,7 @@ class Metaweblog_api_mcp {
 
 var channel_map = $channel_info;
 
-var empty_select = new Option("{$this->EE->lang->line('none')}", 'none');
+var empty_select = new Option("{$none}", 'none');
 
 // We prep our magic arrays as soons as we can, basically
 // converting everything into option elements

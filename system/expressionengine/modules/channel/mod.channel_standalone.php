@@ -513,11 +513,6 @@ $(document).ready(function() {
 	$(".js_hide").hide();
 	
 
-			mySettings = {$this->EE->javascript->generate_json($markItUp, TRUE)};
-			
-			
-
-	
 			$.ee_filebrowser();
 			
 			// Prep for a workaround to allow markitup file insertion in file inputs

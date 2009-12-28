@@ -804,13 +804,14 @@ EOT;
 		}
 
 		$channel_info = $this->EE->javascript->generate_json($channel_info, TRUE);
+		$none_text = $this->EE->lang->line('none');
 
 		$javascript = <<<MAGIC
 
 // An object to represent our channels
 var channel_map = $channel_info;
 
-var empty_select = new Option("{$this->EE->lang->line('none')}", 'none');
+var empty_select = new Option("{$none_text}", 'none');
 var spaceString = new RegExp('!-!', "g");
 
 // We prep the magic array as soon as we can, basically
