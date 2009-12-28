@@ -121,7 +121,7 @@ Download <a href=\"%s\" title=\"Download Here\">here</a> and follow the <a href=
 'There are currently no channels',
 
 'no_templates_available' =>
-"No Templates Available",
+"No Template Groups exist.  <a href='%s' title='Create a template group'>Create a Template Group</a>",
 
 "select_channel_to_post_in" => 
 "Choose a channel to post in",

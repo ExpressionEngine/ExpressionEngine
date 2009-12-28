@@ -70,7 +70,7 @@ if ($EE_view_disable !== TRUE)
 			<li class="item"><a href="<?=BASE.AMP.'C=design'.AMP.'M=new_template'?>" class="submenu accordion"><?=lang('template')?></a>
 				<ul class="submenu" style="display:none">
 					<?php if (count($cp_menu_items['design']['templates']['edit_templates']) <= 1):?>
-						<li><p><?=lang('no_templates_available')?></p></li>
+						<li><p><?=$no_templates?></p></li>
 					<?php else:?>
 						<?php foreach ($cp_menu_items['design']['templates']['edit_templates'] as $template_group => $url):?>
 							<?php if (is_array($url)):?>

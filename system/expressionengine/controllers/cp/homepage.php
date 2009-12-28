@@ -193,6 +193,8 @@ class Homepage extends Controller {
 		{
 			$vars['can_access_modify'] = FALSE;
 		}
+		
+		$vars['no_templates'] = sprintf($this->lang->line('no_templates_available'), BASE.AMP.'C=design'.AMP.'M=new_template_group');
 
 		$allowed_templates = $this->session->userdata('assigned_template_groups');
 		$vars['can_access_templates'] = (count($allowed_templates) > 0 && $this->cp->allowed_group('can_access_design')) ? TRUE : FALSE;
