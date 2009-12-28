@@ -798,7 +798,7 @@ class Member_settings extends Member {
 
 				}
 
-				$content = str_replace("/{custom_profile_fields}/s", $str, $content);
+				$content = str_replace("{custom_profile_fields}", $str, $content);
 			}
 
 		}
