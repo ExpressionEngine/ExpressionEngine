@@ -63,7 +63,7 @@ class Learning_acc {
 			$this->EE->lang->line('community_tutorials')	 => 	'<ul>
 						<li><a href="'.$this->EE->cp->masked_url('http://train-ee.com/').'" title="'.$this->EE->lang->line('train_ee').'">'.$this->EE->lang->line('train_ee').'</a></li>
 						<li><a href="'.$this->EE->cp->masked_url('http://www.eescreencasts.com/').'" title="'.$this->EE->lang->line('ee_screencasts').'">'.$this->EE->lang->line('ee_screencasts').'</a></li>
-						<li><a href="http://loweblog.com/freelance/article/ee-search-bookmarklet/" title="'.$this->EE->lang->line('ee_seach_bookmarklet').'">'.$this->EE->lang->line('ee_seach_bookmarklet').'</a></li>
+						<li><a href="'.$this->EE->cp->masked_url('http://loweblog.com/freelance/article/ee-search-bookmarklet/').'" title="'.$this->EE->lang->line('ee_seach_bookmarklet').'">'.$this->EE->lang->line('ee_seach_bookmarklet').'</a></li>
 					</ul>'
 						,
 						
@@ -74,9 +74,9 @@ class Learning_acc {
 					</ul>
 			',
 			$this->EE->lang->line('support') => '<ul>
-						<li><a href="'.$this->EE->config->item('doc_url').'" title="'.$this->EE->lang->line('documentation').'">'.$this->EE->lang->line('documentation').'</a></li>
-						<li><a href="http://expressionengine.com/forums/" title="'.$this->EE->lang->line('support_forums').'">'.$this->EE->lang->line('support_forums').'</a></li>
-						<li><a href="http://expressionengine.com/wiki/" title="'.$this->EE->lang->line('wiki').'" title="'.$this->EE->lang->line('wiki').'">'.$this->EE->lang->line('wiki').'</a></li>
+						<li><a href="'.$this->EE->cp->masked_url($this->EE->config->item('doc_url')).'" title="'.$this->EE->lang->line('documentation').'">'.$this->EE->lang->line('documentation').'</a></li>
+						<li><a href="'.$this->EE->cp->masked_url('http://expressionengine.com/forums/').'" title="'.$this->EE->lang->line('support_forums').'">'.$this->EE->lang->line('support_forums').'</a></li>
+						<li><a href="'.$this->EE->cp->masked_url('http://expressionengine.com/wiki/').'" title="'.$this->EE->lang->line('wiki').'" title="'.$this->EE->lang->line('wiki').'">'.$this->EE->lang->line('wiki').'</a></li>
 					</ul>'			
 		);
 	}
