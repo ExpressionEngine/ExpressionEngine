@@ -324,11 +324,9 @@ class EE_Functions {
 	function redirect($location, $method = FALSE)
 	{
 		$location = str_replace('&amp;', '&', $this->insert_action_ids($location));
-		
+
 		if (count($this->EE->session->flashdata))
-		{
-			$location .= '&fld=y';
-			
+		{			
 			// Ajax requests don't redirect - serve the flashdata
 			
 			if ($this->EE->input->server('HTTP_X_REQUESTED_WITH') && ($this->EE->input->server('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'))

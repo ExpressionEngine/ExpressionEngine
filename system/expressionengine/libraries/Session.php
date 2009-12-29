@@ -920,12 +920,7 @@ class EE_Session {
 	 * @return	void
 	 */
 	function _prep_flashdata()
-	{
-		if ( ! $this->EE->input->get('fld'))
-		{
-			return FALSE;
-		}
-		
+	{		
 		if ($cookie = $this->EE->input->cookie('flash'))
 		{
 			if (strlen($cookie) > 32)
