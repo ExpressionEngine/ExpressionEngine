@@ -403,13 +403,17 @@ class Admin_content extends Controller {
 			'br'	=> $this->lang->line('auto_br')
 		);
 
-		// Comment HTML formatting
-		$vars['comment_html_formatting_options'] = array(
-			'none'	=> $this->lang->line('convert_to_entities'),
-			'safe'	=> $this->lang->line('allow_safe_html'),
-			'all'	=> $this->lang->line('allow_all_html_not_recommended')
-		);
-
+		if (isset($this->cp->installed_modules['comment']))
+		{
+			// Comment HTML formatting
+			$vars['comment_html_formatting_options'] = array(
+				'none'	=> $this->lang->line('convert_to_entities'),
+				'safe'	=> $this->lang->line('allow_safe_html'),
+				'all'	=> $this->lang->line('allow_all_html_not_recommended')
+			);
+			
+		}
+		
 		// Within the Publish Page Customization option group, there are several options nearly
 		// identical. Here we set up a loop to handle them instead of manually building each one.
 		$vars['publish_page_customization_options'] = array(

@@ -180,21 +180,25 @@ if ($EE_view_disable !== TRUE)
 					$controls = form_input(array('id'=>'channel_notify_emails','name'=>'channel_notify_emails','class'=>'fullfield', 'value'=>$channel_notify_emails));
 					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
-					$preference = lang('comment_notify', 'comment_notify');
-					$controls = lang('yes', 'comment_notify_y').NBS.form_radio(array('name'=>'comment_notify', 'id'=>'comment_notify_y', 'value'=>'y', 'checked'=>($comment_notify == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('no', 'comment_notify_n').NBS.form_radio(array('name'=>'comment_notify', 'id'=>'comment_notify_n', 'value'=>'n', 'checked'=>($comment_notify == 'n') ? TRUE : FALSE));
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					$preference = lang('comment_notify_emails', 'comment_notify_emails');
-					$controls = form_input(array('id'=>'comment_notify_emails','name'=>'comment_notify_emails','class'=>'fullfield', 'value'=>$comment_notify_emails));
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
+					if (isset($this->cp->installed_modules['comment'])) 
+					{
+						$preference = lang('comment_notify', 'comment_notify');
+						$controls = lang('yes', 'comment_notify_y').NBS.form_radio(array('name'=>'comment_notify', 'id'=>'comment_notify_y', 'value'=>'y', 'checked'=>($comment_notify == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
+						$controls .= lang('no', 'comment_notify_n').NBS.form_radio(array('name'=>'comment_notify', 'id'=>'comment_notify_n', 'value'=>'n', 'checked'=>($comment_notify == 'n') ? TRUE : FALSE));
+						$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+					
+						$preference = lang('comment_notify_emails', 'comment_notify_emails');
+						$controls = form_input(array('id'=>'comment_notify_emails','name'=>'comment_notify_emails','class'=>'fullfield', 'value'=>$comment_notify_emails));
+						$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));						
+					}
+					
 					echo $this->table->generate();
 					$this->table->clear(); // Clear out for the next one
 				?>
 
 			</div>
-
+			
+			<?php if (isset($this->cp->installed_modules['comment'])):?>
 			<h3 class="accordion"><?=lang('comment_prefs')?></h3>
 			<div style="padding: 5px 1px;">
 
@@ -262,6 +266,7 @@ if ($EE_view_disable !== TRUE)
 				?>
 
 			</div>
+			<?php endif;?>
 
 			<h3 class="accordion"><?=lang('publish_page_customization')?></h3>
 			<div style="padding: 5px 1px;">

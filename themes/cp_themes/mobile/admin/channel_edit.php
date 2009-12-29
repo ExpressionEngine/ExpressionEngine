@@ -194,6 +194,7 @@ if ($EE_view_disable !== TRUE)
 				<li><?=$controls?></li>
 			</ul>
 
+			<?php if (isset($this->cp->installed_modules['comment'])):?>
 			<div class="label">
 				<?=lang('comment_notify_emails', 'channel_notify_emails')?>
 			</div>
@@ -211,15 +212,17 @@ if ($EE_view_disable !== TRUE)
 				?>
 				<li><?=$controls?></li>
 			</ul>
-
+			
 			<div class="label">
 				<?=lang('comment_notify_emails', 'comment_notify_emails')?>
 			</div>
 			<ul class="rounded">
 				<li><?=form_input(array('id'=>'comment_notify_emails','name'=>'comment_notify_emails','class'=>'fullfield', 'value'=>$comment_notify_emails))?></li>
 			</ul>
+			<?php endif; ?>
 		</div>
 
+		<?php if (isset($this->cp->installed_modules['comment'])):?>
 		<h3 class="accordion"><?=lang('comment_prefs')?></h3>
 		<div>
 			<div class="label">
@@ -338,7 +341,7 @@ if ($EE_view_disable !== TRUE)
 				<li><?=$controls?></li>
 			</ul>
 		</div>
-			
+		<?php endif; ?>
 
 		<h3 class="accordion"><?=lang('publish_page_customization')?></h3>
 		<div>
