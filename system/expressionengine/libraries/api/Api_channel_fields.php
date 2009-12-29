@@ -315,23 +315,10 @@ class Api_channel_fields extends Api {
 
 			if (method_exists($OBJ, 'publish_tabs') === TRUE)
 			{
-			// we're going to wipe the view vars here in a sec
-			//$file = $vars['file'];
-			
-				$mod_base_path = ($third_party) ? PATH_THIRD : APPPATH.'modules/';
-			
-				// add the view paths
-				$orig_view_path = $this->EE->load->_ci_view_path;
-				$this->EE->load->_ci_view_path = $mod_base_path.strtolower($class_name).'/views/';
-
 				// fetch the content
 				$set[$class_name] = $OBJ->publish_tabs($channel_id, $entry_id);
-			
-				// restore our package and view paths
-				$this->EE->load->_ci_view_path = $orig_view_path;
-
 			}
-		
+
 		// restore our package and view paths
 		$this->EE->load->remove_package_path($mod_base_path.strtolower($class_name).'/');
 		
