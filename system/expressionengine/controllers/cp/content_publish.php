@@ -1366,8 +1366,8 @@ class Content_publish extends Controller {
 			foreach ($module_data as $tab => $v)
 			{
 				foreach ($v as $val)
-				{			
-					$module_tabs[$tab][] = $val['field_id'];
+				{
+					$module_tabs[ucfirst($tab)][] = $val['field_id'];
 
 					$this->api_channel_fields->set_settings($val['field_id'], $val);
 
