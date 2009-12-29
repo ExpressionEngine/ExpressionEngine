@@ -934,9 +934,7 @@ class Api_channel_entries extends Api {
 		$params = array('validate_publish' => array($data), 'publish_tabs' => array($data['channel_id'], $this->entry_id));
 		
 		$module_data = $this->EE->api_channel_fields->get_module_methods($methods, $params);
-		
 
-		
 		foreach ($module_data as $class => $m)
 		{
 		
@@ -1850,7 +1848,7 @@ class Api_channel_entries extends Api {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Create a forum post if forum data was passed in
+	 * Sets the Module data for processing
 	 *
 	 * @access	private
 	 * @param	string
@@ -1860,7 +1858,7 @@ class Api_channel_entries extends Api {
 	{
 		$methods = array('publish_data_db');
 		$params = array('publish_data_db' => array('meta' => $meta, 'data' => $data, 'mod_data' => $mod_data, 'entry_id' => $this->entry_id));
-		
+
 		$module_data = $this->EE->api_channel_fields->get_module_methods($methods, $params);
 
 	}

@@ -316,7 +316,23 @@ class Api_channel_fields extends Api {
 			if (method_exists($OBJ, 'publish_tabs') === TRUE)
 			{
 				// fetch the content
-				$set[$class_name] = $OBJ->publish_tabs($channel_id, $entry_id);
+				$fields = $OBJ->publish_tabs($channel_id, $entry_id);
+
+				// @confirm: actually, commenting this out, as I see all kinds of problems here.
+				//
+				// There's basically no way this *won't* be set, but let's check it anyhow.
+				// It'll be returned as an array, so we'll read index 0 to find it.
+				// When we find it, we'll append the module's classname to it to prevent
+				// collission with other modules with similarly named fields. This namespacing
+				// gets stripped when the module data is fetched in the Api_channel_entries
+				// function _fetch_module_data(). This function is called for insertion and editing
+				// of entries.
+				// if (isset($fields[0]['field_id']))
+				// {
+				// 	$fields[0]['field_id'] = $class_name.'__'.$fields[0]['field_id']; // two underscores
+				// }
+
+				$set[$class_name] = $fields;
 			}
 
 		// restore our package and view paths
@@ -478,7 +494,7 @@ class Api_channel_fields extends Api {
 		$this->EE->load->remove_package_path($mod_base_path.strtolower($class_name).'/');
 		
 		}
-		
+
 		return $set;
 	}
 
