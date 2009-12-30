@@ -1236,6 +1236,34 @@ class Member_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Get Group Layout
+	 *
+	 * Gets layout information for member groups for the publish page
+	 *
+	 * @access	public
+	 * @param	int Member group
+	 * @param	int		Field group
+	 * @return	array
+	 */
+	function get_all_group_layouts()
+	{
+		$layout_data = $this->db->get('layout_publish');
+
+		if ($layout_data->num_rows() > 0)
+		{
+			$returned_data = $layout_data->result_array();
+		}
+		else
+		{
+			$returned_data = array();
+		}
+
+		return $returned_data;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Localization Default
 	 *
 	 * This function retuns author data for a single member
