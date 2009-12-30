@@ -659,7 +659,7 @@ ul#navigationTabs li ul ul ul ul {
 }
 
 
-#search {
+div#search {
 	margin-top:			6px;
 	padding-right:		25px;
 	color:				#5f6c74;
@@ -1557,7 +1557,7 @@ if they are all converted, delete this */
 	font-size:			11px;
 }
 
-#templates {
+div#templates {
 	margin-left:		31.5%;
 	font-size:			11px;
 	color:				#5f6c74;
@@ -2286,7 +2286,7 @@ table.accessTable div.tableCellHeading {
 	text-align:			left;
 }
 
-#upload_file.field {
+#upload_form #upload_file.field {
 	width:				196px;
 	margin:				8px 0 8px 4px;
 	padding:			3px;
@@ -3077,7 +3077,7 @@ input#ip_address {
 	font-weight: 		bold;
 }
 
-#mainContent #file_manager {
+#mainContent div#file_manager {
 	background-color:	#DDE2E5;
 	padding-top:		14px;
 	border-top:			1px solid #fff;

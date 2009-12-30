@@ -823,7 +823,7 @@ ul#navigationTabs li #addQuickTab:active {
 	display: block;
 }
 
-#search {
+div#search {
 	margin-top:			6px;
 	margin-left:			24px;
 	margin-right:			24px;
@@ -1908,7 +1908,7 @@ select.smallSelect {
 	font-size:			11px;
 }
 
-#templates {
+div#templates {
 	margin-left:		25%;
 	font-size:			11px;
 	color:				#005eb0;
@@ -3421,7 +3421,7 @@ div.accordionContent table tr:last-of-type  td{
 	font-weight: 		bold;
 }
 
-#mainContent #file_manager {
+#mainContent div#file_manager {
 	background:				#f3f5f8 url('<?=$cp_theme_url?>images/file_manager_background.png') bottom right no-repeat;
 	padding:				0;
 	color:					#505050;
