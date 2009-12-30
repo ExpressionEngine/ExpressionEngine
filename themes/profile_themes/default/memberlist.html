@@ -1,6 +1,7 @@
 {form_declaration}
 
-<table class='tableborder' border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+<table id="memberlist" class='tableborder' border="0" cellpadding="0" cellspacing="0" style="width:100%;">
+<thead>
 <tr>
 <td class='memberlistHead' style="width:21%;">{lang:name}</td>
 <td class='memberlistHead' style="width:13%;">{lang:forum_posts}</td>
@@ -12,7 +13,8 @@
 <td class='memberlistHead' style="width:13%;">{lang:join_date}</td>
 <td class='memberlistHead' style="width:13%;">{lang:last_visit}</td>
 </tr>
-
+</thead>
+<tbody>
 {member_rows}
 
 <tr>
@@ -49,6 +51,7 @@
 </div>
 </td>
 </tr>
+</tbody>
 </table>
 
 {if paginate}

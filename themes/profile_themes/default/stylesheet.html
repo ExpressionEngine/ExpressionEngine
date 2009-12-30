@@ -304,7 +304,7 @@ padding: 0 0 0 4px;
 	border-bottom:			1px solid #98A5AD;
 }
 
-.menuHeadingBG, .tableHeadingBG, .profileHeadingBG, tableRowHeading, .tableRowHeadingBold {
+.menuHeadingBG, .tableHeadingBG, .profileHeadingBG, tableRowHeading, .tableRowHeadingBold, #memberlist thead {
 	background:		#95A5AE;
 	color:				#fff;
 	padding:			6px 6px 6px 6px;
@@ -317,6 +317,27 @@ padding: 0 0 0 4px;
 	font-size:20px;
 	font-weight:normal;
 }
+
+#memberlist {
+	-moz-border-radius-topleft: 10px;
+	-moz-border-radius-topright: 10px;
+	-webkit-border-top-right-radius: 10px;
+	-webkit-border-top-left-radius: 10px;
+}
+
+#memberlist thead {
+	font-size:14px;
+}
+
+#memberlist thead td {
+	font-size:14px;
+	padding:			6px 6px 6px 6px;
+	
+}
+
+#memberlist
+
+
 
 .profileMenu {
 	background:				#F4F6F6;
@@ -364,7 +385,7 @@ padding: 0 0 0 4px;
 	text-decoration:	underline;
 }
 
-
+/*
 .memberlistRowOne {
 	background: #FBFBFC url({path:image_url}bg_table_td_one.jpg) repeat-x left top;
 	font-family:		Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
@@ -408,7 +429,7 @@ padding: 0 0 0 4px;
 	border-right:		1px solid #fff;
 	background-color:	#B8B9D1;
 }
-/*
+
 .innerShade {
 	background-color:	#DDE1E7;
 	border:			1px solid #74779D;
@@ -466,7 +487,7 @@ font-weight: bold;
 }
 */
 /*
-.tableCellOne {
+.tableCellOne, .memberlistRowOne {
 	background: #F0F0F2 url({path:image_url}bg_table_td_one.jpg) repeat-x left top;
 	font-family:		Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
 	font-size:			11px;
@@ -477,7 +498,7 @@ font-weight: bold;
 	border-left:		1px solid #B2B3CE;
 	border-right:		1px solid #fff;
 }
-.tableCellTwo {
+.tableCellTwo, .memberlistRowTwo {
 	background: #EDEEF3 url({path:image_url}bg_table_td_two.jpg) repeat-x left top;
 	font-family:		Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
 	font-size:			11px;
@@ -490,7 +511,7 @@ font-weight: bold;
 }
 */
 
-.tableCellOne, .tableCellTwo {
+.tableCellOne, .tableCellTwo, .memberlistRowOne, .memberlistRowTwo {
 	border-top:		1px solid #98A5AD;
 	padding:			10px;
 	background:			#F4F6F6;
