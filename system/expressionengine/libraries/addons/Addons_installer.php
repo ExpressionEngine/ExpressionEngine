@@ -174,8 +174,8 @@ class Addons_installer {
 		// custom publish page layouts
 		if ( ! in_array($module, $this->EE->core->native_modules))
 		{
-			$class = ucfirst($module).'_mcp';
-			$path = PATH_THIRD.$module.'/mcp.'.$module.EXT;
+			$class = ucfirst($module).'_tab';
+			$path = PATH_THIRD.$module.'/tab.'.$module.EXT;
 
 			if ( ! class_exists($class))
 			{
