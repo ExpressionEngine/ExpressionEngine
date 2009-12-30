@@ -295,18 +295,18 @@ class Api_channel_fields extends Api {
 
 			if ( ! class_exists($class_name))
 			{
-				if (file_exists(APPPATH.'modules/'.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT))
+				if (file_exists(APPPATH.'modules/'.strtolower($class_name).'/tab.'.strtolower($class_name).EXT))
 				{
-					@include_once(APPPATH.'modules/'.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT);				
+					@include_once(APPPATH.'modules/'.strtolower($class_name).'/tab.'.strtolower($class_name).EXT);				
 				}
-				elseif (file_exists(PATH_THIRD.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT))
+				elseif (file_exists(PATH_THIRD.strtolower($class_name).'/tab.'.strtolower($class_name).EXT))
 				{
 					$third_party = TRUE;
-					@include_once(PATH_THIRD.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT);
+					@include_once(PATH_THIRD.strtolower($class_name).'/tab.'.strtolower($class_name).EXT);
 				}
 			}
 
-			$new_name = $class_name.'_mcp';
+			$new_name = $class_name.'_tab';
 		
 			$mod_base_path = ($third_party) ? PATH_THIRD : APPPATH.'modules/';
 			$this->EE->load->add_package_path($mod_base_path.strtolower($class_name).'/');
@@ -369,18 +369,18 @@ class Api_channel_fields extends Api {
 
 			if ( ! class_exists($class_name))
 			{
-				if (file_exists(APPPATH.'modules/'.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT))
+				if (file_exists(APPPATH.'modules/'.strtolower($class_name).'/tab.'.strtolower($class_name).EXT))
 				{
-					@include_once(APPPATH.'modules/'.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT);				
+					@include_once(APPPATH.'modules/'.strtolower($class_name).'/tab.'.strtolower($class_name).EXT);				
 				}
-				elseif (file_exists(PATH_THIRD.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT))
+				elseif (file_exists(PATH_THIRD.strtolower($class_name).'/tab.'.strtolower($class_name).EXT))
 				{
 					$third_party = TRUE;
-					@include_once(PATH_THIRD.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT);
+					@include_once(PATH_THIRD.strtolower($class_name).'/tab.'.strtolower($class_name).EXT);
 				}
 			}
 
-			$new_name = $class_name.'_mcp';
+			$new_name = $class_name.'_tab';
 		
 			$mod_base_path = ($third_party) ? PATH_THIRD : APPPATH.'modules/';
 			$this->EE->load->add_package_path($mod_base_path.strtolower($class_name).'/');
@@ -444,18 +444,18 @@ class Api_channel_fields extends Api {
 
 			if ( ! class_exists($class_name))
 			{
-				if (file_exists(APPPATH.'modules/'.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT))
+				if (file_exists(APPPATH.'modules/'.strtolower($class_name).'/tab.'.strtolower($class_name).EXT))
 				{
-					@include_once(APPPATH.'modules/'.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT);				
+					@include_once(APPPATH.'modules/'.strtolower($class_name).'/tab.'.strtolower($class_name).EXT);				
 				}
-				elseif (file_exists(PATH_THIRD.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT))
+				elseif (file_exists(PATH_THIRD.strtolower($class_name).'/tab.'.strtolower($class_name).EXT))
 				{
 					$third_party = TRUE;
-					@include_once(PATH_THIRD.strtolower($class_name).'/mcp.'.strtolower($class_name).EXT);
+					@include_once(PATH_THIRD.strtolower($class_name).'/tab.'.strtolower($class_name).EXT);
 				}
 			}
 
-			$new_name = $class_name.'_mcp';
+			$new_name = $class_name.'_tab';
 		
 			$mod_base_path = ($third_party) ? PATH_THIRD : APPPATH.'modules/';
 			$this->EE->load->add_package_path($mod_base_path.strtolower($class_name).'/');
