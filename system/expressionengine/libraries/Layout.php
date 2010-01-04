@@ -111,19 +111,14 @@ class EE_Layout {
 
 	/**
 	 * Update Layout
-	 *
-	 *
-	 *
-	 *
-	 *
 	 */
-	function update_layout($edit = FALSE)
+	function update_layout($edit = FALSE, $comment_date_fields = TRUE)
 	{
 		if ($edit === FALSE)
 		{
 			return;
 		}
-		
+
 		$this->EE->load->model('member_model');
 
 		// Grab each member group that's allowed to publish
@@ -137,7 +132,12 @@ class EE_Layout {
 		else
 		{
 			$this->EE->db->select('channel_id');
-			$this->EE->db->where('field_group', $this->EE->input->post('group_id'));
+			
+			if ($this->EE->input->post('group_id'))
+			{
+				$this->EE->db->where('field_group', $this->EE->input->post('group_id'));				
+			}
+			
 			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
 			$query = $this->EE->db->get('channels');
 			
@@ -162,7 +162,8 @@ class EE_Layout {
 								'show_url_title' => array('url_title'),
 								'show_author_menu' => array('author'),
 								'show_status_menu' => array('status'),
-								'show_date_menu' => array('entry_date', 'expiration_date', 'comment_expiration_date'),
+								'show_date_menu' => array('entry_date', 
+															'expiration_date', 'comment_expiration_date'),
 								'show_options_cluster' => array('options'),
 								'show_ping_cluster' => array('ping'),
 								'show_categories_menu' => array('category'),
@@ -184,6 +185,11 @@ class EE_Layout {
 								}
 							}
 						}
+					}
+					
+					if ( ! $comment_date_fields)
+					{
+						unset($this->custom_layout_fields['show_date_menu']['comment_expiration_date']);
 					}
 				}
 

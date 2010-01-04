@@ -139,6 +139,10 @@ class Comment_upd {
 		$this->EE->db->delete('actions');
 
 		$this->EE->dbforge->drop_table('comments');
+		
+		$this->EE->load->library('layout');
+		
+		$this->EE->layout->update_layout(TRUE, FALSE);
 
 		return TRUE;
 	}
