@@ -872,7 +872,12 @@ class Tools_data extends Controller {
 				$member_entries = array(); // arrays of statements to update
 
 				$member_entries_count = $this->db->query('SELECT COUNT(*) AS count, author_id FROM exp_channel_titles GROUP BY author_id ORDER BY count DESC');
-				$member_comments_count = $this->db->query('SELECT COUNT(*) AS count, author_id FROM exp_comments GROUP BY author_id ORDER BY count DESC');
+				
+				if (isset($this->cp->installed_modules['comments']))
+				{
+					$member_comments_count = $this->db->query('SELECT COUNT(*) AS count, author_id FROM exp_comments GROUP BY author_id ORDER BY count DESC');					
+				}				
+				
 				$member_message_count = $this->db->query('SELECT COUNT(*) AS count, recipient_id FROM exp_message_copies GROUP BY recipient_id ORDER BY count DESC');
 
 				$member_data = array();
@@ -889,24 +894,27 @@ class Tools_data extends Controller {
 					}
 				}
 
-				if ($member_comments_count->num_rows() > 0)
+				if ($this->cp->installed_modules['comments'])
 				{
-					foreach ($member_comments_count->result() as $row)
+					if ($member_comments_count->num_rows() > 0)
 					{
-						if (isset($member_entries[$row->author_id]['member_id']))
+						foreach ($member_comments_count->result() as $row)
 						{
-							$member_entries[$row->author_id]['total_comments'] = $row->count;							
-						}
-						else
-						{
-							$member_entries[$row->author_id]['member_id'] = $row->author_id;
-							$member_entries[$row->author_id]['total_entries'] = 0;					
-							$member_entries[$row->author_id]['total_comments'] = $row->count;
-							$member_entries[$row->author_id]['private_messages'] = 0;
-							$member_entries[$row->author_id]['total_forum_topics'] = 0;
-							$member_entries[$row->author_id]['total_forum_posts'] = 0;
-						}
-					}	
+							if (isset($member_entries[$row->author_id]['member_id']))
+							{
+								$member_entries[$row->author_id]['total_comments'] = $row->count;							
+							}
+							else
+							{
+								$member_entries[$row->author_id]['member_id'] = $row->author_id;
+								$member_entries[$row->author_id]['total_entries'] = 0;					
+								$member_entries[$row->author_id]['total_comments'] = $row->count;
+								$member_entries[$row->author_id]['private_messages'] = 0;
+								$member_entries[$row->author_id]['total_forum_topics'] = 0;
+								$member_entries[$row->author_id]['total_forum_posts'] = 0;
+							}
+						}	
+					}					
 				}
 
 				if ($member_message_count->num_rows() > 0)
