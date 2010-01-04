@@ -108,6 +108,10 @@ class Comment_upd {
 		$this->EE->dbforge->add_key(array('entry_id', 'channel_id', 'author_id', 'status', 'site_id'));
 		$this->EE->dbforge->create_table('comments');
 
+		$this->EE->load->library('layout');
+		
+		$this->EE->layout->update_layout(TRUE);
+
 		return TRUE;
 	}
 

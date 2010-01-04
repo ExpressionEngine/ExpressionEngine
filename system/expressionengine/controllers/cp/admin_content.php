@@ -285,6 +285,9 @@ class Admin_content extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
+		
+		// grab installed modules 
+		$this->cp->get_installed_modules();
 
 		$this->lang->loadfile('admin_content');
 		$this->load->library('table');

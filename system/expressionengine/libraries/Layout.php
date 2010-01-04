@@ -186,20 +186,30 @@ class EE_Layout {
 							}
 						}
 					}
-					
+
 					if ( ! $comment_date_fields)
 					{
 						unset($this->custom_layout_fields['date']['comment_expiration_date']);
 					}
+					else
+					{
+						$this->custom_layout_fields['date']['comment_expiration_date'] = array(
+										'visible'		=> 'TRUE',
+										'collapse'		=> 'FALSE',
+										'htmlbuttons'	=> 'FALSE',
+										'width'			=> '100%'
+							
+							);
+					}
 				}
 
 				// All fields have been removed that need to be, reconstruct the layout
-				$this->EE->member_model->insert_group_layout($group->group_id, 
+				$test = $this->EE->member_model->insert_group_layout($group->group_id, 
 														 	 $channel_id, 
 														 	 $this->custom_layout_fields
 														);
 			}
-		}	
+		}
 	}
 	
 	// --------------------------------------------------------------------
