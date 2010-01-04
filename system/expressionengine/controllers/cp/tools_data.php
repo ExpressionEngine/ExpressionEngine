@@ -982,44 +982,50 @@ class Tools_data extends Controller {
 						}
 					}
 				}
-
-				$this->db->update_batch('exp_members', $member_entries, 'member_id');
 				
-				// Set the rest to 0 for all of the above
-				// @confirm- the array_keys bit is dumb if there were no members not hit in the above- so maybe ... query to get total number of
-				// members and compare count to see if it's needed?  Needs a bit of pondering.  
-				$data = array(
-               		'total_entries' => 0,
-               		'total_comments' => 0,
-               		'private_messages' => 0,
-               		'total_forum_topics' => 0,
-               		'total_forum_posts' => 0
-            		);
+				if ( ! empty($member_entries))
+				{
+					$this->db->update_batch('exp_members', $member_entries, 'member_id');	
 
-				$this->db->where_not_in('member_id', array_keys($member_entries));
-				$this->db->update('members', $data); 
+					// Set the rest to 0 for all of the above
+					// @confirm- the array_keys bit is dumb if there were no members not hit in the above- so maybe ... query to get total number of
+					// members and compare count to see if it's needed?  Needs a bit of pondering.  
+					$data = array(
+	               		'total_entries' => 0,
+	               		'total_comments' => 0,
+	               		'private_messages' => 0,
+	               		'total_forum_topics' => 0,
+	               		'total_forum_posts' => 0
+	            		);
+
+					$this->db->where_not_in('member_id', array_keys($member_entries));
+					$this->db->update('members', $data); 
+				}
 
 				break;
 			case ('channel_titles') :
 				$channel_titles = array(); // arrays of statements to update
 
-				$channel_comments_count = $this->db->query('SELECT COUNT(comment_id) AS count, entry_id FROM exp_comments WHERE status = "o" GROUP BY entry_id ORDER BY count DESC');
-				$channel_comments_recent = $this->db->query('SELECT MAX(comment_date) AS recent, entry_id FROM exp_comments WHERE status = "o" GROUP BY entry_id ORDER BY recent DESC');
-
-				if ($channel_comments_count->num_rows() > 0)
+				if (isset($this->cp->installed_modules['comment']))
 				{
-					foreach ($channel_comments_count->result() as $row)
+					$channel_comments_count = $this->db->query('SELECT COUNT(comment_id) AS count, entry_id FROM exp_comments WHERE status = "o" GROUP BY entry_id ORDER BY count DESC');
+					$channel_comments_recent = $this->db->query('SELECT MAX(comment_date) AS recent, entry_id FROM exp_comments WHERE status = "o" GROUP BY entry_id ORDER BY recent DESC');
+
+					if ($channel_comments_count->num_rows() > 0)
 					{
-						$channel_titles[$row->entry_id]['entry_id'] = $row->entry_id;
-						$channel_titles[$row->entry_id]['comment_total'] = $row->count;
-						$channel_titles[$row->entry_id]['recent_comment_date'] = 0;
-					}
-					
-					// Now for the most recent date
-					foreach ($channel_comments_recent->result() as $row)
-					{
-						$channel_titles[$row->entry_id]['recent_comment_date'] = $row->recent;
-					}
+						foreach ($channel_comments_count->result() as $row)
+						{
+							$channel_titles[$row->entry_id]['entry_id'] = $row->entry_id;
+							$channel_titles[$row->entry_id]['comment_total'] = $row->count;
+							$channel_titles[$row->entry_id]['recent_comment_date'] = 0;
+						}
+
+						// Now for the most recent date
+						foreach ($channel_comments_recent->result() as $row)
+						{
+							$channel_titles[$row->entry_id]['recent_comment_date'] = $row->recent;
+						}
+					}					
 				}
 
 					// Set the rest to 0 for all of the above
@@ -1150,7 +1156,11 @@ class Tools_data extends Controller {
 				{
 					$this->config->core_ini['site_id'] = $row['site_id'];
 
-					$this->stats->update_comment_stats();
+					if (isset($this->cp->installed_modules['comment']))
+					{
+						$this->stats->update_comment_stats();
+					}
+
 					$this->stats->update_member_stats();
 					$this->stats->update_channel_stats();
 				}
