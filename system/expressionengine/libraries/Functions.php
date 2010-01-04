@@ -623,7 +623,7 @@ class EE_Functions {
 	{
 		if (isset($this->EE->session->cache['functions']['emails'][$str]))
 		{
-			return $this->EE->session->cache['functions']['emails'][$str];
+			return preg_replace("/(eeEncEmail_)\w+/", '\\1'.$this->EE->functions->random('alpha', 10), $this->EE->session->cache['functions']['emails'][$str]);
 		}
 	
 		$email = (is_array($str)) ? trim($str[1]) : trim($str);
@@ -643,7 +643,7 @@ class EE_Functions {
 		$encoded = $this->EE->typography->encode_email($email, $title, TRUE);
 		
 		$this->EE->session->cache['functions']['emails'][$str] = $encoded;
-		
+
 		return $encoded;
 	}
 	
