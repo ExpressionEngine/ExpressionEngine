@@ -2752,7 +2752,7 @@ class MyAccount extends Controller {
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
-		$link = BASE.AMP.str_replace(array('/', '--'), array('&', '='), $this->input->get('link'));
+		$link = str_replace(array('/', '--'), array('&', '='), $this->input->get('link'));
 		$linkt = base64_decode($this->input->get('linkt'));
 
 		if ($link == '')

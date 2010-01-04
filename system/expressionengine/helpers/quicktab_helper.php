@@ -15,8 +15,10 @@ function generate_quicktab($title = '')
 	{
 		foreach ($_GET as $key => $val)
 		{
-			if ($key == 'S')
+			if ($key == 'S' OR $key == 'D')
+			{
 				continue;
+			}
 
 			$link .= $key.'--'.$val.'/';
 		}

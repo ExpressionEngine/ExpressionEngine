@@ -672,7 +672,7 @@ class EE_Menu {
 				$title = (isset($x['0'])) ? $x['0'] : '';
 				$link  = (isset($x['1'])) ? $x['1'] : '';
 
-				$tabs[$title] = $link;
+				$tabs[$title] = BASE.AMP.$link;
 			}
 		}
 
