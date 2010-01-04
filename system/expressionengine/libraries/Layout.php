@@ -131,7 +131,7 @@ class EE_Layout {
 		}
 		else
 		{
-			$this->EE->db->select('channel_id');
+			$this->EE->db->select('channel_id, field_group');
 			
 			if ($this->EE->input->post('group_id'))
 			{
@@ -189,7 +189,7 @@ class EE_Layout {
 					
 					if ( ! $comment_date_fields)
 					{
-						unset($this->custom_layout_fields['show_date_menu']['comment_expiration_date']);
+						unset($this->custom_layout_fields['date']['comment_expiration_date']);
 					}
 				}
 
