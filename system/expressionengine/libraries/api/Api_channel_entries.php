@@ -499,7 +499,7 @@ class Api_channel_entries extends Api {
 			// Update statistics
 			$this->EE->stats->update_channel_stats($channel_id);
 			
-			if ( ! isset($this->EE->cp->installed_modules['comment']))
+			if (isset($this->EE->cp->installed_modules['comment']))
 			{
 				$this->EE->stats->update_comment_stats($channel_id);
 			}

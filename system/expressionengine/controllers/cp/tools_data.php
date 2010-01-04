@@ -873,7 +873,7 @@ class Tools_data extends Controller {
 
 				$member_entries_count = $this->db->query('SELECT COUNT(*) AS count, author_id FROM exp_channel_titles GROUP BY author_id ORDER BY count DESC');
 				
-				if (isset($this->cp->installed_modules['comments']))
+				if (isset($this->cp->installed_modules['comment']))
 				{
 					$member_comments_count = $this->db->query('SELECT COUNT(*) AS count, author_id FROM exp_comments GROUP BY author_id ORDER BY count DESC');					
 				}				
@@ -894,7 +894,7 @@ class Tools_data extends Controller {
 					}
 				}
 
-				if ($this->cp->installed_modules['comments'])
+				if ($this->cp->installed_modules['comment'])
 				{
 					if ($member_comments_count->num_rows() > 0)
 					{
