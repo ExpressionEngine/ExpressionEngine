@@ -871,7 +871,7 @@ class Email {
 				$this->EE->email->EE_initialize();
 				$this->EE->email->to($val);
 
-				if (isset($_POST['replyto']) && $_POST['replyto'] == 'y')
+				if (isset($_POST['replyto']) && $_POST['replyto'] == 'yes')
 				{
 					$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));
 					$this->EE->email->reply_to($_POST['from'], $_POST['name']);
@@ -893,7 +893,7 @@ class Email {
 				$this->EE->email->EE_initialize();
 				$this->EE->email->to($val);
 
-				if (isset($_POST['replyto']) && $_POST['replyto'] == 'y')
+				if (isset($_POST['replyto']) && $_POST['replyto'] == 'yes')
 				{
 					$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));
 					$this->EE->email->reply_to($_POST['from'], $_POST['name']);
@@ -916,7 +916,7 @@ class Email {
 				$this->EE->email->to($val);
 				$this->EE->email->bcc(implode(',', $approved_recipients));
 
-				if (isset($_POST['replyto']) && $_POST['replyto'] == 'y')
+				if (isset($_POST['replyto']) && $_POST['replyto'] == 'yes')
 				{
 					$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));
 					$this->EE->email->reply_to($_POST['from'], $_POST['name']);
