@@ -1,7 +1,7 @@
 // Create a void console.log if the
-// browser does not support it (prevents errors)
+// browser does not support it
 
-if (typeof console == "undefined") {
+if (typeof console == "undefined" || ! console.log) {
 	console = { log: function() { return false; }};
 }
 
@@ -60,8 +60,8 @@ EE.create_searchbox = (function() {
 					  navigator.vendor.indexOf('Apple Computer') != -1) ? webkit_search : generic_search;
 
 	return function(id, placeholder, save) {
-			var el = document.getElementById(id);
-			(el && create_func(el, placeholder, save));
+		var el = document.getElementById(id);
+		(el && create_func(el, placeholder, save));
 	}
 })();
 
@@ -114,7 +114,7 @@ if (EE.flashdata !== undefined) {
 		show_notices = [];
 
 	for (type in types) {
-		if (types[type] in EE.flashdata) {
+		if (EE.flashdata.hasOwnProperty(types[type])) {
 
 			if (type == "error") {
 				notice = notices.filter(".failure").slice(0, 1);
@@ -145,9 +145,9 @@ EE.notepad = (function() {
 	var notepad = $('#notePad'),
 		notepad_form = $("#notepad_form"),
 		notepad_desc = $('#sidebar_notepad_edit_desc'),
-		notepad_txtarea = $('#notePadTextEdit').hide(),
-		notepad_controls = $('#notePadControls').hide(),
-		notepad_text = $('#notePadText').show(),
+		notepad_txtarea = $('#notePadTextEdit'),
+		notepad_controls = $('#notePadControls'),
+		notepad_text = $('#notePadText').removeClass('js_show'),	// .show() was really slow on this - not sure why
 		notepad_empty = notepad_text.text(),
 		current_content = notepad_txtarea.val();
 	
@@ -287,12 +287,12 @@ control_panel_search();
 $('h4', '#quickLinks').click(function() {
 	window.location.href = EE.BASE+'&C=myaccount&M=quicklinks';
 })
-	.add('#notePad', '#sideBar').hover(function() {
-		$('.sidebar_hover_desc', this).show();
-	}, function() {
-		$('.sidebar_hover_desc', this).hide();
-	})
-	.css('cursor', 'pointer');
+.add('#notePad').hover(function() {
+	$('.sidebar_hover_desc', this).show();
+}, function() {
+	$('.sidebar_hover_desc', this).hide();
+})
+.css('cursor', 'pointer');
 
 
 // Logout button confirmation
@@ -356,5 +356,7 @@ $("#activeUser").one("mouseover", function() {
 		return false;
 	});
 });
+
+$(".js_show").show();
 
 });
