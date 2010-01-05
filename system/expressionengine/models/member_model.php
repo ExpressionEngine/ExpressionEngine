@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2009, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
  * @license		http://expressionengine.com/docs/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -1224,34 +1224,6 @@ class Member_model extends CI_Model {
 		if ($layout_data->num_rows() > 0)
 		{
 			$returned_data = unserialize($layout_data->row('field_layout'));
-		}
-		else
-		{
-			$returned_data = array();
-		}
-
-		return $returned_data;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get Group Layout
-	 *
-	 * Gets layout information for member groups for the publish page
-	 *
-	 * @access	public
-	 * @param	int Member group
-	 * @param	int		Field group
-	 * @return	array
-	 */
-	function get_all_group_layouts()
-	{
-		$layout_data = $this->db->get('layout_publish');
-
-		if ($layout_data->num_rows() > 0)
-		{
-			$returned_data = $layout_data->result_array();
 		}
 		else
 		{

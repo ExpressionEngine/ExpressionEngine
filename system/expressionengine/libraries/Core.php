@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2009, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
  * @license		http://expressionengine.com/docs/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -75,7 +75,7 @@ class EE_Core {
 		// application constants
 		define('IS_FREELANCER',	! file_exists(PATH_MOD.'member/mod.member'.EXT));
 		define('APP_NAME',		'ExpressionEngine'.((IS_FREELANCER) ? ' Freelancer' : ''));
-		define('APP_BUILD',		'20091201');
+		define('APP_BUILD',		'20100101');
 		define('APP_VER',		substr($this->EE->config->slash_item('app_version'), 0, 1).'.'.substr($this->EE->config->item('app_version'), 1, 1).'.'.substr($this->EE->config->item('app_version'), 2));
 		define('SLASH',			'&#47;');
 		define('LD',			'{');

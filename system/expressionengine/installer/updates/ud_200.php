@@ -4,7 +4,7 @@
  *
  * @package     ExpressionEngine
  * @author      ExpressionEngine Dev Team
- * @copyright   Copyright (c) 2003 - 2009, EllisLab, Inc.
+ * @copyright   Copyright (c) 2003 - 2010, EllisLab, Inc.
  * @license     http://expressionengine.com/docs/license.html
  * @link        http://expressionengine.com
  * @since       Version 2.0

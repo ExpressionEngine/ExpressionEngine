@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2009, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
  * @license		http://expressionengine.com/docs/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -285,9 +285,6 @@ class Admin_content extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-		
-		// grab installed modules 
-		$this->cp->get_installed_modules();
 
 		$this->lang->loadfile('admin_content');
 		$this->load->library('table');
@@ -406,17 +403,13 @@ class Admin_content extends Controller {
 			'br'	=> $this->lang->line('auto_br')
 		);
 
-		if (isset($this->cp->installed_modules['comment']))
-		{
-			// Comment HTML formatting
-			$vars['comment_html_formatting_options'] = array(
-				'none'	=> $this->lang->line('convert_to_entities'),
-				'safe'	=> $this->lang->line('allow_safe_html'),
-				'all'	=> $this->lang->line('allow_all_html_not_recommended')
-			);
-			
-		}
-		
+		// Comment HTML formatting
+		$vars['comment_html_formatting_options'] = array(
+			'none'	=> $this->lang->line('convert_to_entities'),
+			'safe'	=> $this->lang->line('allow_safe_html'),
+			'all'	=> $this->lang->line('allow_all_html_not_recommended')
+		);
+
 		// Within the Publish Page Customization option group, there are several options nearly
 		// identical. Here we set up a loop to handle them instead of manually building each one.
 		$vars['publish_page_customization_options'] = array(

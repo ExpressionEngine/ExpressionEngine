@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2009, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
  * @license		http://expressionengine.com/docs/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -463,29 +463,26 @@ class Api_channel_entries extends Api {
 			}
 
 			// @todo model
+
 			$this->EE->db->where('member_id', $authors[$val]);
 			$this->EE->db->update('members', array('total_entries' => $tot));
 
-			if (isset($this->EE->cp->installed_modules['comment']))
+			$this->EE->db->where('status', 'o');
+			$this->EE->db->where('entry_id', $val);
+			$this->EE->db->where('author_id', $authors[$val]);
+			$count = $this->EE->db->count_all_results('comments');
+
+			if ($count > 0)
 			{
-				$this->EE->db->where('status', 'o');
-				$this->EE->db->where('entry_id', $val);
-				$this->EE->db->where('author_id', $authors[$val]);
-				$count = $this->EE->db->count_all_results('comments');
+				$this->EE->db->select('total_comments');
+				$query = $this->EE->db->get_where('members', array('member_id' => $authors[$val]));
 
-				if ($count > 0)
-				{
-					$this->EE->db->select('total_comments');
-					$query = $this->EE->db->get_where('members', array('member_id' => $authors[$val]));
-
-					$this->EE->db->where('member_id', $authors[$val]);
-					$this->EE->db->update('members', array('total_comments' => ($query->row('total_comments') - $count)));
-				}
-
-				$this->EE->db->delete('comments', array('entry_id' => $val));
-				
+				$this->EE->db->where('member_id', $authors[$val]);
+				$this->EE->db->update('members', array('total_comments' => ($query->row('total_comments') - $count)));
 			}
-			
+
+			$this->EE->db->delete('comments', array('entry_id' => $val));
+
 			// -------------------------------------------
 			// 'delete_entries_loop' hook.
 			//  - Add additional processing for entry deletion in loop
@@ -498,11 +495,7 @@ class Api_channel_entries extends Api {
 
 			// Update statistics
 			$this->EE->stats->update_channel_stats($channel_id);
-			
-			if (isset($this->EE->cp->installed_modules['comment']))
-			{
-				$this->EE->stats->update_comment_stats($channel_id);
-			}
+			$this->EE->stats->update_comment_stats($channel_id);
 		}
 
 		// Delete Pages Stored in Database For Entries
@@ -934,7 +927,9 @@ class Api_channel_entries extends Api {
 		$params = array('validate_publish' => array($data), 'publish_tabs' => array($data['channel_id'], $this->entry_id));
 		
 		$module_data = $this->EE->api_channel_fields->get_module_methods($methods, $params);
+		
 
+		
 		foreach ($module_data as $class => $m)
 		{
 		
@@ -1848,7 +1843,7 @@ class Api_channel_entries extends Api {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Sets the Module data for processing
+	 * Create a forum post if forum data was passed in
 	 *
 	 * @access	private
 	 * @param	string
@@ -1858,7 +1853,7 @@ class Api_channel_entries extends Api {
 	{
 		$methods = array('publish_data_db');
 		$params = array('publish_data_db' => array('meta' => $meta, 'data' => $data, 'mod_data' => $mod_data, 'entry_id' => $this->entry_id));
-
+		
 		$module_data = $this->EE->api_channel_fields->get_module_methods($methods, $params);
 
 	}

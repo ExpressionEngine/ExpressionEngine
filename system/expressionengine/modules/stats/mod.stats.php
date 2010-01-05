@@ -6,7 +6,7 @@
 -----------------------------------------------------
  http://expressionengine.com/
 -----------------------------------------------------
- Copyright (c) 2003 - 2009, EllisLab, Inc.
+ Copyright (c) 2003 - 2010, EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
@@ -47,7 +47,7 @@ class Stats {
 			$sql = "SELECT	total_entries, 
 							total_comments,
 							last_entry_date,
-							last_comment_date
+							last_comment_date,
 					FROM exp_channels 
 					WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
 

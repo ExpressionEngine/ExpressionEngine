@@ -6,7 +6,7 @@
 -----------------------------------------------------
  http://expressionengine.com/
 -----------------------------------------------------
- Copyright (c) 2004 - 2009 EllisLab, Inc.
+ Copyright (c) 2004 - 2010 EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT

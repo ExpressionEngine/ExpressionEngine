@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2009, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
  * @license		http://expressionengine.com/docs/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -672,7 +672,7 @@ class EE_Menu {
 				$title = (isset($x['0'])) ? $x['0'] : '';
 				$link  = (isset($x['1'])) ? $x['1'] : '';
 
-				$tabs[$title] = BASE.AMP.$link;
+				$tabs[$title] = $link;
 			}
 		}
 

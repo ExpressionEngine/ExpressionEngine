@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2009, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
  * @license		http://expressionengine.com/docs/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -1366,8 +1366,8 @@ class Content_publish extends Controller {
 			foreach ($module_data as $tab => $v)
 			{
 				foreach ($v as $val)
-				{
-					$module_tabs[ucfirst($tab)][] = $val['field_id'];
+				{			
+					$module_tabs[$tab][] = $val['field_id'];
 
 					$this->api_channel_fields->set_settings($val['field_id'], $val);
 

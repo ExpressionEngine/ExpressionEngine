@@ -5,7 +5,7 @@
 -----------------------------------------------------
  http://expressionengine.com/
 -----------------------------------------------------
- Copyright (c) 2003 - 2009, EllisLab, Inc.
+ Copyright (c) 2003 - 2010, EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
@@ -108,10 +108,6 @@ class Comment_upd {
 		$this->EE->dbforge->add_key(array('entry_id', 'channel_id', 'author_id', 'status', 'site_id'));
 		$this->EE->dbforge->create_table('comments');
 
-		$this->EE->load->library('layout');
-		
-		$this->EE->layout->update_layout(TRUE);
-
 		return TRUE;
 	}
 
@@ -143,10 +139,6 @@ class Comment_upd {
 		$this->EE->db->delete('actions');
 
 		$this->EE->dbforge->drop_table('comments');
-		
-		$this->EE->load->library('layout');
-		
-		$this->EE->layout->update_layout(TRUE, FALSE);
 
 		return TRUE;
 	}

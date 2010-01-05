@@ -6,7 +6,7 @@
 -----------------------------------------------------
  http://expressionengine.com/
 -----------------------------------------------------
- Copyright (c) 2003 - 2009, EllisLab, Inc.
+ Copyright (c) 2003 - 2010, EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
@@ -28,7 +28,7 @@ class Forum {
 
 
 	var $version			= '3.0.0';
-	var $build				= '20091202';
+	var $build				= '20100101';
 	var $use_site_profile	= FALSE;
 	var $search_limit		= 500; // Maximum number of search results
 	var $return_data 		= '';

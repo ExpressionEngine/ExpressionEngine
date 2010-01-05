@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2009, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
  * @license		http://expressionengine.com/docs/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -169,37 +169,6 @@ class Addons_installer {
 
 		$MOD = new $class();
 		$MOD->_ee_path = APPPATH;
-
-		// Third Party modules need to be considered for their implications on
-		// custom publish page layouts
-		if ( ! in_array($module, $this->EE->core->native_modules))
-		{
-			$class = ucfirst($module).'_tab';
-			$path = PATH_THIRD.$module.'/tab.'.$module.EXT;
-
-			if ( ! class_exists($class))
-			{
-				require_once $path;
-			}
-
-			$OBJ = new $class;
-
-			// If the "publish tabs" method is there, then there's a strong chance
-			// there were custom fields. Let's wipe 'em
-			if (method_exists($OBJ, 'publish_tabs') === TRUE)
-			{
-				$fields = array();
-
-				foreach ($OBJ->publish_tabs('') as $field)
-				{
-					$fields[] .= $field['field_id'];
-				}
-
-				// Load the layout Library & update the layouts
-				$this->EE->load->library('layout');
-				$this->EE->layout->remove_module_layout($module, $fields);
-			}
-		}
 
 		if ($MOD->uninstall() !== TRUE)
 		{

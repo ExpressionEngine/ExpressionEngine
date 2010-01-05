@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2009, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
  * @license		http://expressionengine.com/docs/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -1284,21 +1284,17 @@ class MyAccount extends Controller {
 
 		// Fetch Channel Comments
 		// @todo AR, model
-		if ($this->db->table_exists('comments'))
+		$query = $this->db->query("SELECT DISTINCT(entry_id) FROM exp_comments WHERE email = '".$this->db->escape_str($email)."' AND notify = 'y' ORDER BY comment_date DESC");
+
+		if ($query->num_rows() > 0)
 		{
-			$query = $this->db->query("SELECT DISTINCT(entry_id) FROM exp_comments WHERE email = '".$this->db->escape_str($email)."' AND notify = 'y' ORDER BY comment_date DESC");
+			$channel_subscriptions = TRUE;
 
-			if ($query->num_rows() > 0)
+			foreach ($query->result_array() as $row)
 			{
-				$channel_subscriptions = TRUE;
-
-				foreach ($query->result_array() as $row)
-				{
-					$result_ids[$total_count.'b'] = $row['entry_id'];
-					$total_count++;
-				}
+				$result_ids[$total_count.'b'] = $row['entry_id'];
+				$total_count++;
 			}
-			
 		}
 
 		// Fetch Forum Topic Subscriptions
@@ -2752,7 +2748,7 @@ class MyAccount extends Controller {
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
-		$link = str_replace(array('/', '--'), array('&', '='), $this->input->get('link'));
+		$link = BASE.AMP.str_replace(array('/', '--'), array('&', '='), $this->input->get('link'));
 		$linkt = base64_decode($this->input->get('linkt'));
 
 		if ($link == '')

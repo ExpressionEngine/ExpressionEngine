@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2009, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
  * @license		http://expressionengine.com/docs/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -44,7 +44,7 @@ class Wizard extends Controller {
 	var $content			= '';
 	var $title				= 'ExpressionEngine Installation and Update Wizard';
 	var $heading			= 'ExpressionEngine Installation and Update Wizard';
-	var $copyright			= 'Copyright 2003 - 2009 EllisLab, Inc. - All Rights Reserved';
+	var $copyright			= 'Copyright 2003 - 2010 EllisLab, Inc. - All Rights Reserved';
 	
 	var $now;
 	var $year;

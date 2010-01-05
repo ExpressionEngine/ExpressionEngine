@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2009, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
  * @license		http://expressionengine.com/docs/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
@@ -2817,7 +2817,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		                                        'y'   => lang('yes') 
 		                                        );
 		                                        
-        $vars['m_field_required_yes'] = ($m_field_required == 'y') ? 'y' : 'n';
+        $vars['m_field_required_yes'] = ($m_field_required == 'y') ? TRUE : FALSE;
 
 		/**  Is field public? **/
 		
@@ -2826,7 +2826,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
                                                 'y'   => lang('yes')
 		                                        );
         
-        $vars['m_field_public_yes'] = ($m_field_public == 'y') ? 'y' : 'n';
+        $vars['m_field_public_yes'] = ($m_field_public == 'y') ? TRUE : FALSE;
 
 
 		/**  Is field visible in reg page? **/
@@ -2836,7 +2836,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
                                                 'y'   => lang('yes')
 		                                        );
 
-        $vars['m_field_reg_yes'] = ($m_field_reg == 'y') ? 'y' : 'n';
+        $vars['m_field_reg_yes'] = ($m_field_reg == 'y') ? TRUE : FALSE;
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line($title));
 

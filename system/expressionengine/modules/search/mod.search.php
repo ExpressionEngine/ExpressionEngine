@@ -6,7 +6,7 @@
 -----------------------------------------------------
  http://expressionengine.com/
 -----------------------------------------------------
- Copyright (c) 2003 - 2009, EllisLab, Inc.
+ Copyright (c) 2003 - 2010, EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
@@ -515,14 +515,8 @@ class Search {
 
 		$sql .= "
 				LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
-				LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id";
-		
-		if (isset($_POST['search_in']) AND $_POST['search_in'] == 'everywhere' AND $this->EE->addons_model->module_installed('comment'))
-		{
-			$sql .= " LEFT JOIN exp_comments ON exp_comments.channel_id = exp_channels.channel_id";
-		}
-		
-		$sql .= " WHERE exp_channels.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' ";
+				LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id
+				WHERE exp_channels.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' ";
 		
 		/** ----------------------------------------------
 		/**  We only select entries that have not expired 
@@ -801,7 +795,7 @@ class Search {
 			/**  Search in Comments
 			/** ----------------------------------*/
 
-			if (isset($_POST['search_in']) AND $_POST['search_in'] == 'everywhere' AND $this->EE->addons_model->module_installed('comment'))
+			if (isset($_POST['search_in']) AND $_POST['search_in'] == 'everywhere' AND $this->EE->addons_model->module_installed('comments'))
 			{
 				if (count($terms) == 1 && isset($_POST['where']) && $_POST['where'] == 'word')
 				{
