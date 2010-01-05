@@ -2385,10 +2385,16 @@ a#refresh_categories {
 }
 
 .filename {
-	width: 				75px;
+	float:				left;
+	width: 				auto;
 	padding: 			5px;
 	border: 			1px solid #B6C0C2;
 	text-align: 		center;
+}
+
+.file_set .sub_filename {
+	clear:				left;
+	padding-top:		7px;
 }
 
 .hasDatepicker { /* UI datepicker automatically adds this class */

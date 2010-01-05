@@ -351,7 +351,7 @@
 			}
 
 			// non-images get a "default" icon
-			if (file.mime !== false && file.mime.indexOf("image") < 0) {
+			if (file.mime == false || file.mime.indexOf("image") < 0) {
 				thumbs += '<div><div title="{filedir_'+directory.id+'}|'+file.name+'"><img title="'+default_img_url+'" src="'+default_img_url+'" alt="default thumbnail" /></div>'+file.name+'</div>';
 			}
 			else {
@@ -362,6 +362,7 @@
 				thumbs += '<div><div title=\''+file.dimensions+'\'><img class="image" title="{filedir_'+directory.id+'}'+file.name+'" src="';
 
 				if ( ! file.has_thumb) {
+
 					thumbs += default_img_url
 
 					// If this is a viewable page without thumbs, build it

@@ -166,17 +166,17 @@ class File_ft extends EE_Fieldtype {
 
 		$r = '<div class="file_set '.$set_class.'">';
 		$r .= "<p class='filename'>$thumb<br />$filename</p>";
-		$r .= "<p>$remf</p>";
+		$r .= "<p class='sub_filename'>$remf</p>";
 		$r .= "<p>$hidden</p>";
 		$r .= '</div>';
 
 		$r .= '<div class="no_file js_hide">';
-		$r .= "<p>$upload</p>";
+		$r .= "<p class='sub_filename'>$upload</p>";
 		$r .= "<p>$dropdown</p>";
 		$r .= '</div>';
 
 		$r .= '<div class="modifiers js_show">';
-		$r .= "<p>$newf</p>";
+		$r .= "<p class='sub_filename'>$newf</p>";
 		$r .= '</div>';
 
 		return $r;
