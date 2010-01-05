@@ -2445,8 +2445,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			}
 			else
 			{
-				$statuses[] = array($v['1'], $this->lang->line('open'));
-				$statuses[] = array($v['1'], $this->lang->line('closed'));
+				$statuses[] = array('open', $this->lang->line('open'));
+				$statuses[] = array('closed', $this->lang->line('closed'));
 			}
 
 			$channel_info[$key]['statuses'] = $statuses;
