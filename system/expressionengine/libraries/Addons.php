@@ -208,7 +208,7 @@ class EE_Addons {
 		{
 			$query = $this->EE->addons_model->get_installed_modules();
 			
-			if ($query->num_rows > 0)
+			if ($query->num_rows() > 0)
 			{
 				$files = $this->get_files('modules');
 				
@@ -225,7 +225,7 @@ class EE_Addons {
 		{
 			$query = $this->EE->db->get('accessories');
 
-			if ($query->num_rows > 0)
+			if ($query->num_rows() > 0)
 			{
 				$files = $this->get_files('accessories');
 
@@ -244,7 +244,7 @@ class EE_Addons {
 		{
 			$query = $this->EE->addons_model->get_installed_extensions();
 			
-			if ($query->num_rows > 0)
+			if ($query->num_rows() > 0)
 			{
 				$files = $this->get_files('extensions');
 				
@@ -252,6 +252,25 @@ class EE_Addons {
 				{
 					$name = strtolower(substr($row['class'], 0, -4));
 
+					if (isset($files[$name]))
+					{
+						$_installed[$type][$name] = array_merge($files[$name], $row);
+					}
+				}
+			}
+		}
+		elseif ($type == 'fieldtypes')
+		{
+			$query = $this->EE->db->get('fieldtypes');
+			
+			if ($query->num_rows() > 0)
+			{
+				$files = $this->get_files('fieldtypes');
+				
+				foreach($query->result_array() as $row)
+				{
+					$name = $row['name'];
+					
 					if (isset($files[$name]))
 					{
 						$_installed[$type][$name] = array_merge($files[$name], $row);
