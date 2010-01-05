@@ -1345,8 +1345,15 @@ h2 a:hover {
 	padding:0;
 }
 
+#ee_homepage_notice.contents .heading {
+	background:#d0eaf7;
+}
+
 #ee_homepage_notice.contents .heading h2 {
-	background: none;
+	background:none;
+	color:#3ba1db;
+	text-shadow:0 1px 0 #abd8f0;
+	
 }
 
 #noticeContents.closed {
@@ -1366,8 +1373,22 @@ h2 a:hover {
 	display:none;
 }
 
+#mainContent .pageContents#noticeContents {
+	background:#e5f7fc;
+	color:#4d6a7c;
+}
+
+span.ee_notice_icon {
+	background:transparent url(<?=$cp_theme_url?>images/cp_sprite.png) no-repeat 0 -90px;
+	width:13px;
+	height:14px;
+	display:block;
+	float:left;
+	margin:3px 5px 0 0;
+}
+
 .heading span.msg_open_close {
-	background:transparent url('../themes/jquery_ui/default/images/ui-icons_27343C_256x240.png') -15px -192px no-repeat;
+	background:transparent url(<?=$cp_theme_url?>images/cp_sprite.png) no-repeat -145px -90px;
 }
 
 #ee_important_message.closed {

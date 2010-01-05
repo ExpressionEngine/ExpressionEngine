@@ -14,7 +14,7 @@ if ($EE_view_disable !== TRUE)
 		<div id="ee_important_message" class="<?=$open_close_msg?>">
 			<div class="contents" id="ee_homepage_notice">
 				<div class="heading">
-		            <h2><?=lang('important_messages')?><span class="msg_open_close">Ignore Button</span></h2>
+		            <h2><span class="ee_notice_icon"></span><?=lang('important_messages')?><span class="msg_open_close">Ignore Button</span></h2>
 		        </div>
 				<div class="closedHeading msg_open_close">
 						<?=lang('important_messages')?>
