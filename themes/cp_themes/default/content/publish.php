@@ -68,15 +68,6 @@ if ($EE_view_disable !== TRUE)
 
 				</div>
 
-				<h3><a href="#"><?=lang('files')?></a></h3>
-				<div>
-					<ul>
-					<?php foreach($file_list as $dir):?>
-						<li><a href="#" class="carousel_activate" id="upload_<?=$dir['id']?>"><?=$dir['name']?></a></li>
-					<?php endforeach;?>
-					</ul><br />
-				</div>
-
 				<?php
 				if ($show_author_menu):
 					// Can the current user assign the entry to a different author?
