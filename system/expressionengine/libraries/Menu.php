@@ -789,7 +789,6 @@ class EE_Menu {
 															'captcha_preferences'			=> 'cp/admin/system_admin/captcha_preferences.html',
 															'database_settings'				=> 'cp/admin/system_admin/database_settings.html',
 															'cookie_settings'				=> 'cp/admin/system_admin/cookie_settings.html',
-															'database_settings'				=> 'cp/admin/system_admin/output_and_debugging_preferences.html',
 															'email_configuration'			=> 'cp/admin/system_admin/email_configuration.html',
 															'emoticon_preferences'			=> 'cp/admin/system_admin/emoticon_preferences.html',
 															'general_configuration'			=> 'cp/admin/system_admin/general_configuration.html',
