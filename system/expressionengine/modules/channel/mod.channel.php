@@ -2928,12 +2928,12 @@ class Channel {
 
 				if ((($this->total_pages * $this->p_limit) - $this->p_limit) > $this->p_page)
 				{
-					$this->page_next = $this->basepath.'P'.($this->p_page + $this->p_limit).'/';
+					$this->page_next = reduce_double_slashes($this->basepath.'/P'.($this->p_page + $this->p_limit));
 				}
 
 				if (($this->p_page - $this->p_limit ) >= 0)
 				{
-					$this->page_previous = $this->basepath.'P'.($this->p_page - $this->p_limit).'/';
+					$this->page_previous = reduce_double_slashes($this->basepath.'/P'.($this->p_page - $this->p_limit));
 				}
 			}
 			else
