@@ -925,36 +925,35 @@ class Api_channel_entries extends Api {
 
 		$methods = array('validate_publish', 'publish_tabs');
 		$params = array('validate_publish' => array($data), 'publish_tabs' => array($data['channel_id'], $this->entry_id));
-		
-		$module_data = $this->EE->api_channel_fields->get_module_methods($methods, $params);
-		
 
-		
-		foreach ($module_data as $class => $m)
+		$module_data = $this->EE->api_channel_fields->get_module_methods($methods, $params);
+
+		if ($module_data !== FALSE)
 		{
-		
-		if (is_array($m['validate_publish']))
-		{
-			foreach($m['validate_publish'] as $k => $v)
+			foreach ($module_data as $class => $m)
 			{
-				$this->_set_error($k, $v);
+				if (is_array($m['validate_publish']))
+				{
+					foreach($m['validate_publish'] as $k => $v)
+					{
+						$this->_set_error($k, $v);
+					}
+				}
+
+				if (is_array($m['publish_tabs']))
+				{
+					foreach($m['publish_tabs'] as $tab => $v)
+					{
+						//foreach ($v as $val)
+						//{
+							$this->mod_fields[$v['field_id']] = '';
+							//print_r($v);
+						//}
+					}
+				}
 			}
 		}
-		
-		if (is_array($m['publish_tabs']))
-		{
-			foreach($m['publish_tabs'] as $tab => $v)
-			{
-				//foreach ($v as $val)
-				//{			
-					$this->mod_fields[$v['field_id']] = '';
-					
-					//print_r($v);
-				//}
-			}
-		}		
-		}
-		
+
 	}
 	
 	// --------------------------------------------------------------------
