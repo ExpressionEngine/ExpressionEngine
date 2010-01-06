@@ -306,11 +306,15 @@ class Simple_commerce_mcp {
 				$vars['items'][$id]['sale_price_enabled'] =  FALSE;
 				$vars['items'][$id]['recurring'] =  FALSE;
 				$vars['items'][$id]['admin_email_address'] = '';		
-				$vars['items'][$id]['admin_email_template'] = '';					
+				$vars['items'][$id]['admin_email_template'] = '';
+				$vars['items'][$id]['admin_email_template_unsubscribe'] = '';		
 				$vars['items'][$id]['customer_email_template'] = '';
+				$vars['items'][$id]['customer_email_template_unsubscribe'] = '';
 				$vars['items'][$id]['new_member_group'] = '';
+				$vars['items'][$id]['member_group_unsubscribe'] = '';
 				$vars['items'][$id]['current_subscriptions'] = '';
-				$vars['items'][$id]['subscription_frequency'] = '';				
+				$vars['items'][$id]['subscription_frequency'] = '';	
+				$vars['items'][$id]['subscription_frequency_unit'] = '';			
 				$vars['items'][$id]['entry_id'] = $id;				
 
 			}				
