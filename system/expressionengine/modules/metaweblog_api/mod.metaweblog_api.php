@@ -444,8 +444,8 @@ class Metaweblog_api {
 		$entry_id = $parameters['0'];
 
 		$sql = "SELECT wt.channel_id, wt.author_id, wt.title, wt.url_title,
-				wb.channel_title, wb.channel_url, 
-				FROM exp_channel_titles wt, exp_channels wb
+				wb.channel_title, wb.channel_url
+				FROM (exp_channel_titles wt, exp_channels wb)
 				WHERE wt.channel_id = wb.channel_id
 				AND wt.entry_id = '".$this->EE->db->escape_str($entry_id)."' ";
 
