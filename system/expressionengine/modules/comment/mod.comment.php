@@ -398,6 +398,7 @@ class Comment {
 
 		// We are done with this
 		$this->EE->db->flush_cache();
+		$this->EE->db->stop_cache();
 
 		/** ------------------------------------
 		/**  No results?  No reason to continue...
