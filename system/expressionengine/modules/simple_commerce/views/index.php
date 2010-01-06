@@ -10,14 +10,14 @@ $this->table->set_heading(
 );
 
 $this->table->add_row(array(
-		lang('ipn_url', 'ipn_url'),
-		form_input(array('id'=>'api_url', 'readonly'=>'readonly','class'=>'field','value'=>$api_url))
-	)
-);
-
-$this->table->add_row(array(
 		'colspan' 	=> 2,
 		'data'		=> lang('ipn_details')
+	)
+); 
+
+$this->table->add_row(array(
+		lang('ipn_url', 'ipn_url'),
+		form_input(array('id'=>'api_url', 'readonly'=>'readonly','class'=>'field','value'=>$api_url))
 	)
 );
 
