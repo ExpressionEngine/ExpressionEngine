@@ -29,7 +29,7 @@ class Date_ft extends EE_Fieldtype {
 		'version'	=> '1.0'
 	);
 
-	var $has_array_data = TRUE;
+	var $has_array_data = FALSE;
 	
 	/**
 	 * Constructor

@@ -29,7 +29,7 @@ class Option_group_ft extends EE_Fieldtype {
 		'version'	=> '1.0'
 	);
 	
-	var $has_array_data = FALSE;
+	var $has_array_data = TRUE;
 
 	/**
 	 * Constructor
@@ -253,9 +253,9 @@ class Option_group_ft extends EE_Fieldtype {
 		$limit = FALSE;
 		
 		// Limit Parameter
-		if (is_array($chk_data[1]) AND isset($chk_data[1]['limit']))
+		if (is_array($params) AND isset($params['limit']))
 		{
-			$limit = $chk_data[1]['limit'];
+			$limit = $params['limit'];
 		}
 
 		foreach($data as $key => $item)

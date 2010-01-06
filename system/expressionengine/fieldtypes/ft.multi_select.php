@@ -29,7 +29,7 @@ class Multi_select_ft extends EE_Fieldtype {
 		'version'	=> '1.0'
 	);
 	
-	var $has_array_data = FALSE;
+	var $has_array_data = TRUE;
 
 	/**
 	 * Constructor
@@ -99,7 +99,7 @@ class Multi_select_ft extends EE_Fieldtype {
 	{
 		$this->EE->load->helper('custom_field');
 		$data = decode_multi_field($data);
-		
+
 		if ($tagdata)
 		{
 			return $this->_parse_multi($data, $params, $tagdata);
@@ -159,11 +159,11 @@ class Multi_select_ft extends EE_Fieldtype {
 	{
 		$chunk = '';
 		$limit = FALSE;
-		
+
 		// Limit Parameter
-		if (is_array($chk_data[1]) AND isset($chk_data[1]['limit']))
+		if (is_array($params) AND isset($params['limit']))
 		{
-			$limit = $chk_data[1]['limit'];
+			$limit = $params['limit'];
 		}
 
 		foreach($data as $key => $item)

@@ -3822,19 +3822,19 @@ class Channel {
 					// We parse all chunks, but TMPL->var_pairs will still have the others
 					// so we'll keep track of these and bail if we've parsed it
 					$parsed_custom_pairs[] = $key_name;
-										
+				
 					// Is this custom field part of the current channel row?
 					if (isset($row['field_id_'.$this->cfields[$row['site_id']][$key_name]]) && isset($this->pfields[$row['site_id']][$this->cfields[$row['site_id']][$key_name]]))
 					{
 						$this->EE->load->library('api');
 						$this->EE->api->instantiate('channel_fields');
-						
-						if ($this->EE->api_channel_fields->setup_handler($field_id))
+
+						if ($this->EE->api_channel_fields->setup_handler($this->cfields[$row['site_id']][$key_name]))
 						{
 							$this->EE->api_channel_fields->apply('_init', array(array('row' => $row)));
 							
 							// Preprocess
-							$data = $this->EE->api_channel_fields->apply('pre_process', array($row['field_id_'.$field_id]));
+							$data = $this->EE->api_channel_fields->apply('pre_process', array($row['field_id_'.$this->cfields[$row['site_id']][$key_name]]));
 
 							// Blast through all the chunks
 							foreach($pfield_chunk[$site_id][$key_name] as $chk_data)
