@@ -926,6 +926,7 @@ class Api_channel_entries extends Api {
 		$methods = array('validate_publish', 'publish_tabs');
 		$params = array('validate_publish' => array($data), 'publish_tabs' => array($data['channel_id'], $this->entry_id));
 
+		$this->instantiate('channel_fields');
 		$module_data = $this->EE->api_channel_fields->get_module_methods($methods, $params);
 
 		if ($module_data !== FALSE)
