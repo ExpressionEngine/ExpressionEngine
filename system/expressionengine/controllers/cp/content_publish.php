@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Content_publish extends Controller {
+class Content_publish extends Controller { 
 
 	var $SPELL				= FALSE;
 	var $autosave_error		= FALSE;
@@ -428,7 +428,6 @@ class Content_publish extends Controller {
 
 			$vars['cp_page_title'] = $this->lang->line('edit_entry');
 			
-
 			if ($this->input->get_post('use_autosave') == 'y')
 			{
 				$result = $this->channel_entries_model->get_entry($entry_id, $channel_id, TRUE);
@@ -494,18 +493,20 @@ class Content_publish extends Controller {
 					}
 
 					$this->javascript->output('
+					
+						var publishForm = $("#publishForm");
 
 						_destroy_live_view = function() {
-							$("#publishForm").trigger("destroy_live_view");
+							publishForm.trigger("destroy_live_view");
 						}
 
-						$("#publishForm").find("input:text, textarea").focus(_destroy_live_view);
-						$("#publishForm").find("input:radio, input:checkbox").click(_destroy_live_view);
-						$("#publishForm").find("input:hidden, input:file, select").change(_destroy_live_view);
+						publishForm.find("input:text, textarea").focus(_destroy_live_view);
+						publishForm.find("input:radio, input:checkbox").click(_destroy_live_view);
+						publishForm.find("input:hidden, input:file, select").change(_destroy_live_view);
 
 						function view_live_look() {
 							$.ee_notice("'.$view_link.'",  {duration:0});
-							$("#publishForm").one("destroy_live_view", $.ee_notice.destroy);
+							publishForm.one("destroy_live_view", $.ee_notice.destroy);
 						}
 
 						view_live_look();
@@ -670,21 +671,21 @@ class Content_publish extends Controller {
 			}
 
 			$this->javascript->output('
-				$("input#versioning_enabled").click(function() {
+				$("#versioning_enabled").click(function() {
 					if($(this).attr("checked")) {
 						$("#revision_button").show(); 
 					} else {
-					$("#revision_button").hide(); 
-				}  
+						$("#revision_button").hide(); 
+					}  
 				});
 			');
 		}
 
 		// used in date field
 		$this->javascript->output('
-			date_obj = new Date();
-			date_obj_hours = date_obj.getHours();
-			date_obj_mins = date_obj.getMinutes();
+			var date_obj = new Date(),
+				date_obj_hours = date_obj.getHours(),
+				date_obj_mins = date_obj.getMinutes();
 
 			if (date_obj_mins < 10) { date_obj_mins = "0" + date_obj_mins; }
 
@@ -695,7 +696,7 @@ class Content_publish extends Controller {
 				date_obj_am_pm = " AM";
 			}
 
-			date_obj_time = " \'"+date_obj_hours+":"+date_obj_mins+date_obj_am_pm+"\'";
+			EE.date_obj_time = " \'"+date_obj_hours+":"+date_obj_mins+date_obj_am_pm+"\'";
 		');
 
 
@@ -928,7 +929,7 @@ class Content_publish extends Controller {
 					cat_groups_containers = {};
 				
 				// IE caches $.load requests, so we need a unique number
-				function now(){
+				function now() {
 					return +new Date;
 				}
 				
