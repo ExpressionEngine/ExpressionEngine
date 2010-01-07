@@ -1082,6 +1082,8 @@ class MyAccount extends Controller {
 			$predefined_buttons[$button]['site_id'] = $this->config->item('site_id');
 			$predefined_buttons[$button]['tag_order'] = $button_count++;
 			$predefined_buttons[$button]['tag_row'] = 1;
+			// depending on how this got inserted into the db, this may be needed, but it will never be "bad", so slashes are removed for safety.
+			$predefined_buttons[$button]['tag_open'] = stripslashes($predefined_buttons[$button]['tag_open']);
 
 			$this->admin_model->update_html_buttons($this->id, array($predefined_buttons[$button]), FALSE);
 		}
