@@ -3291,6 +3291,12 @@ table.solo {
 	overflow: scroll;
 }
 
+.image_edit_form_options #image_edit_form .source label {
+	width:				auto;
+	margin-top: 		5px;
+	float: 				none;
+}
+
 .image_edit_form_options #image_edit_form label {
 	width:				150px;
 }

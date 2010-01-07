@@ -3600,7 +3600,11 @@ table.solo {
 	overflow: scroll;
 }
 
-
+.image_edit_form_options #image_edit_form .source label {
+	width:				auto;
+	margin-top: 		5px;
+	float: 				none;
+}
 
 #mainContent #image_edit_form label {
 	font-weight:		bold;

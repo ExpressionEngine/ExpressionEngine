@@ -95,9 +95,11 @@
 				</ul>
 			</fieldset>
 
+			<div class="source">
+				<label><?=form_radio('source', 'copy', TRUE)?> <?=lang('create_thumb_copy')?></label>
+			</div>
 			<div class="shun source">
-				<label><?=form_radio('source', 'copy', TRUE)?> <?=lang('create_thumb_copy')?></label><br />
-				<label><?=form_radio('source', 'resize_orig', FALSE)?> <?=lang('resize_original')?></label><br />
+				<label><?=form_radio('source', 'resize_orig', FALSE)?> <?=lang('resize_original')?></label>
 			</div>
 
 			<p class="submit_button"><?=form_submit('edit', lang('edit_image'), 'class="submit" id="edit"')?> <?=form_button('cancel', lang('cancel'), 'class="submit place_image"')?></p>
