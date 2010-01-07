@@ -1300,7 +1300,7 @@ class Comment {
 			// If there is a slash in the entry ID we'll kill everything after it.
 			$entry_id = trim($qstring); 
 			$entry_id = preg_replace("#/.+#", "", $entry_id);
-			
+
 			if ( ! is_numeric($entry_id))
 			{
 				$entry_where = array('url_title' => $entry_id);
@@ -1320,6 +1320,7 @@ class Comment {
 		if ($channel = $this->EE->TMPL->fetch_param('channel'))
 		{
 			$this->EE->db->select('channel_id');
+			$this->EE->functions->ar_andor_string($channel, 'channel_name');
 			$this->EE->db->where_in('site_id', $this->EE->TMPL->site_ids);
 			$query = $this->EE->db->get('channels');
 
