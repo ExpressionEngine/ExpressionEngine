@@ -4167,18 +4167,18 @@ td .markItUp{
 }
 
 .js_notification .js_notice {
-	background:		#FFF8AA url('<?=$cp_theme_url?>images/cp_sprite.png') -5px -115px no-repeat;
+	background:		#FFF8AA url('<?=$cp_theme_url?>images/alert.png') no-repeat 12px 6px;
 	color:			#40381A;
 }
 
 .js_notification .js_error {
-	background:		#FFF8AA url('<?=$cp_theme_url?>images/cp_sprite.png') -5px -138px no-repeat;
+	background:		#FFF8AA url('<?=$cp_theme_url?>images/error.png') no-repeat 12px 6px;
 	color:			#C00;
 	font-weight:	bold;
 }
 
 .js_notification .js_success {
-	background:		#FFF8AA url('<?=$cp_theme_url?>images/cp_sprite.png') -5px -180px no-repeat;
+	background:		#FFF8AA url('<?=$cp_theme_url?>images/success.png') no-repeat 12px 6px;
 	color:			#08711D;
 	font-weight:	bold;
 }
