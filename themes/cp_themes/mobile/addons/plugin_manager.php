@@ -99,12 +99,14 @@ if ($EE_view_disable !== TRUE)
 					<br /><a href="<?=BASE.AMP.'C=addons_plugins'.AMP.'M=install'.AMP.'file='.$item['dl_url']?>"><?=lang('plugin_install')?></a>
 				<?php endif;?>
 			</li>
-			
 		<?php endforeach;?>
+	<?php else:?>	
+			<li>Plugin Feed Disabled in Beta Version.</li>
 	<?php endif;?>
 		</ul>
-<?=$this->pagination->create_links()?>
-
+		<?php if (count($remote) > 1):?>
+			<?=$this->pagination->create_links()?>
+		<?php endif;?>
 
 </div>
 <?php
