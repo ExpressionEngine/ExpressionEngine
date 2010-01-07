@@ -1990,7 +1990,7 @@ class Forum {
 	function set_theme()
 	{
 		$theme = $this->EE->input->get('theme');
-		
+
 		if ( ! preg_match("/^[a-z0-9\s_-]+$/i", $theme))
 		{ 
 			exit('Forum themes may only contain alpha-numeric characters');
@@ -2013,6 +2013,8 @@ class Forum {
 		if (isset($this->EE->session->tracker[0]))
 		{	
 			$return = ($this->_fetch_pref('board_forum_trigger') != '') ? str_replace($this->_fetch_pref('board_forum_trigger'), '', $this->EE->session->tracker[0]) : $this->EE->session->tracker[0];
+
+
 			$this->EE->functions->redirect($this->_forum_path($return));
 		}
 
@@ -2085,13 +2087,24 @@ class Forum {
 	/** -----------------------------------------
 	/**  Base IFRAME for Spell Check
 	/** -----------------------------------------*/
+	/**
+	 * 	@todo, figure out why the tracker is being completely unset.  This at least gets theme
+	 *  switching working again.  bandaid fix.
+	 */
 	function spellcheck_iframe()
 	{
+		if (isset($this->EE->session->tracker[0]) && substr($this->EE->session->tracker[0], -17) == 'spellcheck_iframe')
+		{
+			array_shift($this->EE->session->tracker);
+
+			$this->EE->functions->set_cookie('tracker', serialize($this->EE->session->tracker), '0');
+		}
+		
 		if ( ! class_exists('EE_Spellcheck'))
 		{
 			require APPPATH.'libraries/Spellcheck'.EXT; 
 		}
-		
+
 		return EE_Spellcheck::iframe();
 	}
 

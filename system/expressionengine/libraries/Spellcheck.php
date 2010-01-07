@@ -296,10 +296,10 @@ class EE_Spellcheck {
 			
 			if (!SP_additionalLinks)
 			{
-				console.log(SP_hiddenField.innerHTML);
+				// console.log(SP_hiddenField.innerHTML);
 				
 				SP_additionalLinks = SP_hiddenField.innerHTML;
-				console.log(SP_additionalLinks);
+				// console.log(SP_additionalLinks);
 			}
 			
 			SP_popupDiv = document.getElementById("spellcheck_popup");
@@ -1130,12 +1130,17 @@ EOT;
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-		
+
+		$this->EE->session->tracker = array_shift($this->EE->session->tracker);
+
+		$this->EE->functions->set_cookie('tracker', serialize($this->EE->session->tracker), '0');
+
   		if ( ! defined('AMP')) define('AMP', '&amp;');
 		if ( ! defined('BR'))  define('BR',  '<br />');
 		if ( ! defined('NL'))  define('NL',  "\n");
 		if ( ! defined('NBS')) define('NBS', "&nbsp;");	
 
+		
 		$header =
 
 		"<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n\n".
@@ -1146,9 +1151,48 @@ EOT;
 		"<meta name='MSSmartTagsPreventParsing' content='TRUE'>\n".
 		"<meta http-equiv='expires' content='-1'>\n".
 		"<meta http-equiv='expires' content='Mon, 01 Jan 1970 23:59:59 GMT'>\n".		
-		"<meta http-equiv='pragma' content='no-cache'>\n".
-		"<link rel='stylesheet' href='".BASE.AMP."C=css".AMP."M=spellcheck_frame' type='text/css' media='screen' />\n".
-		"</head>\n\n".
+		"<meta http-equiv='pragma' content='no-cache'>\n";
+		
+		if (REQ == 'CP')
+		{
+			$header .= "<link rel='stylesheet' href='".BASE.AMP."C=css".AMP."M=spellcheck_frame' type='text/css' media='screen' />\n";			
+		}
+		else
+		{
+			$header .= <<<EOH
+				<style type="text/css">
+				<!--
+				body
+				{
+				margin:			0;
+				padding:			5px;
+				font-family:		Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+				font-size:		 11px;
+				color:			 #333;
+				background-color:  #fff;
+				line-height: 18px;
+				}
+
+				.spellchecked_word
+				{
+					cursor: pointer;
+					background-color: #fff;
+					border-bottom: 1px dashed #ff0000;
+				}
+
+				.spellchecked_word_selected
+				{
+					cursor: pointer;
+					background-color: #F72A58;
+					color: #FFF;
+				}
+				-->
+				</style>
+EOH;
+		}
+		
+		
+		$header .= "</head>\n\n".
 		"<body></body>\n</html>";		
 		
 		@header('Content-Type: text/html');
