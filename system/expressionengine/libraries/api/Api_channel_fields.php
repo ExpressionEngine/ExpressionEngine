@@ -70,11 +70,7 @@ class Api_channel_fields extends Api {
 			$this->field_types[$key] = $this->include_handler($key);
 			
 			$opts = get_class_vars($data['class']);
-			
-			if (isset($opts['info'], $opts['info']['name']))
-			{
-				$fts[$key]['name'] = $opts['info']['name'];
-			}
+			$fts[$key] = array_merge($fts[$key], $opts['info']);
 		}
 		
 		return $fts;
@@ -185,7 +181,7 @@ class Api_channel_fields extends Api {
 	 *
 	 * @access	public
 	 */
-	function setup_handler($field_type)
+	function setup_handler($field_type, $return_obj = FALSE)
 	{
 		$field_id = FALSE;
 		$frontend = FALSE;
@@ -239,7 +235,7 @@ class Api_channel_fields extends Api {
 		// Remember the last one
 		$this->field_type = $field_type;
 		
-		return TRUE;
+		return ($return_obj) ? $this->field_types[$field_type] : TRUE;
 	}
 	
 	// --------------------------------------------------------------------
