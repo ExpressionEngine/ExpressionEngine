@@ -45,8 +45,6 @@ if ($EE_view_disable !== TRUE)
 
 				</div>
 
-				<?php if (count($file_list) > 0):?>
-
 				<h3 class="closed"><a href="#"><?=lang('file_upload')?></a></h3>
 				<div id="file_upload_hold" class="f_m_s">
 					<iframe id='target_upload' name='target_upload' src='' style='width:200px;height:50px;border:1;display:none;'></iframe>
@@ -73,8 +71,6 @@ if ($EE_view_disable !== TRUE)
 					<?=form_close()?>
 
 				</div>
-
-				<?php endif;?>
 
 				<h3><a href="#"><?=lang('file_tools')?></a></h3>
 				<div class="f_m_s">

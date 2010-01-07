@@ -316,7 +316,7 @@ class Content_files extends Controller {
 	 */
 	function _map($dir_id = FALSE, $enc_path = FALSE)
 	{
-		$upload_directories = $this->tools_model->get_upload_preferences($this->session->userdata('member_group'));
+		$upload_directories = $this->tools_model->get_upload_preferences($this->session->userdata('group_id'));
 		// if a user has no directories available to them, then they have no right to be here
 		if ($this->session->userdata['group_id'] != 1 && $upload_directories->num_rows() == 0)
 		{
