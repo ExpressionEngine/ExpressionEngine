@@ -298,9 +298,9 @@ class Addons_installer {
 			$default_settings = $FT->install();
 			
 			$this->EE->db->insert('fieldtypes', array(
-					'fieldtype_name'		=> $fieldtype,
-					'fieldtype_version'		=> $FT->info['version'],
-					'fieldtype_settings'	=> base64_encode(serialize($default_settings)),
+					'name'					=> $fieldtype,
+					'version'				=> $FT->info['version'],
+					'settings'				=> base64_encode(serialize($default_settings)),
 					'has_global_settings'	=> method_exists($FT, 'global_settings') ? 'y' : 'n'
 			));
 		}
@@ -321,10 +321,31 @@ class Addons_installer {
 		
 		if ($this->EE->api_channel_fields->include_handler($fieldtype))
 		{
+			$this->EE->load->dbforge();
+			
+			// Drop columns
+			$this->EE->db->select('field_id');
+			$query = $this->EE->db->get_where('channel_fields', array('field_type' => $fieldtype));
+			
+			$ids = array_map('array_pop', $query->result_array());
+
+			if (count($ids))
+			{
+				foreach($ids as $id)
+				{
+					$this->EE->dbforge->drop_column('channel_data', 'field_id_'.$id);
+					$this->EE->dbforge->drop_column('channel_data', 'field_ft_'.$id);
+				}
+
+				$this->EE->db->where_in('field_id', $ids);
+				$this->EE->db->delete(array('channel_fields', 'field_formatting'));
+			}
+
+			// Uninstall
 			$FT = $this->EE->api_channel_fields->setup_handler($fieldtype, TRUE);
 			$FT->uninstall();
 			
-			$this->EE->db->delete('fieldtypes', array('fieldtype_name' => $fieldtype)); 
+			$this->EE->db->delete('fieldtypes', array('name' => $fieldtype)); 
 		}
 	}
 
