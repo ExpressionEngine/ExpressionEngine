@@ -792,6 +792,9 @@ class Updater {
         // Channel fields can now have content restrictions
         $Q[] = "ALTER TABLE `exp_weblog_fields` ADD COLUMN `field_content_type` VARCHAR(20) NOT NULL default 'any'";
 
+        // Modules now have a tab setting
+        $Q[] = "ALTER TABLE `exp_modules` ADD COLUMN `has_publish_fields` char(1) NOT NULL default 'n'";
+
         // get rid of 'blog_encoding from exp_weblogs' - everything's utf-8 now
         $Q[] = "ALTER TABLE `exp_weblogs` DROP COLUMN `blog_encoding`";
         

@@ -158,6 +158,7 @@ class EE_Schema {
 			 module_name varchar(50) NOT NULL,
 			 module_version varchar(12) NOT NULL,
 			 has_cp_backend char(1) NOT NULL default 'n',
+			 has_publish_fields char(1) NOT NULL default 'n',
 			 PRIMARY KEY `module_id` (`module_id`)
 			)";
 		
