@@ -364,7 +364,7 @@ a:hover .submit_alt{
 	padding-top:		2px;
 }
 
-input.submit, a.submit {
+input.submit, button.submit, a.submit {
 	background:			#80a210 url('<?=$cp_theme_url?>images/btn_grad.png') top left repeat-x;
 	display: 			inline-block;
 	padding:			3px 31px 3px 31px;

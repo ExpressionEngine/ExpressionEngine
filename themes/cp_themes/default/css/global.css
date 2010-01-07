@@ -272,6 +272,7 @@ ul.bulleted {
 }
 
 input.submit,
+button.submit,
 .submit_alt,
 .button a.submit {
 	-moz-border-radius: 3px;
