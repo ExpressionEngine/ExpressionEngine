@@ -89,7 +89,7 @@ if (count($forums))
 
 	$this->table->add_row(array(
 		'colspan'	=> 6, 
-		'data'		=> '<a href="'.$_base.AMP.'method=forum_edit'.AMP.'parent_id='.$parent_id.'">'.lang('forum_add_new').'</a>'
+		'data'		=> '<a href="'.$_base.AMP.'method=forum_edit'.AMP.'board_id='.$_board_id.AMP.'parent_id='.$parent_id.'">'.lang('forum_add_new').'</a>'
 	));
 	echo $this->table->generate();
 }
