@@ -143,6 +143,7 @@ class EE_Extensions {
 		// Reset Our Variables		
 		$this->end_script	= FALSE;
 		$this->last_call	= FALSE;
+		$php5_args			= array();
 		
 		// Anything to Do Here?
 		if ( ! isset($this->extensions[$which])) return;
@@ -163,11 +164,11 @@ class EE_Extensions {
 			$args = array_slice(func_get_args(), 1);
 		}
 
-		if (is_php('5.3'))
+		if (is_php('5'))
 		{
 			foreach($args as $k => $v)
 			{
-				$args[$k] =& $args[$k];
+				$php5_args[$k] =& $args[$k];
 			}
 		}
 		
@@ -256,7 +257,7 @@ class EE_Extensions {
 				}
 				else
 				{
-					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $args);
+					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $php5_args);
 				}
 				
 				$this->in_progress = '';
