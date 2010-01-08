@@ -148,7 +148,7 @@ class Cp {
 					'cp_avatar_path'		=> $user_q->row('avatar_filename') ? $this->EE->config->slash_item('avatar_url').$user_q->row('avatar_filename') : '',
 					'cp_avatar_width'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_width') : '',
 					'cp_avatar_height'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_height') : '',
-					'cp_quicklinks'			=> $this->EE->member_model->get_member_quicklinks($this->EE->session->userdata('member_id')),
+					'cp_quicklinks'			=> $this->_get_quicklinks(),
 					
 					'EE_view_disable'		=> FALSE,
 					'is_super_admin'		=> ($this->EE->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
@@ -466,7 +466,53 @@ class Cp {
 		
 		return $url;
 	}
+
+	// --------------------------------------------------------------------
 	
+	/**
+	 * 	Get Quicklinks
+	 *
+	 * 	Does a lookup for quick links.  Based on the URL we determine if it is external or not
+	 *
+	 * 	@access private
+	 * 	@return array
+	 */
+	
+	function _get_quicklinks()
+	{
+		$quick_links = $this->EE->member_model->get_member_quicklinks($this->EE->session->userdata('member_id'));
+
+		$external = false; // If this is an external link or not.
+		
+		$len = strlen($this->EE->config->item('cp_url'));
+		
+		$link = array();
+		
+		$count = 0;
+		
+		foreach ($quick_links as $ql)
+		{
+			if (strncmp($ql['link'], $this->EE->config->item('cp_url'), $len) == 0)
+			{
+				$link[$count]['link'] = str_replace($this->EE->config->item('cp_url'), '', $ql['link']);
+				$link[$count]['link'] = preg_replace('/\?S=[a-zA-Z0-9]+&D=cp&/', '', $link[$count]['link']);
+				$link[$count]['link'] = BASE.AMP.$link[$count]['link'];
+				$link[$count]['title'] = $ql['title'];
+				$link[$count]['external'] = FALSE;
+			}
+			else
+			{
+				$link[$count]['link'] = $ql['link'];
+				$link[$count]['title'] = $ql['title'];
+				$link[$count]['external'] = TRUE;
+			}
+						
+			$count++;
+		}
+
+		return $link;
+	}
+		
 	// --------------------------------------------------------------------
 	
 	/**
