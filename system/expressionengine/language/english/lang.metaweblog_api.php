@@ -132,6 +132,9 @@ a webpage with all BBCode and file directories rendered.",
 'unable_to_upload' =>
 "Unable to Upload File",
 
+'invalid_file_content' =>
+'The file you are attempting to upload has invalid content for its MIME type',
+
 'metaweblog_upload_dir' =>
 "Upload Directory for File Uploading",
 

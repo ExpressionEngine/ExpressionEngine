@@ -1605,17 +1605,22 @@ class Metaweblog_api {
 		}
 
 		/** -------------------------------------
-		/**  File name security
+		/**  File name and security
 		/** -------------------------------------*/
 
 		$filename = preg_replace("/\s+/", "_", $parameters['3']['name']);
 
 		$filename = $this->EE->functions->sanitize_filename($filename);
 
+		if ($this->EE->security->xss_clean($parameters['3']['bits'], TRUE) === FALSE)
+		{
+			return $this->EE->xmlrpc->send_error_message('810', $this->EE->lang->line('invalid_file_content'));
+		}
+
 		/** -------------------------------------
 		/**  Upload the image
 		/** -------------------------------------*/
-
+		
 		$this->EE->load->helper('path');
 
 		$upload_path = set_realpath($this->EE->functions->remove_double_slashes($query->row('server_path') .'/'));
@@ -1626,7 +1631,7 @@ class Metaweblog_api {
 		{
 			return $this->EE->xmlrpc->send_error_message('810', $this->EE->lang->line('unable_to_upload'));
 		}
-
+		
 		@fwrite($fp, $parameters['3']['bits']);// Data base64 decoded by XML-RPC library
 		@fclose($fp);
 
