@@ -5501,7 +5501,7 @@ class Forum_Core extends Forum {
 	{
 		if (isset($this->EE->session->cache['forum']['submission_error']))
 		{
-			$this->submission_error = $SESS->cache['forum']['submission_error'];
+			$this->submission_error = $this->EE->session->cache['forum']['submission_error'];
 		}
 		
 		if ($this->submission_error == '')
