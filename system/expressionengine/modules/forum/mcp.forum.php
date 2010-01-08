@@ -814,7 +814,7 @@ class Forum_mcp {
 		// Define page title based on the request type
 		
 		$title = ($is_new === TRUE) ? 'forum_create' : 'forum_edit';
-		$title = ($is_forum == TRUE) ? $title.'_category' : $title;
+		$title = ($is_forum == TRUE) ? $title : $title.'_category';
 
 		$this->_accordion_js();
 
