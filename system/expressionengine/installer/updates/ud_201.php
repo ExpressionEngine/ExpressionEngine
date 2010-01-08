@@ -30,13 +30,10 @@ class Updater {
     function Updater()
     {
         $this->EE =& get_instance();
-        $this->EE->load->library('progress');
     }
 
     function do_update()
     {
-	    $this->EE->progress->update_state("Starting 201 Update");
-
         // Modules now have a tab setting
         $Q[] = "ALTER TABLE `exp_modules` ADD COLUMN `has_publish_fields` char(1) NOT NULL default 'n'";
 

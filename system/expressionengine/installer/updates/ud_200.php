@@ -54,8 +54,6 @@ class Updater {
 
     function do_update()
     {
-        $this->EE->progress->update_state("Starting 200 Update");
-        
         // turn off extensions
         $this->EE->db->update('extensions', array('enabled' => 'n'));
         

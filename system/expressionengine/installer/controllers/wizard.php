@@ -1243,6 +1243,10 @@ PAPAYA;
 		
 		$this->load->library('progress');
 		
+		$display_version = str_replace('%s', substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1), $this->lang->line('version_update_text'));
+
+		$this->progress->update_state($display_version);
+		
 		// Is this a call from the Progress Indicator?
 		if ($this->input->get('progress') == 'yes')
 		{
