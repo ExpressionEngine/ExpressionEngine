@@ -24,7 +24,7 @@
  */
 class Wizard extends Controller {
 
-	var $version			= '2.0.0pb01';	// The version being installed
+	var $version			= '2.0.1pb01';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '4.3.2';	// Minimum version required to run EE
 	var $full_install		= FALSE;	// Set dynamically.  Determines which version is being installed  (full or core)
@@ -75,7 +75,7 @@ class Wizard extends Controller {
 
 	// These are the values we need to set during a first time installation
 	var $userdata = array(
-						'app_version'			=> '200pb01',
+						'app_version'			=> '201pb01',
 						'doc_url'				=> 'http://expressionengine.com/public_beta/docs/', // public beta
 						'install_lock'			=> '1',
 						'ext'					=> '.php',
@@ -562,7 +562,7 @@ class Wizard extends Controller {
 		}
 		else
 		{
-			$data['link'] = $this->set_qstr('license', str_replace('%s', substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1), $this->lang->line('click_to_update')));
+			$data['link'] = $this->set_qstr('license', str_replace('%s', $this->version, $this->lang->line('click_to_update')));			
 		}
 
 		return $this->_set_output('optionselect', $data);	
