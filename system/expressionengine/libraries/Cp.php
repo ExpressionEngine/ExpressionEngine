@@ -481,8 +481,6 @@ class Cp {
 	function _get_quicklinks()
 	{
 		$quick_links = $this->EE->member_model->get_member_quicklinks($this->EE->session->userdata('member_id'));
-
-		$external = false; // If this is an external link or not.
 		
 		$len = strlen($this->EE->config->item('cp_url'));
 		
