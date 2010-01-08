@@ -25,39 +25,20 @@
  */
 class Updater {
 
-	var $version_suffix = '';
+	var $version_suffix = 'pb01';
     
     function Updater()
     {
         $this->EE =& get_instance();
-        $this->EE->load->library('progress');
     }
 
     function do_update()
     {
-        $this->EE->progress->update_state("Starting 201 Update");
-
-
-        
-        // @todo usual update stuff goes here!
-
-
-        
-		// we have another step!
-		// @todo @pk activate it when it's done and properly tested
-		return TRUE;
-        return 'database_changes';
-    }
-
-    
-    // ------------------------------------------------------------------------ 
-        
-    function database_changes()
-    {
-        $this->EE->progress->update_state("Migrating Custom Field Settings");
 
         // Modules now have a tab setting
         $Q[] = "ALTER TABLE `exp_modules` ADD COLUMN `has_publish_fields` char(1) NOT NULL default 'n'";
+
+		// Everything else is the custom field conversion
 
 		// Rename option groups to checkboxes
 		$this->EE->db->select('field_id');
@@ -96,6 +77,7 @@ class Updater {
 		
 		// Finished!
         return TRUE;
+
     }
 }   
 /* END CLASS */
