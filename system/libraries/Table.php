@@ -172,7 +172,10 @@ class CI_Table {
 	 */
 	function _prep_args($args)
 	{
-		if (count($args) == 1 && is_array($args[0]))
+		// If there is no $args[0], skip this and treat as an associative array
+		// This can happen if there is only a single key, for example this is passed to table->generate
+		// array(array('foo'=>'bar'))
+		if (isset($args[0]) AND (count($args) == 1 && is_array($args[0])))
 		{
 			// args sent as indexed array
 			if ( ! isset($args[0]['data']))
@@ -335,7 +338,7 @@ class CI_Table {
 					$cell = isset($cell['data']) ? $cell['data'] : '';
 					$out .= $temp;
 
-					if ($cell === "")
+					if ($cell === "" OR $cell === NULL)
 					{
 						$out .= $this->empty_cells;
 					}
