@@ -25,7 +25,7 @@ $lang = array(
 "De-install Module",
 
 "delete_module_confirm" =>
-"Are you sure you want to de-install the following module:",
+"Are you sure you want to remove the following module:",
 
 "module_backend" =>
 "User CP",
