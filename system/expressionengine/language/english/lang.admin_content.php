@@ -703,6 +703,9 @@ $lang = array(
 // Custom field Administration
 //----------------------------
 
+"field_settings" =>
+"Custom Field Settings",
+
 "field_group" =>
 "Custom Field Group",
 

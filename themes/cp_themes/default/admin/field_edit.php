@@ -21,7 +21,7 @@ if ($EE_view_disable !== TRUE)
 		<thead>
 			<tr>
 				<th colspan="2">
-					<?=lang('field_group').':'.NBS.$group_name?>
+					<?=lang('field_settings')?>
 				</th>
 			</tr>
 		</thead>
