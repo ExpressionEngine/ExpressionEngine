@@ -1037,7 +1037,12 @@ class Content_files extends Controller {
 
 			$("#rotate_fieldset li img").click(function() {
 				$("#rotate").val($(this).attr("alt"));
-				$("#submit").click(); //we click the submit button instead
+				// We will submit the form for them. While this is happening, we do not
+				// want them to click the submit button manually, so we disable and enable it
+				$("#edit_file_submit").attr("disabled", true).addClass("disabled_field");
+				$("#image_edit_form").submit();
+			}, function() {
+				$("#edit_file_submit").attr("disable", "false").removeClass("disabled_field");
 			});
 
 			var image_ratio_width = $("#edit_image").height()/$("#edit_image").width();
