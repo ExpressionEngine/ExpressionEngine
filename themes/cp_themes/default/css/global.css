@@ -2251,7 +2251,7 @@ table.accessTable div.tableCellHeading {
 	padding-top: 12px;
 }
 
-#mainContent #tools {
+#mainContent div#tools {
 	width:				196px;
 	float: 				right;
 	clear: 				left;
