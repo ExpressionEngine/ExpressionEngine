@@ -97,13 +97,12 @@ class Date_ft extends EE_Fieldtype {
 */
 		$custom_date = ( ! $data) ? '' : $data;
 		$cal_date = ($custom_date != '') ? ($this->EE->localize->set_localized_time($this->EE->localize->convert_human_date_to_gmt($custom_date)) * 1000) : ($this->EE->localize->set_localized_time() * 1000);
-		
+
 		$custom_date = ( ! $data) ? '' : $this->EE->localize->set_human_time($data);
 		$cal_date = ( ! $data) ? $this->EE->localize->set_localized_time() * 1000 : ($this->EE->localize->set_localized_time($data) * 1000);
 
-
 		$this->EE->javascript->output('
-			$("#'.$this->field_name.'").datepicker({ dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$cal_date.') });
+			$("#'.$this->field_name.'").datepicker({ dateFormat: $.datepicker.W3C + EE.date_obj_time, defaultDate: new Date('.$cal_date.') });
 		');
 		
 		$loc_field = 'field_offset_'.$this->field_id;
