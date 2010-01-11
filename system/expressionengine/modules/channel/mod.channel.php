@@ -218,7 +218,7 @@ class Channel {
 		// we'll call the "related_categories" function
 		// and bail out.
 
-		if ($this->EE->TMPL->fetch_param('related_categories_mode') == 'on')
+		if ($this->EE->TMPL->fetch_param('related_categories_mode') == 'yes')
 		{
 			return $this->related_entries();
 		}
