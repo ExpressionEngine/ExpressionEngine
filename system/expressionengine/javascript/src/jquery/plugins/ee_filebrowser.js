@@ -28,7 +28,7 @@
 		current_directory = 0,
 		spinner_url = EE.filebrowser.theme_url+'images/publish_file_manager_loader.gif',
 		default_img_url = EE.PATH_CP_GBL_IMG+'default.png',
-		file_manager_obj;
+		file_manager_obj, cur_dir_seek;
 
 	/*
 	 * Sets up the filebrowser - call this before anything else
@@ -563,18 +563,29 @@
 			keyboard: false,
 			onSeek: function(i) {
 
-				// In order to figure out which (of potentially dozens) directory we are on, we need to read the DOM
-				current_directory = $("li:eq("+i+")", '#main_navi').attr("id").replace(/main_navi_/, "");
+				// onSeek (and onBeforeSeek which is the easiest to see this with) are firing twice, I believe
+				// because of the nested scrollable plugins. Its my theory that this is intermittently making
+				// the "pagination" wrong on the second, third, forth, etc directories.
+				// we'll just use a simple variable (cur_dir_seek) to make sure this doesn't fire twice. Also making
+				// efforts to get this patched in the scrollable plugin proper.
 
-				// Are there files that need to be retrieved for this dir?
-				// loadFiles will intelligently take care of minimizing HTTP requests
-				loadFiles(current_directory);
-				loadThumbs(current_directory);
+				if (cur_dir_seek != i)
+				{
+					cur_dir_seek = i;
 
-				// An up/down page has changed. Focus in on it
-				focused_tab.scrollable(i).focus();
+					// In order to figure out which (of potentially dozens) directory we are on, we need to read the DOM
+					current_directory = $("li:eq("+i+")", '#main_navi').attr("id").replace(/main_navi_/, "");
 
-				$("#page_"+current_directory).scrollable().reload();
+					// Are there files that need to be retrieved for this dir?
+					// loadFiles will intelligently take care of minimizing HTTP requests
+					loadFiles(current_directory);
+					loadThumbs(current_directory);
+
+					// An up/down page has changed. Focus in on it
+					focused_tab.scrollable(i).focus();
+
+					$("#page_"+current_directory).scrollable().reload();
+				}
 			}
 		}).navigator("#main_navi");
 
