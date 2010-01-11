@@ -207,10 +207,8 @@ class EE_Typography extends CI_Typography {
 			{
 				$this->censored_replace = $this->EE->config->item('censor_replacement');
 			}
-		
-			$words = preg_replace("/\s+/", "", trim($this->EE->config->item('censored_words')));
 			
-			$words = str_replace('OR', '|', $words);
+			$words = str_replace('OR', '|', trim($this->EE->config->item('censored_words')));
 	
 			if (substr($words, -1) == "|")
 			{

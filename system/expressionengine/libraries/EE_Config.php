@@ -570,8 +570,8 @@ class EE_Config Extends CI_Config {
 		if (isset($new_values['censored_words']))
 		{
 			$new_values['censored_words'] = trim($new_values['censored_words']);
-			$new_values['censored_words'] = str_replace(NL, '|', $new_values['censored_words']);
-			$new_values['censored_words'] = preg_replace("#\s+#", "", $new_values['censored_words']);
+			$new_values['censored_words'] = preg_replace("/[\n,|]+/", '|', $new_values['censored_words']);
+			$new_values['censored_words'] = trim($new_values['censored_words'], '|');
 		}
 
 		// Category trigger matches template != biscuit	 (biscuits, Robin? Okay! --Derek)
