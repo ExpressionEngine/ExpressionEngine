@@ -1824,15 +1824,15 @@ a.less_important_link:hover {
 	background:		#8FA1AD url('<?=$cp_theme_url?>images/design_sprite.png') 0 -668px no-repeat;
 }
 
-.templateTable td.feed {
+.templateTable td.feed, .templateTable td.xml {
 	background:		url('<?=$cp_theme_url?>images/design_sprite.png') 0 -225px no-repeat;
 }
 
-.templateTable tr.odd td.feed {
+.templateTable tr.odd td.feed, .templateTable tr.odd td.xml {
 	background:	#ECF1F4 url('<?=$cp_theme_url?>images/design_sprite.png') -502px -225px no-repeat;
 }
 
-.templateTable tr.highlightRow td.feed {
+.templateTable tr.highlightRow td.feed, .templateTable tr.highlightRow td.xml {
 	background:		#8FA1AD url('<?=$cp_theme_url?>images/design_sprite.png') 0 -292px no-repeat;
 }
 
