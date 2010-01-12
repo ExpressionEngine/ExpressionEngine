@@ -1170,7 +1170,7 @@ class Moblog {
 		}
 
 
-		$data['categories'] = array();
+		$data['category'] = array();
 
 		if ($this->post_data['categories'] == 'all')
 		{
