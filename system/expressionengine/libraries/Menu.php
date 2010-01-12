@@ -61,7 +61,7 @@ class EE_Menu {
 		
 		$menu['design'] = array(
 			'templates'		=> array(
-				'edit_templates'				=> BASE.AMP.'C=design'.AMP.'M=manager',
+				'edit_templates'				=> array(),
 				'template_manager'				=> BASE.AMP.'C=design'.AMP.'M=manager',
 				'sync_templates'				=> BASE.AMP.'C=design'.AMP.'M=sync_templates',
 				'----',
@@ -196,12 +196,10 @@ class EE_Menu {
 		
 		if (count($allowed_groups) OR $this->EE->session->userdata('group_id') == 1)
 		{
-			$additional_where = (count($allowed_groups) ? array('template_groups.group_id' => array_keys($allowed_groups)) : array());
+			$additional_where = count($allowed_groups) ? array('template_groups.group_id' => array_keys($allowed_groups)) : array();
 			
 			$templates = $this->EE->template_model->get_templates(NULL, array('template_groups.group_id'), $additional_where);
 			
-			$menu['design']['templates']['edit_templates'] = array();
-
 			if ($templates->num_rows() > 0)
 			{
 				$by_group = array();
@@ -252,16 +250,15 @@ class EE_Menu {
 
 		$menu = $this->_remove_blocked_menu_items($menu);
 		$menu = $this->_add_overviews($menu);
-				
+
 		// Only get the views once
-		$this->menu_parent = $this->EE->load->view('_shared/menu/item_parent', '', TRUE);
-		$this->menu_item = $this->EE->load->view('_shared/menu/item', '', TRUE);
-		$this->menu_divider = $this->EE->load->view('_shared/menu/item_divider', '', TRUE);
+		$this->menu_parent	= $this->EE->load->view('_shared/menu/item_parent', '', TRUE);
+		$this->menu_item	= $this->EE->load->view('_shared/menu/item', '', TRUE);
+		$this->menu_divider	= $this->EE->load->view('_shared/menu/item_divider', '', TRUE);
 
-		$menu_string = $this->_process_menu($menu);
+		// Main menu, custom tabs, help link - in that order
+		$menu_string  = $this->_process_menu($menu);
 		$menu_string .= $this->_process_menu($this->_fetch_quick_tabs(), 0, FALSE);
-
-		// Help link comes last
 		$menu_string .= $this->_process_menu(array('help' => $this->generate_help_link()));
 		
 		// Visit Site / MSM Switcher gets an extra class
@@ -449,12 +446,12 @@ class EE_Menu {
 						$m_names[] = $row['module_name'].'_themes';
 					}
 					
-					if (! in_array('forum_themes', $m_names))
+					if ( ! in_array('forum_themes', $m_names))
 					{
 						unset($menu['design']['themes']['forum_themes']);
 					}
 
-					if (! in_array('wiki_themes', $m_names))
+					if ( ! in_array('wiki_themes', $m_names))
 					{
 						unset($menu['design']['themes']['wiki_themes']);
 					}					
@@ -471,7 +468,6 @@ class EE_Menu {
 				}
 			}
 			
-			
 			if ( ! $this->EE->cp->allowed_group('can_admin_design'))
 			{
 				unset($menu['design']['message_pages']);
@@ -479,7 +475,7 @@ class EE_Menu {
 
 			if ( ! $this->EE->cp->allowed_group('can_admin_templates'))
 			{
-				unset($menu['design']['templates']['edit_templates']['Create Group']);
+				unset($menu['design']['templates']['edit_templates'][lang('nav_create_template')]);
 				unset($menu['design']['templates']['edit_templates'][0]);
 				unset($menu['design']['templates']['create_template']);
 				unset($menu['design']['templates']['snippets']);
@@ -539,7 +535,7 @@ class EE_Menu {
 				$unset_count++;
 								
 				$member_divider_3 = FALSE;								
-			}			
+			}
 
 			if ( ! $this->EE->cp->allowed_group('can_ban_users'))
 			{
@@ -642,8 +638,7 @@ class EE_Menu {
 			if ( ! $tools_divider)
 			{
 				unset($menu['tools'][0]);							
-			}				
-									
+			}
 		}
 
 		return $menu;
