@@ -138,6 +138,14 @@ class Forum_Core extends Forum {
 						$this->return_data = str_replace(LD.$key.RD, $val, $this->return_data); 
 					}
 				}
+
+				if (count($this->EE->config->_global_vars) > 0)
+				{
+					foreach ($this->EE->config->_global_vars as $key => $val)
+					{
+						$this->return_data = str_replace(LD.$key.RD, $val, $this->return_data); 
+					}
+				}
 			
 				$this->return_data = $this->_final_prep($this->return_data);
 			}
