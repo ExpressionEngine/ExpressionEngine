@@ -72,9 +72,12 @@ class Moblog {
 
 	var $txt_override	= FALSE;				// When set to TRUE, all .txt files are treated as message text
 
-	/** -------------------------------------
-	/**  Constructor
-	/** -------------------------------------*/
+
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Constructor
+	 */
 	function Moblog()
 	{
 		// Make a local reference to the ExpressionEngine super object
@@ -101,11 +104,11 @@ class Moblog {
 		$this->max_size = $this->max_size * 1024 * 1000;
 	}
 
-
-
-	/** -------------------------------------
-	/**  Check for expired moblog(s)
-	/** -------------------------------------*/
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Check for Expired Moblogs
+	 */
 	function check()
 	{
 		$which 			= ( ! $this->EE->TMPL->fetch_param('which'))	? '' : $this->EE->TMPL->fetch_param('which');
@@ -129,48 +132,12 @@ class Moblog {
 			return $this->return_data;
 		}
 
-		/** --------------------------
-		/**  Check Cache
-		/** --------------------------*/
-
-		if ( ! @is_dir(APPPATH.'cache/'.$this->cache_name))
-		{
-			if ( ! @mkdir(APPPATH.'cache/'.$this->cache_name, DIR_WRITE_MODE))
-			{
-				$this->return_data = ($this->silent == 'true') ? '' : $this->EE->lang->line('no_cache');
-				return $this->return_data;
-			}
-		}
-
-		@chmod(APPPATH.'cache/'.$this->cache_name, DIR_WRITE_MODE);
-
-		//$this->EE->functions->delete_expired_files(APPPATH.'cache/'.$this->cache_name);
-
-		$expired = array();
-
 		foreach($query->result_array() as $row)
 		{
-			$cache_file = APPPATH.'cache/'.$this->cache_name.'/t_moblog_'.$row['moblog_id'];
-
-			if ( ! file_exists($cache_file) OR (time() > (filemtime($cache_file) + ($row['moblog_time_interval'] * 60))))
+			if ($this->silent == 'false')
 			{
-				$this->set_cache($row['moblog_id']);
-				$expired[] = $row['moblog_id'];
+				$this->return_data .= '<p><strong>'.$row['moblog_full_name'].'</strong><br />'."\n</p>";
 			}
-			elseif ( ! $fp = @fopen($cache_file, FOPEN_READ_WRITE))
-			{
-				if ($this->silent == 'false')
-				{
-					$this->return_data .= '<p><strong>'.$row['moblog_full_name'].'</strong><br />'.
-									$this->EE->lang->line('no_cache')."\n</p>";
-				}
-			}
-		}
-
-		if (count($expired) == 0)
-		{
-			$this->return_data = ($this->silent == 'true') ? '' : $this->EE->lang->line('moblog_current');
-			return $this->return_data;
 		}
 
 		/** ------------------------------
@@ -222,31 +189,11 @@ class Moblog {
 		return $this->return_data ;
 	}
 
-
-
-	/** -------------------------------------
-	/**  Set cache
-	/** -------------------------------------*/
-	function set_cache($moblog_id)
-	{
-		$cache_file = APPPATH.'cache/'.$this->cache_name.'/t_moblog_'.$moblog_id;
-
-		if ($fp = @fopen($cache_file, FOPEN_WRITE_CREATE_DESTRUCTIVE))
-		{
-			flock($fp, LOCK_EX);
-			fwrite($fp, 'hi');
-			flock($fp, LOCK_UN);
-			fclose($fp);
-		}
-
-		@chmod($cache_file, FILE_WRITE_MODE);
-
-	}
-
-
-	/** -------------------------------------
-	/**  Return errors
-	/** -------------------------------------*/
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Return Moblog Errors
+	 */
 	function errors()
 	{
 		$message = '';
@@ -266,10 +213,14 @@ class Moblog {
 
 	}
 
-
-	/** -------------------------------------
-	/**  Check POP3 moblog
-	/** -------------------------------------*/
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Check Pop3 Moblog
+	 *
+	 * 	
+	 */
+	
 	function check_pop_moblog()
 	{
 		/** ------------------------------
@@ -954,9 +905,11 @@ class Moblog {
 		return TRUE;
 	}
 
-	/** -------------------------------------
-	/**  Post Channel Entry
-	/** -------------------------------------*/
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Post Entry 
+	 */
 	function post_entry()
 	{
 		// Default Channel Data
@@ -1220,12 +1173,15 @@ class Moblog {
 		}
 	}
 
-
-
-
-	/** -------------------------------------
-	/**  Send Pings
-	/** -------------------------------------*/
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Send Pings
+	 *
+	 * 	@param string	title
+	 * 	@param string	url
+	 * 
+	 */
 
 	function send_pings($title, $url)
 	{
@@ -1267,16 +1223,18 @@ class Moblog {
 		return $result;
 	}
 
-
-
-
-	/** -------------------------------------
-	/**  Return parameters as an array - Use TMPL one eventually
-	/** -------------------------------------*/
-
-	//  Creates an associative array from a string
-	//  of parameters: sort="asc" limit="2" etc.
-
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Assign Params
+	 *
+	 *	Creates an associative array from a string
+	 *	of parameters: sort="asc" limit="2" etc.
+	 *
+	 * 	Return parameters as an array - Use TMPL one eventually
+	 *
+	 *	@param string
+	 */
 	function assign_parameters($str)
 	{
 		if ($str == "")
@@ -1306,13 +1264,16 @@ class Moblog {
 		return FALSE;
 	}
 
-
-
-	/** -------------------------------------
-	/**  Parse Field
-	/** -------------------------------------*/
-
-	function parse_field($params,$field_data, $field_group)
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	parse_field
+	 *
+	 *	@param mixed - params
+	 * 	@param 
+	 *	@param string
+	 */
+	function parse_field($params, $field_data, $field_group)
 	{
 		$field_id = '1';
 		$format = 'none';
@@ -1511,12 +1472,14 @@ class Moblog {
 		$this->entry_data[$field_id]['format'] 	= $format;
 	}
 
-
-
-	/** -------------------------------------
-	/**  Parse Email
-	/** -------------------------------------*/
-
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Parse Email
+	 *
+	 *	@param mixed - Email Data
+	 * 	@param 
+	 */
 	function parse_email($email_data,$type='norm')
 	{
 		$boundary = ($type != 'norm') ? $this->multi_boundary : $this->boundary;
@@ -1990,14 +1953,15 @@ class Moblog {
 		return TRUE;
 	}
 
-
-
-	/** -------------------------------------
-	/**  Retrieve Sprint Images
-	/** -------------------------------------*/
-
-	// <img src="http://pictures.sprintpcs.com//shareImage/13413001858_235.jpg?border=1,255,255,255,1,0,0,0&amp;invite=OEKJJD5XYYhMZ5hY8amx" border="0" />
-
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Remove Images from Sprint.
+	 *
+	 * eg:  <img src="http://pictures.sprintpcs.com//shareImage/13413001858_235.jpg?border=1,255,255,255,1,0,0,0&amp;invite=OEKJJD5XYYhMZ5hY8amx" border="0" />
+	 *
+	 *	@param string
+	 */
 	function sprint_image($text)
 	{
 		if (preg_match_all("|(http://pictures.sprintpcs.com(.*?))\?inviteToken\=(.*?)&|i", str_replace($this->newline,"\n",$text), $matches))
@@ -2125,15 +2089,16 @@ class Moblog {
 		return TRUE;
 
 	}
-
-
-
-	/** -------------------------------------
-	/**  Retrieve Bell Images
-	/** -------------------------------------*/
-
-	// <img src="http://mypictures.bell.ca//i/99376001_240.jpg?invite=SELr4RJHhma1cknzLQoU" alt="Retrieving picture..."/>
-
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Bell Images
+	 *
+	 * eg:  <img src="http://mypictures.bell.ca//i/99376001_240.jpg?invite=SELr4RJHhma1cknzLQoU" alt="Retrieving picture..."/>
+	 *
+	 *	@param string
+	 */
 	function bell_image($text)
 	{
 		$text = trim(str_replace($this->newline,"\n",$text));
@@ -2196,13 +2161,15 @@ class Moblog {
 		return TRUE;
 
 	}
-
-
-
-
-	/** -------------------------------------
-	/**  Get Images From External Server
-	/** -------------------------------------*/
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Get Images from External Server
+	 *
+	 *	@param string
+	 *	@param string
+	 */
 	function external_image($fp, $filename)
 	{
 		$data = '';
@@ -2261,16 +2228,14 @@ class Moblog {
 		return TRUE;
 
 	}
-
-
-
-
-
-
-	/** -------------------------------------
-	/**  appledouble crap
-	/** -------------------------------------*/
-
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Strip Apple Double Crap
+	 *
+	 *	@param string
+	 */
 	function appledouble($data)
 	{
 		if (stristr($data, 'boundary=') === FALSE)
@@ -2308,11 +2273,11 @@ class Moblog {
 		return FALSE;
 	}
 
-
-	/** -------------------------------------
-	/**  Check Login
-	/** -------------------------------------*/
-
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Check Login
+	 */
 	function check_login()
 	{
 		$this->body	= trim($this->body);
@@ -2367,12 +2332,12 @@ class Moblog {
 
 		return TRUE;
 	}
-
-
-	/** -------------------------------------
-	/**  Determine Boundary
-	/** -------------------------------------*/
-
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Find Boundary
+	 */
 	function find_boundary($email_data)
 	{
 		if (stristr($email_data, 'boundary=') === FALSE)
@@ -2389,9 +2354,16 @@ class Moblog {
 		}
 	}
 
-	/** -------------------------------------
-	/**  Send POP3 Command to server
-	/** -------------------------------------*/
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Pop Command.
+	 *
+	 * 	Send pop command to the server.
+	 *
+	 *	@param string
+	 *	@return string
+	 */
 	function pop_command($cmd = "")
 	{
 		if ( ! $this->fp)
@@ -2409,10 +2381,15 @@ class Moblog {
 		return $line;
 	}
 
-
-	/** -------------------------------------
-	/**  Strip line-breaks via callback
-	/** -------------------------------------*/
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Remove New Lines
+	 *
+	 *	@param string
+	 *	@param	string
+	 *	@return string
+	 */
 	function remove_newlines($str,$replace='')
 	{
 		if (strpos($str, "\r") !== FALSE OR strpos($str, "\n") !== FALSE)
@@ -2423,11 +2400,14 @@ class Moblog {
 		return $str;
 	}
 
-
-
-	/** -------------------------------------
-	/**  Clear iso info
-	/** -------------------------------------*/
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	ISO Clean
+	 *
+	 *	@param string
+	 *	@return string
+	 */
 	function iso_clean($str)
 	{
 		if (stristr($str, '=?') === FALSE)
@@ -2499,12 +2479,16 @@ class Moblog {
 		return ltrim($str);
 	}
 
-
-
-	/** -------------------------------------
-	/**  Find Data
-	/** -------------------------------------*/
-
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Find Data
+	 *
+	 *	@param	string
+	 * 	@param	string
+	 *	@param 	string
+	 *	@return string
+	 */
 	function find_data($str, $begin, $end)
 	{
 		$new = '';
@@ -2542,9 +2526,12 @@ class Moblog {
 	}
 
 
-	/** -------------------------------------
-	/**  Set image properties
-	/** -------------------------------------*/
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Image Properties
+	 *
+	 */
 	function image_properties($file)
 	{
 		if (function_exists('getimagesize'))
@@ -2567,10 +2554,14 @@ class Moblog {
 	}
 
 
-
-	/** -------------------------------------
-	/**  Safe Filenames
-	/** -------------------------------------*/
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Safe Filename
+	 *
+	 *	@param string
+	 *	@return string
+	 */
 	function safe_filename($str)
 	{
 		$str = strip_tags(strtolower($str));
@@ -2621,12 +2612,15 @@ class Moblog {
 		return $str;
 	}
 
-
-
-	/** -------------------------------------
-	/**  Resizing of Images
-	/** -------------------------------------*/
-
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Resize Images
+	 *
+	 *	@param string
+	 *	@param string
+	 *	@return string
+	 */
 	function image_resize($filename, $key)
 	{
 		/** --------------------------
@@ -2780,11 +2774,15 @@ class Moblog {
 		}	// End thumbnail 
   	} 
 
-  
-  	/** --------------------------------
-  	/**  Guarantees Unique Filename
-  	/** --------------------------------*/
-  
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * 	Unique Filename
+	 *
+	 *	@param string
+	 *	@param string
+	 *	@return string
+	 */
   	function unique_filename($filename, $subtype='0')
   	{
   		$i = 0;
