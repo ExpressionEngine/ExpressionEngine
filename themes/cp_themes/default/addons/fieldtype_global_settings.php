@@ -20,7 +20,8 @@ if ($EE_view_disable !== TRUE)
 		<div class="pageContents">
 
 			<?=form_open('C=addons_fieldtypes'.AMP.'M=global_settings'.AMP.'ft='.$_ft_name)?>
-			<?=$_ft_settings_body?>
+				<?=$_ft_settings_body?>
+				<p><?=form_submit('submit', lang('submit'), 'class="submit"')?></p>
 			<?=form_close()?>
 			
 		</div>
