@@ -2086,12 +2086,12 @@ span.defaultIndicator {
 	background:			#7a90a2 url('<?=$cp_theme_url?>images/template_type_webpage.gif') 10px center no-repeat;
 }
 
-.templateTable td.feed {
+.templateTable td.feed, .templateTable td.xml {
 	background:		url('<?=$cp_theme_url?>images/template_type_feed.gif') 10px center no-repeat;
 }
 
 
-.templateTable tr.highlightRow td.feed {
+.templateTable tr.highlightRow td.feed, .templateTable tr.highlightRow td.xml {
 	background:		#7a90a2 url('<?=$cp_theme_url?>images/template_type_feed.gif') 10px center no-repeat;;
 }
 
