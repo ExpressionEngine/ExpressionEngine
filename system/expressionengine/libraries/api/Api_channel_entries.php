@@ -628,6 +628,11 @@ class Api_channel_entries extends Api {
 	 */
 	function send_pings($ping_servers, $channel_id, $entry_id, $send_now = TRUE)
 	{
+		if ( ! $ping_servers)
+		{
+			return FALSE;
+		}
+		
 		$result = TRUE;
 		
 		if ( ! isset($this->c_prefs['rss_url']))

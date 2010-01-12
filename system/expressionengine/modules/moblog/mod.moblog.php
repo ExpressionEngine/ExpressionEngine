@@ -1005,7 +1005,8 @@ class Moblog {
 						'day'				=> gmdate('d', $entry_date),
 						'sticky'			=> (isset($this->post_data['sticky'])) ? $this->post_data['sticky'] : $this->sticky,
 						'status'			=> ($this->post_data['status'] == 'none') ? 'open' : $this->post_data['status'],
-						'allow_comments'	=> $query->row('deft_comments')
+						'allow_comments'	=> $query->row('deft_comments'),
+						'ping_servers'		=> FALSE   // Pings are already sent above.  Should probably be hooked into API CHannel Entries as well.
 					 );
 
 		if ($this->EE->config->item('honor_entry_dst') == 'y')
@@ -1200,7 +1201,7 @@ class Moblog {
 		// Insert the Entry
 		$this->EE->load->library('api');
 		$this->EE->api->instantiate('channel_entries');
-		
+
 		$result = $this->EE->api_channel_entries->submit_new_entry($data['channel_id'], $data);
 		
 		if ( ! $result)
