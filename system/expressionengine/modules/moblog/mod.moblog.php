@@ -992,7 +992,7 @@ class Moblog {
 		$this->EE->load->helper('text');
 		$entry_date = ($this->EE->localize->now + $this->entries_added - $this->time_offset);
 
-		$data = array( 
+		$data = array(
 						'channel_id'		=> $channel_id,
 						'site_id'			=> $site_id,
 						'author_id'			=> $author_id,
@@ -1185,17 +1185,17 @@ class Moblog {
 				{
 					foreach($cats_q->result() as $row)
 					{
-						$data['categories'][] = $row->cat_id;
+						$data['category'][] = $row->cat_id;
 					}
 				}
 			}
 			
-			$data['categories'] = array_unique($data['categories']);
+			$data['category'] = array_unique($data['category']);
 		}
 		elseif ($this->post_data['categories'] != 'none')
 		{
-			$data['categories'] = explode('|', $this->post_data['categories']);
-			$data['categories'] = array_unique($data['categories']);
+			$data['category'] = explode('|', $this->post_data['categories']);
+			$data['category'] = array_unique($data['category']);
 		}
 
 		// Insert the Entry

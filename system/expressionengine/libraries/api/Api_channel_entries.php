@@ -1396,6 +1396,8 @@ class Api_channel_entries extends Api {
 	 */
 	function _prepare_data(&$data, &$mod_data)
 	{
+		$this->instantiate('channel_categories');
+		
 		// Category parents - we toss the rest
 		
 		if (isset($data['category']) AND is_array($data['category']))
