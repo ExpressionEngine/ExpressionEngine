@@ -905,20 +905,19 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 }
 
 #notePad #notePadTextEdit {
-	width:80%;
+	width:				80%;
 	height:				5em;
-	margin:		10px 20px;
+	margin:				10px 20px;
 }
 
 #notePad #notePadText {
-	display:			none;
-	margin:		10px 20px 0 20px;
+	margin:				10px 20px 0 20px;
 }
 
 
 #notePad #notePadControls {
 	display:			none;
-	margin:		-15px 20px 5px 20px;
+	margin:				-15px 20px 5px 20px;
 }
 /* -------------------------------------
 /*  Breadcrumbs
