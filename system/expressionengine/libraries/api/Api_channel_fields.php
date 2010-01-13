@@ -430,17 +430,6 @@ class Api_channel_fields extends Api {
 			$methods = array($methods);
 		}
 
-		// if this data is getting inserted into the database, then we need to ensure we've
-		// removed the automagically added classname from the field names
-		if (isset($params['publish_data_db']['mod_data']))
-		{
-			$params['publish_data_db']['mod_data'] = $this->_clean_module_names($params['publish_data_db']['mod_data'], $tab_modules);
-		}
-		elseif (isset($params['validate_publish'][0]))
-		{
-			$params['validate_publish'][0] = $this->_clean_module_names($params['validate_publish'][0], $tab_modules);
-		}
-
 		foreach ($tab_modules as $class_name)
 		{
 			//  Call Module
@@ -468,14 +457,24 @@ class Api_channel_fields extends Api {
 
 			foreach ($methods as $method)
 			{
+				// if this data is getting inserted into the database, then we need to ensure we've
+				// removed the automagically added classname from the field names
+				if (isset($params['publish_data_db']['mod_data']))
+				{
+					$params['publish_data_db']['mod_data'] = $this->_clean_module_names($params['publish_data_db']['mod_data'], array($class_name));
+				}
+				elseif (isset($params['validate_publish'][0]))
+				{
+					$params['validate_publish'][0] = $this->_clean_module_names($params['validate_publish'][0], array($class_name));
+				}
+
 				if (method_exists($OBJ, $method) === TRUE)
 				{
 					if ( ! isset($params[$method]))
 					{
 						$params[$method] = '';
 					}
-				
-					
+
 					// we're going to wipe the view vars here in a sec
 					//$file = $vars['file'];
 			
@@ -487,7 +486,7 @@ class Api_channel_fields extends Api {
 
 					// fetch the content
 					$set[$class_name][$method] = $OBJ->$method($params[$method]);
-			
+
 					// restore our package and view paths
 					$this->EE->load->_ci_view_path = $orig_view_path;
 
