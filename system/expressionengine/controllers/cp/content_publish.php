@@ -1419,7 +1419,7 @@ class Content_publish extends Controller {
 			
 			$this->api_channel_fields->set_settings('url_title', $settings);
 			
-			$rules = 'required|call_field_validation['.$settings['field_id'].']';
+			$rules = 'call_field_validation['.$settings['field_id'].']';
 			$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
 		}
 
