@@ -1457,11 +1457,14 @@ class Api_channel_entries extends Api {
 		foreach($this->EE->api_channel_fields->settings as $field_id => $settings)
 		{
 			$field_name = $settings['field_name'];
-			
+
+			// if a field isn't filled out, we still want to pass an empty array back to the module method
+			$mod_data[$field_name] = array();
+
 			if (isset($data[$field_name]))
 			{
 				$this->EE->api_channel_fields->setup_handler($field_id);
-				
+
 				// Break out module fields here
 				if (isset($this->mod_fields[$field_name]))
 				{
@@ -1470,10 +1473,12 @@ class Api_channel_entries extends Api {
 				}
 				else
 				{
+					unset($mod_data[$field_name]); // not a mod field, remove its default (blank) value
 					$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
 				}
 			}
 		}
+
 		
 		//print_r($mod_data);
 		//print_r($data);
