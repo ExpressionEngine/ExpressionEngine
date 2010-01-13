@@ -518,6 +518,16 @@ class Api_channel_entries extends Api {
 			}
 		}
 
+		
+		// Pass to any modules on publish form
+		$this->EE->load->library('api');
+		$this->EE->api->instantiate('channel_fields');		
+		
+		$methods = array('publish_data_delete_db');
+		$params = array('publish_data_delete_db' => array('entry_ids' => $entry_ids));
+		
+		$this->EE->api_channel_fields->get_module_methods($methods, $params);
+
 		// Clear caches
 		$this->EE->functions->clear_caching('all');
 
