@@ -301,7 +301,7 @@ class Content_publish extends Controller {
 
 				if ($query->num_rows() == 1)
 				{
-					$autosave_channel_id = $query->row('channel_id') ;
+					$autosave_channel_id = $query->row('channel_id');
 				}
 			}
 			// end autosave code
@@ -312,7 +312,7 @@ class Content_publish extends Controller {
 			
 			if ($query->num_rows() == 1)
 			{
-				$channel_id = $query->row('channel_id') ;
+				$channel_id = $query->row('channel_id');
 			}
 		}
 
@@ -328,7 +328,7 @@ class Content_publish extends Controller {
 
 				if ($query->num_rows() == 1)
 				{
-					$channel_id = $query->row('channel_id') ;
+					$channel_id = $query->row('channel_id');
 				}
 				else
 				{
@@ -1148,7 +1148,7 @@ class Content_publish extends Controller {
 						if ( ! isset($forum_topic_id))
 						{
 							$fquery2 = $this->db->query("SELECT forum_topic_id FROM exp_channel_titles WHERE entry_id = '{$entry_id}'");
-							$forum_topic_id = $fquery2->row('forum_topic_id') ;
+							$forum_topic_id = $fquery2->row('forum_topic_id');
 						}
 
 						$vars['form_hidden']['forum_topic_id'] = $forum_topic_id;
@@ -1204,7 +1204,7 @@ class Content_publish extends Controller {
 				{
 					$fquery = $this->db->query("SELECT title FROM exp_forum_topics WHERE topic_id = '{$forum_topic_id}'");
 
-					$ftitle = ($fquery->num_rows() == 0) ? '' : $fquery->row('title') ;
+					$ftitle = ($fquery->num_rows() == 0) ? '' : $fquery->row('title');
 					$vars['forum_title'] = $ftitle;
 				}
 			}
@@ -2455,7 +2455,7 @@ class Content_publish extends Controller {
 			$this->db->select('username, screen_name');
 			$query = $this->db->get_where('members', array('member_id' => $author_id));
 	
-			$author = ($query->row('screen_name')  == '') ? $query->row('username')	 : $query->row('screen_name') ;
+			$author = ($query->row('screen_name')  == '') ? $query->row('username')	 : $query->row('screen_name');
 			$vars['menu_author_options'][$author_id] = $author;
 
 			// Next we'll gather all the authors that are allowed to be in this list
@@ -3160,7 +3160,7 @@ class Content_publish extends Controller {
 			return false;
 		}
 
-		$field_group = $query->row('field_group') ;
+		$field_group = $query->row('field_group');
 
 		$query = $this->db->query("SELECT field_id, field_type FROM exp_channel_fields WHERE group_id = '$field_group' AND field_type != 'select' ORDER BY field_order");
 
