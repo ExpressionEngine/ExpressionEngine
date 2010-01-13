@@ -435,30 +435,33 @@ class Metaweblog_api_mcp {
 		// @todo- clean this up and decide how permissions come into play.  Note- above
 		// is commented out in 1.6
 		// Fetch channel titles
-		$this->EE->db->select('group_id, group_name, status_group, field_group, site_label, channel_title');
+		// $this->EE->db->select('group_id, group_name, status_group, field_group, site_label, channel_title');
 		
 		//if ( ! $this->EE->dsp->allowed_group('can_edit_other_entries'))
 		//{
 		//	$this->EE->db->where_in('channel_id', $allowed_channels);
 		//}
-
+		
+		$this->EE->db->select('group_id, group_name, site_label');
+		$this->EE->db->from('field_groups');
+		$this->EE->db->join('sites', 'sites.site_id = field_groups.site_id');
+		
 		if ($this->EE->config->item('multiple_sites_enabled') !== 'y')
 		{
-			$this->EE->db->where('channels.site_id', '1');
+			$this->EE->db->where('field_groups.site_id', '1');
 		}
-			
-		$where = "channels.site_id = exp_sites.site_id AND exp_channels.field_group = exp_field_groups.group_id";
-		$this->EE->db->where($where, NULL, FALSE);			
-		$this->EE->db->order_by('channel_title');
-		$this->EE->db->from(array('channels', 'sites', 'field_groups'));
+		
 		$query = $this->EE->db->get();
 
-		foreach ($query->result_array() as $row)
+		if ($query->num_rows() > 0)
 		{
-			$label = ($this->EE->config->item('multiple_sites_enabled') === 'y') ? $row['site_label'].NBS.'-'.NBS.$row['group_name'] : $row['channel_title'];
-			$this->group_array[$row['group_id']] = array(str_replace('"','',$label), $row['status_group'], $row['field_group']);
+			foreach ($query->result_array() as $row)
+			{
+				$label = ($this->EE->config->item('multiple_sites_enabled') === 'y') ? $row['site_label'].NBS.'-'.NBS.$row['group_name'] : $row['group_name'];
+				$this->group_array[$row['group_id']] = array(str_replace('"','',$label), $row['group_name']);
+			}
 		}
-		  
+
 		/** ----------------------------- 
 		/**  Entry Statuses
 		/** -----------------------------*/
@@ -466,7 +469,7 @@ class Metaweblog_api_mcp {
 		$this->EE->db->select('group_id, status');
 		$this->EE->db->order_by('status_order');
 		$query = $this->EE->db->get('statuses');
-		
+
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result_array() as $row)
@@ -485,7 +488,7 @@ class Metaweblog_api_mcp {
 		$this->EE->db->where_in('channel_fields.field_type', array('textarea', 'text'));
 		
 		$query = $this->EE->db->get('channel_fields');
-		
+
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result_array() as $row)
@@ -496,7 +499,7 @@ class Metaweblog_api_mcp {
 
 		$channel_info = array();
 
-		foreach ($this->group_array as $key => $val)
+		foreach ($this->field_array as $key => $val)
 		{
 			$statuses = array();
 
@@ -506,7 +509,7 @@ class Metaweblog_api_mcp {
 			{
 				foreach ($this->status_array as $k => $v)
 				{
-					if ($v['0'] == $val['2'])
+					if ($v['0'] == $val['1'])
 					{
 						$status_name = ($v['1'] == 'closed' OR $v['1'] == 'open') ?  $this->EE->lang->line($v['1']) : $v['1'];
 						$statuses[] = array($v['1'], $status_name);
@@ -529,7 +532,7 @@ class Metaweblog_api_mcp {
 			{
 				foreach ($this->field_array as $k => $v)
 				{
-					if ($v['0'] == $val['2'])
+					if ($v['0'] == $val['0'])
 					{
 						$fields[] = array($v['1'], $v['2']);
 					}
