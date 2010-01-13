@@ -2580,6 +2580,10 @@ a#refresh_categories {
 	float: 				left;
 }
 
+.writemode_parent {
+	position:			absolute;
+}
+
 #publish_submit_buttons {
 	clear:				left;
 	text-align:			right;
