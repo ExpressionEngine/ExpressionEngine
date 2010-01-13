@@ -436,6 +436,10 @@ class Api_channel_fields extends Api {
 		{
 			$params['publish_data_db']['mod_data'] = $this->_clean_module_names($params['publish_data_db']['mod_data'], $tab_modules);
 		}
+		elseif (isset($params['validate_publish'][0]))
+		{
+			$params['validate_publish'][0] = $this->_clean_module_names($params['validate_publish'][0], $tab_modules);
+		}
 
 		foreach ($tab_modules as $class_name)
 		{
