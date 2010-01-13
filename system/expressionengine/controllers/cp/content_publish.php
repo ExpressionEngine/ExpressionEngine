@@ -1474,7 +1474,9 @@ class Content_publish extends Controller {
 			$this->api_channel_fields->set_settings($row['field_id'], $settings);
 			$this->form_validation->set_rules('field_id_'.$row['field_id'], $row['field_label'], $rules);
 
-			if ($row['field_type'] == 'textarea' AND $show_button_cluster == 'y')
+			$set = $this->api_channel_fields->get_settings($row['field_id']);
+
+			if ($show_button_cluster == 'y' && isset($set['field_show_formatting_btns']) && $set['field_show_formatting_btns'] == 'y')
 			{
 				$this->javascript->output('
 					$("#field_id_'.$row['field_id'].'").markItUp(mySettings);
