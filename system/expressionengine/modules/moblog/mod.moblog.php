@@ -846,7 +846,7 @@ class Moblog {
 				$this->EE->db->where('channels.field_group', 'channel_fields.group_id');
 				$this->EE->db->where('channels.channel_id', $this->moblog_array['moblog_channel_id']);
 				$this->EE->db->where('channel_fields.group_id', $query->row('field_group'));
-				$this->EE->db->where('(channel_fields.field_name = "'.$matches[1].'" OR channel_fields.field_label = "'.$matches[1].'")');
+				$this->EE->db->where('(channel_fields.field_name = "'.$matches[1].'" OR '.$this->EE->db->dbprefix('channel_fields').'.field_label = "'.$matches[1].'")', NULL, FALSE);
 
 				/* -------------------------------------
 				/*  Hidden Configuration Variable
@@ -1066,7 +1066,7 @@ class Moblog {
 		{
 			$this->EE->db->select('channel_fields.field_id, channel_fields.field_name, channel_fields.field_label, channel_fields.field_fmt');
 			$this->EE->db->from('channels, channel_fields');
-			$this->EE->db->where('channels.field_group', 'channel_fields.group_id');
+			$this->EE->db->where('channels.field_group = '.$this->EE->db->dbprefix('channel_fields').'.group_id', NULL, FALSE);
 			$this->EE->db->where('channels.channel_id', $this->moblog_array['moblog_channel_id']);
 
 			/* -------------------------------------
@@ -1096,7 +1096,7 @@ class Moblog {
 
 				unset($results);
 
-				for($i=0; $i < count($matches['0']); $i++)
+				for($i=0; $i < count($matches[0]); $i++)
 				{
 					$x = preg_split("/[\s]+/", $matches['1'][$i]);
 
