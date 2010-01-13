@@ -841,21 +841,24 @@ class Moblog {
 			if ($allow_overrides == 'y' && (preg_match("/\{field\}(.*)\{\/field\}/", $this->body, $matches) OR
 											preg_match("/\<field\>(.*)\<\/field\>/", $this->body, $matches)))
 			{
+				$this->EE->db->select('field_id');
+				$this->EE->db->from('channel_fields, channels');
+				$this->EE->db->where('channels.field_group', 'channel_fields.group_id');
+				$this->EE->db->where('channels.channel_id', $this->moblog_array['moblog_channel_id']);
+				$this->EE->db->where('channel_fields.group_id', $query->row('field_group'));
+				$this->EE->db->where('(channel_fields.field_name = "'.$matches[1].'" OR channel_fields.field_label = "'.$matches[1].'")');
+
 				/* -------------------------------------
 				/*  Hidden Configuration Variable
 				/*  - moblog_allow_nontextareas => Removes the textarea only restriction
 				/*	for custom fields in the moblog module (y/n)
 				/* -------------------------------------*/
-
-				$xsql = ($this->EE->config->item('moblog_allow_nontextareas') == 'y') ? "" : " AND exp_channel_fields.field_type = 'textarea' ";
-
-				$results = $this->EE->db->query("SELECT field_id FROM exp_channel_fields, exp_channels
-										WHERE exp_channels.field_group = exp_channel_fields.group_id
-										AND exp_channels.channel_id = '".$this->moblog_array['moblog_channel_id']."'
-										AND exp_channel_fields.group_id = '".$query->row('field_group') ."'
-										AND (exp_channel_fields.field_name = '".$matches['1']."'
-										OR exp_channel_fields.field_label = '".$matches['1']."')
-										{$xsql}");
+				if ($this->EE->config->item('moblog_allow_nontextareas') != 'y')
+				{
+					$this->EE->db->where('channel_fields.field_name', 'textarea');
+				}
+				
+				$results = $this->EE->db->get();
 
 				if ($results->num_rows() > 0)
 				{
@@ -1061,20 +1064,22 @@ class Moblog {
 
 		if (preg_match_all("/[\<\{]field\:(.*?)[\}\>](.*?)[\<\{]\/field\:(.*?)[\}\>]/", $this->body, $matches))
 		{
+			$this->EE->db->select('channel_fields.field_id, channel_fields.field_name, channel_fields.field_label, channel_fields.field_fmt');
+			$this->EE->db->from('channels, channel_fields');
+			$this->EE->db->where('channels.field_group', 'channel_fields.group_id');
+			$this->EE->db->where('channels.channel_id', $this->moblog_array['moblog_channel_id']);
+
 			/* -------------------------------------
 			/*  Hidden Configuration Variable
 			/*  - moblog_allow_nontextareas => Removes the textarea only restriction
 			/*	for custom fields in the moblog module (y/n)
 			/* -------------------------------------*/
+			if ($this->EE->config->item('moblog_allow_nontextareas') != 'y')
+			{
+				$this->EE->db->where('channel_fields.field_name', 'textarea');
+			}
 
-			$xsql = ($this->EE->config->item('moblog_allow_nontextareas') == 'y') ? "" : " AND exp_channel_fields.field_type = 'textarea' ";
-
-			$results = $this->EE->db->query("SELECT exp_channel_fields.field_id, exp_channel_fields.field_name,
-									exp_channel_fields.field_label, exp_channel_fields.field_fmt
-									FROM exp_channels, exp_channel_fields
-									WHERE exp_channels.field_group = exp_channel_fields.group_id
-									AND exp_channels.channel_id = '".$this->moblog_array['moblog_channel_id']."'
-									{$xsql}");
+			$results = $this->EE->db->get();
 
 			if ($results->num_rows() > 0)
 			{
@@ -1344,8 +1349,9 @@ class Moblog {
 		{
 			$field_id = $params;
 
-			$results = $this->EE->db->query(	"SELECT field_fmt FROM exp_channel_fields
-									 WHERE field_id = '{$field_id}'");
+			$this->EE->db->select('field_fmt');
+			$this->EE->db->where('field_id', $field_id);
+			$results = $this->EE->db->get('channel_fields');
 
 			$format = ($results->num_rows() > 0) ? $results->row('field_fmt')  : 'none';
 		}
@@ -1355,11 +1361,16 @@ class Moblog {
 			{
 				$xsql = ($this->EE->config->item('moblog_allow_nontextareas') == 'y') ? "" : " AND exp_channel_fields.field_type = 'textarea' ";
 
-				$results = $this->EE->db->query(	"SELECT field_id, field_fmt FROM exp_channel_fields
-										WHERE group_id = '".$field_group."'
-									 	AND (field_name = '".$params['name']."'
-									 	OR field_label = '".$params['name']."')
-									 	{$xsql}");
+				$this->EE->db->select('field_id, field_fmt');
+				$this->EE->db->where('group_id', $field_id);
+				$this->EE->db->where('(field_name = "'.$params['name'].'" OR field_label = "'.$params['name'].'")', NULL, FALSE);
+				
+				if ($this->EE->config->item('moblog_allow_nontextareas') != 'y')
+				{
+					$this->EE->db->where('field_type', 'textarea');
+				}
+				
+				$results = $this->EE->db->get('channel_fields');
 									 
 				$field_id	= ($results->num_rows() > 0) ? $results->row('field_id')  : $this->moblog_array['moblog_field_id'];
 				$format 	= ($results->num_rows() > 0) ? $results->row('field_fmt')  : 'none';
@@ -1367,9 +1378,12 @@ class Moblog {
 			elseif($params['name'] == '' && $params['format'] == '')
 			{
 				$field_id = $this->moblog_array['moblog_field_id'];
-				$results  = $this->EE->db->query(	"SELECT field_fmt FROM exp_channel_fields
-							 			 WHERE field_id = '{$field_id}'");
-									 
+				
+				$this->EE->db->seledct('field_fmt');
+				$this->EE->db->where('field_id', $field_id);
+				
+				$results = $this->EE->db->get('channel_fields');
+													 
 				$format	= $results->row('field_fmt') ;
 			}
 			elseif($params['name'] == '' && $params['format'] != '')
@@ -1381,11 +1395,16 @@ class Moblog {
 			{
 				$xsql = ($this->EE->config->item('moblog_allow_nontextareas') == 'y') ? "" : " AND exp_channel_fields.field_type = 'textarea' ";
 
-				$results = $this->EE->db->query(	"SELECT field_id FROM exp_channel_fields
-											WHERE group_id = '".$field_group."'
-										 	AND (field_name = '".$params['name']."'
-										 	OR field_label = '".$params['name']."')
-										 	{$xsql}");
+				$this->EE->db->select('field_id');
+				$this->EE->db->where('group_id', $field_group);
+				$this->EE->db->where('(field_name = "'.$params['name'].'" OR field_label = "'.$params['name'].'")');
+				
+				if ($this->EE->config->item('moblog_allow_nontextareas') != 'y')
+				{
+					$this->EE->db->where('field_type', 'textarea');
+				}
+				
+				$results = $this->EE->db->get('channel_fields');
 										 
 				$field_id	= ($results->num_rows() > 0) ? $results->row('field_id')  : $this->moblog_array['moblog_field_id'];
 				$format		= $params['format'];

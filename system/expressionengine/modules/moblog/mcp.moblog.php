@@ -639,7 +639,7 @@ EOT;
 		$this->EE->db->select('group_id, field_label, field_id');
 		$this->EE->db->order_by('field_label');
 		
-		if ($this->EE->config->item('moblog_allow_nontextareas') == 'y')
+		if ($this->EE->config->item('moblog_allow_nontextareas') != 'y')
 		{
 			$this->EE->db->where('channel_fields.field_type', 'textarea');
 		}
