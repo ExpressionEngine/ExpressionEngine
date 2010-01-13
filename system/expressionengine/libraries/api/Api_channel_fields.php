@@ -530,7 +530,7 @@ class Api_channel_fields extends Api {
 			{
 				$module_name.="__";
 				
-				if (strncmp($field, $module_name, count($module_name)) == 0)
+				if (strncmp($field, $module_name, strlen($module_name)) == 0)
 				{
 					// new name
 					$cleared_field_name = str_replace($module_name, '', $field); // avoid passing the entire $module_names array for swapping to avoid common naming situations
