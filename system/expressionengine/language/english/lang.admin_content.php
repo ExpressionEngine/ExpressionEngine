@@ -832,26 +832,29 @@ $lang = array(
 "is_field_required" =>
 "Is this a required field?",
 
+"show_smileys" =>
+"Show Smileys",
+
+"show_glossary" =>
+"Show Glossary",
+
+"show_spellcheck" =>
+"Show Spellcheck",
+
+"show_file_selector" =>
+"Show File Chooser",
+
+"show_formatting_btns" =>
+"Show Formatting Buttons",
+
+"show_writemode" =>
+"Show Writemode",
+
 "text_input" =>
 "Text Input",
 
 "textarea" =>
 "Textarea",
-
-"file" =>
-"Upload",
-
-"select_list" =>
-"Drop-down List",
-
-"multi_select" =>
-"Multi-select List",
-
-"option_group" =>
-"Checkboxes",
-
-"radio" =>
-"Radio",
 
 "auto_br" =>
 "Auto &lt;br /&gt;",
