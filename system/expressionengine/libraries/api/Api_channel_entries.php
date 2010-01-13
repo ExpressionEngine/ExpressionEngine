@@ -1074,7 +1074,7 @@ class Api_channel_entries extends Api {
 					$func = '_prep_'.$row['field_type'].'_field';
 					$this->$func($data, $row);
 				}
-				elseif ($row['field_type'] == 'multi_select' OR $row['field_type'] == 'option_group')
+				elseif ($row['field_type'] == 'multi_select' OR $row['field_type'] == 'checkboxes')
 				{
 					$this->_prep_multi_field($data, $row);
 				}

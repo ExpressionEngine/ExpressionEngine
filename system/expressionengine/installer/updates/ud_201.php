@@ -41,7 +41,7 @@ class Updater {
 
 		// Rename option groups to checkboxes
 		$this->EE->db->select('field_id');
-		$query = $this->EE->db->get_where('channel_fields', array('field_type' => 'option_group'));
+		$query = $this->EE->db->get_where('channel_fields', array('field_type' => 'checkboxes'));
 
 		$ids = array_map('array_pop', $query->result_array());
 		
@@ -67,13 +67,43 @@ class Updater {
         		PRIMARY KEY `fieldtype_id` (`fieldtype_id`)
 		)";
 		
-		// @todo install default fieldtypes
+		
+		// Install default field types
+		
+		$default_fts = array('select', 'text', 'textarea', 'date', 'file', 'multi_select', 'checkboxes', 'radio', 'rel');
+		
+		foreach($default_fts as $name)
+		{
+			$Q[] = "INSERT INTO `exp_fieldtypes` (`name`,`version`,`settings`,`has_global_settings`) VALUES ('".$name."','1.0','YTowOnt9','n');"
+		}
 		
 		foreach ($Q as $num => $sql)
 		{
 	        $this->EE->db->query($sql);
 		}
 		
+		
+		// Set settings to yes so nothing disappears
+		
+		$set_to_yes = array(
+			'text'		=> array('show_smileys', 'show_glossary', 'show_spellcheck', 'show_file_selector'),
+			'textarea'	=> array('show_smileys', 'show_glossary', 'show_spellcheck', 'show_file_selector')
+		);
+		
+		foreach($set_to_yes as $fieldtype => $yes_settings)
+		{
+			$final_settings = array();
+			
+			foreach($yes_settings as $name)
+			{
+				$final_settings['field_'.$name] = 'y';
+			}
+			
+			$this->EE->db->set('settings', base64_encode(serialize($final_settings)));
+			$this->EE->db->where('name', $fieldtype);
+			$this->EE->db->update('fieldtypes');
+		}
+
 		// Finished!
         return TRUE;
 

@@ -701,7 +701,7 @@ class EE_Schema {
 			 field_name varchar(32) NOT NULL,
 			 field_label varchar(50) NOT NULL,
 			 field_instructions TEXT NULL,
-			 field_type varchar(12) NOT NULL default 'text',
+			 field_type varchar(50) NOT NULL default 'text',
 			 field_list_items text NOT NULL,
 			 field_pre_populate char(1) NOT NULL default 'n', 
 			 field_pre_channel_id int(6) unsigned NULL DEFAULT NULL,
@@ -721,6 +721,7 @@ class EE_Schema {
 			 field_show_fmt char(1) NOT NULL default 'y',
 			 field_order int(3) unsigned NOT NULL,
 			 field_content_type varchar(20) NOT NULL default 'any',
+			 field_settings text NULL,
 			 PRIMARY KEY `field_id` (`field_id`),
 			 KEY `group_id` (`group_id`),
 			 KEY `site_id` (`site_id`)
@@ -1211,6 +1212,15 @@ class EE_Schema {
 			KEY `sender_id` (`sender_id`),
 			KEY `hash` (`hash`)
 			)";
+		
+		// Fieldtype table
+		$Q[] = "CREATE TABLE exp_fieldtypes (
+				fieldtype_id int(4) unsigned NOT NULL auto_increment, 
+				name varchar(50) NOT NULL, 
+				version varchar(12) NOT NULL, 
+				settings text NULL, 
+        		PRIMARY KEY `fieldtype_id` (`fieldtype_id`)
+		)";
 
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
@@ -1306,6 +1316,13 @@ class EE_Schema {
 											values (1, '0', '".$predefined_buttons[$button]['tag_name']."', '".$predefined_buttons[$button]['tag_open']."', '".$predefined_buttons[$button]['tag_close']."', '".$predefined_buttons[$button]['accesskey']."', '".$buttoncount++."', '1', '".$predefined_buttons[$button]['classname']."')";
 		}
 	
+		// Default field types
+		$default_fts = array('select', 'text', 'textarea', 'date', 'file', 'multi_select', 'checkboxes', 'radio', 'rel');
+		
+		foreach($default_fts as $name)
+		{
+			$Q[] = "INSERT INTO `exp_fieldtypes` (`name`,`version`,`settings`,`has_global_settings`) VALUES ('".$name."','1.0','YTowOnt9','n');"
+		}
 
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------

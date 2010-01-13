@@ -247,7 +247,6 @@ class EE_Fieldtype {
 				lang('field_populate_from_channel', $prefix.'field_pre_populate_y').
 			'</p>',
 			'<p class="field_format_option select_format_n">'.
-	//			lang('field_list_items', 'select_list_items').
 				lang('multi_list_items', $prefix.'multi_select_list_items').BR.
 				lang('field_list_instructions').BR.
 				form_textarea(array('id'=>$prefix.'field_list_items','name'=>$prefix.'field_list_items', 'rows'=>10, 'cols'=>50, 'value'=>$data['field_list_items'])).

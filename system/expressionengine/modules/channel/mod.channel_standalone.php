@@ -759,7 +759,7 @@ EOT;
 				{
 					$date_fields[$row['field_name']] = $row['field_id'];
 				}
-				elseif (in_array($row['field_type'], array('file', 'multi_select', 'option_group')))
+				elseif (in_array($row['field_type'], array('file', 'multi_select', 'checkboxes')))
 				{
 					$pair_fields[$row['field_name']] = array($row['field_type'], $row['field_id']);
 				}
@@ -962,7 +962,7 @@ EOT;
 							
 							$str .= '<p>'.$full_path.'</p>';
 						}
-						elseif (in_array($fields['field_id_'.$expl['1']]['1'], array('multi_select', 'option_group')))
+						elseif (in_array($fields['field_id_'.$expl['1']]['1'], array('multi_select', 'checkboxes')))
 						{
 							$entry = implode(', ', $val);
 								
@@ -1496,7 +1496,7 @@ EOT;
 					}
 				}
 
-				elseif ($row['field_type'] == 'option_group' AND $checkbox != '')
+				elseif ($row['field_type'] == 'checkboxes' AND $checkbox != '')
 				{
 					if ($row['field_pre_populate'] == 'n')
 					{

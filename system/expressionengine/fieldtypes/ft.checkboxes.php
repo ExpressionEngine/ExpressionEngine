@@ -294,11 +294,11 @@ class Checkboxes_ft extends EE_Fieldtype {
 	
 	function display_settings($data)
 	{
-		$this->multi_item_row($data, 'option_group');
+		$this->multi_item_row($data, 'checkboxes');
 	}
 }
 
 // END Checkboxes_ft class
 
-/* End of file ft.option_group.php */
+/* End of file ft.checkboxes.php */
 /* Location: ./system/expressionengine/fieldtypes/ft.checkboxes.php */

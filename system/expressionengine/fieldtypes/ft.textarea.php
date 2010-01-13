@@ -95,6 +95,7 @@ class Textarea_ft extends EE_Fieldtype {
 		$this->field_show_glossary_row($data, $prefix);
 		$this->field_show_spellcheck_row($data, $prefix);
 		$this->field_show_writemode_row($data, $prefix);
+		$this->field_show_file_selector_row($data, $prefix);
 	}
 }
 
