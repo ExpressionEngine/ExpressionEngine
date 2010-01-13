@@ -2549,7 +2549,7 @@ class Forum_Core extends Forum {
 			*/  
 				if ($this->EE->extensions->active_hook('forum_topics_loop_start') === TRUE)
 				{
-					$temp = $this->EE->extensions->universal_call('forum_topics_loop_start', $this, $query->result, $row, $temp);
+					$temp = $this->EE->extensions->universal_call('forum_topics_loop_start', $this, $query->result(), $row, $temp);
 					if ($this->EE->extensions->end_script === TRUE) return;
 				}
 			/*
@@ -2819,7 +2819,7 @@ class Forum_Core extends Forum {
 			*/  
 				if ($this->EE->extensions->active_hook('forum_topics_loop_end') === TRUE)
 				{
-					$temp = $this->EE->extensions->universal_call('forum_topics_loop_end', $this, $query->result, $row, $temp);
+					$temp = $this->EE->extensions->universal_call('forum_topics_loop_end', $this, $query->result(), $row, $temp);
 					if ($this->EE->extensions->end_script === TRUE) return;
 				}
 			/*
@@ -2867,7 +2867,7 @@ class Forum_Core extends Forum {
 		*/  
 			if ($this->EE->extensions->active_hook('forum_topics_absolute_end') === TRUE)
 			{
-				$str = $this->EE->extensions->universal_call('forum_topics_absolute_end', $this, $query->result, $str);
+				$str = $this->EE->extensions->universal_call('forum_topics_absolute_end', $this, $query->result(), $str);
 				if ($this->EE->extensions->end_script === TRUE) return $str;
 			}
 		/*
