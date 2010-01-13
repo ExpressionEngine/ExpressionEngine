@@ -1310,11 +1310,14 @@ class EE_Functions {
 	 * @return	string
 	 */
 	function insert_action_ids($str)
-	{  
-		if (count($this->action_ids) == 0) return $str;
+	{
+		if (count($this->action_ids) == 0)
+		{
+			return $str;
+		}
 		
-			$sql = "SELECT action_id, class, method FROM exp_actions WHERE";
-			
+		$sql = "SELECT action_id, class, method FROM exp_actions WHERE";
+
 		foreach($this->action_ids as $key => $value)
 		{
 			foreach($value as $k => $v)
