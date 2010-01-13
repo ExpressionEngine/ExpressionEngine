@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Option_group_ft extends EE_Fieldtype {
+class Checkboxes_ft extends EE_Fieldtype {
 
 	var $info = array(
 		'name'		=> 'Checkboxes',
@@ -36,7 +36,7 @@ class Option_group_ft extends EE_Fieldtype {
 	 *
 	 * @access	public
 	 */
-	function Option_group_ft()
+	function Checkboxes_ft()
 	{
 		parent::EE_Fieldtype();
 	}
@@ -298,7 +298,7 @@ class Option_group_ft extends EE_Fieldtype {
 	}
 }
 
-// END Option_group_ft class
+// END Checkboxes_ft class
 
 /* End of file ft.option_group.php */
-/* Location: ./system/expressionengine/fieldtypes/ft.option_group.php */
+/* Location: ./system/expressionengine/fieldtypes/ft.checkboxes.php */
