@@ -42,7 +42,6 @@ class Addons_fieldtypes extends Controller {
 		foreach($installed_fts as $ft_name => $data)
 		{
 			$installed_fts[$ft_name] = $data['has_global_settings'];
-			
 		}
 
 		$vars['table_headings'] = array(
@@ -53,7 +52,6 @@ class Addons_fieldtypes extends Controller {
 										$this->lang->line('action')
 										);
 		
-
 		$vars['fieldtypes'] = array();
 
 		foreach ($fieldtypes as $fieldtype => $ft_info)
@@ -223,7 +221,7 @@ class Addons_fieldtypes extends Controller {
 		// Saving!
 		if (count($_POST))
 		{
-			$settings = $FT->save_global_settings();
+			$settings = $this->api_channel_fields->apply('save_global_settings');
 			$settings = base64_encode(serialize($settings));
 			$this->db->update('fieldtypes', array('settings' => $settings), array('name' => $ft));
 			
@@ -232,7 +230,7 @@ class Addons_fieldtypes extends Controller {
 		}
 		
 		$vars = array(
-			'_ft_settings_body' => $FT->global_settings(),
+			'_ft_settings_body'	=> $this->api_channel_fields->apply('global_settings'),
 			'_ft_name'			=> $ft
 		);
 		$this->cp->set_variable('cp_page_title', $FT->info['name']);
