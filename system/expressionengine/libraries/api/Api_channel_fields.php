@@ -314,19 +314,16 @@ class Api_channel_fields extends Api {
 				// fetch the content
 				$fields = $OBJ->publish_tabs($channel_id, $entry_id);
 
-				// @confirm: actually, commenting this out, as I see all kinds of problems here.
-				//
 				// There's basically no way this *won't* be set, but let's check it anyhow.
 				// It'll be returned as an array, so we'll read index 0 to find it.
 				// When we find it, we'll append the module's classname to it to prevent
 				// collission with other modules with similarly named fields. This namespacing
-				// gets stripped when the module data is fetched in the Api_channel_entries
-				// function _fetch_module_data(). This function is called for insertion and editing
-				// of entries.
-				// if (isset($fields[0]['field_id']))
-				// {
-				// 	$fields[0]['field_id'] = $class_name.'__'.$fields[0]['field_id']; // two underscores
-				// }
+				// gets stripped as needed when the module data is processed in get_module_methods()
+				// This function is called for insertion and editing of entries.
+				if (isset($fields[0]['field_id']))
+				{
+					$fields[0]['field_id'] = $class_name.'__'.$fields[0]['field_id']; // two underscores
+				}
 
 				$set[$class_name] = $fields;
 			}
@@ -432,7 +429,14 @@ class Api_channel_fields extends Api {
 		{
 			$methods = array($methods);
 		}
-		
+
+		// if this data is getting inserted into the database, then we need to ensure we've
+		// removed the automagically added classname from the field names
+		if (isset($params['publish_data_db']['mod_data']))
+		{
+			$params['publish_data_db']['mod_data'] = $this->_clean_module_names($params['publish_data_db']['mod_data'], $tab_modules);
+		}
+
 		foreach ($tab_modules as $class_name)
 		{
 			//  Call Module
@@ -494,6 +498,51 @@ class Api_channel_fields extends Api {
 		return $set;
 	}
 
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Clean Module Names
+	 *
+	 * This function removes the automatically added module classname from its field inputs
+	 *
+	 * @access	public
+	 */
+	function _clean_module_names($array_to_clean = array(), $module_names = array())
+	{
+		if (empty($module_names))
+		{
+			return $array_to_clean;
+		}
+
+		if (isset($array_to_clean['revision_post']))
+		{
+			$array_to_clean['revision_post'] = $this->_clean_module_names($array_to_clean['revision_post'], $module_names);
+		}
+
+		foreach ($array_to_clean as $field => $value)
+		{
+			// loop through each module name
+			foreach($module_names as $module_name)
+			{
+				$module_name.="__";
+				
+				if (strncmp($field, $module_name, count($module_name)) == 0)
+				{
+					// new name
+					$cleared_field_name = str_replace($module_name, '', $field); // avoid passing the entire $module_names array for swapping to avoid common naming situations
+				
+					// unset old
+					unset($array_to_clean[$field]);
+					//reset new
+					$array_to_clean[$cleared_field_name] = $value;
+				}
+			}
+		}
+
+		return $array_to_clean;
+	}
+
+	// --------------------------------------------------------------------
 
 	function get_modules()
 	{

@@ -952,7 +952,7 @@ class Api_channel_entries extends Api {
 					{
 						//foreach ($v as $val)
 						//{
-							$this->mod_fields[$v['field_id']] = '';
+							$this->mod_fields[$class.'__'.$v['field_id']] = '';
 							//print_r($v);
 						//}
 					}
