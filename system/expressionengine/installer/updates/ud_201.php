@@ -64,6 +64,7 @@ class Updater {
 				name varchar(50) NOT NULL, 
 				version varchar(12) NOT NULL, 
 				settings text NULL, 
+				has_global_settings char(1) default 'n', 
         		PRIMARY KEY `fieldtype_id` (`fieldtype_id`)
 		)";
 		
@@ -74,7 +75,7 @@ class Updater {
 		
 		foreach($default_fts as $name)
 		{
-			$Q[] = "INSERT INTO `exp_fieldtypes` (`name`,`version`,`settings`,`has_global_settings`) VALUES ('".$name."','1.0','YTowOnt9','n');"
+			$Q[] = "INSERT INTO `exp_fieldtypes` (`name`,`version`,`settings`,`has_global_settings`) VALUES ('".$name."','1.0','YTowOnt9','n')";
 		}
 		
 		foreach ($Q as $num => $sql)
