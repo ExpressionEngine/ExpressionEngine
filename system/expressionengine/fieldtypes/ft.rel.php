@@ -25,7 +25,8 @@
 class Rel_ft extends EE_Fieldtype {
 
 	var $info = array(
-		'name'	=> 'Relationship'
+		'name'		=> 'Relationship',
+		'version'	=> '1.0'
 	);
 
 	/**
