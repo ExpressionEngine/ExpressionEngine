@@ -76,18 +76,93 @@ class EE_Fieldtype {
 	}
 
 	// --------------------------------------------------------------------
+
+	function save_global_settings()
+	{
+		return array();
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Display Field Settings
+	 *
+	 * @access	public
+	 * @param	array
+	 * @return	string
+	 */
+	function display_settings($data)
+	{
+		return '';
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Save Field
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	string
+	 */
+	function save($data)
+	{
+		return $data;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Save Settings
+	 *
+	 * @access	public
+	 * @param	array
+	 * @return	void
+	 */
+	function save_settings($data)
+	{
+		return array();
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Install
+	 *
+	 * @access	public
+	 * @return	array	global settings
+	 */
+	function install()
+	{
+		return array();
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Uninstall
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function uninstall()
+	{
+		return;
+	}
+
+	// --------------------------------------------------------------------
 	
 	function display_publish_field($data)
 	{
-		// @todo hack fix
+		// @todo replace this view hack with something suitable for CI
 		$tmp = $this->EE->load->_ci_view_path;
 		$this->EE->load->_ci_view_path = PATH_THEMES.'cp_themes/default/';
-				
+
 		$vars['glossary_items'] = $this->EE->load->view('content/_assets/glossary_items', '', TRUE);
-		$this->EE->load->vars($vars);
 		
 		$this->EE->load->_ci_view_path = $tmp;
 		
+		$this->EE->load->vars($vars);
 		return $this->display_field($data);
 	}
 	
@@ -95,7 +170,8 @@ class EE_Fieldtype {
 	
 	function field_formatting_row($data, $prefix = FALSE)
 	{
-		// @todo
+		// @todo (blank ... smooth. something needs doing apparently)
+		
 		$edit_format_link = $data['edit_format_link'];
 		$prefix = ($prefix) ? $prefix.'_' : '';
 		
@@ -195,50 +271,53 @@ class EE_Fieldtype {
 	
 	// --------------------------------------------------------------------
 	
-	/**
-	 * Display Field Settings
-	 *
-	 * @access	public
-	 * @param	array
-	 * @return	string
-	 */
-	function display_settings($data)
+	function field_show_smileys_row($data, $prefix = FALSE)
 	{
-		return '';
+		$this->_yes_no_row($data, 'show_smileys', 'field_show_smileys', $prefix = FALSE);
+	}
+		
+	function field_show_spellcheck_row($data, $prefix = FALSE)
+	{
+		$this->_yes_no_row($data, 'show_spellcheck', 'field_show_spellcheck', $prefix = FALSE);
+	}
+		
+	function field_show_glossary_row($data, $prefix = FALSE)
+	{
+		$this->_yes_no_row($data, 'show_glossary', 'field_show_glossary', $prefix = FALSE);
+	}
+		
+	function field_show_file_selector_row($data, $prefix = FALSE)
+	{
+		$this->_yes_no_row($data, 'show_file_selector', 'field_show_file_selector', $prefix = FALSE);
+	}
+		
+	function field_show_formatting_btns_row($data, $prefix = FALSE)
+	{
+		$this->_yes_no_row($data, 'show_formatting_btns', 'field_show_formatting_btns', $prefix = FALSE);
+	}
+		
+	function field_show_writemode_row($data, $prefix = FALSE)
+	{
+		$this->_yes_no_row($data, 'show_writemode', 'field_show_writemode', $prefix = FALSE);
 	}
 	
 	// --------------------------------------------------------------------
 	
-	/**
-	 * Save Field
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function save($data)
+	function _yes_no_row($data, $lang, $data_key, $prefix = FALSE)
 	{
-		return $data;
+		$prefix = ($prefix) ? $prefix.'_' : '';
+		
+		$val_is_y = ($data[$data_key] == 'y') ? TRUE : FALSE;
+		
+		$this->EE->table->add_row(
+			'<strong>'.lang($lang).'</strong>',
+				form_radio($prefix.$data_key, 'y', $val_is_y, 'id="'.$data_key.'_y"').NBS.
+				lang('yes', $data_key.'_y').NBS.NBS.NBS.NBS.NBS.
+				form_radio($prefix.$data_key, 'n', ( ! $val_is_y), 'id="'.$data_key.'_n"').NBS.
+				lang('no', $data_key.'_n')
+		);
 	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Save Settings
-	 *
-	 * @access	public
-	 * @param	array
-	 * @return	void
-	 */
-	function save_settings($data)
-	{
-		return array();
-	}
-	
-	// --------------------------------------------------------------------
-
 }
-
 // END EE_Fieldtype class
 
 
