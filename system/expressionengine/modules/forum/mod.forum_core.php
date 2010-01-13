@@ -130,23 +130,19 @@ class Forum_Core extends Forum {
 			if (stristr($this->EE->TMPL->tagproper, 'exp:forum:') === FALSE)
 			{
 				$this->return_data = $this->EE->TMPL->simple_conditionals($this->_include_recursive($function), $this->EE->config->_global_vars);
-			
-				if (count($this->EE->TMPL->global_vars) > 0)
+
+				// Parse Snippets
+				foreach ($this->EE->config->_global_vars as $key => $val)
 				{
-					foreach ($this->EE->TMPL->global_vars as $key => $val)
-					{
-						$this->return_data = str_replace(LD.$key.RD, $val, $this->return_data); 
-					}
+					$this->return_data = str_replace(LD.$key.RD, $val, $this->return_data); 
+				}
+			
+				// Parse Global Variables
+				foreach ($this->EE->TMPL->global_vars as $key => $val)
+				{
+					$this->return_data = str_replace(LD.$key.RD, $val, $this->return_data); 
 				}
 
-				if (count($this->EE->config->_global_vars) > 0)
-				{
-					foreach ($this->EE->config->_global_vars as $key => $val)
-					{
-						$this->return_data = str_replace(LD.$key.RD, $val, $this->return_data); 
-					}
-				}
-			
 				$this->return_data = $this->_final_prep($this->return_data);
 			}
 		}
