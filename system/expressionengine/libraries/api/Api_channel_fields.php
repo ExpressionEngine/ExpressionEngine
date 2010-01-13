@@ -2,11 +2,12 @@
 
 class Api_channel_fields extends Api {
 
-	var $field_types	= array();
-	var $ft_paths		= array();
-	var $settings		= array();
+	var $field_types		= array();
+	var $ft_paths			= array();
+	var $settings			= array();
 
-	var $ee_base_ft		= FALSE;
+	var $ee_base_ft			= FALSE;
+	var $global_settings;
 
 	/**
 	 * Constructor
@@ -36,7 +37,7 @@ class Api_channel_fields extends Api {
 		{
 			$this->field_types[$settings['field_type']] = $this->include_handler($settings['field_type']);
 		}
-		
+
 		$this->settings[$field_id] = $settings;
 	}
 	
@@ -53,6 +54,29 @@ class Api_channel_fields extends Api {
 	}
 	
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Get settings
+	 *
+	 * @access	public
+	 */
+	function get_global_settings($field_type)
+	{
+		if ( ! $this->global_settings)
+		{
+			$this->global_settings = array();
+			$this->fetch_installed_fieldtypes();
+		}
+		
+		if (isset($this->global_settings[$field_type]))
+		{
+			return $this->global_settings[$field_type];
+		}
+		
+		return array();
+	}
+	
+	// --------------------------------------------------------------------
 
 	/**
 	 * Fetch all fieldtypes
@@ -61,13 +85,43 @@ class Api_channel_fields extends Api {
 	 */
 	function fetch_all_fieldtypes()
 	{
+		return $this->_fetch_fts('get_files');
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fetch defined custom fields
+	 *
+	 * @access	public
+	 */
+	function fetch_installed_fieldtypes()
+	{
+		return $this->_fetch_fts('get_installed');
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fetch fieldtypes
+	 *
+	 * Convenience method to reduce code duplication
+	 *
+	 * @access	private
+	 */
+	function _fetch_fts($method)
+	{
 		$this->EE->load->library('addons');
-		
-		$fts = $this->EE->addons->get_files('fieldtypes');
+		$fts = $this->EE->addons->$method('fieldtypes');
 		
 		foreach($fts as $key => $data)
 		{
 			$this->field_types[$key] = $this->include_handler($key);
+
+			if (isset($data['settings']))
+			{
+				$this->global_settings[$key] = unserialize(base64_decode($data['settings']));
+			}
 			
 			$opts = get_class_vars($data['class']);
 			$fts[$key] = array_merge($fts[$key], $opts['info']);
@@ -149,7 +203,7 @@ class Api_channel_fields extends Api {
 			require_once APPPATH.'fieldtypes/EE_Fieldtype.php';
 			$this->ee_base_ft = TRUE;
 		}
-		
+
 		if ( ! isset($this->field_types[$field_type]))
 		{
 			$file = 'ft.'.$field_type.EXT;
@@ -224,6 +278,8 @@ class Api_channel_fields extends Api {
 			$field_id	= $field_id;
 			$field_name	= FALSE;
 		}
+		
+		$settings = array_merge($this->get_global_settings($field_type), $settings);
 		
 		// Init settings
 		$this->field_types[$field_type]->_init(array(
