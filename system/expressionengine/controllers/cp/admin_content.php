@@ -3852,9 +3852,9 @@ class Admin_content extends Controller {
 		}
 
 		$this->cp->set_right_nav(array(
-						'create_new_custom_field' =>
-						BASE.AMP.'C=admin_content'.AMP.'M=field_edit'.AMP.'group_id='.$vars['group_id']
-					));
+					'create_new_custom_field' =>
+					BASE.AMP.'C=admin_content'.AMP.'M=field_edit'.AMP.'group_id='.$vars['group_id']
+		));
 
 		$vars['message'] = $message; //$this->lang->line('preferences_updated')
 
@@ -3875,36 +3875,17 @@ class Admin_content extends Controller {
 
 		if ($custom_fields->num_rows() > 0)
 		{
+			$this->load->library('api');
+			$this->api->instantiate('channel_fields');
+			$fts = $this->api_channel_fields->fetch_all_fieldtypes();
+			
 			foreach ($custom_fields->result() as $row)
 			{
 				$vars['custom_fields'][$row->field_id]['field_id'] = $row->field_id;
 				$vars['custom_fields'][$row->field_id]['field_name'] = $row->field_name;
 				$vars['custom_fields'][$row->field_id]['field_order'] = $row->field_order;
 				$vars['custom_fields'][$row->field_id]['field_label'] = $row->field_label;
-
-				switch ($row->field_type)
-				{
-					case 'text' :  $field_type = $this->lang->line('text_input');
-						break;
-					case 'textarea' :  $field_type = $this->lang->line('textarea');
-						break;
-					case 'select' :  $field_type = $this->lang->line('select_list');
-						break;
-					case 'multi_select' :  $field_type = $this->lang->line('multi_select_list');
-						break;
-					case 'option_group' :  $field_type = $this->lang->line('option_group');
-						break;
-					case 'radio' :  $field_type = $this->lang->line('radio');
-						break;												
-					case 'date' :  $field_type = $this->lang->line('date_field');
-						break;
-					case 'rel' :  $field_type = $this->lang->line('relationship');
-						break;
-					case 'file' : $field_type = $this->lang->line('file');
-						break;
-				}
-
-				$vars['custom_fields'][$row->field_id]['field_type'] = $field_type;
+				$vars['custom_fields'][$row->field_id]['field_type'] = $fts[$row->field_type]['name'];
 			}
 		}
 
@@ -4137,19 +4118,28 @@ class Admin_content extends Controller {
 		$vars['field_fmt'] = (isset($field_fmt) && $field_fmt != '') ? $field_fmt : 'xhtml';
 
 		// Prep our own fields
+		
+		$fts = $this->api_channel_fields->fetch_installed_fieldtypes();
+		
 		$default_values = array(
-			'field_type'			=> 'text',
-			'field_show_fmt'		=> 'n',
-			'field_required'		=> 'n',
-			'field_search'			=> 'n',
-			'field_is_hidden'		=> 'n',
-			'field_pre_populate'	=> 'n',
-			'field_text_direction'	=> 'ltr'
+			'field_type'					=> isset($fts['text']) ? 'text' : key($fts),
+			'field_show_fmt'				=> 'n',
+			'field_required'				=> 'n',
+			'field_search'					=> 'n',
+			'field_is_hidden'				=> 'n',
+			'field_pre_populate'			=> 'n',
+			'field_show_spellcheck'			=> 'n',
+			'field_show_smileys'			=> 'n',
+			'field_show_glossary'			=> 'n',
+			'field_show_formatting_btns'	=> 'n',
+			'field_show_writemode'			=> 'n',
+			'field_show_file_selector'		=> 'n',
+			'field_text_direction'			=> 'ltr'
 		);
 
 		foreach($default_values as $key => $val)
 		{
-			$vars[$key] = ($vars[$key] == '') ? $val : $vars[$key];
+			$vars[$key] = ( ! isset($vars[$key]) OR $vars[$key] == '') ? $val : $vars[$key];
 		}
 		
 		foreach(array('field_pre_populate', 'field_required', 'field_search', 'field_show_fmt') as $key)
@@ -4168,21 +4158,24 @@ class Admin_content extends Controller {
 		$vars['field_text_direction_'.$current] = TRUE;
 		$vars['field_text_direction_'.$other] = FALSE;
 		
-
 		// Grab Field Type Settings
 		
 		$vars['field_type_table']	= array();
 		$vars['field_type_options']	= array();
-		
-		$fts = $this->api_channel_fields->fetch_all_fieldtypes();
 
 		$created = FALSE;
 
 		foreach($fts as $key => $attr)
 		{
+			// Global settings
+			$settings = unserialize(base64_decode($fts[$key]['settings']));
+			$settings['field_type'] = $key;
+			
 			$this->table->clear();
 			
+			$this->api_channel_fields->set_settings($key, $settings);
 			$this->api_channel_fields->setup_handler($key);
+			
 			$str = $this->api_channel_fields->apply('display_settings', array($vars));
 
 			$vars['field_type_tables'][$key]	= $str;
@@ -4368,6 +4361,13 @@ class Admin_content extends Controller {
 		$this->api_channel_fields->setup_handler($field_type);
 		$ft_settings = $this->api_channel_fields->apply('save_settings', $_POST);
 		
+		// Default display options
+		foreach(array('smileys', 'glossary', 'spellcheck', 'formatting_btns', 'file_selector', 'writemode') as $key)
+		{
+			$tmp = $this->_get_ft_post_data($field_type, 'field_show_'.$key);
+			$ft_settings['field_show_'.$key] = $tmp ? $tmp : 'n';
+		}
+		
 		// Now that they've had a chance to mess with the POST array,
 		// grab post values for the native fields (and check namespaced fields)
 		foreach($native as $key)
@@ -4411,8 +4411,7 @@ class Admin_content extends Controller {
 			}
 		}
 		
-		// Add our serialized settings @todo we're missing a column - ::facepalm::
-		// $native_settings['field_settings'] = base64_encode(serialize($ft_settings));
+		$native_settings['field_settings'] = base64_encode(serialize($ft_settings));
 		
 		// Construct the query based on whether we are updating or inserting
 		if ($edit === TRUE)
