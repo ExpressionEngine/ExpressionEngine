@@ -132,12 +132,50 @@ class Moblog {
 			return $this->return_data;
 		}
 
+		// Check Cache
+		// The only reason to write the file is to see
+		// the last time the moblog was checked.
+		// Seems like there should be a better way to do this
+		// @todo figure it out
+
+		if ( ! @is_dir(APPPATH.'cache/'.$this->cache_name))
+		{
+			if ( ! @mkdir(APPPATH.'cache/'.$this->cache_name, DIR_WRITE_MODE))
+			{
+				$this->return_data = ($this->silent == 'true') ? '' : $this->EE->lang->line('no_cache');
+				return $this->return_data;
+			}
+		}
+
+		@chmod(APPPATH.'cache/'.$this->cache_name, DIR_WRITE_MODE);
+
+		//$this->EE->functions->delete_expired_files(APPPATH.'cache/'.$this->cache_name);
+
+		$expired = array();
+
 		foreach($query->result_array() as $row)
 		{
-			if ($this->silent == 'false')
+			$cache_file = APPPATH.'cache/'.$this->cache_name.'/t_moblog_'.$row['moblog_id'];
+
+			if ( ! file_exists($cache_file) OR (time() > (filemtime($cache_file) + ($row['moblog_time_interval'] * 60))))
 			{
-				$this->return_data .= '<p><strong>'.$row['moblog_full_name'].'</strong><br />'."\n</p>";
+				$this->set_cache($row['moblog_id']);
+				$expired[] = $row['moblog_id'];
 			}
+			elseif ( ! $fp = @fopen($cache_file, FOPEN_READ_WRITE))
+			{
+				if ($this->silent == 'false')
+				{
+					$this->return_data .= '<p><strong>'.$row['moblog_full_name'].'</strong><br />'.
+									$this->EE->lang->line('no_cache')."\n</p>";
+				}
+			}
+		}
+
+		if (count($expired) == 0)
+		{
+			$this->return_data = ($this->silent == 'true') ? '' : $this->EE->lang->line('moblog_current');
+			return $this->return_data;
 		}
 
 		/** ------------------------------
@@ -189,11 +227,31 @@ class Moblog {
 		return $this->return_data ;
 	}
 
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * 	Return Moblog Errors
-	 */
+
+
+	/** -------------------------------------
+	/**  Set cache
+	/** -------------------------------------*/
+	function set_cache($moblog_id)
+	{
+		$cache_file = APPPATH.'cache/'.$this->cache_name.'/t_moblog_'.$moblog_id;
+
+		if ($fp = @fopen($cache_file, FOPEN_WRITE_CREATE_DESTRUCTIVE))
+		{
+			flock($fp, LOCK_EX);
+			fwrite($fp, 'hi');
+			flock($fp, LOCK_UN);
+			fclose($fp);
+		}
+
+		@chmod($cache_file, FILE_WRITE_MODE);
+
+	}
+
+
+	/** -------------------------------------
+	/**  Return errors
+	/** -------------------------------------*/
 	function errors()
 	{
 		$message = '';
