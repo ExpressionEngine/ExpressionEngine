@@ -90,6 +90,11 @@ class Textarea_ft extends EE_Fieldtype {
 		
 		$this->field_formatting_row($data, $prefix);
 		$this->text_direction_row($data, $prefix);
+		$this->field_show_formatting_btns_row($data, $prefix);
+		$this->field_show_smileys_row($data, $prefix);
+		$this->field_show_glossary_row($data, $prefix);
+		$this->field_show_spellcheck_row($data, $prefix);
+		$this->field_show_writemode_row($data, $prefix);
 	}
 }
 

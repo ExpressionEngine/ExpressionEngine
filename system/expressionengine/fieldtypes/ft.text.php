@@ -25,7 +25,8 @@
 class Text_ft extends EE_Fieldtype {
 
 	var $info = array(
-		'name'		=> 'Text Input'
+		'name'		=> 'Text Input',
+		'version'	=> '1.0'
 	);
 
 	// Parser Flag (preparse pairs?)
@@ -116,6 +117,10 @@ class Text_ft extends EE_Fieldtype {
 		$this->field_formatting_row($data, $prefix);
 		$this->text_direction_row($data, $prefix);
 		$this->field_content_type_row($data, $prefix);
+		$this->field_show_smileys_row($data, $prefix);
+		$this->field_show_glossary_row($data, $prefix);
+		$this->field_show_spellcheck_row($data, $prefix);
+		$this->field_show_file_selector_row($data, $prefix);
 	}
 
 	// --------------------------------------------------------------------
