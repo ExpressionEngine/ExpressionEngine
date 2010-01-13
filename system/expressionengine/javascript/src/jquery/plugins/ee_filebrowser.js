@@ -181,6 +181,10 @@
 		trigger_callback(file);
 	}
 
+	$.ee_filebrowser.reset = function() {
+		$("#file_manager").scrollable({api: true}).begin();
+	}
+
 	// --------------------------------------------------------------------
 
 	/*

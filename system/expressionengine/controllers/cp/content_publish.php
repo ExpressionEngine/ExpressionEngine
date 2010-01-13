@@ -4008,6 +4008,8 @@ class Content_publish extends Controller {
 				{
 					$("#"+window.file_manager_context).val("{filedir_"+file.directory+"}"+file.name);
 				}
+
+				$.ee_filebrowser.reset(); // restores everything to "default" state - also needed below for file fields
 			});
 			
 			// File fields
@@ -4024,6 +4026,8 @@ class Content_publish extends Controller {
 
 				$("input[name="+field+"_hidden]").val(file.name);
 				$("select[name="+field+"_directory]").val(file.directory);
+
+				$.ee_filebrowser.reset(); // restores everything to "default" state - also needed above for textareas
 			}
 			
 			$("input[type=file]", "#publishForm").each(function() {
