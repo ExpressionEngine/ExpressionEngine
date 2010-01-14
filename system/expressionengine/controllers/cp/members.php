@@ -1058,6 +1058,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 			if ($query->num_rows() > 0)
 			{
+				$this->db->query("DELETE FROM exp_comments WHERE ".$IDS);
+
 				foreach ($query->result_array() as $row)
 				{
 					$channel_ids[] = $row['channel_id'];
@@ -1072,8 +1074,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 								SET comment_total = '".$this->db->escape_str($query->row('count') )."', recent_comment_date = '$comment_date'
 								WHERE entry_id = '{$row['entry_id']}'");
 				}
-			
-				$this->db->query("DELETE FROM exp_comments WHERE ".$IDS);
 			}
 		
 			if (count($channel_ids) > 0)
