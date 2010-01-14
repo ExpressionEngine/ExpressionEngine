@@ -16,8 +16,8 @@ if ($EE_view_disable !== TRUE)
 		</div>
 		
 		<?php $this->load->view('_shared/message');?>
-		
-		<div class="publishPageContents">      
+
+		<div class="publishPageContents">
 <?php if (isset($submission_error)):?>
 		<fieldset class="previewBox" id="previewBox"><legend class="previewItemTitle">&nbsp;<span class='alert'><?=lang('error')?></span>&nbsp;</legend>
 
@@ -46,8 +46,6 @@ if ($EE_view_disable !== TRUE)
 				<h3><a href="#"><?=lang('fields')?></a></h3>
 				<div>
 					<ul>
-						
-						
 						<?php foreach ($field_output as $name => $field):
 							$f = is_array($field) ? $field : $this->api_channel_fields->settings[$name];
 						?>
@@ -64,9 +62,9 @@ if ($EE_view_disable !== TRUE)
 							<a href="#" title="menu_<?=$tab?>" class="menu_focus"><?=lang($tab)?></a> 
 							<a href="#<?=$tab?>" class="delete delete_tab"><img src="<?=$cp_theme_url?>images/content_custom_tab_delete.png" alt="<?=lang('delete')?>" width="19" height="18" /></a>
 						</li>
-					<?php endforeach;?> 
+					<?php endforeach;?>
 				</ul>
-					<p class="custom_field_add"><a href="#" class="add_tab_link submit submit_alt"><?=lang('add_tab')?></a></p>
+				<p class="custom_field_add"><a href="#" class="add_tab_link submit submit_alt"><?=lang('add_tab')?></a></p>
 				</div>
 
 				<?php
@@ -80,7 +78,7 @@ if ($EE_view_disable !== TRUE)
 						<?php foreach ($author_list->result() as $author):?>
 							<li>
 								<a href="<?=BASE.AMP.'C=myaccount'.AMP.'id='.$author->member_id?>"><?=$author->screen_name?></a>
-								<?php if ($author->in_authorlist == 'y' AND $author->include_in_authorlist == 'n'):?>
+								<?php if ($author->in_authorlist == 'y' && $author->include_in_authorlist == 'n'):?>
 								<a href="#" class="delete" id="mid<?=$author->member_id?>"><img src="<?=$cp_theme_url?>images/content_custom_tab_delete.png" alt="<?=lang('delete')?>" width="19" height="18" /></a>
 								<?php endif;?>
 							</li>
@@ -96,12 +94,12 @@ if ($EE_view_disable !== TRUE)
 				?>
 				<h3><a href="#"><?=lang('publish_layout')?></a></h3>
 				<div>
-				<p id="layout_groups_holder">
-					<?php foreach($member_groups->result() as $group):?>
-						<label><?=form_checkbox('member_group[]', $group->group_id, FALSE, 'class="toggle_member_groups"')?> <?=$group->group_title?></label><br />
-					<?php endforeach;?>
-					<label><?=form_checkbox('toggle_member_groups', 'toggle_member_groups', FALSE, 'class="toggle_member_groups" id="toggle_member_groups_all"').' '.$this->lang->line('select_all')?></label>
-				</p>
+					<p id="layout_groups_holder">
+						<?php foreach($member_groups->result() as $group):?>
+							<label><?=form_checkbox('member_group[]', $group->group_id, FALSE, 'class="toggle_member_groups"')?> <?=$group->group_title?></label><br />
+						<?php endforeach;?>
+						<label><?=form_checkbox('toggle_member_groups', 'toggle_member_groups', FALSE, 'class="toggle_member_groups" id="toggle_member_groups_all"').' '.$this->lang->line('select_all')?></label>
+					</p>
 					<p class="custom_field_add">
 						<a href="#" id="layout_group_submit" class="submit_alt"><?=lang('save_layout')?></a>
 						<a href="#" id="layout_group_remove" class="submit_alt"><?=lang('remove_layout')?></a>
@@ -125,105 +123,120 @@ if ($EE_view_disable !== TRUE)
 	<div id="holder">
 			<?php foreach ($publish_tabs as $tab=>$fields):?>
 			<div id="<?=$tab?>" class="main_tab">
-
+				
 				<?php foreach ($fields as $field=>$values):?>
-
+					
 					<?php
 
 					$f = is_array($field_output[$field]) ? $field_output[$field] : $this->api_channel_fields->settings[$field];
 					$values['is_hidden'] = isset($values['is_hidden']) ? $values['is_hidden'] : FALSE;
 
 					?>
-
+					
+					
 					<div class="publish_field publish_<?=$f['field_type']?>" id="hold_field_<?=$f['field_id']?>">
 						<div class="handle"></div>
-						<?php /*upload bar goes here if needed*/?>
-
 						<p>
-							<label class="hide_field" for="<?=$f['field_id']?>">
+							<label class="hide_field" for="<?=$field?>">
 								<img class="field_collapse" src="<?=$cp_theme_url?>images/field_expand.png" width="13" height="13" alt="" />
 								<?php if ($f['field_required'] == 'y'):?><?=required()?><?php endif?>
 								<?=$f['field_label']?>
 							</label>
 						</p>
+						
 
-						<div id="sub_hold_field_<?=$f['field_id']?>">
+						<?php if($f['field_instructions'] != ''):?>
+							<div class="instruction_text"><?=auto_typography('<strong>'.$this->lang->line('instructions').'</strong>'.NBS.$f['field_instructions'])?></div>
+						<?php endif;?>
 
-							<?php if($f['field_instructions'] != ''):?>
-								<div class="instruction_text"><?=auto_typography('<strong>'.$this->lang->line('instructions').'</strong>'.NBS.$f['field_instructions'])?></div>
-							<?php endif;?>
-
+						<div id="sub_hold_field_<?=$field?>" <?=$values['is_hidden']? 'class="js_hide"': '';?>>
 							<p>
-								<?php
-									echo isset($f['string_override']) ? $f['string_override'] : $field_output[$field];
-									echo form_error($f['field_name']);
-								?>
+							<?php
+								echo isset($f['string_override']) ? $f['string_override'] : $field_output[$field];
+								echo form_error($f['field_name']);
+							?>
 							</p>
 
 							<?php if ($f['field_type'] == 'textarea'):?>
 							<p class="writemode_parent"><a href="<?=$write_mode_link?>" class="write_mode_trigger thickbox" id="id_<?=$f['field_id']?>" title="<?=lang('write_mode')?>"><img alt="<?=lang('write_mode')?>" width="22" height="21" src="<?=$cp_theme_url?>images/publish_write_mode.png" /></a></p>
 							<?php endif;?>
-
-							<?php
-							// only text field types get these options
-							if(
-								($f['field_type'] == 'text' OR $f['field_type'] == 'textarea') 
-								&& $f['field_id'] != 'title' 
-								&& $f['field_id'] != 'url_title' 
-								&& $f['field_id'] != 'pages_uri' 
-								&& $f['field_id'] != 'forum_title' 
-								&& $f['field_id'] != 'forum_topic_id' 
-								&& (empty($f['field_content_type']) OR $f['field_content_type'] == 'any')):
-							?>
-							<p class="spellcheck">
-								<?php if ($f['field_type'] == 'text' && count($file_list) > 0):?>
-								<img class="file_manipulate js_show" src="<?=$cp_theme_url?>images/publish_format_picture.gif" alt="<?=lang('file')?>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-								<?php endif;?>
-
-								<?php if($spell_enabled):?>
-								<a href="#" class="spellcheck_link" id="spelltrigger_<?=(ctype_digit($f['field_id']))?'field_id_':''?><?=$f['field_id']?>" title="<?=lang('check_spelling')?>"><img src="<?=$cp_theme_url.'images/spell_check_icon.png'?>" style="margin-bottom: -8px;" alt="<?=lang('check_spelling')?>" /></a>
-								<?php endif;?>
-								<a href="#" class="glossary_link" title="<?=lang('glossary')?>"><img src="<?=$cp_theme_url.'images/spell_check_glossary.png'?>" style="margin-bottom: -8px;" alt="<?=lang('glossary')?>" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-								<?php if ($smileys_enabled):?>
-								<a href="#" class="smiley_link" title="<?=lang('emoticons')?>"><?=lang('emoticons')?></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-								<?php endif; ?>
-								<?php if ($f['field_show_fmt'] == 'y' && count($f['field_fmt_options']) > 0):?>
-									
-								<?=lang('formatting')?>
-								<?=form_dropdown('field_ft_'.$f['field_id'], $f['field_fmt_options'], $f['field_fmt'])?> 
-								<?php endif;?>
-
-							</p>
-						<?php elseif ($f['field_show_fmt'] == 'y' && count($f['field_fmt_options']) > 0):?>
-							<p class="spellcheck">
-							<?=lang('formatting')?>
-							<?=form_dropdown('field_ft_'.$f['field_id'], $f['field_fmt_options'], $f['field_fmt'])?> 
-							</p>
-						<?php endif;?>
-
-							<?php
-							// only text field types get these options
-							if(($f['field_type'] == 'text' OR $f['field_type'] == 'textarea') && $f['field_id'] != 'title' && $f['field_id'] != 'url_title' && $f['field_id'] != 'pages_uri' && $f['field_id'] != 'forum_topic_id' && ( ! isset($f['field_content_type']) OR $f['field_content_type'] == 'any'))
-							{
-								if ($spell_enabled)
-								{
-									echo (ctype_digit($f['field_id'])) ? build_spellcheck('field_id_'.$f['field_id']) : build_spellcheck($f['field_id']);
-								}
-								echo $glossary_items;
-								if ($smileys_enabled)
-								{
-									echo $smiley_table[$f['field_id']];									
-								}
-							}
-							?>
-
 						</div>
+						
+						<?php
+						// @todo move this logic to the controller or fieldtype api
+						$defaults = array(
+							'field_show_spellcheck'			=> 'n',
+							'field_show_smileys'			=> 'n',
+							'field_show_glossary'			=> 'n',
+							'field_show_formatting_btns'	=> 'n',
+							'field_show_writemode'			=> 'n',
+							'field_show_file_selector'		=> 'n',
+							'field_show_fmt'				=> 'n'
+						);
+						
+						$has_extras = FALSE;
+						
+						foreach($defaults as $key => $val)
+						{
+							if (isset($f[$key]) && $f[$key] == 'y')
+							{
+								$has_extras = TRUE;
+								continue;
+							}
+							
+							$f[$key] = $val;
+						}
+						?>
+						
+						<?php if ($has_extras): ?>
+							<p class="spellcheck">
+							
+								<?php if ($f['field_show_writemode'] == 'y'):?>
+									<a href="<?=$write_mode_link?>" class="write_mode_trigger thickbox" id="id_<?=$f['field_id']?>" title="<?=lang('write_mode')?>"><img alt="<?=lang('write_mode')?>" width="22" height="21" src="<?=$cp_theme_url?>images/publish_write_mode.png" /></a> 
+								<?php endif;?>
+							
+								<?php if ($f['field_show_file_selector'] == 'y' && count($file_list) > 0):?>
+									<img class="file_manipulate js_show" src="<?=$cp_theme_url?>images/publish_format_picture.gif" alt="<?=lang('file')?>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<?php endif;?>
+							
+								<?php if($spell_enabled && $f['field_show_spellcheck'] == 'y'):?>
+									<a href="#" class="spellcheck_link" id="spelltrigger_<?=(ctype_digit($f['field_id']))?'field_id_':''?><?=$f['field_id']?>" title="<?=lang('check_spelling')?>"><img src="<?=$cp_theme_url.'images/spell_check_icon.png'?>" style="margin-bottom: -8px;" alt="<?=lang('check_spelling')?>" /></a>
+								<?php endif;?>
+							
+								<?php if($f['field_show_glossary'] == 'y'):?>
+									<a href="#" class="glossary_link" title="<?=lang('glossary')?>"><img src="<?=$cp_theme_url.'images/spell_check_glossary.png'?>" style="margin-bottom: -8px;" alt="<?=lang('glossary')?>" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<?php endif;?>
+							
+								<?php if ($smileys_enabled && $f['field_show_smileys'] == 'y'):?>
+									<a href="#" class="smiley_link" title="<?=lang('emoticons')?>"><?=lang('emoticons')?></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<?php endif;?>
+							
+								<?php if ($f['field_show_fmt'] == 'y' && count($f['field_fmt_options']) > 0):?>
+									<?=lang('formatting')?>
+									<?=form_dropdown('field_ft_'.$f['field_id'], $f['field_fmt_options'], $f['field_fmt'])?> 
+								<?php endif;?>
+						
+							</p>
+						
+							<?php if($spell_enabled && $f['field_show_spellcheck'] == 'y'):
+								echo (ctype_digit($f['field_id'])) ? build_spellcheck('field_id_'.$f['field_id']) : build_spellcheck($f['field_id']);
+							endif;?>
+							
+							<?php if($f['field_show_glossary'] == 'y'):
+								echo $glossary_items;
+							endif;?>
+
+							<?php if ($smileys_enabled && $f['field_show_smileys'] == 'y'):
+								echo $smiley_table[$f['field_id']];									
+							endif;?>
+						
+						<?php endif; ?>
 					</div>
 
 				<?php endforeach;?>
 
 				<div class="insertpoint"></div>
-			<div class="clear"></div>
+				<div class="clear"></div>
 			</div>
 
 			<?php endforeach;?>
@@ -240,90 +253,43 @@ if ($EE_view_disable !== TRUE)
 </div><!-- mainContent -->
 
 
-	<div id="write_mode_container">
-		<div id="write_mode_close_container"><a href="#" class="TB_closeWindowButton"><img alt="<?=lang('close')?>" width="13" height="13" src="<?=$cp_theme_url?>images/write_mode_close.png" /></a><a href="#" class="publish_to_field"><img alt="Publish to Field" width="103" height="18" src="<?=$cp_theme_url?>images/write_mode_publish_to_field.png" /></a>&nbsp;</div>
+<div id="write_mode_container">
+	<div id="write_mode_close_container"><a href="#" class="TB_closeWindowButton"><img alt="<?=lang('close')?>" width="13" height="13" src="<?=$cp_theme_url?>images/write_mode_close.png" /></a><a href="#" class="publish_to_field"><img alt="Publish to Field" width="103" height="18" src="<?=$cp_theme_url?>images/write_mode_publish_to_field.png" /></a>&nbsp;</div>
   
-		<div id="write_mode_writer">
-		   <div id="write_mode_header"><a href="#" class="reveal_formatting_buttons"><img class="show_tools" alt="<?=lang('show_tools')?>" width="109" height="18" src="<?=$cp_theme_url?>images/write_mode_show_tools.png" /></a></div>
-			<textarea id="write_mode_textarea"></textarea>
-		</div>
-		<div id="write_mode_footer"><a href="#" class="publish_to_field"><img alt="<?=lang('publish_to_field')?>" width="103" height="18" src="<?=$cp_theme_url?>images/write_mode_publish_to_field.png" /></a></div>
+	<div id="write_mode_writer">
+	   <div id="write_mode_header"><a href="#" class="reveal_formatting_buttons"><img class="show_tools" alt="<?=lang('show_tools')?>" width="109" height="18" src="<?=$cp_theme_url?>images/write_mode_show_tools.png" /></a></div>
+		<textarea id="write_mode_textarea"></textarea>
 	</div>
+	<div id="write_mode_footer"><a href="#" class="publish_to_field"><img alt="<?=lang('publish_to_field')?>" width="103" height="18" src="<?=$cp_theme_url?>images/write_mode_publish_to_field.png" /></a></div>
+</div>
 
 	<div class="js_hide">
 		<?php foreach ($unrevealed_fields as $field):?>
+			<?php
+
+			$f = is_array($field_output[$field]) ? $field_output[$field] : $this->api_channel_fields->settings[$field];
+			$values['is_hidden'] = isset($values['is_hidden']) ? $values['is_hidden'] : FALSE;
+
+			?>
+			
+			
 			<div class="publish_field publish_<?=$f['field_type']?>" id="hold_field_<?=$f['field_id']?>">
 				<div class="handle"></div>
-				<?php /*upload bar goes here if needed*/?>
 				<p>
-					<label class="hide_field" for="<?=$f['field_id']?>">
-						<img class="field_collapse" src="<?=$cp_theme_url?>images/field_expand.png" width="13" height="13" alt="" />
+					<label class="hide_field" for="<?=$field?>">
+						<img class="field_collapse" src="<?=$cp_theme_url?>images/field_expand.png" width="10" height="13" alt="" />
 						<?php if ($f['field_required'] == 'y'):?><?=required()?><?php endif?>
 						<?=$f['field_label']?>
 					</label>
 				</p>
 
-				<div id="sub_hold_field_<?=$f['field_id']?>">
-					<?php if($f['field_instructions'] != ''):?>
-						<div class="instruction_text"><?=auto_typography('<strong>'.$this->lang->line('instructions').'</strong>'.NBS.$f['field_instructions'])?></div>
-					<?php endif;?>
-
+				<div id="sub_hold_field_<?=$field?>" <?=$values['is_hidden']? 'class="js_hide"': '';?>>
 					<p>
-						<?=custom_field($f)?>
-						<?=($e = form_error('field_id_'.$field)) == '' ? form_error($field) : $e?>
-					</p>
-
 					<?php
-					// only text field types get these options
-					if(
-						($f['field_type'] == 'text' OR $f['field_type'] == 'textarea') 
-						&& $f['field_id'] != 'title' 
-						&& $f['field_id'] != 'url_title' 
-						&& $f['field_id'] != 'pages_uri' 
-						&& $f['field_id'] != 'forum_title' 
-						&& $f['field_id'] != 'forum_topic_id' 
-						&& ( ! isset($f['field_content_type']) OR $f['field_content_type'] == 'any')):
+						echo isset($f['string_override']) ? $f['string_override'] : $field_output[$field];
+						echo form_error($f['field_name']);
 					?>
-					<p class="spellcheck">
-						<?php if ($f['field_type'] == 'textarea'):?>
-						<a href="<?=$write_mode_link?>" class="write_mode_trigger thickbox" id="id_<?=$f['field_id']?>" title="<?=lang('write_mode')?>"><img alt="<?=lang('write_mode')?>" width="22" height="21" src="<?=$cp_theme_url?>images/publish_write_mode.png" /></a> 
-						<?php endif;?>
-
-						<?php if ($f['field_type'] == 'text' && count($file_list) > 0):?>
-						<img class="file_manipulate js_show" src="<?=$cp_theme_url?>images/publish_format_picture.gif" alt="<?=lang('file')?>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<?php endif;?>
-
-						<?php if($spell_enabled):?>
-						<a href="#" class="spellcheck_link" id="spelltrigger_field_id_<?=$f['field_id']?>" title="<?=lang('check_spelling')?>"><img src="<?=$cp_theme_url.'images/spell_check_icon.png'?>" style="margin-bottom: -8px;" alt="<?=lang('check_spelling')?>" /></a>
-						<?php endif;?>
-						<a href="#" class="glossary_link" title="<?=lang('glossary')?>"><img src="<?=$cp_theme_url.'images/spell_check_glossary.png'?>" style="margin-bottom: -8px;" alt="<?=lang('glossary')?>" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="#" class="smiley_link" title="<?=lang('emoticons')?>"><?=lang('emoticons')?></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-						<?php if ($f['field_show_fmt'] == 'y' && count($f['field_fmt_options']) > 0):?>
-						<?=lang('formatting')?>
-						<?=form_dropdown('field_ft_'.$f['field_id'], $f['field_fmt_options'], $f['field_fmt'], 'id="formatting"')?> 
-						<?php endif;?>
-
 					</p>
-				<?php elseif ($f['field_show_fmt'] == 'y' && count($f['field_fmt_options']) > 0):?>
-					<p class="spellcheck">
-					<?=lang('formatting')?>
-					<?=form_dropdown('field_ft_'.$f['field_id'], $f['field_fmt_options'], $f['field_fmt'], 'id="formatting"')?> 
-					</p>
-				<?php endif;?>
-
-					<?php
-					// only text field types get these options
-					if(($f['field_type'] == 'text' OR $f['field_type'] == 'textarea') && $f['field_id'] != 'title' && $f['field_id'] != 'url_title' && $f['field_id'] != 'pages_uri' && $f['field_id'] != 'forum_topic_id' && ( ! isset($f['field_content_type']) OR $f['field_content_type'] == 'any'))
-					{
-						if ($spell_enabled)
-						{
-							echo build_spellcheck('field_id_'.$f['field_id']);
-						}
-						echo $glossary_items;
-						echo $smiley_table[$f['field_id']];
-					}
-					?>
 				</div>
 				
 			</div>
@@ -331,21 +297,21 @@ if ($EE_view_disable !== TRUE)
 		<?php endforeach;?>
 	</div>
 
-	<?php if ($this->session->userdata('group_id') == 1):?>
-		<div id="new_tab_dialog" title="<?=lang('add_tab')?>" style="display: none;">
-			<form>
-				<p>
-					<label><?=lang('tab_name')?></label> 
-					<input id="tab_name" type="text" value="" name="tab_name"/>
-				</p>
-			</form>
-		</div>
+<?php if ($this->session->userdata('group_id') == 1):?>
+	<div id="new_tab_dialog" title="<?=lang('add_tab')?>" style="display: none;">
+		<form>
+			<p>
+				<label><?=lang('tab_name')?></label> 
+				<input id="tab_name" type="text" value="" name="tab_name"/>
+			</p>
+		</form>
+	</div>
 
-		<div id="add_author_dialog" title="<?=lang('add_author')?>" style="display: none;">
-			<form>
-				<?=$authors_table?>
-			</form>
-		</div>
+	<div id="add_author_dialog" title="<?=lang('add_author')?>" style="display: none;">
+		<form>
+			<?=$authors_table?>
+		</form>
+	</div>
 	<?php endif;?>
 	</div>
 <?php
