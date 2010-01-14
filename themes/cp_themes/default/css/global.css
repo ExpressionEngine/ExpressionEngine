@@ -399,7 +399,7 @@ table td a {
 	line-height: 		13px;
 }
 
-#navigationTabs > li.active {
+#navigationTabs > .parent.active {
 	background: 		url('<?=$cp_theme_url?>images/nav_active_arrow.png') bottom center no-repeat;
 }
 
