@@ -100,7 +100,11 @@ class Select_ft extends EE_Fieldtype {
 
 	function display_settings($data)
 	{
+		$prefix = 'select';
+		
 		$this->multi_item_row($data, 'select');
+
+		$this->field_formatting_row($data, $prefix);
 	}
 
 	// --------------------------------------------------------------------
