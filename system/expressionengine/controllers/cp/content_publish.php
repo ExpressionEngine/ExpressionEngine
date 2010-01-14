@@ -1595,7 +1595,9 @@ class Content_publish extends Controller {
 					}
 
 					// set up html buttons
-					if ($custom['htmlbuttons'] == 'false')
+					// with third party modules able to set the value of 'htmlbuttons', its possible this value will
+					// be used/passed incorrectly, so an isset() for insurance that its a field that has the buttons
+					if ($custom['htmlbuttons'] == 'false' AND isset($this->field_definitions[$key]['field_id']))
 					{
 						$this->javascript->output('
 							$("#hold_field_'.$this->field_definitions[$key]['field_id'].' .close_formatting_buttons a").click();
