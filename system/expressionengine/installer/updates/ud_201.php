@@ -78,6 +78,9 @@ class Updater {
 			$Q[] = "INSERT INTO `exp_fieldtypes` (`name`,`version`,`settings`,`has_global_settings`) VALUES ('".$name."','1.0','YTowOnt9','n')";
 		}
 		
+		// Remove weblog from specialty_templates 
+		$Q[] = "UPDATE `exp_specialty_templates` SET `template_data` = REPLACE(`template_data`, 'weblog_name', 'channel_name')";
+		
 		foreach ($Q as $num => $sql)
 		{
 	        $this->EE->db->query($sql);
