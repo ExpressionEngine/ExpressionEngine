@@ -24,9 +24,9 @@
 			<span id="sidebar_notepad_edit_desc" class="sidebar_hover_desc"><?=lang('click_to_edit')?></span>
 		</h4>
 
-		<p id="notePadText"><?=lang('notepad_no_content')?></p>
-		<?=form_textarea(array('name' => 'notePadTextEdit', 'value' => $cp_notepad_content, 'id' => 'notePadTextEdit'))?>
-		<p id="notePadControls"><br />
+		<p id="notePadText" class="js_show"><?=lang('notepad_no_content')?></p>
+		<?=form_textarea(array('name' => 'notePadTextEdit', 'value' => $cp_notepad_content, 'id' => 'notePadTextEdit', 'class' => 'js_hide'))?>
+		<p id="notePadControls" class="js_hide"><br />
 			<input type="submit" class="submit" value="<?=lang('save')?>" />
 			<a class="cancel" href="#"><?=lang('cancel')?></a>
 			<img src="<?=$cp_theme_url?>images/indicator.gif" id="notePadSaveIndicator" alt="Notepad Save Indicator" style="display: none;" width="16" height="16" />
