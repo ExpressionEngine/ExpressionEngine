@@ -161,7 +161,7 @@ class Addons_fieldtypes extends Controller {
 			}
 		}
 		
-		$this->cp->set_variable('cp_page_title', $this->lang->line('@todo delete ft confirm'));
+		$this->cp->set_variable('cp_page_title', $this->lang->line('delete_fieldtype'));
 		
 		return $this->load->view('addons/fieldtype_delete_confirm', array('form_action' => 'C=addons_fieldtypes'.AMP.'M=uninstall'.AMP.'ft='.$ft));
 	}

@@ -33,6 +33,10 @@ $lang = array(
 'extensions_enabled'			=>		"Extensions Enabled",
 'extensions_disabled'			=>		"Extensions Disabled",
 
+'delete_fieldtype_confirm'		=>		"Are you sure you want to remove this fieldtype?",
+'delete_fieldtype'				=>		"Remove Fieldtype",
+'data_will_be_lost'				=>		"All data associated with this fieldtype, including all associated channel data, will be permanently deleted!",
+
 'package_settings'				=>		"Package Settings",
 'component'						=>		"Component",
 'current_status'				=>		"Current Status",
