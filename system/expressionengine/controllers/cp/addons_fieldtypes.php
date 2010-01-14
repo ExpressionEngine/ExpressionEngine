@@ -225,12 +225,12 @@ class Addons_fieldtypes extends Controller {
 			$settings = base64_encode(serialize($settings));
 			$this->db->update('fieldtypes', array('settings' => $settings), array('name' => $ft));
 			
-			$this->session->set_flashdata('message_success', '@todo lang global settings saved');
+			$this->session->set_flashdata('message_success', $this->lang->line('global_settings_saved'));
 			$this->functions->redirect(BASE.AMP.'C=addons_fieldtypes');
 		}
 		
 		$vars = array(
-			'_ft_settings_body'	=> $this->api_channel_fields->apply('global_settings'),
+			'_ft_settings_body'	=> $this->api_channel_fields->apply('display_global_settings'),
 			'_ft_name'			=> $ft
 		);
 		$this->cp->set_variable('cp_page_title', $FT->info['name']);
