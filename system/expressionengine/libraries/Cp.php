@@ -341,12 +341,25 @@ class Cp {
 	 * @param	array
 	 * @return	bool
 	 */
-	function add_layout_tabs($tabs = array())
+	function add_layout_tabs($tabs = array(), $namespace = '')
 	{
 		if ( ! is_array($tabs) OR count($tabs) == 0)
 		{
 			return FALSE;
 		}
+
+		if ($namespace != '')
+		{
+			foreach ($tabs as $key => $val)
+			{
+				foreach ($val as $field_name => $data)
+				{
+					$tabs[$key][$namespace.'__'.$field_name] = $data;
+					unset($tabs[$key][$field_name]);
+				}
+			}
+		}
+
 
 		$this->EE->load->model('member_model');
 		$this->EE->member_model->update_layouts($tabs, 'add_tabs');
@@ -361,13 +374,25 @@ class Cp {
 	 * @param	array
 	 * @return	bool
 	 */
-	function delete_layout_tabs($tabs = array())
+	function delete_layout_tabs($tabs = array(), $namespace = '')
 	{
 		if ( ! is_array($tabs) OR count($tabs) == 0)
 		{
 			return FALSE;
 		}
-
+		
+		if ($namespace != '')
+		{
+			foreach ($tabs as $key => $val)
+			{
+				foreach ($val as $field_name => $data)
+				{
+					$tabs[$key][$namespace.'__'.$field_name] = $data;
+					unset($tabs[$key][$field_name]);
+				}
+			}
+		}
+		
 		$this->EE->load->model('member_model');
 		
 		return $this->EE->member_model->update_layouts($tabs, 'delete_tabs');
