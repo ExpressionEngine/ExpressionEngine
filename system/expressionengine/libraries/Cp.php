@@ -628,7 +628,6 @@ class Cp {
 	 * Load Package CSS
 	 *
 	 * Load a stylesheet from a package
-	 * @pk Hack for Brandon. Check with DJ -- css controller, <link> tag, filemtime caching, documentation
 	 *
 	 * @access	public
 	 * @param	string
@@ -636,6 +635,7 @@ class Cp {
 	 */
 	function load_package_css($file)
 	{
+		// @todo move to proper style tag
 		$package = realpath($this->EE->load->_ci_view_path.'../');
 		$this->add_to_head('<style type="text/css" media="screen">'.
 			file_get_contents($package.'/css/'.$file.'.css').
