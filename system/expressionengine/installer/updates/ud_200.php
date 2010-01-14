@@ -980,6 +980,7 @@ class Updater {
         $Q[] = "ALTER TABLE `exp_members` CHANGE `notepad` `notepad` text NULL";
         $Q[] = "ALTER TABLE `exp_members` CHANGE `quick_links` `quick_links` text NULL";
         $Q[] = "ALTER TABLE `exp_members` CHANGE `quick_tabs` `quick_tabs` text NULL";
+		$Q[] = "UPDATE exp_members SET quick_tabs = ''";
 
         // Remove trackback actions
         $Q[] = "DELETE FROM `exp_actions` WHERE `class` = 'Trackback'";
