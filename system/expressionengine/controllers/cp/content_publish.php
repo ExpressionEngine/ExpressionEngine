@@ -1971,8 +1971,8 @@ class Content_publish extends Controller {
 					$(".main_tab input, .main_tab textarea, .main_tab select, #submit_button").attr("disabled", true);
 					$("#submit_button").addClass("disabled_field");
 					$("#holder a").addClass("admin_mode");
-					$("#holder a").each(function() {
-						$(this).before("<div class=\"cover\" style=\"position:absolute;width:50px;height:50px;z-index:9999;\"></div>").css({});
+					$("#holder div.markItUp, #holder p.spellcheck").each(function() {
+						$(this).before("<div class=\"cover\" style=\"position:absolute;width:100%;height:50px;z-index:9999;\"></div>").css({});
 					});
 				}
 				else
