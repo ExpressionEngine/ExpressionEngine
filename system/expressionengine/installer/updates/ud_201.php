@@ -100,9 +100,9 @@ class Updater {
 				$final_settings['field_'.$name] = 'y';
 			}
 			
-			$this->EE->db->set('settings', base64_encode(serialize($final_settings)));
-			$this->EE->db->where('name', $fieldtype);
-			$this->EE->db->update('fieldtypes');
+			$this->EE->db->set('field_settings', base64_encode(serialize($final_settings)));
+			$this->EE->db->where('field_type', $fieldtype);
+			$this->EE->db->update('channel_fields');
 		}
 
 		// Finished!
