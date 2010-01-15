@@ -192,7 +192,7 @@
 	function open_notice_drawer(type) {
 		if (active != type) {
 			drawer.find('.notice_texts').hide().end().find('.notice_'+type).show();
-			drawer.slideDown('fast');
+			drawer.slideDown('fast', repaint_flag);
 			active = type;
 			
 			if (store_ref) {
