@@ -31,164 +31,169 @@
  *
  * Options:
  * type				- message severity, options are: notice | success | error (default = notice)
- * delay			- delay before notification is shown (default = 0)
- * duration			- time it remains visible (0 = until closed | default = 5 sec)
- * animation_speed	- duration of the sliding animation
+ * open				- open drawer automatically | bool (default = false [except for errors])
  *
  * Force Hide:
  * $.ee_notice.destroy()
  */
-
-/* Example:
- *
- * $.ee_notice("Entry saved. <a href='#'>Look here!</a>", {
- *		'duration' : 0
- * });
- *
- */
 (function($) {
+	
+	var type_store = {},
+		store_ref, drawer, options, active;
 
-	var message_queue = [],
-		rm_class = /\bjs_.*?\b/g,
-		delay_active = false,
-		options, close_timeout, nc_height,
-		notice_container, notice_text, notice_inner;
-
-	/**
-	 * Create a notification
-	 */
-	$.ee_notice = function(messages, params) {
+	function _init() {
+		var type_counts = $("#notice_counts");
+		
+		// Set plugin globals
+		type_store = {
+			"error"	  : { count: 0,  last: "",  counter: type_counts.find(".notice_error").get(0) },
+			"alert"	  : { count: 0,  last: "",  counter: type_counts.find(".notice_alert").get(0) },
+			"success" : { count: 0,  last: "",  counter: type_counts.find(".notice_success").get(0) }
+		};
+		
+		drawer = $("#notice_texts_container");
+		
+		// Set up events
+		type_counts.find('span').click(count_click_handler);
+	}
+	
+	$.ee_notice = function(message, params) {
+		if ( ! drawer) {
+			_init();
+		}
+				
+		if ($.isArray(message)) {
+			$.each(message ,function(k, v) {
+				$.ee_notice(v.message, v);
+			});
+			return;
+		}
+		
 		options = $.extend({
 			type: 'notice',
-			delay: 0,
-			duration: 3000,
-			animation_speed: 400
+			open: false
 		}, params);
 		
-		if (message_queue.length) {
-			delay_active = true;
+		// Ha! Well done, Pascal
+		if (options.type == 'notice') {
+			options.type = 'alert';
 		}
 		
-		if (typeof messages == "string") {
-			messages = [{message: messages}];
-		}
-		
-		messages = $.map(messages, function (m) {
-			m.type = m.type || options.type;
-			m.duration = m.duration || (m.type == 'error') ? 0 : options.duration;
-			return m;
-		});
-		message_queue.push.apply(message_queue, messages);
-		
-		// Patience!
-		if (delay_active === false) {
-			delay_active = true;
+		store_ref = type_store[options.type];
+
+		if (store_ref) {
 			
-			setTimeout(function() {
-				create_container();
-				dequeue_message();
-			}, options.delay);
+			increment_type_count();
+			
+			var notice_list = $(".notice_texts.notice_" + options.type);
+			
+			if (store_ref.last == message) {
+				var last_message = notice_list.children().slice(-1),
+					subcount = last_message.find('.subcount');
+				
+				if ( ! subcount.length) {
+					last_message.prepend('<span class="subcount">'+2+'</span>');
+				}
+				else {
+					subcount.text(parseInt(subcount.text()) + 1);
+				}
+			}
+			else {
+				notice_list.append("<p>" + message + "</p>");
+				store_ref.last = message;
+			}
+		}
+		else if (options.type == 'custom') {
+			$(".notice_texts.notice_custom").html(message);
+		}
+		else {
+			throw "Invalid notification type.";
+		}
+		
+		if (options.type == 'error' || options.open) {
+			open_notice_drawer(options.type);
 		}
 		
 		return $.ee_notice;
 	}
 	
-	
-	/**
-	 * Remove notification in one fell swoop (kills queue)
-	 */
 	$.ee_notice.destroy = function() {
-		message_queue = [];
-		if (notice_container) {
-			hide_notice();
+		if (drawer) {
+			close_notice_drawer();
 		}
 	}
 	
-	/**
-	 * Creates the container and binds events
-	 */
-	function create_container() {
-		if ( ! notice_container) {
-			var close_handle = $('<div class="close_handle"><a href="#">&times;</a></div>');
-			notice_text = $('<span/>');
-
-			notice_inner = $('<div class="notice_inner"/>').append(notice_text, close_handle);
-			notice_container = $('<div class="js_notification"/>').append(notice_inner).appendTo(document.body);
-
-			close_handle.click(hide_notice);
+	function increment_type_count() {
+		$("#notice_flag").css("display", "inline");
+		set_type_count(options.type, store_ref.count + 1);
+	}
+	
+	function set_type_count(type, count) {
+		if ( ! type_store[type]) {
+		 	return;
+		}
+		
+		type_store[type].count = count;
+		
+		var tc = type_store[type].counter;
+		
+		if (tc.lastChild.nodeType == 3) {
+			tc.removeChild(tc.lastChild);
+		}
+		
+		if (count == 0) {
+			type_store[type].last = '';
+			$(tc).hide();
+		}
+		else {
+			$(tc).show();
+			tc.innerHTML += '&nbsp;&nbsp;' + count;
+		}
+	}
+	
+	function open_notice_drawer(type) {
+		if (active != type) {
+			drawer.find('.notice_texts').hide().end().find('.notice_'+type).show();
+			drawer.slideDown('fast');
+			active = type;
 			
-			// Pause timeout on hover and restart with very small delay on mouseout
-			notice_container.hover(function() {
-				clear_timeout(500);
-			}, start_timeout);
-			
-			// Clicking dismisses on mouseout
-			notice_container.click(function() {
-				clear_timeout(1);
+			if (store_ref) {
+				set_active(store_ref.counter);
+			}
+		}
+	}
+	
+	function close_notice_drawer() {
+		drawer.slideUp('fast', function() {
+			drawer.find('.notice_texts').html('');
+			$.each(type_store, function(k, v) {
+				set_type_count(k, 0);
 			});
-		}
+			
+			$("#notice_flag").hide();
+			$("#active_notice").attr("id", "");
+			
+			active = false;
+		});
 	}
 	
-	/**
-	 * Clear the timeout
-	 */
-	function clear_timeout(new_d) {
-		if (typeof close_timeout == "number") {
-			window.clearTimeout(close_timeout);
-		}
+	function count_click_handler() {
+		var type = this.className.substr(7);
 		
-		if (new_d && message_queue[0].duration) {
-			message_queue[0].duration = new_d;
-		}
+		open_notice_drawer(type);
+		set_active(this);
+
+		return false;
 	}
 	
-	/**
-	 * Starts the hiding timeout
-	 */
-	function start_timeout() {
-		clear_timeout();
-		
-		// No duration? no hiding!
-		if (message_queue.length && message_queue[0].duration) {
-			close_timeout = window.setTimeout(hide_notice, message_queue[0].duration);
-		}
-	}
-	
-	/**
-	 * Dequeues the next message
-	 */
-	function dequeue_message() {
-		delay_active = false;
-		
-		if ( ! message_queue.length) {
-			return clear_timeout();
-		}
-				
-		// Add proper type class
-		notice_inner[0].className = notice_inner[0].className.replace(rm_class, '');
-		notice_inner.addClass('js_'+message_queue[0].type);
-		
-		notice_text.html(message_queue[0].message);
-		
-		// Go into hiding
-		nc_height = notice_container.outerHeight();
-		notice_container.css('top', -nc_height);
-
-		// Show, slide down, and start hiding timeout
-		notice_container.show().animate({'top': 0}, options.animation_speed, start_timeout);
-	}
-
-
-	/**
-	 * Hides the notification container
-	 */
-	function hide_notice() {
-		message_queue = message_queue.slice(1);
-		notice_container.animate({'top': -nc_height}, options.animation_speed, dequeue_message);
-		return false; // kill click event
+	function set_active(el) {
+		$("#active_notice").attr("id", "");
+		el.id = "active_notice";
 	}
 	
 })(jQuery);
+
+
 
 /* End of file ee_notice.js */
 /* Location: ./system/expressionengine/javascript/jquery/plugins/ee_notice.js */

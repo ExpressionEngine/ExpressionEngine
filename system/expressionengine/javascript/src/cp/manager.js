@@ -314,13 +314,11 @@
 			data: "is_ajax=TRUE&XID="+EE.XID+"&" + str,
 			success: function(msg){
 				if (msg != '') {
-					$.ee_notice.destroy();
 					$.ee_notice(msg, {duration: 3000, type: 'success'});
 				}
 			},
 			error: function(req, error){
 				if (req.responseText != '') {
-					$.ee_notice.destroy();
 					$.ee_notice(req.responseText, {duration: 3000, type: 'error'});
 				}
 			}
@@ -382,13 +380,11 @@
 				$("#hitsId_"+template_id).text(hits);
 				
 				if (msg != '') {
-					$.ee_notice.destroy();
 					$.ee_notice(msg, {duration: 3000, type: 'success'});
 				}
 			},
 			error: function(req, error){
 				if (req.responseText != '') {
-					$.ee_notice.destroy();
 					$.ee_notice(req.responseText, {duration: 3000, type: 'error'});
 				}
 			}
@@ -420,9 +416,9 @@
 			}
 			
 			text = '<div style="padding: 5px;"><label>Find:</label> <input name="fr_find" id="fr_find" type="text" value="" /> <label>Replace:</label> <input type="text" name="fr_replace" id="fr_replace" value=""/> '+select+'</div>';
-			text +=	'<div style="padding: 5px;"><button id="fr_find_btn">Find Next</button> <button id="fr_replace_btn">Replace</button> <button id="fr_replace_all_btn">Replace All</button> <label><input name="fr_replace_closing_tags" id="fr_replace_closing_tags" type="checkbox" /> Include Closing Tags</label></div>';
+			text +=	'<div style="padding: 5px;"><button class="submit" id="fr_find_btn">Find Next</button> <button class="submit" id="fr_replace_btn">Replace</button> <button class="submit" id="fr_replace_all_btn">Replace All</button> <label><input name="fr_replace_closing_tags" id="fr_replace_closing_tags" type="checkbox" /> Include Closing Tags</label></div>';
 
-			$.ee_notice(text, {duration: 0});
+			$.ee_notice(text, {type: "custom", open: true});
 
 			$('#fr_find').val(find);
 			$('#fr_replace').val(replace);
