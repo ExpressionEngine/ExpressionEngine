@@ -3759,6 +3759,7 @@ class Design extends Controller {
 			$this->zip->download($site_name.'.zip');
 		}
 		
+		$this->zip->clear_data();
 		 
 		exit();
 	}
