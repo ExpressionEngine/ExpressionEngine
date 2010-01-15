@@ -146,33 +146,40 @@ class Homepage extends Controller {
 		});
 		');
 		
-		$vars['open_close_msg'] = ($this->input->cookie('home_msg_state') == 'closed') ? 'closed' : 'open';
-		$vars['msg_class'] = $this->javascript->generate_json(($vars['open_close_msg'] == 'closed'));		
+		$vars['info_message_open'] = ($this->input->cookie('home_msg_state') == 'open');
+		$state = $this->javascript->generate_json(($vars['info_message_open'] == 'open'));		
 
 		// Ignore version update javascript
 		$this->javascript->output('
-			var msgBoxState = '.$vars['msg_class'].',
-				msgContainer = $("#ee_important_message"),
-				msgContents = $("#noticeContents");
-		
-			msgContainer.find(".msg_open_close").click(function() {
+				
+			var msgBoxOpen = '.$state.',
+				msgContainer = $("#ee_important_message");			
+			
+			function save_state() {
+				msgBoxOpen = ! msgBoxOpen;
+				
 				$.ajax({
 					url: EE.BASE+"&C=homepage&M=hide_message_box",
-					data: "state="+(msgBoxState ? "open" : "closed"),
-					success: collapseHomepageNotice
+					data: "state="+(msgBoxOpen ? "open" : "closed")
 				});
+			}
+			
+			function setup_hidden() {
+				$.ee_notice.show_info(function() {
+					$.ee_notice.hide_info();
+					msgContainer.removeClass("closed").show();
+					save_state();
+				});
+			}
+			
+			msgContainer.find(".msg_open_close").click(function() {
+				msgContainer.hide();
+				setup_hidden();
+				save_state();
 			});
-		
-			function collapseHomepageNotice() {
-				msgContents.toggle(msgBoxState);
-				
-				msgContainer.hide()
-							.toggleClass("open", msgBoxState)
-							.toggleClass("closed", ! msgBoxState)
-							.fadeIn("slow");
-				
-				// Flip it for future clicks
-				msgBoxState = ! msgBoxState;
+			
+			if ( ! msgBoxOpen) {
+				setup_hidden();
 			}
 		');
 

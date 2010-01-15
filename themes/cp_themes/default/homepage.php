@@ -11,15 +11,12 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 
 	<?php if ($version OR isset($new_checksums)):?>
-		<div id="ee_important_message" class="<?=$open_close_msg?>">
+		<div id="ee_important_message" class="<?=( ! $info_message_open) ? 'closed' : 'open'?>">
 			<div class="contents" id="ee_homepage_notice">
 				<div class="heading">
 		            <h2><span class="ee_notice_icon"></span><?=lang('important_messages')?><span class="msg_open_close">Ignore Button</span></h2>
 		        </div>
-				<div class="closedHeading msg_open_close">
-						<?=lang('important_messages')?>
-				</div>
-				<div class="pageContents <?=$msg_class?>" id="noticeContents">
+				<div class="pageContents open" id="noticeContents">
 					<?php // New Version Notice
 					if ($version):?>
 					<p id="newVersionNotice"><?=$version?></p>

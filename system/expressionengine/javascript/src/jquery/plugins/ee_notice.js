@@ -39,6 +39,7 @@
 (function($) {
 	
 	var type_store = {},
+		info_callback = function() {},	// @todo move to $.noop in 1.4
 		store_ref, drawer, options, active;
 
 	function _init() {
@@ -123,6 +124,41 @@
 		}
 	}
 	
+	$.ee_notice.show_info = function(click_callback) {
+		if ( ! drawer) {
+			_init();
+		}
+		
+		$("#notice_flag").css("display", "inline");
+		$('.notice_info').show();
+		info_callback = click_callback;
+		
+		repaint_flag();
+	}
+	
+	$.ee_notice.hide_info = function() {
+		$('.notice_info').hide();
+		var total = 0;
+		
+		$.each(type_store, function(k, v) {
+			total += v.count;
+		});
+		
+		if ( ! total) {
+			$("#notice_flag").hide();
+		}
+	}
+	
+	function repaint_flag() {
+		if ( ! $.browser == 'safari') {
+			return;
+		}
+		setTimeout(function() {
+			window.scrollBy(0, 1);
+			window.scrollBy(0, -1);	
+		}, 15);
+	}
+	
 	function increment_type_count() {
 		$("#notice_flag").css("display", "inline");
 		set_type_count(options.type, store_ref.count + 1);
@@ -146,8 +182,10 @@
 			$(tc).hide();
 		}
 		else {
-			$(tc).show();
 			tc.innerHTML += '&nbsp;&nbsp;' + count;
+			$(tc).show();
+			
+			repaint_flag();
 		}
 	}
 	
@@ -179,6 +217,10 @@
 	
 	function count_click_handler() {
 		var type = this.className.substr(7);
+		
+		if (type == 'info') {
+			return info_callback();
+		}
 		
 		open_notice_drawer(type);
 		set_active(this);

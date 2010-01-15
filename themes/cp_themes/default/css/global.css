@@ -1392,25 +1392,7 @@ span.ee_notice_icon {
 }
 
 #ee_important_message.closed {
-	position:absolute;
-	width:120px;
-	height:18px;
-	top:-35px;
-	left:-5px;
-}
-
-#ee_important_message.closed .heading h2 {
-	display:none;
-}
-
-#ee_important_message.closed .closedHeading {
-	display:block;
-	height:15px;
-	width:119px;
-	background:transparent url('<?=$cp_theme_url?>images/notice_toolbar.png') no-repeat;
-	color:#fff;
-	padding:2px 5px 0 5px;
-	cursor: pointer;
+	display: none;
 }
 
 #mainContent .pageContents p#newVersionNotice {
@@ -3857,7 +3839,6 @@ body.js #revealSidebarLink {
 #notice_texts_container {
 	background: #1F2B33;
 	color: #fff;
-	overflow: hidden;
 	display: none;
 	
 	border: 1px solid #303F4A;
