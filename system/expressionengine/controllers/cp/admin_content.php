@@ -4380,7 +4380,7 @@ class Admin_content extends Controller {
 		$native_settings['field_list_items']		= ($tmp = $this->_get_ft_post_data($field_type, 'field_list_items')) ? $tmp : '';
 				
 		$native_settings['field_text_direction']	= ($native_settings['field_text_direction'] !== FALSE) ? $native_settings['field_text_direction'] : 'ltr';
-		$native_settings['field_show_fmt']			= ($native_settings['field_show_fmt'] !== FALSE) ? $native_settings['field_show_fmt'] : 'y';
+		$native_settings['field_show_fmt']			= ($native_settings['field_show_fmt'] !== FALSE) ? $native_settings['field_show_fmt'] : 'n';
 		$native_settings['field_fmt']				= ($native_settings['field_fmt'] !== FALSE) ? $native_settings['field_fmt'] : 'xhtml';
 		
 		$native_settings['field_content_type']		= ($native_settings['field_content_type'] !== FALSE) ? $native_settings['field_content_type'] : 'any';
