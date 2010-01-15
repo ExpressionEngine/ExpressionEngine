@@ -3750,7 +3750,16 @@ class Design extends Controller {
 			$this->zip->add_data($template_name, $template['template_data']);
 		}
 		
-		$this->zip->download($site_name.'_'.$template['group_name'].'.zip'); 
+		if ($this->input->get_post('group_id'))
+		{
+			$this->zip->download($site_name.'_'.$template['group_name'].'.zip');
+		}
+		else
+		{
+			$this->zip->download($site_name.'.zip');
+		}
+		
+		 
 		exit();
 	}
 
