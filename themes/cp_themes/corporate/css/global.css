@@ -4163,53 +4163,87 @@ td .markItUp{
 
 /* JS Notice CSS */
 
-.js_notification {
-	position:		fixed;
-	top:			0;
-	width:			100%;
-	z-index: 		9999;
+#notice_flag {
+	position: relative;
+	top: 15px;
+	left: 77%;
+	
+	display: none;
+	background: #1F2B33;
+	
+	padding: 17px 10px 8px 10px;
+	color: #fff;
+
+	border: 1px solid #303F4A;
+	border-top: none;
+	
+	-webkit-border-bottom-left-radius: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+	
+	-moz-border-radius-bottomleft: 10px;
+	-moz-border-radius-bottomright: 10px;
 }
 
-.notice_inner {
-	position:		relative;
-	padding:		7px 30px 7px 35px;
-	background:		#FFF8AA;
-	border-bottom:	1px solid #DFD67A;
+#notice_container {
+	opacity: 0.96;
+	
+	width: 100%;
+	position: fixed;
+	top: 0;
+	z-index: 999;
 }
 
-.js_notification .js_notice {
-	background:		#FFF8AA url('<?=$cp_theme_url?>images/alert.png') no-repeat 12px 6px;
-	color:			#40381A;
+#notice_texts_container {
+	background: #1F2B33;
+	color: #fff;
+	display: none;
+	
+	border: 1px solid #303F4A;
 }
 
-.js_notification .js_error {
-	background:		#FFF8AA url('<?=$cp_theme_url?>images/error.png') no-repeat 12px 6px;
-	color:			#C00;
-	font-weight:	bold;
+#notice_counts {
+	display: inline;
 }
 
-.js_notification .js_success {
-	background:		#FFF8AA url('<?=$cp_theme_url?>images/success.png') no-repeat 12px 6px;
-	color:			#08711D;
-	font-weight:	bold;
+#notice_counts span {
+	padding: 7px 6px 4px 6px;
+	display: none;
 }
 
-.close_handle a {
-	color:			#40381A;
-	font-weight:	normal;
-	position:		absolute;
-	top:			5px;
-	right:			15px;
-	font-size:		1.6em;
-	padding:		2px;
-	line-height:	0.5;
+#notice_counts span:hover,
+#active_notice {
+	cursor: pointer;
+	background: #2D3C47;
 }
 
-.close_handle a:hover {
-	top:			4px;
-	right:			14px;
-	border:			1px solid #dFd67A;
-	text-decoration: none;
+#notice_counts span img {
+	margin-bottom: -3px;
+}
+	
+.notice_texts {
+	padding: 10px 30px;
+	margin: 0;
+}
+
+.notice_texts p {
+	padding: 5px;
+}
+
+.notice_texts .subcount {
+	background: #818F97;
+	padding: 1px 4px;
+	text-shadow: 0 1px 0 #777;
+	margin-left: -22px;
+	margin-right: 5px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+}
+
+#close_notice {
+	font-size: 1.2em;
+	padding: 3px 10px;
+	color: white;
+	float: right;
 }
 
 /** THICKBOX
