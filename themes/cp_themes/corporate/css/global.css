@@ -2000,6 +2000,14 @@ div#templates {
 	background:			#ECF1F4 url('<?=$cp_theme_url?>images/lock_closed.gif') right top no-repeat;
 }
 
+div.exportTemplateGroup {
+	margin-top:10px;
+	text-align:center;
+	color:#005EB0;
+}
+
+div.exportTemplateGroup a {color:#005EB0;}
+
 span.defaultIndicator {
 	color:				#E7174B;
 	font-size:			14px;

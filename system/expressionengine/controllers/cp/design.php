@@ -3447,6 +3447,8 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
+		$this->load->model('design_model');
+
 		$this->cp->set_variable('cp_page_title', $this->lang->line('template_manager'));
 
 		$this->load->library('table');
@@ -3518,17 +3520,20 @@ class Design extends Controller {
 					$("#" + id + "_templates").show().siblings(":not(.linkBar)").hide();
 
 					// re-jig (yes, rejig is a word) the create new template link for the new selected group
-	//				$("#new_template_create").attr("href", "'.str_replace('&amp;', '&', BASE.AMP).'C=design&M=new_template&group_id=" + group_id);
+	//				$("#new_template_create").attr("href", EE.BASE + "&C=design&M=new_template&group_id=" + group_id);
 
 					$("table").show().trigger("applyWidgets");
+
+					// Update the export group link
+					$("div.exportTemplateGroup a#export_group").attr("href", EE.BASE+"&C=design&M=export_templates&group_id="+id);
 
 					// do not follow any links
 					return false;
 				});
 			});
 
-			EE.template_edit_url = "'.str_replace('&amp;', '&', BASE).'&C=design&M=template_edit_ajax";
-			EE.access_edit_url = "'.str_replace('&amp;', '&', BASE).'&C=design&M=access_edit_ajax";
+			EE.template_edit_url = EE.BASE + "&C=design&M=template_edit_ajax";
+			EE.access_edit_url = EE.BASE + "&C=design&M=access_edit_ajax";
 		
 			$(".show_prefs_link").click(function() {
 				id = $(this).attr("id").replace("show_prefs_link_","");					
@@ -3550,7 +3555,7 @@ class Design extends Controller {
 				update: function() {
 					$.ajax({
 						type: "POST",
-						url: "'.str_replace('&amp;', '&', BASE).'&C=design&M=reorder_template_groups",
+						url: EE.BASE + "&C=design&M=reorder_template_groups",
 						data: "is_ajax=true&XID="+ EE.XID + "&" + $("#sortable_template_groups").sortable("serialize")
 					});
 				}
@@ -3585,66 +3590,7 @@ class Design extends Controller {
 		$hidden_indicator = ($this->config->item('hidden_template_indicator') != '') ? $this->config->item('hidden_template_indicator') : '.';
 		$hidden_indicator_length = strlen($hidden_indicator);
 
-		// templates query
-		// @todo: move this to a model
-		$this->db->select(array('t.template_id', 't.group_id', 't.template_name', 't.template_type', 't.cache', 't.refresh', 't.no_auth_bounce', 't.enable_http_auth', 't.allow_php', 't.php_parse_location', 't.hits', 'tg.group_name'));
-		$this->db->from('templates AS t');
-		$this->db->join('template_groups AS tg', 'tg.group_id = t.group_id');
-		$this->db->where('t.site_id', $this->config->item('site_id'));
-		$this->db->order_by('t.group_id, t.template_name', 'ASC');
-		
-		// add in search terms if necessary		
-		if (($keywords = trim($this->input->post('template_keywords'))) != FALSE)
-		{
-			// note that search helper sanitize_search_terms() is intentionally not used here
-			// since users may want to search for tags, javascript etc.  Terms are escaped
-			// before used in queries, and are converted to entities for display
-			$terms = array();
-		
-			if (preg_match_all("/\-*\"(.*?)\"/", $keywords, $matches))
-			{
-				for($m=0; $m < sizeof($matches['1']); $m++)
-				{
-					$terms[] = trim(str_replace('"','',$matches['0'][$m]));
-					$keywords = str_replace($matches['0'][$m],'', $keywords);
-				}    
-			}
-			
-			if (trim($keywords) != '')
-			{
-				$terms  = array_merge($terms, preg_split("/\s+/", trim($keywords)));
-			}
-			
-			rsort($terms);
-			$not_and = (sizeof($terms) > 2) ? ') AND (' : 'AND';
-			$criteria = 'AND';
-			
-			$mysql_function	= (substr($terms['0'], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';    
-			$search_term	= (substr($terms['0'], 0,1) == '-') ? substr($terms['0'], 1) : $terms['0'];
-			
-			// We have two parentheses in the beginning in case
-			// there are any NOT LIKE's being used
-			$sql = "\n (t.template_data $mysql_function '%".$this->db->escape_like_str($search_term)."%' ";
-			
-			for ($i=1; $i < sizeof($terms); $i++) 
-			{
-				if (trim($terms[$i]) == '') continue;
-				$mysql_criteria	= ($mysql_function == 'NOT LIKE' OR substr($terms[$i], 0,1) == '-') ? $not_and : $criteria;
-				$mysql_function	= (substr($terms[$i], 0,1) == '-') ? 'NOT LIKE' : 'LIKE';
-				$search_term	= (substr($terms[$i], 0,1) == '-') ? substr($terms[$i], 1) : $terms[$i];
-				
-				$sql .= "$mysql_criteria t.template_data $mysql_function '%".$this->db->escape_like_str($search_term)."%' ";
-			}
-			
-			$sql .= ") \n";
-			
-			$this->db->where($sql, NULL, FALSE);
-		}
-		
-		$vars['search_terms'] = ($keywords == '') ? FALSE : htmlentities(implode(',', $terms));
-		$vars['no_results'] = FALSE;
-		
-		$query = $this->db->get();
+		$query = $this->design_model->fetch_templates();
 		
 		if ($query->num_rows() == 0)
 		{
@@ -3659,14 +3605,7 @@ class Design extends Controller {
 		}
 		
 		// template access restrictions query
-		$this->db->select('member_group, template_id');
-		$no_access = $this->db->get('template_no_access');
-		
-		$denied_groups = array();
-		foreach($no_access->result() as $row)
-		{
-			$denied_groups[$row->template_id][$row->member_group] = TRUE;
-		}
+		$this->design_model->template_access_restrictions();
 		
 		$vars['templates'] = array();
 		$displayed_groups = array();
@@ -3746,6 +3685,9 @@ class Design extends Controller {
 		
 		$this->javascript->output('$("#template_group_'.$vars['first_template'].'").addClass("selected");');
 		$this->javascript->output('$("#template_group_'.$vars['first_template'].'_templates").show();');
+		$this->javascript->output(
+			'$("div.exportTemplateGroup a#export_group").attr("href", EE.BASE+"&C=design&M=export_templates&group_id=template_group_'.$vars['first_template'].'");
+		');
 
 		$vars['table_template'] = array(
 					'table_open'			=> '<table class="templateTable" border="0" cellspacing="0" cellpadding="0">'
@@ -3756,6 +3698,62 @@ class Design extends Controller {
 		$this->javascript->compile();
 		$this->load->view('design/manager', $vars);
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Export Template Group
+	 *
+	 * Export Template Group as a ZIP file
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function export_templates()
+	{
+		if ( ! $this->cp->allowed_group('can_access_design') && ! $this->cp->allowed_group('can_admin_templates') )
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		// Load the design model
+		$this->load->model('design_model');
+
+		$templates = $this->design_model->export_tmpl_group($this->input->get_post('group_id'));
+
+		$this->load->library('zip');
+		$site_name = $this->config->item('site_short_name');
+
+		foreach ($templates as $template)
+		{
+			// Create appropriate file extensions for each template
+			switch ($template['template_type'])
+			{
+				case 'xml':
+					$tmpl_ext = '.xml';
+					break;
+				case 'feed':
+					$tmpl_ext = '.xml';
+					break;
+				case 'css':
+					$tmpl_ext = '.css';
+					break;
+				case 'js':
+					$tmpl_ext = '.js';
+					break;
+				default:
+					$tmpl_ext = '.html';
+			}
+			
+			$template_name = $site_name.'/'.$template['group_name'].'/'.$template['template_name'].$tmpl_ext;
+			
+			$this->zip->add_data($template_name, $template['template_data']);
+		}
+		
+		$this->zip->download($site_name.'_'.$template['group_name'].'.zip'); 
+		exit();
+	}
+
 
 	// --------------------------------------------------------------------
 
@@ -3810,7 +3808,7 @@ class Design extends Controller {
 		$this->db->where('template_id', $template_id);
 		$this->db->where('templates.site_id', $this->config->item('site_id'));
 		$query = $this->db->get('templates');
-
+		
 		$template_info = $query->row_array();
 
 		// safety

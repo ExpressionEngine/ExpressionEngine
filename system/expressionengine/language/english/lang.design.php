@@ -283,6 +283,12 @@ $lang = array(
 "export_templates" =>
 "Export Templates",
 
+'export_all' => 
+'Export All',
+
+'export_group' =>
+'Export Group',
+
 "template_name" =>
 "Template Name",
 
