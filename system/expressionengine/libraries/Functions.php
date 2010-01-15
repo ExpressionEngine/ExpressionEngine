@@ -2694,7 +2694,6 @@ class EE_Functions {
 			// on average, about .07 seconds on a .34 page load. Not too shabby.
 			// Sadly, its influence is far less on a cached page.  Ah well...			
 			$data		= array();
-			$unmatched	= array();
 
 			foreach($matches['t'] as $cond)
 			{
@@ -2716,30 +2715,10 @@ class EE_Functions {
 					{
 						$data[$x[$i]] = '';
 					}
-					else
-					{
-						$unmatched[] = $x[$i];
-					}
 					
 					if ($i > 500) break; ++$i;
 				}	
 				while(isset($x[$i]));
-			}
-
-			// -------------------------------------
-			//  Protect Unmatched Variables
-			// -------------------------------------
-			
-			if (count($unmatched) > 0 && $safety != 'y')
-			{
-				foreach($unmatched as $loner)
-				{
-					$md5_key = $prep_id.md5($loner);
-					$protect[$loner] = $md5_key;
-					$switch[$md5_key] = $loner;
-				}
-
-				$matches[3] = str_replace(array_keys($protect), array_values($protect), $matches[3]);
 			}
 
 			// Reverse Key Length Sorting
