@@ -63,14 +63,16 @@ $mimes = array(
 	{
 		$mimes['png'] = 'image/x-png';
 	}			
-/*			
+
+/*
 | -------------------------------------------------------------------
 | MIME TYPES
 | -------------------------------------------------------------------
 | This file contains an array of mime types.  It is used by the
 | Upload class to help identify allowed file types.
 |
-
+*/
+/*
 $mimes = array(	'hqx'	=>	'application/mac-binhex40',
 				'cpt'	=>	'application/mac-compactpro',
 				'csv'	=>	array('text/x-comma-separated-values', 'text/comma-separated-values', 'application/octet-stream', 'application/vnd.ms-excel', 'text/csv', 'application/csv', 'application/excel', 'application/vnd.msexcel'),
@@ -78,7 +80,7 @@ $mimes = array(	'hqx'	=>	'application/mac-binhex40',
 				'dms'	=>	'application/octet-stream',
 				'lha'	=>	'application/octet-stream',
 				'lzh'	=>	'application/octet-stream',
-				'exe'	=>	'application/octet-stream',
+				'exe'	=>	array('application/octet-stream', 'application/x-msdownload'),
 				'class'	=>	'application/octet-stream',
 				'psd'	=>	'application/x-photoshop',
 				'so'	=>	'application/octet-stream',
@@ -111,7 +113,7 @@ $mimes = array(	'hqx'	=>	'application/mac-binhex40',
 				'swf'	=>	'application/x-shockwave-flash',
 				'sit'	=>	'application/x-stuffit',
 				'tar'	=>	'application/x-tar',
-				'tgz'	=>	'application/x-tar',
+				'tgz'	=>	array('application/x-tar', 'application/x-gzip-compressed'),
 				'xhtml'	=>	'application/xhtml+xml',
 				'xht'	=>	'application/xhtml+xml',
 				'zip'	=>  array('application/x-zip', 'application/zip', 'application/x-zip-compressed'),
@@ -163,7 +165,6 @@ $mimes = array(	'hqx'	=>	'application/mac-binhex40',
 				'eml'	=>	'message/rfc822'
 			);
 */
-
 
 /* End of file mimes.php */
 /* Location: ./system/expressionengine/config/mimes.php */
