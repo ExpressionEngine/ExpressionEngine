@@ -36,7 +36,7 @@
  */
 if ( ! function_exists('byte_format'))
 {
-	function byte_format($num)
+	function byte_format($num, $precision = 1)
 	{
 		$CI =& get_instance();
 		$CI->lang->load('number');
@@ -67,9 +67,10 @@ if ( ! function_exists('byte_format'))
 			return number_format($num).' '.$unit;
 		}
 
-		return number_format($num, 1).' '.$unit;
+		return number_format($num, $precision).' '.$unit;
 	}	
 }
+
 
 /* End of file number_helper.php */
 /* Location: ./system/helpers/number_helper.php */
