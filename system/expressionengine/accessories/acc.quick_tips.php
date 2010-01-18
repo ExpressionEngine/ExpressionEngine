@@ -42,7 +42,6 @@ class Quick_tips_acc {
 								'Did you know… that the help button is context sensitive based on where you are in the control panel?',
 								'Did you know… that you can view previously sent email from the Communicate tool?',
 								'Did you know… that Accessories can be assigned to member groups?  Or even sections of the control panel?',
-								'Clicking on the ExpressionEngine logo gives you quick access to common community resources.',
 								'You can use the "disable" parameter to eliminate unneeded queries and improve performance.',
 								'Need help? Want to network? Visit the <a rel="external" href="http://expressionengine.com/forums/">forums</a>.',
 								'To hide EE tags in your templates you can use the EE comment feature {!—EE Comment—} as opposed to typical HTML comments <!—HTML Comment—>',
