@@ -81,6 +81,11 @@ class Updater {
 		// Remove weblog from specialty_templates 
 		$Q[] = "UPDATE `exp_specialty_templates` SET `template_data` = REPLACE(`template_data`, 'weblog_name', 'channel_name')";
 		
+		// Ditch 
+		$Q[] = "DELETE FROM `exp_specialty_templates` WHERE `template_name` = 'admin_notify_trackback'";
+		$Q[] = "DELETE FROM `exp_specialty_templates` WHERE `template_name` = 'admin_notify_gallery_comment'";
+		$Q[] = "DELETE FROM `exp_specialty_templates` WHERE `template_name` = 'gallery_comment_notification'";
+		
 		foreach ($Q as $num => $sql)
 		{
 	        $this->EE->db->query($sql);
