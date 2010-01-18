@@ -3163,10 +3163,10 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		));
 
 		$comment_results = $this->search_model->comment_search($channel_id, $entry_id, $id_array, $total_rows, $validate);
-		
+
 		if ($comment_results['error'] !== FALSE)
 		{
-			show_error($comment_results['error']);
+			show_error($comment_results);
 		}
 		
 		
