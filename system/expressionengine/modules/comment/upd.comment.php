@@ -1,27 +1,27 @@
-<?php
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://expressionengine.com/
------------------------------------------------------
- Copyright (c) 2003 - 2010, EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/docs/license.html
-=====================================================
- File: mcp.comment.php
------------------------------------------------------
- Purpose: Commenting class - CP
-=====================================================
-*/
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
+ * @license		http://expressionengine.com/docs/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
 
-if ( ! defined('EXT'))
-{
-	exit('Invalid file request');
-}
+// ------------------------------------------------------------------------
 
+/**
+ * ExpressionEngine Comment Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Modules
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
 
 class Comment_upd {
 
@@ -139,6 +139,8 @@ class Comment_upd {
 		$this->EE->db->delete('actions');
 
 		$this->EE->dbforge->drop_table('comments');
+
+		$this->EE->db->update('channel_titles', array('comment_total' => 0, 'recent_comment_date' => 0)); 
 
 		return TRUE;
 	}

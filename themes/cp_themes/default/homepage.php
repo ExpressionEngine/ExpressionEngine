@@ -114,13 +114,14 @@ if ($EE_view_disable !== TRUE)
 		<?php endif;?>
 		</ul>
 	</div>
-	
 <?php endif; ?>
 	<div class="contentMenu view">
 		<div class="heading"><h2><?=lang('view')?></h2></div>
 		<ul class="homeBlocks">
 			<li class="site"><?=anchor($this->config->item('base_url').$this->config->item('index_page').'?URL='.$this->config->item('base_url').$this->config->item('index_page'), lang('site'))?></li>
+			<?php if (isset($this->cp->installed_modules['comment'])):?>
 			<li class="submission"><a href="<?=BASE.AMP.'C=content_edit'.AMP.'M=show_recent_comments'.AMP.'count=10'?>" class="submenu"><?=lang('recent_comments')?></a></li>
+			<?php endif;?>
 			<li class="item"><a href="<?=BASE.AMP.'C=content_edit'.AMP.'M=show_recent_entries'.AMP.'count=10'?>" class="submenu"><?=lang('recent_entries')?></a></li>
 			<li class="resource"><a rel="external" href="<?=config_item('doc_url')?>"><?=lang('user_guide')?></a></li>
 			<li class="resource"><a rel="external" href="http://expressionengine.com/wiki/"><?=lang('ee_wiki')?></a></li>

@@ -86,6 +86,7 @@ class Homepage extends Controller {
 	{
 		$vars['version'] = FALSE;
 
+		$this->cp->get_installed_modules();
 
 		$this->_checksum_bootstrap_files();
 		
@@ -205,10 +206,8 @@ class Homepage extends Controller {
 
 		$allowed_templates = $this->session->userdata('assigned_template_groups');
 		$vars['can_access_templates'] = (count($allowed_templates) > 0 && $this->cp->allowed_group('can_access_design')) ? TRUE : FALSE;
-
-		$this->load->model('addons_model');
 		
-		$vars['show_page_option'] = $this->addons_model->module_installed('pages');
+		$vars['show_page_option'] = (isset($this->cp->installed_modules['pages'])) ? TRUE : FALSE;
 
 		if ( ! $this->cp->allowed_group('can_access_publish'))	
 		{
