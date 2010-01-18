@@ -360,6 +360,8 @@ class Api_channel_entries extends Api {
 		// @confirm eek - needed for the permission check
 		$this->EE->load->library('cp');
 
+		$comments_installed = (isset($this->EE->cp->installed_modules['comment'])) ? TRUE : FALSE;
+		
 		// @todo model
 		$this->EE->db->select('channel_id, author_id, entry_id');
 		$this->EE->db->from('channel_titles');
@@ -467,21 +469,24 @@ class Api_channel_entries extends Api {
 			$this->EE->db->where('member_id', $authors[$val]);
 			$this->EE->db->update('members', array('total_entries' => $tot));
 
-			$this->EE->db->where('status', 'o');
-			$this->EE->db->where('entry_id', $val);
-			$this->EE->db->where('author_id', $authors[$val]);
-			$count = $this->EE->db->count_all_results('comments');
-
-			if ($count > 0)
+			if ($comments_installed)
 			{
-				$this->EE->db->select('total_comments');
-				$query = $this->EE->db->get_where('members', array('member_id' => $authors[$val]));
+				$this->EE->db->where('status', 'o');
+				$this->EE->db->where('entry_id', $val);
+				$this->EE->db->where('author_id', $authors[$val]);
+				$count = $this->EE->db->count_all_results('comments');
 
-				$this->EE->db->where('member_id', $authors[$val]);
-				$this->EE->db->update('members', array('total_comments' => ($query->row('total_comments') - $count)));
+				if ($count > 0)
+				{
+					$this->EE->db->select('total_comments');
+					$query = $this->EE->db->get_where('members', array('member_id' => $authors[$val]));
+
+					$this->EE->db->where('member_id', $authors[$val]);
+					$this->EE->db->update('members', array('total_comments' => ($query->row('total_comments') - $count)));
+				}
+
+				$this->EE->db->delete('commentss', array('entry_id' => $val));
 			}
-
-			$this->EE->db->delete('comments', array('entry_id' => $val));
 
 			// -------------------------------------------
 			// 'delete_entries_loop' hook.
@@ -495,7 +500,11 @@ class Api_channel_entries extends Api {
 
 			// Update statistics
 			$this->EE->stats->update_channel_stats($channel_id);
-			$this->EE->stats->update_comment_stats($channel_id);
+			
+			if ($comments_installed)
+			{
+				$this->EE->stats->update_comment_stats($channel_id);
+			}
 		}
 
 		// Delete Pages Stored in Database For Entries
