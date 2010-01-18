@@ -1404,7 +1404,6 @@ class Channel {
 						$entry_id = implode('|',array_diff($ids, array_flip($pages['uris'])));
 					}
 				}
-				echo $entry_id;
 			}
 			else
 			{
@@ -2415,7 +2414,7 @@ class Channel {
 
 			if (FALSE === $order_array[0])
 			{
-				if ($sticky == 'off')
+				if ($sticky == 'no')
 				{
 					$end .= "t.entry_date";
 				}
@@ -2431,7 +2430,7 @@ class Channel {
 			}
 			else
 			{
-				if ($sticky != 'off')
+				if ($sticky != 'no')
 				{
 					$end .= "t.sticky desc, ";
 				}
