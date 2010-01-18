@@ -46,7 +46,6 @@ class Simple_commerce_mcp {
 
 		$base_link = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce';
 		$this->EE->cp->set_right_nav(array('items' => $base_link.AMP.'method=edit_items', 'purchases' => $base_link.AMP.'method=edit_purchases', 'email_templates' => $base_link.AMP.'method=edit_emails', 'simple_commerce_module_name' => $base_link));
-
 	}
 
 	// --------------------------------------------------------------------
@@ -62,8 +61,7 @@ class Simple_commerce_mcp {
 		$this->EE->load->library('table');
 		$this->EE->load->library('javascript');
 		$this->EE->load->helper('form');
-		
-		
+				
 		$vars['message'] = $message;
 		$vars['cp_page_title'] = $this->EE->lang->line('simple_commerce_module_name');
 		

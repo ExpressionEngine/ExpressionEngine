@@ -207,6 +207,8 @@ class Addons_modules extends Controller {
 		
 		// These can be overriden by individual modules
 		$this->cp->set_variable('cp_page_title', $this->lang->line('modules'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=addons_modules', $this->lang->line('modules'));
+
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumb', array(
@@ -308,13 +310,6 @@ class Addons_modules extends Controller {
 		else
 		{
 			$vars['_module_cp_body'] = $this->lang->line('requested_page_not_found');
-		}
-	
-		// @todo: an exception for incomplete modules
-		// not perfect, but quickly gives us access to the full module navigation
-		if ($module == 'simple_commerce')
-		{
-			$this->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce', $this->lang->line('simple_commerce_module_name'));
 		}
 		
 		// unset reference
