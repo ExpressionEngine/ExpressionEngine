@@ -34,7 +34,7 @@
 	}
 	?>
 
-	<script type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'theme=default'.AMP.'v='.$global_js_mtime?>"></script>
+	<script type="text/javascript" charset="utf-8" src="<?=BASE.AMP.'C=javascript'.AMP.'theme=default'.AMP.'v='.$global_js_mtime?>"></script>
 </head>
 <body>
 <script type="text/javascript" charset="utf-8">
