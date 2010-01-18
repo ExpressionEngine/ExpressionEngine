@@ -1036,26 +1036,28 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$vars['entries'][$row['entry_id']][] = form_checkbox('toggle[]', $row['entry_id'], '', ' class="toggle" id="delete_box_'.$row['entry_id'].'"');
 		} // End foreach
 		
-		
-		// Get the total number of comments for each entry
-		$this->db->select('comment_id, entry_id, channel_id, COUNT(*) as count');
-		$this->db->where_in('entry_id', $comment_totals);
-		$this->db->group_by('entry_id');
-		$comment_query = $this->db->get('comments');
-
-		if (isset($this->installed_modules['comment']))
+		if (isset($this->cp->installed_modules['comment']))
 		{
-			foreach ($comment_query->result() as $row)
+			// Get the total number of comments for each entry
+			$this->db->select('comment_id, entry_id, channel_id, COUNT(*) as count');
+			$this->db->where_in('entry_id', $comment_totals);
+			$this->db->group_by('entry_id');
+			$comment_query = $this->db->get('comments');
+
+			if (isset($this->installed_modules['comment']))
 			{
-				if ($show_link !== FALSE)
+				foreach ($comment_query->result() as $row)
 				{
-					$view_url = BASE.AMP.'C=content_edit'.AMP.'M=view_comments'.AMP.'channel_id='.$row->channel_id.AMP.'entry_id='.$row->entry_id;
+					if ($show_link !== FALSE)
+					{
+						$view_url = BASE.AMP.'C=content_edit'.AMP.'M=view_comments'.AMP.'channel_id='.$row->channel_id.AMP.'entry_id='.$row->entry_id;
+					}
+				
+					$view_link = ($show_link === FALSE) ? $this->dsp->qdiv('lightLinks', '--') : $this->dsp->qspan('lightLinks', '('.($row->count ).')').NBS.$this->dsp->anchor($view_url, $this->lang->line('view'));
+				
+					$vars['entries'][$row->entry_id][3] = $view_link;
+				
 				}
-				
-				$view_link = ($show_link === FALSE) ? $this->dsp->qdiv('lightLinks', '--') : $this->dsp->qspan('lightLinks', '('.($row->count ).')').NBS.$this->dsp->anchor($view_url, $this->lang->line('view'));
-				
-				$vars['entries'][$row->entry_id][3] = $view_link;
-				
 			}
 		}
 

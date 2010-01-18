@@ -285,6 +285,9 @@ class Admin_content extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
+		
+		// Get modules that are installed
+		$this->cp->get_installed_modules();
 
 		$this->lang->loadfile('admin_content');
 		$this->load->library('table');
@@ -396,19 +399,22 @@ class Admin_content extends Controller {
 			'all'	=> $this->lang->line('allow_all_html')
 		);
 
-		// Default comment text formatting
-		$vars['comment_text_formatting_options'] = array(
-			'none'	=> $this->lang->line('none'),
-			'xhtml'	=> $this->lang->line('xhtml'),
-			'br'	=> $this->lang->line('auto_br')
-		);
+		if (isset($this->cp->installed_modules['comment']))
+		{
+			// Default comment text formatting
+			$vars['comment_text_formatting_options'] = array(
+				'none'	=> $this->lang->line('none'),
+				'xhtml'	=> $this->lang->line('xhtml'),
+				'br'	=> $this->lang->line('auto_br')
+			);
 
-		// Comment HTML formatting
-		$vars['comment_html_formatting_options'] = array(
-			'none'	=> $this->lang->line('convert_to_entities'),
-			'safe'	=> $this->lang->line('allow_safe_html'),
-			'all'	=> $this->lang->line('allow_all_html_not_recommended')
-		);
+			// Comment HTML formatting
+			$vars['comment_html_formatting_options'] = array(
+				'none'	=> $this->lang->line('convert_to_entities'),
+				'safe'	=> $this->lang->line('allow_safe_html'),
+				'all'	=> $this->lang->line('allow_all_html_not_recommended')
+			);		
+		}
 
 		// Within the Publish Page Customization option group, there are several options nearly
 		// identical. Here we set up a loop to handle them instead of manually building each one.
@@ -417,7 +423,6 @@ class Admin_content extends Controller {
 			'show_options_cluster', 'show_ping_cluster', 'show_categories_menu', 'show_forum_cluster');
 
 		$this->javascript->compile();
-		$this->cp->get_installed_modules();
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('channel_prefs').' - '.$vars['channel_title']);
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', $this->lang->line('channel_management'));
