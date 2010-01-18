@@ -95,8 +95,8 @@ class Content_edit extends Controller {
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('edit'));
 
-		$this->cp->add_js_script(array('plugin' => 'dataTables'));
-		$this->cp->add_js_script(array('ui' => 'datepicker'));
+		$this->cp->add_js_script(array('plugin' => 'dataTables',
+										'ui' => 'datepicker'));
 		
 		// Need perpage for js
 		
@@ -106,7 +106,8 @@ class Content_edit extends Controller {
 			$perpage = $this->input->cookie('perpage');
 		}
 
-		if ($perpage == ''){
+		if ($perpage == '')
+		{
 			$perpage = 50;
 		}
 
@@ -910,6 +911,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		// Loop through the main query result and set up data structure for table
 
 		$vars['entries'] = array();
+		
+		$comment_totals = array();
 
 		foreach($query_results as $row)
 		{
@@ -962,17 +965,15 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				}
 			}
 
-			if ( isset($this->installed_modules['comment']))
+			// Setup an array of entry IDs here so we can do an aggregate query to
+			// get an accurate count of total comments for each entry.
+			if (isset($this->installed_modules['comment']))
 			{
-				//	Comment Link
-				if ($show_link !== FALSE)
-				{
-					$res = $this->db->query("SELECT COUNT(*) AS count FROM exp_comments WHERE entry_id = '".$row['entry_id']."'");$this->db->query_count--;
-					$view_url = BASE.AMP.'C=content_edit'.AMP.'M=view_comments'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'];
-				}
-
-				$view_link = ($show_link == FALSE) ? $this->dsp->qdiv('lightLinks', '--') : $this->dsp->qspan('lightLinks', '('.($res->row('count') ).')').NBS.$this->dsp->anchor($view_url, $this->lang->line('view'));
-
+				$comment_totals[] = $row['entry_id'];
+			}
+			
+			if ( isset($this->installed_modules['comment']))
+			{						
 				$vars['entries'][$row['entry_id']][] = $view_link;
 			}
 
@@ -1034,6 +1035,29 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			// Delete checkbox
 			$vars['entries'][$row['entry_id']][] = form_checkbox('toggle[]', $row['entry_id'], '', ' class="toggle" id="delete_box_'.$row['entry_id'].'"');
 		} // End foreach
+		
+		
+		// Get the total number of comments for each entry
+		$this->db->select('comment_id, entry_id, channel_id, COUNT(*) as count');
+		$this->db->where_in('entry_id', $comment_totals);
+		$this->db->group_by('entry_id');
+		$comment_query = $this->db->get('comments');
+
+		if (isset($this->installed_modules['comment']))
+		{
+			foreach ($comment_query->result() as $row)
+			{
+				if ($show_link !== FALSE)
+				{
+					$view_url = BASE.AMP.'C=content_edit'.AMP.'M=view_comments'.AMP.'channel_id='.$row->channel_id.AMP.'entry_id='.$row->entry_id;
+				}
+				
+				$view_link = ($show_link === FALSE) ? $this->dsp->qdiv('lightLinks', '--') : $this->dsp->qspan('lightLinks', '('.($row->count ).')').NBS.$this->dsp->anchor($view_url, $this->lang->line('view'));
+				
+				$vars['entries'][$row->entry_id][3] = $view_link;
+				
+			}
+		}
 
 		// Pass the relevant data to the paginate class
 		$config['base_url'] = $pageurl;
