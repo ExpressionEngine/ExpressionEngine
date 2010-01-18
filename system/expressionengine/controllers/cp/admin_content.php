@@ -417,6 +417,7 @@ class Admin_content extends Controller {
 			'show_options_cluster', 'show_ping_cluster', 'show_categories_menu', 'show_forum_cluster');
 
 		$this->javascript->compile();
+		$this->cp->get_installed_modules();
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('channel_prefs').' - '.$vars['channel_title']);
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', $this->lang->line('channel_management'));
