@@ -310,6 +310,31 @@ class Addons_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Fieldtype installed
+	 *
+	 * Returns true if a fieldtype is installed, false if not
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	boolean
+	 */
+	function fieldtype_installed($ft_name)
+	{
+		static $_installed = array();
+		
+		if ( ! isset($_installed[$ft_name]))
+		{
+			$this->db->from("fieldtypes");
+			$this->db->where("name", strtolower($ft_name));
+			$_installed[$ft_name] = ($this->db->count_all_results() > 0) ? TRUE : FALSE;
+		}
+		
+		return $_installed[$ft_name];
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
 	 * Update an Extension
 	 *
 	 * @access	public
