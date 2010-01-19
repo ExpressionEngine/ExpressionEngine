@@ -1,6 +1,5 @@
 /*
  @todo Documentation, reconsider class names
- @todo getSelectedRange is broken in IE
 
 $(textarea).getSelectedText();
 $(textarea).getSelectedRange();
@@ -62,28 +61,12 @@ $(textarea).scrollToCursor();
 				return {start: this.el.selectionStart, end: this.el.selectionEnd};
 			}
 			else if (document.selection) {
-				var r_start = document.selection.createRange(),
-					r_end = r_start.duplicate();
-
-				r_end.moveToBookmark(r_start.getBookmark());
-				r_start.collapse(true);
-				r_end.collapse(false);
 				
-				r_start.setEndPoint('EndToStart', r_end);
-				
-				return {start: trd.text.length, end: trd.text.length + r.text.length};
-
-				/*
-
 				var r = document.selection.createRange(),
-					tr = this.el.createTextRange(),
-					trd = tr.duplicate();
-
-				tr.moveToBookmark(r.getBookmark());
-				trd.setEndPoint('EndToStart', tr);
-
-				return {start: trd.text.length, end: trd.text.length + r.text.length};
-				*/
+					selectionEnd = Math.abs(r.duplicate().moveEnd('character', -100000));
+					selectionStart = selectionEnd - r.text.length;
+				
+				return {start: selectionStart, end: selectionEnd};
 			}
 		},
 
@@ -210,8 +193,7 @@ $(textarea).scrollToCursor();
 			return this;
 		}
 	}
-	else
-	{
+	else {
 		Selection = Selection_Base;
 	}
 
@@ -251,6 +233,8 @@ $(textarea).scrollToCursor();
 			}
 		},
 		autoResize: function() {
+			alert('hi');
+			
 			var that = this,
 				txt = $(this.el);
 
@@ -276,8 +260,7 @@ $(textarea).scrollToCursor();
 					var args = Array.prototype.slice.call(arguments),
 						jQ_Txt = this.data('txtarea');
 
-					if ( ! jQ_Txt)
-					{
+					if ( ! jQ_Txt) {
 						jQ_Txt = new Txtarea(this[0]);
 						this.data('txtarea', jQ_Txt);
 					}
