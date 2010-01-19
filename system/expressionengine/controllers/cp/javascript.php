@@ -154,7 +154,16 @@ class Javascript extends Controller {
 			}
 			else
 			{
-				$file = PATH_JQUERY.'jquery.js';
+				$this->load->library('user_agent');
+				
+				if ($this->agent->browser() == 'Internet Explorer')
+				{
+					$file = APPPATH.'javascript/src/jquery/jquery.js';
+				}
+				else
+				{
+					$file = PATH_JQUERY.'jquery.js';					
+				}
 			}
 		}
 		elseif ($loadfile == 'css')
@@ -322,6 +331,7 @@ class Javascript extends Controller {
 		}      
 
 		header("Content-type: text/javascript");
+		header("Content-Length: " . strlen($contents)); 
 		exit($contents);
 	}
 

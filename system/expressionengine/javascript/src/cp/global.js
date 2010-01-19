@@ -19,7 +19,7 @@ var $ = jQuery;
 // on the login page to catch periodic ajax requests (e.g. autosave)
 
 $(document).bind('ajaxComplete', function(evt, xhr) {
-	if (xhr.hasOwnProperty('status') && xhr.status == 401) {
+	if (xhr.status && xhr.status == 401) {
 		document.location = EE.BASE+'&'+xhr.responseText;
 	}
 });
