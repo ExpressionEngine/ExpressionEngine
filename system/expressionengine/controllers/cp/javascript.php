@@ -267,7 +267,14 @@ class Javascript extends Controller {
 
 			foreach ($load_file as $file)
 			{
-				$file = APPPATH.'javascript/compressed/'.$file.'.js';
+				if ($this->config->item('use_compressed_js') == 'n')
+				{
+					$file = APPPATH.'javascript/src/'.$file.'.js';
+				}
+				else
+				{
+					$file = APPPATH.'javascript/compressed/'.$file.'.js';
+				}
 
 				if (file_exists($file))
 				{
