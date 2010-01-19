@@ -3750,7 +3750,7 @@ class Content_publish extends Controller {
 						axis: "x",
 						tolerance: "pointer",	// feels easier in this case
 						placeholder: "publishTabSortPlaceholder",
-						items: "li:not(.addTabButton)",
+						items: "li:not(.addTabButton)"
 					});
 					
 					$("a span", "#showToolbarLink").text("'.$this->lang->line('hide_toolbar').'");
