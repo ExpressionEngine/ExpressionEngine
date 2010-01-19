@@ -233,8 +233,6 @@ $(textarea).scrollToCursor();
 			}
 		},
 		autoResize: function() {
-			alert('hi');
-			
 			var that = this,
 				txt = $(this.el);
 
