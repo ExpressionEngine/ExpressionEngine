@@ -33,7 +33,7 @@ $(textarea).scrollToCursor();
 				this.el.selectionEnd = end;
 			}
 			else if (document.selection) {
-				var r = document.selection.createTextRange();
+				var r = document.selection.createRange();
 				r.moveStart("character", -this.el.value.length);
 				
 				r.collapse();
