@@ -36,6 +36,7 @@ class Wiki_mcp {
         $base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP;
 
         $this->EE->cp->set_right_nav(array(
+				'wiki_homepage'	=> BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki',
                 'create_wiki'   => $base_url.'method=create',
                 'wiki_themes'   => $base_url.'method=list_themes'
             ));
@@ -317,7 +318,7 @@ class Wiki_mcp {
 				$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('update_successful'));
 			}
 			
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP.'method=update');
+			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP.'method=update'.AMP.'wiki_id='.$wiki_id);
 		}
 	}
 
