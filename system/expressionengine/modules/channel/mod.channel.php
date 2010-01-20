@@ -4747,7 +4747,7 @@ class Channel {
 		$q = '';
 
 		foreach ($this->EE->TMPL->var_single as $val)
-		{
+		{			
 			if (in_array($val, $params))
 			{
 				$q .= $val.',';
@@ -4775,6 +4775,10 @@ class Channel {
 		{
 			return '';
 		}
+
+		$cond_vars = $query->row_array();
+		
+		$this->EE->TMPL->tagdata = $this->EE->functions->prep_conditionals($this->EE->TMPL->tagdata, $cond_vars);
 
 		foreach ($query->row_array() as $key => $val)
 		{
