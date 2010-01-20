@@ -1497,7 +1497,7 @@ class Content_publish extends Controller {
 					$revealed_fields[] .= $key;
 
 					// set up hidden fields (not visible)
-					if ($custom['visible'] == 'false')
+					if ($custom['visible'] === FALSE OR $custom['visible'] === 'false')
 					{
 						$name = (isset($this->field_definitions[$key]['field_id'])) ? 
 						
@@ -1507,7 +1507,7 @@ class Content_publish extends Controller {
 						$this->javascript->output('$("#remove_field_'.$name.'").children().attr("src", "'.$this->cp->cp_theme_url.'images/closed_eye.png");');
 					}
 					// set up collapsed fields
-					if ($custom['collapse'] == 'true')
+					if ($custom['collapse'] === 'true' OR $custom['collapse'] === TRUE)
 					{
 						$this->javascript->output('
 							$("#sub_hold_field_'.$key.'").hide();
@@ -1519,7 +1519,7 @@ class Content_publish extends Controller {
 					// set up html buttons
 					// with third party modules able to set the value of 'htmlbuttons', its possible this value will
 					// be used/passed incorrectly, so an isset() for insurance that its a field that has the buttons
-					if ($custom['htmlbuttons'] == 'false' AND isset($this->field_definitions[$key]['field_id']))
+					if (($custom['htmlbuttons'] == 'false' OR $custom['htmlbuttons'] === FALSE) AND isset($this->field_definitions[$key]['field_id']))
 					{
 						$this->javascript->output('
 							$("#hold_field_'.$this->field_definitions[$key]['field_id'].' .close_formatting_buttons a").click();
