@@ -557,7 +557,7 @@ class Content_publish extends Controller {
 		$this->cp->add_js_script(array(
 		        'ui'        => array('datepicker', 'resizable', 'draggable', 'droppable'),
 		        'plugin'    => array('markitup', 'thickbox'),
-				'file'		=> 'cp/publish'
+				'file'		=> array('json2', 'cp/publish')
 		    )
 		);		
 		
@@ -1660,129 +1660,18 @@ class Content_publish extends Controller {
 			}
 		}
 
-		$this->javascript->click("#layout_group_submit", '
+		$this->javascript->set_global('publish.channel_id', $channel_id);
 
-			var tab_count = 0;
-			var json_tab_layout = "{\n";
+		$this->javascript->set_global('publish.lang', array(
+			'tab_count_zero'		=> $this->lang->line('tab_count_zero'),
+			'no_member_groups'		=> $this->lang->line('no_member_groups'),
+			'layout_removed'		=> $this->lang->line('layout_removed'),
+			'refresh_layout'		=> $this->lang->line('refresh_layout')
+		));
 
-			// for width() to work, the element cannot be in a parent div that is display:none
-			$(".main_tab").show();
-			var cur_tab = $("#tab_menu_tabs li.current").attr("id");
+		$this->javascript->click("#layout_group_submit", 'EE.publish.save_layout()');
+		$this->javascript->click("#layout_group_remove", 'EE.publish.remove_layout()');
 
-			$("li:visible", "#tab_menu_tabs").each(function() {
-
-				// skip list items with no id (ie: new tab)
-				if ($(this).attr("id") != "")
-				{
-					json_tab_layout += "\t\""+$(this).attr("id").replace(/menu_/, "")+"\": ";
-
-					json_tab_layout_content_array = new Array();
-
-					$("#"+$(this).attr("id").replace(/menu_/, "")+" .publish_field").each(function() {
-
-							var id = $(this).attr("id").replace(/hold_field_/, "");
-
-							json_tab_layout_content = "\t\t\""+id+"\": {";
-
-							json_tab_layout_content += "\"visible\": \"";
-							json_tab_layout_content += ($(this).css("display") == "none") ? "false" : "true";
-							json_tab_layout_content += "\", \"collapse\": \"";
-							json_tab_layout_content += ($("#sub_hold_field_"+id).css("display") == "none") ? "true" : "false";
-							json_tab_layout_content += "\", \"htmlbuttons\": \"";
-
-							var temp_buttons = $("#sub_hold_field_"+id+" .markItUp ul li:eq(2)");
-
-							if (temp_buttons.html() != "undefined" && temp_buttons.css("display") != "none")
-							{
-								json_tab_layout_content += "true";
-							}
-							else
-							{
-								json_tab_layout_content += "false";
-							}
-
-							percent_width = Math.round(($(this).width() / $(this).parent().width()) * 10) * 10;
-
-							json_tab_layout_content += "\", \"width\": \"";
-							json_tab_layout_content += percent_width+"%";
-
-							json_tab_layout_content += "\"},\n";
-
-							json_tab_layout_content_array.push(json_tab_layout_content);
-					});
-
-					// there may have been no fields in that tab, but the json still needs to be constructed
-					if (json_tab_layout_content_array.length == 0)
-					{
-						json_tab_layout += "{},\n";
-					}
-					else
-					{
-						json_tab_layout += "{\n";
-
-						for ( var i in json_tab_layout_content_array )
-						{
-						    json_tab_layout += json_tab_layout_content_array[i];
-						}
-
-						// get rid of trailing comma of last field
-						json_tab_layout = json_tab_layout.substring(0,json_tab_layout.length-2);
-
-						json_tab_layout += "\n\t},\n";
-					}
-
-					tab_count++; // add one to the tab count
-				}
-			});
-
-			tab_focus(cur_tab.replace(/menu_/, ""));
-
-			// get rid of trailing comma
-			json_tab_layout = json_tab_layout.substring(0,json_tab_layout.length-2);
-
-			json_tab_layout += "\n}";
-
-			if (tab_count == 0)
-			{
-				$.ee_notice("'.$this->lang->line('tab_count_zero').'", {"type" : "error"});
-			}
-			else if ($("#layout_groups_holder input:checked").length == 0)
-			{
-				$.ee_notice("'.$this->lang->line('no_member_groups').'", {"type" : "error"});
-			}
-			else
-			{
-				$.ajax({
-					type: "POST",
-					url: EE.BASE+"&C=content_publish&M=save_layout",
-					data: "XID="+EE.XID+"&json_tab_layout="+json_tab_layout+"&"+$("#layout_groups_holder input").serialize()+"&channel_id='.$channel_id.'",
-					success: function(msg){
-						$.ee_notice(msg, {type:"success"});
-					}
-				});
-			}
-		');
-
-		$this->javascript->click("#layout_group_remove", '
-
-			if ($("#layout_groups_holder input:checked").length == 0)
-			{
-				$.ee_notice("'.$this->lang->line('no_member_groups').'", {"type" : "error"});
-			}
-			else
-			{
-				var json_tab_layout = "{}"; // empty array will remove everything nicely
-
-				$.ajax({
-					type: "POST",
-					url: EE.BASE+"&C=content_publish&M=save_layout",
-					data: "XID="+EE.XID+"&json_tab_layout="+json_tab_layout+"&"+$("#layout_groups_holder input").serialize()+"&channel_id='.$channel_id.'&field_group='.$field_group.'",
-					success: function(msg){
-						$.ee_notice("'.$this->lang->line('layout_removed').' <a href=\"javascript:location=location\">'.$this->lang->line('refresh_layout').'</a>", {duration:0, type:"success"});
-					}
-				});
-			}
-		');
 
 		$layout_preview_links = "<p>".$this->lang->line('choose_layout_group_preview').NBS."<span class='notice'>".$this->lang->line('layout_save_warning')."</span></p><ul class='bullets'>";
 		foreach($vars['member_groups']->result() as $group)

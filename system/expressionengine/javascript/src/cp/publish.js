@@ -63,7 +63,7 @@ EE.publish.category_editor = function() {
 
 			return false;
 		});
-		$(this).find(".cp_button a").corner();
+		
 		return false;
 	}
 
@@ -84,10 +84,9 @@ EE.publish.category_editor = function() {
 	
 
 	// Bind the live events for internal links
-	for (var i in cat_groups_containers)
-	{
-		cat_groups_containers[i].find("a").live("click", reload);
-	}
+	$.each(cat_groups_containers, function() {
+		this.find("a").live("click", reload);
+	});
 
 
 	// Last but not least - update the checkboxes
@@ -95,5 +94,92 @@ EE.publish.category_editor = function() {
 		var that = $(this).hide().nextAll("div");
 		that.text("loading...").load(EE.BASE+"&C=content_publish&M=ajax_update_cat_fields&group_id="+that.data("gid")+"&timestamp="+now());
 		return false;
+	});
+}
+
+
+EE.publish.save_layout = function() {
+	
+	var tab_count = 0,
+		layout_object = {},
+		cur_tab			= $("#tab_menu_tabs li.current").attr("id");
+
+	// for width() to work, the element cannot be in a parent div that is display:none
+	$(".main_tab").show();
+
+	$("li:visible", "#tab_menu_tabs").each(function() {
+
+		// skip list items with no id (ie: new tab)
+		if (this.id && this.id != "")
+		{
+			var tab_name = this.id.replace(/menu_/, "");
+			
+			layout_object[tab_name] = {};
+
+			$("#"+tab_name).find(".publish_field").each(function() {
+
+					var that = $(this);
+						id = this.id.replace(/hold_field_/, ""),
+						percent_width = Math.round((that.width() / that.parent().width()) * 10) * 10,
+						temp_buttons = $("#sub_hold_field_"+id+" .markItUp ul li:eq(2)");
+						
+					if (temp_buttons.html() != "undefined" && temp_buttons.css("display") != "none") {
+						temp_buttons = true;
+					}
+					else {
+						temp_buttons = false;
+					}
+					
+					layout_object[tab_name][id] = {
+						visible		: ($(this).css("display") == "none") ? false : true,
+						collapse	: ($("#sub_hold_field_"+id).css("display") == "none") ? true : false,
+						htmlbuttons	: temp_buttons,
+						width		: percent_width+'%'
+					};
+			});
+			
+			tab_count++; // add one to the tab count
+		}
+	});
+
+
+//	tab_focus(cur_tab.replace(/menu_/, ""));
+
+
+	alert(JSON.stringify(layout_object, null, '\t'));
+
+	if (tab_count == 0) {
+		$.ee_notice(EE.publish.lang.tab_count_zero, {"type" : "error"});
+	}
+	else if ($("#layout_groups_holder input:checked").length == 0) {
+		$.ee_notice(EE.publish.lang.no_member_groups, {"type" : "error"});
+	}
+	else {
+		$.ajax({
+			type: "POST",
+			url: EE.BASE+"&C=content_publish&M=save_layout",
+			data: "XID="+EE.XID+"&json_tab_layout="+json_tab_layout+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,
+			success: function(msg){
+				$.ee_notice(msg, {type: "success"});
+			}
+		});
+	}
+}
+
+
+EE.publish.remove_layout = function() {
+	if ($("#layout_groups_holder input:checked").length == 0) {
+		return $.ee_notice(EE.publish.lang.no_member_groups, {"type" : "error"});
+	}
+
+	var json_tab_layout = "{}"; // empty array will remove everything nicely
+
+	$.ajax({
+		type: "POST",
+		url: EE.BASE+"&C=content_publish&M=save_layout",
+		data: "XID="+EE.XID+"&json_tab_layout="+json_tab_layout+"&"+$("#layout_groups_holder input").serialize()+"&channel_id='.$channel_id.'&field_group='.$field_group.'",
+		success: function(msg){
+			$.ee_notice(EE.publish.lang.layout_removed + " <a href=\"javascript:location=location\">"+EE.publish.lang.refresh_layout+"</a>", {duration:0, type:"success"});
+		}
 	});
 }
