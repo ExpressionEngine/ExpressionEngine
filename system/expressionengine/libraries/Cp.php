@@ -660,11 +660,10 @@ class Cp {
 	 */
 	function load_package_css($file)
 	{
-		// @todo move to proper style tag
-		$package = realpath($this->EE->load->_ci_view_path.'../');
-		$this->add_to_head('<style type="text/css" media="screen">'.
-			file_get_contents($package.'/css/'.$file.'.css').
-		'</style>');
+		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $this->EE->load->_ci_view_path), '/');
+		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'file='.$file;
+		
+		$this->add_to_head('<link type="text/css" rel="stylesheet" href="'.$url.'" />');
 	}
 	
 	// --------------------------------------------------------------------

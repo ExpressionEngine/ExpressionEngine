@@ -69,9 +69,18 @@ class Css extends Controller {
 	
 	function _remap()
 	{
-		$file = ($this->input->get_post('M') !== FALSE) ? $this->input->get_post('M') : 'global';
+		if ($this->input->get_post('M') == 'third_party' && $package = $this->input->get_post('package'))
+		{
+			$file = $this->input->get_post('file');
+			$this->load->_ci_view_path = PATH_THIRD.$package.'/';
+		}
+		else
+		{
+			$file = ($this->input->get_post('M') !== FALSE) ? $this->input->get_post('M') : 'global';
+		}
+		
 		$path = $this->load->_ci_view_path.'css/'.$file.'.css';
-
+		
 		if (file_exists($path))
 		{
 			$this->output->enable_profiler(FALSE);
