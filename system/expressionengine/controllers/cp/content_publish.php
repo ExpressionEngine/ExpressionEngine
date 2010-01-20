@@ -3921,6 +3921,9 @@ class Content_publish extends Controller {
 				$("#"+tab_id).css("z-index", "5");
 				selected_tab = tab_id;
 			}
+			
+			// @todo hacky, hacky, hacky
+			EE.tab_focus = tab_focus;
 
 			function setup_tabs()
 			{
