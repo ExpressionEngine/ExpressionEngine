@@ -555,6 +555,7 @@ class Javascript extends Controller {
 			}
 		}
 
+		$this->load->library('javascript');
 		return $this->javascript->generate_json($this->parsed_css, TRUE);
 	}
 	

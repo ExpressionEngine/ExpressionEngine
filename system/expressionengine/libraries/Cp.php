@@ -24,19 +24,21 @@
  */
 class Cp {
 	
-	var $cp_theme_url = '';	// base URL to the CP theme folder
-	var $its_all_in_your_head = array();
-	var $js_files    = array(
-						'ui'        => array(),
-						'effect'    => array(),
-						'plugin'    => array(),
-						'file'      => array(),
-						'package'   => array(),
-	);
+	var $cp_theme				= '';
+	var $cp_theme_url			= '';	// base URL to the CP theme folder
 
-	var $footer_item = array();
-	
-	var $installed_modules = FALSE;
+	var $installed_modules		= FALSE;
+
+	var $its_all_in_your_head	= array();
+	var $footer_item			= array();
+		
+	var $js_files = array(
+			'ui'				=> array(),
+			'effect'			=> array(),
+			'plugin'			=> array(),
+			'file'				=> array(),
+			'package'			=> array(),
+	);
 	
 	/**
 	 * Constructor
@@ -51,8 +53,16 @@ class Cp {
 			show_error("The CP library is only available on Control Panel requests.");
 		}
 		
-		// @confirm uhhh.. what?
-		$this->EE->load->vars(array('cp_page_id' => 'Whatever'));
+		
+		$this->cp_theme	= ( ! $this->EE->session->userdata('cp_theme')) ? $this->EE->config->item('cp_theme') : $this->EE->session->userdata('cp_theme'); 
+		$this->cp_theme_url = $this->EE->config->slash_item('theme_folder_url').'cp_themes/'.$this->cp_theme.'/';
+		
+		
+		
+		$this->EE->load->vars(array(
+			'cp_page_id'	=> 'EE',		// @confirm do we still need this?
+			'cp_theme_url'	=> $this->cp_theme_url
+		));
 	}
 
 	
@@ -66,12 +76,15 @@ class Cp {
 	 */		
 	function set_default_view_variables()
 	{
-		$cp_theme	= ( ! $this->EE->session->userdata('cp_theme')) ? $this->EE->config->item('cp_theme') : $this->EE->session->userdata('cp_theme'); 
 		$js_folder	= ($this->EE->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';		
 		$langfile	= substr($this->EE->router->class, 0, strcspn($this->EE->router->class, '_'));
 		
-		$this->cp_theme_url = $this->EE->config->slash_item('theme_folder_url').'cp_themes/'.$cp_theme.'/';
+		// Javascript Path Constants
 		
+		define('PATH_JQUERY', APPPATH.'javascript/'.$js_folder.'/jquery/');
+		define('PATH_JAVASCRIPT', APPPATH.'javascript/'.$js_folder.'/');
+
+
 		$this->EE->load->library('menu');
 		$this->EE->load->library('accessories');
 		$this->EE->load->library('javascript', array('autoload' => FALSE));
@@ -81,12 +94,6 @@ class Cp {
 		$this->EE->load->model('channel_model'); // for most recent entry/comment quicklinks
 		
 		$this->EE->lang->loadfile($langfile);
-		
-		
-		// Javascript Path Constants
-		
-		define('PATH_JQUERY', APPPATH.'javascript/'.$js_folder.'/jquery/');
-		define('PATH_JAVASCRIPT', APPPATH.'javascript/'.$js_folder.'/');
 		
 		
 		// Most recent comment and most recent entry
@@ -112,10 +119,7 @@ class Cp {
 				$cp_messages[$flash_key] = $message;
 			}
 		}
-
-
-		// Table templates
-
+		
 		$cp_table_template = array(
 									'table_open'		=> '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">',
 									'row_start'			=> '<tr class="even">',
@@ -164,14 +168,14 @@ class Cp {
 					// Asset mtimes to force caching
 					'jquery_mtime' 		=> filemtime(PATH_JQUERY.'jquery.js'),
 					'corner_mtime' 		=> filemtime(PATH_JQUERY.'plugins/corner.js'),
-					'theme_css_mtime'	=> filemtime(PATH_CP_THEME.$cp_theme.'/css/global.css'),
+					'theme_css_mtime'	=> filemtime(PATH_CP_THEME.$this->cp_theme.'/css/global.css'),
 					'global_js_mtime'	=> filemtime(PATH_JAVASCRIPT.'cp/global.js')
 		);
 
 
-		if (file_exists(PATH_CP_THEME.$cp_theme.'/css/advanced.css'))
+		if (file_exists(PATH_CP_THEME.$this->cp_theme.'/css/advanced.css'))
 		{
-			$vars['advanced_css_mtime'] = filemtime(PATH_CP_THEME.$cp_theme.'/css/advanced.css');
+			$vars['advanced_css_mtime'] = filemtime(PATH_CP_THEME.$this->cp_theme.'/css/advanced.css');
 		}
 		
 		if ($this->EE->router->method != 'index')
@@ -219,7 +223,7 @@ class Cp {
 						'plugin'	=> array('ee_focus', 'ee_notice')
 		);
 		
-		if ($cp_theme != 'mobile')
+		if ($this->cp_theme != 'mobile')
 		{
 			$js_scripts['plugin'][] = 'ee_navigation';
 		}
