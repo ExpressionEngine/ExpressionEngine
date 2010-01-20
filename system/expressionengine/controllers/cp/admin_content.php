@@ -1699,14 +1699,15 @@ class Admin_content extends Controller {
 		if ($this->input->get_post('modal') == 'yes')
 		{
 			$vars['EE_view_disable'] = TRUE;
-			if (! $this->cp->allowed_group('can_edit_categories'))
+			
+			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}
 		}
 		else
 		{
-			if (! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}
@@ -1828,14 +1829,14 @@ class Admin_content extends Controller {
 		// as I work through this function - needs to be reviewed
 		if ($this->input->get_post('modal') == 'yes')
 		{
-			if (! $this->cp->allowed_group('can_edit_categories'))
+			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}
 		}
 		else
 		{
-			if (! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}
@@ -2140,7 +2141,7 @@ class Admin_content extends Controller {
 		}
 		else
 		{
-			if (! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}
@@ -2226,7 +2227,7 @@ class Admin_content extends Controller {
 		}
 		else
 		{
-			if (! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}
@@ -2269,14 +2270,14 @@ class Admin_content extends Controller {
 
 		if ($this->input->get_post('Z') == 1)
 		{
-			if (! $this->cp->allowed_group('can_edit_categories'))
+			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}
 		}
 		else
 		{
-			if (! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}
@@ -2612,14 +2613,14 @@ class Admin_content extends Controller {
 
 		if ($this->input->get_post('Z') == 1)
 		{
-			if (! $this->dsp->allowed_group('can_edit_categories'))
+			if ( ! $this->dsp->allowed_group('can_edit_categories'))
 			{
 				return $this->dsp->no_access_message();
 			}
 		}
 		else
 		{
-			if (! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}		
@@ -2675,14 +2676,14 @@ class Admin_content extends Controller {
 
 		if ($this->input->get_post('Z') == 1)
 		{
-			if (! $this->dsp->allowed_group('can_edit_categories'))
+			if ( ! $this->dsp->allowed_group('can_edit_categories'))
 			{
 				return $this->dsp->no_access_message();
 			}
 		}
 		else
 		{
-			if (! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}		
@@ -2722,14 +2723,14 @@ class Admin_content extends Controller {
 
 		if ($this->input->get_post('Z') == 1)
 		{
-			if (! $this->dsp->allowed_group('can_edit_categories'))
+			if ( ! $this->dsp->allowed_group('can_edit_categories'))
 			{
 				return $this->dsp->no_access_message();
 			}
 		}
 		else
 		{
-			if (! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}		
@@ -2841,14 +2842,14 @@ class Admin_content extends Controller {
 
 		if ($this->input->get_post('Z') == 1)
 		{
-			if (! $this->cp->allowed_group('can_edit_categories'))
+			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}
 		}
 		else
 		{
-			if (! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}		
@@ -4094,7 +4095,7 @@ class Admin_content extends Controller {
 		else
 		{
 			// @todo ditch the dsp class
-			$confirm = "onclick=\"if(!confirm('".$this->lang->line('list_edit_warning')."')) return false;\"";
+			$confirm = "onclick=\"if( !confirm('".$this->lang->line('list_edit_warning')."')) return false;\"";
 			$vars['edit_format_link'] = $this->dsp->anchor(BASE.AMP.'C=admin_content'.AMP.'M=edit_formatting_options'.AMP.'id='.$field_id, '<b>'.$this->lang->line('edit_list').'</b>', $confirm);
 
 			$this->db->select('field_fmt');
@@ -5531,7 +5532,7 @@ class Admin_content extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		if (! $this->cp->allowed_group('can_admin_channels'))
+		if ( ! $this->cp->allowed_group('can_admin_channels'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -6085,7 +6086,7 @@ class Admin_content extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
-		if (! $this->cp->allowed_group('can_admin_channels'))
+		if ( ! $this->cp->allowed_group('can_admin_channels'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -6139,7 +6140,7 @@ class Admin_content extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		if (! $this->cp->allowed_group('can_admin_channels'))
+		if ( ! $this->cp->allowed_group('can_admin_channels'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -6304,7 +6305,7 @@ class Admin_content extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		if (! $this->cp->allowed_group('can_admin_channels'))
+		if ( ! $this->cp->allowed_group('can_admin_channels'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -6329,7 +6330,7 @@ class Admin_content extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		if (! $this->cp->allowed_group('can_admin_channels'))
+		if ( ! $this->cp->allowed_group('can_admin_channels'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
