@@ -25,6 +25,7 @@
 class Progress {
 
 	var $_config = array();
+	var $_prefix = '';
 
 	/**
 	 * Constructor
@@ -69,7 +70,7 @@ class Progress {
 	function get_state()
 	{
 		session_start();
-		return isset($_SESSION['_progress_state']) ? $_SESSION['_progress_state'] : FALSE;
+		return isset($_SESSION['_progress_state']) ? $this->_prefix.$_SESSION['_progress_state'] : FALSE;
 	}
 	
 	// --------------------------------------------------------------------
