@@ -142,11 +142,10 @@ EE.publish.save_layout = function() {
 		}
 	});
 
+	//	alert(JSON.stringify(layout_object, null, '\t'));
 
-//	tab_focus(cur_tab.replace(/menu_/, ""));
-
-
-	alert(JSON.stringify(layout_object, null, '\t'));
+	// @todo not a great solution
+	EE.tab_focus(cur_tab.replace(/menu_/, ""));
 
 	if (tab_count == 0) {
 		$.ee_notice(EE.publish.lang.tab_count_zero, {"type" : "error"});
@@ -158,7 +157,7 @@ EE.publish.save_layout = function() {
 		$.ajax({
 			type: "POST",
 			url: EE.BASE+"&C=content_publish&M=save_layout",
-			data: "XID="+EE.XID+"&json_tab_layout="+json_tab_layout+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,
+			data: "XID="+EE.XID+"&json_tab_layout="+JSON.stringify(layout_object)+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,
 			success: function(msg){
 				$.ee_notice(msg, {type: "success"});
 			}
