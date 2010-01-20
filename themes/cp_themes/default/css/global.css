@@ -3429,6 +3429,8 @@ table.solo {
 	margin-left:5px;
 }
 
+.dataTables_paginate span span.paginate_button {padding:0 5px;}
+
 .dataTables_wrapper {margin-bottom:20px;}
 
 
