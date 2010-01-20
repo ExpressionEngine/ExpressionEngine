@@ -65,8 +65,7 @@ class Css extends Controller {
 	 * Any CSS file in the view collection
 	 *
 	 * @access	private
-	 */	
-	
+	 */
 	function _remap()
 	{
 		if ($this->input->get_post('M') == 'third_party' && $package = $this->input->get_post('package'))

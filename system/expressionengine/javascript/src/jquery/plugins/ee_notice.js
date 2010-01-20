@@ -199,6 +199,14 @@
 				set_active(store_ref.counter);
 			}
 		}
+		
+		if ( ! drawer.data('close_bound')) {
+			drawer.data('close_bound', true);
+			
+			drawer.click(function() {
+				drawer.one('mouseout', close_notice_drawer);
+			});
+		}
 	}
 	
 	function close_notice_drawer() {
