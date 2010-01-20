@@ -556,7 +556,8 @@ class Content_publish extends Controller {
 
 		$this->cp->add_js_script(array(
 		        'ui'        => array('datepicker', 'resizable', 'draggable', 'droppable'),
-		        'plugin'    => array('markitup', 'thickbox')
+		        'plugin'    => array('markitup', 'thickbox'),
+				'file'		=> 'cp/publish'
 		    )
 		);		
 		
@@ -924,88 +925,8 @@ class Content_publish extends Controller {
 
 			$edit_categories_link = $links;
 			
-			$this->javascript->output('
-				var cat_groups = [],
-					cat_groups_containers = {};
-				
-				// IE caches $.load requests, so we need a unique number
-				function now() {
-					return +new Date;
-				}
-				
-				// Grab all group ids
-				$(".edit_categories_link").each(function() {
-					var gid = this.href.substr(this.href.lastIndexOf("=") + 1);
-					$(this).data("gid", gid);
-					cat_groups.push(gid);
-				});
-				
-				for(i = 0; i < cat_groups.length; i++) {
-					cat_groups_containers[cat_groups[i]] = $("#cat_group_container_"+[cat_groups[i]]);
-					cat_groups_containers[cat_groups[i]].data("gid", cat_groups[i]);
-				}
-				
-				// A function to setup new page events
-				setup_page = function() {
-					var container = $(this);
-					
-					container.parent().find("#refresh_categories").show();
-					container.find("form").submit(function() {
-						var that = $(this),
-							values = that.serialize(),
-							url = that.attr("action");
-
-						$.ajax({
-							url: url,
-							type: "POST",
-							data: values,
-							dataType: "html",
-							beforeSend: function() {
-								container.html("loading...");
-							},
-							success: function(res) {
-								// A bit hacky, but it works - trigger our live event
-								container.html($(res).find(".pageContents"));
-								setup_page.call(container);
-							}
-						});
-
-						return false;
-					});
-					$(this).find(".cp_button a").corner();
-					return false;
-				}
-				
-				// And a function to do the work
-				function reload() {
-					var gid = $(this).data("gid");
-
-					if ( ! gid) {
-						gid = $(this).closest(".cat_group_container").data("gid");
-					}
-
-					cat_groups_containers[gid].text("loading...").load(this.href+"&modal=yes&timestamp="+now()+" .pageContents", setup_page);
-					return false;
-				}
-				
-				// Hijack edit category links to get it off the ground
-				$(".edit_categories_link").click(reload);
-
-
-				// Bind the live events for internal links
-				for (var i in cat_groups_containers)
-				{
-					cat_groups_containers[i].find("a").live("click", reload);
-				}
-				
-				
-				// Last but not least - update the checkboxes
-				$("a#refresh_categories", "#sub_hold_field_category").live("click", function() {
-					var that = $(this).hide().nextAll("div");
-					that.text("loading...").load(EE.BASE+"&C=content_publish&M=ajax_update_cat_fields&group_id="+that.data("gid")+"&timestamp="+now());
-					return false;
-				});
-			');
+			// Function can be found in cp/publish.js
+			$this->javascript->output('EE.publish.category_editor()');
 		}
 
 		$this->_define_category_fields($vars['categories'], $edit_categories_link);
@@ -1083,6 +1004,7 @@ class Content_publish extends Controller {
 					} // End foreach
 
 					$versioning = $this->table->generate();
+
 					$this->javascript->output('
 						var revision_target = "";
 						$("<div id=\"revision_warning\">'.$this->lang->line('revision_warning').'</div>").dialog({
