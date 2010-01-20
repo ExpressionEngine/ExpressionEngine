@@ -1243,9 +1243,7 @@ PAPAYA;
 		
 		$this->load->library('progress');
 		
-		$display_version = str_replace('%s', substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1), $this->lang->line('version_update_text'));
-
-		$this->progress->update_state($display_version);
+		$next_version = str_replace('%s', $this->next_update[0].'.'.$this->next_update[1].'.'.$this->next_update[2], $this->lang->line('version_update_text'));
 		
 		// Is this a call from the Progress Indicator?
 		if ($this->input->get('progress') == 'yes')
@@ -1259,7 +1257,8 @@ PAPAYA;
 			$this->refresh = TRUE;
 			$this->refresh_url = $this->set_qstr('do_update&agree=yes');
 			return $this->_set_output('update_msg', array(
-												'remaining_updates' => $this->remaining_updates
+												'remaining_updates' => $this->remaining_updates,
+												'next_version'		=> $next_version
 			));
 		}
 		
@@ -1339,7 +1338,8 @@ PAPAYA;
 		
 		$this->_set_output('update_msg', array(
 											'remaining_updates' => $this->remaining_updates,
-											'extra_header'		=> $progress_head
+											'extra_header'		=> $progress_head,
+											'next_version'		=> $next_version
 		));
 	}
 	

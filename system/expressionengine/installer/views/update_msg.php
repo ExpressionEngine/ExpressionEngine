@@ -6,6 +6,6 @@
 
 <p><?php echo $this->lang->line('dont_close_browser'); ?></p>
 
-<p id="js_progress"></p>
+<p id="js_progress"><?=$next_version?></p>
 
 </div>

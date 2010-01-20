@@ -78,7 +78,7 @@ $lang['module_errors_occurred'] = 'The following error(s) were reported during m
 $lang['support_resource_info'] = 'If you have questions regarding the above errors please visit our  <a href="http://expressionengine.com/support/">Support Resources</a> page or contact ExpressionEngine technical support.';
 $lang['click_to_install'] = 'Click here to install a brand new copy of ExpressionEngine';
 $lang['click_to_update'] = 'Click here to update ExpressionEngine to Version %s';
-$lang['version_update_text'] = 'Starting %s Update';
+$lang['version_update_text'] = 'Running %s update ...';
 $lang['invalid_action'] = 'The action you have requested is not valid.';
 $lang['unreadable_config'] = 'Your config.php file is unreadable. Please make sure the file exists and that the file permissions to 666 (or the equivalent write permissions for your server) on the following file: expressionengine/config/config.php';
 $lang['unwritable_config'] = 'Your config.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 (or the equivalent write permissions for your server) on the following file: expressionengine/config/config.php';
