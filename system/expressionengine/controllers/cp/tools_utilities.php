@@ -47,7 +47,7 @@ class Tools_utilities extends Controller {
 			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
 		}
 
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -72,7 +72,7 @@ class Tools_utilities extends Controller {
 	 */	
 	function index()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -98,7 +98,7 @@ class Tools_utilities extends Controller {
 	 */	
 	function import_utilities()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -122,7 +122,7 @@ class Tools_utilities extends Controller {
 	 */	
 	function member_import()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -150,7 +150,7 @@ class Tools_utilities extends Controller {
 	 */	
 	function import_from_xml()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -249,7 +249,7 @@ class Tools_utilities extends Controller {
 	 */	
 	function confirm_xml_form()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -353,7 +353,7 @@ class Tools_utilities extends Controller {
 	
 	function final_confirm_xml_form()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -489,7 +489,7 @@ class Tools_utilities extends Controller {
 	
 	function process_xml()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -573,7 +573,7 @@ class Tools_utilities extends Controller {
 
 	function custom_field_check($xml_file)
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -629,7 +629,7 @@ class Tools_utilities extends Controller {
 					$i = 0;
 						
 					// Is the XML tag an allowed database field
-					if (! isset($existing_fields[$tag->tag]) && ! isset($existing_c_fields[$tag->tag]))
+					if ( ! isset($existing_fields[$tag->tag]) && ! isset($existing_c_fields[$tag->tag]))
 					{
 						$new_custom_fields['new'][] = $tag->tag;
 						$new_custom_fields['xml_fields'][] = $tag->tag;	
@@ -667,7 +667,7 @@ class Tools_utilities extends Controller {
 	 */	
 	function validate_xml($xml)
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -915,7 +915,7 @@ class Tools_utilities extends Controller {
 	
 	function do_import()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}		
@@ -1131,7 +1131,7 @@ class Tools_utilities extends Controller {
 
 	function create_custom_fields()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}		
@@ -1206,7 +1206,7 @@ class Tools_utilities extends Controller {
 	 */	
 	function convert_from_delimited()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1358,7 +1358,7 @@ class Tools_utilities extends Controller {
 	 */
 	function pair_fields()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1487,17 +1487,17 @@ class Tools_utilities extends Controller {
 			}
 		}
 		
-		if (! in_array('username', $paired))
+		if ( ! in_array('username', $paired))
 		{
 			$mssg[] = $this->lang->line('missing_username_field');
 		}
 		
-		if (! in_array('screen_name', $paired))
+		if ( ! in_array('screen_name', $paired))
 		{
 			$mssg[] = $this->lang->line('missing_screen_name_field');
 		}
 		
-		if (! in_array('email', $paired))
+		if ( ! in_array('email', $paired))
 		{
 			$mssg[] = $this->lang->line('missing_email_field');
 		}
@@ -1515,7 +1515,7 @@ class Tools_utilities extends Controller {
 
 	function confirm_data_form()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1607,7 +1607,7 @@ class Tools_utilities extends Controller {
 	
 	function create_xml()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1692,7 +1692,7 @@ class Tools_utilities extends Controller {
 	
 	function view_xml($xml)
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1719,7 +1719,7 @@ class Tools_utilities extends Controller {
 	
 	function view_xml_errors($errors, $message = '')
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1763,7 +1763,7 @@ class Tools_utilities extends Controller {
 	
 	function download_xml($xml)
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1789,7 +1789,7 @@ class Tools_utilities extends Controller {
 	 */	
 	function translation_tool($message = '')
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1824,7 +1824,7 @@ class Tools_utilities extends Controller {
 	 */	
 	function translate()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1871,7 +1871,7 @@ class Tools_utilities extends Controller {
 
 	function translation_save()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1923,7 +1923,7 @@ class Tools_utilities extends Controller {
 	
 	function datafile_to_array($file)
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1964,7 +1964,7 @@ class Tools_utilities extends Controller {
 	 */
 	function php_info()
 	{
-		if (! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
