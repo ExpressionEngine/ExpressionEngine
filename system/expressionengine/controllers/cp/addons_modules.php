@@ -39,7 +39,7 @@ class Addons_modules extends Controller {
 			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
 		}
 
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -64,7 +64,7 @@ class Addons_modules extends Controller {
 	 */
 	function index()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -200,7 +200,7 @@ class Addons_modules extends Controller {
 	 */
 	function show_module_cp()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -334,7 +334,7 @@ class Addons_modules extends Controller {
 	 */
 	function module_installer()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -366,7 +366,7 @@ class Addons_modules extends Controller {
 
 	function delete_module_confirm()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -405,7 +405,7 @@ class Addons_modules extends Controller {
 	 */
 	function module_uninstaller()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}

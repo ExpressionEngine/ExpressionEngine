@@ -40,7 +40,7 @@ class Addons_plugins extends Controller {
 			show_error('The ExpressionEngine Core was not initialized.	Please make sure your autoloader is correctly set up.');
 		}
 
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -64,7 +64,7 @@ class Addons_plugins extends Controller {
 	 */
 	function index()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -201,7 +201,7 @@ class Addons_plugins extends Controller {
 	 */
 	function info()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -252,7 +252,7 @@ class Addons_plugins extends Controller {
 	 */
 	function remove_confirm()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -292,7 +292,7 @@ class Addons_plugins extends Controller {
 	 */
 	function remove()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -376,7 +376,7 @@ class Addons_plugins extends Controller {
 	 */
 	function install()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}

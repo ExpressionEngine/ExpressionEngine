@@ -44,7 +44,7 @@ class Addons_accessories extends Controller {
 			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
 		}
 		
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}		
@@ -77,7 +77,7 @@ class Addons_accessories extends Controller {
 	 */	
 	function index()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}		
@@ -236,7 +236,7 @@ class Addons_accessories extends Controller {
 	 */
 	function process_request()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -275,7 +275,7 @@ class Addons_accessories extends Controller {
 	 */
 	function install()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -301,7 +301,7 @@ class Addons_accessories extends Controller {
 	 */
 	function uninstall()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -327,7 +327,7 @@ class Addons_accessories extends Controller {
 	 */
 	function edit_prefs()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -488,7 +488,7 @@ class Addons_accessories extends Controller {
 	 */
 	function update_prefs()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}

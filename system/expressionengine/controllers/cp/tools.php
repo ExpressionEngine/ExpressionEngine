@@ -39,7 +39,7 @@ class Tools extends Controller {
 			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
 		}
 
-		if (! $this->cp->allowed_group('can_access_tools'))
+		if ( ! $this->cp->allowed_group('can_access_tools'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -63,7 +63,7 @@ class Tools extends Controller {
 	 */	
 	function index()
 	{
-		if (! $this->cp->allowed_group('can_access_tools'))
+		if ( ! $this->cp->allowed_group('can_access_tools'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}

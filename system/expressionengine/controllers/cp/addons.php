@@ -43,7 +43,7 @@ class Addons extends Controller {
 			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
 		}
 		
-		if (! $this->cp->allowed_group('can_access_addons'))
+		if ( ! $this->cp->allowed_group('can_access_addons'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -70,7 +70,7 @@ class Addons extends Controller {
 	 */	
 	function index()
 	{
-		if (! $this->cp->allowed_group('can_access_addons'))
+		if ( ! $this->cp->allowed_group('can_access_addons'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -95,7 +95,7 @@ class Addons extends Controller {
 	 */	
 	function package_settings()
 	{
-		if (! $this->cp->allowed_group('can_access_addons'))
+		if ( ! $this->cp->allowed_group('can_access_addons'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}

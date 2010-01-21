@@ -38,7 +38,7 @@ class Addons_extensions extends Controller {
 			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
 		}
 
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -65,7 +65,7 @@ class Addons_extensions extends Controller {
 	 */
 	function index()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -193,7 +193,7 @@ class Addons_extensions extends Controller {
 	 */
 	function toggle_extension_confirm()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -231,7 +231,7 @@ class Addons_extensions extends Controller {
 	 */
 	function toggle_extension()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -287,7 +287,7 @@ class Addons_extensions extends Controller {
 	 */
 	function extension_settings($message = '')
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -512,7 +512,7 @@ class Addons_extensions extends Controller {
 	 */
 	function save_extension_settings()
 	{
-		if (! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}

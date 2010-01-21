@@ -39,7 +39,7 @@ class Content_files extends Controller {
 			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
 		}
 
-		if (! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
+		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -65,7 +65,7 @@ class Content_files extends Controller {
 	 */
 	function index()
 	{
-		if (! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
+		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -441,7 +441,7 @@ class Content_files extends Controller {
 	 */
 	function file_info()
 	{
-		if (! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
+		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -493,7 +493,7 @@ class Content_files extends Controller {
 	 */
 	function upload_file()
 	{
-		if (! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
+		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -609,7 +609,7 @@ class Content_files extends Controller {
 	 */
 	function download_files($files = array())
 	{
-		if (! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
+		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -683,7 +683,7 @@ class Content_files extends Controller {
 	 */
 	function delete_files_confirm()
 	{
-		if (! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
+		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -726,7 +726,7 @@ class Content_files extends Controller {
 	 */
 	function delete_files()
 	{
-		if (! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
+		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -788,7 +788,7 @@ class Content_files extends Controller {
 	 */
 	function display_image()
 	{
-		if (! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
+		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -811,7 +811,7 @@ class Content_files extends Controller {
 	 */
 	function prep_edit_image()
 	{
-		if (! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
+		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1210,7 +1210,7 @@ class Content_files extends Controller {
 	 */
 	function edit_image()
 	{
-		if (! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
+		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}

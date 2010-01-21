@@ -39,7 +39,7 @@ class Content extends Controller {
 			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
 		}
 
-		if (! $this->cp->allowed_group('can_access_content'))
+		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}

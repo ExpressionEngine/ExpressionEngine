@@ -46,7 +46,7 @@ class Members extends Controller {
 			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
 		}
 		
-		if (! $this->cp->allowed_group('can_access_members'))
+		if ( ! $this->cp->allowed_group('can_access_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -80,7 +80,7 @@ class Members extends Controller {
 	 */	
 	function index()
 	{
-		if (! $this->cp->allowed_group('can_access_members'))
+		if ( ! $this->cp->allowed_group('can_access_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -109,7 +109,7 @@ class Members extends Controller {
 	 */
 	function view_all_members()
 	{
-		if (! $this->cp->allowed_group('can_access_members'))
+		if ( ! $this->cp->allowed_group('can_access_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -405,7 +405,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 	function member_search()
 	{
-		if (! $this->cp->allowed_group('can_access_members'))
+		if ( ! $this->cp->allowed_group('can_access_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -487,7 +487,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function member_confirm()
 	{
-		if (! $this->cp->allowed_group('can_access_members'))
+		if ( ! $this->cp->allowed_group('can_access_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -514,7 +514,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function resend_activation_emails()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR $this->config->item('req_mbr_activation') !== 'email')
+		if ( ! $this->cp->allowed_group('can_access_members') OR $this->config->item('req_mbr_activation') !== 'email')
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -597,7 +597,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function member_delete_confirm()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_delete_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_delete_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -863,7 +863,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function member_delete()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_delete_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_delete_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1135,7 +1135,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function member_group_manager()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_mbr_groups'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_mbr_groups'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1645,7 +1645,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function member_config()
 	{		
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1900,7 +1900,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function update_config()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -2333,7 +2333,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function new_member_form()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}		
@@ -2499,7 +2499,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function member_banning()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_ban_users'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_ban_users'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -2574,7 +2574,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function update_banning_data()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_ban_users'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_ban_users'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -2634,7 +2634,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function custom_profile_fields($group_id = '')
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}		
@@ -2672,7 +2672,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function edit_profile_field()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -2935,7 +2935,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function update_profile_fields()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -3044,7 +3044,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function delete_profile_field_conf()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -3082,7 +3082,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function delete_profile_field()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -3116,7 +3116,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function edit_field_order()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -3160,7 +3160,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function update_field_order()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -3190,7 +3190,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function do_member_search()
 	{
-		if (! $this->cp->allowed_group('can_access_members'))
+		if ( ! $this->cp->allowed_group('can_access_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -3478,7 +3478,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function ip_search()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -3519,7 +3519,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function do_ip_search()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -3723,7 +3723,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function member_validation()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -3774,7 +3774,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function validate_members()
 	{
-		if (! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members') OR ! $this->cp->allowed_group('can_delete_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members') OR ! $this->cp->allowed_group('can_delete_members'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
