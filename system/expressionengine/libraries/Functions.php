@@ -2919,14 +2919,22 @@ class EE_Functions {
 	 * Clones an Object
 	 * 
 	 * This is required because of the way PHP 5 handles the passing of objects
-	 *
+	 * @php4
+	 * 
 	 * @access	public
 	 * @param	object
 	 * @return	object
 	 */
 	function clone_object($object)
 	{ 
-		return (is_php('5.0.0') == TRUE) ? clone $object : $object;
+		if (is_php('5.0.0') == TRUE)
+		{
+			eval('return clone $object');
+		}
+		else
+		{
+			return $object;
+		}
 	}
 	
 	// --------------------------------------------------------------------
