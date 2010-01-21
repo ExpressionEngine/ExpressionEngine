@@ -211,7 +211,7 @@ class Tools_utilities extends Controller {
 						  ),
 					   array(
 							 'field'   => 'timezones',
-							 'label'   => 'lang:timezone',
+							 'label'   => 'lang:timezones',
 							 'rules'   => ''
 						  ),
 					   array(
@@ -273,17 +273,23 @@ class Tools_utilities extends Controller {
 		if ($query->num_rows() > 0)
 		{
 			$row = $query->row_array();
-			$group_title = $row['group_title'];
+			$group_name = $row['group_title'];
 			
 		}
+		else
+		{
+			$group_name = ' -- ';
+		}
+				
 
 		$this->javascript->compile();
 
+					
 		$data = array(
 						'xml_file'   		=> $this->input->post('xml_file'),
 						'group_id' 			=> $this->input->post('group_id'),
 						'language' 			=> ($this->input->post('language') == $this->lang->line('none')) ? '' : $this->input->post('language'),
-						'timezone' 			=> $this->input->post('timezones'),
+						'timezones' 			=> $this->input->post('timezones'),
 						'time_format' 		=> $this->input->post('time_format'),
 						'daylight_savings' 	=> ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n',
 						'auto_custom_field' => ($this->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
@@ -292,13 +298,14 @@ class Tools_utilities extends Controller {
 
 		$vars['data_display'] = array(
 						'xml_file'   		=> $data['xml_file'],
-						'group_id' 			=> $group_title,
-						'language' 			=> ($data['language'] == $this->lang->line('none')) ? $this->lang->line('none') : ucfirst($data['language']),
-						'timezone' 			=> $this->lang->line($data['timezone']),
+						'default_group_id'	=> $group_name,
+						'language' 			=> ($data['language'] == '') ? $this->lang->line('none') : ucfirst($data['language']),
+						'timezones' 			=> $this->lang->line($data['timezones']),
 						'time_format' 		=> ($data['time_format'] == 'us') ? $this->lang->line('united_states') : $this->lang->line('european'),
 						'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? $this->lang->line('yes') : $this->lang->line('no'),
 						'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? $this->lang->line('yes') : $this->lang->line('no')
 					 );
+
 
 				
 		$vars['form_hidden'] = $data;
@@ -307,6 +314,7 @@ class Tools_utilities extends Controller {
 		// Branch off here if we need to create a new custom field
 		if ($data['auto_custom_field'] == 'y')
 		{
+
 			$new_custom_fields = $this->custom_field_check($data['xml_file']);
 			
 			if ($new_custom_fields != FALSE && count($new_custom_fields) > 0)
@@ -350,6 +358,13 @@ class Tools_utilities extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
+		$map = FALSE;
+		
+		if (isset($_POST['field_map']))
+		{
+			$map = TRUE;
+		}
+		
 		$this->lang->loadfile('member_import');
 		$this->load->library('table');
 		$this->load->helper(array('form', 'date'));
@@ -366,15 +381,21 @@ class Tools_utilities extends Controller {
 		if ($query->num_rows() > 0)
 		{
 			$row = $query->row_array();
+			$group_name = $row['group_title'];
 			
 		}
+		else
+		{
+			$group_name = ' -- ';
+		}
+		
 		$this->javascript->compile();
 
 		$data = array(
 						'xml_file'   		=> $this->input->post('xml_file'),
 						'group_id' 			=> $this->input->post('group_id'),
 						'language' 			=> ($this->input->post('language') == $this->lang->line('none')) ? '' : $this->input->post('language'),
-						'timezone' 			=> $this->input->post('timezones'),
+						'timezones' 			=> $this->input->post('timezones'),
 						'time_format' 		=> $this->input->post('time_format'),
 						'daylight_savings' 	=> ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n',
 						'auto_custom_field' => ($this->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
@@ -383,16 +404,17 @@ class Tools_utilities extends Controller {
 
 		$vars['data_display'] = array(
 						'xml_file'   		=> $data['xml_file'],
-						'group_id' 			=> $row['group_title'],
-						'language' 			=> ($data['language'] == $this->lang->line('none')) ? $this->lang->line('none') : ucfirst($data['language']),
-						'timezone' 			=> $this->lang->line($data['timezone']),
+						'default_group_id'	=> $group_name,
+						'language' 			=> ($data['language'] == '') ? $this->lang->line('none') : ucfirst($data['language']),
+						'timezones' 			=> $this->lang->line($data['timezones']),
 						'time_format' 		=> ($data['time_format'] == 'us') ? $this->lang->line('united_states') : $this->lang->line('european'),
 						'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? $this->lang->line('yes') : $this->lang->line('no'),
 						'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? $this->lang->line('yes') : $this->lang->line('no')
 					 );
 
-				
-		$vars['form_hidden'] = $data;
+			
+		$vars['form_hidden'] = ($map) ? array_merge($data, $_POST['field_map']) : $data;
+		$vars['xml_fields']	= $this->input->post('xml_custom_fields');
 		
 		$this->load->library('table');
 		$this->load->helper(array('form', 'date'));
@@ -435,14 +457,14 @@ class Tools_utilities extends Controller {
 
 		$this->javascript->compile();			
 				
-		$vars['form_hidden']['new'] = $new_custom_fields;
-		$vars['new_fields'] = $new_custom_fields;
+		$vars['form_hidden']['new'] = $new_custom_fields['new'];
+		$vars['xml_fields'] = $new_custom_fields['xml_fields'];
+		
+		$vars['new_fields'] = $new_custom_fields['new'];
 				
 		$query = $this->member_model->count_records('member_fields');
 			
 		$vars['order_start'] = $query + 1;
-
-		$vars['new_fields'] = $new_custom_fields;
 		
 		/**  Create the pull-down menu **/
 		
@@ -492,7 +514,29 @@ class Tools_utilities extends Controller {
 		if ($xml === FALSE)
 		{
 			return $this->view_xml_errors($this->lang->line('unable_to_parse_xml'));
-		}		
+		}
+		
+		// Any custom fields exist
+		
+		$this->db->select('m_field_name, m_field_id');
+		$m_custom_fields = $this->db->get('member_fields');
+		
+		if ($m_custom_fields->num_rows() > 0)
+		{
+   			$custom_fields = TRUE;
+
+			foreach ($m_custom_fields->result() as $row)
+   			{
+				if (isset($_POST['map'][$row->m_field_name]))
+				{
+					$this->default_custom_fields[$_POST['map'][$row->m_field_name]] = $row->m_field_id;
+				}
+				else
+				{
+					$this->default_custom_fields[$row->m_field_name] = $row->m_field_id;
+				}
+			}
+		}
 
 		$this->validate_xml($xml);
 
@@ -573,33 +617,34 @@ class Tools_utilities extends Controller {
 			}
 		}
 		
-		// note- might could just go through first iteration?
+		// We go through a single iteration to find the fields
 		if (is_array($xml->children[0]->children))
 		{
-			foreach($xml->children as $member)
+			$member = $xml->children['0'];
+				
+			if ($member->tag == "member")
 			{
-				if ($member->tag == "member")
+				foreach($member->children as $tag)
 				{
-					foreach($member->children as $tag)
-					{
-						$i = 0;
+					$i = 0;
 						
-						// Is the XML tag an allowed database field
-						if (! isset($existing_fields[$tag->tag]) && ! isset($existing_c_fields[$tag->tag]))
+					// Is the XML tag an allowed database field
+					if (! isset($existing_fields[$tag->tag]) && ! isset($existing_c_fields[$tag->tag]))
+					{
+						$new_custom_fields['new'][] = $tag->tag;
+						$new_custom_fields['xml_fields'][] = $tag->tag;	
+					}
+					elseif (isset($existing_c_fields[$tag->tag]))
+					{
+						while($i < 100)
 						{
-							$new_custom_fields[] = $tag->tag;						
-						}
-						elseif (isset($existing_c_fields[$tag->tag]))
-						{
-							while($i < 100)
+							$i++;
+							
+							if ( ! isset($existing_c_fields[$tag->tag.'_'.$i]))
 							{
-								$i++;
-								
-								if ( ! isset($existing_c_fields[$tag->tag.'_'.$i]))
-								{
-									$new_custom_fields[] = $tag->tag.'_'.$i;
-									break;
-								}
+								$new_custom_fields['new'][] = $tag->tag.'_'.$i;
+								$new_custom_fields['xml_fields'][] = $tag->tag;
+								break;
 							}
 						}
 					}
@@ -607,7 +652,7 @@ class Tools_utilities extends Controller {
 			}
 		}
 		
-		return array_unique($new_custom_fields);
+		return $new_custom_fields; //array_unique($new_custom_fields);
 	}
 
 	// --------------------------------------------------------------------
@@ -652,14 +697,14 @@ class Tools_utilities extends Controller {
 			$this->default_fields[$row['Field']] = '';
 		}
 
-		$this->db->select('m_field_name');
+		$this->db->select('m_field_name, m_field_id');
 		$m_custom_fields = $this->db->get('member_fields');
 		
 		if ($m_custom_fields->num_rows() > 0)
 		{
    			foreach ($m_custom_fields->result() as $row)
    			{
-				$this->default_custom_fields[$row->m_field_name] = '';
+				$this->default_custom_fields[$row->m_field_name] = $row->m_field_id;
 			}
 		}
 		
@@ -878,7 +923,7 @@ class Tools_utilities extends Controller {
 		//  Set our optional default values
 		$this->default_fields['group_id']			= $this->input->post('group_id');
 		$this->default_fields['language']			= ($this->input->post('language') == $this->lang->line('none') OR $this->input->post('language') == '') ? 'english' : strtolower($this->input->post('language'));
-		$this->default_fields['timezone']			= ($this->input->post('timezone') && $this->input->post('timezone') != '') ? $this->input->post('timezone') : $this->config->item('server_timezone');
+		$this->default_fields['timezone']			= ($this->input->post('timezones') && $this->input->post('timezones') != '') ? $this->input->post('timezones') : $this->config->item('server_timezone');
 		$this->default_fields['time_format']		= $this->input->post('time_format');
 		$this->default_fields['daylight_savings']	= ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n';
 		$this->default_fields['ip_address']			= '0.0.0.0';
@@ -887,10 +932,8 @@ class Tools_utilities extends Controller {
 		//  Rev it up, no turning back!
 		$new_ids = array();
 		$counter = 0;
-		
 		$custom_fields = (count($this->default_custom_fields) > 0) ? TRUE : FALSE;
-		
-		
+
 		foreach ($this->members as $count => $member)
 		{
 			$data = array();
@@ -908,22 +951,16 @@ class Tools_utilities extends Controller {
 				}
 			}
 			
-			if ($custom_fields == TRUE)
+			if ($custom_fields)
 			{
-				foreach ($this->default_custom_fields as $key => $val)
+				foreach ($this->default_custom_fields as $name => $id)
 				{
-					if (isset($member_custom[$key]))
+					if (isset($this->members_custom[$count][$name]))
 					{
-						$cdata[$key] = $member_custom[$key];						
-					}
-					elseif ($val != '')
-					{
-						$cdata[$key] = $val;
+						$cdata['m_field_id_'.$id] = $this->members_custom[$count][$name];			
 					}
 				}	
 			}			
-				
-				
 
 			//  Add a unique_id for each member
 			$data['unique_id'] = random_string('encrypt');
@@ -956,15 +993,16 @@ class Tools_utilities extends Controller {
 			/*  Shove it in!
 			/*  We are using REPLACE as we want to overwrite existing members if a member id is specified
 			/* -------------------------------------*/
-			
+
 			$this->db->replace('members', $data); 
+			$mid = $this->db->insert_id();
 
 			//  Add the member id to the array of imported member id's
-			$new_ids[$this->db->insert_id()] = '';
+			$new_ids[$mid] = $mid;
 			
 			if ($custom_fields == TRUE)
 			{
-				$cdata['member_id'] = $this->db->insert_id();
+				$cdata['member_id'] = $mid;
 			}
 
 			//  Insert the old auto_incremented member, if necessary
@@ -972,14 +1010,15 @@ class Tools_utilities extends Controller {
 			{
 				unset($tempdata->row['member_id']); // dump the member_id so it can auto_increment a new one
 				$this->db->insert('members', $tempdata->row);
-				$new_ids[$this->db->insert_id()] = '';
+				$replace_mid = $this->db->insert_id();
+				
+				$new_ids[$replace_mid] = '';
 			
 				if ($custom_fields == TRUE)
 				{
-					$tempcdata->row['member_id'] = $this->db->insert_id();
+					$tempcdata->row['member_id'] = $replace_mid;
 					$this->db->insert('member_data', $tempcdata->row);
 				}				
-				
 			}
 			
 			if ($custom_fields == TRUE)
@@ -1035,13 +1074,17 @@ class Tools_utilities extends Controller {
 			}
 		}
 
-		foreach($_POST['create_ids'] as $key => $val)
+		if (isset($_POST['create_ids']))
 		{
-			$this->form_validation->set_rules("m_field_name[".$key."]", '', 'required|callback__valid_name');	
-			$this->form_validation->set_rules("m_field_label[".$key."]", '', 'required');
-			$this->form_validation->set_rules("required[".$key."]", '', '');
-			$this->form_validation->set_rules("public[".$key."]", '', '');
-			$this->form_validation->set_rules("reg_form[".$key."]", '', '');			
+			foreach($_POST['create_ids'] as $key => $val)
+			{
+				$this->form_validation->set_rules("m_field_name[".$key."]", '', 'required|callback__valid_name');	
+				$this->form_validation->set_rules("m_field_label[".$key."]", '', 'required');
+				$this->form_validation->set_rules("required[".$key."]", '', '');
+				$this->form_validation->set_rules("public[".$key."]", '', '');
+				$this->form_validation->set_rules("reg_form[".$key."]", '', '');			
+				$this->form_validation->set_rules("xml_field_name[".$key."]", '', '');
+			}
 		}
 		
 		$this->form_validation->set_message('required', $this->lang->line('s_required'));
@@ -1127,33 +1170,20 @@ class Tools_utilities extends Controller {
 			$data['m_field_fmt'] 		= (isset($_POST['m_field_fmt'][$k])) ? $_POST['m_field_fmt'][$k] : 'xhtml';
 			$data['m_field_order'] 		= (isset($_POST['m_field_order'][$k])) ? $_POST['m_field_order'][$k] : '';
 							
-			$this->db->insert('member_fields', $data); 
-			$this->db->query('ALTER table exp_member_data add column m_field_id_'.$this->db->insert_id().' text NULL DEFAULT NULL');	
+			$this->db->insert('member_fields', $data);
+			$field_id = $this->db->insert_id();
+			$this->db->query('ALTER table exp_member_data add column m_field_id_'.$field_id.' text NULL DEFAULT NULL');	
 
 			$_POST['added_fields'][$_POST['m_field_name'][$k]] = $_POST['m_field_label'][$k];
+			//$_POST['xml_custom_fields'][$_POST['xml_field_name'][$k]] = $field_id;
 
-		}
-
-		
-//need to do something about missing order variables
-
-	
-		$sql = "SELECT exp_members.member_id
-				FROM exp_members
-				LEFT JOIN exp_member_data ON exp_members.member_id = exp_member_data.member_id
-				WHERE exp_member_data.member_id IS NULL
-				ORDER BY exp_members.member_id";
-			
-		$query = $this->db->query($sql);
-			
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
+			if ($_POST['new'][$k] != $_POST['m_field_name'][$k])
 			{
-				$this->db->query("INSERT INTO exp_member_data (member_id) values ('{$row['member_id']}')");
-			}
+				$_POST['field_map']['map'][$_POST['m_field_name'][$k]] = $_POST['new'][$k];
+			}			
+			//$this->default_custom_fields[$_POST['m_field_name'][$k]] = 'm_field_id_'.$this->db->insert_id();
+
 		}
-		
 
 		$_POST['auto_custom_field'] = 'n';
 		unset($_POST['new']);
@@ -1832,7 +1862,8 @@ class Tools_utilities extends Controller {
 		{
 			$vars['language_list'] = $lang_list;
 		}
-
+		
+		
 		$this->load->view('tools/translate', $vars);
 	}
 

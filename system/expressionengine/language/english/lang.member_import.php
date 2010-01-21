@@ -248,7 +248,7 @@ type of your imported data, the passwords will not work, and affected members wi
 'time_format' =>
 'Default Time Format',
 
-'timezone' =>
+'timezones' =>
 'Default Timezone',
 
 'total_members_imported' =>
