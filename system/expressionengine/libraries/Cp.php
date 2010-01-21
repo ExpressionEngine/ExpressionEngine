@@ -53,16 +53,17 @@ class Cp {
 			show_error("The CP library is only available on Control Panel requests.");
 		}
 		
-		
-		$this->cp_theme	= ( ! $this->EE->session->userdata('cp_theme')) ? $this->EE->config->item('cp_theme') : $this->EE->session->userdata('cp_theme'); 
-		$this->cp_theme_url = $this->EE->config->slash_item('theme_folder_url').'cp_themes/'.$this->cp_theme.'/';
-		
-		
-		
-		$this->EE->load->vars(array(
-			'cp_page_id'	=> 'EE',		// @confirm do we still need this?
-			'cp_theme_url'	=> $this->cp_theme_url
-		));
+		// Cannot set these in the installer
+		if ( ! defined('EE_APPPATH'))
+		{
+			$this->cp_theme	= ( ! $this->EE->session->userdata('cp_theme')) ? $this->EE->config->item('cp_theme') : $this->EE->session->userdata('cp_theme'); 
+			$this->cp_theme_url = $this->EE->config->slash_item('theme_folder_url').'cp_themes/'.$this->cp_theme.'/';
+
+			$this->EE->load->vars(array(
+				'cp_page_id'	=> 'EE',		// @confirm do we still need this?
+				'cp_theme_url'	=> $this->cp_theme_url
+			));
+		}
 	}
 
 	
