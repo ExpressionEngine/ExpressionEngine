@@ -2926,7 +2926,7 @@ class EE_Functions {
 	 */
 	function clone_object($object)
 	{ 
-		return (is_php('5.0.0') == TRUE) ? clone($object) : $object;
+		return (is_php('5.0.0') == TRUE) ? clone $object : $object;
 	}
 	
 	// --------------------------------------------------------------------
