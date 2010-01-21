@@ -452,6 +452,9 @@ $lang = array(
 "email_taken" =>
 "The email you chose is not available",
 
+"valid_user_email" =>
+"The email you chose is not valid",
+
 "password_based_on_username" =>
 "The password can not be based on the username",
 

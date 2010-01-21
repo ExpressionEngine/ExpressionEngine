@@ -2367,7 +2367,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 						array(
 			   				'field'  => 'email', 
 			   				'label'  => 'lang:email', 
-			   				'rules'  => 'required|valid_user_email[new]'
+			   				'rules'  => 'trim|required|valid_user_email[new]'
 						),
 						array(
 			   				'field'  => 'group_id', 
