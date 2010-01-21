@@ -147,39 +147,43 @@ class Homepage extends Controller {
 			return false;
 		});
 		');
-				
+		
 		$vars['info_message_open'] = ($this->input->cookie('home_msg_state') != 'closed' && $show_notice);
-		$state = $this->javascript->generate_json(($vars['info_message_open']));		
+		
+		if ($show_notice)
+		{
+			$state = $this->javascript->generate_json(($vars['info_message_open']));
 
-		// Ignore version update javascript
-		$this->javascript->output('
+			// Ignore version update javascript
+			$this->javascript->output('
 				
-			var msgBoxOpen = '.$state.',
-				msgContainer = $("#ee_important_message");			
+				var msgBoxOpen = '.$state.',
+					msgContainer = $("#ee_important_message");			
 			
-			function save_state() {
-				msgBoxOpen = ! msgBoxOpen;
-				document.cookie="exp_home_msg_state="+(msgBoxOpen ? "open" : "closed");
-			}
+				function save_state() {
+					msgBoxOpen = ! msgBoxOpen;
+					document.cookie="exp_home_msg_state="+(msgBoxOpen ? "open" : "closed");
+				}
 			
-			function setup_hidden() {
-				$.ee_notice.show_info(function() {
-					$.ee_notice.hide_info();
-					msgContainer.removeClass("closed").show();
+				function setup_hidden() {
+					$.ee_notice.show_info(function() {
+						$.ee_notice.hide_info();
+						msgContainer.removeClass("closed").show();
+						save_state();
+					});
+				}
+			
+				msgContainer.find(".msg_open_close").click(function() {
+					msgContainer.hide();
+					setup_hidden();
 					save_state();
 				});
-			}
 			
-			msgContainer.find(".msg_open_close").click(function() {
-				msgContainer.hide();
-				setup_hidden();
-				save_state();
-			});
-			
-			if ( ! msgBoxOpen) {
-				setup_hidden();
-			}
-		');
+				if ( ! msgBoxOpen) {
+					setup_hidden();
+				}
+			');
+		}
 
 		$this->javascript->compile();
 
