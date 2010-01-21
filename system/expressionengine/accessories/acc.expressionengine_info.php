@@ -125,7 +125,7 @@ class Expressionengine_info_acc {
 		
 		$version = 'v'.trim(str_replace('Version:', '', $version));
 		
-		$build = $this->_fsockopen_process('https://secure.expressionengine.com/extra/ee_current_build/');
+		$build = $this->_fsockopen_process('https://secure.expressionengine.com/extra/ee_current_build/v2');
 
 		$details = array(
 							'timestamp'	=> $this->EE->localize->now,
