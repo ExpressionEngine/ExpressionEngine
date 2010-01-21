@@ -371,17 +371,16 @@ class Api_channel_fields extends Api {
 				$fields = $OBJ->publish_tabs($channel_id, $entry_id);
 
 				// There's basically no way this *won't* be set, but let's check it anyhow.
-				// It'll be returned as an array, so we'll read index 0 to find it.
 				// When we find it, we'll append the module's classname to it to prevent
 				// collission with other modules with similarly named fields. This namespacing
 				// gets stripped as needed when the module data is processed in get_module_methods()
 				// This function is called for insertion and editing of entries.
 				
-				foreach ($fields as &$field)
+				foreach ($fields as $key => $field)
 				{
 					if (isset($field['field_id']))
 					{
-						$field['field_id'] = $class_name.'__'.$field['field_id']; // two underscores
+						$fields[$key]['field_id'] = $class_name.'__'.$field['field_id']; // two underscores
 					}
 				}
 
