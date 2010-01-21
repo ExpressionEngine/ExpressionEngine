@@ -37,7 +37,7 @@
 *
 * @access	public
 * @param	string
-* @return	bool
+* @return	bool	TRUE if the current version is $version or higher
 */
 	function is_php($version = '5.0.0')
 	{
