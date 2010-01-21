@@ -88,12 +88,13 @@ class Homepage extends Controller {
 
 		$this->cp->get_installed_modules();
 
-		$this->_checksum_bootstrap_files();
+		$show_notice = $this->_checksum_bootstrap_files();
 		
 		
 		if ($this->session->userdata['group_id'] == 1 AND $this->config->item('new_version_check') == 'y')
 		{
 			$vars['version'] = $this->_version_check();
+			$show_notice = ($show_notice OR $vars['version']);
 		}
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('main_menu'));
@@ -146,9 +147,9 @@ class Homepage extends Controller {
 			return false;
 		});
 		');
-		
-		$vars['info_message_open'] = ($this->input->cookie('home_msg_state') == 'open');
-		$state = $this->javascript->generate_json(($vars['info_message_open'] == 'open'));		
+				
+		$vars['info_message_open'] = ($this->input->cookie('home_msg_state') != 'closed' && $show_notice);
+		$state = $this->javascript->generate_json(($vars['info_message_open']));		
 
 		// Ignore version update javascript
 		$this->javascript->output('
@@ -158,11 +159,7 @@ class Homepage extends Controller {
 			
 			function save_state() {
 				msgBoxOpen = ! msgBoxOpen;
-				
-				$.ajax({
-					url: EE.BASE+"&C=homepage&M=hide_message_box",
-					data: "state="+(msgBoxOpen ? "open" : "closed")
-				});
+				document.cookie="exp_home_msg_state="+(msgBoxOpen ? "open" : "closed");
 			}
 			
 			function setup_hidden() {
@@ -268,32 +265,22 @@ class Homepage extends Controller {
 
 		if ($changed)
 		{
-			if ($this->session->userdata('group_id') == 1)
-			{
-				$this->load->vars(array('new_checksums' => $changed));
-			}
-			
 			// Email the webmaster - if he isn't already looking at the message
 			
 			if ($this->session->userdata('email') != $this->config->item('webmaster_email'))
 			{
 				$this->file_integrity->send_site_admin_warning($changed);
 			}
+			
+			if ($this->session->userdata('group_id') == 1)
+			{
+				$this->load->vars(array('new_checksums' => $changed));
+				return TRUE;
+			}
 		}
-	}
-
-	// --------------------------------------------------------------------
-
-	
-	function hide_message_box()
-	{
-		$msg_state = $this->input->get_post('state');
 		
-		$this->functions->set_cookie('home_msg_state', "{$msg_state}", 86400);
-		exit;
+		return FALSE;
 	}
-	
-	
 
 	// --------------------------------------------------------------------
 
@@ -392,6 +379,8 @@ class Homepage extends Controller {
 			return sprintf($this->lang->line('new_version_error'),
 							$download_url);
 		}
+		
+		return FALSE;
 	}
 	
 	// --------------------------------------------------------------------
