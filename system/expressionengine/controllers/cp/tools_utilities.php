@@ -161,7 +161,18 @@ class Tools_utilities extends Controller {
 
 		$this->_import_xml_form();
 	}
-	
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Import Member Data XML Form
+	 *
+	 * Generates the starting form for the member import
+	 * 
+	 * @access	private
+	 * @return	void
+	 */	
+
 	function _import_xml_form()
 	{
 		$this->load->helper(array('form', 'date'));
@@ -188,6 +199,16 @@ class Tools_utilities extends Controller {
 		
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Import Member Data Validation
+	 *
+	 * Validates main import settings
+	 * 
+	 * @access	private
+	 * @return	void
+	 */	
 
 	function _import_xml_validate()
 	{
@@ -330,6 +351,18 @@ class Tools_utilities extends Controller {
 		$this->_confirm_custom_field_form($vars);
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Custom Field Confirmed Form
+	 *
+	 * Confirmation screen after custom field validation
+	 * 
+	 * @access	private
+	 * @return	void
+	 */	
+
+
 	function _confirm_custom_field_form($vars)
 	{
 		$this->_import_xml_validate();
@@ -351,6 +384,18 @@ class Tools_utilities extends Controller {
 		$this->load->view('tools/confirm_import_xml', $vars);		
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Final Import Confirmation Form
+	 *
+	 * Final Import Confirmation Form generated after custom field creation
+	 * 
+	 * @access	public
+	 * @return	void
+	 */	
+
+
 	function final_confirm_xml_form()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
@@ -432,6 +477,16 @@ class Tools_utilities extends Controller {
 	
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * New Custom Fields Form
+	 *
+	 * Generates the form for new custom field settings
+	 * 
+	 * @access	private
+	 * @return	void
+	 */	
 		
 	function _new_custom_fields_form($data, $vars, $new_custom_fields)
 	{
@@ -487,6 +542,18 @@ class Tools_utilities extends Controller {
 		return $this->load->view('tools/custom_field_form', $vars);				
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Process XML
+	 *
+	 * Imports the members from XML and redirects to the index page on successful completion
+	 * 
+	 * @access	public
+	 * @return	void
+	 */	
+
+
 	function process_xml()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
@@ -570,6 +637,16 @@ class Tools_utilities extends Controller {
 	}
 	/* END */
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Custom Field Check
+	 *
+	 * Finds the fields in the first XML record that do not already exist
+	 * 
+	 * @access	public
+	 * @return	array
+	 */	
 
 	function custom_field_check($xml_file)
 	{
@@ -909,6 +986,18 @@ class Tools_utilities extends Controller {
 	}
 	/* END */
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Do Import
+	 *
+	 * Inserts new members into the database
+	 * 
+	 * @access	public
+	 * @return	number
+	 */	
+
+
 	/** -------------------------------------
 	/**  Perform XML Member Import
 	/** -------------------------------------*/
@@ -1056,6 +1145,18 @@ class Tools_utilities extends Controller {
 	}
 	/* END */
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Create Custom Field Validation
+	 *
+	 * Validates new custom field submission
+	 * 
+	 * @access	private
+	 * @return	mixed
+	 */	
+
+
 	function _create_custom_validation()
 	{
 		$this->load->library('form_validation');
@@ -1091,6 +1192,17 @@ class Tools_utilities extends Controller {
 		$this->form_validation->set_error_delimiters('<span class="notice">', '</span>');
 		
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Valid Name
+	 *
+	 * Validates new custom field names
+	 * 
+	 * @access	private
+	 * @return	bool
+	 */	
 	
 	function _valid_name($str)
 	{
@@ -1128,6 +1240,16 @@ class Tools_utilities extends Controller {
 		return TRUE;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Create Custom Fields
+	 *
+	 * Creates the custom field form
+	 * 
+	 * @access	public
+	 * @return	mixed
+	 */	
 
 	function create_custom_fields()
 	{
@@ -1217,6 +1339,16 @@ class Tools_utilities extends Controller {
 	}
 	
 	// --------------------------------------------------------------------
+
+	/**
+	 * Convert From Delimited Validation
+	 *
+	 * Validation for delimited XML conversion
+	 * 
+	 * @access	private
+	 * @return	void
+	 */	
+
 	
 	function _convert_from_delimited_validation()
 	{
@@ -1231,6 +1363,16 @@ class Tools_utilities extends Controller {
 	}
 	
 	// --------------------------------------------------------------------
+
+	/**
+	 * Convert from Delimited FORM
+	 *
+	 * Main form for converted delimited data to XML
+	 * 
+	 * @access	private
+	 * @return	void
+	 */	
+
 	
 	function _convert_from_delimited_form()
 	{
@@ -1255,6 +1397,16 @@ class Tools_utilities extends Controller {
 
 	
 	// --------------------------------------------------------------------
+
+	/**
+	 * Pair Fields Form
+	 *
+	 * For mapping to existing custom fields
+	 * 
+	 * @access	private
+	 * @return	void
+	 */	
+
 	
 	function _pair_fields_form()
 	{
@@ -1432,6 +1584,16 @@ class Tools_utilities extends Controller {
 	}
 	
 	// --------------------------------------------------------------------
+
+	/**
+	 * Prep Enclosure
+	 *
+	 * Undo changes made by form prep
+	 * 
+	 * @access	private
+	 * @return	string
+	 */	
+
 	
 	function _prep_enclosure($enclosure)
 	{
@@ -1450,7 +1612,15 @@ class Tools_utilities extends Controller {
 	
 	// --------------------------------------------------------------------
 
-	//  Confirm Data to XML Form
+	/**
+	 * Pair Fields Validation
+	 *
+	 * Validates paired fields
+	 * 
+	 * @access	private
+	 * @return	void
+	 */	
+
 	
 	function _pair_fields_validation()
 	{
@@ -1465,7 +1635,15 @@ class Tools_utilities extends Controller {
 	
 	// --------------------------------------------------------------------
 
-	//  Check for uniqueness and required values
+	/**
+	 * Unique Required
+	 *
+	 * Check for uniqueness and required values
+	 * 
+	 * @access	private
+	 * @return	void
+	 */	
+	
 	
 	function _unique_required ($selected_fields)
 	{
@@ -1512,6 +1690,16 @@ class Tools_utilities extends Controller {
 		return TRUE;		
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Confirm Data Form
+	 *
+	 * Generates confirmation page prior to delimited conversion
+	 * 
+	 * @access	public
+	 * @return	void
+	 */	
 
 	function confirm_data_form()
 	{
@@ -1601,9 +1789,17 @@ class Tools_utilities extends Controller {
 	/* END */
 	
 	
-	/** -------------------------------------
-	/**  Create XML File
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+
+	/**
+	 * Create XML File
+	 *
+	 * Creates and XML file from delimited data
+	 * 
+	 * @access	public
+	 * @return	mixed
+	 */	
+
 	
 	function create_xml()
 	{
@@ -1685,10 +1881,18 @@ class Tools_utilities extends Controller {
 	}
 	/* END */
 	
-	
-	/** -------------------------------------
-	/**  View XML in browser
-	/** -------------------------------------*/
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * View XML
+	 *
+	 * View XML in browser
+	 * 
+	 * @access	private
+	 * @return	void
+	 */	
+
 	
 	function view_xml($xml)
 	{
@@ -1712,11 +1916,18 @@ class Tools_utilities extends Controller {
 	}
 	/* END */
 	
-		
-	/** -------------------------------------
-	/**  View XML errors
-	/** -------------------------------------*/
-	
+	// --------------------------------------------------------------------
+
+	/**
+	 * View XML Errors
+	 *
+	 * Displays XML Errors
+	 * 
+	 * @access	public
+	 * @return	void
+	 */	
+
+
 	function view_xml_errors($errors, $message = '')
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
@@ -1756,10 +1967,17 @@ class Tools_utilities extends Controller {
 	}
 	/* END */
 	
-	
-	/** -------------------------------------
-	/**  Download XML file
-	/** -------------------------------------*/
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Download XML
+	 *
+	 * Generates XML download
+	 * 
+	 * @access	public
+	 * @return	void
+	 */	
 	
 	function download_xml($xml)
 	{
@@ -1869,6 +2087,16 @@ class Tools_utilities extends Controller {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Translation Save
+	 *
+	 * Saves a submitted translation
+	 * 
+	 * @access	public
+	 * @return	void
+	 */	
+
+
 	function translation_save()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
@@ -1917,9 +2145,17 @@ class Tools_utilities extends Controller {
 		}
 	}
 
-	/** -------------------------------------
-	/**  Read delimited data file into array
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+
+	/**
+	 * Datafile to Array
+	 *
+	 * Read delimited data file into an array
+	 * 
+	 * @access	public
+	 * @return	array
+	 */	
+
 	
 	function datafile_to_array($file)
 	{
