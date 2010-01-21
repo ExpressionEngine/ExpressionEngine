@@ -1227,6 +1227,7 @@ class Updater {
         $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{assign_variable:', '{preload_replace:')";   // this is necessary before the following query
         $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{preload_replace:my_weblog=', '{preload_replace:my_channel=')";
         $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{my_weblog}', '{my_channel}')";
+        $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '{weblog}', '{channel}')";
         $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'weblog_', 'channel_')";
         $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, '_weblog', '_channel')";
         $Q[] = "UPDATE `exp_templates` SET `template_data` = REPLACE(`template_data`, 'weblog=', 'channel=')";

@@ -33,14 +33,17 @@ class Search_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get Plugin Formatting
+	 * Get Filtered Entries
 	 *
-	 * Used in various locations to list formatting options
+	 * Main query for editable entries based on search parameters
 	 *
 	 * @access	public
-	 * @param	bool	whether or not to include a "None" option
+	 * @param	array	data array
+	 * @param	mixed	optional order array
+	 * @param	bool	whether this is a control panel request	
 	 * @return	array
 	 */
+	
 	function get_filtered_entries($data, $order = array(), $cp = TRUE)
 	{
 		$return_data = array('pageurl' => '', 'total_count' => 0, 'results' => array());
@@ -88,20 +91,50 @@ class Search_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get Plugin Formatting
+	 * Build Main Query
 	 *
-	 * Used in various locations to list formatting options
+	 * Creates the main query for search filter
 	 *
 	 * @access	public
-	 * @param	bool	whether or not to include a "None" option
+	 * @param	array	data array
+	 * @param	mixed	optional order array
+	 * @param	bool	whether to count results
+	 * @param	bool	whether this is a control panel request			
 	 * @return	array
 	 */
+		
 	function build_main_query($data, $order = array(), $do_count = FALSE, $cp = TRUE)
 	{
 		$where_clause = '';
 		$pageurl = '';
 		
-		$searchable_fields = $this->get_searchable_fields($data['channel_id']);
+		if ($cp)
+		{
+			// Fetch channel ID numbers assigned to the current user
+			$allowed_channels = $this->functions->fetch_assigned_channels();
+		}		
+		
+		$data['search_channels'] = $data['channel_id'];
+		
+		if ($data['search_channels'] == '')
+		{
+			if ($cp && $this->session->userdata['group_id'] != 1)
+			{
+				$data['search_channels'] = $allowed_channels;
+			}
+		}
+		
+		if ( ! is_array($data['search_channels']) && $data['search_channels'] != '')
+		{
+			$data['search_channels'] = array($data['search_channels']);
+		}
+		
+		if ($cp && is_array($data['search_channels']))
+		{
+			$data['search_channels'] = array_intersect($data['search_channels'], $allowed_channels);
+		}
+
+		$searchable_fields = $this->get_searchable_fields($data['search_channels']);
 
 		if ($data['search_in'] == 'comments')
 		{
@@ -247,9 +280,14 @@ class Search_model extends CI_Model {
 		if ($data['channel_id'] != '')
 		{
 			$pageurl .= AMP.'channel_id='.$data['channel_id'];
-			$where_clause .= " AND exp_channel_titles.channel_id = ".$data['channel_id'];
 		}
 
+		if (is_array($data['search_channels']))
+		{
+/////////			$where_clause .= " AND exp_channel_titles.channel_id = ".$data['channel_id'];
+					$where_clause .= " AND exp_channel_titles.channel_id IN (".implode(',' , $data['search_channels']).")";
+		}
+		
 		if ($data['date_range'])
 		{
 			$pageurl .= AMP.'date_range='.$data['date_range'];
@@ -331,6 +369,21 @@ class Search_model extends CI_Model {
 		return array('pageurl' => $pageurl, 'result_obj' => $this->db->get());
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Build Full CP Query
+	 *
+	 * Creates the full query for search filter
+	 *
+	 * @access	public
+	 * @param	array	data array
+	 * @param	array	array of entry ids
+	 * @param	mixed	order
+	 * @return	object
+	 */
+
+
 	function get_full_cp_query($data, $ids = array(), $order = array())
 	{
 		$select = ($data['cat_id'] == 'none' OR $data['cat_id'] != "") ? "DISTINCT(exp_channel_titles.entry_id), " : "exp_channel_titles.entry_id, ";
@@ -391,44 +444,52 @@ class Search_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	function get_searchable_fields($channel_id = '')
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get Searchable Fields
+	 *
+	 * CFetch the searchable field names
+	 *
+	 * @access	public
+	 * @param	array	data array
+	 * @return	array
+	 */
+
+	function get_searchable_fields($channel_id = array())
 	{
-				// ---------------------------------------
-				//	 Fetch the searchable field names
-				// ---------------------------------------
+		$fields = array();
 
-				$fields = array();
+		$this->db->distinct();
+		$this->db->select('field_group');
 
-				$this->db->distinct();
-				$this->db->select('field_group');
+		if (is_array($channel_id) && count($channel_id) > 0)
+		{
+			$this->db->where_in('channel_id', $channel_id);
+		}
 
-				if ($channel_id != '')
+		$query = $this->db->get('channels');
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				$fql[] = $row['field_group'];	
+			}
+			
+			$this->db->select('field_id');
+			$this->db->where_in('group_id', $fql);
+
+			$query =  $this->db->get('channel_fields');
+
+			if ($query->num_rows() > 0)
+			{
+				foreach ($query->result_array() as $row)
 				{
-					$this->db->where('channel_id', $channel_id);
+					$fields[] = $row['field_id'];
 				}
-
-				$query = $this->db->get('channels');
-
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{
-						$fql[] = $row['field_group'];	
-					}
-					
-					$this->db->select('field_id');
-					$this->db->where_in('group_id', $fql);
-
-					$query =  $this->db->get('channel_fields');
-
-					if ($query->num_rows() > 0)
-					{
-						foreach ($query->result_array() as $row)
-						{
-							$fields[] = $row['field_id'];
-						}
-					}
-				}
+			}
+		}
 	
 		return $fields;
 	}
