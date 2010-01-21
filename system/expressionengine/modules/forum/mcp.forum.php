@@ -1146,7 +1146,7 @@ class Forum_mcp {
 		$total_topics = 0;
 		$total_posts  = 0;
 		
-		foreach ($query->result as $row)
+		foreach ($query->result_array as $row)
 		{
 			$this->EE->db->where('forum_id', $row['forum_id']);
 			$total_topics += $this->EE->db->count_all_results('forum_topics');
