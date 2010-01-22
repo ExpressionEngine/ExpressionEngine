@@ -32,6 +32,7 @@
  * Options:
  * type				- message severity, options are: notice | success | error (default = notice)
  * open				- open drawer automatically | bool (default = false [except for errors])
+ * close_on_click   - close the drawer on click. | bool (default = true)
  *
  * Force Hide:
  * $.ee_notice.destroy()
@@ -72,7 +73,8 @@
 		
 		options = $.extend({
 			type: 'notice',
-			open: false
+			open: false,
+			close_on_click: true
 		}, params);
 		
 		// Ha! Well done, Pascal
@@ -200,12 +202,14 @@
 			}
 		}
 		
-		if ( ! drawer.data('close_bound')) {
-			drawer.data('close_bound', true);
-			
-			drawer.click(function() {
-				drawer.one('mouseout', close_notice_drawer);
-			});
+		if (options.close_on_click) {
+    		if ( ! drawer.data('close_bound')) {
+    			drawer.data('close_bound', true);
+
+    			drawer.click(function() {
+    				drawer.one('mouseout', close_notice_drawer);
+    			});
+    		}		    
 		}
 	}
 	

@@ -1,1 +1,416 @@
-if(typeof console=="undefined"||!console.log){console={log:function(){return false}}}jQuery(document).ready(function(){var b=jQuery;b(document).bind("ajaxComplete",function(e,f){if(f.status&&f.status==401){document.location=EE.BASE+"&"+f.responseText}});EE.create_searchbox=(function(){function f(h,j,i){h.setAttribute("type","search");b(h).attr({autosave:i,results:"10",placeholder:j})}function e(h,k){var j=b(h),i=j.css("color");j.focus(function(){j.css("color",i);(j.val()==k&&j.val(""))}).blur(function(){if(j.val()==""||j.val==k){j.val(k).css("color","#888")}}).trigger("blur")}var g=(parseInt(navigator.productSub)>=20020000&&navigator.vendor.indexOf("Apple Computer")!=-1)?f:e;return function(k,j,i){var h=document.getElementById(k);(h&&g(h,j,i))}})();EE.create_searchbox("cp_search_keywords","Search","ee_cp_search");EE.create_searchbox("template_keywords","Search Templates","ee_template_search");b('a[rel="external"]').click(function(){window.open(this.href);return false});function d(){var e={revealSidebarLink:"77%",hideSidebarLink:"100%"},f=b("#mainContent");if(EE.CP_SIDEBAR_STATE=="off"){f.css("width","100%");b("#revealSidebarLink").css("display","block");b("#hideSidebarLink").hide()}b("#revealSidebarLink, #hideSidebarLink").click(function(){var h=b(this),g=h.siblings("a");h.hide().siblings(":not(#activeUser)").slideToggle();f.animate({width:e[this.id]});g.show();return false})}d();if(EE.flashdata!==undefined){var c=b(".notice");types={success:"message_success",notice:"message",error:"message_failure"},show_notices=[];for(type in types){if(EE.flashdata.hasOwnProperty(types[type])){if(type=="error"){notice=c.filter(".failure").slice(0,1)}else{if(type=="success"){notice=c.filter(".success").slice(0,1)}else{notice=c.slice(0,1)}}if(EE.flashdata[types[type]]==notice.html()){show_notices.push({message:EE.flashdata[types[type]],type:type});notice.remove()}}}if(show_notices.length){b.ee_notice(show_notices)}}EE.notepad=(function(){var i=b("#notePad"),g=b("#notepad_form"),l=b("#sidebar_notepad_edit_desc"),f=b("#notePadTextEdit"),h=b("#notePadControls"),k=b("#notePadText").removeClass("js_show"),e=k.text(),j=f.val();return{init:function(){if(j){k.html(j.replace(/</ig,"&lt;").replace(/>/ig,"&gt;").replace(/\n/ig,"<br />"))}i.click(EE.notepad.show);h.find("a.cancel").click(EE.notepad.hide);g.submit(EE.notepad.submit);h.find("input.submit").click(EE.notepad.submit);f.autoResize()},submit:function(){j=b.trim(f.val());var m=j.replace(/</ig,"&lt;").replace(/>/ig,"&gt;").replace(/\n/ig,"<br />");f.attr("readonly","readonly").css("opacity",0.5);h.find("#notePadSaveIndicator").show();b.post(g.attr("action"),{notepad:j,XID:EE.XID},function(n){k.html(m||e).show();f.attr("readonly","").css("opacity",1).hide();h.hide().find("#notePadSaveIndicator").hide()},"json");return false},show:function(){if(h.is(":visible")){return false}var m="";if(k.hide().text()!=e){m=k.html().replace(/<br>/ig,"\n").replace(/&lt;/ig,"<").replace(/&gt;/ig,">")}h.show();f.val(m).show().height(0).focus().trigger("keypress")},hide:function(){k.show();f.hide();h.hide();return false}}})();EE.notepad.init();b("#accessoryTabs li a").click(function(){var e=b(this).parent("li"),f=b("#"+this.className);if(e.hasClass("current")){f.hide();e.removeClass("current")}else{if(e.siblings().hasClass("current")){f.show().siblings(":not(#accessoryTabs)").hide();e.siblings().removeClass("current")}else{f.slideDown()}e.addClass("current")}return false});function a(){var f=b("#search"),e=f.clone(),g=b("#cp_search_form").find(".searchButton");submit_handler=function(){var h=b(this).attr("action"),i={cp_search_keywords:b("#cp_search_keywords").attr("value")};b.ajax({url:h+"&ajax=y",data:i,beforeSend:function(){g.toggle()},success:function(j){g.toggle();f=f.replaceWith(e);e.html(j);b("#cp_reset_search").click(function(){e=e.replaceWith(f);b("#cp_search_form").submit(submit_handler);b("#cp_search_keywords").select();return false})},dataType:"html"});return false};b("#cp_search_form").submit(submit_handler)}a();b("h4","#quickLinks").click(function(){window.location.href=EE.BASE+"&C=myaccount&M=quicklinks"}).add("#notePad").hover(function(){b(".sidebar_hover_desc",this).show()},function(){b(".sidebar_hover_desc",this).hide()}).css("cursor","pointer");b("#activeUser").one("mouseover",function(){var j=b('<div id="logOutConfirm">'+EE.lang.logout_confirm+" </div>"),f=30,h=f,l;function k(){b.ajax({url:EE.BASE+"&C=login&M=logout",async:(!b.browser.safari)});window.location=EE.BASE+"&C=login&M=logout"}function g(){if(f<1){return setTimeout(k,0)}else{if(f==h){b(window).bind("unload.logout",k)}}j.dialog("option","title",EE.lang.logout+" ("+(f--||"...")+")");l=setTimeout(g,1000)}function e(){clearTimeout(l);b(window).unbind("unload.logout");f=h}var i={};i.Cancel=function(){b(this).dialog("close")};i[EE.lang.logout]=k;j.dialog({autoOpen:false,resizable:false,modal:true,title:EE.lang.logout,position:"center",minHeight:"0px",buttons:i,beforeclose:e});b("a.logOutButton",this).click(function(){b("#logOutConfirm").dialog("open");b(".ui-dialog-buttonpane button:eq(2)").focus();g();return false})});b(".js_show").show()});
+// Create a void console.log if the
+// browser does not support it
+
+if (typeof console == "undefined" || ! console.log) {
+	console = { log: function() { return false; }};
+}
+
+
+// Setup Base EE Control Panel
+
+jQuery(document).ready(function() {
+
+var $ = jQuery;
+
+
+// Setup Global Ajax Events
+
+// A 401 in combination with a url indicates a redirect, we use this
+// on the login page to catch periodic ajax requests (e.g. autosave)
+
+$(document).bind('ajaxComplete', function(evt, xhr) {
+	if (xhr.status && xhr.status == 401) {
+		document.location = EE.BASE+'&'+xhr.responseText;
+	}
+});
+
+
+// OS X Style Search Boxes for Webkit
+
+EE.create_searchbox = (function() {
+	
+	function webkit_search(el, placeholder, save) {
+		el.setAttribute('type', 'search');
+		$(el).attr({
+			autosave: 		save,
+			results:		'10',
+			placeholder:	placeholder
+		});
+	}
+	
+	function generic_search(el, placeholder) {
+		var jqEl = $(el),
+			orig_color = jqEl.css('color');
+		
+		jqEl.focus(function() {
+			// Reset color & remove placeholder text
+			jqEl.css('color', orig_color);
+			(jqEl.val() == placeholder && jqEl.val(''));
+		})
+		.blur(function() {
+			// If no user content -> add placeholder text and dim
+			if (jqEl.val() == '' || jqEl.val == placeholder) {
+				jqEl.val(placeholder).css('color', '#888');
+			}
+		})
+		.trigger('blur');
+	}
+	
+	var create_func = (parseInt(navigator.productSub) >= 20020000 &&
+					  navigator.vendor.indexOf('Apple Computer') != -1) ? webkit_search : generic_search;
+
+	return function(id, placeholder, save) {
+		var el = document.getElementById(id);
+		(el && create_func(el, placeholder, save));
+	}
+})();
+
+// @todo Language keys
+EE.create_searchbox('cp_search_keywords', 'Search', 'ee_cp_search');
+EE.create_searchbox('template_keywords', 'Search Templates', 'ee_template_search');
+
+
+// External links open in new window
+
+$('a[rel="external"]').click(function() {
+	window.open(this.href);
+	return false;
+});
+
+
+
+
+EE.logOutCheck = (function() {
+    // return false;
+    var timeOutTimer         = EE.SESS_TIMEOUT - 900; // 5000;// EE.SESS_TIMEOUT - 60000; Fire one Minute before the session times out.  EE.lang.session_expiring
+
+    setTimeout(isPageAboutToExpire, timeOutTimer);
+
+    function isPageAboutToExpire() {
+        // console.log('fired');
+
+        $.ee_notice('<div id="logOutWarning" style="text-align:center"><p>'+EE.lang.session_expiring+'</p><label for="username">'+EE.lang.username+'</label>: <input type="text" id="username" name="username" value="" style="width:100px" size="35" dir="ltr" id="username" maxlength="32"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="password">'+EE.lang.password+'</label>: <input id="password" type="password" name="password" value="" style="width:100px" size="32" dir="ltr" id="password" maxlength="32"  /> <input type="submit" id="submit" name="submit" value="'+EE.lang.login+'" class="submit" /></div>', {type: "custom", open: true, close_on_click: false});
+        
+        $("#logOutWarning").find('#username').focus();
+
+        $('#logOutWarning').find("input#submit").click(function() {
+            var username = $('#logOutWarning').find('input#username').val(),
+                password = $('#logOutWarning').find('input#password').val();
+
+            $.ajax({
+                type: "POST",
+                url: EE.BASE+"&C=login&M=authenticate&is_ajax=true",
+                data: {'username' : username, 'password' : password, 'XID' : EE.XID},
+                success: function(result) {
+                    // console.log(result);
+                    if (result != '') {
+                        
+                        eval('res='+result); 
+
+                        // Regenerate XID and Session ID
+                        $("input[name='XID']").val(res.xid);
+                        
+                        $('#logOutWarning').slideUp('fast');
+                        $.ee_notice('You are now logged back in!', {type : "custom", open: true});
+                        setTimeout(isPageAboutToExpire, timeOutTimer);
+                    } 
+                    else {
+                        console.log('failure');
+                    }
+                }
+            });
+            
+            return false;
+
+        });
+
+    }
+    
+
+    
+
+})();
+
+
+// Hook up show / hide actions for sidebar
+
+function show_hide_sidebar() {
+	var w = {'revealSidebarLink': '77%', 'hideSidebarLink': '100%'},
+		main_content = $("#mainContent");
+	
+	// Sidebar state
+
+	if (EE.CP_SIDEBAR_STATE == "off") {
+		main_content.css("width", "100%");
+		$("#revealSidebarLink").css('display', 'block');
+		$("#hideSidebarLink").hide();
+	}
+	
+	$('#revealSidebarLink, #hideSidebarLink').click(function() {
+		var that = $(this),
+			other = that.siblings('a');
+		
+		that.hide().siblings(':not(#activeUser)').slideToggle();
+		main_content.animate({"width": w[this.id]});
+		other.show();
+		return false;
+	});
+}
+
+show_hide_sidebar();
+
+
+// Move notices to notification bar for consistency
+
+if (EE.flashdata !== undefined) {
+	var notices = $(".notice");
+		types = {success: "message_success", notice: "message", error: "message_failure"},
+		show_notices = [];
+
+	for (type in types) {
+		if (EE.flashdata.hasOwnProperty(types[type])) {
+
+			if (type == "error") {
+				notice = notices.filter(".failure").slice(0, 1);
+			}
+			else if (type == "success") {
+				notice = notices.filter(".success").slice(0, 1);
+			}
+			else {
+				notice = notices.slice(0, 1);
+			}
+
+			if (EE.flashdata[types[type]] == notice.html()) {
+				show_notices.push({message: EE.flashdata[types[type]], type: type});
+				notice.remove();
+			}
+		}
+	}
+
+	if (show_notices.length) {
+		$.ee_notice(show_notices);
+	}
+}
+
+
+// Setup Notepad
+
+EE.notepad = (function() {
+	var notepad = $('#notePad'),
+		notepad_form = $("#notepad_form"),
+		notepad_desc = $('#sidebar_notepad_edit_desc'),
+		notepad_txtarea = $('#notePadTextEdit'),
+		notepad_controls = $('#notePadControls'),
+		notepad_text = $('#notePadText').removeClass('js_show'),	// .show() was really slow on this - not sure why
+		notepad_empty = notepad_text.text(),
+		current_content = notepad_txtarea.val();
+	
+	return {
+		init: function() {
+			if (current_content) {
+				notepad_text.html(current_content.replace(/</ig, '&lt;').replace(/>/ig, '&gt;').replace(/\n/ig, '<br />'));
+			}
+			
+			notepad.click(EE.notepad.show);
+			notepad_controls.find('a.cancel').click(EE.notepad.hide);
+			
+			notepad_form.submit(EE.notepad.submit);
+			notepad_controls.find('input.submit').click(EE.notepad.submit);
+			
+			notepad_txtarea.autoResize();
+		},
+		
+		submit: function() {
+			current_content = $.trim(notepad_txtarea.val());
+
+			var newval = current_content.replace(/</ig, '&lt;').replace(/>/ig, '&gt;').replace(/\n/ig, '<br />');
+
+			notepad_txtarea.attr('readonly', 'readonly').css('opacity', 0.5);
+			notepad_controls.find('#notePadSaveIndicator').show();
+
+			$.post(notepad_form.attr('action'), {'notepad': current_content, 'XID': EE.XID }, function(ret) {
+				notepad_text.html(newval || notepad_empty).show();
+				notepad_txtarea.attr('readonly', '').css('opacity', 1).hide();
+				notepad_controls.hide().find('#notePadSaveIndicator').hide();
+			}, 'json');
+			return false;
+		},
+		
+		show: function() {
+			// Already showing?
+			if (notepad_controls.is(':visible')) {
+				return false;
+			}
+
+			var newval = '';
+
+			if (notepad_text.hide().text() != notepad_empty) {
+				newval = notepad_text.html().replace(/<br>/ig, '\n').replace(/&lt;/ig, '<').replace(/&gt;/ig, '>');
+			}
+
+			notepad_controls.show();
+			notepad_txtarea.val(newval).show()
+							.height(0).focus()
+							.trigger('keypress');
+		},
+		
+		hide: function() {
+			notepad_text.show();
+			notepad_txtarea.hide();
+			notepad_controls.hide();
+			return false;
+		}
+	}
+})();
+
+EE.notepad.init();
+
+
+// Show / hide accessories
+
+$('#accessoryTabs li a').click(function() {
+	var parent = $(this).parent("li"),
+		accessory = $("#" + this.className);
+	
+	if (parent.hasClass("current")) {
+		accessory.hide();
+		parent.removeClass("current");
+	}
+	else {
+		if (parent.siblings().hasClass("current")) {
+			accessory.show().siblings(":not(#accessoryTabs)").hide();
+			parent.siblings().removeClass("current");
+		}
+		else {
+			accessory.slideDown();
+		}
+		parent.addClass("current");
+	}
+	
+	return false;
+});
+
+
+// Ajax for control panel search
+
+function control_panel_search() {
+	var search = $('#search'),
+		result = search.clone(),
+		buttonImgs = $('#cp_search_form').find('.searchButton');
+	
+	submit_handler = function() {
+		var url = $(this).attr('action'),
+			data = {
+				'cp_search_keywords': $('#cp_search_keywords').attr('value')
+			};
+
+		$.ajax({
+			url: url+'&ajax=y',
+			data: data,
+			beforeSend: function() {
+				buttonImgs.toggle();
+			},
+			success: function(ret) {
+				buttonImgs.toggle();
+
+				search = search.replaceWith(result);
+				result.html(ret);
+
+				$('#cp_reset_search').click(function() {
+					result = result.replaceWith(search);
+
+					$('#cp_search_form').submit(submit_handler);
+					$('#cp_search_keywords').select();
+					return false;
+				});
+			},
+			dataType: 'html'
+		});
+
+		return false;
+	}
+
+	$('#cp_search_form').submit(submit_handler);
+}
+
+control_panel_search();
+
+
+// Setup sidebar hover descriptions
+
+$('h4', '#quickLinks').click(function() {
+	window.location.href = EE.BASE+'&C=myaccount&M=quicklinks';
+})
+.add('#notePad').hover(function() {
+	$('.sidebar_hover_desc', this).show();
+}, function() {
+	$('.sidebar_hover_desc', this).hide();
+})
+.css('cursor', 'pointer');
+
+
+// Logout button confirmation
+
+$("#activeUser").one("mouseover", function() {
+
+	var logout_modal = $('<div id="logOutConfirm">'+EE.lang.logout_confirm+' </div>'),
+		ttl = 30,
+		orig_ttl = ttl,
+		countdown_timer;
+
+	function log_me_out() {
+		// Won't redirect on unload
+		$.ajax({
+			url: EE.BASE+"&C=login&M=logout",
+			async: ( ! $.browser.safari)
+		});
+
+		// Redirect
+		window.location=EE.BASE+"&C=login&M=logout";
+	}
+	
+	function delay_logout() {
+		if (ttl < 1) {
+			return setTimeout(log_me_out, 0);
+		}
+		else if (ttl == orig_ttl) {
+			$(window).bind("unload.logout", log_me_out);
+		}
+		
+		logout_modal.dialog("option", "title", EE.lang.logout+" ("+ (ttl-- || "...") +")");
+		countdown_timer = setTimeout(delay_logout, 1000);
+	}
+	
+	function cancel_logout() {
+		clearTimeout(countdown_timer);
+		$(window).unbind("unload.logout");
+		ttl = orig_ttl;
+	}
+	
+	var buttons = {};
+		buttons['Cancel'] = function() { $(this).dialog("close"); };
+		buttons[EE.lang.logout] = log_me_out;
+	
+	logout_modal.dialog({
+		autoOpen: false,
+		resizable: false,
+		modal: true,
+		title: EE.lang.logout,
+		position: "center",
+		minHeight: "0px",
+		buttons: buttons,
+		beforeclose: cancel_logout
+	});
+
+	$("a.logOutButton", this).click(function(){
+		$("#logOutConfirm").dialog("open");
+		$(".ui-dialog-buttonpane button:eq(2)").focus(); //focus on Log-out so pressing return logs out
+		
+		delay_logout();
+		return false;
+	});
+});
+
+$(".js_show").show();
+
+});

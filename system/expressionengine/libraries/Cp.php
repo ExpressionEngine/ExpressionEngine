@@ -202,7 +202,11 @@ class Cp {
 		
 		$js_lang_keys = array(
 			'logout_confirm'	=> $this->EE->lang->line('logout_confirm'),
-			'logout'			=> $this->EE->lang->line('logout')
+			'logout'			=> $this->EE->lang->line('logout'),
+			'session_expiring'	=> $this->EE->lang->line('session_expiring'),
+			'username'			=> $this->EE->lang->line('username'),
+			'password'			=> $this->EE->lang->line('password'),
+			'login'				=> $this->EE->lang->line('login')
 		);
 		
 		$this->EE->javascript->set_global(array(
@@ -213,7 +217,8 @@ class Cp {
 			'flashdata'			=> $this->EE->session->flashdata,
 			'username'			=> $this->EE->session->userdata('username'),
 			'router_class'		=> $this->EE->router->class,				// advanced css
-			'lang'				=> $js_lang_keys
+			'lang'				=> $js_lang_keys,
+			'SESS_TIMEOUT'		=> $this->EE->session->cpan_session_len * 1000
 		));
 		
 		// Combo-load the javascript files we need for every request

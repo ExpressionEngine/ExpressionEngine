@@ -123,7 +123,7 @@ class Login extends Controller {
 	 * @return	mixed
 	 */	
 	function authenticate()
-	{
+	{		
 		/** ----------------------------------------
 		/**  No username/password?  Bounce them...
 		/** ----------------------------------------*/
@@ -378,6 +378,18 @@ class Login extends Controller {
 		if ($this->input->post('bm_qstr'))
 		{
 			$return_path .= AMP.$this->input->post('bm_qstr');
+		}
+		
+		if ($this->input->get_post('is_ajax'))
+		{
+			if (defined('XID_SECURE_HASH')) {
+				$resp['xid'] = XID_SECURE_HASH;
+			}
+			
+			$resp['session'] = $this->session->sdata['session_id'];
+			
+			
+			$this->output->send_ajax_response($resp); exit;
 		}
 
 		$this->functions->redirect($return_path);
