@@ -133,7 +133,7 @@ class Expressionengine_info_acc {
 							'build'		=> $build
 						);
 
-		// $this->_write_cache($details);
+		$this->_write_cache($details);
 		return str_replace(array('%v', '%b'), array($details['version'], $details['build']), $this->EE->lang->line('version_info'));
 	}
 
