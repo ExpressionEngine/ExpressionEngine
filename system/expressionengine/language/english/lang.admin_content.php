@@ -856,6 +856,9 @@ $lang = array(
 "textarea" =>
 "Textarea",
 
+'select_list' =>
+'Select List',
+
 "auto_br" =>
 "Auto &lt;br /&gt;",
 
