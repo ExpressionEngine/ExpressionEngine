@@ -835,6 +835,14 @@ class Cp {
 
 	// --------------------------------------------------------------------
 	
+	/**
+	 * 	Fetch Action IDs
+	 *
+	 * 	@access public
+	 *	@param string
+	 * 	@param string
+	 *	@return mixed
+	 */
 	function fetch_action_id($class, $method)
 	{
 		$this->EE->db->select('action_id');
