@@ -123,7 +123,9 @@ class Login extends Controller {
 	 * @return	mixed
 	 */	
 	function authenticate()
-	{		
+	{	
+		$is_ajax = ($this->input->get_post('is_ajax')) ? TRUE : FALSE;
+			
 		/** ----------------------------------------
 		/**  No username/password?  Bounce them...
 		/** ----------------------------------------*/
@@ -131,6 +133,15 @@ class Login extends Controller {
 		if ( ! $this->input->post('username'))
 		{
 			$this->session->set_flashdata('message', $this->lang->line('no_username'));
+
+			if ($is_ajax)
+			{
+				$resp['messageType'] = 'failure';
+				$resp['message'] = $this->lang->line('no_username');
+
+				$this->output->send_ajax_response($resp); exit;				
+			}
+			
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
 		
@@ -139,6 +150,15 @@ class Login extends Controller {
 		if ( ! $this->input->get_post('password'))
 		{
 			$this->session->set_flashdata('message', $this->lang->line('no_password'));
+
+			if ($is_ajax)
+			{
+				$resp['messageType'] = 'failure';
+				$resp['message'] = $this->lang->line('no_password');
+
+				$this->output->send_ajax_response($resp); exit;				
+			}
+			
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
 
@@ -199,6 +219,15 @@ class Login extends Controller {
 			$this->session->save_password_lockout();
 			
 			$this->session->set_flashdata('message', $this->lang->line('credential_missmatch'));
+			
+			if ($is_ajax)
+			{
+				$resp['messageType'] = 'failure';
+				$resp['message'] = $this->lang->line('credential_missmatch');
+
+				$this->output->send_ajax_response($resp); exit;				
+			}
+			
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
 		
@@ -234,6 +263,15 @@ class Login extends Controller {
 				$this->session->save_password_lockout();
 
 				$this->session->set_flashdata('message', $this->lang->line('credential_missmatch'));
+				
+				if ($is_ajax)
+				{
+					$resp['messageType'] = 'failure';
+					$resp['message'] = $this->lang->line('credential_missmatch');
+
+					$this->output->send_ajax_response($resp); exit;				
+				}
+				
 				$this->functions->redirect(BASE.AMP.'C=login');
 			}
 		}
@@ -380,13 +418,15 @@ class Login extends Controller {
 			$return_path .= AMP.$this->input->post('bm_qstr');
 		}
 		
-		if ($this->input->get_post('is_ajax'))
+		if ($is_ajax)
 		{
 			if (defined('XID_SECURE_HASH')) {
 				$resp['xid'] = XID_SECURE_HASH;
 			}
 			
-			$resp['session'] = $this->session->sdata['session_id'];
+			$resp['session_id'] = $this->session->sdata['session_id'];
+			$resp['messageType'] = 'success';
+			$resp['message'] = $this->lang->line('logged_back_in');
 			
 			
 			$this->output->send_ajax_response($resp); exit;

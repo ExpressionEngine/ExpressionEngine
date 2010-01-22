@@ -78,6 +78,63 @@ $('a[rel="external"]').click(function() {
 });
 
 
+
+
+EE.logOutCheck = (function() {
+
+    var timeOutTimer         = EE.SESS_TIMEOUT - 2; //60000; // One minute before the EE Session Times Out
+    // 5000;// EE.SESS_TIMEOUT - 60000; Fire one Minute before the session times out.  EE.lang.session_expiring
+
+    setTimeout(isPageAboutToExpire, timeOutTimer);
+
+    function isPageAboutToExpire() {
+        $.ee_notice('<div id="logOutWarning" style="text-align:center"><p>'+EE.lang.session_expiring+'</p><label for="username">'+EE.lang.username+'</label>: <input type="text" id="log_backin_username" name="username" value="" style="width:100px" size="35" dir="ltr" id="username" maxlength="32"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="password">'+EE.lang.password+'</label>: <input id="log_backin_password" type="password" name="password" value="" style="width:100px" size="32" dir="ltr" id="password" maxlength="32"  /> <input type="submit" id="submit" name="submit" value="'+EE.lang.login+'" class="submit" /><span id="logInSpinner"></span></div>', {type: "custom", open: true, close_on_click: false});
+        
+        logOutWarning = $('#logOutWarning');
+        
+        logOutWarning.find('#log_backin_username').focus();
+
+        logOutWarning.find("input#submit").click(function() {
+
+            var username        = logOutWarning.find('input#log_backin_username').val(),
+                password        = logOutWarning.find('input#log_backin_password').val(),
+                submitBtn       = $(this),
+                logInSpinner    = logOutWarning.find('span#logInSpinner');
+
+            submitBtn.hide();
+            logInSpinner.html('<img src="'+EE.PATH_CP_GBL_IMG+'indicator.gif" />');
+
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                url: EE.BASE+"&C=login&M=authenticate&is_ajax=true",
+                data: {'username' : username, 'password' : password, 'XID' : EE.XID},
+                success: function(result) {
+                    if (result.messageType == 'success') {
+                        // Regenerate XID
+                        $("input[name='XID']").val(result.xid);
+                        
+                        logOutWarning.slideUp('fast');
+                        $.ee_notice(result.message, {type : "custom", open: true});
+                        
+                        // Reset Timeout
+                        setTimeout(isPageAboutToExpire, timeOutTimer);
+                    } 
+                    else if (result.messageType == 'failure') {
+
+                        logOutWarning.before('<div id="loginCheckFailure">' + result.message + '</div>');                        
+                        logInSpinner.hide('fast');
+                        submitBtn.css('display', 'inline');
+
+                    }
+                }
+            });
+            return false;
+        });
+    }
+})();
+
+
 // Hook up show / hide actions for sidebar
 
 function show_hide_sidebar() {

@@ -211,6 +211,9 @@ $lang = array(
 "password" => 
 "Password",
 
+'logged_back_in'	=>
+'You are now logged back in!',
+
 "my_account" => 
 "My Account",
 
