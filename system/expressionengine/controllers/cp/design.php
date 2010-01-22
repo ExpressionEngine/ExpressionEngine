@@ -3495,6 +3495,7 @@ class Design extends Controller {
 		
 		$vars['message'] = $message;
 		$vars['default_group'] = '';
+		$vars['search_terms'] = FALSE;
 
 		$this->javascript->output('
 			// messages are hidden because they push the table out of the way with empty paragraphs
