@@ -210,6 +210,11 @@ class Homepage extends Controller {
 		
 		$vars['show_page_option'] = (isset($this->cp->installed_modules['pages'])) ? TRUE : FALSE;
 
+		if (APP_BUILD == '20100101')
+		{
+			$this->db->query("UPDATE exp_channel_fields SET field_type = 'checkboxes' WHERE field_type = 'option_group'");
+		}
+
 		if ( ! $this->cp->allowed_group('can_access_publish'))	
 		{
 			$vars['show_page_option'] = FALSE;

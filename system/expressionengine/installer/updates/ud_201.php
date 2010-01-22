@@ -40,17 +40,7 @@ class Updater {
 		// Everything else is the custom field conversion
 
 		// Rename option groups to checkboxes
-		$this->EE->db->select('field_id');
-		$query = $this->EE->db->get_where('channel_fields', array('field_type' => 'checkboxes'));
-
-		$ids = array_map('array_pop', $query->result_array());
-		
-		if (count($ids))
-		{
-			$this->EE->db->where_in('field_id', $ids);
-			$this->EE->db->set('field_type', 'checkboxes');
-			$this->EE->db->update('channel_fields');
-		}
+		$Q[] = "UPDATE exp_channel_fields SET field_type = 'checkboxes' WHERE field_type = 'option_group'";
 
 		// Add missing column
 		$Q[] = "ALTER TABLE `exp_channel_fields` ADD `field_settings` TEXT NULL";
