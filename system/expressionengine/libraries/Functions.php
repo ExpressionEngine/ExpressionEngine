@@ -2926,10 +2926,10 @@ class EE_Functions {
 	 * @return	object
 	 */
 	function clone_object($object)
-	{ 
+	{
 		if (is_php('5.0.0') == TRUE)
 		{
-			eval('return clone $object;');
+			return eval('return clone $object;');
 		}
 		else
 		{
