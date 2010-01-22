@@ -559,6 +559,15 @@ class Wiki {
 		{
 			$data[LD.'segment_'.$i.RD] = $this->EE->uri->segment($i);
 		}
+
+		/** -------------------------------------
+		/**  Parse Snippets
+		/** -------------------------------------*/
+		
+		foreach ($this->EE->config->_global_vars as $key => $val)
+		{
+			$data[LD.$key.RD] = $val; 
+		}
 		
 		/** -------------------------------------
 		/**  Parse manual variables
