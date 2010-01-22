@@ -96,7 +96,7 @@ if ($EE_view_disable !== TRUE)
 			<?=lang('is_field_required', 'm_field_required')?>
 			</div>
 			<ul class="rounded">
-				<li><?=form_dropdown('m_field_required', $m_field_required_options, set_value('m_field_required', $m_field_required_yes))?></li>
+				<li><?=form_dropdown('m_field_required', $m_field_required_options, set_value('m_field_required', $m_field_required))?></li>
 			</ul>
 
 			<div class="label">
@@ -104,7 +104,7 @@ if ($EE_view_disable !== TRUE)
 			<?=lang('is_field_public_cont')?>
 			</div>
 			<ul class="rounded">
-				<li><?=form_dropdown('m_field_public', $m_field_public_options, set_value('m_field_public', $m_field_public_yes))?></li>
+				<li><?=form_dropdown('m_field_public', $m_field_public_options, set_value('m_field_public', $m_field_public))?></li>
 			</ul>
 
 			<div class="label">
@@ -112,7 +112,7 @@ if ($EE_view_disable !== TRUE)
 			<?=lang('is_field_public_cont')?>
 			</div>
 			<ul class="rounded">
-				<li><?=form_dropdown('m_field_reg', $m_field_reg_options, set_value('m_field_reg', $m_field_reg_yes))?></li>
+				<li><?=form_dropdown('m_field_reg', $m_field_reg_options, set_value('m_field_reg', $m_field_reg))?></li>
 			</ul>
 
 			<div class="container pad">* <?=lang('required_fields')?></div>

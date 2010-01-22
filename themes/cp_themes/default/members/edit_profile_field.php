@@ -113,7 +113,7 @@ if ($EE_view_disable !== TRUE)
         // Required Field?
         $this->table->add_row(array(
                 lang('is_field_required', 'm_field_required'),
-				form_dropdown('m_field_required', $m_field_required_options, set_value('m_field_required', $m_field_required_yes))
+				form_dropdown('m_field_required', $m_field_required_options, set_value('m_field_required', $m_field_required))
             )
         );
 
@@ -121,7 +121,7 @@ if ($EE_view_disable !== TRUE)
         $this->table->add_row(array(
                 lang('is_field_public', 'm_field_reg').'<br />'.
                 lang('is_field_public_cont'),
-				form_dropdown('m_field_public', $m_field_public_options, set_value('m_field_public', $m_field_public_yes))
+				form_dropdown('m_field_public', $m_field_public_options, set_value('m_field_public', $m_field_public))
              )
         );
 
@@ -129,7 +129,7 @@ if ($EE_view_disable !== TRUE)
         $this->table->add_row(array(
                lang('is_field_reg', 'm_field_reg').'<br />'.
                lang('is_field_public_cont'),
-				form_dropdown('m_field_reg', $m_field_reg_options, set_value('m_field_reg', $m_field_reg_yes))
+				form_dropdown('m_field_reg', $m_field_reg_options, set_value('m_field_reg', $m_field_reg))
             )
         );
 
