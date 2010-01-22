@@ -82,7 +82,7 @@ $('a[rel="external"]').click(function() {
 
 EE.logOutCheck = (function() {
 
-    var timeOutTimer         = EE.SESS_TIMEOUT - 2; //60000; // One minute before the EE Session Times Out
+    var timeOutTimer         = EE.SESS_TIMEOUT - 60000; //60000; // One minute before the EE Session Times Out
     // 5000;// EE.SESS_TIMEOUT - 60000; Fire one Minute before the session times out.  EE.lang.session_expiring
 
     setTimeout(isPageAboutToExpire, timeOutTimer);
