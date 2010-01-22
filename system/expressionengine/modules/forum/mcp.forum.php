@@ -578,8 +578,8 @@ class Forum_mcp {
 	{
 		$forum_id 	= $this->EE->input->get_post('forum_id');
 		$parent_id 	= $this->EE->input->get_post('parent_id');
+		$default_parent = FALSE;
 		
-
 		//  What type of request are we processing?
 		
 		// If $_GET['forum_id'] is missing we are creating a new item
@@ -662,7 +662,6 @@ class Forum_mcp {
 			$hidden['forum_id'] = $forum_id;
 		}
 		
-
 		// Fetch the forum data if we are editing
 
 		if ($is_new === FALSE)
@@ -672,6 +671,8 @@ class Forum_mcp {
 		}
 		else
 		{
+			$default_parent = $this->EE->input->get_post('parent_id');
+
 			$query = $this->EE->db->get_where('forum_boards', array('board_id' => $this->board_id));
 			$row = $query->row_array();
 	
@@ -709,7 +710,7 @@ class Forum_mcp {
 				{
 					continue;
 				}
-				
+
 				$default_value = (isset($query) AND is_object($query) AND isset($row[$item])) ? $row[$item] : '';
 				
 				$label = ($title == 'forum_preferences') ? $item : str_replace('forum_', 'pref_', $item);
@@ -764,9 +765,14 @@ class Forum_mcp {
 				elseif ($val['0'] == 'd' || $val['0'] == 'f')		// drop-down menus
 				{
 					$label = lang($label, $item);
-					
+
 					if ($val['0'] == 'f')
 					{
+						if ($default_parent && $item == 'forum_parent')
+						{
+							$default_value = $default_parent;
+						}
+						
 						$items = $this->$val['1']();
 					}
 					else

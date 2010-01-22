@@ -6328,7 +6328,7 @@ class Forum_Core extends Forum {
 					'quotetopic'	=> 'new_reply_page',
 					'quotereply'	=> 'new_reply_page'
 					);
-			
+
 			if ($this->_use_trigger())
 			{
 				return $this->_display_forum($type[$this->current_request]);
@@ -6338,11 +6338,11 @@ class Forum_Core extends Forum {
 			{
 				$_POST['attach'] = implode('|', $this->attachments);
 			}
-			
+
 			// Then we are in a template.  We have to call this template.  Dude.
 			// We still have to send the preview information though.  Curious.
 			
-			$this->EE->functions->clear_caching('all', $_POST['preview']);
+			$this->EE->functions->clear_caching('all');
 			
 			unset($_POST['ACT']);
 		
