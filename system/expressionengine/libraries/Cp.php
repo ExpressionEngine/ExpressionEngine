@@ -40,6 +40,8 @@ class Cp {
 			'package'			=> array(),
 	);
 	
+	var $xid_ttl 				= 14400;
+	
 	/**
 	 * Constructor
 	 *
@@ -218,7 +220,8 @@ class Cp {
 			'username'			=> $this->EE->session->userdata('username'),
 			'router_class'		=> $this->EE->router->class,				// advanced css
 			'lang'				=> $js_lang_keys,
-			'SESS_TIMEOUT'		=> $this->EE->session->cpan_session_len * 1000
+			'SESS_TIMEOUT'		=> $this->EE->session->cpan_session_len * 1000,
+			'XID_TIMEOUT'		=> $this->xid_ttl * 1000
 		));
 		
 		// Combo-load the javascript files we need for every request
@@ -598,7 +601,7 @@ class Cp {
 				$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_security_hashes 
 												 WHERE hash = '".$this->EE->db->escape_str($_POST['XID'])."' 
 												 AND ip_address = '".$this->EE->input->ip_address()."' 
-												 AND date > UNIX_TIMESTAMP()-14400");
+												 AND date > UNIX_TIMESTAMP()-".$this->xid_ttl);
 	
 				if ($query->row('count')  == 0)
 				{
@@ -607,7 +610,7 @@ class Cp {
 				else
 				{
 					$this->EE->db->query("DELETE FROM exp_security_hashes 
-											WHERE date < UNIX_TIMESTAMP()-14400
+											WHERE date < UNIX_TIMESTAMP()-{$this->xid_ttl}
 											AND ip_address = '".$this->EE->input->ip_address()."'");
 								
 					unset($_POST['XID']);
