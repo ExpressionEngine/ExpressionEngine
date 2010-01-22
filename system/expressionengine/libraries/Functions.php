@@ -2929,7 +2929,7 @@ class EE_Functions {
 	{ 
 		if (is_php('5.0.0') == TRUE)
 		{
-			eval('return clone $object');
+			eval('return clone $object;');
 		}
 		else
 		{
