@@ -485,7 +485,7 @@ class Api_channel_entries extends Api {
 					$this->EE->db->update('members', array('total_comments' => ($query->row('total_comments') - $count)));
 				}
 
-				$this->EE->db->delete('commentss', array('entry_id' => $val));
+				$this->EE->db->delete('comments', array('entry_id' => $val));
 			}
 
 			// -------------------------------------------
