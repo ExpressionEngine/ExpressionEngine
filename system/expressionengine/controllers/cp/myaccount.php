@@ -333,7 +333,7 @@ class MyAccount extends Controller {
 				{
 					$rows = ( ! isset($row['m_field_ta_rows'])) ? '10' : $row['m_field_ta_rows'];
 
-					$vars['custom_profile_fields'][] = $required.form_label($row['m_field_label'], 'm_field_id_'.$row['m_field_id']).NBS.form_textarea(array('name'=>'m_field_id_'.$row['m_field_id'], 'id'=>'m_field_id_'.$row['m_field_id'], 'rows'=>$rows, 'value'=>$field_data));
+					$vars['custom_profile_fields'][] = $required.form_label($row['m_field_label'], 'm_field_id_'.$row['m_field_id']).NBS.form_textarea(array('name'=>'m_field_id_'.$row['m_field_id'], 'class'=>'field','id'=>'m_field_id_'.$row['m_field_id'], 'rows'=>$rows, 'value'=>$field_data));
 				}
 				elseif ($row['m_field_type'] == 'select') // Drop-down lists
 				{
