@@ -90,25 +90,17 @@ class Login extends Controller {
 		
 		$vars['username'] = ($this->username) ? form_prep($this->username) : '';
 		
-		// @confirm there is no way this works - silly bookmarklet
 		if ($this->input->get('BK'))
 		{
-			if ( ! isset($_SERVER['QUERY_STRING']))
-			{
-				$qstr = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
-			}
-			else
-			{
-				$qstr = $_SERVER['QUERY_STRING'];
-			}
+			$vars['return_path'] = base64_encode($this->input->get('BK'));
 		}
-							
-		if ($this->input->get('BK') AND $qstr != '')
+		else if ($this->input->get('return'))
 		{
-			$qstr = preg_replace("#.*?C=publish(.*?)#", "C=publish\\1", $qstr);
-		
-			// @todo remove all dsp from this file - starting with this one
-			$r .= $this->dsp->input_hidden('bm_qstr', $qstr);
+			$vars['return_path'] = $this->input->get('return');
+		}
+		else
+		{
+			$vars['return_path'] = '';
 		}
 
 		$this->load->view('account/login', $vars);
@@ -409,13 +401,13 @@ class Login extends Controller {
 		/**  Redirect the user to the CP home page
 		/** ----------------------------------------*/
 		
-		$return_path = $this->input->post('return_path').'?S='.$session_id;
-		
-		$return_path = str_replace(array('&#46;','&#63;','&amp;'), array('.','?','&'), $return_path);
-		
-		if ($this->input->post('bm_qstr'))
+		if ($this->input->post('return_path'))
 		{
-			$return_path .= AMP.$this->input->post('bm_qstr');
+			$return_path = BASE.AMP.base64_decode($this->input->post('return_path'));
+		}
+		else
+		{
+			$return_path = BASE.AMP.'C=homepage';
 		}
 		
 		if ($is_ajax)

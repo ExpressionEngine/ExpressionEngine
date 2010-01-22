@@ -435,11 +435,21 @@ class EE_Core {
 
 		$this->EE->load->library('logger');
 
+		// Load the NEW control panel display class
+		$this->EE->load->library('cp');
+
 		// Does an admin session exist?
 		// Only the "login" class can be accessed when there isn't an admin session		
 		if ($this->EE->session->userdata('admin_sess') == 0 && $this->EE->router->fetch_class() != 'login' && $this->EE->router->fetch_class() != 'css')
 		{
-			$this->EE->functions->redirect(BASE.'&C=login&M=login_form');
+			// has their session Timed out and they are requesting a page?
+			// Grab the URL, base64_encode it and send them to the login screen.
+			
+			$safe_refresh = $this->EE->cp->get_safe_refresh();
+			
+			$return_url = ($this->EE->cp->get_safe_refresh() == 'C=homepage') ? '' : AMP.'return='.base64_encode($this->EE->cp->get_safe_refresh());
+			
+			$this->EE->functions->redirect(BASE.AMP.'C=login'.AMP.'M=login_form'.$return_url);
 		}
 		
 		// Is the user banned?
@@ -448,11 +458,7 @@ class EE_Core {
 		if ($this->EE->session->userdata('group_id') != 1 AND $this->EE->session->ban_check('ip'))
 		{
 			return $this->EE->output->fatal_error($this->EE->lang->line('not_authorized'));
-		}
-		
-		// Load the NEW control panel display class
-		$this->EE->load->library('cp');
-		
+		}	
 		
 		// Request to our css controller don't need any
 		// of the expensive prep work below
