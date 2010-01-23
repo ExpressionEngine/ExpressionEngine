@@ -188,7 +188,7 @@ if ( ! function_exists('reduce_multiples'))
  * Useful for generating passwords or hashes.
  *
  * @access	public
- * @param	string 	type of random string.  Options: basic, alunum, numeric, nozero, unique, md5, and sha1
+ * @param	string 	type of random string.  basic, alpha, alunum, numeric, nozero, unique, md5, encrypt and sha1
  * @param	integer	number of characters
  * @return	string
  */	
