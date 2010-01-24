@@ -3537,8 +3537,8 @@ table.solo {
 
 /* Javascript Rules */
 
-body.js .js_hide,
-body.js #revealSidebarLink {
+html.js .js_hide,
+html.js #revealSidebarLink {
 	display: none;
 }
 

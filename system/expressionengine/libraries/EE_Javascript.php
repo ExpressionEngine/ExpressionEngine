@@ -1,5 +1,27 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
+ * @license		http://expressionengine.com/docs/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
+/**
+ * ExpressionEngine Javascript Class
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
 class EE_Javascript extends CI_Javascript {
 
 	var $global_vars = array();
@@ -70,9 +92,30 @@ class EE_Javascript extends CI_Javascript {
 	 */
 	function compile($view_var = 'script_foot', $script_tags = TRUE)
 	{
+		// Experimental reduction of inline js
+		/*
+		foreach($this->js->jquery_code_for_compile as $k => $v)
+		{
+			// Remove Comments
+			$v = preg_replace('/\/\/[^\n\r\'";{}]*[\n\r]/', ' ', $v);
+			$v = preg_replace('/\/\*[^*]*\*+([^\/\'";{}][^*]*\*+)*\//', ' ', $v);
+			
+			// Safe Whitespace Replacements
+			$v = preg_replace('/[\t ]+/', ' ', $v);
+			$v = preg_replace('/(\s*?\n+\s*?)+/', "\n", $v);
+			
+			// Common Ones
+			$v = preg_replace('/([;]\n|\) \{|\{\n)/', '', $v);
+			
+			$this->js->jquery_code_for_compile[$k] = $v;
+		}
+		*/
+		
 		parent::compile($view_var, $script_tags);
 		
 		$global_js = $this->inline('
+			document.documentElement.className += "js";
+			
 			if (typeof EE == "undefined" || ! EE) {
 				var EE = '.$this->generate_json($this->global_vars).';
 			}
@@ -82,7 +125,7 @@ class EE_Javascript extends CI_Javascript {
 	}
 }
 
-// END EE_Javascript extends CI_Javascript class
+// END EE_Javascript
 
 
 /* End of file EE_Javascript.php */
