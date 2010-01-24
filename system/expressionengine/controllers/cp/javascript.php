@@ -396,64 +396,76 @@ class Javascript extends Controller {
 	 */
 	function _css_javascript()
 	{
-		$js = '(function($) {
+		$js = '(function($, doc) {
 			var adv_css = '.$this->_advanced_css().', selector,
+		 		compat_el = doc.createElement("ee_compat"),
+
+				supported = false,
+
 				inline_css = [],
-				moz = false,
-				webkit =  false,
-				prefix = "",
-				suffix = "",
+				use = ["", "", "$1$3"],
+
+				prefixes = " webkit o ms moz Moz".split(" "),
+				corners = " -top-right -top-left -bottom-right -bottom-left".split(" "),
+
+				regex = /^-(.)(.*?)-(.)(.*)/,
+
 				css_radii = {};
 
-			/* Safari */
-			if ($.browser.safari) {
-				webkit = true;
-				prefix = "-webkit-border";
-				suffix = "-radius";
-			}
-
-			/* Feature detection for gecko */
-			try {
-				if (document.body.style.MozBorderRadius !== undefined) {
-					moz = true;
-					prefix = "-moz-border-radius";
-				}
-			} catch(e){}
+			/* Detect browser support and define a proper prefix */
 			
-			/* Webkit: border-bottom-left-radius, Moz: border-radius-bottomleft, Plugin: bl */
-			
-			var p = /^-(.)(.*?)-(.)(.*)/,
-				r = (moz) ? "-$1$2$3$4" : "$1$3";
-			
-			$.each(["", "-top-right", "-top-left", "-bottom-right", "-bottom-left"], function(i, v) {
-				if ( ! webkit) {
-					v = v.replace(p, r);
-				}
+			$.each(prefixes, function(i) {
 				
-				css_radii["border"+this+"-radius"] = prefix+v+suffix;
+				var name = i ? this+"BorderRadius" : "borderRadius";
+
+				if (compat_el.style[name] !== undefined) {
+					if (i < 3) {
+						use = ["-"+this+"-border", "-radius", ""];
+					}
+					else {
+						use = ["-moz-border-radius", "", "-$1$2$3$4"];	/* ... thanks mozilla */
+					}
+
+					supported = true;
+					return false;
+				}
+			});
+
+			/*
+			 * Different names for the same thing.
+			 * Spec: border-bottom-left-radius, Moz: border-radius-bottomleft, Plugin: bl
+			 */
+
+			$.each(corners, function(i, v) {
+				if (use[2]) {
+					v = v.replace(regex, use[2]);
+				}
+
+				css_radii["border"+this+"-radius"] = use[0]+v+use[1];
 			});
 
 			function process_css(key, value) {
-				
+
 				if (key.indexOf("@") == -1) {
 					var apply_radius = "",
-						sep = (webkit || moz) ? ":" : " ",
+						sep = (supported) ? ":" : " ",
 						jQel;
-										
+
 					for (radius in css_radii) {
 						if (value[radius]) {
 							apply_radius += css_radii[radius]+sep+value[radius]+";";
 							delete(value[radius]);
 						}
 					}
-					
-					if (webkit || moz) {
+
+					if (supported) {
 						apply_radius += value;
+						
 						inline_css.push(key+"{"+apply_radius+"}");
 					}
 					else {
 						jQel = $(key).css(value);
-						
+
 						if (apply_radius) {
 							jQel.uncorner().corner(apply_radius);
 						}
@@ -463,25 +475,25 @@ class Javascript extends Controller {
 					$.each(value, process_css);
 				}
 			}
-			
-			if (webkit || moz) {
+
+			if (supported) {
 				$.each(adv_css, process_css);
-				
-				var head = document.getElementsByTagName("head")[0],
-					ss_txt = document.createTextNode(inline_css.join("\n")),
-					ss_el = document.createElement("style");
-				
+
+				var head = doc.getElementsByTagName("head")[0],
+					ss_txt = doc.createTextNode(inline_css.join("\n")),
+					ss_el = doc.createElement("style");
+
 				ss_el.setAttribute("type", "text/css");
 				ss_el.appendChild(ss_txt);
 				head.appendChild(ss_el);
 			}
 			else {
-				$(document).ready(function() {
+				$(doc).ready(function() {
 					$.each(adv_css, process_css);
 				});
 			}
-			
-		})(jQuery)';
+
+		})(jQuery, this.document)';
 
 		return str_replace(array("\t", "\n"), '', $js);
 	}
