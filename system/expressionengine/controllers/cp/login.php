@@ -412,14 +412,12 @@ class Login extends Controller {
 		
 		if ($is_ajax)
 		{
-			if (defined('XID_SECURE_HASH')) {
-				$resp['xid'] = XID_SECURE_HASH;
-			}
-			
-			$resp['session_id'] = $this->session->sdata['session_id'];
-			$resp['messageType'] = 'success';
-			$resp['message'] = $this->lang->line('logged_back_in');
-			
+			$resp = array(
+				'xid'			=> XID_SECURE_HASH,
+				'session_id'	=> $this->session->sdata['session_id'],
+				'messageType'	=> 'success',
+				'message'		=> $this->lang->line('logged_back_in')
+			);
 			
 			$this->output->send_ajax_response($resp); exit;
 		}

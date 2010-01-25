@@ -213,7 +213,7 @@ class Cp {
 		
 		$this->EE->javascript->set_global(array(
 			'BASE'				=> str_replace(AMP, '&', BASE),
-			'XID'				=> (defined('XID_SECURE_HASH')) ? XID_SECURE_HASH : "",
+			'XID'				=> XID_SECURE_HASH,
 			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
 			'CP_SIDEBAR_STATE'	=> ($this->EE->input->cookie('cp_sidebar_state') == 'off') ? 'off' : 'on',
 			'flashdata'			=> $this->EE->session->flashdata,

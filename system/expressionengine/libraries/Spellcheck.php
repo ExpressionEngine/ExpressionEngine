@@ -73,7 +73,7 @@ class EE_Spellcheck {
 		$unsupported_browser	= $this->EE->lang->line('unsupported_browser');
 		$no_spelling_errors		= $this->EE->lang->line('no_spelling_errors');
 		$spellcheck_in_progress	= $this->EE->lang->line('spellcheck_in_progress');
-		$XID_SECURE_HASH		= (defined('XID_SECURE_HASH')) ? XID_SECURE_HASH : '{XID_SECURE_HASH}';
+		$XID_SECURE_HASH		= XID_SECURE_HASH ? XID_SECURE_HASH : '{XID_SECURE_HASH}';
 		$is_frontend			= 'true';
 
 		if (REQ == 'CP')
