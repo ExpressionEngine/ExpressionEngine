@@ -5,10 +5,6 @@
 
 		<?=form_open('C=myaccount'.AMP.'M=select_avatar', array('id'=>'browse_avatar_form'), $form_hidden)?>
 
-		<?php if ($pagination != ''):?>
-			<p><?=$pagination?></p>
-		<?php endif;?>
-
 		<?=$this->table->generate($this->table->make_columns($avatars, 3))?>
 
 		<?php if ($pagination != ''):?>
