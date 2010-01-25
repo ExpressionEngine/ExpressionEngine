@@ -825,8 +825,6 @@ class MyAccount extends Controller {
 
 		$vars['blank_count'] = $i;
 
-		$xid = (defined('XID_SECURE_HASH')) ? XID_SECURE_HASH : "";
-
 		$this->javascript->output('
 
 			function setup_js_page() {
@@ -985,8 +983,6 @@ class MyAccount extends Controller {
 			widgets: ["zebra"]
 		}');
 
-		$xid = (defined('XID_SECURE_HASH')) ? XID_SECURE_HASH : "";
-
 		$this->javascript->output('
 			$(".mainTable .tag_order input").hide();
 
@@ -1006,7 +1002,7 @@ class MyAccount extends Controller {
 						$.ajax({
 							type: "POST",
 							url: EE.BASE+"&C=myaccount&M=reorder_html_buttons",
-							data: "XID='.$xid.'"+tag_order,
+							data: "XID="+EE.XID+tag_order,
 							complete: function() {
 								$(".submit input.submit").attr("disabled", false).removeClass("disabled_field");
 							},

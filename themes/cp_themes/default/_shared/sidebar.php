@@ -37,20 +37,11 @@
 
 	<div id="search">
 		<h4><?=lang('search')?></h4>
-
-		<form action="<?=BASE.AMP.'C=search'?>" method="post" id="cp_search_form">
-			
-			<?php
-			if (defined('XID_SECURE_HASH'))
-			{
-				echo '<input type="hidden" name="XID" value="'.XID_SECURE_HASH.'" />';
-			}
-			?>
-
+		<?=form_open('C=search', array('id' => 'cp_search_form'))?>
 			<input type="text" id="cp_search_keywords" name="cp_search_keywords" value="" maxlength="80" class="input" />
 			<input type="image" src="<?=$cp_theme_url?>images/search_button.gif" class="searchButton" />
 			<input type="image" src="<?=$cp_theme_url?>images/indicator.gif" id="cp_search_ajax_indicator" class="searchButton" style="display: none;" />
-		</form>
+		<?=form_close()?>
 
 	</div> <!-- search -->
 

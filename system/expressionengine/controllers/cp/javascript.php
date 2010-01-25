@@ -228,16 +228,16 @@ class Javascript extends Controller {
 
 	// --------------------------------------------------------------------
 
-/**
-* Javascript Combo Loader 
-*
-* Combo load multiple javascript files to reduce HTTP requests
-* BASE.AMP.'C=javascript&M=combo&ui=ui,packages&file=another&plugin=plugins&package=third,party,packages'
-* 
-* @access public
-* @todo check for duplicated files.
-* @return string
-*/
+	/**
+	 * Javascript Combo Loader 
+	 *
+	 * Combo load multiple javascript files to reduce HTTP requests
+	 * BASE.AMP.'C=javascript&M=combo&ui=ui,packages&file=another&plugin=plugins&package=third,party,packages'
+	 * 
+	 * @access public
+	 * @todo check for duplicated files.
+	 * @return string
+	 */
 	function combo_load()
 	{
 		$this->output->enable_profiler(FALSE);
@@ -498,6 +498,7 @@ class Javascript extends Controller {
 
 		})(jQuery, this.document)';
 
+		$js = preg_replace('|/\*.*?\*/|s', '', $js);
 		return str_replace(array("\t", "\n"), '', $js);
 	}
 
