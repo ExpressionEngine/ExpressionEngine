@@ -107,7 +107,7 @@ class Upload {
 			}
 		}
 
-		include_once(APPPATH.'config/mimes.php');
+		include(APPPATH.'config/mimes.php');
 		
 		$this->allowed_mimes = $mimes;
 		
