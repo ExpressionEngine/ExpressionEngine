@@ -589,6 +589,8 @@ class Cp {
 	 */		
 	function secure_forms()
 	{
+		$hash = '';
+		
 		if ($this->EE->config->item('secure_forms') == 'y')
 		{
 			if (count($_POST) > 0)
@@ -621,9 +623,9 @@ class Cp {
 			$this->EE->db->query("INSERT INTO exp_security_hashes (date, ip_address, hash)
 								VALUES 
 								(UNIX_TIMESTAMP(), '".$this->EE->input->ip_address()."', '".$hash."')");
-			
-			define('XID_SECURE_HASH', $hash);
 		}
+		
+		define('XID_SECURE_HASH', $hash);
 	}
 	
 	// --------------------------------------------------------------------
