@@ -176,7 +176,7 @@ EE.publish.remove_layout = function() {
 	$.ajax({
 		type: "POST",
 		url: EE.BASE+"&C=content_publish&M=save_layout",
-		data: "XID="+EE.XID+"&json_tab_layout="+json_tab_layout+"&"+$("#layout_groups_holder input").serialize()+"&channel_id='.$channel_id.'&field_group='.$field_group.'",
+		data: "XID="+EE.XID+"&json_tab_layout="+json_tab_layout+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id+"&field_group="+EE.publish.field_group,
 		success: function(msg){
 			$.ee_notice(EE.publish.lang.layout_removed + " <a href=\"javascript:location=location\">"+EE.publish.lang.refresh_layout+"</a>", {duration:0, type:"success"});
 		}

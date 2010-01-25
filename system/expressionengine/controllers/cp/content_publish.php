@@ -1661,6 +1661,7 @@ class Content_publish extends Controller {
 		}
 
 		$this->javascript->set_global('publish.channel_id', $channel_id);
+		$this->javascript->set_global('publish.field_group', $field_group);
 
 		$this->javascript->set_global('publish.lang', array(
 			'tab_count_zero'		=> $this->lang->line('tab_count_zero'),
