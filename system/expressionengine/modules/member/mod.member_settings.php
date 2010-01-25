@@ -1448,7 +1448,7 @@ class Member_settings extends Member {
 		if ($query->row('screen_name')  != $_POST['screen_name'] AND $this->EE->config->item('forum_is_installed') == "y" )
 		{
 			$this->EE->db->query("UPDATE exp_forums SET forum_last_post_author = '".$this->EE->db->escape_str($_POST['screen_name'])."' WHERE forum_last_post_author_id = '".$this->EE->session->userdata('member_id')."'");
-			$this->EE->db->query("UPDATE exp_forum_moderators SET mod_member_name = '".$this->EE->db->escape_str($_POST['screen_name'])."' WHERE mod_member_id = '".$id."'");
+			$this->EE->db->query("UPDATE exp_forum_moderators SET mod_member_name = '".$this->EE->db->escape_str($_POST['screen_name'])."' WHERE mod_member_id = '".$this->EE->session->userdata('member_id')."'");
 		}
 
 		/** -------------------------------------
