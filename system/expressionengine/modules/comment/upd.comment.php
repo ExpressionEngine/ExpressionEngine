@@ -23,6 +23,12 @@
  * @link		http://expressionengine.com
  */
 
+if ( ! defined('EXT'))
+{
+	exit('Invalid file request');
+}
+
+
 class Comment_upd {
 
 	var $version = '2.0';
@@ -108,6 +114,10 @@ class Comment_upd {
 		$this->EE->dbforge->add_key(array('entry_id', 'channel_id', 'author_id', 'status', 'site_id'));
 		$this->EE->dbforge->create_table('comments');
 
+		$this->EE->load->library('layout');
+
+		$this->EE->layout->update_layout(TRUE);
+
 		return TRUE;
 	}
 
@@ -140,7 +150,11 @@ class Comment_upd {
 
 		$this->EE->dbforge->drop_table('comments');
 
-		$this->EE->db->update('channel_titles', array('comment_total' => 0, 'recent_comment_date' => 0)); 
+		$this->EE->db->update('channel_titles', array('comment_total' => 0, 'recent_comment_date' => 0));
+
+		$this->EE->load->library('layout');
+
+		$this->EE->layout->update_layout(TRUE, FALSE);
 
 		return TRUE;
 	}
