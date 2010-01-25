@@ -81,16 +81,18 @@ $('a[rel="external"]').click(function() {
 // Logout Check -
 // Is XID or the session Expired
 
-EE.logOutCheck = (function() {
+function logOutCheck() {
 
     var timeOutTimer	= EE.SESS_TIMEOUT - 60000, //Fire one Minute before the session times out.  
-		xidTimeOutTimer	= EE.XID_TIMEOUT - 60000;	 
+		xidTimeOutTimer	= EE.XID_TIMEOUT - 60000,
+		pageExpirationTimeout = (timeOutTimer < xidTimeOutTimer) ? timeOutTimer : xidTimeOutTimer;	 
 
-	setTimeout(isPageAboutToExpire, xidTimeOutTimer);
-    setTimeout(isPageAboutToExpire, timeOutTimer);
+	setTimeout(isPageAboutToExpire, pageExpirationTimeout);
 
     function isPageAboutToExpire() {
-        $.ee_notice('<div id="logOutWarning" style="text-align:center"><p>'+EE.lang.session_expiring+'</p><label for="username">'+EE.lang.username+'</label>: <input type="text" id="log_backin_username" name="username" value="" style="width:100px" size="35" dir="ltr" id="username" maxlength="32"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="password">'+EE.lang.password+'</label>: <input id="log_backin_password" type="password" name="password" value="" style="width:100px" size="32" dir="ltr" id="password" maxlength="32"  /> <input type="submit" id="submit" name="submit" value="'+EE.lang.login+'" class="submit" /><span id="logInSpinner"></span></div>', {type: "custom", open: true, close_on_click: false});
+		var logInForm = '<form><div id="logOutWarning" style="text-align:center"><p>'+EE.lang.session_expiring+'</p><label for="username">'+EE.lang.username+'</label>: <input type="text" id="log_backin_username" name="username" value="" style="width:100px" size="35" dir="ltr" id="username" maxlength="32"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="password">'+EE.lang.password+'</label>: <input id="log_backin_password" type="password" name="password" value="" style="width:100px" size="32" dir="ltr" id="password" maxlength="32"  /> <input type="submit" id="submit" name="submit" value="'+EE.lang.login+'" class="submit" /><span id="logInSpinner"></span></div></form>';
+	
+        $.ee_notice(logInForm, {type: "custom", open: true, close_on_click: false});
         
         logOutWarning = $('#logOutWarning');
         logOutWarning.find('#log_backin_username').focus();
@@ -117,8 +119,10 @@ EE.logOutCheck = (function() {
                         logOutWarning.slideUp('fast');
                         $.ee_notice(result.message, {type : "custom", open: true});
                         
+						EE.XID = result.xid;
+
                         // Reset Timeout
-                        setTimeout(isPageAboutToExpire, timeOutTimer);
+                        setTimeout(isPageAboutToExpire, pageExpirationTimeout);
                     } 
                     else if (result.messageType == 'failure') {
 
@@ -132,7 +136,9 @@ EE.logOutCheck = (function() {
             return false;
         });
     }
-})();
+}
+
+logOutCheck();
 
 
 // Hook up show / hide actions for sidebar
