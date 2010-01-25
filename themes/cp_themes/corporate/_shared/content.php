@@ -1,1 +1,0 @@
-This is where the content area shall be
