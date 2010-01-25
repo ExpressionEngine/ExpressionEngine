@@ -55,7 +55,7 @@ if ($EE_view_disable !== TRUE)
 
 				// URL to Upload Directory
 				$this->table->add_row(array(
-						lang('url_to_upload_dir', 'url'),
+						form_label('<span class="notice">*</span> '.lang('url_to_upload_dir'), 'url'),
 						form_error('url').
 						form_input(array(
 							'id'	=> 'url',
