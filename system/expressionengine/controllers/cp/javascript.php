@@ -419,7 +419,11 @@ class Javascript extends Controller {
 				var name = i ? this+"BorderRadius" : "borderRadius";
 
 				if (compat_el.style[name] !== undefined) {
-					if (i < 3) {
+					
+					if (i == 0) {
+						use = ["border", "-radius", ""];
+					}
+					else if (i < 3) {
 						use = ["-"+this+"-border", "-radius", ""];
 					}
 					else {
@@ -430,7 +434,7 @@ class Javascript extends Controller {
 					return false;
 				}
 			});
-
+			
 			/*
 			 * Different names for the same thing.
 			 * Spec: border-bottom-left-radius, Moz: border-radius-bottomleft, Plugin: bl
@@ -447,6 +451,7 @@ class Javascript extends Controller {
 			function process_css(key, value) {
 
 				if (key.indexOf("@") == -1) {
+					
 					var apply_radius = "",
 						sep = (supported) ? ":" : " ",
 						jQel;
@@ -459,8 +464,6 @@ class Javascript extends Controller {
 					}
 
 					if (supported) {
-						apply_radius += value;
-						
 						inline_css.push(key+"{"+apply_radius+"}");
 					}
 					else {
@@ -475,7 +478,7 @@ class Javascript extends Controller {
 					$.each(value, process_css);
 				}
 			}
-
+			
 			if (supported) {
 				$.each(adv_css, process_css);
 
