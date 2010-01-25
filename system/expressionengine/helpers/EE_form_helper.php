@@ -24,18 +24,22 @@ if (REQ == 'CP')
 		$action = ( strpos($action, '://') === FALSE) ? BASE.AMP.$action : $action;
 
 		$form = '<form action="'.$action.'"';
-	
-		if ( ! isset($attributes['method']))
+
+		if (is_array($attributes))
 		{
-			$form .= ' method="post"';
-		}
-	
-		if (is_array($attributes) AND count($attributes) > 0)
-		{
+			if ( ! isset($attributes['method']))
+			{
+				$form .= ' method="post"';
+			}
+			
 			foreach ($attributes as $key => $val)
 			{
 				$form .= ' '.$key.'="'.$val.'"';
 			}
+		}
+		else
+		{
+			$form .= ' method="post" '.$attributes;
 		}
 	
 		$form .= ">\n";
