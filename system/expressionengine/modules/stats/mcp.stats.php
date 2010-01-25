@@ -307,6 +307,13 @@ class Stats_mcp {
 	  */
 	function update_comment_stats($channel_id = '', $newtime = '', $global=TRUE)
 	{
+		
+		// Is the comments module installed?  Bail out if not.
+		if ( ! $this->EE->db->table_exists('comments'))
+		{
+			return FALSE;
+		}
+		
 		// Update
 		if ($global === TRUE)
 		{
