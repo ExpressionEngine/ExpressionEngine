@@ -1228,6 +1228,7 @@ class MyAccount extends Controller {
 		$this->load->helper(array('form', 'snippets', 'url', 'string'));
 		$this->load->library('table');
 		$this->load->library('pagination');
+		$this->cp->get_installed_modules();
 
 		$vars['cp_page_title'] = $this->lang->line('subscriptions');
 		$vars['cp_messages'] = array($message);
@@ -1280,25 +1281,29 @@ class MyAccount extends Controller {
 
 		$email = $query->row('email') ;
 
-		// Fetch Channel Comments
-		// @todo AR, model
-		$query = $this->db->query("SELECT DISTINCT(entry_id) FROM exp_comments WHERE email = '".$this->db->escape_str($email)."' AND notify = 'y' ORDER BY comment_date DESC");
-
-		if ($query->num_rows() > 0)
+		if (isset($this->cp->installed_modules['comment']))
 		{
-			$channel_subscriptions = TRUE;
+			// Fetch Channel Comments
+			// @todo AR, model
+			$query = $this->db->query("SELECT DISTINCT(entry_id) FROM exp_comments WHERE email = '".$this->db->escape_str($email)."' AND notify = 'y' ORDER BY comment_date DESC");
 
-			foreach ($query->result_array() as $row)
+			if ($query->num_rows() > 0)
 			{
-				$result_ids[$total_count.'b'] = $row['entry_id'];
-				$total_count++;
+				$channel_subscriptions = TRUE;
+
+				foreach ($query->result_array() as $row)
+				{
+					$result_ids[$total_count.'b'] = $row['entry_id'];
+					$total_count++;
+				}
 			}
+			
 		}
 
 		// Fetch Forum Topic Subscriptions
 		// Since the forum module might not be installed we'll test for it first.
 
-		if ($this->db->table_exists('exp_forum_subscriptions'))
+		if (isset($this->cp->installed_modules['forum']))
 		{
 			$query = $this->db->query("SELECT topic_id FROM exp_forum_subscriptions WHERE member_id = '".$this->db->escape_str($this->id)."' ORDER BY subscription_date DESC");
 

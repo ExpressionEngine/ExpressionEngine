@@ -61,30 +61,32 @@ class Member_subscriptions extends Member {
 		/** ----------------------------------------
 		/**  Fetch Channel Comment Subscriptions
 		/** ----------------------------------------*/
-		
-		$query = $this->EE->db->query("SELECT DISTINCT(entry_id)  FROM exp_comments WHERE email = '".$this->EE->session->userdata['email']."' AND notify = 'y' ORDER BY comment_date DESC");
-
-		if ($query->num_rows() > 0)
+		if ($this->EE->db->table_exists('exp_comments'))
 		{
-			$channel_subscriptions	= TRUE;
-			
-			$temp_ids = array();
-			
-			foreach ($query->result_array() as $row)
-			{
-				$temp_ids[] = $row['entry_id'];
-			}
-
-			// and now grab the most recent activity for each subscription for ordering later
-			$query = $this->EE->db->query("SELECT entry_id, recent_comment_date FROM exp_channel_titles WHERE entry_id IN (".implode(',', $temp_ids).")");
+			$query = $this->EE->db->query("SELECT DISTINCT(entry_id)  FROM exp_comments WHERE email = '".$this->EE->session->userdata['email']."' AND notify = 'y' ORDER BY comment_date DESC");
 
 			if ($query->num_rows() > 0)
 			{
-				foreach ($query->result() as $row)
+				$channel_subscriptions	= TRUE;
+
+				$temp_ids = array();
+
+				foreach ($query->result_array() as $row)
 				{
-					$result_ids[$row->recent_comment_date.'b'] = $row->entry_id;
+					$temp_ids[] = $row['entry_id'];
 				}
-			}
+
+				// and now grab the most recent activity for each subscription for ordering later
+				$query = $this->EE->db->query("SELECT entry_id, recent_comment_date FROM exp_channel_titles WHERE entry_id IN (".implode(',', $temp_ids).")");
+
+				if ($query->num_rows() > 0)
+				{
+					foreach ($query->result() as $row)
+					{
+						$result_ids[$row->recent_comment_date.'b'] = $row->entry_id;
+					}
+				}
+			}			
 		}
 		
 		/** ----------------------------------------
@@ -147,7 +149,7 @@ class Member_subscriptions extends Member {
 				{
 					foreach ($query->result() as $row)
 					{
-						$result_ids[$row['last_post_date'].'f'] = $row['topic_id'];
+						$result_ids[$row->last_post_date.'f'] = $row->topic_id;
 					}
 				}
 			}
