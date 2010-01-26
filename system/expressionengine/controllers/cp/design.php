@@ -241,8 +241,8 @@ class Design extends Controller {
 			show_error('id not found'); //@todo: lang key
 		}
 
-		$this->load->helper('form');
 		$this->load->model('template_model');
+		$this->load->helper('form');
 
 		$query = $this->template_model->get_group_info($group_id);
 
@@ -369,8 +369,8 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		$this->load->helper('form');
 		$this->load->model('template_model');
+		$this->load->helper('form');
 		$this->load->library('table');
 
 		$templates = $this->template_model->get_templates($this->config->item('site_id'));
@@ -485,6 +485,7 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
+		$this->load->model('template_model');
 		$this->load->model('admin_model');
 		$this->load->helper('form');
 		$this->load->library('table');
@@ -594,6 +595,7 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
+		$this->load->model('template_model');
 		$this->load->helper('form');
 		$this->load->library('table');
 
@@ -636,6 +638,7 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
+		$this->load->model('template_model');
 		$this->load->helper('form');
 		
 		// form defaults
@@ -691,6 +694,7 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
+		$this->load->model('template_model');
 		$this->load->library('api');
 		
 		foreach (array('snippet_id', 'site_id', 'snippet_name', 'snippet_contents') as $var)
@@ -782,6 +786,7 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
+		$this->load->model('template_model');
 		$this->load->helper('form');
 	
 		if (($snippet_id = $this->input->get_post('snippet_id')) === FALSE)
@@ -827,6 +832,7 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
+		$this->load->model('template_model');
 		$this->load->helper('form');
 		$this->load->library('table');
 	
@@ -867,6 +873,7 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
+		$this->load->model('template_model');
 		$this->load->library('table');
 
 		$variable_id = $this->input->get_post('variable_id');
@@ -1581,7 +1588,7 @@ class Design extends Controller {
 
 						 );
 						 
-			$this->db->query($this->db->insert_string('exp_templates', $data));
+			$this->template_model->create_template($data);
 			
 		}
 		elseif ($_POST['template_data'] == 'existing_template')
@@ -1638,7 +1645,7 @@ class Design extends Controller {
 							'last_author_id'	=> 0
 						 );
 
-				$this->db->query($this->db->insert_string('exp_templates', $data, TRUE));
+				$template_id = $this->template_model->create_template($data);
 		}
 		else
 		{
@@ -1652,12 +1659,11 @@ class Design extends Controller {
 							'last_author_id'	=> $this->session->userdata['member_id']
 						 );
 
-			$this->db->query($this->db->insert_string('exp_templates', $data));
+			$template_id = $this->template_model->create_template($data);
 		}
 
 		//@todo: save template files
 
-		$template_id = $this->db->insert_id();
 
 		if (isset($_POST['create']))
 		{
@@ -1703,7 +1709,6 @@ class Design extends Controller {
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
 		
-		$this->load->model('template_model');
 		$this->load->helper('file');
 		$this->load->helper('form');
 
@@ -2462,7 +2467,6 @@ class Design extends Controller {
 		$this->load->helper('form');
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
-		$this->load->model('template_model');
 
 		$vars = array();
 		
@@ -2601,7 +2605,6 @@ class Design extends Controller {
 		}
 
 		$this->load->helper('form');
-		$this->load->model('template_model');
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
 
@@ -2678,7 +2681,6 @@ class Design extends Controller {
 			show_error('id not found'); //@todo: lang key
 		}
 		
-		$this->load->model('template_model');
 		$path = FALSE;
 
 		$query = $this->template_model->get_template_info($template_id, array('group_id', 'template_type', 'template_name'));
@@ -3812,8 +3814,6 @@ class Design extends Controller {
 						'hits'					=> $this->input->get_post('hits')
 		);
 		
-		$this->load->model('template_model');
-		
 		$this->db->select('template_name, template_type, save_template_file, group_name, templates.group_id');
 		$this->db->join('template_groups', 'template_groups.group_id = templates.group_id');
 		$this->db->where('template_id', $template_id);
@@ -3912,8 +3912,6 @@ class Design extends Controller {
 
 		$this->output->enable_profiler(FALSE);
 
-		$this->load->model('template_model');
-		
 		if ($member_group = $this->input->get_post('member_group_id'))
 		{
 			$new_status = $this->input->get_post('new_status');
@@ -3979,7 +3977,6 @@ class Design extends Controller {
 		}
 
 		$this->load->helper('form');
-		$this->load->model('template_model');
 		$this->load->library('form_validation');
 		$this->load->library('table');
 		
@@ -4056,40 +4053,28 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
+		$this->load->model('template_model');
+		
 		$group_id = $this->input->get_post('group_id');
 		$group_name = $this->input->post('group_name');
 		
 		$is_site_default = ($this->input->post('is_site_default') == 'y' ) ? 'y' : 'n';
 
-		if ($is_site_default == 'y')
-		{
-			$this->db->query("UPDATE exp_template_groups SET is_site_default = 'n' WHERE site_id = '".$this->db->escape_str($this->config->item('site_id'))."' ");
-		}
-
 		if ( ! $group_id)
 		{
-			$query = $this->db->query("SELECT COUNT(*) AS count FROM exp_template_groups");
-			$group_order = $query->row('count')	 +1;
-
-			$this->db->query(
-						$this->db->insert_string(
-											 'exp_template_groups', 
-											  array(
-													 'group_name'	  => $group_name,
-													 'group_order'	 => $group_order,
-													 'is_site_default' => $is_site_default,
-													 'site_id'			=> $this->config->item('site_id')
-													)
-											)
+			$data = array(
+					 'group_name'	  => $group_name,
+					 'is_site_default' => $is_site_default,
+					 'site_id'			=> $this->config->item('site_id')
 						);
 
-			$group_id = $this->db->insert_id();
+			$group_id = $this->template_model->create_group($data);
 
 			$duplicate = FALSE;
 
 			if (is_numeric($_POST['duplicate_group']))
 			{
-				$query = $this->db->query("SELECT template_name, template_data, template_type, template_notes, cache, refresh, no_auth_bounce, allow_php, php_parse_location FROM exp_templates WHERE group_id = '".$this->db->escape_str($_POST['duplicate_group'])."'");
+				$query = $this->db->query("SELECT template_name, save_template_file, template_data, template_type, template_notes, cache, refresh, no_auth_bounce, allow_php, php_parse_location FROM exp_templates WHERE group_id = '".$this->db->escape_str($_POST['duplicate_group'])."'");
 
 				if ($query->num_rows() > 0)
 				{
@@ -4099,19 +4084,16 @@ class Design extends Controller {
 
 			if ( ! $duplicate)
 			{
-				$this->db->query(
-						$this->db->insert_string(
-											'exp_templates', 
-											array(
-													'group_id'	  => $group_id,
-													'template_name' => 'index',
-													'template_data' => '',
-													'last_author_id' => 0,
-													'edit_date'		=> $this->localize->now,
-													'site_id'		=> $this->config->item('site_id')
-												 )
-										 )
-						);
+				$data = array(
+								'group_id'	  => $group_id,
+								'template_name' => 'index',
+								'template_data' => '',
+								'last_author_id' => 0,
+								'edit_date'		=> $this->localize->now,
+								'site_id'		=> $this->config->item('site_id')
+								);
+				
+				$this->template_model->create_template($data);
 			}
 			else
 			{
@@ -4120,6 +4102,7 @@ class Design extends Controller {
 					$data = array(
 									'group_id'				=> $group_id,
 									'template_name'			=> $row['template_name'],
+									'save_template_file'	=> $row['save_template_file'],
 									'template_notes'		=> $row['template_notes'],
 									'cache'					=> $row['cache'],
 									'refresh'				=> $row['refresh'],
@@ -4129,11 +4112,13 @@ class Design extends Controller {
 									'template_type'			=> $row['template_type'],
 									'template_data'			=> $row['template_data'],
 									'edit_date'				=> $this->localize->now,
-									'last_author_id' => 0,
+									'last_author_id' 		=> 0,
 									'site_id'				=> $this->config->item('site_id')
 								 );
 
-							$this->db->query($this->db->insert_string('exp_templates', $data, TRUE));
+					$this->template_model->create_template($data);
+					
+					// @todo create files if duplicating
 				}
 			}
 
@@ -4156,13 +4141,13 @@ class Design extends Controller {
 				}
 			}
 			
-			$this->db->query(
-						$this->db->update_string(
-											'exp_template_groups', 
-											 array('group_name' => $group_name, 'is_site_default' => $is_site_default), 
-											 array('group_id'	=> $group_id)
-										  )
+			$fields = array(
+						'group_name' => $group_name,
+						'is_site_default' => $is_site_default, 
+						'group_id'	=> $group_id
 					  );
+					
+			$this->template_model->update_template_group($group_id, $fields);
 		
 			$this->session->set_flashdata('message_success', $this->lang->line('template_group_updated'));
 
@@ -4234,7 +4219,6 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
-		$this->load->model('template_model');
 		$template_groups = $this->input->post('template_group');
 
 		if ($this->input->get_post('is_ajax') == 'true')
@@ -4334,7 +4318,6 @@ class Design extends Controller {
 
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
-		$this->load->model('template_model');
 		$this->load->helper('file');
 		
 		$this->db->select(array('group_name', 'templates.group_id', 'template_name', 'template_type', 'template_id', 'edit_date'));
@@ -4532,7 +4515,6 @@ class Design extends Controller {
 
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
-		$this->load->model('template_model');
 		$this->load->helper('file');
 		
 		$this->db->select(array('group_name', 'templates.group_id', 'template_name', 'template_type', 'template_id', 'edit_date'));
@@ -4706,7 +4688,6 @@ class Design extends Controller {
 		
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
-		$this->load->model('template_model');
 		
 		$this->db->select(array('group_name', 'template_name', 'template_type', 'save_template_file'));
 		$this->db->join('template_groups', 'template_groups.group_id = templates.group_id');
@@ -4755,7 +4736,6 @@ class Design extends Controller {
 				
 					$data = array(
 									'group_name'		=> $group_name,
-									'group_order'		=> $this->db->count_all('template_groups') + 1,
 									'is_site_default'	=> 'n',
 									'site_id'			=> $this->config->item('site_id')
 								);
@@ -4801,7 +4781,7 @@ class Design extends Controller {
 					$template_name = substr($template, 0, -$ext_length);
 					$template_type = array_search('.'.$ext, $this->api_template_structure->file_extensions);
 
-					if ( isset($existing[$group][$template_name]))
+					if (isset($existing[$group][$template_name]))
 					{
 						continue;
 					}

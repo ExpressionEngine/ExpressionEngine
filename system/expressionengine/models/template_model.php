@@ -115,6 +115,12 @@ class Template_model extends CI_Model {
 	 */
 	function update_template_group($group_id, $fields = array())
 	{
+		if (isset($fields['is_site_default']) && $fields['is_site_default'] == 'y')
+		{
+			$this->db->where('site_id', $fields['site_id']);
+			$this->db->update('template_groups', array('is_site_default' => 'n'));
+		}
+
 		$this->db->where('group_id', $group_id);
 		$this->db->set($fields);
 		$this->db->update('template_groups');
