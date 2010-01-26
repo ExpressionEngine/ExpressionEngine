@@ -26,12 +26,12 @@
 
 class Forum_upd {
 
-	var $version			= '3.0';
+	var $version			= '3.1';
 	
 	function Forum_upd()
 	{
 		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
+		$this->EE =& get_instance(); 
 	}
 	
 	/** ---------------------------------
@@ -151,29 +151,29 @@ class Forum_upd {
 			board_install_date int(10) unsigned default '0' NOT NULL,
 			board_forum_url varchar(150) NOT NULL,
 			board_default_theme varchar(75) NOT NULL,
-			board_upload_path varchar(150) NOT NULL,
-			board_topics_perpage smallint(4) NOT NULL,
-			board_posts_perpage smallint(4) NOT NULL,
+			board_upload_path varchar(150) NULL,
+			board_topics_perpage SMALLINT(4) NOT NULL default 25,
+			board_posts_perpage smallint(4) NOT NULL default 10,
 			board_topic_order char(1) NOT NULL default 'r',
 			board_post_order char(1) NOT NULL default 'a',
-			board_hot_topic smallint(4) NOT NULL,
-			board_max_post_chars int(6) unsigned NOT NULL, 
+			board_hot_topic smallint(4) NOT NULL default 10,
+			board_max_post_chars int(6) unsigned NOT NULL default 6000, 
 			board_post_timelock int(5) unsigned NOT NULL default '0',
 			board_display_edit_date char(1) NOT NULL default 'n',
 			board_text_formatting varchar(50) NOT NULL default 'xhtml',
 			board_html_formatting char(4) NOT NULL default 'safe',
 			board_allow_img_urls char(1) NOT NULL default 'n',
 			board_auto_link_urls char(1) NOT NULL default 'y',
-			board_notify_emails varchar(255) NOT NULL,
-			board_notify_emails_topics varchar(255) NOT NULL,
-			board_max_attach_perpost smallint(4) NOT NULL,
-			board_max_attach_size int(6) unsigned NOT NULL, 
-			board_max_width int(4) unsigned NOT NULL,
-			board_max_height int(4) unsigned NOT NULL,
+			board_notify_emails varchar(255) NULL,
+			board_notify_emails_topics varchar(255) NULL,
+			board_max_attach_perpost smallint(4) NOT NULL default 3,
+			board_max_attach_size int(6) unsigned NOT NULL default 75, 
+			board_max_width int(4) unsigned NOT NULL default 800,
+			board_max_height int(4) unsigned NOT NULL default 600,
 			board_attach_types char(3) NOT NULL default 'img',
 			board_use_img_thumbs char(1) NOT NULL default 'y',			
-			board_thumb_width int(4) unsigned NOT NULL,
-			board_thumb_height int(4) unsigned NOT NULL,
+			board_thumb_width int(4) unsigned NOT NULL default 100,
+			board_thumb_height int(4) unsigned NOT NULL default 100,
 			board_forum_permissions text NOT NULL,
 			board_use_deft_permissions char(1) NOT NULL default 'n',
 			board_recent_poster_id int(10) unsigned NOT NULL default '0',
@@ -818,6 +818,31 @@ class Forum_upd {
 			$this->EE->db->query("ALTER TABLE `exp_forum_moderators` CHANGE `mod_member_name` `mod_member_name` VARCHAR(50) NULL DEFAULT NULL");
 		}
 		*/
+		
+		if ($current < 3.1)
+		{
+			$Q = array();
+			
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_upload_path` VARCHAR(150) NULL';
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_topics_perpage` SMALLINT(4) NOT NULL DEFAULT 25';
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_posts_perpage` SMALLINT(4) NOT NULL DEFAULT 10';			
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_hot_topic` SMALLINT(4) NOT NULL DEFAULT 10';			
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_max_post_chars` INT(6) UNSIGNED NOT NULL DEFAULT 6000';				
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_notify_emails` VARCHAR(255) NULL';
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_notify_emails_topics` VARCHAR(255) NULL';
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_max_attach_perpost` SMALLINT(4) NOT NULL DEFAULT 3';
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_max_attach_size` INT(6) UNSIGNED NOT NULL DEFAULT 75';
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_max_width` INT(4) UNSIGNED NOT NULL DEFAULT 800';
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_max_height` INT(4) UNSIGNED NOT NULL DEFAULT 600';
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_thumb_width` INT(4) UNSIGNED NOT NULL DEFAULT 100';
+			$Q[] = 'ALTER TABLE `exp_forum_boards` MODIFY `board_thumb_height` INT(4) UNSIGNED NOT NULL DEFAULT 100';
+
+
+			foreach ($Q as $query)
+			{
+				$this->EE->db->query($query);
+			}
+		}	
 	}
 
 }
