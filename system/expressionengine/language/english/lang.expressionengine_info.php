@@ -11,7 +11,7 @@ $lang = array(
 'support_resources'		=> 'Support Resources',
 
 'version_and_build'		=> 'Version and Build',
-'error_getting_version'	=> 'Could not retreive the current version number at this time',
+'error_getting_version'	=> 'Could not retrieve the current version number at this time',
 'version_info'			=> 'The current version of ExpressionEngine is %v Build %b',
 
 ''=>''
