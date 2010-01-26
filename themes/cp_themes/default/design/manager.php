@@ -36,13 +36,15 @@ if ($EE_view_disable !== TRUE)
 							<li id="template_group_<?=$row['group_id']?>"><a class="templateGroupName" href="#"><?php if ($row['is_site_default'] == 'y'):?><span class="defaultIndicator">*&nbsp;</span><?php endif?><?=$row['group_name']?></a></li>
 							<?php endforeach; ?>
 						</ul>
-						<div class="defaultTemplateGroup">
-							<span class="defaultIndicator">*&nbsp;</span><?=lang('default_template_group')?> <span class="defaultGroupName"><?=$default_group?></span>
-						</div>
-						<?php if ($can_admin_templates): ?>
-						<div class="exportTemplateGroup">
-							 <a id="export_group" href="#" title="<?=lang('export_group')?>"><?=lang('export_group')?></a> | <a href="<?=BASE.AMP?>C=design<?=AMP?>M=export_templates" title="<?=lang('export_all')?>"><?=lang('export_all')?></a>
-						</div>
+						<?php if ( ! empty($template_groups)):?>
+							<div class="defaultTemplateGroup">
+								<span class="defaultIndicator">*&nbsp;</span><?=lang('default_template_group')?> <span class="defaultGroupName"><?=$default_group?></span>
+							</div>
+							<?php if ($can_admin_templates): ?>
+							<div class="exportTemplateGroup">
+								 <a id="export_group" href="#" title="<?=lang('export_group')?>"><?=lang('export_group')?></a> | <a href="<?=BASE.AMP?>C=design<?=AMP?>M=export_templates" title="<?=lang('export_all')?>"><?=lang('export_all')?></a>
+							</div>
+							<?php endif; ?>
 						<?php endif; ?>
 					</div>					
 				</div>

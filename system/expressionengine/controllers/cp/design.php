@@ -290,6 +290,12 @@ class Design extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
+		
+		// if the hidden group_id field is not set, they might be here by accident.
+		if ( ! $this->input->post('group_id'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
 
 		$group_id = $this->input->get_post('group_id');
 
@@ -313,7 +319,9 @@ class Design extends Controller {
 		}
 
 		// We need to delete all the saved template data in the versioning table
-		$query = $this->db->query("SELECT template_id FROM exp_templates WHERE group_id = '$group_id'");
+		$this->db->select('template_id');
+		$this->db->where('group_id', $group_id);
+		$query = $this->db->get('templates');
 		
 		if ($query->num_rows() > 0)
 		{
@@ -333,7 +341,8 @@ class Design extends Controller {
 
 		$this->db->query("DELETE FROM exp_template_groups WHERE group_id = '$group_id'");
 
-		$this->manager($this->lang->line('template_group_deleted'));
+		$this->session->set_flashdata('message_success', $this->lang->line('template_group_deleted'));
+		$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=manager');
 	}
 
 	// --------------------------------------------------------------------
