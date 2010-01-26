@@ -6769,10 +6769,13 @@ class Forum_Core extends Forum {
 			($this->current_request != 'newtopic' && $cmeta[$fdata['forum_parent']]['forum_notify_moderators_replies'] == 'y')
 			)
 		{
-			$query = $this->EE->db->query("SELECT email from exp_members, exp_forum_moderators 
-								WHERE exp_members.member_id = exp_forum_moderators.mod_member_id 
-								AND exp_forum_moderators.mod_forum_id = '".$fdata['forum_id']."'");
+			$this->EE->db->select('email');	
+			$this->EE->db->from('members, forum_moderators');
+			$this->EE->db->where('(exp_members.member_id = exp_forum_moderators.mod_member_id OR exp_members.group_id =  exp_forum_moderators.mod_group_id)', NULL, FALSE); 
+			$this->EE->db->where('exp_forum_moderators.mod_forum_id', $fdata['forum_id']);
 			
+			$query = $this->EE->db->get();	
+		
 			if ($query->num_rows() > 0)
 			{
 				foreach ($query->result_array() as $row)
@@ -8685,10 +8688,12 @@ class Forum_Core extends Forum {
 		/** -------------------------------------*/
 		
 		$addresses = array();
-		
-		$mquery = $this->EE->db->query("SELECT email from exp_members, exp_forum_moderators 
-							WHERE (exp_members.member_id = exp_forum_moderators.mod_member_id OR exp_members.group_id = exp_forum_moderators.mod_group_id)
-							AND exp_forum_moderators.mod_forum_id = '{$forum_id}'");
+				
+		$this->EE->db->select('email');	
+		$this->EE->db->from('members, forum_moderators');
+		$this->EE->db->where('(exp_members.member_id = exp_forum_moderators.mod_member_id OR exp_members.group_id =  exp_forum_moderators.mod_group_id)', NULL, FALSE); 
+		$this->EE->db->where('exp_forum_moderators.mod_forum_id', $forum_id);
+		$mquery = $this->EE->db->get();	
 
 		if ($mquery->num_rows() == 0)
 		{
