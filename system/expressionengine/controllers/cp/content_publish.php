@@ -1829,9 +1829,7 @@ class Content_publish extends Controller {
 						url: EE.BASE+"&C=content_publish&M=autosave_entry",
 						data: form_data,
 						success: function(result){
-							
-							$.ee_notice.destroy("autosave");
-							
+														
 							if (isNaN(result))
 							{
 								$.ee_notice(result, {type:"error"});
