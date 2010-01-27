@@ -7268,7 +7268,7 @@ class Channel {
 		$this->entry_id 	= '';
 		$qstring 			= '';
 
-		if ($this->enable['custom_fields'] == TRUE && $this->EE->TMPL->fetch_param('custom_fields') == 'on')
+		if ($this->enable['custom_fields'] == TRUE && $this->EE->TMPL->fetch_param('custom_fields') == 'yes')
 		{
 			$this->fetch_custom_channel_fields();
 		}
@@ -7292,7 +7292,7 @@ class Channel {
 
 		$this->EE->typography->convert_curly = FALSE;
 
-		if ($this->EE->TMPL->fetch_param('member_data') !== FALSE && $this->EE->TMPL->fetch_param('member_data') == 'on')
+		if ($this->EE->TMPL->fetch_param('member_data') !== FALSE && $this->EE->TMPL->fetch_param('member_data') == 'yes')
 		{
 			$this->fetch_custom_member_fields();
 		}
