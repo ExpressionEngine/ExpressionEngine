@@ -111,19 +111,19 @@ Class Magpie {
 		/** -----------------------------------*/
 		
 		if (preg_match("/(".LD."items".RD."(.*?)".LD.'\/'.'items'.RD."|".LD."magpie:items".RD."(.*?)".LD.'\/'.'magpie:items'.RD.")/s", $template, $matches))
-		  {
-		  	$items_data = '';
-		  	$i = 0;
-		  	
-		  	if (count($this->RSS->items) > 0)
-		  	{		  	
-		  		foreach($this->RSS->items as $item)
+		{
+			$items_data = '';
+			$i = 0;
+			
+			if (count($this->RSS->items) > 0)
+			{		  	
+				foreach($this->RSS->items as $item)
 		  		{
 		  			$i++;
 		  			if ($i <= $offset) continue;
 		  			
 		  			$temp_data = $matches['1'];
-		  			
+		
 		  			/** ----------------------------------------
 					/**  Quick and Dirty Conditionals
 					/** ----------------------------------------*/
@@ -141,57 +141,57 @@ Class Magpie {
 		  			{		  				
 		  				if ( ! is_array($value))
 		  				{
-		  					$temp_data = str_replace(LD.$key.RD,$value,$temp_data);
-		  					$temp_data = str_replace(LD.'magpie:'.$key.RD,$value,$temp_data);
+		  					$temp_data = str_replace(LD.$key.RD, $value, $temp_data);
+		  					$temp_data = str_replace(LD.'magpie:'.$key.RD, $value, $temp_data);
 		  					
 		  					if ($key == 'atom_content') 
 		  					{
-		  						$temp_data = str_replace(LD.'content'.RD,$value,$temp_data);
-		  						$temp_data = str_replace(LD.'magpie:content'.RD,$value,$temp_data);
+		  						$temp_data = str_replace(LD.'content'.RD, $value, $temp_data);
+		  						$temp_data = str_replace(LD.'magpie:content'.RD, $value, $temp_data);
 		  					}
 		  				}
 		  				else
 		  				{
 		  					foreach ($value as $vk => $vv)
 		  					{
-		  						$temp_data = str_replace(LD.$key.'_'.$vk.RD,$vv,$temp_data);
-		  						$temp_data = str_replace(LD.'magpie:'.$key.'_'.$vk.RD,$vv,$temp_data);
+		  						$temp_data = str_replace(LD.$key.'_'.$vk.RD, $vv, $temp_data);
+		  						$temp_data = str_replace(LD.'magpie:'.$key.'_'.$vk.RD, $vv, $temp_data);
 		  						
 		  						if ($key == 'dc')
 		  						{
-		  							$temp_data = str_replace(LD.$vk.RD,$vv,$temp_data);
-		  							$temp_data = str_replace(LD.'magpie:'.$vk.RD,$vv,$temp_data);
+		  							$temp_data = str_replace(LD.$vk.RD, $vv, $temp_data);
+		  							$temp_data = str_replace(LD.'magpie:'.$vk.RD, $vv, $temp_data);
 		  						}
 		  					}
 		  				}
 		  			}
-		  			
+		
 		  			$items_data .= $temp_data;
 		  			
 		  			if ($i >= ($limit + $offset))
 		  			{
 		  				break;
 		  			}
-		  		}
-		  	}
-		  	
+				}
+			}
+			
 		  	/** ----------------------------------------
 			/**  Clean up left over variables
 			/** ----------------------------------------*/
 		  	
 		  	$items_data = str_replace(LD.'exp:', 'TgB903He0mnv3dd098', $items_data);
-			$items_data = str_replace(LD.'\/'.'exp:', 'Mu87ddk2QPoid990iod', $items_data);
+			$items_data = str_replace(LD.'/exp:', 'Mu87ddk2QPoid990iod', $items_data);
 		
 			$items_data = preg_replace("/".LD."if.*?".RD.".+?".LD.'\/'."if".RD."/s", '', $items_data);
 			$items_data = preg_replace("/".LD.".+?".RD."/", '', $items_data);
 
 			$items_data = str_replace('TgB903He0mnv3dd098', LD.'exp:', $items_data);
-			$items_data = str_replace('Mu87ddk2QPoid990iod', LD.'\/'.'exp:', $items_data);
+			$items_data = str_replace('Mu87ddk2QPoid990iod', LD.'/exp:', $items_data);
 		  	
-		  	$template = str_replace($matches['0'],$items_data,$template);
-			}
-			
-			/** -----------------------------------
+			$template = str_replace($matches['0'], $items_data, $template);
+		}
+					
+		/** -----------------------------------
 		/**  Parse Template
 		/** -----------------------------------*/
 		
@@ -201,6 +201,7 @@ Class Magpie {
 									'tagline', 'creator', 'date', 'rights');
 									
 		$image_variables = array('title','url', 'link','description', 'width', 'height');
+		
 		
 		foreach ($this->EE->TMPL->var_single as $key => $val)
 		  {		  			
