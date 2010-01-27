@@ -2074,10 +2074,10 @@ class Content_publish extends Controller {
 		$this->load->model('channel_model');
 		$channels = $this->channel_model->get_channels();
 
-		$cp_table_template = array(
-									'table_open'			=> '<table id="entries" class="mainTable" border="0" cellspacing="0" cellpadding="0" style="width: 100%;">'
+		$authorsTableTemplate = array(
+									'table_open'			=> '<table id="authorsTable" class="mainTable" border="0" cellspacing="0" cellpadding="0" style="width: 100%;">'
 								);
-		$this->table->set_template($cp_table_template);
+		$this->table->set_template($authorsTableTemplate);
 		$this->table->set_heading($this->lang->line('username'), $this->lang->line('screen_name'), $this->lang->line('group'), array('class'=>'author_header', 'data'=>$this->lang->line('author')));
 
 		$potential_author_count = 0; // the number of potential authors. If at the end this is still zero, we'll message that to the user
@@ -3529,6 +3529,7 @@ class Content_publish extends Controller {
 					position: "center",
 					width: "auto",
 					minHeight: "0px", // fix display bug, where the height of the dialog is too big
+					minWidth: "400px",
 					buttons: { "'.$this->lang->line('close').'": function() { $(this).dialog("close"); } }
 				});
 			});
