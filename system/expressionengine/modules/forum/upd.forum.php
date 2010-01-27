@@ -26,7 +26,7 @@
 
 class Forum_upd {
 
-	var $version			= '3.1';
+	var $version			= '3.0.1';
 	
 	function Forum_upd()
 	{
@@ -819,7 +819,7 @@ class Forum_upd {
 		}
 		*/
 		
-		if ($current < 3.1)
+		if ($current < 3.0.1)
 		{
 			$Q = array();
 			
