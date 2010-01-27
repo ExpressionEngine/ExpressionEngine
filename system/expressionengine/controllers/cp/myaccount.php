@@ -649,7 +649,8 @@ class MyAccount extends Controller {
 		}
 
 		// validate for unallowed blank values
-		if (empty($_POST)) {
+		if (empty($_POST)) 
+		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
@@ -760,9 +761,13 @@ class MyAccount extends Controller {
 		if ($pw_change)
 		{
 			$message .= BR.$this->lang->line('password_change_warning');
-		}
 
-		$this->username_password($message);
+			$this->session->set_flashdata('message_success', $message);
+			$this->functions->redirect(BASE.AMP.'C=login');
+		}
+		
+		$this->session->set_flashdata('message_success', $message);
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=username_password'.AMP.'id='.$id);
 	}
 
 	// --------------------------------------------------------------------

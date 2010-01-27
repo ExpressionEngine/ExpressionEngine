@@ -442,74 +442,48 @@ class Login extends Controller {
 	function _un_pw_update_form($message = '')
 	{
 		$this->lang->loadfile('member');
+		$this->load->helper('security');
+				
+		$vars['cp_page_title'] = $this->lang->line('login');
 		
 		$uml = $this->config->item('un_min_len');
 		$pml = $this->config->item('pw_min_len');
 		
 		$ulen = strlen($this->input->post('username'));
 		$plen = strlen($this->input->post('password'));
-		
-		$r  = $this->dsp->form_open(array('action' => 'C=login'.AMP.'M=update_un_pw'));
-		
-		$r .= $this->dsp->div('loginInnerBox');		
-		$r .= $this->dsp->qdiv('alert', $this->lang->line('access_notice'));
-		
-		if ($ulen < $uml)
-		{
-			$r .= $this->dsp->qdiv('itemWrapperTop', $this->dsp->qdiv('highlight_alt', str_replace('%x', $uml, $this->lang->line('un_len'))));
-			$r .= $this->dsp->qdiv('itemWrapper', $this->dsp->qdiv('highlight', str_replace('%x', $ulen, $this->lang->line('yun_len'))));
-		}
 	
-		if ($plen < $pml)
-		{
-			$r .= $this->dsp->qdiv('itemWrapperTop', $this->dsp->qdiv('highlight_alt', str_replace('%x', $pml, $this->lang->line('pw_len'))));
-			$r .= $this->dsp->qdiv('itemWrapper', $this->dsp->qdiv('highlight', str_replace('%x', $plen, $this->lang->line('ypw_len'))));
-		}
+		$vars['message'] = array();
 		
-		$r .= $this->dsp->qdiv('padBotBorder', NBS);
+		$vars['message'][] = $message;
 		
-		if ($message != '')
-		{
-			$r .= $this->dsp->qdiv('alert', BR.$message);
-		}
+		$vars['message'][] = $this->lang->line('access_notice');
+		$vars['username'] = $this->input->post('username');
+		$vars['new_username_required'] = FALSE;
+		$vars['new_username'] = ($this->input->get_post('new_username') !== FALSE) ? $this->input->get_post('new_username') : '';
+		$vars['password'] = $this->input->post('password');
+		$vars['new_password_required'] = FALSE;
+		$vars['new_password'] = ($this->input->get_post('new_password') !== FALSE) ? $this->input->get_post('new_password') : '';	
+		
+		$vars['hidden'] = array(
+			'username'	=> $this->input->post('username'),
+			'password'	=> base64_encode($this->input->post('password'))
+		);
 		
 		if ($ulen < $uml)
 		{
-			$new_username = ($this->input->get_post('new_username') !== FALSE) ? $this->input->get_post('new_username') : '';
+			$vars['new_username_required'] = TRUE;
+			$vars['notices']['un_len'] = sprintf($this->lang->line('un_len'), $uml);
+			$vars['notices']['yun_len'] = sprintf($this->lang->line('yun_len'), $ulen);
+		}
 		
-			$r .=	$this->dsp->qdiv('default', BR.$this->lang->line('choose_new_un', 'new_username')).
-					$this->dsp->qdiv('itemWrapper', $this->dsp->input_text('new_username', $new_username, '20', '32', 'input', '150px'));
-		}		
-
 		if ($plen < $pml)
-		{				
-			$r .=	$this->dsp->qdiv('default', BR.$this->lang->line('choose_new_pw', 'new_password')).
-					$this->dsp->qdiv('itemWrapper', $this->dsp->input_pass('new_password', '', '20', '32', 'input', '150px'));
-					
-			$r .=	$this->dsp->qdiv('itmeWrapper', $this->lang->line('confirm_new_pw', 'new_password_confirm')).
-					$this->dsp->qdiv('itemWrapper', $this->dsp->input_pass('new_password_confirm', '', '20', '32', 'input', '150px'));
-		}				
-				
-				
-		$r .= $this->dsp->qdiv('padBotBorder', NBS);
-				
-				
-		$r .=
-			$this->dsp->qdiv('default', BR.$this->lang->line('existing_username', 'username')).
-			$this->dsp->qdiv('itemWrapper', $this->dsp->input_text('username', $this->input->post('username'), '20', '32', 'input', '150px')).
-			$this->dsp->qdiv('default', BR.$this->lang->line('existing_password', 'password')).
-			$this->dsp->qdiv('itemWrapper', $this->dsp->input_pass('password', '', '20', '32', 'input', '150px'));
+		{
+			$vars['new_password_required'] = TRUE;
+			$vars['notices']['pw_len'] = sprintf($this->lang->line('pw_len'), $pml);
+			$vars['notices']['ypw_len'] = sprintf($this->lang->line('ypw_len'), $plen);
+		}
 		
-
-		$r .= $this->dsp->qdiv('itemWrapperTop', $this->dsp->input_submit($this->lang->line('submit')));
-			
-		  
-		$r .= $this->dsp->div_c();	
-		$r .= $this->dsp->form_close();
-
-				
-		$this->dsp->body = $this->dsp->qdiv('loginBox', $r);
-		$this->dsp->title = $this->lang->line('login');				
+		$this->load->view('account/update_un_pw', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -532,18 +506,8 @@ class Login extends Controller {
 		{
 			$missing = TRUE;
 		}
-		
-		if ((isset($_POST['new_username']) AND $_POST['new_username'] == '') OR (isset($_POST['new_password']) AND $_POST['new_password'] == ''))
-		{
-			$missing = TRUE;
-		}
-		
-		if ($this->input->post('username') == '' OR $this->input->get_post('password') == '')
-		{
-			$missing = TRUE;
-		}
-
-		if ($missing == TRUE)
+			
+		if ($missing === TRUE)
 		{
 			return $this->_un_pw_update_form($this->lang->line('all_fields_required'));
 		}
@@ -554,7 +518,8 @@ class Login extends Controller {
 		
 		if ($this->session->check_password_lockout() === TRUE)
 		{		
-			$line = str_replace("%x", $this->config->item('password_lockout_interval'), $this->lang->line('password_lockout_in_effect'));		
+			$line = str_replace("%x", $this->config->item('password_lockout_interval'), $this->lang->line('password_lockout_in_effect'));	
+				
 			return $this->_un_pw_update_form($line);
 		}
 						
@@ -564,11 +529,11 @@ class Login extends Controller {
 		
 		$this->db->select('member_id, group_id');
 		$this->db->where('username', $this->input->post('username'));
-		$this->db->where('password', $this->input->post('password'));
+		$this->db->where('password', do_hash(base64_decode($this->input->post('password'))));
 		$query = $this->db->get('members');
-
+			
 		$member_id = $query->row('member_id') ;
-		
+			
 		/** ----------------------------------------
 		/**  Invalid Username or Password
 		/** ----------------------------------------*/
@@ -603,10 +568,10 @@ class Login extends Controller {
 			require APPPATH.'libraries/Validate'.EXT;
 		}
 		
-		$new_un  = (isset($_POST['new_username'])) ? $_POST['new_username'] : '';
-		$new_pw  = (isset($_POST['new_password'])) ? $_POST['new_password'] : '';
-		$new_pwc = (isset($_POST['new_password_confirm'])) ? $_POST['new_password_confirm'] : '';
-
+		$new_un  = ($this->input->post('new_username')) ? $this->input->post('new_username') : '';
+		$new_pw  = ($this->input->post('new_password')) ? $this->input->post('new_password') : '';
+		$new_pwc = ($this->input->post('new_password_confirm')) ? $this->input->post('new_password_confirm') : '';
+			
 		$VAL = new EE_Validate(
 								array( 
 										'val_type'			=> 'new',
@@ -616,17 +581,32 @@ class Login extends Controller {
 										'username'			=> $new_un,
 										'password'			=> $new_pw,
 									 	'password_confirm'	=> $new_pwc,
-									 	'cur_password'		=> $_POST['password'],
+									 	'cur_password'		=> $this->input->post('password')
 									 )
 							);
 		
-		$un_exists = (isset($_POST['new_username']) AND $_POST['new_username'] != '') ? TRUE : FALSE;
+		if ($this->input->post('new_username') && $this->input->post('new_username') != '')
+		{
+			if ($this->input->post('username') == $new_un)
+			{
+				$un_exists = FALSE;
+			}
+			else
+			{
+				$un_exists = TRUE;
+			}			
+		}
+		
 		$pw_exists = (isset($_POST['new_password']) AND $_POST['new_password'] != '') ? TRUE : FALSE;
 				
 		if ($un_exists)
-			$VAL->validate_username();
+		{
+			$VAL->validate_username();			
+		}
 		if ($pw_exists)
-			$VAL->validate_password();
+		{
+			$VAL->validate_password();			
+		}
 		
 		/** -------------------------------------
 		/**  Display error is there are any
@@ -639,14 +619,14 @@ class Login extends Controller {
 		 	{
 		 		$er .= $val.BR;
 		 	}
-		 
+		
 			return $this->_un_pw_update_form($er);
 		 }
 		 
 		 
 		if ($un_exists)
 		{
-			$this->db->set('username', $_POST['new_username']);
+			$this->db->set('username', $this->input->post('new_username'));
 			$this->db->where('member_id', $member_id);
 			$this->db->update('members');
 		}	
@@ -654,15 +634,13 @@ class Login extends Controller {
 		if ($pw_exists)
 		{
 			$this->load->helper('security');
-			$this->db->set('password', do_hash($_POST['new_password']));
+			$this->db->set('password', do_hash($this->input->post('new_password')));
 			$this->db->where('member_id', $member_id);
 			$this->db->update('members');
-		}	
-
-		$this->dsp->body  = $this->dsp->div('loginBox').BR.BR.BR;
-		$this->dsp->body .= $this->dsp->qdiv('success', $this->lang->line('unpw_updated'));
-		$this->dsp->body .= $this->dsp->qdiv('itemWrapper', $this->dsp->anchor('index.php', $this->lang->line('return_to_login')));
-		$this->dsp->body .= $this->dsp->div_c();
+		}
+		
+		$this->session->set_flashdata('message', $this->lang->line('unpw_updated'));
+		$this->functions->redirect(BASE.AMP.'C=login'.AMP.'M=login_form');			
 	}
 	
 	// --------------------------------------------------------------------
@@ -675,7 +653,8 @@ class Login extends Controller {
 	 */
 	function logout()
 	{
-		if ($this->session->userdata('group_id') == 3) {
+		if ($this->session->userdata('group_id') == 3) 
+		{
 			$this->functions->redirect(SELF);
 		}
 		

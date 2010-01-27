@@ -57,16 +57,16 @@ $lang = array(
 "Your existing password",
 
 "un_len" =>
-"Usernames must be at least %x characters in length",
+"Usernames must be at least %s characters in length",
 
 "pw_len" =>
-"Passwords must be at least %x characters in length",
+"Passwords must be at least %s characters in length",
 
 "yun_len" =>
-"Your username is currently %x characters long",
+"Your username is currently %s characters long",
 
 "ypw_len" =>
-"Your password is currently %x characters long",
+"Your password is currently %s characters long",
 
 "existing_username" =>
 "Your Existing Username",
