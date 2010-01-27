@@ -658,7 +658,10 @@ class Channel {
 				{
 					if ( ! isset($params['channel']) OR array_key_exists($relating_data['query']->row('channel_id'), $allowed))
 					{
-						if (isset($stati) && isset($relating_data['query']->row[$order]))
+						$order_check = $relating_data['query']->row($order);
+						if ( ! isset($order_check)) continue;
+												
+						if (isset($stati))
 						{
 							if ($status_state == 'negative' && ! in_array(strtolower($relating_data['query']->row('status')) , $stati))
 							{
