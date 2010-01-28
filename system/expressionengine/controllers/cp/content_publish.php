@@ -2167,7 +2167,10 @@ class Content_publish extends Controller {
 			$deft_status = 'open';
 		}
 
-		if ($status == '')
+		// It seems some blogging tools that don't add in a status 
+		// will just pass a string of NULL back to us.
+		// So we fight it here.
+		if ($status == '' OR $status == 'NULL')
 		{
 			$status = $deft_status;
 		}
