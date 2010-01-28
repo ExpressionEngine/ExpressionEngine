@@ -1851,6 +1851,8 @@ class EE_Template {
 			// Set the name of our template group
 			$template_group = $this->EE->uri->segment(1);
 
+			$this->log_item("Template Group Found: ".$template_group);
+			
 			// Set the group_id so we can use it in the next query
 			$group_id = $query->row('group_id');
 		
@@ -1943,6 +1945,8 @@ class EE_Template {
 			{ 
 				// Set the template group name from the prior query result (we use the default template group name)
 				$template_group	= $result->row('group_name');
+
+				$this->log_item("Template Group Using Default: ".$template_group);
 
 				// Set the template name
 				$template = $this->EE->uri->segment(1);				
@@ -2037,6 +2041,8 @@ class EE_Template {
 		$this->log_item("Retrieving Template from Database: ".$template_group.'/'.$template);
 		 
 		$sql_404 = '';
+		$template_group_404 = '';
+		$template_404 = '';
 
 		/* -------------------------------------------
 		/*	Hidden Configuration Variable
@@ -2065,6 +2071,9 @@ class EE_Template {
 					$this->EE->output->out_type = '404';
 					$this->template_type = '404';
 					
+					$template_group_404 = $this->EE->db->escape_str($x[0]);
+					$template_404 = $this->EE->db->escape_str($x[1]);
+					
 					$sql_404 = " AND exp_template_groups.group_name='".$this->EE->db->escape_str($x[0])."' AND exp_templates.template_name='".$this->EE->db->escape_str($x[1])."'";
 				}
 				else
@@ -2088,6 +2097,9 @@ class EE_Template {
 			{
 				$this->EE->output->out_type = '404';
 				$this->template_type = '404';
+				
+				$template_group_404 = $this->EE->db->escape_str($x[0]);
+				$template_404 = $this->EE->db->escape_str($x[1]);
 				
 				$sql_404 = " AND exp_template_groups.group_name='".$this->EE->db->escape_str($x[0])."' AND exp_templates.template_name='".$this->EE->db->escape_str($x[1])."'";
 			}	
@@ -2139,15 +2151,25 @@ class EE_Template {
 			// is there a file we can automatically create this template from?
 			if ($this->EE->config->item('save_tmpl_files') == 'y' && $this->EE->config->item('tmpl_file_basepath') != '')
 			{
-				if ($this->_create_from_file($template_group, $template))
+				$t_group = ($sql_404 != '') ? $template_group_404 : $template_group;
+				$t_template = ($sql_404 != '') ? $template_404 : $template;					
+				
+				if ($this->_create_from_file($t_group, $t_template, TRUE))
 				{
 					// run the query again, as we just successfully created it
 					$query = $this->EE->db->query($sql);
 				}
+				else
+				{
+					$this->log_item("Template Not Found");
+					return FALSE;
+				}
 			}
-			
-			$this->log_item("Template Not Found");
-			return FALSE;
+			else
+			{
+				$this->log_item("Template Not Found");
+				return FALSE;
+			}
 		}
 		
 		$this->log_item("Template Found");
@@ -2377,18 +2399,33 @@ class EE_Template {
 	 * @param	string		template name
 	 * @return	bool
 	 */
-	function _create_from_file($template_group, $template)
+	function _create_from_file($template_group, $template, $db_check = FALSE)
 	{
 		if ($this->EE->config->item('save_tmpl_files') != 'y' OR $this->EE->config->item('tmpl_file_basepath') == '')
 		{
 			return FALSE;
 		}
 		
+		$template = ($template == '') ? 'index' : $template;
+		
+		if ($db_check)
+		{
+			$this->EE->db->from('templates');
+			$this->EE->db->join('template_groups', 'templates.group_id = template_groups.group_id', 'left');
+			$this->EE->db->where('group_name', $template_group);			
+			$this->EE->db->where('template_name', $template);
+			$valid_count =  $this->EE->db->count_all_results();
+			
+			// We found a valid template!  Er- could this loop?  Better just return FALSE
+			if ($valid_count > 0)
+			{
+				return FALSE;
+			}
+		}
+
 		$this->EE->load->library('api');
 		$this->EE->api->instantiate('template_structure');
 		$this->EE->load->model('template_model');
-		
-		$template = ($template == '') ? 'index' : $template;
 		
 		$basepath = $this->EE->config->slash_item('tmpl_file_basepath');
 		$basepath .= '/'.$this->EE->config->item('site_short_name').'/'.$template_group.'.group';
@@ -2400,41 +2437,26 @@ class EE_Template {
 
 		$filename = FALSE;
 		
-		if (file_exists($basepath.'/'.$template))
+		// Note- we should add the extension before checking.
+
+		foreach ($this->EE->api_template_structure->file_extensions as $temp_ext)
 		{
-			// found it!
-			$filename = $template;
-		}
-		else
-		{
-			foreach ($this->EE->api_template_structure->file_extensions as $ext)
+			if (file_exists($basepath.'/'.$template.$temp_ext))
 			{
-				if (file_exists($basepath.'/'.$template.$ext))
-				{
-					// found it with an extension
-					$filename = $template.$ext;
-				}					
-			}
+				// found it with an extension
+				$filename = $template.$temp_ext;
+				$ext = $temp_ext;
+				break;
+			}					
 		}
-		
+
 		// did we find anything?
 		if ($filename === FALSE)
 		{
 			return FALSE;			
 		}
 		
-		if (strpos($filename, '.') !== FALSE)
-		{
-			$parts			= explode('.', $filename);
-			$ext			= '.'.array_pop($parts);
-			$template_name	= array_shift($parts);			
-		}
-		else
-		{			
-			$template_name	= $filename;
-			$ext			= '';
-		}
-
+		// Double check this
 		if ( ! in_array($ext, $this->EE->api_template_structure->file_extensions))
 		{
 			$template_type = 'webpage';
