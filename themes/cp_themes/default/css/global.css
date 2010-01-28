@@ -317,7 +317,7 @@ select.select {
 }
 
 .module_textarea {
-	width: 100%;
+	width: 99%;
 }
 
 .pageContents span.button .submit,
@@ -1485,6 +1485,10 @@ if they are all converted, delete this */
 	width:100%;
 }
 
+#template_create textarea.notes {
+	width: 99%;
+}
+
 #template_create {
 	padding: 0 0 18px 0;
 }
@@ -2015,6 +2019,7 @@ table.accessTable div.tableCellHeading {
 	border:				0;
 	padding:			5px;
 	padding-left:		22px;
+	margin-bottom:		0;
 	font-size:			13px;
 	color:				#fff;
 	text-shadow:		1px 1px 1px #888;
