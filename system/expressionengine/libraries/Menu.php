@@ -865,7 +865,7 @@ class EE_Menu {
 														'sql_system_vars'		=> 'cp/tools/data/sql_system_variables.html'
 														),																													
 							'cp/tools/data/',
-							'content_files'			=> 'cp/tools/file_manager/file_manager.html',
+							'content_files'			=> 'cp/content/file_manager/index.html',
 							'tools_logs'			=> array(
 														'index'					=> 'cp/tools/index.html',
 														'view_cp_log'					=> 'cp/tools/logs/cp_log.html',
