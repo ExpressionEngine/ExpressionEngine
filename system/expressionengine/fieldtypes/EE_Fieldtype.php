@@ -272,32 +272,32 @@ class EE_Fieldtype {
 	
 	function field_show_smileys_row($data, $prefix = FALSE)
 	{
-		$this->_yes_no_row($data, 'show_smileys', 'field_show_smileys', $prefix = FALSE);
+		$this->_yes_no_row($data, 'show_smileys', 'field_show_smileys', $prefix);
 	}
 		
 	function field_show_spellcheck_row($data, $prefix = FALSE)
 	{
-		$this->_yes_no_row($data, 'show_spellcheck', 'field_show_spellcheck', $prefix = FALSE);
+		$this->_yes_no_row($data, 'show_spellcheck', 'field_show_spellcheck', $prefix);
 	}
 		
 	function field_show_glossary_row($data, $prefix = FALSE)
 	{
-		$this->_yes_no_row($data, 'show_glossary', 'field_show_glossary', $prefix = FALSE);
+		$this->_yes_no_row($data, 'show_glossary', 'field_show_glossary', $prefix);
 	}
 		
 	function field_show_file_selector_row($data, $prefix = FALSE)
 	{
-		$this->_yes_no_row($data, 'show_file_selector', 'field_show_file_selector', $prefix = FALSE);
+		$this->_yes_no_row($data, 'show_file_selector', 'field_show_file_selector', $prefix);
 	}
 		
 	function field_show_formatting_btns_row($data, $prefix = FALSE)
 	{
-		$this->_yes_no_row($data, 'show_formatting_btns', 'field_show_formatting_btns', $prefix = FALSE);
+		$this->_yes_no_row($data, 'show_formatting_btns', 'field_show_formatting_btns', $prefix);
 	}
 		
 	function field_show_writemode_row($data, $prefix = FALSE)
 	{
-		$this->_yes_no_row($data, 'show_writemode', 'field_show_writemode', $prefix = FALSE);
+		$this->_yes_no_row($data, 'show_writemode', 'field_show_writemode', $prefix);
 	}
 	
 	// --------------------------------------------------------------------
