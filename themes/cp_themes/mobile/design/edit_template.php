@@ -225,7 +225,14 @@ if ($EE_view_disable !== TRUE)
 	</div> <?php // End Hidden Inputs?>
 	<ul>
 		<li><?=lang('template_notes_desc')?></li>
-		<li><textarea class="field" name="template_notes" id="template_notes"><?=$template_notes?></textarea></li>
+		<li>
+			<?=form_textarea(array(
+				'name'	=> 'template_notes',
+				'id'	=> 'template_notes',
+				'class'	=> 'field',
+				'value'	=> $template_notes
+			))?>
+		</li>
 	</ul>
 	<?=form_submit('update', lang('update'), 'class="whiteButton"')?>
 		

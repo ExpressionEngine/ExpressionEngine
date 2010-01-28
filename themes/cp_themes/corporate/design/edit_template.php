@@ -195,7 +195,15 @@ if ($EE_view_disable !== TRUE)
 						<th><?=lang('template_notes_desc')?></th>
 					</tr>
 					<tr>
-						<td><textarea class="field" rows="10" name="template_notes" id="template_notes"><?=$template_notes?></textarea></td>
+						<td>
+							<?=form_textarea(array(
+								'name'	=> 'template_notes',
+								'id'	=> 'template_notes',
+								'class'	=> 'field',
+								'rows'	=> '10',
+								'value'	=> $template_notes
+							))?>
+						</td>
 					</tr>
 					</table>
 				</div>
