@@ -545,11 +545,15 @@ class Channel {
 
 				if ( ! is_array($params))
 				{
-					$params = array('open');
+					$params = array('status' => 'open');
 				}
-				elseif( ! isset($params['status']))
+				elseif ( ! isset($params['status']))
 				{
 					$params['status'] = 'open';
+				}
+				else
+				{
+					$params['status'] = trim($params['status'], " |\t\n\r");
 				}
 
 				//  Entries have to be ordered, sorted and other stuff
@@ -634,23 +638,19 @@ class Channel {
 					}
 				}
 
-				$stati = array();
 
-				if (isset($params['status']) && trim($params['status']) != '')
+				$stati			= explode('|', $params['status']);
+				$stati			= array_map('strtolower', $stati);	// match MySQL's case-insensitivity
+				$status_state	= 'positive';
+
+
+				// Check for "not "
+				if (substr($stati[0], 0, 4) == 'not ')
 				{
-					$stati	= explode('|', trim($params['status']));
-					$status_state = 'positive';
-
-					if (substr($stati[0], 0, 4) == 'not ')
-					{
-						$stati[0] = trim(substr($stati[0], 3));
-						$status_state = 'negative';
-						$stati[] = 'closed';
-					}
+					$status_state = 'negative';
+					$stati[0] = trim(substr($stati[0], 3));
+					$stati[] = 'closed';
 				}
-
-				// lower case to match MySQL's case-insensitivity
-				$stati = array_map('strtolower', $stati);
 
 				$r = 1;  // Fixes a problem when a sorting key occurs twice
 
@@ -658,23 +658,19 @@ class Channel {
 				{
 					if ( ! isset($params['channel']) OR array_key_exists($relating_data['query']->row('channel_id'), $allowed))
 					{
-						$order_check = $relating_data['query']->row($order);
-						if ( ! isset($order_check)) continue;
-												
-						if (isset($stati))
+						$query_row = $relating_data['query']->row_array();
+						
+						// Needs to have the field we're ordering by
+						if (isset($query_row[$order]))
 						{
-							if ($status_state == 'negative' && ! in_array(strtolower($relating_data['query']->row('status')) , $stati))
+							if ($status_state == 'negative' && ! in_array(strtolower($query_row['status']) , $stati))
 							{
-								$new[$relating_data['query']->row($order).'_'.$r] = $relating_data;
+								$new[$query_row[$order].'_'.$r] = $relating_data;
 							}
-							elseif($status_state == 'positive' && in_array(strtolower($relating_data['query']->row('status')) , $stati))
+							elseif (in_array(strtolower($query_row['status']) , $stati))
 							{
-								$new[$relating_data['query']->row($order).'_'.$r] = $relating_data;
+								$new[$query_row[$order].'_'.$r] = $relating_data;
 							}
-						}
-						elseif (strtolower($relating_data['query']->row('status'))  == 'open')
-						{
-							$new[$relating_data['query']->row($order).'_'.$r] = $relating_data;
 						}
 
 						++$r;
