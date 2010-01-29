@@ -3,7 +3,7 @@
 		<span class="userName" style="float: left;"><?=$cp_screen_name?></span>
 		<a class="logOutButton" href="<?=BASE.AMP.'C=login'.AMP.'M=logout'?>" title="<?=lang('logout')?>"><?=lang('logout')?></a>
 	</div>
-	<div<?=$sidebar_state?>>
+	<div<?=$sidebar_state?> id="sidebarContent">
 	<h4><?=lang('myaccount')?></h4>
 
 	<div id="siteLogo">		
