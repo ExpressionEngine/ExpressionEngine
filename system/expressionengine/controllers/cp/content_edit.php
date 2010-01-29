@@ -292,8 +292,8 @@ class Content_edit extends Controller {
 		$filter_data['keywords'] = $keywords;
 
 
-		// If we have more than one channel we'll write the JavaScript menu switching code
-		if ($total_channels > 1)
+		// If we have channels we'll write the JavaScript menu switching code
+		if ($total_channels > 0)
 		{	  
 			$this->javascript->output($this->filtering_menus());
 		}
