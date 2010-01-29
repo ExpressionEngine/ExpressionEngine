@@ -90,7 +90,7 @@ function logOutCheck() {
 	setTimeout(isPageAboutToExpire, pageExpirationTimeout);
 
     function isPageAboutToExpire() {
-		var logInForm = '<form><div id="logOutWarning" style="text-align:center"><p>'+EE.lang.session_expiring+'</p><label for="username">'+EE.lang.username+'</label>: <input type="text" id="log_backin_username" name="username" value="" style="width:100px" size="35" dir="ltr" id="username" maxlength="32"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="password">'+EE.lang.password+'</label>: <input id="log_backin_password" type="password" name="password" value="" style="width:100px" size="32" dir="ltr" id="password" maxlength="32"  /> <input type="submit" id="submit" name="submit" value="'+EE.lang.login+'" class="submit" /><span id="logInSpinner"></span></div></form>';
+		var logInForm = '<form><div id="logOutWarning" style="text-align:center"><p>'+EE.lang.session_expiring+'</p><label for="username">'+EE.lang.username+'</label>: <input type="text" id="log_backin_username" name="username" value="" style="width:100px" size="35" dir="ltr" id="username" maxlength="32"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="password">'+EE.lang.password+'</label>: <input class="field" id="log_backin_password" type="password" name="password" value="" style="width:100px" size="32" dir="ltr" id="password" maxlength="32"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" id="submit" name="submit" value="'+EE.lang.login+'" class="submit" /><span id="logInSpinner"></span></div></form>';
 	
         $.ee_notice(logInForm, {type: "custom", open: true, close_on_click: false});
         
@@ -104,7 +104,7 @@ function logOutCheck() {
                 logInSpinner    = logOutWarning.find('span#logInSpinner');
 
             submitBtn.hide();
-            logInSpinner.html('<img src="'+EE.PATH_CP_GBL_IMG+'indicator.gif" />');
+            logInSpinner.html('<img src="'+EE.PATH_CP_GBL_IMG+'loader_blackbg.gif" />');
 
             $.ajax({
                 type: "POST",
@@ -125,12 +125,13 @@ function logOutCheck() {
                         setTimeout(isPageAboutToExpire, pageExpirationTimeout);
                     } 
                     else if (result.messageType == 'failure') {
-
                         logOutWarning.before('<div id="loginCheckFailure">' + result.message + '</div>');                        
                         logInSpinner.hide('fast');
                         submitBtn.css('display', 'inline');
-
                     }
+					else if (result.messageType == 'logout') {
+						window.location.href = EE.BASE+'&C=login';
+					}
                 }
             });
             return false;
@@ -138,7 +139,11 @@ function logOutCheck() {
     }
 }
 
-logOutCheck();
+if (EE.SESS_TIMEOUT) {
+	logOutCheck();	
+}
+
+
 
 
 // Hook up show / hide actions for sidebar

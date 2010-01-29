@@ -204,12 +204,21 @@ class Cp {
 		
 		$js_lang_keys = array(
 			'logout_confirm'	=> $this->EE->lang->line('logout_confirm'),
-			'logout'			=> $this->EE->lang->line('logout'),
-			'session_expiring'	=> $this->EE->lang->line('session_expiring'),
-			'username'			=> $this->EE->lang->line('username'),
-			'password'			=> $this->EE->lang->line('password'),
-			'login'				=> $this->EE->lang->line('login')
+			'logout'			=> $this->EE->lang->line('logout')
 		);
+		
+		/* -------------------------------------------
+		/*	Hidden Configuration Variable
+		/*	- login_reminder => y/n  to turn the CP Login Reminder On or Off.  Default is 'y'
+        /* -------------------------------------------*/
+		
+		if ($this->EE->config->item('login_reminder') != 'n')
+		{
+			$js_lang_keys['session_expiring'] = $this->EE->lang->line('session_expiring');
+			$js_lang_keys['username'] = $this->EE->lang->line('username');
+			$js_lang_keys['password'] = $this->EE->lang->line('password');
+			$js_lang_keys['login'] = $this->EE->lang->line('login');			
+		}
 		
 		$this->EE->javascript->set_global(array(
 			'BASE'				=> str_replace(AMP, '&', BASE),
@@ -220,9 +229,20 @@ class Cp {
 			'username'			=> $this->EE->session->userdata('username'),
 			'router_class'		=> $this->EE->router->class,				// advanced css
 			'lang'				=> $js_lang_keys,
-			'SESS_TIMEOUT'		=> $this->EE->session->cpan_session_len * 1000,
-			'XID_TIMEOUT'		=> $this->xid_ttl * 1000
 		));
+
+		/* -------------------------------------------
+		/*	Hidden Configuration Variable
+		/*	- login_reminder => y/n  to turn the CP Login Reminder On or Off.  Default is 'y'
+	    /* -------------------------------------------*/
+		if ($this->EE->config->item('login_reminder') != 'n')
+		{
+			$this->EE->javascript->set_global(array(
+					'SESS_TIMEOUT'		=> $this->EE->session->cpan_session_len * 1000,
+					'XID_TIMEOUT'		=> $this->xid_ttl * 1000			
+				)
+			);
+		}
 		
 		// Combo-load the javascript files we need for every request
 

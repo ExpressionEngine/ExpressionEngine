@@ -187,6 +187,15 @@ class Login extends Controller {
 		
 			$line = str_replace("%x", $this->config->item('password_lockout_interval'), $line);
 		
+			if ($is_ajax)
+			{
+				$resp = array(
+					'messageType'	=> 'logout'
+				);
+
+				$this->output->send_ajax_response($resp); exit;
+			}
+		
 			$this->session->set_flashdata('message', $line);
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
