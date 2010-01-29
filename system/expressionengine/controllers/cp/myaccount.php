@@ -476,7 +476,8 @@ class MyAccount extends Controller {
 	function update_email()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) {
+		if (empty($_POST)) 
+		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
@@ -528,15 +529,19 @@ class MyAccount extends Controller {
 
 		$this->member_model->update_member($this->id, $data);
 
-		//	Update comments and log email change
-
-		if ($current_email != $_POST['email'])
+		$this->cp->get_installed_modules();
+		
+		if (isset($this->cp->installed_modules['comment']))
 		{
-			// @todo: model
-			$this->db->where('author_id', $this->id);
-			$this->db->update('comments', array('email' => $this->input->post('email')));
+			//	Update comments and log email change
+			if ($current_email != $_POST['email'])
+			{
+				// @todo: model
+				$this->db->where('author_id', $this->id);
+				$this->db->update('comments', array('email' => $this->input->post('email')));
 
-			$this->logger->log_action($this->VAL->log_msg);
+				$this->logger->log_action($this->VAL->log_msg);
+			}			
 		}
 
 		$this->session->set_flashdata('message_success', $this->lang->line('settings_updated'));

@@ -735,8 +735,6 @@ class Tools_communicate extends Controller {
 					$error = TRUE;
 				}
 
-				$this->_delete_attachments(); // Remove attachments now
-
 				if ($error == TRUE)
 				{
 					show_error($this->lang->line('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
@@ -745,6 +743,7 @@ class Tools_communicate extends Controller {
 				$total_sent++;
 			}
 
+			$this->_delete_attachments(); // Remove attachments now
 
 			/** ----------------------------------------
 			/**  Store email cache
