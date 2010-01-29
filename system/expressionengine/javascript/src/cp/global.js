@@ -166,6 +166,8 @@ function show_hide_sidebar() {
 		main_height = main_content.height(),
 		sidebar.show();
 	}
+	
+	var larger_height = sidebar_height > main_height ? sidebar_height : main_height;
 		
 	$('#revealSidebarLink, #hideSidebarLink').click(function() {
 		var that = $(this),
@@ -185,7 +187,7 @@ function show_hide_sidebar() {
 		sidebar.slideToggle();
 		main_content.animate({
 			"width": w[this.id],
-			"height": show ? sidebar_height : main_height
+			"height": show ? larger_height : main_height
 		}, function() {
 			$("#sideBar").css({
 				'position': '',
