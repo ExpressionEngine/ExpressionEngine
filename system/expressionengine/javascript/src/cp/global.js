@@ -145,23 +145,54 @@ logOutCheck();
 
 function show_hide_sidebar() {
 	var w = {'revealSidebarLink': '77%', 'hideSidebarLink': '100%'},
-		main_content = $("#mainContent");
-	
+		main_content = $("#mainContent"),
+		sidebar = $("#sidebarContent"),
+		main_height = main_content.height(),
+		sidebar_height = sidebar.height();
+		
 	// Sidebar state
 
 	if (EE.CP_SIDEBAR_STATE == "off") {
 		main_content.css("width", "100%");
 		$("#revealSidebarLink").css('display', 'block');
 		$("#hideSidebarLink").hide();
+		
+		sidebar.show();
+		sidebar_height = sidebar.height();
+		sidebar.hide();
 	}
-	
+	else {
+		sidebar.hide();
+		main_height = main_content.height(),
+		sidebar.show();
+	}
+		
 	$('#revealSidebarLink, #hideSidebarLink').click(function() {
 		var that = $(this),
-			other = that.siblings('a');
+			other = that.siblings('a'),
+			show = (this.id == 'revealSidebarLink');		
+
+		$("#sideBar").css({
+			'position': 'absolute',
+			'float': '',
+			'right': '0'
+		});
 		
-		that.hide().siblings(':not(#activeUser)').slideToggle();
-		main_content.animate({"width": w[this.id]});
-		other.show();
+		
+		that.hide();
+		other.css('display', 'block');
+		
+		sidebar.slideToggle();
+		main_content.animate({
+			"width": w[this.id],
+			"height": show ? sidebar_height : main_height
+		}, function() {
+			$("#sideBar").css({
+				'position': '',
+				'float': 'right',
+			});
+		});
+		
 		return false;
 	});
 }
