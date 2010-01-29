@@ -4725,10 +4725,15 @@ class Design extends Controller {
 				if (substr($group, -6) != '.group')
 				{
 					continue;
-				}				
+				}
 
 				$group_name = substr($group, 0, -6); // remove .group
 				$group_id = '';
+
+				if ( ! preg_match("#^[a-zA-Z0-9_\-]+$#i", $group_name))
+				{
+					continue;
+				}
 							
 				// if the template group doesn't exist, make it!
 				if ( ! isset($existing[$group]))
