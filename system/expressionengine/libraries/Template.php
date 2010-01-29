@@ -299,6 +299,17 @@ class EE_Template {
 						
 			return;
 		}
+		
+		/** --------------------------------------------------
+		/**  Parse 'Site' variables
+		/** --------------------------------------------------*/
+		$this->log_item("Parsing Site Variables");
+		
+		// load site variables into the global_vars array
+		foreach (array('site_id', 'site_label', 'site_short_name') as $site_var)
+		{
+			$this->EE->config->_global_vars[$site_var] = stripslashes($this->EE->config->item($site_var));
+		}
 
 		/** -------------------------------------
 		/**  Parse manual variables and Snippets
@@ -356,19 +367,7 @@ class EE_Template {
 		if (strpos($this->template, LD.'embed:') !== FALSE)
 		{
 			$this->template = preg_replace('/'.LD.'embed:(.+?)'.RD.'/', '', $this->template);
-		}
-		
-		/** --------------------------------------------------
-		/**  Parse 'Site' variables
-		/** --------------------------------------------------*/
-		$this->log_item("Parsing Site Variables");
-		
-		// load site variables into the global_vars array
-		foreach (array('site_id', 'site_label', 'site_short_name') as $site_var)
-		{
-			$this->global_vars[$site_var] = stripslashes($this->EE->config->item($site_var));
-		}
-		
+		}		
 	
 		/** -------------------------------------
 		/**  Parse date format string "constants"
