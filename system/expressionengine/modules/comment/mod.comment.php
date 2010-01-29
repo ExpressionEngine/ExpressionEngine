@@ -226,8 +226,9 @@ class Comment {
 
 			if ($this->EE->TMPL->fetch_param('show_expired') !== 'yes')
 			{
-				$this->EE->db->where('expiration_date', '0');
-				$this->EE->db->or_where('expiration_date >', $timestamp);
+				$date_where = "(".$this->EE->db->protect_identifiers('expiration_date')." = 0 OR "
+				.$this->EE->db->protect_identifiers('expiration_date')." > {$timestamp})";
+				$this->EE->db->where($date_where);
 			}
 
 			$this->EE->db->where('status !=', 'closed');
