@@ -1261,7 +1261,7 @@ class EE_Schema {
 		$quick_link = '';
 		
 		$Q[] = "INSERT INTO exp_members (group_id, username, password, unique_id, email, screen_name, join_date, ip_address, timezone, daylight_savings, total_entries, last_entry_date, quick_links, language) 
-				VALUES ('1', '".$this->EE->db->escape_str($this->userdata['username'])."', '".$this->userdata['password']."', '".$this->userdata['unique_id']."', '".$this->EE->db->escape_str($this->userdata['email'])."', '".$this->EE->db->escape_str($this->userdata['screen_name'])."', '".$this->now."', '".$this->EE->input->ip_address()."', '".$this->userdata['server_timezone']."', '".$this->userdata['daylight_savings']."', '1', '".$this->now."', '$quick_link', '".$this->EE->db->escape_str($this->userdata['deft_lang'])."')";
+				VALUES ('1', '".$this->EE->db->escape_str($this->userdata['username'])."', '".$this->userdata['password']."', '".$this->userdata['unique_id']."', '".$this->EE->db->escape_str($this->userdata['email_address'])."', '".$this->EE->db->escape_str($this->userdata['screen_name'])."', '".$this->now."', '".$this->EE->input->ip_address()."', '".$this->userdata['server_timezone']."', '".$this->userdata['daylight_savings']."', '1', '".$this->now."', '$quick_link', '".$this->EE->db->escape_str($this->userdata['deft_lang'])."')";
 		
 		$Q[] = "INSERT INTO exp_member_homepage (member_id, recent_entries_order, recent_comments_order, site_statistics_order, notepad_order, pmachine_news_feed) 
 				VALUES ('1', '1', '2', '1', '2', 'l')";

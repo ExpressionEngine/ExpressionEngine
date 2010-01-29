@@ -133,7 +133,7 @@ else
 <div id="password_mismatch" class="pad"></div>
 
 <h5><?php echo $this->lang->line('email'); ?></h5>
-<p><input type='text' id='email' name='email' value='<?php echo $email; ?>' size='40'  maxlength='80' class='input' /></p>
+<p><input type='text' id='email_address' name='email_address' value='<?php echo $email; ?>' size='40'  maxlength='80' class='input' /></p>
 
 
 <h5><?php echo $this->lang->line('screen_name'); ?></h5>

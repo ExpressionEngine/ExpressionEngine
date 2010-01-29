@@ -819,7 +819,7 @@ class Forum_upd {
 		}
 		*/
 		
-		if ($current < 3.0.1)
+		if ($current < "3.0.1")
 		{
 			$Q = array();
 			

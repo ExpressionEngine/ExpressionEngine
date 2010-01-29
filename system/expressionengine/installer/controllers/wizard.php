@@ -98,7 +98,7 @@ class Wizard extends Controller {
 						'password'				=> '',
 						'password_confirm'		=> '',
 						'screen_name'			=> '',
-						'email'					=> '',
+						'email_address'			=> '',
 						'webmaster_email'		=> '',
 						'deft_lang'				=> 'english',
 						'theme'					=> '01',
@@ -662,9 +662,9 @@ class Wizard extends Controller {
 							$("#theme_select").change(onSelectChange);
 
 							$("#webmaster_email").blur( function() {
-								if ($("#email").val() == "")
+								if ($("#email_address").val() == "")
 								{
-									$("#email").val($(this).val());
+									$("#email_address").val($(this).val());
 								}
 							});
 						});
@@ -707,7 +707,7 @@ class Wizard extends Controller {
 						function onSelectChange(){
 							var selected = $("#theme_select").val();
 							var theme_modules_jason = {$theme_modules_jason}
-							var base_modules = new Array("comment", "email", "emoticon", "jquery", "email", "rss", "comment", "search");
+							var base_modules = new Array("comment", "email", "emoticon", "jquery", "rss", "search");
 
 						   $("input[name='modules[]']").setChecks(base_modules, theme_modules_jason[selected]);
 						}
@@ -797,7 +797,7 @@ PAPAYA;
 		$errors = array();
 		
 		// Blank fields?
-		foreach (array('db_hostname', 'db_username', 'db_name', 'site_label', 'username', 'password', 'email') as $val)
+		foreach (array('db_hostname', 'db_username', 'db_name', 'site_label', 'username', 'password', 'email_address') as $val)
 		{
 			if ($this->userdata[$val] == '')
 			{
@@ -845,7 +845,7 @@ PAPAYA;
 		}
 		
 		// Is email valid?
-		if ($this->userdata['email'] != '' AND ! valid_email($this->userdata['email']))
+		if ($this->userdata['email_address'] != '' AND ! valid_email($this->userdata['email_address']))
 		{
 			$errors[] = "The email address you submitted is not valid";
 		}	
