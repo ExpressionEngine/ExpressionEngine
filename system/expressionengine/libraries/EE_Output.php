@@ -370,6 +370,12 @@ class EE_Output extends CI_Output {
 		}
 		
 		$EE =& get_instance();
+		
+		if ($EE->config->item('send_headers') == 'y')
+		{
+			@header('Content-Type: text/html; charset=UTF-8');	
+		}
+		
 		exit($EE->javascript->generate_json($msg, TRUE));
 	}
 

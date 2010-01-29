@@ -1208,8 +1208,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			
 			$j_response['aaData']  = $this->format_comments($filter_data['validate'], $data_array['results']);
 			
-			$sOutput = $this->javascript->generate_json($j_response, TRUE);
-			exit($sOutput);
+			$this->output->send_ajax_response($j_response);
 		}
 
 		$total = $filtered_entries['total_count'];
@@ -1447,12 +1446,10 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 
 		$j_response['aaData'] = $tdata;	
-		$sOutput = $this->javascript->generate_json($j_response, TRUE);
-	
-		exit($sOutput);
+
+		$this->output->send_ajax_response($j_response);
 	}
-
-
+	
 
 	// --------------------------------------------
 	//	 Multi Edit Form
