@@ -82,7 +82,7 @@ class Search extends Controller {
 			{
 				// Force a js redirect
 				$url = str_replace('&amp;', '&', BASE).'&C=search&M=build_index&saved='.$search;
-				echo '<script type="text/javascript">document.location.href="'.$url.'";</script>';
+				echo '<script type="text/javascript">window.location="'.$url.'";</script>';
 				exit;
 			}
 

@@ -20,7 +20,7 @@ var $ = jQuery;
 
 $(document).bind('ajaxComplete', function(evt, xhr) {
 	if (xhr.status && xhr.status == 401) {
-		document.location = EE.BASE+'&'+xhr.responseText;
+		window.location = EE.BASE+'&'+xhr.responseText;
 	}
 });
 
