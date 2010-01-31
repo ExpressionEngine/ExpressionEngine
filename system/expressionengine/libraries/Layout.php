@@ -143,14 +143,21 @@ class EE_Layout {
 			
 			$channel_id = $query->row('channel_id');
 		}
+		
+		// No channel id? Happens when you edit field group that ins't
+		// in use by any channels.
+		
+		if ( ! is_numeric($channel_id))
+		{
+			return;
+		}
 
 		// Loop through each member group, looking for a custom layout
 		// Counting results isn't needed here, at least super admin will be here
 		foreach ($member_groups->result() as $group)
 		{
 			// Get any custom layout
-			$this->custom_layout_fields = $this->EE->member_model->get_group_layout($group->group_id,
-				 																	$channel_id);
+			$this->custom_layout_fields = $this->EE->member_model->get_group_layout($group->group_id, $channel_id);
 
 			// If there is a layout, we need to re-create it, as the channel prefs
 			// might be hiding the url_title or something.
@@ -159,15 +166,14 @@ class EE_Layout {
 				// This is a list of everything that an admin could choose to hide in Channel Prefs
 				// with a corresponding list of which fields need to be stricken from a custom layout
 				$check_field = array(
-								'show_url_title' => array('url_title'),
-								'show_author_menu' => array('author'),
-								'show_status_menu' => array('status'),
-								'show_date_menu' => array('entry_date', 
-															'expiration_date', 'comment_expiration_date'),
-								'show_options_cluster' => array('options'),
-								'show_ping_cluster' => array('ping'),
-								'show_categories_menu' => array('category'),
-								'show_forum_cluster' => array('forum_title', 'forum_body', 'forum_id', 'forum_topic_id')
+								'show_url_title'		=> array('url_title'),
+								'show_author_menu'		=> array('author'),
+								'show_status_menu'		=> array('status'),
+								'show_date_menu'		=> array('entry_date', 'expiration_date', 'comment_expiration_date'),
+								'show_options_cluster'	=> array('options'),
+								'show_ping_cluster'		=> array('ping'),
+								'show_categories_menu'	=> array('category'),
+								'show_forum_cluster'	=> array('forum_title', 'forum_body', 'forum_id', 'forum_topic_id')
 							);
 
 				foreach ($check_field as $post_key => $fields_to_remove)
@@ -204,10 +210,7 @@ class EE_Layout {
 				}
 
 				// All fields have been removed that need to be, reconstruct the layout
-				$test = $this->EE->member_model->insert_group_layout($group->group_id, 
-														 	 $channel_id, 
-														 	 $this->custom_layout_fields
-														);
+				$test = $this->EE->member_model->insert_group_layout($group->group_id, $channel_id, $this->custom_layout_fields);
 			}
 		}
 	}
