@@ -781,9 +781,8 @@ class Content_publish extends Controller {
 					$comment_expiration_date = $comment_expiration_date + $this->localize->now;
 				}
 			}
-			
 		}
-
+		
 		if ($which == 'edit')
 		{
 			// -----------------------------
@@ -818,6 +817,7 @@ class Content_publish extends Controller {
 
 		$cal_entry_date = ($this->localize->set_localized_time($entry_date) * 1000);
 		$cal_expir_date = ($expiration_date == '' OR $expiration_date == 0) ? $this->localize->set_localized_time() * 1000 : $this->localize->set_localized_time($expiration_date) * 1000;
+		
 		if (isset($this->installed_modules['comment']))
 		{
 			$cal_com_expir_date = ($comment_expiration_date == '' OR $comment_expiration_date == 0) ? $this->localize->set_localized_time() * 1000: $this->localize->set_localized_time($comment_expiration_date) * 1000;			
@@ -836,10 +836,37 @@ class Content_publish extends Controller {
 		
 		$this->_define_default_date_field('entry_date', $this->localize->convert_human_date_to_gmt($loc_entry_date));
 		$this->_define_default_date_field('expiration_date', $this->localize->convert_human_date_to_gmt($loc_expiration_date));
+		
 		if (isset($this->installed_modules['comment']))
 		{
 			$this->_define_default_date_field('comment_expiration_date', $this->localize->convert_human_date_to_gmt($loc_comment_expiration_date));			
 		}
+		
+		/*
+		
+		
+		$settings = array(
+					'field_id'				=> 'entry_date',
+					'field_label'			=> $this->lang->line('entry_date'),
+					'field_required'		=> 'n',
+					'field_type'			=> 'date',
+					'field_text_direction'	=> 'ltr',
+					'field_data'			=> $entry_date,
+					'field_fmt'				=> 'text',
+					'field_instructions'	=> '',
+					'field_show_fmt'		=> 'n',
+					'selected'				=> 'y'
+		);
+
+		// Entry date
+		$this->api_channel_fields->set_settings('entry_date', $settings);
+
+		$rules = 'call_field_validation['.$settings['field_id'].']';
+		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
+		
+		
+		*/
+		
 
 
 		// ----------------------------------------------
@@ -2175,8 +2202,7 @@ class Content_publish extends Controller {
 			$status = $deft_status;
 		}
 
-		$vars['menu_status_options'] = array();
-		$vars['menu_status_selected'] = '';
+		$vars = array();
 
 		if ($show_status_menu == 'n')
 		{
@@ -2203,50 +2229,58 @@ class Content_publish extends Controller {
 			}
 
 			//	Create status menu options
-
-			$query = $this->status_model->get_statuses($status_group);
-
-			if ($query->num_rows() == 0)
+			
+			// Start with the default open/closed in case they didn't select
+			// a status group.
+			
+			$vars['menu_status_options'] = array();
+			$vars['menu_status_selected'] = $status;
+			
+			// if there is no status group assigned, only Super Admins can create 'open' entries
+			if ($this->session->userdata['group_id'] == 1)
 			{
-				// if there is no status group assigned, only Super Admins can create 'open' entries
-				if ($this->session->userdata['group_id'] == 1)
-				{
-					$vars['menu_status_options']['open'] = $this->lang->line('open');
-				}
-
-				$vars['menu_status_options']['closed'] = $this->lang->line('closed');
-
-				// pre-selected status
-				$vars['menu_status_selected'] = $status;
+				$vars['menu_status_options']['open'] = $this->lang->line('open');
 			}
-			else
+
+			$vars['menu_status_options']['closed'] = $this->lang->line('closed');
+
+
+			// If the channel has a status group, grab those statuses
+			
+			if ($status_group)
 			{
-				$no_status_flag = TRUE;
-
-				foreach ($query->result_array() as $row)
+				$query = $this->status_model->get_statuses($status_group);
+				
+				if ($query->num_rows())
 				{
-					// pre-selected status
-					if ($status == $row['status'])
+					$no_status_flag = TRUE;
+					$vars['menu_status_options'] = array();
+
+					foreach ($query->result_array() as $row)
 					{
-						$vars['menu_status_selected'] = $row['status'];
+						// pre-selected status
+						if ($status == $row['status'])
+						{
+							$vars['menu_status_selected'] = $row['status'];
+						}
+
+						if (in_array($row['status_id'], $no_status_access))
+						{
+							continue;
+						}
+
+						$no_status_flag = FALSE;
+						$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? $this->lang->line($row['status']) : $row['status'];
+						$vars['menu_status_options'][form_prep($row['status'])] = form_prep($status_name);
 					}
 
-					if (in_array($row['status_id'], $no_status_access))
+					//	Were there no statuses?
+					// If the current user is not allowed to submit any statuses we'll set the default to closed
+
+					if ($no_status_flag == TRUE)
 					{
-						continue;
+						$vars['menu_status_selected'] = 'closed';
 					}
-
-					$no_status_flag = FALSE;
-					$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? $this->lang->line($row['status']) : $row['status'];
-					$vars['menu_status_options'][form_prep($row['status'])] = form_prep($status_name);
-				}
-
-				//	Were there no statuses?
-				// If the current user is not allowed to submit any statuses we'll set the default to closed
-
-				if ($no_status_flag == TRUE)
-				{
-					$vars['menu_status_selected'] = 'closed';
 				}
 			}
 		}
