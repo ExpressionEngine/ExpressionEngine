@@ -46,7 +46,7 @@ class Select_ft extends EE_Fieldtype {
 	function validate($data)
 	{
 		$valid			= FALSE;
-		$field_options	= $this->_get_field_options();
+		$field_options	= $this->_get_field_options($data);
 				
 		foreach($field_options as $key => $val)
 		{
@@ -76,7 +76,7 @@ class Select_ft extends EE_Fieldtype {
 	function display_field($data)
 	{
 		$text_direction = ($this->settings['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr';
-		$field_options = $this->_get_field_options();
+		$field_options = $this->_get_field_options($data);
 
 		return form_dropdown($this->field_name, $field_options, $data, 'dir="'.$text_direction.'" id="'.$this->field_id.'"');
 	}
@@ -109,7 +109,7 @@ class Select_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 	
-	function _get_field_options()
+	function _get_field_options($data)
 	{
 		$field_options = array();
 		
