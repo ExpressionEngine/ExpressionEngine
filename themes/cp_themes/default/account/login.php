@@ -94,7 +94,7 @@ input.submit {
 .error {
 	font-size:			14px;
 	color:				#ce0000;
-	background:			#fdf5b2 url('<?=$cp_theme_url?>images/icon-error.png') no-repeat 8px 10px;
+	background:			#fdf5b2 url('<?=$cp_theme_url?>images/error.png') no-repeat 8px 10px;
 	border:				1px solid #f3d589;
 	padding:			3px 15px 3px 25px;
 	margin:				-48px 0 20px 0;
