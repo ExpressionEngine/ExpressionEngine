@@ -753,7 +753,7 @@ class CI_Javascript {
 		}
 		else
 		{
-			return FALSE;
+			return 'null';
 		}
 
 		$json = array();
@@ -761,7 +761,7 @@ class CI_Javascript {
 		
 		if ( ! is_array($json_result) AND empty($json_result))
 		{
-			return FALSE;
+			show_error("Generate JSON Failed - Illegal key, value pair.");
 		}
 		elseif ($match_array_type)
 		{
