@@ -1726,9 +1726,16 @@ class MyAccount extends Controller {
 		$this->load->helper('directory');
 		
 		$vars['avatar_dirs'] = directory_map($this->config->slash_item('avatar_path'), 2);
-		$vars['avatar_dirs'] = array_filter($vars['avatar_dirs'], 'is_array');	// only grab subfolders
 		
-		unset($vars['avatar_dirs']['uploads']); // remove user uploaded avatars
+		if (is_array($vars['avatar_dirs']))
+		{
+			$vars['avatar_dirs'] = array_filter($vars['avatar_dirs'], 'is_array');	// only grab subfolders
+			unset($vars['avatar_dirs']['uploads']); // remove user uploaded avatars
+		}
+		else
+		{
+			$vars['avatar_dirs'] = array();
+		}
 
 		// Set the default image meta values
 
