@@ -1033,7 +1033,8 @@ class Admin_content extends Controller {
 						$tabs[] = $row->field_id;
 					}
 					
-					$this->cp->delete_layout_fields($tabs, $channel_id);
+					$this->load->library('layout');
+					$this->layout->delete_layout_fields($tabs, $channel_id);
 					unset($tabs);
 				}
 		}
@@ -1060,8 +1061,9 @@ class Admin_content extends Controller {
 								);
 						
 					}
+					$this->load->library('layout');
 					//print_r($tabs); exit;
-					$this->cp->add_layout_fields($tabs, $channel_id);
+					$this->layout->add_layout_fields($tabs, $channel_id);
 				}
 
 		}
@@ -3740,7 +3742,8 @@ class Admin_content extends Controller {
 				$channel_ids[] = $row->channel_id;
 			}
 	
-			$this->cp->delete_layout_fields($tabs, $channel_ids);
+			$this->load->library('layout');
+			$this->layout->delete_layout_fields($tabs, $channel_ids);
 		}
 		
 
@@ -4574,8 +4577,8 @@ class Admin_content extends Controller {
 				{
 					$channel_ids[] = $row->channel_id;
 				}
-
-				$this->cp->add_layout_fields($field_info, $channel_ids);
+				$this->load->library('layout');
+				$this->layout->add_layout_fields($field_info, $channel_ids);
 			}
 		}
 
@@ -4726,7 +4729,8 @@ class Admin_content extends Controller {
 				$channel_ids[] = $row->channel_id;
 			}
 	
-			$this->cp->delete_layout_fields($field_id, $channel_ids);
+			$this->load->library('layout');
+			$this->layout->delete_layout_fields($field_id, $channel_ids);
 		}
 
 		$cp_message = $this->lang->line('field_deleted').NBS.$field_label;

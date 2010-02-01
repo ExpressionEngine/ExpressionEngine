@@ -348,7 +348,9 @@ class Addons_installer {
 					
 					// Remove from layouts
 					$c_ids = array_unique($channel_ids[$id]);
-					$this->EE->cp->delete_layout_fields($field_id, $c_ids);
+					
+					$this->EE->load->library('layout');
+					$this->EE->layout->delete_layout_fields($field_id, $c_ids);
 				}
 
 				$this->EE->db->where_in('field_id', $ids);

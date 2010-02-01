@@ -281,6 +281,63 @@ class Layout {
 		$this->EE->load->model('member_model');
 		$this->EE->member_model->update_layouts($tabs, 'add_tabs', $channel_id);
 	}
+
+
+	// --------------------------------------------------------------------
+
+	
+	/**
+	 * Adds new fields to the saved publish layouts, creating the default tab if required
+	 *
+	 * @access	public
+	 * @param	array
+	 * @param	int
+	 * @return	bool
+	 */
+	function add_layout_fields($tabs = array(), $channel_id = array())
+	{
+		if ( ! is_array($channel_id))
+		{
+			$channel_id = array($channel_id);
+		}
+		
+		if ( ! is_array($tabs) OR count($tabs) == 0)
+		{
+			return FALSE;
+		}
+
+		$this->EE->load->model('member_model');
+		
+		return $this->EE->member_model->update_layouts($tabs, 'add_fields', $channel_id);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Deletes fields from the saved publish layouts
+	 *
+	 * @access	public
+	 * @param	array or string
+	 * @param	int
+	 * @return	bool
+	 */
+	function delete_layout_fields($tabs, $channel_id = array())
+	{
+		if ( ! is_array($channel_id))
+		{
+			$channel_id = array($channel_id);
+		}
+
+		if ( ! is_array($tabs))
+		{
+			$tabs = array($tabs);
+		}
+		
+		$this->EE->load->model('member_model');
+	
+		return $this->EE->member_model->update_layouts($tabs, 'delete_fields', $channel_id);
+	}
+
 	
 }
 // END CLASS
