@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class EE_Layout {
+class Layout {
 	
 	var $custom_layout_fields = array();
 	
@@ -31,7 +31,7 @@ class EE_Layout {
 	 *
 	 * Get reference to EE SuperObject
 	 */
-	function EE_Layout()
+	function Layout()
 	{
 		$this->EE =& get_instance();
 	}

@@ -23,7 +23,7 @@
  * @link		http://expressionengine.com
  */
 
-require_once(EE_APPPATH.'/libraries/EE_Layout'.EXT);
+require_once(EE_APPPATH.'/libraries/Layout'.EXT);
 
 class Installer_Layout extends EE_Layout {
 	// Nothing to see here.

@@ -291,6 +291,7 @@ class Admin_content extends Controller {
 
 		$this->lang->loadfile('admin_content');
 		$this->load->library('table');
+		$this->load->library('layout');
 		$this->load->helper(array('form', 'snippets'));
 		$this->load->model('channel_model');
 		$this->load->model('template_model');
@@ -421,6 +422,11 @@ class Admin_content extends Controller {
 		$vars['publish_page_customization_options'] = array(
 			'show_url_title', 'show_button_cluster', 'show_author_menu', 'show_status_menu',  'show_date_menu',
 			'show_options_cluster', 'show_ping_cluster', 'show_categories_menu', 'show_forum_cluster');
+			
+		if (isset($this->cp->installed_modules['pages']))
+		{
+			$vars['publish_page_customization_options'][] = 'show_pages_cluster';
+		}
 
 		$this->javascript->compile();
 
