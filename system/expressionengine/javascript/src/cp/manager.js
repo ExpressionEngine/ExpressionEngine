@@ -418,7 +418,11 @@
 			text = '<div style="padding: 5px;"><label>Find:</label> <input name="fr_find" id="fr_find" type="text" value="" /> <label>Replace:</label> <input type="text" name="fr_replace" id="fr_replace" value=""/> '+select+'</div>';
 			text +=	'<div style="padding: 5px;"><button class="submit" id="fr_find_btn">Find Next</button> <button class="submit" id="fr_replace_btn">Replace</button> <button class="submit" id="fr_replace_all_btn">Replace All</button> <label><input name="fr_replace_closing_tags" id="fr_replace_closing_tags" type="checkbox" /> Include Closing Tags</label></div>';
 
-			$.ee_notice(text, {type: "custom", open: true});
+			$.ee_notice(text, {
+				type: "custom",
+				open: true,
+				close_on_click: false
+			});
 
 			$('#fr_find').val(find);
 			$('#fr_replace').val(replace);
