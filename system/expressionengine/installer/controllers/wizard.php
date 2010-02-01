@@ -2036,6 +2036,8 @@ PAPAYA;
 	 */
 	function _install_modules()
 	{
+		$this->load->library('layout');
+		
 		$modules = ($this->input->post('modules') !== FALSE) ? $this->input->post('modules') : array();
 		
 		$modules = array_unique(array_merge($modules, $this->required_modules));
