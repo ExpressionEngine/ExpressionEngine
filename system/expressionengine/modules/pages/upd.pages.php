@@ -81,7 +81,8 @@ class Pages_upd {
 			$this->EE->db->query($query);
 		}
 		
-		$this->EE->cp->add_layout_tabs($this->tabs());
+		$this->EE->load->library('layout');
+		$this->EE->layout->add_layout_tabs($this->tabs());
 
 		return TRUE;
 	}
@@ -111,7 +112,9 @@ class Pages_upd {
 			$this->EE->db->query($query);
 		}
 		
-		$this->EE->cp->delete_layout_tabs($this->tabs());
+		$this->EE->load->library('layout');
+		
+		$this->EE->layout->delete_layout_tabs($this->tabs());
 
 		return TRUE;
 	}

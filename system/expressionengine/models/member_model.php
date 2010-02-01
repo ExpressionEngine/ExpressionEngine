@@ -1080,7 +1080,7 @@ class Member_model extends CI_Model {
 				elseif ($action == 'delete_tabs')
 				{
 					foreach($layout_info AS $tab => $fields)
-					{						
+					{					
 						$k_field = (is_array($fields)) ? key($fields) : $fields;
 						
 						if ($action == 'delete_tabs' && array_key_exists($tab, $layout) == TRUE)
@@ -1120,7 +1120,7 @@ class Member_model extends CI_Model {
 				$this->db->update('layout_publish', $data); 
 			}
 		}
-		
+
 		if ($errors > 0)
 		{
 			return FALSE;

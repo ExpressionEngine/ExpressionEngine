@@ -528,7 +528,15 @@ class Admin_content extends Controller {
 
 		// Load the layout Library & update the layouts
 		$this->load->library('layout');
-		$this->layout->update_layout($edit);
+
+		if (isset($_POST['show_pages_cluster']) && $_POST['show_pages_cluster'] == 'n')
+		{
+			$this->layout->delete_layout_tabs(array('pages' => 'pages_uri', 'pages_template_id'), '', $this->input->post('channel_id'));
+		}
+		else
+		{
+			$this->layout->add_layout_tabs(array('pages' => 'pages_uri', 'pages_template_id'), $this->input->post('channel_id'));
+		}
 
 		$add_rss = (isset($_POST['add_rss'])) ? TRUE : FALSE;
 		unset($_POST['add_rss']);

@@ -173,7 +173,8 @@ class Layout {
 								'show_options_cluster'	=> array('options'),
 								'show_ping_cluster'		=> array('ping'),
 								'show_categories_menu'	=> array('category'),
-								'show_forum_cluster'	=> array('forum_title', 'forum_body', 'forum_id', 'forum_topic_id')
+								'show_forum_cluster'	=> array('forum_title', 'forum_body', 'forum_id', 'forum_topic_id'),
+								'show_pages_cluster'	=> array('pages_uri', 'pages_template_id')
 							);
 
 				foreach ($check_field as $post_key => $fields_to_remove)
@@ -216,6 +217,70 @@ class Layout {
 	}
 	
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Updates saved publish layouts
+	 *
+	 * @access	public
+	 * @param	array
+	 * @return	bool
+	 */
+	function delete_layout_tabs($tabs = array(), $namespace = '', $channel_id = array())
+	{
+		if ( ! is_array($tabs) OR count($tabs) == 0)
+		{
+			return FALSE;
+		}
+		
+		if ($namespace != '')
+		{
+			foreach ($tabs as $key => $val)
+			{
+				foreach ($val as $field_name => $data)
+				{
+					$tabs[$key][$namespace.'__'.$field_name] = $data;
+					unset($tabs[$key][$field_name]);
+				}
+			}
+		}
+		
+		$this->EE->load->model('member_model');
+
+		return $this->EE->member_model->update_layouts($tabs, 'delete_tabs', $channel_id);
+	}	
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Add new tabs and associated fields to saved publish layouts
+	 *
+	 * @access	public
+	 * @param	array
+	 * @return	bool
+	 */
+	function add_layout_tabs($tabs = array(), $namespace = '', $channel_id = array())
+	{
+		if ( ! is_array($tabs) OR count($tabs) == 0)
+		{
+			return FALSE;
+		}
+
+		if ($namespace != '')
+		{
+			foreach ($tabs as $key => $val)
+			{
+				foreach ($val as $field_name => $data)
+				{
+					$tabs[$key][$namespace.'__'.$field_name] = $data;
+					unset($tabs[$key][$field_name]);
+				}
+			}
+		}
+
+
+		$this->EE->load->model('member_model');
+		$this->EE->member_model->update_layouts($tabs, 'add_tabs', $channel_id);
+	}
 	
 }
 // END CLASS
