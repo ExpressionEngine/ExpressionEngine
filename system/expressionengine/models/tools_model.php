@@ -153,7 +153,7 @@ class Tools_model extends CI_Model {
 		$this->db->select('cp_log.*, sites.site_id, sites.site_label');
 		$this->db->from('cp_log');
 		$this->db->join('sites', 'sites.site_id=cp_log.site_id');
-		$this->db->order_by('act_date');
+		$this->db->order_by('act_date', 'desc');
 		$this->db->limit(25); // @todo... pagination
 
 		return $this->db->get();
