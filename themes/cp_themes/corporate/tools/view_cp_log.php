@@ -12,7 +12,9 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=lang('view_cp_log')?></h2></div>
+			<div class="heading"><h2>
+			<span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>			
+			<?=lang('view_cp_log')?></h2></div>
 			
 			<div class="pageContents">
 			<?php $this->load->view('_shared/message');?>
@@ -46,6 +48,9 @@ if ($EE_view_disable !== TRUE)
 				<div class="clear_left"></div>
 
 				<?=$this->table->generate()?>
+				
+				<span class="js_hide"><?=$pagination?></span>
+				<span class="pagination" id="filter_pagination"></span>
 
 			<?php else:?>
 

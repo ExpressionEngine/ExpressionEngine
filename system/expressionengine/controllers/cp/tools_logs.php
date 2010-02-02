@@ -23,6 +23,9 @@
  * @link		http://expressionengine.com
  */
 class Tools_logs extends Controller {
+	
+	var $perpage = 50;
+	var $pipe_length = 3;
 
 
 	function Tools_logs()
@@ -107,18 +110,107 @@ class Tools_logs extends Controller {
 			BASE.AMP.'C=tools_logs'=> $this->lang->line('tools_logs')
 		));
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
-		$this->jquery->tablesorter('.mainTable', '{widgets: ["zebra"]}');
+		$this->cp->add_js_script(array('plugin' => 'dataTables'));
+		
+		$this->javascript->output($this->ajax_filters('view_cp_ajax_filter', 6));
 
 		$this->javascript->compile();
+		
+		$total = $this->db->count_all('cp_log');
+		
+		$row = ( ! $this->input->get_post('per_page')) ? 0 : $this->input->get_post('per_page');
+		$vars['pagination'] = FALSE;
 
-		$vars['cp_data'] = $this->tools_model->get_cp_log();
+		if ($total > $this->perpage)
+		{
+			$this->load->library('pagination');
+			
+			$config['base_url'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_cp_log';
+			$config['total_rows'] = $total;
+			$config['per_page'] = $this->perpage;
+			$config['page_query_string'] = TRUE;
+			
+			$this->pagination->initialize($config);	
+			$vars['pagination'] = $this->pagination->create_links();
+		}
 
+		$vars['cp_data'] = $this->tools_model->get_cp_log($this->perpage, $row);
+		
 		$this->load->view('tools/view_cp_log', $vars);
 	}
 
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Ajax filter for CP log
+	 *
+	 * Filters CP log data
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function view_cp_ajax_filter()
+	{
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		$this->output->enable_profiler(FALSE);
+		
+		$col_map = array('member_id', 'username', 'ip_address', 'act_date', 'site_label', 'action');
+		
+		// Note- we pipeline the js, so pull more data than are displayed on the page		
+		$perpage = $this->input->get_post('iDisplayLength');
+		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
+		$sEcho = $this->input->get_post('sEcho');	
+
+		$order = array();
+
+		/* Ordering */
+		if ( isset($_GET['iSortCol_0']))
+		{
+			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
+			{
+				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['iSortDir_'.$i];
+			}
+		}
+
+		$query = $this->tools_model->get_cp_log($perpage, $offset, $order);
+		
+		$total = $this->db->count_all('cp_log');
+
+
+		$j_response['sEcho'] = $sEcho;
+		$j_response['iTotalRecords'] = $total;
+		$j_response['iTotalDisplayRecords'] = $total;
+		
+		$tdata = array();
+		$i = 0;
+		
+		foreach ($query->result_array() as $log)
+		{
+		
+			$m[] = $log['member_id'];
+			$m[] = "<strong><a href='".BASE.AMP.'C=myaccount'.AMP.'id='.$log['member_id']."'>{$log['username']}</a></strong>";
+			$m[] = $log['ip_address'];
+			$m[] = date('Y-m-d h:m A', $log['act_date']);
+			$m[] = $log['site_label'];	
+			$m[] = $log['action'];	
+
+			$tdata[$i] = $m;
+			$i++;
+			unset($m);
+		}		
+
+		$j_response['aaData'] = $tdata;	
+		$sOutput = $this->javascript->generate_json($j_response, TRUE);
+	
+		exit($sOutput);
+	}
+
+	// --------------------------------------------------------------------
+
 
 	/**
 	 * View Search Log
@@ -145,14 +237,104 @@ class Tools_logs extends Controller {
 			BASE.AMP.'C=tools_logs'=> $this->lang->line('tools_logs')
 		));
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-		$this->jquery->tablesorter('.mainTable', '{widgets: ["zebra"]}');
+		$this->cp->add_js_script(array('plugin' => 'dataTables'));
+		
+		$this->javascript->output($this->ajax_filters('view_search_ajax_filter', 6));
 
 		$this->javascript->compile();
+		
+		$total = $this->db->count_all('search_log');
+		
+		$row = ( ! $this->input->get_post('per_page')) ? 0 : $this->input->get_post('per_page');
+		$vars['pagination'] = FALSE;
 
-		$vars['search_data'] = $this->tools_model->get_search_log();
+		if ($total > $this->perpage)
+		{
+			$this->load->library('pagination');
+			
+			$config['base_url'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_search_log';
+			$config['total_rows'] = $total;
+			$config['per_page'] = $this->perpage;
+			$config['page_query_string'] = TRUE;
+			
+			$this->pagination->initialize($config);	
+			$vars['pagination'] = $this->pagination->create_links();
+		}
+
+		$vars['search_data'] = $this->tools_model->get_search_log($this->perpage, $row);
 
 		$this->load->view('tools/view_search_log', $vars);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Ajax filter for Search log
+	 *
+	 * Filters Search log data
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function view_search_ajax_filter()
+	{
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		$this->output->enable_profiler(FALSE);
+		
+		$col_map = array('screen_name', 'ip_address', 'search_date', 'site_label', 'search_type', 'search_terms');
+		
+		// Note- we pipeline the js, so pull more data than are displayed on the page		
+		$perpage = $this->input->get_post('iDisplayLength');
+		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
+		$sEcho = $this->input->get_post('sEcho');	
+
+		$order = array();
+
+		/* Ordering */
+		if ( isset($_GET['iSortCol_0']))
+		{
+			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
+			{
+				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['iSortDir_'.$i];
+			}
+		}
+
+		$query = $this->tools_model->get_search_log($perpage, $offset, $order);
+		
+		$total = $this->db->count_all('search_log');
+
+
+		$j_response['sEcho'] = $sEcho;
+		$j_response['iTotalRecords'] = $total;
+		$j_response['iTotalDisplayRecords'] = $total;
+		
+		$tdata = array();
+		$i = 0;
+		
+		foreach ($query->result_array() as $log)
+		{
+			$screen_name = ($log['screen_name'] != '') ? '<a href="'.BASE.AMP.'C=myaccount'.AMP.'member_id='. $log['member_id'].'">'.$log['screen_name'].'</a>' : ' -- ';
+			
+			$m[] = $screen_name;
+			$m[] = $log['ip_address'];
+			$m[] = date('Y-m-d h:m A', $log['search_date']);
+			$m[] = $log['site_label'];	
+			$m[] = $log['search_type'];	
+			$m[] = $log['search_terms'];	
+			
+			$tdata[$i] = $m;
+			$i++;
+			unset($m);
+		}		
+
+		$j_response['aaData'] = $tdata;	
+		$sOutput = $this->javascript->generate_json($j_response, TRUE);
+	
+		exit($sOutput);
 	}
 
 	// --------------------------------------------------------------------
@@ -195,11 +377,32 @@ class Tools_logs extends Controller {
 			BASE.AMP.'C=tools_logs'=> $this->lang->line('tools_logs')
 		));
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
-		$this->jquery->tablesorter('.mainTable', '{widgets: ["zebra"]}');
+		$this->cp->add_js_script(array('plugin' => 'dataTables'));
+		
+		$this->javascript->output($this->ajax_filters('view_throttle_ajax_filter', 3));
 
 		$this->javascript->compile();
+		
+		
+		$this->db->where('(hits >= "'.$max_page_loads.'" OR (locked_out = "y" AND last_activity > "'.$lockout_time.'"))', NULL, FALSE);
+		$this->db->from('throttle');
+		$total = $this->db->count_all_results();		
+		
+		$row = ( ! $this->input->get_post('per_page')) ? 0 : $this->input->get_post('per_page');
+		$vars['pagination'] = FALSE;
+
+		if ($total > $this->perpage)
+		{
+			$this->load->library('pagination');
+			
+			$config['base_url'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_throttle_log';
+			$config['total_rows'] = $total;
+			$config['per_page'] = $this->perpage;
+			$config['page_query_string'] = TRUE;
+			
+			$this->pagination->initialize($config);	
+			$vars['pagination'] = $this->pagination->create_links();
+		}
 		
 		// Blacklist Installed?
 		$this->db->where('module_name', 'Blacklist');
@@ -207,9 +410,91 @@ class Tools_logs extends Controller {
 
 		$vars['blacklist_installed'] = ($count > 0);
 
-		$vars['throttle_data'] = $this->tools_model->get_throttle_log($max_page_loads, $lockout_time);
+		$vars['throttle_data'] = $this->tools_model->get_throttle_log($max_page_loads, $lockout_time, $this->perpage, $row);
 
 		$this->load->view('tools/view_throttle_log', $vars);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Ajax filter for Throttle log
+	 *
+	 * Filters Throttle log data
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function view_throttle_ajax_filter()
+	{
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		$this->output->enable_profiler(FALSE);
+		
+		$col_map = array('ip_address', 'hits', 'last_activity');
+		
+		$max_page_loads = 10;
+		$lockout_time	= 30;
+		
+		if (is_numeric($this->config->item('max_page_loads')))
+		{
+			$max_page_loads = $this->config->item('max_page_loads');
+		}
+
+		if (is_numeric($this->config->item('lockout_time')))
+		{
+			$lockout_time = $this->config->item('lockout_time');
+		}
+		
+		// Note- we pipeline the js, so pull more data than are displayed on the page		
+		$perpage = $this->input->get_post('iDisplayLength');
+		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
+		$sEcho = $this->input->get_post('sEcho');	
+
+		$order = array();
+
+		/* Ordering */
+		if ( isset($_GET['iSortCol_0']))
+		{
+			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
+			{
+				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['iSortDir_'.$i];
+			}
+		}
+
+		$query = $this->tools_model->get_throttle_log($perpage, $offset, $order);
+		
+		$this->db->where('(hits >= "'.$max_page_loads.'" OR (locked_out = "y" AND last_activity > "'.$lockout_time.'"))', NULL, FALSE);
+		$this->db->from('throttle');
+		$total = $this->db->count_all_results();
+
+
+		$j_response['sEcho'] = $sEcho;
+		$j_response['iTotalRecords'] = $total;
+		$j_response['iTotalDisplayRecords'] = $total;
+		
+		$tdata = array();
+		$i = 0;
+		
+		foreach ($query->result_array() as $log)
+		{
+		
+			$m[] = $log['ip_address'];
+			$m[] = $log['hits'];
+			$m[] = date('Y-m-d h:m A', $log['last_activity']);
+
+			$tdata[$i] = $m;
+			$i++;
+			unset($m);
+		}		
+
+		$j_response['aaData'] = $tdata;	
+		$sOutput = $this->javascript->generate_json($j_response, TRUE);
+	
+		exit($sOutput);
 	}
 
 	// --------------------------------------------------------------------
@@ -241,8 +526,7 @@ class Tools_logs extends Controller {
 			BASE.AMP.'C=tools_logs'=> $this->lang->line('tools_logs')
 		));
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-		$this->jquery->tablesorter('.mainTable', '{headers: {4: {sorter: false}},	widgets: ["zebra"]}');
+		$this->cp->add_js_script(array('plugin' => 'dataTables'));
 
 		$this->javascript->output('
 			$("#toggle_all").toggle(
@@ -258,10 +542,31 @@ class Tools_logs extends Controller {
 			);
 		');
 
-		$this->javascript->compile();
+		$this->javascript->output($this->ajax_filters('view_email_ajax_filter', 4, TRUE));
 
-		$vars['emails']	= $this->tools_model->get_email_logs();
-		$vars['emails_count'] = $vars['emails']->num_rows();
+		$this->javascript->compile();
+		
+		$total = $this->db->count_all('email_console_cache');
+		
+		$row = ( ! $this->input->get_post('per_page')) ? 0 : $this->input->get_post('per_page');
+		$vars['pagination'] = FALSE;
+
+		if ($total > $this->perpage)
+		{
+			$this->load->library('pagination');
+			
+			$config['base_url'] = BASE.AMP.'C=tools_logs'.AMP.'M=view_email_log';
+			$config['total_rows'] = $total;
+			$config['per_page'] = $this->perpage;
+			$config['page_query_string'] = TRUE;
+			
+			$this->pagination->initialize($config);	
+			$vars['pagination'] = $this->pagination->create_links();
+		}
+
+
+		$vars['emails']	= $this->tools_model->get_email_logs(FALSE, $this->perpage, $row);
+		$vars['emails_count'] = $total;
 
         if ($vars['emails_count'] != 0)
         {
@@ -270,6 +575,74 @@ class Tools_logs extends Controller {
         }
 
 		$this->load->view('tools/view_email_log', $vars);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Ajax filter for Email log
+	 *
+	 * Filters Email log data
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function view_email_ajax_filter()
+	{
+		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		$this->output->enable_profiler(FALSE);
+		
+		$col_map = array('subject', 'member_name', 'recipient_name', 'cache_date');
+		
+		// Note- we pipeline the js, so pull more data than are displayed on the page		
+		$perpage = $this->input->get_post('iDisplayLength');
+		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
+		$sEcho = $this->input->get_post('sEcho');	
+
+		$order = array();
+
+		/* Ordering */
+		if ( isset($_GET['iSortCol_0']))
+		{
+			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
+			{
+				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['iSortDir_'.$i];
+			}
+		}
+
+		$query = $this->tools_model->get_email_logs(FALSE, $perpage, $offset, $order);
+		
+		$total = $this->db->count_all('email_console_cache');
+
+
+		$j_response['sEcho'] = $sEcho;
+		$j_response['iTotalRecords'] = $total;
+		$j_response['iTotalDisplayRecords'] = $total;
+		
+		$tdata = array();
+		$i = 0;
+		
+		foreach ($query->result_array() as $log)
+		{
+			$m[] = '<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_email'.AMP.'id='.$log['cache_id'].'">'.$log['subject'].'</a>';
+			$m[] = '<a href="'.BASE.AMP.'C=myaccount'.AMP.'member_id='. $log['member_id'].'">'.$log['member_name'].'</a>';
+			$m[] = $log['recipient_name'];
+			$m[] = date("Y-m-d h:m A", $log['cache_date']);
+			$m[] = form_checkbox(array('id'=>'delete_box_'.$log['cache_id'],'name'=>'toggle[]','value'=>$log['cache_id'], 'class'=>'toggle_email', 'checked'=>FALSE));
+			
+			$tdata[$i] = $m;
+			$i++;
+			unset($m);
+		}		
+
+		$j_response['aaData'] = $tdata;	
+		$sOutput = $this->javascript->generate_json($j_response, TRUE);
+	
+		exit($sOutput);
 	}
 
 	// --------------------------------------------------------------------
@@ -446,6 +819,176 @@ class Tools_logs extends Controller {
 		$this->session->set_flashdata('message_success', $this->lang->line('blacklist_updated'));
 		$this->functions->redirect(BASE.AMP.'C=tools_logs'.AMP.'M=view_throttle_log');
 	}
+	
+	function ajax_filters($ajax_method = '', $cols = '', $final_check = FALSE)
+	{
+		if ($ajax_method == '')
+		{
+			return;
+		}
+		
+		$col_defs = '';
+		if ($cols != '')
+		{
+			$col_defs .= '"aoColumns": [ ';
+			$i = 1;
+			
+			while ($i <= $cols)
+			{
+				$col_defs .= 'null, ';
+				$i++;
+			}
+			
+			if ($final_check == TRUE)
+			{
+				$col_defs .= '{ "bSortable" : false } ],';
+			}
+			else
+			{
+				$col_defs .= ' ],';
+			}
+		}
+		
+		$js = '
+var oCache = {
+	iCacheLower: -1
+};
+
+function fnSetKey( aoData, sKey, mValue )
+{
+	for ( var i=0, iLen=aoData.length ; i<iLen ; i++ )
+	{
+		if ( aoData[i].name == sKey )
+		{
+			aoData[i].value = mValue;
+		}
+	}
+}
+
+function fnGetKey( aoData, sKey )
+{
+	for ( var i=0, iLen=aoData.length ; i<iLen ; i++ )
+	{
+		if ( aoData[i].name == sKey )
+		{
+			return aoData[i].value;
+		}
+	}
+	return null;
+}
+
+function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
+	var iPipe = '.$this->pipe_length.';  /* Ajust the pipe size */
+	
+	var bNeedServer = false;
+	var sEcho = fnGetKey(aoData, "sEcho");
+	var iRequestStart = fnGetKey(aoData, "iDisplayStart");
+	var iRequestLength = fnGetKey(aoData, "iDisplayLength");
+	var iRequestEnd = iRequestStart + iRequestLength;
+	oCache.iDisplayStart = iRequestStart;
+	
+	/* outside pipeline? */
+	if ( oCache.iCacheLower < 0 || iRequestStart < oCache.iCacheLower || iRequestEnd > oCache.iCacheUpper )
+	{
+		bNeedServer = true;
+	}
+	
+	/* sorting etc changed? */
+	if ( oCache.lastRequest && !bNeedServer )
+	{
+		for( var i=0, iLen=aoData.length ; i<iLen ; i++ )
+		{
+			if ( aoData[i].name != "iDisplayStart" && aoData[i].name != "iDisplayLength" && aoData[i].name != "sEcho" )
+			{
+				if ( aoData[i].value != oCache.lastRequest[i].value )
+				{
+					bNeedServer = true;
+					break;
+				}
+			}
+		}
+	}
+	
+	/* Store the request for checking next time around */
+	oCache.lastRequest = aoData.slice();
+	
+	if ( bNeedServer )
+	{
+		if ( iRequestStart < oCache.iCacheLower )
+		{
+			iRequestStart = iRequestStart - (iRequestLength*(iPipe-1));
+			if ( iRequestStart < 0 )
+			{
+				iRequestStart = 0;
+			}
+		}
+		
+		oCache.iCacheLower = iRequestStart;
+		oCache.iCacheUpper = iRequestStart + (iRequestLength * iPipe);
+		oCache.iDisplayLength = fnGetKey( aoData, "iDisplayLength" );
+		fnSetKey( aoData, "iDisplayStart", iRequestStart );
+		fnSetKey( aoData, "iDisplayLength", iRequestLength*iPipe );
+		
+		$.getJSON( sSource, aoData, function (json) { 
+			/* Callback processing */
+			oCache.lastJson = jQuery.extend(true, {}, json);
+			
+			if ( oCache.iCacheLower != oCache.iDisplayStart )
+			{
+				json.aaData.splice( 0, oCache.iDisplayStart-oCache.iCacheLower );
+			}
+			json.aaData.splice( oCache.iDisplayLength, json.aaData.length );
+			
+			fnCallback(json)
+		} );
+	}
+	else
+	{
+		json = jQuery.extend(true, {}, oCache.lastJson);
+		json.sEcho = sEcho; /* Update the echo for each response */
+		json.aaData.splice( 0, iRequestStart-oCache.iCacheLower );
+		json.aaData.splice( iRequestLength, json.aaData.length );
+		fnCallback(json);
+		return;
+	}
+}
+
+	oTable = $(".mainTable").dataTable( {	
+			"sPaginationType": "full_numbers",
+			"bLengthChange": false,
+			"aaSorting": [[]],
+			"bFilter": false,
+			"sWrapper": false,
+			"sInfo": false,
+			"bAutoWidth": false,
+			"iDisplayLength": '.$this->perpage.', 
+			
+			'.$col_defs.'
+					
+		"oLanguage": {
+			"sZeroRecords": "'.$this->lang->line('invalid_entries').'",
+			
+			"oPaginate": {
+				"sFirst": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
+				"sPrevious": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_prev_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
+				"sNext": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_next_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />", 
+				"sLast": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_last_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />"
+			}
+		},
+		
+			"bProcessing": true,
+			"bServerSide": true,
+			"sAjaxSource": EE.BASE+"&C=tools_logs&M='.$ajax_method.'",
+			"fnServerData": fnDataTablesPipeline
+
+	} );';
+
+		return $js;
+		
+	}
+	
+	
+	
 }
 // END CLASS
 

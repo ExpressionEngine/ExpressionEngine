@@ -30,6 +30,10 @@ if ($EE_view_disable !== TRUE)
 			</ul>				
 		<?php endforeach;?>
 		
+		<?php if ($pagination): ?>					
+			<?=$pagination?>
+		<?php endif; ?>		
+		
 		<?=form_submit('email_logs', lang('delete'), 'class="whiteButton"')?>
 
 		<?=form_close()?>

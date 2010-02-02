@@ -24,8 +24,13 @@ if ($EE_view_disable !== TRUE)
 			<li><strong><?=lang('action')?>:</strong> <?=$data->action?></li>
 		</ul>
 		
-		<?php endforeach;
-	else: ?>
+		<?php endforeach; ?>
+		
+		<?php if ($pagination): ?>					
+			<?=$pagination?>
+		<?php endif; ?>
+		
+	<?php else: ?>
 		<div class="container pad"><?=lang('no_search_results')?></div>
 	<?php endif;?>
 <a class="whiteButton" href="<?=BASE.AMP.'C=tools_logs'.AMP.'M=clear_log_files'.AMP.'type=cp'?>"><?=lang('clear_logs')?></a>

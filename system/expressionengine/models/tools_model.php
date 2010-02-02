@@ -148,17 +148,30 @@ class Tools_model extends CI_Model {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function get_cp_log()
+
+	function get_cp_log($limit = 50, $offset = 0, $order = array())
 	{
 		$this->db->select('cp_log.*, sites.site_id, sites.site_label');
 		$this->db->from('cp_log');
 		$this->db->join('sites', 'sites.site_id=cp_log.site_id');
-		$this->db->order_by('act_date', 'desc');
-		$this->db->limit(25); // @todo... pagination
 
-		return $this->db->get();
+		if (is_array($order) && count($order) > 0)
+		{
+			foreach ($order as $key => $val)
+			{
+				$this->db->order_by($key, $val);
+			}
+		}
+		else
+		{
+			$this->db->order_by('act_date', 'desc');			
+		}
+
+		$this->db->limit($limit, $offset);
+		return $this->db->get();	
 	}
-	
+
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -167,14 +180,25 @@ class Tools_model extends CI_Model {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function get_search_log()
+	function get_search_log($limit = 50, $offset = 0, $order = array())
 	{
 		$this->db->select('search_log.*, sites.site_id, sites.site_label');
 		$this->db->from('search_log');
 		$this->db->join('sites', 'sites.site_id=search_log.site_id');
-		$this->db->order_by('search_date');
-		$this->db->limit(100);
 
+		if (is_array($order) && count($order) > 0)
+		{
+			foreach ($order as $key => $val)
+			{
+				$this->db->order_by($key, $val);
+			}
+		}
+		else
+		{
+			$this->db->order_by('search_date', 'desc');			
+		}
+
+		$this->db->limit($limit, $offset);
 		return $this->db->get();
 	}
 
@@ -188,13 +212,25 @@ class Tools_model extends CI_Model {
 	 * @param	int		lockout time
 	 * @return	mixed
 	 */
-	function get_throttle_log($max_page_loads = 10, $lockout_time = 30)
+	function get_throttle_log($max_page_loads = 10, $lockout_time = 30, $limit = 50, $offset = 0, $order = array())
 	{
 		$this->db->select('ip_address, hits, locked_out, last_activity');
 		$this->db->from('throttle');
 		$this->db->where('(hits >= "'.$max_page_loads.'" OR (locked_out = "y" AND last_activity > "'.$lockout_time.'"))', NULL, FALSE);
-		$this->db->order_by('ip_address');
 
+		if (is_array($order) && count($order) > 0)
+		{
+			foreach ($order as $key => $val)
+			{
+				$this->db->order_by($key, $val);
+			}
+		}
+		else
+		{
+			$this->db->order_by('ip_address', 'desc');			
+		}
+
+		$this->db->limit($limit, $offset);
 		return $this->db->get();
 	}
 	
@@ -241,13 +277,25 @@ class Tools_model extends CI_Model {
 	 * @param	int
 	 * @return	mixed
 	 */
-	function get_email_logs($group_id = FALSE)
+	function get_email_logs($group_id = FALSE, $limit = 50, $offset = 0, $order = array())
 	{
 		$this->db->select('cache_id, member_id, member_name, recipient_name, cache_date, subject');
 		$this->db->from('email_console_cache');
-		$this->db->order_by('cache_id', 'desc');
 
-		return $this->db->get();
+		if (is_array($order) && count($order) > 0)
+		{
+			foreach ($order as $key => $val)
+			{
+				$this->db->order_by($key, $val);
+			}
+		}
+		else
+		{
+			$this->db->order_by('cache_id', 'desc');			
+		}
+
+		$this->db->limit($limit, $offset);
+		return $this->db->get();	
 	}
 
 	// --------------------------------------------------------------------

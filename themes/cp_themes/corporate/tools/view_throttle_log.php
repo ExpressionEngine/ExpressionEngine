@@ -12,7 +12,9 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=$cp_page_title?></h2></div>
+			<div class="heading"><h2>
+			<span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>			
+			<?=$cp_page_title?></h2></div>
 			
 			<div class="pageContents">
 				
@@ -45,6 +47,9 @@ if ($EE_view_disable !== TRUE)
 					<div class="buttonRightHeader"><a href="<?=BASE.AMP.'C=tools_logs'.AMP.'M=blacklist_throttled_ips'?>"><?=lang('blacklist_all_ips')?></a></div>
 				<?php endif;?>
 				<?=$this->table->generate()?>
+
+				<span class="js_hide"><?=$pagination?></span>
+				<span class="pagination" id="filter_pagination"></span>
 
 			<?php else:?>
 				

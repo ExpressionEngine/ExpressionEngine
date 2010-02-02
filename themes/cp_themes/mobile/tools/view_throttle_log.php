@@ -28,9 +28,13 @@ if ($EE_view_disable !== TRUE)
 		<?php endforeach;?>
 		<?php if ($blacklist_installed): ?>
 			<a class="whiteButton" href="<?=BASE.AMP.'C=tools_logs'.AMP.'M=blacklist_throttled_ips'?>"><?=lang('blacklist_all_ips')?></a>
-		<?php endif;
+		<?php endif; ?>
 		
-		else: ?>
+		<?php if ($pagination): ?>					
+			<?=$pagination?>
+		<?php endif; ?>		
+		
+		<?php else: ?>
 			<div class="container pad"><?=lang('no_throttle_logs')?></div>
 		<?php endif;?>
 </div>
