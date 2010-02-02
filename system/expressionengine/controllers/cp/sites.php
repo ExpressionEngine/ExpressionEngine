@@ -1240,7 +1240,7 @@ class Sites extends Controller {
 						
 						$this->db->query($this->db->update_string('exp_channels', 
 														array('field_group' => $fields[$query->row('field_group') ], 
-														 'search_excerpt' => $channel_data['search_excerpt']), 
+														 'search_excerpt' => (int) $channel_data['search_excerpt']), 
 														"channel_id = '".$this->db->escape_str($new_channel)."'"));
 														
 						/** -----------------------------------------
