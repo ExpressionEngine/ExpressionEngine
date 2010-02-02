@@ -432,17 +432,15 @@ class Addons_installer {
 		
 		if ($accessory == '')
 		{
-			// @todo not found error
+			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 
 		$class = ucfirst($accessory).'_acc';
 		$count = $this->EE->super_model->count('accessories', array('class' => $class));
-		
+
 		if (($install && $count) OR ( ! $install && ! $count))
 		{
-			// @todo not found error
-			die('@todo not found error');
-			return $this->index();
+			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 		
 		$this->EE->load->library('accessories');
