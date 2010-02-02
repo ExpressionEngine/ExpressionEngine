@@ -1947,10 +1947,21 @@ class M_Snoopy
 		{
 			case "http":
 				$this->host = $URI_PARTS["host"];
-				if(!empty($URI_PARTS["port"]))
-					$this->port = $URI_PARTS["port"];
+				
+				// Default to 80, cannot connect without a port
+				$this->port = empty($URI_PARTS["port"]) ? 80 : $URI_PARTS["port"];
+				
 				if($this->_connect($fp))
 				{
+					// We needed port 80 to connect, but we can now switch to empty
+					// for the Host header. Some servers will try to redirect if the
+					// host header contains a port, which would previously create a loop.
+					
+					if(empty($URI_PARTS["port"]))
+					{
+						$this->port = '';
+					}
+					
 					if($this->_isproxy)
 					{
 						// using proxy, send entire URI
