@@ -17,7 +17,7 @@ if ($EE_view_disable !== TRUE)
 			<span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>
 			<?=lang('view_email_cache')?></h2>
 		</div>
-
+			<div class="pageContents">
 			<?php if ($cached_email === FALSE): ?>
 				<p class="notice"><?=lang('no_cached_email')?></p>
 			<?php else: ?>
@@ -53,20 +53,21 @@ if ($EE_view_disable !== TRUE)
 					echo $this->table->generate();
 				?>
 
-		<div class="tableFooter">
-			<div class="tableSubmit">
-					<?=form_submit(array('name' => 'submit', 'value' => lang('delete'), 'class' => 'submit'))?>
-			</div>		
-					<?php if ($pagination): ?>					
-						<span class="js_hide"><?=$pagination?></span>
-					<?php endif; ?>
-						<span class="pagination" id="filter_pagination"></span>
-		</div> <!-- tableFooter -->
+				<div class="tableFooter">
+					<div class="tableSubmit">
+							<?=form_submit(array('name' => 'submit', 'value' => lang('delete'), 'class' => 'submit'))?>
+					</div>		
+							<?php if ($pagination): ?>					
+								<span class="js_hide"><?=$pagination?></span>
+							<?php endif; ?>
+								<span class="pagination" id="filter_pagination"></span>
+				</div> <!-- tableFooter -->
+			
 
 				<?=form_close()?>
 
 			<?php endif; ?>
-
+		</div>
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
