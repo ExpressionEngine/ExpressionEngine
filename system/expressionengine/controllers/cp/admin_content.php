@@ -535,7 +535,7 @@ class Admin_content extends Controller {
 		}
 		else
 		{
-			$this->layout->add_layout_tabs(array('pages' => 'pages_uri', 'pages_template_id'), $this->input->post('channel_id'));
+			$this->layout->add_layout_tabs(array('pages' => 'pages_uri', 'pages_template_id'), '', $this->input->post('channel_id'));
 		}
 
 		$add_rss = (isset($_POST['add_rss'])) ? TRUE : FALSE;
