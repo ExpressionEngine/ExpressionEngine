@@ -683,22 +683,22 @@ class Content_publish extends Controller {
 		}
 
 		// used in date field
-		$this->javascript->output('
-			var date_obj = new Date(),
-				date_obj_hours = date_obj.getHours(),
-				date_obj_mins = date_obj.getMinutes();
-
-			if (date_obj_mins < 10) { date_obj_mins = "0" + date_obj_mins; }
-
-			if (date_obj_hours > 11) {
-				date_obj_hours = date_obj_hours - 12;
-				date_obj_am_pm = " PM";
-			} else {
-				date_obj_am_pm = " AM";
-			}
-
-			EE.date_obj_time = " \'"+date_obj_hours+":"+date_obj_mins+date_obj_am_pm+"\'";
-		');
+		// $this->javascript->output('
+		// 	var date_obj = new Date(),
+		// 		date_obj_hours = date_obj.getHours(),
+		// 		date_obj_mins = date_obj.getMinutes();
+		// 
+		// 	if (date_obj_mins < 10) { date_obj_mins = "0" + date_obj_mins; }
+		// 
+		// 	if (date_obj_hours > 11) {
+		// 		date_obj_hours = date_obj_hours - 12;
+		// 		date_obj_am_pm = " PM";
+		// 	} else {
+		// 		date_obj_am_pm = " AM";
+		// 	}
+		// 
+		// 	EE.date_obj_time = " \'"+date_obj_hours+":"+date_obj_mins+date_obj_am_pm+"\'";
+		// ');
 
 
 		// --------------------------------
@@ -1701,8 +1701,8 @@ class Content_publish extends Controller {
 			'refresh_layout'		=> $this->lang->line('refresh_layout')
 		));
 
-		$this->javascript->click("#layout_group_submit", 'EE.publish.save_layout()');
-		$this->javascript->click("#layout_group_remove", 'EE.publish.remove_layout()');
+		// $this->javascript->click("#layout_group_submit", 'EE.publish.save_layout()');
+		// $this->javascript->click("#layout_group_remove", 'EE.publish.remove_layout()');
 
 
 		$layout_preview_links = "<p>".$this->lang->line('choose_layout_group_preview').NBS."<span class='notice'>".$this->lang->line('layout_save_warning')."</span></p><ul class='bullets'>";
@@ -1740,62 +1740,41 @@ class Content_publish extends Controller {
 														)
 		);
 
-		$this->javascript->click(".add_author_link", array(
-				'$("#add_author_dialog").dialog("open")'
-			)
-		);
+		// $this->javascript->click(".add_author_link", array(
+		// 		'$("#add_author_dialog").dialog("open")'
+		// 	)
+		// );
 
-		$this->javascript->output('
-		function removeAuthor(e)
-		{
-			$.get(EE.BASE+"&C=content_publish&M=remove_author' .'", { mid: e.attr("id")});
-			e.parent().fadeOut();
-			// rebuild author table
-			$.ajax({
-				type: "POST",
-				url: EE.BASE+"&C=content_publish&M=build_author_table",
-				data: "is_ajax=true"+$("#publishForm").serialize(),
-				success: function(result){
-					$("#authorsForm").html(result);
-					updateAuthorTable();
-				}
-			});
-		}
-		');
+		// $this->javascript->output('
+		// function removeAuthor(e)
+		// {
+		// 	$.get(EE.BASE+"&C=content_publish&M=remove_author", { mid: e.attr("id")});
+		// 	e.parent().fadeOut();
+		// 	// rebuild author table
+		// 	$.ajax({
+		// 		type: "POST",
+		// 		url: EE.BASE+"&C=content_publish&M=build_author_table",
+		// 		data: "is_ajax=true"+$("#publishForm").serialize(),
+		// 		success: function(result){
+		// 			$("#authorsForm").html(result);
+		// 			updateAuthorTable();
+		// 		}
+		// 	});
+		// }
+		// ');
 
-		$this->javascript->click("#author_list_sidebar .delete", 'removeAuthor($(this));');
-	
-		$this->javascript->click("a.reveal_formatting_buttons", "$(this).parent().parent().children('.close_container').slideDown(); $(this).hide();");
+		// $this->javascript->click("#author_list_sidebar .delete", 'removeAuthor($(this));');
+		// 	
+		// $this->javascript->click("a.reveal_formatting_buttons", "$(this).parent().parent().children('.close_container').slideDown(); $(this).hide();");
 
 		if ($vars['smileys_enabled'])
 		{
-			$this->javascript->click("a.glossary_link", "$(this).parent().siblings('.glossary_content').slideToggle(\"fast\");$(this).parent().siblings('.smileyContent .spellcheck_content').hide();");	
-
-			$this->javascript->output("
-
-				$('a.smiley_link').toggle(
-					function() {
-						$(this).parent().siblings('.smileyContent').slideDown('fast', function() { $(this).css('display', ''); });
-					}, function() {
-						$(this).parent().siblings('.smileyContent').slideUp('fast');
-					}
-				);
-				$(this).parent().siblings('.glossary_content, .spellcheck_content').hide();
-
-				$('.glossary_content a').click(function(){
-					$.markItUp({ replaceWith:$(this).attr('title')} );
-					return false;
-				});
-
-			");
+			$this->javascript->set_global('publish.smileys', 'true');
 		}
-
-		$this->javascript->output(array(
-										$this->javascript->hide("#write_mode_header .reveal_formatting_buttons"),
-										$this->jquery->corner("#write_mode_writer", "15px"),
-										$this->jquery->corner('#holder', 'bottom-left')
-										)
-		);
+		else
+		{
+			$this->javascript->set_global('publish.smileys', 'false');
+		}
 
 		$vars['write_mode_link'] = '#TB_inline?height=100%'.AMP.'width=100%'.AMP.'modal=true'.AMP.'inlineId=write_mode_container';
 		$vars['add_publish_tab_link'] = '#TB_inline?height=150'.AMP.'width=300'.AMP.'modal=true'.AMP.'inlineId=add_tab_popup';
@@ -1804,29 +1783,6 @@ class Content_publish extends Controller {
 		{
 			$this->javascript->output('$("#holder").css("margin-right", "10px");');
 		}
-
-		$inline_js = $this->javascript->inline('
-			file_manager_context = "";	// @todo - yuck, should be on the EE global
-			function disable_fields(state)
-			{
-				if (state)
-				{
-					$(".main_tab input, .main_tab textarea, .main_tab select, #submit_button").attr("disabled", true);
-					$("#submit_button").addClass("disabled_field");
-					$("#holder a").addClass("admin_mode");
-					$("#holder div.markItUp, #holder p.spellcheck").each(function() {
-						$(this).before("<div class=\"cover\" style=\"position:absolute;width:100%;height:50px;z-index:9999;\"></div>").css({});
-					});
-				}
-				else
-				{
-					$(".main_tab input, .main_tab textarea, .main_tab select, #submit_button").removeAttr("disabled");
-					$("#submit_button").removeClass("disabled_field");
-					$("#holder a").removeClass("admin_mode");
-					$("holder .cover").remove();
-				}
-			}'
-		);
 
 		$autosave_interval_seconds = ( ! $this->config->item('autosave_interval_seconds')) ? 60 : $this->config->item('autosave_interval_seconds');
 
@@ -1837,43 +1793,6 @@ class Content_publish extends Controller {
 				'success'	=> $this->lang->line('autosave_success')
 			));
 			
-			// autosave code, function is called via setInterval
-			$this->cp->add_to_foot('<script type="text/javascript"><!--
-				function autosave_entry()
-				{
-					// If the sidebar is showing, then form fields are disabled. Thus, enable all form elements,
-					// grab the data and re-disable (re-dis-able... does not feel like a word) them.
-					if ($("#tools:visible").length == 1)
-					{
-						disable_fields(true);
-					}
-					
-					var form_data = $("#publishForm").serialize();
-					
-					if ($("#tools:visible").length == 1)
-					{
-						disable_fields(false);
-					}					
-
-					$.ajax({
-						type: "POST",
-						url: EE.BASE+"&C=content_publish&M=autosave_entry",
-						data: form_data,
-						success: function(result){
-														
-							if (isNaN(result))
-							{
-								$.ee_notice(result, {type:"error"});
-							}
-							else
-							{
-								$.ee_notice(EE.publish.autosave.success, {type:"success"});
-							}
-						}
-					});
-				}
-				// setInterval("autosave_entry();", 1000 * EE.publish.autosave.success); // 1000 milliseconds per second
-			--></script>');
 		}
 
 
@@ -1894,7 +1813,8 @@ class Content_publish extends Controller {
 		// $this->javascript->set_global($this->form_validation->_config_rules);
 		if ($this->form_validation->run() == FALSE OR is_numeric($version_id))
 		{
-			$this->cp->add_to_foot($inline_js.$this->insert_javascript());
+			// $this->cp->add_to_foot($inline_js.$this->insert_javascript());
+			$this->cp->add_to_foot($this->insert_javascript());
 			
 			if ($vars['smileys_enabled'])
 			{
@@ -2662,291 +2582,14 @@ class Content_publish extends Controller {
 		/* -------------------------------------*/
 		
 		$this->javascript->set_global('publish.foreignChars', $foreign_characters);
-
+		$this->javascript->set_global('publish.word_separator', $this->config->item('word_separator') != "dash" ? '_' : '-');
 		ob_start();
 
 		?>
 
 		<script type="text/javascript">
 		// <![CDATA[
-		function removeAuthor(e)
-		{
-			$.get(EE.BASE + "&C=content_publish&M=remove_author", { mid: e.attr("id")});
-			e.parent().fadeOut();
-		}
 
-		function updateAuthorTable()
-		{
-			$.ajax({
-				type: "POST",
-				url: EE.BASE + "&C=content_publish&M=build_author_table",
-				data: "XID=" + EE.XID + "&is_ajax=true",
-				success: function(e){
-					$("#authorsForm").html(e);
-				}
-			});
-
-			$(".add_author_modal").bind("click", function(e){
-				add_authors_sidebar(this);
-			});
-		}
-
-		function add_authors_sidebar(e)
-		{
-			var author_id = $(e).attr("id").substring(16);
-
-			$.ajax({
-				type: "POST",
-				url: EE.BASE + "&C=content_publish&M=build_author_sidebar",
-				data: "XID=" + EE.XID + "&author_id="+author_id,
-				success: function(e){
-					$("#author_list_sidebar").append(e).fadeIn();
-					updateAuthorTable();
-				}
-			});
-		}
-
-		  /** ------------------------------------
-		  /**  Live URL Title Function
-		  /** -------------------------------------*/
-
-		  function liveUrlTitle()
-		  {
-			var defaultTitle = '',
-				newText = document.getElementById("title").value;
-
-			if (defaultTitle != '')
-			{
-				if (newText.substr(0, defaultTitle.length) == defaultTitle)
-				{
-					newText = newText.substr(defaultTitle.length);
-				}
-			}
-
-			newText = newText.toLowerCase();
-			var separator = "<?php echo $this->config->item('word_separator') != "dash" ? '_' : '-'; ?>";
-
-			if (separator != "_")
-			{
-				newText = newText.replace(/\_/g, separator);
-			}
-			else
-			{
-				newText = newText.replace(/\-/g, separator);
-			}
-
-			// Foreign Character Attempt
-
-			var newTextTemp = '';
-			for(var pos=0; pos<newText.length; pos++)
-			{
-				var c = newText.charCodeAt(pos);
-
-				if (c >= 32 && c < 128)
-				{
-					newTextTemp += newText.charAt(pos);
-				}
-				else
-				{
-					if (c in EE.publish.foreignChars) {
-						newTextTemp += EE.publish.foreignChars[c];
-					}
-				}
-			}
-
-			var multiReg = new RegExp(separator + '{2,}', 'g');
-
-			newText = newTextTemp;
-
-			newText = newText.replace('/<(.*?)>/g', '');
-			newText = newText.replace(/\s+/g, separator);
-			newText = newText.replace(/\//g, separator);
-			newText = newText.replace(/[^a-z0-9\-\._]/g,'');
-			newText = newText.replace(/\+/g, separator);
-			newText = newText.replace(multiReg, separator);
-			newText = newText.replace(/^[-_]|[-_]$/g, '');
-			newText = newText.replace(/\.+$/g,'');
-
-			if (document.getElementById("url_title"))
-			{
-				document.getElementById("url_title").value = "" + newText;
-			}
-		}
-
-		var selField  = false,
-			selMode = "normal";
-
-		//	Dynamically set the textarea name
-
-		function setFieldName(which)
-		{
-			if (which != selField)
-			{
-				selField = which;
-
-				clear_state();
-
-				tagarray  = new Array();
-				usedarray = new Array();
-				running	  = 0;
-			}
-		}
-
-		// Insert tag
-		function taginsert(item, tagOpen, tagClose)
-		{
-			// Determine which tag we are dealing with
-
-			var which = eval('item.name');
-
-			if ( ! selField)
-			{
-				$.ee_notice(no_cursor);
-				return false;
-			}
-
-			var theSelection	= false,
-				result			= false,
-				theField		= document.getElementById('entryform')[selField];
-
-			if (selMode == 'guided')
-			{
-				data = prompt(enter_text, "");
-
-				if ((data != null) && (data != ""))
-				{
-					result =  tagOpen + data + tagClose;
-				}
-			}
-
-			// Is this a Windows user?
-			// If so, add tags around selection
-
-			if (document.selection)
-			{
-				theSelection = document.selection.createRange().text;
-
-				theField.focus();
-
-				if (theSelection)
-				{
-					document.selection.createRange().text = (result == false) ? tagOpen + theSelection + tagClose : result;
-				}
-				else
-				{
-					document.selection.createRange().text = (result == false) ? tagOpen + tagClose : result;
-				}
-
-				theSelection = '';
-
-				theField.blur();
-				theField.focus();
-
-				return;
-			}
-			else if ( ! isNaN(theField.selectionEnd))
-			{
-				var newStart,
-					scrollPos = theField.scrollTop,
-					selLength = theField.textLength,
-					selStart = theField.selectionStart,
-					selEnd = theField.selectionEnd;
-					
-				if (selEnd <= 2 && typeof(selLength) != 'undefined')
-					selEnd = selLength;
-
-				var s1 = (theField.value).substring(0,selStart);
-				var s2 = (theField.value).substring(selStart, selEnd)
-				var s3 = (theField.value).substring(selEnd, selLength);
-
-				if (result == false)
-				{
-					newStart = selStart + tagOpen.length + s2.length + tagClose.length;
-					theField.value = (result == false) ? s1 + tagOpen + s2 + tagClose + s3 : result;
-				}
-				else
-				{
-					newStart = selStart + result.length;
-					theField.value = s1 + result + s3;
-				}
-
-				theField.focus();
-				theField.selectionStart = newStart;
-				theField.selectionEnd = newStart;
-				theField.scrollTop = scrollPos;
-				return;
-			}
-			else if (selMode == 'guided')
-			{
-				curField = document.submit_post[selfField];
-				
-				curField.value += result;
-				curField.blur();
-				curField.focus();
-
-				return;
-			}
-
-			// Add single open tags
-
-			if (item == 'other')
-			{
-				eval("document.getElementById('entryform')." + selField + ".value += tagOpen");
-			}
-			else if (eval(which) == 0)
-			{
-				var result = tagOpen;
-
-				eval("document.getElementById('entryform')." + selField + ".value += result");
-				eval(which + " = 1");
-
-				arraypush(tagarray, tagClose);
-				arraypush(usedarray, which);
-
-				running++;
-
-				styleswap(which);
-			}
-			else
-			{
-				// Close tags
-
-				n = 0;
-
-				for (i = 0 ; i < tagarray.length; i++ )
-				{
-					if (tagarray[i] == tagClose)
-					{
-						n = i;
-
-						running--;
-
-						while (tagarray[n])
-						{
-							closeTag = arraypop(tagarray);
-							eval("document.getElementById('entryform')." + selField + ".value += closeTag");
-						}
-
-						while (usedarray[n])
-						{
-							clearState = arraypop(usedarray);
-							eval(clearState + " = 0");
-							document.getElementById(clearState).className = 'htmlButtonA';
-						}
-					}
-				}
-
-				if (running <= 0 && document.getElementById('close_all').className == 'htmlButtonB')
-				{
-					document.getElementById('close_all').className = 'htmlButtonA';
-				}
-
-			}
-
-			curField = eval("document.getElementById('entryform')." + selField);
-			curField.blur();
-			curField.focus();
-		}
 
 		// ]]>
 		</script>
@@ -3527,312 +3170,28 @@ class Content_publish extends Controller {
 
 	function _static_publish_admin()
 	{
-		$this->javascript->output('
-			// Some of the ui widgets are slow to set up (looking at you, sortable) and we
-			// don\'t really need these until the sidebar is shown so to save on yet more
-			// things happening on document.ready we\'ll bind them when they mouse over the sidebar link
+		$this->javascript->set_global(array(
+				'lang.add_tab' 				=> $this->lang->line('add_tab'),
+				'lang.close' 				=> $this->lang->line('close'),
+				'lang.hide_toolbar' 		=> $this->lang->line('hide_toolbar'),
+				'lang.show_toolbar' 		=> $this->lang->line('show_toolbar'),
+				'lang.illegal_characters'	=> $this->lang->line('illegal_characters'),
+				'lang.tab_name_required' 	=> $this->lang->line('tab_name_required'),
+				'lang.duplicate_tab_name'	=> $this->lang->line('duplicate_tab_name')
+			)
+		);
 		
-			$("a", "#showToolbarLink").one("click", function() {
-				// set up resizing of publish fields
-				$(".publish_field").resizable({handles: "e", minHeight: 49, stop: function(e){
-					percent_width = Math.round(($(this).width() / $(this).parent().width()) * 10) * 10;
-					// minimum of 10%
-					if (percent_width < 10)
-					{
-						percent_width = 10;
-					}
-					// maximum of 100
-					if (percent_width > 99)
-					{
-						percent_width = 100;
-					}
-					$(this).css("width", percent_width + "%");
-				}});
-
-				$("#tools ul li a.field_selector").draggable({
-					revert: true,
-					zIndex: 33,
-					helper: "clone"
-				}).click(function() {return false;});
-
-				$("#new_tab_dialog").dialog({
-					autoOpen: false,
-					resizable: false,
-					modal: true,
-					position: "center",
-					minHeight: "0px", // fix display bug, where the height of the dialog is too big
-					buttons: { "'.$this->lang->line('add_tab').'": function() {add_publish_tab();} }
-				}).css("overflow", "hidden");
-
-				$("#add_author_dialog").dialog({
-					autoOpen: false,
-					resizable: false,
-					modal: true,
-					position: "center",
-					width: "auto",
-					minHeight: "0px", // fix display bug, where the height of the dialog is too big
-					minWidth: "400px",
-					buttons: { "'.$this->lang->line('close').'": function() { $(this).dialog("close"); } }
-				});
-			});
-
-			$("#tab_menu_tabs").sortable({
-				tolerance: "intersect",
-				items: "li:not(.addTabButton)",
-				axis: "x"
-			});
-
-			$("#tools h3 a").toggle(
-				function(){
-					$(this).parent().next("div").slideUp();
-					$(this).toggleClass("closed");
-				}, function(){
-					$(this).parent().next("div").slideDown();
-					$(this).toggleClass("closed");
-				}
-			);
-
-
-			$("a", "#showToolbarLink").toggle(
-				function(){
-					
-					// disable all form elements
-					disable_fields(true);
-
-					$(".tab_menu").sortable({
-						axis: "x",
-						tolerance: "pointer",	// feels easier in this case
-						placeholder: "publishTabSortPlaceholder",
-						items: "li:not(.addTabButton)"
-					});
-					
-					$("a span", "#showToolbarLink").text("'.$this->lang->line('hide_toolbar').'");
-					$("#showToolbarLink").animate({
-						marginRight: "210"
-					});
-					$("#holder").animate({
-						marginRight: "196"
-					}, function(){
-						$("#tools").show();
-					});
-					$(".publish_field").animate({backgroundPosition: "0px 0px"}, "slow");
-					$(".handle").css("display", "block");
-
-					$(".ui-resizable-e").animate({
-						marginRight: "0px"
-					});
-					$(".addTabButton").css("display", "inline");
-					
-					// Swap the image
-					$("#showToolbarImg").hide();
-					$("#hideToolbarImg").css("display", "inline");	// .show() uses block
-					
-				}, function (){
-
-					// enable all form elements
-					disable_fields(false);
-
-					$("#tools").hide();
-					$(".tab_menu").sortable("destroy");
-					$("a span", "#showToolbarLink").text("'.$this->lang->line('show_toolbar').'");
-					$("#showToolbarLink").animate({
-						marginRight: "20"
-					});
-					$("#holder").animate({
-						marginRight: "10"
-					});
-					$(".publish_field").animate({backgroundPosition: "-15px 0px"}, "slow");
-					$(".handle").css("display", "none");
-
-					$(".ui-resizable-e").animate({
-						marginRight: "-10px"
-					});
-					$(".addTabButton").hide();
-					
-					// Swap the image
-					$("#hideToolbarImg").hide();
-					$("#showToolbarImg").css("display", "inline");	// .show() uses block
-				}
-			);
-
-			$("#toggle_member_groups_all").toggle(
-				function(){
-					$("input.toggle_member_groups").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					$("input.toggle_member_groups").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-
-			$(".delete_field").toggle(
-				function()
-				{
-					var field_id = $(this).attr("id").substring(13),
-						field = $("#hold_field_"+field_id);
-					
-					// If the field is not in the active tab - slideUp has no effect
-					if (field.is(":hidden")) {
-						field.css("display", "none");
-					}
-					
-					field.slideUp();
-					$(this).children().attr("src", "'.$this->cp->cp_theme_url.'images/closed_eye.png");
-				},
-				function()
-				{
-					var field_id = $(this).attr("id").substring(13);
-					$("#hold_field_"+field_id).slideDown();
-					$(this).children().attr("src", "'.$this->cp->cp_theme_url.'images/open_eye.png");
-				}
-			);
-
-			_delete_tab_hide = function() {
-				tab_to_delete = $(this).attr("href").substring(1);
-				$(".menu_"+tab_to_delete).parent().fadeOut();	// hide the tab
-				$(this).parent().fadeOut();						// remove from sidebar
-				$("#"+tab_to_delete).fadeOut();					// hide the fields
-
-				// If the tab is selected - move focus to the left
-				selected_tab = get_selected_tab();
-
-				if (tab_to_delete == selected_tab) {
-					prev = $(".menu_"+selected_tab).parent().prevAll(":visible");
-					if (prev.length > 0) {
-						prev = prev.attr("id").substr(5);
-					}
-					else {
-						prev = "publish_tab";
-					}
-					tab_focus(prev);
-				}
-
-//				$("#"+tab_to_delete).remove() // remove from DOM
-
-				return false;
-			}
-
-			_delete_tab_reveal = function() {
-				tab_to_show = $(this).attr("href").substring(1);
-				// $(".menu"+tab_to_show).parent().animate({width:0, margin:0, padding:0, border:0, opacity:0}, "fast");
-				$(".menu_"+tab_to_show).parent().fadeIn(); // show the tab
-				$(this).children().attr("src", "'.$this->cp->cp_theme_url.'images/content_custom_tab_show.gif"); // change icon
-				$("#"+tab_to_delete).fadeIn(); // show the fields
-
-				return false;
-			}
-
-			function delete_publish_tab()
-			{
-				// Toggle cannot use a namespaced click event so we need to unbind using the
-				// function reference instead
-				$(".delete_tab").unbind("click", _delete_tab_hide).unbind("click", _delete_tab_reveal);
-				$(".delete_tab").toggle(_delete_tab_hide, _delete_tab_reveal);
-			}
-
-			// when the page loads set up existing tabs to delete
-			delete_publish_tab();
-
-			function add_publish_tab()
-			{
-				tab_name = $("#tab_name").val();
-
-				var legalChars = /^[a-zA-Z0-9 _-]+$/; // allow only letters, numbers, spaces, underscores, and dashes
-
-				if ( ! legalChars.test(tab_name))
-				{
-					$.ee_notice("'.$this->lang->line('illegal_characters').'");
-				}
-				else if (tab_name == "")
-				{
-					$.ee_notice("'.$this->lang->line('tab_name_required').'");
-				}
-				else
-				{
-					if ( ! _add_tab(tab_name))
-					{
-						$.ee_notice("'.$this->lang->line('duplicate_tab_name').'");
-					}
-					else
-					{
-						// remove thickbox
-						$("#new_tab_dialog").dialog("close");
-					}
-				}
-			}
-
-			function _add_tab(tab_name) {
-				tab_name_filtered = tab_name.replace(/ /g, "_");
-
-				// ensure there are no duplicate ids provided
-				if ($("#"+tab_name_filtered).length) {
-					return false;
-				}
-
-				// add the custom tab
-				$(".addTabButton").before("<li id=\"menu_"+tab_name_filtered+"\" class=\"content_tab\"><a href=\"#\" class=\"menu_"+tab_name_filtered+"\" title=\"menu_"+tab_name_filtered+"\">"+tab_name+"</a></li>").fadeIn();
-
-				// add the tab to the list in the toolbar
-				$("#publish_tab_list").append("<li><a class=\"menu_focus\" title=\"menu_"+tab_name_filtered+"\" href=\"#\">"+tab_name+" </a> <a href=\"#"+tab_name_filtered+"\" class=\"delete delete_tab\"><img src=\"'.$this->theme_img_url.'content_custom_tab_delete.png\" alt=\"Delete\" width=\"19\" height=\"18\" /></a></li>");
-
-				new_tab = $("<div class=\"main_tab\"><div class=\"insertpoint\"></div><div class=\"clear\"></div></div>").attr("id", tab_name_filtered);
-				new_tab.prependTo("#holder");
-
-				// If this is the only tab on the interface, we should move focus into it
-				// The "add tab" button counts for 1, so we look for it plus the new tab (hence 2)
-				if ($("#tab_menu_tabs li:visible").length <= 2)
-				{
-					tab_focus(tab_name_filtered);
-				}
-
-				// apply the classes to make it look focused
-				$("#tab_menu_tabs li").removeClass("current");
-				$("#menu_"+tab_name_filtered).addClass("current");
-
-				// re-assign behaviours
-				setup_tabs();
-				delete_publish_tab();
-				return true;
-			}
-
-			$("#tab_name").keypress(function(e){
-				if (e.keyCode=="13") { // return key press
-					add_publish_tab();
-					return false;
-				}
-			});
-			
-			// Sidebar starts out closed - kill tab sorting
-			$(".tab_menu").sortable("destroy");
-
-		');
+		$this->cp->add_js_script(array('file' => 'cp/publish_admin'));
 	}
 
 	function _static_publish_formatting_buttons()
 	{
-		$this->javascript->output('
-			$(".markItUp ul").append("<li class=\"btn_plus\"><a title=\"'.lang('add_new_html_button').'\" href=\"'.str_replace('&amp;', '&', BASE).'&C=myaccount&M=html_buttons&id='.$this->session->userdata('member_id').'\">+</a></li>");
-			$(".btn_plus a").click(function(){
-				return confirm("'.$this->lang->line('confirm_exit').'", "");
-			});
-
-			// inject the collapse button into the formatting buttons list
-			$(".markItUpHeader ul").prepend("<li class=\"close_formatting_buttons\"><a href=\"#\"><img width=\"10\" height=\"10\" src=\"'.$this->cp->cp_theme_url.'images/publish_minus.gif\" alt=\"Close Formatting Buttons\"/></a></li>");
-
-			$(".close_formatting_buttons a").toggle(
-				function() {
-					$(this).parent().parent().children(":not(.close_formatting_buttons)").hide();
-					$(this).parent().parent().css("height", "13px");
-					$(this).children("img").attr("src", "'.$this->cp->cp_theme_url.'images/publish_plus.png");
-				}, function () {
-					$(this).parent().parent().children().show();
-					$(this).parent().parent().css("height", "22px");
-					$(this).children("img").attr("src", "'.$this->cp->cp_theme_url.'images/publish_minus.gif");
-				}
-			);
-		');
+		$this->javascript->set_global(array(
+					'user_id' 					=> $this->session->userdata('member_id'),
+					'lang.confirm_exit'			=> $this->lang->line('confirm_exit'),
+					'lang.add_new_html_button'	=> $this->lang->line('add_new_html_button')
+				)
+		);		
 	}
 
 	function _static_publish_non_admin()
