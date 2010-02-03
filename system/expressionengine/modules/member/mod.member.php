@@ -1,44 +1,42 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://expressionengine.com/
------------------------------------------------------
- Copyright (c) 2003 - 2010, EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/docs/license.html
-=====================================================
- File: mod.member.php
------------------------------------------------------
- Purpose: Member Management Class
- Note: Because member management is so tightly
- integrated into the core system, most of the
- member functions are contained in the core and cp
- files.
-=====================================================
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
+ * @license		http://expressionengine.com/docs/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
 
-Multi Site Login
+// --------------------------------------------------------------------
 
-The login routine can set cookies for multiple domains if needed.
-This allows users who run separate domains for each channel to have
-a way to enable users to log-in once and remain logged-in across
-domains.  In order to use this feature this array index must be
-added to the config file:
+/**
+ * Member Management Class
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Modules
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
 
-$conf['multi_login_sites'] = "http://www.siteone.com/|http://www.sitetwo.com";
+ /*
+	Multi Site Login
 
-Separate each domain with a pipe.
+	The login routine can set cookies for multiple domains if needed.
+	This allows users who run separate domains for each channel to have
+	a way to enable users to log-in once and remain logged-in across
+	domains.  In order to use this feature this array index must be
+	added to the config file:
 
-*/
-if ( ! defined('EXT'))
-{
-	exit('Invalid file request');
-}
+	$conf['multi_login_sites'] = "http://www.siteone.com/|http://www.sitetwo.com";
 
+	Separate each domain with a pipe.
+ */
 
 class Member {
 
