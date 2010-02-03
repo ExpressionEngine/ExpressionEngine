@@ -1370,6 +1370,7 @@ class MyAccount extends Controller {
 
 						$vars['subscriptions'][] = array(
 												'title' => $row['title'],
+												'active_date' => $row['recent_comment_date'],
 												'url_title' => url_title($row['title']),
 												'path' => $this->functions->fetch_site_index().$qm.'URL='.$path,
 												'id'	=> 'b'.$row['entry_id'],
@@ -1384,7 +1385,7 @@ class MyAccount extends Controller {
 		if ($forum_subscriptions == TRUE)
 		{
 			// @todo: AR, model
-			$sql = "SELECT title, topic_id, board_forum_url FROM exp_forum_topics, exp_forum_boards
+			$sql = "SELECT title, topic_id, board_forum_url, last_post_date FROM exp_forum_topics, exp_forum_boards
 					WHERE exp_forum_topics.board_id = exp_forum_boards.board_id
 					AND topic_id IN (";
 
@@ -1414,6 +1415,7 @@ class MyAccount extends Controller {
 
 						$vars['subscriptions'][] = array(
 												'title' => $row['title'],
+												'active_date' => $row['last_post_date'],
 												'url_title' => url_title($row['title']),
 												'path' => $this->functions->fetch_site_index().$qm.'URL='.$path,
 												'id'	=> 'f'.$row['topic_id'],
