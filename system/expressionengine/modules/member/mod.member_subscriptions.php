@@ -43,7 +43,6 @@ class Member_subscriptions extends Member {
 		// Set some base values
 		
 		$channel_subscriptions		= FALSE;
-		$gallery_subscriptions	= FALSE;
 		$forum_subscriptions	= FALSE;
 		$result_ids				= array();
 		$result_data			= array();
@@ -89,39 +88,6 @@ class Member_subscriptions extends Member {
 			}			
 		}
 		
-		/** ----------------------------------------
-		/**  Fetch Gallery Comment Subscriptions
-		/** ----------------------------------------*/
-		// Since the gallery module might not be installed we'll test for it first.
-						
-		if ($this->EE->db->table_exists('exp_gallery_comments'))
-		{
-			$query = $this->EE->db->query("SELECT DISTINCT(entry_id) FROM exp_gallery_comments WHERE email = '".$this->EE->db->escape_str($this->EE->session->userdata['email'])."' AND notify = 'y' ORDER BY comment_date DESC");
-		
-			if ($query->num_rows() > 0)
-			{
-				$gallery_subscriptions = TRUE;
-				
-				$temp_ids = array();
-				
-				foreach ($query->result_array() as $row)
-				{
-					$temp_ids[] = $row['entry_id'];
-				}
-				
-				// and now grab the most recent activity for each subscription for ordering later
-				$query = $this->EE->db->query("SELECT entry_id, recent_comment_date FROM exp_gallery_entries WHERE entry_id IN (".implode(',', $temp_ids).")");
-
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result as $row)
-					{
-						$result_ids[$row['recent_comment_date'].'g'] = $row['entry_id'];
-					}
-				}
-			}
-		}
-
 		/** ----------------------------------------
 		/**  Fetch Forum Topic Subscriptions
 		/** ----------------------------------------*/
@@ -265,50 +231,6 @@ class Member_subscriptions extends Member {
 		}
 
 		/** ---------------------------------
-		/**  Fetch Gallery Titles
-		/** ---------------------------------*/
-		if ($gallery_subscriptions == TRUE)
-		{
-			$sql = "SELECT
-					exp_gallery_entries.title, exp_gallery_entries.entry_id, exp_gallery_entries.gallery_id, exp_gallery_entries.recent_comment_date,
-					exp_galleries.gallery_comment_url
-					FROM exp_gallery_entries
-					LEFT JOIN exp_galleries ON exp_gallery_entries.gallery_id = exp_galleries.gallery_id
-					WHERE entry_id IN (";
-					
-			$idx = '';
-		
-			foreach ($result_ids as $key => $val)
-			{			
-				if (substr($key, strlen($key)-1) == 'g')
-				{
-					$idx .= $val.",";
-				}
-			}
-		
-			$idx = substr($idx, 0, -1);
-			
-			if ($idx != '')
-			{
-				$query = $this->EE->db->query($sql.$idx.') ');
-	
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{																
-						$result_data[$row['recent_comment_date']] = array(
-												'path'	=> $this->EE->functions->remove_double_slashes($this->EE->functions->prep_query_string($row['gallery_comment_url'] ).'/'.$row['entry_id'].'/'),
-												'title'	=> str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), $row['title']),
-												'id'	=> 'g'.$row['entry_id'],
-												'type'	=> $this->EE->lang->line('mbr_image_gallery')
-												);
-					}
-				}
-			}
-		}
-
-
-		/** ---------------------------------
 		/**  Fetch Forum Topics
 		/** ---------------------------------*/
 		if ($forum_subscriptions == TRUE)
@@ -410,8 +332,6 @@ class Member_subscriptions extends Member {
 			switch (substr($val, 0, 1))
 			{
 				case "b"	: $this->EE->db->query("UPDATE exp_comments SET notify = 'n' WHERE entry_id = '".substr($val, 1)."' AND email = '".$this->EE->db->escape_str($this->EE->session->userdata('email'))."'");
-					break;
-				case "g"	: $this->EE->db->query("UPDATE exp_gallery_comments SET notify = 'n' WHERE entry_id = '".substr($val, 1)."' AND email = '".$this->EE->db->escape_str($this->EE->session->userdata('email'))."'");
 					break;
 				case "f"	: $this->EE->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '".substr($val, 1)."' AND member_id = '{$this->EE->session->userdata['member_id']}'");
 					break;
