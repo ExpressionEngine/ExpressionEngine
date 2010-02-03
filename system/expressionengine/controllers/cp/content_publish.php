@@ -1031,7 +1031,7 @@ class Content_publish extends Controller {
 					} // End foreach
 
 					$versioning = $this->table->generate();
-
+					
 					$this->javascript->output('
 						var revision_target = "";
 						$("<div id=\"revision_warning\">'.$this->lang->line('revision_warning').'</div>").dialog({
@@ -1602,13 +1602,6 @@ class Content_publish extends Controller {
 						$vars['publish_tabs']['pings'][$field] = $field_display;
 					}
 				}
-				elseif ($field == 'revisions')
-				{
-					if ($show_revision_cluster != 'n')
-					{
-						$vars['publish_tabs']['revisions'][$field] = $field_display;
-					}
-				}
 				elseif (in_array($field, array('entry_date', 'expiration_date', 'comment_expiration_date')))
 				{
 					if ($show_date_menu != 'n')
@@ -1641,6 +1634,12 @@ class Content_publish extends Controller {
 			
 			$field_display['is_hidden'] = FALSE;
 			
+			// show revisions tab?
+			if ($show_revision_cluster != 'n')
+			{
+				$vars['publish_tabs']['revisions']['revisions'] = $field_display;
+			}
+
 			// show options tab?
 			if ($show_options_cluster != 'n')
 			{
@@ -1888,7 +1887,7 @@ class Content_publish extends Controller {
 		// @todo use this for js validation?
 		// @todo -- clean this up.
 		// $this->javascript->set_global($this->form_validation->_config_rules);
-		if ($this->form_validation->run() == FALSE)
+		if ($this->form_validation->run() == FALSE OR is_numeric($version_id))
 		{
 			$this->cp->add_to_foot($inline_js.$this->insert_javascript());
 			
@@ -1919,7 +1918,7 @@ class Content_publish extends Controller {
 			}
 
 			$this->_define_options_fields($vars, $which);
-			$this->_define_revisions_fields($vars, $which);
+			$this->_define_revisions_fields($vars, $versioning);
 			$this->_define_forum_fields($vars);
 			
 			foreach($this->field_definitions as $field => $opts)
@@ -1961,7 +1960,7 @@ class Content_publish extends Controller {
 			}
 
 			$this->_define_options_fields($vars, $which);
-			$this->_define_revisions_fields($vars, $which);
+			$this->_define_revisions_fields($vars, $versioning);
 			$this->_define_forum_fields($vars);
 			
 			foreach($this->field_definitions as $field => $opts)
@@ -3386,6 +3385,7 @@ class Content_publish extends Controller {
 		$revisions_checked = ($vars['versioning_enabled'] == 'y')? TRUE : FALSE;
 		$revisions_r .= ($vars['revs_exist'] == FALSE) ? '<p>'.$this->lang->line('no_revisions_exist').'</p>' : '';
 		$revisions_r .= '<p><label>'.form_checkbox('versioning_enabled', 'y', $revisions_checked, 'id="versioning_enabled"').' '.$this->lang->line('versioning_enabled').'</label></p>';
+
 
 		// Revisions tab
 		$this->field_definitions['revisions'] = array(
