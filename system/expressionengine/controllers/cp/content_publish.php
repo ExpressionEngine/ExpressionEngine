@@ -3275,7 +3275,7 @@ class Content_publish extends Controller {
 				if($("#sub_hold_field_"+field_id).css("display") == "block"){
 					$("#sub_hold_field_"+field_id).slideUp();
 					$("#hold_field_"+field_id+" .ui-resizable-handle").hide();
-					$("#hold_field_"+field_id+" .field_collapse").attr("src", "'.$this->cp->cp_theme_url . 'images/field_collapse.png");
+					$("#hold_field_"+field_id+" .field_collapse").attr("src", EE.filebrowser.theme_url+"images/field_collapse.png");
 
 					// We dont want datepicker getting triggered when a field is collapsed/expanded
 					return false;
@@ -3284,7 +3284,7 @@ class Content_publish extends Controller {
 				{
 					$("#sub_hold_field_"+field_id).slideDown();
 					$("#hold_field_"+field_id+" .ui-resizable-handle").show();
-					$("#hold_field_"+field_id+" .field_collapse").attr("src", "'.$this->cp->cp_theme_url . 'images/field_expand.png");
+					$("#hold_field_"+field_id+" .field_collapse").attr("src", EE.filebrowser.theme_url+"images/field_expand.png");
 
 					// We dont want datepicker getting triggered when a field is collapsed/expanded
 					return false;
@@ -3294,10 +3294,10 @@ class Content_publish extends Controller {
 			$(".close_upload_bar").toggle(
 				function() {
 					$(this).parent().children(":not(.close_upload_bar)").hide();
-					$(this).children("img").attr("src", "'.$this->theme_img_url.'publish_plus.png");
+					$(this).children("img").attr("src", EE.filebrowser.theme_url+"publish_plus.png");
 				}, function () {
 					$(this).parent().children().show();
-					$(this).children("img").attr("src", "'.$this->theme_img_url.'publish_minus.gif");
+					$(this).children("img").attr("src", EE.filebrowser.theme_url+"publish_minus.gif");
 				}
 			);
 
