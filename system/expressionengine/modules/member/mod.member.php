@@ -3259,19 +3259,20 @@ class Member {
         /**  Default Member Data
         /** ----------------------------------------*/
 
-		$query = $this->EE->db->query("SELECT m.member_id, m.group_id, m.username, m.screen_name, m.email, m.signature,
-									m.avatar_filename, m.avatar_width, m.avatar_height,
-									m.photo_filename, m.photo_width, m.photo_height,
-									m.url, m.location, m.occupation, m.interests,
-									m.bio,
-									m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date,
-									m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts,
-									m.language, m.timezone, m.daylight_savings, m.bday_d, m.bday_m, m.bday_y,
-									g.group_title
-							 FROM exp_members m, exp_member_groups g
-							 WHERE m.member_id = '".$this->EE->db->escape_str($member_id)."'
-							 AND g.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'
-							 AND m.group_id = g.group_id");
+		$this->EE->db->select('m.member_id, m.group_id, m.username, m.screen_name, m.email, m.signature,
+							m.avatar_filename, m.avatar_width, m.avatar_height,
+							m.photo_filename, m.photo_width, m.photo_height,
+							m.url, m.location, m.occupation, m.interests,
+							m.bio,
+							m.join_date, m.last_visit, m.last_activity, m.last_entry_date, m.last_comment_date,
+							m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics, m.total_forum_posts,
+							m.language, m.timezone, m.daylight_savings, m.bday_d, m.bday_m, m.bday_y,
+							g.group_title');
+		$this->EE->db->from(array('members m', 'member_groups g'));
+		$this->EE->db->where('m.member_id', $member_id);
+		$this->EE->db->where('g.site_id', $this->EE->config->item('site_id'));
+		$this->EE->db->where('m.group_id = g.group_id');
+		$query = $this->EE->db->get();
 
 		if ($query->num_rows == 0)
 		{
@@ -3279,6 +3280,8 @@ class Member {
 		}
 
 		$default_fields = $query->row_array();
+		
+		
 
 		/** ----------------------------------------
 		/**  Is there an avatar?
@@ -3319,6 +3322,26 @@ class Member {
 		}
 
 		/** ----------------------------------------
+		/**  Is there a signature image?
+		/** ----------------------------------------*/
+						
+		if ($this->EE->config->item('enable_signatures') == 'y' AND $query->row('sig_img_filename') != '')
+		{
+			$sig_img_path	= $this->EE->config->item('sig_img_url', 1).$query->row('sig_img_filename');
+			$sig_img_width	= $query->row('sig_img_width');
+			$sig_img_height	= $query->row('sig_img_height');
+			$sig_img_image	= 'TRUE';
+		}
+		else
+		{
+			$sig_img_path	= '';
+			$sig_img_width	= '';
+			$sig_img_height	= '';
+			$sig_img		= 'FALSE';
+		}
+
+
+		/** ----------------------------------------
 		/**  Parse variables
 		/** ----------------------------------------*/
 
@@ -3341,7 +3364,12 @@ class Member {
 							'photo_url'				=> $photo_path,
 							'photo_filename'		=> $query->row('photo_filename'),
 							'photo_width'			=> $photo_width,
-							'photo_height'			=> $photo_height);
+							'photo_height'			=> $photo_height,
+							'signature_image_url'		=> $sig_img_path,
+							'signature_image_filename'	=> $query->row('sig_img_filename'),
+							'signature_image_width'		=> $sig_img_width,
+							'signature_image_height'	=> $sig_img_height
+						);
 
 		$default_fields = array_merge($default_fields, $more_fields);
 
@@ -3351,7 +3379,8 @@ class Member {
 
 		$fields = array();
 
-		$query = $this->EE->db->query("SELECT m_field_id, m_field_name, m_field_fmt FROM exp_member_fields");
+		$this->EE->db->select('m_field_id, m_field_name, m_field_fmt');
+		$query = $this->EE->db->get('member_fields');
 
 		if ($query->num_rows() > 0)
 		{
@@ -3361,7 +3390,8 @@ class Member {
 			}
 		}
 
-		$query = $this->EE->db->query("SELECT * FROM exp_member_data WHERE member_id = '".$member_id."'");
+		$this->EE->db->where('member_id', $member_id);
+		$query = $this->EE->db->get('member_data');
 
 		if ($query->num_rows() == 0)
 		{
@@ -3376,10 +3406,12 @@ class Member {
 		$this->EE->load->library('typography');
 		$this->EE->typography->initialize();
 
+		$cond = $default_fields;
+
 		foreach ($query->result_array() as $row)
 		{
-			$cond = array('avatar'	=> $avatar,
-						  'photo'	=> $photo);
+			$cond['avatar']	= $avatar;
+			$cond['photo'] = $photo;
 
 			foreach($fields as $key =>  $value)
 			{
@@ -3412,7 +3444,9 @@ class Member {
 				if ($key == 'url')
 				{
 					if (substr($default_fields['url'], 0, 4) != "http" && strpos($default_fields['url'], '://') === FALSE)
+					{
 						$default_fields['url'] = "http://".$default_fields['url'];
+					}
 				}
 
 				/** ----------------------------------------
@@ -3549,7 +3583,7 @@ class Member {
 				{
 					$time = $this->EE->localize->now;
 
-					if ($SESS->userdata('member_id') != $this->cur_id)
+					if ($this->EE->session->userdata('member_id') != $this->cur_id)
 					{  
 						// Default is UTC?
 						$zone = ($default_fields['timezone'] == '') ? 'UTC' : $default_fields['timezone'];
