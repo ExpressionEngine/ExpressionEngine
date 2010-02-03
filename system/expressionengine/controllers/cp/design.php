@@ -1366,7 +1366,7 @@ class Design extends Controller {
 
 		if (count($templates) == 0)
 		{
-			show_error('submission', $this->lang->line('no_templates_selected'));
+			show_error($this->lang->line('no_templates_selected'));
 		}
 
 		// Template Preferences
