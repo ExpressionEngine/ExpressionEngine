@@ -1010,13 +1010,18 @@ class Content_publish extends Controller {
 
 					foreach($revquery->result_array() as $row)
 					{
-						if (($row['version_id'] == $version_id) OR ($which == 'edit' AND $i == 0))
+						$revlink = '<a class="revision_warning" href="'.BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.AMP.'version_id='.$row['version_id'].AMP.'version_num='.$j.AMP.'use_autosave=n">'.$this->lang->line('load_revision').'</a>';
+
+						if ($version_id !== FALSE)
+						{
+							if ($row['version_id'] == $version_id)
+							{
+								$revlink = $this->lang->line('current_rev');
+							}
+						}
+						elseif ($which == 'edit' AND $i == 0)
 						{
 							$revlink = $this->lang->line('current_rev');
-						}
-						else
-						{
-							$revlink = '<a class="revision_warning" href="'.BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.AMP.'version_id='.$row['version_id'].AMP.'version_num='.$j.AMP.'use_autosave=n">'.$this->lang->line('load_revision').'</a>';
 						}
 
 						$this->table->add_row(
@@ -1031,7 +1036,7 @@ class Content_publish extends Controller {
 					} // End foreach
 
 					$versioning = $this->table->generate();
-					
+					// $("<div id=\"revision_warning\">'.$this->lang->line('revision_warning').'</div>").dialog({
 					$this->javascript->output('
 						var revision_target = "";
 						$("<div id=\"revision_warning\">'.$this->lang->line('revision_warning').'</div>").dialog({
@@ -1051,12 +1056,12 @@ class Content_publish extends Controller {
 							}
 						});
 
-						// $(".revision_warning").click(function(){
-						// 	$("#revision_warning").dialog("open");
-						// 	revision_target = $(this).attr("href");
-						// 	$(".ui-dialog-buttonpane button:eq(2)").focus();
-						// 	return false;
-						// });
+						 $(".revision_warning").click(function(){
+						 	$("#revision_warning").dialog("open");
+						 	revision_target = $(this).attr("href");
+						 	$(".ui-dialog-buttonpane button:eq(2)").focus();
+						 	return false;
+						 });
 					');
 				}
 			}
