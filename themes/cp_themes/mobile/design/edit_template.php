@@ -211,7 +211,7 @@ if ($EE_view_disable !== TRUE)
 		<select class="template_type" name="template_type" id="template_type">
 			<option value="css" <?=($prefs['template_type'] == 'css') ? 'selected="selected"':''?>><?=lang('css_stylesheet')?></option>
 			<option value="js" <?=($prefs['template_type'] == 'js') ? 'selected="selected"':''?>><?=lang('js')?></option>
-			<option value="rss" <?=($prefs['template_type'] == 'rss') ? 'selected="selected"':''?>><?=lang('rss')?></option>
+			<option value="feed" <?=($prefs['template_type'] == 'rss') ? 'selected="selected"':''?>><?=lang('rss')?></option>
 			<option value="static" <?=($prefs['template_type'] == 'static') ? 'selected="selected"':''?>><?=lang('static')?></option>
 			<option value="webpage" <?=($prefs['template_type'] == 'webpage') ? 'selected="selected"':''?>><?=lang('webpage')?></option>
 			<option value="xml" <?=($prefs['template_type'] == 'xml') ? 'selected="selected"':''?>><?=lang('xml')?></option>
