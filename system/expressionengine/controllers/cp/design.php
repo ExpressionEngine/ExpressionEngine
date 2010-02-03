@@ -1110,7 +1110,7 @@ class Design extends Controller {
 			
 			var the_templates = $(\'div[id^="template_group_div_"]\');
 		
-			$("#template_groups").click(function() {
+			$("#template_groups").change(function() {
 				the_templates.hide();
 				var openDivs = $(this).val().toString()
 				var ids = new Array();
