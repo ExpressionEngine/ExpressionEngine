@@ -1901,6 +1901,15 @@ class EE_Template {
 			// If we are enforcing strict URLs we need to show a 404
 			if ($this->strict_urls == TRUE)
 			{
+				// is there a file we can automatically create this template from?
+				if ($this->EE->config->item('save_tmpl_files') == 'y' && $this->EE->config->item('tmpl_file_basepath') != '')
+				{
+					if ($this->_create_from_file($this->EE->uri->segment(1), $this->EE->uri->segment(2)))
+					{
+						return $this->fetch_template($this->EE->uri->segment(1), $this->EE->uri->segment(2), FALSE);
+					}
+				}
+
 				if ($this->EE->config->item('site_404'))
 				{
 					$this->log_item("Template group and template not found, showing 404 page");
@@ -2426,8 +2435,7 @@ class EE_Template {
 		$this->EE->api->instantiate('template_structure');
 		$this->EE->load->model('template_model');
 		
-		$basepath = $this->EE->config->slash_item('tmpl_file_basepath');
-		$basepath .= '/'.$this->EE->config->item('site_short_name').'/'.$template_group.'.group';
+		$basepath = $this->EE->config->slash_item('tmpl_file_basepath').$this->EE->config->item('site_short_name').'/'.$template_group.'.group';
 
 		if ( ! is_dir($basepath))
 		{
@@ -2438,13 +2446,14 @@ class EE_Template {
 		
 		// Note- we should add the extension before checking.
 
-		foreach ($this->EE->api_template_structure->file_extensions as $temp_ext)
+		foreach ($this->EE->api_template_structure->file_extensions as $type => $temp_ext)
 		{
 			if (file_exists($basepath.'/'.$template.$temp_ext))
 			{
 				// found it with an extension
 				$filename = $template.$temp_ext;
 				$ext = $temp_ext;
+				$template_type = $type;
 				break;
 			}					
 		}
@@ -2455,23 +2464,12 @@ class EE_Template {
 			return FALSE;			
 		}
 		
-		// Double check this
-		if ( ! in_array($ext, $this->EE->api_template_structure->file_extensions))
-		{
-			$template_type = 'webpage';
-			$template_name .= $ext;
-		}
-		else
-		{
-			$template_type = array_search($ext, $this->EE->api_template_structure->file_extensions);
-		}
-
-		if ( ! $this->EE->api->is_url_safe($template_name))
+		if ( ! $this->EE->api->is_url_safe($template))
 		{
 			// bail out
 			return FALSE;
 		}
-			
+		
 		$this->EE->db->select('group_id');
 		$this->EE->db->where('group_name', $template_group);
 		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
@@ -2508,7 +2506,7 @@ class EE_Template {
 
 		$data = array(
 						'group_id'				=> $group_id,
-						'template_name'			=> $template_name,
+						'template_name'			=> $template,
 						'template_type'			=> $template_type,
 						'template_data'			=> file_get_contents($basepath.'/'.$filename),
 						'edit_date'				=> $this->EE->localize->now,
