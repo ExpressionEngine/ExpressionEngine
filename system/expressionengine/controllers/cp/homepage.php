@@ -99,90 +99,15 @@ class Homepage extends Controller {
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('main_menu'));
 		
-		$this->javascript->output('
-		$("<div id=\"ajaxContent\"></div>").dialog({
-			autoOpen: false,
-			resizable: false,
-			modal: true,
-			position: "center",
-			minHeight: "0px", // fix display bug, where the height of the dialog is too big
-			buttons: { "'.$this->lang->line('close').'": function() { $(this).dialog("close"); } }
-		});
-
-		$("a.submenu").click(function() {
-			if ($(this).data("working")) {
-				return false;
-			}
-			else {
-				$(this).data("working", true);
-			}
-			
-			var url = $(this).attr("href"),
-				that = $(this).parent(),
-				submenu = that.find("ul");
-	
-			if ($(this).hasClass("accordion")) {
-				
-				if (submenu.length > 0) {
-					if ( ! that.hasClass("open")) {
-						that.siblings(".open").toggleClass("open").children("ul").slideUp("fast");
-					}
-
-					submenu.slideToggle("fast");
-					that.toggleClass("open");
-				}
-				
-				$(this).data("working", false);
-			}
-			else {
-				$(this).data("working", false);
-				var dialog_title = $(this).html();
-
-				$("#ajaxContent").load(url+" .pageContents", function() {
-					$("#ajaxContent").dialog("option", "title", dialog_title);
-					$("#ajaxContent").dialog("open");
-				});
-			}
-
-			return false;
-		});
-		');
+		$this->javascript->set_global('lang.close', $this->lang->line('close'));
+		
+		$this->cp->add_js_script(array('file' => 'cp/homepage'));
 		
 		$vars['info_message_open'] = ($this->input->cookie('home_msg_state') != 'closed' && $show_notice);
 		
 		if ($show_notice)
 		{
-			$state = $this->javascript->generate_json(($vars['info_message_open']));
-
-			// Ignore version update javascript
-			$this->javascript->output('
-				
-				var msgBoxOpen = '.$state.',
-					msgContainer = $("#ee_important_message");			
-			
-				function save_state() {
-					msgBoxOpen = ! msgBoxOpen;
-					document.cookie="exp_home_msg_state="+(msgBoxOpen ? "open" : "closed");
-				}
-			
-				function setup_hidden() {
-					$.ee_notice.show_info(function() {
-						$.ee_notice.hide_info();
-						msgContainer.removeClass("closed").show();
-						save_state();
-					});
-				}
-			
-				msgContainer.find(".msg_open_close").click(function() {
-					msgContainer.hide();
-					setup_hidden();
-					save_state();
-				});
-			
-				if ( ! msgBoxOpen) {
-					setup_hidden();
-				}
-			');
+			$this->javascript->set_global('importantMessage.state', $vars['info_message_open']);
 		}
 
 		$this->javascript->compile();

@@ -1731,33 +1731,6 @@ class Content_publish extends Controller {
 														)
 		);
 
-		// $this->javascript->click(".add_author_link", array(
-		// 		'$("#add_author_dialog").dialog("open")'
-		// 	)
-		// );
-
-		// $this->javascript->output('
-		// function removeAuthor(e)
-		// {
-		// 	$.get(EE.BASE+"&C=content_publish&M=remove_author", { mid: e.attr("id")});
-		// 	e.parent().fadeOut();
-		// 	// rebuild author table
-		// 	$.ajax({
-		// 		type: "POST",
-		// 		url: EE.BASE+"&C=content_publish&M=build_author_table",
-		// 		data: "is_ajax=true"+$("#publishForm").serialize(),
-		// 		success: function(result){
-		// 			$("#authorsForm").html(result);
-		// 			updateAuthorTable();
-		// 		}
-		// 	});
-		// }
-		// ');
-
-		// $this->javascript->click("#author_list_sidebar .delete", 'removeAuthor($(this));');
-		// 	
-		// $this->javascript->click("a.reveal_formatting_buttons", "$(this).parent().parent().children('.close_container').slideDown(); $(this).hide();");
-
 		if ($vars['smileys_enabled'])
 		{
 			$this->javascript->set_global('publish.smileys', 'true');
