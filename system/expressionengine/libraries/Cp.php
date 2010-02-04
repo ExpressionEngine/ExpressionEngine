@@ -228,6 +228,7 @@ class Cp {
 			'username'			=> $this->EE->session->userdata('username'),
 			'router_class'		=> $this->EE->router->class,				// advanced css
 			'lang'				=> $js_lang_keys,
+			'THEME_URL'			=> $this->cp_theme_url
 		));
 
 		/* -------------------------------------------
