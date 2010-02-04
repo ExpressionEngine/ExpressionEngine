@@ -249,7 +249,7 @@ class Cp {
 		$js_scripts = array(
 						'ui'		=> array('core', 'sortable', 'dialog'),
 						'file'		=> array('ee_txtarea'),
-						'plugin'	=> array('ee_focus', 'ee_notice')
+						'plugin'	=> array('ee_focus', 'ee_notice', 'tablesorter')
 		);
 		
 		if ($this->cp_theme != 'mobile')
