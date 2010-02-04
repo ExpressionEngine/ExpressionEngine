@@ -210,9 +210,9 @@ show_hide_sidebar();
 // Move notices to notification bar for consistency
 
 if (EE.flashdata !== undefined) {
-	var notices = $(".notice");
+	var notices = $(".notice").filter('p.js_hide');	// make sure we only grab notices that are meant for our js
 		types = {success: "message_success", notice: "message", error: "message_failure"},
-		show_notices = [];
+		show_notices = [], i = 0;
 
 	for (type in types) {
 		if (EE.flashdata.hasOwnProperty(types[type])) {
@@ -227,10 +227,9 @@ if (EE.flashdata !== undefined) {
 				notice = notices.slice(0, 1);
 			}
 
-			if (EE.flashdata[types[type]] == notice.html()) {
-				show_notices.push({message: EE.flashdata[types[type]], type: type});
-				notice.remove();
-			}
+			// i++ is faster than show_notices.push();
+			show_notices[i++] = {message: EE.flashdata[types[type]], type: type};
+			notice.remove();
 		}
 	}
 
