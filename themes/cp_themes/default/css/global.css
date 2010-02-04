@@ -2411,13 +2411,19 @@ a#refresh_categories {
 	padding-top:		7px;
 }
 
-.hasDatepicker { /* UI datepicker automatically adds this class */
-	background-image: url('<?=$cp_theme_url?>images/calendar_bg.gif');
+/*.hasDatepicker { /* UI datepicker automatically adds this class 
 	background-repeat: no-repeat;
 	background-position: 99%;
 	border: 1px solid #B6C0C2;
 	padding: 2px;
+}*/
+
+#custom_date_picker input[type="text"] {
+	background: transparent url('<?=$cp_theme_url?>images/calendar_bg.gif') no-repeat 98% 2px;
 }
+
+#filterMenu table.ui-datepicker-calendar a {color:#fff;}
+#filterMenu table.ui-datepicker-calendar a.ui-state-highlight {color:#505050;}
 
 #publish_tab .publish_textarea textarea {
 	width:				100%;

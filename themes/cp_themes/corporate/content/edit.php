@@ -42,13 +42,13 @@ if ($EE_view_disable !== TRUE)
 					<?=form_dropdown('perpage', $perpage_select_options, $perpage_selected, 'id="f_perpage"')?>
 				</div>
 
-        		<div id="custom_date_picker" style="display: none; margin: 0 auto 50px auto;width: 385px; height: 185px; padding: 5px 15px 5px 15px;border: 1px solid black;  background: #FFF;">
-					<div id="cal1" style="width:200px; float:left; text-align:center;">
-						<p><?=lang('start_date', 'custom_date_start')?>:&nbsp; <input type="text" name="custom_date_start" id="custom_date_start" value="yyyy-mm-dd" size="12" tabindex="1" /></p>
+        		<div id="custom_date_picker" style="display: none; margin: 0 auto 50px auto;width: 500px; height: 235px; padding: 5px 15px 5px 15px;border: 1px solid black;  background: #FFF;">
+					<div id="cal1" style="width:250px; float:left; text-align:center;">
+						<p style="text-align:left; margin-bottom:5px"><?=lang('start_date', 'custom_date_start')?>:&nbsp; <input type="text" name="custom_date_start" id="custom_date_start" value="yyyy-mm-dd" size="12" tabindex="1" /></p>
 						<span id="custom_date_start_span"></span>
 					</div>
-	                <div id="cal2" style="text-align:center;">
-						<p><?=lang('end_date', 'custom_date_end')?>:&nbsp; <input type="text" name="custom_date_end" id="custom_date_end" value="yyyy-mm-dd" size="12" tabindex="2" /></p>
+	                <div id="cal2" style="width:250px; float:left; text-align:center;">
+						<p style="text-align:left; margin-bottom:5px"><?=lang('end_date', 'custom_date_end')?>:&nbsp; <input type="text" name="custom_date_end" id="custom_date_end" value="yyyy-mm-dd" size="12" tabindex="2" /></p>
 						<span id="custom_date_end_span"></span>          
 					</div>
                 </div>
