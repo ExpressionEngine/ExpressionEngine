@@ -67,10 +67,6 @@ class Filemanager {
 		$this->EE->javascript->set_global('lang.or', $this->EE->lang->line('or'));
 		$this->EE->javascript->set_global('lang.return_to_publish', $this->EE->lang->line('return_to_publish'));
 		$this->EE->javascript->set_global('filebrowser.window_title', $this->EE->lang->line('file_manager'));
-		
-		// @todo move this - it's really just the cp theme url
-		// but the frontend needs it for it's images - decisions...
-		$this->EE->javascript->set_global('filebrowser.theme_url', $this->EE->cp->cp_theme_url);
 	}
 	
 	// --------------------------------------------------------------------

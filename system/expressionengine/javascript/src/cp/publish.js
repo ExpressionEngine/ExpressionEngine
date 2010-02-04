@@ -309,17 +309,17 @@ $(document).ready(function() {
 	});
 
 	// inject the collapse button into the formatting buttons list
-	$(".markItUpHeader ul").prepend("<li class=\"close_formatting_buttons\"><a href=\"#\"><img width=\"10\" height=\"10\" src=\""+EE.filebrowser.theme_url+"images/publish_minus.gif\" alt=\"Close Formatting Buttons\"/></a></li>");
+	$(".markItUpHeader ul").prepend("<li class=\"close_formatting_buttons\"><a href=\"#\"><img width=\"10\" height=\"10\" src=\""+EE.THEME_URL+"images/publish_minus.gif\" alt=\"Close Formatting Buttons\"/></a></li>");
 
 	$(".close_formatting_buttons a").toggle(
 		function() {
 			$(this).parent().parent().children(":not(.close_formatting_buttons)").hide();
 			$(this).parent().parent().css("height", "13px");
-			$(this).children("img").attr("src", EE.filebrowser.theme_url+"images/publish_plus.png");
+			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_plus.png");
 		}, function () {
 			$(this).parent().parent().children().show();
 			$(this).parent().parent().css("height", "22px");
-			$(this).children("img").attr("src", EE.filebrowser.theme_url+"images/publish_minus.gif");
+			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_minus.gif");
 		}
 	);
 

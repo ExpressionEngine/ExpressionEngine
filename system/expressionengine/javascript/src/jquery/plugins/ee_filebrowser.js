@@ -26,7 +26,7 @@
 
 	var thumbs_per_page, dir_files_structure, dir_paths, backend_url, trigger_callback,
 		current_directory = 0,
-		spinner_url = EE.filebrowser.theme_url+'images/publish_file_manager_loader.gif',
+		spinner_url = EE.THEME_URL+'images/publish_file_manager_loader.gif',
 		default_img_url = EE.PATH_CP_GBL_IMG+'default.png',
 		file_manager_obj, cur_dir_seek;
 

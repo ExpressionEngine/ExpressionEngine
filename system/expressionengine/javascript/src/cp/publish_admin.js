@@ -155,13 +155,13 @@ $(".delete_field").toggle(
 		}
 		
 		field.slideUp();
-		$(this).children().attr("src", EE.filebrowser.theme_url+"images/closed_eye.png");
+		$(this).children().attr("src", EE.THEME_URL+"images/closed_eye.png");
 	},
 	function()
 	{
 		var field_id = $(this).attr("id").substring(13);
 		$("#hold_field_"+field_id).slideDown();
-		$(this).children().attr("src", EE.filebrowser.theme_url+"images/open_eye.png");
+		$(this).children().attr("src", EE.THEME_URL+"images/open_eye.png");
 	}
 );
 
@@ -194,7 +194,7 @@ _delete_tab_reveal = function() {
 	tab_to_show = $(this).attr("href").substring(1);
 	// $(".menu"+tab_to_show).parent().animate({width:0, margin:0, padding:0, border:0, opacity:0}, "fast");
 	$(".menu_"+tab_to_show).parent().fadeIn(); // show the tab
-	$(this).children().attr("src", EE.filebrowser.theme_url+"images/content_custom_tab_show.gif"); // change icon
+	$(this).children().attr("src", EE.THEME_URL+"images/content_custom_tab_show.gif"); // change icon
 	$("#"+tab_to_delete).fadeIn(); // show the fields
 
 	return false;
@@ -251,7 +251,7 @@ function _add_tab(tab_name) {
 	$(".addTabButton").before("<li id=\"menu_"+tab_name_filtered+"\" class=\"content_tab\"><a href=\"#\" class=\"menu_"+tab_name_filtered+"\" title=\"menu_"+tab_name_filtered+"\">"+tab_name+"</a></li>").fadeIn();
 
 	// add the tab to the list in the toolbar
-	$("#publish_tab_list").append("<li><a class=\"menu_focus\" title=\"menu_+tab_name_filtered+\" href=\"#\">"+tab_name+"</a> <a href=\"#"+tab_name_filtered+" class=\"delete delete_tab\"><img src=\""+EE.filebrowser.theme_url+"content_custom_tab_delete.png\" alt=\"Delete\" width=\"19\" height=\"18\" /></a></li>");
+	$("#publish_tab_list").append("<li><a class=\"menu_focus\" title=\"menu_+tab_name_filtered+\" href=\"#\">"+tab_name+"</a> <a href=\"#"+tab_name_filtered+" class=\"delete delete_tab\"><img src=\""+EE.THEME_URL+"content_custom_tab_delete.png\" alt=\"Delete\" width=\"19\" height=\"18\" /></a></li>");
 
 	new_tab = $("<div class=\"main_tab\"><div class=\"insertpoint\"></div><div class=\"clear\"></div></div>").attr("id", tab_name_filtered);
 	new_tab.prependTo("#holder");
