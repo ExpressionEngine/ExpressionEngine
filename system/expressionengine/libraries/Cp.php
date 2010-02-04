@@ -297,7 +297,13 @@ class Cp {
 	{
 		if ( ! is_array($script))
 		{
-			return FALSE;
+			if ( ! is_string($in_footer))
+			{
+				return FALSE;
+			}
+			
+			$script = array($script => $in_footer);
+			$in_footer = TRUE;
 		}
 
 		if ( ! $in_footer)
