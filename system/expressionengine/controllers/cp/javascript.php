@@ -251,8 +251,11 @@ class Javascript extends Controller {
 			'package'	=> PATH_THIRD
 		);
 		
+		$mock_name = '';
+		
 		foreach($types as $type => $path)
 		{
+			$mock_name .= $this->input->get_post($type);
 			$files = explode(',', $this->input->get_post($type));
 			
 			foreach($files as $file)
@@ -272,16 +275,16 @@ class Javascript extends Controller {
 		}
 
 		$modified = $this->input->get_post('v');
-		
-		$modified = gmdate('D, d M Y H:i:s', $modified).' GMT';
-		$expires = gmdate('D, d M Y H:i:s', time() + 5184000).' GMT';
-
-		@header("Content-Type: text/javascript");
-		@header("Content-Length: " . strlen($contents)); 
-		@header("Cache-Control: max-age={$max_age}, must-revalidate");
-		@header('Vary: Accept-Encoding');
-		@header('Last-Modified: '.$modified);
-		@header('Expires: '.$expires);
+				
+		if ($this->config->item('send_headers') == 'y')
+		{
+			$this->_set_headers($mock_name, $modified);
+			@header('Content-Length: '.strlen($contents));
+		}
+		else
+		{
+			@header("Content-Type: text/javascript");
+		}
 
 		exit($contents);
 	}
@@ -295,10 +298,10 @@ class Javascript extends Controller {
      * @param string 
 	 * @return str
 	 */
-    function _set_headers($file)
+    function _set_headers($file, $mtime = FALSE)
     {
 		$max_age		= 5184000;
-		$modified		= filemtime($file);
+		$modified		= ($mtime !== FALSE) ? $mtime : filemtime($file);
 		$modified_since	= $this->input->server('HTTP_IF_MODIFIED_SINCE');
 
 		// Remove anything after the semicolon
