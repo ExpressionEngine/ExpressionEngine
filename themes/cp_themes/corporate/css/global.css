@@ -572,7 +572,8 @@ ul#navigationTabs li a.first_level:visited {
 	text-decoration:	none;
 }
 ul#navigationTabs li a.first_level:hover,
-ul#navigationTabs li a.first_level:active{
+ul#navigationTabs li a.first_level:active,
+ul#navigationTabs li.active a.first_level {
 	background:			#fff;
 	color:				#005eb0;
 }
