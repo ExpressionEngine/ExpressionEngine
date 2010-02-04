@@ -34,7 +34,6 @@ class Cp {
 		
 	var $js_files = array(
 			'ui'				=> array(),
-			'effect'			=> array(),
 			'plugin'			=> array(),
 			'file'				=> array(),
 			'package'			=> array(),
@@ -258,6 +257,7 @@ class Cp {
 		}
 		
 		$this->add_js_script($js_scripts);
+		$this->_seal_combo_loader();		
 		
 		$this->EE->load->vars($vars);
 		$this->EE->javascript->compile();
@@ -341,19 +341,108 @@ class Cp {
 	 */
 	function render_footer_js()
 	{
-		// jquery Ui stuff
-		$ui = array_unique($this->js_files['ui']);
-		$ui = ($ui) ? AMP.'ui='.implode(',', $ui) : '';
+		$str = '';
+		$requests = $this->_seal_combo_loader();
+		
+		foreach($requests as $req)
+		{
+			$str .= '<script type="text/javascript" charset="utf-8" src="'.BASE.AMP.'C=javascript'.AMP.'M=combo_load'.$req.'"></script>';
+		}
 
-		// File
-		$file = array_unique($this->js_files['file']); 
-		$file = ($file) ? AMP.'file='.implode(',', $file) : '';
+		return $str;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Seal the current combo loader and reopen a new one.
+	 *
+	 * @access	private
+	 * @return	array
+	 */
+	function _seal_combo_loader()
+	{
+		static $requests = array();
+		static $loaded = array();
+		
+		$str = '';
+		$mtimes = array();
+		
+		$this->js_files = array_map('array_unique', $this->js_files);
+		
+		foreach($this->js_files as $type => $files)
+		{
+			if (isset($loaded[$type]))
+			{
+				$files = array_diff($files, $loaded[$type]);
+			}
+			
+			if (count($files))
+			{
+				$mtimes[] = $this->_get_js_mtime($type, $files);
+				$str .= AMP.$type.'='.implode(',', $files);
+			}
+		}
+		
+		if ($str)
+		{
+			$loaded = array_merge_recursive($loaded, $this->js_files);
 
-		// Plugins
-		$plugin = array_unique($this->js_files['plugin']);
-		$plugin = ($plugin) ? AMP.'plugin='.implode(',', $plugin) : '';
+			$this->js_files = array(
+					'ui'				=> array(),
+					'plugin'			=> array(),
+					'file'				=> array(),
+					'package'			=> array()
+			);
 
-		return '<script type="text/javascript" charset="utf-8" src="'.BASE.AMP.'C=javascript'.AMP.'M=combo_load'.$ui.$plugin.$file.'"></script>';
+			$requests[] = $str.AMP.'v='.max($mtimes);
+		}
+		
+		return $requests;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get last modification time of a js file.
+	 * Returns highest if passed an array.
+	 *
+	 * @access	private
+	 * @param	string
+	 * @param	mixed
+	 * @return	int
+	 */
+	function _get_js_mtime($type, $name)
+	{
+		if (is_array($name))
+		{
+			$mtimes = array();
+			
+			foreach($name as $file)
+			{
+				$mtimes[] = $this->_get_js_mtime($type, $file);
+			}
+
+			return max($mtimes);
+		}
+		
+		$folder = $this->EE->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
+		
+		switch($type)
+		{
+			case 'ui':		$file = APPPATH.'javascript/'.$folder.'/jquery/ui/ui.'.$name.'.js';
+				break;
+			case 'plugin':	$file = APPPATH.'javascript/'.$folder.'/jquery/plugins/'.$name.'.js';
+				break;
+			case 'file':	$file = APPPATH.'javascript/'.$folder.'/'.$name.'.js';
+				break;
+			case 'package':	$file = PATH_THIRD.$name.'/'.$name.'.js';
+				break;
+			default:
+				return 0;
+		}
+
+		return file_exists($file) ? filemtime($file) : 0;
 	}
 	
 	// --------------------------------------------------------------------
@@ -361,7 +450,7 @@ class Cp {
 	/**
 	 * Set the right navigation
 	 *
-	 * @access	private
+	 * @access	public
 	 * @param	array
 	 * @param	string
 	 * @return	int
@@ -370,6 +459,8 @@ class Cp {
 	{
 		$this->EE->load->vars('cp_right_nav', array_reverse($nav));
 	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Updates saved publish layouts

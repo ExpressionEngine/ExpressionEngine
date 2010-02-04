@@ -242,96 +242,47 @@ class Javascript extends Controller {
 	{
 		$this->output->enable_profiler(FALSE);
 
-		$contents = '';
-
-		$file_mtime = array();
-
-		// Load jQuery UI
-		$ui = $this->input->get_post('ui');
-		$load_file = $this->input->get_post('file');
-		$plugins = $this->input->get_post('plugin');
-		$packages = $this->input->get_post('package');
-
-		if ($ui)
+		$contents	= '';
+		$folder 	= $this->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
+		$types		= array(
+			'ui'		=> PATH_JQUERY.'ui/ui.',
+			'file'		=> APPPATH.'javascript/'.$folder.'/',
+			'plugin'	=> PATH_JQUERY.'plugins/',
+			'package'	=> PATH_THIRD
+		);
+		
+		foreach($types as $type => $path)
 		{
-			$ui = explode(',', $ui);
-
-			foreach ($ui as $ui)
+			$files = explode(',', $this->input->get_post($type));
+			
+			foreach($files as $file)
 			{
+				if ($type == 'package')
+				{
+					$file = $file.'/javascript/'.$file;
+				}
 				
-				$file = PATH_JQUERY.'ui/ui.'.$ui.'.js';
-
+				$file = $path.$file.'.js';
+				
 				if (file_exists($file))
 				{
 					$contents .= file_get_contents($file)."\n\n";
-
-					$file_mtime[$file] = filemtime($file);                    
-				}
-			}
-		}        
-
-		if ($load_file)
-		{
-			$load_file = explode(',', $load_file);
-
-			foreach ($load_file as $file)
-			{
-				if ($this->config->item('use_compressed_js') == 'n')
-				{
-					$file = APPPATH.'javascript/src/'.$file.'.js';
-				}
-				else
-				{
-					$file = APPPATH.'javascript/compressed/'.$file.'.js';
-				}
-
-				if (file_exists($file))
-				{
-					$contents .= file_get_contents($file)."\n\n";
-
-					$file_mtime[$file] = filemtime($file);
 				}
 			}
 		}
 
-		// Load Plugins 
-		if ($plugins)
-		{
-			$plugins = explode(',', $plugins);
+		$modified = $this->input->get_post('v');
+		
+		$modified = gmdate('D, d M Y H:i:s', $modified).' GMT';
+		$expires = gmdate('D, d M Y H:i:s', time() + 5184000).' GMT';
 
-			foreach ($plugins as $plugin)
-			{
-				$file = PATH_JQUERY.'plugins/'.$plugin.'.js';
+		@header("Content-Type: text/javascript");
+		@header("Content-Length: " . strlen($contents)); 
+		@header("Cache-Control: max-age={$max_age}, must-revalidate");
+		@header('Vary: Accept-Encoding');
+		@header('Last-Modified: '.$modified);
+		@header('Expires: '.$expires);
 
-				if (file_exists($file))
-				{
-					$contents .= file_get_contents($file)."\n\n";
-
-					$file_mtime[$file] = filemtime($file);
-				}
-			}
-		}
-
-		// Third Party Packages
-		if ($packages)
-		{
-			$packages = explode(',', $packages);
-
-			foreach ($packages as $package)
-			{
-				$file = PATH_THIRD.$package.'/javascript/'.$package.'.js';
-
-				if (file_exists($file))
-				{
-					$contents .= file_get_contents($file)."\n\n";
-
-					$file_mtime[$file] = filemtime($file);
-				}
-			}
-		}      
-
-		header("Content-type: text/javascript");
-		header("Content-Length: " . strlen($contents)); 
 		exit($contents);
 	}
 
