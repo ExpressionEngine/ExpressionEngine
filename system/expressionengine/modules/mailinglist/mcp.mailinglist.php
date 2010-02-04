@@ -54,7 +54,6 @@ class Mailinglist_mcp {
 		$this->EE->load->library('javascript');
 		$this->EE->load->helper('form');
 
-		$this->EE->cp->add_js_script(array('plugin' => 'tablesorter'));
 		$this->EE->jquery->tablesorter('.mainTable', '{
 			headers: {2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}, 6: {sorter: false}},
 			widgets: ["zebra"]

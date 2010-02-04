@@ -78,12 +78,6 @@ class Admin_content extends Controller {
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('admin'));
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
-		$this->javascript->output('$("#adminContentSubmenu").show();');
-
-		$this->javascript->output($this->javascript->slidedown("#adminContentSubmenu"));
-
 		$this->javascript->compile();
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('admin_content'));
@@ -117,14 +111,10 @@ class Admin_content extends Controller {
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('channel_management'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', $this->lang->line('admin_content'));
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 		
 		$this->load->library('table');
 
 		$vars['channel_data'] = $this->channel_model->get_channels();
-
-		$this->javascript->compile();
 
 		$this->load->view('admin/channel_management', $vars);
 	}
@@ -1318,8 +1308,6 @@ class Admin_content extends Controller {
 		$this->cp->set_variable('cp_page_title', $this->lang->line('categories'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', $this->lang->line('admin_content'));
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}},
 			widgets: ["zebra"]
@@ -1741,8 +1729,6 @@ class Admin_content extends Controller {
 
 		$vars['message'] = ''; // override lower down if needed
 		$vars['form_action'] = '';
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}},
@@ -3032,8 +3018,6 @@ class Admin_content extends Controller {
 			// @todo: field order
 		}
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {3: {sorter: false}},
 			widgets: ["zebra"]
@@ -3546,8 +3530,6 @@ class Admin_content extends Controller {
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('field_management'));
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}, 3: {sorter: false}},
 			widgets: ["zebra"]
@@ -3913,8 +3895,6 @@ class Admin_content extends Controller {
 			}
 		}
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {3: {sorter: false}},
 			widgets: ["zebra"]
@@ -3966,8 +3946,6 @@ class Admin_content extends Controller {
 		$this->db->where('f.field_id', $vars['field_id']);
 		
 		$field_query = $this->db->get();
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {0: {sorter: false}, 1: {sorter: false}},
@@ -4219,8 +4197,6 @@ class Admin_content extends Controller {
 			'field_id'		=> $field_id,
 			'site_id'		=> $this->config->item('site_id')
 		);
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
  		$ft_selector = "#ft_".implode(", #ft_", array_keys($fts));
 		
@@ -4784,8 +4760,6 @@ class Admin_content extends Controller {
 		$this->load->library('table');
 		$this->load->model('addons_model');
 		$this->lang->loadfile('admin_content');
-				
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}},
@@ -4895,8 +4869,6 @@ class Admin_content extends Controller {
 		$this->lang->loadfile('admin_content');
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('status_groups'));
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}, 3: {sorter: false}},
@@ -5191,8 +5163,6 @@ class Admin_content extends Controller {
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('status_group').':'.NBS.$group_name->row('group_name'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_group_management', $this->lang->line('status_management'));
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}},
@@ -5560,8 +5530,6 @@ class Admin_content extends Controller {
 		$this->lang->loadfile('admin_content');
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('file_upload_prefs'));
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}},
@@ -5995,8 +5963,6 @@ class Admin_content extends Controller {
 
 		$vars['form_hidden']['member_id'] = $id;
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$this->jquery->tablesorter('.mainTable', '{widgets: ["zebra"]}');
 
 		$ping_servers = $this->admin_model->get_ping_servers(0);
@@ -6174,8 +6140,6 @@ class Admin_content extends Controller {
 		}
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('default_html_buttons'));
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {0: {sorter: false}},
@@ -6394,8 +6358,6 @@ class Admin_content extends Controller {
 	 */
 	function _config_manager($type, $return_loc)
 	{
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$this->jquery->tablesorter('.mainTable', '{
 			widgets: ["zebra"],
 			headers: {

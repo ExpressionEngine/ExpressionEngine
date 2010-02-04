@@ -2058,8 +2058,6 @@ class Tools_utilities extends Controller {
 		$this->cp->set_variable('cp_page_title', $language_file);
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=translation_tool', $this->lang->line('translation_tool'));
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}},
 			widgets: ["zebra"]

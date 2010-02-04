@@ -44,9 +44,6 @@ class Addons_modules extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
-		// $this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=tablesorter', TRUE);
 		$this->load->model('addons_model');
 		
 		$this->lang->loadfile('modules');

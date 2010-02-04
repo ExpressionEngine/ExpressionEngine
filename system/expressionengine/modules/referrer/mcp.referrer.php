@@ -74,7 +74,6 @@ class Referrer_mcp {
 
 		$vars['cp_page_title'] = $this->EE->lang->line('view_referrers');
 
-		$this->EE->cp->add_js_script(array('plugin' => 'tablesorter'));
 		$this->EE->jquery->tablesorter('.mainTable', '{
 			headers: {5: {sorter: false}},
 			widgets: ["zebra"]

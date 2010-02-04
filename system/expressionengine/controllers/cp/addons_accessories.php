@@ -89,8 +89,6 @@ class Addons_accessories extends Controller {
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', $this->lang->line('addons'));
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$this->jquery->tablesorter('.mainTable', '{
 			widgets: ["zebra"]
 		}');

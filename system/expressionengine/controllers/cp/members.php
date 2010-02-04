@@ -87,11 +87,6 @@ class Members extends Controller {
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('members'));
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
-		// for the main page, we want the submenu shown by default.  Its the only one
-		$this->javascript->output('$("#adminContentSubmenu").show();');
-
 		$this->javascript->compile();
 
 		$this->load->vars(array('controller'=>'members'));
@@ -1187,8 +1182,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('member_groups'));
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$this->jquery->tablesorter('.mainTable', '{headers: {1: {sorter: false}, 5: {sorter: false}}, widgets: ["zebra"]}');
 		
 		$this->javascript->compile();
@@ -1226,7 +1219,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$this->load->model('site_model');
 		$this->lang->loadfile('admin');
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter', 'ui' => 'accordion'));
+		$this->cp->add_js_script('ui', 'accordion');
 
 		$this->jquery->tablesorter('#edit_member_group table', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}},
@@ -1872,7 +1865,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('member_cfg'));
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter', 'ui' => 'accordion'));
+		$this->cp->add_js_script('ui', 'accordion');
 
 		$this->jquery->tablesorter('table', '{
 			headers: {},
@@ -2648,8 +2641,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$vars['fields'] = $this->member_model->get_custom_member_fields();
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('custom_profile_fields'));
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{headers: {3: {sorter: false}, 4: {sorter: false}},	widgets: ["zebra"]}');
 
@@ -3734,8 +3725,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('member_validation'));
 	
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$this->jquery->tablesorter('.mainTable', '{headers: {1: {sorter: false}},	widgets: ["zebra"]}');
 
 	  	// @todo: abstract this function out so its available application wide - it toggles all checkboxes at once

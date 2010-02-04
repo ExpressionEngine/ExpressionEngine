@@ -43,8 +43,6 @@ class Addons_extensions extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$this->lang->loadfile('addons');
 		$this->load->model('addons_model');
 

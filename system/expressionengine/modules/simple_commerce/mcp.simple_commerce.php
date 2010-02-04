@@ -2247,7 +2247,7 @@ MAGIC;
 
 		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('edit'));
 
-		$this->EE->cp->add_js_script(array('plugin' => 'tablesorter', 'ui' => 'datepicker'));
+		$this->EE->cp->add_js_script('ui', 'datepicker');
 
 		$this->EE->javascript->output(array(
 			$this->EE->javascript->hide(".paginationLinks .first"), 

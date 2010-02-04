@@ -162,8 +162,6 @@ class Tools_data extends Controller {
 
 		$this->load->library('table');
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$this->jquery->tablesorter('.mainTable', '{
 			widgets: ["zebra"]
 		}');
@@ -232,8 +230,6 @@ class Tools_data extends Controller {
 
 		$this->load->library('table');
 		$this->load->helper('form');
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {
@@ -383,8 +379,6 @@ class Tools_data extends Controller {
 
 		$this->load->library('pagination');
 		$this->load->library('table');
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			widgets: ["zebra"]
@@ -780,9 +774,6 @@ class Tools_data extends Controller {
 
 		$this->load->library('table');
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
-		$this->jquery->tablesorter('.mainTable', '{widgets: ["zebra"]}');
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {2: {sorter: false}},
 			widgets: ["zebra"]

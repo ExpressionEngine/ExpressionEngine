@@ -67,8 +67,6 @@ class Design extends Controller {
 		$this->load->model('template_model');
 		$this->lang->loadfile('design');
 		
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$this->javascript->compile();
 
 		if ($this->cp->allowed_group('can_admin_templates'))
@@ -1948,29 +1946,18 @@ class Design extends Controller {
 		$url = str_replace(AMP, '&', BASE).'&C=design&M=template_revision_history&template='.$template_id.'&revision_id=';
 
 		$this->javascript->output('
-		 $("#revision_id").change(
+		$("#revision_id").change(
 			function() {
 				var id = $(this).val();
 
-				if (id == "")
-                {
-                    return false;
-                }
- 
-                else if (id == "clear")
-                {
-                    window.open ("'.$url.'"+id,"Revision", "width=500, height=350, location=0, menubar=0, resizable=0, scrollbars=0, status=0, titlebar=0, toolbar=0, screenX=60, left=60, screenY=60, top=60");
-
-                    return false;
-                }
-               else
-                {
-                    window.open ("'.$url.'"+id,"Revision");
-
-                    return false;
-                }
-                return false;
-            }
+				if (id == "clear") {
+					window.open ("'.$url.'"+id,"Revision", "width=500, height=350, location=0, menubar=0, resizable=0, scrollbars=0, status=0, titlebar=0, toolbar=0, screenX=60, left=60, screenY=60, top=60");
+				}
+				else if (id != "") {
+					window.open ("'.$url.'"+id,"Revision");
+				}
+				return false;
+			}
 		);
 		$("#revision_button").hide();
 		');

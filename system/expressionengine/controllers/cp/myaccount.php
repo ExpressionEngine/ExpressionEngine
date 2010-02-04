@@ -797,10 +797,6 @@ class MyAccount extends Controller {
 		$vars['cp_page_title'] = $this->lang->line('ping_servers');
 		$vars['form_hidden'] = array();
 
-		$this->javascript->output('');
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$ping_servers = $this->admin_model->get_ping_servers($this->id);
 
 		// This user have any ping servers? If not, grab the defaults
@@ -985,8 +981,6 @@ class MyAccount extends Controller {
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['cp_messages'] = array($message);
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {0: {sorter: false}},
@@ -1242,8 +1236,6 @@ class MyAccount extends Controller {
 
 		$vars['cp_page_title'] = $this->lang->line('subscriptions');
 		$vars['cp_messages'] = array($message);
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {3: {sorter: false}},
@@ -2578,8 +2570,6 @@ class MyAccount extends Controller {
 		$vars['cp_messages'] = array($message);
 		$vars['form_hidden']['id'] = $this->id;
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$this->jquery->tablesorter('.mainTable', '{widgets: ["zebra"]}');
 
 		$this->javascript->output('');
@@ -2737,8 +2727,6 @@ class MyAccount extends Controller {
 
 		if (count($vars['quicktabs']) > 0)
 		{
-			$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 			$this->jquery->tablesorter('.mainTable', '{
 				headers: {6: {sorter: false}},
 				widgets: ["zebra"]
@@ -3027,8 +3015,6 @@ class MyAccount extends Controller {
 
 		$vars['cp_page_title'] = $this->lang->line('ignore_list');
 		$vars['message'] = '';
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}},

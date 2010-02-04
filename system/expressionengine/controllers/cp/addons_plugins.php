@@ -75,8 +75,6 @@ class Addons_plugins extends Controller {
 		$this->cp->set_variable('cp_page_title', $this->lang->line('plugins'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', $this->lang->line('addons'));
 
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {2: {sorter: false}},
 			widgets: ["zebra"]
@@ -216,8 +214,6 @@ class Addons_plugins extends Controller {
 		}
 
 		$this->load->library('table');
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}},

@@ -67,16 +67,6 @@ class Admin_system extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('admin'));
-
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
-
-		$this->javascript->output('$("#adminContentSubmenu").show();');
-
-		$this->javascript->output($this->javascript->slidedown("#adminContentSubmenu"));
-
-		$this->javascript->compile();
-
 		$this->cp->set_variable('cp_page_title', $this->lang->line('admin_system'));
 
 		$this->load->vars(array('controller'=>'admin'));
@@ -136,8 +126,6 @@ class Admin_system extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-		
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			widgets: ["zebra"],

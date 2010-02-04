@@ -195,10 +195,7 @@ class Sites extends Controller {
 		$this->load->library('table');
 		$this->load->model('site_model');
 
-
 		$this->cp->set_variable('cp_page_title', $this->lang->line('site_management'));
-		
-		$this->cp->add_js_script(array('plugin' => 'tablesorter'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			widgets: ["zebra"]
