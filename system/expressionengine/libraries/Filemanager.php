@@ -60,9 +60,7 @@ class Filemanager {
 										)
 									);
 
-		$this->EE->javascript->output('
-			$(\'<link rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=file_browser" type="text/css" media="screen" />\').appendTo("head");
-		');
+		$this->EE->cp->add_to_head('<link rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=file_browser" type="text/css" media="screen" />');
 		
 		$this->EE->javascript->set_global('filebrowser.endpoint_url', $endpoint_url);
 		$this->EE->javascript->set_global('lang.resize_image', $this->EE->lang->line('resize_image'));
