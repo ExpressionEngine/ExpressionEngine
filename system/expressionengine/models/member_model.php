@@ -1325,6 +1325,46 @@ class Member_model extends CI_Model {
 			return '';
 		}
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Can Access Module
+	 *
+	 * @access	public
+	 * @return	boolean
+	 */
+	function can_access_module($module, $group_id = '')
+	{	
+		// Superadmin sees all		
+		if ($this->session->userdata['group_id'] == 1)
+		{
+			return TRUE;
+		}
+		
+		if ( ! $group_id)
+		{
+			$group_id = $this->session->userdata['group_id'];
+		}
+
+		$this->db->select('modules.module_id, module_member_groups.group_id');
+		$this->db->where('LOWER('.$this->db->dbprefix.'modules.module_name)', strtolower($module));
+		$this->db->join('module_member_groups', 'module_member_groups.module_id = modules.module_id');
+		$this->db->where('module_member_groups.group_id', $group_id);
+		
+		$query = $this->db->get('modules');
+
+		if ($query->num_rows() == 0)
+		{
+			return FALSE;
+		}
+		else
+		{
+			return TRUE;
+		}
+
+	}
+	
 }
 
 /* End of file member_model.php */

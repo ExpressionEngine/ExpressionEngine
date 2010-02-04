@@ -110,7 +110,13 @@ class Homepage extends Controller {
 			'can_access_content'	=> TRUE,
 			'can_access_templates'	=> (count($allowed_templates) > 0 && $this->cp->allowed_group('can_access_design')) ? TRUE : FALSE
 		);
-		
+
+		// Pages module is installed, need to check perms
+		// To see if the member group can access it.
+		// Super admin sees all.
+		$this->load->model('member_model');
+		$vars['show_page_option'] = $this->member_model->can_access_module('pages');
+
 		// Permissions
 		if ( ! $this->cp->allowed_group('can_access_publish'))
 		{
@@ -127,6 +133,8 @@ class Homepage extends Controller {
 			}
 		}
 		
+		
+		
 		// Prep js		
 		$this->javascript->set_global('lang.close', $this->lang->line('close'));
 		
@@ -137,12 +145,6 @@ class Homepage extends Controller {
 
 		$this->cp->add_js_script('file', 'cp/homepage');
 		$this->javascript->compile();
-		
-		// Hotfix @todo remove next build
-		if (APP_BUILD == '20100121')
-		{
-			$this->db->query("UPDATE exp_channel_fields SET field_type = 'checkboxes' WHERE field_type = 'option_group'");
-		}
 		
 		$this->load->view('homepage', $vars);
 	}
