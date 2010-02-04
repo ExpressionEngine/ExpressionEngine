@@ -84,67 +84,66 @@ class Homepage extends Controller {
 	 */	
 	function index($message = '')
 	{
-		$vars['version'] = FALSE;
-
 		$this->cp->get_installed_modules();
+		$this->cp->set_variable('cp_page_title', $this->lang->line('main_menu'));
 
-		$show_notice = $this->_checksum_bootstrap_files();
-		
-		
+		$version			= FALSE;
+		$show_notice		= $this->_checksum_bootstrap_files();
+		$allowed_templates	= $this->session->userdata('assigned_template_groups');
+
+		// Notices only show for super admins
 		if ($this->session->userdata['group_id'] == 1 AND $this->config->item('new_version_check') == 'y')
 		{
-			$vars['version'] = $this->_version_check();
-			$show_notice = ($show_notice OR $vars['version']);
+			$version		= $this->_version_check();
+			$show_notice	= ($show_notice OR $version);
 		}
-
-		$this->cp->set_variable('cp_page_title', $this->lang->line('main_menu'));
 		
+		$vars = array(
+			'version'			=> $version,
+			'message'			=> $message,
+			'instructions'		=> $this->lang->line('select_channel_to_post_in'),
+			'show_page_option'	=> (isset($this->cp->installed_modules['pages'])) ? TRUE : FALSE,
+			'info_message_open'	=> ($this->input->cookie('home_msg_state') != 'closed' && $show_notice) ? TRUE : FALSE,
+			'no_templates'		=> sprintf($this->lang->line('no_templates_available'), BASE.AMP.'C=design'.AMP.'M=new_template_group'),
+			
+			'can_access_modify'		=> TRUE,
+			'can_access_content'	=> TRUE,
+			'can_access_templates'	=> (count($allowed_templates) > 0 && $this->cp->allowed_group('can_access_design')) ? TRUE : FALSE
+		);
+		
+		// Permissions
+		if ( ! $this->cp->allowed_group('can_access_publish'))
+		{
+			$vars['show_page_option'] = FALSE;
+			
+			if ( ! $this->cp->allowed_group('can_access_edit') && ! $this->cp->allowed_group('can_admin_templates'))
+			{
+				$vars['can_access_modify'] = FALSE;
+				
+				if ( ! $this->cp->allowed_group('can_admin_channels')  && ! $this->cp->allowed_group('can_admin_sites'))
+				{
+					$vars['can_access_content'] = FALSE;
+				}
+			}
+		}
+		
+		// Prep js		
 		$this->javascript->set_global('lang.close', $this->lang->line('close'));
-		
-		$this->cp->add_js_script(array('file' => 'cp/homepage'));
-		
-		$vars['info_message_open'] = ($this->input->cookie('home_msg_state') != 'closed' && $show_notice);
 		
 		if ($show_notice)
 		{
 			$this->javascript->set_global('importantMessage.state', $vars['info_message_open']);
 		}
 
+		$this->cp->add_js_script('file', 'cp/homepage');
 		$this->javascript->compile();
-
-        $vars['instructions'] = $this->lang->line('select_channel_to_post_in');
-		$vars['message'] = $message;
-
-		$vars['can_access_content'] = TRUE;
-		$vars['can_access_modify'] = TRUE;		
-
-		if ( ! $this->cp->allowed_group('can_access_publish') && ! $this->cp->allowed_group('can_access_edit') && ! $this->cp->allowed_group('can_admin_templates') && ! $this->cp->allowed_group('can_admin_channels')  && ! $this->cp->allowed_group('can_admin_sites'))
-		{
-			$vars['can_access_content'] = FALSE;
-		}
-
-		if ( ! $this->cp->allowed_group('can_access_publish') && ! $this->cp->allowed_group('can_access_edit') && ! $this->cp->allowed_group('can_admin_templates'))
-		{
-			$vars['can_access_modify'] = FALSE;
-		}
 		
-		$vars['no_templates'] = sprintf($this->lang->line('no_templates_available'), BASE.AMP.'C=design'.AMP.'M=new_template_group');
-
-		$allowed_templates = $this->session->userdata('assigned_template_groups');
-		$vars['can_access_templates'] = (count($allowed_templates) > 0 && $this->cp->allowed_group('can_access_design')) ? TRUE : FALSE;
-		
-		$vars['show_page_option'] = (isset($this->cp->installed_modules['pages'])) ? TRUE : FALSE;
-
+		// Hotfix @todo remove next build
 		if (APP_BUILD == '20100121')
 		{
 			$this->db->query("UPDATE exp_channel_fields SET field_type = 'checkboxes' WHERE field_type = 'option_group'");
 		}
-
-		if ( ! $this->cp->allowed_group('can_access_publish'))	
-		{
-			$vars['show_page_option'] = FALSE;
-		}
-
+		
 		$this->load->view('homepage', $vars);
 	}
 
