@@ -202,8 +202,8 @@ class Content_edit extends Controller {
 
 		// If we have channels we'll write the JavaScript menu switching code
 		if ($total_channels > 0)
-		{	  
-			$this->javascript->output($this->filtering_menus());
+		{
+			$this->filtering_menus();
 		}
 
 		// If we're filtering using ajax, we redirect comment only searches
