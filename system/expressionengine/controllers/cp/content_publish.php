@@ -636,11 +636,16 @@ class Content_publish extends Controller {
 		}
 		
 		
-		// @confirm: just a note that the original 'mysettings' is in javascript/plugins		
-		$this->javascript->output("
+		// @confirm: just a note that the original 'mysettings' is in javascript/plugins
+		$this->cp->add_js_script(array("
+			<script type=\"text/javascript\" charset=\"utf-8\">
+			// <![CDATA[
 			mySettings = ".$this->javascript->generate_json($markItUp, TRUE).";
 			myWritemodeSettings = ".$this->javascript->generate_json($markItUp_writemode, TRUE).";
-		");
+			// ]]>
+			</script>
+			
+		"), FALSE);
 
 		if ($show_button_cluster == 'y')
 		{
@@ -1187,10 +1192,11 @@ class Content_publish extends Controller {
 			}
 			else
 			{
-				$query = $this->db->query("SELECT configuration_value FROM exp_pages_configuration
-									 WHERE configuration_name = '".$this->db->escape_str('template_channel_'.$channel_id)."'
-									 AND site_id = '".$this->db->escape_str($this->config->item('site_id'))."'");
-
+				$this->db->select('configuration_value');
+				$this->db->where('configuration_name', 'template_channel_'.$channel_id);
+				$this->db->where('site_id', $this->config->item('site_id'));
+				$query = $this->db->get('pages_configuration');
+				
 				if ($query->num_rows() > 0)
 				{
 					$pages_template_id = $query->row('configuration_value');
@@ -1203,27 +1209,12 @@ class Content_publish extends Controller {
 			// A few overwrites here if the pages_uri is empty
 			if ($pages_uri == '')
 			{
-				$pages_uri = '/example/pages/uri/';
+				$this->javascript->set_global('publish.pages.pagesUri', '/example/pages/uri/');
 			}
-
-			$this->javascript->output('
-				var pagesUri 		= $("#pages_uri"),
-					placeholderText = "'.$pages_uri.'";
-				
-				if ( ! pagesUri.value) {
-					pagesUri.val(placeholderText);
-				}
-				
-				pagesUri.focus(function() {					
-					if (this.value == placeholderText) {
-						$(this).val("");
-					}	
-				}).blur(function() {
-					if (this.value == "") {
-						$(this).val(placeholderText);
-					}
-				});
-			');		
+			else
+			{
+				$this->javascript->set_global('publish.pages.pageUri', $pages_uri);
+			}
 
 			$vars['pages_uri']	= $pages_uri;
 			$vars['pages_dropdown_selected'] = $pages_template_id;

@@ -323,6 +323,26 @@ $(document).ready(function() {
 		}
 	);
 
+	// Pages URI Placeholder
+	if (EE.publish.pages) {
+		var pagesUri 		= $("#pages_uri"),
+			placeholderText = EE.publish.pages.pagesUri;
+
+		if ( ! pagesUri.value) {
+			pagesUri.val(placeholderText);
+		}
+
+		pagesUri.focus(function() {					
+			if (this.value == placeholderText) {
+				$(this).val("");
+			}	
+		}).blur(function() {
+			if (this.value == "") {
+				$(this).val(placeholderText);
+			}
+		});		
+	}
+	
 
 });
 
