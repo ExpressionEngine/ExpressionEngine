@@ -1333,7 +1333,7 @@ class Admin_content extends Controller {
 		$cat_count = 1;
 		$vars['categories'] = array();
 
-		$categories = $this->category_model->get_categories();
+		$categories = $this->category_model->get_categories('', FALSE);
 
 		foreach($categories->result() as $row)
 		{
@@ -4189,7 +4189,6 @@ class Admin_content extends Controller {
 			}
 		}
 		
-
 		asort($vars['field_type_options']);	// sort by title
 
 		$vars['form_hidden'] = array(
@@ -4198,8 +4197,8 @@ class Admin_content extends Controller {
 			'site_id'		=> $this->config->item('site_id')
 		);
 
- 		$ft_selector = "#ft_".implode(", #ft_", array_keys($fts));
-		
+		$ft_selector = "#ft_".implode(", #ft_", array_keys($fts));
+
 		$this->javascript->output('
 			var ft_divs = $("'.$ft_selector.'"),
 				ft_dropdown = $("#field_type");
