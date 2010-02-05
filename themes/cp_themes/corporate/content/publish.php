@@ -189,14 +189,15 @@ if ($EE_view_disable !== TRUE)
 						?>
 						
 						<?php if ($has_extras): ?>
-							<p class="spellcheck">
+							<p class="spellcheck markitup">
 							
 								<?php if ($f['field_show_writemode'] == 'y'):?>
 									<a href="<?=$write_mode_link?>" class="write_mode_trigger thickbox" id="id_<?=$f['field_id']?>" title="<?=lang('write_mode')?>"><img alt="<?=lang('write_mode')?>" width="22" height="21" src="<?=$cp_theme_url?>images/publish_write_mode.png" /></a> 
 								<?php endif;?>
 							
 								<?php if ($f['field_show_file_selector'] == 'y' && count($file_list) > 0):?>
-									<img class="file_manipulate js_show" src="<?=$cp_theme_url?>images/publish_format_picture.gif" alt="<?=lang('file')?>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									<a href="#" class="markItUpButton">
+									<img class="file_manipulate js_show" src="<?=$cp_theme_url?>images/publish_format_picture.gif" alt="<?=lang('file')?>" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 								<?php endif;?>
 							
 								<?php if($spell_enabled && $f['field_show_spellcheck'] == 'y'):?>
