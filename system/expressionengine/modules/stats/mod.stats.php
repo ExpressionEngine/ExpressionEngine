@@ -47,7 +47,7 @@ class Stats {
 			$sql = "SELECT	total_entries, 
 							total_comments,
 							last_entry_date,
-							last_comment_date,
+							last_comment_date
 					FROM exp_channels 
 					WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
 
