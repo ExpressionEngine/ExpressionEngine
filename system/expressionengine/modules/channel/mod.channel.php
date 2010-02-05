@@ -864,6 +864,8 @@ class Channel {
 					$this->paginate_data = str_replace($match[0],	$match[1], $this->paginate_data);
 				}
 			}
+			
+			$this->paginate_data = $this->EE->functions->prep_conditionals($this->paginate_data, array('total_pages' => $this->total_pages));
 
 			$position = ( ! $this->EE->TMPL->fetch_param('paginate')) ? '' : $this->EE->TMPL->fetch_param('paginate');
 
