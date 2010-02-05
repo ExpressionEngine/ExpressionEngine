@@ -64,7 +64,7 @@ class Template_model extends CI_Model {
 		
 		if ( ! isset($data['group_order']))
 		{
-			$data['group_order'] = $this->super_model->count('template_groups') + 1;
+			$data['group_order'] = $this->db->count_all('template_groups') + 1;
 		}
 
 		$this->db->insert('template_groups', $data);
