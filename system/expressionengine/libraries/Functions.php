@@ -1375,9 +1375,10 @@ class EE_Functions {
 	
 			// Is there a category group associated with this channel?
 			$query = $this->EE->db->query("SELECT cat_group FROM  exp_channels WHERE channel_id = '".$entry_query->row('channel_id') ."'");	 
-			$cat_group = ($query->num_rows() == 0) ? FALSE : $query->row('cat_group') ;
-	
+			$cat_group = (trim($query->row('cat_group')) == '') ? FALSE : $query->row('cat_group');
+
 			$this->cat_array = array();
+			$cat_array = array();
 	
 			if ($cat_group !== FALSE)
 			{
