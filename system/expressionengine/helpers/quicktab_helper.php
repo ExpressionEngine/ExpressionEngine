@@ -34,7 +34,7 @@ function generate_quicktab($title = '')
 
 	if (isset($EE->session->userdata['quick_tabs']) AND $EE->session->userdata['quick_tabs'] != '')
 	{
-		$newlink = '|'.str_replace('/', '&', str_replace('--', '=', $link)).'|';
+		$newlink = str_replace('/', '&', str_replace('--', '=', $link)).'|';
 
 		if (strpos($EE->session->userdata['quick_tabs'], $newlink))
 		{
