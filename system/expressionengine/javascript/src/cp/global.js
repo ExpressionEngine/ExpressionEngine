@@ -27,43 +27,49 @@ $(document).bind('ajaxComplete', function(evt, xhr) {
 
 // OS X Style Search Boxes for Webkit
 
-EE.create_searchbox = (function() {
+EE.create_searchbox = function() {
 	
-	function webkit_search(el, placeholder, save) {
-		el.setAttribute('type', 'search');
-		$(el).attr({
-			autosave: 		save,
-			results:		'10',
-			placeholder:	placeholder
-		});
+	var ee_test_obj = document.createElement('input'),
+		create_func;
+	
+	if ('placeholder' in ee_test_obj) {
+		create_func = function(placeholder, save) {
+			this.setAttribute('type', 'search');
+			$(this).attr({
+				autosave: 		save,
+				results:		'10',
+				placeholder:	placeholder
+			});
+		};
 	}
-	
-	function generic_search(el, placeholder) {
-		var jqEl = $(el),
-			orig_color = jqEl.css('color');
-		
-		jqEl.focus(function() {
-			// Reset color & remove placeholder text
-			jqEl.css('color', orig_color);
-			(jqEl.val() == placeholder && jqEl.val(''));
-		})
-		.blur(function() {
-			// If no user content -> add placeholder text and dim
-			if (jqEl.val() == '' || jqEl.val == placeholder) {
-				jqEl.val(placeholder).css('color', '#888');
-			}
-		})
-		.trigger('blur');
-	}
-	
-	var create_func = (parseInt(navigator.productSub) >= 20020000 &&
-					  navigator.vendor.indexOf('Apple Computer') != -1) ? webkit_search : generic_search;
+	else {
+		create_func = function(placeholder) {
+			var jqEl = $(this),
+				orig_color = jqEl.css('color');
 
-	return function(id, placeholder, save) {
-		var el = document.getElementById(id);
-		(el && create_func(el, placeholder, save));
+			jqEl.focus(function() {
+				// Reset color & remove placeholder text
+				jqEl.css('color', orig_color);
+				(jqEl.val() == placeholder && jqEl.val(''));
+			})
+			.blur(function() {
+				// If no user content -> add placeholder text and dim
+				if (jqEl.val() == '' || jqEl.val == placeholder) {
+					jqEl.val(placeholder).css('color', '#888');
+				}
+			})
+			.trigger('blur');
+		};
 	}
-})();
+
+	EE.create_searchbox = function(el, placeholder, save) {
+		if (el = document.getElementById(el)) {
+			create_func.call(el, placeholder, save);
+		}
+	};
+	
+	EE.create_searchbox.apply(EE.create_searchbox, arguments);
+};
 
 // @todo Language keys
 EE.create_searchbox('cp_search_keywords', 'Search', 'ee_cp_search');
