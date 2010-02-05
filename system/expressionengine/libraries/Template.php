@@ -3822,7 +3822,7 @@ class EE_Template {
 	 * @return	string
 	 */
 	function parse_variables_row($tagdata, $variables, $solo = TRUE)
-	{		
+	{
 		if ($tagdata == '' OR ! is_array($variables) OR empty($variables))
 		{
 			return $tagdata;
@@ -4006,9 +4006,9 @@ class EE_Template {
 					$temp = $this->_parse_var_single($name, $value, $temp);
 				}
 			}
-			
+
 			// Prep conditionals
-			$temp = $this->EE->functions->prep_conditionals($temp, $this->conditional_vars);
+			$temp = $this->EE->functions->prep_conditionals($temp, $set);
 			
 			$str .= $temp;
 		}
