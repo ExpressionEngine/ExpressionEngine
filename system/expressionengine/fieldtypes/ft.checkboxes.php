@@ -294,8 +294,8 @@ class Checkboxes_ft extends EE_Fieldtype {
 	
 	function display_settings($data)
 	{
+		$this->field_formatting_row($data, 'checkboxes');
 		$this->multi_item_row($data, 'checkboxes');
-		$this->field_formatting_row($data);
 	}
 }
 

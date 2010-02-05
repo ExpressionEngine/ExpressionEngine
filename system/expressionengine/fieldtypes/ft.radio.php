@@ -132,6 +132,7 @@ class Radio_ft extends EE_Fieldtype {
 
 	function display_settings($data)
 	{
+		$this->field_formatting_row($data, 'radio');
 		$this->multi_item_row($data, 'radio');
 	}
 }
