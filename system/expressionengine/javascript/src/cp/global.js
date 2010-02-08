@@ -202,7 +202,7 @@ function show_hide_sidebar() {
 		}, function() {
 			$("#sideBar").css({
 				'position': '',
-				'float': 'right',
+				'float': 'right'
 			});
 		});
 		
