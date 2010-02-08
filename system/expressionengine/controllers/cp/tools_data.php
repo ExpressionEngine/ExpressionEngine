@@ -849,7 +849,9 @@ class Tools_data extends Controller {
 	function _do_recount_stats($which, $forum_exists)
 	{
 		$sources = array('members', 'channel_titles', 'forums', 'forum_topics', 'sites');
-
+		
+		$this->cp->get_installed_modules();
+		
 		if ( ! in_array($which, $sources))
 		{
 			return FALSE;
