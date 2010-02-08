@@ -3169,6 +3169,11 @@ class Content_publish extends Controller {
 			
 			// Prep for a workaround to allow markitup file insertion in file inputs
 			$(".btn_img a, .file_manipulate").click(function(){
+				var textareaId = $(this).parent().parent().parent().find("textarea").attr("id");
+				if (textareaId != undefined) {
+					$("#"+textareaId).focus();		
+				}
+
 				window.file_manager_context = ($(this).parent().attr("class").indexOf("markItUpButton") == -1) ? $(this).closest("div").find("input").attr("id") : "textarea_a8LogxV4eFdcbC";
 
 			});
