@@ -1770,6 +1770,12 @@ class Admin_content extends Controller {
 		$zurl .= ($this->input->get_post('integrated') !== FALSE) ? AMP.'integrated='.$this->input->get_post('integrated') : '';
 
 		$query = $this->category_model->get_categories($group_id, FALSE);
+		
+		if ($query->num_rows() == 0)
+		{
+			$this->functions->redirect(BASE.AMP.'C=admin_content&M=category_management');
+		}
+		
 		$group_name = $query->row('group_name') ;
 		$sort_order = $query->row('sort_order') ;
 
