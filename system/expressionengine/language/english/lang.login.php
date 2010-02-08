@@ -33,6 +33,8 @@ $lang = array(
 "unauthorized_request" =>
 "You are not authorized to perform this action",
 
+'new_password_request' =>
+'New Password Request',
 
 ''=>''
 );

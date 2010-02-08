@@ -737,6 +737,8 @@ class Login extends Controller {
 			$this->functions->redirect(BASE.AMP.'C=login'.AMP.'M=forgotten_password_form');
 		}
 		
+		$this->cp->set_variable('cp_page_title', $this->lang->line('new_password_request'));
+		
 		$address = strip_tags($address);
 		
 		// Fetch user data
