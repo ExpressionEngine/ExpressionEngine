@@ -106,16 +106,15 @@ class Field_model extends CI_Model {
 	 */
 	function get_field_groups()
 	{
-		// @todo: AR this
-		$sql = "SELECT exp_field_groups.group_id, exp_field_groups.group_name,
-				COUNT(exp_channel_fields.group_id) as count 
-				FROM exp_field_groups
-				LEFT JOIN exp_channel_fields ON (exp_field_groups.group_id = exp_channel_fields.group_id)
-				WHERE exp_field_groups.site_id = '".$this->db->escape_str($this->config->item('site_id'))."'
-				GROUP BY exp_field_groups.group_id
-				ORDER BY exp_field_groups.group_name";
-
-		return $this->db->query($sql);
+		$this->db->select('exp_field_groups.group_id, exp_field_groups.group_name,
+							COUNT(exp_channel_fields.group_id) as count');
+		$this->db->from('exp_field_groups');
+		$this->db->join('exp_channel_fields', 'exp_field_groups.group_id = exp_channel_fields.group_id', 'left');
+		$this->db->where('exp_field_groups.site_id', $this->config->item('site_id'));
+		$this->db->group_by('exp_field_groups.group_id');
+		$this->db->order_by('exp_field_groups.group_name');
+		
+		return $this->db->get();		
 	}
 
 	// --------------------------------------------------------------------
