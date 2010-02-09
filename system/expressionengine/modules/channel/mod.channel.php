@@ -4746,20 +4746,28 @@ class Channel {
 							);
 
 		$q = '';
-
+		$tags = FALSE;
+		$charset = $this->EE->config->item('charset');
+		
 		foreach ($this->EE->TMPL->var_single as $val)
 		{			
 			if (in_array($val, $params))
 			{
+				$tags = TRUE;
 				$q .= $val.',';
+			}
+			elseif ($val == 'channel_encoding')
+			{
+				$tags = TRUE;
 			}
 		}
 
 		$q = substr($q, 0, -1);
 
-		if ($q == '')
-				return '';
-
+		if ($tags == FALSE)
+		{
+			return '';
+		}
 
 		$sql = "SELECT ".$q." FROM exp_channels ";
 
@@ -4777,7 +4785,8 @@ class Channel {
 			return '';
 		}
 
-		$cond_vars = $query->row_array();
+		// We add in the channel_encoding
+		$cond_vars = array_merge($query->row_array(), array('channel_encoding' => $charset));
 		
 		$this->EE->TMPL->tagdata = $this->EE->functions->prep_conditionals($this->EE->TMPL->tagdata, $cond_vars);
 
@@ -4785,6 +4794,8 @@ class Channel {
 		{
 			$this->EE->TMPL->tagdata = str_replace(LD.$key.RD, $val, $this->EE->TMPL->tagdata);
 		}
+		
+		$this->EE->TMPL->tagdata = str_replace(LD.'channel_encoding'.RD, $charset, $this->EE->TMPL->tagdata);
 
 		return $this->EE->TMPL->tagdata;
 	}
