@@ -4,64 +4,64 @@ $lang = array(
 
 // Design
 'design_user_message' =>
-"User Message Template",
+'User Message Template',
 
 'design_system_offline' =>
-"System Offline Template",
+'System Offline Template',
 
 'design_email_notification' =>
-"Email Notification Template",
+'Email Notification Template',
 
 'design_member_profile_templates' =>
-"Member Profile Template",
+'Member Profile Template',
 
 // Members
 'member_register_member' =>
-"Register Member",
+'Register Member',
 
 'member_validation' =>
-"Member Validation",
+'Member Validation',
 
 'member_view_members' =>
-"View Members",
+'View Members',
 
 'member_ip_search' =>
-"Member IP Search",
+'Member IP Search',
 
 'member_custom_profile_fields' =>
-"Custom Member Fields",
+'Custom Member Fields',
 
 'member_group_manager' =>
-"Member Group Manager",
+'Member Group Manager',
 
 'member_config' =>
-"Member Configuration",
+'Member Configuration',
 
 'member_banning' =>
-"Member Banning",
+'Member Banning',
 
 'member_search' =>
-"Member Search",
+'Member Search',
 
 // Tools_data
 'data_sql_manager' =>
-"Sql Manager",
+'Sql Manager',
 
 'data_search_and_replace' =>
-"Search and Replace",
+'Search and Replace',
 
 'data_recount_stats' =>
-"Recount Stats",
+'Recount Stats',
 
 'data_php_info' =>
-"PHP Info",
+'PHP Info',
 
 'data_clear_caching' =>
-"Clear Caching",
+'Clear Caching',
 
 // Content_files
 'file_index' =>
-"File Manager",
+'File Manager',
 
 // Tools_logs
 'logs_view_cp_log' =>
@@ -78,16 +78,16 @@ $lang = array(
 
 // Tools_utilities
 'util_member_import' =>
-"Member Import",
+'Member Import',
 
 'util_import_from_mt' =>
-"Import From MT",
+'Import From MT',
 
 'util_import_from_xml' =>
-"Import From XML",
+'Import From XML',
 
 'util_translation_tool' =>
-"Translation Utility",
+'Translation Utility',
 
 ''=>''
 );

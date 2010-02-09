@@ -7,31 +7,31 @@ $lang = array(
 //----------------------------
 
 'spell_check' =>
-"Spell Check",
+'Spell Check',
 
 'check_spelling' =>
-"Check Spelling",
+'Check Spelling',
 
-"save_spellcheck" =>
-"Save Changes",
+'save_spellcheck' =>
+'Save Changes',
 
-"revert_spellcheck" =>
-"Revert to Original",
+'revert_spellcheck' =>
+'Revert to Original',
 
 'spell_save_edit' =>
-"Save Edit",
+'Save Edit',
 
 'spell_edit_word' =>
-"Edit Word",
+'Edit Word',
 
 'unsupported_browser' =>
-"Unsupported Browser",
+'Unsupported Browser',
 
 'no_spelling_errors' =>
-"No Errors Found",
+'No Errors Found',
 
 'spellcheck_in_progress' =>
-"Check In Progress...",
+'Check In Progress...',
 
 
 ''=>''

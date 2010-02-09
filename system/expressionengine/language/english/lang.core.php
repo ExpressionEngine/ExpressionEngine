@@ -6,47 +6,47 @@ $lang = array(
 // General word list
 //----------------------------
 
-"no" =>
-"No",
+'no' =>
+'No',
 
-"yes" =>
-"Yes",
+'yes' =>
+'Yes',
 
-"on" => 
-"on",
+'on' => 
+'on',
 
-"off" => 
-"off",
+'off' => 
+'off',
 
-"first" =>
-"First",
+'first' =>
+'First',
 
-"last" =>
-"Last",
+'last' =>
+'Last',
 
-"enabled" => 
-"enabled",
+'enabled' => 
+'enabled',
 
-"disabled" => 
-"disabled",
+'disabled' => 
+'disabled',
 
-"back" => 
-"Back",
+'back' => 
+'Back',
 
-"submit" =>
-"Submit",
+'submit' =>
+'Submit',
 
-"update" =>
-"Update",
+'update' =>
+'Update',
 
-"thank_you" =>
-"Thank You!",
+'thank_you' =>
+'Thank You!',
 
-"page" =>
-"Page",
+'page' =>
+'Page',
 
-"of" =>
-"of",
+'of' =>
+'of',
 
 'by' =>
 'by',
@@ -61,22 +61,22 @@ $lang = array(
 '(JavaScript must be enabled to view this email address)',
 
 'search' =>
-"Search",
+'Search',
 
-"system_off_msg" => 
-"This site is currently inactive.",
+'system_off_msg' => 
+'This site is currently inactive.',
 
-"not_authorized" => 
-"You are not authorized to perform this action",
+'not_authorized' => 
+'You are not authorized to perform this action',
 
-"auto_redirection" =>
-"You will be redirected automatically in %x seconds",
+'auto_redirection' =>
+'You will be redirected automatically in %x seconds',
 
-"click_if_no_redirect" =>
-"Click here if you are not redirected automatically",
+'click_if_no_redirect' =>
+'Click here if you are not redirected automatically',
 
-"return_to_previous" =>
-"Return to Previous Page",
+'return_to_previous' =>
+'Return to Previous Page',
 
 'not_available' =>
 'Not available',
@@ -91,295 +91,295 @@ $lang = array(
 // Errors
 //----------------------------
 
-"error" =>
-"Error",
+'error' =>
+'Error',
 
-"invalid_url" =>
-"The URL you submitted is not valid.",
+'invalid_url' =>
+'The URL you submitted is not valid.',
 
-"submission_error" =>
-"The form you submitted contained the following errors",
+'submission_error' =>
+'The form you submitted contained the following errors',
 
-"general_error" =>
-"The following errors were encountered",
+'general_error' =>
+'The following errors were encountered',
 
-"invalid_action" => 
-"The action you have requested is invalid.",
+'invalid_action' => 
+'The action you have requested is invalid.',
 
-"captcha_required" =>
-"You must submit the word that appears in the image",
+'captcha_required' =>
+'You must submit the word that appears in the image',
 
-"captcha_incorrect" =>
-"You did not submit the word exactly as it appears in the image",
+'captcha_incorrect' =>
+'You did not submit the word exactly as it appears in the image',
 
-"nonexistent_page" =>
-"The page you requested was not found",
+'nonexistent_page' =>
+'The page you requested was not found',
 
 
 //----------------------------
 // Member Groups
 //----------------------------
 
-"banned" =>
-"Banned",
+'banned' =>
+'Banned',
 
-"guests" =>
-"Guests",
+'guests' =>
+'Guests',
 
-"members" =>
-"Members",
+'members' =>
+'Members',
 
-"pending" =>
-"Pending",
+'pending' =>
+'Pending',
 
-"super_admins" =>
-"Super Admins",
+'super_admins' =>
+'Super Admins',
 
 
 //----------------------------
 // Template.php
 //----------------------------
 
-"error_tag_syntax" => 
-"The following tag has a syntax error:",
+'error_tag_syntax' => 
+'The following tag has a syntax error:',
 
-"error_fix_syntax" => 
-"Please correct the syntax in your template.",
+'error_fix_syntax' => 
+'Please correct the syntax in your template.',
 
-"error_tag_module_processing" =>
-"The following tag cannot be processed:",
+'error_tag_module_processing' =>
+'The following tag cannot be processed:',
 
-"error_fix_module_processing" =>
-"Please check that the '%x' module is installed and that '%y' is an available method of the module",
+'error_fix_module_processing' =>
+'Please check that the \'%x\' module is installed and that \'%y\' is an available method of the module',
 
-"template_loop" =>
-"You have caused a template loop due to improperly nested sub-templates ('%s' recursively called)",
+'template_loop' =>
+'You have caused a template loop due to improperly nested sub-templates (\'%s\' recursively called)',
 
 //----------------------------
 // Email
 //----------------------------
 
-"forgotten_email_sent" => 
-"Instructions for resetting your password have just been emailed to you.",
+'forgotten_email_sent' => 
+'Instructions for resetting your password have just been emailed to you.',
 
-"error_sending_email" => 
-"Unable to send email at this time.",
+'error_sending_email' => 
+'Unable to send email at this time.',
 
-"no_email_found" => 
-"The email address you submitted was not found in the database.",
+'no_email_found' => 
+'The email address you submitted was not found in the database.',
 
-"your_new_login_info" => 
-"Login information",
+'your_new_login_info' => 
+'Login information',
 
-"reset_link" => 
-"To reset your password, please go to the following page:",
+'reset_link' => 
+'To reset your password, please go to the following page:',
 
-"password_will_be_reset" => 
-"Your password will be automatically reset, and a new password will be emailed to you.",
+'password_will_be_reset' => 
+'Your password will be automatically reset, and a new password will be emailed to you.',
 
-"ignore_password_message" => 
-"If you do not wish to reset your password, ignore this message. It will expire in 24 hours.",
+'ignore_password_message' => 
+'If you do not wish to reset your password, ignore this message. It will expire in 24 hours.',
 
-"password_has_been_reset" => 
-"Your password was reset and a new one has been emailed to you.",
+'password_has_been_reset' => 
+'Your password was reset and a new one has been emailed to you.',
 
-"new_login_info" => 
-"Here is your new login information:",
+'new_login_info' => 
+'Here is your new login information:',
 
 
 //----------------------------
 // Date
 //----------------------------
 
-"year" =>
-"year",
+'year' =>
+'year',
 
-"years" =>
-"years",
+'years' =>
+'years',
 
-"month" =>
-"month",
+'month' =>
+'month',
 
-"months" =>
-"months",
+'months' =>
+'months',
 
-"week" =>
-"week",
+'week' =>
+'week',
 
-"weeks" =>
-"weeks",
+'weeks' =>
+'weeks',
 
-"day" =>
-"day",
+'day' =>
+'day',
 
-"days" =>
-"days",
+'days' =>
+'days',
 
-"hour" =>
-"hour",
+'hour' =>
+'hour',
 
-"hours" =>
-"hours",
+'hours' =>
+'hours',
 
-"minute" =>
-"minute",
+'minute' =>
+'minute',
 
-"minutes" =>
-"minutes",
+'minutes' =>
+'minutes',
 
-"second" =>
-"second",
+'second' =>
+'second',
 
-"seconds" =>
-"seconds",
+'seconds' =>
+'seconds',
 
-"am" =>
-"am",
+'am' =>
+'am',
 
-"pm" =>
-"pm",
+'pm' =>
+'pm',
 
-"AM" =>
-"AM",
+'AM' =>
+'AM',
 
-"PM" =>
-"PM",
+'PM' =>
+'PM',
 
-"Sun" => 
-"Sun",
+'Sun' => 
+'Sun',
 
-"Mon" => 
-"Mon",
+'Mon' => 
+'Mon',
 
-"Tue" => 
-"Tue",
+'Tue' => 
+'Tue',
 
-"Wed" => 
-"Wed",
+'Wed' => 
+'Wed',
 
-"Thu" => 
-"Thu",
+'Thu' => 
+'Thu',
 
-"Fri" => 
-"Fri",
+'Fri' => 
+'Fri',
 
-"Sat" => 
-"Sat",
+'Sat' => 
+'Sat',
 
-"Su" =>  
-"S",
+'Su' =>  
+'S',
 
-"Mo" => 
-"M",
+'Mo' => 
+'M',
 
-"Tu" => 
-"T",
+'Tu' => 
+'T',
 
-"We" => 
-"W",
+'We' => 
+'W',
 
-"Th" => 
-"T",
+'Th' => 
+'T',
 
-"Fr" => 
-"F",
+'Fr' => 
+'F',
 
-"Sa" => 
-"S",
+'Sa' => 
+'S',
 
-"Sunday" => 
-"Sunday",
+'Sunday' => 
+'Sunday',
 
-"Monday" => 
-"Monday",
+'Monday' => 
+'Monday',
 
-"Tuesday" => 
-"Tuesday",
+'Tuesday' => 
+'Tuesday',
 
-"Wednesday" => 
-"Wednesday",
+'Wednesday' => 
+'Wednesday',
 
-"Thursday" => 
-"Thursday",
+'Thursday' => 
+'Thursday',
 
-"Friday" => 
-"Friday",
+'Friday' => 
+'Friday',
 
-"Saturday" => 
-"Saturday",
+'Saturday' => 
+'Saturday',
 
 
-"Jan" => 
-"Jan",
+'Jan' => 
+'Jan',
 
-"Feb" => 
-"Feb",
+'Feb' => 
+'Feb',
 
-"Mar" => 
-"Mar",
+'Mar' => 
+'Mar',
 
-"Apr" => 
-"Apr",
+'Apr' => 
+'Apr',
 
-"May" => 
-"May",
+'May' => 
+'May',
 
-"Jun" => 
-"Jun",
+'Jun' => 
+'Jun',
 
-"Jul" => 
-"Jul",
+'Jul' => 
+'Jul',
 
-"Aug" => 
-"Aug",
+'Aug' => 
+'Aug',
 
-"Sep" => 
-"Sep",
+'Sep' => 
+'Sep',
 
-"Oct" => 
-"Oct",
+'Oct' => 
+'Oct',
 
-"Nov" => 
-"Nov",
+'Nov' => 
+'Nov',
 
-"Dec" => 
-"Dec",
+'Dec' => 
+'Dec',
 
-"January" => 
-"January",
+'January' => 
+'January',
 
-"February" => 
-"February",
+'February' => 
+'February',
 
-"March" => 
-"March",
+'March' => 
+'March',
 
-"April" => 
-"April",
+'April' => 
+'April',
 
-"May_l" => 
-"May",
+'May_l' => 
+'May',
 
-"June" => 
-"June",
+'June' => 
+'June',
 
-"July" => 
-"July",
+'July' => 
+'July',
 
-"August" => 
-"August",
+'August' => 
+'August',
 
-"September" => 
-"September",
+'September' => 
+'September',
 
-"October" => 
-"October",
+'October' => 
+'October',
 
-"November" => 
-"November",
+'November' => 
+'November',
 
-"December" => 
-"December",
+'December' => 
+'December',
 
 
 'UM12'		=>	'(UTC -12:00) Baker/Howland Island',

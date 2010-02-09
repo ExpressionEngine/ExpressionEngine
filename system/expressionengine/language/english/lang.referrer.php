@@ -6,96 +6,96 @@ $lang = array(
 // Required for MODULES page
 //----------------------------------------
 
-"referrer_module_name" =>
-"Referrer",
+'referrer_module_name' =>
+'Referrer',
 
-"referrer_module_description" =>
-"Referrer tracking module",
+'referrer_module_description' =>
+'Referrer tracking module',
 
 //----------------------------------------
 
-"referrer_preferences" =>
-"Referrer Preferences",
+'referrer_preferences' =>
+'Referrer Preferences',
 
-"referrer_ip" =>
-"Referrer IP",
+'referrer_ip' =>
+'Referrer IP',
 
-"referrer_date" =>
-"Referrer Date",
+'referrer_date' =>
+'Referrer Date',
 
 'ref_ip' =>
-"IP Address",
+'IP Address',
 
 'ref_user_agent' =>
-"User Agent",
+'User Agent',
 
 'ref_url' =>
-"URL",
+'URL',
 
 'ref_type' =>
-"Type",
+'Type',
 
-"referrers" =>
-"Referrers",
+'referrers' =>
+'Referrers',
 
-"view_referrers" =>
-"View Referrers",
+'view_referrers' =>
+'View Referrers',
 
-"clear_referrers" =>
-"Clear Referrers",
+'clear_referrers' =>
+'Clear Referrers',
 
-"referrer_from" =>
-"Referrer From",
+'referrer_from' =>
+'Referrer From',
 
-"referrer_to" =>
-"Referrer To",
+'referrer_to' =>
+'Referrer To',
 
-"no_referrers" =>
-"There are currently no referrers",
+'no_referrers' =>
+'There are currently no referrers',
 
-"referrer_no_results" =>
-"There are no results matching the criteria you submitted",
+'referrer_no_results' =>
+'There are no results matching the criteria you submitted',
 
-"total_referrers" =>
-"Total Referrers:",
+'total_referrers' =>
+'Total Referrers:',
 
-"save_instructions" =>
-"How many of the most recent referrers do you want to save?",
+'save_instructions' =>
+'How many of the most recent referrers do you want to save?',
 
 // NEW LANGUAGE MEMBERS v.1.3
 
-"referrers_deleted" =>
-"Referrers have been cleared",
+'referrers_deleted' =>
+'Referrers have been cleared',
 
-"referrer_deleted" =>
-"Referrer has been cleared",
+'referrer_deleted' =>
+'Referrer has been cleared',
 
 'delete_confirm' =>
-"Confirm Delete",
+'Confirm Delete',
 
-"referrer_delete_question" =>
-"Are you sure you want to delete the selected referrer(s)?",
+'referrer_delete_question' =>
+'Are you sure you want to delete the selected referrer(s)?',
 
 'blacklist_question' =>
-"In addition to deleting these referrers you can also:",
+'In addition to deleting these referrers you can also:',
 
 'add_urls' =>
-"Delete Other Referrers with same URL?",
+'Delete Other Referrers with same URL?',
 
 'add_and_blacklist_urls' =>
-"Add URLs to Blacklist and Delete Other Referrers with same URL?",
+'Add URLs to Blacklist and Delete Other Referrers with same URL?',
 
 'add_ips' =>
-"Delete Other Referrers with same IP?",
+'Delete Other Referrers with same IP?',
 
 'add_and_blacklist_ips' =>
-"Add IP Addresses to Blacklist and Delete Other Referrers with same IP?",
+'Add IP Addresses to Blacklist and Delete Other Referrers with same IP?',
 
 'add_agents' =>
-"Delete Other Referrers with same User Agent?",
+'Delete Other Referrers with same User Agent?',
 
 'add_and_blacklist_agents' =>
-"Add User Agents to Blacklist and Delete Other Referrers with same User Agent?",
+'Add User Agents to Blacklist and Delete Other Referrers with same User Agent?',
 
 ''=>''
 );

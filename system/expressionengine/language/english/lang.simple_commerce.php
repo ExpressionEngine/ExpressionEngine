@@ -5,66 +5,66 @@ $lang = array(
 /* ----------------------------------------
 /*  Required for MODULES page
 /* ----------------------------------------*/
-"simple_commerce_module_name" =>
-"Simple Commerce",
+'simple_commerce_module_name' =>
+'Simple Commerce',
 
-"simple_commerce_module_description" =>
-"Simple, Flexible Commerce Module",
+'simple_commerce_module_description' =>
+'Simple, Flexible Commerce Module',
 
 /*----------------------------------------*/
 'simple_commerce_home' =>
-"Control Panel",
+'Control Panel',
 
 'subscription_frequency' =>
-"Subscription Frequency",
+'Subscription Frequency',
 
 'subscription_frequency_unit' =>
-"Subscription Frequency Unit",
+'Subscription Frequency Unit',
 
 'invalid_subscription_frequency' =>
-"Invalid Subscription Frequency",
+'Invalid Subscription Frequency',
 
 'recurs_every' =>
-"Recurs every",
+'Recurs every',
 
 'days' =>
-"Days",
+'Days',
 
 'screen_name' =>
 'Screen name',
 
 'weeks' =>
-"Weeks",
+'Weeks',
 
 'months' =>
-"Months",
+'Months',
 
 'years' =>
-"Years",
+'Years',
 
 'day' =>
-"Day",
+'Day',
 
 'week' =>
-"Week",
+'Week',
 
 'month' =>
-"Month",
+'Month',
 
 'year' =>
-"Year",
+'Year',
 
 'ipn_url' =>
-"Instant Payment Notification (IPN) URL",
+'Instant Payment Notification (IPN) URL',
 
 'ipn_details' =>
-"Instant Payment Notification is a PayPal service that allows the processing of
+'Instant Payment Notification is a PayPal service that allows the processing of
 transactions on their site and then notifying ExpressionEngine when the transaction is complete
 and accepted.  This allows purchases to not be stored and recorded in the Simple Commerce module
-until the transaction is finalized.  ExpressionEngine's Simple Commerce module automates all of this
+until the transaction is finalized.  ExpressionEngine\'s Simple Commerce module automates all of this
 behind the scenes so all you have to do is activate Instant Payment Notification on the PayPal site
 and provide them with the URL below.<br /><br />
-For more details:  https://www.paypal.com/IntegrationCenter/ic_ipn.html",
+For more details:  https://www.paypal.com/IntegrationCenter/ic_ipn.html',
 
 'items' =>
 'Items',
@@ -76,10 +76,10 @@ For more details:  https://www.paypal.com/IntegrationCenter/ic_ipn.html",
 'Email Templates',
 
 'store_items' =>
-"Store Items",
+'Store Items',
 
 'add_item' =>
-"Add Item",
+'Add Item',
 
 'item_added' =>
 'Items Added',
@@ -95,284 +95,284 @@ For more details:  https://www.paypal.com/IntegrationCenter/ic_ipn.html",
 'Subscription End Date',
 
 'add_items' =>
-"Add Items",
+'Add Items',
 
 'edit_items' =>
-"Edit Items",
+'Edit Items',
 
 'export_items' =>
-"Export Items",
+'Export Items',
 
 'store_purchases' =>
-"Store Purchases",
+'Store Purchases',
 
 'edit_purchases' =>
-"Edit Purchases",
+'Edit Purchases',
 
 'add_purchase' =>
-"Add Purchase",
+'Add Purchase',
 
 'export_purchases' =>
-"Export Purchases",
+'Export Purchases',
 
 'choose_entry_for_item' =>
-"Choose Entry for Store Item",
+'Choose Entry for Store Item',
 
 'invalid_entries' =>
-"No Valid Entries",
+'No Valid Entries',
 
 'invalid_emails' =>
-"No Valid Emails",
+'No Valid Emails',
 
 'invalid_purchases' =>
-"No Valid Purchases",
+'No Valid Purchases',
 
 'use_sale_price' => 
-"Use Sale Price?",
+'Use Sale Price?',
 
 'entry_title' =>
-"Entry Title",
+'Entry Title',
 
 'update_item' =>
-"Update Item",
+'Update Item',
 
 'update_items' =>
-"Update Items",
+'Update Items',
 
 'sale_price' =>
-"Sale Price",
+'Sale Price',
 
 'regular_price' =>
-"Regular Price",
+'Regular Price',
 
 'item_enabled' =>
-"Item Enabled",
+'Item Enabled',
 
 'purchase_actions' =>
-"Purchase Actions",
+'Purchase Actions',
 
 'store_emails' =>
-"Store Emails",
+'Store Emails',
 
 'add_email_template' =>
-"Add Email Template",
+'Add Email Template',
 
 'edit_email_templates' =>
-"Edit Email Templates",
+'Edit Email Templates',
 
 'sales_information' =>
-"Sales Information",
+'Sales Information',
 
 'no_email_templates' =>
-"No Email Templates",
+'No Email Templates',
 
 'no_purchases' =>
-"No Purchases",
+'No Purchases',
 
 'perform_item_actions' =>
-"Perform Actions for Item?",
+'Perform Actions for Item?',
 
 'email_name' =>
-"Email Template Name",
+'Email Template Name',
 
 'edit_emails' =>
-"Edit Emails",
+'Edit Emails',
 
 'monthly_sales' =>
-"Monthly Sales",
+'Monthly Sales',
 
 'customer_email' =>
-"Customer Email Template",
+'Customer Email Template',
 
 'on_subscribe' =>
-"On Subscribe",
+'On Subscribe',
 
 'on_unsubscribe' =>
-"On Unsubscribe",
+'On Unsubscribe',
 
 'customer_email_subscribe' =>
-"Customer Email Subscribe Template",
+'Customer Email Subscribe Template',
 
 'customer_email_unsubscribe' =>
-"Customer Email Unsubscribe Template",
+'Customer Email Unsubscribe Template',
 
 'admin_email_address' =>
-"Admin Email Address",
+'Admin Email Address',
 
 'invalid_price' =>
-"Invalid Price!",
+'Invalid Price!',
 
 'select_admin_template' =>
-"Must Select Admin Email Template if Email Address is Filled Out",
+'Must Select Admin Email Template if Email Address is Filled Out',
 
 'admin_email_template' =>
-"Admin Email Template",
+'Admin Email Template',
 
 'member_group' =>
-"New Member Group",
+'New Member Group',
 
 'admin_email_template_unsubscribe' =>
-"Admin Email Unsubscribe Template",
+'Admin Email Unsubscribe Template',
 
 'member_group_subscribe' =>
-"Subscribe Member Group",
+'Subscribe Member Group',
 
 'member_group_unsubscribe' =>
-"Unsubscribe Member Group",
+'Unsubscribe Member Group',
 
 
 'send_no_email' =>
-"Do Not Send Email",
+'Do Not Send Email',
 
 'no_change' =>
-"No Change",
+'No Change',
 
 'no_store_items' =>
-"No Store Items",
+'No Store Items',
 
 'item_purchases' =>
-"Purchases",
+'Purchases',
 
-"updated" =>
-"Updated",
+'updated' =>
+'Updated',
 
 'choose_item' =>
-"Choose Item",
+'Choose Item',
 
 'invalid_emails' =>
-"Invalid Emails",
+'Invalid Emails',
 
 'invalid_purchases' =>
-"Invalid Purchases",
+'Invalid Purchases',
 
 'fields_left_blank' =>
-"You Left Some Required Fields Blank",
+'You Left Some Required Fields Blank',
 
 'add_emails' =>
-"Add Email Templates",
+'Add Email Templates',
 
 'add_email' =>
-"Add Email Template",
+'Add Email Template',
 
 'update_email' =>
-"Update Email Template",
+'Update Email Template',
 
 'update_purchase' =>
-"Update Purchase",
+'Update Purchase',
 
 'update_emails' =>
-"Update Email Templates",
+'Update Email Templates',
 
 'update_purchases' =>
-"Update Purchases",
+'Update Purchases',
 
 'purchases_deleted' =>
-"Purchases Deleted",
+'Purchases Deleted',
 
 'email_instructions' =>
-"Email Instructions",
+'Email Instructions',
 
 'email_name' =>
-"Email Template Name",
+'Email Template Name',
 
 'email_subject' =>
-"Email Subject",
+'Email Subject',
 
 'email_body' =>
-"Email Body",
+'Email Body',
 
 'add_email_instructions' =>
-"When the purchase of an item is confirmed, an email can be sent out to one or many email addresses for that item.  These emails can contain certain variables sent back from PayPal, which are as follows: ",
+'When the purchase of an item is confirmed, an email can be sent out to one or many email addresses for that item.  These emails can contain certain variables sent back from PayPal, which are as follows: ',
 
 'edit_selected' =>
-"Edit Selected",
+'Edit Selected',
 
 'delete_selected' =>
-"Delete Selected",
+'Delete Selected',
 
 'delete_items_confirm' =>
-"Delete Items Confirmation",
+'Delete Items Confirmation',
 
 'items_deleted' =>
-"Items Deleted",
+'Items Deleted',
 
 'delete_emails_confirm' =>
-"Delete Emails Confirmation",
+'Delete Emails Confirmation',
 
 'delete_purchases_confirm' =>
-"Delete Purchases Confirmation",
+'Delete Purchases Confirmation',
 
 'emails_deleted' =>
-"Email Templates Deleted!",
+'Email Templates Deleted!',
 
 'member_not_found' =>
-"Member Not Found",
+'Member Not Found',
 
 'purchaser_screen_name' =>
-"Purchaser's Screen Name",
+'Purchaser\'s Screen Name',
 
 'txn_id' =>
-"Purchase Identification Number (TXN ID)",
+'Purchase Identification Number (TXN ID)',
 
 'date_purchased' =>
-"Date Purchased",
+'Date Purchased',
 
 'subscription_end_date' =>
-"Subscription End Date",
+'Subscription End Date',
 
 'subscription_end_date_subtext' =>
-"Enter '0' for no subscription end",
+'Enter \'0\' for no subscription end',
 
 'item_purchased' =>
-"Item Purchased",
+'Item Purchased',
 
 'item_cost' =>
-"Item Cost",
+'Item Cost',
 
 'choose_item' =>
-"Choose Item",
+'Choose Item',
 
 'invalid_date_formatting' =>
-"Invalid Date Formatting",
+'Invalid Date Formatting',
 
 'invalid_amount' =>
-"Invalid Monetary Amount",
+'Invalid Monetary Amount',
 
 'encryption' =>
-"Encryption",
+'Encryption',
 
 'encrypt_buttons_links' =>
-"Encrypt PayPal Buttons and Links?",
+'Encrypt PayPal Buttons and Links?',
 
 'public_certificate' =>
-"Public Certificate Path",
+'Public Certificate Path',
 
 'certificate_id' =>
-"ID Given to Public Certificate by PayPal",
+'ID Given to Public Certificate by PayPal',
 
 'private_key' =>
-"Private Key Path",
+'Private Key Path',
 
 'paypal_certificate' =>
-"PayPal Certificate Path",
+'PayPal Certificate Path',
 
 'temp_path' =>
-"Temporary Encrypted Files Path",
+'Temporary Encrypted Files Path',
 
 'settings' =>
-"Settings",
+'Settings',
 
 'settings_updated' =>
-"Settings Updated",
+'Settings Updated',
 
 'file_does_not_exist' =>
-"File Does Not Exist for '%pref%'.  Make sure to use a full server path.",
+'File Does Not Exist for \'%pref%\'.  Make sure to use a full server path.',
 
 'temporary_directory_unwritable' =>
-"The Directory specified for writing the temporary files is not writable.",
+'The Directory specified for writing the temporary files is not writable.',
 
 'paypal_account' =>
-"PayPal Account",
+'PayPal Account',
 
 
 

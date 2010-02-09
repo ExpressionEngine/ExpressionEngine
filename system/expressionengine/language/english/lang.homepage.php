@@ -6,22 +6,22 @@ $lang = array(
 // Home page
 //----------------------------
 
-"install_lock_warning" =>
-"Warning: Your installation folder is still on your server.",
+'install_lock_warning' =>
+'Warning: Your installation folder is still on your server.',
 
-"install_lock_removal" =>
-"For security purposes, please remove the folder called <strong>installer</strong> from your server using your FTP program.",
+'install_lock_removal' =>
+'For security purposes, please remove the folder called <strong>installer</strong> from your server using your FTP program.',
 
-"checksum_changed_warning" =>
-"One or more core files have been altered:",
+'checksum_changed_warning' =>
+'One or more core files have been altered:',
 
-"checksum_changed_accept" =>
-"Accept Changes",
+'checksum_changed_accept' =>
+'Accept Changes',
 
-"checksum_email_subject" =>
-"A core file was modified on your site.",
+'checksum_email_subject' =>
+'A core file was modified on your site.',
 
-"checksum_email_message" => "ExpressionEngine has detected the modification of a core file on: {url}
+'checksum_email_message' => 'ExpressionEngine has detected the modification of a core file on: {url}
 
 The following files are affected:
 {changed}
@@ -30,143 +30,143 @@ If you made these changes, please accept the modifications on the control panel 
 http://expressionengine.com/forums/viewcategory/4/
 
 Please review the support policy before posting to the forums:
-http://expressionengine.com/support/policy/",
+http://expressionengine.com/support/policy/',
 
 'new_version_notice' =>
-"ExpressionEngine version %s is now available.\n
-Download <a href=\"%s\" title=\"Download Here\">here</a> and follow the <a href=\"%s\" title=\"Version Update Docs\">Version Update Docs</a>.",
+'ExpressionEngine version %s is now available.\n
+Download <a href=\'%s\' title=\'Download Here\'>here</a> and follow the <a href=\'%s\' title=\'Version Update Docs\'>Version Update Docs</a>.',
 
 'new_version_error' =>
-'An unexpected error occurred attempting to download the current ExpressionEngine version number.  Please visit your <a href="%s" title="download account">Download Account</a> to verify you are on the current version.  If this error persists, please contact your system administrator',
+'An unexpected error occurred attempting to download the current ExpressionEngine version number.  Please visit your <a href=\'%s\' title=\'download account\'>Download Account</a> to verify you are on the current version.  If this error persists, please contact your system administrator',
 
 'important_messages' =>
 'Notice',
 
-"cp_home" =>
-"My Home Page",
+'cp_home' =>
+'My Home Page',
 
-"current_user" => 
-"Current User:",
+'current_user' => 
+'Current User:',
 
-"system_status" =>
-"System Status",
+'system_status' =>
+'System Status',
 
-"offline" =>
-"Offline",
+'offline' =>
+'Offline',
 
-"online" =>
-"Online",
+'online' =>
+'Online',
 
-"member_search" =>
-"Member Search",
+'member_search' =>
+'Member Search',
 
-"search_instructions" =>
-"Submit full or partial words",
+'search_instructions' =>
+'Submit full or partial words',
 
-"member_group" =>
-"Member Group",
+'member_group' =>
+'Member Group',
 
-"search_by" =>
-"Search Field",
+'search_by' =>
+'Search Field',
 
-"screen_name" =>
-"Screen Name",
+'screen_name' =>
+'Screen Name',
 
-"email_address" =>
-"Email Address",
+'email_address' =>
+'Email Address',
 
-"url" =>
-"URL",
+'url' =>
+'URL',
 
-"site_statistics" =>
-"Site Statistics",
+'site_statistics' =>
+'Site Statistics',
 
-"value" =>
-"Value",
+'value' =>
+'Value',
 
-"total_members" =>
-"Total Members",
+'total_members' =>
+'Total Members',
 
-"total_validating_members" =>
-"Members Awaiting Activation",
+'total_validating_members' =>
+'Members Awaiting Activation',
 
-"total_validating_comments" =>
-"Comments Awaiting Validation",
+'total_validating_comments' =>
+'Comments Awaiting Validation',
 
-"total_entries" =>
-"Total Channel Entries",
+'total_entries' =>
+'Total Channel Entries',
 
-"total_comments" =>
-"Total Comments",
+'total_comments' =>
+'Total Comments',
 
-"most_recent_entries" =>
-"Most Recent Channel Entries",
+'most_recent_entries' =>
+'Most Recent Channel Entries',
 
-"most_recent_comments" =>
-"Most Recent Comments",
+'most_recent_comments' =>
+'Most Recent Comments',
 
-"no_comments" =>
-"There are currently no comments",
+'no_comments' =>
+'There are currently no comments',
 
-"no_entries" =>
-"There are currently no channel entries",
+'no_entries' =>
+'There are currently no channel entries',
 
-"entry_title" =>
-"Channel Entry Title",
+'entry_title' =>
+'Channel Entry Title',
 
-"comments" =>
-"Comments",
+'comments' =>
+'Comments',
 
 'no_channels_exist' =>
 'There are currently no channels',
 
 'no_templates_available' =>
-"No Template Groups exist.  <a href='%s' title='Create a template group'>Create a Template Group</a>",
+'No Template Groups exist.  <a href=\'%s\' title=\'Create a template group\'>Create a Template Group</a>',
 
-"select_channel_to_post_in" => 
-"Choose a channel to post in",
+'select_channel_to_post_in' => 
+'Choose a channel to post in',
 
-"recent_members" =>
-"Most Recent New Members",
+'recent_members' =>
+'Most Recent New Members',
 
-"join_date" =>
-"Join Date",
+'join_date' =>
+'Join Date',
 
-"total_hits" =>
-"Total Combined Page Hits",
+'total_hits' =>
+'Total Combined Page Hits',
 
-"demo_expiration" =>
-"Your demo account will expire in:",
+'demo_expiration' =>
+'Your demo account will expire in:',
 
 'bulletin_board' =>
-"Bulletin Board",
+'Bulletin Board',
 
 'no_bulletins' =>
-"No Bulletins",
+'No Bulletins',
 
 'bulletin_sender' =>
-"Bulletin Sender",
+'Bulletin Sender',
 
 'bulletin_date' =>
-"Bulletin Date",
+'Bulletin Date',
 
 'exact_match' =>
-"Exact Match",
+'Exact Match',
 
 'pmachine_news_feed' =>
 'EllisLab News Feed',
 
 'no_news' =>
-"No News Available",
+'No News Available',
 
 'more_news' =>
-"More News...",
+'More News...',
 
-"site_status" =>
-"Site Status",
+'site_status' =>
+'Site Status',
 
-"close" =>
-"Close",
+'close' =>
+'Close',
 
 ''=>''
 );

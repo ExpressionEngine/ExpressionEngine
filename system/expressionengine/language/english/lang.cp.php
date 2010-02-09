@@ -11,166 +11,166 @@ $lang = array(
 // Main Menu
 //----------------------------
 
-"nav_content"	   				=> "Content",
-"nav_publish"	   				=> "Publish",
-"nav_edit"						=> "Edit",
-"nav_files"	   					=> "File Manager",
+'nav_content'	   				=> 'Content',
+'nav_publish'	   				=> 'Publish',
+'nav_edit'						=> 'Edit',
+'nav_files'	   					=> 'File Manager',
 
 'nav_files_short_desc'			=> 'Upload, edit, and delete Files',
 'nav_edit_short_desc'			=> 'Edit Entries',
 
-"nav_design"	   				=> "Design",
-	"nav_create_group"				=> "Create Group",
-	"nav_create_template"			=> "Create Template",
-"nav_templates"					=> "Templates",
-	'nav_edit_templates'		 	=> "Edit",
-	'nav_snippets'					=> "Snippets",
+'nav_design'	   				=> 'Design',
+	'nav_create_group'				=> 'Create Group',
+	'nav_create_template'			=> 'Create Template',
+'nav_templates'					=> 'Templates',
+	'nav_edit_templates'		 	=> 'Edit',
+	'nav_snippets'					=> 'Snippets',
 	'nav_snippets_short_desc'	=> 'Create, edit, and delete Snippets for your Templates',
-	'nav_sync_templates'			=> "Synchronize Templates",
-	'nav_sync_templates_short_desc'		=> "Synchronize templates with their associated files.",
-	'nav_global_variables'			=> "Global Variables",
+	'nav_sync_templates'			=> 'Synchronize Templates',
+	'nav_sync_templates_short_desc'		=> 'Synchronize templates with their associated files.',
+	'nav_global_variables'			=> 'Global Variables',
 	'nav_global_variables_short_desc'	=> 'Create, edit, and delete User Defined Global Variables',
-	'nav_template_manager'			=> "Template Manager",
+	'nav_template_manager'			=> 'Template Manager',
 	'nav_template_manager_short_desc'	=> 'Create, edit, delete, and manage Templates and Template Groups',
-	'nav_template_preferences'		=> "Template Preferences",
+	'nav_template_preferences'		=> 'Template Preferences',
 	'nav_template_preferences_short_desc'	=> 'Batch modify Template Preferences',
-	'nav_global_preferences'		=> "Global Preferences",
+	'nav_global_preferences'		=> 'Global Preferences',
 	'nav_global_preferences_short_desc'	=> 'Manage Template handling and preferences',
-"nav_message_pages"				=> "Message Pages",
-	'nav_email_notification'		=> "Email Notifications",
+'nav_message_pages'				=> 'Message Pages',
+	'nav_email_notification'		=> 'Email Notifications',
 	'nav_email_notification_short_desc'	=> 'Edit Email Notification Templates',
-	'nav_user_message'				=> "User Messages",
+	'nav_user_message'				=> 'User Messages',
 	'nav_user_message_short_desc'	=> 'Edit User Message Template',
-	'nav_offline_template'			=> "Offline Template",
+	'nav_offline_template'			=> 'Offline Template',
 	'nav_offline_template_short_desc'	=> 'Edit System Offline Template',
-"nav_themes"					=> "Themes",
-	'nav_wiki_themes'				=> "Wiki",
+'nav_themes'					=> 'Themes',
+	'nav_wiki_themes'				=> 'Wiki',
 	'nav_wiki_themes_short_desc'	=> 'Edit Wiki Themes',
-	'nav_forum_themes'				=> "Forum",
+	'nav_forum_themes'				=> 'Forum',
 	'nav_forum_themes_short_desc'	=> 'Edit Forum Themes',
-	'nav_member_profile_templates'	=> "Member Profile Templates",
+	'nav_member_profile_templates'	=> 'Member Profile Templates',
 	'nav_member_profile_templates_short_desc'	=> 'Edit Member Profile Templates',
 
-"nav_addons"	   	   			=> "Add-Ons",
-"nav_accessories"  	   			=> "Accessories",
+'nav_addons'	   	   			=> 'Add-Ons',
+'nav_accessories'  	   			=> 'Accessories',
 'nav_accessories_short_desc'	=> 'Manage Accessories and Accessory Permissions',
-"nav_extensions"   	   			=> "Extensions",
+'nav_extensions'   	   			=> 'Extensions',
 'nav_extensions_short_desc'	=> 'Manage Extensions',
-"nav_plugins"	   	   			=> "Plugins",
+'nav_plugins'	   	   			=> 'Plugins',
 'nav_plugins_short_desc'	=> 'Install and Remove Plugins.  Review Plugin Usage Docs',
-"nav_modules"	   	   			=> "Modules",
+'nav_modules'	   	   			=> 'Modules',
 'nav_modules_short_desc'	=> 'Manage Module Preferences',
-"nav_fieldtypes"				=> "Fieldtypes",
+'nav_fieldtypes'				=> 'Fieldtypes',
 'nav_fieldtypes_short_desc'	=> 'Manage Fieldtypes and Fieldtypes Preferences.',
 
-"nav_members"	   	   			=> "Members",
-"nav_view_all_members"			=> "View All",
+'nav_members'	   	   			=> 'Members',
+'nav_view_all_members'			=> 'View All',
 'nav_view_all_members_short_desc'	=> 'View All Members',
-"nav_member_groups"				=> "Member Groups",
+'nav_member_groups'				=> 'Member Groups',
 'nav_member_groups_short_desc'	=> 'Create, edit, and delete Member Groups',
-"nav_ip_search"					=> "IP Search",
+'nav_ip_search'					=> 'IP Search',
 'nav_ip_search_short_desc'	=> 'Search for Member by IP Address',
 
-"nav_register_member"			=> "Register Member",
+'nav_register_member'			=> 'Register Member',
 'nav_register_member_short_desc'	=> 'Register a new Member',
-"nav_user_banning"				=> "User Banning",
+'nav_user_banning'				=> 'User Banning',
 'nav_user_banning_short_desc'	=> 'Manage Banning Preferences and Banned Visitors',
-"nav_activate_pending_members"	=> "Activate Pending",
+'nav_activate_pending_members'	=> 'Activate Pending',
 'nav_activate_pending_members_short_desc'	=> 'Moderate Pending Members',
-"nav_custom_member_fields"		=> "Custom Member Fields",
+'nav_custom_member_fields'		=> 'Custom Member Fields',
 'nav_custom_member_fields_short_desc'	=> 'Create, edit, and delete Custom Member Fields',
-"nav_member_config"				=> "Preferences",
+'nav_member_config'				=> 'Preferences',
 'nav_member_config_short_desc'	=> 'Manage Membership Preferences ',
 
-"nav_admin"		   	   			=> "Admin",
+'nav_admin'		   	   			=> 'Admin',
 
-"nav_channel_management"		=> "Channel Administration",
-	"nav_channels"						=> "Channels",
+'nav_channel_management'		=> 'Channel Administration',
+	'nav_channels'						=> 'Channels',
 	'nav_channels_short_desc'	=> 'Create, edit, and delete Channels',
-	"nav_category_management"			=> "Categories",
+	'nav_category_management'			=> 'Categories',
 	'nav_category_management_short_desc'	=> 'Create, edit, and delete Categories',
-	"nav_field_group_management"			=> "Custom Fields",
+	'nav_field_group_management'			=> 'Custom Fields',
 	'nav_field_group_management_short_desc'	=> 'Create, edit, and delete Custom Fields',
-	"nav_status_group_management"		=> "Custom Status Groups",
+	'nav_status_group_management'		=> 'Custom Status Groups',
 	'nav_status_group_management_short_desc'	=> 'Create, edit, and delete  Custom Status Groups',
-	"nav_global_channel_preferences"	=> "Global Preferences",
+	'nav_global_channel_preferences'	=> 'Global Preferences',
 	'nav_global_channel_preferences_short_desc'	=> 'Manage Global Channel Preferences',
 
-"nav_admin_content"				=> "Content Administration",
-	"nav_file_upload_preferences"		=> "File Upload Preferences",
+'nav_admin_content'				=> 'Content Administration',
+	'nav_file_upload_preferences'		=> 'File Upload Preferences',
 	'nav_file_upload_preferences_short_desc'	=> 'Create, edit, and delete File Upload Preferences',
-	"nav_default_ping_servers"			=> "Default Ping Servers",
+	'nav_default_ping_servers'			=> 'Default Ping Servers',
 	'nav_default_ping_servers_short_desc'	=> 'Create, edit, and delete  Default Ping Servers',
-	"nav_default_html_buttons"			=> "Default HTML Buttons",
+	'nav_default_html_buttons'			=> 'Default HTML Buttons',
 	'nav_default_html_buttons_short_desc'	=> 'Create, edit, and delete Default HTML Buttons',
 
-"nav_security_and_privacy"		=> "Security and Privacy",
+'nav_security_and_privacy'		=> 'Security and Privacy',
 
-"nav_admin_system"				=> "System Administration",
-	"nav_general_configuration"			=> "General Configuration",
+'nav_admin_system'				=> 'System Administration',
+	'nav_general_configuration'			=> 'General Configuration',
 	'nav_general_configuration_short_desc'	=> 'Manage General Configuration',
-	"nav_email_configuration"			=> "Email Configuration",
+	'nav_email_configuration'			=> 'Email Configuration',
 	'nav_email_configuration_short_desc'	=> 'Manage Email Configuration',
-	"nav_localization_settings"			=> "Localization Settings",
+	'nav_localization_settings'			=> 'Localization Settings',
 	'nav_localization_settings_short_desc'	=> 'Manage Localization Settings',
-	"nav_database_settings"				=> "Database Settings",
+	'nav_database_settings'				=> 'Database Settings',
 	'nav_database_settings_short_desc'	=> 'Manage Database Settings',
-	"nav_output_debugging_preferences"	=> "Output and Debugging",
+	'nav_output_debugging_preferences'	=> 'Output and Debugging',
 	'nav_output_debugging_preferences_short_desc'	=> 'Manage Output and Debugging',
-	"nav_security_session_preferences"	=> "Security and Sessions",
+	'nav_security_session_preferences'	=> 'Security and Sessions',
 	'nav_security_session_preferences_short_desc'	=> 'Manage Security and Sessions',
-	"nav_captcha_preferences"			=> "CAPTCHA Preferences",
+	'nav_captcha_preferences'			=> 'CAPTCHA Preferences',
 	'nav_captcha_preferences_short_desc'	=> 'Manage CAPTCHA Preferences',
-	"nav_throttling_configuration"		=> "Throttling Preferences",
+	'nav_throttling_configuration'		=> 'Throttling Preferences',
 	'nav_throttling_configuration_short_desc'	=> 'Manage Throttling Preferences',
-	"nav_tracking_preferences"			=> "Tracking Preferences",
+	'nav_tracking_preferences'			=> 'Tracking Preferences',
 	'nav_tracking_preferences_short_desc'	=> 'Manage Tracking Preferences',
-	"nav_cookie_settings"				=> "Cookie Settings",
+	'nav_cookie_settings'				=> 'Cookie Settings',
 	'nav_cookie_settings_short_desc'	=> 'Manage Cookie Settings',
-	"nav_image_resizing_preferences"	=> "Image Resizing Preferences",
+	'nav_image_resizing_preferences'	=> 'Image Resizing Preferences',
 	'nav_image_resizing_preferences_short_desc'	=> 'Manage Image Resizing Preferences',
-	"nav_emoticon_preferences"			=> "Emoticon Preferences",
+	'nav_emoticon_preferences'			=> 'Emoticon Preferences',
 	'nav_emoticon_preferences_short_desc'	=> 'Manage Emoticon Preferences',
-	"nav_word_censoring"				=> "Word Censoring",
+	'nav_word_censoring'				=> 'Word Censoring',
 	'nav_word_censoring_short_desc'	=> 'Manage Word Censoring',
-	"nav_search_log_configuration"		=> "Search Log Configuration",
+	'nav_search_log_configuration'		=> 'Search Log Configuration',
 	'nav_search_log_configuration_short_desc'	=> 'Manage Search Log Configuration',
 
-"nav_tools"		   	   			=> "Tools",
-"nav_tools_communicate"			=> "Communicate",
+'nav_tools'		   	   			=> 'Tools',
+'nav_tools_communicate'			=> 'Communicate',
 'nav_tools_communicate_short_desc'	=> 'Send Emails',
-"nav_tools_utilities"  			=> "Utilities",
-	"nav_translation_tool"			=> "Translation Utility",
+'nav_tools_utilities'  			=> 'Utilities',
+	'nav_translation_tool'			=> 'Translation Utility',
 	'nav_translation_tool_short_desc'	=> 'Translation Utility',
-	"nav_import_utilities"			=> "Import Utilities",
+	'nav_import_utilities'			=> 'Import Utilities',
 	'nav_import_utilities_short_desc'	=> 'Import Content',
-	"nav_php_info"					=> "PHP Info",
+	'nav_php_info'					=> 'PHP Info',
 	'nav_php_info_short_desc'	=> 'Detailed PHP Information',
-	"nav_config_editor"				=> "Config File Editor",
+	'nav_config_editor'				=> 'Config File Editor',
 	'nav_config_editor_short_desc'	=> 'Configuration File Editor',
 
-"nav_tools_data"	   			=> "Data",
-	"nav_sql_manager"				=> "SQL Manager",
+'nav_tools_data'	   			=> 'Data',
+	'nav_sql_manager'				=> 'SQL Manager',
 	'nav_sql_manager_short_desc'	=> 'Database Management Utility',
-	"nav_clear_caching"				=> "Clear Caching",
+	'nav_clear_caching'				=> 'Clear Caching',
 	'nav_clear_caching_short_desc'	=> 'Clear Cached Data',
-	"nav_search_and_replace"		=> "Search and Replace",
+	'nav_search_and_replace'		=> 'Search and Replace',
 	'nav_search_and_replace_short_desc'	=> 'Search and Replace',
-	"nav_recount_stats"				=> "Recount Statistics",
+	'nav_recount_stats'				=> 'Recount Statistics',
 	'nav_recount_stats_short_desc'	=> 'Recount and Resync Statistics',
 
-"nav_tools_logs"	   			=> "Logs",
-	"nav_view_cp_log"				=> "Control Panel Log",
+'nav_tools_logs'	   			=> 'Logs',
+	'nav_view_cp_log'				=> 'Control Panel Log',
 	'nav_view_cp_log_short_desc'	=> 'View and clear the Control Panel Log',
-	"nav_view_search_log"			=> "Search Log",
+	'nav_view_search_log'			=> 'Search Log',
 	'nav_view_search_log_short_desc'	=> 'View and clear the Search Log',
-	"nav_view_throttle_log"			=> "Throttle Log",
+	'nav_view_throttle_log'			=> 'Throttle Log',
 	'nav_view_throttle_log_short_desc'	=> 'View and clear the Throttle Log',
-	"nav_view_email_log"			=> "Email Console Log",
+	'nav_view_email_log'			=> 'Email Console Log',
 	'nav_view_email_log_short_desc'	=> 'View and clear the Email Log',
 
-"nav_help"			   			=> "Help",
-"nav_overview"					=> "Overview",
+'nav_help'			   			=> 'Help',
+'nav_overview'					=> 'Overview',
 
 'nav_add_tab'					=> 'Add',
 
@@ -181,208 +181,208 @@ $lang = array(
 'session_expiring' =>
 'Your Session has expired.  Please log back in to avoid data loss',
 
-"loading" =>
-"Loading",
+'loading' =>
+'Loading',
 
-"show_hide" =>
-"Show/Hide All",
+'show_hide' =>
+'Show/Hide All',
 
-"new_tab" =>
-"New Tab",
+'new_tab' =>
+'New Tab',
 
-"new_version_available" =>
-"ExpressionEngine Version %s is now available",
+'new_version_available' =>
+'ExpressionEngine Version %s is now available',
 
-"consult_user_guide" =>
-"Consult User Guide",
+'consult_user_guide' =>
+'Consult User Guide',
 
-"powered_by" =>
-"Powered By",
+'powered_by' =>
+'Powered By',
 
-"control_panel" => 
-"Control Panel",
+'control_panel' => 
+'Control Panel',
 
-"main_menu" => 
-"CP Home",
+'main_menu' => 
+'CP Home',
 
-"username" => 
-"Username",
+'username' => 
+'Username',
 
-"password" => 
-"Password",
+'password' => 
+'Password',
 
 'logged_back_in'	=>
 'You are now logged back in!',
 
-"my_account" => 
-"My Account",
+'my_account' => 
+'My Account',
 
-"myaccount" => 
-"My Account",
+'myaccount' => 
+'My Account',
 
-"user_account" => 
-"Member Account",
+'user_account' => 
+'Member Account',
 
-"user_guide" => 
-"User Guide",
+'user_guide' => 
+'User Guide',
 
-"logout_confirm" =>
-"Are you sure you want to log-out?",
+'logout_confirm' =>
+'Are you sure you want to log-out?',
 
-"logout" => 
-"Log-out",
+'logout' => 
+'Log-out',
 
-"login" => 
-"Log-in",
+'login' => 
+'Log-in',
 
-"copyright" => 
-"Copyright",
+'copyright' => 
+'Copyright',
 
-"rights_reserved" => 
-"All Rights Reserved",
+'rights_reserved' => 
+'All Rights Reserved',
 
-"page_rendered" => 
-"Script executed in %x seconds",
+'page_rendered' => 
+'Script executed in %x seconds',
 
-"queries_executed" => 
-"%x SQL queries used",
+'queries_executed' => 
+'%x SQL queries used',
 
-"build" =>
-"Build:",
+'build' =>
+'Build:',
 
-"forgot_password" =>
-"Forgot your password?",
+'forgot_password' =>
+'Forgot your password?',
 
-"e_no_css" => 
-"The requested CSS file could not be opened.",
+'e_no_css' => 
+'The requested CSS file could not be opened.',
 
-"unauthorized" => 
-"Unauthorized",
+'unauthorized' => 
+'Unauthorized',
 
-"unauthorized_access" => 
-"You are not authorized to access this page",
+'unauthorized_access' => 
+'You are not authorized to access this page',
 
-"be_careful" =>
-"BE CAREFUL!",
+'be_careful' =>
+'BE CAREFUL!',
 
-"action_can_not_be_undone" =>
-"THIS ACTION CAN NOT BE UNDONE",
+'action_can_not_be_undone' =>
+'THIS ACTION CAN NOT BE UNDONE',
 
-"captcha_explanation" =>
-"A CAPTCHA is an image containing a security code that users have to submit.  Please consult the user guide for more info.",
+'captcha_explanation' =>
+'A CAPTCHA is an image containing a security code that users have to submit.  Please consult the user guide for more info.',
 
-"back" =>
-"Back",
+'back' =>
+'Back',
 
-"no" =>
-"No",
+'no' =>
+'No',
 
-"yes" =>
-"Yes",
+'yes' =>
+'Yes',
 
-"all" =>
-"All",
+'all' =>
+'All',
 
-"any" =>
-"Any",
+'any' =>
+'Any',
 
 'mobile_not_supported' => 
 'This feature is not supported in the mobile browser',
 
-"required_fields" =>
-"Indicates required fields",
+'required_fields' =>
+'Indicates required fields',
 
-"please_consult_manual" => 
-"Please consult the user guide.",
+'please_consult_manual' => 
+'Please consult the user guide.',
 
-"login" => 
-"Login",
+'login' => 
+'Login',
 
-"forgotten_password" => 
-"Forgotten password",
+'forgotten_password' => 
+'Forgotten password',
 
-"submit_email_address" => 
-"Submit your email address",
+'submit_email_address' => 
+'Submit your email address',
 
-"click_to_edit" =>
-"Click to Edit",
+'click_to_edit' =>
+'Click to Edit',
 
-"notepad" =>
-"Notepad",
+'notepad' =>
+'Notepad',
 
-"notepad_no_content" =>
-"No Notepad Entry. Click to create one.",
+'notepad_no_content' =>
+'No Notepad Entry. Click to create one.',
 
 'edit_quicklinks' =>
-"Edit Quick Links",
+'Edit Quick Links',
 
-"quick_links" =>
-"Quick Links",
+'quick_links' =>
+'Quick Links',
 
-"quicklinks_manager" =>
-"Quick Links Manager",
+'quicklinks_manager' =>
+'Quick Links Manager',
 
 'hide_sidebar' =>
-"hide sidebar",
+'hide sidebar',
 
 'reveal_sidebar' =>
-"reveal sidebar",
+'reveal sidebar',
 
 //----------------------------
 // Buttons
 //----------------------------
 
-"submit" => 
-"Submit",
+'submit' => 
+'Submit',
 
-"preview" => 
-"Preview",
+'preview' => 
+'Preview',
 
-"update" => 
-"Update",
+'update' => 
+'Update',
 
-"edit" => 
-"Edit",
+'edit' => 
+'Edit',
 
-"delete" => 
-"Delete",
+'delete' => 
+'Delete',
 
-"save_changes" => 
-"Save changes",
+'save_changes' => 
+'Save changes',
 
-"save" =>
-"Save",
+'save' =>
+'Save',
 
-"cancel" =>
-"Cancel",
+'cancel' =>
+'Cancel',
 
 //----------------------------
 // Log
 //----------------------------
 
-"clear_logs" =>
-"Clear Log Files",
+'clear_logs' =>
+'Clear Log Files',
 
-"member_id" =>
-"Member ID",
+'member_id' =>
+'Member ID',
 
-"ip_address" =>
-"IP Address",
+'ip_address' =>
+'IP Address',
 
-"date" =>
-"Date",
+'date' =>
+'Date',
 
-"action" =>
-"Action",
+'action' =>
+'Action',
 
-"member_logged_in" =>
-"Logged in",
+'member_logged_in' =>
+'Logged in',
 
-"member_logged_out" =>
-"Logged out",
+'member_logged_out' =>
+'Logged out',
 
-"cleared_logs" =>
-"Cleared Log Files",
+'cleared_logs' =>
+'Cleared Log Files',
 
 'close' =>
 'Close',
@@ -395,29 +395,29 @@ $lang = array(
 // they seemed elements that would get re-used, or potentially re-used across the site, so 
 // I've opted for here for now.  If you have another opinion... just move em.  DA
 
-'create' 						=> 	"Create",
-'create_and_edit'				=> 	"Create and Edit",
-'modify' 						=>	"Modify",
-'or_delete' 					=>	"or delete",
-'view' 							=>	"View",
-'switch'						=>	"Switch",
+'create' 						=> 	'Create',
+'create_and_edit'				=> 	'Create and Edit',
+'modify' 						=>	'Modify',
+'or_delete' 					=>	'or delete',
+'view' 							=>	'View',
+'switch'						=>	'Switch',
 
-'entry' 						=>	"Entry",
-'template' 						=>	"Template",
-'template_group'				=>	"Template Group",
-'page' 							=>	"Page",
-'channel' 						=>	"Channel",
-'site' 							=>	"Site",
+'entry' 						=>	'Entry',
+'template' 						=>	'Template',
+'template_group'				=>	'Template Group',
+'page' 							=>	'Page',
+'channel' 						=>	'Channel',
+'site' 							=>	'Site',
 
-'most_recent_entry' 			=>	"Most recent Entry",
-'most_recent_edited_entry' 		=>	"Most recently edited Entry",
-'most_recent_comment' 			=>	"Most recent Comment",
-'most_recent_edited_template' 	=>	"Most recently edited Template",
+'most_recent_entry' 			=>	'Most recent Entry',
+'most_recent_edited_entry' 		=>	'Most recently edited Entry',
+'most_recent_comment' 			=>	'Most recent Comment',
+'most_recent_edited_template' 	=>	'Most recently edited Template',
 
-'recent_entries' 				=>	"Recent Entries",
-'recent_comments'	 			=>	"Recent Comments",
-'user_guide' 					=>	"User Guide",
-'ee_wiki'	 					=>	"EE Wiki",
+'recent_entries' 				=>	'Recent Entries',
+'recent_comments'	 			=>	'Recent Comments',
+'user_guide' 					=>	'User Guide',
+'ee_wiki'	 					=>	'EE Wiki',
 
 'status'						=> 'Status',
 'select_all'					=> 'Select All',
@@ -426,39 +426,39 @@ $lang = array(
 // Sites and Channels
 //----------------------------
 
-'sites' 						=> 	"Sites",
-'view_site'						=>	"View Site",
-'edit_sites' 					=>	"Edit Sites",
-'edit_channels' 				=>	"Edit Channels",
-'site_id'						=>	"Site ID",
-'site'							=>	"Site",
-'site_specific_data'			=>	"This data is site specific.  If you wish to select or change data for another site, then use the 'Sites' menu tab to switch to that site.",
+'sites' 						=> 	'Sites',
+'view_site'						=>	'View Site',
+'edit_sites' 					=>	'Edit Sites',
+'edit_channels' 				=>	'Edit Channels',
+'site_id'						=>	'Site ID',
+'site'							=>	'Site',
+'site_specific_data'			=>	'This data is site specific.  If you wish to select or change data for another site, then use the \'Sites\' menu tab to switch to that site.',
 
 
 //----------------------------
 // learning EE lang vars
 //----------------------------
 
-'videos'						=>	"Videos",
-'community_tutorials'			=>	"Community Tutorials",
+'videos'						=>	'Videos',
+'community_tutorials'			=>	'Community Tutorials',
 'community_resources'			=> 'Community Resources',
-'support'						=>	"Support",
+'support'						=>	'Support',
 
 
-'installing_ee'					=>	"Installing ExpressionEngine",
-'introduction_to_templates'		=>	"Introduction to Templates",
-'channels_custom_fields'		=>	"Channels and Custom Fields",
-'channel_template_relationship'	=>	"Channel Template Relationship",
-'building_ee_site_01'			=>	"Building An ExpressionEngine Site - Chapter 01",
-'designing_ee_architecture'		=>	"Designing and ExpressionEngine Architecture",
-'troubleshooting_file_uploads'	=>	"Troubleshooting Problems with File Uploads",
-'ee_cp_overview'				=>	"ExpressionEngine Control Panel Overview",
-'ee_seach_bookmarklet'			=>	"ExpressionEngine Search Bookmarklet",
-'wiki'							=>	"Wiki",
-'support_forums'				=>	"Support Forums",
-'knowledge_base'				=>	"Knowledge Base",
-'documentation'					=>	"Documentation",
-'my_downloads'					=>	"My Downloads",
+'installing_ee'					=>	'Installing ExpressionEngine',
+'introduction_to_templates'		=>	'Introduction to Templates',
+'channels_custom_fields'		=>	'Channels and Custom Fields',
+'channel_template_relationship'	=>	'Channel Template Relationship',
+'building_ee_site_01'			=>	'Building An ExpressionEngine Site - Chapter 01',
+'designing_ee_architecture'		=>	'Designing and ExpressionEngine Architecture',
+'troubleshooting_file_uploads'	=>	'Troubleshooting Problems with File Uploads',
+'ee_cp_overview'				=>	'ExpressionEngine Control Panel Overview',
+'ee_seach_bookmarklet'			=>	'ExpressionEngine Search Bookmarklet',
+'wiki'							=>	'Wiki',
+'support_forums'				=>	'Support Forums',
+'knowledge_base'				=>	'Knowledge Base',
+'documentation'					=>	'Documentation',
+'my_downloads'					=>	'My Downloads',
 'train_ee'						=> 'Train-EE',
 'ee_screencasts'				=> 'EE Screencasts',
 'ee_insider'					=> 'EE Insider',

@@ -5,148 +5,148 @@ $lang = array(
 /* ----------------------------------------
 /*  Required for MODULES page
 /* ----------------------------------------*/
-"metaweblog_api_module_name" =>
-"Metaweblog API",
+'metaweblog_api_module_name' =>
+'Metaweblog API',
 
-"metaweblog_api_module_description" =>
-"Metaweblog API Module",
+'metaweblog_api_module_description' =>
+'Metaweblog API Module',
 
 /*----------------------------------------*/
 'metaweblog_api_home' =>
-"Control Panel",
+'Control Panel',
 
 'api_urls' =>
-"View URLs for MetaWeblog API",
+'View URLs for MetaWeblog API',
 
 'invalid_access' =>
-"Invalid Access to MetaWeblog API.  Make sure you used the correct username and 
-password for a member account with permissions to post to at least one channel.",
+'Invalid Access to MetaWeblog API.  Make sure you used the correct username and 
+password for a member account with permissions to post to at least one channel.',
 
 'no_channels_found' =>
-"No Channels found for this user.",
+'No Channels found for this user.',
 
 'invalid_channel' =>
-"Invalid Channel Selection",
+'Invalid Channel Selection',
 
 'invalid_categories' =>
-"Invalid Categories Selection",
+'Invalid Categories Selection',
 
 'no_entries_found' =>
-"No Entries Found",
+'No Entries Found',
 
 'no_entry_found' =>
-"Entry not found in the database",
+'Entry not found in the database',
 
 'unauthorized_action' =>
-"You are not authorized to perform this action.",
+'You are not authorized to perform this action.',
 
 'invalid_access' =>
-"Invalid Access",
+'Invalid Access',
 
 'entry_uneditable' =>
-"You do not have permission to edit this entry. Please check member group permissions",
+'You do not have permission to edit this entry. Please check member group permissions',
 
 'no_metaweblog_configs' =>
-"There are currently no MetaWeblog API Configurations",
+'There are currently no MetaWeblog API Configurations',
 
 'metaweblog_configurations' =>
-"MetaWeblog API Configurations",
+'MetaWeblog API Configurations',
 
 'metaweblog_config_name' =>
-"Name",
+'Name',
 
 'metaweblog_config_url' =>
-"URL",
+'URL',
 
 'metaweblog_delete_confirm' =>
-"Delete MetaWeblog API Configurations",
+'Delete MetaWeblog API Configurations',
 
 'metaweblog_deleted' =>
-"MetaWeblog API Configuration Deleted",
+'MetaWeblog API Configuration Deleted',
 
 'metaweblogs_deleted' =>
-"MetaWeblog API Configurations Deleted",
+'MetaWeblog API Configurations Deleted',
 
-"metaweblog_delete_question" =>
-"Are you sure you want to delete the selected MetaWeblog API Configuration(s)?",
+'metaweblog_delete_question' =>
+'Are you sure you want to delete the selected MetaWeblog API Configuration(s)?',
 
 'delete' =>
-"Delete",
+'Delete',
 
 'new_config' =>
-"New Configuration",
+'New Configuration',
 
 'modify_config' =>
-"Modify Configuration",
+'Modify Configuration',
 
 'configuration_options' =>
-"Configuration Options",
+'Configuration Options',
 
 'metaweblog_pref_name' =>
-"Configuration Name",
+'Configuration Name',
 
 'metaweblog_parse_type' => 
-"Text Formatting Preference",
+'Text Formatting Preference',
 
 'metaweblog_parse_type_subtext' =>
-"Setting to yes will output an entry's content as if it was being displayed on 
-a webpage with all BBCode and file directories rendered.",
+'Setting to yes will output an entry\'s content as if it was being displayed on 
+a webpage with all BBCode and file directories rendered.',
 
 'yes' =>
-"Yes",
+'Yes',
 
 'no' =>
-"No",
+'No',
 
 'none' =>
-"None",
+'None',
 
 'metaweblog_field_group' =>
-"Channel Field Group",
+'Channel Field Group',
 
 'metaweblog_excerpt_field' =>
-"Excerpt Field",
+'Excerpt Field',
 
 'metaweblog_content_field' =>
-"Content Field",
+'Content Field',
 
 'metaweblog_more_field' =>
-"More Field",
+'More Field',
 
 'metaweblog_keywords_field' =>
-"Keywords Field",
+'Keywords Field',
 
 
 'metaweblog_mising_fields' =>
-"A Field was Left Blank",
+'A Field was Left Blank',
 
 'configuration_created' =>
-"Configuration Created",
+'Configuration Created',
 
 'configuration_updated' =>
-"Configuration Updated",
+'Configuration Updated',
 
 'metaweblog_create_new' =>
-"Create New Configuration",
+'Create New Configuration',
 
 'unable_to_upload' =>
-"Unable to Upload File",
+'Unable to Upload File',
 
 'invalid_file_content' =>
 'The file you are attempting to upload has invalid content for its MIME type',
 
 'metaweblog_upload_dir' =>
-"Upload Directory for File Uploading",
+'Upload Directory for File Uploading',
 
 'metaweblog_upload_dir_subtext' =>
-"Relatively few channel editors allow this option and you may not wish to allow uploads
-over the API, so setting to 'None' will prevent any file uploads via channel editor.",
+'Relatively few channel editors allow this option and you may not wish to allow uploads
+over the API, so setting to \'None\' will prevent any file uploads via channel editor.',
 
 'metaweblog_entry_status' =>
-"Entry Status",
+'Entry Status',
 
 'do_not_set_status' =>
-"Do Not Set Status (Client decides)",
+'Do Not Set Status (Client decides)',
 
 'auto_br' =>
 'Auto &lt;br /&gt;',

@@ -6,121 +6,121 @@ $lang = array(
 // Required for MODULES page
 //----------------------------------------
 
-"pages_module_name" =>
-"Pages",
+'pages_module_name' =>
+'Pages',
 
-"pages_module_description" =>
-"Uses Channel Entries to make Static pages",
+'pages_module_description' =>
+'Uses Channel Entries to make Static pages',
 
 //----------------------------------------
 
 'pages_homepage' =>
-"Pages Homepage",
+'Pages Homepage',
 
 'page' =>
-"Page",
+'Page',
 
 'pages_uri' =>
-"Pages URI",
+'Pages URI',
 
 'no_pages' =>
-"No Pages Currently Exist",
+'No Pages Currently Exist',
 
 'create_page' =>
-"Create New Page",
+'Create New Page',
 
 'page_name' =>
-"Page Name",
+'Page Name',
 
 'edit_page' =>
-"Edit Page",
+'Edit Page',
 
 'view_page' =>
-"View Page",
+'View Page',
 
 'page_settings' =>
-"Page Settings",
+'Page Settings',
 
 'none' =>
-"None",
+'None',
 
 'template' =>
-"Template",
+'Template',
 
 'parent_page' =>
-"Parent Page",
+'Parent Page',
 
 'channel_entry' =>
-"Channel Entry",
+'Channel Entry',
 
 'choose_entry' =>
-"Choose Entry",
+'Choose Entry',
 
 'pages_delete_confirm' =>
-"Delete Pages",
+'Delete Pages',
 
 'pages_delete_question' =>
-"Are you sure you want to delete the selected Page URI(s)?<br /><em>Note: Deleting a Page only deletes the URL. It does not delete the entry.</em>",
+'Are you sure you want to delete the selected Page URI(s)?<br /><em>Note: Deleting a Page only deletes the URL. It does not delete the entry.</em>',
 
 'page_deleted' =>
-"Page Deleted",
+'Page Deleted',
 
 'pages_deleted' =>
-"Pages Deleted",
+'Pages Deleted',
 
 'create_entry' =>
-"Create Entry",
+'Create Entry',
 
 'choose_template' =>
-"Choose Template for Displaying Page",
+'Choose Template for Displaying Page',
 
 'invalid_page_name' =>
-"Invalid Page Name Submitted",
+'Invalid Page Name Submitted',
 
 'invalid_template' =>
-"You must select a valid template for displaying this page.",
+'You must select a valid template for displaying this page.',
 
 'page_created' =>
-"Page Created",
+'Page Created',
 
 'page_updated' =>
-"Page Updated",
+'Page Updated',
 
 'invalid_page_uri' =>
-"Invalid Page URI",
+'Invalid Page URI',
 
 'pages_configuration' =>
-"Module Configuration",
+'Module Configuration',
 
 'preference_name' =>
-"Preference Name",
+'Preference Name',
 
 'preference_value' =>
-"Preference Value",
+'Preference Value',
 
 'default_template' =>
-"Default Template",
+'Default Template',
 
 'default_for_page_creation' =>
-"Default Channel for 'Create New Page' Tab",
+'Default Channel for \'Create New Page\' Tab',
 
 'no_default' =>
-"No Default",
+'No Default',
 
 'configuration_updated' =>
-"Configuration Updated",
+'Configuration Updated',
 
 'duplicate_page_uri' =>
-"Duplicate Page URI",
+'Duplicate Page URI',
 
 'pages_display_on_homepage' =>
-"Display of URIs on Module Homepage",
+'Display of URIs on Module Homepage',
 
 'nested' =>
-"Nested",
+'Nested',
 
 'not_nested' =>
-"Not Nested",
+'Not Nested',
 
 'preference' =>
 'Preference',
