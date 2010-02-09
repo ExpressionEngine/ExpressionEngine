@@ -2113,16 +2113,15 @@ class Tools_utilities extends Controller {
 
 		foreach ($_POST as $key => $val)
 		{
-			$val = str_replace("<",  "&lt;",	$val);
-			$val = str_replace(">",  "&gt;",	$val);
-			$val = str_replace("'",  "&#39;",  $val);
-			$val = str_replace("\"", "&quot;", $val);
-			$val = stripslashes($val);
+			$val = str_replace('<script', '', $val);
+			$val = str_replace('<iframe', '', $val);
+			$val = str_replace(array("\\", "'"), array("\\\\", "\'"), $val);
 
-			$str .= "\"$key\" =>\n\"$val\",\n\n";
+			$str .= '\''.$key.'\' => '."\n".'\''.$val.'\''.",\n\n";
 		}
 
-		$str .= "''=>''\n);\n?".">";
+		$str .= "''=>''\n);\n\n";
+		$str .= "// End of File";
 
 		// Make sure any existing file is writeable
 		if (file_exists($dest_loc))
