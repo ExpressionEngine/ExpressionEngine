@@ -1356,6 +1356,10 @@ h2 a:hover {
 	
 }
 
+ul.bad_path_error_list li {font-weight:bold; margin-bottom:5px;color:#F72A58;}
+ul.bad_path_error_list li ul li {font-weight:normal; margin-left:15px;margin-bottom:0;color:#5F6C74;}
+div.notice_texts ul.bad_path_error_list li ul li {color:#fff; font-weight:normal;}
+
 #noticeContents.closed {
 	display:none;
 }

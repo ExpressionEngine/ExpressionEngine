@@ -355,11 +355,20 @@ class Admin_system extends Controller {
 
 		$loc = $this->input->get_post('return_location');
 
-		$this->config->update_site_prefs($_POST);
+		$config_update = $this->config->update_site_prefs($_POST);
 
-		if ($loc !== FALSE)
+		if ( ! empty($config_update))
+		{
+			$this->load->helper('html');
+			$this->session->set_flashdata('message_failure', ul($config_update, array('class' => 'bad_path_error_list')));
+		}
+		else
 		{
 			$this->session->set_flashdata('message_success', $this->lang->line('preferences_updated'));
+		}
+		
+		if ($loc !== FALSE)
+		{
 			$this->functions->redirect($loc);
 		}
 	}

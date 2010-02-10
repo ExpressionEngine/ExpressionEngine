@@ -435,6 +435,12 @@ $lang = array(
 'site_specific_data'			=>	'This data is site specific.  If you wish to select or change data for another site, then use the \'Sites\' menu tab to switch to that site.',
 
 
+'sig_img_path' 			=> 'Signature Image Path',
+'avatar_path' 			=>  'Avatar Path',
+'photo_path' 			=> 'Member Photo Path',
+'prv_msg_upload_path' 	=> 'Private Message Upload Path',
+'not_writable_path' 	=> 'The following folders are not writeable:',
+
 //----------------------------
 // learning EE lang vars
 //----------------------------

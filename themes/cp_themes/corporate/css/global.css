@@ -1661,6 +1661,11 @@ h2 a:hover {
 	margin-bottom:3.3%;
 }
 
+ul.bad_path_error_list li {font-weight:bold; color:#F72A58;}
+ul.bad_path_error_list li ul {margin-top:0; margin-left:10px; padding-top:0;}
+ul.bad_path_error_list li ul li {font-weight:normal;margin-bottom:0; padding:0; color:#5F6C74;}
+div.notice_texts ul.bad_path_error_list li ul li {color:#fff; font-weight:normal;}
+
 #ee_important_message a {
 	color:#005EB0;
 }

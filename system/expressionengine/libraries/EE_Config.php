@@ -31,6 +31,7 @@ class EE_Config Extends CI_Config {
 	var $cp_cookie_domain	= '';
 	var $_global_vars 		= array();	// The global vars from path.php (deprecated but usable for other purposes now)
 	var $special_tlds 		= array('com', 'edu', 'net', 'org', 'gov', 'mil', 'int');	// seven special TLDs for cookie domains
+	var $_config_path_errors = array();
 	
 	/**
 	 * Constructor
@@ -604,19 +605,23 @@ class EE_Config Extends CI_Config {
 				}
 
 				$fp = ($val == 'avatar_path') ? $new_values[$val].'uploads/' : $new_values[$val];
-
+				
 				if ( ! @is_dir($fp))
 				{
-					show_error(array($this->EE->lang->line('invalid_path'), $new_values[$val]));
+					$this->_config_path_errors[$this->EE->lang->line('invalid_path')][$val] = $this->EE->lang->line($val) .': ' .$new_values[$val];
 				}
 
 				if ( (! is_really_writable($fp)) && ($val != 'theme_folder_path'))
 				{
-					show_error(array($this->EE->lang->line('not_writable_path'), $new_values[$val]));
+					if ( ! isset($this->_config_path_errors[$this->EE->lang->line('invalid_path')][$val]))
+					{
+						$this->_config_path_errors[$this->EE->lang->line('not_writable_path')][$val] = $this->EE->lang->line($val) .': ' .$new_values[$val];
+						
+					}
 				}
 			}
 		}
-		
+
 		// To enable CI's helpers and native functions that deal with URLs
 		// to work correctly we make these CI config items identical
 		// to the EE counterparts
@@ -709,6 +714,8 @@ class EE_Config Extends CI_Config {
 				$this->_update_config($new_values);
 			}
 		}
+		
+		return $this->_config_path_errors;
 	}
 	
 	
@@ -861,8 +868,14 @@ class EE_Config Extends CI_Config {
 		flock($fp, LOCK_UN);
 		fclose($fp);
 
-		return TRUE;
-		
+		if ( ! empty($this->_config_path_errors))
+		{
+			return $this->_config_path_errors;
+		}
+		else
+		{
+			return TRUE;			
+		}
 		 // <?php BBEdit bug fix
 	}
 
