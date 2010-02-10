@@ -1651,9 +1651,11 @@ class MyAccount extends Controller {
 		{
 			return $this->upload_signature_image();
 		}
+		
+		$id = ($this->input->get_post('id')) ? AMP.'id='.$this->input->get_post('id') : '';
 
 		$this->session->set_flashdata('message_success', $this->lang->line('signature_updated'));
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature');
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature'.$id);
 	}
 
 	// --------------------------------------------------------------------
@@ -1934,8 +1936,10 @@ class MyAccount extends Controller {
 
 		$this->member_model->update_member($this->id, array('avatar_filename' => $avatar, 'avatar_width' => $width, 'avatar_height' => $height));
 
+		$id = ($this->input->get_post('id')) ? AMP.'id='.$this->input->get_post('id') : '';
+
 		$this->session->set_flashdata('message_success', $this->lang->line('avatar_updated'));
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_avatar');
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_avatar'.$id);
 	}
 
 	// --------------------------------------------------------------------
@@ -2008,7 +2012,8 @@ class MyAccount extends Controller {
 	function _upload_image($type = 'avatar')
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) {
+		if (empty($_POST)) 
+		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
@@ -2330,7 +2335,10 @@ class MyAccount extends Controller {
 		$this->member_model->update_member($this->id, $data);
 
 		// Success message
-		return $this->$edit_image($this->lang->line($updated));
+		$this->session->set_flashdata('message_success', $this->lang->line($updated));
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M='.$edit_image.AMP.'id='.$id);
+
+		// return $this->$edit_image($this->lang->line($updated));
 	}
 
 	// --------------------------------------------------------------------
@@ -2389,7 +2397,8 @@ class MyAccount extends Controller {
 	function notepad_update()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) {
+		if (empty($_POST)) 
+		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
