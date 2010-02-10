@@ -220,8 +220,22 @@ class EE_Core {
 				$theme_path = substr(APPPATH, 0, - strlen(SYSDIR.'/expressionengine/')).'themes/';
 				$theme_path = preg_replace("#/+#", "/", $theme_path);
 			}
+
+			// Maybe the site has been moved.  
+			// Let's try some basic autodiscovery if config items are set
+			// But the directory does not exist.  
+			if ( ! is_dir($theme_path))
+			{
+				if (is_dir(FCPATH.'../themes/')) // We're in the system directory
+				{
+					$theme_path = FCPATH.'../themes/';
+				}
+				elseif (is_dir(FCPATH.'themes/')) // Front end.
+				{
+					$theme_path = FCPATH.'themes/';
+				}
+			}
 			
-						
 			define('PATH_THEMES', 		$theme_path);	
 			define('PATH_MBR_THEMES',	PATH_THEMES.'profile_themes/'); 
 			define('PATH_CP_GBL_IMG', 	$this->EE->config->slash_item('theme_folder_url').'cp_global_images/');
