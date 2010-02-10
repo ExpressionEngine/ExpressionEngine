@@ -1,9 +1,18 @@
+/*jslint browser: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true */
+
+/*global $, jQuery, EE */
+
+"use strict";
+
 $(document).ready(function() {
 
-	var ajaxContentButtons = {};
-		ajaxContentButtons[EE.lang.close] = $(this).dialog("close");	
+	var ajaxContentButtons = {},
+		dialog_div = $('<div id=\"ajaxContent\" />'),
+		msgBoxOpen, msgContainer, save_state, setup_hidden;
 	
-	$("<div id=\"ajaxContent\"></div>").dialog({
+	ajaxContentButtons[EE.lang.close] = function() { $(this).dialog("close") };
+	
+	dialog_div.dialog({
 		autoOpen: false,
 		resizable: false,
 		modal: true,
@@ -11,6 +20,34 @@ $(document).ready(function() {
 		minHeight: "0px", // fix display bug, where the height of the dialog is too big
 		buttons: ajaxContentButtons
 	});
+	
+	if (EE.importantMessage) {
+		msgBoxOpen = EE.importantMessage.state;
+		msgContainer = $("#ee_important_message");
+			
+		save_state = function() {
+			msgBoxOpen = ! msgBoxOpen;
+			document.cookie="exp_home_msg_state="+(msgBoxOpen ? "open" : "closed");
+		};
+	
+		setup_hidden = function() {
+			$.ee_notice.show_info(function() {
+				$.ee_notice.hide_info();
+				msgContainer.removeClass("closed").show();
+				save_state();
+			});
+		};
+	
+		msgContainer.find(".msg_open_close").click(function() {
+			msgContainer.hide();
+			setup_hidden();
+			save_state();
+		});
+	
+		if ( ! msgBoxOpen) {
+			setup_hidden();
+		}		
+	}
 
 	$("a.submenu").click(function() {
 		if ($(this).data("working")) {
@@ -22,7 +59,8 @@ $(document).ready(function() {
 		
 		var url = $(this).attr("href"),
 			that = $(this).parent(),
-			submenu = that.find("ul");
+			submenu = that.find("ul"),
+			dialog_title;
 
 		if ($(this).hasClass("accordion")) {
 			
@@ -39,7 +77,7 @@ $(document).ready(function() {
 		}
 		else {
 			$(this).data("working", false);
-			var dialog_title = $(this).html();
+			dialog_title = $(this).html();
 
 			$("#ajaxContent").load(url+" .pageContents", function() {
 				$("#ajaxContent").dialog("option", "title", dialog_title);
@@ -49,33 +87,4 @@ $(document).ready(function() {
 
 		return false;
 	});
-
-
-	if (EE.importantMessage) {
-		var msgBoxOpen = EE.importantMessage.state,
-			msgContainer = $("#ee_important_message");			
-	
-		function save_state() {
-			msgBoxOpen = ! msgBoxOpen;
-			document.cookie="exp_home_msg_state="+(msgBoxOpen ? "open" : "closed");
-		}
-	
-		function setup_hidden() {
-			$.ee_notice.show_info(function() {
-				$.ee_notice.hide_info();
-				msgContainer.removeClass("closed").show();
-				save_state();
-			});
-		}
-	
-		msgContainer.find(".msg_open_close").click(function() {
-			msgContainer.hide();
-			setup_hidden();
-			save_state();
-		});
-	
-		if ( ! msgBoxOpen) {
-			setup_hidden();
-		}		
-	}
 });
