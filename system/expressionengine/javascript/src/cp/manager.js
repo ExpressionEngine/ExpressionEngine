@@ -26,11 +26,20 @@
  * 
  * EE.manager.showPrefsRow and EE.manager.hidePrefsRow
  */
+
+/*jslint browser: true, devel: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true */
+
+/*global $, jQuery, EE */
+
+"use strict";
+
 (function($) {
 
 	var prefs_template, access_template;
 
 	$(document).ready(function() {
+		
+		var tables, template_id, group_id, all_checkbox_toggles;
 	
 		prefs_template = $('#prefRowTemplate').html();
 		access_template = $('#accessRowTemplate').html();
@@ -38,9 +47,9 @@
 		// Template editor page?
 		if ( ! prefs_template || ! access_template)
 		{
-			var tables = $('#templateAccess, #templatePreferences'),
-				template_id = $('input:hidden[name=template_id]').val(),
-				group_id = $('input:hidden[name=group_id]').val();
+			tables = $('#templateAccess, #templatePreferences');
+			template_id = $('input:hidden[name=template_id]').val();
+			group_id = $('input:hidden[name=group_id]').val();
 			
 			$('#templatePreferences').data('ajax_ids', {'id': template_id, 'group_id': group_id});
 			
@@ -57,8 +66,8 @@
 		
 		// Expose the two click callback functions - events bound in the controller
 		EE.manager = {
-			showPrefsRow: function(rowdata, el)
-			{
+			showPrefsRow: function(rowdata, el) {
+				
 				var currentrow = $(el).parent().parent();
 
 				if ( ! hideRow(currentrow, 'prefsRow'))
@@ -70,8 +79,8 @@
 				return false;
 			},
 
-			showAccessRow: function(template_id, rowdata, el)
-			{
+			showAccessRow: function(template_id, rowdata, el) {
+				
 				var currentrow = $(el).parent().parent();
 
 				if ( ! hideRow(currentrow, 'accessRow'))
@@ -86,13 +95,11 @@
 	});
 
 	function hideRow(currentrow, data_type) {
-		if (currentrow.hasClass('highlightRow'))
-		{
+		if (currentrow.hasClass('highlightRow')) {
 			currentrow.removeClass('highlightRow');
 		}
 
-		if (currentrow.data(data_type))
-		{
+		if (currentrow.data(data_type)) {
 			var was_vis = currentrow.data(data_type).is(':visible');
 			hideSubRows(currentrow);
 			
@@ -107,8 +114,8 @@
 		return false;
 	}
 	
-	function hideSubRows(currentrow, type)
-	{
+	function hideSubRows(currentrow, type) {
+		
 		if (type) {
 			if ($(currentrow).data(type)) {
 				$(currentrow).data(type).hide();
@@ -162,8 +169,7 @@
 	
 		// Name field
 		headerrow.find('.template_name').val(rowdata.name);
-		if (rowdata.name == 'index')
-		{
+		if (rowdata.name === 'index') {
 			headerrow.find('.template_name').attr({readonly:'readonly'});
 		}
 
@@ -195,10 +201,10 @@
 		}
 		
 		parent.find('.ignore_radio').click(function() {
-			if (this.value == 'y') {
+			if (this.value === 'y') {
 				parent.find(selector_base+'y]').filter(':not(.ignore_radio)').trigger('click');
 			}
-			if (this.value == 'n') {
+			if (this.value === 'n') {
 				parent.find(selector_base+'n]').filter(':not(.ignore_radio)').trigger('click');
 			}
 
@@ -256,49 +262,49 @@
 		currentrow.data('accessRow', headerrow);
 	}
 
-	function access_edit_ajax(el)
-	{
+	function access_edit_ajax(el) {
+		
+		var ids, template_id
+		
 		// access_gid_tid
-		if (el.attr('name').substr(0, 14) == 'no_auth_bounce')
-		{
+		if (el.attr('name').substr(0, 14) === 'no_auth_bounce') {
 			template_id = (el.attr('name').substr(15)) ? el.attr('name').substr(15) : $('input:hidden[name=template_id]').val();
 			_access_edit_ajax(el, template_id, '', 'no_auth_bounce');
 		}
-		else if (el.attr('name').substr(0, 16) == 'enable_http_auth')
-		{
+		else if (el.attr('name').substr(0, 16) === 'enable_http_auth') {
 			template_id = (el.attr('name').substr(17)) ? el.attr('name').substr(17) : $('input:hidden[name=template_id]').val();
 			_access_edit_ajax(el, template_id, '', 'enable_http_auth');
 		}
-		else
-		{
-			var ids = el.attr('name').replace('access_', '').split('_'),
-				template_id = (ids.length < 2) ? $('input:hidden[name=template_id]').val() : ids[1];
+		else {
+			ids = el.attr('name').replace('access_', '').split('_'),
+			template_id = (ids.length < 2) ? $('input:hidden[name=template_id]').val() : ids[1];
 
 			_access_edit_ajax(el, template_id, ids[0], 'access');
 		}
 	}
 
-	function _access_edit_ajax(el, template_id, m_group_id, kind)
-	{
-		switch (kind)
-		{
+	function _access_edit_ajax(el, template_id, m_group_id, kind) {
+		
+		var str = '';
+		
+		switch (kind) {
 			case 'no_auth_bounce':
-				var str = jQuery.param({
+				str = jQuery.param({
 					'template_id': template_id,
 					'no_auth_bounce': el.val()
 				});
 				break;
 			case 'enable_http_auth':
-				var str = jQuery.param({
+				str = jQuery.param({
 					'template_id': template_id,
 					'enable_http_auth': el.val()
 				});
 				break;
 			case 'access':
 				var no_auth_bounce = ( ! $(el).closest('.accessTable').length) ?
-										$('.no_auth_bounce').val() :
-										$(el).closest('.accessTable').find('.no_auth_bounce').val();
-				var str = jQuery.param({
+										 $('.no_auth_bounce').val() :
+										 $(el).closest('.accessTable').find('.no_auth_bounce').val();
+				str = jQuery.param({
 					'template_id': template_id,
 					'member_group_id': m_group_id,
 					'new_status': el.val(),
@@ -313,20 +319,20 @@
 			url: EE.access_edit_url,
 			data: "is_ajax=TRUE&XID="+EE.XID+"&" + str,
 			success: function(msg){
-				if (msg != '') {
+				if (msg !== '') {
 					$.ee_notice(msg, {duration: 3000, type: 'success'});
 				}
 			},
 			error: function(req, error){
-				if (req.responseText != '') {
+				if (req.responseText !== '') {
 					$.ee_notice(req.responseText, {duration: 3000, type: 'error'});
 				}
 			}
 		});
 	}
 
-	function template_edit_ajax()
-	{
+	function template_edit_ajax() {
+		
 		var holder = $(this).closest('.accessRowHeader'),
 			holder_data,
 			template_id, group_id, template_name, template_type,
@@ -370,8 +376,23 @@
 			url: EE.template_edit_url,
 			data: "is_ajax=TRUE&XID="+EE.XID+"&" + str,
 			success: function(msg){
+				
+				var name_obj = $("#templateId_" + template_id),
+					view_link;
+				
+				
 				// change the displayed template name
-				$("#templateId_"+template_id).text(template_name);
+				name_obj.text(template_name);
+				
+				// Change the view link
+				if (name_obj.closest('.templateName').length) {
+					view_link = name_obj.closest('.templateName').next().find('a');
+					if (view_link.length) {
+						view_link = view_link.get(0);
+						view_link.href = view_link.href.replace(/\/[^\/]*$/, '/' + template_name);
+					}
+				}
+				
 
 				// change the displayed template size
 				$("#template_data").attr('rows', template_size);
@@ -379,12 +400,12 @@
 				// change the displayed hits
 				$("#hitsId_"+template_id).text(hits);
 				
-				if (msg != '') {
+				if (msg !== '') {
 					$.ee_notice(msg, {duration: 3000, type: 'success'});
 				}
 			},
 			error: function(req, error){
-				if (req.responseText != '') {
+				if (req.responseText !== '') {
 					$.ee_notice(req.responseText, {duration: 3000, type: 'error'});
 				}
 			}
@@ -428,7 +449,7 @@
 			$('#fr_replace').val(replace);
 			$('#fr_replace_closing_tags').attr('checked', '');
 			
-			if (select != '') {
+			if (select !== '') {
 				$('#fr_options').append($(dropdown));
 				$('#fr_options').click(function() {
 					$('#fr_find').val($(this).val());
@@ -450,7 +471,7 @@
 			var find = $('#fr_find').val(),
 				replace = $('#fr_replace').val();
 
-			if (selection.getSelectedText() == find) {
+			if (selection.getSelectedText() === find) {
 				selection.replaceWith(replace);
 			}
 		});
@@ -460,7 +481,7 @@
 				replace = $('#fr_replace').val();
 
 			// Sanity check
-			if (jQuery.trim(find) == '') {
+			if (jQuery.trim(find) === '') {
 				return;
 			}
 			
@@ -471,14 +492,14 @@
 			
 			if ($('#fr_replace_closing_tags').attr('checked')) {
 
-				if (find[0] == '{' && find.substr(0, 2) != '{/') {
+				if (find[0] === '{' && find.substr(0, 2) !== '{/') {
 					find = '{/'+find.substr(1);
 				}
-				if (replace[0] == '{' && replace.substr(0, 2) != '{/') {
+				if (replace[0] === '{' && replace.substr(0, 2) !== '{/') {
 					replace = '{/'+replace.substr(1);
 				}
 				
-				if (jQuery.trim(find) == '') {
+				if (jQuery.trim(find) === '') {
 					return;
 				}
 				
@@ -500,7 +521,7 @@
 				}
 			}
 			
-			if (suggest == '{exp:') {
+			if (suggest === '{exp:') {
 				suggest = '';
 			}
 
