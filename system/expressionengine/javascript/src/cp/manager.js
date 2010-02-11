@@ -39,7 +39,7 @@
 
 	$(document).ready(function() {
 		
-		var tables, template_id, group_id, all_checkbox_toggles;
+		var tables, template_id, group_id;
 	
 		prefs_template = $('#prefRowTemplate').html();
 		access_template = $('#accessRowTemplate').html();
