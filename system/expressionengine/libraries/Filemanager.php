@@ -710,19 +710,19 @@ class Filemanager {
 		{
 			$new_filename = '';
 			
-			$thumb_prefix = $this->EE->config->item('thumbnail_prefix');
+			$thumb_suffix = $this->EE->config->item('thumbnail_prefix');
 			
-			if ( ! file_exists($path.$thumb_prefix.'_'.$filename.$file_ext))
+			if ( ! file_exists($path.$filename.'_'.$thumb_suffix.$file_ext))
 			{
-				$new_filename = $thumb_prefix.'_'.$filename.$file_ext;
+				$new_filename = $filename.'_'.$thumb_suffix.$file_ext;
 			}
 			else
 			{
 				for ($i = 1; $i < 100; $i++)
 				{			
-					if ( ! file_exists($path.$thumb_prefix.'_'.$filename.'_'.$i.$file_ext))
+					if ( ! file_exists($path.$filename.'_'.$thumb_suffix.'_'.$i.$file_ext))
 					{
-						$new_filename = $thumb_prefix.'_'.$filename.'_'.$i.$file_ext;
+						$new_filename = $filename.'_'.$thumb_suffix.'_'.$i.$file_ext;
 						break;
 					}
 				}				
