@@ -62,7 +62,7 @@ $lang = array(
 'edit_image'			=> 'Save Image',
 'image_edit_success'	=> 'Image Successfully Edited',
 'no_edit_selected'		=> 'No Edit Operation Selected',
-
+'uploading_file'		=> 'Uploading File',
 
 
 ''=>''

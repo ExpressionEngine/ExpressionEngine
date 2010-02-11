@@ -78,17 +78,210 @@ class Content_files extends Controller {
 		$this->cp->set_variable('cp_page_title', $this->lang->line('content_files'));
 		
 		$this->cp->add_js_script(array(
-		            'plugin'    => array('fancybox', 'tablesorter', 'ee_upload'),
-					'file'		=> 'cp/file_manager_home'
+		            'plugin'    => array('fancybox', 'tablesorter', 'ee_upload')
 		    )
 		);
 		
 		$this->cp->add_to_head('<link type="text/css" rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=fancybox" />');
 
-		$this->javascript->set_global('lang.loading', $this->lang->line('loading'));
-		$this->javascript->set_global('lang.uploading_file', $this->lang->line('uploading_file').'&hellip;');
-		$this->javascript->set_global('lang.show_toolbar', $this->lang->line('show_toolbar'));
-		$this->javascript->set_global('lang.hide_toolbar', $this->lang->line('hide_toolbar'));
+		$this->jquery->tablesorter('.mainTable', '{
+			headers: {2: {sorter: "digit"}, 4: {sorter: false}, 5: {sorter: false}, 6: {sorter: false}},
+			widgets: ["zebra"],
+			sortList: [[0,0]] 
+		}');
+
+		$this->javascript->output(array(
+			$this->javascript->show("#file_tools")
+		));
+
+		$this->javascript->output('
+			$("#download_selected").css("display", "block");
+
+			function show_file_info(file) {
+				$("#file_information_hold").slideDown("fast");
+				$("#file_information_header").removeClass("closed");
+				$("#file_information_header").addClass("open");
+
+				$("#file_information_hold").html("<p style=\"text-align: center;\"><img src=\"'. $this->cp->cp_theme_url.'images/indicator.gif\" alt=\"'.$this->lang->line('loading').'\" /><br />'.$this->lang->line('loading').'...</p>");
+
+				$.get(EE.BASE+"&C=content_files&M=file_info",
+					{file: file},
+					function(data){
+						$("#file_information_hold").html(data);
+					}
+				);
+			}
+
+			$("#showToolbarLink a").toggle(
+				function(){
+					$("#file_manager_tools").hide();
+					$("#showToolbarLink a span").text("'.$this->lang->line('show_toolbar').'");
+					$("#showToolbarLink").animate({
+						marginRight: "20"
+					});
+					$("#file_manager_holder").animate({
+						marginRight: "10"
+					});
+				}, function (){
+					$("#showToolbarLink a span").text("'.$this->lang->line('hide_toolbar').'");
+					$("#showToolbarLink").animate({
+						marginRight: "314"
+					});
+					$("#file_manager_holder").animate({
+						marginRight: "300"
+					}, function(){
+						$("#file_manager_tools").show();
+					});
+				}
+			);
+
+			$("#file_manager_tools h3 a").toggle(
+				function(){
+					$(this).parent().next("div").slideUp();
+					$(this).toggleClass("closed");
+				}, function(){
+					$(this).parent().next("div").slideDown();
+					$(this).toggleClass("closed");
+				}
+			);
+
+			$("#file_manager_list h3").toggle(
+				function(){
+					document.cookie="exp_hide_upload_"+$(this).next().attr("id")+"=true";
+					$(this).next().slideUp();
+					$(this).toggleClass("closed");
+				}, function(){
+					document.cookie="exp_hide_upload_"+$(this).next().attr("id")+"=false";
+					$(this).next().slideDown();
+					$(this).toggleClass("closed");
+				}
+			);
+
+			// collapse sidebar and folder list by default
+			$("#file_manager_tools h3.closed").next("div").hide();
+			$("#file_manager_tools h3.closed a").click();
+
+			function upload_fail(message)
+			{
+				// change status and fade it out
+				$("#progress").html("<span class=\"notice\">"+message+"</span>");
+			}
+		
+			$("input[type=file]").ee_upload({
+				url: EE.BASE+"&C=content_files&M=upload_file&is_ajax=true",
+				onStart:function(el) {
+					$("#progress").html("<p><img src=\"'. $this->cp->cp_theme_url.'images/indicator.gif\" alt=\"'.$this->lang->line('loading').'\" />Uploading File...</p>").show();
+					
+					dir_id = $("#upload_dir").val();
+					return {upload_dir: dir_id};
+				},
+				onComplete: function(res, el, opt) {
+					if (typeof(res) == "object") {
+						if (res.success) {
+							var directory_container = "#dir_id_"+opt.upload_dir;
+
+							// @confirm this is a bit ugly - cannot think of an easy way to send this as part of the
+							// response without forcing a layout
+							var refresh_url = EE.BASE+"&C=content_files&ajax=true&directory="+opt.upload_dir+"&enc_path="+res.enc_path;
+
+							$.get(refresh_url, function(response) {
+								var tmp = $("<div></div>");
+								tmp.append(response);
+								tmp = tmp.find("tbody tr");
+
+								$(directory_container+" tbody").append(tmp);
+
+								// remove row with warning message if its there
+								$(directory_container+" tbody .no_files_warning").parent().remove();
+
+								// let the tablesorter plugin know that we have an update
+								$(directory_container+" table").trigger("update");
+
+								// Reset sort to force re-stripe
+								var sorting = [[0,0]]; 
+								$("table").trigger("sorton",[sorting]);
+
+								setup_events(tmp);
+
+								$("#progress").html(res).slideUp("slow");
+							}, "html");
+							
+						}
+						else {
+							upload_fail(res.error);
+						}
+					}
+				}
+			});
+		');
+
+		// tools
+		$this->javascript->click('#download_selected a', '
+			$("#files_form").attr("action", $("#files_form").attr("action").replace(/delete_files_confirm/, "download_files"))
+			$("#files_form").submit();
+		');
+
+		$this->javascript->click('a#email_files', 'alert("not yet functional");');
+
+		$this->javascript->click('#delete_selected_files a', '
+			// these may be been downloaded: ensure the action attr is correct
+			$("#files_form").attr("action", $("#files_form").attr("action").replace(/download_files/, "delete_files_confirm"))
+			$("#files_form").submit();
+		');
+
+		$this->javascript->output('
+			$(".toggle_all").toggle(
+				function(){
+					$(this).closest("table").find("tbody tr").addClass("selected");
+					$(this).closest("table").find("input.toggle").each(function() {
+						this.checked = true;
+					});
+				}, function (){
+					$(this).closest("table").find("tbody tr").removeClass("selected");
+					$(this).closest("table").find("input.toggle").each(function() {
+						this.checked = false;
+					});
+				}
+			);
+
+			$("input.toggle").each(function() {
+				this.checked = false;
+			});
+
+			function setup_events(el) {
+
+				$("td.fancybox a").unbind("click").
+					fancybox({
+						"showEditLink": true
+					}).
+					click(function(e){
+						show_file_info($(this).attr("rel"));
+					});
+
+					// Set the row as "selected"
+					$(".toggle").unbind("click").click(function(e){
+						$(this).parent().parent().toggleClass("selected");
+					});
+
+					$(".mainTable td").unbind("click").click(function(e){
+						// if the control or command key was pressed, select the file
+						if (e.ctrlKey || e.metaKey)
+						{
+							$(this).parent().toggleClass("selected"); // Set row as selected
+
+							if ( ! $(this).parent().find(".file_select :checkbox").attr("checked"))
+							{
+								$(this).parent().find(".file_select :checkbox").attr("checked", "true");
+							}
+							else
+							{
+								$(this).parent().find(".file_select :checkbox").attr("checked", "");
+							}
+						}
+					});
+			}
+			setup_events();
+		');
 
 		$vars = array();
 
@@ -314,10 +507,10 @@ class Content_files extends Controller {
 		$upload_dir_result = $this->tools_model->get_upload_preferences($this->session->userdata('member_group'), $upload_id);
 		$upload_dir_prefs = $upload_dir_result->row();
 		
-		// $filename = $this->input->get_post('userfile');
-		// var_dump($_POST);
-		// $filename = substr($filename, 0, strrpos($filename, '.'));
-		// var_dump(url_title($filename, $this->config->item('word_separator'), TRUE)); exit;
+		$filename = $this->input->get_post('userfile');
+		var_dump($_POST);
+		$filename = substr($filename, 0, strrpos($filename, '.'));
+		var_dump(url_title($filename, $this->config->item('word_separator'), TRUE)); exit;
 		switch($upload_dir_prefs->allowed_types)
 		{
 			case 'all' : $config['allowed_types'] = '*';
@@ -328,7 +521,7 @@ class Content_files extends Controller {
 				$config['allowed_types'] = $upload_dir_prefs->allowed_types;
 		}
 
-		// $config['file_name'] = url_title($filename, $this->config->item('word_separator'), TRUE);
+		$config['file_name'] = url_title($filename, $this->config->item('word_separator'), TRUE);
 		$config['upload_path'] = $upload_dir_prefs->server_path;
 		$config['max_size']	= $upload_dir_prefs->max_size;
 		$config['max_width']  = $upload_dir_prefs->max_width;
@@ -641,7 +834,7 @@ class Content_files extends Controller {
 		$this->cp->add_js_script(array(
 				'ui'		=> 'resizable',
 				'plugin'	=> array('jcrop', 'simplemodal'),
-				'file'		=> 'cp/file_manager_edit'
+				'file'		=> 'cp/file_manager'
 			)
 		);
 
