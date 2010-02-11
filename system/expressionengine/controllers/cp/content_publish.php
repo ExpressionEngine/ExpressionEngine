@@ -185,7 +185,9 @@ class Content_publish extends Controller {
 		}
 
 		// make this into an array, insert_group_layout will serialize and save
+		
 		$layout_info = json_decode($json_tab_layout, TRUE);
+		$layout_info = array_map(array($this, '_sort_publish_fields'), $layout_info);
 
 		if ($this->member_model->insert_group_layout($member_group, $channel_id, $layout_info))
 		{
@@ -195,6 +197,42 @@ class Content_publish extends Controller {
 		{
 			exit($this->lang->line('layout_failure'));
 		}
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Sort Publish Fields
+	 *
+	 * Some browsers (read: chrome) sort JSON arrays by key automatically.
+	 * So before we save our fields we need to reorder them according to
+	 * their index parameter.
+	 *
+	 * @access private
+	 */
+	function _sort_publish_fields($fields)
+	{
+		// array_multisort couldn't be coerced into maintaining our
+		// array keys, so we sort manually ... le sigh.
+		
+		$positions = array();
+
+		foreach($fields as $id => $field)
+		{
+			$positions[$field['index']] = $id;
+			unset($fields[$id]['index']);
+		}
+		
+		ksort($positions);
+		
+		$new_fields = array();
+		
+		foreach($positions as $id)
+		{
+			$new_fields[$id] = $fields[$id];
+		}
+
+		return $new_fields;
 	}
 
 	// --------------------------------------------------------------------
@@ -847,8 +885,8 @@ class Content_publish extends Controller {
 			$this->_define_default_date_field('comment_expiration_date', $this->localize->convert_human_date_to_gmt($loc_comment_expiration_date));			
 		}
 		
-		/*
-		
+
+		/*	
 		
 		$settings = array(
 					'field_id'				=> 'entry_date',
@@ -862,10 +900,10 @@ class Content_publish extends Controller {
 					'field_show_fmt'		=> 'n',
 					'selected'				=> 'y'
 		);
-
+		
 		// Entry date
 		$this->api_channel_fields->set_settings('entry_date', $settings);
-
+		
 		$rules = 'call_field_validation['.$settings['field_id'].']';
 		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
 		
@@ -3370,10 +3408,12 @@ class Content_publish extends Controller {
 				});
 
 				$(".tab_menu li.content_tab a, #publish_tab_list a.menu_focus")
-					.unbind("click.publish_tabs")
-					.bind("click.publish_tabs", function(){
+					.unbind(".publish_tabs")
+					.bind("mousedown.publish_tabs", function(e){
 						tab_id = $(this).attr("title").substring(5);
 						tab_focus(tab_id);
+						e.preventDefault();
+					}).bind("click.publish_tabs", function() {
 						return false;
 					});
 			}
