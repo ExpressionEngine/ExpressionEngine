@@ -1907,21 +1907,19 @@ class Design extends Controller {
 		}
 
 		$this->javascript->output('
+		
+			var accordion = $(".editAccordion"),
+				template_data = $("#template_data");
+		
 			$(".button").css("float", "right");
 			
-			$("#template_data").markItUp('.$this->javascript->generate_json($markItUp).');
-
-			// Just like calling focus(), but forces FF to move
-			// the cursor to the beginning of the field
-			$("#template_data").createSelection(0, 0);
-
 			// Notes, Access, Prefs
-			$(".editAccordion > div").hide();
-			$(".editAccordion > h3").css("cursor", "pointer").addClass("collapsed").parent().addClass("collapsed");
+			accordion.children("div").hide();
+			accordion.children("h3").css("cursor", "pointer").addClass("collapsed").parent().addClass("collapsed");
 			
-			$(".editAccordion").css("borderTop", $(".editAccordion").css("borderBottom"));
+			accordion.css("borderTop", $(".editAccordion").css("borderBottom"));
 			
-			$(".editAccordion h3").click(function() {
+			accordion.children("h3").click(function() {
 				var that = $(this);
 				
 				if (that.hasClass("collapsed")) {
@@ -1934,10 +1932,16 @@ class Design extends Controller {
 				}
 			});
 			
-			$(".editAccordion.open h3").each(function() {
+			accordion.filter(".open").find("h3").each(function() {
 				$(this).siblings().show();
 				$(this).removeClass("collapsed").parent().removeClass("collapsed");
 			});
+			
+			template_data.markItUp('.$this->javascript->generate_json($markItUp).');
+			
+			// Just like calling focus(), but forces FF to move
+			// the cursor to the beginning of the field
+			template_data.createSelection(0, 0);
 			
 			EE.template_edit_url = "'.str_replace('&amp;', '&', BASE).'&C=design&M=template_edit_ajax";
 			EE.access_edit_url = "'.str_replace('&amp;', '&', BASE).'&C=design&M=access_edit_ajax";
