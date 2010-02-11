@@ -53,6 +53,7 @@ class Wiki_mcp {
 		$this->EE->load->library('javascript');
 		$this->EE->load->helper('form');
 
+		$this->EE->cp->add_js_script(array('plugin' => 'tablesorter'));
 		$this->EE->jquery->tablesorter('.mainTable', '{
 			headers: {2: {sorter: false}},
 			widgets: ["zebra"]
@@ -194,7 +195,9 @@ class Wiki_mcp {
 			$result = $this->EE->db->get('wiki_namespaces');
 
 			$vars['next_namespace_id'] = ($result->row('namespace_id') >= 1) ? $result->row('namespace_id') + 1 : 1;
-
+			$vars['wiki_users_value'] = explode('|', $vars['wiki_users_value']);
+			$vars['wiki_admins_value'] = explode('|', $vars['wiki_admins_value']);
+			
 			return $this->EE->load->view('update', $vars, TRUE);
 		}
 		else
@@ -302,7 +305,7 @@ class Wiki_mcp {
 
 				if ($val == 'wiki_users' OR $val == 'wiki_admins')
 				{
-					$data[$val] = implode('|', ($this->EE->input->get_post($val) == '') ? array() : $this->EE->input->get_post($val));
+					$data[$val] = implode('|', $this->EE->input->get_post($val));
 				}
 				elseif($val != 'wiki_namespaces_list')
 				{
