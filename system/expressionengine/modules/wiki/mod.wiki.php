@@ -145,7 +145,9 @@ class Wiki {
 		/* ----------------------------------------*/
 		
 		$x	= explode('/', $this->base_path);
-		$this->seg_parts = explode('/', $this->EE->security->xss_clean(strip_tags($this->EE->uri->query_string)));
+		
+		// temp fix to ditch slashes @todo
+		$this->seg_parts = explode('/', $this->EE->security->xss_clean(strip_tags(stripslashes($this->EE->uri->query_string))));
 		
 		/* ----------------------------------------
 			Fixes a minor bug in ExpressionEngine where the QSTR variable
@@ -198,16 +200,16 @@ class Wiki {
 		/** ------------------------------------
 		/**  Retrieve Our Namespaces
 		/** ------------------------------------*/
-		
+
 		$namespace_query = $this->EE->db->query("SELECT * FROM exp_wiki_namespaces WHERE wiki_id = '".$this->EE->db->escape_str($this->wiki_id)."'");
 		
 		if ($namespace_query->num_rows() > 0)
 		{
 			foreach($namespace_query->result_array() as $row)
 			{
-				$this->namespaces[$row['namespace_name']] = $row['namespace_label'];
+				$this->namespaces[strtolower($row['namespace_name'])] = array($row['namespace_name'], $row['namespace_label']);
 				
-				if (isset($this->seg_parts['0']) && $this->prep_title(substr($this->seg_parts['0'], 0, strlen($row['namespace_label'].':'))) == $row['namespace_label'].':')
+				if (isset($this->seg_parts['0']) && strcasecmp($this->prep_title(substr($this->seg_parts['0'], 0, strlen($row['namespace_label'].':'))), $row['namespace_label'].':') == 0)
 				{
 					$this->admins = explode('|', $row['namespace_admins']);
 					$this->users  = explode('|', $row['namespace_users']); 
@@ -240,7 +242,7 @@ class Wiki {
 		/*  the relatively simple 'category' in the page_namespace field.
 		/* ---------------------------------------*/
 		
-		$this->namespaces['category'] = $this->category_ns;
+		$this->namespaces['category'] = array('category', $this->category_ns);
 		
 		/** ----------------------------------------
 		/**  Tag Settings
@@ -448,7 +450,7 @@ class Wiki {
 		{
 			$this->return_data = $this->_deny_if('uploads', $this->return_data);
 		}
-		
+
 		/** ----------------------------------------
 		/**  Global Tags
 		/** ----------------------------------------*/
@@ -463,8 +465,8 @@ class Wiki {
 				{	
 					foreach($this->namespaces as $name => $label)
 					{
-						$selected = (isset($this->seg_parts['1']) && $this->seg_parts['1'] == $name) ? 'selected="selected"' : '';
-						$output .= str_replace(array('{namespace_short_name}', '{namespace_label}', '{namespace_selected}'), array($name, $label, $selected), $matches['2'][$i]);
+						$selected = (isset($this->seg_parts['1']) && strtolower($this->seg_parts['1']) == $name) ? 'selected="selected"' : '';
+						$output .= str_replace(array('{namespace_short_name}', '{namespace_label}', '{namespace_selected}'), array($label['0'], $label['1'], $selected), $matches['2'][$i]);
 					}
 				}
 				
@@ -644,10 +646,10 @@ class Wiki {
 		{
 			foreach($this->namespaces as $possible)
 			{
-				if (substr($title, 0, strlen($possible.':')) == $possible.':')
+				if (substr($title, 0, strlen($possible['1'].':')) == $possible['1'].':')
 				{
-					$namespace = $possible;
-					$title = substr($title, strlen($possible.':'));
+					$namespace = $possible['1'];
+					$title = substr($title, strlen($possible['1'].':'));
 					break;
 				}
 			}
@@ -743,6 +745,7 @@ class Wiki {
 											"/{$replace}$/"			=> $replace,
 											"/^{$replace}/"			=> $replace
 										   ));
+										
 		
 		return preg_replace(array_keys($trans), array_values($trans), urldecode($str));
 	}
@@ -756,7 +759,8 @@ class Wiki {
 	{
 		if ($short_name != '')
 		{
-			$short_name = (isset($this->namespaces[$short_name])) ? $this->namespaces[$short_name] : '';
+			$short_name = strtolower($short_name);
+			$short_name = (isset($this->namespaces[$short_name])) ? $this->namespaces[$short_name]['1'] : '';
 		}
 		
 		return $short_name;
@@ -801,11 +805,11 @@ class Wiki {
 			
 			foreach($this->namespaces as $name => $label)
 			{
-				if ($label == $this->prep_title($parts['0']))
+				if (strcasecmp($label['1'], $this->prep_title($parts['0'])) == 0)
 				{
-					$xsql		 = " AND page_namespace = '".$this->EE->db->escape_str($name)."' ";
-					$this->topic = substr($this->topic, strlen($label.':'));
-					$this->current_namespace = $label;
+					$xsql		 = " AND LOWER(page_namespace) = '".$this->EE->db->escape_str($name)."' ";
+					$this->topic = substr($this->topic, strlen($label['1'].':'));
+					$this->current_namespace = $label['1'];
 					
 					$this->title = $this->current_namespace.':'.$this->topic;
 					
@@ -816,7 +820,7 @@ class Wiki {
 		
 		return $this->EE->db->query("SELECT * FROM exp_wiki_page 
 							WHERE wiki_id = '".$this->EE->db->escape_str($this->wiki_id)."' 
-							AND page_name = '".$this->EE->db->escape_str($this->topic)."' 
+							AND LOWER(page_name) = '".strtolower($this->EE->db->escape_str($this->topic))."' 
 							{$xsql}");
 	}
 
@@ -1298,9 +1302,9 @@ class Wiki {
 			$xsql = '';
 		}
 			
-		if (isset($this->seg_parts['1']) && isset($this->namespaces[$this->seg_parts['1']]))
+		if (isset($this->seg_parts['1']) && in_array(strtolower($this->seg_parts['1']), array_map('strtolower', array_keys($this->namespaces)))     )
 		{
-			$xsql = "AND p.page_namespace = '".$this->EE->db->escape_str($this->seg_parts['1'])."'";
+			$xsql = "AND LOWER(p.page_namespace) = '".$this->EE->db->escape_str(strtolower($this->seg_parts['1']))."'";
 		}
 		else
 		{
@@ -1380,7 +1384,7 @@ class Wiki {
 			
 			$temp = $template;
 			
-			if (isset($this->seg_parts['1']) && isset($this->namespaces[$this->seg_parts['1']]))
+			if (isset($this->seg_parts['1']) && isset($this->namespaces[strtolower($this->seg_parts['1'])]))
 			{
 				$title = $row['topic'];
 			}
@@ -1836,9 +1840,9 @@ class Wiki {
 			
 			if ($page_id == '' && isset($this->seg_parts['1']) && count($this->namespaces) > 0)
 			{	
-				if (isset($this->namespaces[$this->seg_parts['1']]))
+				if (isset($this->namespaces[strtolower($this->seg_parts['1'])]))
 				{
-					$namespace = $this->seg_parts['1'];
+					$namespace = $this->namespaces[strtolower($this->seg_parts['1'])]['0'];
 				}
 			}
 			
@@ -3208,7 +3212,7 @@ class Wiki {
 	
 	function determine_category($topic)
 	{
-		$cats = explode($this->cats_separator, $topic);
+		$cats = explode($this->cats_separator, strtolower($topic));
 		
 		$parent_id = 0;
 		
@@ -3221,7 +3225,7 @@ class Wiki {
 		/*  following the nesting to find the correct category at the bottom.
 		/* ----------------------------------------*/
 		
-		$xsql = " AND cat_name IN ('";
+		$xsql = " AND LOWER(cat_name) IN ('";
 		
 		foreach($cats as $cat)
 		{
@@ -3247,7 +3251,7 @@ class Wiki {
 				
 				foreach($query->result_array() as $row)
 				{
-					if ($this->valid_title($row['cat_name']) == $current)
+					if (strtolower($this->valid_title($row['cat_name'])) == $current)
 					{
 						if (( ! isset($cat_id) && $row['parent_id'] == 0) OR (isset($cat_id) && $cat_id == $row['parent_id']))
 						{
@@ -3286,7 +3290,7 @@ class Wiki {
 	function category_page()
 	{
 		$cat_data = $this->determine_category($this->topic);
-		
+
 		extract($cat_data);
 		
 		/** ----------------------------------------
@@ -3811,10 +3815,20 @@ class Wiki {
 
 		if ($query->num_rows() == 0)
 		{
-			$key = array_search($this->current_namespace, $this->namespaces);
+			$current_name = strtolower($this->current_namespace);
+			$key = '';
+			
+			foreach ($this->namespaces as $name => $label)
+			{
+				if ($current_name == strtolower($label['1']))
+				{
+					$key = $label['0'];
+					break;
+				}
+			}
 			
 			$data = array('page_name'		=> $this->topic,
-						  'page_namespace'	=> ( ! empty($key)) ? $key : '',  // Namespace's Short Name from Label
+						  'page_namespace'	=> $key,  // Namespace's Short Name from Label
 						  'last_updated'	=> $this->EE->localize->now,
 						  'wiki_id'			=> $this->wiki_id);
 			
@@ -3954,19 +3968,19 @@ class Wiki {
 						
 						foreach($this->namespaces as $name => $label)
 						{
-							if ($label == $parts['0'])
+							if ($label['1'] == $parts['0'])
 							{
 								$data['page_namespace']  = $name;
 								$data['page_name']		 = $this->valid_title(substr($this->EE->input->get_post('rename'), strlen($label.':')));
-								$this->title			 = $label.':'.$data['page_name'];
+								$this->title			 = $label['1'].':'.$data['page_name'];
 								$this->topic			 = $data['page_name'];
-								$this->current_namespace = $label;
+								$this->current_namespace = $label['1'];
 								break;	
 							}
 						}
 					}
 					
-					$t_query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_wiki_page WHERE page_name = '".$this->EE->db->escape_str($data['page_name'])."' AND page_namespace = '".$this->EE->db->escape_str($data['page_namespace'])."'");
+					$t_query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_wiki_page WHERE page_name = '".$this->EE->db->escape_str($data['page_name'])."' AND LOWER(page_namespace) = '".$this->EE->db->escape_str($data['page_namespace'])."'");
 
 					if ($t_query->row('count')  > 0)
 					{
@@ -5789,11 +5803,11 @@ class Wiki {
 							{
 								$link = trim(substr($matches['1'][$i], 0, $pipe_pos));
 								$display_title[$i] = trim(substr($matches['1'][$i], $pipe_pos + 1));
-								$regular[$i] = $this->valid_title($this->EE->security->xss_clean(strip_tags($link)));
+								$regular[$i] = strtolower($this->valid_title($this->EE->security->xss_clean(strip_tags($link))));
 							}
 							else
 							{
-								$regular[$i] = $this->valid_title($matches['1'][$i]);								
+								$regular[$i] = strtolower($this->valid_title($matches['1'][$i]));								
 							}
 						break;
 					}
@@ -5804,11 +5818,11 @@ class Wiki {
 					{
 						$link = trim(substr($matches['1'][$i], 0, $pipe_pos));
 						$display_title[$i] = trim(substr($matches['1'][$i], $pipe_pos + 1));
-						$regular[$i] = $this->valid_title($this->EE->security->xss_clean(strip_tags($link)));
+						$regular[$i] = strtolower($this->valid_title($this->EE->security->xss_clean(strip_tags($link))));
 					}
 					else
 					{
-						$regular[$i] = $this->valid_title($this->EE->security->xss_clean(strip_tags($matches['1'][$i])));
+						$regular[$i] = strtolower($this->valid_title($this->EE->security->xss_clean(strip_tags($matches['1'][$i]))));
 					}
 				}
 			}
@@ -5816,10 +5830,12 @@ class Wiki {
 			/** ------------------------------------
 			/**  Adds a Bit of CSS for Non-Existent Pages
 			/** ------------------------------------*/
-			
+		
 			if (count($regular) > 0)
 			{
 				$exists = array();
+				$replace = ($this->EE->config->item('word_separator') == 'dash') ? '-' : '_';
+
 				if ($existence_check == TRUE)
 				{	
 					// Most...annoying...query...ever.
@@ -5835,26 +5851,35 @@ class Wiki {
 										)
 										AND
 										(
-											CONCAT_WS(':', wn.namespace_label, wp.page_name) IN ('" . implode("','", $this->EE->db->escape_str($regular)) . "')
+											LOWER(CONCAT_WS(':', REPLACE(wn.namespace_label, ' ', '{$replace}'), wp.page_name)) IN ('" . implode("','", $this->EE->db->escape_str($regular)) . "')
 											OR
-											wp.page_name IN ('" . implode("','", $this->EE->db->escape_str($regular)) . "')
-										)
+											LOWER(wp.page_name) IN ('" . implode("','", $this->EE->db->escape_str($regular)) . "')	)
 										");
 
 					if (isset($query) && $query->num_rows() > 0)
 					{
 						foreach($query->result_array() as $row)
 						{
-							$exists[] = ($row['namespace_label'] != '') ? $row['namespace_label'].':'.$row['page_name'] : $row['page_name'];
+							$e_link = ($row['namespace_label'] != '') ? $row['namespace_label'].':'.$row['page_name'] : $row['page_name'];
+							$exists[strtolower($this->valid_title($e_link))] = $this->valid_title($e_link);
 						}
 					}					
 				}
 
+				$this->EE->load->helper('form');
+				
 				foreach($regular as $key => $title)
 				{
-					$this->EE->load->helper('form');
+					$article = FALSE;
+					
+					if (isset($exists[$title]))
+					{
+						$title = $exists[$title];
+						$article = TRUE;
+					}
+					
 					$display = (isset($display_title[$key])) ? $display_title[$key] : $title;
-					$css = (in_array($title, $exists)) ? '' : 'class="noArticle"';
+					$css = ($article) ? '' : 'class="noArticle"';
 					$matches['1'][$key] = '[url="'.$this->base_url.urlencode($title).'" '.$css.' title="'.form_prep($title).'"]'.$this->prep_title($display).'[/url]';
 				}
 			}
