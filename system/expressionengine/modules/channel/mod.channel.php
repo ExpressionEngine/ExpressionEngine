@@ -565,9 +565,11 @@ class Channel {
 				$sort	= ( ! isset($params['sort']))	 ? 'asc' : $params['sort'];
 				$random = ($order == 'random') ? TRUE : FALSE;
 
-				$base_orders = array('random', 'date', 'title', 'url_title', 'edit_date', 'comment_total', 'username', 'screen_name', 'most_recent_comment', 'expiration_date',
+				$base_orders = array('random', 'date', 'title', 'url_title', 'edit_date', 'comment_total', 'username', 'screen_name', 'most_recent_comment', 'expiration_date', 'entry_id', 
 									 'view_count_one', 'view_count_two', 'view_count_three', 'view_count_four');
 
+				$str_sort = array('title', 'url_title', 'username', 'screen_name');
+				
 				if ( ! in_array($order, $base_orders))
 				{
 					$set = 'n';
@@ -665,11 +667,11 @@ class Channel {
 						{
 							if ($status_state == 'negative' && ! in_array(strtolower($query_row['status']) , $stati))
 							{
-								$new[$query_row[$order].'_'.$r] = $relating_data;
+								$new[$query_row[$order].' '.$r] = $relating_data;
 							}
 							elseif (in_array(strtolower($query_row['status']) , $stati))
 							{
-								$new[$query_row[$order].'_'.$r] = $relating_data;
+								$new[$query_row[$order].' '.$r] = $relating_data;
 							}
 						}
 
@@ -683,11 +685,26 @@ class Channel {
 				}
 				elseif ($sort == 'asc') // 1 to 10, A to Z
 				{
-					uksort($new, 'strnatcasecmp');
+					if (in_array($order, $str_sort))
+					{
+						ksort($new);
+					}
+					else
+					{
+						uksort($new, 'strnatcasecmp'); 
+					}
 				}
 				else
 				{
-					uksort($new, 'strnatcasecmp');
+					if (in_array($order, $str_sort))
+					{
+						ksort($new);
+					}
+					else
+					{
+						uksort($new, 'strnatcasecmp'); 
+					}
+					
 					$new = array_reverse($new, TRUE);
 				}
 
