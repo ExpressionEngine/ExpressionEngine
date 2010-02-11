@@ -383,13 +383,22 @@
 				
 				// change the displayed template name
 				name_obj.text(template_name);
-				
+
 				// Change the view link
-				if (name_obj.closest('.templateName').length) {
+				if (name_obj.closest('.templateName').length) { 
 					view_link = name_obj.closest('.templateName').next().find('a');
 					if (view_link.length) {
 						view_link = view_link.get(0);
 						view_link.href = view_link.href.replace(/\/[^\/]*$/, '/' + template_name);
+					}
+				}
+				else if ($('#templateViewLink a.submit').length) {
+					view_link = $('#templateViewLink a.submit');
+					
+					if (view_link.length) { 
+						view_link = view_link.get(0);
+						view_link.href = view_link.href.replace(/\/[^\/]*$/, '/' + template_name);
+						
 					}
 				}
 				

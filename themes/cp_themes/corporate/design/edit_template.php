@@ -9,7 +9,9 @@ if ($EE_view_disable !== TRUE)
 ?>
 
 <div id="mainContent"<?=$maincontent_state?>>
+	<div id="templateViewLink">
 	<?php $this->load->view('_shared/right_nav')?>
+	</div>
 	<div class="contents">
 
 	<?php $this->load->view('_shared/message')?>

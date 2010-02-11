@@ -1886,10 +1886,15 @@ class Design extends Controller {
 
 		$vars['can_save_file'] = ($this->config->item('save_tmpl_files') == 'y' && $this->config->item('tmpl_file_basepath') != '') ? TRUE : FALSE;
 
-
-		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=markitup', TRUE);
-		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=ee_txtarea', TRUE);
-		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=cp/manager', TRUE);
+		$this->cp->add_js_script(array(
+				'plugin'	=> 'markitup',
+				'file'		=> array(
+								'ee_txtarea',
+								'cp/template_editor',
+								'cp/manager'
+				)
+			)
+		);
 
 		$markItUp = array(
 			'nameSpace'	=> "html",
@@ -1902,69 +1907,14 @@ class Design extends Controller {
 		/*	- allow_textarea_tabs => Preserve tabs in all textareas or disable completely
 		/* -------------------------------------------*/
 		
-		if($this->config->item('allow_textarea_tabs') != 'n') {
+		if($this->config->item('allow_textarea_tabs') != 'n') 
+		{
 			$markItUp['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
 		}
 
-		$this->javascript->output('
-		
-			var accordion = $(".editAccordion"),
-				template_data = $("#template_data");
-		
-			$(".button").css("float", "right");
-			
-			// Notes, Access, Prefs
-			accordion.children("div").hide();
-			accordion.children("h3").css("cursor", "pointer").addClass("collapsed").parent().addClass("collapsed");
-			
-			accordion.css("borderTop", $(".editAccordion").css("borderBottom"));
-			
-			accordion.children("h3").click(function() {
-				var that = $(this);
-				
-				if (that.hasClass("collapsed")) {
-					that.siblings().slideDown("fast");
-					that.removeClass("collapsed").parent().removeClass("collapsed");
-				}
-				else {
-					that.siblings().slideUp("fast");
-					that.addClass("collapsed").parent().addClass("collapsed");
-				}
-			});
-			
-			accordion.filter(".open").find("h3").each(function() {
-				$(this).siblings().show();
-				$(this).removeClass("collapsed").parent().removeClass("collapsed");
-			});
-			
-			template_data.markItUp('.$this->javascript->generate_json($markItUp).');
-			
-			// Just like calling focus(), but forces FF to move
-			// the cursor to the beginning of the field
-			template_data.createSelection(0, 0);
-			
-			EE.template_edit_url = "'.str_replace('&amp;', '&', BASE).'&C=design&M=template_edit_ajax";
-			EE.access_edit_url = "'.str_replace('&amp;', '&', BASE).'&C=design&M=access_edit_ajax";
-		');
-		
-		$url = str_replace(AMP, '&', BASE).'&C=design&M=template_revision_history&template='.$template_id.'&revision_id=';
-
-		$this->javascript->output('
-		$("#revision_id").change(
-			function() {
-				var id = $(this).val();
-
-				if (id == "clear") {
-					window.open ("'.$url.'"+id,"Revision", "width=500, height=350, location=0, menubar=0, resizable=0, scrollbars=0, status=0, titlebar=0, toolbar=0, screenX=60, left=60, screenY=60, top=60");
-				}
-				else if (id != "") {
-					window.open ("'.$url.'"+id,"Revision");
-				}
-				return false;
-			}
-		);
-		$("#revision_button").hide();
-		');
+		$this->javascript->set_global('template.markitup', $markItUp);
+		$this->javascript->set_global('template.url',
+		 								str_replace(AMP, '&', BASE).'&C=design&M=template_revision_history&template='.$template_id.'&revision_id=');
 		
 		$vars['table_template'] = array(
 					'table_open'			=> '<table class="templateTable templateEditorTable" border="0" cellspacing="0" cellpadding="0">'
@@ -2015,7 +1965,7 @@ class Design extends Controller {
 		$vars['warnings'] = $warnings;
 
 		$this->javascript->compile();
-		
+
 		$this->cp->set_right_nav(array(
 		    'view_rendered_template' => $vars['view_path']
 		    ));
