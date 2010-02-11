@@ -335,7 +335,7 @@ class Filemanager {
 	 * @return	mixed	uploaded file info
 	 */
 	function upload_file($dir_id = '', $field = FALSE, $ajax = FALSE)
-	{
+	{//var_dump($this->config['upload_file_callback'][0]);
 		$dir = $this->directory($dir_id, FALSE, TRUE);
 
 		$data = array('error' => 'No File'); // @todo: lang key
@@ -580,7 +580,11 @@ class Filemanager {
 				}
 			}
 		}
+		
+		$filename = $_FILES['userfile']['name'];
+		$filename = substr($filename, 0, strrpos($filename, '.'));
 
+		$config['file_name'] 		= url_title($filename, $this->EE->config->item('word_separator'), TRUE);
 		$config['upload_path']		= $dir['server_path'];
 		$config['allowed_types']	= $allowed_types;
 		$config['max_size']			= $dir['max_size'];
@@ -705,13 +709,23 @@ class Filemanager {
 		else
 		{
 			$new_filename = '';
-			for ($i = 1; $i < 100; $i++)
-			{			
-				if ( ! file_exists($path.$filename.$i.$file_ext))
-				{
-					$new_filename = $filename.$i.$file_ext;
-					break;
-				}
+			
+			$thumb_prefix = $this->EE->config->item('thumbnail_prefix');
+			
+			if ( ! file_exists($path.$thumb_prefix.'_'.$filename.$file_ext))
+			{
+				$new_filename = $thumb_prefix.'_'.$filename.$file_ext;
+			}
+			else
+			{
+				for ($i = 1; $i < 100; $i++)
+				{			
+					if ( ! file_exists($path.$thumb_prefix.'_'.$filename.'_'.$i.$file_ext))
+					{
+						$new_filename = $thumb_prefix.'_'.$filename.'_'.$i.$file_ext;
+						break;
+					}
+				}				
 			}
 
 			$image_name_reference = $new_filename;
