@@ -55,6 +55,21 @@ class Rel_ft extends EE_Fieldtype {
 	 * @param	string
 	 * @return	string
 	 */
+	function delete($ids)
+	{
+		$this->EE->db->where_in('rel_parent_id', $ids);
+		$this->EE->db->delete('relationships');
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Display Relationship Field
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	string
+	 */
 	function display_field($data)
 	{
 		if ($this->settings['field_related_orderby'] == 'date')
