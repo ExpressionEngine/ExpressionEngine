@@ -34,7 +34,8 @@ class EE_Functions {
 	var $action_ids			= array();
 	var $file_paths	 		= array();
 	var $conditional_debug = FALSE;
-  
+	var $catfields			= array();
+	  
 	/**
 	 * Constructor
 	 */	  
@@ -1409,32 +1410,6 @@ class EE_Functions {
 				}
 			}		
 		}
-		elseif ($data['type'] == 'gallery')
-		{
-			$sql = "SELECT e.*, 
-					p.gallery_image_url, p.gallery_thumb_prefix, p.gallery_medium_prefix, p.gallery_text_formatting, p.gallery_auto_link_urls, p.gallery_cf_one_formatting, p.gallery_cf_one_auto_link, p.gallery_cf_two_formatting, p.gallery_cf_two_auto_link, p.gallery_cf_three_formatting, p.gallery_cf_three_auto_link, p.gallery_cf_four_formatting, p.gallery_cf_four_auto_link, p.gallery_cf_five_formatting, p.gallery_cf_five_auto_link, p.gallery_cf_six_formatting, p.gallery_cf_six_auto_link,					
-					c.cat_folder, c.cat_name, c.cat_description,
-					m.screen_name, m.username 
-					FROM exp_gallery_entries			AS e
-					LEFT JOIN exp_galleries				AS p ON p.gallery_id = e.gallery_id
-					LEFT JOIN exp_gallery_categories	AS c ON c.cat_id = e.cat_id
-					LEFT JOIN exp_members				AS m ON e.author_id = m.member_id
-					WHERE e.entry_id = '".$data['child_id']."'";
-					
-			$sql = str_replace("\t", " ", $sql);
-		
-			$entry_query = $this->EE->db->query($sql);
-	
-			if ($parent_entry == TRUE)
-			{
-				$this->EE->db->query("INSERT INTO exp_relationships (rel_parent_id, rel_child_id, rel_type, rel_data) VALUES ('".$data['parent_id']."', '".$data['child_id']."', '".$data['type']."', '".addslashes(serialize(array('query' => $entry_query)))."')");
-				return $this->EE->db->insert_id();
-			}
-			else
-			{
-				$this->EE->db->query("UPDATE exp_relationships SET rel_data = '".addslashes(serialize(array('query' => $entry_query)))."' WHERE rel_type = 'gallery' AND rel_child_id = '".$data['child_id']."'");
-			}
-		}
 	}
 	
 	// --------------------------------------------------------------------
@@ -1449,8 +1424,29 @@ class EE_Functions {
 	 */
 	function get_categories($cat_group, $entry_id)
 	{		
+		// fetch the custom category fields
+		$field_sqla = '';
+		$field_sqlb = '';
+		
+		$query = $this->EE->db->query("SELECT field_id, field_name FROM exp_category_fields WHERE group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($cat_group))."')");
+			
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				$this->catfields[] = array('field_name' => $row['field_name'], 'field_id' => $row['field_id']);
+			}
+
+			
+			$field_sqla = ", cg.field_html_formatting, fd.* ";
+			$field_sqlb = " LEFT JOIN exp_category_field_data AS fd ON fd.cat_id = c.cat_id 
+							LEFT JOIN exp_category_groups AS cg ON cg.group_id = c.group_id";
+		}
+
 		$sql = "SELECT		c.cat_name, c.cat_url_title, c.cat_id, c.cat_image, p.cat_id, c.parent_id, c.cat_description, c.group_id
-				FROM		exp_categories AS c, exp_category_posts AS p
+				{$field_sqla}
+				FROM		(exp_categories AS c, exp_category_posts AS p)
+				{$field_sqlb}
 				WHERE		c.group_id	IN ('".str_replace('|', "','", $this->EE->db->escape_str($cat_group))."')
 				AND			p.entry_id	= '".$entry_id."'
 				AND			c.cat_id 	= p.cat_id
@@ -1470,6 +1466,17 @@ class EE_Functions {
 			{	
 				$this->temp_array[$row['cat_id']] = array($row['cat_id'], $row['parent_id'], $row['cat_name'], $row['cat_image'], $row['cat_description'], $row['group_id'], $row['cat_url_title']);
 						
+				if ($field_sqla != '')
+				{
+					foreach ($row as $k => $v)
+					{
+						if (strpos($k, 'field') !== FALSE)
+						{
+							$this->temp_array[$row['cat_id']][$k] = $v;
+						}
+					}
+				}
+
 				if ($row['parent_id'] > 0 && ! isset($this->temp_array[$row['parent_id']])) $parents[$row['parent_id']] = '';
 				unset($parents[$row['cat_id']]);			  
 			}

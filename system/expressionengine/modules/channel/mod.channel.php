@@ -439,10 +439,17 @@ class Channel {
 
 							$this->EE->functions->compile_relationship($fixdata, FALSE);
 							$reldata['categories'] = $this->EE->functions->cat_array;
+							$reldata['category_fields'] = $this->EE->functions->catfields;
 						}
 
 						$this->query = $reldata['query'];
 						$this->categories = array($this->query->row('entry_id')  => $reldata['categories']);
+
+						if (isset($reldata['category_fields']))
+						{
+							$this->catfields = array($this->query->row('entry_id') => $reldata['category_fields']);
+						}
+
 						$this->parse_channel_entries();
 
 						$marker = LD."REL[".$row['rel_id']."][".$temp[2]['field_name']."]".$temp[1]."REL".RD;
@@ -7423,11 +7430,9 @@ class Channel {
 
 	function filemanager_endpoint($function = '', $params = array())
 	{
-
 		$this->EE->load->library('filemanager');
 		$this->EE->lang->loadfile('content');
-		$this->EE->load->library('cp');
-		
+		//$this->EE->load->library('cp');
 		
 		$config = array();
 		
@@ -7439,10 +7444,6 @@ class Channel {
 		}
 
 		$this->EE->filemanager->process_request($config);		
-		
-		
-		$this->EE->filemanager->process_request();
-
 	}	
 	
 	// ------------------------------------------------------------------------
