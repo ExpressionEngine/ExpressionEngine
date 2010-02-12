@@ -319,7 +319,7 @@ $(document).ready(function() {
 				}
 			});
 		};
-		setInterval(autosave_entry, 1000 * EE.publish.autosave.success); // 1000 milliseconds per second
+		setInterval(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
 	}
 
 	$(".markItUp ul").append("<li class=\"btn_plus\"><a title=\""+EE.lang.add_new_html_button+"\" href=\""+EE.BASE+"&C=myaccount&M=html_buttons&id="+EE.user_id+"\">+</a></li>");
