@@ -352,6 +352,9 @@ class Api_channel_entries extends Api {
 	 */
 	function delete_entry($entry_ids)
 	{
+		$this->EE->load->library('api');
+		$this->EE->api->instantiate('channel_fields');
+
 		if ( ! is_array($entry_ids))
 		{
 			$entry_ids = array($entry_ids);
@@ -363,11 +366,14 @@ class Api_channel_entries extends Api {
 		$comments_installed = (isset($this->EE->cp->installed_modules['comment'])) ? TRUE : FALSE;
 		
 		// @todo model
+		// grab entry meta data
 		$this->EE->db->select('channel_id, author_id, entry_id');
 		$this->EE->db->from('channel_titles');
 		$this->EE->db->where_in('entry_id', $entry_ids);
 		$query = $this->EE->db->get();
 
+		
+		// Check permissions
 		$allowed_channels = $this->EE->functions->fetch_assigned_channels();
 		$authors = array();
 
@@ -398,38 +404,68 @@ class Api_channel_entries extends Api {
 
 			$authors[$row['entry_id']] = $row['author_id'];
 		}
+		
+		
+		// grab channel field groups
+		$this->EE->db->select('channel_id, field_group');
+		$cquery = $this->EE->db->get('channels');
+		
+		$channel_groups = array();
+		
+		foreach($cquery->result_array() as $row)
+		{
+			$channel_groups[$row['channel_id']] = $row['field_group'];
+		}
 
-		// gather related fields, we use this later if needed
-		$this->EE->db->select('field_id');
-		$fquery = $this->EE->db->get_where('channel_fields', array('field_type' => 'rel'));
+
+		// grab fields and order by group
+		$this->EE->db->select('field_id, field_type, group_id');
+		$fquery = $this->EE->db->get('channel_fields');
+		
+		$group_fields = array();
+		
+		foreach($fquery->result_array() as $row)
+		{
+			$group_fields[$row['group_id']][] = $row['field_type'];
+		}
+		
+
+		// Delete primary data
+		$this->EE->db->where_in('entry_id', $entry_ids);
+		$this->EE->db->delete(array('channel_titles', 'channel_data', 'category_posts'));
+
 
 		$entries = array();
-
-		foreach($entry_ids as $key => $val)
+		$ft_to_ids = array();
+		
+		foreach($query->result_array() as $row)
 		{
-			if ( ! is_numeric($val))
+			$val = $row['entry_id'];
+			$channel_id = $row['channel_id'];
+			
+			// Map entry id to fieldtype
+			$group_id = $channel_groups[$channel_id];
+			$field_type = $group_fields[$group_id];
+			
+			foreach($field_type as $ft)
 			{
-				continue;
+				if ( ! isset($ft_to_ids[$ft]))
+				{
+					$ft_to_ids[$ft] = array($val);
+				}
+				else if ( ! in_array($val, $ft_to_ids[$ft]))
+				{
+					$ft_to_ids[$ft][] = $val;
+				}
 			}
-
-			$this->EE->db->select('channel_id');
-			$query = $this->EE->db->get_where('channel_titles', array('entry_id' => $val));
-
-			if ($query->num_rows() == 0)
-			{
-				continue;
-			}
-
-			$entries[] = $val;
-
-			$channel_id = $query->row('channel_id');
-
-			$this->EE->db->where('entry_id', $val);
-			$this->EE->db->delete(array('channel_titles', 'channel_data', 'category_posts'));
-			$this->EE->db->delete('relationships', array('rel_parent_id' => $val));
-
-			// Check for silly children
-
+			
+			
+			// Check for silly relationship children
+			
+			// We do the regular relationship data in the relationship
+			// fieldtype, but we have no way of knowing that a child
+			// exists until we check. So it happens here.
+			
 			$this->EE->db->select('rel_id');
 			$child_results = $this->EE->db->get_where('relationships', array('rel_child_id' => $val));
 
@@ -454,17 +490,17 @@ class Api_channel_entries extends Api {
 				$this->EE->db->delete('relationships', array('rel_child_id' => $val));
 			}
 
-			$this->EE->db->select('total_entries');
-			$query = $this->EE->db->get_where('members', array('member_id' => $authors[$val]));
 
-			$tot = $query->row('total_entries');
+			// Correct member post count
+			$this->EE->db->select('total_entries');
+			$mquery = $this->EE->db->get_where('members', array('member_id' => $authors[$val]));
+
+			$tot = $mquery->row('total_entries');
 
 			if ($tot > 0)
 			{
 				$tot -= 1;
 			}
-
-			// @todo model
 
 			$this->EE->db->where('member_id', $authors[$val]);
 			$this->EE->db->update('members', array('total_entries' => $tot));
@@ -473,21 +509,22 @@ class Api_channel_entries extends Api {
 			{
 				$this->EE->db->where('status', 'o');
 				$this->EE->db->where('entry_id', $val);
-				$this->EE->db->where('author_id', $authors[$val]);
+				$this->EE->db->where('author_id', $authors[$val]);	// @confirm this doesn't make a lot of sense
 				$count = $this->EE->db->count_all_results('comments');
 
 				if ($count > 0)
 				{
 					$this->EE->db->select('total_comments');
-					$query = $this->EE->db->get_where('members', array('member_id' => $authors[$val]));
+					$mc_query = $this->EE->db->get_where('members', array('member_id' => $authors[$val]));
 
 					$this->EE->db->where('member_id', $authors[$val]);
-					$this->EE->db->update('members', array('total_comments' => ($query->row('total_comments') - $count)));
+					$this->EE->db->update('members', array('total_comments' => ($mc_query->row('total_comments') - $count)));
 				}
 
 				$this->EE->db->delete('comments', array('entry_id' => $val));
 			}
-
+			
+			
 			// -------------------------------------------
 			// 'delete_entries_loop' hook.
 			//  - Add additional processing for entry deletion in loop
@@ -505,7 +542,10 @@ class Api_channel_entries extends Api {
 			{
 				$this->EE->stats->update_comment_stats($channel_id);
 			}
+
+			$entries[] = $val;
 		}
+
 
 		// Delete Pages Stored in Database For Entries
 		if (count($entries) > 0 && $this->EE->config->item('site_pages') !== FALSE)
@@ -526,16 +566,23 @@ class Api_channel_entries extends Api {
 				$this->EE->db->update('sites', array('site_pages' => base64_encode(serialize($pages))));
 			}
 		}
-
 		
-		// Pass to any modules on publish form
-		$this->EE->load->library('api');
-		$this->EE->api->instantiate('channel_fields');		
+		$fts = $this->EE->api_channel_fields->fetch_installed_fieldtypes();
 		
+		// Pass to custom fields
+		foreach($ft_to_ids as $fieldtype => $ids)
+		{
+			$this->EE->api_channel_fields->setup_handler($fieldtype);
+			$this->EE->api_channel_fields->apply('delete', array($ids));
+		}
+		
+		
+		// Pass to module defined fields		
 		$methods = array('publish_data_delete_db');
 		$params = array('publish_data_delete_db' => array('entry_ids' => $entry_ids));
 		
 		$this->EE->api_channel_fields->get_module_methods($methods, $params);
+		
 
 		// Clear caches
 		$this->EE->functions->clear_caching('all');
@@ -595,7 +642,7 @@ class Api_channel_entries extends Api {
 	 */
 	function update_related_cache($entry_id)
 	{
-		//	Is this entry a child of another parent?
+		// Is this entry a child of another parent?
 		//
 		// If the entry being submitted is a "child" of another parent
 		// we need to re-compile and cache the data.  Confused?	 Me too...
@@ -1527,7 +1574,7 @@ class Api_channel_entries extends Api {
 		// @todo model
 		$this->EE->db->select('field_id, field_related_to, field_related_id');
 		$query = $this->EE->db->get_where('channel_fields', array('field_type' => 'rel'));
-				
+		
 		$rel_updates = array();
 		
 		if ($query->num_rows() > 0)
@@ -1868,6 +1915,20 @@ class Api_channel_entries extends Api {
 			$max = (is_numeric($this->c_prefs['max_revisions']) AND $this->c_prefs['max_revisions'] > 0) ? $this->c_prefs['max_revisions'] : 10;
 			
 			$this->EE->channel_entries_model->prune_revisions($this->entry_id, $max);
+		}
+		
+		
+		// Post update custom fields
+		
+		foreach($this->EE->api_channel_fields->settings as $field_id => $settings)
+		{
+			$this->EE->api_channel_fields->settings[$field_id]['entry_id'] = $this->entry_id;
+			
+			$field_name = $settings['field_name'];
+			$fdata = isset($data[$field_name]) ? $data[$field_name] : '';
+
+			$this->EE->api_channel_fields->setup_handler($field_id);
+			$this->EE->api_channel_fields->apply('post_save', array($fdata));
 		}
 	}
 	
