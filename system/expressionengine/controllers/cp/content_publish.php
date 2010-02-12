@@ -1815,7 +1815,6 @@ class Content_publish extends Controller {
 		// $this->javascript->set_global($this->form_validation->_config_rules);
 		if ($this->form_validation->run() == FALSE OR is_numeric($version_id))
 		{
-			// $this->cp->add_to_foot($inline_js.$this->insert_javascript());
 			$this->cp->add_to_foot($this->insert_javascript());
 			
 			if ($vars['smileys_enabled'])
@@ -1858,7 +1857,7 @@ class Content_publish extends Controller {
 		}
 		else
 		{
-			$this->cp->add_to_foot($inline_js.$this->insert_javascript());
+			$this->cp->add_to_foot($this->insert_javascript());
 			
 			if ($vars['smileys_enabled'])
 			{
