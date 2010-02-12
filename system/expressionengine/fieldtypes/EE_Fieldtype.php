@@ -113,6 +113,33 @@ class EE_Fieldtype {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Called after field is saved
+	 *
+	 * @access	public
+	 * @param	string
+	 */
+	function post_save($data)
+	{
+		// $this->settings['entry_id'];
+		return array();
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Called when entries are deleted
+	 *
+	 * @access	public
+	 * @param	mixed
+	 */
+	function delete($ids)
+	{
+		return array();
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Save Settings
 	 *
 	 * @access	public
