@@ -280,10 +280,10 @@ class Forum_mcp {
 		{
 			$vars['_boards'][$row['board_id']] = form_prep($row['board_label']);
 		}
-		
+
 		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line($title));
 		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum', $this->EE->lang->line('forum_module_name'));
-		
+
 		// Using _add_crumb for templates means we end with a breadcrumb after the page title...
 		// we fix this by adding the current page to the path and setting a bogus cp title
 
@@ -2576,10 +2576,10 @@ class Forum_mcp {
 		
 		$title = ($alias == 'y') ? 'forum_board_alias_prefs' : 'forum_board_prefs';
 		$title = ($is_new === TRUE) ? 'new_'.$title : $title;
-		
+
 		$this->_accordion_js();
 		
-		return $this->content_wrapper('forum_prefs', 'new_forum_board_prefs', array('P' => $P, 'hidden' => $hidden));
+		return $this->content_wrapper('forum_prefs', $title, array('P' => $P, 'hidden' => $hidden));
 	}
 
 	// --------------------------------------------------------------------
