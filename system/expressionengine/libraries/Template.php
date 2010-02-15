@@ -1447,7 +1447,7 @@ class EE_Template {
 						$match[0] = $this->EE->functions->full_tag($no_rel_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
 					}
 					
-					$no_rel_content = substr($no_rel_match[0], strlen(LD."if no_related_entries".RD), -strlen(LD.'\/'."if".RD));
+					$no_rel_content = substr($no_rel_match[0], strlen(LD."if no_related_entries".RD), -strlen(LD.'/'."if".RD));
 				}
 				
 				$this->related_markers[] = $matches[1][$j];
