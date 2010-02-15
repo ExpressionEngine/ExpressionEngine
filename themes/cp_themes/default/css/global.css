@@ -1093,7 +1093,6 @@ input.submit {
 	}	
 #mainContent #filterMenu, #mainContent #registerUser {
 	background-color:	#ECF1F4;
-	padding:			0 10px 12px 10px;
 	color:				#5f6c74;
 	font-size:			12px;
 }
@@ -3335,7 +3334,6 @@ table.solo {
 
 #mainContent #filterMenu {
 	background-color:	#ECF1F4;
-	padding:			12px 10px;
 	color:				#5f6c74;
 	font-size:			12px;
 }

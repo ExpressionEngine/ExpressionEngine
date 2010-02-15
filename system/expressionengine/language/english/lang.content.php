@@ -929,6 +929,9 @@ $lang = array(
 'comments_moved' =>
 'Comments moved',
 
+'search_entries' =>
+'Search Entries',
+
 ''=>''
 );
 

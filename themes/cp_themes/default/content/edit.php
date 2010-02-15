@@ -19,7 +19,8 @@ if ($EE_view_disable !== TRUE)
 		</div>
 		<div class="pageContents">
 		<div id="filterMenu">
-
+			<fieldset>
+				<legend><?=lang('search_entries')?></legend>
 			<?php $this->load->view('_shared/message');?>
 
 			<?=form_open($search_form, array('name'=>'filterform', 'id'=>'filterform'), $search_form_hidden)?>
@@ -59,7 +60,7 @@ if ($EE_view_disable !== TRUE)
 				</div>
 
 			<?=form_close()?>
-	
+			</fieldset>
 			</div> <!-- filterMenu -->
 
 			<?php if ($total_count == 0):?>
