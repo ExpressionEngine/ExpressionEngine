@@ -58,7 +58,7 @@ class Comment_mcp {
 		$this->EE->lang->loadfile('comment');
 
 		$this->EE->db->select('entry_id, email');
-		$this->EE->db->get_where('comments', array('comment_id' => $id));
+		$query = $this->EE->db->get_where('comments', array('comment_id' => $id));
 
 		if ($query->num_rows() != 1)
 		{
