@@ -1488,7 +1488,7 @@ class EE_Template {
 						$match[0] = $this->EE->functions->full_tag($no_rev_match[0], $matches[2][$j], LD.'if', LD.'\/'."if".RD);
 					}
 					
-					$no_rev_content = substr($no_rev_match[0], strlen(LD."if no_reverse_related_entries".RD), -strlen(LD.'\/'."if".RD));
+					$no_rev_content = substr($no_rev_match[0], strlen(LD."if no_reverse_related_entries".RD), -strlen(LD.'/'."if".RD));
 				}
 				
 				$this->reverse_related_data[$rand] = array(
