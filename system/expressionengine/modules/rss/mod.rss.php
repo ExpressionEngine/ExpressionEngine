@@ -538,7 +538,7 @@ class Rss {
 				$match['0'] = $this->EE->functions->full_tag($match['0'], $this->EE->TMPL->tagdata, LD.'if', LD.'\/'."if".RD);
 			}
 
-			$empty_feed = substr($match['0'], strlen(LD."if empty_feed".RD), -strlen(LD.'\/'."if".RD));
+			$empty_feed = substr($match['0'], strlen(LD."if empty_feed".RD), -strlen(LD.'/'."if".RD));
 
 			$empty_feed = str_replace(LD.'error'.RD, $error, $empty_feed);
 		}
