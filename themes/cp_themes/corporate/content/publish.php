@@ -157,81 +157,78 @@ if ($EE_view_disable !== TRUE)
 							?>
 							</p>
 
-							<?php if ($f['field_type'] == 'textarea'):?>
-							<p class="writemode_parent"><a href="<?=$write_mode_link?>" class="write_mode_trigger thickbox" id="id_<?=$f['field_id']?>" title="<?=lang('write_mode')?>"><img alt="<?=lang('write_mode')?>" width="22" height="21" src="<?=$cp_theme_url?>images/publish_write_mode.png" /></a></p>
-							<?php endif;?>
-						</div>
-						
-						<?php
-						// @todo move this logic to the controller or fieldtype api
-						$defaults = array(
-							'field_show_spellcheck'			=> 'n',
-							'field_show_smileys'			=> 'n',
-							'field_show_glossary'			=> 'n',
-							'field_show_formatting_btns'	=> 'n',
-							'field_show_writemode'			=> 'n',
-							'field_show_file_selector'		=> 'n',
-							'field_show_fmt'				=> 'n'
-						);
-						
-						$has_extras = FALSE;
-						
-						foreach($defaults as $key => $val)
-						{
-							if (isset($f[$key]) && $f[$key] == 'y')
-							{
-								$has_extras = TRUE;
-								continue;
-							}
-							
-							$f[$key] = $val;
-						}
-						?>
-						
-						<?php if ($has_extras): ?>
-							<p class="spellcheck markitup">
-							
-								<?php if ($f['field_show_writemode'] == 'y'):?>
-									<a href="<?=$write_mode_link?>" class="write_mode_trigger thickbox" id="id_<?=$f['field_id']?>" title="<?=lang('write_mode')?>"><img alt="<?=lang('write_mode')?>" width="22" height="21" src="<?=$cp_theme_url?>images/publish_write_mode.png" /></a> 
-								<?php endif;?>
-							
-								<?php if ($f['field_show_file_selector'] == 'y' && count($file_list) > 0):?>
-									<a href="#" class="markItUpButton">
-									<img class="file_manipulate js_show" src="<?=$cp_theme_url?>images/publish_format_picture.gif" alt="<?=lang('file')?>" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-								<?php endif;?>
-							
-								<?php if($spell_enabled && $f['field_show_spellcheck'] == 'y'):?>
-									<a href="#" class="spellcheck_link" id="spelltrigger_<?=(ctype_digit($f['field_id']))?'field_id_':''?><?=$f['field_id']?>" title="<?=lang('check_spelling')?>"><img src="<?=$cp_theme_url.'images/spell_check_icon.png'?>" style="margin-bottom: -8px;" alt="<?=lang('check_spelling')?>" /></a>
-								<?php endif;?>
-							
-								<?php if($f['field_show_glossary'] == 'y'):?>
-									<a href="#" class="glossary_link" title="<?=lang('glossary')?>"><img src="<?=$cp_theme_url.'images/spell_check_glossary.png'?>" style="margin-bottom: -8px;" alt="<?=lang('glossary')?>" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-								<?php endif;?>
-							
-								<?php if ($smileys_enabled && $f['field_show_smileys'] == 'y'):?>
-									<a href="#" class="smiley_link" title="<?=lang('emoticons')?>"><?=lang('emoticons')?></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-								<?php endif;?>
-							
-								<?php if ($f['field_show_fmt'] == 'y' && count($f['field_fmt_options']) > 0):?>
-									<?=lang('formatting')?>
-									<?=form_dropdown('field_ft_'.$f['field_id'], $f['field_fmt_options'], $f['field_fmt'])?> 
-								<?php endif;?>
-						
-							</p>
-						
-							<?php if($spell_enabled && $f['field_show_spellcheck'] == 'y'):
-								echo (ctype_digit($f['field_id'])) ? build_spellcheck('field_id_'.$f['field_id']) : build_spellcheck($f['field_id']);
-							endif;?>
-							
-							<?php if($f['field_show_glossary'] == 'y'):
-								echo $glossary_items;
-							endif;?>
+							<?php
+							// @todo move this logic to the controller or fieldtype api
+							$defaults = array(
+								'field_show_spellcheck'			=> 'n',
+								'field_show_smileys'			=> 'n',
+								'field_show_glossary'			=> 'n',
+								'field_show_formatting_btns'	=> 'n',
+								'field_show_writemode'			=> 'n',
+								'field_show_file_selector'		=> 'n',
+								'field_show_fmt'				=> 'n'
+							);
 
-							<?php if ($smileys_enabled && $f['field_show_smileys'] == 'y'):
-								echo $smiley_table[$f['field_id']];									
-							endif;?>
-						
-						<?php endif; ?>
+							$has_extras = FALSE;
+
+							foreach($defaults as $key => $val)
+							{
+								if (isset($f[$key]) && $f[$key] == 'y')
+								{
+									$has_extras = TRUE;
+									continue;
+								}
+
+								$f[$key] = $val;
+							}
+							?>
+
+							<?php if ($has_extras): ?>
+								<p class="spellcheck markitup">
+
+									<?php if ($f['field_show_writemode'] == 'y'):?>
+										<a href="<?=$write_mode_link?>" class="write_mode_trigger thickbox" id="id_<?=$f['field_id']?>" title="<?=lang('write_mode')?>"><img alt="<?=lang('write_mode')?>" width="22" height="21" src="<?=$cp_theme_url?>images/publish_write_mode.png" /></a> 
+									<?php endif;?>
+
+									<?php if ($f['field_show_file_selector'] == 'y' && count($file_list) > 0):?>
+										<a href="#" class="markItUpButton">
+										<img class="file_manipulate js_show" src="<?=$cp_theme_url?>images/publish_format_picture.gif" alt="<?=lang('file')?>" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									<?php endif;?>
+
+									<?php if($spell_enabled && $f['field_show_spellcheck'] == 'y'):?>
+										<a href="#" class="spellcheck_link" id="spelltrigger_<?=(ctype_digit($f['field_id']))?'field_id_':''?><?=$f['field_id']?>" title="<?=lang('check_spelling')?>"><img src="<?=$cp_theme_url.'images/spell_check_icon.png'?>" style="margin-bottom: -8px;" alt="<?=lang('check_spelling')?>" /></a>
+									<?php endif;?>
+
+									<?php if($f['field_show_glossary'] == 'y'):?>
+										<a href="#" class="glossary_link" title="<?=lang('glossary')?>"><img src="<?=$cp_theme_url.'images/spell_check_glossary.png'?>" style="margin-bottom: -8px;" alt="<?=lang('glossary')?>" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									<?php endif;?>
+
+									<?php if ($smileys_enabled && $f['field_show_smileys'] == 'y'):?>
+										<a href="#" class="smiley_link" title="<?=lang('emoticons')?>"><?=lang('emoticons')?></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									<?php endif;?>
+
+									<?php if ($f['field_show_fmt'] == 'y' && count($f['field_fmt_options']) > 0):?>
+										<?=lang('formatting')?>
+										<?=form_dropdown('field_ft_'.$f['field_id'], $f['field_fmt_options'], $f['field_fmt'])?> 
+									<?php endif;?>
+
+								</p>
+
+								<?php if($spell_enabled && $f['field_show_spellcheck'] == 'y'):
+									echo (ctype_digit($f['field_id'])) ? build_spellcheck('field_id_'.$f['field_id']) : build_spellcheck($f['field_id']);
+								endif;?>
+
+								<?php if($f['field_show_glossary'] == 'y'):
+									echo $glossary_items;
+								endif;?>
+
+								<?php if ($smileys_enabled && $f['field_show_smileys'] == 'y'):
+									echo $smiley_table[$f['field_id']];									
+								endif;?>
+
+							<?php endif; ?>
+
+						</div>
 					</div>
 
 				<?php endforeach;?>
