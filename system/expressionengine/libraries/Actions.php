@@ -73,13 +73,13 @@ class EE_Actions {
 		{
 			return false;
 		}
-
+// var_dump($action_id); exit;
 		// Fetch the class and method name (checks to make sure module is installed too)
 		// If the ID is numeric we need to do an SQL lookup
 		if (is_numeric($action_id))
 		{					
 			$query = $EE->db->query("SELECT class, method FROM exp_actions WHERE action_id = '".$EE->db->escape_str($action_id)."'");
-			
+
 			if ($query->num_rows() == 0)
 			{
 				if ($EE->config->item('debug') >= 1)
@@ -87,7 +87,9 @@ class EE_Actions {
 					$EE->output->fatal_error($EE->lang->line('invalid_action'));
 				}
 				else
-					return FALSE;
+				{
+					return FALSE;					
+				}
 			}
 			
 			$class  = ucfirst($query->row('class') );
@@ -107,7 +109,7 @@ class EE_Actions {
 			// Double check that the module is actually installed
 			$query = $EE->db->query("SELECT module_version FROM exp_modules 
 									 WHERE module_name = '".$EE->db->escape_str(ucfirst($class))."'");
-			
+
 			if ($query->num_rows() == 0)
 			{
 				if ($EE->config->item('debug') >= 1)
@@ -115,16 +117,18 @@ class EE_Actions {
 					$EE->output->fatal_error($EE->lang->line('invalid_action'));
 				}
 				else
-					return false;
+				{
+					return false;					
+				}
 			}
 		}
 
 		// What type of module is being requested?
-		if (substr($class, -3) == '_mcp')
+		if (substr($class, -4) == '_mcp')
 		{
 			$type = 'mcp'; 
 			
-			$base_class = strtolower(substr($class, 0, -3));
+			$base_class = strtolower(substr($class, 0, -4));
 		}
 		else
 		{
@@ -145,7 +149,7 @@ class EE_Actions {
 			$EE->load->add_package_path(PATH_THIRD.$base_class.'/');		
 			$path = PATH_THIRD.$base_class.'/'.$type.'.'.$base_class.EXT;
 		}
-	
+
 		// Does the path exist?		
 		if ( ! file_exists($path))
 		{
@@ -154,7 +158,9 @@ class EE_Actions {
 				$EE->output->fatal_error($EE->lang->line('invalid_action'));
 			}
 			else
-				return FALSE;
+			{
+				return FALSE;				
+			}
 		}
 		
 		// Require the class file
