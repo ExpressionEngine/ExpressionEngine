@@ -23,8 +23,8 @@ if ($EE_view_disable !== TRUE)
 			<?php $this->load->view('_shared/message');?>
 
 	        	<?=form_open('C=members'.AMP.'M=view_all_members')?>
-			
-					<p><?=lang('total_members').' '.$total_members?></p>
+					<fieldset>
+					<p><strong><?=lang('total_members').'</strong> '.$total_members?></p>
 			
 					<p>
 						<?=form_label(lang('keywords'), 'member_name')?>
@@ -45,6 +45,7 @@ if ($EE_view_disable !== TRUE)
 
 						<?=form_submit('submit', lang('search'), 'id="filter_member_submit" class="submit"')?>
 					</p>
+					</fieldset>
 	            <?=form_close()?>
 	
 <?php
