@@ -748,7 +748,9 @@ class Forum_Core extends Forum {
 		$this->return_data = '';		
 		$this->error_message = $this->EE->lang->line($msg);
 		$this->_set_page_title($this->EE->lang->line('error'));
+		
 		// set the current id to 'error' so breadcrumbs and other items are obfuscated
+		$this->return_override = $this->current_id;		
 		$this->current_id = 'error';
 		return $this->_display_forum('error_page');			
 	}

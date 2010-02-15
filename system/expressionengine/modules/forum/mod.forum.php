@@ -39,6 +39,7 @@ class Forum {
 	var $trigger			= '';
 	var $current_page		= 0;
 	var $current_id			= '';
+	var $return_override	= '';
 	var $seg_addition		= 0;
 	var $announce_id		= '';
 	var $current_request	= '';
@@ -850,7 +851,14 @@ class Forum {
 		
 		if ( ! isset($hidden['RET']))
 		{
-			$hidden['RET'] = $this->EE->functions->remove_double_slashes($this->_forum_path($this->current_request.'/'.$this->current_id));
+			if ($this->return_override != '')
+			{
+				$hidden['RET'] = $this->EE->functions->remove_double_slashes($this->_forum_path($this->current_request.'/'.$this->return_override));				
+			}
+			else
+			{
+				$hidden['RET'] = $this->EE->functions->remove_double_slashes($this->_forum_path($this->current_request.'/'.$this->current_id));
+			}
 		}
 				
 		// If the post submission form is the one being viewed we
