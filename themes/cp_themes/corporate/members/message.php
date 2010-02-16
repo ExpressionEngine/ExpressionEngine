@@ -11,15 +11,12 @@ if ($EE_view_disable !== TRUE)
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
-
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-	
-		<div class="pageContents">
-	
 		<?php $this->load->view('_shared/message');?>
-	   
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		<div class="heading"><h2><?=$cp_page_title?></h2></div>
+		<div class="pageContents">
+			<?=$message?>
+		</div> <!-- pageContents -->
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
