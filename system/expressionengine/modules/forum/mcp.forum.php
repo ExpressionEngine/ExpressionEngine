@@ -1111,7 +1111,7 @@ class Forum_mcp {
 		$forum_topics_count = $this->EE->db->query('SELECT COUNT(*) AS count, author_id FROM exp_forum_topics GROUP BY author_id ORDER BY count DESC');
 		$forum_posts_count = $this->EE->db->query('SELECT COUNT(*) AS count, author_id FROM exp_forum_posts GROUP BY author_id ORDER BY count DESC');
 
-		if ($forum_topics_count->num_rows > 0)
+		if ($forum_topics_count->num_rows() > 0)
 		{
 			foreach($forum_topics_count->result as $row)
 			{
@@ -1121,7 +1121,7 @@ class Forum_mcp {
 			}
 		}
 
-		if ($forum_posts_count->num_rows > 0)
+		if ($forum_posts_count->num_rows() > 0)
 		{
 			foreach($forum_posts_count->result as $row)
 			{

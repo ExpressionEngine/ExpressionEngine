@@ -615,7 +615,7 @@ class Api_channel_fields extends Api {
 		
 		$mquery = $this->EE->addons_model->get_installed_modules(FALSE, TRUE);
 			
-		if ($mquery->num_rows > 0)
+		if ($mquery->num_rows() > 0)
 		{
 			foreach($mquery->result_array() as $row)
 			{

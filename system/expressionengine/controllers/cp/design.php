@@ -2439,7 +2439,7 @@ class Design extends Controller {
 			$vars['revision_data'] = $query->row('item_data');
 			$vars['type'] = 'revision';
 
-        	if ($query->num_rows == 0)
+        	if ($query->num_rows() == 0)
         	{
         		return false;
         	}

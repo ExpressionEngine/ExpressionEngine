@@ -2475,7 +2475,7 @@ class EE_Template {
 		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
 		$query = $this->EE->db->get('template_groups');
 
-		if ($query->num_rows != 0)
+		if ($query->num_rows() != 0)
 		{
 			$group_id = $query->row('group_id');
 		}

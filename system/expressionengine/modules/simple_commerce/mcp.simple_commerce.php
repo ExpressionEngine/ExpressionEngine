@@ -2211,7 +2211,7 @@ MAGIC;
 
 		$query = $this->EE->db->get('simple_commerce_items');
 
-        if ($query->num_rows > 0)
+        if ($query->num_rows() > 0)
         {
         	$extra_sql['where'] = " AND exp_channel_titles.entry_id NOT IN ('";
         		

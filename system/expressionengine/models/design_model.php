@@ -123,7 +123,7 @@ class Design_model extends CI_Model {
 		$this->db->where('templates.site_id', $this->config->item('site_id'));
 		$query = $this->db->get();
 
-		if ($query->num_rows == 0)
+		if ($query->num_rows() == 0)
 		{
 			return FALSE;
 		}

@@ -399,7 +399,7 @@ class Search {
         {
 			$query = $this->EE->db->query("SELECT member_id FROM exp_members WHERE member_id = '".$this->EE->db->escape_str($_GET['mbr'])."'");
 			
-			if ($query->num_rows != 1)
+			if ($query->num_rows() != 1)
 			{
 				return FALSE;
 			}

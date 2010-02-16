@@ -586,7 +586,7 @@ class EE_Config Extends CI_Config {
 								OR group_name = '".$this->EE->db->escape_str($new_values['reserved_category_word'])."')
 								AND t.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' LIMIT 1");
 
-			if ($query->num_rows > 0)
+			if ($query->num_rows() > 0)
 			{
 				show_error($this->EE->lang->line('category_trigger_duplication').' ('.htmlentities($new_values['reserved_category_word']).')');
 			}

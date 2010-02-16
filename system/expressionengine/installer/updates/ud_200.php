@@ -132,7 +132,7 @@ class Updater {
 		$this->EE->db->join('template_groups', 'template_groups.group_id = templates.group_id');
         $query = $this->EE->db->get('templates');
 
-        if ($query->num_rows == 0)
+        if ($query->num_rows() == 0)
         {
             return;
         }

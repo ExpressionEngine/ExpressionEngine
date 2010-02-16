@@ -3274,7 +3274,7 @@ class Member {
 		$this->EE->db->where('m.group_id = g.group_id');
 		$query = $this->EE->db->get();
 
-		if ($query->num_rows == 0)
+		if ($query->num_rows() == 0)
 		{
 			return $this->EE->TMPL->tagdata = '';
 		}

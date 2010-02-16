@@ -3905,7 +3905,7 @@ class Forum_Core extends Forum {
 		
 			$total_posts = ($row['total_forum_topics'] + $row['total_forum_posts']);
 		
-			if ($rank_query->num_rows > 0)
+			if ($rank_query->num_rows() > 0)
 			{
 				$num_stars = NULL;
 				$rank_title = '';
