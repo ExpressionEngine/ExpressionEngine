@@ -4002,13 +4002,21 @@ class Design extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-		
+
 		$this->load->model('template_model');
 		
 		$group_id = $this->input->get_post('group_id');
 		$group_name = $this->input->post('group_name');
 		
 		$is_site_default = ($this->input->post('is_site_default') == 'y' ) ? 'y' : 'n';
+
+		if ($is_site_default == 'y')
+		{
+			$this->db->where('group_id !=', $group_id);
+			$this->db->where('site_id', $this->config->item('site_id'));
+			$this->db->set('is_site_default', 'n');
+			$this->db->update('exp_template_groups');
+		}
 
 		if ( ! $group_id)
 		{
