@@ -1302,7 +1302,7 @@ class Wiki {
 			$xsql = '';
 		}
 			
-		if (isset($this->seg_parts['1']) && in_array(strtolower($this->seg_parts['1']), array_map('strtolower', array_keys($this->namespaces)))     )
+		if (isset($this->seg_parts['1']) && isset($this->namespaces[strtolower($this->seg_parts['1'])]))
 		{
 			$xsql = "AND LOWER(p.page_namespace) = '".$this->EE->db->escape_str(strtolower($this->seg_parts['1']))."'";
 		}
