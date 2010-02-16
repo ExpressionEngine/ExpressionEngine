@@ -64,7 +64,7 @@ and accepted.  This allows purchases to not be stored and recorded in the Simple
 until the transaction is finalized.  ExpressionEngine\'s Simple Commerce module automates all of this
 behind the scenes so all you have to do is activate Instant Payment Notification on the PayPal site
 and provide them with the URL below.<br /><br />
-For more details:  https://www.paypal.com/IntegrationCenter/ic_ipn.html',
+For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_admin_IPNIntro" rel="external">https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_admin_IPNIntro</a>',
 
 'items' =>
 'Items',
