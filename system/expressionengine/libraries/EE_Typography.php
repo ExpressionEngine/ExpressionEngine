@@ -654,7 +654,8 @@ class EE_Typography extends CI_Typography {
 		
 		if (stristr($str, '<p') !== FALSE)
 		{
-			$str = preg_replace("#<p>|<p[^>]*?".">|</p>#i", "",  preg_replace("#<\/p><p[^>]*?".">#i", "\n", $str));
+			$str = preg_replace("#<(/)?pre[^>]*?>#i", "<$1pre>", $str);
+			$str = preg_replace("#<p>|<p(?!re)[^>]*?".">|</p>#i", "",  preg_replace("#<\/p><p(?!re)[^>]*?".">#i", "\n", $str)); 
 		}
 		
 		// Convert allowed HTML to BBCode
