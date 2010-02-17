@@ -5803,11 +5803,11 @@ class Wiki {
 							{
 								$link = trim(substr($matches['1'][$i], 0, $pipe_pos));
 								$display_title[$i] = trim(substr($matches['1'][$i], $pipe_pos + 1));
-								$regular[$i] = strtolower($this->valid_title($this->EE->security->xss_clean(strip_tags($link))));
+								$regular[$i] = $this->valid_title($this->EE->security->xss_clean(strip_tags($link)));
 							}
 							else
 							{
-								$regular[$i] = strtolower($this->valid_title($matches['1'][$i]));								
+								$regular[$i] = $this->valid_title($matches['1'][$i]);								
 							}
 						break;
 					}
@@ -5818,11 +5818,11 @@ class Wiki {
 					{
 						$link = trim(substr($matches['1'][$i], 0, $pipe_pos));
 						$display_title[$i] = trim(substr($matches['1'][$i], $pipe_pos + 1));
-						$regular[$i] = strtolower($this->valid_title($this->EE->security->xss_clean(strip_tags($link))));
+						$regular[$i] = $this->valid_title($this->EE->security->xss_clean(strip_tags($link)));
 					}
 					else
 					{
-						$regular[$i] = strtolower($this->valid_title($this->EE->security->xss_clean(strip_tags($matches['1'][$i]))));
+						$regular[$i] = $this->valid_title($this->EE->security->xss_clean(strip_tags($matches['1'][$i])));
 					}
 				}
 			}
@@ -5851,9 +5851,9 @@ class Wiki {
 										)
 										AND
 										(
-											LOWER(CONCAT_WS(':', REPLACE(wn.namespace_label, ' ', '{$replace}'), wp.page_name)) IN ('" . implode("','", $this->EE->db->escape_str($regular)) . "')
+											LOWER(CONCAT_WS(':', REPLACE(wn.namespace_label, ' ', '{$replace}'), wp.page_name)) IN ('".strtolower(implode("','", $this->EE->db->escape_str($regular)))."')
 											OR
-											LOWER(wp.page_name) IN ('" . implode("','", $this->EE->db->escape_str($regular)) . "')	)
+											LOWER(wp.page_name) IN ('".strtolower(implode("','", $this->EE->db->escape_str($regular)))."')	)
 										");
 
 					if (isset($query) && $query->num_rows() > 0)
@@ -5872,9 +5872,9 @@ class Wiki {
 				{
 					$article = FALSE;
 					
-					if (isset($exists[$title]))
+					if (isset($exists[strtolower($title)]))
 					{
-						$title = $exists[$title];
+						$title = $exists[strtolower($title)];
 						$article = TRUE;
 					}
 					
