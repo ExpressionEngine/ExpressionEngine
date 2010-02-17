@@ -34,7 +34,7 @@ if ($EE_view_disable !== TRUE)
 			
 				foreach ($search_data->result() as $data)
 				{
-					$screen_name = ($data->screen_name != '') ? '<a href="'.BASE.AMP.'C=myaccount'.AMP.'member_id='. $data->member_id .'">'.$data->screen_name.'</a>' : '';
+					$screen_name = ($data->screen_name != '') ? '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $data->member_id .'">'.$data->screen_name.'</a>' : '';
 					$this->table->add_row(
 										$screen_name,
 										$data->ip_address,

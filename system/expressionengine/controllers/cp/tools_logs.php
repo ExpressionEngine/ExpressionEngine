@@ -317,7 +317,7 @@ class Tools_logs extends Controller {
 		
 		foreach ($query->result_array() as $log)
 		{
-			$screen_name = ($log['screen_name'] != '') ? '<a href="'.BASE.AMP.'C=myaccount'.AMP.'member_id='. $log['member_id'].'">'.$log['screen_name'].'</a>' : ' -- ';
+			$screen_name = ($log['screen_name'] != '') ? '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $log['member_id'].'">'.$log['screen_name'].'</a>' : ' -- ';
 			
 			$m[] = $screen_name;
 			$m[] = $log['ip_address'];
@@ -629,7 +629,7 @@ class Tools_logs extends Controller {
 		foreach ($query->result_array() as $log)
 		{
 			$m[] = '<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_email'.AMP.'id='.$log['cache_id'].'">'.$log['subject'].'</a>';
-			$m[] = '<a href="'.BASE.AMP.'C=myaccount'.AMP.'member_id='. $log['member_id'].'">'.$log['member_name'].'</a>';
+			$m[] = '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $log['member_id'].'">'.$log['member_name'].'</a>';
 			$m[] = $log['recipient_name'];
 			$m[] = date("Y-m-d h:m A", $log['cache_date']);
 			$m[] = form_checkbox(array('id'=>'delete_box_'.$log['cache_id'],'name'=>'toggle[]','value'=>$log['cache_id'], 'class'=>'toggle_email', 'checked'=>FALSE));
