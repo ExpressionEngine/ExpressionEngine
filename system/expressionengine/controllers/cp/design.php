@@ -654,25 +654,28 @@ class Design extends Controller {
 						'update'				=> ($this->input->get_post('update') == 1),
 						'site_id'				=> $this->config->item('site_id'),
 						'all_sites'				=> FALSE,
-						'snippet_id'				=> NULL,
-						'snippet_name'		=> '',
-						'snippet_contents'	=> '',
+						'snippet_id'			=> NULL,
+						'snippet_name'			=> '',
+						'snippet_contents'		=> '',
 						'create_edit'			=> $this->lang->line('snippet_create')
 					);
-		
+
 		if ($this->config->item('multiple_sites_enabled') == 'y')
 		{
 			$vars['msm'] = TRUE;
 		}
-		
+
 		if ($this->input->get_post('snippet') !== FALSE)
 		{
 			if (($snippet = $this->template_model->get_snippet($this->input->get_post('snippet'))) !== FALSE)
 			{
+				$snippet['snippet_site_id'] = $snippet['site_id'];
+				unset($snippet['site_id']);
+				
 				$vars = array_merge($vars, $snippet);
 				$vars['orig_name'] = $vars['snippet_name'];
-				$vars['create_edit'] = str_replace('%s', $vars['snippet_name'], $this->lang->line('snippet_edit'));
-				$vars['all_sites'] = ($vars['site_id'] == 0) ? TRUE : FALSE;
+				$vars['create_edit'] = sprintf($this->lang->line('snippet_edit'), $vars['snippet_name']);
+				$vars['all_sites'] = ($snippet['snippet_site_id'] == 0) ? TRUE : FALSE;
 			}			
 		}
 
@@ -700,7 +703,7 @@ class Design extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-		
+
 		$this->load->model('template_model');
 		$this->load->library('api');
 		
