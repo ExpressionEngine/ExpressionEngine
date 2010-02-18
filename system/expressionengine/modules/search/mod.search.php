@@ -1442,6 +1442,7 @@ class Search {
 			preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('id')))
 		{
 			$data['id'] = $this->EE->TMPL->fetch_param('id');
+			$this->EE->TMPL->log_item('Simple Search Form:  The \'id\' parameter has been deprecated.  Please use form_id');
 		} 
 							 
 		$res  = $this->EE->functions->form_declaration($data);

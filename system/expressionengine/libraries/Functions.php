@@ -398,34 +398,42 @@ class EE_Functions {
 	 * @param	string
 	 * @return	string
 	 */	
-	function form_declaration($data)
+	function form_declaration($data, $class_id_override = TRUE)
 	{
+		$deft = array(
+					'hidden_fields'	=> array(),
+					'action'		=> '', 
+					'id'			=> '',
+					'class'			=> '',
+					'secure'		=> TRUE,
+					'enctype' 		=> '',
+					'onsubmit'		=> '',
+				);
+	
 		// Load the form helper
 		$this->EE->load->helper('form');
 		
-		$deft = array(
-						'hidden_fields'	=> array(),
-						'action'		=> '', 
-						'id'			=> '',
-						'secure'		=> TRUE,
-						'enctype' 		=> '',
-						'onsubmit'		=> '',
-					);
-		
-		
-		foreach ($deft as $key => $val)
+		$data = array_merge($deft, $data);
+
+		if ($class_id_override)
 		{
-			if ( ! isset($data[$key]))
+			if ($this->EE->TMPL->fetch_param('form_class') !== FALSE && 
+				preg_match("#^[a-zA-Z0-9_ \-]+$#i", $this->EE->TMPL->fetch_param('form_class')))
 			{
-				$data[$key] = $val;
+				$data['class'] = $this->EE->TMPL->fetch_param('form_class');
+			}
+
+			if ($this->EE->TMPL->fetch_param('form_id') !== FALSE && 
+				preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('form_id')))
+			{
+				$data['id'] = $this->EE->TMPL->fetch_param('form_id');	
 			}
 		}
-		
+
 		if (is_array($data['hidden_fields']) && ! isset($data['hidden_fields']['site_id']))
 		{
 			$data['hidden_fields']['site_id'] = $this->EE->config->item('site_id');
 		}
-
 
 		// Add the CSRF Protection Hash
 		if ($this->EE->config->item('csrf_protection') == TRUE )
@@ -465,15 +473,16 @@ class EE_Functions {
 		
 		$data['name']	= (isset($data['name']) && $data['name'] != '') ? "name='".$data['name']."' "	: '';
 		$data['id']		= ($data['id'] != '') 							? "id='".$data['id']."' " 		: '';
+		$data['class']	= ($data['class'] != '') ? 'class="'.$data['class'].'" ' : '';
 
 		if ($data['enctype'] == 'multi' OR strtolower($data['enctype']) == 'multipart/form-data')
 		{
 			$data['enctype'] = 'enctype="multipart/form-data" ';
 		}
 		
-		$form  = '<form '.$data['id'].$data['name'].'method="post" action="'.$data['action'].'" '.$data['onsubmit'].' '.$data['enctype'].">\n";
+		$form  = '<form '.$data['id'].$data['class'].$data['name'].'method="post" action="'.$data['action'].'" '.$data['onsubmit'].' '.$data['enctype'].">\n";
 		
-		if ($data['secure'] == TRUE)
+		if ($data['secure'] === TRUE)
 		{
 			if ($this->EE->config->item('secure_forms') == 'y')
 			{
