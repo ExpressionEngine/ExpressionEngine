@@ -1,0 +1,6 @@
+syntax:  glob
+
+system/expressionengine/config/config.php
+system/expressionengine/config/database.php
+system/expressionengine/cache/*
+
