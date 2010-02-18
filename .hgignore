@@ -1,10 +1,10 @@
 syntax:  glob
 
+.DS_Store
+Thumbs.db
 system/expressionengine/config/config.php
 system/expressionengine/config/database.php
 
 syntax: regexp
-
-system/expressionengine/cache/(?!index\.html)
-
+system/expressionengine/cache/(?!index\.html|\.htaccess)
 images/(captchas|avatars/uploads|forum_attachments|member_photos|signature_attachments|pm_attachments|uploads)/(?!index\.html)
