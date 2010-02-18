@@ -394,8 +394,10 @@ class EE_Core {
 		
 		// Define the BASE constant containing the CP URL with the session ID
 		$s = ($this->EE->config->item('admin_session_type') != 'c') ? $this->EE->session->userdata('session_id') : 0;
+		$req_source = $this->EE->input->server('HTTP_X_REQUESTED_WITH');
 		
-		define('BASE', SELF.'?S='.$s.'&amp;D=cp');
+		define('BASE',			SELF.'?S='.$s.'&amp;D=cp');
+		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);
 		
 		// Show the control panel home page in the event that a controller class isn't found in the URL
 		if ($this->EE->router->fetch_class() == 'ee' OR $this->EE->router->fetch_class() == '')
