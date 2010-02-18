@@ -2,5 +2,9 @@ syntax:  glob
 
 system/expressionengine/config/config.php
 system/expressionengine/config/database.php
-system/expressionengine/cache/*
 
+syntax: regexp
+
+system/expressionengine/cache/(?!index\.html)
+
+images/(captchas|avatars/uploads|forum_attachments|member_photos|signature_attachments|pm_attachments|uploads)/(?!index\.html)
