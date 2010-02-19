@@ -428,7 +428,7 @@ class Admin_content extends Controller {
 		$this->cp->set_variable('cp_page_title', $this->lang->line('channel_prefs').' - '.$vars['channel_title']);
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', $this->lang->line('channel_management'));
 
-print_r($vars['publish_page_customization_options']);
+//print_r($vars['publish_page_customization_options']);
 		$this->load->view('admin/channel_edit', $vars);
 	}
 	

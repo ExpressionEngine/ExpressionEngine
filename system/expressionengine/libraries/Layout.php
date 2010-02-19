@@ -231,14 +231,14 @@ class Layout {
 		// open each one
 		foreach ($layouts as $layout)
 		{
-			$layout['field_layout']);
+			$layout['field_layout'];
 			
 			$this->db->set("site_id", $layout['site_id']);
 			$this->db->set("channel_id", $channel_id);
 			$this->db->set("field_layout", $layout['field_layout']);
 			$this->db->set("member_group", $layout['member_group']);
 
-			$this->db->insert('layout_publish')'
+			$this->db->insert('layout_publish');
 		}			
 	}
 
