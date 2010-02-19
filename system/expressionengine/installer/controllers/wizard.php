@@ -24,7 +24,7 @@
  */
 class Wizard extends Controller {
 
-	var $version			= '2.0.1pb01';	// The version being installed
+	var $version			= '2.0.2pb01';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '4.3.2';	// Minimum version required to run EE
 	var $full_install		= FALSE;	// Set dynamically.  Determines which version is being installed  (full or core)
