@@ -1808,7 +1808,7 @@ class Content_publish extends Controller {
 		$vars['field_definitions'] = $this->field_definitions;
 		$vars['field_output'] = array();
 		
-		$this->build_author_table();
+		// $this->build_author_table();
 
 		// @todo use this for js validation?
 		// @todo -- clean this up.
@@ -2018,7 +2018,7 @@ class Content_publish extends Controller {
 		$this->table->clear();
 
 		// get all members
-		$member_list = $this->member_model->get_members();
+		$member_list = $this->member_model->get_members('', 20, $this->input->get_post('offset'));
 
 		// get allowable member groups
 		$author_groups = $this->member_model->get_author_groups($channel_id);
@@ -2070,7 +2070,7 @@ class Content_publish extends Controller {
 
 		if ($this->input->get_post('is_ajax'))
 		{
-			echo $message;
+			exit($message);
 		}
 	}
 

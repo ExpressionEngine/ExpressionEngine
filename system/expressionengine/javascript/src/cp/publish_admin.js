@@ -45,10 +45,15 @@ var addAuthorButtons = {};
 		resizable: false,
 		modal: true,
 		position: "center",
-		width: "auto",
-		minHeight: "0px", // fix display bug, where the height of the dialog is too big
-		minWidth: "400px",
+		height: 400,
+		width: 700,
 		buttons: addAuthorButtons
+	});
+});
+
+$('.add_author_link').click(function() {
+	$.get(EE.BASE+'&C=content_publish&M=build_author_table&channel_id='+EE.channel_id+'&is_ajax=y', function(data) {
+		$('#add_authors_dialog_form').html(data);
 	});
 });
 

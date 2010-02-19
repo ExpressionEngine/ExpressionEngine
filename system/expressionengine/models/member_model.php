@@ -610,24 +610,30 @@ class Member_model extends CI_Model {
 	 * @param	integer
 	 * @return	mixed
 	 */
-	function get_authors($author_id = '')
+	function get_authors($author_id = FALSE, $limit = FALSE, $offset = FALSE)
 	{
-		//@todo: AR this
-		$ss = "SELECT exp_members.member_id, exp_members.group_id, exp_members.username, exp_members.screen_name, exp_members.in_authorlist,
-		exp_member_groups.*
-		FROM exp_members, exp_member_groups WHERE ";
-
-		if ($author_id != '')
+		$this->db->select('members.member_id, members.group_id, 
+							members.username, members.screen_name, members.in_authorlist, member_groups.*');
+		$this->db->from('members, member_groups');
+		
+		if ($author_id)
 		{
-			$ss .= " exp_members.member_id != '$author_id' AND ";
+			$this->db->where('members.member_id !=', $author_id);
 		}
-
-		$ss .= " (exp_members.in_authorlist = 'y' OR exp_member_groups.include_in_authorlist = 'y')
-		AND exp_members.group_id = exp_member_groups.group_id
-		AND exp_member_groups.site_id = '".$this->db->escape_str($this->config->item('site_id'))."'
-		ORDER BY screen_name asc, username asc";
-
-		return $this->db->query($ss);
+		
+		$this->db->where('('.$this->db->dbprefix('members').'.in_authorlist = "y" OR
+		 						'.$this->db->dbprefix('member_groups').'.include_in_authorlist = "y")');
+		$this->db->where('members.group_id = '.$this->db->dbprefix('member_groups').'.group_id');
+		$this->db->where('member_groups.site_id', $this->config->item('site_id'));
+		$this->db->order_by('members.screen_name', 'ASC');
+		$this->db->order_by('members.username', 'ASC');
+		
+		if ($limit)
+		{
+			$this->db->limit($limit, $offset);
+		}
+		
+		return $this->db->get();
 	}
 
 	// --------------------------------------------------------------------
