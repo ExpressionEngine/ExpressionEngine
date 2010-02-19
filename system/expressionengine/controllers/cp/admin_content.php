@@ -749,6 +749,9 @@ print_r($vars['publish_page_customization_options']);
 
 			$insert_id = $this->db->insert_id();
 			$channel_id = $insert_id;
+			
+			// Duplicate layouts
+			$this->layout->duplicate_layout($dupe_id, $channel_id);
 
 			$success_msg = $this->lang->line('channel_created');
 
@@ -764,7 +767,12 @@ print_r($vars['publish_page_customization_options']);
 				unset($_POST['clear_versioning_data']);
 			}
 			
+
+
+			
 			// Update layouts
+
+/*
 					$default_settings = array(
 										'visible'		=> 'TRUE',
 										'collapse'		=> 'FALSE',
@@ -855,9 +863,9 @@ print_r($vars['publish_page_customization_options']);
 					'forum_id' => $default_settings, 
 					'forum_topic_id' => $default_settings);
 			}
+		
 			
-			
-
+*/
 
 			$sql = $this->db->update_string('exp_channels', $_POST, 'channel_id='.$this->db->escape_str($_POST['channel_id']));
 
