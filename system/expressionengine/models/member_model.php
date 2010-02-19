@@ -1027,7 +1027,7 @@ class Member_model extends CI_Model {
 	 * @access	public
 	 * @param	array	Altered tabs and/or fields
 	 * @param	string	Action to take
-	 * @param	int		The field group- applies only if custom fields
+	 * @param	int		The channel id
 	 * @return	bool
 	 */
 	function update_layouts($layout_info, $action, $channel_id = array())
@@ -1041,6 +1041,13 @@ class Member_model extends CI_Model {
 				
 		$query = $this->db->get('layout_publish');
 		$errors = 0;
+		$default_settings = array(
+										'visible'		=> 'TRUE',
+										'collapse'		=> 'FALSE',
+										'htmlbuttons'	=> 'FALSE',
+										'width'			=> '100%'
+							
+							);
 		
 		$valid_actions = array('add_tabs', 'delete_tabs', 'add_fields', 'delete_fields');
 
@@ -1075,7 +1082,7 @@ class Member_model extends CI_Model {
 					{
 						if (array_key_exists($tab, $layout) !== TRUE)
 						{
-							$layout[$tab] = $fields;
+							$layout[$tab] = ( ! array($fields)) ? array($fields => $default_settings) : $fields;
 						}
 						else
 						{
@@ -1223,6 +1230,7 @@ class Member_model extends CI_Model {
 		$this->db->select('field_layout');
 		$this->db->where("site_id", $this->config->item('site_id'));
 		$this->db->where("channel_id", $channel_id);
+
 		$this->db->where("member_group", $member_group);
 
 		$layout_data = $this->db->get('layout_publish');
@@ -1251,9 +1259,19 @@ class Member_model extends CI_Model {
 	 * @param	int		Field group
 	 * @return	array
 	 */
-	function get_all_group_layouts()
+	function get_all_group_layouts($channel_id = array())
 	{
+		if ( ! is_array($channel_id))
+		{
+			$channel_id = array($channel_id);
+		}
+
 		$layout_data = $this->db->get('layout_publish');
+		
+		if (! empty($channel_id))
+		{
+			$this->db->where_in("channel_id", $channel_id);	
+		}
 
 		if ($layout_data->num_rows() > 0)
 		{

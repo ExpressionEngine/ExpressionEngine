@@ -215,6 +215,50 @@ class Layout {
 			}
 		}
 	}
+
+
+	function duplicate_layout($dupe_id, $channel_id)
+	{
+		$this->EE->load->model('member_model');
+		
+		$layouts = $this->EE->member_model->get_all_group_layouts($dupe_id);
+		
+		if (empty($layouts))
+		{
+			return;
+		}
+		
+		// open each one
+		foreach ($layouts as $layout)
+		{
+			$layout['field_layout']);
+			
+			$this->db->set("site_id", $layout['site_id']);
+			$this->db->set("channel_id", $channel_id);
+			$this->db->set("field_layout", $layout['field_layout']);
+			$this->db->set("member_group", $layout['member_group']);
+
+			$this->db->insert('layout_publish')'
+		}			
+	}
+
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Updates saved publish layouts
+	 *
+	 * @access	public
+	 * @param	array
+	 * @return	bool
+	 */
+	function sync_layout($fields = array(), $channel_id = array(), $changes_only = TRUE)
+	{
+		$layout_fields = array('show_author_menu', 'show_status_menu', 'show_date_menu', 'show_options_cluster', 'show_ping_cluster', 'show_categories_menu', 'show_pages_cluster', 'show_forum_cluster');
+
+		return $this->EE->member_model->update_layouts($tabs, 'delete_tabs', $channel_id);
+	}
+
 	
 	// --------------------------------------------------------------------
 	

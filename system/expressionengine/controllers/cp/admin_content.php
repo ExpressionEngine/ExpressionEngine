@@ -411,19 +411,24 @@ class Admin_content extends Controller {
 		// identical. Here we set up a loop to handle them instead of manually building each one.
 		$vars['publish_page_customization_options'] = array(
 			'show_url_title', 'show_button_cluster', 'show_author_menu', 'show_status_menu',  'show_date_menu',
-			'show_options_cluster', 'show_ping_cluster', 'show_categories_menu', 'show_forum_cluster');
+			'show_options_cluster', 'show_ping_cluster', 'show_categories_menu');
 			
 		if (isset($this->cp->installed_modules['pages']))
 		{
 			$vars['publish_page_customization_options'][] = 'show_pages_cluster';
 		}
+		
+		if (isset($this->cp->installed_modules['forum']))
+		{
+			$vars['publish_page_customization_options'][] = 'show_forum_cluster';
+		}		
 
 		$this->javascript->compile();
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('channel_prefs').' - '.$vars['channel_title']);
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', $this->lang->line('channel_management'));
 
-
+print_r($vars['publish_page_customization_options']);
 		$this->load->view('admin/channel_edit', $vars);
 	}
 	
@@ -518,15 +523,6 @@ class Admin_content extends Controller {
 
 		// Load the layout Library & update the layouts
 		$this->load->library('layout');
-
-		if (isset($_POST['show_pages_cluster']) && $_POST['show_pages_cluster'] == 'n')
-		{
-			$this->layout->delete_layout_tabs(array('pages' => 'pages_uri', 'pages_template_id'), '', $this->input->post('channel_id'));
-		}
-		else
-		{
-			$this->layout->add_layout_tabs(array('pages' => 'pages_uri', 'pages_template_id'), '', $this->input->post('channel_id'));
-		}
 
 		$add_rss = (isset($_POST['add_rss'])) ? TRUE : FALSE;
 		unset($_POST['add_rss']);
@@ -767,6 +763,101 @@ class Admin_content extends Controller {
 				$this->db->query("DELETE FROM exp_entry_versioning WHERE channel_id  = '".$this->db->escape_str($_POST['channel_id'])."'");
 				unset($_POST['clear_versioning_data']);
 			}
+			
+			// Update layouts
+					$default_settings = array(
+										'visible'		=> 'TRUE',
+										'collapse'		=> 'FALSE',
+										'htmlbuttons'	=> 'FALSE',
+										'width'			=> '100%'
+							
+							);
+			
+			
+			if ($this->input->post('show_author_menu') == 'n')
+			{
+				$delete_fields[] = 'author';
+			}
+			elseif ($this->input->post('show_author_menu') == 'y')
+			{
+				$add_fields['options']['author'] = $default_settings;
+			}
+			
+			if ($this->input->post('show_status_menu') == 'n')
+			{
+				$delete_fields[] = 'status';
+			}
+			elseif ($this->input->post('show_status_menu') == 'y')
+			{
+				$add_fields['options']['status'] = $default_settings;
+			}
+			
+			if ($this->input->post('show_date_menu') == 'n')
+			{
+				$delete_tabs['date'] = array('entry_date', 'expiration_date', 'comment_expiration_date');
+			}
+			elseif ($this->input->post('show_date_menu') == 'y')
+			{
+				$add_tabs['date'] = array('entry_date' => $default_settings, 
+							'expiration_date' => $default_settings,  
+							'comment_expiration_date' => $default_settings);
+			}
+			
+			if ($this->input->post('show_options_cluster') == 'n')
+			{
+				$delete_tabs['options'] = array('status' => $default_settings, 
+							'author' => $default_settings, 
+							'options' => $default_settings);
+			}
+			elseif ($this->input->post('show_options_cluster') == 'y')
+			{
+				$add_tabs['options'] = array('status' => $default_settings, 
+						'author' => $default_settings, 
+						'options' => $default_settings);
+			}
+
+			if ($this->input->post('show_ping_cluster') == 'n')
+			{
+				 $delete_tabs['pings'] = array('ping');
+			}
+			elseif ($this->input->post('show_ping_cluster') == 'y')
+			{
+				 $add_tabs['pings'] = array('ping' => $default_settings);
+			}
+
+			if ($this->input->post('show_categories_menu') == 'n')
+			{
+				 $delete_tabs['categories'] = array('category');
+			}
+			elseif ($this->input->post('show_categories_menu') == 'y')
+			{
+				 $add_tabs['categories'] = array('category' => $default_settings);
+			}
+
+			if ($this->input->post('show_pages_cluster') == 'n')
+			{
+				$delete_tabs['pages'] = array('pages_uri', 'pages_template_id');
+			}
+			elseif ($this->input->post('show_pages_cluster') == 'y')
+			{
+				$add_tabs['pages'] = array('pages_uri' => $default_settings, 
+							'pages_template_id' => $default_settings);
+			}
+
+			if ($this->input->post('show_forum_cluster') == 'n')
+			{
+				$delete_tabs['forum'] = array('pages_uri', 'pages_template_id');
+			}
+			elseif ($this->input->post('show_forum_cluster') == 'y')
+			{
+				$add_tabs['forum'] = array('forum_title' => $default_settings, 
+					'forum_body'=> $default_settings, 
+					'forum_id' => $default_settings, 
+					'forum_topic_id' => $default_settings);
+			}
+			
+			
+
 
 			$sql = $this->db->update_string('exp_channels', $_POST, 'channel_id='.$this->db->escape_str($_POST['channel_id']));
 
@@ -1122,7 +1213,7 @@ class Admin_content extends Controller {
 
 
 		// Category Select List
-		$query = $this->category_model->get_categories();
+		$query = $this->category_model->get_categories('', FALSE);
 
 		$vars['cat_group_options'][''] = $this->lang->line('none');
 
