@@ -129,20 +129,15 @@ class Date_ft extends EE_Fieldtype {
 	
 	function pre_process($data)
 	{
-
+		return $data;
 	}
 	
 	// --------------------------------------------------------------------
 
 	function replace_tag($date, $params = array(), $tagdata = FALSE)
-	{		
-		if ($tagdata !== FALSE)
-		{
-			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $date);
-			$tagdata = $this->EE->functions->var_swap($tagdata, $date);
-						
-			return $tagdata;
-		}
+	{
+		// if we're here, they're just using the date field without formatting, e.g. {custom_date}
+		return $date;
 	}
 }
 
