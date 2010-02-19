@@ -1850,7 +1850,7 @@ EOT;
 				}
 				else
 				{
-					$checked = ($this->EE->config->item('honor_entry_dst') == 'y') ? "checked='checked'" : '';
+					$checked = ($dst_enabled == 'y') ? "checked='checked'" : '';
 				}
 
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $checked, $tagdata);
