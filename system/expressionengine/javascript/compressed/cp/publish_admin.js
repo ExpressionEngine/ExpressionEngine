@@ -56,7 +56,7 @@ $('.add_author_link').click(function() {
 		$('#add_authors_dialog_form div').html(data);
 		$('#add_author_dialog').find('#add_author_pagination').appendTo('.ui-dialog-buttonpane');
 		
-		$('#add_author_pagination a').click(function() {
+		$('#add_author_pagination a').live('click', function() {
 			
 			$('.ui-dialog-buttonpane #add_author_pagination').remove();
 			
