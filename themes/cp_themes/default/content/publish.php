@@ -308,7 +308,10 @@ if ($EE_view_disable !== TRUE)
 	</div>
 
 	<div id="add_author_dialog" title="<?=lang('add_author')?>" style="display: none;">
-		<form id="add_authors_dialog_form"><img src="<?=PATH_CP_GBL_IMG?>indicator.gif" /></form>
+		<form id="add_authors_dialog_form">
+			<div><img src="<?=PATH_CP_GBL_IMG?>indicator.gif" /></div>
+			<span id="add_author_pagination"></span>
+		</form>
 	</div>
 <?php endif;?>
 

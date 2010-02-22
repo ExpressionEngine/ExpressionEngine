@@ -1786,6 +1786,7 @@ class Content_publish extends Controller {
 			$this->javascript->output('$("#holder").css("margin-right", "10px");');
 		}
 
+
 		$autosave_interval_seconds = ( ! $this->config->item('autosave_interval_seconds')) ? 60 : $this->config->item('autosave_interval_seconds');
 
 		if ($entry_id != '' AND $autosave_interval_seconds != 0)
