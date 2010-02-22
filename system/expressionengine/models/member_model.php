@@ -185,6 +185,61 @@ class Member_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
+	 *	Count Members
+	 *
+	 *	@access public
+	 *	@return int
+	 */
+	function get_member_count($group_id = FALSE)
+	{
+		$member_ids = array();
+
+		if ($group_id != '')
+		{
+			$this->db->select('member_id');
+			$this->db->where('group_id', $group_id);
+			$query = $this->db->get('members');
+
+			foreach($query->result() as $member)
+			{
+				$member_ids[] = $member->member_id;
+			}
+
+			// no member_ids in that group?	 Might as well return now
+			if (count($member_ids) < 1)
+			{
+				return FALSE;
+			}
+		}
+
+		// now run the query for the actual results
+		if ($group_id)
+		{
+			$this->db->where_in("members.member_id", $member_ids);
+		}
+
+		$this->db->select("COUNT(*) as count");
+		$this->db->from("member_groups");
+		$this->db->from("members");
+		$this->db->where("members.group_id = " .$this->db->dbprefix("member_groups.group_id"));
+		$this->db->where("member_groups.site_id", $this->config->item('site_id'));
+
+		$members = $this->db->get();
+
+		if ($members->num_rows() == 0)
+		{
+			return FALSE;
+		}
+		else
+		{
+			return $members->row('count');
+		}
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Get All Member Fields
 	 *
 	 * @access	public
