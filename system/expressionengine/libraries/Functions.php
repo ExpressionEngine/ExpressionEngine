@@ -415,7 +415,7 @@ class EE_Functions {
 		
 		$data = array_merge($deft, $data);
 
-		if ($class_id_override)
+		if ($class_id_override && isset($this->EE->TMPL))
 		{
 			if ($this->EE->TMPL->fetch_param('form_class') !== FALSE && 
 				preg_match("#^[a-zA-Z0-9_ \-]+$#i", $this->EE->TMPL->fetch_param('form_class')))
