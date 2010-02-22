@@ -2075,7 +2075,7 @@ class Content_publish extends Controller {
 			$message = $this->table->generate();
 		}
 
-		$message .= '<span id="add_author_pagination">Pagination'.$pagination_links.'</span>';
+		$message .= '<span id="add_author_pagination">'.$pagination_links.'</span>';
 
 		$this->load->vars(array('authors_table' => $message, 'channels' => $channels));
 
