@@ -52,9 +52,14 @@ var addAuthorButtons = {};
 });
 
 $('.add_author_link').click(function() {
-	$.get(EE.BASE+'&C=content_publish&M=build_author_table&channel_id='+EE.channel_id+'&is_ajax=y', function(data) {
-		$('#add_authors_dialog_form').html(data);
+	$.get(EE.BASE+'&C=content_publish&M=build_author_table&channel_id='+EE.publish.channel_id+'&is_ajax=y', function(data) {
+		$('#add_authors_dialog_form div').html(data);
 	});
+
+	// console.log();
+	// var test = $('#add_author_dialog').find('.ui-dialog-buttonpane button');
+	
+	// console.log(test)
 });
 
 $("#tab_menu_tabs").sortable({
