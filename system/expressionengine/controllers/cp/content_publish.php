@@ -2019,6 +2019,14 @@ class Content_publish extends Controller {
 		// get all members
 		$member_list = $this->member_model->get_members('', 20, $this->input->get_post('offset'));
 
+		$this->load->library('pagination');
+		$pconfig['base_url'] = BASE.AMP.'C=content_publish'.AMP.'M=build_author_table';
+		$pconfig['total_rows'] = $member_list->num_rows();//$this->member_model->get_members_count();
+		$pconfig['per_page'] = 20;
+		
+		$this->pagination->initialize($pconfig);
+		$pagination_links = $this->pagination->create_links();
+
 		// get allowable member groups
 		$author_groups = $this->member_model->get_author_groups($channel_id);
 
@@ -2064,6 +2072,8 @@ class Content_publish extends Controller {
 		{
 			$message = $this->table->generate();
 		}
+
+		$message .= '<span id="add_author_pagination">'.$pagination_links.'</span>';
 
 		$this->load->vars(array('authors_table' => $message, 'channels' => $channels));
 
