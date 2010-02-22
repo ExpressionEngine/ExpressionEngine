@@ -54,12 +54,24 @@ var addAuthorButtons = {};
 $('.add_author_link').click(function() {
 	$.get(EE.BASE+'&C=content_publish&M=build_author_table&channel_id='+EE.publish.channel_id+'&is_ajax=y', function(data) {
 		$('#add_authors_dialog_form div').html(data);
+		$('#add_author_dialog').find('#add_author_pagination').appendTo('.ui-dialog-buttonpane');
+		
+		$('#add_author_pagination a').live('click', function() {
+			
+			$('.ui-dialog-buttonpane #add_author_pagination').remove();
+			
+			$.get(this.href, function(data) {
+				$('#add_authors_dialog_form div').html(data);
+				
+				$('#add_author_dialog').find('#add_author_pagination').appendTo('.ui-dialog-buttonpane');
+				
+				$('#add_author_dialog').find('#add_author_pagination');
+			});
+
+		});
+		return false;
 	});
 
-	// console.log();
-	// var test = $('#add_author_dialog').find('.ui-dialog-buttonpane button');
-	
-	// console.log(test)
 });
 
 $("#tab_menu_tabs").sortable({
