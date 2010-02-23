@@ -273,7 +273,7 @@ class EE_Output extends CI_Output {
 			$data['link'] = "<a href='".$url."'>".$ltitle."</a>";
 		}
 
-		if ($xhtml == TRUE)
+		if ($xhtml == TRUE && isset($EE->session))
 		{
 			$EE->load->library('typography');
 	
