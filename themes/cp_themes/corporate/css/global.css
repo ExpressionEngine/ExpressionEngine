@@ -320,6 +320,13 @@ ul.bulleted {
 	padding:			5px 9px 5px 9px;
 }
 
+.moduleWrap .button a:link, .moduleWrap .button a:visited {
+	display:block;
+	color:#fff;
+	padding:10px 9px 0 9px;
+	margin-bottom:10px;
+}
+
 .button a:hover {
 	color:				#005EB0;
 	text-decoration: underline;
@@ -3260,6 +3267,11 @@ div#view_content_entry_links {
 	width:				95%;
 }
 
+/*  Forum Theme */
+.moduleWrap #forum_global_nav {
+	height:30px;
+	margin-top:5px;
+}
 
 
 /* -------------------------------------
