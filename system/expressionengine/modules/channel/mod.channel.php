@@ -3458,12 +3458,12 @@ class Channel {
 						// @confirm FIX IT! this is ugly
 						// Shoot me now - darned regular expressions not matching what they should
 						// if (preg_match_all("/".LD."{$field_name}(.*?)".RD."(?!.*".LD.$field_name.")(.*?)".LD.'\/'.$field_name.RD."/s", $this->EE->TMPL->tagdata, $matches))
-						
+
 						// This hurts soo much. Using custom fields as pair and single vars in the same
 						// channel tags could lead to something like this: {field}...{field}inner{/field}
 						// There's no efficient regex to match this case, so we'll find the last nested
 						// opening tag and re-cut the chunk.
-						
+
 						if (preg_match_all("/".LD."{$field_name}(.*?)".RD."(.*?)".LD.'\/'.$field_name.RD."/s", $this->EE->TMPL->tagdata, $matches))
 						{
 							for ($j = 0; $j < count($matches[0]); $j++)
@@ -3471,14 +3471,14 @@ class Channel {
 								$chunk = $matches[0][$j];
 								$params = $matches[1][$j];
 								$inner = $matches[2][$j];
-								
+
 								// We might've sandwiched a single tag - no good, check again (:sigh:)
 								if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}(.*?)".RD."/s", $chunk, $match))
 								{
 									// Let's start at the end
 									$idx = count($match[0]) - 1;
 									$tag = $match[0][$idx];
-									
+
 									// Cut the chunk at the last opening tag (PHP5 could do this with strrpos :-( )
 									while (strpos($chunk, $tag, 1) !== FALSE)
 									{
@@ -3504,12 +3504,33 @@ class Channel {
 
 		$search_link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
 
-		//  Start the main processing loop
-		$total_results = count($this->query->result_array());
+		// Start the main processing loop
+
+		// For our hook to work, we need to grab the result array
+		$query_result = $this->query->result_array();
+
+		// Ditch everything else
+		$this->query->free_result();
+		unset($this->query);
+
+		// -------------------------------------------
+		// 'channel_entries_query_result' hook.
+		//  - Take the whole query result array, do what you wish
+		//  - added 1.6.7
+		//
+			if ($this->EE->extensions->active_hook('channel_entries_query_result') === TRUE)
+			{
+				$query_result = $this->EE->extensions->call('channel_entries_query_result', $this, $query_result);
+				if ($this->EE->extensions->end_script === TRUE) return $this->EE->TMPL->tagdata;
+			}
+		//
+		// -------------------------------------------
+
+		$total_results = count($query_result);
 
 		$site_pages = $this->EE->config->item('site_pages');
 
-		foreach ($this->query->result_array() as $count => $row)
+		foreach ($query_result as $count => $row)
 		{
 			// Fetch the tag block containing the variables that need to be parsed
 
@@ -3539,7 +3560,20 @@ class Channel {
 				}
 			//
 			// -------------------------------------------
-			
+
+			// -------------------------------------------
+			// 'channel_entries_row' hook.
+			//  - Take the entry data, do what you wish
+			//  - added 1.6.7
+			//
+				if ($this->EE->extensions->active_hook('channel_entries_row') === TRUE)
+				{
+					$row = $this->EE->extensions->call('channel_entries_row', $this, $row);
+					if ($this->EE->extensions->end_script === TRUE) return $tagdata;
+				}
+			//
+			// -------------------------------------------
+
 			//  Adjust dates if needed
 			// If the "dst_enabled" item is set in any given entry
 			// we need to offset to the timestamp by an hour
@@ -3830,24 +3864,24 @@ class Channel {
 					}
 				}
 				// END CATEGORIES
-				
+
 				// parse custom field pairs (file, checkbox, multiselect)
-				
+
 				// First we need the key name out of the {name foo=bar|baz} mess
 				$key_name = $key;
-				
+
 				if (($spc = strpos($key, ' ')) !== FALSE)
 				{
 					$key_name = substr($key, 0, $spc);
 				}
-				
+
 				// Is it a custom field?
 				if (isset($this->cfields[$row['site_id']][$key_name]) && ! in_array($key_name, $parsed_custom_pairs))
 				{
 					// We parse all chunks, but TMPL->var_pairs will still have the others
 					// so we'll keep track of these and bail if we've parsed it
 					$parsed_custom_pairs[] = $key_name;
-				
+
 					// Is this custom field part of the current channel row?
 					if (isset($row['field_id_'.$this->cfields[$row['site_id']][$key_name]]) && isset($this->pfields[$row['site_id']][$this->cfields[$row['site_id']][$key_name]]))
 					{
@@ -3857,7 +3891,7 @@ class Channel {
 						if ($this->EE->api_channel_fields->setup_handler($this->cfields[$row['site_id']][$key_name]))
 						{
 							$this->EE->api_channel_fields->apply('_init', array(array('row' => $row)));
-							
+
 							// Preprocess
 							$data = $this->EE->api_channel_fields->apply('pre_process', array($row['field_id_'.$this->cfields[$row['site_id']][$key_name]]));
 
@@ -3866,7 +3900,7 @@ class Channel {
 							{
 								// $chk_data = array(chunk_contents, parameters, chunk_with_tag);
 								$tpl_chunk = $this->EE->api_channel_fields->apply('replace_tag', array($data, $chk_data[1], $chk_data[0]));
-								
+
 								// Replace the chunk
 								$tagdata = str_replace($chk_data[2], $tpl_chunk, $tagdata);
 							}
@@ -3875,7 +3909,7 @@ class Channel {
 						{
 							// Couldn't find a fieldtype, blank out the chunks?
 							// (@confirm - just kill tags? keep everything?)
-							
+
 							// @todo log!
 
 							$tagdata = $this->EE->TMPL->delete_var_pairs($key, $key_name, $tagdata);
@@ -3887,7 +3921,7 @@ class Channel {
 					}
 				}
 				// END CUSTOM FIELD PAIRS
-				
+
 
 				//  parse date heading
 				if (strncmp($key, 'date_heading', 12) == 0)
@@ -4002,8 +4036,8 @@ class Channel {
 					//  Hourly footer
 					if ($display == 'hourly')
 					{
-						if ( ! isset($this->query->result_array[$row['count']]) OR
-							date('YmdH', $this->EE->localize->set_localized_time($row['entry_date'])) != date('YmdH', $this->EE->localize->set_localized_time($this->query->result_array[$row['count']]['entry_date'])))
+						if ( ! isset($query_result[$row['count']]) OR
+							date('YmdH', $this->EE->localize->set_localized_time($row['entry_date'])) != date('YmdH', $this->EE->localize->set_localized_time($query_result[$row['count']]['entry_date'])))
 						{
 							$tagdata = $this->EE->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 						}
@@ -4015,8 +4049,8 @@ class Channel {
 					//  Weekly footer
 					elseif ($display == 'weekly')
 					{
-						if ( ! isset($this->query->result_array[$row['count']]) OR
-							date('YW', $this->EE->localize->set_localized_time($row['entry_date'])) != date('YW', $this->EE->localize->set_localized_time($this->query->result_array[$row['count']]['entry_date'])))
+						if ( ! isset($query_result[$row['count']]) OR
+							date('YW', $this->EE->localize->set_localized_time($row['entry_date'])) != date('YW', $this->EE->localize->set_localized_time($query_result[$row['count']]['entry_date'])))
 						{
 							$tagdata = $this->EE->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 						}
@@ -4028,8 +4062,8 @@ class Channel {
 					//  Monthly footer
 					elseif ($display == 'monthly')
 					{
-						if ( ! isset($this->query->result_array[$row['count']]) OR
-							date('Ym', $this->EE->localize->set_localized_time($row['entry_date'])) != date('Ym', $this->EE->localize->set_localized_time($this->query->result_array[$row['count']]['entry_date'])))
+						if ( ! isset($query_result[$row['count']]) OR
+							date('Ym', $this->EE->localize->set_localized_time($row['entry_date'])) != date('Ym', $this->EE->localize->set_localized_time($query_result[$row['count']]['entry_date'])))
 						{
 							$tagdata = $this->EE->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 						}
@@ -4041,8 +4075,8 @@ class Channel {
 					//  Yearly footer
 					elseif ($display == 'yearly')
 					{
-						if ( ! isset($this->query->result_array[$row['count']]) OR
-							date('Y', $this->EE->localize->set_localized_time($row['entry_date'])) != date('Y', $this->EE->localize->set_localized_time($this->query->result_array[$row['count']]['entry_date'])))
+						if ( ! isset($query_result[$row['count']]) OR
+							date('Y', $this->EE->localize->set_localized_time($row['entry_date'])) != date('Y', $this->EE->localize->set_localized_time($query_result[$row['count']]['entry_date'])))
 						{
 							$tagdata = $this->EE->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 						}
@@ -4054,8 +4088,8 @@ class Channel {
 					//  Default (daily) footer
 					else
 					{
-						if ( ! isset($this->query->result_array[$row['count']]) OR
-							date('Ymd', $this->EE->localize->set_localized_time($row['entry_date'])) != date('Ymd', $this->EE->localize->set_localized_time($this->query->result_array[$row['count']]['entry_date'])))
+						if ( ! isset($query_result[$row['count']]) OR
+							date('Ymd', $this->EE->localize->set_localized_time($row['entry_date'])) != date('Ymd', $this->EE->localize->set_localized_time($query_result[$row['count']]['entry_date'])))
 						{
 							$tagdata = $this->EE->TMPL->swap_var_pairs($key, 'date_footer', $tagdata);
 						}
@@ -4066,7 +4100,7 @@ class Channel {
 					}
 				}
 				// END DATE FOOTER
-				
+
 			}
 			// END VARIABLE PAIRS
 
@@ -4594,7 +4628,7 @@ class Channel {
 
 				$params = array();
 				$replace = $key;
-				
+
 				if (($spc = strpos($key, ' ')) !== FALSE)
 				{
 					$params = $this->EE->functions->assign_parameters($key);
@@ -4691,7 +4725,7 @@ class Channel {
 				}
 			//
 			// -------------------------------------------
-			
+
 			$this->return_data .= $tagdata;
 
 		}
