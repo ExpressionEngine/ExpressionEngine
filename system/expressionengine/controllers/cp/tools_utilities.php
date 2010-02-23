@@ -304,7 +304,6 @@ class Tools_utilities extends Controller {
 				
 
 		$this->javascript->compile();
-
 					
 		$data = array(
 						'xml_file'   		=> $this->input->post('xml_file'),
@@ -322,7 +321,7 @@ class Tools_utilities extends Controller {
 						'default_group_id'	=> $group_name,
 						'language' 			=> ($data['language'] == '') ? $this->lang->line('none') : ucfirst($data['language']),
 						'timezones' 			=> $this->lang->line($data['timezones']),
-						'time_format' 		=> ($data['time_format'] == 'us') ? $this->lang->line('united_states') : $this->lang->line('european'),
+						'time_format' 		=> ($data['time_format'] == 0) ? $this->lang->line('united_states') : $this->lang->line('european'),
 						'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? $this->lang->line('yes') : $this->lang->line('no'),
 						'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? $this->lang->line('yes') : $this->lang->line('no')
 					 );
