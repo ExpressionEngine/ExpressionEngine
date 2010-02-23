@@ -1938,7 +1938,7 @@ EOT;
 						'enctype' 		=> 'multi'
 						);
 
-		$res  = $this->EE->functions->form_declaration($data);
+		$res  = $this->EE->functions->form_declaration($data, FALSE);
 		
 		$res .= $misc_js;
 
