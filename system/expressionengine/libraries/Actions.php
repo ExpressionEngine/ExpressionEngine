@@ -73,7 +73,7 @@ class EE_Actions {
 		{
 			return false;
 		}
-// var_dump($action_id); exit;
+
 		// Fetch the class and method name (checks to make sure module is installed too)
 		// If the ID is numeric we need to do an SQL lookup
 		if (is_numeric($action_id))
