@@ -2363,7 +2363,7 @@ class Design extends Controller {
 		else
 		{
 			flock($fp, LOCK_EX);
-			fwrite($fp, stripslashes($data['template_data']));
+			fwrite($fp, $data['template_data']);
 			flock($fp, LOCK_UN);
 			fclose($fp);
 			
