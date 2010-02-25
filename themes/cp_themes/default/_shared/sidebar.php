@@ -26,7 +26,7 @@
 			</h4>
 
 			<p id="notePadText" class="js_show"><?=lang('notepad_no_content')?></p>
-			<?=form_textarea(array('name' => 'notePadTextEdit', 'value' => $cp_notepad_content, 'id' => 'notePadTextEdit', 'class' => 'js_hide'))?>
+			<?=form_textarea(array('name' => 'notePadTextEdit', 'id' => 'notePadTextEdit', 'class' => 'js_hide'), $cp_notepad_content)?>
 			<p id="notePadControls" class="js_hide"><br />
 				<input type="submit" class="submit" value="<?=lang('save')?>" />
 				<a class="cancel" href="#"><?=lang('cancel')?></a>
