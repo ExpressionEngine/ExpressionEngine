@@ -767,105 +767,7 @@ class Admin_content extends Controller {
 				unset($_POST['clear_versioning_data']);
 			}
 			
-
-
-			
-			// Update layouts
-
-/*
-					$default_settings = array(
-										'visible'		=> 'TRUE',
-										'collapse'		=> 'FALSE',
-										'htmlbuttons'	=> 'FALSE',
-										'width'			=> '100%'
-							
-							);
-			
-			
-			if ($this->input->post('show_author_menu') == 'n')
-			{
-				$delete_fields[] = 'author';
-			}
-			elseif ($this->input->post('show_author_menu') == 'y')
-			{
-				$add_fields['options']['author'] = $default_settings;
-			}
-			
-			if ($this->input->post('show_status_menu') == 'n')
-			{
-				$delete_fields[] = 'status';
-			}
-			elseif ($this->input->post('show_status_menu') == 'y')
-			{
-				$add_fields['options']['status'] = $default_settings;
-			}
-			
-			if ($this->input->post('show_date_menu') == 'n')
-			{
-				$delete_tabs['date'] = array('entry_date', 'expiration_date', 'comment_expiration_date');
-			}
-			elseif ($this->input->post('show_date_menu') == 'y')
-			{
-				$add_tabs['date'] = array('entry_date' => $default_settings, 
-							'expiration_date' => $default_settings,  
-							'comment_expiration_date' => $default_settings);
-			}
-			
-			if ($this->input->post('show_options_cluster') == 'n')
-			{
-				$delete_tabs['options'] = array('status' => $default_settings, 
-							'author' => $default_settings, 
-							'options' => $default_settings);
-			}
-			elseif ($this->input->post('show_options_cluster') == 'y')
-			{
-				$add_tabs['options'] = array('status' => $default_settings, 
-						'author' => $default_settings, 
-						'options' => $default_settings);
-			}
-
-			if ($this->input->post('show_ping_cluster') == 'n')
-			{
-				 $delete_tabs['pings'] = array('ping');
-			}
-			elseif ($this->input->post('show_ping_cluster') == 'y')
-			{
-				 $add_tabs['pings'] = array('ping' => $default_settings);
-			}
-
-			if ($this->input->post('show_categories_menu') == 'n')
-			{
-				 $delete_tabs['categories'] = array('category');
-			}
-			elseif ($this->input->post('show_categories_menu') == 'y')
-			{
-				 $add_tabs['categories'] = array('category' => $default_settings);
-			}
-
-			if ($this->input->post('show_pages_cluster') == 'n')
-			{
-				$delete_tabs['pages'] = array('pages_uri', 'pages_template_id');
-			}
-			elseif ($this->input->post('show_pages_cluster') == 'y')
-			{
-				$add_tabs['pages'] = array('pages_uri' => $default_settings, 
-							'pages_template_id' => $default_settings);
-			}
-
-			if ($this->input->post('show_forum_cluster') == 'n')
-			{
-				$delete_tabs['forum'] = array('pages_uri', 'pages_template_id');
-			}
-			elseif ($this->input->post('show_forum_cluster') == 'y')
-			{
-				$add_tabs['forum'] = array('forum_title' => $default_settings, 
-					'forum_body'=> $default_settings, 
-					'forum_id' => $default_settings, 
-					'forum_topic_id' => $default_settings);
-			}
-		
-			
-*/
+			$this->layout->sync_layout($_POST, $_POST['channel_id']);
 
 			$sql = $this->db->update_string('exp_channels', $_POST, 'channel_id='.$this->db->escape_str($_POST['channel_id']));
 
@@ -1061,10 +963,10 @@ class Admin_content extends Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Edit Channel
+	 * Channel Update Group Assignments
 	 *
-	 * This function displays the form used to edit the various 
-	 * preferences and group assignments for a given channel
+	 * This function processes changes to the channel's 
+	 * assigned groups
 	 *
 	 * @access	public
 	 * @return	void
@@ -1111,21 +1013,21 @@ class Admin_content extends Controller {
 		{
 			$update_fields = TRUE;
 			
-				$this->db->select('field_id');
-				$this->db->where('group_id', $old_field); 
-				$query = $this->db->get('channel_fields');
+			$this->db->select('field_id');
+			$this->db->where('group_id', $old_field); 
+			$query = $this->db->get('channel_fields');
 		
-				if ($query->num_rows() == 1)
+			if ($query->num_rows() == 1)
+			{
+				foreach($query->result() as $row)
 				{
-					foreach($query->result() as $row)
-					{
-						$tabs[] = $row->field_id;
-					}
-					
-					$this->load->library('layout');
-					$this->layout->delete_layout_fields($tabs, $channel_id);
-					unset($tabs);
+					$tabs[] = $row->field_id;
 				}
+					
+				$this->load->library('layout');
+				$this->layout->delete_layout_fields($tabs, $channel_id);
+				unset($tabs);
+			}
 		}
 		
 		$this->db->where('channel_id', $channel_id);
@@ -1134,27 +1036,27 @@ class Admin_content extends Controller {
 		// Updated saved layouts if field group changed
 		if ($update_fields)
 		{
-				$this->db->select('field_id');
-				$this->db->where('group_id', $data['field_group']); 
-				$query = $this->db->get('channel_fields');
+			$this->db->select('field_id');
+			$this->db->where('group_id', $data['field_group']); 
+			$query = $this->db->get('channel_fields');
 
-				if ($query->num_rows() > 0)
+			if ($query->num_rows() > 0)
+			{
+				foreach($query->result() as $row)
 				{
-					foreach($query->result() as $row)
-					{
-						$tabs['publish'][$row->field_id] = array(
+					$tabs['publish'][$row->field_id] = array(
 								'visible'		=> 'true',
 								'collapse'		=> 'false',
 								'htmlbuttons'	=> 'true',
 								'width'			=> '100%'
 								);
 						
-					}
-					$this->load->library('layout');
-					//print_r($tabs); exit;
-					$this->layout->add_layout_fields($tabs, $channel_id);
 				}
-
+			
+				$this->load->library('layout');
+				//print_r($tabs); exit;
+				$this->layout->add_layout_fields($tabs, $channel_id);
+			}
 		}
 
 
@@ -1379,6 +1281,10 @@ class Admin_content extends Controller {
 		$authors = array_unique($authors);
 
 		$this->channel_model->delete_channel($channel_id, $entries, $authors);
+		
+		// Clear saved layouts
+		$this->load->library('layout');
+		$this->layout->delete_channel_layouts($channel_id);
 
 		return $this->channel_management($this->lang->line('channel_deleted').NBS.$channel_title);
 	}
@@ -3927,10 +3833,6 @@ class Admin_content extends Controller {
 
 			$cp_message = $this->lang->line('field_group_updated').NBS.$group_name;
 		}
-		
-		// Load the layout Library & update the layouts
-		$this->load->library('layout');
-		$this->layout->update_layout($edit);
 
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=field_group_management');
@@ -4594,6 +4496,41 @@ class Admin_content extends Controller {
 			$this->db->where('field_id', $native_settings['field_id']);
 			$this->db->where('group_id', $group_id);
 			$this->db->update('channel_fields', $native_settings);
+			
+/*
+
+			// Update saved layouts if necessary
+			
+			$native_settings['field_required'] == 'y'
+			
+			$collapse = ($native_settings['field_is_hidden'] == 'y') ? 'true' : 'false';
+			$buttons = ($ft_settings['field_show_formatting_btns'] == 'y') ? 'true' : 'false';
+			
+			$field_info[$insert_id] = array(
+								'visible'		=> 'true',
+								'collapse'		=> $collapse,
+								'htmlbuttons'	=> $buttons,
+								'width'			=> '100%'
+			);
+			
+			// Add to any custom layouts
+			
+			//echo '<pre>'; print_r($_POST); print_r($native_settings); print_r($ft_settings); exit;
+
+			$query = $this->field_model->get_assigned_channels($group_id);
+			
+			if ($query->num_rows() > 0)
+			{
+				foreach ($query->result() as $row)
+				{
+					$channel_ids[] = $row->channel_id;
+				}
+				
+				$this->load->library('layout');
+				$this->layout->edit_layout_fields($field_info, $channel_ids);
+			}
+*/						
+			
 		}
 		else
 		{
@@ -4640,14 +4577,19 @@ class Admin_content extends Controller {
 				$this->db->query("INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ('$insert_id', '$val')");
 			}
 			
+			$collapse = ($native_settings['field_is_hidden'] == 'y') ? 'true' : 'false';
+			$buttons = ($ft_settings['field_show_formatting_btns'] == 'y') ? 'true' : 'false';
+			
 			$field_info['publish'][$insert_id] = array(
 								'visible'		=> 'true',
-								'collapse'		=> 'false',
-								'htmlbuttons'	=> 'true',
+								'collapse'		=> $collapse,
+								'htmlbuttons'	=> $buttons,
 								'width'			=> '100%'
 			);
 			
 			// Add to any custom layouts
+			
+			//echo '<pre>'; print_r($_POST); print_r($native_settings); print_r($ft_settings); exit;
 
 			$query = $this->field_model->get_assigned_channels($group_id);
 			
@@ -4657,6 +4599,7 @@ class Admin_content extends Controller {
 				{
 					$channel_ids[] = $row->channel_id;
 				}
+				
 				$this->load->library('layout');
 				$this->layout->add_layout_fields($field_info, $channel_ids);
 			}
@@ -4818,9 +4761,6 @@ class Admin_content extends Controller {
 		$this->logger->log_action($cp_message);
 
 		$this->functions->clear_caching('all', '', TRUE);
-
-		$this->load->library('layout');
-		$this->layout->update_layout(TRUE);
 
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=field_management'.AMP.'group_id='.$group_id);

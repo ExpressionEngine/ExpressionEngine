@@ -685,12 +685,14 @@ class Content_publish extends Controller {
 			
 		"), FALSE);
 
+
 		if ($show_button_cluster == 'y')
 		{
 			$this->javascript->output('
 				$("#write_mode_textarea").markItUp(myWritemodeSettings);
 			');
 		}
+
 
 		// -------------------------------------------
 		//	Publish Page Title Focus - makes the title field gain focus when the page is loaded
@@ -1539,6 +1541,7 @@ class Content_publish extends Controller {
 
 		if (count($layout_info) > 0)
 		{
+//print_r($layout_info);
 			if ($this->config->item('site_pages') === FALSE)
 			{
 				unset($layout_info['pages']);
@@ -1681,7 +1684,7 @@ class Content_publish extends Controller {
 				{
 					$vars['publish_tabs']['options']['new_channel'] = $field_display;
 				}
-
+// hack
 				if ($show_status_menu == 'y')
 				{
 					$vars['publish_tabs']['options']['status'] = $field_display;
@@ -2129,7 +2132,7 @@ class Content_publish extends Controller {
 		{
 			$deft_status = 'open';
 		}
-
+		
 		// It seems some blogging tools that don't add in a status 
 		// will just pass a string of NULL back to us.
 		// So we fight it here.
@@ -2143,6 +2146,8 @@ class Content_publish extends Controller {
 		if ($show_status_menu == 'n')
 		{
 			$vars['form_hidden']['status'] = $status;
+			$vars['menu_status_options'] = array();
+			$vars['menu_status_selected'] = $status;
 		}
 		else
 		{
@@ -3320,119 +3325,12 @@ class Content_publish extends Controller {
 			);
 
 			var field_for_writemode_publish = "";
-			var selected_tab = "";
 
-			function tab_focus(tab_id)
-			{
-				// If the tab was hidden, this was triggered
-				// through the sidebar - show it again!
-				if ( ! $(".menu_"+tab_id).parent().is(":visible")) {
-					// we need to trigger a click to maintain
-					// the delete button toggle state
-					$("a.delete_tab[href=#"+tab_id+"]").trigger("click");
-				}
 
-				$(".tab_menu li").removeClass("current");
-				$(".menu_"+tab_id).parent().addClass("current");
-				$(".main_tab").hide();
-				$("#"+tab_id).fadeIn("fast");
-				$(".main_tab").css("z-index", "");
-				$("#"+tab_id).css("z-index", "5");
-				selected_tab = tab_id;
-			}
+			// tab_focus moved to publish_admin.js
 			
-			// @todo hacky, hacky, hacky
-			EE.tab_focus = tab_focus;
 
-			function setup_tabs()
-			{
-				var spring_delay = 500;
-				var focused_tab = "menu_publish_tab";
-				var field_dropped = false;
-				var spring = "";
-
-				
-				// allow sorting of publish fields
-				$(".main_tab").sortable({
-					handle: ".handle",
-					start: function(event, ui) {
-						ui.item.css("width", $(this).parent().css("width"));
-					},
-					stop: function(event, ui) {
-						ui.item.css("width", "100%");
-					}
-				});
-
-				$(".tab_menu li a").droppable({
-					accept: ".field_selector",
-					tolerance: "pointer",
-					deactivate: function(e, ui) {
-						clearTimeout(spring);
-						$(".tab_menu li").removeClass("highlight_tab");
-					},
-					drop: function(e, ui) {
-						field_id = ui.draggable.attr("id").substring(11);
-						tab_id = $(this).attr("title").substring(5);
-
-						$("#hold_field_"+field_id).prependTo("#"+tab_id);
-						$("#hold_field_"+field_id).hide().slideDown();
-
-						// bring focus
-						tab_focus(tab_id);
-						return false;
-					},
-					over: function(e, ui) {
-
-						tab_id = $(this).attr("title").substring(5);
-						$(this).parent().addClass("highlight_tab");
-
-						spring = setTimeout(function(){
-							tab_focus(tab_id);
-							return false;
-						}, spring_delay);
-
-					},
-					out: function(e, ui) {
-
-						if (spring != "") {
-							clearTimeout(spring);
-						}
-
-						$(this).parent().removeClass("highlight_tab");
-
-					}
-				});
-
-				$("#holder .main_tab").droppable({
-					accept: ".field_selector",
-					tolerance: "pointer",
-					drop: function(e, ui) {
-						field_id = (ui.draggable.attr("id") == "hide_title" || ui.draggable.attr("id") == "hide_url_title") ? ui.draggable.attr("id").substring(5) : ui.draggable.attr("id").substring(11);
-						tab_id = $(this).attr("id");
-
-						// store the field we are moving, then remove it from the DOM
-						$("#hold_field_"+field_id).prependTo("#"+tab_id);// + " div.insertpoint");
-
-						$("#hold_field_"+field_id).hide().slideDown();
-					}
-				});
-
-				$(".tab_menu li.content_tab a, #publish_tab_list a.menu_focus")
-					.unbind(".publish_tabs")
-					.bind("mousedown.publish_tabs", function(e){
-						tab_id = $(this).attr("title").substring(5);
-						tab_focus(tab_id);
-						e.preventDefault();
-					}).bind("click.publish_tabs", function() {
-						return false;
-					});
-			}
-
-			setup_tabs();
-
-			function get_selected_tab() {
-				return selected_tab;
-			}
+			// setup_tabs() moved to publish_admin.js
 
 			// the height of this window depends on the height of the viewport.	 Percentages dont work
 			// as the header and footer are absolutely sized.  This is a great compromise.

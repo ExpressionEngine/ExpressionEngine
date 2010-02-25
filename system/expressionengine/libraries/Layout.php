@@ -114,106 +114,7 @@ class Layout {
 	 */
 	function update_layout($edit = FALSE, $comment_date_fields = TRUE)
 	{
-		if ($edit === FALSE)
-		{
-			return;
-		}
-
-		$this->EE->load->model('member_model');
-
-		// Grab each member group that's allowed to publish
-		$member_groups = $this->EE->member_model->get_member_groups('can_access_publish', array('can_access_publish'=>'y'));
-
-		// Do we have a channel id?
-		if ($this->EE->input->post('channel_id'))
-		{
-			$channel_id = $this->EE->input->post('channel_id');
-		}
-		else
-		{
-			$this->EE->db->select('channel_id, field_group');
-			
-			if ($this->EE->input->post('group_id'))
-			{
-				$this->EE->db->where('field_group', $this->EE->input->post('group_id'));				
-			}
-			
-			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-			$query = $this->EE->db->get('channels');
-			
-			$channel_id = $query->row('channel_id');
-		}
-		
-		// No channel id? Happens when you edit field group that ins't
-		// in use by any channels.
-		
-		if ( ! is_numeric($channel_id))
-		{
-			return;
-		}
-
-		// Loop through each member group, looking for a custom layout
-		// Counting results isn't needed here, at least super admin will be here
-		foreach ($member_groups->result() as $group)
-		{
-			// Get any custom layout
-			$this->custom_layout_fields = $this->EE->member_model->get_group_layout($group->group_id, $channel_id);
-
-			// If there is a layout, we need to re-create it, as the channel prefs
-			// might be hiding the url_title or something.
-			if ( ! empty($this->custom_layout_fields))
-			{
-				// This is a list of everything that an admin could choose to hide in Channel Prefs
-				// with a corresponding list of which fields need to be stricken from a custom layout
-				$check_field = array(
-								'show_url_title'		=> array('url_title'),
-								'show_author_menu'		=> array('author'),
-								'show_status_menu'		=> array('status'),
-								'show_date_menu'		=> array('entry_date', 'expiration_date', 'comment_expiration_date'),
-								'show_options_cluster'	=> array('options'),
-								'show_ping_cluster'		=> array('ping'),
-								'show_categories_menu'	=> array('category'),
-								'show_forum_cluster'	=> array('forum_title', 'forum_body', 'forum_id', 'forum_topic_id'),
-								'show_pages_cluster'	=> array('pages_uri', 'pages_template_id')
-							);
-
-				foreach ($check_field as $post_key => $fields_to_remove)
-				{
-					// If the field is set to 'n', then we need it stripped from the custom layout
-					if ($this->EE->input->post($post_key) == 'n')
-					{
-						foreach ($this->custom_layout_fields as $tab => $fields)
-						{
-							foreach ($fields as $field => $data)
-							{
-								if (array_search($field, $fields_to_remove) !== FALSE)
-								{
-									unset($this->custom_layout_fields[$tab][$field]);
-								}
-							}
-						}
-					}
-
-					if ( ! $comment_date_fields)
-					{
-						unset($this->custom_layout_fields['date']['comment_expiration_date']);
-					}
-					else
-					{
-						$this->custom_layout_fields['date']['comment_expiration_date'] = array(
-										'visible'		=> 'TRUE',
-										'collapse'		=> 'FALSE',
-										'htmlbuttons'	=> 'FALSE',
-										'width'			=> '100%'
-							
-							);
-					}
-				}
-
-				// All fields have been removed that need to be, reconstruct the layout
-				$test = $this->EE->member_model->insert_group_layout($group->group_id, $channel_id, $this->custom_layout_fields);
-			}
-		}
+// replaced by sync
 	}
 
 
@@ -241,6 +142,12 @@ class Layout {
 			$this->db->insert('layout_publish');
 		}			
 	}
+	
+	function delete_channel_layouts($channel_id)
+	{
+		$this->EE->load->model('member_model');
+		$this->EE->member_model->delete_group_layout('', $channel_id)
+	}
 
 
 	// --------------------------------------------------------------------
@@ -252,11 +159,219 @@ class Layout {
 	 * @param	array
 	 * @return	bool
 	 */
-	function sync_layout($fields = array(), $channel_id = array(), $changes_only = TRUE)
+	function sync_layout($fields = array(), $channel_id = '', $changes_only = TRUE)
 	{
-		$layout_fields = array('show_author_menu', 'show_status_menu', 'show_date_menu', 'show_options_cluster', 'show_ping_cluster', 'show_categories_menu', 'show_pages_cluster', 'show_forum_cluster');
+		$new_settings = array();
+		$changed = array();
+		$hide_fields = array();
+		$hide_tab_fields = array();
+		$show_fields = array();
+		$show_tab_fields = array();
+		
+		$default_settings = array(
+							'visible'		=> 'TRUE',
+							'collapse'		=> 'FALSE',
+							'htmlbuttons'	=> 'FALSE',
+							'width'			=> '100%'
+						);		
+		
+		$layout_fields = array('enable_versioning', 'show_url_title', 'show_author_menu', 'show_status_menu', 'show_date_menu', 'show_options_cluster', 'show_ping_cluster', 'show_categories_menu', 'show_pages_cluster', 'show_forum_cluster');
+		
+		foreach ($layout_fields as $field)
+		{
+			if (isset($fields[$field]))
+			{
+				$new_settings[$field] = $fields[$field];
+			}
+		}
+		
+		$this->EE->db->select('enable_versioning, show_url_title, show_author_menu, show_status_menu, show_date_menu, show_options_cluster, show_ping_cluster, show_categories_menu, show_pages_cluster, show_forum_cluster');
+		$this->EE->db->where('channel_id', $channel_id);
+		$current = $this->EE->db->get('channels');
+		
+		if ($current->num_rows() > 0)
+		{
+			 $row = $current->row_array(); 
+//print_r($row);
+//print_r($new_settings);
+			
+			foreach ($new_settings as $field => $val)
+			{
+				if ($val != $row[$field]) // Undefined index: show_author_menu
+				{
+					$changed[$field] = $val;
+				}
+			}
+		}
+		
+		if ( ! empty ($changed))
+		{
+			foreach ($changed as $field => $val)
+			{
+				switch ($field) {
+					case 'enable_versioning':
 
-		return $this->EE->member_model->update_layouts($tabs, 'delete_tabs', $channel_id);
+						if ($val == 'n')
+						{
+							$hide_tab_fields['revisions'] = array('revisions');
+						}
+						else
+						{
+							$show_tab_fields['revisions'] = array('revisions' => $default_settings);
+						}
+
+						break;
+					case 'show_url_title':
+
+						if ($val == 'n')
+						{
+							$hide_fields[] = 'url_title';
+						}
+						else
+						{
+							$show_fields['publish']['url_title'] = $default_settings;
+						}
+
+						break;
+					case 'show_author_menu':
+
+						if ($val == 'n')
+						{
+							$hide_fields[] = 'author';
+						}
+						else
+						{
+							$show_fields['options']['author'] = $default_settings;
+						}
+
+						break;
+					case 'show_status_menu':
+
+						if ($val == 'n')
+						{
+							$hide_fields[] = 'status';
+						}
+						else
+						{
+							$show_fields['options']['status'] = $default_settings;
+						}
+
+						break;
+					case 'show_date_menu':
+
+						if ($val == 'n')
+						{
+							$hide_tab_fields['date'] = array('entry_date', 'expiration_date', 'comment_expiration_date');
+						}
+						else
+						{
+							$show_tab_fields['date'] = array('entry_date' => $default_settings, 
+								'expiration_date' => $default_settings,  
+								'comment_expiration_date' => $default_settings);
+						}
+
+						break;
+					case 'show_options_cluster':
+
+						if ($val == 'n')
+						{
+							$hide_tab_fields['options'] = array('status' => $default_settings, 
+								'author' => $default_settings, 
+								'options' => $default_settings);
+						}
+						else
+						{
+							$show_tab_fields['options'] = array('status' => $default_settings, 
+								'author' => $default_settings, 
+								'options' => $default_settings);
+						}
+
+						break;
+					case 'show_ping_cluster':
+
+						if ($val == 'n')
+						{
+							$hide_tab_fields['pings'] = array('ping');
+						}
+						else
+						{
+							$show_tab_fields['pings'] = array('ping' => $default_settings);
+						}
+
+						break;																		
+					case 'show_categories_menu':
+
+						if ($val == 'n')
+						{
+							 $hide_tab_fields['categories'] = array('category');
+						}
+						else
+						{
+							$show_tab_fields['categories'] = array('category' => $default_settings);
+						}
+
+						break;	
+					case 'show_pages_cluster':
+
+						if ($val == 'n')
+						{
+							$hide_tab_fields['pages'] = array('pages_uri', 'pages_template_id');
+						}
+						else
+						{
+							$show_tab_fields['pages'] = array('pages_uri', 'pages_template_id');
+						}
+
+						break;							
+					case 'show_forum_cluster':
+
+						if ($val == 'n')
+						{
+							$hide_tab_fields['forum'] = array('pages_uri', 'pages_template_id');
+						}
+						else
+						{
+							$show_tab_fields['forum'] = array('forum_title' => $default_settings, 
+								'forum_body'=> $default_settings, 
+								'forum_id' => $default_settings, 
+								'forum_topic_id' => $default_settings);
+						}
+
+						break;	
+					}
+			}
+		}
+		
+		if ( ! empty($hide_tab_fields))
+		{
+			$this->EE->layout_model->edit_layout_fields($hide_tab_fields, 'hide_fields', $channel_id, TRUE);
+		}
+		
+		if ( ! empty($hide_fields))
+		{
+			$this->EE->layout_model->edit_layout_fields($hide_fields, 'hide_fields', $channel_id);
+		}
+
+		if ( ! empty($show_tab_fields))
+		{
+			$this->EE->layout_model->edit_layout_fields($show_tab_fields, 'show_fields', $channel_id, TRUE);
+		}
+
+		if ( ! empty($show_fields))
+		{
+			$this->EE->layout_model->edit_layout_fields($show_fields, 'show_fields', $channel_id);
+		}
+/*
+echo '<pre>';
+print_r($changed);		
+print_r($show_fields);
+print_r($hide_fields);
+print_r($show_tab_fields);
+print_r($hide_tab_fields);
+exit;
+		
+*/		
+		return;
 	}
 
 	
@@ -288,9 +403,9 @@ class Layout {
 			}
 		}
 		
-		$this->EE->load->model('member_model');
+		$this->EE->load->model('layout_model');
 
-		return $this->EE->member_model->update_layouts($tabs, 'delete_tabs', $channel_id);
+		return $this->EE->layout_model->update_layouts($tabs, 'delete_tabs', $channel_id);
 	}	
 
 	// --------------------------------------------------------------------
@@ -322,8 +437,8 @@ class Layout {
 		}
 
 
-		$this->EE->load->model('member_model');
-		$this->EE->member_model->update_layouts($tabs, 'add_tabs', $channel_id);
+		$this->EE->load->model('layout_model');
+		$this->EE->layout_model->update_layouts($tabs, 'add_tabs', $channel_id);
 	}
 
 
@@ -350,9 +465,9 @@ class Layout {
 			return FALSE;
 		}
 
-		$this->EE->load->model('member_model');
+		$this->EE->load->model('layout_model');
 		
-		return $this->EE->member_model->update_layouts($tabs, 'add_fields', $channel_id);
+		return $this->EE->layout_model->update_layouts($tabs, 'add_fields', $channel_id);
 	}
 
 	// --------------------------------------------------------------------
@@ -377,9 +492,9 @@ class Layout {
 			$tabs = array($tabs);
 		}
 		
-		$this->EE->load->model('member_model');
+		$this->EE->load->model('layout_model');
 	
-		return $this->EE->member_model->update_layouts($tabs, 'delete_fields', $channel_id);
+		return $this->EE->layout_model->update_layouts($tabs, 'delete_fields', $channel_id);
 	}
 
 	
