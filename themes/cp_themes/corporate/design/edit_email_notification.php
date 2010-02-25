@@ -30,6 +30,11 @@ if ($EE_view_disable !== TRUE)
 				<div id="template_create">
 					<?=form_open('C=design'.AMP.'M=update_email_notification', '', array('template_id' => $template_id, 'template' => $template))?>
 					<p>
+						<?=lang('email_subject', 'template_title')?>
+						<?=form_input('template_title', $template_title, 'class="fullfield"')?>
+					</p>
+					<p>
+						<?=lang('message_body', 'template_data')?>
 
 					<?=form_textarea(array(
 											'name'	=> 'template_data',

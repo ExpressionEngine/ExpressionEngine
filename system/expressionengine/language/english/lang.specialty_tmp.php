@@ -134,6 +134,8 @@ $lang = array(
 'forum_report_notification_desc' =>
 'This template defines notifications that moderators receive when a user reports a forum post',
 
+'email_subject'	=> 'Email Subject',
+'message_body'	=> 'Email Message Body',
 
 ''=>''
 );

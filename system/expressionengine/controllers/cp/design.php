@@ -3114,7 +3114,7 @@ class Design extends Controller {
 		
 		$this->load->helper('form');
 		
-		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=markitup', TRUE);
+		$this->cp->add_js_script(array('plugin' => 'markitup'));
 
 		$markItUp = array(
 			'nameSpace'	=> "html",
@@ -3127,7 +3127,8 @@ class Design extends Controller {
 		/*	- allow_textarea_tabs => Preserve tabs in all textareas or disable completely
 		/* -------------------------------------------*/
 		
-		if($this->config->item('allow_textarea_tabs') != 'n') {
+		if($this->config->item('allow_textarea_tabs') != 'n') 
+		{
 			$markItUp['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
 		}
 
@@ -3139,6 +3140,7 @@ class Design extends Controller {
 			'vars'				=> $this->template_model->get_specialty_template_vars($template),
 			'template'			=> $template,
 			'template_data'		=> $template_query->row('template_data'),
+			'template_title'	=> $template_query->row('data_title'),
 			'template_id'		=> $template_query->row('template_id'),
 			'template_name'		=> ($this->lang->line($template) == FALSE) ? $template : $this->lang->line($template),
 			'enable_template'	=> $template_query->row('enable_template')
@@ -3167,6 +3169,7 @@ class Design extends Controller {
 		$template_id = $this->input->post('template_id');
 		$template_data = $this->input->post('template_data');
 		$enable_template = ($this->input->post('enable_template')) ? 'y' : 'n';
+		$template_title = $this->input->post('template_title');
 		
 		$query = $this->template_model->get_specialty_template($template_name);
 		
@@ -3175,7 +3178,8 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		$this->template_model->update_specialty_template($template_id, $template_data, $enable_template);
+		$this->template_model->update_specialty_template($template_id, $template_data, 
+															$enable_template, $template_title);
 		
 		// Clear cache files
 		

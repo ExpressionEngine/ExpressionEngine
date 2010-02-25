@@ -609,7 +609,7 @@ class Template_model extends CI_Model {
 	 */
 	function get_specialty_template($template_name)
 	{
-		$this->db->select('template_id, template_data, enable_template');
+		$this->db->select('data_title, template_id, template_data, enable_template');
 		$this->db->from("specialty_templates");
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->where('template_name', $template_name);
@@ -667,10 +667,16 @@ class Template_model extends CI_Model {
 	 * @param	string
 	 * @return	string
 	 */
-	function update_specialty_template($template_id, $template_data, $enable_template = 'y')
+	function update_specialty_template($template_id, $template_data, $enable_template = 'y', $template_title = NULL)
 	{
 		$this->db->set('template_data', $template_data);
 		$this->db->set('enable_template', $enable_template);
+		
+		if ($template_title)
+		{
+			$this->db->set('data_title', $template_title);
+		}
+
 		$this->db->where('template_id', $template_id);
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->update('specialty_templates');
