@@ -752,7 +752,7 @@ class Member_auth extends Member {
 		/**  Build success message
 		/** ----------------------------------------*/
 
-		$data = array(	'title' 	=> $this->EE->lang->line('mbr_login'),
+		$data = array(	'title' 	=> $this->EE->lang->line('mbr_passwd_email_sent'),
 						'heading'	=> $this->EE->lang->line('thank_you'),
 						'content'	=> $this->EE->lang->line('forgotten_email_sent'),
 						'link'		=> array($return, $site_name)

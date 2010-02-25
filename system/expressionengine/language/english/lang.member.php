@@ -469,6 +469,9 @@ content associated with your account will also be deleted.',
 'mbr_login' =>
 'Login',
 
+'mbr_passwd_email_sent' => 
+'Password Reset Email Sent',
+
 'mbr_form_empty' =>
 'You must submit your username and password',
 
