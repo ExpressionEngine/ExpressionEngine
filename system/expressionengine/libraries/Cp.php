@@ -203,7 +203,8 @@ class Cp {
 		
 		$js_lang_keys = array(
 			'logout_confirm'	=> $this->EE->lang->line('logout_confirm'),
-			'logout'			=> $this->EE->lang->line('logout')
+			'logout'			=> $this->EE->lang->line('logout'),
+			'search'			=> $this->EE->lang->line('search')
 		);
 		
 		/* -------------------------------------------

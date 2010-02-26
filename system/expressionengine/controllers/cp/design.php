@@ -3452,6 +3452,10 @@ class Design extends Controller {
 			}
 		}
 		
+		$this->javascript->set_global(array(
+			'lang' => array('search_template' => $this->lang->line('search_template')))
+		);
+		
 		$vars['message'] = $message;
 		$vars['default_group'] = '';
 		$vars['search_terms'] = FALSE;

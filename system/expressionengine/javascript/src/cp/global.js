@@ -82,8 +82,8 @@ EE.create_searchbox = function() {
 };
 
 // @todo Language keys
-EE.create_searchbox('cp_search_keywords', 'Search', 'ee_cp_search');
-EE.create_searchbox('template_keywords', 'Search Templates', 'ee_template_search');
+EE.create_searchbox('cp_search_keywords', EE.lang.search, 'ee_cp_search');
+EE.create_searchbox('template_keywords', EE.lang.search_template, 'ee_template_search');
 
 
 // External links open in new window
