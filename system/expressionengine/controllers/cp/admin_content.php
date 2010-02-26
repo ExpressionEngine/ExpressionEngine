@@ -4497,16 +4497,14 @@ class Admin_content extends Controller {
 			$this->db->where('group_id', $group_id);
 			$this->db->update('channel_fields', $native_settings);
 			
-/*
+
 
 			// Update saved layouts if necessary
-			
-			$native_settings['field_required'] == 'y'
 			
 			$collapse = ($native_settings['field_is_hidden'] == 'y') ? 'true' : 'false';
 			$buttons = ($ft_settings['field_show_formatting_btns'] == 'y') ? 'true' : 'false';
 			
-			$field_info[$insert_id] = array(
+			$field_info[$native_settings['field_id']] = array(
 								'visible'		=> 'true',
 								'collapse'		=> $collapse,
 								'htmlbuttons'	=> $buttons,
@@ -4529,7 +4527,7 @@ class Admin_content extends Controller {
 				$this->load->library('layout');
 				$this->layout->edit_layout_fields($field_info, $channel_ids);
 			}
-*/						
+						
 			
 		}
 		else

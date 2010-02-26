@@ -118,6 +118,7 @@ class Layout {
 	}
 
 
+
 	function duplicate_layout($dupe_id, $channel_id)
 	{
 		$this->EE->load->model('member_model');
@@ -146,7 +147,20 @@ class Layout {
 	function delete_channel_layouts($channel_id)
 	{
 		$this->EE->load->model('member_model');
-		$this->EE->member_model->delete_group_layout('', $channel_id)
+		$this->EE->member_model->delete_group_layout('', $channel_id);
+	}
+
+	function edit_layout_fields($field_info, $channel_id)
+	{
+		$this->EE->load->model('layout_model');
+		
+		if ( ! is_array($channel_id))
+		{
+			$channel_id = array($channel_id);
+		}
+		
+		
+		$this->EE->layout_model->edit_layout_fields($field_info, 'edit_fields', $channel_id);
 	}
 
 
@@ -161,11 +175,13 @@ class Layout {
 	 */
 	function sync_layout($fields = array(), $channel_id = '', $changes_only = TRUE)
 	{
+		$this->EE->load->model('layout_model');
+
 		$new_settings = array();
 		$changed = array();
-		$hide_fields = array();
+		$hide_fields = '';
 		$hide_tab_fields = array();
-		$show_fields = array();
+		$show_fields = '';
 		$show_tab_fields = array();
 		
 		$default_settings = array(
@@ -225,11 +241,11 @@ class Layout {
 
 						if ($val == 'n')
 						{
-							$hide_fields[] = 'url_title';
+							$hide_fields .= 'url_title,';
 						}
 						else
 						{
-							$show_fields['publish']['url_title'] = $default_settings;
+							$show_fields .= 'url_title,';
 						}
 
 						break;
@@ -237,11 +253,11 @@ class Layout {
 
 						if ($val == 'n')
 						{
-							$hide_fields[] = 'author';
+							$hide_fields .= 'author,';
 						}
 						else
 						{
-							$show_fields['options']['author'] = $default_settings;
+							$show_fields .= 'author,';
 						}
 
 						break;
@@ -249,11 +265,11 @@ class Layout {
 
 						if ($val == 'n')
 						{
-							$hide_fields[] = 'status';
+							$hide_fields .= 'status,';
 						}
 						else
 						{
-							$show_fields['options']['status'] = $default_settings;
+							$show_fields .= 'status,';
 						}
 
 						break;
@@ -265,9 +281,7 @@ class Layout {
 						}
 						else
 						{
-							$show_tab_fields['date'] = array('entry_date' => $default_settings, 
-								'expiration_date' => $default_settings,  
-								'comment_expiration_date' => $default_settings);
+							$show_tab_fields['date'] = array('entry_date', 'expiration_date', 'comment_expiration_date');
 						}
 
 						break;
@@ -275,15 +289,11 @@ class Layout {
 
 						if ($val == 'n')
 						{
-							$hide_tab_fields['options'] = array('status' => $default_settings, 
-								'author' => $default_settings, 
-								'options' => $default_settings);
+							$hide_tab_fields['options'] = array('status', 'author', 'options');
 						}
 						else
 						{
-							$show_tab_fields['options'] = array('status' => $default_settings, 
-								'author' => $default_settings, 
-								'options' => $default_settings);
+							$show_tab_fields['options'] = array('status', 'author', 'options');
 						}
 
 						break;
@@ -295,7 +305,7 @@ class Layout {
 						}
 						else
 						{
-							$show_tab_fields['pings'] = array('ping' => $default_settings);
+							$show_tab_fields['pings'] = array('ping');
 						}
 
 						break;																		
@@ -303,11 +313,11 @@ class Layout {
 
 						if ($val == 'n')
 						{
-							 $hide_tab_fields['categories'] = array('category');
+							$hide_tab_fields['categories'] = array('category');
 						}
 						else
 						{
-							$show_tab_fields['categories'] = array('category' => $default_settings);
+							$show_tab_fields['categories'] = array('category');
 						}
 
 						break;	
@@ -327,14 +337,11 @@ class Layout {
 
 						if ($val == 'n')
 						{
-							$hide_tab_fields['forum'] = array('pages_uri', 'pages_template_id');
+							$hide_tab_fields['forum'] = array('forum_title', 'forum_body', 'forum_id', 'forum_topic_id');
 						}
 						else
 						{
-							$show_tab_fields['forum'] = array('forum_title' => $default_settings, 
-								'forum_body'=> $default_settings, 
-								'forum_id' => $default_settings, 
-								'forum_topic_id' => $default_settings);
+							$show_tab_fields['forum'] = array('forum_title', 'forum_body', 'forum_id', 'forum_topic_id');
 						}
 
 						break;	
@@ -344,22 +351,22 @@ class Layout {
 		
 		if ( ! empty($hide_tab_fields))
 		{
-			$this->EE->layout_model->edit_layout_fields($hide_tab_fields, 'hide_fields', $channel_id, TRUE);
+			$this->EE->layout_model->edit_layout_fields($hide_tab_fields, 'hide_tab_fields', $channel_id, TRUE);
 		}
 		
-		if ( ! empty($hide_fields))
+		if ($hide_fields != '')
 		{
-			$this->EE->layout_model->edit_layout_fields($hide_fields, 'hide_fields', $channel_id);
+			$this->EE->layout_model->edit_layout_fields(explode(',', $hide_fields), 'hide_fields', $channel_id);
 		}
 
 		if ( ! empty($show_tab_fields))
 		{
-			$this->EE->layout_model->edit_layout_fields($show_tab_fields, 'show_fields', $channel_id, TRUE);
+			$this->EE->layout_model->edit_layout_fields($show_tab_fields, 'show_tab_fields', $channel_id, TRUE);
 		}
 
-		if ( ! empty($show_fields))
+		if ($show_fields != '')
 		{
-			$this->EE->layout_model->edit_layout_fields($show_fields, 'show_fields', $channel_id);
+			$this->EE->layout_model->edit_layout_fields(explode(',', $show_fields), 'show_fields', $channel_id);
 		}
 /*
 echo '<pre>';

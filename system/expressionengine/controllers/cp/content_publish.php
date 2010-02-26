@@ -1382,13 +1382,14 @@ class Content_publish extends Controller {
 		$rules = 'required|call_field_validation['.$settings['field_id'].']';
 		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
 
+		// hack
 		// "URL title" input Field
-		if ($show_url_title == 'n')
-		{
-			$vars['form_hidden']['url_title'] = $url_title;
-		}
-		else
-		{
+		//if ($show_url_title == 'n')
+		//{
+		//	$vars['form_hidden']['url_title'] = $url_title;
+		//}
+		//else
+		//{
 			$settings = array(
 						'field_id'				=> 'url_title',
 						'field_label'			=> lang('url_title'),
@@ -1406,7 +1407,7 @@ class Content_publish extends Controller {
 			
 			$rules = 'call_field_validation['.$settings['field_id'].']';
 			$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
-		}
+		//}
 
 		$get_format = array();
 
