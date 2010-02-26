@@ -43,10 +43,10 @@ foreach ($this->cp->footer_item as $item)
 	</div>
 	<div id="notice_flag">
 		<p id="notice_counts">
-			<span class="notice_success"><img src="<?=$cp_theme_url?>images/success.png" /></span>
-			<span class="notice_alert"><img src="<?=$cp_theme_url?>images/alert.png" /></span>
-			<span class="notice_error"><img src="<?=$cp_theme_url?>images/error.png" /></span>
-			<span class="notice_info"><img src="<?=$cp_theme_url?>images/info.png" /></span>
+			<span class="notice_success"><img src="<?=$cp_theme_url?>images/success.png" alt="" /></span>
+			<span class="notice_alert"><img src="<?=$cp_theme_url?>images/alert.png" alt="" /></span>
+			<span class="notice_error"><img src="<?=$cp_theme_url?>images/error.png" alt="" /></span>
+			<span class="notice_info"><img src="<?=$cp_theme_url?>images/info.png" alt="" /></span>
 		</p>
 	</div>
 </div>

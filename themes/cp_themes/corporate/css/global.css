@@ -2930,6 +2930,21 @@ p.file_tool {
 	cursor:				pointer;
 }
 
+.publish_textarea textarea {
+	padding:4px;
+}
+
+label.hide_field {
+	margin: 5px 17px 0px 12px;
+}
+
+.publish_field fieldset.holder {
+	margin: 0;
+	padding:0 10px;
+	border: 0;
+}
+
+
 /* -------------------------------------
 /*  Write Mode
 /* -------------------------------------*/
