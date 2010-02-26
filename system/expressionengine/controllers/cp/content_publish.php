@@ -1820,7 +1820,7 @@ class Content_publish extends Controller {
 			{
 				$this->cp->add_to_foot(smiley_js());				
 			}
-			
+
 			foreach($this->api_channel_fields->settings as $field => $field_info)
 			{
 				if (isset($opts['string_override']))

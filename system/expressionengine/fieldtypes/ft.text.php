@@ -81,7 +81,8 @@ class Text_ft extends EE_Fieldtype {
 		return form_input(array(
 			'name'	=> $this->field_name,
 			'id'	=> $this->field_name,
-			'value'	=> $data
+			'value'	=> $data,
+			'dir'	=> $this->settings['field_text_direction']
 		));
 	}
 	
