@@ -1531,7 +1531,7 @@ class Content_publish extends Controller {
 		// hidden elements
 		$all_fields = array();
 		$revealed_fields = array();
-		
+
 		$vars['unrevealed_fields'] = array(); // used in view to build hidden fields
 
 		// Layout
@@ -2925,7 +2925,7 @@ class Content_publish extends Controller {
 		$options_r .= ($vars['show_dst']) ? '<label>'.form_checkbox($vars['dst_data']).' '.lang('dst_enabled').'</label>' : '';
 
 		$this->field_definitions['options'] = array(
-			'string_override'		=> ($options_r != '') ? '</p><fieldset>'.$options_r.'</fieldset><p>&nbsp;' : '',
+			'string_override'		=> ($options_r != '') ? '<fieldset>'.$options_r.'</fieldset>&nbsp;' : '',
 			'field_id'				=> 'options',
 			'field_label'			=> $this->lang->line('options'),
 			'field_name'			=> 'options',
@@ -2966,7 +2966,7 @@ class Content_publish extends Controller {
 	{
 		// @todo: integrate this more nicely with custom_field_helper
 		// Custom fields are wrapped in <p> tags, which are not needed here.
-		$category_r = '</p>';
+		$category_r = '';
 
 		foreach ($categories as $key => $val)
 		{
@@ -2991,7 +2991,7 @@ class Content_publish extends Controller {
 		{
 			if (count($edit_categories_link) == 1)
 			{
-				$category_r .= '<p style="margin: 15px;"><a href="'.$edit_categories_link['0']['url'].'" class="edit_categories_link">'.$this->lang->line('edit_categories').'</a>';
+				$category_r .= '<p style="margin: 15px;"><a href="'.$edit_categories_link['0']['url'].'" class="edit_categories_link">'.$this->lang->line('edit_categories').'</a></p>';
 			}
 			else
 			{
@@ -3026,7 +3026,7 @@ class Content_publish extends Controller {
 	function _define_ping_fields($vars)
 	{
 		$this->api_channel_fields->set_settings('ping', array(
-			'string_override'		=> (isset($vars['ping_servers']) && $vars['ping_servers'] != '') ? '<fieldset>'.$vars['ping_servers'].'</fieldset>' : lang('no_ping_sites').'</p><p><a href="'.BASE.AMP.'C=myaccount'.AMP.'M=ping_servers'.AMP.'id='.$this->session->userdata('member_id').'">'.$this->lang->line('add_ping_sites').'</a>',
+			'string_override'		=> (isset($vars['ping_servers']) && $vars['ping_servers'] != '') ? '<fieldset>'.$vars['ping_servers'].'</fieldset>' : lang('no_ping_sites').'<p><a href="'.BASE.AMP.'C=myaccount'.AMP.'M=ping_servers'.AMP.'id='.$this->session->userdata('member_id').'">'.$this->lang->line('add_ping_sites').'</a></p>',
 			'field_id'				=> 'ping',
 			'field_label'			=> $this->lang->line('pings'),
 			'field_required'		=> 'n',
@@ -3289,7 +3289,10 @@ class Content_publish extends Controller {
 			// depending on admin customization
 
 			$(".hide_field").click(function(){
-				field_id = $(this).attr("for");
+				
+				holder_id = $(this).parent().attr("id");
+				field_id = holder_id.substr(11)
+				
 				if($("#sub_hold_field_"+field_id).css("display") == "block"){
 					$("#sub_hold_field_"+field_id).slideUp();
 					$("#hold_field_"+field_id+" .ui-resizable-handle").hide();

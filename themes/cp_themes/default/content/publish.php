@@ -139,13 +139,11 @@ if ($EE_view_disable !== TRUE)
 					
 					<div class="publish_field publish_<?=$f['field_type']?>" id="hold_field_<?=$f['field_id']?>">
 						<div class="handle"></div>
-						<p>
-							<label class="hide_field" for="<?=$field?>">
+							<label class="hide_field">
 								<img class="field_collapse" src="<?=$cp_theme_url?>images/field_expand.png" width="10" height="13" alt="" />
 								<?php if ($f['field_required'] == 'y'):?><?=required()?><?php endif?>
 								<?=$f['field_label']?>
 							</label>
-						</p>
 						
 
 						<?php if($f['field_instructions'] != ''):?>
@@ -153,12 +151,12 @@ if ($EE_view_disable !== TRUE)
 						<?php endif;?>
 
 						<div id="sub_hold_field_<?=$field?>" <?=$values['is_hidden']? 'class="js_hide"': '';?>>
-							<p>
+							<fieldset class="holder">
 							<?php
 								echo isset($f['string_override']) ? $f['string_override'] : $field_output[$field];
 								echo form_error($f['field_name']);
 							?>
-							</p>
+							</fieldset>
 							<?php
 							// @todo move this logic to the controller or fieldtype api
 							$defaults = array(
@@ -299,7 +297,7 @@ if ($EE_view_disable !== TRUE)
 
 <?php if ($this->session->userdata('group_id') == 1):?>
 	<div id="new_tab_dialog" title="<?=lang('add_tab')?>" style="display: none;">
-		<form>
+		<form action="#">
 			<p>
 				<label><?=lang('tab_name')?></label> 
 				<input id="tab_name" type="text" value="" name="tab_name"/>
@@ -308,8 +306,8 @@ if ($EE_view_disable !== TRUE)
 	</div>
 
 	<div id="add_author_dialog" title="<?=lang('add_author')?>" style="display: none;">
-		<form id="add_authors_dialog_form">
-			<div><img src="<?=PATH_CP_GBL_IMG?>indicator.gif" /></div>
+		<form id="add_authors_dialog_form" action="#">
+			<div><img src="<?=PATH_CP_GBL_IMG?>indicator.gif" alt="" /></div>
 		</form>
 	</div>
 <?php endif;?>

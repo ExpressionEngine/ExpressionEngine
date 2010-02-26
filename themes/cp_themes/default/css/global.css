@@ -2178,6 +2178,15 @@ table.accessTable div.tableCellHeading {
 .publish_field p, .publish_field h3, .publish_field .notice {
 	margin: 5px 17px 0px 12px;
 }
+
+.publish_field fieldset {
+	
+}
+
+label.hide_field {
+	margin: 5px 17px 0px 12px;
+}
+
 .publish_field p {
 	color:#5f6c74;
 	}
@@ -2188,8 +2197,9 @@ table.accessTable div.tableCellHeading {
 .publish_field a:hover {
 	color:	#e11842;
 	}	
-.publish_field fieldset {
-	margin: 5px 2px 12px 15px;
+.publish_field fieldset.holder {
+	margin: 0;
+	padding:0 10px;
 	border: 0;
 }
 .publish_field fieldset legend {
@@ -2393,7 +2403,11 @@ a#refresh_categories {
 .publish_text input, .publish_textarea textarea {
 	border: 			1px solid #b6c0c2;
 	margin-top: 		7px;
-	width: 				99.7%;
+	width: 				98.5%;
+}
+
+.publish_textarea textarea {
+	padding:4px;
 }
 
 .publish_text input {
