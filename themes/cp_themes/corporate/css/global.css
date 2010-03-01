@@ -1309,7 +1309,7 @@ input.submit,input.delete, a.submit {
 	line-height:		14px;
 	color:				#3e434a;
 	font-size:			12px;
-	margin-bottom:		0;
+	margin-bottom:		10px;
 	border-bottom:		1px solid #8ba0b1;
 }
 
@@ -1423,7 +1423,6 @@ td#tableEndRight p.commentend{
 
 #mainContent .tableSubmit {
 	float:				right;
-	margin-top:-35px;
 }
 
 
