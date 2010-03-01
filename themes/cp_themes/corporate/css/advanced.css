@@ -81,6 +81,10 @@ h3.accordion{
 	}
 }
 
+#write_mode_writer {
+	border-radius: 15px;
+}
+
 .js_hide {
 	display: none;
 }

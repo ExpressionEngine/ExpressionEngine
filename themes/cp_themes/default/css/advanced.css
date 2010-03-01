@@ -61,6 +61,10 @@ div.pageContents,
 	border-bottom-left-radius: 10px;
 }
 
+#write_mode_writer {
+	border-radius: 15px;
+}
+
 .js_hide {
 	display: none;
 }
