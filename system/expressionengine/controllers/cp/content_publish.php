@@ -294,8 +294,7 @@ class Content_publish extends Controller {
 		$vars = array(
 			'message'				=> '',
 			'cp_page_title'			=> $this->lang->line('new_entry'),								// modified below if this is an "edit"
-			'BK'					=> ($this->input->get_post('BK')) ? AMP.'BK=1'.AMP.'Z=1' : '',	// @todo - I don't think so...
-			'show_author_menu'		=> FALSE
+			'BK'					=> ($this->input->get_post('BK')) ? AMP.'BK=1'.AMP.'Z=1' : ''	// @todo - I don't think so...
 		);
 
 		$vars['smileys_enabled'] = (isset($this->installed_modules['emoticon']) ? TRUE : FALSE);
@@ -587,10 +586,10 @@ class Content_publish extends Controller {
 
 		// Create status menu
 
-		$vars = array_merge_recursive($vars, $this->_build_status_vars($status_group, $status, $deft_status, $show_status_menu));
+		$vars = array_merge_recursive($vars, $this->_build_status_vars($status_group, $status, $deft_status));
 
 		// Create author menu
-		$vars = array_merge_recursive($vars, $this->_build_author_vars($author_id, $channel_id, $show_author_menu));
+		$vars = array_merge_recursive($vars, $this->_build_author_vars($author_id, $channel_id));
 
 		$this->cp->add_js_script(array(
 		        'ui'        => array('datepicker', 'resizable', 'draggable', 'droppable'),
@@ -761,54 +760,45 @@ class Content_publish extends Controller {
 		$vars['show_sticky']	= FALSE;
 		$vars['show_dst']		= FALSE;
 
-		if ($show_options_cluster == 'n')
+		//	"Sticky" checkbox
+		$vars['show_sticky'] = TRUE;
+		$vars['sticky_data'] = array(
+									  'name'		=> 'sticky',
+									  'id'			=> 'sticky',
+									  'value'		=> 'y',
+									  'checked'		=> ($sticky == 'y') ? TRUE : FALSE
+									);
+
+
+		//	"Allow comments"?
+		if ( ! isset($this->installed_modules['comment']))
 		{
-			$vars['form_hidden']['sticky']			= $sticky;
-			$vars['form_hidden']['allow_comments']	= $allow_comments;
+			$vars['form_hidden']['allow_comments'] = $allow_comments;
 		}
-		else
+		elseif ($comment_system_enabled == 'y')
 		{
-			//	"Sticky" checkbox
-			$vars['show_sticky'] = TRUE;
-			$vars['sticky_data'] = array(
-										  'name'		=> 'sticky',
-										  'id'			=> 'sticky',
-										  'value'		=> 'y',
-										  'checked'		=> ($sticky == 'y') ? TRUE : FALSE
-										);
-
-
-			//	"Allow comments"?
-			if ( ! isset($this->installed_modules['comment']))
-			{
-				$vars['form_hidden']['allow_comments'] = $allow_comments;
-			}
-			elseif ($comment_system_enabled == 'y')
-			{
-				$vars['show_comments'] = TRUE;
-				$vars['comments_data'] = array(
-												  'name'		=> 'allow_comments',
-												  'id'			=> 'allow_comments',
-												  'checked'		=> ($allow_comments == 'y') ? TRUE : FALSE,
-												  'value'		=> 'y'
-												);
-			}
-
-			//	"Daylight Saving Time" checkbox
-			if ($this->config->item('honor_entry_dst') == 'y')
-			{
-				$vars['show_dst'] = TRUE;
-				$vars['dst_enabled'] = ( ! isset($_POST['dst_enabled'])) ? 'n' :  $dst_enabled;
-
-				$vars['dst_data'] = array(
-										  'name'		=> 'dst_enabled',
-										  'id'			=> 'dst_enabled',
-										  'checked'		=> $vars['dst_enabled'],
-										  'value'		=> 'y'
-										);
-			}
+			$vars['show_comments'] = TRUE;
+			$vars['comments_data'] = array(
+											  'name'		=> 'allow_comments',
+											  'id'			=> 'allow_comments',
+											  'checked'		=> ($allow_comments == 'y') ? TRUE : FALSE,
+											  'value'		=> 'y'
+											);
 		}
-		
+
+		//	"Daylight Saving Time" checkbox
+		if ($this->config->item('honor_entry_dst') == 'y')
+		{
+			$vars['show_dst'] = TRUE;
+			$vars['dst_enabled'] = ( ! isset($_POST['dst_enabled'])) ? 'n' :  $dst_enabled;
+
+			$vars['dst_data'] = array(
+									  'name'		=> 'dst_enabled',
+									  'id'			=> 'dst_enabled',
+									  'checked'		=> $vars['dst_enabled'],
+									  'value'		=> 'y'
+									);
+		}
 		
 		$vars['publish_tabs']['publish'] = array();
 		
@@ -868,7 +858,7 @@ class Content_publish extends Controller {
 			$cal_com_expir_date = ($comment_expiration_date == '' OR $comment_expiration_date == 0) ? $this->localize->set_localized_time() * 1000: $this->localize->set_localized_time($comment_expiration_date) * 1000;			
 		}
 
-		if ($show_date_menu == 'n' OR ! array_key_exists('date', $layout_info))
+		if ( ! array_key_exists('date', $layout_info))
 		{
 			$vars['form_hidden']['entry_date'] = $loc_entry_date;
 			$vars['form_hidden']['expiration_date'] = $loc_expiration_date;
@@ -931,14 +921,7 @@ class Content_publish extends Controller {
 
 			foreach ($query->result_array() as $row)
 			{
-				if ($show_categories_menu == 'n')
-				{
-					$vars['form_hidden']['category'][] = $row['cat_id'];
-				}
-				else
-				{
-					$catlist[$row['cat_id']] = $row['cat_id'];
-				}
+				$catlist[$row['cat_id']] = $row['cat_id'];
 			}
 		}
 		else
@@ -952,54 +935,46 @@ class Content_publish extends Controller {
 			}
 		}
 
-		$vars['show_categories_menu'] = $show_categories_menu;
 		$vars['categories'] = array();
 		
 		$edit_categories_link = FALSE; //start off as false, meaning user does not have privs
 
-		if ($which == 'new' AND $deft_category != '' AND $show_categories_menu == 'n')
-		{
-			$vars['form_hidden']['category'][] = $deft_category;
-		}
-		elseif ($show_categories_menu == 'y')
-		{
-			// Normal Category Display
+		// Normal Category Display
 			
-			$catlist = ($which == 'new' && $deft_category != '') ? $deft_category : $catlist;
+		$catlist = ($which == 'new' && $deft_category != '') ? $deft_category : $catlist;
 
-			$this->api_channel_categories->category_tree($cat_group, $catlist);
+		$this->api_channel_categories->category_tree($cat_group, $catlist);
 
-			if (count($this->api_channel_categories->categories) > 0)
-			{  
-				// add categories in again, over-ride setting above
-				// @confirm this is how we want to handle passing it to the view
-				//$vars['categories'] = $this->api_channel_categories->categories;
-				foreach ($this->api_channel_categories->categories as $val)
-				{
-					$vars['categories'][$val['3']][] = $val;
-				}
-			}
-
-			$link_info = $this->api_channel_categories->fetch_allowed_category_groups($cat_group);
-
-			$links = array();
-			if ($link_info !== FALSE)
+		if (count($this->api_channel_categories->categories) > 0)
+		{  
+			// add categories in again, over-ride setting above
+			// @confirm this is how we want to handle passing it to the view
+			//$vars['categories'] = $this->api_channel_categories->categories;
+			foreach ($this->api_channel_categories->categories as $val)
 			{
-				// @todo needs reworking.  If you include the z it throws an error because that triggers an include of cp.publish.
-				// Without the z the permissions may not be working as per 1.6.  
-
-				foreach ($link_info as $val)
-				{
-					$links[] = array('url' => BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$val['group_id'],
-					'group_name' => $val['group_name']);
-				}
+				$vars['categories'][$val['3']][] = $val;
 			}
-
-			$edit_categories_link = $links;
-			
-			// Function can be found in cp/publish.js
-			$this->javascript->output('EE.publish.category_editor()');
 		}
+
+		$link_info = $this->api_channel_categories->fetch_allowed_category_groups($cat_group);
+
+		$links = array();
+		if ($link_info !== FALSE)
+		{
+			// @todo needs reworking.  If you include the z it throws an error because that triggers an include of cp.publish.
+			// Without the z the permissions may not be working as per 1.6.  
+
+			foreach ($link_info as $val)
+			{
+				$links[] = array('url' => BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$val['group_id'],
+					'group_name' => $val['group_name']);
+			}
+		}
+
+		$edit_categories_link = $links;
+			
+		// Function can be found in cp/publish.js
+		$this->javascript->output('EE.publish.category_editor()');
 
 		$this->_define_category_fields($vars['categories'], $edit_categories_link);
 
@@ -1007,13 +982,8 @@ class Content_publish extends Controller {
 		// PING BLOCK
 		// ----------------------------------------------
 
-		$vars['show_ping_cluster'] = $show_ping_cluster;
-
-		if ($show_ping_cluster == 'y')
-		{
-			$vars['ping_servers'] = $this->fetch_ping_servers( ($which == 'edit') ? $author_id : '', isset($entry_id) ? $entry_id : '', $which, ($show_ping_cluster == 'y') ? TRUE : FALSE);
-			$this->_define_ping_fields($vars);
-		}
+		$vars['ping_servers'] = $this->fetch_ping_servers( ($which == 'edit') ? $author_id : '', isset($entry_id) ? $entry_id : '', $which, TRUE);
+		$this->_define_ping_fields($vars);
 
 		// ----------------------------------------------
 		// REVISIONS BLOCK
@@ -1117,9 +1087,7 @@ class Content_publish extends Controller {
 		//	FORUM BLOCK
 		// ---------------------------------------------
 
-		$vars['show_forum_cluster'] = $show_forum_cluster;
-
-		if ($show_forum_cluster == 'y' AND $this->config->item('forum_is_installed') == "y")
+		if ($this->config->item('forum_is_installed') == "y")
 		{
 			// New forum topics will only be accepted by the submit_new_entry_form() when there is no entry_id sent
 
@@ -1214,13 +1182,11 @@ class Content_publish extends Controller {
 		//	PAGES BLOCK
 		// ----------------------------------------------
 
-		$vars['show_pages_cluster'] = $show_pages_cluster;
-		
 		$vars['pages_uri']	= '';
 		$vars['pages_dropdown'] = array();
 		$vars['pages_dropdown_selected'] = '';
 
-		if ($show_pages_cluster == 'y' AND ($pages = $this->config->item('site_pages')) !== FALSE)
+		if ($pages = $this->config->item('site_pages') !== FALSE)
 		{
 			$pages_uri = '';
 			$pages_template_id = '';
@@ -1312,8 +1278,6 @@ class Content_publish extends Controller {
 			}
 			else
 			{
-				$vars['show_pages_cluster'] = $show_pages_cluster = 'n';
-				
 				$vars['publish_tabs']['pages']['pages_uri'] = array(
 								'visible'		=> TRUE,
 								'collapse'		=> FALSE,
@@ -1382,26 +1346,18 @@ class Content_publish extends Controller {
 		$rules = 'required|call_field_validation['.$settings['field_id'].']';
 		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
 
-		// hack
-		// "URL title" input Field
-		//if ($show_url_title == 'n')
-		//{
-		//	$vars['form_hidden']['url_title'] = $url_title;
-		//}
-		//else
-		//{
-			$settings = array(
-						'field_id'				=> 'url_title',
-						'field_label'			=> lang('url_title'),
-						'field_required'		=> 'n',
-						'field_data'			=> ($this->input->post('url_title') == '') ? $url_title : $this->input->post('url_title'),
-						'field_fmt'				=> 'xhtml',
-						'field_instructions'	=> '',
-						'field_show_fmt'		=> 'n',
-						'field_text_direction'	=> 'ltr',
-						'field_type'			=> 'text',
-						'field_maxl'			=> 75
-			);
+		$settings = array(
+					'field_id'				=> 'url_title',
+					'field_label'			=> lang('url_title'),
+					'field_required'		=> 'n',
+					'field_data'			=> ($this->input->post('url_title') == '') ? $url_title : $this->input->post('url_title'),
+					'field_fmt'				=> 'xhtml',
+					'field_instructions'	=> '',
+					'field_show_fmt'		=> 'n',
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'text',
+					'field_maxl'			=> 75
+		);
 			
 			$this->api_channel_fields->set_settings('url_title', $settings);
 			
@@ -1635,21 +1591,15 @@ class Content_publish extends Controller {
 				
 				if ($field == 'ping')
 				{
-					if ($show_ping_cluster != 'n')
-					{
-						$vars['publish_tabs']['pings'][$field] = $field_display;
-					}
+					$vars['publish_tabs']['pings'][$field] = $field_display;
 				}
 				elseif (in_array($field, array('entry_date', 'expiration_date', 'comment_expiration_date')))
 				{
-					if ($show_date_menu != 'n')
-					{
-						$vars['publish_tabs']['date'][$field] = $field_display;
-					}
+					$vars['publish_tabs']['date'][$field] = $field_display;
 				}
 				elseif (in_array($field, array('pages_uri', 'pages_template_id')))
 				{
-					if ($show_pages_cluster == 'y' AND ($pages = $this->config->item('site_pages')) !== FALSE)
+					if ($pages = $this->config->item('site_pages') !== FALSE)
 					{
 						$vars['publish_tabs']['pages'][$field] = $field_display;
 					}
@@ -1678,33 +1628,21 @@ class Content_publish extends Controller {
 				$vars['publish_tabs']['revisions']['revisions'] = $field_display;
 			}
 
-			// show options tab?
-			if ($show_options_cluster != 'n')
+			// Options tab
+			if ($which != 'new')
 			{
-				if ($which != 'new')
-				{
-					$vars['publish_tabs']['options']['new_channel'] = $field_display;
-				}
+				$vars['publish_tabs']['options']['new_channel'] = $field_display;
+			}
 // hack
-				if ($show_status_menu == 'y')
-				{
-					$vars['publish_tabs']['options']['status'] = $field_display;
-				}
+			$vars['publish_tabs']['options']['status'] = $field_display;
 
-				if ($vars['show_author_menu'])
-				{
-					$vars['publish_tabs']['options']['author'] = $field_display;
-				}
+			$vars['publish_tabs']['options']['author'] = $field_display;
 
-				$vars['publish_tabs']['options']['options'] = $field_display;
-			}
+			$vars['publish_tabs']['options']['options'] = $field_display;
 			
-			if ($show_categories_menu != 'n')
-			{
-				$vars['publish_tabs']['categories']['category'] = $field_display;
-			}
+			$vars['publish_tabs']['categories']['category'] = $field_display;
 
-			if ($show_forum_cluster != 'n' AND $this->config->item('forum_is_installed') == "y")
+			if ($this->config->item('forum_is_installed') == "y")
 			{
 				if (isset($vars['forum_title']))
 				{
@@ -2125,7 +2063,7 @@ class Content_publish extends Controller {
 		return $vars;
 	}
 
-	function _build_status_vars($status_group, $status, $deft_status, $show_status_menu)
+	function _build_status_vars($status_group, $status, $deft_status)
 	{
 		$this->load->model('status_model');
 
@@ -2144,93 +2082,82 @@ class Content_publish extends Controller {
 
 		$vars = array();
 
-		if ($show_status_menu == 'n')
+		// Fetch disallowed statuses
+
+		$no_status_access = array();
+		$vars = array();
+
+		if ($this->session->userdata['group_id'] != 1)
 		{
-			$vars['form_hidden']['status'] = $status;
-			$vars['menu_status_options'] = array();
-			$vars['menu_status_selected'] = $status;
-		}
-		else
-		{
-			// Fetch disallowed statuses
+			$query = $this->status_model->get_disallowed_statuses($this->session->userdata['group_id']);
 
-			$no_status_access = array();
-			$vars = array();
-
-			if ($this->session->userdata['group_id'] != 1)
+			if ($query->num_rows() > 0)
 			{
-				$query = $this->status_model->get_disallowed_statuses($this->session->userdata['group_id']);
-
-				if ($query->num_rows() > 0)
+				foreach ($query->result_array() as $row)
 				{
-					foreach ($query->result_array() as $row)
-					{
-						$no_status_access[] = $row['status_id'];
-					}
-				}
-			}
-
-			//	Create status menu options
-			
-			// Start with the default open/closed in case they didn't select
-			// a status group.
-			
-			$vars['menu_status_options'] = array();
-			$vars['menu_status_selected'] = $status;
-			
-			// if there is no status group assigned, only Super Admins can create 'open' entries
-			if ($this->session->userdata['group_id'] == 1)
-			{
-				$vars['menu_status_options']['open'] = $this->lang->line('open');
-			}
-
-			$vars['menu_status_options']['closed'] = $this->lang->line('closed');
-
-
-			// If the channel has a status group, grab those statuses
-			
-			if ($status_group)
-			{
-				$query = $this->status_model->get_statuses($status_group);
-				
-				if ($query->num_rows())
-				{
-					$no_status_flag = TRUE;
-					$vars['menu_status_options'] = array();
-
-					foreach ($query->result_array() as $row)
-					{
-						// pre-selected status
-						if ($status == $row['status'])
-						{
-							$vars['menu_status_selected'] = $row['status'];
-						}
-
-						if (in_array($row['status_id'], $no_status_access))
-						{
-							continue;
-						}
-
-						$no_status_flag = FALSE;
-						$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? $this->lang->line($row['status']) : $row['status'];
-						$vars['menu_status_options'][form_prep($row['status'])] = form_prep($status_name);
-					}
-
-					//	Were there no statuses?
-					// If the current user is not allowed to submit any statuses we'll set the default to closed
-
-					if ($no_status_flag == TRUE)
-					{
-						$vars['menu_status_selected'] = 'closed';
-					}
+					$no_status_access[] = $row['status_id'];
 				}
 			}
 		}
 
+		//	Create status menu options
+			
+		// Start with the default open/closed in case they didn't select
+		// a status group.
+			
+		$vars['menu_status_options'] = array();
+		$vars['menu_status_selected'] = $status;
+			
+		// if there is no status group assigned, only Super Admins can create 'open' entries
+		if ($this->session->userdata['group_id'] == 1)
+		{
+			$vars['menu_status_options']['open'] = $this->lang->line('open');
+		}
+
+		$vars['menu_status_options']['closed'] = $this->lang->line('closed');
+
+		// If the channel has a status group, grab those statuses
+			
+		if ($status_group)
+		{
+			$query = $this->status_model->get_statuses($status_group);
+			
+			if ($query->num_rows())
+			{
+				$no_status_flag = TRUE;
+				$vars['menu_status_options'] = array();
+
+				foreach ($query->result_array() as $row)
+				{
+					// pre-selected status
+					if ($status == $row['status'])
+					{
+						$vars['menu_status_selected'] = $row['status'];
+					}
+
+					if (in_array($row['status_id'], $no_status_access))
+					{
+						continue;
+					}
+
+					$no_status_flag = FALSE;
+					$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? $this->lang->line($row['status']) : $row['status'];
+					$vars['menu_status_options'][form_prep($row['status'])] = form_prep($status_name);
+				}
+
+				//	Were there no statuses?
+				// If the current user is not allowed to submit any statuses we'll set the default to closed
+
+				if ($no_status_flag == TRUE)
+				{
+					$vars['menu_status_selected'] = 'closed';
+				}
+			}
+		}
 		return $vars;
 	}
 
-	function _build_author_vars($author_id, $channel_id, $show_author_menu)
+	function _build_author_vars($author_id, $channel_id)
 	{
 		$this->load->model('member_model');
 
@@ -2243,32 +2170,23 @@ class Content_publish extends Controller {
 		$vars['menu_author_options'] = array();
 		$vars['menu_author_selected'] = $author_id;
 
-		if ($show_author_menu == 'n')
-		{
-			$vars['form_hidden']['author_id'] = $author_id;
-		}
-		else
-		{
-			$vars['show_author_menu'] = TRUE;
-
-			$this->db->select('username, screen_name');
-			$query = $this->db->get_where('members', array('member_id' => $author_id));
+		$this->db->select('username, screen_name');
+		$query = $this->db->get_where('members', array('member_id' => $author_id));
 	
-			$author = ($query->row('screen_name')  == '') ? $query->row('username')	 : $query->row('screen_name');
-			$vars['menu_author_options'][$author_id] = $author;
+		$author = ($query->row('screen_name')  == '') ? $query->row('username')	 : $query->row('screen_name');
+		$vars['menu_author_options'][$author_id] = $author;
 
-			// Next we'll gather all the authors that are allowed to be in this list
-			$vars['author_list'] = $this->member_model->get_authors();
+		// Next we'll gather all the authors that are allowed to be in this list
+		$vars['author_list'] = $this->member_model->get_authors();
 
-			// We'll confirm that the user is assigned to a member group that allows posting in this channel
-			if ($vars['author_list']->num_rows() > 0)
+		// We'll confirm that the user is assigned to a member group that allows posting in this channel
+		if ($vars['author_list']->num_rows() > 0)
+		{
+			foreach ($vars['author_list']->result() as $row)
 			{
-				foreach ($vars['author_list']->result() as $row)
+				if (isset($this->session->userdata['assigned_channels'][$channel_id]))
 				{
-					if (isset($this->session->userdata['assigned_channels'][$channel_id]))
-					{
-						$vars['menu_author_options'][$row->member_id] = ($row->screen_name == '') ? $row->username : $row->screen_name;
-					}
+					$vars['menu_author_options'][$row->member_id] = ($row->screen_name == '') ? $row->username : $row->screen_name;
 				}
 			}
 		}

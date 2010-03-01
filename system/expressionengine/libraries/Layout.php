@@ -191,7 +191,7 @@ class Layout {
 							'width'			=> '100%'
 						);		
 		
-		$layout_fields = array('enable_versioning', 'show_url_title', 'show_author_menu', 'show_status_menu', 'show_date_menu', 'show_options_cluster', 'show_ping_cluster', 'show_categories_menu', 'show_pages_cluster', 'show_forum_cluster');
+		$layout_fields = array('enable_versioning');
 		
 		foreach ($layout_fields as $field)
 		{
@@ -201,7 +201,7 @@ class Layout {
 			}
 		}
 		
-		$this->EE->db->select('enable_versioning, show_url_title, show_author_menu, show_status_menu, show_date_menu, show_options_cluster, show_ping_cluster, show_categories_menu, show_pages_cluster, show_forum_cluster');
+		$this->EE->db->select('enable_versioning');
 		$this->EE->db->where('channel_id', $channel_id);
 		$current = $this->EE->db->get('channels');
 		
@@ -246,102 +246,6 @@ class Layout {
 						else
 						{
 							$show_fields .= 'url_title,';
-						}
-
-						break;
-					case 'show_author_menu':
-
-						if ($val == 'n')
-						{
-							$hide_fields .= 'author,';
-						}
-						else
-						{
-							$show_fields .= 'author,';
-						}
-
-						break;
-					case 'show_status_menu':
-
-						if ($val == 'n')
-						{
-							$hide_fields .= 'status,';
-						}
-						else
-						{
-							$show_fields .= 'status,';
-						}
-
-						break;
-					case 'show_date_menu':
-
-						if ($val == 'n')
-						{
-							$hide_tab_fields['date'] = array('entry_date', 'expiration_date', 'comment_expiration_date');
-						}
-						else
-						{
-							$show_tab_fields['date'] = array('entry_date', 'expiration_date', 'comment_expiration_date');
-						}
-
-						break;
-					case 'show_options_cluster':
-
-						if ($val == 'n')
-						{
-							$hide_tab_fields['options'] = array('status', 'author', 'options');
-						}
-						else
-						{
-							$show_tab_fields['options'] = array('status', 'author', 'options');
-						}
-
-						break;
-					case 'show_ping_cluster':
-
-						if ($val == 'n')
-						{
-							$hide_tab_fields['pings'] = array('ping');
-						}
-						else
-						{
-							$show_tab_fields['pings'] = array('ping');
-						}
-
-						break;																		
-					case 'show_categories_menu':
-
-						if ($val == 'n')
-						{
-							$hide_tab_fields['categories'] = array('category');
-						}
-						else
-						{
-							$show_tab_fields['categories'] = array('category');
-						}
-
-						break;	
-					case 'show_pages_cluster':
-
-						if ($val == 'n')
-						{
-							$hide_tab_fields['pages'] = array('pages_uri', 'pages_template_id');
-						}
-						else
-						{
-							$show_tab_fields['pages'] = array('pages_uri', 'pages_template_id');
-						}
-
-						break;							
-					case 'show_forum_cluster':
-
-						if ($val == 'n')
-						{
-							$hide_tab_fields['forum'] = array('forum_title', 'forum_body', 'forum_id', 'forum_topic_id');
-						}
-						else
-						{
-							$show_tab_fields['forum'] = array('forum_title', 'forum_body', 'forum_id', 'forum_topic_id');
 						}
 
 						break;	

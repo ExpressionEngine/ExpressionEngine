@@ -275,13 +275,10 @@ if ($EE_view_disable !== TRUE)
 				<?php
 					$this->table->set_heading(lang('preference'), lang('setting'));
 
-					foreach ($publish_page_customization_options as $option)
-					{
-						$preference = lang($option, $option);
-						$controls = lang('yes', $option.'_y').NBS.form_radio(array('name'=>$option, 'id'=>$option.'_y', 'value'=>'y', 'checked'=>($$option == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-						$controls .= lang('no', $option.'_n').NBS.form_radio(array('name'=>$option, 'id'=>$option.'_n', 'value'=>'n', 'checked'=>($$option == 'n') ? TRUE : FALSE));
-						$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
-					}
+					$preference = lang('show_button_cluster', 'show_button_cluster');
+					$controls = lang('yes', 'show_button_cluster_y').NBS.form_radio(array('name'=>'show_button_cluster', 'id'=>'show_button_cluster_y', 'value'=>'y', 'checked'=>($show_button_cluster == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
+					$controls .= lang('no', 'show_button_cluster_n').NBS.form_radio(array('name'=>'show_button_cluster', 'id'=>'show_button_cluster_n', 'value'=>'n', 'checked'=>($show_button_cluster == 'n') ? TRUE : FALSE));
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('default_entry_title', 'default_entry_title');
 					$controls = form_input(array('id'=>'default_entry_title','name'=>'default_entry_title','class'=>'fullfield', 'value'=>$default_entry_title));

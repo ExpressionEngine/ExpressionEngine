@@ -407,22 +407,6 @@ class Admin_content extends Controller {
 			);		
 		}
 
-		// Within the Publish Page Customization option group, there are several options nearly
-		// identical. Here we set up a loop to handle them instead of manually building each one.
-		$vars['publish_page_customization_options'] = array(
-			'show_url_title', 'show_button_cluster', 'show_author_menu', 'show_status_menu',  'show_date_menu',
-			'show_options_cluster', 'show_ping_cluster', 'show_categories_menu');
-			
-		if (isset($this->cp->installed_modules['pages']))
-		{
-			$vars['publish_page_customization_options'][] = 'show_pages_cluster';
-		}
-		
-		if (isset($this->cp->installed_modules['forum']))
-		{
-			$vars['publish_page_customization_options'][] = 'show_forum_cluster';
-		}		
-
 		$this->javascript->compile();
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('channel_prefs').' - '.$vars['channel_title']);
