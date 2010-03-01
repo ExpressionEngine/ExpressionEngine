@@ -666,7 +666,7 @@ class Login extends Controller {
 		{
 			$this->functions->redirect(SELF);
 		}
-		
+
 		$this->db->where('ip_address', $this->input->ip_address());
 		$this->db->where('member_id', $this->session->userdata('member_id'));
 		$this->db->delete('online_users');
@@ -910,6 +910,50 @@ class Login extends Controller {
 		$this->session->set_flashdata('message', $res);
 		$this->functions->redirect(BASE.AMP.'C=login');
 	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 *	Refresh XID
+	 *
+	 *	This method is hit by users who are logged in and using cookies only
+	 *	As their session type.  we'll silently refresh their XIDs in the background
+	 *	Instead of forcing them to log back in each time.
+	 *	This method will keep the user logged in indefinitely, as the session type is
+	 *	already set to cookies.  If we didn't do this, they would simply be redirected to 
+	 *	the control panel home page.
+	 *			
+	 */
+	function refresh_xid()
+	{
+		// the only way we will be hitting this is through an ajax request.
+		// Any other way is monkeying with URLs.  I have no patience for URL monkiers.
+		if ( ! AJAX_REQUEST)
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+		
+		// No CP access?  No reason to be here.  buh bye
+		if ( ! isset($this->session->userdata['can_access_cp']) OR $this->session->userdata['can_access_cp'] != 'y')
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+		
+		// If the admin session type is not cookies only, how'd they get here?
+		if ($this->config->item('admin_session_type') != 'c')
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+		
+		$resp = array(
+			'xid'	=> XID_SECURE_HASH
+		);
+		
+		$this->output->send_ajax_response($resp); exit;
+	}	
+	
+	
+	
 }
 // END CLASS
 

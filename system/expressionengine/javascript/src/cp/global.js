@@ -94,74 +94,159 @@ $('a[rel="external"]').click(function() {
 });
 
 
-// Logout Check -
-// Is XID or the session Expired
-
 function logOutCheck() {
-
-    var timeOutTimer	= EE.SESS_TIMEOUT - 60000, //Fire one Minute before the session times out.  
-		xidTimeOutTimer	= EE.XID_TIMEOUT - 60000,
-		pageExpirationTimeout = (timeOutTimer < xidTimeOutTimer) ? timeOutTimer : xidTimeOutTimer,
-		isPageAboutToExpire; 
-
+	
+    var timeOutTimer			= EE.SESS_TIMEOUT - 60000, //Fire one Minute before the session times out.  
+		xidTimeOutTimer			= EE.XID_TIMEOUT - 60000,
+		pageExpirationTimeout 	= (timeOutTimer < xidTimeOutTimer) ? timeOutTimer : xidTimeOutTimer,
+		loginHit 				= false,
+		isPageAboutToExpire, xidRefresh;
+	
+	xidRefresh = function() {
+		$.ajax({
+			type: 		'POST',
+			dataType: 	'json',
+			url: 		EE.BASE+'&C=login&M=refresh_xid',
+			success: function(result) {
+				$("input[name='XID']").val(result.xid);
+				EE.XID = result.xid;
+				setTimeout(xidRefresh, xidTimeOutTimer);
+			}
+		});	
+	};
+	
 	isPageAboutToExpire = function() {
 		var logInForm = '<form><div id="logOutWarning" style="text-align:center"><p>'+EE.lang.session_expiring+'</p><label for="username">'+EE.lang.username+'</label>: <input type="text" id="log_backin_username" name="username" value="" style="width:100px" size="35" dir="ltr" id="username" maxlength="32"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="password">'+EE.lang.password+'</label>: <input class="field" id="log_backin_password" type="password" name="password" value="" style="width:100px" size="32" dir="ltr" id="password" maxlength="32"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" id="submit" name="submit" value="'+EE.lang.login+'" class="submit" /><span id="logInSpinner"></span></div></form>',
 			logOutWarning;
-	
-        $.ee_notice(logInForm, {type: "custom", open: true, close_on_click: false});
-        
-        logOutWarning = $('#logOutWarning');
-        logOutWarning.find('#log_backin_username').focus();
-        logOutWarning.find("input#submit").click(function() {
 
-            var username        = logOutWarning.find('input#log_backin_username').val(),
-                password        = logOutWarning.find('input#log_backin_password').val(),
-                submitBtn       = $(this),
-                logInSpinner    = logOutWarning.find('span#logInSpinner');
 
-            submitBtn.hide();
-            logInSpinner.html('<img src="'+EE.PATH_CP_GBL_IMG+'loader_blackbg.gif" />');
+		if (loginHit === true) {
+			finalLogOutTimer();
+			return false;
+		} else {
+			setTimeout(finalLogOutTimer, pageExpirationTimeout);
+		}
 
-            $.ajax({
-                type: "POST",
-                dataType: 'json',
-                url: EE.BASE+"&C=login&M=authenticate&is_ajax=true",
-                data: {'username' : username, 'password' : password, 'XID' : EE.XID},
-                success: function(result) {
-                    if (result.messageType === 'success') {
-                        // Regenerate XID
-                        $("input[name='XID']").val(result.xid);
-                        
-                        logOutWarning.slideUp('fast');
-                        $.ee_notice(result.message, {type : "custom", open: true});
-                        
-						EE.XID = result.xid;
+		$.ee_notice(logInForm, {type: "custom", open: true, close_on_click: false});
 
-                        // Reset Timeout
-                        setTimeout(isPageAboutToExpire, pageExpirationTimeout);
-                    } 
-                    else if (result.messageType === 'failure') {
-                        logOutWarning.before('<div id="loginCheckFailure">' + result.message + '</div>');                        
-                        logInSpinner.hide('fast');
-                        submitBtn.css('display', 'inline');
-                    }
-					else if (result.messageType === 'logout') {
-						window.location.href = EE.BASE+'&C=login';
+		logOutWarning = $('#logOutWarning');
+		logOutWarning.find('#log_backin_username').focus();
+		logOutWarning.find("input#submit").click(function() {
+
+			var username        = logOutWarning.find('input#log_backin_username').val(),
+				password        = logOutWarning.find('input#log_backin_password').val(),
+				submitBtn       = $(this),
+				logInSpinner    = logOutWarning.find('span#logInSpinner');
+
+				submitBtn.hide();
+				logInSpinner.html('<img src="'+EE.PATH_CP_GBL_IMG+'loader_blackbg.gif" />');		
+
+				$.ajax({
+					type: 		"POST",
+					dataType: 	'json',
+					url: 		EE.BASE+"&C=login&M=authenticate&is_ajax=true",
+					data: {'username' : username, 'password' : password, 'XID' : EE.XID},
+					success: function(result) {
+						clearTimeout(isPageAboutToExpire);
+
+						if (result.messageType === 'success') {
+							// Regenerate XID
+							$("input[name='XID']").val(result.xid);
+
+							logOutWarning.slideUp('fast');
+							$.ee_notice(result.message, {type : "custom", open: true});
+							
+							EE.XID = result.xid;
+
+							loginHit = true;
+
+							// Reset Timeout
+							setTimeout(isPageAboutToExpire, pageExpirationTimeout);
+						
+						} else if (result.messageType === 'failure') {
+							logOutWarning.before('<div id="loginCheckFailure">' + result.message + '</div>');                        
+							logInSpinner.hide('fast');
+							submitBtn.css('display', 'inline');
+						} else if (result.messageType === 'logout') {
+							window.location.href = EE.BASE+'&C=login&M=logout&auto_expire=true';
+						}
 					}
-                }
-            });
-            return false;
-        });
-    };
+				});
+			return false;
+		});
+	};
 
-	setTimeout(isPageAboutToExpire, pageExpirationTimeout);
+
+	if (EE.SESS_TYPE == 'c') { 
+		setTimeout(xidRefresh, xidTimeOutTimer);
+	} else { 
+		setTimeout(isPageAboutToExpire, pageExpirationTimeout);
+	}
 }
+
+finalLogOutTimer = function() {
+
+	var logoutModal = $('<div id="logOutConfirm">'+EE.lang.logout_confirm+' </div>'),
+		ttl = 5, //30,
+		orig_ttl = ttl,
+		logoutCountdown, buttons,
+		logOut, delayLogout;
+	
+		logOut = function() {
+			// Won't redirect on unload
+			// $.ajax({
+			// 	url: EE.BASE+"&C=login&M=logout&auto_expire=true",
+			// 	async: ( ! $.browser.safari)
+			// });
+
+			// Redirect
+			window.location=EE.BASE+"&C=login&M=logout&auto_expire=true";
+		}
+
+		delayLogout = function() {
+			if (ttl < 1) {
+				return setTimeout(logOut, 0);
+			}
+			else if (ttl === orig_ttl) {
+				$(window).bind("unload.logout", logOut);
+			}
+
+			logoutModal.dialog("option", "title", EE.lang.logout+" ("+ (ttl-- || "...") +")");
+			logoutCountdown = setTimeout(delayLogout, 1000);
+		}
+
+		function cancelLogout() {
+			clearTimeout(logoutCountdown);
+			$(window).unbind("unload.logout");
+			ttl = orig_ttl;
+		}
+
+		buttons = { Cancel: function() { $(this).dialog("close"); }};
+		buttons[EE.lang.logout] = logOut;
+
+		logoutModal.dialog({
+			autoOpen: false,
+			resizable: false,
+			modal: true,
+			title: EE.lang.logout,
+			position: "center",
+			minHeight: "0px",
+			buttons: buttons,
+			beforeclose: cancelLogout
+		});
+
+		$("#logOutConfirm").dialog("open");
+		$(".ui-dialog-buttonpane button:eq(2)").focus(); //focus on Log-out so pressing return logs out
+
+		delayLogout();
+
+	return false;
+}
+
 
 if (EE.SESS_TIMEOUT) {
 	logOutCheck();	
 }
-
-
 
 
 // Hook up show / hide actions for sidebar

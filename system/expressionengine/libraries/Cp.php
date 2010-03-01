@@ -240,7 +240,8 @@ class Cp {
 		{
 			$this->EE->javascript->set_global(array(
 					'SESS_TIMEOUT'		=> $this->EE->session->cpan_session_len * 1000,
-					'XID_TIMEOUT'		=> $this->xid_ttl * 1000			
+					'XID_TIMEOUT'		=> $this->xid_ttl * 1000,
+					'SESS_TYPE'			=> $this->EE->config->item('admin_session_type')	
 				)
 			);
 		}
