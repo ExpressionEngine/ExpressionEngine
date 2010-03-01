@@ -237,41 +237,23 @@ class Layout {
 						}
 
 						break;
-					case 'show_url_title':
-
-						if ($val == 'n')
-						{
-							$hide_fields .= 'url_title,';
-						}
-						else
-						{
-							$show_fields .= 'url_title,';
-						}
-
-						break;	
 					}
 			}
 		}
 		
 		if ( ! empty($hide_tab_fields))
 		{
-			$this->EE->layout_model->edit_layout_fields($hide_tab_fields, 'hide_tab_fields', $channel_id, TRUE);
+			//$this->EE->layout_model->edit_layout_fields($hide_tab_fields, 'hide_tab_fields', $channel_id, TRUE);
+			$this->EE->layout_model->update_layouts($hide_tab_fields, 'delete_tabs', $channel_id);
 		}
 		
-		if ($hide_fields != '')
-		{
-			$this->EE->layout_model->edit_layout_fields(explode(',', $hide_fields), 'hide_fields', $channel_id);
-		}
 
 		if ( ! empty($show_tab_fields))
 		{
-			$this->EE->layout_model->edit_layout_fields($show_tab_fields, 'show_tab_fields', $channel_id, TRUE);
+			//$this->EE->layout_model->edit_layout_fields($show_tab_fields, 'show_tab_fields', $channel_id, TRUE);
+			$this->EE->layout_model->update_layouts($show_tab_fields, 'add_tabs', $channel_id);
 		}
 
-		if ($show_fields != '')
-		{
-			$this->EE->layout_model->edit_layout_fields(explode(',', $show_fields), 'show_fields', $channel_id);
-		}
 /*
 echo '<pre>';
 print_r($changed);		
@@ -280,8 +262,8 @@ print_r($hide_fields);
 print_r($show_tab_fields);
 print_r($hide_tab_fields);
 exit;
-		
 */		
+
 		return;
 	}
 

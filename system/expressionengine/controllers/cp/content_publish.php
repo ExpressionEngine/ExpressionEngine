@@ -1785,7 +1785,12 @@ class Content_publish extends Controller {
 			}
 
 			$this->_define_options_fields($vars, $which);
-			$this->_define_revisions_fields($vars, $versioning);
+			
+			if ($show_revision_cluster == 'y')
+			{
+				$this->_define_revisions_fields($vars, $versioning);
+			}
+			
 			$this->_define_forum_fields($vars);
 			
 			foreach($this->field_definitions as $field => $opts)

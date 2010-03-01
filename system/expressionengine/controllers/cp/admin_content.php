@@ -281,7 +281,6 @@ class Admin_content extends Controller {
 
 		$this->lang->loadfile('admin_content');
 		$this->load->library('table');
-		$this->load->library('layout');
 		$this->load->helper(array('form', 'snippets'));
 		$this->load->model('channel_model');
 		$this->load->model('template_model');
@@ -412,7 +411,7 @@ class Admin_content extends Controller {
 		$this->cp->set_variable('cp_page_title', $this->lang->line('channel_prefs').' - '.$vars['channel_title']);
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', $this->lang->line('channel_management'));
 
-//print_r($vars['publish_page_customization_options']);
+
 		$this->load->view('admin/channel_edit', $vars);
 	}
 	
@@ -750,6 +749,9 @@ class Admin_content extends Controller {
 				$this->db->query("DELETE FROM exp_entry_versioning WHERE channel_id  = '".$this->db->escape_str($_POST['channel_id'])."'");
 				unset($_POST['clear_versioning_data']);
 			}
+			
+			// Only one possible is revisions- enabled or disabled.
+			// We treat as installed/not and delete the whole tab.
 			
 			$this->layout->sync_layout($_POST, $_POST['channel_id']);
 
