@@ -1219,7 +1219,7 @@ class Content_edit extends Controller {
 		// Build and run the query
 		// -----------------------------
 
-		$sql_top = "SELECT t.entry_id, t.channel_id, t.author_id, t.title, t.url_title, t.entry_date, t.dst_enabled, t.status, t.allow_comments, t.sticky, w.comment_system_enabled, w.show_options_cluster
+		$sql_top = "SELECT t.entry_id, t.channel_id, t.author_id, t.title, t.url_title, t.entry_date, t.dst_enabled, t.status, t.allow_comments, t.sticky, w.comment_system_enabled
 					FROM exp_channel_titles AS t, exp_channels AS w
 					WHERE t.entry_id IN (";
 
@@ -1428,22 +1428,15 @@ class Content_edit extends Controller {
 			// Sticky
 			$vars['options'][$entry_id]['sticky'] = array();
 
-			if ($row['show_options_cluster'] == 'n')
-			{
-				$vars['form_hidden']["sticky[$entry_id]"] = $row['sticky'];
-			}
-			else
-			{
-				$vars['options'][$entry_id]['sticky']['name'] = 'sticky['.$row['entry_id'].']';
-				$vars['options'][$entry_id]['sticky']['value'] = 'y';
-				$vars['options'][$entry_id]['sticky']['selected'] = ($row['sticky'] == 'y') ? TRUE : FALSE;
-				$vars['options'][$entry_id]['sticky']['style'] = 'width: auto!important;';
-			}
+			$vars['options'][$entry_id]['sticky']['name'] = 'sticky['.$row['entry_id'].']';
+			$vars['options'][$entry_id]['sticky']['value'] = 'y';
+			$vars['options'][$entry_id]['sticky']['selected'] = ($row['sticky'] == 'y') ? TRUE : FALSE;
+			$vars['options'][$entry_id]['sticky']['style'] = 'width: auto!important;';
 
 			// Allow Comments
 			$vars['options'][$entry_id]['allow_comments'] = array();
 
-			if ( ! isset($this->installed_modules['comment']) OR $row['comment_system_enabled'] == 'n' OR $row['show_options_cluster'] == 'n')
+			if ( ! isset($this->installed_modules['comment']) OR $row['comment_system_enabled'] == 'n')
 			{
 				$vars['form_hidden']["allow_comments[$entry_id]"] = $row['allow_comments'];
 			}

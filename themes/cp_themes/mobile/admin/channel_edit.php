@@ -345,19 +345,17 @@ if ($EE_view_disable !== TRUE)
 
 		<h3 class="accordion"><?=lang('publish_page_customization')?></h3>
 		<div>
-			<?php foreach ($publish_page_customization_options as $option): ?>
-				<div class="label">
-					<?=lang($option, $option)?>
-				</div>
-				<ul class="rounded">
-					<?php
-					$controls = lang('yes', $option.'_y').NBS.form_radio(array('name'=>$option, 'id'=>$option.'_y', 'value'=>'y', 'checked'=>($$option == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('no', $option.'_n').NBS.form_radio(array('name'=>$option, 'id'=>$option.'_n', 'value'=>'n', 'checked'=>($$option == 'n') ? TRUE : FALSE));				
-					?>
-					<li><?=$controls?></li>
-				</ul>
-			<?php endforeach;?>
-		
+			<div class="label">
+				<?=lang('show_button_cluster', 'show_button_cluster')?>
+			</div>
+			<ul class="rounded">
+				<?php
+				$controls = lang('yes', 'show_button_cluster_y').NBS.form_radio(array('name'=>'show_button_cluster', 'id'=>'show_button_cluster_y', 'value'=>'y', 'checked'=>($show_button_cluster == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
+				$controls .= lang('no', 'show_button_cluster_n').NBS.form_radio(array('name'=>'show_button_cluster', 'id'=>'show_button_cluster_n', 'value'=>'n', 'checked'=>($show_button_cluster == 'n') ? TRUE : FALSE));				
+				?>
+				<li><?=$controls?></li>
+			</ul>
+			
 			<div class="label">
 				<?=lang('default_entry_title', 'default_entry_title')?>
 			</div>

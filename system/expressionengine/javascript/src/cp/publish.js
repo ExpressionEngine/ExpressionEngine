@@ -105,31 +105,52 @@ EE.publish.category_editor = function() {
 };
 
 
+
 EE.publish.save_layout = function() {
 	
 	var tab_count = 0,
 		layout_object = {},
+		layout_hidden = {},
+		layout_settings = {},
+		field_index = 0,
+		merge = false,
+		hidden_index = 0,
+		adjust_index = 0,
 		cur_tab	= $("#tab_menu_tabs li.current").attr("id");
 
 	// for width() to work, the element cannot be in a parent div that is display:none
 	$(".main_tab").show();
 
-	$("li:visible", "#tab_menu_tabs").each(function() {
-
+	//$("li:visible", "#tab_menu_tabs").each(function() {
+	$("li", "#tab_menu_tabs").each(function() {
 		// skip list items with no id (ie: new tab)
 		if (this.id && this.id !== "")
 		{
-			var tab_name = this.id.replace(/menu_/, ""),
-				field_index = 0;
+			var tab_name = this.id.replace(/menu_/, "");
 			
-			layout_object[tab_name] = {};
+			field_index = 0;
+			visible = true;
+
+
+			if( $(this).is(':visible') )
+			{
+				lay_name = tab_name;
+				layout_object[lay_name] = {};
+				
+			}
+			else
+			{
+				merge = true;
+				visible = false;
+			}
 
 			$("#"+tab_name).find(".publish_field").each(function() {
 
 				var that = $(this),
 					id = this.id.replace(/hold_field_/, ""),
 					percent_width = Math.round((that.width() / that.parent().width()) * 10) * 10,
-					temp_buttons = $("#sub_hold_field_"+id+" .markItUp ul li:eq(2)");
+					temp_buttons = $("#sub_hold_field_"+id+" .markItUp ul li:eq(2)"),
+					layout_settings;
 					
 				if (temp_buttons.html() !== "undefined" && temp_buttons.css("display") !== "none") {
 					temp_buttons = true;
@@ -138,23 +159,58 @@ EE.publish.save_layout = function() {
 					temp_buttons = false;
 				}
 				
-				layout_object[tab_name][id] = {
+				layout_settings = {
 					visible		: ($(this).css("display") === "none") ? false : true,
 					collapse	: ($("#sub_hold_field_"+id).css("display") === "none") ? true : false,
 					htmlbuttons	: temp_buttons,
 					width		: percent_width+'%',
-					index		: field_index
 				};
 				
-				field_index += 1;
+				if (visible === true)
+				{
+					layout_settings['index'] = field_index;
+					layout_object[lay_name][id] = layout_settings;
+
+					field_index += 1;				
+				}
+				else
+				{
+					layout_hidden[id] = layout_settings;
+				}
 				
 			});
 			
-			tab_count++; // add one to the tab count
+			if (visible === true)
+			{
+				tab_count++; // add one to the tab count
+			}
 		}
 	});
 
-	// alert(JSON.stringify(layout_object, null, '\t'));
+	if (merge == true)
+	{
+		// Add hidden fields to first tab
+		
+		var darn1, darn2, first_tab, last_index = 0;
+		
+		for (darn in layout_object) {
+			first_tab = darn;
+			for (darn2 in layout_object[first_tab]) {
+				last_index = layout_object[first_tab][darn2]['index'];
+			}				
+			break;
+		}
+
+		
+		// Reindex first tab
+		$.each(layout_hidden, function() {
+			this['index'] = ++last_index;
+		});
+		
+		jQuery.extend(layout_object[first_tab], layout_hidden);
+	} 
+	
+	alert(JSON.stringify(layout_object, null, '\t'));
 
 	// @todo not a great solution
 	EE.tab_focus(cur_tab.replace(/menu_/, ""));

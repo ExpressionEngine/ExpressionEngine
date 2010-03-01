@@ -39,21 +39,19 @@ if ($EE_view_disable !== TRUE)
 				<?=form_input('entry_date['.$entry->entry_id.']', $this->localize->set_human_time($entry->entry_date), 'class="entry_date entry_date_'.$entry->entry_id.'" id="entry_date['.$entry->entry_id.']"')?>
 			</p>
 
-			<?php if($entry->show_options_cluster == 'y'):?>
-				<fieldset>
-					<legend><?=lang('options')?></legend>
-					<?php if (count($options[$entry->entry_id]['sticky']) > 0):?>
-						<p>
-							<label><?=form_checkbox($options[$entry->entry_id]['sticky'])?> <?=lang('sticky')?></label>
-						</p>
-					<?php endif;?>
-					<?php if (count($options[$entry->entry_id]['allow_comments']) > 0):?>
-						<p>
-							<label><?=form_checkbox($options[$entry->entry_id]['allow_comments'])?> <?=lang('allow_comments')?></label>
-						</p>
-					<?php endif;?>
-				</fieldset>
-			<?php endif;?>
+			<fieldset>
+				<legend><?=lang('options')?></legend>
+				<?php if (count($options[$entry->entry_id]['sticky']) > 0):?>
+					<p>
+						<label><?=form_checkbox($options[$entry->entry_id]['sticky'])?> <?=lang('sticky')?></label>
+					</p>
+				<?php endif;?>
+				<?php if (count($options[$entry->entry_id]['allow_comments']) > 0):?>
+					<p>
+						<label><?=form_checkbox($options[$entry->entry_id]['allow_comments'])?> <?=lang('allow_comments')?></label>
+					</p>
+				<?php endif;?>
+			</fieldset>
 
 		<hr />
 

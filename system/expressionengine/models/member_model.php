@@ -1096,13 +1096,6 @@ class Member_model extends CI_Model {
 				
 		$query = $this->db->get('layout_publish');
 		$errors = 0;
-		$default_settings = array(
-										'visible'		=> 'TRUE',
-										'collapse'		=> 'FALSE',
-										'htmlbuttons'	=> 'FALSE',
-										'width'			=> '100%'
-							
-							);
 		
 		$valid_actions = array('add_tabs', 'delete_tabs', 'add_fields', 'delete_fields');
 
@@ -1137,7 +1130,7 @@ class Member_model extends CI_Model {
 					{
 						if (array_key_exists($tab, $layout) !== TRUE)
 						{
-							$layout[$tab] = ( ! array($fields)) ? array($fields => $default_settings) : $fields;
+							$layout[$tab] = $fields;
 						}
 						else
 						{
@@ -1196,6 +1189,7 @@ class Member_model extends CI_Model {
 
 		return TRUE;
 	}
+
 
 	// --------------------------------------------------------------------
 
@@ -1264,7 +1258,12 @@ class Member_model extends CI_Model {
 	{
 		$this->db->where("site_id", $this->config->item('site_id'));
 		$this->db->where("channel_id", $channel_id);
-		$this->db->where("member_group", $member_group);
+		
+		if ($member_group != '')
+		{
+			$this->db->where("member_group", $member_group);
+		}
+		
 		$this->db->delete('layout_publish');
 	}
 

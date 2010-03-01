@@ -212,32 +212,8 @@ $lang = array(
 'publish_page_customization' =>
 'Publish Page Customization',
 
-'show_url_title' =>
-'Display URL Title Field',
-
 'show_button_cluster' =>
 'Display Rich Formatting Buttons',
-
-'show_author_menu' =>
-'Display Author Menu',
-
-'show_status_menu' =>
-'Display Status Menu',
-
-'show_options_cluster' =>
-'Display Option Buttons',
-
-'show_ping_cluster' =>
-'Display Ping Buttons',
-
-'show_forum_cluster' =>
-'Display Forum Topic Submission Field',
-
-'show_date_menu' =>
-'Display Date Fields',
-
-'show_categories_menu' =>
-'Display Category Menu',
 
 'paths' =>
 'Path Settings',

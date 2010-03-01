@@ -36,7 +36,16 @@ class Updater {
     {
         // Modules now have a tab setting
         $Q[] = "UPDATE `exp_relationships` SET rel_type = 'channel' WHERE rel_type = 'blog'";
-
+        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_url_title`";
+        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_ping_cluster`";
+        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_options_cluster`";
+        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_forum_cluster`";
+        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_show_all_cluster`";
+        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_status_menu`";
+        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_categories_menu`";
+        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_date_menu`";
+        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_pages_cluster`";
+        $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_author_menu`";
 		$count = count($Q);
 		
 		foreach ($Q as $num => $sql)
