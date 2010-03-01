@@ -80,9 +80,9 @@ class Login extends Controller {
 		
 		
 		$this->load->helper('form');
-		
-		$message = $this->session->flashdata('message');
-		
+
+		$message = ($this->input->get('auto_expire')) ? $this->lang->line('session_auto_timeout') : $this->session->flashdata('message');
+
 		$this->cp->set_variable('return_path',		SELF);
 		$this->cp->set_variable('message',			$message);
 		$this->cp->set_variable('cp_page_title',	$this->lang->line('login'));
@@ -678,11 +678,17 @@ class Login extends Controller {
 		$this->functions->set_cookie($this->session->c_password);	
 		$this->functions->set_cookie($this->session->c_session);	
 		$this->functions->set_cookie($this->session->c_expire);	
-		$this->functions->set_cookie($this->session->c_anon);	
+		$this->functions->set_cookie($this->session->c_anon);
 		$this->functions->set_cookie('read_topics');  
 		$this->functions->set_cookie('tracker');  
 
 		$this->logger->log_action($this->lang->line('member_logged_out'));
+
+		if ($this->input->get('auto_expire'))
+		{
+			$this->functions->redirect(BASE.AMP.'C=login&auto_expire=true');
+		}
+
 
 		/* -------------------------------------------
 		/* 'cp_member_logout' hook.

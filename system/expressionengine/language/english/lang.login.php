@@ -36,6 +36,9 @@ $lang = array(
 'new_password_request' =>
 'New Password Request',
 
+'session_auto_timeout' => 
+'Your session has timed out due to inactivity',
+
 ''=>''
 );
 
