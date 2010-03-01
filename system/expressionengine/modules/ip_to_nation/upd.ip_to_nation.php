@@ -26,7 +26,7 @@ if ( ! defined('EXT'))
 
 class Ip_to_nation_upd {
 
-	var $version = '2.1';
+	var $version = '2.2';
 
 	/**
 	  * Constructor
@@ -180,9 +180,17 @@ class Ip_to_nation_upd {
 			return FALSE;
 		}
 
-		// Version 2.1 uses data based on 11/02/2009 sql from ip2nation.com + some love for East Timor
+		if ($current < 2.0)
+		{
+			// can't use this column as a Primary Key because the ip2nation db has duplicate values in the ip column ::sigh::
+//			$this->EE->db->query("ALTER TABLE `exp_ip2nation` DROP KEY `ip`");
+//			$this->EE->db->query("ALTER TABLE `exp_ip2nation` ADD PRIMARY KEY `ip` (`ip`)");
+			$this->EE->db->query("ALTER TABLE `exp_ip2nation_countries` DROP KEY `code`");
+			$this->EE->db->query("ALTER TABLE `exp_ip2nation_countries` ADD PRIMARY KEY `code` (`code`)");
+		}
 
-		if ($current < 2.1)
+		// Version 2.2 user data based on 02/27/2010 sql from ip2nation.com
+		if ($current < 2.2)
 		{
 			if ( ! include_once($this->_ee_path.'modules/ip_to_nation/iptonation.php'))
 			{
@@ -217,16 +225,6 @@ class Ip_to_nation_upd {
 				}
 			}
 		}
-
-		if ($current < 2.0)
-		{
-			// can't use this column as a Primary Key because the ip2nation db has duplicate values in the ip column ::sigh::
-//			$this->EE->db->query("ALTER TABLE `exp_ip2nation` DROP KEY `ip`");
-//			$this->EE->db->query("ALTER TABLE `exp_ip2nation` ADD PRIMARY KEY `ip` (`ip`)");
-			$this->EE->db->query("ALTER TABLE `exp_ip2nation_countries` DROP KEY `code`");
-			$this->EE->db->query("ALTER TABLE `exp_ip2nation_countries` ADD PRIMARY KEY `code` (`code`)");
-		}
-
 		return TRUE;
 	}
 
