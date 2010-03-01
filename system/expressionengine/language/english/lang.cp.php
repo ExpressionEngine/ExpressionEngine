@@ -232,6 +232,9 @@ $lang = array(
 'logout' => 
 'Log-out',
 
+'session_timeout' => 
+'Your session is about to expire due to inactivity',
+
 'login' => 
 'Log-in',
 

@@ -119,7 +119,6 @@ function logOutCheck() {
 		var logInForm = '<form><div id="logOutWarning" style="text-align:center"><p>'+EE.lang.session_expiring+'</p><label for="username">'+EE.lang.username+'</label>: <input type="text" id="log_backin_username" name="username" value="" style="width:100px" size="35" dir="ltr" id="username" maxlength="32"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="password">'+EE.lang.password+'</label>: <input class="field" id="log_backin_password" type="password" name="password" value="" style="width:100px" size="32" dir="ltr" id="password" maxlength="32"  />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" id="submit" name="submit" value="'+EE.lang.login+'" class="submit" /><span id="logInSpinner"></span></div></form>',
 			logOutWarning;
 
-
 		if (loginHit === true) {
 			finalLogOutTimer();
 			return false;
@@ -184,10 +183,11 @@ function logOutCheck() {
 	}
 }
 
+// This is largely ripped off from pascal below. -- greg
 finalLogOutTimer = function() {
 
-	var logoutModal = $('<div id="logOutConfirm">'+EE.lang.logout_confirm+' </div>'),
-		ttl = 5, //30,
+	var logoutModal = $('<div id="logOutConfirm">'+EE.lang.session_timeout+' </div>'),
+		ttl = 30,
 		orig_ttl = ttl,
 		logoutCountdown, buttons,
 		logOut, delayLogout;

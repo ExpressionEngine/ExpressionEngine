@@ -949,11 +949,8 @@ class Login extends Controller {
 			'xid'	=> XID_SECURE_HASH
 		);
 		
-		$this->output->send_ajax_response($resp); exit;
-	}	
-	
-	
-	
+		$this->output->send_ajax_response($resp);
+	}
 }
 // END CLASS
 
