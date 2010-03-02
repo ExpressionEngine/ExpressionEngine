@@ -3700,7 +3700,12 @@ class EE_Template {
 	{
 		$this->form_id 		= '';
 		$this->form_class 	= '';
-
+		
+		if ( ! is_array($tagdata['params']))
+		{
+			return $tagdata;
+		}
+		
 		if (array_key_exists('form_id', $tagdata['params']))
 		{
 			$this->form_id = $tagdata['params']['form_id'];
