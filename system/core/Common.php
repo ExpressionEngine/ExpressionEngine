@@ -57,10 +57,9 @@
 /**
  * Tests for file writability
  *
- * is_writable() returns TRUE on Windows servers
- * when you really can't write to the file
- * as the OS reports to PHP as FALSE only if the
- * read-only attribute is marked.  Ugh?
+ * is_writable() returns TRUE on Windows servers when you really can't write to 
+ * the file, based on the read-only attribute.  is_writable() is also unreliable
+ * on Unix servers if safe_mode is on.
  *
  * @access	private
  * @return	void
