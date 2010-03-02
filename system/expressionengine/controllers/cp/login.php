@@ -939,12 +939,6 @@ class Login extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
-		// If the admin session type is not cookies only, how'd they get here?
-		if ($this->config->item('admin_session_type') != 'c')
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
 		$resp = array(
 			'xid'	=> XID_SECURE_HASH
 		);

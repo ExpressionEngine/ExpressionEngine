@@ -120,7 +120,7 @@ function logOutCheck() {
 			logOutWarning;
 
 		if (loginHit === true) {
-			finalLogOutTimer();
+			finalLogOutTimer(loginHit);
 			return false;
 		} else {
 			setTimeout(finalLogOutTimer, pageExpirationTimeout);
@@ -146,8 +146,9 @@ function logOutCheck() {
 					url: 		EE.BASE+"&C=login&M=authenticate&is_ajax=true",
 					data: {'username' : username, 'password' : password, 'XID' : EE.XID},
 					success: function(result) {
-						clearTimeout(isPageAboutToExpire);
-
+						
+						loginHit = true;
+						
 						if (result.messageType === 'success') {
 							// Regenerate XID
 							$("input[name='XID']").val(result.xid);
@@ -160,6 +161,7 @@ function logOutCheck() {
 							loginHit = true;
 
 							// Reset Timeout
+							clearTimeout(isPageAboutToExpire)
 							setTimeout(isPageAboutToExpire, pageExpirationTimeout);
 						
 						} else if (result.messageType === 'failure') {
@@ -175,7 +177,6 @@ function logOutCheck() {
 		});
 	};
 
-
 	if (EE.SESS_TYPE == 'c') { 
 		setTimeout(xidRefresh, xidTimeOutTimer);
 	} else { 
@@ -184,7 +185,7 @@ function logOutCheck() {
 }
 
 // This is largely ripped off from pascal below. -- greg
-finalLogOutTimer = function() {
+finalLogOutTimer = function(loginHit) {
 
 	var logoutModal = $('<div id="logOutConfirm">'+EE.lang.session_timeout+' </div>'),
 		ttl = 30,
@@ -193,13 +194,6 @@ finalLogOutTimer = function() {
 		logOut, delayLogout;
 	
 		logOut = function() {
-			// Won't redirect on unload
-			// $.ajax({
-			// 	url: EE.BASE+"&C=login&M=logout&auto_expire=true",
-			// 	async: ( ! $.browser.safari)
-			// });
-
-			// Redirect
 			window.location=EE.BASE+"&C=login&M=logout&auto_expire=true";
 		}
 
@@ -219,6 +213,19 @@ finalLogOutTimer = function() {
 			clearTimeout(logoutCountdown);
 			$(window).unbind("unload.logout");
 			ttl = orig_ttl;
+			
+			$.ajax({
+				type: 		'POST',
+				dataType: 	'json',
+				url: 		EE.BASE+'&C=login&M=refresh_xid',
+				success: function(result) {
+					$("input[name='XID']").val(result.xid);
+					EE.XID = result.xid;
+					$('#logOutWarning').slideUp('fast');
+					logOutCheck();
+				}
+			});
+			loginHit = false;
 		}
 
 		buttons = { Cancel: function() { $(this).dialog("close"); }};
@@ -239,15 +246,12 @@ finalLogOutTimer = function() {
 		$(".ui-dialog-buttonpane button:eq(2)").focus(); //focus on Log-out so pressing return logs out
 
 		delayLogout();
-
 	return false;
 }
-
 
 if (EE.SESS_TIMEOUT) {
 	logOutCheck();	
 }
-
 
 // Hook up show / hide actions for sidebar
 
