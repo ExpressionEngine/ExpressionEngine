@@ -1676,7 +1676,7 @@ class Search {
 			$data['id'] = $this->EE->TMPL->fetch_param('id');
 		} 
 		
-		$res  = $this->EE->functions->form_declaration($data, FALSE);
+		$res  = $this->EE->functions->form_declaration($data);
 		
 		$res .= $this->search_js_switcher($nested, $data['id']);
 		

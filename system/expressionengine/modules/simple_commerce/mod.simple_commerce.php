@@ -316,7 +316,7 @@ class Simple_commerce {
 			$data['id']		= 'paypal_form_'.$row['item_id'].'_'.$key;
 			$data['secure'] = FALSE;
 			
-			$form	= $this->EE->functions->form_declaration($data, FALSE).
+			$form	= $this->EE->functions->form_declaration($data).
 					  '<input type="submit" name="submit" value="\\1" class="paypal_button" />'."\n".
 					  '</form>'."\n\n";
 					  
@@ -336,7 +336,7 @@ class Simple_commerce {
 			$data['secure'] = FALSE;
 			$data = $hidden;
 			
-			$form	= $this->EE->functions->form_declaration($data, FALSE).
+			$form	= $this->EE->functions->form_declaration($data).
 					  '<input type="submit" name="submit" value="\\1" class="paypal_button" />'."\n".
 					  '</form>'."\n\n";
 			return 'dude';		
