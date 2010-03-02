@@ -29,6 +29,7 @@ class Content_publish extends Controller {
 	
 	var $installed_modules	= FALSE;
 	var $field_definitions	= array();
+	var $required_fields	= array();
 
 	var $theme_img_url		= ''; // Path to the cp theme images, set up during init
 
@@ -165,7 +166,10 @@ class Content_publish extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
+		$this->load->library('api');
+		$this->api->instantiate(array('channel_fields'));
 		$this->output->enable_profiler(FALSE);
+		$error = array();
 
 		$member_group = $this->input->post('member_group');
 		$channel_id = $this->input->post('channel_id');
@@ -184,18 +188,54 @@ class Content_publish extends Controller {
 			$this->load->library('Services_json');
 		}
 
+		$layout_info = json_decode($json_tab_layout, TRUE);
+		
+		// Check for required fields being hidden
+		$required = $this->api_channel_fields->get_required_fields($channel_id);
+		
+		if (count($required) > 0)
+		{
+			foreach($layout_info as $tab => $field)
+			{
+				foreach ($field as $name => $info)
+				{
+					if (in_array($name, $required) && $info['visible'] === FALSE)
+					{
+						$error[] = $name;
+					}
+				}
+			}
+			
+			if (count($error) > 0)
+			{
+				
+				$resp['messageType'] = 'failure';
+				$resp['message'] = $this->lang->line('layout_failure_required').implode(', ', $error);
+
+				$this->output->send_ajax_response($resp); exit;	
+				
+			}
+		}
+		
 		// make this into an array, insert_group_layout will serialize and save
 		
-		$layout_info = json_decode($json_tab_layout, TRUE);
 		$layout_info = array_map(array($this, '_sort_publish_fields'), $layout_info);
 
 		if ($this->member_model->insert_group_layout($member_group, $channel_id, $layout_info))
 		{
-			exit($this->lang->line('layout_success'));
+			$resp['messageType'] = 'success';
+			$resp['message'] = $this->lang->line('layout_success');
+
+			$this->output->send_ajax_response($resp); exit;	
+
 		}
 		else
 		{
-			exit($this->lang->line('layout_failure'));
+			$resp['messageType'] = 'failure';
+			$resp['message'] = $this->lang->line('layout_failure');
+
+			$this->output->send_ajax_response($resp); exit;	
+			
 		}
 	}
 	
@@ -294,7 +334,8 @@ class Content_publish extends Controller {
 		$vars = array(
 			'message'				=> '',
 			'cp_page_title'			=> $this->lang->line('new_entry'),								// modified below if this is an "edit"
-			'BK'					=> ($this->input->get_post('BK')) ? AMP.'BK=1'.AMP.'Z=1' : ''	// @todo - I don't think so...
+			'BK'					=> ($this->input->get_post('BK')) ? AMP.'BK=1'.AMP.'Z=1' : '',	// @todo - I don't think so...
+			'required_fields'		=> array()
 		);
 
 		$vars['smileys_enabled'] = (isset($this->installed_modules['emoticon']) ? TRUE : FALSE);
@@ -1769,6 +1810,11 @@ class Content_publish extends Controller {
 				{
 					$vars['field_output'][$field] = $opts;
 				}
+								
+				if (isset($field_info['field_required']) && $field_info['field_required'] == 'y')
+				{
+					$this->required_fields[] = $field_info['field_id'];
+				}				
 				
 				if ($vars['smileys_enabled'])
 				{
@@ -1782,6 +1828,7 @@ class Content_publish extends Controller {
 				$field_value = set_value($field_info['field_name'], $field_info['field_data']);
 
 				$vars['field_output'][$field_info['field_id']] = $this->api_channel_fields->apply('display_publish_field', array($field_value));
+				
 			}
 
 			$this->_define_options_fields($vars, $which);
@@ -1792,12 +1839,13 @@ class Content_publish extends Controller {
 			}
 			
 			$this->_define_forum_fields($vars);
-			
+
 			foreach($this->field_definitions as $field => $opts)
 			{
 				$vars['field_output'][$field] = $opts;
 			}
 			
+			$vars['required_fields'] = $this->required_fields;
 			$this->javascript->compile();
 			$this->load->view('content/publish', $vars);
 		}
@@ -1816,6 +1864,11 @@ class Content_publish extends Controller {
 				{
 					$vars['field_output'][$field] = $opts;
 				}
+
+				if (isset($field_info['field_required']) && $field_info['field_required'] == 'y')
+				{
+					$this->required_fields[] = $field_info['field_id'];
+				}	
 				
 				if ($vars['smileys_enabled'])
 				{				
@@ -1840,6 +1893,8 @@ class Content_publish extends Controller {
 				$vars['field_output'][$field] = $opts;
 			}
 			
+			$vars['required_fields'] = $this->required_fields;
+
 			// Entry submission will return false if no channel id is provided, and
 			// in that event, just reload the publish page
 			if (($err = $this->_submit_new_entry()) !== TRUE)

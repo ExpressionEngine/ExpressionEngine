@@ -160,10 +160,37 @@ class Channel_model extends CI_Model {
 	 * @param	int
 	 * @return	mixed
 	 */
-	function get_channel_fields($field_group)
+	function get_channel_fields($field_group, $fields = array())
 	{
+		if (count($fields) > 0)
+		{
+			$this->db->select(implode(',', $fields));
+		}
+
 		$this->db->from('channel_fields');
 		$this->db->where('group_id', $field_group);
+		$this->db->order_by('field_order');
+		return $this->db->get();
+	}
+
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get Required Fields
+	 *
+	 * Returns required
+	 *
+	 * @access	public
+	 * @param	int
+	 * @return	mixed
+	 */
+	function get_required_fields($field_group)
+	{
+
+		$this->db->from('channel_fields');
+		$this->db->where('group_id', $field_group);
+		$this->db->where('field_required', 'y');		
 		$this->db->order_by('field_order');
 		return $this->db->get();
 	}

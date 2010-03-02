@@ -136,7 +136,6 @@ EE.publish.save_layout = function() {
 			{
 				lay_name = tab_name;
 				layout_object[lay_name] = {};
-				
 			}
 			else
 			{
@@ -210,7 +209,7 @@ EE.publish.save_layout = function() {
 		jQuery.extend(layout_object[first_tab], layout_hidden);
 	} 
 	
-	alert(JSON.stringify(layout_object, null, '\t'));
+	//alert(JSON.stringify(layout_object, null, '\t'));
 
 	// @todo not a great solution
 	EE.tab_focus(cur_tab.replace(/menu_/, ""));
@@ -224,10 +223,15 @@ EE.publish.save_layout = function() {
 	else {
 		$.ajax({
 			type: "POST",
+			dataType: 	'json',
 			url: EE.BASE+"&C=content_publish&M=save_layout",
 			data: "XID="+EE.XID+"&json_tab_layout="+JSON.stringify(layout_object)+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,
-			success: function(msg){
-				$.ee_notice(msg, {type: "success"});
+			success: function(result){
+				if (result.messageType === 'success') {
+					$.ee_notice(result.message, {type: "success"});
+				} else if (result.messageType === 'failure') {
+					$.ee_notice(result.message, {type: "error"});
+				}
 			}
 		});
 	}

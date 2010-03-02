@@ -329,6 +329,56 @@ class Api_channel_fields extends Api {
 	 *
 	 * @access	public
 	 */	
+	function get_required_fields($channel_id)
+	{
+		$this->EE->load->model('channel_model');
+		$required = array('title', 'entry_date');
+		
+		$query = $this->EE->channel_model->get_channel_info($channel_id, array('field_group'));
+		
+		if ($query->num_rows() > 0)
+		{
+			$row = $query->row();
+			$fields = $this->EE->channel_model->get_required_fields($row->field_group);
+		
+			if ($fields->num_rows() > 0)
+			{
+				foreach ($fields->result() as $row)
+				{
+					$required[] = $row->field_id;
+				}
+			}
+		}
+
+		$module_data = $this->get_module_fields($channel_id);
+	
+		if ($module_data && is_array($module_data))
+		{
+			foreach ($module_data as $tab => $v)
+			{
+				foreach ($v as $val)
+				{			
+					
+					if ($val['field_required'] == 'y')
+					{
+						$required[] =  $val['field_id'];
+					}
+
+				}
+			}
+		}
+		
+		return $required;
+
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get custom field info from modules
+	 *
+	 * @access	public
+	 */	
 	function get_module_fields($channel_id, $entry_id = '')
 	{
 		$tab_modules = $this->get_modules();
