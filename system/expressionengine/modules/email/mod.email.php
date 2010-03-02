@@ -210,7 +210,8 @@ class Email {
 		{
 			$recipients = $recipients.md5($this->EE->session->sess_crypt_key.$recipients);
 		}
-		$data['id']	= 'contact_form';
+		$data['id']	= ($this->EE->TMPL->form_id == '') ? 'contact_form' : $this->EE->TMPL->form_id;
+		$data['class'] = $this->EE->TMPL->form_class;
 
 		$data['hidden_fields']	= array(
 									'ACT'	  			=> $this->EE->functions->fetch_action_id('Email', 'send_email'),
@@ -482,7 +483,9 @@ class Email {
 			$recipients = $recipients.md5($this->EE->session->sess_crypt_key.$recipients);
 		}
 
-		$data['id'] = 'tellafriend_form';
+		$data['id'] = ($this->EE->TMPL->form_id == '') ? 'tellafriend_form' : $this->EE->TMPL->form_id;
+		$data['class'] = $this->EE->TMPL->form_class;
+		
 		$data['hidden_fields'] = array(
 									'ACT'	  			=> $this->EE->functions->fetch_action_id('Email', 'send_email'),
 									'RET'	  			=> ( ! $this->EE->TMPL->fetch_param('return'))  ? '' : $this->EE->TMPL->fetch_param('return'),
