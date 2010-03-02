@@ -84,7 +84,9 @@ class Mailinglist {
 			$data['name'] = $this->EE->TMPL->fetch_param('name');
 		}
 
-		$data['id']				= 'mailinglist_form';
+		$data['id']				= ($this->EE->TMPL->form_id == '') ? 'mailinglist_form' : $this->EE->TMPL->form_id;
+		$data['class']			= $this->EE->TMPL->form_class;
+		
 		$data['hidden_fields']	= array(
 										'ACT'	=> $this->EE->functions->fetch_action_id('Mailinglist', 'insert_new_email'),
 										'RET'	=> $this->EE->functions->fetch_current_uri(),
