@@ -1935,6 +1935,7 @@ EOT;
 						'hidden_fields' => $hidden_fields,
 						'action'		=> $RET,
 						'id'			=> 'publishForm',
+						'class'			=> $this->EE->TMPL->form_class,
 						'enctype' 		=> 'multi'
 						);
 
