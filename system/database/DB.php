@@ -137,8 +137,10 @@ function &DB($params = '', $active_record_override = NULL)
 		$DB->initialize();
 	}
 	
-	// @todo - remove before release, temporary to force Strict Mode for testing purposes
-	$DB->query('SET SESSION sql_mode="STRICT_ALL_TABLES"');
+	if (isset($params['stricton']) && $params['stricton'] == TRUE)
+	{
+		$DB->query('SET SESSION sql_mode="STRICT_ALL_TABLES"');		
+	}
 	
 	return $DB;
 }	
