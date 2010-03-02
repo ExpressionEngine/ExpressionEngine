@@ -215,7 +215,7 @@ class Comment {
 			}
 
 			/** ----------------------------------------
-			/**  Do we have a vaild entry ID number?
+			/**  Do we have a valid entry ID number?
 			/** ----------------------------------------*/
 
 			$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
@@ -1637,7 +1637,8 @@ class Comment {
 		$data = array(
 						'hidden_fields'	=> $hidden_fields,
 						'action'		=> $RET,
-						'id'			=> 'comment_form'
+						'id'			=> ( ! $this->EE->TMPL->form_id) ? 'comment_form' : $this->EE->TMPL->form_id,
+						'class'			=> $this->EE->TMPL->form_class
 					);
 
 		if ($this->EE->TMPL->fetch_param('name') !== FALSE &&

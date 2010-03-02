@@ -93,7 +93,9 @@ class EE_Template {
 	var $realm				= 'ExpressionEngine Template';  // Localize?
 
 	var $marker = '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
-	
+
+	var $form_id			= '';		// 	Form Id
+	var $form_class 		= '';		// 	Form Class
 
 	// --------------------------------------------------------------------
 	
@@ -343,7 +345,7 @@ class EE_Template {
 			$this->template = str_replace(LD.'segment_'.$i.RD, $this->EE->uri->segment($i), $this->template); 
 			$this->segment_vars['segment_'.$i] = $this->EE->uri->segment($i);
 		}
-		
+
 		/** -------------------------------------
 		/**  Parse {embed} tag variables
 		/** -------------------------------------*/
@@ -492,9 +494,9 @@ class EE_Template {
 		/** -------------------------------------
 		/**  Parse Plugin and Module Tags
 		/** -------------------------------------*/
-		
+
 		$this->tags();
-				
+		
 		/** -------------------------------------
 		/**  Parse Output Stage PHP
 		/** -------------------------------------*/
@@ -754,14 +756,14 @@ class EE_Template {
 					$this->template = preg_replace("/".LD.'exp:'.".*?$/", '', $this->template);
 					break;
 				}
-								
+		
 				// Checking for variables/tags embedded within tags
 				// {exp:channel:entries channel="{master_channel_name}"}				
 				if (stristr(substr($matches[0], 1), LD) !== FALSE)
 				{
 					$matches[0] = $this->EE->functions->full_tag($matches[0]);
 				}
-				
+
 				$this->log_item("Tag: ".$matches[0]);
 											
 				$raw_tag = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $matches[0]);
@@ -806,13 +808,11 @@ class EE_Template {
 				}
 				
 				// -----------------------------------------
-				
+
 				// Assign parameters based on the arguments from the tag
-				
 				$args  = $this->EE->functions->assign_parameters($args);
-				
+
 				// standardized mechanism for "search" type parameters get some extra lovin'
-				
 				$search_fields = array();
 				
 				if ($args !== FALSE)
@@ -898,7 +898,7 @@ class EE_Template {
 				$cfile = md5($chunk); // This becomes the name of the cache file
 
 				// Build a multi-dimensional array containing all of the tag data we've assembled
-				  
+
 				$this->tag_data[$this->loop_count]['tag']				= $raw_tag;
 				$this->tag_data[$this->loop_count]['class']				= $class[0];
 				$this->tag_data[$this->loop_count]['method']			= $class[1];
@@ -911,8 +911,7 @@ class EE_Template {
 				$this->tag_data[$this->loop_count]['no_results']		= $no_results;
 				$this->tag_data[$this->loop_count]['no_results_block']	= $no_results_block;
 				$this->tag_data[$this->loop_count]['search_fields']		= $search_fields;
-				
-			
+
 			} // END IF
 
 		  // Increment counter			
@@ -942,9 +941,9 @@ class EE_Template {
 		}
 
 		// Parse the template.
-		
+
 		$this->log_item(" - Beginning Tag Processing - ");
-		
+
 		while (is_int(strpos($this->template, LD.'exp:')))
 		{
 			// Initialize values between loops
@@ -958,7 +957,7 @@ class EE_Template {
 
 			// Run the template parser
 			$this->parse_tags();
-			
+
 			$this->log_item("Processing Tags");
 			
 			// Run the class/method handler
@@ -992,7 +991,7 @@ class EE_Template {
 		$modules = array();
 		
 		// Fill an array with the names of all the classes that we previously extracted from the tags
-				
+
 		for ($i = 0, $ctd = count($this->tag_data); $i < $ctd; $i++)
 		{
 			// Check the tag cache file
@@ -1085,7 +1084,7 @@ class EE_Template {
 			// make sure it's not already included just in case
 			if ( ! class_exists($module))
 			{
-				if (in_array($module ,$this->EE->core->native_modules))
+				if (in_array($module, $this->EE->core->native_modules))
 				{
 					require_once PATH_MOD."{$module}/mod.{$module}".EXT;
 				}
@@ -1121,7 +1120,7 @@ class EE_Template {
 		reset($this->tag_data);
 
 		for ($i = 0; $i < count($this->tag_data); $i++)
-		{ 
+		{			
 			if ($this->tag_data[$i]['cache'] != 'CURRENT')
 			{
 				$this->log_item("Calling Class/Method: ".ucfirst($this->tag_data[$i]['class'])."/".$this->tag_data[$i]['method']);
@@ -1239,6 +1238,11 @@ class EE_Template {
 				$this->_fetch_site_ids();
 				
 				/** -------------------------------------
+				/**  Fetch Form Class/Id Attributes
+				/** -------------------------------------*/
+				$this->tag_data[$i] = $this->_assign_form_params($this->tag_data[$i]);
+
+				/** -------------------------------------
 				/**  Relationship Data Pulled Out
 				/** -------------------------------------*/
 				
@@ -1274,7 +1278,7 @@ class EE_Template {
 
 				$this->var_single	= $vars['var_single'];
 				$this->var_pair		= $vars['var_pair'];
-				
+
 				if ($this->related_id != '')
 				{
 					$this->var_single[$this->related_id] = $this->related_id;
@@ -1335,7 +1339,9 @@ class EE_Template {
 						$this->EE->output->fatal_error($error);
 					 }
 					 else
-						return;
+					{
+						return;						
+					}
 				}	
 				
 				/*
@@ -1392,14 +1398,14 @@ class EE_Template {
 				
 				$this->template = str_replace('M'.$i.$this->marker, $return_data, $this->template);
 				
-				// Initialize data in case there are susequent loops				
+				// Initialize data in case there are susequent loops
 				
 				$this->var_single = array();
 				$this->var_cond	= array();
 				$this->var_pair	= array();
-								
+				
 				unset($return_data);
-				unset($class_name);	
+				unset($class_name);
 				unset($meth_name);	
 				unset($EE);
 			}
@@ -3088,6 +3094,9 @@ class EE_Template {
 				// Assign sites for the tag
 				$this->_fetch_site_ids();
 
+				// Assign Form ID/Classes
+				$this->tag_data[$i] = $this->_assign_form_params($this->tag_data[$i]);
+
 				if ($class == 'comment')
 				{
 					$str = str_replace($match[0][$i], Comment::form(TRUE, $this->EE->functions->cached_captcha), $str);	
@@ -3119,12 +3128,15 @@ class EE_Template {
 				// Assign sites for the tag
 				$this->_fetch_site_ids();
 
+				// Assign Form ID/Classes
+				$this->tag_data[$i] = $this->_assign_form_params($this->tag_data[$i]);
+
 				$XX = new Channel();
 				$str = str_replace($match[0][$i], $XX->entry_form(TRUE, $this->EE->functions->cached_captcha), $str);
 				$str = str_replace('{PREVIEW_TEMPLATE}', (isset($_POST['PRV'])) ? $_POST['PRV'] : $this->fetch_param('preview'), $str);	
 			}
 		}
-				
+
 		return $str;
 	
 	}
@@ -3672,6 +3684,35 @@ class EE_Template {
 		}
 	}
 
+	// --------------------------------------------------------------------
+	
+	/**
+	 *	Assign Form Params
+	 *
+	 *	Extract form_class / form_id from tagdata, and assign it to a class property 
+	 *	So it can be easily accessed.
+	 *
+	 *	@access private
+	 *	@param 	array
+	 *	@return array
+	 */
+	function _assign_form_params($tagdata)
+	{
+		$this->form_id 		= '';
+		$this->form_class 	= '';
+
+		if (array_key_exists('form_id', $tagdata['params']))
+		{
+			$this->form_id = $tagdata['params']['form_id'];
+		}
+		
+		if (array_key_exists('form_class', $tagdata['params']))
+		{
+			$this->form_class = $tagdata['params']['form_class'];
+		}		
+
+		return $tagdata;
+	}
 	
 	// --------------------------------------------------------------------
 	
@@ -3722,7 +3763,7 @@ class EE_Template {
 			$this->site_ids[] = $this->EE->config->item('site_id');
 		}
 	}
-	
+
 	// --------------------------------------------------------------------
 	
 	/**
