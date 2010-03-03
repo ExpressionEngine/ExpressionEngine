@@ -1,8 +1,8 @@
 	<div class="clear"></div>
 </div>
 <div id="footer">
-	<a rel="external" href="<?=$this->config->item('base_url').$this->config->item('index_page')?>?URL=http://expressionengine.com/"><img src="<?=$cp_theme_url?>images/ee_logo_footer.gif" alt="<?=APP_NAME?>" /></a>
-	<?=(IS_FREELANCER)?' Freelancer':''?> v<?=APP_VER?> - &copy; <?=lang('copyright')?> 2003 - 2010 <a href="http://ellislab.com/">EllisLab, Inc.</a><br />
+	<a rel="external" href="<?=$this->cp->masked_url('http://expressionengine.com/')?>"><img src="<?=$cp_theme_url?>images/ee_logo_footer.gif" alt="<?=APP_NAME?>" width="109" height="15" /></a>
+	<?=(IS_FREELANCER)?' Freelancer':''?> v<?=APP_VER?> - &copy; <?=lang('copyright')?> 2003 - 2010 <a href="<?=$this->cp->masked_url('http://ellislab.com/')?>" rel="external">EllisLab, Inc.</a><br />
 	
 	<?php
 		echo str_replace("%x", $this->benchmark->elapsed_time('total_execution_time_start', 'total_execution_time_end'), lang('page_rendered'));
