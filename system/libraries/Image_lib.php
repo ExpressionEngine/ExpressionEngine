@@ -349,7 +349,7 @@ class CI_Image_lib {
 	function resize()
 	{
 		$protocol = 'image_process_'.$this->image_library;
-		
+
 		if (preg_match('/gd2$/i', $protocol))
 		{
 			$protocol = 'image_process_gd';
@@ -690,7 +690,7 @@ class CI_Image_lib {
 		// we have to rename the temp file.
 		copy ($this->dest_folder.'netpbm.tmp', $this->full_dst_path);
 		unlink ($this->dest_folder.'netpbm.tmp');
-		@chmod($dst_image, FILE_WRITE_MODE);
+		@chmod($this->full_dst_path, FILE_WRITE_MODE);
 
 		return TRUE;
 	}
