@@ -1127,8 +1127,8 @@ class XML_RPC_Message extends CI_Xmlrpc
 				}
 				else
 				{
-					// 'bits is for the MetaWeblog API image bits
-					// @todo - this needs to be made more general purpose before inclusion in CodeIgniter
+					// 'bits' is for the MetaWeblog API image bits
+					// @todo - this needs to be made more general purpose
 					$array[$key] = ($key == 'bits') ? $array[$key] : $CI->security->xss_clean($array[$key]);
 				}
 			}
