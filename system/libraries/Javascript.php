@@ -7,7 +7,7 @@ class CI_Javascript {
 	var $_javascript_location = 'js';
 
 	function CI_Javascript($params = array())
-	{
+	{		
 		$defaults = array('js_library_driver' => 'jquery', 'autoload' => TRUE);
 		
 		foreach ($defaults as $key => $val)
@@ -23,7 +23,7 @@ class CI_Javascript {
 		$this->CI =& get_instance();
 
 		// load the requested js library
-		$this->CI->load->library($js_library_driver, array('autoload' => $autoload));
+		$this->CI->load->library('javascript/'.$js_library_driver, array('autoload' => $autoload));
 		// make js to refer to current library
 		$this->js =& $this->CI->$js_library_driver;
 		
