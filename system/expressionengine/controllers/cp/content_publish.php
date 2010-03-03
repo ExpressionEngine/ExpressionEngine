@@ -1947,30 +1947,21 @@ $this->javascript->output('
 				i = 0,
 				key = "";
 				
-		for (key in required)
-		{
+		for (key in required) {
 			if (required[key] == id) {
 				illegal = true;
 				illegal_fields[i] = id;
 				i++;	
             }
 		}
+	});
 		
-		});
-		
-		if (illegal === true)
-		{
-			$.ee_notice(EE.publish.lang.tab_has_req_field + illegal_fields.join(","), {"type" : "error"});
-		}
+	if (illegal === true) {
+		$.ee_notice(EE.publish.lang.tab_has_req_field + illegal_fields.join(","), {"type" : "error"});
+	}
 		
 		return false;
 	});
-			
-
-	
-
-
-			
 			
 ');
 			
