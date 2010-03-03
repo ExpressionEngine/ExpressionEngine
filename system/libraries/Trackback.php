@@ -268,7 +268,7 @@ class CI_Trackback {
 		@fclose($fp);
 		
 		
-		if (stristr($response, '<error>0</error>') === FALSE)
+		if (stristr($this->response, '<error>0</error>') === FALSE)
 		{
 			$message = 'An unknown error was encountered';
 			
