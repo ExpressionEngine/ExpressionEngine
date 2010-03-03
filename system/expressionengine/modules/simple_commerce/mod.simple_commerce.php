@@ -314,7 +314,6 @@ class Simple_commerce {
 			}
 			
 			$data['id']		= 'paypal_form_'.$row['item_id'].'_'.$key;
-			$data['class']	= $this->EE->TMPL->form_class;
 			$data['secure'] = FALSE;
 			
 			$form	= $this->EE->functions->form_declaration($data).
