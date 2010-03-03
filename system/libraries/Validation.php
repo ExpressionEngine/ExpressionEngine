@@ -46,6 +46,12 @@ class CI_Validation {
 	function CI_Validation()
 	{	
 		$this->CI =& get_instance();
+		
+		if (function_exists('mb_internal_encoding'))
+		{
+			mb_internal_encoding($this->CI->config->item('charset'));
+		}
+		
 		log_message('debug', "Validation Class Initialized");
 	}
 	
@@ -431,7 +437,12 @@ class CI_Validation {
 		{
 			return FALSE;
 		}
-	
+
+		if (function_exists('mb_strlen'))
+		{
+			return (mb_strlen($str) < $val) ? FALSE : TRUE;		
+		}
+
 		return (strlen($str) < $val) ? FALSE : TRUE;
 	}
 	
@@ -451,7 +462,12 @@ class CI_Validation {
 		{
 			return FALSE;
 		}
-	
+		
+		if (function_exists('mb_strlen'))
+		{
+			return (mb_strlen($str) > $val) ? FALSE : TRUE;		
+		}
+
 		return (strlen($str) > $val) ? FALSE : TRUE;
 	}
 	
@@ -472,6 +488,11 @@ class CI_Validation {
 			return FALSE;
 		}
 	
+		if (function_exists('mb_strlen'))
+		{
+			return (mb_strlen($str) != $val) ? FALSE : TRUE;		
+		}
+
 		return (strlen($str) != $val) ? FALSE : TRUE;
 	}
 	
@@ -488,7 +509,7 @@ class CI_Validation {
 	{
 		return ( ! preg_match("/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix", $str)) ? FALSE : TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -596,7 +617,7 @@ class CI_Validation {
 	 * @param	string
 	 * @return	bool
 	 */
-	function is_numeric($str)
+  	function is_numeric($str)
 	{
 		return ( ! is_numeric($str)) ? FALSE : TRUE;
 	} 
@@ -640,7 +661,17 @@ class CI_Validation {
 	 */
 	function is_natural_no_zero($str)
 	{   
-   		return (bool)preg_match( '/^[0-9]+$/', $str);
+		if ( ! preg_match( '/^[0-9]+$/', $str))
+		{
+			return FALSE;
+		}
+	
+		if ($str == 0)
+		{
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
