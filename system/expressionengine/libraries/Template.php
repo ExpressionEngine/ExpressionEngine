@@ -3700,8 +3700,8 @@ class EE_Template {
 	{
 		$this->form_id 		= '';
 		$this->form_class 	= '';
-		
-		if ( ! isset($tagdata['params']) && ! is_array($tagdata['params']))
+
+		if ( ! isset($tagdata['params']) OR ! is_array($tagdata['params']))
 		{
 			return $tagdata;
 		}
