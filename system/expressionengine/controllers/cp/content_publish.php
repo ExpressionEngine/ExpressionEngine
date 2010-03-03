@@ -154,6 +154,92 @@ class Content_publish extends Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
+	function tab_required_check()
+	{
+		if ( ! $this->cp->allowed_group('can_access_content'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		if ( ! $this->cp->allowed_group('can_admin_channels'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		$this->load->library('api');
+		$this->api->instantiate(array('channel_fields'));
+		$this->output->enable_profiler(FALSE);
+		$error = array();
+
+		$member_group = $this->input->post('member_group');
+		$channel_id = $this->input->post('channel_id');
+		$json_tab_layout = $this->input->post('json_tab_layout');
+
+		if ( ! function_exists('json_decode'))
+		{
+			$this->load->library('Services_json');
+		}
+
+		$layout_info = json_decode($json_tab_layout, TRUE);
+		
+		// Check for required fields being hidden
+		$required = $this->api_channel_fields->get_required_fields($channel_id);
+		
+		if (count($required) > 0)
+		{
+			foreach($layout_info as $tab => $field)
+			{
+				foreach ($field as $name => $info)
+				{
+					if (in_array($name, $required) && $info['visible'] === FALSE)
+					{
+						$error[] = $name;
+					}
+				}
+			}
+			
+			if (count($error) > 0)
+			{
+				
+				$resp['messageType'] = 'failure';
+				$resp['message'] = $this->lang->line('layout_failure_required').implode(', ', $error);
+
+				$this->output->send_ajax_response($resp); exit;	
+				
+			}
+		}
+		
+		// make this into an array, insert_group_layout will serialize and save
+		
+		$layout_info = array_map(array($this, '_sort_publish_fields'), $layout_info);
+		
+		if ($this->member_model->insert_group_layout($member_group, $channel_id, $layout_info))
+		{
+			$resp['messageType'] = 'success';
+			$resp['message'] = $this->lang->line('layout_success');
+
+			$this->output->send_ajax_response($resp); exit;	
+
+		}
+		else
+		{
+			$resp['messageType'] = 'failure';
+			$resp['message'] = $this->lang->line('layout_failure');
+
+			$this->output->send_ajax_response($resp); exit;	
+			
+		}
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Save publish layout
+	 *
+	 * @access	public
+	 * @return	mixed
+	 */
 	function save_layout()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
@@ -220,7 +306,7 @@ class Content_publish extends Controller {
 		// make this into an array, insert_group_layout will serialize and save
 		
 		$layout_info = array_map(array($this, '_sort_publish_fields'), $layout_info);
-
+		
 		if ($this->member_model->insert_group_layout($member_group, $channel_id, $layout_info))
 		{
 			$resp['messageType'] = 'success';
@@ -335,7 +421,7 @@ class Content_publish extends Controller {
 			'message'				=> '',
 			'cp_page_title'			=> $this->lang->line('new_entry'),								// modified below if this is an "edit"
 			'BK'					=> ($this->input->get_post('BK')) ? AMP.'BK=1'.AMP.'Z=1' : '',	// @todo - I don't think so...
-			'required_fields'		=> array()
+			'required_fields'		=> array('title', 'entry_date', 'url_title')
 		);
 
 		$vars['smileys_enabled'] = (isset($this->installed_modules['emoticon']) ? TRUE : FALSE);
@@ -1539,7 +1625,6 @@ class Content_publish extends Controller {
 
 		if (count($layout_info) > 0)
 		{
-//print_r($layout_info);
 			if ($this->config->item('site_pages') === FALSE)
 			{
 				unset($layout_info['pages']);
@@ -1552,6 +1637,8 @@ class Content_publish extends Controller {
 			
 			$vars['publish_tabs'] = $layout_info; // Custom Layout construction
 
+			// print_r($vars['publish_tabs']);
+			
 			foreach($vars['publish_tabs'] as $val)
 			{
 				foreach($val as $key => $custom)
@@ -1674,7 +1761,7 @@ class Content_publish extends Controller {
 			{
 				$vars['publish_tabs']['options']['new_channel'] = $field_display;
 			}
-// hack
+
 			$vars['publish_tabs']['options']['status'] = $field_display;
 
 			$vars['publish_tabs']['options']['author'] = $field_display;
@@ -1710,7 +1797,8 @@ class Content_publish extends Controller {
 			'tab_count_zero'		=> $this->lang->line('tab_count_zero'),
 			'no_member_groups'		=> $this->lang->line('no_member_groups'),
 			'layout_removed'		=> $this->lang->line('layout_removed'),
-			'refresh_layout'		=> $this->lang->line('refresh_layout')
+			'refresh_layout'		=> $this->lang->line('refresh_layout'),
+			'tab_has_req_field'		=> $this->lang->line('tab_has_req_field')
 		));
 
 		// $this->javascript->click("#layout_group_submit", 'EE.publish.save_layout()');
@@ -1813,7 +1901,7 @@ class Content_publish extends Controller {
 								
 				if (isset($field_info['field_required']) && $field_info['field_required'] == 'y')
 				{
-					$this->required_fields[] = $field_info['field_id'];
+					$vars['required_fields'][] = $field_info['field_id'];
 				}				
 				
 				if ($vars['smileys_enabled'])
@@ -1845,7 +1933,47 @@ class Content_publish extends Controller {
 				$vars['field_output'][$field] = $opts;
 			}
 			
-			$vars['required_fields'] = $this->required_fields;
+$this->javascript->output('
+
+	$(".delete_tab").click(function(){
+	var tab_name = this.id.replace(/remove_tab_/, "");
+	var illegal = false;
+	var illegal_fields = new Array();
+	var required = '.$this->javascript->generate_json($vars['required_fields'], TRUE).';
+
+	$("#"+tab_name).find(".publish_field").each(function() {
+
+		var id = this.id.replace(/hold_field_/, ""),
+				i = 0,
+				key = "";
+				
+		for (key in required)
+		{
+			if (required[key] == id) {
+				illegal = true;
+				illegal_fields[i] = id;
+				i++;	
+            }
+		}
+		
+		});
+		
+		if (illegal === true)
+		{
+			$.ee_notice(EE.publish.lang.tab_has_req_field + illegal_fields.join(","), {"type" : "error"});
+		}
+		
+		return false;
+	});
+			
+
+	
+
+
+			
+			
+');
+			
 			$this->javascript->compile();
 			$this->load->view('content/publish', $vars);
 		}
@@ -1867,7 +1995,7 @@ class Content_publish extends Controller {
 
 				if (isset($field_info['field_required']) && $field_info['field_required'] == 'y')
 				{
-					$this->required_fields[] = $field_info['field_id'];
+					$vars['required_fields'][] = $field_info['field_id'];
 				}	
 				
 				if ($vars['smileys_enabled'])
@@ -1892,8 +2020,6 @@ class Content_publish extends Controller {
 			{
 				$vars['field_output'][$field] = $opts;
 			}
-			
-			$vars['required_fields'] = $this->required_fields;
 
 			// Entry submission will return false if no channel id is provided, and
 			// in that event, just reload the publish page

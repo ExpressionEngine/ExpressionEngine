@@ -63,7 +63,7 @@ if ($EE_view_disable !== TRUE)
 					<?php foreach($publish_tabs as $tab => $field_list):?>
 						<li>
 							<a href="#" title="menu_<?=$tab?>" class="menu_focus"><?=lang($tab)?></a> 
-							<a href="#<?=$tab?>" class="delete delete_tab"><img src="<?=$cp_theme_url?>images/content_custom_tab_delete.png" alt="<?=lang('delete')?>" width="19" height="18" /></a>
+							<a href="#<?=$tab?>" class="delete delete_tab" id="remove_tab_<?=$tab?>"><img src="<?=$cp_theme_url?>images/content_custom_tab_delete.png" alt="<?=lang('delete')?>" width="19" height="18" /></a>
 						</li>
 					<?php endforeach;?>
 				</ul>

@@ -389,6 +389,7 @@ $lang = array(
 'tab_count_zero'	=> 'There needs to be at least one tab available to hold fields.',
 'no_member_groups'	=> 'You need to select at least one member group to apply/remove a layout.',
 'layout_removed'	=> 'Layout Removed.',
+'tab_has_req_field'	=> 'The tab may not be deleted while it contains the following required fields: ',
 
 'layout_group'		=> 'Group',
 

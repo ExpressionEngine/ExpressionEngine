@@ -159,7 +159,6 @@ class Layout {
 			$channel_id = array($channel_id);
 		}
 		
-		
 		$this->EE->layout_model->edit_layout_fields($field_info, 'edit_fields', $channel_id);
 	}
 
@@ -207,9 +206,7 @@ class Layout {
 		
 		if ($current->num_rows() > 0)
 		{
-			 $row = $current->row_array(); 
-//print_r($row);
-//print_r($new_settings);
+			$row = $current->row_array(); 
 			
 			foreach ($new_settings as $field => $val)
 			{
@@ -253,16 +250,6 @@ class Layout {
 			//$this->EE->layout_model->edit_layout_fields($show_tab_fields, 'show_tab_fields', $channel_id, TRUE);
 			$this->EE->layout_model->update_layouts($show_tab_fields, 'add_tabs', $channel_id);
 		}
-
-/*
-echo '<pre>';
-print_r($changed);		
-print_r($show_fields);
-print_r($hide_fields);
-print_r($show_tab_fields);
-print_r($hide_tab_fields);
-exit;
-*/		
 
 		return;
 	}
