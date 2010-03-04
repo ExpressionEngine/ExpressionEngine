@@ -3161,7 +3161,9 @@ class EE_Template {
 	function advanced_conditionals($str)
 	{
 		if (stristr($str, LD.'if') === FALSE)
-			return $str;
+		{
+			return $str;			
+		}
 			
 		/* ---------------------------------
 		/*	Hidden Configuration Variables
@@ -3230,7 +3232,7 @@ class EE_Template {
 		/** ------------------------------------
 		/**  Protect <script> tags
 		/** ------------------------------------*/
-		
+
 		$protected = array();
 		$front_protect = '89Protect17';
 		$back_protect  = '21Me01Please47';
@@ -3246,7 +3248,7 @@ class EE_Template {
 			
 			$str = str_replace(array_values($protected), array_keys($protected), $str);
 		}
-		
+
 		/** ------------------------------------
 		/**  Convert EE Conditionals to PHP 
 		/** ------------------------------------*/
@@ -3257,7 +3259,7 @@ class EE_Template {
 		{
 			$str = preg_replace("/".preg_quote(LD)."((if:(else))*if)\s+(.*?)".preg_quote(RD)."/s", '<?php \\3if(\\4) : ?'.'>', $str);
 		}
-		
+
 		$str = $this->parse_template_php($str);
 		
 		/** ------------------------------------
