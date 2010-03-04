@@ -3039,6 +3039,7 @@ class Content_publish extends Controller {
 	{
 		// @todo: integrate this more nicely with custom_field_helper
 		// Custom fields are wrapped in <p> tags, which are not needed here.
+		// At this point, most of the <p> tags have been done away with -- greg
 		$category_r = '';
 
 		foreach ($categories as $key => $val)
