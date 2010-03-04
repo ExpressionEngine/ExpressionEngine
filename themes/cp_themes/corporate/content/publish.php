@@ -48,8 +48,11 @@ if ($EE_view_disable !== TRUE)
 					<ul>
 						<?php foreach ($field_output as $name => $field):
 							$f = is_array($field) ? $field : $this->api_channel_fields->settings[$name];
-						?>
+							if (in_array($name, $required_fields)):?>
+						<li><a href="#" class="field_selector" id="hide_field_<?=$f['field_id']?>"><?=required()?><?=$f['field_label']?></a></li>	
+							<?php else:?>
 						<li><a href="#" class="field_selector" id="hide_field_<?=$f['field_id']?>"><?=$f['field_label']?></a> <a href="#" class="delete delete_field" id="remove_field_<?=$f['field_id']?>"><img src="<?=$cp_theme_url?>images/open_eye.png" alt="<?=lang('delete')?>" width="15" height="15" /></a></li>
+						<?php endif;?>						
 						<?php endforeach;?>
 					</ul><br />
 				</div>
@@ -58,7 +61,7 @@ if ($EE_view_disable !== TRUE)
 				<div>
 				<ul id="publish_tab_list">
 					<?php foreach($publish_tabs as $tab => $field_list):?>
-						<li>
+						<li id="remove_tab_<?=$tab?>">
 							<a href="#" title="menu_<?=$tab?>" class="menu_focus"><?=lang($tab)?></a> 
 							<a href="#<?=$tab?>" class="delete delete_tab"><img src="<?=$cp_theme_url?>images/content_custom_tab_delete.png" alt="<?=lang('delete')?>" width="19" height="18" /></a>
 						</li>
@@ -68,26 +71,6 @@ if ($EE_view_disable !== TRUE)
 				</div>
 
 				<?php
-<<<<<<< local
-				// Can the current user assign the entry to a different author?
-				if ($this->cp->allowed_group('can_assign_post_authors')):
-				?>
-					<h3><a href="#"><?=lang('authors')?></a></h3>
-					<div>
-					<ul id="author_list_sidebar">
-					<?php foreach ($author_list->result() as $author):?>
-						<li>
-							<a href="<?=BASE.AMP.'C=myaccount'.AMP.'id='.$author->member_id?>"><?=$author->screen_name?></a>
-							<?php if ($author->in_authorlist == 'y' && $author->include_in_authorlist == 'n'):?>
-							<a href="#" class="delete" id="mid<?=$author->member_id?>"><img src="<?=$cp_theme_url?>images/content_custom_tab_delete.png" alt="<?=lang('delete')?>" width="19" height="18" /></a>
-							<?php endif;?>
-						</li>
-					<?php endforeach;?>
-					</ul>
-					<p class="custom_field_add"><a href="#" class="add_author_link submit submit_alt"><?=lang('add_author')?></a></p>
-					</div>
-=======
-				if ($show_author_menu):
 					// Can the current user assign the entry to a different author?
 					if ($this->cp->allowed_group('can_assign_post_authors')):
 					?>
@@ -105,8 +88,7 @@ if ($EE_view_disable !== TRUE)
 						</ul>
 						<p class="custom_field_add"><a href="#" class="add_author_link submit_alt"><?=lang('add_author')?></a></p>
 						</div>
-					<?php endif;?>
->>>>>>> other
+
 				<?php endif;?>
 				<?php
 				// is the user admin? This feature can only be used by admins

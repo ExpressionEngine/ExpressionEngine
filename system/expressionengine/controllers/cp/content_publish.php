@@ -1902,7 +1902,7 @@ class Content_publish extends Controller {
 				if (isset($field_info['field_required']) && $field_info['field_required'] == 'y')
 				{
 					$vars['required_fields'][] = $field_info['field_id'];
-				}				
+				}
 				
 				if ($vars['smileys_enabled'])
 				{
@@ -1918,6 +1918,8 @@ class Content_publish extends Controller {
 				$vars['field_output'][$field_info['field_id']] = $this->api_channel_fields->apply('display_publish_field', array($field_value));
 				
 			}
+			
+			$this->javascript->set_global('publish.required_fields', $vars['required_fields']);
 
 			$this->_define_options_fields($vars, $which);
 			
@@ -1932,8 +1934,6 @@ class Content_publish extends Controller {
 			{
 				$vars['field_output'][$field] = $opts;
 			}
-			
-			$this->cp->add_to_foot($this->_js_tab_check($vars['required_fields']));
 			
 			$this->javascript->compile();
 			$this->load->view('content/publish', $vars);
@@ -1973,11 +1973,11 @@ class Content_publish extends Controller {
 				$vars['field_output'][$field_info['field_id']] = $this->api_channel_fields->apply('display_publish_field', array($field_value));
 			}
 
+			$this->javascript->set_global('publish.required_fields', $vars['required_fields']);
+			
 			$this->_define_options_fields($vars, $which);
 			$this->_define_revisions_fields($vars, $versioning);
 			$this->_define_forum_fields($vars);
-			
-			$this->cp->add_to_foot($this->_js_tab_check($vars['required_fields']));
 			
 			foreach($this->field_definitions as $field => $opts)
 			{
@@ -2637,42 +2637,6 @@ class Content_publish extends Controller {
 
 		return $r;
 	}
-
-
-	function _js_tab_check($req_fields)
-	{
-$this->javascript->output('
-
-	$(".delete_tab").click(function(){
-	var tab_name = this.id.replace(/remove_tab_/, "");
-	var illegal = false;
-	var illegal_fields = new Array();
-	var required = '.$this->javascript->generate_json($req_fields, TRUE).';
-
-	$("#"+tab_name).find(".publish_field").each(function() {
-
-		var id = this.id.replace(/hold_field_/, ""),
-				i = 0,
-				key = "";
-				
-		for (key in required) {
-			if (required[key] == id) {
-				illegal = true;
-				illegal_fields[i] = id;
-				i++;	
-            }
-		}
-	});
-		
-	if (illegal === true) {
-		$.ee_notice(EE.publish.lang.tab_has_req_field + illegal_fields.join(","), {"type" : "error"});
-	}
-		
-		return false;
-	});
-			
-');
-}
 
 
 	/** ---------------------------------------------------------------

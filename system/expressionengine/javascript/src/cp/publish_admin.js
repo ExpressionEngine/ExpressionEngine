@@ -165,6 +165,11 @@ $("#toggle_member_groups_all").toggle(
 	}
 );
 
+
+
+
+
+
 $(".delete_field").toggle(
 	function()
 	{
@@ -187,10 +192,9 @@ $(".delete_field").toggle(
 	}
 );
 
-_delete_tab_hide = function() {
-	tab_to_delete = $(this).attr("href").substring(1);
+_delete_tab_hide = function(the_li, tab_to_delete) {
 	$(".menu_"+tab_to_delete).parent().fadeOut();	// hide the tab
-	$(this).parent().fadeOut();						// remove from sidebar
+	$(the_li).fadeOut();						// remove from sidebar
 	$("#"+tab_to_delete).fadeOut();					// hide the fields
 
 	// If the tab is selected - move focus to the left
@@ -222,13 +226,59 @@ _delete_tab_reveal = function() {
 	return false;
 }
 
+
+
+
+
+
+tab_req_check = function(tab_name) {
+	var illegal = false;
+	var illegal_fields = new Array();
+	var required = EE.publish.required_fields;
+
+	$("#"+tab_name).find(".publish_field").each(function() {
+
+		var id = this.id.replace(/hold_field_/, ""),
+				i = 0,
+				key = "";
+				
+		for (key in required) {
+			if (required[key] == id) {
+				illegal = true;
+				illegal_fields[i] = id;
+				i++;	
+            }
+		}
+	});
+		
+	if (illegal === true) {
+		$.ee_notice(EE.publish.lang.tab_has_req_field + illegal_fields.join(","), {"type" : "error"});
+		return true;
+	}
+	
+	return false;
+}
+
+
 function delete_publish_tab()
 {
 	// Toggle cannot use a namespaced click event so we need to unbind using the
 	// function reference instead
-	$(".delete_tab").unbind("click", _delete_tab_hide).unbind("click", _delete_tab_reveal);
-	$(".delete_tab").toggle(_delete_tab_hide, _delete_tab_reveal);
+	$("#publish_tab_list").unbind("click.tab_delete");
+	$("#publish_tab_list").bind("click.tab_delete", function(evt) {
+	
+	if (evt.target !== this) {
+    	var the_li = $(evt.target).closest("li");
+		the_id = the_li.attr("id").replace(/remove_tab_/, "");
+
+		if ( ! tab_req_check(the_id)) {
+			_delete_tab_hide(the_li, the_id);
+		}
+    }
+});
 }
+
+ 
 
 // when the page loads set up existing tabs to delete
 delete_publish_tab();
