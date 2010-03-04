@@ -426,9 +426,6 @@ class Wizard extends Controller {
 			return FALSE;
 		}
 		
-		var_dump($this->_db_connect($db));
-		exit('boo');
-		
 		// Can we connect?
 		if ( ! $this->_db_connect($db))
 		{
