@@ -936,6 +936,9 @@ $lang = array(
 'search_entries' =>
 'Search Entries',
 
+'unable_to_load_tab' => 
+'Unable to load requested publish tab file: %s',
+
 ''=>''
 );
 
