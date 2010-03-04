@@ -729,6 +729,11 @@ class Design extends Controller {
 		{
 			show_error($this->lang->line('illegal_characters'));
 		}
+		elseif (in_array($snippet_name, $this->cp->invalid_custom_field_names()))
+		{
+			show_error($this->lang->line('reserved_name'));
+		}
+		
 
 		// validate site_id
 		if ($site_id != $this->config->item('site_id') AND $site_id != 0)
