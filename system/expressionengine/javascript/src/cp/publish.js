@@ -210,7 +210,7 @@ EE.publish.save_layout = function() {
 		jQuery.extend(layout_object[first_tab], layout_hidden);
 	} 
 	
-	alert(JSON.stringify(layout_object, null, '\t'));
+	//alert(JSON.stringify(layout_object, null, '\t'));
 
 	// @todo not a great solution
 	EE.tab_focus(cur_tab.replace(/menu_/, ""));
