@@ -1226,7 +1226,6 @@ class Content_publish extends Controller {
 			$vars['forum_id']	= '';
 			$vars['forum_topic_id']			= ( ! isset($_POST['forum_topic_id'])) ? '' : $_POST['forum_topic_id'];		
 			
-			
 			if ($which == 'new' OR $entry_id == '')
 			{
 				// Fetch the list of available forums
@@ -1636,8 +1635,6 @@ class Content_publish extends Controller {
 
 		if (count($layout_info) > 0)
 		{
-//print_r($layout_info);
-			
 			if ($this->config->item('site_pages') === FALSE)
 			{
 				unset($layout_info['pages']);
