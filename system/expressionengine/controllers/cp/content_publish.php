@@ -1635,6 +1635,9 @@ class Content_publish extends Controller {
 
 		if (count($layout_info) > 0)
 		{
+//print_r($layout_info);
+
+			/*
 			if ($this->config->item('site_pages') === FALSE)
 			{
 				unset($layout_info['pages']);
@@ -1644,6 +1647,7 @@ class Content_publish extends Controller {
 			{
 				unset($layout_info['forum']);
 			}
+			*/
 			
 			$vars['publish_tabs'] = $layout_info; // Custom Layout construction
 

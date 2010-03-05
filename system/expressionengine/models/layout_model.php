@@ -105,25 +105,25 @@ class Layout_model extends CI_Model {
 				{
 					foreach($layout_info AS $tab => $fields)
 					{					
-						$k_field = (is_array($fields)) ? key($fields) : $fields;
-						
-						if ($action == 'delete_tabs' && array_key_exists($tab, $layout) == TRUE)
+						if (array_key_exists($tab, $layout))
 						{
 							unset($layout[$tab]);
 						}
-
-						foreach ($layout AS $existing_tab => $existing_field)
+						
+						foreach ($fields as $field_name => $settings)
 						{
-							if (isset($layout[$existing_tab][$k_field]))
+							foreach ($layout AS $existing_tab => $existing_field)
 							{
-								unset($layout[$existing_tab][$k_field]);
+								if (isset($layout[$existing_tab][$field_name]))
+								{
+									unset($layout[$existing_tab][$field_name]);
+								}
 							}
 						}
-					}					
+					}
 				}
 				elseif ($action == 'delete_fields')
 				{
-
 					foreach($layout_info AS $field_name)
 					{
 
