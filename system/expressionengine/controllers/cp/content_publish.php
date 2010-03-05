@@ -1214,10 +1214,19 @@ class Content_publish extends Controller {
 		//	FORUM BLOCK
 		// ---------------------------------------------
 
+		$hide_forum_fields = FALSE;
+		
 		if ($this->config->item('forum_is_installed') == "y")
 		{
 			// New forum topics will only be accepted by the submit_new_entry_form() when there is no entry_id sent
 
+			$vars['forum_title']			= '';
+			$vars['forum_body']				= '';
+			//$vars['forum_id']	= form_dropdown('forum_id', $forums, $this->input->get_post('forum_id'));
+			$vars['forum_id']	= '';
+			$vars['forum_topic_id']			= ( ! isset($_POST['forum_topic_id'])) ? '' : $_POST['forum_topic_id'];		
+			
+			
 			if ($which == 'new' OR $entry_id == '')
 			{
 				// Fetch the list of available forums
@@ -1282,9 +1291,11 @@ class Content_publish extends Controller {
 						$this->table->clear(); // clear out tables for the next smiley						
 					}				
 				}
+
 			}
 			else
 			{
+				$hide_forum_fields = TRUE;
 				if ( ! isset($forum_topic_id))
 				{
 					$fquery = $this->db->query("SELECT forum_topic_id FROM exp_channel_titles WHERE entry_id = '{$entry_id}'");
@@ -1625,6 +1636,8 @@ class Content_publish extends Controller {
 
 		if (count($layout_info) > 0)
 		{
+//print_r($layout_info);
+			
 			if ($this->config->item('site_pages') === FALSE)
 			{
 				unset($layout_info['pages']);
@@ -1645,6 +1658,23 @@ class Content_publish extends Controller {
 				{
 					$revealed_fields[] .= $key;
 
+					// Override forum tab display if it's an edit
+					if ($hide_forum_fields)
+					{
+						if ($key == 'forum_title')
+						{
+							$custom['visible'] = 'false';
+						}
+						elseif ($key == 'forum_body')
+						{
+							$custom['visible'] = 'false';
+						}
+						elseif ($key == 'forum_id')
+						{
+							$custom['visible'] = 'false';
+						}						
+					}
+					
 					// set up hidden fields (not visible)
 					if ($custom['visible'] === FALSE OR $custom['visible'] === 'false')
 					{
@@ -1776,7 +1806,7 @@ class Content_publish extends Controller {
 				{
 					$vars['publish_tabs']['forum']['forum_title'] = $field_display;
 				}
-				
+			
 				if (isset($vars['forum_body']) AND isset($vars['forum_id']))
 				{
 					$vars['publish_tabs']['forum']['forum_body'] = $field_display;
@@ -1785,7 +1815,7 @@ class Content_publish extends Controller {
 					$vars['publish_tabs']['forum']['forum_id']['html_buttons'] = FALSE;
 					$vars['publish_tabs']['forum']['forum_id']['width'] = '50%';
 				}
-				
+		
 				$vars['publish_tabs']['forum']['forum_topic_id'] = $field_display;
 			}
 		}
@@ -1934,7 +1964,7 @@ class Content_publish extends Controller {
 			{
 				$vars['field_output'][$field] = $opts;
 			}
-			
+//print_r($vars['field_output']);			
 			$this->javascript->compile();
 			$this->load->view('content/publish', $vars);
 		}
@@ -1983,7 +2013,7 @@ class Content_publish extends Controller {
 			{
 				$vars['field_output'][$field] = $opts;
 			}
-
+//print_r($vars['field_output']);
 			// Entry submission will return false if no channel id is provided, and
 			// in that event, just reload the publish page
 			if (($err = $this->_submit_new_entry()) !== TRUE)
@@ -3138,6 +3168,7 @@ class Content_publish extends Controller {
 	
 	function _define_forum_fields(&$vars)
 	{
+		
 		if ( ! isset($vars['forum_topic_id']))
 		{
 			unset($vars['publish_tabs']['forum']);
