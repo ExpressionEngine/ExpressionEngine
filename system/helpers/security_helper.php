@@ -123,17 +123,15 @@ if ( ! function_exists('strip_image_tags'))
 // ------------------------------------------------------------------------
 
 /**
- * PHP tags to Entities
- *
- * Converts PHP tags to entities
+ * Convert PHP tags to entities
  *
  * @access	public
  * @param	string
  * @return	string
  */	
-if ( ! function_exists('php_tags_to_entities'))
+if ( ! function_exists('encode_php_tags'))
 {
-	function php_tags_to_entities($str)
+	function encode_php_tags($str)
 	{
 		return str_replace(array('<?php', '<?PHP', '<?', '?>'),  array('&lt;?php', '&lt;?PHP', '&lt;?', '?&gt;'), $str);
 	}

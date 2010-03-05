@@ -4731,7 +4731,7 @@ class Forum_Core extends Forum {
 				$this->EE->load->helper(array('security', 'form'));
 
 				$data['body'] = '[quote author="'.$this->_convert_special_chars($meta[$this->current_id]['screen_name']).'" date="'.$meta[$this->current_id]['post_date'].'"]'.
-								str_replace('&amp;#40;', '&#40;', php_tags_to_entities(form_prep($meta[$this->current_id]['body']))).
+								str_replace('&amp;#40;', '&#40;', encode_php_tags(form_prep($meta[$this->current_id]['body']))).
 								'[/quote]';					
 				
 				$this->current_id = $meta[$this->current_id]['topic_id'];
@@ -4756,7 +4756,7 @@ class Forum_Core extends Forum {
 				$this->EE->load->helper(array('security', 'form'));
 
 				$data['body'] = '[quote author="'.$this->_convert_special_chars($meta[$this->current_id]['screen_name']).'" date="'.$meta[$this->current_id]['topic_date'].'"]'.
-								str_replace('&amp;#40;', '&#40;', php_tags_to_entities(form_prep($meta[$this->current_id]['body']))).
+								str_replace('&amp;#40;', '&#40;', encode_php_tags(form_prep($meta[$this->current_id]['body']))).
 								'[/quote]';
 			}
 			
@@ -4796,7 +4796,7 @@ class Forum_Core extends Forum {
 			$this->EE->load->helper(array('security', 'form'));
 	
 			$data['title']		 			= $meta[$this->current_id]['title'];
-			$data['body']		 			= php_tags_to_entities(form_prep($meta[$this->current_id]['body']));
+			$data['body']		 			= encode_php_tags(form_prep($meta[$this->current_id]['body']));
 			$data['body'] 					= str_replace('&amp;#40;', '&#40;', $data['body']);
 			$data['forum_id']	 			= $meta[$this->current_id]['forum_id'];
 			$data['status']	 	 			= $meta[$this->current_id]['status'];
@@ -4849,7 +4849,7 @@ class Forum_Core extends Forum {
 			$this->EE->load->helper(array('security', 'form'));
 			
 			$data['title']		 = $meta[$this->current_id]['title'];
-			$data['body']		 = php_tags_to_entities(form_prep($meta[$this->current_id]['body']));
+			$data['body']		 = encode_php_tags(form_prep($meta[$this->current_id]['body']));
 			$data['body'] 		 = str_replace('&amp;#40;', '&#40;', $data['body']);
 			$data['topic_id']	 = $meta[$this->current_id]['topic_id'];
 			$data['forum_id']	 = $meta[$this->current_id]['forum_id'];
