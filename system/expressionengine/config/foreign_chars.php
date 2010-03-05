@@ -1,27 +1,12 @@
-<?php
-/**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
- * @license		http://expressionengine.com/docs/license.html
- * @link		http://expressionengine.com
- * @since		Version 2.0
- * @filesource
- */
- 
-// ------------------------------------------------------------------------
-
-/**
- * An array of foreign characters for conversion
- *
- * @package		ExpressionEngine
- * @subpackage	Config
- * @category	Config
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
- */
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/*
+| -------------------------------------------------------------------
+| Foreign Characters
+| -------------------------------------------------------------------
+| This file contains an array of foreign characters for transliteration
+| conversion used by the Text helper
+|
+*/
 $foreign_characters = array('223'	=>	"ss", // §
 							'224'	=>  "a",  
 							'225'	=>  "a", 
