@@ -40,7 +40,6 @@
  *
  * @access	public
  * @param	string
- * @param	bool	whether to remove the slash entity as well
  * @return	string
  */	
 if ( ! function_exists('trim_slashes'))
