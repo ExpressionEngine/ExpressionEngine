@@ -298,7 +298,7 @@ class EE_Typography extends CI_Typography {
 		
 		$this->EE->load->helper('security');
 		
-		$str = php_tags_to_entities($str);
+		$str = encode_php_tags($str);
 
 		/** -------------------------------------
 		/**  Encode EE tags
