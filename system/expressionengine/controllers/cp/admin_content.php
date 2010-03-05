@@ -995,7 +995,7 @@ class Admin_content extends Controller {
 			$old_field = $query->row('field_group');
 		}
 
-		if ($old_field != $data['field_group'])
+		if ($old_field != $data['field_group'] && ! is_null($old_field))
 		{
 			$update_fields = TRUE;
 			
@@ -1003,12 +1003,13 @@ class Admin_content extends Controller {
 			$this->db->where('group_id', $old_field); 
 			$query = $this->db->get('channel_fields');
 		
-			if ($query->num_rows() == 1)
+			if ($query->num_rows() > 0)
 			{
 				foreach($query->result() as $row)
 				{
 					$tabs[] = $row->field_id;
 				}
+
 					
 				$this->load->library('layout');
 				$this->layout->delete_layout_fields($tabs, $channel_id);
@@ -1020,7 +1021,7 @@ class Admin_content extends Controller {
 		$this->db->update('channels', $data); 
 
 		// Updated saved layouts if field group changed
-		if ($update_fields)
+		if ($update_fields == TRUE && ! is_null($data['field_group']))
 		{
 			$this->db->select('field_id');
 			$this->db->where('group_id', $data['field_group']); 
