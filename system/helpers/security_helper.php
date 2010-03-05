@@ -123,9 +123,7 @@ if ( ! function_exists('strip_image_tags'))
 // ------------------------------------------------------------------------
 
 /**
- * PHP tags to Entities
- *
- * Converts PHP tags to entities
+ * Convert PHP tags to entities
  *
  * @access	public
  * @param	string
