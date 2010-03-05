@@ -142,26 +142,26 @@ class EE_Messages_send extends EE_Messages {
 		
 		$UP = new Upload();
 		
-		$this->EE->UP->set_upload_path($this->upload_path);
-		$this->EE->UP->set_allowed_types('all');
+		$UP->set_upload_path($this->upload_path);
+		$UP->set_allowed_types('all');
 		
-		$this->EE->UP->new_name = $filehash.$extension;
+		$UP->new_name = $filehash.$extension;
 						
-		if ( ! $this->EE->UP->upload_file())
+		if ( ! $UP->upload_file())
 		{
-			@unlink($this->EE->UP->new_name);
+			@unlink($UP->new_name);
 			
-			if ($this->EE->UP->error_msg == 'invalid_filetype')
+			if ($UP->error_msg == 'invalid_filetype')
 			{
-				$info = implode(', ', $this->EE->UP->allowed_mimes);
+				$info = implode(', ', $UP->allowed_mimes);
 			
-				$info  = "<div class='default'>".$this->EE->lang->line($this->EE->UP->error_msg).
+				$info  = "<div class='default'>".$this->EE->lang->line($UP->error_msg).
 						 "<div class='default'>".$this->EE->lang->line('allowed_mimes').'&nbsp;'.$info."</div>";
 				
 				return $info;
 			}
 			
-			return $this->EE->UP->error_msg;
+			return $UP->error_msg;
 		}
 
 		/** -------------------------------------
@@ -169,16 +169,16 @@ class EE_Messages_send extends EE_Messages {
 		/** -------------------------------------*/
 		
 		$this->temp_message_id = $this->EE->functions->random('nozero', 10);
-	  
+		
 	  	$data = array(
 	  					'sender_id'				=> $this->member_id,
 	  					'message_id'			=> $this->temp_message_id,
 	  					'attachment_name'		=> $filename.$extension,
 	  					'attachment_hash'		=> $filehash,
 	  					'attachment_extension'  => $extension,
-	  					'attachment_location'	=> $this->EE->UP->new_name,
+	  					'attachment_location'	=> $UP->new_name,
 	  					'attachment_date'		=> $this->EE->localize->now,
-	  					'attachment_size'		=> ceil($this->EE->UP->file_size/1024)
+	  					'attachment_size'		=> ceil($UP->file_size/1024)
 	  				);	  
 	  				
 		$this->EE->db->query($this->EE->db->insert_string('exp_message_attachments', $data));	
@@ -192,12 +192,10 @@ class EE_Messages_send extends EE_Messages {
 		// For convenience we use the attachment ID number as the prefix for all files.
 		// That way they will be easier to manager.
 		
-		// OK, whatever you say, Rick.  -Paul
-		
-		if (file_exists($this->EE->UP->new_name))
+		if (file_exists($UP->new_name))
 		{
 			$final_name = $attach_id.'_'.$filehash;
-			$final_path = $this->EE->UP->upload_path.$final_name.$extension;
+			$final_path = $UP->upload_path.$final_name.$extension;
 			
 			if (rename($this->EE->UP->new_name, $final_path))
 			{
