@@ -372,6 +372,8 @@ class Layout {
 			$tabs = array($tabs);
 		}
 		
+		//print_r($tabs); exit;
+		
 		$this->EE->load->model('layout_model');
 	
 		return $this->EE->layout_model->update_layouts($tabs, 'delete_fields', $channel_id);
