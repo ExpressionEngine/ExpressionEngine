@@ -4058,18 +4058,20 @@ class Admin_content extends Controller {
 			$this->db->where('group_id', $row['field_group']);
 			$this->db->order_by('field_label','ASC');
 			$rez = $this->db->get('channel_fields');
-			
-			$vars['field_pre_populate_id_options'][$row['channel_title']] = array();
 
-			foreach ($rez->result_array() as $frow)
+			if ($rez->num_rows() > 0)
 			{
-				$vars['field_pre_populate_id_options'][$row['channel_title']][$row['channel_id'].'_'.$frow['field_id']] = $frow['field_label'];
+				$vars['field_pre_populate_id_options'][$row['channel_title']] = array();
+				
+				foreach ($rez->result_array() as $frow)
+				{
+					$vars['field_pre_populate_id_options'][$row['channel_title']][$row['channel_id'].'_'.$frow['field_id']] = $frow['field_label'];
+				}
 			}
 		}
 
 		$vars['field_pre_populate_id_select'] = $field_pre_channel_id.'_'.$field_pre_field_id;
 
-		
 		// build list of formatting options
 		// @todo - automatically include plugins in same package
 		if ($type == 'new')

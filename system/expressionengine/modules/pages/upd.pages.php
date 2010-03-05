@@ -37,13 +37,14 @@ class Pages_upd {
 	function tabs()
 	{
 		$tabs['pages'] = array(
-			'pages_uri'		=> array(
+			'pages_template_id'	=> array(
 								'visible'		=> 'true',
 								'collapse'		=> 'false',
 								'htmlbuttons'	=> 'true',
 								'width'			=> '100%'
 								),
-			'pages_template_id'		=> array(
+			
+			'pages_uri'		=> array(
 								'visible'		=> 'true',
 								'collapse'		=> 'false',
 								'htmlbuttons'	=> 'true',
@@ -113,7 +114,6 @@ class Pages_upd {
 		}
 		
 		$this->EE->load->library('layout');
-		
 		$this->EE->layout->delete_layout_tabs($this->tabs());
 
 		return TRUE;

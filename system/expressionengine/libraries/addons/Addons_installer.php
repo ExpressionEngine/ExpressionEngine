@@ -335,7 +335,7 @@ class Addons_installer {
 				foreach($query->result() as $row)
 				{
 					$ids[] = $row->field_id;
-					$channel_ids[$row->field_id][] = $row->channel_id;
+					$channel_ids[] = $row->channel_id;
 				}
 			}
 
@@ -345,13 +345,13 @@ class Addons_installer {
 				{
 					$this->EE->dbforge->drop_column('channel_data', 'field_id_'.$id);
 					$this->EE->dbforge->drop_column('channel_data', 'field_ft_'.$id);
-					
-					// Remove from layouts
-					$c_ids = array_unique($channel_ids[$id]);
-					
-					$this->EE->load->library('layout');
-					$this->EE->layout->delete_layout_fields($field_id, $c_ids);
 				}
+				
+				// Remove from layouts
+				$c_ids = array_unique($channel_ids[$id]);
+				
+				$this->EE->load->library('layout');
+				$this->EE->layout->delete_layout_fields($id, $c_ids);				
 
 				$this->EE->db->where_in('field_id', $ids);
 				$this->EE->db->delete(array('channel_fields', 'field_formatting'));
