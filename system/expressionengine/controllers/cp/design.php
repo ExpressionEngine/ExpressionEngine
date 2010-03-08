@@ -80,7 +80,6 @@ class Design extends Controller {
 			);
 		}
 
-		$this->load->vars(array('cp_page_id'=>'design'));
 		$this->cp->set_variable('wiki_installed', (bool) $this->db->table_exists('wikis'));
 		$this->cp->set_variable('forum_installed', (bool) $this->db->table_exists('forums'));
 	}

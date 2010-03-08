@@ -55,8 +55,6 @@ class Addons_accessories extends Controller {
 			$this->accessories->ignored_controllers[$i] = str_replace('.php', EXT, $this->accessories->ignored_controllers[$i]);
 		}
 		
-		$this->load->vars(array('cp_page_id'=>'addons'));
-		
 		$this->human_names = $this->_fetch_human_names();
 		
 		$this->load->library('addons');

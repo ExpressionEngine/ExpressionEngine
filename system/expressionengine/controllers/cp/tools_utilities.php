@@ -53,7 +53,6 @@ class Tools_utilities extends Controller {
 		}
 
 		$this->lang->loadfile('tools');
-		$this->load->vars(array('cp_page_id'=>'tools'));
 		
 		$this->javascript->compile();
 	}

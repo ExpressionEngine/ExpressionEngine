@@ -33,5 +33,5 @@
 	<script type="text/javascript" src="<?=BASE.AMP.'C=javascript'?>"></script>
 </head>
 
-<body id="<?=$cp_page_id?>" onload="<?=$cp_page_onload?>">
+<body onload="<?=$cp_page_onload?>">
 

@@ -54,8 +54,6 @@ class Content_edit extends Controller {
 		$this->load->model('category_model');
 		$this->load->model('status_model');
 		$this->load->model('search_model');
-		
-		$this->load->vars(array('cp_page_id'=>'content'));
 	}
 
 	// --------------------------------------------------------------------

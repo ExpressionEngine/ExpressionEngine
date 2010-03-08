@@ -61,7 +61,6 @@ class Cp {
 			$this->cp_theme_url = $this->EE->config->slash_item('theme_folder_url').'cp_themes/'.$this->cp_theme.'/';
 
 			$this->EE->load->vars(array(
-				'cp_page_id'	=> 'EE',		// @confirm do we still need this?
 				'cp_theme_url'	=> $this->cp_theme_url
 			));
 		}
@@ -138,7 +137,6 @@ class Cp {
 		// Global view variables
 
 		$vars =	array(
-					'cp_page_id'			=> '',
 					'cp_page_onload'		=> '',
 					'cp_page_title'			=> '',
 					'cp_breadcrumbs'		=> array(),

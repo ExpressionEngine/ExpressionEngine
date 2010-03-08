@@ -66,7 +66,6 @@ class MyAccount extends Controller {
 			$("#myaccountHtmlButtonsLink").show(); // JS only feature, its hidden by default
 		');
 
-		$this->cp->set_variable('cp_page_id', 'myAccount');
 		$this->cp->set_variable('message', '');
 		$this->cp->set_variable('id', $this->id);
 

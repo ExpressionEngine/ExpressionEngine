@@ -34,7 +34,7 @@
 
 </head>
 
-<body id="<?=$cp_page_id?>" onload="<?=$cp_page_onload?>">
+<body onload="<?=$cp_page_onload?>">
 
 <div id="branding"><a href="http://expressionengine.com/"><img src="<?=$cp_theme_url?>images/ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
 

@@ -56,8 +56,6 @@ class Tools_data extends Controller {
 			'sql_processlist'		=> BASE.AMP.'C=tools_data'.AMP.'M=sql_processlist'
 		);
 		
-
-		$this->load->vars(array('cp_page_id'=>'tools'));
 		$this->javascript->compile();
 	}
 

@@ -44,8 +44,6 @@ class Admin_system extends Controller {
 		}
 
 		$this->javascript->compile();
-
-		$this->load->vars(array('cp_page_id'=>'admin'));
 	}
 
 	// --------------------------------------------------------------------

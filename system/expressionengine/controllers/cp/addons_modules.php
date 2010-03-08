@@ -47,8 +47,6 @@ class Addons_modules extends Controller {
 		$this->load->model('addons_model');
 		
 		$this->lang->loadfile('modules');
-		
-		$this->load->vars(array('cp_page_id'=>'addons'));
 	}
 
 	// --------------------------------------------------------------------

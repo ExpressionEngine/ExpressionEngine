@@ -39,7 +39,6 @@ class Search extends Controller {
 		}
 
 		$this->lang->loadfile('admin');
-		$this->load->vars(array('cp_page_id'=>'cp_search'));
 		
 		$this->load->library('Cp_search');
 	}

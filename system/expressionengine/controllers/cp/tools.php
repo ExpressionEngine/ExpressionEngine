@@ -45,8 +45,6 @@ class Tools extends Controller {
 		}
 
 		$this->lang->loadfile('tools');
-
-		$this->load->vars(array('cp_page_id'=>'tools'));
 	}
 	
 	// --------------------------------------------------------------------

@@ -66,8 +66,6 @@ class Members extends Controller {
 		$view_member_methods = array('view', 'ipsearch', 'groups', 'email_logs');		
 
 		$this->javascript->compile();
-
-		$this->load->vars(array('cp_page_id'=>'members'));
 	}
 	
 	// --------------------------------------------------------------------

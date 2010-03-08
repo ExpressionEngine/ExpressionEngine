@@ -45,7 +45,6 @@ class Content_files extends Controller {
 		}
 
 		$this->lang->loadfile('filemanager');
-		$this->load->vars(array('cp_page_id'=>'content_files'));
 		
 		if (isset($_GET['ajax']))
         {

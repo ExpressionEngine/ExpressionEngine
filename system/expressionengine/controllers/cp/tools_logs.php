@@ -52,7 +52,6 @@ class Tools_logs extends Controller {
 
 		$this->load->vars(array('controller'=>'tools/tools_logs'));
 
-		$this->load->vars(array('cp_page_id'=>'tools'));
 		$this->javascript->compile();
 	}
 	

@@ -53,8 +53,6 @@ class Admin_content extends Controller {
 		}
 
 		// Note- no access check here to allow the publish page access to categories
-
-		$this->load->vars(array('cp_page_id'=>'admin'));
 	}
 
 	// --------------------------------------------------------------------

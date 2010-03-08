@@ -64,10 +64,6 @@ class Homepage extends Controller {
 			$this->messages[] = $this->dsp->qdiv('itemWrapper', $this->dsp->qspan('defaultBold', $this->lang->line('demo_expiration').NBS.NBS.$this->localize->format_timespan(($this->config->item('demo_date') + $expiration) - time())));
 		}
 		// -- End Demo Code
-		
-		
-
-		$this->load->vars(array('cp_page_id'=>'homepage'));
 	}
 
 	// --------------------------------------------------------------------

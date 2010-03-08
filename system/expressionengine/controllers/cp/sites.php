@@ -71,8 +71,6 @@ class Sites extends Controller {
 			$this->lang->loadfile('sites_cp');
 			$this->lang->loadfile('admin_content');
 		}
-
-		$this->load->vars(array('cp_page_id'=>'sites'));
 	}
 	
 	// --------------------------------------------------------------------

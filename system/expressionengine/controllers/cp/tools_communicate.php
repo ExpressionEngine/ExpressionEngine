@@ -56,7 +56,6 @@ class Tools_communicate extends Controller {
 		$this->load->model('communicate_model');
 		$this->lang->loadfile('communicate');
 		
-		$this->load->vars(array('cp_page_id'=>'tools'));
 		$this->javascript->compile();
 	}
 	

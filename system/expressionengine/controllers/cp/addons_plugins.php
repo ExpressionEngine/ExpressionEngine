@@ -46,8 +46,6 @@ class Addons_plugins extends Controller {
 		}
 
 		$this->lang->loadfile('admin');
-
-		$this->load->vars(array('cp_page_id'=>'addons'));
 	}
 
 	// --------------------------------------------------------------------

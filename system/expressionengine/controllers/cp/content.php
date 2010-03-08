@@ -43,8 +43,6 @@ class Content extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-		
-		$this->load->vars(array('cp_page_id'=>'content'));
 	}
 	
 	// --------------------------------------------------------------------
