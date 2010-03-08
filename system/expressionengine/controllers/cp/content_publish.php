@@ -709,7 +709,7 @@ class Content_publish extends Controller {
 		}
 
 		// Create channel menu
-		$vars = array_merge_recursive($vars, $this->_build_channel_vars($which, $status_group, $cat_group, $field_group, $assigned_channels, $channel_id));
+		$vars = array_merge_recursive($vars, $this->_build_channel_vars($which, $status_group, $cat_group, $field_group, $assigned_channels, $channel_id, $channel_title));
 
 		// Create status menu
 
@@ -1222,7 +1222,7 @@ class Content_publish extends Controller {
 
 			$vars['forum_title']			= '';
 			$vars['forum_body']				= '';
-			//$vars['forum_id']	= form_dropdown('forum_id', $forums, $this->input->get_post('forum_id'));
+			$vars['forum_topic_id_descp']	= '';
 			$vars['forum_id']	= '';
 			$vars['forum_topic_id']			= ( ! isset($_POST['forum_topic_id'])) ? '' : $_POST['forum_topic_id'];		
 			
@@ -1635,23 +1635,7 @@ class Content_publish extends Controller {
 
 		if (count($layout_info) > 0)
 		{
-//print_r($layout_info);
-
-			/*
-			if ($this->config->item('site_pages') === FALSE)
-			{
-				unset($layout_info['pages']);
-			}
-			
-			if ($this->config->item('forum_is_installed') != "y")
-			{
-				unset($layout_info['forum']);
-			}
-			*/
-			
 			$vars['publish_tabs'] = $layout_info; // Custom Layout construction
-
-			// print_r($vars['publish_tabs']);
 			
 			foreach($vars['publish_tabs'] as $val)
 			{
@@ -1788,10 +1772,7 @@ class Content_publish extends Controller {
 			}
 
 			// Options tab
-			if ($which != 'new')
-			{
-				$vars['publish_tabs']['options']['new_channel'] = $field_display;
-			}
+			$vars['publish_tabs']['options']['new_channel'] = $field_display;
 
 			$vars['publish_tabs']['options']['status'] = $field_display;
 
@@ -1965,7 +1946,7 @@ class Content_publish extends Controller {
 			{
 				$vars['field_output'][$field] = $opts;
 			}
-//print_r($vars['field_output']);			
+			
 			$this->javascript->compile();
 			$this->load->view('content/publish', $vars);
 		}
@@ -2014,7 +1995,7 @@ class Content_publish extends Controller {
 			{
 				$vars['field_output'][$field] = $opts;
 			}
-//print_r($vars['field_output']);
+
 			// Entry submission will return false if no channel id is provided, and
 			// in that event, just reload the publish page
 			if (($err = $this->_submit_new_entry()) !== TRUE)
@@ -2207,7 +2188,7 @@ class Content_publish extends Controller {
 		}
 	}
 
-	function _build_channel_vars($which, $status_group, $cat_group, $field_group, $assigned_channels, $channel_id)
+	function _build_channel_vars($which, $status_group, $cat_group, $field_group, $assigned_channels, $channel_id, $channel_title)
 	{
 		$this->load->model('channel_model');
 
@@ -2238,6 +2219,11 @@ class Content_publish extends Controller {
 					}
 				}
 			}
+		}
+		else
+		{
+			$vars['menu_channel_selected'] =  $channel_id;
+			$vars['menu_channel_options'][$channel_id] = form_prep($channel_title);
 		}
 
 		return $vars;
@@ -2972,9 +2958,7 @@ class Content_publish extends Controller {
 	function _define_options_fields($vars, $which)
 	{
 		//options
-		if ($which != 'new')
-		{
-			$this->field_definitions['new_channel'] = array(
+		$this->field_definitions['new_channel'] = array(
 				'string_override'		=> form_dropdown('new_channel', $vars['menu_channel_options'], $vars['menu_channel_selected']),
 				'field_id'				=> 'new_channel',
 				'field_label'			=> $this->lang->line('channel'),
@@ -2988,10 +2972,10 @@ class Content_publish extends Controller {
 				'field_show_fmt'		=> 'n',
 				'selected'				=> $vars['menu_channel_selected'],
 				'options'				=> $vars['menu_channel_options']
-			);
-		}
+		);
 
 		$this->field_definitions['status'] = array(
+		
 			'string_override'		=> form_dropdown('status', $vars['menu_status_options'], $vars['menu_status_selected']),
 			'field_id'				=> 'status',
 			'field_label'			=> $this->lang->line('status'),

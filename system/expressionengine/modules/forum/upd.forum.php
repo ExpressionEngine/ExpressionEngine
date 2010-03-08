@@ -34,6 +34,39 @@ class Forum_upd {
 		$this->EE =& get_instance(); 
 	}
 	
+
+	function tabs()
+	{
+		$tabs['forum'] = array(
+			'forum_title'	=> array(
+								'visible'		=> 'true',
+								'collapse'		=> 'false',
+								'htmlbuttons'	=> 'true',
+								'width'			=> '100%'
+								),
+			'forum_body'	=> array(
+								'visible'		=> 'true',
+								'collapse'		=> 'false',
+								'htmlbuttons'	=> 'true',
+								'width'			=> '100%'
+								),
+			'forum_id'	=> array(
+								'visible'		=> 'true',
+								'collapse'		=> 'false',
+								'htmlbuttons'	=> 'true',
+								'width'			=> '100%'
+								),								
+			'forum_topic_id'	=> array(
+								'visible'		=> 'true',
+								'collapse'		=> 'false',
+								'htmlbuttons'	=> 'true',
+								'width'			=> '100%'
+								)
+				);	
+				
+		return $tabs;	
+	}
+
 	/** ---------------------------------
 	/**  Store Trigger Word
 	/** ---------------------------------*/
@@ -449,6 +482,9 @@ class Forum_upd {
 			$this->EE->config->set_item('forum_is_installed', 'y');			
 		}
 		
+		$this->EE->load->library('layout');
+		$this->EE->layout->add_layout_tabs($this->tabs());
+
 		return TRUE;
 	}
 
@@ -501,6 +537,8 @@ class Forum_upd {
 		
 		$this->EE->config->_update_config(array(), array('forum_is_installed' => '', 'forum_trigger' => ''));
 
+		$this->EE->load->library('layout');
+		$this->EE->layout->delete_layout_tabs($this->tabs());
 
 		return TRUE;
 	}

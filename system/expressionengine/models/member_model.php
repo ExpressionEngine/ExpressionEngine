@@ -1320,12 +1320,12 @@ class Member_model extends CI_Model {
 			$channel_id = array($channel_id);
 		}
 
-		$layout_data = $this->db->get('layout_publish');
-		
-		if (! empty($channel_id))
+		if ( ! empty($channel_id))
 		{
 			$this->db->where_in("channel_id", $channel_id);	
 		}
+
+		$layout_data = $this->db->get('layout_publish');
 
 		if ($layout_data->num_rows() > 0)
 		{

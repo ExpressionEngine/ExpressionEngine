@@ -123,7 +123,7 @@ class Layout {
 	{
 		$this->EE->load->model('member_model');
 		
-		$layouts = $this->EE->member_model->get_all_group_layouts($dupe_id);
+		$layouts = $this->EE->member_model->get_all_group_layouts(array($dupe_id));
 		
 		if (empty($layouts))
 		{
@@ -135,12 +135,12 @@ class Layout {
 		{
 			$layout['field_layout'];
 			
-			$this->db->set("site_id", $layout['site_id']);
-			$this->db->set("channel_id", $channel_id);
-			$this->db->set("field_layout", $layout['field_layout']);
-			$this->db->set("member_group", $layout['member_group']);
+			$this->EE->db->set("site_id", $layout['site_id']);
+			$this->EE->db->set("channel_id", $channel_id);
+			$this->EE->db->set("field_layout", $layout['field_layout']);
+			$this->EE->db->set("member_group", $layout['member_group']);
 
-			$this->db->insert('layout_publish');
+			$this->EE->db->insert('layout_publish');
 		}			
 	}
 	

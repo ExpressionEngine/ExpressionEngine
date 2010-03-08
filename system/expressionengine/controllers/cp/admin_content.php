@@ -510,12 +510,14 @@ class Admin_content extends Controller {
 
 		$return = ($this->input->get_post('return')) ? TRUE : FALSE;
 		unset($_POST['return']);
-
+		$edit_group_prefs = TRUE;
+		
 		if ($this->input->get_post('edit_group_prefs') !== 'y')
 		{
 			unset($_POST['cat_group']);
 			unset($_POST['status_group']);
 			unset($_POST['field_group']);
+			$edit_group_prefs = FALSE;
 		}
 
 		unset($_POST['edit_group_prefs']);
@@ -731,8 +733,11 @@ class Admin_content extends Controller {
 			$insert_id = $this->db->insert_id();
 			$channel_id = $insert_id;
 			
-			// Duplicate layouts
-			$this->layout->duplicate_layout($dupe_id, $channel_id);
+			if ($dupe_id !== FALSE AND is_numeric($dupe_id) && $edit_group_prefs == FALSE)
+			{
+				// Duplicate layouts
+				$this->layout->duplicate_layout($dupe_id, $channel_id);
+			}
 
 			$success_msg = $this->lang->line('channel_created');
 
