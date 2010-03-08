@@ -22,7 +22,7 @@ if ($EE_view_disable !== TRUE)
 		<?php if ($show_template_manager !== FALSE):?>
 
 			<?=form_open('C=design'.AMP.'M=update_manager_prefs')?>
-
+			<fieldset>
 			<table style="width:100%; text-align:left;">
 				<thead>
 					<tr>
@@ -49,7 +49,7 @@ if ($EE_view_disable !== TRUE)
 					</tr>
 				</tbody>
 			</table>
-			
+			</fieldset>
 
 			<?php
 				$this->table->set_template($cp_pad_table_template);
@@ -73,7 +73,9 @@ if ($EE_view_disable !== TRUE)
 			?>
 
 			<?php if ($this->session->userdata['group_id'] == 1):?>
-				<p class="notice"><?=str_replace('%s', $this->config->item('doc_url').'templates/php_templates.html', lang('security_warning'))?></p>
+				<p class="notice"><?=str_replace('%s', $this->cp->masked_url(
+					$this->config->item('doc_url').'templates/php_templates.html'), 
+					lang('security_warning'))?></p>
 			<?php endif;?>
 
 			<h3><?=lang('template_access')?></h3>
@@ -84,14 +86,13 @@ if ($EE_view_disable !== TRUE)
 				$this->table->set_heading(array(lang('member_group'), lang('can_view_template')));
 				echo $this->table->generate($template_access);
 			?>
+			<fieldset>
+				<h3><?=lang('no_access_select_blurb')?></h3>
 
-			<h3><?=lang('no_access_select_blurb')?></h3>
-			<p></p>
+				<p><?=lang('no_access_instructions', 'no_auth_bounce').NBS.NBS.NBS.NBS.form_dropdown('no_auth_bounce', $no_auth_bounce_options, 'null', 'id="no_auth_bounce"')?></p>
 
-			<p><?=lang('no_access_instructions', 'no_auth_bounce').NBS.NBS.NBS.NBS.form_dropdown('no_auth_bounce', $no_auth_bounce_options, 'null', 'id="no_auth_bounce"')?></p>
-
-			<p><?=lang('enable_http_authentication', 'enable_http_auth').NBS.NBS.NBS.NBS.form_dropdown('enable_http_auth', $enable_http_auth_options, 'null', 'id="enable_http_auth"')?></p>
-
+				<p><?=lang('enable_http_authentication', 'enable_http_auth').NBS.NBS.NBS.NBS.form_dropdown('enable_http_auth', $enable_http_auth_options, 'null', 'id="enable_http_auth"')?></p>
+			</fieldset>
 			<p><?=form_submit('template_preferences_manager', lang('update'), 'class="submit"')?></p>
 
 			<?=form_close()?>
