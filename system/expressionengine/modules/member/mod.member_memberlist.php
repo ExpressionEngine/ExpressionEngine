@@ -464,16 +464,20 @@ class Member_memberlist extends Member {
 
 		$path = '';
 
-		if (preg_match('/^([0-9]+)-([0-9a-z\_]+)-([0-9a-z]+)-([0-9]+)-([0-9]+)$/i', $this->cur_id, $match))
+		if (preg_match('/^([0-9]+)-([0-9a-z\_]+)-([0-9a-z]+)-([0-9]+)$/i', $this->cur_id, $match))
 		{
 			$group_id	= $match[1];
 			$order_by 	= $match[2];
 			$sort_order	= $match[3];
 			$row_limit	= $match[4];
-			$row_count	= $match[5];
+			
+			// Which segment is this?  We need the NEXT segment to pass to pagination
+			$pag_uri_segment = array_search($this->cur_id, $this->EE->uri->segment_array()) + 1;
+
+			$row_count = ($this->uri_extra != '') ? $this->uri_extra : 0;
 		}
 
-		$path = '/'.$group_id.'-'.$order_by.'-'.$sort_order.'-'.$row_limit.'-';
+		$path = '/'.$group_id.'-'.$order_by.'-'.$sort_order.'-'.$row_limit;
 
 		/** ----------------------------------------
 		/**  Build the query
@@ -507,8 +511,6 @@ class Member_memberlist extends Member {
 		if (isset($search_id))
 		{
 			$sql .= $this->fetch_search($search_id);
-
-			//echo $this->search_keywords.' => '.$this->search_fields;
 		}
 
 		/** -------------------------------------
@@ -564,40 +566,36 @@ class Member_memberlist extends Member {
 
 		if ($query->row('count')  > $row_limit)
 		{ 
-			if ( ! class_exists('Paginate'))
-			{
-				require APPPATH.'_to_be_replaced/lib.paginate'.EXT;
-			}
+			$this->EE->load->library('pagination');
 
-			$PGR = new Paginate();
-
-			$PGR->first_url 	= $this->_member_path('memberlist'.$search_path);
-			$PGR->path			= $this->_member_path('memberlist'.$search_path.$path, '');
-			$PGR->suffix		= ($first_letter != '') ? $first_letter.'/' : '';
-			$PGR->total_count 	= $query->row('count') ;
-			$PGR->per_page		= $row_limit;
-			$PGR->cur_page		= $row_count;
-			$PRG->first_page	= $this->EE->lang->line('first');
-			$PRG->last_page		= $this->EE->lang->line('last');
+			$config['base_url'] = $this->_member_path('memberlist'.$search_path.$path, '');
+			$config['total_rows'] = $query->row('count');
+			$config['per_page'] = $row_limit;
+			$config['first_link'] = $this->EE->lang->line('first');
+			$config['last_link'] = $this->EE->lang->line('last');
+			$config['uri_segment'] = $pag_uri_segment;
 
 			if (preg_match("/".LD.'pagination_links'.RD."/", $template))
 			{
-				$PGR->first_div_o	= '<td><div class="paginate">';
-				$PGR->first_div_c	= '</div></td>';
-				$PGR->next_div_o	= '<td><div class="paginate">';
-				$PGR->next_div_c	= '</div></td>';
-				$PGR->prev_div_o	= '<td><div class="paginate">';
-				$PGR->prev_div_c	= '</div></td>';
-				$PGR->num_div_o		= '<td><div class="paginate">';
-				$PGR->num_div_c		= '</div></td>';
-				$PGR->cur_div_o		= '<td><div class="paginateCur">';
-				$PGR->cur_div_c		= '</div></td>';
-				$PGR->last_div_o	= '<td><div class="paginate">';
-				$PGR->last_div_c	= '</div></td>';
-			}
+				$config['first_tag_open'] = '<td><div class="paginate">';
+				$config['first_tag_close'] = '</div></td>';
+				$config['last_tag_open'] = '<td><div class="paginate">';
+				$config['last_tag_close'] = '</div></td>';
+				$config['next_tag_open'] = '<td><div class="paginate">';
+				$config['next_tag_close'] = '</div></td>';
+				$config['prev_tag_open'] = '<td><div class="paginate">';
+				$config['prev_tag_close'] = '</div></td>';
+				$config['cur_tag_open'] = '<td><div class="paginateCur">';
+				$config['cur_tag_close'] = '</div></td>';
+				$config['num_tag_open'] = '<td><div class="paginate">';
+				$config['num_tag_close'] = '</div></td>';				
+			}			
+			
+			$this->EE->pagination->initialize($config);
+			
 
-			$pager = $PGR->show_links();
-
+			$pager = $this->EE->pagination->create_links();
+			// var_dump($this->EE->pagination);exit;
 			$sql .= " LIMIT ".$row_count.", ".$row_limit;
 		}
 
@@ -1249,10 +1247,6 @@ class Member_memberlist extends Member {
 
 		return $this->EE->functions->redirect($this->EE->functions->remove_double_slashes($this->_member_path('member_search/'.$hash)));
 	}
-
-
-
-
 }
 // END CLASS
 
