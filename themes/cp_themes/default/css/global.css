@@ -1504,6 +1504,8 @@ if they are all converted, delete this */
   margin-bottom:10px;
 }
 
+select#site_list_pulldown {margin-bottom:10px;}
+
 .menu_list, 
 .member_profile_themes, .wiki_themes {
 	list-style:	none;

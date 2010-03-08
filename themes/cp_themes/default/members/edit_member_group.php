@@ -33,10 +33,8 @@ if ($EE_view_disable !== TRUE)
 			?>
 
 			<?php if ($this->config->item('multiple_sites_enabled') == 'y'):?>
-				<p>
 					<?=form_dropdown('site_list_pulldown', $sites_dropdown, '', 'id="site_list_pulldown"')?>
 					<span id="site_loader" style="display:none;"><img src="<?=PATH_CP_GBL_IMG?>loader.gif" width="16" height="16" style="vertical-align:sub;" /></span>
-				</p>
 			<?php endif;?>
 
 						
@@ -196,10 +194,6 @@ if ($EE_view_disable !== TRUE)
 				endif;
 			?>
 
-
-			</div>
-
-			<div class="tableFooter">
 				<p>
 					<?php if($action == 'submit'):?>
 						<?=form_submit('submit', lang('submit'), 'class="submit"')?>
@@ -207,9 +201,10 @@ if ($EE_view_disable !== TRUE)
 						<?=form_submit('submit', lang('update'), 'class="submit"')?>
 					<?php endif;?>
 				</p>
-			</div>
 			<div class="shun"></div>
 			<?=form_close()?>
+			</div>
+
 
 
 		</div>
