@@ -463,6 +463,7 @@ class Member_memberlist extends Member {
 		/** ----------------------------------------*/
 
 		$path = '';
+		$pag_uri_segment = 0;
 
 		if (preg_match('/^([0-9]+)-([0-9a-z\_]+)-([0-9a-z]+)-([0-9]+)$/i', $this->cur_id, $match))
 		{
