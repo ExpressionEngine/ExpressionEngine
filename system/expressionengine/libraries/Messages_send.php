@@ -168,7 +168,7 @@ class EE_Messages_send extends EE_Messages {
 		/**  Insert into Database
 		/** -------------------------------------*/
 		
-		$this->temp_message_id = $this->EE->functions->random('nozero', 10);
+		$this->temp_message_id = $this->EE->functions->random('nozero', 9);
 		
 	  	$data = array(
 	  					'sender_id'				=> $this->member_id,
