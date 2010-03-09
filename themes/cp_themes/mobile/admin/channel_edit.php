@@ -214,10 +214,14 @@ if ($EE_view_disable !== TRUE)
 			</ul>
 			
 			<div class="label">
-				<?=lang('comment_notify_emails', 'comment_notify_emails')?>
+				<?=lang('comment_notify_author', 'comment_notify_author')?>
 			</div>
 			<ul class="rounded">
-				<li><?=form_input(array('id'=>'comment_notify_emails','name'=>'comment_notify_emails','class'=>'fullfield', 'value'=>$comment_notify_emails))?></li>
+				<?php
+				$controls = lang('yes', 'comment_notify_author_y').NBS.form_radio(array('name'=>'comment_notify_author', 'id'=>'comment_notify_author_y', 'value'=>'y', 'checked'=>($comment_notify_author == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
+				$controls .= lang('no', 'comment_notify_author_n').NBS.form_radio(array('name'=>'comment_notify_author', 'id'=>'comment_notify_author_n', 'value'=>'n', 'checked'=>($comment_notify_author == 'n') ? TRUE : FALSE));			
+				?>
+				<li><?=$controls?></li>
 			</ul>
 			<?php endif; ?>
 		</div>

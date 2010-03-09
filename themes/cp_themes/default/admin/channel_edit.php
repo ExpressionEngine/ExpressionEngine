@@ -189,6 +189,11 @@ if ($EE_view_disable !== TRUE)
 					
 						$preference = lang('comment_notify_emails', 'comment_notify_emails');
 						$controls = form_input(array('id'=>'comment_notify_emails','name'=>'comment_notify_emails','class'=>'fullfield', 'value'=>$comment_notify_emails));
+						$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+						
+						$preference = lang('comment_notify_authors', 'comment_notify_authors');
+						$controls = lang('yes', 'comment_notify_authors_y').NBS.form_radio(array('name'=>'comment_notify_authors', 'id'=>'comment_notify_authors_y', 'value'=>'y', 'checked'=>($comment_notify_authors == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
+						$controls .= lang('no', 'comment_notify_authors_n').NBS.form_radio(array('name'=>'comment_notify_authors', 'id'=>'comment_notify_authors_n', 'value'=>'n', 'checked'=>($comment_notify_authors == 'n') ? TRUE : FALSE));
 						$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));						
 					}
 					
