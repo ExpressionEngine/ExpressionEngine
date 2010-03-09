@@ -1015,6 +1015,23 @@ class Content_edit extends Controller {
 		}
 
 
+		// load the site's templates
+		$templates = array();
+
+		$tquery = $this->db->query("SELECT exp_template_groups.group_name, exp_templates.template_name, exp_templates.template_id
+							FROM exp_template_groups, exp_templates
+							WHERE exp_template_groups.group_id = exp_templates.group_id
+							AND exp_templates.site_id = '".$this->db->escape_str($this->config->item('site_id'))."'");
+
+		if ($tquery->num_rows() > 0)
+		{
+			foreach ($tquery->result_array() as $row)
+			{
+				$templates[$row['template_id']] = $row['group_name'].'/'.$row['template_name'];
+			}
+		}
+
+
 		$j_response['sEcho'] = $sEcho;
 		$j_response['iTotalRecords'] = $f_total;  // note- duping the f_total here- should be true total
 		$j_response['iTotalDisplayRecords'] = $f_total;
