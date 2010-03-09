@@ -324,9 +324,12 @@ class Addons_installer {
 			$this->EE->load->dbforge();
 			
 			// Drop columns
-			$this->EE->db->select('field_id', 'channel_id');
-			$query = $this->EE->db->get_where('channel_fields', array('field_type' => $fieldtype));
-			
+			$this->EE->db->select('channel_fields.field_id, channels.channel_id');
+			$this->EE->db->from('channel_fields');
+			$this->EE->db->join('channels', 'channels.field_group = channel_fields.group_id');
+			$this->EE->db->where('channel_fields.field_type', $fieldtype);
+			$query = $this->EE->db->get();
+
 			$ids = array();
 			$channel_ids = array();
 			
@@ -338,6 +341,8 @@ class Addons_installer {
 					$channel_ids[] = $row->channel_id;
 				}
 			}
+			
+			$ids = array_unique($ids);
 
 			if (count($ids))
 			{
