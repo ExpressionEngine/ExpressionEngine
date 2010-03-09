@@ -2,15 +2,15 @@ Welcome to the ExpressionEngine Discussion Forum Module
 
 
 Forum installation instructions can be found online by visiting this page:
-http://expressionengine.com/docs/modules/forum/forum_installation.html
+http://expressionengine.com/public_beta/docs/modules/forum/forum_installation.html
 
 
 If you are upgrading from an older version please follow these instructions:
-http://expressionengine.com/docs/modules/forum/forum_update.html
+http://expressionengine.com/public_beta/docs/modules/forum/forum_update.html
 
 
 The forum documentation can be found here:
-http://expressionengine.com/docs/modules/forum/index.html
+http://expressionengine.com/public_beta/docs/modules/forum/index.html
 
 
 Enjoy...
