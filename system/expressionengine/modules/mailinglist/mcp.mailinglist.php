@@ -248,7 +248,7 @@ EOF;
 		$vars['cp_page_title'] = $this->EE->lang->line('mailinglist_template');
 		$vars['form_hidden']['list_id'] = $list_id;
 		$vars['list_title'] = $list->row('list_title');
-		$vars['template_data'] = form_prep($list->row('list_template'));
+		$vars['template_data'] = $list->row('list_template');
 
 		return $this->EE->load->view('edit_template', $vars, TRUE);
 	}
