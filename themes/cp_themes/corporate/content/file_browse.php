@@ -63,7 +63,7 @@ if ($EE_view_disable !== TRUE)
 					</div>
 
 					<p><?=form_submit('upload', lang('upload'), 'class="submit"')?></p>
-					<p id="progress"><img src="<?=$cp_theme_url?>/images/indicator_DDE2E5.gif" alt="<?=lang('loading')?>..." /><br /><?=lang('loading')?>...</p>
+					<p id="progress"><img src="<?=$cp_theme_url?>/images/indicator.gif" alt="<?=lang('loading')?>..." /><br /><?=lang('loading')?>...</p>
 
 					<?=form_close()?>
 

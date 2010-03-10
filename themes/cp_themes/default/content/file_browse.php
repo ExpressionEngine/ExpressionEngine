@@ -66,7 +66,7 @@ if ($EE_view_disable !== TRUE)
 
 					<p class="custom_field_add"><button class="submit submit_alt"><img src="<?=$cp_theme_url?>images/upload_item.png" width="12" height="14" alt="<?=lang('upload')?>" />&nbsp;&nbsp;<?=lang('upload')?></button></p>
 
-					<p id="progress"><img src="<?=$cp_theme_url?>/images/indicator_DDE2E5.gif" alt="<?=lang('loading')?>..." /><br /><?=lang('loading')?>...</p>
+					<p id="progress"><img src="<?=$cp_theme_url?>/images/indicator.gif" alt="<?=lang('loading')?>..." /><br /><?=lang('loading')?>...</p>
 
 					<?=form_close()?>
 
