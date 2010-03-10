@@ -260,7 +260,7 @@ class EE_Accessories {
 		
 		if (strncmp($path, PATH_THIRD, strlen(PATH_THIRD)) == 0)
 		{
-			$this->EE->load->add_package_path(PATH_THIRD.strtolower($class).'/');
+			$this->EE->load->add_package_path(PATH_THIRD.strtolower($name).'/');
 		}
 		
 		return $class;
