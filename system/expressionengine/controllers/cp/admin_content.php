@@ -6115,7 +6115,7 @@ class Admin_content extends Controller {
 
 		foreach ($_POST as $key => $val)
 		{
-			if (strstr($key, 'server_name_') AND $val != '')
+			if (strncmp($key, 'server_name_', 12) == 0 && $val != '')
 			{
 				$n = substr($key, 12);
 
@@ -6270,7 +6270,7 @@ class Admin_content extends Controller {
 			$data = array();
 			foreach ($_POST as $key => $val)
 			{
-				if (strstr($key, 'tag_name_') AND $val != '')
+				if (strncmp($key, 'tag_name_', 9) == 0 && $val != '')
 				{
 					$n = substr($key, 9);
 

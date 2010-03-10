@@ -649,7 +649,7 @@ EOT;
 			{
 				foreach ($_POST as $key => $val)
 				{
-					if (strstr($key, 'category') AND is_array($val))
+					if (strpos($key, 'category') AND is_array($val))
 					{
 						$i =0;
 						foreach ($val as $v)
@@ -831,11 +831,9 @@ EOT;
 
 				foreach($_POST as $key => $val)
 				{
-					if (strstr($key, 'field_id'))
+					if (strncmp($key, 'field_id', 8) == 0)
 					{
-						
-// do pair variables
-
+						// do pair variables
 						if (isset($pfield_chunk[$key]))
 						{
 							
@@ -1982,7 +1980,7 @@ EOT;
 
 			foreach ($_POST as $key => $val)
 			{
-				if (strstr($key, 'category') AND is_array($val))
+				if (strpos($key, 'category') AND is_array($val))
 				{
 						foreach ($val as $k => $v)
 						{
@@ -2076,7 +2074,7 @@ EOT;
 
 			foreach ($_POST as $key => $val)
 			{
-				if (strstr($key, 'category') AND is_array($val))
+				if (strpos($key, 'category') AND is_array($val))
 				{
 						foreach ($val as $k => $v)
 						{
@@ -2169,7 +2167,7 @@ EOT;
 				$selected = '';
 				foreach ($_POST as $key => $val)
 				{
-					if (strstr($key, 'ping') AND $val == $row['id'])
+					if (strpos($key, 'ping') AND $val == $row['id'])
 					{
 						$selected = " checked='checked' ";
 						break;

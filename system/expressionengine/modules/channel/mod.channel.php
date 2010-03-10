@@ -1340,7 +1340,7 @@ class Channel {
 				/** --------------------------------------*/
 				if (($cat_id == '' AND $year == '') OR $this->EE->TMPL->fetch_param('require_entry') == 'yes')
 				{
-					if (strstr($qstring, '/'))
+					if (strpos($qstring, '/'))
 					{
 						$xe = explode('/', $qstring);
 						$qstring = current($xe);
@@ -7220,7 +7220,7 @@ class Channel {
 		/**  Make sure to only get one segment
 		/** --------------------------------------*/
 
-		if (strstr($qstring, '/'))
+		if (strpos($qstring, '/'))
 		{
 			$qstring = substr($qstring, 0, strpos($qstring, '/'));
 		}

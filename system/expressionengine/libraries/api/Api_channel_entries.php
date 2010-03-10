@@ -1672,15 +1672,15 @@ class Api_channel_entries extends Api {
 
 		foreach($data as $key => $val)
 		{
-			if (strstr($key, 'field_offset_'))
+			if (strncmp($str, 'field_offset_', 13) == 0)
 			{
 				unset($data[$key]);
 				continue;
 			}
 
-			if (strstr($key, 'field'))
+			if (strncmp($str, 'field', 5) == 0) 
 			{
-				if (strstr($key, 'field_id_') AND ! is_numeric($val))
+				if (strncmp($str, 'field_id_', 9) == 0 && ! is_numeric($val))
 				{
 					$cust_fields[$key] = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($val) : $val;
 				}
@@ -1791,15 +1791,15 @@ class Api_channel_entries extends Api {
 		$cust_fields = array('channel_id' =>  $this->channel_id);
 		foreach ($data as $key => $val)
 		{
-			if (strstr($key, 'field_offset_'))
+			if (strncmp($str, 'field_offset_', 13) == 0)
 			{
 				unset($data[$key]);
 				continue;
 			}
 
-			if (strstr($key, 'field'))
+			if (strncmp($str, 'field', 5) == 0) 
 			{
-				if (strstr($key, 'field_id_') AND ! is_numeric($val))
+				if (strncmp($str, 'field_id_', 9) == 0 && ! is_numeric($val))
 				{
 					$cust_fields[$key] = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($val) : $val;
 				}
