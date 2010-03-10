@@ -443,10 +443,19 @@ class Channel_model extends CI_Model {
 	 * @param	int		comment expiration
 	 * @return	int		affected rows
 	 */
-	function update_comment_expiration($channel_id, $comment_expiration)
+	function update_comment_expiration($channel_id, $comment_expiration, $reset_to_zero = FALSE)
 	{
 		$this->db->where('channel_id', $channel_id);
-		$this->db->set('comment_expiration_date', "(`entry_date` + {$comment_expiration})", FALSE);
+		
+		if ($reset_to_zero)
+		{
+			$this->db->set('comment_expiration_date', 0);
+		}
+		else
+		{
+			$this->db->set('comment_expiration_date', "(`entry_date` + {$comment_expiration})", FALSE);
+		}
+		
 		$this->db->update('channel_titles');
 		return $this->db->affected_rows();
 	}

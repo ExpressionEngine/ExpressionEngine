@@ -598,7 +598,14 @@ class Admin_content extends Controller {
 
 		if (isset($_POST['apply_expiration_to_existing']))
 		{
-			$this->channel_model->update_comment_expiration($_POST['channel_id'], $_POST['comment_expiration'] * 86400);
+			if ($this->input->post('comment_expiration') == 0)
+			{
+				$this->channel_model->update_comment_expiration($_POST['channel_id'], $_POST['comment_expiration'], TRUE);
+			}
+			else
+			{
+				$this->channel_model->update_comment_expiration($_POST['channel_id'], $_POST['comment_expiration'] * 86400);
+			}
 		}
 
 		unset($_POST['apply_expiration_to_existing']);
