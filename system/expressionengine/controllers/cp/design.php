@@ -4156,7 +4156,8 @@ class Design extends Controller {
 			$fields = array(
 						'group_name' => $group_name,
 						'is_site_default' => $is_site_default, 
-						'group_id'	=> $group_id
+						'group_id'	=> $group_id,
+						'site_id'		=> $this->config->item('site_id')
 					  );
 					
 			$this->template_model->update_template_group($group_id, $fields);
