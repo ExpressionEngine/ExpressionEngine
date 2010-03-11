@@ -1340,7 +1340,7 @@ class Design extends Controller {
 		}
 
 		$this->db->from('template_groups tg, templates t');
-		$this->db->select('t.template_id, t.group_id');
+		$this->db->select('t.template_id, t.group_id, tg.group_name');
 		$this->db->where('tg.group_id = t.group_id');
 		$this->db->where('tg.site_id', $this->config->item('site_id'));
 
@@ -1355,6 +1355,14 @@ class Design extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
+		
+		$delete = array();
+		
+		foreach ($query->result_array() as $row)
+		{
+			$delete[$row['template_id']] = $row['group_name'];
+		}
+
 
 		$templates = array();
 
@@ -1431,6 +1439,36 @@ class Design extends Controller {
 
 		if (count($data) > 0)
 		{
+			// If we switched 'save' to no, we need to delete files.
+			$short_name = $this->config->item('site_short_name');
+			
+			if ($_POST['save_template_file'] == 'n')
+			{
+				$this->db->from('templates');
+				$this->db->select('template_name, template_type, template_id');
+				$this->db->where('save_template_file', 'y');
+				$this->db->where_in('template_id', $templates);
+				
+				$query = $this->db->get();
+
+				
+				if ($query->num_rows() > 0)
+				{
+					foreach ($query->result_array() as $row)
+					{
+						$tdata = array(
+								'template_id'		=> $row['template_id'],
+								'site_short_name'	=> $short_name,
+								'template_group'	=> $delete[$row['template_id']],
+								'template_name'		=> $row['template_name'],
+								'template_type'		=> $row['template_type']
+								);
+								
+						$this->_delete_template_file($tdata);
+					}
+				}
+			}
+
 			$this->db->query($this->db->update_string('exp_templates', $data, "template_id IN ('".implode("','", $templates)."')"));
 		}
 
@@ -2053,12 +2091,13 @@ class Design extends Controller {
 					$delete_template_file = TRUE;
 					
 					$tdata = array(
+								'template_id'		=> $template_id,
 								'site_short_name'	=> $this->config->item('site_short_name'),
 								'template_group'	=> $query->row('group_name') ,
 								'template_name'		=> $query->row('template_name'),
 								'template_type'		=> $query->row('template_type')
 								);
-								
+
 					$template_file_result = $this->_delete_template_file($tdata);
 				}
 			}
@@ -2382,7 +2421,7 @@ class Design extends Controller {
 	{
 		if ( ! isset($data['template_id']) OR ! $this->_template_access_privs(array('template_id' => $data['template_id'])))
 		{
-			return FALSE;
+			//return FALSE;
 		}
 
 		$this->load->library('api');
@@ -2392,7 +2431,7 @@ class Design extends Controller {
 
 		$basepath .= $data['site_short_name'].'/'.$data['template_group'].'.group/'.$data['template_name'].$this->api_template_structure->file_extensions($data['template_type']);
 				
-		if ( ! @unlink($path))
+		if ( ! @unlink($basepath))
 		{
 			return FALSE;
 		}
