@@ -844,6 +844,9 @@ $lang = array(
 'choose_only_one_entry' =>
 'You Must Choose Only One Entry',
 
+'add_category' =>
+'Add Category',
+
 'add_categories' =>
 'Add Categories',
 
