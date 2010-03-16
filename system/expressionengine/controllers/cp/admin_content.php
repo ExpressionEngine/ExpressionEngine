@@ -1702,7 +1702,7 @@ class Admin_content extends Controller {
 	 */
 	function category_editor($group_id = '', $update = FALSE)
 	{
-		if ($this->input->get_post('modal') == 'yes')
+		if (AJAX_REQUEST)
 		{
 			$vars['EE_view_disable'] = TRUE;
 			
@@ -1720,11 +1720,11 @@ class Admin_content extends Controller {
 		}		
 		
 		$this->lang->loadfile('admin_content');
-		$this->load->library('table');
 		$this->load->model('category_model');
+		$this->load->library('table');
+		$this->load->library('api');
 		$this->load->helper('form');
 		
-		$this->load->library('api');
 		$this->api->instantiate('channel_categories');
 		
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_management', $this->lang->line('categories'));
@@ -1738,7 +1738,6 @@ class Admin_content extends Controller {
 		}');
 
 		$this->javascript->compile();
-
 
 
 		if ($group_id == '')
@@ -1830,13 +1829,6 @@ class Admin_content extends Controller {
 	 */
 	function category_edit()
 	{
-		$this->load->model('category_model');
-		$this->lang->loadfile('admin_content');
-		$this->load->helper('form');
-		$this->load->helper('string');
-
-		// @confirm: "Z" used for popup windows... don't think we need these anymore. I'm keeping the "Z" logic in here
-		// as I work through this function - needs to be reviewed
 		if ($this->input->get_post('modal') == 'yes')
 		{
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
@@ -1856,8 +1848,6 @@ class Admin_content extends Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->helper('form');
 		$this->load->helper('string');
-
-
 
 
 		$group_id = $this->input->get_post('group_id');
@@ -2845,26 +2835,17 @@ class Admin_content extends Controller {
 	/** --------------------------------------*/
 	function change_category_order()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ($this->input->get_post('Z') == 1)
+		if (AJAX_REQUEST)
 		{
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}
 		}
-		else
+		elseif ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
 		{
-			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-			{
-				show_error($this->lang->line('unauthorized_access'));
-			}		
+			show_error($this->lang->line('unauthorized_access'));
 		}
-
 
 		// Fetch required globals
 
@@ -2878,10 +2859,12 @@ class Admin_content extends Controller {
 			$$val = $_GET[$val];
 		}
 
+		$zurl = '';
+		/*
 		$zurl = ($this->input->get_post('Z') == 1) ? AMP.'Z=1' : '';
 		$zurl .= ($this->input->get_post('cat_group') !== FALSE) ? AMP.'cat_group='.$this->input->get_post('cat_group') : '';
 		$zurl .= ($this->input->get_post('integrated') !== FALSE) ? AMP.'integrated='.$this->input->get_post('integrated') : '';
-
+		*/
 		// Return Location
 		$return = BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$group_id.$zurl;
 
@@ -2896,7 +2879,7 @@ class Admin_content extends Controller {
 
 		$query = $this->db->query("SELECT cat_id FROM exp_categories WHERE group_id = '".$this->db->escape_str($group_id)."' AND parent_id = '".$this->db->escape_str($parent_id)."' ORDER BY cat_order {$dir} LIMIT 1");
 
-		if ($query->row('cat_id')  == $cat_id)
+		if ($query->row('cat_id') == $cat_id)
 		{
 			$this->functions->redirect($return);
 		}
