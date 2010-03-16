@@ -314,6 +314,7 @@ class Updater {
             }
             
             // finally, set the table's charset and collation in MySQL to utf8
+
             $this->EE->db->query("ALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci");
         }
         

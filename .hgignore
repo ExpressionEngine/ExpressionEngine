@@ -4,6 +4,9 @@ syntax:  glob
 Thumbs.db
 system/expressionengine/config/config.php
 system/expressionengine/config/database.php
+system/expressionengine/config/config1x.php
+system/expressionengine/config/config_1x.php
+members_1k.xml
 
 syntax: regexp
 system/expressionengine/cache/(?!index\.html|\.htaccess)

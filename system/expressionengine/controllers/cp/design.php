@@ -2421,7 +2421,7 @@ class Design extends Controller {
 	{
 		if ( ! isset($data['template_id']) OR ! $this->_template_access_privs(array('template_id' => $data['template_id'])))
 		{
-			//return FALSE;
+			return FALSE;
 		}
 
 		$this->load->library('api');
