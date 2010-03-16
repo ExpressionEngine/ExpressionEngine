@@ -136,7 +136,7 @@ class Blogger_api {
 		/**  Instantiate the Server Class
 		/** ---------------------------------*/
 
-		$this->EE->xmlrpcs->initialize(array('functions' => $functions, 'object' => $this));
+		$this->EE->xmlrpcs->initialize(array('functions' => $functions, 'object' => $this, 'xss_clean' => FALSE));
 		$this->EE->xmlrpcs->serve();
 	}
 
