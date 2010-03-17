@@ -414,18 +414,12 @@ class Forum_mcp {
 			return FALSE;
 		}
 		
-		$r = $this->EE->dsp->delete_confirmation(
-										array(
-												'url'		=> 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum'.AMP.'method=delete_board'.AMP.'board_id='.$board_id,
-												'heading'	=> 'delete_board_confirmation',
-												'message'	=> 'delete_board_confirmation_message',
-												'item'		=> $query->row('board_label') ,
-												'extra'		=> '',
-												'hidden'	=> array('board_id' => $board_id)
-											)
-										);	
+		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('delete_board_confirmation'));
 		
-		return $this->content_wrapper($this->EE->lang->line('delete_board_confirmation'), $this->EE->lang->line('delete_board_confirmation'), $r);
+		$vars['form_action'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum'.AMP.'method=delete_board';
+		$vars['hidden'] = array('board_id' => $board_id);
+
+		return $this->EE->load->view('delete_board_confirmation', $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
