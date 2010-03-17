@@ -1332,8 +1332,8 @@ class Search {
 												
 			$url = ($row['search_results_url'] != '') ? $row['search_results_url'] : $row['channel_url'];		
 						
-			$path = $this->EE->functions->remove_double_slashes($this->EE->functions->prep_query_string($url).'/'.$row['url_title'].'/');
-			$idpath = $this->EE->functions->remove_double_slashes($this->EE->functions->prep_query_string($url).'/'.$row['entry_id'].'/');
+			$path = $this->EE->functions->remove_double_slashes($this->EE->functions->prep_query_string($url).'/'.$row['url_title']);
+			$idpath = $this->EE->functions->remove_double_slashes($this->EE->functions->prep_query_string($url).'/'.$row['entry_id']);
 			
 			$switch = ($i++ % 2) ? $switch1 : $switch2;
 			$output = preg_replace("/".LD.'switch'.RD."/", $switch, $output, count(explode(LD.'switch'.RD, $this->EE->TMPL->tagdata)) - 1);

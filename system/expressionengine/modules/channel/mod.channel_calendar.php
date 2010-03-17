@@ -536,7 +536,7 @@ class Channel_calendar extends Channel {
 						if ($key == "comment_url_title_auto_path")
 						{
 							$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
-							$comment_url_title_auto_path = $path.$row['url_title'].'/';
+							$comment_url_title_auto_path = $path.$row['url_title'];
 						}
 
 						/** ----------------------------------------
@@ -545,7 +545,7 @@ class Channel_calendar extends Channel {
 						if ($key == "comment_entry_id_auto_path")
 						{
 							$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
-							$comment_entry_id_auto_path = $path.$row['entry_id'].'/';
+							$comment_entry_id_auto_path = $path.$row['entry_id'];
 						}
 
 						/** ----------------------------------------
