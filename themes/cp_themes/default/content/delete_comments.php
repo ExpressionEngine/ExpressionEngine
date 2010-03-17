@@ -11,20 +11,17 @@ if ($EE_view_disable !== TRUE)
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
-
-			<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
-		    <div id="filterMenu">
 		
-				<?=form_open('C=content_edit'.AMP.'M=delete_comment', '', $hidden)?>
+		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
+		<div class="pageContents">
+			<?=form_open('C=content_edit'.AMP.'M=delete_comment', '', $hidden)?>
 
-				<p class="notice"><?=lang('action_can_not_be_undone')?></p>
+			<p class="notice"><?=lang('action_can_not_be_undone')?></p>
 
-				<p><?=form_submit('delete_comments', lang('delete'), 'class="submit"')?></p>
-	
-				<?=form_close()?>
+			<p><?=form_submit('delete_comments', lang('delete'), 'class="submit"')?></p>
 
-			</div>
-		
+			<?=form_close()?>
+		</div>
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
