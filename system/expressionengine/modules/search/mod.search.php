@@ -1,26 +1,27 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
+ * @license		http://expressionengine.com/docs/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
 
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://expressionengine.com/
------------------------------------------------------
- Copyright (c) 2003 - 2010, EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/docs/license.html
-=====================================================
- File: mod.search.php
------------------------------------------------------
- Purpose: Search class
-=====================================================
-*/
-if ( ! defined('EXT'))
-{
-	exit('Invalid file request');
-}
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Search Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Modules
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
 
 
 class Search {
@@ -414,13 +415,13 @@ class Search {
 			{
 				$sql = "SELECT member_id FROM exp_members WHERE screen_name ";
 				
-				if ($this->input->post('exact_match') == 'y')
+				if ($this->EE->input->post('exact_match') == 'y')
 				{
-					$sql .= " = '".$this->EE->db->escape_str($this->input->post('member_name'))."' ";
+					$sql .= " = '".$this->EE->db->escape_str($this->EE->input->post('member_name'))."' ";
 				}
 				else
 				{
-					$sql .= " LIKE '%".$this->EE->db->escape_like_str($this->input->post('member_name'))."%' ";
+					$sql .= " LIKE '%".$this->EE->db->escape_like_str($this->EE->input->post('member_name'))."%' ";
 				}
 				
 				$query = $this->EE->db->query($sql);
