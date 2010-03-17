@@ -47,6 +47,7 @@ $lang = array(
 'description'					=>		'Description',
 'version'						=>		'Version',
 'status'						=>		'Status',
+'fieldtype'						=>		'Fieldtype',
 
 'edit_accessory_preferences'	=>		'Edit Accessory Preferences',
 'member_group_assignment'		=>		'Assigned Member Groups',
