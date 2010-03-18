@@ -10,9 +10,13 @@ EE.publish = EE.publish || {};
 // are needed. So for example EE.publish.category_editor() is called after
 // the category menu is constructed.
 
+
 EE.publish.category_editor = function() {
 	var cat_groups = [],
+		cat_modal = $('<div />'),
+		cat_modal_container = $('<div id="cat_modal_container" />').appendTo(cat_modal),
 		cat_groups_containers = {},
+		cat_groups_buttons = {},
 		cat_list_url = EE.BASE+'&C=admin_content&M=category_editor&group_id=',
 		refresh_cats, setup_page, reload, i;
 
@@ -20,6 +24,13 @@ EE.publish.category_editor = function() {
 	function now() {
 		return +new Date();
 	}
+	
+	cat_modal.dialog({
+		autoOpen: false,
+		height: 450,
+		width: 600,
+		modal: true
+	});
 
 	// Grab all group ids
 	$(".edit_categories_link").each(function() {
@@ -31,81 +42,153 @@ EE.publish.category_editor = function() {
 	for (i = 0; i < cat_groups.length; i++) {
 		cat_groups_containers[cat_groups[i]] = $("#cat_group_container_"+[cat_groups[i]]);
 		cat_groups_containers[cat_groups[i]].data("gid", cat_groups[i]);
+		cat_groups_buttons[cat_groups[i]] = $("#cat_group_container_"+[cat_groups[i]]).find(".cat_action_buttons").remove();
 	}
 	
 	refresh_cats = function(gid) {
-		cat_groups_containers[gid].text("loading...").load(cat_list_url+gid+"&timestamp="+now()+" .pageContents", function(res) {
-			setup_page(res, false);
+		cat_groups_containers[gid].text("loading...").load(cat_list_url+gid+"&timestamp="+now()+" .pageContents table", function() {
+			setup_page.call(cat_groups_containers[gid], cat_groups_containers[gid].html(), false);
 		});
 	};
 
 	// A function to setup new page events
 	setup_page = function(response, require_valid_response) {
-		if (response[0] !== '<' && require_valid_response) {
-			return refresh_cats( $(this).closest(".cat_group_container").data("gid") );
+		
+		var container = $(this),
+			gid = container.data("gid");
+		
+		response = $.trim(response);
+		
+		if (container.hasClass('edit_categories_link')) {
+			container = $("#cat_group_container_"+gid);
 		}
 		
-		var container = $(this);
-	
-		container.parent().find("#refresh_categories").show();
-		container.find("form").submit(function() {
-			var that = $(this),
-				values = that.serialize(),
-				url = that.attr("action");
+		if (response[0] !== '<' && require_valid_response) {
+			return refresh_cats(gid);
+		}
+		
+		container.closest(".cat_group_container").find("#refresh_categories").show();
+		
+		var res = $(response),
+			form = res.find("form"),
+			submit_button,
+			container_form;
+		
+		if (form.length) {
+			cat_modal_container.html(res);
+			
+			submit_button = cat_modal_container.find("input[type=submit]");
+			container_form = cat_modal_container.find("form");
+			
+			var handle_submit = function(form) {
+				var that = form || $(this),
+					values = that.serialize(),
+					url = that.attr("action");
 
-			$.ajax({
-				url: url,
-				type: "POST",
-				data: values,
-				dataType: "html",
-				beforeSend: function() {
-					container.html("loading...");
-				},
-				success: function(res) {
-					// A bit hacky, but it works - trigger our live event
-					container.html($(res).find(".pageContents"));
-					setup_page.call(container);
-				}
+				$.ajax({
+					url: url,
+					type: "POST",
+					data: values,
+					dataType: "html",
+					beforeSend: function() {
+						container.html("loading...");
+					},
+					success: function(res) {
+						res = $.trim(res);
+						cat_modal.dialog("close");
+						
+						if (res[0] == '<') {
+							var response = $(res).find(".pageContents table"),
+								form = response.find("form");
+
+							if (form.length == 0) {
+								container.html(response);
+							}
+
+							setup_page.call(container, response, true);
+						}
+						else {
+							setup_page.call(container, res, true);
+						}
+					}
+				});
+				
+				return false;
+			};
+			
+			container_form.submit(handle_submit);
+			
+			var buttons = {};
+			buttons[submit_button.remove().attr('value')] = function() {
+				handle_submit(container_form);
+			}
+			
+			cat_modal.dialog("open");
+			cat_modal.dialog("option", "buttons", buttons);
+			
+			cat_modal.one('dialogclose', function() {
+				refresh_cats(gid);
 			});
-
-			return false;
-		});
+		}
+		else {
+			cat_groups_buttons[gid].clone().appendTo(container).show();
+		}
 		
 		return false;
 	};
 
 	// And a function to do the work
 	reload = function() {
-		var gid = $(this).data("gid");
+		
+		var gid = $(this).data("gid"),
+			resp_filter = ".pageContents";
+		
+		if ($(this).hasClass("edit_cat_order_trigger") || $(this).hasClass("edit_categories_link")) {
+			resp_filter += " table";
+		}
 
 		if ( ! gid) {
 			gid = $(this).closest(".cat_group_container").data("gid");
 		}
+		
+		cat_groups_containers[gid].text("loading...");
+		
+		$.get(this.href+"&timestamp="+now()+resp_filter, function(response) {
+			var res,
+				filtered_res = '';
+			
+			response = $.trim(response);
+			
+			if (response[0] == '<') {
+				res = $(response).find(resp_filter);
+				filtered_res = $('<div />').append(res).html();
+								
+				if (res.find('form').length == 0) {
+					cat_groups_containers[gid].html(filtered_res);
+				}
+			}
 
-		cat_groups_containers[gid].text("loading...").load(this.href+"&modal=yes&timestamp="+now()+" .pageContents", setup_page);
+			setup_page.call(cat_groups_containers[gid], filtered_res, true);
+		});
 		return false;
 	};
 
 	// Hijack edit category links to get it off the ground
 	$(".edit_categories_link").click(reload);
 	
-
-	// Bind the live events for internal links
-	$.each(cat_groups_containers, function() {
-		this.find("a").live("click", reload);
-	});
-
+	// Hijack internal links
+	$('.cat_group_container a:not(.cats_done)').live('click', reload);
 
 	// Last but not least - update the checkboxes
-	$("a#refresh_categories", "#sub_hold_field_category").live("click", function() {
-		var that = $(this).hide().nextAll("div");
-		that.text("loading...").load(EE.BASE+"&C=content_publish&M=ajax_update_cat_fields&group_id="+that.data("gid")+"&timestamp="+now());
+	$(".cats_done").live("click", function() {
+		var that = $(this).closest(".cat_group_container");
+		that.text("loading...").load(EE.BASE+"&C=content_publish&M=ajax_update_cat_fields&group_id="+that.data("gid")+"&timestamp="+now(), function(response) {
+			that.html( $(response).html() );
+		});
+				
 		return false;
 	});
 };
-
-
-
 
 
 EE.publish.save_layout = function() {
@@ -324,7 +407,6 @@ $(document).ready(function() {
 	});
 
 	$("#write_mode_header .reveal_formatting_buttons").hide();
-	$("#write_mode_writer").corner("15px");
 	$("#holder").corner("bottom-left");
 
 

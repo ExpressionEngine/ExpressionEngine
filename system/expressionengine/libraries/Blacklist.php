@@ -235,7 +235,7 @@ class EE_Blacklist {
 				
 				foreach($blacklist_values as $bad_ip)
 				{
-					if ($bad_ip != '' && stristr($this->EE->input->ip_address(), $bad_ip) !== false)
+					if ($bad_ip != '' && strpos($this->EE->input->ip_address(), $bad_ip) === 0) 
 					{
 						$bad = 'y';
 						

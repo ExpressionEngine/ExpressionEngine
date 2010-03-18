@@ -1,44 +1,57 @@
+/*jslint browser: true, devel: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true */
+/*global $, jQuery, EE */
+
+"use strict";
+
 // Some of the ui widgets are slow to set up (looking at you, sortable) and we
-// don\'t really need these until the sidebar is shown so to save on yet more
-// things happening on document.ready we'll bind them when they mouse over the sidebar link
+// don't really need these until the sidebar is shown so to save on yet more
+// things happening on document.ready we'll init them when they click on the sidebar link
 
 $("a", "#showToolbarLink").one("click", function() {
+	
 	// set up resizing of publish fields
-	$(".publish_field").resizable({handles: "e", minHeight: 49, stop: function(e){
-		percent_width = Math.round(($(this).width() / $(this).parent().width()) * 10) * 10;
-		// minimum of 10%
-		if (percent_width < 10)
-		{
-			percent_width = 10;
+	$(".publish_field").resizable({
+		handles: "e",
+		minHeight: 49,
+		stop: function(e){
+			var percent_width = Math.round(($(this).width() / $(this).parent().width()) * 10) * 10;
+			// minimum of 10%
+			if (percent_width < 10) {
+				percent_width = 10;
+			}
+		
+			// maximum of 100
+			if (percent_width > 99) {
+				percent_width = 100;
+			}
+		
+			$(this).css("width", percent_width + "%");
 		}
-		// maximum of 100
-		if (percent_width > 99)
-		{
-			percent_width = 100;
-		}
-		$(this).css("width", percent_width + "%");
-	}});
+	});
 
 	$("#tools ul li a.field_selector").draggable({
 		revert: true,
 		zIndex: 33,
 		helper: "clone"
-	}).click(function() {return false;});
+	}).click(function() {
+		return false;
+	});
 
-var newTabButtons = {};
+	var newTabButtons = {},
+		addAuthorButtons = {};
+	
 	newTabButtons[EE.lang.add_tab] = add_publish_tab;
-
-$("#new_tab_dialog").dialog({
-	autoOpen: false,
-	resizable: false,
-	modal: true,
-	position: "center",
-	minHeight: "0px",
-	buttons: newTabButtons
-});
-
-var addAuthorButtons = {};
 	addAuthorButtons[EE.lang.close] = $(this).dialog("close");
+
+	$("#new_tab_dialog").dialog({
+		autoOpen: false,
+		resizable: false,
+		modal: true,
+		position: "center",
+		minHeight: "0px",
+		buttons: newTabButtons
+	});
+
 
 	$("#add_author_dialog").dialog({
 		autoOpen: false,
@@ -62,10 +75,7 @@ $('.add_author_link').click(function() {
 			
 			$.get(this.href, function(data) {
 				$('#add_authors_dialog_form div').html(data);
-				
 				$('#add_author_dialog').find('#add_author_pagination').appendTo('.ui-dialog-buttonpane');
-				
-				$('#add_author_dialog').find('#add_author_pagination');
 			});
 
 		});
@@ -171,8 +181,7 @@ $("#toggle_member_groups_all").toggle(
 
 
 $(".delete_field").toggle(
-	function()
-	{
+	function() {
 		var field_id = $(this).attr("id").substring(13),
 			field = $("#hold_field_"+field_id);
 		
@@ -184,8 +193,7 @@ $(".delete_field").toggle(
 		field.slideUp();
 		$(this).children().attr("src", EE.THEME_URL+"images/closed_eye.png");
 	},
-	function()
-	{
+	function() {
 		var field_id = $(this).attr("id").substring(13);
 		$("#hold_field_"+field_id).slideDown();
 		$(this).children().attr("src", EE.THEME_URL+"images/open_eye.png");
@@ -194,7 +202,7 @@ $(".delete_field").toggle(
 
 _delete_tab_hide = function(the_li, tab_to_delete) {
 	$(".menu_"+tab_to_delete).parent().fadeOut();	// hide the tab
-	$(the_li).fadeOut();						// remove from sidebar
+	$(the_li).fadeOut();							// remove from sidebar
 	$("#"+tab_to_delete).fadeOut();					// hide the fields
 
 	// If the tab is selected - move focus to the left
@@ -211,7 +219,7 @@ _delete_tab_hide = function(the_li, tab_to_delete) {
 		tab_focus(prev);
 	}
 
-//	$("#"+tab_to_delete).remove() // remove from DOM
+	// $("#"+tab_to_delete).remove() // remove from DOM
 
 	return false;
 }
@@ -239,8 +247,8 @@ tab_req_check = function(tab_name) {
 	$("#"+tab_name).find(".publish_field").each(function() {
 
 		var id = this.id.replace(/hold_field_/, ""),
-				i = 0,
-				key = "";
+			i = 0,
+			key = "";
 				
 		for (key in required) {
 			if (required[key] == id) {
@@ -267,15 +275,15 @@ function delete_publish_tab()
 	$("#publish_tab_list").unbind("click.tab_delete");
 	$("#publish_tab_list").bind("click.tab_delete", function(evt) {
 	
-	if (evt.target !== this) {
-    	var the_li = $(evt.target).closest("li");
-		the_id = the_li.attr("id").replace(/remove_tab_/, "");
+		if (evt.target !== this) {
+	    	var the_li = $(evt.target).closest("li");
+			the_id = the_li.attr("id").replace(/remove_tab_/, "");
 
-		if ( ! tab_req_check(the_id)) {
-			_delete_tab_hide(the_li, the_id);
-		}
-    }
-});
+			if ( ! tab_req_check(the_id)) {
+				_delete_tab_hide(the_li, the_id);
+			}
+	    }
+	});
 }
 
  
@@ -283,8 +291,7 @@ function delete_publish_tab()
 // when the page loads set up existing tabs to delete
 delete_publish_tab();
 
-function add_publish_tab()
-{
+add_publish_tab = function() {
 	tab_name = $("#tab_name").val();
 
 	var legalChars = /^[a-zA-Z0-9 _-]+$/; // allow only letters, numbers, spaces, underscores, and dashes
@@ -381,10 +388,10 @@ EE.tab_focus = tab_focus;
 
 function setup_tabs()
 {
-	var spring_delay = 500;
-	var focused_tab = "menu_publish_tab";
-	var field_dropped = false;
-	var spring = "";
+	var spring_delay = 500,
+		focused_tab = "menu_publish_tab",
+		field_dropped = false,
+		spring = "";
 
 	// allow sorting of publish fields
 	$(".main_tab").sortable({
@@ -419,17 +426,17 @@ function setup_tabs()
 
 			tab_id = $(this).attr("title").substring(5);
 			$(this).parent().addClass("highlight_tab");
-				spring = setTimeout(function(){
+				spring = setTimeout(function() {
 				tab_focus(tab_id);
 				return false;
 			}, spring_delay);
-			},
+		},
 		out: function(e, ui) {
-				if (spring != "") {
+			if (spring != "") {
 				clearTimeout(spring);
 			}
-				$(this).parent().removeClass("highlight_tab");
-			}
+			$(this).parent().removeClass("highlight_tab");
+		}
 	});
 
 	$("#holder .main_tab").droppable({
@@ -448,7 +455,7 @@ function setup_tabs()
 
 	$(".tab_menu li.content_tab a, #publish_tab_list a.menu_focus")
 		.unbind(".publish_tabs")
-		.bind("mousedown.publish_tabs", function(e){
+		.bind("mousedown.publish_tabs", function(e) {
 			tab_id = $(this).attr("title").substring(5);
 			tab_focus(tab_id);
 			e.preventDefault();

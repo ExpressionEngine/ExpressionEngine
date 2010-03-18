@@ -1749,7 +1749,7 @@ class Admin_content extends Controller {
 		}
 
 		//  Check discrete privileges
-		if ($this->input->get_post('modal') == 'yes')
+		if (AJAX_REQUEST)
 		{
 			$query = $this->db->query("SELECT can_edit_categories FROM exp_category_groups WHERE group_id = '".$this->db->escape_str($group_id)."'");
 
@@ -1829,7 +1829,7 @@ class Admin_content extends Controller {
 	 */
 	function category_edit()
 	{
-		if ($this->input->get_post('modal') == 'yes')
+		if (AJAX_REQUEST)
 		{
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
@@ -1861,7 +1861,7 @@ class Admin_content extends Controller {
 		}
 
 		//  Check discrete privileges
-		if ($this->input->get_post('modal') == 'yes')
+		if (AJAX_REQUEST)
 		{
 			$query = $this->db->query("SELECT can_edit_categories FROM exp_category_groups WHERE group_id = '".$this->db->escape_str($group_id)."'");
 
@@ -2121,11 +2121,10 @@ class Admin_content extends Controller {
 		}
 
 		// Check discrete privileges
-		// @todo: "Z" key for popup window, needed in EE2 still?
-		if ($this->input->get_post('modal') == 'yes')
+		if (AJAX_REQUEST)
 		{
 			$this->db->select('can_delete_categories');
-			$zquery = $this->db->get_where('category_groups', array('group_id' => $query->row('group_id')));
+			$zquery = $this->db->get_where('category_groups', array('group_id' => $this->input->get_post('group_id')));
 
 			if ($zquery->num_rows() == 0)
 			{
@@ -2207,11 +2206,10 @@ class Admin_content extends Controller {
 		}
 
 		// Check discrete privileges
-		// @todo: "Z" key for popup window, needed in EE2 still?
-		if ($this->input->get_post('modal') == 'yes')
+		if (AJAX_REQUEST)
 		{
 			$this->db->select('can_delete_categories');
-			$zquery = $this->db->get_where('category_groups', array('group_id' => $query->row('group_id')));
+			$zquery = $this->db->get_where('category_groups', array('group_id' => $this->input->post('group_id')));
 
 			if ($zquery->num_rows() == 0)
 			{
