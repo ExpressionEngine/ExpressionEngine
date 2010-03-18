@@ -1,24 +1,14 @@
-/*
- * jquery.tools 1.1.0 - The missing UI library for the Web
- * 
- * [tools.scrollable-1.1.0, tools.scrollable.circular-0.5.0, tools.scrollable.autoscroll-1.0.0, tools.scrollable.navigator-1.0.0, tools.scrollable.mousewheel-1.0.0]
+/**
+ * tools.scrollable 1.1.0 - Scroll your HTML with eye candy.
  * 
  * Copyright (c) 2009 Tero Piirainen
- * http://flowplayer.org/tools/
+ * http://flowplayer.org/tools/scrollable.html
  *
  * Dual licensed under MIT and GPL 2+ licenses
  * http://www.opensource.org/licenses
- * 
- * -----
- * 
- * jquery.event.wheel.js - rev 1 
- * Copyright (c) 2008, Three Dub Media (http://threedubmedia.com)
- * Liscensed under the MIT License (MIT-LICENSE.txt)
- * http://www.opensource.org/licenses/mit-license.php
- * Created: 2008-07-01 | Updated: 2008-07-14
- * 
- * -----
- * 
- * File generated: Thu Sep 03 11:41:46 GMT+00:00 2009
+ *
+ * Launch  : March 2008
+ * Date: ${date}
+ * Revision: ${revision} 
  */
 (function(c){c.tools=c.tools||{};c.tools.scrollable={version:"1.1.0",conf:{size:5,vertical:false,speed:400,keyboard:true,keyboardSteps:null,disabledClass:"disabled",hoverClass:null,clickable:true,activeClass:"active",easing:"swing",items:".items",item:null,prev:".prev",next:".next",prevPage:".prevPage",nextPage:".nextPage",api:false}};var d,a=0;function b(r,o,m){var t=this,e=!o.vertical,f=r.children(),l=0,j;if(!d){d=t}function p(u,v){c(t).bind(u,function(x,w){if(v&&v.call(this,w.index)===false&&w){w.proceed=false}});return t}c.each(o,function(u,v){if(c.isFunction(v)){p(u,v)}});if(f.length>1){f=c(o.items,r)}function n(v){var u=c(v);return m==1||u.length==1||o.globalNav?u:r.parent().find(v)}r.data("finder",n);var g=n(o.prev),i=n(o.next),h=n(o.prevPage),q=n(o.nextPage);c.extend(t,{getIndex:function(){return l},getConf:function(){return o},getSize:function(){return t.getItems().size()},getPageAmount:function(){return Math.ceil(this.getSize()/o.size)},getPageIndex:function(){return Math.ceil(l/o.size)},getNaviButtons:function(){return g.add(i).add(h).add(q)},getRoot:function(){return r},getItemWrap:function(){return f},getItems:function(){return f.children(o.item)},getVisibleItems:function(){return t.getItems().slice(l,l+o.size)},seekTo:function(u,y,v){if(y===undefined){y=o.speed}if(c.isFunction(y)){v=y;y=o.speed}if(u<0){u=0}if(u>t.getSize()-o.size){return this.end()}var w=t.getItems().eq(u);if(!w.length){return t}var x={index:u,proceed:true};c(t).trigger("onBeforeSeek",x);if(!x.proceed){return t}function z(){if(v){v.call(t)}c(t).trigger("onSeek",x)}if(e){f.animate({left:-w.position().left},y,o.easing,z)}else{f.animate({top:-w.position().top},y,o.easing,z)}d=t;l=u;return t},move:function(w,v,u){j=w>0;return this.seekTo(l+w,v,u)},next:function(v,u){return this.move(1,v,u)},prev:function(v,u){return this.move(-1,v,u)},movePage:function(y,x,w){j=y>0;var u=o.size*y;var v=l%o.size;if(v>0){u+=(y>0?-v:o.size-v)}return this.move(u,x,w)},prevPage:function(v,u){return this.movePage(-1,v,u)},nextPage:function(v,u){return this.movePage(1,v,u)},setPage:function(v,w,u){return this.seekTo(v*o.size,w,u)},begin:function(v,u){return this.seekTo(0,v,u)},end:function(v,u){var w=this.getSize()-o.size;return w>0?this.seekTo(w,v,u):t},reload:function(){c(t).trigger("onReload",{});return t},onBeforeSeek:function(u){return p("onBeforeSeek",u)},onSeek:function(u){return p("onSeek",u)},onReload:function(u){return p("onReload",u)},focus:function(){d=t;return t},click:function(w){var x=t.getItems().eq(w),u=o.activeClass,v=o.size;if(w<0||w>=t.getSize()){return t}if(v==1){if(w===0||w==t.getSize()-1){j=(j===undefined)?true:!j}return j===false?t.prev():t.next()}if(v==2){if(w==l){w--}t.getItems().removeClass(u);x.addClass(u);return t.seekTo(w,time,fn)}if(!x.hasClass(u)){t.getItems().removeClass(u);x.addClass(u);var z=Math.floor(v/2);var y=w-z;if(y>t.getSize()-v){y=t.getSize()-v}if(y!==w){return t.seekTo(y)}}return t}});g.addClass(o.disabledClass).click(function(){t.prev()});i.click(function(){t.next()});q.click(function(){t.nextPage()});h.addClass(o.disabledClass).click(function(){t.prevPage()});t.onSeek(function(u){if(u===0){g.add(h).addClass(o.disabledClass)}else{g.add(h).removeClass(o.disabledClass)}if(u>=t.getSize()-o.size){i.add(q).addClass(o.disabledClass)}else{i.add(q).removeClass(o.disabledClass)}});var k=o.hoverClass,s="keydown."+Math.random().toString().substring(10);t.onReload(function(){if(k){t.getItems().hover(function(){c(this).addClass(k)},function(){c(this).removeClass(k)})}if(o.clickable){t.getItems().each(function(u){c(this).unbind("click.scrollable").bind("click.scrollable",function(v){if(c(v.target).is("a")){return}return t.click(u)})})}if(o.keyboard){c(document).unbind(s);c(document).bind(s,function(u){if(u.altKey||u.ctrlKey){return}if(o.keyboard!="static"&&d!=t){return}var v=o.keyboardSteps;if(e&&(u.keyCode==37||u.keyCode==39)){t.move(u.keyCode==37?-v:v);return u.preventDefault()}if(!e&&(u.keyCode==38||u.keyCode==40)){t.move(u.keyCode==38?-v:v);return u.preventDefault()}return true})}else{c(document).unbind(s)}});t.reload()}c.fn.scrollable=function(e){var f=this.eq(typeof e=="number"?e:0).data("scrollable");if(f){return f}var g=c.extend({},c.tools.scrollable.conf);c.extend(g,e);g.keyboardSteps=g.keyboardSteps||g.size;a+=this.length;this.each(function(){f=new b(c(this),g);c(this).data("scrollable",f)});return g.api?f:this}})(jQuery);
