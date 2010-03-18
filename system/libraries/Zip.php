@@ -37,7 +37,6 @@ class CI_Zip  {
 	var $entries 	= 0;
 	var $file_num 	= 0;
 	var $offset		= 0;
-	var $now;
 
 	function CI_Zip()
 	{
@@ -66,8 +65,22 @@ class CI_Zip  {
 				$dir .= '/';
 			}
 
-			$this->_add_dir($dir);
+			$dir_time = $this->_get_mod_time($dir);
+
+			$this->_add_dir($dir, $dir_time['file_mtime'], $dir_time['file_mdate']);
 		}
+	}
+
+	// --------------------------------------------------------------------	
+
+	function _get_mod_time($dir)
+	{
+		$date = (@filemtime($dir)) ? filemtime($dir) : getdate($this->now); 
+
+		$time['file_mtime'] = ($date['hours'] << 11) + ($date['minutes'] << 5) + $date['seconds'] / 2;
+		$time['file_mdate'] = (($date['year'] - 1980) << 9) + ($date['mon'] << 5) + $date['mday'];
+		
+		return $time;
 	}
 
 	// --------------------------------------------------------------------
@@ -79,19 +92,14 @@ class CI_Zip  {
 	 * @param	string	the directory name
 	 * @return	void
 	 */
-	function _add_dir($dir)
-	{
-
-		$f_date = getdate();
-    	$f_mtime = ($f_date['hours'] <<11) + ($f_date['minutes'] << 5) + $f_date['seconds'] / 2;
-		$f_mdate = (($f_date['year'] - 1980) << 9) + ($f_date['mon'] << 5) + $f_date['mday'];	
-
+	function _add_dir($dir, $file_mtime, $file_mdate)
+	{		
 		$dir = str_replace("\\", "/", $dir);
 
 		$this->zipdata .=
 			"\x50\x4b\x03\x04\x0a\x00\x00\x00\x00\x00"
-			.pack('v', $f_mtime)
-			.pack('v', $f_mdate)
+			.pack('v', $file_mtime)
+			.pack('v', $file_mdate)
 			.pack('V', 0) // crc32
 			.pack('V', 0) // compressed filesize
 			.pack('V', 0) // uncompressed filesize
@@ -105,11 +113,11 @@ class CI_Zip  {
 
 		$this->directory .=
 			"\x50\x4b\x01\x02\x00\x00\x0a\x00\x00\x00\x00\x00"
-			.pack('v', $f_mtime)
-			.pack('v', $f_mdate)
-			.pack('V', 0) // crc32
-			.pack('V', 0) // compressed filesize
-			.pack('V', 0) // uncompressed filesize
+			.pack('v', $file_mtime)
+			.pack('v', $file_mdate)
+			.pack('V',0) // crc32
+			.pack('V',0) // compressed filesize
+			.pack('V',0) // uncompressed filesize
 			.pack('v', strlen($dir)) // length of pathname
 			.pack('v', 0) // extra field length
 			.pack('v', 0) // file comment length
@@ -137,23 +145,22 @@ class CI_Zip  {
 	 * @param	string
 	 * @return	void
 	 */	
-	function add_data($filepath, $data = NULL, $mtime = NULL)
-	{
-		if ( ! $mtime)
-		{
-			$mtime = $this->now;
-		}
-		
+	function add_data($filepath, $data = NULL)
+	{	
 		if (is_array($filepath))
 		{
 			foreach ($filepath as $path => $data)
 			{
-				$this->_add_data($path, $data, $mtime);
+				$file_data = $this->_get_mod_time($path);	
+
+				$this->_add_data($path, $data, $file_data['file_mtime'], $file_data['file_mdate']);
 			}
 		}
 		else
 		{
-			$this->_add_data($filepath, $data, $mtime);
+			$file_data = $this->_get_mod_time($filepath);
+			
+			$this->_add_data($filepath, $data, $file_data['file_mtime'], $file_data['file_mdate']);
 		}
 	}
 
@@ -167,7 +174,7 @@ class CI_Zip  {
 	 * @param	string	the data to be encoded
 	 * @return	void
 	 */	
-	function _add_data($filepath, $data, $mtime = NULL)
+	function _add_data($filepath, $data, $file_mtime, $file_mdate)
 	{
 		$filepath = str_replace("\\", "/", $filepath);
 
@@ -178,14 +185,10 @@ class CI_Zip  {
 		$gzdata = substr($gzdata, 2, -4);
 		$compressed_size = strlen($gzdata);
 
-		$f_date = getdate($mtime);
-    	$f_mtime = ($f_date['hours'] << 11) + ($f_date['minutes'] << 5) + $f_date['seconds'] / 2;
-		$f_mdate = (($f_date['year'] - 1980) << 9) + ($f_date['mon'] << 5) + $f_date['mday'];	
-
 		$this->zipdata .=
 			"\x50\x4b\x03\x04\x14\x00\x00\x00\x08\x00"
-			.pack('v', $f_mtime)
-			.pack('v', $f_mdate)
+			.pack('v', $file_mtime)
+			.pack('v', $file_mdate)
 			.pack('V', $crc32)
 			.pack('V', $compressed_size)
 			.pack('V', $uncompressed_size)
@@ -196,8 +199,8 @@ class CI_Zip  {
 
 		$this->directory .=
 			"\x50\x4b\x01\x02\x00\x00\x14\x00\x00\x00\x08\x00"
-			.pack('v', $f_mtime)
-			.pack('v', $f_mdate)
+			.pack('v', $file_mtime)
+			.pack('v', $file_mdate)
 			.pack('V', $crc32)
 			.pack('V', $compressed_size)
 			.pack('V', $uncompressed_size)
@@ -239,16 +242,14 @@ class CI_Zip  {
 				$name = preg_replace("|.*/(.+)|", "\\1", $name);
 			}
 
-			$mtime = filemtime($path);
-
-			$this->add_data($name, $data, $mtime);
+			$this->add_data($name, $data);
 			return TRUE;
 		}
 		return FALSE;
 	}
-	
-	// ------------------------------------------------------------------------
 
+	// ------------------------------------------------------------------------
+	
 	/**
 	 * Read a directory and add it to the zip.
 	 *
@@ -273,9 +274,8 @@ class CI_Zip  {
 				elseif (substr($file, 0, 1) != ".")
 				{
 					if (FALSE !== ($data = file_get_contents($path.$file)))
-					{	
-						$mtime = filemtime($path.$file);				
-						$this->add_data(str_replace("\\", "/", $path).$file, $data, $mtime);
+					{						
+						$this->add_data(str_replace("\\", "/", $path).$file, $data);
 					}
 				}
 			}
@@ -319,7 +319,6 @@ class CI_Zip  {
 	 *
 	 * @access	public
 	 * @param	string	the file name
-	 * @param	string	the data to be encoded
 	 * @return	bool
 	 */	
 	function archive($filepath)
