@@ -3052,49 +3052,9 @@ class Content_publish extends Controller {
 
 	function _define_category_fields($categories, $edit_categories_link)
 	{
-		// @todo: integrate this more nicely with custom_field_helper
-		// Custom fields are wrapped in <p> tags, which are not needed here.
-		// At this point, most of the <p> tags have been done away with -- greg
-		$category_r = '';
-
-		foreach ($categories as $key => $val)
-		{
-			$category_r .= (count($categories) > 1) ? '<fieldset><legend>'.$key.'</legend>' : '';
-			
-			$group_id = current($val);
-			
-			$category_r .= '<a href="#" style="display: none;" id="refresh_categories">Apply Changes</a>';
-			$category_r .= '<div id="cat_group_container_'.$group_id['2'].'" class="cat_group_container">';
-
-			foreach ($val as $v)
-			{
-				$indent = ($v['5'] != 1) ? repeater(NBS.NBS.NBS.NBS, $v['5']) : '';
-				$category_r .= '<label>'.$indent.form_checkbox('category[]', $v['0'], $v['4']).NBS.NBS.$v['1'].'</label>';
-			}
-
-			$category_r .= '</div>';
-			$category_r .= (count($categories) > 1) ? '</fieldset>' : '';
-		}
-
-		if ($edit_categories_link !== FALSE)
-		{
-			if (count($edit_categories_link) == 1)
-			{
-				$category_r .= '<p style="margin: 15px;"><a href="'.$edit_categories_link['0']['url'].'" class="edit_categories_link">'.$this->lang->line('edit_categories').'</a></p>';
-			}
-			else
-			{
-				$category_r .= '<p style="margin: 15px;">'.$this->lang->line('edit_categories').': ';
-
-				foreach ($edit_categories_link as $link)
-				{
-					$category_r .= '<a href="'.BASE.$link['url'].'" class="edit_categories_link">'.$link['group_name'].'</a>, ';
-				}
-
-				$category_r = substr($category_r, 0, -2);
-			}
-		}
-
+		$vars = compact('categories', 'edit_categories_link');
+		$category_r = $this->load->view('content/_assets/categories', $vars, TRUE);
+		
 		$this->field_definitions['category'] = array(
 			'string_override'		=> (count($categories) == 0) ? $this->lang->line('no_categories') : $category_r,
 			'field_id'				=> 'category',
