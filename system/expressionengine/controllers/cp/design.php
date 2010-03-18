@@ -3754,7 +3754,7 @@ class Design extends Controller {
 			
 			$template_name = $site_name.'/'.$template['group_name'].'/'.$template['template_name'].$tmpl_ext;
 			
-			$this->zip->add_data($template_name, $template['template_data']);
+			$this->zip->add_data($template_name, $template['template_data'], $template['edit_date']);
 		}
 		
 		if ($this->input->get_post('group_id'))

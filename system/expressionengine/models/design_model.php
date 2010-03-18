@@ -111,7 +111,8 @@ class Design_model extends CI_Model {
 	 */
 	function export_tmpl_group($tmpl_group = FALSE)
 	{
-		$this->db->select('template_groups.group_name, templates.template_name, templates.template_data, templates.template_type');
+		$this->db->select('template_groups.group_name, templates.template_name, 
+						templates.template_data, templates.template_type, templates.edit_date');
 		$this->db->from('templates');
 		$this->db->join('template_groups', 'template_groups.group_id = templates.group_id');
 		
