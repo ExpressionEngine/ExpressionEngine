@@ -163,7 +163,7 @@ EE.publish.save_layout = function() {
 					visible		: ($(this).css("display") === "none" || visible === false) ? false : true,
 					collapse	: ($("#sub_hold_field_"+id).css("display") === "none") ? true : false,
 					htmlbuttons	: temp_buttons,
-					width		: percent_width+'%',
+					width		: percent_width+'%'
 				};
 				
 				if (visible === true)
