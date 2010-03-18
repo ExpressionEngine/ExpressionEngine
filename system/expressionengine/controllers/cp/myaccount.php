@@ -646,7 +646,7 @@ class MyAccount extends Controller {
 		{
 			if ($_POST['current_password'] == '')
 			{
-				$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=username_password'.AMP.'id='.$id);
+				$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=username_password'.AMP.'id='.$this->id);
 			}
 
 			$_POST['username'] = $_POST['current_username'];
@@ -754,7 +754,8 @@ class MyAccount extends Controller {
 
 			$data = array('name' => ($screen_name != '') ? $screen_name : $_POST['username']);
 
-			$this->db->query($this->db->update_string('exp_comments', $data, "author_id = '".$this->db->escape_str($this->id)."'"));
+			$this->db->where('author_id', $this->id);
+			$this->db->update('comments', $data);
 		}
 
 		// Write log file
@@ -771,7 +772,7 @@ class MyAccount extends Controller {
 		}
 		
 		$this->session->set_flashdata('message_success', $message);
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=username_password'.AMP.'id='.$id);
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=username_password'.AMP.'id='.$this->id);
 	}
 
 	// --------------------------------------------------------------------
