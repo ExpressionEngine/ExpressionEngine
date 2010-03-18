@@ -399,7 +399,7 @@ $lang = array(
 'autosave_success'	=> 'Entry autosaved',
 'autosave_failure'	=> 'This entry could not be autosaved',
 'autosave_title'	=> 'Saved data available',
-'autosave_warning_1'	=> 'ExpressionEngine has saved data from this entry before it was last saved.',
+'autosave_warning_1'	=> 'ExpressionEngine has saved data from this entry since it was last saved.',
 'autosave_warning_2'	=> 'Saved data is removed when an entry is saved or re-saved.',
 'autosave_warning_3'	=> 'Would you like to load this data now?',
 
