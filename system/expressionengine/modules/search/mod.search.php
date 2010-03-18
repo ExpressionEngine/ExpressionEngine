@@ -74,8 +74,14 @@ class Search {
 			$_POST['exact_keyword'] = 'n';
 			
 		//	$_POST['member_name'] 	= urldecode($this->EE->input->get_post('fetch_posts_by'));
-			
 		}
+		
+		
+		// RP can be used in a query string,
+		// so we need to clean it a bit
+		
+		$_POST['RP'] = str_replace(array('=', '&'), '', $_POST['RP']);
+
 
 		/** ----------------------------------------
 		/**  Pulldown Addition - Any, All, Exact
