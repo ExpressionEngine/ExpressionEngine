@@ -918,7 +918,7 @@ class MyAccount extends Controller {
 
 		foreach ($_POST as $key => $val)
 		{
-			if (strpos($key, 'server_name_') AND $val != '')
+			if (strncmp($key, 'server_name_', 12) == 0 && $val != '')
 			{
 				$n = substr($key, 12);
 
@@ -1091,7 +1091,7 @@ class MyAccount extends Controller {
 			$data = array();
 			foreach ($_POST as $key => $val)
 			{
-				if (strpos($key, 'tag_name_') AND $val != '')
+				if (strncmp($key, 'tag_name_', 9) == 0 && $val != '')
 				{
 					$n = substr($key, 9);
 
@@ -2623,7 +2623,7 @@ class MyAccount extends Controller {
 
 		foreach ($_POST as $key => $val)
 		{
-			if (strpos($key, 'title_') AND $val != '')
+			if (strncmp($key, 'title_', 6) == 0 && $val != '')
 			{
 				$i = $_POST['order_'.substr($key, 6)];
 
@@ -2649,7 +2649,7 @@ class MyAccount extends Controller {
 
 			foreach ($_POST as $key => $val)
 			{
-				if (strpos($key, 'title_') AND $val != '')
+				if (strncmp($key, 'title_', 6) == 0 && $val != '')
 				{
 					$_POST['order_'.substr($key, 6)] = $i;
 
@@ -2664,7 +2664,7 @@ class MyAccount extends Controller {
 
 		foreach ($_POST as $key => $val)
 		{
-			if (strpos($key, 'title_') AND $val != '')
+			if (strncmp($key, 'title_', 6) == 0 && $val != '')
 			{
 				$n = substr($key, 6);
 
@@ -2829,7 +2829,7 @@ class MyAccount extends Controller {
 
 		foreach ($_POST as $key => $val)
 		{
-			if (strpos($key, 'title_') AND $val != '')
+			if (strncmp($key, 'title_', 6) == 0 && $val != '')
 			{
 				$i = $_POST['order_'.substr($key, 6)];
 
@@ -2855,7 +2855,7 @@ class MyAccount extends Controller {
 
 			foreach ($_POST as $key => $val)
 			{
-				if (strpos($key, 'title_') AND $val != '')
+				if (strncmp($key, 'title_', 6) == 0 && $val != '')
 				{
 					$_POST['order_'.substr($key, 6)] = $i;
 					$i++;
@@ -2869,7 +2869,7 @@ class MyAccount extends Controller {
 
 		foreach ($_POST as $key => $val)
 		{
-			if (strpos($key, 'title_') AND $val != '')
+			if (strncmp($key, 'title_', 6) == 0 && $val != '')
 			{
 				$n = substr($key, 6);
 

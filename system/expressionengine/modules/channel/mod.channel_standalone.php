@@ -649,7 +649,7 @@ EOT;
 			{
 				foreach ($_POST as $key => $val)
 				{
-					if (strpos($key, 'category') AND is_array($val))
+					if (strpos($key, 'category') !== FALSE && is_array($val))
 					{
 						$i =0;
 						foreach ($val as $v)
@@ -1980,7 +1980,7 @@ EOT;
 
 			foreach ($_POST as $key => $val)
 			{
-				if (strpos($key, 'category') AND is_array($val))
+				if (strpos($key, 'category') !== FALSE && is_array($val))
 				{
 						foreach ($val as $k => $v)
 						{
@@ -2074,7 +2074,7 @@ EOT;
 
 			foreach ($_POST as $key => $val)
 			{
-				if (strpos($key, 'category') AND is_array($val))
+				if (strpos($key, 'category') !== FALSE && is_array($val))
 				{
 						foreach ($val as $k => $v)
 						{
@@ -2167,7 +2167,7 @@ EOT;
 				$selected = '';
 				foreach ($_POST as $key => $val)
 				{
-					if (strpos($key, 'ping') AND $val == $row['id'])
+					if (strpos($key, 'ping') !== FALSE && $val == $row['id'])
 					{
 						$selected = " checked='checked' ";
 						break;
