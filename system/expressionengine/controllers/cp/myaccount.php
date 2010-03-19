@@ -2698,7 +2698,6 @@ class MyAccount extends Controller {
 		$this->load->helper(array('form'));
 
 		$vars['cp_page_title'] = $this->lang->line('tab_manager');
-		$vars['message'] = ($this->input->get('U')) ? $this->lang->line('tab_manager_updated') : '';
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -2802,7 +2801,8 @@ class MyAccount extends Controller {
 
 		$this->member_model->update_member($this->id, array('quick_tabs' => trim($str)));
 
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=quicktab_manager'.AMP.'id='.$this->id.AMP.'U=1');
+		$this->session->set_flashdata('message_success', $this->lang->line('tab_manager_updated'));
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=quicktab_manager'.AMP.'id='.$this->id);
 	}
 
 	// --------------------------------------------------------------------
@@ -2890,7 +2890,8 @@ class MyAccount extends Controller {
 
 		$this->member_model->update_member($this->id, array('quick_tabs' => trim($str)));
 
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=quicktab_manager'.AMP.'id='.$this->id.AMP.'U=1');
+		$this->session->set_flashdata('message_success', $this->lang->line('tab_manager_updated'));
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=quicktab_manager'.AMP.'id='.$this->id);
 	}
 
 	// --------------------------------------------------------------------
