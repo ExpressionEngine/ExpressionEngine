@@ -919,7 +919,7 @@ class MyAccount extends Controller {
 
 		foreach ($_POST as $key => $val)
 		{
-			if (strpos($key, 'server_name_') AND $val != '')
+			if (strncmp($key, 'server_name_', 12) == 0 && $val != '')
 			{
 				$n = substr($key, 12);
 
@@ -1092,7 +1092,7 @@ class MyAccount extends Controller {
 			$data = array();
 			foreach ($_POST as $key => $val)
 			{
-				if (strpos($key, 'tag_name_') AND $val != '')
+				if (strncmp($key, 'tag_name_', 9) == 0 && $val != '')
 				{
 					$n = substr($key, 9);
 
@@ -2624,7 +2624,7 @@ class MyAccount extends Controller {
 
 		foreach ($_POST as $key => $val)
 		{
-			if (strpos($key, 'title_') AND $val != '')
+			if (strncmp($key, 'title_', 6) == 0 && $val != '')
 			{
 				$i = $_POST['order_'.substr($key, 6)];
 
@@ -2650,7 +2650,7 @@ class MyAccount extends Controller {
 
 			foreach ($_POST as $key => $val)
 			{
-				if (strpos($key, 'title_') AND $val != '')
+				if (strncmp($key, 'title_', 6) == 0 && $val != '')
 				{
 					$_POST['order_'.substr($key, 6)] = $i;
 
@@ -2665,7 +2665,7 @@ class MyAccount extends Controller {
 
 		foreach ($_POST as $key => $val)
 		{
-			if (strpos($key, 'title_') AND $val != '')
+			if (strncmp($key, 'title_', 6) == 0 && $val != '')
 			{
 				$n = substr($key, 6);
 
@@ -2699,7 +2699,6 @@ class MyAccount extends Controller {
 		$this->load->helper(array('form'));
 
 		$vars['cp_page_title'] = $this->lang->line('tab_manager');
-		$vars['message'] = ($this->input->get('U')) ? $this->lang->line('tab_manager_updated') : '';
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -2803,7 +2802,8 @@ class MyAccount extends Controller {
 
 		$this->member_model->update_member($this->id, array('quick_tabs' => trim($str)));
 
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=quicktab_manager'.AMP.'id='.$this->id.AMP.'U=1');
+		$this->session->set_flashdata('message_success', $this->lang->line('tab_manager_updated'));
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=quicktab_manager'.AMP.'id='.$this->id);
 	}
 
 	// --------------------------------------------------------------------
@@ -2830,7 +2830,7 @@ class MyAccount extends Controller {
 
 		foreach ($_POST as $key => $val)
 		{
-			if (strpos($key, 'title_') AND $val != '')
+			if (strncmp($key, 'title_', 6) == 0 && $val != '')
 			{
 				$i = $_POST['order_'.substr($key, 6)];
 
@@ -2856,7 +2856,7 @@ class MyAccount extends Controller {
 
 			foreach ($_POST as $key => $val)
 			{
-				if (strpos($key, 'title_') AND $val != '')
+				if (strncmp($key, 'title_', 6) == 0 && $val != '')
 				{
 					$_POST['order_'.substr($key, 6)] = $i;
 					$i++;
@@ -2870,7 +2870,7 @@ class MyAccount extends Controller {
 
 		foreach ($_POST as $key => $val)
 		{
-			if (strpos($key, 'title_') AND $val != '')
+			if (strncmp($key, 'title_', 6) == 0 && $val != '')
 			{
 				$n = substr($key, 6);
 
@@ -2891,7 +2891,8 @@ class MyAccount extends Controller {
 
 		$this->member_model->update_member($this->id, array('quick_tabs' => trim($str)));
 
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=quicktab_manager'.AMP.'id='.$this->id.AMP.'U=1');
+		$this->session->set_flashdata('message_success', $this->lang->line('tab_manager_updated'));
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=quicktab_manager'.AMP.'id='.$this->id);
 	}
 
 	// --------------------------------------------------------------------

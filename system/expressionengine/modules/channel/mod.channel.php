@@ -1340,7 +1340,7 @@ class Channel {
 				/** --------------------------------------*/
 				if (($cat_id == '' AND $year == '') OR $this->EE->TMPL->fetch_param('require_entry') == 'yes')
 				{
-					if (strpos($qstring, '/'))
+					if (strpos($qstring, '/') !== FALSE)
 					{
 						$xe = explode('/', $qstring);
 						$qstring = current($xe);
@@ -2540,7 +2540,7 @@ class Channel {
 						break;
 
 						case 'custom_field' :
-							if (strpos($corder[$key], '|'))
+							if (strpos($corder[$key], '|') !== FALSE))
 							{
 								$end .= "CONCAT(wd.field_id_".implode(", wd.field_id_", explode('|', $corder[$key])).")";
 							}
@@ -7220,7 +7220,7 @@ class Channel {
 		/**  Make sure to only get one segment
 		/** --------------------------------------*/
 
-		if (strpos($qstring, '/'))
+		if (strpos($qstring, '/') !== FALSE)
 		{
 			$qstring = substr($qstring, 0, strpos($qstring, '/'));
 		}

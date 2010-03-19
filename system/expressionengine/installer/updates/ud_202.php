@@ -46,6 +46,9 @@ class Updater {
         $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_date_menu`";
         $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_pages_cluster`";
         $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_author_menu`";
+
+		// Email field size consistent with RFC2822 recommended header line limit of 78 (minus "from: ")
+        $Q[] = "ALTER TABLE `exp_members` CHANGE `email` `email` varchar(72) NOT NULL";
 		$count = count($Q);
 		
 		foreach ($Q as $num => $sql)

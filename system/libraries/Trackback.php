@@ -356,7 +356,7 @@ class CI_Trackback {
 	{	
 		$tb_id = "";
 		
-		if (strpos($url, '?'))
+		if (strpos($url, '?') !== FALSE)
 		{
 			$tb_array = explode('/', $url);
 			$tb_end   = $tb_array[count($tb_array)-1];
