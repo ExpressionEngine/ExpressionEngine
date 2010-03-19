@@ -3030,7 +3030,7 @@ class Forum_mcp {
 		// Clear cache files
 		$this->EE->functions->clear_caching('all');
 		
-		if ($this->EE->input->get_post('update_and_return') != FALSE)
+		if ($this->EE->input->get_post('update_and_return') === FALSE)
 		{
 			$this->EE->session->set_flashdata('message', $this->EE->lang->line('template_updated'));
 			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum'.AMP.'method=edit_template'.AMP.'folder='.$path);
