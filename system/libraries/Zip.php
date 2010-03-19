@@ -73,8 +73,17 @@ class CI_Zip  {
 
 	// --------------------------------------------------------------------	
 
+	/**
+	 *	Get file/directory modification time
+	 *	
+	 *	If this is a newly created file/dir, we will set the time to 'now'
+	 *
+	 *	@param string	path to file
+	 *	@return array 	filemtime/filemdate
+	 */
 	function _get_mod_time($dir)
 	{
+		// filemtime() will return false, but it does raise an error.
 		$date = (@filemtime($dir)) ? filemtime($dir) : getdate($this->now); 
 
 		$time['file_mtime'] = ($date['hours'] << 11) + ($date['minutes'] << 5) + $date['seconds'] / 2;
