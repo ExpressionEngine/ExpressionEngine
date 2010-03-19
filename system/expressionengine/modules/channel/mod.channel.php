@@ -2540,7 +2540,7 @@ class Channel {
 						break;
 
 						case 'custom_field' :
-							if (strpos($corder[$key], '|') !== FALSE))
+							if (strpos($corder[$key], '|') !== FALSE)
 							{
 								$end .= "CONCAT(wd.field_id_".implode(", wd.field_id_", explode('|', $corder[$key])).")";
 							}
