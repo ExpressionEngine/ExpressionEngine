@@ -37,6 +37,7 @@ class CI_Zip  {
 	var $entries 	= 0;
 	var $file_num 	= 0;
 	var $offset		= 0;
+	var $now;
 
 	function CI_Zip()
 	{
