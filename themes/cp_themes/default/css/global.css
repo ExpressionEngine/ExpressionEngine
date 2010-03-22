@@ -122,6 +122,24 @@ table a:hover {
 
 /* Button Link Styles */
 
+
+.button {
+	float:					left;
+	margin-right:			6px;
+}
+
+.button a:link,
+.button a:visited {
+	color:					#5f6c74;
+	display:				block;
+	padding:				5px 9px;
+}
+
+.button a:hover {
+	color:					#FFF;
+}
+
+
 .cp_button {
 	float:					left;
 	margin:					0 14px 14px 14px;
@@ -129,17 +147,16 @@ table a:hover {
 
 .cp_button a:link,
 .cp_button a:visited {
-	display:				block;
-	padding:      			4px 8px 5px 8px;
-	text-align: 			center;
-	
 	background:				#d0d9e1;
 	color:					#5f6c74;
+	display:				block;
+	padding:      			4px 8px;
+	text-align: 			center;
 }
 
 .cp_button a:hover {
-	background-color:		#e11842;
 	color:					#fff;
+	background:				#e11842;
 	text-decoration:		none;
 }
 
@@ -149,7 +166,7 @@ table a:hover {
 
 .ui-widget-content ul {
 	margin:5px;	
-	}
+}
 
 .ui-datepicker {
 	z-index:			99;
@@ -232,10 +249,12 @@ ul.bullets li {
 .center {
 	text-align:			center;
 }
-.center h1, .center h2 {
+
+.center h1,
+.center h2 {
 	text-align:left;
 	margin-bottom:10px;
-	}
+}
 
 
 .genericHeading {
@@ -253,10 +272,6 @@ ul.videos li a {
 	background:			transparent url('<?=$cp_theme_url?>images/list_item_video.gif') 15px no-repeat;
 }
 
-ul.videos li a:hover {
-/*	background-image:	url('<?=$cp_theme_url?>images/list_item_video_hover.gif');*/
-}
-
 ul.bulleted {
 	list-style-type:		disc;
 	margin-left:			15px;
@@ -266,7 +281,6 @@ ul.bulleted {
 	background:   #f72a58 url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -298px;
 	padding:      4px 8px 5px 8px;
 	color:        #fff/*!important*/;
-	/*font-weight:  bold;*/
 	border:       0;
 }
 
@@ -276,12 +290,12 @@ ul.bulleted {
 	background:		#d0d9e1;
 	color:			#34424b;
 }
+
 .less_important_bttn:hover,
 .rightNav a.submit:hover {
-	/*color:#e11842;*/
 	background-color:#e11842;
 	text-decoration:none;
-	}
+}
 
 .submit_alt {
 	background:			#FFF url('<?=$cp_theme_url?>images/submit_alt_button_bg.jpg') bottom left repeat-x!important;
@@ -306,31 +320,6 @@ button.submit,
 
 select.select {
 	margin-right:		5px;
-}
-
-.button {
-	float:				left;
-	margin-right:		6px;
-}
-
-.button a:link, .button a:visited {
-	display:			block;
-	color:				#5f6c74;
-	padding:			5px 9px 5px 9px;
-/*  background-color: #d0d9e1;*/
-}
-
-.button a:hover {
-	color:				#FFF;
-/*  background-color: #3E4D56;*/
-}
-
-.editLink a:link, .editLink a:visited {
-	color:				#5f6c74;
-	display:			block;
-	padding:			5px 9px 4px 9px;
-	background-color:	#ECF1F4;
-	margin-bottom:		6px;
 }
 
 .module_textarea {
