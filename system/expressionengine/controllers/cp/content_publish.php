@@ -1328,10 +1328,10 @@ class Content_publish extends Controller {
 			$pages_uri = '';
 			$pages_template_id = '';
 
-			if ($entry_id != '' && isset($pages['uris'][$entry_id]))
+			if ($entry_id != '' && isset($pages[$this->config->item('site_id')]['uris'][$entry_id]))
 			{
-				$pages_uri			= $pages['uris'][$entry_id];
-				$pages_template_id	= $pages['templates'][$entry_id];
+				$pages_uri			= $pages[$this->config->item('site_id')]['uris'][$entry_id];
+				$pages_template_id	= $pages[$this->config->item('site_id')]['templates'][$entry_id];
 			}
 			else
 			{
@@ -1709,6 +1709,8 @@ class Content_publish extends Controller {
 		}
 		else
 		{
+print_r($this->api_channel_fields->settings);
+
 			foreach($this->api_channel_fields->settings as $field => $values)
 			{
 				 $field_display = array(

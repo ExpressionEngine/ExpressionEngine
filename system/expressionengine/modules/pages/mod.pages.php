@@ -32,10 +32,67 @@ class Pages {
 
 	function Pages()
 	{
+		// Make a local reference to the ExpressionEngine super object
+		$this->EE =& get_instance();
 	}
 
+	function load_site_pages()
+	{
+		$this->return_data = '';
 
+        $sites	= ( ! $this->EE->TMPL->fetch_param('site')) ? '' : $this->EE->TMPL->fetch_param('site');
 
+		$current_site = $this->EE->config->item('site_short_name');
+
+        if ($sites == '')
+        {
+        	return $this->return_data;
+        }		
+		
+		$site_names = explode('|', $sites);
+		
+		if ( ! in_array($current_site, $site_names))
+		{
+			
+		}	$site_names[] = $current_site;
+
+		$names = '(';
+				
+		foreach ($site_names as $name)
+		{
+			$names .= "'".$this->EE->db->escape_str($name)."', ";
+		}
+				
+		$names = substr($names, 0, -2).')';
+				
+		$query = $this->EE->db->query("SELECT site_pages, site_name, site_id, site_system_preferences 
+								 FROM exp_sites AS es
+								 WHERE es.site_name IN ".$names);
+
+		if ($query->num_rows() > 0)
+		{
+			$PREFS->core_ini['site_pages'] = array();
+			
+			foreach($query->result_array() as $row)
+			{
+				$PREFS->core_ini['site_pages'][$row['site_id']] = $this->EE->regex->array_stripslashes(unserialize($row['site_pages']));
+
+				$url_data = unserialize(base64_decode($query->row('site_system_preferences')));
+				$url = (isset($url_data['site_url'])) ? $url_data['site_url'] : '';
+				$url .= (isset($url_data['site_index'])) ? $url_data['site_index'] : '';
+                
+   				if ($this->EE->config->item('force_query_string') == 'y')
+   				{
+   					$url .= '?';
+   				}  
+
+				$PREFS->core_ini['site_pages'][$row['site_id']]['url'] = $url;
+				
+			}
+		}
+		
+		return $this->return_data;
+	}
 }
 // End Pages Class
 

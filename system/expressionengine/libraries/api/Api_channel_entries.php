@@ -552,18 +552,18 @@ class Api_channel_entries extends Api {
 		{
 			$pages = $this->EE->config->item('site_pages');
 
-			if (count($pages) > 0)
+			if (count($pages[$this->EE->config->item('site_id')]) > 0)
 			{
 				foreach($entries as $entry_id)
 				{
-					unset($pages['uris'][$entry_id]);
-					unset($pages['templates'][$entry_id]);
+					unset($pages[$this->EE->config->item('site_id')]['uris'][$entry_id]);
+					unset($pages[$this->EE->config->item('site_id')]['templates'][$entry_id]);
 				}
 
-				$this->EE->config->core_ini['site_pages'] = $pages;
+				$this->EE->config->core_ini['site_pages'][$this->EE->config->item('site_id')] = $pages[$this->EE->config->item('site_id')];
 
 				$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-				$this->EE->db->update('sites', array('site_pages' => base64_encode(serialize($pages))));
+				$this->EE->db->update('sites', array('site_pages' => base64_encode(serialize($pages[$this->EE->config->item('site_id')]))));
 			}
 		}
 		
@@ -1176,7 +1176,7 @@ class Api_channel_entries extends Api {
 			// Check if duplicate uri
 			
 			$static_pages = $this->EE->config->item('site_pages');
-			$uris = $static_pages['uris'];
+			$uris = $static_pages[$this->EE->config->item('site_id')]['uris'];
 			
 			if ($this->entry_id)
 			{

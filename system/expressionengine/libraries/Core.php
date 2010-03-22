@@ -587,12 +587,12 @@ class EE_Core {
 				
 				$match_uri = ($this->EE->uri->uri_string == '') ? '/' : '/'.trim($this->EE->uri->uri_string, '/').'/';
 				
-				if ($pages !== FALSE && count($pages['uris']) > 0 && ($entry_id = array_search($match_uri, $pages['uris'])) !== FALSE)
+				if ($pages !== FALSE && count($pages[$this->EE->config->item('site_id')]['uris']) > 0 && ($entry_id = array_search($match_uri, $pages[$this->EE->config->item('site_id')]['uris'])) !== FALSE)
 				{
 					$query = $this->EE->db->query("SELECT t.template_name, tg.group_name
 										 FROM exp_templates t, exp_template_groups tg 
 										 WHERE t.group_id = tg.group_id 
-										 AND t.template_id = '".$this->EE->db->escape_str($pages['templates'][$entry_id])."'");
+										 AND t.template_id = '".$this->EE->db->escape_str($pages[$this->EE->config->item('site_id')]['templates'][$entry_id])."'");
 										 
 					if ($query->num_rows() > 0)
 					{

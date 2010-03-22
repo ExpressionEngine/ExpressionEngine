@@ -3023,10 +3023,10 @@ class Channel {
 			$row['page_uri']		= '';
 			$row['page_url']		= '';
 
-			if ($site_pages !== FALSE && isset($site_pages['uris'][$row['entry_id']]))
+			if ($site_pages !== FALSE && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']]))
 			{
-				$row['page_uri'] = $site_pages['uris'][$row['entry_id']];
-				$row['page_url'] = $this->EE->functions->create_url($site_pages['uris'][$row['entry_id']]);
+				$row['page_uri'] = $site_pages[$row['site_id']]['uris'][$row['entry_id']];
+				$row['page_url'] = $this->EE->functions->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
 			}
 
 			//  Adjust dates if needed
@@ -3543,10 +3543,10 @@ class Channel {
 			$row['absolute_count']		= $this->p_page + $row['count'];
 			$row['absolute_results']	= ($this->absolute_results === NULL) ? $total_results : $this->absolute_results;
 
-			if ($site_pages !== FALSE && isset($site_pages['uris'][$row['entry_id']]))
+			if ($site_pages !== FALSE && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']]))
 			{
-				$row['page_uri'] = $site_pages['uris'][$row['entry_id']];
-				$row['page_url'] = $this->EE->functions->create_url($site_pages['uris'][$row['entry_id']]);
+				$row['page_uri'] = $site_pages[$row['site_id']]['uris'][$row['entry_id']];
+				$row['page_url'] = $this->EE->functions->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
 			}
 
 			// -------------------------------------------

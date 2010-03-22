@@ -195,6 +195,8 @@ class EE_Config Extends CI_Config {
 		$this->config = $this->default_ini;
 
 		$this->config['site_pages'] = FALSE;
+		// Fetch the query result array
+		$row = $query->row_array();
 	
 		$this->EE->load->helper('string');
 
@@ -218,14 +220,13 @@ class EE_Config Extends CI_Config {
 				
 				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
 				{
-					$this->config['site_pages'] = array('uris' => array(), 'templates' => array());
-					
+					$this->config['site_pages'][$row['site_id']] = array('uris' => array(), 'templates' => array());
 					//$this->config['site_pages']['uris'][1] = '/evil/';
 					//$this->config['site_pages']['templates'][1] = 16;
 					continue;
 				}
 				
-				$this->config['site_pages'] = unserialize($data);
+				$this->config['site_pages'][$row['site_id']] = unserialize($data);
 			}
 			elseif ($name == 'site_bootstrap_checksums')
 			{
@@ -304,13 +305,24 @@ class EE_Config Extends CI_Config {
 			}
 		}
 		
-		// Fetch the query result array
-		$row = $query->row_array();
-		
+
 		// Few More Variables
 		$this->config['site_short_name'] = $row['site_name'];
 		$this->config['site_name'] 		 = $row['site_label']; // Legacy code as 3rd Party modules likely use it
 		
+		// Need this so we know the base url a page belongs to
+		if (isset($this->config['site_pages'][$row['site_id']]))
+		{
+			$url = $this->config['site_url'].'/';
+			$url = (substr($base, -1) != '/') ? $url.'/' : $url;
+			$url .= $this->config['site_index'];
+			$url = (substr($base, -1) != '/') ? $url.'/' : $url;
+
+			$this->config['site_pages'][$row['site_id']]['url'] = $url;
+		}
+
+
+
 		// master tracking override?
 		if ($this->item('disable_all_tracking') == 'y')
 		{

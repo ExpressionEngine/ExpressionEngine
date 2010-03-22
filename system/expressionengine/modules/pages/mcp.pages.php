@@ -109,12 +109,12 @@ class Pages_mcp {
 
 		$pages = $this->EE->config->item('site_pages');
 
-		if ($pages === FALSE OR count($pages['uris']) == 0)
+		if ($pages === FALSE OR count($pages[$this->EE->config->item('site_id')]['uris']) == 0)
 		{
 			return $this->EE->load->view('index', $vars, TRUE);
 		}
 
-		natcasesort($pages['uris']);
+		natcasesort($pages[$this->EE->config->item('site_id')]['uris']);
 		$vars['pages'] = array();
 
 		//  Our Pages
@@ -124,7 +124,7 @@ class Pages_mcp {
 		$spcr = '<img src="'.PATH_CP_GBL_IMG.'clear.gif" border="0"  width="24" height="14" alt="" title="" />';
 		$indent = $spcr.'<img src="'.PATH_CP_GBL_IMG.'cat_marker.gif" border="0"  width="18" height="14" alt="" title="" />';
 
-		foreach($pages['uris'] as $entry_id => $url)
+		foreach($pages[$this->EE->config->item('site_id')]['uris'] as $entry_id => $url)
 		{
 			$url = ($url == '/') ? '/' : '/'.trim($url, '/').'/';
 

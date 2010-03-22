@@ -151,6 +151,32 @@ class EE_Functions {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Creates a url for Pages links
+	 *
+	 * @access	public
+	 * @return	string
+	 */
+	function create_page_url($base_url, $segment, $trailing_slash = true)
+	{
+		// Load the string helper
+		$this->EE->load->helper('string');       
+
+		$base = $base_url.'/'.trim_slashes($segment);
+       
+       if (substr($base, -1) != '/' && $trailing_slash == TRUE)
+       {
+           $base .= '/';
+       }
+       
+       $out = $this->remove_double_slashes($base);
+               
+       return $out;          
+	}
+	
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Fetch site index with URI query string
 	 *
 	 * @access	public
