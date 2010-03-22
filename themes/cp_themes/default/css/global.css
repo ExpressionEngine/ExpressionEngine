@@ -4,13 +4,9 @@
 /*  Standardize for all browsers
 /* -------------------------------------*/
 
-html, body, p, div, h1, h2, h3, h4, h5, h6, ol, ul, li, form, input, select, option {
+html, body, p, img, div, h1, h2, h3, h4, h5, h6, ol, ul, li, form, input, select, option {
 	margin:					0;
 	padding:				0;
-}
-
-optgroup option {
-	padding-left:				10px;
 }
 
 html {
@@ -18,15 +14,17 @@ html {
 }
 
 body {
+	background-color:		#fff;
 	font-family:			Helvetica, Arial, sans-serif;
 	font-size:				76%;
-	background-color:		#fff;
 	min-width: 				930px;
 }
 
+optgroup option {
+	padding-left:			10px;
+}
+
 img {
-	margin:					0;
-	padding:				0;
 	border:					0;
 }
 
@@ -34,76 +32,113 @@ ul {
 	list-style:				none;
 }
 
-a {
+textarea,
+input[type=text],
+input[type=password] {
+	border:					1px solid #b6c0c2;
+	color:					#5f6c74;
+	outline:				0;
+  	padding:				4px;
+	width:					99%;
+	
+	border-radius:			3px;
+	-moz-border-radius:		3px;
+  	-webkit-border-radius:	3px;
+}
+
+textarea {
+	resize:					vertical;
+	-moz-box-sizing:		border-box; /* firefox never does 100% textareas without this */
+}
+
+textarea:focus,
+input[type=text]:focus,
+input[type=password]:focus {
+	border:					2px solid #B2BEC0;
+	padding:				3px;
+}
+
+/* -------------------------------------
+/*  Links
+/* -------------------------------------*/
+
+/* General Link Styles */
+
+a:link {
+	color:					#5f6c74;
 	text-decoration:		none;
+}
+
+a:visited {
+	color:					#859199;
+}
+
+a:hover {
+	color:					#e11842;
+	text-decoration:		underline;
+}
+
+a:focus {
+	color:					#e11842;
+}
+
+
+/* Table Link Styles */
+
+table a:link {
+	color:					#5f6c74;
+	text-decoration:		underline;
+}
+
+table a:visited {
+	color:					#859199;
+}
+
+table a:hover {
+	color:					#e11842;
+}
+
+
+/* Content Area Link Styles */
+
+.pageContents a:link,
+.pageContents a:visited {
+	color:					#E7174B;
+	text-decoration:		none;
+}
+
+.pageContents a:hover {
+	text-decoration:		underline;
+}
+
+.pageContents a.submit {
+	color:					#fff;
+	-moz-border-radius:		3px;
+	-webkit-border-radius:	3px;
+}
+
+
+/* Button Link Styles */
+
+.cp_button {
+	float:					left;
+	margin:					0 14px 14px 14px;
+}
+
+.cp_button a:link,
+.cp_button a:visited {
+	display:				block;
+	padding:      			4px 8px 5px 8px;
+	text-align: 			center;
+	
+	background:				#d0d9e1;
 	color:					#5f6c74;
 }
 
-/* I hate doing this, but FF will not let us override the input outline unless
-   we have a custom style for the input fields.  Sighs.
-*/
-input[type=text], textarea, .field {
-	padding:				4px;
-	border:					1px solid #b6c0c2;
-	border-radius: 3px;
-  	-webkit-border-radius: 3px;
-  	-moz-border-radius:	3px;
-  	color:	#5f6c74;
-}
-
-
-a:focus, input:focus, textarea:focus, select:focus, option:focus, .focused {
-	outline-color:			#8A99AA;
-	outline-color:			rgba(138, 153, 170, 0.5);
-	
-	/* Outline ... Most. Inconsistent. Style. Ever.
-	 *
-	 * Safari - works pretty much as you would expect
-	 * Firefox - works, but looks nothing like Safari
-	 * Opera - total joke - sets outline in addition to its own, won't accept it with -o-
-	 *
-	 * Need a browser prefix or we can't fix webkit. Opera support == ugly default.
-	 *
-	 * @todo IE 8 (looking forward to it)
-	 */
-	-webkit-outline-style:		auto;
-	-webkit-outline-width:		5px;
-
-	-moz-outline-style:			solid;
-	-moz-outline-width:			2px;	
-	-moz-outline-radius:		2px;
-	-moz-outline-offset:		0px;
-}
-
-input[type=text]:focus, textarea:focus {
-	/* webkit is deficient again
-	 * can't line up the outline border on the template editor,
-	 * so using a bit of box-shadow magic to blur the edge.
-	 */
-	-moz-box-shadow:			1px 0px 2px rgba(138, 153, 170, 0.7);
-	-webkit-box-shadow: 		0px 0px 2px rgba(138, 153, 170, 0.7);
-	
-	/* very, very light */
-	outline-color:				rgba(138, 153, 170, 0.3);
-	
-	outline-style:				solid;
-	outline-width:				1px;
-	outline-offset:				0px;
-}
-
-a.first_level:focus {
-	outline-color:				#7A899A;
-}
-
-a:link {
-	color:	#5f6c74;
-	}
-a:visited {
-	color:	#859199;
-	}
-a:hover {
-	color:	#e11842;
-	text-decoration:		underline;
+.cp_button a:hover {
+	background-color:		#e11842;
+	color:					#fff;
+	text-decoration:		none;
 }
 
 /* -------------------------------------
@@ -132,13 +167,14 @@ a:hover {
 
 .tableFooter p {
 	margin-bottom:3px;
-	}
+}
+
 .notice {
 	color:				#ce0000;
 	font-weight: 		bold;
 	margin: 			5px 0;
-/*	display:			block;*/
 }
+
 em.alert {
 	color:				#ce0000;
 	font-weight: 		bold;
@@ -168,27 +204,6 @@ th .go_notice {
 
 .cupRunnethOver {
 	overflow:			auto!important;
-}
-
-.cp_button {
-	margin:				0 14px 14px 14px;
-	float:				left;
-}
-.pageContents .cp_button a:link,
-.pageContents .cp_button a:visited {
-	color:	#5f6c74;
-	}
-.pageContents .cp_button a:hover {
-	background-color:#e11842;
-	text-decoration:none;
-	color:	#fff;
-	}
-.cp_button a {
-	display:			block;
-	padding:      		4px 8px 5px 8px;
-	text-align: 		center;
-	background:			#d0d9e1;
-	color:				#34424b;
 }
 
 ul.bullets li {
@@ -334,15 +349,6 @@ span.button .submit {
 	font-size:			11px;
 }
 
-textarea {
-	resize:				vertical;
-}
-
-table td a {
-	text-decoration:	underline;
-	color:				#e11842;
-}
-
 .overview {
 	margin-bottom:		15px;
 }
@@ -350,8 +356,6 @@ table td a {
 .overview .overviewItemName {
 	width:				30%;
 }
-
-
 
 .overview .overviewItemDesc {
 	width:				65%;
@@ -831,26 +835,6 @@ div#search {
 	color:				#5f6c74;
 	font-size:			12px;
 }
-
-.pageContents a, .pageContents a:link, .pageContents a:visited {
-  color:#E7174B;
-  text-decoration:none;
-}
-
-.pageContents a:hover {
-  text-decoration:underline;
-}
-
-.pageContents a.submit {
-	color:#fff;
-	-moz-border-radius:3px;
-	-webkit-border-radius:3px;
-}
-
-/*.pageContents h3 {
-	margin-bottom: 		0!important;
-	border: 			1px solid #ECF1F4;
-}*/
 
 .pageContents label {
 	font-weight: bold;
@@ -1484,12 +1468,28 @@ if they are all converted, delete this */
 	margin-bottom:		11px;
 }
 
-#template_create textarea {
-	width:100%;
+#template_create textarea, #template_data {
+	width:				100%;
+	border:				none;
+}
+
+#template_create textarea:focus {
+	margin:				0;
+	padding:			0;
 }
 
 #template_create textarea.notes {
-	width: 99%;
+	border:					1px solid #b6c0c2;
+	padding:				3px;
+	width:					99%;
+}
+
+/* @todo find a way to inherit regular textarea style
+ * without breaking main template editor textarea
+ */
+#template_create textarea.notes:focus {
+	border:					2px solid #B2BEC0;
+	padding:				2px;
 }
 
 #template_create {
@@ -2399,13 +2399,8 @@ a#refresh_categories {
 }
 
 .publish_text input, .publish_textarea textarea {
-	border: 			1px solid #b6c0c2;
 	margin-top: 		7px;
 	width: 				98.5%;
-}
-
-.publish_textarea textarea {
-	padding:4px;
 }
 
 .publish_text input {
@@ -2439,11 +2434,6 @@ a#refresh_categories {
 
 #filterMenu table.ui-datepicker-calendar a {color:#fff;}
 #filterMenu table.ui-datepicker-calendar a.ui-state-highlight {color:#505050;}
-
-#publish_tab .publish_textarea textarea {
-	width:				100%;
-	-moz-box-sizing:	border-box; /* firefox never does 100% textareas without this */
-}
 
 .handle {
 	width:				8px;
@@ -3557,7 +3547,9 @@ table.solo {
 }
 #confirmModalContainer .button {margin-left: 17px;}
 
-#confirmModalContainer .message {color:#333; text-align:center; margin:0; padding:12px 4px;}
+#confirmModalContainer .message {
+	color:#333; text-align:center; margin:0; padding:12px 4px;
+}
 
 
 /* Javascript Rules */
@@ -3929,16 +3921,15 @@ html.js #revealSidebarLink {
 
 /* global settings needed for thickbox*/
 
-*{padding: 0; margin: 0;}
-
-fieldset{
+fieldset {
 	border:1px solid #d0d7df;
 	padding:10px;
 	margin:10px 0 10px 0;
-	}
+}
+
 legend {
 	padding:0 10px;
-	}	
+}	
 
 /* thickbox specific link and font settings */
 #TB_window {
@@ -3951,11 +3942,15 @@ legend {
 	color:#666666;
 }
 
-#TB_window a:link {color: #666666;}
-#TB_window a:visited {color: #666666;}
-#TB_window a:hover {color: #000;}
-#TB_window a:active {color: #666666;}
-#TB_window a:focus{color: #666666;}
+#TB_window a:link,
+#TB_window a:active,
+#TB_window a:visited,
+#TB_window a:focus {
+	color: #666666;
+}
+#TB_window a:hover {
+	color: #000;
+}
 
 /* Thickbox Settings */
 #TB_overlay {
@@ -3967,7 +3962,9 @@ legend {
 	width:100%;
 }
 
-.TB_overlayMacFFBGHack {background: url('<?=$cp_theme_url?>images/macFFBgHack.png') repeat;}
+.TB_overlayMacFFBGHack {
+	background: url('<?=$cp_theme_url?>images/macFFBgHack.png') repeat;
+}
 .TB_overlayBG {
 	background-color:#000;
 	filter:alpha(opacity=85);
@@ -3975,26 +3972,14 @@ legend {
 	opacity: 0.85;
 }
 
-* html #TB_overlay { /* ie6 hack */
-     position: absolute;
-     height: expression(document.body.scrollHeight > document.body.offsetHeight ? document.body.scrollHeight : document.body.offsetHeight + 'px');
-}
-
 #TB_window {
 	position: fixed;
-/*	background: #ffffff;
-	border: 4px solid #525252;
-*/	z-index: 10!important;
+	z-index: 10!important;
 	color:#000000;
 	display:none;
 	text-align:left;
 	top:50%;
 	left:50%;
-}
-
-* html #TB_window { /* ie6 hack */
-position: absolute;
-margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = document.documentElement && document.documentElement.scrollTop || document.body.scrollTop) + 'px');
 }
 
 #TB_window #TB_Image {
@@ -4006,54 +3991,52 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
 	border-left: 1px solid #666;
 }
 
-#TB_caption{
+#TB_caption {
 	height:25px;
 	padding:7px 30px 10px 25px;
 	float:left;
 }
 
-#TB_closeWindow{
+#TB_closeWindow {
 	height:25px;
 	padding:11px 25px 10px 0;
 	float:right;
 }
 
-#TB_closeAjaxWindow{
+#TB_closeAjaxWindow {
 	padding:7px 10px 5px 0;
 	margin-bottom:1px;
 	text-align:right;
 	float:right;
 }
 
-#TB_ajaxWindowTitle{
+#TB_ajaxWindowTitle {
 	float:left;
 	padding:7px 0 5px 10px;
 	margin-bottom:1px;
 }
 
-#TB_title{
+#TB_title {
 	background-color:#e8e8e8;
 	height:27px;
 }
 
-#TB_ajaxContent{
+#TB_ajaxContent {
 	clear:both;
-/*	padding:2px 15px 15px 15px;*/
 	overflow:auto;
-/*	overflow:hidden;*/
 	text-align:left;
 	line-height:1.4em;
 }
 
-#TB_ajaxContent.TB_modal{
+#TB_ajaxContent.TB_modal {
 	padding:0px;
 }
 
-#TB_ajaxContent p{
+#TB_ajaxContent p {
 	padding:5px 0px 5px 0px;
 }
 
-#TB_load{
+#TB_load {
 	position: fixed;
 	display:none;
 	height:13px;
@@ -4064,12 +4047,7 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
 	margin: -6px 0 0 -104px; /* -height/2 0 0 -width/2 */
 }
 
-* html #TB_load { /* ie6 hack */
-position: absolute;
-margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = document.documentElement && document.documentElement.scrollTop || document.body.scrollTop) + 'px');
-}
-
-#TB_HideSelect{
+#TB_HideSelect {
 	z-index:9;
 	position:fixed;
 	top: 0;
@@ -4083,12 +4061,7 @@ margin-top: expression(0 - parseInt(this.offsetHeight / 2) + (TBWindowMargin = d
 	width:100%;
 }
 
-* html #TB_HideSelect { /* ie6 hack */
-     position: absolute;
-     height: expression(document.body.scrollHeight > document.body.offsetHeight ? document.body.scrollHeight : document.body.offsetHeight + 'px');
-}
-
-#TB_iframeContent{
+#TB_iframeContent {
 	clear:both;
 	border:none;
 	margin-bottom:-1px;

@@ -53,8 +53,7 @@ if ($EE_view_disable !== TRUE)
 									'id'	=> 'template_data',
 									'cols'	=> '100',
 									'rows'	=> $prefs['template_size'],
-									'value' => $template_data,
-									'style' => 'border: 0;'
+									'value' => $template_data
 							));?>
 
 
