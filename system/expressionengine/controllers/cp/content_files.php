@@ -719,6 +719,7 @@ class Content_files extends Controller {
 
 		$vars['rotate_selected'] = 'none';
 
+		$this->javascript->set_global('lang.exit_apply_changes', $this->lang->line('exit_apply_changes'));
 		$this->javascript->compile();
 
 		$this->load->view('content/prep_edit_image', $vars);
