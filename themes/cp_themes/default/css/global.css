@@ -71,6 +71,7 @@ a:link {
 
 a:visited {
 	color:					#859199;
+	text-decoration:		none;
 }
 
 a:hover {
@@ -92,6 +93,7 @@ table a:link {
 
 table a:visited {
 	color:					#859199;
+	text-decoration:		underline;
 }
 
 table a:hover {
