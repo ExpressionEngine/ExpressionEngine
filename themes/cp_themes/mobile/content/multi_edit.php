@@ -54,8 +54,6 @@ if ($EE_view_disable !== TRUE)
 			<?php endif;?>
 			</li>
 		</ul>
-	<?php endif;?>
-
 	<hr />
 
 	<?php endforeach;?>
