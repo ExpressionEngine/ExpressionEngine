@@ -53,7 +53,7 @@ if ($EE_view_disable !== TRUE)
                 </div>
 
 				<div>
-					<?=lang('keywords', 'keywords')?> <?=form_input($keywords, NULL,  'class="half_width shun"')?><br />
+					<?=lang('keywords', 'keywords')?> <?=form_input($keywords, NULL,  'class="field shun"')?><br />
 					<?=form_checkbox('exact_match', 'yes', $exact_match, 'id="exact_match"')?> <?=lang('exact_match', 'exact_match').NBS.NBS?>
 					<?=form_dropdown('search_in', $search_in_options, $search_in_selected, 'id="f_search_in"').NBS.NBS?>
 					<?=form_submit('submit', lang('search'), 'class="submit" id="search_button"')?>
