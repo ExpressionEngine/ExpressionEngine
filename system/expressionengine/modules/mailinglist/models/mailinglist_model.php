@@ -137,8 +137,6 @@ class Mailinglist_model extends CI_Model  {
 
 		if ($count != 0)
 		{
-			$this->form_validation->set_message('_unique_short_name', $this->lang->line('ml_short_name_taken'));
-			
 			return FALSE;
 		}
 
