@@ -213,9 +213,11 @@ class Api_channel_fields extends Api {
 			if ( ! file_exists($path.$file))
 			{
 				$path = PATH_THIRD.$field_type.'/';
+				
 				if ( ! file_exists($path.$file))
 				{
-					return FALSE;
+					show_error(sprintf($this->EE->lang->line('unable_to_load_field_type'),
+					 						strtolower($file)));
 				}
 			}
 			
@@ -266,7 +268,7 @@ class Api_channel_fields extends Api {
 			$this->include_handler($field_type);
 			$this->field_types[$field_type] = new $class();
 		}
-		
+
 		if ($field_id && ! $frontend)
 		{
 			$settings	= $this->get_settings($field_id);
