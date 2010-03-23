@@ -21,7 +21,7 @@ if ($EE_view_disable !== TRUE)
 		<?php
 		    $this->table->set_template($cp_pad_table_template);
 		    $this->table->set_heading(
-                array('data' => lang('preference'), 'style' => 'width:90%;'),
+                array('data' => lang('preference'), 'style' => 'width:50%;'),
 				lang('setting')
 			);
 		

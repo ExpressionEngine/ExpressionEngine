@@ -58,6 +58,11 @@ input[type=password]:focus {
 	padding:				3px;
 }
 
+
+input.half_width {
+	width:45%;
+}
+
 /* -------------------------------------
 /*  Links
 /* -------------------------------------*/

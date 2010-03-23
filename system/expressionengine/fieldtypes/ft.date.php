@@ -116,7 +116,8 @@ class Date_ft extends EE_Fieldtype {
 		$r = form_input(array(
 			'name'	=> $this->field_name,
 			'id'	=> $this->field_name,
-			'value'	=> $custom_date
+			'value'	=> $custom_date,
+			'class'	=> 'half_width'
 		));
 		
 		$r .= NBS.NBS.NBS.NBS;

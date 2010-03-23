@@ -1226,11 +1226,11 @@ class Search {
 		// This allows the channel {absolute_count} variable to work
 			$channel->p_page = ($per_page * $current_page) - $per_page;
 
-			$channel->fetch_custom_channel_fields();
+		$channel->fetch_custom_channel_fields();
 		$channel->fetch_custom_member_fields();
 		$channel->query = $this->EE->db->query($sql);
 		
-			if ($channel->query->num_rows() == 0)
+		if ($channel->query->num_rows() == 0)
 		{
 			return $this->EE->TMPL->no_results();
 		}
