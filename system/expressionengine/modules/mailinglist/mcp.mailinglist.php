@@ -34,7 +34,6 @@ class Mailinglist_mcp {
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-	
 		
 		$this->EE->cp->set_right_nav(array(
 		                'ml_create_new' => BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=edit_mailing_list', 
@@ -54,31 +53,13 @@ class Mailinglist_mcp {
 		$this->EE->load->library('javascript');
 		$this->EE->load->helper('form');
 
-		$this->EE->jquery->tablesorter('.mainTable', '{
-			headers: {2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}, 6: {sorter: false}},
-			widgets: ["zebra"]
-		}');
-
-		$this->EE->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);'
-			)
-		);
+		$this->EE->cp->add_js_script(array('fp_module' => 'mailinglist'));
 
 		$vars['cp_page_title'] = $this->EE->lang->line('ml_mailinglist');
 
-		$this->EE->db->order_by('list_title');
-		$mailinglists = $this->EE->db->get('mailing_lists');
+		$this->EE->load->model('mailinglist_model');
+		
+		$mailinglists = $this->EE->mailinglist_model->get_mailinglists();
 
 		$vars['mailinglists'] = array();
 		$vars['list_id_options'] = array();
@@ -134,6 +115,7 @@ EOF;
 		$this->EE->load->library('javascript');
 		$this->EE->load->library('form_validation');
 		$this->EE->load->helper('form');
+		$this->EE->load->model('mailinglist_model');
 		
 		$this->EE->form_validation->set_rules('list_name', 'lang:ml_mailinglist_short_name', 'required|alpha_dash|callback__unique_short_name');
 		$this->EE->form_validation->set_rules('list_title', 'lang:ml_mailinglist_long_name', 'required');
@@ -146,8 +128,9 @@ EOF;
 
 		if (is_numeric($this->EE->input->get_post('list_id')))
 		{
-			$this->EE->db->where('list_id', $this->EE->input->get_post('list_id'));
-			$query = $this->EE->db->get('mailing_lists');
+			$query = $this->EE->mailinglist_model->get_list_by_id(
+														$this->EE->input->get_post('list_id'),
+														'list_title, list_template');			
 
 			if ($query->num_rows() == 1)
 			{
@@ -180,15 +163,7 @@ EOF;
 							'list_template'	=> addslashes($this->default_template_data())
 						);
 
-			if ($list_id == FALSE)
-			{
-				$this->EE->db->insert('mailing_lists', $data);
-			}
-			else
-			{
-				$this->EE->db->where('list_id', $list_id);
-				$this->EE->db->update('mailing_lists', $data);
-			}
+			$this->EE->mailinglist_model->update_mailinglist($list_id, $data);
 			
 			$message = ($list_id == FALSE) ? $this->EE->lang->line('ml_mailinglist_created') : $this->EE->lang->line('ml_mailinglist_updated');
 			
@@ -204,20 +179,17 @@ EOF;
 	  */
 	function _unique_short_name($str)
 	{
-		if ($list_id = $this->EE->form_validation->old_value('list_id'))
-		{
-			$this->EE->db->where('list_id !=', $list_id);
-		}
-
-		$this->EE->db->where('list_name', $str);
-
-		if ($this->EE->db->count_all_results('mailing_lists') > 0)
+		$this->EE->load->model('mailinglist_model');
+		
+		if ($this->EE->mailinglist_model->unique_shortname($this->EE->form_validation->old_value('list_id'), $str) === FALSE)
 		{
 			$this->EE->form_validation->set_message('_unique_short_name', $this->EE->lang->line('ml_short_name_taken'));
 			return FALSE;
 		}
-		
-		return TRUE;
+		else
+		{
+			return TRUE;
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -233,10 +205,10 @@ EOF;
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-
-		$this->EE->db->select('list_title, list_template');
-		$this->EE->db->where('list_id', $list_id);
-		$list = $this->EE->db->get('mailing_lists');
+		
+		$this->EE->load->model('mailinglist_model');
+		
+		$list = $this->EE->mailinglist_model->get_list_by_id($list_id, 'list_title, list_template');
 
 		if ($list->num_rows() == 0)
 		{
@@ -269,10 +241,10 @@ EOF;
 		{
 			return FALSE;
 		}
-
-		$this->EE->db->set('list_template', $this->EE->input->post('template_data'));
-		$this->EE->db->where('list_id', $list_id);
-		$this->EE->db->update('mailing_lists');
+		
+		$this->EE->load->model('mailinglist_model');
+		
+		$this->EE->mailinglist_model->update_template($list_id, $this->EE->input->post('template_data'));
 		
 		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('template_updated'));
 		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
