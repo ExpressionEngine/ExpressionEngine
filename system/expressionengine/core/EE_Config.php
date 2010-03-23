@@ -216,8 +216,8 @@ class EE_Config Extends CI_Config {
 			}
 			elseif ($name == 'site_pages')
 			{
-				$data = base64_decode($data);
-				
+				$data =  base64_decode($data);
+
 				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
 				{
 					$this->config['site_pages'][$row['site_id']] = array('uris' => array(), 'templates' => array());
@@ -226,7 +226,7 @@ class EE_Config Extends CI_Config {
 					continue;
 				}
 				
-				$this->config['site_pages'][$row['site_id']] = unserialize($data);
+				$this->config['site_pages'] = unserialize($data);
 			}
 			elseif ($name == 'site_bootstrap_checksums')
 			{
@@ -343,7 +343,6 @@ class EE_Config Extends CI_Config {
 		{
 			$this->EE->db->cache_on();
 		}
-
 	}
 
 	// --------------------------------------------------------------------

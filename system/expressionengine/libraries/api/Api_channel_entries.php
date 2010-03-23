@@ -1883,16 +1883,27 @@ class Api_channel_entries extends Api {
 		
 		if ($this->EE->config->item('site_pages') !== FALSE && $this->_cache['pages_enabled'] && $this->EE->input->post('pages_uri') != '/example/pages/uri/' && $this->EE->input->post('pages_uri') != '')
 		{
+			//echo '<pre>';
+			//echo 'a';
+			//print_r($this->_cache['static_pages']);
+
+			
 			if (isset($data['pages_template_id']) && is_numeric($data['pages_template_id']))
 			{
-				$this->_cache['static_pages']['uris'][$this->entry_id]		= preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '', str_replace($this->EE->config->item('site_url'), '', $data['pages_uri']));
-				$this->_cache['static_pages']['uris'][$this->entry_id]		= '/'.trim($this->_cache['static_pages']['uris'][$this->entry_id], '/').'/';
-				$this->_cache['static_pages']['templates'][$this->entry_id]	= preg_replace("#[^0-9]+$#i", '', $data['pages_template_id']);
+				$site_id = $this->EE->config->item('site_id');
+				
+				$this->_cache['static_pages'][$site_id]['uris'][$this->entry_id]		= preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '', str_replace($this->EE->config->item('site_url'), '', $data['pages_uri']));
+				$this->_cache['static_pages'][$site_id]['uris'][$this->entry_id]		= '/'.trim($this->_cache['static_pages'][$site_id]['uris'][$this->entry_id], '/').'/';
+				$this->_cache['static_pages'][$site_id]['templates'][$this->entry_id]	= preg_replace("#[^0-9]+$#i", '', $data['pages_template_id']);
 
-				if ($this->_cache['static_pages']['uris'][$this->entry_id] == '//')
+				if ($this->_cache['static_pages'][$site_id]['uris'][$this->entry_id] == '//')
 				{
-					$this->_cache['static_pages']['uris'][$this->entry_id] = '/';
+					$this->_cache['static_pages'][$site_id]['uris'][$this->entry_id] = '/';
 				}
+
+//echo 'b';
+			//print_r($this->_cache['static_pages']);
+			//exit;
 
 				$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
 				$this->EE->db->update('sites', array('site_pages' => base64_encode(serialize($this->_cache['static_pages']))) );

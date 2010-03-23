@@ -1322,9 +1322,11 @@ class Content_publish extends Controller {
 		$vars['pages_uri']	= '';
 		$vars['pages_dropdown'] = array();
 		$vars['pages_dropdown_selected'] = '';
+		$pages = FALSE;
 
-		if ($pages = $this->config->item('site_pages') !== FALSE)
+		if ($this->config->item('site_pages') !== FALSE)
 		{
+			$pages = $this->config->item('site_pages');
 			$pages_uri = '';
 			$pages_template_id = '';
 
@@ -1709,7 +1711,7 @@ class Content_publish extends Controller {
 		}
 		else
 		{
-print_r($this->api_channel_fields->settings);
+//print_r($this->api_channel_fields->settings);
 
 			foreach($this->api_channel_fields->settings as $field => $values)
 			{
