@@ -239,7 +239,8 @@ class Javascript extends Controller {
 			'ui'		=> PATH_JQUERY.'ui/ui.',
 			'file'		=> APPPATH.'javascript/'.$folder.'/',
 			'plugin'	=> PATH_JQUERY.'plugins/',
-			'package'	=> PATH_THIRD
+			'package'	=> PATH_THIRD,
+			'fp_module'	=> PATH_MOD
 		);
 		
 		$mock_name = '';
@@ -251,13 +252,13 @@ class Javascript extends Controller {
 			
 			foreach($files as $file)
 			{
-				if ($type == 'package')
+				if ($type == 'package' OR $type == 'fp_module')
 				{
 					$file = $file.'/javascript/'.$file;
 				}
 				
 				$file = $path.$file.'.js';
-				
+
 				if (file_exists($file))
 				{
 					$contents .= file_get_contents($file)."\n\n";
