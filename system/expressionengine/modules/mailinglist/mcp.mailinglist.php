@@ -126,22 +126,22 @@ EOF;
 		$vars['list_name']	= '';
 		$vars['list_title']	= '';
 
-		if (is_numeric($this->EE->input->get_post('list_id')))
+		if ($this->EE->input->get_post('list_id') != 0)
 		{
 			$query = $this->EE->mailinglist_model->get_list_by_id(
-														$this->EE->input->get_post('list_id'),
-														'list_title, list_template');			
+													$this->EE->input->get_post('list_id'),
+													'list_title, list_template, list_id, list_name');			
 
 			if ($query->num_rows() == 1)
 			{
-				$list_id = $query->row('list_id') ;
+				$list_id = $query->row('list_id');
 				$vars['list_title'] = $query->row('list_title');
 				$vars['list_name'] = $query->row('list_name');
 				
 				$this->EE->form_validation->set_old_value('list_id', $list_id);
 			}
 		}
-		
+
 		if ($this->EE->form_validation->run() === FALSE)
 		{
 			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist', $this->EE->lang->line('ml_mailinglist'));
@@ -180,8 +180,8 @@ EOF;
 	function _unique_short_name($str)
 	{
 		$this->EE->load->model('mailinglist_model');
-		
-		if ($this->EE->mailinglist_model->unique_shortname($this->EE->form_validation->old_value('list_id'), $str) === FALSE)
+
+		if ( ! $this->EE->mailinglist_model->unique_shortname($this->EE->form_validation->old_value('list_id'), $str))
 		{
 			$this->EE->form_validation->set_message('_unique_short_name', $this->EE->lang->line('ml_short_name_taken'));
 			return FALSE;
@@ -277,16 +277,15 @@ EOF;
 		{
 			$vars['damned'][] = $val;
 		}
-
-		$this->EE->db->select('list_title');
-		$this->EE->db->where_in('list_id', $_POST['toggle']);
-		$query = $this->EE->db->get('mailing_lists');
+		
+		$this->EE->load->model('mailinglist_model');
+		
+		$query = $this->EE->mailinglist_model->get_list_by_id($_POST['toggle'], 'list_title');
 
 		$vars['list_names'] = array();
 
 		foreach ($query->result() as $row)
 		{
-
 			$vars['list_names'][] = $row->list_title;
 		}
 
@@ -307,10 +306,9 @@ EOF;
 			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
 		}
 
-		$this->EE->db->where_in('list_id', $_POST['delete']);
-		$this->EE->db->delete(array('mailing_lists', 'mailing_list'));
-
-		$message = ($this->EE->db->affected_rows() == 1) ? $this->EE->lang->line('ml_list_deleted') : $this->EE->lang->line('ml_lists_deleted');
+		$this->EE->load->model('mailinglist_model');
+		
+		$message = $this->EE->mailinglist_model->delete_mailinglist($_POST['delete']);
 
 		$this->EE->session->set_flashdata('message_success', $message);
 		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
@@ -335,10 +333,10 @@ EOF;
 		$subscribe = ($this->EE->input->get_post('sub_action') == 'unsubscribe') ? FALSE : TRUE;
 
 		$list_id = $this->EE->input->get_post('list_id');
-
-		$this->EE->db->select('email');
-		$this->EE->db->where('list_id', $list_id);
-		$query = $this->EE->db->get('mailing_list');
+		
+		$this->EE->load->model('mailinglist_model');
+		
+		$query = $this->EE->mailinglist_model->get_list_by_id($list_id, 'email');
 
 		$current = array();
 
@@ -398,13 +396,12 @@ EOF;
 								'email'			=> $addr,
 								'ip_address'	=> $this->EE->input->ip_address()
 							);
-				$this->EE->db->insert('mailing_list', $data);
+				
+				$this->EE->mailinglist_model->insert_subscription($data);
 			}
 			else
 			{
-				$this->EE->db->where('email', $addr);
-				$this->EE->db->where('list_id', $list_id);
-				$this->EE->db->delete('mailing_list');
+				$this->EE->mailinglist_model->delete_subscription($list_id, $addr);
 			}
 
 			$vars['good_email']++;
@@ -458,178 +455,13 @@ EOF;
 		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist', $this->EE->lang->line('ml_mailinglist'));
 
 		$vars['cp_page_title'] = $this->EE->lang->line('ml_view_mailinglist');
-		$this->EE->cp->add_js_script(array('plugin' => 'dataTables'));
+		$this->EE->cp->add_js_script(array('plugin' => 'dataTables',	
+											'fp_module' => 'mailinglist'));
 
-
-	$this->EE->javascript->output('
-var oCache = {
-	iCacheLower: -1
-};
-
-function fnSetKey( aoData, sKey, mValue )
-{
-	for ( var i=0, iLen=aoData.length ; i<iLen ; i++ )
-	{
-		if ( aoData[i].name == sKey )
-		{
-			aoData[i].value = mValue;
-		}
-	}
-}
-
-function fnGetKey( aoData, sKey )
-{
-	for ( var i=0, iLen=aoData.length ; i<iLen ; i++ )
-	{
-		if ( aoData[i].name == sKey )
-		{
-			return aoData[i].value;
-		}
-	}
-	return null;
-}
-
-function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
-	var iPipe = '.$this->pipe_length.';  /* Ajust the pipe size */
-	
-	var bNeedServer = false;
-	var sEcho = fnGetKey(aoData, "sEcho");
-	var iRequestStart = fnGetKey(aoData, "iDisplayStart");
-	var iRequestLength = fnGetKey(aoData, "iDisplayLength");
-	var iRequestEnd = iRequestStart + iRequestLength;
-	var email = document.getElementById("email");
-    var list_id = document.getElementById("list_id");
-
-		aoData.push( 
-		 { "name": "email", "value": email.value },
-         { "name": "list_id", "value": list_id.value }
-		 );
-	
-	oCache.iDisplayStart = iRequestStart;
-	
-	/* outside pipeline? */
-	if ( oCache.iCacheLower < 0 || iRequestStart < oCache.iCacheLower || iRequestEnd > oCache.iCacheUpper )
-	{
-		bNeedServer = true;
-	}
-	
-	/* sorting etc changed? */
-	if ( oCache.lastRequest && !bNeedServer )
-	{
-		for( var i=0, iLen=aoData.length ; i<iLen ; i++ )
-		{
-			if ( aoData[i].name != "iDisplayStart" && aoData[i].name != "iDisplayLength" && aoData[i].name != "sEcho" )
-			{
-				if ( aoData[i].value != oCache.lastRequest[i].value )
-				{
-					bNeedServer = true;
-					break;
-				}
-			}
-		}
-	}
-	
-	/* Store the request for checking next time around */
-	oCache.lastRequest = aoData.slice();
-	
-	if ( bNeedServer )
-	{
-		if ( iRequestStart < oCache.iCacheLower )
-		{
-			iRequestStart = iRequestStart - (iRequestLength*(iPipe-1));
-			if ( iRequestStart < 0 )
-			{
-				iRequestStart = 0;
-			}
-		}
-		
-		oCache.iCacheLower = iRequestStart;
-		oCache.iCacheUpper = iRequestStart + (iRequestLength * iPipe);
-		oCache.iDisplayLength = fnGetKey( aoData, "iDisplayLength" );
-		fnSetKey( aoData, "iDisplayStart", iRequestStart );
-		fnSetKey( aoData, "iDisplayLength", iRequestLength*iPipe );
-		
-				aoData.push( 
-				 { "name": "email", "value": email.value },
-        	     { "name": "list_id", "value": list_id.value }
-				 );
-		
-		
-		$.getJSON( sSource, aoData, function (json) { 
-			/* Callback processing */
-			oCache.lastJson = jQuery.extend(true, {}, json);
- 			
-			if ( oCache.iCacheLower != oCache.iDisplayStart )
-			{
-				json.aaData.splice( 0, oCache.iDisplayStart-oCache.iCacheLower );
-			}
-			json.aaData.splice( oCache.iDisplayLength, json.aaData.length );
-			
-			fnCallback(json)
-		} );
-	}
-	else
-	{
-		json = jQuery.extend(true, {}, oCache.lastJson);
-		json.sEcho = sEcho; /* Update the echo for each response */
-		json.aaData.splice( 0, iRequestStart-oCache.iCacheLower );
-		json.aaData.splice( iRequestLength, json.aaData.length );
-		fnCallback(json);
-		return;
-	}
-}
-
-	
-	oTable = $(".mainTable").dataTable( {	
-			"sPaginationType": "full_numbers",
-			"bLengthChange": false,
-			"bFilter": false,
-			"sWrapper": false,
-			"sInfo": false,
-			"bAutoWidth": false,
-			"iDisplayLength": '.$this->perpage.',  
-
-		"aoColumns": [null, null, null, { "bSortable" : false } ],
-			
-			
-		"oLanguage": {
-			"sZeroRecords": "'.$this->EE->lang->line('ml_no_results').'",
-			
-			"oPaginate": {
-				"sFirst": "<img src=\"'.$this->EE->cp->cp_theme_url.'images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-				"sPrevious": "<img src=\"'.$this->EE->cp->cp_theme_url.'images/pagination_prev_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-				"sNext": "<img src=\"'.$this->EE->cp->cp_theme_url.'images/pagination_next_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />", 
-				"sLast": "<img src=\"'.$this->EE->cp->cp_theme_url.'images/pagination_last_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />"
-			}
-		},
-		
-			
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": EE.BASE+"&C=addons_modules&M=show_module_cp&module=mailinglist&method=view_ajax_filter",
-			"fnServerData": fnDataTablesPipeline
-
-	} );
-	
-		$("select#list_id").change(function () {
-				oTable.fnDraw();
-			});		
-
-
-
-var delayed;
-
-$("#email").keyup(function() {
-     clearTimeout(delayed);
-     var value = this.value;
-     if (value) {
-         delayed = setTimeout(function() {
-	oTable.fnDraw();
-         }, 300);
-     }
-})		
-		
-		');		
+		$this->EE->javascript->set_global('datatables.enabled', 'true');
+		$this->EE->javascript->set_global('datatables.pipe_length', $this->pipe_length);
+		$this->EE->javascript->set_global('datatables.per_page', $this->perpage);
+		$this->EE->javascript->set_global('datatables.LANG.no_results', $this->EE->lang->line('ml_no_results'));
 
 
 // this worked when you cleared the field- but no delay
@@ -638,30 +470,12 @@ $("#email").keyup(function() {
 		//oTable.fnDraw();
 		//} );	
 
-
-		$this->EE->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);'
-			)
-		);
-
 		$list_id = $this->EE->input->get_post('list_id');
 		$email = $this->EE->input->get_post('email');
 		$rownum = ($this->EE->input->get_post('rownum') != '') ? $this->EE->input->get_post('rownum') : 0;
 
 		// some page defaults
 		$vars['form_hidden'] = '';
-
 
 		if ($list_id != '')
 		{
@@ -685,8 +499,9 @@ $("#email").keyup(function() {
 		$vars['subscribers'] = array();
 
 		$row_count = 1;
-		$query = $this->mailinglist_search($list_id, $email, '', $rownum);
-
+		
+		$this->EE->load->model('mailinglist_model');
+		$query = $this->EE->mailinglist_model->mailinglist_search($list_id, $email, '', $rownum, $this->perpage);
 
 		foreach ($query->result() as $row)
 		{
@@ -726,10 +541,17 @@ $("#email").keyup(function() {
 		return $this->EE->load->view('view', $vars, TRUE);
 	}
 
-
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * View Ajax Filter
+	 */
 	function view_ajax_filter()
 	{
 		$this->EE->output->enable_profiler(FALSE);
+		
+		$this->EE->load->model('mailinglist_model');
+		
 		$col_map = array('email', 'ip_address', 'list_title');
 		
 		$email = ($this->EE->input->get_post('email')) ? $this->EE->input->get_post('email') : '';
@@ -759,10 +581,10 @@ $("#email").keyup(function() {
 		{
 			$lists[$row['list_id']] = $row['list_title'];
 		}
+		
+		$perpage = ($perpage == '') ? $this->perpage: $perpage;
 
-
-		$query = $this->mailinglist_search($list_id, $email, $order, $offset, $perpage);
-
+		$query = $this->EE->mailinglist_model->mailinglist_search($list_id, $email, $order, $offset, $perpage);
 		
 		// Note- we can just use $f_total for both if we choose not to show total records
 		// $f_total must be accurate for proper pagination
@@ -777,7 +599,6 @@ $("#email").keyup(function() {
 		{
 			$f_total = $total;
 		}
-
 
 		$j_response['sEcho'] = $sEcho;
 		$j_response['iTotalRecords'] = $total;
@@ -799,54 +620,7 @@ $("#email").keyup(function() {
 		}
 
 		$j_response['aaData'] = $tdata;	
-		$sOutput = $this->EE->javascript->generate_json($j_response, TRUE);
-
-		die($sOutput);
-	}
-
-	function mailinglist_search($list_id = '', $email = '', $order = array(), $rownum = 0, $perpage = '')
-	{
-		$perpage = ($perpage == '') ? $this->perpage: $perpage;
-		$do_join = FALSE;
-			
-		$this->EE->db->select('user_id, mailing_list.list_id, email, ip_address');
-		$this->EE->db->from('mailing_list');
-
-		if (is_array($order) && count($order) > 0)
-		{
-			foreach ($order as $key => $val)
-			{
-				if ($key != 'list_title')
-				{
-					$this->EE->db->order_by($key, $val);
-				}
-				elseif ($key == 'list_title' && $list_id == '')
-				{
-					$do_join = TRUE;
-					$this->EE->db->order_by($key, $val);
-				}
-			}
-		}
-
-		if ($do_join == TRUE)
-		{
-			$this->EE->db->join('mailing_lists', 'mailing_lists.list_id = mailing_list.list_id', 'left');
-		}
-
-		if ($list_id != '')
-		{
-			$this->EE->db->where('list_id', $list_id);
-		}
-
-		if ($email)
-		{
-			$this->EE->db->like('email', urldecode($email));
-		}
-
-		$this->EE->db->limit($perpage, $rownum);
-		$query = $this->EE->db->get();
-		
-		return $query;
+		$sOutput = $this->EE->output->send_ajax_response($j_response);
 	}
 
 	// --------------------------------------------------------------------
@@ -891,10 +665,8 @@ $("#email").keyup(function() {
 			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=view');
 		}
 
-		$this->EE->db->where_in('user_id', $_POST['delete']);
-		$this->EE->db->delete('mailing_list');
-
-		$message = ($this->EE->db->affected_rows() == 1) ? $this->EE->lang->line('ml_email_deleted') : $this->EE->lang->line('ml_emails_deleted');
+		$this->EE->load->model('mailinglist_model');
+		$message = $this->EE->mailinglist_model->delete_email($_POST['delete']);
 
 		$this->EE->session->set_flashdata('message_success', $message);
 		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist');
