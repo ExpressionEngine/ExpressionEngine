@@ -115,6 +115,9 @@ $lang = array(
 'nonexistent_page' =>
 'The page you requested was not found',
 
+'unable_to_load_field_type' =>
+'Unable to load requested field type file:  %s.<br />
+Confirm the fieldtype file is located in the expressionengine/third_party/ directory',
 
 //----------------------------
 // Member Groups
@@ -185,7 +188,6 @@ $lang = array(
 
 'new_login_info' => 
 'Here is your new login information:',
-
 
 //----------------------------
 // Date

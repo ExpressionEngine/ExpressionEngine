@@ -942,6 +942,10 @@ $lang = array(
 'unable_to_load_tab' => 
 'Unable to load requested publish tab file: %s',
 
+'unable_to_load_field_type' =>
+'Unable to load requested field type file:  %s.<br />
+Confirm the fieldtype file is located in the expressionengine/third_party/ directory',
+
 ''=>''
 );
 
