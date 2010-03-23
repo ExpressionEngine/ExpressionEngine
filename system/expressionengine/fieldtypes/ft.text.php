@@ -79,10 +79,11 @@ class Text_ft extends EE_Fieldtype {
 	function display_field($data)
 	{
 		return form_input(array(
-			'name'	=> $this->field_name,
-			'id'	=> $this->field_name,
-			'value'	=> $data,
-			'dir'	=> $this->settings['field_text_direction']
+			'name'		=> $this->field_name,
+			'id'		=> $this->field_name,
+			'value'		=> $data,
+			'dir'		=> $this->settings['field_text_direction'],
+			'maxlength'	=> $this->settings['field_maxl']
 		));
 	}
 	
