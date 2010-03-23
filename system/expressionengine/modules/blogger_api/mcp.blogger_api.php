@@ -46,33 +46,15 @@ class Blogger_api_mcp {
 		$this->EE->load->library('table');
 		$this->EE->load->library('javascript');
 
-		$this->EE->jquery->tablesorter('.mainTable', '{
-			headers: {2: {sorter: false}},
-			widgets: ["zebra"]
-		}');
-
-		$this->EE->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);'
-			)
-		);
+		$this->EE->cp->add_js_script(array('fp_module' => 'blogger_api'));
 
 		$vars['cp_page_title'] = $this->EE->lang->line('blogger_api_module_name');
 
 		$api_url = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->cp->fetch_action_id('Blogger_api', 'incoming');
 
-		$this->EE->db->select('blogger_pref_name, blogger_id');
-		$query = $this->EE->db->get('blogger');
+		$this->EE->load->model('blogger_api_model');
+		
+		$query = $this->EE->blogger_api_model->get_blogger_prefs();
 
 		$this->EE->javascript->compile();
 		
@@ -137,7 +119,9 @@ class Blogger_api_mcp {
 		{
 			$vars['submit_text']	= 'update';
 
-			$query = $this->EE->db->get_where('blogger', array('blogger_id' => $id));
+			$this->EE->load->module('blogger_api_model');
+			
+			$query = $this->EE->blogger_api_model->get_prefs_by_id($id)
 
 			if ($query->num_rows() == 0)
 			{
@@ -159,10 +143,10 @@ class Blogger_api_mcp {
 
 		// Fetch Channels
 		$channel_array = array();
-
-		$this->EE->db->select('channel_id, field_group, channel_title');
-		$this->EE->db->order_by('channel_title');
-		$query = $this->EE->db->get('channels');
+		
+		$this->EE->load->model('channel_model');
+		$fields = array('channel_id', 'field_group', 'channel_title');
+		$query = $this->EE->channel_model->get_channels($this->EE->config->item('site_id'), $fields);
 
 		if ($query->num_rows() > 0)
 		{
@@ -174,10 +158,10 @@ class Blogger_api_mcp {
 
 		// Fetch Fields
 		$field_array = array();
-
-		$this->EE->db->select('field_id, group_id, field_name');
-		$this->EE->db->order_by('field_name');
-		$query = $this->EE->db->get_where('channel_fields', array('field_type' => 'textarea'));
+		
+		$this->EE->load->model('blogger_api_model');
+		
+		$query = $this->EE->blogger_api_model->get_channel_fields();
 
 		if ($query->num_rows() > 0)
 		{
@@ -296,26 +280,13 @@ class Blogger_api_mcp {
 			$data['blogger_'.$var] = $_POST[$var];
 		}
 		
-		if ($_POST['id'] == 'new' )
-		{
-			unset($data['blogger_id']);
+		$this->EE->load->model('blogger_api_model');
+		
+		$save = $this->EE->blogger_api_model->save_configuration($_POST['id'], $data);
 
-			$this->EE->db->insert('blogger', $data);
-			$id = $this->EE->db->insert_id();
-			$message = $this->EE->lang->line('configuration_created');
-		}
-		else
-		{
-			$this->EE->db->where('blogger_id', $_POST['id']);
-			$this->EE->db->update('blogger', $data);
-			
-			$id = $_POST['id'];
-			$message = $this->EE->lang->line('configuration_updated');
-		}
-
-		$this->EE->session->set_flashdata('message_success', $message);
+		$this->EE->session->set_flashdata('message_success', $save['message']);
 		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blogger_api'.AMP
-		.'method=modify'.AMP.'id='.$id);
+		.'method=modify'.AMP.'id='.$save['id']);
 	}
 
 	// ------------------------------------------------------------------------
@@ -354,15 +325,9 @@ class Blogger_api_mcp {
 			return $this->index();
 		}
 
-		// Need to confirm this will work.
-		foreach ($this->EE->input->post('delete') as $item)
-		{
-			$this->EE->db->or_where('blogger_id', $item);
-		}
-
-		$this->EE->db->delete('blogger');
-
-		$message = ($this->EE->db->affected_rows() == 1) ? $this->EE->lang->line('blogger_deleted') : $this->EE->lang->line('bloggers_deleted');
+		$this->EE->load->model('blogger_api_model');
+		
+		$message = $this->EE->blogger_api_model->delete_configuration($_POST['delete']);
 
 		$this->EE->session->set_flashdata('message_success', $message);
 		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blogger_api');
