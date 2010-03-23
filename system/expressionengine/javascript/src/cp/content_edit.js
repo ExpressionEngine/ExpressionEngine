@@ -247,7 +247,7 @@ $(document).ready(function() {
 		}
 	}
 
-		oTable = $(".mainTable").dataTable( {	
+		oTable = $("#entries_form .mainTable").dataTable( {	
 				"sPaginationType": "full_numbers",
 				"bLengthChange": false,
 				"aaSorting": [[ 5, "desc" ]],
