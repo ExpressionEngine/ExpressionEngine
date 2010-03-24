@@ -51,6 +51,19 @@ class Updater {
         $Q[] = "ALTER TABLE `exp_members` CHANGE `email` `email` varchar(72) NOT NULL";
 		$count = count($Q);
 		
+		// If there is no action id, add it
+        $this->EE->db->where('class', 'channel');
+        $this->EE->db->where('method', 'filemanager_endpoint');
+        $query = $this->EE->db->get('actions');
+
+        if ($query->num_rows() == 0)
+        {
+			$Q[] = "INSERT INTO exp_actions (class,method) VALUES ('channel','filemanager_endpoint')";
+        }
+
+		// If the action id is for the Weblog class, change it
+		$Q[] = "UPDATE exp_actions SET class = 'Channel' WHERE class = 'Weblog'";
+		
 		foreach ($Q as $num => $sql)
 		{
 			$this->EE->progress->update_state("Running Query $num of $count");

@@ -373,7 +373,6 @@ class Channel_standalone extends Channel {
 		
 		$default_entry_title = form_prep($default_entry_title);
 		
-
 		$action_id = $this->EE->functions->fetch_action_id('Channel', 'filemanager_endpoint');
 		$endpoint = str_replace('&amp;', '&', $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER).'ACT='.$action_id;
 		
