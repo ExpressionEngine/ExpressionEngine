@@ -1,87 +1,91 @@
-<?php
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://expressionengine.com/
------------------------------------------------------
- Copyright (c) 2003 - 2010, EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/docs/license.html
-=====================================================
- File: mod.pages.php
------------------------------------------------------
- Purpose: Pages class
-=====================================================
-*/
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
+ * @license		http://expressionengine.com/docs/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
 
-if ( ! defined('EXT'))
-{
-	exit('Invalid file request');
-}
+// ------------------------------------------------------------------------
 
-
-
+/**
+ * ExpressionEngine Pages Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Modules
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
 class Pages {
 
-	/** ----------------------------------------
-	/**  Constructor
-	/** ----------------------------------------*/
-
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function Pages()
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}
+	
+	// --------------------------------------------------------------------
 
+	/**
+	 * Output Javascript
+	 * 
+	 * Outputs Javascript files, triggered most commonly by an action request,
+	 * but also available as a tag if desired.
+	 *
+	 * @access	public
+	 * @return	string
+	 */
 	function load_site_pages()
 	{
-		$this->return_data = '';
+        $sites			= $this->EE->TMPL->fetch_param('site', '');
+		$current_site	= $this->EE->config->item('site_short_name');
 
-        $sites	= ( ! $this->EE->TMPL->fetch_param('site')) ? '' : $this->EE->TMPL->fetch_param('site');
+		// Always include the current site
 
-		$current_site = $this->EE->config->item('site_short_name');
-
-        if ($sites == '')
-        {
-        	return $this->return_data;
-        }		
-		
 		$site_names = explode('|', $sites);
 		
 		if ( ! in_array($current_site, $site_names))
 		{
-			
-		}	$site_names[] = $current_site;
-
-		$names = '(';
-				
-		foreach ($site_names as $name)
-		{
-			$names .= "'".$this->EE->db->escape_str($name)."', ";
+			$site_names[] = $current_site;
 		}
-				
-		$names = substr($names, 0, -2).')';
-				
-		$query = $this->EE->db->query("SELECT site_pages, site_name, site_id, site_system_preferences 
-								 FROM exp_sites AS es
-								 WHERE es.site_name IN ".$names);
+
+		// Fetch all pages
+
+		$this->EE->db->select('site_pages, site_name');
+		$this->EE->db->where_in('site_name', $site_names);
+		$query = $this->EE->db->get('sites');
+
+		$new_pages = array();
 
 		if ($query->num_rows() > 0)
 		{
-			$new_pages = array();
-			
 			foreach($query->result_array() as $row)
 			{
-				$new_pages += unserialize(base64_decode($row['site_pages']));
+				$site_pages = unserialize(base64_decode($row['site_pages']));
+
+				if (is_array($site_pages))
+				{
+					$new_pages += $site_pages;
+				}
 			}
 		}
 		
+		// Update config
+
 		$this->EE->config->set_item('site_pages', $new_pages);
 		
-		return $this->return_data;
+		return '';
 	}
 }
 // End Pages Class
