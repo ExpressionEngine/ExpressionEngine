@@ -76,8 +76,6 @@ class Pages {
 			foreach($query->result_array() as $row)
 			{
 				$new_pages += unserialize(base64_decode($row['site_pages']));
-			
-			print_r(unserialize(base64_decode($row['site_pages'])));
 			}
 		}
 		

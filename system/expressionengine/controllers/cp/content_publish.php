@@ -1327,7 +1327,6 @@ class Content_publish extends Controller {
 		if ($this->config->item('site_pages') !== FALSE)
 		{
 			$pages = $this->config->item('site_pages');
-			print_r($pages);
 			$pages_uri = '';
 			$pages_template_id = '';
 
@@ -1712,8 +1711,6 @@ class Content_publish extends Controller {
 		}
 		else
 		{
-//print_r($this->api_channel_fields->settings);
-
 			foreach($this->api_channel_fields->settings as $field => $values)
 			{
 				 $field_display = array(
