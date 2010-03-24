@@ -37,18 +37,6 @@ class Homepage extends Controller {
 		{
 			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
 		}
-		
-		/** --------------------------------
-		/**  Does the install folder exist?
-		/** --------------------------------*/
-		
-		// If so, we will issue a warning  
-		
-		if ($this->config->item('demo_date') === FALSE && is_dir(BASEPATH.'expressionengine/installer'))
-		{
-			$this->messages[] = $this->dsp->qdiv('alert', $this->lang->line('install_lock_warning'));
-			$this->messages[] = $this->dsp->qdiv('itemWrapper', $this->lang->line('install_lock_removal'));
-		}
 
 		/** --------------------------------
 		/**  Demo account expiration
@@ -106,14 +94,21 @@ class Homepage extends Controller {
 			'can_access_content'	=> TRUE,
 			'can_access_templates'	=> (count($allowed_templates) > 0 && $this->cp->allowed_group('can_access_design')) ? TRUE : FALSE
 		);
-
+		
+		
 		// Pages module is installed, need to check perms
-		// To see if the member group can access it.
+		// to see if the member group can access it.
 		// Super admin sees all.
-		$this->load->model('member_model');
-		$vars['show_page_option'] = $this->member_model->can_access_module('pages');
+		
+		if ($vars['show_page_option'] && $this->session->userdata('group_id') != 1)
+		{
+			$this->load->model('member_model');
+			$vars['show_page_option'] = $this->member_model->can_access_module('pages');
+		}
+		
 
-		// Permissions
+		// A few more permission checks
+		
 		if ( ! $this->cp->allowed_group('can_access_publish'))
 		{
 			$vars['show_page_option'] = FALSE;
@@ -130,8 +125,8 @@ class Homepage extends Controller {
 		}
 		
 		
+		// Prep js
 		
-		// Prep js		
 		$this->javascript->set_global('lang.close', $this->lang->line('close'));
 		
 		if ($show_notice)
@@ -146,7 +141,6 @@ class Homepage extends Controller {
 	}
 
 	// --------------------------------------------------------------------
-
 
 	/**
 	 * Accept Bootstrap Checksum Changes
@@ -272,7 +266,6 @@ class Homepage extends Controller {
 						unset($details['version']);
 
 						$details['error'] = TRUE;
-
 						$this->_write_version_cache($details);						
 					}
 				}
@@ -297,7 +290,7 @@ class Homepage extends Controller {
 		
 		if (isset($details['version']))
 		{
-			if (($details['version'] > APP_VER))
+			if ($details['version'] > APP_VER)
 			{
 				return sprintf($this->lang->line('new_version_notice'),
 							   $details['version'],
@@ -305,7 +298,7 @@ class Homepage extends Controller {
 							   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));
 			}
 		}
-		else 
+		else
 		{
 			return sprintf($this->lang->line('new_version_error'),
 							$download_url);
@@ -317,10 +310,10 @@ class Homepage extends Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Check EE Version Cache.  
+	 * Check EE Version Cache.
 	 *
-	 * 
-	 *
+	 * @access	private
+	 * @return	bool|string
 	 */
 	function _check_version_cache()
 	{
@@ -342,9 +335,7 @@ class Homepage extends Controller {
 				return FALSE;
 			}
 		}
-		
 	}
-
 
 	// --------------------------------------------------------------------
 

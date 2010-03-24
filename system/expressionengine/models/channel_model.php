@@ -359,15 +359,15 @@ class Channel_model extends CI_Model {
 		{
 			$pages = $this->config->item('site_pages');
 			
-			if (count($pages) > 0)
+			if (count($pages[$this->config->item('site_id')]) > 0)
 			{
 				foreach($entries as $entry_id)
 				{
-					unset($pages['uris'][$entry_id]);
-					unset($pages['templates'][$entry_id]);
+					unset($pages[$this->config->item('site_id')]['uris'][$entry_id]);
+					unset($pages[$this->config->item('site_id')]['templates'][$entry_id]);
 				}
 				
-				$this->config->core_ini['site_pages'] = $pages;
+				$this->config->set_item('site_pages', $pages);
 				
 				$this->db->where('site_id', $this->config->item('site_id'));
 				$this->db->update('sites', array('site_pages' => base64_encode(serialize($pages))));

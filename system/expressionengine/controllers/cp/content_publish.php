@@ -1322,16 +1322,18 @@ class Content_publish extends Controller {
 		$vars['pages_uri']	= '';
 		$vars['pages_dropdown'] = array();
 		$vars['pages_dropdown_selected'] = '';
+		$pages = FALSE;
 
-		if ($pages = $this->config->item('site_pages') !== FALSE)
+		if ($this->config->item('site_pages') !== FALSE)
 		{
+			$pages = $this->config->item('site_pages');
 			$pages_uri = '';
 			$pages_template_id = '';
 
-			if ($entry_id != '' && isset($pages['uris'][$entry_id]))
+			if ($entry_id != '' && isset($pages[$this->config->item('site_id')]['uris'][$entry_id]))
 			{
-				$pages_uri			= $pages['uris'][$entry_id];
-				$pages_template_id	= $pages['templates'][$entry_id];
+				$pages_uri			= $pages[$this->config->item('site_id')]['uris'][$entry_id];
+				$pages_template_id	= $pages[$this->config->item('site_id')]['templates'][$entry_id];
 			}
 			else
 			{

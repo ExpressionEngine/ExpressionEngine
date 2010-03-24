@@ -321,7 +321,7 @@ class EE_Messages {
 		
 		if ($this->disable_emoticons == 'y')
 		{
-			$this->EE->config->core_ini['enable_emoticons'] = 'n';
+			$this->EE->config->set_item('enable_emoticons', 'n');
 		}
 	
 			/** -----------------------------------

@@ -775,7 +775,7 @@ class Metaweblog_api {
 			$this->EE->load->library('typography');
 			$this->EE->typography->initialize();
 			$this->EE->typography->encode_email = FALSE;
-			$this->EE->config->core_ini['enable_emoticons'] = 'n';
+			$this->EE->config->set_item('enable_emoticons', 'n');
 		}
 
 		/** ---------------------------------------
