@@ -88,7 +88,7 @@ class Crud_model extends CI_Model {
 		if ($where)
 		{
 			foreach ($where as $key => $val)
-			{//var_dump($val);
+			{
 				if (is_array($val))
 				{
 					$this->db->where_in($key, $val);
@@ -99,7 +99,7 @@ class Crud_model extends CI_Model {
 				}
 			}
 		}
-//exit;
+
 		if ( ! empty($order) AND count($order) == 2)
 		{
 			$this->db->order_by($order[0], $order[1]);
@@ -134,7 +134,7 @@ class Crud_model extends CI_Model {
 		$key = array_keys($where);
 	
 		$values = array_values($where);
-		
+
 		foreach ($key as $del_key => $col_name)
 		{
 			if (is_array($values[$del_key]))
