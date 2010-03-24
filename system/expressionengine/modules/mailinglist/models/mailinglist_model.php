@@ -72,6 +72,38 @@ class Mailinglist_model extends CI_Model  {
 		
 		return $this->db->get('mailing_lists');
 	}
+	
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Get Emails by List Id.
+	 *
+	 * @param int 	Mailing List ID
+	 * @param str 	columns to select -- optional
+	 * @return obj
+	 */
+	function get_emails_by_list($id = NULL, $addt_select = NULL)
+	{
+		if ($addt_select)
+		{
+			$this->db->select($addt_select);
+		}
+		
+		if ($id)
+		{
+			if (is_array($id))
+			{
+				$this->db->where_in('list_id', $id);
+			}
+			else
+			{
+				$this->db->where('list_id', $id);	
+			}			
+		}
+		
+		return $this->db->get('mailing_list');
+	}
+	
 
 	// ------------------------------------------------------------------------
 	
