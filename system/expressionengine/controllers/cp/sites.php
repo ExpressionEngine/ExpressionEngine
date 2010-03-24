@@ -1623,7 +1623,7 @@ class Sites extends Controller {
 		// Update site stats
 		$original_site_id = $this->config->item('site_id');
 		
-		$this->config->core_ini['site_id'] = $site_id;
+		$this->config->set_item('site_id', $site_id);
 		
 		if ($do_comments === TRUE)
 		{
@@ -1633,7 +1633,7 @@ class Sites extends Controller {
 		$this->stats->update_member_stats();
 		$this->stats->update_channel_stats();
         
-        $this->config->core_ini['site_id'] = $original_site_id;
+		$this->config->set_item('site_id', $original_site_id);
 
 		/** -----------------------------------------
 		/**  View Sites List
