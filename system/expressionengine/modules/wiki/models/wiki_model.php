@@ -17,13 +17,13 @@
  * ExpressionEngine Wiki Model
  *
  * @package		ExpressionEngine
- * @subpackage	Core
+ * @subpackage	Module
  * @category	Model
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
 class Wiki_model extends CI_Model {
-	
+
 	/**
 	 * Construct
 	 */
@@ -52,8 +52,8 @@ class Wiki_model extends CI_Model {
 			}
 			else
 			{
-				$this->db->where('wiki_id', $id);	
-			}			
+				$this->db->where('wiki_id', $id);
+			}
 		}
 
 		if ($select)
@@ -70,7 +70,7 @@ class Wiki_model extends CI_Model {
 		{
 			$this->db->order_by($order_sort[0], $order_sort[1]);
 		}
-		
+
 		return $this->db->get('wikis');
 	}
 
@@ -84,8 +84,8 @@ class Wiki_model extends CI_Model {
 	 */
 	function delete_wiki($wiki_id)
 	{
-		$this->EE->db->where_in('wiki_id', $wiki_id);
-		$this->EE->db->delete(array('wikis', 'wiki_page', 'wiki_revisions', 'wiki_categories'));
+		$this->db->where_in('wiki_id', $wiki_id);
+		$this->db->delete(array('wikis', 'wiki_page', 'wiki_revisions', 'wiki_categories'));
 
 		return (count($wiki_id) == 1) ? $this->lang->line('wiki_deleted') : $this->lang->line('wikis_deleted');
 	}
@@ -95,13 +95,14 @@ class Wiki_model extends CI_Model {
 	/**
 	 * Select Max
 	 *
-	 * @param string 	field to select
+	 * @param string	field to select
+	 * @param string	field alias eg:  SELECT MAX(field_id) as max
 	 * @param string	table to select from
 	 * @return object
 	 */
-	function select_max($field, $table)
+	function select_max($field, $as = NULL, $table)
 	{
-		$this->db->select_max($field);
+		$this->db->select_max($field, $as);
 
 		return $this->db->get($table);
 	}
@@ -111,7 +112,7 @@ class Wiki_model extends CI_Model {
 	/**
 	 * Create New Wiki
 	 *
-	 * @param array 
+	 * @param array
 	 * @return integer
 	 */
 	function create_new_wiki($prefix)
@@ -126,10 +127,10 @@ class Wiki_model extends CI_Model {
 						'wiki_revision_limit'		=> 200,
 						'wiki_author_limit'			=> 75,
 						'wiki_moderation_emails'	=> '');
-		
+
 		$this->db->insert('wikis', $data);
 		$wiki_id = $this->db->insert_id();
-		
+
 		//  Default Index Page
 		$this->lang->loadfile('wiki');
 
@@ -153,8 +154,23 @@ class Wiki_model extends CI_Model {
 
 		$this->db->where('page_id', $page_id);
 		$this->db->update('wiki_page', array('last_revision_id' => $last_revision_id));
-		
+
 		return $wiki_id;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Update wiki
+	 *
+	 * @param int	Wiki ID
+	 * @param array
+	 * @return void
+	 */
+	function update_wiki($wiki_id, $data)
+	{
+		$this->db->where('wiki_id', $wiki_id);
+		return $this->db->update('wikis', $data);
 	}
 
 	// ------------------------------------------------------------------------
@@ -164,12 +180,23 @@ class Wiki_model extends CI_Model {
 	 *
 	 * @return object
 	 */
-	function fetch_upload_options()
+	function fetch_upload_options($value = '')
 	{
 		$this->db->select('id, name');
 		$this->db->order_by('name');
-		
-		return $this->db->get('upload_prefs');
+
+		$query = $this->db->get('upload_prefs');
+
+		$options[0] = $this->lang->line('none');
+
+		foreach($query->result() as $row)
+		{
+			$selected = ($value == $row->id) ? 1 : '';
+
+			$options[$row->id] = $row->name;
+		}
+
+		return $options;
 	}
 
 	// ------------------------------------------------------------------------
@@ -184,7 +211,7 @@ class Wiki_model extends CI_Model {
 		$this->db->select('group_title, group_id');
 		$this->db->where_not_in('group_id', array('2', '3', '4'));
 		$this->db->where('site_id', $this->config->item('site_id'));
-		$query = $this->db->get('member_groups');		
+		$query = $this->db->get('member_groups');
 
 		$options = array();
 
@@ -194,6 +221,45 @@ class Wiki_model extends CI_Model {
 		}
 
 		return $options;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Check Duplicate
+	 *
+	 * @param mixed		id to check against
+	 * @param string	name to check against
+	 * @return boolean
+	 */
+	function check_duplicate($id = NULL, $str)
+	{
+		if ($id)
+		{
+			$this->db->where('wiki_id !=', $id);
+		}
+
+		$this->db->where('wiki_short_name', $str);
+
+		if ($this->db->count_all_results('wikis') > 0)
+		{
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Delete Namespace
+	 *
+	 * @param int		namespace ID
+	 * @return boolean	TRUE on success / FALSE on failure
+	 */	
+	function delete_namespace($id)
+	{
+		return $this->db->delete('wiki_namespaces', array('namespace_id' => $id));
 	}
 
 }

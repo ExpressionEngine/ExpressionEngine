@@ -110,7 +110,7 @@
 										form_input('namespace_name_'.$namespace['namespace_id'], $namespace['namespace_name']),
 										form_dropdown('namespace_admins_'.$namespace['namespace_id'].'[]', $member_group_options, $namespace['namespace_admins'], 'multiple="multiple"'),
 										form_dropdown('namespace_users_'.$namespace['namespace_id'].'[]', $member_group_options, $namespace['namespace_users'], 'multiple="multiple"'),
-										form_submit(array('name' => 'add_namespace', 'value' => '+', 'class' => 'submit')).' '.form_submit(array('name' => 'remove_namespace_'.$namespace['namespace_id'], 'value' => '-', 'class' => 'submit'))
+										form_submit(array('name' => 'add_namespace', 'value' => '+', 'class' => 'submit')).' '.form_submit(array('name' => 'remove_namespace_'.$namespace['namespace_id'], 'value' => '-', 'class' => 'submit remove_namespace'))
 									);
 			}
 		}
