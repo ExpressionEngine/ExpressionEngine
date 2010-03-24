@@ -374,8 +374,8 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 'paypal_account' =>
 'PayPal Account',
 
-
-
+'no_entries_matching_that_criteria' => 
+'There are no entries matching the criteria you selected',
 
 ''=>''
 );
