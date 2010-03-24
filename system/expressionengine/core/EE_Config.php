@@ -195,6 +195,8 @@ class EE_Config Extends CI_Config {
 		$this->config = $this->default_ini;
 
 		$this->config['site_pages'] = FALSE;
+		// Fetch the query result array
+		$row = $query->row_array();
 	
 		$this->EE->load->helper('string');
 
@@ -214,12 +216,11 @@ class EE_Config Extends CI_Config {
 			}
 			elseif ($name == 'site_pages')
 			{
-				$data = base64_decode($data);
-				
+				$data =  base64_decode($data);
+
 				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
 				{
-					$this->config['site_pages'] = array('uris' => array(), 'templates' => array());
-					
+					$this->config['site_pages'][$row['site_id']] = array('uris' => array(), 'templates' => array());
 					//$this->config['site_pages']['uris'][1] = '/evil/';
 					//$this->config['site_pages']['templates'][1] = 16;
 					continue;
@@ -304,13 +305,20 @@ class EE_Config Extends CI_Config {
 			}
 		}
 		
-		// Fetch the query result array
-		$row = $query->row_array();
-		
+
 		// Few More Variables
 		$this->config['site_short_name'] = $row['site_name'];
 		$this->config['site_name'] 		 = $row['site_label']; // Legacy code as 3rd Party modules likely use it
 		
+		// Need this so we know the base url a page belongs to
+		if (isset($this->config['site_pages'][$row['site_id']]))
+		{
+			$url = $this->config['site_url'].'/';
+			$url .= $this->config['site_index'].'/';
+
+			$this->config['site_pages'][$row['site_id']]['url'] = preg_replace("#(^|[^:])//+#", "\\1/", $url);
+		}
+
 		// master tracking override?
 		if ($this->item('disable_all_tracking') == 'y')
 		{
@@ -331,7 +339,6 @@ class EE_Config Extends CI_Config {
 		{
 			$this->EE->db->cache_on();
 		}
-
 	}
 
 	// --------------------------------------------------------------------
@@ -647,6 +654,25 @@ class EE_Config Extends CI_Config {
 		
 		$query = $this->EE->db->query("SELECT * FROM exp_sites WHERE site_id = '".$this->EE->db->escape_str($site_id)."'");
 			
+		
+		// Because Pages is a special snowflake
+		if ($this->EE->config->item('site_pages') !== FALSE)
+		{
+			if (isset($new_values['site_url']) OR isset($new_values['site_index']))
+			{
+				$pages	= unserialize(base64_decode($query->row('site_pages')));
+				
+				$url = (isset($new_values['site_url'])) ? $new_values['site_url'].'/' : $this->config['site_url'].'/';
+				$url .= (isset($new_values['site_index'])) ? $new_values['site_index'].'/' : $this->config['site_index'].'/';
+				
+				$pages[$this->EE->config->item('site_id')]['url'] = preg_replace("#(^|[^:])//+#", "\\1/", $url);
+
+				$this->EE->db->query($this->EE->db->update_string('exp_sites', 
+											  array('site_pages' => base64_encode(serialize($pages))),
+											  "site_id = '".$this->EE->db->escape_str($site_id)."'"));
+			}
+		}
+
 		foreach(array('system', 'channel', 'template', 'mailinglist', 'member') as $type)
 		{
 			$prefs	 = unserialize(base64_decode($query->row('site_'.$type.'_preferences')));			

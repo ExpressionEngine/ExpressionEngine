@@ -569,12 +569,25 @@ class Member_memberlist extends Member {
 		{ 
 			$this->EE->load->library('pagination');
 
+			/*
 			$config['base_url'] = $this->_member_path('memberlist'.$search_path.$path, '');
 			$config['total_rows'] = $query->row('count');
 			$config['per_page'] = $row_limit;
 			$config['first_link'] = $this->EE->lang->line('first');
 			$config['last_link'] = $this->EE->lang->line('last');
 			$config['uri_segment'] = $pag_uri_segment;
+			*/
+			
+			$config['base_url'] = $this->_member_path('memberlist'.$search_path.$path, '');
+			$config['total_rows'] = $query->row('count');
+			$config['per_page'] = $row_limit;
+			$config['first_link'] = $this->EE->lang->line('first');
+			$config['last_link'] = $this->EE->lang->line('last');
+			$config['uri_segment'] = $pag_uri_segment;
+			$config['suffix'] = ($first_letter != '') ? $first_letter.'/' : '';
+			$config['first_url'] = $this->_member_path('memberlist'.$search_path);
+			
+						
 
 			if (preg_match("/".LD.'pagination_links'.RD."/", $template))
 			{

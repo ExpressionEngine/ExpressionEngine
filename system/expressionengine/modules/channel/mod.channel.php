@@ -1394,6 +1394,13 @@ class Channel {
 
 		if ($this->EE->TMPL->fetch_param('show_pages') !== FALSE && in_array($this->EE->TMPL->fetch_param('show_pages'), array('only', 'no')) && ($pages = $this->EE->config->item('site_pages')) !== FALSE)
 		{
+			$pages_uris = array();
+			
+			foreach ($pages as $data)
+			{
+				$pages_uris += $data['uris'];
+			}
+			
 			// consider entry_id
 			if ($this->EE->TMPL->fetch_param('entry_id') !== FALSE)
 			{
@@ -1411,28 +1418,28 @@ class Channel {
 				{
 					if ($not === TRUE)
 					{
-						$entry_id = implode('|', array_diff(array_flip($pages['uris']), explode('|', $ids)));
+						$entry_id = implode('|', array_diff(array_flip($pages_uris), explode('|', $ids)));
 					}
 					else
 					{
-						$entry_id = implode('|',array_diff($ids, array_diff($ids, array_flip($pages['uris']))));
+						$entry_id = implode('|',array_diff($ids, array_diff($ids, array_flip($pages_uris))));
 					}
 				}
 				else
 				{
 					if ($not === TRUE)
 					{
-						$entry_id = "not {$entry_id}|".implode('|', array_flip($pages['uris']));
+						$entry_id = "not {$entry_id}|".implode('|', array_flip($pages_uris));
 					}
 					else
 					{
-						$entry_id = implode('|',array_diff($ids, array_flip($pages['uris'])));
+						$entry_id = implode('|',array_diff($ids, array_flip($pages_uris)));
 					}
 				}
 			}
 			else
 			{
-				$entry_id = (($this->EE->TMPL->fetch_param('show_pages') == 'no') ? 'not ' : '').implode('|', array_flip($pages['uris']));
+				$entry_id = (($this->EE->TMPL->fetch_param('show_pages') == 'no') ? 'not ' : '').implode('|', array_flip($pages_uris));
 			}
 		}
 
@@ -3023,10 +3030,10 @@ class Channel {
 			$row['page_uri']		= '';
 			$row['page_url']		= '';
 
-			if ($site_pages !== FALSE && isset($site_pages['uris'][$row['entry_id']]))
+			if ($site_pages !== FALSE && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']]))
 			{
-				$row['page_uri'] = $site_pages['uris'][$row['entry_id']];
-				$row['page_url'] = $this->EE->functions->create_url($site_pages['uris'][$row['entry_id']]);
+				$row['page_uri'] = $site_pages[$row['site_id']]['uris'][$row['entry_id']];
+				$row['page_url'] = $this->EE->functions->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
 			}
 
 			//  Adjust dates if needed
@@ -3542,11 +3549,11 @@ class Channel {
 			$row['total_results']		= $total_results;
 			$row['absolute_count']		= $this->p_page + $row['count'];
 			$row['absolute_results']	= ($this->absolute_results === NULL) ? $total_results : $this->absolute_results;
-
-			if ($site_pages !== FALSE && isset($site_pages['uris'][$row['entry_id']]))
+			
+			if ($site_pages !== FALSE && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']]))
 			{
-				$row['page_uri'] = $site_pages['uris'][$row['entry_id']];
-				$row['page_url'] = $this->EE->functions->create_url($site_pages['uris'][$row['entry_id']]);
+				$row['page_uri'] = $site_pages[$row['site_id']]['uris'][$row['entry_id']];
+				$row['page_url'] = $this->EE->functions->create_page_url($site_pages[$row['site_id']]['url'], $site_pages[$row['site_id']]['uris'][$row['entry_id']]);
 			}
 
 			// -------------------------------------------

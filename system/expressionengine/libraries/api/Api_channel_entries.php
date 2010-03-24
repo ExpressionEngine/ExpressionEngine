@@ -552,15 +552,14 @@ class Api_channel_entries extends Api {
 		{
 			$pages = $this->EE->config->item('site_pages');
 
-			if (count($pages) > 0)
+			if (count($pages[$this->EE->config->item('site_id')]) > 0)
 			{
 				foreach($entries as $entry_id)
 				{
-					unset($pages['uris'][$entry_id]);
-					unset($pages['templates'][$entry_id]);
+					unset($pages[$this->EE->config->item('site_id')]['uris'][$entry_id]);
+					unset($pages[$this->EE->config->item('site_id')]['templates'][$entry_id]);
 				}
-
-				$this->EE->config->core_ini['site_pages'] = $pages;
+				//  No need for set_item();
 
 				$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
 				$this->EE->db->update('sites', array('site_pages' => base64_encode(serialize($pages))));
@@ -1176,7 +1175,7 @@ class Api_channel_entries extends Api {
 			// Check if duplicate uri
 			
 			$static_pages = $this->EE->config->item('site_pages');
-			$uris = $static_pages['uris'];
+			$uris = $static_pages[$this->EE->config->item('site_id')]['uris'];
 			
 			if ($this->entry_id)
 			{
@@ -1190,6 +1189,7 @@ class Api_channel_entries extends Api {
 			
 			// Need this later...
 			$this->_cache['static_pages'] = $static_pages;
+			
 			unset($uris, $static_pages);
 		}
 		
@@ -1885,13 +1885,15 @@ class Api_channel_entries extends Api {
 		{
 			if (isset($data['pages_template_id']) && is_numeric($data['pages_template_id']))
 			{
-				$this->_cache['static_pages']['uris'][$this->entry_id]		= preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '', str_replace($this->EE->config->item('site_url'), '', $data['pages_uri']));
-				$this->_cache['static_pages']['uris'][$this->entry_id]		= '/'.trim($this->_cache['static_pages']['uris'][$this->entry_id], '/').'/';
-				$this->_cache['static_pages']['templates'][$this->entry_id]	= preg_replace("#[^0-9]+$#i", '', $data['pages_template_id']);
+				$site_id = $this->EE->config->item('site_id');
+				
+				$this->_cache['static_pages'][$site_id]['uris'][$this->entry_id]		= preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '', str_replace($this->EE->config->item('site_url'), '', $data['pages_uri']));
+				$this->_cache['static_pages'][$site_id]['uris'][$this->entry_id]		= '/'.ltrim($this->_cache['static_pages'][$site_id]['uris'][$this->entry_id], '/');
+				$this->_cache['static_pages'][$site_id]['templates'][$this->entry_id]	= preg_replace("#[^0-9]+$#i", '', $data['pages_template_id']);
 
-				if ($this->_cache['static_pages']['uris'][$this->entry_id] == '//')
+				if ($this->_cache['static_pages'][$site_id]['uris'][$this->entry_id] == '//')
 				{
-					$this->_cache['static_pages']['uris'][$this->entry_id] = '/';
+					$this->_cache['static_pages'][$site_id]['uris'][$this->entry_id] = '/';
 				}
 
 				$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
