@@ -136,17 +136,17 @@ class Pages_model extends CI_Model {
             return FALSE; 
         }
         
-		foreach($pages['uris'] as $entry_id => $value)
+		foreach($pages[$this->config->item('site_id')]['uris'] as $entry_id => $value)
 		{
 			if (isset($delete_ids[$entry_id]))
 			{
-				unset($pages['uris'][$entry_id]);
-				unset($pages['templates'][$entry_id]);
+				unset($pages[$this->config->item('site_id')]['uris'][$entry_id]);
+				unset($pages[$this->config->item('site_id')]['templates'][$entry_id]);
 				$num++;
 			}
 		}
 
-		$this->config->core_ini['site_pages'] = $pages;
+		$this->config->set_item('site_pages', $pages);
 	    
 		$this->db->set('site_pages', base64_encode(serialize($pages)));
 		$this->db->where('site_id', $this->config->item('site_id'));

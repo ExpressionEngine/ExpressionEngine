@@ -1327,6 +1327,7 @@ class Content_publish extends Controller {
 		if ($this->config->item('site_pages') !== FALSE)
 		{
 			$pages = $this->config->item('site_pages');
+			print_r($pages);
 			$pages_uri = '';
 			$pages_template_id = '';
 

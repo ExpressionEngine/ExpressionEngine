@@ -559,11 +559,10 @@ class Api_channel_entries extends Api {
 					unset($pages[$this->EE->config->item('site_id')]['uris'][$entry_id]);
 					unset($pages[$this->EE->config->item('site_id')]['templates'][$entry_id]);
 				}
-
-				$this->EE->config->core_ini['site_pages'][$this->EE->config->item('site_id')] = $pages[$this->EE->config->item('site_id')];
+				//  No need for set_item();
 
 				$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-				$this->EE->db->update('sites', array('site_pages' => base64_encode(serialize($pages[$this->EE->config->item('site_id')]))));
+				$this->EE->db->update('sites', array('site_pages' => base64_encode(serialize($pages))));
 			}
 		}
 		
