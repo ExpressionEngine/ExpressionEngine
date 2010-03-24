@@ -32,6 +32,7 @@ class Simple_commerce_mcp {
 	var $nest_categories	= 'y';
 	var $perpage			= 50;
 	var $pipe_length 		= 5;
+	var $base_url			= '';
 	
 	/**
 	 * Constructor
@@ -44,8 +45,14 @@ class Simple_commerce_mcp {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-		$base_link = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce';
-		$this->EE->cp->set_right_nav(array('items' => $base_link.AMP.'method=edit_items', 'purchases' => $base_link.AMP.'method=edit_purchases', 'email_templates' => $base_link.AMP.'method=edit_emails', 'simple_commerce_module_name' => $base_link));
+		$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce';
+
+		$this->EE->cp->set_right_nav(array(
+								'items'				=> $this->base_url.AMP.'method=edit_items', 
+								'purchases'			=> $this->base_url.AMP.'method=edit_purchases', 
+								'email_templates'	=> $this->base_url.AMP.'method=edit_emails', 
+								'simple_commerce_module_name' => $this->base_url)
+							);
 	}
 
 	// --------------------------------------------------------------------
