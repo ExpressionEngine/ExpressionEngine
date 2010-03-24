@@ -71,25 +71,17 @@ class Pages {
 
 		if ($query->num_rows() > 0)
 		{
-			$PREFS->core_ini['site_pages'] = array();
+			$new_pages = array();
 			
 			foreach($query->result_array() as $row)
 			{
-				$PREFS->core_ini['site_pages'][$row['site_id']] = $this->EE->regex->array_stripslashes(unserialize($row['site_pages']));
-
-				$url_data = unserialize(base64_decode($query->row('site_system_preferences')));
-				$url = (isset($url_data['site_url'])) ? $url_data['site_url'] : '';
-				$url .= (isset($url_data['site_index'])) ? $url_data['site_index'] : '';
-                
-   				if ($this->EE->config->item('force_query_string') == 'y')
-   				{
-   					$url .= '?';
-   				}  
-
-				$PREFS->core_ini['site_pages'][$row['site_id']]['url'] = $url;
-				
+				$new_pages += unserialize(base64_decode($row['site_pages']));
+			
+			print_r(unserialize(base64_decode($row['site_pages'])));
 			}
 		}
+		
+		$this->EE->config->set_item('site_pages', $new_pages);
 		
 		return $this->return_data;
 	}

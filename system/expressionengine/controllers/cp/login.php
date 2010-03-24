@@ -71,8 +71,6 @@ class Login extends Controller {
 	 */	
 	function login_form()
 	{
-	echo 'woot';
-	
 		// If an ajax request ends up here the user is probably logged out
 		if ($this->input->server('HTTP_X_REQUESTED_WITH') && ($this->input->server('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'))
 		{

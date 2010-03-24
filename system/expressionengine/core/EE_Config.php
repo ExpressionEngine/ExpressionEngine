@@ -314,14 +314,10 @@ class EE_Config Extends CI_Config {
 		if (isset($this->config['site_pages'][$row['site_id']]))
 		{
 			$url = $this->config['site_url'].'/';
-			$url = (substr($base, -1) != '/') ? $url.'/' : $url;
-			$url .= $this->config['site_index'];
-			$url = (substr($base, -1) != '/') ? $url.'/' : $url;
+			$url .= $this->config['site_index'].'/';
 
-			$this->config['site_pages'][$row['site_id']]['url'] = $url;
+			$this->config['site_pages'][$row['site_id']]['url'] = preg_replace("#(^|[^:])//+#", "\\1/", $url);
 		}
-
-
 
 		// master tracking override?
 		if ($this->item('disable_all_tracking') == 'y')
@@ -658,6 +654,25 @@ class EE_Config Extends CI_Config {
 		
 		$query = $this->EE->db->query("SELECT * FROM exp_sites WHERE site_id = '".$this->EE->db->escape_str($site_id)."'");
 			
+		
+		// Because Pages is a special snowflake
+		if ($this->EE->config->item('site_pages') !== FALSE)
+		{
+			if (isset($new_values['site_url']) OR isset($new_values['site_index']))
+			{
+				$pages	= unserialize(base64_decode($query->row('site_pages')));
+				
+				$url = (isset($new_values['site_url'])) ? $new_values['site_url'].'/' : $this->config['site_url'].'/';
+				$url .= (isset($new_values['site_index'])) ? $new_values['site_index'].'/' : $this->config['site_index'].'/';
+				
+				$pages[$this->EE->config->item('site_id')]['url'] = preg_replace("#(^|[^:])//+#", "\\1/", $url);
+
+				$this->EE->db->query($this->EE->db->update_string('exp_sites', 
+											  array('site_pages' => base64_encode(serialize($pages))),
+											  "site_id = '".$this->EE->db->escape_str($site_id)."'"));
+			}
+		}
+
 		foreach(array('system', 'channel', 'template', 'mailinglist', 'member') as $type)
 		{
 			$prefs	 = unserialize(base64_decode($query->row('site_'.$type.'_preferences')));			
