@@ -949,6 +949,9 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 'no_templates' =>
 'No Templates',
 
+'add_file' => 'Add File',
+'remove_file' => 'Remove File',
+
 ''=>''
 );
 

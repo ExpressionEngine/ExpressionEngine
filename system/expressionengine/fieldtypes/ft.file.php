@@ -159,8 +159,8 @@ class File_ft extends EE_Fieldtype {
 		$dropdown = form_dropdown($this->field_name.'_directory', $upload_dirs, $filedir);
 
 		// @todo Lang keys
-		$newf = '<a href="#" class="choose_file">Add File</a>';
-		$remf = '<a href="#" class="remove_file">Remove File</a>';
+		$newf = '<a href="#" class="choose_file">'.$this->EE->lang->line('add_file').'</a>';
+		$remf = '<a href="#" class="remove_file">'.$this->EE->lang->line('remove_file').'</a>';
 
 		$set_class = $filename ? '' : 'js_hide';		
 
