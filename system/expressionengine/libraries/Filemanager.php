@@ -579,9 +579,14 @@ class Filemanager {
 					$allowed_types = 'gif|jpg|jpeg|png|jpe';
 				}
 			}
+
+			$filename = $_FILES['userfile']['name'];
 		}
-		
-		$filename = $_FILES['userfile']['name'];
+		else
+		{
+			$filename = $_FILES[$field_name]['name'];
+		}
+
 		$filename = substr($filename, 0, strrpos($filename, '.'));
 
 		$config['file_name'] 		= url_title($filename, $this->EE->config->item('word_separator'), TRUE);

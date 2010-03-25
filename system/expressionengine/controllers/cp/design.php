@@ -4030,10 +4030,13 @@ class Design extends Controller {
 			$this->form_validation->set_message('_group_name_checks', $this->lang->line('reserved_name'));
 			return FALSE;	
 		}
-		
-		$query = $this->db->query("SELECT count(*) AS count FROM exp_template_groups WHERE site_id = '".$this->db->escape_str($this->config->item('site_id'))."' AND group_name = '".$this->db->escape_str($str)."'");
 
-		if (($this->input->post('old_name') != $str) AND $query->row('count')  > 0)
+		$this->db->select('count(*) as count');
+		$this->db->where('site_id', $this->config->item('site_id'));
+		$this->db->where('group_name', $str);
+		$query = $this->db->get('template_groups');
+
+		if ((strtolower($this->input->post('old_name')) != strtolower($str)) AND $query->row('count')  > 0)
 		{
 			$this->form_validation->set_message('_group_name_checks', $this->lang->line('template_group_taken'));
 			return FALSE;			

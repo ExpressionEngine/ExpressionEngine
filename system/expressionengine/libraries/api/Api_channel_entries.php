@@ -230,11 +230,11 @@ class Api_channel_entries extends Api {
 				
 		$this->_fetch_channel_preferences();
 		$this->_do_channel_switch($data);
-		
+
 		$this->_fetch_module_data($data);		
-		
+	
 		$this->_check_for_data_errors($data);
-		
+	
 		// Lets make sure those went smoothly
 		
 		if (count($this->errors) > 0)
@@ -867,9 +867,8 @@ class Api_channel_entries extends Api {
 	 * @return	mixed
 	 */
 	function _base_prep(&$data)
-	{
+	{	
 		// Language Files
-		
 		if ($this->EE->config->item('site_pages') !== FALSE)
 		{
 			$this->EE->lang->loadfile('pages');
@@ -877,9 +876,7 @@ class Api_channel_entries extends Api {
 		
 		$this->EE->lang->loadfile('admin_content');
 		
-		
 		// Sanity Check
-		
 		if ( ! is_array($data) OR ! isset($data['channel_id']) OR ! is_numeric($data['channel_id']))
 		{
 			show_error($this->EE->lang->line('invalid_api_parameter'));
@@ -888,7 +885,6 @@ class Api_channel_entries extends Api {
 		$this->channel_id = $data['channel_id'];
 
 		// Is this user allowed to post here?
-		
 		$this->_cache['assigned_channels'] = $this->EE->functions->fetch_assigned_channels();
 		
 		if ( ! in_array($this->channel_id, $this->_cache['assigned_channels']))
@@ -896,9 +892,29 @@ class Api_channel_entries extends Api {
 			show_error($this->EE->lang->line('unauthorized_for_this_channel'));
 		}
 		
+		// Make sure all the fields have a key in our data array even
+		// if no data was sent
 
+		// @confirm - This is puking an error in autosave
+		// api_channel_fields is not an object.  
+		if ($this->autosave === FALSE)
+		{
+			$field_ids = array_keys($this->EE->api_channel_fields->settings);
+
+			foreach($field_ids as $id)
+			{
+				if (is_numeric($id))
+				{
+					$id = 'field_id_'.$id;
+				}
+
+				if ( ! isset($data[$id]))
+				{
+					$data[$id] = '';
+				}
+			}
+		}
 		// Helpers
-		
 		$this->EE->load->helper('text');
 		$this->EE->load->helper('custom_field');
 		return TRUE;
@@ -1090,19 +1106,17 @@ class Api_channel_entries extends Api {
 			}
 		}
 		
-		
 		// Required and custom fields
 		
 		// @todo model
 		$this->EE->db->select('field_id, field_label, field_type, field_required');
 		$query = $this->EE->db->get('channel_fields');
-		
+
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result_array() as $row)
 			{
 				// Required field?
-
 				if ($row['field_required'] == 'y')
 				{
 					if ($row['field_type'] == "file" AND isset($data['field_id_'.$row['field_id'].'_hidden']) AND $data['field_id_'.$row['field_id'].'_hidden'] == '')
@@ -1137,7 +1151,6 @@ class Api_channel_entries extends Api {
 		}
 
 		// Channel data present for pings?
-		
 		if (isset($data['ping_servers']) && count($data['ping_servers']) > 0)
 		{
 			if ($this->c_prefs['channel_title'] == '')
@@ -1145,7 +1158,6 @@ class Api_channel_entries extends Api {
 				$this->_set_error('missing_channel_data_for_pings');
 			}
 		}
-		
 		
 		// Clean / create the url title
 		
@@ -1238,7 +1250,6 @@ class Api_channel_entries extends Api {
 				}
 			}
 		}
-		
 		
 		// Validate Status
 		
@@ -1445,7 +1456,7 @@ class Api_channel_entries extends Api {
 			}
 		}
 		
-		unset($data['field_id_'.$row['field_id']]);
+		//unset($data['field_id_'.$row['field_id']]);
 	}
 	
 	// --------------------------------------------------------------------
@@ -1544,12 +1555,6 @@ class Api_channel_entries extends Api {
 				}
 			}
 		}
-
-		
-		//print_r($mod_data);
-		//print_r($data);
-		//echo 'donage';
-		//exit;
 	}
 	
 	// --------------------------------------------------------------------
