@@ -451,12 +451,17 @@ $(document).ready(function() {
 				type: "POST",
 				url: EE.BASE+"&C=content_publish&M=autosave_entry",
 				data: form_data,
-				success: function(result){
-												
+				success: function(result){		
 					if (isNaN(result)) {
-						$.ee_notice(result, {type:"error"});
+						if (EE.publish.autosave.error_state == 'false') {
+							$.ee_notice(result, {type:"error"});
+							EE.publish.autosave.error_state = 'true';
+						}
 					}
 					else {
+						if (EE.publish.autosave.error_state == 'true') {
+							EE.publish.autosave.error_state = 'false';
+						}
 						$.ee_notice(EE.publish.autosave.success, {type:"success"});
 					}
 				}

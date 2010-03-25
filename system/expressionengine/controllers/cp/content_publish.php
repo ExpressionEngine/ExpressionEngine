@@ -1877,7 +1877,8 @@ class Content_publish extends Controller {
 		{
 			$this->javascript->set_global('publish.autosave', array(
 				'interval'	=> $autosave_interval_seconds,
-				'success'	=> $this->lang->line('autosave_success')
+				'success'	=> $this->lang->line('autosave_success'),
+				'error_state' => 'false'
 			));
 			
 		}
