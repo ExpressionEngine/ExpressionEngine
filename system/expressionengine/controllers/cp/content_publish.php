@@ -1426,7 +1426,7 @@ class Content_publish extends Controller {
 				);
 
 				$this->field_definitions['pages_uri'] = array(
-					'string_override'		=> 'No Templates', // @todo language key
+					'string_override'		=> $this->lang->line('no_templates'),
 					'field_id'				=> 'pages_uri',
 					'field_label'			=> $this->lang->line('pages_uri'),
 					'field_name'			=> 'pages_uri',

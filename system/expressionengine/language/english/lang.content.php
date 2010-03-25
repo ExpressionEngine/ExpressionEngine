@@ -946,6 +946,9 @@ $lang = array(
 'Unable to load requested field type file:  %s.<br />
 Confirm the fieldtype file is located in the expressionengine/third_party/ directory',
 
+'no_templates' =>
+'No Templates',
+
 ''=>''
 );
 
