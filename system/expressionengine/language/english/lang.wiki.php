@@ -221,12 +221,6 @@ referencing the namespace.  Your short name should only contain word characters 
 'file_writing_instructions' =>
 'You will not be able to save changes to this template until it is given write permissions for this server.',
 
-'namespace_deleted' =>
-'Namespace successfully deleted',
-
-'namespace_not_deleted' => 
-'An error occurred',
-
 ''=>''
 );
 
