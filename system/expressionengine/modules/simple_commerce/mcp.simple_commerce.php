@@ -108,15 +108,12 @@ class Simple_commerce_mcp {
 
 	}
 
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Various Settings
-	 */
+	/** -------------------------------------------
+	/**  Save Encryption Settings
+	/** -------------------------------------------*/
 	function various_settings()
 	{
-		$prefs = array('encrypt_buttons', 'paypal_account', 'certificate_id', 
-						'public_certificate', 'private_key', 'paypal_certificate', 'temp_path');
+		$prefs = array('encrypt_buttons', 'paypal_account', 'certificate_id', 'public_certificate', 'private_key', 'paypal_certificate', 'temp_path');
 
 		$insert = array();
 
@@ -135,12 +132,12 @@ class Simple_commerce_mcp {
 					{
 						if ( ! file_exists($_POST['sc_'.$val]))
 						{
-							show_error(str_replace('%pref%', $this->EE->lang->line($val), $this->EE->lang->line('file_does_not_exist')));
+							return $this->EE->dsp->error_message(str_replace('%pref%', $this->EE->lang->line($val), $this->EE->lang->line('file_does_not_exist')));
 						}
 
 						if ($val == 'temp_path' && ! is_really_writable($_POST['sc_'.$val]))
 						{
-							show_error($this->EE->lang->line('temporary_directory_unwritable'));
+							return $this->EE->dsp->error_message($this->EE->lang->line('temporary_directory_unwritable'));
 						}
 					}
 
@@ -165,15 +162,15 @@ class Simple_commerce_mcp {
 
 		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('settings_updated'));
 
-		$this->EE->functions->redirect($this->base_url.AMP.'method=index');
+		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP
+		.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=index');
 
 	}
 
-	// ------------------------------------------------------------------------
 
-	/**
-	 * Add Item
-	 */
+	/** -------------------------------------------
+	/**  Add Item
+	/** -------------------------------------------*/
 	function add_item()
 	{
 		$entry_ids = array();
@@ -181,10 +178,9 @@ class Simple_commerce_mcp {
 		$this->EE->load->library('table');
 
 		//  Must be Assigned to Channels
-		if (count($this->EE->session->userdata('assigned_channels')) == 0)
+		if (count($this->EE->session->userdata['assigned_channels']) == 0)
 		{
-			show_error($this->EE->lang->line('no_entries_matching_that_criteria').BR.BR.$this->EE->lang->line('site_specific_data'));
-			
+			return $this->EE->dsp->no_access_message($this->EE->lang->line('no_entries_matching_that_criteria').BR.BR.$this->EE->lang->line('site_specific_data'));
 		}
 
 		//  Either Show Search Form or Process Entries
@@ -212,10 +208,6 @@ class Simple_commerce_mcp {
 			return $this->add_items();
 		}
 	}
-
-	// ------------------------------------------------------------------------
-
-
 
 	// For items, we need to make certain they can only view/assign items to entries
 	// the have permissions for - both on the edit table display, the add/edit form,
@@ -259,13 +251,10 @@ class Simple_commerce_mcp {
 		return $entry_ids;
 	}
 
-	// ------------------------------------------------------------------------
-
 
 	function _items_form($entry_ids = array(), $new = 'y')
 	{
 		$this->EE->load->model('member_model');
-		$this->EE->load->model('crud_model');
 		$this->EE->load->helper(array('form', 'date'));
 		$this->EE->load->library('table');
 
@@ -278,12 +267,14 @@ class Simple_commerce_mcp {
 		if (count($safe_ids) == 0)
 		{
 			$this->EE->session->set_flashdata('message_failure', $this->EE->lang->line('invalid_entries'));
-			$this->EE->functions->redirect($this->base_url.AMP.'method=edit_items');
+			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP
+				.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items');
 		}
 
 		$vars['email_templates_dropdown'] = array(0 => $this->EE->lang->line('send_no_email'));
 
-		$query = $this->EE->crud_model->fetch('simple_commerce_emails', array('email_id', 'email_name'));
+		$this->EE->db->select('email_id, email_name');
+		$query = $this->EE->db->get('simple_commerce_emails');
 
 		foreach($query->result_array() as $row)
 		{
@@ -302,12 +293,10 @@ class Simple_commerce_mcp {
 		}
 
 		// get subsubscription frequency options
-		$vars['subscription_frequency_unit'] = array(
-				'day'	=> $this->EE->lang->line('days'),
-				'week'	=> $this->EE->lang->line('weeks'),
-				'month'	=> $this->EE->lang->line('month'),
-				'year'	=> $this->EE->lang->line('year') 
-		);
+		$vars['subscription_frequency_unit']['day'] = $this->EE->lang->line('days');
+		$vars['subscription_frequency_unit']['week'] = $this->EE->lang->line('weeks');
+		$vars['subscription_frequency_unit']['month'] = $this->EE->lang->line('months');
+		$vars['subscription_frequency_unit']['year'] = $this->EE->lang->line('years');
 
 		if ($new == 'y')
 		{
@@ -316,31 +305,31 @@ class Simple_commerce_mcp {
 
 			foreach($safe_ids as $id => $title)
 			{
-				$vars['items'][$id] = array(
-					'entry_title'							=> $title,
-					'regular_price'							=> '0.00',
-					'sale_price'							=> '0.00',
-					'item_enabled'							=> TRUE,
-					'sale_price_enabled'					=> FALSE,
-					'recurring'								=> FALSE,
-					'admin_email_address'					=> '',
-					'admin_email_template'					=> '',
-					'admin_email_template_unsubscribe'		=> '',
-					'customer_email_template'				=> '',
-					'customer_email_template_unsubscribe'	=> '',
-					'new_member_group'						=> '',
-					'member_group_unsubscribe'				=> '',
-					'current_subscriptions'					=> '',
-					'subscription_frequency'				=> '',
-					'subscription_frequency_unit'			=> '',
-					'entry_id'								=> $id
-				);
+				$vars['items'][$id]['entry_title'] = $title;
+				$vars['items'][$id]['regular_price'] = '0.00';
+				$vars['items'][$id]['sale_price'] = '0.00';
+				$vars['items'][$id]['item_enabled'] =  TRUE;
+				$vars['items'][$id]['sale_price_enabled'] =  FALSE;
+				$vars['items'][$id]['recurring'] =  FALSE;
+				$vars['items'][$id]['admin_email_address'] = '';
+				$vars['items'][$id]['admin_email_template'] = '';
+				$vars['items'][$id]['admin_email_template_unsubscribe'] = '';
+				$vars['items'][$id]['customer_email_template'] = '';
+				$vars['items'][$id]['customer_email_template_unsubscribe'] = '';
+				$vars['items'][$id]['new_member_group'] = '';
+				$vars['items'][$id]['member_group_unsubscribe'] = '';
+				$vars['items'][$id]['current_subscriptions'] = '';
+				$vars['items'][$id]['subscription_frequency'] = '';
+				$vars['items'][$id]['subscription_frequency_unit'] = '';
+				$vars['items'][$id]['entry_id'] = $id;
+
 			}
 		}
 		else
 		{
 			$type = (count($safe_ids) == 1) ? 'update_item' : 'update_items';
 			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=updating_items';
+
 
 			//  Valid Entries Selected?
 
@@ -350,43 +339,39 @@ class Simple_commerce_mcp {
 			if ($query->num_rows() == 0)
 			{
 				$this->EE->session->set_flashdata('message_failure', $this->EE->lang->line('invalid_entries'));
-				$this->EE->functions->redirect($this->base_url.AMP.'method=edit_items');
+				$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP
+				.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items');
 			}
 
 			foreach($query->result_array() as $row)
 			{
-				$vars['items'][$row['entry_id']] = array(
-					'entry_title'							=> $safe_ids[$row['entry_id']],
-					'regular_price'							=> $row['item_regular_price'],
-					'sale_price'							=> $row['item_sale_price'],
-					'item_enabled'							=> ($row['item_enabled'] == 'y') ? TRUE : FALSE,
-					'sale_price_enabled'					=> ($row['item_use_sale'] == 'y') ? TRUE : FALSE,
-					'recurring'								=> ($row['recurring'] == 'y') ? TRUE : FALSE,
-					'admin_email_address'					=> $row['admin_email_address'],
-					'admin_email_template'					=> $row['admin_email_template'],
-					'admin_email_template_unsubscribe'		=> $row['admin_email_template_unsubscribe'],
-					'customer_email_template'				=> $row['customer_email_template'],
-					'customer_email_template_unsubscribe'	=> $row['customer_email_template_unsubscribe'],
-					'new_member_group'						=> $row['new_member_group'],
-					'member_group_unsubscribe'				=> $row['member_group_unsubscribe'],
-					'current_subscriptions'					=> $row['current_subscriptions'],
-					'subscription_frequency'				=> $row['subscription_frequency'],
-					'subscription_frequency_unit'			=> $row['subscription_frequency_unit'],
-					'entry_id'								=> $row['entry_id']
-				);
+				$vars['items'][$row['entry_id']]['entry_title'] = $safe_ids[$row['entry_id']];
+				$vars['items'][$row['entry_id']]['regular_price'] = $row['item_regular_price'];
+				$vars['items'][$row['entry_id']]['sale_price'] = $row['item_sale_price'];
+				$vars['items'][$row['entry_id']]['item_enabled'] =  ($row['item_enabled'] == 'y') ? TRUE : FALSE;
+				$vars['items'][$row['entry_id']]['sale_price_enabled'] =  ($row['item_use_sale'] == 'y') ? TRUE : FALSE;
+				$vars['items'][$row['entry_id']]['recurring'] =  ($row['recurring'] == 'y') ? TRUE : FALSE;
+				$vars['items'][$row['entry_id']]['admin_email_address'] = $row['admin_email_address'];
+				$vars['items'][$row['entry_id']]['admin_email_template'] = $row['admin_email_template'];
+				$vars['items'][$row['entry_id']]['customer_email_template'] = $row['customer_email_template'];
+				$vars['items'][$row['entry_id']]['new_member_group'] = $row['new_member_group'];
+				$vars['items'][$row['entry_id']]['subscription_frequency'] = $row['subscription_frequency'];
+				$vars['items'][$row['entry_id']]['subscription_frequency_unit'] = $row['subscription_frequency_unit'];
+				$vars['items'][$row['entry_id']]['current_subscriptions'] = $row['current_subscriptions'];
+				$vars['items'][$row['entry_id']]['entry_id'] = $row['entry_id'];
+				$vars['items'][$row['entry_id']]['member_group_unsubscribe'] = $row['member_group_unsubscribe'];
+				$vars['items'][$row['entry_id']]['customer_email_template_unsubscribe'] = $row['customer_email_template_unsubscribe'];
+				$vars['items'][$row['entry_id']]['admin_email_template_unsubscribe'] = $row['admin_email_template_unsubscribe'];
 			}
 		}
 
 		$vars['cp_page_title']  = $this->EE->lang->line($type);
-		$this->EE->cp->set_breadcrumb($this->base_url, $this->EE->lang->line('simple_commerce_module_name'));
+		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
 
 		$this->EE->javascript->compile();
 
 		return $this->EE->load->view('edit_item', $vars, TRUE);
 	}
-
-	// ------------------------------------------------------------------------
-
 
 	function _items_validate($entry_id = array())
 	{
@@ -409,7 +394,6 @@ class Simple_commerce_mcp {
 		$this->EE->form_validation->set_error_delimiters('<br /><span class="notice">', '</span>');
 	}
 
-	// ------------------------------------------------------------------------
 
 
 	/** -------------------------------------------
@@ -423,10 +407,8 @@ class Simple_commerce_mcp {
 	{
 		if ( ! isset($_POST['entry_id']) OR ! is_array($_POST['entry_id']))
 		{
-			show_error($this->EE->lang->line($this->EE->lang->line('unauthorized_access')));
+			return $this->EE->dsp->no_access_message();
 		}
-
-		$this->EE->load->model('crud_model');
 
 		foreach ($_POST['entry_id'] as $id)
 		{
@@ -446,28 +428,33 @@ class Simple_commerce_mcp {
 		if (count($safe_ids) == 0)
 		{
 			$this->EE->session->set_flashdata('message_failure', $this->EE->lang->line('invalid_entries'));
-			$this->EE->functions->redirect($this->base_url.AMP.'method=edit_items');
+			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP
+				.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items');
 		}
 
 		foreach(array_keys($safe_ids) as $id)
 		{
 			$data = array(
-				'entry_id'							=> $_POST['entry_id'][$id],
-				'item_enabled'						=> ( ! isset($_POST['enabled'][$id])) ? 'n' : 'y',
-				'item_regular_price'				=> $_POST['regular_price'][$id],
-				'item_sale_price'					=> $_POST['sale_price'][$id],
-				'item_use_sale'						=> ( ! isset($_POST['use_sale'][$id])) ? 'n' : 'y',
-				'subscription_frequency'			=> ($_POST['subscription_frequency'][$id] == '') ? NULL : $_POST['subscription_frequency'][$id],
-				'subscription_frequency_unit'		=> ($_POST['subscription_frequency_unit'][$id] == '') ? NULL : $_POST['subscription_frequency_unit'][$id],
-				'new_member_group'					=> ($_POST['member_group'][$id] == 'no_change') ? 0 : $_POST['member_group'][$id],
-				'admin_email_address'				=> $_POST['admin_email_address'][$id],
-				'admin_email_template'				=> $_POST['admin_email_template'][$id],
-				'customer_email_template'			=> $_POST['customer_email_template'][$id],
-				'recurring'							=> ( ! isset($_POST['recurring'][$id])) ? 'n' : 'y',
-				'admin_email_template_unsubscribe'	=> $_POST['admin_email_template_unsubscribe'][$id],
-				'customer_email_template_unsubscribe' => $_POST['customer_email_template_unsubscribe'][$id],
-				'member_group_unsubscribe'			=> $_POST['member_group_unsubscribe'][$id]
-			);
+							'entry_id'					=> $_POST['entry_id'][$id],
+							'item_enabled'				=> ( ! isset($_POST['enabled'][$id])) ? 'n' : 'y',
+							'item_regular_price'		=> $_POST['regular_price'][$id],
+							'item_sale_price'			=> $_POST['sale_price'][$id],
+							'item_use_sale'				=> ( ! isset($_POST['use_sale'][$id])) ? 'n' : 'y',
+							'subscription_frequency'	=> ($_POST['subscription_frequency'][$id] == '') ? NULL : $_POST['subscription_frequency'][$id],
+							'subscription_frequency_unit'	=> ($_POST['subscription_frequency_unit'][$id] == '') ? NULL : $_POST['subscription_frequency_unit'][$id],
+							'new_member_group'			=> ($_POST['member_group'][$id] == 'no_change') ? 0 : $_POST['member_group'][$id],
+							'admin_email_address'		=> $_POST['admin_email_address'][$id],
+							'admin_email_template'		=> $_POST['admin_email_template'][$id],
+							'customer_email_template'	=> $_POST['customer_email_template'][$id],
+
+							'recurring'				=> ( ! isset($_POST['recurring'][$id])) ? 'n' : 'y',
+							'admin_email_template_unsubscribe'		=> $_POST['admin_email_template_unsubscribe'][$id],
+							'customer_email_template_unsubscribe'	=> $_POST['customer_email_template_unsubscribe'][$id],
+							'member_group_unsubscribe'			=> $_POST['member_group_unsubscribe'][$id]
+
+							);
+
+
 
 			/** ---------------------------------
 			/**  Do our insert or update
@@ -475,12 +462,12 @@ class Simple_commerce_mcp {
 
 			if ($new == 'y')
 			{
-				$this->EE->crud_model->save('simple_commerce_items', $data);
+				$this->EE->db->query($this->EE->db->insert_string('exp_simple_commerce_items', $data));
 				$cp_message = $this->EE->lang->line('item_added');
 			}
 			else
 			{
-				$this->EE->crud_model->save('simple_commerce_items', $data, array('entry_id' => $id));
+				$this->EE->db->query($this->EE->db->update_string('exp_simple_commerce_items', $data, "entry_id = '$id'"));
 				$cp_message = $this->EE->lang->line('updated');
 			}
 		}
@@ -488,11 +475,13 @@ class Simple_commerce_mcp {
 		$this->EE->functions->clear_caching('page');
 
 		$this->EE->session->set_flashdata('message_success', $cp_message);
-		$this->EE->functions->redirect($this->base_url.AMP.'method=edit_items');
+
+		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP
+		.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items');
+
 	}
 
 
-	// ------------------------------------------------------------------------
 
 	/** -------------------------------------------
 	/**  Edit Store Items
@@ -645,9 +634,6 @@ class Simple_commerce_mcp {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
-
 	function edit_items_ajax_filter()
 	{
 		$this->EE->output->enable_profiler(FALSE);
@@ -717,7 +703,7 @@ class Simple_commerce_mcp {
 		$required = array('method', 'heading', 'message', 'hidden');
 
 		$vars['cp_page_title']  = $this->EE->lang->line($data['heading']);
-		$this->EE->cp->set_breadcrumb($this->base_url, $this->EE->lang->line('simple_commerce_module_name'));
+		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
 		$vars['damned'] = $data['hidden'];
 
 		$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method='.$data['method'];
@@ -727,58 +713,50 @@ class Simple_commerce_mcp {
 
 	}
 
-	// ------------------------------------------------------------------------
 
-	/**
-	 * Delete Items
-	 */
+	/** -------------------------------------------
+	/**  Delete Store Items
+	/** -------------------------------------------*/
 	function delete_items()
 	{
-		$this->EE->load->model('crud_model');
-
 		if ($this->EE->input->post('entry_ids') !== FALSE)
 		{
 			$entry_ids = array();
 
 			foreach(explode('|', $this->EE->input->get_post('entry_ids')) as $id)
 			{
-				$entry_ids[] = $id;
+				$entry_ids[] = $this->EE->db->escape_str($id);
 			}
-	
-			$this->EE->crud_model->delete('simple_commerce_items', array('entry_id' => $entry_ids));
+
+			$this->EE->db->query("DELETE FROM exp_simple_commerce_items
+						WHERE entry_id IN ('".implode("','", $entry_ids)."')");
 		}
 
-		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('items_deleted'));
-		$this->EE->functions->redirect($this->base_url.AMP.'method=edit_items');
+		return $this->edit_items($this->EE->lang->line('items_deleted'));
 	}
 
 
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Add Email template
-	 */
+	/** -------------------------------------------
+	/**  Add Email Template
+	/** -------------------------------------------*/
 	function add_email()
 	{
 		return $this->_emails_form(array(0));
 	}
 
-	// ------------------------------------------------------------------------
-
-
-	/**
-	 * Email Form
-	 */
 	function _emails_form($email_ids = array(), $new = 'y')
 	{
 		$this->EE->load->library('table');
+
 		$this->EE->load->helper('form');
-		$this->EE->load->model('crud_model');
 		$type = 'add_email';
+
+		$this->EE->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=ee_txtarea', TRUE);
 
 		$vars['template_directions'] = $this->EE->load->view('template_directions', '', TRUE);
 
 		$this->EE->javascript->output('
+
 			$(".glossary_content a").click(function(){
 				var replacement = $(this).attr("title");
 				var id_group = $(this).parents("div:first").attr("id");
@@ -801,7 +779,7 @@ class Simple_commerce_mcp {
 			$vars['email_template']['0']['possible_post'] = TRUE;
 
 			$vars['cp_page_title']  = $this->EE->lang->line('add_emails');
-			$this->EE->cp->set_breadcrumb($this->base_url, $this->EE->lang->line('simple_commerce_module_name'));
+			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
 
 			$vars['form_hidden']['email_id']['0'] = '';
 
@@ -813,7 +791,7 @@ class Simple_commerce_mcp {
 			$type = (count($email_ids) == 1) ? 'update_email' : 'update_emails';
 			$vars['email_template'] = array();
 
-			$query = $this->EE->crud_model->fetch('simple_commerce_emails', '*', array('email_id' => $email_ids));	
+			$query = $this->EE->db->query("SELECT * FROM exp_simple_commerce_emails WHERE email_id IN ('".implode("','", $email_ids)."')");
 
 			foreach ($query->result_array() as $key => $row)
 			{
@@ -864,7 +842,7 @@ class Simple_commerce_mcp {
 	{
 		if ( ! is_array($_POST['email_id']))
 		{
-			show_error($this->EE->lang->line('unauthorized_access'));
+			return $this->EE->dsp->no_access_message();
 		}
 
 		/** -------------------------------------------
@@ -1388,7 +1366,7 @@ class Simple_commerce_mcp {
 	{
 		if ( ! is_array($_POST['purchase_id']))
 		{
-			show_error($this->EE->lang->line('unauthorized_access'));
+			return $this->EE->dsp->no_access_message();
 		}
 
 		//  Valid Purchases Selected?
@@ -2231,14 +2209,15 @@ MAGIC;
 	function add_items($channel_id = '', $message = '', $extra_sql = '', $search_url = '', $form_url = '', $action = '', $extra_fields_search='', $extra_fields_entries='', $heading='')
 	{
 		$this->EE->lang->loadfile('content');
-		$this->EE->load->model('crud_model');
-		$this->EE->load->library('api');
 
 		//@todo: these vars were in the function instaniation - investigate if this is going to cause any limitations...
 		$channel_id = '';
 		$extra_sql = array();
 
-		$query = $this->EE->crud_model->fetch('simple_commerce_items', 'entry_id');
+
+		$this->EE->db->select('entry_id');
+
+		$query = $this->EE->db->get('simple_commerce_items');
 
         if ($query->num_rows() > 0)
         {
@@ -2248,6 +2227,8 @@ MAGIC;
 
         	$extra_sql['where'] = substr($extra_sql['where'], 0, -2).') ';
         }
+
+		$this->EE->load->library('api');
 
 		// $action, $extra_fields_*, and $heading are used by move_comments
 		$vars['message'] = $message;

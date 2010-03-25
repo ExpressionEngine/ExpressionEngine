@@ -32,10 +32,8 @@ class Sc_model extends CI_Model {
 		parent::CI_Model();
 	}
 
-
-
-
 	// ------------------------------------------------------------------------
+
 
 }
 // End Class
