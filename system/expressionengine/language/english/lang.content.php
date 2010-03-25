@@ -919,7 +919,10 @@ $lang = array(
 'There was a problem saving your layout.',
 
 'layout_failure_required' => 
-'There was a problem saving your layout.  The following fields are required and may not be hidden: ',
+'The following fields are required and may not be hidden: ',
+
+'layout_failure_invalid_name' => 
+'The following fields have invalid characters in the short names: ',
 
 'no_entry_to_update' =>
 'You have tried to update an entry that does not exist.',

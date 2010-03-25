@@ -256,6 +256,7 @@ class Content_publish extends Controller {
 		$this->api->instantiate(array('channel_fields'));
 		$this->output->enable_profiler(FALSE);
 		$error = array();
+		$valid_name_error = array();
 
 		$member_group = $this->input->post('member_group');
 		$channel_id = $this->input->post('channel_id');
@@ -285,21 +286,38 @@ class Content_publish extends Controller {
 			{
 				foreach ($field as $name => $info)
 				{
+					// Check for hiding a required field
 					if (in_array($name, $required) && $info['visible'] === FALSE)
 					{
 						$error[] = $name;
 					}
+					
+					// Check for hinkiness in field names
+					if (preg_match('/[^a-z0-9\_\-]/i', $name))
+					{
+						$valid_name_error[] = $name;
+					}					
 				}
 			}
 			
-			if (count($error) > 0)
+			if (count($error) > 0 OR count($valid_name_error) > 0)
 			{
-				
 				$resp['messageType'] = 'failure';
-				$resp['message'] = $this->lang->line('layout_failure_required').implode(', ', $error);
+				$message = $this->lang->line('layout_failure');
+				
+				if (count($error))
+				{
+					$message .= NBS.NBS.$this->lang->line('layout_failure_required').implode(', ', $error);
+				}
+				
+				if (count($valid_name_error))
+				{
+					$message .= NBS.NBS.$this->lang->line('layout_failure_invalid_name').implode(', ', $valid_name_error);
+				}
+				
+				$resp['message'] = $message; 
 
 				$this->output->send_ajax_response($resp); exit;	
-				
 			}
 		}
 		
