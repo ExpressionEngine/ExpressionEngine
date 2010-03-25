@@ -494,19 +494,19 @@ class Simple_commerce_mcp {
 
 	// ------------------------------------------------------------------------
 
-	/**
-	 * Edit Store Items
-	 */
+	/** -------------------------------------------
+	/**  Edit Store Items
+	/** -------------------------------------------*/
 	function edit_items()
 	{
 		$this->EE->load->library('javascript');
 		$this->EE->load->helper('form');
-		$this->EE->load->model('crud_model');
 
 		$vars['form_hidden'] = NULL;
 		$vars['items'] = array();
 
 		//  Either Show Search Form or Process Entries
+
 		if ($this->EE->input->post('toggle') !== FALSE OR $this->EE->input->get_post('entry_id') !== FALSE)
 		{
 			$entry_ids = array();
@@ -525,6 +525,8 @@ class Simple_commerce_mcp {
 					}
 				}
 			}
+
+
 
 			if ($this->EE->input->get_post('action') == 'delete')
 			{
@@ -547,7 +549,8 @@ class Simple_commerce_mcp {
 		{
 			$this->EE->load->library('table');
 			$vars['cp_page_title']  = $this->EE->lang->line('edit_items');
-			$this->EE->cp->set_breadcrumb($this->base_url, $this->EE->lang->line('simple_commerce_module_name'));
+			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.
+			AMP.'M=show_module_cp'.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
 
 			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items';
 
@@ -556,6 +559,7 @@ class Simple_commerce_mcp {
 			$this->EE->cp->add_js_script(array('plugin' => 'dataTables'));
 
 			$this->EE->javascript->output($this->ajax_filters('edit_items_ajax_filter', 8));
+
 
 			$this->EE->javascript->output(array(
 					'$(".toggle_all").toggle(
@@ -608,7 +612,7 @@ class Simple_commerce_mcp {
 			{
 
    				$vars['items'][$row['entry_id']]['entry_title'] = $row['title'];
-   				$vars['items'][$row['entry_id']]['edit_link'] = $this->base_url.AMP.'method=edit_items'.AMP.'entry_id='.$row['entry_id'];
+   				$vars['items'][$row['entry_id']]['edit_link'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items'.AMP.'entry_id='.$row['entry_id'];
 
    				$vars['items'][$row['entry_id']]['regular_price'] = $row['item_regular_price'];
    				$vars['items'][$row['entry_id']]['sale_price'] = $row['item_sale_price'];
@@ -625,6 +629,8 @@ class Simple_commerce_mcp {
 																		'value'		=> $row['entry_id'],
 																		'class'		=>'toggle'
 																	);
+
+
 			}
 
 			// Pass the relevant data to the paginate class so it can display the "next page" links
@@ -657,6 +663,7 @@ class Simple_commerce_mcp {
 		$offset = ($this->EE->input->get_post('iDisplayStart')) ? $this->EE->input->get_post('iDisplayStart') : 0; // Display start point
 		$sEcho = $this->EE->input->get_post('sEcho');
 
+
 		/* Ordering */
 		$order_by = 'item_id desc';
 
@@ -685,7 +692,7 @@ class Simple_commerce_mcp {
 		// Note- empty string added because otherwise it will throw a js error
 		foreach ($query->result_array() as $item)
 		{
-			$m[] = '<a href="'.$this->base_url.AMP.'method=edit_items'.AMP.'entry_id='.$item['entry_id'].'">'.$item['title'].'</a>';
+			$m[] = '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items'.AMP.'entry_id='.$item['entry_id'].'">'.$item['title'].'</a>';
 			$m[] = $item['item_regular_price'];
 			$m[] = $item['item_sale_price'];
 			$m[] = $item['item_use_sale'];
@@ -758,6 +765,7 @@ class Simple_commerce_mcp {
 
 	// ------------------------------------------------------------------------
 
+
 	/**
 	 * Email Form
 	 */
@@ -817,21 +825,19 @@ class Simple_commerce_mcp {
 			}
 
 			$vars['cp_page_title']  = $this->EE->lang->line($type);
-			$this->EE->cp->set_breadcrumb($this->base_url, $this->EE->lang->line('simple_commerce_module_name'));
+			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
+
 
 			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=update_emails';
 		}
 
+
 		$vars['type'] = $this->EE->lang->line($type);
 		$this->EE->javascript->compile();
 		return $this->EE->load->view('email_template', $vars, TRUE);
+
 	}
 
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Email Form Validation
-	 */
 	function _email_form_validation($email_id = array())
 	{
 		$this->EE->load->library('form_validation');
@@ -846,11 +852,10 @@ class Simple_commerce_mcp {
 		$this->EE->form_validation->set_error_delimiters('<br /><span class="notice">', '</span>');
 	}
 
-	// ------------------------------------------------------------------------
 
-	/**
-	 * Modify Email Templates- Add/Update
-	 */
+	/** -------------------------------------------
+	/**  Modify Email Templates- Add/Update
+	/** -------------------------------------------*/
 
 	function adding_email()		{ return $this->modify_emails('y', array(0)); 	}
 	function update_emails()	{ return $this->modify_emails('n');	}
@@ -862,15 +867,15 @@ class Simple_commerce_mcp {
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 
-		$this->EE->load->model('crud_model');
-
 		/** -------------------------------------------
 		/**  Valid Email Templates Selected?
 		/** -------------------------------------------*/
 
 		if ($new !== 'y')
 		{
-			$query = $this->EE->crud_model->fetch('simple_commerce_emails', 'email_id', array('email_id' => $_POST['email_id']));
+			$this->EE->db->select('email_id');
+			$this->EE->db->where_in('email_id', $_POST['email_id']);
+			$query = $this->EE->db->get('simple_commerce_emails');
 
 			if ($query->num_rows() > 0)
 			{
@@ -883,9 +888,11 @@ class Simple_commerce_mcp {
 			if (count($email_ids) == 0)
 			{
 				unset($_POST['email_id']);
-
 				$this->EE->session->set_flashdata('message_failure', $this->EE->lang->line('invalid_emails'));
-				$this->EE->functions->redirect($this->base_url.AMP.'method=edit_emails');
+
+				$this->EE->functions->redirect(
+					BASE.AMP.'C=addons_modules'.AMP
+					.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_emails');
 			}
 		}
 
@@ -906,65 +913,68 @@ class Simple_commerce_mcp {
 							);
 
 			//  Do our insert or update
+
 			if ($new == 'y')
 			{
 				$cp_message = 'new';
 				unset($data['email_id']);
-				$this->EE->crud_model->save('simple_commerce_emails', $data);
+
+				$this->EE->db->insert('simple_commerce_emails', $data);
 			}
 			else
 			{
 				$cp_message = 'update';
-				
-				$this->EE->crud_model->save('simple_commerce_emails', $data, array('email_id' => $id));
+
+				$this->EE->db->where('email_id', $id);
+				$this->EE->db->update('simple_commerce_emails', $data);
 			}
 		}
 
 		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line($cp_message));
-		$this->EE->functions->redirect($this->base_url.AMP.'method=edit_emails');
+
+		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'
+		.AMP.'module=simple_commerce'.AMP.'method=edit_emails');
 	}
 
-	// ------------------------------------------------------------------------
 
-	/**
-	 * Delete Email templates
-	 */
+
+	/** -------------------------------------------
+	/**  Delete Email Templates
+	/** -------------------------------------------*/
 	function delete_emails()
 	{
 		if ($this->EE->input->post('email_ids') !== FALSE)
 		{
-			$this->EE->load->model('crud_model');
+			$email_ids = explode('|', $this->EE->input->post('email_ids'));
 
-			$email_ids = array();
-	
-			foreach (explode('|', $this->EE->input->post('email_ids')) as $id)
-			{
-				$email_ids[] = $id;
-			}
-
-			$this->EE->crud_model->delete('simple_commerce_emails', array('email_id' => $email_ids));
+			$this->EE->db->where_in('email_id', $email_ids);
+			$this->EE->db->delete('simple_commerce_emails');
 
 			$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('emails_deleted'));
 		}
 
-		$this->EE->functions->redirect($this->base_url.AMP.'method=edit_emails');
+		$this->EE->functions->redirect(
+			BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'
+			.AMP.'module=simple_commerce'.AMP.'method=edit_emails');
 	}
 
-	// ------------------------------------------------------------------------
 
-	/**
-	 * Edit Email Templates
-	 */
+
+	/** -------------------------------------------
+	/**  Edit Email Templates
+	/** -------------------------------------------*/
 	function edit_emails()
 	{
 		$this->EE->load->library('javascript');
 		$this->EE->load->helper('form');
-		$this->EE->load->model('crud_model');
 
 		$vars['email_templates'] = array();
 		$vars['form_hidden'] = NULL;
 
-		// Either Show Search Form or Process Entries
+		/** -------------------------------------------
+		/**  Either Show Search Form or Process Entries
+		/** -------------------------------------------*/
+
 		if ($this->EE->input->post('toggle') !== FALSE OR $this->EE->input->get_post('email_id') !== FALSE)
 		{
 			$email_ids = array();
@@ -984,7 +994,11 @@ class Simple_commerce_mcp {
 				}
 			}
 
-			// Removed cause couldn't figure the point- Weed Out Any Entries that are already items
+			/** -------------------------------------------
+			/**  Removed cause couldn't figure the point- Weed Out Any Entries that are already items
+			/** -------------------------------------------*/
+
+
 			if ($this->EE->input->get_post('action') == 'delete')
 			{
 				return $this->_delete_confirmation_forms(
@@ -1005,9 +1019,11 @@ class Simple_commerce_mcp {
 		{
 			$this->EE->load->library('table');
 			$vars['cp_page_title']  = $this->EE->lang->line('edit_email_templates');
-			$this->EE->cp->set_breadcrumb($this->base_url, $this->EE->lang->line('simple_commerce_module_name'));
+			$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'
+			.AMP.'module=simple_commerce', $this->EE->lang->line('simple_commerce_module_name'));
 
 			// Add javascript
+
 			$this->EE->cp->add_js_script(array('plugin' => 'dataTables'));
 
 			$this->EE->javascript->output($this->ajax_filters('edit_emails_ajax_filter', 2));
@@ -1031,6 +1047,7 @@ class Simple_commerce_mcp {
 			$this->EE->javascript->compile();
 
 			//  Check for pagination
+
 			$total = $this->EE->db->count_all('simple_commerce_emails');
 
 			if ($total == 0)
@@ -1043,12 +1060,10 @@ class Simple_commerce_mcp {
 				$rownum = 0;
 			}
 
-			$query = $this->EE->crud_model->fetch('simple_commerce_emails', 
-													array('email_id', 'email_name'),
-													'',
-													array('email_name', 'desc'),
-													$this->perpage, $rownum
-						);
+			$this->EE->db->select('email_id, email_name');
+			$this->EE->db->order_by("email_name", "desc");
+			$this->EE->db->limit($this->perpage, $rownum);
+			$query = $this->EE->db->get('simple_commerce_emails');
 
 			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_emails';
 
@@ -1056,16 +1071,16 @@ class Simple_commerce_mcp {
 
 			foreach($query->result_array() as $row)
 			{
-				$vars['email_templates'][$row['email_id']] = array(
-							'email_name'		=> $row['email_name'],
-							'edit_link'			=> $this->base_url.AMP.'method=edit_emails'.AMP.'email_id='.$row['email_id'],
-							'toggle'			=> array(
-													'name'		=> 'toggle[]',
-													'id'		=> 'edit_box_'.$row['email_id'],
-													'value'		=> $row['email_id'],
-													'class'		=>'toggle'
-							)
-				);
+   				$vars['email_templates'][$row['email_id']]['email_name'] = $row['email_name'];
+   				$vars['email_templates'][$row['email_id']]['edit_link'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_emails'.AMP.'email_id='.$row['email_id'];
+				// Toggle checkbox
+				$vars['email_templates'][$row['email_id']]['toggle'] = array(
+																			'name'		=> 'toggle[]',
+																			'id'		=> 'edit_box_'.$row['email_id'],
+																			'value'		=> $row['email_id'],
+																			'class'		=>'toggle'
+																	);
+
 			}
 
 			// Pass the relevant data to the paginate class so it can display the "next page" links
@@ -1080,11 +1095,6 @@ class Simple_commerce_mcp {
 		}
 	}
 
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Edit Emails Ajax Filter
-	 */
 	function edit_emails_ajax_filter()
 	{
 
@@ -1094,10 +1104,12 @@ class Simple_commerce_mcp {
 
 		$id = ($this->EE->input->get_post('id')) ? $this->EE->input->get_post('id') : '';
 
+
 		// Note- we pipeline the js, so pull more data than are displayed on the page
 		$perpage = $this->EE->input->get_post('iDisplayLength');
 		$offset = ($this->EE->input->get_post('iDisplayStart')) ? $this->EE->input->get_post('iDisplayStart') : 0; // Display start point
 		$sEcho = $this->EE->input->get_post('sEcho');
+
 
 		/* Ordering */
 		$order = array();
@@ -1143,7 +1155,7 @@ class Simple_commerce_mcp {
 
 		foreach ($query->result_array() as $email)
 		{
-			$m[] = '<a href="'.$this->base_url.AMP.'method=edit_emails'.AMP.'email_id='.$email['email_id'].'">'.$email['email_name'].'</a>';
+			$m[] = '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_emails'.AMP.'email_id='.$email['email_id'].'">'.$email['email_name'].'</a>';
 			$m[] = '<input class="toggle" id="edit_box_'.$email['email_id'].'" type="checkbox" name="toggle[]" value="'.$email['email_id'].'" />';
 
 			$tdata[$i] = $m;
@@ -1174,7 +1186,6 @@ class Simple_commerce_mcp {
 	function _purchases_form($purchase_ids = array(), $new = 'y')
 	{
 		$this->EE->load->model('member_model');
-		$this->EE->load->model('sc_model');
 		$this->EE->load->library('table');
 		$this->EE->load->helper(array('form', 'date'));
 
@@ -1206,7 +1217,11 @@ class Simple_commerce_mcp {
 		//$items_list = $DB->query("SELECT sc.item_id, wt.title FROM exp_simple_commerce_items sc, exp_weblog_titles wt
 	    //    				 WHERE sc.entry_id = wt.entry_id");
 
-		$items_list = $this->EE->sc_model->select_sc_items();
+		$this->EE->db->select('simple_commerce_items.item_id, channel_titles.title');
+		$this->EE->db->from('simple_commerce_items');
+		$this->EE->db->join('channel_titles', 'simple_commerce_items.entry_id = channel_titles.entry_id');
+
+		$items_list = $this->EE->db->get();
 
 		$vars['items_dropdown'] = array('' => $this->EE->lang->line('choose_item'));
 

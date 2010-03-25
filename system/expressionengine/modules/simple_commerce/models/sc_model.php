@@ -32,20 +32,10 @@ class Sc_model extends CI_Model {
 		parent::CI_Model();
 	}
 
+
+
+
 	// ------------------------------------------------------------------------
-
-	/**
-	 * Select Simple Commerce Items
-	 *
-	 */
-	function select_sc_items()
-	{
-		$this->db->select('simple_commerce_items.item_id, channel_titles.title');
-		$this->db->from('simple_commerce_items');
-		$this->db->join('channel_titles', 'simple_commerce_items.entry_id = channel_titles.entry_id');
-
-		return $this->db->get();
-	}
 
 }
 // End Class
