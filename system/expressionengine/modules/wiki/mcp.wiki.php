@@ -1,44 +1,45 @@
-<?php
+<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
+ * @license		http://expressionengine.com/docs/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
 
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://expressionengine.com/
------------------------------------------------------
- Copyright (c) 2003 - 2010, EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/docs/license.html
-=====================================================
- File: mcp.wiki.php
------------------------------------------------------
- Purpose: Wiki class - CP
-=====================================================
-*/
-if ( ! defined('EXT'))
-{
-	exit('Invalid file request');
-}
+// ------------------------------------------------------------------------
 
-
+/**
+ * ExpressionEngine Wiki Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Control Panel Page
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
 class Wiki_mcp {
+
+	var $base_url = '';
 
 	/**
 	  *  Constructor
 	  */
-	function Wiki_mcp( $switch = TRUE )
+	function Wiki_mcp()
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-        $base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP;
+        $this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki';
 
         $this->EE->cp->set_right_nav(array(
-				'wiki_homepage'	=> BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki',
-                'create_wiki'   => $base_url.'method=create',
-                'wiki_themes'   => $base_url.'method=list_themes'
+				'wiki_homepage'	=> $this->base_url,
+                'create_wiki'   => $this->base_url.AMP.'method=create',
+                'wiki_themes'   => $this->base_url.AMP.'method=list_themes'
             ));
 	}
 
@@ -52,34 +53,20 @@ class Wiki_mcp {
 		$this->EE->load->library('table');
 		$this->EE->load->library('javascript');
 		$this->EE->load->helper('form');
+		$this->EE->load->model('wiki_model');
 
-		$this->EE->cp->add_js_script(array('plugin' => 'tablesorter'));
-		$this->EE->jquery->tablesorter('.mainTable', '{
-			headers: {2: {sorter: false}},
-			widgets: ["zebra"]
-		}');
-
-		$this->EE->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);'
+		$this->EE->cp->add_js_script(array(
+			'plugin' 	=> 'tablesorter',
+			'fp_module'	=> 'wiki'
 			)
 		);
 
 		$vars['cp_page_title'] = $this->EE->lang->line('wiki_module_name');
 
-		$this->EE->db->select('wiki_id, wiki_label_name, wiki_short_name');
-		$this->EE->db->order_by('wiki_label_name', 'asc');
-		$query = $this->EE->db->get('wikis');
+		$select = array('wiki_id', 'wiki_label_name', 'wiki_short_name');
+		$sort_order = array('wiki_label_name', 'asc');
+
+		$query = $this->EE->wiki_model->get_wikis('', $select, $sort_order);
 
 		$vars['wikis'] = array();
 
@@ -89,11 +76,11 @@ class Wiki_mcp {
 			$vars['wikis'][$row->wiki_id]['label_name'] = $row->wiki_label_name;
 			$vars['wikis'][$row->wiki_id]['shortname'] = $row->wiki_short_name;
 			$vars['wikis'][$row->wiki_id]['toggle'] = array(
-																			'name'		=> 'toggle[]',
-																			'id'		=> 'delete_box_'.$row->wiki_id,
-																			'value'		=> $row->wiki_id,
-																			'class'		=>'toggle'
-			    														);
+														'name'		=> 'toggle[]',
+														'id'		=> 'delete_box_'.$row->wiki_id,
+														'value'		=> $row->wiki_id,
+														'class'		=>'toggle'
+  													);
 		}
 
 		$this->EE->javascript->compile();
@@ -110,6 +97,16 @@ class Wiki_mcp {
 		$this->EE->load->library('form_validation');
 		$this->EE->load->library('table');
 		$this->EE->load->helper('form');
+		$this->EE->load->model('wiki_model');
+
+		$this->EE->cp->add_js_script(array('fp_module' => 'wiki'));
+
+		$this->EE->javascript->set_global(array('lang' => array(
+											'namespace_deleted'	=> $this->EE->lang->line('namespace_deleted'),
+											'namespace_not_deleted' => $this->EE->lang->line('namespace_not_deleted')
+										)
+									));
+
 
 		$wiki_id = ($this->EE->input->get_post('wiki_id') !== '' && is_numeric($this->EE->input->get_post('wiki_id'))) ? $this->EE->input->get_post('wiki_id') : 1;
 
@@ -120,12 +117,12 @@ class Wiki_mcp {
 			$vars['message_type'] = 'success';
 		}
 
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki', $this->EE->lang->line('wiki_module_name'));
+		$this->EE->cp->set_breadcrumb($this->base_url, $this->EE->lang->line('wiki_module_name'));
 
 		$vars['cp_page_title'] = $this->EE->lang->line('wiki_preferences');
 		$vars['form_hidden']['wiki_id'] = $wiki_id;
 		$vars['form_hidden']['action'] = 'edit';
-		
+
 		$this->EE->form_validation->set_rules('wiki_label_name',		'lang:wiki_label_name',			'required');
 		$this->EE->form_validation->set_rules('wiki_short_name',		'lang:wiki_short_name',			'required|callback__check_duplicate');
 		$this->EE->form_validation->set_rules('wiki_upload_dir',		'lang:wiki_upload_dir',			'required');
@@ -136,14 +133,14 @@ class Wiki_mcp {
 		$this->EE->form_validation->set_rules('wiki_revision_limit',	'lang:wiki_revision_limit',		'is_natural');
 		$this->EE->form_validation->set_rules('wiki_author_limit',		'lang:wiki_author_limit',		'is_natural');
 		$this->EE->form_validation->set_rules('wiki_namespaces_list',	'lang:wiki_namespaces_list',	'');
-		$this->EE->form_validation->set_rules('wiki_moderation_emails',	'lang:wiki_moderation_emails',	'prep_list[,]|valid_emails');		
+		$this->EE->form_validation->set_rules('wiki_moderation_emails',	'lang:wiki_moderation_emails',	'prep_list[,]|valid_emails');
 
 		$this->EE->form_validation->set_old_value('id', $wiki_id);
 		$this->EE->form_validation->set_error_delimiters('<br /><span class="notice">', '</span>');
 
 		if ($this->EE->form_validation->run() === FALSE)
 		{
-			$query = $this->EE->db->get_where('wikis', array('wiki_id' => $wiki_id));
+			$query = $this->EE->wiki_model->get_wikis($wiki_id);
 
 			if ($query->num_rows() == 0)
 			{
@@ -151,7 +148,6 @@ class Wiki_mcp {
 			}
 
 			// Preferences
-
 			// generate field values
 			foreach ($query->row() as $field_name => $value)
 			{
@@ -163,20 +159,28 @@ class Wiki_mcp {
 
 			$vars['wiki_text_format_options'] 	= $this->EE->addons_model->get_plugin_formatting();
 			$vars['wiki_html_format_options'] 	= array(
-															'none'	=> $this->EE->lang->line('convert_to_entities'),
-															'safe'	=> $this->EE->lang->line('allow_safe_html'),
-															'all'	=> $this->EE->lang->line('allow_all_html')
-														);
-			$vars['wiki_upload_dir_options'] 	= $this->upload_directory_options();
-			$vars['wiki_admins_options'] 		= $this->member_group_options();
-			$vars['wiki_users_options'] 		= $this->member_group_options();
+												'none'	=> $this->EE->lang->line('convert_to_entities'),
+												'safe'	=> $this->EE->lang->line('allow_safe_html'),
+												'all'	=> $this->EE->lang->line('allow_all_html')
+											);
+
+			/**
+			 * We were calling this method three times prior to moving it over to the model
+			 * I decided to just run it once, but it'll be easy enough to tweak things if needed
+			 * in the future --ga
+			 */
+			$member_group_options = $this->EE->wiki_model->member_group_options();
+
+			$vars['wiki_upload_dir_options'] 	= $this->EE->wiki_model->fetch_upload_options();
+			$vars['wiki_admins_options'] 		= $member_group_options;
+			$vars['wiki_users_options'] 		= $member_group_options;
 
 			// Namespaces
-
-			$namespaces_query = $this->EE->db->get_where('wiki_namespaces', array('wiki_id' => $wiki_id));
+			$namespaces_query = $this->EE->db->get_where('wiki_namespaces',
+														array('wiki_id' => $wiki_id));
 
 			$vars['namespaces'] = array();
-			$vars['member_group_options'] = $this->member_group_options();
+			$vars['member_group_options'] = $member_group_options;
 
 			if ($namespaces_query->num_rows() > 0)
 			{
@@ -191,13 +195,12 @@ class Wiki_mcp {
 				}
 			}
 
-			$this->EE->db->select_max('namespace_id');
-			$result = $this->EE->db->get('wiki_namespaces');
+			$result = $this->EE->wiki_model->select_max('namespace_id', '', 'wiki_namespaces');
 
 			$vars['next_namespace_id'] = ($result->row('namespace_id') >= 1) ? $result->row('namespace_id') + 1 : 1;
 			$vars['wiki_users_value'] = explode('|', $vars['wiki_users_value']);
 			$vars['wiki_admins_value'] = explode('|', $vars['wiki_admins_value']);
-			
+
 			return $this->EE->load->view('update', $vars, TRUE);
 		}
 		else
@@ -219,7 +222,6 @@ class Wiki_mcp {
 				if ($val == 'wiki_namespaces_list')
 				{
 					//  Namespaces Requiring an Update
-
 					$query = $this->EE->db->get_where('wiki_namespaces', array('wiki_id' => $wiki_id));
 
 					$labels = array();
@@ -315,12 +317,11 @@ class Wiki_mcp {
 
 			if (count($data) > 0)
 			{
-				$this->EE->db->where('wiki_id', $wiki_id);
-				$this->EE->db->update('wikis', $data);
+				$this->EE->wiki_model->update_wiki($wiki_id, $data);
 				$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('update_successful'));
 			}
-			
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP.'method=update'.AMP.'wiki_id='.$wiki_id);
+
+			$this->EE->functions->redirect($this->base_url.AMP.'method=update'.AMP.'wiki_id='.$wiki_id);
 		}
 	}
 
@@ -331,153 +332,15 @@ class Wiki_mcp {
 	  */
 	function _check_duplicate($str)
 	{
-		if ($id = $this->EE->form_validation->old_value('id'))
-		{
-			$this->EE->db->where('wiki_id != ', $id);
-		}
-		
-		$this->EE->db->where('wiki_short_name', $str);
-		
-		if ($this->EE->db->count_all_results('wikis') > 0)
+		$this->EE->load->model('wiki_model');
+
+		if ($this->EE->wiki_model->check_duplicate($this->EE->form_validation->old_value('id'), $str) === FALSE)
 		{
 			$this->EE->form_validation->set_message('_check_duplicate', $this->EE->lang->line('duplicate_short_name'));
 			return FALSE;
 		}
+
 		return TRUE;
-	}
-	
-	// --------------------------------------------------------------------
-
-	/**
-	  *  Add Namespace JS for Configuration
-	  */
-	function add_namespace_js($i, $first)
-	{
-		// @confirm: since we need the CP to be functional without JS, I've replaced this "dynamicly add a row"
-		// javascript with simple submit buttons labelled "+" and "-"
-		// This function remains here for reference.  Remove or implement for 2.0 release
-		$this->EE->lang->loadfile('admin');
-
-		$action_can_not_be_undone = $this->EE->lang->line('action_can_not_be_undone')."\\n\\n".$this->EE->lang->line('toggle_extension_confirmation')."\\n";
-
-			return <<<DOH
-
-<script type="text/javascript">
-//<![CDATA[
-
-var namespaceCount	= {$i};
-var modelNamespace	= {$first};
-
-function add_namespace_fields()
-{
-
-	if (document.getElementById('namespace_container_' + modelNamespace))
-	{
-		// Find last namespace field
-		var originalNamespaceField = document.getElementById('namespace_container_' + modelNamespace);
-		namespaceCount++;
-
-		// Clone it, change the id
-		var newNamespaceField = originalNamespaceField.cloneNode(true);
-		newNamespaceField.id = 'namespace_container_' + namespaceCount;
-
-		// Zero the input and change the names of fields
-		var newFieldInputs = newNamespaceField.getElementsByTagName('input');
-		newFieldInputs[0].value = '';
-		newFieldInputs[0].name = 'namespace_label_' + namespaceCount;
-		newFieldInputs[1].value = '';
-		newFieldInputs[1].name = 'namespace_name_' + namespaceCount;
-
-		// Append it and we're done
-		originalNamespaceField.parentNode.appendChild(newNamespaceField);
-	}
-}
-
-function delete_namespace_field(obj)
-{
-	if (obj.parentNode && obj.parentNode.parentNode)
-	{
-		if( ! confirm("{$action_can_not_be_undone}")) return false;
-
-		siblings = obj.parentNode.parentNode.parentNode.getElementsByTagName('tr');
-
-		if (siblings.length == 2)
-		{
-			add_namespace_fields();
-		}
-
-		if (obj.parentNode.parentNode.id = siblings[1].id)
-		{
-			modelNamespace = siblings[2].id.substr(20);
-		}
-		else
-		{
-			modelNamespace = siblings[1].id.substr(20);
-		}
-
-		obj.parentNode.parentNode.parentNode.removeChild(obj.parentNode.parentNode);
-	}
-}
-
-//-->
-//]]>
-</script>
-
-DOH;
-
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	  *  List of Member Groups
-	  */
-	function member_group_options()
-	{
-		// currently all member group functions are irrespective of specific contexts
-		// so it may make sense to load these once into an array available to the whole
-		// module, however that would limit future flexibility, and the select calls
-		// are not very intensive, so we'll continue running a db call each time.
-		// Then again, query caching and this is pretty much a non-issue...
-
-		// @todo: is there a model that would be better for this?  I'll hold off
-		// AR'ing this sucker until I investimigate (sic) it 
-		$query = $this->EE->db->query("SELECT group_title, group_id
-							 FROM exp_member_groups
-							 WHERE group_id NOT IN (2,3,4)
-							 AND site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'");
-
-		$options = array();
-
-		foreach($query->result() as $row)
-		{
-			$options[$row->group_id] = $row->group_title;
-		}
-
-		return $options;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	  *  Upload Some Files with This Directory
-	  */
-	function upload_directory_options($value='')
-	{
-		$this->EE->db->select('id, name');
-		$this->EE->db->order_by('name');
-		$query = $this->EE->db->get('upload_prefs');
-
-		$options[0] = $this->EE->lang->line('none');
-
-		foreach($query->result() as $row)
-		{
-			$selected = ($value == $row->id) ? 1 : '';
-
-			$options[$row->id] = $row->name;
-		}
-
-		return $options;
 	}
 
 	// --------------------------------------------------------------------
@@ -489,10 +352,10 @@ DOH;
 	{
 		if ( ! $this->EE->input->post('toggle'))
 		{
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki');
+			$this->EE->functions->redirect($this->base_url);
 		}
 
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki', $this->EE->lang->line('wiki_module_name'));
+		$this->EE->cp->set_breadcrumb($this->base_url, $this->EE->lang->line('wiki_module_name'));
 
 		$vars['cp_page_title'] = $this->EE->lang->line('wiki_delete_confirm');
 		$vars['question_key'] = 'wiki_delete_question';
@@ -519,88 +382,59 @@ DOH;
 	{
 		if ( ! $this->EE->input->post('delete'))
 		{
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki');
+			$this->EE->functions->redirect($this->base_url);
 		}
 
-		$this->EE->db->where_in('wiki_id', $_POST['delete']);
-		$this->EE->db->delete(array('wikis', 'wiki_page', 'wiki_revisions', 'wiki_categories'));
-
-		$message = (count($_POST['delete']) == 1) ? $this->EE->lang->line('wiki_deleted') : $this->EE->lang->line('wikis_deleted');
+		$this->EE->load->model('wiki_model');
+		$message = $this->EE->wiki_model->delete_wiki($_POST['delete']);
 
 		$this->EE->session->set_flashdata('message_success', $message);
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki');
+		$this->EE->functions->redirect($this->base_url);
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	  * Create New Wiki
-	  */
+	 * Create New Wiki
+	 * 
+	 * @todo -- Revisit this whole thing.  Why is a wiki being created before 'submit' is pressed?
+	 * look at update() as well.
+	 */
 	function create()
 	{
-		$query = $this->EE->db->query("SELECT MAX(wiki_id) AS max FROM exp_wikis");
+		$this->EE->load->model('wiki_model');
+		$query = $this->EE->wiki_model->select_max('wiki_id', 'max', 'wikis');
 
-		$prefix = ($query->num_rows() > 0 && $query->row('max')  != 0) ? '_'.($query->row('max') +1) : '';
+		$prefix = ($query->num_rows() > 0 && $query->row('max')  != 0) ? '_'.((int)$query->row('max') +1) : '';
 
-		$id = $this->create_new_wiki($prefix);
+		$id = $this->EE->wiki_model->create_new_wiki($prefix);
 
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP.'method=update'.AMP.'wiki_id='.$id.AMP.'create=new');
+		$this->EE->functions->redirect($this->base_url.AMP.'method=update'.AMP.'wiki_id='.$id.AMP.'create=new');
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	  *  Create New Wiki
-	  */
-	function create_new_wiki($prefix='')
-	{
-		//  Default Index Page
+	 * Delete Namespace
+	 */
+	function delete_namespace()
+	{	
+		if ( ! AJAX_REQUEST)
+		{
+			show_error($this->EE->lang->line('unauthorized_access'));
+		}
+		
+		if ($this->EE->wiki_model->delete_namespace($this->EE->input->get_post('namespace_id')) === TRUE)
+		{
+			echo $this->EE->output->send_ajax_response(array('response' => 'success')); 
+		}
 
-		$data  = array(	'wiki_label_name'			=> "EE Wiki".str_replace('_', ' ', $prefix),
-						'wiki_short_name'			=> 'default_wiki'.$prefix,
-						'wiki_text_format'			=> 'xhtml',
-						'wiki_html_format'			=> 'safe',
-						'wiki_admins'				=> '1',
-						'wiki_users'				=> '1|5',
-						'wiki_upload_dir'			=> '0',
-						'wiki_revision_limit'		=> 200,
-						'wiki_author_limit'			=> 75,
-						'wiki_moderation_emails'	=> '');
+		echo $this->EE->output->send_ajax_response(array('response' => 'failure'));
 
-		$this->EE->db->query($this->EE->db->insert_string('exp_wikis', $data));
-		$wiki_id = $this->EE->db->insert_id();
-
-		//  Default Index Page
-
-		$data = array(	'wiki_id'		=> $wiki_id,
-						'page_name'		=> 'index',
-						'last_updated'	=> $this->EE->localize->now);
-
-		$this->EE->db->query($this->EE->db->insert_string('exp_wiki_page', $data));
-
-		$this->EE->lang->loadfile('wiki');
-
-		$page_id = $this->EE->db->insert_id();
-
-		$data = array(	'page_id'			=> $page_id,
-						'wiki_id'			=> $wiki_id,
-						'revision_date'		=> $this->EE->localize->now,
-						'revision_author'	=> $this->EE->session->userdata['member_id'],
-						'revision_notes'	=> $this->EE->lang->line('default_index_note'),
-						'page_content'		=> $this->EE->lang->line('default_index_content')
-					 );
-
-		$this->EE->db->query($this->EE->db->insert_string('exp_wiki_revisions', $data));
-
-		$last_revision_id = $this->EE->db->insert_id();
-
-		$this->EE->db->query($this->EE->db->update_string('exp_wiki_page', array('last_revision_id' => $last_revision_id), array('page_id' => $page_id)));
-
-		return $wiki_id;
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * List Themes
 	 *
@@ -611,17 +445,18 @@ DOH;
 	 */
 	function list_themes()
 	{
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki', $this->EE->lang->line('wiki_module_name'));
+		$this->EE->cp->set_breadcrumb($this->base_url,
+										$this->EE->lang->line('wiki_module_name'));
 
 		$vars = array();
 		$vars['cp_page_title'] = $this->EE->lang->line('wiki_themes');
 		$vars['themes'] = array();
-		
+
 		$this->EE->load->helper('directory');
 
 		foreach (directory_map(PATH_THEMES.'wiki_themes', TRUE) as $file)
 		{
-			if (is_dir(PATH_THEMES.'wiki_themes/'.$file) AND $file != '.' AND $file != '..' AND $file != '.svn' AND $file != '.cvs') 
+			if (is_dir(PATH_THEMES.'wiki_themes/'.$file) AND $file != '.' AND $file != '..' AND $file != '.svn' AND $file != '.cvs')
 			{
 				$vars['themes'][$file] = ucfirst(str_replace("_", " ", $file));
 			}
@@ -631,7 +466,7 @@ DOH;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Theme Templates
 	 *
@@ -642,25 +477,27 @@ DOH;
 	 */
 	function theme_templates()
 	{
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki', $this->EE->lang->line('wiki_module_name'));
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP.'method=list_themes', $this->EE->lang->line('wiki_themes'));
+		$this->EE->cp->set_breadcrumb($this->base_url,
+										$this->EE->lang->line('wiki_module_name'));
+		$this->EE->cp->set_breadcrumb($this->base_url.AMP.'method=list_themes',
+										$this->EE->lang->line('wiki_themes'));
 
 		$vars = array();
 		$vars['cp_page_title'] = $this->EE->lang->line('wiki_theme_templates');
 		$vars['templates'] = array();
-		
+
 		// no theme?
 		if (($vars['theme'] = $this->EE->input->get_post('theme')) === FALSE)
 		{
 			return $this->EE->load->view('theme_templates', $vars, TRUE);
 		}
-		
+
 		$vars['theme'] = strtolower($this->EE->functions->sanitize_filename($vars['theme']));
 		$vars['theme_name'] = strtolower(str_replace('_', ' ', $vars['theme']));
 		$vars['cp_page_title'] .= ' - '.htmlentities($vars['theme_name']);
-		
+
 		$path = PATH_THEMES.'/wiki_themes/'.$vars['theme'];
-		
+
 		$this->EE->load->helper('directory');
 
 		foreach (directory_map($path, TRUE) as $file)
@@ -676,13 +513,13 @@ DOH;
 		asort($vars['templates']);
 
 		$this->EE->javascript->compile();
-		
+
 		$this->EE->load->helper('string');
 		return $this->EE->load->view('theme_templates', $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Edit Template
 	 *
@@ -693,9 +530,11 @@ DOH;
 	 */
 	function edit_template()
 	{
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki', $this->EE->lang->line('wiki_module_name'));
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP.'method=list_themes', $this->EE->lang->line('wiki_themes'));
-		
+		$this->EE->cp->set_breadcrumb($this->base_url,
+										$this->EE->lang->line('wiki_module_name'));
+		$this->EE->cp->set_breadcrumb($this->base_url.AMP.'method=list_themes',
+										$this->EE->lang->line('wiki_themes'));
+
 		$vars = array();
 		$vars['cp_page_title'] = $this->EE->lang->line('edit_template');
 
@@ -719,7 +558,8 @@ DOH;
 		$vars['template_name'] = ucwords(str_replace('_', ' ', substr($vars['template'], 0, -strlen(strrchr($vars['template'], '.')))));
 		$vars['cp_page_title'] .= ' - '.htmlentities($vars['theme_name']).' / '.htmlentities($vars['template_name']);
 
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP.'method=theme_templates'.AMP.'theme='.$vars['theme'], htmlentities($vars['theme_name']));
+		$this->EE->cp->set_breadcrumb($this->base_url.AMP.'method=theme_templates'.AMP.'theme='.$vars['theme'],
+		 								htmlentities($vars['theme_name']));
 
 		$path = PATH_THEMES.'wiki_themes/'.$vars['theme'].'/';
 
@@ -731,28 +571,29 @@ DOH;
 		{
 			return $this->EE->load->view('theme_templates', $vars, TRUE);
 		}
-		
+
 		$this->EE->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=markitup', TRUE);
 
 		$markItUp = array(
-			'nameSpace'	=> "html",
+			'nameSpace'		=> "html",
 			'onShiftEnter'	=> array('keepDefault' => FALSE, 'replaceWith' => "<br />\n"),
 			'onCtrlEnter'	=> array('keepDefault' => FALSE, 'openWith' => "\n<p>", 'closeWith' => "</p>\n")
 		);
-		
+
 		/* -------------------------------------------
 		/*	Hidden Configuration Variable
 		/*	- allow_textarea_tabs => Preserve tabs in all textareas or disable completely
 		/* -------------------------------------------*/
-		
-		if($this->EE->config->item('allow_textarea_tabs') != 'n') {
+
+		if ($this->EE->config->item('allow_textarea_tabs') != 'n')
+		{
 			$markItUp['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
 		}
 
 		$this->EE->javascript->output('
 			$("#template_data").markItUp('.$this->EE->javascript->generate_json($markItUp).');
 		');
-		
+
 		$this->EE->javascript->compile();
 
 		$vars['not_writable'] = ! is_really_writable($path.$vars['template']);
@@ -772,7 +613,8 @@ DOH;
 	 */
 	function update_template()
 	{
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki', $this->EE->lang->line('wiki_module_name'));
+		$this->EE->cp->set_breadcrumb($this->base_url,
+										$this->EE->lang->line('wiki_module_name'));
 
 		// no theme?
 		if (($theme = $this->EE->input->get_post('theme')) === FALSE)
@@ -805,15 +647,16 @@ DOH;
 
 		// Clear cache files
 		$this->EE->functions->clear_caching('all');
-		
 		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('template_updated'));
 
-		if ($this->EE->input->get_post('update_and_return') != FALSE)
+		$redirect_url = $this->base_url.AMP.'method=theme_templates';
+
+		if ($this->EE->input->get_post('update_and_return') !== FALSE)
 		{
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP.'method=theme_templates'.AMP.'theme='.$theme);
+			$this->EE->functions->redirect($redirect_url.AMP.'theme='.$theme);
 		}
 
-$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki'.AMP.'method=edit_template'.AMP.'theme='.$theme.AMP.'template='.$template);		
+		$this->EE->functions->redirect($redirect_url.AMP.'theme='.$theme.AMP.'template='.$template);
 	}
 }
 /* END Class */
