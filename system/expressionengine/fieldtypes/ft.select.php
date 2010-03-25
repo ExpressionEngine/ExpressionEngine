@@ -67,7 +67,7 @@ class Select_ft extends EE_Fieldtype {
 		
 		if ( ! $valid)
 		{
-			return 'Invalid Selection'; // @todo lang key
+			return $this->EE->lang->line('invalid_selection');
 		}
 	}
 	
