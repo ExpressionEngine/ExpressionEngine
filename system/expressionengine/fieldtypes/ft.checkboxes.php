@@ -76,7 +76,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 			{
 				foreach ($pop_query->result_array() as $prow)
 				{
-					$selected = ($prow['field_id_'.$this->settings['field_pre_field_id']] == $field_data) ? 1 : '';
+					$selected = ($prow['field_id_'.$this->settings['field_pre_field_id']] == $data) ? 1 : '';
 					$pretitle = substr($prow['field_id_'.$this->settings['field_pre_field_id']], 0, 110);
 					$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
 					$pretitle = form_prep($pretitle);
@@ -85,7 +85,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 				}
 			}
 		}
-	
+
 		// If they've selected something we'll make sure that it's a valid choice
 		$selected = $this->EE->input->post('field_id_'.$this->settings['field_id']);
 	
