@@ -201,6 +201,7 @@ $(".delete_field").toggle(
 );
 
 _delete_tab_hide = function(the_li, tab_to_delete) {
+
 	$(".menu_"+tab_to_delete).parent().fadeOut();	// hide the tab
 	$(the_li).fadeOut();							// remove from sidebar
 	$("#"+tab_to_delete).fadeOut();					// hide the fields
@@ -233,11 +234,6 @@ _delete_tab_reveal = function() {
 
 	return false;
 }
-
-
-
-
-
 
 tab_req_check = function(tab_name) {
 	var illegal = false;
@@ -330,15 +326,14 @@ function _add_tab(tab_name) {
 	$(".addTabButton").before("<li id=\"menu_"+tab_name_filtered+"\" class=\"content_tab\"><a href=\"#\" class=\"menu_"+tab_name_filtered+"\" title=\"menu_"+tab_name_filtered+"\">"+tab_name+"</a></li>").fadeIn();
 
 	// add the tab to the list in the toolbar
-	$("#publish_tab_list").append("<li><a class=\"menu_focus\" title=\"menu_+tab_name_filtered+\" href=\"#\">"+tab_name+"</a> <a href=\"#"+tab_name_filtered+" class=\"delete delete_tab\"><img src=\""+EE.THEME_URL+"content_custom_tab_delete.png\" alt=\"Delete\" width=\"19\" height=\"18\" /></a></li>");
+	$("#publish_tab_list").append("<li class=\"remove_"+tab_name_filtered+"\"><a class=\"menu_focus\" title=\"menu_+tab_name_filtered+\" href=\"#\">"+tab_name+"</a> <a href=\"#"+tab_name_filtered+"\" class=\"delete delete_tab\"><img src=\""+EE.THEME_URL+"images/content_custom_tab_delete.png\" alt=\"Delete\" width=\"19\" height=\"18\" /></a></li>");
 
 	new_tab = $("<div class=\"main_tab\"><div class=\"insertpoint\"></div><div class=\"clear\"></div></div>").attr("id", tab_name_filtered);
 	new_tab.prependTo("#holder");
 
 	// If this is the only tab on the interface, we should move focus into it
 	// The "add tab" button counts for 1, so we look for it plus the new tab (hence 2)
-	if ($("#tab_menu_tabs li:visible").length <= 2)
-	{
+	if ($("#tab_menu_tabs li:visible").length <= 2) {
 		tab_focus(tab_name_filtered);
 	}  
 

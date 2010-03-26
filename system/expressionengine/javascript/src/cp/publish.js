@@ -207,27 +207,32 @@ EE.publish.save_layout = function() {
 	$(".main_tab").show();
 
 	//$("li:visible", "#tab_menu_tabs").each(function() {
-	$("li", "#tab_menu_tabs").each(function() {
+	$("#tab_menu_tabs a:not(.add_tab_link)").each(function() {
+	
+
+		//console.log($(this).text()); return false;
+
 		// skip list items with no id (ie: new tab)
-		if (this.id && this.id !== "")
+		if ($(this).parent('li').attr('id') && $(this).parent('li').attr('id') !== "")
 		{
-			var tab_name = this.id.replace(/menu_/, "");
-			
+			//var tab_name = this.id.replace(/menu_/, "");
+
+			var tab_name = $(this).text(),
+				tab_id	 = $(this).text().replace(/ /g, '_').toLowerCase();	
+
 			field_index = 0;
 			visible = true;
 
-			if( $(this).is(':visible') )
+			if( $(this).parent('li').is(':visible') )
 			{
 				lay_name = tab_name;
 				layout_object[lay_name] = {};
-			}
-			else
-			{
+			} else {
 				merge = true;
 				visible = false;
 			}
 
-			$("#"+tab_name).find(".publish_field").each(function() {
+			$("#"+tab_id).find(".publish_field").each(function() {
 
 				var that = $(this),
 					id = this.id.replace(/hold_field_/, ""),

@@ -34,7 +34,7 @@ if ($EE_view_disable !== TRUE)
 		<?=form_open_multipart('C=content_publish'.AMP.'M=entry_form'.$BK, $form_additional, $form_hidden)?>
 
 			<ul class="tab_menu" id="tab_menu_tabs">
-				<?php foreach($publish_tabs as $tab => $field_list):?><li id="menu_<?=$tab?>" class="content_tab"><a href="#" title="menu_<?=$tab?>" class="menu_<?=$tab?>"><?=lang($tab)?></a>&nbsp;</li><?php endforeach; if ($this->session->userdata('group_id') == 1):?><li class="addTabButton"><a class="add_tab_link" href="#"><img src="<?=$cp_theme_url?>images/add_publish_tab_button.gif" alt="<?=lang('add_tab')?>" width="10" height="10"/><?=lang('add_tab')?></a>&nbsp;</li><?php endif?>
+				<?php foreach($publish_tabs as $tab => $field_list):?><li id="menu_<?=url_title($tab, 'underscore', TRUE)?>" class="content_tab"><a href="#" title="menu_<?=url_title($tab, 'underscore', TRUE)?>" class="menu_<?=url_title($tab, 'underscore', TRUE)?>"><?=lang($tab)?></a>&nbsp;</li><?php endforeach; if ($this->session->userdata('group_id') == 1):?><li class="addTabButton"><a class="add_tab_link" href="#"><img src="<?=$cp_theme_url?>images/add_publish_tab_button.gif" alt="<?=lang('add_tab')?>" width="10" height="10"/><?=lang('add_tab')?></a>&nbsp;</li><?php endif?>
 			</ul>
 
 		<?php
@@ -61,9 +61,9 @@ if ($EE_view_disable !== TRUE)
 				<div>
 				<ul id="publish_tab_list">
 					<?php foreach($publish_tabs as $tab => $field_list):?>
-						<li id="remove_tab_<?=$tab?>">
-							<a href="#" title="menu_<?=$tab?>" class="menu_focus"><?=lang($tab)?></a> 
-							<a href="#<?=$tab?>" class="delete delete_tab"><img src="<?=$cp_theme_url?>images/content_custom_tab_delete.png" alt="<?=lang('delete')?>" width="19" height="18" /></a>
+						<li id="remove_tab_<?=url_title($tab, 'underscore', TRUE)?>">
+							<a href="#" title="menu_<?=url_title($tab, 'underscore', TRUE)?>" class="menu_focus"><?=lang($tab)?></a> 
+							<a href="#<?=url_title($tab, 'underscore', TRUE)?>" class="delete delete_tab"><img src="<?=$cp_theme_url?>images/content_custom_tab_delete.png" alt="<?=lang('delete')?>" width="19" height="18" /></a>
 						</li>
 					<?php endforeach;?>
 				</ul>
@@ -127,7 +127,7 @@ if ($EE_view_disable !== TRUE)
 
 	<div id="holder">
 			<?php foreach ($publish_tabs as $tab=>$fields):?>
-			<div id="<?=$tab?>" class="main_tab">
+			<div id="<?=url_title($tab, 'underscore', TRUE)?>" class="main_tab">
 				
 				<?php foreach ($fields as $field=>$values):?>
 					
