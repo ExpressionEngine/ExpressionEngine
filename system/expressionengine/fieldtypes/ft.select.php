@@ -48,6 +48,11 @@ class Select_ft extends EE_Fieldtype {
 		$valid			= FALSE;
 		$field_options	= $this->_get_field_options($data);
 				
+		if ($data == '')
+		{
+			return TRUE;
+		}
+
 		foreach($field_options as $key => $val)
 		{
 			if (is_array($val))
