@@ -90,7 +90,6 @@ class Admin_model extends CI_Model {
 											'new_posts_clear_caches'	=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'enable_sql_caching'		=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'word_separator'			=> array('s', array('dash' => 'dash', 'underscore' => 'underscore')),
-											'enable_image_resizing'		=> array('r', array('y' => 'yes', 'n' => 'no')),
 											),
 
 			'image_cfg'			=>	array(
@@ -280,7 +279,6 @@ class Admin_model extends CI_Model {
 						'allow_multi_logins'		=> array('allow_multi_logins_explanation'),
 						'name_of_dictionary_file'	=> array('dictionary_explanation'),
 						'force_query_string'		=> array('force_query_string_explanation'),
-						'enable_image_resizing'		=> array('enable_image_resizing_exp'),
 						'image_resize_protocol'		=> array('image_resize_protocol_exp'),
 						'image_library_path'		=> array('image_library_path_exp'),
 						'thumbnail_prefix'			=> array('thumbnail_prefix_exp'),

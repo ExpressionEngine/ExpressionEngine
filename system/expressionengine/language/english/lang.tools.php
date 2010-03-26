@@ -1187,12 +1187,6 @@ $lang = array(
 'cookie_path_explain' => 
 'Use only if you require a specific server path for cookies',
 
-'enable_image_resizing' =>
-'Enable Image Resizing',
-
-'enable_image_resizing_exp' =>
-'When enabled, you will be able to create thumbnails when you upload images for placement in your channel entries.',
-
 'image_resize_protocol' =>
 'Image Resizing Protocol',
 

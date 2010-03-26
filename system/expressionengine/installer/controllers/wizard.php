@@ -283,7 +283,7 @@ class Wizard extends Controller {
 		
 		// Set the installation type (core or full)
 		$this->full_install = $this->_is_full_install();
-	
+
 		// Is the config file readable?
 		if ( ! @include($this->config->config_path))
 		{			
@@ -2341,7 +2341,6 @@ PAPAYA;
 						'enable_emoticons'      		=>  'y',
 						'emoticon_path'         		=>  $this->userdata['site_url'].'images/smileys/',
 						'recount_batch_total'   		=>  '1000',
-						'enable_image_resizing'			=>	'y',
 						'image_resize_protocol'			=>	'gd2',
 						'image_library_path'			=>	'',
 						'thumbnail_prefix'				=>	'thumb',
@@ -2572,8 +2571,7 @@ PAPAYA;
 		$this->db->update('sites', array('site_template_preferences' => base64_encode(serialize($site_prefs))));
 										
 		// Default Channels Prefs
-		$channel_default = array('enable_image_resizing',
-								'image_resize_protocol',
+		$channel_default = array('image_resize_protocol',
 								'image_library_path',
 								'thumbnail_prefix',
 								'word_separator',

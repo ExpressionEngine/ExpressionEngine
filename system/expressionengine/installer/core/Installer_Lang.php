@@ -19,13 +19,13 @@
 // do an include and create a small meta class that
 // CI can instantiate using the proper prefix.
 
-require_once(EE_APPPATH.'/libraries/EE_Exceptions'.EXT);
+require_once(EE_APPPATH.'/core/EE_Lang'.EXT);
 
  
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Exceptions Class
+ * ExpressionEngine Language Class
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -34,9 +34,9 @@ require_once(EE_APPPATH.'/libraries/EE_Exceptions'.EXT);
  * @link		http://expressionengine.com
  */
 
-class Installer_Exceptions Extends EE_Exceptions {
+class Installer_Lang Extends EE_Lang {
 	// Yes, it's empty!
 }
 
-/* End of file Installer_Exceptions.php */
-/* Location: ./system/expressionengine/installer/libraries/Installer_Exceptions.php */
+/* End of file Installer_Lang.php */
+/* Location: ./system/expressionengine/installer/libraries/Installer_Lang.php */

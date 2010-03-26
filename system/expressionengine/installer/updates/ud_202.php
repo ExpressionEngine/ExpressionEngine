@@ -56,7 +56,24 @@ class Updater {
 			$this->EE->progress->update_state("Running Query $num of $count");
 	        $this->EE->db->query($sql);
 		}
-		
+
+		// Drop enable image resize configuration option
+		$this->EE->db->select('site_channel_preferences');
+		$query = $this->EE->db->get('sites');
+
+		foreach ($query->result() as $row)
+		{
+			$settings = unserialize(base64_decode($row->site_channel_preferences));
+
+			if (isset($settings['enable_image_resizing']))
+			{
+				unset($settings['enable_image_resizing']);
+			}
+
+			$this->EE->db->set('site_channel_preferences', base64_encode(serialize($settings)));
+			$this->EE->db->update('sites');
+		}
+
 		// Finished!
         return TRUE;
 

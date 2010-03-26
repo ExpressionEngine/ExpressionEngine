@@ -524,8 +524,8 @@ class EE_Config Extends CI_Config {
 								  'strict_urls'
 								);
 								  
-		$channel_default = array('enable_image_resizing',
-								'image_resize_protocol',
+		$channel_default = array('image_resize_protocol',
+				// deprecated	'enable_image_resizing', 
 								'image_library_path',
 								'thumbnail_prefix',
 								'word_separator',

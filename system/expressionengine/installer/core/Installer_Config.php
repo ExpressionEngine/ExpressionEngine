@@ -19,9 +19,8 @@
 // Instead of reimplementing those methods, we'll
 // include that file and subclass it again.
 
-require_once(EE_APPPATH.'/libraries/EE_Config'.EXT);
+require_once(EE_APPPATH.'/core/EE_Config'.EXT);
 
- 
 // ------------------------------------------------------------------------
 
 /**

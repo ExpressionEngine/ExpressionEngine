@@ -2713,16 +2713,6 @@ class Moblog {
 		$this->post_data['images'][$key]['width']  = $properties['width'];
 		$this->post_data['images'][$key]['height'] = $properties['height'];
 
-
-		/** ---------------------------
-		/**  Resizing Set Up Check
-		/** ---------------------------*/
-
-		if ($this->EE->config->item('enable_image_resizing') != 'y')
-		{
-			return;
-		}
-
 		/** --------------------------------
 		/**  Invoke the Image Lib Class
 		/** --------------------------------*/
