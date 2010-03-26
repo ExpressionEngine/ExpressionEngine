@@ -204,7 +204,7 @@ class Updater {
 
 			if ( ! $one_six_file)
 			{
-				show_error(sprintf($this->EE->lang->line('unable_to_read_tmpl_file', $val->group_name.'/'.$val->template_name.EXT)));
+				show_error(sprintf($this->EE->lang->line('unable_to_read_tmpl_file'), $val->group_name.'/'.$val->template_name.EXT));
 			}
 			
 			$this->EE->db->where('template_id', $val->template_id);
