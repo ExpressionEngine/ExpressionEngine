@@ -142,7 +142,7 @@ input.submit {
 			<p><?=form_checkbox('remember_me', '1', '', 'id="remember_me"')?><span><?=lang('remember_me', 'remember_me')?></span></p>
 		<?php endif;?>
 
-		<p><?=form_submit('submit', lang('login'), 'class="submit"')?> <span><a href='index.php?S=0&amp;D=cp&amp;C=login&amp;M=forgotten_password_form'><?=lang('forgot_password')?></a></span></p>
+		<p><?=form_submit('submit', lang('login'), 'class="submit"')?> <span><a href='<?=BASE.AMP?>C=login&amp;M=forgotten_password_form'><?=lang('forgot_password')?></a></span></p>
 
 		<?=form_close()?>
 
