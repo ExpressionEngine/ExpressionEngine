@@ -395,7 +395,9 @@ class Api_channel_fields extends Api {
 			//  Call Module
 			$third_party = FALSE;
 
-			if ( ! class_exists($class_name))
+			$new_name = ucfirst($class_name).'_tab';
+
+			if ( ! class_exists($new_name))
 			{
 				if (file_exists(APPPATH.'modules/'.strtolower($class_name).'/tab.'.strtolower($class_name).EXT))
 				{
@@ -413,8 +415,6 @@ class Api_channel_fields extends Api {
 				}
 			}
 
-			$new_name = ucfirst($class_name).'_tab';
-		
 			$mod_base_path = ($third_party) ? PATH_THIRD : APPPATH.'modules/';
 			$this->EE->load->add_package_path($mod_base_path.strtolower($class_name).'/');
 
