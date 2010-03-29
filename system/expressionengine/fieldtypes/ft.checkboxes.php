@@ -31,6 +31,16 @@ class Checkboxes_ft extends EE_Fieldtype {
 	
 	var $has_array_data = TRUE;
 
+	// used in display_field() below to set 
+	// some defaults for third party usage
+	var $settings_vars = array(
+		'field_text_direction'	=> 'rtl',
+		'field_pre_populate'	=> 'n',
+		'field_list_items'		=> array(),
+		'field_pre_field_id'	=> '',
+		'field_pre_channel_id'	=> ''
+	);
+
 	/**
 	 * Constructor
 	 *
@@ -118,6 +128,8 @@ class Checkboxes_ft extends EE_Fieldtype {
 	
 	function display_field($data)
 	{
+		array_merge($this->settings, $this->settings_vars);
+
 		$values = decode_multi_field($data);
 
 		// @todo remove hack for pings

@@ -31,7 +31,9 @@ class Radio_ft extends EE_Fieldtype {
 
 	var $has_array_data = FALSE;
 
-	var $default_settings = array(
+	// used in display_field() below to set 
+	// some defaults for third party usage
+	var $settings_vars = array(	
 		'field_text_direction'	=> 'rtl',
 		'field_pre_populate'	=> 'n',
 		'field_list_items'		=> array(),
@@ -53,7 +55,7 @@ class Radio_ft extends EE_Fieldtype {
 	
 	function display_field($data)
 	{
-		array_merge($this->settings, $this->default_settings);
+		array_merge($this->settings, $this->settings_vars);
 
 		$text_direction = ($this->settings['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr';
 
