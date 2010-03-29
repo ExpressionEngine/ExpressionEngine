@@ -62,16 +62,31 @@ class EE_Form_validation extends CI_Form_validation {
 	 */
 	function call_field_validation($data, $field_id)
 	{
-		$this->CI->api_channel_fields->setup_handler($field_id);
-		$err = $this->CI->api_channel_fields->apply('validate', array($data));
+		$error = '';
+		$value = TRUE;
 		
-		if ($err !== TRUE && $err != '')
+		$this->CI->api_channel_fields->setup_handler($field_id);
+		$res = $this->CI->api_channel_fields->apply('validate', array($data));
+		
+		if (is_array($res))
 		{
-			$this->set_message('call_field_validation', $err);
+			// Overwrites $error and $value if they're set
+			// array('error' => ..., 'value' => ...)
+			
+			extract($res);
+		}
+		else
+		{
+			$error = $res;
+		}
+		
+		if ($error !== TRUE && $error != '')
+		{
+			$this->set_message('call_field_validation', $error);
 			return FALSE;
 		}
 		
-		return TRUE;
+		return $value;
 	}
 	
 	// --------------------------------------------------------------------

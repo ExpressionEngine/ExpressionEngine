@@ -100,8 +100,9 @@ class File_ft extends EE_Fieldtype {
 		{
 			$_POST[$this->field_name] = $_POST[$hidden_field];
 		}
-
+		
 		$_POST[$dir_field] = $filedir;
+		
 		unset($_POST[$hidden_field]);
 		
 		if ($this->settings['field_required'] == 'y' && ! $_POST[$this->field_name])
@@ -109,7 +110,7 @@ class File_ft extends EE_Fieldtype {
 			return $this->EE->lang->line('required');
 		}
 		
-		return TRUE;
+		return array('value' => $_POST[$this->field_name]);
 	}
 	
 	// --------------------------------------------------------------------
@@ -121,8 +122,8 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function display_field($data)
 	{
-		$filedir = '';
-		$filename = '';
+		$filedir = set_value($this->field_name.'_directory', '');
+		$filename = set_value($this->field_name, '');
 		$upload_dirs = array();
 				
 		$upload_directories = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata('group_id'));
@@ -152,7 +153,6 @@ class File_ft extends EE_Fieldtype {
 		{
 			$thumb = '<img src="'.PATH_CP_GBL_IMG.'default.png" alt="default thumbnail" />';
 		}
-
 
 		$hidden	  = form_hidden($this->field_name.'_hidden', $filename);
 		$upload   = form_upload($this->field_name, $filename);
