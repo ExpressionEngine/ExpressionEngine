@@ -1163,11 +1163,16 @@ class Api_channel_entries extends Api {
 		
 		$data['url_title'] = isset($data['url_title']) ? $data['url_title'] : '';
 		$data['url_title'] = $this->_validate_url_title($data['url_title'], $data['title'], (bool) $this->entry_id);
-		
-		
+
 		// Pages
 		$this->_cache['pages_enabled'] = $this->EE->config->item('site_pages');
-		
+
+		// Pages URI is just the default example URI submitted.
+		if (isset($data['pages_uri']) && $data['pages_uri'] == '/example/pages/uri/')
+		{
+			$data['pages_uri'] = '';
+		}
+
 		if ($this->EE->config->item('site_pages') !== FALSE && isset($data['pages_uri']) && $data['pages_uri'] != '')
 		{
 			$this->_cache['pages_enabled'] = TRUE;
@@ -1185,7 +1190,6 @@ class Api_channel_entries extends Api {
 			}
 			
 			// Check if duplicate uri
-			
 			$static_pages = $this->EE->config->item('site_pages');
 			$uris = $static_pages[$this->EE->config->item('site_id')]['uris'];
 			
