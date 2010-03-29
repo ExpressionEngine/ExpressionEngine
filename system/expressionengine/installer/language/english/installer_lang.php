@@ -139,6 +139,7 @@ $lang['update_ee'] = 'Update ExpressionEngine!';
 $lang['updating_template_as_files'] = 'Updating templates saved as files.';
 $lang['template_files_not_located'] = 'The following template files could not be located:';
 $lang['proper_template_files_location'] = 'Please make sure your template group folders are located in %s and the template folder has permissions of 777';
+$lang['site_templates_not_found'] = 'The following sites have templates saved as files and templates can not be found.  Please verify %s have been uploaded.';
 $lang['template_folder_not_writeable'] = 'The template folder is not writeable, make sure permissions are set to 777 on %s';
 $lang['unable_to_read_tmpl_file'] = 'Unable to read the following file:  %s Verify it exists.';
 $lang['could_not_create_folder'] = 'Could not create folder for %s.  Please make sure %s is writable';

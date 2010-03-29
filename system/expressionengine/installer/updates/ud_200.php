@@ -60,14 +60,14 @@ class Updater {
         // Load the string helper
         $this->EE->load->helper('string');
         
-        // Update Flat File Templates if we have any
-        $this->_update_templates_saved_as_files();
-        
         // set charset to PHP default so non-latin characters stored in preferences are retreived correctly
         // @todo - might do a little dance for people who hacked version 1.x to use utf8 charset with MySQL
         $this->EE->db->db_set_charset('latin1', 'latin1_swedish_ci');
         $query = $this->EE->db->query("SELECT es.* FROM exp_sites AS es");
-        
+
+        // Update Flat File Templates if we have any
+        $this->_update_templates_saved_as_files($query);
+
         foreach($query->result_array() as $row)
         {
             foreach($row as $name => $data)
@@ -122,124 +122,171 @@ class Updater {
      * And move them out of the way.
      *
      * @access private
-     * @return void
+	 * @param object	Query object from sites query.
+	 * @return void
      */
-    function _update_templates_saved_as_files()
+    function _update_templates_saved_as_files($sites)
     {
-		$this->EE->db->select('templates.template_id, templates.template_name, 
-							   templates.template_data, template_groups.group_name');
-        $this->EE->db->where('save_template_file', 'y');
-		$this->EE->db->join('template_groups', 'template_groups.group_id = templates.group_id');
-        $query = $this->EE->db->get('templates');
+		// This might seem a little redundant, but let's check that the directories with templates
+		// Actually exist before we go much further.
+		$old_template_upload_errors = array();
 
-        if ($query->num_rows() == 0)
-        {
-            return;
-        }
-
-        $this->EE->progress->update_state($this->EE->lang->line('updating_templates_as_files'));     
-        
-		define('TEMPLATE_PATH', EE_APPPATH.'templates/');
-
-		if ( ! is_really_writable(TEMPLATE_PATH))
+		foreach ($sites->result() as $row)
 		{
-			show_error(sprintf($this->EE->lang->line('template_folder_not_writeable'), TEMPLATE_PATH));
+			if ( ! is_really_writable(EE_APPPATH.'templates/'.$row->site_name.'/'))
+			{
+				$old_template_upload_errors[] = EE_APPPATH.'templates/'.$row->site_name.'/';
+			}
 		}
 
-        // Error Array
-        $template_errors = array();
-        
-        // Templates to move
-        $templates_to_move = array();
-
-        // Tempalte Groups
-		$template_groups = array();
-
-        foreach ($query->result() as $row)
-        {
-            if ( ! file_exists(TEMPLATE_PATH.$row->group_name.'/'.$row->template_name.EXT))
-            {
-                $template_errors[] = $row->group_name.'/'.$row->template_name;
-            }
-            else
-            {
-                $templates_to_move[] = $row;
-				$template_groups[] = $row->group_name;
-            }
-        }
-
-		$template_groups = array_unique($template_groups);
-
-		// Are there errors?
-		if ( ! empty($template_errors))
+		if ( ! empty($old_template_upload_errors))
 		{
-			$error_str = '<ul>';
-			
-			foreach ($template_errors as $key => $val)
+			$folder_error = implode(', <br />', $old_template_upload_errors);
+
+			show_error(sprintf($this->EE->lang->line('site_templates_not_found'), 
+													$folder_error));
+		}
+
+		// On to the real deal.
+		foreach ($sites->result() as $site)
+		{
+			// Are templates saved as files in the first place?  No sense in going on if not
+			$templates = unserialize($site->site_template_preferences);
+
+			if ($templates['save_tmpl_files'] == 'n')
 			{
-				$error_str .= '<li>'.$val.'</li>';
+				continue;
 			}
 			
-			$error_str .= '</ul>';
-			
-			show_error($this->EE->lang->line('template_files_not_located').$error_str
-						.sprintf($this->EE->lang->line('proper_template_files_location'), TEMPLATE_PATH));
-		}
+			$template_path = EE_APPPATH.'templates/'.$site->site_name.'/';
 
-		// Create a new directory for old files.
-		define('OLD_TEMPLATE_FOLDER', TEMPLATE_PATH.'1.x_templates/');
+			// Onward
+			$this->EE->db->select('templates.template_id, templates.template_name, 
+								   templates.template_data, template_groups.group_name');
+		    $this->EE->db->where('save_template_file', 'y');
+			$this->EE->db->where('template_groups.site_id', $site->site_id);
+			$this->EE->db->join('template_groups', 'template_groups.group_id = templates.group_id');
+		    $query = $this->EE->db->get('templates');
+			
+			if ($query->num_rows() == 0)
+			{
+				continue;
+			}
+	
+			$this->EE->progress->update_state($this->EE->lang->line('updating_templates_as_files'));
+
+			// Error Array
+			$template_errors = array();
+
+			// Templates to move
+			$templates_to_move = array();
+
+			// Template Groups
+			$template_groups = array();
 		
-		if ( ! (is_dir(OLD_TEMPLATE_FOLDER)))
-		{
-			if (mkdir(OLD_TEMPLATE_FOLDER) === FALSE)
+			foreach ($query->result() as $row)
 			{
-				show_error(sprintf($this->EE->lang->line('template_folder_not_writeable'),
-								   TEMPLATE_PATH));
-			}
-		}
-
-        foreach ($templates_to_move as $key => $val)
-        {
-			$one_six_file = read_file(TEMPLATE_PATH.$val->group_name.'/'.$val->template_name.EXT);
-
-			if ( ! $one_six_file)
-			{
-				show_error(sprintf($this->EE->lang->line('unable_to_read_tmpl_file'), $val->group_name.'/'.$val->template_name.EXT));
-			}
-			
-			$this->EE->db->where('template_id', $val->template_id);
-			$this->EE->db->update('templates', array('template_data' => $one_six_file));
-			
-			// Move the file over to a new directory, so we're keeping the original file.
-			if ( ! is_dir(OLD_TEMPLATE_FOLDER.$val->group_name))
-			{
-				if (mkdir(OLD_TEMPLATE_FOLDER.$val->group_name) === FALSE)
-				{	
-					show_error(sprintf($this->EE->lang->line('could_not_create_folder'),
-										OLD_TEMPLATE_FOLDER.$val->group_name,
-										OLD_TEMPLATE_FOLDER));
+				if ( ! file_exists($template_path.$row->group_name.'/'.$row->template_name.EXT))
+				{
+					$template_errors[] = $row->group_name.'/'.$row->template_name;
 				}
-				
-				chmod(OLD_TEMPLATE_FOLDER.$val->group_name, DIR_WRITE_MODE);
+				else
+				{
+					$templates_to_move[] = $row;
+					$template_groups[] = $row->group_name;
+				}
 			}
+
+			$template_groups = array_unique($template_groups);
+
+			// Are there errors?
+			if ( ! empty($template_errors))
+			{
+				$error_str = '<ul>';
+
+				foreach ($template_errors as $key => $val)
+				{
+					$error_str .= '<li>'.$val.'</li>';
+				}
+
+				$error_str .= '</ul>';
+
+				show_error($this->EE->lang->line('template_files_not_located').$error_str.
+							sprintf($this->EE->lang->line('proper_template_files_location'), 
+															$template_path));
+			}
+
+			// Create a new directory for old files.
+			//$old_template_folder = $template_path.'1.x_templates/';
+
+			$old_template_folder = EE_APPPATH.'templates/1.x_templates/'.$site->site_name.'/';
+
 			
-			// write the file to a new temp location where the user can have them for safe keeping.
-			write_file(OLD_TEMPLATE_FOLDER.$val->group_name.'/'.$val->template_name.EXT, $one_six_file);
-			
-			// Destroy the file in the we just moved.
-			unlink(TEMPLATE_PATH.$val->group_name.'/'.$val->template_name.EXT);
-        }
-		
-		// Remove old folders for each template group
-		foreach ($template_groups as $group)
-		{
-			rmdir(TEMPLATE_PATH.$group);
+			// First, make sure the 1.x template folder exists
+			if ( ! (is_dir(EE_APPPATH.'templates/1.x_templates')))
+			{
+				if (mkdir(EE_APPPATH.'templates/1.x_templates') === FALSE)
+				{
+					show_error(sprintf($this->EE->lang->line('template_folder_not_writeable'),
+										$template_path));
+				}
+			}
+
+			// Next, make the folder for the site in 1.x_templates
+			if ( ! (is_dir($old_template_folder)))
+			{
+				if (mkdir($old_template_folder) === FALSE)
+				{
+					show_error(sprintf($this->EE->lang->line('template_folder_not_writeable'),
+										$template_path));
+				}
+			}
+
+			foreach ($templates_to_move as $key => $val)
+			{
+				$one_six_file = read_file($template_path.$val->group_name.'/'.$val->template_name.EXT);
+
+				if ( ! $one_six_file)
+				{
+					show_error(sprintf($this->EE->lang->line('unable_to_read_tmpl_file'),
+										$val->group_name.'/'.$val->template_name.EXT));
+				}
+
+				$this->EE->db->where('template_id', $val->template_id);
+				$this->EE->db->update('templates', array('template_data' => $one_six_file));
+
+				// Move the file over to a new directory, so we're keeping the original file.
+				if ( ! is_dir($old_template_folder.$val->group_name))
+				{
+					if (mkdir($old_template_folder.$val->group_name) === FALSE)
+					{	
+						show_error(sprintf($this->EE->lang->line('could_not_create_folder'),
+											$old_template_folder.$val->group_name,
+											$old_template_folder));
+					}
+
+					chmod($old_template_folder.$val->group_name, DIR_WRITE_MODE);
+				}
+
+				// write the file to a new temp location where the user can have them for safe keeping.
+				write_file($old_template_folder .$val->group_name.'/'.$val->template_name.EXT, $one_six_file);
+
+				// Destroy the file in the we just moved.
+				unlink($template_path.$val->group_name.'/'.$val->template_name.EXT);
+			}
+
+			// Remove old folders for each template group
+			foreach ($template_groups as $group)
+			{
+				rmdir($template_path.$group);
+			}
+
+			// Remove the site's template folder
+			rmdir(EE_APPPATH.'templates/'.$site->site_name);
 		}
 
 		return;
     }
-    
-    
     
     // ------------------------------------------------------------------------ 
     
