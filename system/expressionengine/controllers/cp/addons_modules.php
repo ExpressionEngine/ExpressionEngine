@@ -71,6 +71,12 @@ class Addons_modules extends Controller {
 		$this->load->library('addons');
 		$this->load->helper('directory');
 		
+		$this->jquery->tablesorter('.mainTable', '{
+			headers: {0: {sorter: false}},
+        	textExtraction: "complex",			
+			widgets: ["zebra"]
+		}');		
+		
 		//  Fetch all module names from "modules" folder
 		$modules = $this->addons->get_files();
 
@@ -116,6 +122,8 @@ class Addons_modules extends Controller {
 		$modcount = 1;
 
 		$vars['modules'] = array();
+		$names = array();
+		$data = array();
 
 		foreach ($modules as $module => $module_info)
 		{
@@ -127,32 +135,35 @@ class Addons_modules extends Controller {
 				}
 			}
 
-			$vars['modules'][$modcount][] = $modcount;
+			$data[$modcount][] = $modcount;
 
 			// Module Name
 			$name = ($this->lang->line(strtolower($module).'_module_name') != FALSE) ? $this->lang->line(strtolower($module).'_module_name') : $module_info['name'];
 
+			$names[$modcount] = strtolower($name);
+			
 			if (isset($this->installed_modules[$module]) AND $this->installed_modules[$module]['has_cp_backend'] == 'y')
 			{
 				$cp_theme = ($this->session->userdata['cp_theme'] == '') ? $this->config->item('cp_theme') : $this->session->userdata['cp_theme'];
 				$name = '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module='.strtolower($module).'"><strong>'.$name.'</strong></a>';
 			}
 
-			$vars['modules'][$modcount][] = $name;
+			$data[$modcount][] = $name;
+			
 
 			// Module Description
-			$vars['modules'][$modcount][] = $this->lang->line(strtolower($module).'_module_description');
+			$data[$modcount][] = $this->lang->line(strtolower($module).'_module_description');
 
 			// Module Version
 			$version = ( ! isset($this->installed_modules[$module])) ?  '--' : $this->installed_modules[$module]['module_version'];
-			$vars['modules'][$modcount][] = $version;
+			$data[$modcount][] = $version;
 
 			// Module Status
 			// @todo: get rid of dsp class down there...
 			$status = ( ! isset($this->installed_modules[$module]) ) ? 'not_installed' : 'installed';
 			$in_status = str_replace(" ", "&nbsp;", $this->lang->line($status));
 			$show_status = ($status == 'not_installed') ? $this->dsp->qspan('notice', $in_status) : $this->dsp->qspan('go_notice', $in_status);
-			$vars['modules'][$modcount][] = $show_status;
+			$data[$modcount][] = $show_status;
 
 			// Module Action
 			$action = ($status == 'not_installed') ? 'install' : 'deinstall';
@@ -170,10 +181,22 @@ class Addons_modules extends Controller {
 				$show_action = '<a class="less_important_link" href="'.BASE.AMP.'C=addons_modules'.AMP.'M=module_uninstaller'.AMP.'module='.$module.'" title="'.$this->lang->line('deinstall').'">'.$this->lang->line('deinstall').'</a>';
 			}
 
-			$vars['modules'][$modcount][] = $show_action;
+			$data[$modcount][] = $show_action;
 
 			$modcount++;
 		}
+		
+		// Let's order by name just in case
+		asort($names);
+		
+		$id = 1;
+		foreach ($names as $k => $v)
+		{
+			$vars['modules'][$id] = $data[$k];
+			$vars['modules'][$id][0] = $k;
+			$id++;
+		}
+
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('modules'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', $this->lang->line('addons'));

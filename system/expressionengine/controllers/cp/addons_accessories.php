@@ -86,10 +86,11 @@ class Addons_accessories extends Controller {
 		$this->cp->set_variable('cp_page_title', $this->lang->line('accessories'));
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', $this->lang->line('addons'));
-
+		
 		$this->jquery->tablesorter('.mainTable', '{
+        	textExtraction: "complex",			
 			widgets: ["zebra"]
-		}');
+		}');		
 	
 		$this->load->library('addons');
 		

@@ -32,6 +32,12 @@ class Addons_fieldtypes extends Controller {
 		
 		$this->cp->set_variable('cp_page_title', $this->lang->line('addons_fieldtypes'));
 		
+		$this->jquery->tablesorter('.mainTable', '{
+			headers: {0: {sorter: false}},
+        	textExtraction: "complex",			
+			widgets: ["zebra"]
+		}');
+		
 		$fieldtypes = $this->api_channel_fields->fetch_all_fieldtypes();
 		$installed_fts = array();
 		
@@ -53,11 +59,15 @@ class Addons_fieldtypes extends Controller {
 										);
 		
 		$vars['fieldtypes'] = array();
+		$names = array();
+		$data = array();
+		$ftcount = 1;
 
 		foreach ($fieldtypes as $fieldtype => $ft_info)
 		{
 			// Name and Version
 			$name = $ft_info['name'];
+			$names[$ftcount] = strtolower($name);
 			$version = $ft_info['version'];
 			
 			// Installed
@@ -80,15 +90,28 @@ class Addons_fieldtypes extends Controller {
 			$show_action = '<a class="less_important_link" href="'.BASE.AMP.'C=addons_fieldtypes'.AMP.'M='.$show_action.AMP.'ft='.$fieldtype.'" title="'.$this->lang->line($show_action).'">'.$this->lang->line($show_action).'</a>';
 
 			// Add to the view array
-			$vars['fieldtypes'][] = array(
-				count($vars['fieldtypes']) + 1,
+			$data[$ftcount] = array(
+				$ftcount,
 				$name,
 				$version,
 				$show_status,
 				$show_action
 			);
+			
+			$ftcount++;
 		}
 		
+		// Let's order by name just in case
+		asort($names);
+		
+		$id = 0;
+		foreach ($names as $k => $v)
+		{
+			$vars['fieldtypes'][$id] = $data[$k];
+			$vars['fieldtypes'][$id][0] = $k;
+			$id++;
+		}
+
 		$this->javascript->compile();
 		
 		$this->load->view('addons/fieldtypes', $vars);

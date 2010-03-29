@@ -80,13 +80,21 @@ class Updater {
 
 					if ( ! is_string($old_pages) OR substr($old_pages, 0, 2) != 'a:')
 					{
-						// Error or will lose data.  Which is borked!
+						// Error or will lose data- which is borked!
 						continue;
 
 					}
 					else
 					{
-						$new_pages[$row['site_id']] = unserialize($old_pages);
+						if (isset($row['site_id']]['url']))
+						{
+							//  Site pages have already been updated
+							continue;
+						}
+						else
+						{
+							$new_pages[$row['site_id']] = unserialize($old_pages);
+						}
 						
 					}
 					
