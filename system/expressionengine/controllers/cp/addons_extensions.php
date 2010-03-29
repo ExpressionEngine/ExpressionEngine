@@ -174,10 +174,10 @@ class Addons_extensions extends Controller {
 		
 		// Let's order by name just in case
 		asort($names);
-		
+
 		foreach ($names as $k => $v)
 		{
-			$vars['extension_info'][] = $extension_files[$k];
+			$vars['extension_info'][$k] = $extension_files[$k];
 		}
 
 		$extensions_toggle = ($this->config->item('allow_extensions') == 'y') ? 'disable_extensions' : 'enable_extensions';
