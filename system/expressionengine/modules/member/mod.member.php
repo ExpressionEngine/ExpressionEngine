@@ -3289,7 +3289,7 @@ class Member {
 
 		if ($this->EE->config->item('enable_avatars') == 'y' AND $query->row('avatar_filename') != '')
 		{
-			$avatar_path	= $this->EE->config->item('avatar_url', 1).$query->row('avatar_filename');
+			$avatar_path	= $this->EE->config->item('avatar_url').$query->row('avatar_filename');
 			$avatar_width	= $query->row('avatar_width');
 			$avatar_height	= $query->row('avatar_height');
 			$avatar			= 'TRUE';
@@ -3308,7 +3308,7 @@ class Member {
 
 		if ($this->EE->config->item('enable_photos') == 'y' AND $query->row('photo_filename') != '')
 		{
-			$photo_path		= $this->EE->config->item('photo_url', 1).$query->row('photo_filename');
+			$photo_path		= $this->EE->config->item('photo_url').$query->row('photo_filename');
 			$photo_width	= $query->row('photo_width');
 			$photo_height	= $query->row('photo_height');
 			$photo			= 'TRUE';
@@ -3327,7 +3327,7 @@ class Member {
 						
 		if ($this->EE->config->item('enable_signatures') == 'y' AND $query->row('sig_img_filename') != '')
 		{
-			$sig_img_path	= $this->EE->config->item('sig_img_url', 1).$query->row('sig_img_filename');
+			$sig_img_path	= $this->EE->config->item('sig_img_url').$query->row('sig_img_filename');
 			$sig_img_width	= $query->row('sig_img_width');
 			$sig_img_height	= $query->row('sig_img_height');
 			$sig_img_image	= 'TRUE';
