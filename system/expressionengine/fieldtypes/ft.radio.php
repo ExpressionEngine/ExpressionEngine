@@ -31,6 +31,14 @@ class Radio_ft extends EE_Fieldtype {
 
 	var $has_array_data = FALSE;
 
+	var $default_settings = array(
+		'field_text_direction'	=> 'rtl',
+		'field_pre_populate'	=> 'n',
+		'field_list_items'		=> array(),
+		'field_pre_field_id'	=> '',
+		'field_pre_channel_id'	=> ''
+	);
+
 	/**
 	 * Constructor
 	 *
@@ -45,12 +53,14 @@ class Radio_ft extends EE_Fieldtype {
 	
 	function display_field($data)
 	{
+		array_merge($this->settings, $this->default_settings);
+
 		$text_direction = ($this->settings['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr';
 
 		$selected = $data;
-
+			
 		$field_options = array();
-
+		
 		if ($this->settings['field_pre_populate'] == 'n')
 		{
 			if ( ! is_array($this->settings['field_list_items']))
