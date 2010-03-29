@@ -44,7 +44,7 @@ if ($EE_view_disable !== TRUE)
 												$email['email_date'],
 												$email['total_sent'],
 												($email['status'] === TRUE) ? lang('complete') :
-																			lang('incomplete').NBS.NBS.'<a href="'.BASE.AMP.'C=tools_communicate'.AMP.'M=batch_send'.AMP.'id='.$email['cache_id'].'">Finish Sending</a>',
+																			lang('incomplete').NBS.NBS.'<a href="'.BASE.AMP.'C=tools_communicate'.AMP.'M=batch_send'.AMP.'id='.$email['cache_id'].'">'.lang('finish_sending').'</a>',
 												'<a href="'.BASE.AMP.'C=tools_communicate'.AMP.'id='.$email['cache_id'].'">'.lang('resend').'</a>',
 												'<input class="toggle" type="checkbox" name="email[]" value="'.$email['cache_id'].'" />'
 											);

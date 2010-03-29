@@ -69,6 +69,7 @@ $lang = array(
 'mailinglist_unsubscribe_all'	=> 'To remove your email from all mailing lists, click here:',
 'complete'				=> 'Complete',
 'incomplete'			=> 'Incomplete',
+'finish_sending'		=> 'Finish Sending',
 'on'					=> 'On',
 'off'					=> 'Off',
 

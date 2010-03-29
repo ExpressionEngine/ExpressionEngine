@@ -291,7 +291,7 @@ class Api_channel_entries extends Api {
 			return $this->_update_entry($meta, $data);
 		}
 
-		$this->_update_entry($meta, $data);
+		$this->_update_entry($meta, $data, $mod_data);
 
 		if (count($mod_data) > 0)
 		{
@@ -1735,7 +1735,7 @@ class Api_channel_entries extends Api {
 	 * @param	mixed
 	 * @return	void
 	 */
-	function _update_entry($meta, &$data)
+	function _update_entry($meta, &$data, &$mod_data = array())
 	{
 		$meta['dst_enabled'] =  $this->_cache['dst_enabled'];
 
@@ -1822,8 +1822,10 @@ class Api_channel_entries extends Api {
 				// Entry for this was made earlier, now its an update not an insert
 				$cust_fields['entry_id'] = $this->entry_id;
 				$cust_fields['original_entry_id'] = $this->entry_id;
+				//print_r($mod_data); exit;
+				$dummy = array_merge($cust_fields, $mod_data);
 				$this->EE->db->where('original_entry_id', $this->entry_id);
-				$this->EE->db->set('entry_data', serialize($cust_fields)); 
+				$this->EE->db->set('entry_data', serialize($dummy)); 
 				$this->EE->db->update('channel_entries_autosave'); // reinsert
 			}
 			else
@@ -1942,7 +1944,7 @@ class Api_channel_entries extends Api {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Create a forum post if forum data was passed in
+	 * Pass third party fields off for processing
 	 *
 	 * @access	private
 	 * @param	string

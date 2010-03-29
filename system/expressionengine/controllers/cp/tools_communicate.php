@@ -666,6 +666,12 @@ class Tools_communicate extends Controller {
 			}
 		}
 
+		//  Store email cache
+		$cache_data['total_sent'] = 0;
+		$cache_data['recipient_array'] = serialize($emails);
+		$id = $this->communicate_model->save_cache_data($cache_data, $groups, $list_ids);
+
+
 		/** ----------------------------------------
 		/**  If batch-mode is not set, send emails
 		/** ----------------------------------------*/
@@ -736,6 +742,11 @@ class Tools_communicate extends Controller {
 
 				if ($error == TRUE)
 				{
+					// Let's adjust the recipient array up to this point
+					reset($recipient_array);
+					$recipient_array = array_slice($recipient_array, $total_sent);
+					$this->communicate_model->update_email_cache($total_sent, $recipient_array, $id);
+
 					show_error($this->lang->line('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
 				}
 
@@ -744,13 +755,8 @@ class Tools_communicate extends Controller {
 
 			$this->_delete_attachments(); // Remove attachments now
 
-			/** ----------------------------------------
-			/**  Store email cache
-			/** ----------------------------------------*/
-
-			$cache_data['total_sent'] = $total_sent;
-
-			$this->communicate_model->save_cache_data($cache_data, $groups, $list_ids);
+			//  Update email cache
+			$this->communicate_model->update_email_cache($total_sent, '', $id);
 
 			$this->load->view('tools/email_sent', array('debug' => $this->email->_debug_msg, 'total_sent' => $total_sent));
 			return;
@@ -759,12 +765,6 @@ class Tools_communicate extends Controller {
 		/** ----------------------------------------
 		/**  Start Batch-Mode
 		/** ----------------------------------------*/
-
-		//  Store email cache
-
-		$cache_data['recipient_array'] = serialize($emails);
-
-		$id = $this->communicate_model->save_cache_data($cache_data, $groups, $list_ids);
 
 		$vars['redirect_url'] =  BASE.AMP.'C=tools_communicate'.AMP.'M=batch_send'.AMP.'id='.$id;
 		$vars['refresh_rate'] = 6;
@@ -958,6 +958,12 @@ class Tools_communicate extends Controller {
 
 			if ($error == TRUE)
 			{
+				reset($recipient_array);
+				$recipient_array = array_slice($recipient_array, $i);
+				
+				$n = $total_sent + $i;
+				$this->communicate_model->update_email_cache($n, $recipient_array, $id);
+
 				show_error($this->lang->line('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
 			}
 

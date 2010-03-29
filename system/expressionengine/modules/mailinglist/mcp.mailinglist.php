@@ -336,7 +336,7 @@ EOF;
 		
 		$this->EE->load->model('mailinglist_model');
 		
-		$query = $this->EE->mailinglist_model->get_list_by_id($list_id, 'email');
+		$query = $this->EE->mailinglist_model->get_emails_by_list($list_id, 'email');
 
 		$current = array();
 

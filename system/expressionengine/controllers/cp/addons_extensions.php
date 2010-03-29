@@ -75,7 +75,6 @@ class Addons_extensions extends Controller {
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', $this->lang->line('addons'));
 
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {1: {sorter: false}, 2: {sorter: false}},
 			widgets: ["zebra"]
 		}');
 
@@ -94,7 +93,10 @@ class Addons_extensions extends Controller {
 			// Check the meta data
 			$installed_ext[$row['class']] = $row;
 		}
+		
 		$installed_ext_q->free_result();
+		$names = array();
+		$extcount = 1;
 
 		foreach($extension_files as $ext_name => $ext)
 		{
@@ -149,6 +151,8 @@ class Addons_extensions extends Controller {
 			// @todo review, review, review!
 			
 			$extension_files[$ext_name]['name'] = (isset($OBJ->name)) ? $OBJ->name : $extension_files[$ext_name]['name'];
+			$names[$ext_name] = strtolower($extension_files[$ext_name]['name']);
+			
 			$extension_files[$ext_name]['status'] = ( ! isset($installed_ext[$ext['class']]) ) ? 'extension_disabled' : 'extension_enabled';
 			$extension_files[$ext_name]['status_switch'] = ( ! isset($installed_ext[$ext['class']]) ) ? 'enable_extension' : 'disable_extension';
 
@@ -167,7 +171,14 @@ class Addons_extensions extends Controller {
 		$vars['extensions_enabled'] = ($this->config->item('allow_extensions') == 'y');
 		$vars['extensions_toggle'] = ($this->config->item('allow_extensions') == 'y') ? 'disable_extensions' : 'enable_extensions';
 		
-		$vars['extension_info'] = $extension_files;
+		
+		// Let's order by name just in case
+		asort($names);
+		
+		foreach ($names as $k => $v)
+		{
+			$vars['extension_info'][] = $extension_files[$k];
+		}
 
 		$extensions_toggle = ($this->config->item('allow_extensions') == 'y') ? 'disable_extensions' : 'enable_extensions';
 		$this->cp->set_right_nav(array(
