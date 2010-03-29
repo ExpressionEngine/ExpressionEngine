@@ -791,7 +791,7 @@ class Api_channel_entries extends Api {
 					$this->EE->extensions->call('entry_submission_ready', $this->meta, $this->data, $this->autosave);
 					break;
 			case 'entry_submission_redirect':	
-					$loc = $this->EE->extensions->call('entry_submission_redirect', $this->entry_id, $this->meta, $this->data, $cp_call);
+					$loc = $this->EE->extensions->call('entry_submission_redirect', $this->entry_id, $this->meta, $this->data, $cp_call, $orig_var);
 					if ($this->EE->extensions->end_script === TRUE)
 					{
 						return $loc;
