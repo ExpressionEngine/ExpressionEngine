@@ -5343,13 +5343,25 @@ class Wiki {
 			$allowed_types = ($query->row('allowed_types') == 'all') ? '*' : $query->row('allowed_types');
 
 			// Upload the image
-			$config['file_name'] = $no_extension_name;
-			$config['upload_path'] = $server_path;
-			$config['allowed_types'] = $allowed_types;
-			$config['max_size']	= $query->row('max_size');
-			$config['max_width']  = $query->row('max_width');
-			$config['max_height']  = $query->row('max_height');
-			$config['xss_clean'] = ($this->EE->session->userdata('member_group') == 1) ? FALSE : TRUE;
+			$config = array(
+					'file_name'		=> $no_extension_name,
+					'upload_path'	=> $server_path,
+					'allowed_types'	=> $allowed_types,
+					'max_size'		=> $query->row('max_size'),
+					'max_width'		=> $query->row('max_width'),
+					'max_height'	=> $query->row('max_height'),
+					'xss_override'	=> TRUE
+				
+				);
+			
+			if ($this->EE->config->item('xss_clean_uploads') == 'n')
+			{
+				$config['xss_clean'] = FALSE;
+			}
+			else
+			{
+				$config['xss_clean'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
+			}
 
 			$this->EE->load->library('upload', $config);
 
