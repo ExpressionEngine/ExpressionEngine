@@ -402,7 +402,19 @@ class Members {
 		$config['max_width']  = $max_width;
 		$config['max_height']  = $max_height;
 		$config['overwrite'] = TRUE;
-		
+
+		if ($this->EE->config->item('xss_clean_uploads') == 'n')
+		{
+			$config['xss_clean'] = FALSE;
+		}
+		else
+		{
+			$config['xss_override'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
+			$config['xss_clean'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
+		}
+
+		$config['xss_override'] = TRUE;
+
 		$this->EE->load->library('upload', $config);
 		
 		if ( ! $this->EE->upload->do_upload())
