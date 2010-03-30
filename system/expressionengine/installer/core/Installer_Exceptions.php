@@ -19,7 +19,7 @@
 // do an include and create a small meta class that
 // CI can instantiate using the proper prefix.
 
-require_once(EE_APPPATH.'/core/EE_Exceptions'.EXT);
+require_once(EE_APPPATH.'core/EE_Exceptions'.EXT);
 
  
 // ------------------------------------------------------------------------
