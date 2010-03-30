@@ -58,7 +58,7 @@ if ( ! function_exists('force_download'))
 		$extension = end($x);
 
 		// Load the mime types
-		@include(APPPATH.'config/CI_mimes'.EXT); //@todo: CI mimes needed for this helper... change back when EE supports mime arrays
+		@include(APPPATH.'config/mimes'.EXT);
 	
 		// Set a default mime if we can't find it
 		if ( ! isset($mimes[$extension]))
