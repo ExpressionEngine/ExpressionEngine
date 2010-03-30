@@ -279,7 +279,10 @@ class CI_Upload {
 		 */
 		if ($this->xss_clean == TRUE)
 		{
-			$this->do_xss_clean();
+			if ($this->do_xss_clean() === FALSE)
+			{
+				return FALSE;
+			}
 		}
 
 		/*
