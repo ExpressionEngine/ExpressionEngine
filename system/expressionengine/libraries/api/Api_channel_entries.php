@@ -98,7 +98,8 @@ class Api_channel_entries extends Api {
 		
 		$this->_fetch_channel_preferences();
 
-		$this->_fetch_module_data($data);
+		// We break out the third party data here
+		$this->_fetch_module_data($data, $mod_data);		
 
 		$this->_check_for_data_errors($data);
 				
@@ -231,8 +232,9 @@ class Api_channel_entries extends Api {
 		$this->_fetch_channel_preferences();
 		$this->_do_channel_switch($data);
 
-		$this->_fetch_module_data($data);		
-	
+		// We break out the third party data here
+		$this->_fetch_module_data($data, $mod_data);
+		
 		$this->_check_for_data_errors($data);
 	
 		// Lets make sure those went smoothly
@@ -243,6 +245,7 @@ class Api_channel_entries extends Api {
 		}
 		
 		$this->_prepare_data($data, $mod_data);
+		
 		$this->_build_relationships($data);
 		
 		$meta = array(
@@ -282,13 +285,12 @@ class Api_channel_entries extends Api {
 			return TRUE;
 		}
 				
+		
 		if ($this->autosave)
 		{
 			// autosave is done at this point, title and custom field insertion.
-			// _submit_new_entry() in the publish controller handles the rest of the data such as
-			// categories, statuses, etc.
 			// no revisions, stat updating or cache clearing needed.
-			return $this->_update_entry($meta, $data);
+			return $this->_update_entry($meta, $data, $mod_data);
 		}
 
 		$this->_update_entry($meta, $data, $mod_data);
@@ -297,7 +299,6 @@ class Api_channel_entries extends Api {
 		{
 			$this->_set_mod_data($meta, $data, $mod_data);
 		}		
-		
 		
 		$this->_update_forum_post($meta, $data);
 		$this->_sync_related($meta, $data);
@@ -1005,7 +1006,7 @@ class Api_channel_entries extends Api {
 	 * @param	mixed
 	 * @return	void
 	 */
-	function _fetch_module_data($data)
+	function _fetch_module_data(&$data, &$mod_data)
 	{
 		//$errors = $this->EE->api_channel_fields->get_module_methods('validate_publish', array('data' => $data));
 
@@ -1033,14 +1034,18 @@ class Api_channel_entries extends Api {
 					{
 						//foreach ($v as $val)
 						//{
-							$this->mod_fields[$class.'__'.$v['field_id']] = '';
+							$name = $class.'__'.$v['field_id'];
+							$this->mod_fields[$name] = '';
 							//print_r($v);
 						//}
+				
+						// Break out module fields here
+						$mod_data[$name] = (isset($data[$name])) ? $data[$name] : '';
+						unset($data[$name]);
 					}
 				}
 			}
 		}
-
 	}
 	
 	// --------------------------------------------------------------------
@@ -1540,22 +1545,20 @@ class Api_channel_entries extends Api {
 			$field_name = $settings['field_name'];
 
 			// if a field isn't filled out, we still want to pass an empty array back to the module method
-			$mod_data[$field_name] = array();
+			//$mod_data[$field_name] = array();
 
-			if (isset($data[$field_name]))
+			if (isset($data[$field_name]) OR isset($mod_data[$field_name]))
 			{
 				$this->EE->api_channel_fields->setup_handler($field_id);
 
 				// Break out module fields here
-				if (isset($this->mod_fields[$field_name]))
+				if (isset($data[$field_name]))
 				{
-					$mod_data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
-					unset($data[$field_name]);
-				}
-				else
-				{
-					unset($mod_data[$field_name]); // not a mod field, remove its default (blank) value
 					$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
+				}
+				elseif (isset($mod_data[$field_name]))
+				{
+					$mod_data[$field_name] = $this->EE->api_channel_fields->apply('save', array($mod_data[$field_name]));
 				}
 			}
 		}
@@ -1742,7 +1745,7 @@ class Api_channel_entries extends Api {
 	function _update_entry($meta, &$data, &$mod_data = array())
 	{
 		$meta['dst_enabled'] =  $this->_cache['dst_enabled'];
-
+		
 		if ($this->EE->config->item('honor_entry_dst') == 'y')
 		{
 			$meta['entry_date'] = $this->EE->localize->offset_entry_dst($meta['entry_date'], $meta['dst_enabled']);
@@ -1757,7 +1760,7 @@ class Api_channel_entries extends Api {
 				$meta['comment_expiration_date'] = $this->EE->localize->offset_entry_dst($meta['comment_expiration_date'], $meta['dst_enabled']);
 			}
 		}
-
+		
 		// Check if the author changed
 		$this->EE->db->select('author_id');
 		$query = $this->EE->db->get_where('channel_titles', array('entry_id' => $this->entry_id));
@@ -1796,6 +1799,7 @@ class Api_channel_entries extends Api {
 		}
 		
 		// Update Custom fields
+		
 
 		$cust_fields = array('channel_id' =>  $this->channel_id);
 		foreach ($data as $key => $val)
@@ -1823,13 +1827,37 @@ class Api_channel_entries extends Api {
 		{
 			if ($this->autosave)
 			{
+				// Need to add to our custom fields array
+				
+				$this->instantiate('channel_categories');
+		
+				if ($this->EE->api_channel_categories->cat_parents > 0)
+				{
+					$this->EE->api_channel_categories->cat_parents = array_unique($this->EE->api_channel_categories->cat_parents);
+					
+					sort($this->EE->api_channel_categories->cat_parents);
+
+					foreach($this->EE->api_channel_categories->cat_parents as $val)
+					{
+						if ($val != '')
+						{
+							$mod_data['category'][] = $val;
+						}
+					}
+				}
+				
+				if ($this->EE->config->item('site_pages') !== FALSE && $this->_cache['pages_enabled'] && $this->EE->input->post('pages_uri') != '/example/pages/uri/' && $this->EE->input->post('pages_uri') != '')
+				{
+					$mod_data['pages_uri'] = $data['pages_uri'];
+					$mod_data['pages_template_id'] = $data['pages_template_id'];
+				}
+
+				
 				// Entry for this was made earlier, now its an update not an insert
 				$cust_fields['entry_id'] = $this->entry_id;
 				$cust_fields['original_entry_id'] = $this->entry_id;
-				//print_r($mod_data); exit;
-				$dummy = array_merge($cust_fields, $mod_data);
 				$this->EE->db->where('original_entry_id', $this->entry_id);
-				$this->EE->db->set('entry_data', serialize($dummy)); 
+				$this->EE->db->set('entry_data', serialize(array_merge($cust_fields, $mod_data))); 
 				$this->EE->db->update('channel_entries_autosave'); // reinsert
 			}
 			else
@@ -1922,7 +1950,7 @@ class Api_channel_entries extends Api {
 				'channel_id'	=> $this->channel_id,
 				'author_id'		=> $this->EE->session->userdata('member_id'),
 				'version_date'	=> $this->EE->localize->now,
-				'version_data'	=> addslashes(serialize($data['revision_post']))
+				'version_data'	=> serialize($data['revision_post'])
 			));
 			
 			$max = (is_numeric($this->c_prefs['max_revisions']) AND $this->c_prefs['max_revisions'] > 0) ? $this->c_prefs['max_revisions'] : 10;

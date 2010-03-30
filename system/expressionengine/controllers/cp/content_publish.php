@@ -582,7 +582,7 @@ class Content_publish extends Controller {
 				// Load the string helper
 				$this->load->helper('string');
 
-				$_POST = @unserialize(strip_slashes($revquery->row('version_data')));
+				$_POST = @unserialize($revquery->row('version_data'));
 				$_POST['entry_id'] = $entry_id;
 			}
 			
@@ -633,10 +633,13 @@ class Content_publish extends Controller {
 				{
 					$resrow[$k] = $v;
 				}
+				
+				$_POST = @unserialize($resrow['entry_data']);
 
+				print_r($_POST);
 				unset($resrow['entry_data']);
 			}
-
+			
 			if ($resrow['author_id'] != $this->session->userdata('member_id'))
 			{
 				if ( ! $this->cp->allowed_group('can_edit_other_entries'))
@@ -1053,7 +1056,7 @@ class Content_publish extends Controller {
 		//	CATEGORY BLOCK
 		// ----------------------------------------------
 
-		if ($which == 'edit')
+		if ($which == 'edit' && ! isset($_POST['category']))
 		{
 			// @todo model
 			$this->db->select('c.cat_name, p.*');
@@ -1087,7 +1090,7 @@ class Content_publish extends Controller {
 		// Normal Category Display
 			
 		$catlist = ($which == 'new' && $deft_category != '') ? $deft_category : $catlist;
-
+		
 		$this->api_channel_categories->category_tree($cat_group, $catlist);
 
 		if (count($this->api_channel_categories->categories) > 0)

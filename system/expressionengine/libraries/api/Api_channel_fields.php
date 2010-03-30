@@ -545,6 +545,7 @@ class Api_channel_fields extends Api {
 						// This function is called for insertion and editing of entries.
 						// @php4 would be nice to use a reference in this foreach...
 				
+
 						/*
 						foreach ($fields as $key => $field)
 						{
@@ -554,6 +555,7 @@ class Api_channel_fields extends Api {
 							}
 						}
 						*/
+
 
 						$set[$class_name]['publish_tabs'] = $fields;
 					}
