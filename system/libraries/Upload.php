@@ -49,6 +49,7 @@ class CI_Upload {
 	var $mimes			= array();
 	var $remove_spaces	= TRUE;
 	var $xss_clean		= FALSE;
+	var $xss_override	= FALSE;
 	var $temp_prefix	= "temp_file_";
 		
 	/**
@@ -482,8 +483,8 @@ class CI_Upload {
 
 		if (function_exists('getimagesize'))
 		{
-			if (FALSE !== ($D = @getimagesize($path)))
-			{	
+			if (FALSE !== ($D = getimagesize($path)))
+			{
 				$types = array(1 => 'gif', 2 => 'jpeg', 3 => 'png');
 
 				$this->image_width		= $D['0'];
@@ -814,13 +815,26 @@ class CI_Upload {
 			return FALSE;
 		}
 
-		$CI =& get_instance();	
-		$data = $CI->security->xss_clean($data);
+		$CI =& get_instance();
 		
-		flock($fp, LOCK_EX);
-		fwrite($fp, $data);
-		flock($fp, LOCK_UN);
-		fclose($fp);
+		if ($this->xss_override || $this->is_image())
+		{
+			// If this is an image, and the security library removes characters
+			// There is no point in writing it, as the image would now be a broken file
+			// So return FALSE so do_upload() fails.
+			if ( ! $CI->security->xss_clean($data, TRUE))
+			{
+				return FALSE;
+			}
+		}
+		else
+		{
+			$data = $CI->security->xss_clean($data, FALSE);
+			flock($fp, LOCK_EX);
+			fwrite($fp, $data);
+			flock($fp, LOCK_UN);
+			fclose($fp);			
+		}	
 	}
 	
 	// --------------------------------------------------------------------
