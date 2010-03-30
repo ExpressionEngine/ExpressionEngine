@@ -102,6 +102,7 @@ class CI_Upload {
 							'mimes'				=> array(),
 							'remove_spaces'		=> TRUE,
 							'xss_clean'			=> FALSE,
+							'xss_override'		=> FALSE,
 							'temp_prefix'		=> "temp_file_"
 						);	
 	
@@ -277,10 +278,11 @@ class CI_Upload {
 		 * embedded within a file.  Scripts can easily
 		 * be disguised as images or other file types.
 		 */
-		if ($this->xss_clean == TRUE)
+		if ($this->xss_clean || $this->xss_override)
 		{
 			if ($this->do_xss_clean() === FALSE)
 			{
+				$this->set_error('upload_unable_to_write_file');
 				return FALSE;
 			}
 		}
@@ -819,15 +821,19 @@ class CI_Upload {
 		}
 
 		$CI =& get_instance();
-		
+
 		if ($this->xss_override || $this->is_image())
 		{
 			// If this is an image, and the security library removes characters
 			// There is no point in writing it, as the image would now be a broken file
 			// So return FALSE so do_upload() fails.
-			if ( ! $CI->security->xss_clean($data, TRUE))
+			if ($CI->security->xss_clean($data, TRUE) === FALSE)
 			{
 				return FALSE;
+			}
+			else
+			{
+				return TRUE;
 			}
 		}
 		else
