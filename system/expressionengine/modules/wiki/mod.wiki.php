@@ -5364,7 +5364,7 @@ class Wiki {
 			if ( ! $this->EE->upload->do_upload())
 			{
 					return $this->EE->output->show_user_error('general', 
-														array($this->EE->lang->line($this->EE->upload->display_errors())));
+								array($this->EE->lang->line($this->EE->upload->display_errors())));
 			}
 
 			$file_data = $this->EE->upload->data();
