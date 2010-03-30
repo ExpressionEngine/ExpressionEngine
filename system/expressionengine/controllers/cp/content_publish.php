@@ -636,7 +636,6 @@ class Content_publish extends Controller {
 				
 				$_POST = @unserialize($resrow['entry_data']);
 
-				print_r($_POST);
 				unset($resrow['entry_data']);
 			}
 			
