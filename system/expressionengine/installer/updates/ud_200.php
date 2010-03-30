@@ -127,15 +127,76 @@ class Updater {
      */
     function _update_templates_saved_as_files($sites)
     {
+		$sites_with_templates = array();
+	
+		foreach ($sites->result() as $site)
+		{
+			$templates = unserialize($site->site_template_preferences);
+
+			if ($templates['save_tmpl_files'] == 'n')
+			{
+				continue;
+			}
+			
+			$sites_with_templates[$site->site_name] = 
+						array(
+							'site_id'		=> $site->site_id,
+							'site_name'		=> $site->site_name
+						);
+		}
+	
+		// Do we have any sites with templates?  If there aren't any, bail out!
+		if (empty($sites_with_templates))
+		{
+			return;
+		}
+		
+		// We have sites that are saving templates as files.
+		// We'll query to see if any templates are actually saved as
+		// files, and prune the above array if necessary.
+		// Or, tack on the object returned to the query on the array
+		$template_query = array();
+		
+		foreach ($sites_with_templates as $site)
+		{
+			// Onward
+			$this->EE->db->select('templates.template_id, templates.template_name, 
+								   templates.template_data, template_groups.group_name');
+		    $this->EE->db->where('save_template_file', 'y');
+			$this->EE->db->where('template_groups.site_id', $site['site_id']);
+			$this->EE->db->join('template_groups', 'template_groups.group_id = templates.group_id');
+		    $query = $this->EE->db->get('templates');
+			
+			if ($query->num_rows() == 0)
+			{
+				// No templates saved as files for this site.  Drop it
+				// from the sites with templates array.
+				unset($sites_with_templates[$site['site_name']]);
+				
+				continue;
+			}
+			
+			// Stay with me here.  Saving some queries.
+			$sites_with_templates[$site['site_name']]['query'] = $query;
+		}
+	
+		// Are there any sites with templates left?
+		if (empty($sites_with_templates))
+		{
+			return;  // Nope
+		}
+	
+		// There are sites with templates, make sure the templates have been uploaded.
+	
 		// This might seem a little redundant, but let's check that the directories with templates
 		// Actually exist before we go much further.
 		$old_template_upload_errors = array();
 
-		foreach ($sites->result() as $row)
+		foreach ($sites_with_templates as $site)
 		{
-			if ( ! is_really_writable(EE_APPPATH.'templates/'.$row->site_name.'/'))
+			if ( ! is_really_writable(EE_APPPATH.'templates/'.$site['site_name'].'/'))
 			{
-				$old_template_upload_errors[] = EE_APPPATH.'templates/'.$row->site_name.'/';
+				$old_template_upload_errors[] = EE_APPPATH.'templates/'.$site['site_name'].'/';
 			}
 		}
 
@@ -148,30 +209,9 @@ class Updater {
 		}
 
 		// On to the real deal.
-		foreach ($sites->result() as $site)
+		foreach ($sites_with_templates as $site)
 		{
-			// Are templates saved as files in the first place?  No sense in going on if not
-			$templates = unserialize($site->site_template_preferences);
-
-			if ($templates['save_tmpl_files'] == 'n')
-			{
-				continue;
-			}
-			
-			$template_path = EE_APPPATH.'templates/'.$site->site_name.'/';
-
-			// Onward
-			$this->EE->db->select('templates.template_id, templates.template_name, 
-								   templates.template_data, template_groups.group_name');
-		    $this->EE->db->where('save_template_file', 'y');
-			$this->EE->db->where('template_groups.site_id', $site->site_id);
-			$this->EE->db->join('template_groups', 'template_groups.group_id = templates.group_id');
-		    $query = $this->EE->db->get('templates');
-			
-			if ($query->num_rows() == 0)
-			{
-				continue;
-			}
+			$template_path = EE_APPPATH.'templates/'.$site['site_name'].'/';
 	
 			$this->EE->progress->update_state($this->EE->lang->line('updating_templates_as_files'));
 
@@ -183,8 +223,8 @@ class Updater {
 
 			// Template Groups
 			$template_groups = array();
-		
-			foreach ($query->result() as $row)
+
+			foreach ($site['query']->result() as $row)
 			{
 				if ( ! file_exists($template_path.$row->group_name.'/'.$row->template_name.EXT))
 				{
@@ -216,10 +256,7 @@ class Updater {
 															$template_path));
 			}
 
-			// Create a new directory for old files.
-			//$old_template_folder = $template_path.'1.x_templates/';
-
-			$old_template_folder = EE_APPPATH.'templates/1.x_templates/'.$site->site_name.'/';
+			$old_template_folder = EE_APPPATH.'templates/1.x_templates/'.$site['site_name'].'/';
 
 			
 			// First, make sure the 1.x template folder exists
@@ -282,7 +319,7 @@ class Updater {
 			}
 
 			// Remove the site's template folder
-			rmdir(EE_APPPATH.'templates/'.$site->site_name);
+			rmdir(EE_APPPATH.'templates/'.$site['site_name']);
 		}
 
 		return;
@@ -1301,8 +1338,6 @@ class Updater {
     }
 }   
 /* END CLASS */
-
-
 
 /* End of file ud_200.php */
 /* Location: ./system/expressionengine/installer/updates/ud_200.php */
