@@ -893,8 +893,7 @@ class CI_Upload {
 	
 		if (count($this->mimes) == 0)
 		{
-//			if (@require_once(APPPATH.'config/mimes'.EXT))
-			if (@require_once(APPPATH.'config/CI_mimes'.EXT)) //@todo replace with mimes
+			if (@require_once(APPPATH.'config/mimes'.EXT))
 			{
 				$this->mimes = $mimes;
 				unset($mimes);
