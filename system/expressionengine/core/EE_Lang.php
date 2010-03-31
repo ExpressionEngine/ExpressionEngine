@@ -97,14 +97,7 @@ class EE_Lang extends CI_Lang {
 			oIk11bHRpcGxlIFNpdGUgTWFuYWdlciBFcnJvciAtIFNpdGUgTGltaXQgUmVhY2hlZCIpOyB9IH0="))); return;
 		}
 
-		if (file_exists(PATH_THIRD.$package.'/language/'.$user_lang.'/'.str_replace(EXT, '', $which).EXT) OR file_exists(PATH_THIRD.$package.'/language/'.$deft_lang.'/'.str_replace(EXT, '', $which).EXT))
-		{
-			$this->load($which, $user_lang, FALSE, FALSE, PATH_THIRD.$package.'/');
-		}
-		else
-		{
-			$this->load($which, $user_lang, FALSE, FALSE);
-		}
+		$this->load($which, $user_lang, FALSE, FALSE, PATH_THIRD.$package.'/');
 	}
 	
 	// --------------------------------------------------------------------
