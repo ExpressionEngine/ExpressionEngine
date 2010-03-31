@@ -4573,9 +4573,11 @@ class Forum_Core extends Forum {
 		{
 			exit;
 		}
-				
-		$query = $this->EE->db->query("SELECT filehash, filename, extension, hits, is_image FROM exp_forum_attachments WHERE filehash = '{$attach_hash}'");
-
+		
+		$this->EE->db->select('filehash, filename, extension, hits, is_image');
+		$this->EE->db->where('filehash', $attach_hash);
+		$query = $this->EE->db->get('forum_attachments');
+		
 		if ($query->num_rows() == 0)
 		{
 			exit;
@@ -4598,15 +4600,20 @@ class Forum_Core extends Forum {
 		
 		$this->EE->db->query("UPDATE exp_forum_attachments SET hits = '{$hits}' WHERE filehash = '{$attach_hash}'");
 
-
 		if ($this->mimes[$extension] == 'html')
+		{
 			$this->mimes[$extension] = 'text/html';
-		
-		if ($query->row('is_image')  == 'y')
-			$attachment = '';
-		else
-			$attachment = (isset($_SERVER['HTTP_USER_AGENT']) AND strstr($_SERVER['HTTP_USER_AGENT'], "MSIE")) ? "" : " attachment;";
+		}
 
+		if ($query->row('is_image')  == 'y')
+		{
+			$attachment = '';
+		}
+		else
+		{
+			$attachment = (isset($_SERVER['HTTP_USER_AGENT']) AND strstr($_SERVER['HTTP_USER_AGENT'], "MSIE")) ? "" : " attachment;";
+		}
+		
 		header('Content-Disposition: '.$attachment.' filename="'.$query->row('filename') .'"');		
 		header('Content-Type: '.$this->mimes[$extension]);
 		header('Content-Transfer-Encoding: binary');
@@ -4622,6 +4629,7 @@ class Forum_Core extends Forum {
 		fpassthru($fp);
 		@fclose($fp);
 		exit;
+		
 	}
 	
 
@@ -5738,13 +5746,8 @@ class Forum_Core extends Forum {
 		/** -------------------------------------
 		/**  Separate the filename form the extension
 		/** -------------------------------------*/
-		
-		require APPPATH.'_to_be_replaced/lib.image_lib'.EXT;
-		$IM = new Image_lib();
-		
-		$split = $IM->explode_name($_FILES['userfile']['name']);
-		$filename  = $split['name'];
-		$extension = $split['ext'];		
+		$extension = strrchr($source_image, '.');
+		$filename = ($ext === FALSE) ? $source_image : substr($source_image, 0, -strlen($ext));
 		
 		$filehash = $this->EE->functions->random('alnum', 20);
 		
@@ -5803,29 +5806,29 @@ class Forum_Core extends Forum {
 			}
 
 			if ($query->row('board_use_img_thumbs')  == 'y')
-			{			
-				$res = $IM->set_properties(			
-											array(
-													'resize_protocol'	=> $this->EE->config->item('image_resize_protocol'),
-													'libpath'			=> $this->EE->config->item('image_library_path'),
-													'maintain_ratio'	=> TRUE,
-													'master_dim'		=> 'height',
-													'thumb_prefix'		=> 't',
-													'file_path'			=> $query->row('board_upload_path') ,
-													'file_name'			=> $filehash.$upload_data['file_ext'],
-													'quality'			=> 75,
-													'dst_width'			=> ($query->row('board_thumb_width')  < $width) ? $query->row('board_thumb_width')  : $width,
-													'dst_height'		=> ($query->row('board_thumb_height')  < $height) ? $query->row('board_thumb_height')  : $height
-													)
-											);
-				if ($IM->image_resize())
-				{
-					$props = $IM->get_image_properties($query->row('board_upload_path') .$filehash.'_t'.$upload_data['file_ext'], TRUE);
+			{
+				$res_config = array(
+					'image_library'		=> $this->EE->config->item('image_resize_protocol'),
+					'library_path'		=> $this->EE->config->item('image_library_path'),
+					'maintain_ratio'	=> TRUE,
+					'new_image'			=> $query->row('board_upload_path').$filehash.'_t'.$upload_data['file_ext'],
+					'master_dim'		=> 'height',
+					'thumb_marker'		=> '_t',
+					'source_image'		=> $upload_data['full_path'],
+					'quality'			=> 75,
+					'width'			=> ($query->row('board_thumb_width')  < $width) ? $query->row('board_thumb_width')  : $width,
+					'height'		=> ($query->row('board_thumb_height')  < $height) ? $query->row('board_thumb_height')  : $height				);
+					
+				$this->EE->load->library('image_lib', $res_config); 
 
+				if ($this->EE->image_lib->resize())
+				{
+					$props = $this->EE->image_lib->get_image_properties($query->row('board_upload_path').$filehash.'_t'.$upload_data['file_ext'], TRUE);
+					
 					$t_width  = $props['width'];
 					$t_height = $props['height'];
-
 				}
+
 			}			
 			
 			/** -------------------------------------
