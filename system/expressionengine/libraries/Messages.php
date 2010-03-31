@@ -3099,10 +3099,10 @@ DOH;
 		/** ---------------------------
 		/**  Valid ID?
 		/** ---------------------------*/
+		$this->EE->db->select('attachment_location, attachment_name, attachment_extension, message_id');
+		$this->EE->db->where('attachment_hash', $attach_hash);
+		$query = $this->EE->db->get('message_attachments');
 		
-		$query = $this->EE->db->query("SELECT attachment_location, attachment_name, attachment_extension, message_id 
-							 FROM exp_message_attachments WHERE attachment_hash = '".$this->EE->db->escape_str($attach_hash)."'");
-	
 		if ($query->num_rows() == 0)
 		{
 			exit;
@@ -3112,9 +3112,10 @@ DOH;
 		/**  Attachment for User?
 		/** ---------------------------*/
 		
-		$results = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_message_copies 
-								WHERE message_id = '".$this->EE->db->escape_str($query->row('message_id') )."'
-								AND recipient_id = '{$this->member_id}'");
+		$this->EE->db->select('COUNT(*) as count');
+		$this->EE->db->where('message_id', $query->row('message_id'));
+		$this->EE->db->where('recipient_id', $this->member_id);
+		$results = $this->EE->db->get('message_copies');
 		
 		if ($results->row('count')  == 0)
 		{
@@ -3130,18 +3131,29 @@ DOH;
 			include(APPPATH.'config/mimes.php');			
 			$this->mimes = $mimes;
 		}
+		
+		if ($this->mimes[$extension] == 'html')
+		{
+			$mime = 'text/html';
+		}
+		else
+		{
+			$mime = (is_array($this->mimes[$extension])) ? $this->mimes[$extension][0] : $this->mimes[$extension];
+		}
+		
 			
 		if ( ! file_exists($filepath) OR ! isset($this->mimes[$extension]))
 		{
 			exit;
 		}
 		
-		$this->EE->db->query("UPDATE exp_message_copies SET attachment_downloaded = 'y' 
-					WHERE message_id = '".$this->EE->db->escape_str($query->row('message_id') )."'
-					AND recipient_id = '{$this->member_id}'");
-					
+		$this->EE->db->set('attachment_downloaded = "y"');
+		$this->EE->db->where('message_id', $query->row('message_id'));
+		$this->EE->db->where('recipient_id', $this->member_id);
+		$this->EE->db->update('message_copies');
+							
 		header('Content-Disposition: filename="'.$query->row('attachment_name') .'"');		
-		header('Content-Type: '.$this->mimes[$extension]);
+		header('Content-Type: '.$mime);
 		header('Content-Transfer-Encoding: binary');
 		header('Content-Length: '.filesize($filepath));
 		header('Last-Modified: '.gmdate('D, d M Y H:i:s', $this->EE->localize->now).' GMT');
@@ -3155,7 +3167,6 @@ DOH;
 		@fclose($fp);
 		exit;
 	}
-
  	
 	/** -----------------------------------
 	/**  Buddies List
