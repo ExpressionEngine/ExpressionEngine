@@ -141,12 +141,8 @@ class EE_Messages_send extends EE_Messages {
 		}
 		else
 		{
-			$config['xss_override'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
 			$config['xss_clean'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
 		}
-
-		$config['xss_clean'] = TRUE;
-		$config['xss_override'] = TRUE;
 
 		$this->EE->load->library('upload', $config);
 	

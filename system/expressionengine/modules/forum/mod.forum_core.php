@@ -5779,7 +5779,6 @@ class Forum_Core extends Forum {
 		}
 		else
 		{
-			$config['xss_override'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
 			$config['xss_clean'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
 		}
 
