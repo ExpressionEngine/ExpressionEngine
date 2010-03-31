@@ -3105,7 +3105,7 @@ DOH;
 		
 		if ($query->num_rows() == 0)
 		{
-			exit;
+			$this->EE->output->show_user_error('submission', $this->EE->lang->line('not_authorized'));
 		}
 		
 		/** ---------------------------
@@ -3119,10 +3119,12 @@ DOH;
 		
 		if ($results->row('count')  == 0)
 		{
-			exit;
+			$this->EE->output->show_user_error('submission', $this->EE->lang->line('not_authorized'));
 		}
 
-		$filepath = $query->row('attachment_location') ;
+		$base_path = (substr($this->EE->config->item('prv_msg_upload_path'), -1) == '/') ? $this->EE->config->item('prv_msg_upload_path') : $this->EE->config->item('prv_msg_upload_path') . '/';
+
+		$filepath = $base_path.$query->row('attachment_location') ;
 		
 		$extension = strtolower(str_replace('.', '', $query->row('attachment_extension') ));
 			
@@ -3142,9 +3144,9 @@ DOH;
 		}
 		
 			
-		if ( ! file_exists($filepath) OR ! isset($this->mimes[$extension]))
+		if ( ! file_exists($filepath) OR ! isset($mime))
 		{
-			exit;
+			$this->EE->output->show_user_error('submission', $this->EE->lang->line('not_authorized'));
 		}
 		
 		$this->EE->db->set('attachment_downloaded = "y"');
@@ -3160,7 +3162,7 @@ DOH;
 			
 		if ( ! $fp = @fopen($filepath, FOPEN_READ))
 		{
-			exit;
+			$this->EE->output->show_user_error('submission', $this->EE->lang->line('not_authorized'));
 		}
 		
 		fpassthru($fp);
