@@ -6171,7 +6171,7 @@ class Channel {
 								$fillable_entries = 'y';
 							}
 
-							$this->category_list[] = "\t\t\t$v";
+							$this->category_list[] = "\t\t\t$v\n";
 						}
 					}
 				}

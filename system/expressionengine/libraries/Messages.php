@@ -3908,7 +3908,7 @@ DOH;
 		}
 		
 		$list_size = count($this->blocked);
-		
+
 		if ($list_size == 0)
 		{
 			$this->single_parts['include']['list_rows'] .= $this->_process_template($this->retrieve_template('empty_list'));
@@ -3926,11 +3926,11 @@ DOH;
 				
 				if ($this->allegiance == 'user')
 				{
-					$this->single_parts['path']['send_pm'] = $this->_create_path('pm').$this->buddies[$i]['5'].'/';
+					$this->single_parts['path']['send_pm'] = $this->_create_path('pm').'/'.$this->blocked[$i]['5'];
 				}
 				else
 				{
-					$this->single_parts['path']['send_pm'] = $this->_create_path('pm').AMP.'mid='.$this->buddies[$i]['5'];
+					$this->single_parts['path']['send_pm'] = $this->_create_path('pm').AMP.'mid='.$this->blocked[$i]['5'];
 				}
 				
 				$this->single_parts['include']['list_rows'] .= $this->_process_template($rows);

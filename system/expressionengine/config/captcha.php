@@ -334,7 +334,6 @@ $words = array(
 				'heart',
 				'heavy',
 				'held',
-				'hell',
 				'help',
 				'her',
 				'here',
