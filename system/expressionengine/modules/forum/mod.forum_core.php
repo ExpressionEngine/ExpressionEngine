@@ -4604,7 +4604,11 @@ class Forum_Core extends Forum {
 		
 		if ($this->mimes[$extension] == 'html')
 		{
-			$this->mimes[$extension] = 'text/html';
+			$mime = 'text/html';
+		}
+		else
+		{
+			$mime = (is_array($this->mimes[$extension])) ? $this->mimes[$extension][0] : $this->mimes[$extension];
 		}
 
 		if ($query->row('is_image')  == 'y')
@@ -4617,7 +4621,7 @@ class Forum_Core extends Forum {
 		}
 		
 		header('Content-Disposition: '.$attachment.' filename="'.$query->row('filename') .'"');		
-		header('Content-Type: '.$this->mimes[$extension]);
+		header('Content-Type: '.$mime);
 		header('Content-Transfer-Encoding: binary');
 		header('Content-Length: '.filesize($filepath));
 		header('Last-Modified: '.gmdate('D, d M Y H:i:s', $this->EE->localize->now).' GMT'); 
@@ -5722,7 +5726,9 @@ class Forum_Core extends Forum {
 		{		
 			foreach ($attach_ids as $val)
 			{
-				$result = $this->EE->db->query("SELECT filesize FROM exp_forum_attachments WHERE attachment_id = '{$val}'");
+				$this->EE->db->select('filesize');
+				$this->EE->db->where('attachment_id', $val);
+				$result = $this->EE->db->get('forum_attachments');
 				
 				if ($total == 0)
 				{
@@ -5748,8 +5754,9 @@ class Forum_Core extends Forum {
 		/** -------------------------------------
 		/**  Separate the filename form the extension
 		/** -------------------------------------*/
-		$extension = strrchr($source_image, '.');
-		$filename = ($ext === FALSE) ? $source_image : substr($source_image, 0, -strlen($ext));
+		$filename = $_FILES['userfile']['name'];
+		$extension = strrchr($filename, '.');
+		$filename = ($extension === FALSE) ? $filename : substr($filename, 0, -strlen($extension));
 		
 		$filehash = $this->EE->functions->random('alnum', 20);
 		
@@ -5830,123 +5837,121 @@ class Forum_Core extends Forum {
 					$t_width  = $props['width'];
 					$t_height = $props['height'];
 				}
+			}
+		}
+// var_dump($upload_data, $filename); exit;
+		/** -------------------------------------
+		/**  Build the column data
+		/** -------------------------------------*/
 
-			}			
-			
-			/** -------------------------------------
-			/**  Build the column data
-			/** -------------------------------------*/
-
-			$data = array(
-							'topic_id'			=> 0,
-							'post_id'			=> 0,
-							'board_id'			=> 0,
-							'member_id'			=> $this->EE->session->userdata('member_id'),
-							'filename'			=> $filename.$upload_data['file_ext'],
-							'filehash'			=> $filehash,
-							'filesize'			=> ceil($upload_data['file_size']),
-							'extension'			=> $extension,
-							'attachment_date'	=> $this->EE->localize->now,
-							'is_temp'			=> ($is_preview == TRUE OR $this->submission_error != '') ? 'y' : 'n',
-							'width'				=>  $width,
-							'height'			=>  $height,
-							't_width'			=>  $t_width,
-							't_height'			=>  $t_height,
-							'is_image'			=> ($upload_data['is_image']) ? 'y' : 'n'
-						);	  
+		$data = array(
+						'topic_id'			=> 0,
+						'post_id'			=> 0,
+						'board_id'			=> 0,
+						'member_id'			=> $this->EE->session->userdata('member_id'),
+						'filename'			=> $filename.$upload_data['file_ext'],
+						'filehash'			=> $filehash,
+						'filesize'			=> ceil($upload_data['file_size']),
+						'extension'			=> $extension,
+						'attachment_date'	=> $this->EE->localize->now,
+						'is_temp'			=> ($is_preview == TRUE OR $this->submission_error != '') ? 'y' : 'n',
+						'width'				=>  $width,
+						'height'			=>  $height,
+						't_width'			=>  $t_width,
+						't_height'			=>  $t_height,
+						'is_image'			=> ($upload_data['is_image']) ? 'y' : 'n'
+					);	  
 
 
-			$this->EE->db->insert('forum_attachments', $data);
+		$this->EE->db->insert('forum_attachments', $data);
 
-			$attach_id = $this->EE->db->insert_id();
-			
-			
-			/** -------------------------------------
-			/**  Change file name with attach ID
-			/** -------------------------------------*/
+		$attach_id = $this->EE->db->insert_id();
+		
+		
+		/** -------------------------------------
+		/**  Change file name with attach ID
+		/** -------------------------------------*/
 
-			// For convenience we use the attachment ID number as the prefix for all files.
-			// That way they will be easier to manager.
-			if (file_exists($upload_data['full_path']))
+		// For convenience we use the attachment ID number as the prefix for all files.
+		// That way they will be easier to manager.
+		if (file_exists($upload_data['full_path']))
+		{
+			$final_name = $attach_id.'_'.$filehash;
+			$final_path = $upload_data['file_path'].$final_name.$extension;
+
+			if (rename($upload_data['full_path'], $final_path))
 			{
-				$final_name = $attach_id.'_'.$filehash;
-				$final_path = $upload_data['file_path'].$final_name.$extension;
+				chmod($final_path, FILE_WRITE_MODE);
 
-				if (rename($upload_data['full_path'], $final_path))
+				$thumb_name  = $filehash.'_t'.$extension;
+				$thumb_final = $final_name.'_t'.$extension;
+
+				if (file_exists($upload_data['file_path'].$thumb_name))
 				{
-					chmod($final_path, FILE_WRITE_MODE);
-
-					$thumb_name  = $filehash.'_t'.$extension;
-					$thumb_final = $final_name.'_t'.$extension;
-
-					if (file_exists($upload_data['file_path'].$thumb_name))
+					if (rename($upload_data['file_path'].$thumb_name, $upload_data['file_path'].$thumb_final))
 					{
-						if (rename($upload_data['file_path'].$thumb_name, $upload_data['file_path'].$thumb_final))
-						{
-							chmod($upload_data['file_path'].$thumb_final, FILE_WRITE_MODE);
-						}			
-					}
-					
-					$this->EE->db->set('filehash', $final_name);
-					$this->EE->db->where('attachment_id', $attach_id);
-					$this->EE->db->update('forum_attachments');
-				}
-			}
-			
-			/** -------------------------------------
-			/**  Are there previous attachments?
-			/** -------------------------------------*/
-
-			$this->attachments[] = $attach_id;
-
-			if (count($attach_ids) > 0)
-			{
-				foreach ($attach_ids as $val)
-				{
-					$this->attachments[] = $val;
-				}
-			}
-
-			/** -------------------------------------
-			/**  Is this a preview request
-			/** -------------------------------------*/
-
-			// If so it means they are manually triggering the upload
-			// so we'll disable errors;
-
-			if ($is_preview == TRUE)
-			{
-				$this->preview_override = TRUE;
-				$this->submission_error = '';
-			}
-
-			/** -------------------------------------
-			/**  Delete expired images
-			/** -------------------------------------*/
-
-			$expire = $this->EE->localize->now - 10800; // Three hours ago
-
-			$this->EE->db->select('attachment_id, filehash, extension');
-			$this->EE->db->where('attachment_date < ', $expire);
-			$this->EE->db->where('is_temp', 'y');
-			
-			$result = $this->EE->db->get('forum_attachments');
-
-			if ($result->num_rows() > 0)
-			{
-				foreach ($result->result_array() as $row)
-				{
-					@unlink($upload_data['file_path'].$row['attachment_id'].'_'.$row['filehash'].$row['extension']);
-					@unlink($upload_data['file_path'].$row['attachment_id'].'_'.$row['filehash'].'_t'.$row['extension']);
+						chmod($upload_data['file_path'].$thumb_final, FILE_WRITE_MODE);
+					}			
 				}
 				
-				$this->EE->db->where('attachment_date <', $expire);
-				$this->EE->db->where('is_temp', 'y');
-				$this->EE->db->delete('forum_attachments');
-			}	
-			
+				$this->EE->db->set('filehash', $final_name);
+				$this->EE->db->where('attachment_id', $attach_id);
+				$this->EE->db->update('forum_attachments');
+			}
+		}
+		
+		/** -------------------------------------
+		/**  Are there previous attachments?
+		/** -------------------------------------*/
+
+		$this->attachments[] = $attach_id;
+
+		if (count($attach_ids) > 0)
+		{
+			foreach ($attach_ids as $val)
+			{
+				$this->attachments[] = $val;
+			}
 		}
 
+		/** -------------------------------------
+		/**  Is this a preview request
+		/** -------------------------------------*/
+
+		// If so it means they are manually triggering the upload
+		// so we'll disable errors;
+
+		if ($is_preview == TRUE)
+		{
+			$this->preview_override = TRUE;
+			$this->submission_error = '';
+		}
+
+		/** -------------------------------------
+		/**  Delete expired images
+		/** -------------------------------------*/
+
+		$expire = $this->EE->localize->now - 10800; // Three hours ago
+
+		$this->EE->db->select('attachment_id, filehash, extension');
+		$this->EE->db->where('attachment_date < ', $expire);
+		$this->EE->db->where('is_temp', 'y');
+		
+		$result = $this->EE->db->get('forum_attachments');
+
+		if ($result->num_rows() > 0)
+		{
+			foreach ($result->result_array() as $row)
+			{
+				@unlink($upload_data['file_path'].$row['attachment_id'].'_'.$row['filehash'].$row['extension']);
+				@unlink($upload_data['file_path'].$row['attachment_id'].'_'.$row['filehash'].'_t'.$row['extension']);
+			}
+			
+			$this->EE->db->where('attachment_date <', $expire);
+			$this->EE->db->where('is_temp', 'y');
+			$this->EE->db->delete('forum_attachments');
+		}
+		
 		return TRUE;
 	}
 
