@@ -5350,8 +5350,6 @@ class Wiki {
 					'max_size'		=> $query->row('max_size'),
 					'max_width'		=> $query->row('max_width'),
 					'max_height'	=> $query->row('max_height'),
-					'xss_override'	=> TRUE
-				
 				);
 			
 			if ($this->EE->config->item('xss_clean_uploads') == 'n')
@@ -5360,6 +5358,7 @@ class Wiki {
 			}
 			else
 			{
+				$config['xss_override'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
 				$config['xss_clean'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
 			}
 
