@@ -119,7 +119,7 @@ class Cp_search {
 			{
 				$prefix = substr($controller, $start + 1, 4).'_';
 			}
-		
+	
 			if (strpos($method, $prefix) === 0)
 			{
 				return $this->EE->lang->line($method);
@@ -477,7 +477,24 @@ class Cp_search {
 							'search_log_configuration'		=> array('access' => 'can_access_sys_prefs', 'search_log_cfg')
 					),
 					'admin_content'		=> array(
-							'global_channel_preferences'	=> array('access' => 'can_admin_channels', 'channel_cfg')
+							'global_channel_preferences'	=> array('access' => 'can_admin_channels', 'channel_cfg'),
+							'field_group_management'		=> array('access' => 'can_admin_channels', TRUE),
+							'category_management'			=> array('access' => 'can_admin_categories', TRUE)
+					),
+					'addons_accessories'=> array(
+							'index'							=> array('access' => 'can_access_accessories', TRUE)
+					),
+					'addons_extensions'	=> array(
+							'index'							=> array('access' => 'can_access_extensions', TRUE)							
+					),
+					// 'addons_fieldtypes'	=> array(
+					// 		'index'							=> array('access' => 'can_access_modules', TRUE)							
+					// ),
+					'addons_modules'	=> array(
+							'index'							=> array('access' => 'can_access_modules', TRUE)						
+					),
+					'addons_plugins'	=> array(
+							'index'							=> array('access' => 'can_access_plugins', TRUE)						
 					),
 					'content_publish'		=> array(
 							'index'							=> array('keywords' => 'publish new entry', TRUE)
