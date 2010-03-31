@@ -4598,8 +4598,10 @@ class Forum_Core extends Forum {
 		
 		$hits = ($query->row('hits')  == 0) ? 1 : ($query->row('hits')  + 1);
 		
-		$this->EE->db->query("UPDATE exp_forum_attachments SET hits = '{$hits}' WHERE filehash = '{$attach_hash}'");
-
+		$this->EE->db->set('hits', $hits);
+		$this->EE->db->where('filehash', $attach_hash);
+		$this->EE->db->update('forum_attachments');
+		
 		if ($this->mimes[$extension] == 'html')
 		{
 			$this->mimes[$extension] = 'text/html';
