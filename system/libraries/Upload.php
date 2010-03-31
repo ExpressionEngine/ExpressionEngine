@@ -49,6 +49,7 @@ class CI_Upload {
 	var $mimes			= array();
 	var $remove_spaces	= TRUE;
 	var $xss_clean		= FALSE;
+	var $xss_override	= FALSE;
 	var $temp_prefix	= "temp_file_";
 		
 	/**
@@ -101,6 +102,7 @@ class CI_Upload {
 							'mimes'				=> array(),
 							'remove_spaces'		=> TRUE,
 							'xss_clean'			=> FALSE,
+							'xss_override'		=> FALSE,
 							'temp_prefix'		=> "temp_file_"
 						);	
 	
@@ -276,9 +278,13 @@ class CI_Upload {
 		 * embedded within a file.  Scripts can easily
 		 * be disguised as images or other file types.
 		 */
-		if ($this->xss_clean == TRUE)
+		if ($this->xss_clean || $this->xss_override)
 		{
-			$this->do_xss_clean();
+			if ($this->do_xss_clean() === FALSE)
+			{
+				$this->set_error('upload_unable_to_write_file');
+				return FALSE;
+			}
 		}
 
 		/*
@@ -482,8 +488,8 @@ class CI_Upload {
 
 		if (function_exists('getimagesize'))
 		{
-			if (FALSE !== ($D = @getimagesize($path)))
-			{	
+			if (FALSE !== ($D = getimagesize($path)))
+			{
 				$types = array(1 => 'gif', 2 => 'jpeg', 3 => 'png');
 
 				$this->image_width		= $D['0'];
@@ -814,13 +820,30 @@ class CI_Upload {
 			return FALSE;
 		}
 
-		$CI =& get_instance();	
-		$data = $CI->security->xss_clean($data);
-		
-		flock($fp, LOCK_EX);
-		fwrite($fp, $data);
-		flock($fp, LOCK_UN);
-		fclose($fp);
+		$CI =& get_instance();
+
+		if ($this->xss_override || $this->is_image())
+		{
+			// If this is an image, and the security library removes characters
+			// There is no point in writing it, as the image would now be a broken file
+			// So return FALSE so do_upload() fails.
+			if ($CI->security->xss_clean($data, TRUE) === FALSE)
+			{
+				return FALSE;
+			}
+			else
+			{
+				return TRUE;
+			}
+		}
+		else
+		{
+			$data = $CI->security->xss_clean($data, FALSE);
+			flock($fp, LOCK_EX);
+			fwrite($fp, $data);
+			flock($fp, LOCK_UN);
+			fclose($fp);			
+		}	
 	}
 	
 	// --------------------------------------------------------------------
@@ -893,7 +916,7 @@ class CI_Upload {
 	
 		if (count($this->mimes) == 0)
 		{
-//			if (@require_once(APPPATH.'config/mimes'.EXT))
+			// if (@require_once(APPPATH.'config/mimes'.EXT))
 			if (@require_once(APPPATH.'config/CI_mimes'.EXT)) //@todo replace with mimes
 			{
 				$this->mimes = $mimes;
