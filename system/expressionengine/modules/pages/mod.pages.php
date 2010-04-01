@@ -62,7 +62,7 @@ class Pages {
 
 		// Fetch all pages
 
-		$this->EE->db->select('site_pages, site_name');
+		$this->EE->db->select('site_pages, site_name, site_id');
 		$this->EE->db->where_in('site_name', $site_names);
 		$query = $this->EE->db->get('sites');
 
