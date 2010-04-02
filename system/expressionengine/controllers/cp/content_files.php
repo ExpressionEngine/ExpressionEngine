@@ -398,6 +398,7 @@ class Content_files extends Controller {
 				);
 
 				echo '<script type="text/javascript">parent.EE_uploads.'.$this->input->get('frame_id').' = '.$this->javascript->generate_json($response).';</script>';
+				exit;
 			}
 			else
 			{
