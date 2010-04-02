@@ -1447,20 +1447,19 @@ class Simple_commerce_mcp {
 	{
 		if ($this->EE->input->post('purchase_ids') !== FALSE)
 		{
-			$purchase_ids[] = $explode('|', $this->EE->input->post('purchase_ids'));
-
-			$this->EE->db->distinct();
-			$this->EE->db->select('item_id, recurring');
+			$purchase_ids = explode('|', $this->EE->input->post('purchase_ids'));
+			
+			$this->EE->db->select('item_id, purchase_id');
 			$this->EE->db->where_in('purchase_id', $purchase_ids);
 			$query = $this->EE->db->get('simple_commerce_purchases');
 
 			if ($query->num_rows() > 0)
 			{
-				$this->EE->db->where_in('purchase_id', $purchase_ids);
-				$this->EE->db->delete('simple_commerce_purchases');
-
 				foreach($query->result_array() as $row)
 				{
+					$this->EE->db->where('purchase_id', $row['purchase_id']);
+					$this->EE->db->delete('simple_commerce_purchases');
+
 					// Get current count of purchases for the item
 					$this->EE->db->where('item_id', $row['item_id']);
 					$this->EE->db->from('simple_commerce_purchases');
@@ -1470,18 +1469,15 @@ class Simple_commerce_mcp {
 					$this->EE->db->where('item_id', $row['item_id']);
 					$this->EE->db->update('simple_commerce_items', array('item_purchases' => $count));
 
-					if ($row['recurring'] == 'y')
-					{
-						// Get current count of live subscriptions the item
-						$this->EE->db->where('item_id', $row['item_id']);
-						$this->EE->db->where('subscription_end_date', 0);
-						$this->EE->db->from('simple_commerce_purchases');
-						$count = $this->EE->db->count_all_results();
+					// Get current count of live subscriptions the item
+					$this->EE->db->where('item_id', $row['item_id']);
+					$this->EE->db->where('subscription_end_date', 0);
+					$this->EE->db->from('simple_commerce_purchases');
+					$count = $this->EE->db->count_all_results();
 
-						// Update current subscription count
-						$this->EE->db->where('item_id', $row['item_id']);
-						$this->EE->db->update('simple_commerce_items', array('current_subscriptions' => $count));
-					}
+					// Update current subscription count
+					$this->EE->db->where('item_id', $row['item_id']);
+					$this->EE->db->update('simple_commerce_items', array('current_subscriptions' => $count));
 				}
 			}
 
