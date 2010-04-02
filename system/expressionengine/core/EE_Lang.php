@@ -71,6 +71,8 @@ class EE_Lang extends CI_Lang {
 			}
 		}
 
+		$deft_lang = ( ! isset($config['language'])) ? 'english' : $config['language'];
+		
 		// Sec.ur.ity code.  ::sigh::
 		$package = ($package == '') ? $EE->functions->sanitize_filename(str_replace(array('lang.', EXT), '', $which)) : $EE->functions->sanitize_filename($package);
 		$which = 'lang.'.str_replace('lang.', '', $which);
@@ -95,14 +97,7 @@ class EE_Lang extends CI_Lang {
 			oIk11bHRpcGxlIFNpdGUgTWFuYWdlciBFcnJvciAtIFNpdGUgTGltaXQgUmVhY2hlZCIpOyB9IH0="))); return;
 		}
 
-		if (file_exists(PATH_THIRD.$package.'/language/'.$user_lang.'/'.str_replace(EXT, '', $which).EXT))
-		{
-			$this->load($which, $user_lang, FALSE, FALSE, PATH_THIRD.$package.'/');
-		}
-		else
-		{
-			$this->load($which, $user_lang, FALSE, FALSE);
-		}
+		$this->load($which, $user_lang, FALSE, FALSE, PATH_THIRD.$package.'/');
 	}
 	
 	// --------------------------------------------------------------------

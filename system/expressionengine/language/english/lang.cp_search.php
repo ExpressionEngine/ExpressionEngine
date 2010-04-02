@@ -63,6 +63,19 @@ $lang = array(
 'file_index' =>
 'File Manager',
 
+'cont_field_group_management' =>
+'Field Group Management',
+
+'members_member_group_manager' => 
+'Member Group Management',
+
+'cont_category_management' => 
+'Category Management',
+
+'members_custom_profile_fields' =>
+'Custom Member Profile Fields',
+
+
 // Tools_logs
 'logs_view_cp_log' =>
 'View Control Panel Log',
@@ -88,6 +101,22 @@ $lang = array(
 
 'util_translation_tool' =>
 'Translation Utility',
+
+// Plugins
+'plug_index'	=> 
+'Plugins',
+
+'modu_index'	=> 
+'Modules',
+
+'exte_index'	=> 
+'Extensions',
+
+'acce_index' =>
+'Accessories',
+
+
+
 
 ''=>''
 );

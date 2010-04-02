@@ -2046,7 +2046,7 @@ UNGA;
 
 		return $this->_var_swap($this->_load_element('success'),
 								array(
-										'lang:heading'	=>	$this->EE->lang->line('notepad'),
+										'lang:heading'	=>	$this->EE->lang->line('mbr_notepad'),
 										'lang:message'	=>	$this->EE->lang->line('mbr_notepad_updated')
 									 )
 								);

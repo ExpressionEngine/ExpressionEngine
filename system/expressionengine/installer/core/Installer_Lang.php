@@ -18,8 +18,8 @@
 // so instead of maintaining the code in both, we'll just
 // do an include and create a small meta class that
 // CI can instantiate using the proper prefix.
-
-require_once(EE_APPPATH.'/core/EE_Lang'.EXT);
+	
+require_once(EE_APPPATH.'core/EE_Lang'.EXT);
 
  
 // ------------------------------------------------------------------------

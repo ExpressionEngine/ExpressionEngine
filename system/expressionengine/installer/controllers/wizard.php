@@ -487,6 +487,12 @@ class Wizard extends Controller {
 		if ($move_db_data == TRUE)
 		{
 			$default_language = $this->config->_get_config_1x('deft_lang');
+			
+			if (is_null($default_language))
+			{
+				// Likely an unserialize error so we go with the default
+				$default_language = 'english';
+			}
 
 			// Fetch the installed languages
 			$languages = directory_map(BASEPATH.'expressionengine/language', TRUE);

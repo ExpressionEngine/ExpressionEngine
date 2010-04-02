@@ -161,11 +161,11 @@ class Updater {
 		{
 			// Onward
 			$this->EE->db->select('templates.template_id, templates.template_name, 
-								   templates.template_data, template_groups.group_name');
-		    $this->EE->db->where('save_template_file', 'y');
+									templates.template_data, template_groups.group_name');
+			$this->EE->db->where('save_template_file', 'y');
 			$this->EE->db->where('template_groups.site_id', $site['site_id']);
 			$this->EE->db->join('template_groups', 'template_groups.group_id = templates.group_id');
-		    $query = $this->EE->db->get('templates');
+			$query = $this->EE->db->get('templates');
 			
 			if ($query->num_rows() == 0)
 			{
@@ -205,7 +205,7 @@ class Updater {
 			$folder_error = implode(', <br />', $old_template_upload_errors);
 
 			show_error(sprintf($this->EE->lang->line('site_templates_not_found'), 
-													$folder_error));
+								$folder_error));
 		}
 
 		// On to the real deal.
@@ -253,7 +253,7 @@ class Updater {
 
 				show_error($this->EE->lang->line('template_files_not_located').$error_str.
 							sprintf($this->EE->lang->line('proper_template_files_location'), 
-															$template_path));
+									$template_path));
 			}
 
 			$old_template_folder = EE_APPPATH.'templates/1.x_templates/'.$site['site_name'].'/';

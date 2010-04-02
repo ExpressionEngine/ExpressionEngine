@@ -314,7 +314,7 @@ class EE_Config Extends CI_Config {
 		if (isset($this->config['site_pages'][$row['site_id']]))
 		{
 			$url = $this->config['site_url'].'/';
-			$url .= $this->config['site_index'].'/';
+			$url .= $this->config['site_index'].'/'.QUERY_MARKER;
 
 			$this->config['site_pages'][$row['site_id']]['url'] = preg_replace("#(^|[^:])//+#", "\\1/", $url);
 		}
