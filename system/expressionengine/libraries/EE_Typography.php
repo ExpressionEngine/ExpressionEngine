@@ -1415,7 +1415,7 @@ class EE_Typography extends CI_Typography {
 		
 ?>
 <span id='<?php echo $span_id; ?>'>.<?php echo $this->EE->lang->line('encoded_email'); ?></span><script type="text/javascript">
-//<![CDATA[
+/*<![CDATA[*/
 var l=new Array();
 var output = '';
 <?php
@@ -1432,13 +1432,13 @@ if (l[i].substring(0, 1) == ' ') output += "&#"+unescape(l[i].substring(1))+";";
 else output += unescape(l[i]);
 }
 document.getElementById('<?php echo $span_id; ?>').innerHTML = output;
-//]]>
+/*]]>*/
 </script><?php
 
 		$buffer = ob_get_contents();
 		ob_end_clean(); 
 
-		return $buffer;		
+		return str_replace("\n", '', $buffer);		
 	}
 
 
