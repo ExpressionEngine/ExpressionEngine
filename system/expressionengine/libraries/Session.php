@@ -1109,14 +1109,21 @@ class EE_Session {
 	/**  Save password lockout
 	/** ----------------------------------------------*/
 		
-	function save_password_lockout()
+	function save_password_lockout($username = '')
 	{
 		if ($this->EE->config->item('password_lockout') == 'n')
 		{
 		 	return; 
 		} 
-	
-		$query = $this->EE->db->query("INSERT INTO exp_password_lockout (login_date, ip_address, user_agent) VALUES ('".time()."', '".$this->EE->db->escape_str($this->EE->input->ip_address())."', '".$this->EE->db->escape_str($this->userdata['user_agent'])."')");
+
+		$data = array(
+						'login_date'	=> time(),
+						'ip_address'	=> $this->EE->input->ip_address(),
+						'user_agent'	=> $this->userdata['user_agent'],
+						'username'		=> $username
+					);
+					
+		$this->EE->db->insert('password_lockout', $data);
 	}
 
 	
@@ -1126,7 +1133,7 @@ class EE_Session {
 	/**  Check password lockout
 	/** ----------------------------------------------*/
 		
-	function check_password_lockout()
+	function check_password_lockout($username = '')
 	{
 		if ($this->EE->config->item('password_lockout') == 'n')
 		{
@@ -1146,7 +1153,9 @@ class EE_Session {
   				FROM exp_password_lockout 
   				WHERE login_date > $expire 
   				AND ip_address = '".$this->EE->db->escape_str($this->EE->input->ip_address())."'
-  				AND user_agent = '".$this->EE->db->escape_str($this->userdata['user_agent'])."'";
+  				AND (user_agent = '".$this->EE->db->escape_str($this->userdata['user_agent'])."'
+					OR username = '".$this->EE->db->escape_str($username)."'
+					)";
   
 		$query = $this->EE->db->query($sql);
 		

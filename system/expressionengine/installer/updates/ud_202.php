@@ -142,6 +142,11 @@ class Updater {
 			}
 		}
 
+		if ( ! $this->EE->db->field_exists('username', 'password_lockout'))
+		{
+			$Q[] = "ALTER TABLE `exp_password_lockout` ADD `username` VARCHAR(50) NOT NULL AFTER `user_agent`";
+		}
+
 		foreach ($Q as $num => $sql)
 		{
 			$this->EE->progress->update_state("Running Query $num of $count");

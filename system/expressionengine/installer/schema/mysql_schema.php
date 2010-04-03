@@ -195,6 +195,7 @@ class EE_Schema {
 			 login_date int(10) unsigned NOT NULL,
 			 ip_address varchar(16) default '0' NOT NULL,
 			 user_agent varchar(50) NOT NULL,
+			 username varchar(50) NOT NULL,
 			 PRIMARY KEY `lockout_id` (`lockout_id`),
 			 KEY `login_date` (`login_date`),
 			 KEY `ip_address` (`ip_address`),

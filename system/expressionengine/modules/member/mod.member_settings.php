@@ -2158,7 +2158,7 @@ UNGA;
 		/**  Check password lockout status
 		/** ----------------------------------------*/
 
-		if ($this->EE->session->check_password_lockout() === TRUE)
+		if ($this->EE->session->check_password_lockout($this->EE->input->post('username')) === TRUE)
 		{
 			$line = str_replace("%x", $this->EE->config->item('password_lockout_interval'), $this->EE->lang->line('password_lockout_in_effect'));
 			return $this->EE->output->show_user_error('submission', $line);
@@ -2179,7 +2179,7 @@ UNGA;
 		/** ----------------------------------------*/
 		if ($query->num_rows() == 0)
 		{
-			$this->EE->session->save_password_lockout();
+			$this->EE->session->save_password_lockout($this->EE->input->post('username'));
 			return $this->EE->output->show_user_error('submission', $this->EE->lang->line('invalid_existing_un_pw'));
 		}
 
