@@ -2710,7 +2710,7 @@ class EE_Functions {
 			{
 				foreach($quote_matches[0] as $quote_match)
 				{
-					$md5_key = $prep_id.md5($quote_match);
+					$md5_key = (string) hexdec($prep_id.md5($quote_match));
 					$protect[$quote_match] = $md5_key;
 					$switch[$md5_key] = $quote_match;
 				}
@@ -2757,12 +2757,12 @@ class EE_Functions {
 				while(isset($x[$i]));
 			}
 
-			// Reverse Key Length Sorting
 			// This should prevent, for example, the variable 'comment' from 
-			// overwriting the variable 'comments'.  I tried using create_function()
-			// here but it was significantly slower than calling an already existing
-			// method in the class.  Not sure why.
-			uksort($data, array($this, 'reverse_key_sort'));
+			// overwriting the variable 'comments'.  
+			
+			$data = array_flip($data);
+			natsort($data);
+			$data = array_reverse(array_flip($data), TRUE); 
 
 			if ($safety == 'y')
 			{
@@ -2804,13 +2804,13 @@ class EE_Functions {
 								  '"';
 				}
 				
-				$md5_key = $prep_id.md5($key);
+				$md5_key = (string) hexdec($prep_id.md5($key));
 				$protect[$key] = $md5_key;
 				$switch[$md5_key] = $data[$key];
 				
 				if ($prefix != '')
 				{
-					$md5_key = $prep_id.md5($prefix.$key);
+					$md5_key = (string) hexdec($prep_id.md5($prefix.$key));
 					$protect[$prefix.$key] = $md5_key;
 					$switch[$md5_key] = $data[$key];
 				}
