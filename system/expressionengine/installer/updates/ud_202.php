@@ -34,6 +34,10 @@ class Updater {
 
     function do_update()
     {
+		// This update corresponds to the 1.6.9 release in the 1.x branch.
+		// Some of the changes made in this update can also be found in
+		// said update on the other branch.
+	
 
 		// Modules now have a tab setting
         $Q[] = "UPDATE `exp_relationships` SET rel_type = 'channel' WHERE rel_type = 'blog'";
