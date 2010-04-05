@@ -81,6 +81,7 @@ class EE_Core {
 		define('LD',			'{');
 		define('RD',			'}');
 		define('AMP',			'&amp;');
+		define('PATH_DICT', 	APPPATH.'config/');
 
 		$this->native_modules = array('blacklist', 'blogger_api', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 									'forum', 'gallery', 'ip_to_nation', 'jquery', 'mailinglist', 'member', 'metaweblog_api',
