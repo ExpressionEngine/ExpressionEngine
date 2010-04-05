@@ -255,9 +255,13 @@ class EE_Extensions {
 				{
 					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), array(&$parameter_one) + $args);
 				}
-				else
+				elseif ( ! empty($php5_args))
 				{
 					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $php5_args);
+				}
+				else
+				{
+					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $args);
 				}
 				
 				$this->in_progress = '';
