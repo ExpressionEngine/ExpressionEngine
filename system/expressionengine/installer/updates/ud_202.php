@@ -34,7 +34,7 @@ class Updater {
 
     function do_update()
     {
-        /*
+
 		// Modules now have a tab setting
         $Q[] = "UPDATE `exp_relationships` SET rel_type = 'channel' WHERE rel_type = 'blog'";
         $Q[] = "ALTER TABLE `exp_channels` DROP COLUMN `show_url_title`";
@@ -57,6 +57,15 @@ class Updater {
 		
 		// If there is no action id, add it
         $this->EE->db->where('class', 'channel');
+        $this->EE->db->where('method', 'smiley_pop');
+        $query = $this->EE->db->get('actions');
+
+        if ($query->num_rows() == 0)
+        {
+			$Q[] = "INSERT INTO exp_actions (class,method) VALUES ('channel','smiley_pop')";
+        }
+
+        $this->EE->db->where('class', 'channel');
         $this->EE->db->where('method', 'filemanager_endpoint');
         $query = $this->EE->db->get('actions');
 
@@ -65,7 +74,6 @@ class Updater {
 			$Q[] = "INSERT INTO exp_actions (class,method) VALUES ('channel','filemanager_endpoint')";
         }
 
-*/
 		// If the action id is for the Weblog class, change it
 		$Q[] = "UPDATE exp_actions SET class = 'Channel' WHERE class = 'Weblog'";
 		
