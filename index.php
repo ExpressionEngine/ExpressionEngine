@@ -137,7 +137,7 @@
 	define('FCPATH', str_replace(SELF, '', __FILE__));
 	
 	// Name of the "system folder"
-	define('SYSDIR', trim(strrchr(trim(BASEPATH, '/'), '/'), '/'));		
+	define('SYSDIR', end(explode('/', trim(BASEPATH, '/'))));		
 
 	// The $debug value as a constant for global access
 	define('DEBUG', $debug);  unset($debug);
