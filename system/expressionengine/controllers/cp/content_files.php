@@ -307,6 +307,7 @@ class Content_files extends Controller {
 		// @todo: this function should be migrated to file manager lib
 		$this->load->library('filemanager');
 		$this->load->model('tools_model');
+		
 		// get upload dir info
 		$upload_id = $this->input->get_post('upload_dir');
 
@@ -317,10 +318,17 @@ class Content_files extends Controller {
 		$extension = strrchr($full_filename, '.');
 		$filename = ($extension === FALSE) ? $full_filename : substr($full_filename, 0, -strlen($extension));
 
-		// @todo, Add a check to see if the file exists, give options on what to do.
-		// http://expressionengine.com/bug_tracker/bug/10878/
-
 		$upload_filename = url_title($filename, $this->config->item('word_separator'), TRUE);
+
+		// Upload Exists.
+		// if (file_exists($upload_dir_prefs->server_path.$upload_filename.$extension))
+		// {
+		// 	$message = 'The file you are attempting to upload already exists.  Would you like to:';
+		// 	$message_extra = '<a id="rename_file" href="#" title="Rename">Rename</a>&nbsp;<a id="overwrite_file" href="#" title="Overwrite">Overwrite</a>';
+		// 	
+		// 	echo '<script type="text/javascript">parent.EE_uploads.'.$this->input->get('frame_id').' = '.$this->javascript->generate_json(array('error' => $message.'<br />'.$message_extra)).';</script>';
+		// 	exit();
+		// }
 
 		$config = array(
 			'file_name'		=> $upload_filename,
