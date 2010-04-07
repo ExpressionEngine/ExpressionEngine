@@ -3406,7 +3406,7 @@ class EE_Template {
 		{
 			return $str;
 		}
-		
+
 		foreach ($this->var_cond as $val)
 		{
 			// Make sure there is such a $global_var
