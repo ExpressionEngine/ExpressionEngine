@@ -145,7 +145,6 @@ class Metaweblog_api {
 							'mt.supportedTextFilters'	=> array('function' => 'Metaweblog_api.supportedTextFilters')
 							);
 
-
 		/** ---------------------------------
 		/**  Instantiate the Server Class
 		/** ---------------------------------*/
@@ -191,10 +190,10 @@ class Metaweblog_api {
 		/**  Default Channel Data for channel_id
 		/** ---------------------------------------*/
 
-		$query = $this->EE->db->query("SELECT deft_comments, cat_group, deft_category,
-							 channel_title, channel_url, channel_notify_emails, channel_notify, comment_url
-							 FROM exp_channels
-							 WHERE channel_id = '{$this->channel_id}'");
+		$this->EE->db->select('deft_comments, cat_group, deft_category, channel_title, channel_url,
+								channel_notify_emails, channel_notify, comment_url');
+		$this->EE->db->where('channel_id', $this->channel_id);
+		$query = $this->EE->db->get('channels');
 
 		if ($query->num_rows() == 0)
 		{
@@ -207,6 +206,10 @@ class Metaweblog_api {
 		}
 
 		$notify_address = ($query->row('channel_notify')  == 'y' AND $query->row('channel_notify_emails')  != '') ? $query->row('channel_notify_emails')  : '';
+
+		// Get channel field Settings
+		// @todo, fix this
+		$this->get_settings($this->channel_id, 'new');
 
 		/** ---------------------------------------
 		/**  Parse Data Struct
@@ -395,13 +398,21 @@ class Metaweblog_api {
 		
 		if ( ! $this->EE->api_channel_entries->submit_new_entry($this->channel_id, $data))
 		{
-	//		return $this->EE->xmlrpc->send_response(array($this->EE->api_channel_entries->get_errors(), 'array'));
-			return $this->EE->xmlrpc->send_response(array('Something went wrong.', 'string'));
+			$errors = $this->EE->api_channel_entries->get_errors();
+
+			$response = array(
+				'errors' => array($errors, 'array')
+			);
+
+			return $this->EE->xmlrpc->send_response($response);
 		}
 		
 		//Return Entry ID of new entry
+		$response = array(
+			'entry_id' => array($this->EE->api_channel_entries->entry_id, 'string')
+		);
 
-		return $this->EE->xmlrpc->send_response(array($this->EE->api_channel_entries->entry_id, 'string'));
+		return $this->EE->xmlrpc->send_response($response);
 	}
 
 	// --------------------------------------------------------------------
@@ -1213,7 +1224,6 @@ class Metaweblog_api {
 	{
 		// Query DB for member data.  Depending on the validation type we'll
 		// either use the cookie data or the member ID gathered with the session query.
-
 		$sql = " SELECT exp_members.screen_name,
 						exp_members.member_id,
 						exp_members.email,
@@ -1274,6 +1284,12 @@ class Metaweblog_api {
 		}
 
 		$this->userdata['assigned_channels'] = $assigned_channels;
+
+
+		$this->EE->session->userdata = array_merge(
+			$this->EE->session->userdata,
+			$this->userdata
+		);
 
 		return TRUE;
 	}
@@ -1540,7 +1556,6 @@ class Metaweblog_api {
 			)
 		);
 
-
 		// Delete the entry
 		$this->EE->load->library('api');
 		$this->EE->api->instantiate('channel_entries');
@@ -1549,7 +1564,9 @@ class Metaweblog_api {
 
 		if ( ! $r)
 		{
-			return $this->EE->xmlrpc->send_error_message('809', $this->EE->api_channel_entries->get_errors());
+			$errors = implode(', ', $this->EE->api_channel_entries->get_errors());
+
+			return $this->EE->xmlrpc->send_error_message('809', $errors);
 		}
 		else
 		{
@@ -1901,6 +1918,65 @@ class Metaweblog_api {
 		}
 
 		return $filename;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get Settings for the channel
+	 *
+	 * @todo, this is a bandaid. 
+	 *
+	 *
+	 */
+	function get_settings($channel_id, $which = 'new')
+	{
+		$this->EE->load->model('channel_model');
+		$this->EE->load->library('api');
+		$this->EE->api->instantiate('channel_fields');
+
+		$this->EE->db->select('field_group');
+		$this->EE->db->where('channel_id', $channel_id);
+		$field_group = $this->EE->db->get('channels');
+
+		$field_query = $this->EE->channel_model->get_channel_fields($field_group->row('field_group'));
+
+		foreach ($field_query->result_array() as $row)
+		{
+			$field_data = '';
+			$field_fmt = '';
+			
+			if ($which == 'edit')
+			{
+				$field_data = ( ! isset( $resrow['field_id_'.$row['field_id']])) ? '' : $resrow['field_id_'.$row['field_id']];
+				$field_fmt	= ( ! isset( $resrow['field_ft_'.$row['field_id']] )) ? $row['field_fmt'] : $resrow['field_ft_'.$row['field_id']];
+
+			}
+			else // New entry- use the default setting
+			{
+				$field_fmt	= $row['field_fmt'];
+			}
+
+			// Settings that need to be prepped			
+			$settings = array(
+				'field_instructions'	=> trim($row['field_instructions']),
+				'field_text_direction'	=> ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
+				'field_fmt'				=> $field_fmt,
+				'field_data'			=> $field_data,
+				'field_name'			=> 'field_id_'.$row['field_id'],
+			);
+
+			$ft_settings = array();
+			
+			if (isset($row['field_settings']) && strlen($row['field_settings']))
+			{
+				$ft_settings = unserialize(base64_decode($row['field_settings']));
+			}
+
+			$settings = array_merge($row, $settings, $ft_settings);
+
+			$this->EE->api_channel_fields->set_settings($row['field_id'], $settings);
+		}
 	}
 }
 
