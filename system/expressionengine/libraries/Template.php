@@ -2682,9 +2682,10 @@ class EE_Template {
 			}
 		}
 
+
 		// now third party add-ons, which are arranged in "packages"
 		// only catch files that match the package name, as other files are merely assets
-		if (($map = directory_map(PATH_THIRD)) !== FALSE)
+		if (($map = directory_map(PATH_THIRD, 2)) !== FALSE)
 		{
 			foreach ($map as $pkg_name => $files)
 			{
@@ -3406,7 +3407,7 @@ class EE_Template {
 		{
 			return $str;
 		}
-		
+
 		foreach ($this->var_cond as $val)
 		{
 			// Make sure there is such a $global_var

@@ -32,6 +32,13 @@ foreach ($purchases as $key => $val):
 	);
 
 	$this->table->add_row(array(
+			lang('item_cost', 'item_cost['.$key.']'),
+			form_error('item_cost['.$key.']').
+			form_input('item_cost['.$key.']', set_value('item_cost['.$key.']', $val['item_cost']))
+		)
+	);
+
+	$this->table->add_row(array(
 			lang('purchase_date', 'purchase_date['.$key.']'),
 			form_error('purchase_date['.$key.']').
 			form_input('purchase_date['.$key.']', set_value('purchase_date['.$key.']', $val['purchase_date']), 'id="purchase_date_'.$key.'"')
@@ -42,13 +49,6 @@ foreach ($purchases as $key => $val):
 			lang('subscription_end_date', 'subscription_end_date['.$key.']'),
 			form_error('subscription_end_date['.$key.']').
 			form_input('subscription_end_date['.$key.']', set_value('subscription_end_date['.$key.']', $val['subscription_end_date']), 'id="subscription_end_date_'.$key.'"')
-		)
-	);
-
-	$this->table->add_row(array(
-			lang('item_cost', 'item_cost['.$key.']'),
-			form_error('item_cost['.$key.']').
-			form_input('item_cost['.$key.']', set_value('item_cost['.$key.']', $val['item_cost']))
 		)
 	);
 

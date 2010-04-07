@@ -181,7 +181,9 @@ class EE_Actions {
 					$EE->output->fatal_error($EE->lang->line('invalid_action'));
 				}
 				else
+				{
 					return FALSE;
+				}
 			}
 		
 			$ACT->$method();
