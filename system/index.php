@@ -106,7 +106,7 @@
 		$system_path = pathinfo(__FILE__, PATHINFO_DIRNAME);
 	}
 
-	if (function_exists('realpath') AND @realpath($system_path) !== FALSE)
+	if (realpath($system_path) !== FALSE)
 	{
 		$system_path = realpath($system_path).'/';
 	}
