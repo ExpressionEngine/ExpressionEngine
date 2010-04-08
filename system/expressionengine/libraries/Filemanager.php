@@ -699,6 +699,7 @@ class Filemanager {
 		}
 
 		$config['image_library'] = $this->EE->config->item('image_resize_protocol');
+		$config['library_path'] = $this->EE->config->item('image_library_path');
 		$config['source_image'] = $file;
 
 		$path = substr($file, 0, strrpos($file, DIRECTORY_SEPARATOR)+1);

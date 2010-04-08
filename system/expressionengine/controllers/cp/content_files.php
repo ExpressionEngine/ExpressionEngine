@@ -640,7 +640,7 @@ class Content_files extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-		
+	
 		$this->load->helper(array('form', 'string', 'url', 'file'));
 		$this->load->library('encrypt');
 
@@ -828,6 +828,7 @@ class Content_files extends Controller {
 			}
 		}
 
+		$config['library_path'] = $this->config->item('image_library_path'); 
 		$config['image_library'] = $this->config->item('image_resize_protocol');
 		$config['source_image'] = $file;
 		$config['new_image'] = $file;
