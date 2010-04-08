@@ -250,16 +250,19 @@ $(document).ready(function() {
 		if (EE.edit.tableColumns == 9)
 		{
 			MyCols = [null, null, { "bSortable" : false }, null, null, null, null, null, { "bSortable" : false } ];
+			MySortCol = 5;
 		}
 		else
 		{
 			MyCols = [null, null, { "bSortable" : false }, null, null, null, null, { "bSortable" : false } ];
+			MySortCol = 4;
 		}
 	
 	
 		oTable = $("#entries_form .mainTable").dataTable( {	
 				"sPaginationType": "full_numbers",
 				"bLengthChange": false,
+				"aaSorting": [[ MySortCol, "desc" ]],
 				"bFilter": false,
 				"sWrapper": false,
 				"sInfo": false,

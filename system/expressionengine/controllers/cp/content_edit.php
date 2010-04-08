@@ -868,7 +868,7 @@ class Content_edit extends Controller {
 		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
 		$sEcho = $this->input->get_post('sEcho');	
 		
-		if ($filter_data['search_in'] == 'bbbbbbbbbbbbcomments')
+		if ($filter_data['search_in'] == 'comments')
 		{
 			$col_map[] = 'comment';
 			
