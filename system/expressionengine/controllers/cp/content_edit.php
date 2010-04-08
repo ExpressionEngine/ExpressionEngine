@@ -213,9 +213,15 @@ class Content_edit extends Controller {
 			$comment_url .= ($filter_data['channel_id'] != '') ? '&channel_id='.$filter_data['channel_id'] : '';
 			$comment_url .= ($filter_data['keywords'] != '') ? '&keywords='.base64_encode($filter_data['keywords']) : '';
 		}
-		
-		$table_columns = (isset($this->installed_modules['comment'])) ? '"aoColumns": [null, null, { "bSortable" : false }, null, null, null, null, null, { "bSortable" : false } ],' : '"aoColumns": [null, null, { "bSortable" : false }, null, null, null, null, { "bSortable" : false } ],';
 
+		if (isset($this->installed_modules['comment']))
+		{
+			$table_columns = 9;
+		}
+		else
+		{
+			$table_columns = 8;
+		}
 
 		$this->javascript->set_global(array(
 						'edit.pipe' 		=> $this->pipe_length,
@@ -825,9 +831,6 @@ class Content_edit extends Controller {
 		$this->output->enable_profiler(FALSE);
 		$this->load->helper(array('form', 'text', 'url', 'snippets'));
 		
-
-		
-		
 		$filter_data['channel_id'] = ($this->input->get_post('channel_id') != 'null' && $this->input->get_post('channel_id') != 'all') ? $this->input->get_post('channel_id') : '';
 		$filter_data['cat_id'] = ($this->input->get_post('cat_id') != 'all') ? $this->input->get_post('cat_id') : '';
 
@@ -865,7 +868,7 @@ class Content_edit extends Controller {
 		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
 		$sEcho = $this->input->get_post('sEcho');	
 		
-		if ($filter_data['search_in'] == 'comments')
+		if ($filter_data['search_in'] == 'bbbbbbbbbbbbcomments')
 		{
 			$col_map[] = 'comment';
 			
@@ -883,7 +886,14 @@ class Content_edit extends Controller {
 		}
 		else
 		{
-			$col_map = array('exp_channel_titles.entry_id', 'title', 'view', 'comment_total', 'screen_name', 'entry_date', 'channel_name', 'status');
+			if (isset($this->installed_modules['comment']))
+			{
+				$col_map = array('exp_channel_titles.entry_id', 'title', 'view', 'comment_total', 'screen_name', 'entry_date', 'channel_name', 'status', '');
+			}
+			else
+			{
+				$col_map = array('exp_channel_titles.entry_id', 'title', 'view', 'screen_name', 'entry_date', 'channel_name', 'status', '');
+			}
 		}
 
 		/* Ordering */

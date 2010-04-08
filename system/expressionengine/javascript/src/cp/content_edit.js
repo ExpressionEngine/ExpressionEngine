@@ -247,17 +247,25 @@ $(document).ready(function() {
 		}
 	}
 
+		if (EE.edit.tableColumns == 9)
+		{
+			MyCols = [null, null, { "bSortable" : false }, null, null, null, null, null, { "bSortable" : false } ];
+		}
+		else
+		{
+			MyCols = [null, null, { "bSortable" : false }, null, null, null, null, { "bSortable" : false } ];
+		}
+	
+	
 		oTable = $("#entries_form .mainTable").dataTable( {	
 				"sPaginationType": "full_numbers",
 				"bLengthChange": false,
-				"aaSorting": [[ 5, "desc" ]],
 				"bFilter": false,
 				"sWrapper": false,
 				"sInfo": false,
 				"bAutoWidth": false,
 				"iDisplayLength": EE.edit.perPage,  
-				"table_columns" : EE.edit.tableColumns,
-
+				"aoColumns": MyCols,
 
 			"oLanguage": {
 				"sZeroRecords": EE.lang.noEntries,
