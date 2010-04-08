@@ -1825,7 +1825,7 @@ class Member {
 		/**  Check password lockout status
 		/** ----------------------------------------*/
 
-		if ($this->EE->session->check_password_lockout() === TRUE)
+		if ($this->EE->session->check_password_lockout($this->EE->session->userdata['username']) === TRUE)
 		{
 			return $this->EE->output->show_user_error('general', str_replace("%x", $this->EE->config->item('password_lockout_interval'), $this->EE->lang->line('password_lockout_in_effect')));
 		}
@@ -1839,7 +1839,7 @@ class Member {
 
 		if ($query->row('password')  != $password)
 		{
-			$this->EE->session->save_password_lockout();
+			$this->EE->session->save_password_lockout($this->EE->session->userdata['username']);
 
 			return $this->EE->output->show_user_error('general', $this->EE->lang->line('invalid_pw'));
 		}

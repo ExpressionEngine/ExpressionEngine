@@ -106,7 +106,7 @@
 		$system_path = pathinfo(__FILE__, PATHINFO_DIRNAME);
 	}
 
-	if (function_exists('realpath') AND @realpath($system_path) !== FALSE)
+	if (realpath($system_path) !== FALSE)
 	{
 		$system_path = realpath($system_path).'/';
 	}
@@ -132,7 +132,7 @@
 	define('FCPATH', str_replace(SELF, '', __FILE__));
 	
 	// Name of the "system folder"
-	define('SYSDIR', end(explode('/', trim(BASEPATH, '/'))));
+	define('SYSDIR', trim(strrchr(trim(BASEPATH, '/'), '/'), '/'));
 
 	// The $debug value as a constant for global access
 	define('DEBUG', $debug);  unset($debug);

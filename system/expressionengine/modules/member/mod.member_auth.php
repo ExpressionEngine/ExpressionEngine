@@ -149,7 +149,7 @@ class Member_auth extends Member {
 		/**  Check password lockout status
 		/** ----------------------------------------*/
 
-		if ($this->EE->session->check_password_lockout() === TRUE)
+		if ($this->EE->session->check_password_lockout($this->EE->input->get_post('username')) === TRUE)
 		{
 			$line = $this->EE->lang->line('password_lockout_in_effect');
 
@@ -278,7 +278,7 @@ class Member_auth extends Member {
 		/** ----------------------------------------*/
 		if ($query->num_rows() == 0)
 		{
-			$this->EE->session->save_password_lockout();
+			$this->EE->session->save_password_lockout($this->EE->input->get_post('username'));
 
 			$this->EE->output->show_user_error('submission', array($this->EE->lang->line('credential_missmatch')));
 		}
@@ -321,7 +321,7 @@ class Member_auth extends Member {
 				/**  Invalid password
 				/** ----------------------------------------*/
 
-				$this->EE->session->save_password_lockout();
+				$this->EE->session->save_password_lockout($this->EE->input->get_post('username'));
 
 				$errors[] = $this->EE->lang->line('credential_missmatch');
 			}

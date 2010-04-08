@@ -131,7 +131,7 @@ class Wizard extends Controller {
 							'url_suffix' 			=> '',
 							'language'				=> 'english',
 							'charset' 				=> 'UTF-8',
-							'enable_hooks' 			=> TRUE,
+							'enable_hooks' 			=> FALSE,
 							'subclass_prefix' 		=> 'EE_',
 							'permitted_uri_chars' 	=> 'a-z 0-9~%.:_\-',
 							'enable_query_strings'	=> FALSE,

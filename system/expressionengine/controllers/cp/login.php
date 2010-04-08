@@ -181,7 +181,7 @@ class Login extends Controller {
 		/**  Check password lockout status
 		/** ----------------------------------------*/
 		
-		if ($this->session->check_password_lockout() === TRUE)
+		if ($this->session->check_password_lockout($this->username) === TRUE)
 		{
 			$line = $this->lang->line('password_lockout_in_effect');
 		
@@ -217,7 +217,7 @@ class Login extends Controller {
 		/** ----------------------------------------*/
 		if ($query->num_rows() == 0)
 		{
-			$this->session->save_password_lockout();
+			$this->session->save_password_lockout($this->username);
 			
 			$this->session->set_flashdata('message', $this->lang->line('credential_missmatch'));
 			
@@ -261,7 +261,7 @@ class Login extends Controller {
 				/**  Invalid password
 				/** ----------------------------------------*/
 					
-				$this->session->save_password_lockout();
+				$this->session->save_password_lockout($this->username);
 
 				$this->session->set_flashdata('message', $this->lang->line('credential_missmatch'));
 				
@@ -525,7 +525,7 @@ class Login extends Controller {
 		/**  Check password lockout status
 		/** ----------------------------------------*/
 		
-		if ($this->session->check_password_lockout() === TRUE)
+		if ($this->session->check_password_lockout($this->input->post('username')) === TRUE)
 		{		
 			$line = str_replace("%x", $this->config->item('password_lockout_interval'), $this->lang->line('password_lockout_in_effect'));	
 				
@@ -548,7 +548,7 @@ class Login extends Controller {
 		/** ----------------------------------------*/
 		if ($query->num_rows() == 0)
 		{
-			$this->session->save_password_lockout();
+			$this->session->save_password_lockout($this->input->post('username'));
 			return $this->_un_pw_update_form($this->lang->line('invalid_existing_un_pw'));
 		}
 		

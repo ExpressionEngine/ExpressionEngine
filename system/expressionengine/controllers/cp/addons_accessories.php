@@ -143,14 +143,14 @@ class Addons_accessories extends Controller {
 					$accessories[$name]['acc_member_groups'] = array_map(array($this, '_get_human_name'), $installed[$name]['member_groups']);
 				}
 				else
-				{
+				{	
 					// over 3 listed, and this starts to get a bit out of hand, so we'll show the first 3, and say how
 					// many others there are, and offer the option of looking at them
-					$member_groups = array_map(array($this, '_get_human_name'), $installed[$class]['member_groups']);
+					$member_groups = array_map(array($this, '_get_human_name'), $installed[$name]['member_groups']);
 					$member_groups = array_slice($member_groups, 0, 3);
-					$member_groups[] = '<a href="'.$accessories[$key]->acc_pref_url.'">'.str_replace("%x", ($num_member_groups-3), $this->lang->line('and_more')).'</a>';
+					$member_groups[] = '<a href="'.$accessories[$name]['acc_pref_url'].'">'.str_replace("%x", ($num_member_groups-3), $this->lang->line('and_more')).'</a>';
 
-					$accessories[$key]->acc_member_groups = $member_groups;
+					$accessories[$name]['acc_member_groups'] = $member_groups;
 				}
 
 				// work out controller names (if needed)

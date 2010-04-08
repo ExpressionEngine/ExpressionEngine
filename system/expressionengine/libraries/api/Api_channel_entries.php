@@ -354,6 +354,7 @@ class Api_channel_entries extends Api {
 	function delete_entry($entry_ids)
 	{
 		$this->EE->load->library('api');
+		$this->EE->load->library('addons');
 		$this->EE->api->instantiate('channel_fields');
 
 		if ( ! is_array($entry_ids))
@@ -362,9 +363,16 @@ class Api_channel_entries extends Api {
 		}
 		
 		// @confirm eek - needed for the permission check
-		$this->EE->load->library('cp');
-
-		$comments_installed = (isset($this->EE->cp->installed_modules['comment'])) ? TRUE : FALSE;
+		// $this->EE->load->library('cp');
+		
+		if (in_array('comment', $this->EE->addons->get_installed('modules')))
+		{
+			$comments_installed = TRUE;
+		}
+		else
+		{
+			$comments_installed = FALSE;
+		}
 		
 		// @todo model
 		// grab entry meta data
@@ -380,7 +388,7 @@ class Api_channel_entries extends Api {
 
 		foreach ($query->result_array() as $row)
 		{
-			if ($this->EE->session->userdata['group_id'] != 1)
+			if ($this->EE->session->userdata('group_id') != 1)
 			{
 				if ( ! in_array($row['channel_id'], $allowed_channels))
 				{
@@ -390,14 +398,14 @@ class Api_channel_entries extends Api {
 
 			if ($row['author_id'] == $this->EE->session->userdata('member_id'))
 			{
-				if ( ! $this->EE->cp->allowed_group('can_delete_self_entries'))
+				if ($this->EE->session->userdata('can_delete_self_entries') != 'y')
 				{
 					return $this->_set_error('unauthorized_to_delete_self');
 				}
 			}
 			else
 			{
-				if ( ! $this->EE->cp->allowed_group('can_delete_all_entries'))
+				if ($this->EE->session->userdata('can_delete_all_entries') != 'y')
 				{
 					return $this->_set_error('unauthorized_to_delete_self');
 				}
@@ -1219,21 +1227,21 @@ class Api_channel_entries extends Api {
 		
 		$data['author_id'] = ( ! isset($data['author_id']) OR ! $data['author_id']) ? $this->EE->session->userdata('member_id'): $data['author_id'];
 
-		if ($data['author_id'] != $this->EE->session->userdata['member_id'] && ! $this->EE->cp->allowed_group('can_edit_other_entries'))
+		if ($data['author_id'] != $this->EE->session->userdata('member_id') && $this->EE->session->userdata('can_edit_other_entries') != 'y')
 		{
 			$this->_set_error('not_authorized');
 		}
 		
-		if (isset($this->_cache['orig_author_id']) && $data['author_id'] != $this->_cache['orig_author_id'] && (! $this->EE->cp->allowed_group('can_edit_other_entries') OR ! $this->EE->cp->allowed_group('can_assign_post_authors')))
+		if (isset($this->_cache['orig_author_id']) && $data['author_id'] != $this->_cache['orig_author_id'] && ($this->EE->session->userdata('can_edit_other_entries') != 'y' OR $this->EE->session->userdata('can_assign_post_authors') != 'y'))
 		{
 			$this->_set_error('not_authorized');
 		}
 				
-		if ($data['author_id'] != $this->EE->session->userdata['member_id'] && $this->EE->session->userdata['group_id'] != 1)
+		if ($data['author_id'] != $this->EE->session->userdata('member_id') && $this->EE->session->userdata('group_id') != 1)
 		{
 			if ( ! isset($this->_cache['orig_author_id']) OR $data['author_id'] != $this->_cache['orig_author_id'])
 			{
-				if ( ! $this->EE->cp->allowed_group('can_assign_post_authors'))
+				if ($this->EE->session->userdata('can_assign_post_authors') != 'y')
 				{
 					$this->_set_error('not_authorized');
 				}

@@ -1794,14 +1794,13 @@ class Content_publish extends Controller {
 			}
 
 			// Options tab
-			$vars['publish_tabs']['options']['new_channel'] = $field_display;
-
-			$vars['publish_tabs']['options']['status'] = $field_display;
-
-			$vars['publish_tabs']['options']['author'] = $field_display;
-
-			$vars['publish_tabs']['options']['options'] = $field_display;
-			
+			$vars['publish_tabs']['options'] = array(
+				'new_channel'	=> $field_display,
+				'status'		=> $field_display,
+				'author'		=> $field_display,
+				'options'		=> $field_display
+			);
+		
 			$vars['publish_tabs']['categories']['category'] = $field_display;
 
 			if ($this->config->item('forum_is_installed') == "y")
@@ -2765,7 +2764,9 @@ class Content_publish extends Controller {
 		$this->typography->initialize();
 		$this->typography->convert_curly = FALSE;
 
-		$query = $this->db->query("SELECT channel_html_formatting, channel_allow_img_urls, channel_auto_link_urls from exp_channels WHERE channel_id = '$channel_id'");
+		$this->db->select('channel_html_formatting, channel_allow_img_urls, channel_auto_link_urls');
+		$this->db->where('channel_id', $channel_id);
+		$query = $this->db->get('channels');
 
 		if ($query->num_rows() > 0)
 		{
@@ -3290,12 +3291,13 @@ class Content_publish extends Controller {
 			
 			// Prep for a workaround to allow markitup file insertion in file inputs
 			$(".btn_img a, .file_manipulate").click(function(){
-				var textareaId = $(this).parent().parent().parent().find("textarea").attr("id");
+				var textareaId = $(this).closest(".publish_field").attr("id").replace("hold_field_", "field_id_");
 				if (textareaId != undefined) {
 					$("#"+textareaId).focus();		
 				}
 
-				window.file_manager_context = ($(this).parent().attr("class").indexOf("markItUpButton") == -1) ? $(this).closest("div").find("input").attr("id") : "textarea_a8LogxV4eFdcbC";
+				//window.file_manager_context = ($(this).parent().attr("class").indexOf("markItUpButton") == -1) ? textareaId : "textarea_a8LogxV4eFdcbC";
+				window.file_manager_context = $("#"+textareaId).filter("textarea").length ? "textarea_a8LogxV4eFdcbC" : textareaId;
 
 			});
 

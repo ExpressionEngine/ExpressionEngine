@@ -12192,7 +12192,7 @@ class Forum_Core extends Forum {
 		/**  Check password lockout status
 		/** ----------------------------------------*/
 		
-		if ($this->EE->session->check_password_lockout() === TRUE)
+		if ($this->EE->session->check_password_lockout($username) === TRUE)
 		{
 			return FALSE;	
 		}
@@ -12205,7 +12205,7 @@ class Forum_Core extends Forum {
 		
 		if ($query->num_rows() == 0)
 		{
-			$this->EE->session->save_password_lockout();
+			$this->EE->session->save_password_lockout($username);
 			return FALSE;
 		}
 		
@@ -12233,7 +12233,7 @@ class Forum_Core extends Forum {
 		}
 		else
 		{
-			$this->EE->session->save_password_lockout();
+			$this->EE->session->save_password_lockout($username);
 			
 			return FALSE;
 		}
@@ -12343,7 +12343,7 @@ class Forum_Core extends Forum {
 		/**  Check password lockout status
 		/** ----------------------------------------*/
 		
-		if ($this->EE->session->check_password_lockout() === TRUE)
+		if ($this->EE->session->check_password_lockout($user) === TRUE)
 		{
 			return FALSE;	
 		}
@@ -12356,7 +12356,7 @@ class Forum_Core extends Forum {
 		
 		if ($query->num_rows() == 0)
 		{
-			$this->EE->session->save_password_lockout();
+			$this->EE->session->save_password_lockout($user);
 			return FALSE;
 		}
 		
@@ -12384,7 +12384,7 @@ class Forum_Core extends Forum {
 		}
 		else
 		{
-			$this->EE->session->save_password_lockout();
+			$this->EE->session->save_password_lockout($user);
 			
 			return FALSE;
 		}

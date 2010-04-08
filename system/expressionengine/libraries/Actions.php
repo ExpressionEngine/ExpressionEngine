@@ -138,6 +138,7 @@ class EE_Actions {
 		}
 		
 		// Assign the path
+		$orig_view_path = $EE->load->_ci_view_path;
 		
 		if (in_array($base_class, $EE->core->native_modules))
 		{
@@ -146,6 +147,7 @@ class EE_Actions {
 		else
 		{
 			// set path for local libraries, models, etc.
+			$EE->load->_ci_view_path = PATH_THIRD.$base_class.'/views/';
 			$EE->load->add_package_path(PATH_THIRD.$base_class.'/');		
 			$path = PATH_THIRD.$base_class.'/'.$type.'.'.$base_class.EXT;
 		}
@@ -181,7 +183,9 @@ class EE_Actions {
 					$EE->output->fatal_error($EE->lang->line('invalid_action'));
 				}
 				else
+				{
 					return FALSE;
+				}
 			}
 		
 			$ACT->$method();
@@ -190,6 +194,7 @@ class EE_Actions {
 		// if it's a third party add-on, remove the temporarily added path for local libraries, models, etc.
 		if ( ! in_array($base_class, $EE->core->native_modules))
 		{
+		    $EE->load->_ci_view_path = $orig_view_path;
 			$EE->load->remove_package_path();
 		}
 	}

@@ -2682,9 +2682,10 @@ class EE_Template {
 			}
 		}
 
+
 		// now third party add-ons, which are arranged in "packages"
 		// only catch files that match the package name, as other files are merely assets
-		if (($map = directory_map(PATH_THIRD)) !== FALSE)
+		if (($map = directory_map(PATH_THIRD, 2)) !== FALSE)
 		{
 			foreach ($map as $pkg_name => $files)
 			{
@@ -3406,7 +3407,7 @@ class EE_Template {
 		{
 			return $str;
 		}
-		
+
 		foreach ($this->var_cond as $val)
 		{
 			// Make sure there is such a $global_var
@@ -3645,7 +3646,7 @@ class EE_Template {
 		/**  Check password lockout status
 		/** ----------------------------------------*/
 		
-		if ($this->EE->session->check_password_lockout() === TRUE)
+		if ($this->EE->session->check_password_lockout($user) === TRUE)
 		{
 			return FALSE;	
 		}
@@ -3658,7 +3659,7 @@ class EE_Template {
 		
 		if ($query->num_rows() == 0)
 		{
-			$this->EE->session->save_password_lockout();
+			$this->EE->session->save_password_lockout($user);
 			return FALSE;
 		}
 		
@@ -3680,7 +3681,7 @@ class EE_Template {
 		}
 		else
 		{
-			$this->EE->session->save_password_lockout();
+			$this->EE->session->save_password_lockout($user);
 			
 			return FALSE;
 		}

@@ -307,15 +307,36 @@ class Content_files extends Controller {
 		// @todo: this function should be migrated to file manager lib
 		$this->load->library('filemanager');
 		$this->load->model('tools_model');
+		
 		// get upload dir info
 		$upload_id = $this->input->get_post('upload_dir');
 
 		$upload_dir_result = $this->tools_model->get_upload_preferences($this->session->userdata('member_group'), $upload_id);
 		$upload_dir_prefs = $upload_dir_result->row();
-		
-		$filename = $_FILES['userfile']['name'];
 
-		$filename = substr($filename, 0, strrpos($filename, '.'));
+		$full_filename = $_FILES['userfile']['name'];
+		$extension = strrchr($full_filename, '.');
+		$filename = ($extension === FALSE) ? $full_filename : substr($full_filename, 0, -strlen($extension));
+
+		$upload_filename = url_title($filename, $this->config->item('word_separator'), TRUE);
+
+		// Upload Exists.
+		// if (file_exists($upload_dir_prefs->server_path.$upload_filename.$extension))
+		// {
+		// 	$message = 'The file you are attempting to upload already exists.  Would you like to:';
+		// 	$message_extra = '<a id="rename_file" href="#" title="Rename">Rename</a>&nbsp;<a id="overwrite_file" href="#" title="Overwrite">Overwrite</a>';
+		// 	
+		// 	echo '<script type="text/javascript">parent.EE_uploads.'.$this->input->get('frame_id').' = '.$this->javascript->generate_json(array('error' => $message.'<br />'.$message_extra)).';</script>';
+		// 	exit();
+		// }
+
+		$config = array(
+			'file_name'		=> $upload_filename,
+			'upload_path'	=> $upload_dir_prefs->server_path,
+			'max_size'		=> $upload_dir_prefs->max_size,
+			'max_width'		=> $upload_dir_prefs->max_width,
+			'max_height'	=> $upload_dir_prefs->max_height
+		);
 
 		switch($upload_dir_prefs->allowed_types)
 		{
@@ -327,21 +348,13 @@ class Content_files extends Controller {
 				$config['allowed_types'] = $upload_dir_prefs->allowed_types;
 		}
 
-		$config['file_name'] = url_title($filename, $this->config->item('word_separator'), TRUE);
-		$config['upload_path'] = $upload_dir_prefs->server_path;
-		$config['max_size']	= $upload_dir_prefs->max_size;
-		$config['max_width']  = $upload_dir_prefs->max_width;
-		$config['max_height']  = $upload_dir_prefs->max_height;
-
 		$this->load->library('upload', $config);
-
-		$try_upload = $this->upload->do_upload();
 
 		// We use an iframe to simulate asynchronous uploading.  Files submitted
 		// in this way will have the "is_ajax" field, otherwise they where normal
 		// file upload submissions.
 
-		if ( ! $try_upload)
+		if ( ! $this->upload->do_upload())
 		{
 			if ($this->input->get_post('is_ajax') == 'true')
 			{
@@ -398,6 +411,7 @@ class Content_files extends Controller {
 				);
 
 				echo '<script type="text/javascript">parent.EE_uploads.'.$this->input->get('frame_id').' = '.$this->javascript->generate_json($response).';</script>';
+				exit;
 			}
 			else
 			{
@@ -626,7 +640,7 @@ class Content_files extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-		
+	
 		$this->load->helper(array('form', 'string', 'url', 'file'));
 		$this->load->library('encrypt');
 
@@ -814,6 +828,7 @@ class Content_files extends Controller {
 			}
 		}
 
+		$config['library_path'] = $this->config->item('image_library_path'); 
 		$config['image_library'] = $this->config->item('image_resize_protocol');
 		$config['source_image'] = $file;
 		$config['new_image'] = $file;
