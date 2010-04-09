@@ -29,7 +29,7 @@
 					$item['regular_price'],
 					$item['sale_price'],
 					$item['use_sale_price'],
-					$item['subscription_frequency'],
+					$item['subscription_period'],
 					$item['current_subscriptions'],					
 					$item['item_purchases'],
 					form_checkbox($item['toggle'])

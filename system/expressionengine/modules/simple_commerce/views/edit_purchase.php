@@ -10,8 +10,15 @@ foreach ($purchases as $key => $val):
 	    lang('setting')
 	);
 
+	$recurring = '';
+	
+	if ($val['recurring'] == 'y')
+	{
+		$recurring = '<span class="notice">* </span>';
+	}
+	
 	$this->table->add_row(array(
-			lang('txn_id', 'txn_id['.$key.']'),
+			$recurring.lang('txn_id', 'txn_id['.$key.']'),
 			form_error('txn_id['.$key.']').
 			form_input('txn_id['.$key.']', set_value('txn_id['.$key.']', $val['txn_id']))
 		)
@@ -45,13 +52,6 @@ foreach ($purchases as $key => $val):
 		)
 	);
 
-	$this->table->add_row(array(
-			lang('subscription_end_date', 'subscription_end_date['.$key.']'),
-			form_error('subscription_end_date['.$key.']').
-			form_input('subscription_end_date['.$key.']', set_value('subscription_end_date['.$key.']', $val['subscription_end_date']), 'id="subscription_end_date_'.$key.'"')
-		)
-	);
-
 	echo $this->table->generate();
 	$this->table->clear();
 ?>
@@ -62,5 +62,7 @@ foreach ($purchases as $key => $val):
 <?php endforeach; ?>
 
 <?=form_submit(array('name' => 'submit', 'value' => $type, 'class' => 'submit'))?>
+
+<p class="notice">* <?=lang('recurring_purchase_warning')?></p>
 
 <?=form_close()?>

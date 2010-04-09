@@ -2760,8 +2760,7 @@ class EE_Functions {
 			// This should prevent, for example, the variable 'comment' from 
 			// overwriting the variable 'comments'.  
 			
-			uksort($data, 'strnatcmp');
-			$data = array_reverse($data, TRUE); 
+			uksort($data, array($this, 'reverse_key_sort'));
 
 			if ($safety == 'y')
 			{
