@@ -68,10 +68,17 @@
  */
 //	$assign_to_config['template_group'] = '';
 //	$assign_to_config['template'] = '';
-//	$assign_to_config['site_url'] = '';
 //	$assign_to_config['site_index'] = '';
 //	$assign_to_config['site_404'] = '';
 //	$assign_to_config['global_vars'] = array(); // This array must be associative
+
+/**
+ * If you are running the Multiple Site Manager, uncomment and assign the following variables 
+ * See http://expressionengine.com/public_beta/docs/cp/sites/domainsetup.html
+ */
+//	$assign_to_config['site_name'] = '';
+//	$assign_to_config['cp_url'] = '';
+//	$assign_to_config['site_url'] = '';
 
 /*
  * --------------------------------------------------------------------

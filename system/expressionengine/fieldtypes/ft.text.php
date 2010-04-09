@@ -107,7 +107,6 @@ class Text_ft extends EE_Fieldtype {
 	function display_settings($data)
 	{
 		$prefix = 'text';
-		
 		$field_maxl			= ($data['field_maxl'] == '') ? 128 : $data['field_maxl'];
 		$field_content_text	= ($data['field_content_text'] == '') ? 'any' : $data['field_content_text'];
 		

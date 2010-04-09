@@ -47,11 +47,13 @@ class Select_ft extends EE_Fieldtype {
 	{
 		$valid			= FALSE;
 		$field_options	= $this->_get_field_options($data);
-				
+		
 		if ($data == '')
 		{
 			return TRUE;
 		}
+		
+		$data = form_prep($data);
 
 		foreach($field_options as $key => $val)
 		{
@@ -82,8 +84,9 @@ class Select_ft extends EE_Fieldtype {
 	{
 		$text_direction = ($this->settings['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr';
 		$field_options = $this->_get_field_options($data);
-
+		
 		return form_dropdown($this->field_name, $field_options, $data, 'dir="'.$text_direction.'" id="'.$this->field_id.'"');
+		
 	}
 	
 	// --------------------------------------------------------------------
@@ -124,7 +127,7 @@ class Select_ft extends EE_Fieldtype {
 				foreach (explode("\n", trim($this->settings['field_list_items'])) as $v)
 				{
 					$v = trim($v);
-					$field_options[$v] = $v;
+					$field_options[form_prep($v)] = form_prep($v);
 				}
 			}
 			else
@@ -150,9 +153,9 @@ class Select_ft extends EE_Fieldtype {
 					$selected = ($prow['field_id_'.$this->settings['field_pre_field_id']] == $data) ? 1 : '';
 					$pretitle = substr($prow['field_id_'.$this->settings['field_pre_field_id']], 0, 110);
 					$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
-					$pretitle = form_prep($pretitle);
+					//$pretitle = form_prep($pretitle);
 
-					$field_options[form_prep($prow['field_id_'.$this->settings['field_pre_field_id']])] = $pretitle;
+					$field_options[form_prep($prow['field_id_'.$this->settings['field_pre_field_id']])] = form_prep($pretitle);
 				}
 			}
 		}
