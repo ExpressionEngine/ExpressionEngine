@@ -208,15 +208,10 @@ EE.publish.save_layout = function() {
 
 	//$("li:visible", "#tab_menu_tabs").each(function() {
 	$("#tab_menu_tabs a:not(.add_tab_link)").each(function() {
-	
-
-		//console.log($(this).text()); return false;
 
 		// skip list items with no id (ie: new tab)
 		if ($(this).parent('li').attr('id') && $(this).parent('li').attr('id') !== "")
 		{
-			//var tab_name = this.id.replace(/menu_/, "");
-
 			var tab_name = $(this).text(),
 				tab_id	 = $(this).text().replace(/ /g, '_').toLowerCase();	
 
@@ -415,7 +410,7 @@ $(document).ready(function() {
 	$("#holder").corner("bottom-left");
 
 
-	if (EE.publish.smileys === 'true') {
+	if (EE.publish.smileys == true) {
 		$("a.glossary_link").click(function(){
 			$(this).parent().siblings('.glossary_content').slideToggle("fast");$(this).parent().siblings('.smileyContent .spellcheck_content').hide();
 			return false;
@@ -625,3 +620,373 @@ function liveUrlTitle()
 		replaceField.value = newText;
 	}
 }
+
+var selField  = false,
+	selMode = "normal";
+
+//	Dynamically set the textarea name
+
+function setFieldName(which)
+{
+	if (which != selField)
+	{
+		selField = which;
+
+		clear_state();
+
+		tagarray  = new Array();
+		usedarray = new Array();
+		running	  = 0;
+	}
+}
+
+// Insert tag
+function taginsert(item, tagOpen, tagClose)
+{
+	// Determine which tag we are dealing with
+
+	var which = eval('item.name');
+
+	if ( ! selField)
+	{
+		$.ee_notice(no_cursor);
+		return false;
+	}
+
+	var theSelection	= false,
+		result			= false,
+		theField		= document.getElementById('entryform')[selField];
+
+	if (selMode == 'guided')
+	{
+		data = prompt(enter_text, "");
+
+		if ((data != null) && (data != ""))
+		{
+			result =  tagOpen + data + tagClose;
+		}
+	}
+
+	// Is this a Windows user?
+	// If so, add tags around selection
+
+	if (document.selection)
+	{
+		theSelection = document.selection.createRange().text;
+
+		theField.focus();
+
+		if (theSelection)
+		{
+			document.selection.createRange().text = (result == false) ? tagOpen + theSelection + tagClose : result;
+		}
+		else
+		{
+			document.selection.createRange().text = (result == false) ? tagOpen + tagClose : result;
+		}
+
+		theSelection = '';
+
+		theField.blur();
+		theField.focus();
+
+		return;
+	}
+	else if ( ! isNaN(theField.selectionEnd))
+	{
+		var newStart,
+			scrollPos = theField.scrollTop,
+			selLength = theField.textLength,
+			selStart = theField.selectionStart,
+			selEnd = theField.selectionEnd;
+			
+		if (selEnd <= 2 && typeof(selLength) != 'undefined')
+			selEnd = selLength;
+
+		var s1 = (theField.value).substring(0,selStart);
+		var s2 = (theField.value).substring(selStart, selEnd)
+		var s3 = (theField.value).substring(selEnd, selLength);
+
+		if (result == false)
+		{
+			newStart = selStart + tagOpen.length + s2.length + tagClose.length;
+			theField.value = (result == false) ? s1 + tagOpen + s2 + tagClose + s3 : result;
+		}
+		else
+		{
+			newStart = selStart + result.length;
+			theField.value = s1 + result + s3;
+		}
+
+		theField.focus();
+		theField.selectionStart = newStart;
+		theField.selectionEnd = newStart;
+		theField.scrollTop = scrollPos;
+		return;
+	}
+	else if (selMode == 'guided')
+	{
+		curField = document.submit_post[selfField];
+		
+		curField.value += result;
+		curField.blur();
+		curField.focus();
+
+		return;
+	}
+
+	// Add single open tags
+
+	if (item == 'other')
+	{
+		eval("document.getElementById('entryform')." + selField + ".value += tagOpen");
+	}
+	else if (eval(which) == 0)
+	{
+		var result = tagOpen;
+
+		eval("document.getElementById('entryform')." + selField + ".value += result");
+		eval(which + " = 1");
+
+		arraypush(tagarray, tagClose);
+		arraypush(usedarray, which);
+
+		running++;
+
+		styleswap(which);
+	}
+	else
+	{
+		// Close tags
+
+		n = 0;
+
+		for (i = 0 ; i < tagarray.length; i++ )
+		{
+			if (tagarray[i] == tagClose)
+			{
+				n = i;
+
+				running--;
+
+				while (tagarray[n])
+				{
+					closeTag = arraypop(tagarray);
+					eval("document.getElementById('entryform')." + selField + ".value += closeTag");
+				}
+
+				while (usedarray[n])
+				{
+					clearState = arraypop(usedarray);
+					eval(clearState + " = 0");
+					document.getElementById(clearState).className = 'htmlButtonA';
+				}
+			}
+		}
+
+		if (running <= 0 && document.getElementById('close_all').className == 'htmlButtonB')
+		{
+			document.getElementById('close_all').className = 'htmlButtonA';
+		}
+
+	}
+
+	curField = eval("document.getElementById('entryform')." + selField);
+	curField.blur();
+	curField.focus();
+}
+
+$(document).ready(function() {
+
+	$.ee_filebrowser();
+	
+	var field_for_writemode_publish = "";
+
+	if (EE.publish.show_write_mode == true) { 
+		$("#write_mode_textarea").markItUp(myWritemodeSettings);		
+	}
+	
+	$(".write_mode_trigger").click(function(){
+
+		if ($(this).attr("id").match(/^id_\d+$/)) {
+			field_for_writemode_publish = "field_"+$(this).attr("id");
+		} else {
+			field_for_writemode_publish = $(this).attr("id").replace(/id_/, '');
+		}
+
+		// put contents from other page into here
+		$("#write_mode_textarea").val($("#"+field_for_writemode_publish).val());
+		$("#write_mode_textarea").focus();
+		return false;
+	});
+	
+
+	$.each(EE.publish.markitup.fields, function(key, value) { 
+		$("#"+key).markItUp(mySettings);
+	});
+
+	// Prep for a workaround to allow markitup file insertion in file inputs
+	$(".btn_img a, .file_manipulate").click(function(){
+		var textareaId;
+		
+		if ($(this).closest("#markItUpWrite_mode_textarea").length) {
+			textareaId = "write_mode_textarea";
+		}
+		else {
+			textareaId = $(this).closest(".publish_field").attr("id").replace("hold_field_", "field_id_");
+		}
+
+		if (textareaId != undefined) {
+			$("#"+textareaId).focus();		
+		}
+
+		window.file_manager_context = $("#"+textareaId).filter("textarea").length ? "textarea_a8LogxV4eFdcbC" : textareaId;
+	});
+
+	// Bind the image html buttons
+	$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
+		// We also need to allow file insertion into text inputs (vs textareas) but markitup
+		// will not accommodate this, so we need to detect if this request is coming from a 
+		// markitup button (textarea_a8LogxV4eFdcbC), or another field type.
+
+		if (window.file_manager_context == "textarea_a8LogxV4eFdcbC")
+		{
+			// Handle images and non-images differently
+			if ( ! file.is_image)
+			{
+				$.markItUp({name:"Link", key:"L", openWith:"<a href=\"{filedir_"+file.directory+"}"+file.name+"\">", closeWith:"</a>", placeHolder:file.name });
+			}
+			else
+			{
+				$.markItUp({ replaceWith:"<img src=\"{filedir_"+file.directory+"}"+file.name+"\" alt=\"[![Alternative text]!]\" "+file.dimensions+"/>" } );
+			}
+		}
+		else
+		{
+			$("#"+window.file_manager_context).val("{filedir_"+file.directory+"}"+file.name);
+		}
+
+		$.ee_filebrowser.reset(); // restores everything to "default" state - also needed below for file fields
+	});
+
+	// File fields
+	function file_field_changed(file, field) {
+		var container = $("input[name="+field+"]").closest(".publish_field");
+
+		if (file.is_image == false) {
+			container.find(".file_set").show().find(".filename").html("<img src=\""+EE.PATH_CP_GBL_IMG+"default.png\" alt=\""+EE.PATH_CP_GBL_IMG+"default.png\" /><br />"+file.name);
+		}
+		else
+		{
+			container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" alt=\""+file.name+"\" /><br />"+file.name);
+		}
+
+		$("input[name="+field+"_hidden]").val(file.name);
+		$("select[name="+field+"_directory]").val(file.directory);
+
+		$.ee_filebrowser.reset(); // restores everything to "default" state - also needed above for textareas
+	}
+
+	$("input[type=file]", "#publishForm").each(function() {
+		var container = $(this).closest(".publish_field"),
+			trigger = container.find(".choose_file");
+
+		$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), file_field_changed);
+
+		container.find(".remove_file").click(function() {
+			container.find("input[type=hidden]").val("");
+			container.find(".file_set").hide();
+			return false;
+		});
+	});
+
+	// toggle can not be used here, since it may or may not be visible
+	// depending on admin customization
+	$(".hide_field").click(function(){
+		
+		holder_id = $(this).parent().attr("id");
+		field_id = holder_id.substr(11)
+		
+		if($("#sub_hold_field_"+field_id).css("display") == "block"){
+			$("#sub_hold_field_"+field_id).slideUp();
+			$("#hold_field_"+field_id+" .ui-resizable-handle").hide();
+			$("#hold_field_"+field_id+" .field_collapse").attr("src", EE.THEME_URL+"images/field_collapse.png");
+
+			// We dont want datepicker getting triggered when a field is collapsed/expanded
+			return false;
+		}
+		else
+		{
+			$("#sub_hold_field_"+field_id).slideDown();
+			$("#hold_field_"+field_id+" .ui-resizable-handle").show();
+			$("#hold_field_"+field_id+" .field_collapse").attr("src", EE.THEME_URL+"images/field_expand.png");
+
+			// We dont want datepicker getting triggered when a field is collapsed/expanded
+			return false;
+		}
+	});
+
+	$(".close_upload_bar").toggle(
+		function() {
+			$(this).parent().children(":not(.close_upload_bar)").hide();
+			$(this).children("img").attr("src", EE.THEME_URL+"publish_plus.png");
+		}, function () {
+			$(this).parent().children().show();
+			$(this).children("img").attr("src", EE.THEME_URL+"publish_minus.gif");
+		}
+	);
+
+	// the height of this window depends on the height of the viewport.	 Percentages dont work
+	// as the header and footer are absolutely sized.  This is a great compromise.
+	write_mode_height = $(window).height() - (33 + 59 + 25); // the height of header + footer + 25px just to be safe
+	$("#write_mode_writer").css("height", write_mode_height+"px");
+	$("#write_mode_writer textarea").css("height", (write_mode_height-67-17)+"px"); // for formatting buttons + 17px for appearance
+
+	// set up the "publish to field" buttons
+	$(".publish_to_field").click(function() {
+		$("#"+field_for_writemode_publish).val($("#write_mode_textarea").val());
+		tb_remove();
+		return false;
+	});
+
+	$(".ping_toggle_all").toggle(
+		function(){
+			$("input[class=ping_toggle]").each(function() {
+				this.checked = false;
+			});
+		}, function (){
+			$("input[class=ping_toggle]").each(function() {
+				this.checked = true;
+			});
+		}
+	);
+
+	// Hide all tab divisions, then find out which tab is first and reveal it to the world!
+	$(".main_tab").hide();
+	$(".main_tab:first").show();
+
+	// Apply a class to its companion tab fitting of its position
+	$(".tab_menu li:first").addClass("current");
+	
+	if (EE.publish.title_focus == true) {
+		$("#title").focus();
+	}
+	
+	if (EE.publish.which == 'new') { 
+		$("#title").bind("keyup blur", function(){liveUrlTitle();});	
+	}
+	
+	if (EE.publish.versioning_enabled == 'n') { 
+		$("#revision_button").hide();
+	} else {
+		$("#versioning_enabled").click(function() {
+			if($(this).attr("checked")) {
+				$("#revision_button").show(); 
+			} else {
+				$("#revision_button").hide(); 
+			}  
+		});
+	}
+	
+	EE.publish.category_editor();
+});
