@@ -62,11 +62,18 @@ class Filemanager {
 
 		$this->EE->cp->add_to_head('<link rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=file_browser" type="text/css" media="screen" />');
 		
-		$this->EE->javascript->set_global('filebrowser.endpoint_url', $endpoint_url);
-		$this->EE->javascript->set_global('lang.resize_image', $this->EE->lang->line('resize_image'));
-		$this->EE->javascript->set_global('lang.or', $this->EE->lang->line('or'));
-		$this->EE->javascript->set_global('lang.return_to_publish', $this->EE->lang->line('return_to_publish'));
-		$this->EE->javascript->set_global('filebrowser.window_title', $this->EE->lang->line('file_manager'));
+		$this->EE->javascript->set_global('lang', array(
+									'resize_image'		=> $this->EE->lang->line('resize_image'),
+									'or'				=> $this->EE->lang->line('or'),
+									'return_to_publish'	=> $this->EE->lang->line('return_to_publish')
+													)
+										);
+		
+		$this->EE->javascript->set_global('filebrowser', array(
+									'endpoint_url'	=> $endpoint_url,
+									'window_title'	=> $this->EE->lang->line('file_manager')
+														)
+										);
 	}
 	
 	// --------------------------------------------------------------------
