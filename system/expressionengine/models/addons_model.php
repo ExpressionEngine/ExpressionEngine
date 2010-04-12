@@ -27,7 +27,6 @@ class Addons_model extends CI_Model {
 	function Addons_model()
 	{
 		parent::CI_Model();
-		$this->EE =& get_instance();
     }
 
 	// --------------------------------------------------------------------
@@ -43,7 +42,7 @@ class Addons_model extends CI_Model {
 	 */
 	function get_plugin_formatting($include_none = FALSE)
 	{
-		$this->EE->load->helper('directory');
+		$this->load->helper('directory');
 		
 		static $filelist = array();
 		
