@@ -1,2 +1,816 @@
 /*jslint browser: true, devel: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true */
-"use strict";EE.publish=EE.publish||{};EE.publish.category_editor=function(){var k=[],d=$("<div />"),b=$('<div id="cat_modal_container" />').appendTo(d),j={},g={},l=EE.BASE+"&C=admin_content&M=category_editor&group_id=",f,e,a,h;function c(){return +new Date()}d.dialog({autoOpen:false,height:450,width:600,modal:true});$(".edit_categories_link").each(function(){var i=this.href.substr(this.href.lastIndexOf("=")+1);$(this).data("gid",i);k.push(i)});for(h=0;h<k.length;h++){j[k[h]]=$("#cat_group_container_"+[k[h]]);j[k[h]].data("gid",k[h]);g[k[h]]=$("#cat_group_container_"+[k[h]]).find(".cat_action_buttons").remove()}f=function(i){j[i].text("loading...").load(l+i+"&timestamp="+c()+" .pageContents table",function(){e.call(j[i],j[i].html(),false)})};e=function(p,r){var m=$(this),q=m.data("gid");p=$.trim(p);if(m.hasClass("edit_categories_link")){m=$("#cat_group_container_"+q)}if(p[0]!=="<"&&r){return f(q)}m.closest(".cat_group_container").find("#refresh_categories").show();var s=$(p),n=s.find("form"),o,u;if(n.length){b.html(s);o=b.find("input[type=submit]");u=b.find("form");var i=function(y){var x=y||$(this),v=x.serialize(),w=x.attr("action");$.ajax({url:w,type:"POST",data:v,dataType:"html",beforeSend:function(){m.html("loading...")},success:function(A){A=$.trim(A);d.dialog("close");if(A[0]=="<"){var z=$(A).find(".pageContents table"),B=z.find("form");if(B.length==0){m.html(z)}e.call(m,z,true)}else{e.call(m,A,true)}}});return false};u.submit(i);var t={};t[o.remove().attr("value")]=function(){i(u)};d.dialog("open");d.dialog("option","buttons",t);d.one("dialogclose",function(){f(q)})}else{g[q].clone().appendTo(m).show()}return false};a=function(){var i=$(this).data("gid"),m=".pageContents";if($(this).hasClass("edit_cat_order_trigger")||$(this).hasClass("edit_categories_link")){m+=" table"}if(!i){i=$(this).closest(".cat_group_container").data("gid")}j[i].text("loading...");$.get(this.href+"&timestamp="+c()+m,function(n){var o,p="";n=$.trim(n);if(n[0]=="<"){o=$(n).find(m);p=$("<div />").append(o).html();if(o.find("form").length==0){j[i].html(p)}}e.call(j[i],p,true)});return false};$(".edit_categories_link").click(a);$(".cat_group_container a:not(.cats_done)").live("click",a);$(".cats_done").live("click",function(){var i=$(this).closest(".cat_group_container");i.text("loading...").load(EE.BASE+"&C=content_publish&M=ajax_update_cat_fields&group_id="+i.data("gid")+"&timestamp="+c(),function(m){i.html($(m).html())});return false})};EE.publish.save_layout=function(){var g=0,e={},h={},m={},j=0,i=false,a=0,k=0,b=$("#tab_menu_tabs li.current").attr("id");$(".main_tab").show();$("#tab_menu_tabs a:not(.add_tab_link)").each(function(){if($(this).parent("li").attr("id")&&$(this).parent("li").attr("id")!==""){var o=$(this).text(),n=$(this).text().replace(/ /g,"_").toLowerCase();j=0;visible=true;if($(this).parent("li").is(":visible")){lay_name=o;e[lay_name]={}}else{i=true;visible=false}$("#"+n).find(".publish_field").each(function(){var q=$(this),t=this.id.replace(/hold_field_/,""),s=Math.round((q.width()/q.parent().width())*10)*10,p=$("#sub_hold_field_"+t+" .markItUp ul li:eq(2)"),r;if(p.html()!=="undefined"&&p.css("display")!=="none"){p=true}else{p=false}r={visible:($(this).css("display")==="none"||visible===false)?false:true,collapse:($("#sub_hold_field_"+t).css("display")==="none")?true:false,htmlbuttons:p,width:s+"%"};if(visible===true){r.index=j;e[lay_name][t]=r;j+=1}else{h[t]=r}});if(visible===true){g++}}});if(i==true){var d,c,l,f=0;for(darn in e){l=darn;for(c in e[l]){f=e[l][c]["index"]}break}$.each(h,function(){this["index"]=++f});jQuery.extend(e[l],h)}EE.tab_focus(b.replace(/menu_/,""));if(g===0){$.ee_notice(EE.publish.lang.tab_count_zero,{type:"error"})}else{if($("#layout_groups_holder input:checked").length===0){$.ee_notice(EE.publish.lang.no_member_groups,{type:"error"})}else{$.ajax({type:"POST",dataType:"json",url:EE.BASE+"&C=content_publish&M=save_layout",data:"XID="+EE.XID+"&json_tab_layout="+JSON.stringify(e)+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,success:function(n){if(n.messageType==="success"){$.ee_notice(n.message,{type:"success"})}else{if(n.messageType==="failure"){$.ee_notice(n.message,{type:"error"})}}}})}}};EE.publish.remove_layout=function(){if($("#layout_groups_holder input:checked").length===0){return $.ee_notice(EE.publish.lang.no_member_groups,{type:"error"})}var a="{}";$.ajax({type:"POST",url:EE.BASE+"&C=content_publish&M=save_layout",data:"XID="+EE.XID+"&json_tab_layout="+a+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id+"&field_group="+EE.publish.field_group,success:function(b){$.ee_notice(EE.publish.lang.layout_removed+' <a href="javascript:location=location">'+EE.publish.lang.refresh_layout+"</a>",{duration:0,type:"success"})}})};EE.date_obj_time=(function(){var a=new Date(),d=a.getHours(),b=a.getMinutes(),c=" AM";if(b<10){b="0"+b}if(d>11){d=d-12;c=" PM"}return" '"+d+":"+b+c+"'"}());$(document).ready(function(){var d;$("#layout_group_submit").click(function(){EE.publish.save_layout();return false});$("#layout_group_remove").click(function(){EE.publish.remove_layout();return false});$(".add_author_link").click(function(){$("#add_author_dialog").dialog("open");return false});function b(e){$.get(EE.BASE+"&C=content_publish&M=remove_author",{mid:e.attr("id")});e.parent().fadeOut();$.ajax({type:"POST",url:EE.BASE+"&C=content_publish&M=build_author_table",data:"is_ajax=true"+$("#publishForm").serialize(),success:function(f){$("#authorsForm").html(f);updateAuthorTable()}})}$("#author_list_sidebar .delete").click(function(){b($(this));return false});$("a.reveal_formatting_buttons").click(function(){$(this).parent().parent().children(".close_container").slideDown();$(this).hide();return false});$("#write_mode_header .reveal_formatting_buttons").hide();$("#holder").corner("bottom-left");if(EE.publish.smileys==="true"){$("a.glossary_link").click(function(){$(this).parent().siblings(".glossary_content").slideToggle("fast");$(this).parent().siblings(".smileyContent .spellcheck_content").hide();return false});$("a.smiley_link").toggle(function(){$(this).parent().siblings(".smileyContent").slideDown("fast",function(){$(this).css("display","")})},function(){$(this).parent().siblings(".smileyContent").slideUp("fast")});$(this).parent().siblings(".glossary_content, .spellcheck_content").hide();$(".glossary_content a").click(function(){$.markItUp({replaceWith:$(this).attr("title")});return false})}if(EE.publish.autosave){d=function(){var e=$("#tools:visible"),f;if(e.length===1){disable_fields(true)}f=$("#publishForm").serialize();if(e.length===1){disable_fields(false)}$.ajax({type:"POST",url:EE.BASE+"&C=content_publish&M=autosave_entry",data:f,success:function(g){if(isNaN(g)){if(EE.publish.autosave.error_state=="false"){$.ee_notice(g,{type:"error"});EE.publish.autosave.error_state="true"}}else{if(EE.publish.autosave.error_state=="true"){EE.publish.autosave.error_state="false"}$.ee_notice(EE.publish.autosave.success,{type:"success"})}}})};setInterval(d,1000*EE.publish.autosave.interval)}$(".markItUp ul").append('<li class="btn_plus"><a title="'+EE.lang.add_new_html_button+'" href="'+EE.BASE+"&C=myaccount&M=html_buttons&id="+EE.user_id+'">+</a></li>');$(".btn_plus a").click(function(){return confirm(EE.lang.confirm_exit,"")});$(".markItUpHeader ul").prepend('<li class="close_formatting_buttons"><a href="#"><img width="10" height="10" src="'+EE.THEME_URL+'images/publish_minus.gif" alt="Close Formatting Buttons"/></a></li>');$(".close_formatting_buttons a").toggle(function(){$(this).parent().parent().children(":not(.close_formatting_buttons)").hide();$(this).parent().parent().css("height","13px");$(this).children("img").attr("src",EE.THEME_URL+"images/publish_plus.png")},function(){$(this).parent().parent().children().show();$(this).parent().parent().css("height","22px");$(this).children("img").attr("src",EE.THEME_URL+"images/publish_minus.gif")});if(EE.publish.pages){var c=$("#pages_uri"),a=EE.publish.pages.pagesUri;if(!c.value){c.val(a)}c.focus(function(){if(this.value===a){$(this).val("")}}).blur(function(){if(this.value===""){$(this).val(a)}})}});file_manager_context="";function disable_fields(c){var a=$(".main_tab input, .main_tab textarea, .main_tab select, #submit_button"),b=$("#submit_button"),d=$("#holder").find("a");if(c){a.attr("disabled",true);b.addClass("disabled_field");d.addClass("admin_mode");$("#holder div.markItUp, #holder p.spellcheck").each(function(){$(this).before('<div class="cover" style="position:absolute;width:100%;height:50px;z-index:9999;"></div>').css({})})}else{a.removeAttr("disabled");b.removeClass("disabled_field");d.removeClass("admin_mode");$(".cover").remove()}}function removeAuthor(a){$.get(EE.BASE+"&C=content_publish&M=remove_author",{mid:a.attr("id")});a.parent().fadeOut()}function updateAuthorTable(){$.ajax({type:"POST",url:EE.BASE+"&C=content_publish&M=build_author_table",data:"XID="+EE.XID+"&is_ajax=true",success:function(a){$("#authorsForm").html(a)}});$(".add_author_modal").bind("click",function(a){add_authors_sidebar(this)})}function add_authors_sidebar(b){var a=$(b).attr("id").substring(16);$.ajax({type:"POST",url:EE.BASE+"&C=content_publish&M=build_author_sidebar",data:"XID="+EE.XID+"&author_id="+a,success:function(c){$("#author_list_sidebar").append(c).fadeIn();updateAuthorTable()}})}function liveUrlTitle(){var e="",b=EE.publish.word_separator,d=document.getElementById("title").value||"",a=document.getElementById("url_title"),h=new RegExp(b+"{2,}","g"),i=(b!=="_")?/\_/g:/\-/g,j="",g,f;if(e!==""){if(d.substr(0,e.length)===e){d=d.substr(e.length)}}d=d.toLowerCase().replace(i,b);for(g=0;g<d.length;g++){f=d.charCodeAt(g);if(f>=32&&f<128){j+=d.charAt(g)}else{if(f in EE.publish.foreignChars){j+=EE.publish.foreignChars[f]}}}d=j;d=d.replace("/<(.*?)>/g","");d=d.replace(/\s+/g,b);d=d.replace(/\//g,b);d=d.replace(/[^a-z0-9\-\._]/g,"");d=d.replace(/\+/g,b);d=d.replace(h,b);d=d.replace(/^[-_]|[-_]$/g,"");d=d.replace(/\.+$/g,"");if(a){a.value=d}};
+
+/*global $, jQuery, EE */
+
+"use strict";
+
+EE.publish = EE.publish || {};
+
+// The functions in this file are called from within publish if their components
+// are needed. So for example EE.publish.category_editor() is called after
+// the category menu is constructed.
+
+
+EE.publish.category_editor = function() {
+	var cat_groups = [],
+		cat_modal = $('<div />'),
+		cat_modal_container = $('<div id="cat_modal_container" />').appendTo(cat_modal),
+		cat_groups_containers = {},
+		cat_groups_buttons = {},
+		cat_list_url = EE.BASE+'&C=admin_content&M=category_editor&group_id=',
+		refresh_cats, setup_page, reload, i;
+
+	// IE caches $.load requests, so we need a unique number
+	function now() {
+		return +new Date();
+	}
+	
+	cat_modal.dialog({
+		autoOpen: false,
+		height: 450,
+		width: 600,
+		modal: true
+	});
+
+	// Grab all group ids
+	$(".edit_categories_link").each(function() {
+		var gid = this.href.substr(this.href.lastIndexOf("=") + 1);
+		$(this).data("gid", gid);
+		cat_groups.push(gid);
+	});
+
+	for (i = 0; i < cat_groups.length; i++) {
+		cat_groups_containers[cat_groups[i]] = $("#cat_group_container_"+[cat_groups[i]]);
+		cat_groups_containers[cat_groups[i]].data("gid", cat_groups[i]);
+		cat_groups_buttons[cat_groups[i]] = $("#cat_group_container_"+[cat_groups[i]]).find(".cat_action_buttons").remove();
+	}
+	
+	refresh_cats = function(gid) {
+		cat_groups_containers[gid].text("loading...").load(cat_list_url+gid+"&timestamp="+now()+" .pageContents table", function() {
+			setup_page.call(cat_groups_containers[gid], cat_groups_containers[gid].html(), false);
+		});
+	};
+
+	// A function to setup new page events
+	setup_page = function(response, require_valid_response) {
+		
+		var container = $(this),
+			gid = container.data("gid");
+		
+		response = $.trim(response);
+		
+		if (container.hasClass('edit_categories_link')) {
+			container = $("#cat_group_container_"+gid);
+		}
+		
+		if (response[0] !== '<' && require_valid_response) {
+			return refresh_cats(gid);
+		}
+		
+		container.closest(".cat_group_container").find("#refresh_categories").show();
+		
+		var res = $(response),
+			form = res.find("form"),
+			submit_button,
+			container_form;
+		
+		if (form.length) {
+			cat_modal_container.html(res);
+			
+			submit_button = cat_modal_container.find("input[type=submit]");
+			container_form = cat_modal_container.find("form");
+			
+			var handle_submit = function(form) {
+				var that = form || $(this),
+					values = that.serialize(),
+					url = that.attr("action");
+
+				$.ajax({
+					url: url,
+					type: "POST",
+					data: values,
+					dataType: "html",
+					beforeSend: function() {
+						container.html("loading...");
+					},
+					success: function(res) {
+						res = $.trim(res);
+						cat_modal.dialog("close");
+						
+						if (res[0] == '<') {
+							var response = $(res).find(".pageContents table"),
+								form = response.find("form");
+
+							if (form.length == 0) {
+								container.html(response);
+							}
+
+							setup_page.call(container, response, true);
+						}
+						else {
+							setup_page.call(container, res, true);
+						}
+					}
+				});
+				
+				return false;
+			};
+			
+			container_form.submit(handle_submit);
+			
+			var buttons = {};
+			buttons[submit_button.remove().attr('value')] = function() {
+				handle_submit(container_form);
+			}
+			
+			cat_modal.dialog("open");
+			cat_modal.dialog("option", "buttons", buttons);
+			
+			cat_modal.one('dialogclose', function() {
+				refresh_cats(gid);
+			});
+		}
+		else {
+			cat_groups_buttons[gid].clone().appendTo(container).show();
+		}
+		
+		return false;
+	};
+
+	// And a function to do the work
+	reload = function() {
+		
+		var gid = $(this).data("gid"),
+			resp_filter = ".pageContents";
+		
+		if ($(this).hasClass("edit_cat_order_trigger") || $(this).hasClass("edit_categories_link")) {
+			resp_filter += " table";
+		}
+
+		if ( ! gid) {
+			gid = $(this).closest(".cat_group_container").data("gid");
+		}
+		
+		cat_groups_containers[gid].text("loading...");
+		
+		$.get(this.href+"&timestamp="+now()+resp_filter, function(response) {
+			var res,
+				filtered_res = '';
+			
+			response = $.trim(response);
+			
+			if (response[0] == '<') {
+				res = $(response).find(resp_filter);
+				filtered_res = $('<div />').append(res).html();
+								
+				if (res.find('form').length == 0) {
+					cat_groups_containers[gid].html(filtered_res);
+				}
+			}
+
+			setup_page.call(cat_groups_containers[gid], filtered_res, true);
+		});
+		return false;
+	};
+
+	// Hijack edit category links to get it off the ground
+	$(".edit_categories_link").click(reload);
+	
+	// Hijack internal links
+	$('.cat_group_container a:not(.cats_done)').live('click', reload);
+
+	// Last but not least - update the checkboxes
+	$(".cats_done").live("click", function() {
+		var that = $(this).closest(".cat_group_container");
+		that.text("loading...").load(EE.BASE+"&C=content_publish&M=ajax_update_cat_fields&group_id="+that.data("gid")+"&timestamp="+now(), function(response) {
+			that.html( $(response).html() );
+		});
+				
+		return false;
+	});
+};
+
+
+EE.publish.save_layout = function() {
+	
+	var tab_count = 0,
+		layout_object = {},
+		layout_hidden = {},
+		layout_settings = {},
+		field_index = 0,
+		merge = false,
+		hidden_index = 0,
+		adjust_index = 0,
+		cur_tab	= $("#tab_menu_tabs li.current").attr("id");
+
+	// for width() to work, the element cannot be in a parent div that is display:none
+	$(".main_tab").show();
+
+	//$("li:visible", "#tab_menu_tabs").each(function() {
+	$("#tab_menu_tabs a:not(.add_tab_link)").each(function() {
+
+		// skip list items with no id (ie: new tab)
+		if ($(this).parent('li').attr('id') && $(this).parent('li').attr('id') !== "")
+		{
+			var tab_name = $(this).text(),
+				tab_id	 = $(this).text().replace(/ /g, '_').toLowerCase();	
+
+			field_index = 0;
+			visible = true;
+
+			if( $(this).parent('li').is(':visible') )
+			{
+				lay_name = tab_name;
+				layout_object[lay_name] = {};
+			} else {
+				merge = true;
+				visible = false;
+			}
+
+			$("#"+tab_id).find(".publish_field").each(function() {
+
+				var that = $(this),
+					id = this.id.replace(/hold_field_/, ""),
+					percent_width = Math.round((that.width() / that.parent().width()) * 10) * 10,
+					temp_buttons = $("#sub_hold_field_"+id+" .markItUp ul li:eq(2)"),
+					layout_settings;
+					
+				if (temp_buttons.html() !== "undefined" && temp_buttons.css("display") !== "none") {
+					temp_buttons = true;
+				}
+				else {
+					temp_buttons = false;
+				}
+				
+				layout_settings = {
+					visible		: ($(this).css("display") === "none" || visible === false) ? false : true,
+					collapse	: ($("#sub_hold_field_"+id).css("display") === "none") ? true : false,
+					htmlbuttons	: temp_buttons,
+					width		: percent_width+'%'
+				};
+				
+				if (visible === true)
+				{
+					layout_settings['index'] = field_index;
+					layout_object[lay_name][id] = layout_settings;
+
+					field_index += 1;				
+				}
+				else
+				{
+					layout_hidden[id] = layout_settings;
+				}
+				
+			});
+			
+			if (visible === true)
+			{
+				tab_count++; // add one to the tab count
+			}
+		}
+	});
+
+	if (merge == true)
+	{
+		// Add hidden fields to first tab
+		
+		var darn1, darn2, first_tab, last_index = 0;
+		
+		for (darn in layout_object) {
+			first_tab = darn;
+			for (darn2 in layout_object[first_tab]) {
+				last_index = layout_object[first_tab][darn2]['index'];
+			}				
+			break;
+		}
+
+		
+		// Reindex first tab
+		$.each(layout_hidden, function() {
+			this['index'] = ++last_index;
+		});
+		
+		jQuery.extend(layout_object[first_tab], layout_hidden);
+	} 
+	
+	//alert(JSON.stringify(layout_object, null, '\t'));
+
+	// @todo not a great solution
+	EE.tab_focus(cur_tab.replace(/menu_/, ""));
+
+	if (tab_count === 0) {
+		$.ee_notice(EE.publish.lang.tab_count_zero, {"type" : "error"});
+	}
+	else if ($("#layout_groups_holder input:checked").length === 0) {
+		$.ee_notice(EE.publish.lang.no_member_groups, {"type" : "error"});
+	}
+	else {
+		$.ajax({
+			type: "POST",
+			dataType: 	'json',
+			url: EE.BASE+"&C=content_publish&M=save_layout",
+			data: "XID="+EE.XID+"&json_tab_layout="+JSON.stringify(layout_object)+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id,
+			success: function(result){
+				if (result.messageType === 'success') {
+					$.ee_notice(result.message, {type: "success"});
+				} else if (result.messageType === 'failure') {
+					$.ee_notice(result.message, {type: "error"});
+				}
+			}
+		});
+	}
+};
+
+
+EE.publish.remove_layout = function() {
+	if ($("#layout_groups_holder input:checked").length === 0) {
+		return $.ee_notice(EE.publish.lang.no_member_groups, {"type" : "error"});
+	}
+
+	var json_tab_layout = "{}"; // empty array will remove everything nicely
+
+	$.ajax({
+		type: "POST",
+		url: EE.BASE+"&C=content_publish&M=save_layout",
+		data: "XID="+EE.XID+"&json_tab_layout="+json_tab_layout+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id+"&field_group="+EE.publish.field_group,
+		success: function(msg){
+			$.ee_notice(EE.publish.lang.layout_removed + " <a href=\"javascript:location=location\">"+EE.publish.lang.refresh_layout+"</a>", {duration:0, type:"success"});
+		}
+	});
+};
+
+EE.date_obj_time = (function() {
+	var date_obj = new Date(),
+		date_obj_hours = date_obj.getHours(),
+		date_obj_mins = date_obj.getMinutes(),
+		date_obj_am_pm = " AM";
+
+	if (date_obj_mins < 10) {
+		date_obj_mins = "0" + date_obj_mins;
+	}
+
+	if (date_obj_hours > 11) {
+		date_obj_hours = date_obj_hours - 12;
+		date_obj_am_pm = " PM";
+	}
+	
+	return " '" + date_obj_hours + ":" + date_obj_mins + date_obj_am_pm + "'";
+}());
+
+
+
+$(document).ready(function() {
+	
+	var autosave_entry;
+
+	$("#layout_group_submit").click(function(){
+		EE.publish.save_layout();
+		return false;
+	});
+
+	$("#layout_group_remove").click(function(){
+		EE.publish.remove_layout();
+		return false;
+	});
+
+	$(".add_author_link").click(function(){
+		$("#add_author_dialog").dialog("open");
+		return false;
+	});
+
+	function removeAuthor(el) {
+		$.get(EE.BASE+"&C=content_publish&M=remove_author", { mid: el.attr("id")});
+		
+		el.parent().fadeOut();
+		
+		// rebuild author table
+		$.ajax({
+			type: "POST",
+			url: EE.BASE+"&C=content_publish&M=build_author_table",
+			data: "is_ajax=true"+$("#publishForm").serialize(),
+			success: function(result){
+				$("#authorsForm").html(result);
+				updateAuthorTable();
+			}
+		});
+	}
+
+	$("#author_list_sidebar .delete").click(function(){
+		removeAuthor($(this));
+		return false;
+	});
+
+	$("a.reveal_formatting_buttons").click(function(){
+		$(this).parent().parent().children('.close_container').slideDown();
+		$(this).hide();
+		return false;
+	});
+
+	$("#write_mode_header .reveal_formatting_buttons").hide();
+	$("#holder").corner("bottom-left");
+
+
+	if (EE.publish.smileys === 'true') {
+		$("a.glossary_link").click(function(){
+			$(this).parent().siblings('.glossary_content').slideToggle("fast");$(this).parent().siblings('.smileyContent .spellcheck_content').hide();
+			return false;
+		});
+
+		$('a.smiley_link').toggle(function() {
+			$(this).parent().siblings('.smileyContent').slideDown('fast', function() { $(this).css('display', ''); });
+		}, function() {
+			$(this).parent().siblings('.smileyContent').slideUp('fast');
+		});
+
+		$(this).parent().siblings('.glossary_content, .spellcheck_content').hide();
+
+		$('.glossary_content a').click(function(){
+			$.markItUp({ replaceWith:$(this).attr('title')} );
+			return false;
+		});
+	}
+
+	if (EE.publish.autosave) {
+		autosave_entry = function() {
+			var tools = $("#tools:visible"),
+				form_data;
+			
+			// If the sidebar is showing, then form fields are disabled. Thus, enable all form elements,
+			// grab the data and re-disable (re-dis-able... does not feel like a word) them.
+			if (tools.length === 1) {
+				disable_fields(true);
+			}
+			
+			form_data = $("#publishForm").serialize();
+			
+			if (tools.length === 1) {
+				disable_fields(false);
+			}					
+
+			$.ajax({
+				type: "POST",
+				url: EE.BASE+"&C=content_publish&M=autosave_entry",
+				data: form_data,
+				success: function(result){		
+					if (isNaN(result)) {
+						if (EE.publish.autosave.error_state == 'false') {
+							$.ee_notice(result, {type:"error"});
+							EE.publish.autosave.error_state = 'true';
+						}
+					}
+					else {
+						if (EE.publish.autosave.error_state == 'true') {
+							EE.publish.autosave.error_state = 'false';
+						}
+						$.ee_notice(EE.publish.autosave.success, {type:"success"});
+					}
+				}
+			});
+		};
+		setInterval(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
+	}
+
+	$(".markItUp ul").append("<li class=\"btn_plus\"><a title=\""+EE.lang.add_new_html_button+"\" href=\""+EE.BASE+"&C=myaccount&M=html_buttons&id="+EE.user_id+"\">+</a></li>");
+	
+	$(".btn_plus a").click(function(){
+		return confirm(EE.lang.confirm_exit, "");
+	});
+
+	// inject the collapse button into the formatting buttons list
+	$(".markItUpHeader ul").prepend("<li class=\"close_formatting_buttons\"><a href=\"#\"><img width=\"10\" height=\"10\" src=\""+EE.THEME_URL+"images/publish_minus.gif\" alt=\"Close Formatting Buttons\"/></a></li>");
+
+	$(".close_formatting_buttons a").toggle(
+		function() {
+			$(this).parent().parent().children(":not(.close_formatting_buttons)").hide();
+			$(this).parent().parent().css("height", "13px");
+			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_plus.png");
+		}, function () {
+			$(this).parent().parent().children().show();
+			$(this).parent().parent().css("height", "22px");
+			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_minus.gif");
+		}
+	);
+
+	// Pages URI Placeholder
+	if (EE.publish.pages) {
+		var pagesUri		= $("#pages_uri"),
+			placeholderText = EE.publish.pages.pagesUri;
+
+		if ( ! pagesUri.value) {
+			pagesUri.val(placeholderText);
+		}
+
+		pagesUri.focus(function() {					
+			if (this.value === placeholderText) {
+				$(this).val("");
+			}	
+		}).blur(function() {
+			if (this.value === "") {
+				$(this).val(placeholderText);
+			}
+		});		
+	}
+});
+
+
+file_manager_context = "";	// @todo - yuck, should be on the EE global
+
+
+function disable_fields(state) {
+	
+	var fields = $(".main_tab input, .main_tab textarea, .main_tab select, #submit_button"),
+		submit = $("#submit_button"),
+		admin_link = $("#holder").find('a');
+
+	if (state) {
+		fields.attr("disabled", true);
+		submit.addClass("disabled_field");
+		admin_link.addClass("admin_mode");
+		$("#holder div.markItUp, #holder p.spellcheck").each(function() {
+			$(this).before("<div class=\"cover\" style=\"position:absolute;width:100%;height:50px;z-index:9999;\"></div>").css({});
+		});
+	}
+	else {
+		fields.removeAttr("disabled");
+		submit.removeClass("disabled_field");
+		admin_link.removeClass("admin_mode");
+		$(".cover").remove();
+	}
+}
+
+function removeAuthor(e) {
+	$.get(EE.BASE + "&C=content_publish&M=remove_author", { mid: e.attr("id")});
+	e.parent().fadeOut();
+}
+
+function updateAuthorTable() {
+	$.ajax({
+		type: "POST",
+		url: EE.BASE + "&C=content_publish&M=build_author_table",
+		data: "XID=" + EE.XID + "&is_ajax=true",
+		success: function(e){
+			$("#authorsForm").html(e);
+		}
+	});
+
+	$(".add_author_modal").bind("click", function(e){
+		add_authors_sidebar(this);
+	});
+}
+
+function add_authors_sidebar(e) {
+	var author_id = $(e).attr("id").substring(16);
+
+	$.ajax({
+		type: "POST",
+		url: EE.BASE + "&C=content_publish&M=build_author_sidebar",
+		data: "XID=" + EE.XID + "&author_id="+author_id,
+		success: function(e){
+			$("#author_list_sidebar").append(e).fadeIn();
+			updateAuthorTable();
+		}
+	});
+}
+
+function liveUrlTitle()
+{
+	var defaultTitle = '',
+		separator = EE.publish.word_separator,
+		newText = document.getElementById("title").value || '',
+		replaceField = document.getElementById("url_title"),
+		multiReg = new RegExp(separator + '{2,}', 'g'),
+		separatorReg = (separator !== '_') ? /\_/g : /\-/g,
+		newTextTemp = '',
+		pos, c;
+
+	if (defaultTitle !== '') {
+		if (newText.substr(0, defaultTitle.length) === defaultTitle) {
+			newText = newText.substr(defaultTitle.length);
+		}
+	}
+
+	newText = newText.toLowerCase().replace(separatorReg, separator);
+
+	// Foreign Character Attempt
+
+	for (pos = 0; pos < newText.length; pos++)
+	{
+		c = newText.charCodeAt(pos);
+
+		if (c >= 32 && c < 128) {
+			newTextTemp += newText.charAt(pos);
+		}
+		else if (c in EE.publish.foreignChars) {
+			newTextTemp += EE.publish.foreignChars[c];
+		}
+	}
+
+	newText = newTextTemp;
+
+	newText = newText.replace('/<(.*?)>/g', '');
+	newText = newText.replace(/\s+/g, separator);
+	newText = newText.replace(/\//g, separator);
+	newText = newText.replace(/[^a-z0-9\-\._]/g, '');
+	newText = newText.replace(/\+/g, separator);
+	newText = newText.replace(multiReg, separator);
+	newText = newText.replace(/^[-_]|[-_]$/g, '');
+	newText = newText.replace(/\.+$/g, '');
+
+	if (replaceField) {
+		replaceField.value = newText;
+	}
+}
+
+$(".write_mode_trigger").click(function(){
+	
+	if ($(this).attr("id").match(/^id_\d+$/)) {
+		field_for_writemode_publish = "field_"+$(this).attr("id");
+	} else {
+		field_for_writemode_publish = $(this).attr("id").replace(/id_/, '');
+	}
+	
+	// put contents from other page into here
+	$("#write_mode_textarea").val($("#"+field_for_writemode_publish).val());
+	$("#write_mode_textarea").focus();
+	return false;
+});
+
+$(document).ready(function() {
+
+	$.ee_filebrowser();
+
+	$.each(EE.publish.markitup.fields, function(key, value) { 
+		$("#"+key).markItUp(mySettings);
+	});
+
+	// Prep for a workaround to allow markitup file insertion in file inputs
+	$(".btn_img a, .file_manipulate").click(function(){
+		var textareaId;
+		
+		if ($(this).closest("#markItUpWrite_mode_textarea").length) {
+			textareaId = "write_mode_textarea";
+		}
+		else {
+			textareaId = $(this).closest(".publish_field").attr("id").replace("hold_field_", "field_id_");
+		}
+
+		if (textareaId != undefined) {
+			$("#"+textareaId).focus();		
+		}
+
+		window.file_manager_context = $("#"+textareaId).filter("textarea").length ? "textarea_a8LogxV4eFdcbC" : textareaId;
+	});
+
+	// Bind the image html buttons
+	$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
+		// We also need to allow file insertion into text inputs (vs textareas) but markitup
+		// will not accommodate this, so we need to detect if this request is coming from a 
+		// markitup button (textarea_a8LogxV4eFdcbC), or another field type.
+
+		if (window.file_manager_context == "textarea_a8LogxV4eFdcbC")
+		{
+			// Handle images and non-images differently
+			if ( ! file.is_image)
+			{
+				$.markItUp({name:"Link", key:"L", openWith:"<a href=\"{filedir_"+file.directory+"}"+file.name+"\">", closeWith:"</a>", placeHolder:file.name });
+			}
+			else
+			{
+				$.markItUp({ replaceWith:"<img src=\"{filedir_"+file.directory+"}"+file.name+"\" alt=\"[![Alternative text]!]\" "+file.dimensions+"/>" } );
+			}
+		}
+		else
+		{
+			$("#"+window.file_manager_context).val("{filedir_"+file.directory+"}"+file.name);
+		}
+
+		$.ee_filebrowser.reset(); // restores everything to "default" state - also needed below for file fields
+	});
+
+	// File fields
+	function file_field_changed(file, field) {
+		var container = $("input[name="+field+"]").closest(".publish_field");
+
+		if (file.is_image == false) {
+			container.find(".file_set").show().find(".filename").html("<img src=\""+EE.PATH_CP_GBL_IMG+"default.png\" alt=\""+EE.PATH_CP_GBL_IMG+"default.png\" /><br />"+file.name);
+		}
+		else
+		{
+			container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" alt=\""+file.name+"\" /><br />"+file.name);
+		}
+
+		$("input[name="+field+"_hidden]").val(file.name);
+		$("select[name="+field+"_directory]").val(file.directory);
+
+		$.ee_filebrowser.reset(); // restores everything to "default" state - also needed above for textareas
+	}
+
+	$("input[type=file]", "#publishForm").each(function() {
+		var container = $(this).closest(".publish_field"),
+			trigger = container.find(".choose_file");
+
+		$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), file_field_changed);
+
+		container.find(".remove_file").click(function() {
+			container.find("input[type=hidden]").val("");
+			container.find(".file_set").hide();
+			return false;
+		});
+	});
+
+	// toggle can not be used here, since it may or may not be visible
+	// depending on admin customization
+	$(".hide_field").click(function(){
+		
+		holder_id = $(this).parent().attr("id");
+		field_id = holder_id.substr(11)
+		
+		if($("#sub_hold_field_"+field_id).css("display") == "block"){
+			$("#sub_hold_field_"+field_id).slideUp();
+			$("#hold_field_"+field_id+" .ui-resizable-handle").hide();
+			$("#hold_field_"+field_id+" .field_collapse").attr("src", EE.THEME_URL+"images/field_collapse.png");
+
+			// We dont want datepicker getting triggered when a field is collapsed/expanded
+			return false;
+		}
+		else
+		{
+			$("#sub_hold_field_"+field_id).slideDown();
+			$("#hold_field_"+field_id+" .ui-resizable-handle").show();
+			$("#hold_field_"+field_id+" .field_collapse").attr("src", EE.THEME_URL+"images/field_expand.png");
+
+			// We dont want datepicker getting triggered when a field is collapsed/expanded
+			return false;
+		}
+	});
+
+	$(".close_upload_bar").toggle(
+		function() {
+			$(this).parent().children(":not(.close_upload_bar)").hide();
+			$(this).children("img").attr("src", EE.THEME_URL+"publish_plus.png");
+		}, function () {
+			$(this).parent().children().show();
+			$(this).children("img").attr("src", EE.THEME_URL+"publish_minus.gif");
+		}
+	);
+
+	var field_for_writemode_publish = "";
+
+	// the height of this window depends on the height of the viewport.	 Percentages dont work
+	// as the header and footer are absolutely sized.  This is a great compromise.
+	write_mode_height = $(window).height() - (33 + 59 + 25); // the height of header + footer + 25px just to be safe
+	$("#write_mode_writer").css("height", write_mode_height+"px");
+	$("#write_mode_writer textarea").css("height", (write_mode_height-67-17)+"px"); // for formatting buttons + 17px for appearance
+
+	// set up the "publish to field" buttons
+	$(".publish_to_field").click(function() {
+		$("#"+field_for_writemode_publish).val($("#write_mode_textarea").val());
+		tb_remove();
+		return false;
+	});
+
+	$(".ping_toggle_all").toggle(
+		function(){
+			$("input[class=ping_toggle]").each(function() {
+				this.checked = false;
+			});
+		}, function (){
+			$("input[class=ping_toggle]").each(function() {
+				this.checked = true;
+			});
+		}
+	);
+
+	// Hide all tab divisions, then find out which tab is first and reveal it to the world!
+	$(".main_tab").hide();
+	$(".main_tab:first").show();
+
+	// Apply a class to its companion tab fitting of its position
+	$(".tab_menu li:first").addClass("current");
+
+	if (EE.publish.show_write_mode == true) { 
+		$("#write_mode_textarea").markItUp(myWritemodeSettings);		
+	}
+	
+	if (EE.publish.title_focus == true) {
+		$("#title").focus();
+	}
+	
+	if (EE.publish.which == 'new') { 
+		$("#title").bind("keyup blur", function(){liveUrlTitle();});	
+	}
+	
+	if (EE.publish.versioning_enabled == 'n') { 
+		$("#revision_button").hide();
+	} else {
+		$("#versioning_enabled").click(function() {
+			if($(this).attr("checked")) {
+				$("#revision_button").show(); 
+			} else {
+				$("#revision_button").hide(); 
+			}  
+		});
+	}
+	
+	EE.publish.category_editor();
+});

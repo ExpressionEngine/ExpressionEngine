@@ -553,6 +553,9 @@ class Content_publish extends Controller {
 		/*
 		/* -------------------------------------------*/
 
+		// Sets 'new' / 'edit' in the global json array.  Neat, eh?
+		$this->javascript->set_global('publish.which', $which);
+
 		extract($row);
 
 		//	Fetch Revision if Necessary
@@ -649,6 +652,7 @@ class Content_publish extends Controller {
 
 			if ($enable_versioning == 'y')
 			{
+				$this->javascript->set_global('publish.versioning_enabled', $resrow['versioning_enabled']);
 				$vars['versioning_enabled'] = $resrow['versioning_enabled'];
 			}
 
@@ -831,14 +835,7 @@ class Content_publish extends Controller {
 			
 		"), FALSE);
 
-
-		if ($show_button_cluster == 'y')
-		{
-			$this->javascript->output('
-				$("#write_mode_textarea").markItUp(myWritemodeSettings);
-			');
-		}
-
+		$this->javascript->set_global('publish.show_write_mode', ($show_button_cluster == 'y') ? TRUE : FALSE);
 
 		// -------------------------------------------
 		//	Publish Page Title Focus - makes the title field gain focus when the page is loaded
@@ -846,32 +843,14 @@ class Content_publish extends Controller {
 		//	Hidden Configuration Variable - publish_page_title_focus => Set focus to the tile? (y/n)
 		if ($which != 'edit' && $this->config->item('publish_page_title_focus') !== 'n')
 		{
-			$this->javascript->output('$("#title").focus();');
+			$this->javascript->set_global('publish.title_focus', TRUE);
 		}
+		else
+		{
+			$this->javascript->set_global('publish.title_focus', FALSE);
+		}
+
 		// -------------------------------------------
-
-		if ($which == 'new')
-		{
-			$this->javascript->output('$("#title").bind("keyup blur", function(){liveUrlTitle();});');
-		}
-
-		if ($show_revision_cluster == 'y')
-		{
-			if ($vars['versioning_enabled'] == 'n')
-			{
-				$this->javascript->output('$("#revision_button").hide();');
-			}
-
-			$this->javascript->output('
-				$("#versioning_enabled").click(function() {
-					if($(this).attr("checked")) {
-						$("#revision_button").show(); 
-					} else {
-						$("#revision_button").hide(); 
-					}  
-				});
-			');
-		}
 
 		// used in date field
 		// $this->javascript->output('
@@ -891,11 +870,9 @@ class Content_publish extends Controller {
 		// 	EE.date_obj_time = " \'"+date_obj_hours+":"+date_obj_mins+date_obj_am_pm+"\'";
 		// ');
 
-
 		// --------------------------------
 		//	Options Cluster
 		// --------------------------------
-
 		if ($allow_comments == '' AND $which == 'new')
 		{
 			$allow_comments = $deft_comments;
@@ -915,7 +892,6 @@ class Content_publish extends Controller {
 									  'value'		=> 'y',
 									  'checked'		=> ($sticky == 'y') ? TRUE : FALSE
 									);
-
 
 		//	"Allow comments"?
 		if ( ! isset($this->installed_modules['comment']))
@@ -1119,9 +1095,6 @@ class Content_publish extends Controller {
 		}
 
 		$edit_categories_link = $links;
-			
-		// Function can be found in cp/publish.js
-		$this->javascript->output('EE.publish.category_editor()');
 
 		$this->_define_category_fields($vars['categories'], $edit_categories_link);
 
@@ -1524,6 +1497,8 @@ class Content_publish extends Controller {
 		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
 
 		$get_format = array();
+		
+		$markitup_buttons = array();
 
 		foreach ($field_query->result_array() as $row)
 		{
@@ -1578,9 +1553,7 @@ class Content_publish extends Controller {
 
 			if ($show_button_cluster == 'y' && isset($set['field_show_formatting_btns']) && $set['field_show_formatting_btns'] == 'y')
 			{
-				$this->javascript->output('
-					$("#field_id_'.$row['field_id'].'").markItUp(mySettings);
-				');
+				$markitup_buttons['fields']['field_id_'.$row['field_id']] = $row['field_id'];
 			}
 
 			// Formatting @todo move
@@ -1593,9 +1566,11 @@ class Content_publish extends Controller {
 				$get_format[] = $row['field_id'];
 			}
 		}
+		
+		$this->javascript->set_global('publish.markitup', $markitup_buttons);
+		
 
 		// Field formatting
-
 		if (count($get_format) > 0)
 		{
 			$this->db->select('field_id, field_fmt');
@@ -1833,10 +1808,6 @@ class Content_publish extends Controller {
 			'tab_has_req_field'		=> $this->lang->line('tab_has_req_field')
 		));
 
-		// $this->javascript->click("#layout_group_submit", 'EE.publish.save_layout()');
-		// $this->javascript->click("#layout_group_remove", 'EE.publish.remove_layout()');
-
-
 		$layout_preview_links = "<p>".$this->lang->line('choose_layout_group_preview').NBS."<span class='notice'>".$this->lang->line('layout_save_warning')."</span></p><ul class='bullets'>";
 		foreach($vars['member_groups']->result() as $group)
 		{
@@ -1848,38 +1819,9 @@ class Content_publish extends Controller {
 			$.ee_notice("'.$layout_preview_links.'", {duration:0});
 		');
 
-		$this->javascript->click(".write_mode_trigger", array(
-																'if ($(this).attr("id").match(/^id_\d+$/))
-																{
-																	field_for_writemode_publish = "field_"+$(this).attr("id");
-																}
-																else
-																{
-																	field_for_writemode_publish = $(this).attr("id").replace(/id_/, \'\');
-																}',
-																'// put contents from other page into here',
-																'$("#write_mode_textarea").val($("#"+field_for_writemode_publish).val());',
-																'$("#write_mode_textarea").focus();'
-																)
-		);
+		$this->javascript->set_global('lang.tab_name', $this->lang->line('tab_name'));
 
-		$this->javascript->click(".add_tab_link", array(
-														'$("#tab_name").val("");',
-														'$("#add_tab label").text("'.$this->lang->line('tab_name').': ");',
-														'$("#new_tab_dialog").dialog("open")',
-														'$("#tab_name").focus();',
-														'setup_tabs()'
-														)
-		);
-
-		if ($vars['smileys_enabled'])
-		{
-			$this->javascript->set_global('publish.smileys', 'true');
-		}
-		else
-		{
-			$this->javascript->set_global('publish.smileys', 'false');
-		}
+		$this->javascript->set_global('publish.smileys', ($vars['smileys_enabled']) ? TRUE : FALSE);
 
 		$vars['write_mode_link'] = '#TB_inline?height=100%'.AMP.'width=100%'.AMP.'modal=true'.AMP.'inlineId=write_mode_container';
 		$vars['add_publish_tab_link'] = '#TB_inline?height=150'.AMP.'width=300'.AMP.'modal=true'.AMP.'inlineId=add_tab_popup';
@@ -3279,160 +3221,6 @@ class Content_publish extends Controller {
 	{
 		$this->load->library('filemanager');
 		$this->filemanager->filebrowser('C=content_publish&M=filemanager_endpoint');
-
-		// File browser
-		$this->javascript->output('
-			$.ee_filebrowser();
-			
-			// Prep for a workaround to allow markitup file insertion in file inputs
-			$(".btn_img a, .file_manipulate").click(function(){
-				var textareaId = $(this).closest(".publish_field").attr("id").replace("hold_field_", "field_id_");
-				if (textareaId != undefined) {
-					$("#"+textareaId).focus();		
-				}
-
-				//window.file_manager_context = ($(this).parent().attr("class").indexOf("markItUpButton") == -1) ? textareaId : "textarea_a8LogxV4eFdcbC";
-				window.file_manager_context = $("#"+textareaId).filter("textarea").length ? "textarea_a8LogxV4eFdcbC" : textareaId;
-
-			});
-
-			// Bind the image html buttons
-			$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
-				// We also need to allow file insertion into text inputs (vs textareas) but markitup
-				// will not accommodate this, so we need to detect if this request is coming from a 
-				// markitup button (textarea_a8LogxV4eFdcbC), or another field type.
-
-				if (window.file_manager_context == "textarea_a8LogxV4eFdcbC")
-				{
-					// Handle images and non-images differently
-					if ( ! file.is_image)
-					{
-						$.markItUp({name:"Link", key:"L", openWith:"<a href=\"{filedir_"+file.directory+"}"+file.name+"\">", closeWith:"</a>", placeHolder:file.name });
-					}
-					else
-					{
-						$.markItUp({ replaceWith:"<img src=\"{filedir_"+file.directory+"}"+file.name+"\" alt=\"[![Alternative text]!]\" "+file.dimensions+"/>" } );
-					}
-				}
-				else
-				{
-					$("#"+window.file_manager_context).val("{filedir_"+file.directory+"}"+file.name);
-				}
-
-				$.ee_filebrowser.reset(); // restores everything to "default" state - also needed below for file fields
-			});
-			
-			// File fields
-			function file_field_changed(file, field) {
-				var container = $("input[name="+field+"]").closest(".publish_field");
-
-				if (file.is_image == false) {
-					container.find(".file_set").show().find(".filename").html("<img src=\""+EE.PATH_CP_GBL_IMG+"default.png\" alt=\""+EE.PATH_CP_GBL_IMG+"default.png\" /><br />"+file.name);
-				}
-				else
-				{
-					container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" alt=\""+file.name+"\" /><br />"+file.name);
-				}
-
-				$("input[name="+field+"_hidden]").val(file.name);
-				$("select[name="+field+"_directory]").val(file.directory);
-
-				$.ee_filebrowser.reset(); // restores everything to "default" state - also needed above for textareas
-			}
-			
-			$("input[type=file]", "#publishForm").each(function() {
-				var container = $(this).closest(".publish_field"),
-					trigger = container.find(".choose_file");
-					
-				$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), file_field_changed);
-				
-				container.find(".remove_file").click(function() {
-					container.find("input[type=hidden]").val("");
-					container.find(".file_set").hide();
-					return false;
-				});
-			});
-		');
-
-		$this->javascript->output('
-			// toggle can not be used here, since it may or may not be visible
-			// depending on admin customization
-
-			$(".hide_field").click(function(){
-				
-				holder_id = $(this).parent().attr("id");
-				field_id = holder_id.substr(11)
-				
-				if($("#sub_hold_field_"+field_id).css("display") == "block"){
-					$("#sub_hold_field_"+field_id).slideUp();
-					$("#hold_field_"+field_id+" .ui-resizable-handle").hide();
-					$("#hold_field_"+field_id+" .field_collapse").attr("src", EE.THEME_URL+"images/field_collapse.png");
-
-					// We dont want datepicker getting triggered when a field is collapsed/expanded
-					return false;
-				}
-				else
-				{
-					$("#sub_hold_field_"+field_id).slideDown();
-					$("#hold_field_"+field_id+" .ui-resizable-handle").show();
-					$("#hold_field_"+field_id+" .field_collapse").attr("src", EE.THEME_URL+"images/field_expand.png");
-
-					// We dont want datepicker getting triggered when a field is collapsed/expanded
-					return false;
-				}
-			});
-
-			$(".close_upload_bar").toggle(
-				function() {
-					$(this).parent().children(":not(.close_upload_bar)").hide();
-					$(this).children("img").attr("src", EE.THEME_URL+"publish_plus.png");
-				}, function () {
-					$(this).parent().children().show();
-					$(this).children("img").attr("src", EE.THEME_URL+"publish_minus.gif");
-				}
-			);
-
-			var field_for_writemode_publish = "";
-
-
-			// tab_focus moved to publish_admin.js
-			
-
-			// setup_tabs() moved to publish_admin.js
-
-			// the height of this window depends on the height of the viewport.	 Percentages dont work
-			// as the header and footer are absolutely sized.  This is a great compromise.
-			write_mode_height = $(window).height() - (33 + 59 + 25); // the height of header + footer + 25px just to be safe
-			$("#write_mode_writer").css("height", write_mode_height+"px");
-			$("#write_mode_writer textarea").css("height", (write_mode_height-67-17)+"px"); // for formatting buttons + 17px for appearance
-
-			// set up the "publish to field" buttons
-			$(".publish_to_field").click(function() {
-				$("#"+field_for_writemode_publish).val($("#write_mode_textarea").val());
-				tb_remove();
-				return false;
-			});
-
-			$(".ping_toggle_all").toggle(
-				function(){
-					$("input[class=ping_toggle]").each(function() {
-						this.checked = false;
-					});
-				}, function (){
-					$("input[class=ping_toggle]").each(function() {
-						this.checked = true;
-					});
-				}
-			);
-
-			// Hide all tab divisions, then find out which tab is first and reveal it to the world!
-			$(".main_tab").hide();
-			$(".main_tab:first").show();
-
-			// Apply a class to its companion tab fitting of its position
-			$(".tab_menu li:first").addClass("current");
-
-		');
 	}
 }
 // END CLASS
