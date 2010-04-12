@@ -599,6 +599,7 @@ class Simple_commerce_mcp {
 
 			foreach($query->result_array() as $row)
 			{
+				$subscription_period = ($row['subscription_frequency'] != '') ? $row['subscription_frequency'].' x '.$row['subscription_frequency_unit'] : '--';
 
    				$vars['items'][$row['entry_id']]['entry_title'] = $row['title'];
    				$vars['items'][$row['entry_id']]['edit_link'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items'.AMP.'entry_id='.$row['entry_id'];
@@ -608,7 +609,8 @@ class Simple_commerce_mcp {
    				$vars['items'][$row['entry_id']]['use_sale_price'] = $row['item_use_sale'];
    				$vars['items'][$row['entry_id']]['item_purchases'] = $row['item_purchases'];
   				$vars['items'][$row['entry_id']]['subscription_frequency_unit'] = $row['subscription_frequency_unit'];
-   				$vars['items'][$row['entry_id']]['subscription_frequency'] = $row['subscription_frequency'];
+   				$vars['items'][$row['entry_id']]['subscription_frequency'] = $row['subscription_frequency_unit'];
+   				$vars['items'][$row['entry_id']]['subscription_period'] = $subscription_period;
   				$vars['items'][$row['entry_id']]['current_subscriptions'] = $row['current_subscriptions'];
 
 				// Toggle checkbox
@@ -678,11 +680,12 @@ class Simple_commerce_mcp {
 		// Note- empty string added because otherwise it will throw a js error
 		foreach ($query->result_array() as $item)
 		{
+			$subscription_period = ($item['subscription_frequency'] != '') ? $item['subscription_frequency'].' x '.$item['subscription_frequency_unit'] : '--';
 			$m[] = '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items'.AMP.'entry_id='.$item['entry_id'].'">'.$item['title'].'</a>';
 			$m[] = $item['item_regular_price'];
 			$m[] = $item['item_sale_price'];
 			$m[] = $item['item_use_sale'];
-			$m[] = $item['subscription_frequency'].'';
+			$m[] = $subscription_period;
 			$m[] = $item['current_subscriptions'];
 			$m[] = $item['item_purchases'];
 			$m[] = '<input class="toggle" id="edit_box_'.$item['entry_id'].'" type="checkbox" name="toggle[]" value="'.$item['entry_id'].'" />';
@@ -1235,7 +1238,7 @@ class Simple_commerce_mcp {
 			$type = (count($purchase_ids) == 1) ? 'update_purchase' : 'update_purchases';
 			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=update_purchases';
 
-			$query = $this->EE->db->query("SELECT sp.*, si.entry_id, m.screen_name AS purchaser FROM exp_simple_commerce_purchases sp, exp_simple_commerce_items si, exp_members m
+			$query = $this->EE->db->query("SELECT sp.*, si.entry_id, si.recurring, m.screen_name AS purchaser FROM exp_simple_commerce_purchases sp, exp_simple_commerce_items si, exp_members m
 								 WHERE sp.item_id = si.item_id
 								 AND sp.member_id = m.member_id
 								 AND sp.purchase_id IN ('".implode("','", $purchase_ids)."')");
@@ -1246,18 +1249,17 @@ class Simple_commerce_mcp {
 				$vars['purchases'][$row['purchase_id']]['member_id']  = $row['member_id'];
 				$vars['purchases'][$row['purchase_id']]['item_id'] = $row['item_id'];
 				$vars['purchases'][$row['purchase_id']]['purchase_date'] = $this->EE->localize->set_human_time($row['purchase_date']);
-				$vars['purchases'][$row['purchase_id']]['subscription_end_date'] = ($row['subscription_end_date'] == 0) ? '' : $this->EE->localize->set_human_time($row['subscription_end_date']);
 
 				$vars['purchases'][$row['purchase_id']]['item_cost'] =  $row['item_cost'];
 				$vars['purchases'][$row['purchase_id']]['purchase_id'] = $row['purchase_id'];
 				$vars['purchases'][$row['purchase_id']]['screen_name'] = $row['purchaser'];
-
+				$vars['purchases'][$row['purchase_id']]['recurring'] = $row['recurring'];
+				
 				$now_p_date = ($row['purchase_date'] * 1000);
-				$now_s_date = ($row['subscription_end_date'] != '' && $row['subscription_end_date'] != 0) ?	($row['subscription_end_date']* 1000) : ($this->EE->localize->set_localized_time() * 1000);
+
 
 			$this->EE->javascript->output('
 			$("#purchase_date_'.$row['purchase_id'].'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$now_p_date.')});
-			$("#subscription_end_date_'.$row['purchase_id'].'").datepicker({dateFormat: $.datepicker.W3C + date_obj_time, defaultDate: new Date('.$now_s_date.')});
 		');
 
 			}

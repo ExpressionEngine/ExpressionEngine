@@ -87,12 +87,14 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 'purchase_date' =>
 'Purchase date',
 
-
 'recurring' =>
 'Recurring',
 
+'recurring_purchase_warning' =>
+"Recurring purchases must be set up through PayPal for full functionality.",
+
 'current_subscriptions' =>
-'Subscription End Date',
+'Current Subscriptions',
 
 'add_items' =>
 'Add Items',
