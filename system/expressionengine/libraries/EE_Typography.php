@@ -53,29 +53,9 @@ class EE_Typography extends CI_Typography {
 	var $code_counter				= 0;
 	var $http_hidden 				= 'ed9f01a60cc1ac21bf6f1684e5a3be23f38a51b9'; // hash to protect URLs in [url] BBCode
 	
-	/** -------------------------------------
-	/**  Allowed tags
-	/** -------------------------------------*/
-	
-	// Note: The decoding array is associative, allowing more precise mapping
-			
-	var $safe_encode = array('b', 'i', 'em', 'del', 'ins', 'strong', 'pre', 'code', 'blockquote');
-	
-	var $safe_decode = array(
-								'b'			 	=> 'b', 
-								'i'			 	=> 'i',
-								'em'			=> 'em', 
-								'del'			=> 'del',
-								'ins'			=> 'ins',
-								'strong'		=> 'strong', 
-								'pre'			=> 'pre', 
-								'code'			=> 'code', 
-								'blockquote'	=> 'blockquote',
-								'quote'			=> 'blockquote',
-								'QUOTE'			=> 'blockquote'
-							 );
-	
-
+	// Allowed tags  Note: Specified in initialize()
+	var $safe_encode = array();
+	var $safe_decode = array();
 
 	/** -------------------------------------
 	/**  Constructor

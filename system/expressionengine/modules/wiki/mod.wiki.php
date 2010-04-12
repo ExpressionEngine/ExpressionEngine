@@ -4060,9 +4060,9 @@ class Wiki {
 			$revision['title']				 = $this->title;
 			$revision['content']			 = $this->EE->security->xss_clean($content);
 			$revision['path:view_article']	 = $link;
-			$revision['path:view_revision']	 = $link.'revision/'.$revision['revision_id'];
-			$revision['path:open_revision']	 = $link.'revision/'.$revision['revision_id'].'/open';
-			$revision['path:close_revision'] = $link.'revision/'.$revision['revision_id'].'/close';
+			$revision['path:view_revision']	 = $link.'/revision/'.$revision['revision_id'];
+			$revision['path:open_revision']	 = $link.'/revision/'.$revision['revision_id'].'/open';
+			$revision['path:close_revision'] = $link.'/revision/'.$revision['revision_id'].'/close';
 			
 			$this->EE->load->library('typography');
 			$this->EE->typography->initialize();
