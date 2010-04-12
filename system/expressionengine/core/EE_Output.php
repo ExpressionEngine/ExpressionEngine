@@ -39,6 +39,31 @@ class EE_Output extends CI_Output {
 	{
 		parent::CI_Output();
 	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set Header
+	 *
+	 * Lets you set a server header which will be outputted with the final display.
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	void
+	 */
+	function set_header($header, $replace = TRUE)
+	{
+		$EE =& get_instance();
+		
+		// We always need to send a content type
+		
+		if ($EE->config->item('send_headers') != 'y' && strncasecmp($header, 'content-type', 12) != 0)
+		{
+			return;
+		}
+		
+		parent::set_header($header, $replace);
+	}
 
 	// --------------------------------------------------------------------
 
@@ -60,7 +85,7 @@ class EE_Output extends CI_Output {
 		
 		// Generate No-Cache Headers
 		
-		if ($EE->config->item('send_headers') == 'y' && $this->out_type != 'feed' && $this->out_type != '404')
+		if ($EE->config->item('send_headers') == 'y' && $this->out_type != 'feed' && $this->out_type != '404' && $this->out_type != 'cp_asset')
 		{		
 			$this->set_status_header(200);
 			
