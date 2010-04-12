@@ -967,6 +967,9 @@ username and password to view the template.',
 'custom_profile_fields' => 
 'Custom Member Fields',
 
+'bulletin_board' => 
+'Bulletin Board',
+
 //----------------------------
 // Tag Validation
 //----------------------------
