@@ -541,8 +541,6 @@ class Content_publish extends Controller {
 
 		$row = $query->row_array();
 
-		
-
 		/* -------------------------------------------
 		/* 'publish_form_channel_preferences' hook.
 		/*  - Modify channel preferences
@@ -628,17 +626,19 @@ class Content_publish extends Controller {
 
 			if ($this->input->get_post('use_autosave') == 'y')
 			{
+				$res_entry_data = unserialize($resrow['entry_data']);
+
 				// overwrite and add to this array with entry_data
-				foreach (unserialize($resrow['entry_data']) as $k=>$v)
+				foreach ($res_entry_data as $k => $v)
 				{
 					$resrow[$k] = $v;
 				}
 				
-				$_POST = @unserialize($resrow['entry_data']);
-
 				unset($resrow['entry_data']);
-			}
 			
+				$_POST = $resrow;
+			}
+
 			if ($resrow['author_id'] != $this->session->userdata('member_id'))
 			{
 				if ( ! $this->cp->allowed_group('can_edit_other_entries'))
@@ -1518,11 +1518,10 @@ class Content_publish extends Controller {
 					'field_maxl'			=> 75
 		);
 			
-			$this->api_channel_fields->set_settings('url_title', $settings);
-			
-			$rules = 'call_field_validation['.$settings['field_id'].']';
-			$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
-		//}
+		$this->api_channel_fields->set_settings('url_title', $settings);
+		
+		$rules = 'call_field_validation['.$settings['field_id'].']';
+		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
 
 		$get_format = array();
 
@@ -1912,8 +1911,6 @@ class Content_publish extends Controller {
 		$vars['field_definitions'] = $this->field_definitions;
 		$vars['field_output'] = array();
 		
-		// $this->build_author_table();
-
 		// @todo use this for js validation?
 		// @todo -- clean this up.
 		// $this->javascript->set_global($this->form_validation->_config_rules);
@@ -1945,14 +1942,12 @@ class Content_publish extends Controller {
 					$vars['smiley_table'][$field] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
 					$this->table->clear(); // clear out tables for the next smiley					
 				}
-				
+
 				$this->api_channel_fields->setup_handler($field);
 				$field_value = set_value($field_info['field_name'], $field_info['field_data']);
-
 				$vars['field_output'][$field_info['field_id']] = $this->api_channel_fields->apply('display_publish_field', array($field_value));
-				
 			}
-			
+
 			$this->javascript->set_global('publish.required_fields', $vars['required_fields']);
 
 			$this->_define_options_fields($vars, $which);
@@ -1968,7 +1963,7 @@ class Content_publish extends Controller {
 			{
 				$vars['field_output'][$field] = $opts;
 			}
-			
+
 			$this->javascript->compile();
 			$this->load->view('content/publish', $vars);
 		}
