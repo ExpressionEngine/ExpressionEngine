@@ -1705,6 +1705,7 @@ class Admin_content extends Controller {
 		if (AJAX_REQUEST)
 		{
 			$vars['EE_view_disable'] = TRUE;
+
 			
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
@@ -1718,7 +1719,7 @@ class Admin_content extends Controller {
 				show_error($this->lang->line('unauthorized_access'));
 			}
 		}		
-		
+
 		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 		$this->load->library('table');

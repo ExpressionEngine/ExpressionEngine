@@ -2161,7 +2161,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		{
 			return FALSE;
 		}
-		
+
 		$expected = array('member_group', 'field', 'allow', 'site_id', 'clone_id');
 		
 		// turn parameters into variables
@@ -2193,9 +2193,12 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 			if ($allow === TRUE)
 			{
-				if (is_numeric($clone_id) AND in_array($clone_id, $can_do))
+				if (is_numeric($clone_id))
 				{
-					$can_do[] = $member_group;						
+					if (in_array($clone_id, $can_do) OR $clone_id == 1)
+					{
+						$can_do[] = $member_group;
+					}						
 				}
 				elseif ($clone_id === FALSE)
 				{
