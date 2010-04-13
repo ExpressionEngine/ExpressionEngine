@@ -3937,6 +3937,7 @@ class Admin_content extends Controller {
 			widgets: ["zebra"]
 		}');
 
+
 		// @todo: model, AR
 		$field_query = $this->db->query("SELECT f.* FROM exp_channel_fields AS f, exp_field_groups AS g
 						WHERE f.group_id = g.group_id
@@ -4175,7 +4176,7 @@ class Admin_content extends Controller {
 				$vars['field_type_tables'][$key] = $this->table->rows;
 			}
 		}
-		
+
 		asort($vars['field_type_options']);	// sort by title
 
 		$vars['form_hidden'] = array(
@@ -4229,7 +4230,7 @@ class Admin_content extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-
+		
 		$this->lang->loadfile('admin_content');
 		$this->load->library('api');
 		$this->api->instantiate('channel_fields');
@@ -4373,8 +4374,9 @@ class Admin_content extends Controller {
 		
 		if ($native_settings['field_list_items'] != '')
 		{
-			$this->load->helper('string');
-			$native_settings['field_list_items'] = quotes_to_entities($native_settings['field_list_items']);
+			// This results in double encoding later on
+			//$this->load->helper('string');
+			//$native_settings['field_list_items'] = quotes_to_entities($native_settings['field_list_items']);
 		}
 		
 		if ($native_settings['field_pre_populate'] == 'y')

@@ -175,6 +175,8 @@ class Addons_extensions extends Controller {
 		// Let's order by name just in case
 		asort($names);
 
+		$vars['extension_info'] = array();
+
 		foreach ($names as $k => $v)
 		{
 			$vars['extension_info'][$k] = $extension_files[$k];

@@ -189,10 +189,7 @@ class Javascript extends Controller {
 		// Can't do any of this if we're not allowed
 		// to send any headers
 
-		if ($this->config->item('send_headers') == 'y')
-		{
-			$this->_set_headers($file);
-		}
+		$this->_set_headers($file);
 
 		// Grab the file, content length and serve
 		// it up with the proper content type!
@@ -207,13 +204,8 @@ class Javascript extends Controller {
 			$contents = file_get_contents($file);
 		}
 
-		if ($this->config->item('send_headers') == 'y')
-		{
-			@header('Content-Length: '.strlen($contents));
-		}
-
-		header("Content-type: text/javascript");
-		exit($contents);
+		$this->output->set_header('Content-Length: '.strlen($contents));
+		$this->output->set_output($contents);
 	}
 
 
@@ -267,18 +259,11 @@ class Javascript extends Controller {
 		}
 
 		$modified = $this->input->get_post('v');
-				
-		if ($this->config->item('send_headers') == 'y')
-		{
-			$this->_set_headers($mock_name, $modified);
-			@header('Content-Length: '.strlen($contents));
-		}
-		else
-		{
-			@header("Content-Type: text/javascript");
-		}
+		
+		$this->_set_headers($mock_name, $modified);
 
-		exit($contents);
+		$this->output->set_header('Content-Length: '.strlen($contents));
+		$this->output->set_output($contents);
 	}
 
 	// --------------------------------------------------------------------
@@ -292,6 +277,15 @@ class Javascript extends Controller {
 	 */
     function _set_headers($file, $mtime = FALSE)
     {
+		$this->output->out_type = 'cp_asset';
+		$this->output->set_header("Content-Type: text/javascript");
+		
+		if ($this->config->item('send_headers') != 'y')
+		{
+			// All we need is content type - we're done
+			return;
+		}
+		
 		$max_age		= 5184000;
 		$modified		= ($mtime !== FALSE) ? $mtime : filemtime($file);
 		$modified_since	= $this->input->server('HTTP_IF_MODIFIED_SINCE');
@@ -303,11 +297,6 @@ class Javascript extends Controller {
 			$modified_since = substr($modified_since, 0, $pos);
 		}
 		
-		// Send a custom ETag to maintain a useful cache in
-		// load-balanced environments
-		
-        header("ETag: ".md5($modified.$file));
-		
 		// If the file is in the client cache, we'll
 		// send a 304 and be done with it.
 
@@ -316,17 +305,21 @@ class Javascript extends Controller {
 			$this->output->set_status_header(304);
 			exit;
 		}
+		
+		// Send a custom ETag to maintain a useful cache in
+		// load-balanced environments
+		
+        $this->output->set_header("ETag: ".md5($modified.$file));
 
 		// All times GMT
 		$modified = gmdate('D, d M Y H:i:s', $modified).' GMT';
 		$expires = gmdate('D, d M Y H:i:s', time() + $max_age).' GMT';
 
 		$this->output->set_status_header(200);
-		@header("Content-Type: text/javascript");
-		@header("Cache-Control: max-age={$max_age}, must-revalidate");
-		@header('Vary: Accept-Encoding');
-		@header('Last-Modified: '.$modified);
-		@header('Expires: '.$expires);        
+		$this->output->set_header("Cache-Control: max-age={$max_age}, must-revalidate");
+		$this->output->set_header('Vary: Accept-Encoding');
+		$this->output->set_header('Last-Modified: '.$modified);
+		$this->output->set_header('Expires: '.$expires);        
     }
 
 

@@ -34,7 +34,6 @@ class Super_model extends CI_Model {
     function Super_model()
     {
         parent::CI_Model();
-		$this->EE =& get_instance();
     }
 
 	// --------------------------------------------------------------------
@@ -53,7 +52,7 @@ class Super_model extends CI_Model {
 	{
 		if ( ! is_array($where))
 		{
-			return $this->EE->db->count_all($table);			
+			return $this->db->count_all($table);			
 		}
 		else
 		{

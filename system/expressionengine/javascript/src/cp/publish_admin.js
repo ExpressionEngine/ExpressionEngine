@@ -62,6 +62,18 @@ $("a", "#showToolbarLink").one("click", function() {
 		width: 700,
 		buttons: addAuthorButtons
 	});
+	
+	
+	$(".add_tab_link").click(function(){
+		$("#tab_name").val("");
+		$("#add_tab label").text(EE.lang.tab_name+": ");
+		$("#new_tab_dialog").dialog("open")
+		$("#tab_name").focus();
+		setup_tabs()
+		return false;
+	});
+	
+	
 });
 
 $('.add_author_link').click(function() {
