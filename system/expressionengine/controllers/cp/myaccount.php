@@ -1047,7 +1047,7 @@ class MyAccount extends Controller {
 
 		$this->javascript->compile();
 
-		$this->cp->add_to_head('<style type="text/css">.cp_button{display:none;}</style><link rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=markitup" type="text/css" media="screen" />');
+		$this->cp->add_to_head('<style type="text/css">.cp_button{display:none;}</style>');
 
 		// load the systems's predefined buttons
 		include(APPPATH.'config/html_buttons.php');
