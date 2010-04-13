@@ -828,6 +828,11 @@ class Content_edit extends Controller {
 
 	function edit_ajax_filter()
 	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+		
 		$this->output->enable_profiler(FALSE);
 		$this->load->helper(array('form', 'text', 'url', 'snippets'));
 		
@@ -838,7 +843,6 @@ class Content_edit extends Controller {
 		$filter_data['date_range'] = $this->input->get_post('date_range');	
 		$filter_data['author_id'] = $this->input->get_post('author_id');	
 	
-
 		$filter_data['keywords'] = ($this->input->get_post('keywords')) ? $this->input->get_post('keywords') : '';
 		$filter_data['search_in'] = ($this->input->get_post('search_in') != '') ? $this->input->get_post('search_in') : 'title';
 		$filter_data['exact_match'] = $this->input->get_post('exact_match');

@@ -35,7 +35,6 @@ $(document).ready(function() {
 		}
 	);
 	
-	
 	$("#custom_date_start_span").datepicker({
 		dateFormat: "yy-mm-dd",
 		prevText: "<<",
@@ -56,23 +55,19 @@ $(document).ready(function() {
 	});
 
 	$("#custom_date_start, #custom_date_end").focus(function(){
-		if ($(this).val() == "yyyy-mm-dd")
-		{
+		if ($(this).val() == "yyyy-mm-dd") {
 			$(this).val("");
 		}
 	});
 
 	$("#custom_date_start, #custom_date_end").keypress(function(){
-		if ($(this).val().length >= 9)
-		{
+		if ($(this).val().length >= 9) {
 			dates_picked();
 		}
 	});
 
-	function dates_picked()
-	{
-		if ($("#custom_date_start").val() != "yyyy-mm-dd" && $("#custom_date_end").val() != "yyyy-mm-dd")
-		{
+	function dates_picked() {
+		if ($("#custom_date_start").val() != "yyyy-mm-dd" && $("#custom_date_end").val() != "yyyy-mm-dd") {
 			// populate dropdown box
 			focus_number = $("#date_range").children().length;
 			$("#date_range").append("<option id=\"custom_date_option\">" + $("#custom_date_start").val() + " to " + $("#custom_date_end").val() + "</option>");
@@ -84,55 +79,43 @@ $(document).ready(function() {
 	}
 	
 	
-	$("#date_range").change(function(){
-		
-			if ($('#date_range').val() == 'custom_date')
-			{
-				// clear any current dates, remove any custom options
-				$('#custom_date_start').val('yyyy-mm-dd');
-				$('#custom_date_end').val('yyyy-mm-dd');
-				$('#custom_date_option').remove();
+	$("#date_range").change(function() {
+		if ($('#date_range').val() == 'custom_date') {
+			// clear any current dates, remove any custom options
+			$('#custom_date_start').val('yyyy-mm-dd');
+			$('#custom_date_end').val('yyyy-mm-dd');
+			$('#custom_date_option').remove();
 
-				// drop it down
-				$('#custom_date_picker').slideDown('fast');
-			}
-			else
-			{
-				$('#custom_date_picker').hide();
-			}
-		
+			// drop it down
+			$('#custom_date_picker').slideDown('fast');
+		} else {
+			$('#custom_date_picker').hide();
+		}
 	});
 
 	// Require at least one comment checked to submit	
 	$("#entries_form").submit(function() {
 		if ( ! $("input:checkbox", this).is(":checked")) {
-		$.ee_notice(EE.lang.selection_required, {"type" : "error"});
-		return false;
+			$.ee_notice(EE.lang.selection_required, {"type" : "error"});
+			return false;
 		}
 	});
-
 
 	var oCache = {
 		iCacheLower: -1
 	};
 
-	function fnSetKey( aoData, sKey, mValue )
-	{
-		for ( var i=0, iLen=aoData.length ; i<iLen ; i++ )
-		{
-			if ( aoData[i].name == sKey )
-			{
+	function fnSetKey( aoData, sKey, mValue ) {
+		for ( var i=0, iLen=aoData.length; i < iLen ; i++ ) {
+			if ( aoData[i].name == sKey ) {
 				aoData[i].value = mValue;
 			}
 		}
 	}
 
-	function fnGetKey( aoData, sKey )
-	{
-		for ( var i=0, iLen=aoData.length ; i<iLen ; i++ )
-		{
-			if ( aoData[i].name == sKey )
-			{
+	function fnGetKey( aoData, sKey ) {
+		for ( var i=0, iLen=aoData.length; i < iLen ; i++ ) {
+			if ( aoData[i].name == sKey ) {
 				return aoData[i].value;
 			}
 		}
@@ -140,25 +123,22 @@ $(document).ready(function() {
 	}
 
 	function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
-		var iPipe = EE.edit.pipe;  /* Ajust the pipe size */
+		var iPipe 			= EE.edit.pipe,  /* Ajust the pipe size */
+			bNeedServer 	= false,
+			sEcho 			= fnGetKey(aoData, "sEcho"),
+			iRequestStart 	= fnGetKey(aoData, "iDisplayStart"),
+			iRequestLength 	= fnGetKey(aoData, "iDisplayLength"),
+			iRequestEnd 	= iRequestStart + iRequestLength,
+			keywords		= document.getElementById("keywords"),
+	    	status			= document.getElementById("f_status"),
+			channel_id		= document.getElementById("f_channel_id"),
+	    	cat_id			= document.getElementById("f_cat_id"),
+	    	search_in		= document.getElementById("f_search_in"),
+	    	date_range		= document.getElementById("date_range"),
+			comment_url		= "&ajax=true&keywords="+keywords.value+"&channel_id="+channel_id.value;
 
-		var bNeedServer = false;
-		var sEcho = fnGetKey(aoData, "sEcho");
-		var iRequestStart = fnGetKey(aoData, "iDisplayStart");
-		var iRequestLength = fnGetKey(aoData, "iDisplayLength");
-		var iRequestEnd = iRequestStart + iRequestLength;
-		var keywords    = document.getElementById("keywords");
-	    var status       = document.getElementById("f_status");
-		var channel_id    = document.getElementById("f_channel_id");
-	    var cat_id       = document.getElementById("f_cat_id");
-	    var search_in  = document.getElementById("f_search_in");
-	    var date_range = document.getElementById("date_range");
-
-		var comment_url = "&ajax=true&keywords="+keywords.value+"&channel_id="+channel_id.value;
-
-		if (search_in.value == "comments")
-		{
-				window.location = EE.BASE+"&C=content_edit&M=view_comments"+comment_url;
+		if (search_in.value == "comments") {
+			window.location = EE.BASE+"&C=content_edit&M=view_comments"+comment_url;
 		}
 
 		aoData.push( 
@@ -173,20 +153,15 @@ $(document).ready(function() {
 		oCache.iDisplayStart = iRequestStart;
 
 		/* outside pipeline? */
-		if ( oCache.iCacheLower < 0 || iRequestStart < oCache.iCacheLower || iRequestEnd > oCache.iCacheUpper )
-		{
+		if ( oCache.iCacheLower < 0 || iRequestStart < oCache.iCacheLower || iRequestEnd > oCache.iCacheUpper ) {
 			bNeedServer = true;
 		}
 
 		/* sorting etc changed? */
-		if ( oCache.lastRequest && !bNeedServer )
-		{
-			for( var i=0, iLen=aoData.length ; i<iLen ; i++ )
-			{
-				if ( aoData[i].name != "iDisplayStart" && aoData[i].name != "iDisplayLength" && aoData[i].name != "sEcho" )
-				{
-					if ( aoData[i].value != oCache.lastRequest[i].value )
-					{
+		if ( oCache.lastRequest && !bNeedServer ) {
+			for( var i=0, iLen=aoData.length ; i<iLen ; i++ ) {
+				if ( aoData[i].name != "iDisplayStart" && aoData[i].name != "iDisplayLength" && aoData[i].name != "sEcho" ) {
+					if ( aoData[i].value != oCache.lastRequest[i].value ) {
 						bNeedServer = true;
 						break;
 					}
@@ -197,13 +172,10 @@ $(document).ready(function() {
 		/* Store the request for checking next time around */
 		oCache.lastRequest = aoData.slice();
 
-		if ( bNeedServer )
-		{
-			if ( iRequestStart < oCache.iCacheLower )
-			{
+		if ( bNeedServer ) {
+			if ( iRequestStart < oCache.iCacheLower ) {
 				iRequestStart = iRequestStart - (iRequestLength*(iPipe-1));
-				if ( iRequestStart < 0 )
-				{
+				if ( iRequestStart < 0 ) {
 					iRequestStart = 0;
 				}
 			}
@@ -212,7 +184,7 @@ $(document).ready(function() {
 			oCache.iCacheUpper = iRequestStart + (iRequestLength * iPipe);
 			oCache.iDisplayLength = fnGetKey( aoData, "iDisplayLength" );
 			fnSetKey( aoData, "iDisplayStart", iRequestStart );
-			fnSetKey( aoData, "iDisplayLength", iRequestLength*iPipe );
+			fnSetKey( aoData, "iDisplayLength", iRequestLength * iPipe );
 
 					aoData.push(  
 			 			{ "name": "keywords", "value": keywords.value },
@@ -227,17 +199,14 @@ $(document).ready(function() {
 				/* Callback processing */
 				oCache.lastJson = jQuery.extend(true, {}, json);
 
-				if ( oCache.iCacheLower != oCache.iDisplayStart )
-				{
+				if ( oCache.iCacheLower != oCache.iDisplayStart ) {
 					json.aaData.splice( 0, oCache.iDisplayStart-oCache.iCacheLower );
 				}
 				json.aaData.splice( oCache.iDisplayLength, json.aaData.length );
 
 				fnCallback(json)
-			} );
-		}
-		else
-		{
+			});
+		} else {
 			json = jQuery.extend(true, {}, oCache.lastJson);
 			json.sEcho = sEcho; /* Update the echo for each response */
 			json.aaData.splice( 0, iRequestStart-oCache.iCacheLower );
@@ -247,17 +216,13 @@ $(document).ready(function() {
 		}
 	}
 
-		if (EE.edit.tableColumns == 9)
-		{
+		if (EE.edit.tableColumns == 9) {
 			MyCols = [null, null, { "bSortable" : false }, null, null, null, null, null, { "bSortable" : false } ];
 			MySortCol = 5;
-		}
-		else
-		{
+		} else {
 			MyCols = [null, null, { "bSortable" : false }, null, null, null, null, { "bSortable" : false } ];
 			MySortCol = 4;
 		}
-	
 	
 		oTable = $("#entries_form .mainTable").dataTable( {	
 				"sPaginationType": "full_numbers",
@@ -269,18 +234,15 @@ $(document).ready(function() {
 				"bAutoWidth": false,
 				"iDisplayLength": EE.edit.perPage,  
 				"aoColumns": MyCols,
-
-			"oLanguage": {
-				"sZeroRecords": EE.lang.noEntries,
-
-				"oPaginate": {
-					"sFirst": "<img src=\""+EE.edit.themeUrl+"images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-					"sPrevious": "<img src=\""+EE.edit.themeUrl+"images/pagination_prev_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-					"sNext": "<img src=\""+EE.edit.themeUrl+"images/pagination_next_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />", 
-					"sLast": "<img src=\""+EE.edit.themeUrl+"images/pagination_last_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />"
-				}
-			},
-
+				"oLanguage": {
+					"sZeroRecords": EE.lang.noEntries,
+					"oPaginate": {
+						"sFirst": "<img src=\""+EE.edit.themeUrl+"images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
+						"sPrevious": "<img src=\""+EE.edit.themeUrl+"images/pagination_prev_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
+						"sNext": "<img src=\""+EE.edit.themeUrl+"images/pagination_next_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />", 
+						"sLast": "<img src=\""+EE.edit.themeUrl+"images/pagination_last_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />"
+					}
+				},
 				"bProcessing": true,
 				"bServerSide": true,
 				"sAjaxSource": EE.BASE+"&C=content_edit&M=edit_ajax_filter",
@@ -290,29 +252,29 @@ $(document).ready(function() {
 			$("#keywords").keyup( function () {
 			/* Filter on the column (the index) of this element */
 				oTable.fnDraw();
-			} );
+			});
 
 			$("select#f_channel_id").change(function () {
-					oTable.fnDraw();
+				oTable.fnDraw();
 			});	
 
 			$("select#f_cat_id").change(function () {
-					oTable.fnDraw();
-			});						
-			$("select#f_status").change(function () {
-					oTable.fnDraw();
-			});		
-			$("select#f_search_in").change(function () {
-					oTable.fnDraw();
+				oTable.fnDraw();
 			});	
+			$("select#f_status").change(function () {
+				oTable.fnDraw();
+			});
+			$("select#f_search_in").change(function () {
+				oTable.fnDraw();
+			});
 			$("select#date_range").change(function () {
-					oTable.fnDraw();
+				oTable.fnDraw();
 			});
 
 			// The oracle knows everything.  
 
-			var channel_oracle = EE.edit.channelInfo;
-			var spaceString = new RegExp('!-!', "g");
+			var channel_oracle = EE.edit.channelInfo,
+				spaceString = new RegExp('!-!', "g");
 
 			// We prep our magic arrays as soons as we can, basically
 			// converting everything into option elements
@@ -338,18 +300,18 @@ $(document).ready(function() {
 
 			// Change the submenus
 			// Gets passed the channel id
-			function changemenu(index)
-			{
+			function changemenu(index) {
 				var channels = 'null';
 
 				if (channel_oracle[index] === undefined) {
 					index = 0;
 				}
-				jQuery.each(channel_oracle[index], function(key, val) { 
+				
+				jQuery.each(channel_oracle[index], function(key, val) { 					
 					switch(key) {
-						case 'categories':	$('select[name=cat_id]').empty().append(val);
+						case 'categories':	$('select#cat_id').empty().append(val);
 							break;
-						case 'statuses':	$('select[name=status]').empty().append(val);
+						case 'statuses':	$('select#status').empty().append(val);
 							break;
 					}
 				});
