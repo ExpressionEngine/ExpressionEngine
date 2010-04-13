@@ -1178,6 +1178,7 @@ class Forum {
 										'forum_build'				=> $this->build,
 										'error_message'				=> $this->error_message,
 										'path:theme_css'			=> $this->_fetch_pref('board_theme_url').$this->theme.'/theme.css',
+										'path:theme_js'				=> $this->_fetch_pref('board_theme_url').$this->theme.'/theme/javascript/',
 										'site_url'					=> $this->EE->config->item('site_url')
 									)
 						); 
