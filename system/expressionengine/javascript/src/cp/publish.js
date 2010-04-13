@@ -57,7 +57,7 @@ EE.publish.category_editor = function() {
 			gid = container.data("gid");
 		
 		response = $.trim(response);
-		
+
 		if (container.hasClass('edit_categories_link')) {
 			container = $("#cat_group_container_"+gid);
 		}
