@@ -929,6 +929,7 @@ class Content_publish extends Controller {
 		// ----------------------------------------------
 		//	DATE BLOCK
 		// ----------------------------------------------
+		/*
 		if (isset($this->installed_modules['comment']))
 		{
 			if ($comment_expiration_date == '' OR $comment_expiration_date == 0)
@@ -992,16 +993,17 @@ class Content_publish extends Controller {
 			}
 		}
 		
-		$this->_define_default_date_field('entry_date', $this->localize->convert_human_date_to_gmt($loc_entry_date));
-		$this->_define_default_date_field('expiration_date', $this->localize->convert_human_date_to_gmt($loc_expiration_date));
+	//	$this->_define_default_date_field('entry_date', $this->localize->convert_human_date_to_gmt($loc_entry_date));
+	//	$this->_define_default_date_field('expiration_date', $this->localize->convert_human_date_to_gmt($loc_expiration_date));
 		
 		if (isset($this->installed_modules['comment']))
 		{
 			$this->_define_default_date_field('comment_expiration_date', $this->localize->convert_human_date_to_gmt($loc_comment_expiration_date));			
 		}
+		*/
 		
-
-		/*	
+		
+		// Entry date
 		
 		$settings = array(
 					'field_id'				=> 'entry_date',
@@ -1013,17 +1015,65 @@ class Content_publish extends Controller {
 					'field_fmt'				=> 'text',
 					'field_instructions'	=> '',
 					'field_show_fmt'		=> 'n',
+					'default_offset'		=> 0,
 					'selected'				=> 'y'
 		);
 		
-		// Entry date
 		$this->api_channel_fields->set_settings('entry_date', $settings);
 		
 		$rules = 'call_field_validation['.$settings['field_id'].']';
 		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
 		
 		
-		*/
+		
+		// Expiration Date
+		
+		$settings = array(
+					'field_id'				=> 'expiration_date',
+					'field_label'			=> $this->lang->line('expiration_date'),
+					'field_required'		=> 'n',
+					'field_type'			=> 'date',
+					'field_text_direction'	=> 'ltr',
+					'field_data'			=> $expiration_date,
+					'field_fmt'				=> 'text',
+					'field_instructions'	=> '',
+					'field_show_fmt'		=> 'n',
+					'selected'				=> 'y'
+		);
+		
+		$this->api_channel_fields->set_settings('expiration_date', $settings);
+		
+		$rules = 'call_field_validation['.$settings['field_id'].']';
+		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
+		
+		
+		
+		// Comment Expiration Date
+		
+		if (isset($this->installed_modules['comment']))
+		{
+			$settings = array(
+						'field_id'				=> 'comment_expiration_date',
+						'field_label'			=> $this->lang->line('comment_expiration_date'),
+						'field_required'		=> 'n',
+						'field_type'			=> 'date',
+						'field_text_direction'	=> 'ltr',
+						'field_data'			=> $comment_expiration_date,
+						'field_fmt'				=> 'text',
+						'field_instructions'	=> '',
+						'field_show_fmt'		=> 'n',
+						'selected'				=> 'y'
+			);
+
+			$this->api_channel_fields->set_settings('comment_expiration_date', $settings);
+
+			$rules = 'call_field_validation['.$settings['field_id'].']';
+			$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
+		}
+
+
+
+		
 		
 
 
