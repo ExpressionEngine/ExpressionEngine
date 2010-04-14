@@ -59,8 +59,55 @@ class Radio_ft extends EE_Fieldtype {
 
 		$text_direction = ($this->settings['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr';
 
-		$selected = $data;
-			
+		$field_options = $this->_get_field_options($data);
+		
+		// If they've selected something we'll make sure that it's a valid choice
+		$selected = $this->EE->input->post($this->field_name);
+	
+		if ($selected)
+		{
+			if ( ! in_array(form_prep($selected), array_keys($field_options)))
+			{
+				unset($_POST['field_id_'.$this->settings['field_id']]);
+			}
+		}
+		
+		$r = form_fieldset('$field_options');
+
+		foreach($field_options as $option)
+		{
+			$selected = ($option == $data);
+			$r .= '<label>'.form_radio($this->field_name, $option, $selected).NBS.$option.'</label>';
+		}
+		
+		return $r.form_fieldset_close();
+	}
+	
+	// --------------------------------------------------------------------
+	
+	function replace_tag($data, $params = '', $tagdata = '')
+	{
+		return $this->EE->typography->parse_type(
+			$this->EE->functions->encode_ee_tags($data),
+			array(
+				'text_format'	=> $this->row['field_ft_'.$this->field_id],
+				'html_format'	=> $this->row['channel_html_formatting'],
+				'auto_links'	=> $this->row['channel_auto_link_urls'],
+				'allow_img_url' => $this->row['channel_allow_img_urls']
+			)
+		);
+	}
+	
+	// --------------------------------------------------------------------
+
+	function display_settings($data)
+	{
+		$this->field_formatting_row($data, 'radio');
+		$this->multi_item_row($data, 'radio');
+	}
+	
+	function _get_field_options($data)
+	{
 		$field_options = array();
 		
 		if ($this->settings['field_pre_populate'] == 'n')
@@ -70,7 +117,7 @@ class Radio_ft extends EE_Fieldtype {
 				foreach (explode("\n", trim($this->settings['field_list_items'])) as $v)
 				{
 					$v = trim($v);
-					$field_options[$v] = $v;
+					$field_options[form_prep($v)] = form_prep($v);
 				}
 			}
 			else
@@ -102,50 +149,8 @@ class Radio_ft extends EE_Fieldtype {
 				}
 			}
 		}
-	
-		// If they've selected something we'll make sure that it's a valid choice
-		$selected = $this->EE->input->post($this->field_name);
-	
-		if ($selected)
-		{
-			if ( ! in_array($selected, array_keys($field_options)))
-			{
-				unset($_POST['field_id_'.$this->settings['field_id']]);
-			}
-		}
 		
-		
-		$r = form_fieldset('');
-		foreach($field_options as $option)
-		{
-			$selected = ($option == $data);
-			$r .= '<label>'.form_radio($this->field_name, $option, $selected).NBS.$option.'</label>';
-		}
-		
-		return $r.form_fieldset_close();
-	}
-	
-	// --------------------------------------------------------------------
-	
-	function replace_tag($data, $params = '', $tagdata = '')
-	{
-		return $this->EE->typography->parse_type(
-			$this->EE->functions->encode_ee_tags($data),
-			array(
-				'text_format'	=> $this->row['field_ft_'.$this->field_id],
-				'html_format'	=> $this->row['channel_html_formatting'],
-				'auto_links'	=> $this->row['channel_auto_link_urls'],
-				'allow_img_url' => $this->row['channel_allow_img_urls']
-			)
-		);
-	}
-	
-	// --------------------------------------------------------------------
-
-	function display_settings($data)
-	{
-		$this->field_formatting_row($data, 'radio');
-		$this->multi_item_row($data, 'radio');
+		return $field_options;
 	}
 }
 
