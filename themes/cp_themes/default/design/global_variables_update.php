@@ -15,20 +15,29 @@ if ($EE_view_disable !== TRUE)
 		<div class="heading">
 				<h2><?=lang('global_var_update')?></h2>
 		</div>
-		<div id="new_global_var" class="pageContents">
+		<div class="pageContents">
 
 			<?=form_open('C=design'.AMP.'M=global_variables_update')?>
 				<?=form_hidden('variable_id', $variable_id)?>
-				<p>
-				<label for="variable_name"><?=lang('global_variable_name')?></label><br />
-				<?=lang('template_group_instructions') . ' ' . lang('undersores_allowed')?><br />
-				<?=form_input(array('id'=>'variable_name','name'=>'variable_name','size'=>70,'class'=>'field','value'=>$variable_name))?>				
-				</p>
-				<p>
-				<label for="variable_data"><?=lang('variable_data')?></label><br />
-				<?=form_textarea(array('id'=>'variable_data','name'=>'variable_data','cols'=>70,'rows'=>10,'class'=>'field','value'=>$variable_data))?>
-				</p>
-				<p><?=form_submit('template', lang('update'), 'class="submit"')?></p>
+				<?php $this->table->set_template(array('table_open' => '<table class="mainTable clear_left" cellspacing="0" cellpadding="0">'));
+				$this->table->set_heading(NBS, NBS);
+				
+				$this->table->add_row(array(
+						lang('variable_name', 'global_variable_name'),
+						lang('template_group_instructions') . ' ' . lang('undersores_allowed').BR.
+						form_input(array('id'=>'variable_name','name'=>'variable_name','size'=>70,'class'=>'field','value'=>$variable_name))
+					)
+				);
+
+				$this->table->add_row(array(
+						lang('variable_data', 'variable_data'),
+						form_textarea(array('id'=>'variable_data','name'=>'variable_data','cols'=>70,'rows'=>10,'class'=>'field','value'=>$variable_data))
+					)
+				);
+				
+				echo $this->table->generate();
+				?>				
+				<?=form_submit('template', lang('update'), 'class="submit"')?>
 			<?=form_close()?>
 		
 		</div>
