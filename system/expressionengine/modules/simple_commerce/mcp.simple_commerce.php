@@ -108,6 +108,8 @@ class Simple_commerce_mcp {
 
 	}
 
+	// --------------------------------------------------------------------
+
 	/** -------------------------------------------
 	/**  Save Encryption Settings
 	/** -------------------------------------------*/
@@ -167,6 +169,7 @@ class Simple_commerce_mcp {
 
 	}
 
+	// --------------------------------------------------------------------
 
 	/** -------------------------------------------
 	/**  Add Item
@@ -208,6 +211,8 @@ class Simple_commerce_mcp {
 			return $this->add_items();
 		}
 	}
+
+	// --------------------------------------------------------------------
 
 	// For items, we need to make certain they can only view/assign items to entries
 	// the have permissions for - both on the edit table display, the add/edit form,
@@ -251,6 +256,7 @@ class Simple_commerce_mcp {
 		return $entry_ids;
 	}
 
+	// --------------------------------------------------------------------
 
 	function _items_form($entry_ids = array(), $new = 'y')
 	{
@@ -372,6 +378,8 @@ class Simple_commerce_mcp {
 
 		return $this->EE->load->view('edit_item', $vars, TRUE);
 	}
+	
+	// --------------------------------------------------------------------
 
 	function _items_validate($entry_id = array())
 	{
@@ -394,7 +402,7 @@ class Simple_commerce_mcp {
 		$this->EE->form_validation->set_error_delimiters('<br /><span class="notice">', '</span>');
 	}
 
-
+	// --------------------------------------------------------------------
 
 	/** -------------------------------------------
 	/**  Modify Store Items - Add/Update
@@ -480,7 +488,8 @@ class Simple_commerce_mcp {
 		.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items');
 
 	}
-
+	
+	// --------------------------------------------------------------------
 
 
 	/** -------------------------------------------
@@ -635,7 +644,9 @@ class Simple_commerce_mcp {
 			return $this->EE->load->view('edit_items', $vars, TRUE);
 		}
 	}
-
+	
+	// --------------------------------------------------------------------
+	
 	function edit_items_ajax_filter()
 	{
 		$this->EE->output->enable_profiler(FALSE);
@@ -701,6 +712,8 @@ class Simple_commerce_mcp {
 		die($sOutput);
 	}
 
+	// --------------------------------------------------------------------
+
 	function _delete_confirmation_forms($data)
 	{
 		$required = array('method', 'heading', 'message', 'hidden');
@@ -716,7 +729,8 @@ class Simple_commerce_mcp {
 
 	}
 
-
+	// --------------------------------------------------------------------
+	
 	/** -------------------------------------------
 	/**  Delete Store Items
 	/** -------------------------------------------*/
@@ -738,7 +752,8 @@ class Simple_commerce_mcp {
 		return $this->edit_items($this->EE->lang->line('items_deleted'));
 	}
 
-
+	// --------------------------------------------------------------------
+	
 	/** -------------------------------------------
 	/**  Add Email Template
 	/** -------------------------------------------*/
@@ -746,6 +761,8 @@ class Simple_commerce_mcp {
 	{
 		return $this->_emails_form(array(0));
 	}
+
+	// --------------------------------------------------------------------
 
 	function _emails_form($email_ids = array(), $new = 'y')
 	{
@@ -818,6 +835,8 @@ class Simple_commerce_mcp {
 		return $this->EE->load->view('email_template', $vars, TRUE);
 
 	}
+	
+	// --------------------------------------------------------------------
 
 	function _email_form_validation($email_id = array())
 	{
@@ -1302,7 +1321,7 @@ class Simple_commerce_mcp {
 
 		if ($query->num_rows() == 0)
 		{
-			$this->EE->form_validation->set_message('_valid_date', $this->lang->line('member_not_found'));
+			$this->EE->form_validation->set_message('_valid_member', $this->lang->line('member_not_found'));
 			return FALSE;
 		}
 		else
