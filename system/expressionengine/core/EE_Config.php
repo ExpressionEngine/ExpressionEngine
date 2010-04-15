@@ -175,7 +175,7 @@ class EE_Config Extends CI_Config {
 		{
 			$query = $this->EE->db->query("SELECT es.* FROM exp_sites AS es WHERE es.site_id = '".$this->EE->db->escape_str($site_id)."'");	
 		}
-		
+	
 		if ($query->num_rows() == 0)
 		{
 			if ($site_name == '' && $site_id != 1)

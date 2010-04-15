@@ -53,6 +53,43 @@ class Radio_ft extends EE_Fieldtype {
 	
 	// --------------------------------------------------------------------
 	
+	function validate($data)
+	{
+		$valid			= FALSE;
+		$field_options	= $this->_get_field_options($data);
+		
+		if ($data === FALSE OR $data == '')
+		{
+			return TRUE;
+		}
+		
+		$data = form_prep($data);
+
+		foreach($field_options as $key => $val)
+		{
+			if (is_array($val))
+			{
+				if (array_key_exists($data, $val))
+				{
+					$valid = TRUE;
+					break;
+				}
+			}
+			elseif ((string) $key === $data)
+			{
+				$valid = TRUE;
+				break;
+			}
+		}
+		
+		if ( ! $valid)
+		{
+			return $this->EE->lang->line('invalid_selection');
+		}
+	}
+	
+	// --------------------------------------------------------------------
+
 	function display_field($data)
 	{
 		array_merge($this->settings, $this->settings_vars);
@@ -62,17 +99,10 @@ class Radio_ft extends EE_Fieldtype {
 		$field_options = $this->_get_field_options($data);
 		
 		// If they've selected something we'll make sure that it's a valid choice
-		$selected = $this->EE->input->post($this->field_name);
-	
-		if ($selected)
-		{
-			if ( ! in_array(form_prep($selected), array_keys($field_options)))
-			{
-				unset($_POST['field_id_'.$this->settings['field_id']]);
-			}
-		}
+		$selected = $data;
+//$this->EE->input->post($this->field_name);
 		
-		$r = form_fieldset('$field_options');
+		$r = form_fieldset('');
 
 		foreach($field_options as $option)
 		{
