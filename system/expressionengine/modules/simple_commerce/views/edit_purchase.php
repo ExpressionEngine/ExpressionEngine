@@ -12,7 +12,7 @@ foreach ($purchases as $key => $val):
 
 	$recurring = '';
 	
-	if ($val['recurring'] == 'y')
+	if (isset($val['recurring']) && $val['recurring'] == 'y')
 	{
 		$recurring = '<span class="notice">* </span>';
 	}

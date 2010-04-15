@@ -84,10 +84,13 @@ class Content_files extends Controller {
 		
 		$this->cp->add_to_head('<link type="text/css" rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=fancybox" />');
 
-		$this->javascript->set_global('lang.loading', $this->lang->line('loading'));
-		$this->javascript->set_global('lang.uploading_file', $this->lang->line('uploading_file').'&hellip;');
-		$this->javascript->set_global('lang.show_toolbar', $this->lang->line('show_toolbar'));
-		$this->javascript->set_global('lang.hide_toolbar', $this->lang->line('hide_toolbar'));
+		$this->javascript->set_global('lang', array(
+					'loading'			=> $this->lang->line('loading'),
+					'uploading_file'	=> $this->lang->line('uploading_file').'&hellip;',
+					'show_toolbar'		=> $this->lang->line('show_toolbar'),
+					'hide_toolbar'		=> $this->lang->line('hide_toolbar')
+			)
+		);
 
 		$vars = array();
 
@@ -373,31 +376,8 @@ class Content_files extends Controller {
 			$file_info = $this->upload->data();
 			$encrypted_path = rawurlencode($this->encrypt->encode($file_info['full_path'], $this->session->sess_crypt_key));
 
-			// upload sucessful, now create thumb
-			$thumb_path = $file_info['file_path'].'_thumbs'.DIRECTORY_SEPARATOR;
-
-			if ( ! is_dir($thumb_path))
-			{
-				mkdir($thumb_path);
-			}
-
-			$resize['source_image']		= $file_info['full_path'];
-			$resize['new_image']		= $thumb_path.'thumb_'.$file_info['file_name'];
-			$resize['maintain_ratio']	= FALSE;
-			$resize['image_library']	= $this->config->item('image_resize_protocol');
-			$resize['library_path']		= $this->config->item('image_library_path');
-			$resize['width']			= 73;
-			$resize['height']			= 60;
-
-			$this->load->library('image_lib', $resize);
-
-			$thumb_errors = '';
-
-			if ( ! $this->image_lib->resize())
-			{
-				// @todo find a good way to display errors
-				$thumb_errors = $this->image_lib->display_errors();
-			}
+			$this->filemanager->create_thumb(array('server_path' => $file_info['file_path']), 
+											array('name' => $file_info['file_name']));
 
 			if ($this->input->get_post('is_ajax') == 'true')
 			{
@@ -760,6 +740,8 @@ class Content_files extends Controller {
 		{
 			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
+		
+		$this->load->library('filemanager');
 
 		$this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate");
 		$this->output->set_header("Pragma: no-cache");
@@ -882,8 +864,10 @@ class Content_files extends Controller {
 		$this->image_lib->clear();
 
 		// Rebuild thumb
-		// @todo
-		// $this->create_thumb(array('server_path'=>substr($file, 0, strrpos($file, DIRECTORY_SEPARATOR))), array('name'=>$image_reference));
+		$this->filemanager->create_thumb(array(
+					'server_path'	=> substr($file, 0, strrpos($file, DIRECTORY_SEPARATOR))),
+					array('name'	=> basename($file))
+			);
 
 		$url = BASE.AMP.'C=content_files'.AMP.'M=prep_edit_image'.AMP.'file='.rawurlencode($this->input->get_post('file')).AMP.'url_path='.rawurlencode($this->input->get_post('url_path'));
 

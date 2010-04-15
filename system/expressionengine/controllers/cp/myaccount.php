@@ -976,78 +976,18 @@ class MyAccount extends Controller {
 		$this->load->model('admin_model');
 
 		$vars['cp_page_title'] = $this->lang->line('html_buttons');
-		$vars['form_hidden'] = array('button_submit'=>TRUE);
+		$vars['form_hidden'] = array(
+								'button_submit'	=>	TRUE,
+								'id'			=>	$this->id);
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['cp_messages'] = array($message);
 
-		$this->jquery->tablesorter('.mainTable', '{
-			headers: {0: {sorter: false}},
-			widgets: ["zebra"]
-		}');
-
-		$this->javascript->output('
-			$(".mainTable .tag_order input").hide();
-
-			$(".mainTable tbody").sortable(
-				{
-					axis:"y",
-					containment:"parent",
-					placeholder:"tablesize",
-					start: function() {
-						$(".submit input.submit").attr("disabled", true).addClass("disabled_field");
-					},
-					stop: function(){
-						var tag_order = "";
-						$(".mainTable input.tag_order").each(function(){
-							tag_order += "&" + $(this).attr("name") + "=" + $(this).val();
-						});
-						$.ajax({
-							type: "POST",
-							url: EE.BASE+"&C=myaccount&M=reorder_html_buttons",
-							data: "XID="+EE.XID+tag_order,
-							complete: function() {
-								$(".submit input.submit").attr("disabled", false).removeClass("disabled_field");
-							},
-							success: function () {
-								$(".tag_order input[type=text]").each(function(i) {
-									$(this).val(i);
-								});
-							}
-						});
-					}
-				}
-			);
-
-			$(".del_row").show(); // js only functionality
-
-			$(".del_row a").click(function(){
-				// remove the button from the db
-				$.ajax({url: $(this).attr("href")});
-
-				// remove it from the table
-				$(this).parent().parent().remove();
-
-				// stay here
-				return false;
-			});
-
-			$("#add_new_html_button").hide();
-			$(".del_instructions").hide();
-
-			$(".cp_button").show().toggle(
-				function(){
-					$("#add_new_html_button").slideDown();
-				}, function(){
-					$("#add_new_html_button").slideUp();
-				}
-			);
-		');
-
+		$this->cp->add_js_script(array('file' => 'cp/account_html_buttons'));
 		$this->javascript->compile();
 
-		$this->cp->add_to_head('<style type="text/css">.cp_button{display:none;}</style><link rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=markitup" type="text/css" media="screen" />');
+		$this->cp->add_to_head('<style type="text/css">.cp_button{display:none;}</style>');
 
 		// load the systems's predefined buttons
 		include(APPPATH.'config/html_buttons.php');
@@ -1078,16 +1018,17 @@ class MyAccount extends Controller {
 			}
 
 			// all buttons also share these settings
-			$predefined_buttons[$button]['member_id'] = $this->id;
-			$predefined_buttons[$button]['site_id'] = $this->config->item('site_id');
-			$predefined_buttons[$button]['tag_order'] = $button_count++;
-			$predefined_buttons[$button]['tag_row'] = 1;
-			// depending on how this got inserted into the db, this may be needed, but it will never be "bad", so slashes are removed for safety.
-			$predefined_buttons[$button]['tag_open'] = stripslashes($predefined_buttons[$button]['tag_open']);
+			$predefined_buttons[$button] = array(
+						'member_id'		=> $this->id,
+						'site_id'		=> $this->config->item('site_id'),
+						'tar_order'		=> $button_count++,
+						'tar_row'		=> 1,
+						'tag_open'		=> stripslashes($predefined_buttons[$button]['tag_open'])
+				);
 
 			$this->admin_model->update_html_buttons($this->id, array($predefined_buttons[$button]), FALSE);
 		}
-		elseif (is_numeric($this->id) AND $this->id != 0 AND $this->input->get_post('button_submit') != '')
+		elseif (is_numeric($this->id) AND $this->id != 0 AND $this->input->post('button_submit') != '')
 		{
 			$data = array();
 			foreach ($_POST as $key => $val)
@@ -1138,7 +1079,8 @@ class MyAccount extends Controller {
 	function delete_html_button()
 	{
 		// validate for unallowed blank values
-		if ( ! $this->input->get_post('button_id')) {
+		if ( ! $this->input->get_post('button_id')) 
+		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
@@ -1211,7 +1153,8 @@ class MyAccount extends Controller {
 	function save_theme()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) {
+		if (empty($_POST)) 
+		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
 

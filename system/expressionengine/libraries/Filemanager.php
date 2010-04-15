@@ -342,7 +342,7 @@ class Filemanager {
 	 * @return	mixed	uploaded file info
 	 */
 	function upload_file($dir_id = '', $field = FALSE, $ajax = FALSE)
-	{//var_dump($this->config['upload_file_callback'][0]);
+	{
 		$dir = $this->directory($dir_id, FALSE, TRUE);
 
 		$data = array('error' => 'No File'); // @todo: lang key
@@ -396,18 +396,28 @@ class Filemanager {
 	 */
 	function create_thumb($dir, $data)
 	{
+		$this->EE->load->library('image_lib');
+		
 		$img_path = rtrim($dir['server_path'], '/').'/';
 		$thumb_path = $img_path.'_thumbs/';
 				
 		if ( ! is_dir($thumb_path))
 		{
 			mkdir($thumb_path);
-			// @todo create index file
+			
+			if ( ! file_exists($thumb_path.'index.html'))
+			{
+				$f = fopen($thumb_path.'index.html', FOPEN_READ_WRITE_CREATE_DESTRUCTIVE);
+				fwrite($f, 'Directory access is forbidden.');
+				fclose($f);
+			}
 		}
 		elseif ( ! is_really_writable($thumb_path))
 		{
 			return FALSE;
 		}
+		
+		$this->EE->image_lib->clear();
 
 		$config['source_image']		= $img_path.$data['name'];
 		$config['new_image']		= $thumb_path.'thumb_'.$data['name'];
@@ -417,7 +427,7 @@ class Filemanager {
 		$config['width']			= 73;
 		$config['height']			= 60;
 
-		$this->EE->load->library('image_lib', $config);
+		$this->EE->image_lib->initialize($config);
 
 		if ( ! $this->EE->image_lib->resize())
 		{
@@ -425,7 +435,7 @@ class Filemanager {
 			return FALSE;
 			die($this->EE->image_lib->display_errors());
 		}
-		
+	
 		return TRUE;
 	}
 
@@ -793,7 +803,10 @@ class Filemanager {
 		$this->EE->image_lib->clear();
 
 		// Rebuild thumb
-//		exit($this->create_thumb(array('server_path'=>$path), array('name'=>$image_name_reference)));
+		$this->create_thumb(
+						array('server_path'	=> $path), 
+						array('name'		=> $image_name_reference)
+					);
 
 
 		exit($image_name_reference);

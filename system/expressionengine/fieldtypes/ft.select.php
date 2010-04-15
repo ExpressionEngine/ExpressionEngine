@@ -153,9 +153,9 @@ class Select_ft extends EE_Fieldtype {
 					$selected = ($prow['field_id_'.$this->settings['field_pre_field_id']] == $data) ? 1 : '';
 					$pretitle = substr($prow['field_id_'.$this->settings['field_pre_field_id']], 0, 110);
 					$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
-					//$pretitle = form_prep($pretitle);
+					$pretitle = form_prep($pretitle);
 
-					$field_options[form_prep($prow['field_id_'.$this->settings['field_pre_field_id']])] = form_prep($pretitle);
+					$field_options[form_prep($prow['field_id_'.$this->settings['field_pre_field_id']])] = $pretitle;
 				}
 			}
 		}

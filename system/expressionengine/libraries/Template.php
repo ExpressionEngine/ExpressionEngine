@@ -497,6 +497,11 @@ class EE_Template {
 
 		$this->tags();
 		
+		if ($this->cease_processing === TRUE)
+		{
+			return;
+		}
+		
 		/** -------------------------------------
 		/**  Parse Output Stage PHP
 		/** -------------------------------------*/

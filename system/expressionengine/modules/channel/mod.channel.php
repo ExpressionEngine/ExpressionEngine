@@ -2435,7 +2435,7 @@ class Channel {
 
 		$end = 'ORDER BY ';
 
-		if ($fixed_order !== FALSE)
+		if ($fixed_order !== FALSE && ! empty($fixed_order))
 		{
 			$end .= 'FIELD(t.entry_id, '.implode(',', $fixed_order).') ';
 		}

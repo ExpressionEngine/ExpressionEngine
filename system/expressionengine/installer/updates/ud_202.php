@@ -34,10 +34,6 @@ class Updater {
 
     function do_update()
     {
-		// This update corresponds to the 1.6.9 release in the 1.x branch.
-		// Some of the changes made in this update can also be found in
-		// said update on the other branch.
-	
 
 		// Modules now have a tab setting
         $Q[] = "UPDATE `exp_relationships` SET rel_type = 'channel' WHERE rel_type = 'blog'";
@@ -98,7 +94,7 @@ class Updater {
 					$encode_only = FALSE;
 					
 					// Note- to this point, pages may not have been encoded
-					$old_pages = strip_slashes($row['site_pages']);
+					$old_pages = $this->array_stripslashes($row['site_pages']);
 
 					if ( ! is_string($old_pages) OR substr($old_pages, 0, 2) != 'a:')
 					{
@@ -119,15 +115,17 @@ class Updater {
 					}
 					else
 					{
+						$old_pages = unserialize($old_pages);
+						
 						if (isset($old_pages[$row['site_id']]['url']))
 						{
 							//  Site pages have already been updated, but may not be encoded
-							$new_pages = unserialize($old_pages);
+							$new_pages = $old_pages;
 							$encode_only = TRUE;
 						}
 						else
 						{
-							$new_pages[$row['site_id']] = unserialize($old_pages);
+							$new_pages[$row['site_id']] = $old_pages;
 						}
 					}
 					
@@ -149,6 +147,8 @@ class Updater {
 					}
 					
 					$Q[] = "UPDATE exp_sites SET site_pages = '".base64_encode(serialize($new_pages))."' WHERE site_id = '".$row['site_id']."'";
+					
+					unset($new_pages);
 
 				}
 			}
@@ -182,10 +182,45 @@ class Updater {
 			$this->EE->db->set('site_channel_preferences', base64_encode(serialize($settings)));
 			$this->EE->db->update('sites');
 		}
+		
+		// Unlink files on the ee_version/ and ee_info accessory because they have
+		// been being written with 644 permissions.  So people running on hosts that
+		// have a single apache user on a server with specific FTP users in the apache
+		// group will be unable to get rid of the file.  We'll use the apache user to
+		// delete it here, for a fresh start.
+		
+		if (file_exists(APPPATH.'cache/expressionengine_info/version'))
+		{
+			@unlink(APPPATH.'cache/expressionengine_info/version');
+		}
+		
+		if (file_exists(APPPATH.'cache/ee_version/current_version'))
+		{
+			@unlink(APPPATH.'cache/ee_version/current_version');
+		}
 
 		// Finished!
         return TRUE;
     }
+
+    function array_stripslashes($vals)
+     {
+     	if (is_array($vals))
+     	{	
+     		foreach ($vals as $key=>$val)
+     		{
+     			$vals[$key] = $this->array_stripslashes($val);
+     		}
+     	}
+     	else
+     	{
+     		$vals = stripslashes($vals);
+     	}
+     	
+     	return $vals;
+	}
+
+
 }   
 /* END CLASS */
 

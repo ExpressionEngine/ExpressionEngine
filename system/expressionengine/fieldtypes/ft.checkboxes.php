@@ -60,41 +60,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 		$this->settings['selected'] = $data;
 
 		// in case another field type was here
-		$field_options = array();
-
-		if ($this->settings['field_pre_populate'] == 'n')
-		{
-			foreach (explode("\n", trim($this->settings['field_list_items'])) as $v)
-			{
-				$v = trim($v);
-
-				$field_options[$v] = $v;
-			}
-		}
-		else
-		{
-			// We need to pre-populate this menu from an another channel custom field
-
-			// @todo: model
-			$this->EE->db->select('field_id_'.$this->settings['field_pre_field_id']);
-			$this->EE->db->where('channel_id', $this->settings['field_pre_channel_id']);
-			$pop_query = $this->EE->db->get('channel_data');
-
-			$field_options[''] = '--';
-
-			if ($pop_query->num_rows() > 0)
-			{
-				foreach ($pop_query->result_array() as $prow)
-				{
-					$selected = ($prow['field_id_'.$this->settings['field_pre_field_id']] == $data) ? 1 : '';
-					$pretitle = substr($prow['field_id_'.$this->settings['field_pre_field_id']], 0, 110);
-					$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
-					$pretitle = form_prep($pretitle);
-
-					$field_options[form_prep(trim($prow['field_id_'.$this->settings['field_pre_field_id']]))] = $pretitle;
-				}
-			}
-		}
+		$field_options	= $this->_get_field_options($data);
 
 		// If they've selected something we'll make sure that it's a valid choice
 		$selected = $this->EE->input->post('field_id_'.$this->settings['field_id']);
@@ -143,47 +109,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 			return $this->settings['string_override'];
 		}
 		
-		$field_options = array();
-
-		if ($this->settings['field_pre_populate'] == 'n')
-		{
-			if ( ! is_array($this->settings['field_list_items']))
-			{
-				foreach (explode("\n", trim($this->settings['field_list_items'])) as $v)
-				{
-					$v = trim($v);
-					$field_options[$v] = $v;
-				}
-			}
-			else
-			{
-				$field_options = $this->settings['field_list_items'];
-			}
-		}
-		else
-		{
-			// We need to pre-populate this menu from an another channel custom field
-
-			// @todo: model
-			$this->EE->db->select('field_id_'.$this->settings['field_pre_field_id']);
-			$this->EE->db->where('channel_id', $this->settings['field_pre_channel_id']);
-			$pop_query = $this->EE->db->get('channel_data');
-
-			$field_options[''] = '--';
-
-			if ($pop_query->num_rows() > 0)
-			{
-				foreach ($pop_query->result_array() as $prow)
-				{
-					$selected = ($prow['field_id_'.$this->settings['field_pre_field_id']] == $data) ? 1 : '';
-					$pretitle = substr($prow['field_id_'.$this->settings['field_pre_field_id']], 0, 110);
-					$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
-					$pretitle = form_prep($pretitle);
-
-					$field_options[form_prep($prow['field_id_'.$this->settings['field_pre_field_id']])] = $pretitle;
-				}
-			}
-		}		
+		$field_options	= $this->_get_field_options($data);
 		
 		$values = decode_multi_field($data);
 
@@ -308,6 +234,53 @@ class Checkboxes_ft extends EE_Fieldtype {
 	{
 		$this->field_formatting_row($data, 'checkboxes');
 		$this->multi_item_row($data, 'checkboxes');
+	}
+	
+	function _get_field_options($data)
+	{
+		$field_options = array();
+
+		if ($this->settings['field_pre_populate'] == 'n')
+		{
+			if ( ! is_array($this->settings['field_list_items']))
+			{
+				foreach (explode("\n", trim($this->settings['field_list_items'])) as $v)
+				{
+					$v = trim($v);
+					$field_options[$v] = $v;
+				}
+			}
+			else
+			{
+				$field_options = $this->settings['field_list_items'];
+			}
+		}
+		else
+		{
+			// We need to pre-populate this menu from an another channel custom field
+
+			// @todo: model
+			$this->EE->db->select('field_id_'.$this->settings['field_pre_field_id']);
+			$this->EE->db->where('channel_id', $this->settings['field_pre_channel_id']);
+			$pop_query = $this->EE->db->get('channel_data');
+
+			$field_options[''] = '--';
+
+			if ($pop_query->num_rows() > 0)
+			{
+				foreach ($pop_query->result_array() as $prow)
+				{
+					$selected = ($prow['field_id_'.$this->settings['field_pre_field_id']] == $data) ? 1 : '';
+					$pretitle = substr($prow['field_id_'.$this->settings['field_pre_field_id']], 0, 110);
+					$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
+					$pretitle = form_prep($pretitle);
+
+					$field_options[form_prep(trim($prow['field_id_'.$this->settings['field_pre_field_id']]))] = $pretitle;
+				}
+			}
+		}
+		
+		return $field_options;
 	}
 }
 

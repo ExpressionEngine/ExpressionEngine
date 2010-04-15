@@ -354,7 +354,10 @@ class Homepage extends Controller {
 			mkdir(APPPATH.'cache/ee_version', DIR_WRITE_MODE);
 		}
 
-		write_file(APPPATH.'cache/ee_version/current_version', serialize($details));
+		if (write_file(APPPATH.'cache/ee_version/current_version', serialize($details)))
+		{
+			@chmod(APPPATH.'cache/ee_version/current_version', FILE_WRITE_MODE);			
+		}		
 	}
 }
 

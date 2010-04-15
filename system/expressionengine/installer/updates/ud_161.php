@@ -51,7 +51,7 @@ class Updater {
 
 	function do_update()
 	{
-		$query = $this->db->query("SHOW tables LIKE 'exp_mailing_list'");
+		$query = $this->EE->db->query("SHOW tables LIKE 'exp_mailing_list'");
 		
 		if ($query->num_rows() > 0)
 		{

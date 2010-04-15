@@ -60,58 +60,43 @@ class Date_ft extends EE_Fieldtype {
 	
 	function display_field($data)
 	{
+		// @todo probably shouldn't be hard coded in the long run
+		$special = array('entry_date', 'expiration_date', 'comment_expiration_date');
+
 		$date_field = $this->field_name;
 		$date_local = 'field_dt_'.$this->field_id;
-		
-		$localize = TRUE;
-		$edit = FALSE;
-/*
 
+		$date = $this->EE->localize->set_localized_time($data);
 		$custom_date = '';
-
-		if ($error == TRUE)
-		{
-			$localize = TRUE;
-
-			if ($field_data != '' AND isset($result))
-			{
-				if (isset($resrow[$date_local]) AND $resrow[$date_local] != '')
-				{
-					$field_data = $this->EE->localize->offset_entry_dst($field_data, $dst_enabled);
-					$field_data = $this->EE->localize->simpl_offset($field_data, $resrow[$date_local]);
-					$localize = FALSE;
-				}
-			}
-
-			if ($field_data != '')
-			{
-				$custom_date = $this->EE->localize->set_human_time($field_data, $localize);
-			}
-
-			$cal_date = ($this->EE->localize->set_localized_time($field_data) * 1000);
-		}
-		else
-		{
-			
-		}
-*/
-		$custom_date = ( ! $data) ? '' : $data;
-		$cal_date = ($custom_date != '') ? ($this->EE->localize->set_localized_time($this->EE->localize->convert_human_date_to_gmt($custom_date)) * 1000) : ($this->EE->localize->set_localized_time() * 1000);
-
-		$custom_date = ( ! $data) ? '' : $this->EE->localize->set_human_time($data);
-		$cal_date = ( ! $data) ? $this->EE->localize->set_localized_time() * 1000 : ($this->EE->localize->set_localized_time($data) * 1000);
-
-		$this->EE->javascript->output('
-			$("#'.$this->field_name.'").datepicker({ dateFormat: $.datepicker.W3C + EE.date_obj_time, defaultDate: new Date('.$cal_date.') });
-		');
 		
-		$loc_field = 'field_offset_'.$this->field_id;
-		$localized = ( ! isset($_POST[$loc_field])) ? (($localize == FALSE) ? 'n' : 'y') : $_POST[$loc_field];
-
-		$localized_opts	= array(
-			'y' => $this->EE->lang->line('localized_date'),
-			'n' => $this->EE->lang->line('fixed_date')
-		);
+		$localize = FALSE;
+		
+	
+		if (isset($_POST[$date_field]))	// Validation failed or autosave - human readable data
+		{
+			if ($_POST[$date_field])
+			{
+				$custom_date = $_POST[$date_field];
+				$date = $this->EE->localize->convert_human_date_to_gmt($custom_date);
+			}
+		}
+		elseif ( ! $data && isset($this->settings['default_offset']))	// Initial load - no data and showing a field (no offset == blank)
+		{
+			$date = $this->EE->localize->set_localized_time($data) + $this->settings['default_offset'];
+			$custom_date = $this->EE->localize->set_human_time($custom_date);
+		}
+		
+		elseif ($data)	// Everything else
+		{
+			$date = $this->EE->localize->set_localized_time($data);
+			$custom_date = $this->EE->localize->set_human_time($date);
+		}
+		
+		$cal_date = $date * 1000;
+		
+		$this->EE->javascript->output('
+			$("#'.$this->field_name.'").datepicker({ dateFormat: $.datepicker.W3C + EE.date_obj_time , defaultDate: new Date('.$cal_date.') });
+		');
 		
 		$r = form_input(array(
 			'name'	=> $this->field_name,
@@ -120,8 +105,20 @@ class Date_ft extends EE_Fieldtype {
 			'class'	=> 'field'
 		));
 		
-		$r .= NBS.NBS.NBS.NBS;
-		$r .= form_dropdown($loc_field, $localized_opts, $localized, 'dir="'.$this->settings['field_text_direction'].'" id="'.$loc_field.'"');
+		if ( ! in_array($this->field_name, $special))
+		{
+			$localize = FALSE; // @todo this line is wrong
+			
+			$localized = ( ! isset($_POST[$date_local])) ? (($localize == FALSE) ? 'n' : 'y') : $_POST[$date_local];
+
+			$localized_opts	= array(
+				'y' => $this->EE->lang->line('localized_date'),
+				'n' => $this->EE->lang->line('fixed_date')
+			);
+			
+			$r .= NBS.NBS.NBS.NBS;
+			$r .= form_dropdown($date_local, $localized_opts, $localized, 'dir="'.$this->settings['field_text_direction'].'" id="'.$date_local.'"');
+		}
 		
 		return $r;
 	}
