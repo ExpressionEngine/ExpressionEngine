@@ -911,7 +911,7 @@ $(document).ready(function() {
 	
 	var field_for_writemode_publish = "";
 
-	if (EE.publish.show_write_mode == true) { 
+	if (EE.publish.show_write_mode === true) { 
 		$("#write_mode_textarea").markItUp(myWritemodeSettings);		
 	}
 	
@@ -929,10 +929,12 @@ $(document).ready(function() {
 		return false;
 	});
 	
-
-	$.each(EE.publish.markitup.fields, function(key, value) { 
-		$("#"+key).markItUp(mySettings);
-	});
+	if (EE.publish.markitup.fields !== undefined)
+	{
+		$.each(EE.publish.markitup.fields, function(key, value) { 
+			$("#"+key).markItUp(mySettings);
+		});	
+	}
 
 	// Prep for a workaround to allow markitup file insertion in file inputs
 	$(".btn_img a, .file_manipulate").click(function(){
