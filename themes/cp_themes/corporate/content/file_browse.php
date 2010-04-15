@@ -128,7 +128,7 @@ if ($EE_view_disable !== TRUE)
 															array('data' => lang('kind'), 'style' => 'width:10%'),
 															array('data' => lang('date'), 'style' => 'width:25%'),
 															array('data' => lang('edit'), 'style' => 'width:5%'),
-															array('data' => '', 'style' => 'width:18%'),
+															array('data' => '', 'style' => 'width:7%'),
 															array('data' => form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"'), 'style' => 'width:2%', 'class' => 'file_select')
 														);
 

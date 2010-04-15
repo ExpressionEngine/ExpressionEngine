@@ -202,8 +202,8 @@ class Content_files extends Controller {
 							'id' => 'edit_img_'.str_replace(".", '', $file['name']), 
 							'data' => '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=prep_edit_image'.AMP.'url_path='.$enc_url_path.AMP.'file='.$file['encrypted_path'].'" title="'.$file['name'].'">'.lang('edit').'</a>'
 						),
-						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=download_files'.AMP.'file='.$file['encrypted_path'].'" title="'.$file['name'].'">'.lang('file_download').'</a> | '.
-						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=delete_files_confirm'.AMP.'file='.$file['encrypted_path'].'" title="'.$file['name'].'">'.lang('delete').'</a>',
+						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=download_files'.AMP.'file='.$file['encrypted_path'].'" title="'.lang('file_download').':'.NBS.$file['name'].'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png" alt="'.lang('file_download').'" /></a> '.NBS.NBS.NBS.
+						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=delete_files_confirm'.AMP.'file='.$file['encrypted_path'].'" title="'.lang('delete').':'.NBS.$file['name'].'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png" alt="'.lang('delete').'" /></a>',
 						array(
 							'class' => 'file_select', 
 							'data' => form_checkbox('file[]', $file['encrypted_path'], FALSE, 'class="toggle"')
@@ -221,13 +221,13 @@ class Content_files extends Controller {
 						$file['mime'],
 						date('M d Y - H:ia', $file['date']),
 						'--',
-						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=download_files'.AMP.'file='.$file['encrypted_path'].'" title="'.$file['name'].'">'.lang('file_download').'</a> | '.
-						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=delete_files_confirm'.AMP.'file='.$file['encrypted_path'].'" title="'.$file['name'].'">'.lang('delete').'</a>',
+						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=download_files'.AMP.'file='.$file['encrypted_path'].'" title="'.lang('file_download').':'.NBS.$file['name'].'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png" alt="'.lang('file_download').'" /></a> '.NBS.NBS.NBS.
+						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=delete_files_confirm'.AMP.'file='.$file['encrypted_path'].'" title="'.lang('delete').':'.NBS.$file['name'].'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png" alt="'.lang('delete').'" /></a>',
 						array(
 							'class' => 'file_select', 
 							'data' => form_checkbox('file[]', $file['encrypted_path'], FALSE, 'class="toggle"')
 						)
-					);
+					);//iimages/icon-download-file.png") no-repeat scroll 0 0 transparent
 				}
 
 				$file_count++;
