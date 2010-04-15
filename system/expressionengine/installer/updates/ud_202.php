@@ -182,6 +182,22 @@ class Updater {
 			$this->EE->db->set('site_channel_preferences', base64_encode(serialize($settings)));
 			$this->EE->db->update('sites');
 		}
+		
+		// Unlink files on the ee_version/ and ee_info accessory because they have
+		// been being written with 644 permissions.  So people running on hosts that
+		// have a single apache user on a server with specific FTP users in the apache
+		// group will be unable to get rid of the file.  We'll use the apache user to
+		// delete it here, for a fresh start.
+		
+		if (file_exists(APPPATH.'cache/expressionengine_info/version'))
+		{
+			@unlink(APPPATH.'cache/expressionengine_info/version');
+		}
+		
+		if (file_exists(APPPATH.'cache/ee_version/current_version'))
+		{
+			@unlink(APPPATH.'cache/ee_version/current_version');
+		}
 
 		// Finished!
         return TRUE;
