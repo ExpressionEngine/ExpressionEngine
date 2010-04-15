@@ -1750,7 +1750,7 @@ class Api_channel_entries extends Api {
 	 * @param	mixed
 	 * @return	void
 	 */
-	function _update_entry($meta, &$data, &$mod_data = array())
+	function _update_entry($meta, &$data, &$mod_data)
 	{
 		$meta['dst_enabled'] =  $this->_cache['dst_enabled'];
 		
