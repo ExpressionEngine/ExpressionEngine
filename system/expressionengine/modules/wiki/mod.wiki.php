@@ -5371,10 +5371,12 @@ class Wiki {
 				);
 			}
 
-			if ( ! $this->EE->upload->do_upload())
+			if ($this->EE->upload->do_upload() === FALSE)
 			{
-					return $this->EE->output->show_user_error('general', 
-								array($this->EE->lang->line($this->EE->upload->display_errors())));
+				@unlink($this->EE->upload->file_name);
+				
+				return $this->EE->output->show_user_error('general', 
+							array($this->EE->lang->line($this->EE->upload->display_errors())));
 			}
 
 			$file_data = $this->EE->upload->data();
