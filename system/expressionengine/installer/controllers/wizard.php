@@ -75,7 +75,7 @@ class Wizard extends Controller {
 
 	// These are the values we need to set during a first time installation
 	var $userdata = array(
-						'app_version'			=> '201pb01',
+						'app_version'			=> $this->version,
 						'doc_url'				=> 'http://expressionengine.com/public_beta/docs/', // public beta
 						'install_lock'			=> '1',
 						'ext'					=> '.php',
