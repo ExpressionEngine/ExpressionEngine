@@ -74,7 +74,7 @@ class Channel_upd {
 		$this->EE->db->insert('actions', $data);
 		
 		$data = array(
-					'class' => 'Channel_standalone',
+					'class' => 'Channel',
 					'method' => 'saef_filebrowser'
 					);
 					
