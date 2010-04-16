@@ -7623,6 +7623,15 @@ class Channel {
 		return $WS->entry_form($return_form, $captcha);
 	}
 
+	function saef_filebrowser()
+	{
+		if ( ! class_exists('Channel_standalone'))
+		{
+			require PATH_MOD.'channel/mod.channel_standalone.php';
+		}
+		
+		return Channel_standalone::saef_javascript();
+	}
 
 }
 // END CLASS

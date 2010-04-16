@@ -374,7 +374,7 @@ class Channel_standalone extends Channel {
 		$default_entry_title = form_prep($default_entry_title);
 		
 		$action_id = $this->EE->functions->fetch_action_id('Channel', 'filemanager_endpoint');
-		$endpoint = str_replace('&amp;', '&', $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER).'ACT='.$action_id;
+		$endpoint = 'ACT='.$action_id;
 		
 		$this->EE->load->library('filemanager');
 		$this->EE->load->library('javascript');
@@ -2186,8 +2186,49 @@ EOT;
 		return $ping_array;
 	}
 
+	// --------------------------------------------------------------------
 
+	/**
+	 * Combo Loaded Javascript for the Stand-Alone Entry Form
+	 *
+	 * Given the heafty amount of javascript needed for this form, we don't
+	 * want to kill page speeds, so we're going to combo load what is needed
+	 *
+	 * @return void
+	 */
+	function saef_javascript()
+	{
+		$scripts = array(
+				'ui'		=> array('core', 'dialog'),
+				'plugins'	=> array('scrollable', 'scrollable_navigator', 
+										'ee_filebrowser', 'markitup')
+			);
 
+		if ( ! defined('PATH_JQUERY'))
+		{
+			$type = ($this->EE->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
+			
+			define('PATH_JQUERY', APPPATH.'javascript/'.$type.'/jquery/');
+		}
+		
+		$output = '';
+		
+		foreach ($scripts as $key => $val)
+		{
+			foreach ($val as $script)
+			{
+				$filename = ($key == 'ui') ? 'ui.'.$script.'.js' : $script.'.js';
+				
+				$output .= file_get_contents(PATH_JQUERY.$key.'/'.$filename)."\n";
+			}
+		}
+
+		$this->EE->output->out_type = 'cp_asset';
+		$this->EE->output->set_header("Content-Type: text/javascript");
+		
+		$this->EE->output->set_header('Content-Length: '.strlen($output));
+		$this->EE->output->set_output($output);
+	}
 
 }
 // END CLASS

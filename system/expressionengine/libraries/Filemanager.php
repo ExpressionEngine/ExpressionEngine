@@ -29,6 +29,7 @@ class Filemanager {
 
 	var $EE;
 	var $config;
+	var $theme_url;
 
 	/**
 	 * Constructor
@@ -39,6 +40,9 @@ class Filemanager {
 	{
 		$this->EE =& get_instance();
 		$this->EE->load->library('javascript');
+		
+		$this->theme_url = $this->EE->config->item('theme_folder_url').$this->EE->config->item('cp_theme').'/';
+		
 	}
 	
 	// --------------------------------------------------------------------
@@ -93,28 +97,31 @@ class Filemanager {
 		$this->EE->lang->loadfile('filebrowser');
 
 		$str = '';
-		
-			// @todo urm...
-		$json = array('filebrowser' => array(
+// var_dump($this->EE->config); exit;
+		// @todo urm...
+		$json = array(
+			'BASE'			=> $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER,
+			'filebrowser' => array(
 				'endpoint_url'	=> $endpoint_url,
 				'window_title'	=> $this->EE->lang->line('file_manager'),
-				'theme_url'		=> 'http://example.com'),
-			'lang' => array('or' => $this->EE->lang->line('or'), 'resize_image' => $this->EE->lang->line('resize_image'), 'return_to_publish' => $this->EE->lang->line('return_to_publish')));
+				'theme_url'		=> $this->theme_url),
+				'lang' => array(
+							'or'				=> $this->EE->lang->line('or'), 
+							'resize_image' 		=> $this->EE->lang->line('resize_image'), 
+							'return_to_publish' => $this->EE->lang->line('return_to_publish')
+							)
+				);
 			
-		$script_base = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=jquery';
+		$script_base = $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT=jquery';
 		
 		if ($include_jquery_base)
 		{
 			$str .= '<script type="text/javascript" charset="utf-8" src="'.$script_base.'"></script>';
 		}
-		$str .= '<script type="text/javascript">var EE='.$this->EE->javascript->generate_json($json).';</script>';
 
-		$str .= '<script type="text/javascript" charset="utf-8" src="'.$script_base.'&amp;ui=core"></script>';
-		$str .= '<script type="text/javascript" charset="utf-8" src="'.$script_base.'&amp;ui=dialog"></script>';
-		$str .= '<script type="text/javascript" charset="utf-8" src="'.$script_base.'&amp;plugin=scrollable"></script>';
-		$str .= '<script type="text/javascript" charset="utf-8" src="'.$script_base.'&amp;plugin=scrollable_navigator"></script>';
-		$str .= '<script type="text/javascript" charset="utf-8" src="'.$script_base.'&amp;plugin=ee_filebrowser"></script>';
-		$str .= '<script type="text/javascript" charset="utf-8" src="'.$script_base.'&amp;plugin=markitup"></script>';
+		$str .= '<script type="text/javascript">var EE='.$this->EE->javascript->generate_json($json).';</script>';
+		$str .= '<script type="text/javascript" charset="utf-8" src="'.$this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Channel', 'saef_filebrowser').'"></script>';
+
 		return $str;
 	}
 	
