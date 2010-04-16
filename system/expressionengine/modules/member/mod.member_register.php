@@ -499,7 +499,7 @@ class Member_register extends Member {
 		$data['url']		 = prep_url($_POST['url']);
 		$data['location']	 = $_POST['location'];
 		// overridden below if used as optional fields
-		$data['language']	= ( ! isset($config['language'])) ? 'english' : $config['language']; 
+		$data['language']	= ($this->EE->config->item('deft_lang')) ? $this->EE->config->item('deft_lang') : 'english';
 		$data['timezone']	= 'UTC';
 		$data['time_format'] = 'us';
 
