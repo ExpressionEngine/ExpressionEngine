@@ -71,14 +71,16 @@ class EE_Actions {
 		// Make sure the ACT variable is set		
 		if ( ! $action_id = $EE->input->get_post('ACT'))
 		{
-			return false;
+			return FALSE;
 		}
 
 		// Fetch the class and method name (checks to make sure module is installed too)
 		// If the ID is numeric we need to do an SQL lookup
 		if (is_numeric($action_id))
-		{					
-			$query = $EE->db->query("SELECT class, method FROM exp_actions WHERE action_id = '".$EE->db->escape_str($action_id)."'");
+		{
+			$EE->db->select('class, method');
+			$EE->db->where('action_id', $action_id);
+			$query = $EE->db->get('actions');			
 
 			if ($query->num_rows() == 0)
 			{
@@ -105,10 +107,11 @@ class EE_Actions {
 		
 			$class  = $specials[$action_id]['0'];
 			$method = $specials[$action_id]['1'];
-			
-			// Double check that the module is actually installed
-			$query = $EE->db->query("SELECT module_version FROM exp_modules 
-									 WHERE module_name = '".$EE->db->escape_str(ucfirst($class))."'");
+
+			// Double check that the module is actually installed			
+			$EE->db->select('module_version');
+			$EE->db->where('module_name', ucfirst($class));
+			$query = $EE->db->get('modules');
 
 			if ($query->num_rows() == 0)
 			{
@@ -118,7 +121,7 @@ class EE_Actions {
 				}
 				else
 				{
-					return false;					
+					return FALSE;					
 				}
 			}
 		}
