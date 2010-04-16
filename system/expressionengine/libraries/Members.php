@@ -414,8 +414,11 @@ class Members {
 
 		$this->EE->load->library('upload', $config);
 		
-		if ( ! $this->EE->upload->do_upload())
+		if ($this->EE->upload->do_upload() === FALSE)
 		{
+			// Upload Failed.  Make sure that file is gone!
+			@unlink($upload_path.$filename.$extension);
+			
 			if (REQ == 'CP')
 			{
 				$this->EE->session->set_flashdata('message_failure', $this->EE->upload->display_errors());

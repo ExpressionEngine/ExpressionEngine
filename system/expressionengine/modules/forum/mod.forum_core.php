@@ -5772,7 +5772,7 @@ class Forum_Core extends Forum {
 		}
 		else
 		{
-			$allowed_types = 'gif|jpg|png';
+			$allowed_types = 'gif|jpg|jpeg|png';
 		}
 
 		// Upload the image
