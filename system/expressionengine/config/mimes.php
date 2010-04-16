@@ -129,4 +129,4 @@ $mimes = array(	'hqx'	=>	'application/mac-binhex40',
 
 
 /* End of file CI_mimes.php */
-/* Location: ./system/expressionengine/config/CI_mimes.php */
+/* Location: ./system/expressionengine/config/mimes.php */
