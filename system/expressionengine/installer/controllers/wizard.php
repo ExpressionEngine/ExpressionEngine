@@ -75,7 +75,7 @@ class Wizard extends Controller {
 
 	// These are the values we need to set during a first time installation
 	var $userdata = array(
-						'app_version'			=> $this->version,
+						'app_version'			=> '',
 						'doc_url'				=> 'http://expressionengine.com/public_beta/docs/', // public beta
 						'install_lock'			=> '1',
 						'ext'					=> '.php',
@@ -177,6 +177,8 @@ class Wizard extends Controller {
 				error_reporting(E_ALL);
 			}
 		}
+		
+		$this->userdata['app_version'] = $this->version;
 		
  		// Load the helpers we intend to use
  		$this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
