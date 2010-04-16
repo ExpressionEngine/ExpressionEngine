@@ -5765,7 +5765,15 @@ class Forum_Core extends Forum {
 		/** -------------------------------------*/
 	
 		$server_path = $query->row('board_upload_path');
-		$allowed_types = ($query->row('board_attach_types') == 'all') ? '*' : $query->row('board_attach_types');
+		
+		if ($query->row('board_attach_types') == 'all')
+		{
+			$allowed_types = '*';
+		}
+		else
+		{
+			$allowed_types = 'gif|jpg|png';
+		}
 
 		// Upload the image
 		$config['file_name'] = $filename;
