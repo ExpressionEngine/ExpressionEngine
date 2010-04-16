@@ -352,7 +352,7 @@ if ( ! function_exists('get_mime_by_extension'))
 
 		if ( ! is_array($mimes))
 		{
-			if ( ! require_once(APPPATH.'config/CI_mimes.php'))
+			if ( ! require_once(APPPATH.'config/mimes.php'))
 			{
 				return FALSE;
 			}

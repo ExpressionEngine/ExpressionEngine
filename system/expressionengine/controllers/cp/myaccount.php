@@ -1951,337 +1951,37 @@ class MyAccount extends Controller {
 		return $this->_upload_image('sig_img');
 	}
 
-	// @todo: functional, but needs AR/model
+	// --------------------------------------------------------------------
+
+	/**
+	 * Upload Image
+	 *
+	 * @access private
+	 * @param string	Type of member image to upload
+	 * @return void
+	 */
 	function _upload_image($type = 'avatar')
 	{
-		// validate for unallowed blank values
-		if (empty($_POST)) 
+		$this->load->library('members');
+		$upload = $this->members->upload_member_images($type, $this->id);
+
+		if (is_array($upload))
 		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$id = $this->id;
-
-		switch ($type)
-		{
-			case 'avatar'	:
-								$edit_image		= 'edit_avatar';
-								$enable_pref	= 'allow_avatar_uploads';
-								$not_enabled	= 'avatars_not_enabled';
-								$remove			= 'remove_avatar';
-								$removed		= 'avatar_removed';
-								$updated		= 'avatar_updated';
-				break;
-			case 'photo'	:
-								$edit_image		= 'edit_photo';
-								$enable_pref	= 'enable_photos';
-								$not_enabled	= 'photos_not_enabled';
-								$remove			= 'remove_photo';
-								$removed		= 'photo_removed';
-								$updated		= 'photo_updated';
-
-				break;
-			case 'sig_img'		:
-								$edit_image		= 'edit_signature';
-								$enable_pref	= 'sig_allow_img_upload';
-								$not_enabled	= 'sig_img_not_enabled';
-								$remove			= 'remove_sig_image';
-								$removed		= 'sig_img_removed';
-								$updated		= 'signature_updated';
-				break;
-		}
-
-		//Is this a remove request?
-
-		if ( ! isset($_POST['remove']))
-		{
-			if ($this->config->item($enable_pref) == 'n')
+			switch ($upload[0])
 			{
-				show_error(lang($not_enabled));
-			}
+				case 'success':
+					$edit_image = $upload[1];
+					$updated = $upload[2];
+					break;
+				case 'page':
+					$args = (isset($upload[2])) ? $upload[2] : array();
+					return call_user_func_array(array($this, $upload[1]), $args);
+			}			
 		}
-		else
-		{
-			if ($type == 'avatar')
-			{
-				$query = $this->db->query("SELECT avatar_filename FROM exp_members WHERE member_id = '{$id}'");
-
-				if ($query->row('avatar_filename')	== '')
-				{
-					return $this->edit_avatar();
-				}
-
-				$this->db->query("UPDATE exp_members SET avatar_filename = '' WHERE member_id = '{$id}' ");
-
-				if (strncmp($query->row('avatar_filename'), 'uploads/', 8) == 0)
-				{
-					@unlink($this->config->slash_item('avatar_path').$query->row('avatar_filename') );
-				}
-
-				$this->session->set_flashdata('message_success', $this->lang->line($removed));
-				$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_avatar'.AMP.'id='.$id);
-			}
-			elseif ($type == 'photo')
-			{
-				$query = $this->db->query("SELECT photo_filename FROM exp_members WHERE member_id = '{$id}'");
-
-				if ($query->row('photo_filename')  == '')
-				{
-					return $this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_photo'.AMP.'id='.$id);
-				}
-
-				$this->db->query("UPDATE exp_members SET photo_filename = '' WHERE member_id = '{$id}' ");
-
-				@unlink($this->config->slash_item('photo_path').$query->row('photo_filename') );
-
-				return $this->edit_photo(lang($removed));
-			}
-			else
-			{
-				$query = $this->db->query("SELECT sig_img_filename FROM exp_members WHERE member_id = '{$id}'");
-
-				if ($query->row('sig_img_filename')	 == '')
-				{
-					return $this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature'.AMP.'id='.$id);
-				}
-
-				$this->db->query("UPDATE exp_members SET sig_img_filename = '' WHERE member_id = '{$id}' ");
-
-				@unlink($this->config->slash_item('sig_img_path').$query->row('sig_img_filename') );
-
-				$this->session->set_flashdata('message_success', $this->lang->line($removed));
-				$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature'.AMP.'id='.$id);
-			}
-		}
-
-		// Do the have the GD library?
-		if ( ! function_exists('getimagesize'))
-		{
-			show_error('gd_required');
-		}
-
-		// Is there $_FILES data?
-
-		if ( ! isset($_FILES['userfile']))
-		{
-			return $this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_'.$type.AMP.'id='.$id);
-		}
-
-		// Check the image size
-
-		$size = ceil(($_FILES['userfile']['size']/1024));
-
-		if ($type == 'avatar')
-		{
-			$max_size = ($this->config->item('avatar_max_kb') == '' OR $this->config->item('avatar_max_kb') == 0) ? 50 : $this->config->item('avatar_max_kb');
-		}
-		elseif ($type == 'photo')
-		{
-			$max_size = ($this->config->item('photo_max_kb') == '' OR $this->config->item('photo_max_kb') == 0) ? 50 : $this->config->item('photo_max_kb');
-		}
-		else
-		{
-			$max_size = ($this->config->item('sig_img_max_kb') == '' OR $this->config->item('sig_img_max_kb') == 0) ? 50 : $this->config->item('sig_img_max_kb');
-		}
-
-		$max_size = preg_replace("/(\D+)/", "", $max_size);
-
-		if ($size > $max_size)
-		{
-			show_error('submission', str_replace('%s', $max_size, $this->lang->line('image_max_size_exceeded')));
-		}
-
-		// Is the upload path valid and writable?
-
-		if ($type == 'avatar')
-		{
-			$upload_path = $this->config->slash_item('avatar_path').'uploads/';
-		}
-		elseif ($type == 'photo')
-		{
-			$upload_path = $this->config->slash_item('photo_path');
-		}
-		else
-		{
-			$upload_path = $this->config->slash_item('sig_img_path');
-		}
-
-		if ( ! @is_dir($upload_path) OR ! is_really_writable($upload_path))
-		{
-			show_error('image_assignment_error');
-		}
-
-		// Set some defaults
-
-		$filename = $_FILES['userfile']['name'];
-
-		if ($type == 'avatar')
-		{
-			$max_width	= ($this->config->item('avatar_max_width') == '' OR $this->config->item('avatar_max_width') == 0) ? 100 : $this->config->item('avatar_max_width');
-			$max_height = ($this->config->item('avatar_max_height') == '' OR $this->config->item('avatar_max_height') == 0) ? 100 : $this->config->item('avatar_max_height');
-			$max_kb		= ($this->config->item('avatar_max_kb') == '' OR $this->config->item('avatar_max_kb') == 0) ? 50 : $this->config->item('avatar_max_kb');
-		}
-		elseif ($type == 'photo')
-		{
-			$max_width	= ($this->config->item('photo_max_width') == '' OR $this->config->item('photo_max_width') == 0) ? 100 : $this->config->item('photo_max_width');
-			$max_height = ($this->config->item('photo_max_height') == '' OR $this->config->item('photo_max_height') == 0) ? 100 : $this->config->item('photo_max_height');
-			$max_kb		= ($this->config->item('photo_max_kb') == '' OR $this->config->item('photo_max_kb') == 0) ? 50 : $this->config->item('photo_max_kb');
-		}
-		else
-		{
-			$max_width	= ($this->config->item('sig_img_max_width') == '' OR $this->config->item('sig_img_max_width') == 0) ? 100 : $this->config->item('sig_img_max_width');
-			$max_height = ($this->config->item('sig_img_max_height') == '' OR $this->config->item('sig_img_max_height') == 0) ? 100 : $this->config->item('sig_img_max_height');
-			$max_kb		= ($this->config->item('sig_img_max_kb') == '' OR $this->config->item('sig_img_max_kb') == 0) ? 50 : $this->config->item('sig_img_max_kb');
-		}
-
-		// Does the image have a file extension?
-
-		if (strpos($filename, '.') === FALSE)
-		{
-			show_error('submission', $this->lang->line('invalid_image_type'));
-		}
-
-		// Is it an allowed image type?
-
-		$x = explode('.', $filename);
-		$extension = '.'.end($x);
-
-		// We'll do a simple extension check now.
-		// The file upload class will do a more thorough check later
-
-		$types = array('.jpg', '.jpeg', '.gif', '.png');
-
-		if ( ! in_array(strtolower($extension), $types))
-		{
-			show_error('submission', $this->lang->line('invalid_image_type'));
-		}
-
-		// Assign the name of the image
-		$new_filename = $type.'_'.$id.strtolower($extension);
-
-		// Do they currently have an avatar or photo?
-
-		if ($type == 'avatar')
-		{
-			$query = $this->member_model->get_member_data($this->id, array('avatar_filename'));
-			$old_filename = ($query->row('avatar_filename')	 == '') ? '' : $query->row('avatar_filename') ;
-
-			if (strpos($old_filename, '/') !== FALSE)
-			{
-				$x = explode('/', $old_filename);
-				$old_filename =	 end($x);
-			}
-		}
-		elseif ($type == 'photo')
-		{
-			$query = $this->member_model->get_member_data($this->id, array('photo_filename'));
-			$old_filename = ($query->row('photo_filename')	== '') ? '' : $query->row('photo_filename') ;
-		}
-		else
-		{
-			$query = $this->member_model->get_member_data($this->id, array('sig_img_filename'));
-			$old_filename = ($query->row('sig_img_filename')  == '') ? '' : $query->row('sig_img_filename') ;
-		}
-
-		// Upload the image
-
-		require APPPATH.'_to_be_replaced/lib.upload'.EXT;
-
-		$this->UP = new Upload();
-		$this->UP->new_name = $new_filename;
-
-		$this->UP->set_upload_path($upload_path);
-		$this->UP->set_allowed_types('img');
-
-		if ( ! $this->UP->upload_file())
-		{
-			@unlink($this->UP->new_name);
-
-			$info = ($this->UP->error_msg == 'invalid_filetype') ? "<div class='itempadbig'>".$this->lang->line('invalid_image_type')."</div>" : '';
-			show_error($this->lang->line($this->UP->error_msg).$info);
-		}
-
-		// Do we need to resize?
-
-		$vals	= @getimagesize($this->UP->new_name);
-		$width	= $vals['0'];
-		$height = $vals['1'];
-
-		if ($width > $max_width OR $height > $max_height)
-		{
-			// Was resizing successful?
-			// If not, we'll delete the uploaded image and issue an error saying the file is to big
-
-			if ( ! $this->_image_resize($new_filename, $type))
-			{
-				@unlink($this->UP->new_name);
-
-				$max_size = str_replace('%x', $max_width, $this->lang->line('max_image_size'));
-				$max_size = str_replace('%y', $max_height, $max_size);
-				$max_size .= ' - '.$max_kb.'KB';
-
-				show_error($max_size);
-			}
-		}
-
-		// Check the width/height one last time
-		// Since our image resizing class will only reproportion based on one axis,
-		// we'll check the size again, just to be safe. We need to make absolutely
-		// sure that if someone submits a very short/wide image it'll contrain properly
-
-		$vals	= @getimagesize($this->UP->new_name);
-		$width	= $vals['0'];
-		$height = $vals['1'];
-
-		if ($width > $max_width OR $height > $max_height)
-		{
-			$this->_image_resize($new_filename, $type, 'height');
-			$vals	= @getimagesize($this->UP->new_name);
-			$width	= $vals['0'];
-			$height = $vals['1'];
-		}
-
-		// Delete the old file if necessary
-
-		if ($old_filename != $new_filename)
-		{
-			@unlink($upload_path.$old_filename);
-		}
-
-		// Update DB
-		if ($type == 'avatar')
-		{
-			$avatar = 'uploads/'.$new_filename;
-			$data = array(
-							'avatar_filename' 	=> $avatar,
-							'avatar_width' 		=> $width,
-							'avatar_height' 	=> $height
-			);
-		}
-		elseif ($type == 'photo')
-		{
-			$data = array(
-							'photo_filename' 	=> $new_filename,
-							'photo_width' 		=> $width,
-							'photo_height' 	=> $height
-			);
-		}
-		else
-		{
-			$data = array(
-							'sig_img_filename' 	=> $new_filename,
-							'sig_img_width' 	=> $width,
-							'sig_img_height' 	=> $height
-			);
-		}
-
-		$this->member_model->update_member($this->id, $data);
 
 		// Success message
 		$this->session->set_flashdata('message_success', $this->lang->line($updated));
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M='.$edit_image.AMP.'id='.$id);
-
-		// return $this->$edit_image($this->lang->line($updated));
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M='.$edit_image.AMP.'id='.$this->id);
 	}
 
 	// --------------------------------------------------------------------

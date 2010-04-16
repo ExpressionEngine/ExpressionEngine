@@ -27,44 +27,8 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-$mimes = array(
-				'psd'	=>	'application/octet-stream',
-				'pdf'	=>	'application/pdf',
-				'swf'	=>	'application/x-shockwave-flash',
-				'sit'	=>	'application/x-stuffit',
-				'tar'	=>	'application/x-tar',
-				'tgz'	=>	'application/x-tar',
-				'zip'	=>	'application/zip',
-				'gzip'	=>	'application/x-gzip',
-				'bmp'	=>	'image/bmp',
-				'gif'	=>	'image/gif',
-				'jpeg'	=>	'image/jpeg',
-				'jpg'	=>	'image/jpeg',
-				'jpe'	=>	'image/jpeg',
-				'png'	=>	'image/png',
-				'txt'	=>	'text/plain',
-				'html'	=>	'text/html',
-				'doc'	=>	'application/msword',
-				'xl'	=>	'application/excel',
-				'xls'	=>	'application/excel',
-				'flv'	=>	'video/x-flv',
-				'mov'	=>	'video/quicktime',
-				'qt'	=>	'video/quicktime',
-				'mpg'	=>	'video/mpeg',
-				'mpeg'	=>	'video/mpeg',
-				'mp3'	=>	'audio/mpeg',
-				'aiff'	=>	'audio/x-aiff',
-				'aif'	=>	'audio/x-aiff',
-				'aac'	=>	'audio/aac'
-			);
-
-	// shakes fist at IE
-	if ($this->EE->input->user_agent() != "" && stristr($this->EE->input->user_agent(), 'MSIE') !== FALSE)
-	{
-		$mimes['png'] = 'image/x-png';
-	}			
-
-/*
+	
+/*			
 | -------------------------------------------------------------------
 | MIME TYPES
 | -------------------------------------------------------------------
@@ -72,7 +36,6 @@ $mimes = array(
 | Upload class to help identify allowed file types.
 |
 */
-/*
 $mimes = array(	'hqx'	=>	'application/mac-binhex40',
 				'cpt'	=>	'application/mac-compactpro',
 				'csv'	=>	array('text/x-comma-separated-values', 'text/comma-separated-values', 'application/octet-stream', 'application/vnd.ms-excel', 'text/csv', 'application/csv', 'application/excel', 'application/vnd.msexcel'),
@@ -80,7 +43,7 @@ $mimes = array(	'hqx'	=>	'application/mac-binhex40',
 				'dms'	=>	'application/octet-stream',
 				'lha'	=>	'application/octet-stream',
 				'lzh'	=>	'application/octet-stream',
-				'exe'	=>	array('application/octet-stream', 'application/x-msdownload'),
+				'exe'	=>	'application/octet-stream',
 				'class'	=>	'application/octet-stream',
 				'psd'	=>	'application/x-photoshop',
 				'so'	=>	'application/octet-stream',
@@ -94,7 +57,7 @@ $mimes = array(	'hqx'	=>	'application/mac-binhex40',
 				'smi'	=>	'application/smil',
 				'smil'	=>	'application/smil',
 				'mif'	=>	'application/vnd.mif',
-				'xls'	=>	array('application/excel', 'application/vnd.ms-excel', 'application/msexcel'),
+				'xls'	=>	array('application/excel', 'application/vnd.ms-excel'),
 				'ppt'	=>	array('application/powerpoint', 'application/vnd.ms-powerpoint'),
 				'wbxml'	=>	'application/wbxml',
 				'wmlc'	=>	'application/wmlc',
@@ -113,7 +76,7 @@ $mimes = array(	'hqx'	=>	'application/mac-binhex40',
 				'swf'	=>	'application/x-shockwave-flash',
 				'sit'	=>	'application/x-stuffit',
 				'tar'	=>	'application/x-tar',
-				'tgz'	=>	array('application/x-tar', 'application/x-gzip-compressed'),
+				'tgz'	=>	'application/x-tar',
 				'xhtml'	=>	'application/xhtml+xml',
 				'xht'	=>	'application/xhtml+xml',
 				'zip'	=>  array('application/x-zip', 'application/zip', 'application/x-zip-compressed'),
@@ -158,13 +121,12 @@ $mimes = array(	'hqx'	=>	'application/mac-binhex40',
 				'avi'	=>	'video/x-msvideo',
 				'movie'	=>	'video/x-sgi-movie',
 				'doc'	=>	'application/msword',
-				'docx'	=>	'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-				'xlsx'	=>	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 				'word'	=>	array('application/msword', 'application/octet-stream'),
 				'xl'	=>	'application/excel',
 				'eml'	=>	'message/rfc822'
 			);
-*/
 
-/* End of file mimes.php */
-/* Location: ./system/expressionengine/config/mimes.php */
+
+
+/* End of file CI_mimes.php */
+/* Location: ./system/expressionengine/config/CI_mimes.php */

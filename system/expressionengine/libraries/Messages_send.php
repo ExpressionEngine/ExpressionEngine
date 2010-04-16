@@ -63,10 +63,10 @@ class EE_Messages_send extends EE_Messages {
 		
 		if ($this->EE->input->get_post('attach') !== FALSE && $this->EE->input->get_post('attach') != '')
 		{
-			$query = $this->EE->db->query("SELECT attachment_id, attachment_size, attachment_location
-								 FROM exp_message_attachments
-								 WHERE attachment_id IN ('".str_replace('|', "','", $this->EE->input->get_post('attach'))."')");
- 			
+			$this->EE->db->select('attachment_id, attachment_size, attachment_location');
+			$this->EE->db->where_in('attachment_id', str_replace('|',"','", $this->EE->input->get_post('attach')));
+			$query = $this->EE->select('message_attachments');
+			 			
  			if ($query->num_rows() + 1 > $this->max_attachments)
  			{
  				return $this->EE->lang->line('no_more_attachments');
@@ -86,7 +86,6 @@ class EE_Messages_send extends EE_Messages {
 			}
 		}
 		
-		
 		/** -------------------------------------
 		/**  Attachment too hefty?
 		/** -------------------------------------*/
@@ -101,12 +100,13 @@ class EE_Messages_send extends EE_Messages {
 		/** -------------------------------------*/
 		if ($this->attach_total != '0')
 		{
-			$query = $this->EE->db->query("SELECT SUM(attachment_size) AS total FROM exp_message_attachments WHERE is_temp != 'y'");
+			$this->EE->db->select('SUM(attachment_size) as total');
+			$this->EE->db->where('is_temp', 'y');
+			$query = $this->EE->db->get('message_attachments');
 			
 			if ($query->row('total') != NULL)
 			{	
-				// Is the size of the new file (along with the previous ones) too large?
-																		
+				// Is the size of the new file (along with the previous ones) too large?					
 				if (ceil($query->row('total')  + ($_FILES['userfile']['size']/1024)) > ($this->attach_total * 1000))
 				{
 					return $this->EE->lang->line('too_many_attachments');
@@ -117,93 +117,60 @@ class EE_Messages_send extends EE_Messages {
 		/** -------------------------------------
 		/**  Separate the filename form the extension
 		/** -------------------------------------*/
-		
-		if ( ! class_exists('Image_lib'))
-		{
-			require APPPATH.'_to_be_replaced/lib.image_lib'.EXT;
-		}
-		
-		$IM = new Image_lib();
-		
-		$split = $IM->explode_name($_FILES['userfile']['name']);
-		$filename  = $split['name'];
-		$extension = $split['ext'];		
-		
+		$filename = $_FILES['userfile']['name'];
+		$extension = strrchr($filename, '.');
+		$filename = ($extension === FALSE) ? $filename : substr($filename, 0, -strlen($extension));
+
 		$filehash = $this->EE->functions->random('alnum', 20);
 		
 		/** -------------------------------------
 		/**  Upload the image
 		/** -------------------------------------*/
 		
-		if ( ! class_exists('Upload'))
+		// Upload the image
+		$config = array(
+				'file_name'		=> $filename,
+				'upload_path'	=> $this->upload_path,
+				'allowed_types'	=> '*',
+				'max_size'		=> $this->attach_maxsize
+			);
+	
+		if ($this->EE->config->item('xss_clean_uploads') == 'n')
 		{
-			require APPPATH.'_to_be_replaced/lib.upload'.EXT;
+			$config['xss_clean'] = FALSE;
 		}
-		
-		$UP = new Upload();
-		
-		$UP->set_upload_path($this->upload_path);
-		$UP->set_allowed_types('all');
-		
-		$UP->new_name = $filehash.$extension;
-						
-		if ( ! $UP->upload_file())
+		else
 		{
-			@unlink($UP->new_name);
-			
-			if ($UP->error_msg == 'invalid_filetype')
-			{
-				$info = implode(', ', $UP->allowed_mimes);
-			
-				$info  = "<div class='default'>".$this->EE->lang->line($UP->error_msg).
-						 "<div class='default'>".$this->EE->lang->line('allowed_mimes').'&nbsp;'.$info."</div>";
-				
-				return $info;
-			}
-			
-			return $UP->error_msg;
+			$config['xss_clean'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
 		}
 
-		/** -------------------------------------
-		/**  Insert into Database
-		/** -------------------------------------*/
-		
-		$this->temp_message_id = $this->EE->functions->random('nozero', 9);
-		
-	  	$data = array(
-	  					'sender_id'				=> $this->member_id,
-	  					'message_id'			=> $this->temp_message_id,
-	  					'attachment_name'		=> $filename.$extension,
-	  					'attachment_hash'		=> $filehash,
-	  					'attachment_extension'  => $extension,
-	  					'attachment_location'	=> $UP->new_name,
-	  					'attachment_date'		=> $this->EE->localize->now,
-	  					'attachment_size'		=> ceil($UP->file_size/1024)
-	  				);	  
-	  				
-		$this->EE->db->query($this->EE->db->insert_string('exp_message_attachments', $data));	
-		$attach_id = $this->EE->db->insert_id();
-		
-		
-		/** -------------------------------------
-		/**  Change file name with attach ID
-		/** -------------------------------------*/
-		
-		// For convenience we use the attachment ID number as the prefix for all files.
-		// That way they will be easier to manager.
-		
-		if (file_exists($UP->new_name))
+		$this->EE->load->library('upload', $config);
+	
+		if ($this->EE->upload->do_upload() === FALSE)
 		{
-			$final_name = $attach_id.'_'.$filehash;
-			$final_path = $UP->upload_path.$final_name.$extension;
+			@unlink($this->EE->upload->file_name);
 			
-			if (rename($this->EE->UP->new_name, $final_path))
-			{
-				chmod($final_path, FILE_WRITE_MODE);			
-				$this->EE->db->query("UPDATE exp_message_attachments SET attachment_hash = '{$final_name}', attachment_location = '{$final_path}'  WHERE attachment_id = '{$attach_id}'");
-			}
+			return $this->EE->upload->display_errors();
 		}
-		
+	
+		$upload_data = $this->EE->upload->data();
+
+		$this->temp_message_id = $this->EE->functions->random('nozero', 9);
+
+		$data = array(
+					'sender_id'				=> $this->member_id,
+					'message_id'			=> $this->temp_message_id,
+					'attachment_name'		=> $filename.$extension,
+					'attachment_hash'		=> $filehash,
+					'attachment_extension'  => $extension,
+					'attachment_location'	=> $upload_data['file_name'],
+					'attachment_date'		=> $this->EE->localize->now,
+					'attachment_size'		=> $upload_data['file_size']
+				);
+				
+		$this->EE->db->insert('message_attachments', $data);
+		$attach_id = $this->EE->db->insert_id();
+	
 		/** -------------------------------------
 		/**  Load Attachment into array
 		/** -------------------------------------*/
@@ -222,18 +189,21 @@ class EE_Messages_send extends EE_Messages {
 		
 		$expire = $this->EE->localize->now - 24*60*60;
 		
-		$result = $this->EE->db->query("SELECT attachment_location FROM exp_message_attachments 
-							  WHERE attachment_date < $expire
-							  AND is_temp = 'y'");
-							  
+		$this->EE->db->select('attachment_location');
+		$this->EE->db->where('attachment_date < ', $expire);
+		$this->EE->db->where('is_temp', 'y');
+		$result = $this->EE->db->get('message_attachments');
+		
 		if ($result->num_rows() > 0)
 		{
 			foreach ($result->result_array() as $row)
 			{
 				@unlink($row['attachment_location']);
 			}
-				
-			$this->EE->db->query("DELETE FROM exp_message_attachments WHERE attachment_date < $expire AND is_temp='y'");			
+			
+			$this->EE->db->where('attachment_date <', $expire);
+			$this->EE->db->where('is_temp = "y"');
+			$this->EE->db->delete('message_attachments');			
 		}
 		
 		return TRUE;

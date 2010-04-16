@@ -4573,9 +4573,11 @@ class Forum_Core extends Forum {
 		{
 			exit;
 		}
-				
-		$query = $this->EE->db->query("SELECT filehash, filename, extension, hits, is_image FROM exp_forum_attachments WHERE filehash = '{$attach_hash}'");
-
+		
+		$this->EE->db->select('filehash, filename, extension, hits, is_image');
+		$this->EE->db->where('filehash', $attach_hash);
+		$query = $this->EE->db->get('forum_attachments');
+		
 		if ($query->num_rows() == 0)
 		{
 			exit;
@@ -4596,19 +4598,30 @@ class Forum_Core extends Forum {
 		
 		$hits = ($query->row('hits')  == 0) ? 1 : ($query->row('hits')  + 1);
 		
-		$this->EE->db->query("UPDATE exp_forum_attachments SET hits = '{$hits}' WHERE filehash = '{$attach_hash}'");
-
-
-		if ($this->mimes[$extension] == 'html')
-			$this->mimes[$extension] = 'text/html';
+		$this->EE->db->set('hits', $hits);
+		$this->EE->db->where('filehash', $attach_hash);
+		$this->EE->db->update('forum_attachments');
 		
-		if ($query->row('is_image')  == 'y')
-			$attachment = '';
+		if ($this->mimes[$extension] == 'html')
+		{
+			$mime = 'text/html';
+		}
 		else
-			$attachment = (isset($_SERVER['HTTP_USER_AGENT']) AND strstr($_SERVER['HTTP_USER_AGENT'], "MSIE")) ? "" : " attachment;";
+		{
+			$mime = (is_array($this->mimes[$extension])) ? $this->mimes[$extension][0] : $this->mimes[$extension];
+		}
 
+		if ($query->row('is_image')  == 'y')
+		{
+			$attachment = '';
+		}
+		else
+		{
+			$attachment = (isset($_SERVER['HTTP_USER_AGENT']) AND strstr($_SERVER['HTTP_USER_AGENT'], "MSIE")) ? "" : " attachment;";
+		}
+		
 		header('Content-Disposition: '.$attachment.' filename="'.$query->row('filename') .'"');		
-		header('Content-Type: '.$this->mimes[$extension]);
+		header('Content-Type: '.$mime);
 		header('Content-Transfer-Encoding: binary');
 		header('Content-Length: '.filesize($filepath));
 		header('Last-Modified: '.gmdate('D, d M Y H:i:s', $this->EE->localize->now).' GMT'); 
@@ -4622,6 +4635,7 @@ class Forum_Core extends Forum {
 		fpassthru($fp);
 		@fclose($fp);
 		exit;
+		
 	}
 	
 
@@ -5712,7 +5726,9 @@ class Forum_Core extends Forum {
 		{		
 			foreach ($attach_ids as $val)
 			{
-				$result = $this->EE->db->query("SELECT filesize FROM exp_forum_attachments WHERE attachment_id = '{$val}'");
+				$this->EE->db->select('filesize');
+				$this->EE->db->where('attachment_id', $val);
+				$result = $this->EE->db->get('forum_attachments');
 				
 				if ($total == 0)
 				{
@@ -5724,8 +5740,8 @@ class Forum_Core extends Forum {
 				}
 			}
 		}
-			
-		$total = $total + ($_FILES['userfile']['size']/1024);
+
+		$total = $total + ($_FILES['userfile']['size'] / 1024);
 		$total = ceil($total);
 			
 		// Is the size of the new file (along with the previous ones) too large?
@@ -5738,172 +5754,152 @@ class Forum_Core extends Forum {
 		/** -------------------------------------
 		/**  Separate the filename form the extension
 		/** -------------------------------------*/
-		
-		require APPPATH.'_to_be_replaced/lib.image_lib'.EXT;
-		$IM = new Image_lib();
-		
-		$split = $IM->explode_name($_FILES['userfile']['name']);
-		$filename  = $split['name'];
-		$extension = $split['ext'];		
+		$filename = $_FILES['userfile']['name'];
+		$extension = strrchr($filename, '.');
+		$filename = ($extension === FALSE) ? $filename : substr($filename, 0, -strlen($extension));
 		
 		$filehash = $this->EE->functions->random('alnum', 20);
 		
 		/** -------------------------------------
 		/**  Upload the image
 		/** -------------------------------------*/
-		require APPPATH.'_to_be_replaced/lib.upload'.EXT;
-		$this->EE->UP = new Upload();
+	
+		$server_path = $query->row('board_upload_path');
+		$allowed_types = ($query->row('board_attach_types') == 'all') ? '*' : $query->row('board_attach_types');
+
+		// Upload the image
+		$config['file_name'] = $filename;
+		$config['upload_path'] = $server_path;
+		$config['allowed_types'] = $allowed_types;
+		$config['max_size']	= $query->row('board_max_attach_size');
 		
-		$this->EE->UP->set_upload_path($query->row('board_upload_path') );
-		$this->EE->UP->set_max_filesize($query->row('board_max_attach_size') , TRUE);
-		$this->EE->UP->set_allowed_types($query->row('board_attach_types') );
-		
-		$this->EE->UP->new_name = $filehash.$extension;
-						
-		if ( ! $this->EE->UP->upload_file())
+		if ($this->EE->config->item('xss_clean_uploads') == 'n')
 		{
-			@unlink($this->EE->UP->new_name);
-			
-			$info = '';
-			
-			if ($this->EE->UP->error_msg == 'invalid_filetype')
-			{
-				if ($query->row('board_attach_types')  == 'all')
-				{
-					$this->_fetch_mimes();
-					
-					foreach ($this->mimes as $key => $val)
-					{
-						$info .= $key.', ';
-					}
-			
-					$info = substr($info, 0, -1);
-				}
-				else
-				{
-					$info = 'image';
-				}
-			
-				$info = "<div class='itempadbig'>".$this->EE->lang->line('allowed_mimes').'&nbsp;'.$info."</div>";
-			}
-			
-			return $this->submission_error = $this->EE->lang->line($this->EE->UP->error_msg).$info;
+			$config['xss_clean'] = FALSE;
+		}
+		else
+		{
+			$config['xss_clean'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
 		}
 
-		/** -------------------------------------
-		/**  Create the thumb if necessary
-		/** -------------------------------------*/
+		$this->EE->load->library('upload', $config);
+
+		if ($this->EE->upload->do_upload() === FALSE)
+		{
+			@unlink($server_path.$filename.$extension);
+			return $this->submission_error = $this->EE->lang->line($this->EE->upload->display_errors());
+		}
+		
+		$upload_data = $this->EE->upload->data();
+
 		$width		= 0;
 		$height		= 0;
 		$t_width	= 0;
 		$t_height	= 0;
-		
-		if ($this->EE->UP->is_image == 1)
+
+		if ($upload_data['is_image'])
 		{
-			$props = $IM->get_image_properties($this->EE->UP->new_name, TRUE);
-			
-			$width  = $props['width'];
-			$height = $props['height'];
-			
+			$width = $upload_data['image_width'];
+			$height = $upload_data['image_height'];
 			
 			if ($width > $query->row('board_max_width')  OR $height > $query->row('board_max_height') )
 			{
-				@unlink($this->EE->UP->new_name);
+				@unlink($upload_data['full_path']);
 				$error = str_replace('%x', $query->row('board_max_width') , $this->EE->lang->line("dimensions_too_big"));
 				$error = str_replace('%y', $query->row('board_max_height') , $error);
 				return $this->submission_error = $error;
 			}
-			
+
 			if ($query->row('board_use_img_thumbs')  == 'y')
-			{			
-				$res = $IM->set_properties(			
-											array(
-													'resize_protocol'	=> $this->EE->config->item('image_resize_protocol'),
-													'libpath'			=> $this->EE->config->item('image_library_path'),
-													'maintain_ratio'	=> TRUE,
-													'master_dim'		=> 'height',
-													'thumb_prefix'		=> 't',
-													'file_path'			=> $query->row('board_upload_path') ,
-													'file_name'			=> $filehash.$extension,
-													'quality'			=> 75,
-													'dst_width'			=> ($query->row('board_thumb_width')  < $width) ? $query->row('board_thumb_width')  : $width,
-													'dst_height'		=> ($query->row('board_thumb_height')  < $height) ? $query->row('board_thumb_height')  : $height
-													)
-											);
-				if ($IM->image_resize())
+			{
+				$res_config = array(
+					'image_library'		=> $this->EE->config->item('image_resize_protocol'),
+					'library_path'		=> $this->EE->config->item('image_library_path'),
+					'maintain_ratio'	=> TRUE,
+					'new_image'			=> $query->row('board_upload_path').$filehash.'_t'.$upload_data['file_ext'],
+					'master_dim'		=> 'height',
+					'thumb_marker'		=> '_t',
+					'source_image'		=> $upload_data['full_path'],
+					'quality'			=> 75,
+					'width'			=> ($query->row('board_thumb_width')  < $width) ? $query->row('board_thumb_width')  : $width,
+					'height'		=> ($query->row('board_thumb_height')  < $height) ? $query->row('board_thumb_height')  : $height				);
+					
+				$this->EE->load->library('image_lib', $res_config); 
+
+				if ($this->EE->image_lib->resize())
 				{
-					$props = $IM->get_image_properties($query->row('board_upload_path') .$filehash.'_t'.$extension, TRUE);
+					$props = $this->EE->image_lib->get_image_properties($query->row('board_upload_path').$filehash.'_t'.$upload_data['file_ext'], TRUE);
 					
 					$t_width  = $props['width'];
 					$t_height = $props['height'];
-				
 				}
 			}
 		}
-
+// var_dump($upload_data, $filename); exit;
 		/** -------------------------------------
 		/**  Build the column data
 		/** -------------------------------------*/
-	  
-	  	$data = array(
-	  					'topic_id'			=> 0,
-	  					'post_id'			=> 0,
+
+		$data = array(
+						'topic_id'			=> 0,
+						'post_id'			=> 0,
 						'board_id'			=> 0,
-	  					'member_id'			=> $this->EE->session->userdata('member_id'),
-	  					'filename'			=> $filename.$extension,
-	  					'filehash'			=> $filehash,
-	  					'filesize'			=> ceil($this->EE->UP->file_size/1024),
-	  					'extension'			=> $extension,
-	  					'attachment_date'	=> $this->EE->localize->now,
-	  					'is_temp'			=> ($is_preview == TRUE OR $this->submission_error != '') ? 'y' : 'n',
-	  					'width'				=>  $width,
-	  					'height'			=>  $height,
-	  					't_width'			=>  $t_width,
-	  					't_height'			=>  $t_height,
-	  					'is_image'			=> ($this->EE->UP->is_image == 1) ? 'y' : 'n'
-	  				);	  
-	  
-	  
-		$this->EE->db->query($this->EE->db->insert_string('exp_forum_attachments', $data));	
+						'member_id'			=> $this->EE->session->userdata('member_id'),
+						'filename'			=> $filename.$upload_data['file_ext'],
+						'filehash'			=> $filehash,
+						'filesize'			=> ceil($upload_data['file_size']),
+						'extension'			=> $extension,
+						'attachment_date'	=> $this->EE->localize->now,
+						'is_temp'			=> ($is_preview == TRUE OR $this->submission_error != '') ? 'y' : 'n',
+						'width'				=>  $width,
+						'height'			=>  $height,
+						't_width'			=>  $t_width,
+						't_height'			=>  $t_height,
+						'is_image'			=> ($upload_data['is_image']) ? 'y' : 'n'
+					);	  
+
+
+		$this->EE->db->insert('forum_attachments', $data);
+
 		$attach_id = $this->EE->db->insert_id();
 		
 		
 		/** -------------------------------------
 		/**  Change file name with attach ID
 		/** -------------------------------------*/
-		
+
 		// For convenience we use the attachment ID number as the prefix for all files.
 		// That way they will be easier to manager.
-		
-		
-		if (file_exists($this->EE->UP->new_name))
+		if (file_exists($upload_data['full_path']))
 		{
 			$final_name = $attach_id.'_'.$filehash;
-			$final_path = $this->EE->UP->upload_path.$final_name.$extension;
-			
-			if (rename($this->EE->UP->new_name, $final_path))
+			$final_path = $upload_data['file_path'].$final_name.$extension;
+
+			if (rename($upload_data['full_path'], $final_path))
 			{
 				chmod($final_path, FILE_WRITE_MODE);
-				
+
 				$thumb_name  = $filehash.'_t'.$extension;
 				$thumb_final = $final_name.'_t'.$extension;
 
-				if (file_exists($this->EE->UP->upload_path.$thumb_name))
+				if (file_exists($upload_data['file_path'].$thumb_name))
 				{
-					if (rename($this->EE->UP->upload_path.$thumb_name, $this->EE->UP->upload_path.$thumb_final))
+					if (rename($upload_data['file_path'].$thumb_name, $upload_data['file_path'].$thumb_final))
 					{
-						chmod($this->EE->UP->upload_path.$thumb_final, FILE_WRITE_MODE);
+						chmod($upload_data['file_path'].$thumb_final, FILE_WRITE_MODE);
 					}			
 				}
-
-				$this->EE->db->query("UPDATE exp_forum_attachments SET filehash = '{$final_name}' WHERE attachment_id = '{$attach_id}'");
+				
+				$this->EE->db->set('filehash', $final_name);
+				$this->EE->db->where('attachment_id', $attach_id);
+				$this->EE->db->update('forum_attachments');
 			}
 		}
 		
 		/** -------------------------------------
 		/**  Are there previous attachments?
 		/** -------------------------------------*/
-				
+
 		$this->attachments[] = $attach_id;
 
 		if (count($attach_ids) > 0)
@@ -5912,41 +5908,46 @@ class Forum_Core extends Forum {
 			{
 				$this->attachments[] = $val;
 			}
-
 		}
-		
+
 		/** -------------------------------------
 		/**  Is this a preview request
 		/** -------------------------------------*/
-		
+
 		// If so it means they are manually triggering the upload
 		// so we'll disable errors;
-		
+
 		if ($is_preview == TRUE)
 		{
 			$this->preview_override = TRUE;
 			$this->submission_error = '';
 		}
-		
+
 		/** -------------------------------------
 		/**  Delete expired images
 		/** -------------------------------------*/
-		
+
 		$expire = $this->EE->localize->now - 10800; // Three hours ago
 
-		$result = $this->EE->db->query("SELECT attachment_id, filehash, extension FROM exp_forum_attachments WHERE attachment_date < $expire AND is_temp = 'y'");
+		$this->EE->db->select('attachment_id, filehash, extension');
+		$this->EE->db->where('attachment_date < ', $expire);
+		$this->EE->db->where('is_temp', 'y');
+		
+		$result = $this->EE->db->get('forum_attachments');
 
 		if ($result->num_rows() > 0)
 		{
 			foreach ($result->result_array() as $row)
 			{
-				@unlink($this->EE->UP->upload_path.$row['attachment_id'].'_'.$row['filehash'].$row['extension']);
-				@unlink($this->EE->UP->upload_path.$row['attachment_id'].'_'.$row['filehash'].'_t'.$row['extension']);
+				@unlink($upload_data['file_path'].$row['attachment_id'].'_'.$row['filehash'].$row['extension']);
+				@unlink($upload_data['file_path'].$row['attachment_id'].'_'.$row['filehash'].'_t'.$row['extension']);
 			}
 			
-			$this->EE->db->query("DELETE FROM exp_forum_attachments WHERE attachment_date < $expire AND is_temp = 'y'");			
+			$this->EE->db->where('attachment_date <', $expire);
+			$this->EE->db->where('is_temp', 'y');
+			$this->EE->db->delete('forum_attachments');
 		}
-
+		
 		return TRUE;
 	}
 
@@ -5964,7 +5965,7 @@ class Forum_Core extends Forum {
 		$query = $this->EE->db->get('forum_attachments');
 
 		// make sure the attachment exists and the user is allowed to remove it
-		if ($query->num_rows() == 0 OR ($this->session->userdata['member_id'] != $query->row('member_id') && $this->_mod_permission('can_edit', $forum_id) === FALSE))
+		if ($query->num_rows() == 0 OR ($this->EE->session->userdata('member_id') != $query->row('member_id') && $this->_mod_permission('can_edit', $forum_id) === FALSE))
 		{
 			return;
 		}

@@ -5284,16 +5284,16 @@ class Wiki {
 			return;
 		}
 		
-		$query = $this->EE->db->query("SELECT * FROM exp_upload_prefs 
-							 WHERE id = '".$this->EE->db->escape_str($this->upload_dir)."'");
-		
+		$this->EE->db->where('id', $this->upload_dir);
+		$query = $this->EE->db->get('upload_prefs');
+				
 		/** -------------------------------------
 		/**  Uploading
 		/** -------------------------------------*/
 		
 		if ($this->EE->input->post('upload') == 'y')
 		{
-			if( ! in_array($this->EE->session->userdata['group_id'], $this->users) && ! in_array($this->EE->session->userdata['group_id'], $this->admins))
+			if( ! in_array($this->EE->session->userdata('group_id'), $this->users) && ! in_array($this->EE->session->userdata('group_id'), $this->admins))
 			{
 				return FALSE;
 			}
@@ -5304,10 +5304,10 @@ class Wiki {
 			
 			if ($this->EE->config->item('secure_forms') == 'y')
 			{
-				$results = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_security_hashes 
-										WHERE hash='".$this->EE->db->escape_str($_POST['XID'])."' 
-										AND ip_address = '".$this->EE->input->ip_address()."' 
-										AND date > UNIX_TIMESTAMP()-7200");
+				$this->EE->db->select('COUNT(*) as count');
+				$this->EE->db->where('ip_address', $this->EE->input->ip_address());
+				$this->EE->db->where('date >', 'UNIX_TIMESTAMP()-7200');
+				$results = $this->EE->db->get('security_hashes');				
 			
 				if ($results->row('count')  == 0)
 				{
@@ -5324,77 +5324,81 @@ class Wiki {
 			/** -------------------------------------
 			/**  Upload File
 			/** -------------------------------------*/
-			
-			if ( ! class_exists('Upload'))
+
+			$filename = $this->EE->input->get_post('new_filename');
+
+			if ($filename !== FALSE && $filename != '')
 			{
-				require APPPATH.'_to_be_replaced/lib.upload'.EXT;
-			}
-			
-			$UP = new Upload();
-			
-			$server_path = $query->row('server_path');
-			
-			if (substr($server_path , -1) != '/')
-			{
-				$server_path .= '/';
-			}
-			
-			if ($UP->set_upload_path($server_path) !== TRUE)
-			{
-				return $this->EE->output->show_user_error('general', array($this->EE->lang->line($UP->error_msg)));
-			}
-			
-			$UP->set_allowed_types($query->row('allowed_types') );
-			$UP->set_max_width($query->row('max_width') );
-			$UP->set_max_height($query->row('max_height') );
-			$UP->set_max_filesize($query->row('max_size') );
-			
-			/** -------------------------------------
-			/**  Massage the Filename to be Safe and WIKI-like
-			/** -------------------------------------*/
-			
-			if ($this->EE->input->get_post('new_filename') !== FALSE && $this->EE->input->get_post('new_filename') != '')
-			{
-				$new_name = $this->valid_title($this->EE->functions->sanitize_filename(strip_tags($this->EE->input->get_post('new_filename'))));
+				$new_name = $this->valid_title($this->EE->functions->sanitize_filename(strip_tags($filename)));
 			}
 			elseif ( ! is_uploaded_file($_FILES['userfile']['tmp_name']))
 			{
 				$new_name = $this->valid_title($this->EE->functions->sanitize_filename(strip_tags($_FILES['userfile']['name'])));
 			}
 			
-			$UP->new_name = $new_name;
+			$no_extension_name = substr($new_name, 0, strrpos($new_name, '.'));
 			
-			if (file_exists($query->row('server_path') .$UP->new_name))
-			{		
-				return $this->EE->output->show_user_error('general', array($this->EE->lang->line('file_exists')));
-			}
+			$server_path = $query->row('server_path');
+
+			$allowed_types = ($query->row('allowed_types') == 'all') ? '*' : $query->row('allowed_types');
+
+			// Upload the image
+			$config = array(
+					'file_name'		=> $no_extension_name,
+					'upload_path'	=> $server_path,
+					'allowed_types'	=> $allowed_types,
+					'max_size'		=> $query->row('max_size'),
+					'max_width'		=> $query->row('max_width'),
+					'max_height'	=> $query->row('max_height'),
+				);
 			
-			/** -------------------------------------
-			/**  Process the Upload
-			/** -------------------------------------*/
-			
-			if ( ! $UP->upload_file())
+			if ($this->EE->config->item('xss_clean_uploads') == 'n')
 			{
-				return $this->EE->output->show_user_error('general', array($this->EE->lang->line($UP->error_msg)));
+				$config['xss_clean'] = FALSE;
 			}
+			else
+			{
+				$config['xss_clean'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
+			}
+
+			$this->EE->load->library('upload', $config);
+
+			if (file_exists($server_path.$new_name))
+			{
+				return $this->EE->output->show_user_error('general', array(
+								$this->EE->lang->line('file_exists')
+					)
+				);
+			}
+
+			if ( ! $this->EE->upload->do_upload())
+			{
+					return $this->EE->output->show_user_error('general', 
+								array($this->EE->lang->line($this->EE->upload->display_errors())));
+			}
+
+			$file_data = $this->EE->upload->data();
 			
 			$data = array(	'wiki_id'				=> $this->wiki_id,
 							'file_name'				=> $new_name,
 							'upload_summary'		=> ($this->EE->input->get_post('summary') !== FALSE) ? $this->EE->security->xss_clean($this->EE->input->get_post('summary')) : '',
-							'upload_author'			=> $this->EE->session->userdata['member_id'],
+							'upload_author'			=> $this->EE->session->userdata('member_id'),
 							'upload_date'			=> $this->EE->localize->now,
-							'image_width'			=> $UP->width,
-							'image_height'			=> $UP->height,
-							'file_type'				=> $UP->file_type,
-							'file_size'				=> ceil($UP->file_size/1024),
+							'image_width'			=> $file_data['image_width'],
+							'image_height'			=> $file_data['image_height'],
+							'file_type'				=> $file_data['file_type'],
+							'file_size'				=> ceil($file_data['file_size'] / 1024),
 							'file_hash'				=> $this->EE->functions->random('md5')
 						 );
 			
-			$this->EE->db->query($this->EE->db->insert_string('exp_wiki_uploads', $data));
+			$this->EE->db->insert('wiki_uploads', $data);			
 			
 			if ($this->EE->config->item('secure_forms') == 'y')
 			{
-				$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
+				$this->EE->db->where('hash', $_POST['XID']);
+				$this->EE->db->where('ip_address', $this->EE->input->ip_address());
+				$this->EE->db->or_where('date', 'UNIX_TIMESTAMP()-7200');
+				$this->EE->db->delete('security_hashes');				
 			}
 			
 			$this->redirect($this->file_ns, $new_name);
