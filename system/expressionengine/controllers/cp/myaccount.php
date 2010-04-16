@@ -1987,54 +1987,6 @@ class MyAccount extends Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	  *	 Image Resizing
-	  */
-	function _image_resize($filename, $type = 'avatar', $axis = 'width')
-	{
-		if ( ! class_exists('Image_lib'))
-		{
-			require APPPATH.'_to_be_replaced/lib.image_lib'.EXT;
-		}
-
-		$IM = new Image_lib();
-
-		if ($type == 'avatar')
-		{
-			$max_width	= ($this->config->item('avatar_max_width') == '' OR $this->config->item('avatar_max_width') == 0) ? 100 : $this->config->item('avatar_max_width');
-			$max_height = ($this->config->item('avatar_max_height') == '' OR $this->config->item('avatar_max_height') == 0) ? 100 : $this->config->item('avatar_max_height');
-			$image_path = $this->config->slash_item('avatar_path').'uploads/';
-		}
-		else
-		{
-			$max_width	= ($this->config->item('photo_max_width') == '' OR $this->config->item('photo_max_width') == 0) ? 100 : $this->config->item('photo_max_width');
-			$max_height = ($this->config->item('photo_max_height') == '' OR $this->config->item('photo_max_height') == 0) ? 100 : $this->config->item('photo_max_height');
-			$image_path = $this->config->slash_item('photo_path');
-		}
-
-		$res = $IM->set_properties(
-									array(
-											'resize_protocol'	=> $this->config->item('image_resize_protocol'),
-											'libpath'			=> $this->config->item('image_library_path'),
-											'maintain_ratio'	=> TRUE,
-											'master_dim'		=> $axis,
-											'file_path'			=> $image_path,
-											'file_name'			=> $filename,
-											'quality'			=> 75,
-											'dst_width'			=> $max_width,
-											'dst_height'		=> $max_height
-											)
-									);
-		if ( ! $IM->image_resize())
-		{
-			return FALSE;
-		}
-
-		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	  *	 Update notepad
 	  */
 	function notepad_update()

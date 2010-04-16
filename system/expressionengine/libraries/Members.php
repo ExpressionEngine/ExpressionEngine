@@ -474,6 +474,58 @@ class Members {
 
 		return array('success', $edit_image, $updated);	
 	}
+	
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Image Resizing
+	 * @todo not currently called from anywhere.
+	 * Moving code that's shared between the member mod & my account over to this.
+	 */
+	function image_resize($filename, $type = 'avatar', $axis = 'width')
+	{
+		$this->EE->load->library('image_lib');
+
+		if ($type == 'avatar')
+		{
+			$max_width	= ($this->config->item('avatar_max_width') == '' OR $this->config->item('avatar_max_width') == 0) ? 100 : $this->config->item('avatar_max_width');
+			$max_height = ($this->config->item('avatar_max_height') == '' OR $this->config->item('avatar_max_height') == 0) ? 100 : $this->config->item('avatar_max_height');
+			$image_path = $this->config->slash_item('avatar_path').'uploads/';
+		}
+		else
+		{
+			$max_width	= ($this->config->item('photo_max_width') == '' OR $this->config->item('photo_max_width') == 0) ? 100 : $this->config->item('photo_max_width');
+			$max_height = ($this->config->item('photo_max_height') == '' OR $this->config->item('photo_max_height') == 0) ? 100 : $this->config->item('photo_max_height');
+			$image_path = $this->config->slash_item('photo_path');
+		}
+
+		$config = array(
+				'image_library'		=> $this->config->item('image_resize_protocol'),
+				'libpath'			=> $this->config->item('image_library_path'),
+				'maintain_ratio'	=> TRUE,
+				'master_dim'		=> $axis,
+				'source_image'		=> $image_path.$filename,
+				'quality'			=> 75,
+				'width'				=> $max_width,
+				'height'			=> $max_height				
+			);
+			
+		$this->EE->image_lib->clear();
+		
+		$this->EE->image_lib->initialize($config);
+
+		;
+
+
+		if ($this->EE->image_lib->resize() === FALSE)
+		{
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	
 }
 /* End of file members.php */
 /* Location: ./system/expressionengine/libraries/members.php */

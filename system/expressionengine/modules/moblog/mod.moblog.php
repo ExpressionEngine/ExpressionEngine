@@ -2713,15 +2713,8 @@ class Moblog {
 		$this->post_data['images'][$key]['width']  = $properties['width'];
 		$this->post_data['images'][$key]['height'] = $properties['height'];
 
-		/** --------------------------------
-		/**  Invoke the Image Lib Class
-		/** --------------------------------*/
-		if ( ! class_exists('Image_lib'))
-		{
-			require APPPATH.'_to_be_replaced/lib.image_lib'.EXT;
-		}
-
-		$IM = new Image_lib();
+		$this->EE->load->library('image_lib');
+		$this->EE->image_lib->clear();
 
 		/** ------------------------------
 		/**  Resize Image
@@ -2750,32 +2743,31 @@ class Moblog {
 					$resize_height = ceil(($this->moblog_array['moblog_resize_width']/$properties['width']) * $properties['height']);
 				}
 
-				$res = $IM->set_properties(
-											array(
-													'resize_protocol'	=> $this->EE->config->item('image_resize_protocol'),
-													'libpath'			=> $this->EE->config->item('image_library_path'),
-													'file_path'			=> $this->upload_path,
-													'file_name'			=> $filename,
-													'quality'			=> '90',
-													'dst_width'			=> $resize_width,
-													'dst_height'		=> $resize_height
-												)
-											);
+				$config = array(
+						'resize_protocol'	=> $this->EE->config->item('image_resize_protocol'),
+						'libpath'			=> $this->EE->config->item('image_library_path'),
+						'source_image'		=> $this->upload_path.$filename,
+						'quality'			=> '90',
+						'width'				=> $resize_width,
+						'height'			=> $resize_height
+				);
 
-				if ($res === FALSE OR ! $IM->image_resize())
+				$this->EE->image_lib->initialize($config);
+
+				if ($this->EE->image_lib->resize() === FALSE)
 				{
 					$this->message_array[] = 'unable_to_resize';
-					$this->message_array = array_merge($this->message_array,$IM->error_msg);
+					$this->message_array = array_merge($this->message_array,$this->EE->image_lib->error_msg);
 					return FALSE;
 				}
 
-				$this->post_data['images'][$key]['width']  = $IM->dst_width;
-				$this->post_data['images'][$key]['height'] = $IM->dst_height;
+				$this->post_data['images'][$key]['width']  = $this->EE->image_lib->width;
+				$this->post_data['images'][$key]['height'] = $this->EE->image_lib->height;
 
 				if( ! $properties = $this->image_properties($this->upload_path.$filename))
 				{
-					$properties = array('width'	  => $IM->dst_width,
-										'height'  => $IM->dst_height);
+					$properties = array('width'	  => $this->EE->image_lib->width,
+										'height'  => $this->EE->image_lib->height);
 				}
 			}
 		}
@@ -2806,25 +2798,25 @@ class Moblog {
 					// Resize based on width, calculate height
 					$resize_height = ceil(($this->moblog_array['moblog_thumbnail_width']/$properties['width']) * $properties['height']);
 				}
+				
+				$this->EE->image_lib->clear();
 
-				$res = $IM->set_properties(
-										array(
-												'resize_protocol'	=> $this->EE->config->item('image_resize_protocol'),
-												'libpath'			=> $this->EE->config->item('image_library_path'),
-												'file_path'			=> $this->upload_path,
-												'file_name'			=> $filename,
-												'thumb_prefix'		=> 'thumb',
-												'quality'			=> '90',
-												'dst_width'			=> $resize_width,
-												'dst_height'		=> $resize_height
-											  )
-										);
+				$config = array(
+					'resize_protocol'	=> $this->EE->config->item('image_resize_protocol'),
+					'libpath'			=> $this->EE->config->item('image_library_path'),
+					'source_image'		=> $this->upload_path.$filename,
+					'thumb_prefix'		=> 'thumb',
+					'quality'			=> '90',
+					'width'				=> $resize_width,
+					'height'			=> $resize_height					
+					);
+				
+				$this->EE->image_lib->initialize($config);
 
-
-				if ($res === FALSE OR ! $IM->image_resize())
+				if ($this->EE->image_lib->resize() === FALSE)
 				{
 					$this->message_array[] = 'unable_to_resize';
-					$this->message_array = array_merge($this->message_array,$IM->error_msg);
+					$this->message_array = array_merge($this->message_array,$this->EE->image_lib->error_msg);
 					return FALSE;
 				}
 

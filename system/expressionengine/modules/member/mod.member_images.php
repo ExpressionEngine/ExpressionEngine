@@ -635,63 +635,6 @@ class Member_images extends Member {
 								);
 	}
 
-
-
-	/** ----------------------------------------
-	/**  Image Resizing
-	/** ----------------------------------------*/
-
-	function _image_resize($filename, $type = 'avatar', $axis = 'width')
-	{
-		if ( ! class_exists('Image_lib'))
-		{
-			require APPPATH.'_to_be_replaced/lib.image_lib'.EXT;
-		}
-
-		$IM = new Image_lib();
-
-		if ($type == 'avatar')
-		{
-			$max_width	= ($this->EE->config->item('avatar_max_width') == '' OR $this->EE->config->item('avatar_max_width') == 0) ? 100 : $this->EE->config->item('avatar_max_width');
-			$max_height	= ($this->EE->config->item('avatar_max_height') == '' OR $this->EE->config->item('avatar_max_height') == 0) ? 100 : $this->EE->config->item('avatar_max_height');
-			$image_path = $this->EE->config->slash_item('avatar_path').'uploads/';
-		}
-		elseif ($type == 'photo')
-		{
-			$max_width	= ($this->EE->config->item('photo_max_width') == '' OR $this->EE->config->item('photo_max_width') == 0) ? 100 : $this->EE->config->item('photo_max_width');
-			$max_height	= ($this->EE->config->item('photo_max_height') == '' OR $this->EE->config->item('photo_max_height') == 0) ? 100 : $this->EE->config->item('photo_max_height');
-			$image_path = $this->EE->config->slash_item('photo_path');
-		}
-		else
-		{
-			$max_width	= ($this->EE->config->item('sig_img_max_width') == '' OR $this->EE->config->item('sig_img_max_width') == 0) ? 100 : $this->EE->config->item('sig_img_max_width');
-			$max_height	= ($this->EE->config->item('sig_img_max_height') == '' OR $this->EE->config->item('sig_img_max_height') == 0) ? 100 : $this->EE->config->item('sig_img_max_height');
-			$image_path = $this->EE->config->slash_item('sig_img_path');
-		}
-
-		$res = $IM->set_properties(
-									array(
-											'resize_protocol'	=> $this->EE->config->item('image_resize_protocol'),
-											'libpath'			=> $this->EE->config->item('image_library_path'),
-											'maintain_ratio'	=> TRUE,
-											'master_dim'		=> $axis,
-											'file_path'			=> $image_path,
-											'file_name'			=> $filename,
-											'quality'			=> 75,
-											'dst_width'			=> $max_width,
-											'dst_height'		=> $max_height
-											)
-									);
-		if ( ! $IM->image_resize())
-		{
-			return FALSE;
-		}
-
-		return TRUE;
-	}
-
-
-
 	/** ----------------------------------------
 	/**  Photo Edit Form
 	/** ----------------------------------------*/
