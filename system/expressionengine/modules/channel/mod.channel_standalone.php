@@ -258,17 +258,10 @@ class Channel_standalone extends Channel {
 		$url_title	= '';
 		$dst_enabled = $this->EE->session->userdata('daylight_savings');
 
-	  	// Load the language file
-		$this->EE->lang->loadfile('channel');
-
-		// Load the form helper
-		$this->EE->load->helper('form');
-
 		// No loggy? No looky...
-
 		if ($this->EE->session->userdata('member_id') == 0)
 	  	{
-			return '';
+			return;
 	  	}
 	  
 		if ( ! $channel = $this->EE->TMPL->fetch_param('channel'))
@@ -279,14 +272,18 @@ class Channel_standalone extends Channel {
 	  	// Fetch the action ID number.  Even though we don't need it until later
 	  	// we'll grab it here.  If not found it means the action table doesn't
 	  	// contain the ID, which means the user has not updated properly.  Ya know?
-	  
 	  	if ( ! $insert_action = $this->EE->functions->fetch_action_id('Channel', 'insert_new_entry'))
 	  	{
 			return $this->EE->output->show_user_error('general', $this->EE->lang->line('channel_no_action_found'));
 	  	}
+	
+		// Load some helpers, language files & libraries.
+		// Doing this after error checking since it makes no sense 
+		// To load a bunch of things up if we're just going to error
+		$this->EE->lang->loadfile('channel');
+		$this->EE->load->helper('form');
 	  
 		// We need to first determine which channel to post the entry into.
-
 		$assigned_channels = $this->EE->functions->fetch_assigned_channels();
 
 		$channel_id = ( ! $this->EE->input->post('channel_id')) ? '' : $this->EE->input->get_post('channel_id');
@@ -748,7 +745,7 @@ EOT;
 		{
 			if (strncmp($this->EE->TMPL->fetch_param('show_fields'), 'not ', 4) == 0)
 			{
-				$this->EE->db->where_not_in('field_name', explode('|', trim(substr($this->EE->TMPL->fetch_param('show_fields'), 3))));å				
+				$this->EE->db->where_not_in('field_name', explode('|', trim(substr($this->EE->TMPL->fetch_param('show_fields'), 3))));			
 			}
 			else
 			{
@@ -1326,6 +1323,7 @@ EOT;
 						$temp_options = str_replace(LD.'option_value'.RD, '', $temp_options);
 						$temp_options = str_replace(LD.'selected'.RD, '', $temp_options);
 						$pdo = $temp_options;
+						
 						foreach ($relquery->result_array() as $relrow)
 						{
 							$temp_options = $rel_options;
@@ -1543,7 +1541,7 @@ EOT;
 					{
 						// We need to pre-populate this menu from an another channel custom field
 						$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
-						$this->EE->db->where('channel_id' $row['field_pre_channel_id']);
+						$this->EE->db->where('channel_id', $row['field_pre_channel_id']);
 						$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
 						$pop_query = $this->EE->db->get('channel_data');
 						
