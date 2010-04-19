@@ -96,9 +96,11 @@ class Filemanager {
 	{
 		$this->EE->lang->loadfile('filebrowser');
 
-		$str = '';
+		$ret = array();
 
-		$json = array(
+		$ret['str'] = '';
+
+		$ret['json'] = array(
 			'BASE'			=> $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER,
 			'THEME_URL'		=> $this->theme_url,
 			'filebrowser' => array(
@@ -111,18 +113,17 @@ class Filemanager {
 							'return_to_publish' => $this->EE->lang->line('return_to_publish')
 							)
 				);
-			
+
 		$script_base = $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT=jquery';
 		
 		if ($include_jquery_base)
 		{
-			$str .= '<script type="text/javascript" charset="utf-8" src="'.$script_base.'"></script>';
+			$ret['str'] .= '<script type="text/javascript" charset="utf-8" src="'.$script_base.'"></script>';
 		}
 
-		$str .= '<script type="text/javascript">var EE='.$this->EE->javascript->generate_json($json).';</script>';
-		$str .= '<script type="text/javascript" charset="utf-8" src="'.$this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Channel', 'saef_filebrowser').'"></script>';
+		$ret['str'] .= '<script type="text/javascript" charset="utf-8" src="'.$this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Channel', 'saef_filebrowser').'"></script>';
 
-		return $str;
+		return $ret;
 	}
 	
 	// --------------------------------------------------------------------

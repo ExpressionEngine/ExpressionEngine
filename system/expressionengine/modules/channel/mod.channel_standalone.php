@@ -26,10 +26,13 @@
 
 class Channel_standalone extends Channel {
 
-	var $categories = array();
-	var $cat_parents = array();
-	var $assign_cat_parent = FALSE;
-	var $upload_div = '';
+	var $categories 		= array();
+	var $cat_parents 		= array();
+	var $assign_cat_parent 	= FALSE;
+	var $upload_div 		= '';
+	var $output_js 			= NULL;
+	var $default_entry_title = '';
+	var $url_title_prefix 	= '';
 
 	// --------------------------------------------------------------------	
 
@@ -145,7 +148,6 @@ class Channel_standalone extends Channel {
 		if ( ! $this->EE->input->post('preview'))
 		{
 			$this->EE->load->library('api');
-
 			$this->EE->api->instantiate(array('channel_entries', 'channel_categories'));
 			
 			unset($_POST['hidden_pings']);
@@ -160,7 +162,6 @@ class Channel_standalone extends Channel {
 			if ( ! $this->EE->input->post('entry_date'))
 			{
 				$_POST['entry_date'] = $this->EE->localize->set_human_time($this->EE->localize->now);
-				
 			}
 
 			$data = $_POST;
@@ -251,18 +252,16 @@ class Channel_standalone extends Channel {
 	 */
 	function entry_form($return_form = FALSE, $captcha = '')
 	{
-		$field_data	= '';
-		$catlist	= '';
-		$status		= '';
-		$title		= '';
-		$url_title	= '';
-		$dst_enabled = $this->EE->session->userdata('daylight_savings');
-
+		$field_data		= '';
+		$cat_list		= '';
+		$status			= '';
+		$title 			= '';
+		$url_title 		= '';
+		
 		// No loggy? No looky...
-		if ($this->EE->session->userdata('member_id') == 0)
-	  	{
-			return;
-	  	}
+		if ($this->EE->session->userdata('member_id') == 0) { 
+			return; 
+		}
 	  
 		if ( ! $channel = $this->EE->TMPL->fetch_param('channel'))
 		{
@@ -282,13 +281,11 @@ class Channel_standalone extends Channel {
 		// To load a bunch of things up if we're just going to error
 		$this->EE->lang->loadfile('channel');
 		$this->EE->load->helper('form');
-	  
-		// We need to first determine which channel to post the entry into.
+		
 		$assigned_channels = $this->EE->functions->fetch_assigned_channels();
-
-		$channel_id = ( ! $this->EE->input->post('channel_id')) ? '' : $this->EE->input->get_post('channel_id');
-
-		if ($channel_id == '')
+		$channel_id = ( ! $this->EE->TMPL->fetch_param('channel')) ? '' : $this->EE->TMPL->fetch_param('channel');
+		
+		if ($channel_id != '')
 		{
 			$this->EE->db->select('channel_id');
 			$this->EE->db->where_in('site_id', $this->EE->TMPL->site_ids);
@@ -300,42 +297,33 @@ class Channel_standalone extends Channel {
 				$channel_id = $query->row('channel_id') ;
 			}
 		}
-
-		/** ----------------------------------------------
-		/**  Security check
-		/** ---------------------------------------------*/
-
+		
+		// Security Check
 		if ( ! in_array($channel_id, $assigned_channels))
 		{
 			return $this->EE->TMPL->no_results();
 		}
 
-		/** ----------------------------------------------
-		/**  Fetch channel preferences
-		/** ---------------------------------------------*/
+		// Fetch Channel Preferences
 		$this->EE->db->where('channel_id', $channel_id);
 		$query = $this->EE->db->get('channels');
-	
-		if ($query->num_rows() == 0)
-		{
-			return "The channel you have specified does not exist.";
-		}
-
-		foreach ($query->row_array() as $key => $val)
+		
+		foreach($query->row_array() as $key => $val)
 		{
 			$$key = $val;
 		}
-
+	
 		if ( ! isset($_POST['channel_id']))
 		{
 			$title		= $default_entry_title;
 			$url_title	= $url_title_prefix;
+			
+			$this->default_entry_title 	= $default_entry_title;
+			$this->url_title_prefix		= $url_title_prefix;
 		}
-
-		/** ----------------------------------------
-		/**  Return the "no cache" version of the form
-		/** ----------------------------------------*/
-		if ($return_form == FALSE)
+		
+		// Return 'no cache' version of form
+		if ($return_form === FALSE)
 		{
 			$nc = '{{NOCACHE_CHANNEL_FORM ';
 
@@ -351,39 +339,6 @@ class Channel_standalone extends Channel {
 
 			return $nc;
 		}
-
-		/** ----------------------------------------------
-		/**  JavaScript For URL Title
-		/** ---------------------------------------------*/
-
-		$convert_ascii = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? TRUE : FALSE;
-		$word_separator = $this->EE->config->item('word_separator') != "dash" ? '_' : '-';
-
-		/** -------------------------------------
-		/**  Create Foreign Character Conversion JS
-		/** -------------------------------------*/
-
-		include(APPPATH.'config/foreign_chars.php');
-	
-		/* -------------------------------------
-		/*  'foreign_character_conversion_array' hook.
-		/*  - Allows you to use your own foreign character conversion array
-		/*  - Added 1.6.0
-		/* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
-		*/  
-			if (isset($this->extensions->extensions['foreign_character_conversion_array']))
-			{
-				$foreign_characters = $this->extensions->call('foreign_character_conversion_array');
-			}
-		/*
-		/* -------------------------------------*/
-
-		$foreign_replace = '';
-
-		foreach($foreign_characters as $old => $new)
-		{
-			$foreign_replace .= "if (c == '$old') {NewTextTemp += '$new'; continue;}\n\t\t\t\t";
-		}
 		
 		$default_entry_title = form_prep($default_entry_title);
 		
@@ -394,9 +349,11 @@ class Channel_standalone extends Channel {
 		$this->EE->load->library('javascript');
 		$this->EE->load->model('admin_model');
 		$this->EE->load->model('tools_model');
+		$this->EE->load->model('channel_model');
 		
-		// Upload Directories
-
+		// Onward...
+		$which = ($this->EE->input->post('preview')) ? 'preview' : 'new';
+		
 		$upload_directories = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata('group_id'));
 
 		$file_list = array();
@@ -409,12 +366,13 @@ class Channel_standalone extends Channel {
 			$file_list[$row->id]['id'] = $row->id;
 			$file_list[$row->id]['name'] = $row->name;
 			$file_list[$row->id]['url'] = $row->url;
-		}		
+		}
+
+		// Fetch Custom Fields
+		$field_query = $this->EE->channel_model->get_channel_fields($field_group);
 		
 		$html_buttons = $this->EE->admin_model->get_html_buttons($this->EE->session->userdata('member_id'));
-		
 		$button_js = array();
-
 
 		foreach ($html_buttons->result() as $button)
 		{
@@ -424,7 +382,12 @@ class Channel_standalone extends Channel {
 				// at least one image must be available for this to work
 				if (count($file_list) > 0)
 				{
-					$button_js[] = array('name' => $button->tag_name, 'key' => $button->accesskey, 'replaceWith' => '', 'className' => $button->classname);
+					$button_js[] = array(
+										'name' 			=> $button->tag_name, 
+										'key' 			=> $button->accesskey, 
+										'replaceWith' 	=> '', 
+										'className' 	=> $button->classname
+								);
 				}
 			}
 			elseif(strpos($button->classname, 'markItUpSeparator') !== FALSE)
@@ -434,158 +397,56 @@ class Channel_standalone extends Channel {
 			}
 			else
 			{
-				$button_js[] = array('name' => $button->tag_name, 'key' => $button->accesskey, 'openWith' => $button->tag_open, 'closeWith' => $button->tag_close, 'className' => $button->classname);
+				$button_js[] = array(
+									'name' 		=> $button->tag_name, 
+									'key' 		=> $button->accesskey, 
+									'openWith' 	=> $button->tag_open, 
+									'closeWith' => $button->tag_close, 
+									'className' => $button->classname
+								);
 			}
 		}
 		
-		$js_includes = $this->EE->filemanager->frontend_filebrowser($endpoint, TRUE);
 		
-		$markItUp = array(
+		$markItUp = $markItUp_writemode = array(
 			'nameSpace'		=> "html",
 			'onShiftEnter'	=> array('keepDefault' => FALSE, 'replaceWith' => "<br />\n"),
 			'onCtrlEnter'	=> array('keepDefault' => FALSE, 'openWith' => "\n<p>", 'closeWith' => "</p>\n"),
 			'markupSet'		=> $button_js,
-		);	
+		);
 
-		$url_title_js = <<<EOT
+		/* -------------------------------------------
+		/*	Hidden Configuration Variable
+		/*	- allow_textarea_tabs => Add tab preservation to all textareas or disable completely
+		/* -------------------------------------------*/
 		
-		<script type="text/javascript">
-		<!--
-		function liveUrlTitle()
+		if ($this->EE->config->item('allow_textarea_tabs') == 'y')
 		{
-			var defaultTitle = '{$default_entry_title}';
-			var NewText = document.getElementById("title").value;
-
-			if (defaultTitle != '')
-			{
-				if (NewText.substr(0, defaultTitle.length) == defaultTitle)
-				{
-					NewText = NewText.substr(defaultTitle.length)
-				}
-			}
-
-			NewText = NewText.toLowerCase();
-			var separator = "{$word_separator}";
-
-			// Foreign Character Attempt
-
-			var NewTextTemp = '';
-			for(var pos=0; pos<NewText.length; pos++)
-			{
-				var c = NewText.charCodeAt(pos);
-
-				if (c >= 32 && c < 128)
-				{
-					NewTextTemp += NewText.charAt(pos);
-				}
-				else
-				{
-					{$foreign_replace}
-				}
-			}
-
-			var multiReg = new RegExp(separator + '{2,}', 'g');
-
-			NewText = NewTextTemp;
-
-			NewText = NewText.replace('/<(.*?)>/g', '');
-			NewText = NewText.replace(/\s+/g, separator);
-			NewText = NewText.replace(/\//g, separator);
-			NewText = NewText.replace(/[^a-z0-9\-\._]/g,'');
-			NewText = NewText.replace(/\+/g, separator);
-			NewText = NewText.replace(multiReg, separator);
-			NewText = NewText.replace(/-$/g,'');
-			NewText = NewText.replace(/_$/g,'');
-			NewText = NewText.replace(/^_/g,'');
-			NewText = NewText.replace(/^-/g,'');
-
-			if (document.getElementById("url_title"))
-			{
-				document.getElementById("url_title").value = "{$url_title_prefix}" + NewText;
-			}
-			else
-			{
-				document.forms['entryform'].elements['url_title'].value = "{$url_title_prefix}" + NewText;
-			}
+			$markItUp['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
+			$markItUp_writemode['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
 		}
+		elseif ($this->EE->config->item('allow_textarea_tabs') != 'n')
+		{
+			$markItUp_writemode['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
+		}
+
+		// -------------------------------------------
+		//	Publish Page Title Focus - makes the title field gain focus when the page is loaded
+		//
+		//	Hidden Configuration Variable - publish_page_title_focus => Set focus to the tile? (y/n)		
+		$addt_js = array(
+				'publish'		=> array(
+							'show_write_mode' 	=> (($show_button_cluster == 'y') ? TRUE : FALSE),
+							'title_focus'		=> (($which != 'edit' && $this->EE->config->item('publish_page_title_focus') !== 'n') ? TRUE : FALSE)),
+				'user_id'		=> $this->EE->session->userdata('member_id'),
+				'lang'			=> array(
+							'confirm_exit'			=> $this->EE->lang->line('confirm_exit'),
+							'add_new_html_button'	=> $this->EE->lang->line('add_new_html_button')
+					)		
+			);
+
+		$this->_setup_js($endpoint, $markItUp, $markItUp_writemode, $addt_js);
 		
-		-->
-		</script>
-		
-EOT;
-
-$misc_js = <<<EOT
-
-{$js_includes}
-
-		<script type="text/javascript">
-		<!--			
-			
-$(document).ready(function() {
-	
-	$(".js_show").show();
-	$(".js_hide").hide();
-	
-
-			$.ee_filebrowser();
-			
-			// Prep for a workaround to allow markitup file insertion in file inputs
-			$(".btn_img a, .file_manipulate").click(function(){
-				window.file_manager_context = ($(this).parent().attr("class").indexOf("markItUpButton") == -1) ? $(this).closest("div").find("input").attr("id") : "textarea_a8LogxV4eFdcbC";
-			});
-					
-			// Bind the image html buttons
-			$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
-				// We also need to allow file insertion into text inputs (vs textareas) but markitup
-				// will not accommodate this, so we need to detect if this request is coming from a 
-				// markitup button (textarea_a8LogxV4eFdcbC), or another field type.
-
-				if (window.file_manager_context == "textarea_a8LogxV4eFdcbC")
-				{
-					// Handle images and non-images differently
-					if ( ! file.is_image)
-					{
-						$.markItUp({name:"Link", key:"L", openWith:"<a href=\"{filedir_"+file.directory+"}"+file.name+"\">", closeWith:"</a>", placeHolder:file.name });
-					}
-					else
-					{
-						$.markItUp({ replaceWith:"<img src=\"{filedir_"+file.directory+"}"+file.name+"\" alt=\"[![Alternative text]!]\" "+file.dimensions+"/>" } );
-					}
-				}
-				else
-				{
-					$("#"+window.file_manager_context).val("{filedir_"+file.directory+"}"+file.name);
-				}
-			});
-
-		function file_field_changed(file, field) {
-			var container = $("input[name="+field+"]").closest(".publish_field");
-			container.find(".file_set").show().find(".filename").text(file.name);
-			$("input[name="+field+"_hidden]").val(file.name);
-			$("select[name="+field+"_directory]").val(file.directory);
- 			}
-
-
-			$("input[type=file]", "#publishForm").each(function() {
-				var container = $(this).closest(".publish_field"),
-					trigger = container.find(".choose_file");
-					
-				$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), file_field_changed);
-				
-				container.find(".remove_file").click(function() {
-					container.find("input[type=hidden]").val("");
-					container.find(".file_set").hide();
-					return false;
-				});
-			});
-
- });
-			
-		-->
-		</script>		
-		
-EOT;
-
 		$this->EE->lang->loadfile('content');
 
 		/** ----------------------------------------
@@ -606,11 +467,7 @@ EOT;
 								'author_id'				=> $this->EE->session->userdata('member_id'),
 								'channel_id'			=> $channel_id
 							  );
-
-		/** ----------------------------------------
-		/**  Add status to hidden fields
-		/** ----------------------------------------*/
-
+		
 		$status_id = ( ! isset($_POST['status_id'])) ? $this->EE->TMPL->fetch_param('status') : $_POST['status_id'];
 
 		if ($status_id == 'Open' OR $status_id == 'Closed')
@@ -717,30 +574,11 @@ EOT;
 				}
 			}
 		}
-
-
-		//  Parse out the tag
-		$tagdata = $this->EE->TMPL->tagdata;
-
-		//  Upload and Smileys Link
 		
-		$s = ($this->EE->config->item('admin_session_type') != 'c') ? $this->EE->session->userdata['session_id'] : 0;
+		// Parse out the tag
+		$tagdata = $this->EE->TMPL->tagdata;	
 
-		$action_id = $this->EE->functions->fetch_action_id('Channel', 'smiley_pop');
-		$smiley = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.AMP.'field_group='.$field_group;
-		$tagdata = str_replace('{smileys_url}',$smiley, $tagdata);
-
-		//  Formatting buttons
-		$tagdata = str_replace(LD.'formatting_buttons'.RD, '', $tagdata); // remove from the template until this is added
-
-
-		// Onward...
-		$which = ($this->EE->input->post('preview')) ? 'preview' : 'new';
-
-		/** --------------------------------
-		/**  Fetch Custom Fields
-		/** --------------------------------*/
-
+		// Fetch Custom Fields
 		if ($this->EE->TMPL->fetch_param('show_fields') !== FALSE)
 		{
 			if (strncmp($this->EE->TMPL->fetch_param('show_fields'), 'not ', 4) == 0)
@@ -763,944 +601,34 @@ EOT;
 		$pfield_chunk = array();
 		$cond = array();
 
-		if ($which == 'preview')
-		{ 
-			foreach ($query->result_array() as $row)
-			{
-				$fields['field_id_'.$row['field_id']] = array($row['field_name'], $row['field_type']);
-				$cond[$row['field_name']] = '';
-
-				if ($row['field_type'] == 'date')
-				{
-					$date_fields[$row['field_name']] = $row['field_id'];
-				}
-				elseif (in_array($row['field_type'], array('file', 'multi_select', 'checkboxes')))
-				{
-					$pair_fields[$row['field_name']] = array($row['field_type'], $row['field_id']);
-				}
-			}
-		}
-
-		/** ----------------------------------------
-		/**  Preview
-		/** ----------------------------------------*/
-
 		if (preg_match("#".LD."preview".RD."(.+?)".LD.'/'."preview".RD."#s", $tagdata, $match))
 		{
-			if ($which != 'preview')
-			{
-				$tagdata = str_replace ($match['0'], '', $tagdata);
-			}
-			else
-			{
-				// Snag out the possible pair chunks (file, multiselect and checkboxes)
-				foreach ($pair_fields as $field_name => $field_info)
-				{
-					if (($end = strpos($match['1'], LD.'/'.$field_name.RD)) !== FALSE)
-					{
-						// @confirm FIX IT! this is ugly
-						if (preg_match_all("/".LD."{$field_name}(.*?)".RD."(.*?)".LD.'\/'.$field_name.RD."/s", $match['1'], $pmatches))
-						{
-							for ($j = 0; $j < count($pmatches[0]); $j++)
-							{
-								$chunk = $pmatches[0][$j];
-								$params = $pmatches[1][$j];
-								$inner = $pmatches[2][$j];
-								
-								// We might've sandwiched a single tag - no good, check again (:sigh:)
-								if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}(.*?)".RD."/s", $chunk, $pmatch))
-								{
-									// Let's start at the end
-									$idx = count($pmatch[0]) - 1;
-									$tag = $pmatch[0][$idx];
-									
-									// Cut the chunk at the last opening tag (PHP5 could do this with strrpos :-( )
-									while (strpos($chunk, $tag, 1) !== FALSE)
-									{
-										$chunk = substr($chunk, 1);
-										$chunk = strstr($chunk, LD.$field_name);
-										$inner = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
-									}
-								}
-
-								$pfield_chunk['field_id_'.$field_info['1']][] = array($inner,
-									 										$this->EE->functions->assign_parameters($params), $chunk);
-							}
-						}
-					}
-				}
-
-				/** ----------------------------------------
-				/**  Instantiate Typography class
-				/** ----------------------------------------*/
-
-				$this->EE->load->library('typography');
-				$this->EE->typography->initialize();
-
-				$this->EE->typography->convert_curly = FALSE;
-				$file_dirs = $this->EE->functions->fetch_file_paths();
-
-				$match['1'] = str_replace(LD.'title'.RD, stripslashes($this->EE->input->post('title')), $match['1']);
-
-				// We need to grab each
-				$str = '';
-
-				foreach($_POST as $key => $val)
-				{
-					if (strncmp($key, 'field_id', 8) == 0)
-					{
-						// do pair variables
-						if (isset($pfield_chunk[$key]))
-						{
-							
-							$expl = explode('field_id_', $key);
-							$txt_fmt = ( ! isset($_POST['field_ft_'.$expl['1']])) ? 'xhtml' : $_POST['field_ft_'.$expl['1']];
-													
-							// Blast through all the chunks
-							foreach($pfield_chunk[$key] as $chk_data)
-							{
-								$tpl_chunk = '';
-								$limit = FALSE;
-								
-								// Limit Parameter
-								if (is_array($chk_data[1]) AND isset($chk_data[1]['limit']))
-								{
-									$limit = $chk_data[1]['limit'];
-								}
-
-								foreach($val as $k => $item)
-								{
-									if ( ! $limit OR $k < $limit)
-									{
-										$vars['item'] = $item;
-										$vars['count'] = $k + 1;	// {count} parameter
-
-										$tmp = $this->EE->functions->prep_conditionals($chk_data[0], $vars);
-										$tpl_chunk .= $this->EE->functions->var_swap($tmp, $vars);
-									}
-									else
-									{
-										break;
-									}
-								}
-
-								// Everybody loves backspace
-								if (is_array($chk_data[1]) AND isset($chk_data[1]['backspace']))
-								{
-									$tpl_chunk = substr($tpl_chunk, 0, - $chk_data[1]['backspace']);
-								}
-
-							}
-							
-							// Typography!
-							$tpl_chunk = $this->EE->typography->parse_type(
-												$this->EE->functions->encode_ee_tags($tpl_chunk),
-												array(
-																'text_format'   => $txt_fmt,
-																'html_format'   => $channel_html_formatting,
-																'auto_links'    => $channel_allow_img_urls,
-																'allow_img_url' => $channel_auto_link_urls
-													  )
-								);
-
-							// Replace the chunk
-							if (isset($fields[$key]['0']))
-							{
-								$match['1'] = str_replace($chk_data[2], $tpl_chunk, $match['1']);
-							}
-						}
-
-						// end pair variables						
-						
-						$expl = explode('field_id_', $key);
-						$temp = '';
-						if (! is_numeric($expl['1'])) continue;
-
-						if (in_array($expl['1'], $date_fields))
-						{
-							$temp_date = $this->EE->localize->convert_human_date_to_gmt($_POST['field_id_'.$expl['1']]);
-							$temp = $_POST['field_id_'.$expl['1']];
-							$cond[$fields['field_id_'.$expl['1']]['0']] =  $temp_date;
-						}
-						elseif ($fields['field_id_'.$expl['1']]['1'] == 'file')
-						{
-							$file_info['path'] = '';
-							$file_info['extension'] = '';
-							$file_info['filename'] = '';
-							$full_path = '';
-							$entry = '';
-
-							if ($val != '')
-							{
-								$parts = explode('.', $val);
-								$file_info['extension'] = array_pop($parts);
-								$file_info['filename'] = implode('.', $parts);
-
-								if (isset($_POST['field_id_'.$expl['1'].'_directory']) && isset($_POST['field_id_'.$expl['1']]) && $_POST['field_id_'.$expl['1']] != '')
-								{
-									$file_info['path'] = $file_dirs[$_POST['field_id_'.$expl['1'].'_directory']];
-								}
-
-								$full_path = $file_info['path'].$file_info['filename'].'.'.$file_info['extension'];
-							}
-							
-							if (preg_match_all("/".LD.$fields['field_id_'.$expl['1']]['0']."(.*?)".RD."/s", $match['1'], $pmatches))
-							{
-								foreach ($pmatches['0'] as $id => $tag)
-								{
-									if ($pmatches['1'][$id] == '')
-									{
-										$entry = $full_path;
-									}
-									else
-									{
-										$params = $this->EE->functions->assign_parameters($pmatches['1'][$id]);
-										
-										if (isset($params['wrap']) && $params['wrap'] == 'link')
-										{
-											$entry = '<a href="'.$full_path.'">'.$file_info['filename'].'</a>';
-										}
-										elseif (isset($params['wrap']) && $params['wrap'] == 'image')
-										{
-											$entry = '<img src="'.$full_path.'" alt="'.$file_info['filename'].'" />';
-										}
-										else
-										{
-											$entry = $full_path;
-										}
-									}
-										
-									$match['1'] = str_replace($pmatches['0'][$id], $entry, $match['1']);
-								}
-							}
-							
-							$str .= '<p>'.$full_path.'</p>';
-						}
-						elseif (in_array($fields['field_id_'.$expl['1']]['1'], array('multi_select', 'checkboxes')))
-						{
-							$entry = implode(', ', $val);
-								
-							$cond[$fields['field_id_'.$expl['1']]['0']] =  ( ! isset($_POST['field_id_'.$expl['1']])) ? '' : $entry;
-
-							$txt_fmt = ( ! isset($_POST['field_ft_'.$expl['1']])) ? 'xhtml' : $_POST['field_ft_'.$expl['1']];
-								
-							if (preg_match_all("/".LD.$fields['field_id_'.$expl['1']]['0']."(.*?)".RD."/s", $match['1'], $pmatches))
-							{
-								foreach ($pmatches['0'] as $id => $tag)
-								{
-									if ($pmatches['1'][$id] == '')
-									{
-										
-									}
-									else
-									{
-										$params = $this->EE->functions->assign_parameters($pmatches['1'][$id]);
-
-										if (isset($params['limit']))
-										{
-											$limit = intval($params['limit']);
-							
-											if (count($val) > $limit)
-											{
-												$val = array_slice($val, 0, $limit);
-											}
-										}
-
-										if (isset($params['markup']) && ($params['markup'] == 'ol' OR $params['markup'] == 'ul'))
-										{
-											$entry = '<'.$params['markup'].'>';
-								
-											foreach($val as $dv)
-											{
-												$entry .= '<li>';
-												$entry .= $dv;
-												$entry .= '</li>';
-											}
-
-											$entry .= '</'.$params['markup'].'>';
-										}
-									}
-	
-									$entry = $this->EE->typography->parse_type(
-											$this->EE->functions->encode_ee_tags($entry),
-											array(
-													'text_format'   => $txt_fmt,
-													'html_format'   => $channel_html_formatting,
-													'auto_links'    => $channel_allow_img_urls,
-													'allow_img_url' => $channel_auto_link_urls
-											)
-										);
-
-									$match['1'] = str_replace($pmatches['0'][$id], $entry, $match['1']);
-								}
-							}
-
-							$str .= '<p>'.$entry.'</p>';
-						}
-						elseif (! is_array($val))
-						{
-							// @todo something hinky w/needing conditional check here ditto $temp blank bit
-							//echo $val;
-							if (isset($fields['field_id_'.$expl['1']]))
-							{
-							
-								$cond[$fields['field_id_'.$expl['1']]['0']] =  ( ! isset($_POST['field_id_'.$expl['1']])) ? '' : $_POST['field_id_'.$expl['1']];
-
-								$txt_fmt = ( ! isset($_POST['field_ft_'.$expl['1']])) ? 'xhtml' : $_POST['field_ft_'.$expl['1']];
-
-								$temp = $this->EE->typography->parse_type( stripslashes($val),
-												 		array(
-															'text_format'   => $txt_fmt,
-															'html_format'   => $channel_html_formatting,
-															'auto_links'    => $channel_allow_img_urls,
-															'allow_img_url' => $channel_auto_link_urls
-													   		)
-													);
-							}
-						}
-
-						if (isset($fields[$key]['0']))
-						{
-							$match['1'] = str_replace(LD.$fields[$key]['0'].RD, $temp, $match['1']);
-						}
-
-						$str .= $temp;
-					//}
-					
-					
-					// end non pair fields
-					}
-				
-				}
-
-				$match['1'] = str_replace(LD.'display_custom_fields'.RD, $str, $match['1']);
-				$match['1'] = $this->EE->functions->prep_conditionals($match['1'], $cond);
-				$tagdata = str_replace ($match['0'], $match['1'], $tagdata);
-			}
-
-//  This ends preview parsing- it's the only spot we need to parse custom fields that are funky.
+			$tagdata = $this->_parse_preview($which, $match, $tagdata);
+			// This ends preview parsing- 
+			// it's the only spot we need to parse custom fields that are funky.
 		}
-
-
-
-		/** -------------------------------------
-		/**  Fetch the {custom_fields} chunk
-		/** -------------------------------------*/
-
+		
+		// Fetch {custom_fields} chunk
+		
 		$custom_fields = '';
 		$file_allowed = (count($directories) > 0) ? TRUE : FALSE;
-
+		
 		if (preg_match("#".LD."custom_fields".RD."(.+?)".LD.'/'."custom_fields".RD."#s", $tagdata, $match))
 		{
 			$custom_fields = trim($match['1']);
 
 			$tagdata = str_replace($match['0'], LD.'temp_custom_fields'.RD, $tagdata);
-		}
-
-		// If we have custom fields to show, generate them
-
-		if ($custom_fields != '')
-		{
-			$field_array = array('textarea', 'textinput', 'pulldown', 'multiselect', 'checkbox', 'radio', 'file', 'date', 'relationship', 'file');
-
-			$formatting_toolbar 	= '';
-			$textarea 				= '';
-			$textinput 				= '';
-			$pulldown				= '';
-			$multiselect			= '';
-			$checkbox				= '';
-			$radio					= '';
-			$file					= '';
-			$file_options			= '';
-			$file_pulldown			= '';			
-			$date					= '';
-			$relationship 			= '';
-			$rel_options 			= '';
-			$pd_options				= '';
-			$multi_options 			= '';
-			$check_options 			= '';
-			$radio_options 			= '';
-			$required				= '';
-
-			foreach ($field_array as $val)
-			{
-				if (preg_match("#".LD."\s*if\s+".$val.RD."(.+?)".LD.'/'."if".RD."#s", $custom_fields, $match))
-				{
-					$$val = $match['1'];
-
-					if ($val == 'pulldown')
-					{
-						if (preg_match("#".LD."options".RD."(.+?)".LD.'/'."options".RD."#s", $pulldown, $pmatch))
-						{
-							$pd_options = $pmatch['1']; 
-							$pulldown = str_replace ($pmatch['0'], LD.'temp_pd_options'.RD, $pulldown);
-						}
-					}
-
-					if ($val == 'file')
-					{
-						if (preg_match("#".LD."options".RD."(.+?)".LD.'/'."options".RD."#s", $file, $pmatch))
-						{
-							$file_options = $pmatch['1']; 
-							$file = str_replace ($pmatch['0'], LD.'temp_file_options'.RD, $file);
-						}
-					}
-
-
-					if ($val == 'multiselect')
-					{
-						if (preg_match("#".LD."options".RD."(.+?)".LD.'/'."options".RD."#s", $multiselect, $pmatch))
-						{
-							$multi_options = $pmatch['1'];
-							$multiselect = str_replace ($pmatch['0'], LD.'temp_multi_options'.RD, $multiselect);
-						}
-					}
-
-					if ($val == 'checkbox')
-					{
-						if (preg_match("#".LD."options".RD."(.+?)".LD.'/'."options".RD."#s", $checkbox, $pmatch))
-						{
-							$check_options = $pmatch['1'];
-							$checkbox = str_replace ($pmatch['0'], LD.'temp_check_options'.RD, $checkbox);
-						}
-					}
-					
-					if ($val == 'radio')
-					{
-						if (preg_match("#".LD."options".RD."(.+?)".LD.'/'."options".RD."#s", $radio, $pmatch))
-						{
-							$radio_options = $pmatch['1'];
-							$radio = str_replace ($pmatch['0'], LD.'temp_radio_options'.RD, $radio);
-						}
-					}
-
-					if ($val == 'relationship')
-					{
-						if (preg_match("#".LD."options".RD."(.+?)".LD.'/'."options".RD."#s", $relationship, $pmatch))
-						{
-							$rel_options = $pmatch['1'];
-							$relationship = str_replace ($pmatch['0'], LD.'temp_rel_options'.RD, $relationship);
-						}
-					}
-
-					$custom_fields = str_replace($match['0'], LD.'temp_'.$val.RD, $custom_fields);
-				}
-			}
-
-			if (preg_match("#".LD."if\s+required".RD."(.+?)".LD.'/'."if".RD."#s", $custom_fields, $match))
-			{
-				$required = $match['1'];
-
-				$custom_fields = str_replace($match['0'], LD.'temp_required'.RD, $custom_fields);
-			}
 			
-			if (preg_match("#".LD."if\s+formatting_toolbar".RD."(.+?)".LD.'/'."if".RD."#s", $custom_fields, $match))
+			if ($custom_fields != '')
 			{
-				$show_toolbar = $match[1];
-				$custom_fields = str_replace($match[0], LD.'temp_show_toolbar'.RD, $custom_fields);
+				$tagdata = $this->_parse_custom_fields($custom_fields, $query, $which, $tagdata, $directories);
 			}
-
-			/** --------------------------------
-			/**  Parse Custom Fields
-			/** --------------------------------*/
-
-			$build = '';
-
-			foreach ($query->result_array() as $row)
-			{
-				
-				$settings = unserialize(base64_decode($row['field_settings']));
-				$temp_chunk = $custom_fields;
-				$temp_field = '';
-
-				switch ($which)
-				{
-					case 'preview' :
-							$field_data = ( ! isset( $_POST['field_id_'.$row['field_id']] )) ?  '' : $_POST['field_id_'.$row['field_id']];
-							$field_fmt  = ( ! isset( $_POST['field_ft_'.$row['field_id']] )) ? $row['field_fmt'] : $_POST['field_ft_'.$row['field_id']];
-						break;
-					/* no edits or $result in the SAEF - leftover from old CP Publish class
-					case 'edit'	:
-							$field_data = ($result->row('field_id_'.$row['field_id']) !== FALSE) ? '' : $result->row('field_id_'.$row['field_id']);
-							$field_fmt  = ($result->row('field_ft_'.$row['field_id']) !== FALSE) ? $row['field_fmt'] : $result->row('field_ft_'.$row['field_id']);
-						break;
-					*/
-					default		:
-							$field_data = '';
-							$field_fmt  = $row['field_fmt'];
-						break;
-				}
-
-
-				/** --------------------------------
-				/**  Textarea field types
-				/** --------------------------------*/
-
-				if ($row['field_type'] == 'textarea' AND $textarea != '')
-				{
-					$temp_chunk = str_replace(LD.'temp_textarea'.RD, $textarea, $temp_chunk);
-				}
-				
-				if ($row['field_type'] == 'text' AND $textinput != '')
-				{
-					$temp_chunk = str_replace(LD.'temp_textinput'.RD, $textinput, $temp_chunk);
-				}
-				
-				if ($row['field_type'] == 'file' AND $file != '')
-				{
-
-						$pdo = '';
-
-						$file_dir = ( ! isset( $_POST['field_id_'.$row['field_id'].'_directory'] )) ?  '' : $_POST['field_id_'.$row['field_id'].'_directory'];
-						$filename = ( ! isset( $_POST['field_id_'.$row['field_id'].'_hidden'] )) ?  '' : $_POST['field_id_'.$row['field_id'].'_hidden'];
-						
-						$file_div = 'hold_field_'.$row['field_id'];
-						$file_set = 'file_set';
-						
-						if ($filename == '')
-						{
-							$file_set .= ' js_hide';
-						}
-
-						foreach ($directories as $k => $v)
-						{
-							$temp_options = $file_options;
-
-							$v = trim($v);
-							$temp_options = str_replace(LD.'option_name'.RD, $v, $temp_options);
-							$temp_options = str_replace(LD.'option_value'.RD, $k, $temp_options);
-							$temp_options = str_replace(LD.'selected'.RD, ($k == $file_dir) ? ' selected="selected"' : '', $temp_options);
-
-							$pdo .= $temp_options;
-						}
-
-						$temp_file = str_replace(LD.'temp_file_options'.RD, $pdo, $file);
-						$temp_file = str_replace(LD.'file_name'.RD, $filename, $temp_file);
-						$temp_file = str_replace(LD.'file_set'.RD, $file_set, $temp_file);
-						$temp_file = str_replace(LD.'file_div'.RD, $file_div, $temp_file);			
-						$temp_chunk = str_replace(LD.'temp_file'.RD, $temp_file, $temp_chunk); 
-				}				
-				
-				if ($row['field_type'] == 'rel')
-				{
-					if ($row['field_related_orderby'] == 'date')
-					{
-						$row['field_related_orderby'] = 'entry_date';						
-					}
-
-					$this->EE->db->select('entry_id, title');
-					$this->EE->db->where('channel_id', $row['field_related_id']);
-					$this->EE->db->order_by($row['field_related_orderby'], $row['field_related_sort']);
-
-					if ($row['field_related_max'] > 0)
-					{
-						$this->EE->db->limit($row['field_related_max']);
-					}
-
-					$relquery = $this->EE->db->get('channel_titles');
-					
-					if ($relquery->num_rows() > 0)
-					{
-						$relentry_id = '';
-						if ( ! isset($_POST['field_id_'.$row['field_id']]))
-						{
-							$this->EE->db->select('rel_child_id');
-							$this->EE->db->where('rel_id', $field_data);
-							$relentry = $this->EE->db->get('relationships');
-
-							if ($relentry->num_rows() == 1)
-							{
-								$relentry_id = $relentry->row('rel_child_id') ;
-							}
-						}
-						else
-						{
-							$relentry_id = $_POST['field_id_'.$row['field_id']];
-						}
-
-						$temp_options = $rel_options;
-						$temp_options = str_replace(LD.'option_name'.RD, '--', $temp_options);
-						$temp_options = str_replace(LD.'option_value'.RD, '', $temp_options);
-						$temp_options = str_replace(LD.'selected'.RD, '', $temp_options);
-						$pdo = $temp_options;
-						
-						foreach ($relquery->result_array() as $relrow)
-						{
-							$temp_options = $rel_options;
-							$temp_options = str_replace(LD.'option_name'.RD, $relrow['title'], $temp_options);
-							$temp_options = str_replace(LD.'option_value'.RD, $relrow['entry_id'], $temp_options);
-							$temp_options = str_replace(LD.'selected'.RD, ($relentry_id == $relrow['entry_id']) ? ' selected="selected"' : '', $temp_options);
-
-							$pdo .= $temp_options;
-						}
-
-						$temp_relationship = str_replace(LD.'temp_rel_options'.RD, $pdo, $relationship);
-						$temp_chunk = str_replace(LD.'temp_relationship'.RD, $temp_relationship, $temp_chunk);
-					}
-				}
-				if ($row['field_type'] == 'date' AND $date != '')
-				{
-					$temp_chunk = $custom_fields;
-
-					$date_field = 'field_id_'.$row['field_id'];
-					$date_local = 'field_dt_'.$row['field_id'];
-
-					$dtwhich = $which;
-					if (isset($_POST[$date_field]))
-					{
-						$field_data = $_POST[$date_field];
-						$dtwhich = 'preview';
-					}
-
-					$custom_date = '';
-					$localize = FALSE;
-					if ($dtwhich != 'preview')
-					{
-						$localize = TRUE;
-						
-						/* $result is a leftover from the old cp Publish class, unused at present
-						if ($field_data != '' && $result->row('field_dt_'.$row['field_id']) != '')
-						{
-							$field_data = $this->EE->localize->offset_entry_dst($field_data, $dst_enabled);
-							$field_data = $this->EE->localize->simpl_offset($field_data, $result->row('field_dt_'.$row['field_id']));
-							$localize = FALSE;
-						}
-						*/
-						
-						if ($field_data != '')
-							$custom_date = $this->EE->localize->set_human_time($field_data, $localize);
-
-						$cal_date = ($this->EE->localize->set_localized_time($custom_date) * 1000);
-					}
-					else
-					{
-						$custom_date = $_POST[$date_field];
-						$cal_date = ($custom_date != '') ? ($this->EE->localize->set_localized_time($this->EE->localize->convert_human_date_to_gmt($custom_date)) * 1000) : ($this->EE->localize->set_localized_time() * 1000);
-					}
-
-					$temp_chunk = str_replace(LD.'temp_date'.RD, $date, $temp_chunk);
-					$temp_chunk = str_replace(LD.'date'.RD, $custom_date, $temp_chunk);
-				}
-				elseif ($row['field_type'] == 'select' AND $pulldown != '')
-				{
-					if ($row['field_pre_populate'] == 'n')
-					{
-						$pdo = '';
-
-						if ($row['field_required'] == 'n')
-						{
-							$temp_options = $pd_options;
-							
-//echo $temp_options;							
-							$temp_options = str_replace(LD.'option_name'.RD, '--', $temp_options);
-							$temp_options = str_replace(LD.'option_value'.RD, '', $temp_options);
-							$temp_options = str_replace(LD.'selected'.RD, '', $temp_options);
-							$pdo = $temp_options;
-						}
-
-						foreach (explode("\n", trim($row['field_list_items'])) as $v)
-						{
-							$temp_options = $pd_options;
-
-							$v = trim($v);
-							$temp_options = str_replace(LD.'option_name'.RD, $v, $temp_options);
-							$temp_options = str_replace(LD.'option_value'.RD, $v, $temp_options);
-							$temp_options = str_replace(LD.'selected'.RD, ($v == $field_data) ? ' selected="selected"' : '', $temp_options);
-
-							$pdo .= $temp_options;
-						}
-
-						$temp_pulldown = str_replace(LD.'temp_pd_options'.RD, $pdo, $pulldown);
-						$temp_chunk = str_replace(LD.'temp_pulldown'.RD, $temp_pulldown, $temp_chunk); 
-					}
-					else
-					{
-						// We need to pre-populate this menu from an another channel custom field
-						$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
-						$this->EE->where('channel_id', $row['field_pre_channel_id']);
-						$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
-						$pop_query = $this->EE->db->get('channel_data');
-						
-						if ($pop_query->num_rows() > 0)
-						{
-							$temp_options = $rel_options;
-							$temp_options = str_replace(LD.'option_name'.RD, '--', $temp_options);
-							$temp_options = str_replace(LD.'option_value'.RD, '', $temp_options);
-							$temp_options = str_replace(LD.'selected'.RD, '', $temp_options);
-							$pdo = $temp_options;
-
-							foreach ($pop_query->result_array() as $prow)
-							{
-								$pretitle = substr($prow['field_id_'.$row['field_pre_field_id']], 0, 110);
-								$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
-								$pretitle = form_prep($pretitle);
-
-								$temp_options = $pd_options;
-								$temp_options = str_replace(LD.'option_name'.RD, $pretitle, $temp_options);
-								$temp_options = str_replace(LD.'option_value'.RD, form_prep($prow['field_id_'.$row['field_pre_field_id']]), $temp_options);
-								$temp_options = str_replace(LD.'selected'.RD, ($prow['field_id_'.$row['field_pre_field_id']] == $field_data) ? ' selected="selected"' : '', $temp_options);
-								$pdo .= $temp_options;
-							}
-
-							$temp_pulldown = str_replace(LD.'temp_pd_options'.RD, $pdo, $pulldown);
-							$temp_chunk = str_replace(LD.'temp_pulldown'.RD, $temp_pulldown, $temp_chunk);
-						}
-					}
-				}
-				elseif ($row['field_type'] == 'multi_select' AND $multiselect != '')
-				{
-					if ($row['field_pre_populate'] == 'n')
-					{
-						$pdo = '';
-
-						if ($row['field_required'] == 'n')
-						{
-							$temp_options = $multi_options;
-							$temp_options = str_replace(LD.'option_name'.RD, '--', $temp_options);
-							$temp_options = str_replace(LD.'option_value'.RD, '', $temp_options);
-							$temp_options = str_replace(LD.'selected'.RD, '', $temp_options);
-							$pdo = $temp_options;
-						}
-
-						foreach (explode("\n", trim($row['field_list_items'])) as $v)
-						{
-							$temp_options = $multi_options;
-
-							$v = trim($v);
-							$temp_options = str_replace(LD.'option_name'.RD, $v, $temp_options);
-							$temp_options = str_replace(LD.'option_value'.RD, $v, $temp_options);
-							$temp_options = str_replace(LD.'selected'.RD, (is_array($field_data) && in_array($v, $field_data)) ? ' selected="selected"' : '', $temp_options);
-							$pdo .= $temp_options;
-						}
-
-						$temp_multiselect = str_replace(LD.'temp_multi_options'.RD, $pdo, $multiselect);
-						$temp_chunk = str_replace(LD.'temp_multiselect'.RD, $temp_multiselect, $temp_chunk);
-					}
-
-					else
-					{
-						// We need to pre-populate this menu from an another channel custom field
-						$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
-						$this->EE->db->where('channel_id', $row['field_pre_channel_id']);
-						$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
-						$pop_query = $this->EE->db->get('channel_data');
-						
-						if ($pop_query->num_rows() > 0)
-						{
-							$temp_options = $multi_options;
-							$temp_options = str_replace(LD.'option_name'.RD, '--', $temp_options);
-							$temp_options = str_replace(LD.'option_value'.RD, '', $temp_options);
-							$temp_options = str_replace(LD.'selected'.RD, '', $temp_options);
-							$pdo = $temp_options;
-
-							foreach ($pop_query->result_array() as $prow)
-							{
-								if (trim($prow['field_id_'.$row['field_pre_field_id']]) != '')
-								{
-									$pretitle = substr(trim($prow['field_id_'.$row['field_pre_field_id']]), 0, 110);
-									$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
-									$pretitle = form_prep($pretitle);
-
-									$temp_options = $multi_options;
-									$temp_options = str_replace(LD.'option_name'.RD, $pretitle, $temp_options);
-									$temp_options = str_replace(LD.'option_value'.RD, form_prep($prow['field_id_'.$row['field_pre_field_id']]), $temp_options);
-									$temp_options = str_replace(LD.'selected'.RD, (is_array($field_data) && in_array($prow['field_id_'.$row['field_pre_field_id']], $field_data)) ? ' selected="selected"' : '', $temp_options);
-									$pdo .= $temp_options;
-								}
-							}
-
-							$temp_multiselect = str_replace(LD.'temp_multi_options'.RD, $pdo, $multiselect);
-							$temp_chunk = str_replace(LD.'temp_multiselect'.RD, $temp_multiselect, $temp_chunk);
-						}
-					}
-				}
-
-				elseif ($row['field_type'] == 'checkboxes' AND $checkbox != '')
-				{
-					if ($row['field_pre_populate'] == 'n')
-					{
-						$pdo = '';
-
-						foreach (explode("\n", trim($row['field_list_items'])) as $v)
-						{
-							$temp_options = $check_options;
-
-							$v = trim($v);
-							$temp_options = str_replace(LD.'option_name'.RD, $v, $temp_options);
-							$temp_options = str_replace(LD.'option_value'.RD, $v, $temp_options);
-							$temp_options = str_replace(LD.'checked'.RD, (is_array($field_data) && in_array($v, $field_data)) ? ' checked ' : '', $temp_options);
-
-							$pdo .= $temp_options;
-						}
-
-						$temp_checkbox = str_replace(LD.'temp_check_options'.RD, $pdo, $checkbox);
-						$temp_chunk = str_replace(LD.'temp_checkbox'.RD, $temp_checkbox, $temp_chunk);
-					}
-
-					else
-					{
-						// We need to pre-populate this menu from an another channel custom field
-						$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
-						$this->EE->db->where('channel_id', $row['field_pre_channel_id']);
-						$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
-						$pop_query = $this->EE->db->get('channel_data');
-						
-						if ($pop_query->num_rows() > 0)
-						{
-							$pdo = '';
-
-							foreach ($pop_query->result_array() as $prow)
-							{
-								$pretitle = substr(trim($prow['field_id_'.$row['field_pre_field_id']]), 0, 110);
-								$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
-								$pretitle = form_prep($pretitle);
-
-								$temp_options = $check_options;
-								$temp_options = str_replace(LD.'option_name'.RD, $pretitle, $temp_options);
-								$temp_options = str_replace(LD.'option_value'.RD, form_prep($prow['field_id_'.$row['field_pre_field_id']]), $temp_options);
-								$temp_options = str_replace(LD.'checked'.RD, (is_array($field_data) && in_array($prow['field_id_'.$row['field_pre_field_id']], $field_data)) ? ' checked ' : '', $temp_options);
-								$pdo .= $temp_options;
-							}
-
-							$temp_checkbox = str_replace(LD.'temp_check_options'.RD, $pdo, $checkbox);
-							$temp_chunk = str_replace(LD.'temp_checkbox'.RD, $temp_checkbox, $temp_chunk);
-						}
-					}
-				}
-				elseif ($row['field_type'] == 'radio' AND $radio != '')
-				{
-					if ($row['field_pre_populate'] == 'n')
-					{
-						$pdo = '';
-
-						foreach (explode("\n", trim($row['field_list_items'])) as $v)
-						{
-							$temp_options = $radio_options;
-
-							$v = trim($v);
-							$temp_options = str_replace(LD.'option_name'.RD, $v, $temp_options);
-							$temp_options = str_replace(LD.'option_value'.RD, $v, $temp_options);
-							$temp_options = str_replace(LD.'checked'.RD, ($v == $field_data) ? ' checked ' : '', $temp_options);
-
-							$pdo .= $temp_options;
-						}
-
-						$temp_radio = str_replace(LD.'temp_radio_options'.RD, $pdo, $radio);
-						$temp_chunk = str_replace(LD.'temp_radio'.RD, $temp_radio, $temp_chunk);
-					}
-
-					else
-					{
-						// We need to pre-populate this menu from an another channel custom field
-						$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
-						$this->EE->db->where('channel_id', $row['field_pre_channel_id']);
-						$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
-						$pop_query = $this->EE->db->get('channel_data');
-						
-						if ($pop_query->num_rows() > 0)
-						{
-							$pdo = '';
-
-							foreach ($pop_query->result_array() as $prow)
-							{
-								$pretitle = substr($prow['field_id_'.$row['field_pre_field_id']], 0, 110);
-								$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
-								$pretitle = form_prep($pretitle);
-
-								$temp_options = $radio_options;
-								$temp_options = str_replace(LD.'option_name'.RD, $pretitle, $temp_options);
-								$temp_options = str_replace(LD.'option_value'.RD, form_prep($prow['field_id_'.$row['field_pre_field_id']]), $temp_options);
-								$temp_options = str_replace(LD.'checked'.RD, ($prow['field_id_'.$row['field_pre_field_id']] == $field_data) ? ' checked ' : '', $temp_options);
-								$pdo .= $temp_options;
-							}
-
-							$temp_radio = str_replace(LD.'temp_radio_options'.RD, $pdo, $radio);
-							$temp_chunk = str_replace(LD.'temp_radio'.RD, $temp_radio, $temp_chunk);
-						}
-					}
-				}
-
-
-				if ($row['field_required'] == 'y')
-				{
-					$temp_chunk = str_replace(LD.'temp_required'.RD, $required, $temp_chunk);
-				}
-				else
-				{
-					$temp_chunk = str_replace(LD.'temp_required'.RD, '', $temp_chunk);
-				}
-
-				if (is_array($field_data))
-				{
-					
-				}
-				else
-				{
-					$temp_chunk = str_replace(LD.'field_data'.RD, form_prep($field_data), $temp_chunk);					
-				}
-/*
-array
-  'field_show_smileys' => string 'y' (length=1)
-  'field_show_glossary' => string 'y' (length=1)
-  'field_show_spellcheck' => string 'y' (length=1)
-  'field_show_formatting_btns' => string 'y' (length=1)
-  'field_show_file_selector' => string 'y' (length=1)
-  'field_show_writemode' => string 'y' (length=1)
-
-*/
-
-				
-				if (isset($settings['field_show_formatting_btns']) && $settings['field_show_formatting_btns'] == 'y')
-				{
-					$temp_chunk = str_replace(LD.'temp_show_toolbar'.RD, 'yay!', $temp_chunk);
-				}
-				else
-				{
-					$temp_chunk = str_replace(LD.'temp_show_toolbar'.RD, '', $temp_chunk);
-				}
-				
-				$temp_chunk = str_replace(LD.'temp_date'.RD, '', $temp_chunk);
-				$temp_chunk = str_replace(LD.'temp_textarea'.RD, '', $temp_chunk);
-				$temp_chunk = str_replace(LD.'temp_relationship'.RD, '', $temp_chunk);
-				$temp_chunk = str_replace(LD.'temp_textinput'.RD, '', $temp_chunk);
-				$temp_chunk = str_replace(LD.'temp_file'.RD, '', $temp_chunk);
-				$temp_chunk = str_replace(LD.'temp_file_options'.RD, '', $temp_chunk);
-				
-				$temp_chunk = str_replace(LD.'temp_pulldown'.RD, '', $temp_chunk);
-				$temp_chunk = str_replace(LD.'temp_pd_options'.RD, '', $temp_chunk);
-				$temp_chunk = str_replace(LD.'temp_multiselect'.RD, '', $temp_chunk);
-				$temp_chunk = str_replace(LD.'temp_multi_options'.RD, '', $temp_chunk);
-				$temp_chunk = str_replace(LD.'temp_checkbox'.RD, '', $temp_chunk);
-				$temp_chunk = str_replace(LD.'temp_check_options'.RD, '', $temp_chunk);
-				$temp_chunk = str_replace(LD.'temp_radio'.RD, '', $temp_chunk);
-				$temp_chunk = str_replace(LD.'temp_radio_options'.RD, '', $temp_chunk);
-				$temp_chunk = str_replace(LD.'calendar_link'.RD, '', $temp_chunk);
-				$temp_chunk = str_replace(LD.'calendar_id'.RD, '', $temp_chunk);
-
-				$temp_chunk = str_replace(LD.'rows'.RD, ( ! isset($row['field_ta_rows'])) ? '10' : $row['field_ta_rows'], $temp_chunk);
-				$temp_chunk = str_replace(LD.'field_label'.RD, $row['field_label'], $temp_chunk);
-				$temp_chunk = str_replace(LD.'field_instructions'.RD, $row['field_instructions'], $temp_chunk);
-				$temp_chunk = str_replace(LD.'text_direction'.RD, $row['field_text_direction'], $temp_chunk);
-				$temp_chunk = str_replace(LD.'maxlength'.RD, $row['field_maxl'], $temp_chunk);
-				$temp_chunk = str_replace(LD.'field_name'.RD, 'field_id_'.$row['field_id'], $temp_chunk);
-				$temp_chunk = str_replace(LD.'field_name_directory'.RD, 'field_id_'.$row['field_id'].'_directory', $temp_chunk);				
-
-				$hidden_fields['field_ft_'.$row['field_id']] = $field_fmt;
-				// $temp_chunk .= "\n<input type='hidden' name='field_ft_".$row['field_id']."' value='".$field_fmt."' />\n";
-
-				$build .= $temp_chunk;
-			}
-
-			$tagdata = str_replace(LD.'temp_custom_fields'.RD, $build, $tagdata);
 		}
-
-		/** ----------------------------------------
-		/**  Categories
-		/** ----------------------------------------*/
-
+		
+		// Categories
 		if (preg_match("#".LD."category_menu".RD."(.+?)".LD.'/'."category_menu".RD."#s", $tagdata, $match))
 		{
-			$this->_category_tree_form($cat_group, $which, $deft_category, $catlist);
+			$this->_category_tree_form($cat_group, $which, $deft_category, $cat_list);
 
 			if (count($this->categories) == 0)
 			{
@@ -1719,11 +647,7 @@ array
 			}
 		}
 
-
-		/** ----------------------------------------
-		/**  Ping Servers
-		/** ----------------------------------------*/
-
+		// Ping Servers
 		if (preg_match("#".LD."ping_servers".RD."(.+?)".LD.'/'."ping_servers".RD."#s", $tagdata, $match))
 		{
 			$field = (preg_match("#".LD."ping_row".RD."(.+?)".LD.'/'."ping_row".RD."#s", $tagdata, $match1)) ? $match1['1'] : '';
@@ -1758,102 +682,98 @@ array
 				$tagdata = str_replace ($match['0'], $match['1'], $tagdata);
 			}
 		}
-
-
-
-
-		/** ----------------------------------------
-		/**  Status
-		/** ----------------------------------------*/
-
+		
+		// Status
 		if (preg_match("#".LD."status_menu".RD."(.+?)".LD.'/'."status_menu".RD."#s", $tagdata, $match))
 		{
 			if (isset($_POST['status']))
-				$deft_status = $_POST['status'];
+			{
+				$deft_status = $_POST['status'];				
+			}
 
 			if ($deft_status == '')
-				$deft_status = 'open';
+			{
+				$deft_status = 'open';				
+			}
 
 			if ($status == '')
-				$status = $deft_status;
+			{
+				$status = $deft_status;	
+			}
 
-				/** --------------------------------
-				/**  Fetch disallowed statuses
-				/** --------------------------------*/
+			/** --------------------------------
+			/**  Fetch disallowed statuses
+			/** --------------------------------*/
 
-				$no_status_access = array();
+			$no_status_access = array();
 
-				if ($this->EE->session->userdata['group_id'] != 1)
+			if ($this->EE->session->userdata['group_id'] != 1)
+			{
+				$this->EE->db->select('status_id');
+				$this->EE->db->where('member_group', $this->EE->session->userdata('group_id'));
+				$query = $this->EE->db->get('status_no_access');
+				
+				if ($query->num_rows() > 0)
 				{
-					$this->EE->db->select('status_id');
-					$this->EE->db->where('member_group', $this->EE->session->userdata('group_id'));
-					$query = $this->EE->db->get('status_no_access');
-					
-					if ($query->num_rows() > 0)
+					foreach ($query->result_array() as $row)
 					{
-						foreach ($query->result_array() as $row)
+						$no_status_access[] = $row['status_id'];
+					}
+				}
+			}
+
+			/** --------------------------------
+			/**  Create status menu
+			/** --------------------------------*/
+
+			$r = '';
+
+			if ($status_query->num_rows() == 0)
+			{
+				// if there is no status group assigned, only Super Admins can create 'open' entries
+				if ($this->EE->session->userdata['group_id'] == 1)
+				{
+					$selected = ($status == 'open') ? " selected='selected'" : '';
+					$r .= "<option value='open'".$selected.">".$this->EE->lang->line('open')."</option>";
+				}
+
+				$selected = ($status == 'closed') ? " selected='selected'" : '';
+				$r .= "<option value='closed'".$selected.">".$this->EE->lang->line('closed')."</option>";
+			}
+			else
+			{
+				$no_status_flag = TRUE;
+
+				foreach ($status_query->result_array() as $row)
+				{
+					$selected = ($status == $row['status']) ? " selected='selected'" : '';
+
+					if ($selected != 1)
+					{
+						if (in_array($row['status_id'], $no_status_access))
 						{
-							$no_status_access[] = $row['status_id'];
+							continue;
 						}
 					}
+
+					$no_status_flag = FALSE;
+
+					$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? $this->EE->lang->line($row['status']) : $row['status'];
+
+					$r .= "<option value='".form_prep($row['status'])."'".$selected.">". form_prep($status_name)."</option>\n";
 				}
 
-				/** --------------------------------
-				/**  Create status menu
-				/** --------------------------------*/
-
-				$r = '';
-
-				if ($status_query->num_rows() == 0)
+				if ($no_status_flag == TRUE)
 				{
-					// if there is no status group assigned, only Super Admins can create 'open' entries
-					if ($this->EE->session->userdata['group_id'] == 1)
-					{
-						$selected = ($status == 'open') ? " selected='selected'" : '';
-						$r .= "<option value='open'".$selected.">".$this->EE->lang->line('open')."</option>";
-					}
-
-					$selected = ($status == 'closed') ? " selected='selected'" : '';
-					$r .= "<option value='closed'".$selected.">".$this->EE->lang->line('closed')."</option>";
+					$tagdata = str_replace ($match['0'], '', $tagdata);
 				}
-				else
-				{
-					$no_status_flag = TRUE;
-
-					foreach ($status_query->result_array() as $row)
-					{
-						$selected = ($status == $row['status']) ? " selected='selected'" : '';
-
-						if ($selected != 1)
-						{
-							if (in_array($row['status_id'], $no_status_access))
-							{
-								continue;
-							}
-						}
-
-						$no_status_flag = FALSE;
-
-						$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? $this->EE->lang->line($row['status']) : $row['status'];
-
-						$r .= "<option value='".form_prep($row['status'])."'".$selected.">". form_prep($status_name)."</option>\n";
-					}
-
-					if ($no_status_flag == TRUE)
-					{
-						$tagdata = str_replace ($match['0'], '', $tagdata);
-					}
-				}
+			}
 
 
-				$match['1'] = str_replace(LD.'select_options'.RD, $r, $match['1']);
-				$tagdata = str_replace ($match['0'], $match['1'], $tagdata);
+			$match['1'] = str_replace(LD.'select_options'.RD, $r, $match['1']);
+			$tagdata = str_replace ($match['0'], $match['1'], $tagdata);
 		}
-
-
-		/** ----------------------------------------
-		/**  Parse single variables
-		/** ----------------------------------------*/
+		
 		foreach ($this->EE->TMPL->var_single as $key => $val)
 		{
 			/** ----------------------------------------
@@ -1897,7 +817,7 @@ array
 				}
 				else
 				{
-					$checked = ($dst_enabled == 'y') ? "checked='checked'" : '';
+					$checked = ($this->EE->session->userdata('daylight_savings') == 'y') ? "checked='checked'" : '';
 				}
 
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $checked, $tagdata);
@@ -1973,11 +893,38 @@ array
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $comment_expiration_date, $tagdata);
 
 			}
+			
+			/** ----------------------------------------
+			/**  {saef_javascript}
+			/** ----------------------------------------*/
+			
+			if ($key == 'saef_javascript')
+			{
+				$js = '<script type="text/javascript" charset="utf-8">// <![CDATA[ '."\n"; 
 
+				foreach ($this->output_js['json'] as $key => $val)
+				{
+					if ($js == 'EE')
+					{
+						$js .= 'if (typeof EE == "undefined" || ! EE) {'."\n".
+							'var EE = '.$this->EE->javascript->generate_json($val)."\n".
+							"}\n";
+					}
+					else 
+					{
+						$js .= $this->EE->javascript->generate_json($val);
+					}
+				}
+
+				$js .= "\n".' // ]]>'."\n".'</script>';
+				$js .= $this->output_js['str'];
+				
+				$tagdata = $this->EE->TMPL->swap_var_single($key, $js, $tagdata);
+				unset($this->output_js);
+			}
+			
 		}
 		
-		// Build the form
-
 		$data = array(
 						'hidden_fields' => $hidden_fields,
 						'action'		=> $RET,
@@ -1988,17 +935,37 @@ array
 
 		$res  = $this->EE->functions->form_declaration($data);
 		
-		$res .= $misc_js;
+		// our Json string will go here if it hasn't been put in by {saef_javascript}
+		if (isset($this->output_js))
+		{
+			$res .= '<script type="text/javascript" charset="utf-8">// <![CDATA[ '."\n"; 
+			
+			foreach ($this->output_js['json'] as $key => $val)
+			{
+				if ($key == 'EE')
+				{
+					$res .= 'if (typeof EE == "undefined" || ! EE) { var EE = '.$this->EE->javascript->generate_json($val).";}\n";
+				}
+				else 
+				{
+					$res .= $key.' = ' . $this->EE->javascript->generate_json($val) . ";\n";
+				}
+			}
+			
+			$res .= "\n".' // ]]>'."\n".'</script>';
+			$res .= $this->output_js['str'];
+		}
 
 		if ($this->EE->TMPL->fetch_param('use_live_url') != 'no')
 		{
- 			$res .= $url_title_js;
+ 			// $res .= $url_title_js;
 		}
 
 		$res .= stripslashes($tagdata);
 		$res .= "</form>";
 
 		return $res;
+
 	}
 	
 	// --------------------------------------------------------------------	
@@ -2290,6 +1257,8 @@ array
 				$output .= file_get_contents(PATH_JQUERY.$key.'/'.$filename)."\n";
 			}
 		}
+		
+		$output .= $this->_addt_saef_scripts();
 
 		$this->EE->output->out_type = 'cp_asset';
 		$this->EE->output->set_header("Content-Type: text/javascript");
@@ -2298,6 +1267,1106 @@ array
 		$this->EE->output->set_output($output);
 	}
 
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Create Formatting Buttons
+	 *
+	 * 
+	 *
+	 */
+	function _formatting_buttons($file_list)
+	{
+		$html_buttons = $this->EE->admin_model->get_html_buttons($this->EE->session->userdata('member_id'));
+		
+		$button_js = array();
+
+		foreach ($html_buttons->result() as $button)
+		{
+			if (strpos($button->classname, 'btn_img') !== FALSE)
+			{
+				// images are handled differently because of the file browser
+				// at least one image must be available for this to work
+				if (count($file_list) > 0)
+				{
+					$button_js[] = array('name' => $button->tag_name, 'key' => $button->accesskey, 'replaceWith' => '', 'className' => $button->classname);
+				}
+			}
+			elseif(strpos($button->classname, 'markItUpSeparator') !== FALSE)
+			{
+				// separators are purely presentational
+				$button_js[] = array('separator' => '---');
+			}
+			else
+			{
+				$button_js[] = array('name' => $button->tag_name, 'key' => $button->accesskey, 'openWith' => $button->tag_open, 'closeWith' => $button->tag_close, 'className' => $button->classname);
+			}
+		}
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup SAEF Javascript
+	 *
+	 *
+	 *
+	 *
+	 */
+	function _setup_js($endpoint, $markItUp, $markItUp_writemode, $addt_js)
+	{
+		$include_jquery = ($this->EE->TMPL->fetch_param('include_jquery') == 'n') ? FALSE : TRUE;
+		
+		$this->EE->load->library('filemanager');
+		
+		$js = $this->EE->filemanager->frontend_filebrowser($endpoint, $include_jquery);
+
+		$json = array_merge($js['json'], $addt_js);
+
+		$this->output_js['json'] = array(
+					'EE'					=> $json,
+					'mySettings'			=> $markItUp,
+					'myWritemodeSettings'	=> $markItUp_writemode
+			);
+
+		$this->output_js['str'] = $js['str'];
+	}
+	
+	// --------------------------------------------------------------------	
+	
+	function _addt_saef_scripts()
+	{
+		// js for URL Title
+		$convert_ascii = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? TRUE : FALSE;
+		$word_separator = $this->EE->config->item('word_separator') != "dash" ? '_' : '-';
+		
+		// Foreign Character Conversion Javascript
+		include(APPPATH.'config/foreign_chars.php');
+		
+		/* -------------------------------------
+		/*  'foreign_character_conversion_array' hook.
+		/*  - Allows you to use your own foreign character conversion array
+		/*  - Added 1.6.0
+		/* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
+		*/  
+			if (isset($this->extensions->extensions['foreign_character_conversion_array']))
+			{
+				$foreign_characters = $this->extensions->call('foreign_character_conversion_array');
+			}
+		/*
+		/* -------------------------------------*/
+		
+		$foreign_replace = '';
+
+		foreach($foreign_characters as $old => $new)
+		{
+			$foreign_replace .= "if (c == '$old') {NewTextTemp += '$new'; continue;}\n\t\t\t\t";
+		}
+		
+		$url_title_js = <<<YOYOYO
+
+function liveUrlTitle()
+{
+	var defaultTitle = '{$this->default_entry_title}';
+	var NewText = document.getElementById("title").value;
+
+	if (defaultTitle != '')
+	{
+		if (NewText.substr(0, defaultTitle.length) == defaultTitle)
+		{
+			NewText = NewText.substr(defaultTitle.length)
+		}
+	}
+
+	NewText = NewText.toLowerCase();
+	var separator = "{$word_separator}";
+
+	/* Foreign Character Attempt */
+
+	var NewTextTemp = '';
+	for(var pos=0; pos<NewText.length; pos++)
+	{
+		var c = NewText.charCodeAt(pos);
+
+		if (c >= 32 && c < 128)
+		{
+			NewTextTemp += NewText.charAt(pos);
+		}
+		else
+		{
+			{$foreign_replace}
+		}
+	}
+
+	var multiReg = new RegExp(separator + '{2,}', 'g');
+
+	NewText = NewTextTemp;
+
+	NewText = NewText.replace('/<(.*?)>/g', '');
+	NewText = NewText.replace(/\s+/g, separator);
+	NewText = NewText.replace(/\//g, separator);
+	NewText = NewText.replace(/[^a-z0-9\-\._]/g,'');
+	NewText = NewText.replace(/\+/g, separator);
+	NewText = NewText.replace(multiReg, separator);
+	NewText = NewText.replace(/-$/g,'');
+	NewText = NewText.replace(/_$/g,'');
+	NewText = NewText.replace(/^_/g,'');
+	NewText = NewText.replace(/^-/g,'');
+
+	if (document.getElementById("url_title"))
+	{
+		document.getElementById("url_title").value = "{$this->url_title_prefix}" + NewText;
+	}
+	else
+	{
+		document.forms['entryform'].elements['url_title'].value = "{$this->url_title_prefix}" + NewText;
+	}
+}
+YOYOYO;
+
+		$who_is = <<<INDAHOUSE
+
+$(document).ready(function() {
+	$(".js_show").show();
+	$(".js_hide").hide();
+
+	$.ee_filebrowser();
+
+	// Prep for a workaround to allow markitup file insertion in file inputs
+	$(".btn_img a, .file_manipulate").click(function(){
+		window.file_manager_context = ($(this).parent().attr("class").indexOf("markItUpButton") == -1) ? 	$(this).closest("div").find("input").attr("id") : "textarea_a8LogxV4eFdcbC";
+	});
+
+	// Bind the image html buttons
+	$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
+		// We also need to allow file insertion into text inputs (vs textareas) but markitup
+		// will not accommodate this, so we need to detect if this request is coming from a 
+		// markitup button (textarea_a8LogxV4eFdcbC), or another field type.
+		if (window.file_manager_context == "textarea_a8LogxV4eFdcbC")
+		{
+			// Handle images and non-images differently
+			if ( ! file.is_image) {
+				$.markItUp({name:"Link", key:"L", openWith:"<a href=\"{filedir_"+file.directory+"}"+file.name+"\">", closeWith:"</a>", placeHolder:file.name });
+			} else {
+				$.markItUp({ replaceWith:"<img src=\"{filedir_"+file.directory+"}"+file.name+"\" alt=\"[![Alternative text]!]\" "+file.dimensions+"/>" } );}
+			} else {
+				$("#"+window.file_manager_context).val("{filedir_"+file.directory+"}"+file.name);
+			}
+		});
+
+		function file_field_changed(file, field) {
+			var container = $("input[name="+field+"]").closest(".publish_field");
+			container.find(".file_set").show().find(".filename").text(file.name);
+			$("input[name="+field+"_hidden]").val(file.name);
+			$("select[name="+field+"_directory]").val(file.directory);
+		}
+
+		$("input[type=file]", "#publishForm").each(function() {
+			var container = $(this).closest(".publish_field"),
+				trigger = container.find(".choose_file");
+
+			$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), file_field_changed);
+
+			container.find(".remove_file").click(function() {
+				container.find("input[type=hidden]").val("");
+				container.find(".file_set").hide();
+				return false;
+			});
+		});
+	});		
+		
+INDAHOUSE;
+
+		$ret = $url_title_js;
+		$ret .= "\n".$who_is;
+		
+		if ($this->EE->config->item('use_compressed_js'))
+		{
+			return str_replace(array("\n", "\t"), '', $ret);			
+		}
+		
+		return $ret;
+	}
+	
+	// --------------------------------------------------------------------	
+	
+	function _parse_preview($which, $match, $tagdata)
+	{
+		if ($which != 'preview')
+		{
+			$tagdata = str_replace ($match['0'], '', $tagdata);
+		}
+		else
+		{
+			// Snag out the possible pair chunks (file, multiselect and checkboxes)
+			foreach ($pair_fields as $field_name => $field_info)
+			{
+				if (($end = strpos($match['1'], LD.'/'.$field_name.RD)) !== FALSE)
+				{
+					// @confirm FIX IT! this is ugly
+					if (preg_match_all("/".LD."{$field_name}(.*?)".RD."(.*?)".LD.'\/'.$field_name.RD."/s", $match['1'], $pmatches))
+					{
+						for ($j = 0; $j < count($pmatches[0]); $j++)
+						{
+							$chunk = $pmatches[0][$j];
+							$params = $pmatches[1][$j];
+							$inner = $pmatches[2][$j];
+							
+							// We might've sandwiched a single tag - no good, check again (:sigh:)
+							if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}(.*?)".RD."/s", $chunk, $pmatch))
+							{
+								// Let's start at the end
+								$idx = count($pmatch[0]) - 1;
+								$tag = $pmatch[0][$idx];
+								
+								// Cut the chunk at the last opening tag (PHP5 could do this with strrpos :-( )
+								while (strpos($chunk, $tag, 1) !== FALSE)
+								{
+									$chunk = substr($chunk, 1);
+									$chunk = strstr($chunk, LD.$field_name);
+									$inner = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
+								}
+							}
+
+							$pfield_chunk['field_id_'.$field_info['1']][] = array($inner,
+								 										$this->EE->functions->assign_parameters($params), $chunk);
+						}
+					}
+				}
+			}
+
+			/** ----------------------------------------
+			/**  Instantiate Typography class
+			/** ----------------------------------------*/
+
+			$this->EE->load->library('typography');
+			$this->EE->typography->initialize();
+
+			$this->EE->typography->convert_curly = FALSE;
+			$file_dirs = $this->EE->functions->fetch_file_paths();
+
+			$match['1'] = str_replace(LD.'title'.RD, stripslashes($this->EE->input->post('title')), $match['1']);
+
+			// We need to grab each
+			$str = '';
+
+			foreach($_POST as $key => $val)
+			{
+				if (strncmp($key, 'field_id', 8) == 0)
+				{
+					// do pair variables
+					if (isset($pfield_chunk[$key]))
+					{
+						
+						$expl = explode('field_id_', $key);
+						$txt_fmt = ( ! isset($_POST['field_ft_'.$expl['1']])) ? 'xhtml' : $_POST['field_ft_'.$expl['1']];
+												
+						// Blast through all the chunks
+						foreach($pfield_chunk[$key] as $chk_data)
+						{
+							$tpl_chunk = '';
+							$limit = FALSE;
+							
+							// Limit Parameter
+							if (is_array($chk_data[1]) AND isset($chk_data[1]['limit']))
+							{
+								$limit = $chk_data[1]['limit'];
+							}
+
+							foreach($val as $k => $item)
+							{
+								if ( ! $limit OR $k < $limit)
+								{
+									$vars['item'] = $item;
+									$vars['count'] = $k + 1;	// {count} parameter
+
+									$tmp = $this->EE->functions->prep_conditionals($chk_data[0], $vars);
+									$tpl_chunk .= $this->EE->functions->var_swap($tmp, $vars);
+								}
+								else
+								{
+									break;
+								}
+							}
+
+							// Everybody loves backspace
+							if (is_array($chk_data[1]) AND isset($chk_data[1]['backspace']))
+							{
+								$tpl_chunk = substr($tpl_chunk, 0, - $chk_data[1]['backspace']);
+							}
+
+						}
+						
+						// Typography!
+						$tpl_chunk = $this->EE->typography->parse_type(
+											$this->EE->functions->encode_ee_tags($tpl_chunk),
+											array(
+															'text_format'   => $txt_fmt,
+															'html_format'   => $channel_html_formatting,
+															'auto_links'    => $channel_allow_img_urls,
+															'allow_img_url' => $channel_auto_link_urls
+												  )
+							);
+
+						// Replace the chunk
+						if (isset($fields[$key]['0']))
+						{
+							$match['1'] = str_replace($chk_data[2], $tpl_chunk, $match['1']);
+						}
+					}
+
+					// end pair variables						
+					
+					$expl = explode('field_id_', $key);
+					$temp = '';
+					if (! is_numeric($expl['1'])) continue;
+
+					if (in_array($expl['1'], $date_fields))
+					{
+						$temp_date = $this->EE->localize->convert_human_date_to_gmt($_POST['field_id_'.$expl['1']]);
+						$temp = $_POST['field_id_'.$expl['1']];
+						$cond[$fields['field_id_'.$expl['1']]['0']] =  $temp_date;
+					}
+					elseif ($fields['field_id_'.$expl['1']]['1'] == 'file')
+					{
+						$file_info['path'] = '';
+						$file_info['extension'] = '';
+						$file_info['filename'] = '';
+						$full_path = '';
+						$entry = '';
+
+						if ($val != '')
+						{
+							$parts = explode('.', $val);
+							$file_info['extension'] = array_pop($parts);
+							$file_info['filename'] = implode('.', $parts);
+
+							if (isset($_POST['field_id_'.$expl['1'].'_directory']) && isset($_POST['field_id_'.$expl['1']]) && $_POST['field_id_'.$expl['1']] != '')
+							{
+								$file_info['path'] = $file_dirs[$_POST['field_id_'.$expl['1'].'_directory']];
+							}
+
+							$full_path = $file_info['path'].$file_info['filename'].'.'.$file_info['extension'];
+						}
+						
+						if (preg_match_all("/".LD.$fields['field_id_'.$expl['1']]['0']."(.*?)".RD."/s", $match['1'], $pmatches))
+						{
+							foreach ($pmatches['0'] as $id => $tag)
+							{
+								if ($pmatches['1'][$id] == '')
+								{
+									$entry = $full_path;
+								}
+								else
+								{
+									$params = $this->EE->functions->assign_parameters($pmatches['1'][$id]);
+									
+									if (isset($params['wrap']) && $params['wrap'] == 'link')
+									{
+										$entry = '<a href="'.$full_path.'">'.$file_info['filename'].'</a>';
+									}
+									elseif (isset($params['wrap']) && $params['wrap'] == 'image')
+									{
+										$entry = '<img src="'.$full_path.'" alt="'.$file_info['filename'].'" />';
+									}
+									else
+									{
+										$entry = $full_path;
+									}
+								}
+									
+								$match['1'] = str_replace($pmatches['0'][$id], $entry, $match['1']);
+							}
+						}
+						
+						$str .= '<p>'.$full_path.'</p>';
+					}
+					elseif (in_array($fields['field_id_'.$expl['1']]['1'], array('multi_select', 'checkboxes')))
+					{
+						$entry = implode(', ', $val);
+							
+						$cond[$fields['field_id_'.$expl['1']]['0']] =  ( ! isset($_POST['field_id_'.$expl['1']])) ? '' : $entry;
+
+						$txt_fmt = ( ! isset($_POST['field_ft_'.$expl['1']])) ? 'xhtml' : $_POST['field_ft_'.$expl['1']];
+							
+						if (preg_match_all("/".LD.$fields['field_id_'.$expl['1']]['0']."(.*?)".RD."/s", $match['1'], $pmatches))
+						{
+							foreach ($pmatches['0'] as $id => $tag)
+							{
+								if ($pmatches['1'][$id] == '')
+								{
+									
+								}
+								else
+								{
+									$params = $this->EE->functions->assign_parameters($pmatches['1'][$id]);
+
+									if (isset($params['limit']))
+									{
+										$limit = intval($params['limit']);
+						
+										if (count($val) > $limit)
+										{
+											$val = array_slice($val, 0, $limit);
+										}
+									}
+
+									if (isset($params['markup']) && ($params['markup'] == 'ol' OR $params['markup'] == 'ul'))
+									{
+										$entry = '<'.$params['markup'].'>';
+							
+										foreach($val as $dv)
+										{
+											$entry .= '<li>';
+											$entry .= $dv;
+											$entry .= '</li>';
+										}
+
+										$entry .= '</'.$params['markup'].'>';
+									}
+								}
+
+								$entry = $this->EE->typography->parse_type(
+										$this->EE->functions->encode_ee_tags($entry),
+										array(
+												'text_format'   => $txt_fmt,
+												'html_format'   => $channel_html_formatting,
+												'auto_links'    => $channel_allow_img_urls,
+												'allow_img_url' => $channel_auto_link_urls
+										)
+									);
+
+								$match['1'] = str_replace($pmatches['0'][$id], $entry, $match['1']);
+							}
+						}
+
+						$str .= '<p>'.$entry.'</p>';
+					}
+					elseif (! is_array($val))
+					{
+						// @todo something hinky w/needing conditional check here ditto $temp blank bit
+						//echo $val;
+						if (isset($fields['field_id_'.$expl['1']]))
+						{
+						
+							$cond[$fields['field_id_'.$expl['1']]['0']] =  ( ! isset($_POST['field_id_'.$expl['1']])) ? '' : $_POST['field_id_'.$expl['1']];
+
+							$txt_fmt = ( ! isset($_POST['field_ft_'.$expl['1']])) ? 'xhtml' : $_POST['field_ft_'.$expl['1']];
+
+							$temp = $this->EE->typography->parse_type( stripslashes($val),
+											 		array(
+														'text_format'   => $txt_fmt,
+														'html_format'   => $channel_html_formatting,
+														'auto_links'    => $channel_allow_img_urls,
+														'allow_img_url' => $channel_auto_link_urls
+												   		)
+												);
+						}
+					}
+
+					if (isset($fields[$key]['0']))
+					{
+						$match['1'] = str_replace(LD.$fields[$key]['0'].RD, $temp, $match['1']);
+					}
+
+					$str .= $temp;
+				//}
+				
+				
+				// end non pair fields
+				}
+			
+			}
+
+			$match['1'] = str_replace(LD.'display_custom_fields'.RD, $str, $match['1']);
+			$match['1'] = $this->EE->functions->prep_conditionals($match['1'], $cond);
+			$tagdata = str_replace ($match['0'], $match['1'], $tagdata);
+		}
+		
+		return $tagdata;
+	}
+
+	// --------------------------------------------------------------------	
+	
+	/**
+	 * Parse Custom Fields
+	 *
+	 *
+	 *
+	 *
+	 */
+	function _parse_custom_fields($custom_fields, $query, $which, $tagdata, $directories)
+	{
+		$field_array = array('textarea', 'textinput', 'pulldown', 'multiselect', 'checkbox', 'radio', 'file', 'date', 'relationship', 'file');
+
+		$formatting_toolbar 	= '';
+		$textarea 				= '';
+		$textinput 				= '';
+		$pulldown				= '';
+		$multiselect			= '';
+		$checkbox				= '';
+		$radio					= '';
+		$file					= '';
+		$file_options			= '';
+		$file_pulldown			= '';			
+		$date					= '';
+		$relationship 			= '';
+		$rel_options 			= '';
+		$pd_options				= '';
+		$multi_options 			= '';
+		$check_options 			= '';
+		$radio_options 			= '';
+		$required				= '';
+
+		foreach ($field_array as $val)
+		{
+			if (preg_match("#".LD."\s*if\s+".$val.RD."(.+?)".LD.'/'."if".RD."#s", $custom_fields, $match))
+			{
+				$$val = $match['1'];
+
+				if ($val == 'pulldown')
+				{
+					if (preg_match("#".LD."options".RD."(.+?)".LD.'/'."options".RD."#s", $pulldown, $pmatch))
+					{
+						$pd_options = $pmatch['1']; 
+						$pulldown = str_replace ($pmatch['0'], LD.'temp_pd_options'.RD, $pulldown);
+					}
+				}
+
+				if ($val == 'file')
+				{
+					if (preg_match("#".LD."options".RD."(.+?)".LD.'/'."options".RD."#s", $file, $pmatch))
+					{
+						$file_options = $pmatch['1']; 
+						$file = str_replace ($pmatch['0'], LD.'temp_file_options'.RD, $file);
+					}
+				}
+
+
+				if ($val == 'multiselect')
+				{
+					if (preg_match("#".LD."options".RD."(.+?)".LD.'/'."options".RD."#s", $multiselect, $pmatch))
+					{
+						$multi_options = $pmatch['1'];
+						$multiselect = str_replace ($pmatch['0'], LD.'temp_multi_options'.RD, $multiselect);
+					}
+				}
+
+				if ($val == 'checkbox')
+				{
+					if (preg_match("#".LD."options".RD."(.+?)".LD.'/'."options".RD."#s", $checkbox, $pmatch))
+					{
+						$check_options = $pmatch['1'];
+						$checkbox = str_replace ($pmatch['0'], LD.'temp_check_options'.RD, $checkbox);
+					}
+				}
+
+				if ($val == 'radio')
+				{
+					if (preg_match("#".LD."options".RD."(.+?)".LD.'/'."options".RD."#s", $radio, $pmatch))
+					{
+						$radio_options = $pmatch['1'];
+						$radio = str_replace ($pmatch['0'], LD.'temp_radio_options'.RD, $radio);
+					}
+				}
+
+				if ($val == 'relationship')
+				{
+					if (preg_match("#".LD."options".RD."(.+?)".LD.'/'."options".RD."#s", $relationship, $pmatch))
+					{
+						$rel_options = $pmatch['1'];
+						$relationship = str_replace ($pmatch['0'], LD.'temp_rel_options'.RD, $relationship);
+					}
+				}
+
+				$custom_fields = str_replace($match['0'], LD.'temp_'.$val.RD, $custom_fields);
+			}
+		}
+
+		if (preg_match("#".LD."if\s+required".RD."(.+?)".LD.'/'."if".RD."#s", $custom_fields, $match))
+		{
+			$required = $match['1'];
+
+			$custom_fields = str_replace($match['0'], LD.'temp_required'.RD, $custom_fields);
+		}
+
+		/** --------------------------------
+		/**  Parse Custom Fields
+		/** --------------------------------*/
+
+		$build = '';
+
+		foreach ($query->result_array() as $row)
+		{
+			$settings = unserialize(base64_decode($row['field_settings']));
+			$temp_chunk = $custom_fields;
+			$temp_field = '';
+
+			switch ($which)
+			{
+				case 'preview' :
+						$field_data = ( ! isset( $_POST['field_id_'.$row['field_id']] )) ?  '' : $_POST['field_id_'.$row['field_id']];
+						$field_fmt  = ( ! isset( $_POST['field_ft_'.$row['field_id']] )) ? $row['field_fmt'] : $_POST['field_ft_'.$row['field_id']];
+					break;
+				/* no edits or $result in the SAEF - leftover from old CP Publish class
+				case 'edit'	:
+						$field_data = ($result->row('field_id_'.$row['field_id']) !== FALSE) ? '' : $result->row('field_id_'.$row['field_id']);
+						$field_fmt  = ($result->row('field_ft_'.$row['field_id']) !== FALSE) ? $row['field_fmt'] : $result->row('field_ft_'.$row['field_id']);
+					break;
+				*/
+				default		:
+						$field_data = '';
+						$field_fmt  = $row['field_fmt'];
+					break;
+			}
+
+
+			/** --------------------------------
+			/**  Textarea field types
+			/** --------------------------------*/
+
+			if ($row['field_type'] == 'textarea' AND $textarea != '')
+			{
+				$temp_chunk = str_replace(LD.'temp_textarea'.RD, $textarea, $temp_chunk);
+			}
+
+			if ($row['field_type'] == 'text' AND $textinput != '')
+			{
+				$temp_chunk = str_replace(LD.'temp_textinput'.RD, $textinput, $temp_chunk);
+			}
+
+			if ($row['field_type'] == 'file' AND $file != '')
+			{
+
+					$pdo = '';
+
+					$file_dir = ( ! isset( $_POST['field_id_'.$row['field_id'].'_directory'] )) ?  '' : $_POST['field_id_'.$row['field_id'].'_directory'];
+					$filename = ( ! isset( $_POST['field_id_'.$row['field_id'].'_hidden'] )) ?  '' : $_POST['field_id_'.$row['field_id'].'_hidden'];
+
+					$file_div = 'hold_field_'.$row['field_id'];
+					$file_set = 'file_set';
+
+					if ($filename == '')
+					{
+						$file_set .= ' js_hide';
+					}
+
+					foreach ($directories as $k => $v)
+					{
+						$temp_options = $file_options;
+
+						$v = trim($v);
+						$temp_options = str_replace(LD.'option_name'.RD, $v, $temp_options);
+						$temp_options = str_replace(LD.'option_value'.RD, $k, $temp_options);
+						$temp_options = str_replace(LD.'selected'.RD, ($k == $file_dir) ? ' selected="selected"' : '', $temp_options);
+
+						$pdo .= $temp_options;
+					}
+
+					$temp_file = str_replace(LD.'temp_file_options'.RD, $pdo, $file);
+					$temp_file = str_replace(LD.'file_name'.RD, $filename, $temp_file);
+					$temp_file = str_replace(LD.'file_set'.RD, $file_set, $temp_file);
+					$temp_file = str_replace(LD.'file_div'.RD, $file_div, $temp_file);			
+					$temp_chunk = str_replace(LD.'temp_file'.RD, $temp_file, $temp_chunk); 
+			}				
+
+			if ($row['field_type'] == 'rel')
+			{
+				if ($row['field_related_orderby'] == 'date')
+				{
+					$row['field_related_orderby'] = 'entry_date';						
+				}
+
+				$this->EE->db->select('entry_id, title');
+				$this->EE->db->where('channel_id', $row['field_related_id']);
+				$this->EE->db->order_by($row['field_related_orderby'], $row['field_related_sort']);
+
+				if ($row['field_related_max'] > 0)
+				{
+					$this->EE->db->limit($row['field_related_max']);
+				}
+
+				$relquery = $this->EE->db->get('channel_titles');
+
+				if ($relquery->num_rows() > 0)
+				{
+					$relentry_id = '';
+					if ( ! isset($_POST['field_id_'.$row['field_id']]))
+					{
+						$this->EE->db->select('rel_child_id');
+						$this->EE->db->where('rel_id', $field_data);
+						$relentry = $this->EE->db->get('relationships');
+
+						if ($relentry->num_rows() == 1)
+						{
+							$relentry_id = $relentry->row('rel_child_id') ;
+						}
+					}
+					else
+					{
+						$relentry_id = $_POST['field_id_'.$row['field_id']];
+					}
+
+					$temp_options = $rel_options;
+					$temp_options = str_replace(LD.'option_name'.RD, '--', $temp_options);
+					$temp_options = str_replace(LD.'option_value'.RD, '', $temp_options);
+					$temp_options = str_replace(LD.'selected'.RD, '', $temp_options);
+					$pdo = $temp_options;
+
+					foreach ($relquery->result_array() as $relrow)
+					{
+						$temp_options = $rel_options;
+						$temp_options = str_replace(LD.'option_name'.RD, $relrow['title'], $temp_options);
+						$temp_options = str_replace(LD.'option_value'.RD, $relrow['entry_id'], $temp_options);
+						$temp_options = str_replace(LD.'selected'.RD, ($relentry_id == $relrow['entry_id']) ? ' selected="selected"' : '', $temp_options);
+
+						$pdo .= $temp_options;
+					}
+
+					$temp_relationship = str_replace(LD.'temp_rel_options'.RD, $pdo, $relationship);
+					$temp_chunk = str_replace(LD.'temp_relationship'.RD, $temp_relationship, $temp_chunk);
+				}
+			}
+			if ($row['field_type'] == 'date' AND $date != '')
+			{
+				$temp_chunk = $custom_fields;
+
+				$date_field = 'field_id_'.$row['field_id'];
+				$date_local = 'field_dt_'.$row['field_id'];
+
+				$dtwhich = $which;
+				if (isset($_POST[$date_field]))
+				{
+					$field_data = $_POST[$date_field];
+					$dtwhich = 'preview';
+				}
+
+				$custom_date = '';
+				$localize = FALSE;
+				if ($dtwhich != 'preview')
+				{
+					$localize = TRUE;
+
+					/* $result is a leftover from the old cp Publish class, unused at present
+					if ($field_data != '' && $result->row('field_dt_'.$row['field_id']) != '')
+					{
+						$field_data = $this->EE->localize->offset_entry_dst($field_data, $dst_enabled);
+						$field_data = $this->EE->localize->simpl_offset($field_data, $result->row('field_dt_'.$row['field_id']));
+						$localize = FALSE;
+					}
+					*/
+
+					if ($field_data != '')
+						$custom_date = $this->EE->localize->set_human_time($field_data, $localize);
+
+					$cal_date = ($this->EE->localize->set_localized_time($custom_date) * 1000);
+				}
+				else
+				{
+					$custom_date = $_POST[$date_field];
+					$cal_date = ($custom_date != '') ? ($this->EE->localize->set_localized_time($this->EE->localize->convert_human_date_to_gmt($custom_date)) * 1000) : ($this->EE->localize->set_localized_time() * 1000);
+				}
+
+				$temp_chunk = str_replace(LD.'temp_date'.RD, $date, $temp_chunk);
+				$temp_chunk = str_replace(LD.'date'.RD, $custom_date, $temp_chunk);
+			}
+			elseif ($row['field_type'] == 'select' AND $pulldown != '')
+			{
+				if ($row['field_pre_populate'] == 'n')
+				{
+					$pdo = '';
+
+					if ($row['field_required'] == 'n')
+					{
+						$temp_options = $pd_options;
+
+	//echo $temp_options;							
+						$temp_options = str_replace(LD.'option_name'.RD, '--', $temp_options);
+						$temp_options = str_replace(LD.'option_value'.RD, '', $temp_options);
+						$temp_options = str_replace(LD.'selected'.RD, '', $temp_options);
+						$pdo = $temp_options;
+					}
+
+					foreach (explode("\n", trim($row['field_list_items'])) as $v)
+					{
+						$temp_options = $pd_options;
+
+						$v = trim($v);
+						$temp_options = str_replace(LD.'option_name'.RD, $v, $temp_options);
+						$temp_options = str_replace(LD.'option_value'.RD, $v, $temp_options);
+						$temp_options = str_replace(LD.'selected'.RD, ($v == $field_data) ? ' selected="selected"' : '', $temp_options);
+
+						$pdo .= $temp_options;
+					}
+
+					$temp_pulldown = str_replace(LD.'temp_pd_options'.RD, $pdo, $pulldown);
+					$temp_chunk = str_replace(LD.'temp_pulldown'.RD, $temp_pulldown, $temp_chunk); 
+				}
+				else
+				{
+					// We need to pre-populate this menu from an another channel custom field
+					$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
+					$this->EE->where('channel_id', $row['field_pre_channel_id']);
+					$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
+					$pop_query = $this->EE->db->get('channel_data');
+
+					if ($pop_query->num_rows() > 0)
+					{
+						$temp_options = $rel_options;
+						$temp_options = str_replace(LD.'option_name'.RD, '--', $temp_options);
+						$temp_options = str_replace(LD.'option_value'.RD, '', $temp_options);
+						$temp_options = str_replace(LD.'selected'.RD, '', $temp_options);
+						$pdo = $temp_options;
+
+						foreach ($pop_query->result_array() as $prow)
+						{
+							$pretitle = substr($prow['field_id_'.$row['field_pre_field_id']], 0, 110);
+							$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
+							$pretitle = form_prep($pretitle);
+
+							$temp_options = $pd_options;
+							$temp_options = str_replace(LD.'option_name'.RD, $pretitle, $temp_options);
+							$temp_options = str_replace(LD.'option_value'.RD, form_prep($prow['field_id_'.$row['field_pre_field_id']]), $temp_options);
+							$temp_options = str_replace(LD.'selected'.RD, ($prow['field_id_'.$row['field_pre_field_id']] == $field_data) ? ' selected="selected"' : '', $temp_options);
+							$pdo .= $temp_options;
+						}
+
+						$temp_pulldown = str_replace(LD.'temp_pd_options'.RD, $pdo, $pulldown);
+						$temp_chunk = str_replace(LD.'temp_pulldown'.RD, $temp_pulldown, $temp_chunk);
+					}
+				}
+			}
+			elseif ($row['field_type'] == 'multi_select' AND $multiselect != '')
+			{
+				if ($row['field_pre_populate'] == 'n')
+				{
+					$pdo = '';
+
+					if ($row['field_required'] == 'n')
+					{
+						$temp_options = $multi_options;
+						$temp_options = str_replace(LD.'option_name'.RD, '--', $temp_options);
+						$temp_options = str_replace(LD.'option_value'.RD, '', $temp_options);
+						$temp_options = str_replace(LD.'selected'.RD, '', $temp_options);
+						$pdo = $temp_options;
+					}
+
+					foreach (explode("\n", trim($row['field_list_items'])) as $v)
+					{
+						$temp_options = $multi_options;
+
+						$v = trim($v);
+						$temp_options = str_replace(LD.'option_name'.RD, $v, $temp_options);
+						$temp_options = str_replace(LD.'option_value'.RD, $v, $temp_options);
+						$temp_options = str_replace(LD.'selected'.RD, (is_array($field_data) && in_array($v, $field_data)) ? ' selected="selected"' : '', $temp_options);
+						$pdo .= $temp_options;
+					}
+
+					$temp_multiselect = str_replace(LD.'temp_multi_options'.RD, $pdo, $multiselect);
+					$temp_chunk = str_replace(LD.'temp_multiselect'.RD, $temp_multiselect, $temp_chunk);
+				}
+
+				else
+				{
+					// We need to pre-populate this menu from an another channel custom field
+					$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
+					$this->EE->db->where('channel_id', $row['field_pre_channel_id']);
+					$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
+					$pop_query = $this->EE->db->get('channel_data');
+
+					if ($pop_query->num_rows() > 0)
+					{
+						$temp_options = $multi_options;
+						$temp_options = str_replace(LD.'option_name'.RD, '--', $temp_options);
+						$temp_options = str_replace(LD.'option_value'.RD, '', $temp_options);
+						$temp_options = str_replace(LD.'selected'.RD, '', $temp_options);
+						$pdo = $temp_options;
+
+						foreach ($pop_query->result_array() as $prow)
+						{
+							if (trim($prow['field_id_'.$row['field_pre_field_id']]) != '')
+							{
+								$pretitle = substr(trim($prow['field_id_'.$row['field_pre_field_id']]), 0, 110);
+								$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
+								$pretitle = form_prep($pretitle);
+
+								$temp_options = $multi_options;
+								$temp_options = str_replace(LD.'option_name'.RD, $pretitle, $temp_options);
+								$temp_options = str_replace(LD.'option_value'.RD, form_prep($prow['field_id_'.$row['field_pre_field_id']]), $temp_options);
+								$temp_options = str_replace(LD.'selected'.RD, (is_array($field_data) && in_array($prow['field_id_'.$row['field_pre_field_id']], $field_data)) ? ' selected="selected"' : '', $temp_options);
+								$pdo .= $temp_options;
+							}
+						}
+
+						$temp_multiselect = str_replace(LD.'temp_multi_options'.RD, $pdo, $multiselect);
+						$temp_chunk = str_replace(LD.'temp_multiselect'.RD, $temp_multiselect, $temp_chunk);
+					}
+				}
+			}
+
+			elseif ($row['field_type'] == 'checkboxes' AND $checkbox != '')
+			{
+				if ($row['field_pre_populate'] == 'n')
+				{
+					$pdo = '';
+
+					foreach (explode("\n", trim($row['field_list_items'])) as $v)
+					{
+						$temp_options = $check_options;
+
+						$v = trim($v);
+						$temp_options = str_replace(LD.'option_name'.RD, $v, $temp_options);
+						$temp_options = str_replace(LD.'option_value'.RD, $v, $temp_options);
+						$temp_options = str_replace(LD.'checked'.RD, (is_array($field_data) && in_array($v, $field_data)) ? ' checked ' : '', $temp_options);
+
+						$pdo .= $temp_options;
+					}
+
+					$temp_checkbox = str_replace(LD.'temp_check_options'.RD, $pdo, $checkbox);
+					$temp_chunk = str_replace(LD.'temp_checkbox'.RD, $temp_checkbox, $temp_chunk);
+				}
+
+				else
+				{
+					// We need to pre-populate this menu from an another channel custom field
+					$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
+					$this->EE->db->where('channel_id', $row['field_pre_channel_id']);
+					$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
+					$pop_query = $this->EE->db->get('channel_data');
+
+					if ($pop_query->num_rows() > 0)
+					{
+						$pdo = '';
+
+						foreach ($pop_query->result_array() as $prow)
+						{
+							$pretitle = substr(trim($prow['field_id_'.$row['field_pre_field_id']]), 0, 110);
+							$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
+							$pretitle = form_prep($pretitle);
+
+							$temp_options = $check_options;
+							$temp_options = str_replace(LD.'option_name'.RD, $pretitle, $temp_options);
+							$temp_options = str_replace(LD.'option_value'.RD, form_prep($prow['field_id_'.$row['field_pre_field_id']]), $temp_options);
+							$temp_options = str_replace(LD.'checked'.RD, (is_array($field_data) && in_array($prow['field_id_'.$row['field_pre_field_id']], $field_data)) ? ' checked ' : '', $temp_options);
+							$pdo .= $temp_options;
+						}
+
+						$temp_checkbox = str_replace(LD.'temp_check_options'.RD, $pdo, $checkbox);
+						$temp_chunk = str_replace(LD.'temp_checkbox'.RD, $temp_checkbox, $temp_chunk);
+					}
+				}
+			}
+			elseif ($row['field_type'] == 'radio' AND $radio != '')
+			{
+				if ($row['field_pre_populate'] == 'n')
+				{
+					$pdo = '';
+
+					foreach (explode("\n", trim($row['field_list_items'])) as $v)
+					{
+						$temp_options = $radio_options;
+
+						$v = trim($v);
+						$temp_options = str_replace(LD.'option_name'.RD, $v, $temp_options);
+						$temp_options = str_replace(LD.'option_value'.RD, $v, $temp_options);
+						$temp_options = str_replace(LD.'checked'.RD, ($v == $field_data) ? ' checked ' : '', $temp_options);
+
+						$pdo .= $temp_options;
+					}
+
+					$temp_radio = str_replace(LD.'temp_radio_options'.RD, $pdo, $radio);
+					$temp_chunk = str_replace(LD.'temp_radio'.RD, $temp_radio, $temp_chunk);
+				}
+
+				else
+				{
+					// We need to pre-populate this menu from an another channel custom field
+					$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
+					$this->EE->db->where('channel_id', $row['field_pre_channel_id']);
+					$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
+					$pop_query = $this->EE->db->get('channel_data');
+
+					if ($pop_query->num_rows() > 0)
+					{
+						$pdo = '';
+
+						foreach ($pop_query->result_array() as $prow)
+						{
+							$pretitle = substr($prow['field_id_'.$row['field_pre_field_id']], 0, 110);
+							$pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
+							$pretitle = form_prep($pretitle);
+
+							$temp_options = $radio_options;
+							$temp_options = str_replace(LD.'option_name'.RD, $pretitle, $temp_options);
+							$temp_options = str_replace(LD.'option_value'.RD, form_prep($prow['field_id_'.$row['field_pre_field_id']]), $temp_options);
+							$temp_options = str_replace(LD.'checked'.RD, ($prow['field_id_'.$row['field_pre_field_id']] == $field_data) ? ' checked ' : '', $temp_options);
+							$pdo .= $temp_options;
+						}
+
+						$temp_radio = str_replace(LD.'temp_radio_options'.RD, $pdo, $radio);
+						$temp_chunk = str_replace(LD.'temp_radio'.RD, $temp_radio, $temp_chunk);
+					}
+				}
+			}
+
+
+			if ($row['field_required'] == 'y')
+			{
+				$temp_chunk = str_replace(LD.'temp_required'.RD, $required, $temp_chunk);
+			}
+			else
+			{
+				$temp_chunk = str_replace(LD.'temp_required'.RD, '', $temp_chunk);
+			}
+
+			if (is_array($field_data))
+			{
+
+			}
+			else
+			{
+				$temp_chunk = str_replace(LD.'field_data'.RD, form_prep($field_data), $temp_chunk);					
+			}
+
+			$temp_chunk = str_replace(LD.'temp_date'.RD, '', $temp_chunk);
+			$temp_chunk = str_replace(LD.'temp_textarea'.RD, '', $temp_chunk);
+			$temp_chunk = str_replace(LD.'temp_relationship'.RD, '', $temp_chunk);
+			$temp_chunk = str_replace(LD.'temp_textinput'.RD, '', $temp_chunk);
+			$temp_chunk = str_replace(LD.'temp_file'.RD, '', $temp_chunk);
+			$temp_chunk = str_replace(LD.'temp_file_options'.RD, '', $temp_chunk);
+
+			$temp_chunk = str_replace(LD.'temp_pulldown'.RD, '', $temp_chunk);
+			$temp_chunk = str_replace(LD.'temp_pd_options'.RD, '', $temp_chunk);
+			$temp_chunk = str_replace(LD.'temp_multiselect'.RD, '', $temp_chunk);
+			$temp_chunk = str_replace(LD.'temp_multi_options'.RD, '', $temp_chunk);
+			$temp_chunk = str_replace(LD.'temp_checkbox'.RD, '', $temp_chunk);
+			$temp_chunk = str_replace(LD.'temp_check_options'.RD, '', $temp_chunk);
+			$temp_chunk = str_replace(LD.'temp_radio'.RD, '', $temp_chunk);
+			$temp_chunk = str_replace(LD.'temp_radio_options'.RD, '', $temp_chunk);
+			$temp_chunk = str_replace(LD.'calendar_link'.RD, '', $temp_chunk);
+			$temp_chunk = str_replace(LD.'calendar_id'.RD, '', $temp_chunk);
+
+			$temp_chunk = str_replace(LD.'rows'.RD, ( ! isset($row['field_ta_rows'])) ? '10' : $row['field_ta_rows'], $temp_chunk);
+			$temp_chunk = str_replace(LD.'field_label'.RD, $row['field_label'], $temp_chunk);
+			$temp_chunk = str_replace(LD.'field_instructions'.RD, $row['field_instructions'], $temp_chunk);
+			$temp_chunk = str_replace(LD.'text_direction'.RD, $row['field_text_direction'], $temp_chunk);
+			$temp_chunk = str_replace(LD.'maxlength'.RD, $row['field_maxl'], $temp_chunk);
+			$temp_chunk = str_replace(LD.'field_name'.RD, 'field_id_'.$row['field_id'], $temp_chunk);
+			$temp_chunk = str_replace(LD.'field_name_directory'.RD, 'field_id_'.$row['field_id'].'_directory', $temp_chunk);				
+
+			$hidden_fields['field_ft_'.$row['field_id']] = $field_fmt;
+			// $temp_chunk .= "\n<input type='hidden' name='field_ft_".$row['field_id']."' value='".$field_fmt."' />\n";
+
+			$build .= $temp_chunk;
+		}
+
+		$tagdata = str_replace(LD.'temp_custom_fields'.RD, $build, $tagdata);
+
+		return $tagdata;
+	}
+
+
+	
 }
 // END CLASS
 

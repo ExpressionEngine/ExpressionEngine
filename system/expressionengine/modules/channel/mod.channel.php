@@ -7635,7 +7635,8 @@ class Channel {
 			require PATH_MOD.'channel/mod.channel_standalone.php';
 		}
 		
-		return Channel_standalone::saef_javascript();
+		$channel_js = new Channel_standalone();
+		return $channel_js->saef_javascript();
 	}
 
 }
