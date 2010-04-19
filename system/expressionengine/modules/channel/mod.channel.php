@@ -494,8 +494,10 @@ class Channel {
 		//  Data Processing Time
 		$entry_data = array();
 
-		foreach($query->result_array() as $row)
+		for ($i = 0, $total = count($query->result_array()); $i < $total; $i++)
 		{
+    		$row = array_shift($query->result_array());
+
 			//  If the data is emptied (cache cleared or first process), then we
 			//  rebuild it with fresh data so processing can continue.
 
