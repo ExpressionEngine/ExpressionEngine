@@ -2172,7 +2172,7 @@ class Admin_content extends Controller {
 		$vars = array(
 			'form_action'	=> 'C=admin_content'.AMP.'M=category_delete'.$zurl,
 			'form_extra'	=> '',
-			'message'		=> $this->lang->line('delete_cat_field_confirmation'),
+			'message'		=> $this->lang->line('delete_cat_confirmation'),
 			'items'			=> array(),
 			'form_hidden'	=> array(
 				'group_id'		=> $items->row('group_id'),

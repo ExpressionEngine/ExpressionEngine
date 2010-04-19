@@ -585,6 +585,9 @@ $lang = array(
 'delete_category' =>
 'Delete Category',
 
+'delete_cat_confirmation' =>
+'Are you sure you want to permanently delete this category?',
+
 'category_deleted' =>
 'Category Deleted',
 
