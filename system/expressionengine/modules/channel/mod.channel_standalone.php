@@ -30,8 +30,16 @@ class Channel_standalone extends Channel {
 	var $cat_parents = array();
 	var $assign_cat_parent = FALSE;
 	var $upload_div = '';
-	
 
+	// --------------------------------------------------------------------	
+
+	/**
+	 * Run Filemanager
+	 *
+	 * @param 	string	
+	 * @param	array
+	 * @return 	mixed
+	 */
 	function run_filemanager($function = '', $params = array())
 	{
 		$this->EE->load->library('filemanager');
@@ -45,14 +53,15 @@ class Channel_standalone extends Channel {
 		return call_user_func_array(array($this->EE->filemanager, $function), $params);
 	}
 
-	/** ----------------------------------------
-	/**  Insert a new channel entry
-	/** ----------------------------------------*/
+	// --------------------------------------------------------------------	
 
-	// This function serves dual purpose:
-	// 1. It allows submitted data to be previewed
-	// 2. It allows submitted data to be inserted
-
+	/**
+	 * Insert New Channel entry
+	 *
+	 * This function serves dual purpose:
+	 * 1. It allows submitted data to be previewed
+	 * 2. It allows submitted data to be inserted
+	 */
 	function insert_new_entry()
 	{
 		$this->EE->lang->loadfile('channel');
@@ -231,10 +240,15 @@ class Channel_standalone extends Channel {
 		$this->EE->TMPL->run_template_engine($ex['0'], $ex['1']);
 	}
 
-	/** ----------------------------------------
-	/**  Stand-alone version of the entry form
-	/** ----------------------------------------*/
+	// --------------------------------------------------------------------	
 
+	/**
+	 * Stand-alone version of the entry form
+	 *
+	 * @param 	mixed
+	 * @param 	string
+	 * @return 	mixed
+	 */
 	function entry_form($return_form = FALSE, $captcha = '')
 	{
 		$field_data	= '';
@@ -279,8 +293,11 @@ class Channel_standalone extends Channel {
 
 		if ($channel_id == '')
 		{
-			$query = $this->EE->db->query("SELECT channel_id from exp_channels WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') AND channel_name = '".$this->EE->db->escape_str($channel)."'");
-
+			$this->EE->db->select('channel_id');
+			$this->EE->db->where_in('site_id', $this->EE->TMPL->site_ids);
+			$this->EE->db->where('channel_name', $channel);
+			$query = $this->EE->db->get('channels');
+			
 			if ($query->num_rows() == 1)
 			{
 				$channel_id = $query->row('channel_id') ;
@@ -299,9 +316,9 @@ class Channel_standalone extends Channel {
 		/** ----------------------------------------------
 		/**  Fetch channel preferences
 		/** ---------------------------------------------*/
-
-		$query = $this->EE->db->query("SELECT * FROM  exp_channels WHERE channel_id = '$channel_id'");
-
+		$this->EE->db->where('channel_id', $channel_id);
+		$query = $this->EE->db->get('channels');
+	
 		if ($query->num_rows() == 0)
 		{
 			return "The channel you have specified does not exist.";
@@ -600,9 +617,13 @@ EOT;
 		$status_id = ( ! isset($_POST['status_id'])) ? $this->EE->TMPL->fetch_param('status') : $_POST['status_id'];
 
 		if ($status_id == 'Open' OR $status_id == 'Closed')
-			$status_id = strtolower($status_id);
+		{
+			$status_id = strtolower($status_id);			
+		}
 
-		$status_query = $this->EE->db->query("SELECT * FROM exp_statuses WHERE group_id = '$status_group' order by status_order");
+		$this->EE->db->where('group_id', $status_group);
+		$this->EE->db->order_by('status_order');
+		$status_query = $this->EE->db->get('statuses');
 
 		if ($status_id != '')
 		{
@@ -619,7 +640,6 @@ EOT;
 
 			$hidden_fields['status'] = ($closed_flag == TRUE) ? 'closed' : $status_id;
 		}
-
 
 		/** ----------------------------------------
 		/**  Add "allow" options
@@ -694,7 +714,9 @@ EOT;
 				foreach ($ping_servers as $val)
 				{
 					if ($val['1'] != '')
-						$hidden_fields['ping['.($i++).']'] = $val['0'];
+					{
+						$hidden_fields['ping['.($i++).']'] = $val['0'];						
+					}
 				}
 			}
 		}
@@ -716,7 +738,6 @@ EOT;
 
 
 		// Onward...
-
 		$which = ($this->EE->input->post('preview')) ? 'preview' : 'new';
 
 		/** --------------------------------
@@ -727,19 +748,17 @@ EOT;
 		{
 			if (strncmp($this->EE->TMPL->fetch_param('show_fields'), 'not ', 4) == 0)
 			{
-				$these = "AND field_name NOT IN ('".str_replace('|', "','", trim(substr($this->EE->TMPL->fetch_param('show_fields'), 3)))."') ";
+				$this->EE->db->where_not_in('field_name', explode('|', trim(substr($this->EE->TMPL->fetch_param('show_fields'), 3))));å				
 			}
 			else
 			{
-				$these = "AND field_name IN ('".str_replace('|', "','", trim($this->EE->TMPL->fetch_param('show_fields')))."') ";
+				$this->EE->db->where_in('field_name', explode('|', trim($this->EE->TMPL->fetch_param('show_fields'))));
 			}
 		}
-		else
-		{
-			$these = '';
-		}
 
-		$query = $this->EE->db->query("SELECT * FROM  exp_channel_fields WHERE group_id = '$field_group' $these ORDER BY field_order");
+		$this->EE->db->where('group_id', $field_group);
+		$this->EE->db->order_by('field_order');
+		$query = $this->EE->db->get('channel_fields');
 
 		$fields = array();
 		$date_fields = array();
@@ -807,7 +826,8 @@ EOT;
 									}
 								}
 
-								$pfield_chunk['field_id_'.$field_info['1']][] = array($inner, $this->EE->functions->assign_parameters($params), $chunk);
+								$pfield_chunk['field_id_'.$field_info['1']][] = array($inner,
+									 										$this->EE->functions->assign_parameters($params), $chunk);
 							}
 						}
 					}
@@ -1086,23 +1106,24 @@ EOT;
 		{
 			$field_array = array('textarea', 'textinput', 'pulldown', 'multiselect', 'checkbox', 'radio', 'file', 'date', 'relationship', 'file');
 
-			$textarea 	= '';
-			$textinput 	= '';
-			$pulldown	= '';
-			$multiselect= '';
-			$checkbox	= '';
-			$radio		= '';
-			$file		= '';
-			$file_options	= '';
-			$file_pulldown	= '';			
-			$date		= '';
-			$relationship = '';
-			$rel_options = '';
-			$pd_options	= '';
-			$multi_options = '';
-			$check_options = '';
-			$radio_options = '';
-			$required	= '';
+			$formatting_toolbar 	= '';
+			$textarea 				= '';
+			$textinput 				= '';
+			$pulldown				= '';
+			$multiselect			= '';
+			$checkbox				= '';
+			$radio					= '';
+			$file					= '';
+			$file_options			= '';
+			$file_pulldown			= '';			
+			$date					= '';
+			$relationship 			= '';
+			$rel_options 			= '';
+			$pd_options				= '';
+			$multi_options 			= '';
+			$check_options 			= '';
+			$radio_options 			= '';
+			$required				= '';
 
 			foreach ($field_array as $val)
 			{
@@ -1175,6 +1196,12 @@ EOT;
 
 				$custom_fields = str_replace($match['0'], LD.'temp_required'.RD, $custom_fields);
 			}
+			
+			if (preg_match("#".LD."if\s+formatting_toolbar".RD."(.+?)".LD.'/'."if".RD."#s", $custom_fields, $match))
+			{
+				$show_toolbar = $match[1];
+				$custom_fields = str_replace($match[0], LD.'temp_show_toolbar'.RD, $custom_fields);
+			}
 
 			/** --------------------------------
 			/**  Parse Custom Fields
@@ -1184,6 +1211,8 @@ EOT;
 
 			foreach ($query->result_array() as $row)
 			{
+				
+				$settings = unserialize(base64_decode($row['field_settings']));
 				$temp_chunk = $custom_fields;
 				$temp_field = '';
 
@@ -1214,10 +1243,12 @@ EOT;
 				{
 					$temp_chunk = str_replace(LD.'temp_textarea'.RD, $textarea, $temp_chunk);
 				}
+				
 				if ($row['field_type'] == 'text' AND $textinput != '')
 				{
 					$temp_chunk = str_replace(LD.'temp_textinput'.RD, $textinput, $temp_chunk);
 				}
+				
 				if ($row['field_type'] == 'file' AND $file != '')
 				{
 
@@ -1233,13 +1264,10 @@ EOT;
 						{
 							$file_set .= ' js_hide';
 						}
-						
-
 
 						foreach ($directories as $k => $v)
 						{
 							$temp_options = $file_options;
-							
 
 							$v = trim($v);
 							$temp_options = str_replace(LD.'option_name'.RD, $v, $temp_options);
@@ -1252,46 +1280,36 @@ EOT;
 						$temp_file = str_replace(LD.'temp_file_options'.RD, $pdo, $file);
 						$temp_file = str_replace(LD.'file_name'.RD, $filename, $temp_file);
 						$temp_file = str_replace(LD.'file_set'.RD, $file_set, $temp_file);
-						$temp_file = str_replace(LD.'file_div'.RD, $file_div, $temp_file);
-						
-						
-												
+						$temp_file = str_replace(LD.'file_div'.RD, $file_div, $temp_file);			
 						$temp_chunk = str_replace(LD.'temp_file'.RD, $temp_file, $temp_chunk); 
 				}				
 				
 				if ($row['field_type'] == 'rel')
 				{
-					if ($row['field_related_to'] == 'channel')
-					{
-						$relto = 'exp_channel_titles';
-						$relid = 'channel_id';
-					}
-					else
-					{
-						$relto = 'exp_gallery_entries';
-						$relid = 'gallery_id';
-					}
-
 					if ($row['field_related_orderby'] == 'date')
-						$row['field_related_orderby'] = 'entry_date';
+					{
+						$row['field_related_orderby'] = 'entry_date';						
+					}
 
-
-					$sql = "SELECT entry_id, title FROM ".$relto." WHERE ".$relid." = '".$this->EE->db->escape_str($row['field_related_id'])."' ";
-					$sql .= "ORDER BY ".$row['field_related_orderby']." ".$row['field_related_sort'];
+					$this->EE->db->select('entry_id, title');
+					$this->EE->db->where('channel_id', $row['field_related_id']);
+					$this->EE->db->order_by($row['field_related_orderby'], $row['field_related_sort']);
 
 					if ($row['field_related_max'] > 0)
 					{
-						$sql .= " LIMIT ".$row['field_related_max'];
+						$this->EE->db->limit($row['field_related_max']);
 					}
 
-					$relquery = $this->EE->db->query($sql);
-
+					$relquery = $this->EE->db->get('channel_titles');
+					
 					if ($relquery->num_rows() > 0)
 					{
 						$relentry_id = '';
 						if ( ! isset($_POST['field_id_'.$row['field_id']]))
 						{
-							$relentry = $this->EE->db->query("SELECT rel_child_id FROM exp_relationships WHERE rel_id = '".$this->EE->db->escape_str($field_data)."'");
+							$this->EE->db->select('rel_child_id');
+							$this->EE->db->where('rel_id', $field_data);
+							$relentry = $this->EE->db->get('relationships');
 
 							if ($relentry->num_rows() == 1)
 							{
@@ -1400,8 +1418,11 @@ EOT;
 					else
 					{
 						// We need to pre-populate this menu from an another channel custom field
-						$pop_query = $this->EE->db->query("SELECT field_id_".$row['field_pre_field_id']." FROM exp_channel_data WHERE channel_id = ".$row['field_pre_channel_id']." AND field_id_".$row['field_pre_field_id']." != ''");
-
+						$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
+						$this->EE->where('channel_id', $row['field_pre_channel_id']);
+						$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
+						$pop_query = $this->EE->db->get('channel_data');
+						
 						if ($pop_query->num_rows() > 0)
 						{
 							$temp_options = $rel_options;
@@ -1461,8 +1482,11 @@ EOT;
 					else
 					{
 						// We need to pre-populate this menu from an another channel custom field
-						$pop_query = $this->EE->db->query("SELECT field_id_".$row['field_pre_field_id']." FROM exp_channel_data WHERE channel_id = ".$row['field_pre_channel_id']." AND field_id_".$row['field_pre_field_id']." != ''");
-
+						$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
+						$this->EE->db->where('channel_id', $row['field_pre_channel_id']);
+						$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
+						$pop_query = $this->EE->db->get('channel_data');
+						
 						if ($pop_query->num_rows() > 0)
 						{
 							$temp_options = $multi_options;
@@ -1518,8 +1542,11 @@ EOT;
 					else
 					{
 						// We need to pre-populate this menu from an another channel custom field
-						$pop_query = $this->EE->db->query("SELECT field_id_".$row['field_pre_field_id']." FROM exp_channel_data WHERE channel_id = ".$row['field_pre_channel_id']." AND field_id_".$row['field_pre_field_id']." != ''");
-
+						$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
+						$this->EE->db->where('channel_id' $row['field_pre_channel_id']);
+						$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
+						$pop_query = $this->EE->db->get('channel_data');
+						
 						if ($pop_query->num_rows() > 0)
 						{
 							$pdo = '';
@@ -1567,8 +1594,11 @@ EOT;
 					else
 					{
 						// We need to pre-populate this menu from an another channel custom field
-						$pop_query = $this->EE->db->query("SELECT field_id_".$row['field_pre_field_id']." FROM exp_channel_data WHERE channel_id = ".$row['field_pre_channel_id']." AND field_id_".$row['field_pre_field_id']." != ''");
-
+						$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
+						$this->EE->db->where('channel_id', $row['field_pre_channel_id']);
+						$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
+						$pop_query = $this->EE->db->get('channel_data');
+						
 						if ($pop_query->num_rows() > 0)
 						{
 							$pdo = '';
@@ -1609,6 +1639,26 @@ EOT;
 				else
 				{
 					$temp_chunk = str_replace(LD.'field_data'.RD, form_prep($field_data), $temp_chunk);					
+				}
+/*
+array
+  'field_show_smileys' => string 'y' (length=1)
+  'field_show_glossary' => string 'y' (length=1)
+  'field_show_spellcheck' => string 'y' (length=1)
+  'field_show_formatting_btns' => string 'y' (length=1)
+  'field_show_file_selector' => string 'y' (length=1)
+  'field_show_writemode' => string 'y' (length=1)
+
+*/
+
+				
+				if (isset($settings['field_show_formatting_btns']) && $settings['field_show_formatting_btns'] == 'y')
+				{
+					$temp_chunk = str_replace(LD.'temp_show_toolbar'.RD, 'yay!', $temp_chunk);
+				}
+				else
+				{
+					$temp_chunk = str_replace(LD.'temp_show_toolbar'.RD, '', $temp_chunk);
 				}
 				
 				$temp_chunk = str_replace(LD.'temp_date'.RD, '', $temp_chunk);
@@ -1652,7 +1702,7 @@ EOT;
 
 		if (preg_match("#".LD."category_menu".RD."(.+?)".LD.'/'."category_menu".RD."#s", $tagdata, $match))
 		{
-			$this->category_tree_form($cat_group, $which, $deft_category, $catlist);
+			$this->_category_tree_form($cat_group, $which, $deft_category, $catlist);
 
 			if (count($this->categories) == 0)
 			{
@@ -1737,8 +1787,10 @@ EOT;
 
 				if ($this->EE->session->userdata['group_id'] != 1)
 				{
-					$query = $this->EE->db->query("SELECT status_id FROM exp_status_no_access WHERE member_group = '".$this->EE->session->userdata['group_id']."'");
-
+					$this->EE->db->select('status_id');
+					$this->EE->db->where('member_group', $this->EE->session->userdata('group_id'));
+					$query = $this->EE->db->get('status_no_access');
+					
 					if ($query->num_rows() > 0)
 					{
 						foreach ($query->result_array() as $row)
@@ -1950,17 +2002,23 @@ EOT;
 
 		return $res;
 	}
+	
+	// --------------------------------------------------------------------	
 
-	/** -----------------------------
-	/**  Category tree
-	/** -----------------------------*/
-	// This function (and the next) create a higherarchy tree
-	// of categories.
-
-	function category_tree_form($group_id = '', $action = '', $default = '', $selected = '')
+	/**
+	 * Category Tree
+	 *
+	 * This function (and the next) create a hierarchy tree
+	 * of categories.
+	 *
+	 * @param 	integer
+	 * @param 	integer
+	 * @param	mixed
+	 * @param	mixed
+	 */
+	function _category_tree_form($group_id = '', $action = '', $default = '', $selected = '')
 	{
 		// Fetch category group ID number
-
 		if ($group_id == '')
 		{
 			if ( ! $group_id = $this->EE->input->get_post('group_id'))
@@ -1972,7 +2030,6 @@ EOT;
 		// If we are using the category list on the "new entry" page
 		// we need to gather the selected categories so we can highlight
 		// them in the form.
-
 		if ($action == 'preview')
 		{
 			$catarray = array();
@@ -2003,11 +2060,13 @@ EOT;
 		}
 
 		// Fetch category groups
-
-		$query = $this->EE->db->query("SELECT cat_name, cat_id, parent_id
-							 FROM exp_categories
-							 WHERE group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_id))."')
-							 ORDER BY parent_id, cat_order");
+		$group_ids = explode('|', $group_id);
+		
+		$this->EE->db->select('cat_name, cat_id, parent_id');
+		$this->EE->db->where_in('group_id', $group_ids);
+		$this->EE->db->order_by('parent_id');
+		$this->EE->db->order_by('cat_order');
+		$query = $this->EE->db->get('categories');
 
 		if ($query->num_rows() == 0)
 		{
@@ -2044,29 +2103,32 @@ EOT;
 
 				$this->categories[] = "<option value='".$key."'".$s.">".$val['1']."</option>\n";
 
-				$this->category_subtree_form($key, $cat_array, $depth=1, $action, $default, $selected);
+				$this->_category_subtree_form($key, $cat_array, $depth=1, $action, $default, $selected);
 			}
 		}
 	}
 
 
+	// --------------------------------------------------------------------	
 
-
-
-	/** -----------------------------------------------------------
-	/**  Category sub-tree
-	/** -----------------------------------------------------------*/
-	// This function works with the preceeding one to show a
-	// hierarchical display of categories
-	//-----------------------------------------------------------
-
-	function category_subtree_form($cat_id, $cat_array, $depth, $action, $default = '', $selected = '')
+	/**
+	 * Category sub-tree
+	 *
+	 * This function works with the preceeding one to show a
+	 * hierarchical display of categories
+	 *
+	 * @param 	integer
+	 * @param	array
+	 * @param	integer
+	 * @param	mixed
+	 * @param 	mixed
+	 * @param	mixed
+	 */
+	function _category_subtree_form($cat_id, $cat_array, $depth, $action, $default = '', $selected = '')
 	{
 		$spcr = "&nbsp;";
 
-
 		// Just as in the function above, we'll figure out which items are selected.
-
 		if ($action == 'preview')
 		{
 			$catarray = array();
@@ -2130,27 +2192,35 @@ EOT;
 
 				$this->categories[] = "<option value='".$key."'".$s.">".$pre.$indent.$spcr.$val['1']."</option>\n";
 
-				$this->category_subtree_form($key, $cat_array, $depth, $action, $default, $selected);
+				$this->_category_subtree_form($key, $cat_array, $depth, $action, $default, $selected);
 			}
 		}
 	}
 
+	// --------------------------------------------------------------------	
 
-
-
-	/** ---------------------------------------------------------------
-	/**  Fetch ping servers
-	/** ---------------------------------------------------------------*/
-	// This function displays the ping server checkboxes
-	//---------------------------------------------------------------
-
+	/**
+	 * Fetch ping servers
+	 *
+	 * This function displays the ping server checkboxes
+	 *
+	 * @param 	string
+	 * @return 	array
+	 */
 	function fetch_ping_servers($which = 'new')
 	{
-		$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_ping_servers WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND member_id = '".$this->EE->session->userdata('member_id')."'");
-
+		$this->EE->db->select('COUNT(*) as count');
+		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+		$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
+		$query = $this->EE->db->get('ping_servers');
+		
 		$member_id = ($query->row('count')  == 0) ? 0 : $this->EE->session->userdata('member_id');
 
-		$query = $this->EE->db->query("SELECT id, server_name, is_default FROM exp_ping_servers WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND member_id = '$member_id' ORDER BY server_order");
+		$this->EE->db->select('id, server_name, is_default');
+		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+		$this->EE->db->where('member_id', $member_id);
+		$this->EE->db->order_by('server_order');
+		$query = $this->EE->db->get('ping_servers');
 
 		if ($query->num_rows() == 0)
 		{

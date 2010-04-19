@@ -7623,6 +7623,11 @@ class Channel {
 		return $WS->entry_form($return_form, $captcha);
 	}
 
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * ACT method for Stand Alone Entry Form Javascript
+	 */
 	function saef_filebrowser()
 	{
 		if ( ! class_exists('Channel_standalone'))

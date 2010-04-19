@@ -97,10 +97,10 @@ class Filemanager {
 		$this->EE->lang->loadfile('filebrowser');
 
 		$str = '';
-// var_dump($this->EE->config); exit;
-		// @todo urm...
+
 		$json = array(
 			'BASE'			=> $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER,
+			'THEME_URL'		=> $this->theme_url,
 			'filebrowser' => array(
 				'endpoint_url'	=> $endpoint_url,
 				'window_title'	=> $this->EE->lang->line('file_manager'),
@@ -575,8 +575,9 @@ class Filemanager {
 	 */
 	function _upload_file($dir, $field_name)
 	{
-		// Restricted upload directory?
+		$this->EE->load->helper('url');
 		
+		// Restricted upload directory?
 		switch($dir['allowed_types'])
 		{
 			case 'all'	: $allowed_types = '*';
