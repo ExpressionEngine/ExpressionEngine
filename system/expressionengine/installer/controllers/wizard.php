@@ -164,6 +164,9 @@ class Wizard extends Controller {
 	function Wizard()
 	{
 		parent::Controller();
+		
+		// Third party constants
+		define('PATH_THIRD',	EE_APPPATH.'third_party/');
 
 		if (DEBUG == 1)
 		{
