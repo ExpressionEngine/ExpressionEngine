@@ -130,6 +130,7 @@ input#upload_file.field {
 
 #file_manager_main #progress {
 	text-align:	left;
+	display:none;
 }
 
 #file_manager_main .navi {

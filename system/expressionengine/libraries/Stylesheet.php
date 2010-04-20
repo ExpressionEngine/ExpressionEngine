@@ -124,9 +124,10 @@ class EE_Stylesheet {
 	 */
 	function _ee_saef_css()
 	{
-		$files[] = PATH_THEMES.'jquery_ui/default/min_filebrowser.css';
+		// $files[] = PATH_THEMES.'jquery_ui/default/min_filebrowser.css';
         $files[] = PATH_THEMES.'cp_themes/default/css/file_browser.css';
         $files[] = PATH_THEMES.'jquery_ui/default/jquery-ui-1.7.2.custom.css';
+		$files[] = PATH_THEMES.'cp_themes/default/css/saef.css';
 		
 		$out = '';
 		
@@ -135,6 +136,18 @@ class EE_Stylesheet {
 			if (file_exists($file))
 			{
 				$out .= file_get_contents($file);
+				
+				if ($file == PATH_THEMES.'jquery_ui/default/jquery-ui-1.7.2.custom.css')
+				{
+					$theme_url = $this->EE->config->item('theme_folder_url').'jquery_ui/'.$this->EE->config->item('cp_theme');
+					
+					$out = str_replace('url(images/', 'url('.$theme_url.'/images/', $out);
+				}
+		
+				if ($file == PATH_THEMES.'cp_themes/default/css/file_browser.css')
+				{
+					
+				}
 			}
 		}
 

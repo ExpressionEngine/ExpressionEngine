@@ -40,7 +40,7 @@
  */
 if ( ! function_exists('smiley_js'))
 {
-	function smiley_js($alias = '', $field_id = '')
+	function smiley_js($alias = '', $field_id = '', $inline = TRUE)
 	{
 		static $do_setup = TRUE;
 
@@ -107,8 +107,15 @@ EOF;
 				}
 			}
 		}
-
-		return '<script type="text/javascript" charset="utf-8">/*<![CDATA[ */'.$r.'// ]]></script>';
+		
+		if ($inline)
+		{
+			return '<script type="text/javascript" charset="utf-8">/*<![CDATA[ */'.$r.'// ]]></script>';			
+		}
+		else
+		{
+			return $r;
+		}
 	}
 }
 
