@@ -13,7 +13,7 @@ if ($EE_view_disable !== TRUE)
 	<div class="contents">
 
 		<div class="heading"><h2><?=lang('default_html_buttons')?></h2>
-		<div class="buttonRightHeader"><a class="cp_button" href="<?=BASE.AMP.'C=admin_content'.AMP.'M=default_html_buttons'?>"><?=lang('add_html_button')?></a></div>   
+		<div class="buttonRightHeader"><a class="cp_button" href="#"><?=lang('add_html_button')?></a></div>   
 			</div>      
 		<div class="pageContents">
 
