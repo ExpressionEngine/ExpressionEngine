@@ -108,7 +108,7 @@ EOF;
 			}
 		}
 		
-		if ( ! $inline)
+		if ($inline)
 		{
 			return '<script type="text/javascript" charset="utf-8">/*<![CDATA[ */'.$r.'// ]]></script>';			
 		}
