@@ -34,6 +34,7 @@ class Channel_standalone extends Channel {
 	var $default_entry_title = '';
 	var $url_title_prefix 	= '';
 	var $_installed_mods	= array('smileys' => FALSE, 'spellcheck' => FALSE);
+	var $theme_url;
 
 	// --------------------------------------------------------------------	
 
@@ -276,6 +277,8 @@ class Channel_standalone extends Channel {
 	  	{
 			return $this->EE->output->show_user_error('general', $this->EE->lang->line('channel_no_action_found'));
 	  	}
+	
+		$this->theme_url = $this->EE->config->item('theme_folder_url').'cp_themes/'.$this->EE->config->item('cp_theme').'/';
 	
 		// Load some helpers, language files & libraries.
 		// Doing this after error checking since it makes no sense 
@@ -533,7 +536,7 @@ class Channel_standalone extends Channel {
 				{
 					if (strpos($key, 'category') !== FALSE && is_array($val))
 					{
-						$i =0;
+						$i = 0;
 						foreach ($val as $v)
 						{
 							$hidden_fields['category['.($i++).']'] = $v;
@@ -1268,7 +1271,11 @@ class Channel_standalone extends Channel {
 		}
 		
 		$output .= $this->_url_title_js();
+
+		$this->EE->load->helper('smiley');
 		
+		$output .= ($this->EE->config->item('use_compressed_js') != 'n') ? str_replace(array("\n", "\t"), '', smiley_js('', '', FALSE)) : smiley_js('', '', FALSE);
+
 		$output .= file_get_contents(APPPATH.'javascript/'.$type.'/saef.js');
 
 		$this->EE->output->out_type = 'cp_asset';
@@ -2217,13 +2224,13 @@ class Channel_standalone extends Channel {
 	// --------------------------------------------------------------------	
 
 	/**
-	 *
+	 * Build Spellcheck 
 	 *
 	 *
 	 *
 	 */
 	function _build_spellcheck($chunk, $row, $settings)
-	{//var_dump($row); exit;
+	{
 		/*
 		array
 		  'field_show_smileys' => string 'y' (length=1)
@@ -2249,36 +2256,43 @@ class Channel_standalone extends Channel {
 			return $chunk;
 		}
 		
-		$output = '<p class="spellcheck markitup">';
+		$output = '<div class="spellcheck markitup">';
 
 		if (isset($settings['field_show_writemode']))
 		{
-			$output .= '<a href="#TB_inline?height=100%'.AMP.'width=100%'.AMP.'modal=true'.AMP.'inlineId=write_mode_container" class="write_mode_trigger thickbox" id="id_'.$row['field_id'].'"><img src="images/publish_write_mode.png" /></a>';
+			$output .= '<a href="#TB_inline?height=100%'.AMP.'width=100%'.AMP.'modal=true'.AMP.'inlineId=write_mode_container" class="write_mode_trigger thickbox" id="id_'.$row['field_id'].'"><img src="'.$this->theme_url.'images/publish_write_mode.png" /></a>';
 		}
 
 		if (isset($settings['field_show_file_selector']))
 		{
 			$output .= '<a href="#" class="markItUpButton">
-			<img class="file_manipulate js_show" src="<?=$cp_theme_url?>images/publish_format_picture.gif" alt="'.lang('file').'" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+			<img class="file_manipulate js_show" src="'.$this->theme_url.'images/publish_format_picture.gif" alt="'.lang('file').'" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
 		}
 
 		if ($this->_installed_mods['spellcheck'] && isset($settings['field_show_spellcheck']))
 		{
 			$id = (ctype_digit($row['field_id'])) ? 'field_id_' : '';
 			
-			$output .= '<a href="#" class="spellcheck_link" id="'.$id.$row['field_id'].'" title="'.lang('check_spelling').'"><img src="images/spell_check_icon.png" alt="'.lang('check_spelling').'" /></a>';
+			$output .= '<a href="#" class="spellcheck_link" id="'.$id.$row['field_id'].'" title="'.lang('check_spelling').'"><img src="'.$this->theme_url.'images/spell_check_icon.png" alt="'.lang('check_spelling').'" /></a>';
 			
 			// $output .= '<a href="#" class="spellcheck_link" id="spelltrigger_'.(ctype_digit($row['field_id']))?'field_id_':''.$row['field_id'].'" title="'.lang('check_spelling').'"><img src="images/spell_check_icon.png" style="margin-bottom: -8px;" alt="'.lang('check_spelling').'" /></a>';
 		}
 		
 		if (isset($settings['field_show_glossary']))
 		{
-			$output .= '<a href="#" class="glossary_link" title="'.lang('glossary').'"><img src="images/spell_check_glossary.png" alt="'.lang('glossary').'" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+			$output .= '<a href="#" class="glossary_link" title="'.lang('glossary').'"><img src="'.$this->theme_url.'images/spell_check_glossary.png" alt="'.lang('glossary').'" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
 		}
 		
 		if ($this->_installed_mods['smileys'])
 		{
-			$output .= '<a href="#" class="smiley_link" title="'.lang('emotions').'">'.lang('emotions').'</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+			$this->EE->load->helper('smiley');
+			$this->EE->load->library('table');
+			
+			$output .= '<a href="#" id="smiley_link_'.$row['field_id'].'" class="smiley_link" title="'.lang('emotions').'">'.lang('emotions').'</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+			$image_array = get_clickable_smileys($path = $this->EE->config->slash_item('emoticon_path'), 'field_id_'.$row['field_id']);
+			$col_array = $this->EE->table->make_columns($image_array, 8);
+			$output .= '<div id="smiley_table_'.$row['field_id'].'" class="smileyContent" style="display: none;">'.$this->EE->table->generate($col_array).'</div>';
+			$this->EE->table->clear(); // clear out tables for the next smiley
 		}
 		
 		if (isset($row['field_show_fmt']) && $row['field_show_fmt'] == 'y')
@@ -2286,6 +2300,16 @@ class Channel_standalone extends Channel {
 			
 		}
 		
+		if (isset($settings['field_show_glossary']))
+		{
+			// @todo replace this view hack with something suitable for CI
+			$tmp = $this->EE->load->_ci_view_path;
+			$this->EE->load->_ci_view_path = PATH_THEMES.'cp_themes/default/';
+
+			$output .= $this->EE->load->view('content/_assets/glossary_items', '', TRUE);
+			
+			$this->EE->load->_ci_view_path = $tmp;
+		}
 		
 /*
 
@@ -2315,11 +2339,11 @@ class Channel_standalone extends Channel {
 		
 		*/
 		
-		$output .= '</p>';
+		$output .= '</div>';
 		
-		
+		// echo $output; exit;
 		$chunk = str_replace(LD.'spellcheck'.RD, $output, $chunk);
-		
+
 		return $chunk;
 	}
 
@@ -2420,15 +2444,16 @@ function liveUrlTitle()
 		document.forms['entryform'].elements['url_title'].value = "{$this->url_title_prefix}" + NewText;
 	}
 }
+
 YOYOYO;
 
 		$ret = $url_title_js;
 
 		// @todo, figure out why this is borking
-		// if ($this->EE->config->item('use_compressed_js') != 'n')
-		// {
-		// 	return str_replace(array("\n", "\t"), '', $ret);			
-		// }
+		if ($this->EE->config->item('use_compressed_js') != 'n')
+		{
+			return str_replace(array("\n", "\t"), '', $ret);			
+		}
 
 		return $ret;
 	}	

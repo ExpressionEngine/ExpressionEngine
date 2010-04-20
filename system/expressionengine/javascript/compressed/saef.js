@@ -157,20 +157,22 @@ $(document).ready(function() {
 			$(this).parent().siblings('.smileyContent .spellcheck_content').hide();
 			return false;
 		});
-	
+	 
 		$('a.smiley_link').toggle(function() {
-			$(this).parent().siblings('.smileyContent').slideDown('fast', function() { $(this).css('display', ''); 
-		});
-		}, function() {
-			$(this).parent().siblings('.smileyContent').slideUp('fast');
-		});
+			which = $(this).attr('id').substr(12);
+			$('#smiley_table_'+which).slideDown('fast', function() { 
+				$(this).css('display', '');
+			});
+			}, function() {
+				$('#smiley_table_'+which).slideUp('fast');
+			});
 	
-		$(this).parent().siblings('.glossary_content, .spellcheck_content').hide();
+			$(this).parent().siblings('.glossary_content, .spellcheck_content').hide();
 	
-		$('.glossary_content a').click(function(){
-			$.markItUp({ replaceWith:$(this).attr('title')});
-			return false;
-		});
+			$('.glossary_content a').click(function(){
+				$.markItUp({ replaceWith:$(this).attr('title')});
+				return false;
+			});
 	}
 	
 	$(".btn_plus a").click(function(){

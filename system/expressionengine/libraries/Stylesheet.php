@@ -127,6 +127,7 @@ class EE_Stylesheet {
 		// $files[] = PATH_THEMES.'jquery_ui/default/min_filebrowser.css';
         $files[] = PATH_THEMES.'cp_themes/default/css/file_browser.css';
         $files[] = PATH_THEMES.'jquery_ui/default/jquery-ui-1.7.2.custom.css';
+		$files[] = PATH_THEMES.'cp_themes/default/css/saef.css';
 		
 		$out = '';
 		
