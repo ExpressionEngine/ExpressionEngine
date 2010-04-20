@@ -975,6 +975,8 @@ class Channel_standalone extends Channel {
 
 		$res .= stripslashes($tagdata);
 		$res .= "</form>";
+		
+		$res .= $this->_writemode_markup();
 
 		return $res;
 
@@ -1114,8 +1116,8 @@ class Channel_standalone extends Channel {
 			{
 				if (strpos($key, 'category') !== FALSE && is_array($val))
 				{
-						foreach ($val as $k => $v)
-						{
+					foreach ($val as $k => $v)
+					{
 						$catarray[$v] = $v;
 					}
 				}
@@ -1248,7 +1250,8 @@ class Channel_standalone extends Channel {
 		$scripts = array(
 				'ui'		=> array('core', 'dialog'),
 				'plugins'	=> array('scrollable', 'scrollable_navigator', 
-										'ee_filebrowser', 'markitup')
+										'ee_filebrowser', 'markitup',
+										'thickbox')
 			);
 
 		$type = ($this->EE->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
@@ -2258,10 +2261,12 @@ class Channel_standalone extends Channel {
 		
 		$output = '<div class="spellcheck markitup">';
 
-		if (isset($settings['field_show_writemode']))
-		{
-			$output .= '<a href="#TB_inline?height=100%'.AMP.'width=100%'.AMP.'modal=true'.AMP.'inlineId=write_mode_container" class="write_mode_trigger thickbox" id="id_'.$row['field_id'].'"><img src="'.$this->theme_url.'images/publish_write_mode.png" /></a>';
-		}
+		// Commented out for the time being while we decide on what to do regarding
+		// Thickbox.  @see _writemode_markup();
+		// if (isset($settings['field_show_writemode']))
+		// {
+		// 	$output .= '<a href="#TB_inline?height=100%'.AMP.'width=100%'.AMP.'modal=true'.AMP.'inlineId=write_mode_container" class="write_mode_trigger thickbox" id="id_'.$row['field_id'].'"><img src="'.$this->theme_url.'images/publish_write_mode.png" /></a>';
+		// }
 
 		if (isset($settings['field_show_file_selector']))
 		{
@@ -2457,6 +2462,26 @@ YOYOYO;
 
 		return $ret;
 	}	
+	
+	// --------------------------------------------------------------------	
+
+	/**
+	 * Writemode markup
+	 *
+	 * This function is just returning nothing at the moment while we decide on
+	 * what to do about thickbox, given that it is no longer supported.
+	 */
+	function _writemode_markup()
+	{
+		return '';
+		
+		$output = '<div id="write_mode_container" style="display:none">';
+		$output .= '<div id="write_mode_close_container"><a href="#" class="TB_closeWindowButton"><img alt="'.lang('close').'" width="13" height="13" src="images/write_mode_close.png" /></a><a href="#" class="publish_to_field"><img alt="Publish to Field" width="103" height="18" src="images/write_mode_publish_to_field.png" /></a>&nbsp;</div>';
+		$output .= '<div id="write_mode_writer"><div id="write_mode_header"><a href="#" class="reveal_formatting_buttons"><img class="show_tools" alt="'.lang('show_tools').'" width="109" height="18" src="<images/write_mode_show_tools.png" /></a></div><textarea id="write_mode_textarea"></textarea></div>';
+		$output .= '<div id="write_mode_footer"><a href="#" class="publish_to_field"><img alt="'.lang('publish_to_field').'" width="103" height="18" src="images/write_mode_publish_to_field.png" /></a></div></div>';
+	
+		return $output;
+	}
 }
 // END CLASS
 

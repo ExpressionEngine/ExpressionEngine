@@ -1,0 +1,266 @@
+/* -------------------------------------------------------------------
+// markItUp! Universal MarkUp Engine, JQuery plugin
+// By Jay Salvat - http://markitup.jaysalvat.com/
+// ------------------------------------------------------------------*/
+.markItUp * {
+	margin:0px; padding:0px;
+}
+.markItUp {
+	padding-top:10px;
+	}
+.markItUpPreviewFrame	{
+	overflow:auto;
+	background-color:#FFFFFF;
+	border:1px solid #3C769D;
+	width:99.9%;
+	height:300px;
+	margin:5px 0;
+}
+.markItUpFooter {
+	width:100%;
+	cursor:n-resize;
+}
+.markItUpResizeHandle {
+	overflow:hidden;
+	width:22px; height:5px;
+	margin-left:auto;
+	margin-right:auto;
+	background: transparent url(<?=$cp_theme_url?>images/cp_sprite.png) no-repeat left -34px;
+	cursor:n-resize;
+}
+/***************************************************************************************/
+/* first row of buttons */
+.markItUpHeader ul li	{
+	list-style:none;
+	float:left;
+	position:relative;
+	text-indent:-5000em;
+}
+.markItUpHeader ul li ul{
+	display:none;
+}
+.markItUpHeader ul li:hover > ul{
+	display:block;
+}
+.markItUpHeader ul .markItUpDropMenu {
+	background:transparent url(images/menu.png) no-repeat 115% 50%;
+	margin-right:5px;
+}
+.markItUpHeader ul .markItUpDropMenu li {
+	margin-right:0px;
+}
+.markItUpHeader ul .markItUpSeparator {
+	margin:0 7px 0 4px;
+	width:1px;
+	height:16px;
+	overflow:hidden;
+	text-indent: -5000px;
+	background-color:#d0d7df;
+}
+.markItUpHeader ul ul .markItUpSeparator {
+	width:auto; height:1px;
+	margin:0px;
+}
+/* next rows of buttons */
+.markItUpHeader ul ul {
+	display:none;
+	position:absolute;
+	top:18px; left:0px;	
+	background:#F5F5F5;
+	border:1px solid #3C769D;
+	height:inherit;
+}
+.markItUpHeader ul ul li {
+	float:none;
+	border-bottom:1px solid #3C769D;
+}
+.markItUpHeader ul ul .markItUpDropMenu {
+	background:#F5F5F5 url(images/submenu.png) no-repeat 100% 50%;
+}
+/* next rows of buttons */
+.markItUpHeader ul ul ul {
+	position:absolute;
+	top:-1px; left:150px;
+}
+.markItUpHeader ul ul ul li {
+	float:none;
+}
+.markItUpHeader ul a {
+	display:block;
+	text-decoration:none;
+	height:19px;
+	background-repeat:no-repeat;
+	margin:1px;
+	padding:1px;
+}
+.markItUpHeader ul ul a {
+	display:block;
+	padding-left:0px;
+	text-indent:0;
+	width:120px; 
+	padding:5px 5px 5px 25px;
+	background-position:2px 50%;
+}
+.markItUpHeader ul ul a:hover  {
+	color:#FFF;
+	background-color:#3C769D;
+}
+/***************************************************************************************/
+
+.markItUp ul {
+	margin: 			7px 0 0 0;
+	padding: 			3px 2px 3px 4px;
+	list-style: 		none;
+	border: 			1px solid #d0d7df;
+	background: 		#e1e8ed;
+	height:				22px;
+	border-radius:		4px;
+	-webkit-border-radius:		4px;
+	-moz-border-radius:		4px;
+}
+
+.formatting_buttons {
+	margin: 			7px 0 0 0;
+	padding: 			4px 4px 1px 4px;
+	list-style: 		none;
+	border: 			1px solid #d0d7df;
+	background: 		#e1e8ed;
+}
+
+.close_formatting_buttons a {
+	text-indent: 0!important;
+	width: 13px!important;
+	padding: 0!important;
+	border:0!important;
+	background-color: transparent;
+	height: 13px!important;
+}
+
+.close_formatting_buttons {
+	float: 				right!important;
+}
+
+.markItUp a {
+	background:#e1e8ed;
+	border: 1px solid #d0d7df;
+	line-height: 15px;
+}
+.markItUp a:hover {
+	text-decoration: none!important;
+}
+.markItUp .btn_b a, .markItUp .btn_strong a {
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -85px 0;
+	text-indent:-10000px;
+	border:0!important;
+	width: 19px;
+}
+.markItUp .btn_i a, .markItUp .btn_em a {
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -175px 0;
+	text-indent:-10000px;
+	border:0!important;
+	width: 19px;
+}
+.markItUp .btn_s a, .markItUp .btn_strike a, .markItUp .btn_del a {
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -131px 0;
+	text-indent:-10000px;
+	border:0!important;
+	width: 19px;
+}
+.markItUp .btn_ins a, .markItUp .btn_insert a {
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -198px 0;
+	text-indent:-10000px;
+	border:0!important;
+	width: 19px;
+}
+.markItUp .btn_ul a {
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -107px -21px;
+	text-indent:-10000px;
+	border:0!important;
+	width: 19px;
+}
+.markItUp .btn_ol a {
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -198px -21px;
+	text-indent:-10000px;
+	border:0!important;
+	width: 19px;
+}
+.markItUp .btn_li a, .markItUp .btn_indent a {
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -107px 0;
+	text-indent:-10000px;
+	border:0!important;
+	background-color: transparent;
+	width: 19px;
+}
+.markItUp .btn_p a, .markItUp .btn_paragraph a {
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -221px 0;
+	text-indent:-10000px;
+	border:0!important;
+	width: 19px;
+}
+.markItUp .btn_blockquote a, .markItUp .btn_bq a {
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -85px -21px;
+	text-indent:-10000px;
+	border:0!important;
+	width: 19px;
+}
+.markItUp .btn_h1 a, .markItUp .btn_heading1 a, .markItUp .btn_headingone a {
+	width: 25px;
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat 0 0;
+	text-indent:-10000px;
+	border:0!important;
+}
+.markItUp .btn_h2 a, .markItUp .btn_heading2 a, .markItUp .btn_headingtwo a {
+	width: 25px;
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -27px 0;
+	text-indent:-10000px;
+	border:0!important;
+}
+.markItUp .btn_h3 a, .markItUp .btn_heading3 a, .markItUp .btn_headingthree a {
+	width: 25px;
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -54px 0;
+	text-indent:-10000px;
+	border:0!important;
+}
+.markItUp .btn_h4 a, .markItUp .btn_heading4 a, .markItUp .btn_headingfour a {
+	width: 25px;
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat 0 -21px;
+	text-indent:-10000px;
+	border:0!important;
+}
+.markItUp .btn_h5 a, .markItUp .btn_heading5 a, .markItUp .btn_headingfive a {
+	width: 25px;
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -27px -21px;
+	text-indent:-10000px;
+	border:0!important;
+}
+.markItUp .btn_h6 a, .markItUp .btn_heading6 a, .markItUp .btn_headingsix a {
+	width: 25px;
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -54px -21px;
+	text-indent:-10000px;
+	border:0!important;
+}
+.markItUp .btn_a a, .markItUp .btn_link a, .markItUp .btn_anchor a {
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -153px 0;
+	text-indent:-10000px;
+	border:0!important;
+	width: 19px;
+}
+.markItUp .btn_img a, .markItUp .btn_image a, .markItUp .btn_graphic a {
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -175px -21px;
+	text-indent:-10000px;
+	border:0!important;
+	width: 19px;
+}
+.markItUp .btn_separator a {
+	background-image:url(<?=$cp_theme_url?>images/publish_separator.gif);
+	text-indent:-10000px;
+	border:0!important;
+	background-color: transparent;
+	width: 19px;
+}
+.markItUp .btn_plus a {
+	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -132px -21px;
+	text-indent:-10000px;
+	border:0!important;
+	width: 19px;
+}

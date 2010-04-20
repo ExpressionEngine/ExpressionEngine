@@ -201,6 +201,20 @@ $(document).ready(function() {
 	if (EE.publish.show_write_mode === true) { 
 		$("#write_mode_textarea").markItUp(myWritemodeSettings);		
 	}
+
+	$(".write_mode_trigger").click(function(){
+
+		if ($(this).attr("id").match(/^id_\d+$/)) {
+			field_for_writemode_publish = "field_"+$(this).attr("id");
+		} else {
+			field_for_writemode_publish = $(this).attr("id").replace(/id_/, '');
+		}
+
+		// put contents from other page into here
+		$("#write_mode_textarea").val($("#"+field_for_writemode_publish).val());
+		$("#write_mode_textarea").focus();
+		return false;
+	});
 	
 	// Prep for a workaround to allow markitup file insertion in file inputs
 	$(".btn_img a, .file_manipulate").click(function(){
