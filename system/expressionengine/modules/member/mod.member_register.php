@@ -500,9 +500,10 @@ class Member_register extends Member {
 		$data['location']	 = $_POST['location'];
 		// overridden below if used as optional fields
 		$data['language']	= ($this->EE->config->item('deft_lang')) ? $this->EE->config->item('deft_lang') : 'english';
-		$data['timezone']	= 'UTC';
-		$data['time_format'] = 'us';
-
+		$data['time_format'] = ($this->EE->config->item('time_format')) ? $this->EE->config->item('time_format') : 'us';
+		$data['timezone']	= ($this->EE->config->item('default_site_timezone')) ? $this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone');
+		$data['daylight_savings'] = ($this->EE->config->item('default_site_dst')) ? $this->EE->config->item('default_site_dst') : 'n';		
+		
 		// Optional Fields
 
 		$optional = array('bio'					=> 'bio',
@@ -518,8 +519,15 @@ class Member_register extends Member {
 			}
 		}
 
-		$data['daylight_savings'] = ($this->EE->input->post('daylight_savings') == 'y') ? 'y' : 'n';
-
+		if ($this->EE->input->post('daylight_savings') == 'y')
+		{
+			$data['daylight_savings'] = 'y';
+		}
+		else
+		{
+			$data['daylight_savings'] = ($this->EE->config->item('default_site_dst')) ? $this->EE->config->item('default_site_dst') : 'n';
+		}
+		
 		// We generate an authorization code if the member needs to self-activate
 
 		if ($this->EE->config->item('req_mbr_activation') == 'email')

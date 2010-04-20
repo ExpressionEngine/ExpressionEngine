@@ -490,8 +490,6 @@ class Member_model extends CI_Model {
 		$this->db->update('members', $data);
 	}
 
-	// --------------------------------------------------------------------
-
 
 	// --------------------------------------------------------------------
 
@@ -1350,9 +1348,9 @@ class Member_model extends CI_Model {
 	 * @access	public
 	 * @return	array
 	 */
-	function get_localization_default()
+	function get_localization_default($get_id = FALSE)
 	{
-		$this->db->select('timezone, daylight_savings');
+		$this->db->select('member_id, timezone, daylight_savings, time_format');
 		$this->db->where('localization_is_site_default', 'y');
 		$query = $this->db->get('members');
 
@@ -1362,6 +1360,11 @@ class Member_model extends CI_Model {
 							'default_site_timezone' => $query->row('timezone'),
 							'default_site_dst'		=> $query->row('daylight_savings')
 							);
+							
+			if ($get_id)
+			{
+				$config['member_id'] = $query->row('member_id');
+			}				
 		}
 		else
 		{
@@ -1369,6 +1372,10 @@ class Member_model extends CI_Model {
 							'default_site_timezone' => '',
 							'default_site_dst'		=> 'n'
 							);
+			if ($get_id)
+			{
+				$config['member_id'] = '';
+			}
 		}
 
 		return $config;

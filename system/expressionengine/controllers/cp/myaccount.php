@@ -1450,19 +1450,44 @@ class MyAccount extends Controller {
 
 		$vars['form_hidden']['id'] = $this->id;
 
+		$fields = array('timezone', 'daylight_savings', 'language', 'time_format');
+		
 		// Fetch profile data
-		$query = $this->member_model->get_member_data($this->id, array('timezone', 'daylight_savings', 'language'));
+		$query = $this->member_model->get_member_data($this->id, $fields);
+		
+		foreach ($fields as $val)
+		{
+			{
+				$vars[$val] = $query->row($val);
+			}
+		}
 
-		$vars['timezone'] = ($query->row('timezone')  == '') ? 'UTC' : $query->row('timezone');
+		if ($vars['timezone'] == '')
+		{
+			$vars['timezone'] = ($this->config->item('default_site_timezone') && $this->config->item('default_site_timezone') != '') ? $this->config->item('default_site_timezone') : 'UTC';
+		}
+		
+		if ($vars['time_format'] == '')
+		{
+			$vars['time_format'] = ($this->config->item('time_format') && $this->config->item('time_format') != '') ? $this->config->item('time_format') : 'us';
+		}		
 
-		$vars['daylight_savings_y'] = ($query->row('daylight_savings') == 'y') ? TRUE : FALSE;
-		$vars['daylight_savings_n'] = ($query->row('daylight_savings') == 'y') ? FALSE : TRUE;
-
-		$vars['time_format'] = $this->session->userdata('time_format');
 		$vars['time_format_options']['us'] = $this->lang->line('united_states');
 		$vars['time_format_options']['eu'] = $this->lang->line('european');
+		
+		if ($vars['daylight_savings'] != 'y')
+		{
+			$vars['daylight_savings'] = ($this->config->item('default_site_dst') == 'y') ? 'y' : 'n';
+		}
+				
+		$vars['daylight_savings_y'] = ($vars['daylight_savings'] == 'y') ? TRUE : FALSE;
+		$vars['daylight_savings_n'] = ($vars['daylight_savings'] == 'y') ? FALSE : TRUE;
 
-		$vars['language'] = ($query->row('language')  == '') ? 'english' : $query->row('language');
+		if ($vars['language'] == '')
+		{
+			$vars['language'] = ($this->config->item('deft_lang') && $this->config->item('deft_lang') != '') ? $this->config->item('deft_lang') : 'english';
+		}
+
 		$vars['language_options'] = $this->language_model->language_pack_names();
 
 		$this->load->view('account/localization', $vars);
@@ -1499,20 +1524,23 @@ class MyAccount extends Controller {
 
 		$this->member_model->update_member($this->id, $data);
 
-		$config = $this->member_model->get_localization_default();
+		$config = $this->member_model->get_localization_default(TRUE);
 
 		//	Update Config Values
-
-		$query = $this->site_model->get_site_system_preferences($this->config->item('site_id'));
-
-		$prefs = unserialize(base64_decode($query->row('site_system_preferences')));
-
-		foreach($config as $key => $value)
+		if ($config['member_id'] == $this->id)
 		{
-			$prefs[$key] = $value;
-		}
+			unset($config['member_id']);
+			$query = $this->site_model->get_site_system_preferences($this->config->item('site_id'));
 
-		$this->site_model->update_site_system_preferences($prefs, $this->config->item('site_id'));
+			$prefs = unserialize(base64_decode($query->row('site_system_preferences')));
+
+			foreach($config as $key => $value)
+			{
+				$prefs[$key] = $value;
+			}
+
+			$this->site_model->update_site_system_preferences($prefs, $this->config->item('site_id'));
+		}
 
 		$this->session->set_flashdata('message_success', $this->lang->line('settings_updated'));
 
@@ -2118,25 +2146,16 @@ class MyAccount extends Controller {
 			}
 		}
 
-		$this->member_model->update_member($this->id, array('localization_is_site_default'=>'n'), array('localization_is_site_default'=>'y'));
+		// If this member is set to be the default localization, wipe 'em all
+		if ($data['localization_is_site_default'] == 'y') 
+		{
+			$this->db->where('localization_is_site_default', 'y');
+			$this->db->update('members', array('localization_is_site_default' => 'n'));
+		}
+		
 		$this->member_model->update_member($this->id, $data);
 
-		// @todo: model
-		$this->db->select('timezone, daylight_savings');
-		$this->db->where('localization_is_site_default', 'y');
-		$query = $this->db->get('members');
-
-		if ($query->num_rows() == 1)
-		{
-			$config = array(
-							'default_site_timezone' => $query->row('timezone') ,
-							'default_site_dst'		=> $query->row('daylight_savings')
-							);
-		}
-		else
-		{
-			$config = array('default_site_timezone' => '', 'default_site_dst'		=> 'n');
-		}
+		$config = $this->member_model->get_localization_default();
 
 		//	Update Config Values
 
