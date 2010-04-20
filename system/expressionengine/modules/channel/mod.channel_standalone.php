@@ -407,7 +407,6 @@ class Channel_standalone extends Channel {
 			}
 		}
 		
-		
 		$markItUp = $markItUp_writemode = array(
 			'nameSpace'		=> "html",
 			'onShiftEnter'	=> array('keepDefault' => FALSE, 'replaceWith' => "<br />\n"),
@@ -1239,10 +1238,10 @@ class Channel_standalone extends Channel {
 										'ee_filebrowser', 'markitup')
 			);
 
+		$type = ($this->EE->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
+
 		if ( ! defined('PATH_JQUERY'))
-		{
-			$type = ($this->EE->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
-			
+		{			
 			define('PATH_JQUERY', APPPATH.'javascript/'.$type.'/jquery/');
 		}
 		
@@ -1258,50 +1257,15 @@ class Channel_standalone extends Channel {
 			}
 		}
 		
-		$output .= $this->_dynamic_js();
+		$output .= $this->_url_title_js();
+		
+		$output .= file_get_contents(APPPATH.'javascript/'.$type.'/saef.js');
 
 		$this->EE->output->out_type = 'cp_asset';
 		$this->EE->output->set_header("Content-Type: text/javascript");
 		
 		$this->EE->output->set_header('Content-Length: '.strlen($output));
 		$this->EE->output->set_output($output);
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Create Formatting Buttons
-	 *
-	 * 
-	 *
-	 */
-	function _formatting_buttons($file_list)
-	{
-		$html_buttons = $this->EE->admin_model->get_html_buttons($this->EE->session->userdata('member_id'));
-		
-		$button_js = array();
-
-		foreach ($html_buttons->result() as $button)
-		{
-			if (strpos($button->classname, 'btn_img') !== FALSE)
-			{
-				// images are handled differently because of the file browser
-				// at least one image must be available for this to work
-				if (count($file_list) > 0)
-				{
-					$button_js[] = array('name' => $button->tag_name, 'key' => $button->accesskey, 'replaceWith' => '', 'className' => $button->classname);
-				}
-			}
-			elseif(strpos($button->classname, 'markItUpSeparator') !== FALSE)
-			{
-				// separators are purely presentational
-				$button_js[] = array('separator' => '---');
-			}
-			else
-			{
-				$button_js[] = array('name' => $button->tag_name, 'key' => $button->accesskey, 'openWith' => $button->tag_open, 'closeWith' => $button->tag_close, 'className' => $button->classname);
-			}
-		}
 	}
 	
 	// --------------------------------------------------------------------
@@ -2241,13 +2205,13 @@ class Channel_standalone extends Channel {
 	// --------------------------------------------------------------------	
 
 	/**
-	 * SAEF Dynamic Javascript
+	 * SAEF URL Title Javascript
 	 * 
-	 * This function adds dynamic javascript to the js script compiled in saef_javascript()
+	 * This function adds url_title javascript to the js script compiled in saef_javascript()
 	 *
 	 * @return string
 	 */
-	function _dynamic_js()
+	function _url_title_js()
 	{
 		// js for URL Title
 		$convert_ascii = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? TRUE : FALSE;
@@ -2337,291 +2301,7 @@ function liveUrlTitle()
 }
 YOYOYO;
 
-	$who_is = <<<INDAHOUSE
-
-		var selField  = false,
-			selMode = "normal";
-
-		//	Dynamically set the textarea name
-
-		function setFieldName(which)
-		{
-			if (which != selField)
-			{
-				selField = which;
-
-				clear_state();
-
-				tagarray  = new Array();
-				usedarray = new Array();
-				running	  = 0;
-			}
-		}
-
-		// Insert tag
-		function taginsert(item, tagOpen, tagClose)
-		{
-			// Determine which tag we are dealing with
-
-			var which = eval('item.name');
-
-			if ( ! selField)
-			{
-				$.ee_notice(no_cursor);
-				return false;
-			}
-
-			var theSelection	= false,
-				result			= false,
-				theField		= document.getElementById('entryform')[selField];
-
-			if (selMode == 'guided')
-			{
-				data = prompt(enter_text, "");
-
-				if ((data != null) && (data != ""))
-				{
-					result =  tagOpen + data + tagClose;
-				}
-			}
-
-			// Is this a Windows user?
-			// If so, add tags around selection
-
-			if (document.selection)
-			{
-				theSelection = document.selection.createRange().text;
-
-				theField.focus();
-
-				if (theSelection)
-				{
-					document.selection.createRange().text = (result == false) ? tagOpen + theSelection + tagClose : result;
-				}
-				else
-				{
-					document.selection.createRange().text = (result == false) ? tagOpen + tagClose : result;
-				}
-
-				theSelection = '';
-
-				theField.blur();
-				theField.focus();
-
-				return;
-			}
-			else if ( ! isNaN(theField.selectionEnd))
-			{
-				var newStart,
-					scrollPos = theField.scrollTop,
-					selLength = theField.textLength,
-					selStart = theField.selectionStart,
-					selEnd = theField.selectionEnd;
-
-				if (selEnd <= 2 && typeof(selLength) != 'undefined')
-					selEnd = selLength;
-
-				var s1 = (theField.value).substring(0,selStart);
-				var s2 = (theField.value).substring(selStart, selEnd)
-				var s3 = (theField.value).substring(selEnd, selLength);
-
-				if (result == false)
-				{
-					newStart = selStart + tagOpen.length + s2.length + tagClose.length;
-					theField.value = (result == false) ? s1 + tagOpen + s2 + tagClose + s3 : result;
-				}
-				else
-				{
-					newStart = selStart + result.length;
-					theField.value = s1 + result + s3;
-				}
-
-				theField.focus();
-				theField.selectionStart = newStart;
-				theField.selectionEnd = newStart;
-				theField.scrollTop = scrollPos;
-				return;
-			}
-			else if (selMode == 'guided')
-			{
-				curField = document.submit_post[selfField];
-
-				curField.value += result;
-				curField.blur();
-				curField.focus();
-
-				return;
-			}
-
-			// Add single open tags
-
-			if (item == 'other')
-			{
-				eval("document.getElementById('entryform')." + selField + ".value += tagOpen");
-			}
-			else if (eval(which) == 0)
-			{
-				var result = tagOpen;
-
-				eval("document.getElementById('entryform')." + selField + ".value += result");
-				eval(which + " = 1");
-
-				arraypush(tagarray, tagClose);
-				arraypush(usedarray, which);
-
-				running++;
-
-				styleswap(which);
-			}
-			else
-			{
-				// Close tags
-
-				n = 0;
-
-				for (i = 0 ; i < tagarray.length; i++ )
-				{
-					if (tagarray[i] == tagClose)
-					{
-						n = i;
-
-						running--;
-
-						while (tagarray[n])
-						{
-							closeTag = arraypop(tagarray);
-							eval("document.getElementById('entryform')." + selField + ".value += closeTag");
-						}
-
-						while (usedarray[n])
-						{
-							clearState = arraypop(usedarray);
-							eval(clearState + " = 0");
-							document.getElementById(clearState).className = 'htmlButtonA';
-						}
-					}
-				}
-
-				if (running <= 0 && document.getElementById('close_all').className == 'htmlButtonB')
-				{
-					document.getElementById('close_all').className = 'htmlButtonA';
-				}
-
-			}
-
-			curField = eval("document.getElementById('entryform')." + selField);
-			curField.blur();
-			curField.focus();
-		}
-
-
-
-$(document).ready(function() {
-	$(".js_show").show();
-	$(".js_hide").hide();
-
-	if (EE.publish.markitup.fields !== undefined) {
-		$.each(EE.publish.markitup.fields, function(key, value) { 
-			$("#"+key).markItUp(mySettings);
-		});
-	}
-
-	if (EE.publish.smileys === true) {
-		console.log('hi');
-		$("a.glossary_link").click(function(){
-			$(this).parent().siblings('.glossary_content').slideToggle("fast");$(this).parent().siblings('.smileyContent .spellcheck_content').hide();
-			return false;
-		});
-
-		$('a.smiley_link').toggle(function() {
-			$(this).parent().siblings('.smileyContent').slideDown('fast', function() { $(this).css('display', ''); });
-		}, function() {
-			$(this).parent().siblings('.smileyContent').slideUp('fast');
-		});
-
-		$(this).parent().siblings('.glossary_content, .spellcheck_content').hide();
-
-		$('.glossary_content a').click(function(){
-			$.markItUp({ replaceWith:$(this).attr('title')} );
-			return false;
-		});
-	}
-	
-	$(".btn_plus a").click(function(){
-		return confirm(EE.lang.confirm_exit, "");
-	});
-
-	// inject the collapse button into the formatting buttons list
-	$(".markItUpHeader ul").prepend("<li class=\"close_formatting_buttons\"><a href=\"#\"><img width=\"10\" height=\"10\" src=\""+EE.THEME_URL+"images/publish_minus.gif\" alt=\"Close Formatting Buttons\"/></a></li>");
-
-	$(".close_formatting_buttons a").toggle(
-		function() {
-			$(this).parent().parent().children(":not(.close_formatting_buttons)").hide();
-			$(this).parent().parent().css("height", "13px");
-			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_plus.png");
-		}, function () {
-			$(this).parent().parent().children().show();
-			$(this).parent().parent().css("height", "22px");
-			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_minus.gif");
-		}
-	);
-
-
-	$.ee_filebrowser();
-
-	var field_for_writemode_publish = "";
-
-	if (EE.publish.show_write_mode === true) { 
-		$("#write_mode_textarea").markItUp(myWritemodeSettings);		
-	}
-
-	// Prep for a workaround to allow markitup file insertion in file inputs
-	$(".btn_img a, .file_manipulate").click(function(){
-		window.file_manager_context = ($(this).parent().attr("class").indexOf("markItUpButton") == -1) ? 	$(this).closest("div").find("input").attr("id") : "textarea_a8LogxV4eFdcbC";
-	});
-
-// Bind the image html buttons
-$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
-	// We also need to allow file insertion into text inputs (vs textareas) but markitup
-	// will not accommodate this, so we need to detect if this request is coming from a 
-	// markitup button (textarea_a8LogxV4eFdcbC), or another field type.
-	if (window.file_manager_context == "textarea_a8LogxV4eFdcbC")
-	{
-		// Handle images and non-images differently
-		if ( ! file.is_image) {
-			$.markItUp({name:"Link", key:"L", openWith:"<a href=\"{filedir_"+file.directory+"}"+file.name+"\">", closeWith:"</a>", placeHolder:file.name });
-		} else {
-			$.markItUp({ replaceWith:"<img src=\"{filedir_"+file.directory+"}"+file.name+"\" alt=\"[![Alternative text]!]\" "+file.dimensions+"/>" } );}
-		} else {
-			$("#"+window.file_manager_context).val("{filedir_"+file.directory+"}"+file.name);
-		}
-	});
-
-	function file_field_changed(file, field) {
-		var container = $("input[name="+field+"]").closest(".publish_field");
-		container.find(".file_set").show().find(".filename").text(file.name);
-		$("input[name="+field+"_hidden]").val(file.name);
-		$("select[name="+field+"_directory]").val(file.directory);
-	}
-
-	$("input[type=file]", "#publishForm").each(function() {
-		var container = $(this).closest(".publish_field"),
-			trigger = container.find(".choose_file");
-
-		$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), file_field_changed);
-
-		container.find(".remove_file").click(function() {
-			container.find("input[type=hidden]").val("");
-			container.find(".file_set").hide();
-			return false;
-		});
-	});
-});		
-
-INDAHOUSE;
-
 		$ret = $url_title_js;
-		$ret .= "\n".$who_is;
 
 		// @todo, figure out why this is borking
 		// if ($this->EE->config->item('use_compressed_js') != 'n')
