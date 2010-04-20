@@ -225,7 +225,7 @@ class EE_Config Extends CI_Config {
 					//$this->config['site_pages']['templates'][1] = 16;
 					continue;
 				}
-				
+
 				$this->config['site_pages'] = unserialize($data);
 			}
 			elseif ($name == 'site_bootstrap_checksums')

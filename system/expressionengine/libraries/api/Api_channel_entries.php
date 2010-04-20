@@ -452,6 +452,12 @@ class Api_channel_entries extends Api {
 			$val = $row['entry_id'];
 			$channel_id = $row['channel_id'];
 			
+			// No field group- skip this bit
+			if ( ! isset($channel_groups[$channel_id]) OR ! isset($group_fields[$channel_groups[$channel_id]]))
+			{
+				continue;
+			}
+			
 			// Map entry id to fieldtype
 			$group_id = $channel_groups[$channel_id];
 			$field_type = $group_fields[$group_id];
