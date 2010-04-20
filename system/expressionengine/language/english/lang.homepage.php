@@ -33,7 +33,7 @@ Please review the support policy before posting to the forums:
 http://expressionengine.com/support/policy/',
 
 'new_version_notice' =>
-'ExpressionEngine version %s is now available.\n
+'ExpressionEngine version %s is now available.'."\n".'
 Download <a href=\'%s\' title=\'Download Here\'>here</a> and follow the <a href=\'%s\' title=\'Version Update Docs\'>Version Update Docs</a>.',
 
 'new_version_error' =>
