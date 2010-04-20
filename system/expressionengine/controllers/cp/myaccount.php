@@ -1021,8 +1021,8 @@ class MyAccount extends Controller {
 			$predefined_buttons[$button] = array(
 						'member_id'		=> $this->id,
 						'site_id'		=> $this->config->item('site_id'),
-						'tar_order'		=> $button_count++,
-						'tar_row'		=> 1,
+						'tag_order'		=> $button_count++,
+						'tag_row'		=> 1,
 						'tag_open'		=> stripslashes($predefined_buttons[$button]['tag_open'])
 				);
 
