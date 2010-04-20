@@ -1258,7 +1258,7 @@ class Channel_standalone extends Channel {
 			}
 		}
 		
-		$output .= $this->_addt_saef_scripts();
+		$output .= $this->_dynamic_js();
 
 		$this->EE->output->out_type = 'cp_asset';
 		$this->EE->output->set_header("Content-Type: text/javascript");
@@ -1330,162 +1330,6 @@ class Channel_standalone extends Channel {
 			);
 
 		$this->output_js['str'] = $js['str'];
-	}
-	
-	// --------------------------------------------------------------------	
-	
-	function _addt_saef_scripts()
-	{
-		// js for URL Title
-		$convert_ascii = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? TRUE : FALSE;
-		$word_separator = $this->EE->config->item('word_separator') != "dash" ? '_' : '-';
-		
-		// Foreign Character Conversion Javascript
-		include(APPPATH.'config/foreign_chars.php');
-		
-		/* -------------------------------------
-		/*  'foreign_character_conversion_array' hook.
-		/*  - Allows you to use your own foreign character conversion array
-		/*  - Added 1.6.0
-		/* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
-		*/  
-			if (isset($this->extensions->extensions['foreign_character_conversion_array']))
-			{
-				$foreign_characters = $this->extensions->call('foreign_character_conversion_array');
-			}
-		/*
-		/* -------------------------------------*/
-		
-		$foreign_replace = '';
-
-		foreach($foreign_characters as $old => $new)
-		{
-			$foreign_replace .= "if (c == '$old') {NewTextTemp += '$new'; continue;}\n\t\t\t\t";
-		}
-		
-		$url_title_js = <<<YOYOYO
-
-function liveUrlTitle()
-{
-	var defaultTitle = '{$this->default_entry_title}';
-	var NewText = document.getElementById("title").value;
-
-	if (defaultTitle != '')
-	{
-		if (NewText.substr(0, defaultTitle.length) == defaultTitle)
-		{
-			NewText = NewText.substr(defaultTitle.length)
-		}
-	}
-
-	NewText = NewText.toLowerCase();
-	var separator = "{$word_separator}";
-
-	/* Foreign Character Attempt */
-
-	var NewTextTemp = '';
-	for(var pos=0; pos<NewText.length; pos++)
-	{
-		var c = NewText.charCodeAt(pos);
-
-		if (c >= 32 && c < 128)
-		{
-			NewTextTemp += NewText.charAt(pos);
-		}
-		else
-		{
-			{$foreign_replace}
-		}
-	}
-
-	var multiReg = new RegExp(separator + '{2,}', 'g');
-
-	NewText = NewTextTemp;
-
-	NewText = NewText.replace('/<(.*?)>/g', '');
-	NewText = NewText.replace(/\s+/g, separator);
-	NewText = NewText.replace(/\//g, separator);
-	NewText = NewText.replace(/[^a-z0-9\-\._]/g,'');
-	NewText = NewText.replace(/\+/g, separator);
-	NewText = NewText.replace(multiReg, separator);
-	NewText = NewText.replace(/-$/g,'');
-	NewText = NewText.replace(/_$/g,'');
-	NewText = NewText.replace(/^_/g,'');
-	NewText = NewText.replace(/^-/g,'');
-
-	if (document.getElementById("url_title"))
-	{
-		document.getElementById("url_title").value = "{$this->url_title_prefix}" + NewText;
-	}
-	else
-	{
-		document.forms['entryform'].elements['url_title'].value = "{$this->url_title_prefix}" + NewText;
-	}
-}
-YOYOYO;
-
-		$who_is = <<<INDAHOUSE
-
-$(document).ready(function() {
-	$(".js_show").show();
-	$(".js_hide").hide();
-
-	$.ee_filebrowser();
-
-	// Prep for a workaround to allow markitup file insertion in file inputs
-	$(".btn_img a, .file_manipulate").click(function(){
-		window.file_manager_context = ($(this).parent().attr("class").indexOf("markItUpButton") == -1) ? 	$(this).closest("div").find("input").attr("id") : "textarea_a8LogxV4eFdcbC";
-	});
-
-	// Bind the image html buttons
-	$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
-		// We also need to allow file insertion into text inputs (vs textareas) but markitup
-		// will not accommodate this, so we need to detect if this request is coming from a 
-		// markitup button (textarea_a8LogxV4eFdcbC), or another field type.
-		if (window.file_manager_context == "textarea_a8LogxV4eFdcbC")
-		{
-			// Handle images and non-images differently
-			if ( ! file.is_image) {
-				$.markItUp({name:"Link", key:"L", openWith:"<a href=\"{filedir_"+file.directory+"}"+file.name+"\">", closeWith:"</a>", placeHolder:file.name });
-			} else {
-				$.markItUp({ replaceWith:"<img src=\"{filedir_"+file.directory+"}"+file.name+"\" alt=\"[![Alternative text]!]\" "+file.dimensions+"/>" } );}
-			} else {
-				$("#"+window.file_manager_context).val("{filedir_"+file.directory+"}"+file.name);
-			}
-		});
-
-		function file_field_changed(file, field) {
-			var container = $("input[name="+field+"]").closest(".publish_field");
-			container.find(".file_set").show().find(".filename").text(file.name);
-			$("input[name="+field+"_hidden]").val(file.name);
-			$("select[name="+field+"_directory]").val(file.directory);
-		}
-
-		$("input[type=file]", "#publishForm").each(function() {
-			var container = $(this).closest(".publish_field"),
-				trigger = container.find(".choose_file");
-
-			$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), file_field_changed);
-
-			container.find(".remove_file").click(function() {
-				container.find("input[type=hidden]").val("");
-				container.find(".file_set").hide();
-				return false;
-			});
-		});
-	});		
-		
-INDAHOUSE;
-
-		$ret = $url_title_js;
-		$ret .= "\n".$who_is;
-		
-		if ($this->EE->config->item('use_compressed_js'))
-		{
-			return str_replace(array("\n", "\t"), '', $ret);			
-		}
-		
-		return $ret;
 	}
 	
 	// --------------------------------------------------------------------	
@@ -1775,7 +1619,6 @@ INDAHOUSE;
 				
 				// end non pair fields
 				}
-			
 			}
 
 			$match['1'] = str_replace(LD.'display_custom_fields'.RD, $str, $match['1']);
@@ -1797,7 +1640,10 @@ INDAHOUSE;
 	 */
 	function _parse_custom_fields($custom_fields, $query, $which, $tagdata, $directories)
 	{
-		$field_array = array('textarea', 'textinput', 'pulldown', 'multiselect', 'checkbox', 'radio', 'file', 'date', 'relationship', 'file');
+		$field_array = array(
+							'textarea', 'textinput', 'pulldown', 'multiselect', 
+							'checkbox', 'radio', 'file', 'date', 'relationship', 
+							'file');
 
 		$formatting_toolbar 	= '';
 		$textarea 				= '';
@@ -1920,10 +1766,7 @@ INDAHOUSE;
 					break;
 			}
 
-
-			/** --------------------------------
-			/**  Textarea field types
-			/** --------------------------------*/
+			$temp_chunk = $this->_build_format_buttons($temp_chunk, $row, $settings);
 
 			if ($row['field_type'] == 'textarea' AND $textarea != '')
 			{
@@ -1937,7 +1780,6 @@ INDAHOUSE;
 
 			if ($row['field_type'] == 'file' AND $file != '')
 			{
-
 					$pdo = '';
 
 					$file_dir = ( ! isset( $_POST['field_id_'.$row['field_id'].'_directory'] )) ?  '' : $_POST['field_id_'.$row['field_id'].'_directory'];
@@ -2027,6 +1869,8 @@ INDAHOUSE;
 					$temp_chunk = str_replace(LD.'temp_relationship'.RD, $temp_relationship, $temp_chunk);
 				}
 			}
+			
+			// Date Fields
 			if ($row['field_type'] == 'date' AND $date != '')
 			{
 				$temp_chunk = $custom_fields;
@@ -2043,6 +1887,7 @@ INDAHOUSE;
 
 				$custom_date = '';
 				$localize = FALSE;
+				
 				if ($dtwhich != 'preview')
 				{
 					$localize = TRUE;
@@ -2057,7 +1902,9 @@ INDAHOUSE;
 					*/
 
 					if ($field_data != '')
-						$custom_date = $this->EE->localize->set_human_time($field_data, $localize);
+					{
+						$custom_date = $this->EE->localize->set_human_time($field_data, $localize);						
+					}
 
 					$cal_date = ($this->EE->localize->set_localized_time($custom_date) * 1000);
 				}
@@ -2066,7 +1913,7 @@ INDAHOUSE;
 					$custom_date = $_POST[$date_field];
 					$cal_date = ($custom_date != '') ? ($this->EE->localize->set_localized_time($this->EE->localize->convert_human_date_to_gmt($custom_date)) * 1000) : ($this->EE->localize->set_localized_time() * 1000);
 				}
-
+				
 				$temp_chunk = str_replace(LD.'temp_date'.RD, $date, $temp_chunk);
 				$temp_chunk = str_replace(LD.'date'.RD, $custom_date, $temp_chunk);
 			}
@@ -2079,8 +1926,7 @@ INDAHOUSE;
 					if ($row['field_required'] == 'n')
 					{
 						$temp_options = $pd_options;
-
-	//echo $temp_options;							
+												
 						$temp_options = str_replace(LD.'option_name'.RD, '--', $temp_options);
 						$temp_options = str_replace(LD.'option_value'.RD, '', $temp_options);
 						$temp_options = str_replace(LD.'selected'.RD, '', $temp_options);
@@ -2277,7 +2123,6 @@ INDAHOUSE;
 					$temp_radio = str_replace(LD.'temp_radio_options'.RD, $pdo, $radio);
 					$temp_chunk = str_replace(LD.'temp_radio'.RD, $temp_radio, $temp_chunk);
 				}
-
 				else
 				{
 					// We need to pre-populate this menu from an another channel custom field
@@ -2328,6 +2173,7 @@ INDAHOUSE;
 				$temp_chunk = str_replace(LD.'field_data'.RD, form_prep($field_data), $temp_chunk);					
 			}
 
+			$temp_chunk = str_replace(LD.'formatting_buttons'.RD, '', $temp_chunk);
 			$temp_chunk = str_replace(LD.'temp_date'.RD, '', $temp_chunk);
 			$temp_chunk = str_replace(LD.'temp_textarea'.RD, '', $temp_chunk);
 			$temp_chunk = str_replace(LD.'temp_relationship'.RD, '', $temp_chunk);
@@ -2365,8 +2211,426 @@ INDAHOUSE;
 		return $tagdata;
 	}
 
-
+	// --------------------------------------------------------------------	
 	
+	/**
+	 * Build Formatting Buttons
+	 *
+	 * This function replaces the {formatting_buttons} variables and
+	 * adds the field to the global json array if formatting btns is set to yes & if the var is present
+	 *
+	 * @param string
+	 * @param array
+	 * @param array
+	 * @return string
+	 */
+	function _build_format_buttons($chunk, $row, $settings)
+	{
+		$chunk = str_replace(LD.'formatting_buttons'.RD, '', $chunk);
+		
+		if ( ! isset($settings['field_show_formatting_btns']) OR $settings['field_show_formatting_btns'] != 'y')
+		{
+			return $chunk;
+		}
+				
+		$this->output_js['json']['EE']['publish']['markitup']['fields']['field_id_'.$row['field_id']] = $row['field_id'];
+		
+		return $chunk;
+	}
+
+	// --------------------------------------------------------------------	
+
+	/**
+	 * SAEF Dynamic Javascript
+	 * 
+	 * This function adds dynamic javascript to the js script compiled in saef_javascript()
+	 *
+	 * @return string
+	 */
+	function _dynamic_js()
+	{
+		// js for URL Title
+		$convert_ascii = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? TRUE : FALSE;
+		$word_separator = $this->EE->config->item('word_separator') != "dash" ? '_' : '-';
+
+		// Foreign Character Conversion Javascript
+		include(APPPATH.'config/foreign_chars.php');
+
+		/* -------------------------------------
+		/*  'foreign_character_conversion_array' hook.
+		/*  - Allows you to use your own foreign character conversion array
+		/*  - Added 1.6.0
+		/* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
+		*/  
+			if (isset($this->extensions->extensions['foreign_character_conversion_array']))
+			{
+				$foreign_characters = $this->extensions->call('foreign_character_conversion_array');
+			}
+		/*
+		/* -------------------------------------*/
+
+		$foreign_replace = '';
+
+		foreach($foreign_characters as $old => $new)
+		{
+			$foreign_replace .= "if (c == '$old') {NewTextTemp += '$new'; continue;}\n\t\t\t\t";
+		}
+
+		$url_title_js = <<<YOYOYO
+
+function liveUrlTitle()
+{
+	var defaultTitle = '{$this->default_entry_title}';
+	var NewText = document.getElementById("title").value;
+
+	if (defaultTitle != '')
+	{
+		if (NewText.substr(0, defaultTitle.length) == defaultTitle)
+		{
+			NewText = NewText.substr(defaultTitle.length)
+		}
+	}
+
+	NewText = NewText.toLowerCase();
+	var separator = "{$word_separator}";
+
+	/* Foreign Character Attempt */
+
+	var NewTextTemp = '';
+	for(var pos=0; pos<NewText.length; pos++)
+	{
+		var c = NewText.charCodeAt(pos);
+
+		if (c >= 32 && c < 128)
+		{
+			NewTextTemp += NewText.charAt(pos);
+		}
+		else
+		{
+			{$foreign_replace}
+		}
+	}
+
+	var multiReg = new RegExp(separator + '{2,}', 'g');
+
+	NewText = NewTextTemp;
+
+	NewText = NewText.replace('/<(.*?)>/g', '');
+	NewText = NewText.replace(/\s+/g, separator);
+	NewText = NewText.replace(/\//g, separator);
+	NewText = NewText.replace(/[^a-z0-9\-\._]/g,'');
+	NewText = NewText.replace(/\+/g, separator);
+	NewText = NewText.replace(multiReg, separator);
+	NewText = NewText.replace(/-$/g,'');
+	NewText = NewText.replace(/_$/g,'');
+	NewText = NewText.replace(/^_/g,'');
+	NewText = NewText.replace(/^-/g,'');
+
+	if (document.getElementById("url_title"))
+	{
+		document.getElementById("url_title").value = "{$this->url_title_prefix}" + NewText;
+	}
+	else
+	{
+		document.forms['entryform'].elements['url_title'].value = "{$this->url_title_prefix}" + NewText;
+	}
+}
+YOYOYO;
+
+	$who_is = <<<INDAHOUSE
+
+		var selField  = false,
+			selMode = "normal";
+
+		//	Dynamically set the textarea name
+
+		function setFieldName(which)
+		{
+			if (which != selField)
+			{
+				selField = which;
+
+				clear_state();
+
+				tagarray  = new Array();
+				usedarray = new Array();
+				running	  = 0;
+			}
+		}
+
+		// Insert tag
+		function taginsert(item, tagOpen, tagClose)
+		{
+			// Determine which tag we are dealing with
+
+			var which = eval('item.name');
+
+			if ( ! selField)
+			{
+				$.ee_notice(no_cursor);
+				return false;
+			}
+
+			var theSelection	= false,
+				result			= false,
+				theField		= document.getElementById('entryform')[selField];
+
+			if (selMode == 'guided')
+			{
+				data = prompt(enter_text, "");
+
+				if ((data != null) && (data != ""))
+				{
+					result =  tagOpen + data + tagClose;
+				}
+			}
+
+			// Is this a Windows user?
+			// If so, add tags around selection
+
+			if (document.selection)
+			{
+				theSelection = document.selection.createRange().text;
+
+				theField.focus();
+
+				if (theSelection)
+				{
+					document.selection.createRange().text = (result == false) ? tagOpen + theSelection + tagClose : result;
+				}
+				else
+				{
+					document.selection.createRange().text = (result == false) ? tagOpen + tagClose : result;
+				}
+
+				theSelection = '';
+
+				theField.blur();
+				theField.focus();
+
+				return;
+			}
+			else if ( ! isNaN(theField.selectionEnd))
+			{
+				var newStart,
+					scrollPos = theField.scrollTop,
+					selLength = theField.textLength,
+					selStart = theField.selectionStart,
+					selEnd = theField.selectionEnd;
+
+				if (selEnd <= 2 && typeof(selLength) != 'undefined')
+					selEnd = selLength;
+
+				var s1 = (theField.value).substring(0,selStart);
+				var s2 = (theField.value).substring(selStart, selEnd)
+				var s3 = (theField.value).substring(selEnd, selLength);
+
+				if (result == false)
+				{
+					newStart = selStart + tagOpen.length + s2.length + tagClose.length;
+					theField.value = (result == false) ? s1 + tagOpen + s2 + tagClose + s3 : result;
+				}
+				else
+				{
+					newStart = selStart + result.length;
+					theField.value = s1 + result + s3;
+				}
+
+				theField.focus();
+				theField.selectionStart = newStart;
+				theField.selectionEnd = newStart;
+				theField.scrollTop = scrollPos;
+				return;
+			}
+			else if (selMode == 'guided')
+			{
+				curField = document.submit_post[selfField];
+
+				curField.value += result;
+				curField.blur();
+				curField.focus();
+
+				return;
+			}
+
+			// Add single open tags
+
+			if (item == 'other')
+			{
+				eval("document.getElementById('entryform')." + selField + ".value += tagOpen");
+			}
+			else if (eval(which) == 0)
+			{
+				var result = tagOpen;
+
+				eval("document.getElementById('entryform')." + selField + ".value += result");
+				eval(which + " = 1");
+
+				arraypush(tagarray, tagClose);
+				arraypush(usedarray, which);
+
+				running++;
+
+				styleswap(which);
+			}
+			else
+			{
+				// Close tags
+
+				n = 0;
+
+				for (i = 0 ; i < tagarray.length; i++ )
+				{
+					if (tagarray[i] == tagClose)
+					{
+						n = i;
+
+						running--;
+
+						while (tagarray[n])
+						{
+							closeTag = arraypop(tagarray);
+							eval("document.getElementById('entryform')." + selField + ".value += closeTag");
+						}
+
+						while (usedarray[n])
+						{
+							clearState = arraypop(usedarray);
+							eval(clearState + " = 0");
+							document.getElementById(clearState).className = 'htmlButtonA';
+						}
+					}
+				}
+
+				if (running <= 0 && document.getElementById('close_all').className == 'htmlButtonB')
+				{
+					document.getElementById('close_all').className = 'htmlButtonA';
+				}
+
+			}
+
+			curField = eval("document.getElementById('entryform')." + selField);
+			curField.blur();
+			curField.focus();
+		}
+
+
+
+$(document).ready(function() {
+	$(".js_show").show();
+	$(".js_hide").hide();
+
+	if (EE.publish.markitup.fields !== undefined) {
+		$.each(EE.publish.markitup.fields, function(key, value) { 
+			$("#"+key).markItUp(mySettings);
+		});
+	}
+
+	if (EE.publish.smileys === true) {
+		console.log('hi');
+		$("a.glossary_link").click(function(){
+			$(this).parent().siblings('.glossary_content').slideToggle("fast");$(this).parent().siblings('.smileyContent .spellcheck_content').hide();
+			return false;
+		});
+
+		$('a.smiley_link').toggle(function() {
+			$(this).parent().siblings('.smileyContent').slideDown('fast', function() { $(this).css('display', ''); });
+		}, function() {
+			$(this).parent().siblings('.smileyContent').slideUp('fast');
+		});
+
+		$(this).parent().siblings('.glossary_content, .spellcheck_content').hide();
+
+		$('.glossary_content a').click(function(){
+			$.markItUp({ replaceWith:$(this).attr('title')} );
+			return false;
+		});
+	}
+	
+	$(".btn_plus a").click(function(){
+		return confirm(EE.lang.confirm_exit, "");
+	});
+
+	// inject the collapse button into the formatting buttons list
+	$(".markItUpHeader ul").prepend("<li class=\"close_formatting_buttons\"><a href=\"#\"><img width=\"10\" height=\"10\" src=\""+EE.THEME_URL+"images/publish_minus.gif\" alt=\"Close Formatting Buttons\"/></a></li>");
+
+	$(".close_formatting_buttons a").toggle(
+		function() {
+			$(this).parent().parent().children(":not(.close_formatting_buttons)").hide();
+			$(this).parent().parent().css("height", "13px");
+			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_plus.png");
+		}, function () {
+			$(this).parent().parent().children().show();
+			$(this).parent().parent().css("height", "22px");
+			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_minus.gif");
+		}
+	);
+
+
+	$.ee_filebrowser();
+
+	var field_for_writemode_publish = "";
+
+	if (EE.publish.show_write_mode === true) { 
+		$("#write_mode_textarea").markItUp(myWritemodeSettings);		
+	}
+
+	// Prep for a workaround to allow markitup file insertion in file inputs
+	$(".btn_img a, .file_manipulate").click(function(){
+		window.file_manager_context = ($(this).parent().attr("class").indexOf("markItUpButton") == -1) ? 	$(this).closest("div").find("input").attr("id") : "textarea_a8LogxV4eFdcbC";
+	});
+
+// Bind the image html buttons
+$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
+	// We also need to allow file insertion into text inputs (vs textareas) but markitup
+	// will not accommodate this, so we need to detect if this request is coming from a 
+	// markitup button (textarea_a8LogxV4eFdcbC), or another field type.
+	if (window.file_manager_context == "textarea_a8LogxV4eFdcbC")
+	{
+		// Handle images and non-images differently
+		if ( ! file.is_image) {
+			$.markItUp({name:"Link", key:"L", openWith:"<a href=\"{filedir_"+file.directory+"}"+file.name+"\">", closeWith:"</a>", placeHolder:file.name });
+		} else {
+			$.markItUp({ replaceWith:"<img src=\"{filedir_"+file.directory+"}"+file.name+"\" alt=\"[![Alternative text]!]\" "+file.dimensions+"/>" } );}
+		} else {
+			$("#"+window.file_manager_context).val("{filedir_"+file.directory+"}"+file.name);
+		}
+	});
+
+	function file_field_changed(file, field) {
+		var container = $("input[name="+field+"]").closest(".publish_field");
+		container.find(".file_set").show().find(".filename").text(file.name);
+		$("input[name="+field+"_hidden]").val(file.name);
+		$("select[name="+field+"_directory]").val(file.directory);
+	}
+
+	$("input[type=file]", "#publishForm").each(function() {
+		var container = $(this).closest(".publish_field"),
+			trigger = container.find(".choose_file");
+
+		$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), file_field_changed);
+
+		container.find(".remove_file").click(function() {
+			container.find("input[type=hidden]").val("");
+			container.find(".file_set").hide();
+			return false;
+		});
+	});
+});		
+
+INDAHOUSE;
+
+		$ret = $url_title_js;
+		$ret .= "\n".$who_is;
+
+		// @todo, figure out why this is borking
+		// if ($this->EE->config->item('use_compressed_js') != 'n')
+		// {
+		// 	return str_replace(array("\n", "\t"), '', $ret);			
+		// }
+
+		return $ret;
+	}	
 }
 // END CLASS
 
