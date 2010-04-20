@@ -17,7 +17,7 @@ if ($EE_view_disable !== TRUE)
 
 			<?php $this->load->view('_shared/message');?>
 
-			<div class="cp_button"><a href="<?=BASE.AMP.'C=admin_content'.AMP.'M=edit_upload_preferences'?>"><?=lang('add_html_button')?></a></div>
+			<div class="cp_button"><a href="#"><?=lang('add_html_button')?></a></div>
 			<div class="clear_left"></div>
 
 			<?=form_open('C=admin_content'.AMP.'M=default_html_buttons', '', $form_hidden)?>

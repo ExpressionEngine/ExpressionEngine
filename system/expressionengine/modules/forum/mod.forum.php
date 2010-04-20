@@ -27,8 +27,8 @@
 class Forum {
 
 
-	var $version			= '3.0.0';
-	var $build				= '20100101';
+	var $version			= '3.0.1';
+	var $build				= '20100415';
 	var $use_site_profile	= FALSE;
 	var $search_limit		= 500; // Maximum number of search results
 	var $return_data 		= '';
