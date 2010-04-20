@@ -143,11 +143,13 @@ function taginsert(item, tagOpen, tagClose)
 $(document).ready(function() {
 	$(".js_show").show();
 	$(".js_hide").hide();
-
+console.log(EE.publish.markitup.fields); 
 	if (EE.publish.markitup.fields !== undefined) {
 		$.each(EE.publish.markitup.fields, function(key, value) { 
 			$("#"+key).markItUp(mySettings);
 		});
+		console.log(key);
+		console.log(value);
 	}
 
 	if (EE.publish.smileys === true) {

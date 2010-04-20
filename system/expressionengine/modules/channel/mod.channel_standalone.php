@@ -33,6 +33,7 @@ class Channel_standalone extends Channel {
 	var $output_js 			= NULL;
 	var $default_entry_title = '';
 	var $url_title_prefix 	= '';
+	var $_installed_mods	= array('smileys' => FALSE, 'spellcheck' => FALSE);
 
 	// --------------------------------------------------------------------	
 
@@ -281,6 +282,7 @@ class Channel_standalone extends Channel {
 		// To load a bunch of things up if we're just going to error
 		$this->EE->lang->loadfile('channel');
 		$this->EE->load->helper('form');
+		$this->EE->load->library('spellcheck');
 		
 		$assigned_channels = $this->EE->functions->fetch_assigned_channels();
 		$channel_id = ( ! $this->EE->TMPL->fetch_param('channel')) ? '' : $this->EE->TMPL->fetch_param('channel');
@@ -369,7 +371,7 @@ class Channel_standalone extends Channel {
 		}
 
 		// Fetch Custom Fields
-		$field_query = $this->EE->channel_model->get_channel_fields($field_group);
+		// $field_query = $this->EE->channel_model->get_channel_fields($field_group);
 		
 		$html_buttons = $this->EE->admin_model->get_html_buttons($this->EE->session->userdata('member_id'));
 		$button_js = array();
@@ -428,6 +430,13 @@ class Channel_standalone extends Channel {
 		{
 			$markItUp_writemode['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
 		}
+		
+		// Are smiley's & spellcheck Enabled?
+		$this->EE->db->select('COUNT(*) as count');
+		$this->EE->db->where('module_name', 'Emoticon');
+		$smiley = $this->EE->db->get('modules');
+		
+		$this->_installed_mods['smileys'] = ((int) $smiley->row('count') == 1) ? TRUE : FALSE;
 
 		// -------------------------------------------
 		//	Publish Page Title Focus - makes the title field gain focus when the page is loaded
@@ -436,18 +445,19 @@ class Channel_standalone extends Channel {
 		$addt_js = array(
 				'publish'		=> array(
 							'show_write_mode' 	=> (($show_button_cluster == 'y') ? TRUE : FALSE),
-							'title_focus'		=> (($which != 'edit' && $this->EE->config->item('publish_page_title_focus') !== 'n') ? TRUE : FALSE)),
+							'title_focus'		=> (($which != 'edit' && $this->EE->config->item('publish_page_title_focus') !== 'n') ? TRUE : FALSE),
+							'smileys'			=> ($this->_installed_mods['smileys']) ? TRUE : FALSE),
+							
 				'user_id'		=> $this->EE->session->userdata('member_id'),
 				'lang'			=> array(
 							'confirm_exit'			=> $this->EE->lang->line('confirm_exit'),
 							'add_new_html_button'	=> $this->EE->lang->line('add_new_html_button')
 					)		
 			);
-
-		$this->_setup_js($endpoint, $markItUp, $markItUp_writemode, $addt_js);
 		
 		$this->EE->lang->loadfile('content');
-
+		$this->_setup_js($endpoint, $markItUp, $markItUp_writemode, $addt_js);
+		
 		/** ----------------------------------------
 		/**  Compile form declaration and hidden fields
 		/** ----------------------------------------*/
@@ -906,12 +916,12 @@ class Channel_standalone extends Channel {
 					if ($js == 'EE')
 					{
 						$js .= 'if (typeof EE == "undefined" || ! EE) {'."\n".
-							'var EE = '.$this->EE->javascript->generate_json($val)."\n".
+							'var EE = '.$this->EE->javascript->generate_json($val, TRUE)."\n".
 							"}\n";
 					}
 					else 
 					{
-						$js .= $this->EE->javascript->generate_json($val);
+						$js .= $this->EE->javascript->generate_json($val, TRUE);
 					}
 				}
 
@@ -947,7 +957,7 @@ class Channel_standalone extends Channel {
 				}
 				else 
 				{
-					$res .= $key.' = ' . $this->EE->javascript->generate_json($val) . ";\n";
+					$res .= $key.' = ' . $this->EE->javascript->generate_json($val, TRUE) . ";\n";
 				}
 			}
 			
@@ -1699,7 +1709,7 @@ class Channel_standalone extends Channel {
 
 			$custom_fields = str_replace($match['0'], LD.'temp_required'.RD, $custom_fields);
 		}
-
+		
 		/** --------------------------------
 		/**  Parse Custom Fields
 		/** --------------------------------*/
@@ -1731,6 +1741,7 @@ class Channel_standalone extends Channel {
 			}
 
 			$temp_chunk = $this->_build_format_buttons($temp_chunk, $row, $settings);
+			$temp_chunk = $this->_build_spellcheck($temp_chunk, $row, $settings);
 
 			if ($row['field_type'] == 'textarea' AND $textarea != '')
 			{
@@ -2138,6 +2149,7 @@ class Channel_standalone extends Channel {
 			}
 
 			$temp_chunk = str_replace(LD.'formatting_buttons'.RD, '', $temp_chunk);
+			$temp_chunk = str_replace(LD.'spellcheck'.RD, '', $temp_chunk);
 			$temp_chunk = str_replace(LD.'temp_date'.RD, '', $temp_chunk);
 			$temp_chunk = str_replace(LD.'temp_textarea'.RD, '', $temp_chunk);
 			$temp_chunk = str_replace(LD.'temp_relationship'.RD, '', $temp_chunk);
@@ -2198,6 +2210,115 @@ class Channel_standalone extends Channel {
 		}
 				
 		$this->output_js['json']['EE']['publish']['markitup']['fields']['field_id_'.$row['field_id']] = $row['field_id'];
+		
+		return $chunk;
+	}
+
+	// --------------------------------------------------------------------	
+
+	/**
+	 *
+	 *
+	 *
+	 *
+	 */
+	function _build_spellcheck($chunk, $row, $settings)
+	{//var_dump($row); exit;
+		/*
+		array
+		  'field_show_smileys' => string 'y' (length=1)
+		  'field_show_glossary' => string 'y' (length=1)
+		  'field_show_spellcheck' => string 'y' (length=1)
+		  'field_show_formatting_btns' => string 'y' (length=1)
+		  'field_show_file_selector' => string 'y' (length=1)
+		  'field_show_writemode' => string 'y' (length=1)
+		*/
+		// Unset formatting buttons choice, we've already dealt with it.
+		unset($settings['field_show_formatting_btns']);
+		
+		foreach ($settings as $key => $val)
+		{
+			if ($val == 'n')
+			{
+				unset($settings[$key]);
+			}
+		}
+		
+		if (empty($settings))
+		{
+			return $chunk;
+		}
+		
+		$output = '<p class="spellcheck markitup">';
+
+		if (isset($settings['field_show_writemode']))
+		{
+			$output .= '<a href="#TB_inline?height=100%'.AMP.'width=100%'.AMP.'modal=true'.AMP.'inlineId=write_mode_container" class="write_mode_trigger thickbox" id="id_'.$row['field_id'].'"><img src="images/publish_write_mode.png" /></a>';
+		}
+
+		if (isset($settings['field_show_file_selector']))
+		{
+			$output .= '<a href="#" class="markItUpButton">
+			<img class="file_manipulate js_show" src="<?=$cp_theme_url?>images/publish_format_picture.gif" alt="'.lang('file').'" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+		}
+
+		if ($this->_installed_mods['spellcheck'] && isset($settings['field_show_spellcheck']))
+		{
+			$id = (ctype_digit($row['field_id'])) ? 'field_id_' : '';
+			
+			$output .= '<a href="#" class="spellcheck_link" id="'.$id.$row['field_id'].'" title="'.lang('check_spelling').'"><img src="images/spell_check_icon.png" alt="'.lang('check_spelling').'" /></a>';
+			
+			// $output .= '<a href="#" class="spellcheck_link" id="spelltrigger_'.(ctype_digit($row['field_id']))?'field_id_':''.$row['field_id'].'" title="'.lang('check_spelling').'"><img src="images/spell_check_icon.png" style="margin-bottom: -8px;" alt="'.lang('check_spelling').'" /></a>';
+		}
+		
+		if (isset($settings['field_show_glossary']))
+		{
+			$output .= '<a href="#" class="glossary_link" title="'.lang('glossary').'"><img src="images/spell_check_glossary.png" alt="'.lang('glossary').'" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+		}
+		
+		if ($this->_installed_mods['smileys'])
+		{
+			$output .= '<a href="#" class="smiley_link" title="'.lang('emotions').'">'.lang('emotions').'</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+		}
+		
+		if (isset($row['field_show_fmt']) && $row['field_show_fmt'] == 'y')
+		{
+			
+		}
+		
+		
+/*
+
+				if ($f['field_show_fmt'] == 'y' && count($f['field_fmt_options']) > 0) 
+				{
+					<?=lang('formatting')?>
+					<?=form_dropdown('field_ft_'.$f['field_id'], $f['field_fmt_options'], $f['field_fmt'])?> 
+				}
+
+			</p>
+
+			if($spell_enabled && $f['field_show_spellcheck'] == 'y')
+			{
+				echo (ctype_digit($f['field_id'])) ? build_spellcheck('field_id_'.$f['field_id']) : build_spellcheck($f['field_id']);
+			}
+
+			if($f['field_show_glossary'] == 'y')
+			{
+				echo $glossary_items;
+			}
+
+			if ($smileys_enabled && $f['field_show_smileys'] == 'y')
+			{
+				echo $smiley_table[$f['field_id']];									
+			}
+		
+		
+		*/
+		
+		$output .= '</p>';
+		
+		
+		$chunk = str_replace(LD.'spellcheck'.RD, $output, $chunk);
 		
 		return $chunk;
 	}
