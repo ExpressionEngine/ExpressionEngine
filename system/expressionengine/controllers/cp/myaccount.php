@@ -714,8 +714,13 @@ class MyAccount extends Controller {
 
 		if ($query->row('screen_name') != $_POST['screen_name'] AND $this->config->item('forum_is_installed') == "y")
 		{
-			$this->db->query("UPDATE exp_forums SET forum_last_post_author = '".$this->db->escape_str($_POST['screen_name'])."' WHERE forum_last_post_author_id = '".$this->id."'");
-			$this->db->query("UPDATE exp_forum_moderators SET mod_member_name = '".$this->db->escape_str($_POST['screen_name'])."' WHERE mod_member_id = '".$this->id."'");
+			$this->db->where('forum_last_post_author_id', $this->id);
+			$this->db->update('forums', array('forum_last_post_author' => 
+												$this->input->post('screen_name')));
+			
+			$this->db->where('mod_member_id', $this->id);
+			$this->db->update('forum_moderators', array('mod_member_name' => 
+													$this->input->post('screen_name')));
 		}
 
 		// Assign the query data
@@ -744,20 +749,25 @@ class MyAccount extends Controller {
 
 		$this->member_model->update_member($this->id, $data);
 
-		if ($query->row('screen_name') != $_POST['screen_name'])
+		$this->cp->get_installed_modules();
+		
+		if (isset($this->cp->installed_modules['comment']))
 		{
-			$query = $this->member_model->get_member_data($this->id, array('screen_name'));
+			if ($query->row('screen_name') != $_POST['screen_name'])
+			{
+				$query = $this->member_model->get_member_data($this->id, array('screen_name'));
 
-			$screen_name = ($query->row('screen_name')	!= '') ? $query->row('screen_name')	 : '';
+				$screen_name = ($query->row('screen_name')	!= '') ? $query->row('screen_name')	 : '';
 
-			// Update comments with current member data
+				// Update comments with current member data
 
-			$data = array('name' => ($screen_name != '') ? $screen_name : $_POST['username']);
+				$data = array('name' => ($screen_name != '') ? $screen_name : $_POST['username']);
 
-			$this->db->where('author_id', $this->id);
-			$this->db->update('comments', $data);
+				$this->db->where('author_id', $this->id);
+				$this->db->update('comments', $data);
+			}			
 		}
-
+		
 		// Write log file
 		$this->logger->log_action($this->VAL->log_msg);
 
