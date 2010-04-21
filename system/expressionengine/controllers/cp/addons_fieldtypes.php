@@ -113,6 +113,7 @@ class Addons_fieldtypes extends Controller {
 		}
 
 		$this->javascript->compile();
+		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', $this->lang->line('addons'));
 		
 		$this->load->view('addons/fieldtypes', $vars);
 	}
