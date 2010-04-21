@@ -1760,6 +1760,7 @@ class Design extends Controller {
 
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
+		$this->load->model('design_model');
 		
 		$this->load->helper('file');
 		$this->load->helper('form');
@@ -1980,14 +1981,7 @@ class Design extends Controller {
 		}
 		
 		// template access restrictions query
-		$this->db->select('member_group, template_id');
-		$no_access = $this->db->get('template_no_access');
-
-		$denied_groups = array();
-		foreach($no_access->result() as $row)
-		{
-			$denied_groups[$row->template_id][$row->member_group] = TRUE;
-		}
+		$denied_groups = $this->design_model->template_access_restrictions();
 		
 		$vars['access'] = array();
 
@@ -3612,7 +3606,7 @@ class Design extends Controller {
 		}
 		
 		// template access restrictions query
-		$this->design_model->template_access_restrictions();
+		$denied_groups = $this->design_model->template_access_restrictions();
 		
 		$vars['templates'] = array();
 		$displayed_groups = array();
@@ -3660,7 +3654,7 @@ class Design extends Controller {
 				);
 			}
 		}
-		
+
 		// remove any template groups that aren't being displayed, as may be the case when a search was performed
 		foreach ($vars['template_groups'] as $index => $group)
 		{
