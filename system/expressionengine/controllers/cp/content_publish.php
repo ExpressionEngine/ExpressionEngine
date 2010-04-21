@@ -527,7 +527,8 @@ class Content_publish extends Controller {
 		//	Security check
 		if ( ! in_array($channel_id, $assigned_channels))
 		{
-			show_error($this->lang->line('unauthorized_for_this_channel'));
+			$this->session->set_flashdata('message_failure', $this->lang->line('unauthorized_for_this_channel'));
+			$this->functions->redirect(BASE.AMP.'C=content_publish'.AMP.'M=index');
 		}
 
 		//	Fetch channel preferences
