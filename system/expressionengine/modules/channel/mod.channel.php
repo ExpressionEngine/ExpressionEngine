@@ -496,7 +496,7 @@ class Channel {
 
 		for ($i = 0, $total = count($query->result_array()); $i < $total; $i++)
 		{
-    		$row = array_shift($query->result_array());
+    		$row = array_shift($query->result_array);
 
 			//  If the data is emptied (cache cleared or first process), then we
 			//  rebuild it with fresh data so processing can continue.
