@@ -39,7 +39,7 @@ if ($EE_view_disable !== TRUE)
 	<ul class="tab_menu" id="tab_menu_tabs">
 	<?php foreach($publish_tabs as $tab => $field_list):?>
 		<li id="menu_<?=$tab?>" class="content_tab">
-			<a href="#" title="menu_<?=$tab?>" class="menu_<?=$tab?>"><?=lang($tab)?></a>
+			<a href="#" title="menu_<?=$tab?>" class="menu_<?=$tab?>"><?=ucfirst(lang($tab))?></a>
 		</li>
 	<?php endforeach; 
 	if ($this->session->userdata('group_id') == 1): /*?>

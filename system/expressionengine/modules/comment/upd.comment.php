@@ -39,6 +39,21 @@ class Comment_upd {
 		$this->EE =& get_instance();
 	}
 
+	function tabs()
+	{
+		$tabs['date'] = array(
+			'comment_expiration_date'	=> array(
+								'visible'		=> 'true',
+								'collapse'		=> 'false',
+								'htmlbuttons'	=> 'true',
+								'width'			=> '100%'
+								)
+			);
+				
+		return $tabs;	
+	}
+
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -115,8 +130,7 @@ class Comment_upd {
 		$this->EE->dbforge->create_table('comments');
 
 		$this->EE->load->library('layout');
-
-		$this->EE->layout->update_layout(TRUE);
+		$this->EE->layout->add_layout_fields($this->tabs());
 
 		return TRUE;
 	}
@@ -152,9 +166,9 @@ class Comment_upd {
 
 		$this->EE->db->update('channel_titles', array('comment_total' => 0, 'recent_comment_date' => 0));
 
+		
 		$this->EE->load->library('layout');
-
-		$this->EE->layout->update_layout(TRUE, FALSE);
+		$this->EE->layout->delete_layout_fields($this->tabs());
 
 		return TRUE;
 	}

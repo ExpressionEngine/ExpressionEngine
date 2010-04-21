@@ -83,7 +83,8 @@ class Layout_model extends CI_Model {
 						}
 						else
 						{
-							$errors++;
+							//$errors++;
+							$layout[$tab] = $layout[$tab] + $fields;
 						}
 					}					
 				}

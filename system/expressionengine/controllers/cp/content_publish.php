@@ -280,50 +280,55 @@ class Content_publish extends Controller {
 		// Check for required fields being hidden
 		$required = $this->api_channel_fields->get_required_fields($channel_id);
 		
-		if (count($required) > 0)
+		$clean_layout = array();
+		
+		foreach($layout_info as $tab => $field)
 		{
-			foreach($layout_info as $tab => $field)
+			foreach ($field as $name => $info)
 			{
-				foreach ($field as $name => $info)
-				{
+				if (count($required) > 0)
+				{					
 					// Check for hiding a required field
 					if (in_array($name, $required) && $info['visible'] === FALSE)
 					{
 						$error[] = $name;
 					}
+				}
 					
-					// Check for hinkiness in field names
-					if (preg_match('/[^a-z0-9\_\-]/i', $name))
-					{
-						$valid_name_error[] = $name;
-					}					
+				// Check for hinkiness in field names
+				if (preg_match('/[^a-z0-9\_\-]/i', $name))
+				{
+					$valid_name_error[] = $name;
 				}
 			}
 			
-			if (count($error) > 0 OR count($valid_name_error) > 0)
-			{
-				$resp['messageType'] = 'failure';
-				$message = $this->lang->line('layout_failure');
-				
-				if (count($error))
-				{
-					$message .= NBS.NBS.$this->lang->line('layout_failure_required').implode(', ', $error);
-				}
-				
-				if (count($valid_name_error))
-				{
-					$message .= NBS.NBS.$this->lang->line('layout_failure_invalid_name').implode(', ', $valid_name_error);
-				}
-				
-				$resp['message'] = $message; 
-
-				$this->output->send_ajax_response($resp); exit;	
-			}
+			$clean_layout[strtolower($tab)] = $layout_info[$tab];	
 		}
+			
+		if (count($error) > 0 OR count($valid_name_error) > 0)
+		{
+			$resp['messageType'] = 'failure';
+			$message = $this->lang->line('layout_failure');
+				
+			if (count($error))
+			{
+				$message .= NBS.NBS.$this->lang->line('layout_failure_required').implode(', ', $error);
+			}
+				
+			if (count($valid_name_error))
+			{
+				$message .= NBS.NBS.$this->lang->line('layout_failure_invalid_name').implode(', ', $valid_name_error);
+			}
+				
+			$resp['message'] = $message; 
+
+			$this->output->send_ajax_response($resp); exit;	
+		}
+
 		
 		// make this into an array, insert_group_layout will serialize and save
 		
-		$layout_info = array_map(array($this, '_sort_publish_fields'), $layout_info);
+		$layout_info = array_map(array($this, '_sort_publish_fields'), $clean_layout);
 		
 		if ($this->member_model->insert_group_layout($member_group, $channel_id, $layout_info))
 		{

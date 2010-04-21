@@ -271,21 +271,23 @@ class Layout {
 			return FALSE;
 		}
 		
-		if ($namespace != '')
+		foreach ($tabs as $key => $val)
 		{
-			foreach ($tabs as $key => $val)
-			{
+			if ($namespace != '')
+			{			
 				foreach ($val as $field_name => $data)
 				{
 					$tabs[$key][$namespace.'__'.$field_name] = $data;
 					unset($tabs[$key][$field_name]);
 				}
 			}
+			
+			$clean_tabs[strtolower($key)] = $tabs[$key];
 		}
 		
 		$this->EE->load->model('layout_model');
 
-		return $this->EE->layout_model->update_layouts($tabs, 'delete_tabs', $channel_id);
+		return $this->EE->layout_model->update_layouts($clean_tabs, 'delete_tabs', $channel_id);
 	}	
 
 	// --------------------------------------------------------------------
@@ -304,21 +306,23 @@ class Layout {
 			return FALSE;
 		}
 
-		if ($namespace != '')
+		foreach ($tabs as $key => $val)
 		{
-			foreach ($tabs as $key => $val)
-			{
+			if ($namespace != '')
+			{			
 				foreach ($val as $field_name => $data)
 				{
 					$tabs[$key][$namespace.'__'.$field_name] = $data;
 					unset($tabs[$key][$field_name]);
 				}
 			}
+
+			$clean_tabs[strtolower($key)] = $tabs[$key];
 		}
 
 
 		$this->EE->load->model('layout_model');
-		$this->EE->layout_model->update_layouts($tabs, 'add_tabs', $channel_id);
+		$this->EE->layout_model->update_layouts($clean_tabs, 'add_tabs', $channel_id);
 	}
 
 
@@ -345,9 +349,14 @@ class Layout {
 			return FALSE;
 		}
 
+		foreach ($tabs as $key => $val)
+		{
+			$clean_tabs[strtolower($key)] = $tabs[$key];
+		}
+
 		$this->EE->load->model('layout_model');
 		
-		return $this->EE->layout_model->update_layouts($tabs, 'add_fields', $channel_id);
+		return $this->EE->layout_model->update_layouts($clean_tabs, 'add_fields', $channel_id);
 	}
 
 	// --------------------------------------------------------------------
@@ -372,11 +381,14 @@ class Layout {
 			$tabs = array($tabs);
 		}
 		
-		//print_r($tabs); exit;
+		foreach ($tabs as $key => $val)
+		{
+			$clean_tabs[strtolower($key)] = $tabs[$key];
+		}
 		
 		$this->EE->load->model('layout_model');
 	
-		return $this->EE->layout_model->update_layouts($tabs, 'delete_fields', $channel_id);
+		return $this->EE->layout_model->update_layouts($clean_tabs, 'delete_fields', $channel_id);
 	}
 
 	

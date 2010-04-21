@@ -501,8 +501,8 @@ class Member_register extends Member {
 		// overridden below if used as optional fields
 		$data['language']	= ($this->EE->config->item('deft_lang')) ? $this->EE->config->item('deft_lang') : 'english';
 		$data['time_format'] = ($this->EE->config->item('time_format')) ? $this->EE->config->item('time_format') : 'us';
-		$data['timezone']	= ($this->EE->config->item('default_site_timezone')) ? $this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone');
-		$data['daylight_savings'] = ($this->EE->config->item('default_site_dst')) ? $this->EE->config->item('default_site_dst') : 'n';		
+		$data['timezone']	= ($this->EE->config->item('default_site_timezone') && $this->EE->config->item('default_site_timezone') != '') ? $this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone');
+		$data['daylight_savings'] = ($this->EE->config->item('default_site_dst') && $this->EE->config->item('default_site_dst') != '') ? $this->EE->config->item('default_site_dst') : $this->EE->config->item('daylight_savings');		
 		
 		// Optional Fields
 
