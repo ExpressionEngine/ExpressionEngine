@@ -167,7 +167,7 @@ class EE_Localize {
 		}
 
 		// @confirm reverted this to 1.6 because otherwise date always ended up as now
-		//$now = $this->now + ($this->zones[$timezone] * 3600);
+		// $now = $this->now + ($this->zones[$timezone] * 3600);
 		$now += $this->zones[$timezone] * 3600;
 
 		if ($dst == '')
@@ -225,7 +225,7 @@ class EE_Localize {
 	 * minutes specified in the master server time offset preference
 	 *
 	 * The optional second parameter lets us reverse the offset (positive number becomes negative)
-	 * We use the second paramter with set_localized_offset()
+	 * We use the second parameter with set_localized_offset()
 	 *
 	 * @access	public
 	 * @param	string

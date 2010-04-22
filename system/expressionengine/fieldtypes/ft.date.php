@@ -45,7 +45,6 @@ class Date_ft extends EE_Fieldtype {
 	
 	function save($data)
 	{
-		// @todo
 		return $data;
 	}
 	
@@ -66,7 +65,7 @@ class Date_ft extends EE_Fieldtype {
 		$date_field = $this->field_name;
 		$date_local = 'field_dt_'.$this->field_id;
 
-		$date = $this->EE->localize->set_localized_time($data);
+		$date = $this->EE->localize->set_localized_time();
 		$custom_date = '';
 		
 		$localize = FALSE;
@@ -83,13 +82,12 @@ class Date_ft extends EE_Fieldtype {
 		elseif ( ! $data && isset($this->settings['default_offset']))	// Initial load - no data and showing a field (no offset == blank)
 		{
 			$date = $this->EE->localize->set_localized_time($data) + $this->settings['default_offset'];
-			$custom_date = $this->EE->localize->set_human_time($custom_date);
+			$custom_date = $this->EE->localize->set_human_time($date, FALSE);
 		}
-		
 		elseif ($data)	// Everything else
 		{
 			$date = $this->EE->localize->set_localized_time($data);
-			$custom_date = $this->EE->localize->set_human_time($date);
+			$custom_date = $this->EE->localize->set_human_time($data);
 		}
 		
 		$cal_date = $date * 1000;
