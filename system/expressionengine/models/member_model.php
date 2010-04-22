@@ -1370,7 +1370,7 @@ class Member_model extends CI_Model {
 		{
 			$config = array(
 							'default_site_timezone' => '',
-							'default_site_dst'		=> 'n'
+							'default_site_dst'		=> ''
 							);
 			if ($get_id)
 			{
