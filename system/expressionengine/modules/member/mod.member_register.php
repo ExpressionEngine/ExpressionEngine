@@ -523,9 +523,9 @@ class Member_register extends Member {
 		{
 			$data['daylight_savings'] = 'y';
 		}
-		else
+		elseif ($this->EE->input->post('daylight_savings') == 'n')
 		{
-			$data['daylight_savings'] = ($this->EE->config->item('default_site_dst')) ? $this->EE->config->item('default_site_dst') : 'n';
+			$data['daylight_savings'] = 'n';
 		}
 		
 		// We generate an authorization code if the member needs to self-activate
