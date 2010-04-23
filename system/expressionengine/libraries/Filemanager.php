@@ -42,6 +42,7 @@ class Filemanager {
 		$this->EE->load->library('javascript');
 		
 		$this->theme_url = $this->EE->config->item('theme_folder_url').'cp_themes/'.$this->EE->config->item('cp_theme').'/';
+		
 	}
 	
 	// --------------------------------------------------------------------
@@ -100,18 +101,18 @@ class Filemanager {
 		$ret['str'] = '';
 
 		$ret['json'] = array(
-			'BASE'				=> $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER,
-			'THEME_URL'			=> $this->theme_url,
+			'BASE'			=> $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER,
+			'THEME_URL'		=> $this->theme_url,
 			'PATH_CP_GBL_IMG'	=> $this->EE->config->item('theme_folder_url').'cp_global_images/',
 			'filebrowser' => array(
-					'endpoint_url'	=> $endpoint_url,
-					'window_title'	=> $this->EE->lang->line('file_manager'),
-					'theme_url'		=> $this->theme_url),
-					'lang' => array(
-								'or'				=> $this->EE->lang->line('or'), 
-								'resize_image' 		=> $this->EE->lang->line('resize_image'), 
-								'return_to_publish' => $this->EE->lang->line('return_to_publish')
-								)
+				'endpoint_url'	=> $endpoint_url,
+				'window_title'	=> $this->EE->lang->line('file_manager'),
+				'theme_url'		=> $this->theme_url),
+				'lang' => array(
+							'or'				=> $this->EE->lang->line('or'), 
+							'resize_image' 		=> $this->EE->lang->line('resize_image'), 
+							'return_to_publish' => $this->EE->lang->line('return_to_publish')
+							)
 				);
 
 		$script_base = $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT=jquery';
@@ -225,7 +226,7 @@ class Filemanager {
 		
 		unset($_GET['action']);	// current url == get_safe_refresh()
 		
-		$vars['filemanager_directories'] = $this->directories(AJAX_REQUEST);
+		$vars['filemanager_directories'] = $this->directories(FALSE);
 		
 		$filebrowser_html = $this->EE->load->view('_shared/filebrowser', $vars, TRUE);
 
@@ -284,10 +285,8 @@ class Filemanager {
 		{
 			$dirs = call_user_func($this->config['directories_callback']);
 		}
-
-		$return = array();
-
-		if ($return_all && ! $ajax)	// safety - ajax calls can never get all info!
+		
+		if ($return_all AND ! $ajax)	// safety - ajax calls can never get all info!
 		{
 			$return = $dirs;
 		}
