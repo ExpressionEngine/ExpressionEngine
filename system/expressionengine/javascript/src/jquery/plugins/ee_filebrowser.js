@@ -44,7 +44,11 @@
 			dir_files_structure	= {};
 			dir_paths = {};
 			
-			file_manager_obj = $(data.manager).appendTo(document.body);
+			if (data.manager) { 
+				file_manager_obj = $(data.manager).appendTo(document.body);
+			} else {
+				return;
+			}			
 			
 			for (var d in data.directories) {
 				if ( ! current_directory) {
