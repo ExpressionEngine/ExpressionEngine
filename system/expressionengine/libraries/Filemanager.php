@@ -225,7 +225,7 @@ class Filemanager {
 		
 		unset($_GET['action']);	// current url == get_safe_refresh()
 		
-		$vars['filemanager_directories'] = $this->directories(FALSE);
+		$vars['filemanager_directories'] = $this->directories(AJAX_REQUEST);
 		
 		$filebrowser_html = $this->EE->load->view('_shared/filebrowser', $vars, TRUE);
 
@@ -284,8 +284,10 @@ class Filemanager {
 		{
 			$dirs = call_user_func($this->config['directories_callback']);
 		}
-		
-		if ($return_all AND ! $ajax)	// safety - ajax calls can never get all info!
+
+		$return = array();
+
+		if ($return_all && ! $ajax)	// safety - ajax calls can never get all info!
 		{
 			$return = $dirs;
 		}
@@ -299,7 +301,7 @@ class Filemanager {
 		
 		if ($ajax)
 		{
-			die($this->EE->javascript->generate_json($return));
+			$this->EE->output->send_ajax_response($return);
 		}
 		
 		return $return;
