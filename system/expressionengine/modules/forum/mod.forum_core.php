@@ -11727,59 +11727,65 @@ class Forum_Core extends Forum {
 		$sort  = ( ! in_array($this->EE->TMPL->fetch_param('sort'), array('asc', 'desc'))) ? 'asc' : $this->EE->TMPL->fetch_param('sort');
 		$limit = ( ! is_numeric($this->EE->TMPL->fetch_param('limit'))) ? '10' : $this->EE->TMPL->fetch_param('limit');
 		
-		switch ($this->EE->TMPL->fetch_param('orderby'))
-		{
-			case 'title' 		: $order = "t.title {$sort}";
-				break;
-			case 'recent_post' 	: $order = "last_post_date {$sort}, topic_date {$sort}";
-				break;
-			default				: $order = "t.topic_date {$sort}";
-				break;
-		}
+		$this->EE->db->select('forum_topics.topic_id, forum_topics.author_id, forum_topics.last_post_author_id, 
+								forum_topics.title, forum_topics.body, forum_topics.topic_date, 
+								forum_topics.last_post_date, forum_topics.last_post_id, 
+								forum_topics.thread_total, forum_topics.thread_views,
+								forum_topics.parse_smileys, forums.forum_status,
+								forums.forum_permissions, forums.forum_name, forums.forum_text_formatting, 
+								forums.forum_html_formatting, forums.forum_auto_link_urls, 
+								forums.forum_allow_img_urls, forum_boards.board_label, 
+								forum_boards.board_name, forum_boards.board_forum_url', FALSE);
+
+		$join = 'LEFT JOIN '.$this->EE->db->dbprefix('forums').
+					' ON '.$this->EE->db->dbprefix('forum_topics').
+					'.forum_id = '.$this->EE->db->dbprefix('forums').'.forum_id';
+		$this->EE->db->from('forum_topics '.$join);
+		$this->EE->db->join('forum_boards', 
+			$this->EE->db->dbprefix('forum_topics').
+						'.board_id = '.$this->EE->db->dbprefix('forum_boards').'.board_id ', 'left');
 		
 		if ($forum = $this->EE->TMPL->fetch_param('forums'))
 		{
 			if (substr($forum, 0, 4) == 'not ')
 			{
-				$forums = "AND t.forum_id NOT IN ('".implode("', '", explode('|', substr($forum, 4)))."') ";
+				$this->EE->db->where_not_in('forum_topics.forum_id', explode('|', substr($forum, 4)), FALSE);
 			}
 			else
 			{
-				$forums = "AND t.forum_id IN ('".implode("', '", explode('|', $forum))."') ";
+				$this->EE->db->where_in('forum_topics.forum_id', explode('|', $forum));
 			}
 		}
-		else
-		{
-			$forums = '';
-		}
-		
-		$boards = ($forums == '') ? '' : 'AND';
-		
+
 		if ($board = $this->EE->TMPL->fetch_param('boards'))
 		{
 			if (substr($board, 0, 4) == 'not ')
 			{
-				$boards = " t.board_id NOT IN ('".implode("', '", explode('|', substr($board, 4)))."') ";
+				$this->EE->db->where_not_in('forum_topics.board_id', explode('|', substr($board, 4)));
 			}
 			else
 			{
-				$boards = " t.board_id IN ('".implode("', '", explode('|', $board))."') ";
+				$this->EE->db->where_in('forum_topics.board_id', explode('|', $board));
 			}
 		}
 		else
 		{
-			$boards = " t.board_id = '".$this->_fetch_pref('board_id')."' ";
+			$this->EE->db->where('forum_topics.board_id', $this->_fetch_pref('board_id'));
 		}
 
-		$sql = "SELECT t.topic_id, t.author_id, t.last_post_author_id, t.title, t.body, t.topic_date, t.last_post_date, t.last_post_id, t.thread_total, t.thread_views, t.parse_smileys, 
-			f.forum_status, f.forum_permissions, f.forum_name, f.forum_text_formatting, f.forum_html_formatting, f.forum_auto_link_urls, f.forum_allow_img_urls, 
-			b.board_label, b.board_name, b.board_forum_url 
-			FROM (exp_forum_topics t LEFT JOIN exp_forums f ON t.forum_id = f.forum_id)
-			LEFT JOIN exp_forum_boards b ON t.board_id = b.board_id 
-			WHERE {$forums} {$boards}
-			ORDER BY {$order} LIMIT {$limit}";
-		
-		$query = $this->EE->db->query($sql);
+		switch ($this->EE->TMPL->fetch_param('orderby'))
+		{
+			case 'title' 		: $this->EE->db->order_by('forum_topics.title', $sort);
+				break;
+			case 'recent_post' 	:
+				$this->EE->db->order_by('last_post_date', $sort); 
+				$this->EE->db->order_by('topic_date', $sort);
+				break;
+			default				: $this->EE->db->order_by('forum_topics.topic_date', $sort);
+				break;
+		}
+
+		$query = $this->EE->db->get();
 
 		if ($query->num_rows() == 0)
 		{
