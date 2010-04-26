@@ -19,7 +19,7 @@ if ($EE_view_disable !== TRUE)
 			<li><strong><?=lang('member_id')?>:</strong> <?=$data->member_id?></li>
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'member_id='. $data->member_id?>"><?=$data->username?></a></li>
 			<li><strong><?=lang('ip_address')?>:</strong> <?=$data->ip_address?></li>
-			<li><strong><?=lang('date')?>:</strong> <?=date('Y-m-d h:m A', $data->act_date)?></li>
+			<li><strong><?=lang('date')?>:</strong> <?=date('Y-m-d h:i A', $data->act_date)?></li>
 			<li><strong><?=lang('site_search')?>:</strong> <?=$data->site_label?></li>
 			<li><strong><?=lang('action')?>:</strong> <?=$data->action?></li>
 		</ul>

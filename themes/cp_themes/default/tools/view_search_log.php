@@ -37,7 +37,7 @@ if ($EE_view_disable !== TRUE)
 					$this->table->add_row(
 										$screen_name,
 										$data->ip_address,
-										date('Y-m-d h:m A', $data->search_date),
+										date(Y-m-d h:i A', $data->search_date),
 										$data->site_label,
 										$data->search_type,
 										$data->search_terms

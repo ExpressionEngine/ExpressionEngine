@@ -83,6 +83,9 @@ class EE_Core {
 		define('AMP',			'&amp;');
 		define('PATH_DICT', 	APPPATH.'config/');
 
+		$req_source = $this->EE->input->server('HTTP_X_REQUESTED_WITH');
+		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);
+
 		$this->native_modules = array('blacklist', 'blogger_api', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 									'forum', 'gallery', 'ip_to_nation', 'jquery', 'mailinglist', 'member', 'metaweblog_api',
 									'moblog', 'pages', 'query', 'referrer', 'rss', 'search', 'simple_commerce', 'stats', 
@@ -395,10 +398,8 @@ class EE_Core {
 		
 		// Define the BASE constant containing the CP URL with the session ID
 		$s = ($this->EE->config->item('admin_session_type') != 'c') ? $this->EE->session->userdata('session_id') : 0;
-		$req_source = $this->EE->input->server('HTTP_X_REQUESTED_WITH');
 		
 		define('BASE',			SELF.'?S='.$s.'&amp;D=cp');
-		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);
 		
 		// Show the control panel home page in the event that a controller class isn't found in the URL
 		if ($this->EE->router->fetch_class() == 'ee' OR $this->EE->router->fetch_class() == '')
@@ -588,7 +589,7 @@ class EE_Core {
 
 				$match_uri = ($this->EE->uri->uri_string == '') ? '/' : '/'.trim($this->EE->uri->uri_string, '/');
 				
-				if ($pages !== FALSE && isset($pages[$this->EE->config->item('site_id')]['uris']) && ($entry_id = array_search($match_uri, $pages[$this->EE->config->item('site_id')]['uris']) !== FALSE OR $entry_id = array_search($match_uri.'/', $pages[$this->EE->config->item('site_id')]['uris']) !== FALSE))
+				if ($pages !== FALSE && isset($pages[$this->EE->config->item('site_id')]['uris']) && (($entry_id = array_search($match_uri, $pages[$this->EE->config->item('site_id')]['uris'])) !== FALSE OR ($entry_id = array_search($match_uri.'/', $pages[$this->EE->config->item('site_id')]['uris'])) !== FALSE))
 				{
 					$query = $this->EE->db->query("SELECT t.template_name, tg.group_name
 										 FROM exp_templates t, exp_template_groups tg 
