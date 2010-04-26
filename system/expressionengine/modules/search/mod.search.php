@@ -1651,7 +1651,6 @@ class Search {
 				
 		$result_page = ( ! $this->EE->TMPL->fetch_param('result_page')) ? 'search/results' : $this->EE->TMPL->fetch_param('result_page');
 		 
-		$data['id'] = 'searchform';
 		$data['class'] = $this->EE->TMPL->form_class;
 		$data['hidden_fields'] = array(
 										'ACT'					=> $this->EE->functions->fetch_action_id('Search', 'do_search'),
@@ -1690,9 +1689,13 @@ class Search {
 			$data['id'] = $this->EE->TMPL->fetch_param('id');
 			$this->EE->TMPL->log_item('Advanced Search Form:  The \'id\' parameter has been deprecated.  Please use form_id');
 		}
-		else
+		elseif ($this->EE->TMPL->form_id != '')
 		{
 			$data['id'] = $this->EE->TMPL->form_id;
+		}
+		else
+		{
+			$data['id'] = 'searchform';
 		}
 		
 		$res  = $this->EE->functions->form_declaration($data);
