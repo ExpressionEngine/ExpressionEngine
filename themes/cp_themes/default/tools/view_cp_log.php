@@ -37,7 +37,7 @@ if ($EE_view_disable !== TRUE)
 										$data->member_id,
 										'<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $data->member_id .'">'.$data->username.'</a>',
 										$data->ip_address,
-										date('Y-m-d h:m A', $data->act_date),
+										date('Y-m-d h:i A', $data->act_date),
 										$data->site_label,
 										$data->action
 									);
