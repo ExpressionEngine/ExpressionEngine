@@ -137,7 +137,7 @@ class Simple_commerce {
 							 {$addsql}
 							 AND sci.entry_id = wt.entry_id
 							 LIMIT 1");
-		
+							
 		if ($query->num_rows() == 0) return;
 		
 		$row = $query->row_array();
@@ -443,13 +443,11 @@ class Simple_commerce {
 				return FALSE;
 			}
 			
-			/** -----------------------------------
-			/**  User Valid?
-			/** ----------------------------------*/
+			//  User Valid?
+			$this->EE->db->select('screen_name');
+			$this->EE->db->where('member_id', $this->post['custom']); 
+			$query = $this->EE->db->get('exp_members');
 			
-			$query = $this->EE->db->query("SELECT screen_name FROM exp_members
-								 WHERE member_id = '".$this->EE->db->escape_str($this->post['custom'])."'");
-								 
 			if ($query->num_rows() == 0) return FALSE;
 			
 			$this->post['screen_name'] = $query->row('screen_name') ;
@@ -481,7 +479,10 @@ class Simple_commerce {
 				$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_simple_commerce_purchases
 								 WHERE txn_id = '".$this->EE->db->escape_str($this->post['txn_id'])."'");
 								 
-				if ($query->row('count')  > 0) return FALSE;
+				$this->EE->db->where('txn_id', $this->post['txn_id']); 
+				$this->EE->db->from('exp_simple_commerce_purchases');
+
+				if ($this->EE->db->count_all_results()  > 0) return FALSE;
 
 				//A regular purchase should be completed at this point
 				if (trim($this->post['payment_status']) != 'Completed')
@@ -642,7 +643,7 @@ class Simple_commerce {
 							 FROM exp_simple_commerce_items sc, exp_channel_titles wt
 							 WHERE sc.entry_id = wt.entry_id 
 							 AND sc.item_id = '".$this->EE->db->escape_str($item_id)."'");
-
+							
 		if ($query->num_rows() != 1)
     	{
     		return;
@@ -722,17 +723,22 @@ class Simple_commerce {
 			
 			if ( ! is_numeric($qnty) OR $qnty == 1)
 			{
-				$this->EE->db->query($this->EE->db->insert_string('exp_simple_commerce_purchases', $data));
-				$this->EE->db->query("UPDATE exp_simple_commerce_items SET item_purchases = item_purchases + 1 WHERE item_id = '".$this->EE->db->escape_str($item_id)."'");
+				$this->EE->db->insert('exp_simple_commerce_purchases', $data);
+
+				$this->EE->db->where('item_id', $item_id);
+				$this->EE->db->set('item_purchases', "item_purchases + 1", FALSE);
+				$this->EE->db->update('exp_simple_commerce_items'); 				
 			}
 			else
 			{
 				for($i=0;  $i < $qnty; ++$i)
 				{
-					$this->EE->db->query($this->EE->db->insert_string('exp_simple_commerce_purchases', $data));
+					$this->EE->db->insert('exp_simple_commerce_purchases', $data); 	
 				}
 				
-				$this->EE->db->query("UPDATE exp_simple_commerce_items SET item_purchases = item_purchases + {$qnty} WHERE item_id = '".$this->EE->db->escape_str($item_id)."'");
+				$this->EE->db->where('item_id', $item_id);
+				$this->EE->db->set('item_purchases', "item_purchases + {$qnty}", FALSE);
+				$this->EE->db->update('exp_simple_commerce_items'); 				
 			}
 		}  // end non-sub entry
 		
@@ -740,9 +746,9 @@ class Simple_commerce {
 		//  New Member Group
 		if ($new_member_group != '' && $new_member_group != 0)
 		{
-			$this->EE->db->query($this->EE->db->update_string('exp_members', 
-											  array('group_id' => $new_member_group), 
-											  "member_id = '".$this->EE->db->escape_str($this->post['custom'])."' AND group_id != '1'"));
+			$this->EE->db->where('member_id', $this->post['custom']);
+			$this->EE->db->where('group_id !=', 1);
+			$this->EE->db->update('exp_members', array('group_id' => $new_member_group)); 
 		}
 			
 
@@ -752,13 +758,15 @@ class Simple_commerce {
 			
 		if ($customer_email_template != '' && $customer_email_template != 0)
 		{
-			$result = $this->EE->db->query("SELECT email FROM exp_members WHERE member_id = '".$this->EE->db->escape_str($this->post['custom'])."'");
-			$row = $result->row();
-			$to = $row->email;
+			$this->EE->db->select('email');
+			$result = $this->EE->db->get_where('exp_members', array('member_id' => $this->post['custom']));
+
+			$cust_row = $result->row();
+			$to = $cust_row->email;
 								
-			$result = $this->EE->db->query("SELECT email_subject, email_body 
-									 FROM exp_simple_commerce_emails WHERE email_id = '".$this->EE->db->escape_str($customer_email_template)."'");
-				
+			$this->EE->db->select('email_subject, email_body');
+			$result = $this->EE->db->get_where('exp_simple_commerce_emails', array('email_id' => $customer_email_template));
+						
 			if ($result->num_rows() > 0)
 			{
 				$email = $result->row();
@@ -785,9 +793,9 @@ class Simple_commerce {
 			
 		if ($row->admin_email_address != '' && $admin_email_template != '' && $admin_email_template != 0)
 		{	
-		
-			$result = $this->EE->db->query("SELECT email_subject, email_body 
-									  FROM exp_simple_commerce_emails WHERE email_id = '".$this->EE->db->escape_str($admin_email_template)."'");
+			$this->EE->db->select('email_subject, email_body');
+			$result = $this->EE->db->get_where('exp_simple_commerce_emails', array('email_id' => $admin_email_template));									
+									
 				
 			if ($result->num_rows() > 0)
 			{
@@ -838,15 +846,11 @@ class Simple_commerce {
 
     function end_subscription()
     {
-    	
-		/** --------------------------------------------
-        /**  Check for Subscription
-        /** --------------------------------------------*/
-        
-        $query = $this->EE->db->query("SELECT purchase_id, item_id
-        					 FROM exp_simple_commerce_purchases
-        					 WHERE member_id = '".$this->EE->db->escape_str($this->post['custom'])."'
-        					 AND paypal_subscriber_id = '".$this->EE->db->escape_str($this->post['subscr_id'])."'");
+        //  Check for Subscription
+		$this->EE->db->select('purchase_id, item_id');
+		$this->EE->db->where('member_id', $this->post['custom']);
+		$this->EE->db->where('paypal_subscriber_id', $this->post['subscr_id']);
+		$query = $this->EE->db->get('exp_simple_commerce_purchases');
 
 // what if multiple subscriptions?  item_number viable??? -rob1
 // http://articles.techrepublic.com.com/5100-10878_11-5331883.html
@@ -856,16 +860,16 @@ class Simple_commerce {
         {
         	return FALSE;
         }
-        
-	
+ 	
 		$data = array('subscription_end_date' => $this->EE->localize->now);
 		
-		$this->EE->db->query($this->EE->db->update_string('exp_simple_commerce_purchases', $data, "purchase_id = '".$this->EE->db->escape_str($query->row('purchase_id'))."'"));
+		$this->EE->db->where('purchase_id', $query->row('purchase_id'));
+		$this->EE->db->update('exp_simple_commerce_purchases', $data); 		
 		
-		$this->EE->db->query("UPDATE exp_simple_commerce_items 
-					SET current_subscriptions = current_subscriptions - 1 
-					WHERE item_id = '".$this->EE->db->escape_str($query->row('item_id'))."'");
-					
+		$this->EE->db->where('item_id', $query->row('item_id'));
+		$this->EE->db->set('current_subscriptions', "current_subscriptions - 1 ", FALSE);
+		$this->EE->db->update('exp_simple_commerce_items'); 
+
 		return TRUE;
     }
     /* END end_subscription() */
@@ -908,11 +912,8 @@ class Simple_commerce {
         	return FALSE;
         }
 
-        
-		/** --------------------------------------------
-        /**  Insert Subscription
-        /** --------------------------------------------*/
-	
+        //  Insert Subscription
+
 		$data = array('txn_id' 					=> $this->post['txn_id'],
 					  'member_id' 				=> $this->post['custom'],
 					  'item_id'					=> $row->item_id,
@@ -921,9 +922,12 @@ class Simple_commerce {
 					  'paypal_details'			=> serialize($this->post),
 					  'paypal_subscriber_id'	=> $this->post['subscr_id']);
 		
-		$this->EE->db->query($this->EE->db->insert_string('exp_simple_commerce_purchases', $data));
-		$this->EE->db->query("UPDATE exp_simple_commerce_items SET item_purchases = item_purchases + 1 WHERE item_id = '".$this->EE->db->escape_str($row->item_id)."'");
-		$this->EE->db->query("UPDATE exp_simple_commerce_items SET current_subscriptions = current_subscriptions + 1 WHERE item_id = '".$this->EE->db->escape_str($row->item_id)."'");
+		$this->EE->db->insert('exp_simple_commerce_purchases', $data);
+		
+		$this->EE->db->where('item_id', $row->item_id);
+		$this->EE->db->set('item_purchases', "item_purchases + 1", FALSE);
+		$this->EE->db->set('current_subscriptions', "current_subscriptions + 1", FALSE);		
+		$this->EE->db->update('exp_simple_commerce_items');		
     
     	return TRUE;
     } 

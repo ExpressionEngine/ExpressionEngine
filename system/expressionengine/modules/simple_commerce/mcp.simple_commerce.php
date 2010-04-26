@@ -307,6 +307,7 @@ class Simple_commerce_mcp {
 		if ($new == 'y')
 		{
 			$type = (count($safe_ids) == 1) ? 'add_item' : 'add_items';
+			$vars['type'] = $type;
 			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=adding_items';
 
 			foreach($safe_ids as $id => $title)
@@ -334,6 +335,7 @@ class Simple_commerce_mcp {
 		else
 		{
 			$type = (count($safe_ids) == 1) ? 'update_item' : 'update_items';
+			$vars['type'] = $type;
 			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=updating_items';
 
 

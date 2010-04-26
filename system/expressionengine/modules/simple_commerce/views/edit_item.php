@@ -107,5 +107,5 @@ foreach ($items as $key => $val):
 <div class='hidden'><?=form_hidden('entry_id['.$key.']', $val['entry_id'])?></div>
 
 <?php endforeach; ?>
-	<?=form_submit(array('name' => 'submit', 'value' => lang('add_item'), 'class' => 'submit'))?>
+	<?=form_submit(array('name' => 'submit', 'value' => lang($type), 'class' => 'submit'))?>
 <?=form_close()?>

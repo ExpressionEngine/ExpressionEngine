@@ -282,7 +282,7 @@ class Search_model extends CI_Model {
 			$pageurl .= AMP.'channel_id='.$data['channel_id'];
 		}
 
-		if (is_array($data['search_channels']))
+		if (is_array($data['search_channels']) && count($data['search_channels']) > 0)
 		{
 /////////			$where_clause .= " AND exp_channel_titles.channel_id = ".$data['channel_id'];
 					$where_clause .= " AND exp_channel_titles.channel_id IN (".implode(',' , $data['search_channels']).")";

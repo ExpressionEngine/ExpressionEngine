@@ -374,10 +374,15 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			"fnServerData": fnDataTablesPipeline
 	} );
 
-		$("#member_name").keyup( function () {
+		$("#member_name").bind("keyup blur paste", function (e) {
 		/* Filter on the column (the index) of this element */
-		oTable.fnDraw();
-		} );
+		alert("a");
+    setTimeout(function(){oTable.fnDraw();}, 1);
+});
+	
+		
+		
+		
 		
 		$("select#group_id").change(function () {
 				oTable.fnDraw();
