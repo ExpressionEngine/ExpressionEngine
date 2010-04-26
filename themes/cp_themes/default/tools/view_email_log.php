@@ -37,7 +37,7 @@ if ($EE_view_disable !== TRUE)
 									'<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_email'.AMP.'id='.$data->cache_id.'">'.$data->subject.'</a>',
 									'<a href="'.BASE.AMP.'C=myaccount'.AMP.'member_id='. $data->member_id .'">'.$data->member_name.'</a>',
 									$data->recipient_name,
-									date("Y-m-d h:m A", $data->cache_date),
+									date("Y-m-d h:i A", $data->cache_date),
 									form_checkbox(array('id'=>'delete_box_'.$data->cache_id,'name'=>'toggle[]','value'=>$data->cache_id, 'class'=>'toggle_email', 'checked'=>FALSE))
 								);					
 			}

@@ -311,20 +311,20 @@ class Channel_standalone extends Channel {
 
 		// Fetch Channel Preferences
 		$this->EE->db->where('channel_id', $channel_id);
-		$query = $this->EE->db->get('channels');
-		
-		foreach($query->row_array() as $key => $val)
-		{
-			$$key = $val;
-		}
+		$channel_q = $this->EE->db->get('channels');
+		// var_dump($query->result_array()); exit;
+		// foreach($query->row_array() as $key => $val)
+		// {
+		// 	$$key = $val;
+		// }
 	
 		if ( ! isset($_POST['channel_id']))
 		{
-			$title		= $default_entry_title;
-			$url_title	= $url_title_prefix;
+			$title		= $channel_q->row('default_entry_title');
+			$url_title	= $channel_q->row('url_title_prefix');
 			
-			$this->default_entry_title 	= $default_entry_title;
-			$this->url_title_prefix		= $url_title_prefix;
+			$this->default_entry_title 	= $channel_q->row('default_entry_title');
+			$this->url_title_prefix		= $channel_q->row('url_title_prefix');
 		}
 		
 		// Return 'no cache' version of form
@@ -345,7 +345,7 @@ class Channel_standalone extends Channel {
 			return $nc;
 		}
 		
-		$default_entry_title = form_prep($default_entry_title);
+		$default_entry_title = form_prep($channel_q->row('default_entry_title'));
 		
 		$action_id = $this->EE->functions->fetch_action_id('Channel', 'filemanager_endpoint');
 		$endpoint = 'ACT='.$action_id;
@@ -447,7 +447,7 @@ class Channel_standalone extends Channel {
 		//	Hidden Configuration Variable - publish_page_title_focus => Set focus to the tile? (y/n)		
 		$addt_js = array(
 				'publish'		=> array(
-							'show_write_mode' 	=> (($show_button_cluster == 'y') ? TRUE : FALSE),
+							'show_write_mode' 	=> (($channel_q->row('show_button_cluster') == 'y') ? TRUE : FALSE),
 							'title_focus'		=> (($which != 'edit' && $this->EE->config->item('publish_page_title_focus') !== 'n') ? TRUE : FALSE),
 							'smileys'			=> ($this->_installed_mods['smileys']) ? TRUE : FALSE),
 							
@@ -487,7 +487,7 @@ class Channel_standalone extends Channel {
 			$status_id = strtolower($status_id);			
 		}
 
-		$this->EE->db->where('group_id', $status_group);
+		$this->EE->db->where('group_id', $channel_q->row('status_group'));
 		$this->EE->db->order_by('status_order');
 		$status_query = $this->EE->db->get('statuses');
 
@@ -603,19 +603,38 @@ class Channel_standalone extends Channel {
 			}
 		}
 
-		$this->EE->db->where('group_id', $field_group);
+		$this->EE->db->where('group_id', $channel_q->row('field_group'));
 		$this->EE->db->order_by('field_order');
-		$query = $this->EE->db->get('channel_fields');
+		$cf_query = $this->EE->db->get('channel_fields');
 
 		$fields = array();
 		$date_fields = array();
 		$pair_fields = array();
 		$pfield_chunk = array();
 		$cond = array();
+		
+		if ($which == 'preview')
+		{ 
+			foreach ($cf_query->result_array() as $row)
+			{
+				$fields['field_id_'.$row['field_id']] = array($row['field_name'], 	
+															$row['field_type']);
+															$cond[$row['field_name']] = '';
+				if ($row['field_type'] == 'date')
+				{
+					$date_fields[$row['field_name']] = $row['field_id'];
+				}
+				elseif (in_array($row['field_type'], array('file', 'multi_select', 'checkboxes')))
+				{
+					$pair_fields[$row['field_name']] = array($row['field_type'], $row['field_id']);
+				}
+			}
+		}
 
 		if (preg_match("#".LD."preview".RD."(.+?)".LD.'/'."preview".RD."#s", $tagdata, $match))
 		{
-			$tagdata = $this->_parse_preview($which, $match, $tagdata);
+			$tagdata = $this->_parse_preview($which, $match, $tagdata, 
+											 $pair_fields, $date_fields, $fields, $channel_q);
 			// This ends preview parsing- 
 			// it's the only spot we need to parse custom fields that are funky.
 		}
@@ -633,14 +652,16 @@ class Channel_standalone extends Channel {
 			
 			if ($custom_fields != '')
 			{
-				$tagdata = $this->_parse_custom_fields($custom_fields, $query, $which, $tagdata, $directories);
+				$tagdata = $this->_parse_custom_fields($custom_fields, $cf_query, 
+														$which, $tagdata, $directories);
 			}
 		}
 		
 		// Categories
 		if (preg_match("#".LD."category_menu".RD."(.+?)".LD.'/'."category_menu".RD."#s", $tagdata, $match))
 		{
-			$this->_category_tree_form($cat_group, $which, $deft_category, $cat_list);
+			$this->_category_tree_form($channel_q->row('cat_group'), $which, 
+										$channel_q->row('deft_category'), $cat_list);
 
 			if (count($this->categories) == 0)
 			{
@@ -703,14 +724,14 @@ class Channel_standalone extends Channel {
 				$deft_status = $_POST['status'];				
 			}
 
-			if ($deft_status == '')
+			if ($channel_q->row('deft_status') == '')
 			{
 				$deft_status = 'open';				
 			}
 
 			if ($status == '')
 			{
-				$status = $deft_status;	
+				$status = $channel_q->row('deft_status');
 			}
 
 			/** --------------------------------
@@ -723,11 +744,11 @@ class Channel_standalone extends Channel {
 			{
 				$this->EE->db->select('status_id');
 				$this->EE->db->where('member_group', $this->EE->session->userdata('group_id'));
-				$query = $this->EE->db->get('status_no_access');
+				$status_na_q = $this->EE->db->get('status_no_access');
 				
-				if ($query->num_rows() > 0)
+				if ($status_na_q->num_rows() > 0)
 				{
-					foreach ($query->result_array() as $row)
+					foreach ($status_na_q->result_array() as $row)
 					{
 						$no_status_access[] = $row['status_id'];
 					}
@@ -807,11 +828,12 @@ class Channel_standalone extends Channel {
 			{
 				if ($which == 'preview')
 				{
-					$checked = ( ! isset($_POST['allow_comments']) OR $comment_system_enabled != 'y') ? '' : "checked='checked'";
+					$checked = ( ! isset($_POST['allow_comments']) OR $channel_q->row('comment_system_enabled') != 'y') ? '' : "checked='checked'";
 				}
 				else
 				{
-					$checked = ($deft_comments == 'n' OR $comment_system_enabled != 'y') ? '' : "checked='checked'";
+					$checked = ($channel_q->row('deft_comments') == 'n' OR
+					 		$channel_q->row('comment_system_enabled') != 'y') ? '' : "checked='checked'";
 				}
 
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $checked, $tagdata);
@@ -894,9 +916,9 @@ class Channel_standalone extends Channel {
 				}
 				else
 				{
-					if ($comment_expiration > 0)
+					if ($channel_q->row('comment_expiration') > 0)
 					{
-						$comment_expiration_date = $comment_expiration * 86400;
+						$comment_expiration_date = $channel_q->row('comment_expiration') * 86400;
 						$comment_expiration_date = $comment_expiration_date + $this->EE->localize->now;
 						$comment_expiration_date = $this->EE->localize->set_human_time($comment_expiration_date);
 					}
@@ -1045,16 +1067,16 @@ class Channel_standalone extends Channel {
 		$this->EE->db->where_in('group_id', $group_ids);
 		$this->EE->db->order_by('parent_id');
 		$this->EE->db->order_by('cat_order');
-		$query = $this->EE->db->get('categories');
+		$kitty_query = $this->EE->db->get('categories');
 
-		if ($query->num_rows() == 0)
+		if ($kitty_query->num_rows() == 0)
 		{
 			return FALSE;
 		}
 
 		// Assign the query result to a multi-dimensional array
 
-		foreach($query->result_array() as $row)
+		foreach($kitty_query->result_array() as $row)
 		{
 			$cat_array[$row['cat_id']]  = array($row['parent_id'], $row['cat_name']);
 		}
@@ -1191,24 +1213,24 @@ class Channel_standalone extends Channel {
 		$this->EE->db->select('COUNT(*) as count');
 		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
 		$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
-		$query = $this->EE->db->get('ping_servers');
+		$pingq = $this->EE->db->get('ping_servers');
 		
-		$member_id = ($query->row('count')  == 0) ? 0 : $this->EE->session->userdata('member_id');
+		$member_id = ($pingq->row('count')  == 0) ? 0 : $this->EE->session->userdata('member_id');
 
 		$this->EE->db->select('id, server_name, is_default');
 		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
 		$this->EE->db->where('member_id', $member_id);
 		$this->EE->db->order_by('server_order');
-		$query = $this->EE->db->get('ping_servers');
+		$pingq = $this->EE->db->get('ping_servers');
 
-		if ($query->num_rows() == 0)
+		if ($pingq->num_rows() == 0)
 		{
 			return FALSE;
 		}
 
 		$ping_array = array();
 
-		foreach($query->result_array() as $row)
+		foreach($pingq->result_array() as $row)
 		{
 			if (isset($_POST['preview']))
 			{
@@ -1299,8 +1321,8 @@ class Channel_standalone extends Channel {
 	 */
 	function _setup_js($endpoint, $markItUp, $markItUp_writemode, $addt_js)
 	{
-		$include_jquery = ($this->EE->TMPL->fetch_param('include_jquery') == 'n') ? FALSE : TRUE;
-		
+		$include_jquery = ($this->EE->TMPL->fetch_param('include_jquery') == 'no') ? FALSE : TRUE;
+
 		$this->EE->load->library('filemanager');
 		
 		$js = $this->EE->filemanager->frontend_filebrowser($endpoint, $include_jquery);
@@ -1318,297 +1340,306 @@ class Channel_standalone extends Channel {
 	
 	// --------------------------------------------------------------------	
 	
-	function _parse_preview($which, $match, $tagdata)
+	/**
+	 * Parse Preview
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 */
+	function _parse_preview($which, $match, $tagdata, $pair_fields, $date_fields, $fields, $channel_q)
 	{
 		if ($which != 'preview')
 		{
 			$tagdata = str_replace ($match['0'], '', $tagdata);
+			return $tagdata;
 		}
-		else
-		{
-			// Snag out the possible pair chunks (file, multiselect and checkboxes)
-			foreach ($pair_fields as $field_name => $field_info)
-			{
-				if (($end = strpos($match['1'], LD.'/'.$field_name.RD)) !== FALSE)
-				{
-					// @confirm FIX IT! this is ugly
-					if (preg_match_all("/".LD."{$field_name}(.*?)".RD."(.*?)".LD.'\/'.$field_name.RD."/s", $match['1'], $pmatches))
-					{
-						for ($j = 0; $j < count($pmatches[0]); $j++)
-						{
-							$chunk = $pmatches[0][$j];
-							$params = $pmatches[1][$j];
-							$inner = $pmatches[2][$j];
-							
-							// We might've sandwiched a single tag - no good, check again (:sigh:)
-							if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}(.*?)".RD."/s", $chunk, $pmatch))
-							{
-								// Let's start at the end
-								$idx = count($pmatch[0]) - 1;
-								$tag = $pmatch[0][$idx];
-								
-								// Cut the chunk at the last opening tag (PHP5 could do this with strrpos :-( )
-								while (strpos($chunk, $tag, 1) !== FALSE)
-								{
-									$chunk = substr($chunk, 1);
-									$chunk = strstr($chunk, LD.$field_name);
-									$inner = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
-								}
-							}
 
-							$pfield_chunk['field_id_'.$field_info['1']][] = array($inner,
-								 										$this->EE->functions->assign_parameters($params), $chunk);
+		// Snag out the possible pair chunks (file, multiselect and checkboxes)
+		foreach ($pair_fields as $field_name => $field_info)
+		{
+			if (($end = strpos($match['1'], LD.'/'.$field_name.RD)) !== FALSE)
+			{
+				// @confirm FIX IT! this is ugly
+				if (preg_match_all("/".LD."{$field_name}(.*?)".RD."(.*?)".LD.'\/'.$field_name.RD."/s", $match['1'], $pmatches))
+				{
+					for ($j = 0; $j < count($pmatches[0]); $j++)
+					{
+						$chunk = $pmatches[0][$j];
+						$params = $pmatches[1][$j];
+						$inner = $pmatches[2][$j];
+						
+						// We might've sandwiched a single tag - no good, check again (:sigh:)
+						if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}(.*?)".RD."/s", $chunk, $pmatch))
+						{
+							// Let's start at the end
+							$idx = count($pmatch[0]) - 1;
+							$tag = $pmatch[0][$idx];
+							
+							// Cut the chunk at the last opening tag (PHP5 could do this with strrpos :-( )
+							while (strpos($chunk, $tag, 1) !== FALSE)
+							{
+								$chunk = substr($chunk, 1);
+								$chunk = strstr($chunk, LD.$field_name);
+								$inner = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
+							}
 						}
+
+						$pfield_chunk['field_id_'.$field_info['1']][] = array($inner,
+							 										$this->EE->functions->assign_parameters($params), $chunk);
 					}
 				}
 			}
+		}
 
-			/** ----------------------------------------
-			/**  Instantiate Typography class
-			/** ----------------------------------------*/
+		/** ----------------------------------------
+		/**  Instantiate Typography class
+		/** ----------------------------------------*/
 
-			$this->EE->load->library('typography');
-			$this->EE->typography->initialize();
+		$this->EE->load->library('typography');
+		$this->EE->typography->initialize();
 
-			$this->EE->typography->convert_curly = FALSE;
-			$file_dirs = $this->EE->functions->fetch_file_paths();
+		$this->EE->typography->convert_curly = FALSE;
+		$file_dirs = $this->EE->functions->fetch_file_paths();
 
-			$match['1'] = str_replace(LD.'title'.RD, stripslashes($this->EE->input->post('title')), $match['1']);
+		$match['1'] = str_replace(LD.'title'.RD, stripslashes($this->EE->input->post('title')), $match['1']);
 
-			// We need to grab each
-			$str = '';
+		// We need to grab each
+		$str = '';
 
-			foreach($_POST as $key => $val)
+		foreach($_POST as $key => $val)
+		{
+			if (strncmp($key, 'field_id', 8) == 0)
 			{
-				if (strncmp($key, 'field_id', 8) == 0)
+				// do pair variables
+				if (isset($pfield_chunk[$key]))
 				{
-					// do pair variables
-					if (isset($pfield_chunk[$key]))
-					{
-						
-						$expl = explode('field_id_', $key);
-						$txt_fmt = ( ! isset($_POST['field_ft_'.$expl['1']])) ? 'xhtml' : $_POST['field_ft_'.$expl['1']];
-												
-						// Blast through all the chunks
-						foreach($pfield_chunk[$key] as $chk_data)
-						{
-							$tpl_chunk = '';
-							$limit = FALSE;
-							
-							// Limit Parameter
-							if (is_array($chk_data[1]) AND isset($chk_data[1]['limit']))
-							{
-								$limit = $chk_data[1]['limit'];
-							}
-
-							foreach($val as $k => $item)
-							{
-								if ( ! $limit OR $k < $limit)
-								{
-									$vars['item'] = $item;
-									$vars['count'] = $k + 1;	// {count} parameter
-
-									$tmp = $this->EE->functions->prep_conditionals($chk_data[0], $vars);
-									$tpl_chunk .= $this->EE->functions->var_swap($tmp, $vars);
-								}
-								else
-								{
-									break;
-								}
-							}
-
-							// Everybody loves backspace
-							if (is_array($chk_data[1]) AND isset($chk_data[1]['backspace']))
-							{
-								$tpl_chunk = substr($tpl_chunk, 0, - $chk_data[1]['backspace']);
-							}
-
-						}
-						
-						// Typography!
-						$tpl_chunk = $this->EE->typography->parse_type(
-											$this->EE->functions->encode_ee_tags($tpl_chunk),
-											array(
-															'text_format'   => $txt_fmt,
-															'html_format'   => $channel_html_formatting,
-															'auto_links'    => $channel_allow_img_urls,
-															'allow_img_url' => $channel_auto_link_urls
-												  )
-							);
-
-						// Replace the chunk
-						if (isset($fields[$key]['0']))
-						{
-							$match['1'] = str_replace($chk_data[2], $tpl_chunk, $match['1']);
-						}
-					}
-
-					// end pair variables						
 					
 					$expl = explode('field_id_', $key);
-					$temp = '';
-					if (! is_numeric($expl['1'])) continue;
-
-					if (in_array($expl['1'], $date_fields))
+					$txt_fmt = ( ! isset($_POST['field_ft_'.$expl['1']])) ? 'xhtml' : $_POST['field_ft_'.$expl['1']];
+											
+					// Blast through all the chunks
+					foreach($pfield_chunk[$key] as $chk_data)
 					{
-						$temp_date = $this->EE->localize->convert_human_date_to_gmt($_POST['field_id_'.$expl['1']]);
-						$temp = $_POST['field_id_'.$expl['1']];
-						$cond[$fields['field_id_'.$expl['1']]['0']] =  $temp_date;
-					}
-					elseif ($fields['field_id_'.$expl['1']]['1'] == 'file')
-					{
-						$file_info['path'] = '';
-						$file_info['extension'] = '';
-						$file_info['filename'] = '';
-						$full_path = '';
-						$entry = '';
-
-						if ($val != '')
-						{
-							$parts = explode('.', $val);
-							$file_info['extension'] = array_pop($parts);
-							$file_info['filename'] = implode('.', $parts);
-
-							if (isset($_POST['field_id_'.$expl['1'].'_directory']) && isset($_POST['field_id_'.$expl['1']]) && $_POST['field_id_'.$expl['1']] != '')
-							{
-								$file_info['path'] = $file_dirs[$_POST['field_id_'.$expl['1'].'_directory']];
-							}
-
-							$full_path = $file_info['path'].$file_info['filename'].'.'.$file_info['extension'];
-						}
+						$tpl_chunk = '';
+						$limit = FALSE;
 						
-						if (preg_match_all("/".LD.$fields['field_id_'.$expl['1']]['0']."(.*?)".RD."/s", $match['1'], $pmatches))
+						// Limit Parameter
+						if (is_array($chk_data[1]) AND isset($chk_data[1]['limit']))
 						{
-							foreach ($pmatches['0'] as $id => $tag)
+							$limit = $chk_data[1]['limit'];
+						}
+
+						foreach($val as $k => $item)
+						{
+							if ( ! $limit OR $k < $limit)
 							{
-								if ($pmatches['1'][$id] == '')
+								$vars['item'] = $item;
+								$vars['count'] = $k + 1;	// {count} parameter
+
+								$tmp = $this->EE->functions->prep_conditionals($chk_data[0], $vars);
+								$tpl_chunk .= $this->EE->functions->var_swap($tmp, $vars);
+							}
+							else
+							{
+								break;
+							}
+						}
+
+						// Everybody loves backspace
+						if (is_array($chk_data[1]) AND isset($chk_data[1]['backspace']))
+						{
+							$tpl_chunk = substr($tpl_chunk, 0, - $chk_data[1]['backspace']);
+						}
+
+					}
+					
+					// Typography!
+					$tpl_chunk = $this->EE->typography->parse_type(
+										$this->EE->functions->encode_ee_tags($tpl_chunk),
+								 		array(
+											'text_format'   => $txt_fmt,
+											'html_format'   => $channel_q->row('channel_html_formatting'),
+											'auto_links'    => $channel_q->row('channel_allow_img_urls'),
+											'allow_img_url' => $channel_q->row('channel_auto_link_urls')
+									   		)
+						);
+
+					// Replace the chunk
+					if (isset($fields[$key]['0']))
+					{
+						$match['1'] = str_replace($chk_data[2], $tpl_chunk, $match['1']);
+					}
+				}
+
+				// end pair variables						
+				
+				$expl = explode('field_id_', $key);
+				$temp = '';
+				if (! is_numeric($expl['1'])) continue;
+
+				if (in_array($expl['1'], $date_fields))
+				{
+					$temp_date = $this->EE->localize->convert_human_date_to_gmt($_POST['field_id_'.$expl['1']]);
+					$temp = $_POST['field_id_'.$expl['1']];
+					$cond[$fields['field_id_'.$expl['1']]['0']] =  $temp_date;
+				}
+				elseif ($fields['field_id_'.$expl['1']]['1'] == 'file')
+				{
+					$file_info['path'] = '';
+					$file_info['extension'] = '';
+					$file_info['filename'] = '';
+					$full_path = '';
+					$entry = '';
+
+					if ($val != '')
+					{
+						$parts = explode('.', $val);
+						$file_info['extension'] = array_pop($parts);
+						$file_info['filename'] = implode('.', $parts);
+
+						if (isset($_POST['field_id_'.$expl['1'].'_directory']) && isset($_POST['field_id_'.$expl['1']]) && $_POST['field_id_'.$expl['1']] != '')
+						{
+							$file_info['path'] = $file_dirs[$_POST['field_id_'.$expl['1'].'_directory']];
+						}
+
+						$full_path = $file_info['path'].$file_info['filename'].'.'.$file_info['extension'];
+					}
+					
+					if (preg_match_all("/".LD.$fields['field_id_'.$expl['1']]['0']."(.*?)".RD."/s", $match['1'], $pmatches))
+					{
+						foreach ($pmatches['0'] as $id => $tag)
+						{
+							if ($pmatches['1'][$id] == '')
+							{
+								$entry = $full_path;
+							}
+							else
+							{
+								$params = $this->EE->functions->assign_parameters($pmatches['1'][$id]);
+								
+								if (isset($params['wrap']) && $params['wrap'] == 'link')
+								{
+									$entry = '<a href="'.$full_path.'">'.$file_info['filename'].'</a>';
+								}
+								elseif (isset($params['wrap']) && $params['wrap'] == 'image')
+								{
+									$entry = '<img src="'.$full_path.'" alt="'.$file_info['filename'].'" />';
+								}
+								else
 								{
 									$entry = $full_path;
 								}
-								else
+							}
+								
+							$match['1'] = str_replace($pmatches['0'][$id], $entry, $match['1']);
+						}
+					}
+					
+					$str .= '<p>'.$full_path.'</p>';
+				}
+				elseif (in_array($fields['field_id_'.$expl['1']]['1'], array('multi_select', 'checkboxes')))
+				{
+					$entry = implode(', ', $val);
+						
+					$cond[$fields['field_id_'.$expl['1']]['0']] =  ( ! isset($_POST['field_id_'.$expl['1']])) ? '' : $entry;
+
+					$txt_fmt = ( ! isset($_POST['field_ft_'.$expl['1']])) ? 'xhtml' : $_POST['field_ft_'.$expl['1']];
+						
+					if (preg_match_all("/".LD.$fields['field_id_'.$expl['1']]['0']."(.*?)".RD."/s", $match['1'], $pmatches))
+					{
+						foreach ($pmatches['0'] as $id => $tag)
+						{
+							if ($pmatches['1'][$id] == '')
+							{
+								
+							}
+							else
+							{
+								$params = $this->EE->functions->assign_parameters($pmatches['1'][$id]);
+
+								if (isset($params['limit']))
 								{
-									$params = $this->EE->functions->assign_parameters($pmatches['1'][$id]);
-									
-									if (isset($params['wrap']) && $params['wrap'] == 'link')
+									$limit = intval($params['limit']);
+					
+									if (count($val) > $limit)
 									{
-										$entry = '<a href="'.$full_path.'">'.$file_info['filename'].'</a>';
-									}
-									elseif (isset($params['wrap']) && $params['wrap'] == 'image')
-									{
-										$entry = '<img src="'.$full_path.'" alt="'.$file_info['filename'].'" />';
-									}
-									else
-									{
-										$entry = $full_path;
+										$val = array_slice($val, 0, $limit);
 									}
 								}
-									
-								$match['1'] = str_replace($pmatches['0'][$id], $entry, $match['1']);
-							}
-						}
+
+								if (isset($params['markup']) && ($params['markup'] == 'ol' OR $params['markup'] == 'ul'))
+								{
+									$entry = '<'.$params['markup'].'>';
 						
-						$str .= '<p>'.$full_path.'</p>';
+									foreach($val as $dv)
+									{
+										$entry .= '<li>';
+										$entry .= $dv;
+										$entry .= '</li>';
+									}
+
+									$entry .= '</'.$params['markup'].'>';
+								}
+							}
+
+							$entry = $this->EE->typography->parse_type(
+									$this->EE->functions->encode_ee_tags($entry),
+								 		array(
+											'text_format'   => $txt_fmt,
+											'html_format'   => $channel_q->row('channel_html_formatting'),
+											'auto_links'    => $channel_q->row('channel_allow_img_urls'),
+											'allow_img_url' => $channel_q->row('channel_auto_link_urls')
+									   		)
+								);
+
+							$match['1'] = str_replace($pmatches['0'][$id], $entry, $match['1']);
+						}
 					}
-					elseif (in_array($fields['field_id_'.$expl['1']]['1'], array('multi_select', 'checkboxes')))
+
+					$str .= '<p>'.$entry.'</p>';
+				}
+				elseif (! is_array($val))
+				{
+					// @todo something hinky w/needing conditional check here ditto $temp blank bit
+					//echo $val;
+					if (isset($fields['field_id_'.$expl['1']]))
 					{
-						$entry = implode(', ', $val);
-							
-						$cond[$fields['field_id_'.$expl['1']]['0']] =  ( ! isset($_POST['field_id_'.$expl['1']])) ? '' : $entry;
+					
+						$cond[$fields['field_id_'.$expl['1']]['0']] =  ( ! isset($_POST['field_id_'.$expl['1']])) ? '' : $_POST['field_id_'.$expl['1']];
 
 						$txt_fmt = ( ! isset($_POST['field_ft_'.$expl['1']])) ? 'xhtml' : $_POST['field_ft_'.$expl['1']];
-							
-						if (preg_match_all("/".LD.$fields['field_id_'.$expl['1']]['0']."(.*?)".RD."/s", $match['1'], $pmatches))
-						{
-							foreach ($pmatches['0'] as $id => $tag)
-							{
-								if ($pmatches['1'][$id] == '')
-								{
-									
-								}
-								else
-								{
-									$params = $this->EE->functions->assign_parameters($pmatches['1'][$id]);
 
-									if (isset($params['limit']))
-									{
-										$limit = intval($params['limit']);
-						
-										if (count($val) > $limit)
-										{
-											$val = array_slice($val, 0, $limit);
-										}
-									}
-
-									if (isset($params['markup']) && ($params['markup'] == 'ol' OR $params['markup'] == 'ul'))
-									{
-										$entry = '<'.$params['markup'].'>';
-							
-										foreach($val as $dv)
-										{
-											$entry .= '<li>';
-											$entry .= $dv;
-											$entry .= '</li>';
-										}
-
-										$entry .= '</'.$params['markup'].'>';
-									}
-								}
-
-								$entry = $this->EE->typography->parse_type(
-										$this->EE->functions->encode_ee_tags($entry),
-										array(
+						$temp = $this->EE->typography->parse_type( stripslashes($val),
+									 		array(
 												'text_format'   => $txt_fmt,
-												'html_format'   => $channel_html_formatting,
-												'auto_links'    => $channel_allow_img_urls,
-												'allow_img_url' => $channel_auto_link_urls
-										)
-									);
-
-								$match['1'] = str_replace($pmatches['0'][$id], $entry, $match['1']);
-							}
-						}
-
-						$str .= '<p>'.$entry.'</p>';
+												'html_format'   => $channel_q->row('channel_html_formatting'),
+												'auto_links'    => $channel_q->row('channel_allow_img_urls'),
+												'allow_img_url' => $channel_q->row('channel_auto_link_urls')
+										   		)
+										);
 					}
-					elseif (! is_array($val))
-					{
-						// @todo something hinky w/needing conditional check here ditto $temp blank bit
-						//echo $val;
-						if (isset($fields['field_id_'.$expl['1']]))
-						{
-						
-							$cond[$fields['field_id_'.$expl['1']]['0']] =  ( ! isset($_POST['field_id_'.$expl['1']])) ? '' : $_POST['field_id_'.$expl['1']];
-
-							$txt_fmt = ( ! isset($_POST['field_ft_'.$expl['1']])) ? 'xhtml' : $_POST['field_ft_'.$expl['1']];
-
-							$temp = $this->EE->typography->parse_type( stripslashes($val),
-											 		array(
-														'text_format'   => $txt_fmt,
-														'html_format'   => $channel_html_formatting,
-														'auto_links'    => $channel_allow_img_urls,
-														'allow_img_url' => $channel_auto_link_urls
-												   		)
-												);
-						}
-					}
-
-					if (isset($fields[$key]['0']))
-					{
-						$match['1'] = str_replace(LD.$fields[$key]['0'].RD, $temp, $match['1']);
-					}
-
-					$str .= $temp;
-				//}
-				
-				
-				// end non pair fields
 				}
-			}
 
-			$match['1'] = str_replace(LD.'display_custom_fields'.RD, $str, $match['1']);
-			$match['1'] = $this->EE->functions->prep_conditionals($match['1'], $cond);
-			$tagdata = str_replace ($match['0'], $match['1'], $tagdata);
+				if (isset($fields[$key]['0']))
+				{
+					$match['1'] = str_replace(LD.$fields[$key]['0'].RD, $temp, $match['1']);
+				}
+
+				$str .= $temp;
+			//}
+			
+			
+			// end non pair fields
+			}
 		}
+
+		$match['1'] = str_replace(LD.'display_custom_fields'.RD, $str, $match['1']);
+		$match['1'] = $this->EE->functions->prep_conditionals($match['1'], $cond);
+		$tagdata = str_replace ($match['0'], $match['1'], $tagdata);
+
 		
 		return $tagdata;
 	}
@@ -2212,6 +2243,12 @@ class Channel_standalone extends Channel {
 	 */
 	function _build_format_buttons($chunk, $row, $settings)
 	{
+		if ( ! preg_match('/'.LD.'formatting_buttons'.RD.'/', $chunk))
+		{
+			$chunk = str_replace(LD.'formatting_buttons'.RD, '', $chunk);
+			return $chunk;
+		}
+
 		$chunk = str_replace(LD.'formatting_buttons'.RD, '', $chunk);
 		
 		if ( ! isset($settings['field_show_formatting_btns']) OR $settings['field_show_formatting_btns'] != 'y')
@@ -2229,8 +2266,9 @@ class Channel_standalone extends Channel {
 	/**
 	 * Build Spellcheck 
 	 *
-	 *
-	 *
+	 * @param string
+	 * @param array
+	 * @param array
 	 */
 	function _build_spellcheck($chunk, $row, $settings)
 	{

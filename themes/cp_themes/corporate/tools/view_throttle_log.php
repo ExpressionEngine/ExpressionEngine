@@ -39,7 +39,7 @@ if ($EE_view_disable !== TRUE)
 					$this->table->add_row(
 										$data->ip_address,
 										$data->hits,
-										date("Y-m-d h:m A", $data->last_activity)
+										date("Y-m-d h:i A", $data->last_activity)
 									);
 				}
 			?>

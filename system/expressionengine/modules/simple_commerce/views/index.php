@@ -16,13 +16,13 @@ $this->table->add_row(array(
 ); 
 
 $this->table->add_row(array(
-		lang('ipn_url', 'ipn_url'),
+		lang('ipn_url', 'sc_ipn_url'),
 		form_input(array('id'=>'api_url', 'readonly'=>'readonly','class'=>'field','value'=>$api_url))
 	)
 );
 
 $this->table->add_row(array(
-		lang('paypal_account', 'paypal_account'),
+		lang('paypal_account', 'sc_paypal_account'),
 		form_input('sc_paypal_account', set_value('sc_paypal_account', $paypal_account)).
 		form_error('sc_paypal_account')
 	)
@@ -38,37 +38,37 @@ $this->table->add_row(array(
 );
 
 $this->table->add_row(array(
-		lang('certificate_id', 'certificate_id'),
-		form_error('certificate_id').
-		form_input('certificate_id', set_value('certificate_id', $certificate_id))
+		lang('certificate_id', 'sc_certificate_id'),
+		form_error('sc_certificate_id').
+		form_input('sc_certificate_id', set_value('sc_certificate_id', $certificate_id))
 	)
 );
 
 $this->table->add_row(array(
-		lang('public_certificate', 'public_certificate'),
-		form_error('public_certificate').
-		form_input('public_certificate', set_value('public_certificate', $public_certificate))
+		lang('public_certificate', 'sc_public_certificate'),
+		form_error('sc_public_certificate').
+		form_input('sc_public_certificate', set_value('sc_public_certificate', $public_certificate))
 	)
 );
 
 $this->table->add_row(array(
-		lang('private_key', 'private_key'),
-		form_error('private_key').
-		form_input('private_key', set_value('private_key', $private_key))
+		lang('private_key', 'sc_private_key'),
+		form_error('sc_private_key').
+		form_input('sc_private_key', set_value('sc_private_key', $private_key))
 	)
 );
 
 $this->table->add_row(array(
-		lang('paypal_certificate', 'paypal_certificate'),
-		form_error('paypal_certificate').
-		form_input('paypal_certificate', set_value('paypal_certificate', $paypal_certificate))
+		lang('paypal_certificate', 'sc_paypal_certificate'),
+		form_error('sc_paypal_certificate').
+		form_input('sc_paypal_certificate', set_value('sc_paypal_certificate', $paypal_certificate))
 	)
 );
 
 $this->table->add_row(array(
-		lang('temp_path', 'temp_path'),
-		form_error('temp_path').
-		form_input('temp_path', set_value('temp_path', $temp_path))
+		lang('temp_path', 'sc_temp_path'),
+		form_error('sc_temp_path').
+		form_input('sc_temp_path', set_value('temp_path', $temp_path))
 	)
 );
 

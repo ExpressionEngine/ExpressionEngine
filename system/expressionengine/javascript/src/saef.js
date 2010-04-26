@@ -143,45 +143,45 @@ function taginsert(item, tagOpen, tagClose)
 $(document).ready(function() {
 	$(".js_show").show();
 	$(".js_hide").hide();
-console.log(EE.publish.markitup.fields); 
-	if (EE.publish.markitup.fields !== undefined) {
+
+	if (EE.publish.markitup !== undefined && EE.publish.markitup.fields !== undefined) {
 		$.each(EE.publish.markitup.fields, function(key, value) { 
 			$("#"+key).markItUp(mySettings);
 		});
-		console.log(key);
-		console.log(value);
 	}
 
 	if (EE.publish.smileys === true) {
-		// console.log('hi');
+		
 		$("a.glossary_link").click(function(){
 			$(this).parent().siblings('.glossary_content').slideToggle("fast");
 			$(this).parent().siblings('.smileyContent .spellcheck_content').hide();
 			return false;
 		});
-
+	 
 		$('a.smiley_link').toggle(function() {
-			$(this).parent().siblings('.smileyContent').slideDown('fast', function() { $(this).css('display', ''); 
-		});
-		}, function() {
-			$(this).parent().siblings('.smileyContent').slideUp('fast');
-		});
-
-		$(this).parent().siblings('.glossary_content, .spellcheck_content').hide();
-
-		$('.glossary_content a').click(function(){
-			$.markItUp({ replaceWith:$(this).attr('title')});
-			return false;
-		});
+			which = $(this).attr('id').substr(12);
+			$('#smiley_table_'+which).slideDown('fast', function() { 
+				$(this).css('display', '');
+			});
+			}, function() {
+				$('#smiley_table_'+which).slideUp('fast');
+			});
+	
+			$(this).parent().siblings('.glossary_content, .spellcheck_content').hide();
+	
+			$('.glossary_content a').click(function(){
+				$.markItUp({ replaceWith:$(this).attr('title')});
+				return false;
+			});
 	}
-
+	
 	$(".btn_plus a").click(function(){
 		return confirm(EE.lang.confirm_exit, "");
 	});
-
+	
 	// inject the collapse button into the formatting buttons list
 	$(".markItUpHeader ul").prepend("<li class=\"close_formatting_buttons\"><a href=\"#\"><img width=\"10\" height=\"10\" src=\""+EE.THEME_URL+"images/publish_minus.gif\" alt=\"Close Formatting Buttons\"/></a></li>");
-
+	
 	$(".close_formatting_buttons a").toggle(
 		function() {
 			$(this).parent().parent().children(":not(.close_formatting_buttons)").hide();
@@ -193,20 +193,34 @@ console.log(EE.publish.markitup.fields);
 			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_minus.gif");
 		}
 	);
-
+	
 	$.ee_filebrowser();
-
+	
 	var field_for_writemode_publish = "";
-
+	
 	if (EE.publish.show_write_mode === true) { 
 		$("#write_mode_textarea").markItUp(myWritemodeSettings);		
 	}
 
+	$(".write_mode_trigger").click(function(){
+
+		if ($(this).attr("id").match(/^id_\d+$/)) {
+			field_for_writemode_publish = "field_"+$(this).attr("id");
+		} else {
+			field_for_writemode_publish = $(this).attr("id").replace(/id_/, '');
+		}
+
+		// put contents from other page into here
+		$("#write_mode_textarea").val($("#"+field_for_writemode_publish).val());
+		$("#write_mode_textarea").focus();
+		return false;
+	});
+	
 	// Prep for a workaround to allow markitup file insertion in file inputs
 	$(".btn_img a, .file_manipulate").click(function(){
 		window.file_manager_context = ($(this).parent().attr("class").indexOf("markItUpButton") == -1) ? 	$(this).closest("div").find("input").attr("id") : "textarea_a8LogxV4eFdcbC";
 	});
-
+	
 	// Bind the image html buttons
 	$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
 		// We also need to allow file insertion into text inputs (vs textareas) but markitup
@@ -222,20 +236,20 @@ console.log(EE.publish.markitup.fields);
 				$("#"+window.file_manager_context).val("{filedir_"+file.directory+"}"+file.name);
 			}
 		});
-
+	
 		function file_field_changed(file, field) {
 			var container = $("input[name="+field+"]").closest(".publish_field");
 			container.find(".file_set").show().find(".filename").text(file.name);
 			$("input[name="+field+"_hidden]").val(file.name);
 			$("select[name="+field+"_directory]").val(file.directory);
 		}
-
+	
 		$("input[type=file]", "#publishForm").each(function() {
 			var container = $(this).closest(".publish_field"),
 				trigger = container.find(".choose_file");
-
+	
 			$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), file_field_changed);
-
+	
 			container.find(".remove_file").click(function() {
 			container.find("input[type=hidden]").val("");
 			container.find(".file_set").hide();
