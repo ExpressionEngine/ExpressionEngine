@@ -858,6 +858,9 @@ class Content_publish extends Controller {
 
 		// -------------------------------------------
 
+		$fmt = ($this->session->userdata['time_format'] != '') ? $this->session->userdata['time_format'] : $this->config->item('time_format');
+		$this->javascript->set_global('date.format', $fmt);
+
 		// used in date field
 		// $this->javascript->output('
 		// 	var date_obj = new Date(),
