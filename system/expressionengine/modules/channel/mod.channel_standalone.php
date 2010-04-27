@@ -990,11 +990,6 @@ class Channel_standalone extends Channel {
 			$res .= $this->output_js['str'];
 		}
 
-		if ($this->EE->TMPL->fetch_param('use_live_url') != 'no')
-		{
- 			// $res .= $url_title_js;
-		}
-
 		$res .= stripslashes($tagdata);
 		$res .= "</form>";
 		
@@ -1295,8 +1290,11 @@ class Channel_standalone extends Channel {
 			}
 		}
 		
-		$output .= $this->_url_title_js();
-
+		if ($this->EE->TMPL->fetch_param('use_live_url') != 'no')
+		{
+			$output .= $this->_url_title_js();
+		}
+		
 		$this->EE->load->helper('smiley');
 		
 		$output .= ($this->EE->config->item('use_compressed_js') != 'n') ? str_replace(array("\n", "\t"), '', smiley_js('', '', FALSE)) : smiley_js('', '', FALSE);
@@ -1314,10 +1312,6 @@ class Channel_standalone extends Channel {
 	
 	/**
 	 * Setup SAEF Javascript
-	 *
-	 *
-	 *
-	 *
 	 */
 	function _setup_js($endpoint, $markItUp, $markItUp_writemode, $addt_js)
 	{
@@ -1343,17 +1337,12 @@ class Channel_standalone extends Channel {
 	/**
 	 * Parse Preview
 	 *
-	 *
-	 *
-	 *
-	 *
-	 *
 	 */
 	function _parse_preview($which, $match, $tagdata, $pair_fields, $date_fields, $fields, $channel_q)
 	{
 		if ($which != 'preview')
 		{
-			$tagdata = str_replace ($match['0'], '', $tagdata);
+			$tagdata = str_replace($match['0'], '', $tagdata);
 			return $tagdata;
 		}
 
@@ -2189,6 +2178,8 @@ class Channel_standalone extends Channel {
 				$temp_chunk = str_replace(LD.'field_data'.RD, form_prep($field_data), $temp_chunk);					
 			}
 
+			$temp_chunk = str_replace(LD.'path:cp_global_img'.RD,
+						$this->EE->config->item('theme_folder_url').'/cp_global_images/', $temp_chunk);
 			$temp_chunk = str_replace(LD.'formatting_buttons'.RD, '', $temp_chunk);
 			$temp_chunk = str_replace(LD.'spellcheck'.RD, '', $temp_chunk);
 			$temp_chunk = str_replace(LD.'temp_date'.RD, '', $temp_chunk);
