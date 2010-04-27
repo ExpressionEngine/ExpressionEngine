@@ -452,15 +452,19 @@ EE.date_obj_time = (function() {
 	var date_obj = new Date(),
 		date_obj_hours = date_obj.getHours(),
 		date_obj_mins = date_obj.getMinutes(),
-		date_obj_am_pm = " AM";
+		date_obj_am_pm = "";
 
 	if (date_obj_mins < 10) {
 		date_obj_mins = "0" + date_obj_mins;
 	}
 
-	if (date_obj_hours > 11) {
-		date_obj_hours = date_obj_hours - 12;
-		date_obj_am_pm = " PM";
+	if (EE.date.format == "us") {
+		if (date_obj_hours > 11) {
+			date_obj_hours = date_obj_hours - 12;
+			date_obj_am_pm = " PM";
+		} else {
+			date_obj_am_pm = " AM";
+		}
 	}
 	
 	return " '" + date_obj_hours + ":" + date_obj_mins + date_obj_am_pm + "'";
