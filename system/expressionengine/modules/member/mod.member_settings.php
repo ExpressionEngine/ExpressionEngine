@@ -701,7 +701,7 @@ class Member_settings extends Member {
 
 				if (isset($fnames[$val['3']]))
 				{
-					$lcond = str_replace($val['3'], $result_row['m_field_id_'.$fnames[$val['3']]], $lcond);
+					$lcond = str_replace($val['3'], "\$result_row['m_field_id_".$fnames[$val['3']]."']", $lcond);
 
 					$cond = $lcond.' '.$rcond;
 
