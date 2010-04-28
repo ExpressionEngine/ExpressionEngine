@@ -53,9 +53,17 @@ class EE_Exceptions extends CI_Exceptions {
 		}
 
 		// let's be kind if it's a submission error, and offer a back link
-		if ( ! empty($_POST))
+		if ( ! empty($_POST) && ! AJAX_REQUEST)
 		{
 			$message .= '<p><a href="javascript:history.go(-1);">&#171; '.$EE->lang->line('back').'</a></p>';			
+		}
+		
+		// Ajax Requests get a reasonable response
+		if (AJAX_REQUEST)
+		{
+			$EE->output->send_ajax_response(array(
+				'error'	=> $message
+			));
 		}
 		
 		// CP requests get no change in treatment
