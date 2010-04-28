@@ -1771,7 +1771,11 @@ class Channel_standalone extends Channel {
 			}
 
 			$temp_chunk = $this->_build_format_buttons($temp_chunk, $row, $settings);
-			$temp_chunk = $this->_build_spellcheck($temp_chunk, $row, $settings);
+			
+			if (isset($settings['field_show_spellcheck']) && $settings['field_show_spellcheck'] == 'n')
+			{
+				$temp_chunk = $this->_build_spellcheck($temp_chunk, $row, $settings);
+			}
 
 			if ($row['field_type'] == 'textarea' AND $textarea != '')
 			{
@@ -2274,7 +2278,7 @@ class Channel_standalone extends Channel {
 		*/
 		// Unset formatting buttons choice, we've already dealt with it.
 		unset($settings['field_show_formatting_btns']);
-		
+				
 		foreach ($settings as $key => $val)
 		{
 			if ($val == 'n')
