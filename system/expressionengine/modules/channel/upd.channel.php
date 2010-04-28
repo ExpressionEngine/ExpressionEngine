@@ -118,7 +118,7 @@ class Channel_upd {
 	function update()
 	{
 		$data = array(
-					'class' => 'Channel_standalone',
+					'class' => 'Channel',
 					'method' => 'saef_filebrowser'
 					);
 					
