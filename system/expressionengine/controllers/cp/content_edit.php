@@ -856,8 +856,10 @@ class Content_edit extends Controller {
 		// Apply only to comments- not part of edit page filter
 		$filter_data['entry_id'] = $this->input->get_post('entry_id');
 		$filter_data['comment_id'] = $this->input->get_post('comment_id');
+		$filter_data['id_array'] = ($this->input->get_post('id_array')) ? explode($this->input->get_post('id_array')) : array();		
+	
 		$filter_data['validate'] = ($this->input->get_post('validate') == 'true') ? TRUE : FALSE;
-		$validate = ($filter_data['validate'] == 'true') ? TRUE : FALSE;
+		$validate = $filter_data['validate'];
 
 
 		$perpage = $this->input->get_post('iDisplayLength');
@@ -913,7 +915,10 @@ class Content_edit extends Controller {
 
 		if ($filter_data['entry_id'] != FALSE OR $filter_data['comment_id'] != FALSE)
 		{
-			$filtered_entries = $this->search_model->comment_search('', $filter_data['entry_id'], array($filter_data['comment_id']), '', $validate, $order);	
+			$filtered_entries = $this->search_model->comment_search('', $filter_data['entry_id'], array($filter_data['comment_id']), '', $validate, $order);
+			
+			//print_r($filtered_entries);
+				
 			$filter_data['search_in'] == 'comments';
 		}
 		else
@@ -935,9 +940,17 @@ class Content_edit extends Controller {
 		// Did we shift over to comment search?
 		if ($filter_data['search_in'] == 'comments')
 		{
-			$j_response['iTotalDisplayRecords'] = count($filtered_entries['ids']);
+			if (isset($filtered_entries['ids']))
+			{
+				$j_response['iTotalDisplayRecords'] = count($filtered_entries['ids']);
 			
-			$data_array = $this->search_model->comment_search('', '', $filtered_entries['ids'], count($filtered_entries['ids']), $validate, $order);
+				$data_array = $this->search_model->comment_search('', '', $filtered_entries['ids'], count($filtered_entries['ids']), $validate, $order);
+			}
+			else
+			{
+				$data_array = $filtered_entries['results'];
+			}
+		
 			
 			$j_response['aaData']  = $this->format_comments($filter_data['validate'], $data_array['results']);
 			

@@ -541,6 +541,8 @@ class Search_model extends CI_Model {
 			}			
 			
 			$query = $this->db->get();
+			
+			$return_data['total_count'] = ($return_data['total_comments'] != '') ? $return_data['total_comments'] : $query->num_rows();
 
 			$return_data['results'] = $query->result_array();
 			
@@ -619,6 +621,7 @@ class Search_model extends CI_Model {
 			// No results?  No reason to continue...
 			
 			$return_data['total_comments'] = $id_query->num_rows();
+			$return_data['total_count'] = $return_data['total_comments'];
 
 			if ($id_query->num_rows() == 0)
 			{
