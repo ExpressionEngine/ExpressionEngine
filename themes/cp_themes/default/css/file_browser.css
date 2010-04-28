@@ -188,3 +188,31 @@ input#upload_file.field {
 #file_manager_body button {
 	padding: 5px;
 }
+
+
+
+
+.image_edit_form_options #image_edit_form fieldset {
+	width:				440px;
+	padding:			6px 10px;
+}
+
+#image_edit_form fieldset {
+	background-color:	#ECF1F4;
+	padding:			12px 10px;
+	color:				#505050;
+	font-size:			11px;
+}
+
+.image_edit_form_options #image_edit_form fieldset#rotate_fieldset ul {
+	display: block;
+}
+
+#image_edit_form fieldset#rotate_fieldset ul {
+	display: none;
+}
+
+#image_edit_form fieldset#rotate_fieldset li {
+	display: inline;
+	cursor: pointer;
+}

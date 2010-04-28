@@ -1802,24 +1802,42 @@ class Channel_standalone extends Channel {
 						$file_set .= ' js_hide';
 					}
 
+					$options = '';
+
 					foreach ($directories as $k => $v)
 					{
 						$temp_options = $file_options;
-
-						$v = trim($v);
-						$temp_options = str_replace(LD.'option_name'.RD, $v, $temp_options);
-						$temp_options = str_replace(LD.'option_value'.RD, $k, $temp_options);
-						$temp_options = str_replace(LD.'selected'.RD, ($k == $file_dir) ? ' selected="selected"' : '', $temp_options);
+						$selected = ($k == $file_dir) ? ' selected="selected"' : '';
+						$options .= '<option value="'.$k.'"'.$selected.'>'.trim($v).'</option>';
 
 						$pdo .= $temp_options;
 					}
+					
+					$file = '<div class="publish_field">';
+					$file .= '<div class="file_set js_hide">';
+					$file .= '<p class="filename">';
+					$file .= '<img src="'.$this->theme_url.'cp_global_images/default.png" alt="default thumbnail" />';
+					$file .= '</p>';
+					$file .= '<p class="sub_filename"><a href="#" class="remove_file">'.$this->EE->lang->line('remove_file').'</a></p>';
+					$file .= '<p><input type="hidden" name="'.$row['field_name'].'_hidden" value="'.$field_data.'" /></p>';
+					$file .= '</div>'; 
+					$file .= '<div class="no_file js_hide">';
+					$file .= '<p><input type="file" name="field_id_'.$row['field_id'].'" value="'.$field_data.'" /></p>';
+					$file .= '<p><select name="field_id_'.$row['field_id'].'_directory">'.$options.'</select></p>' ;
+					
+					$file .= '</div>';
+					$file .= '<div class="modifiers js_show">';
+					$file .= '<p class="sub_filename"><a href="#" class="choose_file">'.$this->EE->lang->line('add_file').'</a></p>';
+					$file .= '</div></div>';
 
-					$temp_file = str_replace(LD.'temp_file_options'.RD, $pdo, $file);
-					$temp_file = str_replace(LD.'file_name'.RD, $filename, $temp_file);
-					$temp_file = str_replace(LD.'file_set'.RD, $file_set, $temp_file);
-					$temp_file = str_replace(LD.'file_div'.RD, $file_div, $temp_file);			
-					$temp_chunk = str_replace(LD.'temp_file'.RD, $temp_file, $temp_chunk); 
-			}				
+					$temp_chunk = str_replace(LD.'temp_file'.RD, $file, $temp_chunk);
+					
+					// $temp_file = str_replace(LD.'temp_file_options'.RD, $pdo, $file);
+					// $temp_file = str_replace(LD.'file_name'.RD, $filename, $temp_file);
+					// $temp_file = str_replace(LD.'file_set'.RD, $file_set, $temp_file);
+					// $temp_file = str_replace(LD.'file_div'.RD, $file_div, $temp_file);			
+					// $temp_chunk = str_replace(LD.'temp_file'.RD, $temp_file, $temp_chunk); 
+			}	
 
 			if ($row['field_type'] == 'rel')
 			{

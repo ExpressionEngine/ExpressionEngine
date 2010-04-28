@@ -108,12 +108,12 @@ class Filemanager {
 				'endpoint_url'	=> $endpoint_url,
 				'window_title'	=> $this->EE->lang->line('file_manager'),
 				'theme_url'		=> $this->theme_url),
-				'lang' => array(
-							'or'				=> $this->EE->lang->line('or'), 
-							'resize_image' 		=> $this->EE->lang->line('resize_image'), 
-							'return_to_publish' => $this->EE->lang->line('return_to_publish')
-							)
-				);
+			'lang' => array(
+						'or'				=> $this->EE->lang->line('or'), 
+						'resize_image' 		=> $this->EE->lang->line('resize_image'), 
+						'return_to_publish' => $this->EE->lang->line('return_to_publish')
+						)
+			);
 
 		$script_base = $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT=jquery';
 		
