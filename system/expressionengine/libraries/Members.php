@@ -514,9 +514,6 @@ class Members {
 		
 		$this->EE->image_lib->initialize($config);
 
-		;
-
-
 		if ($this->EE->image_lib->resize() === FALSE)
 		{
 			return FALSE;
