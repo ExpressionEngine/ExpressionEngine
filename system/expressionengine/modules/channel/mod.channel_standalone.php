@@ -1321,7 +1321,7 @@ class Channel_standalone extends Channel {
 		
 		$js = $this->EE->filemanager->frontend_filebrowser($endpoint, $include_jquery);
 
-		$json = array_merge($js['json'], $addt_js);
+		$json = array_merge_recursive($js['json'], $addt_js);
 
 		$this->output_js['json'] = array(
 					'EE'					=> $json,
