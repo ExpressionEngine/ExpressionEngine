@@ -2234,22 +2234,15 @@ class Channel_standalone extends Channel {
 	 */
 	function _build_format_buttons($chunk, $row, $settings)
 	{
-		if ( ! preg_match('/'.LD.'formatting_buttons'.RD.'/', $chunk))
+		if (strpos(LD.'formatting_buttons'.RD, $chunk) !== FALSE)
 		{
-			$chunk = str_replace(LD.'formatting_buttons'.RD, '', $chunk);
-			return $chunk;
+			if (isset($settings['field_show_formatting_btns']) && $settings['field_show_formatting_btns'] == 'y')
+			{
+				$this->output_js['json']['EE']['publish']['markitup']['fields']['field_id_'.$row['field_id']] = $row['field_id'];
+			}
 		}
 
-		$chunk = str_replace(LD.'formatting_buttons'.RD, '', $chunk);
-		
-		if ( ! isset($settings['field_show_formatting_btns']) OR $settings['field_show_formatting_btns'] != 'y')
-		{
-			return $chunk;
-		}
-				
-		$this->output_js['json']['EE']['publish']['markitup']['fields']['field_id_'.$row['field_id']] = $row['field_id'];
-		
-		return $chunk;
+		return str_replace(LD.'formatting_buttons'.RD, '', $chunk);
 	}
 
 	// --------------------------------------------------------------------	
