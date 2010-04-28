@@ -280,6 +280,7 @@ class Filemanager {
 	function directories($ajax = FALSE, $return_all = FALSE)
 	{
 		static $dirs;
+		$return = array();
 		
 		if ( ! is_array($dirs))
 		{
