@@ -1,7 +1,27 @@
+// Filesize Tablesorting
+
+$.tablesorter.addParser({ 
+	id: 'filesize', 
+	is: function(s) {
+		return false; 
+	}, 
+	format: function(s) { 
+		s = s.replace(/[^0-9.]/g, '');
+		return s * 1000;
+	}, 
+	type: 'numeric' 
+});
+
+
 $(document).ready(function() {
 
 	$(".mainTable").tablesorter({
-		headers: {2: {sorter: "digit"}, 4: {sorter: false}, 5: {sorter: false}, 6: {sorter: false}},
+		headers: {
+			1: {sorter: "filesize"},
+			4: {sorter: false},
+			5: {sorter: false},
+			6: {sorter: false}
+		},
 		widgets: ["zebra"],
 		sortList: [[0,0]] 
 	});
@@ -11,16 +31,21 @@ $(document).ready(function() {
 	$("#download_selected").css("display", "block");
 
 	function show_file_info(file) {
-		$("#file_information_hold").slideDown("fast");
-		$("#file_information_header").removeClass("closed");
-		$("#file_information_header").addClass("open");
+		var file_info_hold, file_info_header;
+		
+		file_info_hold   = $("#file_information_hold");
+		file_info_header = $("#file_information_header");
+		
+		file_info_header.removeClass("closed");
+		file_info_header.addClass("open");
 
-		$("#file_information_hold").html('<p style="text-align: center;"><img src="'+EE.THEME_URL+'images/indicator.gif" alt="'+EE.lang.loading+'" /><br />'+EE.lang.loading+'...</p>');
+		file_info_hold.slideDown("fast");
+		file_info_hold.html('<p style="text-align: center;"><img src="'+EE.THEME_URL+'images/indicator.gif" alt="'+EE.lang.loading+'" /><br />'+EE.lang.loading+'...</p>');
 
 		$.get(EE.BASE+"&C=content_files&M=file_info",
 			{file: file},
 			function(data){
-				$("#file_information_hold").html(data);
+				file_info_hold.html(data);
 			}
 		);
 	}
@@ -98,7 +123,7 @@ $(document).ready(function() {
 					var refresh_url = EE.BASE+"&C=content_files&ajax=true&directory="+opt.upload_dir+"&enc_path="+res.enc_path;
 
 					$.get(refresh_url, function(response) {
-						var tmp = $("<div></div>");
+						var tmp = $("<div />");
 						tmp.append(response);
 						tmp = tmp.find("tbody tr");
 
@@ -129,8 +154,9 @@ $(document).ready(function() {
 
 	// tools
 	$("#download_selected a").click(function(){
-		
-			$("#files_form").attr("action", $("#files_form").attr("action").replace(/delete_files_confirm/, "download_files"))
+			var action = $("#files_form").attr("action");
+			
+			$("#files_form").attr("action", action.replace(/delete_files_confirm/, "download_files"));
 			$("#files_form").submit();
 		
 		return false;
@@ -144,7 +170,9 @@ $(document).ready(function() {
 
 	$("#delete_selected_files a").click(function(){
 			// these may be been downloaded: ensure the action attr is correct
-			$("#files_form").attr("action", $("#files_form").attr("action").replace(/download_files/, "delete_files_confirm"))
+			var action = $("#files_form").attr("action");
+			
+			$("#files_form").attr("action", action.replace(/download_files/, "delete_files_confirm"));
 			$("#files_form").submit();
 		
 		return false;
@@ -154,14 +182,10 @@ $(document).ready(function() {
 	$(".toggle_all").toggle(
 		function(){
 			$(this).closest("table").find("tbody tr").addClass("selected");
-			$(this).closest("table").find("input.toggle").each(function() {
-				this.checked = true;
-			});
+			$(this).closest("table").find("input.toggle").attr('checked', true);
 		}, function (){
 			$(this).closest("table").find("tbody tr").removeClass("selected");
-			$(this).closest("table").find("input.toggle").each(function() {
-				this.checked = false;
-			});
+			$(this).closest("table").find("input.toggle").attr('checked', false);
 		}
 	);
 
