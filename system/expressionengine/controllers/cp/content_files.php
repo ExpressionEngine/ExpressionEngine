@@ -126,6 +126,7 @@ class Content_files extends Controller {
 	function _map($dir_id = FALSE, $enc_path = FALSE)
 	{
 		$upload_directories = $this->tools_model->get_upload_preferences($this->session->userdata('group_id'));
+		
 		// if a user has no directories available to them, then they have no right to be here
 		if ($this->session->userdata['group_id'] != 1 && $upload_directories->num_rows() == 0)
 		{
@@ -152,14 +153,18 @@ class Content_files extends Controller {
 			// we need to know the dirs for the purposes of uploads, so grab them here
 			$vars['upload_directories'][$dir->id] = $dir->name;
 
-			$vars['file_list'][$dir->id]['id'] = $dir->id;
-			$vars['file_list'][$dir->id]['name'] = $dir->name;
-			$vars['file_list'][$dir->id]['url'] = $dir->url;
-			$vars['file_list'][$dir->id]['display'] = ($this->input->cookie('hide_upload_dir_id_'.$dir->id) == 'true') ? 'none' : 'block';
-			$files = $this->tools_model->get_files($dir->server_path, $dir->allowed_types);
+			$vars['file_list'][$dir->id] = array(
+				'id'		=> $dir->id,
+				'name'		=> $dir->name,
+				'url'		=> $dir->url,
+				'display'	=> ($this->input->cookie('hide_upload_dir_id_'.$dir->id) == 'true') ? 'none' : 'block',
+				
+				'files'		=> array()	// initialize so empty dirs don't throw errors
+			);
+
 
 			$file_count = 0;
-			$vars['file_list'][$dir->id]['files'] = array(); // initialize so empty dirs don't throw errors
+			$files = $this->tools_model->get_files($dir->server_path, $dir->allowed_types);
 
 			// construct table row arrays
 			foreach($files as $file)
@@ -169,7 +174,7 @@ class Content_files extends Controller {
 					continue;
 				}
 
-				if ($file['name'] == '_thumbs' OR $file['name'] == 'folder')
+				if ($file['name'] == '_thumbs' OR is_dir($file['server_path']))
 				{
 					continue;
 				}
