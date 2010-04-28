@@ -2239,7 +2239,7 @@ class Channel_standalone extends Channel {
 	 */
 	function _build_format_buttons($chunk, $row, $settings)
 	{
-		if (strpos(LD.'formatting_buttons'.RD, $chunk) !== FALSE)
+		if (strpos($chunk, LD.'formatting_buttons'.RD) !== FALSE)
 		{
 			if (isset($settings['field_show_formatting_btns']) && $settings['field_show_formatting_btns'] == 'y')
 			{
