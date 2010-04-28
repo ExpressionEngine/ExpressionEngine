@@ -312,11 +312,6 @@ class Channel_standalone extends Channel {
 		// Fetch Channel Preferences
 		$this->EE->db->where('channel_id', $channel_id);
 		$channel_q = $this->EE->db->get('channels');
-		// var_dump($query->result_array()); exit;
-		// foreach($query->row_array() as $key => $val)
-		// {
-		// 	$$key = $val;
-		// }
 	
 		if ( ! isset($_POST['channel_id']))
 		{
@@ -818,6 +813,12 @@ class Channel_standalone extends Channel {
 				$title = ( ! isset($_POST['title'])) ? $title : $_POST['title'];
 
 				$tagdata = $this->EE->TMPL->swap_var_single($key, form_prep($title), $tagdata);
+				
+				if ($this->EE->TMPL->fetch_param('use_live_url') == 'no')
+				{
+					$tagdata = str_replace('liveUrlTitle();', '', $tagdata);
+				}
+				
 			}
 
 			/** ----------------------------------------
@@ -1290,7 +1291,7 @@ class Channel_standalone extends Channel {
 			}
 		}
 		
-		if ($this->EE->TMPL->fetch_param('use_live_url') != 'no')
+		if ($this->EE->input->get('use_live_url') == 'y')
 		{
 			$output .= $this->_url_title_js();
 		}
