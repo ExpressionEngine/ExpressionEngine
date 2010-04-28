@@ -104,7 +104,7 @@ class Member_model extends CI_Model {
 	 * @param	string
 	 * @return	mixed
 	 */
-	function get_members($group_id = '', $limit = '', $offset = '', $search_value = '', $order = array(), $column = 'screen_name')
+	function get_members($group_id = '', $limit = '', $offset = '', $search_value = '', $order = array(), $column = 'all')
 	{
 
 		/**
@@ -149,7 +149,16 @@ class Member_model extends CI_Model {
 
 		if ($search_value != '')
 		{
-			$this->db->like('members.'.$column, $search_value);
+			if ($column == 'all')
+			{
+				$this->db->or_like('members.screen_name', $search_value);
+				$this->db->or_like('members.username', $search_value);
+				$this->db->or_like('members.email', $search_value);				
+			}
+			else
+			{
+				$this->db->like('members.'.$column, $search_value);
+			}
 		}
 
 		if (is_array($order) && count($order) > 0)
@@ -164,10 +173,11 @@ class Member_model extends CI_Model {
 			$this->db->order_by('join_date');
 		}
 
+		$this->db->distinct();
 		$this->db->select("members.username, members.member_id, members.screen_name, members.email, members.join_date, members.last_visit, member_groups.group_title, member_groups.group_id, members.member_id, members.in_authorlist");
-		$this->db->from("member_groups");
 		$this->db->from("members");
-		$this->db->where("members.group_id = " .$this->db->dbprefix("member_groups.group_id"));
+		$this->db->join('member_groups', 'member_groups.group_id = members.group_id');
+		//$this->db->where("members.group_id = " .$this->db->dbprefix("member_groups.group_id"));
 		$this->db->where("member_groups.site_id", $this->config->item('site_id'));
 
 		$members = $this->db->get();

@@ -143,12 +143,13 @@ class Members extends Controller {
 		$per_page = $this->input->get_post('per_page');
 
 		$vars['column_filter_options'] = array(
+			'all'				=> $this->lang->line('all'),
 			'screen_name'		=> $this->lang->line('screen_name'),
 			'username'			=> $this->lang->line('username'),
 			'email'				=> $this->lang->line('email')
 		);
 
-		$vars['column_filter_selected'] = ($this->input->get_post('column_filter')) ? $this->input->get_post('column_filter') :'screen_name';
+		$vars['column_filter_selected'] = ($this->input->get_post('column_filter')) ? $this->input->get_post('column_filter') : 'all';
 
 		// Repopulate Search Box ?
 		$member_name = $this->input->get_post('member_name') ? $this->input->get_post('member_name') : '';	
@@ -376,14 +377,14 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$("#member_name").bind("keyup blur paste", function (e) {
 		/* Filter on the column (the index) of this element */
-		alert("a");
-    setTimeout(function(){oTable.fnDraw();}, 1);
-});
+    	setTimeout(function(){oTable.fnDraw();}, 1);
+		});
+
+		$("#member_form").submit(function() {
+			oTable.fnDraw();
+  			return false;
+		});
 	
-		
-		
-		
-		
 		$("select#group_id").change(function () {
 				oTable.fnDraw();
 				
@@ -392,9 +393,12 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 					$("#member_action_options").show();
 				}
 			});		
-
-		');
 		
+		$("select#column_filter").change(function () {
+				oTable.fnDraw();
+
+			});		
+		');
 		
 		$this->javascript->compile();
 
@@ -432,7 +436,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			}
 		}
 
-		$column_filter = ($this->input->get_post('column_filter')) ? $this->input->get_post('column_filter') : 'screen_name';
+		$column_filter = ($this->input->get_post('column_filter')) ? $this->input->get_post('column_filter') : 'all';
 
 		$members = $this->member_model->get_members($group_id, $perpage, $offset, $search_value, $order, $column_filter);
 
