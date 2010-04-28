@@ -398,7 +398,14 @@ class EE_Output extends CI_Output {
 		
 		if ($EE->config->item('send_headers') == 'y')
 		{
-			@header('Content-Type: text/html; charset=UTF-8');	
+			if (is_array($msg))
+			{
+				@header('Content-Type: application/json');
+			}
+			else
+			{
+				@header('Content-Type: text/html; charset=UTF-8');	
+			}
 		}
 		
 		exit($EE->javascript->generate_json($msg, TRUE));

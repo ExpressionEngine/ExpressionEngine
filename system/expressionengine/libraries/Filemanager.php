@@ -122,7 +122,9 @@ class Filemanager {
 			$ret['str'] .= '<script type="text/javascript" charset="utf-8" src="'.$script_base.'"></script>';
 		}
 
-		$ret['str'] .= '<script type="text/javascript" charset="utf-8" src="'.$this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Channel', 'saef_filebrowser').'"></script>';
+		$live_url =  ($this->EE->TMPL->fetch_param('use_live_url') != 'no') ? AMP.'use_live_url=y' : '';
+
+		$ret['str'] .= '<script type="text/javascript" charset="utf-8" src="'.$this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Channel', 'saef_filebrowser').$live_url.'"></script>';
 
 		return $ret;
 	}
@@ -280,6 +282,7 @@ class Filemanager {
 	function directories($ajax = FALSE, $return_all = FALSE)
 	{
 		static $dirs;
+		$return = array();
 		
 		if ( ! is_array($dirs))
 		{

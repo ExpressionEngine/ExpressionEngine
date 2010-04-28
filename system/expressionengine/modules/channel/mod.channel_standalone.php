@@ -49,7 +49,6 @@ class Channel_standalone extends Channel {
 	{
 		$this->EE->load->library('filemanager');
 		$this->EE->lang->loadfile('content');
-		$this->EE->load->library('cp');
 		
 		$config = array();
 		
@@ -312,11 +311,6 @@ class Channel_standalone extends Channel {
 		// Fetch Channel Preferences
 		$this->EE->db->where('channel_id', $channel_id);
 		$channel_q = $this->EE->db->get('channels');
-		// var_dump($query->result_array()); exit;
-		// foreach($query->row_array() as $key => $val)
-		// {
-		// 	$$key = $val;
-		// }
 	
 		if ( ! isset($_POST['channel_id']))
 		{
@@ -818,6 +812,12 @@ class Channel_standalone extends Channel {
 				$title = ( ! isset($_POST['title'])) ? $title : $_POST['title'];
 
 				$tagdata = $this->EE->TMPL->swap_var_single($key, form_prep($title), $tagdata);
+				
+				if ($this->EE->TMPL->fetch_param('use_live_url') == 'no')
+				{
+					$tagdata = str_replace('liveUrlTitle();', '', $tagdata);
+				}
+				
 			}
 
 			/** ----------------------------------------
@@ -988,11 +988,6 @@ class Channel_standalone extends Channel {
 			
 			$res .= "\n".' // ]]>'."\n".'</script>';
 			$res .= $this->output_js['str'];
-		}
-
-		if ($this->EE->TMPL->fetch_param('use_live_url') != 'no')
-		{
- 			// $res .= $url_title_js;
 		}
 
 		$res .= stripslashes($tagdata);
@@ -1295,8 +1290,11 @@ class Channel_standalone extends Channel {
 			}
 		}
 		
-		$output .= $this->_url_title_js();
-
+		if ($this->EE->input->get('use_live_url') == 'y')
+		{
+			$output .= $this->_url_title_js();
+		}
+		
 		$this->EE->load->helper('smiley');
 		
 		$output .= ($this->EE->config->item('use_compressed_js') != 'n') ? str_replace(array("\n", "\t"), '', smiley_js('', '', FALSE)) : smiley_js('', '', FALSE);
@@ -1314,10 +1312,6 @@ class Channel_standalone extends Channel {
 	
 	/**
 	 * Setup SAEF Javascript
-	 *
-	 *
-	 *
-	 *
 	 */
 	function _setup_js($endpoint, $markItUp, $markItUp_writemode, $addt_js)
 	{
@@ -1343,17 +1337,12 @@ class Channel_standalone extends Channel {
 	/**
 	 * Parse Preview
 	 *
-	 *
-	 *
-	 *
-	 *
-	 *
 	 */
 	function _parse_preview($which, $match, $tagdata, $pair_fields, $date_fields, $fields, $channel_q)
 	{
 		if ($which != 'preview')
 		{
-			$tagdata = str_replace ($match['0'], '', $tagdata);
+			$tagdata = str_replace($match['0'], '', $tagdata);
 			return $tagdata;
 		}
 
@@ -1782,7 +1771,11 @@ class Channel_standalone extends Channel {
 			}
 
 			$temp_chunk = $this->_build_format_buttons($temp_chunk, $row, $settings);
-			$temp_chunk = $this->_build_spellcheck($temp_chunk, $row, $settings);
+			
+			if (isset($settings['field_show_spellcheck']) && $settings['field_show_spellcheck'] == 'n')
+			{
+				$temp_chunk = $this->_build_spellcheck($temp_chunk, $row, $settings);
+			}
 
 			if ($row['field_type'] == 'textarea' AND $textarea != '')
 			{
@@ -2189,6 +2182,8 @@ class Channel_standalone extends Channel {
 				$temp_chunk = str_replace(LD.'field_data'.RD, form_prep($field_data), $temp_chunk);					
 			}
 
+			$temp_chunk = str_replace(LD.'path:cp_global_img'.RD,
+						$this->EE->config->item('theme_folder_url').'/cp_global_images/', $temp_chunk);
 			$temp_chunk = str_replace(LD.'formatting_buttons'.RD, '', $temp_chunk);
 			$temp_chunk = str_replace(LD.'spellcheck'.RD, '', $temp_chunk);
 			$temp_chunk = str_replace(LD.'temp_date'.RD, '', $temp_chunk);
@@ -2243,22 +2238,15 @@ class Channel_standalone extends Channel {
 	 */
 	function _build_format_buttons($chunk, $row, $settings)
 	{
-		if ( ! preg_match('/'.LD.'formatting_buttons'.RD.'/', $chunk))
+		if (strpos($chunk, LD.'formatting_buttons'.RD) !== FALSE)
 		{
-			$chunk = str_replace(LD.'formatting_buttons'.RD, '', $chunk);
-			return $chunk;
+			if (isset($settings['field_show_formatting_btns']) && $settings['field_show_formatting_btns'] == 'y')
+			{
+				$this->output_js['json']['EE']['publish']['markitup']['fields']['field_id_'.$row['field_id']] = $row['field_id'];
+			}
 		}
 
-		$chunk = str_replace(LD.'formatting_buttons'.RD, '', $chunk);
-		
-		if ( ! isset($settings['field_show_formatting_btns']) OR $settings['field_show_formatting_btns'] != 'y')
-		{
-			return $chunk;
-		}
-				
-		$this->output_js['json']['EE']['publish']['markitup']['fields']['field_id_'.$row['field_id']] = $row['field_id'];
-		
-		return $chunk;
+		return str_replace(LD.'formatting_buttons'.RD, '', $chunk);
 	}
 
 	// --------------------------------------------------------------------	
@@ -2283,7 +2271,7 @@ class Channel_standalone extends Channel {
 		*/
 		// Unset formatting buttons choice, we've already dealt with it.
 		unset($settings['field_show_formatting_btns']);
-		
+				
 		foreach ($settings as $key => $val)
 		{
 			if ($val == 'n')

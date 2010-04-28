@@ -1837,12 +1837,9 @@ class Admin_content extends Controller {
 				show_error($this->lang->line('unauthorized_access'));
 			}
 		}
-		else
+		elseif ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
 		{
-			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-			{
-				show_error($this->lang->line('unauthorized_access'));
-			}
+			show_error($this->lang->line('unauthorized_access'));
 		}
 
 		$this->load->model('category_model');
@@ -2262,26 +2259,17 @@ class Admin_content extends Controller {
 
 	function category_update()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ($this->input->get_post('Z') == 1)
+		if (AJAX_REQUEST)
 		{
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}
 		}
-		else
+		elseif ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
 		{
-			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-			{
-				show_error($this->lang->line('unauthorized_access'));
-			}
+			show_error($this->lang->line('unauthorized_access'));
 		}
-
 
 		$group_id = $this->input->get_post('group_id');
 
@@ -2605,16 +2593,11 @@ class Admin_content extends Controller {
 	/** -----------------------------------*/
 	function global_category_order()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		if (AJAX_REQUEST)
 		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ($this->input->get_post('Z') == 1)
-		{
-			if ( ! $this->dsp->allowed_group('can_edit_categories'))
+			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
-				return $this->dsp->no_access_message();
+				show_error($this->lang->line('unauthorized_access'));
 			}
 		}
 		else
@@ -2668,24 +2651,16 @@ class Admin_content extends Controller {
 	/** --------------------------------------*/
 	function global_category_order_confirm()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		if (AJAX_REQUEST)
 		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ($this->input->get_post('Z') == 1)
-		{
-			if ( ! $this->dsp->allowed_group('can_edit_categories'))
-			{
-				return $this->dsp->no_access_message();
-			}
-		}
-		else
-		{
-			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
 				show_error($this->lang->line('unauthorized_access'));
-			}		
+			}
+		}
+		elseif ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
 		}
 
 		if (($group_id = $this->input->get_post('group_id')) === FALSE OR ! is_numeric($group_id))
@@ -2715,16 +2690,11 @@ class Admin_content extends Controller {
 	//	@todo move to api/model
 	function reorder_cats_alphabetically()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		if (AJAX_REQUEST)
 		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ($this->input->get_post('Z') == 1)
-		{
-			if ( ! $this->dsp->allowed_group('can_edit_categories'))
+			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
-				return $this->dsp->no_access_message();
+				show_error($this->lang->line('unauthorized_access'));
 			}
 		}
 		else

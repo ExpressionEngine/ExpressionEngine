@@ -181,7 +181,7 @@ class Wizard extends Controller {
 			}
 		}
 		
-		$this->userdata['app_version'] = $this->version;
+		$this->userdata['app_version'] = str_replace('.', '', $this->version);
 		
  		// Load the helpers we intend to use
  		$this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
@@ -449,7 +449,10 @@ class Wizard extends Controller {
 		{
 			$this->config->_append_config_1x(array('app_version' => 0));	
 			$config['app_version'] = 0;  // Update the $config array
-		}	
+		}
+		
+		// Fixes a bug in the installation script for 2.0.2, where periods were included
+		$config['app_version'] = str_replace('.', '', $config['app_version']);
 
 		// This fixes a bug introduced in the installation script for v 1.3.1			
 		if ($config['app_version'] == 130)

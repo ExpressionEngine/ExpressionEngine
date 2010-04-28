@@ -109,6 +109,10 @@ EE.publish.category_editor = function() {
 						else {
 							setup_page.call(container, res, true);
 						}
+					},
+					error: function(res) {
+						cat_modal.dialog("close");
+						setup_page.call(container, res.error, true);
 					}
 				});
 				
@@ -138,7 +142,6 @@ EE.publish.category_editor = function() {
 
 	// And a function to do the work
 	reload = function() {
-		
 		var gid = $(this).data("gid"),
 			resp_filter = ".pageContents";
 		
@@ -152,22 +155,30 @@ EE.publish.category_editor = function() {
 		
 		cat_groups_containers[gid].text("loading...");
 		
-		$.get(this.href+"&timestamp="+now()+resp_filter, function(response) {
-			var res,
-				filtered_res = '';
+		$.ajax({
+			url: this.href+"&timestamp="+now()+resp_filter,
+			success: function(response) {
+				var res, filtered_res = '';
 			
-			response = $.trim(response);
+				response = $.trim(response);
 			
-			if (response[0] == '<') {
-				res = $(response).find(resp_filter);
-				filtered_res = $('<div />').append(res).html();
+				if (response[0] == '<') {
+					res = $(response).find(resp_filter);
+					filtered_res = $('<div />').append(res).html();
 								
-				if (res.find('form').length == 0) {
-					cat_groups_containers[gid].html(filtered_res);
+					if (res.find('form').length == 0) {
+						cat_groups_containers[gid].html(filtered_res);
+					}
 				}
-			}
 
-			setup_page.call(cat_groups_containers[gid], filtered_res, true);
+				setup_page.call(cat_groups_containers[gid], filtered_res, true);
+			},
+			error: function(response) {
+				// Juck @todo flip to JSON parser in jQuery 1.4
+				response = eval('(' + response.responseText + ')');
+				cat_groups_containers[gid].html(response.error);
+				setup_page.call(cat_groups_containers[gid], response.error, true);
+			}
 		});
 		return false;
 	};
@@ -452,15 +463,19 @@ EE.date_obj_time = (function() {
 	var date_obj = new Date(),
 		date_obj_hours = date_obj.getHours(),
 		date_obj_mins = date_obj.getMinutes(),
-		date_obj_am_pm = " AM";
+		date_obj_am_pm = "";
 
 	if (date_obj_mins < 10) {
 		date_obj_mins = "0" + date_obj_mins;
 	}
 
-	if (date_obj_hours > 11) {
-		date_obj_hours = date_obj_hours - 12;
-		date_obj_am_pm = " PM";
+	if (EE.date.format == "us") {
+		if (date_obj_hours > 11) {
+			date_obj_hours = date_obj_hours - 12;
+			date_obj_am_pm = " PM";
+		} else {
+			date_obj_am_pm = " AM";
+		}
 	}
 	
 	return " '" + date_obj_hours + ":" + date_obj_mins + date_obj_am_pm + "'";

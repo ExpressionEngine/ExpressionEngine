@@ -62,7 +62,16 @@ class EE_Core {
 	function _initialize_core()
 	{
 		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();			
+		$this->EE =& get_instance();
+		
+		// Make sure app_version has no periods (only a problem on 2.0.2 installs)
+		$app_version = $this->EE->config->item('app_version');
+		
+		if (strpos($app_version, '.'))
+		{
+			$this->EE->config->_update_config(array('app_version' => str_replace('.', '', $app_version)));
+			$this->EE->config->set_item('app_version', str_replace('.', '', $app_version));
+		}		
 		
 		// some path constants to simplify things
 		define('PATH_MOD',		APPPATH.'modules/');
@@ -76,7 +85,7 @@ class EE_Core {
 		define('IS_FREELANCER',	! file_exists(PATH_MOD.'member/mod.member'.EXT));
 		define('APP_NAME',		'ExpressionEngine'.((IS_FREELANCER) ? ' Freelancer' : ''));
 		define('APP_BUILD',		'20100101');
-		define('APP_VER',		substr($this->EE->config->slash_item('app_version'), 0, 1).'.'.substr($this->EE->config->item('app_version'), 1, 1).'.'.substr($this->EE->config->item('app_version'), 2));
+		define('APP_VER',		substr($this->EE->config->item('app_version'), 0, 1).'.'.substr($this->EE->config->item('app_version'), 1, 1).'.'.substr($this->EE->config->item('app_version'), 2));
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');

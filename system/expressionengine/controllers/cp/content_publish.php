@@ -858,6 +858,9 @@ class Content_publish extends Controller {
 
 		// -------------------------------------------
 
+		$fmt = ($this->session->userdata['time_format'] != '') ? $this->session->userdata['time_format'] : $this->config->item('time_format');
+		$this->javascript->set_global('date.format', $fmt);
+
 		// used in date field
 		// $this->javascript->output('
 		// 	var date_obj = new Date(),
@@ -2563,12 +2566,12 @@ class Content_publish extends Controller {
 			return TRUE;
 		}
 
-		if ($this->api_channel_entries->get_errors('pings'))
+		if (($vars['ping_errors'] = $this->api_channel_entries->get_errors('pings')) !== FALSE)
 		{
 			$vars['channel_id'] = $this->api_channel_entries->channel_id;
 			$vars['entry_id'] = $this->api_channel_entries->entry_id;
 			$vars['entry_link'] = BASE.AMP.'C=content_publish'.AMP.'M=view_entry'.AMP.'channel_id='.$vars['channel_id'].AMP.'entry_id='.$vars['entry_id'];
-			$this->cp->set_variable('cp_page_title', 'success or something like it');
+			$this->cp->set_variable('cp_page_title', $this->lang->line('xmlrpc_ping_errors'));
 		
 			$this->load->view('content/ping_errors', $vars);
 			return TRUE;	// tricking it into not publish again
