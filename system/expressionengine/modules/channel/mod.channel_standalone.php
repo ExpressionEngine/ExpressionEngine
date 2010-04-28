@@ -49,7 +49,6 @@ class Channel_standalone extends Channel {
 	{
 		$this->EE->load->library('filemanager');
 		$this->EE->lang->loadfile('content');
-		$this->EE->load->library('cp');
 		
 		$config = array();
 		
