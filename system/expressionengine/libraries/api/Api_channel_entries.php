@@ -914,6 +914,13 @@ class Api_channel_entries extends Api {
 		// api_channel_fields is not an object.  
 		if ($this->autosave === FALSE)
 		{
+			if ( ! isset($this->EE->api_channel_fields) OR ! isset($this->EE->api_channel_fields->settings))
+			{
+				// @confirm - limit to this channel!
+				$this->instantiate('channel_fields');
+				$this->EE->api_channel_fields->fetch_custom_channel_fields();
+			}
+			
 			$field_ids = array_keys($this->EE->api_channel_fields->settings);
 
 			foreach($field_ids as $id)
