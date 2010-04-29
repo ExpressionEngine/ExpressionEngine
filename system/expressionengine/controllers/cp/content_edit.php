@@ -950,7 +950,6 @@ class Content_edit extends Controller {
 			{
 				$data_array = $filtered_entries['results'];
 			}
-		
 			
 			$j_response['aaData']  = $this->format_comments($filter_data['validate'], $data_array['results']);
 			
@@ -2384,7 +2383,7 @@ class Content_edit extends Controller {
 		/*	- view_comment_chars => Number of characters to display (#)
 		/*	- view_comment_leave_breaks => Create <br />'s based on line breaks? (y/n)
 		/* -------------------------------------------*/
-
+		
 		$this->comment_chars	= ($this->config->item('view_comment_chars') !== FALSE) ? $this->config->item('view_comment_chars') : $this->comment_chars;
 		$this->comment_leave_breaks = ($this->config->item('view_comment_leave_breaks') !== FALSE) ? $this->config->item('view_comment_leave_breaks') : $this->comment_leave_breaks;
 		
@@ -2392,6 +2391,7 @@ class Content_edit extends Controller {
 		$val = 'val';
 		$pag_config['per_page'] = 'per';
 		$rownum= '';
+		$channel_id = '';
 		
 
 		if ($validate OR is_array($data_array))
@@ -2409,10 +2409,7 @@ class Content_edit extends Controller {
 		}
 		else
 		{
-
-			//---------------------------------------
 			// Fetch comment display preferences
-			//---------------------------------------
 
 			$this->db->select('comment_text_formatting, comment_html_formatting, comment_allow_img_urls, comment_auto_link_urls');
 			$query = $this->db->get_where('channels', array('channel_id' => $channel_id));
