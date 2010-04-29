@@ -9318,6 +9318,11 @@ class Forum_Core extends Forum {
 	/** -------------------------------------*/
 	function visitor_stats()
 	{
+		if (empty($this->EE->stats->statdata))
+		{
+			return;
+		}
+		
 		$str = $this->_load_element('visitor_stats');
 			
 		/** -------------------------------------
@@ -9351,7 +9356,14 @@ class Forum_Core extends Forum {
 			$limit	= (preg_match("/.*limit=[\"|'](.+?)[\"|']/", $match['1'], $match2)) ? $match2['1'] : 10;
 			$back	= (preg_match("/.*backspace=[\"|'](.+?)[\"|']/", $match['1'], $match2)) ? $match2['1'] : '';
 			
-			$query = $this->EE->db->query("SELECT screen_name, member_id FROM exp_members WHERE group_id != '2' AND group_id != '4' ORDER BY member_id DESC LIMIT ".$limit);
+			$this->EE->db->select('screen_name, member_id');
+			$this->EE->db->where('group_id != 2');
+			$this->EE->db->where('group_id != 4');
+			$this->EE->db->order_by('member_id', 'DESC');
+			$this->EE->db->limit($limit);
+			$query = $this->EE->db->get('members');
+			
+			// $query = $this->EE->db->query("SELECT screen_name, member_id FROM exp_members WHERE group_id != '2' AND group_id != '4' ORDER BY member_id DESC LIMIT ".$limit);
 			
 			$names = '';
 			
