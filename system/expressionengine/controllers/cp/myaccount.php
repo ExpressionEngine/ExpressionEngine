@@ -423,10 +423,16 @@ class MyAccount extends Controller {
 
 		if ($data['location'] != "" OR $data['url'] != "")
 		{
-			// @todo: model this
-			$data = array('location' => $data['location'], 'url' => $data['url']);
-			$this->db->where('author_id', $this->id);
-			$this->db->update('comments', $data);
+			if ($this->db->table_exists('comments'))
+			{
+				$d = array(
+						'location'	=> $data['location'],
+						'url'		=> $data['url']
+					);
+				
+				$this->db->where('author_id', $this->id);
+				$this->db->update('comments', $d);
+			}
 		}
 		
 		$id = ($id == '') ? '' : AMP.'id='.$id;
