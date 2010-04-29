@@ -1431,9 +1431,9 @@ class Design extends Controller {
 
 		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
 		{
-			if ($_POST['save_template_file'] != 'null')
+			if ($this->input->post('save_template_file') != FALSE && $this->input->post('save_template_file') != 'null')
 			{
-				$data['save_template_file'] = $_POST['save_template_file'];
+				$data['save_template_file'] = $this->input->post('save_template_file');
 			}
 		}
 
@@ -1442,7 +1442,7 @@ class Design extends Controller {
 			// If we switched 'save' to no, we need to delete files.
 			$short_name = $this->config->item('site_short_name');
 			
-			if ($_POST['save_template_file'] == 'n')
+			if ($this->input->post('save_template_file') == 'n')
 			{
 				$this->db->from('templates');
 				$this->db->select('template_name, template_type, template_id');

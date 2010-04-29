@@ -22,7 +22,7 @@ if ($EE_view_disable !== TRUE)
 
 			<?php $this->load->view('_shared/message');?>
 
-	        	<?=form_open('C=members'.AMP.'M=view_all_members')?>
+	        	<?=form_open('C=members'.AMP.'M=view_all_members', array('id' => 'member_form'))?>
 					<fieldset>
 					<p><strong><?=lang('total_members').'</strong> '.$total_members?></p>
 			

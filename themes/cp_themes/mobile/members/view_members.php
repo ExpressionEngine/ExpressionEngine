@@ -24,7 +24,7 @@ if ($EE_view_disable !== TRUE)
 	
 				<?php $this->load->view('_shared/message');?>
 
-		        	<?=form_open('C=members'.AMP.'M=view_all_members')?>
+		        	<?=form_open('C=members'.AMP.'M=view_all_members', array('id' => 'member_form'))?>
 
 					<ul class="rounded">
 						<li><?=lang('total_members').' '.$total_members?></li>

@@ -856,8 +856,10 @@ class Content_edit extends Controller {
 		// Apply only to comments- not part of edit page filter
 		$filter_data['entry_id'] = $this->input->get_post('entry_id');
 		$filter_data['comment_id'] = $this->input->get_post('comment_id');
+		$filter_data['id_array'] = ($this->input->get_post('id_array')) ? explode($this->input->get_post('id_array')) : array();		
+	
 		$filter_data['validate'] = ($this->input->get_post('validate') == 'true') ? TRUE : FALSE;
-		$validate = ($filter_data['validate'] == 'true') ? TRUE : FALSE;
+		$validate = $filter_data['validate'];
 
 
 		$perpage = $this->input->get_post('iDisplayLength');
@@ -913,7 +915,10 @@ class Content_edit extends Controller {
 
 		if ($filter_data['entry_id'] != FALSE OR $filter_data['comment_id'] != FALSE)
 		{
-			$filtered_entries = $this->search_model->comment_search('', $filter_data['entry_id'], array($filter_data['comment_id']), '', $validate, $order);	
+			$filtered_entries = $this->search_model->comment_search('', $filter_data['entry_id'], array($filter_data['comment_id']), '', $validate, $order);
+			
+			//print_r($filtered_entries);
+				
 			$filter_data['search_in'] == 'comments';
 		}
 		else
@@ -935,9 +940,16 @@ class Content_edit extends Controller {
 		// Did we shift over to comment search?
 		if ($filter_data['search_in'] == 'comments')
 		{
-			$j_response['iTotalDisplayRecords'] = count($filtered_entries['ids']);
+			if (isset($filtered_entries['ids']))
+			{
+				$j_response['iTotalDisplayRecords'] = count($filtered_entries['ids']);
 			
-			$data_array = $this->search_model->comment_search('', '', $filtered_entries['ids'], count($filtered_entries['ids']), $validate, $order);
+				$data_array = $this->search_model->comment_search('', '', $filtered_entries['ids'], count($filtered_entries['ids']), $validate, $order);
+			}
+			else
+			{
+				$data_array = $filtered_entries['results'];
+			}
 			
 			$j_response['aaData']  = $this->format_comments($filter_data['validate'], $data_array['results']);
 			
@@ -2371,7 +2383,7 @@ class Content_edit extends Controller {
 		/*	- view_comment_chars => Number of characters to display (#)
 		/*	- view_comment_leave_breaks => Create <br />'s based on line breaks? (y/n)
 		/* -------------------------------------------*/
-
+		
 		$this->comment_chars	= ($this->config->item('view_comment_chars') !== FALSE) ? $this->config->item('view_comment_chars') : $this->comment_chars;
 		$this->comment_leave_breaks = ($this->config->item('view_comment_leave_breaks') !== FALSE) ? $this->config->item('view_comment_leave_breaks') : $this->comment_leave_breaks;
 		
@@ -2379,6 +2391,7 @@ class Content_edit extends Controller {
 		$val = 'val';
 		$pag_config['per_page'] = 'per';
 		$rownum= '';
+		$channel_id = '';
 		
 
 		if ($validate OR is_array($data_array))
@@ -2396,10 +2409,7 @@ class Content_edit extends Controller {
 		}
 		else
 		{
-
-			//---------------------------------------
 			// Fetch comment display preferences
-			//---------------------------------------
 
 			$this->db->select('comment_text_formatting, comment_html_formatting, comment_allow_img_urls, comment_auto_link_urls');
 			$query = $this->db->get_where('channels', array('channel_id' => $channel_id));

@@ -159,6 +159,9 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 'add_email_template' =>
 'Add Email Template',
 
+'template_name' =>
+'Template Name',
+
 'edit_email_templates' =>
 'Edit Email Templates',
 
