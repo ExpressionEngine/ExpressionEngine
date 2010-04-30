@@ -2538,12 +2538,12 @@ class Wiki {
 		/**  Current Revision's Content
 		/** ----------------------------------------*/
 		
-		$results = $this->EE->db->query("SELECT page_content, revision_date
-								FROM exp_wiki_revisions
-								WHERE page_id = '".$query->row('page_id') ."'
-								AND revision_id = '".$this->EE->db->escape_str($revision_id)."'
-								AND wiki_id = '".$this->EE->db->escape_str($this->wiki_id)."'
-								ORDER BY revision_date DESC LIMIT 1");
+		$results = $this->EE->db->query("SELECT page_content, revision_date, revision_notes, page_redirect  
+							   FROM exp_wiki_page p LEFT JOIN  exp_wiki_revisions r ON r.page_id = p.page_id
+							   WHERE p.page_id = '".$query->row('page_id')."'
+							   AND revision_id = '".$this->EE->db->escape_str($revision_id)."'
+							   AND p.wiki_id = '".$this->EE->db->escape_str($this->wiki_id)."'
+							   ORDER BY revision_date DESC LIMIT 1");
 									
 		if ($results->row('revision_date')  < $query->row('last_updated') )
 		{
@@ -2554,7 +2554,9 @@ class Wiki {
 			$this->return_data = $this->_deny_if('old_revision', $this->return_data);
 		}
 			
-		$content = ($results->num_rows() == 0) ? '' :  $results->row('page_content') ;
+		$content = ($results->num_rows() == 0) ? '' :  $results->row('page_content');
+		$revision_notes = ($results->num_rows() == 0) ? '' :  $results->row('revision_notes');
+		$redirect = ($results->num_rows() == 0) ? '' :  $results->row('page_redirect');		
 		
 		$this->conditionals['redirect_page'] = '';
 		
@@ -2575,8 +2577,7 @@ class Wiki {
 		// Load the form helper
 		$this->EE->load->helper('form');
 
-		$this->return_data = str_replace(array('{form_declaration:wiki:edit}', '{content}', '{redirect_page}'), 
-										array($this->EE->functions->form_declaration($data), $this->encode_ee_tags(form_prep($content)), ''), 
+		$this->return_data = str_replace(array('{form_declaration:wiki:edit}', '{content}', '{redirect_page}', '{revision_notes}', '{rename}'), array($this->EE->functions->form_declaration($data), $this->encode_ee_tags(form_prep($content)), $redirect, $revision_notes, ''),
 										$this->return_data);
 	}
 
