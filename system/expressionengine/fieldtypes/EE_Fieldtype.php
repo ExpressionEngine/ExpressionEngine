@@ -152,6 +152,20 @@ class EE_Fieldtype {
 	}
 	
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Save Settings
+	 *
+	 * @access	public
+	 * @param	array
+	 * @return	void
+	 */
+	function post_save_settings($data)
+	{
+		return;
+	}
+	
+	// --------------------------------------------------------------------
 
 	/**
 	 * Install

@@ -4313,11 +4313,23 @@ class Admin_content extends Controller {
 			'field_text_direction', 'field_search', 'field_is_hidden', 'field_fmt', 'field_show_fmt',
 			'field_order', 'field_content_type'
 		);
+				
+		$_posted = array();
+		$_field_posted = preg_grep('/^'.$field_type.'_.*/', array_keys($_POST));
+		$_keys = array_merge($native,  $_field_posted);
+
+		foreach($_keys as $key)
+		{
+			if (isset($_POST[$key]))
+			{
+				$_posted[$key] = $this->input->post($key);
+			}
+		}
 
 		// Get the field type settings
 		$this->api_channel_fields->fetch_all_fieldtypes();
 		$this->api_channel_fields->setup_handler($field_type);
-		$ft_settings = $this->api_channel_fields->apply('save_settings', $_POST);
+		$ft_settings = $this->api_channel_fields->apply('save_settings', array($_posted));
 		
 		// Default display options
 		foreach(array('smileys', 'glossary', 'spellcheck', 'formatting_btns', 'file_selector', 'writemode') as $key)
@@ -4504,6 +4516,7 @@ class Admin_content extends Controller {
 			$this->db->insert('channel_fields', $native_settings);
 
 			$insert_id = $this->db->insert_id();
+			$native_settings['field_id'] = $insert_id;
 
 			if ($field_type == 'date' OR $field_type == 'rel')
 			{
@@ -4555,6 +4568,13 @@ class Admin_content extends Controller {
 				$this->layout->add_layout_fields($field_info, $channel_ids);
 			}
 		}
+		
+		$_final_settings = array_merge($native_settings, $ft_settings);
+		unset($_final_settings['field_settings']);
+		
+		$this->api_channel_fields->set_settings($native_settings['field_id'], $_final_settings);
+		$this->api_channel_fields->setup_handler($native_settings['field_id']);
+		$this->api_channel_fields->apply('post_save_settings', array($_posted));
 
 		$this->functions->clear_caching('all', '', TRUE);
 
