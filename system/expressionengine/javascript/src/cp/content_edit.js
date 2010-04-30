@@ -66,6 +66,58 @@ $(document).ready(function() {
 		}
 	});
 
+
+
+	// The oracle knows everything.  
+
+	var channel_oracle = EE.edit.channelInfo,
+			spaceString = new RegExp('!-!', "g");
+
+	// We prep our magic arrays as soons as we can, basically
+	// converting everything into option elements
+	(function() {
+		jQuery.each(channel_oracle, function(key, details) {
+
+			// Go through each of the individual settings and build a proper dom element
+			jQuery.each(details, function(group, values) {
+				var newval = new Array();
+
+				// Add the new option fields
+				jQuery.each(values, function(a, b) {
+					newval.push(new Option(b[1].replace(spaceString, String.fromCharCode(160)), b[0]));
+				});
+
+				// Set the new values
+				channel_oracle[key][group] = $(newval);
+			});
+		});
+
+	})();
+
+	// Change the submenus
+	// Gets passed the channel id
+	function changemenu(index) {
+		var channels = 'null';
+
+		if (channel_oracle[index] === undefined) {
+			index = 0;
+		}
+				
+		jQuery.each(channel_oracle[index], function(key, val) { 					
+			switch(key) {
+				case 'categories':	$('select#f_cat_id').empty().append(val);
+					break;
+				case 'statuses':	$('select#f_status').empty().append(val);
+					break;
+			}
+		});
+	}
+
+	$("#f_channel_id").change(function() {
+		changemenu(this.value);
+	});	
+
+
 	function dates_picked() {
 		if ($("#custom_date_start").val() != "yyyy-mm-dd" && $("#custom_date_end").val() != "yyyy-mm-dd") {
 			// populate dropdown box
@@ -270,56 +322,6 @@ $(document).ready(function() {
 			$("select#date_range").change(function () {
 				oTable.fnDraw();
 			});
-
-			// The oracle knows everything.  
-
-			var channel_oracle = EE.edit.channelInfo,
-				spaceString = new RegExp('!-!', "g");
-
-			// We prep our magic arrays as soons as we can, basically
-			// converting everything into option elements
-			(function() {
-				jQuery.each(channel_oracle, function(key, details) {
-
-					// Go through each of the individual settings and build a proper dom element
-					jQuery.each(details, function(group, values) {
-						var newval = new Array();
-
-						// Add the new option fields
-						jQuery.each(values, function(a, b) {
-							newval.push(new Option(b[1].replace(spaceString, String.fromCharCode(160)), b[0]));
-						});
-
-						// Set the new values
-						channel_oracle[key][group] = $(newval);
-					});
-				});
-
-			})();
-
-
-			// Change the submenus
-			// Gets passed the channel id
-			function changemenu(index) {
-				var channels = 'null';
-
-				if (channel_oracle[index] === undefined) {
-					index = 0;
-				}
-				
-				jQuery.each(channel_oracle[index], function(key, val) { 					
-					switch(key) {
-						case 'categories':	$('select#cat_id').empty().append(val);
-							break;
-						case 'statuses':	$('select#status').empty().append(val);
-							break;
-					}
-				});
-			}
-
-			$('select[name=channel_id]').change(function() {
-				changemenu(this.value);
-			});	
 	
 });
 

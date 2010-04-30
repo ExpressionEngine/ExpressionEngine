@@ -244,17 +244,6 @@ class Content_edit extends Controller {
 
 		$vars['search_form'] = ($search_url != '') ? $search_url : 'C=content_edit';
 
-		// If we have more than one channel we'll add the "onchange" method to
-		// the form so that it'll automatically switch categories and statuses
-		if ($total_channels > 1)
-		{
-			$vars['channel_select']['onchange'] = 'changemenu(this.selectedIndex);';
-		}
-
-		// Design note:	 Because the JavaScript code dynamically switches the information inside the
-		// pull-down menus we can't show any particular menu in a "selected" state unless there is only
-		// one channel.	 Each channel is fully independent, so it can have its own categories, statuses, etc. 
-
 		// Channel selection pull-down menu
 		// Fetch the names of all channels and write each one in an <option> field
 
