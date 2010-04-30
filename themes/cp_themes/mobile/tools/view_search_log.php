@@ -22,7 +22,7 @@ if ($EE_view_disable !== TRUE)
 			<ul>
 				<li><strong><?=lang('screen_name')?>:</strong> <?=$screen_name?></li>
 				<li><strong><?=lang('ip_address')?>:</strong> <?=$data->ip_address?></li>
-				<li><strong><?=lang('date')?>:</strong> <?=date(Y-m-d h:i A', $data->search_date)?></li>
+				<li><strong><?=lang('date')?>:</strong> <?=date('Y-m-d h:i A', $data->search_date)?></li>
 				<li><strong><?=lang('site')?>:</strong> <?=$data->site_label?></li>
 				<li><strong><?=lang('searched_in')?>:</strong> <?=$data->search_type?></li>
 				<li><strong><?=lang('search_terms')?>:</strong> <?=$data->search_terms?></li>
