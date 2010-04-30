@@ -65,7 +65,8 @@ class EE_Actions {
 		// These are actions that are triggered manually
 		// rather than doing a lookup in the actions table.
 		$specials = array(
-							'jquery'			=> array('Jquery', 'output_javascript')
+							'jquery'			=> array('Jquery', 'output_javascript'),
+							'saef'				=> array('Channel', 'saef_filebrowser')
 						 );
 		
 		// Make sure the ACT variable is set		

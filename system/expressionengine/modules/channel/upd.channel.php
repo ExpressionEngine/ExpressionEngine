@@ -72,13 +72,6 @@ class Channel_upd {
 					);
 					
 		$this->EE->db->insert('actions', $data);
-		
-		$data = array(
-					'class' => 'Channel',
-					'method' => 'saef_filebrowser'
-					);
-					
-		$this->EE->db->insert('actions', $data);
 
 		return TRUE;
 	}
@@ -101,7 +94,6 @@ class Channel_upd {
 		$this->EE->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
 		$this->EE->db->delete('modules', array('module_name' => 'Channel'));
 		$this->EE->db->delete('actions', array('class' => 'Channel'));
-		$this->EE->db->delete('actions', array('class' => 'Channel_standalone'));
 		$this->EE->db->delete('actions', array('class' => 'Channel_mcp'));
 
 		return TRUE;
@@ -117,13 +109,6 @@ class Channel_upd {
 	 */
 	function update()
 	{
-		$data = array(
-					'class' => 'Channel',
-					'method' => 'saef_filebrowser'
-					);
-					
-		$this->EE->db->insert('actions', $data);
-		
 		return TRUE;
 	}
 
