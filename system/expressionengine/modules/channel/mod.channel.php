@@ -3452,6 +3452,7 @@ class Channel {
 		// Fetch Custom Field Chunks
 		// If any of our custom fields are tag pair fields, we'll grab those chunks now
 
+		// @todo @pk - something is off - we're not caching parameters correctly
 		$pfield_chunk = array();
 
 		if (count($this->pfields) > 0)
@@ -3504,6 +3505,31 @@ class Channel {
 				}
 			}
 		}
+		
+		// One more preloop check - custom fields with modifiers in conditionals
+
+		$all_field_names = array();
+		
+		foreach($this->cfields as $site_id => $fields)
+		{
+			$all_field_names = array_unique(array_merge($all_field_names, $fields));
+		}
+		
+		$modified_field_options = implode('|', array_keys($all_field_names));
+		$modified_conditionals = array();
+
+		if (preg_match_all("/".preg_quote(LD)."((if:(else))*if)\s+(($modified_field_options):(\w+))(.*?)".preg_quote(RD)."/s", $this->EE->TMPL->tagdata, $matches))
+		{
+			foreach($matches[5] as $match_key => $field_name)
+			{
+				$modified_conditionals[$field_name][] = $matches[6][$match_key];
+			}
+		}
+		
+		$modified_conditionals = array_map('array_unique', $modified_conditionals);
+		unset($all_field_names, $modified_field_options);
+		
+		
 
 		// "Search by Member" link
 		// We use this with the {member_search_path} variable
@@ -3662,7 +3688,9 @@ class Channel {
 			foreach (array('avatar_filename', 'photo_filename', 'sig_img_filename') as $pv)
 			{
 				if ( ! isset($row[$pv]))
+				{
 					$row[$pv] = '';
+				}
 			}
 
 			$cond['signature_image']		= ($row['sig_img_filename'] == '' OR $this->EE->config->item('enable_signatures') == 'n' OR $this->EE->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
@@ -3691,8 +3719,27 @@ class Channel {
 				foreach($this->cfields[$row['site_id']] as $key => $value)
 				{
 					$cond[$key] = ( ! isset($row['field_id_'.$value])) ? '' : $row['field_id_'.$value];
+					
+					// Is this field used with a modifier anywhere?
+					if (isset($modified_conditionals[$key]) && count($modified_conditionals[$key]))
+					{
+						$this->EE->load->library('api');
+						$this->EE->api->instantiate('channel_fields');
+
+						if ($this->EE->api_channel_fields->setup_handler($value))
+						{
+							foreach($modified_conditionals[$key] as $modifier)
+							{
+								$this->EE->api_channel_fields->apply('_init', array(array('row' => $row)));
+								$data = $this->EE->api_channel_fields->apply('pre_process', array($cond[$key]));
+								$cond[$key.':'.$modifier] = $this->EE->api_channel_fields->apply('replace_'.$modifier, array($data, array(), FALSE));
+							}
+						}
+					}
+					
 				}
 			}
+
 
 			foreach($this->mfields as $key => $value)
 			{
@@ -3700,6 +3747,7 @@ class Channel {
 			}
 
 			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
+
 
 			// Reset custom variable pair cache
 			$parsed_custom_pairs = array();
@@ -3878,17 +3926,28 @@ class Channel {
 
 				// First we need the key name out of the {name foo=bar|baz} mess
 				$key_name = $key;
+				$parse_fnc = 'replace_tag';
 
 				if (($spc = strpos($key, ' ')) !== FALSE)
 				{
 					$key_name = substr($key, 0, $spc);
 				}
 
+				/* Currently does not work with pair fields
+				if (($cln = strpos($key, ':')) !== FALSE)
+				{
+					$parse_fnc = 'replace_'.substr($key_name, $cln + 1);
+					$key_name = substr($key_name, 0, $cln);
+				}
+				*/
+				
 				// Is it a custom field?
 				if (isset($this->cfields[$row['site_id']][$key_name]) && ! in_array($key_name, $parsed_custom_pairs))
 				{
 					// We parse all chunks, but TMPL->var_pairs will still have the others
 					// so we'll keep track of these and bail if we've parsed it
+					
+					// @todo @pk this should probably consider parameters (use $key instead of $key_name?)
 					$parsed_custom_pairs[] = $key_name;
 
 					// Is this custom field part of the current channel row?
@@ -4636,12 +4695,19 @@ class Channel {
 				// parse custom channel fields
 
 				$params = array();
+				$parse_fnc = 'replace_tag';
 				$replace = $key;
 
 				if (($spc = strpos($key, ' ')) !== FALSE)
 				{
 					$params = $this->EE->functions->assign_parameters($key);
 					$val = $key = substr($key, 0, $spc);
+				}
+				
+				if (($cln = strpos($key, ':')) !== FALSE)
+				{
+					$parse_fnc = 'replace_'.substr($key, $cln + 1);
+					$val = $key = substr($key, 0, $cln);
 				}
 
 				if (isset($this->cfields[$row['site_id']][$key]))
@@ -4661,7 +4727,7 @@ class Channel {
 						{
 							$this->EE->api_channel_fields->apply('_init', array(array('row' => $row)));
 							$data = $this->EE->api_channel_fields->apply('pre_process', array($row['field_id_'.$field_id]));
-							$entry = $this->EE->api_channel_fields->apply('replace_tag', array($data, $params, FALSE));
+							$entry = $this->EE->api_channel_fields->apply($parse_fnc, array($data, $params, FALSE));
 						}
 						else
 						{
