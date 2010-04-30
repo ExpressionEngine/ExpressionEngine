@@ -2375,9 +2375,146 @@ class Content_edit extends Controller {
 	}
 
 
-	function format_comments($validate = '', $data_array = '')
+	function comment_ajax_filter()
 	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
 		
+		$this->output->enable_profiler(FALSE);
+		$this->load->helper(array('form', 'text', 'url', 'snippets'));
+		
+		$val = '';
+		$validate = FALSE;
+		$filter_data['validate'] = 0;
+
+
+		if ($this->input->get_post('search_in') == 'comments' OR $this->input->get_post('validate') != FALSE)
+		{
+			$validate = TRUE;
+			$val = 'validate=1';
+			$filter_data['validate'] = 1;
+		}
+		
+		
+		$filter_data['channel_id'] = ($this->input->get_post('channel_id') != 'null' && $this->input->get_post('channel_id') != 'all') ? $this->input->get_post('channel_id') : '';
+		$filter_data['cat_id'] = ($this->input->get_post('cat_id') != 'all') ? $this->input->get_post('cat_id') : '';
+
+		$filter_data['status'] = ($this->input->get_post('status') != 'all') ? $this->input->get_post('status') : '';
+		$filter_data['date_range'] = $this->input->get_post('date_range');	
+		$filter_data['author_id'] = $this->input->get_post('author_id');	
+	
+		$filter_data['keywords'] = ($this->input->get_post('keywords')) ? $this->input->get_post('keywords') : '';
+		$filter_data['search_in'] = ($this->input->get_post('search_in') != '') ? $this->input->get_post('search_in') : 'title';
+		$filter_data['exact_match'] = $this->input->get_post('exact_match');
+
+
+		// Because of the auto convert we prepare a specific variable with the converted ascii
+		// characters while leaving the $keywords variable intact for display and URL purposes
+		$search_keywords = ($this->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($filter_data['keywords']) : $filter_data['keywords'];
+
+		$filter_data['search_keywords'] = $search_keywords;
+		
+		// Apply only to comments- not part of edit page filter
+		$filter_data['entry_id'] = $this->input->get_post('entry_id');
+		$filter_data['comment_id'] = ($this->input->get_post('comment_id')) ? array($this->input->get_post('comment_id')) : '';
+		//$filter_data['validate'] = ($this->input->get_post('validate') == 'true') ? TRUE : FALSE;
+		//$validate = $filter_data['validate'];
+		
+		//$validate = FALSE;
+
+
+		$perpage = $this->input->get_post('iDisplayLength');
+		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point		
+		
+		$filter_data['perpage'] = $perpage;
+		$filter_data['rownum'] = $offset;
+		
+		
+		// Note- we pipeline the js, so pull more data than are displayed on the page		
+		$perpage = $this->input->get_post('iDisplayLength');
+		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
+		$sEcho = $this->input->get_post('sEcho');	
+		
+
+		$col_map[] = 'comment';
+			
+		if ($validate)
+		{
+			$col_map[] = 'channel_name';
+			$col_map[] = 'channel_titles.title';
+		}
+			
+		$col_map[] = 'name';
+		$col_map[] = 'exp_comments.email';
+		$col_map[] = 'comment_date';
+		$col_map[] = 'exp_comments.ip_address';
+		$col_map[] = 'exp_comments.status';
+
+		/* Ordering */
+		$order = array();
+
+		if ( isset($_GET['iSortCol_0']))
+		{
+			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
+			{
+				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['iSortDir_'.$i];
+			}
+		}
+
+
+		if ($filter_data['entry_id'] != FALSE OR $filter_data['comment_id'] != FALSE)
+		{
+			$filtered_entries = $this->search_model->comment_search('', $filter_data['entry_id'], $filter_data['comment_id'], '', $validate, $order);
+			
+			$filter_data['search_in'] == 'comments';
+			
+			$data_array = $filtered_entries['results'];
+
+			$total = $filtered_entries['total_count'];
+			$f_total = $filtered_entries['total_count'];
+			$query_results = $filtered_entries['results'];
+
+			$j_response['sEcho'] = $sEcho;
+			$j_response['iTotalRecords'] = $f_total;  // note- duping the f_total here- should be true total
+			$j_response['iTotalDisplayRecords'] = $f_total;	
+			
+			$j_response['aaData']  = $this->format_comments($validate, $data_array);
+			
+			$this->output->send_ajax_response($j_response);			
+		}
+
+		$filtered_entries = $this->search_model->get_filtered_entries($filter_data, $order);
+
+		// No result?  Show the "no results" message
+		$total = $filtered_entries['total_count'];
+		$f_total = $filtered_entries['total_count'];
+		$query_results = $filtered_entries['results'];
+
+		$j_response['sEcho'] = $sEcho;
+		$j_response['iTotalRecords'] = $f_total;  // note- duping the f_total here- should be true total
+		$j_response['iTotalDisplayRecords'] = $f_total;		
+		
+		if (isset($filtered_entries['ids']))
+		{
+			$j_response['iTotalDisplayRecords'] = count($filtered_entries['ids']);
+			
+			$data_array = $this->search_model->comment_search('', '', $filtered_entries['ids'], count($filtered_entries['ids']), $validate, $order);
+		}
+		else
+		{
+			$data_array = $filtered_entries['results'];
+		}
+		
+			
+		$j_response['aaData']  = $this->format_comments($validate, $data_array['results']);
+			
+		$this->output->send_ajax_response($j_response);
+	}
+
+	function format_comments($validate = FALSE, $data_array = '')
+	{
 		/* -------------------------------------------
 		/*	Hidden Configuration Variables
 		/*	- view_comment_chars => Number of characters to display (#)
@@ -2392,14 +2529,10 @@ class Content_edit extends Controller {
 		$pag_config['per_page'] = 'per';
 		$rownum= '';
 		$channel_id = '';
-		
+		$entry_title = FALSE;
 
-		if ($validate OR is_array($data_array))
+		if ($validate OR $channel_id == '')
 		{
-			if (is_array($data_array))
-			{
-				$validate = TRUE;
-			}
 
 			$comment_text_formatting = 'xhtml';
 			$comment_html_formatting = 'safe';
@@ -2425,9 +2558,12 @@ class Content_edit extends Controller {
 			}
 		}
 
+
 		$this->load->library('typography');
 		$this->typography->initialize();
 		$tdata = array();
+		
+		$i = 0;
 
 		foreach ($data_array as $row)
 		{
@@ -2479,7 +2615,10 @@ class Content_edit extends Controller {
 				}
 
 				$entry_url	= BASE.AMP.'C=content_publish'.AMP.'M=view_entry'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'];
-				$entry_title = $this->functions->char_limiter(trim(strip_tags($row['entry_title'])), 26); 
+				if (isset($row['entry_title']))
+				{
+					$entry_title = $this->functions->char_limiter(trim(strip_tags($row['entry_title'])), 26); 
+				}
 			}
 
 			$mid_search_url = BASE.AMP.'C=content_edit'.AMP.'M=index'.
@@ -2543,19 +2682,26 @@ class Content_edit extends Controller {
 			}
 			
 			
-					$row = array(
-						"<a class='less_important_link' href='{$edit_url}'>{$row['comment']}</a>",
-						$channel_name,
-						($show_link) ? "<a class='less_important_link' href='{$entry_url}'>{$entry_title}</a>" : $entry_title,
-						($row['author_id'] == '0') ? $row['name'] : "<a class='less_important_link'  href='{$mid_search_url}'>{$row['name']}</a>",
-						$email,
-						$date,
-						"<a class='less_important_link' href='{$ip_search_url}'>{$row['ip_address']}</a>",
-						"<a class='less_important_link' href='{$status_change_url}'>{$status_label}</a>",												
-						form_checkbox('toggle[]', 'c'.$row['comment_id'], FALSE, 'class="comment_toggle"')
-					);			
+			$out[] = "<a class='less_important_link' href='{$edit_url}'>{$row['comment']}</a>";
 			
-			$tdata[] = $row;
+			if ($validate === TRUE)
+			{
+				$out[] = $channel_name;
+				$out[] = ($show_link) ? "<a class='less_important_link' href='{$entry_url}'>{$entry_title}</a>" : $entry_title;
+			}
+			
+			$out[] = ($row['author_id'] == '0') ? $row['name'] : "<a class='less_important_link'  href='{$mid_search_url}'>{$row['name']}</a>";
+			$out[] = $email;
+			$out[] = $date;
+			$out[] = "<a class='less_important_link' href='{$ip_search_url}'>{$row['ip_address']}</a>";
+			$out[] = "<a class='less_important_link' href='{$status_change_url}'>{$status_label}</a>";												
+			$out[] = form_checkbox('toggle[]', 'c'.$row['comment_id'], FALSE, 'class="comment_toggle"');
+			
+			
+			$tdata[$i] = $out;
+			
+			unset($out);
+			$i++;
 		}
 		
 		$j_response = $tdata;	
@@ -2580,7 +2726,12 @@ class Content_edit extends Controller {
 
 		$this->load->helper('text');
 
+		$val = '';
+		$search = '';
+		$validate = FALSE;
+		$filter_data['validate'] = 0;
 		$perpage = '75';
+		$cols = '[null, null, null, null, null, null, { "bSortable" : false } ]';
 		$this->cp->add_js_script(array('plugin' => 'dataTables'));
 
 		// This function is accessible through the url, but also callable
@@ -2614,8 +2765,16 @@ class Content_edit extends Controller {
 		$pag_config['page_query_string'] = TRUE;
 		$pag_config['query_string_segment'] = 'current_page';
 		
-		$validate = ($this->input->get('validate') == 1) ? TRUE : FALSE;
-		$filter_data['validate'] = 'false';
+		//  validate or keyword indicate $validate = TRUE
+		
+		if ($this->input->get_post('keywords') !== FALSE OR $this->input->get('validate') != FALSE)
+		{
+			$validate = TRUE;
+			$search = '&search_in=comments';
+			$val = 'validate=1';
+			$filter_data['validate'] = 1;
+			$cols = '[null, null, null, null, null, null, null, null, { "bSortable" : false } ]';
+		}
 
 		$filter_data['channel_id'] = ($this->input->get_post('channel_id') && $this->input->get_post('channel_id') != 'null') ? $this->input->get_post('channel_id') : '';
 		$filter_data['cat_id'] = $this->input->get_post('cat_id');
@@ -2651,12 +2810,6 @@ class Content_edit extends Controller {
 			}			
 		}
 		
-		if ($validate == TRUE OR is_array($id_array))
-		{
-			$filter_data['validate'] = 'true';
-		}
-
-	
 		// Require at least one comment checked to submit
 		$this->javascript->output('
 		$("#target").submit(function() {
@@ -2811,9 +2964,10 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			"sWrapper": false,
 			"sInfo": false,
 			"bAutoWidth": false,
-			"iDisplayLength": '.$perpage.',  
-
-		"aoColumns": [null, null, { "bSortable" : false }, null, null, null, null, null, { "bSortable" : false } ],
+			"iDisplayLength": '.$perpage.', 
+			
+			
+		"aoColumns": '.$cols.', 
 			
 			
 		"oLanguage": {
@@ -2829,7 +2983,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 			"bProcessing": true,
 			"bServerSide": true,
-			"sAjaxSource": EE.BASE+"&C=content_edit&M=edit_ajax_filter&search_in=comments",
+			"sAjaxSource": EE.BASE+"&C=content_edit&M=comment_ajax_filter'.$search.'",
 			"fnServerData": fnDataTablesPipeline
 	} );
 
@@ -2862,11 +3016,10 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		if ($comment_results['error'] !== FALSE)
 		{
-			show_error($comment_results);
+			show_error($comment_results['error']);
 		}
 		
-		
-		if ($validate OR is_array($id_array))
+		if ($validate OR $channel_id == '')
 		{
 			// Paginate the results - this only happens when the function is called
 			// directly and the base url and total comment count are passed
@@ -2887,7 +3040,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 			if (is_array($id_array))
 			{
-				$validate = TRUE;
+				//$validate = TRUE;
 			}
 
 
@@ -2924,7 +3077,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 			if ($query->num_rows() == 0)
 			{
-				show_error($this->lang->line('no_channel_exists'));
+				show_error($this->lang->line('no_channel_exist'));
 			}
 
 			foreach ($query->row_array() as $key => $val)

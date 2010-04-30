@@ -499,13 +499,16 @@ class Search_model extends CI_Model {
 		$return_data['error'] = FALSE;
 		$return_data['results'] = array();
 		$return_data['total_comments'] = $total_rows;
+		$return_data['total_count'] = $total_rows;
+		
+		$ids = array();
 
-		if ($validate OR is_array($id_array))
+		if ($validate OR (is_array($id_array) && count($id_array) > 0))
 		{
 			if ( ! $this->cp->allowed_group('can_moderate_comments'))
 			{
-				$results['error'] = $this->lang->line('unauthorized_access');
-				return $results['error'];
+				$return_data['error'] = $this->lang->line('unauthorized_access');
+				return $return_data;
 			}
 
 			if (is_array($id_array))
@@ -542,7 +545,15 @@ class Search_model extends CI_Model {
 			
 			$query = $this->db->get();
 			
-			$return_data['total_count'] = ($return_data['total_comments'] != '') ? $return_data['total_comments'] : $query->num_rows();
+			foreach ($query->result_array() as $row)
+			{
+				$ids[] = $row['comment_id'];
+			}
+			
+			$return_data['ids'] = $ids;
+			
+			$return_data['total_count'] = $query->num_rows();
+			$return_data['total_comments'] = $query->num_rows();
 
 			$return_data['results'] = $query->result_array();
 			
@@ -555,8 +566,8 @@ class Search_model extends CI_Model {
 			{
 				if ( ! $entry_id = $this->input->get('entry_id'))
 				{
-					$results['error'] = $this->lang->line('unauthorized_access');
-					return $results['error'];
+					$return_data['error'] = $this->lang->line('unauthorized_access');
+					return $return_data;
 				}
 			}
 
@@ -564,15 +575,15 @@ class Search_model extends CI_Model {
 			{
 				if ( ! $channel_id = $this->input->get('channel_id'))
 				{
-					$results['error'] = $this->lang->line('unauthorized_access');
-					return $results['error'];
+					$return_data['error'] = $this->lang->line('unauthorized_access');
+					return $return_data;
 				}
 			}
 
 			if ( ! is_numeric($entry_id) OR ! is_numeric($channel_id))
 			{
-				$results['error'] = $this->lang->line('unauthorized_access');
-				return $results['error'];
+				$return_data['error'] = $this->lang->line('unauthorized_access');
+				return $return_data;
 			}
 
 
@@ -585,20 +596,20 @@ class Search_model extends CI_Model {
 
 			if ($query->num_rows() == 0)
 			{
-				$results['error'] = $this->lang->line('no_channel_exists');
-				return $results['error'];
+				$return_data['error'] = $this->lang->line('no_channel_exists');
+				return $return_data;
 			}
 
-			if ($query->row('author_id')  != $this->session->userdata('member_id'))
+			if ($query->row('author_id') != $this->session->userdata('member_id'))
 			{
 				if ( ! $this->cp->allowed_group('can_view_other_comments'))
 				{
-					$results['error'] = $this->lang->line('unauthorized_access');
-					return $results['error'];
+					$return_data['error'] = $this->lang->line('unauthorized_access');
+					return $return_data;
 				}
 			}
 
-			$et = $query->row('title') ;
+			//$et = $query->row('title') ;
 
 			// Fetch comment ID numbers
 
@@ -637,6 +648,17 @@ class Search_model extends CI_Model {
 
 
 			// Fetch Comments if necessary
+			if (is_array($order) && count($order) > 0)
+			{
+				foreach ($order as $key => $val)
+				{
+					$this->db->order_by($key, $val);
+				}
+			}
+			else
+			{
+				$this->db->order_by('comment_date', 'desc');
+			}
 
 			$this->db->select('comment_id, entry_id, status, channel_id, author_id, name, email, url, location, ip_address, comment_date, comment');
 			$this->db->where_in('comment_id', $c_ids);
