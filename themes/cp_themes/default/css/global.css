@@ -2416,6 +2416,7 @@ a#refresh_categories {
 
 #custom_date_picker input[type="text"] {
 	background: transparent url('<?=$cp_theme_url?>images/calendar_bg.gif') no-repeat 98% 2px;
+	width:90%;
 }
 
 #filterMenu table.ui-datepicker-calendar a {color:#fff;}
