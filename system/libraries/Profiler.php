@@ -43,8 +43,6 @@ class CI_Profiler {
 										'controller_info',
 										'queries',
 										'http_headers',
-										
-										
 										'config'
 										);
 

@@ -990,11 +990,10 @@ class Member_settings extends Member {
 			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('invalid_action')));
 		}
 
-		/** -------------------------------------
-		/**  Are any required custom fields empty?
-		/** -------------------------------------*/
-
-		 $query = $this->EE->db->query("SELECT m_field_id, m_field_label FROM exp_member_fields WHERE m_field_required = 'y'");
+		// Are any required custom fields empty?
+		$this->EE->db->select('m_field_id, m_field_label');
+		$this->EE->db->where('m_field_required = "y"');
+		$query = $this->EE->db->get('member_fields');
 
 		 $errors = array();
 
@@ -1103,14 +1102,15 @@ class Member_settings extends Member {
 
 		if ($data['location'] != "" OR $data['url'] != "")
 		{
-			$this->EE->db->query($this->EE->db->update_string('exp_comments', array('location' => $data['location'], 'url' => $data['url']), "author_id = '".$this->EE->session->userdata('member_id')."'"));
-
-			// We need to update the gallery comments
-			// But!  Only if the table exists
-
-			if ($this->EE->db->table_exists('exp_gallery_comments'))
+			if ($this->EE->db->table_exists('comments'))
 			{
-				$this->EE->db->query($this->EE->db->update_string('exp_gallery_comments', array('location' => $data['location'], 'url' => $data['url']), "author_id = '".$this->EE->session->userdata('member_id')."'"));
+				$d = array(
+						'location'	=> $data['location'],
+						'url'		=> $data['url']
+					);
+				
+				$this->EE->db->where('author_id', $this->EE->session->userdata('member_id'));
+				$this->EE->db->update('comments', $d);
 			}
 	  	}
 
