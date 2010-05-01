@@ -125,6 +125,16 @@ class Homepage extends Controller {
 		}
 		
 		
+		// Most recent comment and most recent entry
+		
+		$comments_installed = $this->db->table_exists('comments');
+		
+		$vars['cp_recent_ids'] = array(
+			'entry'		=> $this->channel_model->get_most_recent_id('entry'),
+			'comment'	=> $comments_installed ? $this->channel_model->get_most_recent_id('comment') : FALSE
+		);
+		
+		
 		// Prep js
 		
 		$this->javascript->set_global('lang.close', $this->lang->line('close'));

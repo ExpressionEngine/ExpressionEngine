@@ -27,6 +27,7 @@ class Cp {
 	var $cp_theme				= '';
 	var $cp_theme_url			= '';	// base URL to the CP theme folder
 
+	var $xid_ttl 				= 14400;
 	var $installed_modules		= FALSE;
 
 	var $its_all_in_your_head	= array();
@@ -39,7 +40,6 @@ class Cp {
 			'package'			=> array(),
 	);
 	
-	var $xid_ttl 				= 14400;
 	
 	/**
 	 * Constructor
@@ -96,17 +96,6 @@ class Cp {
 		
 		$this->EE->lang->loadfile($langfile);
 		
-		
-		// Most recent comment and most recent entry
-		// (@confirm not needed on every page)
-		
-		$comments_installed = $this->EE->db->table_exists('comments');
-		
-		$recent = array(
-			'entry'		=> $this->EE->channel_model->get_most_recent_id('entry'),
-			'comment'	=> $comments_installed ? $this->EE->channel_model->get_most_recent_id('comment') : FALSE
-		);
-		
 
 		// Success/failure messages
 		
@@ -141,7 +130,6 @@ class Cp {
 					'cp_page_title'			=> '',
 					'cp_breadcrumbs'		=> array(),
 					'cp_right_nav'			=> array(),
-					'cp_recent_ids'			=> $recent,
 					'cp_messages'			=> $cp_messages,
 					'cp_notepad_content'	=> $notepad_content,
 					'cp_table_template'		=> $cp_table_template,
