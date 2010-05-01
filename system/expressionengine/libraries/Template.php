@@ -105,7 +105,6 @@ class EE_Template {
 	 * @access	public
 	 * @return	void
 	 */	
-	 
 	function EE_Template()
 	{
 		// Make a local reference to the ExpressionEngine super object
