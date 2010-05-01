@@ -221,8 +221,8 @@ class Api_channel_fields extends Api {
 				}
 			}
 			
-			require $path.$file;
-						
+			require_once $path.$file;
+			
 			$this->ft_paths[$field_type] = $path;
 			$this->field_types[$field_type] = ucfirst($field_type.'_ft');
 		}
