@@ -908,26 +908,20 @@ class EE_Functions {
 	 */
 	function encoding_menu($name, $selected = '')
 	{
-		
 		$file = APPPATH.'config/languages'.EXT;	
 
 		if ( ! file_exists($file)) 
 		{
 			return FALSE;
-		}	
+		}
 
 		require_once $file;
 		
-		$r = $this->EE->dsp->input_select_header($name);
+		$languages = array_flip($languages);
 		
-		foreach ($languages as $key => $val)
-		{
-			$r .= $this->EE->dsp->input_select_option($val, $key, ($selected == $val) ? 1 : '');
-		}
+		$this->EE->load->helper('form');
 		
-		$r .= $this->EE->dsp->input_select_footer();
-		
-		return $r;
+		return form_dropdown($name, $languages, $selected);
 	}
 
 	// --------------------------------------------------------------------

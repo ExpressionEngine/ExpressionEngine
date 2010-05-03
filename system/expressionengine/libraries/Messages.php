@@ -770,107 +770,39 @@ class EE_Messages {
 		/** --------------------------------*/
 		
 		$map = array('bulletin_board', 'compose_message', 'folders', 'edit_folders', 'buddy_list', 'block_list');
-		
-		if ($this->allegiance == 'cp')
-		{	
-			/** --------------------------------
-			/**  Menu Section + JavaScript
-			/** --------------------------------*/
-			
-			$expand		= '<img src="'.PATH_CP_GBL_IMG.'expand.gif" border="0"  width="10" height="10" alt="Expand" />&nbsp;&nbsp;';
-			$collapse	= '<img src="'.PATH_CP_GBL_IMG.'collapse.gif" border="0"  width="10" height="10" alt="Collapse" />&nbsp;&nbsp;';		
-								
-			$pm_state = ($this->EE->input->get_post('M') == 'messages') ? TRUE : FALSE;
-			
-			$this->menu  .= '<div id="menu_pm_h" style="display: '.(($pm_state == TRUE) ? 'none' : 'block').'; padding:0; margin: 0;">';			
-			$js = ' onclick="showhide_menu(\'menu_pm\');return false;" onmouseover="navTabOn(\'pmx\', \'tableHeadingAlt\', \'tableHeadingAltHover\');" onmouseout="navTabOff(\'pmx\', \'tableHeadingAlt\', \'tableHeadingAltHover\');" ';
-			$this->menu .= $this->EE->dsp->div();
-			$this->menu .= "<div class='tableHeadingAlt' id='pmx' ".$js.">";
-			$this->menu .= $expand.$this->EE->lang->line('private_messages');
-			$this->menu .= $this->EE->dsp->div_c();
-			$this->menu .= $this->EE->dsp->div_c();
-			$this->menu .= $this->EE->dsp->div_c();
-			 
-			$this->menu .= '<div id="menu_pm_b" style="display: '.(($pm_state == TRUE) ? 'block' : 'none').'; padding:0; margin: 0;">';
-			
-			$js = ' onclick="showhide_menu(\'menu_pm\');return false;" onmouseover="navTabOn(\'pmx2\', \'tableHeadingAlt\', \'tableHeadingAltHover\');" onmouseout="navTabOff(\'pmx2\', \'tableHeadingAlt\', \'tableHeadingAltHover\');" ';
-			$this->menu .= $this->EE->dsp->div();
-			$this->menu .= "<div class='tableHeadingAlt' id='pmx2' ".$js.">";
-			$this->menu .= $collapse.$this->EE->lang->line('private_messages');
-			$this->menu .= $this->EE->dsp->div_c();
-			$this->menu .= $this->EE->dsp->div('profileMenuInner');
 
-			/** --------------------------------
-			/**  Create Menu Based on Item Map
-			/** --------------------------------*/
-							
-			foreach($map as $item)
-			{
-				if (isset($this->menu_items['repeat_items'][$item]))
-				{
-					foreach($this->menu_items['repeat_items'][$item] as $item_member)
-					{
-						$this->create_item($item_member);
-					}
-				}
-				else
-				{
-					$this->create_item($this->menu_items['single_items'][$item]);
-				}
-			}							
-							
-			$this->menu .= $this->EE->dsp->div_c().$this->EE->dsp->div_c().$this->EE->dsp->div_c();
-		}
-		else
+		$template = $this->retrieve_template('message_menu');
+		$rows	  = $this->retrieve_template('message_menu_rows');
+		
+		$this->single_parts['include']['hide_menu_style'] = $hidden_style;
+		$this->single_parts['include']['hide_menu_link']  = $hidden_link;
+		$this->single_parts['include']['hide_menu_js']	  = $this->showhide_js();
+		
+		$this->single_parts['include']['menu_items'] = '';
+		
+		foreach($map as $item)
 		{
-			$template = $this->retrieve_template('message_menu');
-			$rows	  = $this->retrieve_template('message_menu_rows');
-			
-			$this->single_parts['include']['hide_menu_style'] = $hidden_style;
-			$this->single_parts['include']['hide_menu_link']  = $hidden_link;
-			$this->single_parts['include']['hide_menu_js']	  = $this->showhide_js();
-			
-			$this->single_parts['include']['menu_items'] = '';
-			
-			foreach($map as $item)
+			if (isset($this->menu_items['repeat_items'][$item]))
 			{
-				if (isset($this->menu_items['repeat_items'][$item]))
+				foreach($this->menu_items['repeat_items'][$item] as $item_member)
 				{
-					foreach($this->menu_items['repeat_items'][$item] as $item_member)
-					{
-						$this->single_parts['title'] = $item_member['text'];
-						$this->single_parts['link']  = $item_member['link'];
-						
-						$this->single_parts['include']['menu_items'] .= $this->_process_template($rows);
-					}
-				}
-				else
-				{
-					$this->single_parts['title'] = $this->menu_items['single_items'][$item]['text'];
-					$this->single_parts['link']  = $this->menu_items['single_items'][$item]['link'];
+					$this->single_parts['title'] = $item_member['text'];
+					$this->single_parts['link']  = $item_member['link'];
 					
 					$this->single_parts['include']['menu_items'] .= $this->_process_template($rows);
 				}
 			}
-			
-			$this->menu = $this->_process_template($template);
+			else
+			{
+				$this->single_parts['title'] = $this->menu_items['single_items'][$item]['text'];
+				$this->single_parts['link']  = $this->menu_items['single_items'][$item]['link'];
+				
+				$this->single_parts['include']['menu_items'] .= $this->_process_template($rows);
+			}
 		}
+		
+		$this->menu = $this->_process_template($template);
  	}
-
- 	
- 	
-	/** -----------------------------------
-	/**  Create Menu Item
-	/** -----------------------------------*/
-	function create_item($data)
-	{
-		$this->menu .= $this->EE->dsp->div(($data['style'] != '') ? $data['style'] : 'navPad').
-							$this->EE->dsp->anchor($data['link'], $data['text']).
-							$this->EE->dsp->div_c();
- 	}
-
- 	 	
-
 
 
 	// -----------------------------------
@@ -1153,7 +1085,7 @@ class EE_Messages {
 		{
 			if ($this->allegiance == 'cp')
 			{
-				return $this->EE->dsp->no_access_message();
+				show_error($this->lang->line('unauthorized_access'));
 			}
 			else
 			{

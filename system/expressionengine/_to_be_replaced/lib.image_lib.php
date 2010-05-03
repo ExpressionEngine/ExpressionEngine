@@ -1554,7 +1554,7 @@ class Image_lib {
 	/** -------------------------------------*/
 	function show_error()
 	{
-		return $this->EE->dsp->error_message($this->error_msg);
+		return $this->error_msg;
 	}
 
 	

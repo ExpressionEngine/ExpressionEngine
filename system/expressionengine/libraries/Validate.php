@@ -429,7 +429,7 @@ class EE_Validate {
 	/** ----------------------------------
 	/**  Display errors
 	/** ----------------------------------*/
-	function show_errors($ee2 = FALSE) //@todo: for ee2 dev compatibility
+	function show_errors()
 	{
 		 if (count($this->errors) > 0)
 		 {
@@ -439,16 +439,8 @@ class EE_Validate {
 			{
 				$msg .= $val.'<br />';  
 			}
-
-			if ($ee2)
-			{
-				return $msg;
-			}
-			else
-			{
-				return $this->EE->dsp->error_message($msg);
-			}
-
+			
+			return $msg;
 		 }
 	}
 
