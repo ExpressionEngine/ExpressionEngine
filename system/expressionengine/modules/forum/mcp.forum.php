@@ -391,9 +391,9 @@ class Forum_mcp {
 	 */
 	function delete_board_confirm()
 	{
-		if ( ! $this->EE->dsp->allowed_group('can_admin_boards'))
+		if ( ! $this->EE->cp->allowed_group('can_admin_boards'))
 		{
-			return $this->EE->dsp->no_access_message();
+			show_error($this->lang->line('unauthorized_access'));
 		}  
 		
 		if ( ! $board_id = $this->EE->input->get_post('board_id'))
@@ -432,9 +432,9 @@ class Forum_mcp {
 	 */
 	function delete_board()
 	{
-		if ( ! $this->EE->dsp->allowed_group('can_admin_boards'))
+		if ( ! $this->EE->cp->allowed_group('can_admin_boards'))
 		{
-			return $this->EE->dsp->no_access_message();
+			show_error($this->lang->line('unauthorized_access'));
 		}
 	
 		if ( ! $board_id = $this->EE->input->post('board_id'))
@@ -1403,7 +1403,7 @@ class Forum_mcp {
 	{
 		if ( ! $rank_id = $this->EE->input->get_post('rank_id'))
 		{
-			return $this->EE->dsp->no_access_message();
+			show_error($this->lang->line('unauthorized_access'));
 		}
 
 		$this->show_nav = FALSE;
@@ -1496,7 +1496,7 @@ class Forum_mcp {
 	
 		if ( ! $rank_id = $this->EE->input->get_post('rank_id'))
 		{
-			return $this->EE->dsp->no_access_message();
+			show_error($this->lang->line('unauthorized_access'));
 		}
 
 		$this->EE->db->select('rank_title');
@@ -1533,7 +1533,7 @@ class Forum_mcp {
 	
 		if ( ! $rank_id = $this->EE->input->post('rank_id'))
 		{
-			return $this->EE->dsp->no_access_message();
+			show_error($this->lang->line('unauthorized_access'));
 		}
 
 		$this->EE->db->query("DELETE FROM exp_forum_ranks WHERE rank_id = '".$this->EE->db->escape_str($rank_id)."'");

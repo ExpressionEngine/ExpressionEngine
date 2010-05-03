@@ -134,12 +134,12 @@ class Simple_commerce_mcp {
 					{
 						if ( ! file_exists($_POST['sc_'.$val]))
 						{
-							return $this->EE->dsp->error_message(str_replace('%pref%', $this->EE->lang->line($val), $this->EE->lang->line('file_does_not_exist')));
+							show_error(str_replace('%pref%', $this->EE->lang->line($val), $this->EE->lang->line('file_does_not_exist')));
 						}
 
 						if ($val == 'temp_path' && ! is_really_writable($_POST['sc_'.$val]))
 						{
-							return $this->EE->dsp->error_message($this->EE->lang->line('temporary_directory_unwritable'));
+							show_error($this->EE->lang->line('temporary_directory_unwritable'));
 						}
 					}
 
@@ -183,7 +183,7 @@ class Simple_commerce_mcp {
 		//  Must be Assigned to Channels
 		if (count($this->EE->session->userdata['assigned_channels']) == 0)
 		{
-			return $this->EE->dsp->no_access_message($this->EE->lang->line('no_entries_matching_that_criteria').BR.BR.$this->EE->lang->line('site_specific_data'));
+			show_error($this->EE->lang->line('no_entries_matching_that_criteria').BR.BR.$this->EE->lang->line('site_specific_data'));
 		}
 
 		//  Either Show Search Form or Process Entries
@@ -417,7 +417,7 @@ class Simple_commerce_mcp {
 	{
 		if ( ! isset($_POST['entry_id']) OR ! is_array($_POST['entry_id']))
 		{
-			return $this->EE->dsp->no_access_message();
+			show_error($this->lang->line('unauthorized_access'));
 		}
 
 		foreach ($_POST['entry_id'] as $id)
@@ -866,7 +866,7 @@ class Simple_commerce_mcp {
 	{
 		if ( ! is_array($_POST['email_id']))
 		{
-			return $this->EE->dsp->no_access_message();
+			show_error($this->lang->line('unauthorized_access'));
 		}
 
 		/** -------------------------------------------
@@ -1389,7 +1389,7 @@ class Simple_commerce_mcp {
 	{
 		if ( ! is_array($_POST['purchase_id']))
 		{
-			return $this->EE->dsp->no_access_message();
+			show_error($this->lang->line('unauthorized_access'));
 		}
 
 		//  Valid Purchases Selected?

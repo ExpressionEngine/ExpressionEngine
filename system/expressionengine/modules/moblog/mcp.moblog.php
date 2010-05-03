@@ -560,7 +560,7 @@ EOT;
 			// Fetch channel titles
 			$this->EE->db->select('channel_title, channel_id, cat_group, status_group, field_group');
 					
-			if ( ! $this->EE->dsp->allowed_group('can_edit_other_entries'))
+			if ( ! $this->EE->cp->allowed_group('can_edit_other_entries'))
 			{
 				$this->EE->db->where_in('channel_id', $allowed_channels);
 			}
