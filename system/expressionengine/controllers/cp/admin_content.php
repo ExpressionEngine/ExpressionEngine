@@ -349,10 +349,14 @@ class Admin_content extends Controller {
 		// @todo: ar and model
 		$cats = implode("','", $this->db->escape_str(explode('|', $vars['cat_group'])));
 
-        $query = $this->db->query("SELECT CONCAT(g.group_name, ': ', c.cat_name) as display_name, c.cat_id, c.cat_name, g.group_name
-							FROM  exp_categories c, exp_category_groups g
-							WHERE g.group_id = c.group_id
-							AND c.group_id IN ('{$cats}') ORDER BY display_name");
+		$this->db->select('CONCAT('.$this->db->dbprefix('category_groups').'.group_name, ": ", '.$this->db->dbprefix('categories').'.cat_name) as display_name', FALSE);
+		$this->db->select('categories.cat_id, categories.cat_name, category_groups.group_name');
+		$this->db->from('categories, '.$this->db->dbprefix('category_groups'));
+		$this->db->where($this->db->dbprefix('category_groups').'.group_id = '.$this->db->dbprefix('categories').'.group_id', NULL, FALSE);
+		$this->db->where('categories.group_id IN('.$cats.')');
+		$this->db->order_by('display_name');
+		
+		$query = $this->db->get();
 
 		$vars['deft_category_options'][''] = $this->lang->line('none');
 

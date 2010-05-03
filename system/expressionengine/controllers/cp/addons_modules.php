@@ -89,14 +89,14 @@ class Addons_modules extends Controller {
 		$this->installed_modules = $this->addons->get_installed();
 	
 		// Fetch allowed Modules for a particular user
+		$this->db->select('modules.module_name');
+		$this->db->from('modules, module_member_groups');
+		$this->db->where('module_member_groups.group_id', $this->session->userdata('group_id'));
+		$this->db->where('modules.module_id = '.$this->db->dbprefix('module_member_groups').'.module_id', NULL, FALSE);
+		$this->db->order_by('module_name');
+		
+		$query = $this->db->get();
 
-		$sql = "SELECT exp_modules.module_name 
-				FROM exp_modules, exp_module_member_groups
-				WHERE exp_module_member_groups.group_id = '".$this->session->userdata['group_id']."'
-				AND exp_modules.module_id = exp_module_member_groups.module_id
-				ORDER BY module_name";
-
-		$query = $this->db->query($sql);
 
 		$allowed_mods = array();
 
