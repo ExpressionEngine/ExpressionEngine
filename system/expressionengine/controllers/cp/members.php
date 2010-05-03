@@ -2976,7 +2976,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 			$_POST['m_field_list_items'] = quotes_to_entities($_POST['m_field_list_items']);
 		}
-			
+
 		// Construct the query based on whether we are updating or inserting
 		// @todo: this whole constructed query needs to be AR'ed and modelled... ouch
 		if ($edit === TRUE)
@@ -3014,12 +3014,28 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			
 				$_POST['m_field_order'] = $total;
 			}
+
+			$n = $_POST['m_field_maxl'];
+		
+			if ($_POST['m_field_type'] == 'text')
+			{
+				if ( ! is_numeric($n) OR $n == '' OR $n == 0)
+				{
+					$n = '100';
+				}
+			
+				$f_type = 'varchar('.$n.') NULL DEFAULT NULL';
+			}
+			else
+			{
+				$f_type = 'text NULL DEFAULT NULL';
+			}
 			
 			unset($_POST['m_field_id']);
 
 			$this->db->query($this->db->insert_string('exp_member_fields', $_POST));
 									
-			$this->db->query('ALTER table exp_member_data add column m_field_id_'.$this->db->insert_id().' text NULL DEFAULT NULL');
+			$this->db->query('ALTER table exp_member_data add column m_field_id_'.$this->db->insert_id().' '.$f_type);
 			
 			$sql = "SELECT exp_members.member_id
 					FROM exp_members
