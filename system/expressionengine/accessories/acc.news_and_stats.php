@@ -226,7 +226,7 @@ class News_and_stats_acc {
 		}
 
 		// total comments waiting validation
-		if ($this->EE->dsp->allowed_group('can_moderate_comments'))
+		if ($this->EE->cp->allowed_group('can_moderate_comments'))
 		{
 			$this->EE->load->model('addons_model');
 

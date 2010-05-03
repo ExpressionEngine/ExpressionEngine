@@ -87,7 +87,7 @@ if ($EE_view_disable !== TRUE)
 						<li id="delete_selected_files">
 							<a title="<?=lang('delete_selected_files')?>" href="<?=BASE.AMP."C=content_files".AMP."M=delete_files_confirm"?>"><?=lang('delete_selected_files')?></a>
 						</li>
-						<?php if ($this->dsp->allowed_group('can_access_files')):?>
+						<?php if ($this->cp->allowed_group('can_access_files')):?>
 						<li id="create_new_upload_pref">
 							<a title="<?=lang('create_new_upload_pref')?>" href="<?=BASE.AMP.'C=admin_content'.AMP.'M=edit_upload_preferences'?>"><?=lang('create_new_upload_pref')?></a>
 						</li>

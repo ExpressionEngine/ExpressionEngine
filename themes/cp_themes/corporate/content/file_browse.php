@@ -87,7 +87,7 @@ if ($EE_view_disable !== TRUE)
 						</p>
 			
 					</div>
-					<?php if ($this->dsp->allowed_group('can_access_files')):?>
+					<?php if ($this->cp->allowed_group('can_access_files')):?>
 					<div class="fu_pref">	<p class="file_tool"><a href="<?=BASE.AMP.'C=admin_content'.AMP.'M=edit_upload_preferences'?>" class="submit_alt"><?=lang('create_new_upload_pref')?></a></p></div>
 					<div class="fu_pref">	<p class="file_tool"><a id="upload_prefs" href="<?=BASE.AMP."C=admin_content".AMP."M=file_upload_preferences"?>" class="submit_alt"><?=lang('file_upload_prefs')?></a></p></div>
 					<?php endif;?>

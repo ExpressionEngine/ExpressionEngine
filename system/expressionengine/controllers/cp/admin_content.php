@@ -636,8 +636,10 @@ class Admin_content extends Controller {
 
 			if ( ! isset($_POST['field_group']) OR (isset($_POST['field_group']) && ! is_numeric($_POST['field_group'])))
 			{
-				$query = $this->db->query("SELECT group_id FROM exp_field_groups WHERE site_id = '".$this->db->escape_str($this->config->item('site_id'))."'");
-
+				$this->db->select('group_id');
+				$this->db->where('site_id', $this->config->item('site_id'));
+				$query = $this->db->Get('field_groups');
+				
 				if ($query->num_rows() == 1)
 				{
 					$_POST['field_group'] = $query->row('group_id') ;
@@ -651,8 +653,9 @@ class Admin_content extends Controller {
 			// duplicating preferences?
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
 			{
-				$wquery = $this->db->query("SELECT * FROM exp_channels WHERE channel_id = '".$this->db->escape_str($dupe_id)."'");
-
+				$this->db->where('channel_id', $dupe_id);
+				$wquery = $this->db->get('channels');
+								
 				if ($wquery->num_rows() == 1)
 				{
 					$exceptions = array('channel_id', 'site_id', 'channel_name', 'channel_title', 'total_entries',
@@ -713,7 +716,10 @@ class Admin_content extends Controller {
 									{
 										if ( ! isset($old_group_name))
 										{
-											$gquery = $this->db->query("SELECT group_name FROM exp_template_groups WHERE group_id = '".$this->db->escape_str($old_group_id)."'");
+											$this->db->select('group_name');
+											$this->db->where('group_id', $old_group_id);
+											$gquery = $this->db->get('template_groups');
+
 											$old_group_name = $gquery->row('group_name');
 										}
 
@@ -736,11 +742,9 @@ class Admin_content extends Controller {
 
 			$_POST['default_entry_title'] = ( ! isset(	$_POST['default_entry_title'])) ? '' : $_POST['default_entry_title'];
 			$_POST['url_title_prefix'] = ( ! isset(	$_POST['url_title_prefix'])) ? '' : $_POST['url_title_prefix'];
+					
+			$this->db->insert('channels', $_POST);		
 						
-			$sql = $this->db->insert_string('exp_channels', $_POST);
-
-			$this->db->query($sql);
-
 			$insert_id = $this->db->insert_id();
 			$channel_id = $insert_id;
 			
@@ -760,7 +764,9 @@ class Admin_content extends Controller {
 		{
 			if (isset($_POST['clear_versioning_data']))
 			{
-				$this->db->query("DELETE FROM exp_entry_versioning WHERE channel_id  = '".$this->db->escape_str($_POST['channel_id'])."'");
+				$this->db->where('channel_id', $_POST['channel_id']);
+				$this->db->delete('entry_versioning', array('channel_id' => $_POST['channel_id']));
+				
 				unset($_POST['clear_versioning_data']);
 			}
 			
@@ -806,10 +812,16 @@ class Admin_content extends Controller {
 
 				if ($create_templates == 'duplicate')
 				{
-					$query = $this->db->query("SELECT group_name FROM exp_template_groups WHERE group_id = '".$this->db->escape_str($old_group_id)."'");
+					$this->db->select('group_name');
+					$this->db->where('group_id', $old_group_id);
+					$query = $this->db->get('template_groups');
 					$old_group_name = $query->row('group_name') ;
 
-					$query = $this->db->query("SELECT template_name, template_data, template_type, template_notes, cache, refresh, no_auth_bounce, allow_php, php_parse_location FROM exp_templates WHERE group_id = '".$this->db->escape_str($old_group_id)."'");
+					$this->db->select('template_name, template_data, template_type, 
+										template_notes, cache, refresh, no_auth_bounce, 
+										allow_php, php_parse_location');
+					$this->db->where('group_id', $old_group_id);
+					$query = $this->db->get('templates');
 
 					if ($query->num_rows() == 0)
 					{
@@ -1324,9 +1336,10 @@ class Admin_content extends Controller {
 		// Fetch count of custom fields per group
 		$cfcount = array();
 		
+		$this->db->select('COUNT(*) AS count, group_id');
+		$this->db->group_by('group_id');
+		$cfq = $this->db->get('category_fields');
 		
-		$cfq = $this->db->query("SELECT COUNT(*) AS count, group_id FROM exp_category_fields GROUP BY group_id"); //@todo: model/AR
-
 		// @todo: revisit this logic, we can probably clean it up a bit, particularly in its use for 'custom_field_count'
 		if ($cfq->num_rows() > 0)
 		{
@@ -1756,8 +1769,10 @@ class Admin_content extends Controller {
 		//  Check discrete privileges
 		if (AJAX_REQUEST)
 		{
-			$query = $this->db->query("SELECT can_edit_categories FROM exp_category_groups WHERE group_id = '".$this->db->escape_str($group_id)."'");
-
+			$this->db->select('can_edit_categories');
+			$this->db->where('group_id', $group_id);
+			$query = $this->db->get('category_groups');
+			
 			if ($query->num_rows() == 0)
 			{
 				show_error($this->lang->line('unauthorized_access'));
@@ -1865,7 +1880,9 @@ class Admin_content extends Controller {
 		//  Check discrete privileges
 		if (AJAX_REQUEST)
 		{
-			$query = $this->db->query("SELECT can_edit_categories FROM exp_category_groups WHERE group_id = '".$this->db->escape_str($group_id)."'");
+			$this->db->select('can_edit_categories');
+			$this->db->where('group_id', $group_id);
+			$query = $this->db->get('category_groups');
 
 			if ($query->num_rows() == 0)
 			{
@@ -2009,9 +2026,12 @@ class Admin_content extends Controller {
 		
 		$vars['cat_custom_fields'] = array();
 
-		$field_query = $this->db->query("SELECT * FROM exp_category_fields WHERE group_id = '".$this->db->escape_str($group_id)."' ORDER BY field_order");
-		$data_query = $this->db->query("SELECT * FROM exp_category_field_data WHERE cat_id = '".$this->db->escape_str($vars['cat_id'])."'");
+		$this->db->where('group_id', $group_id);
+		$this->db->order_by('field_order');
+		$field_query = $this->db->get('category_fields');
 
+		$this->db->where('cat_id', $vars['cat_id']);
+		$data_query = $this->db->get('category_field_data');
 
 		if ($field_query->num_rows() > 0)
 		{
@@ -2843,14 +2863,22 @@ class Admin_content extends Controller {
 
 		// Fetch the parent ID
 
-		$query = $this->db->query("SELECT parent_id FROM exp_categories WHERE cat_id = '".$this->db->escape_str($cat_id)."'");
+		$this->db->select('parent_id');
+		$this->db->where('cat_id', $cat_id);
+		$query = $this->db->get('categories');
+
 		$parent_id = $query->row('parent_id') ;
 
 		// Is the requested category already at the beginning/end of the list?
 
 		$dir = ($order == 'up') ? 'asc' : 'desc';
 
-		$query = $this->db->query("SELECT cat_id FROM exp_categories WHERE group_id = '".$this->db->escape_str($group_id)."' AND parent_id = '".$this->db->escape_str($parent_id)."' ORDER BY cat_order {$dir} LIMIT 1");
+		$this->db->select('cat_id');
+		$this->db->where('group_id', $group_id);
+		$this->db->where('parent_id', $parent_id);
+		$this->db->order_by('cat_order', $dir);
+		$this->db->limit(1);
+		$query = $this->db->get('categories');
 
 		if ($query->row('cat_id') == $cat_id)
 		{
@@ -2858,11 +2886,13 @@ class Admin_content extends Controller {
 		}
 
 		// Fetch all the categories in the parent
-
-		$query = $this->db->query("SELECT cat_id, cat_order FROM exp_categories WHERE group_id = '".$this->db->escape_str($group_id)."' AND  parent_id = '".$this->db->escape_str($parent_id)."' ORDER BY cat_order asc");
+		$this->db->select('cat_id, cat_order');
+		$this->db->where('group_id', $group_id);
+		$this->db->where('parent_id', $parent_id);
+		$this->db->order_by('cat_order ASC');
+		$query = $this->db->get('categories');
 
 		// If there is only one category, there is nothing to re-order
-
 		if ($query->num_rows() <= 1)
 		{
 			$this->functions->redirect($return);
@@ -3056,8 +3086,12 @@ class Admin_content extends Controller {
 			}
 			else
 			{
-				// if there are no existing category fields yet for this group, this allows us to still validate the group_id
-				$gquery = $this->db->query("SELECT COUNT(*) AS count FROM exp_category_groups WHERE group_id = '".$this->db->escape_str($group_id)."' AND site_id = '".$this->db->escape_str($this->config->item('site_id'))."'");
+				// if there are no existing category fields yet for this group, 
+				// this allows us to still validate the group_id
+				$this->db->select('COUNT(*) AS count');
+				$this->db->where('group_id', $group_id);
+				$this->db->where('site_id', $this->config->item('site_id'));
+				$gquery = $this->db->get('category_groups');
 
 				if ($gquery->row('count')  != 1)
 				{
@@ -3082,7 +3116,10 @@ class Admin_content extends Controller {
 				$("#show_formatting_buttons").show();
 			');
 
-			$query = $this->db->query("SELECT field_id, group_id FROM exp_category_fields WHERE group_id = '".$this->db->escape_str($group_id)."' AND field_id = '".$this->db->escape_str($field_id)."'");
+			$this->db->select('field_id, group_id');
+			$this->db->where('group_id', $group_id);
+			$this->db->where('field_id', $field_id);
+			$query = $this->db->get('category_fields');
 
 			$vars['field_order'] = '';
 
