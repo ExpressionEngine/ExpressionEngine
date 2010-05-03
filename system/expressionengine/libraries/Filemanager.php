@@ -85,7 +85,7 @@ class Filemanager {
 	/**
 	 * Filebrowser (Frontend)
 	 *
-	 * Same as frontend(), but with additional considerations for the frontend
+	 * Same as filebrowser(), but with additional considerations for the frontend
 	 *
 	 * @access	public
 	 * @param	string	the endpoint url
