@@ -638,7 +638,7 @@ class Admin_content extends Controller {
 			{
 				$this->db->select('group_id');
 				$this->db->where('site_id', $this->config->item('site_id'));
-				$query = $this->db->Get('field_groups');
+				$query = $this->db->get('field_groups');
 				
 				if ($query->num_rows() == 1)
 				{
@@ -764,7 +764,6 @@ class Admin_content extends Controller {
 		{
 			if (isset($_POST['clear_versioning_data']))
 			{
-				$this->db->where('channel_id', $_POST['channel_id']);
 				$this->db->delete('entry_versioning', array('channel_id' => $_POST['channel_id']));
 				
 				unset($_POST['clear_versioning_data']);
