@@ -67,7 +67,7 @@ class Homepage extends Controller {
 	 * @return	mixed
 	 */	
 	function index($message = '')
-	{
+	{	
 		$this->cp->get_installed_modules();
 		$this->cp->set_variable('cp_page_title', $this->lang->line('main_menu'));
 
@@ -126,7 +126,9 @@ class Homepage extends Controller {
 		
 		
 		// Most recent comment and most recent entry
+		// @confirm - use cp->installed_modules['comment']?
 		
+		$this->load->model('channel_model');
 		$comments_installed = $this->db->table_exists('comments');
 		
 		$vars['cp_recent_ids'] = array(

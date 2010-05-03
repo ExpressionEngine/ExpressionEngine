@@ -92,7 +92,6 @@ class Cp {
  		$this->EE->load->helper('url');
 
 		$this->EE->load->model('member_model'); // for screen_name, quicklinks
-		$this->EE->load->model('channel_model'); // for most recent entry/comment quicklinks
 		
 		$this->EE->lang->loadfile($langfile);
 		
