@@ -553,7 +553,7 @@ class Admin_content extends Controller {
 			{
 				$this->lang->loadfile('design');
 
-				if ( ! $this->dsp->allowed_group('can_admin_templates'))
+				if ( ! $this->cp->allowed_group('can_admin_templates'))
 				{
 					show_error($this->lang->line('unauthorized_access'));
 				}

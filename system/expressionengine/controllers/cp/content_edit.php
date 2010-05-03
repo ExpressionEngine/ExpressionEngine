@@ -1821,7 +1821,7 @@ class Content_edit extends Controller {
 
 		if ($this->input->get_post('entry_ids') === FALSE OR $this->input->get_post('type') === FALSE)
 		{
-			return $this->dsp->no_access_message($this->lang->line('unauthorized_to_edit'));
+			show_error($this->lang->line('unauthorized_to_edit'));
 		}
 
 		if ($this->input->get_post('category') === FALSE OR ! is_array($_POST['category']) OR count($_POST['category']) == 0)

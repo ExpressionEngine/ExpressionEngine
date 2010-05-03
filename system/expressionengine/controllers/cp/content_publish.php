@@ -2166,6 +2166,7 @@ class Content_publish extends Controller {
 
 		if ($member_list->num_rows() == 0)
 		{
+			// @todo lang key
 			$this->table->add_row(array('data'=>'There are no members available to be authors', 'colspan'=>4));
 		}
 		else
@@ -2659,7 +2660,7 @@ class Content_publish extends Controller {
 			{
 				if ($which != 'edit' AND $selected == 1)
 				{
-					$r .= $this->dsp->input_hidden('ping[]', $row['id']);
+					$r .= form_hidden('ping[]', $row['id']);
 				}
 			}
 		}
@@ -2751,7 +2752,7 @@ class Content_publish extends Controller {
 
 		if ( ! in_array($channel_id, $assigned_channels))
 		{
-			return $this->dsp->no_access_message($this->lang->line('unauthorized_for_this_channel'));
+			show_error($this->lang->line('unauthorized_for_this_channel'));
 		}
 
 		//	 Instantiate Typography class

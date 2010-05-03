@@ -781,13 +781,13 @@ class Login extends Controller {
 		// Buid the email message
 		
 		$message  = $username.",".
-					$this->dsp->nl(2).
+					"\n\n".
 					$this->lang->line('reset_link').
-					$this->dsp->nl(2).
+					"\n\n".
 					$this->config->item('cp_url')."?D=cp&C=login&M=reset_password&id=".$rand.
-					$this->dsp->nl(2).
+					"\n\n".
 					$this->lang->line('password_will_be_reset').
-					$this->dsp->nl(2).
+					"\n\n".
 					$this->lang->line('ignore_password_message');
 		 
 		 
@@ -881,11 +881,11 @@ class Login extends Controller {
 		// Buid the email message
 		
 		$message  = $username.",".
-					$this->dsp->nl(2).
+					"\n\n".
 					$this->lang->line('new_login_info').
-					$this->dsp->nl(2).
+					"\n\n".
 					$this->lang->line('username').': '.$username.
-					$this->dsp->nl(1).
+					"\n".
 					$this->lang->line('password').': '.$rand;
 		 
 		 

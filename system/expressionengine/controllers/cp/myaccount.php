@@ -519,7 +519,7 @@ class MyAccount extends Controller {
 
 		if (count($this->VAL->errors) > 0)
 		{
-			show_error($this->VAL->show_errors(TRUE));
+			show_error($this->VAL->show_errors());
 		}
 
 		// Assign the query data
@@ -713,7 +713,7 @@ class MyAccount extends Controller {
 
 		if (count($this->VAL->errors) > 0)
 		{
-			show_error($this->VAL->show_errors(TRUE));
+			show_error($this->VAL->show_errors());
 		}
 
 		// Update "last post" forum info if needed
