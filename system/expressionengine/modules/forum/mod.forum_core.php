@@ -11796,6 +11796,8 @@ class Forum_Core extends Forum {
 			default				: $this->EE->db->order_by('forum_topics.topic_date', $sort);
 				break;
 		}
+		
+		$this->EE->db->limit($limit);
 
 		$query = $this->EE->db->get();
 
