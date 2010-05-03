@@ -327,7 +327,7 @@ class Addons_extensions extends Controller {
 		/** ---------------------------------------*/
 		
 		$this->db->select('settings');
-		$this->db->where('enabled = "y"');
+		$this->db->where('enabled', 'y');
 		$this->db->where('class', $class_name);
 		$this->db->limit(1);
 		$query = $this->db->get('extensions');
