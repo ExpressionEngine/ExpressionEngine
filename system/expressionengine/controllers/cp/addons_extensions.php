@@ -326,9 +326,11 @@ class Addons_extensions extends Controller {
 		/**  Extensions Enabled
 		/** ---------------------------------------*/
 		
-		$query = $this->db->query("SELECT settings FROM exp_extensions 
-							 WHERE enabled = 'y' AND class = '".$this->db->escape_str($class_name)."'
-							 LIMIT 1");
+		$this->db->select('settings');
+		$this->db->where('enabled = "y"');
+		$this->db->where('class', $class_name);
+		$this->db->limit(1);
+		$query = $this->db->get('extensions');
 		
 		if ($query->num_rows() > 0 && $query->row('settings')  != '')
 		{
