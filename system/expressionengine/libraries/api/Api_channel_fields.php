@@ -56,7 +56,7 @@ class Api_channel_fields extends Api {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Get settings
+	 * Get global settings
 	 *
 	 * @access	public
 	 */
@@ -242,7 +242,9 @@ class Api_channel_fields extends Api {
 		$field_id = FALSE;
 		$frontend = FALSE;
 		
-		// Might be a field id
+		// Quite frequently all you have convenient access to
+		// is a field_id. We can do a lookup based on some of the
+		// other data we have.
 		if (isset($this->custom_fields[$field_type]))
 		{
 			$frontend = TRUE;
@@ -255,20 +257,23 @@ class Api_channel_fields extends Api {
 			$field_type = $this->settings[$field_id]['field_type'];
 		}
 		
-		// Not found? Bail out.
+		// Now that we know that we're definitely working
+		// with a field_type name. Look for it.
 		if ( ! isset($this->field_types[$field_type]))
 		{
 			return FALSE;
 		}
 		
-		// Instantiate if we haven't used it yet
+		// Instantiate it if we haven't used it yet.
 		if ( ! is_object($this->field_types[$field_type]))
 		{
-			$class = $this->field_types[$field_type];
 			$this->include_handler($field_type);
-			$this->field_types[$field_type] = new $class();
+			$this->field_types[$field_type] =& $this->_instantiate_handler($field_type);
 		}
 
+		// If we started with a field_id, but we're not on the frontend
+		// (which means fetch_custom_channel_fields didn't get called),
+		// we need to make sure we have the proper field name.
 		if ($field_id && ! $frontend)
 		{
 			$settings	= $this->get_settings($field_id);
@@ -281,19 +286,44 @@ class Api_channel_fields extends Api {
 			$field_name	= FALSE;
 		}
 		
+		// Merge field settings with the global settings
 		$settings = array_merge($this->get_global_settings($field_type), $settings);
 		
-		// Init settings
+		// Initialize fieldtype with settings for this field
 		$this->field_types[$field_type]->_init(array(
 			'settings'		=> $settings,
 			'field_id'		=> $field_id,
 			'field_name'	=> $field_name
 		));
 		
-		// Remember the last one
+		// Remember what we set up so that apply
+		// calls go to the right spot
 		$this->field_type = $field_type;
 		
 		return ($return_obj) ? $this->field_types[$field_type] : TRUE;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Instantiate a fieldtype handler
+	 *
+	 * Normally this method does not need to be called, it's here for
+	 * convenience. Use setup_handler() unless you're 100% sure you
+	 * need this.
+	 *
+	 * @access	private
+	 */
+	function &_instantiate_handler($field_type)
+	{
+		$class		= $this->field_types[$field_type];
+		$_ft_path	= $this->ft_paths[$field_type];
+		
+		$this->EE->load->add_package_path($_ft_path);
+		$obj =& instantiate_class(new $class());
+		$this->EE->load->remove_package_path($_ft_path);
+		
+		return $obj;
 	}
 	
 	// --------------------------------------------------------------------
@@ -303,6 +333,8 @@ class Api_channel_fields extends Api {
 	 *
 	 * Doing it this way so we don't have to pass objects around with PHP 4
 	 * being annoying as it is.
+	 *
+	 * Using the name of the identical javascript function, and yes, I like it.
 	 *
 	 * @access	public
 	 * @todo cache package paths - sloooow
