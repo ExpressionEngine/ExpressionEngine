@@ -131,9 +131,12 @@ if ($EE_view_disable !== TRUE)
 			<li class="resource"><a rel="external" href="http://expressionengine.com/wiki/"><?=lang('ee_wiki')?></a></li>
 		</ul>
 	</div>
+	
+	<div class="clear_left"></div>
 
 </div> <!-- mainContent -->
 
+<div class="shun"></div>
 
 <?php
 if ($EE_view_disable !== TRUE)

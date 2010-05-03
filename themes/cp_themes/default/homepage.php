@@ -7,7 +7,7 @@ if ($EE_view_disable !== TRUE)
 	$this->load->view('_shared/breadcrumbs');
 }
 ?>
-<div id="mainContent"<?=$maincontent_state?>>
+<div class="shun" id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
 
 	<?php if ($version OR isset($new_checksums)):?>
@@ -128,8 +128,11 @@ if ($EE_view_disable !== TRUE)
 		</ul>
 	</div>
 
+	<div class="clear_left"></div>
+
 </div> <!-- mainContent -->
 
+<div class="shun">&nbsp;</div>
 
 <?php
 if ($EE_view_disable !== TRUE)
