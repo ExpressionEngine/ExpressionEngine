@@ -1443,8 +1443,15 @@ class Channel {
 			{
 				$entry_id = (($this->EE->TMPL->fetch_param('show_pages') == 'no') ? 'not ' : '').implode('|', array_flip($pages_uris));
 			}
+			
+			//  No pages and show_pages only
+			if ($entry_id == '' && $this->EE->TMPL->fetch_param('show_pages') == 'only')
+			{
+				$this->sql = '';
+				return;
+			}			
 		}
-
+		
 		/**------
 		/**  Assing the order variables
 		/**------*/
