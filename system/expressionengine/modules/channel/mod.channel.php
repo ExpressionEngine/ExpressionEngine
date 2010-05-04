@@ -2819,7 +2819,7 @@ class Channel {
 			{
 				$this->basepath = $this->EE->functions->create_url($this->EE->config->slash_item('template_group').'/'.$this->EE->config->item('template'));
 			}
-
+			
 			if ($this->basepath == '')
 			{
 				$this->basepath = $this->EE->functions->create_url($this->EE->uri->uri_string);
@@ -2873,10 +2873,13 @@ class Channel {
 				{
 					$this->p_page = 0;
 				}
+				
+				if ($this->p_page != 0 && $this->p_limit != 0)
+				{
+					$this->current_page = floor(($this->p_page / $this->p_limit) + 1);
 
-				$this->current_page = floor(($this->p_page / $this->p_limit) + 1);
-
-				$this->total_pages = intval(floor($this->total_rows / $this->p_limit));
+					$this->total_pages = intval(floor($this->total_rows / $this->p_limit));					
+				}
 			}
 			else
 			{
@@ -2931,9 +2934,12 @@ class Channel {
 
 			//  Create the pagination
 
-			if ($this->total_rows % $this->p_limit)
+			if ($this->total_rows > 0 && $this->p_limit > 0)
 			{
-				$this->total_pages++;
+				if ($this->total_rows % $this->p_limit)
+				{
+					$this->total_pages++;
+				}				
 			}
 
 			if ($this->total_rows > $this->p_limit)
