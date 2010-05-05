@@ -1685,6 +1685,8 @@ class Api_channel_entries extends Api {
 	 */
 	function _insert_entry($meta, &$data)
 	{
+		$meta['dst_enabled'] =  $this->_cache['dst_enabled'];
+		
 		$this->EE->db->query($this->EE->db->insert_string('exp_channel_titles', $meta));
 		$this->entry_id = $this->EE->db->insert_id();
 		

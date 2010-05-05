@@ -345,12 +345,15 @@ class Channel_model extends CI_Model {
 	 */
 	function delete_channel($channel_id, $entries = array(), $authors = array())
 	{
+		$comments = FALSE;
+		
 		$this->db->delete('channel_data', array('channel_id' => $channel_id));
 		$this->db->delete('channel_titles', array('channel_id' => $channel_id));
 		$this->db->delete('channels', array('channel_id' => $channel_id));
 
 		if ($this->db->table_exists('comments'))
 		{
+			$comments = TRUE;
 			$this->db->delete('comments', array('channel_id' => $channel_id));
 		}
 
@@ -418,10 +421,14 @@ class Channel_model extends CI_Model {
 		{
 			$this->db->where('author_id', $author_id);
 			$total_entries = $this->db->count_all_results('channel_titles');
+			$total_comments = 0;
 			
-			$this->db->where('author_id', $author_id);
-			$total_comments = $this->db->count_all_results('comments');
-
+			if ($comments)
+			{
+				$this->db->where('author_id', $author_id);
+				$total_comments = $this->db->count_all_results('comments');
+			}
+			
 			$this->db->where('member_id', $author_id);
 			$this->db->update('members', array( 'total_entries' => $total_entries,'total_comments' => $total_comments));
 		}
