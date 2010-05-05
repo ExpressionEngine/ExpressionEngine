@@ -756,8 +756,6 @@ class Admin_content extends Controller {
 
 			$success_msg = $this->lang->line('channel_created');
 
-			$crumb = $this->dsp->crumb_item($this->lang->line('new_channel'));
-
 			$this->logger->log_action($success_msg.NBS.NBS.$_POST['channel_title']);
 		}
 		else
@@ -780,11 +778,8 @@ class Admin_content extends Controller {
 			$channel_id = $this->db->escape_str($_POST['channel_id']);
 
 			$success_msg = $this->lang->line('channel_updated');
-
-			$crumb = $this->dsp->crumb_item($this->lang->line('update'));
 		}
 		
-
 		/** -----------------------------------------
 		/**  Create Templates
 		/** -----------------------------------------*/
@@ -4088,9 +4083,8 @@ class Admin_content extends Controller {
 		}
 		else
 		{
-			// @todo ditch the dsp class
 			$confirm = "onclick=\"if( !confirm('".$this->lang->line('list_edit_warning')."')) return false;\"";
-			$vars['edit_format_link'] = $this->dsp->anchor(BASE.AMP.'C=admin_content'.AMP.'M=edit_formatting_options'.AMP.'id='.$field_id, '<b>'.$this->lang->line('edit_list').'</b>', $confirm);
+			$vars['edit_format_link'] = '<strong><a '.$confirm.' href="'.BASE.AMP.'C=admin_content'.AMP.'M=edit_formatting_options'.AMP.'id='.$field_id.'" title="'.$this->lang->line('edit_list').'">'.$this->lang->line('edit_list').'</a></strong>';
 
 			$this->db->select('field_fmt');
 			$this->db->where('field_id', $field_id);
@@ -4853,13 +4847,6 @@ class Admin_content extends Controller {
 		
 		$this->javascript->compile();
 		$this->load->view('admin/edit_formatting_options', $vars);
-
-		//$this->dsp->crumb =
-		//$this->dsp->anchor(BASE.AMP.'C=admin'.AMP.'area=channel_administration', $this->lang->line('channel_administration')).
-		//$this->dsp->crumb_item($this->dsp->anchor(BASE.AMP.'C=publish_admin'.AMP.'M=custom_field_overview', $this->lang->line('field_groups'))).
-		//$this->dsp->crumb_item($this->dsp->anchor(BASE.AMP.'C=publish_admin'.AMP.'M=edit_field'.AMP.'field_id='.$id, $this->lang->line('custom_fields'))).
-		//$this->dsp->crumb_item($this->lang->line('formatting_options'));
-
 	}
 
  
