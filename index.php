@@ -109,11 +109,12 @@
  *  Resolve the system path for increased reliability
  * --------------------------------------------------------------------
  */
+
 	if (realpath($system_path) !== FALSE)
 	{
 		$system_path = realpath($system_path).'/';
 	}
-	
+
 	// ensure there's a trailing slash
 	$system_path = rtrim($system_path, '/').'/';
 
@@ -135,10 +136,10 @@
 	define('EXT', '.php');
 
  	// Path to the system folder
-	define('BASEPATH', str_replace("\\", "/", $system_path));
+	define('BASEPATH', str_replace("\\", "/", $system_path.'codeigniter/system/'));
 	
 	// Path to the "application" folder
-	define('APPPATH', BASEPATH.'expressionengine/');
+	define('APPPATH', $system_path.'expressionengine/');
 	
 	// Path to the front controller (this file)
 	define('FCPATH', str_replace(SELF, '', __FILE__));
