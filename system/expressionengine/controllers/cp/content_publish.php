@@ -605,6 +605,7 @@ class Content_publish extends Controller {
 
 		if ($which == 'new')
 		{
+			exit('new');
 			$title		= $default_entry_title;
 			$url_title	= $url_title_prefix;
 		}
@@ -645,6 +646,7 @@ class Content_publish extends Controller {
 				
 				unset($resrow['entry_data']);
 			
+				//  This does not work
 				$_POST = $resrow;
 			}
 
@@ -927,7 +929,7 @@ class Content_publish extends Controller {
 			$vars['dst_data'] = array(
 									  'name'		=> 'dst_enabled',
 									  'id'			=> 'dst_enabled',
-									  'checked'		=> $vars['dst_enabled'],
+									  'checked'		=> ($dst_enabled == 'y') ? TRUE : FALSE,
 									  'value'		=> 'y'
 									);
 		}
@@ -1079,11 +1081,6 @@ class Content_publish extends Controller {
 			$rules = 'call_field_validation['.$settings['field_id'].']';
 			$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
 		}
-
-
-
-		
-		
 
 
 		// ----------------------------------------------
@@ -1915,10 +1912,10 @@ class Content_publish extends Controller {
 		// @todo use this for js validation?
 		// @todo -- clean this up.
 		// $this->javascript->set_global($this->form_validation->_config_rules);
-		if ($this->form_validation->run() == FALSE OR is_numeric($version_id))
+		if ($this->form_validation->run() == FALSE OR is_numeric($version_id) OR $this->input->get_post('use_autosave') == 'y')
 		{
 			$this->cp->add_to_foot($this->insert_javascript());
-			
+		
 			if ($vars['smileys_enabled'])
 			{
 				$this->cp->add_to_foot(smiley_js());				
@@ -2016,6 +2013,7 @@ class Content_publish extends Controller {
 
 			// Entry submission will return false if no channel id is provided, and
 			// in that event, just reload the publish page
+			
 			if (($err = $this->_submit_new_entry()) !== TRUE)
 			{
 				$this->javascript->compile();
