@@ -2805,7 +2805,7 @@ class Forum_mcp {
 
 		if ($count == 0)
 		{
-			require_once BASEPATH.'expressionengine/language/'.$this->EE->config->item('deft_lang').'/email_data'.EXT;
+			require_once APPPATH.'language/'.$this->EE->config->item('deft_lang').'/email_data'.EXT;
 			
 			$this->EE->db->query("INSERT INTO exp_specialty_templates(site_id, template_name, data_title, template_data) 
 					  VALUES ('".$this->EE->db->escape_str($_POST['board_site_id'])."', 'admin_notify_forum_post', '".addslashes(trim(admin_notify_forum_post_title()))."', '".addslashes(admin_notify_forum_post())."')");

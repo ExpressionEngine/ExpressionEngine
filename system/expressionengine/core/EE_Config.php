@@ -42,8 +42,8 @@ class EE_Config Extends CI_Config {
 		parent::CI_Config();
 		
 		// Change this path before release.  
-		$this->config_path		= BASEPATH.'expressionengine/config/config'.EXT;
-		$this->database_path	= BASEPATH.'expressionengine/config/database'.EXT;
+		$this->config_path		= APPPATH.'config/config'.EXT;
+		$this->database_path	= APPPATH.'config/database'.EXT;
 
 		$this->_initialize();
 	}
