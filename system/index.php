@@ -126,7 +126,7 @@
 	define('SELF', pathinfo(__FILE__, PATHINFO_BASENAME));
 
  	// Path to the system folder
-	define('BASEPATH', str_replace("\\", "/", $system_path));
+	define('BASEPATH', str_replace("\\", "/", $system_path.'codeigniter/system/'));
 	
 	// Path to the front controller (this file)
 	define('FCPATH', str_replace(SELF, '', __FILE__));
@@ -147,7 +147,7 @@
  *
  */ 
  	// Is the installation folder present?
-	if (FALSE && is_dir(BASEPATH.'expressionengine/installer/'))
+	if (FALSE && is_dir($system_path.'expressionengine/installer/'))
 	{
 		// We need a different subclass prefix when we run the installer.
 		// The reason is because the installer has it's on Config class extension
@@ -157,12 +157,12 @@
 		$assign_to_config['subclass_prefix']	= 'Installer_';
 		
 		// This allows the installer application to be inside our normal EE application directory
-		define('APPPATH', BASEPATH.'expressionengine/installer/');
-		define('EE_APPPATH', BASEPATH.'expressionengine/');
+		define('APPPATH', $system_path.'expressionengine/installer/');
+		define('EE_APPPATH', $system_path.'expressionengine/');
 	}
 	else
 	{
-		define('APPPATH', BASEPATH.'expressionengine/');
+		define('APPPATH', $system_path.'expressionengine/');
 	}
 
  	// The control panel access constant.  Without this, the CP will not be invoked
