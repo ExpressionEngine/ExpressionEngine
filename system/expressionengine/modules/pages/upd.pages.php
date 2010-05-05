@@ -68,7 +68,11 @@ class Pages_upd {
 	function install()
 	{
 		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend) VALUES ('Pages', '$this->version', 'y')";
-		$sql[] = "ALTER TABLE `exp_sites` ADD `site_pages` TEXT NOT NULL";
+
+		if ( ! $this->EE->db->field_exists('site_pages', 'exp_sites'))
+		{
+			$sql[] = "ALTER TABLE `exp_sites` ADD `site_pages` TEXT NOT NULL";
+		}
 
 		$sql[] = "CREATE TABLE `exp_pages_configuration` (
 				`configuration_id` INT( 10 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,

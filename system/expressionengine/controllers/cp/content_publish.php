@@ -1373,7 +1373,7 @@ class Content_publish extends Controller {
 		$vars['pages_dropdown_selected'] = '';
 		$pages = FALSE;
 
-		if ($this->config->item('site_pages') !== FALSE)
+		if (isset($this->installed_modules['pages']))
 		{
 			$pages = $this->config->item('site_pages');
 			$pages_uri = '';
