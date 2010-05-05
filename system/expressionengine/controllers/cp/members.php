@@ -1118,8 +1118,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		// Update		
 		$this->stats->update_member_stats();
 			
-		$cp_message = (count($ids) == 1) ? $this->dsp->qdiv('success', $this->lang->line('member_deleted')) :
-										$this->dsp->qdiv('success', $this->lang->line('members_deleted'));
+		$cp_message = (count($ids) == 1) ? $this->lang->line('member_deleted') :
+										$this->lang->line('members_deleted');
 
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=members'.AMP.'M=view_all_members');

@@ -230,9 +230,9 @@ class Referrer_mcp {
 
 			if (strlen($agent) > 11)
 			{
-				$agent2 = $this->EE->dsp->qspan('defaultBold', $this->EE->lang->line('ref_user_agent')).':'.NBS."<a href=\"javascript:void(0);\" name=\"ext{$row['ref_id']}\" onclick=\"showHide({$row['ref_id']},this,'close');return false;\">[-]</a>".NBS.NBS.$agent;
+				$agent2 = '<span class="defaultBold">'.$this->EE->lang->line('ref_user_agent').'</span>:'.NBS."<a href=\"javascript:void(0);\" name=\"ext{$row['ref_id']}\" onclick=\"showHide({$row['ref_id']},this,'close');return false;\">[-]</a>".NBS.NBS.$agent;
 
-				$agent = "<div id='extLink{$row['ref_id']}'>".$this->EE->dsp->qspan('defaultBold', $this->EE->lang->line('ref_user_agent')).':'.NBS."<a href=\"javascript:void(0);\" name=\"ext{$row['ref_id']}\" onclick=\"showHide({$row['ref_id']},this,'open');return false;\">[+]</a>".NBS.NBS.preg_replace("/(.+?)\s+.*/", "\\1", $agent)."</div>";
+				$agent = "<div id='extLink{$row['ref_id']}'><span class='defaultBold'>". $this->EE->lang->line('ref_user_agent').'</span>:'.NBS."<a href=\"javascript:void(0);\" name=\"ext{$row['ref_id']}\" onclick=\"showHide({$row['ref_id']},this,'open');return false;\">[+]</a>".NBS.NBS.preg_replace("/(.+?)\s+.*/", "\\1", $agent)."</div>";
 
 				$agent .= '<div id="extText'.$row['ref_id'].'" style="display: none; padding:0;">'.$agent2.'</div>';
 			}
