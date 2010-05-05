@@ -47,8 +47,8 @@ class Installer_Config Extends EE_Config {
 	{	
 		parent::CI_Config();
 
-		$this->config_path		= BASEPATH.'expressionengine/config/config'.EXT;
-		$this->database_path	= BASEPATH.'expressionengine/config/database'.EXT;
+		$this->config_path		= EE_APPPATH.'/config/config'.EXT;
+		$this->database_path	= EE_APPPATH.'/config/database'.EXT;
 
 		$this->_initialize();
 	}
