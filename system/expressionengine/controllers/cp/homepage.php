@@ -37,21 +37,6 @@ class Homepage extends Controller {
 		{
 			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
 		}
-
-		/** --------------------------------
-		/**  Demo account expiration
-		/** --------------------------------*/
-		
-		// We use this code for expressionengine.com demos.
-		// Since it's only a couple lines of code we'll leave it in 
-		// the master files even though it's not needed for normal use.
-
-		if ($this->config->item('demo_date'))
-		{
-			$expiration = ( ! $this->config->item('demo_expiration')) ? (60*60*24*30) : $this->config->item('demo_expiration');
-			$this->messages[] = $this->dsp->qdiv('itemWrapper', $this->dsp->qspan('defaultBold', $this->lang->line('demo_expiration').NBS.NBS.$this->localize->format_timespan(($this->config->item('demo_date') + $expiration) - time())));
-		}
-		// -- End Demo Code
 	}
 
 	// --------------------------------------------------------------------
