@@ -41,9 +41,10 @@ $Q[] = "INSERT INTO exp_channel_titles (channel_id, author_id, ip_address, entry
 $Q[] = "INSERT INTO exp_channel_data (entry_id, channel_id, field_id_1, field_ft_1, field_id_2, field_ft_2, field_id_3, field_ft_3) VALUES ('1', '1', '', 'xhtml', '".$this->db->escape_str($this->schema->default_entry)."', 'xhtml', '', 'xhtml')";
 
 // Upload prefs
-// @confirm: since the installer changes APPPATH, upload folder is wrong, so reset it before it gets installed.
-$orig_image_path = $this->userdata['image_path'];
-$this->userdata['image_path'] = str_replace(SYSDIR.'/', '', BASEPATH).'images/';
+// @confirm: we had to monkey around with the image_path since the installer APPPATH was buried inside the expressionengine folder
+// but now that shouldn't be necessary. commented out 5/5/10
+// $orig_image_path = $this->userdata['image_path'];
+// $this->userdata['image_path'] = str_replace(SYSDIR.'/codeigniter/system/', '', BASEPATH).'images/';
 
 if (@realpath(str_replace('../', './', $this->userdata['image_path'])) !== FALSE)
 {

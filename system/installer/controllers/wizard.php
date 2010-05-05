@@ -356,7 +356,7 @@ class Wizard extends Controller {
 			// set the image path and theme folder path
 			$this->userdata['image_path'] = $this->image_path;
 			$this->userdata['theme_folder_path'] = $this->root_theme_path;
-			
+
 			// We'll assign any POST values that exist (this will be the case after the user submits the install form)
 			if (count($_POST) > 0)
 			{
@@ -1108,7 +1108,7 @@ PAPAYA;
 		
 		// Since the CP access file can be inside or outside of the "system" folder
 		// we will do a little test to help us set the site_url item
-		$_selfloc = (is_dir('./expressionengine/installer/')) ? SELF.'/'.SYSDIR : SELF;
+		$_selfloc = (is_dir('./installer/')) ? SELF.'/'.SYSDIR : SELF;
 		
 		// Set the site URL
 		$this->userdata['site_url'] = $host.substr($self, 0, - strlen($_selfloc)); 
@@ -1462,7 +1462,7 @@ PAPAYA;
 		{
 			$path = $this->_set_image_path('../'.$path, ++$n);
 		}
-		
+
 		return $path;
 	}
 
