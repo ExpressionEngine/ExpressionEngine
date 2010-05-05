@@ -147,7 +147,7 @@
  *
  */ 
  	// Is the installation folder present?
-	if (FALSE && is_dir($system_path.'expressionengine/installer/'))
+	if (FALSE && is_dir($system_path.'installer/'))
 	{
 		// We need a different subclass prefix when we run the installer.
 		// The reason is because the installer has it's on Config class extension
@@ -157,7 +157,7 @@
 		$assign_to_config['subclass_prefix']	= 'Installer_';
 		
 		// This allows the installer application to be inside our normal EE application directory
-		define('APPPATH', $system_path.'expressionengine/installer/');
+		define('APPPATH', $system_path.'installer/');
 		define('EE_APPPATH', $system_path.'expressionengine/');
 	}
 	else
