@@ -319,7 +319,7 @@ class Wizard extends Controller {
 		}
 
 		// Is the cache folder writable?
-		if ( ! is_really_writable(BASEPATH.'expressionengine/cache'))
+		if ( ! is_really_writable(EE_APPPATH.'/cache'))
 		{
 			$this->_set_output('error', array('error' => $this->lang->line('unwritable_cache_folder')));
 			return FALSE;
@@ -337,7 +337,7 @@ class Wizard extends Controller {
 		if ( ! isset($config) AND ! isset($db))
 		{
 			// Is the email template file available?  We'll check since we need this later
-			if ( ! file_exists(BASEPATH.'expressionengine/language/'.$this->userdata['deft_lang'].'/email_data'.EXT))
+			if ( ! file_exists(EE_APPPATH.'/language/'.$this->userdata['deft_lang'].'/email_data'.EXT))
 			{
 				$this->_set_output('error', array('error' => $this->lang->line('unreadable_email')));
 				return FALSE;
@@ -503,7 +503,7 @@ class Wizard extends Controller {
 			}
 
 			// Fetch the installed languages
-			$languages = directory_map(BASEPATH.'expressionengine/language', TRUE);
+			$languages = directory_map(EE_APPPATH.'/language', TRUE);
 
 			// Check to see if they have the language files needed
 			if ( ! in_array($default_language, $languages))
@@ -1012,7 +1012,7 @@ PAPAYA;
 		}
 		
 		// Load the email template	
-		require_once BASEPATH.'expressionengine/language/'.$this->userdata['deft_lang'].'/email_data'.EXT;
+		require_once EE_APPPATH.'/language/'.$this->userdata['deft_lang'].'/email_data'.EXT;
 
 		// Install Database Tables!
 		if ( ! $this->schema->install_tables_and_data())
@@ -1597,13 +1597,13 @@ PAPAYA;
 	{
 		$modules = array();
 
-		if ($fp = @opendir(BASEPATH.'expressionengine/modules/')) 
+		if ($fp = @opendir(EE_APPPATH.'/modules/')) 
 		{
 			while (FALSE !== ($file = readdir($fp))) 
 			{
 				if (strncmp($file, '_', 1) != 0 && strpos($file, '.') === FALSE && ! in_array($file, $this->required_modules))
 				{				
-					$this->lang->load('lang.'.$file, '', FALSE, FALSE, BASEPATH.'expressionengine/');
+					$this->lang->load('lang.'.$file, '', FALSE, FALSE, EE_APPPATH.'/');
 					$name = ($this->lang->line(strtolower($file).'_module_name') != FALSE) ? $this->lang->line(strtolower($file).'_module_name') : $file;			
 					$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
 				}
@@ -1615,7 +1615,7 @@ PAPAYA;
 		$this->load->helper('directory');
 		$ext_len = strlen(EXT);
 		
-		if (($map = directory_map(BASEPATH.'expressionengine/third_party/')) !== FALSE)
+		if (($map = directory_map(EE_APPPATH.'/third_party/')) !== FALSE)
 		{
 			foreach ($map as $pkg_name => $files)
 			{
@@ -1639,7 +1639,7 @@ PAPAYA;
 
 						if ($file == $pkg_name)
 						{
-							$this->lang->load('lang.'.$file, '', FALSE, FALSE, BASEPATH.'expressionengine/third_party/'.$pkg_name.'/');
+							$this->lang->load('lang.'.$file, '', FALSE, FALSE, EE_APPPATH.'/third_party/'.$pkg_name.'/');
 							$name = ($this->lang->line(strtolower($file).'_module_name') != FALSE) ? $this->lang->line(strtolower($file).'_module_name') : $file;			
 							$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
 						}
@@ -1726,7 +1726,7 @@ PAPAYA;
 	 */
 	function _is_full_install()
 	{
-		if ($fp = @opendir(BASEPATH.'expressionengine/modules/')) 
+		if ($fp = @opendir(EE_APPPATH.'/modules/')) 
 		{ 
 			while (false !== ($file = readdir($fp))) 
 			{ 
@@ -2063,7 +2063,7 @@ PAPAYA;
 		{
 			if (in_array($module, $this->native_modules))
 			{
-				$path = BASEPATH.'expressionengine/modules/'.$module.'/';
+				$path = EE_APPPATH.'/modules/'.$module.'/';
 				unset($modules[$module]); // remove from modules array
 
 				if (file_exists($path.'upd.'.$module.EXT))
@@ -2094,7 +2094,7 @@ PAPAYA;
 
 		foreach($modules as $module)
 		{
-			$path = BASEPATH.'expressionengine/third_party/'.$module.'/';
+			$path = EE_APPPATH.'/third_party/'.$module.'/';
 			
 			if (file_exists($path.'upd.'.$module.EXT))
 			{
@@ -2747,7 +2747,7 @@ PAPAYA;
 							'pconnect'	=> FALSE,
 							'db_debug'	=> TRUE,
 							'cache_on'	=> FALSE,
-							'cachedir'	=> BASEPATH.'expressionengine/cache/db_cache/',
+							'cachedir'	=> EE_APPPATH.'/cache/db_cache/',
 							'autoinit'	=> TRUE,
 							'char_set'	=> 'utf8',
 							'dbcollat'	=> 'utf8_general_ci'
@@ -2853,11 +2853,11 @@ PAPAYA;
 
 			if (in_array($module, $this->native_modules))
 			{
-				$path = BASEPATH.'expressionengine/modules/'.$module.'/';
+				$path = EE_APPPATH.'/modules/'.$module.'/';
 			}
 			else
 			{
-				$path = BASEPATH.'expressionengine/third_party/'.$module.'/';
+				$path = EE_APPPATH.'/third_party/'.$module.'/';
 			}
 			
 			if (file_exists($path.'upd.'.$module.EXT))

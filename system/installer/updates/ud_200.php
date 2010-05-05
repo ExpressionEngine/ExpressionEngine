@@ -80,7 +80,7 @@ class Updater {
                     // one quick path adjustment if they were using the old default location for template files
                     if (isset($data['tmpl_file_basepath']) && trim($data['tmpl_file_basepath'], '/') == BASEPATH.'templates')
                     {
-                        $data['tmpl_file_basepath'] = BASEPATH.'expressionengine/templates/';
+                        $data['tmpl_file_basepath'] = EE_APPPATH.'/templates/';
                     }
                     // also, make sure they start with the default cp theme
                     elseif (isset($data['cp_theme']) && $data['cp_theme'] != 'default')
