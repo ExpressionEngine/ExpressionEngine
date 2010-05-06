@@ -165,6 +165,7 @@ class News_and_stats_acc {
 		$values = array('data' => '', 'class' => 'values');
 		
 		$this->EE->load->library('table');
+		$this->EE->load->helper(array('url', 'snippets'));
 //		$this->EE->table->set_heading($this->EE->lang->line('site_statistics'), array('data' => $this->EE->lang->line('value'), 'class' => 'values'));
 		
 		if ($this->EE->session->userdata['group_id'] == 1)
@@ -245,8 +246,14 @@ class News_and_stats_acc {
 			
 				$this->EE->db->where(array('status' => 'c', 'site_id' => $this->EE->config->item('site_id')));
 				$values['data'] = $this->EE->db->count_all_results('comments');
+				
+				$l = anchor(BASE.AMP.'C=publish&M=view_comments&validate=1',
+					   required(
+							$this->EE->lang->line('total_validating_comments')
+						)
+					);
 
-				$link = ($values['data'] > 0) ? $this->EE->dsp->required().NBS.$this->EE->dsp->anchor(BASE.AMP.'C=publish&M=view_comments&validate=1', $this->EE->lang->line('total_validating_comments')) : $this->EE->lang->line('total_validating_comments');
+				$link = ($values['data'] > 0) ? $l : $this->EE->lang->line('total_validating_comments');
 				$this->EE->table->add_row($link, $values);
 			}
 		}
