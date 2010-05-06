@@ -4,14 +4,6 @@
 
 "use strict";
 
-// Create a void console.log if the
-// browser does not support it
-
-if (typeof console === "undefined" || ! console.log) {
-	console = { log: function() { return false; }};
-}
-
-
 // Setup Base EE Control Panel
 
 jQuery(document).ready(function() {
@@ -355,6 +347,7 @@ if (EE.flashdata !== undefined) {
 // Setup Notepad
 
 EE.notepad = (function() {
+	
 	var notepad = $('#notePad'),
 		notepad_form = $("#notepad_form"),
 		notepad_txtarea = $('#notePadTextEdit'),
