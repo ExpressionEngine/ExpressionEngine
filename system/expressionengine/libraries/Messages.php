@@ -1635,13 +1635,6 @@ DOH;
 		}
 		
 		$this->return_data = $this->_process_template($this->retrieve_template('search_members'));
-		
-		if ($this->allegiance == 'cp')
-		{
-			
-			$this->EE->dsp->title = $this->EE->lang->line('member_search');
-			$this->EE->dsp->body  = $this->return_data;
-		}
 	}
 
 	
@@ -1742,13 +1735,6 @@ DOH;
 		}
 		
 		$this->return_data = $this->_process_template($this->retrieve_template('member_results'));
-		
-		if ($this->allegiance == 'cp')
-		{
-			
-			$this->EE->dsp->title = $this->EE->lang->line('search_results');
-			$this->EE->dsp->body  = $this->return_data;
-		}
 	}
 
 	
@@ -1792,13 +1778,6 @@ DOH;
 		}
 		
 		$this->return_data = $this->_process_template($this->retrieve_template('search_members'));
-		
-		if ($this->allegiance == 'cp')
-		{
-			
-			$this->EE->dsp->title = $this->EE->lang->line('member_search');
-			$this->EE->dsp->body  = $this->return_data;
-		}
 	}
 
 	
@@ -1902,13 +1881,6 @@ DOH;
 		$this->single_parts['include']['search_results'] = $r;
 		
 		$this->return_data = $this->_process_template($this->retrieve_template('member_results'));
-		
-		if ($this->allegiance == 'cp')
-		{
-			
-			$this->EE->dsp->title = $this->EE->lang->line('search_results');
-			$this->EE->dsp->body  = $this->return_data;
-		}
 	}
 
 		
