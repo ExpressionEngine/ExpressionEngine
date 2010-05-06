@@ -634,9 +634,9 @@ class Content_edit extends Controller {
 			// Entry ID number
 			$vars['entries'][$row['entry_id']][] = $row['entry_id'];
 
-			// Channel entry title (view entry)
-			// @todo: move this to CI anchor
-			$output = '<a href="'.BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'].'">'.$row['title'].'</a>';
+			// Channel entry title (view entry)			
+			$output = anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'], $row['title']);
+			
 			$output .= (in_array($row['entry_id'], $autosave_array)) ? NBS.required() : '';
 			$vars['entries'][$row['entry_id']][] = $output;
 
@@ -645,9 +645,10 @@ class Content_edit extends Controller {
 			{
 				$qm = ($this->config->item('force_query_string') == 'y') ? '' : '?';
 
-				$view_link = $this->dsp->anchor($this->functions->fetch_site_index().$qm.'URL='.
-									$this->functions->create_url($templates[$row['live_look_template']].'/'.$row['entry_id']),
-									$this->lang->line('view'), '', TRUE);
+				$url = $this->functions->create_url($templates[$row['live_look_template']].'/'.$row['entry_id']);
+
+				$view_link = anchor($this->functions->fetch_site_index().QUERY_MARKER.'URL='.$url,
+									$this->lang->line('view'));
 			}
 			else
 			{
@@ -728,7 +729,7 @@ class Content_edit extends Controller {
 			$vars['entries'][$row['entry_id']][] = $this->localize->decode_date($datestr, $row['entry_date'], TRUE);
 
 			// Channel
-			$vars['entries'][$row['entry_id']][] = (isset($w_array[$row['channel_id']])) ? $this->dsp->qdiv('smallNoWrap', $w_array[$row['channel_id']]) : '';
+			$vars['entries'][$row['entry_id']][] = (isset($w_array[$row['channel_id']])) ? '<div class="smallNoWrap">'. $w_array[$row['channel_id']].'</div>' : '';
 
 			// Status
 			$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? $this->lang->line($row['status']) : $row['status'];
@@ -766,8 +767,9 @@ class Content_edit extends Controller {
 					{
 						$view_url = BASE.AMP.'C=content_edit'.AMP.'M=view_comments'.AMP.'channel_id='.$row->channel_id.AMP.'entry_id='.$row->entry_id;
 					}
-				
-					$view_link = ($show_link === FALSE) ? $this->dsp->qdiv('lightLinks', '--') : $this->dsp->qspan('lightLinks', '('.($row->count ).')').NBS.$this->dsp->anchor($view_url, $this->lang->line('view'));
+					
+					$view_link = ($show_link === FALSE) ? '<div class="lightLinks">--</div>' : 
+					'<div class="lightLinks">('.$row->count.')'.NBS.anchor($view_url, $this->lang->line('view')).'</div>';
 				
 					$vars['entries'][$row->entry_id][3] = $view_link;
 				
@@ -1066,12 +1068,11 @@ class Content_edit extends Controller {
 		}
 		
 		
-		
+
 		foreach($query_results as $row)
 		{
-
 			$m[] = $row['entry_id'];
-			$title_output = '<a href="'.BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'].'">'.$row['title'].'</a>';
+			$title_output = anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'], $row['title']);
 			$title_output .= (in_array($row['entry_id'], $autosave_array)) ? NBS.required() : '';
 
 			$m[] = $title_output;
@@ -1082,9 +1083,9 @@ class Content_edit extends Controller {
 			{
 				$qm = ($this->config->item('force_query_string') == 'y') ? '' : '?';
 
-				$view_link = $this->dsp->anchor($this->functions->fetch_site_index().$qm.'URL='.
-									$this->functions->create_url($templates[$row['live_look_template']].'/'.$row['entry_id']),
-									$this->lang->line('view'), '', TRUE);
+				$url = $this->functions->create_url($templates[$row['live_look_template']].'/'.$row['entry_id']);
+				$view_link = anchor($this->functions->fetch_site_index().$qm.'URL='.$url,
+									$this->lang->line('view'));
 			}
 			else
 			{
@@ -1092,7 +1093,6 @@ class Content_edit extends Controller {
 			}
 			
 			$m[] = $view_link; // Add live look template
-
 			
 
 			// Comment count
@@ -1126,7 +1126,7 @@ class Content_edit extends Controller {
 					$view_url = BASE.AMP.'C=content_edit'.AMP.'M=view_comments'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'];
 				}
 
-				$view_link = ($show_link == FALSE) ? $this->dsp->qdiv('lightLinks', '--') : $this->dsp->qspan('lightLinks', '('.($res->row('count') ).')').NBS.$this->dsp->anchor($view_url, $this->lang->line('view'));
+				$view_link = ($show_link == FALSE) ? '<div class="lightLinks">--</div>' : '<div class="lightLinks">('.$res->row('count').')'.NBS.anchor($view_url, $this->lang->line('view')).'</div>';
 
 				$m[] = $view_link;
 			}
@@ -1168,7 +1168,7 @@ class Content_edit extends Controller {
 			$m[] = $this->localize->decode_date($datestr, $row['entry_date'], TRUE);
 
 			// Channel
-			$m[] = (isset($w_array[$row['channel_id']])) ? $this->dsp->qdiv('smallNoWrap', $w_array[$row['channel_id']]) : '';
+			$m[] = (isset($w_array[$row['channel_id']])) ? '<div class="smallNoWrap">'.$w_array[$row['channel_id']].'</div>' : '';
 
 			// Status
 			$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? $this->lang->line($row['status']) : $row['status'];
@@ -1624,7 +1624,7 @@ class Content_edit extends Controller {
 
 				foreach($error as $val)
 				{
-					$msg .= $this->dsp->qdiv('itemWrapper', $val);	
+					$msg .= '<div class="itemWrapper">'.$val.'</div>';	
 				}
 
 				return show_error($msg);
@@ -1893,7 +1893,7 @@ class Content_edit extends Controller {
 
 		if ($valid == 'n')
 		{
-			return $this->dsp->show_user_error($this->lang->line('no_category_group_match'));
+			return $this->output->show_user_error('submission', $this->lang->line('no_category_group_match'));
 		}
 
 		/** -----------------------------
