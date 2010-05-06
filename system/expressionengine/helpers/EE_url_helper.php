@@ -84,5 +84,45 @@ if ( ! function_exists('url_title'))
 
 // --------------------------------------------------------------------
 
+/**
+ * Anchor Link
+ *
+ * Creates an anchor based on the local URL.
+ *
+ * @access	public
+ * @param	string	the URL
+ * @param	string	the link title
+ * @param	mixed	any attributes
+ * @return	string
+ */
+function anchor($uri = '', $title = '', $attributes = '')
+{
+    $title = (string) $title;
+
+    $site_url = is_array($uri) ? implode('/', $uri) : $uri;
+
+    if (REQ != 'CP' && ! preg_match('!^\w+://! i', $site_url))
+    {
+		$EE =& get_instance();
+	
+        $site_url = $EE->functions->fetch_site_index(TRUE).$site_url;
+    }
+
+    if ($title == '')
+    {
+        $title = $site_url;
+    }
+
+    if ($attributes != '')
+    {
+        $attributes = _parse_attributes($attributes);
+    }
+
+    return '<a href="'.$site_url.'"'.$attributes.'>'.$title.'</a>';
+}
+
+// --------------------------------------------------------------------
+
+
 /* End of file EE_url_helper.php */
 /* Location: ./system/expressionengine/helpers/EE_url_helper.php */
