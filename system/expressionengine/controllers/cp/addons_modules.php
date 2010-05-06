@@ -159,7 +159,6 @@ class Addons_modules extends Controller {
 			$data[$modcount][] = $version;
 
 			// Module Status
-			// @todo: get rid of dsp class down there...
 			$status = ( ! isset($this->installed_modules[$module]) ) ? 'not_installed' : 'installed';
 			$in_status = str_replace(" ", "&nbsp;", $this->lang->line($status));
 			$show_status = ($status == 'not_installed') ? '<span class="notice">'.$in_status.'</span>' : '<span class="go_notice">'.$in_status.'</span>';

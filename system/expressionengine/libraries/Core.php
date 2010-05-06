@@ -498,10 +498,6 @@ class EE_Core {
 		/** ------------------------------------
 		/**  Instantiate Display Class.
 		/** ------------------------------------*/
-		// @todo Kill this one before release!
-		
-		require APPPATH.'controllers/cp/display'.EXT;
-		$this->EE->dsp = new Display();
 		
 		// Load common helper files
 		$this->EE->load->helper(array('form', 'quicktab'));
