@@ -2228,6 +2228,7 @@ MAGIC;
 	function add_items($channel_id = '', $message = '', $extra_sql = '', $search_url = '', $form_url = '', $action = '', $extra_fields_search='', $extra_fields_entries='', $heading='')
 	{
 		$this->EE->lang->loadfile('content');
+		$this->EE->load->helper('url');
 
 		//@todo: these vars were in the function instaniation - investigate if this is going to cause any limitations...
 		$channel_id = '';
@@ -3208,7 +3209,7 @@ MAGIC;
 			{
 				$qm = ($this->EE->config->item('force_query_string') == 'y') ? '' : '?';
 
-				$view_link = $this->EE->dsp->anchor($this->EE->functions->fetch_site_index().$qm.'URL='.
+				$view_link = anchor($this->EE->functions->fetch_site_index().$qm.'URL='.
 									$this->EE->functions->create_url($templates[$row['live_look_template']].'/'.$row['entry_id']),
 									$this->EE->lang->line('view'), '', TRUE);
 			}
@@ -3251,7 +3252,7 @@ MAGIC;
 					$view_url = BASE.AMP.'C=content_edit'.AMP.'M=view_comments'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'];
 				}
 
-				$view_link = ($show_link == FALSE) ? $this->EE->dsp->qdiv('lightLinks', '--') : $this->EE->dsp->qspan('lightLinks', '('.($res->row('count') ).')').NBS.$this->EE->dsp->anchor($view_url, $this->EE->lang->line('view'));
+				$view_link = ($show_link == FALSE) ? '<div class="lightLinks">--</div>' : '<div class="lightLinks">('.($res->row('count') ).')'.NBS.anchor($view_url, $this->EE->lang->line('view')).'</div>';
 
 				$vars['entries'][$row['entry_id']][] = $view_link;
 			}
@@ -3293,7 +3294,7 @@ MAGIC;
 			$vars['entries'][$row['entry_id']][] = $this->EE->localize->decode_date($datestr, $row['entry_date'], TRUE);
 
 			// Channel
-			$vars['entries'][$row['entry_id']][] = (isset($w_array[$row['channel_id']])) ? $this->EE->dsp->qdiv('smallNoWrap', $w_array[$row['channel_id']]) : '';
+			$vars['entries'][$row['entry_id']][] = (isset($w_array[$row['channel_id']])) ? '<div class="smallNoWrap">'. $w_array[$row['channel_id']].'</div>' : '';
 
 			// Status
 			$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? $this->EE->lang->line($row['status']) : $row['status'];
