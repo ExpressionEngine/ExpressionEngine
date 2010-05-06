@@ -11,7 +11,11 @@
 |
 */
 
-
+$config['config']			= FALSE;
+$config['http_headers']		= FALSE;
+$config['get']				= FALSE;
+$config['uri_string']		= FALSE;
+$config['controller_info']	= FALSE;
 
 /* End of file profiler.php */
 /* Location: ./system/expressionengine/config/profiler.php */

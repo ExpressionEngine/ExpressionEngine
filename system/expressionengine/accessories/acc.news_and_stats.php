@@ -205,7 +205,7 @@ class News_and_stats_acc {
 		$this->EE->table->add_row($this->EE->lang->line('total_hits'), $values);
 
 		// member stats
-		if ($this->EE->session->userdata['group_id'] == 1)
+		if ($this->EE->session->userdata('group_id') == 1)
 		{
 			// total members
 			$values['data'] = $this->EE->db->count_all_results('members');
@@ -219,8 +219,16 @@ class News_and_stats_acc {
 				$this->EE->db->where('group_id', '4');
 				$values['data'] = $this->EE->db->count_all_results('members');
 			}
-
-			$link = ($values['data'] > 0) ? $this->EE->dsp->required().NBS.$this->EE->dsp->anchor(BASE.AMP.'C=members&M=member_validation', $this->EE->lang->line('total_validating_members')) : $this->EE->lang->line('total_validating_members');
+			
+			$this->EE->load->helper(array('url', 'snippets'));
+			
+			$l = anchor(BASE.AMP.'C=members&M=member_validation',
+				   required(
+						$this->EE->lang->line('total_validating_members')
+					)
+				);
+			
+			$link = ($values['data'] > 0) ? $l : $this->EE->lang->line('total_validating_members');
 
 			$this->EE->table->add_row($link, $values);
 		}
