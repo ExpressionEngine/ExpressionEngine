@@ -432,6 +432,7 @@ class Metaweblog_api_mcp {
 
 
 		// @todo- clean this up and decide how permissions come into play.  Note- above
+		// @robin -- I'm leaving this dsp so you can decide what needs to be done with the todo -ga
 		// is commented out in 1.6
 		// Fetch channel titles
 		// $this->EE->db->select('group_id, group_name, status_group, field_group, site_label, channel_title');
