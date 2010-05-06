@@ -3864,10 +3864,9 @@ class Channel {
 												  'parent_id'				=> $v[1]);
 
 								// add custom fields for conditionals prep
-
-								foreach ($this->catfields as $ck => $cv)
+								foreach ($this->catfields as $cv)
 								{
-									$cat_vars[$ck] = ( ! isset($v['field_id_'.$cv])) ? '' : $v['field_id_'.$cv];
+									$cat_vars[$cv['field_name']] = ( ! isset($v['field_id_'.$cv['field_id']])) ? '' : $v['field_id_'.$cv['field_id']];
 								}
 
 								$temp = $this->EE->functions->prep_conditionals($temp, $cat_vars);

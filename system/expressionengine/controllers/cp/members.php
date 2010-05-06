@@ -1337,8 +1337,10 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 		else
 		{
-			$res = $this->db->get_where('channel_member_groups', array('group_id' => $id));
-		
+			$this->db->select('channel_id');
+ 			$this->db->where('group_id', $id);		
+			$res = $this->db->get('channel_member_groups');				
+			
 			if ($res->num_rows() > 0)
 			{
 				foreach ($res->result_array() as $row)
@@ -1357,7 +1359,10 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$vars['channel_names'] = $channel_names;
 		
 		//  Fetch the names and IDs of all modules	
-		$query	= $this->db->query("SELECT module_id, module_name FROM exp_modules WHERE has_cp_backend = 'y' ORDER BY module_name");
+		$this->db->select('module_id, module_name');
+ 		$this->db->where('has_cp_backend', 'y');		
+ 		$this->db->order_by('module_name');
+		$query = $this->db->get('modules');		
 
 		$module_names = array();
 		$module_perms = array();
@@ -1373,7 +1378,9 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 		else
 		{
-			$res = $this->db->query("SELECT module_id FROM exp_module_member_groups WHERE group_id = '".$this->db->escape_str($group_id)."' ");
+			$this->db->select('module_id');
+ 			$this->db->where('group_id', $id);		
+			$res = $this->db->get('module_member_groups');	
 			
 			if ($res->num_rows() > 0)
 			{
@@ -1394,7 +1401,9 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$vars['module_perms'] = $module_perms;
 		
 		//  Fetch the names and IDs of all template groups
-		$query 	= $this->db->query("SELECT group_id, group_name, site_id FROM exp_template_groups ORDER BY group_name");
+		$this->db->select('group_id, group_name, site_id');
+ 		$this->db->order_by('group_name');
+		$query = $this->db->get('template_groups');			
 
 		$template_names = array();
 		$template_perms = array();
@@ -1409,7 +1418,9 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 		else
 		{
-			$res	= $this->db->query("SELECT template_group_id FROM exp_template_member_groups WHERE group_id = '".$this->db->escape_str($id)."' ");
+			$this->db->select('template_group_id');
+ 			$this->db->where('group_id', $id);		
+			$res = $this->db->get('template_member_groups');	
 
 			$template_ids = array();
 
