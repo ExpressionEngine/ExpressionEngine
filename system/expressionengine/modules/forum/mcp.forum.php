@@ -2686,7 +2686,7 @@ class Forum_mcp {
 			
 			if ( ! is_really_writable($_POST['board_upload_path']))
 			{
-				$msg  = '<strong>'.$this->EE->lang->line('unwritable_upload_path')).'</strong><br />';
+				$msg  = '<strong>'.$this->EE->lang->line('unwritable_upload_path').'</strong><br />';
 				$msg .= $_POST['board_upload_path'];
 			
 				show_error($msg);
