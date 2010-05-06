@@ -61,8 +61,6 @@ class Tools_communicate extends Controller {
 	
 	// --------------------------------------------------------------------
 
-	// @todo: this whole controller looks like it needs to be looked at
-
 	/**
 	 * Index function
 	 * 

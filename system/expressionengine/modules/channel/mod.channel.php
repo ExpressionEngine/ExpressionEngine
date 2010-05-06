@@ -4090,7 +4090,9 @@ class Channel {
 					//  Default (daily) header
 					else
 					{
-						$heading_date_daily = date('Ymd', $this->EE->localize->set_localized_time($row['entry_date']));
+						//$heading_date_daily = date('Ymd', $this->EE->localize->set_localized_time($row['entry_date']));
+						
+						 $heading_date_daily = date('Ymd', $this->EE->localize->offset_entry_dst($row['entry_date'], $row['dst_enabled'], FALSE));
 
 						if ($heading_date_daily == $heading_flag_daily)
 						{

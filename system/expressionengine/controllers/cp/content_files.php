@@ -312,7 +312,6 @@ class Content_files extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		// @todo: this function should be migrated to file manager lib
 		$this->load->library('filemanager');
 		$this->load->model('tools_model');
 		
@@ -726,8 +725,6 @@ class Content_files extends Controller {
 
 	// --------------------------------------------------------------------
 
-	// @todo: this method is duplicated in the filemanager library. Remove it from here
-	// after tools > filemanager has been migrated to that lib.
 	/**
 	 * Handle the edit actions
 	 * 

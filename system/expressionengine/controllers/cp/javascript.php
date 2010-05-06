@@ -218,7 +218,6 @@ class Javascript extends Controller {
 	 * BASE.AMP.'C=javascript&M=combo&ui=ui,packages&file=another&plugin=plugins&package=third,party,packages'
 	 * 
 	 * @access public
-	 * @todo check for duplicated files.
 	 * @return string
 	 */
 	function combo_load()

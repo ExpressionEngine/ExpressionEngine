@@ -200,11 +200,7 @@ class Login extends Controller {
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
 				
-		/** ----------------------------------------
-		/**  Fetch member data
-		/** ----------------------------------------*/
-		
-		// @todo: move to model... in fact, there are a few in this file to move
+		//  Fetch member data
 		$this->db->select('members.password, members.unique_id, members.member_id, members.group_id, member_groups.can_access_cp');
 		$this->db->where('username', $this->input->post('username'));
 		$this->db->where('member_groups.site_id', $this->config->item('site_id'));
@@ -212,9 +208,8 @@ class Login extends Controller {
 		
 		$query = $this->db->get(array('members', 'member_groups'));
 		
-		/** ----------------------------------------
-		/**  Invalid Username
-		/** ----------------------------------------*/
+
+		//  Invalid Username
 		if ($query->num_rows() == 0)
 		{
 			$this->session->save_password_lockout($this->username);
@@ -569,9 +564,7 @@ class Login extends Controller {
 		/** -------------------------------------
 		/**  Instantiate validation class
 		/** -------------------------------------*/
-		
-		// @todo Move to form validation...
-		
+
 		if ( ! class_exists('EE_Validate'))
 		{
 			require APPPATH.'libraries/Validate'.EXT;

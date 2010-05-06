@@ -380,9 +380,6 @@ class Addons_plugins extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		// @todo convert pclzip to a proper library
-		// $this->load->library('PclZip');
-
 		@include_once(APPPATH.'libraries/Pclzip'.EXT);
 
 		if ( ! is_really_writable(PATH_THIRD))
