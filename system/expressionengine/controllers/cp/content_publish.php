@@ -1289,7 +1289,7 @@ class Content_publish extends Controller {
 
 				if ($fquery->num_rows() == 0)
 				{
-					$forum_content = $this->dsp->qdiv('itemWrapper', BR.$this->dsp->qdiv('highlight', $this->lang->line('forums_unavailable', 'title')));
+					$vars['forum_id'] = $this->lang->line('forums_unavailable');
 				}
 				else
 				{
@@ -2524,7 +2524,7 @@ class Content_publish extends Controller {
 				}
 			}
 
-			$type = 'new';
+			$type = '';
 			$page_title = 'entry_has_been_updated';
 		}
 		else
@@ -2554,7 +2554,11 @@ class Content_publish extends Controller {
 		}
 
 		// Redirect to ths "success" page
-		$loc = BASE.AMP.'C=content_publish'.AMP.'M=view_entry'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.AMP.'U='.$type;
+		$message = ($type == 'new') ? $this->lang->line('entry_has_been_added') : $this->lang->line('entry_has_been_updated');
+			
+		$this->session->set_flashdata('message_success', $message);
+
+		$loc = BASE.AMP.'C=content_publish'.AMP.'M=view_entry'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id;
 		
 		// Trigger the submit new entry redirect hook
 		$loc = $this->api_channel_entries->trigger_hook('entry_submission_redirect', $loc);
@@ -2701,24 +2705,7 @@ class Content_publish extends Controller {
 		
 		$this->javascript->set_global('publish.foreignChars', $foreign_characters);
 		$this->javascript->set_global('publish.word_separator', $this->config->item('word_separator') != "dash" ? '_' : '-');
-		ob_start();
 
-		?>
-
-		<script type="text/javascript">
-		// <![CDATA[
-
-
-		// ]]>
-		</script>
-
-		<?php
-
-		$javascript = ob_get_contents();
-
-		ob_end_clean();
-
-		return $javascript;
 	}
 
 
@@ -2771,11 +2758,6 @@ class Content_publish extends Controller {
 		}
 
 		$message = '';
-
-		if ($U = $this->input->get_post('U'))
-		{
-			$message = ($U == 'new') ? $this->dsp->qdiv('success', $this->lang->line('entry_has_been_added')) : $this->dsp->qdiv('success', $this->lang->line('entry_has_been_updated'));
-		}
 
 		$query = $this->db->query("SELECT field_group FROM	exp_channels WHERE channel_id = '$channel_id'");
 
@@ -2950,7 +2932,7 @@ class Content_publish extends Controller {
 			require APPPATH.'libraries/Spellcheck'.EXT;
 		}
 
-		return EE_Spellcheck::iframe($this->dsp->fetch_stylesheet());
+		return EE_Spellcheck::iframe();
 	}
 
 
