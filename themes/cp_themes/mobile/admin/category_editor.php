@@ -28,7 +28,10 @@ if ($EE_view_disable !== TRUE)
 				<strong><?=lang('category_name')?>:</strong> <?=$category[1]?><br />
 				</div>
 				<?php
-				$link = $this->dsp->anchor(BASE.AMP.'C=admin_content'.AMP.'M=change_category_order'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.AMP.'order=up', $up).NBS.							$this->dsp->anchor(BASE.AMP.'C=admin_content'.AMP.'M=change_category_order'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.AMP.'order=down', $down);
+				
+				$this->load->helper('url');
+				
+				$link = anchor(BASE.AMP.'C=admin_content'.AMP.'M=change_category_order'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.AMP.'order=up', $up).NBS.							anchor(BASE.AMP.'C=admin_content'.AMP.'M=change_category_order'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.AMP.'order=down', $down);
 				$spcr = '<img src="'.PATH_CP_GBL_IMG.'clear.gif" border="0"  width="24" height="14" alt="" title="" />';
 				$cat_marker = '<img src="'.PATH_CP_GBL_IMG.'cat_marker.gif" border="0"  width="18" height="14" alt="" title="" />';
 				?>
