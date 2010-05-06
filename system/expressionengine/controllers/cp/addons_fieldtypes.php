@@ -79,10 +79,9 @@ class Addons_fieldtypes extends Controller {
 			}
 
 			// Show installation status
-			// @todo: get rid of dsp class down there...
 			$status = $installed ? 'installed' : 'not_installed';
 			$in_status = str_replace(" ", "&nbsp;", $this->lang->line($status));
-			$show_status = $installed ? $this->dsp->qspan('go_notice', $in_status) : $this->dsp->qspan('notice', $in_status);
+			$show_status = $installed ? '<span class="go_notice">'.$in_status.'</span>' : '<span class="notice">'.$in_status.'</span>';
 
 
 			// Proper link to install or uninstall
