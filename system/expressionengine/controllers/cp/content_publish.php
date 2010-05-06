@@ -605,7 +605,6 @@ class Content_publish extends Controller {
 
 		if ($which == 'new')
 		{
-			exit('new');
 			$title		= $default_entry_title;
 			$url_title	= $url_title_prefix;
 		}
