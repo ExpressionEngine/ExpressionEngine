@@ -148,7 +148,6 @@ class Addons_extensions extends Controller {
 			}
 			
 			// View Table Columns
-			// @todo review, review, review!
 			
 			$extension_files[$ext_name]['name'] = (isset($OBJ->name)) ? $OBJ->name : $extension_files[$ext_name]['name'];
 			$names[$ext_name] = strtolower($extension_files[$ext_name]['name']);

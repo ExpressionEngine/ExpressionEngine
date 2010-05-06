@@ -546,9 +546,6 @@ class Addons_accessories extends Controller {
 		ksort($data['controllers']);
 
 		// Member Groups
-
-		// @todo: model
-
 		$this->db->select("group_id, group_title");
 		$this->db->from("member_groups");
 		$this->db->where("site_id", $this->config->item('site_id'));

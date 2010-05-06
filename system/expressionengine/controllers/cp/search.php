@@ -111,7 +111,6 @@ class Search extends Controller {
 	 * Build Index
 	 * 
 	 * Shows a 'working' page and orchestrates the rebuilding process
-	 * @todo ajaxify
 	 *
 	 * @access	public
 	 * @return	mixed

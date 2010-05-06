@@ -270,7 +270,6 @@ class Sites extends Controller {
 			$values = array_merge($values, $query->row_array());
 		}
 		
-		// @todo AR / model
 		if ($values['site_id'] == '')
 		{
 				$this->lang->loadfile('content');
