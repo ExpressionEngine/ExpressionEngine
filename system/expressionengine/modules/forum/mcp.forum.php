@@ -2648,11 +2648,11 @@ class Forum_mcp {
 		
 		if (count($error) > 0)
 		{
-			$msg = $this->EE->dsp->qdiv('itemWrapper', $this->EE->lang->line('forum_empty_fields'));
+			$msg = '<strong>'.$this->EE->lang->line('forum_empty_fields').'</strong><br />';
 			
 			foreach ($error as $val)
 			{
-				$msg .= $this->EE->dsp->qdiv('highlight_alt', $val);
+				$msg .= $val.'<br />';
 			}
 		
 			show_error($msg);
@@ -2678,16 +2678,16 @@ class Forum_mcp {
 		{
 			if ( ! @is_dir($_POST['board_upload_path']))
 			{
-				$msg  = $this->EE->dsp->qdiv('itemWrapper', $this->EE->lang->line('invalid_upload_path'));
-				$msg .= $this->EE->dsp->qdiv('highlight', $_POST['board_upload_path']);
+				$msg  = '<strong>'.$this->EE->lang->line('invalid_upload_path').'</strong><br />';
+				$msg .= $_POST['board_upload_path'];
 			
 				show_error($msg);
 			}
 			
 			if ( ! is_really_writable($_POST['board_upload_path']))
 			{
-				$msg  = $this->EE->dsp->qdiv('itemWrapper', $this->EE->lang->line('unwritable_upload_path'));
-				$msg .= $this->EE->dsp->qdiv('highlight', $_POST['board_upload_path']);
+				$msg  = '<strong>'.$this->EE->lang->line('unwritable_upload_path')).'</strong><br />';
+				$msg .= $_POST['board_upload_path'];
 			
 				show_error($msg);
 			}
