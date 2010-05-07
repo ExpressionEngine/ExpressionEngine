@@ -57,7 +57,7 @@ class Api {
 	 * Loads a child API after an API has been instantiated, since libraries
 	 * in CI are singletons.
 	 *
-	 * @access	private
+	 * @access	public
 	 * @param	array
 	 * @return	void
 	 */
@@ -87,7 +87,8 @@ class Api {
 	 *
 	 * Reset the errors array and any config options
 	 *
-	 * @access	private
+	 * @php4	private Method
+	 * @access	protected
 	 * @param	array
 	 * @return	void
 	 */
@@ -124,7 +125,8 @@ class Api {
 	 *
 	 * Adds an error to the API error array
 	 *
-	 * @access	private
+	 * @php4	Protected Class
+	 * @access	protected
 	 * @param	string
 	 * @return	void
 	 */
@@ -174,6 +176,7 @@ class Api {
 	 * string and which type of data we are checking against and returns a valid URL Title or FALSE
 	 * if it is unable to create one.
 	 *
+	 * @php4	protected 
 	 * @param	string
 	 * @param	string integer
 	 * @param	string integer

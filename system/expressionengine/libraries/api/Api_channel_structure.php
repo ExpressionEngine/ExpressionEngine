@@ -23,7 +23,10 @@
  * @link		http://expressionengine.com
  */
 class Api_channel_structure extends Api {
-	
+
+	/**
+	 * @php4 -- Class properties are protected.
+	 */	
 	var $channel_info	= array();	// cache of previously fetched channel info
 	var $channels		= array();	// cache of previously fetched channels
 	
@@ -117,7 +120,7 @@ class Api_channel_structure extends Api {
 	 *
 	 * @access	public
 	 * @param	int
-	 * @return	string	// returns the Channel Title on successful delete
+	 * @return	string	returns the Channel Title on successful delete
 	 */
 	function delete_channel($channel_id = '', $site_id = NULL)
 	{		
@@ -178,7 +181,7 @@ class Api_channel_structure extends Api {
 	 *
 	 * @access	public
 	 * @param	array
-	 * @return	int		// id of newly created channel
+	 * @return	int		id of newly created channel
 	 */
 	function create_channel($data)
 	{

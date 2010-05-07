@@ -11,7 +11,7 @@ function required($blurb = '')
 		$blurb = lang($blurb);
 	}
 
-	return "<em class='required'>* </em>".$blurb.NL;
+	return "<em class='required'>* </em>".$blurb."\n";
 }
 
 function layout_preview_links($data, $channel_id)

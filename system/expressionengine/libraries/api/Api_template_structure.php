@@ -24,8 +24,11 @@
  */
 class Api_template_structure extends Api {
 	
-	var $template_info			= array();							// cache of previously fetched template info
-	var $group_info				= array();							// cache of previously fetched group info
+	/**
+	 * @php4 -- All of the class properties are protected.
+	 */
+	var $template_info			= array();				// cache of previously fetched template info
+	var $group_info				= array();				// cache of previously fetched group info
 	var $reserved_names			= array('act', 'css');	// array of reserved template group names
 
 	// file extensions used when saving templates as files
@@ -40,7 +43,6 @@ class Api_template_structure extends Api {
 	
 	/**
 	 * Constructor
-	 *
 	 */
 	function Api_template_structure()
 	{
@@ -90,22 +92,6 @@ class Api_template_structure extends Api {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Get Template Info
-	 *
-	 * Fetches template data and properties
-	 *
-	 * @access	public
-	 * @param	int
-	 * @return	object
-	 */
-	function get_template_info($template_id)
-	{
-
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
 	 * Create Group
 	 *
 	 * Creates a new template group
@@ -114,7 +100,7 @@ class Api_template_structure extends Api {
 	 * @param	array
 	 * @return	int
 	 */
-	function create_group($data, $duplicate = FALSE)
+	function create_template_group($data, $duplicate = FALSE)
 	{
 		if ( ! is_array($data) OR count($data) == 0)
 		{
@@ -235,6 +221,7 @@ class Api_template_structure extends Api {
 	 * Adds all potential reserved names to the reserved groups array
 	 *
 	 * @access	private
+	 * @php4 -- Change to truly private when php support is deprecated.
 	 * @return	void
 	 */
 	function _load_reserved_groups()
