@@ -1293,7 +1293,8 @@ class Admin_content extends Controller {
 		$this->load->library('layout');
 		$this->layout->delete_channel_layouts($channel_id);
 
-		return $this->channel_management($this->lang->line('channel_deleted').NBS.$channel_title);
+		$this->session->set_flashdata('message_success', $this->lang->line('channel_deleted').NBS.$channel_title);
+		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=channel_management');
 	}
 
 	// --------------------------------------------------------------------
