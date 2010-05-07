@@ -181,7 +181,6 @@ class Admin_content extends Controller {
 
 		$vars['status_group_options'][''] = $this->lang->line('none');
 
-		// @todo: model
 		$this->db->select('group_id, group_name');
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->order_by('group_name');
@@ -198,7 +197,6 @@ class Admin_content extends Controller {
 
 		$vars['field_group_options'][''] = $this->lang->line('none');
 
-		// @todo: model
 		$this->db->select('group_id, group_name');
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->order_by('group_name');
@@ -233,7 +231,6 @@ class Admin_content extends Controller {
 		//	}
 		//}
 
-		//@todo: model
 		$this->db->select('group_id, group_name, s.site_label');
 		$this->db->from('template_groups tg, sites s');
 		$this->db->where('tg.site_id = s.site_id', NULL, FALSE);
@@ -346,7 +343,6 @@ class Admin_content extends Controller {
 		}
 
 		// Default category menu
-		// @todo: ar and model
 		$cats = implode("','", $this->db->escape_str(explode('|', $vars['cat_group'])));
 
 		$this->db->select('CONCAT('.$this->db->dbprefix('category_groups').'.group_name, ": ", '.$this->db->dbprefix('categories').'.cat_name) as display_name', FALSE);
@@ -493,9 +489,6 @@ class Admin_content extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-
-		// @todo: this whole function: its functional, but needs a good once
-		// over for CI style, AR, model use, and optimization
 
 		$this->lang->loadfile('admin_content');
 
@@ -1143,7 +1136,6 @@ class Admin_content extends Controller {
 		}
 
 		// Status group select list
-		// @todo: model this
 		$this->db->select('group_id, group_name');
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->order_by('group_name');
@@ -1161,7 +1153,6 @@ class Admin_content extends Controller {
 		}
 
 		// Field group select list
-		// @todo: model this
 		$this->db->select('group_id, group_name');
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->order_by('group_name');
@@ -1335,7 +1326,6 @@ class Admin_content extends Controller {
 		$this->db->group_by('group_id');
 		$cfq = $this->db->get('category_fields');
 		
-		// @todo: revisit this logic, we can probably clean it up a bit, particularly in its use for 'custom_field_count'
 		if ($cfq->num_rows() > 0)
 		{
 			foreach ($cfq->result() as $row)
@@ -1352,8 +1342,8 @@ class Admin_content extends Controller {
 		foreach($categories->result() as $row)
 		{
 			$this->db->where('group_id', $row->group_id);
-			$category_count = $this->db->count_all_results('categories'); //@todo: should probably move to a model...
-
+			$category_count = $this->db->count_all_results('categories');
+			
 			$vars['categories'][$cat_count]['group_id'] = $row->group_id;
 			$vars['categories'][$cat_count]['group_name'] = $row->group_name;
 			$vars['categories'][$cat_count]['category_count'] = $category_count;
@@ -1428,7 +1418,6 @@ class Admin_content extends Controller {
 			$vars['submit_lang_key'] = 'update';
 			$vars['form_hidden']['group_id'] = $group_id;
 
-			// @todo model this
 			$this->db->where('group_id', $group_id);
 			$this->db->where('site_id', $this->config->item('site_id'));
 			$this->db->from('category_groups');
@@ -1447,7 +1436,6 @@ class Admin_content extends Controller {
 		}
 
 		//  Grab member groups with potential privs
-		// @todo: model
 		$this->db->select('group_id, group_title, can_edit_categories, can_delete_categories');
 		$this->db->where_not_in('group_id', array(1,2,3,4));
 		$this->db->where('site_id', $this->config->item('site_id'));
@@ -1573,7 +1561,6 @@ class Admin_content extends Controller {
 			$cp_message = $this->lang->line('category_group_created').' '.$data['group_name'];
 			$this->logger->log_action($this->lang->line('category_group_created').NBS.NBS.$data['group_name']);
 
-			// @todo: model this... can't decide on a good name/location
 			$this->db->select('channel_id');
 			$this->db->where('site_id', $this->config->item('site_id'));
 			$query = $this->db->get('channels');
@@ -2016,7 +2003,6 @@ class Admin_content extends Controller {
 
 		//$vars['parent_id_options'][0] = $this->lang->line('none');
 
-		// @todo: this whole block needs a revisit
 		// Display custom fields
 		
 		$vars['cat_custom_fields'] = array();
@@ -2267,7 +2253,6 @@ class Admin_content extends Controller {
 
 	// --------------------------------------------------------------------
 
-	//@todo: this whole function
 	/** -----------------------------------------------------------
 	/**  Category submission handler
 	/** -----------------------------------------------------------*/
@@ -2706,7 +2691,7 @@ class Admin_content extends Controller {
 	/** --------------------------------
 	/**  Re-order Categories Alphabetically
 	/** --------------------------------*/
-	//	@todo move to api/model
+
 	function reorder_cats_alphabetically()
 	{
 		if (AJAX_REQUEST)
@@ -2749,7 +2734,7 @@ class Admin_content extends Controller {
 	/** --------------------------------
 	/**  Process nested category group
 	/** --------------------------------*/
-	//	@todo move to api/model
+
 	function process_category_group($group_id)
 	{
 		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
@@ -2792,7 +2777,7 @@ class Admin_content extends Controller {
 	/** --------------------------------
 	/**  Process Subcategories
 	/** --------------------------------*/
-	//	@todo move to api/model		
+		
 	function process_subcategories($parent_id)
 	{		
 		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
@@ -2813,11 +2798,6 @@ class Admin_content extends Controller {
 		}
 	}
 
-
-
-
-
-	//@todo: this whole function
 	/** --------------------------------------
 	/**  Change Category Order
 	/** --------------------------------------*/
@@ -2938,7 +2918,7 @@ class Admin_content extends Controller {
 
 	// --------------------------------------------------------------------
 
-	//@todo: this whole function
+
 	/**
 	  *  Category Field Group Form
 	  *
@@ -2973,7 +2953,6 @@ class Admin_content extends Controller {
 		$query = $this->category_model->get_category_group_name($vars['group_id']);
 		$vars['group_name'] = $query->row('group_name');
 
-		// @todo: model
 		$this->db->select('field_id, field_name, field_label, field_type, field_order');
 		$this->db->from('category_fields');
 		$this->db->where('group_id', $vars['group_id']);
@@ -3066,7 +3045,6 @@ class Admin_content extends Controller {
 
 			$vars['submit_lang_key'] = 'submit';
 
-			// @todo: model this
 			$this->db->select('group_id');
 			$this->db->where('group_id', $vars['group_id']);
 			$query = $this->db->get('category_fields');
@@ -3244,7 +3222,6 @@ class Admin_content extends Controller {
 
 	// --------------------------------------------------------------------
 
-	// @todo: this whole function
 	/** -----------------------------------------------------------
 	/**  Update Category Fields
 	/** -----------------------------------------------------------*/
@@ -3686,9 +3663,7 @@ class Admin_content extends Controller {
 
 		// field ids for baleeting
 		$fields = $this->field_model->get_fields($group_id);
-//		$fields = $this->db->query("SELECT field_id, field_type FROM exp_channel_fields WHERE group_id ='$group_id'");
 
-		// @todo: move this into AR and then into field_model
 		if ($fields->num_rows() > 0)
 		{
 			foreach ($fields->result() as $field)
@@ -3790,7 +3765,6 @@ class Admin_content extends Controller {
 
 			$this->logger->log_action($cp_message);
 
-			//@todo: model
 			$this->db->select('channel_id');
 			$this->db->where('site_id', $this->config->item('site_id'));
 			$channel_info = $this->db->get('channels');
@@ -3945,7 +3919,6 @@ class Admin_content extends Controller {
 		}');
 
 
-		// @todo: model, AR
 		$field_query = $this->db->query("SELECT f.* FROM exp_channel_fields AS f, exp_field_groups AS g
 						WHERE f.group_id = g.group_id
 						AND g.site_id = '".$this->db->escape_str($this->config->item('site_id'))."'
@@ -4042,7 +4015,6 @@ class Admin_content extends Controller {
 
 		// Fetch the channel names
 
-		// @todo: model
 		$this->db->select('channel_id, channel_title, field_group');
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->order_by('channel_title', 'asc');
@@ -4717,8 +4689,6 @@ class Admin_content extends Controller {
 		$field_label = $query->row('field_label') ;
 		$field_type = $query->row('field_type') ;
 
-		// @todo: AR and model this
-
 		if ($field_type == 'rel')
 		{
 			$rquery = $this->db->query("SELECT field_id_".$this->db->escape_str($field_id)." AS rel_id FROM exp_channel_data WHERE field_id_".$this->db->escape_str($field_id)." != '0'");
@@ -5140,7 +5110,6 @@ class Admin_content extends Controller {
 
 			$this->logger->log_action($cp_message);
 
-			//@todo: model
 			$this->db->select('channel_id');
 			$this->db->where('site_id', $this->config->item('site_id'));
 			$channel_info = $this->db->get('channels');
@@ -5339,7 +5308,6 @@ class Admin_content extends Controller {
 
 	// --------------------------------------------------------------------
 
-//@todo: this function needs more massaging
 	/**
 	  * Status submission handler
 	  *
@@ -5784,7 +5752,7 @@ class Admin_content extends Controller {
 		$vars['form_hidden']['id'] = $id;
 		$vars['message'] = $this->lang->line('delete_upload_pref_confirmation');
 
-		// Grab all upload locations with this id // @todo: model
+		// Grab all upload locations with this id
 		$this->db->where('id', $id);
 		$items = $this->db->get('upload_prefs');
 		$vars['items'] = array();
@@ -6191,6 +6159,9 @@ class Admin_content extends Controller {
 
 		// @todo: remove this.  I was experimenting with a js delete interface... but I've changed my mind.
 		// leaving here for reference
+		
+		//  Robin comments out the js to make sure it doesn't matter- before actually removing it!
+		/*
 		$this->javascript->output('
 			$(".mainTable .tag_order input").hide();
 
@@ -6248,6 +6219,8 @@ class Admin_content extends Controller {
 				}
 			);
 		');
+		
+		*/
 
 		$vars['form_hidden']['member_id'] = $this->session->userdata('member_id');
 		$vars['form_hidden']['button_submit'] = TRUE;

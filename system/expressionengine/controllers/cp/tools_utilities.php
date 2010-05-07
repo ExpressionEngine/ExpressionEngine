@@ -90,7 +90,7 @@ class Tools_utilities extends Controller {
 	/**
 	 * Import Utilities
 	 *
-	 * @todo: copy function desc
+	 * Creates the main page for the list of Import Utilities
 	 * 
 	 * @access	public
 	 * @return	mixed
@@ -114,7 +114,7 @@ class Tools_utilities extends Controller {
 	/**
 	 * Member Import
 	 *
-	 * @todo: copy function desc
+	 * Creates the initial page for the Member Import
 	 * 
 	 * @access	public
 	 * @return	mixed
@@ -142,7 +142,7 @@ class Tools_utilities extends Controller {
 	/**
 	 * Import Member Data from XML
 	 *
-	 * @todo: copy function desc
+	 * Creates the initial page for the Import Member Data from XML page
 	 * 
 	 * @access	public
 	 * @return	mixed
@@ -260,9 +260,9 @@ class Tools_utilities extends Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * ConfirmImport Member Data from XML
+	 * Confirm Import Member Data from XML
 	 *
-	 * @todo: copy function desc
+	 * Confirmation page for Member Data import
 	 * 
 	 * @access	public
 	 * @return	mixed
@@ -735,7 +735,7 @@ class Tools_utilities extends Controller {
 	/**
 	 * Validate XML for Member Import
 	 *
-	 * @todo: copy function desc
+	 * Validates both the format and content of Member Import XML
 	 * 
 	 * @access	public
 	 * @return	mixed
@@ -1319,7 +1319,7 @@ class Tools_utilities extends Controller {
 	/**
 	 * Convert Member Data from Delimited File
 	 *
-	 * @todo: copy function desc
+	 * Creates initial page for the Convert from a Delimited File page
 	 * 
 	 * @access	public
 	 * @return	mixed
@@ -1998,7 +1998,7 @@ class Tools_utilities extends Controller {
 	/**
 	 * Translation Tool
 	 *
-	 * @todo: copy function desc
+	 * Creates the Translation Tool page
 	 * 
 	 * @access	public
 	 * @return	mixed
@@ -2033,7 +2033,7 @@ class Tools_utilities extends Controller {
 	/**
 	 * Translate
 	 *
-	 * @todo: copy function desc
+	 * Creates the Translation Tool form page
 	 * 
 	 * @access	public
 	 * @return	mixed
@@ -2188,7 +2188,7 @@ class Tools_utilities extends Controller {
 	/**
 	 * PHP Info
 	 *
-	 * @todo: copy function desc
+	 * Creates the PHP Info page
 	 *
 	 * @access	public
 	 * @return	mixed

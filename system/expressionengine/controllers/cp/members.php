@@ -546,7 +546,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$this->load->library('email');
 		$this->load->helper('text');
 
-		// @todo: model this
 		$this->db->select('screen_name, username, email, authcode');
 		$this->db->where_in('member_id', $damned);
 		$query = $this->db->get('members');
@@ -660,7 +659,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		{
 			$group_ids = $this->member_model->get_members_group_ids($damned);
 			
-			// Find Valid Member Replacements //@todo: model me baby!
+			// Find Valid Member Replacements
 			$this->db->select('member_id, username, screen_name');
 			$this->db->from('members');
 			$this->db->where_in('member_id', $group_ids);
@@ -1275,7 +1274,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$id = $clone_id;
 		}
 
-		// @todo: drop this into a model
 		$query = $this->db->get_where('member_groups', array('group_id' => $id));
 
 		$result = ($query->num_rows() == 0) ? FALSE : TRUE;
@@ -1318,7 +1316,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 	$vars['is_locked'] = ($group_data[$default_id]['is_locked'] == 'y') ? 'y' : 'n';
 
 		//  Fetch the names and IDs of all channels
-		// @todo: model
 		$this->db->select('channel_id, site_id, channel_title');
  		$this->db->order_by('channel_title');
 		$query 	= $this->db->get('channels');
@@ -1945,8 +1942,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	function update_member_group()
 	{
-		// @todo: AR and model this whole dang thang
-
 		//  Only super admins can administrate member groups
 		if ($this->session->userdata['group_id'] != 1)
 		{
@@ -2989,7 +2984,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 
 		// Construct the query based on whether we are updating or inserting
-		// @todo: this whole constructed query needs to be AR'ed and modelled... ouch
 		if ($edit === TRUE)
 		{
 			$n = $_POST['m_field_maxl'];
@@ -3096,7 +3090,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$this->lang->loadfile('admin_content');
 		$this->load->helper('form');
 
-		// @todo: model this
 		$this->db->select('m_field_label');
 		$this->db->from('member_fields');
 		$this->db->where('m_field_id', $m_field_id);
@@ -3131,7 +3124,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			return false;
 		}
 		
-		// @todo: AR and model
 		$query = $this->db->query("SELECT m_field_label FROM exp_member_fields WHERE m_field_id = '$m_field_id'");
 		$m_field_label = $query->row('m_field_label') ;
 				
@@ -3206,7 +3198,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				
 		foreach ($_POST as $key => $val)
 		{
-			// @todo: model this
 			$this->db->set('m_field_order', $val);
 			$this->db->where('m_field_name', $key);
 			$this->db->update('member_fields');
@@ -3301,7 +3292,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		// Find Member Accounts with IP
 		
-		// @todo: model this
 		$this->db->from('members');
 		$this->db->like('ip_address', $ip);
 		$total = $this->db->count_all_results(); // for paging
@@ -3324,7 +3314,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		//  Find Channel Entries with IP
 		
-		// @todo: AR and model this AND ALL BENEATH IT
 		$sql = "SELECT COUNT(*) AS count
 				FROM exp_channel_titles t, exp_members m, exp_sites s
 				WHERE t.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
@@ -3360,7 +3349,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 		if ($comment_installed  == 1)
 		{
-			// @todo: AR and model this
 			$sql = "SELECT COUNT(*) AS count
 					FROM exp_channel_titles t, exp_members m, exp_sites s
 					WHERE t.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
@@ -3397,7 +3385,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 		if ($forum_installed  == 1)
 		{
-			// @todo: AR and model this
 			$sql = "SELECT COUNT(*) AS count
 					FROM exp_forum_topics f, exp_members m, exp_forum_boards b
 					WHERE f.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'
@@ -3426,7 +3413,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 			//  Find Forum Posts with IP
 
-			// @todo: AR and model this
 			$sql = "SELECT COUNT(*) AS count
 					FROM exp_forum_posts p, exp_members m
 					WHERE p.ip_address LIKE '%".$this->db->escape_like_str($ip)."%'

@@ -93,7 +93,7 @@ class Tools_data extends Controller {
 	/**
 	 * Clear Caching
 	 *
-	 * @todo: copy function desc
+	 * Processes the clear cache submitted data
 	 *
 	 * @access	public
 	 * @return	mixed
@@ -556,7 +556,7 @@ class Tools_data extends Controller {
 	/**
 	 * Search and Replace
 	 *
-	 * @todo: copy function desc
+	 * Creates the Search and Replace form page
 	 *
 	 * @access	public
 	 * @return	mixed
@@ -758,7 +758,7 @@ class Tools_data extends Controller {
 	/**
 	 * Recount Statistics
 	 *
-	 * @todo: copy function desc
+	 * Creates the Recount Statistics form page
 	 *
 	 * @access	public
 	 * @return	mixed

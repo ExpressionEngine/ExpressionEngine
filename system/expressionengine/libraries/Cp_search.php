@@ -56,7 +56,6 @@ class Cp_search {
 	{
 		$result = array();
 		
-		// @todo model and AR
 		$sql = "SELECT *, MATCH(keywords) AGAINST (?) AS relevance 
 				FROM ".$this->EE->db->dbprefix('cp_search_index')." 
 				WHERE MATCH(keywords) AGAINST (?) 

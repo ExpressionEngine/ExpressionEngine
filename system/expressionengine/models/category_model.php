@@ -349,7 +349,6 @@ class Category_model extends CI_Model {
 	{
 		$this->db->delete('category_fields', array('field_id' => $field_id));
 
-		// @todo: AR this
 		$this->db->query("ALTER TABLE exp_category_field_data DROP COLUMN field_id_{$field_id}");
 		$this->db->query("ALTER TABLE exp_category_field_data DROP COLUMN field_ft_{$field_id}");
 	}

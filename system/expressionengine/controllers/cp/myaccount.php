@@ -541,7 +541,6 @@ class MyAccount extends Controller {
 			//	Update comments and log email change
 			if ($current_email != $_POST['email'])
 			{
-				// @todo: model
 				$this->db->where('author_id', $this->id);
 				$this->db->update('comments', array('email' => $this->input->post('email')));
 
@@ -1245,7 +1244,6 @@ class MyAccount extends Controller {
 		if (isset($this->cp->installed_modules['comment']))
 		{
 			// Fetch Channel Comments
-			// @todo AR, model
 			$query = $this->db->query("SELECT DISTINCT(entry_id) FROM exp_comments WHERE email = '".$this->db->escape_str($email)."' AND notify = 'y' ORDER BY comment_date DESC");
 
 			if ($query->num_rows() > 0)
@@ -1287,7 +1285,6 @@ class MyAccount extends Controller {
 		// Fetch Channel Titles
 		if ($channel_subscriptions == TRUE)
 		{
-			// @todo: AR, model
 			$sql = "SELECT
 					exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.channel_id, exp_channel_titles.entry_id,
 					exp_channels.comment_url, exp_channels.channel_url
@@ -1335,7 +1332,6 @@ class MyAccount extends Controller {
 		// Fetch Forum Topics
 		if ($forum_subscriptions == TRUE)
 		{
-			// @todo: AR, model
 			$sql = "SELECT title, topic_id, board_forum_url, last_post_date FROM exp_forum_topics, exp_forum_boards
 					WHERE exp_forum_topics.board_id = exp_forum_boards.board_id
 					AND topic_id IN (";
@@ -1421,7 +1417,6 @@ class MyAccount extends Controller {
 
 		$email = $query->row('email') ;
 
-		// @todo: AR, model
 		foreach ($_POST['toggle'] as $key => $val)
 		{
 			switch (substr($val, 0, 1))

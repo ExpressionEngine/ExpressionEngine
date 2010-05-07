@@ -1440,8 +1440,6 @@ class Simple_commerce_mcp {
 				unset($data['purchase_id']);
 				$this->EE->db->insert('simple_commerce_purchases', $data);
 
-				// @todo active record
-
 				$this->EE->db->query("UPDATE exp_simple_commerce_items SET item_purchases = item_purchases + 1 WHERE item_id = '".$data['item_id']."'");
 				$this->EE->db->query("UPDATE exp_simple_commerce_items SET current_subscriptions = current_subscriptions + 1 WHERE item_id = '".$data['item_id']."'");
 

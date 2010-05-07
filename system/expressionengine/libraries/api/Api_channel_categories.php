@@ -83,7 +83,6 @@ class Api_channel_categories extends Api {
 			return FALSE;
 		}
 
-		// @todo Convert to AR
 		// @confirm - might want group_id as string or array instead of pipe delimited string
 		$order = ($order == 'a') ? "cat_name" : "cat_order";
 		
@@ -204,7 +203,6 @@ class Api_channel_categories extends Api {
 			return;
 		}
 
-		// @todo Convert to AR
 		$sql = "SELECT parent_id FROM exp_categories WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND (";
 
 		foreach($cat_array as $val)
