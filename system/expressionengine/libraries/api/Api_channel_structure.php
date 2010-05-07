@@ -189,6 +189,8 @@ class Api_channel_structure extends Api {
 		{
 			return FALSE;
 		}
+
+		$this->EE->load->model('super_model');
 		
 		$channel_title		= '';
 		$channel_name		= '';
@@ -214,8 +216,8 @@ class Api_channel_structure extends Api {
 		{
 			$this->_set_error('no_channel_name');
 		}
-		
-		if ( ! $this->api->is_url_safe($channel_name))
+
+		if ( ! $this->is_url_safe($channel_name))
 		{
 			$this->_set_error('invalid_short_name');
 		}
@@ -225,7 +227,7 @@ class Api_channel_structure extends Api {
 		{
 			$url_title_prefix = strtolower(strip_tags($url_title_prefix));
 			
-			if ( ! $this->api->is_url_safe($url_title_prefix))
+			if ( ! $this->is_url_safe($url_title_prefix))
 			{
 				$this->_set_error('invalid_url_title_prefix');
 			}
@@ -246,12 +248,13 @@ class Api_channel_structure extends Api {
 		}
 
 		// validate template creation options
-		if (isset($create_templates)  && $create_templates != 'no' && isset($old_group_id) && isset($group_name) && isset($template_theme))
+		if (isset($create_templates)  && $create_templates != 'no' && 
+			isset($old_group_id) && isset($group_name) && isset($template_theme))
 		{
 			// load the template structure library
 			$this->EE->load->library('api/api_template_structure', 'template_structure');
 			$this->EE->lang->loadfile('design');
-			
+
 			$group_name = strtolower($group_name);
 			$template_theme = $this->EE->functions->sanitize_filename($template_theme);
 			
@@ -261,12 +264,12 @@ class Api_channel_structure extends Api {
 				$this->_set_error('group_required');
 			}
 			
-			if ( ! $this->api->is_url_safe($group_name))
+			if ( ! $this->is_url_safe($group_name))
 			{
 				$this->_set_error('illegal_characters');
 			}			
 			
-			if (in_array($group_name, $this->EE->template_structure->reserved_names))
+			if (in_array($group_name, $this->EE->api_template_structure->reserved_names))
 			{
 				$this->_set_error('reserved_name');
 			}
@@ -401,7 +404,7 @@ class Api_channel_structure extends Api {
 		}
 		
 		// valid fields for insertion
-		$fields = $this->db->list_fields('channels');
+		$fields = $this->EE->db->list_fields('channels');
 		
 		// we don't allow these for new channels
 		$exceptions = array('channel_id', 'total_entries', 'total_comments', 'last_entry_date', 'last_comment_date');
@@ -418,7 +421,8 @@ class Api_channel_structure extends Api {
 		$channel_id = $this->EE->channel_model->create_channel($data);
 
 		// log it
-		$this->EE->logger->log_action($this->lang->line('channel_created').NBS.NBS.$channel_title);
+		$this->EE->load->library('logger');
+		$this->EE->logger->log_action($this->EE->lang->line('channel_created').NBS.NBS.$channel_title);
 		
 		// Are we making templates?
 		if ($create_templates != 'no')
@@ -431,17 +435,17 @@ class Api_channel_structure extends Api {
 								'site_id' => $site_id
 								);
 
-			if (($group_id = $this->EE->template_structure->create_group($group_data)) !== FALSE)
+			if (($group_id = $this->EE->api_template_structure->create_group($group_data)) !== FALSE)
 			{
 				if ($create_templates == 'duplicate')
 				{
 					// @todo - this needs to be written in the Template Structure API to work with the new theme format
-					$this->EE->template_structure->duplicate_templates($old_group_id, $group_id, $channel_name);
+					$this->EE->api_template_structure->duplicate_templates($old_group_id, $group_id, $channel_name);
 				}
 				else
 				{
 					// @todo - this needs to be written in the Template Structure API to work with the new theme format
-					$this->EE->template_structure->create_templates_from_theme($template_theme, $group_id, $channel_name);
+					$this->EE->api_template_structure->create_templates_from_theme($template_theme, $group_id, $channel_name);
 				}				
 			}
 		}
@@ -504,7 +508,7 @@ class Api_channel_structure extends Api {
 			$this->_set_error('no_channel_name');
 		}
 		
-		if ( ! $this->api->is_url_safe($channel_name))
+		if ( ! $this->is_url_safe($channel_name))
 		{
 			$this->_set_error('invalid_short_name');
 		}
@@ -514,7 +518,7 @@ class Api_channel_structure extends Api {
 		{
 			$url_title_prefix = strtolower(strip_tags($url_title_prefix));
 			
-			if ( ! $this->api->is_url_safe($url_title_prefix))
+			if ( ! $this->is_url_safe($url_title_prefix))
 			{
 				$this->_set_error('invalid_url_title_prefix');
 			}

@@ -26,6 +26,7 @@ class Api_template_structure extends Api {
 	
 	/**
 	 * @php4 -- All of the class properties are protected.
+	 * When php4 support is deprecated, make them accessible via __get()
 	 */
 	var $template_info			= array();				// cache of previously fetched template info
 	var $group_info				= array();				// cache of previously fetched group info
