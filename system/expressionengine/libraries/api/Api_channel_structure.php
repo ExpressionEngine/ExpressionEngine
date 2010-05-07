@@ -435,11 +435,12 @@ class Api_channel_structure extends Api {
 								'site_id' => $site_id
 								);
 
-			if (($group_id = $this->EE->api_template_structure->create_group($group_data)) !== FALSE)
+			if (($group_id = $this->EE->api_template_structure->create_template_group($group_data)) !== FALSE)
 			{
 				if ($create_templates == 'duplicate')
 				{
 					// @todo - this needs to be written in the Template Structure API to work with the new theme format
+					// This function does not yet exist.
 					$this->EE->api_template_structure->duplicate_templates($old_group_id, $group_id, $channel_name);
 				}
 				else
@@ -555,7 +556,7 @@ class Api_channel_structure extends Api {
 		}
 	
 		// valid fields for update
-		$fields = $this->db->list_fields('channels');
+		$fields = $this->EE->db->list_fields('channels');
 		
 		// we don't allow these to be modified
 		$exceptions = array('channel_id', 'total_entries', 'total_comments', 'last_entry_date', 'last_comment_date');
