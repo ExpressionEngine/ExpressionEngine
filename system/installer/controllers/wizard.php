@@ -167,6 +167,9 @@ class Wizard extends Controller {
 		
 		// Third party constants
 		define('PATH_THIRD',	EE_APPPATH.'third_party/');
+		
+		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
+		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);		
 
 		if (DEBUG == 1)
 		{
