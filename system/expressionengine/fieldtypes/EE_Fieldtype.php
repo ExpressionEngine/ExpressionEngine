@@ -195,7 +195,6 @@ class EE_Fieldtype {
 	
 	function display_publish_field($data)
 	{
-		// @todo replace this view hack with something suitable for CI
 		$tmp = $this->EE->load->_ci_view_path;
 		$this->EE->load->_ci_view_path = PATH_THEMES.'cp_themes/default/';
 
@@ -211,8 +210,6 @@ class EE_Fieldtype {
 	
 	function field_formatting_row($data, $prefix = FALSE)
 	{
-		// @todo (blank ... smooth. something needs doing apparently)
-		
 		$edit_format_link = $data['edit_format_link'];
 		$prefix = ($prefix) ? $prefix.'_' : '';
 		

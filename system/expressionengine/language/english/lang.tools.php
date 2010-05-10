@@ -2,14 +2,6 @@
 
 $lang = array(
 
-
-/**
- *
- * @todo
- * This lang file is a rip of lang.admin.php.  I'm repurposing it for the tools section.  Many extra lang vars need to be removed.
- *
- */
-
 'tools'					=> 'Tools',
 'tools_data' 			=> 'Data',
 'tools_logs'			=> 'Logs',

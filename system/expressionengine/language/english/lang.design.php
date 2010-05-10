@@ -24,6 +24,9 @@ $lang = array(
 '404_page' =>
 '404 Page',
 
+'id_not_found' =>
+'Group not found',
+
 'site_404_exp' =>
 'Determines which template should be displayed when someone tries to access an invalid URL. Note: If you choose \'None\', your default channel will be shown when an invalid URL is requested.',
 
@@ -543,6 +546,9 @@ $lang = array(
 
 'duplicate_var_name' =>
 'A Global Variable with that name already exists.',
+
+'variable_does_not_exist' =>
+'Global Variable does not exit',
 
 'variable_name_instructions' =>
 'The name must be a single alphanumeric word with no spaces (underscores, dashes, and periods allowed)',

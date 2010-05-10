@@ -443,7 +443,7 @@ class Content_publish extends Controller {
 		$vars = array(
 			'message'				=> '',
 			'cp_page_title'			=> $this->lang->line('new_entry'),								// modified below if this is an "edit"
-			'BK'					=> ($this->input->get_post('BK')) ? AMP.'BK=1'.AMP.'Z=1' : '',	// @todo - I don't think so...
+			'BK'					=> ($this->input->get_post('BK')) ? AMP.'BK=1'.AMP.'Z=1' : '',
 			'required_fields'		=> array('title', 'entry_date', 'url_title')
 		);
 
@@ -664,10 +664,8 @@ class Content_publish extends Controller {
 			}
 
 			// If there's a live look template, show the live look option via ee_notice
-			// @todo I don't like this - it's gone when it autosaves
 			if ($live_look_template != 0)
 			{
-				// @todo: model
 				$this->db->select('template_groups.group_name, templates.template_name');
 				$this->db->from('template_groups, templates');
 				$this->db->where('exp_template_groups.group_id = exp_templates.group_id', NULL, FALSE);
@@ -862,24 +860,6 @@ class Content_publish extends Controller {
 		$fmt = ($this->session->userdata['time_format'] != '') ? $this->session->userdata['time_format'] : $this->config->item('time_format');
 		$this->javascript->set_global('date.format', $fmt);
 
-		// used in date field
-		// $this->javascript->output('
-		// 	var date_obj = new Date(),
-		// 		date_obj_hours = date_obj.getHours(),
-		// 		date_obj_mins = date_obj.getMinutes();
-		// 
-		// 	if (date_obj_mins < 10) { date_obj_mins = "0" + date_obj_mins; }
-		// 
-		// 	if (date_obj_hours > 11) {
-		// 		date_obj_hours = date_obj_hours - 12;
-		// 		date_obj_am_pm = " PM";
-		// 	} else {
-		// 		date_obj_am_pm = " AM";
-		// 	}
-		// 
-		// 	EE.date_obj_time = " \'"+date_obj_hours+":"+date_obj_mins+date_obj_am_pm+"\'";
-		// ');
-
 		// --------------------------------
 		//	Options Cluster
 		// --------------------------------
@@ -935,84 +915,6 @@ class Content_publish extends Controller {
 		
 		$vars['publish_tabs']['publish'] = array();
 		
-
-		// ----------------------------------------------
-		//	DATE BLOCK
-		// ----------------------------------------------
-		/*
-		if (isset($this->installed_modules['comment']))
-		{
-			if ($comment_expiration_date == '' OR $comment_expiration_date == 0)
-			{
-				if ($comment_expiration > 0 AND $which != 'edit')
-				{
-					$comment_expiration_date = $comment_expiration * 86400;
-					$comment_expiration_date = $comment_expiration_date + $this->localize->now;
-				}
-			}
-		}
-		
-		if ($which == 'edit')
-		{
-			// -----------------------------
-			//	Originally, we had $this->session->userdata['daylight_savings'] being
-			//	used here instead of $dst_enabled, but that was, we think,
-			//	a bug as it would cause a person without DST turned on for
-			//	their user to mess up the date if they were not careful
-			// -----------------------------
-
-			if ($entry_date != '')
-			{
-				$entry_date = $this->localize->offset_entry_dst($entry_date, $dst_enabled, FALSE);
-			}
-
-			if ($expiration_date != '' AND $expiration_date != 0)
-			{
-				$expiration_date = $this->localize->offset_entry_dst($expiration_date, $dst_enabled, FALSE);
-			}
-			if (isset($this->installed_modules['comment']))
-			{
-				if ($comment_expiration_date != '' AND $comment_expiration_date != 0)
-				{
-					$comment_expiration_date = $this->localize->offset_entry_dst($comment_expiration_date, $dst_enabled, FALSE);
-				}
-				
-			}
-		}
-
-		$loc_entry_date = $this->localize->set_human_time($entry_date);
-		$loc_expiration_date = ($expiration_date == 0) ? '' : $this->localize->set_human_time($expiration_date);
-		$loc_comment_expiration_date = ($comment_expiration_date == '' OR $comment_expiration_date == 0) ? '' : $this->localize->set_human_time($comment_expiration_date);
-
-		$cal_entry_date = ($this->localize->set_localized_time($entry_date) * 1000);
-		$cal_expir_date = ($expiration_date == '' OR $expiration_date == 0) ? $this->localize->set_localized_time() * 1000 : $this->localize->set_localized_time($expiration_date) * 1000;
-		
-		if (isset($this->installed_modules['comment']))
-		{
-			$cal_com_expir_date = ($comment_expiration_date == '' OR $comment_expiration_date == 0) ? $this->localize->set_localized_time() * 1000: $this->localize->set_localized_time($comment_expiration_date) * 1000;			
-		}
-
-		if ( ! array_key_exists('date', $layout_info))
-		{
-			$vars['form_hidden']['entry_date'] = $loc_entry_date;
-			$vars['form_hidden']['expiration_date'] = $loc_expiration_date;
-
-			if (isset($this->installed_modules['comment']))
-			{
-				$vars['form_hidden']['comment_expiration_date'] = $loc_comment_expiration_date;				
-			}
-		}
-		
-	//	$this->_define_default_date_field('entry_date', $this->localize->convert_human_date_to_gmt($loc_entry_date));
-	//	$this->_define_default_date_field('expiration_date', $this->localize->convert_human_date_to_gmt($loc_expiration_date));
-		
-		if (isset($this->installed_modules['comment']))
-		{
-			$this->_define_default_date_field('comment_expiration_date', $this->localize->convert_human_date_to_gmt($loc_comment_expiration_date));			
-		}
-		*/
-		
-		
 		// Entry date
 		
 		$settings = array(
@@ -1034,8 +936,6 @@ class Content_publish extends Controller {
 		$rules = 'call_field_validation['.$settings['field_id'].']';
 		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
 		
-		
-		
 		// Expiration Date
 		
 		$settings = array(
@@ -1055,8 +955,6 @@ class Content_publish extends Controller {
 		
 		$rules = 'call_field_validation['.$settings['field_id'].']';
 		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
-		
-		
 		
 		// Comment Expiration Date
 		
@@ -1088,7 +986,6 @@ class Content_publish extends Controller {
 
 		if ($which == 'edit' && ! isset($_POST['category']))
 		{
-			// @todo model
 			$this->db->select('c.cat_name, p.*');
 			$this->db->from('categories AS c, category_posts AS p');
 			$this->db->where_in('c.group_id', explode('|', $cat_group));
@@ -1137,11 +1034,9 @@ class Content_publish extends Controller {
 		$link_info = $this->api_channel_categories->fetch_allowed_category_groups($cat_group);
 
 		$links = array();
+
 		if ($link_info !== FALSE)
 		{
-			// @todo needs reworking.  If you include the z it throws an error because that triggers an include of cp.publish.
-			// Without the z the permissions may not be working as per 1.6.  
-
 			foreach ($link_info as $val)
 			{
 				$links[] = array('url' => BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$val['group_id'],
@@ -1184,10 +1079,7 @@ class Content_publish extends Controller {
 				{
 					$vars['revs_exist'] = TRUE;
 
-					//@todo: This cluster is essentially one bit "string_over-ride". It'd be nicer to write a
-					// way to abstract these a bit more.
-
-					$this->table->set_template(array('table_open'=>'<table class="mainTable" border="0" cellspacing="0" cellpadding="0">')); //@todo: should reference globally set var
+					$this->table->set_template(array('table_open'=>'<table class="mainTable" border="0" cellspacing="0" cellpadding="0">'));
 					$this->table->set_heading(
 						$this->lang->line('revision'), 
 						$this->lang->line('rev_date'), 
@@ -1278,7 +1170,6 @@ class Content_publish extends Controller {
 			{
 				// Fetch the list of available forums
 
-				// @todo: model this
 				$this->db->select('f.forum_id, f.forum_name, b.board_label');
 				$this->db->from('forums AS f, forum_boards AS b');
 				$this->db->where('f.forum_is_cat', 'n');
@@ -1322,7 +1213,7 @@ class Content_publish extends Controller {
 					//	Smileys Panes									
 					if ($vars['smileys_enabled'])
 					{
-						$this->table->set_template(array(	// @todo remove inline styles
+						$this->table->set_template(array(
 							'table_open'			=> '<table style="text-align: center; margin-top: 5px;" class="mainTable padTable smileyTable" border="0" cellspacing="0" cellpadding="0">'
 						));
 
@@ -1447,7 +1338,7 @@ class Content_publish extends Controller {
 					'field_required' 		=> 'n',
 					'field_data'			=> $vars['pages_dropdown_selected'],
 					'field_list_items'		=> $vars['pages_dropdown'],
-					'options'				=> $vars['pages_dropdown'],		// @todo this one or field_list_items?
+					'options'				=> $vars['pages_dropdown'],
 					'selected'				=> $vars['pages_dropdown_selected'],
 					'field_fmt'				=> 'text',
 					'field_instructions' 	=> '',
@@ -1596,7 +1487,7 @@ class Content_publish extends Controller {
 			
 			$rules = 'call_field_validation['.$row['field_id'].']';
 			
-			if ($row['field_required'] == 'y' && $row['field_type'] != 'file') 	// @todo figure out a way to remove the file exception
+			if ($row['field_required'] == 'y' && $row['field_type'] != 'file')
 			{
 				$rules = 'required|'.$rules;
 			}
@@ -1611,7 +1502,7 @@ class Content_publish extends Controller {
 				$markitup_buttons['fields']['field_id_'.$row['field_id']] = $row['field_id'];
 			}
 
-			// Formatting @todo move
+			// Formatting
 			if ($row['field_show_fmt'] == 'n')
 			{
 				$vars['form_hidden']['field_ft_'.$row['field_id']] = $field_fmt;
@@ -1908,9 +1799,6 @@ class Content_publish extends Controller {
 		$vars['field_definitions'] = $this->field_definitions;
 		$vars['field_output'] = array();
 		
-		// @todo use this for js validation?
-		// @todo -- clean this up.
-		// $this->javascript->set_global($this->form_validation->_config_rules);
 		if ($this->form_validation->run() == FALSE OR is_numeric($version_id) OR $this->input->get_post('use_autosave') == 'y')
 		{
 			$this->cp->add_to_foot($this->insert_javascript());
@@ -2163,8 +2051,7 @@ class Content_publish extends Controller {
 
 		if ($member_list->num_rows() == 0)
 		{
-			// @todo lang key
-			$this->table->add_row(array('data'=>'There are no members available to be authors', 'colspan'=>4));
+			$this->table->add_row(array('data'=>'no_potential_authors', 'colspan'=>4));
 		}
 		else
 		{
@@ -2457,7 +2344,6 @@ class Content_publish extends Controller {
 	  * This function receives a new or edited channel entry and
 	  * stores it in the database.	It also sends pings
 	  * 
-	  * @todo - move to the API library so we can use this from SAEF as well
 	  */
 	function _submit_new_entry($cp_call = TRUE, $autosave = FALSE)
 	{
@@ -2587,7 +2473,6 @@ class Content_publish extends Controller {
 	/** ---------------------------------------------------------------*/
 	// This function displays the ping server checkboxes
 	//---------------------------------------------------------------
-	// @todo: this whole function... 
 	function fetch_ping_servers($member_id = '', $entry_id = '', $which = 'new', $show = TRUE)
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
@@ -2895,7 +2780,6 @@ class Content_publish extends Controller {
 
 		if ($result->row('live_look_template') != 0)
 		{
-			// @todo: model
 			$this->db->select('template_groups.group_name, templates.template_name');
 			$this->db->from('template_groups, templates');
 			$this->db->where('exp_template_groups.group_id = exp_templates.group_id', NULL, FALSE);
@@ -3034,7 +2918,6 @@ class Content_publish extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
-		// @todo safety checks?
 		$this->load->library('api');
 		$this->api->instantiate('channel_categories');
 		

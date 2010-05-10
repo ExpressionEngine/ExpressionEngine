@@ -54,17 +54,6 @@ class Members extends Controller {
 		$this->lang->loadfile('members');
 		$this->load->model('member_model');
 
-		// @todo- was off somehow- hard coding for now
-		//if ($this->config->item('memberlist_row_limit'))
-		//{
-		//	$this->perpage = $this->config->item('memberlist_row_limit');
-		//}
-
-		// there are 2 submenu options, this figures which page we're on and adjusts accordingly
-		// @confirm - what does this do?
-		$method = $this->input->get_post('M');
-		$view_member_methods = array('view', 'ipsearch', 'groups', 'email_logs');		
-
 		$this->javascript->compile();
 	}
 	
@@ -2858,7 +2847,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line($title));
 
-		// @todo jquery/javascript library?
 		$additional = '<script type="text/javascript">
 					function showhide_element(id)
 					{
@@ -3472,7 +3460,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	
 		$this->jquery->tablesorter('.mainTable', '{headers: {1: {sorter: false}},	widgets: ["zebra"]}');
 
-	  	// @todo: abstract this function out so its available application wide - it toggles all checkboxes at once
 		$this->javascript->output('
 			$("#toggle_all").click(function() {
 				var checked_status = this.checked;

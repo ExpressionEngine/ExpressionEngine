@@ -43,7 +43,6 @@ class Rel_ft extends EE_Fieldtype {
 
 	function validate($data)
 	{
-		// @todo what would this look like?
 	}
 	
 	// --------------------------------------------------------------------

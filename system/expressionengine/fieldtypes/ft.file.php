@@ -83,12 +83,10 @@ class File_ft extends EE_Fieldtype {
 		// Upload or maybe just a path in the hidden field?
 		if (isset($_FILES[$this->field_name]) && $_FILES[$this->field_name]['size'] > 0)
 		{
-			// @todo won't work for saef
 			$data = $this->EE->filemanager_endpoint('upload_file', array($filedir, $this->field_name));
 			
 			if (array_key_exists('error', $data))
 			{
-				// @todo validation error
 				return $data['error'];
 			}
 			else
@@ -158,7 +156,6 @@ class File_ft extends EE_Fieldtype {
 		$upload   = form_upload($this->field_name, $filename);
 		$dropdown = form_dropdown($this->field_name.'_directory', $upload_dirs, $filedir);
 
-		// @todo Lang keys
 		$newf = '<a href="#" class="choose_file">'.$this->EE->lang->line('add_file').'</a>';
 		$remf = '<a href="#" class="remove_file">'.$this->EE->lang->line('remove_file').'</a>';
 

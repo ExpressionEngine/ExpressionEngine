@@ -66,7 +66,7 @@ class Addons_extensions extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		$this->lang->loadfile('admin'); //@todo: look at removing the extension langs out of admin and put somewhere else
+		$this->lang->loadfile('admin'); 
 		$this->load->library('extensions');
 		$this->load->library('table');
 		$this->load->helper('form');

@@ -134,7 +134,7 @@ class Sites extends Controller {
 
 			if ($query->num_rows() == 0 OR $query->row('can_access_cp') !== 'y')
 			{
-				return $this->index('can\'t do that');	// @todo lang key
+				return $this->index('unauthorized_access');
 			}
 		}
 		

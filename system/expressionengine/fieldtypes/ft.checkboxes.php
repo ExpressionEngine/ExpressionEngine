@@ -98,7 +98,6 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 		$values = decode_multi_field($data);
 
-		// @todo remove hack for pings
 		if (is_string($data) && $data != '' && $data[0] == '<')
 		{
 			return $data;
@@ -259,7 +258,6 @@ class Checkboxes_ft extends EE_Fieldtype {
 		{
 			// We need to pre-populate this menu from an another channel custom field
 
-			// @todo: model
 			$this->EE->db->select('field_id_'.$this->settings['field_pre_field_id']);
 			$this->EE->db->where('channel_id', $this->settings['field_pre_channel_id']);
 			$pop_query = $this->EE->db->get('channel_data');

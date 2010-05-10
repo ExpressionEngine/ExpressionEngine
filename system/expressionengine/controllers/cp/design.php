@@ -235,7 +235,7 @@ class Design extends Controller {
 
 		if ( ! is_numeric($group_id))
 		{
-			show_error('id not found'); //@todo: lang key
+			show_error('id_not_found');
 		}
 
 		$this->load->model('template_model');
@@ -898,8 +898,6 @@ class Design extends Controller {
 				
 		if ($variable_name != '')
 		{
-
-			// @todo: this should be CI's validation lib... but I want to revisit that, so for now this is in place DA
 			if ($variable_name == '' OR $variable_data == '')
 			{
 				show_error($this->lang->line('all_fields_required'));
@@ -914,7 +912,6 @@ class Design extends Controller {
 			{
 				show_error($this->lang->line('reserved_name'));
 			}
-			// @todo: end temporary validation
 
 			$this->template_model->update_global_variable($variable_id, $variable_name, $variable_data);
 			
@@ -928,8 +925,8 @@ class Design extends Controller {
 
 			if ($global_variable->num_rows() < 1)
 			{
-				//@todo: make lang entry, or probably redirect to the main page, they shouldn't be this far
-				show_error('That variable does not exisit'); 
+				// They shouldn't be this far
+				show_error('variable_does_not_exist'); 
 			}
 
 			$this->load->helper('form');
@@ -975,7 +972,6 @@ class Design extends Controller {
 		// Existing variables, will have an id
 		if ($variable_name != '')
 		{
-			// @todo: this should be CI's validation lib... but I want to revisit that, so for now this is in place DA
 			if ($variable_name == '' OR $variable_data == '')
 			{
 				show_error($this->lang->line('all_fields_required'));
@@ -995,7 +991,6 @@ class Design extends Controller {
 			{
 				show_error($this->lang->line('duplicate_var_name'));		
 			}
-			// @todo: end temporary validation
 
 			$this->template_model->create_global_variable($variable_name, $variable_data);
 			
@@ -1037,16 +1032,16 @@ class Design extends Controller {
 
 		if ($variable_id == '')
 		{
-			//@todo: make lang entry, or probably redirect to the main page, they shouldn't be this far
-			show_error($this->lang->line('unauthorized_access')); //@todo: make lang entry
+			// They shouldn't be this far
+			show_error($this->lang->line('variable_does_not_exist'));
 		}
 
 		$global_variable = $this->template_model->get_global_variable($variable_id);
 		
 		if ($global_variable->num_rows() < 1)
 		{
-			//@todo: make lang entry, or probably redirect to the main page, they shouldn't be this far
-			show_error('That variable does not exisit'); 
+			// They shouldn't be this far
+			show_error('variable_does_not_exist'); 
 		}
 
 		// offer up confirmation first
@@ -1133,7 +1128,6 @@ class Design extends Controller {
 
 		// Retrieve Valid Template Groups and Templates
 
-		// @todo: model
 		$this->db->from('template_groups tg, templates t');
 		$this->db->select('tg.group_id, tg.group_name, t.template_id, t.template_name');
 		$this->db->where('tg.group_id = t.group_id');
@@ -1261,8 +1255,6 @@ class Design extends Controller {
 		$vars['template_prefs']['hits'] = form_input(array('name'=>'hits', 'value'=>'', 'size'=>5));
 
 		// Template Access Restrictions
-
-		// @todo: model
 		$this->db->select('group_id, group_title');
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->where('group_id !=', '1');
@@ -1292,7 +1284,6 @@ class Design extends Controller {
 
 		$vars['template_access']['select_all'][] = $select_all_radios;
 
-		// @todo: model
 		$this->db->select('template_groups.group_name, templates.template_name, templates.template_id');
 		$this->db->where('template_groups.group_id = '.$this->db->dbprefix('templates.group_id'));
 		$this->db->where('template_groups.site_id', $this->config->item('site_id'));
@@ -1326,7 +1317,6 @@ class Design extends Controller {
 	 */
 	function update_manager_prefs()
 	{
-		//@todo: this whole function needs a rewrite into 2.0 style
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
@@ -1714,9 +1704,6 @@ class Design extends Controller {
 			$template_id = $this->template_model->create_template($data);
 		}
 
-		//@todo: save template files
-
-
 		if (isset($_POST['create']))
 		{
 			$this->manager($this->lang->line('template_created'));
@@ -1966,7 +1953,6 @@ class Design extends Controller {
 					'table_open'			=> '<table class="templateTable templateEditorTable" border="0" cellspacing="0" cellpadding="0">'
 		);
 		
-		// @todo same code is in the manager - move it!
 		// member group query
 		$this->db->select('group_id, group_title');
 		$this->db->where('site_id', $this->config->item('site_id'));
@@ -2202,9 +2188,6 @@ class Design extends Controller {
 		$plugins = $this->template->plugins;
 		unset($this->template);
 
-		// @todo there is no good model function for this, they all check for cp
-		// @confirm - should we check if embedded templates exist? worth it?
-		
 		$this->db->select('module_name');
 		$this->db->order_by('module_name');
 		$query = $this->db->get('modules');
@@ -2212,8 +2195,6 @@ class Design extends Controller {
 		$installed = array_map('array_pop', $query->result_array());
 		$installed = array_map('strtolower', $installed);
 		
-		
-		// @todo clean up
 		$this->info = array_merge($modules, $plugins);
 		
 		// Go through the single variables and check if they match installed plugins
@@ -2668,7 +2649,7 @@ class Design extends Controller {
 
 		if ( ! is_numeric($template_id))
 		{
-			show_error('id not found'); //@todo: lang key
+			show_error('id_not_found');
 		}
 		
 		$path = FALSE;
@@ -3954,8 +3935,6 @@ class Design extends Controller {
 								 );
 
 					$this->template_model->create_template($data);
-					
-					// @todo create files if duplicating
 				}
 			}
 

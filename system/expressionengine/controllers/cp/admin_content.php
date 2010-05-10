@@ -213,7 +213,6 @@ class Admin_content extends Controller {
 
 		$data = $this->functions->create_directory_map(PATH_THEMES.'site_themes/', TRUE);
 		
-		// @todo this needs to wait on template sections
 		// New themes may contain more than one group, thus naming collisions will happen
 		// unless this is revamped.
 		$vars['themes'] = array();
@@ -1293,7 +1292,7 @@ class Admin_content extends Controller {
 	/**
 	 * Category Management
 	 *
-	 * //@todo
+	 * Creates the Category Management main page
 	 *
 	 * @access	public
 	 * @return	void
@@ -1941,7 +1940,6 @@ class Admin_content extends Controller {
 			$foreign_replace .= "if (c == '$old') {NewTextTemp += '$new'; continue;}\n\t\t\t\t";
 		}
 
-		// @todo make this work when ajax loaded from publish
 		$live_title_js = $this->javascript->inline("
 			/** ------------------------------------
 			/**  Live URL Title Function
@@ -2982,8 +2980,6 @@ class Admin_content extends Controller {
 
 				$vars['custom_fields'][$row->field_id]['field_type'] = $field_type;
 			}
-
-			// @todo: field order
 		}
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -3523,7 +3519,7 @@ class Admin_content extends Controller {
 	/**
 	 * Field Group Edit
 	 *
-	 * //@todo
+	 * Creates the Edit Field Group page
 	 *
 	 * @access	public
 	 * @return	void
@@ -3814,8 +3810,6 @@ class Admin_content extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		// @todo: compare against code
-
 		$vars['group_id'] = ($group_id != '') ? $group_id : $this->input->get_post('group_id');
 
 		if ($vars['group_id'] == '' OR ! is_numeric($vars['group_id']))
@@ -3865,8 +3859,6 @@ class Admin_content extends Controller {
 			headers: {3: {sorter: false}},
 			widgets: ["zebra"]
 		}');
-
-		// @todo: field order drag/drop
 
 		$this->javascript->compile();
 		$this->load->view('admin/field_management', $vars);
@@ -4044,7 +4036,6 @@ class Admin_content extends Controller {
 		$vars['field_pre_populate_id_select'] = $field_pre_channel_id.'_'.$field_pre_field_id;
 
 		// build list of formatting options
-		// @todo - automatically include plugins in same package
 		if ($type == 'new')
 		{
 			$vars['edit_format_link'] = '';
@@ -4305,11 +4296,6 @@ class Admin_content extends Controller {
 			show_error($str);
 		}
 		
-		
-		// @todo unset any that aren't our fields and weren't returned by
-		// save settings. Then split between saved_settings and our own fields
-		// and serialize the former to save them.
-		
 		$native = array(
 			'field_id', 'site_id', 'group_id',
 			'field_name', 'field_label', 'field_instructions',
@@ -4542,7 +4528,6 @@ class Admin_content extends Controller {
 				$this->db->query("UPDATE exp_channel_data SET field_ft_".$insert_id." = '".$this->db->escape_str($native_settings['field_fmt'])."'");
 			}
 
-			// @todo fix it! nonsense...
 			foreach (array('none', 'br', 'xhtml') as $val)
 			{
 				$this->db->query("INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ('$insert_id', '$val')");
@@ -4612,7 +4597,7 @@ class Admin_content extends Controller {
 	/**
 	 * Field Status confirm
 	 *
-	 * //@todo
+	 * Creates the Field Deletion Confirmation page
 	 *
 	 * @access	public
 	 * @return	void
@@ -5148,7 +5133,6 @@ class Admin_content extends Controller {
 	/**
 	 * Add or Edit Statuses Group Delete
 	 *
-	 * //@todo build drag and drop order functionality
 	 *
 	 * @access	public
 	 * @return	void
@@ -5424,7 +5408,7 @@ class Admin_content extends Controller {
 	/**
 	 * Delete Status confirm
 	 *
-	 * //@todo
+	 * Creates Delete Status Confirmation page
 	 *
 	 * @access	public
 	 * @return	void
@@ -5519,7 +5503,7 @@ class Admin_content extends Controller {
 	/**
 	 * File Upload Preferences
 	 *
-	 * //@todo
+	 * Creates the File Upload Preferences main page
 	 *
 	 * @access	public
 	 * @return	void
@@ -5562,7 +5546,7 @@ class Admin_content extends Controller {
 	/**
 	 * File Upload Create
 	 *
-	 * //@todo
+	 * Creates the New File Upload Destination page
 	 *
 	 * @access	public
 	 * @return	void
@@ -5835,7 +5819,7 @@ class Admin_content extends Controller {
 	/**
 	 * Update upload preferences
 	 *
-	 * //@todo
+	 * Processes the file upload preferences form
 	 *
 	 * @access	private
 	 * @return	void
@@ -5935,7 +5919,7 @@ class Admin_content extends Controller {
 	/**
 	 * Default Ping Servers
 	 *
-	 * //@todo
+	 * Creates the Default Ping Servers page
 	 *
 	 * @access	public
 	 * @return	void
@@ -6121,7 +6105,7 @@ class Admin_content extends Controller {
 	/**
 	 * Default HTML Buttons
 	 *
-	 * //@todo
+	 * Creates the Default HTML Buttons page
 	 *
 	 * @access	public
 	 * @return	void

@@ -75,7 +75,6 @@ class Content_edit extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		//@todo: these vars were in the function instaniation - investigate if this is going to cause any limitations...
 		$channel_id = '';
 		$extra_sql = '';
 		
@@ -334,7 +333,7 @@ class Content_edit extends Controller {
 		}
 
 		// Authors list
-		$vars['author_selected'] = $this->input->get_post('author_id'); //@todo: I threw author in there... not part of EE 1.6 - 
+		$vars['author_selected'] = $this->input->get_post('author_id');
 		
 		$filter_data['author_id'] = $this->input->get_post('author_id');
 
@@ -445,15 +444,6 @@ class Content_edit extends Controller {
 			$vars['search_in_options']['comments'] =  $this->lang->line('comments');
 		}
 
-/*		@confirm removal
-* 		this appears to be stale
-* 
-*		$vars['channels'] = $this->channel_model->get_channels();
-*		$vars['categories'] = $this->category_model->get_categories(); // @todo: NOT CURRENTLY FUNCTIONAL
-*		$vars['statuses'] = $this->status_model->get_statuses(1); //@todo: this is hardcoded, but needs to be based on the channel selected
-*		$vars['entry_list'] = $this->channel_entries_model->get_entry_list();
-*/
-
 		if ($search_url != '')
 		{
 			$pageurl = BASE.AMP.$search_url;
@@ -503,8 +493,6 @@ class Content_edit extends Controller {
 			$pageurl .= AMP.'perpage='.$perpage;
 			$vars['form_hidden']['pageurl'] = base64_encode($pageurl); // for pagination
 		}
-		
-		// Filter comments @todo make this nicer
 		
 		if ($filter_data['search_in'] == 'comments')
 		{
@@ -630,7 +618,6 @@ class Content_edit extends Controller {
 
 		foreach($query_results as $row)
 		{
-			$style = ''; $tr = ''; //@todo: remove this
 			// Entry ID number
 			$vars['entries'][$row['entry_id']][] = $row['entry_id'];
 
@@ -1048,26 +1035,22 @@ class Content_edit extends Controller {
 			}
 		}
 
-
 		$j_response['sEcho'] = $sEcho;
 		$j_response['iTotalRecords'] = $f_total;  // note- duping the f_total here- should be true total
 		$j_response['iTotalDisplayRecords'] = $f_total;
 					
-
-		
 		$tdata = array();
 		$i = 0;
 		
-		// Grab all autosaved entries - @todo redundancy is redundant
+		// Grab all autosaved entries
 		$this->db->select('original_entry_id');
 		$autosave = $this->db->get('channel_entries_autosave');
 		$autosave_array = array();
+
 		foreach ($autosave->result() as $entry)
 		{
 			$autosave_array[] = $entry->original_entry_id;
 		}
-		
-		
 
 		foreach($query_results as $row)
 		{
@@ -1077,7 +1060,6 @@ class Content_edit extends Controller {
 
 			$m[] = $title_output;
 
-			
 			// "View"
 			if ($row['live_look_template'] != 0 && isset($templates[$row['live_look_template']]))
 			{
@@ -1094,7 +1076,6 @@ class Content_edit extends Controller {
 			
 			$m[] = $view_link; // Add live look template
 			
-
 			// Comment count
 			$show_link = TRUE;
 
@@ -1415,7 +1396,6 @@ class Content_edit extends Controller {
 					continue;
 				}
 
-				// @todo: model
 				$this->db->where('group_id', $channel_row['status_group']);
 				$this->db->order_by('status_order');
 				$status_query = $this->db->get('statuses');
@@ -1775,17 +1755,12 @@ class Content_edit extends Controller {
 		
 		$vars['edit_categories_link'] = FALSE; //start off as false, meaning user does not have privs
 
-		
 		$link_info = $this->api_channel_categories->fetch_allowed_category_groups($cat_group);
 		
-		// @todo- this kinda sucks, but I'm going to output the whole string for now
-		
 		$links = FALSE;
+		
 		if ($link_info !== FALSE)
 		{
-			// @todo needs reworking.  If you include the z it throws an error because that triggers an include of cp.publish.
-			// Without the z the permissions may not be working as per 1.6.  
-
 			foreach ($link_info as $val)
 			{
 				$links[] = array('url' => BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$val['group_id'],

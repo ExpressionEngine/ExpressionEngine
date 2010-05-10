@@ -52,14 +52,12 @@ class Date_ft extends EE_Fieldtype {
 
 	function validate($data)
 	{
-		// @todo check for valid date
 	}
 	
 	// --------------------------------------------------------------------
 	
 	function display_field($data)
 	{
-		// @todo probably shouldn't be hard coded in the long run
 		$special = array('entry_date', 'expiration_date', 'comment_expiration_date');
 
 		$date_field = $this->field_name;
@@ -105,7 +103,7 @@ class Date_ft extends EE_Fieldtype {
 		
 		if ( ! in_array($this->field_name, $special))
 		{
-			$localize = FALSE; // @todo this line is wrong
+			$localize = FALSE;
 			
 			$localized = ( ! isset($_POST[$date_local])) ? (($localize == FALSE) ? 'n' : 'y') : $_POST[$date_local];
 

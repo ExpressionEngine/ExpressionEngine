@@ -2,7 +2,6 @@
 
 $lang = array(
 
-// @todo move Edit lang vars out of publish and into here for the Edit controller
 
 ''=>''
 );
