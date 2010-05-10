@@ -347,7 +347,7 @@ class MyAccount extends Controller {
 				}
 				elseif ($row['m_field_type'] == 'text') // Text input fields
 				{
-					$vars['custom_profile_fields'][] = $required.form_label($row['m_field_label'], 'm_field_id_'.$row['m_field_id']).NBS.form_input(array('name'=>'m_field_id_'.$row['m_field_id'], 'id'=>'m_field_id_'.$row['m_field_id'], 'class'=>'field', 'value'=>$field_data));
+					$vars['custom_profile_fields'][] = $required.form_label($row['m_field_label'], 'm_field_id_'.$row['m_field_id']).NBS.form_input(array('name'=>'m_field_id_'.$row['m_field_id'], 'id'=>'m_field_id_'.$row['m_field_id'], 'class'=>'field', 'value'=>$field_data, 'maxlength'=>$row['m_field_maxl']));
 				}
 			}
 		}
