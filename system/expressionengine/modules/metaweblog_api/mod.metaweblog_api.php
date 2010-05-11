@@ -1624,9 +1624,11 @@ class Metaweblog_api {
 		/**  File name and security
 		/** -------------------------------------*/
 
+		$this->EE->load->library('security');
+		
 		$filename = preg_replace("/\s+/", "_", $parameters['3']['name']);
 
-		$filename = $this->EE->functions->sanitize_filename($filename);
+		$filename = $this->EE->security->sanitize_filename($filename);
 
 		if ($this->EE->security->xss_clean($parameters['3']['bits'], TRUE) === FALSE)
 		{

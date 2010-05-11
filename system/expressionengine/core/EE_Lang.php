@@ -49,7 +49,7 @@ class EE_Lang extends CI_Lang {
 		}
 	
 		$EE =& get_instance();
-		$EE->load->library('functions');
+		$this->load->library('security');
 		
 		if (isset($EE->session->userdata['language']) && $EE->session->userdata['language'] != '')
 		{
@@ -74,9 +74,9 @@ class EE_Lang extends CI_Lang {
 		$deft_lang = ( ! isset($config['language'])) ? 'english' : $config['language'];
 		
 		// Sec.ur.ity code.  ::sigh::
-		$package = ($package == '') ? $EE->functions->sanitize_filename(str_replace(array('lang.', EXT), '', $which)) : $EE->functions->sanitize_filename($package);
+		$package = ($package == '') ? $EE->security->sanitize_filename(str_replace(array('lang.', EXT), '', $which)) : $EE->security->sanitize_filename($package);
 		$which = 'lang.'.str_replace('lang.', '', $which);
-		$user_lang = $EE->functions->sanitize_filename($user_lang);
+		$user_lang = $EE->security->sanitize_filename($user_lang);
 	
 		if ($which == 'lang.sites_cp')
 		{			

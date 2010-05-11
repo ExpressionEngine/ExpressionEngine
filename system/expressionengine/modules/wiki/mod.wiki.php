@@ -311,7 +311,7 @@ class Wiki {
 		
 		if ($this->EE->TMPL->fetch_param('theme') !== FALSE && $this->EE->TMPL->fetch_param('theme') != '' && $this->EE->TMPL->fetch_param('theme') != 'default')
 		{
-			$theme = $this->EE->functions->sanitize_filename($this->EE->TMPL->fetch_param('theme'));
+			$theme = $this->EE->security->sanitize_filename($this->EE->TMPL->fetch_param('theme'));
 
 			if (is_dir(PATH_THEMES.'/wiki_themes/'.$theme))
 			{
@@ -5329,11 +5329,11 @@ class Wiki {
 
 			if ($filename !== FALSE && $filename != '')
 			{
-				$new_name = $this->valid_title($this->EE->functions->sanitize_filename(strip_tags($filename)));
+				$new_name = $this->valid_title($this->EE->security->sanitize_filename(strip_tags($filename)));
 			}
 			elseif ( ! is_uploaded_file($_FILES['userfile']['tmp_name']))
 			{
-				$new_name = $this->valid_title($this->EE->functions->sanitize_filename(strip_tags($_FILES['userfile']['name'])));
+				$new_name = $this->valid_title($this->EE->security->sanitize_filename(strip_tags($_FILES['userfile']['name'])));
 			}
 			
 			$no_extension_name = substr($new_name, 0, strrpos($new_name, '.'));

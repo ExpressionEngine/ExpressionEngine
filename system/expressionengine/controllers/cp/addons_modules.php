@@ -225,7 +225,7 @@ class Addons_modules extends Controller {
 		// These can be overriden by individual modules
 		$this->cp->set_variable('cp_page_title', $this->lang->line('modules'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons_modules', $this->lang->line('modules'));
-
+		$this->load->library('security');
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumb', array(
@@ -234,7 +234,7 @@ class Addons_modules extends Controller {
 		));
 
 		$module = $this->input->get_post('module');
-		$module = $this->functions->sanitize_filename(strtolower($module));
+		$module = $this->security->sanitize_filename(strtolower($module));
 		$this->load->library('addons');
 		
 		$installed = $this->addons->get_installed();
@@ -357,7 +357,7 @@ class Addons_modules extends Controller {
 		}
 
 		$module = $this->input->get_post('module');
-		$module = $this->functions->sanitize_filename(strtolower($module));
+		$module = $this->security->sanitize_filename(strtolower($module));
 
 		$this->load->library('addons/addons_installer');
 		$this->lang->loadfile($module);
@@ -435,7 +435,8 @@ class Addons_modules extends Controller {
 			return $this->delete_module_confirm();
 		}
 		
-		$module = $this->functions->sanitize_filename(strtolower($module));
+		$this->load->library('security');
+		$module = $this->security->sanitize_filename(strtolower($module));
 
 		$this->load->library('addons/addons_installer');
 		$this->lang->loadfile($module);

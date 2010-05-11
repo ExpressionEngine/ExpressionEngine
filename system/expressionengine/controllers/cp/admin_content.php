@@ -534,11 +534,12 @@ class Admin_content extends Controller {
 
 		if ($edit == FALSE)
 		{
+			$this->load->library('security');
 			$create_templates	= $this->input->get_post('create_templates');
 			$old_group_id		= $this->input->get_post('old_group_id');
 			$group_name			= $this->input->post('group_name');
 
-			$template_theme	= $this->functions->sanitize_filename($this->input->get_post('template_theme'));
+			$template_theme	= $this->security->sanitize_filename($this->input->get_post('template_theme'));
 
 			unset($_POST['create_templates']);
 			unset($_POST['old_group_id']);

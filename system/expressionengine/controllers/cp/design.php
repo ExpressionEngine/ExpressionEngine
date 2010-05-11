@@ -1592,11 +1592,13 @@ class Design extends Controller {
 
 		if ($_POST['template_data'] == 'library' && isset($_POST['library']))
 		{
+			$this->load->library('security');
+			
 			$parts = explode('/', $_POST['library']);
 		
 			if (count($parts) == 1)
 			{
-				$_POST['library'] = $this->functions->sanitize_filename($parts[0]);
+				$_POST['library'] = $this->security->sanitize_filename($parts[0]);
 			}
 			else
 			{
@@ -1604,7 +1606,7 @@ class Design extends Controller {
 				
 				foreach($parts as $part)
 				{
-					$_POST['library'] .= $this->functions->sanitize_filename($part).'/';
+					$_POST['library'] .= $this->security->sanitize_filename($part).'/';
 				}
 			}
 			
@@ -3078,7 +3080,8 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		$path = PATH_MBR_THEMES.$this->functions->sanitize_filename($this->input->get_post('name'));
+		$this->load->library('security');
+		$path = PATH_MBR_THEMES.$this->security->sanitize_filename($this->input->get_post('name'));
 		
 		if ( ! is_dir($path))
 		{
@@ -3126,6 +3129,8 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
+		$this->load->library('security');
+		
 		$update = ($theme != '' AND $name != '') ? TRUE : FALSE;
 		
 		if ($theme == '')
@@ -3138,7 +3143,7 @@ class Design extends Controller {
 			$name = $this->input->get_post('name');
 		}
 		
-		$path = PATH_MBR_THEMES.$this->functions->sanitize_filename($theme).'/'.$name;
+		$path = PATH_MBR_THEMES.$this->security->sanitize_filename($theme).'/'.$name;
 		
 		if ( ! file_exists($path))
 		{
@@ -3198,6 +3203,7 @@ class Design extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
+		$this->load->library('security');
 		$theme = $this->input->get_post('theme');
 		$name = $this->input->get_post('name');
 		$template_data	= $this->input->get_post('template_data');
@@ -3206,7 +3212,7 @@ class Design extends Controller {
 		{
 			case 'profile':
 			default:
-				$path = PATH_MBR_THEMES.$this->functions->sanitize_filename($theme).'/'.$this->functions->sanitize_filename($name);
+				$path = PATH_MBR_THEMES.$this->security->sanitize_filename($theme).'/'.$this->security->sanitize_filename($name);
 		}
 		
 		if ( ! file_exists($path))

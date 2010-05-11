@@ -3077,9 +3077,11 @@ class EE_Template {
 
 		if (preg_match_all("#{NOCACHE_(\S+)_FORM=\"(.*?)\"}(.+?){/NOCACHE_FORM}#s", $str, $match))
 		{
+			$this->EE->load->library('security');
+			
 			for($i=0, $s=count($match[0]); $i < $s; $i++)
 			{
-				$class = $this->EE->functions->sanitize_filename(strtolower($match[1][$i]));
+				$class = $this->EE->security->sanitize_filename(strtolower($match[1][$i]));
 		
 				if ( ! class_exists($class))
 				{

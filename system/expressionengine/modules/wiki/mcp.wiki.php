@@ -489,8 +489,10 @@ class Wiki_mcp {
 		{
 			return $this->EE->load->view('theme_templates', $vars, TRUE);
 		}
+		
+		$this->EE->load->library('security');
 
-		$vars['theme'] = strtolower($this->EE->functions->sanitize_filename($vars['theme']));
+		$vars['theme'] = strtolower($this->EE->security->sanitize_filename($vars['theme']));
 		$vars['theme_name'] = strtolower(str_replace('_', ' ', $vars['theme']));
 		$vars['cp_page_title'] .= ' - '.htmlentities($vars['theme_name']);
 
@@ -549,9 +551,11 @@ class Wiki_mcp {
 		{
 			return $this->EE->load->view('theme_templates', $vars, TRUE);
 		}
+		
+		$this->EE->load->library('security');
 
-		$vars['theme'] = $this->EE->functions->sanitize_filename($vars['theme']);
-		$vars['template'] = $this->EE->functions->sanitize_filename($vars['template']);
+		$vars['theme'] = $this->EE->security->sanitize_filename($vars['theme']);
+		$vars['template'] = $this->EE->security->sanitize_filename($vars['template']);
 		$vars['theme_name'] = strtolower(str_replace('_', ' ', $vars['theme']));
 		$vars['template_name'] = ucwords(str_replace('_', ' ', substr($vars['template'], 0, -strlen(strrchr($vars['template'], '.')))));
 		$vars['cp_page_title'] .= ' - '.htmlentities($vars['theme_name']).' / '.htmlentities($vars['template_name']);
@@ -625,9 +629,11 @@ class Wiki_mcp {
 		{
 			show_error($this->EE->lang->line('invalid_template'));
 		}
+		
+		$this->EE->load->library('security');
 
-		$theme = $this->EE->functions->sanitize_filename($theme);
-		$template = $this->EE->functions->sanitize_filename($template);
+		$theme = $this->EE->security->sanitize_filename($theme);
+		$template = $this->EE->security->sanitize_filename($template);
 
 		$path = PATH_THEMES.'/wiki_themes/'.$theme.'/'.$template;
 

@@ -136,7 +136,9 @@ class Addons_fieldtypes extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
-		$ft = $this->functions->sanitize_filename(strtolower($ft));
+		$this->load->library('security');
+		
+		$ft = $this->security->sanitize_filename(strtolower($ft));
 
 		$this->load->library('addons/addons_installer');
 
@@ -168,8 +170,9 @@ class Addons_fieldtypes extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
-		$ft = $this->functions->sanitize_filename(strtolower($ft));
-
+		$this->load->library('security');
+		
+		$ft = $this->security->sanitize_filename(strtolower($ft));
 		
 		if ($this->input->post('doit') == 'y')
 		{

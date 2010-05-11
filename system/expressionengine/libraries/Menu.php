@@ -926,7 +926,9 @@ class EE_Menu {
 			}
 			else
 			{
-				$module = $this->EE->functions->sanitize_filename($module);
+				$this->EE->load->library('security');
+				
+				$module = $this->EE->security->sanitize_filename($module);
 
 				if (file_exists(PATH_THIRD.$module.'/config/help_menu'.EXT))
 				{

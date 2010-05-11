@@ -151,6 +151,7 @@ class EE_Extensions {
 		if ($this->in_progress == $which) return;
 		
 		$this->in_progress = $which;
+		$this->EE->load->library('security');
 		
 		// Retrieve arguments for function
 		if (is_object($parameter_one) && is_php('5.0.0') == TRUE)
@@ -179,7 +180,7 @@ class EE_Extensions {
 			{
 				// Determine Path of Extension
 				$class_name = ucfirst($class);
-				$name = $this->EE->functions->sanitize_filename(strtolower(substr($class, 0, -4))); // remove '_ext' suffix
+				$name = $this->EE->security->sanitize_filename(strtolower(substr($class, 0, -4))); // remove '_ext' suffix
 				
 				$path = PATH_EXT.'ext.'.$name.EXT;
 				$third_party = FALSE;

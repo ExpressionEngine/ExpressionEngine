@@ -845,6 +845,8 @@ class EE_Functions {
 			return array('title' => $query->row('data_title') , 'data' => $query->row('template_data') );
 		}
 		
+		$this->EE->load->library('security');
+		
 		if ($this->EE->session->userdata['language'] != '')
 		{
 			$user_lang = $this->EE->session->userdata['language'];
@@ -865,7 +867,7 @@ class EE_Functions {
 			}
 		}
 
-		$user_lang = $this->sanitize_filename($user_lang);
+		$user_lang = $this->EE->security->sanitize_filename(($user_lang);
 
 		if ( function_exists($name))
 		{
@@ -2962,25 +2964,6 @@ class EE_Functions {
 			return $object;
 		}
 	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Filename Security
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function sanitize_filename($str)
-	{
-		// @todo: change all references to this function to use the identical
-		// function in the security helper, and delete this code.
-		$this->EE =& get_instance();
-		$this->EE->load->library('security');
-		return $this->EE->security->sanitize_filename($str);
-	}
-	
 }
 // END CLASS
 

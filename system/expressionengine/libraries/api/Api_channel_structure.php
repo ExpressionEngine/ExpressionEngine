@@ -256,7 +256,7 @@ class Api_channel_structure extends Api {
 			$this->EE->lang->loadfile('design');
 
 			$group_name = strtolower($group_name);
-			$template_theme = $this->EE->functions->sanitize_filename($template_theme);
+			$template_theme = $this->EE->security->sanitize_filename($template_theme);
 			
 			// validate group name
 			if ($group_name == '')
