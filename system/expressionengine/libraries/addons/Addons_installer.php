@@ -472,7 +472,7 @@ class Addons_installer {
 		
 		if ($extension == '')
 		{
-			show_error($this->EE->lang->line('no_extension_id');
+			show_error($this->EE->lang->line('no_extension_id'));
 		}
 		
 		$class = ucfirst($extension).'_ext';

@@ -867,7 +867,7 @@ class EE_Functions {
 			}
 		}
 
-		$user_lang = $this->EE->security->sanitize_filename(($user_lang);
+		$user_lang = $this->EE->security->sanitize_filename($user_lang);
 
 		if ( function_exists($name))
 		{
