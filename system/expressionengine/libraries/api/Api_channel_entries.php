@@ -1267,7 +1267,7 @@ class Api_channel_entries extends Api {
 
 					if ($query->num_rows() > 0)
 					{
-						foreach($uery->result_array() as $row)
+						foreach($query->result_array() as $row)
 						{
 							$allowed_authors[] = $row['member_id'];
 						}
