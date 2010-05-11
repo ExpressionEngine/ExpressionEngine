@@ -209,7 +209,6 @@ class Api_channel_fields extends Api {
 			$file = 'ft.'.$field_type.EXT;
 			$path = PATH_FT;
 			
-			// @todo hardcode first party array so we only need to check one dir?
 			if ( ! file_exists($path.$file))
 			{
 				$path = PATH_THIRD.$field_type.'/';
@@ -337,7 +336,6 @@ class Api_channel_fields extends Api {
 	 * Using the name of the identical javascript function, and yes, I like it.
 	 *
 	 * @access	public
-	 * @todo cache package paths - sloooow
 	 */
 	function apply($method, $parameters = array())
 	{

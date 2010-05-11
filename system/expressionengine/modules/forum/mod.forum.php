@@ -2097,8 +2097,6 @@ class Forum {
 	/**  Base IFRAME for Spell Check
 	/** -----------------------------------------*/
 	/**
-	 * 	@todo, figure out why the tracker is being completely unset.  This at least gets theme
-	 *  switching working again.  bandaid fix.
 	 */
 	function spellcheck_iframe()
 	{

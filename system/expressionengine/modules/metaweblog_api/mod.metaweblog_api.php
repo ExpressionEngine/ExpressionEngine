@@ -208,7 +208,6 @@ class Metaweblog_api {
 		$notify_address = ($query->row('channel_notify')  == 'y' AND $query->row('channel_notify_emails')  != '') ? $query->row('channel_notify_emails')  : '';
 
 		// Get channel field Settings
-		// @todo, fix this
 		$this->get_settings($this->channel_id, 'new');
 
 		/** ---------------------------------------
@@ -1925,7 +1924,6 @@ class Metaweblog_api {
 	/**
 	 * Get Settings for the channel
 	 *
-	 * @todo, this is a bandaid. 
 	 *
 	 *
 	 */

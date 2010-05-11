@@ -926,10 +926,6 @@ class EE_Menu {
 			}
 			else
 			{
-				// @todo - define way for modules to define their own doc URLs
-				// as well as something useful to do when they have not done so
-				// -- maybe not display a help button when it's a guess?
-				
 				$module = $this->EE->functions->sanitize_filename($module);
 
 				if (file_exists(PATH_THIRD.$module.'/config/help_menu'.EXT))

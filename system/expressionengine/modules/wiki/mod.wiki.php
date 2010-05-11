@@ -146,7 +146,6 @@ class Wiki {
 		
 		$x	= explode('/', $this->base_path);
 		
-		// temp fix to ditch slashes @todo
 		$this->seg_parts = explode('/', $this->EE->security->xss_clean(strip_tags(stripslashes($this->EE->uri->query_string))));
 		
 		/* ----------------------------------------

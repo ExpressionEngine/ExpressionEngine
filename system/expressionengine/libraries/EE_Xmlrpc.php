@@ -71,23 +71,6 @@ class EE_Xmlrpc extends CI_Xmlrpc {
 			$server = str_replace('ping.pmachine.com', 'ping.expressionengine.com', $server);
 		}
 		
-		/* @todo Weblogs.com Fixeroo ?
-		
-		// $server = "rpc.weblogs.com/RPC2/";
-		if (substr($server, 0, 4) != "http") $server = "http://".$server; 
-		
-		$parts = parse_url($server);
-		
-		if (isset($parts['path']) && $parts['path'] == "/RPC2/")
-		{
-			$path = str_replace('/RPC2/', '/RPC2', $parts['path']);
-		}
-		else
-		{
-			$path = (!isset($parts['path'])) ? '/' : $parts['path'];
-		}
-		*/
-		
 		$this->server($server, $port);
 		$this->timeout(5);
 		
@@ -129,7 +112,9 @@ class EE_Xmlrpc extends CI_Xmlrpc {
 		{
 			if ( ! $license = $this->EE->config->item('license_number'))
 			{
-				// @todo return 'Invalid License';
+				$this->EE->lang->loadfile('xmlrpc');
+				$this->error = $this->EE->lang->line('invalid_license');
+				return $this->display_error();
 			}
 			
 			$this->method('Expressionengine.ping');

@@ -195,11 +195,6 @@ class Search_model extends CI_Model {
 			$this->db->join('categories', 'exp_category_posts.cat_id = exp_categories.cat_id', 'left');
 		}
 
-		//if (is_array($extra_sql) && isset($extra_sql['tables']))
-		//{
-			// Think this is extension fed- and not currently available?  @todo double check
-		//}
-
 		// Construct our where clause - this is annoying
 		// Limit to channels assigned to user  
 
@@ -334,26 +329,6 @@ class Search_model extends CI_Model {
 		{
 			$this->db->limit($data['perpage'], $data['rownum']);
 		}
-
-/*
-@todo: deal w/this later
-
-		if ($order)
-		{
-			$pageurl .= AMP.'order='.$order;
-
-			switch ($order)
-			{
-				case 'asc'	: $end .= "entry_date asc";
-					break;
-				case 'desc'	 : $end .= "entry_date desc";
-					break;
-				case 'alpha' : $end .= "title asc";
-					break;
-				default	  : $end .= "entry_date desc";
-			}
-		}
-*/
 
 		// ------------------------------
 		//	 Are there results?

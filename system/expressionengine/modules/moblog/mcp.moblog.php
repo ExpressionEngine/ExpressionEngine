@@ -1042,9 +1042,10 @@ MAGIC;
 		}
 
 		$this->EE->load->helper('form');
+
+		$vars['cp_page_title'] = $this->EE->lang->line('moblog_delete_confirm_title');
 		
-		// @todo breadcrumb to lang->line('delete')
-		$vars['cp_page_title'] = $this->EE->lang->line('moblog');
+		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog', $this->EE->lang->line('moblog'));
 		$vars['form_action'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=delete_moblogs';
 		
 		foreach ($_POST['toggle'] as $val)

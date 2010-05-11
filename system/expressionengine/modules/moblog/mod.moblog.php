@@ -133,10 +133,6 @@ class Moblog {
 		}
 
 		// Check Cache
-		// The only reason to write the file is to see
-		// the last time the moblog was checked.
-		// Seems like there should be a better way to do this
-		// @todo figure it out
 
 		if ( ! @is_dir(APPPATH.'cache/'.$this->cache_name))
 		{
@@ -1222,13 +1218,6 @@ class Moblog {
 		
 		if ( ! $result)
 		{
-			// @todo make this work
-			/*
-			echo '<pre>';
-			print_r($this->EE->api_channel_entries->get_errors());
-			echo '</pre>';
-			exit('fail');
-			*/
 		}
 		else
 		{

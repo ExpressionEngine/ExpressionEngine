@@ -324,6 +324,9 @@ $lang = array(
 'moblog_delete_confirm' =>
 'Delete Moblogs',
 
+'moblog_delete_confirm_title' =>
+'Delete Moblog Confirmation',
+
 'moblog_delete_question' =>
 'Are you sure you want to delete the selected moblog(s)?',
 

@@ -397,8 +397,6 @@ class Wiki_mcp {
 	/**
 	 * Create New Wiki
 	 * 
-	 * @todo -- Revisit this whole thing.  Why is a wiki being created before 'submit' is pressed?
-	 * look at update() as well.
 	 */
 	function create()
 	{

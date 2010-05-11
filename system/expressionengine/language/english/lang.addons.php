@@ -56,6 +56,7 @@ $lang = array(
 'none'							=>		'None',
 'and_more'						=>		'and %x more...',
 'plugins_not_available'			=> 		'Plugin Feed Disabled in Beta Version.',
+'no_extension_id'				=>		'No Extension Specified',
 
 // IGNORE
 ''=>'');

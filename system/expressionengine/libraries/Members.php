@@ -119,7 +119,6 @@ class Members {
 
 				if ($query->row('avatar_filename')	== '')
 				{
-					// @todo, this needs to change
 					if (REQ == 'CP')
 					{
 						// Returning type, method to call.
@@ -154,7 +153,6 @@ class Members {
 
 				if ($query->row('photo_filename')  == '')
 				{
-					// @todo, fix this up
 					if (REQ == 'CP')
 					{
 						$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_photo'.AMP.'id='.$id);						
@@ -478,10 +476,15 @@ class Members {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Image Resizing
-	 * @todo not currently called from anywhere.
-	 * Moving code that's shared between the member mod & my account over to this.
+	 *	Resize Member Images
+	 *
+	 *
+	 *	@param 	string
+	 *	@param 	string	avatar/photo/sig_img
+	 *	@param 	string
+	 *	@return bool
 	 */
+	
 	function image_resize($filename, $type = 'avatar', $axis = 'width')
 	{
 		$this->EE->load->library('image_lib');

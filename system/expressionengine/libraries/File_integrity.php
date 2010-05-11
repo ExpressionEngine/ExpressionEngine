@@ -227,7 +227,6 @@ class File_integrity {
 	/**
 	 * Update the bootstrap column in the db
 	 *
-	 * @todo consider moving this to config
 	 * @access	private
 	 */
 	function _update_config($checksums, $site_id)

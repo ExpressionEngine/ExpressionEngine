@@ -424,7 +424,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			)
 		);
 
-		// @todo: convert this to jQuery
 		$this->EE->cp->add_to_foot('<script type="text/javascript">
 			function showHide(entryID, htmlObj, linkType) {
 

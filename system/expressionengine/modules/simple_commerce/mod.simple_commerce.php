@@ -103,8 +103,6 @@ class Simple_commerce {
 		if (($success = $this->EE->TMPL->fetch_param('success')) === FALSE) return;
 		$cached = FALSE;
 
-	// @todo - some means of avoiding looping through the entry ids
-		
 		$paypal_account = ( ! $this->EE->config->item('sc_paypal_account')) ? $this->EE->config->item('webmaster_email') : $this->EE->config->item('sc_paypal_account');
 		$cancel	 		= ( ! $this->EE->TMPL->fetch_param('cancel'))  ? $this->EE->functions->fetch_site_index() : $this->EE->TMPL->fetch_param('cancel');
 		$currency		= ( ! $this->EE->TMPL->fetch_param('currency'))  ? 'USD' : $this->EE->TMPL->fetch_param('currency');

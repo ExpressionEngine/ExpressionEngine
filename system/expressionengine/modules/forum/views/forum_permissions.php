@@ -50,11 +50,8 @@ foreach($groups as $permission_row)
 		}
 	}
 	
-//	$row[] = 'toggle'; // @todo
 	$this->table->add_row($row);
 }
-
-// @todo toggle checkbox row
 
 echo $this->table->generate();
 ?>

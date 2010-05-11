@@ -2255,8 +2255,6 @@ class EE_Functions {
 		$temp_misc  = array();
 		$slash_length = strlen($slash);
 		
-		// @todo test how the added keys are affecting vars in conditionals
-		
 		foreach($matches[1] as $key => $val)
 		{
 			if (strncmp($val, 'if ', 3) !== 0 && 
