@@ -216,6 +216,7 @@ class Metaweblog_api_mcp {
 
 			// FIELD GROUP
 			$vars['field_group_id_options'] = array();
+			
 			foreach($this->group_array as $key => $value)
 			{
 				$vars['field_group_id_options'][$key] = $value['0'];
@@ -225,6 +226,7 @@ class Metaweblog_api_mcp {
 			// This field array is used for many of the dropdowns below, so we'll
 			// generate it once, and just array_merge() it into the fold.
 			$fields_array = array();
+			
 			foreach($this->field_array as $value)
 			{
 				if ($value['0'] == $vars['field_group_id'])
@@ -397,7 +399,14 @@ class Metaweblog_api_mcp {
 		// In order to build our filtering options we need to gather
 		// all the field groups and fields
 
-		$xql = '';
+		$allowed_channels = $this->EE->functions->fetch_assigned_channels();
+		$allowed_groups = array();
+		$groups_exist = TRUE;
+		
+		if ( ! $this->EE->cp->allowed_group('can_edit_other_entries') && count($allowed_channels) == 0)
+		{
+			$groups_exist = FALSE;
+		}
 
 		/*
 
@@ -442,25 +451,44 @@ class Metaweblog_api_mcp {
 		//	$this->EE->db->where_in('channel_id', $allowed_channels);
 		//}
 		
-		$this->EE->db->select('group_id, group_name, site_label');
-		$this->EE->db->from('field_groups');
-		$this->EE->db->join('sites', 'sites.site_id = field_groups.site_id');
+		$this->EE->db->select('field_group');
+		$this->EE->db->from('exp_channels');
 		
-		if ($this->EE->config->item('multiple_sites_enabled') !== 'y')
+		if ( ! $this->EE->cp->allowed_group('can_edit_other_entries'))
 		{
-			$this->EE->db->where('field_groups.site_id', '1');
-		}
+			$this->EE->db->where_in('channel_id', $allowed_channels);
+		}	
 		
 		$query = $this->EE->db->get();
 
-		if ($query->num_rows() > 0)
+		if ($groups_exist && $query->num_rows() > 0)
 		{
 			foreach ($query->result_array() as $row)
 			{
-				$label = ($this->EE->config->item('multiple_sites_enabled') === 'y') ? $row['site_label'].NBS.'-'.NBS.$row['group_name'] : $row['group_name'];
-				$this->group_array[$row['group_id']] = array(str_replace('"','',$label), $row['group_name']);
+				$allowed_groups[] = $row['field_group'];
 			}
-		}
+		
+			$this->EE->db->select('group_id, group_name, site_label');
+			$this->EE->db->from('field_groups');
+			$this->EE->db->where_in('group_id', $allowed_groups);		
+			$this->EE->db->join('sites', 'sites.site_id = field_groups.site_id');
+		
+			if ($this->EE->config->item('multiple_sites_enabled') !== 'y')
+			{
+				$this->EE->db->where('field_groups.site_id', '1');
+			}
+		
+			$query = $this->EE->db->get();
+
+			if ($query->num_rows() > 0)
+			{
+				foreach ($query->result_array() as $row)
+				{
+					$label = ($this->EE->config->item('multiple_sites_enabled') === 'y') ? $row['site_label'].NBS.'-'.NBS.$row['group_name'] : $row['group_name'];
+					$this->group_array[$row['group_id']] = array(str_replace('"','',$label), $row['group_name']);
+				}
+			}
+		}  // End gather groups
 
 		/** ----------------------------- 
 		/**  Entry Statuses
@@ -493,7 +521,7 @@ class Metaweblog_api_mcp {
 		{
 			foreach ($query->result_array() as $row)
 			{
-				$this->field_array[]  = array($row['group_id'], $row['field_id'], str_replace('"','',$row['field_label']));
+				$this->field_array[$row['group_id']]  = array($row['group_id'], $row['field_id'], str_replace('"','',$row['field_label']));
 			}
 		}
 
