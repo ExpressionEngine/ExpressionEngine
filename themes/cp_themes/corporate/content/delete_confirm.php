@@ -13,7 +13,7 @@ if ($EE_view_disable !== TRUE)
 	<div class="contents">
 
 			<div class="heading"><h2><?=$cp_page_title?></h2></div>
-		    <div id="filterMenu">
+		    <div class="pageContents">
 		
 				<?=form_open('C=content_edit'.AMP.'M=delete_entries')?>
 	

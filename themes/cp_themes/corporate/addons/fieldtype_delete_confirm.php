@@ -13,7 +13,7 @@ if ($EE_view_disable !== TRUE)
 	<div class="contents">
 
 			<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
-		    <div id="filterMenu">
+		    <div class="pageContents">
 		
 				<?=form_open($form_action, '', array('doit' => 'y'))?>
 

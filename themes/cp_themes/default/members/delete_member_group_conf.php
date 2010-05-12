@@ -13,7 +13,7 @@ if ($EE_view_disable !== TRUE)
 	<div class="contents">
 
 			<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
-		    <div id="filterMenu">
+		    <div class="pageContents">
 
 				<?=form_open('C=members'.AMP.'M=delete_member_group'.AMP.'group_id='.$group_id, '', $form_hidden)?>
 
