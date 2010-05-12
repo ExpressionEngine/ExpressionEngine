@@ -1744,6 +1744,9 @@ $lang = array(
 'admin_system'	=>
 'Administration',
 
+'illegal_characters' =>
+'The name you submitted may only contain alpha-numeric characters, underscores, and dashes',
+
 ''=>''
 );
 
