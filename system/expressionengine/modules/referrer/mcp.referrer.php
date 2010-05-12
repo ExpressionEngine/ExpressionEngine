@@ -94,7 +94,6 @@ class Referrer_mcp {
 				);')
 		);
 
-		// @todo: convert this to jQuery
 		$this->EE->cp->add_to_foot('<script type="text/javascript">function showHide(entryID, htmlObj, linkType) {
 
 				extTextDivID = ("extText" + (entryID));
@@ -323,11 +322,6 @@ class Referrer_mcp {
 	  */
 	function delete()
 	{
-
-		// @todo: most of this controller is in "old" style, without AR and such.
-		// since it has no content to display, I'm leaving it here for now, with a
-		// todo note to return. -DA
-
 		if ( ! $this->EE->input->post('delete'))
 		{
 			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=referrer');

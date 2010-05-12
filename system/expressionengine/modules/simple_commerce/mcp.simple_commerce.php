@@ -2228,7 +2228,6 @@ MAGIC;
 		$this->EE->lang->loadfile('content');
 		$this->EE->load->helper('url');
 
-		//@todo: these vars were in the function instaniation - investigate if this is going to cause any limitations...
 		$channel_id = '';
 		$extra_sql = array();
 
@@ -2616,7 +2615,7 @@ MAGIC;
 		}
 
 		// Authors list
-		$vars['author_selected'] = $this->EE->input->get_post('author_id'); //@todo: I threw author in there... not part of EE 1.6 - Needs some work...
+		$vars['author_selected'] = $this->EE->input->get_post('author_id');
 
 		$query = $this->EE->member_model->get_authors();
 		$vars['author_select_options'][''] = $this->EE->lang->line('filter_by_author');
@@ -2746,19 +2745,9 @@ MAGIC;
 			$vars['search_in_options']['comments'] =  $this->lang->line('comments');
 		}
 
-/*		@confirm removal
-* 		this appears to be stale
-*
-*		$vars['channels'] = $this->channel_model->get_channels();
-*		$vars['categories'] = $this->category_model->get_categories(); // @todo: NOT CURRENTLY FUNCTIONAL
-*		$vars['statuses'] = $this->status_model->get_statuses(1); //@todo: this is hardcoded, but needs to be based on the channel selected
-*		$vars['entry_list'] = $this->channel_entries_model->get_entry_list();
-*/
 
-
-		// ------------------------------
 		//	 Build the main query
-		// ------------------------------
+
 		if ($search_url != '')
 		{
 			$pageurl = BASE.AMP.$search_url;
@@ -2768,7 +2757,6 @@ MAGIC;
 			$pageurl = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=add_items';
 		}
 
-		// @todo: this whole big thing needs to be AR'ed and modelled...
 		$sql_a = "SELECT ";
 
 		if ($search_in == 'comments')
@@ -3192,12 +3180,10 @@ MAGIC;
 
 		foreach($query->result_array() as $row)
 		{
-			$style = ''; $tr = ''; //@todo: remove this
 			// Entry ID number
 			$vars['entries'][$row['entry_id']][] = $row['entry_id'];
 
 			// Channel entry title (view entry)
-			// @todo: move this to CI anchor
 			$output = '<a href="'.BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'].'">'.$row['title'].'</a>';
 
 			$vars['entries'][$row['entry_id']][] = $output;

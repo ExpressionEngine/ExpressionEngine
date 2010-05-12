@@ -3465,7 +3465,6 @@ class Channel {
 		// Fetch Custom Field Chunks
 		// If any of our custom fields are tag pair fields, we'll grab those chunks now
 
-		// @todo @pk - something is off - we're not caching parameters correctly
 		$pfield_chunk = array();
 
 		if (count($this->pfields) > 0)
@@ -3959,7 +3958,6 @@ class Channel {
 					// We parse all chunks, but TMPL->var_pairs will still have the others
 					// so we'll keep track of these and bail if we've parsed it
 					
-					// @todo @pk this should probably consider parameters (use $key instead of $key_name?)
 					$parsed_custom_pairs[] = $key_name;
 
 					// Is this custom field part of the current channel row?
@@ -3987,10 +3985,7 @@ class Channel {
 						}
 						else
 						{
-							// Couldn't find a fieldtype, blank out the chunks?
-							// (@confirm - just kill tags? keep everything?)
-
-							// @todo log!
+							$this->EE->TMPL->log_item('Unable to find field type for custom field: '.$key);
 
 							$tagdata = $this->EE->TMPL->delete_var_pairs($key, $key_name, $tagdata);
 						}

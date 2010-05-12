@@ -159,7 +159,6 @@ class Api_channel_structure extends Api {
 		$authors = array_unique($authors);
 		
 		// gather related fields, we use this later if needed
-		// @todo move to custom field API
 		$this->EE->db->select('field_id');
 		$fquery = $this->EE->db->get_where('channel_fields', array('field_type' => 'rel'));
 		
@@ -393,7 +392,6 @@ class Api_channel_structure extends Api {
 		// Assign field group if there is only one
 		if ( ! isset($field_group) OR ! is_numeric($field_group))
 		{
-			// @todo - move to custom field API / model
 			$this->EE->db->select('group_id');
 			$query = $this->EE->db->get_where('field_groups', array('site_id' => $site_id));
 			
@@ -439,13 +437,10 @@ class Api_channel_structure extends Api {
 			{
 				if ($create_templates == 'duplicate')
 				{
-					// @todo - this needs to be written in the Template Structure API to work with the new theme format
-					// This function does not yet exist.
 					$this->EE->api_template_structure->duplicate_templates($old_group_id, $group_id, $channel_name);
 				}
 				else
 				{
-					// @todo - this needs to be written in the Template Structure API to work with the new theme format
 					$this->EE->api_template_structure->create_templates_from_theme($template_theme, $group_id, $channel_name);
 				}				
 			}

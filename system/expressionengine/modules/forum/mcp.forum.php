@@ -153,7 +153,7 @@ class Forum_mcp {
 		
 		$vars['board_forum_url'] = $this->prefs['board_forum_url'];
 
-		return $this->content_wrapper('index', 'forum_board_home', $vars);
+		return $this->_content_wrapper('index', 'forum_board_home', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -242,11 +242,10 @@ class Forum_mcp {
 	 * This is a helper function that builds the forum control panel output.
 	 * Each function that generates a UI will call this function.
 	 *
-	 * @todo make private!
-	 * @access	public
+	 * @access	private
 	 * @return	void
 	 */
-	function content_wrapper($content_view, $title, $vars = array(), $crumb = '')
+	function _content_wrapper($content_view, $title, $vars = array(), $crumb = '')
 	{
 		$message = $this->EE->session->flashdata('message');
 
@@ -378,7 +377,7 @@ class Forum_mcp {
 		$vars['aliases'] = $query->result_array();
  		$this->show_nav = FALSE;
 
-		return $this->content_wrapper('list_boards', 'edit_forum_boards', $vars);
+		return $this->_content_wrapper('list_boards', 'edit_forum_boards', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -547,7 +546,7 @@ class Forum_mcp {
 		$vars = array();
 		$vars['forums'] = ($query->num_rows() > 0) ? $query->result_array() : array();
 
-		return $this->content_wrapper('forum_management', 'forum_management', $vars);
+		return $this->_content_wrapper('forum_management', 'forum_management', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -825,7 +824,7 @@ class Forum_mcp {
 						$title => ''
 					  );
 	*/	
-		return $this->content_wrapper('forum_edit', $title, array(
+		return $this->_content_wrapper('forum_edit', $title, array(
 																'P' => $P,
 																'hidden' => $hidden,
 																'button' => ($is_new) ? 'submit' : 'update'
@@ -1032,7 +1031,7 @@ class Forum_mcp {
 						$title => ''
 					  );
 
-		return $this->content_wrapper('confirm', $title, $vars);
+		return $this->_content_wrapper('confirm', $title, $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1382,7 +1381,7 @@ class Forum_mcp {
 		$vars['ranks']	= $query->result_array();
 		$vars['star']	= $this->prefs['board_theme_url'].$this->prefs['board_default_theme'].'/images/rank.gif';
 		
-		return $this->content_wrapper('forum_ranks', 'forum_ranks', $vars);
+		return $this->_content_wrapper('forum_ranks', 'forum_ranks', $vars);
 /*		 
 		$crumb = array(
 						$this->EE->lang->line('forum_user_manager') => $this->id_base.AMP.'method=forum_admins',
@@ -1413,7 +1412,7 @@ class Forum_mcp {
 		$vars['rank']	= $query->row_array();
 		$vars['star']	= $this->prefs['board_theme_url'].$this->prefs['board_default_theme'].'/images/rank.gif';
 		
-		return $this->content_wrapper('rank_form', 'forum_ranks', $vars);
+		return $this->_content_wrapper('rank_form', 'forum_ranks', $vars);
 /*
 		$crumb = array(
 						$this->EE->lang->line('forum_user_manager') => $this->id_base.AMP.'method=forum_admins',
@@ -1516,7 +1515,7 @@ class Forum_mcp {
 						$title => ''
 					  );
 	*/
-		return $this->content_wrapper('confirm', 'forum_delete_rank_confirm', $vars);
+		return $this->_content_wrapper('confirm', 'forum_delete_rank_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1668,7 +1667,7 @@ class Forum_mcp {
 			$vars['use_default'] = $use_default;
 		}
 		
-		return $this->content_wrapper('forum_permissions', 'forum_permissions', $vars);
+		return $this->_content_wrapper('forum_permissions', 'forum_permissions', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -1813,7 +1812,7 @@ class Forum_mcp {
 			}
 		}
 		
-		return $this->content_wrapper('forum_admins', 'forum_admins', $vars);
+		return $this->_content_wrapper('forum_admins', 'forum_admins', $vars);
 
 		/*	
 		$crumb = array(
@@ -1920,7 +1919,7 @@ class Forum_mcp {
 			'hidden'	=> array('admin_id' => $admin_id)
 		);
 
-		return $this->content_wrapper('confirm', 'forum_remove_admin_confirm', $vars);
+		return $this->_content_wrapper('confirm', 'forum_remove_admin_confirm', $vars);
 /*
 		$crumb = array(
 						$this->EE->lang->line('forum_manager') => $this->id_base.AMP.'method=forum_management',
@@ -1944,8 +1943,8 @@ class Forum_mcp {
 		
 		if ($admin_id == FALSE OR ! is_numeric($admin_id))
 		{
-			return '';
-			// @todo error message
+			$this->EE->session->set_flashdata('message_failure', $this->EE->lang->line('invalid_admin_id'));
+			$this->EE->functions->redirect($this->id_base.AMP.'method=forum_admins');
 		}
 		
 		$this->EE->db->query("DELETE FROM exp_forum_administrators WHERE admin_id = '{$admin_id}'");
@@ -2040,7 +2039,7 @@ class Forum_mcp {
 					  );
 */
 
-		return $this->content_wrapper('forum_moderators', 'forum_moderators', $vars);
+		return $this->_content_wrapper('forum_moderators', 'forum_moderators', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2161,7 +2160,7 @@ class Forum_mcp {
 						$this->EE->lang->line('forum_moderators') => ''
 					  );
 */
-		return $this->content_wrapper('add_edit_moderator', $title, $vars);
+		return $this->_content_wrapper('add_edit_moderator', $title, $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2281,7 +2280,7 @@ class Forum_mcp {
 			'hidden'	=> array('mod_id' => $mod_id)
 		);
 
-		return $this->content_wrapper('confirm', 'forum_remove_moderator_confirm', $vars);
+		return $this->_content_wrapper('confirm', 'forum_remove_moderator_confirm', $vars);
 /*
 		$crumb = array(
 						$this->EE->lang->line('forum_manager') => $this->id_base.AMP.'method=forum_management',
@@ -2305,8 +2304,8 @@ class Forum_mcp {
 
 		if ($mod_id == FALSE OR ! is_numeric($mod_id))
 		{
-			return '';
-			// @todo error message
+			$this->EE->session->set_flashdata('message_failure', $this->EE->lang->line('invalid_mod_id'));
+			$this->EE->functions->redirect($this->id_base.AMP.'method=forum_moderators');
 		}
 
 		$this->EE->db->query("DELETE FROM exp_forum_moderators WHERE mod_id = '{$mod_id}'");
@@ -2478,7 +2477,6 @@ class Forum_mcp {
 			$this->prefs['board_label'] 	= '';
 			$this->prefs['board_name'] 		= '';
 			
-			// @todo cannot use a relative path in 2.0
 			$this->prefs['board_upload_path'] = (@realpath('../images/forum_attachments/') !== FALSE) ? str_replace("\\", "/", realpath('../images/forum_attachments/')).'/' : './images/forum_attachments/';
 		}
 
@@ -2573,7 +2571,7 @@ class Forum_mcp {
 
 		$this->_accordion_js();
 		
-		return $this->content_wrapper('forum_prefs', $title, array('P' => $P, 'hidden' => $hidden));
+		return $this->_content_wrapper('forum_prefs', $title, array('P' => $P, 'hidden' => $hidden));
 	}
 
 	// --------------------------------------------------------------------
@@ -2928,7 +2926,7 @@ class Forum_mcp {
 		asort($vars['templates']['files']);
 
 		$this->EE->load->helper('string');
-		return $this->content_wrapper('forum_templates', 'forum_templates', $vars);
+		return $this->_content_wrapper('forum_templates', 'forum_templates', $vars);
 	}
 	
 	// --------------------------------------------------------------------
@@ -2964,7 +2962,6 @@ class Forum_mcp {
 		// can't read file?
 		if (($vars['template_data'] = read_file($full_path)) === FALSE)
 		{
-			// @todo
 			return $this->EE->load->view('theme_templates', $vars, TRUE);
 		}
 		
@@ -2994,7 +2991,7 @@ class Forum_mcp {
 		$vars['path'] = $path;
 		
 
-		return $this->content_wrapper('edit_template', 'edit_template', $vars);
+		return $this->_content_wrapper('edit_template', 'edit_template', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -3032,7 +3029,7 @@ class Forum_mcp {
 		
 		if ($this->EE->input->get_post('update_and_return') === FALSE)
 		{
-			$this->EE->session->set_flashdata('message', $this->EE->lang->line('template_updated'));
+			$this->EE->session->set_flashdata('message_f', $this->EE->lang->line('template_updated'));
 			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum'.AMP.'method=edit_template'.AMP.'folder='.$path);
 		}
 
@@ -3177,7 +3174,6 @@ class Forum_mcp {
 	 */
 	function _forum_username_picker()
 	{
-		// @todo get rid of the closure - there because the variables are colliding w/ type switcher
 		$this->EE->javascript->output('
 		(function() {
 			var url = "'.str_replace(AMP, '&', $this->id_base).'&method=forum_user_do_lookup",
@@ -3265,7 +3261,6 @@ class Forum_mcp {
 	 */
 	function _forum_type_switcher()
 	{
-		// @todo clean up this 2am disaster
 		$this->EE->javascript->output('
 			var lookup = $("#forum_user_lookup"),
 				parent = lookup.closest("tr"),
@@ -3391,7 +3386,6 @@ class Forum_mcp {
 				$triggers[] = $trow['board_forum_trigger'];
 			}
 			
-			// @todo use config lib?
 			$this->EE->db->select('site_system_preferences');
 			$pquery = $this->EE->db->get_where('sites', array('site_id' => $row['site_id']));
 					

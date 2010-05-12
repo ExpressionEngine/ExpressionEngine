@@ -37,7 +37,6 @@ class EE_Form_validation extends CI_Form_validation {
 		parent::CI_Form_validation($rules);
 		$this->EE =& get_instance();
 		
-		// @todo this is a hack to get around the callback scope issues when inside an mcp file
 		if ($this->EE->input->get('C') == 'addons_modules' &&
 			$this->EE->input->get('M') == 'show_module_cp' &&
 			isset($this->EE->_mcp_reference)
@@ -445,9 +444,6 @@ class EE_Form_validation extends CI_Form_validation {
 	 */
 	function old_value($key)
 	{
-		// @todo usage of this in the method should really be based on the field
-		// name, not a static keyword (as it is now). Problem is we don't
-		// have access to the field name .... grr...
 		return (isset($this->old_values[$key])) ? $this->old_values[$key] : '';
 	}
 	

@@ -374,7 +374,6 @@ class Api_channel_entries extends Api {
 			$comments_installed = FALSE;
 		}
 		
-		// @todo model
 		// grab entry meta data
 		$this->EE->db->select('channel_id, author_id, entry_id');
 		$this->EE->db->from('channel_titles');
@@ -618,7 +617,7 @@ class Api_channel_entries extends Api {
 	/**
 	 * Entry exists
 	 *
-	 * Checks if an entry exists and is editable by the user	// @todo should this set errors - might be useful?
+	 * Checks if an entry exists and is editable by the user
 	 *
 	 * @access	public
 	 * @param	int
@@ -777,7 +776,6 @@ class Api_channel_entries extends Api {
 	 * variable that the hook would otherwise erroneously reassign. This
 	 * replaces the active_hook() check.
 	 *
-	 * @todo when we stop supporting PHP 4, make $orig_var passed by reference
 	 * 
 	 * @access	public
 	 * @param	mixed	variable that gets assigned by the hook
@@ -948,7 +946,6 @@ class Api_channel_entries extends Api {
 	 * Fetch Channel Preferences
 	 *
 	 * Grabs required channel information and preps a few fields
-	 * @todo should this set errors - might be useful?
 	 *
 	 * @access	private
 	 * @param	int
@@ -991,7 +988,6 @@ class Api_channel_entries extends Api {
 	{
 		if (isset($data['new_channel']) && $data['new_channel'] && $data['new_channel'] != $this->channel_id)
 		{
-			// @todo model
 			$this->EE->db->select('status_group, cat_group, field_group, channel_id');
 			$this->EE->db->where_in('channel_id', array($this->channel_id, $data['new_channel']));
 			$query = $this->EE->db->get('channels');
@@ -1134,7 +1130,6 @@ class Api_channel_entries extends Api {
 		
 		// Required and custom fields
 		
-		// @todo model
 		$this->EE->db->select('field_id, field_label, field_type, field_required');
 		$query = $this->EE->db->get('channel_fields');
 
@@ -1346,7 +1341,6 @@ class Api_channel_entries extends Api {
 
 		if ($update)
 		{
-			// @todo model!
 			$this->EE->db->select('url_title');
 			$url_query = $this->EE->db->get_where('channel_titles', array('entry_id' => $this->entry_id));
 
@@ -1598,13 +1592,11 @@ class Api_channel_entries extends Api {
 	 */
 	function _build_relationships(&$data)
 	{
-		// @todo clean up this method
 		if ($this->autosave)
 		{
 			return;
 		}
 
-		// @todo model
 		$this->EE->db->select('field_id, field_related_to, field_related_id');
 		$query = $this->EE->db->get_where('channel_fields', array('field_type' => 'rel'));
 		

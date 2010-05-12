@@ -482,6 +482,9 @@ $lang = array(
 'in_forum' =>
 'in forum:',
 
+'invalid_mod_id' =>
+'Invalid Moderator ID',
+
 'moderator_removed' =>
 'Moderator has been removed',
 
@@ -763,6 +766,9 @@ $lang = array(
 
 'admin_removed' =>
 'Admin Removed',
+
+'invalid_admin_id' =>
+'Invalid Administrator ID',
 
 'forum_remove_admin_confirm' =>
 'Remove Admin Confirm',

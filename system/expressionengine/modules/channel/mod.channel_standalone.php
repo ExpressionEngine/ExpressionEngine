@@ -189,15 +189,13 @@ class Channel_standalone extends Channel {
 	
 			if ( ! $success)
 			{
-				// @todo error handling could be shinier
 				$errors = $this->EE->api_channel_entries->errors;
 				return $this->EE->output->show_user_error('general', $errors);
 			}
 		
 			if ($this->EE->api_channel_entries->get_errors('pings'))
 			{
-				// @todo- figure out if we want to show an error here.  1.6 does not.  Just fails silently. 
-				// The error is easy, but we'd want to have the link go to the return url, not back.
+				return FALSE;
 			}
 
 			$loc = ($return_url == '') ? $this->EE->functions->fetch_site_index() : $this->EE->functions->create_url($return_url, 1, 0);
@@ -1592,8 +1590,6 @@ class Channel_standalone extends Channel {
 				}
 				elseif (! is_array($val))
 				{
-					// @todo something hinky w/needing conditional check here ditto $temp blank bit
-					//echo $val;
 					if (isset($fields['field_id_'.$expl['1']]))
 					{
 					
@@ -2351,7 +2347,6 @@ class Channel_standalone extends Channel {
 		
 		if (isset($settings['field_show_glossary']))
 		{
-			// @todo replace this view hack with something suitable for CI
 			$tmp = $this->EE->load->_ci_view_path;
 			$this->EE->load->_ci_view_path = PATH_THEMES.'cp_themes/default/';
 
@@ -2360,37 +2355,8 @@ class Channel_standalone extends Channel {
 			$this->EE->load->_ci_view_path = $tmp;
 		}
 		
-/*
-
-				if ($f['field_show_fmt'] == 'y' && count($f['field_fmt_options']) > 0) 
-				{
-					<?=lang('formatting')?>
-					<?=form_dropdown('field_ft_'.$f['field_id'], $f['field_fmt_options'], $f['field_fmt'])?> 
-				}
-
-			</p>
-
-			if($spell_enabled && $f['field_show_spellcheck'] == 'y')
-			{
-				echo (ctype_digit($f['field_id'])) ? build_spellcheck('field_id_'.$f['field_id']) : build_spellcheck($f['field_id']);
-			}
-
-			if($f['field_show_glossary'] == 'y')
-			{
-				echo $glossary_items;
-			}
-
-			if ($smileys_enabled && $f['field_show_smileys'] == 'y')
-			{
-				echo $smiley_table[$f['field_id']];									
-			}
-		
-		
-		*/
-		
 		$output .= '</div>';
 		
-		// echo $output; exit;
 		$chunk = str_replace(LD.'spellcheck'.RD, $output, $chunk);
 
 		return $chunk;
@@ -2498,7 +2464,6 @@ YOYOYO;
 
 		$ret = $url_title_js;
 
-		// @todo, figure out why this is borking
 		if ($this->EE->config->item('use_compressed_js') != 'n')
 		{
 			return str_replace(array("\n", "\t"), '', $ret);			
