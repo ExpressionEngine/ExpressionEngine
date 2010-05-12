@@ -423,6 +423,7 @@ class Api_channel_structure extends Api {
 		$this->EE->logger->log_action($this->EE->lang->line('channel_created').NBS.NBS.$channel_title);
 		
 		// Are we making templates?
+		/*
 		if ($create_templates != 'no')
 		{			
 			$group_order = $this->EE->super_model->count('template_groups') + 1;
@@ -445,7 +446,7 @@ class Api_channel_structure extends Api {
 				}				
 			}
 		}
-		
+		*/
 		return $channel_id;
 	}
 
