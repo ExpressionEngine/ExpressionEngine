@@ -15,11 +15,11 @@ if ($EE_view_disable !== TRUE)
 		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		
 		<?php if($type == 'cleared'):?>
-	    	<div id="filterMenu">
+	    	<div class="pageContents">
 				<p><strong><?=lang('history_cleared')?></strong></p>
 			</div>
 		<?php elseif($type == 'clear'):?>
-		    <div id="filterMenu">
+		    <div class="pageContents">
 
 				<?=form_open('C=design'.AMP.'M=clear_revision_history', '', $form_hidden)?>
 
