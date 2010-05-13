@@ -9,7 +9,7 @@
 	<div class="editAccordion <?=($title == 'general') ? 'open' : ''; ?>">		
 		<h3><?=lang('forum_prefs_'.$title)?></h3>
 		<div>
-			<table class="templateTable templateEditorTable" id="templateWarningsList" border="0" cellspacing="0" cellpadding="0" style="margin: 0;">
+			<table class="templateTable templateEditorTable" border="0" cellspacing="0" cellpadding="0" style="margin: 0;">
 			
 			<?php foreach($menu as $item => $parts): ?>
 				<tr>
