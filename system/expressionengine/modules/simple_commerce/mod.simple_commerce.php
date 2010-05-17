@@ -779,8 +779,9 @@ class Simple_commerce {
 
 				// Load the text helper
 				$this->EE->load->helper('text');
-					
-				$this->EE->email->from($this->EE->config->item('webmaster_email'));
+				
+				$this->EE->email->from($this->EE->config->item('webmaster_email'), 
+										$this->EE->config->item('site_name'));
 				$this->EE->email->to($to);
 				$this->EE->email->subject($subject);
 				$this->EE->email->message(entities_to_ascii($message));
@@ -810,7 +811,8 @@ class Simple_commerce {
 				// Load the text helper
 				$this->EE->load->helper('text');
 					
-				$this->EE->email->from($this->EE->config->item('webmaster_email'));
+				$this->EE->email->from($this->EE->config->item('webmaster_email'), 
+										$this->EE->config->item('site_name'));
 				$this->EE->email->to($row->admin_email_address);
 				$this->EE->email->subject($subject);
 				$this->EE->email->message(entities_to_ascii($message));
