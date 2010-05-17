@@ -6672,7 +6672,7 @@ class Channel {
 		// add custom fields for conditionals prep
 		foreach ($this->catfields as $v)
 		{
-			$cat_vars[$v['field_name']] = ( ! isset($query->row['field_id_'.$v['field_id']])) ? '' : $query->row['field_id_'.$v['field_id']];
+			$cat_vars[$v['field_name']] = ($query->row('field_id_'.$v['field_id'])) ? $query->row('field_id_'.$v['field_id']) : '';
 		}
 
 		$this->EE->TMPL->tagdata = $this->EE->functions->prep_conditionals($this->EE->TMPL->tagdata, $cat_vars);
