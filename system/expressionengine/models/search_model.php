@@ -69,6 +69,7 @@ class Search_model extends CI_Model {
 			
 			$return_data['pageurl'] = $base_results['pageurl'];
 			$return_data['ids'] = $ids;
+			$return_data['total_count'] = count($ids);
 
 			return $return_data;			
 		}

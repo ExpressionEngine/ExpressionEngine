@@ -1790,7 +1790,6 @@ class Admin_content extends Controller {
 		}
 
 		// Fetch the category tree
-		//$this->category_tree('table', $group_id, '', $sort_order);
 		$this->api_channel_categories->category_tree($group_id, '', $sort_order);
 
 		if (count($this->api_channel_categories->categories) == 0)

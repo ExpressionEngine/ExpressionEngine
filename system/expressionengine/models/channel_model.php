@@ -40,11 +40,11 @@ class Channel_model extends CI_Model {
 	 */
 	function get_channels($site_id = NULL, $fields = array(), $additional_where = array())
 	{
-		if ($site_id === NULL OR ! is_numeric($site_id))
+		if (( $site_id === NULL OR ! is_numeric($site_id)) && $site_id != 'all')
 		{
 			$site_id = $this->config->item('site_id');
 		}
-		
+
 		// If the user is restricted to specific channels, add that to the query
 		if ($this->session->userdata('group_id') != 1)
 		{
@@ -82,7 +82,11 @@ class Channel_model extends CI_Model {
 			}
 		}
 
-		$this->db->where('site_id', $site_id);
+		if ($site_id != 'all')
+		{
+			$this->db->where('site_id', $site_id);
+		}
+		
 		$this->db->order_by('channel_title');
 		
 		return $this->db->get('channels'); 

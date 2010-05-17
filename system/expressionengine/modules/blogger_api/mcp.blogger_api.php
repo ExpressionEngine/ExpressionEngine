@@ -119,7 +119,7 @@ class Blogger_api_mcp {
 		{
 			$vars['submit_text']	= 'update';
 
-			$this->EE->load->module('blogger_api_model');
+			$this->EE->load->model('blogger_api_model');
 			
 			$query = $this->EE->blogger_api_model->get_prefs_by_id($id);
 
@@ -142,24 +142,52 @@ class Blogger_api_mcp {
 		$vars['form_hidden']['id'] =$id;
 
 		// Fetch Channels
+		$allowed_groups = array();
 		$channel_array = array();
+		$group_array = array();
 		
 		$this->EE->load->model('channel_model');
 		$fields = array('channel_id', 'field_group', 'channel_title');
-		$query = $this->EE->channel_model->get_channels($this->EE->config->item('site_id'), $fields);
 
-		if ($query->num_rows() > 0)
+		$query = $this->EE->channel_model->get_channels('all', $fields);
+
+
+		if ($query && $query->num_rows() > 0)
 		{
 			foreach ($query->result_array() as $row)
 			{
-				$channel_array[$row['channel_id']] = array($row['field_group'], $row['channel_title']);
+				$allowed_groups[$row['field_group']] = array($row['channel_id'], $row['channel_title']);
+				//$channel_array[$row['channel_id']] = array($row['field_group'], $row['channel_title']);
 			}
+
+				//  And only select field groups that are actually assigned to channels
+			
+				$this->EE->db->select('group_id, group_name, site_label');
+				$this->EE->db->from('field_groups');
+				$this->EE->db->where_in('group_id', array_keys($allowed_groups));		
+				$this->EE->db->join('sites', 'sites.site_id = field_groups.site_id');
+		
+				if ($this->EE->config->item('multiple_sites_enabled') !== 'y')
+				{
+					$this->EE->db->where('field_groups.site_id', '1');
+				}
+		
+				$query = $this->EE->db->get();
+
+				if ($query->num_rows() > 0)
+				{
+					foreach ($query->result_array() as $row)
+					{
+						//  if (! isset($channel_array[$allowed_groups[$row['group_id']]])) continue;
+						
+						$label = ($this->EE->config->item('multiple_sites_enabled') === 'y') ? $row['site_label'].NBS.'-'.NBS.$allowed_groups[$row['group_id']['1']] : $allowed_groups[$row['group_id']['1']];
+						$channel_array[$allowed_groups[$row['group_id']['0']]] = array(str_replace('"','',$label), $row['group_name']);
+					}
+				}
 		}
 
 		// Fetch Fields
 		$field_array = array();
-		
-		$this->EE->load->model('blogger_api_model');
 		
 		$query = $this->EE->blogger_api_model->get_channel_fields();
 
@@ -167,15 +195,17 @@ class Blogger_api_mcp {
 		{
 			foreach($query->result_array() as $row)
 			{
-				$field_array[] = array($row['field_id'], $row['group_id'], $row['field_name']);
+				$field_array[$row['group_id']][] = array($row['field_id'], $row['group_id'], $row['field_name']);
 			}
 		}
 
 		// Fields to Channels
 		$channel_fields = array();
+		
 
 		foreach($channel_array as $channel_id => $meta_channel)
 		{
+			/*
 			for($i = 0; $i < count($field_array); $i++)
 			{
 				if ($field_array[$i]['1'] == $meta_channel['0'])
@@ -183,6 +213,9 @@ class Blogger_api_mcp {
 					$channel_fields[$channel_id][] = array($field_array[$i]['0'], $field_array[$i]['2']);
 				}
 			}
+			*/
+			
+			$vars['field_id_options'][$channel_id.':'.$field_data[$i]['0']] = $channel_array[$channel_id]['1'].' : '.$field_data[$i]['1'];
 		}
 
 		$x = explode(':',$vars['field_id']);
@@ -194,6 +227,7 @@ class Blogger_api_mcp {
 
 		$t = 1;
 
+		/*
 		foreach($channel_fields as $channel_id => $field_data)
 		{
 			$t++;
@@ -209,6 +243,7 @@ class Blogger_api_mcp {
 				$vars['field_id_options'][$t] = NBS.'----------'.NBS;
 			}
 		}
+		*/
 
 		$vars['block_entry_options'] = array(
 												'y'=>$this->EE->lang->line('yes'),
