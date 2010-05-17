@@ -1480,6 +1480,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 												'can_access_extensions'		=> 'n',
 												'can_access_accessories'	=> 'n',
 												'can_access_plugins'		=> 'n',												
+												'can_access_fieldtypes'		=> 'n',
 												'can_access_members'		=> 'n',
 												'can_access_admin'	  		=> 'n',
 												'can_access_sys_prefs'	 	=> 'n',
@@ -1606,7 +1607,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 					}
 					elseif ($key == $sites['site_id'])
 					{
-					//echo '<pre>'; print_r($val);
 						foreach($val as $p => $a)
 						{
 						$vars['group_data'][$sites['site_id']][$g_key][$add.$p] = $a;							
@@ -1621,8 +1621,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			
 			++$s;
 		}
-
-		//echo '<pre>';print_r($vars);echo '</pre>';exit;
 
 		//  Submit button lang key
 		$vars['action'] = ($group_id == '') ? 'submit' : 'update';

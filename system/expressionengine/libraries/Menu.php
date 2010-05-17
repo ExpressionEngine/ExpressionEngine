@@ -410,7 +410,7 @@ class EE_Menu {
 			if ( ! $this->EE->cp->allowed_group('can_access_files'))
 			{
 				unset($menu['content']['files']);
-			}
+			}			
 		}
 
 		if ( ! $this->EE->cp->allowed_group('can_access_design'))
@@ -511,6 +511,11 @@ class EE_Menu {
 			if ( ! $this->EE->cp->allowed_group('can_access_plugins'))
 			{
 				unset($menu['addons']['plugins']);
+			}
+			
+			if ( ! $this->EE->cp->allowed_group('can_access_fieldtypes'))
+			{
+				unset($menu['addons']['fieldtypes']);
 			}
 		}
 		

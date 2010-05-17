@@ -634,6 +634,9 @@ $lang = array(
 'can_access_plugins' =>
 'Can access ADD-ONS: Plugins',
 
+'can_access_fieldtypes' =>
+'Can access ADD-ONS: Fieldtypes',
+
 'can_access_comm' =>
 'Can access TOOLS: Communication',
 

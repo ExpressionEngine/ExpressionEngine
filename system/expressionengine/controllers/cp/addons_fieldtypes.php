@@ -21,7 +21,7 @@ class Addons_fieldtypes extends Controller {
 	 */
 	function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_fieldtypes'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -126,7 +126,7 @@ class Addons_fieldtypes extends Controller {
 	 */
 	function install()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_fieldtypes'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -160,7 +160,7 @@ class Addons_fieldtypes extends Controller {
 	 */
 	function uninstall()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_fieldtypes'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -201,7 +201,7 @@ class Addons_fieldtypes extends Controller {
 	 */
 	function global_settings()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_fieldtypes'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
