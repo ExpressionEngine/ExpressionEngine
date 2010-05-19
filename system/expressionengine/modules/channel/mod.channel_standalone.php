@@ -2409,7 +2409,7 @@ function liveUrlTitle()
 	{
 		if (NewText.substr(0, defaultTitle.length) == defaultTitle)
 		{
-			NewText = NewText.substr(defaultTitle.length)
+			NewText = NewText.substr(defaultTitle.length);
 		}
 	}
 
