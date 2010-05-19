@@ -115,8 +115,12 @@ class EE_Javascript extends CI_Javascript {
 		
 		$global_js = $this->inline('
 			document.documentElement.className += "js";
+
+			if (typeof console === "undefined" || ! console.log) {
+				console = { log: function() { return false; }};
+			}
 			
-			if (typeof EE == "undefined" || ! EE) {
+			if (typeof EE === "undefined" || ! EE) {
 				var EE = '.$this->generate_json($this->global_vars).';
 			}
 		');
