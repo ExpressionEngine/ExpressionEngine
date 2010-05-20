@@ -123,20 +123,21 @@ if ($EE_view_disable !== TRUE)
 		?>
 
 	<div id="holder">
-			<?php foreach ($publish_tabs as $tab=>$fields):?>
-			<div id="<?=url_title($tab, 'underscore', TRUE)?>" class="main_tab">
+			<?php reset($publish_tabs); $first_tab = key($publish_tabs); ?>
+			<?php foreach ($publish_tabs as $tab => $fields):?>
+			<div id="<?=url_title($tab, 'underscore', TRUE)?>" class="main_tab<?=($tab == $first_tab) ? '' : ' js_hide'?>">
 				
-				<?php foreach ($fields as $field=>$values):?>
+				<?php foreach ($fields as $field => $values):?>
 					
 					<?php
 
 					$f = is_array($field_output[$field]) ? $field_output[$field] : $this->api_channel_fields->settings[$field];
 					$values['is_hidden'] = isset($values['is_hidden']) ? $values['is_hidden'] : FALSE;
+					$values['visible'] = ($values['visible'] === FALSE OR $values['visible'] === 'false') ? FALSE : TRUE;
 
 					?>
 					
-					
-					<div class="publish_field publish_<?=$f['field_type']?>" id="hold_field_<?=$f['field_id']?>">
+					<div class="publish_field publish_<?=$f['field_type']?>" id="hold_field_<?=$f['field_id']?>" <?=$values['visible'] ? '' : 'style="display: none;"'?>>
 						<div class="handle"></div>
 							<label class="hide_field">
 								<img class="field_collapse" src="<?=$cp_theme_url?>images/field_expand.png" width="13" height="13" alt="" />
@@ -186,7 +187,7 @@ if ($EE_view_disable !== TRUE)
 								<p class="spellcheck markitup">
 
 									<?php if ($f['field_show_writemode'] == 'y'):?>
-										<a href="<?=$write_mode_link?>" class="write_mode_trigger thickbox" id="id_<?=$f['field_id']?>" title="<?=lang('write_mode')?>"><img alt="<?=lang('write_mode')?>" width="22" height="21" src="<?=$cp_theme_url?>images/publish_write_mode.png" /></a> 
+										<a href="<?=$write_mode_link?>" class="write_mode_trigger" rel="#write_mode_container" id="id_<?=$f['field_id']?>" title="<?=lang('write_mode')?>"><img alt="<?=lang('write_mode')?>" width="22" height="21" src="<?=$cp_theme_url?>images/publish_write_mode.png" /></a> 
 									<?php endif;?>
 
 									<?php if ($f['field_show_file_selector'] == 'y' && count($file_list) > 0):?>
@@ -251,10 +252,10 @@ if ($EE_view_disable !== TRUE)
 
 
 <div id="write_mode_container">
-	<div id="write_mode_close_container"><a href="#" class="TB_closeWindowButton"><img alt="<?=lang('close')?>" width="13" height="13" src="<?=$cp_theme_url?>images/write_mode_close.png" /></a><a href="#" class="publish_to_field"><img alt="Publish to Field" width="103" height="18" src="<?=$cp_theme_url?>images/write_mode_publish_to_field.png" /></a>&nbsp;</div>
+	<div id="write_mode_close_container"><a href="#" class="closeWindowButton"><img alt="<?=lang('close')?>" width="13" height="13" src="<?=$cp_theme_url?>images/write_mode_close.png" /></a><a href="#" class="publish_to_field"><img alt="Publish to Field" width="103" height="18" src="<?=$cp_theme_url?>images/write_mode_publish_to_field.png" /></a>&nbsp;</div>
   
 	<div id="write_mode_writer">
-	   <div id="write_mode_header"><a href="#" class="reveal_formatting_buttons"><img class="show_tools" alt="<?=lang('show_tools')?>" width="109" height="18" src="<?=$cp_theme_url?>images/write_mode_show_tools.png" /></a></div>
+		<div id="write_mode_header"><a href="#" class="reveal_formatting_buttons"><img class="show_tools" alt="<?=lang('show_tools')?>" width="109" height="18" src="<?=$cp_theme_url?>images/write_mode_show_tools.png" /></a></div>
 		<textarea id="write_mode_textarea"></textarea>
 	</div>
 	<div id="write_mode_footer"><a href="#" class="publish_to_field"><img alt="<?=lang('publish_to_field')?>" width="103" height="18" src="<?=$cp_theme_url?>images/write_mode_publish_to_field.png" /></a></div>
@@ -288,7 +289,6 @@ if ($EE_view_disable !== TRUE)
 					?>
 					</p>
 				</div>
-				
 			</div>
 
 		<?php endforeach;?>
