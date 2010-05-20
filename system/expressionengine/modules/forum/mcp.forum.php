@@ -1546,7 +1546,6 @@ class Forum_mcp {
 	/**
 	 * Forum Base Permissions
 	 *
-	 * @confirm make private?
 	 * @access	public
 	 * @return	void
 	 */
@@ -3362,7 +3361,6 @@ class Forum_mcp {
 	/**
 	 * Store Trigger Word
 	 *
-	 * @confirm private?
 	 * @access	private
 	 * @return	void
 	 */

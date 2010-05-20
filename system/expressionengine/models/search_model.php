@@ -537,7 +537,6 @@ class Search_model extends CI_Model {
 		}
 		else
 		{
-			// @confirm can this be removed / reduced - similar check at the beginning
 			if ($entry_id == '')
 			{
 				if ( ! $entry_id = $this->input->get('entry_id'))

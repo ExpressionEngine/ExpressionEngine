@@ -3477,10 +3477,6 @@ class Channel {
 				{
 					if (($end = strpos($this->EE->TMPL->tagdata, LD.'/'.$field_name.RD)) !== FALSE)
 					{
-						// @confirm FIX IT! this is ugly
-						// Shoot me now - darned regular expressions not matching what they should
-						// if (preg_match_all("/".LD."{$field_name}(.*?)".RD."(?!.*".LD.$field_name.")(.*?)".LD.'\/'.$field_name.RD."/s", $this->EE->TMPL->tagdata, $matches))
-
 						// This hurts soo much. Using custom fields as pair and single vars in the same
 						// channel tags could lead to something like this: {field}...{field}inner{/field}
 						// There's no efficient regex to match this case, so we'll find the last nested

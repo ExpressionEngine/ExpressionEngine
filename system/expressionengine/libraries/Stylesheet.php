@@ -171,7 +171,6 @@ class EE_Stylesheet {
 	 */
 	function _send_css($stylesheet, $modified)
 	{
-		// @confirm - this appears to not be working in Safari for some reason
 		if ($this->EE->config->item('send_headers') == 'y')
 		{
 			$max_age		= 172800;

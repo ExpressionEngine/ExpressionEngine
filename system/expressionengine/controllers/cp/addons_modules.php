@@ -82,7 +82,6 @@ class Addons_modules extends Controller {
 
 		foreach($modules as $module => $info)
 		{
-			// @confirm - lang override still needed?
 			$this->lang->loadfile(( ! isset($this->lang_overrides[$module])) ? $module : $this->lang_overrides[$module]);
 		}
 		

@@ -982,8 +982,6 @@ class Tools_data extends Controller {
 				$this->db->update_batch('exp_members', $member_entries, 'member_id');	
 
 				// Set the rest to 0 for all of the above
-				// @confirm- the array_keys bit is dumb if there were no members not hit in the above- so maybe ... query to get total number of
-				// members and compare count to see if it's needed?  Needs a bit of pondering.  
 				
 				$data = array(
 					'total_entries'			=> 0,

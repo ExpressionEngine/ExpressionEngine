@@ -362,9 +362,6 @@ class Api_channel_entries extends Api {
 			$entry_ids = array($entry_ids);
 		}
 		
-		// @confirm eek - needed for the permission check
-		// $this->EE->load->library('cp');
-		
 		if (in_array('comment', $this->EE->addons->get_installed('modules')))
 		{
 			$comments_installed = TRUE;
@@ -523,7 +520,7 @@ class Api_channel_entries extends Api {
 			{
 				$this->EE->db->where('status', 'o');
 				$this->EE->db->where('entry_id', $val);
-				$this->EE->db->where('author_id', $authors[$val]);	// @confirm this doesn't make a lot of sense
+				$this->EE->db->where('author_id', $authors[$val]);
 				$count = $this->EE->db->count_all_results('comments');
 
 				if ($count > 0)
@@ -732,7 +729,6 @@ class Api_channel_entries extends Api {
 		}
 			
 		//	Save ping button state
-		//  @confirm Not entirely sure why we delete this in cases where they weren't sent.
 		$this->EE->db->delete('entry_ping_status', array('entry_id' => $entry_id));
 
 		foreach ($ping_servers as $val)
@@ -908,13 +904,10 @@ class Api_channel_entries extends Api {
 		// Make sure all the fields have a key in our data array even
 		// if no data was sent
 
-		// @confirm - This is puking an error in autosave
-		// api_channel_fields is not an object.  
 		if ($this->autosave === FALSE)
 		{
 			if ( ! isset($this->EE->api_channel_fields) OR ! isset($this->EE->api_channel_fields->settings))
 			{
-				// @confirm - limit to this channel!
 				$this->instantiate('channel_fields');
 				$this->EE->api_channel_fields->fetch_custom_channel_fields();
 			}

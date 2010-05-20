@@ -141,8 +141,6 @@ class Addons_extensions extends Controller {
     			{
     				$update = $OBJ->update_extension($installed_ext[$class_name]['version']);
     				
-    				// @confirm I don't really see how this will ever conflict?!
-					// leaving it here for now as not to break anything -pk
 					$this->extensions->version_numbers[$class_name] = $OBJ->version;
 	    		}
 			}

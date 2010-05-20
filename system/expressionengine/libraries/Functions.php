@@ -2285,7 +2285,6 @@ class EE_Functions {
 				
 				// We only need the first match here, all others will get caught by our
 				// previous code as they won't start with if.
-				// @confirm why did the old code use preg_match_all?  It screws up our pair matching.
 				
 				if (preg_match("/".LD."(.*?)".RD."/s", $full_conditional, $cond_vars))
 				{
@@ -2331,7 +2330,6 @@ class EE_Functions {
 		{
 			$open_tag_key = array_pop($potential_openings);
 			
-			// @confirm causes problem without if {exp:channel:entry} {/exp:channel:entries}
 			if (isset($temp_misc[$open_tag_key]))
 			{
 				$temp_pair[] = $temp_misc[$open_tag_key];
@@ -2381,112 +2379,6 @@ class EE_Functions {
 		
 		return $return;
 	}
-	
-	// @confirm old version, remove when the new one is properly tested
-	function old_assign_variables($str = '', $slash = '/')
-		{
-			$return['var_single']	= array();
-			$return['var_pair']		= array();
-
-			if ($str == '')
-			{
-				return $return;
-			}	
-
-			// No variables?  No reason to continue...
-			if (strpos($str, '{') === FALSE OR ! preg_match_all("/".LD."(.+?)".RD."/", $str, $matches))
-			{
-				return $return;
-			}
-
-			$temp_close = array();
-			$temp_misc  = array();
-			$slash_length = strlen($slash);
-
-			foreach($matches[1] as $key => $val)
-			{
-				if (strncmp($val, 'if ', 3) !== 0 && 
-					strncmp($val, 'if:', 3) !== 0 &&
-					substr($val, 0, $slash_length+2) != $slash."if")
-				{
-					if (strpos($val, '{') !== FALSE)
-					{
-						if (preg_match("/(.+?)".LD."(.*)/s", $val, $matches2))
-						{
-							$temp_misc[] = $matches2[2];
-						}
-					}
-					elseif (strncmp($val, $slash, $slash_length) === 0)
-					{
-						$temp_close[] = str_replace($slash, '', $val);
-					}
-					else
-					{
-						$temp_misc[] = $val;
-					}
-				}
-				elseif (strpos($val, '{') !== FALSE) // Variable in conditional.  ::sigh::
-				{
-					$full_conditional = substr($this->full_tag($matches[0][$key], $str), 1, -1);
-
-					if (preg_match_all("/".LD."(.*?)".RD."/s", $full_conditional, $cond_vars))
-					{
-						$temp_misc = array_merge($temp_misc, $cond_vars[1]);
-					}
-				}
-			}
-
-			$temp_pair = array();
-
-			foreach($temp_misc as $item)
-			{
-				foreach($temp_close as $row)
-				{
-					if (substr($item, 0, strlen($row)) == $row)
-					{
-						$temp_pair[] = $item;
-					}
-				}
-			}
-
-			$temp_single = array_unique(array_diff($temp_misc, $temp_pair));
-			$temp_pair	= array_unique($temp_pair);
-
-			// Assign Single Variables
-			$var_single = array();
-
-			foreach($temp_single as $val)
-			{  
-				// simple conditionals
-				if (stristr($val, '\|') && substr($val, 0, 6) != 'switch' && substr($val, 0, 11) != 'multi_field')
-				{
-					$var_single[$val] = $this->fetch_simple_conditions($val);
-				}
-
-				// date variables
-				elseif (strpos($val, 'format') !== FALSE && preg_match("/.+?\s+?format/", $val))
-				{
-					$var_single[$val] = $this->fetch_date_variables($val);  
-				}
-				else  // single variables
-				{
-					$var_single[$val] = $val;  
-				}
-			}
-
-			// Assign Variable Pairs		
-			$var_pair = array();
-
-			foreach($temp_pair as $val)
-			{
-				$var_pair[$val] = $this->assign_parameters($val);		
-			}
-
-			$return['var_single']	= $var_single;
-			$return['var_pair']		= $var_pair;
-
-			return $return;
-		}
 	
 	// --------------------------------------------------------------------
 

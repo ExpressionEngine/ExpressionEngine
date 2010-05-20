@@ -283,7 +283,7 @@ class Content_edit extends Controller {
 
 		if ($query->num_rows() > 1)
 		{
-			$vars['channel_select_options']['all'] = $this->lang->line('all'); //@confirm : formerly, this was not "all", but "null", only null is already taken for "filter by channel"
+			$vars['channel_select_options']['all'] = $this->lang->line('all');
 		}
 
 		foreach ($query->result_array() as $row)
@@ -1709,9 +1709,6 @@ class Content_edit extends Controller {
 		}
 		else
 		{
-			// @confirm this is how we want to handle passing it to the view
-			//$vars['cats'] = $this->api_channel_categories->categories;
-			
 			foreach ($this->api_channel_categories->categories as $val)
 			{
 					$vars['cats'][$val['3']][] = $val;
@@ -2924,7 +2921,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				}
 				
 				$pag_config['total_rows'] = $total_rows;
-				$pag_config['base_url'] = $pag_base_url.AMP.'perpage='.$pag_config['per_page']; // @confirm this is a workaround for the old method - does the behavior match?
+				$pag_config['base_url'] = $pag_base_url.AMP.'perpage='.$pag_config['per_page'];
 
 				$this->pagination->initialize($pag_config);
 				$pagination_links = $this->pagination->create_links();
@@ -3844,12 +3841,9 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$this->load->helper('form');
 		$this->cp->set_variable('cp_page_title', $this->lang->line('delete_confirm'));
 
-		// @confirm this would be nice to have ...
-		// we cannot pass the ids along as hidden values as that will break the move function
-		
 		$this->cp->set_variable('cp_breadcrumbs', array(
 			BASE.AMP.'C=content_edit' => $this->lang->line('edit'),
-//			BASE.AMP.'C=content_edit'.AMP.'M=view_comments'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id	=> $this->lang->line('comments')
+
 		));
 		
 		$vars = array();

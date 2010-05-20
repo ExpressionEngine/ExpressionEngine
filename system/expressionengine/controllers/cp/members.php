@@ -1850,7 +1850,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 					/** -----------------------------
 					/**  Text input fields
 					/** -----------------------------*/
-					$item = str_replace("\\'", "'", $this->config->item($key)); //@confirm : this should be here no?
+					$item = str_replace("\\'", "'", $this->config->item($key));
 
 					$preference_controls['type'] = "text";
 					$preference_controls['data'] = array(
