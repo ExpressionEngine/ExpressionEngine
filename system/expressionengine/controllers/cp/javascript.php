@@ -67,7 +67,7 @@ class Javascript extends Controller {
 	 */
 	function index()
 	{
-		$this->load('cp/global');
+		$this->load('jquery');
 	}
 
 	// --------------------------------------------------------------------
@@ -128,6 +128,7 @@ class Javascript extends Controller {
 	{
 		$this->output->enable_profiler(FALSE);
 		
+		$file = '';
 		$contents = '';		// needed for css parsing
 
 		// trying to load a specific js file?
@@ -138,6 +139,10 @@ class Javascript extends Controller {
 		{
 			$file = PATH_THIRD.$package.'/javascript/'.$loadfile.'.js';
 		}
+		elseif ($loadfile == 'jquery')
+		{
+			$file = PATH_JQUERY.'jquery.js';
+		}
 		elseif ($loadfile == '')
 		{
 			if (($plugin = $this->input->get_post('plugin')) !== FALSE)
@@ -146,15 +151,11 @@ class Javascript extends Controller {
 			}
 			elseif (($ui = $this->input->get_post('ui')) !== FALSE)
 			{
-				$file = PATH_JQUERY.'ui/ui.'.$ui.'.js';
+				$file = PATH_JQUERY.'ui/jquery.ui.'.$ui.'.js';
 			}
 			elseif (($effect = $this->input->get_post('effect')) !== FALSE)
 			{
-				$file = PATH_JQUERY.'ui/effect.'.$effect.'.js';
-			}
-			else
-			{
-				$file = PATH_JQUERY.'jquery.js';					
+				$file = PATH_JQUERY.'ui/jquery.effect.'.$effect.'.js';
 			}
 		}
 		elseif ($loadfile == 'css')
@@ -174,7 +175,7 @@ class Javascript extends Controller {
 			}
 		}
 
-		if ( ! file_exists($file))
+		if ( ! $file OR ! file_exists($file))
 		{
 			if ($this->config->item('debug') >= 1)
 			{
@@ -227,9 +228,10 @@ class Javascript extends Controller {
 		$contents	= '';
 		$folder 	= $this->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
 		$types		= array(
-			'ui'		=> PATH_JQUERY.'ui/ui.',
-			'file'		=> APPPATH.'javascript/'.$folder.'/',
+			'effect'	=> PATH_JQUERY.'ui/jquery.effect.',
+			'ui'		=> PATH_JQUERY.'ui/jquery.ui.',
 			'plugin'	=> PATH_JQUERY.'plugins/',
+			'file'		=> APPPATH.'javascript/'.$folder.'/',
 			'package'	=> PATH_THIRD,
 			'fp_module'	=> PATH_MOD
 		);
