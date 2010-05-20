@@ -169,21 +169,12 @@ class Updater {
 			
 			if ($query->num_rows() == 0)
 			{
-				// No templates saved as files for this site.  Drop it
-				// from the sites with templates array.
-				unset($sites_with_templates[$site['site_name']]);
-				
-				continue;
+				// No templates saved as files for this site.  Set to FALSE, but move to backup
+				$query = FALSE;
 			}
 			
 			// Stay with me here.  Saving some queries.
 			$sites_with_templates[$site['site_name']]['query'] = $query;
-		}
-	
-		// Are there any sites with templates left?
-		if (empty($sites_with_templates))
-		{
-			return;  // Nope
 		}
 	
 		// There are sites with templates, make sure the templates have been uploaded.
@@ -224,16 +215,19 @@ class Updater {
 			// Template Groups
 			$template_groups = array();
 
-			foreach ($site['query']->result() as $row)
+			if ($site['query'] !== FALSE)
 			{
-				if ( ! file_exists($template_path.$row->group_name.'/'.$row->template_name.EXT))
+				foreach ($site['query']->result() as $row)
 				{
-					$template_errors[] = $row->group_name.'/'.$row->template_name;
-				}
-				else
-				{
-					$templates_to_move[] = $row;
-					$template_groups[] = $row->group_name;
+					if ( ! file_exists($template_path.$row->group_name.'/'.$row->template_name.EXT))
+					{
+						$template_errors[] = $row->group_name.'/'.$row->template_name;
+					}
+					else
+					{
+						$templates_to_move[] = $row;
+						$template_groups[] = $row->group_name;
+					}
 				}
 			}
 
@@ -315,15 +309,55 @@ class Updater {
 			// Remove old folders for each template group
 			foreach ($template_groups as $group)
 			{
+				$this->clear_folder($template_path.$group, $old_template_folder.$group);
 				rmdir($template_path.$group);
 			}
 
 			// Remove the site's template folder
+			$this->clear_folder(EE_APPPATH.'templates/'.$site['site_name'], $old_template_folder);
 			rmdir(EE_APPPATH.'templates/'.$site['site_name']);
 		}
 
 		return;
     }
+
+	function clear_folder($src, $dst)
+	{
+ 		$this->EE->load->helper('string');
+		$dir = opendir($src);
+
+		while(false !== ($file = readdir($dir)))
+		{
+			if (( $file != '.' ) && ( $file != '..' ))
+			{
+            	$full_dst = reduce_double_slashes($dst.'/'.$file);
+				$full_src = reduce_double_slashes($src.'/'.$file);
+			
+				if (is_dir($full_src)) 
+				{
+					if ( ! is_dir($full_dst))
+					{
+						if (mkdir($full_dst) === FALSE)
+						{
+							show_error(sprintf($this->EE->lang->line('could_not_create_folder'),
+											$full_dst,
+											$dst));						
+						}                
+
+						chmod($full_dst, DIR_WRITE_MODE);
+					}
+				
+					$this->clear_folder($full_src, $full_dst);
+				}
+				else
+				{
+					rename($full_src, $full_dst);
+				}
+			}
+		}
+
+		closedir($dir);
+	}
     
     // ------------------------------------------------------------------------ 
     
