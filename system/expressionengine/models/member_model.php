@@ -577,7 +577,7 @@ class Member_model extends CI_Model {
 
 		// mail and communications
 		$this->db->delete('message_copies', array('sender_id' => $member_id));
-/		$this->db->delete('message_folders', array('member_id' => $member_id));
+		$this->db->delete('message_folders', array('member_id' => $member_id));
 		$this->db->delete('message_listed', array('member_id' => $member_id));
 
 		return $member_id;
