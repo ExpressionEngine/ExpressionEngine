@@ -119,7 +119,7 @@ class Blogger_api_mcp {
 		{
 			$vars['submit_text']	= 'update';
 
-			$this->EE->load->module('blogger_api_model');
+			$this->EE->load->model('blogger_api_model');
 			
 			$query = $this->EE->blogger_api_model->get_prefs_by_id($id);
 
