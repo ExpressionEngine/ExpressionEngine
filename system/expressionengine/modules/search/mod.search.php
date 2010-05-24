@@ -1181,19 +1181,16 @@ class Search {
 		
 		if ($query->row('count')  > $per_page)
 		{ 											
-			if ( ! class_exists('Paginate'))
-			{
-				require APPPATH.'_to_be_replaced/lib.paginate'.EXT;
-			}
+			$this->EE->load->library('pagination');
 
-			$PGR = new Paginate();
-						
-			$PGR->path			= $this->EE->functions->create_url($res_page.'/'.$search_id, 0, 0);
-			$PGR->total_count 	= $query->row('count') ;
-			$PGR->per_page		= $per_page;
-			$PGR->cur_page		= $cur_page;
-			
-			$pager = $PGR->show_links();			
+			$config['base_url']		= $this->EE->functions->create_url($res_page.'/'.$search_id, 0, 0);
+			$config['prefix']		= ( ! $dynamic) ? 'N' : 'P';
+			$config['total_rows'] 	= $query->row('count') ;
+			$config['per_page']		= $per_page;
+			$config['cur_page']		= $cur_page;	
+
+			$this->EE->pagination->initialize($config);
+			$pager = $this->EE->pagination->create_links();			
 			 
 			$sql .= " LIMIT ".$cur_page.", ".$per_page;	
 		}

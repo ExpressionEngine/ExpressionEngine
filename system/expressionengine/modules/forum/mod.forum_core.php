@@ -995,37 +995,34 @@ class Forum_Core extends Forum {
 	/** -------------------------------------*/
 	function _create_pagination($data)
 	{
-		if ( ! class_exists('Paginate'))
-		{
-			require APPPATH.'_to_be_replaced/lib.paginate'.EXT;
-		}
+		$this->EE->load->library('pagination');
 		
-		$PGR = new Paginate();
+		$config['first_page']	= $this->EE->lang->line('first');	
+		$config['last_page']	= $this->EE->lang->line('last');	
+		$config['next_link']	= $this->EE->lang->line('next');
+		$config['prev_link']	= $this->EE->lang->line('previous');
+		$config['first_tag_open']	= '<td><div class="paginate">';
+		$config['first_tag_close']	= '</div></td>';
+		$config['next_tag_open']	= '<td><div class="paginate">';
+		$config['next_tag_close']	= '</div></td>';
+		$config['prev_tag_open']	= '<td><div class="paginate">';
+		$config['prev_tag_close']	= '</div></td>';
+		$config['num_tag_open']	= '<td><div class="paginate">';
+		$config['num_tag_close']	= '</div></td>';
+		$config['cur_tag_open']	= '<td><div class="paginateCur">';
+		$config['cur_tag_close']	= '</div></td>';
+		$config['last_tag_open']	= '<td><div class="paginate">';
+		$config['last_tag_close']	= '</div></td>';
 		
-		$PRG->first_page	= $this->EE->lang->line('first');	
-		$PRG->last_page		= $this->EE->lang->line('last');	
-		$PGR->next_link		= $this->EE->lang->line('next');
-		$PGR->prev_link		= $this->EE->lang->line('previous');
-		$PGR->first_div_o	= '<td><div class="paginate">';
-		$PGR->first_div_c	= '</div></td>';
-		$PGR->next_div_o	= '<td><div class="paginate">';
-		$PGR->next_div_c	= '</div></td>';
-		$PGR->prev_div_o	= '<td><div class="paginate">';
-		$PGR->prev_div_c	= '</div></td>';
-		$PGR->num_div_o		= '<td><div class="paginate">';
-		$PGR->num_div_c		= '</div></td>';
-		$PGR->cur_div_o		= '<td><div class="paginateCur">';
-		$PGR->cur_div_c		= '</div></td>';
-		$PGR->last_div_o	= '<td><div class="paginate">';
-		$PGR->last_div_c	= '</div></td>';
-		$PGR->first_url 	= $data['first_url'];
-		$PGR->path			= $data['path'];
-		$PGR->prefix		= 'P';
-		$PGR->total_count 	= $data['total_count'];
-		$PGR->per_page		= $data['per_page'];
-		$PGR->cur_page		= $data['cur_page'];
+		//$config['first_url'] 	= $data['first_url'];
+		$config['base_url']		= $data['path'];
+		$config['prefix']		= 'P';
+		$config['total_rows'] 	= $data['total_count'];
+		$config['per_page']		= $data['per_page'];
+		$config['cur_page']		= $data['cur_page'];
 
-		return $PGR->show_links();
+		$this->EE->pagination->initialize($config);
+		return $this->EE->pagination->create_links();
 	}
 
 
@@ -6705,7 +6702,7 @@ class Forum_Core extends Forum {
 			if ($row['count'] == 0)
 			{	
 				$rand = $orig_author_id.$this->EE->functions->random('alnum', 8);
-				$this->EE->db->query("INSERT INTO exp_forum_subscriptions (topic_id, member_id, subscription_date, hash) VALUES ('{$data['topic_id']}', '{$orig_author_id}', '{$this->EE->localize->now}', '{$rand}')");
+				$this->EE->db->query("INSERT INTO exp_forum_subscriptions (topic_id, board_id, member_id, subscription_date, hash) VALUES ('{$data['topic_id']}', '{$this->preferences[‘board_id’]}', '{$orig_author_id}', '{$this->EE->localize->now}', '{$rand}')");
 			}
 		}
 		else
@@ -7830,7 +7827,7 @@ class Forum_Core extends Forum {
 		if ($query->row('count')  == 0)
 		{	
 			$rand = $this->EE->session->userdata('member_id').$this->EE->functions->random('alnum', 8);
-			$this->EE->db->query("INSERT INTO exp_forum_subscriptions (topic_id, member_id, subscription_date, hash) VALUES ('{$this->current_id}', '".$this->EE->session->userdata('member_id')."', '{$this->EE->localize->now}', '{$rand}')");
+			$this->EE->db->query("INSERT INTO exp_forum_subscriptions (topic_id, board_id, member_id, subscription_date, hash) VALUES ('{$this->current_id}', '{$this->preferences[‘board_id’]}', '".$this->EE->session->userdata('member_id')."', '{$this->EE->localize->now}', '{$rand}')");
 		}
 		
 

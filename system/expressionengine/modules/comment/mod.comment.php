@@ -476,12 +476,7 @@ class Comment {
 
 			if ($total_rows > $limit)
 			{
-				if ( ! class_exists('Paginate'))
-				{
-					require APPPATH.'_to_be_replaced/lib.paginate'.EXT;
-				}
-
-				$PGR = new Paginate();
+				$this->EE->load->library('pagination');
 
 				$deft_tmpl = '';
 
@@ -518,15 +513,17 @@ class Comment {
 					}
 				}
 
-				$PGR->first_url 	= $basepath;
-				$PGR->path			= $basepath;
-				$PGR->prefix		= ( ! $dynamic) ? 'N' : 'P';
-				$PGR->total_count 	= $total_rows;
-				$PGR->per_page		= $limit;
-				$PGR->cur_page		= $current_page;
-				$PGR->suffix		= $anchor;
+				$config['first_url'] 	= rtrim($basepath, '/').$anchor;
+				$config['base_url']		= $basepath;
+				$config['prefix']		= ( ! $dynamic) ? 'N' : 'P';
+				$config['total_rows'] 	= $total_rows;
+				$config['per_page']		= $limit;
+				$config['cur_page']		= $current_page;
+				$config['suffix']	= $anchor;
+				
+				$this->EE->pagination->initialize($config);
+				$pagination_links = $this->EE->pagination->create_links();
 
-				$pagination_links = $PGR->show_links();
 
 				if ((($total_pages * $limit) - $limit) > $current_page)
 				{
