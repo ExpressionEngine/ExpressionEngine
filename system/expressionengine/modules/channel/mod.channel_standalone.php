@@ -109,7 +109,7 @@ class Channel_standalone extends Channel {
 				}
 			} 
 		} 
-		
+
 		foreach ($file_fields as $v)
 		{
 			if (isset($_POST['field_id_'.$v.'_hidden']))
@@ -183,9 +183,9 @@ class Channel_standalone extends Channel {
 			}
 		
 			$data = array_merge($extra, $data);
-		
-			$success = $this->EE->api_channel_entries->submit_new_entry($channel_id, $data);
 	
+			$success = $this->EE->api_channel_entries->submit_new_entry($channel_id, $data);
+
 			if ( ! $success)
 			{
 				$errors = $this->EE->api_channel_entries->errors;
@@ -1973,7 +1973,7 @@ class Channel_standalone extends Channel {
 				{
 					// We need to pre-populate this menu from an another channel custom field
 					$this->EE->db->select('field_id_'.$row['field_pre_field_id']);
-					$this->EE->where('channel_id', $row['field_pre_channel_id']);
+					$this->EE->db->where('channel_id', $row['field_pre_channel_id']);
 					$this->EE->db->where('field_id_'.$row['field_pre_field_id'].' != ""');
 					$pop_query = $this->EE->db->get('channel_data');
 
