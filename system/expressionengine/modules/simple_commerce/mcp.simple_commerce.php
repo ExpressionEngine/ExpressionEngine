@@ -2563,7 +2563,7 @@ MAGIC;
 
 		if ($query->num_rows() > 1)
 		{
-			$vars['channel_select_options']['all'] = $this->EE->lang->line('all'); //@confirm : formerly, this was not "all", but "null", only null is already taken for "filter by channel"
+			$vars['channel_select_options']['all'] = $this->EE->lang->line('all');
 		}
 
 		foreach ($query->result_array() as $row)

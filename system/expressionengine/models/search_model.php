@@ -69,6 +69,7 @@ class Search_model extends CI_Model {
 			
 			$return_data['pageurl'] = $base_results['pageurl'];
 			$return_data['ids'] = $ids;
+			$return_data['total_count'] = count($ids);
 
 			return $return_data;			
 		}
@@ -536,7 +537,6 @@ class Search_model extends CI_Model {
 		}
 		else
 		{
-			// @confirm can this be removed / reduced - similar check at the beginning
 			if ($entry_id == '')
 			{
 				if ( ! $entry_id = $this->input->get('entry_id'))

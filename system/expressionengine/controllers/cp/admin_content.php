@@ -341,21 +341,24 @@ class Admin_content extends Controller {
 			}
 		}
 
-		// Default category menu
-		$cats = implode("','", $this->db->escape_str(explode('|', $vars['cat_group'])));
+		if ( ! is_null($vars['cat_group']))
+		{
+			// Default category menu
+			$cats = implode("','", $this->db->escape_str(explode('|', $vars['cat_group'])));
 
-		$this->db->select('CONCAT('.$this->db->dbprefix('category_groups').'.group_name, ": ", '.$this->db->dbprefix('categories').'.cat_name) as display_name', FALSE);
-		$this->db->select('categories.cat_id, categories.cat_name, category_groups.group_name');
-		$this->db->from('categories, '.$this->db->dbprefix('category_groups'));
-		$this->db->where($this->db->dbprefix('category_groups').'.group_id = '.$this->db->dbprefix('categories').'.group_id', NULL, FALSE);
-		$this->db->where('categories.group_id IN('.$cats.')');
-		$this->db->order_by('display_name');
+			$this->db->select('CONCAT('.$this->db->dbprefix('category_groups').'.group_name, ": ", '.$this->db->dbprefix('categories').'.cat_name) as display_name', FALSE);
+			$this->db->select('categories.cat_id, categories.cat_name, category_groups.group_name');
+			$this->db->from('categories, '.$this->db->dbprefix('category_groups'));
+			$this->db->where($this->db->dbprefix('category_groups').'.group_id = '.$this->db->dbprefix('categories').'.group_id', NULL, FALSE);
+			$this->db->where('categories.group_id IN('.$cats.')');
+			$this->db->order_by('display_name');
 		
-		$query = $this->db->get();
-
+			$query = $this->db->get();
+		}
+		
 		$vars['deft_category_options'][''] = $this->lang->line('none');
 
-		if ($query->num_rows() > 0)
+		if ( ! is_null($vars['cat_group']) && $query->num_rows() > 0)
 		{
 			foreach ($query->result() as $row)
 			{
@@ -1790,7 +1793,6 @@ class Admin_content extends Controller {
 		}
 
 		// Fetch the category tree
-		//$this->category_tree('table', $group_id, '', $sort_order);
 		$this->api_channel_categories->category_tree($group_id, '', $sort_order);
 
 		if (count($this->api_channel_categories->categories) == 0)

@@ -147,7 +147,6 @@ class File_integrity {
 		}
 
 		// Any changes? report them
-		// @confirm - also mention removed/renamed files?
 		if (count($altered))
 		{
 			return $altered;

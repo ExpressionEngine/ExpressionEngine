@@ -84,7 +84,7 @@ class EE_Messages {
 	// Changeable Class Variables
 	var $default_folders	= array('Inbox', 'Sent');
 	var $max_folders		= 10;				// Maximum number of folders per user
-	var $per_page			= 25;				// Messages on a Folder's Page
+	var $per_page			= 5;				// Messages on a Folder's Page
 	var $graph_width		= '300';			// Width of Total Messages Graph
 	var $emoticons_per_row  = 5;				// Number of Images Per Table Row
 	var $delete_expiration	= 30;				// Erase deleted messages after X days
@@ -927,28 +927,27 @@ class EE_Messages {
 		
 		if ($query->row('count')  > $this->per_page)
 		{ 											
-			if ( ! class_exists('Paginate'))
-			{
-				require APPPATH.'_to_be_replaced/lib.paginate'.EXT;
-			}
-			
-			$PGR = new Paginate();
+			$this->EE->load->library('pagination');
 			
 			if ($this->allegiance == 'user')
 			{
-				$PGR->path = $this->_create_path('drafts');
+				$config['base_url'] = $this->_create_path('drafts');
 			}
 			else
 			{
-				$PGR->base_url = $this->_create_path('drafts');
-				$PGR->qstr_var = 'page';
+				$config['page_query_string'] = TRUE;
+				$config['base_url'] = $this->_create_path('drafts');
+				$config['query_string_segment'] = 'page';
 			}
 			
-			$PGR->total_count 	= $query->row('count') ;
-			$PGR->per_page		= $this->per_page;
-			$PGR->cur_page		= $row_count;
+			$config['total_rows'] 	= $query->row('count');
+			$config['per_page']		= $this->per_page;
+			$config['cur_page']		= $row_count;			
 			
-			$this->single_parts['include']['pagination_link'] = $PGR->show_links();
+			
+			$this->EE->pagination->initialize($config);
+			$this->single_parts['include']['pagination_link'] = $this->EE->pagination->create_links();
+
 			$this->conditionals['paginate'] = 'y';
 			 
 			$sql .= " LIMIT ".$row_count.", ".$this->per_page;			
@@ -1206,28 +1205,28 @@ class EE_Messages {
 		
 		if ($query->row('count')  > $this->per_page)
 		{ 											
-			if ( ! class_exists('Paginate'))
-			{
-				require APPPATH.'_to_be_replaced/lib.paginate'.EXT;
-			}
-			
-			$PGR = new Paginate();
+			$this->EE->load->library('pagination');
 			
 			if ($this->allegiance == 'user')
 			{
-				$PGR->path = $this->base_url.'view_folder/'.$folder_id.'_';
+				//$config['base_url'] = $this->base_url.'view_folder/'.$folder_id.'_';
+				$config['base_url'] = $this->base_url.'view_folder/';
+				$config['prefix'] = $folder_id.'_';
 			}
 			else
 			{
-				$PGR->base_url = $this->base_url.'view_folder'.AMP.'folder='.$folder_id;
-				$PGR->qstr_var = 'page';
+				$config['page_query_string'] = TRUE;
+				$config['base_url'] = $this->base_url.'view_folder'.AMP.'folder='.$folder_id;
+				$config['query_string_segment'] = 'page';
 			}
 			
-			$PGR->total_count 	= $query->row('count') ;
-			$PGR->per_page		= $this->per_page;
-			$PGR->cur_page		= $row_count;
+			$config['total_rows'] 	= $query->row('count');
+			$config['per_page']		= $this->per_page;
+			$config['cur_page']		= $row_count;		
 			
-			$this->single_parts['include']['pagination_link'] = $PGR->show_links();
+			$this->EE->pagination->initialize($config);
+			$this->single_parts['include']['pagination_link'] = $this->EE->pagination->create_links();
+
 			$this->conditionals['paginate'] = 'y';
 			 
 			$sql .= " LIMIT ".$row_count.", ".$this->per_page;			
@@ -3248,28 +3247,26 @@ DOH;
 		
 		if ($query->row('count')  > $this->per_page)
 		{ 											
-			if ( ! class_exists('Paginate'))
-			{
-				require APPPATH.'_to_be_replaced/lib.paginate'.EXT;
-			}
-			
-			$PGR = new Paginate();
+			$this->EE->load->library('pagination');
 			
 			if ($this->allegiance == 'user')
 			{
-				$PGR->path = $this->base_url.'bulletin_board/';
+				$config['base_url'] = $this->base_url.'bulletin_board/';
 			}
 			else
 			{
-				$PGR->base_url = $this->base_url.'bulletin_board';
-				$PGR->qstr_var = 'page';
+				$config['page_query_string'] = TRUE;
+				$config['base_url'] = $this->base_url.'bulletin_board';
+				$config['query_string_segment'] = 'page';
 			}
 			
-			$PGR->total_count 	= $query->row('count') ;
-			$PGR->per_page		= $this->per_page;
-			$PGR->cur_page		= $row_count;
-			
-			$this->single_parts['include']['pagination_link'] = $PGR->show_links();
+			$config['total_rows'] 	= $query->row('count');
+			$config['per_page']		= $this->per_page;
+			$config['cur_page']		= $row_count;
+
+			$this->EE->pagination->initialize($config);
+			$this->single_parts['include']['pagination_link'] = $this->EE->pagination->create_links();
+
 			$this->conditionals['paginate'] = 'y';
 			 
 			$sql .= " LIMIT ".$row_count.", ".$this->per_page;			

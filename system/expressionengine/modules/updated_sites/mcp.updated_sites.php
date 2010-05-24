@@ -85,8 +85,7 @@ class Updated_sites_mcp {
 		$vars['pings'] = array();
 		
 		$this->EE->javascript->compile();
-		
-		// @confirm- changed from 1.6 to allow no configs to exist.
+
 		if ($query->num_rows() == 0)
 		{
 			$vars['message'] = $this->EE->lang->line('no_ping_configs');

@@ -577,8 +577,6 @@ class Member_model extends CI_Model {
 
 		// mail and communications
 		$this->db->delete('message_copies', array('sender_id' => $member_id));
-// @confirm next line is from cp/members.php line 4752, but there appears to be no sender_id field in member data
-//		$this->db->delete('member_data', array('sender_id' => $member_id));
 		$this->db->delete('message_folders', array('member_id' => $member_id));
 		$this->db->delete('message_listed', array('member_id' => $member_id));
 

@@ -381,9 +381,6 @@ class Tools_model extends CI_Model {
 			}
 		}
 
-		
-		//$lang = array_filter($lang); //@confirm this is to remove empty array items... I don't think we'll ever get anything that could evaluate to false that we'd want to keep
-
 		return $lang_list;
 	}
 
@@ -551,7 +548,6 @@ class Tools_model extends CI_Model {
 						}
 					}
 
-					// @confirm: probably not ideal, there's got to be a more efficient way of doing this.
 					// Add relative directory path information to name
 					$file['name'] = substr($file['relative_path'], $dir_name_length).$file['name'];
 

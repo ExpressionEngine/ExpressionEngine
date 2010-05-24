@@ -153,13 +153,6 @@ class Ip_to_nation_upd {
 		$this->EE->dbforge->drop_table('ip2nation');
 		$this->EE->dbforge->drop_table('ip2nation_countries');
 
-		//  Remove the flag from the config file
-		// @confirm: this was in the old blacklist mod... but I don't understand its purpose anymore
-		//if ( ! class_exists('Admin'))
-		//{
-		//	require APPPATH.'cp/cp.admin'.EXT;
-		//}
-
 		$this->EE->config->_update_config('', array('ip2nation' => ''));
 
 		return TRUE;

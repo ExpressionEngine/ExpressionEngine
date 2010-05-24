@@ -809,6 +809,7 @@ PAPAYA;
 	{
 		// Assign the _POST array values
 		$this->_assign_install_values();
+		$this->load->library('javascript');
 
 		// Start our error trapping
 		$errors = array();
@@ -920,7 +921,7 @@ PAPAYA;
 			}
 		
 			$this->userdata['errors'] = $str;
-			$this->load->library('javascript');
+
 			$this->userdata['extra_header'] = $this->_install_form_extra_header($this->javascript->generate_json($this->theme_required_modules, TRUE));
 			
 			$this->_set_output('install_form', $this->userdata);
@@ -1223,6 +1224,8 @@ PAPAYA;
 		{
 			return $this->_license(TRUE);
 		}
+		
+		$this->load->library('javascript');
 		
 		// Do we have to handle trackbacks?
 		if ($this->input->get_post('archive_trackbacks'))

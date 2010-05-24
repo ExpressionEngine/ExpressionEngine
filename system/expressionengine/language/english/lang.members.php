@@ -2,9 +2,6 @@
 
 $lang = array(
 
-
-// @confirm: moved from admin... seemed the most logical DA
-
 "register_member" => 
 "Register a New Member",
 
@@ -328,7 +325,7 @@ $lang = array(
 "username_desc" =>
 "Username - descending",
 
-"screen_name" => //@confirm - I copied this from lang.admin.php... it may overwrite another lang var?  Need input.
+"screen_name" => 
 "Screen Name",
 
 "screen_name_asc" =>
@@ -337,7 +334,7 @@ $lang = array(
 "screen_name_desc" =>
 "Screen Name - descending",
 
-"mbr_email_address" => //@confirm - I copied this from lang.member.php... it may overwrite another lang var?  Need input.
+"mbr_email_address" => 
 "Email Address",
 
 'email_address' =>
@@ -524,10 +521,10 @@ $lang = array(
 "Member Account Privileges",
 
 'prv_msg_storage_limit' =>
-"Maximum Number of Private Messages a user can store", //@confirm, stolen from lang.administration.php... need to check conflicts
+"Maximum Number of Private Messages a user can store",
 
 'prv_msg_send_limit' =>
-"Maximum Number of Private Messages a user can send per day", //@confirm, stolen from lang.administration.php... need to check conflicts
+"Maximum Number of Private Messages a user can send per day",
 
 "can_view_profiles" =>
 "Can view public profiles",

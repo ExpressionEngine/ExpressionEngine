@@ -167,7 +167,6 @@ class Channel_standalone extends Channel {
 
 			$data = $_POST;
 			
-			// @confirm not safe?!
 			$extra = array(
 				'url_title'		=> '',
 				'ping_errors'	=> FALSE,
@@ -1349,7 +1348,6 @@ class Channel_standalone extends Channel {
 		{
 			if (($end = strpos($match['1'], LD.'/'.$field_name.RD)) !== FALSE)
 			{
-				// @confirm FIX IT! this is ugly
 				if (preg_match_all("/".LD."{$field_name}(.*?)".RD."(.*?)".LD.'\/'.$field_name.RD."/s", $match['1'], $pmatches))
 				{
 					for ($j = 0; $j < count($pmatches[0]); $j++)

@@ -2049,9 +2049,6 @@ class Tools_utilities extends Controller {
 		$this->load->library('table');
 		$this->load->model('tools_model');
 		$language_file = $this->input->get_post('language_file');
-
-		// @confirm- 1.6 shows filename in breadcrumb
-		//$this->cp->set_variable('cp_page_title', $this->lang->line('translation'));
 		
 		$this->cp->set_variable('cp_page_title', $language_file);
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=translation_tool', $this->lang->line('translation_tool'));

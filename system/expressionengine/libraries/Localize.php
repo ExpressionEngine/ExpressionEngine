@@ -166,7 +166,6 @@ class EE_Localize {
 			return $this->set_server_time($now);
 		}
 
-		// @confirm reverted this to 1.6 because otherwise date always ended up as now
 		// $now = $this->now + ($this->zones[$timezone] * 3600);
 		$now += $this->zones[$timezone] * 3600;
 

@@ -382,19 +382,15 @@ class Member_images extends Member {
 		{
 			$avatars = array_slice($avatars, $rownum, $perpage);
 
-			if ( ! class_exists('Paginate'))
-			{
-				require APPPATH.'_to_be_replaced/lib.paginate'.EXT;
-			}
+			$this->EE->load->library('pagination');
 
-			$PGR = new Paginate();
-
-			$PGR->path			= $base_url;
-			$PGR->prefix		= '';
-			$PGR->total_count 	= $total_rows;
-			$PGR->per_page		= $perpage;
-			$PGR->cur_page		= $rownum;
-			$pagination	= $PGR->show_links();
+			$config['base_url']		= $base_url;
+			$config['total_rows'] 	= $total_rows;
+			$config['per_page']		= $perpage;
+			$config['cur_page']		= $rownum;
+				
+			$this->EE->pagination->initialize($config);
+			$pagination = $this->EE->pagination->create_links();			
 
 			// We add this for use later
 

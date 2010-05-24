@@ -574,41 +574,9 @@ EOT;
 			}		
 		}
 		
-		/** ----------------------------- 
-		/**  Category Tree
-		/** -----------------------------*/
 
-		$this->EE->db->select('categories.group_id, categories.parent_id, categories.cat_id, categories.cat_name');
-		$this->EE->db->from(array('categories', 'category_groups'));
-		$this->EE->db->where($this->EE->db->dbprefix('category_groups.group_id'), $this->EE->db->dbprefix('categories.group_id'), FALSE);
-		$this->EE->db->order_by('group_id, parent_id, cat_name');
-		
-		$query = $this->EE->db->get();
-
-		// @confirm - what's going on here?  Cat_id was never in the query!  Did this work in 1.6?
-		// Commented out for now - Pascal
-		
-		//	$sql .= " AND exp_categories.group_id = '".$query->row('cat_id') ."'";
-	
-		// Load the text helper
-		$this->EE->load->helper('text');
-				
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				$categories[] = array($row['group_id'], $row['cat_id'], entities_to_ascii($row['cat_name']), $row['parent_id']);
-			}
-		
-			foreach($categories as $key => $val)
-			{
-				if (0 == $val['3']) 
-				{
-					$this->EE->api_channel_categories->cat_array[] = array($val['0'], $val['1'], $val['2']);
-					$this->EE->api_channel_categories->category_edit_subtree($val['1'], $categories, $depth=1);
-				}
-			}
-		} 
+		//  Category Tree
+		$cat_array = $this->EE->api_channel_categories->category_form_tree('y', FALSE, 'all');
 		  
 		/** ----------------------------- 
 		/**  Entry Statuses
@@ -706,11 +674,11 @@ EOT;
 			$any = 0;
 			$cats = array();
 	
-			if (count($this->EE->api_channel_categories->cat_array) > 0)
+			if (count($cat_array) > 0)
 			{
 				$last_group = 0;
 		
-				foreach ($this->EE->api_channel_categories->cat_array as $k => $v)
+				foreach ($cat_array as $k => $v)
 				{
 					if (in_array($v['0'], explode('|', $val['1'])))
 					{

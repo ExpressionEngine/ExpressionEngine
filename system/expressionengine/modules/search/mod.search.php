@@ -1181,19 +1181,16 @@ class Search {
 		
 		if ($query->row('count')  > $per_page)
 		{ 											
-			if ( ! class_exists('Paginate'))
-			{
-				require APPPATH.'_to_be_replaced/lib.paginate'.EXT;
-			}
+			$this->EE->load->library('pagination');
 
-			$PGR = new Paginate();
-						
-			$PGR->path			= $this->EE->functions->create_url($res_page.'/'.$search_id, 0, 0);
-			$PGR->total_count 	= $query->row('count') ;
-			$PGR->per_page		= $per_page;
-			$PGR->cur_page		= $cur_page;
-			
-			$pager = $PGR->show_links();			
+			$config['base_url']		= $this->EE->functions->create_url($res_page.'/'.$search_id, 0, 0);
+			$config['prefix']		= ( ! $dynamic) ? 'N' : 'P';
+			$config['total_rows'] 	= $query->row('count') ;
+			$config['per_page']		= $per_page;
+			$config['cur_page']		= $cur_page;	
+
+			$this->EE->pagination->initialize($config);
+			$pager = $this->EE->pagination->create_links();			
 			 
 			$sql .= " LIMIT ".$cur_page.", ".$per_page;	
 		}
@@ -1477,6 +1474,8 @@ class Search {
 	{
 		
 		$this->EE->lang->loadfile('search');
+		$this->EE->load->library('api');
+		$this->EE->api->instantiate('channel_categories');
 		
 		/** ----------------------------------------
 		/**  Fetch channels and categories
@@ -1526,62 +1525,10 @@ class Search {
 		{
 			$this->channel_array[$row['channel_id']] = array($row['channel_title'], $row['cat_group']);
 		}		
-	
+
 		$nested = ($this->EE->TMPL->fetch_param('cat_style') !== FALSE && $this->EE->TMPL->fetch_param('cat_style') == 'nested') ? 'y' : 'n';
 		
-		$order  = ($nested == 'y') ? 'group_id, parent_id, cat_name' : 'cat_name';
-		
-		$extra = '';
-		
-		/**  Typically, I would worry about orphaned categories a bit, like in the Channel module with
-		/**  the show="" parameter, but my reasoning is that if someone does not want to show a 
-		/**  category then a consequence is that one will not see any of that category's children as well.
-		/**  Futher, if someone decides to show a child but NOT its parent, then they are a nutter and
-		/**  we do not suffer nutters here at EllisLab, no siree.   -Paul
-		 */
-		
-		if (($categories = $this->EE->TMPL->fetch_param('category')) !== FALSE)
-		{
-			$extra = $this->EE->functions->sql_andor_string($categories, 'cat_id', 'exp_categories');
-		}
-	
-		$sql = "SELECT exp_categories.group_id, exp_categories.parent_id, exp_categories.cat_id, exp_categories.cat_name 
-				FROM exp_categories, exp_category_groups
-				WHERE exp_category_groups.group_id = exp_categories.group_id
-				{$extra}
-				ORDER BY {$order}";
-		
-		$query = $this->EE->db->query($sql);
-		
-		if ($query->result_array() > 0)
-		{
-			$categories = array();
-	
-			// Load the text helper
-			$this->EE->load->helper('text');
 
-			foreach ($query->result_array() as $row)
-			{			
-				$categories[] = array($row['group_id'], $row['cat_id'], entities_to_ascii($row['cat_name']), $row['parent_id']);
-			}
-			
-			if ($nested == 'y')
-			{
-				foreach($categories as $key => $val)
-				{
-					if (0 == $val['3']) 
-					{
-						$this->cat_array[] = array($val['0'], $val['1'], $val['2']);
-						$this->category_subtree($val['1'], $categories, $depth=1);
-					}
-				}
-			}
-			else
-			{
-				$this->cat_array = $categories;
-			}
-		}					
-				
 		/** ----------------------------------------
 		/**  Build select list
 		/** ----------------------------------------*/
@@ -1622,6 +1569,7 @@ class Search {
 						'lang:six_months_ago_and'			=>	$this->EE->lang->line('search_six_months_ago_and'),
 						'lang:one_year_ago_and'				=>	$this->EE->lang->line('search_one_year_ago_and'),
 						'lang:channels'						=>	$this->EE->lang->line('search_channels'),
+						'lang:weblogs'						=>	$this->EE->lang->line('search_channels'),
 						'lang:categories'					=>	$this->EE->lang->line('search_categories'),
 						'lang:newer'						=>	$this->EE->lang->line('search_newer'),
 						'lang:older'						=>	$this->EE->lang->line('search_older'),
@@ -1717,6 +1665,11 @@ class Search {
 	/** ----------------------------------------*/
 	function search_js_switcher($nested='n',$id='searchform')
 	{
+		$this->EE->load->library('api');
+		$this->EE->api->instantiate('channel_categories');
+		
+		 $cat_array = $this->EE->api_channel_categories->category_form_tree($nested, $this->EE->TMPL->fetch_param('category'));
+		
 		ob_start();
 ?>
 <script type="text/javascript">
@@ -1727,7 +1680,6 @@ var firststatus = 1;
 
 function changemenu(index)
 { 
-
 	var categories = new Array();
 	
 	var i = firstcategory;
@@ -1776,11 +1728,11 @@ function changemenu(index)
 		
 		if (channels == "<?php echo $key ?>")
 		{	<?php echo "\n";
-			if (count($this->cat_array) > 0)
+			if (count($cat_array) > 0)
 			{
 				$last_group = 0;
 
-				foreach ($this->cat_array as $k => $v)
+				foreach ($cat_array as $k => $v)
 				{
 					if (in_array($v['0'], explode('|', $val['1'])))
 					{
@@ -1844,47 +1796,6 @@ function changemenu(index)
 	
 		return $buffer;
 	}
-
-	
-	
-	/** --------------------------------
-	/**  Category Sub-tree
-	/** --------------------------------*/
-	function category_subtree($cat_id, $categories, $depth)
-	{
-		$spcr = '!-!';
-				  
-		$indent = $spcr.$spcr.$spcr.$spcr;
-	
-		if ($depth == 1)	
-		{
-			$depth = 4;
-		}
-		else 
-		{								
-			$indent = str_repeat($spcr, $depth).$indent;
-			
-			$depth = $depth + 4;
-		}
-		
-		$sel = '';
-			
-		foreach ($categories as $key => $val) 
-		{
-			if ($cat_id == $val['3']) 
-			{
-				$pre = ($depth > 2) ? $spcr : '';
-				
-			  	$this->cat_array[] = array($val['0'], $val['1'], $pre.$indent.$spcr.$val['2']);
-								
-				$this->category_subtree($val['1'], $categories, $depth);
-			}
-		}
-	}
-
-
-
-
 
 }
 // END CLASS

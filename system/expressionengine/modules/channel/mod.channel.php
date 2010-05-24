@@ -2944,12 +2944,7 @@ class Channel {
 
 			if ($this->total_rows > $this->p_limit)
 			{
-				if ( ! class_exists('Paginate'))
-				{
-					require APPPATH.'_to_be_replaced/lib.paginate'.EXT;
-				}
-
-				$PGR = new Paginate();
+				$this->EE->load->library('pagination');
 
 				if (strpos($this->basepath, SELF) === FALSE && $this->EE->config->item('site_index') != '')
 				{
@@ -2963,15 +2958,16 @@ class Channel {
 
 					$this->basepath = $this->EE->functions->create_url(trim_slashes($this->EE->TMPL->fetch_param('paginate_base')));
 				}
+				
+				$config['base_url']		= $this->basepath;
+				$config['prefix']		= 'P';
+				$config['total_rows'] 	= $this->total_rows;
+				$config['per_page']		= $this->p_limit;
+				$config['cur_page']		= $this->p_page;
+				
+				$this->EE->pagination->initialize($config);
+				$this->pagination_links = $this->EE->pagination->create_links();				
 
-				$PGR->first_url 	= $this->basepath;
-				$PGR->path			= $this->basepath;
-				$PGR->prefix		= 'P';
-				$PGR->total_count 	= $this->total_rows;
-				$PGR->per_page		= $this->p_limit;
-				$PGR->cur_page		= $this->p_page;
-
-				$this->pagination_links = $PGR->show_links();
 
 				if ((($this->total_pages * $this->p_limit) - $this->p_limit) > $this->p_page)
 				{
@@ -3477,10 +3473,6 @@ class Channel {
 				{
 					if (($end = strpos($this->EE->TMPL->tagdata, LD.'/'.$field_name.RD)) !== FALSE)
 					{
-						// @confirm FIX IT! this is ugly
-						// Shoot me now - darned regular expressions not matching what they should
-						// if (preg_match_all("/".LD."{$field_name}(.*?)".RD."(?!.*".LD.$field_name.")(.*?)".LD.'\/'.$field_name.RD."/s", $this->EE->TMPL->tagdata, $matches))
-
 						// This hurts soo much. Using custom fields as pair and single vars in the same
 						// channel tags could lead to something like this: {field}...{field}inner{/field}
 						// There's no efficient regex to match this case, so we'll find the last nested
@@ -6672,7 +6664,7 @@ class Channel {
 		// add custom fields for conditionals prep
 		foreach ($this->catfields as $v)
 		{
-			$cat_vars[$v['field_name']] = ( ! isset($query->row['field_id_'.$v['field_id']])) ? '' : $query->row['field_id_'.$v['field_id']];
+			$cat_vars[$v['field_name']] = ($query->row('field_id_'.$v['field_id'])) ? $query->row('field_id_'.$v['field_id']) : '';
 		}
 
 		$this->EE->TMPL->tagdata = $this->EE->functions->prep_conditionals($this->EE->TMPL->tagdata, $cat_vars);

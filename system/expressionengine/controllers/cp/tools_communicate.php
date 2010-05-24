@@ -580,31 +580,10 @@ class Tools_communicate extends Controller {
 
 		foreach($emails as $key => $value)
 		{
-			/* @confirm :  I don't understand why we'd change
-			[lYuqdk8MPng] => Array
-		        (
-		            [0] => derek@darkhorse.to
-		            [1] => 2
-		        )
-
-			into
-
-		    [lYuqdk8MPng] => derek@darkhorse.to
-
-			given the rest of the controller below, so I'm commenting it out.
-
-		    */
-			// mailing list values will be an array with the email address in the 0 key
-			// if (is_array($value))
-			// {
-			// 	$value = $value['0'];
-			// }
-
 			if ( ! isset($cleaned_emails[$key]))
 			{
 				$cleaned_emails[$key] = $value;
 			}
-
 		}
 
 		// After all that, do we have any emails?

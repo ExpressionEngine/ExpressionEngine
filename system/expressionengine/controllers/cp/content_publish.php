@@ -59,7 +59,6 @@ class Content_publish extends Controller {
 
 		$this->theme_img_url = $this->config->item('theme_folder_url').'cp_themes/'.$cp_theme.'/images/';
 
-		// @confirm - probably doesn't need to be in constructor- move to method?
 		$this->assign_cat_parent = ($this->config->item('auto_assign_cat_parents') == 'n') ? FALSE : TRUE;
 	}
 
@@ -828,8 +827,6 @@ class Content_publish extends Controller {
 			$markItUp_writemode['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
 		}
 		
-		
-		// @confirm: just a note that the original 'mysettings' is in javascript/plugins
 		$this->cp->add_js_script(array("
 			<script type=\"text/javascript\" charset=\"utf-8\">
 			// <![CDATA[
@@ -1023,8 +1020,6 @@ class Content_publish extends Controller {
 		if (count($this->api_channel_categories->categories) > 0)
 		{  
 			// add categories in again, over-ride setting above
-			// @confirm this is how we want to handle passing it to the view
-			//$vars['categories'] = $this->api_channel_categories->categories;
 			foreach ($this->api_channel_categories->categories as $val)
 			{
 				$vars['categories'][$val['3']][] = $val;
@@ -2712,7 +2707,6 @@ class Content_publish extends Controller {
 
 		if ($result->num_rows() > 0)
 		{
-			// @confirm double check this is doing what I think it's doing.
 			$vars['entry_title'] = $this->typography->format_characters(stripslashes($resrow['title']));
 
 			foreach ($fields as $key => $val)
@@ -2769,7 +2763,7 @@ class Content_publish extends Controller {
 			if (isset($this->installed_modules['comment']))
 			{
 				$res = $this->db->query("SELECT COUNT(*) AS count FROM exp_comments WHERE entry_id = '".$entry_id."'");
-				//@confirm: do we want to decrement the query count here?
+
 				$this->db->query_count--;
 
 				$vars['show_comments_link'] = BASE.AMP.'C=content_edit'.AMP.'M=view_comments'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id;

@@ -248,7 +248,6 @@ class Template_model extends CI_Model {
 	 * Update Access Ajax Details
 	 *
 	 * Used when editing template access prefs inline from the manager
-	 * @confirm - this isn't used?
 	 * @access	public
 	 * @return	bool
 	 */
@@ -527,7 +526,6 @@ class Template_model extends CI_Model {
 		$this->db->set('variable_data', $variable_data);
 		$this->db->set('site_id', $this->config->item('site_id'));
 		$this->db->where('variable_id', $variable_id);
-		// @confirm: what is the user_channel_id field?  Does action need to be taken here? DA
 
 		$this->db->update('global_variables');
 		
@@ -549,7 +547,6 @@ class Template_model extends CI_Model {
 		$this->db->set('variable_name', $variable_name);
 		$this->db->set('variable_data', $variable_data);
 		$this->db->set('site_id', $this->config->item('site_id'));
-		// @confirm: what is the user_channel_id field?  Does action need to be taken here? DA
 
 		$this->db->insert('global_variables');
 		

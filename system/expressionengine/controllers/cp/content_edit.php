@@ -196,11 +196,13 @@ class Content_edit extends Controller {
 		
 		$filter_data['keywords'] = $keywords;
 
-
+		// We need this for the filter, so grab it now
+		$cat_form_array = $this->api_channel_categories->category_form_tree($this->nest_categories);
+		
 		// If we have channels we'll write the JavaScript menu switching code
 		if ($total_channels > 0)
 		{
-			$this->filtering_menus();
+			$this->filtering_menus($cat_form_array);
 		}
 
 		// If we're filtering using ajax, we redirect comment only searches
@@ -281,7 +283,7 @@ class Content_edit extends Controller {
 
 		if ($query->num_rows() > 1)
 		{
-			$vars['channel_select_options']['all'] = $this->lang->line('all'); //@confirm : formerly, this was not "all", but "null", only null is already taken for "filter by channel"
+			$vars['channel_select_options']['all'] = $this->lang->line('all');
 		}
 
 		foreach ($query->result_array() as $row)
@@ -303,27 +305,27 @@ class Content_edit extends Controller {
 
 		if ($cat_group != '')
 		{
-			foreach($this->api_channel_categories->cat_array as $key => $val)
+			foreach($cat_form_array as $key => $val)
 			{
 				if ( ! in_array($val['0'], explode('|',$cat_group)))
 				{
-					unset($this->api_channel_categories->cat_array[$key]);
+					unset($cat_form_array[$key]);
 				}
 			}
 
 			$i=1;
 			$new_array = array();
 
-			foreach ($this->api_channel_categories->cat_array as $ckey => $cat)
+			foreach ($cat_form_array as $ckey => $cat)
 			{
-		    	if ($ckey-1 < 0 OR ! isset($this->api_channel_categories->cat_array[$ckey-1]))
+		    	if ($ckey-1 < 0 OR ! isset($cat_form_array[$ckey-1]))
     		   	{
 					$vars['category_select_options']['NULL_'.$i] = '-------';
             	}
             	
 				$vars['category_select_options'][$cat['1']] = (str_replace("!-!","&nbsp;", $cat['2']));
 
-            	if (isset($this->api_channel_categories->cat_array[$ckey+1]) && $this->api_channel_categories->cat_array[$ckey+1]['0'] != $cat['0'])
+            	if (isset($cat_form_array[$ckey+1]) && $cat_form_array[$ckey+1]['0'] != $cat['0'])
 	        	{
 					$vars['category_select_options']['NULL_'.$i] = '-------';
        			}
@@ -845,11 +847,7 @@ class Content_edit extends Controller {
 		
 		$filter_data['perpage'] = $perpage;
 		$filter_data['rownum'] = $offset;
-		
-		
-		// Note- we pipeline the js, so pull more data than are displayed on the page		
-		$perpage = $this->input->get_post('iDisplayLength');
-		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
+
 		$sEcho = $this->input->get_post('sEcho');	
 		
 		if ($filter_data['search_in'] == 'comments')
@@ -891,6 +889,7 @@ class Content_edit extends Controller {
 			}
 		}
 
+		/*
 		if ($filter_data['entry_id'] != FALSE OR $filter_data['comment_id'] != FALSE)
 		{
 			$filtered_entries = $this->search_model->comment_search('', $filter_data['entry_id'], array($filter_data['comment_id']), '', $validate, $order);
@@ -901,8 +900,9 @@ class Content_edit extends Controller {
 		}
 		else
 		{
+		*/
 			$filtered_entries = $this->search_model->get_filtered_entries($filter_data, $order);
-		}
+		//}
 
 		// No result?  Show the "no results" message
 		$total = $filtered_entries['total_count'];
@@ -914,37 +914,6 @@ class Content_edit extends Controller {
 		$j_response['iTotalDisplayRecords'] = $f_total;		
 		
 		
-		
-		// Did we shift over to comment search?
-		if ($filter_data['search_in'] == 'comments')
-		{
-			if (isset($filtered_entries['ids']))
-			{
-				$j_response['iTotalDisplayRecords'] = count($filtered_entries['ids']);
-			
-				$data_array = $this->search_model->comment_search('', '', $filtered_entries['ids'], count($filtered_entries['ids']), $validate, $order);
-			}
-			else
-			{
-				$data_array = $filtered_entries['results'];
-			}
-			
-			$j_response['aaData']  = $this->format_comments($filter_data['validate'], $data_array['results']);
-			
-			$this->output->send_ajax_response($j_response);
-		}
-
-		$total = $filtered_entries['total_count'];
-		$f_total = $filtered_entries['total_count'];
-		$query_results = $filtered_entries['results'];
-
-		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $f_total;  // note- duping the f_total here- should be true total
-		$j_response['iTotalDisplayRecords'] = $f_total;		
-		
-
-
-
 		// --------------------------------------------
 		//	 Fetch the channel information we need later
 		// --------------------------------------------
@@ -1035,10 +1004,6 @@ class Content_edit extends Controller {
 			}
 		}
 
-		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $f_total;  // note- duping the f_total here- should be true total
-		$j_response['iTotalDisplayRecords'] = $f_total;
-					
 		$tdata = array();
 		$i = 0;
 		
@@ -1744,9 +1709,6 @@ class Content_edit extends Controller {
 		}
 		else
 		{
-			// @confirm this is how we want to handle passing it to the view
-			//$vars['cats'] = $this->api_channel_categories->categories;
-			
 			foreach ($this->api_channel_categories->categories as $val)
 			{
 					$vars['cats'][$val['3']][] = $val;
@@ -2044,7 +2006,7 @@ class Content_edit extends Controller {
 	// are used to switch the various pull-down menus in the
 	// EDIT page
 	//--------------------------------------------
-	function filtering_menus()
+	function filtering_menus($cat_form_array)
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2078,46 +2040,6 @@ class Content_edit extends Controller {
 		}
 		
 		/** ----------------------------- 
-		/**  Category Tree
-		/** -----------------------------*/
-		
-		$order = ($this->nest_categories == 'y') ? 'group_id, parent_id, cat_name' : 'cat_name';
-
-		$this->db->select('categories.group_id, categories.parent_id, categories.cat_id, categories.cat_name');
-		$this->db->from('categories');
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$this->db->order_by($order);
-		
-		$query = $this->db->get();
-
-		// Load the text helper
-		$this->load->helper('text');
-				
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				$categories[] = array($row['group_id'], $row['cat_id'], entities_to_ascii($row['cat_name']), $row['parent_id']);
-			}
-
-			if ($this->nest_categories == 'y')
-			{
-				foreach($categories as $key => $val)
-				{
-					if (0 == $val['3']) 
-					{
-						$this->api_channel_categories->cat_array[] = array($val['0'], $val['1'], $val['2']);
-						$this->api_channel_categories->category_edit_subtree($val['1'], $categories, $depth=1);
-					}
-				}
-			}
-			else
-			{
-				$this->api_channel_categories->cat_array = $categories;
-			}
-		} 
-		  
-		/** ----------------------------- 
 		/**  Entry Statuses
 		/** -----------------------------*/
 		
@@ -2150,11 +2072,11 @@ class Content_edit extends Controller {
 			$any = 0;
 			$cats = $default_cats;
 	
-			if (count($this->api_channel_categories->cat_array) > 0)
+			if (count($cat_form_array) > 0)
 			{
 				$last_group = 0;
 		
-				foreach ($this->api_channel_categories->cat_array as $k => $v)
+				foreach ($cat_form_array as $k => $v)
 				{
 					if (in_array($v['0'], explode('|', $val['1'])))
 					{
@@ -2449,32 +2371,35 @@ class Content_edit extends Controller {
 			$this->output->send_ajax_response($j_response);			
 		}
 
+
+		//  We're searching in comments only
 		$filtered_entries = $this->search_model->get_filtered_entries($filter_data, $order);
 
 		// No result?  Show the "no results" message
-		$total = $filtered_entries['total_count'];
+		$total = $this->db->count_all('comments');
 		$f_total = $filtered_entries['total_count'];
 		$query_results = $filtered_entries['results'];
 
 		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $f_total;  // note- duping the f_total here- should be true total
+		$j_response['iTotalRecords'] = $total;  // note- duping the f_total here- should be true total
 		$j_response['iTotalDisplayRecords'] = $f_total;		
 		
-		if (isset($filtered_entries['ids']))
-		{
-			$j_response['iTotalDisplayRecords'] = count($filtered_entries['ids']);
+		//if (isset($filtered_entries['ids']))
+		//{
+		//	$j_response['iTotalDisplayRecords'] = 3; //count($filtered_entries['ids']);
 			
-			$data_array = $this->search_model->comment_search('', '', $filtered_entries['ids'], count($filtered_entries['ids']), $validate, $order);
-		}
-		else
-		{
+		//	$data_array = $this->search_model->comment_search('', '', $filtered_entries['ids'], count($filtered_entries['ids']), $validate, $order);
+		//}
+		//else
+		//{
 			$data_array = $filtered_entries['results'];
-		}
+		//}
 		
 			
 		$j_response['aaData']  = $this->format_comments($validate, $data_array['results']);
 			
 		$this->output->send_ajax_response($j_response);
+
 	}
 
 	function format_comments($validate = FALSE, $data_array = '')
@@ -2996,7 +2921,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				}
 				
 				$pag_config['total_rows'] = $total_rows;
-				$pag_config['base_url'] = $pag_base_url.AMP.'perpage='.$pag_config['per_page']; // @confirm this is a workaround for the old method - does the behavior match?
+				$pag_config['base_url'] = $pag_base_url.AMP.'perpage='.$pag_config['per_page'];
 
 				$this->pagination->initialize($pag_config);
 				$pagination_links = $this->pagination->create_links();
@@ -3916,12 +3841,9 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$this->load->helper('form');
 		$this->cp->set_variable('cp_page_title', $this->lang->line('delete_confirm'));
 
-		// @confirm this would be nice to have ...
-		// we cannot pass the ids along as hidden values as that will break the move function
-		
 		$this->cp->set_variable('cp_breadcrumbs', array(
 			BASE.AMP.'C=content_edit' => $this->lang->line('edit'),
-//			BASE.AMP.'C=content_edit'.AMP.'M=view_comments'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id	=> $this->lang->line('comments')
+
 		));
 		
 		$vars = array();

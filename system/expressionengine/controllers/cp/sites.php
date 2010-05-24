@@ -644,8 +644,7 @@ class Sites extends Controller {
 					if ($value == 'move')
 					{
 						$moved[$old_channel_id] = '';
-// @confirm sql
-					
+
 						$this->db->query($this->db->update_string('exp_channels', 
 													  array('site_id' => $site_id), 
 													  "channel_id = '".$this->db->escape_str($old_channel_id)."'"));
@@ -1461,7 +1460,6 @@ class Sites extends Controller {
 								if (isset($complete_entries[$row['rel_child_id']]))
 								{
 									$old_rel_id 		  = $row['rel_id'];
-									//$row['rel_id']		  = ''; @confirm
 									unset($row['rel_id']);
 									$row['rel_child_id']  = $complete_entries[$row['rel_child_id']];
 									$row['rel_parent_id'] = $complete_entries[$row['rel_parent_id']];
@@ -1484,7 +1482,7 @@ class Sites extends Controller {
 						
 						if (isset($entries[$channel_id]))
 						{
-							$channel_id = $channel_ids[$channel_id]; // Moveed Entries, New Channel ID Used
+							$channel_id = $channel_ids[$channel_id]; // Moved Entries, New Channel ID Used
 						}
 						
 						if ($query->num_rows() > 0)
@@ -1495,7 +1493,6 @@ class Sites extends Controller {
 							{
 								if ( ! isset($field_match[$row['field_id']])) continue;
 								
-// @confirm sql
 								$this->db->query("UPDATE exp_channel_data 
 											SET `field_id_".$this->db->escape_str($field_match[$row['field_id']])."` = `field_id_".$this->db->escape_str($row['field_id'])."` 
 											WHERE channel_id = '".$this->db->escape_str($channel_id)."'");
@@ -1549,7 +1546,6 @@ class Sites extends Controller {
 										{
 											if ($value != '0' && isset($moved_relationships[$value]))
 											{
-// @confirm sql
 												$this->db->query("UPDATE exp_channel_data 
 															SET `{$key}` = '".$this->db->escape_str($moved_relationships[$value])."'
 															WHERE `{$key}` = '".$this->db->escape_str($value)."'");

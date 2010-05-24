@@ -138,12 +138,7 @@ class Query {
 			
 			if ($this->total_rows > $this->p_limit)
 			{
-				if ( ! class_exists('Paginate'))
-				{
-					require APPPATH.'_to_be_replaced/lib.paginate'.EXT;
-				}
-				
-				$PGR = new Paginate();
+				$this->EE->load->library('pagination');
 				
 				if (strpos($this->basepath, SELF) === FALSE && $this->EE->config->item('site_index') != '')
 				{
@@ -151,15 +146,15 @@ class Query {
 				}
 				
 				$this->basepath = rtrim($this->basepath,'/').'/';
-				
-				$PGR->first_url 	= $this->basepath;
-				$PGR->path			= $this->basepath;
-				$PGR->prefix		= 'P';
-				$PGR->total_count 	= $this->total_rows;
-				$PGR->per_page		= $this->p_limit;
-				$PGR->cur_page		= $this->p_page;
 
-				$this->pagination_links = $PGR->show_links();
+				$config['base_url']		= $this->basepath;
+				$config['prefix']		= 'P';
+				$config['total_rows'] 	= $this->total_rows;
+				$config['per_page']		= $this->p_limit;
+				$config['cur_page']		= $this->p_page;
+
+				$this->EE->pagination->initialize($config);
+				$this->pagination_links = $this->EE->pagination->create_links();
 				
 				if ((($this->total_pages * $this->p_limit) - $this->p_limit) > $this->p_page)
 				{

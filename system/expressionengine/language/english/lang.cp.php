@@ -397,10 +397,6 @@ $lang = array(
 // Common
 //----------------------------
 
-// @confirm: I'm not sure this group of lang vars is best suited in the cp lang file... but
-// they seemed elements that would get re-used, or potentially re-used across the site, so 
-// I've opted for here for now.  If you have another opinion... just move em.  DA
-
 'create' 						=> 	'Create',
 'create_and_edit'				=> 	'Create and Edit',
 'modify' 						=>	'Modify',

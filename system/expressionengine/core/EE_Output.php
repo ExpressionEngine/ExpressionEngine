@@ -121,9 +121,6 @@ class EE_Output extends CI_Output {
 			
 		if (REQ != 'CP')
 		{
-			// This needs to go away once we are using CI's DB classes
-			// @confirm we are using CI's DB classes now ...
-			
 			$output = str_replace(LD.'total_queries'.RD, $EE->db->query_count, $output);		
 
 
@@ -134,7 +131,6 @@ class EE_Output extends CI_Output {
 				$output = preg_replace("/".LD."[^;\n]+?".RD."/", '', $output);
 			}
 		}
-		
 		
 		// Compress the output
 		// We simply set the ci config value to true

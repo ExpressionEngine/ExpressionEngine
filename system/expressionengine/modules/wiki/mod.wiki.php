@@ -5493,27 +5493,22 @@ class Wiki {
 			
 			if ($count > $limit)
 			{
-				if ( ! class_exists('Paginate'))
-				{
-					require APPPATH.'_to_be_replaced/lib.paginate'.EXT;
-				}
-				
-				$PGR = new Paginate();
+				$this->EE->load->library('pagination');
 				
 				if (strpos($base_path, SELF) === FALSE && $this->EE->config->item('site_index') != '')
 				{
 					$base_path .= SELF;
 				}	
 
-				$PGR->first_url 	= $base_path;
-				$PGR->path			= $base_path;
-				$PGR->prefix		= 'P';
-				$PGR->total_count 	= $count;
-				$PGR->per_page		= $limit;
-				$PGR->cur_page		= $this->p_page;
+				$config['base_url']		= $basepath;
+				$config['prefix']		= 'P';
+				$config['total_rows'] 	= $count;
+				$config['per_page']		= $limit;
+				$config['cur_page']		= $this->p_page;
 
-				$this->pagination_links = $PGR->show_links();
-				
+				$this->EE->pagination->initialize($config);
+				$this->pagination_links = $this->EE->pagination->create_links();
+								
 				if ((($this->total_pages * $limit) - $limit) > $this->p_page)
 				{
 					$this->page_next = $base_path.'P'.($this->p_page + $limit);

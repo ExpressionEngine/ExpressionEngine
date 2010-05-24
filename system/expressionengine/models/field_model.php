@@ -130,7 +130,6 @@ class Field_model extends CI_Model {
 	 */
 	function get_field_group_data($field_group_id = '')
 	{
-		// @confirm: This needs to be checked against the original code - DA
 		$this->db->from('field_groups');
 		$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->where('group_id', $field_group_id);

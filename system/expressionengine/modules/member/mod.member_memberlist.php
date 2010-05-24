@@ -465,19 +465,22 @@ class Member_memberlist extends Member {
 		$path = '';
 		$pag_uri_segment = 0;
 
-		if (preg_match('/^([0-9]+)-([0-9a-z\_]+)-([0-9a-z]+)-([0-9]+)$/i', $this->cur_id, $match))
+		  if (preg_match("#^[0-9]{1,}\-[0-9a-z_]{1,}\-[0-9a-z]{1,}\-[0-9]{1,}\-[0-9]{1,}$#i", $this->cur_id))
 		{
-			$group_id	= $match[1];
-			$order_by 	= $match[2];
-			$sort_order	= $match[3];
-			$row_limit	= $match[4];
+			$x = explode("-", $this->cur_id);
+		
+			$group_id	= $x['0'];
+			$order_by 	= $x['1'];
+			$sort_order	= $x['2'];
+			$row_limit	= $x['3'];
+			$row_count	= $x['4'];			
 			
 			// Which segment is this?  We need the NEXT segment to pass to pagination
 			$pag_uri_segment = array_search($this->cur_id, $this->EE->uri->segment_array()) + 1;
 
-			$row_count = ($this->uri_extra != '') ? $this->uri_extra : 0;
+			//$row_count = ($this->uri_extra != '') ? $this->uri_extra : 0;
 		}
-
+		
 		$path = '/'.$group_id.'-'.$order_by.'-'.$sort_order.'-'.$row_limit;
 
 		/** ----------------------------------------
@@ -569,26 +572,17 @@ class Member_memberlist extends Member {
 		{ 
 			$this->EE->load->library('pagination');
 
-			/*
-			$config['base_url'] = $this->_member_path('memberlist'.$search_path.$path, '');
-			$config['total_rows'] = $query->row('count');
-			$config['per_page'] = $row_limit;
-			$config['first_link'] = $this->EE->lang->line('first');
-			$config['last_link'] = $this->EE->lang->line('last');
-			$config['uri_segment'] = $pag_uri_segment;
-			*/
-			
-			$config['base_url'] = $this->_member_path('memberlist'.$search_path.$path, '');
+			$config['prefix'] = $search_path.$path.'-';
+			$config['base_url'] = $this->_member_path('memberlist', '');
 			$config['total_rows'] = $query->row('count');
 			$config['per_page'] = $row_limit;
 			$config['first_link'] = $this->EE->lang->line('first');
 			$config['last_link'] = $this->EE->lang->line('last');
 			$config['uri_segment'] = $pag_uri_segment;
 			$config['suffix'] = ($first_letter != '') ? $first_letter.'/' : '';
-			$config['first_url'] = $this->_member_path('memberlist'.$search_path);
-			
-						
-
+			$config['first_url'] = $this->_member_path('memberlist'.$search_path.$path.'-0');
+			$config['cur_page']	= ($row_count == '') ? '0' : $row_count;
+  
 			if (preg_match("/".LD.'pagination_links'.RD."/", $template))
 			{
 				$config['first_tag_open'] = '<td><div class="paginate">';
@@ -609,8 +603,9 @@ class Member_memberlist extends Member {
 			
 
 			$pager = $this->EE->pagination->create_links();
-			// var_dump($this->EE->pagination);exit;
+			 //var_dump($this->EE->pagination); //exit;
 			$sql .= " LIMIT ".$row_count.", ".$row_limit;
+
 		}
 
 		/** ----------------------------------------

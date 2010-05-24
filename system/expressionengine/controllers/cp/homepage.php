@@ -111,7 +111,6 @@ class Homepage extends Controller {
 		
 		
 		// Most recent comment and most recent entry
-		// @confirm - use cp->installed_modules['comment']?
 		
 		$this->load->model('channel_model');
 		$comments_installed = $this->db->table_exists('comments');

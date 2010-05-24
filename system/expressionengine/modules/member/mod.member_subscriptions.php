@@ -164,22 +164,20 @@ class Member_subscriptions extends Member {
 		
 		if ($total_rows > $perpage)
 		{
-			if ( ! class_exists('Paginate'))
-			{
-				require APPPATH.'_to_be_replaced/lib.paginate'.EXT;
-			}
+			$this->EE->load->library('pagination');
 			
-			$PGR = new Paginate();
-				
-			$PGR->first_url 	= $pageurl;
-			$PGR->path			= $pageurl;
-			$PGR->prefix		= 'R';
-			$PGR->total_count 	= $total_rows;
-			$PGR->per_page		= $perpage;
-			$PGR->cur_page		= $rownum;
-			$PGR->qstr_var	  = 'rownum';
+			$config['base_url']		= $pageurl;
+			$config['prefix']		= 'R';
+			$config['total_rows'] 	= $total_rows;
+			$config['per_page']		= $perpage;
+			$config['cur_page']		= $rownum;
+			$config['query_string_segment']	  = 'rownum';
+			$config['page_query_string']	= TRUE;
+
+
+			$this->EE->pagination->initialize($config);
+			$page_links = $this->EE->pagination->create_links();			
 			
-			$page_links	= $PGR->show_links();
 			
 			$result_ids = array_slice($result_ids, $rownum, $perpage);
 		}
