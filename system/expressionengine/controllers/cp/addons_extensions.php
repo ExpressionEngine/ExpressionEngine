@@ -313,7 +313,8 @@ class Addons_extensions extends Controller {
 		$this->load->library('table');
 				
 		$this->cp->set_variable('cp_page_title', $this->lang->line('extension_settings'));
-						
+		$this->cp->set_breadcrumb(BASE.AMP.'C=addons_extensions', $this->lang->line('extensions'));
+		
 		$vars['message'] = $message;
 		$vars['file'] = $this->input->get_post('file');
 		$class_name = ucfirst($vars['file']).'_ext';
