@@ -1,30 +1,24 @@
 /**
- * jQuery TOOLS plugin :: scrollable.autoscroll 1.0.0
+ * @license 
+ * jQuery Tools 1.2.2 / Scrollable Autoscroll
  * 
- * Copyright (c) 2009 Tero Piirainen
- * http://flowplayer.org/tools/scrollable.html#autoscroll
+ * NO COPYRIGHTS OR LICENSES. DO WHAT YOU LIKE.
+ * 
+ * http://flowplayer.org/tools/scrollable/autoscroll.html
  *
- * Dual licensed under MIT and GPL 2+ licenses
- * http://www.opensource.org/licenses
- *
- * Launch  : September 2009
- * Date: ${date}
- * Revision: ${revision} 
+ * Since: September 2009
+ * Date:    Wed May 19 06:53:17 2010 +0000 
  */
 (function($) {		
 
 	var t = $.tools.scrollable; 
-	t.plugins = t.plugins || {};
 	
-	t.plugins.autoscroll = {
-		version: '1.0.0',
+	t.autoscroll = {
 		
 		conf: {
 			autoplay: true,
 			interval: 3000,
-			autopause: true,
-			steps: 1,
-			api: false
+			autopause: true
 		}
 	};	
 	
@@ -35,12 +29,11 @@
 			conf = {interval: conf};	
 		}
 		
-		var opts = $.extend({}, t.plugins.autoscroll.conf), ret;
-		$.extend(opts, conf);   	
+		var opts = $.extend({}, t.autoscroll.conf, conf), ret;
 		
 		this.each(function() {		
 				
-			var api = $(this).scrollable();			
+			var api = $(this).data("scrollable");			
 			if (api) { ret = api; }
 			
 			// interval stuff
@@ -55,10 +48,10 @@
 				
 				// construct new timer
 				timer = setInterval(function() { 
-					api.move(opts.steps);				
+					api.next();				
 				}, opts.interval);
 				
-				api.move(opts.steps);
+				api.next();
 			};	
 
 			api.pause = function() {
@@ -94,4 +87,4 @@
 		
 	}; 
 	
-})(jQuery);		
+})(jQuery);

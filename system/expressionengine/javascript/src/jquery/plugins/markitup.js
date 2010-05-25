@@ -1,31 +1,29 @@
-/*!
-* ----------------------------------------------------------------------------
-* markItUp! Universal MarkUp Engine, JQuery plugin
-* v 1.1.4
-* Dual licensed under the MIT and GPL licenses.
-* ----------------------------------------------------------------------------
-* Copyright (C) 2007-2008 Jay Salvat
-* http:*markitup.jaysalvat.com/
-* ----------------------------------------------------------------------------
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-* 
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.
-* ----------------------------------------------------------------------------
-*/
+// ----------------------------------------------------------------------------
+// markItUp! Universal MarkUp Engine, JQuery plugin
+// v 1.1.7
+// Dual licensed under the MIT and GPL licenses.
+// ----------------------------------------------------------------------------
+// Copyright (C) 2007-2010 Jay Salvat
+// http://markitup.jaysalvat.com/
+// ----------------------------------------------------------------------------
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// ----------------------------------------------------------------------------
 (function($) {
 	$.fn.markItUp = function(settings, extraSettings) {
 		var options, ctrlKey, shiftKey, altKey;
@@ -148,7 +146,7 @@
 			function dropMenus(markupSet) {
 				var ul = $('<ul></ul>'), i = 0;
 				$('li:hover > ul', ul).css('display', 'block');
-				$(markupSet).each(function() {
+				$.each(markupSet, function() {
 					var button = this, t = '', title, li, j;
 					title = (button.key) ? (button.name||'')+' [Ctrl+'+button.key+']' : (button.name||'');
 					key   = (button.key) ? 'accesskey="'+button.key+'"' : '';
@@ -164,11 +162,11 @@
 							return false;
 						}).click(function() {
 							return false;
-						}).mouseup(function() {
+						}).mousedown(function() {
 							if (button.call) {
 								eval(button.call)();
 							}
-							markup(button);
+							setTimeout(function() { markup(button) },1);
 							return false;
 						}).hover(function() {
 								$('> ul', this).show();
@@ -404,7 +402,7 @@
 					} else { // opera
 						caretPosition = textarea.selectionStart;
 					}
-				} else { // gecko
+				} else { // gecko & webkit
 					caretPosition = textarea.selectionStart;
 					selection = $$.val().substring(caretPosition, textarea.selectionEnd);
 				} 
@@ -423,13 +421,15 @@
 						} else {
 							iFrame.insertBefore(header);
 						}	
-						previewWindow = iFrame[iFrame.length-1].contentWindow || frame[iFrame.length-1];
+						previewWindow = iFrame[iFrame.length - 1].contentWindow || frame[iFrame.length - 1];
 					}
 				} else if (altKey === true) {
+					// Thx Stephen M. Redd for the IE8 fix
 					if (iFrame) {
 						iFrame.remove();
+					} else {
+						previewWindow.close();
 					}
-					previewWindow.close();
 					previewWindow = iFrame = false;
 				}
 				if (!options.previewAutoRefresh) {
@@ -439,46 +439,48 @@
 
 			// refresh Preview window
 			function refreshPreview() {
+ 				renderPreview();
+			}
+
+			function renderPreview() {		
+				var phtml;
+				if (options.previewParserPath !== '') {
+					$.ajax( {
+						type: 'POST',
+						url: options.previewParserPath,
+						data: options.previewParserVar+'='+encodeURIComponent($$.val()),
+						success: function(data) {
+							writeInPreview( localize(data, 1) ); 
+						}
+					} );
+				} else {
+					if (!template) {
+						$.ajax( {
+							url: options.previewTemplatePath,
+							success: function(data) {
+								writeInPreview( localize(data, 1).replace(/<!-- content -->/g, $$.val()) );
+							}
+						} );
+					}
+				}
+				return false;
+			}
+			
+			function writeInPreview(data) {
 				if (previewWindow.document) {			
 					try {
 						sp = previewWindow.document.documentElement.scrollTop
 					} catch(e) {
 						sp = 0;
-					}					
+					}	
 					previewWindow.document.open();
-					previewWindow.document.write(renderPreview());
+					previewWindow.document.write(data);
 					previewWindow.document.close();
 					previewWindow.document.documentElement.scrollTop = sp;
 				}
 				if (options.previewInWindow) {
 					previewWindow.focus();
 				}
-			}
-
-			function renderPreview() {				
-				if (options.previewParserPath !== '') {
-					$.ajax( {
-						type: 'POST',
-						async: false,
-						url: options.previewParserPath,
-						data: options.previewParserVar+'='+encodeURIComponent($$.val()),
-						success: function(data) {
-							phtml = localize(data, 1); 
-						}
-					} );
-				} else {
-					if (!template) {
-						$.ajax( {
-							async: false,
-							url: options.previewTemplatePath,
-							success: function(data) {
-								template = localize(data, 1); 
-							}
-						} );
-					}
-					phtml = template.replace(/<!-- content -->/g, $$.val());
-				}
-				return phtml;
 			}
 			
 			// set keys pressed
@@ -492,7 +494,9 @@
 						li = $("a[accesskey="+String.fromCharCode(e.keyCode)+"]", header).parent('li');
 						if (li.length !== 0) {
 							ctrlKey = false;
-							li.triggerHandler('mouseup');
+							setTimeout(function() {
+								li.triggerHandler('mousedown');
+							},1);
 							return false;
 						}
 					}
@@ -511,6 +515,9 @@
 						}
 					}
 					if (e.keyCode === 9) { // Tab key
+						if (shiftKey == true || ctrlKey == true || altKey == true) { // Thx Dr Floob.
+							return false; 
+						}
 						if (caretOffset !== -1) {
 							get();
 							caretOffset = $$.val().length - caretOffset;
@@ -531,7 +538,7 @@
 
 	$.fn.markItUpRemove = function() {
 		return this.each(function() {
-				$$ = $(this).unbind().removeClass('markItUpEditor');
+				var $$ = $(this).unbind().removeClass('markItUpEditor');
 				$$.parent('div').parent('div.markItUp').parent('div').replaceWith($$);
 			}
 		);
