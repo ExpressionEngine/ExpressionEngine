@@ -1263,7 +1263,7 @@ class Channel_standalone extends Channel {
 	{
 		$scripts = array(
 				'ui'		=> array('core', 'dialog'),
-				'plugins'	=> array('scrollable', 'scrollable_navigator', 
+				'plugins'	=> array('scrollable', 'scrollable.navigator', 
 										'ee_filebrowser', 'markitup',
 										'thickbox')
 			);
