@@ -348,6 +348,7 @@ class Homepage extends Controller {
 		if ( ! is_dir(APPPATH.'cache/ee_version'))
 		{
 			mkdir(APPPATH.'cache/ee_version', DIR_WRITE_MODE);
+			@chmod(APPPATH.'cache/ee_version', DIR_WRITE_MODE);	
 		}
 
 		if (write_file(APPPATH.'cache/ee_version/current_version', serialize($details)))

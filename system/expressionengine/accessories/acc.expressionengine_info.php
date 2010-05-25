@@ -204,6 +204,7 @@ class Expressionengine_info_acc {
 		if ( ! is_dir(APPPATH.'cache/expressionengine_info'))
 		{
 			mkdir(APPPATH.'cache/expressionengine_info', DIR_WRITE_MODE);
+			@chmod(APPPATH.'cache/expressionengine_info', DIR_WRITE_MODE);
 		}
 		
 		if (write_file(APPPATH.'cache/expressionengine_info/version', serialize($details)))
