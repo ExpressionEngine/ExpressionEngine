@@ -1,8 +1,3 @@
-<?php
-  /** 
-   * @todo, wipe out css that's not needed.  make the width of the page with without jquery.
-   */
-?>
 <!doctype html>
 <html>
   <head>

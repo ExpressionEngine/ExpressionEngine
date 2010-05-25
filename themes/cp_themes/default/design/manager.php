@@ -223,8 +223,6 @@ if ($EE_view_disable !== TRUE)
 						$prefs_json = $this->javascript->generate_json($prefs_json);
 					?>
 					<script type="text/javascript" charset="utf-8">
-					
-						// @todo this needs to move into the controller...
 						EE.pref_json = <?=$prefs_json?>;
 					</script>
 				</div>

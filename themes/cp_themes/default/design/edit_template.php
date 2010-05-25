@@ -215,7 +215,6 @@ if ($EE_view_disable !== TRUE)
 			<?=form_label(lang('save_template_revision'), 'save_template_revision')?></p>
 			<?php endif; ?>
 			
-			<!-- @todo put columns back in -->
 			<input type="hidden" name="columns" id="columns" value = "" />
 
 			<?php if ($can_save_file): ?>

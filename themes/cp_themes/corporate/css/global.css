@@ -1757,12 +1757,6 @@ div.notice_texts ul.bad_path_error_list li ul li {color:#fff; font-weight:normal
 }
 
 
-
-
-
-/*
-@todo: this is only here for a few modules that aren't fully converted
-if they are all converted, delete this */
 #mainContent .tableHeading {
 	color:				#37444d;
 	font-size:			14px;

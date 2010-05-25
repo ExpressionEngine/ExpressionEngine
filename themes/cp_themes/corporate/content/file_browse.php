@@ -33,7 +33,7 @@ if ($EE_view_disable !== TRUE)
 						<p class="preview"><img src="<?=$file['src']?>" alt="<?=$file['name']?>" /></p>
 					<?php endif;?>
 
-					<div id="file_tags"><?php /*@confirm: for use for the Tag module... mayhaps? */?></div>
+					<div id="file_tags"></div>
 
 				<?php else:?>
 
@@ -79,8 +79,7 @@ if ($EE_view_disable !== TRUE)
 						</p>
 						
 					</div>
-<!-- @todo: this functionality isn't build in yet.  Probably should remove this line -->
-<!--				<div class="cp_button fu_pref"><a id="email_files" href="<?=BASE.AMP."C=admin_content".AMP."M=file_upload_preferences"?>"><?=lang('email_files')?></a></div>-->
+
 					<div class="fu_pref" id="delete_selected_files">
 						<p class="file_tool">
 						<a href="<?=BASE.AMP."C=content_files".AMP."M=delete_files_confirm"?>" class="submit_alt"><?=lang('delete_selected_files')?></a>

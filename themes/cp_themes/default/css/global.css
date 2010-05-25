@@ -424,13 +424,6 @@ span.button .submit {
 	color:				#fff;
 }
 
-/* Template list scroll @todo include channels, make pretty!
-ul#navigationTabs li ul ul ul ul {
-	max-height: 400px;
-	overflow-y: auto;
-	overflow-x: hidden;
-}*/
-
 /* Style the add tab link */
 
 #navigationTabs li #addQuickTab,
@@ -1396,9 +1389,6 @@ span.ee_notice_icon {
 }
 
 
-/*
-@todo: this is only here for a few modules that aren't fully converted
-if they are all converted, delete this */
 #mainContent .tableHeading {
 	color:				#37444d;
 	font-size:			14px;
@@ -1475,9 +1465,6 @@ if they are all converted, delete this */
 	width:					99%;
 }
 
-/* @todo find a way to inherit regular textarea style
- * without breaking main template editor textarea
- */
 #template_create textarea.notes:focus {
 	border:					2px solid #B2BEC0;
 	padding:				2px;
@@ -2360,7 +2347,7 @@ div.cat_group_container {
   margin-left:15px;
 }
 
-#sub_hold_field_category label { /* categories exception @todo: more elegant solution */
+#sub_hold_field_category label { 
 	font-weight:		normal!important;
 }
 

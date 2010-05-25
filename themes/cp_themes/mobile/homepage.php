@@ -3,8 +3,6 @@ if ($EE_view_disable !== TRUE)
 {
     $this->load->view('_shared/header');
 }
-// @todo, put checksum failure in here.
-// Also need User added tabs
 ?>
     <div id="home" class="current">
         <div class="toolbar">

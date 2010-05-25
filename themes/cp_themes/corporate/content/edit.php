@@ -29,16 +29,8 @@ if ($EE_view_disable !== TRUE)
 				<div class="group">
 					<?=form_dropdown('channel_id', $channel_select_options, $channel_selected, 'id="f_channel_id"').NBS.NBS?>
 					<?=form_dropdown('cat_id', $category_select_options, $category_selected, 'id="f_cat_id"').NBS.NBS?>
-					<?php
-						//@todo: I threw author in there... not part of EE 1.6 - Needs some work...
-					 	//echo form_dropdown('author_id', $author_select_options, $author_selected, 'id="f_author_id"').NBS.NBS
-					?>
-					<?=form_dropdown('status', $status_select_options, $status_selected, 'id="f_status"').NBS.NBS?>
 					<?=form_dropdown('date_range', $date_select_options, $date_selected, 'id="date_range"').NBS.NBS?>
-					<?php
-						// JS required theme, so ordering handled by table sorter
-						//form_dropdown('order', $order_select_options, $order_selected, 'id="f_select_options"').NBS.NBS
-					?>
+
 					<?=form_dropdown('perpage', $perpage_select_options, $perpage_selected, 'id="f_perpage"')?>
 				</div>
 

@@ -157,7 +157,7 @@ if ($EE_view_disable !== TRUE)
 							</fieldset>
 
 							<?php
-							// @todo move this logic to the controller or fieldtype api
+
 							$defaults = array(
 								'field_show_spellcheck'			=> 'n',
 								'field_show_smileys'			=> 'n',

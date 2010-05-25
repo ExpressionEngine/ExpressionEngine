@@ -50,12 +50,7 @@
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=bookmarklet'.AMP.'id='.$id?>"><?=lang('bookmarklet')?></a></li>
 		</ul>
 	</a></li>
-<!-- @todo: we want or need quicklinks?
-	<li><span class="top_menu"><?=lang('extras')?></span>
-		<ul>
-			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=quick_links'.AMP.'id='.$id?>"><?=lang('quick_links')?></a></li>
-		</ul>
-	</a></li>-->
+
 	<?php if ($can_admin_members):?>
 	<li><span class="top_menu"><?=lang('administrative_options')?></span>
 		<ul>

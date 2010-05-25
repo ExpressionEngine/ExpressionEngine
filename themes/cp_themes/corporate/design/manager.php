@@ -226,7 +226,6 @@ if ($EE_view_disable !== TRUE)
 					?>
 					<script type="text/javascript" charset="utf-8">
 					
-						// @todo this needs to move into the controller...
 						EE.pref_json = <?=$prefs_json?>;
 					</script>
 				</div>

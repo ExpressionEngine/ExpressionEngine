@@ -23,7 +23,6 @@ if ($EE_view_disable !== TRUE)
 			$this->table->set_template($cp_pad_table_template);
 			$this->table->set_heading(
 										lang('status_group'),
-//@todo build drag and drop order functionality										lang('order'),
 										'',
 										''
 									);
@@ -36,7 +35,6 @@ if ($EE_view_disable !== TRUE)
 
 					$this->table->add_row(
 						$status->status,
-//@todo build drag and drop order functionality						'',
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_edit'.AMP.'status_id='.$status->status_id.'">'. lang('edit').'</a>',
 						$delete
 					);

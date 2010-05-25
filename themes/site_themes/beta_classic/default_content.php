@@ -40,12 +40,6 @@ $Q[] = "INSERT INTO exp_category_posts (entry_id, cat_id) VALUES ('1', '1')";
 $Q[] = "INSERT INTO exp_channel_titles (channel_id, author_id, ip_address, entry_date, edit_date, year, month, day, title, url_title, status, dst_enabled) VALUES ('1', '1',  '".$this->input->ip_address()."', '".$this->now."', '".date("YmdHis")."', '".$this->year."', '".$this->month."', '".$this->day."', 'Getting Started with ExpressionEngine', 'getting_started', 'open', '".$this->userdata['daylight_savings']."')";
 $Q[] = "INSERT INTO exp_channel_data (entry_id, channel_id, field_id_1, field_ft_1, field_id_2, field_ft_2, field_id_3, field_ft_3) VALUES ('1', '1', '', 'xhtml', '".$this->db->escape_str($this->schema->default_entry)."', 'xhtml', '', 'xhtml')";
 
-// Upload prefs
-// @confirm: we had to monkey around with the image_path since the installer APPPATH was buried inside the expressionengine folder
-// but now that shouldn't be necessary. commented out 5/5/10
-// $orig_image_path = $this->userdata['image_path'];
-// $this->userdata['image_path'] = str_replace(SYSDIR.'/codeigniter/system/', '', BASEPATH).'images/';
-
 if (@realpath(str_replace('../', './', $this->userdata['image_path'])) !== FALSE)
 {
 	$this->userdata['image_path'] = str_replace('../', './', $this->userdata['image_path']);
@@ -55,9 +49,6 @@ if (@realpath(str_replace('../', './', $this->userdata['image_path'])) !== FALSE
 $props = 'style="border: 0;" alt="image"';
 $Q[] = "INSERT INTO exp_upload_prefs (name, server_path, url, allowed_types, properties) 
 		VALUES ('Main Upload Directory', '".$this->userdata['image_path'].$this->userdata['upload_folder']."', '".$this->userdata['site_url'].'images/'.$this->userdata['upload_folder']."', 'all', '$props')";		
-
-// @confirm: now set it back
-$this->userdata['image_path'] = $orig_image_path;
 
 foreach ($Q as $sql)
 {

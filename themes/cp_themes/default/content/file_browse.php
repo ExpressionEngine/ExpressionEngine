@@ -35,7 +35,7 @@ if ($EE_view_disable !== TRUE)
 						<p class="preview"><img src="<?=$file['src']?>" alt="<?=$file['name']?>" /></p>
 					<?php endif;?>
 
-					<div id="file_tags"><?php /*@confirm: for use for the Tag module... mayhaps? */?></div>
+					<div id="file_tags"></div>
 
 				<?php else:?>
 
@@ -75,12 +75,6 @@ if ($EE_view_disable !== TRUE)
 				<h3><a href="#"><?=lang('file_tools')?></a></h3>
 				<div class="f_m_s">
 					<ul>
-						<?php /* ?>
-						@todo: this functionality isn't build in yet.
-						<li id="email_files">
-							<a title="<?=lang('email_files')?>" href="<?=BASE.AMP."C=admin_content".AMP."M=file_upload_preferences"?>"><?=lang('email_files')?></a>
-						</li>
-						<?php */ ?>
 						<li id="download_selected">
 							<a href="#" title="<?=lang('download_selected')?>"><?=lang('download_selected')?></a>
 						</li>

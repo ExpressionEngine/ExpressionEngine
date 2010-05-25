@@ -93,20 +93,12 @@ $Q[] = "INSERT INTO `exp_category_posts` (`entry_id`, `cat_id`) VALUES
 (9, 3),
 (10, 2)";
 
-// @confirm: we had to monkey around with the image_path since the installer APPPATH was buried inside the expressionengine folder
-// but now that shouldn't be necessary. commented out 5/5/10
-// $orig_image_path = $this->userdata['image_path'];
-// $this->userdata['image_path'] = str_replace(SYSDIR.'/codeigniter/system/', '', BASEPATH).'images/';
-
 // Add upload locations
 $Q[] = "INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`) VALUES 
 (1, 1, 'Main Upload Directory', '".$this->userdata['image_path'].$this->userdata['upload_folder']."', '".$this->userdata['site_url'].'images/'.$this->userdata['upload_folder']."', 'all', '', '', '', 'style=\"border: 0;\" alt=\"image\"', '', '', '', '', ''),
 (2, 1, 'About', '".$this->theme_path."agile_records/images/uploads/', '".$this->userdata['site_url']."themes/site_themes/agile_records/images/uploads/', 'img', '', '', '', '', '', '', '', '', '')";
 
 chmod($this->theme_path."agile_records/images/uploads/", DIR_WRITE_MODE);
-
-// @confirm: now set it back
-// $this->userdata['image_path'] = $orig_image_path;
 
 foreach ($Q as $sql)
 {
