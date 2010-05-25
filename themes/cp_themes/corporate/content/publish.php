@@ -187,7 +187,7 @@ if ($EE_view_disable !== TRUE)
 								<p class="spellcheck markitup">
 
 									<?php if ($f['field_show_writemode'] == 'y'):?>
-										<a href="<?=$write_mode_link?>" class="write_mode_trigger" rel="#write_mode_container" id="id_<?=$f['field_id']?>" title="<?=lang('write_mode')?>"><img alt="<?=lang('write_mode')?>" width="22" height="21" src="<?=$cp_theme_url?>images/publish_write_mode.png" /></a> 
+										<a href="#" class="write_mode_trigger" rel="#write_mode_container" id="id_<?=$f['field_id']?>" title="<?=lang('write_mode')?>"><img alt="<?=lang('write_mode')?>" width="22" height="21" src="<?=$cp_theme_url?>images/publish_write_mode.png" /></a> 
 									<?php endif;?>
 
 									<?php if ($f['field_show_file_selector'] == 'y' && count($file_list) > 0):?>
