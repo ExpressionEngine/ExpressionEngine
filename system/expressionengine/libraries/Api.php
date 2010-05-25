@@ -192,8 +192,6 @@ class Api {
 	
 		switch($type)
 		{
-			case 'gallery'	: $table = 'gallery_entries';	$url_title_field = 'url_title';		$type_field = 'gallery_id';	$self_field = 'entry_id';
-				break;
 			case 'category'	: $table = 'categories';		$url_title_field = 'cat_url_title';	$type_field = 'group_id';	$self_field = 'category_id';
 				break;
 			default			: $table = 'channel_titles';	$url_title_field = 'url_title';		$type_field = 'channel_id'; $self_field = 'entry_id';
