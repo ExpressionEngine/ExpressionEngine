@@ -1813,7 +1813,7 @@ class Channel_standalone extends Channel {
 					$file .= '<img src="'.$this->theme_url.'cp_global_images/default.png" alt="default thumbnail" />';
 					$file .= '</p>';
 					$file .= '<p class="sub_filename"><a href="#" class="remove_file">'.$this->EE->lang->line('remove_file').'</a></p>';
-					$file .= '<p><input type="hidden" name="'.$row['field_name'].'_hidden" value="'.$field_data.'" /></p>';
+					$file .= '<p><input type="hidden" name="field_id_'.$row['field_id'].'_hidden" value="'.$field_data.'" /></p>';
 					$file .= '</div>'; 
 					$file .= '<div class="no_file js_hide">';
 					$file .= '<p><input type="file" name="field_id_'.$row['field_id'].'" value="'.$field_data.'" /></p>';
