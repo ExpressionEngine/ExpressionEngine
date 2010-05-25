@@ -73,7 +73,6 @@ EE.create_searchbox = function() {
 	EE.create_searchbox.apply(EE.create_searchbox, arguments);
 };
 
-// @todo Language keys
 EE.create_searchbox('cp_search_keywords', EE.lang.search, 'ee_cp_search');
 EE.create_searchbox('template_keywords', EE.lang.search_template, 'ee_template_search');
 
