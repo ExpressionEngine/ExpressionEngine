@@ -424,13 +424,13 @@ class EE_Template {
 		// If a cache file exists for the primary template
 		// there is no reason to go further.
 		// However we do need to fetch any subtemplates
-
+		
 		if ($this->cache_status == 'CURRENT' AND $sub == FALSE)
 		{
 			$this->log_item("Cached Template Used");
 		
 			$this->template = $this->parse_nocache($this->template);
-		
+			
 			/** -------------------------------------
 			/**  Smite Our Enemies:  Advanced Conditionals
 			/** -------------------------------------*/
@@ -995,7 +995,7 @@ class EE_Template {
 		$modules = array();
 		
 		// Fill an array with the names of all the classes that we previously extracted from the tags
-
+		
 		for ($i = 0, $ctd = count($this->tag_data); $i < $ctd; $i++)
 		{
 			// Check the tag cache file
@@ -3074,7 +3074,7 @@ class EE_Template {
 		
 		// In order for the comment form not to cache the "save info"
 		// data we need to generate dynamically if necessary
-
+		
 		if (preg_match_all("#{NOCACHE_(\S+)_FORM=\"(.*?)\"}(.+?){/NOCACHE_FORM}#s", $str, $match))
 		{
 			$this->EE->load->library('security');
@@ -3089,7 +3089,7 @@ class EE_Template {
 				}
 						
 				$this->tagdata = $match[3][$i];
-			
+
 				$vars = $this->EE->functions->assign_variables($match[3][$i], '/');			
 				$this->var_single	= $vars['var_single'];
 				$this->var_pair		= $vars['var_pair'];
@@ -3102,7 +3102,7 @@ class EE_Template {
 				$this->_fetch_site_ids();
 
 				// Assign Form ID/Classes
-				$this->tag_data[$i] = $this->_assign_form_params($this->tag_data[$i]);
+				$this->tag_data[$i] = $this->_assign_form_params($this->tagdata);
 
 				if ($class == 'comment')
 				{
@@ -3112,6 +3112,7 @@ class EE_Template {
 				$str = str_replace('{PREVIEW_TEMPLATE}', $match[2][$i], $str);	
 			}
 		}
+		
 		/** -----------------------------------
 		/**  Generate Stand-alone Publish form
 		/** -----------------------------------*/
