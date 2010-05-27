@@ -50,11 +50,23 @@ class Updater {
         $this->EE->load->library('progress');
         
         $this->config =& $config;
+
     }
 
     function do_update()
     {
-        // turn off extensions
+        $ignore = FALSE;
+		if ($this->EE->input->get_post('templates') == 'ignore')
+		{
+			//$this->config->_append_config_1x(array('ignore_templates' => 'y'));	
+			
+$this->EE->config->_update_config(array('ignore_templates' => 'y'));
+$ignore = 'y';
+			
+			
+		}
+
+		// turn off extensions
         $this->EE->db->update('extensions', array('enabled' => 'n'));
         
         // Load the string helper
@@ -66,7 +78,7 @@ class Updater {
         $query = $this->EE->db->query("SELECT es.* FROM exp_sites AS es");
 
         // Update Flat File Templates if we have any
-        $this->_update_templates_saved_as_files($query);
+        $this->_update_templates_saved_as_files($query, $ignore);
 
         foreach($query->result_array() as $row)
         {
@@ -110,12 +122,14 @@ class Updater {
             $this->EE->db->query($this->EE->db->update_string('exp_sites', $row, "site_id = '".$this->EE->db->escape_str($row['site_id'])."'"));
         }
         
-        // there's another step yet
+ 		// there's another step yet
         return 'convert_db_to_utf8';
+
         
     }
 
-    // ------------------------------------------------------------------------
+
+   // ------------------------------------------------------------------------
     
     /**
      * Look for any templates saved as files, sync them with the database
@@ -125,10 +139,24 @@ class Updater {
 	 * @param object	Query object from sites query.
 	 * @return void
      */
-    function _update_templates_saved_as_files($sites)
+    function _update_templates_saved_as_files($sites, $ignore)
     {
 		$sites_with_templates = array();
-	
+		$this->EE->progress->update_state('doing template move');
+
+		$ignore_templates = (isset($this->config['ignore_templates'])) ? $this->config['ignore_templates'] : $ignore;
+		
+
+		if ($ignore_templates != 'y')
+		{
+
+$ignore = anchor('C=wizard&M=do_update&agree=yes&ajax_progress=yes&language=english&templates=ignore', $this->EE->lang->line('ignore'));
+$retry = $this->EE->set_qstr('retry', $this->EE->lang->line('retry'));
+$err_message = $ignore.' '.$retry;
+
+show_error($this->EE->lang->line('template_files_not_located').$err_message);
+}
+
 		foreach ($sites->result() as $site)
 		{
 			$templates = unserialize($site->site_template_preferences);
@@ -145,6 +173,8 @@ class Updater {
 						);
 		}
 	
+		show_error('woot');
+		
 		// Do we have any sites with templates?  If there aren't any, bail out!
 		if (empty($sites_with_templates))
 		{
