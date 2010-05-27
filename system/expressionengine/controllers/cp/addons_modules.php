@@ -364,7 +364,7 @@ class Addons_modules extends Controller {
 		if ($this->addons_installer->install($module, 'module'))
 		{
 			$name = ($this->lang->line($module.'_module_name') == FALSE) ? ucfirst($module) : $this->lang->line($module.'_module_name');
-			$cp_message = $this->lang->line('module_has_been_installed').NBS.'<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module='.$module.'">'.$name.'</a>';
+			$cp_message = $this->lang->line('module_has_been_installed').NBS.$name;
 			
 			$this->session->set_flashdata('message_success', $cp_message);
 			$this->functions->redirect(BASE.AMP.'C=addons_modules');

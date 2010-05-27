@@ -17,7 +17,7 @@ if ($EE_view_disable !== TRUE)
 				<?php if ($can_rebuild):?>
 				
 					<div class="cp_button"><a href="<?=BASE.AMP.'C=search'.AMP.'M=build_index'?>"><?=lang('rebuild_search_index')?></a></div>
-				
+					<div class="clear_left"></div>
 				<?php endif;
 
 				if ($num_rows > 0):

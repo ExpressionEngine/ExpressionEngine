@@ -103,6 +103,8 @@ class Addons_installer {
 	 */
 	function uninstall($addon, $type = 'module', $check_package = TRUE)
 	{
+		$third_party = $this->EE->addons->is_package($addon);
+		
 		if (is_array($type))
 		{
 			foreach($type as $component)
@@ -125,7 +127,17 @@ class Addons_installer {
 
 			if (method_exists($this, $method))
 			{
+				if ($third_party)
+				{
+					$this->EE->load->add_package_path($this->EE->addons->_packages[$addon][$type]['path']);
+				}
+
 				$this->$method($addon);
+
+				if ($third_party)
+				{
+					$this->EE->load->remove_package_path($this->EE->addons->_packages[$addon][$type]['path']);
+				}
 			}
 		}
 		
