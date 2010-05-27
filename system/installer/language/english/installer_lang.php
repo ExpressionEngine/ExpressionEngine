@@ -137,9 +137,19 @@ $lang['update_ee'] = 'Update ExpressionEngine!';
 
 // Template Updater Lang
 $lang['updating_template_as_files'] = 'Updating templates saved as files.';
-$lang['template_files_not_located'] = 'The following template files could not be located:';
-$lang['proper_template_files_location'] = 'Please make sure your template group folders are located in %s and the template folder has permissions of 777';
-$lang['site_templates_not_found'] = 'The following sites have templates saved as files and templates can not be found.  Please verify %s have been uploaded.';
+$lang['template_folders_not_located'] = 'The following site shortnames have templates saved as text files but no corresponding folder exists for the site:';
+$lang['template_folders_not_located_instr'] = 'Please upload the contents of your 1.x system/templates/ directory to the corresponding system/expressionengine/templates/&lt;site_short_name&gt;/  folder and verify permissions on the templates folder is set to 777.';
+$lang['template_files_not_located'] = 'Tempates should be saved as text files in the following locations, but the files are not readable.  Please make sure the files exists and have proper permissions:';
+
+$lang['template_missing_explain_retry'] = 'The updater will sync your templates with the database and move the old files to a folder within the templates directory for archival purposes.  If the missing template files cannot be found and read, it is possible the database will not contain the most recent version of your template.  To prevent this, you are encouraged to replace any missing files above and %s.';
+
+$lang['template_missing_explain_ignore'] = '  If the database was already synced to the files or the missing folders are moot, you may %s';
+
+$lang['template_retry'] = 'Resume the Update';
+$lang['template_ignore'] = 'Ignore the Template Warning';
+
+$lang['template_move_errors'] = 'There was an error moving your existing template files to an archive folder.  Please manually move any folders in the form system/expressionengine/templates/&lt;site_short_name&gt;/ to a backup location and then %s.';
+
 $lang['template_folder_not_writeable'] = 'The template folder is not writeable, make sure permissions are set to 777 on %s';
 $lang['unable_to_read_tmpl_file'] = 'Unable to read the following file:  %s Verify it exists.';
 $lang['could_not_create_folder'] = 'Could not create folder for %s.  Please make sure %s is writable';

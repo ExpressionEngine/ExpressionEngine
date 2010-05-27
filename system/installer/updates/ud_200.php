@@ -143,19 +143,19 @@ class Updater {
 	 * @param object	Query object from sites query.
 	 * @return void
      */
-    function _update_templates_saved_as_files($sites, $ignore, $manual_move)
+    function _update_templates_saved_as_files($sites, $ignore_setting, $manual_move)
     {
 		$sites_with_templates = array();
+		$template_move_errors = FALSE;
 
-		$ignore_templates = (isset($this->config['ignore_templates'])) ? $this->config['ignore_templates'] : $ignore;
-		$manual_move_templates = (isset($this->config['manual_templates_move'])) ? $this->config['manual_templates_move'] : $manual_move;
-		
+		$ignore_templates = 'y'; //(isset($this->config['ignore_templates'])) ? $this->config['ignore_templates'] : $ignore_setting;
+		$manual_move_templates = 'y';  (isset($this->config['manual_templates_move'])) ? $this->config['manual_templates_move'] : $manual_move;
+
 		foreach ($sites->result() as $site)
 		{
 			$templates = unserialize($site->site_template_preferences);
 
-			
-			if ($manual_move == 'y')
+			if ($manual_move_templates == 'y')
 			{
 				$sites_with_templates[$site->site_name]['query'] = FALSE;	
 				continue;
@@ -181,23 +181,22 @@ class Updater {
 		
 		//  If we are retrying after a manual removal of templates, check
 		//  that folder is gone and then move along
-		if ($manual_move == 'y')
+		if ($manual_move_templates == 'y')
 		{
 			$must_remove = array();
-			foreach ($sites_with_templates as $site)
+			$retry = anchor('C=wizard&M=do_update&agree=yes&ajax_progress=yes&language='.$this->mylang.'&templates=manual', $this->EE->lang->line('template_retry'));
+			foreach ($sites_with_templates as $name => $site)
 			{
-				if (is_dir(EE_APPPATH.'templates/'.$site['site_name'].'/'))
+				if (is_dir(EE_APPPATH.'templates/'.$name.'/'))
 				{
-					$must_remove[] = $site['site_name'];
+					$must_remove[] = $name;
 				}	
 			}
 			
 			if ( ! empty($must_remove))
 			{
-					$removal_error = implode(', <br />', $must_remove);
-					$retry = anchor('C=wizard&M=do_update&agree=yes&ajax_progress=yes&language=english&templates=manual', $this->EE->lang->line('retry'));
-					$folder_error_str = sprintf($this->EE->lang->line('manual_removal_required'), 
-								$removal_error.$retry);
+					//$removal_error = implode(', <br />', $must_remove);
+					show_error(sprintf($this->EE->lang->line('template_move_errors'), $retry));
 			}
 			else
 			{
@@ -243,13 +242,13 @@ class Updater {
 		// Actually exist before we go much further.  We'll combine in a single error message later on.
 		$old_template_upload_errors = array();
 
-		foreach ($sites_with_templates as $site)
-		{
-			if ($site['query'] !== FALSE && ! is_really_writable(EE_APPPATH.'templates/'.$site['site_name'].'/'))
-			{
-				$old_template_upload_errors[] = EE_APPPATH.'templates/'.$site['site_name'].'/';
-			}
-		}
+		//foreach ($sites_with_templates as $site)
+		//{
+		//	if ($site['query'] !== FALSE && ! is_really_writable(EE_APPPATH.'templates/'.$site['site_name'].'/'))
+		//	{
+		//		$old_template_upload_errors[] = $site['site_name'];
+		//	}
+		//}
 
 		// On to the real deal.
 		foreach ($sites_with_templates as $site)
@@ -269,9 +268,15 @@ class Updater {
 
 			if ($site['query'] !== FALSE)
 			{
+				if ( ! is_really_writable(EE_APPPATH.'templates/'.$site['site_name'].'/'))
+				{
+					$old_template_upload_errors[] = $site['site_name'];
+				}				
+				
 				foreach ($site['query']->result() as $row)
 				{
-					if ( ! file_exists($template_path.$row->group_name.'/'.$row->template_name.EXT))
+					// Check overhead on testing here
+					if (read_file($template_path.$row->group_name.'/'.$row->template_name.EXT) === FALSE)
 					{
 						$template_errors[] = $row->group_name.'/'.$row->template_name;
 					}
@@ -290,21 +295,27 @@ class Updater {
 			{
 				$folder_error_str = '';
 				$template_error_str = '';
-								
+				
+				$ignore = anchor('C=wizard&M=do_update&agree=yes&ajax_progress=yes&language='.$this->mylang.'&templates=ignore', $this->EE->lang->line('template_ignore'));
+				$retry = anchor('C=wizard&M=do_update&agree=yes&ajax_progress=yes&language='.$this->mylang, $this->EE->lang->line('template_retry'));
+			
 				if ( ! empty($old_template_upload_errors))
 				{
-					$folder_error = implode(', <br />', $old_template_upload_errors);
+					$folder_error = '<ul>';
 
-					$ignore = anchor('C=wizard&M=do_update&agree=yes&ajax_progress=yes&language=english&templates=ignore', $this->EE->lang->line('ignore'));
-					$retry = anchor('C=wizard&M=do_update&agree=yes&ajax_progress=yes&language=english&templates=retry', $this->EE->lang->line('retry'));
-					$err_message = $ignore.' '.$retry;
-					$folder_error_str = sprintf($this->EE->lang->line('site_templates_not_found'), 
-								$folder_error.$err_message);
+					foreach ($old_template_upload_errors as $key => $val)
+					{
+						$folder_error .= '<li>'.$val.'</li>';
+					}					
+					
+					$folder_error .= '</ul>';					
+
+					$folder_error_str = $this->EE->lang->line('template_folders_not_located').$folder_error.$this->EE->lang->line('template_folders_not_located_instr');	
 				}
 				
 				if ( ! empty($template_errors))
 				{
-					$this->EE->lang->line('template_files_not_located');
+					$template_error_str = '<br /><br />'.$this->EE->lang->line('template_files_not_located');
 				
 					$template_error_str .= '<ul>';
 
@@ -317,19 +328,29 @@ class Updater {
 					$template_error_string .= sprintf($this->EE->lang->line('proper_template_files_location'), 
 									$template_path);
 				}
-				show_error($folder_error_str.$template_error_str);
+				
+				$template_error_explain = sprintf($this->EE->lang->line('template_missing_explain_retry'), $retry);
+				$template_error_explain .= sprintf($this->EE->lang->line('template_missing_explain_ignore'), $ignore);
+				show_error($folder_error_str.$template_error_str.$template_error_explain);
 			}
 
 			foreach ($templates_to_move as $key => $val)
 			{
 				$one_six_file = read_file($template_path.$val->group_name.'/'.$val->template_name.EXT);
+				
+				if ($one_six_file === FALSE)
+				{
+					continue;
+				}
 
+				/*
 				if ( ! $one_six_file)
 				{
 					//show_error(sprintf($this->EE->lang->line('unable_to_read_tmpl_file'),
 					//					$val->group_name.'/'.$val->template_name.EXT));
 					$this->template_move_errors = TRUE;
 				}
+				*/
 
 				$this->EE->db->where('template_id', $val->template_id);
 				$this->EE->db->update('templates', array('template_data' => $one_six_file));
@@ -352,10 +373,17 @@ class Updater {
 			}			
 			
 			// Move the site's template folder
-			if ( ! rename(EE_APPPATH.'templates/'.$site['site_name'], $old_template_folder))
+			if (is_dir(EE_APPPATH.'templates/'.$site['site_name']) && ! @rename(EE_APPPATH.'templates/'.$site['site_name'], $old_template_folder))
 			{
 				$template_move_errors = TRUE;
 			}
+			
+		}
+		
+		if ($template_move_errors)
+		{
+			$retry = anchor('C=wizard&M=do_update&agree=yes&ajax_progress=yes&language='.$this->mylang.'&templates=manual', $this->EE->lang->line('template_retry'));
+			show_error(sprintf($this->EE->lang->line('template_move_errors'), $retry));
 		}
 
 		return;
@@ -982,7 +1010,12 @@ class Updater {
         $Q[] = "ALTER TABLE `exp_weblog_titles` DROP COLUMN `recent_trackback_date`";
         $Q[] = "DROP TABLE IF EXISTS `exp_trackbacks`";
         
-        // Add primary keys as needed for normalization of all tables
+        // Eliminate duplicate primaries
+		$Q[] = "CREATE TABLE exp_tmp_upload_no_access SELECT DISTINCT upload_id, member_group FROM exp_upload_no_access";
+		$Q[] = "DROP TABLE exp_upload_no_access";
+		$Q[] = "ALTER TABLE exp_tmp_upload_no_access RENAME TO exp_upload_no_access";
+
+		// Add primary keys as needed for normalization of all tables
         $Q[] = "ALTER TABLE `exp_throttle` ADD COLUMN `throttle_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
         $Q[] = "ALTER TABLE `exp_stats` ADD COLUMN `stat_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
         $Q[] = "ALTER TABLE `exp_online_users` ADD COLUMN `online_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
