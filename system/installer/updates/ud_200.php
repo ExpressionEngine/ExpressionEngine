@@ -25,7 +25,7 @@
 class Updater {
 
     var $version_suffix = 'pb01';
-	var $template_move_errors = FALSE;
+	var $mylang = 'english';
     
     function Updater()
     {
@@ -58,6 +58,12 @@ class Updater {
     {
         $ignore = FALSE;
 		$manual_move = FALSE;
+		
+ 		if ($this->EE->input->get('language') != FALSE && $this->EE->input->get('language') != '')
+		{
+			$this->mylang = $this->EE->input->get_post('language');
+		}
+		
 		
 		if ($this->EE->input->get_post('templates') == 'ignore')
 		{
@@ -148,8 +154,8 @@ class Updater {
 		$sites_with_templates = array();
 		$template_move_errors = FALSE;
 
-		$ignore_templates = 'y'; //(isset($this->config['ignore_templates'])) ? $this->config['ignore_templates'] : $ignore_setting;
-		$manual_move_templates = 'y';  (isset($this->config['manual_templates_move'])) ? $this->config['manual_templates_move'] : $manual_move;
+		$ignore_templates = (isset($this->config['ignore_templates'])) ? $this->config['ignore_templates'] : $ignore_setting;
+		$manual_move_templates = (isset($this->config['manual_templates_move'])) ? $this->config['manual_templates_move'] : $manual_move;
 
 		foreach ($sites->result() as $site)
 		{
@@ -325,8 +331,8 @@ class Updater {
 					}
 
 					$template_error_str .= '</ul>';
-					$template_error_string .= sprintf($this->EE->lang->line('proper_template_files_location'), 
-									$template_path);
+					//$template_error_str .= sprintf($this->EE->lang->line('proper_template_files_location'), 
+					//				$template_path);
 				}
 				
 				$template_error_explain = sprintf($this->EE->lang->line('template_missing_explain_retry'), $retry);
@@ -687,7 +693,7 @@ class Updater {
             $this->EE->config->_update_config(array(), array('trackbacks_to_comments' => '', 'archive_trackbacks' => ''));
             
             // continue with general database changes
-            return 'database_changes';
+            return 'database_clean';
         }
         
         // deal with trackbacks
@@ -696,7 +702,7 @@ class Updater {
     
     function backup_trackbacks()
     {
-        $next_step = 'database_changes';
+        $next_step = 'database_clean';
         
         // Grab the main table
         $t_query = $this->EE->db->get('trackbacks');
@@ -840,6 +846,30 @@ class Updater {
         return $next_step;
     }
     
+	function database_clean()
+	{
+         $this->EE->progress->update_state("Cleaning duplicate data");
+
+		// Eliminate duplicate primaries
+
+		$Q[] = "CREATE TABLE exp_tmp_upload_no_access SELECT DISTINCT upload_id, member_group FROM exp_upload_no_access";
+		$Q[] = "DROP TABLE exp_upload_no_access";
+		$Q[] = "ALTER TABLE exp_tmp_upload_no_access RENAME TO exp_upload_no_access";
+	
+// exp_message_folders ALTER TABLE `exp_message_folders` ADD PRIMARY KEY `member_id` (`member_id`) - multiple
+
+		$Q[] = "CREATE TABLE exp_tmp_message_folders SELECT DISTINCT * FROM exp_message_folders";
+		$Q[] = "DROP TABLE exp_message_folders";
+		$Q[] = "ALTER TABLE exp_tmp_message_folders RENAME TO exp_message_folders";
+
+        foreach ($Q as $sql)
+        {
+             $this->EE->db->query($sql);
+        }
+
+		return 'database_changes';
+	}
+
     // ------------------------------------------------------------------------ 
         
     function database_changes()
@@ -1010,11 +1040,6 @@ class Updater {
         $Q[] = "ALTER TABLE `exp_weblog_titles` DROP COLUMN `recent_trackback_date`";
         $Q[] = "DROP TABLE IF EXISTS `exp_trackbacks`";
         
-        // Eliminate duplicate primaries
-		$Q[] = "CREATE TABLE exp_tmp_upload_no_access SELECT DISTINCT upload_id, member_group FROM exp_upload_no_access";
-		$Q[] = "DROP TABLE exp_upload_no_access";
-		$Q[] = "ALTER TABLE exp_tmp_upload_no_access RENAME TO exp_upload_no_access";
-
 		// Add primary keys as needed for normalization of all tables
         $Q[] = "ALTER TABLE `exp_throttle` ADD COLUMN `throttle_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
         $Q[] = "ALTER TABLE `exp_stats` ADD COLUMN `stat_id` int(10) UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY FIRST";
@@ -1051,7 +1076,7 @@ class Updater {
         $Q[] = "ALTER TABLE `exp_template_no_access` DROP KEY `template_id`";
         $Q[] = "ALTER TABLE `exp_template_no_access` ADD PRIMARY KEY `template_id_member_group` (`template_id`, `member_group`)";
         $Q[] = "ALTER TABLE `exp_upload_no_access` ADD PRIMARY KEY `upload_id_member_group` (`upload_id`, `member_group`)";
-        $Q[] = "ALTER TABLE `exp_message_folders` DROP KEY `member_id`";
+        //$Q[] = "ALTER TABLE `exp_message_folders` DROP KEY `member_id`";
         $Q[] = "ALTER TABLE `exp_message_folders` ADD PRIMARY KEY `member_id` (`member_id`)";
         
         // Add default values for a few columns and switch some to NULL

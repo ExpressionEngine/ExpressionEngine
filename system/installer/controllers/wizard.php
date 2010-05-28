@@ -2229,7 +2229,7 @@ PAPAYA;
 	
 		$config = array(
 						'app_version'					=>	$this->userdata['app_version'],
-						'license_number'				=>	$this->userdata['license_number'],
+						'license_number'				=>	trim($this->userdata['license_number']),
 						'debug'                 		=>  '1',
 						'cp_url'	            		=>  $this->userdata['cp_url'],
 						'site_index'            		=>  $this->userdata['site_index'],
