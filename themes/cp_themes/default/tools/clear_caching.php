@@ -60,9 +60,10 @@ if ($EE_view_disable !== TRUE)
 			<p>
 				<?php
 				$data = array(
-				  'name'        => 'type',
-				  'id'          => 'all',
-				  'value'       => 'all'
+					'name'		=> 'type',
+					'id'		=> 'all',
+					'value'		=> 'all',
+					'checked'	=> TRUE	
 				);
 				echo form_radio($data);?>
 				<?=lang('all_caching', 'all')?>
