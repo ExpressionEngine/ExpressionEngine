@@ -139,9 +139,11 @@ if ($EE_view_disable !== TRUE)
 					<div class="publish_field publish_<?=$f['field_type']?>" id="hold_field_<?=$f['field_id']?>">
 						<div class="handle"></div>
 							<label class="hide_field">
+								<span>
 								<img class="field_collapse" src="<?=$cp_theme_url?>images/field_expand.png" width="13" height="13" alt="" />
 								<?php if ($f['field_required'] == 'y'):?><?=required()?><?php endif?>
 								<?=$f['field_label']?>
+								</span>
 							</label>
 
 						<?php if($f['field_instructions'] != ''):?>

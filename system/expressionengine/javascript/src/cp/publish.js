@@ -1028,9 +1028,9 @@ $(document).ready(function() {
 
 	// toggle can not be used here, since it may or may not be visible
 	// depending on admin customization
-	$(".hide_field").click(function(){
-		
-		holder_id = $(this).parent().attr("id");
+	$(".hide_field span").click(function(){
+
+		holder_id = $(this).parent().parent().attr("id");
 		field_id = holder_id.substr(11)
 		
 		if($("#sub_hold_field_"+field_id).css("display") == "block"){
