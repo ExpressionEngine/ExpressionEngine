@@ -3668,7 +3668,8 @@ class Admin_content extends Controller {
 			foreach ($fields->result() as $field)
 			{
 				$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_id_".$field->field_id);
-
+				$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_ft_".$field->field_id);
+				
 				if ($field->field_type == 'date')
 				{
 					$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_dt_".$field->field_id);
