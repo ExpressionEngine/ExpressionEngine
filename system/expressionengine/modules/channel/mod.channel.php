@@ -1352,8 +1352,16 @@ class Channel {
 					{
 						$sql = "SELECT count(*) AS count
 								FROM  exp_channel_titles, exp_channels
-								WHERE exp_channel_titles.channel_id = exp_channels.channel_id
-								AND	exp_channel_titles.url_title = '".$this->EE->db->escape_str($qstring)."'";
+								WHERE exp_channel_titles.channel_id = exp_channels.channel_id";
+
+						if ($entry_id != '')
+						{
+							$sql .= " AND exp_channel_titles.entry_id = '".$this->EE->db->escape_str($entry_id)."'";							
+						}
+						else
+						{
+							$sql .= " AND exp_channel_titles.url_title = '".$this->EE->db->escape_str($qstring)."'";
+						}
 
 						$sql .= " AND exp_channels.site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
 
