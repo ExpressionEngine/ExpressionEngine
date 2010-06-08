@@ -3412,7 +3412,7 @@ class Member {
 		{
 			$cond['avatar']	= $avatar;
 			$cond['photo'] = $photo;
-
+			
 			foreach($fields as $key =>  $value)
 			{
 				$cond[$key] = $this->EE->typography->parse_type($row['m_field_id_'.$value['0']],
@@ -3433,14 +3433,11 @@ class Member {
 
 			foreach ($this->EE->TMPL->var_single as $key => $val)
 			{
-				     	/** ----------------------------------------
+				/** ----------------------------------------
                 /**  parse default member data
                 /** ----------------------------------------*/
 
-				/** ----------------------------------------
-				/**  Format URLs
-				/** ----------------------------------------*/
-
+				//  Format URLs
 				if ($key == 'url')
 				{
 					if (substr($default_fields['url'], 0, 4) != "http" && strpos($default_fields['url'], '://') === FALSE)
@@ -3449,54 +3446,38 @@ class Member {
 					}
 				}
 
-				/** ----------------------------------------
-				/**  "last_visit"
-				/** ----------------------------------------*/
+				//  "last_visit"
 				if (strncmp($key, 'last_visit', 10) == 0)
 				{
 					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_activity'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_activity']) : '', $this->EE->TMPL->tagdata);
 				}
 
-				/** ----------------------------------------
-				/**  "join_date"
-				/** ----------------------------------------*/
-				
+
+				//  "join_date"
 				if (strncmp($key, 'join_date', 9) == 0)
 				{
 					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['join_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['join_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
-				/** ----------------------------------------
-				/**  "last_entry_date"
-				/** ----------------------------------------*/
-
+				//  "last_entry_date"
 				if (strncmp($key, 'last_entry_date', 15) == 0)
 				{
 					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_entry_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_entry_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
-				/** ----------------------------------------
-				/**  "last_forum_post_date"
-				/** ----------------------------------------*/
-
+				//  "last_forum_post_date"
 				if (strncmp($key, 'last_forum_post_date', 20) == 0)
 				{
 					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_forum_post_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_forum_post_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
-				/** ----------------------------------------
-				/**  parse "recent_comment"
-				/** ----------------------------------------*/
-
+				//  parse "recent_comment"
 				if (strncmp($key, 'last_comment_date', 17) == 0)
 				{
 					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_comment_date'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_comment_date']) : '', $this->EE->TMPL->tagdata);
 				}
 
-				/** ----------------------
-				/**  {name}
-				/** ----------------------*/
-
+				//  {name}
 				$name = ( ! $default_fields['screen_name']) ? $default_fields['username'] : $default_fields['screen_name'];
 
 				$name = $this->_convert_special_chars($name);
@@ -3506,28 +3487,19 @@ class Member {
 					$this->EE->TMPL->tagdata = $this->_var_swap_single($val, $name, $this->EE->TMPL->tagdata);
 				}
 
-				/** ----------------------
-				/**  {member_group}
-				/** ----------------------*/
-
+				//  {member_group}
 				if ($key == "member_group")
 				{
 					$this->EE->TMPL->tagdata = $this->_var_swap_single($val, $default_fields['group_title'], $this->EE->TMPL->tagdata);
 				}
 
-				/** ----------------------
-				/**  {email}
-				/** ----------------------*/
-
+				//  {email}
 				if ($key == "email")
 				{
 					$this->EE->TMPL->tagdata = $this->_var_swap_single($val, $this->EE->typography->encode_email($default_fields['email']), $this->EE->TMPL->tagdata);
 				}
 
-				/** ----------------------
-				/**  {birthday}
-				/** ----------------------*/
-
+				//  {birthday}
 				if ($key == "birthday")
 				{
 					$birthday = '';
@@ -3564,10 +3536,7 @@ class Member {
 					$this->EE->TMPL->tagdata = $this->_var_swap_single($val, $birthday, $this->EE->TMPL->tagdata);
 				}
 
-				/** ----------------------
-				/**  {timezone}
-				/** ----------------------*/
-
+				//  {timezone}
 				if ($key == "timezone")
 				{
 					$timezone = ($default_fields['timezone'] != '') ? $this->EE->lang->line($default_fields['timezone']) : '';
@@ -3575,10 +3544,7 @@ class Member {
 					$this->EE->TMPL->tagdata = $this->_var_swap_single($val, $timezone, $this->EE->TMPL->tagdata);
 				}
 
-				/** ----------------------
-				/**  {local_time}
-				/** ----------------------*/
-
+				//  {local_time}
 				if (strncmp($key, 'local_time', 10) == 0)
 				{
 					$time = $this->EE->localize->now;
@@ -3593,10 +3559,7 @@ class Member {
 					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, $this->EE->localize->decode_date($val, $time), $this->EE->TMPL->tagdata);
 				}
 
-				/** ----------------------
-				/**  {bio}
-				/** ----------------------*/
-
+				//  {bio}
 				if ($key == 'bio')
 				{
 					$bio = $this->EE->typography->parse_type($default_fields[$val],
@@ -3637,12 +3600,13 @@ class Member {
 				/** ----------------------------------------
 				/**  parse custom member fields
 				/** ----------------------------------------*/
-				if ( isset($fields[$val]) AND isset($row['m_field_id_'.$fields[$val]['0']]))
+				
+				if (isset($fields[$val]) && array_key_exists('m_field_id_'.$fields[$val]['0'], $row))
 				{
 					$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single(
 														$val,
 														$this->EE->typography->parse_type(
-																				$row['m_field_id_'.$fields[$val]['0']],
+															$row['m_field_id_'.$fields[$val]['0']],
 																				array(
 																						'text_format'	=> $fields[$val]['1'],
 																						'html_format'	=> 'safe',
@@ -3653,6 +3617,7 @@ class Member {
 														$this->EE->TMPL->tagdata
 													  );
 				}
+				//else { echo 'm_field_id_'.$fields[$val]['0']; }
 			}
 		}
 
