@@ -155,8 +155,7 @@ class Cp {
 					// Asset mtimes to force caching
 					'jquery_mtime' 		=> filemtime(PATH_JQUERY.'jquery.js'),
 					'corner_mtime' 		=> filemtime(PATH_JQUERY.'plugins/corner.js'),
-					'theme_css_mtime'	=> filemtime(PATH_CP_THEME.$this->cp_theme.'/css/global.css'),
-					'global_js_mtime'	=> filemtime(PATH_JAVASCRIPT.'cp/global.js')
+					'theme_css_mtime'	=> filemtime(PATH_CP_THEME.$this->cp_theme.'/css/global.css')
 		);
 
 
@@ -235,9 +234,10 @@ class Cp {
 		// Combo-load the javascript files we need for every request
 
 		$js_scripts = array(
-						'ui'		=> array('core', 'sortable', 'dialog'),
-						'file'		=> array('ee_txtarea'),
-						'plugin'	=> array('ee_focus', 'ee_notice', 'tablesorter')
+						'effect'	=> 'core',
+						'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog'),
+						'plugin'	=> array('ee_focus', 'ee_notice', 'ee_txtarea', 'tablesorter'),
+						'file'		=> 'cp/global'
 		);
 		
 		if ($this->cp_theme != 'mobile')

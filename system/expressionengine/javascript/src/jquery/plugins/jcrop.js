@@ -1,9 +1,33 @@
-/*!
- * Jcrop v.0.9.8 (packed)
- * (c) 2008 Kelly Hallman and DeepLiquid.com
- * More information: http://deepliquid.com/content/Jcrop.html
- * Released under MIT License - this header must remain with code
+/**
+ * jquery.Jcrop.js v0.9.8
+ * jQuery Image Cropping Plugin
+ * @author Kelly Hallman <khallman@gmail.com>
+ * Copyright (c) 2008-2009 Kelly Hallman - released under MIT License {{{
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+
+ * }}}
  */
+
 (function($) {
 
 $.Jcrop = function(obj,opt)
@@ -26,7 +50,7 @@ $.Jcrop = function(obj,opt)
 
 	if (!('keySupport' in opt))
 			opt.keySupport = $.browser.msie ? false : true;
-
+		
 	// }}}
 	// Extend the default options {{{
 	var defaults = {
@@ -100,7 +124,7 @@ $.Jcrop = function(obj,opt)
 				backgroundColor: options.bgColor
 			}).insertAfter($origimg).append($img);
 	;
-
+	
 	if (options.addClass) $div.addClass(options.addClass);
 	//$img.wrap($div);
 
@@ -135,7 +159,7 @@ $.Jcrop = function(obj,opt)
 	var $trk = newTracker().width(boundx+(bound*2)).height(boundy+(bound*2))
 		.css({ position: 'absolute', top: px(-bound), left: px(-bound), zIndex: 290 })
 		.mousedown(newSelection);	
-
+	
 	/* }}} */
 	// Set more variables {{{
 
@@ -147,7 +171,7 @@ $.Jcrop = function(obj,opt)
 		shift_down;
 
 	// }}}
-
+		
 
 		// }}}
 	// Internal Modules {{{
@@ -753,7 +777,7 @@ $.Jcrop = function(obj,opt)
 			return nothing(e);
 		};
 		/*}}}*/
-
+		
 		if (options.keySupport) $keywrap.insertBefore($img);
 		return {
 			watchKeys: watchKeys
@@ -838,7 +862,7 @@ $.Jcrop = function(obj,opt)
 		{
 			Coords.moveOffset([pos[0] - lloc[0], pos[1] - lloc[1]]);
 			lloc = pos;
-
+			
 			Selection.update();
 		};
 	};
@@ -947,7 +971,7 @@ $.Jcrop = function(obj,opt)
 
 	// }}}
 	// API methods {{{
-
+		
 	function animateTo(a)/*{{{*/
 	{
 		var x1 = a[0] / xscale,
@@ -1112,7 +1136,7 @@ $.Jcrop = function(obj,opt)
 
 	$hdl_holder.hide();
 	interfaceUpdate(true);
-
+	
 	var api = {
 		animateTo: animateTo,
 		setSelect: setSelect,

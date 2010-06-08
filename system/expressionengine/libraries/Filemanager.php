@@ -60,7 +60,7 @@ class Filemanager {
 	{
 		// Include dependencies
 		$this->EE->cp->add_js_script(array(
-											'plugin'    => array('scrollable', 'scrollable_navigator', 'ee_filebrowser')
+											'plugin'    => array('scrollable', 'scrollable.navigator', 'ee_filebrowser')
 										)
 									);
 

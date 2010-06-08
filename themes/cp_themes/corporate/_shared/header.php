@@ -17,7 +17,7 @@
 		echo $cp_global_js;
 	}
 	?>
-	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'v='.$jquery_mtime?>"></script>
+	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'v='.$jquery_mtime?>"></script>
 	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=corner'.AMP.'v='.$corner_mtime?>"></script>
 	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=css'.AMP.'theme=corporate'.AMP.'v='.$advanced_css_mtime?>"></script>
 
@@ -33,7 +33,6 @@
 	}
 	?>
 
-	<script type="text/javascript" charset="utf-8" src="<?=BASE.AMP.'C=javascript'.AMP.'theme=corporate'.AMP.'v='.$global_js_mtime?>"></script>
 </head>
 
 <body>
