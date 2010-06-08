@@ -1360,7 +1360,7 @@ class Updater {
             $this->EE->db->query("DELETE FROM exp_modules WHERE module_name = 'Fresh_variables'");
             $this->EE->db->query("DELETE FROM exp_actions WHERE class = 'Fresh_variables'");
         }
-        
+   
         // weblogs are channels!
         return 'weblog_terminology_changes';
     }
