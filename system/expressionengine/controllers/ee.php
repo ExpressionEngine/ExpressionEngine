@@ -19,11 +19,19 @@
  */
 class EE extends Controller {
 
+	/**
+	 * Construct
+	 */
 	function EE()
 	{
 		parent::Controller();	
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Index
+	 */
 	function index()
 	{
 		// If the REQ constant isn't defined it means the EE has not
@@ -101,9 +109,7 @@ class EE extends Controller {
 				
 		echo $output;
 		
-		
 		// Garbage Collection
-		
 		if (REQ == 'PAGE')
 		{
 			if ($this->config->item('log_referrers') == 'y')
