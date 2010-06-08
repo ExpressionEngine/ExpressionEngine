@@ -189,24 +189,6 @@ class EE_Core {
 		
 		/*
 		 * -------------------------------------------------------------------
-		 *  Throttle and Blacklist Check
-		 * -------------------------------------------------------------------
-		 */
-
-		if (REQ != 'CP')
-		{
-			$this->EE->load->library('throttling');
-			$this->EE->throttling->run();
-			
-			$this->EE->load->library('blacklist');
-			$this->EE->blacklist->_check_blacklist();
-			
-			$this->EE->load->library('file_integrity');
-			$this->EE->file_integrity->create_bootstrap_checksum();
-		}
-		
-		/*
-		 * -------------------------------------------------------------------
 		 *  This allows CI compatibility
 		 * -------------------------------------------------------------------
 		 */
@@ -256,17 +238,34 @@ class EE_Core {
 			define('PATH_CP_GBL_IMG', 	$this->EE->config->slash_item('theme_folder_url').'cp_global_images/');
 			unset($theme_path);
 
-		/*
-		 * -----------------------------------------------------------------
-		 *  Is this a stylesheet request?  If so, we're done.
-		 * -----------------------------------------------------------------
-		 */
-		 	
+			/*
+			 * -----------------------------------------------------------------
+			 *  Is this a stylesheet request?  If so, we're done.
+			 * -----------------------------------------------------------------
+			 */
 			if (isset($_GET['css']) OR (isset($_GET['ACT']) && $_GET['ACT'] == 'css')) 
 			{
 				$this->EE->load->library('stylesheet');
 				$this->EE->stylesheet->request_css_template();
 				exit;
+			}
+
+			/*
+			 * -------------------------------------------------------------------
+			 *  Throttle and Blacklist Check
+			 * -------------------------------------------------------------------
+			 */
+
+			if (REQ != 'CP')
+			{
+				$this->EE->load->library('throttling');
+				$this->EE->throttling->run();
+
+				$this->EE->load->library('blacklist');
+				$this->EE->blacklist->_check_blacklist();
+
+				$this->EE->load->library('file_integrity');
+				$this->EE->file_integrity->create_bootstrap_checksum();
 			}
 
 		/*
