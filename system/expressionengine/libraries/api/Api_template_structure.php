@@ -124,12 +124,12 @@ class Api_template_structure extends Api {
 			$this->_set_error('group_required');
 		}
 		
-		if ( ! $this->api->is_url_safe($group_name))
+		if ( ! $this->EE->api->is_url_safe($group_name))
 		{
 			$this->_set_error('illegal_characters');
 		}			
 		
-		if (in_array($group_name, $this->EE->template_structure->reserved_names))
+		if (in_array($group_name, $this->reserved_names))
 		{
 			$this->_set_error('reserved_name');
 		}
