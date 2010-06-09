@@ -281,7 +281,6 @@ class Checkboxes_ft extends EE_Fieldtype {
 			}
 		}
 		
-		print_r($field_options);
 		return $field_options;
 	}
 }
