@@ -2997,7 +2997,6 @@ class Member {
 
 		if (class_exists('Template'))
 		{
-
 			if ($this->EE->TMPL->tagdata != '')
 			{
 				$str = $this->_parse_index_template($str);
@@ -3151,6 +3150,8 @@ class Member {
 		{
 			$str = $this->EE->functions->insert_action_ids($this->EE->functions->add_form_security_hash($str));
 		}
+		
+		$str = preg_replace("/".LD."if\s+.*?".RD.".*?".LD.'\/if'.RD."/s", "", $str);
 
 		return $str;
 	}
