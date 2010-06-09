@@ -74,7 +74,7 @@ class Tools_model extends CI_Model {
 		$this->db->select('fg.group_name, cf.field_id, cf.field_label, s.site_label');
 		$this->db->from('field_groups AS fg');
 		$this->db->join('sites AS s', 's.site_id = fg.site_id');
-		$this->db->join('channel_fields AS cf', 'cf.site_id = s.site_id');
+		$this->db->join('channel_fields AS cf', 'cf.group_id = fg.group_id');
 		
 		if ($this->config->item('multiple_sites_enabled') !== 'y')
 		{
