@@ -631,9 +631,9 @@ class Tools_data extends Controller {
 			}
 			else
 			{
-				$site_id = substr($field, strlen('site_preferences_'));
+				$site_id = substr($where, strlen('site_preferences_'));
 			}
-
+	
 			/** -------------------------------------------
 			/**  Site Preferences in Certain Tables/Fields
 			/** -------------------------------------------*/
@@ -656,16 +656,6 @@ class Tools_data extends Controller {
 								 								 'mbr_delete_notify_emails'),
 								 'exp_global_variables'	=> array('variable_data'),
 								 'exp_categories'		=> array('cat_image'),
-								 'exp_galleries'		=> array('gallery_full_name',
-								 								 'gallery_url',
-								 								 'gallery_upload_path',
-								 								 'gallery_image_url',
-								 								 'gallery_batch_path',
-								 								 'gallery_batch_url',
-								 								 'gallery_wm_image_path',
-								 								 'gallery_wm_test_image_path',
-								 								 'gallery_comment_url',
-								 								 'gallery_comment_notify_emails'),
 								 'exp_forums'			=> array('forum_name',
 								 								 'forum_notify_emails',
 								 								 'forum_notify_emails_topics'),
@@ -675,8 +665,6 @@ class Tools_data extends Controller {
 								 								 'board_notify_emails',
 								 								 'board_notify_emails_topics')
 								 								 );
-
-			unset($preferences['exp_galleries']); // Not Site Specific?
 
 			foreach($preferences as $table => $fields)
 			{
@@ -690,7 +678,7 @@ class Tools_data extends Controller {
 				foreach($fields as $field)
 				{
 					$this->db->query("UPDATE `{$table}`
-								SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace}')
+								SET `{$field}` = REPLACE(`{$field}`, '{$search}', '{$replace}')
 								WHERE `{$site_field}` = '".$this->db->escape_str($site_id)."'");
 
 					$rows += $this->db->affected_rows();
@@ -699,8 +687,10 @@ class Tools_data extends Controller {
 
 			if ($this->db->table_exists('exp_forum_boards'))
 			{
-				$query = $this->db->query("SELECT board_id FROM exp_forum_boards WHERE board_site_id = '".$this->db->escape_str($site_id)."'");
-
+				$this->db->select('board_id');
+				$this->db->where('board_site_id', $site_id);
+				$query = $this->db->get('forum_boards');
+				
 				if ($query->num_rows() > 0)
 				{
 					foreach($query->result_array() as $row)
@@ -708,7 +698,7 @@ class Tools_data extends Controller {
 						foreach($preferences['exp_forums'] as $field)
 						{
 							$this->db->query("UPDATE `exp_forums`
-										SET `{$where}` = REPLACE(`{$where}`, '{$search}', '{$replace}')
+										SET `{$field}` = REPLACE(`{$field}`, '{$search}', '{$replace}')
 										WHERE `board_id` = '".$this->db->escape_str($row['board_id'])."'");
 
 							$rows += $this->db->affected_rows();
