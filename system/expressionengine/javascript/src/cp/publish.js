@@ -90,7 +90,7 @@ EE.publish.category_editor = function() {
 					data: values,
 					dataType: "html",
 					beforeSend: function() {
-						container.html("loading...");
+						container.html(EE.lang.loading);
 					},
 					success: function(res) {
 						res = $.trim(res);
@@ -153,7 +153,7 @@ EE.publish.category_editor = function() {
 			gid = $(this).closest(".cat_group_container").data("gid");
 		}
 		
-		cat_groups_containers[gid].text("loading...");
+		cat_groups_containers[gid].text(EE.lang.loading);
 		
 		$.ajax({
 			url: this.href+"&timestamp="+now()+resp_filter,

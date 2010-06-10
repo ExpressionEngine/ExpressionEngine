@@ -560,6 +560,7 @@ class Content_publish extends Controller {
 
 		// Sets 'new' / 'edit' in the global json array.  Neat, eh?
 		$this->javascript->set_global('publish.which', $which);
+		$this->javascript->set_global('lang.loading', $this->lang->line('loading'));
 
 		extract($row);
 
