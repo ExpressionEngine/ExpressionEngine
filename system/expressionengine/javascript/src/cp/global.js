@@ -4,14 +4,6 @@
 
 "use strict";
 
-// Create a void console.log if the
-// browser does not support it
-
-if (typeof console === "undefined" || ! console.log) {
-	console = { log: function() { return false; }};
-}
-
-
 // Setup Base EE Control Panel
 
 jQuery(document).ready(function() {
@@ -81,7 +73,6 @@ EE.create_searchbox = function() {
 	EE.create_searchbox.apply(EE.create_searchbox, arguments);
 };
 
-// @todo Language keys
 EE.create_searchbox('cp_search_keywords', EE.lang.search, 'ee_cp_search');
 EE.create_searchbox('template_keywords', EE.lang.search_template, 'ee_template_search');
 
@@ -355,6 +346,7 @@ if (EE.flashdata !== undefined) {
 // Setup Notepad
 
 EE.notepad = (function() {
+	
 	var notepad = $('#notePad'),
 		notepad_form = $("#notepad_form"),
 		notepad_txtarea = $('#notePadTextEdit'),

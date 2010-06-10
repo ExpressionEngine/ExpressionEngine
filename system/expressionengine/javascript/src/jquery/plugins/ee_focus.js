@@ -22,56 +22,19 @@
  * @link		http://expressionengine.com
  */
 
-// Create a focusin and focusout event. Normally focus and blur don't bubble.
-
-jQuery.each({'focus' : 'FocusIn', 'blur': 'FocusOut'}, function(name, domEvent) {
-	var bind_name = domEvent.toLowerCase();
-	
-	function handler(event, data) {
-		var el = this;
-		
-		jQuery.each(jQuery.data(this, 'events')[bind_name] || [], function(i, fn) {
-			fn.call(el, event, data);
-		});
-	}
-	
-	jQuery.event.special[bind_name] = {
-		setup: function(data, namespaces) {
-			
-			// Gecko doesn't claim support for focusin/out event and it doesn't look like they
-			// ever will ( https://bugzilla.mozilla.org/show_bug.cgi?id=396927 ).
-			// In practice however, it seems to not matter one bit - in fact, using the event listener
-			// in the capturing phase seems to only work in Safari, but breaks FF 3.5 and Opera.
-			// so we might need to branch for FF 3.0 .... @todo get 3.0 and test
-			
-			// if ($.browser.firefox) {
-			// 	this.addEventListener(name, handler, true);
-			// }
-			// else {
-				jQuery.event.add(this, ($.browser.msie ? bind_name : 'DOM'+domEvent), handler);
-			// }
-		},
-		teardown: function(namespaces) {
-			// @todo namespaces?
-			
-			return false;
-		}
-	};
-});
-
 EE.tabQueue = (function($) {
 	
 	var queue = {},
 		parents = [];
 	
-	$(document).bind('focusin', function(event) {
+	$(document).focusin(function(event) {
 		
 		var event_parent = $(event.target).closest(parents.join(',')),
 			ignore;
 
 		// Ugly variable reuse
 		if (event_parent.length && (event_parent = event_parent.eq(0).data('focusmanager'))) {
-			ignore = $.data(event_parent);
+			ignore = event_parent[$.expando];
 		}
 		
 		$.each(queue, function(key, obj) {
@@ -84,9 +47,13 @@ EE.tabQueue = (function($) {
 	
 	return {
 		append: function(selector) {
-
-			var parent = $(selector).data('focusmanager'),
-			id = $.data(parent);
+			
+			var parent = $(selector).data('focusmanager'), id;
+			
+			// @todo change how we handle ids. Without assigning data we don't get an id,
+			// but it's not exactly a pretty way of doing it.
+			$.data(parent, 'ee_focus_gen_id', true);
+			id = parent[$.expando];
 			
 			if (queue[id]) {
 				delete queue.id;

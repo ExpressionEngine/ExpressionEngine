@@ -28,7 +28,7 @@
 		current_directory = 0,
 		spinner_url = EE.THEME_URL+'/images/publish_file_manager_loader.gif',
 		default_img_url = EE.PATH_CP_GBL_IMG+'default.png',
-		file_manager_obj, cur_dir_seek;
+		file_manager_obj;
 
 	/*
 	 * Sets up the filebrowser - call this before anything else
@@ -147,12 +147,12 @@
 			type: "POST",
 			url: EE.BASE+"&"+EE.filebrowser.endpoint_url+"&action=edit_image",
 			data: $("#image_edit_form").serialize(),
-			success: function(file_name){
+			success: function(file_name) {
 				file.name = file_name;
 				file.dimensions = 'width="'+file.width+'" height="'+file.height+'" ';
 				$.ee_filebrowser.clean_up(file, original_upload_html);
 			},
-			error: function(msg){
+			error: function(msg) {
 				if ($.ee_notice)
 				{
 					$.ee_notice(msg.responseText, {"type" : "error"});
@@ -182,7 +182,7 @@
 	}
 
 	$.ee_filebrowser.reset = function() {
-		$("#file_manager").scrollable({api: true}).begin();
+		$("#file_manager").scrollable().data('scrollable').begin();
 	}
 
 	// --------------------------------------------------------------------
@@ -342,7 +342,7 @@
 		var thumbs = "",
 			item_count = 0,
 			_pages = [],
-			api = $("#page_"+directory.id, file_manager_obj).scrollable();
+			api = $("#page_"+directory.id, file_manager_obj).data('scrollable');
 
 		// For performance, we compile the thumbnails into a string and append once rather then appending each image
 		// We'll need to reload for every page, but it's efficient enough to make it worth it
@@ -393,12 +393,11 @@
 			item_count++;
 		});
 		
-		_pages.push(thumbs)
-		thumbs = _pages.join('</div><div class="item">');
-		
-		api.getItemWrap().append('<div class="item">'+thumbs+'</div>');
+		_pages.push(thumbs);
 
-		api.reload(); // final recount
+		$.each(_pages, function() {
+			api.addItem('<div class="item">'+this+'</div>');
+		});
 
 		// Since items were added, we need to re-setup the events, but its possible that
 		// some already have events assigned. Mass Unbind called for here.
@@ -432,14 +431,11 @@
 			file_manager_obj.dialog("close");
 		});
 
-		// If there is only 1 page, we dont need the navigation controls
-		if (api.getPageAmount() == 1)
+
+		// Our css defaults to hiding the navigation controls. We need
+		// to show them if we have more than one page.
+		if (api.getSize() > 1)
 		{
-			$("#nav_controls_"+directory.id, file_manager_obj).hide();
-		}
-		else
-		{
-			// In case they were hidden and an item was added
 			$("#nav_controls_"+directory.id, file_manager_obj).show();
 		}
 	}
@@ -464,10 +460,10 @@
 	 */
 	function loadThumbs(directory)
 	{
-		var api = $("#page_"+directory).scrollable();
+		var api = $("#page_"+directory).data('scrollable');
 
 		// Which page of thumbs do we need? Also, a bit of defensive coding
-		page_index = (api.getPageIndex() == "") ? 0 : api.getPageIndex();
+		page_index = (api.getIndex() == "") ? 0 : api.getIndex();
 
 		// Go through and grab each image and modify the src now to load the
 		// pretty thumb if it needs loading
@@ -479,9 +475,9 @@
 			// browser to cache it. After it is completely loaded into the cache, it will then replace the image.
 			$("#page_"+directory+" .item:eq("+page_index+") img").each(function (i) {
 
-				var that = $(this);
-				var regex = /^\{filedir_(\d+)\}/;
-				var match = regex.exec(that.attr("title"));
+				var that = $(this),
+					regex = /^\{filedir_(\d+)\}/,
+					match = regex.exec(that.attr("title"));
 
 				// If it has a spinner we need to swap
 				if (that.attr('src') == spinner_url) {
@@ -528,6 +524,8 @@
 	 */
 	function createBrowser() {
 
+		var focused_tab, cur_dir_seek;
+		
 		// Set up modal dialog
 		file_manager_obj.dialog({
 			width: 730,
@@ -541,31 +539,28 @@
 			open: function(event, ui) {
 				// keyboard naviation is disabled so form elements are usable,
 				// re-initialize it when file browser is open
-				$("#file_manager_main").scrollable().getConf().keyboard = "static";
-				$("#file_manager_main").scrollable().reload();
+				$("#file_manager_main").data('scrollable').getConf().keyboard = "static";
 
 				// enable keyboard navigation for pages (will get turned off if the file browser gets hidden)
-				$(".vertscrollable").scrollable().getConf().keyboard = true;
-				$(".vertscrollable").scrollable().reload();
+				$(".vertscrollable").data('scrollable').getConf().keyboard = true;
 			},
 			close: function(event, ui) {
-				$("#file_manager_main").scrollable().getConf().keyboard = false;
-				$("#file_manager_main").scrollable().reload();
+				$("#file_manager_main").data('scrollable').getConf().keyboard = false;
 
 				// set scrollable back to the first page available
 				$("#main_navi li:first").click();
 			}
 		});
 
-
 		// Create vertical tabs
 		$("#file_manager_main").scrollable({
 			vertical: true,
-			size: 1,
 			clickable: false,
 			speed: 250,
-			keyboard: false,
-			onSeek: function(i) {
+			keyboard: true,
+			onSeek: function(evt, i) {
+				
+				var current_directory;
 
 				// onSeek (and onBeforeSeek which is the easiest to see this with) are firing twice, I believe
 				// because of the nested scrollable plugins. Its my theory that this is intermittently making
@@ -576,9 +571,9 @@
 				if (cur_dir_seek != i)
 				{
 					cur_dir_seek = i;
-
+					
 					// In order to figure out which (of potentially dozens) directory we are on, we need to read the DOM
-					current_directory = $("li:eq("+i+")", '#main_navi').attr("id").replace(/main_navi_/, "");
+					current_directory = $('#main_navi').find('li').eq(i).attr('id').replace(/main_navi_/, "");
 
 					// Are there files that need to be retrieved for this dir?
 					// loadFiles will intelligently take care of minimizing HTTP requests
@@ -586,9 +581,7 @@
 					loadThumbs(current_directory);
 
 					// An up/down page has changed. Focus in on it
-					focused_tab.scrollable(i).focus();
-
-					$("#page_"+current_directory).scrollable().reload();
+					focused_tab.eq(i).data('scrollable').focus();
 				}
 			}
 		}).navigator("#main_navi");
@@ -596,32 +589,28 @@
 
 		// Create horizontal pages
 		focused_tab = $(".vertscrollable").scrollable({
-			size: 1,
 			clickable: false,
-			nextPage: ".newThumbs",
-			prevPage: ".prevThumbs",
-			keyboard: false,
-			onBeforeSeek: function(i) {
-				// Keyboard navigation interferes with the ability to arrow around the form
-				// if the file browser isn't showing, turn off keyboard nav
-				if ($("#file_manager_main:visible").length == 0)
-				{
-					this.getConf().keyboard = false;
-					this.reload();
-				}
-			},
-			onSeek: function(i) {
+			next: ".newThumbs",
+			prev: ".prevThumbs",
+			keyboard: true,
+			onSeek: function(evt, i) {
 				loadThumbs(current_directory);
 			}
 		}).navigator({navi: ".navi"});
 
-		// load content for default directory
+
+		// load content for default directory		
 		loadFiles(current_directory);
 		loadThumbs(current_directory);
 
-		// set keyboard focus on the first horizontal scrollable 
-		focused_tab.eq(0).scrollable().focus();
+
+		// set keyboard focus on the first horizontal scrollable
+		focused_tab.eq(0).data('scrollable').focus();
 		
+		// Should work automatically, but without this it wasn't
+		// highlighting the first nav item correctly.
+		$('#file_manager_main').data('scrollable').begin();
+				
 		// Bind the upload submit event
 		$("#upload_form", file_manager_obj).submit($.ee_filebrowser.upload_start);
 	}

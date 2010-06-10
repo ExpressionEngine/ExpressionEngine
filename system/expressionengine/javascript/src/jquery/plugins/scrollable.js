@@ -1,131 +1,86 @@
 /**
- * tools.scrollable 1.1.0 - Scroll your HTML with eye candy.
+ * @license 
+ * jQuery Tools 1.2.0 Scrollable - New wave UI design
  * 
- * Copyright (c) 2009 Tero Piirainen
+ * NO COPYRIGHTS OR LICENSES. DO WHAT YOU LIKE.
+ * 
  * http://flowplayer.org/tools/scrollable.html
  *
- * Dual licensed under MIT and GPL 2+ licenses
- * http://www.opensource.org/licenses
- *
- * Launch  : March 2008
- * Date: ${date}
- * Revision: ${revision} 
+ * Since: March 2008
+ * Date:    Tue Apr 20 19:26:58 2010 +0000 
  */
 (function($) { 
-		
+
 	// static constructs
-	$.tools = $.tools || {};
+	$.tools = $.tools || {version: '1.2.0'};
 	
 	$.tools.scrollable = {
-		version: '1.1.0',
 		
-		conf: {
-			
-			// basics
-			size: 5,
-			vertical: false,
-			speed: 400,
-			keyboard: true,		
-			
-			// by default this is the same as size
-			keyboardSteps: null, 
-			
-			// other
+		conf: {	
+			activeClass: 'active',
+			circular: false,
+			clonedClass: 'cloned',
 			disabledClass: 'disabled',
-			hoverClass: null,		
-			clickable: true,
-			activeClass: 'active', 
 			easing: 'swing',
-			
-			items: '.items',
+			initialIndex: 0,
 			item: null,
-			
-			// navigational elements			
-			prev: '.prev',
-			next: '.next',
-			prevPage: '.prevPage',
-			nextPage: '.nextPage', 
-			api: false
-			
-			// CALLBACKS: onBeforeSeek, onSeek, onReload
+			items: '.items',
+			keyboard: true,
+			mousewheel: false,
+			next: '.next',   
+			prev: '.prev', 
+			speed: 400,
+			vertical: false,
+			wheelSpeed: 0
 		} 
 	};
-				
-	// len = amount of instances
-	var current, len = 0;		
+					
+	// get hidden element's width or height even though it's hidden
+	function dim(el, key) {
+		var v = parseInt(el.css(key), 10);
+		if (v) { return v; }
+		var s = el[0].currentStyle; 
+		return s && s.width && parseInt(s.width, 10);	
+	}
+
+	function find(root, query) { 
+		var el = $(query);
+		return el.length < 2 ? el : root.parent().find(query);
+	}
+	
+	var current;		
 	
 	// constructor
-	function Scrollable(root, conf, len) {   
+	function Scrollable(root, conf) {   
 		
 		// current instance
 		var self = this, 
-			 horizontal = !conf.vertical,
-			 wrap = root.children(),
+			 fire = root.add(self),
+			 itemWrap = root.children(),
 			 index = 0,
-			 forward;  
-		
-		
-		if (!current) { current = self; }
-		
-		// generic binding function
-		function bind(name, fn) {
-			$(self).bind(name, function(e, args)  {
-				if (fn && fn.call(this, args.index) === false && args) {
-					args.proceed = false;	
-				}	
-			});	 
-			return self;
-		}
-		
-		// bind all callbacks from configuration
-		$.each(conf, function(name, fn) {
-			if ($.isFunction(fn)) { bind(name, fn); }
-		});   
-
-		
-		if (wrap.length > 1) { wrap = $(conf.items, root); }
-		
-		// navi can be anywhere when: single scrollable or single navi element or globalNav = true
-		function find(query) {
-			var els = $(query);
-			return len == 1 || els.length == 1 || conf.globalNav ? els : root.parent().find(query);	
-		}
-
-		// to be used by plugins
-		root.data("finder", find);
-		
-		// get handle to navigational elements
-		var prev = find(conf.prev),
-			 next = find(conf.next),
-			 prevPage = find(conf.prevPage),
-			 nextPage = find(conf.nextPage);
-
+			 forward,
+			 vertical = conf.vertical;
+				
+		if (!current) { current = self; } 
+		if (itemWrap.length > 1) { itemWrap = $(conf.items, root); }
 		
 		// methods
 		$.extend(self, {
+				
+			getConf: function() {
+				return conf;	
+			},			
 			
 			getIndex: function() {
 				return index;	
-			},
-	
-			getConf: function() {
-				return conf;	
-			},
-			
+			}, 
+
 			getSize: function() {
 				return self.getItems().size();	
 			},
-	
-			getPageAmount: function() {
-				return Math.ceil(this.getSize() / conf.size); 	
-			},
-			
-			getPageIndex: function() {
-				return Math.ceil(index / conf.size);	
-			},
 
 			getNaviButtons: function() {
-				return prev.add(next).add(prevPage).add(nextPage);	
+				return prev.add(next);	
 			},
 			
 			getRoot: function() {
@@ -133,274 +88,185 @@
 			},
 			
 			getItemWrap: function() {
-				return wrap;	
+				return itemWrap;	
 			},
 			
 			getItems: function() {
-				return wrap.children(conf.item);	
+				return itemWrap.children(conf.item).not("." + conf.clonedClass);	
+			},
+							
+			move: function(offset, time) {
+				return self.seekTo(index + offset, time);
 			},
 			
-			getVisibleItems: function() {
-				return self.getItems().slice(index, index + conf.size);	
+			next: function(time) {
+				return self.move(1, time);	
 			},
 			
-			/* all seeking functions depend on this */		
-			seekTo: function(i, time, fn) {
-
-				// default speed
-				if (time === undefined) { time = conf.speed; }
-				
-				// function given as second argument
-				if ($.isFunction(time)) {
-					fn = time;
-					time = conf.speed;
-				} 
-				
-				if (i < 0) { i = 0; }				
- 
-				if (i > self.getSize() - conf.size) { return this.end(); } 				
-
-				var item = self.getItems().eq(i);					
-				if (!item.length) { return self; }				
-				
-				// onBeforeSeek
-				var p = {index: i, proceed: true};
-				$(self).trigger("onBeforeSeek", p);				
-				if (!p.proceed) { return self; }
-									
-				function callback() {
-					if (fn) { fn.call(self); }
-					$(self).trigger("onSeek", p);	
-				}
-				
-				if (horizontal) {
-					wrap.animate({left: -item.position().left}, time, conf.easing, callback);					
-				} else {
-					wrap.animate({top: -item.position().top}, time, conf.easing, callback);							
-				}
-				
-				current = self;
-				index = i;					
-				return self; 
-			},			
-			
-				
-			move: function(offset, time, fn) {
-				forward = offset > 0;
-				return this.seekTo(index + offset, time, fn);
+			prev: function(time) {
+				return self.move(-1, time);	
 			},
 			
-			next: function(time, fn) {
-				return this.move(1, time, fn);	
+			begin: function(time) {
+				return self.seekTo(0, time);	
 			},
 			
-			prev: function(time, fn) {
-				return this.move(-1, time, fn);	
-			},
-			
-			movePage: function(offset, time, fn) {
-				forward = offset > 0;
-				var steps = conf.size * offset;
-				
-				var i = index % conf.size;
-				if (i > 0) {
-				 	steps += (offset > 0 ? -i : conf.size - i);
-				}
-				
-				return this.move(steps, time, fn);		
-			},
-			
-			prevPage: function(time, fn) {
-				return this.movePage(-1, time, fn);
-			},  
-	
-			nextPage: function(time, fn) {
-				return this.movePage(1, time, fn);
-			},			
-			
-			setPage: function(page, time, fn) {
-				return this.seekTo(page * conf.size, time, fn);
-			},			
-			
-			begin: function(time, fn) {
-				return this.seekTo(0, time, fn);	
-			},
-			
-			end: function(time, fn) {
-				var to = this.getSize() - conf.size;
-				return to > 0 ? this.seekTo(to, time, fn) : self;	
-			},
-			
-			reload: function() {				
-				$(self).trigger("onReload", {});
-				return self;
-			},
-
-			// callback functions
-			onBeforeSeek: function(fn) {
-				return bind("onBeforeSeek", fn); 		
-			},
-			
-			onSeek: function(fn) {
-				return bind("onSeek", fn); 		
-			},
-			
-			onReload: function(fn) {
-				return bind("onReload", fn); 		
-			},
+			end: function(time) {
+				return self.seekTo(self.getSize() -1, time);	
+			},	
 			
 			focus: function() {
 				current = self;
 				return self;
 			},
 			
-			click: function(i) {
+			addItem: function(item) {
+				item = $(item);
 				
-				var item = self.getItems().eq(i), 
-					 klass = conf.activeClass,
-					 size = conf.size;			
-				
-				// check that i is sane
-				if (i < 0 || i >= self.getSize()) { return self; }
-				
-				// size == 1							
-				if (size == 1) {
-					if (i === 0 || i == self.getSize() -1)  { 
-						forward = (forward === undefined) ? true : !forward;	 
-					}
-					return forward === false  ? self.prev() : self.next(); 
-				} 
-				
-				// size == 2
-				if (size == 2) {
-					if (i == index) { i--; }
-					self.getItems().removeClass(klass);
-					item.addClass(klass);					
-					return self.seekTo(i, time, fn);
-				}				
-		
-				if (!item.hasClass(klass)) {				
-					self.getItems().removeClass(klass);
-					item.addClass(klass);
-					var delta = Math.floor(size / 2);
-					var to = i - delta;
-		
-					// next to last item must work
-					if (to > self.getSize() - size) { 
-						to = self.getSize() - size; 
-					}
-		
-					if (to !== i) {
-						return self.seekTo(to);		
-					}
+				if (!conf.circular)  {
+					itemWrap.append(item);
+				} else {
+					$(".cloned:last").before(item);
+					$(".cloned:first").replaceWith(item.clone().addClass(conf.clonedClass)); 						
 				}
 				
+				fire.trigger("onAddItem", [item]);
 				return self;
-			}   
+			},
 			
-		});
 			
-		// prev button		
-		prev.addClass(conf.disabledClass).click(function() {
-			self.prev(); 
-		});
-		
-
-		// next button
-		next.click(function() { 
-			self.next(); 
-		});
-		
-		// prev page button
-		nextPage.click(function() { 
-			self.nextPage(); 
-		});
-		
-
-		// next page button
-		prevPage.addClass(conf.disabledClass).click(function() { 
-			self.prevPage(); 
-		});		
-
-		
-		self.onSeek(function(i) {
-			// prev buttons disabled flag
-			if (i === 0) {
-				prev.add(prevPage).addClass(conf.disabledClass);					
-			} else {
-				prev.add(prevPage).removeClass(conf.disabledClass);
-			}
-			
-			// next buttons disabled flag
-			if (i >= self.getSize() - conf.size) {
-				next.add(nextPage).addClass(conf.disabledClass);
-			} else {
-				next.add(nextPage).removeClass(conf.disabledClass);
-			}				
-		});
-		
-		
-		// hover
-		var hc = conf.hoverClass, keyId = "keydown." + Math.random().toString().substring(10); 
-			
-		self.onReload(function() { 
-
-			// hovering
-			if (hc) {
-				self.getItems().hover(function()  {
-					$(this).addClass(hc);		
-				}, function() {
-					$(this).removeClass(hc);	
-				});						
-			}
-			
-			// clickable
-			if (conf.clickable) {
-				self.getItems().each(function(i) {
-					$(this).unbind("click.scrollable").bind("click.scrollable", function(e) {
-						if ($(e.target).is("a")) { return; }	
-						return self.click(i);
-					});
-				});
-			}				
-
-			// keyboard			
-			if (conf.keyboard) {
-				$(document).unbind(keyId); // ADDED INTO LIBRARY
-
-				// keyboard works on one instance at the time. thus we need to unbind first
-				$(document).bind(keyId, function(evt) {
-
-					// do nothing with CTRL / ALT buttons
-					if (evt.altKey || evt.ctrlKey) { return; }
-					
-					// do nothing for unstatic and unfocused instances
-					if (conf.keyboard != 'static' && current != self) { return; }
-
-					var s = conf.keyboardSteps;				
-										
-					if (horizontal && (evt.keyCode == 37 || evt.keyCode == 39)) {
-						self.move(evt.keyCode == 37 ? -s : s);
-						return evt.preventDefault();
-					}	
-					
-					if (!horizontal && (evt.keyCode == 38 || evt.keyCode == 40)) {
-						self.move(evt.keyCode == 38 ? -s : s);
-						return evt.preventDefault();
-					}
-					
-					return true;
-					
-				});
+			/* all seeking functions depend on this */		
+			seekTo: function(i, time, fn) {				
 				
-			} else  {
-				$(document).unbind(keyId);	
-			}				
-
+				// check that index is sane
+				if (!conf.circular && i < 0 || i > self.getSize()) { return self; }
+				
+				var item = i;
+			
+				if (i.jquery) {
+					i = self.getItems().index(i);	
+				} else {
+					item = self.getItems().eq(i);
+				}  
+				
+				// onBeforeSeek
+				var e = $.Event("onBeforeSeek"); 
+				if (!fn) {
+					fire.trigger(e, [i, time]);				
+					if (e.isDefaultPrevented() || !item.length) { return self; }			
+				}  
+	
+				var props = vertical ? {top: -item.position().top} : {left: -item.position().left};  
+				
+				itemWrap.animate(props, time, conf.easing, fn || function() { 
+					fire.trigger("onSeek", [i]);		
+				});	
+				
+				current = self;
+				index = i;
+				
+				return self; 
+			}					
+			
 		});
+				
+		// callbacks	
+		$.each(['onBeforeSeek', 'onSeek', 'onAddItem'], function(i, name) {
+				
+			// configuration
+			if ($.isFunction(conf[name])) { 
+				$(self).bind(name, conf[name]); 
+			}
+			
+			self[name] = function(fn) {
+				$(self).bind(name, fn);
+				return self;
+			};
+		});  
 		
-		self.reload(); 
+		// circular loop
+		if (conf.circular) {
+			
+			var cloned1 = self.getItems().slice(-1).clone().prependTo(itemWrap),
+				 cloned2 = self.getItems().eq(1).clone().appendTo(itemWrap);
+				
+			cloned1.add(cloned2).addClass(conf.clonedClass);
+			
+			self.onBeforeSeek(function(e, i, time) {
+
+				if (e.isDefaultPrevented()) { return; }
+				
+				/*
+					1. animate to the clone without event triggering
+					2. seek to correct position with 0 speed
+				*/
+				if (i == -1) {
+					self.seekTo(cloned1, time, function()  {
+						self.end(0);		
+					});          
+					return e.preventDefault();
+					
+				} else if (i == self.getSize()) {
+					self.seekTo(cloned2, time, function()  {
+						self.begin(0);		
+					});	
+				}
+				
+			});
+			
+			// seek over the cloned item
+			self.seekTo(0, 0);
+		}
 		
+		// next/prev buttons
+		var prev = find(root, conf.prev).click(function() { self.prev(); }),
+			 next = find(root, conf.next).click(function() { self.next(); });	
+		
+		if (!conf.circular && self.getSize() > 1) {
+			
+			self.onBeforeSeek(function(e, i) {
+				prev.toggleClass(conf.disabledClass, i <= 0);
+				next.toggleClass(conf.disabledClass, i >= self.getSize() -1);
+			}); 
+		}
+			
+		// mousewheel support
+		if (conf.mousewheel && $.fn.mousewheel) {
+			root.mousewheel(function(e, delta)  {
+				if (conf.mousewheel) {
+					self.move(delta < 0 ? 1 : -1, conf.wheelSpeed || 50);
+					return false;
+				}
+			});			
+		}
+		
+		if (conf.keyboard)  {
+			
+			$(document).bind("keydown.scrollable", function(evt) {
+
+				// skip certain conditions
+				if (!conf.keyboard || evt.altKey || evt.ctrlKey || $(evt.target).is(":input")) { return; }
+				
+				// does this instance have focus?
+				if (conf.keyboard != 'static' && current != self) { return; }
+					
+				var key = evt.keyCode;
+			
+				if (vertical && (key == 38 || key == 40)) {
+					self.move(key == 38 ? -1 : 1);
+					return evt.preventDefault();
+				}
+				
+				if (!vertical && (key == 37 || key == 39)) {					
+					self.move(key == 37 ? -1 : 1);
+					return evt.preventDefault();
+				}	  
+				
+			});  
+		}
+		
+		// initial index
+		$(self).trigger("onBeforeSeek", [conf.initialIndex]);
 	} 
 
 		
@@ -408,22 +274,17 @@
 	$.fn.scrollable = function(conf) { 
 			
 		// already constructed --> return API
-		var el = this.eq(typeof conf == 'number' ? conf : 0).data("scrollable");
+		var el = this.data("scrollable");
 		if (el) { return el; }		 
- 
-		var opts = $.extend({}, $.tools.scrollable.conf);
-		$.extend(opts, conf);
-		
-		opts.keyboardSteps = opts.keyboardSteps || opts.size;
-		
-		len += this.length;
+
+		conf = $.extend({}, $.tools.scrollable.conf, conf); 
 		
 		this.each(function() {			
-			el = new Scrollable($(this), opts);
+			el = new Scrollable($(this), conf);
 			$(this).data("scrollable", el);	
 		});
 		
-		return opts.api ? el: this; 
+		return conf.api ? el: this; 
 		
 	};
 			

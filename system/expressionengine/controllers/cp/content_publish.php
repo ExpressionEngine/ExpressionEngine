@@ -748,7 +748,7 @@ class Content_publish extends Controller {
 
 		$this->cp->add_js_script(array(
 		        'ui'        => array('datepicker', 'resizable', 'draggable', 'droppable'),
-		        'plugin'    => array('markitup', 'thickbox'),
+		        'plugin'    => array('markitup', 'toolbox.expose', 'overlay'),
 				'file'		=> array('json2', 'cp/publish')
 		    )
 		);		
@@ -1574,7 +1574,7 @@ class Content_publish extends Controller {
 		{
 			$vars['publish_tabs'] = $layout_info; // Custom Layout construction
 			
-			foreach($vars['publish_tabs'] as $val)
+			foreach($vars['publish_tabs'] as $tab => $val)
 			{
 				foreach($val as $key => $custom)
 				{
@@ -1600,18 +1600,18 @@ class Content_publish extends Controller {
 					// set up hidden fields (not visible)
 					if ($custom['visible'] === FALSE OR $custom['visible'] === 'false')
 					{
-						$name = (isset($this->field_definitions[$key]['field_id'])) ? 
+						$name = (isset($this->field_definitions[$key]['field_id'])) ? $this->field_definitions[$key]['field_id'] : $key;
 						
-						$this->field_definitions[$key]['field_id'] : $key;
-						
-						$this->javascript->output('$("#hold_field_'.$name.'").hide();');
+						// this can happen after the form loads...
 						$this->javascript->output('$("#remove_field_'.$name.'").children().attr("src", "'.$this->cp->cp_theme_url.'images/closed_eye.png");');
 					}
 					// set up collapsed fields
 					if ($custom['collapse'] === 'true' OR $custom['collapse'] === TRUE)
 					{
+						// Catch the obvious one with .js_hide
+						$vars['publish_tabs'][$tab][$key]['is_hidden'] = TRUE;
+						
 						$this->javascript->output('
-							$("#sub_hold_field_'.$key.'").hide();
 							$("#hold_field_'.$key.' .ui-resizable-handle").hide();
 							$("#hold_field_'.$key.' .field_collapse").attr("src", "'.$this->cp->cp_theme_url . 'images/field_collapse.png");
 						');
@@ -1637,7 +1637,7 @@ class Content_publish extends Controller {
 				}
 			}
 
-			foreach ($this->field_definitions as $field=>$data)
+			foreach ($this->field_definitions as $field => $data)
 			{
 				$all_fields[] .= $field;
 			}
@@ -1750,6 +1750,7 @@ class Content_publish extends Controller {
 		));
 
 		$layout_preview_links = "<p>".$this->lang->line('choose_layout_group_preview').NBS."<span class='notice'>".$this->lang->line('layout_save_warning')."</span></p><ul class='bullets'>";
+		
 		foreach($vars['member_groups']->result() as $group)
 		{
 			$layout_preview_links .= '<li><a href=\"'.BASE.AMP.'C=content_publish'.AMP."M=entry_form".AMP."channel_id=".$channel_id.AMP."layout_preview=".$group->group_id.'\">'.$group->group_title."</a></li>";
@@ -1757,15 +1758,11 @@ class Content_publish extends Controller {
 		$layout_preview_links .= "</ul>";
 
 		$this->javascript->click("#layout_group_preview", '
-			$.ee_notice("'.$layout_preview_links.'", {duration:0});
+			$.ee_notice("'.$layout_preview_links.'", {duration:0, open: true});
 		');
 
 		$this->javascript->set_global('lang.tab_name', $this->lang->line('tab_name'));
-
 		$this->javascript->set_global('publish.smileys', ($vars['smileys_enabled']) ? TRUE : FALSE);
-
-		$vars['write_mode_link'] = '#TB_inline?height=100%'.AMP.'width=100%'.AMP.'modal=true'.AMP.'inlineId=write_mode_container';
-		$vars['add_publish_tab_link'] = '#TB_inline?height=150'.AMP.'width=300'.AMP.'modal=true'.AMP.'inlineId=add_tab_popup';
 
 		if ($this->session->userdata('group_id') != 1)
 		{
