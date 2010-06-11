@@ -39,9 +39,9 @@ $(document).ready(function() {
 	EE.access_edit_url = EE.BASE+"&C=design&M=access_edit_ajax";
 
 
-	$("#revision_id").change(
+$('#revisions').submit(
 		function() {
-			var id = $(this).val();
+			var id = $("#revision_id").val();
 
 			if (id == "clear") {
 				window.open (EE.template.url+id,"Revision", "width=500, height=350, location=0, menubar=0, resizable=0, scrollbars=0, status=0, titlebar=0, toolbar=0, screenX=60, left=60, screenY=60, top=60");
@@ -52,6 +52,4 @@ $(document).ready(function() {
 			return false;
 		}
 	);
-	$("#revision_button").hide();	
-	
 });
