@@ -117,7 +117,7 @@ class EE_Xmlrpc extends CI_Xmlrpc {
 				return $this->display_error();
 			}
 			
-			$this->method('Expressionengine.ping');
+			$this->method('ExpressionEngine.ping');
 			$this->request(array(
 				$name,
 				$blog_url,
