@@ -31,9 +31,6 @@ class Content_publish extends Controller {
 	var $field_definitions	= array();
 	var $required_fields	= array();
 
-	var $theme_img_url		= ''; // Path to the cp theme images, set up during init
-
-
 	function Content_publish()
 	{
 		// Call the Controller constructor.
@@ -955,8 +952,8 @@ class Content_publish extends Controller {
 		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
 		
 		// Comment Expiration Date
-		
-		if (isset($this->installed_modules['comment']))
+
+		if (isset($this->installed_modules['comment']) && $vars['show_comments'])
 		{
 			$settings = array(
 						'field_id'				=> 'comment_expiration_date',
