@@ -399,6 +399,11 @@ class Channel_model extends CI_Model {
 
 			if ($child_results->num_rows() > 0)
 			{
+				// gather related fields
+				$this->db->select('field_id');
+				$this->db->where('field_type', 'rel');
+				$fquery = $this->db->get('channel_fields');
+
 				// We have children, so we need to do a bit of housekeeping
 				// so parent entries don't continue to try to reference them
 				$cids = array();

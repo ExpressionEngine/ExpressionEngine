@@ -667,7 +667,7 @@ class Channel {
 
 				foreach($entry_data[$entry_id] as $relating_data)
 				{
-					if ( ! isset($params['channel']) OR array_key_exists($relating_data['query']->row('channel_id'), $allowed))
+					if ( ! isset($params['channel']) OR ($relating_data['query']->row('channel_id') &&  array_key_exists($relating_data['query']->row('channel_id'), $allowed))) 
 					{
 						$query_row = $relating_data['query']->row_array();
 						
