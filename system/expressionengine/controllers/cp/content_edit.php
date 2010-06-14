@@ -1195,20 +1195,13 @@ class Content_edit extends Controller {
 		// Build and run the query
 		// -----------------------------
 
-		$sql_top = "SELECT t.entry_id, t.channel_id, t.author_id, t.title, t.url_title, t.entry_date, t.dst_enabled, t.status, t.allow_comments, t.sticky, w.comment_system_enabled
-					FROM exp_channel_titles AS t, exp_channels AS w
-					WHERE t.entry_id IN (";
+		$this->db->select('entry_id, exp_channel_titles.channel_id, author_id, title, url_title, entry_date, dst_enabled, status, allow_comments, sticky, comment_system_enabled');
+		$this->db->from('exp_channel_titles');
+		$this->db->join('exp_channels', 'exp_channels.channel_id = exp_channel_titles.channel_id');
+		$this->db->where_in('exp_channel_titles.entry_id', $entry_ids);
+		$this->db->order_by("entry_date", "desc"); 
 
-		$sql = '';
-		foreach ($entry_ids as $id)
-		{
-			$sql .= $id.',';
-		}
-
-		$sql = substr($sql, 0, -1).') ';
-		$sql .= "AND t.channel_id = w.channel_id ORDER BY entry_date desc";
-
-		$query = $this->db->query($sql_top.$sql);
+		$query = $this->db->get();
 
 		// -----------------------------
 		// Security check...
@@ -1250,20 +1243,18 @@ class Content_edit extends Controller {
 			if (count($new_ids) == 0)
 			{
 				show_error($this->lang->line('unauthorized_to_edit'));
-				
 			}
 
-			// Run the query one more time with the proper IDs.
-			$sql = '';
-			foreach ($new_ids as $id)
-			{
-				$sql .= $id.',';
-			}
 			unset($query);
 
-			$sql = substr($sql, 0, -1).') ';
-			$sql .= "ORDER BY entry_date desc";
-			$query = $this->db->query($sql_top.$sql);
+			// Run the query one more time with the proper IDs.
+			$this->db->select('entry_id, exp_channel_titles.channel_id, author_id, title, url_title, entry_date, dst_enabled, status, allow_comments, sticky, comment_system_enabled');
+			$this->db->from('exp_channel_titles');
+			$this->db->join('exp_channels', 'exp_channels.channel_id = exp_channel_titles.channel_id');
+			$this->db->where_in('exp_channel_titles.entry_id', $new_ids);
+			$this->db->order_by("entry_date", "desc"); 
+
+			$query = $this->db->get();			
 		}
 
 		// -----------------------------
@@ -1282,25 +1273,29 @@ class Content_edit extends Controller {
 		// Fetch the channel preferences
 		// We need these in order to fetch the status groups and options.
 
-		$sql = "SELECT channel_id, status_group, deft_status FROM exp_channels WHERE channel_id IN(";
-
 		$channel_ids = array();
 		foreach ($query->result_array() as $row)
 		{
 			$channel_ids[] = $row['channel_id'];
-
-			$sql .= $row['channel_id'].',';
 		}
+		
+		$this->db->select('channel_id, status_group, deft_status');
+		$this->db->from('exp_channels');
+		$this->db->where_in('channel_id', $channel_ids);
 
-		$channel_query = $this->db->query(substr($sql, 0, -1).')');
+		$channel_query = $this->db->get();
 
 		// Fetch disallowed statuses
 		$no_status_access = array();
 
 		if ($this->session->userdata['group_id'] != 1)
 		{
-			$result = $this->db->query("SELECT status_id FROM exp_status_no_access WHERE member_group = '".$this->session->userdata('group_id')."'");			
+			$this->db->select('status_id');
+			$this->db->from('exp_status_no_access');
+			$this->db->where('member_group', $this->session->userdata('group_id'));			
 
+			$result = $this->db->get();
+			
 			if ($result->num_rows() > 0)
 			{
 				foreach ($result->result_array() as $row)
@@ -1333,8 +1328,6 @@ class Content_edit extends Controller {
 			}
 
 			date_obj_time = " \'"+date_obj_hours+":"+date_obj_mins+date_obj_am_pm+"\'";
-
-
 		');
 
 		$vars['entries'] = $query;
@@ -1405,7 +1398,7 @@ class Content_edit extends Controller {
 
 			$vars['options'][$entry_id]['sticky']['name'] = 'sticky['.$row['entry_id'].']';
 			$vars['options'][$entry_id]['sticky']['value'] = 'y';
-			$vars['options'][$entry_id]['sticky']['selected'] = ($row['sticky'] == 'y') ? TRUE : FALSE;
+			$vars['options'][$entry_id]['sticky']['checked'] = ($row['sticky'] == 'y') ? TRUE : FALSE;
 			$vars['options'][$entry_id]['sticky']['style'] = 'width: auto!important;';
 
 			// Allow Comments
@@ -1419,10 +1412,10 @@ class Content_edit extends Controller {
 			{
 				$vars['options'][$entry_id]['allow_comments']['name'] = 'allow_comments['.$row['entry_id'].']';
 				$vars['options'][$entry_id]['allow_comments']['value'] = 'y';
-				$vars['options'][$entry_id]['allow_comments']['selected'] = ($row['allow_comments'] == 'y') ? TRUE : FALSE;
+				$vars['options'][$entry_id]['allow_comments']['checked'] = ($row['allow_comments'] == 'y') ? TRUE : FALSE;
+				
 				$vars['options'][$entry_id]['allow_comments']['style'] = 'width: auto!important;';
 			}
-
 		}
 
 		$this->javascript->compile();
