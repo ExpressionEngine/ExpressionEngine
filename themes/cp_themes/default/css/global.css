@@ -36,6 +36,8 @@ ul {
 textarea,
 input[type=text],
 input[type=password] {
+	font-family:			Helvetica, Arial, sans-serif;
+	font-size:				100%;
 	border:					1px solid #b6c0c2;
 	color:					#5f6c74;
 	outline:				0;
