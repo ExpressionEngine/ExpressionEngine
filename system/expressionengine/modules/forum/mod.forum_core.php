@@ -2936,14 +2936,24 @@ class Forum_Core extends Forum {
 		/**  Fetch The Topic
 		/** -------------------------------------*/
 		
-		$tquery = $this->EE->db->query("SELECT f.forum_text_formatting, f.forum_html_formatting, f.forum_enable_rss, f.forum_auto_link_urls, f.forum_allow_img_urls, f.forum_hot_topic, f.forum_post_order, f.forum_posts_perpage, f.forum_display_edit_date,
-									 t.forum_id, t.topic_id as post_id, t.author_id, t.ip_address, t.title, t.body, t.status, t.announcement, t.thread_views, t.parse_smileys, t.topic_date AS date, t.topic_edit_date AS edit_date, t.topic_edit_author AS edit_author_id, em.screen_name AS edit_author,
-							  		 m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics, m.total_forum_posts, m.location, m.email, m.accept_user_email, m.url, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height
-							FROM (exp_forums f, exp_forum_topics t, exp_members m)
-							LEFT JOIN exp_members em ON t.topic_edit_author = em.member_id
-							WHERE f.forum_id = t.forum_id
-							AND t.author_id = m.member_id
-							AND t.topic_id = '{$this->current_id}'");
+		$this->EE->db->select('f.forum_text_formatting, f.forum_html_formatting, f.forum_enable_rss,
+								f.forum_auto_link_urls, f.forum_allow_img_urls, f.forum_hot_topic, 
+								f.forum_post_order, f.forum_posts_perpage, f.forum_display_edit_date,
+								t.forum_id, t.topic_id as post_id, t.author_id, t.ip_address, t.title, 
+								t.body, t.status, t.announcement, t.thread_views, t.parse_smileys, 
+								t.topic_date AS date, t.topic_edit_date AS edit_date, 
+								t.topic_edit_author AS edit_author_id, em.screen_name AS edit_author,
+								m.group_id, m.screen_name AS author, m.join_date, m.total_forum_topics, 
+								m.total_forum_posts, m.location, m.email, m.accept_user_email, m.url, m.aol_im, 
+								m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, 
+								m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, 
+								m.photo_filename, m.photo_width, m.photo_height');
+		$this->EE->db->from(array('forums f', 'forum_topics t', 'members m'));
+		$this->EE->db->join('members em', 't.topic_edit_author = em.member_id', 'left');
+		$this->EE->db->where('f.forum_id', 't.forum_id', FALSE);
+		$this->EE->db->where('t.author_id = m.member_id');
+		$this->EE->db->where('t.topic_id', $this->current_id);
+		$tquery = $this->EE->db->get();
 
 		if ($tquery->num_rows() == 0)
 		{
@@ -2970,7 +2980,9 @@ class Forum_Core extends Forum {
 		
 		if ($this->EE->session->userdata('member_id') != 0)
 		{
-			$this->EE->db->query("UPDATE exp_forum_subscriptions SET notification_sent = 'n' WHERE topic_id = '{$this->current_id}' AND member_id = '".$this->EE->session->userdata('member_id')."'");
+			$this->EE->db->where('topic_id', $this->current_id);
+			$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
+			$this->EE->db->update('forum_subscriptions', array('notification_sent' => 'n'));			
 		}
 		
 		/** -------------------------------------
@@ -3052,8 +3064,12 @@ class Forum_Core extends Forum {
 			/**  Are there any other forums?
 			/** -------------------------------------*/
 			
-			$f_query = $this->EE->db->query("SELECT forum_name, forum_id FROM exp_forums WHERE board_id = '".$this->_fetch_pref('board_id')."' AND forum_is_cat = 'n' ORDER BY forum_order ASC");
-		
+			$this->EE->db->select('forum_name, forum_id');
+			$this->EE->db->where('board_id', $this->_fetch_pref('board_id'));
+			$this->EE->db->where('forum_is_cat', 'n', FALSE);
+			$this->EE->db->order_by('forum_order', 'asc');
+			$f_query = $this->EE->db->get('forums');
+					
 			$menu = '';
 			if ($f_query->num_rows() == 0)
 			{
