@@ -1281,7 +1281,7 @@ class Channel_standalone extends Channel {
 		{
 			foreach ($val as $script)
 			{
-				$filename = ($key == 'ui') ? 'ui.'.$script.'.js' : $script.'.js';
+				$filename = ($key == 'ui') ? 'jquery.ui.'.$script.'.js' : $script.'.js';
 				
 				$output .= file_get_contents(PATH_JQUERY.$key.'/'.$filename)."\n";
 			}
@@ -1806,11 +1806,11 @@ class Channel_standalone extends Channel {
 
 						$pdo .= $temp_options;
 					}
-					
+
 					$file = '<div class="publish_field">';
 					$file .= '<div class="file_set js_hide">';
 					$file .= '<p class="filename">';
-					$file .= '<img src="'.$this->theme_url.'cp_global_images/default.png" alt="default thumbnail" />';
+					$file .= '<img src="'.$this->EE->config->item('theme_folder_url').'/cp_global_images/default.png" alt="default thumbnail" />';
 					$file .= '</p>';
 					$file .= '<p class="sub_filename"><a href="#" class="remove_file">'.$this->EE->lang->line('remove_file').'</a></p>';
 					$file .= '<p><input type="hidden" name="field_id_'.$row['field_id'].'_hidden" value="'.$field_data.'" /></p>';
