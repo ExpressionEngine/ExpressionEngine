@@ -82,11 +82,9 @@ class Forum {
 	var $uri_segments 		= array('viewcategory', 'viewpost', 'viewreply', 'viewforum', 'viewthread', 'viewannounce', 'newtopic', 'quotetopic', 'quotereply', 'reporttopic', 'reportreply', 'do_report', 'newreply', 'edittopic', 'editreply', 'deletetopic', 'deletereply', 'movetopic', 'merge', 'do_merge', 'split', 'do_split', 'movereply', 'subscribe', 'unsubscribe', 'smileys', 'member', 'search', 'member_search', 'new_topic_search', 'active_topic_search', 'view_pending_topics', 'do_search', 'search_results', 'search_thread', 'ban_member', 'do_ban_member', 'spellcheck_iframe', 'spellcheck', 'mark_all_read', 'rss', 'atom', 'ignore_member', 'do_ignore_member');
 	var $include_exceptions	= array('head_extra', 'spellcheck_js', 'body_extra');
 
-
-	/** -------------------------------------
-	/**  Constructor
-	/** -------------------------------------*/
-	
+	/**
+	 * Constructor
+	 */
 	function Forum()
 	{	
 		// Make a local reference to the ExpressionEngine super object
@@ -179,15 +177,16 @@ class Forum {
 		}
 	}
 
-
-
-	/** -------------------------------------
-	/**  Load Base Forum Wrapper Functions
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Load Base Forum Wrapper Functions
+	 *
+	 * @access private
+	 */
 	function _load_base()
 	{
 		// Is the member area trigger changed?
-		
 		if ($this->EE->config->item('profile_trigger') != 'member' && in_array('member', $this->uri_segments))
 		{
 			unset($this->uri_segments[array_search('member', $this->uri_segments)]);
@@ -197,7 +196,6 @@ class Forum {
 		// Is this a Template Request?  If so, we need to do a check
 		// to see how many segments are devoted to the template calling and
 		// if it is two, then we need to modify the segments
-		
 		if ($this->_use_trigger() === FALSE)
 		{
 			
@@ -209,8 +207,7 @@ class Forum {
 			// We have a template or template group included, 
 			// since there is no match between the second segment
 			// and the valid forum uri segments but there is for the 
-			// third segment.
-			
+			// third segment.x
 			$i = 1;
 			
 			while(TRUE)
@@ -232,12 +229,12 @@ class Forum {
 				{
 					break;
 				}
-				}
+			}
 				
-				if ($i > 1)
-				{
-					$this->trigger = implode('/', array_slice($this->EE->uri->segments, 0, $i-1));
-				}
+			if ($i > 1)
+			{
+				$this->trigger = implode('/', array_slice($this->EE->uri->segments, 0, $i-1));
+			}
 		}
 		
 		/** -------------------------------------
@@ -252,27 +249,25 @@ class Forum {
 			exit;
 		}
 		
-		/** -------------------------------------
-		/**  Load Base Resources
-		/** -------------------------------------*/
+		// Load Base Resources
 		$this->EE->lang->loadfile('forum');
 		$this->_parse_uri();
 		$this->_load_preferences();
 		$this->_check_theme_path();		
 	}
 
-
+	// --------------------------------------------------------------------
 	
-	/** -------------------------------------
-	/**  Display Forum Handler
-	/** -------------------------------------*/
+	/**
+	 * Display Forum Handler
+	 *
+	 * @param 	string	function to call
+	 * @access	private
+	 */
 	function _display_forum($function = '')
 	{
-		/** -------------------------------------
-		/**  Determine the function call
-		/** -------------------------------------*/
+		// Determine the function call
 		// The function is based on the 2nd segment of the URI
-		
 		if ($function == '')
 		{
 			if ( ! $this->EE->uri->segment(2+$this->seg_addition))
@@ -285,16 +280,13 @@ class Forum {
 			}
 		}
 		
-		/** -------------------------------------
-		/**  Remap function if needed
-		/** -------------------------------------*/
+		// Remap function if needed
 		// In certain cases we may want different URI function names
 		// to share common methods
-		
 		$remap = array(
 						$this->EE->config->item('profile_trigger')	=> '_load_member_class',
-						'ban_member'					=> 'ban_member_form',
-						'do_ban_member'					=> 'do_ban_member'
+								'ban_member'	=> 'ban_member_form',
+								'do_ban_member'	=> 'do_ban_member'
 					  );		
 		
 		if (isset($remap[$function]))
@@ -302,13 +294,12 @@ class Forum {
 			$function = $remap[$function];
 		}
 						
-		/*  
-			The output is based on whether we are using the main template parser or not.
-			If the config.php file contains a forum "triggering" word we'll send
-			the output directly to the output class.  Otherwise, the output
-			is sent to the template class like normal.  The exception to this is
-			when action requests are processed
-		*/
+
+		// The output is based on whether we are using the main template parser or not.
+		// If the config.php file contains a forum "triggering" word we'll send
+		// the output directly to the output class.  Otherwise, the output
+		// is sent to the template class like normal.  The exception to this is
+		// when action requests are processed
 				
 		if ($this->_use_trigger() OR $this->EE->input->get_post('ACT') !== FALSE)
 		{ 
@@ -324,19 +315,24 @@ class Forum {
 			$this->EE->TMPL->disable_caching = TRUE;
 		
 			$this->return_data = $this->EE->TMPL->simple_conditionals($this->_include_recursive($function), $this->EE->config->_global_vars);
-			
-			if (count($this->EE->TMPL->global_vars) > 0)
+
+			// Parse Snippets
+			foreach ($this->EE->config->_global_vars as $key => $val)
 			{
-				foreach ($this->EE->TMPL->global_vars as $key => $val)
-				{
-					$this->return_data = str_replace(LD.$key.RD, $val, $this->return_data); 
-				}
+				$this->return_data = str_replace(LD.$key.RD, $val, $this->return_data); 
+			}
+		
+			// Parse Global Variables
+			foreach ($this->EE->TMPL->global_vars as $key => $val)
+			{
+				$this->return_data = str_replace(LD.$key.RD, $val, $this->return_data); 
 			}
 			
 			$this->return_data = $this->_final_prep($this->return_data);
 		}
-		
 	}
+
+	// --------------------------------------------------------------------
 
 	function submit_post() 			{ return $this->EE->FRM_CORE->submit_post(); }
 	function delete_post() 			{ return $this->EE->FRM_CORE->delete_post(); }
@@ -350,9 +346,11 @@ class Forum {
 	function do_split()				{ return $this->EE->FRM_CORE->do_split(); }
 	function do_report()			{ return $this->EE->FRM_CORE->do_report(); }
 	
-	/** -------------------------------------
-	/**  Strip out the ID number from the URI
-	/** -------------------------------------*/
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Parse URI
+	 */
 	
 	// The forum URL will typically contain only a few different possibilities:
 	// 
@@ -464,17 +462,23 @@ class Forum {
 			$this->current_id = '';
 	}
 
+	// --------------------------------------------------------------------	
 	
-	
-	/** -------------------------------------
-	/**  Fetch the Trigger Status
-	/** -------------------------------------*/
-	
-	// If TRUE we are bypassing the template engine
-	
+	/**
+	 * Fetch the Trigger Status
+	 *
+	 * If TRUE we are bypassing the template engine
+	 *
+	 * @return boolean
+	 */
 	function _use_trigger()
 	{
-		if ($this->EE->config->item('forum_is_installed') == "y" AND  $this->EE->config->item('forum_trigger') != '' AND in_array($this->EE->uri->segment(1+$this->seg_addition), preg_split('/\|/', $this->EE->config->item('forum_trigger'), -1, PREG_SPLIT_NO_EMPTY)))
+		if ($this->EE->config->item('forum_is_installed') == "y" AND 
+			$this->EE->config->item('forum_trigger') != '' AND 
+			in_array(
+					$this->EE->uri->segment(1+$this->seg_addition), 
+					preg_split('/\|/', $this->EE->config->item('forum_trigger'), -1, PREG_SPLIT_NO_EMPTY))
+		)
 		{
 			$this->forum_trigger = $this->EE->uri->segment(1+$this->seg_addition);
 			return TRUE;
@@ -485,29 +489,34 @@ class Forum {
 		}
 	}
 
-	
+	// --------------------------------------------------------------------		
 
-	/** -------------------------------------
-	/**  Recursively Fetch Template Elements
-	/** -------------------------------------*/
-	// Note:  A "template element" refers to an HTML component used to build the forum (header, breadcrumb, footer, etc.).
-	// Each "template element" corresponds to a particular function in one of the theme files.
-	
-	// This function allows any template element to be embedded within any other template element.
-	// Template elements can contain "include variables" which call other template elements.
-	// The include variables look like this: {include:function_name}
-
-	// If an include is found, this function loads that element and recursively looks for 
-	// additional includes.  
-	
-	// In some cases, template elements need to be processed rather than simply returned.
-	// If we need to process the include, THIS file will contain a function named
-	// exactly the same as the template element which will be called.  If the function does 
-	// not exist we return the pure data.
-	
-	// Right now there is no safety to prevent a run-away loop if an include is put within itself.
-	
-	
+	/**
+	 * Recursively Fetch Template Elements
+	 *
+	 *
+	 * Note:  A "template element" refers to an HTML component used to build the forum 
+	 * (header, breadcrumb, footer, etc.). 
+	 * Each "template element" corresponds to a particular function in one of the theme files.
+	 *
+	 * This function allows any template element to be embedded within any other template element.
+	 * Template elements can contain "include variables" which call other template elements.
+	 * The include variables look like this: {include:function_name}
+ 	 *
+	 * If an include is found, this function loads that element and recursively looks for 
+	 * additional includes.  
+	 *
+	 * In some cases, template elements need to be processed rather than simply returned.
+	 * If we need to process the include, THIS file will contain a function named
+	 * exactly the same as the template element which will be called.  If the function does 
+	 * not exist we return the pure data.
+	 *
+	 * Right now there is no safety to prevent a run-away loop if an include is put within itself.
+	 *
+	 * @param 	string	function to call
+	 * @return 	string
+	 * @access 	private
+	 */	
 	function _include_recursive($function)
 	{ 
 		if ($this->return_data == '' AND $this->trigger_error_page === TRUE)
@@ -541,11 +550,13 @@ class Forum {
 		return $this->return_data;
 	}
 
+	// --------------------------------------------------------------------	
 	
-	/** -------------------------------------
-	/**  Forum CSS
-	/** -------------------------------------*/
-	
+	/**
+	 * Forum CSS
+	 *
+	 * @return string
+	 */
 	function forum_css()
 	{
 		$str = $this->_load_element('forum_css');
@@ -554,11 +565,15 @@ class Forum {
 		$str = preg_replace("/\}\s+/s", "}\n", $str);
 		return $str;
 	}
+
+	// --------------------------------------------------------------------	
 	
-	/** -------------------------------------
-	/**  Load a Theme Element
-	/** -------------------------------------*/
-		
+	/** 
+	 * Load a Theme Element
+	 *
+	 * @param 	string	element to load
+	 * @return 	mixed
+	 */		
 	function _load_element($which)
 	{
 		if ( ! ($classname = $this->_fetch_filename($which)))
@@ -590,18 +605,22 @@ class Forum {
 		return $this->_prep_element(trim(file_get_contents($this->_fetch_pref('board_theme_path').$path)));
 	}
 
+	// --------------------------------------------------------------------	
 
-
-	/** -------------------------------------
-	/**  Prep Element Data
-	/** -------------------------------------*/
-	
-	// Right now we only use this to parse the logged-in/logged-out vars
-
+	/**
+	 * Prep Element Data
+	 *
+	 * Right now we only use this to parse the logged-in/logged-out vars
+	 *
+	 * @param 	string
+	 * @return 	string
+	 */
 	function _prep_element($str)
 	{
 		if ($str == '')
-			return '';
+		{
+			return '';			
+		}
 		
 		if ($this->EE->session->userdata('member_id') == 0)
 		{
@@ -614,61 +633,62 @@ class Forum {
 			$str = $this->_deny_if('logged_out', $str);
 		}
 		
-		
 		return $str;		
 	}
 
-
+	// --------------------------------------------------------------------	
 	
-	/** -------------------------------------
-	/**  Load Forum Preference
-	/** -------------------------------------*/
-	
+	/**
+	 * Load Forum Preference
+	 *
+	 * @param 	integer		board id
+	 *
+	 */
 	function _load_preferences($board_id='')
 	{
 		if ($board_id != '')
 		{
-			$sql = "board_id = '".$this->EE->db->escape_str($board_id)."'";
+			$this->EE->db->where('board_id', $board_id);
 		}
 		elseif ($this->EE->input->get_post('ACT') !== FALSE && $this->EE->input->get_post('board_id') !== FALSE)
 		{
-			$sql = "board_id = '".$this->EE->db->escape_str($this->EE->input->get_post('board_id'))."'";
+			$this->EE->db->where('board_id', $this->EE->input->get_post('board_id'));
 		}
 		elseif ($this->_use_trigger() === TRUE)
 		{
-			$sql = "board_forum_trigger = '".$this->EE->db->escape_str($this->forum_trigger)."' AND board_site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'";
+			$this->EE->db->where('board_forum_trigger', $this->forum_trigger);
+			$this->EE->db->where('board_site_id', $this->EE->config->item('site_id'));
 		}
 		else
 		{
 			// Means we are in a Template
 			// If no board="" parameter, then we automatically
 			// use the default board_id of 1
-			
 			if (isset($this->EE->TMPL) && is_object($this->EE->TMPL) && ($board_name = $this->EE->TMPL->fetch_param('board')) !== FALSE)
 			{
-				$sql = "board_name = '".$this->EE->db->escape_str($board_name)."'";
+				$this->EE->db->where('board_name', $board_name);
 			}
 			else
 			{	
-				$sql = "board_id = '1'";
+				$this->EE->db->where('board_id', 1);
 			}
 		}
 		
-		$query = $this->EE->db->query("SELECT board_label, board_name, board_id, board_alias_id, 
+		$this->EE->db->select('board_label, board_name, board_id, board_alias_id, 
 							board_forum_url, board_enabled, board_default_theme, board_forum_trigger,
 							board_upload_path, board_topics_perpage, board_posts_perpage, board_topic_order, 
 							board_post_order, board_display_edit_date, board_hot_topic, board_max_attach_perpost, 
 							board_attach_types, board_max_attach_size, board_use_img_thumbs, board_recent_poster, 
-							board_recent_poster_id, board_notify_emails, board_notify_emails_topics, board_allow_php, board_php_stage 
-							FROM exp_forum_boards
-							WHERE ".$sql);
+							board_recent_poster_id, board_notify_emails, board_notify_emails_topics, board_allow_php,
+							board_php_stage');
+		$query = $this->EE->db->get('forum_boards');
 
 		if ($query->num_rows() == 0)
 		{
-			exit('Forum does not appear to be installed');
+			$this->EE->output->show_user_error('general', $this->EE->lang->line('forum_not_installed'));
 		}
 
-		if ($query->row('board_alias_id')  != '0')
+		if ($query->row('board_alias_id') != '0')
 		{
 			$this->_load_preferences($query->row('board_alias_id') );
 			
@@ -690,7 +710,6 @@ class Forum {
 		}
 
 		// Assign the path the member profile area
-		
 		if ($this->use_site_profile == TRUE)
 		{
 			$this->preferences['member_profile_path'] = $this->EE->functions->create_url($this->EE->config->item('profile_trigger').'/');
@@ -704,11 +723,14 @@ class Forum {
 		$this->preferences['board_theme_url']	= $this->EE->config->slash_item('theme_folder_url').'forum_themes/';
 	}
 
-	
-	/** -------------------------------------
-	/**  Instantiates the Member Profile Class
-	/** -------------------------------------*/
-	
+	// --------------------------------------------------------------------	
+
+	/**
+	 * Instantiates the Member Profile Class
+	 *
+	 * @access private
+	 * @return string
+	 */
 	function _load_member_class()
 	{
 		// This needs to be first!  Don't move it.
@@ -747,39 +769,39 @@ class Forum {
 		{
 			$template = $this->_deny_if('show_headings', $template);
 		}
+
 		return $template;
 	}
 
-	
-	/** -------------------------------------
-	/**  Fetch Preference item
-	/** -------------------------------------*/
-	
+	// --------------------------------------------------------------------	
+
+	/**
+	 * Fetch Preference item
+	 *
+	 * @param 	string
+	 * @return 	string
+	 */
 	function _fetch_pref($which)
 	{
 		return ( ! isset($this->preferences[$which])) ? '' : $this->preferences[$which];
 	}
 
-	
+	// --------------------------------------------------------------------		
 		
-	/** -------------------------------------
-	/**  Check the theme folder path
-	/** -------------------------------------*/
-		
+	/**
+	 * Check the theme folder path
+	 *
+	 * @return mixed
+	 */
 	function _check_theme_path()
 	{
-		/*  
-			Check path to master folder containing all the themes
-		*/
-		
+		// Check path to master folder containing all the themes
 		if ( ! is_dir($this->_fetch_pref('board_theme_path')))
 		{
 			return $this->EE->output->fatal_error('Unable to locate the forum theme folder.');
 		}
 	
-		/*  
-			Grab theme.  Can be from a cookie or user pref
-		*/	
+		// Grab theme.  Can be from a cookie or user pref
 		$forum_theme = ($this->EE->session->userdata('member_id') != 0) ? $this->EE->session->userdata('forum_theme') : '';
 		
 		// Maybe the theme is in a cookie?
@@ -803,9 +825,8 @@ class Forum {
 			}
 		}
 		
-		/*  
-			Check path to folder containing the requested theme
-		*/
+
+		// Check path to folder containing the requested theme
 				
 		$this->theme = ($forum_theme != '' AND @is_dir($this->_fetch_pref('board_theme_path').$forum_theme)) ? $forum_theme : $this->_fetch_pref('board_default_theme');
 		
@@ -814,18 +835,17 @@ class Forum {
 			return $this->EE->output->fatal_error('Unable to locate the forum theme folder.');
 		}
 	 
-		/*  
-			Set path to the image folder for the particular theme
-		*/
+		// Set path to the image folder for the particular theme
 		$this->image_url = $this->_fetch_pref('board_theme_url').$this->theme.'/images/';
 	}
 
-
+	// --------------------------------------------------------------------	
  
-	/** -------------------------------------
-	/**  Build Form Declaration
-	/** -------------------------------------*/
-	
+	/**
+	 * Build Form Declaration
+	 *
+	 * @param mixed
+	 */
 	function _form_declaration($form = '')
 	{
 		list($class, $method) = explode(':', $form);
@@ -898,35 +918,37 @@ class Forum {
 										);  
 	}
 
-	  
-	  
-	/** -------------------------------------
-	/**  Build Profile Path with member ID
-	/** -------------------------------------*/
-		
+	// --------------------------------------------------------------------	
+
+	/**
+	 * Build Profile Path with member ID
+	 *
+	 * @param 	int	id
+	 * @return 	string
+	 */
 	function _profile_path($id)
-		{
+	{
 		return $this->_fetch_pref('member_profile_path').$id.'/';
-		}
+	}
 
+	// --------------------------------------------------------------------	
 
-	/** -------------------------------------
-	/**  Build Search Path with sting
-	/** -------------------------------------*/
-	
-	// We need to assign an action to this...
-	
+	/**
+	 * Build Search Path with sting
+	 *
+	 * We need to assign an action to this...
+	 *
+	 */
 	function _search_path($id)
-		{	
-		
-			return $this->_forum_path('/search/');
-		}
+	{	
+		return $this->_forum_path('/search/');
+	}
 
+	// --------------------------------------------------------------------	
 
-
-	/** ----------------------------------------
-	/**  Sets the forum basepath
-	/** ----------------------------------------*/
+	/**
+	 * Sets the forum basepath
+	 */
 	function _forum_set_basepath()
 	{
 		/* -------------------------------------------
@@ -947,11 +969,11 @@ class Forum {
 		$this->basepath = $this->EE->functions->create_url($trigger).'/'; 
 	}
 
+	// --------------------------------------------------------------------
 
-
-	/** ----------------------------------------
-	/**  Compiles a path string
-	/** ----------------------------------------*/
+	/**
+	 * Compiles a path string
+	 */
 	function _forum_path($uri = '')
 	{
 		if ($this->basepath == '')
@@ -962,12 +984,11 @@ class Forum {
 		return $this->EE->functions->remove_double_slashes($this->basepath.$uri.'/');
 	}
 
-		
+	// --------------------------------------------------------------------		
 
-	/** ----------------------------------------
-	/**  Replace variables
-	/** ----------------------------------------*/
-		
+	/**
+	 * Replace variables
+	 */
 	function _var_swap($str, $data)
 	{
 		if ( ! is_array($data))
@@ -983,26 +1004,28 @@ class Forum {
 		return $str;
 	}
 
+	// --------------------------------------------------------------------	
 
-
-	/** -------------------------------------
-	/**  Helpers for "if" conditions
-	/** -------------------------------------*/
+	/**
+	 * Helpers for "if" conditions
+	 */
 	function _deny_if($cond, $str, $replace = '')
 	{
 		return preg_replace("/\{if\s+".$cond."\}.+?\{\/if\}/si", $replace, $str);
 	}
+
+	// --------------------------------------------------------------------	
 	
 	function _allow_if($cond, $str)
 	{
 		return preg_replace("/\{if\s+".$cond."\}(.+?)\{\/if\}/si", "\\1", $str);
 	}
 
-	
+	// --------------------------------------------------------------------		
 
-	/** ----------------------------------------
-	/**  Convert special characters
-	/** ----------------------------------------*/
+	/**
+	 * Convert special characters
+	 */
 	function _convert_special_chars($str, $convert_amp = FALSE)
 	{
 		// If we convert &'s for strings that have typography performed on them,
@@ -1015,11 +1038,11 @@ class Forum {
 		return str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), $str);
 	}
 
+	// --------------------------------------------------------------------	
 
-
-	/** ----------------------------------------
-	/**  Convet special characters
-	/** ----------------------------------------*/
+	/**
+	 * Convert forum tags
+	 */
 	function _convert_forum_tags($str)
 	{	
 		$str = str_replace('{include:', '&#123;include:', $str);
@@ -1029,18 +1052,14 @@ class Forum {
 		return $str;
 	}
 
-
+	// --------------------------------------------------------------------	
 	
-	/** -------------------------------------
-	/**  Final Template Parsing
-	/** -------------------------------------*/
-	
+	/**
+	 * Final Template Parsing
+	 */
 	function _final_prep($str)
 	{
-		/** ----------------------------------------
-		/**  Is the user an admin?
-		/** ----------------------------------------*/
-		
+		// Is the user an admin?	
 		if ( ! $this->_is_admin())
 		{
 			$str = $this->_deny_if('is_admin', $str);
@@ -1057,13 +1076,8 @@ class Forum {
 		else
 		{
 			$str = $this->_allow_if('in_forum', $str);
-		}	
-		
-		
-		
-		/** ----------------------------------------
-		/**  Parse the language text
-		/** ----------------------------------------*/
+		}
+			// Parse the language text
 			if (preg_match_all("/{lang:(.+?)\}/i", $str, $matches))
 			{	
 			for ($j = 0; $j < count($matches['0']); $j++)
@@ -1072,7 +1086,6 @@ class Forum {
 				
 				// Since we're using the pre-existing search language file
 				// we might need to add a prefix
-				
 				if ($line == '' AND $this->current_request == 'search')
 				{
 					$line = $this->EE->lang->line('search_'.$matches['1'][$j]);
@@ -1080,24 +1093,20 @@ class Forum {
 			
 				$str = str_replace($matches['0'][$j], $line, $str);
 			}
-		}
+		}	
 		
-		/** ----------------------------------------
-		/**  Parse form declarations
-		/** ----------------------------------------*/
-			if (preg_match_all("/{form_declaration:(.+?)\}/i", $str, $matches))
-			{
+		// Parse form declarations
+		if (preg_match_all("/{form_declaration:(.+?)\}/i", $str, $matches))
+		{
 			for ($j = 0; $j < count($matches['0']); $j++)
 			{
 				$str = str_replace($matches['0'][$j], $this->_form_declaration($matches['1'][$j]), $str);
 			}
 		}
 
-		/** ----------------------------------------
-		/**  Parse the last visit date
-		/** ----------------------------------------*/
-			if (preg_match_all("/{last_visit_date\s+format=['|\"](.+?)['|\"]\}/i", $str, $matches))
-			{
+		// Parse the last visit date
+		if (preg_match_all("/{last_visit_date\s+format=['|\"](.+?)['|\"]\}/i", $str, $matches))
+		{
 			for ($j = 0; $j < count($matches['0']); $j++)
 			{
 				if ($this->EE->session->userdata('member_id') == 0)
@@ -1124,8 +1133,6 @@ class Forum {
 		else
 		{
 			$str = $this->_allow_if('feeds_enabled', $str);
-			
-			
 		}	
 
 		/** ----------------------------------------

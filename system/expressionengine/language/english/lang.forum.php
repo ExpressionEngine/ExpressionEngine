@@ -1039,6 +1039,8 @@ $lang = array(
 'choose_forum_board' =>
 'Choose Forum Board',
 
+'forum_not_installed' =>
+'Forum does not appear to be installed',
 
 ''=>''
 );
