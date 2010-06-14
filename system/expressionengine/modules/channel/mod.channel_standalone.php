@@ -1262,7 +1262,7 @@ class Channel_standalone extends Channel {
 	function saef_javascript()
 	{
 		$scripts = array(
-				'ui'		=> array('core', 'dialog'),
+				'ui'		=> array('core', 'widget', 'button', 'dialog'),
 				'plugins'	=> array('scrollable', 'scrollable.navigator', 
 										'ee_filebrowser', 'markitup',
 										'thickbox')
