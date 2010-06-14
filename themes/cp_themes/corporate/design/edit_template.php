@@ -28,12 +28,12 @@ if ($EE_view_disable !== TRUE)
 		<?php endif;?>
 
 		<div class="clear_left" id="template_details" style="margin-bottom: 0">
-<span class="button">
+<span class="button" style="margin-top:-6px">
 
 			<?=form_open('C=design'.AMP.'M=template_revision_history'.AMP.'tgpref='.$group_id, array('id' => 'revisions', 'name' => 'revisions', 'template_id' => $template_id, 'target' => 'Revisions'))?>	
 			
 			<?=form_dropdown('revision_id', $revision_options, '', 'id="revision_id"')?>
-			<?=form_submit('submit', lang('submit'), 'class="submit" id="revision_button"')?>
+			<?=form_submit('submit', lang('view'), 'class="submit" id="revision_button"')?>
 			<?=form_close()?>
 </span>			
 			<p>

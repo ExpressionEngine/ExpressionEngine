@@ -545,9 +545,15 @@ class Member_auth extends Member {
 		/** ----------------------------------------
 		/**  Kill the session and cookies
 		/** ----------------------------------------*/
-		$this->EE->db->query("DELETE FROM exp_online_users WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND ip_address = '".$this->EE->input->ip_address()."' AND member_id = '".$this->EE->session->userdata('member_id')."'");
+		
+		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+		$this->EE->db->where('ip_address', $this->EE->input->ip_address());
+		$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
+		$this->EE->db->delete('online_users');		
+		
+		$this->EE->db->where('session_id', $this->EE->session->userdata['session_id']);
+		$this->EE->db->delete('sessions');		
 
-		$this->EE->db->query("DELETE FROM exp_sessions WHERE session_id = '".$this->EE->session->userdata['session_id']."'");
 
 		$this->EE->functions->set_cookie($this->EE->session->c_uniqueid);
 		$this->EE->functions->set_cookie($this->EE->session->c_password);

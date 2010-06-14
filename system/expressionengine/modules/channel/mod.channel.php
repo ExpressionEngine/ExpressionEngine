@@ -102,7 +102,7 @@ class Channel {
 
 		$this->query_string = ($this->EE->uri->page_query_string != '') ? $this->EE->uri->page_query_string : $this->EE->uri->query_string;
 
-		if ($this->EE->config->item("use_category_name") == 'y' AND $this->EE->config->item("reserved_category_word") != '')
+		if ($this->EE->config->item("use_category_name") == 'y' && $this->EE->config->item("reserved_category_word") != '')
 		{
 			$this->use_category_names	= $this->EE->config->item("use_category_name");
 			$this->reserved_cat_segment	= $this->EE->config->item("reserved_category_word");
@@ -135,11 +135,11 @@ class Channel {
 	{
 		$tag = ($identifier == '') ? $this->EE->TMPL->tagproper : $this->EE->TMPL->tagproper.$identifier;
 
-		if ($this->EE->TMPL->fetch_param('dynamic_parameters') !== FALSE AND isset($_POST) AND count($_POST) > 0)
+		if ($this->EE->TMPL->fetch_param('dynamic_parameters') !== FALSE && isset($_POST) && count($_POST) > 0)
 		{
 			foreach (explode('|', $this->EE->TMPL->fetch_param('dynamic_parameters')) as $var)
 			{
-				if (isset($_POST[$var]) AND in_array($var, array('channel', 'entry_id', 'category', 'orderby', 'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from', 'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month', 'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'cat_limit', 'month_limit', 'offset', 'author_id')))
+				if (isset($_POST[$var]) && in_array($var, array('channel', 'entry_id', 'category', 'orderby', 'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from', 'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month', 'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'cat_limit', 'month_limit', 'offset', 'author_id')))
 				{
 					$tag .= $var.'="'.$_POST[$var].'"';
 				}
@@ -314,7 +314,7 @@ class Channel {
 		//  - relaxed_track_views => Allow view tracking on non-dynamic
 		//  	single entries (y/n)
 		// -------------------------------------
-		if ($this->EE->config->item('relaxed_track_views') === 'y' AND $this->query->num_rows() == 1)
+		if ($this->EE->config->item('relaxed_track_views') === 'y' && $this->query->num_rows() == 1)
 		{
 			$this->hit_tracking_id = $this->query->row('entry_id') ;
 		}
@@ -339,12 +339,12 @@ class Channel {
 
 		// Does the tag contain "related entries" that we need to parse out?
 
-		if (count($this->EE->TMPL->related_data) > 0 AND count($this->related_entries) > 0)
+		if (count($this->EE->TMPL->related_data) > 0 && count($this->related_entries) > 0)
 		{
 			$this->parse_related_entries();
 		}
 
-		if (count($this->EE->TMPL->reverse_related_data) > 0 AND count($this->reverse_related_entries) > 0)
+		if (count($this->EE->TMPL->reverse_related_data) > 0 && count($this->reverse_related_entries) > 0)
 		{
 			$this->parse_reverse_related_entries();
 		}
@@ -667,7 +667,7 @@ class Channel {
 
 				foreach($entry_data[$entry_id] as $relating_data)
 				{
-					if ( ! isset($params['channel']) OR array_key_exists($relating_data['query']->row('channel_id'), $allowed))
+					if ( ! isset($params['channel']) OR ($relating_data['query']->row('channel_id') &&  array_key_exists($relating_data['query']->row('channel_id'), $allowed))) 
 					{
 						$query_row = $relating_data['query']->row_array();
 						
@@ -3392,7 +3392,7 @@ class Channel {
 
 		// We do this here to avoid processing cycles in the foreach loop
 
-		$date_vars = array('entry_date', 'gmt_date', 'gmt_entry_date', 'edit_date', 'gmt_edit_date', 'expiration_date', 'recent_comment_date');
+		$date_vars = array('entry_date', 'gmt_date', 'gmt_entry_date', 'edit_date', 'gmt_edit_date', 'expiration_date', 'recent_comment_date', 'week_date');
 		$date_variables_exist = FALSE;
 
 		foreach ($date_vars as $val)
@@ -3752,10 +3752,10 @@ class Channel {
 				}
 			}
 
-
 			foreach($this->mfields as $key => $value)
 			{
-				$cond[$key] = ( ! isset($row['m_field_id_'.$value[0]])) ? '' : $row['m_field_id_'.$value[0]];
+				$cond[$key] = ( ! array_key_exists('m_field_id_'.$value[0], $row)) ? '' : $row['m_field_id_'.$value[0]];
+				//( ! isset($row['m_field_id_'.$value[0]])) ? '' : $row['m_field_id_'.$value[0]];
 			}
 
 			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
@@ -4613,7 +4613,9 @@ class Channel {
 				}
 
 				//  parse basic fields (username, screen_name, etc.)
-				if (isset($row[$val]))
+				//  Use array_key_exists to handle null values
+
+				if (array_key_exists($val, $row))
 				{
 					$tagdata = $this->EE->TMPL->swap_var_single($val, $row[$val], $tagdata);
 				}
@@ -4763,8 +4765,7 @@ class Channel {
 				}
 
 				//  parse custom member fields
-
-				if ( isset( $this->mfields[$val]) AND isset($row['m_field_id_'.$this->mfields[$val][0]]))
+				if (isset($this->mfields[$val]) && array_key_exists('m_field_id_'.$value[0], $row))
 				{
 					if ( ! isset($processed_member_fields[$row['member_id']]['m_field_id_'.$this->mfields[$val][0]]))
 					{

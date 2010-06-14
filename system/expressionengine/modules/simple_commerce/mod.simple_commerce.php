@@ -33,7 +33,9 @@ class Simple_commerce {
 
 	var $return_data		= '';
 	var $debug				= FALSE;
-	var $debug_response		= TRUE;
+	var $debug_incoming_ipn = FALSE;  // Will send an email with the incoming ipn post data for debug purposes
+	var $debug_email_address = '';  // Address to send the incoming ipn debug data to- defaults to webmaster_email
+
 	var $possible_post;
 	var $post				= array();
 	
@@ -360,6 +362,26 @@ class Simple_commerce {
 	/** ----------------------------------------*/
 	function incoming_ipn()
 	{
+		// Send incoming post data if debugging required
+		if ($this->debug_incoming_ipn)
+		{
+			ob_start();
+			print_r($_POST);
+			$msg = ob_get_contents();
+			ob_end_clean();
+			
+			$this->EE->load->library('email');
+			$debug_to = ($this->debug_email_address == '') ? $this->EE->config->item('webmaster_email') : $this->debug_email_address;
+			
+			$this->EE->email->from($this->EE->config->item('webmaster_email'), 
+										$this->EE->config->item('site_name'));
+			$this->EE->email->to($debug_to);
+			$this->EE->email->subject('EE Debug: Incoming IPN Response');
+			$this->EE->email->message($msg);
+			$this->EE->email->send();
+			$this->EE->email->EE_initialize();			
+		}
+
 		if (empty($_POST))
 		{
 			@header("HTTP/1.0 404 Not Found");
