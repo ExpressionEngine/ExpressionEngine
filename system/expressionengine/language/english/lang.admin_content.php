@@ -9,7 +9,7 @@ $lang = array(
 'If you have unsaved changes in this page they will be lost when you are transfered to the formatting editor.',
 
 'fmt_has_changed' =>
-'Note: You have selected a different field formatting choice then what was previously saved.',
+'Note: You have selected a different field formatting choice than what was previously saved.',
 
 'update_existing_fields' =>
 'Update all existing channel entries with your new formatting choice?',
