@@ -2175,6 +2175,9 @@ class Design extends Controller {
 		
 		$str = $_POST['template_data'];
 		
+		// Don't trigger inside EE comments
+		$str = preg_replace('/{!--(.*?)--}/is', '', $str);
+		
 		if (strpos($str, '{exp:') === FALSE)
 		{
 			return;
