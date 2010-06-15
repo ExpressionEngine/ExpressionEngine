@@ -2065,6 +2065,18 @@ span.defaultIndicator {
 	text-align:left;
 }
 
+.templateTable td.hiddenTemplate a {
+	filter:alpha(opacity=50);
+	-moz-opacity:0.5;
+	opacity: 0.5;
+}
+
+.templateTable td.hiddenTemplate a:hover {
+	filter:alpha(opacity=100);
+	-moz-opacity:1.0;
+	opacity: 1.0;	
+}
+
 
 .templateTable tr.odd td {
 	background-color:	#fafafc;
