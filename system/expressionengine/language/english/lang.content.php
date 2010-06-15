@@ -595,6 +595,9 @@ $lang = array(
 'today' =>
 'Today',
 
+'past_day' =>
+'Last 24 hours',
+
 'past_week' =>
 'Last 7 days',
 

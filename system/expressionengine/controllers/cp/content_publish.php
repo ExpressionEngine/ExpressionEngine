@@ -324,7 +324,10 @@ class Content_publish extends Controller {
 		
 		// make this into an array, insert_group_layout will serialize and save
 		
+		
 		$layout_info = array_map(array($this, '_sort_publish_fields'), $clean_layout);
+		
+		//print_r($layout_info); exit;
 		
 		if ($this->member_model->insert_group_layout($member_group, $channel_id, $layout_info))
 		{
@@ -1034,12 +1037,13 @@ class Content_publish extends Controller {
 			{
 				$links[] = array('url' => BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$val['group_id'],
 					'group_name' => $val['group_name']);
+
 			}
 		}
 
 		$edit_categories_link = $links;
 
-		$this->_define_category_fields($vars['categories'], $edit_categories_link);
+		$this->_define_category_fields($vars['categories'], $edit_categories_link, $cat_group);
 
 		// ----------------------------------------------
 		// PING BLOCK
@@ -2089,34 +2093,26 @@ class Content_publish extends Controller {
 		$vars['menu_channel_options'] = array();
 		$vars['menu_channel_selected'] = '';
 
-		if($which != 'new')
+		$query = $this->channel_model->get_channel_menu($status_group, $cat_group, $field_group);
+
+		if ($query->num_rows() > 0)
 		{
-			$query = $this->channel_model->get_channel_menu($status_group, $cat_group, $field_group);
-
-			if ($query->num_rows() > 0)
+			foreach ($query->result_array() as $row)
 			{
-				foreach ($query->result_array() as $row)
+				if ($this->session->userdata['group_id'] == 1 OR in_array($row['channel_id'], $assigned_channels))
 				{
-					if ($this->session->userdata['group_id'] == 1 OR in_array($row['channel_id'], $assigned_channels))
+					if (isset($_POST['new_channel']) && is_numeric($_POST['new_channel']) && $_POST['new_channel'] == $row['channel_id'])
 					{
-						if (isset($_POST['new_channel']) && is_numeric($_POST['new_channel']) && $_POST['new_channel'] == $row['channel_id'])
-						{
-							$vars['menu_channel_selected'] = $row['channel_id'];
-						}
-						elseif ($channel_id == $row['channel_id'])
-						{
-							$vars['menu_channel_selected'] =  $row['channel_id'];
-						}
-
-						$vars['menu_channel_options'][$row['channel_id']] = form_prep($row['channel_title']);
+						$vars['menu_channel_selected'] = $row['channel_id'];
 					}
+					elseif ($channel_id == $row['channel_id'])
+					{
+						$vars['menu_channel_selected'] =  $row['channel_id'];
+					}
+
+					$vars['menu_channel_options'][$row['channel_id']] = form_prep($row['channel_title']);
 				}
 			}
-		}
-		else
-		{
-			$vars['menu_channel_selected'] =  $channel_id;
-			$vars['menu_channel_options'][$channel_id] = form_prep($channel_title);
 		}
 
 		return $vars;
@@ -2918,17 +2914,17 @@ class Content_publish extends Controller {
 		$query = $this->category_model->get_categories($group_id, FALSE);
 		$this->api_channel_categories->category_tree($group_id, '', $query->row('sort_order'));
 
-		$this->_define_category_fields(array('' => $this->api_channel_categories->categories), FALSE);
+		$this->_define_category_fields(array('' => $this->api_channel_categories->categories), FALSE, $group_id);
 		exit($this->field_definitions['category']['string_override']);
 	}
 
-	function _define_category_fields($categories, $edit_categories_link)
+	function _define_category_fields($categories, $edit_categories_link, $cat_groups = '')
 	{
 		$vars = compact('categories', 'edit_categories_link');
 		$category_r = $this->load->view('content/_assets/categories', $vars, TRUE);
 		
 		$this->field_definitions['category'] = array(
-			'string_override'		=> (count($categories) == 0) ? $this->lang->line('no_categories') : $category_r,
+			'string_override'		=> ($cat_groups == '') ? $this->lang->line('no_categories') : $category_r,
 			'field_id'				=> 'category',
 			'field_name'			=> 'category',
 			'field_label'			=> $this->lang->line('categories'),

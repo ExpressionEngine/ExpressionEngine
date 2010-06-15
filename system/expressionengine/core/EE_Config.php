@@ -333,11 +333,11 @@ class EE_Config Extends CI_Config {
 		
 		if ($this->item('enable_db_caching') == 'y')
 		{
-			$this->EE->db->cache_off();
+			$this->EE->db->cache_on();
 		}
 		else
 		{
-			$this->EE->db->cache_on();
+			$this->EE->db->cache_off();
 		}
 	}
 

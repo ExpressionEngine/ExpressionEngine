@@ -97,6 +97,7 @@ class Api_channel_entries extends Api {
 		$this->_cache = array();
 		
 		$this->_fetch_channel_preferences();
+		$this->_do_channel_switch($data);
 
 		// We break out the third party data here
 		$this->_fetch_module_data($data, $mod_data);		
