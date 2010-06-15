@@ -133,7 +133,9 @@ class EE_Core {
 		$this->EE->db->swap_pre 	= 'exp_';
 		$this->EE->db->db_debug 	= FALSE;
 		$this->EE->db->save_queries	= ($this->EE->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
-		$this->EE->db->cache_on 	= ($this->EE->config->item('enable_db_caching') == 'y' AND REQ == 'PAGE') ? TRUE : FALSE;
+		//$this->EE->db->cache_on 	= ($this->EE->config->item('enable_db_caching') == 'y' AND REQ == 'PAGE') ? TRUE : FALSE;
+		
+		$this->EE->db->cache_on = ($this->EE->db->cache_on && REQ == 'PAGE') ? TRUE : FALSE;
 
 		// force EE's db cache path
 		$this->EE->db->cache_set_path(APPPATH.'cache/db_cache');

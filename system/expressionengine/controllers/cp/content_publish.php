@@ -324,7 +324,10 @@ class Content_publish extends Controller {
 		
 		// make this into an array, insert_group_layout will serialize and save
 		
+		
 		$layout_info = array_map(array($this, '_sort_publish_fields'), $clean_layout);
+		
+		//print_r($layout_info); exit;
 		
 		if ($this->member_model->insert_group_layout($member_group, $channel_id, $layout_info))
 		{
