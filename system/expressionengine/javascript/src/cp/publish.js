@@ -482,9 +482,118 @@ EE.date_obj_time = (function() {
 }());
 
 
+file_manager_context = "";	// @todo - yuck, should be on the EE global
+
+
+function disable_fields(state) {
+	
+	var fields = $(".main_tab input, .main_tab textarea, .main_tab select, #submit_button"),
+		submit = $("#submit_button"),
+		admin_link = $("#holder").find('a');
+
+	if (state) {
+		fields.attr("disabled", true);
+		submit.addClass("disabled_field");
+		admin_link.addClass("admin_mode");
+		$("#holder div.markItUp, #holder p.spellcheck").each(function() {
+			$(this).before("<div class=\"cover\" style=\"position:absolute;width:100%;height:50px;z-index:9999;\"></div>").css({});
+		});
+	}
+	else {
+		fields.removeAttr("disabled");
+		submit.removeClass("disabled_field");
+		admin_link.removeClass("admin_mode");
+		$(".cover").remove();
+	}
+}
+
+function removeAuthor(e) {
+	$.get(EE.BASE + "&C=content_publish&M=remove_author", { mid: e.attr("id")});
+	e.parent().fadeOut();
+}
+
+function updateAuthorTable() {
+	$.ajax({
+		type: "POST",
+		url: EE.BASE + "&C=content_publish&M=build_author_table",
+		data: "XID=" + EE.XID + "&is_ajax=true",
+		success: function(e){
+			$("#authorsForm").html(e);
+		}
+	});
+
+	$(".add_author_modal").bind("click", function(e){
+		add_authors_sidebar(this);
+	});
+}
+
+function add_authors_sidebar(e) {
+	var author_id = $(e).attr("id").substring(16);
+
+	$.ajax({
+		type: "POST",
+		url: EE.BASE + "&C=content_publish&M=build_author_sidebar",
+		data: "XID=" + EE.XID + "&author_id="+author_id,
+		success: function(e){
+			$("#author_list_sidebar").append(e).fadeIn();
+			updateAuthorTable();
+		}
+	});
+}
+
+function liveUrlTitle()
+{
+	var defaultTitle = '',
+		separator = EE.publish.word_separator,
+		newText = document.getElementById("title").value || '',
+		replaceField = document.getElementById("url_title"),
+		multiReg = new RegExp(separator + '{2,}', 'g'),
+		separatorReg = (separator !== '_') ? /\_/g : /\-/g,
+		newTextTemp = '',
+		pos, c;
+
+	if (defaultTitle !== '') {
+		if (newText.substr(0, defaultTitle.length) === defaultTitle) {
+			newText = newText.substr(defaultTitle.length);
+		}
+	}
+
+	newText = newText.toLowerCase().replace(separatorReg, separator);
+
+	// Foreign Character Attempt
+
+	for (pos = 0; pos < newText.length; pos++)
+	{
+		c = newText.charCodeAt(pos);
+
+		if (c >= 32 && c < 128) {
+			newTextTemp += newText.charAt(pos);
+		}
+		else if (c in EE.publish.foreignChars) {
+			newTextTemp += EE.publish.foreignChars[c];
+		}
+	}
+
+	newText = newTextTemp;
+
+	newText = newText.replace('/<(.*?)>/g', '');
+	newText = newText.replace(/\s+/g, separator);
+	newText = newText.replace(/\//g, separator);
+	newText = newText.replace(/[^a-z0-9\-\._]/g, '');
+	newText = newText.replace(/\+/g, separator);
+	newText = newText.replace(multiReg, separator);
+	newText = newText.replace(/^[-_]|[-_]$/g, '');
+	newText = newText.replace(/\.+$/g, '');
+
+	if (replaceField) {
+		replaceField.value = newText;
+	}
+}
+
+
 
 $(document).ready(function() {
-	
+		
 	var autosave_entry;
 
 	$("#layout_group_submit").click(function(){
@@ -634,293 +743,7 @@ $(document).ready(function() {
 			}
 		});		
 	}
-});
 
-
-file_manager_context = "";	// @todo - yuck, should be on the EE global
-
-
-function disable_fields(state) {
-	
-	var fields = $(".main_tab input, .main_tab textarea, .main_tab select, #submit_button"),
-		submit = $("#submit_button"),
-		admin_link = $("#holder").find('a');
-
-	if (state) {
-		fields.attr("disabled", true);
-		submit.addClass("disabled_field");
-		admin_link.addClass("admin_mode");
-		$("#holder div.markItUp, #holder p.spellcheck").each(function() {
-			$(this).before("<div class=\"cover\" style=\"position:absolute;width:100%;height:50px;z-index:9999;\"></div>").css({});
-		});
-	}
-	else {
-		fields.removeAttr("disabled");
-		submit.removeClass("disabled_field");
-		admin_link.removeClass("admin_mode");
-		$(".cover").remove();
-	}
-}
-
-function removeAuthor(e) {
-	$.get(EE.BASE + "&C=content_publish&M=remove_author", { mid: e.attr("id")});
-	e.parent().fadeOut();
-}
-
-function updateAuthorTable() {
-	$.ajax({
-		type: "POST",
-		url: EE.BASE + "&C=content_publish&M=build_author_table",
-		data: "XID=" + EE.XID + "&is_ajax=true",
-		success: function(e){
-			$("#authorsForm").html(e);
-		}
-	});
-
-	$(".add_author_modal").bind("click", function(e){
-		add_authors_sidebar(this);
-	});
-}
-
-function add_authors_sidebar(e) {
-	var author_id = $(e).attr("id").substring(16);
-
-	$.ajax({
-		type: "POST",
-		url: EE.BASE + "&C=content_publish&M=build_author_sidebar",
-		data: "XID=" + EE.XID + "&author_id="+author_id,
-		success: function(e){
-			$("#author_list_sidebar").append(e).fadeIn();
-			updateAuthorTable();
-		}
-	});
-}
-
-function liveUrlTitle()
-{
-	var defaultTitle = '',
-		separator = EE.publish.word_separator,
-		newText = document.getElementById("title").value || '',
-		replaceField = document.getElementById("url_title"),
-		multiReg = new RegExp(separator + '{2,}', 'g'),
-		separatorReg = (separator !== '_') ? /\_/g : /\-/g,
-		newTextTemp = '',
-		pos, c;
-
-	if (defaultTitle !== '') {
-		if (newText.substr(0, defaultTitle.length) === defaultTitle) {
-			newText = newText.substr(defaultTitle.length);
-		}
-	}
-
-	newText = newText.toLowerCase().replace(separatorReg, separator);
-
-	// Foreign Character Attempt
-
-	for (pos = 0; pos < newText.length; pos++)
-	{
-		c = newText.charCodeAt(pos);
-
-		if (c >= 32 && c < 128) {
-			newTextTemp += newText.charAt(pos);
-		}
-		else if (c in EE.publish.foreignChars) {
-			newTextTemp += EE.publish.foreignChars[c];
-		}
-	}
-
-	newText = newTextTemp;
-
-	newText = newText.replace('/<(.*?)>/g', '');
-	newText = newText.replace(/\s+/g, separator);
-	newText = newText.replace(/\//g, separator);
-	newText = newText.replace(/[^a-z0-9\-\._]/g, '');
-	newText = newText.replace(/\+/g, separator);
-	newText = newText.replace(multiReg, separator);
-	newText = newText.replace(/^[-_]|[-_]$/g, '');
-	newText = newText.replace(/\.+$/g, '');
-
-	if (replaceField) {
-		replaceField.value = newText;
-	}
-}
-
-var selField  = false,
-	selMode = "normal";
-
-//	Dynamically set the textarea name
-
-function setFieldName(which)
-{
-	if (which != selField)
-	{
-		selField = which;
-
-		clear_state();
-
-		tagarray  = new Array();
-		usedarray = new Array();
-		running	  = 0;
-	}
-}
-
-// Insert tag
-function taginsert(item, tagOpen, tagClose)
-{
-	// Determine which tag we are dealing with
-
-	var which = eval('item.name');
-
-	if ( ! selField)
-	{
-		$.ee_notice(no_cursor);
-		return false;
-	}
-
-	var theSelection	= false,
-		result			= false,
-		theField		= document.getElementById('entryform')[selField];
-
-	if (selMode == 'guided')
-	{
-		data = prompt(enter_text, "");
-
-		if ((data != null) && (data != ""))
-		{
-			result =  tagOpen + data + tagClose;
-		}
-	}
-
-	// Is this a Windows user?
-	// If so, add tags around selection
-
-	if (document.selection)
-	{
-		theSelection = document.selection.createRange().text;
-
-		theField.focus();
-
-		if (theSelection)
-		{
-			document.selection.createRange().text = (result == false) ? tagOpen + theSelection + tagClose : result;
-		}
-		else
-		{
-			document.selection.createRange().text = (result == false) ? tagOpen + tagClose : result;
-		}
-
-		theSelection = '';
-
-		theField.blur();
-		theField.focus();
-
-		return;
-	}
-	else if ( ! isNaN(theField.selectionEnd))
-	{
-		var newStart,
-			scrollPos = theField.scrollTop,
-			selLength = theField.textLength,
-			selStart = theField.selectionStart,
-			selEnd = theField.selectionEnd;
-			
-		if (selEnd <= 2 && typeof(selLength) != 'undefined')
-			selEnd = selLength;
-
-		var s1 = (theField.value).substring(0,selStart);
-		var s2 = (theField.value).substring(selStart, selEnd)
-		var s3 = (theField.value).substring(selEnd, selLength);
-
-		if (result == false)
-		{
-			newStart = selStart + tagOpen.length + s2.length + tagClose.length;
-			theField.value = (result == false) ? s1 + tagOpen + s2 + tagClose + s3 : result;
-		}
-		else
-		{
-			newStart = selStart + result.length;
-			theField.value = s1 + result + s3;
-		}
-
-		theField.focus();
-		theField.selectionStart = newStart;
-		theField.selectionEnd = newStart;
-		theField.scrollTop = scrollPos;
-		return;
-	}
-	else if (selMode == 'guided')
-	{
-		curField = document.submit_post[selfField];
-		
-		curField.value += result;
-		curField.blur();
-		curField.focus();
-
-		return;
-	}
-
-	// Add single open tags
-
-	if (item == 'other')
-	{
-		eval("document.getElementById('entryform')." + selField + ".value += tagOpen");
-	}
-	else if (eval(which) == 0)
-	{
-		var result = tagOpen;
-
-		eval("document.getElementById('entryform')." + selField + ".value += result");
-		eval(which + " = 1");
-
-		arraypush(tagarray, tagClose);
-		arraypush(usedarray, which);
-
-		running++;
-
-		styleswap(which);
-	}
-	else
-	{
-		// Close tags
-
-		n = 0;
-
-		for (i = 0 ; i < tagarray.length; i++ )
-		{
-			if (tagarray[i] == tagClose)
-			{
-				n = i;
-
-				running--;
-
-				while (tagarray[n])
-				{
-					closeTag = arraypop(tagarray);
-					eval("document.getElementById('entryform')." + selField + ".value += closeTag");
-				}
-
-				while (usedarray[n])
-				{
-					clearState = arraypop(usedarray);
-					eval(clearState + " = 0");
-					document.getElementById(clearState).className = 'htmlButtonA';
-				}
-			}
-		}
-
-		if (running <= 0 && document.getElementById('close_all').className == 'htmlButtonB')
-		{
-			document.getElementById('close_all').className = 'htmlButtonA';
-		}
-
-	}
-
-	curField = eval("document.getElementById('entryform')." + selField);
-	curField.blur();
-	curField.focus();
-}
-
-$(document).ready(function() {
 
 	$.ee_filebrowser();
 	
@@ -930,27 +753,63 @@ $(document).ready(function() {
 		$("#write_mode_textarea").markItUp(myWritemodeSettings);		
 	}
 	
-	$(".write_mode_trigger").click(function(){
-
-		if ($(this).attr("id").match(/^id_\d+$/)) {
-			field_for_writemode_publish = "field_"+$(this).attr("id");
-		} else {
-			field_for_writemode_publish = $(this).attr("id").replace(/id_/, '');
-		}
-
-		// put contents from other page into here
-		$("#write_mode_textarea").val($("#"+field_for_writemode_publish).val());
-		$("#write_mode_textarea").focus();
-		return false;
-	});
-	
 	if (EE.publish.markitup.fields !== undefined)
 	{
 		$.each(EE.publish.markitup.fields, function(key, value) { 
 			$("#"+key).markItUp(mySettings);
 		});	
 	}
+	
+	
+	// the height of this window depends on the height of the viewport.	 Percentages dont work
+	// as the header and footer are absolutely sized.  This is a great compromise.
+	write_mode_height = $(window).height() - (33 + 59 + 25); // the height of header + footer + 25px just to be safe
+	$("#write_mode_writer").css("height", write_mode_height+"px");
+	$("#write_mode_writer textarea").css("height", (write_mode_height - 67 - 17) + "px"); // for formatting buttons + 17px for appearance
+	
+	
+	var triggers = $(".write_mode_trigger").overlay({
 
+		// Mask to create modal look
+		mask: {
+			color: '#262626',
+			loadSpeed: 200,
+			opacity: 0.85
+		},
+		
+		onBeforeLoad: function(evt) {
+			var trigger = this.getTrigger()[0],
+				textarea = $("#write_mode_textarea");
+									
+			if (trigger.id.match(/^id_\d+$/)) {
+				field_for_writemode_publish = "field_"+trigger.id;
+			} else {
+				field_for_writemode_publish = trigger.id.replace(/id_/, '');
+			}
+
+			// put contents from other page into here
+			textarea.val( $("#"+field_for_writemode_publish).val() );
+			textarea.focus();
+		},
+		
+		top: 'center',
+		closeOnClick: false
+	});
+	
+	// set up the "publish to field" buttons
+	$(".publish_to_field").click(function() {
+		$("#"+field_for_writemode_publish).val($("#write_mode_textarea").val());
+		triggers.eq(0).overlay().close();
+		return false;
+	});
+	
+	
+	$(".closeWindowButton").click(function() {
+		triggers.eq(0).overlay().close();
+		return false;
+	});
+	
+	
 	// Prep for a workaround to allow markitup file insertion in file inputs
 	$(".btn_img a, .file_manipulate").click(function(){
 		var textareaId;
@@ -1028,28 +887,27 @@ $(document).ready(function() {
 
 	// toggle can not be used here, since it may or may not be visible
 	// depending on admin customization
-	$(".hide_field span").click(function(){
-
-		holder_id = $(this).parent().parent().attr("id");
-		field_id = holder_id.substr(11)
+	$(".hide_field").click(function() {
 		
-		if($("#sub_hold_field_"+field_id).css("display") == "block"){
-			$("#sub_hold_field_"+field_id).slideUp();
-			$("#hold_field_"+field_id+" .ui-resizable-handle").hide();
-			$("#hold_field_"+field_id+" .field_collapse").attr("src", EE.THEME_URL+"images/field_collapse.png");
-
-			// We dont want datepicker getting triggered when a field is collapsed/expanded
-			return false;
+		var holder_id = $(this).parent().attr("id"),
+			field_id = holder_id.substr(11),
+		
+			hold_field = $("#hold_field_"+field_id),
+			sub_hold_field = $("#sub_hold_field_"+field_id);		
+		
+		if (sub_hold_field.css("display") == "block") {
+			sub_hold_field.slideUp();
+			hold_field.find(".ui-resizable-handle").hide();
+			hold_field.find(".field_collapse").attr("src", EE.THEME_URL+"images/field_collapse.png");
 		}
-		else
-		{
-			$("#sub_hold_field_"+field_id).slideDown();
-			$("#hold_field_"+field_id+" .ui-resizable-handle").show();
-			$("#hold_field_"+field_id+" .field_collapse").attr("src", EE.THEME_URL+"images/field_expand.png");
-
-			// We dont want datepicker getting triggered when a field is collapsed/expanded
-			return false;
+		else {
+			sub_hold_field.slideDown();
+			hold_field.find(".ui-resizable-handle").show();
+			hold_field.find(".field_collapse").attr("src", EE.THEME_URL+"images/field_expand.png");
 		}
+		
+		// We dont want datepicker getting triggered when a field is collapsed/expanded
+		return false;
 	});
 
 	$(".close_upload_bar").toggle(
@@ -1062,34 +920,17 @@ $(document).ready(function() {
 		}
 	);
 
-	// the height of this window depends on the height of the viewport.	 Percentages dont work
-	// as the header and footer are absolutely sized.  This is a great compromise.
-	write_mode_height = $(window).height() - (33 + 59 + 25); // the height of header + footer + 25px just to be safe
-	$("#write_mode_writer").css("height", write_mode_height+"px");
-	$("#write_mode_writer textarea").css("height", (write_mode_height-67-17)+"px"); // for formatting buttons + 17px for appearance
-
-	// set up the "publish to field" buttons
-	$(".publish_to_field").click(function() {
-		$("#"+field_for_writemode_publish).val($("#write_mode_textarea").val());
-		tb_remove();
-		return false;
-	});
-
 	$(".ping_toggle_all").toggle(
 		function(){
-			$("input[class=ping_toggle]").each(function() {
+			$("input.ping_toggle").each(function() {
 				this.checked = false;
 			});
 		}, function (){
-			$("input[class=ping_toggle]").each(function() {
+			$("input.ping_toggle").each(function() {
 				this.checked = true;
 			});
 		}
 	);
-
-	// Hide all tab divisions, then find out which tab is first and reveal it to the world!
-	$(".main_tab").hide();
-	$(".main_tab:first").show();
 
 	// Apply a class to its companion tab fitting of its position
 	$(".tab_menu li:first").addClass("current");
@@ -1099,7 +940,7 @@ $(document).ready(function() {
 	}
 	
 	if (EE.publish.which == 'new') { 
-		$("#title").bind("keyup blur", function(){liveUrlTitle();});	
+		$("#title").bind("keyup blur", liveUrlTitle);	
 	}
 	
 	if (EE.publish.versioning_enabled == 'n') { 

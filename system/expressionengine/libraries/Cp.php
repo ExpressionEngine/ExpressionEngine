@@ -264,7 +264,6 @@ class Cp {
 	 * @param string	URL
 	 * @return string	Masked URL
 	 */
-
 	function masked_url($url)
 	{
 		return $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'URL='.$url;
@@ -515,9 +514,7 @@ class Cp {
 		$this->EE->member_model->update_layouts($tabs, 'add_tabs', $channel_id);
 	}
 
-
 	// --------------------------------------------------------------------
-
 	
 	/**
 	 * Adds new fields to the saved publish layouts, creating the default tab if required
@@ -571,7 +568,6 @@ class Cp {
 		return $this->EE->member_model->update_layouts($tabs, 'delete_fields', $channel_id);
 	}
 
-
 	// --------------------------------------------------------------------
 	
 	/**
@@ -621,7 +617,6 @@ class Cp {
 	 * 	@access private
 	 * 	@return array
 	 */
-	
 	function _get_quicklinks()
 	{
 		$quick_links = $this->EE->member_model->get_member_quicklinks($this->EE->session->userdata('member_id'));
