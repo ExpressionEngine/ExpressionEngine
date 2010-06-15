@@ -41,7 +41,6 @@ $("a", "#showToolbarLink").one("click", function() {
 		addAuthorButtons = {};
 	
 	newTabButtons[EE.lang.add_tab] = add_publish_tab;
-	addAuthorButtons[EE.lang.close] = $(this).dialog("close");
 
 	$("#new_tab_dialog").dialog({
 		autoOpen: false,
