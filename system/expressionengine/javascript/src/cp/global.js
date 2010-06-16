@@ -230,7 +230,7 @@ finalLogOutTimer = function(loginHit) {
 			position: "center",
 			minHeight: "0px",
 			buttons: buttons,
-			beforeclose: cancelLogout
+			beforeClose: cancelLogout
 		});
 
 		$("#logOutConfirm").dialog("open");
@@ -550,7 +550,7 @@ $("#activeUser").one("mouseover", function() {
 		position: "center",
 		minHeight: "0px",
 		buttons: buttons,
-		beforeclose: cancel_logout
+		beforeClose: cancel_logout
 	});
 
 	$("a.logOutButton", this).click(function(){
