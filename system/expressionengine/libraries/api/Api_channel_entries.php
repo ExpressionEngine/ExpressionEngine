@@ -1702,13 +1702,13 @@ class Api_channel_entries extends Api {
 			{
 				if (strncmp($key, 'field_id_', 9) == 0 && ! is_numeric($val))
 				{
-					if ( ! is_array($val))
+					if ($this->EE->config->item('auto_convert_high_ascii') == 'y')
 					{
-						$cust_fields[$key] = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($val) : $val;						
+						$cust_fields[$key] = (is_array($val)) ? $this->_recursive_ascii_to_entities($val) : $val;
 					}
 					else
 					{
-						$cust_fields[$key] = $this->_recursive_ascii_to_entities($val);
+						$cust_fields[$key] = $val;
 					}
 				}
 				else
@@ -1829,13 +1829,13 @@ class Api_channel_entries extends Api {
 			{
 				if (strncmp($key, 'field_id_', 9) == 0 && ! is_numeric($val))
 				{
-					if ( ! is_array($val))
+					if ($this->EE->config->item('auto_convert_high_ascii') == 'y')
 					{
-						$cust_fields[$key] = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($val) : $val;						
+						$cust_fields[$key] = (is_array($val)) ? $this->_recursive_ascii_to_entities($val) : $val;
 					}
 					else
 					{
-						$cust_fields[$key] = $this->_recursive_ascii_to_entities($val);
+						$cust_fields[$key] = $val;
 					}
 				}
 				else
