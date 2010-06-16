@@ -2009,6 +2009,7 @@ class Content_publish extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
+		$this->lang->loadfile('content');
 		$this->load->library('table');
 		$this->table->clear();
 
@@ -2035,7 +2036,7 @@ class Content_publish extends Controller {
 									'table_open'			=> '<table id="authorsTable" class="mainTable" border="0" cellspacing="0" cellpadding="0" style="width: 100%;">'
 								);
 		$this->table->set_template($authorsTableTemplate);
-		$this->table->set_heading($this->lang->line('username'), $this->lang->line('screen_name'), $this->lang->line('group'), array('class'=>'author_header', 'data'=>$this->lang->line('author')));
+		$this->table->set_heading($this->lang->line('username'), $this->lang->line('screen_name'), $this->lang->line('member_group'), array('class'=>'author_header', 'data'=>$this->lang->line('author')));
 
 		$potential_author_count = 0; // the number of potential authors. If at the end this is still zero, we'll message that to the user
 

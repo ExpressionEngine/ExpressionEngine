@@ -956,8 +956,8 @@ class EE_Typography extends CI_Typography {
 			$bad_things	 = array("'",'"', ';', '[', '(', ')', '!', '*', '>', '<', "\t", "\r", "\n", 'document.cookie');
 
 			if ($this->allow_img_url == 'y')
-			{		
-				$str = preg_replace_callback("/\[img\](.*?)\[\/img\]/i", array($this, "image_sanitize"), $str);
+			{	
+				$str = preg_replace_callback("/\[img\](.*?)\[\/img\]/i", array($this, "image_sanitize"), $str); 
 				//$str = preg_replace("/\[img\](.*?)\[\/img\]/i", "<img src=\\1 />", $str);
 			}
 			elseif($this->auto_links == 'y' && $this->html_format != 'none')
@@ -1019,7 +1019,7 @@ class EE_Typography extends CI_Typography {
 	function image_sanitize($matches)
 	{		
 		$url = str_replace(array('(', ')'), '', $matches['1']);
-		
+
 		if (preg_match("/\s+alt=(\"|\')([^\\1]*?)\\1/", $matches['1'], $alt_match))
 		{
 			$url = trim(str_replace($alt_match['0'], '', $url));
@@ -1037,7 +1037,7 @@ class EE_Typography extends CI_Typography {
 			$alt = substr($alt, strrpos($alt, '/')+1);
 		}
 		
-		return "<img src=".$url." alt='".$alt."' />";
+		return "<img src=\"{$url}\" alt=\"{$alt}\" />";
 	}
 
 	
