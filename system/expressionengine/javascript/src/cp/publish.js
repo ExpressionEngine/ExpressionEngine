@@ -229,8 +229,7 @@ function tab_focus(tab_id)
 // @todo hacky, hacky, hacky
 EE.tab_focus = tab_focus;
 
-function setup_tabs()
-{
+function setup_tabs() {
 	var spring_delay = 500,
 		focused_tab = "menu_publish_tab",
 		field_dropped = false,
@@ -369,22 +368,18 @@ EE.publish.save_layout = function() {
 					width		: percent_width+'%'
 				};
 				
-				if (visible === true)
-				{
+				if (visible === true) {
 					layout_settings['index'] = field_index;
 					layout_object[lay_name][id] = layout_settings;
 
 					field_index += 1;				
-				}
-				else
-				{
+				} else {
 					layout_hidden[id] = layout_settings;
 				}
 				
 			});
 			
-			if (visible === true)
-			{
+			if (visible === true) {
 				tab_count++; // add one to the tab count
 			}
 		}

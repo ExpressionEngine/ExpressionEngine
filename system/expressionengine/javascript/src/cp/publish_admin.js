@@ -66,13 +66,11 @@ $("a", "#showToolbarLink").one("click", function() {
 	$(".add_tab_link").click(function(){
 		$("#tab_name").val("");
 		$("#add_tab label").text(EE.lang.tab_name+": ");
-		$("#new_tab_dialog").dialog("open")
+		$("#new_tab_dialog").dialog("open");
 		$("#tab_name").focus();
-		setup_tabs()
+		setup_tabs();
 		return false;
 	});
-	
-	
 });
 
 $('.add_author_link').click(function() {
@@ -303,23 +301,14 @@ add_publish_tab = function() {
 
 	var legalChars = /^[a-zA-Z0-9 _-]+$/; // allow only letters, numbers, spaces, underscores, and dashes
 
-	if ( ! legalChars.test(tab_name))
-	{
+	if ( ! legalChars.test(tab_name)) {
 		$.ee_notice(EE.lang.illegal_characters);
-	}
-	else if (tab_name == "")
-	{
+	} else if (tab_name == "") {
 		$.ee_notice(EE.lang.tab_name_required);
-	}
-	else
-	{
-		if ( ! _add_tab(tab_name))
-		{
+	} else {
+		if ( ! _add_tab(tab_name)) {
 			$.ee_notice(EE.lang.duplicate_tab_name);
-		}
-		else
-		{
-			// remove thickbox
+		} else {
 			$("#new_tab_dialog").dialog("close");
 		}
 	}
