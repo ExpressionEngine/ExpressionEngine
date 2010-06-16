@@ -92,6 +92,7 @@ class EE_Core {
 		define('AMP',			'&amp;');
 		define('NBS', 			'&nbsp;');
 		define('BR', 			'<br />');
+		define('NL',			"\n");
 		define('PATH_DICT', 	APPPATH.'config/');
 
 		$req_source = $this->EE->input->server('HTTP_X_REQUESTED_WITH');
