@@ -236,6 +236,10 @@ _delete_tab_hide = function(the_li, tab_to_delete) {
 	return false;
 }
 
+get_selected_tab = function() {
+ return jQuery("#tab_menu_tabs .current").attr('id').substring(5);
+}
+
 _delete_tab_reveal = function() {
 	tab_to_show = $(this).attr("href").substring(1);
 	// $(".menu"+tab_to_show).parent().animate({width:0, margin:0, padding:0, border:0, opacity:0}, "fast");

@@ -26,6 +26,7 @@ class Updater {
 
     var $version_suffix = 'pb01';
 	var $mylang = 'english';
+	var $has_duplicates = array();
     
     function Updater()
     {
@@ -693,7 +694,16 @@ class Updater {
             $this->EE->config->_update_config(array(), array('trackbacks_to_comments' => '', 'archive_trackbacks' => ''));
             
             // continue with general database changes
-            return 'database_clean';
+
+			$this->dupe_check();
+			$next_step = 'database_changes';
+		
+			if ( ! empty($this->has_duplicates))
+			{
+				$next_step = 'database_clean';
+			}
+		
+            return $next_step;
         }
         
         // deal with trackbacks
@@ -702,8 +712,14 @@ class Updater {
     
     function backup_trackbacks()
     {
-        $next_step = 'database_clean';
-        
+		$this->dupe_check();
+		$next_step = 'database_changes';
+		
+		if ( ! empty($this->has_duplicates))
+		{
+			$next_step = 'database_clean';
+		}
+		
         // Grab the main table
         $t_query = $this->EE->db->get('trackbacks');
 
@@ -846,21 +862,70 @@ class Updater {
         return $next_step;
     }
     
+	function dupe_check()
+	{
+		// Check whether we need to run duplicate record clean up
+		$query = $this->EE->db->query("SELECT `upload_id`, `member_group`, count(`member_group`) FROM `exp_upload_no_access` GROUP BY `upload_id`, `member_group` HAVING COUNT(`member_group`) > 1");
+        $total = $query->row('count');
+
+		if ($total > 0)
+		{
+			$this->has_duplicates[] = 'upload_no_access';
+		}
+
+		$query = $this->EE->db->query("SELECT `member_id`, count(`member_id`) FROM `exp_message_folders` GROUP BY `member_id` HAVING COUNT(`member_id`) > 1");
+        $total = $query->row('count');
+		
+		if ($total > 0)
+		{
+			$this->has_duplicates[] = 'message_folders';
+		}
+		
+
+		$query = $this->EE->db->query("SELECT `entry_id`, `cat_id` count(`cat_id`) FROM `exp_category_posts` GROUP BY `entry_id`, `cat_id` HAVING count(`cat_id`) > 1");
+        $total = $query->row('count');
+		
+		if ($total > 0)
+		{
+			$this->has_duplicates[] = 'category_posts';
+		}		
+		
+		return;
+	}
+
 	function database_clean()
 	{
          $this->EE->progress->update_state("Cleaning duplicate data");
 
 		// Eliminate duplicate primaries
+		
+// ALTER TABLE `exp_upload_no_access` ADD PRIMARY KEY `upload_id_member_group` (`upload_id`, `member_group`
 
-		$Q[] = "CREATE TABLE exp_tmp_upload_no_access SELECT DISTINCT upload_id, member_group FROM exp_upload_no_access";
-		$Q[] = "DROP TABLE exp_upload_no_access";
-		$Q[] = "ALTER TABLE exp_tmp_upload_no_access RENAME TO exp_upload_no_access";
+		if (in_array('upload_no_access', $this->has_duplicates))
+		{
+		
+			$Q[] = "CREATE TABLE exp_tmp_upload_no_access SELECT DISTINCT upload_id, member_group FROM exp_upload_no_access";
+			$Q[] = "DROP TABLE exp_upload_no_access";
+			$Q[] = "ALTER TABLE exp_tmp_upload_no_access RENAME TO exp_upload_no_access";
+		}
 	
 // exp_message_folders ALTER TABLE `exp_message_folders` ADD PRIMARY KEY `member_id` (`member_id`) - multiple
 
-		$Q[] = "CREATE TABLE exp_tmp_message_folders SELECT DISTINCT * FROM exp_message_folders";
-		$Q[] = "DROP TABLE exp_message_folders";
-		$Q[] = "ALTER TABLE exp_tmp_message_folders RENAME TO exp_message_folders";
+		if (in_array('message_folders', $this->has_duplicates))
+		{
+			
+			$Q[] = "CREATE TABLE exp_tmp_message_folders SELECT DISTINCT * FROM exp_message_folders";
+			$Q[] = "DROP TABLE exp_message_folders";
+			$Q[] = "ALTER TABLE exp_tmp_message_folders RENAME TO exp_message_folders";
+		}
+		
+//         $Q[] = "ALTER TABLE `exp_category_posts` ADD PRIMARY KEY `entry_id_cat_id` (`entry_id`, `cat_id`)";
+		if (in_array('category_posts', $this->has_duplicates))
+		{
+			$Q[] = "CREATE TABLE exp_tmp_category_posts SELECT DISTINCT * FROM exp_category_posts";
+			$Q[] = "DROP TABLE exp_category_posts";
+			$Q[] = "ALTER TABLE exp_tmp_category_posts RENAME TO exp_category_posts";
+		}
 
         foreach ($Q as $sql)
         {
@@ -1076,7 +1141,7 @@ class Updater {
         $Q[] = "ALTER TABLE `exp_template_no_access` DROP KEY `template_id`";
         $Q[] = "ALTER TABLE `exp_template_no_access` ADD PRIMARY KEY `template_id_member_group` (`template_id`, `member_group`)";
         $Q[] = "ALTER TABLE `exp_upload_no_access` ADD PRIMARY KEY `upload_id_member_group` (`upload_id`, `member_group`)";
-        //$Q[] = "ALTER TABLE `exp_message_folders` DROP KEY `member_id`";
+        $Q[] = "ALTER TABLE `exp_message_folders` DROP KEY `member_id`";
         $Q[] = "ALTER TABLE `exp_message_folders` ADD PRIMARY KEY `member_id` (`member_id`)";
         
         // Add default values for a few columns and switch some to NULL
