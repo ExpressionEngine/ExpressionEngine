@@ -3804,7 +3804,7 @@ class EE_Template {
 		$this->_match_date_vars($tagdata);
 
 		// Unfound Variables that We Need Not Parse - Reset
-		$this->unfound_vars = array();
+		$this->unfound_vars = array(array()); // nested for depth 0
 		
 		// Match {switch="foo|bar"} variables			
 		$switch = array();
@@ -3820,7 +3820,7 @@ class EE_Template {
 					$sopt = explode("|", $sparam['switch']);
 
 					$switch[$match[1]] = $sopt;
-				}				
+				}
 			}
 		}
 
@@ -3886,7 +3886,7 @@ class EE_Template {
 		
 		if ($solo === TRUE)
 		{
-			$this->unfound_vars = array();
+			$this->unfound_vars = array(array()); // nested for depth = 0
 		}
 		
 		// Match date variables if necessary
@@ -3894,23 +3894,23 @@ class EE_Template {
 		{
 			$this->_match_date_vars($tagdata);
 		}
-		
+				
 		$this->conditional_vars = $variables;
 
 		foreach ($variables as $name => $value)
 		{
-			if (isset($this->unfound_vars[$name])) continue;
+			if (isset($this->unfound_vars[0][$name])) continue;
 			
-			if (strpos($tagdata, $name) === FALSE)
+			if (strpos($tagdata, LD.$name) === FALSE)
 			{
-				$this->unfound_vars[$name] = TRUE;
+				$this->unfound_vars[0][$name] = TRUE;
 				continue;
 			}
 		
 			// Pair variables are an array of arrays
 			if (is_array($value))
 			{
-				$tagdata = $this->_parse_var_pair($name, $value, $tagdata);
+				$tagdata = $this->_parse_var_pair($name, $value, $tagdata, 1);
 			}
 			else
 			{
@@ -4022,9 +4022,10 @@ class EE_Template {
 	 * @param	string	- the variable pair's name
 	 * @param	array	- the variable pair's single variables
 	 * @param	string	- the text to parse
+	 * @param	integer	- iteration depth for unfound_vars
 	 * @return	string
 	 */
-	function _parse_var_pair($name, $variables, $string)
+	function _parse_var_pair($name, $variables, $string, $depth = 0)
 	{		
 		if ( ! preg_match("|".LD.$name.'.*?'.RD.'(.*?)'.LD.'/'.$name.RD."|s", $string, $match))
 		{
@@ -4036,26 +4037,31 @@ class EE_Template {
 			return str_replace($match[0], '', $string);
 		}
 		
+		if ( ! isset($this->unfound_vars[$depth]))
+		{
+			$this->unfound_vars[$depth] = array();
+		}
+		
 		$str = '';
-				
+
 		foreach ($variables as $set)
 		{
 			$temp = $match[1];
-			
+
 			foreach ($set as $name => $value)
 			{
-				if (isset($this->unfound_vars[$name])) continue;
+				if (isset($this->unfound_vars[$depth][$name])) continue;
 			
-				if (strpos($string, $name) === FALSE)
+				if (strpos($string, LD.$name) === FALSE)
 				{
-					$this->unfound_vars[$name] = TRUE;
+					$this->unfound_vars[$depth][$name] = TRUE;
 					continue;
 				}
 			
 				// Pair variables are an array of arrays.
 				if (is_array($value) && is_array($value[0]))
 				{
-					$temp = $this->_parse_var_pair($name, $value, $temp);
+					$temp = $this->_parse_var_pair($name, $value, $temp, $depth + 1);
 				}
 				else
 				{
