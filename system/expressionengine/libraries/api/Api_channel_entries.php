@@ -1702,7 +1702,14 @@ class Api_channel_entries extends Api {
 			{
 				if (strncmp($key, 'field_id_', 9) == 0 && ! is_numeric($val))
 				{
-					$cust_fields[$key] = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($val) : $val;
+					if ( ! is_array($val))
+					{
+						$cust_fields[$key] = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($val) : $val;						
+					}
+					else
+					{
+						$cust_fields[$key] = $this->_recursive_ascii_to_entities($val);
+					}
 				}
 				else
 				{
@@ -1822,7 +1829,14 @@ class Api_channel_entries extends Api {
 			{
 				if (strncmp($key, 'field_id_', 9) == 0 && ! is_numeric($val))
 				{
-					$cust_fields[$key] = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($val) : $val;
+					if ( ! is_array($val))
+					{
+						$cust_fields[$key] = ($this->EE->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($val) : $val;						
+					}
+					else
+					{
+						$cust_fields[$key] = $this->_recursive_ascii_to_entities($val);
+					}
 				}
 				else
 				{
@@ -1886,7 +1900,36 @@ class Api_channel_entries extends Api {
 		// Delete Categories - resubmitted in the next step
 		$this->EE->db->delete('category_posts', array('entry_id' => $this->entry_id));		
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Recursive ASCII to entities.
+	 *
+	 * This is a helper method used for Arrays POSTed, a la Matrix
+	 *
+	 * @param 	array
+	 * @return 	array
+	 */
+	function _recursive_ascii_to_entities($arr)
+	{
+	    $result = array();
+
+	    foreach($arr as $key => $value)
+	    {
+	        if (is_array($value))
+	        {
+	            $result[$key] = $this->_recursive_ascii_to_entities($value);
+	        }
+	        else
+	        {
+	            $result[$key] = ascii_to_entities($value);
+	        }
+	    }
 	
+		return $result;
+	}
+
 	// --------------------------------------------------------------------
 	
 	/**
