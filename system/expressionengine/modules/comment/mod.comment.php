@@ -1384,13 +1384,22 @@ class Comment {
 			{
 				foreach ($this->EE->TMPL->tagparams as $key => $val)
 				{
-					$nc .= ' '.$key.'="'.$val.'" ';
+					switch ($key)
+					{
+						case 'form_class':
+							$nc .= 'class="'.$val.'" ';
+							break;
+						case 'form_id':
+							$nc .= 'id="'.$val.'" ';
+							break;
+						default:
+							$nc .= ' '.$key.'="'.$val.'" ';
+					}
 				}
 			}
-
+			
 			return '{NOCACHE_COMMENT_FORM="'.$nc.'"}'.$this->EE->TMPL->tagdata.'{/NOCACHE_FORM}';
 		}
-
 
 		/** ----------------------------------------
 		/**  Has commenting expired?
@@ -1634,8 +1643,8 @@ class Comment {
 		$data = array(
 						'hidden_fields'	=> $hidden_fields,
 						'action'		=> $RET,
-						'id'			=> ( ! $this->EE->TMPL->form_id) ? 'comment_form' : $this->EE->TMPL->form_id,
-						'class'			=> $this->EE->TMPL->form_class
+						'id'			=> ( ! isset($this->EE->TMPL->tagparams['id'])) ? 'comment_form' : $this->EE->TMPL->tagparams['id'],
+						'class'			=> ( ! isset($this->EE->TMPL->tagparams['class'])) ? NULL : $this->EE->TMPL->tagparams['class']
 					);
 
 		if ($this->EE->TMPL->fetch_param('name') !== FALSE &&

@@ -3102,7 +3102,10 @@ class EE_Template {
 				$this->_fetch_site_ids();
 
 				// Assign Form ID/Classes
-				$this->tag_data[$i] = $this->_assign_form_params($this->tagdata);
+				if (isset($this->tag_data[$i]))
+				{
+					$this->tag_data[$i] = $this->_assign_form_params($this->tag_data[$i]);					
+				}
 
 				if ($class == 'comment')
 				{
@@ -3137,7 +3140,10 @@ class EE_Template {
 				$this->_fetch_site_ids();
 
 				// Assign Form ID/Classes
-				$this->tag_data[$i] = $this->_assign_form_params($this->tag_data[$i]);
+				if (isset($this->tag_data[$i]))
+				{
+					$this->tag_data[$i] = $this->_assign_form_params($this->tag_data[$i]);					
+				}
 
 				$XX = new Channel();
 				$str = str_replace($match[0][$i], $XX->entry_form(TRUE, $this->EE->functions->cached_captcha), $str);
@@ -3706,27 +3712,27 @@ class EE_Template {
 	 *	@param 	array
 	 *	@return array
 	 */
-	function _assign_form_params($tagdata)
+	function _assign_form_params($tag_data)
 	{
 		$this->form_id 		= '';
 		$this->form_class 	= '';
 
-		if ( ! isset($tagdata['params']) OR ! is_array($tagdata['params']))
+		if ( ! isset($tag_data['params']) OR ! is_array($tag_data['params']))
 		{
-			return $tagdata;
+			return $tag_data;
 		}
 		
-		if (array_key_exists('form_id', $tagdata['params']))
+		if (array_key_exists('form_id', $tag_data['params']))
 		{
-			$this->form_id = $tagdata['params']['form_id'];
+			$this->form_id = $tag_data['params']['form_id'];
 		}
 		
-		if (array_key_exists('form_class', $tagdata['params']))
+		if (array_key_exists('form_class', $tag_data['params']))
 		{
-			$this->form_class = $tagdata['params']['form_class'];
+			$this->form_class = $tag_data['params']['form_class'];
 		}		
 
-		return $tagdata;
+		return $tag_data;
 	}
 	
 	// --------------------------------------------------------------------
