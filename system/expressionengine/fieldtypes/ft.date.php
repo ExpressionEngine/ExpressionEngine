@@ -56,6 +56,11 @@ class Date_ft extends EE_Fieldtype {
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Display Field
+	 *
+	 * @param 	array
+	 */
 	function display_field($data)
 	{
 		$special = array('entry_date', 'expiration_date', 'comment_expiration_date');
@@ -67,14 +72,13 @@ class Date_ft extends EE_Fieldtype {
 		$custom_date = '';
 		
 		$localize = FALSE;
-		
 	
 		if (isset($_POST[$date_field]))	// Validation failed or autosave - human readable data
 		{
 			if ($_POST[$date_field])
 			{
-				$custom_date = $_POST[$date_field];
-				$date = $this->EE->localize->convert_human_date_to_gmt($custom_date);
+				$date = $this->EE->localize->set_localized_time($_POST[$date_field]);
+				$custom_date = $this->EE->localize->set_human_time($date, FALSE);
 			}
 		}
 		elseif ( ! $data && isset($this->settings['default_offset']))	// Initial load - no data and showing a field (no offset == blank)
@@ -87,9 +91,9 @@ class Date_ft extends EE_Fieldtype {
 			$date = $this->EE->localize->set_localized_time($data);
 			$custom_date = $this->EE->localize->set_human_time($data);
 		}
-		
+
 		$cal_date = $date * 1000;
-		
+
 		$this->EE->javascript->output('
 			$("#'.$this->field_name.'").datepicker({ dateFormat: $.datepicker.W3C + EE.date_obj_time , defaultDate: new Date('.$cal_date.') });
 		');
@@ -115,7 +119,7 @@ class Date_ft extends EE_Fieldtype {
 			$r .= NBS.NBS.NBS.NBS;
 			$r .= form_dropdown($date_local, $localized_opts, $localized, 'dir="'.$this->settings['field_text_direction'].'" id="'.$date_local.'"');
 		}
-		
+
 		return $r;
 	}
 
