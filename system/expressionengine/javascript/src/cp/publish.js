@@ -401,6 +401,7 @@ EE.publish.save_layout = function() {
 			break;
 		}
 
+		
 		// Reindex first tab
 		$.each(layout_hidden, function() {
 			this['index'] = ++last_index;
