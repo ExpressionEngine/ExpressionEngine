@@ -69,6 +69,7 @@ $("a", "#showToolbarLink").one("click", function() {
 		$("#new_tab_dialog").dialog("open");
 		$("#tab_name").focus();
 		setup_tabs();
+
 		return false;
 	});
 });
@@ -211,6 +212,7 @@ $(".delete_field").toggle(
 
 _delete_tab_hide = function(the_li, tab_to_delete) {
 
+	//alert(the_li);
 	$(".menu_"+tab_to_delete).parent().fadeOut();	// hide the tab
 	$(the_li).fadeOut();							// remove from sidebar
 	$("#"+tab_to_delete).fadeOut();					// hide the fields
@@ -232,6 +234,24 @@ _delete_tab_hide = function(the_li, tab_to_delete) {
 	// $("#"+tab_to_delete).remove() // remove from DOM
 
 	return false;
+}
+
+
+_delete_tab_show = function(tab_to_show) {
+
+	$(".menu_"+tab_to_show).parent().fadeIn();	// hide the tab
+	//$(the_li).fadeIn();							// remove from sidebar
+	$("#"+tab_to_show).fadeIn();					// hide the fields
+
+	alert(tab_to_show);
+	//console.log(this);
+	// If the tab is selected - move focus to the left
+		tab_focus(tab_to_show);
+	}
+
+
+get_selected_tab = function() {
+ return jQuery("#tab_menu_tabs .current").attr('id').substring(5);
 }
 
 _delete_tab_reveal = function() {
@@ -284,6 +304,8 @@ function delete_publish_tab()
 	    	var the_li = $(evt.target).closest("li");
 			the_id = the_li.attr("id").replace(/remove_tab_/, "");
 
+			//console.log(the_li);
+			//alert(the_li);
 			if ( ! tab_req_check(the_id)) {
 				_delete_tab_hide(the_li, the_id);
 			}
@@ -319,6 +341,11 @@ function _add_tab(tab_name) {
 
 	// ensure there are no duplicate ids provided
 	if ($("#"+tab_name_filtered).length) {
+		if ($("#"+tab_name_filtered).css('display') == "none") {
+			_delete_tab_show(tab_name);
+			return true;
+		}
+		
 		return false;
 	}
 

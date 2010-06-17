@@ -387,7 +387,7 @@ class Content_edit extends Controller {
 		$vars['date_selected'] = $filter_data['date_range'];
 
 		$vars['date_select_options'][''] = $this->lang->line('date_range');
-		$vars['date_select_options']['1'] = $this->lang->line('today');
+		$vars['date_select_options']['1'] = $this->lang->line('past_day');
 		$vars['date_select_options']['7'] = $this->lang->line('past_week');
 		$vars['date_select_options']['31'] = $this->lang->line('past_month');
 		$vars['date_select_options']['182'] = $this->lang->line('past_six_months');

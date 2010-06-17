@@ -715,9 +715,6 @@ class Member_settings extends Member {
 					}
 					else
 					{
-						var_dump($val['0']);
-						
-						// Move to mod.member.php _final_prep() ?
 						$content = preg_replace("/".LD.$val['0'].RD."(.*?)".LD.'\/if'.RD."/s", "", $content);
 					}
 				}
@@ -814,14 +811,9 @@ class Member_settings extends Member {
 		/** ----------------------------------------*/
 
 		$content = str_replace(LD.'custom_profile_fields'.RD, '', $content);
-		
-		// Moved to mod.member.php _final_prep()
-		//$content = preg_replace("/".LD."if\s+.*?".RD.".*?".LD.'\/if'.RD."/s", "", $content);
 
 		return $content;
 	}
-
-
 
 
 	/** ----------------------------------------
