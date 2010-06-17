@@ -394,12 +394,13 @@ EE.publish.save_layout = function() {
 		for (darn in layout_object) {
 			first_tab = darn;
 			for (darn2 in layout_object[first_tab]) {
-				last_index = layout_object[first_tab][darn2]['index'];
+				if (layout_object[first_tab][darn2]['index'] > last_index) {
+					last_index = layout_object[first_tab][darn2]['index'];
+				}
 			}				
 			break;
 		}
 
-		
 		// Reindex first tab
 		$.each(layout_hidden, function() {
 			this['index'] = ++last_index;
