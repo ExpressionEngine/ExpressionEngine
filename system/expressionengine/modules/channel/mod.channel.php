@@ -6931,7 +6931,7 @@ class Channel {
 	    			$categories[0] = trim(substr($categories[0], 3));
 	    		}
 
-	    		foreach($results->result as $row)
+				foreach($results->result_array() as $row)
 	    		{
 	    			$entry_array[$row['cat_id']][] = $row['entry_id'];
 	    		}
