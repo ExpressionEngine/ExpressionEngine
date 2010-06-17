@@ -662,7 +662,7 @@ $(document).ready(function() {
 		autosave_entry = function() {
 			var tools = $("#tools:visible"),
 				form_data;
-			
+
 			// If the sidebar is showing, then form fields are disabled. Thus, enable all form elements,
 			// grab the data and re-disable (re-dis-able... does not feel like a word) them.
 			if (tools.length === 1) {
@@ -671,29 +671,28 @@ $(document).ready(function() {
 			
 			form_data = $("#publishForm").serialize();
 			
-			if (tools.length === 1) {
+			if (tools.length === 0) {
 				disable_fields(false);
-			}					
-
-			$.ajax({
-				type: "POST",
-				url: EE.BASE+"&C=content_publish&M=autosave_entry",
-				data: form_data,
-				success: function(result){		
-					if (isNaN(result)) {
-						if (EE.publish.autosave.error_state == 'false') {
-							$.ee_notice(result, {type:"error"});
-							EE.publish.autosave.error_state = 'true';
+				$.ajax({
+					type: "POST",
+					url: EE.BASE+"&C=content_publish&M=autosave_entry",
+					data: form_data,
+					success: function(result){		
+						if (isNaN(result)) {
+							if (EE.publish.autosave.error_state == 'false') {
+								$.ee_notice(result, {type:"error"});
+								EE.publish.autosave.error_state = 'true';
+							}
+						}
+						else {
+							if (EE.publish.autosave.error_state == 'true') {
+								EE.publish.autosave.error_state = 'false';
+							}
+							$.ee_notice(EE.publish.autosave.success, {type:"success"});
 						}
 					}
-					else {
-						if (EE.publish.autosave.error_state == 'true') {
-							EE.publish.autosave.error_state = 'false';
-						}
-						$.ee_notice(EE.publish.autosave.success, {type:"success"});
-					}
-				}
-			});
+				});
+			}
 		};
 		setInterval(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
 	}
