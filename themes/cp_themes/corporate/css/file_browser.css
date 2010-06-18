@@ -5,7 +5,7 @@
 	height: 450px;
 }
 
-#file_manager > div {
+#file_manager {
 	background: #B7C0C7 url(<?=$cp_theme_url?>images/publish_file_manager_bg.jpg) repeat-y 0px 0px;
 /*	background: #B7C0C7;*/
 }
@@ -19,15 +19,17 @@
 /* single page */
 .page {
 	padding:10px 10px 10px 0px;
-	height: 450px;
-	width:500px;
+	height: 430px;
+	width:480px;
+	overflow-y:auto;
+	overflow-x: hidden;
 }
 
 /* root element for horizontal scrollables */
 .vertscrollable {
 	position:relative;
 	overflow:hidden;
-	width: 500px;
+	width: 470px;
 	height: 410px;
 }
 
@@ -44,7 +46,7 @@
 	width:500px;
 	height:450px;
 	padding: 10px 0;
-	background: none!important;
+	background: none;
 }
 
 .item div {
@@ -60,7 +62,6 @@
 }
 
 .item div > div {
-	border:1px solid #8EA1AD;
 	height:60px;
 	width: 73px;
 	overflow: hidden;
@@ -68,10 +69,21 @@
 }
 
 /* main navigator */
+
+div#nav_wreaper {
+	height:450px;
+	overflow-y:auto;
+	overflow-x: hidden;
+
+	width:215px;
+	float:left;
+/*	margin-top:40px;*/
+}
+
 #main_navi {
 	float:left;
-	padding:0px !important;
-	margin:0px !important;
+	padding:0px;
+	margin:0px;
 }
 
 #main_navi li {
@@ -82,6 +94,7 @@
 	line-height: 40px;
 	list-style-type:none;
 	width:160px;
+	overflow:hidden;
 	cursor:pointer;
 	padding-left: 20px;
 	border-bottom: 1px solid #B7C0C7;
@@ -100,8 +113,14 @@
 	display:block;
 }
 
+#file_manager_main #progress {
+	text-align:	left;
+	display:none;
+}
+
 #file_manager_main .navi {
-	padding-top: 5px;
+	padding-top:2px;
+	margin-left:auto;
 }
 
 #file_manager_main div.navi a {
@@ -111,18 +130,22 @@
 	height: 15px;
 	display: block;
 	float: left;
-	margin: 0 2px 0 2px;
+	margin: 5px 2px;
+
 }
 #file_manager_main div.navi a.active {
 	background: #95A700 url(<?=$cp_theme_url?>images/publish_file_manager_nav_button_active.jpg) no-repeat center center;
 }
 
 .navi_area {
-	background:#27343C;
-	height:35px;
-	margin-top:-35px;
-	margin-left:180px;
-	line-height: 35px;
+	background: #27343C;
+	min-height:40px;
+	margin-top:-40px;
+	line-height:40px;
+	
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
 }
 
 .prevThumbs {
@@ -131,7 +154,6 @@
 	width: 27px;
 	background: #5AB400 url(<?=$cp_theme_url?>images/publish_file_manager_prevthumbs.jpg) no-repeat center center;
 	cursor: pointer;
-	margin-top: -1px;
 	margin-right: 5px;
 }
 
@@ -141,13 +163,14 @@
 	width: 27px;
 	background: #5AB400 url(<?=$cp_theme_url?>images/publish_file_manager_newthumbs.jpg) no-repeat center center;
 	cursor: pointer;
-	margin-top: -6px;
 	margin-left: 5px;
 	float: left;
 }
 
 .nav_controls {
 	display: none;
+	padding:3px 10px;
+	margin-top:0;
 }
 
 p.custom_field_add {
