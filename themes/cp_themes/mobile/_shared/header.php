@@ -14,7 +14,7 @@
 		echo $cp_global_js;
 	}
 	?>
-	<script type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'?>"></script>
+	<script type="text/javascript" src="<?=$cp_theme_url?>javascript/jquery.1.3.2.js"></script>
 	<script type="text/javascript" src="<?=$cp_theme_url?>javascript/jqtouch.js"></script>
 	<script type="text/javascript" src="<?=$cp_theme_url?>javascript/jqtouch.transitions.js"></script>
 	<script type="text/javascript" src="<?=$cp_theme_url?>javascript/ee_mobile_js.js"></script>
