@@ -151,7 +151,10 @@ class EE_Validate {
 				$type = 'new';
 
 				if ($this->enable_log == TRUE)
+				{
 					$this->log_msg[] = $this->EE->lang->line('username_changed').NBS.NBS.$this->username;
+					
+				}
 			}			
 		}
 	
@@ -209,7 +212,9 @@ class EE_Validate {
 				$type = 'new';
 			 
 				if ($this->enable_log == TRUE)
-					$this->log_msg[] = $this->EE->lang->line('screen_name_changed').NBS.NBS.$this->screen_name;
+				{
+					$this->log_msg[] = $this->EE->lang->line('screen_name_changed').NBS.NBS.$this->screen_name;					
+				}
 			}		
 		}
 	
@@ -392,8 +397,10 @@ class EE_Validate {
 			if ($this->cur_email != $this->email)	
 			{
 				if ($this->enable_log == TRUE)
+				{
 					$this->log_msg = $this->EE->lang->line('email_changed').NBS.NBS.$this->email;
-			
+				}
+				
 				$type = 'new';
 			}			
 		}		
