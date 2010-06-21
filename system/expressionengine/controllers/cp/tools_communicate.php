@@ -1010,7 +1010,7 @@ class Tools_communicate extends Controller {
 		
 		if ( ! $this->cp->allowed_group('can_send_cached_email'))
 		{	 
-			show_error($this->lang->line('not_allowed_to_email_mailinglist'));
+			show_error($this->lang->line('not_allowed_to_email_cache'));
 		}
 
 		$this->lang->loadfile('tools');
