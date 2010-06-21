@@ -298,9 +298,17 @@ class Addons_modules extends Controller {
 			}
 		}
 				
-		// set view path, package path, and the controller
+		// set the view path
 		define('MODULE_VIEWS', $installed[$module]['path'].$view_folder.'/');
+		
+		
+		// Add the helper/library load path and temporarily
+		// switch the view path to the module's view folder
 		$this->load->add_package_path($installed[$module]['path']);
+		
+		$orig_view_path = $this->load->_ci_view_path;
+		$this->load->_ci_view_path = MODULE_VIEWS;
+		
 		require_once $installed[$module]['path'].$installed[$module]['file'];
 
 		// instantiate the module cp class
@@ -312,10 +320,6 @@ class Addons_modules extends Controller {
 		$this->_mcp_reference =& $mod; 
 
 		$method = ($this->input->get('method') !== FALSE) ? $this->input->get('method') : 'index';
-
-		// switch the view path temporarily to the module's view folder
-		$orig_view_path = $this->load->_ci_view_path;
-		$this->load->_ci_view_path = MODULE_VIEWS;
 
 		// its possible that a module will try to call a method that does not exist
 		// either by accident (ie: a missed function) or by deliberate user url hacking
