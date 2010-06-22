@@ -1780,7 +1780,6 @@ class Content_publish extends Controller {
 				'success'	=> $this->lang->line('autosave_success'),
 				'error_state' => 'false'
 			));
-			
 		}
 
 		$this->form_validation->set_message('title', $this->lang->line('missing_title'));

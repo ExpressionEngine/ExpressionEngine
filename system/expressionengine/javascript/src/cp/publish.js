@@ -661,9 +661,12 @@ $(document).ready(function() {
 	}
 
 	if (EE.publish.autosave) {
+
 		autosave_entry = function() {
 			var tools = $("#tools:visible"),
 				form_data;
+				
+				
 
 			// If the sidebar is showing, then form fields are disabled. Thus, enable all form elements,
 			// grab the data and re-disable (re-dis-able... does not feel like a word) them.
@@ -671,7 +674,12 @@ $(document).ready(function() {
 				disable_fields(true);
 			}
 			
+			
+			
 			form_data = $("#publishForm").serialize();
+
+			//console.log(form_data);
+			//alert(form_data);
 			
 			if (tools.length === 0) {
 				disable_fields(false);
@@ -698,6 +706,7 @@ $(document).ready(function() {
 		};
 		setInterval(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
 	}
+
 
 	$(".markItUp ul").append("<li class=\"btn_plus\"><a title=\""+EE.lang.add_new_html_button+"\" href=\""+EE.BASE+"&C=myaccount&M=html_buttons&id="+EE.user_id+"\">+</a></li>");
 	
