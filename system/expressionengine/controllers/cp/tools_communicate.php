@@ -1531,10 +1531,13 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	{
 		$strings = func_get_args();
 		$total = 0;
-		
+
 		foreach ($strings as $string)
 		{
-			$total += substr_count($string, ',') + 1;
+			if ($string != '')
+			{
+				$total += substr_count($string, ',') + 1;				
+			}			
 		}
 		
 		return $total;
