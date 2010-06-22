@@ -267,6 +267,10 @@ class EE_Output extends CI_Output {
 	{
 		$EE =& get_instance();
 		
+		@header("Cache-Control: no-cache, must-revalidate");
+		@header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+		@header("Pragma: no-cache");
+		
 		foreach (array('title', 'heading', 'content', 'redirect', 'rate', 'link') as $val)
 		{
 			if ( ! isset($data[$val]))
