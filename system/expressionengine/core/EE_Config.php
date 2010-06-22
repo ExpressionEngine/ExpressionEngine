@@ -331,8 +331,9 @@ class EE_Config Extends CI_Config {
 		// lowercase version charset to use in HTML output
 		$this->config['output_charset'] = strtolower($this->config['charset']);
 		
-		/*
-		if ($this->item('enable_db_caching') == 'y')
+		//  Set up DB caching prefs
+		
+		if ($this->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
 		{
 			$this->EE->db->cache_on();
 		}
@@ -340,8 +341,6 @@ class EE_Config Extends CI_Config {
 		{
 			$this->EE->db->cache_off();
 		}
-		*/
-		
 	}
 
 	// --------------------------------------------------------------------
