@@ -26,7 +26,6 @@ class Updater {
 
     var $version_suffix = 'pb01';
 	var $mylang = 'english';
-	var $has_duplicates = array();
     
     function Updater()
     {
@@ -133,7 +132,14 @@ class Updater {
             $this->EE->db->query($this->EE->db->update_string('exp_sites', $row, "site_id = '".$this->EE->db->escape_str($row['site_id'])."'"));
         }
         
- 		// there's another step yet
+ 		$trunc = array('captcha', 'sessions', 'security_hashes');
+        
+		foreach ($trunc as $table_name)
+        {
+        		$this->EE->db->truncate($table_name);
+        }
+
+		// there's another step yet
         return 'convert_db_to_utf8';
 
         
@@ -245,17 +251,7 @@ class Updater {
 	
 		// There are sites with templates, make sure the templates have been uploaded.
 	
-		// This might seem a little redundant, but let's check that the directories with templates
-		// Actually exist before we go much further.  We'll combine in a single error message later on.
 		$old_template_upload_errors = array();
-
-		//foreach ($sites_with_templates as $site)
-		//{
-		//	if ($site['query'] !== FALSE && ! is_really_writable(EE_APPPATH.'templates/'.$site['site_name'].'/'))
-		//	{
-		//		$old_template_upload_errors[] = $site['site_name'];
-		//	}
-		//}
 
 		// On to the real deal.
 		foreach ($sites_with_templates as $site)
@@ -332,8 +328,6 @@ class Updater {
 					}
 
 					$template_error_str .= '</ul>';
-					//$template_error_str .= sprintf($this->EE->lang->line('proper_template_files_location'), 
-					//				$template_path);
 				}
 				
 				$template_error_explain = sprintf($this->EE->lang->line('template_missing_explain_retry'), $retry);
@@ -350,15 +344,6 @@ class Updater {
 					continue;
 				}
 
-				/*
-				if ( ! $one_six_file)
-				{
-					//show_error(sprintf($this->EE->lang->line('unable_to_read_tmpl_file'),
-					//					$val->group_name.'/'.$val->template_name.EXT));
-					$this->template_move_errors = TRUE;
-				}
-				*/
-
 				$this->EE->db->where('template_id', $val->template_id);
 				$this->EE->db->update('templates', array('template_data' => $one_six_file));
 
@@ -373,8 +358,6 @@ class Updater {
 			{
 				if (@mkdir(EE_APPPATH.'templates/1.x_templates') === FALSE)
 				{
-					//show_error(sprintf($this->EE->lang->line('template_folder_not_writeable'),
-					//					$template_path));
 					$template_move_errors = TRUE;
 				}
 			}			
@@ -695,10 +678,10 @@ class Updater {
             
             // continue with general database changes
 
-			$this->dupe_check();
+			$has_duplicates = $this->dupe_check();
 			$next_step = 'database_changes';
 		
-			if ( ! empty($this->has_duplicates))
+			if ( ! empty($has_duplicates))
 			{
 				$next_step = 'database_clean';
 			}
@@ -712,10 +695,10 @@ class Updater {
     
     function backup_trackbacks()
     {
-		$this->dupe_check();
+		$has_duplicates = $this->dupe_check();
 		$next_step = 'database_changes';
 		
-		if ( ! empty($this->has_duplicates))
+		if ( ! empty($has_duplicates))
 		{
 			$next_step = 'database_clean';
 		}
@@ -864,44 +847,52 @@ class Updater {
     
 	function dupe_check()
 	{
+		$has_duplicates = array();
+		
 		// Check whether we need to run duplicate record clean up
 		$query = $this->EE->db->query("SELECT `upload_id`, `member_group`, count(`member_group`) FROM `exp_upload_no_access` GROUP BY `upload_id`, `member_group` HAVING COUNT(`member_group`) > 1");
-        $total = $query->row('count');
 
-		if ($total > 0)
+		if ($query->num_rows() > 0)
 		{
-			$this->has_duplicates[] = 'upload_no_access';
+			$has_duplicates[] = 'upload_no_access';
 		}
 
 		$query = $this->EE->db->query("SELECT `member_id`, count(`member_id`) FROM `exp_message_folders` GROUP BY `member_id` HAVING COUNT(`member_id`) > 1");
-        $total = $query->row('count');
 		
-		if ($total > 0)
+		if ($query->num_rows() > 0)
 		{
-			$this->has_duplicates[] = 'message_folders';
+			$has_duplicates[] = 'message_folders';
 		}
 		
-
-		$query = $this->EE->db->query("SELECT `entry_id`, `cat_id` count(`cat_id`) FROM `exp_category_posts` GROUP BY `entry_id`, `cat_id` HAVING count(`cat_id`) > 1");
-        $total = $query->row('count');
+		$query = $this->EE->db->query("SELECT `entry_id`, `cat_id`, count(`cat_id`) FROM `exp_category_posts` GROUP BY `entry_id`, `cat_id` HAVING count(`cat_id`) > 1");
 		
-		if ($total > 0)
+		if ($query->num_rows() > 0)
 		{
-			$this->has_duplicates[] = 'category_posts';
+			$has_duplicates[] = 'category_posts';
+		}
+		
+		if ( ! empty($has_duplicates))
+		{
+			$this->EE->config->_update_config(array('table_duplicates' => implode('|', $has_duplicates)));
 		}		
 		
-		return;
+		return $has_duplicates;
 	}
 
 	function database_clean()
 	{
          $this->EE->progress->update_state("Cleaning duplicate data");
 
+		if ( ! isset($this->config['table_duplicates']))
+		{
+			return;
+		}
+		
+		$has_duplicates = explode('|', $this->config['table_duplicates']);
+
 		// Eliminate duplicate primaries
 		
-// ALTER TABLE `exp_upload_no_access` ADD PRIMARY KEY `upload_id_member_group` (`upload_id`, `member_group`
-
-		if (in_array('upload_no_access', $this->has_duplicates))
+		if (in_array('upload_no_access', $has_duplicates))
 		{
 		
 			$Q[] = "CREATE TABLE exp_tmp_upload_no_access SELECT DISTINCT upload_id, member_group FROM exp_upload_no_access";
@@ -909,9 +900,7 @@ class Updater {
 			$Q[] = "ALTER TABLE exp_tmp_upload_no_access RENAME TO exp_upload_no_access";
 		}
 	
-// exp_message_folders ALTER TABLE `exp_message_folders` ADD PRIMARY KEY `member_id` (`member_id`) - multiple
-
-		if (in_array('message_folders', $this->has_duplicates))
+		if (in_array('message_folders', $has_duplicates))
 		{
 			
 			$Q[] = "CREATE TABLE exp_tmp_message_folders SELECT DISTINCT * FROM exp_message_folders";
@@ -919,8 +908,7 @@ class Updater {
 			$Q[] = "ALTER TABLE exp_tmp_message_folders RENAME TO exp_message_folders";
 		}
 		
-//         $Q[] = "ALTER TABLE `exp_category_posts` ADD PRIMARY KEY `entry_id_cat_id` (`entry_id`, `cat_id`)";
-		if (in_array('category_posts', $this->has_duplicates))
+		if (in_array('category_posts', $has_duplicates))
 		{
 			$Q[] = "CREATE TABLE exp_tmp_category_posts SELECT DISTINCT * FROM exp_category_posts";
 			$Q[] = "DROP TABLE exp_category_posts";
@@ -940,6 +928,8 @@ class Updater {
     function database_changes()
     {
         $this->EE->progress->update_state("Creating and updating database tables");
+
+		$has_duplicates = ( ! isset($this->config['table_duplicates'])) ? array() : explode('|', $this->config['table_duplicates']);
 
         $Q[] = "INSERT INTO `exp_actions` (`class`, `method`) VALUES ('Jquery', 'output_javascript')";
         
@@ -1135,13 +1125,23 @@ class Updater {
         $Q[] = "ALTER TABLE `exp_weblog_data` ADD PRIMARY KEY `entry_id` (`entry_id`)";
         $Q[] = "ALTER TABLE `exp_entry_ping_status` ADD PRIMARY KEY `entry_id_ping_id` (`entry_id`, `ping_id`)";
         $Q[] = "ALTER TABLE `exp_status_no_access` ADD PRIMARY KEY `status_id_member_group` (`status_id`, `member_group`)";
-        $Q[] = "ALTER TABLE `exp_category_posts` DROP KEY `entry_id`";
-        $Q[] = "ALTER TABLE `exp_category_posts` DROP KEY `cat_id`";
-        $Q[] = "ALTER TABLE `exp_category_posts` ADD PRIMARY KEY `entry_id_cat_id` (`entry_id`, `cat_id`)";
+
+		if ( ! in_array('category_posts', $has_duplicates))
+		{
+        	$Q[] = "ALTER TABLE `exp_category_posts` DROP KEY `entry_id`";
+        	$Q[] = "ALTER TABLE `exp_category_posts` DROP KEY `cat_id`";
+        }
+
+		$Q[] = "ALTER TABLE `exp_category_posts` ADD PRIMARY KEY `entry_id_cat_id` (`entry_id`, `cat_id`)";
         $Q[] = "ALTER TABLE `exp_template_no_access` DROP KEY `template_id`";
         $Q[] = "ALTER TABLE `exp_template_no_access` ADD PRIMARY KEY `template_id_member_group` (`template_id`, `member_group`)";
         $Q[] = "ALTER TABLE `exp_upload_no_access` ADD PRIMARY KEY `upload_id_member_group` (`upload_id`, `member_group`)";
-        $Q[] = "ALTER TABLE `exp_message_folders` DROP KEY `member_id`";
+
+		if ( ! in_array('message_folders', $has_duplicates))
+		{
+        	$Q[] = "ALTER TABLE `exp_message_folders` DROP KEY `member_id`";
+		}
+		
         $Q[] = "ALTER TABLE `exp_message_folders` ADD PRIMARY KEY `member_id` (`member_id`)";
         
         // Add default values for a few columns and switch some to NULL
@@ -1426,6 +1426,11 @@ class Updater {
             $this->EE->db->query("DELETE FROM exp_actions WHERE class = 'Fresh_variables'");
         }
    
+		if ( ! empty($has_duplicates))
+		{
+			$this->EE->config->_update_config(array(), array('table_duplicates' => ''));
+		}
+
         // weblogs are channels!
         return 'weblog_terminology_changes';
     }
