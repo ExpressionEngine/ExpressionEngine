@@ -133,11 +133,8 @@ class EE_Core {
 		$this->EE->load->database();
 		$this->EE->db->swap_pre 	= 'exp_';
 		$this->EE->db->db_debug 	= FALSE;
-		$this->EE->db->save_queries	= ($this->EE->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
-		
-		//  Note enable_db_caching is a per site setting and must come after site prefs are loaded
-		//$this->EE->db->cache_on 	= ($this->EE->config->item('enable_db_caching') == 'y' AND REQ == 'PAGE') ? TRUE : FALSE;
-		
+	
+		//  Note enable_db_caching is a per site setting specified in EE_Config.php
 				
 		/*
 		 * -----------------------------------------------------------------
@@ -161,17 +158,7 @@ class EE_Core {
 							
 		$this->EE->config->site_prefs($this->EE->config->item('site_name'));
 		
-
-		if ($this->EE->config->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
-		{
-			$this->EE->db->cache_on();
-		}
-		else
-		{
-			$this->EE->db->cache_off();
-		}
-		
-		// force EE's db cache path
+		// force EE's db cache path - do this AFTER site prefs have been assigned
 		$this->EE->db->cache_set_path(APPPATH.'cache/db_cache');
 
 		// make sure the DB cache folder exists if we're caching!
