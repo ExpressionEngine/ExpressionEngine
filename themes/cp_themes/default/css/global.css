@@ -25,12 +25,16 @@ optgroup option {
 	padding-left:			10px;
 }
 
-img {
+img, fieldse {
 	border:					0;
 }
 
 ul {
 	list-style:				none;
+}
+
+fieldset {
+	border:1px solid;
 }
 
 textarea,
@@ -1066,6 +1070,7 @@ input.submit {
 	background-color:	#ECF1F4;
 	color:				#5f6c74;
 	font-size:			12px;
+	margin-bottom:		10px;
 }
 #mainContent .pageContents #registerUser table {
 	margin:				11px 0;
