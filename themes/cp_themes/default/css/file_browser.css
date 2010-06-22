@@ -36,6 +36,7 @@ input#upload_file.field {
 	position:relative;
 	overflow:hidden;
 	height: 450px;
+	background-color:#E1E8ED;
 }
 
 #file_manager_body {
