@@ -39,12 +39,10 @@ class EE_Validate {
 	var $errors 			= array();
 	var $enable_log			= FALSE;
 	var $log_msg			= array();
-	
-	
-	/** ----------------------------------
-	/**  Constructor
-	/** ----------------------------------*/
-	
+
+	/**
+	 * Construct
+	 */
 	function EE_Validate($data = '')
 	{
 		// Make a local reference to the ExpressionEngine super object
@@ -68,11 +66,12 @@ class EE_Validate {
 		if ($this->require_cpw == TRUE)		$this->password_safety_check();
 	}
 
-
-
-	/** ----------------------------------------------
-	/**  Password Safety Check
-	/** ----------------------------------------------*/
+	// ----------------------------------------------------------------
+	
+	/**
+	 * Password safety check
+	 *
+	 */
 	function password_safety_check()
 	{
 		if ($this->EE->session->userdata['group_id'] == 1)
@@ -93,11 +92,11 @@ class EE_Validate {
 		}
 	}
 
+	// ----------------------------------------------------------------
 	
-
-	/** ----------------------------------
-	/**  Validate Username
-	/** ----------------------------------*/
+	/**
+	 * Validate Username
+	 */
 	function validate_username()
 	{
 		$type = $this->val_type;
@@ -136,7 +135,7 @@ class EE_Validate {
 		/** ----------------------------------
 		/**  Is username max length correct?
 		/** ----------------------------------*/
-		if (strlen($this->username) > 32)
+		if (strlen($this->username) > 50)
 		{
 			$this->errors[] = $this->EE->lang->line('username_password_too_long');
 		}
@@ -152,7 +151,10 @@ class EE_Validate {
 				$type = 'new';
 
 				if ($this->enable_log == TRUE)
+				{
 					$this->log_msg[] = $this->EE->lang->line('username_changed').NBS.NBS.$this->username;
+					
+				}
 			}			
 		}
 	
@@ -179,12 +181,11 @@ class EE_Validate {
 		}
 	}
 
+	// ----------------------------------------------------------------
 
-
-
-	/** ----------------------------------
-	/**  Validate Screen Name
-	/** ----------------------------------*/
+	/**
+	 * Validate screen name
+	 */
 	function validate_screen_name()
 	{
 		$type = $this->val_type;
@@ -211,7 +212,9 @@ class EE_Validate {
 				$type = 'new';
 			 
 				if ($this->enable_log == TRUE)
-					$this->log_msg[] = $this->EE->lang->line('screen_name_changed').NBS.NBS.$this->screen_name;
+				{
+					$this->log_msg[] = $this->EE->lang->line('screen_name_changed').NBS.NBS.$this->screen_name;					
+				}
 			}		
 		}
 	
@@ -242,12 +245,13 @@ class EE_Validate {
 		}
 	}
 
+	// ----------------------------------------------------------------
 
-
-
-	/** ----------------------------------
-	/**  Validate Password
-	/** ----------------------------------*/
+	/**
+	 * Validate Password
+	 *
+	 * @return 	mixed 	array on failure, void on success
+	 */
 	function validate_password()
 	{
 		/** ----------------------------------
@@ -273,7 +277,7 @@ class EE_Validate {
 		/** -------------------------------------
 		/**  Is password max length correct?
 		/** -------------------------------------*/
-		if (strlen($this->password) > 32)
+		if (strlen($this->password) > 40)
 		{
 			return $this->errors[] = $this->EE->lang->line('username_password_too_long');
 		}		
@@ -352,12 +356,14 @@ class EE_Validate {
 		}
 	}
 
+	// ----------------------------------------------------------------
 
-
-
-	/** ----------------------------------
-	/**  Validate Email
-	/** ----------------------------------*/
+	/**
+	 * Validate Email
+	 *
+	 *
+	 * @return 	mixed 	array on failure, void on success
+	 */
 	function validate_email()
 	{
 		$type = $this->val_type;
@@ -391,8 +397,10 @@ class EE_Validate {
 			if ($this->cur_email != $this->email)	
 			{
 				if ($this->enable_log == TRUE)
+				{
 					$this->log_msg = $this->EE->lang->line('email_changed').NBS.NBS.$this->email;
-			
+				}
+				
 				$type = 'new';
 			}			
 		}		
@@ -424,11 +432,13 @@ class EE_Validate {
 		}
 	}
 
-
-
-	/** ----------------------------------
-	/**  Display errors
-	/** ----------------------------------*/
+	// ----------------------------------------------------------------
+	
+	/**
+	 * Show Errors
+	 *
+	 * @return 	string
+	 */
 	function show_errors()
 	{
 		 if (count($this->errors) > 0)
@@ -444,12 +454,14 @@ class EE_Validate {
 		 }
 	}
 
+	// ----------------------------------------------------------------
 
-	
-	/** ----------------------------------------------
-	/**  Lookup word in dictionary file
-	/** ----------------------------------------------*/
-  
+  	/**
+	 * Lookup word in dictionary file 
+	 * 
+	 * @param 	string
+	 * @return 	boolean
+	 */
 	function lookup_dictionary_word($target)
 	{
 		if ($this->EE->config->item('allow_dictionary_pw') == 'y' OR $this->EE->config->item('name_of_dictionary_file') == '')

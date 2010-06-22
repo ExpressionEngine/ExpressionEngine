@@ -64,7 +64,7 @@ class Filemanager {
 										)
 									);
 
-		$this->EE->cp->add_to_head('<link rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=file_browser" type="text/css" media="screen" />');
+		$this->EE->cp->add_to_head('<link rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=file_browser'.AMP.'theme='.$this->EE->cp->cp_theme.'" type="text/css" media="screen" />');
 		
 		$this->EE->javascript->set_global('lang', array(
 									'resize_image'		=> $this->EE->lang->line('resize_image'),

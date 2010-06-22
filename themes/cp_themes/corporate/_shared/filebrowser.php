@@ -1,77 +1,80 @@
 <div id="file_manager" style="display:none;">
 	<div id="file_manager_body">
-		<ul id="main_navi">
-			<li id="main_navi_0"><?=lang("upload_file")?></li>
-		<?php foreach ($filemanager_directories as $dir_id => $dir_name):?>
-			<li id="main_navi_<?=$dir_id?>"><?=$dir_name?></li>
-		<?php endforeach;?>
-		</ul>
-		<div id="file_manager_main">
-			<div id="pages">
+		
+		<div id="nav_wreaper">
+			<ul id="main_navi">
+				<li id="main_navi_0"><?=lang("upload_file")?></li>
+			<?php foreach ($filemanager_directories as $dir_id => $dir_name):?>
+				<li id="main_navi_<?=$dir_id?>"><?=$dir_name?></li>
+			<?php endforeach;?>
+			</ul>
+		</div>
+	</div>
 
-				<div class="page" style="margin: 10px;">
-					<div class="vertscrollable" id="page_0">
-						<div class="items">
+	<div id="file_manager_main">
+		<div id="pages">
 
-								<h3><?=lang("upload_file")?></h3>
+			<div class="page" style="margin: 10px;">
+				<div class="vertscrollable" id="page_0">
+					<div class="items">
 
-								<iframe id='target_upload' name='target_upload' src='about:blank' style='width:200px;height:50px;border:1;display:none;'></iframe>
+							<h3><?=lang("upload_file")?></h3>
+							
+							<iframe id='target_upload' name='target_upload' src='about:blank' style='width:200px;height:50px;border:1;display:none;'></iframe>
 
-								<?=form_open_multipart($filemanager_backend_url.'&action=upload', array('target'=>'target_upload','id'=>'upload_form'))?>
-									<input type="hidden" name="frame_id" value="target_upload" id="frame_id" />
+							<?=form_open_multipart($filemanager_backend_url.'&action=upload', array('target'=>'target_upload','id'=>'upload_form'))?>
+								<input type="hidden" name="frame_id" value="target_upload" id="frame_id" />
+								
+							<p>
+								<?=form_label(lang('upload_file'), 'upload_file', array("style"=>"display:none;"))?>
+								<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>20,'class'=>'field'))?>
+							</p>
 
-								<p>
-									<?=form_label(lang('upload_file'), 'upload_file', array("style"=>"display:none;"))?>
-									<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>20,'class'=>'field'))?>
-								</p>
+							<div class="shun"></div>
+							
+							<p>
+							<?php if (count($filemanager_directories) > 1):?>
+								<?=form_label(lang('upload_dir_choose'), 'upload_dir')?>
+								<?=form_dropdown('upload_dir', $filemanager_directories, '', 'id="upload_dir"')?>
+							<?php else:
+								reset($filemanager_directories); // force us to be on the first array key
+							?>
+								<input type="hidden" name="upload_dir" value="<?=key($filemanager_directories)?>" id="upload_dir" />
+							<?php endif;?>
+							</p>
 
-								<div class="shun"></div>
+							<div class="shun"></div>
 
-								<p>
-								<?php if (count($filemanager_directories) > 1):?>
-									<?=form_label(lang('upload_dir_choose'), 'upload_dir')?>
-									<?=form_dropdown('upload_dir', $filemanager_directories, '', 'id="upload_dir"')?>
-								<?php else:
-									reset($filemanager_directories); // force us to be on the first array key
-								?>
-									<input type="hidden" name="upload_dir" value="<?=key($filemanager_directories)?>" id="upload_dir" />
-								<?php endif;?>
-								</p>
+							<p><button class="submit submit_alt"><?=lang('upload')?></button></p>
 
-								<div class="shun"></div>
+							<p id="progress"><img src="<?=$cp_theme_url?>/images/indicator.gif" /><br /><?=lang('loading')?>...</p>
 
-								<p><button class="submit submit_alt"><?=lang('upload')?></button></p>
+							<?=form_close()?>
 
-								<p id="progress"><img src="<?=$cp_theme_url?>/images/indicator.gif" /><br /><?=lang('loading')?>...</p>
-
-								<?=form_close()?>
-
-						</div>
 					</div>
 				</div>
-
-
-				<?php foreach ($filemanager_directories as $dir_id => $name):?>
-					<div class="page">
-						<div class="vertscrollable" id="page_<?=$dir_id?>">
-							<div class="items">
-								<!-- this area gets dynamically filled -->
-							</div>
-						</div>
-
-						<div id="nav_controls_<?=$dir_id?>" class="nav_controls">
-							<a class="prevThumbs"></a>
-							<div class="navi"></div>
-							<a class="newThumbs"></a>
-						</div>
-
-					</div>
-				<?php endforeach;?>
-
-
 			</div>
+
+
+			<?php foreach ($filemanager_directories as $dir_id => $name):?>
+				<div class="page">
+					<div class="vertscrollable" id="page_<?=$dir_id?>">
+						<div class="items">
+							<!-- this area gets dynamically filled -->
+						</div>
+					</div>
+
+					<div id="nav_controls_<?=$dir_id?>" class="nav_controls navi_area">
+						<a class="prevThumbs"></a>
+						<div class="navi"></div>
+						<a class="newThumbs"></a>
+						<div class="clear"></div>
+					</div>
+					
+				</div>
+			<?php endforeach;?>
+
 		</div>
-		<div class="navi_area"></div>
 	</div>
 
 	<div class="image_edit_form_options" style="display:none;">
