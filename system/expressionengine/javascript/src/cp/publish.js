@@ -538,7 +538,7 @@ function add_authors_sidebar(e) {
 
 function liveUrlTitle()
 {
-	var defaultTitle = '',
+	var defaultTitle = EE.publish.default_entry_title,
 		separator = EE.publish.word_separator,
 		newText = document.getElementById("title").value || '',
 		replaceField = document.getElementById("url_title"),
@@ -546,13 +546,14 @@ function liveUrlTitle()
 		separatorReg = (separator !== '_') ? /\_/g : /\-/g,
 		newTextTemp = '',
 		pos, c;
-
+	
 	if (defaultTitle !== '') {
 		if (newText.substr(0, defaultTitle.length) === defaultTitle) {
 			newText = newText.substr(defaultTitle.length);
 		}
 	}
-
+	
+	newText = EE.publish.url_title_prefix + newText;
 	newText = newText.toLowerCase().replace(separatorReg, separator);
 
 	// Foreign Character Attempt
