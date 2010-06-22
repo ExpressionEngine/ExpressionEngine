@@ -134,29 +134,10 @@ class EE_Core {
 		$this->EE->db->swap_pre 	= 'exp_';
 		$this->EE->db->db_debug 	= FALSE;
 		$this->EE->db->save_queries	= ($this->EE->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
-		$this->EE->db->cache_on 	= FALSE; //($this->EE->config->item('enable_db_caching') == 'y' AND REQ == 'PAGE') ? TRUE : FALSE;
 		
-
-//var_dump($this->EE->db->cache_on);
-
-		// force EE's db cache path
-		$this->EE->db->cache_set_path(APPPATH.'cache/db_cache');
-
-		// make sure the DB cache folder exists if we're caching!
-		if ($this->EE->db->cache_on === TRUE && ! @is_dir(APPPATH.'cache/db_cache'))
-		{
-			if ( ! @mkdir(APPPATH.'cache/db_cache', DIR_WRITE_MODE))
-			{
-				continue;
-			}
-
-			if ($fp = @fopen(APPPATH.'cache/db_cache/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
-			{
-				fclose($fp);
-			}
-
-			@chmod(APPPATH.'cache/db_cache', DIR_WRITE_MODE);
-		}
+		//  Note enable_db_caching is a per site setting and must come after site prefs are loaded
+		//$this->EE->db->cache_on 	= ($this->EE->config->item('enable_db_caching') == 'y' AND REQ == 'PAGE') ? TRUE : FALSE;
+		
 				
 		/*
 		 * -----------------------------------------------------------------
@@ -179,6 +160,36 @@ class EE_Core {
 		}
 							
 		$this->EE->config->site_prefs($this->EE->config->item('site_name'));
+		
+
+		if ($this->EE->config->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
+		{
+			$this->EE->db->cache_on();
+		}
+		else
+		{
+			$this->EE->db->cache_off();
+		}
+		
+		// force EE's db cache path
+		$this->EE->db->cache_set_path(APPPATH.'cache/db_cache');
+
+		// make sure the DB cache folder exists if we're caching!
+		if ($this->EE->db->cache_on === TRUE && ! @is_dir(APPPATH.'cache/db_cache'))
+		{
+			if ( ! @mkdir(APPPATH.'cache/db_cache', DIR_WRITE_MODE))
+			{
+				continue;
+			}
+
+			if ($fp = @fopen(APPPATH.'cache/db_cache/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
+			{
+				fclose($fp);
+			}
+
+			@chmod(APPPATH.'cache/db_cache', DIR_WRITE_MODE);
+		}
+		
 
 		// this look backwards, but QUERY_MARKER is only used where we MUST have a ?, and do not want to double up
 		// question marks on sites who are forcing query strings
