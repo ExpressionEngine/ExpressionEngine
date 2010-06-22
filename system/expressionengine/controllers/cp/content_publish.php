@@ -1776,8 +1776,10 @@ class Content_publish extends Controller {
 				'success'	=> $this->lang->line('autosave_success'),
 				'error_state' => 'false'
 			));
-			
 		}
+		
+		$this->javascript->set_global('publish.url_title_prefix', $url_title_prefix);
+		$this->javascript->set_global('publish.default_entry_title', $default_entry_title);
 
 		$this->form_validation->set_message('title', $this->lang->line('missing_title'));
 		$this->form_validation->set_message('entry_date', $this->lang->line('missing_date'));
@@ -2581,7 +2583,6 @@ class Content_publish extends Controller {
 		
 		$this->javascript->set_global('publish.foreignChars', $foreign_characters);
 		$this->javascript->set_global('publish.word_separator', $this->config->item('word_separator') != "dash" ? '_' : '-');
-
 	}
 
 
