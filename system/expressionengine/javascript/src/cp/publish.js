@@ -207,6 +207,10 @@ EE.publish.category_editor = function() {
 
 var selected_tab = "";
 
+function get_selected_tab() {
+	return selected_tab;
+}
+
 function tab_focus(tab_id)
 {
 	// If the tab was hidden, this was triggered
