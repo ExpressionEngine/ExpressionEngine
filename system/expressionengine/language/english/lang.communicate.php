@@ -15,6 +15,7 @@ $lang = array(
 'not_allowed_to_email_members'			=> 'You are not allowed to email members',
 'not_allowed_to_email_member_groups'	=> 'You are not allowed to email Member Groups',
 'not_allowed_to_email_mailinglist'		=> 'You are not allowed to send email to the mailing list',
+'not_allowed_to_email_cache'			=> 'You are not allowed to view the email cache.',
 'subject'				=> 'Subject',
 'message'				=> 'Message',
 'plaintext_alt'			=> 'Plain Text Alternative (optional, HTML emails only, no text formatting applied)',

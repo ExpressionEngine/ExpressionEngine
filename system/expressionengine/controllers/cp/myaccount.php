@@ -548,8 +548,13 @@ class MyAccount extends Controller {
 			}			
 		}
 
+		if ($this->id != $this->session->userdata('member_id'))
+		{
+			$id = AMP.'id='.$this->id;
+		}
+
 		$this->session->set_flashdata('message_success', $this->lang->line('settings_updated'));
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=email_settings');
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=email_settings'.$id);
 	}
 
 	// --------------------------------------------------------------------

@@ -1508,6 +1508,8 @@ class Admin_content extends Controller {
 			$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_management');
 		}
 
+		$this->lang->loadfile('admin_content');
+
 		// check for bad characters in group name
 		if ( ! preg_match("#^[a-zA-Z0-9_\-/\s]+$#i", $_POST['group_name']))
 		{
@@ -1515,7 +1517,6 @@ class Admin_content extends Controller {
 		}
 
 		$this->load->model('category_model');
-		$this->lang->loadfile('admin_content');
 
 		// Is the group name taken?
 		if ($this->category_model->is_duplicate_category_group($this->input->post('group_name'), $this->input->post('group_id')))
@@ -3742,13 +3743,14 @@ class Admin_content extends Controller {
 			return $this->field_group_edit();
 		}
 
+		$this->lang->loadfile('admin_content');
+
 		if ( ! preg_match("#^[a-zA-Z0-9_\-/\s]+$#i", $group_name))
 		{
 			show_error($this->lang->line('illegal_characters'));
 		}
 
 		$this->load->model('field_model');
-		$this->lang->loadfile('admin_content');
 
 		// Is the group name taken?
 		if ($this->field_model->is_duplicate_field_group_name($group_name, $group_id))
