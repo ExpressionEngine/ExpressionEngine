@@ -149,7 +149,7 @@ class Tools_communicate extends Controller {
 		/** -----------------------------
 		/**  Fetch form data from cache
 		/** -----------------------------*/
-
+	
 		if ($id = $this->input->get('id'))
 		{	 
 			if ( ! $this->cp->allowed_group('can_send_cached_email'))
@@ -257,7 +257,9 @@ class Tools_communicate extends Controller {
 		}
 		else
 		{
-			$query = $this->member_model->get_member_groups();
+			$addt_where = array('include_in_mailinglists' => 'y');
+			
+			$query = $this->member_model->get_member_groups('', $addt_where);
 
 			foreach ($query->result() as $row)
 			{
@@ -366,6 +368,7 @@ class Tools_communicate extends Controller {
 
 		$groups = array();
 		$list_ids = array();
+		$emails = array();
 
 		foreach ($_POST as $key => $val)
 		{
@@ -540,7 +543,7 @@ class Tools_communicate extends Controller {
 				}
 			}
 		}
-		
+
 		/** ---------------------------------
 		/**  Fetch mailing list emails
 		/** ---------------------------------*/
