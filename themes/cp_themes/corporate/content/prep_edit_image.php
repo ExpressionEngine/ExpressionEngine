@@ -45,10 +45,10 @@ if ($EE_view_disable !== TRUE)
 							<legend><?=lang('rotate')?></legend>
 							<p class="last"><?=lang('rotate', 'rotate')?> <?=form_dropdown('rotate', $rotate_options, $rotate_selected, 'id="rotate"')?></p>
 							<ul class="icons">
-								<li class="rotate_90r"><img src="<?=$cp_theme_url?>images/image_edit_rotate_cw.png" alt="<?=lang('rotate_90r')?>" width="36" height="42" /></li>
-								<li class="rotate_90l"><img src="<?=$cp_theme_url?>images/image_edit_rotate_ccw.png" alt="<?=lang('rotate_90l')?>" width="36" height="42" /></li>
-								<li class="rotate_flip_vert"><img src="<?=$cp_theme_url?>images/image_edit_flip_vert.png" alt="<?=lang('rotate_flip_vert')?>" width="36" height="42" /></li>
-								<li class="rotate_flip_hor"><img src="<?=$cp_theme_url?>images/image_edit_flip_hor.png" alt="<?=lang('rotate_flip_hor')?>" width="36" height="42" /></li>
+								<li class="rotate_90"><img src="<?=$cp_theme_url?>images/image_edit_rotate_cw.png" alt="<?=lang('rotate_90r')?>" width="36" height="42" /></li>
+								<li class="rotate_270"><img src="<?=$cp_theme_url?>images/image_edit_rotate_ccw.png" alt="<?=lang('rotate_90l')?>" width="36" height="42" /></li>
+								<li class="rotate_vrt"><img src="<?=$cp_theme_url?>images/image_edit_flip_vert.png" alt="<?=lang('rotate_flip_vert')?>" width="36" height="42" /></li>
+								<li class="rotate_hor"><img src="<?=$cp_theme_url?>images/image_edit_flip_hor.png" alt="<?=lang('rotate_flip_hor')?>" width="36" height="42" /></li>
 							</ul>
 						</fieldset>
 

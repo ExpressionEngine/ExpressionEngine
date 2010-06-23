@@ -95,13 +95,15 @@
 		}
 		
 		$(el).click(function() {
+			var that = this;
+			
 			// Change the upload field to their preferred name
 			$("#upload_file", file_manager_obj).attr('name', field_name);
 
 			file_manager_obj.dialog("open");
 
 			trigger_callback = function(file) {
-				callback.call(el, file, field_name);
+				callback.call(that, file, field_name);
 			};
 			return false;
 		});
@@ -182,7 +184,8 @@
 	}
 
 	$.ee_filebrowser.reset = function() {
-		$("#file_manager").scrollable().data('scrollable').begin();
+		$("#file_manager_main").data('scrollable').begin();
+		$(".vertscrollable").data('scrollable').begin();
 	}
 
 	// --------------------------------------------------------------------

@@ -27,10 +27,10 @@
 class Forum {
 
 
-	var $version			= '3.0.1';
+	var $version			= '3.1.0';
 	var $build				= '20100415';
 	var $use_site_profile	= FALSE;
-	var $search_limit		= 500; // Maximum number of search results
+	var $search_limit		= 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)
 	var $return_data 		= '';
 	var $body_extra			= '';
 	var $theme				= '';

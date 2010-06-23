@@ -1,3 +1,26 @@
+/*!
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
+ * @license		http://expressionengine.com/docs/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/*!
+ * ExpressionEngine File Manager
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Control Panel
+ * @category	Control Panel
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
 $(document).ready(function() {
 
 	// Some page setup
@@ -184,7 +207,7 @@ $(document).ready(function() {
 		{
 			crop_coords_array = [ 50, 50, 100, 100 ];
 		}
-
+		
 		$("#edit_image").resizable("destroy"); // turn off resize
 		$("#edit_image_holder").html('<img src="'+EE.filemanager.url_path+'" alt="" id="edit_image" />'); // replace image
 
@@ -207,8 +230,14 @@ $(document).ready(function() {
 		}
 	}
 
+	var image_ratio_width = $("#edit_image").height()/$("#edit_image").width(),
+		image_ratio_height = $("#edit_image").width()/$("#edit_image").height();
+
 	$("#rotate_fieldset li img").click(function() {
-		$("#rotate").val($(this).attr("alt"));
+		var rotate_type = $(this).parent('li').attr('class').substr(7);
+		
+		$("p.last select#rotate").val(rotate_type);
+
 		// We will submit the form for them. While this is happening, we do not
 		// want them to click the submit button manually, so we disable and enable it
 		$("#edit_file_submit").attr("disabled", true).addClass("disabled_field");
@@ -216,9 +245,6 @@ $(document).ready(function() {
 	}, function() {
 		$("#edit_file_submit").attr("disable", "false").removeClass("disabled_field");
 	});
-
-	var image_ratio_width = $("#edit_image").height()/$("#edit_image").width();
-	var image_ratio_height = $("#edit_image").width()/$("#edit_image").height();
 
 	function changeDimValue(dim, master_dim)
 	{
