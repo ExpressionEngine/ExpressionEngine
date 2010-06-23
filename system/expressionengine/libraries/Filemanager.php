@@ -770,6 +770,7 @@ class Filemanager {
 
 //		$config['dynamic_output'] = TRUE;
 
+		$this->EE->load->library('image_lib', $config);
 
 		$errors = '';
 
@@ -814,16 +815,6 @@ class Filemanager {
 		$dimensions = $this->EE->image_lib->get_image_properties('', TRUE);
 		$this->EE->image_lib->clear();
 
-$d = 'path: '.$path;
-$d .= '<br>';
-$d .= 'name ref: '.$image_name_reference;
-$d .= '<br>';
-$d .= 'file: '.$file;
-$d .= '<br>';
-$d .= 'sep: '.DIRECTORY_SEPARATOR;
-
-exit($d);		
-		
 		// Rebuild thumb
 		$this->create_thumb(
 						array('server_path'	=> $path), 
