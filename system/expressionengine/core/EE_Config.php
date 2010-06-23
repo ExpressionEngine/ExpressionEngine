@@ -169,11 +169,11 @@ class EE_Config Extends CI_Config {
 		
 		if ($site_name != '')
 		{
-			$query = $this->EE->db->query("SELECT es.* FROM exp_sites AS es WHERE es.site_name = '".$this->EE->db->escape_str($site_name)."'");
+			$query = $this->EE->db->get_where('sites', array('site_name' => $site_name));	
 		}
 		else
 		{
-			$query = $this->EE->db->query("SELECT es.* FROM exp_sites AS es WHERE es.site_id = '".$this->EE->db->escape_str($site_id)."'");	
+			$query = $this->EE->db->get_where('sites', array('site_id' => $site_id));
 		}
 	
 		if ($query->num_rows() == 0)
