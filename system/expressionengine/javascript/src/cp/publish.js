@@ -713,27 +713,6 @@ $(document).ready(function() {
 	}
 
 
-	$(".markItUp ul").append("<li class=\"btn_plus\"><a title=\""+EE.lang.add_new_html_button+"\" href=\""+EE.BASE+"&C=myaccount&M=html_buttons&id="+EE.user_id+"\">+</a></li>");
-	
-	$(".btn_plus a").click(function(){
-		return confirm(EE.lang.confirm_exit, "");
-	});
-
-	// inject the collapse button into the formatting buttons list
-	$(".markItUpHeader ul").prepend("<li class=\"close_formatting_buttons\"><a href=\"#\"><img width=\"10\" height=\"10\" src=\""+EE.THEME_URL+"images/publish_minus.gif\" alt=\"Close Formatting Buttons\"/></a></li>");
-
-	$(".close_formatting_buttons a").toggle(
-		function() {
-			$(this).parent().parent().children(":not(.close_formatting_buttons)").hide();
-			$(this).parent().parent().css("height", "13px");
-			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_plus.png");
-		}, function () {
-			$(this).parent().parent().children().show();
-			$(this).parent().parent().css("height", "22px");
-			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_minus.gif");
-		}
-	);
-
 	// Pages URI Placeholder
 	if (EE.publish.pages) {
 		var pagesUri		= $("#pages_uri"),
@@ -939,6 +918,28 @@ $(document).ready(function() {
 			$("input.ping_toggle").each(function() {
 				this.checked = true;
 			});
+		}
+	);
+	
+	
+	$(".markItUp ul").append("<li class=\"btn_plus\"><a title=\""+EE.lang.add_new_html_button+"\" href=\""+EE.BASE+"&C=myaccount&M=html_buttons&id="+EE.user_id+"\">+</a></li>");
+	
+	$(".btn_plus a").click(function(){
+		return confirm(EE.lang.confirm_exit, "");
+	});
+
+	// inject the collapse button into the formatting buttons list
+	$(".markItUpHeader ul").prepend("<li class=\"close_formatting_buttons\"><a href=\"#\"><img width=\"10\" height=\"10\" src=\""+EE.THEME_URL+"images/publish_minus.gif\" alt=\"Close Formatting Buttons\"/></a></li>");
+	
+	$(".close_formatting_buttons a").toggle(
+		function() {
+			$(this).parent().parent().children(":not(.close_formatting_buttons)").hide();
+			$(this).parent().parent().css("height", "13px");
+			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_plus.png");
+		}, function () {
+			$(this).parent().parent().children().show();
+			$(this).parent().parent().css("height", "22px");
+			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_minus.gif");
 		}
 	);
 
