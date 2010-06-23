@@ -660,7 +660,7 @@ $(document).ready(function() {
 		$(this).parent().siblings('.glossary_content, .spellcheck_content').hide();
 
 		$('.glossary_content a').click(function(){
-			$.markItUp({ replaceWith:$(this).attr('title')} );
+			$.markItUp({ replaceWith:$(this).attr('title') });
 			return false;
 		});
 	}
@@ -683,9 +683,6 @@ $(document).ready(function() {
 			
 			form_data = $("#publishForm").serialize();
 
-			//console.log(form_data);
-			//alert(form_data);
-			
 			if (tools.length === 0) {
 				disable_fields(false);
 				$.ajax({
@@ -712,27 +709,6 @@ $(document).ready(function() {
 		setInterval(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
 	}
 
-
-	$(".markItUp ul").append("<li class=\"btn_plus\"><a title=\""+EE.lang.add_new_html_button+"\" href=\""+EE.BASE+"&C=myaccount&M=html_buttons&id="+EE.user_id+"\">+</a></li>");
-	
-	$(".btn_plus a").click(function(){
-		return confirm(EE.lang.confirm_exit, "");
-	});
-
-	// inject the collapse button into the formatting buttons list
-	$(".markItUpHeader ul").prepend("<li class=\"close_formatting_buttons\"><a href=\"#\"><img width=\"10\" height=\"10\" src=\""+EE.THEME_URL+"images/publish_minus.gif\" alt=\"Close Formatting Buttons\"/></a></li>");
-
-	$(".close_formatting_buttons a").toggle(
-		function() {
-			$(this).parent().parent().children(":not(.close_formatting_buttons)").hide();
-			$(this).parent().parent().css("height", "13px");
-			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_plus.png");
-		}, function () {
-			$(this).parent().parent().children().show();
-			$(this).parent().parent().css("height", "22px");
-			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_minus.gif");
-		}
-	);
 
 	// Pages URI Placeholder
 	if (EE.publish.pages) {
@@ -819,10 +795,13 @@ $(document).ready(function() {
 		return false;
 	});
 	
-	
-	// Prep for a workaround to allow markitup file insertion in file inputs
-	$(".btn_img a, .file_manipulate").click(function(){
-		var textareaId;
+
+	// Bind the image html buttons
+	$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
+		
+		var textarea, replace;
+		
+		// A bit of working around various textareas, text inputs, tec
 		
 		if ($(this).closest("#markItUpWrite_mode_textarea").length) {
 			textareaId = "write_mode_textarea";
@@ -830,35 +809,52 @@ $(document).ready(function() {
 		else {
 			textareaId = $(this).closest(".publish_field").attr("id").replace("hold_field_", "field_id_");
 		}
-
+		
 		if (textareaId != undefined) {
-			$("#"+textareaId).focus();		
+			textarea = $("#"+textareaId);
+			textarea.focus();		
 		}
-
-		window.file_manager_context = $("#"+textareaId).filter("textarea").length ? "textarea_a8LogxV4eFdcbC" : textareaId;
-	});
-
-	// Bind the image html buttons
-	$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
+		
 		// We also need to allow file insertion into text inputs (vs textareas) but markitup
 		// will not accommodate this, so we need to detect if this request is coming from a 
-		// markitup button (textarea_a8LogxV4eFdcbC), or another field type.
+		// markitup button or another field type.
+		
+		// Fact is - markitup is actually pretty crappy for anything that doesn't specifically
+		// use markitup. So currently the image button only works correctly on markitup textareas.
 
-		if (window.file_manager_context == "textarea_a8LogxV4eFdcbC")
+		if (textarea.is("textarea"))
 		{
+			if ( ! textarea.is('.markItUpEditor')) {
+				textarea.markItUp(myNobuttonSettings);
+				textarea.closest('.markItUpContainer').find('.markItUpHeader').hide();
+				textarea.focus();
+			}
+			
 			// Handle images and non-images differently
 			if ( ! file.is_image)
 			{
-				$.markItUp({name:"Link", key:"L", openWith:"<a href=\"{filedir_"+file.directory+"}"+file.name+"\">", closeWith:"</a>", placeHolder:file.name });
+				$.markItUp({
+					key:"L",
+					name:"Link",
+					openWith:"<a href=\"{filedir_"+file.directory+"}"+file.name+"\">",
+					closeWith:"</a>",
+					placeHolder:file.name
+				});
 			}
 			else
 			{
-				$.markItUp({ replaceWith:"<img src=\"{filedir_"+file.directory+"}"+file.name+"\" alt=\"[![Alternative text]!]\" "+file.dimensions+"/>" } );
+				replace = EE.filebrowser.image_tag.replace(/src="[^"]*"/, '');
+				replace = replace.replace('<img', '<img src="{filedir_'+file.directory+'}'+file.name+'"');
+				replace = replace.replace(/\/?>$/, file.dimensions+' />');
+				
+				$.markItUp({
+					replaceWith: replace
+				});
 			}
 		}
 		else
 		{
-			$("#"+window.file_manager_context).val("{filedir_"+file.directory+"}"+file.name);
+			textarea.val("{filedir_"+file.directory+"}"+file.name);
 		}
 
 		$.ee_filebrowser.reset(); // restores everything to "default" state - also needed below for file fields
@@ -939,6 +935,28 @@ $(document).ready(function() {
 			$("input.ping_toggle").each(function() {
 				this.checked = true;
 			});
+		}
+	);
+	
+	
+	$(".markItUp ul").append("<li class=\"btn_plus\"><a title=\""+EE.lang.add_new_html_button+"\" href=\""+EE.BASE+"&C=myaccount&M=html_buttons&id="+EE.user_id+"\">+</a></li>");
+	
+	$(".btn_plus a").click(function(){
+		return confirm(EE.lang.confirm_exit, "");
+	});
+
+	// inject the collapse button into the formatting buttons list
+	$(".markItUpHeader ul").prepend("<li class=\"close_formatting_buttons\"><a href=\"#\"><img width=\"10\" height=\"10\" src=\""+EE.THEME_URL+"images/publish_minus.gif\" alt=\"Close Formatting Buttons\"/></a></li>");
+	
+	$(".close_formatting_buttons a").toggle(
+		function() {
+			$(this).parent().parent().children(":not(.close_formatting_buttons)").hide();
+			$(this).parent().parent().css("height", "13px");
+			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_plus.png");
+		}, function () {
+			$(this).parent().parent().children().show();
+			$(this).parent().parent().css("height", "22px");
+			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_minus.gif");
 		}
 	);
 

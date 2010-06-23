@@ -792,6 +792,7 @@ class Content_publish extends Controller {
 				if (count($vars['file_list']) > 0)
 				{
 					$button_js[] = array('name' => $button->tag_name, 'key' => $button->accesskey, 'replaceWith' => '', 'className' => $button->classname);
+					$this->javascript->set_global('filebrowser.image_tag', $button->tag_open);
 				}
 			}
 			elseif(strpos($button->classname, 'markItUpSeparator') !== FALSE)
@@ -828,10 +829,14 @@ class Content_publish extends Controller {
 			$markItUp_writemode['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
 		}
 		
+		$markItUp_nobtns = $markItUp;
+		unset($markItUp_nobtns['markupSet']);
+		
 		$this->cp->add_js_script(array("
 			<script type=\"text/javascript\" charset=\"utf-8\">
 			// <![CDATA[
 			mySettings = ".$this->javascript->generate_json($markItUp, TRUE).";
+			myNobuttonSettings = ".$this->javascript->generate_json($markItUp_nobtns, TRUE).";
 			myWritemodeSettings = ".$this->javascript->generate_json($markItUp_writemode, TRUE).";
 			// ]]>
 			</script>
