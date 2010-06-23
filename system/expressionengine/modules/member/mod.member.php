@@ -3593,7 +3593,7 @@ class Member {
 				/**  parse basic fields (username, screen_name, etc.)
 				/** ----------------------------------------*/
 
-				if (isset($default_fields[$val]))
+				if (array_key_exists($key, $default_fields))
 				{
 					$this->EE->TMPL->tagdata = $this->_var_swap_single($val, $default_fields[$val], $this->EE->TMPL->tagdata);
 				}
