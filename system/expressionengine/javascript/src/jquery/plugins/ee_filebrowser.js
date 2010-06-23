@@ -182,7 +182,8 @@
 	}
 
 	$.ee_filebrowser.reset = function() {
-		$("#file_manager").scrollable().data('scrollable').begin();
+		$("#file_manager_main").data('scrollable').begin();
+		$(".vertscrollable").data('scrollable').begin();
 	}
 
 	// --------------------------------------------------------------------
