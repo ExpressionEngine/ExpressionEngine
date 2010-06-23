@@ -9912,7 +9912,7 @@ class Forum_Core extends Forum {
 			/**  Remove "ignored" words
 			/** ----------------------------------------*/
 			
-			if (isset($_POST['search_criteria']) && $_POST['search_criteria'] == 'exact' && @include_once(APPPATH.'config/stopwords'.EXT))
+			if (isset($_POST['search_criteria']) && $_POST['search_criteria'] != 'exact' && @include_once(APPPATH.'config/stopwords'.EXT))
 			{
 				foreach ($ignore as $badword)
 				{		
@@ -10022,15 +10022,15 @@ class Forum_Core extends Forum {
 		/**  Set the default preferences
 		/** ---------------------------------------*/
 	
-		$search_in	= ( ! isset($_POST['search_in']) OR ! in_array($_POST['search_in'], array('titles', 'posts', 'all'))) ? 'all' : $_POST['search_in'];
-		$criteria 	= ( ! isset($_POST['search_criteria']) OR ! in_array($_POST['search_criteria'], array('any', 'all', 'exact'))) ? 'all' : $_POST['search_criteria'];	
-		$date		= ( ! isset($_POST['date']) OR ! is_numeric($_POST['date'])) ? '0' : $_POST['date'];
-		$order_by 	= ( ! isset($_POST['order_by']) OR ! in_array($_POST['order_by'], array('date', 'title', 'most_posts', 'recent_post'))) ? 'date' : $_POST['order_by'];	
-		$date_order = ( ! isset($_POST['date_order']) OR ! in_array($_POST['date_order'], array('newer', 'older'))) ? 'newer' : $_POST['date_order'];	
-		$sort_order = ( ! isset($_POST['sort_order']) OR ! in_array($_POST['sort_order'], array('asc', 'desc'))) ? 'desc' : $_POST['sort_order'];	
-		$keywords	= ( ! isset($_POST['keywords']) OR $_POST['keywords'] == '') ? '' : $_POST['keywords'];
+		$search_in		= ( ! isset($_POST['search_in']) OR ! in_array($_POST['search_in'], array('titles', 'posts', 'all'))) ? 'all' : $_POST['search_in'];
+		$criteria 		= ( ! isset($_POST['search_criteria']) OR ! in_array($_POST['search_criteria'], array('any', 'all', 'exact'))) ? 'all' : $_POST['search_criteria'];	
+		$date			= ( ! isset($_POST['date']) OR ! is_numeric($_POST['date'])) ? '0' : $_POST['date'];
+		$order_by 		= ( ! isset($_POST['order_by']) OR ! in_array($_POST['order_by'], array('date', 'title', 'most_posts', 'recent_post'))) ? 'date' : $_POST['order_by'];	
+		$date_order 	= ( ! isset($_POST['date_order']) OR ! in_array($_POST['date_order'], array('newer', 'older'))) ? 'newer' : $_POST['date_order'];	
+		$sort_order 	= ( ! isset($_POST['sort_order']) OR ! in_array($_POST['sort_order'], array('asc', 'desc'))) ? 'desc' : $_POST['sort_order'];	
+		$keywords		= $this->keywords;
 		$keywords_like	= $this->EE->db->escape_like_str(trim($keywords));
-		$keywords	= $this->EE->db->escape_str(trim($keywords));
+		$keywords		= $this->EE->db->escape_str(trim($keywords));
 		
 		/** ---------------------------------------
 		/**  Do we have multiple search terms?
@@ -10038,6 +10038,8 @@ class Forum_Core extends Forum {
 		
 		// If so, break them up into discreet words so we can
 		// do "any" and "all" searches
+		// LIKE query can easily hog resources so eliminate dupes, and limit the number
+		// of discrete words to 32 - even Google does this for sanity
 		
 		$terms_like = array();
 		
@@ -10045,7 +10047,9 @@ class Forum_Core extends Forum {
 		{
 			if (preg_match("/\s+/", $keywords_like, $matches))
 			{
-				$terms_like = preg_split("/\s+/", $keywords_like);
+				$terms_like = preg_split("/\s+/", $keywords_like, -1, PREG_SPLIT_NO_EMPTY);
+				$terms_like = array_unique($terms_like);
+				$terms_like = array_slice($terms_like, 0, 31);
 			}
 		}
 
