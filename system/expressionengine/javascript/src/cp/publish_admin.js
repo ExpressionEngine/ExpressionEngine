@@ -212,8 +212,6 @@ $(".delete_field").toggle(
 
 _delete_tab_hide = function(the_li, tab_to_delete) {
 
-	//alert(the_li);
-
 	$(".menu_"+tab_to_delete).parent().fadeOut();	// hide the tab
 	$(the_li).fadeOut();							// remove from sidebar
 	$("#"+tab_to_delete).fadeOut();					// hide the fields
@@ -243,8 +241,6 @@ _delete_tab_show = function(tab_to_show) {
 	$(".menu_"+tab_to_show).parent().fadeIn();	// hide the tab
 	//$(the_li).fadeIn();							// remove from sidebar
 	$("#"+tab_to_show).fadeIn();					// hide the fields
-
-	alert(tab_to_show);
 	//console.log(this);
 	// If the tab is selected - move focus to the left
 		tab_focus(tab_to_show);
@@ -311,6 +307,8 @@ function delete_publish_tab()
 				_delete_tab_hide(the_li, the_id);
 			}
 	    }
+		
+		return false;
 	});
 }
 
