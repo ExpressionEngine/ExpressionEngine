@@ -750,7 +750,7 @@ class Content_files extends Controller {
 
 		$this->load->library('encrypt');
 
-		$file = $this->encrypt->decode(rawurldecode($this->input->get_post('file')), $this->session->sess_crypt_key);
+		$file = str_replace(DIRECTORY_SEPARATOR, '/',$this->encrypt->decode(rawurldecode($this->input->get_post('file')), $this->session->sess_crypt_key));
 
 		if ($file == '')
 		{
@@ -867,7 +867,7 @@ class Content_files extends Controller {
 
 		// Rebuild thumb
 		$this->filemanager->create_thumb(array(
-					'server_path'	=> substr($file, 0, strrpos($file, DIRECTORY_SEPARATOR))),
+					'server_path'	=> substr($file, 0, strrpos($file, '/'))),
 					array('name'	=> basename($file))
 			);
 

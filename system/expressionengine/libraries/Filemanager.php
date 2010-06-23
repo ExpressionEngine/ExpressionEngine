@@ -64,7 +64,7 @@ class Filemanager {
 										)
 									);
 
-		$this->EE->cp->add_to_head('<link rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=file_browser'.AMP.'theme='.$this->EE->cp->cp_theme.'" type="text/css" media="screen" />');
+		$this->EE->cp->add_to_head('<link rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=file_browser" type="text/css" media="screen" />');
 		
 		$this->EE->javascript->set_global('lang', array(
 									'resize_image'		=> $this->EE->lang->line('resize_image'),
@@ -666,7 +666,7 @@ class Filemanager {
 
 		$this->EE->load->library('encrypt');
 
-		$file = $this->EE->encrypt->decode(rawurldecode($this->EE->input->get_post('file')), $this->EE->session->sess_crypt_key);
+		$file = str_replace(DIRECTORY_SEPARATOR, '/', $this->EE->encrypt->decode(rawurldecode($this->EE->input->get_post('file')), $this->EE->session->sess_crypt_key));
 
 		if ($file == '')
 		{
@@ -732,8 +732,8 @@ class Filemanager {
 		$config['library_path'] = $this->EE->config->item('image_library_path');
 		$config['source_image'] = $file;
 
-		$path = substr($file, 0, strrpos($file, DIRECTORY_SEPARATOR)+1);
-		$filename = substr($file, strrpos($file, DIRECTORY_SEPARATOR)+1, -4); // All editable images have 3 character file extensions
+		$path = substr($file, 0, strrpos($file, '/')+1);
+		$filename = substr($file, strrpos($file, '/')+1, -4); // All editable images have 3 character file extensions
 		$file_ext = substr($file, -4); // All editable images have 3 character file extensions
 
 		$image_name_reference = $filename.$file_ext;
@@ -770,7 +770,6 @@ class Filemanager {
 
 //		$config['dynamic_output'] = TRUE;
 
-		$this->EE->load->library('image_lib', $config);
 
 		$errors = '';
 
@@ -815,6 +814,16 @@ class Filemanager {
 		$dimensions = $this->EE->image_lib->get_image_properties('', TRUE);
 		$this->EE->image_lib->clear();
 
+$d = 'path: '.$path;
+$d .= '<br>';
+$d .= 'name ref: '.$image_name_reference;
+$d .= '<br>';
+$d .= 'file: '.$file;
+$d .= '<br>';
+$d .= 'sep: '.DIRECTORY_SEPARATOR;
+
+exit($d);		
+		
 		// Rebuild thumb
 		$this->create_thumb(
 						array('server_path'	=> $path), 
