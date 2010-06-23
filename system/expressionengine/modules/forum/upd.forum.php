@@ -26,7 +26,7 @@
 
 class Forum_upd {
 
-	var $version			= '3.0.1';
+	var $version			= '3.1.0';
 	
 	function Forum_upd()
 	{
