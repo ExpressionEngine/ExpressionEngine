@@ -1202,8 +1202,10 @@ class Forum {
 		if (preg_match("/".LD."if (".implode('|', array_keys($conds)).").*?".RD.".*?".LD."\/if".RD."/s", $str))
 		{
 			$str = $this->EE->functions->prep_conditionals($str, $conds, 'y');
-
+	
 			// protect PHP tags within the conditional
+			// code block PHP tags are already protected, so we must double encode them
+			$str = str_replace(array('&lt;?', '?&gt;'), array('&amp;lt;?', '?&amp;gt;'), $str);
 			$str = str_replace(array('<?', '?>'), array('&lt;?', '?&gt;'), $str);
 
 			// convert our prepped EE conditionals to PHP
@@ -1213,8 +1215,9 @@ class Forum {
 			// Evaluate the php conditionals
 			$str = $this->parse_template_php($str);
 
-			// Bring back the old php tags
+			// Bring back the old php tags and double encoded
 			$str = str_replace(array('&lt;?', '?&gt;'), array('<?', '?>'), $str);
+			$str = str_replace(array('&amp;lt;?', '?&amp;gt;'), array('&lt;?', '?&gt;'), $str);
 		}
 	
 		if ($this->_fetch_pref('board_allow_php') == 'y' AND $this->_fetch_pref('board_php_stage') == 'o')
