@@ -1136,17 +1136,22 @@ class Forum {
 		}	
 
 		/** ----------------------------------------
-		/**  Parse the forum segments - we need $segs later
+		/**  Parse the forum segments and board prefs
 		/** ----------------------------------------*/
 
-		$segs = array(
+		$conds = array(
 			'current_request'	=> $this->current_request,
 			'current_id'		=> $this->current_id,
 			'current_page'		=> $this->current_page
 		);
 
-		// Swap the segment variables
-		$str = $this->_var_swap($str, $segs);
+		// parse certain board preferences as well
+		foreach (array('original_board_id', 'board_label', 'board_name', 'board_id', 'board_alias_id') as $pref)
+		{
+			$conds[$pref] = $this->_fetch_pref($pref);
+		}
+		
+		$str = $this->_var_swap($str, $conds);
 
 		$str = $this->_var_swap($str,
 								array(
@@ -1194,9 +1199,9 @@ class Forum {
 		/**  Evaluate the segment conditionals
 		/** ------------------------------------*/
 
-		if (preg_match("/".LD."if (".implode('|', array_keys($segs)).").*?".RD.".*?".LD."\/if".RD."/s", $str))
+		if (preg_match("/".LD."if (".implode('|', array_keys($conds)).").*?".RD.".*?".LD."\/if".RD."/s", $str))
 		{
-			$str = $this->EE->functions->prep_conditionals($str, $segs, 'y');
+			$str = $this->EE->functions->prep_conditionals($str, $conds, 'y');
 
 			// protect PHP tags within the conditional
 			$str = str_replace(array('<?', '?>'), array('&lt;?', '?&gt;'), $str);
