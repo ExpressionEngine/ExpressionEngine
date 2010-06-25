@@ -459,32 +459,14 @@ class Cp {
 	 */
 	function delete_layout_tabs($tabs = array(), $namespace = '', $channel_id = array())
 	{
-		if ( ! is_array($tabs) OR count($tabs) == 0)
-		{
-			return FALSE;
-		}
-		
-		if ($namespace != '')
-		{
-			foreach ($tabs as $key => $val)
-			{
-				foreach ($val as $field_name => $data)
-				{
-					$tabs[$key][$namespace.'__'.$field_name] = $data;
-					unset($tabs[$key][$field_name]);
-				}
-			}
-		}
-		
-		$this->EE->load->model('member_model');
-
-		return $this->EE->member_model->update_layouts($tabs, 'delete_tabs', $channel_id);
+		$this->EE->load->library('layout');
+		return $this->EE->layout->delete_layout_tabs($tabs, $namespace, $channel_id);
 	}	
 
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Add new tabs and associated fields to saved publish layouts
+	 * Deprecated Add new tabs and associated fields to saved publish layouts
 	 *
 	 * @access	public
 	 * @param	array
@@ -492,32 +474,14 @@ class Cp {
 	 */
 	function add_layout_tabs($tabs = array(), $namespace = '', $channel_id = array())
 	{
-		if ( ! is_array($tabs) OR count($tabs) == 0)
-		{
-			return FALSE;
-		}
-
-		if ($namespace != '')
-		{
-			foreach ($tabs as $key => $val)
-			{
-				foreach ($val as $field_name => $data)
-				{
-					$tabs[$key][$namespace.'__'.$field_name] = $data;
-					unset($tabs[$key][$field_name]);
-				}
-			}
-		}
-
-
-		$this->EE->load->model('member_model');
-		$this->EE->member_model->update_layouts($tabs, 'add_tabs', $channel_id);
+		$this->EE->load->library('layout');
+		$this->EE->layout->add_layout_tabs($tabs, $namespace, $channel_id);
 	}
 
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Adds new fields to the saved publish layouts, creating the default tab if required
+	 * Deprecated Adds new fields to the saved publish layouts, creating the default tab if required
 	 *
 	 * @access	public
 	 * @param	array
@@ -526,25 +490,14 @@ class Cp {
 	 */
 	function add_layout_fields($tabs = array(), $channel_id = array())
 	{
-		if ( ! is_array($channel_id))
-		{
-			$channel_id = array($channel_id);
-		}
-		
-		if ( ! is_array($tabs) OR count($tabs) == 0)
-		{
-			return FALSE;
-		}
-
-		$this->EE->load->model('member_model');
-		
-		return $this->EE->member_model->update_layouts($tabs, 'add_fields', $channel_id);
+		$this->EE->load->library('layout');
+		return $this->EE->layout->add_layout_fields($tabs, $channel_id);
 	}
 
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Deletes fields from the saved publish layouts
+	 * Deprecated Deletes fields from the saved publish layouts
 	 *
 	 * @access	public
 	 * @param	array or string
@@ -553,19 +506,8 @@ class Cp {
 	 */
 	function delete_layout_fields($tabs, $channel_id = array())
 	{
-		if ( ! is_array($channel_id))
-		{
-			$channel_id = array($channel_id);
-		}
-
-		if ( ! is_array($tabs))
-		{
-			$tabs = array($tabs);
-		}
-		
-		$this->EE->load->model('member_model');
-	
-		return $this->EE->member_model->update_layouts($tabs, 'delete_fields', $channel_id);
+		$this->EE->load->library('layout');
+		return $this->EE->layout->delete_layout_fields($tabs, $channel_id);
 	}
 
 	// --------------------------------------------------------------------

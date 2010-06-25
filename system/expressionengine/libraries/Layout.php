@@ -42,6 +42,7 @@ class Layout {
 	 * Remove Module Layout
 	 *
 	 * Removes fields created by module tabs from all layouts for all channels in all member groups
+	 * Deprecated?  Nothing calls this function
 	 *
 	 * @access	private
 	 * @param	array
@@ -49,6 +50,7 @@ class Layout {
 	 */
 	function remove_module_layout($module = '', $remove_fields = array())
 	{
+		/*
 		// No module declared or fields to remove? We're done.
 		if ($module == '' OR empty($remove_fields))
 		{
@@ -105,18 +107,10 @@ class Layout {
 				$this->EE->member_model->insert_group_layout($layout['member_group'], $layout['channel_id'], $tabs);
 			}
 		}
+		*/
 	}
 
 	// --------------------------------------------------------------------
-
-	/**
-	 * Update Layout
-	 */
-	function update_layout($edit = FALSE, $comment_date_fields = TRUE)
-	{
-// replaced by sync
-	}
-
 
 
 	function duplicate_layout($dupe_id, $channel_id)

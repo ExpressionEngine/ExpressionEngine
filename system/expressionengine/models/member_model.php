@@ -1084,6 +1084,7 @@ class Member_model extends CI_Model {
 	 * Update Layouts
 	 *
 	 * Adds a new tab and all associated fields to all existing layouts
+	 * Deprecated and I can't spot it being called anywhere
 	 *
 	 * @access	public
 	 * @param	array	Altered tabs and/or fields
@@ -1093,107 +1094,10 @@ class Member_model extends CI_Model {
 	 */
 	function update_layouts($layout_info, $action, $channel_id = array())
 	{
-		$this->db->select('layout_id, field_layout');
+		$this->load->model('layout_model');
 		
-		if (is_array($channel_id) && count($channel_id) > 0)
-		{
-			$this->db->where_in('channel_id', $channel_id);
-		}
-				
-		$query = $this->db->get('layout_publish');
-		$errors = 0;
-		
-		$valid_actions = array('add_tabs', 'delete_tabs', 'add_fields', 'delete_fields');
-
-		if (! in_array($action, $valid_actions))
-		{
-			return FALSE;
-		}
-
-		if ($query->num_rows() > 0)
-		{
-			foreach($query->result() as $row)
-			{
-				$layout = unserialize($row->field_layout);
-				
-				if ($action == 'add_tabs')
-				{
-					foreach($layout_info AS $tab => $fields)
-					{
-						if (array_key_exists($tab, $layout) !== TRUE)
-						{
-							$layout[$tab] = $fields;
-						}
-						else
-						{
-							$errors++;
-						}
-					}					
-				}
-				elseif ($action == 'add_fields')
-				{
-					foreach($layout_info AS $tab => $fields)
-					{
-						if (array_key_exists($tab, $layout) !== TRUE)
-						{
-							$layout[$tab] = $fields;
-						}
-						else
-						{
-							$layout[$tab] = $layout[$tab] + $fields;
-						}
-					}
-				}
-				elseif ($action == 'delete_tabs')
-				{
-					foreach($layout_info AS $tab => $fields)
-					{					
-						$k_field = (is_array($fields)) ? key($fields) : $fields;
-						
-						if ($action == 'delete_tabs' && array_key_exists($tab, $layout) == TRUE)
-						{
-							unset($layout[$tab]);
-						}
-
-						foreach ($layout AS $existing_tab => $existing_field)
-						{
-							if (isset($layout[$existing_tab][$k_field]))
-							{
-								unset($layout[$existing_tab][$k_field]);
-							}
-						}
-					}					
-				}
-				elseif ($action == 'delete_fields')
-				{
-
-					foreach($layout_info AS $field_name)
-					{
-
-						foreach ($layout AS $existing_tab => $existing_field)
-						{
-
-							if (isset($layout[$existing_tab][$field_name]))
-							{
-								unset($layout[$existing_tab][$field_name]);
-							}
-						}
-					}
-					
-				}
-
-				$data = array('field_layout' => serialize($layout));
-				$this->db->where('layout_id', $row->layout_id);
-				$this->db->update('layout_publish', $data); 
-			}
-		}
-
-		if ($errors > 0)
-		{
-			return FALSE;
-		}
-
-		return TRUE;
+		$response = $this->layout_model->update_layouts($layout_info, $action, $channel_id);
+		return $response;
 	}
 
 
@@ -1244,10 +1148,8 @@ class Member_model extends CI_Model {
 		{
 			return FALSE;
 		}
-		else
-		{
-			return TRUE;
-		}
+
+		return TRUE;
 	}
 
 	/**
@@ -1310,7 +1212,7 @@ class Member_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get Group Layout
+	 * Get All Group Layouts
 	 *
 	 * Gets layout information for member groups for the publish page
 	 *
