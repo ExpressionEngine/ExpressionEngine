@@ -1301,8 +1301,7 @@ class Simple_commerce_mcp {
 
 		foreach ($purchase_id as $id)
 		{
-
-			$this->EE->form_validation->set_rules("txn_id[{$id}]", 'lang:txn_id', 'trim|required|numeric');
+			$this->EE->form_validation->set_rules("txn_id[{$id}]", 'lang:txn_id', 'trim|required');
 			$this->EE->form_validation->set_rules("item_id[{$id}]", 'lang:item_id', 'trim|required|numeric');
 			$this->EE->form_validation->set_rules("screen_name[{$id}]", 'lang:screen_name', "trim|required|callback__valid_member[{$id}]");
 			$this->EE->form_validation->set_rules("purchase_date[{$id}]", 'lang:purchase_date', "trim|required|callback__valid_date[{$id}]");
