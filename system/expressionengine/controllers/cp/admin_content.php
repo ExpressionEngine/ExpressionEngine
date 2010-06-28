@@ -4409,8 +4409,22 @@ class Admin_content extends Controller {
 
 			// Do we need to alter the table in order to deal with a new data type?
 
-			$this->db->select('field_type');
+			$this->db->select('field_type, field_content_type');
 			$query = $this->db->get_where('channel_fields', array('field_id' => $native_settings['field_id']));
+
+			$this->db->select('field_id_'.$native_settings['field_id']);
+			$this->db->limit(1);
+			$q = $this->db->get('channel_data');
+
+			$d_type = $q->field_data('channel_data');
+
+			if ($query->row('field_content_type') != $d_type[0]->type)
+			{
+				$this->api_channel_fields->set_datatype(
+									$native_settings['field_id'], 
+									$this->_get_ft_post_data($field_type, 'field_content_type')
+				);				
+			}
 
 			if ($query->row('field_type') != $field_type)
 			{
@@ -4436,7 +4450,7 @@ class Admin_content extends Controller {
 				{
 					$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN `field_dt_".$this->db->escape_str($native_settings['field_id'])."`");
 				}
-
+				
 				switch($field_type)
 				{
 					case 'date'	:
@@ -4460,8 +4474,6 @@ class Admin_content extends Controller {
 			$this->db->where('field_id', $native_settings['field_id']);
 			$this->db->where('group_id', $group_id);
 			$this->db->update('channel_fields', $native_settings);
-			
-
 
 			// Update saved layouts if necessary
 			
@@ -4477,7 +4489,7 @@ class Admin_content extends Controller {
 			
 			// Add to any custom layouts
 			
-			//echo '<pre>'; print_r($_POST); print_r($native_settings); print_r($ft_settings); exit;
+			// echo '<pre>'; print_r($_POST); print_r($native_settings); print_r($ft_settings); exit;
 
 			$query = $this->field_model->get_assigned_channels($group_id);
 			
@@ -4529,7 +4541,19 @@ class Admin_content extends Controller {
 			}
 			else
 			{
-				$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$insert_id." text");
+				switch ($this->_get_ft_post_data($field_type, 'field_content_type'))
+				{
+					case 'numeric':
+						$type = 'FLOAT DEFAULT 0';
+						break;
+					case 'integer':
+						$type = 'INT DEFAULT 0';
+						break;
+					default:
+						$type = 'text';
+				}
+				
+				$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$insert_id.' '.$type);
 				$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_ft_".$insert_id." tinytext NULL");
 				$this->db->query("UPDATE exp_channel_data SET field_ft_".$insert_id." = '".$this->db->escape_str($native_settings['field_fmt'])."'");
 			}

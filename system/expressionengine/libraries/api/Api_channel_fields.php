@@ -353,6 +353,36 @@ class Api_channel_fields extends Api {
 		return $res;
 	}
 
+	// --------------------------------------------------------------------
+
+	function set_datatype($field_id, $c_type)
+	{		
+		$this->EE->load->dbforge();
+		
+		$fields = array(
+				'field_id_'.$field_id => array(
+						'name'	=> 'field_id_'.$field_id
+					)
+			);
+	
+		switch($c_type)
+		{
+			case 'numeric':
+				$fields['field_id_'.$field_id]['type'] = 'FLOAT';
+				$fields['field_id_'.$field_id]['default'] = 0;
+				break;
+			case 'integer':
+				$fields['field_id_'.$field_id]['type'] = 'INT';
+				$fields['field_id_'.$field_id]['default'] = 0;
+				break;
+			default:
+				$fields['field_id_'.$field_id]['type'] = 'text';
+				$fields['field_id_'.$field_id]['null'] = TRUE;
+		}
+	
+		$this->EE->dbforge->modify_column('channel_data', $fields);		
+	}
+
 	
 	// --------------------------------------------------------------------
 	

@@ -264,11 +264,28 @@ class EE_Fieldtype {
 	{
 		$suf = $prefix;
 		$prefix = ($prefix) ? $prefix.'_' : '';
+
+		$extra = '';
+
+		if ($data['field_id'] != '')
+		{
+			$extra .= '<div class="notice update_content_type js_hide">';
+			$extra .= '<p>'.sprintf(
+								lang('content_type_changed'), 
+								$data['field_content_'.$suf]).'</p></div>';
+		}
 		
 		$this->EE->table->add_row(
 			lang('field_content_'.$suf, 'field_content_'.$suf),
-			form_dropdown($prefix.'field_content_type', $data['field_content_options_'.$suf], $data['field_content_'.$suf], 'id="'.$prefix.'field_content_type"')
-		);				
+			form_dropdown($prefix.'field_content_type', $data['field_content_options_'.$suf], $data['field_content_'.$suf], 'id="'.$prefix.'field_content_type"').$extra
+		);	
+		
+		$this->EE->javascript->output('
+		$("#'.$prefix.'field_content_type").change(function() {
+			$(this).nextAll(".update_content_type").show();
+		});
+		');
+					
 	}
 
 	// --------------------------------------------------------------------
@@ -354,6 +371,7 @@ class EE_Fieldtype {
 				lang('no', $data_key.'_n')
 		);
 	}
+	
 }
 // END EE_Fieldtype class
 

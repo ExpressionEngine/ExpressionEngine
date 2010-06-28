@@ -1133,6 +1133,9 @@ $lang = array(
 'show_pages_cluster' =>
 'Display Pages Submission Fields',
 
+'content_type_changed' =>
+'Field Content Type will be changed from %s.  Updating the fieldtype options may result in data loss.  Proceed with caution.',
+
 
 //----------------------------
 // Channel Entries API

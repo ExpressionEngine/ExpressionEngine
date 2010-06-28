@@ -55,12 +55,12 @@ class Text_ft extends EE_Fieldtype {
 		{
 			$this->field_content_types = $this->EE->field_model->get_field_content_types();
 		}
-		
+
 		if ( ! isset($this->settings['field_content_type']))
 		{
 			return TRUE;
 		}
-		
+
 		$content_type = $this->settings['field_content_type'];
 		
 		if (in_array($content_type, $this->field_content_types['text']) && $content_type != 'any')
@@ -127,7 +127,7 @@ class Text_ft extends EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	function save_settings($data)
-	{
+	{		
 		return array(
 			'field_maxl'			=> $this->EE->input->post('field_maxl'),
 			'field_content_text'	=> $this->EE->input->post('field_content_text')
