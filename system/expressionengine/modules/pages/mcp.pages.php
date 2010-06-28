@@ -218,7 +218,8 @@ class Pages_mcp {
 									  'default_channel'		=>
 									   array('type' 		=> 'other',
 									   		 'label'		=> $this->EE->lang->line('default_for_page_creation'),
-									   		 'value'		=> ''));
+									   		 'value'		=> '')								
+									);
 
 		foreach($wquery->result_array() as $row)
 		{
@@ -244,6 +245,7 @@ class Pages_mcp {
 			$vars['configuration_fields'][$field_name]['field_name'] = $field_name;
 			if ($field_data['type'] == 'channel')
 			{
+				$vars['configuration_fields'][$field_name]['options'][0] = $this->EE->lang->line('no_default');
 				foreach ($tquery->result_array() as $template)
 				{
 					$vars['configuration_fields'][$field_name]['options'][$template['template_id']] = $template['group_name'].'/'.$template['template_name'];
@@ -287,7 +289,7 @@ class Pages_mcp {
         	{
         		$data[$key] = $value;
         	}
-        	elseif (is_numeric($value) && ($key == 'default_channel' OR substr($key, 0, strlen('template_channel_')) == 'template_channel_'))
+        	elseif (is_numeric($value) && $value != '0' && ($key == 'default_channel' OR substr($key, 0, strlen('template_channel_')) == 'template_channel_'))
 			{
 				$data[$key] = $value;
 			}

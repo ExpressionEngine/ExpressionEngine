@@ -150,92 +150,6 @@ class Content_publish extends Controller {
 	 * @access	public
 	 * @return	mixed
 	 */
-	function tab_required_check()
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->cp->allowed_group('can_admin_channels'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$this->load->library('api');
-		$this->api->instantiate(array('channel_fields'));
-		$this->output->enable_profiler(FALSE);
-		$error = array();
-
-		$member_group = $this->input->post('member_group');
-		$channel_id = $this->input->post('channel_id');
-		$json_tab_layout = $this->input->post('json_tab_layout');
-
-		if ( ! function_exists('json_decode'))
-		{
-			$this->load->library('Services_json');
-		}
-
-		$layout_info = json_decode($json_tab_layout, TRUE);
-		
-		// Check for required fields being hidden
-		$required = $this->api_channel_fields->get_required_fields($channel_id);
-		
-		if (count($required) > 0)
-		{
-			foreach($layout_info as $tab => $field)
-			{
-				foreach ($field as $name => $info)
-				{
-					if (in_array($name, $required) && $info['visible'] === FALSE)
-					{
-						$error[] = $name;
-					}
-				}
-			}
-			
-			if (count($error) > 0)
-			{
-				
-				$resp['messageType'] = 'failure';
-				$resp['message'] = $this->lang->line('layout_failure_required').implode(', ', $error);
-
-				$this->output->send_ajax_response($resp); exit;	
-				
-			}
-		}
-		
-		// make this into an array, insert_group_layout will serialize and save
-		
-		$layout_info = array_map(array($this, '_sort_publish_fields'), $layout_info);
-		
-		if ($this->member_model->insert_group_layout($member_group, $channel_id, $layout_info))
-		{
-			$resp['messageType'] = 'success';
-			$resp['message'] = $this->lang->line('layout_success');
-
-			$this->output->send_ajax_response($resp); exit;	
-
-		}
-		else
-		{
-			$resp['messageType'] = 'failure';
-			$resp['message'] = $this->lang->line('layout_failure');
-
-			$this->output->send_ajax_response($resp); exit;	
-			
-		}
-	}
-
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Save publish layout
-	 *
-	 * @access	public
-	 * @return	mixed
-	 */
 	function save_layout()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
@@ -296,6 +210,10 @@ class Content_publish extends Controller {
 				{
 					$valid_name_error[] = $name;
 				}
+				elseif (trim($name) == '')
+				{
+					$valid_name_error[] = 'missing_name';
+				}
 			}
 			
 			$clean_layout[strtolower($tab)] = $layout_info[$tab];	
@@ -321,9 +239,7 @@ class Content_publish extends Controller {
 			$this->output->send_ajax_response($resp); exit;	
 		}
 
-		
 		// make this into an array, insert_group_layout will serialize and save
-		
 		
 		$layout_info = array_map(array($this, '_sort_publish_fields'), $clean_layout);
 		
@@ -1686,7 +1602,7 @@ class Content_publish extends Controller {
 				}
 				elseif (in_array($field, array('pages_uri', 'pages_template_id')))
 				{
-					if ($pages = $this->config->item('site_pages') !== FALSE)
+					if ($pages = isset($this->installed_modules['pages']))
 					{
 						$vars['publish_tabs']['pages'][$field] = $field_display;
 					}
@@ -1700,7 +1616,6 @@ class Content_publish extends Controller {
 							$vars['publish_tabs'][$m_tab][$field] = $field_display;
 							continue 2;
 						}
-					
 					}
 					
 					$vars['publish_tabs']['publish'][$field] = $field_display;

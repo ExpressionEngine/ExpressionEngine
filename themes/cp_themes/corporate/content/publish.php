@@ -62,7 +62,7 @@ if ($EE_view_disable !== TRUE)
 				<ul id="publish_tab_list">
 					<?php foreach($publish_tabs as $tab => $field_list):?>
 						<li id="remove_tab_<?=url_title($tab, 'underscore', TRUE)?>">
-							<a href="#" title="menu_<?=url_title($tab, 'underscore', TRUE)?>" class="menu_focus"><?=lang($tab)?></a> 
+							<a href="#" title="menu_<?=url_title($tab, 'underscore', TRUE)?>" class="menu_focus"><?=ucfirst(lang($tab))?></a> 
 							<a href="#<?=url_title($tab, 'underscore', TRUE)?>" class="delete delete_tab"><img src="<?=$cp_theme_url?>images/content_custom_tab_delete.png" alt="<?=lang('delete')?>" width="19" height="18" /></a>
 						</li>
 					<?php endforeach;?>

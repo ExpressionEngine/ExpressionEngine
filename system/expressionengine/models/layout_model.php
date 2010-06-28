@@ -52,13 +52,13 @@ class Layout_model extends CI_Model {
 		
 		$this->db->select('layout_id, field_layout');
 		
-		if (is_array($channel_id) && count($channel_id) > 0)
+		if (count($channel_id) > 0)
 		{
 			$this->db->where_in('channel_id', $channel_id);
 		}
 				
 		$query = $this->db->get('layout_publish');
-		$errors = 0;
+		$errors = array();
 		
 		$valid_actions = array('add_tabs', 'delete_tabs', 'add_fields', 'delete_fields');
 
@@ -77,13 +77,21 @@ class Layout_model extends CI_Model {
 				{
 					foreach($layout_info AS $tab => $fields)
 					{
+						// Check for proper field name
+						
+						$check_name = (is_array($fields)) ? key($fields) : $fields;
+						if ($this->clean_field($check_name) !== TRUE)
+						{
+							$errors[] = $check_name;
+							continue;
+						}
+						
 						if (array_key_exists($tab, $layout) !== TRUE)
 						{
 							$layout[$tab] = $fields;
 						}
 						else
 						{
-							//$errors++;
 							$layout[$tab] = $layout[$tab] + $fields;
 						}
 					}					
@@ -92,6 +100,13 @@ class Layout_model extends CI_Model {
 				{
 					foreach($layout_info AS $tab => $fields)
 					{
+						$check_name = (is_array($fields)) ? key($fields) : $fields;
+						if ($this->clean_field($check_name) !== TRUE)
+						{
+							$errors[] = $check_name;
+							continue;
+						}
+
 						if (array_key_exists($tab, $layout) !== TRUE)
 						{
 							$layout[$tab] = $fields;
@@ -104,6 +119,26 @@ class Layout_model extends CI_Model {
 				}
 				elseif ($action == 'delete_tabs')
 				{
+					foreach($layout_info AS $tab => $fields)
+					{					
+						$k_field = (is_array($fields)) ? key($fields) : $fields;
+						
+						if ($action == 'delete_tabs' && array_key_exists($tab, $layout) == TRUE)
+						{
+							unset($layout[$tab]);
+						}
+
+						foreach ($layout AS $existing_tab => $existing_field)
+						{
+							if (isset($layout[$existing_tab][$k_field]))
+							{
+								unset($layout[$existing_tab][$k_field]);
+							}
+						}
+					}					
+
+					// Replaced below w/code originally in member model				
+					/*
 					foreach($layout_info AS $tab => $fields)
 					{					
 						if (array_key_exists($tab, $layout))
@@ -122,6 +157,7 @@ class Layout_model extends CI_Model {
 							}
 						}
 					}
+					*/
 				}
 				elseif ($action == 'delete_fields')
 				{
@@ -148,9 +184,24 @@ class Layout_model extends CI_Model {
 
 		if ($errors > 0)
 		{
-			return FALSE;
+			return $errors;
 		}
 
+		return TRUE;
+	}
+	
+	function clean_field($name)
+	{
+		// Check for hinkiness in field names
+		if (preg_match('/[^a-z0-9\_\-]/i', $name))
+		{
+			return FALSE;
+		}
+		elseif (trim($name) == '')
+		{
+			return FALSE;
+		}
+		
 		return TRUE;
 	}
 	
@@ -230,9 +281,7 @@ class Layout_model extends CI_Model {
 				$this->db->where('layout_id', $row->layout_id);
 				$this->db->update('layout_publish', $data); 
 			}
-			
 		}
-		
 	}
 }
 
