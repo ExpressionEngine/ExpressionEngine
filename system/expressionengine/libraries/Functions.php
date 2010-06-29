@@ -242,6 +242,7 @@ class EE_Functions {
 			else
 			{
 				$str = preg_replace("/\{(\/){0,1}exp:(.+?)\}/", "&#123;\\1exp:\\2&#125;", $str);
+				$str = str_replace(array('{exp:', '{/exp'), array('&#123;exp:', '&#123;\exp'), $str);				
 				$str = preg_replace("/\{embed=(.+?)\}/", "&#123;embed=\\1&#125;", $str);
 				$str = preg_replace("/\{path:(.+?)\}/", "&#123;path:\\1&#125;", $str);
 				$str = preg_replace("/\{redirect=(.+?)\}/", "&#123;redirect=\\1&#125;", $str);
