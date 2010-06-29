@@ -1,11 +1,6 @@
 $(document).ready(function() {
 	$("#myaccountHtmlButtonsLink").show(); // JS only feature, its hidden by default
 
-	$(".mainTable").tablesorter({
-		headers: {0: {sorter: false}},
-		widgets: ["zebra"]
-	});
-
 	$(".mainTable .tag_order input").hide();
 
 	$(".mainTable tbody").sortable(

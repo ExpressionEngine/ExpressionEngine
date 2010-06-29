@@ -1000,14 +1000,14 @@ class MyAccount extends Controller {
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['cp_messages'] = array($message);
-
+		
 		$this->cp->add_js_script(array('file' => 'cp/account_html_buttons'));
 		$this->javascript->compile();
 
 		$this->cp->add_to_head('<style type="text/css">.cp_button{display:none;}</style>');
 
 		// load the systems's predefined buttons
-		include(APPPATH.'config/html_buttons.php');
+		include_once(APPPATH.'config/html_buttons.php');
 		$vars['predefined_buttons'] = $predefined_buttons;
 
 		// any predefined buttons?
@@ -1038,12 +1038,23 @@ class MyAccount extends Controller {
 			$predefined_buttons[$button] = array(
 						'member_id'		=> $this->id,
 						'site_id'		=> $this->config->item('site_id'),
+						'tag_name'		=> stripslashes($predefined_buttons[$button]['tag_name']),
+						'tag_open'		=> stripslashes($predefined_buttons[$button]['tag_open']),
+						'tag_close'		=> stripslashes($predefined_buttons[$button]['tag_close']),
+						'accesskey'		=> stripslashes($predefined_buttons[$button]['accesskey']),
 						'tag_order'		=> $button_count++,
 						'tag_row'		=> 1,
-						'tag_open'		=> stripslashes($predefined_buttons[$button]['tag_open'])
+						'classname'		=> stripslashes($predefined_buttons[$button]['classname']),
 				);
-
+			
 			$this->admin_model->update_html_buttons($this->id, array($predefined_buttons[$button]), FALSE);
+
+			$id = ($this->input->get('id')) ? AMP.'id='.$this->input->get('id') : '';
+			
+			// Redirect to remove the button name from the query string.  Reloading the page can lead to
+			// adding buttons you don't want, and that's just ugliness.  
+			$this->session->set_flashdata('message_success', $this->lang->line('html_buttons_updated'));
+			$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=html_buttons'.$id);
 		}
 		elseif (is_numeric($this->id) AND $this->id != 0 AND $this->input->post('button_submit') != '')
 		{

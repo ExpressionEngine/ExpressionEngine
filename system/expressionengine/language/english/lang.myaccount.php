@@ -575,6 +575,8 @@ $lang = array(
 'pmachine_news_feed' =>
 'EllisLab News Feed',
 
+'html_buttons_updated' =>
+'HTML Buttons Updated',
 
 ''=>''
 );
