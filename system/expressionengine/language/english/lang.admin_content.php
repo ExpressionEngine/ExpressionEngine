@@ -1136,6 +1136,8 @@ $lang = array(
 'content_type_changed' =>
 'Field Content Type will be changed from %s.  Updating the fieldtype options may result in data loss.  Proceed with caution.',
 
+'field_name_too_lrg' =>
+'Your field name exceeds the maximum length and has been truncated.  Please review.',
 
 //----------------------------
 // Channel Entries API

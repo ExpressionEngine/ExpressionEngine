@@ -3916,7 +3916,6 @@ class Admin_content extends Controller {
 			widgets: ["zebra"]
 		}');
 
-
 		$field_query = $this->db->query("SELECT f.* FROM exp_channel_fields AS f, exp_field_groups AS g
 						WHERE f.group_id = g.group_id
 						AND g.site_id = '".$this->db->escape_str($this->config->item('site_id'))."'
@@ -4258,15 +4257,16 @@ class Admin_content extends Controller {
 		}
 
 		// Is the field name taken?
-
-		$sql = "SELECT COUNT(*) AS count FROM exp_channel_fields WHERE site_id = '".$this->db->escape_str($this->config->item('site_id'))."' AND field_name = '".$this->db->escape_str($_POST['field_name'])."'";
+		$this->db->select('COUNT(*) as count');
+		$this->db->where('site_id', $this->config->item('site_id'));
+		$this->db->where('field_name', $this->input->post('field_name'));
 
 		if ($edit == TRUE)
 		{
-			$sql .= " AND group_id != '$group_id'";
+			$this->db->where('group_id !=', $group_id);
 		}
 
-		$query = $this->db->query($sql);
+		$query = $this->db->get('channel_fields');
 
 		if ($query->row('count')  > 0)
 		{
@@ -4600,7 +4600,17 @@ class Admin_content extends Controller {
 
 		$this->functions->clear_caching('all', '', TRUE);
 
-		$this->session->set_flashdata('message_success', $cp_message);
+		$strlen = strlen($this->input->post('field_name'));
+
+		if ($strlen > 32)
+		{
+			$this->session->set_flashdata('message_failure', $this->lang->line('field_name_too_lrg'));
+		}
+		else
+		{
+			$this->session->set_flashdata('message_success', $cp_message);
+		}
+
 		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=field_management'.AMP.'group_id='.$group_id);
 
 	}
@@ -5699,14 +5709,14 @@ class Admin_content extends Controller {
 
 		if ($vars['upload_groups']->num_rows() > 0)
 		{
-			$sql = "SELECT member_group FROM exp_upload_no_access ";
-
+			$this->db->select('member_group');
+			
 			if ($id != '')
 			{
-				$sql .= "WHERE upload_id = '$id'";
+				$this->db->where('upload_id', $id);
 			}
 
-			$result = $this->db->query($sql);
+			$result = $this->db->get('upload_no_access');
 
 			if ($result->num_rows() != 0)
 			{
