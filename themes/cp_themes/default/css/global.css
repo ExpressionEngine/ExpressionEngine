@@ -1248,7 +1248,7 @@ table.mainTable td:last-child {
 /* html buttons specific */
 .tablesize{display: block;height:32px!important;}
 #custom_html_button {width:450px; clear: left; padding-top: 15px;}
-#custom_html_button label {display: block; float:left;width: 40%;margin-top:5px;}
+/*#custom_html_button label {display: block; float:left;width: 40%;margin-top:5px;}*/
 #custom_html_button p {padding-bottom: 5px;}
 
 #menu {
