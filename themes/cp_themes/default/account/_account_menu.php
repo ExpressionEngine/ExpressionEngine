@@ -14,13 +14,13 @@
 			<?php if ($allow_localization):?><li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=localization'.AMP.'id='.$id?>"><?=lang('localization')?></a></li><?php endif?>
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=edit_preferences'.AMP.'id='.$id?>"><?=lang('edit_preferences')?></a></li>
 		</ul>
-	</a></li>
+	</li>
 	<li><span class="top_menu"><?=lang('utilities')?></span>
 		<ul>
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=subscriptions'.AMP.'id='.$id?>"><?=lang('edit_subscriptions')?></a></li>
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=ignore_list'.AMP.'id='.$id?>"><?=lang('ignore_list')?></a></li>
 		</ul>
-	</a></li>
+	</li>
 	<?php if (FALSE AND count($private_messaging_menu) > 0):?>
 	<li><span class="top_menu"><?=lang('private_messages')?></span>
 		<ul>
@@ -33,7 +33,7 @@
 				<?php endforeach;?>
 			<?php endforeach;?>
 		</ul>
-	</a></li>
+	</li>
 	<?php endif;?>
 	<li><span class="top_menu"><?=lang('customize_cp')?></span>
 		<ul>
@@ -42,14 +42,14 @@
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=quicktab_manager'.AMP.'id='.$id?>"><?=lang('tab_manager')?></a></li>
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=quicklinks'.AMP.'id='.$id?>"><?=lang('quicklinks_manager')?></a></li>
 		</ul>
-	</a></li>
+	</li>
 	<li><span class="top_menu"><?=lang('channel_preferences')?></span>
 		<ul>
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=ping_servers'.AMP.'id='.$id?>"><?=lang('your_ping_servers')?></a></li>
 			<li id="myaccountHtmlButtonsLink" style="display: none;"><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=html_buttons'.AMP.'id='.$id?>"><?=lang('your_html_buttons')?></a></li>
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=bookmarklet'.AMP.'id='.$id?>"><?=lang('bookmarklet')?></a></li>
 		</ul>
-	</a></li>
+	</li>
 
 	<?php if ($can_admin_members):?>
 	<li><span class="top_menu"><?=lang('administrative_options')?></span>
@@ -60,6 +60,6 @@
 			<?php if ($login_as_member):?><li><a href="<?=BASE.AMP.'C=members'.AMP.'M=login_as_member'.AMP.'mid='.$id?>"><?=lang('login_as_member')?></a></li><?php endif?>
 			<?php if ($can_delete_members):?><li><a href="<?=BASE.AMP.'C=members'.AMP.'M=member_delete_confirm'.AMP.'mid='.$id?>"><?=lang('delete')?></a></li><?php endif?>
 		</ul>
-	</a></li>
+	</li>
 	<?php endif;?>
 </ul>
