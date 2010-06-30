@@ -961,9 +961,15 @@ class Content_publish extends Controller {
 
 			}
 		}
-
-		$edit_categories_link = $links;
-
+		
+		// One more check to see if the user can edit categories.  
+		// If so, we give them the link on the publish page.
+		// Peek at fetch_allowed_category_groups, and it will all make sense.
+		if ($this->session->userdata('can_edit_categories') == 'y')
+		{
+			$edit_categories_link = $links;			
+		}
+	
 		$this->_define_category_fields($vars['categories'], $edit_categories_link, $cat_group);
 
 		// ----------------------------------------------
