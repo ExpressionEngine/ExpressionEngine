@@ -71,6 +71,7 @@ class Channel_standalone extends Channel {
 		$this->EE->lang->loadfile('channel');
 		$this->EE->lang->loadfile('content');
 		$this->EE->load->model('field_model');
+		$this->EE->load->model('channel_model');
 
 		// Ya gotta be logged-in billy bob...
 		if ($this->EE->session->userdata('member_id') == 0)
@@ -149,7 +150,7 @@ class Channel_standalone extends Channel {
 		if ( ! $this->EE->input->post('preview'))
 		{
 			$this->EE->load->library('api');
-			$this->EE->api->instantiate(array('channel_entries', 'channel_categories'));
+			$this->EE->api->instantiate(array('channel_entries', 'channel_categories', 'channel_fields'));
 			
 			unset($_POST['hidden_pings']);
 			unset($_POST['status_id']);
@@ -166,6 +167,46 @@ class Channel_standalone extends Channel {
 			}
 
 			$data = $_POST;
+			
+			
+			
+			// Rudimentary handling of custom fields
+			
+			$field_query = $this->EE->channel_model->get_channel_fields($field_group);
+			
+			$dst_enabled = $this->EE->session->userdata('daylight_savings');
+			$dst_enabled = ( ! isset($_POST['dst_enabled'])) ? 'n' :  $dst_enabled;
+			
+			foreach ($field_query->result_array() as $row)
+			{
+				$field_data = '';
+				$field_dt = '';
+				$field_fmt	= $row['field_fmt'];
+
+
+				// Settings that need to be prepped			
+				$settings = array(
+					'field_instructions'	=> trim($row['field_instructions']),
+					'field_text_direction'	=> ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
+					'field_fmt'				=> $field_fmt,
+					'field_dt'				=> $field_dt,
+					'field_data'			=> $field_data,
+					'field_name'			=> 'field_id_'.$row['field_id'],
+					'dst_enabled'			=> $dst_enabled
+				);
+
+				$ft_settings = array();
+
+				if (isset($row['field_settings']) && strlen($row['field_settings']))
+				{
+					$ft_settings = unserialize(base64_decode($row['field_settings']));
+				}
+
+				$settings = array_merge($row, $settings, $ft_settings);
+
+				$this->EE->api_channel_fields->set_settings($row['field_id'], $settings);
+			}
+			
 			
 			$extra = array(
 				'url_title'		=> '',
