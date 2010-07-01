@@ -66,19 +66,20 @@ class Date_ft extends EE_Fieldtype {
 		$special = array('entry_date', 'expiration_date', 'comment_expiration_date');
 
 		$date_field = $this->field_name;
-		$date_local = 'field_dt_'.$this->field_id;
+		$date_local = 'field_offset_'.$this->field_id;
 
 		$date = $this->EE->localize->set_localized_time();
 		$custom_date = '';
 		
 		$localize = FALSE;
 	
-		if (isset($_POST[$date_field]))	// Validation failed or autosave - human readable data
+		if (isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))	// Validation failed - autosave is numeric
 		{
 			if ($_POST[$date_field])
 			{
-				$date = $this->EE->localize->set_localized_time($_POST[$date_field]);
-				$custom_date = $this->EE->localize->set_human_time($date, FALSE);
+				// human readable data - convert cal date back to gmt
+				$custom_date = $_POST[$date_field];
+				$date = $this->EE->localize->convert_human_date_to_gmt($custom_date);
 			}
 		}
 		elseif ( ! $data && isset($this->settings['default_offset']))	// Initial load - no data and showing a field (no offset == blank)
@@ -88,8 +89,20 @@ class Date_ft extends EE_Fieldtype {
 		}
 		elseif ($data)	// Everything else
 		{
+			if (isset($this->settings['field_dt']))
+			{
+				$localize = TRUE;
+
+				if ($this->settings['field_dt'] != '')
+				{
+					$data = $this->EE->localize->offset_entry_dst($data, $this->settings['dst_enabled']);
+					$data = $this->EE->localize->simpl_offset($data, $this->settings['field_dt']);
+					$localize = FALSE;
+				}
+			}
+			
 			$date = $this->EE->localize->set_localized_time($data);
-			$custom_date = $this->EE->localize->set_human_time($data);
+			$custom_date = $this->EE->localize->set_human_time($data, $localize);
 		}
 
 		$cal_date = $date * 1000;
@@ -107,8 +120,6 @@ class Date_ft extends EE_Fieldtype {
 		
 		if ( ! in_array($this->field_name, $special))
 		{
-			$localize = FALSE;
-			
 			$localized = ( ! isset($_POST[$date_local])) ? (($localize == FALSE) ? 'n' : 'y') : $_POST[$date_local];
 
 			$localized_opts	= array(
@@ -122,7 +133,7 @@ class Date_ft extends EE_Fieldtype {
 
 		return $r;
 	}
-
+	
 	// --------------------------------------------------------------------
 	
 	function pre_process($data)

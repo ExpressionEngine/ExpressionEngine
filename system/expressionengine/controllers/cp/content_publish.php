@@ -822,7 +822,7 @@ class Content_publish extends Controller {
 		if ($this->config->item('honor_entry_dst') == 'y')
 		{
 			$vars['show_dst'] = TRUE;
-			$vars['dst_enabled'] = ( ! isset($_POST['dst_enabled'])) ? 'n' :  $dst_enabled;
+			$dst_enabled = ( ! isset($_POST['dst_enabled'])) ? 'n' :  $dst_enabled;
 
 			$vars['dst_data'] = array(
 									  'name'		=> 'dst_enabled',
@@ -1374,11 +1374,13 @@ class Content_publish extends Controller {
 		{
 			$field_data = '';
 			$field_fmt = '';
+			$field_dt = '';
 			
 			if ($which == 'edit')
 			{
 				$field_data = ( ! isset( $resrow['field_id_'.$row['field_id']])) ? '' : $resrow['field_id_'.$row['field_id']];
 				$field_fmt	= ( ! isset( $resrow['field_ft_'.$row['field_id']] )) ? $row['field_fmt'] : $resrow['field_ft_'.$row['field_id']];
+				$field_dt	= ( ! isset( $resrow['field_dt_'.$row['field_id']] )) ? 'y' : $resrow['field_dt_'.$row['field_id']];
 
 			}
 			elseif ($field_data = $this->input->get('field_id_'.$row['field_id'])) // Is this coming from a bookmarklet?
@@ -1396,8 +1398,10 @@ class Content_publish extends Controller {
 				'field_instructions'	=> trim($row['field_instructions']),
 				'field_text_direction'	=> ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
 				'field_fmt'				=> $field_fmt,
+				'field_dt'				=> $field_dt,
 				'field_data'			=> $field_data,
 				'field_name'			=> 'field_id_'.$row['field_id'],
+				'dst_enabled'			=> $dst_enabled
 			);
 			
 			$ft_settings = array();
@@ -3002,28 +3006,6 @@ class Content_publish extends Controller {
 				}
 			}
 		}
-	}
-	
-	function _define_default_date_field($str_key, $value)
-	{
-		$settings = array(
-					'field_id'				=> $str_key,
-					'field_label'			=> $this->lang->line($str_key),
-					'field_required'		=> 'n',
-					'field_type'			=> 'date',
-					'field_text_direction'	=> 'ltr',
-					'field_data'			=> $value,
-					'field_fmt'				=> 'text',
-					'field_instructions'	=> '',
-					'field_show_fmt'		=> 'n',
-					'selected'				=> 'y'
-		);
-
-		// Entry date
-		$this->api_channel_fields->set_settings($str_key, $settings);
-
-		$rules = 'call_field_validation['.$settings['field_id'].']';
-		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
 	}
 
 	function _static_publish_admin()
