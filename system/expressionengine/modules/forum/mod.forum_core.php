@@ -3066,7 +3066,7 @@ class Forum_Core extends Forum {
 			
 			$this->EE->db->select('forum_name, forum_id');
 			$this->EE->db->where('board_id', $this->_fetch_pref('board_id'));
-			$this->EE->db->where('forum_is_cat', 'n', FALSE);
+			$this->EE->db->where('forum_is_cat', 'n', TRUE);
 			$this->EE->db->order_by('forum_order', 'asc');
 			$f_query = $this->EE->db->get('forums');
 					

@@ -917,7 +917,7 @@ class Forum_mcp {
 			
 		}
 		
-		$this->EE->session->set_flashdata('message', $this->EE->lang->line($message));
+		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line($message));
 		$this->EE->functions->redirect($this->id_base.AMP.'method=forum_management');
 	}
 
