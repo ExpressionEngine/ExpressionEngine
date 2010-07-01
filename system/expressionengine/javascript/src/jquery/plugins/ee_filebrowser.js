@@ -564,8 +564,6 @@
 			keyboard: true,
 			onSeek: function(evt, i) {
 				
-				var current_directory;
-
 				// onSeek (and onBeforeSeek which is the easiest to see this with) are firing twice, I believe
 				// because of the nested scrollable plugins. Its my theory that this is intermittently making
 				// the "pagination" wrong on the second, third, forth, etc directories.
