@@ -235,18 +235,6 @@ _delete_tab_hide = function(the_li, tab_to_delete) {
 	return false;
 }
 
-
-_delete_tab_show = function(tab_to_show) {
-
-	$(".menu_"+tab_to_show).parent().fadeIn();	// hide the tab
-	//$(the_li).fadeIn();							// remove from sidebar
-	$("#"+tab_to_show).fadeIn();					// hide the fields
-	//console.log(this);
-	// If the tab is selected - move focus to the left
-		tab_focus(tab_to_show);
-	}
-
-
 get_selected_tab = function() {
  return jQuery("#tab_menu_tabs .current").attr('id').substring(5);
 }
@@ -301,8 +289,6 @@ function delete_publish_tab()
 	    	var the_li = $(evt.target).closest("li");
 			the_id = the_li.attr("id").replace(/remove_tab_/, "");
 
-			//console.log(the_li);
-			//alert(the_li);
 			if ( ! tab_req_check(the_id)) {
 				_delete_tab_hide(the_li, the_id);
 			}
@@ -335,16 +321,29 @@ add_publish_tab = function() {
 	}
 }
 
+
+
 function _add_tab(tab_name) {
 	tab_name_filtered = tab_name.replace(/ /g, "_").toLowerCase();
 
 	// ensure there are no duplicate ids provided
 	if ($("#"+tab_name_filtered).length) {
 		if ($("#"+tab_name_filtered).css('display') == "none") {
-			_delete_tab_show(tab_name);
+			// Tab was hidden- just return it
+			
+			$("#"+"remove_tab_"+tab_name_filtered).fadeIn();
+			$("#"+"menu_"+tab_name_filtered).fadeIn();
+			
+				
+			// apply the classes to make it look focused
+			$("#tab_menu_tabs li").removeClass("current");
+			$("#menu_"+tab_name_filtered).addClass("current");
+			
+			tab_focus(tab_name_filtered);
+
 			return true;
 		}
-		
+
 		return false;
 	}
 
