@@ -955,10 +955,6 @@ class Moblog {
 			}
 		}
 
-		/** -----------------------------
-		/**  Done
-		/** -----------------------------*/
-
 		return TRUE;
 	}
 
@@ -1210,6 +1206,12 @@ class Moblog {
 			$data['category'] = array_unique($data['category']);
 		}
 
+		// forgive me, please.
+		$orig_group_id = $this->EE->session->userdata('group_id');
+		$orig_can_assign = $this->EE->session->userdata('can_assign_post_authors');
+		$this->EE->session->userdata['group_id'] = 1;
+		$this->EE->session->userdata['can_assign_post_authors'] = 'y';
+
 		// Insert the Entry
 		$this->EE->load->library('api');
 		$this->EE->api->instantiate('channel_entries');
@@ -1223,6 +1225,9 @@ class Moblog {
 		{
 			$this->entries_added++;
 		}
+		
+		$this->EE->session->userdata['can_assign_post_authors'] = $orig_can_assign;
+		$this->EE->session->userdata['group_id'] = $orig_group_id;
 	}
 
 	// ------------------------------------------------------------------------
