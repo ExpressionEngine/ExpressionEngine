@@ -3479,6 +3479,49 @@ class Channel {
 
 				foreach($pfield_names as $field_name => $field_id)
 				{
+					$offset = 0;
+					
+					while (($end = strpos($this->EE->TMPL->tagdata, LD.'/'.$field_name.RD, $offset)) !== FALSE)
+					{
+						// This hurts soo much. Using custom fields as pair and single vars in the same
+						// channel tags could lead to something like this: {field}...{field}inner{/field}
+						// There's no efficient regex to match this case, so we'll find the last nested
+						// opening tag and re-cut the chunk.
+
+						if (preg_match("/".LD."{$field_name}(.*?)".RD."(.*?)".LD.'\/'.$field_name.RD."/s", $this->EE->TMPL->tagdata, $matches, 0, $offset))
+						{
+							$chunk = $matches[0];
+							$params = $matches[1];
+							$inner = $matches[2];
+
+							// We might've sandwiched a single tag - no good, check again (:sigh:)
+							if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}(.*?)".RD."/s", $chunk, $match))
+							{
+								// Let's start at the end
+								$idx = count($match[0]) - 1;
+								$tag = $match[0][$idx];
+								
+								// Reassign the parameter
+								$params = $match[1][$idx];
+
+								// Cut the chunk at the last opening tag (PHP5 could do this with strrpos :-( )
+								while (strpos($chunk, $tag, 1) !== FALSE)
+								{
+									$chunk = substr($chunk, 1);
+									$chunk = strstr($chunk, LD.$field_name);
+									$inner = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
+								}
+							}
+							
+							$pfield_chunk[$site_id][$field_name][] = array($inner, $this->EE->functions->assign_parameters($params), $chunk);
+						}
+						
+						$offset = $end + 1;
+					}
+					
+					
+					
+					/*
 					if (($end = strpos($this->EE->TMPL->tagdata, LD.'/'.$field_name.RD)) !== FALSE)
 					{
 						// This hurts soo much. Using custom fields as pair and single vars in the same
@@ -3514,10 +3557,11 @@ class Channel {
 							}
 						}
 					}
+					*/
 				}
 			}
 		}
-		
+
 		// One more preloop check - custom fields with modifiers in conditionals
 
 		$all_field_names = array();
