@@ -52,14 +52,6 @@ class Learning_acc {
 	{
 		$this->sections = array(
 			
-			// @todo:  Get new Videos for 2.0
-			// $this->EE->lang->line('videos')	=> '<ul class="videos">
-			// 			<li><a href="#">'.$this->EE->lang->line('installing_ee').'</a></li>
-			// 			<li><a href="#">'.$this->EE->lang->line('introduction_to_templates').'</a></li>
-			// 			<li><a href="#">'.$this->EE->lang->line('channel_custom_fields').'</a></li>
-			// 			<li><a href="#">'.$this->EE->lang->line('channel_template_relationship').'</a></li>
-			// 		</ul>',
-			
 			$this->EE->lang->line('community_tutorials')	 => 	'<ul>
 						<li><a href="'.$this->EE->cp->masked_url('http://train-ee.com/').'" title="'.$this->EE->lang->line('train_ee').'">'.$this->EE->lang->line('train_ee').'</a></li>
 						<li><a href="'.$this->EE->cp->masked_url('http://www.eescreencasts.com/').'" title="'.$this->EE->lang->line('ee_screencasts').'">'.$this->EE->lang->line('ee_screencasts').'</a></li>

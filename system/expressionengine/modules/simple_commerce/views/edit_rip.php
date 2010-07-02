@@ -7,10 +7,6 @@
 				<div class="group">
 					<?=form_dropdown('channel_id', $channel_select_options, $channel_selected).NBS.NBS?>
 					<?=form_dropdown('cat_id', $category_select_options, $category_selected).NBS.NBS?>
-					<?php
-						//@todo: I threw author in there... not part of EE 1.6 - Needs some work...
-					 	//echo form_dropdown('author_id', $author_select_options, $author_selected).NBS.NBS
-					?>
 					<?=form_dropdown('status', $status_select_options, $status_selected).NBS.NBS?>
 					<?=form_dropdown('date_range', $date_select_options, $date_selected, 'id="date_range"').NBS.NBS?>
 					<?=form_dropdown('order', $order_select_options, $order_selected).NBS.NBS?>

@@ -88,8 +88,7 @@ class Query {
 		/** --------------------------------------
 		/**  Pagination checkeroo!
 		/** --------------------------------------*/
-		
-		// @todo pagination needs replacing with however we implement it, hopefully in the Template class
+
 		if (preg_match("/".LD."paginate".RD."(.+?)".LD.'\/'."paginate".RD."/s", $this->EE->TMPL->tagdata, $match))
 		{ 
 			// Run the query

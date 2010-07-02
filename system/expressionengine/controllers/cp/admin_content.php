@@ -2067,10 +2067,6 @@ class Admin_content extends Controller {
 					{
 						$vars['form_hidden']['field_ft_'.$row['field_id']] = $vars['field_fmt'];
 					}
-					else
-					{
-						// $todo- double check whats up here
-					}
 				}
 
 				//	Text input field types
