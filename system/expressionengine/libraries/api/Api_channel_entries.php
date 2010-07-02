@@ -363,7 +363,7 @@ class Api_channel_entries extends Api {
 			$entry_ids = array($entry_ids);
 		}
 		
-		if (in_array('comment', $this->EE->addons->get_installed('modules')))
+		if (array_key_exists('comment', $this->EE->addons->get_installed('modules')))
 		{
 			$comments_installed = TRUE;
 		}
@@ -371,7 +371,7 @@ class Api_channel_entries extends Api {
 		{
 			$comments_installed = FALSE;
 		}
-		
+
 		// grab entry meta data
 		$this->EE->db->select('channel_id, author_id, entry_id');
 		$this->EE->db->from('channel_titles');
