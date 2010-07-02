@@ -1499,11 +1499,6 @@ class MyAccount extends Controller {
 		$vars['time_format_options']['us'] = $this->lang->line('united_states');
 		$vars['time_format_options']['eu'] = $this->lang->line('european');
 		
-		if ($vars['daylight_savings'] != 'y')
-		{
-			$vars['daylight_savings'] = ($this->config->item('default_site_dst') == 'y') ? 'y' : 'n';
-		}
-				
 		$vars['daylight_savings_y'] = ($vars['daylight_savings'] == 'y') ? TRUE : FALSE;
 		$vars['daylight_savings_n'] = ($vars['daylight_savings'] == 'y') ? FALSE : TRUE;
 
