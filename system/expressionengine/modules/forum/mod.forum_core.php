@@ -2256,16 +2256,8 @@ class Forum_Core extends Forum {
 		$rank_query	 = $this->EE->db->query("SELECT rank_title, rank_min_posts, rank_stars FROM exp_forum_ranks ORDER BY rank_min_posts");
 		$mod_query	 = $this->EE->db->query("SELECT mod_member_id, mod_group_id FROM exp_forum_moderators WHERE mod_forum_id = '{$forum_id}'");
 		
-		/** -------------------------------------
-		/**  Fetch the Super Admin IDs
-		/** -------------------------------------*/
-		$super_admins = array();
-		$ad_query = $this->EE->db->query("SELECT member_id FROM exp_members WHERE group_id = '1'");
-
-		foreach ($ad_query->result_array() as $row)
-		{
-			$super_admins[] = $row['member_id'];
-		}
+		//  Fetch the Super Admin IDs
+		$super_admins = $this->fetch_superadmins();
 		
 		/** -------------------------------------
 		/**  Fetch attachments
@@ -3190,16 +3182,9 @@ class Forum_Core extends Forum {
 		$rank_query	 = $this->EE->db->query("SELECT rank_title, rank_min_posts, rank_stars FROM exp_forum_ranks ORDER BY rank_min_posts");
 		$mod_query	 = $this->EE->db->query("SELECT mod_member_id, mod_group_id FROM exp_forum_moderators WHERE mod_forum_id = '{$forum_id}'");
 		
-		/** -------------------------------------
-		/**  Fetch the Super Admin IDs
-		/** -------------------------------------*/
-		$super_admins = array();
-		$ad_query = $this->EE->db->query("SELECT member_id FROM exp_members WHERE group_id = '1'");
 
-		foreach ($ad_query->result_array() as $row)
-		{
-			$super_admins[] = $row['member_id'];
-		}
+		//  Fetch the Super Admin IDs
+		$super_admins = $this->fetch_superadmins();
 
 		/** -------------------------------------
 		/**  Fetch attachments
@@ -4034,7 +4019,7 @@ class Forum_Core extends Forum {
 				$temp = $this->_allow_if('can_post', $temp);
 			}
 			
-			foreach (array('can_view_ip', 'can_move', 'can_delete', 'can_merge', 'can_split', 'can_change_status') as $val)
+			foreach (array('can_view_ip', 'can_move', 'can_merge', 'can_split', 'can_change_status') as $val)
 			{
 				if ($this->_mod_permission($val, $row['forum_id']))
 				{
@@ -4070,6 +4055,34 @@ class Forum_Core extends Forum {
 			else
 			{
 				$temp = $this->_deny_if('can_ignore', $temp);
+			}
+
+ 			/** ----------------------------------------
+			/**  Parse the "Delete" Button
+			/** ----------------------------------------*/
+			
+			// Users can delete their own entries, and moderators (with privs) can delete other entires.
+			// However, no one but super admins can edit/delete their own entries
+			
+			$can_delete = FALSE;
+			
+			if ($this->EE->session->userdata('group_id') == 1 OR ($this->EE->session->userdata('member_id') == $row['author_id'])) 
+			{
+				$can_delete = TRUE;
+			}
+			
+			if ($this->_mod_permission('can_delete', $row['forum_id']) AND ! in_array($row['author_id'], $super_admins) )
+			{
+				$can_delete = TRUE;
+			}
+									
+			if ($can_delete)
+			{
+				$temp = $this->_allow_if('can_delete', $temp);
+			}
+			else
+			{
+				$temp = $this->_deny_if('can_delete', $temp);
 			}
 			
 			/** ----------------------------------------
@@ -4866,7 +4879,7 @@ class Forum_Core extends Forum {
 			}
 			
 			// If the user performing the edit is not the orginal author we'll verify that they have the proper permissions
-			
+
 			if ($meta[$this->current_id]['author_id'] != $this->EE->session->userdata('member_id') AND ! $this->_mod_permission('can_edit', $meta[$this->current_id]['forum_id']))
 			{
 				return $this->_trigger_error('not_authorized');
@@ -6192,16 +6205,26 @@ class Forum_Core extends Forum {
 			}
 			
 			// If the user performing the edit is not the orginal author we'll verify that they have the proper permissions
-			
+
 			if ($this->current_request == 'editreply')
 			{
-				if ($meta[$this->current_id]['author_id'] != $this->EE->session->userdata('member_id') AND ! $this->_mod_permission('can_edit', $meta[$this->current_id]['forum_id']))
+				if ($meta[$this->current_id]['author_id'] != $this->EE->session->userdata('member_id'))
 				{
+				 	if (! $this->_mod_permission('can_edit', $meta[$this->current_id]['forum_id']))
+					{
+						return $this->_trigger_error('not_authorized');
+					}
 
-					return $this->_trigger_error('not_authorized');
+					//  Fetch the Super Admin IDs
+					$super_admins = $this->fetch_superadmins();
+
+					if (in_array($meta[$this->current_id]['author_id'], $super_admins) && $this->EE->session->userdata('group_id') != 1)
+					{
+						return $this->_trigger_error('not_authorized');
+					}
 				}
 			}
-			
+
 			$orig_author_id			= $meta[$this->current_id]['author_id'];
 			$fdata['forum_id']		= $meta[$this->current_id]['forum_id'];
 			$fdata['permissions']	= $meta[$this->current_id]['forum_permissions'];	
@@ -7094,7 +7117,7 @@ class Forum_Core extends Forum {
 			
 		if ($this->current_request == 'deletereply')
 		{
-			$query = $this->EE->db->query("SELECT p.topic_id, p.post_id, p.forum_id, p.body, 
+			$query = $this->EE->db->query("SELECT p.topic_id, p.post_id, p.forum_id, p.body, p.author_id,
 								f.forum_text_formatting, f.forum_html_formatting, f.forum_auto_link_urls, f.forum_allow_img_urls 
 								FROM exp_forum_posts AS p, exp_forums AS f
 								WHERE f.forum_id = p.forum_id
@@ -7102,7 +7125,7 @@ class Forum_Core extends Forum {
 		}
 		else
 		{
-			$query = $this->EE->db->query("SELECT t.topic_id, t.forum_id, t.title, t.body, 
+			$query = $this->EE->db->query("SELECT t.topic_id, t.forum_id, t.title, t.body, t.author_id,
 								f.forum_text_formatting, f.forum_html_formatting, f.forum_auto_link_urls, f.forum_allow_img_urls 
 								FROM exp_forum_topics AS t, exp_forums AS f
 								WHERE f.forum_id = t.forum_id
@@ -7134,6 +7157,19 @@ class Forum_Core extends Forum {
 		if ( ! $this->_mod_permission('can_delete', $forum_id))
 		{
 			return $this->_trigger_error('not_authorized');
+		}
+
+		// Only Superadmins can delete other Superadmin posts
+		
+		if ($author_id != $SESS->userdata['member_id'])
+		{
+			//  Fetch the Super Admin IDs
+			$super_admins = $this->fetch_superadmins();
+
+			if (in_array($author_id, $super_admins) && $this->EE->session->userdata('group_id') != 1)
+			{
+				return $this->_trigger_error('not_authorized');
+			}
 		}
 		
 		/** -------------------------------------
@@ -12284,6 +12320,20 @@ class Forum_Core extends Forum {
 		}
 	}
 
+	function fetch_superadmins()
+	{
+		$super_admins = array();
+
+		$this->EE->db->select('member_id');
+		$ad_query = $this->EE->db->get_where('members', array('group_id' => 1));
+
+		foreach ($ad_query->result_array() as $row)
+		{
+			$super_admins[] = $row['member_id'];
+		}
+		
+		return $super_admins;
+	}
 	
 	
 	/** ----------------------------------
