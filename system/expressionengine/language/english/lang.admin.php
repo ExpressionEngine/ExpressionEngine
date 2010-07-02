@@ -12,6 +12,8 @@ $lang = array(
 "db_debug" =>
 "Enable Database Debugging",
 
+"enable_db_caching" =>
+"Enable SQL Query Caching",
 
 // ---------------------------
 //  Member List Config 
