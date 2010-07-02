@@ -139,7 +139,7 @@ class Api_channel_fields extends Api {
 	 */
 	function fetch_custom_channel_fields()
 	{
-		$this->EE->db->select('field_id, field_type, field_name, site_id');
+		$this->EE->db->select('field_id, field_type, field_name, site_id, field_settings');
 		$query = $this->EE->db->get('channel_fields');
 		
 		$cfields = array();
@@ -177,6 +177,15 @@ class Api_channel_fields extends Api {
 					$pfields[$row['site_id']][$row['field_id']] = $row['field_type'];
 				}
 			}
+			
+			if (isset($row['field_settings']) && $row['field_settings'] != '')
+			{
+				$settings = unserialize(base64_decode($row['field_settings']));
+				$settings['field_type'] = $row['field_type'];
+
+				$this->set_settings($row['field_id'], $settings);
+			}
+			
 			
 			$cfields[$row['site_id']][$row['field_name']] = $row['field_id'];
 		}
@@ -273,16 +282,14 @@ class Api_channel_fields extends Api {
 		// If we started with a field_id, but we're not on the frontend
 		// (which means fetch_custom_channel_fields didn't get called),
 		// we need to make sure we have the proper field name.
-		if ($field_id && ! $frontend)
+		
+		$field_name = FALSE;
+		
+		$settings = $this->get_settings($field_id);
+		
+		if (isset($settings['field_name']))
 		{
-			$settings	= $this->get_settings($field_id);
 			$field_name	= $settings['field_name'];
-		}
-		else
-		{
-			$settings	= array();
-			$field_id	= $field_id;
-			$field_name	= FALSE;
 		}
 		
 		// Merge field settings with the global settings
