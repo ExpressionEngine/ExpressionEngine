@@ -1,5 +1,34 @@
+<?php
+$cat_action_buttons = FALSE;
+
+// Handle a special case of empty category groups
+if (count($edit_categories_link) > count($categories))
+{
+	foreach($edit_categories_link as $i => $group_info)
+	{
+		if ( ! isset($categories[$group_info['group_name']]))
+		{
+			$categories[$group_info['group_name']] = $group_info['url'];
+		}
+	}
+}
+
+?>
+
+
+
 <?php foreach($categories as $key => $val):?>
-	<?php $first = current($val)?>
+
+	<?php if ( ! is_array($val))
+	{
+		$id = end(explode('group_id=', $val));
+		$first = array(2 => $id);
+	}
+	else
+	{
+		$first = current($val);
+	}
+	?>
 	
 	<?php if (count($categories) > 1):?>
 		<?=form_fieldset($key)?>
@@ -7,7 +36,8 @@
 	
 		<div id="cat_group_container_<?=$first[2]?>" class="cat_group_container">
 	
-			<?php foreach($val as $v):?>
+			<?php if (is_array($val))
+				foreach($val as $v):?>
 				<label>
 					<?=repeater(NBS.NBS.NBS.NBS, $v[5] - 1)?>
 					<?=form_checkbox('category[]', $v[0], $v[4]).NBS.NBS.$v[1]?>
