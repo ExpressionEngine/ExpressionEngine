@@ -457,35 +457,16 @@ class Api_channel_fields extends Api {
 			return FALSE;
 		}
 		
-		foreach ($tab_modules as $class_name)
+		foreach ($tab_modules as $name)
 		{
-			//  Call Module
-			$third_party = FALSE;
+			$directory	= strtolower($name);
+			$class_name	= ucfirst($directory).'_tab';
+			
+			$mod_base_path = $this->_include_tab_file($directory);
 
-			$new_name = ucfirst($class_name).'_tab';
+			$this->EE->load->add_package_path($mod_base_path);
 
-			if ( ! class_exists($new_name))
-			{
-				if (file_exists(APPPATH.'modules/'.strtolower($class_name).'/tab.'.strtolower($class_name).EXT))
-				{
-					include_once(APPPATH.'modules/'.strtolower($class_name).'/tab.'.strtolower($class_name).EXT);				
-				}
-				elseif (file_exists(PATH_THIRD.strtolower($class_name).'/tab.'.strtolower($class_name).EXT))
-				{
-					$third_party = TRUE;
-					include_once(PATH_THIRD.strtolower($class_name).'/tab.'.strtolower($class_name).EXT);
-				}
-				else
-				{
-					show_error(sprintf($this->EE->lang->line('unable_to_load_tab'),
-					 						'tab.'.strtolower($class_name).EXT));
-				}
-			}
-
-			$mod_base_path = ($third_party) ? PATH_THIRD : APPPATH.'modules/';
-			$this->EE->load->add_package_path($mod_base_path.strtolower($class_name).'/');
-
-			$OBJ = new $new_name();
+			$OBJ = new $class_name();
 
 			if (method_exists($OBJ, 'publish_tabs') === TRUE)
 			{
@@ -503,15 +484,15 @@ class Api_channel_fields extends Api {
 				{
 					if (isset($field['field_id']))
 					{
-						$fields[$key]['field_id'] = $class_name.'__'.$field['field_id']; // two underscores
+						$fields[$key]['field_id'] = $name.'__'.$field['field_id']; // two underscores
 					}
 				}
 
-				$set[$class_name] = $fields;
+				$set[$name] = $fields;
 			}
 
 		// restore our package and view paths
-		$this->EE->load->remove_package_path($mod_base_path.strtolower($class_name).'/');
+		$this->EE->load->remove_package_path($mod_base_path);
 		
 		}
 		
@@ -542,30 +523,16 @@ class Api_channel_fields extends Api {
 			$methods = array($methods);
 		}
 
-		foreach ($tab_modules as $class_name)
+		foreach ($tab_modules as $name)
 		{
-			//  Call Module
-			$third_party = FALSE;
+			$directory	= strtolower($name);
+			$class_name	= ucfirst($directory).'_tab';
+			
+			$mod_base_path = $this->_include_tab_file($directory);
 
-			$new_name = ucfirst($class_name).'_tab';
+			$this->EE->load->add_package_path($mod_base_path);
 
-			if ( ! class_exists($new_name))
-			{
-				if (file_exists(APPPATH.'modules/'.strtolower($class_name).'/tab.'.strtolower($class_name).EXT))
-				{
-					@include_once(APPPATH.'modules/'.strtolower($class_name).'/tab.'.strtolower($class_name).EXT);				
-				}
-				elseif (file_exists(PATH_THIRD.strtolower($class_name).'/tab.'.strtolower($class_name).EXT))
-				{
-					$third_party = TRUE;
-					@include_once(PATH_THIRD.strtolower($class_name).'/tab.'.strtolower($class_name).EXT);
-				}
-			}
-		
-			$mod_base_path = ($third_party) ? PATH_THIRD : APPPATH.'modules/';
-			$this->EE->load->add_package_path($mod_base_path.strtolower($class_name).'/');
-
-			$OBJ = new $new_name();
+			$OBJ = new $class_name();
 
 			foreach ($methods as $method)
 			{
@@ -573,11 +540,11 @@ class Api_channel_fields extends Api {
 				// removed the automagically added classname from the field names
 				if (isset($params['publish_data_db']['mod_data']))
 				{
-					$params['publish_data_db']['mod_data'] = $this->_clean_module_names($params['publish_data_db']['mod_data'], array($class_name));
+					$params['publish_data_db']['mod_data'] = $this->_clean_module_names($params['publish_data_db']['mod_data'], array($name));
 				}
 				elseif (isset($params['validate_publish'][0]))
 				{
-					$params['validate_publish'][0] = $this->_clean_module_names($params['validate_publish'][0], array($class_name));
+					$params['validate_publish'][0] = $this->_clean_module_names($params['validate_publish'][0], array($name));
 				}
 
 				if (method_exists($OBJ, $method) === TRUE)
@@ -586,15 +553,10 @@ class Api_channel_fields extends Api {
 					{
 						$params[$method] = '';
 					}
-					
-					// we're going to wipe the view vars here in a sec
-					//$file = $vars['file'];
-			
-					$mod_base_path = ($third_party) ? PATH_THIRD : APPPATH.'modules/';
-			
+
 					// add the view paths
 					$orig_view_path = $this->EE->load->_ci_view_path;
-					$this->EE->load->_ci_view_path = $mod_base_path.strtolower($class_name).'/views/';
+					$this->EE->load->_ci_view_path = $mod_base_path.'views/';
 
 					// fetch the content
 					if ($method == 'publish_tabs')
@@ -605,30 +567,11 @@ class Api_channel_fields extends Api {
 						// fetch the content
 						$fields = $OBJ->publish_tabs($channel_id, $entry_id);
 
-						// There's basically no way this *won't* be set, but let's check it anyhow.
-						// When we find it, we'll append the module's classname to it to prevent
-						// collission with other modules with similarly named fields. This namespacing
-						// gets stripped as needed when the module data is processed in get_module_methods()
-						// This function is called for insertion and editing of entries.
-						// @php4 would be nice to use a reference in this foreach...
-				
-
-						/*
-						foreach ($fields as $key => $field)
-						{
-							if (isset($field['field_id']))
-							{
-								$fields[$key]['field_id'] = $class_name.'__'.$field['field_id']; // two underscores
-							}
-						}
-						*/
-
-
-						$set[$class_name]['publish_tabs'] = $fields;
+						$set[$name]['publish_tabs'] = $fields;
 					}
 					else
 					{
-						$set[$class_name][$method] = $OBJ->$method($params[$method]);
+						$set[$name][$method] = $OBJ->$method($params[$method]);
 					}
 					
 					// restore our package and view paths
@@ -638,11 +581,55 @@ class Api_channel_fields extends Api {
 			}
 		
 		// restore our package and view paths
-		$this->EE->load->remove_package_path($mod_base_path.strtolower($class_name).'/');
+		$this->EE->load->remove_package_path($mod_base_path);
 		
 		}
 
 		return $set;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Include Tab File
+	 *
+	 * Loads the tab if it hasn't been used and returns the base path that
+	 * can then be used to add the correct package paths.
+	 *
+	 * @access	public
+	 */
+	function _include_tab_file($name)
+	{
+		static $paths = array();
+				
+		// Have we encountered this one before?
+		if ( ! isset($paths[$name]))
+		{
+			$class_name = ucfirst($name).'_tab';
+			
+			// First or third party?
+			foreach(array(APPPATH.'modules/', PATH_THIRD) as $tmp_path)
+			{
+				if (file_exists($tmp_path.$name.'/tab.'.$name.EXT))
+				{
+					$paths[$name] = $tmp_path.$name.'/';
+					break;
+				}
+			}
+			
+			// Include file
+			if ( ! class_exists($class_name))
+			{
+				if ( ! isset($paths[$name]))
+				{
+					show_error(sprintf($this->EE->lang->line('unable_to_load_tab'), 'tab.'.$name.EXT));
+				}
+				
+				include_once($paths[$name].'tab.'.$name.EXT);
+			}
+		}
+		
+		return $paths[$name];
 	}
 
 	// --------------------------------------------------------------------
