@@ -691,10 +691,13 @@ class Content_publish extends Controller {
 		{
 			$vars['upload_directories'][$row->id] = $row->name;
 
-			$vars['file_list'][$row->id]['id'] = $row->id;
-			$vars['file_list'][$row->id]['name'] = $row->name;
-			$vars['file_list'][$row->id]['url'] = $row->url;
+			foreach(array('id', 'name', 'url', 'pre_format', 'post_format', 'file_pre_format', 'file_post_format', 'properties', 'file_properties') as $prop)
+			{
+				$vars['file_list'][$row->id][$prop] = $row->$prop;
+			}
 		}
+		
+		$this->javascript->set_global('upload_directories', $vars['file_list']);
 
 		$html_buttons = $this->admin_model->get_html_buttons($this->session->userdata('member_id'));
 		$button_js = array();

@@ -798,8 +798,9 @@ $(document).ready(function() {
 
 	// Bind the image html buttons
 	$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
-		
-		var textarea, replace;
+				
+		var textarea, replace = '', props = '',
+			open = '', close = '';
 		
 		// A bit of working around various textareas, text inputs, tec
 		
@@ -822,6 +823,31 @@ $(document).ready(function() {
 		// Fact is - markitup is actually pretty crappy for anything that doesn't specifically
 		// use markitup. So currently the image button only works correctly on markitup textareas.
 
+		if ( ! file.is_image)
+		{
+			props = EE.upload_directories[file.directory].file_properties;
+			
+			open = EE.upload_directories[file.directory].file_pre_format;
+			open += "<a href=\"{filedir_"+file.directory+"}"+file.name+'" '+props+" >";
+			
+			close = "</a>";
+			close += EE.upload_directories[file.directory].file_post_format;
+		}
+		else
+		{
+			props = EE.upload_directories[file.directory].properties;
+			
+			open = EE.upload_directories[file.directory].pre_format;
+			close = EE.upload_directories[file.directory].post_format;
+			
+			replace = EE.filebrowser.image_tag.replace(/src="[^"]*"/, '');
+			replace = replace.replace('<img', '<img src="{filedir_'+file.directory+'}'+file.name+'"');
+			replace = replace.replace(/\/?>$/, file.dimensions+' '+props+' />');
+			
+			replace = open + replace + close;
+		}
+
+
 		if (textarea.is("textarea"))
 		{
 			if ( ! textarea.is('.markItUpEditor')) {
@@ -836,17 +862,13 @@ $(document).ready(function() {
 				$.markItUp({
 					key:"L",
 					name:"Link",
-					openWith:"<a href=\"{filedir_"+file.directory+"}"+file.name+"\">",
-					closeWith:"</a>",
+					openWith: open,
+					closeWith: close,
 					placeHolder:file.name
 				});
 			}
 			else
 			{
-				replace = EE.filebrowser.image_tag.replace(/src="[^"]*"/, '');
-				replace = replace.replace('<img', '<img src="{filedir_'+file.directory+'}'+file.name+'"');
-				replace = replace.replace(/\/?>$/, file.dimensions+' />');
-				
 				$.markItUp({
 					replaceWith: replace
 				});
@@ -854,7 +876,11 @@ $(document).ready(function() {
 		}
 		else
 		{
-			textarea.val("{filedir_"+file.directory+"}"+file.name);
+		//	textarea.val(function(i, v) { return v + "{filedir_"+file.directory+"}"+file.name; });
+			textarea.val(function(i, v) {
+				return v + open + replace + close;
+			});
+			
 		}
 
 		$.ee_filebrowser.reset(); // restores everything to "default" state - also needed below for file fields

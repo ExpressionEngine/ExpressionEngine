@@ -4200,7 +4200,7 @@ class Admin_content extends Controller {
 	  */
 	function field_update()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs') OR ! isset($_POST['group_id']))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}

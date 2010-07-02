@@ -101,7 +101,7 @@
 			$("#upload_file", file_manager_obj).attr('name', field_name);
 
 			file_manager_obj.dialog("open");
-
+			
 			trigger_callback = function(file) {
 				callback.call(that, file, field_name);
 			};
@@ -217,11 +217,11 @@
 				$("#page_0 .items").html("<button id=\"resize_image\"><span>"+EE.lang.resize_image+"</span></button> "+EE.lang.or+" <button class=\"place_image\"><span>"+EE.lang.return_to_publish+"</span></button>").fadeIn("fast");
 
 				// Place Image is essentially the same as "cancel", it'll just insert the file reference
-				$(".place_image").click(function(){
+				$(".place_image").click(function() {
 					$.ee_filebrowser.clean_up(file, original_upload_html);
 				});
 
-				$("#resize_image").click(function(){
+				$("#resize_image").click(function() {
 					// Let's draw the resize options into a form
 					$("#page_0 .items").html($(".image_edit_form_options").clone().css("display", "block").attr('id', 'cloned'));
 
@@ -539,7 +539,7 @@
 			draggable: true,
 			title: EE.filebrowser.window_title,
 			autoOpen: false,
-			zIndex: 999999,
+			zIndex: 1000,
 			open: function(event, ui) {
 				// keyboard naviation is disabled so form elements are usable,
 				// re-initialize it when file browser is open
@@ -551,8 +551,8 @@
 			close: function(event, ui) {
 				$("#file_manager_main").data('scrollable').getConf().keyboard = false;
 
-				// set scrollable back to the first page available
-				$("#main_navi li:first").click();
+				// Reset position
+				$.ee_filebrowser.reset()
 			}
 		});
 
@@ -564,8 +564,6 @@
 			keyboard: true,
 			onSeek: function(evt, i) {
 				
-				var current_directory;
-
 				// onSeek (and onBeforeSeek which is the easiest to see this with) are firing twice, I believe
 				// because of the nested scrollable plugins. Its my theory that this is intermittently making
 				// the "pagination" wrong on the second, third, forth, etc directories.
@@ -614,7 +612,8 @@
 		// Should work automatically, but without this it wasn't
 		// highlighting the first nav item correctly.
 		$('#file_manager_main').data('scrollable').begin();
-				
+		
+		
 		// Bind the upload submit event
 		$("#upload_form", file_manager_obj).submit($.ee_filebrowser.upload_start);
 	}
