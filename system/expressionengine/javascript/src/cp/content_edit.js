@@ -191,7 +191,6 @@ $(document).ready(function() {
 	    	per_page		= document.getElementById("f_perpage"),	
 			comment_url		= "&ajax=true&keywords="+keywords.value+"&channel_id="+channel_id.value;
 
-	//alert(iRequestStart);
 		if (search_in.value == "comments") {
 			window.location = EE.BASE+"&C=content_edit&M=view_comments"+comment_url;
 		}

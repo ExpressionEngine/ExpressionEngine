@@ -227,6 +227,17 @@ class EE_Config Extends CI_Config {
 				}
 
 				$this->config['site_pages'] = unserialize($data);
+				
+				// Double check that the variables are set.
+				if ( ! isset($this->config['site_pages'][$row['site_id']]['uris']))
+				{
+					$this->config['site_pages'][$row['site_id']]['uris'] = ( ! isset($this->config['site_pages']['uris'])) ? array() : $this->config['site_pages']['uris'];
+				}
+			
+				if ( ! isset($this->config['site_pages'][$row['site_id']]['templates']))
+				{
+					$this->config['site_pages'][$row['site_id']]['templates'] = ( ! isset($this->config['site_pages']['templates'])) ? array() : $this->config['site_pages']['templates'];
+				}				
 			}
 			elseif ($name == 'site_bootstrap_checksums')
 			{
