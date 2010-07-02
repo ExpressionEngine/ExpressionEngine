@@ -421,7 +421,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		{
 			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
 			{
-				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['iSortDir_'.$i];
+				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['sSortDir_'.$i];
 			}
 		}
 
@@ -430,7 +430,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$members = $this->member_model->get_members($group_id, $perpage, $offset, $search_value, $order, $column_filter);
 
 		$total = $this->member_model->count_members();
-		$f_total = $this->member_model->count_members($group_id, $search_value);
+		$f_total = $this->member_model->count_members($group_id, $search_value, $column_filter);
 
 		$j_response['sEcho'] = $sEcho;
 		$j_response['iTotalRecords'] = $total;

@@ -48,38 +48,35 @@ class Search_model extends CI_Model {
 	{
 		$return_data = array('pageurl' => '', 'total_count' => 0, 'results' => array());
 		$ids = array();
-		
-		$return_data['total_count'] = $this->build_main_query($data,  $order, TRUE);
+
+		$base_results = $this->build_main_query($data, $order);
+
+		$return_data['pageurl'] = $base_results['pageurl'];
+		$return_data['total_count'] = count($base_results['result_obj']->result_array());
 	
 		if ($return_data['total_count'] == 0)
 		{
 			return $return_data;
-		}
+		}		
 
-		$base_results = $this->build_main_query($data, $order, FALSE);
-
-		$return_data['pageurl'] = $base_results['pageurl'];
+		$base_results = array_slice($base_results['result_obj']->result_array(), $data['rownum'], $data['perpage']);
 
 		if ($data['search_in'] == 'comments')
 		{
-			foreach ($base_results['result_obj']->result_array() as $row)
+			foreach ($base_results as $id)
 			{
-				$ids[] = $row['comment_id'];
+				$ids[] = $id['comment_id'];
 			}
-			
-			$return_data['pageurl'] = $base_results['pageurl'];
-			$return_data['ids'] = $ids;
-			$return_data['total_count'] = count($ids);
 
+			$return_data['ids'] = $ids;
 			return $return_data;			
 		}
 		
-		foreach ($base_results['result_obj']->result_array() as $row)
-		{
-			$ids[] = $row['entry_id'];
-		}
 
-		// print_r($ids);
+		foreach ($base_results as $id)
+		{
+			$ids[] = $id['entry_id'];
+		}
 
 		$results = $this->get_full_cp_query($data, $ids, $order);
 
@@ -104,7 +101,7 @@ class Search_model extends CI_Model {
 	 * @return	array
 	 */
 		
-	function build_main_query($data, $order = array(), $do_count = FALSE, $cp = TRUE)
+	function build_main_query($data, $order = array(), $cp = TRUE)
 	{
 		$where_clause = '';
 		$pageurl = '';
@@ -113,7 +110,7 @@ class Search_model extends CI_Model {
 		{
 			// Fetch channel ID numbers assigned to the current user
 			$allowed_channels = $this->functions->fetch_assigned_channels();
-		}		
+		}
 		
 		$data['search_channels'] = $data['channel_id'];
 		
@@ -135,38 +132,34 @@ class Search_model extends CI_Model {
 			$data['search_channels'] = array_intersect($data['search_channels'], $allowed_channels);
 		}
 
-		$searchable_fields = $this->get_searchable_fields($data['search_channels']);
+		$searchable_fields = array();  $this->get_searchable_fields($data['search_channels']);
 
+		
+		
 		if ($data['search_in'] == 'comments')
 		{
-			$this->db->distinct();
+			$this->db->select('comments.comment_id', FALSE);
+		
+			$this->db->from('comments');
+			$this->db->join('channel_titles', 'exp_channel_titles.entry_id = exp_comments.entry_id', 'left');
 
-			if ($do_count == FALSE)
-			{
-				$this->db->select('comments.comment_id', FALSE);
-			}
 		}
 		else
 		{
+			$searchable_fields = $this->get_searchable_fields($data['search_channels']);
+			
 			if ($data['cat_id'] == 'none' OR $data['cat_id'] != "")
 			{
-				$this->db->distinct();
-			
-				if ($do_count == FALSE)
-				{
-					$this->db->select('channel_titles.entry_id', FALSE);
-				}
+				$this->db->select('channel_titles.entry_id', FALSE);
 			}
 			else
 			{
-				if ($do_count == FALSE)
-				{
-					$this->db->select('channel_titles.entry_id', FALSE);
-				}
+				$this->db->select('channel_titles.entry_id', FALSE);
 			} 
+		
+			$this->db->from('channel_titles');
 		}
 
-		$this->db->from('channel_titles');
 
 		$this->db->join('channels', 'exp_channel_titles.channel_id = exp_channels.channel_id ', 'left');
 
@@ -177,14 +170,10 @@ class Search_model extends CI_Model {
 				$this->db->join('channel_data', 'exp_channel_titles.entry_id = exp_channel_data.entry_id ', 'left');
 			}
 
-			if ($data['search_in'] == 'everywhere' OR $data['search_in'] == 'comments')
+			if ($data['search_in'] == 'everywhere')
 			{
 				$this->db->join('comments', 'exp_channel_titles.entry_id = exp_comments.entry_id', 'left');
 			}
-		}
-		elseif ($data['search_in'] == 'comments')
-		{
-			$this->db->join('comments', 'exp_channel_titles.entry_id = exp_comments.entry_id', 'left');
 		}
 
 		$this->db->join('members', 'exp_members.member_id = exp_channel_titles.author_id', 'left');
@@ -326,24 +315,16 @@ class Search_model extends CI_Model {
 			$this->db->order_by('entry_date', 'desc');
 		}
 		
-		if ($do_count == FALSE)
-		{
-			$this->db->limit($data['perpage'], $data['rownum']);
-		}
+		//$this->db->limit($data['perpage'], $data['rownum']);
 
 		// ------------------------------
 		//	 Are there results?
 		// ------------------------------
 
-		//$query = $this->db->query($sql_a.$sql_b.$sql);
-
-		if ($do_count == TRUE)
-		{
-			return $this->db->count_all_results();
-		}
-
+		$this->db->distinct();
 		return array('pageurl' => $pageurl, 'result_obj' => $this->db->get());
 	}
+
 
 	// --------------------------------------------------------------------
 

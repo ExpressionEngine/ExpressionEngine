@@ -672,7 +672,7 @@ class Simple_commerce_mcp {
 		{
 			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
 			{
-				$order[] = $col_map[$_GET['iSortCol_'.$i]].' '.$_GET['iSortDir_'.$i];
+				$order[] = $col_map[$_GET['iSortCol_'.$i]].' '.$_GET['sSortDir_'.$i];
 			}
 			$order_by = implode(', ', $order);
 		}
@@ -1120,7 +1120,7 @@ class Simple_commerce_mcp {
 		{
 			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
 			{
-				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['iSortDir_'.$i];
+				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['sSortDir_'.$i];
 			}
 		}
 
@@ -1692,7 +1692,7 @@ class Simple_commerce_mcp {
 		{
 			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
 			{
-				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['iSortDir_'.$i];
+				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['sSortDir_'.$i];
 			}
 		}
 

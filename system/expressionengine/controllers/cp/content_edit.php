@@ -885,7 +885,7 @@ class Content_edit extends Controller {
 		{
 			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
 			{
-				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['iSortDir_'.$i];
+				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['sSortDir_'.$i];
 			}
 		}
 
@@ -906,12 +906,11 @@ class Content_edit extends Controller {
 
 		// No result?  Show the "no results" message
 		$total = $filtered_entries['total_count'];
-		$f_total = $filtered_entries['total_count'];
 		$query_results = $filtered_entries['results'];
 
 		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $f_total;  // note- duping the f_total here- should be true total
-		$j_response['iTotalDisplayRecords'] = $f_total;		
+		$j_response['iTotalRecords'] = $this->db->count_all('channel_titles');  
+		$j_response['iTotalDisplayRecords'] = $total;		
 		
 		
 		// --------------------------------------------
@@ -2338,25 +2337,26 @@ class Content_edit extends Controller {
 		{
 			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
 			{
-				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['iSortDir_'.$i];
+				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['sSortDir_'.$i];
 			}
 		}
 
 
 		if ($filter_data['entry_id'] != FALSE OR $filter_data['comment_id'] != FALSE)
 		{
+			//  we are looking at a specific comment or comments for a specific entry
+			
 			$filtered_entries = $this->search_model->comment_search('', $filter_data['entry_id'], $filter_data['comment_id'], '', $validate, $order);
 			
 			$filter_data['search_in'] == 'comments';
 			
 			$data_array = $filtered_entries['results'];
 
-			$total = $filtered_entries['total_count'];
 			$f_total = $filtered_entries['total_count'];
 			$query_results = $filtered_entries['results'];
 
 			$j_response['sEcho'] = $sEcho;
-			$j_response['iTotalRecords'] = $f_total;  // note- duping the f_total here- should be true total
+			$j_response['iTotalRecords'] = $this->db->count_all('comments');
 			$j_response['iTotalDisplayRecords'] = $f_total;	
 			
 			$j_response['aaData']  = $this->format_comments($validate, $data_array);
@@ -2374,19 +2374,19 @@ class Content_edit extends Controller {
 		$query_results = $filtered_entries['results'];
 
 		$j_response['sEcho'] = $sEcho;
-		$j_response['iTotalRecords'] = $total;  // note- duping the f_total here- should be true total
+		$j_response['iTotalRecords'] = $this->db->count_all('comments');
 		$j_response['iTotalDisplayRecords'] = $f_total;		
 		
-		//if (isset($filtered_entries['ids']))
-		//{
-		//	$j_response['iTotalDisplayRecords'] = 3; //count($filtered_entries['ids']);
+		if (isset($filtered_entries['ids']))
+		{
+			$j_response['iTotalDisplayRecords'] = count($filtered_entries['ids']);
 			
-		//	$data_array = $this->search_model->comment_search('', '', $filtered_entries['ids'], count($filtered_entries['ids']), $validate, $order);
-		//}
-		//else
-		//{
+			$data_array = $this->search_model->comment_search('', '', $filtered_entries['ids'], count($filtered_entries['ids']), $validate, $order);
+		}
+		else
+		{
 			$data_array = $filtered_entries['results'];
-		//}
+		}
 		
 			
 		$j_response['aaData']  = $this->format_comments($validate, $data_array['results']);
@@ -2854,6 +2854,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			
 		"oLanguage": {
 			"sZeroRecords": "'.$this->lang->line('no_comments').'",
+			"sInfoFiltered": "(filtered from _MAX_ total comments)",
 			
 			"oPaginate": {
 				"sFirst": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",

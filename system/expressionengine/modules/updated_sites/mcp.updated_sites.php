@@ -531,7 +531,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		{
 			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
 			{
-				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['iSortDir_'.$i];
+				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['sSortDir_'.$i];
 			}
 		}
 

@@ -151,9 +151,10 @@ class Member_model extends CI_Model {
 		{
 			if ($column == 'all')
 			{
-				$this->db->or_like('members.screen_name', $search_value);
-				$this->db->or_like('members.username', $search_value);
-				$this->db->or_like('members.email', $search_value);				
+				//$this->db->or_like('members.screen_name', $search_value);
+				//$this->db->or_like('members.username', $search_value);
+				//$this->db->or_like('members.email', $search_value);	
+				$this->db->where("(`exp_members`.`screen_name` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`username` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`email` LIKE '%".$this->db->escape_like_str($search_value)."%')", NULL, TRUE);		
 			}
 			else
 			{
@@ -176,8 +177,7 @@ class Member_model extends CI_Model {
 		$this->db->distinct();
 		$this->db->select("members.username, members.member_id, members.screen_name, members.email, members.join_date, members.last_visit, member_groups.group_title, member_groups.group_id, members.member_id, members.in_authorlist");
 		$this->db->from("members");
-		$this->db->join('member_groups', 'member_groups.group_id = members.group_id');
-		//$this->db->where("members.group_id = " .$this->db->dbprefix("member_groups.group_id"));
+		$this->db->join('member_groups', 'member_groups.group_id = members.group_id', 'left');
 		$this->db->where("member_groups.site_id", $this->config->item('site_id'));
 
 		$members = $this->db->get();
@@ -800,8 +800,11 @@ class Member_model extends CI_Model {
 	 * @param	int
 	 * @return	int
 	 */
-	function count_members($group_id = '', $search_value = '')
+	function count_members($group_id = '', $search_value = '', $search_field = '')
 	{
+		$valid_fields = array('all', 'screen_name', 'username', 'email');
+		$search_in = 'screen_name';
+		
 		if ($group_id !== '')
 		{
 			$this->db->where("members.group_id", $group_id);
@@ -809,7 +812,19 @@ class Member_model extends CI_Model {
 
 		if ($search_value != '')
 		{
-			$this->db->like('members.screen_name', $search_value);
+			if (in_array($search_field, $valid_fields))
+			{
+				$search_in = $search_field;
+			}
+
+			if ($search_in == 'all')
+			{
+				$this->db->where("(`exp_members`.`screen_name` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`username` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`email` LIKE '%".$this->db->escape_like_str($search_value)."%')", NULL, TRUE);			
+			}
+			else
+			{			
+				$this->db->like($search_in, $search_value);
+			}
 		}
 
 		return $this->db->count_all_results('members');

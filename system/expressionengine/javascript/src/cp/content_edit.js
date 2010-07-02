@@ -165,17 +165,18 @@ $(document).ready(function() {
 		}
 	}
 
+	
 	function fnGetKey( aoData, sKey ) {
 		for ( var i=0, iLen=aoData.length; i < iLen ; i++ ) {
 			if ( aoData[i].name == sKey ) {
-				return aoData[i].value;
+				return aoData[i].value
 			}
 		}
 		return null;
 	}
 
 	function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
-		var iPipe 			= EE.edit.pipe,  /* Ajust the pipe size */
+		var iPipe 			= +EE.edit.pipe,  /* Ajust the pipe size */
 			bNeedServer 	= false,
 			sEcho 			= fnGetKey(aoData, "sEcho"),
 			iRequestStart 	= fnGetKey(aoData, "iDisplayStart"),
@@ -187,8 +188,10 @@ $(document).ready(function() {
 	    	cat_id			= document.getElementById("f_cat_id"),
 	    	search_in		= document.getElementById("f_search_in"),
 	    	date_range		= document.getElementById("date_range"),
+	    	per_page		= document.getElementById("f_perpage"),	
 			comment_url		= "&ajax=true&keywords="+keywords.value+"&channel_id="+channel_id.value;
 
+	//alert(iRequestStart);
 		if (search_in.value == "comments") {
 			window.location = EE.BASE+"&C=content_edit&M=view_comments"+comment_url;
 		}
@@ -199,7 +202,8 @@ $(document).ready(function() {
 			 { "name": "channel_id", "value": channel_id.value },
 	         { "name": "cat_id", "value": cat_id.value },
 	         { "name": "search_in", "value": search_in.value },
-	         { "name": "date_range", "value": date_range.value }
+	         { "name": "date_range", "value": date_range.value },
+	         { "name": "per_page", "value": per_page.value }	
 		 );
 
 		oCache.iDisplayStart = iRequestStart;
@@ -244,7 +248,8 @@ $(document).ready(function() {
 			 			{ "name": "channel_id", "value": channel_id.value },
 	         			{ "name": "cat_id", "value": cat_id.value },
 	         			{ "name": "search_in", "value": search_in.value },
-	         			{ "name": "date_range", "value": date_range.value }
+	         			{ "name": "date_range", "value": date_range.value },
+	         			{ "name": "per_page", "value": per_page.value }
 		 			);
 
 			$.getJSON( sSource, aoData, function (json) { 
@@ -284,7 +289,7 @@ $(document).ready(function() {
 				"sWrapper": false,
 				"sInfo": false,
 				"bAutoWidth": false,
-				"iDisplayLength": EE.edit.perPage,  
+				"iDisplayLength": +EE.edit.perPage,  
 				"aoColumns": MyCols,
 				"oLanguage": {
 					"sZeroRecords": EE.lang.noEntries,
@@ -322,6 +327,9 @@ $(document).ready(function() {
 			$("select#date_range").change(function () {
 				oTable.fnDraw();
 			});
+			$("select#f_perpage").change(function () {
+				oTable.fnDraw();
+			});			
 	
 });
 
