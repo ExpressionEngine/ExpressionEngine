@@ -189,7 +189,7 @@ class Tools_utilities extends Controller {
 			$member_groups[$member_group->group_id] = $member_group->group_title;
 		}
 
-		$vars['language_options'] = array('None' => 'None', 'English' => 'English'); //$todo
+		$vars['language_options'] = array('None' => 'None', 'English' => 'English');
 		$vars['member_groups'] = $member_groups;
 		$vars['dst_enabled'] = $this->config->item('daylight_savings');  
 		$vars['auto_custom_field_enabled'] = TRUE;

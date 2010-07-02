@@ -439,18 +439,6 @@ class Metaweblog_api_mcp {
 		/**  Channel Field Groups
 		/** -----------------------------*/
 
-
-		// @todo- clean this up and decide how permissions come into play.  Note- above
-		// @robin -- I'm leaving this dsp so you can decide what needs to be done with the todo -ga
-		// is commented out in 1.6
-		// Fetch channel titles
-		// $this->EE->db->select('group_id, group_name, status_group, field_group, site_label, channel_title');
-		
-		//if ( ! $this->EE->dsp->allowed_group('can_edit_other_entries'))
-		//{
-		//	$this->EE->db->where_in('channel_id', $allowed_channels);
-		//}
-		
 		$this->EE->db->select('field_group');
 		$this->EE->db->from('exp_channels');
 		

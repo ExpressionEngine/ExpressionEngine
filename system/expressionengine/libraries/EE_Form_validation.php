@@ -491,7 +491,6 @@ class EE_Form_validation extends CI_Form_validation {
 	 */
 	function enum($str, $opts)
 	{
-		// @todo lang!
 		$this->set_message('enum', 'The option you selected is not valid.');
 
 		$opts = explode(',', $opts);

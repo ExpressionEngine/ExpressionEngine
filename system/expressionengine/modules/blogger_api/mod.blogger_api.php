@@ -555,7 +555,7 @@ class Blogger_api {
 
 				$this->EE->db->set('total_comments', 'total_comments - '.$count, FALSE);
 				$this->EE->db->where('member_id', $row['author_id']);
-				$this->EE->db->update('mytable');  //@todo
+				$this->EE->db->update('members');
 			}
 		}
 

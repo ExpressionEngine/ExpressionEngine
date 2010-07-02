@@ -23,8 +23,6 @@
  * @link		http://expressionengine.com
  */
 
-// @todo lang keys for this class - particularly error messages
-
 class Filemanager {
 
 	var $EE;
@@ -357,11 +355,11 @@ class Filemanager {
 	{
 		$dir = $this->directory($dir_id, FALSE, TRUE);
 
-		$data = array('error' => 'No File'); // @todo: lang key
+		$data = array('error' => 'No File');
 		
 		if ( ! $dir)
 		{
-			$data = array('error' => "You do not have access to this upload directory."); // @todo: lang key
+			$data = array('error' => "You do not have access to this upload directory.");
 		}
 		else if (count($_FILES) > 0)
 		{
@@ -443,7 +441,6 @@ class Filemanager {
 
 		if ( ! $this->EE->image_lib->resize())
 		{
-			// @todo find a good way to display errors
 			return FALSE;
 			die($this->EE->image_lib->display_errors());
 		}

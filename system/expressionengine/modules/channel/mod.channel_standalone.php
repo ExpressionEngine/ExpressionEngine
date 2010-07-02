@@ -129,7 +129,6 @@ class Channel_standalone extends Channel {
 					
 				if (array_key_exists('error', $data))
 				{
-					// @todo validation error
 					die('error '.$data['error']);
 				}
 				else
