@@ -10,18 +10,6 @@
  * @filesource
  */
 
-// ------------------------------------------------------------------------
-
-/*!
- * ExpressionEngine Filebrowser Plugin
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
- */
-
 (function($) {
 
 	var thumbs_per_page, dir_files_structure, dir_paths, backend_url, trigger_callback,

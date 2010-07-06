@@ -9,18 +9,6 @@
  * @since		Version 2.0
  * @filesource
  */
-
-// ------------------------------------------------------------------------
-
-/*!
- * ExpressionEngine File Manager
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
- */
 $(document).ready(function() {
 
 	// Some page setup

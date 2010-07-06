@@ -9,15 +9,6 @@
  * @since		Version 2.0
  * @filesource
  */
-/*
- * ExpressionEngine Content Edit Javascript
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
- */
 $(document).ready(function() {
 	$(".paginationLinks .first").hide();
 	$(".paginationLinks .previous").hide();

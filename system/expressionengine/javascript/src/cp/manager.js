@@ -9,19 +9,6 @@
  * @since		Version 2.0
  * @filesource
  */
-
-// ------------------------------------------------------------------------
-
-/*!
- * ExpressionEngine Template Manager Javascript
- *
- * @package		ExpressionEngine
- * @subpackage	Control Panel
- * @category	Control Panel
- * @author		ExpressionEngine Dev Team
- * @link		http://expressionengine.com
- */
-
 /* This file exposes two callback functions:
  * 
  * EE.manager.showPrefsRow and EE.manager.hidePrefsRow
