@@ -59,6 +59,7 @@ class Wiki {
 	var $auto_links				= "n";
 	var $upload_dir				= '';
 	var $valid_upload_dir		= 'n';
+	var $can_upload				= 'n';	
 	var $moderation_emails		= '';
 	var $revision_limit			= 100;
 	var $author_limit			= 75;
@@ -279,8 +280,13 @@ class Wiki {
 			if ($query->row('count')  > 0)
 			{
 				$this->valid_upload_dir = 'y';
+				$this->can_upload = 'y';
 				
-				if ($this->EE->session->userdata['group_id'] != 1)
+				if (in_array($this->EE->session->userdata['group_id'], array(2, 3, 4)))
+				{
+					$this->can_upload = 'n'; 
+				}
+				elseif ($this->EE->session->userdata['group_id'] != 1)
 				{		 	
 					$query = $this->EE->db->query("SELECT upload_id FROM exp_upload_no_access WHERE member_group = '".$this->EE->session->userdata['group_id']."'");
 				
@@ -288,9 +294,9 @@ class Wiki {
 					{
 						foreach($query->result_array() as $row)
 						{
-							if ($query->row('upload_id')  == $this->upload_dir)
+							if ($query->row('upload_id') == $this->upload_dir)
 							{
-								$this->valid_upload_dir = 'n'; 
+								$this->can_upload = 'n';
 								break;
 							}
 						}
@@ -440,8 +446,8 @@ class Wiki {
 				}
 			}
 		}
-		
-		if ($this->valid_upload_dir == 'y')
+	
+		if ($this->can_upload == 'y')
 		{
 			$this->return_data = $this->_allow_if('uploads', $this->return_data);
 		}
@@ -924,7 +930,7 @@ class Wiki {
 		
 		if (isset($this->seg_parts['1']) && strtolower($this->seg_parts['1']) == 'delete')
 		{
-			if ($this->valid_upload_dir == 'y' && in_array($this->EE->session->userdata['group_id'], $this->admins))
+			if ($this->can_upload == 'y' && in_array($this->EE->session->userdata['group_id'], $this->admins))
 			{
 				$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_wiki_uploads
 							 		 WHERE file_name = '".$this->EE->db->escape_str($topic)."'");
@@ -946,6 +952,9 @@ class Wiki {
 					$query = $this->EE->db->query("DELETE FROM exp_wiki_uploads
 										 WHERE file_name = '".$this->EE->db->escape_str($topic)."'");
 										
+					// Clear wiki cache
+					$this->EE->functions->clear_caching('db');
+
 					$this->redirect($this->special_ns, 'Files');
 				}
 			}
@@ -3859,8 +3868,6 @@ class Wiki {
 						$this->EE->db->query("DELETE FROM exp_wiki_categories WHERE cat_id = '".$this->EE->db->escape_str($cat_data['cat_id'])."'");
 						$this->EE->db->query("UPDATE exp_wiki_categories SET parent_id = '0' WHERE parent_id = '".$this->EE->db->escape_str($cat_data['cat_id'])."'");
 					}
-					
-					$this->redirect('' , $this->title);
 				}
 				elseif ($this->EE->input->get_post('delete_article') == 'y')
 				{
@@ -4138,6 +4145,9 @@ class Wiki {
 			}
 		}
 		
+		// Clear wiki cache
+		$this->EE->functions->clear_caching('db');
+
 		$this->redirect($this->current_namespace, $this->topic);
 	}
 
@@ -5279,7 +5289,7 @@ class Wiki {
 		
 		$this->return_data = str_replace('{wiki:page}', $this->_fetch_template('wiki_special_upload_form.html'), $this->return_data);
 		
-		if ($this->valid_upload_dir != 'y') 
+		if ($this->can_upload != 'y') 
 		{
 			return;
 		}
@@ -5596,6 +5606,9 @@ class Wiki {
 			}			
 		}
 		
+		// Clear wiki cache
+		$this->EE->functions->clear_caching('db');
+
 		$this->redirect('', $title);
 	}
 	

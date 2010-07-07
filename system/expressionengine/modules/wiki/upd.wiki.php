@@ -25,7 +25,7 @@ if ( ! defined('EXT'))
 
 class Wiki_upd {
 
-	var $version = '2.0';
+	var $version = '2.1';
 	
 	function Wiki_upd()
 	{
@@ -49,7 +49,7 @@ class Wiki_upd {
 				page_id int(10) unsigned NOT NULL auto_increment,
 				wiki_id INT(3) UNSIGNED NOT NULL,
 				page_name VARCHAR(100) NOT NULL,
-				page_namespace VARCHAR(125) NULL DEFAULT NULL,
+				page_namespace VARCHAR(125) NOT NULL DEFAULT '',
 				page_redirect VARCHAR(100) NULL DEFAULT NULL,
 				page_locked	CHAR(1) NOT NULL DEFAULT 'n',
 				page_moderated CHAR(1) NOT NULL DEFAULT 'n',
@@ -199,6 +199,12 @@ class Wiki_upd {
 			$this->EE->db->query("ALTER TABLE `exp_wiki_page` CHANGE `page_redirect` `page_redirect` VARCHAR(125) NULL DEFAULT NULL");
 			$this->EE->db->query("ALTER TABLE `exp_wiki_page` CHANGE `last_revision_id` `last_revision_id` INT(10) NULL DEFAULT NULL");
 		}
+		
+		if ($current < 2.1)
+		{
+			$this->EE->db->query("ALTER TABLE `exp_wiki_page` CHANGE `page_namespace` `page_namespace` VARCHAR(125) NOT NULL DEFAULT ''");
+		}
+				
 		
 		return TRUE;
 	}

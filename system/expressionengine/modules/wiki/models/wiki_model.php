@@ -136,6 +136,7 @@ class Wiki_model extends CI_Model {
 
 		$data = array(	'wiki_id'		=> $wiki_id,
 						'page_name'		=> 'index',
+						'page_namespace'	=> '',						
 						'last_updated'	=> $this->localize->now);
 
 		$this->db->insert('wiki_page', $data);

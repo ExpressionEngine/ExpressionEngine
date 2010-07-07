@@ -1084,9 +1084,21 @@ class EE_Functions {
 		{
 			return;
 		}
+		
+		$db_path = '';
 			
 		if ($sub_dir != '')
 		{
+			if ($which == 'all' OR $which == 'db')
+			{
+				$segs = explode('/', str_replace($this->fetch_site_index(), '', $sub_dir));
+
+				$segment_one = (isset($segs['0'])) ? $segs['0'] : 'default';
+				$segment_two = (isset($segs['1'])) ? $segs['1'] : 'index';	
+				
+				$db_path = '/'.$segment_one.'+'.$segment_two.'/';			
+			}
+
 			$sub_dir = '/'.md5($sub_dir).'/';
 		}
 	
@@ -1094,7 +1106,7 @@ class EE_Functions {
 		{
 			case 'page' : $this->delete_directory(APPPATH.'cache/page_cache'.$sub_dir);
 				break;
-			case 'db'	: $this->delete_directory(APPPATH.'cache/db_cache'.$sub_dir);
+			case 'db'	: $this->delete_directory(APPPATH.'cache/db_cache'.$db_path);
 				break;
 			case 'tag'  : $this->delete_directory(APPPATH.'cache/tag_cache'.$sub_dir);
 				break;
@@ -1104,7 +1116,7 @@ class EE_Functions {
 				break;
 			case 'all'  : 
 						$this->delete_directory(APPPATH.'cache/page_cache'.$sub_dir);
-						$this->delete_directory(APPPATH.'cache/db_cache'.$sub_dir);
+						$this->delete_directory(APPPATH.'cache/db_cache'.$db_path);
 						$this->delete_directory(APPPATH.'cache/sql_cache'.$sub_dir);
 
 						if ($this->EE->config->item('disable_tag_caching') != 'y')
