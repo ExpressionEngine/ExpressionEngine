@@ -1106,7 +1106,7 @@ class EE_Functions {
 		{
 			case 'page' : $this->delete_directory(APPPATH.'cache/page_cache'.$sub_dir);
 				break;
-			case 'db'	: $this->delete_directory(APPPATH.'cache/db_cache'.$db_path);
+			case 'db'	: $this->delete_directory(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id').$db_path);
 				break;
 			case 'tag'  : $this->delete_directory(APPPATH.'cache/tag_cache'.$sub_dir);
 				break;
@@ -1116,7 +1116,7 @@ class EE_Functions {
 				break;
 			case 'all'  : 
 						$this->delete_directory(APPPATH.'cache/page_cache'.$sub_dir);
-						$this->delete_directory(APPPATH.'cache/db_cache'.$db_path);
+						$this->delete_directory(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id').$db_path);
 						$this->delete_directory(APPPATH.'cache/sql_cache'.$sub_dir);
 
 						if ($this->EE->config->item('disable_tag_caching') != 'y')

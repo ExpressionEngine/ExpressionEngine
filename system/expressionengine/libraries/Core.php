@@ -159,22 +159,23 @@ class EE_Core {
 		$this->EE->config->site_prefs($this->EE->config->item('site_name'));
 		
 		// force EE's db cache path - do this AFTER site prefs have been assigned
-		$this->EE->db->cache_set_path(APPPATH.'cache/db_cache');
+		// Due to CI's DB_cache handling- suffix with site id
+		$this->EE->db->cache_set_path(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id'));
 
 		// make sure the DB cache folder exists if we're caching!
-		if ($this->EE->db->cache_on === TRUE && ! @is_dir(APPPATH.'cache/db_cache'))
+		if ($this->EE->db->cache_on === TRUE && ! @is_dir(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id')))
 		{
-			if ( ! @mkdir(APPPATH.'cache/db_cache', DIR_WRITE_MODE))
+			if ( ! @mkdir(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id'), DIR_WRITE_MODE))
 			{
-				continue;
+				//continue;
 			}
 
-			if ($fp = @fopen(APPPATH.'cache/db_cache/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
+			if ($fp = @fopen(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id').'/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
 			{
 				fclose($fp);
 			}
 
-			@chmod(APPPATH.'cache/db_cache', DIR_WRITE_MODE);
+			@chmod(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id'), DIR_WRITE_MODE);
 		}
 		
 
