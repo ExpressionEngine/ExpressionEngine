@@ -1091,9 +1091,12 @@ class EE_Functions {
 		{
 			if ($which == 'all' OR $which == 'db')
 			{
-				$segment_one = ($this->EE->uri->segment(1) == FALSE) ? 'default' : $this->EE->uri->segment(1);
-				$segment_two = ($this->EE->uri->segment(2) == FALSE) ? 'index' : $this->EE->uri->segment(2);
-				$db_path = '/'.$segment_one.'+'.$segment_two.'/';
+				$segs = explode('/', str_replace($this->fetch_site_index(), '', $sub_dir));
+
+				$segment_one = (isset($segs['0'])) ? $segs['0'] : 'default';
+				$segment_two = (isset($segs['1'])) ? $segs['1'] : 'index';	
+				
+				$db_path = '/'.$segment_one.'+'.$segment_two.'/';			
 			}
 
 			$sub_dir = '/'.md5($sub_dir).'/';
