@@ -2753,7 +2753,7 @@ PAPAYA;
 							'pconnect'	=> FALSE,
 							'db_debug'	=> TRUE,
 							'cache_on'	=> FALSE,
-							'cachedir'	=> EE_APPPATH.'/cache/db_cache/',
+							'cachedir'	=> EE_APPPATH.'cache/db_cache/',
 							'autoinit'	=> TRUE,
 							'char_set'	=> 'utf8',
 							'dbcollat'	=> 'utf8_general_ci'
