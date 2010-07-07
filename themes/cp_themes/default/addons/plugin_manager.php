@@ -18,42 +18,6 @@ if ($EE_view_disable !== TRUE)
 		<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
-
-		<ul id="remote_plugins">
-
-		<?php if (count($remote) > 1):?>
-		
-			<li><?=lang('plugins')?>:
-				<?php if ($sort == 'alpha'): ?>
-					<a href="<?=$sort_url?>"><?=lang('plugin_by_date')?></a> / <?=lang('plugin_by_letter')?>				
-				<?php else:?>
-					<?=lang('plugin_by_date')?> / <a href="<?=$sort_url?>"><?=lang('plugin_by_letter')?></a>
-				<?php endif;?>
-
-			</li>
-				
-			<?php foreach($remote as $item):?>
-			
-				<li class="<?=alternator('even', 'odd')?>">
-					<h4><a href="<?=$item['link']?>"><?=$item['title']?></a></h4>
-					
-					<?=$item['description']?>
-					
-					<?php if ($remote_install):?>
-						<p><a href="<?=BASE.AMP.'C=addons_plugins'.AMP.'M=install'.AMP.'file='.$item['dl_url']?>"><?=lang('plugin_install')?></a></p>
-					<?php endif;?>
-				</li>
-				
-			<?php endforeach;?>
-			
-			<li>
-				<?=$this->pagination->create_links()?>
-			</li>
-		
-		<?php else: ?>
-			<li><?=lang('plugins_not_available')?></li>
-		<?php endif;?>
-			</ul>
 		
 			<?php
 				// Local Plugins Table
@@ -98,16 +62,14 @@ if ($EE_view_disable !== TRUE)
 				}
 			?>
 
-			<div id="local_plugins">
-				<?=$this->table->generate()?>
+			<?=$this->table->generate()?>
 
-				<?php
-					if ($is_writable)
-					{
-						echo '<p>'.form_submit('remove_plugins', lang('plugin_remove'), 'class="submit"').'</p>';
-					}
-				?>
-			</div>
+			<?php
+				if ($is_writable)
+				{
+					echo '<p>'.form_submit('remove_plugins', lang('plugin_remove'), 'class="submit"').'</p>';
+				}
+			?>
 
 			<?php
 				if ($is_writable)
