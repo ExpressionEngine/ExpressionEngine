@@ -118,7 +118,7 @@ class Updater {
                     // public beta docs location
                     elseif (isset($data['doc_url']))
                     {
-                        $data['doc_url'] = 'http://expressionengine.com/public_beta/docs/';
+                        $data['doc_url'] = 'http://expressionengine.com/user_guide/';
                     }
                     
                     $data = base64_encode(serialize($data));

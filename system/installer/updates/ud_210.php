@@ -34,10 +34,16 @@ class Updater {
 
     function do_update()
     {
+		// update docs location
+		if ($this->EE->config->item('doc_url') == 'http://expressionengine.com/public_beta/docs/')
+		{
+			$this->EE->config->update_site_prefs(array('doc_url' => 'http://expressionengine.com/user_guide/'));
+		}
+		
 		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_fieldtypes` char(1) NOT NULL DEFAULT 'n' AFTER `can_access_files`";
 		$Q[] = 'UPDATE exp_member_groups SET can_access_fieldtypes = "y" WHERE group_id = 1';
 		$Q[] = 'UPDATE exp_actions SET class = "Channel" WHERE class = "channel"';
-
+		
 		foreach ($Q as $num => $sql)
 		{
 			$this->EE->progress->update_state("Running Query $num of $count");

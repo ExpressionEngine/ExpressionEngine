@@ -74,7 +74,7 @@
 
 /**
  * If you are running the Multiple Site Manager, uncomment and assign the following variables 
- * See http://expressionengine.com/public_beta/docs/cp/sites/domainsetup.html
+ * See http://expressionengine.com/user_guide/cp/sites/domainsetup.html
  */
 //	$assign_to_config['site_name'] = '';
 //	$assign_to_config['cp_url'] = '';
