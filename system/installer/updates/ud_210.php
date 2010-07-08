@@ -37,7 +37,7 @@ class Updater {
 		// update docs location
 		if ($this->EE->config->item('doc_url') == 'http://expressionengine.com/public_beta/docs/')
 		{
-			$this->EE->config->update_site_prefs(array('doc_url' => 'http://expressionengine.com/user_guide/'));
+			$this->EE->config->update_site_prefs(array('doc_url' => 'http://expressionengine.com/user_guide/'), 1);
 		}
 		
 		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_fieldtypes` char(1) NOT NULL DEFAULT 'n' AFTER `can_access_files`";
