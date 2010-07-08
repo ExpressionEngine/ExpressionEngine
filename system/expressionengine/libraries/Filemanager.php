@@ -606,16 +606,9 @@ class Filemanager {
 					$allowed_types = 'gif|jpg|jpeg|png|jpe';
 				}
 			}
-
-			$filename = $_FILES['userfile']['name'];
-		}
-		else
-		{
-			$filename = $_FILES[$field_name]['name'];
 		}
 
 		$config = array(
-				'file_name'		=> $filename,
 				'upload_path'	=> $dir['server_path'],
 				'allowed_types'	=> $allowed_types,
 				'max_size'		=> $dir['max_size'],

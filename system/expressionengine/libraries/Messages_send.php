@@ -113,12 +113,6 @@ class EE_Messages_send extends EE_Messages {
 				}
 			}
 		}
-		
-		/** -------------------------------------
-		/**  Separate the filename form the extension
-		/** -------------------------------------*/
-		$filename = $_FILES['userfile']['name'];
-		$extension = strrchr($filename, '.');
 
 		$filehash = $this->EE->functions->random('alnum', 20);
 		
@@ -158,7 +152,7 @@ class EE_Messages_send extends EE_Messages {
 					'message_id'			=> $this->temp_message_id,
 					'attachment_name'		=> $upload_data['file_name'],
 					'attachment_hash'		=> $filehash,
-					'attachment_extension'  => $extension,
+					'attachment_extension'  => $upload_data['file_ext'],
 					'attachment_location'	=> $upload_data['file_name'],
 					'attachment_date'		=> $this->EE->localize->now,
 					'attachment_size'		=> $upload_data['file_size']
