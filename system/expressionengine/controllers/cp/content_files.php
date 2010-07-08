@@ -321,11 +321,11 @@ class Content_files extends Controller {
 		$upload_dir_result = $this->tools_model->get_upload_preferences($this->session->userdata('member_group'), $upload_id);
 		$upload_dir_prefs = $upload_dir_result->row();
 
-		$full_filename = $_FILES['userfile']['name'];
-		$extension = strrchr($full_filename, '.');
-		$filename = ($extension === FALSE) ? $full_filename : substr($full_filename, 0, -strlen($extension));
-
-		$upload_filename = url_title($filename, $this->config->item('word_separator'), TRUE);
+		// $full_filename = $_FILES['userfile']['name'];
+		// $extension = strrchr($full_filename, '.');
+		// $filename = ($extension === FALSE) ? $full_filename : substr($full_filename, 0, -strlen($extension));
+		// 
+		// $upload_filename = url_title($filename, $this->config->item('word_separator'), TRUE);
 
 		// Upload Exists.
 		// if (file_exists($upload_dir_prefs->server_path.$upload_filename.$extension))
@@ -338,7 +338,6 @@ class Content_files extends Controller {
 		// }
 
 		$config = array(
-			'file_name'		=> $upload_filename,
 			'upload_path'	=> $upload_dir_prefs->server_path,
 			'max_size'		=> $upload_dir_prefs->max_size,
 			'max_width'		=> $upload_dir_prefs->max_width,
