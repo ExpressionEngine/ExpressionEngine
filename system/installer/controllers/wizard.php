@@ -483,7 +483,7 @@ class Wizard extends Controller {
 		// We will show the "you are running the most current version" template
 		if ($this->next_update === FALSE)
 		{
-			$vars['installer_path'] = '/'.SYSDIR.'/expressionengine/installer';
+			$vars['installer_path'] = '/'.SYSDIR.'/installer';
 			$vars['site_url'] = rtrim($this->userdata['site_url'], '/').'/'.$this->userdata['site_index'];
 			$vars['cp_url'] = $this->userdata['cp_url'];
 			
@@ -1069,7 +1069,7 @@ PAPAYA;
 		}
 
 		// Build our success links
-		$vars['installer_path'] = '/'.SYSDIR.'/expressionengine/installer';
+		$vars['installer_path'] = '/'.SYSDIR.'/installer';
 		$vars['site_url'] = rtrim($this->userdata['site_url'], '/').'/'.$this->userdata['site_index'];
 		$vars['cp_url'] = $this->userdata['cp_url'];
 
@@ -2753,7 +2753,7 @@ PAPAYA;
 							'pconnect'	=> FALSE,
 							'db_debug'	=> TRUE,
 							'cache_on'	=> FALSE,
-							'cachedir'	=> EE_APPPATH.'/cache/db_cache/',
+							'cachedir'	=> EE_APPPATH.'cache/db_cache/',
 							'autoinit'	=> TRUE,
 							'char_set'	=> 'utf8',
 							'dbcollat'	=> 'utf8_general_ci'
