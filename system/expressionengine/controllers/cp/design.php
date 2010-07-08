@@ -1590,52 +1590,7 @@ class Design extends Controller {
 
 		$template_type = $this->input->post('template_type');
 
-		if ($_POST['template_data'] == 'library' && isset($_POST['library']))
-		{
-			$this->load->library('security');
-			
-			$parts = explode('/', $_POST['library']);
-		
-			if (count($parts) == 1)
-			{
-				$_POST['library'] = $this->security->sanitize_filename($parts[0]);
-			}
-			else
-			{
-				$_POST['library'] = '';
-				
-				foreach($parts as $part)
-				{
-					$_POST['library'] .= $this->security->sanitize_filename($part).'/';
-				}
-			}
-			
-			$_POST['library'] = rtrim($_POST['library'], '/');
-		
-			if ($fp = @fopen(APPPATH.'templates/'.$_POST['library'], 'r'))
-			{
-				$size = filesize(APPPATH.'templates/'.$_POST['library']);
-				
-				$template_data = ($size > 0) ? fread($fp, $size) : '';
-				fclose($fp);
-			}
-			
-						
-			$data = array(
-							'group_id'		=> $_POST['group_id'],
-							'template_name'	 => $_POST['template_name'],
-							'template_type'	 => $template_type,
-							'template_data'	 => $template_data,
-							'edit_date'		 => $this->localize->now,
-							'site_id'		 => $this->config->item('site_id'),
-							'last_author_id'	=> 0
-
-						 );
-						 
-			$this->template_model->create_template($data);
-			
-		}
-		elseif ($_POST['template_data'] == 'existing_template')
+		if ($_POST['template_data'] == 'existing_template')
 		{
 			$this->db->from('templates t, template_groups tg');
 			$this->db->select('tg.group_name, template_name, template_data, template_type, template_notes, cache, refresh, no_auth_bounce, allow_php, php_parse_location, save_template_file');

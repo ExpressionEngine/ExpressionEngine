@@ -64,12 +64,6 @@ if ($EE_view_disable !== TRUE)
 				  'value'		=> 'template',
 				  'checked'		=> TRUE)).' '.
 				lang('blank_template').'</label></li>
-				<li><label>'.
-				form_radio(array(
-				  'name'		=> 'template_data',
-				  'value'		=> 'library',
-				  'checked'		=> FALSE)).' '.
-				lang('template_from_library').'</label></li>
 				<li><label style="display:inline">'.
 				form_radio(array(
 				  'name'		=> 'template_data',
