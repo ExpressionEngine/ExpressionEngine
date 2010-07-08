@@ -119,7 +119,6 @@ class EE_Messages_send extends EE_Messages {
 		/** -------------------------------------*/
 		$filename = $_FILES['userfile']['name'];
 		$extension = strrchr($filename, '.');
-		$filename = ($extension === FALSE) ? $filename : substr($filename, 0, -strlen($extension));
 
 		$filehash = $this->EE->functions->random('alnum', 20);
 		
@@ -129,7 +128,6 @@ class EE_Messages_send extends EE_Messages {
 		
 		// Upload the image
 		$config = array(
-				'file_name'		=> $filename,
 				'upload_path'	=> $this->upload_path,
 				'allowed_types'	=> '*',
 				'max_size'		=> $this->attach_maxsize
@@ -147,9 +145,7 @@ class EE_Messages_send extends EE_Messages {
 		$this->EE->load->library('upload', $config);
 	
 		if ($this->EE->upload->do_upload() === FALSE)
-		{
-			@unlink($this->EE->upload->file_name);
-			
+		{	
 			return $this->EE->upload->display_errors();
 		}
 	
@@ -160,7 +156,7 @@ class EE_Messages_send extends EE_Messages {
 		$data = array(
 					'sender_id'				=> $this->member_id,
 					'message_id'			=> $this->temp_message_id,
-					'attachment_name'		=> $filename.$extension,
+					'attachment_name'		=> $upload_data['file_name'],
 					'attachment_hash'		=> $filehash,
 					'attachment_extension'  => $extension,
 					'attachment_location'	=> $upload_data['file_name'],
