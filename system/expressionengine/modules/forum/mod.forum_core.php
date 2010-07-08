@@ -5776,12 +5776,6 @@ class Forum_Core extends Forum {
 		{
 			return $this->submission_error = str_replace("%x", $query->row('board_max_attach_size') , $this->EE->lang->line("file_too_big"));
 		}
-
-		/** -------------------------------------
-		/**  Separate the filename form the extension
-		/** -------------------------------------*/
-		$filename = $_FILES['userfile']['name'];
-		$extension = strrchr($filename, '.');
 		
 		$filehash = $this->EE->functions->random('alnum', 20);
 		
@@ -5793,7 +5787,6 @@ class Forum_Core extends Forum {
 
 		// Upload the image
 		$config = array(
-				'file_name'		=> $filename,
 				'upload_path'	=> $server_path,
 				'allowed_types'	=> ($query->row('board_attach_types') == 'all') ? '*' : 'gif|jpg|jpeg|png',
 				'max_size'		=> $query->row('board_max_attach_size')
@@ -5811,7 +5804,7 @@ class Forum_Core extends Forum {
 		$this->EE->load->library('upload', $config);
 
 		if ($this->EE->upload->do_upload() === FALSE)
-		{
+		{;
 			return $this->submission_error = $this->EE->lang->line($this->EE->upload->display_errors());
 		}
 		
@@ -5873,7 +5866,7 @@ class Forum_Core extends Forum {
 						'filename'			=> $upload_data['file_name'],
 						'filehash'			=> $filehash,
 						'filesize'			=> ceil($upload_data['file_size']),
-						'extension'			=> $extension,
+						'extension'			=> $upload_data['file_ext'],
 						'attachment_date'	=> $this->EE->localize->now,
 						'is_temp'			=> ($is_preview == TRUE OR $this->submission_error != '') ? 'y' : 'n',
 						'width'				=>  $width,
@@ -5898,14 +5891,14 @@ class Forum_Core extends Forum {
 		if (file_exists($upload_data['full_path']))
 		{
 			$final_name = $attach_id.'_'.$filehash;
-			$final_path = $upload_data['file_path'].$final_name.$extension;
+			$final_path = $upload_data['file_path'].$final_name.$upload_data['file_ext'];
 
 			if (rename($upload_data['full_path'], $final_path))
 			{
 				chmod($final_path, FILE_WRITE_MODE);
 
-				$thumb_name  = $filehash.'_t'.$extension;
-				$thumb_final = $final_name.'_t'.$extension;
+				$thumb_name  = $filehash.'_t'.$upload_data['file_ext'];
+				$thumb_final = $final_name.'_t'.$upload_data['file_ext'];
 
 				if (file_exists($upload_data['file_path'].$thumb_name))
 				{
