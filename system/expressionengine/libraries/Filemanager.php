@@ -614,14 +614,14 @@ class Filemanager {
 			$filename = $_FILES[$field_name]['name'];
 		}
 
-		$filename = substr($filename, 0, strrpos($filename, '.'));
-
-		$config['file_name'] 		= url_title($filename, $this->EE->config->item('word_separator'), TRUE);
-		$config['upload_path']		= $dir['server_path'];
-		$config['allowed_types']	= $allowed_types;
-		$config['max_size']			= $dir['max_size'];
-		$config['max_width']		= $dir['max_width'];
-		$config['max_height']		= $dir['max_height'];
+		$config = array(
+				'file_name'		=> $filename,
+				'upload_path'	=> $dir['server_path'],
+				'allowed_types'	=> $allowed_types,
+				'max_size'		=> $dir['max_size'],
+				'max_width'		=> $dir['max_width'],
+				'max_height'	=> $dir['max_height']
+			);
 
 		$this->EE->load->library('upload', $config);
 
