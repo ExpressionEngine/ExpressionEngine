@@ -5782,7 +5782,6 @@ class Forum_Core extends Forum {
 		/** -------------------------------------*/
 		$filename = $_FILES['userfile']['name'];
 		$extension = strrchr($filename, '.');
-		$filename = ($extension === FALSE) ? $filename : substr($filename, 0, -strlen($extension));
 		
 		$filehash = $this->EE->functions->random('alnum', 20);
 		
@@ -5791,21 +5790,14 @@ class Forum_Core extends Forum {
 		/** -------------------------------------*/
 	
 		$server_path = $query->row('board_upload_path');
-		
-		if ($query->row('board_attach_types') == 'all')
-		{
-			$allowed_types = '*';
-		}
-		else
-		{
-			$allowed_types = 'gif|jpg|jpeg|png';
-		}
 
 		// Upload the image
-		$config['file_name'] = $filename;
-		$config['upload_path'] = $server_path;
-		$config['allowed_types'] = $allowed_types;
-		$config['max_size']	= $query->row('board_max_attach_size');
+		$config = array(
+				'file_name'		=> $filename,
+				'upload_path'	=> $server_path,
+				'allowed_types'	=> ($query->row('board_attach_types') == 'all') ? '*' : 'gif|jpg|jpeg|png',
+				'max_size'		=> $query->row('board_max_attach_size')
+		);
 		
 		if ($this->EE->config->item('xss_clean_uploads') == 'n')
 		{
@@ -5820,7 +5812,6 @@ class Forum_Core extends Forum {
 
 		if ($this->EE->upload->do_upload() === FALSE)
 		{
-			@unlink($server_path.$filename.$extension);
 			return $this->submission_error = $this->EE->lang->line($this->EE->upload->display_errors());
 		}
 		
@@ -5869,7 +5860,7 @@ class Forum_Core extends Forum {
 				}
 			}
 		}
-// var_dump($upload_data, $filename); exit;
+
 		/** -------------------------------------
 		/**  Build the column data
 		/** -------------------------------------*/
@@ -5879,7 +5870,7 @@ class Forum_Core extends Forum {
 						'post_id'			=> 0,
 						'board_id'			=> 0,
 						'member_id'			=> $this->EE->session->userdata('member_id'),
-						'filename'			=> $filename.$upload_data['file_ext'],
+						'filename'			=> $upload_data['file_name'],
 						'filehash'			=> $filehash,
 						'filesize'			=> ceil($upload_data['file_size']),
 						'extension'			=> $extension,
