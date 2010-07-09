@@ -4622,6 +4622,16 @@ class Forum_Core extends Forum {
 			exit;
 		}
 		
+		if ($this->_fetch_pref('board_attach_types') == 'img')
+		{
+			$good_mime = array('jpg', 'jpeg', 'png', 'gif');
+			
+			if ( ! in_array($extension, $good_mime))
+			{
+				exit;
+			}
+		}		
+		
 		$hits = ($query->row('hits')  == 0) ? 1 : ($query->row('hits')  + 1);
 		
 		$this->EE->db->set('hits', $hits);
