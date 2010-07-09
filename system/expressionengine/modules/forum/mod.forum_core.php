@@ -4623,10 +4623,8 @@ class Forum_Core extends Forum {
 		}
 		
 		if ($this->_fetch_pref('board_attach_types') == 'img')
-		{
-			$good_mime = array('jpg', 'jpeg', 'png', 'gif');
-			
-			if ( ! in_array($extension, $good_mime))
+		{			
+			if ( ! in_array($extension, array('jpg', 'jpeg', 'png', 'gif')))
 			{
 				exit;
 			}
