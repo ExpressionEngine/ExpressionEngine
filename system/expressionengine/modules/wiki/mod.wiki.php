@@ -5381,6 +5381,14 @@ class Wiki {
 				);
 			}
 
+			if (strlen($new_name) > 60)
+			{
+				return $this->EE->output->show_user_error('general', array(
+								$this->EE->lang->line('filename_too_long')
+					)
+				);
+			}
+
 			if ($this->EE->upload->do_upload() === FALSE)
 			{
 				@unlink($this->EE->upload->file_name);

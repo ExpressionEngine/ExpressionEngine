@@ -77,6 +77,9 @@ $lang = array(
 'file_exists' =>
 'File Already Exists, Please Try a New Name',
 
+'filename_too_long' =>
+"Filename Must Not Exceed 60 Characters, Please Try a New Name",
+
 'moderation_emails' =>
 'Email Addresses for Moderation Notifications',
 
