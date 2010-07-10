@@ -24,24 +24,19 @@
  */
 class Tools_communicate extends Controller {
 
-	var $mailinglist_exists = FALSE;
-	var $attachments = array();
-	var $perpage = 50;
-	var $pipe_length = 5;
+	var $mailinglist_exists	= FALSE;
+	var $attachments		= array();
+	var $perpage			= 50;
+	var $pipe_length		= 5;
 
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function Tools_communicate()
 	{
-		// Call the Controller constructor.  
-		// Without this, the world as we know it will end!
 		parent::Controller();
-
-		// Does the "core" class exist?  Normally it's initialized
-		// automatically via the autoload.php file.  If it doesn't
-		// exist it means there's a problem.
-		if ( ! isset($this->core) OR ! is_object($this->core))
-		{
-			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
-		}
 		
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_comm'))
 		{
@@ -55,30 +50,19 @@ class Tools_communicate extends Controller {
 		
 		$this->load->model('communicate_model');
 		$this->lang->loadfile('communicate');
-		
-		$this->javascript->compile();
 	}
 	
 	// --------------------------------------------------------------------
 
 	/**
 	 * Index function
-	 * 
-	 * Every controller must have an index function, which gets called
-	 * automatically by CodeIgniter when the URI does not contain a call to
-	 * a specific method call
 	 *
 	 * @access	public
 	 * @param	string
-	 * @return	mixed
+	 * @return	void
 	 */	
 	function index($alert = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_comm'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
 		$this->load->library('spellcheck');
 		$this->load->library('table');
 		$this->load->helper(array('form'));
@@ -348,18 +332,11 @@ class Tools_communicate extends Controller {
 	/**
 	 * Send Email
 	 *
-	 * Sends email
-	 *
 	 * @access	public
 	 * @return	void
 	 */
 	function send_email()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_comm'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		$this->load->library('email');
 		$this->cp->set_variable('cp_page_title', $this->lang->line('email_success'));
 
@@ -770,11 +747,6 @@ class Tools_communicate extends Controller {
 	 */
 	function batch_send()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_comm'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		if ( ! $id = $this->input->get_post('id') OR ! ctype_digit($id))
 		{
 			show_error($this->lang->line('problem_with_id'));
@@ -1006,11 +978,6 @@ class Tools_communicate extends Controller {
 	 */
 	function view_cache()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_comm'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
 		if ( ! $this->cp->allowed_group('can_send_cached_email'))
 		{	 
 			show_error($this->lang->line('not_allowed_to_email_cache'));
@@ -1245,11 +1212,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */
 	function view_cache_ajax_filter()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_comm'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		$this->output->enable_profiler(FALSE);
 		
 		$col_map = array('subject', 'cache_date', 'total_sent', 'recipient_array', 'recipient_array');
@@ -1319,11 +1281,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */
 	function delete_emails_confirm()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_comm'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		if ( ! $this->cp->allowed_group('can_send_cached_email'))
 		{	 
 			show_error($this->lang->line('not_allowed_to_email_mailinglist'));
@@ -1369,11 +1326,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */
 	function delete_emails()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_comm'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		if ( ! $this->cp->allowed_group('can_send_cached_email'))
 		{	 
 			show_error($this->lang->line('not_allowed_to_email_mailinglist'));
@@ -1402,11 +1354,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */
 	function view_email()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_comm'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		if ( ! $this->cp->allowed_group('can_send_cached_email'))
 		{	 
 			show_error($this->lang->line('not_allowed_to_email_mailinglist'));
@@ -1473,7 +1420,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 *
 	 * Adds unsubscribe links to emails, etc.
 	 *
-	 * @access	public
+	 * @access	private
 	 * @param	string	template
 	 * @param	string	message
 	 * @param	string	action id
@@ -1523,7 +1470,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 * Returns a total of email addresses from an undetermined number of strings
 	 * containing comma-delimited addresses
 	 *
-	 * @access	public
+	 * @access	private
 	 * @param	string 	// any number of comma delimited strings
 	 * @return	string
 	 */
@@ -1545,9 +1492,13 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Delete Attachments
+	 *
+	 * @access	private
+	 */
 	function _delete_attachments()
 	{
-		
 		foreach ($this->attachments as $file)
 		{
 			unlink($file);

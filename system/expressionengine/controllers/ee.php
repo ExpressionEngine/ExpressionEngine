@@ -66,7 +66,7 @@ class EE extends Controller {
 	 * Add the template debugger to the output if required and then
 	 * run the garbage collection routine.
 	 *
-	 * @access	public
+	 * @access	private
 	 * @return	void
 	 */
 	function _output($output)

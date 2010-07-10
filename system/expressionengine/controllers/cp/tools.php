@@ -24,21 +24,15 @@
  */
 class Tools extends Controller {
 
-
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function Tools()
 	{
-		// Call the Controller constructor.  
-		// Without this, the world as we know it will end!
 		parent::Controller();
-
-		// Does the "core" class exist?  Normally it's initialized
-		// automatically via the autoload.php file.  If it doesn't
-		// exist it means there's a problem.
-		if ( ! isset($this->core) OR ! is_object($this->core))
-		{
-			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
-		}
-
+		
 		if ( ! $this->cp->allowed_group('can_access_tools'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
@@ -51,26 +45,17 @@ class Tools extends Controller {
 
 	/**
 	 * Index function
-	 * 
-	 * Every controller must have an index function, which gets called
-	 * automatically by CodeIgniter when the URI does not contain a call to
-	 * a specific method call
 	 *
 	 * @access	public
-	 * @return	mixed
+	 * @return	void
 	 */	
 	function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		$this->cp->set_variable('cp_page_title', $this->lang->line('tools'));
 
 		$this->javascript->compile();
 
-		$this->load->vars(array('controller'=>'tools'));
+		$this->load->vars(array('controller' => 'tools'));
 
 		$this->load->view('_shared/overview');
 	}

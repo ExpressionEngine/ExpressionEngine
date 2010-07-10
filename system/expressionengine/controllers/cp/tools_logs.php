@@ -24,23 +24,17 @@
  */
 class Tools_logs extends Controller {
 	
-	var $perpage = 50;
-	var $pipe_length = 3;
+	var $perpage		= 50;
+	var $pipe_length	= 3;
 
-
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function Tools_logs()
 	{
-		// Call the Controller constructor.  
-		// Without this, the world as we know it will end!
 		parent::Controller();
-
-		// Does the "core" class exist?  Normally it's initialized
-		// automatically via the autoload.php file.  If it doesn't
-		// exist it means there's a problem.
-		if ( ! isset($this->core) OR ! is_object($this->core))
-		{
-			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
-		}
 
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{
@@ -50,22 +44,16 @@ class Tools_logs extends Controller {
 		$this->load->model('tools_model');
 		$this->lang->loadfile('tools');
 
-		$this->load->vars(array('controller'=>'tools/tools_logs'));
-
-		$this->javascript->compile();
+		$this->load->vars(array('controller' => 'tools/tools_logs'));
 	}
 	
 	// --------------------------------------------------------------------
 
 	/**
 	 * Index function
-	 * 
-	 * Every controller must have an index function, which gets called
-	 * automatically by CodeIgniter when the URI does not contain a call to
-	 * a specific method call
 	 *
 	 * @access	public
-	 * @return	mixed
+	 * @return	void
 	 */	
 	function index()
 	{
@@ -189,7 +177,6 @@ class Tools_logs extends Controller {
 		
 		foreach ($query->result_array() as $log)
 		{
-		
 			$m[] = $log['member_id'];
 			$m[] = "<strong><a href='".BASE.AMP.'C=myaccount'.AMP.'id='.$log['member_id']."'>{$log['username']}</a></strong>";
 			$m[] = $log['ip_address'];

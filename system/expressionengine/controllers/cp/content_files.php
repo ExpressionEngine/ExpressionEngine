@@ -24,20 +24,14 @@
  */
 class Content_files extends Controller {
 
-
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function Content_files()
 	{
-		// Call the Controller constructor.  
-		// Without this, the world as we know it will end!
 		parent::Controller();
-
-		// Does the "core" class exist?  Normally it's initialized
-		// automatically via the autoload.php file.  If it doesn't
-		// exist it means there's a problem.
-		if ( ! isset($this->core) OR ! is_object($this->core))
-		{
-			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
-		}
 
 		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
 		{
@@ -50,8 +44,6 @@ class Content_files extends Controller {
         {
             $this->output->enable_profiler(FALSE);
         }
-		
-		$this->javascript->compile();
 	}
 
 	// --------------------------------------------------------------------
@@ -60,7 +52,7 @@ class Content_files extends Controller {
 	 * Index function
 	 * 
 	 * @access	public
-	 * @return	mixed
+	 * @return	void
 	 */
 	function index()
 	{

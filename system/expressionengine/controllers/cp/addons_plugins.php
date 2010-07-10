@@ -26,19 +26,14 @@ class Addons_plugins extends Controller {
 
 	var $paths = array();
 
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function Addons_plugins()
 	{
-		// Call the Controller constructor.	
-		// Without this, the world as we know it will end!
 		parent::Controller();
-
-		// Does the "core" class exist?	 Normally it's initialized
-		// automatically via the autoload.php file.	 If it doesn't
-		// exist it means there's a problem.
-		if ( ! isset($this->core) OR ! is_object($this->core))
-		{
-			show_error('The ExpressionEngine Core was not initialized.	Please make sure your autoloader is correctly set up.');
-		}
 
 		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
 		{
@@ -51,22 +46,13 @@ class Addons_plugins extends Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Index function
-	 *
-	 * Every controller must have an index function, which gets called
-	 * automatically by CodeIgniter when the URI does not contain a call to
-	 * a specific method call
+	 * Plugin Homepage
 	 *
 	 * @access	public
-	 * @return	string
+	 * @return	void
 	 */
 	function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
 		$this->load->library('table');
 		$this->load->helper('form');
 
@@ -197,11 +183,6 @@ class Addons_plugins extends Controller {
 	 */
 	function info()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
 		$name = $this->input->get('name');
 
 		// Basic security check
@@ -246,11 +227,6 @@ class Addons_plugins extends Controller {
 	 */
 	function remove_confirm()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
 		if ($this->config->item('demo_date') != FALSE)
 		{
 			show_error($this->lang->line('unauthorized_access'));
@@ -286,11 +262,6 @@ class Addons_plugins extends Controller {
 	 */
 	function remove()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
 		if ($this->config->item('demo_date') != FALSE)
 		{
 			show_error($this->lang->line('unauthorized_access'));
@@ -370,11 +341,6 @@ class Addons_plugins extends Controller {
 	 */
 	function install()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
 		if ($this->config->item('demo_date') != FALSE)
 		{
 			show_error($this->lang->line('unauthorized_access'));

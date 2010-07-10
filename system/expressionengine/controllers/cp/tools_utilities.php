@@ -24,28 +24,22 @@
  */
 class Tools_utilities extends Controller {
 
-	var $errors = array();
-	var $members = array();
-	var $members_custom = array();
-	var $default_fields	= array();
+	var $errors					= array();
+	var $members				= array();
+	var $members_custom			= array();
+	var $default_fields			= array();
 	var $default_custom_fields	= array();
-	var $taken = array();
-	var $invalid_names = array();
-	//var $new_custom_fields = array();
+	var $taken					= array();
+	var $invalid_names			= array();
 
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function Tools_utilities()
 	{
-		// Call the Controller constructor.  
-		// Without this, the world as we know it will end!
 		parent::Controller();
-
-		// Does the "core" class exist?  Normally it's initialized
-		// automatically via the autoload.php file.  If it doesn't
-		// exist it means there's a problem.
-		if ( ! isset($this->core) OR ! is_object($this->core))
-		{
-			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
-		}
 
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -53,21 +47,15 @@ class Tools_utilities extends Controller {
 		}
 
 		$this->lang->loadfile('tools');
-		
-		$this->javascript->compile();
 	}
 	
 	// --------------------------------------------------------------------
 
 	/**
 	 * Index function
-	 * 
-	 * Every controller must have an index function, which gets called
-	 * automatically by CodeIgniter when the URI does not contain a call to
-	 * a specific method call
 	 *
 	 * @access	public
-	 * @return	mixed
+	 * @return	void
 	 */	
 	function index()
 	{
@@ -359,8 +347,6 @@ class Tools_utilities extends Controller {
 	 * @access	private
 	 * @return	void
 	 */	
-
-
 	function _confirm_custom_field_form($vars)
 	{
 		$this->_import_xml_validate();
@@ -392,8 +378,6 @@ class Tools_utilities extends Controller {
 	 * @access	public
 	 * @return	void
 	 */	
-
-
 	function final_confirm_xml_form()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
@@ -485,7 +469,6 @@ class Tools_utilities extends Controller {
 	 * @access	private
 	 * @return	void
 	 */	
-		
 	function _new_custom_fields_form($data, $vars, $new_custom_fields)
 	{
 		$this->load->library('table');
@@ -550,8 +533,6 @@ class Tools_utilities extends Controller {
 	 * @access	public
 	 * @return	void
 	 */	
-
-
 	function process_xml()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
@@ -633,7 +614,6 @@ class Tools_utilities extends Controller {
 		$this->functions->redirect(BASE.AMP.'C=tools_utilities'.AMP.'M=import_from_xml');
 
 	}
-	/* END */
 
 	// --------------------------------------------------------------------
 
@@ -645,7 +625,6 @@ class Tools_utilities extends Controller {
 	 * @access	public
 	 * @return	array
 	 */	
-
 	function custom_field_check($xml_file)
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
@@ -982,7 +961,6 @@ class Tools_utilities extends Controller {
 			$this->errors[] = array($this->lang->line('invalid_xml'));
 		}
 	}
-	/* END */
 	
 	// --------------------------------------------------------------------
 
@@ -994,12 +972,6 @@ class Tools_utilities extends Controller {
 	 * @access	public
 	 * @return	number
 	 */	
-
-
-	/** -------------------------------------
-	/**  Perform XML Member Import
-	/** -------------------------------------*/
-	
 	function do_import()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
@@ -1141,7 +1113,6 @@ class Tools_utilities extends Controller {
 		
 		return $counter;
 	}
-	/* END */
 	
 	// --------------------------------------------------------------------
 
@@ -1153,8 +1124,6 @@ class Tools_utilities extends Controller {
 	 * @access	private
 	 * @return	mixed
 	 */	
-
-
 	function _create_custom_validation()
 	{
 		$this->load->library('form_validation');
@@ -1201,7 +1170,6 @@ class Tools_utilities extends Controller {
 	 * @access	private
 	 * @return	bool
 	 */	
-	
 	function _valid_name($str)
 	{
 		$error = array();
@@ -1248,7 +1216,6 @@ class Tools_utilities extends Controller {
 	 * @access	public
 	 * @return	mixed
 	 */	
-
 	function create_custom_fields()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
@@ -1346,8 +1313,6 @@ class Tools_utilities extends Controller {
 	 * @access	private
 	 * @return	void
 	 */	
-
-	
 	function _convert_from_delimited_validation()
 	{
 		$this->load->library('form_validation');
@@ -1370,8 +1335,6 @@ class Tools_utilities extends Controller {
 	 * @access	private
 	 * @return	void
 	 */	
-
-	
 	function _convert_from_delimited_form()
 	{
 		$this->load->helper('form');
@@ -1404,8 +1367,6 @@ class Tools_utilities extends Controller {
 	 * @access	private
 	 * @return	void
 	 */	
-
-	
 	function _pair_fields_form()
 	{
 		$this->load->library('table');
@@ -1494,7 +1455,6 @@ class Tools_utilities extends Controller {
 		$this->load->view('tools/convert_xml_pairs', $vars);
 
 	}
-
 
 	// --------------------------------------------------------------------
 
@@ -1591,8 +1551,6 @@ class Tools_utilities extends Controller {
 	 * @access	private
 	 * @return	string
 	 */	
-
-	
 	function _prep_enclosure($enclosure)
 	{
 		// undo changes made by form prep as we need the literal characters
@@ -1618,8 +1576,6 @@ class Tools_utilities extends Controller {
 	 * @access	private
 	 * @return	void
 	 */	
-
-	
 	function _pair_fields_validation()
 	{
 		$this->load->library('form_validation');
@@ -1641,8 +1597,6 @@ class Tools_utilities extends Controller {
 	 * @access	private
 	 * @return	void
 	 */	
-	
-	
 	function _unique_required ($selected_fields)
 	{
 		//  Get field pairings
@@ -1698,7 +1652,6 @@ class Tools_utilities extends Controller {
 	 * @access	public
 	 * @return	void
 	 */	
-
 	function confirm_data_form()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
@@ -1783,9 +1736,7 @@ class Tools_utilities extends Controller {
 		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', $this->lang->line('member_import_utility'));
 		
 		$this->load->view('tools/confirm_convert_xml', $vars);
-	}
-	/* END */
-	
+	}	
 	
 	// --------------------------------------------------------------------
 
@@ -1797,8 +1748,6 @@ class Tools_utilities extends Controller {
 	 * @access	public
 	 * @return	mixed
 	 */	
-
-	
 	function create_xml()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
@@ -1877,8 +1826,6 @@ class Tools_utilities extends Controller {
 			case 'download' : $this->download_xml($xml); break;
 		}
 	}
-	/* END */
-	
 
 	// --------------------------------------------------------------------
 
@@ -1890,8 +1837,6 @@ class Tools_utilities extends Controller {
 	 * @access	private
 	 * @return	void
 	 */	
-
-	
 	function view_xml($xml)
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
@@ -1912,7 +1857,6 @@ class Tools_utilities extends Controller {
 
 		$this->load->view('tools/view_xml', $vars);
 	}
-	/* END */
 	
 	// --------------------------------------------------------------------
 
@@ -1924,8 +1868,6 @@ class Tools_utilities extends Controller {
 	 * @access	public
 	 * @return	void
 	 */	
-
-
 	function view_xml_errors($errors, $message = '')
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
@@ -1962,9 +1904,7 @@ class Tools_utilities extends Controller {
 
 		$this->load->view('tools/view_xml', $vars);
 
-	}
-	/* END */
-	
+	}	
 
 	// --------------------------------------------------------------------
 
@@ -1976,7 +1916,6 @@ class Tools_utilities extends Controller {
 	 * @access	public
 	 * @return	void
 	 */	
-	
 	function download_xml($xml)
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
@@ -1991,7 +1930,6 @@ class Tools_utilities extends Controller {
 		
 		force_download($filename, $xml);
 	}
-	/* END */
 
 	// --------------------------------------------------------------------
 
@@ -2088,8 +2026,6 @@ class Tools_utilities extends Controller {
 	 * @access	public
 	 * @return	void
 	 */	
-
-
 	function translation_save()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
@@ -2147,8 +2083,6 @@ class Tools_utilities extends Controller {
 	 * @access	public
 	 * @return	array
 	 */	
-
-	
 	function datafile_to_array($file)
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))

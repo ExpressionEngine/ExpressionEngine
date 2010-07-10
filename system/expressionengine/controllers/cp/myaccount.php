@@ -24,25 +24,17 @@
  */
 class MyAccount extends Controller {
 
-	var $username = '';
-	var $id = '';
+	var $id			= '';
+	var $username	= '';
 
 	/**
-	  *	 Constructor
-	  */
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function MyAccount()
 	{
-		// Call the Controller constructor.
-		// Without this, the world as we know it will end!
 		parent::Controller();
-
-		// Does the "core" class exist?	 Normally it's initialized
-		// automatically via the autoload.php file.	 If it doesn't
-		// exist it means there's a problem.
-		if ( ! isset($this->core) OR ! is_object($this->core))
-		{
-			show_error('The ExpressionEngine Core was not initialized.	Please make sure your autoloader is correctly set up.');
-		}
 
 		if (FALSE === ($this->id = $this->auth_id()))
 		{
@@ -71,8 +63,6 @@ class MyAccount extends Controller {
 
 		$this->username = ($query->row('screen_name')  == '') ? $query->row('username') : $query->row('screen_name');
 		$this->cp->set_variable('member_username', $this->username);
-		
-		$this->javascript->compile();
 	}
 
 	// --------------------------------------------------------------------
@@ -81,9 +71,7 @@ class MyAccount extends Controller {
 	 * My Account main page
 	 *
 	 * @access	public
-	 * @param	string	$title		Optional title
-	 * @param	string	$content
-	 * @return	mixed
+	 * @return	void
 	 */
 	function index()
 	{

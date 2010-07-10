@@ -24,19 +24,14 @@
  */
 class Javascript extends Controller {
 
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function Javascript()
 	{
-		// Call the Controller constructor.  
-		// Without this, the world as we know it will end!
 		parent::Controller();
-
-		// Does the "core" class exist?  Normally it's initialized
-		// automatically via the autoload.php file.  If it doesn't
-		// exist it means there's a problem.
-		if ( ! isset($this->core) OR ! is_object($this->core))
-		{
-			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
-		}
 
 		if ( ! defined('PATH_JQUERY'))
 		{
@@ -57,13 +52,9 @@ class Javascript extends Controller {
 
 	/**
 	 * Index function
-	 * 
-	 * Every controller must have an index function, which gets called
-	 * automatically by CodeIgniter when the URI does not contain a call to
-	 * a specific method call
 	 *
 	 * @access	public
-	 * @return	mixed
+	 * @return	void
 	 */
 	function index()
 	{
@@ -272,9 +263,9 @@ class Javascript extends Controller {
 	/**
 	 * Set Headers
 	 *
-	 * @access private
-     * @param string 
-	 * @return str
+	 * @access	private
+     * @param	string 
+	 * @return	string
 	 */
     function _set_headers($file, $mtime = FALSE)
     {

@@ -27,17 +27,14 @@ class Addons_modules extends Controller {
 
 	var $_mcp_reference;
 
-
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function Addons_modules()
 	{
 		parent::Controller();
-
-		// Does the "core" class exist?  Normally it's initialized automatically
-		// via the autoload.php file.  If it doesn't exist it means there's a problem.
-		if ( ! isset($this->core) OR ! is_object($this->core))
-		{
-			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
-		}
 
 		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
 		{
@@ -55,15 +52,10 @@ class Addons_modules extends Controller {
 	 * Module Section Homepage
 	 *
 	 * @access	public
-	 * @return	string
+	 * @return	void
 	 */
 	function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		// Set access status
 		$can_admin = ( ! $this->cp->allowed_group('can_admin_modules')) ? FALSE : TRUE;
 
@@ -216,15 +208,12 @@ class Addons_modules extends Controller {
 	 */
 	function show_module_cp()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->load->library('security');
+		$this->load->library('addons');
 		
 		// These can be overriden by individual modules
 		$this->cp->set_variable('cp_page_title', $this->lang->line('modules'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons_modules', $this->lang->line('modules'));
-		$this->load->library('security');
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumb', array(
@@ -234,7 +223,6 @@ class Addons_modules extends Controller {
 
 		$module = $this->input->get_post('module');
 		$module = $this->security->sanitize_filename(strtolower($module));
-		$this->load->library('addons');
 		
 		$installed = $this->addons->get_installed();
 
@@ -354,11 +342,6 @@ class Addons_modules extends Controller {
 	 */
 	function module_installer()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		$module = $this->input->get_post('module');
 		$module = $this->security->sanitize_filename(strtolower($module));
 
@@ -383,14 +366,8 @@ class Addons_modules extends Controller {
 	 * @access	public
 	 * @return	void
 	 */
-
 	function delete_module_confirm()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		$module = $this->input->get_post('module');
 
 		if ( ! $this->cp->allowed_group('can_admin_modules') OR $module === FALSE)
@@ -425,11 +402,6 @@ class Addons_modules extends Controller {
 	 */
 	function module_uninstaller()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		$module = $this->input->get_post('module');
 		$confirm = $this->input->get_post('confirm');
 				

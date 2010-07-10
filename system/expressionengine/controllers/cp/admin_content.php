@@ -36,21 +36,16 @@ class Admin_content extends Controller {
 
 	var $temp;
 
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function Admin_content()
 	{
-		// Call the Controller constructor.
-		// Without this, the world as we know it will end!
 		parent::Controller();
 
 		$this->lang->loadfile('admin');
-
-		// Does the "core" class exist?	 Normally it's initialized
-		// automatically via the autoload.php file.	 If it doesn't
-		// exist it means there's a problem.
-		if ( ! isset($this->core) OR ! is_object($this->core))
-		{
-			show_error('The ExpressionEngine Core was not initialized.	Please make sure your autoloader is correctly set up.');
-		}
 
 		// Note- no access check here to allow the publish page access to categories
 	}
@@ -59,10 +54,6 @@ class Admin_content extends Controller {
 
 	/**
 	 * Index function
-	 *
-	 * Every controller must have an index function, which gets called
-	 * automatically by CodeIgniter when the URI does not contain a call to
-	 * a specific method call
 	 *
 	 * @access	public
 	 * @return	void

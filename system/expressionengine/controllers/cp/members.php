@@ -26,25 +26,19 @@
 class Members extends Controller {
 
 	// Default member groups.  We used these for translation purposes
-	var $english = array('Guests', 'Banned', 'Members', 'Pending', 'Super Admins');
-	var $perpage = 50;  // Number of results on the "View all member" page	
-	var $no_delete = array('1', '2', '3', '4'); // Member groups that can not be deleted
-	var $pipe_length = 5;
+	var $english		= array('Guests', 'Banned', 'Members', 'Pending', 'Super Admins');
+	var $no_delete		= array('1', '2', '3', '4'); // Member groups that can not be deleted
+	var $perpage		= 50;  // Number of results on the "View all member" page	
+	var $pipe_length	= 5;
 	
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function Members()
 	{
-	
-		// Call the Controller constructor.
-		// Without this, the world as we know it will end!
 		parent::Controller();
-
-		// Does the "core" class exist?  Normally it's initialized
-		// automatically via the autoload.php file.  If it doesn't
-		// exist it means there's a problem.
-		if ( ! isset($this->core) OR ! is_object($this->core))
-		{
-			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
-		}
 		
 		if ( ! $this->cp->allowed_group('can_access_members'))
 		{
@@ -53,8 +47,6 @@ class Members extends Controller {
 
 		$this->lang->loadfile('members');
 		$this->load->model('member_model');
-
-		$this->javascript->compile();
 	}
 	
 	// --------------------------------------------------------------------

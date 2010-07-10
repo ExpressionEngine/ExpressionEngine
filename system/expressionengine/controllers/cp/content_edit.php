@@ -27,23 +27,18 @@ class Content_edit extends Controller {
 	var $nest_categories	= 'y';
 	var $installed_modules	= FALSE;
 	
+	var $pipe_length			= 3;
 	var $comment_chars			= 25;
 	var $comment_leave_breaks	= 'n';
-	var $pipe_length				= 3;
 
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function Content_edit()
 	{
-		// Call the Controller constructor.  
-		// Without this, the world as we know it will end!
 		parent::Controller();
-
-		// Does the "core" class exist?  Normally it's initialized
-		// automatically via the autoload.php file.  If it doesn't
-		// exist it means there's a problem.
-		if ( ! isset($this->core) OR ! is_object($this->core))
-		{
-			show_error('The ExpressionEngine Core was not initialized.  Please make sure your autoloader is correctly set up.');
-		}
 
 		$this->installed_modules = $this->cp->get_installed_modules();
 		
@@ -60,13 +55,9 @@ class Content_edit extends Controller {
 
 	/**
 	 * Index function
-	 * 
-	 * Every controller must have an index function, which gets called
-	 * automatically by CodeIgniter when the URI does not contain a call to
-	 * a specific method call
 	 *
 	 * @access	public
-	 * @return	mixed
+	 * @return	void
 	 */	
 	function index($channel_id = '', $message = '', $extra_sql = '', $search_url = '', $form_url = '', $action = '', $extra_fields_search='', $extra_fields_entries='', $heading='')
 	{		
