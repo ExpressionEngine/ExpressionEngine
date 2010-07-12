@@ -105,6 +105,7 @@ class EE_Output extends CI_Output {
 			case 'css':		$this->set_header("Content-type: text/css");
 				break;
 			case 'js':		$this->set_header("Content-type: text/javascript");
+							$this->enable_profiler = FALSE;
 				break;
 			case '404':		$this->set_status_header(404);
 							$this->set_header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
