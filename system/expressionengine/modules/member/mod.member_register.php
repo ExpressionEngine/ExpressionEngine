@@ -336,7 +336,7 @@ class Member_register extends Member {
 		/**  Set the default globals
 		/** ----------------------------------------*/
 
-		$default = array('username', 'password', 'password_confirm', 'email', 'email_confirm', 'screen_name', 'url', 'location');
+		$default = array('username', 'password', 'password_confirm', 'email', 'screen_name', 'url', 'location');
 
 		foreach ($default as $val)
 		{
@@ -402,7 +402,7 @@ class Member_register extends Member {
 			}
 		}
 
-		if ($_POST['email'] != $_POST['email_confirm'])
+		if (isset($_POST['email_confirm']) && $_POST['email'] != $_POST['email_confirm'])
 		{
 			$cust_errors[] = $this->EE->lang->line('mbr_emails_not_match');
 		}

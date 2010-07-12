@@ -44,6 +44,8 @@ class Updater {
 		$Q[] = 'UPDATE exp_member_groups SET can_access_fieldtypes = "y" WHERE group_id = 1';
 		$Q[] = 'UPDATE exp_actions SET class = "Channel" WHERE class = "channel"';
 		
+		$count = count($Q);
+		
 		foreach ($Q as $num => $sql)
 		{
 			$this->EE->progress->update_state("Running Query $num of $count");
