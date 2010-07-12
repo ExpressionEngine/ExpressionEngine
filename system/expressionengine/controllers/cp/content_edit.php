@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
  * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
- * @license		http://expressionengine.com/docs/license.html
+ * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
  * @filesource
@@ -812,7 +812,7 @@ class Content_edit extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-
+		
 		$this->output->enable_profiler(FALSE);
 		$this->load->helper(array('form', 'text', 'url', 'snippets'));
 		
@@ -889,8 +889,21 @@ class Content_edit extends Controller {
 			}
 		}
 
-		$filtered_entries = $this->search_model->get_filtered_entries($filter_data, $order);
-		
+		/*
+		if ($filter_data['entry_id'] != FALSE OR $filter_data['comment_id'] != FALSE)
+		{
+			$filtered_entries = $this->search_model->comment_search('', $filter_data['entry_id'], array($filter_data['comment_id']), '', $validate, $order);
+			
+			//print_r($filtered_entries);
+				
+			$filter_data['search_in'] == 'comments';
+		}
+		else
+		{
+		*/
+			$filtered_entries = $this->search_model->get_filtered_entries($filter_data, $order);
+		//}
+
 		// No result?  Show the "no results" message
 		$total = $filtered_entries['total_count'];
 		$query_results = $filtered_entries['results'];

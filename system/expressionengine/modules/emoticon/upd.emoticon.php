@@ -10,7 +10,7 @@
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/docs/license.html
+ http://expressionengine.com/user_guide/license.html
 =====================================================
  File: mcp.emoticon.php
 -----------------------------------------------------

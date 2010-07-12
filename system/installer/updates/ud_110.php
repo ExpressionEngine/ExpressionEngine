@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
  * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
- * @license		http://expressionengine.com/docs/license.html
+ * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
  * @filesource
@@ -322,7 +322,7 @@ class Category_Order {
 		$str .= '====================================================='."\n";
 		$str .= ' THIS IS COPYRIGHTED SOFTWARE'."\n";
 		$str .= ' PLEASE READ THE LICENSE AGREEMENT'."\n";
-		$str .= ' http://expressionengine.com/docs/license.html'."\n";
+		$str .= ' http://expressionengine.com/user_guide/license.html'."\n";
 		$str .= '====================================================='."\n";
 		$str .= ' Purpose: Member Profile Skin Elements'."\n";
 		$str .= '====================================================='."\n";
