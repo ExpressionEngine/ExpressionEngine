@@ -340,17 +340,17 @@ class Admin_content extends Controller {
 				$vars['deft_status_options'][$row->status] = $status_name;
 			}
 		}
+		
+		$cats = $vars['cat_group'] ? explode('|', $vars['cat_group']) : array();
 
-		if ( ! is_null($vars['cat_group']))
+		// Needz moar felineness!
+		if (count($cats))
 		{
-			// Default category menu
-			$cats = implode("','", $this->db->escape_str(explode('|', $vars['cat_group'])));
-
 			$this->db->select('CONCAT('.$this->db->dbprefix('category_groups').'.group_name, ": ", '.$this->db->dbprefix('categories').'.cat_name) as display_name', FALSE);
 			$this->db->select('categories.cat_id, categories.cat_name, category_groups.group_name');
 			$this->db->from('categories, '.$this->db->dbprefix('category_groups'));
 			$this->db->where($this->db->dbprefix('category_groups').'.group_id = '.$this->db->dbprefix('categories').'.group_id', NULL, FALSE);
-			$this->db->where('categories.group_id IN('.$cats.')');
+			$this->db->where_in('categories.group_id', $cats);
 			$this->db->order_by('display_name');
 		
 			$query = $this->db->get();
