@@ -38,8 +38,9 @@ fieldset {
 }
 
 textarea,
-input[type=text],
-input[type=password] {
+textarea.markItUpEditor,
+input[type="text"],
+input[type="password"] {
 	font-family:			Helvetica, Arial, sans-serif;
 	font-size:				100%;
 	border:					1px solid #b6c0c2;
@@ -59,8 +60,9 @@ textarea {
 }
 
 textarea:focus,
-input[type=text]:focus,
-input[type=password]:focus {
+textarea.markItUpEditor:focus,
+input[type="text"]:focus,
+input[type="password"]:focus {
 	border:					2px solid #B2BEC0;
 	padding:				3px;
 }
@@ -1457,7 +1459,9 @@ span.ee_notice_icon {
 	margin-bottom:		11px;
 }
 
-#template_create textarea, #template_data {
+#template_data,
+#template_create textarea {
+	padding:			0;
 	width:				100%;
 	border:				none;
 }
@@ -2414,12 +2418,14 @@ a#refresh_categories {
 	padding-top:		7px;
 }
 
-/*.hasDatepicker { /* UI datepicker automatically adds this class 
+.hasDatepicker { /* UI datepicker automatically adds this class */
+	background: #fff url('<?=$cp_theme_url?>images/calendar_bg.gif') no-repeat 98% 2px;
+	
 	background-repeat: no-repeat;
 	background-position: 99%;
 	border: 1px solid #B6C0C2;
 	padding: 2px;
-}*/
+}
 
 #custom_date_picker input[type="text"] {
 	background: transparent url('<?=$cp_theme_url?>images/calendar_bg.gif') no-repeat 98% 2px;
@@ -3539,12 +3545,14 @@ html.js #revealSidebarLink {
 // By Jay Salvat - http://markitup.jaysalvat.com/
 // ------------------------------------------------------------------*/
 .markItUp * {
-	margin:0px; padding:0px;
+	margin:			0px;
+	padding:		0px;
 }
 .markItUp {
-	padding-top:10px;
-	}
-.markItUpPreviewFrame	{
+	padding-top:	10px;
+}
+
+.markItUpPreviewFrame {
 	overflow:auto;
 	background-color:#FFFFFF;
 	border:1px solid #3C769D;
@@ -3553,8 +3561,8 @@ html.js #revealSidebarLink {
 	margin:5px 0;
 }
 .markItUpFooter {
-	width:100%;
-	cursor:n-resize;
+	width:	100%;
+	cursor:	n-resize;
 }
 .markItUpResizeHandle {
 	overflow:hidden;
@@ -3566,7 +3574,7 @@ html.js #revealSidebarLink {
 }
 /***************************************************************************************/
 /* first row of buttons */
-.markItUpHeader ul li	{
+.markItUpHeader ul li {
 	list-style:none;
 	float:left;
 	position:relative;
