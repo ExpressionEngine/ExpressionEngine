@@ -283,7 +283,6 @@ class Search_model extends CI_Model {
 				
 				$pageurl .= AMP.'date_range='.$data['date_range'];
 			}
-			
 			elseif(strpos($data['date_range'], 'to') !== FALSE)
 			{
 				// Custom range

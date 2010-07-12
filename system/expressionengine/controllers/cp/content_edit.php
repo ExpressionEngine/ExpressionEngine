@@ -810,7 +810,7 @@ class Content_edit extends Controller {
 	{
 		if ( ! AJAX_REQUEST)
 		{
-			//show_error($this->lang->line('unauthorized_access'));
+			show_error($this->lang->line('unauthorized_access'));
 		}
 
 		$this->output->enable_profiler(FALSE);
