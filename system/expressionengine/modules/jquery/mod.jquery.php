@@ -85,11 +85,11 @@ class Jquery {
 			}
 			elseif ($ui !== FALSE OR ($ui = $this->EE->input->get_post('ui')) !== FALSE)
 			{
-				$file = PATH_JQUERY.'ui/ui.'.$this->EE->security->sanitize_filename($ui).'.js';
+				$file = PATH_JQUERY.'ui/jquery.ui.'.$this->EE->security->sanitize_filename($ui).'.js';
 			}
 			elseif ($effect !== FALSE OR ($effect = $this->EE->input->get_post('effect')) !== FALSE)
 			{
-				$file = PATH_JQUERY.'ui/effects.'.$this->EE->security->sanitize_filename($effect).'.js';
+				$file = PATH_JQUERY.'ui/jquery.effects.'.$this->EE->security->sanitize_filename($effect).'.js';
 			}
 			elseif (($file = $this->EE->input->get_post('file')) !== FALSE)
 			{
