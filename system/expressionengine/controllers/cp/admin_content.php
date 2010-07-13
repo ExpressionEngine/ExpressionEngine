@@ -341,6 +341,8 @@ class Admin_content extends Controller {
 			}
 		}
 		
+		$vars['deft_category_options'][''] = $this->lang->line('none');
+		
 		$cats = $vars['cat_group'] ? explode('|', $vars['cat_group']) : array();
 
 		// Needz moar felineness!
@@ -352,20 +354,18 @@ class Admin_content extends Controller {
 			$this->db->where($this->db->dbprefix('category_groups').'.group_id = '.$this->db->dbprefix('categories').'.group_id', NULL, FALSE);
 			$this->db->where_in('categories.group_id', $cats);
 			$this->db->order_by('display_name');
-		
+			
 			$query = $this->db->get();
-		}
-		
-		$vars['deft_category_options'][''] = $this->lang->line('none');
-
-		if ( ! is_null($vars['cat_group']) && $query->num_rows() > 0)
-		{
-			foreach ($query->result() as $row)
+			
+			if ($query->num_rows() > 0)
 			{
-				$vars['deft_category_options'][$row->cat_id] = $row->display_name;
+				foreach ($query->result() as $row)
+				{
+					$vars['deft_category_options'][$row->cat_id] = $row->display_name;
+				}
 			}
 		}
-
+		
 		// Default field for search excerpt		
 		$this->db->select('field_id, field_label');
 		$this->db->where('field_search', 'y');
