@@ -771,6 +771,9 @@ class Design extends Controller {
 			$cp_message = $this->lang->line('snippet_created');
 		}
 		
+		// Clear caches- db and template cache my result in update not being reflected
+		$this->functions->clear_caching('all');
+
 		$this->session->set_flashdata('message_success', $cp_message);
 
 		if ($this->input->get_post('update_and_return') !== FALSE)
