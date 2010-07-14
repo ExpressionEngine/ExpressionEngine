@@ -2842,7 +2842,7 @@ class Channel {
 			//  Standard pagination - base values
 
 			if ($this->field_pagination == FALSE)
-			{
+			{	
 				if ($this->display_by == '')
 				{
 					if ($count == 0)
@@ -2881,13 +2881,9 @@ class Channel {
 				{
 					$this->p_page = 0;
 				}
-				
-				if ($this->p_page != 0 && $this->p_limit != 0)
-				{
-					$this->current_page = floor(($this->p_page / $this->p_limit) + 1);
-
-					$this->total_pages = intval(floor($this->total_rows / $this->p_limit));					
-				}
+								
+				$this->current_page = floor(($this->p_page / $this->p_limit) + 1);
+				$this->total_pages = intval(floor($this->total_rows / $this->p_limit));				
 			}
 			else
 			{
