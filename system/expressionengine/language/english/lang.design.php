@@ -1001,6 +1001,8 @@ username and password to view the template.',
 'tag_class_error' =>
 'Invalid tag (no such plugin or module)',
 
+'tmpl_revisions_not_enabled' =>
+'Template Revisions are not enabled.',
 
 ''=>''
 );

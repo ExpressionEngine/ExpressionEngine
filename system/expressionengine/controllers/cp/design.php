@@ -2373,15 +2373,25 @@ class Design extends Controller {
 	
     function template_revision_history()
     {
+		if ($this->config->item('save_tmpl_revisions') == 'n')
+		{
+			// Revisions are off, but they are here anyway
+			// It's confusing to simply show a white screen, so 
+			// give some feedback.
+			show_error($this->lang->line('tmpl_revisions_not_enabled'));
+		}
+	
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		 
-       if ( ! $id = $this->input->get_post('revision_id'))
+		if ( ! $id = $this->input->get_post('revision_id'))
         {
-            return false;
+            show_error($this->lang->line('unauthorized_access'));
         }
+
+		
 
         $item_id = $this->input->get_post('template');
 		
