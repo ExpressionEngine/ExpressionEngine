@@ -463,7 +463,6 @@ class Content_edit extends Controller {
 		$filter_data['perpage'] = $perpage;
 
 		//	 Are there results?
-
 		$filtered_entries = $this->search_model->get_filtered_entries($filter_data);
 
 		// No result?  Show the "no results" message
@@ -2386,8 +2385,8 @@ class Content_edit extends Controller {
 		
 		$current_page = 'cp';
 		$val = 'val';
-		$pag_config['per_page'] = 'per';
-		$rownum= '';
+		$pag_config['per_page'] = 50;
+		$rownum = '';
 		$channel_id = '';
 		$entry_title = FALSE;
 
