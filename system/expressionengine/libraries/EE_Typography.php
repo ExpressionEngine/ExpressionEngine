@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
  * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
- * @license		http://expressionengine.com/docs/license.html
+ * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
  * @filesource
@@ -1143,6 +1143,21 @@ class EE_Typography extends CI_Typography {
 			return $str;
 		}
 		
+		$counter = 0;
+		
+		// Find any code and pre tags to exclude
+		if (strpos($str, '<pre>') !== FALSE OR strpos($str, '<code>') !== FALSE)
+		{
+			if (preg_match_all("/(<pre>(.+?)<\/pre>)|(<code>(.+?)<\/code>)/si", $str, $matches))
+			{
+				for ($counter = 0, $total = count($matches[0]); $counter < $total; $counter++)
+				{
+					$code_chunk[$counter] = $matches[0][$counter];
+					$str = str_replace($matches[0][$counter], '{'.$counter.'xyH45k02wsSdrp}', $str);
+				}
+			}
+		}
+
 		$str = ' '.$str;
 		
 		foreach ($this->smiley_array as $key => $val)
@@ -1158,6 +1173,15 @@ class EE_Typography extends CI_Typography {
 			}
 		}
 		
+        // Flip code chunks back in
+		if ($counter > 0)
+		{
+			foreach ($code_chunk as $key => $val)
+			{
+				$str = str_replace('{'.$key.'xyH45k02wsSdrp}', $val, $str);
+			}
+ 		}
+
 		return ltrim($str);
 	}
 

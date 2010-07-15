@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
  * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
- * @license		http://expressionengine.com/docs/license.html
+ * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
  * @filesource
@@ -4622,6 +4622,14 @@ class Forum_Core extends Forum {
 			exit;
 		}
 		
+		if ($this->_fetch_pref('board_attach_types') == 'img')
+		{			
+			if ( ! in_array($extension, array('jpg', 'jpeg', 'png', 'gif')))
+			{
+				exit;
+			}
+		}		
+		
 		$hits = ($query->row('hits')  == 0) ? 1 : ($query->row('hits')  + 1);
 		
 		$this->EE->db->set('hits', $hits);
@@ -7145,7 +7153,7 @@ class Forum_Core extends Forum {
 
 		// Only Superadmins can delete other Superadmin posts
 		
-		if ($author_id != $SESS->userdata['member_id'])
+		if ($author_id != $this->EE->session->userdata('member_id'))
 		{
 			//  Fetch the Super Admin IDs
 			$super_admins = $this->fetch_superadmins();

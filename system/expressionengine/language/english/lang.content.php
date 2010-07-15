@@ -611,7 +611,7 @@ $lang = array(
 'Last 365 days',
 
 'any_date' =>
-'Any Date',
+'Custom Date Range',
 
 'results_per_page' =>
 'Results Per Page',

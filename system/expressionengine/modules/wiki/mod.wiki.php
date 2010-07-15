@@ -10,7 +10,7 @@
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/docs/license.html
+ http://expressionengine.com/user_guide/license.html
 =====================================================
  File: mod.wiki.php
 -----------------------------------------------------
@@ -5377,6 +5377,14 @@ class Wiki {
 			{
 				return $this->EE->output->show_user_error('general', array(
 								$this->EE->lang->line('file_exists')
+					)
+				);
+			}
+
+			if (strlen($new_name) > 60)
+			{
+				return $this->EE->output->show_user_error('general', array(
+								$this->EE->lang->line('filename_too_long')
 					)
 				);
 			}

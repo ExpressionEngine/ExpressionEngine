@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <title><?php echo $title; ?></title>
-<script type="text/javascript" src="index.php?C=javascript"></script>
+<script type="text/javascript" src="<?=site_url('C=javascript')?>"></script>
 
 <style type="text/css">
 

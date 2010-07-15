@@ -6,7 +6,7 @@
  * @package     ExpressionEngine
  * @author      ExpressionEngine Dev Team
  * @copyright   Copyright (c) 2003 - 2010, EllisLab, Inc.
- * @license     http://expressionengine.com/docs/license.html
+ * @license     http://expressionengine.com/user_guide/license.html
  * @link        http://expressionengine.com
  * @since       Version 2.0
  * @filesource
@@ -40,9 +40,16 @@ class Updater {
 			$this->EE->config->update_site_prefs(array('doc_url' => 'http://expressionengine.com/user_guide/'), 1);
 		}
 		
+		if ( ! $this->EE->db->field_exists('can_access_fieldtypes', 'member_groups'))
+		{
+			$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_fieldtypes` char(1) NOT NULL DEFAULT 'n' AFTER `can_access_files`";            
+		}
+		
 		$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_fieldtypes` char(1) NOT NULL DEFAULT 'n' AFTER `can_access_files`";
 		$Q[] = 'UPDATE exp_member_groups SET can_access_fieldtypes = "y" WHERE group_id = 1';
 		$Q[] = 'UPDATE exp_actions SET class = "Channel" WHERE class = "channel"';
+		
+		$count = count($Q);
 		
 		foreach ($Q as $num => $sql)
 		{

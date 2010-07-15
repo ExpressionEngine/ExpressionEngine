@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
  * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
- * @license		http://expressionengine.com/docs/license.html
+ * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
  * @filesource
@@ -366,8 +366,6 @@ class Members {
 
 		// Assign the name of the image
 		$new_filename = $type.'_'.$id.strtolower($extension);
-		
-		$filename = substr($new_filename, 0, strrpos($new_filename, '.'));
 
 		// Do they currently have an avatar or photo?
 		if ($type == 'avatar')
@@ -393,7 +391,7 @@ class Members {
 		}
 
 		// Upload the image
-		$config['file_name'] = $filename;
+		$config['file_name'] = $new_filename;
 		$config['upload_path'] = $upload_path;
 		$config['allowed_types'] = 'gif|jpg|jpeg|png';
 		$config['max_size']	= $max_kb;
@@ -414,9 +412,6 @@ class Members {
 		
 		if ($this->EE->upload->do_upload() === FALSE)
 		{
-			// Upload Failed.  Make sure that file is gone!
-			@unlink($upload_path.$filename.$extension);
-			
 			if (REQ == 'CP')
 			{
 				$this->EE->session->set_flashdata('message_failure', $this->EE->upload->display_errors());
@@ -424,8 +419,10 @@ class Members {
 			}
 			else
 			{
-				return $this->EE->output->show_user_error('submission',
-				 									$this->EE->lang->line($this->EE->upload->display_errors()));
+				return $this->EE->output->show_user_error(
+											'submission',
+				 							$this->EE->lang->line($this->EE->upload->display_errors())
+										);
 			}
 		}
 

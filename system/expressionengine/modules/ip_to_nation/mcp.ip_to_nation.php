@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
  * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
- * @license		http://expressionengine.com/docs/license.html
+ * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.0
  * @filesource
@@ -105,8 +105,16 @@ class Ip_to_nation_mcp {
 		foreach ($countries as $key => $val)
 		{
 			$vars['countries'][$key]['code'] = $key;
-			$vars['countries'][$key]['status'] = ($status[$key] == 'y') ? TRUE : FALSE;
 			$vars['countries'][$key]['name'] = $val;
+
+			if ($key == 'gb')
+			{
+				$vars['countries'][$key]['status'] = ($status['uk'] == 'y') ? TRUE : FALSE;				
+			}
+			else
+			{
+				$vars['countries'][$key]['status'] = ($status[$key] == 'y') ? TRUE : FALSE;				
+			}
 		}
 
 		return $this->EE->load->view('banlist', $vars, TRUE);
@@ -130,6 +138,12 @@ class Ip_to_nation_mcp {
 		// Unset everything that isn't an explictly banned country
 		foreach ($_POST as $key => $val)
 		{
+			if ($key == 'gb')
+			{
+				$_POST['uk'] = $val;
+				unset($_POST['gb']);
+			}
+
 			if ( ! isset($countries[$key]) AND $val != 'y')
 			{
 				unset($_POST[$key]);
