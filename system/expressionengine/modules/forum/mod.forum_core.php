@@ -7153,7 +7153,7 @@ class Forum_Core extends Forum {
 
 		// Only Superadmins can delete other Superadmin posts
 		
-		if ($author_id != $SESS->userdata['member_id'])
+		if ($author_id != $this->EE->session->userdata('member_id'))
 		{
 			//  Fetch the Super Admin IDs
 			$super_admins = $this->fetch_superadmins();
