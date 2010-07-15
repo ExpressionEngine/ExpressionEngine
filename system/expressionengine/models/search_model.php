@@ -275,9 +275,29 @@ class Search_model extends CI_Model {
 		
 		if ($data['date_range'])
 		{
-			$pageurl .= AMP.'date_range='.$data['date_range'];
-			$date_range = time() - ($data['date_range'] * 60 * 60 * 24);
-			$where_clause .= " AND exp_channel_titles.entry_date > $date_range";
+			//  Is a single number
+			if (ctype_digit($data['date_range']))
+			{
+				$date_range = time() - ($data['date_range'] * 60 * 60 * 24);
+				$where_clause .= " AND exp_channel_titles.entry_date > $date_range";
+				
+				$pageurl .= AMP.'date_range='.$data['date_range'];
+			}
+			elseif (strpos($data['date_range'], 'to') !== FALSE)
+			{
+				// Custom range
+				$ranges = explode('to', $data['date_range']);
+				
+				$start = $this->localize->convert_human_date_to_gmt(trim($ranges[0]).' 00:00');
+				$end = $this->localize->convert_human_date_to_gmt(trim($ranges[1]).' 23:59');
+			
+				if (ctype_digit($start) && ctype_digit($end))
+				{
+					$where_clause .= "AND exp_channel_titles.entry_date >= '".$start."' ";
+					$where_clause .= "AND exp_channel_titles.entry_date <=  '".$end."' ";
+					$pageurl .= AMP.'date_range='.$data['date_range'];
+				}
+			}
 		}
 
 		if (is_numeric($data['cat_id']))
