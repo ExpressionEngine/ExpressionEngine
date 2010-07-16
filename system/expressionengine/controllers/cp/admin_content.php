@@ -3648,35 +3648,13 @@ class Admin_content extends Controller {
 		// store the name for the delete message
 		$group_name = $this->field_model->get_field_group($group_id);
 
-		// field ids for baleeting
-		$fields = $this->field_model->get_fields($group_id);
-
-		if ($fields->num_rows() > 0)
-		{
-			foreach ($fields->result() as $field)
-			{
-				$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_id_".$field->field_id);
-				$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_ft_".$field->field_id);
-				
-				if ($field->field_type == 'date')
-				{
-					$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_dt_".$field->field_id);
-				}
-
-				$this->db->query("DELETE FROM exp_field_formatting WHERE field_id = '".$this->db->escape_str($field->field_id)."'");
-		        $this->db->query("UPDATE exp_channels SET search_excerpt = NULL WHERE search_excerpt = '".$this->db->escape_str($field->field_id)."'");
-						
-				$tabs[] = $field->field_id;
-			}
-		}
-
-		$this->db->query("DELETE FROM exp_field_groups WHERE group_id = '".$this->db->escape_str($group_id)."'");
-		$this->db->query("DELETE FROM exp_channel_fields WHERE group_id = '".$this->db->escape_str($group_id)."'");
-
+		// delete routine
+		$deleted = $this->field_model->delete_field_groups($group_id);
+		
 		// Drop from custom layouts
 		$query = $this->field_model->get_assigned_channels($group_id);
 			
-		if ($query->num_rows() > 0 && count($tabs) > 0)
+		if ($query->num_rows() > 0 && count($deleted['field_ids']) > 0)
 		{
 			foreach ($query->result() as $row)
 			{
@@ -3684,10 +3662,9 @@ class Admin_content extends Controller {
 			}
 	
 			$this->load->library('layout');
-			$this->layout->delete_layout_fields($tabs, $channel_ids);
+			$this->layout->delete_layout_fields($deleted['field_ids'], $channel_ids);
 		}
 		
-
 		$this->functions->clear_caching('all', '', TRUE);
 
 		$cp_message = $this->lang->line('field_group_deleted').NBS.NBS.$group_name->row('group_name');
@@ -4695,43 +4672,10 @@ class Admin_content extends Controller {
 		$this->load->model('field_model');
 		$this->lang->loadfile('admin_content');
 
-		$query = $this->field_model->get_field($field_id);
-
-		$group_id = $query->row('group_id') ;
-		$field_label = $query->row('field_label') ;
-		$field_type = $query->row('field_type') ;
-
-		if ($field_type == 'rel')
-		{
-			$rquery = $this->db->query("SELECT field_id_".$this->db->escape_str($field_id)." AS rel_id FROM exp_channel_data WHERE field_id_".$this->db->escape_str($field_id)." != '0'");
-
-			if ($rquery->num_rows() > 0)
-			{
-				$rel_ids = array();
-
-				foreach ($rquery->result_array() as $row)
-				{
-					$rel_ids[] = $row['rel_id'];
-				}
-
-				$REL_IDS = "('".implode("', '", $rel_ids)."')";
-				$this->db->query("DELETE FROM exp_relationships WHERE rel_id IN {$REL_IDS}");
-			}
-		}
-
-		if ($field_type == 'date')
-		{
-			$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_dt_".$this->db->escape_str($field_id));
-		}
-
-		$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_id_".$this->db->escape_str($field_id));
-		$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_ft_".$this->db->escape_str($field_id));
-		$this->db->query("DELETE FROM exp_channel_fields WHERE field_id = '".$this->db->escape_str($field_id)."'");
-		$this->db->query("DELETE FROM exp_field_formatting WHERE field_id = '".$this->db->escape_str($field_id)."'");
-        $this->db->query("UPDATE exp_channels SET search_excerpt = NULL WHERE search_excerpt = '".$this->db->escape_str($field_id)."'");		       
-
+		$deleted = $this->field_model->delete_fields($field_id);
+		
 		// Drop from custom layouts
-		$query = $this->field_model->get_assigned_channels($group_id);
+		$query = $this->field_model->get_assigned_channels($deleted['group_id']);
 			
 		if ($query->num_rows() > 0)
 		{
@@ -4744,14 +4688,14 @@ class Admin_content extends Controller {
 			$this->layout->delete_layout_fields($field_id, $channel_ids);
 		}
 
-		$cp_message = $this->lang->line('field_deleted').NBS.$field_label;
+		$cp_message = $this->lang->line('field_deleted').NBS.$deleted['field_label'];
 
 		$this->logger->log_action($cp_message);
 
 		$this->functions->clear_caching('all', '', TRUE);
 
 		$this->session->set_flashdata('message_success', $cp_message);
-		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=field_management'.AMP.'group_id='.$group_id);
+		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=field_management'.AMP.'group_id='.$deleted['group_id']);
 	}
 
 

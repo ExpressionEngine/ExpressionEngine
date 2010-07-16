@@ -370,22 +370,40 @@ class Layout {
 			$channel_id = array($channel_id);
 		}
 
+		$clean_tabs = array();
+		
+		// note- this is a simple array of field ids- so let's break them down to that before sending them on
+		
 		if ( ! is_array($tabs))
 		{
-			$tabs = array($tabs);
+			$clean_tabs = array($tabs);
 		}
-		
-		foreach ($tabs as $key => $val)
+		else
 		{
-			$clean_tabs[strtolower($key)] = $tabs[$key];
+			foreach($tabs as $key => $val)
+			{
+				// We do this in case they sent the full tab array instead of an array of field names
+				if (is_array($val))
+				{
+					foreach ($val as $k => $v)
+					{
+						if (isset($tabs[$key][$k]['visible']))
+						{
+							$clean_tabs[] = $k;
+						}
+					}
+				}
+				else
+				{
+					$clean_tabs[] = $val;
+				}
+			}
 		}
 		
 		$this->EE->load->model('layout_model');
 	
 		return $this->EE->layout_model->update_layouts($clean_tabs, 'delete_fields', $channel_id);
 	}
-
-	
 }
 // END CLASS
 

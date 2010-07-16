@@ -159,21 +159,109 @@ class Field_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Update Fields
+	 * Delete Fields
 	 *
 	 * @access	public
 	 * @return	void
 	 */
-	function update_fields($group_name, $group_id)
+	function delete_fields($field_id)
 	{
-		$data = array(
-						'group_name' => $group_name,
-						'site_id' => $this->config->item('site_id')
-		);
+		$query = $this->field_model->get_field($field_id);
+
+		$field_ids = $this->_remove_fields($query);
+
+		$this->db->where('field_id', $field_id);
+		$this->db->delete('channel_fields');
+		
+		return $field_ids;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Delete Field Groups
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function delete_field_groups($group_id)
+	{
+		$query = $this->get_fields($group_id);
+
+		$field_ids = $this->_remove_fields($query);
+		
+		$this->db->where('group_id', $group_id);
+		$this->db->delete('field_groups'); 
 
 		$this->db->where('group_id', $group_id);
+		$this->db->delete('channel_fields');
 
-		$this->db->update('field_groups', $data);
+		return $field_ids;
+
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Delete Field Groups
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function _remove_fields($results)
+	{
+		$rel_ids = array();
+		$deleted_fields = array();
+		
+		if ($results->num_rows() > 0)
+		{
+			foreach ($results->result() as $field)
+			{
+				if ($field->field_type == 'rel')
+				{
+					$rquery = $this->db->query("SELECT field_id_".$this->db->escape_str($field->field_id)." AS rel_id FROM exp_channel_data WHERE field_id_".$this->db->escape_str($field->field_id)." != '0'");
+
+					if ($rquery->num_rows() > 0)
+					{
+						$rel_ids = array();
+
+						foreach ($rquery->result_array() as $row)
+						{
+							$rel_ids[] = $row['rel_id'];
+						}
+					}
+				}
+
+				$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_id_".$field->field_id);
+				$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_ft_".$field->field_id);
+				
+				if ($field->field_type == 'date')
+				{
+					$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_dt_".$field->field_id);
+				}
+
+				$deleted_fields['field_ids'][] = $field->field_id;
+				$deleted_fields['group_id'] = (isset($field->group_id)) ? $field->group_id : '';
+				$deleted_fields['field_label'] = (isset($field->field_label)) ? $field->field_label : '';
+			}
+			
+			// Make sure a deleted field is not assigned as the search excerpt
+			$this->db->where_in('search_excerpt', $deleted_fields['field_ids']);
+			$this->db->update('channels', array('search_excerpt' => NULL)); 		
+		
+			// Remove from field formatting
+				$this->db->where_in('field_id', $deleted_fields['field_ids']);
+				$this->db->delete('field_formatting'); 
+				
+			//  Get rid of any stray relationship data
+			if (count($rel_ids) > 0)
+			{
+				$this->db->where_in('rel_id', $rel_ids);
+				$this->db->delete('relationships'); 
+			}
+		}
+		
+		return $deleted_fields;
 	}
 
 	// --------------------------------------------------------------------

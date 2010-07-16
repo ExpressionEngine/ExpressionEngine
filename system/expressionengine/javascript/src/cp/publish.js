@@ -600,7 +600,7 @@ function liveUrlTitle()
 	newText = newText.replace(/\.+$/g, '');
 
 	if (replaceField) {
-		replaceField.value = newText;
+		replaceField.value = newText.substring(0,75);
 	}
 }
 

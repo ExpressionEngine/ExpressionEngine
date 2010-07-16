@@ -161,19 +161,17 @@ class Layout_model extends CI_Model {
 				}
 				elseif ($action == 'delete_fields')
 				{
+					//  Note- is an array of field names
 					foreach($layout_info AS $field_name)
 					{
-
 						foreach ($layout AS $existing_tab => $existing_field)
 						{
-
 							if (isset($layout[$existing_tab][$field_name]))
 							{
 								unset($layout[$existing_tab][$field_name]);
 							}
 						}
 					}
-					
 				}
 
 				$data = array('field_layout' => serialize($layout));
