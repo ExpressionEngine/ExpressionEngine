@@ -1209,15 +1209,17 @@ class Moblog {
 		// forgive me, please.
 		$orig_group_id = $this->EE->session->userdata('group_id');
 		$orig_can_assign = $this->EE->session->userdata('can_assign_post_authors');
+		$orig_can_edit = $this->EE->session->userdata('can_edit_other_entries');
 		$this->EE->session->userdata['group_id'] = 1;
 		$this->EE->session->userdata['can_assign_post_authors'] = 'y';
+		$this->EE->session->userdata['can_edit_other_entries'] = 'y';
 
 		// Insert the Entry
 		$this->EE->load->library('api');
 		$this->EE->api->instantiate('channel_entries');
 
 		$result = $this->EE->api_channel_entries->submit_new_entry($data['channel_id'], $data);
-		
+
 		if ( ! $result)
 		{
 		}
@@ -1228,6 +1230,7 @@ class Moblog {
 		
 		$this->EE->session->userdata['can_assign_post_authors'] = $orig_can_assign;
 		$this->EE->session->userdata['group_id'] = $orig_group_id;
+		$this->EE->session->userdata['can_edit_other_entries'] = $orig_can_edit;
 	}
 
 	// ------------------------------------------------------------------------
