@@ -168,7 +168,7 @@ class Comment_upd {
 
 		
 		$this->EE->load->library('layout');
-		$this->EE->layout->delete_layout_fields($this->tabs());
+		$this->EE->layout->delete_layout_fields('comment_expiration_date');
 
 		return TRUE;
 	}
