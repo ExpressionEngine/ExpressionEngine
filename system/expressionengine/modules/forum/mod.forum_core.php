@@ -9040,11 +9040,6 @@ class Forum_Core extends Forum {
 				$ips = implode('|', array_unique($ips));
 			}
 			
-			if ( ! class_exists('Admin'))
-			{
-				require APPPATH.'cp/cp.admin'.EXT;
-			}
-		
 			$this->EE->config->_update_config(array('banned_ips' => $ips));		
 		}
 
