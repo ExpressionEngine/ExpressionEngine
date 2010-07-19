@@ -287,7 +287,7 @@ class EE_Schema {
 			  unique_id varchar(40) NOT NULL,
 			  crypt_key varchar(40) NULL DEFAULT NULL,
 			  authcode varchar(10) NULL DEFAULT NULL,
-			  email varchar(50) NOT NULL,
+			  email varchar(72) NOT NULL,
 			  url varchar(150) NULL DEFAULT NULL,
 			  location varchar(50) NULL DEFAULT NULL,
 			  occupation varchar(80) NULL DEFAULT NULL,
