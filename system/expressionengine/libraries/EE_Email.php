@@ -75,9 +75,9 @@ class EE_Email extends CI_Email {
 			$config['crlf'] = $this->EE->config->item('email_crlf');
 		}
 		
+		$this->useragent = APP_NAME.' '.APP_VER;		
+
 		$this->initialize($config);
-						
-		$this->useragent = APP_NAME.' '.APP_VER;						
 	}
 
 	// --------------------------------------------------------------------
