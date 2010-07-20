@@ -163,8 +163,20 @@ class EE_Addons {
 					{
 						$name	= substr($file, strlen($abbr.'.'), - $ext_len);
 						$class	= ($abbr == 'pi') ? ucfirst($name) : ucfirst($name).'_'.$abbr;
-						$path	= ($abbr == 'ext' OR $abbr == 'acc') ? constant('PATH_'.strtoupper($abbr)) : $root_path.$name.'/';
-
+						
+						if ($abbr == 'ext' OR $abbr == 'acc')
+						{
+							$path	= constant('PATH_'.strtoupper($abbr));
+						}
+						elseif ($abbr == 'ft')
+						{
+							$path =  $root_path;
+						}
+						else
+						{
+							$path =  $root_path.$name.'/';
+						}
+						
 						$this->_map[$type][$name] = array(
 															'path'	=> $path,
 															'file'	=> $file,

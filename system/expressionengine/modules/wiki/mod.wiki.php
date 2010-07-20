@@ -201,7 +201,7 @@ class Wiki {
 		/**  Retrieve Our Namespaces
 		/** ------------------------------------*/
 
-		$namespace_query = $this->EE->db->query("SELECT * FROM exp_wiki_namespaces WHERE wiki_id = '".$this->EE->db->escape_str($this->wiki_id)."'");
+		$namespace_query = $this->EE->db->query("SELECT * FROM exp_wiki_namespaces WHERE wiki_id = '".$this->EE->db->escape_str($this->wiki_id)."' ORDER BY namespace_name"); 
 		
 		if ($namespace_query->num_rows() > 0)
 		{
