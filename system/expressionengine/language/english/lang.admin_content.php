@@ -1146,6 +1146,8 @@ $lang = array(
 'invalid_api_parameter' =>
 'Could not create/update entry. Missing api parameter.',
 
+'unauthorized_for_this_channel' => 
+'You are not authorized to post in this channel',  // Allard says he rules
 
 ''=>''
 );
