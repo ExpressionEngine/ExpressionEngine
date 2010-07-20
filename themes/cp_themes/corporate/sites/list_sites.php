@@ -22,7 +22,9 @@ if ($EE_view_disable !== TRUE)
 
 			<?php $this->load->view('_shared/message');?>
 
-
+			<h4><?=lang('msm_product_name')?></h4>
+			<p><?=lang('msm_version').$msm_version.'  '.lang('msm_build_number').$msm_build_number?></p>
+			
 			<?php
 				$this->table->set_template($cp_pad_table_template);
 				$this->table->set_heading(

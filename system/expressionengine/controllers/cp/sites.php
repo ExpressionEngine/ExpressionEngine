@@ -186,6 +186,9 @@ class Sites extends Controller {
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('site_management'));
 
+		$vars['msm_version'] = $this->version;
+		$vars['msm_build_number'] = $this->build_number;
+
 		$this->jquery->tablesorter('.mainTable', '{
 			widgets: ["zebra"]
 		}');

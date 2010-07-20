@@ -2526,6 +2526,9 @@ class EE_Template {
 					 );
 
 		$this->EE->template_model->create_template($data);
+		
+		// Clear db cache or it will create a new template record each page load!
+		$this->EE->functions->clear_caching('db');
 
 		return TRUE;
 	}

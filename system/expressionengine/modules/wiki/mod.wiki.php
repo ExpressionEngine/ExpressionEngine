@@ -201,7 +201,7 @@ class Wiki {
 		/**  Retrieve Our Namespaces
 		/** ------------------------------------*/
 
-		$namespace_query = $this->EE->db->query("SELECT * FROM exp_wiki_namespaces WHERE wiki_id = '".$this->EE->db->escape_str($this->wiki_id)."'");
+		$namespace_query = $this->EE->db->query("SELECT * FROM exp_wiki_namespaces WHERE wiki_id = '".$this->EE->db->escape_str($this->wiki_id)."' ORDER BY namespace_name"); 
 		
 		if ($namespace_query->num_rows() > 0)
 		{
@@ -5518,7 +5518,7 @@ class Wiki {
 					$base_path .= SELF;
 				}	
 
-				$config['base_url']		= $basepath;
+				$config['base_url']		= $base_path;
 				$config['prefix']		= 'P';
 				$config['total_rows'] 	= $count;
 				$config['per_page']		= $limit;

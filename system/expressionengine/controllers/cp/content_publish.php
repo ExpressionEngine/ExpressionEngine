@@ -841,7 +841,8 @@ class Content_publish extends Controller {
 					'field_instructions'	=> '',
 					'field_show_fmt'		=> 'n',
 					'default_offset'		=> 0,
-					'selected'				=> 'y'
+					'selected'				=> 'y',
+					'dst_enabled'			=> $dst_enabled
 		);
 		
 		$this->api_channel_fields->set_settings('entry_date', $settings);
@@ -861,7 +862,8 @@ class Content_publish extends Controller {
 					'field_fmt'				=> 'text',
 					'field_instructions'	=> '',
 					'field_show_fmt'		=> 'n',
-					'selected'				=> 'y'
+					'selected'				=> 'y',
+					'dst_enabled'			=> $dst_enabled
 		);
 		
 		$this->api_channel_fields->set_settings('expiration_date', $settings);
@@ -883,7 +885,8 @@ class Content_publish extends Controller {
 						'field_fmt'				=> 'text',
 						'field_instructions'	=> '',
 						'field_show_fmt'		=> 'n',
-						'selected'				=> 'y'
+						'selected'				=> 'y',
+						'dst_enabled'			=> $dst_enabled
 			);
 
 			$this->api_channel_fields->set_settings('comment_expiration_date', $settings);
