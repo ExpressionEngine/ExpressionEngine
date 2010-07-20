@@ -5518,7 +5518,7 @@ class Wiki {
 					$base_path .= SELF;
 				}	
 
-				$config['base_url']		= $basepath;
+				$config['base_url']		= $base_path;
 				$config['prefix']		= 'P';
 				$config['total_rows'] 	= $count;
 				$config['per_page']		= $limit;
