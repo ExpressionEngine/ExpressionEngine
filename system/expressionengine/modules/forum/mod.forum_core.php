@@ -1015,6 +1015,7 @@ class Forum_Core extends Forum {
 		$config['last_tag_close']	= '</div></td>';
 		
 		//$config['first_url'] 	= $data['first_url'];
+		$config['uri_segment']	= 0;	// pretty hacky, but lets us override CI's cur_page
 		$config['base_url']		= $data['path'];
 		$config['prefix']		= 'P';
 		$config['total_rows'] 	= $data['total_count'];
