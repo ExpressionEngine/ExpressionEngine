@@ -3723,7 +3723,7 @@ class Admin_content extends Controller {
 		}
 
 		// Construct the query based on whether we are updating or inserting
-		if ($edit == FALSE)
+		if ($edit === FALSE)
 		{
 			$this->field_model->insert_field_group($group_name);
 
@@ -3754,8 +3754,14 @@ class Admin_content extends Controller {
 		}
 		else
 		{
-			$this->field_model->update_fields($group_name, $group_id);
-
+			$data = array(
+					'group_name'	=> $group_name,
+					'site_id'		=> $this->config->item('site_id')
+				);
+			
+			$this->db->where('group_id', $group_id);
+			$this->db->update('field_groups', $data);
+			
 			$cp_message = $this->lang->line('field_group_updated').NBS.$group_name;
 		}
 
