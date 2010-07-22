@@ -1314,7 +1314,9 @@ class Forum_Core extends Forum {
 			}
 				
 			if ($enable_cluster === FALSE)
-				continue;
+			{
+				continue;				
+			}
 
 			/** ------------------------------------------
 			/**  Can the user view the current forum?
@@ -1468,7 +1470,7 @@ class Forum_Core extends Forum {
 		/** ------------------------------------------
 		/**  Parse Globals
 		/** ------------------------------------------*/
-		
+
 		$template = str_replace(LD.'app_version'.RD, APP_VER, $template); 
 		$template = str_replace(LD.'version'.RD, APP_VER, $template); 
 		$template = str_replace(LD.'webmaster_email'.RD, $this->EE->config->item('webmaster_email'), $template); 
