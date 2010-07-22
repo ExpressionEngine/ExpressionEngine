@@ -1048,7 +1048,6 @@ class Admin_content extends Controller {
 				}
 			
 				$this->load->library('layout');
-				//print_r($tabs); exit;
 				$this->layout->add_layout_fields($tabs, $channel_id);
 			}
 		}
@@ -1841,6 +1840,7 @@ class Admin_content extends Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->helper('form');
 		$this->load->helper('string');
+		$this->load->library('form_validation');
 
 
 		$group_id = $this->input->get_post('group_id');
@@ -1905,6 +1905,12 @@ class Admin_content extends Controller {
 			}
 
 			$vars['submit_lang_key'] = 'submit';
+		}
+		
+		//  Override the parent id if there is post data
+		if ($this->input->post('parent_id'))
+		{
+			$vars['parent_id'] = $this->input->post('parent_id');
 		}
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_management', $this->lang->line('categories'));
@@ -2018,14 +2024,12 @@ class Admin_content extends Controller {
 				$vars['custom_format_options'][$k] = $v;
 			}			
 
-
 			foreach ($field_query->result_array() as $row)
 			{
-					
 				$vars['cat_custom_fields'][$row['field_id']]['field_content'] = ( ! isset($dq_row['field_id_'.$row['field_id']])) ? '' : $dq_row['field_id_'.$row['field_id']];
 
-				$vars['cat_custom_fields'][$row['field_id']]['field_fmt'] = ( ! isset($dq_row['field_ft_'.$row['field_id']])) ? $row['field_default_fmt'] : $dq_row['field_ft_'.$row['field_id']];					
-					
+				$vars['cat_custom_fields'][$row['field_id']]['field_fmt'] = ( ! isset($dq_row['field_ft_'.$row['field_id']])) ? $row['field_default_fmt'] : $dq_row['field_ft_'.$row['field_id']];
+				
 				$vars['cat_custom_fields'][$row['field_id']]['field_id'] = $row['field_id'];
 				$vars['cat_custom_fields'][$row['field_id']]['field_label'] = $row['field_label'];
 				$vars['cat_custom_fields'][$row['field_id']]['field_required'] = $row['field_required'];					
@@ -2034,12 +2038,6 @@ class Admin_content extends Controller {
 	
 				$vars['cat_custom_fields'][$row['field_id']]['field_input'] = $row['field_label'];
 
-				if ($row['field_required'] == 'y')
-				{
-					//$this->form_validation->_config_rules['entry'][$row['field_id']]['field'] = 'field_id_'.$row['field_id'];
-					//$this->form_validation->_config_rules['entry'][$row['field_id']]['label'] = $row['field_label'];
-					//$this->form_validation->_config_rules['entry'][$row['field_id']]['rules'] = 'strip_tags|required';
-				}
 
 				$vars['cat_custom_fields'][$row['field_id']]['field_type'] = $row['field_type'];
 				$vars['cat_custom_fields'][$row['field_id']]['field_text_direction'] = ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr';
@@ -2273,11 +2271,6 @@ class Admin_content extends Controller {
 
 		$edit = ($this->input->post('cat_id') == '') ? FALSE : TRUE;
 
-		if ($this->input->post('cat_name') == '')
-		{
-			$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_management');
-		}
-
 		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
 		$this->load->library('api');
@@ -2290,9 +2283,6 @@ class Admin_content extends Controller {
 
 		$this->load->library('form_validation');
 
-		$this->form_validation->set_rules('cat_name',		'lang:cat_name',		'required');
-		$this->form_validation->set_rules('cat_url_title',	'lang:cat_url_title',	'callback__url_title');
-
 		if ($this->input->post('cat_url_title') == '')
 		{
 			$_POST['cat_url_title'] = url_title($this->input->post('cat_name'), $word_separator, TRUE);
@@ -2302,23 +2292,12 @@ class Admin_content extends Controller {
 			$_POST['cat_url_title'] = url_title($_POST['cat_url_title'], $word_separator);
 		}
 
-		// Is the cat_url_title a pure number?  If so we show an error.
-		if (is_numeric($_POST['cat_url_title']))
-		{
-			show_error($this->lang->line('cat_url_title_is_numeric'));
-		}
+		$this->form_validation->set_rules('cat_name',		'lang:category_name',		'required');
+		$this->form_validation->set_rules('cat_url_title',	'lang:cat_url_title',	'callback__cat_url_title');
 
-		// Is the Category URL Title empty?  Can't have that
-		if (trim($_POST['cat_url_title']) == '')
-		{
-			show_error($this->lang->line('unable_to_create_cat_url_title'));
-		}
+		$this->form_validation->set_rules('cat_description', '', '');
+		$this->form_validation->set_rules('cat_image', '', '');
 
-		// Cat URL Title must be unique within the group
-		if ($this->category_model->is_duplicate_category_name($_POST['cat_url_title'], $this->input->post('cat_id'), $group_id))
-		{
-			show_error($this->lang->line('duplicate_cat_url_title'));
-		}
 
 		// Finish data prep for insertion
 		if ($this->config->item('auto_convert_high_ascii') == 'y')
@@ -2340,7 +2319,6 @@ class Admin_content extends Controller {
 			if (strpos($key, 'field') !== FALSE)
 			{
 				$fields[$key] = $val;
-				unset($_POST[$key]);
 			}
 		}
 
@@ -2350,32 +2328,41 @@ class Admin_content extends Controller {
 		$this->db->where('field_required', 'y');
 		$query = $this->db->get('category_fields');
 
-		$missing = array();
+		$required_cat_fields = array();
 
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result_array() as $row)
 			{
-				if ( ! isset($fields['field_id_'.$row['field_id']]) OR $fields['field_id_'.$row['field_id']] == '')
-				{
-					$missing[] = $row['field_label'];
-				}
+				$required_cat_fields[$row['field_id']] = $row['field_label'];
+				$this->form_validation->set_rules('field_id_'.$row['field_id'],	$row['field_label'], 'required');
+				$this->form_validation->set_rules('field_ft_'.$row['field_id'],	'', '');
 			}
 		}
-
-		// Are there errors to display?
-
-		if (count($missing) > 0)
+		
+		foreach ($fields as $id => $val)
 		{
-			$str = $this->lang->line('missing_required_fields').BR.BR;
-
-			foreach ($missing as $msg)
+			if ( ! isset($required_cat_fields[$id]))
 			{
-				$str .= $msg.BR;
+				$this->form_validation->set_rules('field_id_'.$id,	'', '');
+				$this->form_validation->set_rules('field_ft_'.$id,	'', '');
 			}
-
-			show_error($str);
 		}
+
+		
+		$this->form_validation->set_error_delimiters('<br /><span class="notice">', '<br />');
+		
+		if ($this->form_validation->run() === FALSE)
+		{
+			return $this->category_edit();
+		}		
+	
+		/*
+		foreach ($fields as $id => $val)
+		{
+			unset($_POST[$id]);
+		}
+		*/
 
 		$_POST['site_id'] = $this->config->item('site_id');
 
@@ -2579,6 +2566,33 @@ class Admin_content extends Controller {
 	}
 
 	// --------------------------------------------------------------------
+
+	function _cat_url_title($str)
+	{
+		$this->load->model('category_model');
+
+		// Is the cat_url_title a pure number?  If so we show an error.
+		if (is_numeric($str))
+		{
+			$this->form_validation->set_message('_cat_url_title', $this->lang->line('cat_url_title_is_numeric'));
+			return FALSE;			
+		}
+
+		// Is the Category URL Title still empty?  Can't have that
+		if (trim($str) == '')
+		{
+			$this->form_validation->set_message('_cat_url_title', $this->lang->line('unable_to_create_cat_url_title'));
+			return FALSE;	
+		}
+
+		// Cat URL Title must be unique within the group
+		if ($this->category_model->is_duplicate_category_name($str, $this->input->post('cat_id'), $this->input->post('group_id')))
+		{
+			$this->form_validation->set_message('_cat_url_title', $this->lang->line('duplicate_cat_url_title'));
+			return FALSE;			
+		}
+	}
+
 
 
 	/** -----------------------------------
@@ -4538,8 +4552,6 @@ class Admin_content extends Controller {
 			);
 			
 			// Add to any custom layouts
-			
-			//echo '<pre>'; print_r($_POST); print_r($native_settings); print_r($ft_settings); exit;
 
 			$query = $this->field_model->get_assigned_channels($group_id);
 			
