@@ -1668,11 +1668,26 @@ class MyAccount extends Controller {
 		{
 			$member_avatar = $this->member_model->get_member_data($this->id, array('avatar_filename', 'avatar_width', 'avatar_height', 'screen_name'));
 			
-			$cur_avatar_url = $member_avatar->row('avatar_filename') ? $this->config->slash_item('avatar_url').$member_avatar->row('avatar_filename') : '';
-			$avatar_width   = $member_avatar->row('avatar_filename') ? $member_avatar->row('avatar_width') : '';
-			$avatar_height  = $member_avatar->row('avatar_filename') ? $member_avatar->row('avatar_height') : '';
-			$vars['avatar'] = '<img src="'.$cur_avatar_url.'" border="0" width="'.$avatar_width.'" height="'.$avatar_height.'" alt="'.$this->lang->line('my_avatar').'" title="'.$this->lang->line('my_avatar').'" />';
-			
+			if ($member_avatar->row('avatar_filename') == '')
+			{
+				// there ain't no avatar
+				$cur_avatar_url = '';
+				$avatar_width	= '';
+				$avatar_height	= '';
+				$vars['avatar'] = sprintf(
+							$this->lang->line('no_user_avatar'),
+							$member_avatar->row('screen_name')
+					);				
+				
+			}
+			else
+			{
+				// ain't ain't a word
+				$cur_avatar_url = ($member_avatar->row('avatar_filename') != '') ? $this->config->slash_item('avatar_url').$member_avatar->row('avatar_filename') : '';
+				$avatar_width   = $member_avatar->row('avatar_filename') ? $member_avatar->row('avatar_width') : '';
+				$avatar_height  = $member_avatar->row('avatar_filename') ? $member_avatar->row('avatar_height') : '';
+				$vars['avatar'] = '<img src="'.$cur_avatar_url.'" border="0" width="'.$avatar_width.'" height="'.$avatar_height.'" alt="'.$this->lang->line('my_avatar').'" title="'.$this->lang->line('my_avatar').'" />';
+			}
 		}
 		else
 		{

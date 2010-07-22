@@ -239,6 +239,9 @@ $lang = array(
 'no_avatar' =>
 'You do not have an avatar',
 
+'no_user_avatar' =>
+'%s has not uploaded an avatar',
+
 'choose_installed_avatar' =>
 'Browse our Avatar Library',
 
