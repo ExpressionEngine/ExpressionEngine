@@ -220,12 +220,12 @@ class Api_channel_categories extends Api {
 		
 		if ($categories !== FALSE)
 		{
-			if ( ! is_array($categories))
+			if ( is_array($categories))
 			{
 				$categories = implode('|', $categories);
 			}
 			
-			$this->EE->functions->ar_andor_string($cats, 'cat_id', 'exp_categories');
+			$this->EE->functions->ar_andor_string($categories, 'cat_id', 'exp_categories');
 		}
 				
 		$this->EE->db->order_by($order);
