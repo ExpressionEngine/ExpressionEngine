@@ -2246,7 +2246,7 @@ PAPAYA;
 						'captcha_font'					=>  'y',
 						'captcha_rand'					=> 'y',
 						'captcha_require_members'		=>	'n',
-						'enable_db_caching'				=>  'y',
+						'enable_db_caching'				=>  'n',
 						'enable_sql_caching'			=>  'n',
 						'force_query_string'     		=>  'n',
 						'show_profiler'           		=>  'n',
