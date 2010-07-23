@@ -182,9 +182,15 @@ class Content_publish extends Controller {
 		$required = $this->api_channel_fields->get_required_fields($channel_id);
 		
 		$clean_layout = array();
-		
+
 		foreach($layout_info as $tab => $field)
 		{
+			// Check for 'On the Fly' tabs - remove label from others
+			if (strncmp($tab, 'eeof_', 5) != 0)
+			{
+				unset($layout_info[$tab]['_tab_label']);
+			}
+			
 			foreach ($field as $name => $info)
 			{
 				if (count($required) > 0)
@@ -231,10 +237,7 @@ class Content_publish extends Controller {
 		}
 
 		// make this into an array, insert_group_layout will serialize and save
-		
 		$layout_info = array_map(array($this, '_sort_publish_fields'), $clean_layout);
-		
-		//print_r($layout_info); exit;
 		
 		if ($this->member_model->insert_group_layout($member_group, $channel_id, $layout_info))
 		{
@@ -271,16 +274,21 @@ class Content_publish extends Controller {
 		// array keys, so we sort manually ... le sigh.
 		
 		$positions = array();
-
+		$new_fields = array();
+		
 		foreach($fields as $id => $field)
 		{
+			if ($id == '_tab_label')
+			{
+				$new_fields[$id] = $field;
+				continue;
+			}
+			
 			$positions[$field['index']] = $id;
 			unset($fields[$id]['index']);
 		}
 		
 		ksort($positions);
-		
-		$new_fields = array();
 		
 		foreach($positions as $id)
 		{
@@ -319,6 +327,8 @@ class Content_publish extends Controller {
 		$this->load->library('table');
 		$this->load->library('spellcheck');
 		$this->load->library('form_validation');
+		$this->lang->loadfile('publish_tabs_custom');
+
 		
 		$this->api->instantiate(array('channel_categories', 'channel_entries', 'channel_fields'));
 
@@ -1771,6 +1781,13 @@ class Content_publish extends Controller {
 			{
 				$vars['field_output'][$field] = $opts;
 			}
+			
+			// Publish tabs need a label
+			foreach ($vars['publish_tabs'] as $tab => $fields)
+			{
+				$vars['tab_labels'][$tab] = ( ! isset($vars['publish_tabs'][$tab]['_tab_label'])) ? $tab : $vars['publish_tabs'][$tab]['_tab_label'];
+				unset($vars['publish_tabs'][$tab]['_tab_label']);				
+			}
 
 			$this->javascript->compile();
 			$this->load->view('content/publish', $vars);
@@ -1819,6 +1836,13 @@ class Content_publish extends Controller {
 			foreach($this->field_definitions as $field => $opts)
 			{
 				$vars['field_output'][$field] = $opts;
+			}
+
+			// Publish tabs need a label
+			foreach ($vars['publish_tabs'] as $tab => $fields)
+			{
+				$vars['tab_labels'][$tab] = ( ! isset($vars['publish_tabs'][$tab]['_tab_label'])) ? $tab : $vars['publish_tabs'][$tab]['_tab_label'];
+				unset($vars['publish_tabs'][$tab]['_tab_label']);				
 			}
 
 			// Entry submission will return false if no channel id is provided, and

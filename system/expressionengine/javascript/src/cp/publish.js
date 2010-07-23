@@ -336,6 +336,7 @@ EE.publish.save_layout = function() {
 		merge = false,
 		hidden_index = 0,
 		adjust_index = 0,
+		mypre = '_tab_label',
 		cur_tab	= $("#tab_menu_tabs li.current").attr("id");
 
 	// for width() to work, the element cannot be in a parent div that is display:none
@@ -345,11 +346,11 @@ EE.publish.save_layout = function() {
 	$("#tab_menu_tabs a:not(.add_tab_link)").each(function() {
 
 		// skip list items with no id (ie: new tab)
-		if ($(this).parent('li').attr('id') && $(this).parent('li').attr('id') !== "")
+		if ($(this).parent('li').attr('id') && $(this).parent('li').attr('id').substring(0,5) == "menu_")
 		{
-			var tab_name = $(this).text(),
-				tab_id	 = $(this).text().replace(/ /g, '_').toLowerCase();	
-
+			var tab_name =  $(this).parent('li').attr('id').substring(5), //$(this).text(),
+				tab_id	 = $(this).parent('li').attr('id').substring(5), //$(this).text().replace(/ /g, '_').toLowerCase();
+				tab_label = $(this).parent('li').attr('title'); //$(this).text();
 			field_index = 0;
 			visible = true;
 
@@ -362,6 +363,8 @@ EE.publish.save_layout = function() {
 				visible = false;
 			}
 
+			layout_object[lay_name][mypre] = tab_label;
+			
 			$("#"+tab_id).find(".publish_field").each(function() {
 
 				var that = $(this),
