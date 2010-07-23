@@ -701,7 +701,7 @@ ul#navigationTabs li #addQuickTab:active {
 
 #navigationTabs li li.parent:focus, #navigationTabs li li.parent.active {
 	color:				#fff;
-	background:			#005eb0 url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -386px;
+	background:			#005eb0;
 }
 
 /* third-and-above-level lists */
@@ -3389,6 +3389,24 @@ div.accordionContent table tr:last-of-type  td{
 	color:				#505050;
 	font-size:			11px;
 }
+
+/**
+ * pagination
+ */
+
+.dataTables_paginate span.first,
+.dataTables_paginate span.previous,
+.dataTables_paginate span.next {
+	margin-right:5px;
+}
+
+.dataTables_paginate span.next {
+	margin-left:5px;
+}
+
+.dataTables_paginate span span.paginate_button {padding:0 5px;}
+
+.dataTables_wrapper {margin-bottom:20px;}
 
 /* -------------------------------------
 /*  Admin
