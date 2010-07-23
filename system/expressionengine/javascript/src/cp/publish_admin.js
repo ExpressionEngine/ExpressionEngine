@@ -336,7 +336,7 @@ add_publish_tab = function() {
 
 
 function _add_tab(tab_name) {
-	tab_name_filtered = tab_name.replace(/ /g, "_").toLowerCase();
+	tab_name_filtered = "eeof_"+tab_name.replace(/ /g, "_").toLowerCase();
 
 	// ensure there are no duplicate ids provided
 	if ($("#"+tab_name_filtered).length) {
@@ -360,7 +360,7 @@ function _add_tab(tab_name) {
 	}
 
 	// add the custom tab
-	$(".addTabButton").before("<li id=\"menu_"+tab_name_filtered+"\" class=\"content_tab\"><a href=\"#\" class=\"menu_"+tab_name_filtered+"\" title=\"menu_"+tab_name_filtered+"\">"+tab_name+"</a></li>").fadeIn();
+	$(".addTabButton").before("<li id=\"menu_"+tab_name_filtered+"\" title=\""+tab_name+"\" class=\"content_tab\"><a href=\"#\" class=\"menu_"+tab_name_filtered+"\" title=\"menu_"+tab_name_filtered+"\">"+tab_name+"</a></li>").fadeIn();
 
 	// add the tab to the list in the toolbar
 	$("#publish_tab_list").append("<li id=\"remove_tab_"+tab_name_filtered+"\"><a class=\"menu_focus\" title=\"menu_+tab_name_filtered+\" href=\"#\">"+tab_name+"</a> <a href=\"#"+tab_name_filtered+"\" class=\"delete delete_tab\"><img src=\""+EE.THEME_URL+"images/content_custom_tab_delete.png\" alt=\"Delete\" width=\"19\" height=\"18\" /></a></li>");
