@@ -13,11 +13,14 @@ if ($EE_view_disable !== TRUE)
 	<div class="contents">
 
 		<div class="heading"><h2><?=lang('default_html_buttons')?></h2>
-		<div class="buttonRightHeader"><a class="cp_button" href="#"><?=lang('add_html_button')?></a></div>   
+ 
 			</div>      
 		<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
+
+			<div class="cp_button">				<p class="custom_field_add"><a href="" class="cp_button submit_alt"><?=lang('add_html_button')?></a></p></div>
+			<div class="clear_left"></div>
 
 			<?=form_open('C=admin_content'.AMP.'M=default_html_buttons', '', $form_hidden)?>
 
