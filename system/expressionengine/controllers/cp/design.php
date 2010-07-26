@@ -908,6 +908,9 @@ class Design extends Controller {
 
 			$this->template_model->update_global_variable($variable_id, $variable_name, $variable_data);
 			
+			// Clear caches- db and template cache my result in update not being reflected
+			$this->functions->clear_caching('all');
+
 			// Send success message and move user back to global vars page
 			$this->session->set_flashdata('message_success', $this->lang->line('global_var_updated'));
 			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=global_variables');
@@ -986,6 +989,9 @@ class Design extends Controller {
 			}
 
 			$this->template_model->create_global_variable($variable_name, $variable_data);
+			
+			// Clear caches- db and template cache my result in update not being reflected
+			$this->functions->clear_caching('all');
 			
 			// Send success message and move user back to global vars page
 			$this->global_variables($this->lang->line('global_var_created'));
