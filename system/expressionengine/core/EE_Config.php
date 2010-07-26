@@ -248,7 +248,7 @@ class EE_Config Extends CI_Config {
 					$this->config['site_bootstrap_checksums'] = array();
 					continue;
 				}
-				
+			
 				$this->config['site_bootstrap_checksums'] = unserialize($data);
 			}
 			else

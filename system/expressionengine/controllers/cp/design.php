@@ -656,7 +656,7 @@ class Design extends Controller {
 
 		if ($this->input->get_post('snippet') !== FALSE)
 		{
-			if (($snippet = $this->template_model->get_snippet($this->input->get_post('snippet'))) !== FALSE)
+			if (($snippet = $this->template_model->get_snippet($this->input->get_post('snippet'), TRUE)) !== FALSE)
 			{
 				$snippet['snippet_site_id'] = $snippet['site_id'];
 				unset($snippet['site_id']);

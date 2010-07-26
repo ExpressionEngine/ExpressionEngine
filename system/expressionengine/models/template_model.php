@@ -379,9 +379,9 @@ class Template_model extends CI_Model {
 	 * @param	string
 	 * @return	array
 	 */
-	function get_snippet($snippet)
+	function get_snippet($snippet, $by_name = FALSE)
 	{
-		if (ctype_digit($snippet))
+		if (ctype_digit($snippet) && $by_name === FALSE)
 		{
 			$this->db->where('snippet_id', $snippet);
 		}

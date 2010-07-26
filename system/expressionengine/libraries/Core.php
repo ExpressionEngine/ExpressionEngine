@@ -378,7 +378,7 @@ class EE_Core {
 						$snippets[$var->snippet_name] = $var->snippet_contents;
 					}
 
-					$this->EE->config->_global_vars = array_merge($this->EE->config->_global_vars, $snippets);
+					$this->EE->config->_global_vars = $this->EE->config->_global_vars + $snippets; 
 
 					unset($snippets);
 					unset($fresh);
