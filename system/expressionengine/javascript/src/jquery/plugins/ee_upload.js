@@ -42,10 +42,10 @@
  *
  * $("input[type=file]").ee_upload({
  *     url: 'index.php?S=0&D=new&C=controller&M=upload_file',
- *     onStart: function(el) {
+ *     onStart: function (el) {
  *         return {additional: 'value'};
  *     },
- *     onComplete: function(response, element, options) {
+ *     onComplete: function (response, element, options) {
  *         alert(response);
  *     }
  * });
@@ -59,34 +59,53 @@
  * 
  */
 
-(function($) {
+/*jslint browser: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: false, bitwise: true, regexp: false, strict: true, newcap: true, immed: true, nomen: false */
+
+/*global $, jQuery, EE, window, document, console, alert */
+
+"use strict";
+
+(function ($) {
 
 	// Exposed Response Object [the alternative is to grab the iFrame and eval (no thanks)]
 	window.EE_uploads = window.EE_uploads || {};
 
-	$.fn.ee_upload = function(settings) {
-		var options;
+	$.fn.ee_upload = function (settings) {
+		var options, empty_function;
 
 		options = {
 			url: "",
 			data: {},
-			onStart: function() { return {}; },
+			onStart: function () { 
+				return {}; 
+			},
 			onComplete: empty_function,
 			onFailure: empty_function
 		};
 	
 		$.extend(options, settings);
+
+		// Used for default callbacks
+		empty_function = function () { /* nothing */ };
 	
 		// May be more than one field - loop
-		return this.each(function() {
-			var that, _internal;
+		return this.each(function () {
+			var that, _internal,
+				create_hidden_fields,
+				bind_events,
+				pre_flight,
+				move_upload_node,
+				fire_upload,
+				assemble_url,
+				reset_upload,
+				upload_complete;
 		
 			that = $(this);
 		
 			// Get the process started
-			function pre_flight() {
+			pre_flight = function () {
 				// Is this even an upload?
-				if (that.attr("type") != "file") {
+				if (that.attr("type") !== "file") {
 					return;
 				}
 			
@@ -94,19 +113,19 @@
 			
 				create_hidden_fields();
 				bind_events();
-			}
+			};
 		
 			// Generate an iFrame and a form with unique ids
-			function create_hidden_fields() {
+			create_hidden_fields = function () {
 				var n, iframe, form;
 			
 				n = Math.floor(Math.random() * 99999);
-				iframe = $('<iframe src="about:blank" style="display: none;" id="upload_target_'+n+'" name="upload_target_'+n+'"></iframe>');
-				form = $('<form id="upload_form_'+n+'" action="#" method="post" enctype="multipart/form-data" style="display: none;"></form>');
+				iframe = $('<iframe src="about:blank" style="display: none;" id="upload_target_' + n + '" name="upload_target_' + n + '"></iframe>');
+				form = $('<form id="upload_form_' + n + '" action="#" method="post" enctype="multipart/form-data" style="display: none;"></form>');
 			
 				// @confirm This bind is an attempt to remove the 'spinner of death'.  May cause the callback
 				// to be called twice - observe.
-				iframe.load(function() {
+				iframe.load(function () {
 					upload_complete(this);
 				});
 			
@@ -115,18 +134,18 @@
 			
 				_internal.iframe = iframe;
 				_internal.form = form;
-			}
+			};
 		
 			// Get all of our events ready
-			function bind_events() {
+			bind_events = function () {
 			
 				// Bind the iFrame load event
-				_internal.iframe.load(function() {
+				_internal.iframe.load(function () {
 					upload_complete(this);
 				});
 			
 				// Bind the submit event
-				_internal.form.submit(function() {
+				_internal.form.submit(function () {
 					var iframe_id = _internal.iframe.attr('id');
 					$(this).attr("target", iframe_id);
 					return true;
@@ -134,26 +153,10 @@
 
 				// Bind the upload field change event
 				that.change(fire_upload);
-			}
-		
-			// Call onStart, set the form action, and fire
-			function fire_upload() {
-				var changed_opts;
-				changed_opts = options.onStart(that, options.data) || {};
-				$.extend(_internal.data, changed_opts);
-			
-				_internal.form.attr('action', assemble_url());			
-				move_upload_node();
-			}
-		
-			// Creates a full request url
-			function assemble_url() {
-				// @todo Do some more validation
-				return options.url+'&frame_id='+_internal.iframe.attr('id')+'&'+jQuery.param(_internal.data);
-			}
-		
+			};
+
 			// Moves the upload node to the hidden form and submit
-			function move_upload_node() {
+			move_upload_node = function () {
 				var placebo, saved, newel;
 			
 				// We have to move the upload node to our new form.  This gets
@@ -174,26 +177,49 @@
 			
 				// Reset Reference
 				that = saved;
-			}
+			};
 		
+			// Call onStart, set the form action, and fire
+			fire_upload = function () {
+				var changed_opts;
+				changed_opts = options.onStart(that, options.data) || {};
+				$.extend(_internal.data, changed_opts);
+			
+				_internal.form.attr('action', assemble_url());			
+				move_upload_node();
+			};
+		
+			// Creates a full request url
+			assemble_url = function () {
+				// @todo Do some more validation
+				return options.url + '&frame_id=' + _internal.iframe.attr('id') + '&' + jQuery.param(_internal.data);
+			};
+
+			// Remove the temp hidden fields and reset the field
+			reset_upload = function () {
+                _internal.iframe.remove();
+                _internal.form.remove();
+                pre_flight();
+			};
+					
 			// Make sure loaded really means loaded
-			function upload_complete(frame) {
+			upload_complete = function (frame) {
+				var d;
+				
 			    // Event is bound twice - stop the callback after the first fires
 			    if (jQuery.data(_internal.iframe, 'upload_complete')) {
 			        return;
 			    }
 			    
 				if (frame.contentDocument) {
-					var d = frame.contentDocument;
-				}
-				else if (frame.contentWindow) {
-					var d = frame.contentWindow.document;
-				}
-				else {
-					var d = window.frames[id].document;
+					d = frame.contentDocument;
+				} else if (frame.contentWindow) {
+					d = frame.contentWindow.document;
+				} else {
+					d = window.frames[_internal.iframe.attr('id')].document;
 				}
 
-				if (d.location.href == "about:blank") {
+				if (d.location.href === "about:blank") {
 					return;
 				}
 
@@ -208,23 +234,13 @@
 			    jQuery.data(_internal.iframe, 'upload_complete', true);
 			    
                 // Remove upload and yield
-			    setTimeout(function() {
+			    setTimeout(function () {
 				    reset_upload();
 				}, 0);
-			}
-		
-			// Remove the temp hidden fields and reset the field
-			function reset_upload() {
-                _internal.iframe.remove();
-                _internal.form.remove();
-                pre_flight();
-			}
+			};
 		
 			pre_flight();
 		});
-	
-		// Used for default callbacks
-		var empty_function = function() { /* nothing */ };
-	}
+	};
 
 })(jQuery);
