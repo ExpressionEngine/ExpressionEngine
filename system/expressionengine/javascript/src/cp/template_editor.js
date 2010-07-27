@@ -9,7 +9,14 @@
  * @since		Version 2.0
  * @filesource
  */
-$(document).ready(function() {
+
+/*jslint browser: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: false, strict: true, newcap: true, immed: true */
+
+/*global $, jQuery, EE, window, document, console, alert */
+
+"use strict";
+
+$(document).ready(function () {
 
 	var accordion = $(".editAccordion"),
 		template_data = $("#template_data");
@@ -22,7 +29,7 @@ $(document).ready(function() {
 	
 	accordion.css("borderTop", $(".editAccordion").css("borderBottom"));
 	
-	accordion.children("h3").click(function() {
+	accordion.children("h3").click(function () {
 		var that = $(this);
 		
 		if (that.hasClass("collapsed")) {
@@ -35,7 +42,7 @@ $(document).ready(function() {
 		}
 	});
 	
-	accordion.filter(".open").find("h3").each(function() {
+	accordion.filter(".open").find("h3").each(function () {
 		$(this).siblings().show();
 		$(this).removeClass("collapsed").parent().removeClass("collapsed");
 	});
@@ -46,19 +53,17 @@ $(document).ready(function() {
 	// the cursor to the beginning of the field
 	template_data.createSelection(0, 0);
 	
-	EE.template_edit_url = EE.BASE+"&C=design&M=template_edit_ajax";
-	EE.access_edit_url = EE.BASE+"&C=design&M=access_edit_ajax";
+	EE.template_edit_url = EE.BASE + "&C=design&M=template_edit_ajax";
+	EE.access_edit_url = EE.BASE + "&C=design&M=access_edit_ajax";
 
-
-$('#revisions').submit(
-		function() {
+	$('#revisions').submit(
+		function () {
 			var id = $("#revision_id").val();
 
-			if (id == "clear") {
-				window.open (EE.template.url+id,"Revision", "width=500, height=350, location=0, menubar=0, resizable=0, scrollbars=0, status=0, titlebar=0, toolbar=0, screenX=60, left=60, screenY=60, top=60");
-			}
-			else if (id != "") {
-				window.open (EE.template.url+id,"Revision");
+			if (id === "clear") {
+				window.open(EE.template.url + id, "Revision", "width=500, height=350, location=0, menubar=0, resizable=0, scrollbars=0, status=0, titlebar=0, toolbar=0, screenX=60, left=60, screenY=60, top=60");
+			} else if (id !== "") {
+				window.open(EE.template.url + id, "Revision");
 			}
 			return false;
 		}

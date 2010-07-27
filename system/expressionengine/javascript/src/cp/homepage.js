@@ -1,7 +1,3 @@
-/*jslint browser: true, devel: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, strict: true, newcap: true, immed: true */
-
-/*global $, jQuery, EE */
-
 /*!
  * ExpressionEngine - by EllisLab
  *
@@ -13,15 +9,21 @@
  * @since		Version 2.0
  * @filesource
  */
+
+/*jslint browser: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: false, strict: true, newcap: true, immed: true */
+
+/*global $, jQuery, EE, window, document, console, alert */
+
 "use strict";
 
-$(document).ready(function() {
-
+$(document).ready(function () {
 	var ajaxContentButtons = {},
 		dialog_div = $('<div id=\"ajaxContent\" />'),
 		msgBoxOpen, msgContainer, save_state, setup_hidden;
 	
-	ajaxContentButtons[EE.lang.close] = function() { $(this).dialog("close") };
+	ajaxContentButtons[EE.lang.close] = function () { 
+											$(this).dialog("close"); 
+										};
 	
 	dialog_div.dialog({
 		autoOpen: false,
@@ -36,35 +38,34 @@ $(document).ready(function() {
 		msgBoxOpen = EE.importantMessage.state;
 		msgContainer = $("#ee_important_message");
 			
-		save_state = function() {
+		save_state = function () {
 			msgBoxOpen = ! msgBoxOpen;
-			document.cookie="exp_home_msg_state="+(msgBoxOpen ? "open" : "closed");
+			document.cookie = "exp_home_msg_state=" + (msgBoxOpen ? "open" : "closed");
 		};
 	
-		setup_hidden = function() {
-			$.ee_notice.show_info(function() {
+		setup_hidden = function () {
+			$.ee_notice.show_info(function () {
 				$.ee_notice.hide_info();
 				msgContainer.removeClass("closed").show();
 				save_state();
 			});
 		};
 	
-		msgContainer.find(".msg_open_close").click(function() {
+		msgContainer.find(".msg_open_close").click(function () {
 			msgContainer.hide();
 			setup_hidden();
 			save_state();
 		});
 	
-		if ( ! msgBoxOpen) {
+		if (! msgBoxOpen) {
 			setup_hidden();
 		}		
 	}
 
-	$("a.submenu").click(function() {
+	$("a.submenu").click(function () {
 		if ($(this).data("working")) {
 			return false;
-		}
-		else {
+		} else {
 			$(this).data("working", true);
 		}
 		
@@ -76,7 +77,7 @@ $(document).ready(function() {
 		if ($(this).hasClass("accordion")) {
 			
 			if (submenu.length > 0) {
-				if ( ! that.hasClass("open")) {
+				if (! that.hasClass("open")) {
 					that.siblings(".open").toggleClass("open").children("ul").slideUp("fast");
 				}
 
@@ -90,12 +91,11 @@ $(document).ready(function() {
 			$(this).data("working", false);
 			dialog_title = $(this).html();
 
-			$("#ajaxContent").load(url+" .pageContents", function() {
+			$("#ajaxContent").load(url + " .pageContents", function () {
 				$("#ajaxContent").dialog("option", "title", dialog_title);
 				$("#ajaxContent").dialog("open");
 			});
 		}
-
 		return false;
 	});
 });
