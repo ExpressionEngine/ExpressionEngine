@@ -278,7 +278,7 @@ class Content_files extends Controller {
 				$output .= '<li><span>'.$this->lang->line('kind').':</span> '.$file_type.'</li>';
 			}
 
-			$output .= '<li><span>'.$this->lang->line('where').':</span> '.$where.'</li>';
+			$output .= '<li class="file_location"><span>'.$this->lang->line('where').':</span> '.$where.'</li>';
 			$output .= '<li><span>'.$this->lang->line('permissions').':</span> '.symbolic_permissions($file_info['fileperms']).'</li>';
 			$output .= '</ul>';
 
