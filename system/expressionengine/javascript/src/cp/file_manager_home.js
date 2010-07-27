@@ -222,7 +222,7 @@ $(document).ready(function () {
 	$("a#email_files").click(function () {
 		alert("not yet functional");
 		return false;
-	}); 
+	});  
 
 
 	$("#delete_selected_files a").click(function () {
