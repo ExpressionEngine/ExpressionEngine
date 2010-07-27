@@ -69,12 +69,10 @@ class Content_files extends Controller {
 		$this->cp->set_variable('cp_page_title', $this->lang->line('content_files'));
 		
 		$this->cp->add_js_script(array(
-		            'plugin'    => array('fancybox', 'tablesorter', 'ee_upload'),
+		            'plugin'    => array('overlay', 'overlay.apple', 'tablesorter', 'ee_upload'),
 					'file'		=> 'cp/file_manager_home'
 		    )
 		);
-		
-		$this->cp->add_to_head('<link type="text/css" rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=fancybox" />');
 
 		$this->javascript->set_global('lang', array(
 					'loading'			=> $this->lang->line('loading'),
@@ -180,19 +178,20 @@ class Content_files extends Controller {
 				{
 					$vars['file_list'][$dir->id]['files'][$file_count] = array(
 						array(
-							'class'=>'fancybox', 
-							'data' => '<a class="fancybox" id="img_'.str_replace(".", '', $file['name']).'" href="'.$dir->url.$file['name'].'" title="'.$file['name'].NBS.'" rel="'.$file['encrypted_path'].'">'.$file['name'].'</a>',
+							'class' => 'overlay',
+							'id'	=> $file['encrypted_path'],
+							'data' => '<a class="overlay" id="img_'.str_replace(".", '', $file['name']).'" href="'.$dir->url.$file['name'].'" title="'.$file['name'].'" rel="#overlay">'.$file['name'].'</a>',
 						),
 						array(
-							'class'=>'fancybox align_right', 
+							'class'=>'align_right', 
 							'data' => number_format($file['size']/1000, 1).NBS.lang('file_size_unit'),
 						),
 						array(
-							'class'=>'fancybox', 
+							'class'=>'', 
 							'data' => $file['mime'],
 						),
 						array(
-							'class'=>'fancybox', 
+							'class'=>'', 
 							'data' => date('M d Y - H:ia', $file['date']),
 						),
 						array(

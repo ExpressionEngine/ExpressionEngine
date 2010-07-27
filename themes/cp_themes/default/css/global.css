@@ -3050,6 +3050,44 @@ input#ip_address {
 	border-bottom: 		1px solid #d0d7df;
 }
 
+/* close button positioned on upper right corner */
+#overlay .close {
+	background-image: 		url('<?=$cp_theme_url?>images/fancybox/fancybox.png');
+	background-position: 	-40px 0px;
+	position:				absolute;
+	right:					-10px;
+	top:					-10px;
+	cursor:					pointer;
+	height:					30px;
+	width:					30px;
+}
+
+
+#overlay {
+	display:				none;
+	background: 			#fff;
+	z-index:				10000;
+	color:					#efefef;
+	min-width:				150px;
+	min-height:				150px;
+	padding:				15px;
+
+	-webkit-border-radius: 	8px;
+	-moz-border-radius: 	8px;
+	border-radius: 			8px;
+	
+	-webkit-box-shadow: 	rgba(0, 0, 0, 0.347656) 0px 8px 8px;
+    -moz-box-shadow:    	rgba(0, 0, 0, 0.347656) 0px 8px 8px;
+	box-shadow:				rgba(0, 0, 0, 0.347656) 0px 8px 8px;
+}
+
+div.contentWrap {
+	overflow-y:auto;
+	text-align:center;
+}
+
+
+
 #file_list li h3 {
 	background:			#3f4d55 url('<?=$cp_theme_url?>images/form_area_heading_bg.gif') bottom left repeat-x;
 	padding:			6px 0 3px 5px!important;

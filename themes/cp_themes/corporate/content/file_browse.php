@@ -163,7 +163,9 @@ if ($EE_view_disable !== TRUE)
 		</div>
 	</div><!-- contents -->
 </div><!-- mainContent -->
-
+<div class="image_overlay" id="overlay" style="display:none"><a class="close"></a>
+	<div class="contentWrap"></div>
+</div>
 <?php
 if ($EE_view_disable !== TRUE)
 {

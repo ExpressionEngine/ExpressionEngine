@@ -1,18 +1,18 @@
 /**
  * @license 
- * jQuery Tools 1.2.0 Overlay - Overlay base. Extend it.
+ * jQuery Tools 1.2.3 Overlay - Overlay base. Extend it.
  * 
  * NO COPYRIGHTS OR LICENSES. DO WHAT YOU LIKE.
  * 
  * http://flowplayer.org/tools/overlay/
  *
  * Since: March 2008
- * Date:    Tue Apr 20 19:26:58 2010 +0000 
+ * Date:    Mon Jun 7 13:43:53 2010 +0000 
  */
 (function($) { 
 
 	// static constructs
-	$.tools = $.tools || {version: '1.2.0'};
+	$.tools = $.tools || {version: '1.2.3'};
 	
 	$.tools.overlay = {
 		
@@ -254,7 +254,7 @@
 		closers = overlay.find(conf.close || ".close");		
 		
 		if (!closers.length && !conf.close) {
-			closers = $('<div class="close"></div>');
+			closers = $('<a class="close"></a>');
 			overlay.prepend(closers);	
 		}		
 		
