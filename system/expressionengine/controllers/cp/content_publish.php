@@ -185,12 +185,6 @@ class Content_publish extends Controller {
 
 		foreach($layout_info as $tab => $field)
 		{
-			// Check for 'On the Fly' tabs - remove label from others
-			if (strncmp($tab, 'eeof_', 5) != 0)
-			{
-				unset($layout_info[$tab]['_tab_label']);
-			}
-			
 			foreach ($field as $name => $info)
 			{
 				if (count($required) > 0)
