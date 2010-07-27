@@ -3643,6 +3643,10 @@ div.contentWrap {
 	padding-right: 		5px;
 }
 
+#mainContent #file_manager #file_information_hold ul li.file_location {
+	word-wrap: break-word;
+}
+
 #mainContent #file_manager .f_m_s {
 	padding: 			3px 12px 12px 12px;
 }

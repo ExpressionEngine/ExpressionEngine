@@ -22,12 +22,11 @@ if ($EE_view_disable !== TRUE)
 				<div id="file_information_hold" class="f_m_s">
 
 				<?php if (isset($file)):?>
-
 					<ul>
 						<li class="file_name"><?=$file['name']?></li>
 						<li><span><?=lang('size')?>:</span> <?=number_format($file['size']/100, 1)?>KB</li>
 						<li><span><?=lang('kind')?>:</span> <?=$file['type']?></li>
-						<li><span><?=lang('where')?>:</span> <?=$file['location']?></li>
+						<li class="file_location"><span><?=lang('where')?>:</span> <?=$file['location']?></li>
 						<li><span><?=lang('permissions')?></span> <?=$file['permissions']?></li>
 					</ul>
 

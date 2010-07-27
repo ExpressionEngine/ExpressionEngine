@@ -3239,9 +3239,14 @@ div.contentWrap {
 #mainContent #file_manager #file_information_hold ul li span {
 	float: 				left;
 	display:			block;
+	font-weight:		bold;
 	width: 				30%;
 	text-align:			right;
 	padding-right: 		5px;
+}
+
+#mainContent #file_manager #file_information_hold ul li.file_location {
+	word-wrap: break-word;
 }
 
 #mainContent #file_manager .f_m_s {
