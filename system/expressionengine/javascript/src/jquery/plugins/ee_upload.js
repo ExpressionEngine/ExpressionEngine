@@ -204,7 +204,7 @@
 					
 			// Make sure loaded really means loaded
 			upload_complete = function (frame) {
-				var d;
+				var d; 
 				
 			    // Event is bound twice - stop the callback after the first fires
 			    if (jQuery.data(_internal.iframe, 'upload_complete')) {
