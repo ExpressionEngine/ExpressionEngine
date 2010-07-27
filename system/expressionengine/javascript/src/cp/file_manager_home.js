@@ -121,9 +121,6 @@ $(document).ready(function () {
 		$("#progress").html("<span class=\"notice\">" + message + "</span>");
 	}
 
-	
-
-
 	function setup_events() {
 		$("td.overlay a").unbind("click").
 			overlay({
@@ -139,7 +136,7 @@ $(document).ready(function () {
 					$('<img />', {'src': this.getTrigger().attr('href')}).appendTo(wrap);
 				}
 			}).
-			click(function (e) {	
+			click(function () {	
 				show_file_info($(this).parent().attr("id"));
 			}
 		);
