@@ -56,12 +56,9 @@ class EE_Actions {
 	 * a particular action request
 	 *
 	 */	
-	
-	var $can_view_system = FALSE;
-	
-	
-	function EE_Actions()
-	{  
+		
+	function EE_Actions($can_view_system = FALSE)
+	{  		
 		// Set the EE super object to a local variable
 		$EE =& get_instance();
   
@@ -99,8 +96,8 @@ class EE_Actions {
 				}
 			}
 			
-			$class  = ucfirst($query->row('class') );
-			$method = strtolower($query->row('method') );
+			$class  = ucfirst($query->row('class'));
+			$method = strtolower($query->row('method'));
 		}
 		else
 		{
@@ -140,9 +137,9 @@ class EE_Actions {
 		}
 		else
 		{
-			if ($this->can_view_system == FALSE)
+			if ($can_view_system === FALSE)
 			{
-				$this->EE->output->system_off_msg();
+				$EE->output->system_off_msg();
 				exit;
 			}
 
