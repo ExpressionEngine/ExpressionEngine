@@ -3056,21 +3056,28 @@ class Channel {
 			// we need to offset to the timestamp by an hour
 
 			if ( ! isset($row['dst_enabled']))
+			{
 				$row['dst_enabled'] = 'n';
+			}
 
 			if (isset($existing_variables['entry_date']) && $row['entry_date'] != '')
-				$row['entry_date'] = $this->EE->localize->offset_entry_dst($row['entry_date'], $row['dst_enabled'], FALSE);
+			{
+				$row['entry_date'] = $this->EE->localize->offset_entry_dst($row['entry_date'], $row['dst_enabled'], FALSE);				
+			}
 
 			if ( isset($existing_variables['expiration_date']) && $row['expiration_date'] != '' AND $row['expiration_date'] != 0)
-				$row['expiration_date'] = $this->EE->localize->offset_entry_dst($row['expiration_date'], $row['dst_enabled'], FALSE);
+			{
+				$row['expiration_date'] = $this->EE->localize->offset_entry_dst($row['expiration_date'], $row['dst_enabled'], FALSE);				
+			}
 
 			if ( isset($existing_variables['comment_expiration_date']) && $row['comment_expiration_date'] != '' AND $row['comment_expiration_date'] != 0)
-				$row['comment_expiration_date'] = $this->EE->localize->offset_entry_dst($row['comment_expiration_date'], $row['dst_enabled'], FALSE);
+			{
+				$row['comment_expiration_date'] = $this->EE->localize->offset_entry_dst($row['comment_expiration_date'], $row['dst_enabled'], FALSE);				
+			}
 
 			//  More Variables, Mostly for Conditionals
-
-			$row['logged_in']			= ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-			$row['logged_out']			= ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+			$row['logged_in'] = ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
+			$row['logged_out'] = ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
 
 			if (($row['comment_expiration_date'] > 0 && $this->EE->localize->now > $row['comment_expiration_date']) OR $row['allow_comments'] == 'n')
 			{
@@ -3084,7 +3091,9 @@ class Channel {
 			foreach (array('avatar_filename', 'photo_filename', 'sig_img_filename') as $pv)
 			{
 				if ( ! isset($row[$pv]))
-					$row[$pv] = '';
+				{
+					$row[$pv] = '';					
+				}
 			}
 
 			$row['signature_image']			= ($row['sig_img_filename'] == '' OR $this->EE->config->item('enable_signatures') == 'n' OR $this->EE->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
