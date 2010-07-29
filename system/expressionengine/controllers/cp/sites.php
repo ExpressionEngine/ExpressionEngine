@@ -459,7 +459,9 @@ class Sites extends Controller {
 			// This is ugly, but the proper defaults are done by the config lib below
 			$others = array('system_preferences', 'mailinglist_preferences', 'member_preferences', 'template_preferences', 'channel_preferences');
 			
-			if ($this->config->item('site_pages') !== FALSE)
+			$this->load->model('addons_model');
+			
+			if ($this->addons_model->module_installed('pages'))
 			{
 				$others[] = 'pages';
 			}
