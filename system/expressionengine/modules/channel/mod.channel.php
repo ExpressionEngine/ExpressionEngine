@@ -1730,7 +1730,9 @@ class Channel {
 			$str = $this->EE->functions->sql_andor_string($channel, 'channel_name');
 
 			if (substr($str, 0, 3) == 'AND')
-				$str = substr($str, 3);
+			{
+				$str = substr($str, 3);				
+			}
 
 			$xql .= $str;
 
@@ -1766,11 +1768,14 @@ class Channel {
 		/**  Limit query by date range given in tag parameters
 		/**------------*/
 		if ($this->EE->TMPL->fetch_param('start_on'))
-			$sql .= "AND t.entry_date >= '".$this->EE->localize->convert_human_date_to_gmt($this->EE->TMPL->fetch_param('start_on'))."' ";
+		{
+			$sql .= "AND t.entry_date >= '".$this->EE->localize->convert_human_date_to_gmt($this->EE->TMPL->fetch_param('start_on'))."' ";			
+		}
 
 		if ($this->EE->TMPL->fetch_param('stop_before'))
-			$sql .= "AND t.entry_date < '".$this->EE->localize->convert_human_date_to_gmt($this->EE->TMPL->fetch_param('stop_before'))."' ";
-
+		{
+			$sql .= "AND t.entry_date < '".$this->EE->localize->convert_human_date_to_gmt($this->EE->TMPL->fetch_param('stop_before'))."' ";	
+		}
 
 		/**-------------
 		/**  Limit query by date contained in tag parameters
@@ -1789,9 +1794,16 @@ class Channel {
 				$emonth = date('m');
 			}
 
-			if (strlen($smonth) == 1) $smonth = '0'.$smonth;
-			if (strlen($emonth) == 1) $emonth = '0'.$emonth;
-
+			if (strlen($smonth) == 1) 
+			{
+				$smonth = '0'.$smonth;
+			}
+			
+			if (strlen($emonth) == 1) 
+			{
+				$emonth = '0'.$emonth;
+			}
+			
 			if ($day == '')
 			{
 				$sday = 1;

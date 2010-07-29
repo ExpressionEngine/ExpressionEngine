@@ -1107,8 +1107,9 @@ class EE_Template {
 		
 		if (count($this->module_data) == 0 && count(array_intersect($this->modules, $modules)) > 0)
 		{
-			$query = $this->EE->db->query("SELECT module_version, module_name FROM exp_modules");
-			
+			$this->EE->db->select('module_version, module_name');
+			$query = $this->EE->db->get('modules');
+
 			foreach($query->result_array() as $row)
 			{
 				$this->module_data[$row['module_name']] = array('version' => $row['module_version']);

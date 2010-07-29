@@ -1225,11 +1225,14 @@ class EE_Functions {
 		{
 			if ($all_sites === TRUE)
 			{
-				$query = $this->EE->db->query("SELECT channel_id FROM exp_channels");
+				$this->EE->db->select('channel_id');
+				$query = $this->EE->db->get('channels');
 			}
 			else
 			{
-				$query = $this->EE->db->query("SELECT channel_id FROM exp_channels WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'");
+				$this->EE->db->select('channel_id');
+				$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+				$query = $this->EE->db->get('channels');
 			}
 			
 			if ($query->num_rows() > 0)
