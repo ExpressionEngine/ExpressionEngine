@@ -1393,7 +1393,7 @@ class Sites extends Controller {
 										{
 											if ($fields_query_row["field_id_{$fq_row['field_id']}"] != '')
 											{
-												$fields_query_row['field_id_'.$cat_field_match[$fq_row['field_id']]] = $fields_query->row["field_id_{$fq_row['field_id']}"];
+												$fields_query_row['field_id_'.$cat_field_match[$fq_row['field_id']]] = $fields_query_row["field_id_{$fq_row['field_id']}"];
 												$fields_query_row["field_id_{$fq_row['field_id']}"] = '';
 											}
 										}
