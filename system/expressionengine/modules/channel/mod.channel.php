@@ -947,7 +947,8 @@ class Channel {
 	  */
 	function fetch_custom_member_fields()
 	{
-		$query = $this->EE->db->query("SELECT m_field_id, m_field_name, m_field_fmt FROM exp_member_fields");
+		$this->EE->db->select('m_field_id, m_field_name, m_field_fmt');
+		$query = $this->EE->db->get('member_fields');
 
 		$fields_present = FALSE;
 
