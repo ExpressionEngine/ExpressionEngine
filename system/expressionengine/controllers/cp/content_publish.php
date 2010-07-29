@@ -2429,11 +2429,18 @@ class Content_publish extends Controller {
 			}
 		}
 
-		$query = $this->db->query("SELECT COUNT(*) AS count FROM exp_ping_servers WHERE site_id = '".$this->db->escape_str($this->config->item('site_id'))."' AND member_id = '".$this->session->userdata('member_id')."'");
+		$this->db->select('COUNT(*) as count');
+		$this->db->where('site_id', $this->config->item('site_id'));
+		$this->db->where('member_id', $this->session->userdata('member_id'));
+		$query = $this->db->get('ping_servers');
 
 		$member_id = ($query->row('count')	== 0) ? 0 : $this->session->userdata('member_id');
 
-		$query = $this->db->query("SELECT id, server_name, is_default FROM exp_ping_servers WHERE site_id = '".$this->db->escape_str($this->config->item('site_id'))."' AND member_id = '$member_id' ORDER BY server_order");
+		$this->db->select('id, server_name, is_default');
+		$this->db->where('site_id', $this->config->item('site_id'));
+		$this->db->where('member_id', $member_id);
+		$this->db->order_by('server_order');
+		$query = $this->db->get('ping_servers');
 
 		if ($query->num_rows() == 0)
 		{
@@ -2577,7 +2584,9 @@ class Content_publish extends Controller {
 
 		$message = '';
 
-		$query = $this->db->query("SELECT field_group FROM	exp_channels WHERE channel_id = '$channel_id'");
+		$this->db->select('field_group');
+		$this->db->where('channel_id', $channel_id);
+		$query = $this->db->get('channels');
 
 		if ($query->num_rows() == 0)
 		{
@@ -2750,8 +2759,6 @@ class Content_publish extends Controller {
 
 		return EE_Spellcheck::iframe();
 	}
-
-
 
 	/** -----------------------------------------
 	/**	 Spell Check for Textareas
