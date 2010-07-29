@@ -2831,8 +2831,9 @@ class EE_Functions {
 			return $this->file_paths;
 		}
 		
-		$query = $this->EE->db->query("SELECT id, url FROM exp_upload_prefs");
-		
+		$this->EE->db->select('id, url');
+		$query = $this->EE->db->get('upload_prefs');
+
 		if ($query->num_rows() == 0)
 		{
 			return;
