@@ -332,33 +332,6 @@ class EE_Core {
 		
 		/*
 		 * -----------------------------------------------------------------
-		 *  Is the system turned on?
-		 * -----------------------------------------------------------------
-		 */
-			// Note: super-admins can always view the system
-				
-			if ($this->EE->session->userdata('group_id') != 1  AND REQ != 'CP')
-			{	
-				if ($this->EE->config->item('is_system_on') == 'y' && ($this->EE->config->item('multiple_sites_enabled') != 'y' OR $this->EE->config->item('is_site_on') == 'y'))
-				{
-					if ($this->EE->session->userdata('can_view_online_system') == 'n')
-					{
-						$this->EE->output->system_off_msg();
-						exit;
-					}
-				}
-				else
-				{
-					if ($this->EE->session->userdata('can_view_offline_system') == 'n')
-					{
-						$this->EE->output->system_off_msg();
-						exit;
-					}		
-				}
-			}
-
-		/*
-		 * -----------------------------------------------------------------
 		 *  Load up any Snippets
 		 * -----------------------------------------------------------------
 		 */
@@ -539,10 +512,10 @@ class EE_Core {
 	 * @access	private
 	 * @return	void
 	 */	
-	function _generate_action()
+	function _generate_action($can_view_system = FALSE)
 	{
 		require APPPATH.'libraries/Actions'.EXT;    
-		$ACT = new EE_Actions();
+		$ACT = new EE_Actions($can_view_system);
 	}	
 	
 	// ------------------------------------------------------------------------

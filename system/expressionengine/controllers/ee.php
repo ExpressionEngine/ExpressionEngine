@@ -45,10 +45,35 @@ class EE extends Controller {
 
 		// intialize the Core library
 		$this->core->_initialize_core();
-				
+		
+		$can_view_system =  FALSE;
+		
+		if ($this->config->item('is_system_on') == 'y' && ($this->config->item('multiple_sites_enabled') != 'y' OR $this->config->item('is_site_on') == 'y'))
+		{
+			if ($this->session->userdata('can_view_online_system') == 'y')
+			{
+				$can_view_system =  TRUE;
+			}			
+		}
+		else
+		{
+			if ($this->session->userdata('can_view_offline_system') == 'y')
+			{
+				$can_view_system =  TRUE;
+			}
+		}	
+		
+		$can_view_system = ($this->session->userdata('group_id') == 1) ? TRUE : $can_view_system;
+
+		if (REQ != 'ACTION' && $can_view_system != TRUE)
+		{
+			$this->output->system_off_msg();
+			exit;		
+		}
+
 		if (REQ == 'ACTION')
 		{
-			$this->core->_generate_action();
+			$this->core->_generate_action($can_view_system);
 		}
 		elseif (REQ == 'PAGE')
 		{
