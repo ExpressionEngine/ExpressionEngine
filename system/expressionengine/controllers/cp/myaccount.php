@@ -2520,7 +2520,7 @@ class MyAccount extends Controller {
 			}
 		}
 
-		sort($data);
+		natcasesort($data);
 
 		$str = '';
 
