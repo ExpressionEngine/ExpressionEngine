@@ -306,7 +306,7 @@ class EE_Session {
 		/** --------------------------------------*/
 		
 		// We merge these into into one array for portability
-		
+	
 		$this->userdata = array_merge($this->userdata, $this->sdata);
 		
 		// -------------------------------------------
@@ -453,6 +453,11 @@ class EE_Session {
 	 */
 	function fetch_member_data()
 	{
+		if ($this->EE->config->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
+		{
+			$this->EE->db->cache_off();
+		}
+
 		// Query DB for member data.  Depending on the validation type we'll
 		// either use the cookie data or the member ID gathered with the session query.
 		$select = 'm.username, m.screen_name, m.member_id, m.email, m.url, m.location, m.join_date, m.last_visit,
@@ -562,6 +567,7 @@ class EE_Session {
 									  AND ewmg.group_id = '".$this->EE->db->escape_str($this->userdata['group_id'])."'
 									  AND site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'
 									  ORDER BY ew.channel_title");
+
 			}
 			
 			if ($result->num_rows() > 0)
@@ -690,6 +696,11 @@ class EE_Session {
 			$this->EE->db->where('member_id', $this->sdata['member_id']);
 			$this->EE->db->update('members', array('last_activity' => $this->EE->localize->now));
 		}		
+
+		if ($this->EE->config->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
+		{
+			$this->EE->db->cache_on();
+		}
 
 		return TRUE;  
 	}

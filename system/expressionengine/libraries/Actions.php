@@ -56,6 +56,10 @@ class EE_Actions {
 	 * a particular action request
 	 *
 	 */	
+	
+	var $can_view_system = FALSE;
+	
+	
 	function EE_Actions()
 	{  
 		// Set the EE super object to a local variable
@@ -136,6 +140,12 @@ class EE_Actions {
 		}
 		else
 		{
+			if ($this->can_view_system == FALSE)
+			{
+				$this->EE->output->system_off_msg();
+				exit;
+			}
+
 			$type = 'mod';
 		
 			$base_class = strtolower($class);
