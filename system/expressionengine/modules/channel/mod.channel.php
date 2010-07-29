@@ -1411,6 +1411,9 @@ class Channel {
 				$pages_uris += $data['uris'];
 			}
 			
+			if (count($pages_uris) > 0 OR $this->EE->TMPL->fetch_param('show_pages') == 'only')
+			{
+			
 			// consider entry_id
 			if ($this->EE->TMPL->fetch_param('entry_id') !== FALSE)
 			{
@@ -1457,9 +1460,13 @@ class Channel {
 			{
 				$this->sql = '';
 				return;
+			}
+			
 			}			
 		}
 		
+
+
 		/**------
 		/**  Assing the order variables
 		/**------*/
