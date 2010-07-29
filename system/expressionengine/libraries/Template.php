@@ -2802,9 +2802,10 @@ class EE_Template {
 		/**  they can use other standard globals
 		/** --------------------------------------------------*/
 	 	
-		$query = $this->EE->db->query("SELECT variable_name, variable_data FROM exp_global_variables 
-							 		   WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'");
-		
+		$this->EE->db->select('variable_name, variable_data');
+		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+		$query = $this->EE->db->get('global_variables');
+			
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result_array() as $row)
