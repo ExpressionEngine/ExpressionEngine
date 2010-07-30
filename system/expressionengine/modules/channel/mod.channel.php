@@ -1414,59 +1414,55 @@ class Channel {
 			
 			if (count($pages_uris) > 0 OR $this->EE->TMPL->fetch_param('show_pages') == 'only')
 			{
-			
-			// consider entry_id
-			if ($this->EE->TMPL->fetch_param('entry_id') !== FALSE)
-			{
-				$not = FALSE;
-
-				if (strncmp($entry_id, 'not', 3) == 0)
+				// consider entry_id
+				if ($this->EE->TMPL->fetch_param('entry_id') !== FALSE)
 				{
-					$not = TRUE;
-					$entry_id = trim(substr($entry_id, 3));
-				}
+					$not = FALSE;
 
-				$ids = explode('|', $entry_id);
-
-				if ($this->EE->TMPL->fetch_param('show_pages') == 'only')
-				{
-					if ($not === TRUE)
+					if (strncmp($entry_id, 'not', 3) == 0)
 					{
-						$entry_id = implode('|', array_diff(array_flip($pages_uris), explode('|', $ids)));
+						$not = TRUE;
+						$entry_id = trim(substr($entry_id, 3));
+					}
+
+					$ids = explode('|', $entry_id);
+
+					if ($this->EE->TMPL->fetch_param('show_pages') == 'only')
+					{
+						if ($not === TRUE)
+						{
+							$entry_id = implode('|', array_diff(array_flip($pages_uris), explode('|', $ids)));
+						}
+						else
+						{
+							$entry_id = implode('|',array_diff($ids, array_diff($ids, array_flip($pages_uris))));
+						}
 					}
 					else
 					{
-						$entry_id = implode('|',array_diff($ids, array_diff($ids, array_flip($pages_uris))));
+						if ($not === TRUE)
+						{
+							$entry_id = "not {$entry_id}|".implode('|', array_flip($pages_uris));
+						}
+						else
+						{
+							$entry_id = implode('|',array_diff($ids, array_flip($pages_uris)));
+						}
 					}
 				}
 				else
 				{
-					if ($not === TRUE)
-					{
-						$entry_id = "not {$entry_id}|".implode('|', array_flip($pages_uris));
-					}
-					else
-					{
-						$entry_id = implode('|',array_diff($ids, array_flip($pages_uris)));
-					}
+					$entry_id = (($this->EE->TMPL->fetch_param('show_pages') == 'no') ? 'not ' : '').implode('|', array_flip($pages_uris));
 				}
-			}
-			else
-			{
-				$entry_id = (($this->EE->TMPL->fetch_param('show_pages') == 'no') ? 'not ' : '').implode('|', array_flip($pages_uris));
-			}
 			
-			//  No pages and show_pages only
-			if ($entry_id == '' && $this->EE->TMPL->fetch_param('show_pages') == 'only')
-			{
-				$this->sql = '';
-				return;
-			}
-			
+				//  No pages and show_pages only
+				if ($entry_id == '' && $this->EE->TMPL->fetch_param('show_pages') == 'only')
+				{
+					$this->sql = '';
+					return;
+				}
 			}			
 		}
-		
-
 
 		/**------
 		/**  Assing the order variables
