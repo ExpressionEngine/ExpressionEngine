@@ -345,7 +345,7 @@ EOT;
 			$row = $query->row_array();
 			
 			// Upload Directory Double-Check
-			
+		
 			if ( ! isset($upload_array[$row['moblog_upload_directory']]))
 			{
 				$this->EE->db->select('name');
@@ -357,6 +357,10 @@ EOT;
 					$upload_array[$row['moblog_upload_directory']] = $results->row('name') ;
 					$form_data['moblog_upload_directory'] = array($upload_array, $row['moblog_upload_directory']);
 				}
+			}
+			else
+			{
+				$form_data['moblog_upload_directory'] = array($upload_array, $row['moblog_upload_directory']);
 			}
 
 			$data = array(
