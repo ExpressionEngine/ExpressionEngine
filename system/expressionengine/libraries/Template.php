@@ -2216,10 +2216,10 @@ class EE_Template {
 		{
 			$this->log_item("HTTP Authentication in Progress");
 		
-			$results = $this->EE->db->query("SELECT member_group 
-								  FROM exp_template_no_access 
-								  WHERE template_id = '".$this->EE->db->escape_str($query->row('template_id') )."'");
-								  
+			$this->EE->db->select('member_group');
+			$this->EE->db->where('template_id', $query->row('template_id'));
+			$results = $this->EE->db->get('template_no_access');
+		
 			$not_allowed_groups = array('2', '3', '4');
 			
 			if ($results->num_rows() > 0)
@@ -2245,9 +2245,10 @@ class EE_Template {
 		{
 			$this->log_item("Determining Template Access Privileges");
 		
-			$result = $this->EE->db->query("SELECT count(*) AS count FROM exp_template_no_access 
-											WHERE template_id = '".$this->EE->db->escape_str($query->row('template_id') )."' 
-											AND member_group = '".$this->EE->db->escape_str($this->EE->session->userdata['group_id'])."'");
+			$this->EE->db->select('COUNT(*) as count');
+			$this->EE->db->where('template_id', $query->row('template_id'));
+			$this->EE->db->where('member_group', $this->EE->session->userdata('group_id'));
+			$result = $this->EE->db->get('template_no_access');
 			
 			if ($result->row('count')  > 0)
 			{ 
