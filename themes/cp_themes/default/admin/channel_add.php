@@ -55,7 +55,7 @@ if ($EE_view_disable !== TRUE)
 				<tbody>
 					<tr>
 						<td style="width: 50%;"><?=lang('category_group', 'cat_group')?></td>
-						<td><?=form_dropdown('cat_group[]', $cat_group_options, '', 'id="cat_group"')?></td>
+						<td><?=form_dropdown('cat_group[]', $cat_group_options, '', 'id="cat_group" multiple="multiple"')?></td>
 					</tr>
 					<tr>
 						<td><?=lang('status_group', 'status_group')?></td>

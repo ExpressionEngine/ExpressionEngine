@@ -54,7 +54,7 @@ if ($EE_view_disable !== TRUE)
 					<?=lang('category_group', 'cat_group')?>
 				</div>
 				<ul>
-					<li><?=form_dropdown('cat_group[]', $cat_group_options, '', 'id="cat_group"')?></li>
+					<li><?=form_dropdown('cat_group[]', $cat_group_options, '', 'id="cat_group" multiple="multiple"')?></li>
 				</ul>
 				<div class="label">
 					<?=lang('status_group', 'status_group')?>
