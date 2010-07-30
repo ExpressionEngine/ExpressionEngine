@@ -573,10 +573,13 @@ class EE_Core {
 				
 				if ($pages !== FALSE && isset($pages[$this->EE->config->item('site_id')]['uris']) && (($entry_id = array_search($match_uri, $pages[$this->EE->config->item('site_id')]['uris'])) !== FALSE OR ($entry_id = array_search($match_uri.'/', $pages[$this->EE->config->item('site_id')]['uris'])) !== FALSE))
 				{
-					$query = $this->EE->db->query("SELECT t.template_name, tg.group_name
-										 FROM exp_templates t, exp_template_groups tg 
-										 WHERE t.group_id = tg.group_id 
-										 AND t.template_id = '".$this->EE->db->escape_str($pages[$this->EE->config->item('site_id')]['templates'][$entry_id])."'");
+					$this->EE->db->select('t.template_name, tg.group_name');
+					$this->EE->db->from(array('templates t', 'template_groups tg'));
+					$this->EE->db->where('t.group_id', 'tg.group_id', FALSE);
+					$this->EE->db->where('t.template_id',
+								$pages[$this->EE->config->item('site_id')]['templates'][$entry_id]);
+					$query = $this->EE->db->get();
+
 										 
 					if ($query->num_rows() > 0)
 					{
@@ -648,19 +651,28 @@ class EE_Core {
 	
 		if ( ! isset($last_clear) && $this->EE->config->item('enable_online_user_tracking') != 'n')
 		{
-			$query = $this->EE->db->query("SELECT last_cache_clear FROM exp_stats WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'");
+			$this->EE->db->select('last_cache_clear');
+			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+			$query = $this->EE->db->get('stats');
+
 			$last_clear = $query->row('last_cache_clear') ;
 		}
 			
 		if (isset($last_clear) && $this->EE->localize->now > $last_clear)
 		{
-			$expire = $this->EE->localize->now + (60*60*24*7);
-			$this->EE->db->query("UPDATE exp_stats SET last_cache_clear = '{$expire}' WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'");
-			
+			$data = array(
+					'last_cache_clear'	=> $this->EE->localize->now + (60*60*24*7)
+				);
+
+			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+			$this->EE->db->update('stats', $data);
+						
 			if ($this->EE->config->item('enable_throttling') == 'y')
 			{		
 				$expire = time() - 180;
-				$this->EE->db->query("DELETE FROM exp_throttle WHERE last_activity < {$expire}");
+				
+				$this->EE->db->where('last_activity <', $expire);
+				$this->EE->db->delete('throttle');
 			}
 	
 			$this->EE->functions->clear_spam_hashes();
