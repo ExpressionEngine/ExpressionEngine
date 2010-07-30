@@ -75,15 +75,17 @@ class EE_Stylesheet {
 				exit;				
 			}
 
-			$sql = "SELECT exp_templates.template_data, exp_templates.template_name, exp_templates.save_template_file, exp_templates.edit_date
-					FROM	exp_templates, exp_template_groups 
-					WHERE  exp_templates.group_id = exp_template_groups.group_id
-					AND	exp_templates.template_name = '".$this->EE->db->escape_str($ex['1'])."'
-					AND	exp_template_groups.group_name = '".$this->EE->db->escape_str($ex['0'])."'
-					AND	exp_templates.template_type = 'css'
-					AND	exp_templates.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'";
-
-			$query = $this->EE->db->query($sql);
+			$this->EE->db->select('templates.template_data, templates.template_name, 
+									templates.save_template_file, templates.edit_date');
+			$this->EE->db->from(array('templates', 'template_groups'));
+			$this->EE->db->where($this->EE->db->dbprefix('templates').'.group_id', 
+								$this->EE->db->dbprefix('template_groups').'.group_id', FALSE);
+			$this->EE->db->where('templates.template_name', $ex[1]);
+			$this->EE->db->where('template_groups.group_name', $ex[0]);
+			$this->EE->db->where('templates.template_type', 'css');
+			$this->EE->db->where('templates.site_id', $this->EE->config->item('site_id'));
+			
+			$query = $this->EE->db->get();
 
 			if ($query->num_rows() == 0)
 			{
