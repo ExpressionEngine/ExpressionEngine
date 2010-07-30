@@ -1107,8 +1107,9 @@ class EE_Template {
 		
 		if (count($this->module_data) == 0 && count(array_intersect($this->modules, $modules)) > 0)
 		{
-			$query = $this->EE->db->query("SELECT module_version, module_name FROM exp_modules");
-			
+			$this->EE->db->select('module_version, module_name');
+			$query = $this->EE->db->get('modules');
+
 			foreach($query->result_array() as $row)
 			{
 				$this->module_data[$row['module_name']] = array('version' => $row['module_version']);
@@ -2802,9 +2803,10 @@ class EE_Template {
 		/**  they can use other standard globals
 		/** --------------------------------------------------*/
 	 	
-		$query = $this->EE->db->query("SELECT variable_name, variable_data FROM exp_global_variables 
-							 		   WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'");
-		
+		$this->EE->db->select('variable_name, variable_data');
+		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+		$query = $this->EE->db->get('global_variables');
+			
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result_array() as $row)

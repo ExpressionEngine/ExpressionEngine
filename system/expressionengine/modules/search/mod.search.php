@@ -1184,7 +1184,7 @@ class Search {
 			$this->EE->load->library('pagination');
 
 			$config['base_url']		= $this->EE->functions->create_url($res_page.'/'.$search_id, 0, 0);
-			$config['prefix']		= ( ! $dynamic) ? 'N' : 'P';
+			$config['prefix']		= 'P';
 			$config['total_rows'] 	= $query->row('count') ;
 			$config['per_page']		= $per_page;
 			$config['cur_page']		= $cur_page;	
