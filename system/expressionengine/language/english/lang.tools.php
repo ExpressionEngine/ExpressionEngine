@@ -57,6 +57,7 @@ $lang = array(
 'no_lang_keys'			=> 'No Language Keys Exist to Translate',
 'invalid_path' 			=> 'The path you submitted is not valid:',
 'file_saved'			=> 'The translation file has been saved to system/expressionengine/translations/',
+'trans_file_not_writable'=> 'Translation file is not writeable.',
 
 'import_from_mt' 		=> 'Movable Type Import Utility',
 'member_import' 		=> 'Member Import Utility',

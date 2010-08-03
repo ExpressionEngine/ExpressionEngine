@@ -650,7 +650,9 @@ class EE_Template {
 				{
 					if (count($this->sites) == 0)
 					{
-						$sites_query = $this->EE->db->query("SELECT site_id, site_name FROM exp_sites");
+						// This should really be cached somewhere
+						$this->EE->db->select('site_id, site_name');
+						$sites_query = $this->EE->db->get('sites');
 						
 						foreach($sites_query->result_array() as $row)
 						{
@@ -1853,7 +1855,10 @@ class EE_Template {
 		// let's try to determine what template group/template we should show
 		
 		// Is the first segment the name of a template group?
-		$query = $this->EE->db->query("SELECT group_id FROM exp_template_groups WHERE group_name = '".$this->EE->db->escape_str($this->EE->uri->segment(1))."' AND site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'");
+		$this->EE->db->select('group_id');
+		$this->EE->db->where('group_name', $this->EE->uri->segment(1));
+		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+		$query = $this->EE->db->get('template_groups');
 	
 		// Template group found!
 		if ($query->num_rows() == 1)
@@ -1870,7 +1875,10 @@ class EE_Template {
 			if ($this->EE->uri->segment(2) !== FALSE)
 			{
 				// Is the second segment the name of a valid template?
-				$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_templates WHERE group_id = '{$group_id}' AND template_name = '".$this->EE->db->escape_str($this->EE->uri->segment(2))."'");
+				$this->EE->db->select('COUNT(*) as count');
+				$this->EE->db->where('group_id', $group_id);
+				$this->EE->db->where('template_name', $this->EE->uri->segment(2));
+				$query = $this->EE->db->get('templates');
 			
 				// We have a template name!
 				if ($query->row('count') == 1)
@@ -1933,7 +1941,10 @@ class EE_Template {
 			}
 			
 			// We we are not enforcing strict URLs, so Let's fetch the the name of the default template group
-			$result = $this->EE->db->query("SELECT group_name, group_id FROM exp_template_groups WHERE is_site_default = 'y' AND site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'");
+			$this->EE->db->select('group_name, group_id');
+			$this->EE->db->where('is_site_default', 'y');
+			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+			$result = $this->EE->db->get('template_groups');
 
 			// No result?  Bail out...
 			// There's really nothing else to do here.  We don't have a valid template group in the URL
@@ -1956,8 +1967,12 @@ class EE_Template {
 				}
 			}
 			
-			// Since the first URI segment isn't a template group name, could it be the name of a template in the default group?			
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_templates WHERE group_id = '".$result->row('group_id')."' AND template_name = '".$this->EE->db->escape_str($this->EE->uri->segment(1))."'");
+			// Since the first URI segment isn't a template group name, 
+			// could it be the name of a template in the default group?
+			$this->EE->db->select('COUNT(*) as count');
+			$this->EE->db->where('group_id', $result->row('group_id'));
+			$this->EE->db->where('template_name', $this->EE->uri->segment(1));
+			$query = $this->EE->db->get('templates');
 
 			// We found a valid template!
 			if ($query->row('count') == 1)
@@ -2201,10 +2216,10 @@ class EE_Template {
 		{
 			$this->log_item("HTTP Authentication in Progress");
 		
-			$results = $this->EE->db->query("SELECT member_group 
-								  FROM exp_template_no_access 
-								  WHERE template_id = '".$this->EE->db->escape_str($query->row('template_id') )."'");
-								  
+			$this->EE->db->select('member_group');
+			$this->EE->db->where('template_id', $query->row('template_id'));
+			$results = $this->EE->db->get('template_no_access');
+		
 			$not_allowed_groups = array('2', '3', '4');
 			
 			if ($results->num_rows() > 0)
@@ -2230,9 +2245,10 @@ class EE_Template {
 		{
 			$this->log_item("Determining Template Access Privileges");
 		
-			$result = $this->EE->db->query("SELECT count(*) AS count FROM exp_template_no_access 
-											WHERE template_id = '".$this->EE->db->escape_str($query->row('template_id') )."' 
-											AND member_group = '".$this->EE->db->escape_str($this->EE->session->userdata['group_id'])."'");
+			$this->EE->db->select('COUNT(*) as count');
+			$this->EE->db->where('template_id', $query->row('template_id'));
+			$this->EE->db->where('member_group', $this->EE->session->userdata('group_id'));
+			$result = $this->EE->db->get('template_no_access');
 			
 			if ($result->row('count')  > 0)
 			{ 

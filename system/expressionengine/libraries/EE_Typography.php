@@ -1020,10 +1020,23 @@ class EE_Typography extends CI_Typography {
 	{		
 		$url = str_replace(array('(', ')'), '', $matches['1']);
 
-		if (preg_match("/\s+alt=(\"|\')([^\\1]*?)\\1/", $matches['1'], $alt_match))
+		if (preg_match("/\s+width=(\"|\')([^\\1]*?)\\1/", $matches[1], $width_match))
+		{
+			$url = trim(str_replace($width_match[0], '', $url));
+			$width = $width_match[0];
+		}
+
+		if (preg_match("/\s+height=(\"|\')([^\\1]*?)\\1/", $matches[1], $height_match))
+		{	
+			$url = trim(str_replace($height_match[0], '', $url));
+			$height = $height_match[0];
+		}
+
+
+		if (preg_match("/\s+alt=(\"|\')([^\\1]*?)\\1/", $matches[1], $alt_match))
 		{
 			$url = trim(str_replace($alt_match['0'], '', $url));
-			$alt = str_replace(array('"', "'"), '', $alt_match['2']);
+			$alt = str_replace(array('"', "'"), '', $alt_match[2]);
 		}
 		else
 		{
@@ -1037,7 +1050,7 @@ class EE_Typography extends CI_Typography {
 			$alt = substr($alt, strrpos($alt, '/')+1);
 		}
 		
-		return "<img src=\"{$url}\" alt=\"{$alt}\" />";
+		return "<img src=\"{$url}\" alt=\"{$alt}\"}{$width}{$height} />";
 	}
 
 	

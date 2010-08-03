@@ -309,30 +309,22 @@ class Content_files extends Controller {
 		// get upload dir info
 		$upload_id = $this->input->get_post('upload_dir');
 
-		$upload_dir_result = $this->tools_model->get_upload_preferences($this->session->userdata('member_group'), $upload_id);
+		$upload_dir_result = $this->tools_model->get_upload_preferences(
+											$this->session->userdata('member_group'), 
+											$upload_id
+								);
+								
 		$upload_dir_prefs = $upload_dir_result->row();
 
-		// $full_filename = $_FILES['userfile']['name'];
-		// $extension = strrchr($full_filename, '.');
-		// $filename = ($extension === FALSE) ? $full_filename : substr($full_filename, 0, -strlen($extension));
-		// 
-		// $upload_filename = url_title($filename, $this->config->item('word_separator'), TRUE);
-
-		// Upload Exists.
-		// if (file_exists($upload_dir_prefs->server_path.$upload_filename.$extension))
-		// {
-		// 	$message = 'The file you are attempting to upload already exists.  Would you like to:';
-		// 	$message_extra = '<a id="rename_file" href="#" title="Rename">Rename</a>&nbsp;<a id="overwrite_file" href="#" title="Overwrite">Overwrite</a>';
-		// 	
-		// 	echo '<script type="text/javascript">parent.EE_uploads.'.$this->input->get('frame_id').' = '.$this->javascript->generate_json(array('error' => $message.'<br />'.$message_extra)).';</script>';
-		// 	exit();
-		// }
+		$max_file_size = ($upload_dir_prefs->max_size = '') ? 0 : ($upload_dir_prefs->max_size * 1024);
+		$max_width = ($upload_dir_prefs->max_width = '') ? 0 : $upload_dir_prefs->max_width;
+		$max_height = ($upload_dir_prefs->max_height = '') ? 0 : $upload_dir_prefs->max_height;
 
 		$config = array(
 			'upload_path'	=> $upload_dir_prefs->server_path,
-			'max_size'		=> $upload_dir_prefs->max_size,
-			'max_width'		=> $upload_dir_prefs->max_width,
-			'max_height'	=> $upload_dir_prefs->max_height
+			'max_size'		=> $max_file_size,
+			'max_width'		=> $max_width,
+			'max_height'	=> $max_height
 		);
 
 		switch($upload_dir_prefs->allowed_types)

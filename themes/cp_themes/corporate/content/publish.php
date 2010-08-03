@@ -147,11 +147,10 @@ if ($EE_view_disable !== TRUE)
 								</span>
 							</label>
 
-						<?php if($f['field_instructions'] != ''):?>
-							<div class="instruction_text"><?=auto_typography('<strong>'.$this->lang->line('instructions').'</strong>'.NBS.$f['field_instructions'])?></div>
-						<?php endif;?>
-
 						<div id="sub_hold_field_<?=$field?>" <?=$values['is_hidden']? 'class="js_hide"': '';?>>
+							<?php if($f['field_instructions'] != ''):?>
+								<div class="instruction_text"><?=auto_typography('<strong>'.$this->lang->line('instructions').'</strong>'.NBS.$f['field_instructions'])?></div>
+							<?php endif;?>
 							<fieldset class="holder">
 							<?php
 								echo isset($f['string_override']) ? $f['string_override'] : $field_output[$field];
