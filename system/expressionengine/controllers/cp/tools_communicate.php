@@ -760,15 +760,29 @@ class Tools_communicate extends Controller {
 
 		if ($this->mailinglist_exists == TRUE)
 		{
-			$query = $this->communicate_model->get_cached_mailing_lists($id);
+			$list_ids = array();
 
+			$query = $this->communicate_model->get_cached_mailing_lists($id);
+			
 			if ($query->num_rows() > 0)
 			{
 				foreach ($query->result_array() as $row)
 				{
+					$list_ids[] = $row['list_id'];
+				}
+				
+				if (count($list_ids) > 0)
+				{
 					// Fetch the template for each list
-					$query = $this->communicate_model->get_mailing_lists($id);
-					$list_templates[$row['list_id']] = array('list_template' => $query->row('list_template') , 'list_title' => $query->row('list_title') );
+					$query = $this->communicate_model->get_mailing_lists($list_ids);
+			
+					if ($query->num_rows() > 0)
+					{
+						foreach ($query->result_array() as $row)
+						{
+							$list_templates[$row['list_id']] = array('list_template' => $row['list_template'], 'list_title' => $row['list_title']);
+						}
+					}
 				}
 			}
 		}

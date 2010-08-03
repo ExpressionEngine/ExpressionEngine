@@ -126,7 +126,12 @@ class Communicate_model extends CI_Model {
 	{
 		$this->db->select('list_id, list_title');
 		
-		if ($list_id != '')
+		if (is_array($list_id))
+		{
+			$this->db->select('list_template');
+			$this->db->where_in('list_id', $list_id);			
+		}
+		elseif ($list_id != '')
 		{
 			$this->db->select('list_template');
 			$this->db->where('list_id', $list_id);
