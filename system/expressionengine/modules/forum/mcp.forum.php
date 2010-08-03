@@ -129,8 +129,8 @@ class Forum_mcp {
 		$total_mods = $this->EE->db->count_all_results('forum_moderators');
 
 		$one_day = 60*60*24;
-		$total_days = (time()-$this->prefs['board_install_date']);
-		$total_days = ($total_days <= $one_day) ? 1 : abs($total_days/$one_day);
+		$total_days = (time() - $this->prefs['board_install_date']);
+		$total_days = ($total_days <= $one_day) ? 1 : abs($total_days / $one_day);
 
 		$this->EE->db->select('forum_id, forum_name, forum_total_topics, forum_total_posts');
 		$this->EE->db->where('board_id', $this->board_id);
@@ -145,8 +145,8 @@ class Forum_mcp {
 		{
 			foreach ($query->result_array() as $row)
 	 		{
-				$row['topics_perday']	= ($row['forum_total_topics'] == 0) ? 0 : round($row['forum_total_topics']/$total_days, 2);
-				$row['posts_perday']	= ($row['forum_total_posts'] == 0)  ? 0 : round($row['forum_total_posts']/$total_days, 2);
+				$row['topics_perday']	= ($row['forum_total_topics'] == 0) ? 0 : round($row['forum_total_topics'] / $total_days, 2);
+				$row['posts_perday']	= ($row['forum_total_posts'] == 0)  ? 0 : round($row['forum_total_posts'] / $total_days, 2);
 
 				$vars['forums'][] = $row;
 			}
@@ -640,14 +640,12 @@ class Forum_mcp {
 			'forum_notify_emails'			=> 'pref_notify_emails_forums',
 			'forum_notify_emails_topics'	=> 'pref_notify_emails_topics_more'
 		);
-		
 
 		// Category Exceptions
 		
 		// Some of the items in the above matrix don't
 		// apply to categories so we'll create a list of things
 		// that should not appear when editing a category
-
 		$item_exceptions = array('forum_parent');
 
 		$hidden['forum_is_cat'] = ($is_forum === TRUE) ? 'n' : 'y';
@@ -684,10 +682,7 @@ class Forum_mcp {
 			$row['board_notify_moderators']  = 'n';
 		}
 		
-		
-
 		//  Build out the tables		
-		
 		$P = array();
 
 		foreach($data as $title => $cluster)

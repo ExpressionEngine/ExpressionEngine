@@ -9402,8 +9402,6 @@ class Forum_Core extends Forum {
 			$this->EE->db->limit($limit);
 			$query = $this->EE->db->get('members');
 			
-			// $query = $this->EE->db->query("SELECT screen_name, member_id FROM exp_members WHERE group_id != '2' AND group_id != '4' ORDER BY member_id DESC LIMIT ".$limit);
-			
 			$names = '';
 			
 			foreach ($query->result_array() as $row)
@@ -9468,7 +9466,7 @@ class Forum_Core extends Forum {
 		
 			if ($v['1'] == 'y')
 			{
-				if ($this->EE->session->userdata['group_id'] == 1)
+				if ($this->EE->session->userdata('group_id') == 1)
 				{
 					$temp = preg_replace("/\{name\}/", $v['0'].'*', $temp);
 				}
@@ -9501,23 +9499,18 @@ class Forum_Core extends Forum {
 		return $str;
 	}
 
-
-
 	/** -------------------------------------
 	/**  Individual Member's Last Visit
 	/** -------------------------------------*/
 	function member_post_total()
 	{
-		return str_replace('%x', $this->EE->session->userdata['total_forum_posts'], $this->EE->lang->line('your_post_total'));
+		return str_replace('%x', $this->EE->session->userdata('total_forum_posts'), $this->EE->lang->line('your_post_total'));
 	}
 
-
-	
 	
 	/** -------------------------------------
 	/**  Simple Search Form
-	/** -------------------------------------*/
-	
+	/** -------------------------------------*/	
 	function login_form_mini()
 	{
 		$this->form_actions['member:member_login']['anon'] = 1;
@@ -9574,7 +9567,11 @@ class Forum_Core extends Forum {
 		
 		$groups = "<option value='all' selected='selected'>".$this->EE->lang->line('search_all_groups')."</option>\n";
 		
-		$query = $this->EE->db->query("SELECT group_id, group_title FROM exp_member_groups WHERE group_id NOT IN ('2', '3', '4') AND site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND include_in_memberlist = 'y'");
+		$this->EE->db->select('group_id, group_title');
+		$this->EE->db->where_not_in('group_id', array('2', '3', '4'));
+		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+		$this->EE->db->where('include_in_memberlist', 'y');
+		$query = $this->EE->db->get('member_groups');
 		
 		foreach ($query->result_array() as $row)
 		{
@@ -9602,9 +9599,6 @@ class Forum_Core extends Forum {
 								)
 							);
 	}
-
-
-
 		
 	/** --------------------------------------
 	/**  Fetch the forums that can be searched
@@ -9618,9 +9612,11 @@ class Forum_Core extends Forum {
 		
 	function _fetch_allowed_search_ids()
 	{
-		$sql = "SELECT forum_id, forum_name, forum_status, forum_is_cat, forum_parent, forum_permissions, forum_enable_rss FROM exp_forums WHERE board_id = '".$this->_fetch_pref('board_id')."' ORDER BY forum_order";
-		
-		$query = $this->EE->db->query($sql);
+		$this->EE->db->select('forum_id, forum_name, forum_status, forum_is_cat, 
+								forum_parent, forum_permissions, forum_enable_rss');
+		$this->EE->db->where('board_id', $this->_fetch_pref('board_id'));
+		$this->EE->db->order_by('forum_order');
+		$query = $this->EE->db->get('forums');
 				
 		if ($query->num_rows() == 0)
 		{
@@ -9699,8 +9695,6 @@ class Forum_Core extends Forum {
 		
 		return $hash;
 	}
-
-
 
 	/** -------------------------------------
 	/**  Perform Member Search
