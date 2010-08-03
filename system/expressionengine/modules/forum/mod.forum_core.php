@@ -26,28 +26,25 @@
 
 class Forum_Core extends Forum {
 
-	/** -------------------------------------
-	/**  Constructor
-	/** -------------------------------------*/
-	
-	// Do not remove even though it's blank!!!
+	/**
+	 * Construct
+	 */
 	function Forum_Core()
 	{
 		$this->EE =& get_instance();
 	}
 
+	// --------------------------------------------------------------------
 
-	
-	/** -------------------------------------
-	/**  Display Forum Handler
-	/** -------------------------------------*/
+	/**
+	 * Display forum handler
+	 *
+	 * @param 	string
+	 */
 	function _display_forum($function = '')
 	{
-		/** -------------------------------------
-		/**  Determine the function call
-		/** -------------------------------------*/
+		// Determine the function call
 		// The function is based on the 2nd segment of the URI
-		
 		if ($function == '')
 		{
 			if ( ! $this->EE->uri->segment(2+$this->seg_addition))
@@ -60,9 +57,7 @@ class Forum_Core extends Forum {
 			}
 		}
 		
-		/** -------------------------------------
-		/**  Remap function if needed
-		/** -------------------------------------*/
+		// Remap function if needed
 		// In certain cases we may want different URI function names
 		// to share common methods
 		
@@ -148,29 +143,31 @@ class Forum_Core extends Forum {
 		}
 	}
 
-	
+	// --------------------------------------------------------------------
 
-	/** -------------------------------------
-	/**  Recursively Fetch Template Elements
-	/** -------------------------------------*/
-	// Note:  A "template element" refers to an HTML component used to build the forum (header, breadcrumb, footer, etc.).
-	// Each "template element" corresponds to a particular function in one of the theme files.
-	
-	// This function allows any template element to be embedded within any other template element.
-	// Template elements can contain "include variables" which call other template elements.
-	// The include variables look like this: {include:function_name}
 
-	// If an include is found, this function loads that element and recursively looks for 
-	// additional includes.  
-	
-	// In some cases, template elements need to be processed rather than simply returned.
-	// If we need to process the include, THIS file will contain a function named
-	// exactly the same as the template element which will be called.  If the function does 
-	// not exist we return the pure data.
-	
-	// Right now there is no safety to prevent a run-away loop if an include is put within itself.
-	
-	
+	/**
+	 * Recursively Fetch Template Elements
+	 *
+	 * Note:  A "template element" refers to an HTML component used to build the forum (header, breadcrumb, footer, etc.).
+	 * Each "template element" corresponds to a particular function in one of the theme files.
+	 *
+	 * This function allows any template element to be embedded within any other template element.
+	 * Template elements can contain "include variables" which call other template elements.
+	 * The include variables look like this: {include:function_name}
+	 *
+	 * If an include is found, this function loads that element and recursively looks for 
+	 * additional includes.  
+	 *
+	 * In some cases, template elements need to be processed rather than simply returned.
+	 * If we need to process the include, THIS file will contain a function named
+	 * exactly the same as the template element which will be called.  If the function does 
+	 * not exist we return the pure data.
+	 *
+	 * Right now there is no safety to prevent a run-away loop if an include is put within itself.
+	 *
+	 * @param
+	 */
 	function _include_recursive($function)
 	{ 
 		if ($this->return_data == '' AND $this->trigger_error_page === TRUE)
@@ -203,11 +200,11 @@ class Forum_Core extends Forum {
 		return $this->return_data;
 	}
 
-	
-	/** --------------------------------
-	/**  Fetch Forum Moderators
-	/** --------------------------------*/
-	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fetch Forum Moderators
+	 */
 	function _load_moderators()
 	{
 		if ($this->moderators === FALSE)
@@ -220,14 +217,20 @@ class Forum_Core extends Forum {
 			return;
 		}
 		
-		$g_query = $this->EE->db->query("SELECT group_id, group_title FROM exp_member_groups WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'");
+		$this->EE->db->select('group_id, group_title');
+		$g_query = $this->EE->db->get_where('member_groups', 
+											array('site_id' => $this->EE->config->item('site_id'))
+										);
 		
 		foreach ($g_query->result_array() as $row)
 		{
 			$groups[$row['group_id']] = $row['group_title'];
 		}
-		
-		$m_query = $this->EE->db->query("SELECT mod_forum_id, mod_member_id, mod_group_id, mod_member_name FROM exp_forum_moderators WHERE board_id = '".$this->_fetch_pref('board_id')."'");
+
+		$this->EE->db->select('mod_forum_id, mod_member_id, mod_group_id, mod_member_name');
+		$m_query = $this->EE->db->get_where('forum_moderators', 
+											array('board_id' => $this->_fetch_pref('board_id'))
+										);
 		
 		if ($m_query->num_rows() == 0)
 		{
@@ -245,32 +248,32 @@ class Forum_Core extends Forum {
 		}
 	}
 
-	
-	
-	/** -------------------------------------
-	/**  Instantiates the Member Profile Class
-	/** -------------------------------------*/
-	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Instantiate Member Profile Class
+	 */
 	function _load_member_class()
 	{
 		return parent::_load_member_class();
 		return $template;
 	}
 
+	// --------------------------------------------------------------------
 	
-	
-	/** -------------------------------------
-	/**  Fetch Forum Name/Description
-	/** -------------------------------------*/
-	
-	// This, and the next two functions let us gather often needed info,
-	// like the forum name, the forum permissions, etc.
-	// Since several forum sub-systems require this info we'll cache it
-	// in a class variable.  Subsequent calls will be served from cache.
-	// The three meta-data functions fetch pretty much the same info, but
-	// the queries are constructed a little different to permit the info
-	// to be fetched with different data in the URL.
-
+	/**
+	 * Fetch Forum Name/Description
+	 *
+	 * This, and the next two functions let us gather often needed info,
+	 * like the forum name, the forum permissions, etc.
+	 * Since several forum sub-systems require this info we'll cache it
+	 * in a class variable.  Subsequent calls will be served from cache.
+	 * The three meta-data functions fetch pretty much the same info, but
+	 * the queries are constructed a little different to permit the info
+	 * to be fetched with different data in the URL.
+	 *
+	 * @param 	int
+	 */
 	function _fetch_forum_metadata($id)
 	{
 		if (isset($this->EE->TMPL) && is_object($this->EE->TMPL) && ($forums = $this->EE->TMPL->fetch_param('forums')) != FALSE)
@@ -286,7 +289,6 @@ class Forum_Core extends Forum {
 				if ( ! in_array($id, $x)) return FALSE;
 			}
 		}
-		
 				
 		if (isset($this->forum_metadata[$id]))
 		{
@@ -295,12 +297,14 @@ class Forum_Core extends Forum {
 		
 		$items = array('forum_id', 'forum_name', 'forum_status', 'forum_description', 'forum_parent', 'forum_permissions', 'forum_enable_rss', 'forum_is_cat', 'forum_max_post_chars', 'forum_allow_img_urls', 'forum_notify_emails', 'forum_notify_emails_topics', 'forum_notify_moderators_topics', 'forum_notify_moderators_replies');
 	
-		$query = $this->EE->db->query("SELECT forum_id, forum_name, forum_status, forum_description, forum_parent, forum_enable_rss, forum_permissions, 
-							 forum_is_cat, forum_max_post_chars, forum_allow_img_urls, forum_notify_emails, forum_notify_emails_topics,
-							 forum_notify_moderators_topics, forum_notify_moderators_replies 
-							 FROM exp_forums 
-							 WHERE forum_id = '{$id}' 
-							 AND board_id = '".$this->_fetch_pref('board_id')."'");
+		$this->EE->db->select('forum_id, forum_name, forum_status, forum_description, 
+								forum_parent, forum_enable_rss, forum_permissions, 
+								forum_is_cat, forum_max_post_chars, forum_allow_img_urls, 
+								forum_notify_emails, forum_notify_emails_topics,
+							 	forum_notify_moderators_topics, forum_notify_moderators_replies');
+		$this->EE->db->where('forum_id', $id);
+		$this->EE->db->where('board_id', $this->_fetch_pref('board_id'));
+		$query = $this->EE->db->get('forums');
 		
 		if ($query->num_rows() == 0)
 		{
@@ -325,16 +329,15 @@ class Forum_Core extends Forum {
 		return $this->forum_metadata;	
 	}
 
-	
-	
-	/** -------------------------------------
-	/**  Fetch Topic Name, etc...
-	/** -------------------------------------*/
-	
-	// This function is identical to the one above except 
-	// that the query is run based on a topic ID rather than
-	// a forum ID
+	// --------------------------------------------------------------------
 
+	/**
+	 * Fetch Forum Name, etc
+	 * This function is identical to the one above except 
+	 * that the query is run based on a topic ID rather than
+	 * a forum ID
+	 *
+	 */
 	function _fetch_topic_metadata($id)
 	{
 		if (isset($this->topic_metadata[$id]))
@@ -343,13 +346,20 @@ class Forum_Core extends Forum {
 		}
 		
 		$items = array('forum_id', 'forum_status', 'forum_name', 'forum_parent', 'forum_description', 'forum_permissions', 'forum_enable_rss', 'forum_is_cat', 'forum_notify_emails', 'forum_notify_emails_topics', 'forum_notify_moderators_topics', 'forum_notify_moderators_replies', 'forum_posts_perpage', 'forum_allow_img_urls', 'forum_max_post_chars', 'topic_id', 'author_id', 'status', 'sticky', 'announcement', 'title', 'body', 'topic_date', 'screen_name');
-	 
-		$query = $this->EE->db->query("SELECT f.forum_id, f.forum_status, f.forum_name, f.forum_parent, f.forum_description, f.forum_permissions, f.forum_enable_rss, f.forum_is_cat, f.forum_notify_emails, f.forum_notify_emails_topics, f.forum_notify_moderators_topics, f.forum_notify_moderators_replies, f.forum_allow_img_urls, f.forum_posts_perpage, f.forum_max_post_chars, t.author_id, t.status, t.sticky, t.announcement, t.title, t.body, t.topic_id, t.topic_date, m.screen_name
-							 FROM exp_forums f, exp_forum_topics t, exp_members m 
-							 WHERE f.forum_id = t.forum_id
-							 AND t.author_id = m.member_id
-							 AND t.topic_id = '".$this->EE->db->escape_str($id)."'
-							 AND t.board_id = '".$this->_fetch_pref('board_id')."'");
+		
+		$this->EE->db->select('f.forum_id, f.forum_status, f.forum_name, f.forum_parent, 
+								f.forum_description, f.forum_permissions, f.forum_enable_rss, 
+								f.forum_is_cat, f.forum_notify_emails, f.forum_notify_emails_topics, 
+								f.forum_notify_moderators_topics, f.forum_notify_moderators_replies, 
+								f.forum_allow_img_urls, f.forum_posts_perpage, f.forum_max_post_chars, 
+								t.author_id, t.status, t.sticky, t.announcement, t.title, t.body, 
+								t.topic_id, t.topic_date, m.screen_name');
+		$this->EE->db->from(array('forums f', 'forum_topics t', 'members m'));
+		$this->EE->db->where('f.forum_id', 't.forum_id', FALSE);
+		$this->EE->db->where('t.author_id', 'm.member_id', FALSE);
+		$this->EE->db->where('t.topic_id', $id);
+		$this->EE->db->where('t.board_id', $this->_fetch_pref('board_id'));
+		$query = $this->EE->db->get();
 	
 		if ($query->num_rows() == 0)
 		{
@@ -374,6 +384,7 @@ class Forum_Core extends Forum {
 		return $this->topic_metadata;	
 	}
 
+	// --------------------------------------------------------------------
 	
 	// This function is identical to the one above except 
 	// that the query is run based on a POST ID rather than
@@ -391,14 +402,20 @@ class Forum_Core extends Forum {
 		
 		$items = array('forum_id', 'forum_status', 'forum_name', 'forum_parent', 'forum_description', 'forum_permissions', 'forum_enable_rss', 'forum_is_cat', 'forum_posts_perpage', 'forum_post_order', 'forum_max_post_chars', 'forum_allow_img_urls', 'author_id', 'title', 'status', 'topic_id', 'post_id', 'body', 'post_date', 'screen_name');
 	 
-		$query = $this->EE->db->query("SELECT f.forum_id, f.forum_status, f.forum_name, f.forum_parent, f.forum_description, f.forum_permissions, f.forum_enable_rss, f.forum_is_cat, f.forum_posts_perpage, f.forum_post_order, f.forum_max_post_chars, f.forum_allow_img_urls, t.title, t.status, p.author_id, p.topic_id, p.post_id, p.body, p.post_date, m.screen_name
-							 FROM exp_forums f, exp_forum_topics t, exp_forum_posts p, exp_members m
-							 WHERE f.forum_id = p.forum_id
-							 AND p.topic_id = t.topic_id
-							 AND p.author_id = m.member_id
-							 AND p.post_id = '".$this->EE->db->escape_str($id)."'
-							 AND p.board_id = '".$this->_fetch_pref('board_id')."'");
-	
+		$this->EE->db->select('f.forum_id, f.forum_status, f.forum_name, f.forum_parent, 
+								f.forum_description, f.forum_permissions, f.forum_enable_rss, 
+								f.forum_is_cat, f.forum_posts_perpage, f.forum_post_order, 
+								f.forum_max_post_chars, f.forum_allow_img_urls, t.title, 
+								t.status, p.author_id, p.topic_id, p.post_id, p.body, 
+								p.post_date, m.screen_name');
+		$this->EE->db->from(array('forums f', 'forum_topics t', 'forum_posts p', 'members m'));
+		$this->EE->db->where('f.forum_id', 'p.forum_id', FALSE);
+		$this->EE->db->where('p.topic_id', 't.topic_id', FALSE);
+		$this->EE->db->where('p.author_id', 'm.member_id', FALSE);
+		$this->EE->db->where('p.post_id', $id);
+		$this->EE->db->where('p.board_id', $this->_fetch_pref('board_id'));
+		$query = $this->EE->db->get();
+		
 		if ($query->num_rows() == 0)
 		{
 			return FALSE;
@@ -422,13 +439,11 @@ class Forum_Core extends Forum {
 		return $this->post_metadata;	
 	}
 
+	// --------------------------------------------------------------------	
 	
-	
-	
-	
-	/** -------------------------------------
-	/**  Topic Tracker
-	/** -------------------------------------*/
+	/**
+	 * Topic Tracker
+	 */
 	function _fetch_read_topics($new_id = FALSE)
 	{
 			// If the person is not logged in we use the cookie version
@@ -501,10 +516,12 @@ class Forum_Core extends Forum {
 
 		return $new;
 	}	
+
+	// --------------------------------------------------------------------	
 	
-	/** -------------------------------------
-	/**  Topic Tracker Cookie
-	/** -------------------------------------*/
+	/**
+	 * Fetch Tracker Cookie
+	 */
 	function _fetch_read_topics_cookie($new_id = FALSE)
 	{
 		if ( ! $this->EE->input->cookie('forum_topics'))
@@ -557,12 +574,11 @@ class Forum_Core extends Forum {
 		return $new;
 	}
 
+	// --------------------------------------------------------------------
 
-	
-	/** -------------------------------------
-	/**  Final Quote Parsing
-	/** -------------------------------------*/
-	
+	/**
+	 * Final Quote Parsing
+	 */
 	function _quote_decode($str)
 	{
 		$xtemplate = $this->_load_element('quoted_author');
@@ -604,11 +620,11 @@ class Forum_Core extends Forum {
 		return $str;
 	}
 
+	// --------------------------------------------------------------------
 	
-
-	/** -------------------------------------
-	/**  Is the user authorized for the specfic page?
-	/** -------------------------------------*/
+	/**
+	 * Is the user authorized for the page?
+	 */
 	function _is_authorized()
 	{
 		if ($this->current_request == '')
@@ -738,11 +754,11 @@ class Forum_Core extends Forum {
 		return TRUE;	
 	}
 
+	// --------------------------------------------------------------------
 
-	/** --------------------------------
-	/**  Generate Error Page
-	/** --------------------------------*/
-	
+	/**
+	 * Error page
+	 */
 	function _trigger_error($msg = 'not_authorized')
 	{
 		$this->return_data = '';		
@@ -755,16 +771,15 @@ class Forum_Core extends Forum {
 		return $this->_display_forum('error_page');			
 	}
 
+	// --------------------------------------------------------------------
 
-
-	/** -------------------------------------
-	/**  Trigger the log-in page 
-	/** -------------------------------------*/
-	
-	// This function sets a couple variables which the 
-	// $this->_include_recursive() looks for to determine 
-	// whether the error page should be shown.
-	
+	/**
+	 * Trigger Login
+	 *
+	 * This function sets a couple variables which the 
+	 * $this->_include_recursive() looks for to determine 
+	 * whether the error page should be shown.
+	 */
 	function _trigger_login_page()
 	{
 		$this->return_data = '';
@@ -772,12 +787,11 @@ class Forum_Core extends Forum {
 		return FALSE;
 	}
 
+	// --------------------------------------------------------------------
 
-
-
-	/** -------------------------------------
-	/**  Fetch Administrators
-	/** -------------------------------------*/
+	/**
+	 * Fetch admins
+	 */
 	function _fetch_administrators()
 	{
 		if ($this->admin_members === FALSE OR $this->admin_groups === FALSE)
@@ -825,12 +839,11 @@ class Forum_Core extends Forum {
 		return TRUE;
 	}
 
-	
-	
-	/** -------------------------------------
-	/**  Is a particular user an admin?
-	/** -------------------------------------*/
-	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Is this user an admin?
+	 */
 	function _is_admin($member_id = 0, $group_id = 0)
 	{
 		if ($member_id == 0)
@@ -890,11 +903,11 @@ class Forum_Core extends Forum {
 		return FALSE;
 	}
 
-	
+	// --------------------------------------------------------------------
 
-	/** -------------------------------------
-	/**  Fetch a specifc permission
-	/** -------------------------------------*/
+	/**
+	 * Fetch permission
+	 */
 	function _permission($item, $permission_array)
 	{
 		if ($this->_is_admin())
@@ -910,14 +923,13 @@ class Forum_Core extends Forum {
 		return (strpos($permission_array[$item], '|'.$this->EE->session->userdata('group_id').'|') === FALSE) ? FALSE : TRUE;
 	}
 
-	
-	
-	/** -------------------------------------
-	/**  Fetch a specifc moderator permission
-	/** -------------------------------------*/
-	
-	// We cache these for reuse
+	// --------------------------------------------------------------------
 
+	/**
+	 * Fetch moderator permission
+	 *
+	 * We cache these for reuse
+	 */
 	function _mod_permission($item, $forum_id)
 	{
 		if ($this->EE->session->userdata('member_id') == 0)
@@ -987,12 +999,11 @@ class Forum_Core extends Forum {
 		return FALSE;
 	}
 
+	// --------------------------------------------------------------------
 
-	
-	
-	/** -------------------------------------
-	/**  Build the pagination links
-	/** -------------------------------------*/
+	/**
+	 * Build Pagination
+	 */
 	function _create_pagination($data)
 	{
 		$this->EE->load->library('pagination');
@@ -1026,11 +1037,11 @@ class Forum_Core extends Forum {
 		return $this->EE->pagination->create_links();
 	}
 
+	// --------------------------------------------------------------------
 
-
-	/** -------------------------------------
-	/**  Fetch topic marker folder images
-	/** -------------------------------------*/
+	/**
+	 * Fetch topic marker folder images
+	 */
 	function _fetch_topic_markers()
 	{
 		return array(
@@ -1047,16 +1058,16 @@ class Forum_Core extends Forum {
 					);
 	}
 
+	// --------------------------------------------------------------------
 
-
-	/** -------------------------------------
-	/**  Fetch the pagination number
-	/** -------------------------------------*/
-	// After submitting a new post we need to return the
-	// user to his post.  Since a particular thread might span
-	// several pages we need to send the user back to the exact
-	// page, so we'll calculate the page number.
-
+	/**
+	 * Fetch Pagination Number
+	 *
+	 * After submitting a new post we need to return the
+	 * user to his post.  Since a particular thread might span
+	 * several pages we need to send the user back to the exact
+	 * page, so we'll calculate the page number.
+	 */
 	function _fetch_page_number($total, $limit)
 	{
 		if ($this->_fetch_pref('board_post_order') == 'd')
@@ -1098,13 +1109,21 @@ class Forum_Core extends Forum {
 		return 'P'.$tot;
 	}
 
-
+	// --------------------------------------------------------------------
 	
-	/** -------------------------------------
-	/**  Update Forum Post and Member Stats
-	/** -------------------------------------*/
+	/**
+	 * Update stats
+	 */
 	function _update_post_stats($forum_id)
 	{
+		$cache_off = FALSE;
+		
+		if ($this->EE->db->cache_on === TRUE)
+		{
+			$this->EE->db->cache_off();
+			$cache_off = TRUE;
+		}
+		
 		$data = array(
 						'forum_last_post_id' 		=> 0,
 						'forum_last_post_type'		=> 'p',
@@ -1113,35 +1132,41 @@ class Forum_Core extends Forum {
 						'forum_last_post_author_id'	=> 0,
 						'forum_last_post_author'	=> ''		
 					);
-					
-	
-		$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE forum_id = '{$forum_id}'");
-		$data['forum_total_topics'] = $query->row('count') ;
 		
-		$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE forum_id = '{$forum_id}'");
+		$this->EE->db->select('COUNT(*) as count');
+		$query = $this->EE->db->get_where('forum_topics', array('forum_id' => $forum_id));	
+		$data['forum_total_topics'] = $query->row('count') ;
+
+		$this->EE->db->select('COUNT(*) as count');
+		$query = $this->EE->db->get_where('forum_posts', array('forum_id' => $forum_id));
 		$data['forum_total_posts'] = $query->row('count') ;
 		
-		$query = $this->EE->db->query("SELECT topic_id, title, topic_date, last_post_date, last_post_author_id, screen_name, announcement
-							FROM exp_forum_topics, exp_members
-							WHERE member_id = last_post_author_id
-							AND forum_id = '{$forum_id}' 
-							ORDER BY last_post_date DESC LIMIT 1");
+		$this->EE->db->select('topic_id, title, topic_date, last_post_date, 
+								last_post_author_id, screen_name, announcement');
+		$this->EE->db->from(array('forum_topics', 'members'));
+		$this->EE->db->where('member_id', 'last_post_author_id', FALSE);
+		$this->EE->db->where('forum_id', $forum_id);
+		$this->EE->db->order_by('last_post_date', 'DESC');
+		$this->EE->db->limit(1);
+		$query = $this->EE->db->get();
 		
 		if ($query->num_rows() > 0)
 		{
-			$data['forum_last_post_id'] 		= $query->row('topic_id') ;
+			$data['forum_last_post_id'] 		= $query->row('topic_id');
 			$data['forum_last_post_type'] 		= ($query->row('announcement')  == 'n') ? 'p' : 'a';
-			$data['forum_last_post_title'] 		= $query->row('title') ;
-			$data['forum_last_post_date'] 		= $query->row('topic_date') ;
-			$data['forum_last_post_author_id']	= $query->row('last_post_author_id') ;
-			$data['forum_last_post_author']		= $query->row('screen_name') ;
+			$data['forum_last_post_title'] 		= $query->row('title');
+			$data['forum_last_post_date'] 		= $query->row('topic_date');
+			$data['forum_last_post_author_id']	= $query->row('last_post_author_id');
+			$data['forum_last_post_author']		= $query->row('screen_name');
 		}
 		
-		$query = $this->EE->db->query("SELECT post_date, author_id, screen_name 
-							FROM exp_forum_posts, exp_members
-							WHERE  member_id = author_id
-							AND forum_id = '{$forum_id}' 
-							ORDER BY post_date DESC LIMIT 1");
+		$this->EE->db->select('post_date, author_id, screen_name');
+		$this->EE->db->from(array('forum_posts', 'members'));
+		$this->EE->db->where('member_id', 'author_id', FALSE);
+		$this->EE->db->where('forum_id', $forum_id);
+		$this->EE->db->order_by('post_date', 'DESC');
+		$this->EE->db->limit(1);
+		$query = $this->EE->db->get();
 
 		if ($query->num_rows() > 0)
 		{
@@ -1156,82 +1181,158 @@ class Forum_Core extends Forum {
 		$this->EE->db->query($this->EE->db->update_string('exp_forums', $data, "forum_id='{$forum_id}'"));
 		unset($data);
 
-		/** -------------------------------------
-		/**  Update member stats
-		/** -------------------------------------*/
-			
-		$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE author_id = '".$this->EE->session->userdata('member_id')."'");
+		// Update member stats
+		$this->EE->db->select('COUNT(*) as count');
+		$query = $this->EE->db->get_where('forum_topics', 
+											array('author_id' => $this->EE->session->userdata('member_id')));
 		$total_topics = $query->row('count') ;
 		
-		$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE author_id = '".$this->EE->session->userdata('member_id')."'");
+		$this->EE->db->select('COUNT(*) as count');
+		$query = $this->EE->db->get_where('forum_posts', 
+											array('author_id' => $this->EE->session->userdata('member_id')));
 		$total_posts = $query->row('count') ;
 		
-		$this->EE->db->query("UPDATE exp_members SET total_forum_topics = '{$total_topics}', total_forum_posts = '{$total_posts}' WHERE member_id = '".$this->EE->session->userdata('member_id')."'");
+		$d = array(
+					'total_forum_topics'	=> $total_topics,
+					'total_forum_posts'		=> $total_posts
+				);
+		$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
+		$this->EE->db->update('members', $d);
 
+		if ($cache_off)
+		{
+			$this->EE->db->cache_on();
+		}
 	}
 
-	/** -------------------------------------
-	/**  Update global forum stats
-	/** -------------------------------------*/
-		
+	// --------------------------------------------------------------------
+
+	/**
+	 * update global forum stats
+	 */
 	function _update_global_stats()		
 	{
-		$query = $this->EE->db->query("SELECT forum_id FROM exp_forums");
+		$cache_off = FALSE;
+		
+		if ($this->EE->db->cache_on === TRUE)
+		{
+			$this->EE->db->cache_off();
+			$cache_off = TRUE;
+		}
+
+		$this->EE->db->select('forum_id');
+		$query = $this->EE->db->get('forums');
 		
 		$total_topics = 0;
 		$total_posts  = 0;
 		
 		foreach ($query->result_array() as $row)
 		{
-			$q = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE forum_id = '".$row['forum_id']."'");
+			$this->EE->db->select('COUNT(*) as count');
+			$q = $this->EE->db->get_where('forum_topics', array('forum_id' => $row['forum_id']));
 			$total_topics = ($total_topics == 0) ? $q->row('count')  : $total_topics + $q->row('count') ;
-						
-			$q = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE forum_id = '".$row['forum_id']."'");	
+
+			$this->EE->db->select('COUNT(*) as count');
+			$this->EE->db->get_where('forum_posts', array('forum_id' => $row['forum_id']));
 			$total_posts = ($total_posts == 0) ? $q->row('count')  : $total_posts + $q->row('count') ;
 		}
-		
-		$this->EE->db->query("UPDATE exp_stats SET total_forum_topics = '{$total_topics}', total_forum_posts = '{$total_posts}'");
+
+		$this->EE->db->update('stats', array(
+										'total_forum_topics'	=> $total_topics,
+										'total_forum_posts'		=> $total_posts));
+
+		if ($cache_off)
+		{
+			$this->EE->db->cache_on();
+		}
 	}
-	/* END */
+
+	// --------------------------------------------------------------------
 	
-	/** -------------------------------------
-	/**  Update Topic Stats
-	/** -------------------------------------*/
-	
+	/**
+	 * Update topic stats
+	 */
 	function _update_topic_stats($topic_id)
 	{
+		$cache_off = FALSE;
+		
+		if ($this->EE->db->cache_on === TRUE)
+		{
+			$this->EE->db->cache_off();
+			$cache_off = TRUE;
+		}
+
 		// Update the thread count and last post date
-		$query = $this->EE->db->query("SELECT COUNT(*) AS count, MAX(post_date) AS last_post FROM exp_forum_posts WHERE topic_id = '{$topic_id}'");
+		$this->EE->db->select('COUNT(*) as count MAX(post_date) as last_post');
+		$query = $this->EE->db->get_where('forum_posts', array('topic_id' => $topic_id));
+
 		$this->thread_post_total = $query->row('count') ;
 		$total = ($query->row('count')  + 1);
 		
 		if ($query->row('count')  > 0)
 		{
-			$this->EE->db->query("UPDATE exp_forum_topics SET last_post_date = '".$query->row('last_post') ."', thread_total = '{$total}' WHERE topic_id = '{$topic_id}'");
+			$d = array(
+					'last_post_date'	=> $query->row('last_post'),
+					'thread_total'		=> $total
+				);
+			
+			$this->EE->db->where('topic_id', $topic_id);
+			$this->EE->db->update('forum_topics', $d);
 		}
 		else
 		{
-			$this->EE->db->query("UPDATE exp_forum_topics SET last_post_date = topic_date, thread_total = '{$total}' WHERE topic_id = '{$topic_id}'");
+			$this->EE->db->set('last_post_date', 'topic_date', FALSE);
+			$this->EE->db->set('thread_total', $total);
+			$this->EE->db->where('topic_id', $topic_id);
+			$this->EE->db->update('forum_topics');
 		}
 
 		// Update the resulting last post author and last post id
 		if ($total > 1)
 		{
-			$query = $this->EE->db->query("SELECT post_id, author_id FROM exp_forum_posts WHERE topic_id = '{$topic_id}' ORDER BY post_date DESC LIMIT 1");
-			$this->EE->db->query("UPDATE exp_forum_topics SET last_post_author_id = '".$query->row('author_id') ."', last_post_id = '".$query->row('post_id') ."' WHERE topic_id = '{$topic_id}'");
+			$this->EE->db->select('post_id, author_id');
+			$this->EE->db->where('topic_id', $topic_id);
+			$this->EE->db->order_by('post_date', 'DESC');
+			$this->EE->db->limit(1);
+			$query = $this->EE->db->get('forum_posts');
+
+			$d = array(
+					'last_post_author_id'	=> $query->row('author_id'),
+					'last_post_id'			=> $query->row('post_id')
+				);
+
+			$this->EE->db->where('topic_id', $topic_id);
+			$this->EE->db->update('forum_topics', $d);
 		}
 		else
 		{
-			$this->EE->db->query("UPDATE exp_forum_topics SET last_post_author_id = author_id, last_post_id = 0 WHERE topic_id = '{$topic_id}'");
+			$this->EE->db->set('last_post_author_id', 'author_id', FALSE);
+			$this->EE->db->set('last_post_id', $query->row('post_id'));
+			$this->EE->db->where('topic_id', $topic_id);
+			$this->EE->db->update('forum_topics');			
+		}
+
+		if ($cache_off)
+		{
+			$this->EE->db->cache_on();
 		}
 	}
 
-	/** -------------------------------------
-	/**  Update Member Stats
-	/** -------------------------------------*/
-	
+	// --------------------------------------------------------------------
+
+	/**
+	 * update member stats
+	 */
 	function _update_member_stats($member_ids = array())
 	{		
+		$cache_off = FALSE;
+		
+		if ($this->EE->db->cache_on === TRUE)
+		{
+			$this->EE->db->cache_off();
+			$cache_off = TRUE;
+		}
+
 		if ( ! is_array($member_ids))
 		{
 			$member_ids[$member_ids] = $member_ids;
@@ -1239,24 +1340,31 @@ class Forum_Core extends Forum {
 
 		foreach ($member_ids as $member_id)
 		{
-			$res = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE author_id = '{$member_id}'");
+			$this->EE->db->select('COUNT(*) as count');
+			$res = $this->EE->db->get_where('forum_topics', array('author_id' => $member_id));
 			$total_forum_topics = $res->row('count');
-			
-			$res = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE author_id = '{$member_id}'");
+
+			$this->EE->db->select('COUNT(*) as count');
+			$res = $this->EE->db->get_where('forum_posts', array('author_id' => $member_id));
 			$total_forum_posts = $res->row('count');
 
 			$this->EE->db->query($this->EE->db->update_string('exp_members', array('total_forum_topics' => $total_forum_topics, 'total_forum_posts' => $total_forum_posts), "member_id = '{$member_id}'"));
 		}
-	}
-	/* END */
 		
-	
+		if ($cache_off)
+		{
+			$this->EE->db->cache_on();
+		}
+	}
+
+	// --------------------------------------------------------------------
+		
+	/**
+	 * Feed Builder
+	 */
 	function _feed_builder()
 	{
-		/** -------------------------------------
-		/**  Gather the forum prefs
-		/** -------------------------------------*/
-		
+		// Grab them prefs
 		$sql = "SELECT forum_id, forum_is_cat, forum_status, forum_permissions, forum_enable_rss, forum_use_http_auth FROM exp_forums WHERE board_id = '".$this->_fetch_pref('board_id')."' ";
 
 		// Are there specific forums being requested?
@@ -1642,11 +1750,11 @@ class Forum_Core extends Forum {
 		return preg_replace("#S=.+?/#", "", $str);
 	} 
 
-
+	// --------------------------------------------------------------------
 	
-	/** -------------------------------------
-	/**  View Posts
-	/** -------------------------------------*/
+	/**
+	 * View Posts Redirect
+	 */
 	function view_post_redirect()
 	{
 		$topic_id = $this->post_metadata[$this->current_id]['topic_id'];
@@ -1675,12 +1783,11 @@ class Forum_Core extends Forum {
 		exit;
 	}
 
-	
-	
-	/** -------------------------------------
-	/**  Main Forum Display
-	/** -------------------------------------*/
-	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Main Forum Display
+	 */
 	function main_forum_list()
 	{
 		$return 		= '';
@@ -6394,7 +6501,7 @@ class Forum_Core extends Forum {
 			
 			$x = explode('/',$this->trigger);
 			
-			if ( ! isset($x['1']))
+			if ( ! isset($x[1]))
 			{
 				$query = $this->EE->db->query("SELECT tg.group_name 
 									 FROM exp_templates t, exp_template_groups tg
@@ -6430,14 +6537,18 @@ class Forum_Core extends Forum {
 	  
 		if ($this->EE->config->item('secure_forms') == 'y')
 		{
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_security_hashes WHERE hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."' AND date > UNIX_TIMESTAMP()-7200");
-		
+			$this->EE->db->where('hash', $this->EE->input->post('XID'));
+			$this->EE->db->where('ip_address', $this->EE->input->ip_address());
+			$this->EE->db->where('date > UNIX_TIMESTAMP()-7200');
+			$this->EE->db->select('COUNT(*) as count');
+			$query = $this->EE->db->get('security_hashes');
+
 			if ($query->row('count')  == 0)
 			{
 				$this->EE->functions->redirect($this->EE->functions->fetch_current_uri());
 				exit;
 			}
-			
+						
 			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
 		}
 		
@@ -6557,8 +6668,11 @@ class Forum_Core extends Forum {
 						$this->_update_global_stats();
 						
 						// Update member post total
-						$this->EE->db->query("UPDATE exp_members SET last_forum_post_date = '{$this->EE->localize->now}' WHERE member_id = '".$this->EE->session->userdata('member_id')."'");					
-					
+						$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
+						$this->EE->db->update('members', 
+													array('last_forum_post_date' => $this->EE->localize->now)
+													);
+
 						// Submit a poll if we have one
 						if (isset($_POST['poll_question']) AND $_POST['poll_question'] != '' AND $announcement == 'n')
 						{
@@ -6593,9 +6707,12 @@ class Forum_Core extends Forum {
 						else // Or delete an existing one if needed
 						{
 							if ( ! isset($_POST['poll_exists']))
-							{						
-								$this->EE->db->query("DELETE FROM exp_forum_polls WHERE topic_id = '".$data['topic_id']."'");
-								$this->EE->db->query("DELETE FROM exp_forum_pollvotes WHERE topic_id = '".$data['topic_id']."'");
+							{
+								$this->EE->db->where('topic_id', $data['topic_id']);
+								$this->EE->db->delete('forum_polls');
+
+								$this->EE->db->where('topic_id', $data['topic_id']);
+								$this->EE->db->delete('forum_pollvotes');
 							}
 						}
 						
@@ -6641,7 +6758,10 @@ class Forum_Core extends Forum {
 						$this->_update_global_stats();
 						
 						// Update member post total
-						$this->EE->db->query("UPDATE exp_members SET last_forum_post_date = '{$this->EE->localize->now}' WHERE member_id = '".$this->EE->session->userdata('member_id')."'");						
+						$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
+						$this->EE->db->update('members', 
+												array('last_forum_post_date' => $this->EE->localize->now)
+											);
 												
 						// Determine the redirect location
 						$page = $this->_fetch_page_number($this->thread_post_total, $post_per_page);
@@ -6659,8 +6779,10 @@ class Forum_Core extends Forum {
 						
 						$this->EE->db->query($this->EE->db->update_string('exp_forum_posts', $data, "post_id='".$data['post_id']."'"));
 
-						// Determine the redirect location						
-						$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE topic_id = '".$data['topic_id']."'");
+						// Determine the redirect location
+						$this->EE->db->select('COUNT(*) as count');
+						$query = $this->EE->db->get_where('forum_posts', array('topic_id' => $data['topic_id']));
+
 						$total = ($query->row('count')  + 1);						
 
 						$page = $this->_fetch_page_number($query->row('count') , $post_per_page);
@@ -6687,7 +6809,6 @@ class Forum_Core extends Forum {
 		/** -------------------------------------
 		/**  Is there an attachment to finalize
 		/** -------------------------------------*/
-				
 		if ($this->EE->input->get_post('attach') != '')
 		{
 			if (strpos($this->EE->input->get_post('attach'), '|') === FALSE)
@@ -6702,7 +6823,6 @@ class Forum_Core extends Forum {
 				}
 			}
 		}
-		
 
 		if (count($this->attachments) > 0)
 		{
@@ -6712,7 +6832,15 @@ class Forum_Core extends Forum {
 			
 			foreach ($this->attachments as $id)
 			{
-				$this->EE->db->query("UPDATE exp_forum_attachments SET topic_id = '{$topic_id}', post_id = '{$post_id}', board_id = '{$board_id}', is_temp = 'n' WHERE attachment_id = '{$id}'");
+				$d = array(
+						'topic_id'		=> $topic_id,
+						'post_id'		=> $post_id,
+						'board_id'		=> $board_id,
+						'is_temp'		=> 'n',
+						'attachment_id'	=> $id
+					);
+				
+				$this->EE->db->update('forum_attachments', $d);
 			}
 		}		
 				
@@ -6723,25 +6851,42 @@ class Forum_Core extends Forum {
 			
 		if ($this->EE->input->get_post('notify') == 'y')
 		{
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_forum_subscriptions WHERE topic_id = '{$data['topic_id']}' AND member_id = '{$orig_author_id}'");
+			$this->EE->db->select('COUNT(*) as count');
+			$this->EE->db->where('topic_id', $data['topic_id']);
+			$this->EE->db->where('member_id', $orig_author_id);
+			$query = $this->EE->db->get('forum_subscriptions');
 	
 			$row = $query->row_array();
 	
 			if ($row['count']  > 1)
 			{
-				$this->EE->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '{$data['topic_id']}' AND member_id = '{$orig_author_id}'");
+				$this->EE->db->where('topic_id', $data['topic_id']);
+				$this->EE->db->where('member_id', $orig_author_id);
+				$this->EE->db->delete('forum_subscriptions');
+
 				$row['count']  = 0;
 			}	
 			
 			if ($row['count'] == 0)
 			{	
 				$rand = $orig_author_id.$this->EE->functions->random('alnum', 8);
-				$this->EE->db->query("INSERT INTO exp_forum_subscriptions (topic_id, board_id, member_id, subscription_date, hash) VALUES ('{$data['topic_id']}', '{$this->preferences['board_id']}', '{$orig_author_id}', '{$this->EE->localize->now}', '{$rand}')");
+				
+				$d = array(
+						'topic_id'				=> $data['topic_id'],
+						'board_id'				=> $this->preferences['board_id'],
+						'member_id'				=> $orig_author_id,
+						'subscription_date'		=> $this->EE->localize->now,
+						'hash'					=> $rand
+					);
+				
+				$this->EE->db->insert('forum_subscriptions', $d);
 			}
 		}
 		else
 		{
-			$this->EE->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '{$data['topic_id']}' AND member_id = '{$orig_author_id}'");
+			$this->EE->db->where('topic_id', $data['topic_id']);
+			$this->EE->db->where('member_id', $orig_author_id);
+			$this->EE->db->delete('forum_subscriptions');
 		}
 
 		
@@ -12470,8 +12615,62 @@ class Forum_Core extends Forum {
 	}
 
 
-	
-	
+/*
+                                         ,r5GABBBHBM##########Bhi:.                                         
+                                       :2#@#MBM#@@@@@@@@@@@@@@@@@Hr                                         
+                                    .;2#@@@@BAH#@@@@#MMM#@@@@@@@@@@3;.                                      
+                                   :5#@@@#HHBMBHAG925issiXAMBAAM@@@@@MS,                                    
+                                 .;9@@@#MHBM#MAXir;;;;;;;;riX&HBM@@@@@@A;.                                  
+                                ,5#@@#HAHBBA3ir;::::::;;::;rs2A#@@@@@@@@@5,                                 
+                               :9@@@@@MBAXSs;,.,,:::::::::;;;;s9M@@##@@@@#s.                                
+                              ,S#@@@@M&Xs;:,,,,,::::::::::::;;;ri2&BMM#@@@&r.                               
+                             .sH@@@Bh5r;::,,,:::,,::::,;;;;;;;;;;ri9B#B#@@@Ar.                              
+                             ;h@@@#hi;::::::::::,,:;;:;;;;;;;;;;rrri9B##@@@@X;.                             
+                            :2#@@@MXs;::::;;;::::;;;;;r;::::;rrsssrrihM@@@@@H2:                             
+                           .rH@@@@A2srrr;;;;;;;;;;r;;::,,,:;s5XXX332is5&#@@@#&r                             
+                           .sB@@@#A2issrrrrr;;;;;;;:,..,;s222SS2GBM&XS2&#@@@#BS,                            
+                           ,S#@@@MA35isrrr;;::::,,,...:ihB&S;:;s529AHHA&B@@#HA9s,                           
+                           :X@@@#BAh2Ssr;::,,,..,.  .:s233i;:;s22S59&Xrr3#@HX2X5:                           
+                           :3@@@@#B&XSisssiSir;;:..:risrri5X252X25525r;;5B#Gis5S:                           
+                           ,iB@@@@@MAGhGAM#Mh55XX22hHAS;:;i25issrrsisr;;s&BGSsSS:                           
+                            :2#@@@@#@@#A9XG&S:.r#@@AX33s;;;;rrssrriir;;;s3BMGiii:                           
+                         .  .rH@@@@@#BAh33A#Hi:;2&2r;s22SisssiSs;,,:;rsrs2ABAX22;                           
+                         .   :SH#@@@MA&AH&922SrrSX2s;ri22XSr:,,,. .,:rsii2X2Ssii:                           
+                               ;&@@@@H9X25irrssi29Xs:,,;rrrr:...,,:::;rrsS555SSi:                           
+                              .r&@@@#AXSiS2X2SS222i;. .,:;;rr;;;rrr;;;;;rsS2GAA2;                           
+                         ,::.   .s#@MG3XX5ir;::riis;::;rsrrssr;;;rrrrr;;;;ri3A&S:                           
+                       .;9A3i;.  .9@MhSis;:....:sS5Sisssrrrrrr;;rrr;;;::;;;s2&hi:                           
+                       .rh3rrsSSs;:sGBGSr;::::::rsiSSs;:,,:;rrsiSir;:,:;;;;r2ABA3Sr,                        
+                        ;3X;,:rXA2;r3BB9irr;rrrrrrrrrr;:::;;;;;s22i;:,:;rrrsXMMG3h9S;.                      
+                        ;B@Gr..:r2&A2;:sXSsrrrsissrrrrrr;:.,,,:rssr:::;;rrrSGMAirsX&&Xi;:,                  
+                       ;h@@@2:..,sA#3, r&3Ss;;;sS225s;:,,..,:;iis;:;;;;rssi2ABAXr;sG##A93Xi;.               
+                      ;#@@H2r;,.,rXH&srhMXss;:,:rS9h2s;;rssrrssr;;;;rrrrssi3AHMBXrrS&G25G#@#hi;,.           
+                     ;A@@9;,,::,.;X3r.,X#&ir;;:,,:r2XXXX2ir;:,,,:;rrrrsrsi2332hBM&2S5Srr5H@@@#BG2i;,.       
+                    ;h#Ai;,,:;::;9#5   ;M@#5rsr;:::rsis;::,,,,,:;siissisi2h3Ssi9B#A2Sir;;iX&AM###MHh2ir;:.:,
+                  .r9AS: ..,;;;sh@@S    ;A@#A2srrrrr;;;;:;;;;;rrrrssiiS52992iii533SrriSs;ri2XGG33h93GAHHH39r
+                 :SAAi,...,:;;;5B@Bs      i@@@AX5Sisr;rrsrr;;;;rrrsiS52XX2SisiSSisrrrS92ss2X392sri522223GGAX
+               .rH@@Xr:::::;;;:;XHhs,     :B@@@@H9225Sissrr;;:,,:;si52X932issrsssrrrssr;:;i55ir:;SAH9r:;r5G9
+             .;G@@@&ir;::,,,,,...,rXh2r,  ,rS2&#@@@MBA2i;::::::;ri2333X2Sssrr;;rsirrsr::;rsiSsr;iXh2i:.,risi
+.          ,sH@@@@Gir;r;;::,,..   .:;rrrsis;;rsXA#@@@@MAXir;riXhGAA&322Ssrrr;;;;;;;rss;::;;rsiS525r:,,,:srrr
+ir;:.,,,;iB@@@@@BXs;;rrr;;:::,,......,::;rrssssrrrssi2&@@@#MMMBAG32Sissrrrrr;;:::;rsir,.,:;s52225ir:,:;rr:;;
+A@@@@#BhXG##Air;;;;;rrr;;::::::,,,,,.....:ri5Ssr;:;rrr;;i3H##AXisrrrrrrrrsrr::,.,;is;. .;SX32irrrrr;;;sis;rr
+#@@@@@@@@@Ar,.,::;rrrrr;;::::::,,,::,,..:r29Xs;::r2AH3r::;i2992Siiiiisrrrr;,,,,,:;s;,  :5GhS;,,:ris;,,;is;;;
+#MM##@@@@As,.,;;rrrr;;;;;;;:::::,,,,,:,:;s3G2;,:r59&hS;;rii;r5h92SSSsrrssr;,.:;;;;:,..;iXXi;,,;5G9S;..;ii;;:
+BAAAAM#HXr;:,:rsrrrr;;;;;::,:::::,,,,,,,:;s2Sr;rsiS25r:.:S5;:rGBG5SSrrrssr:,,;rr;::,,;i5isr::;iXXi;,,:rss:;;
+BHBHAABAXr:,,;;rrrrr;;::::::;::::::,,,,,,,;S2isr;;;i2S;..rs;:;G@M325iiisr;;;ris;:;;;;;;;;rsr;:rsr:,:;;rsr;sr
+BBMMHAAAhi:,,;;r;;;;::::;;;;:::::::::,,..,rXXir;;;rsiissrrr;,,sMMh3hG2r;;;;riSr;;r;:,,::;sSs;:;sirrrr;rrrrSi
+BAHMMHA&3i;::;;;rrr;;;;;;;;:::;;::::::;;ri525ir;;rSSr;;i2iss,  sAM&2Ss;;;;;;rsr;rr:. .:;;rsr::rS2SSir;;;;;ss
+MHHM##MHhS;:::;;;rrrrrr;;;;;;;:::::,,:;ri25iiSs;:;S5;,.;iiii;  ,G@Hs::rr;;;;rr;;;r,  ,:;rssr;;rSSiss;:;;;:;r
+#MMBMM##H2r:,:;;;rrr;r;;;;;;;;;;;;;::,,,:r522Ss;:;ii;,,;rrrir.  r32r,:;r;;;rrr;:;;,  ,:rriir;:;sirrr;::;r:;;
+MBBHAAB#MGs::::;;;;;;;rrr;;;;:::::::::,.:s9&Xsrrrris;:;rrrrsr:   ,;;::;;;;;rsr;:;;, .,:;rssr:,:riiis;::;r;;:
+MB##MHHM@#ASr::;;;;;;;;rrr;;;;::::::;;;;s23XSsrr;ris;;;rsrrss;. .:;;;;;;;;;rrr;:;;:..,:;riir;:;sSisr;;:;ir;:
+#######@@@@@A5sssssrr;;rrrrrrr;;;r;;;rs522SiSir::;iir;;iSsrrr;,.;i;::;;;;;;;;;;:;r:..,;rrssr;:;iir::;;:;irr;
+3sr;rssi2&HBH&39&M#@Mh2S5SSisrrrrr;;;;rS39X222r,,rX9Srrri525i;::;r:,;rr;;;r;;;;;rr:,,:;rrsrr;:;sr:,:rs;;srr;
+.            ,rS3B@@@@A325iissrrr;;;;;sXHMA9XS;,:s9A3Sr;r592s;;;;::riSr;:rsrrr;;rr:,,:;rsiis;;rir,.:rir;srsr
+                    ,,,,............,rh@@BX5is;:;iX35sr;;siisr;;,,;i2S;,.;rrr;;;r;,..:;riSir;;sir,.,rir;rrss
+                                    .:iA#Bh2Sirrri22SisssrsSSir;;;sSSs;::;ssrrrrsr;::;rsiSSsrsSSs;::rsssssiS
+*/	
+
 }
 // END CLASS
 
