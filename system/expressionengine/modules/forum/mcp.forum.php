@@ -99,7 +99,8 @@ class Forum_mcp {
 		// Garbage collection.  Delete old read topic data
 		
 		$year_ago = $this->EE->localize->now - (60*60*24*365);
-		$this->EE->db->query("DELETE FROM exp_forum_read_topics WHERE last_visit < ".$year_ago);
+		$this->EE->db->where('last_visit <', $year_ago);
+		$this->EE->db->delete('forum_read_topics');
 	}
 	
 	// --------------------------------------------------------------------
@@ -519,7 +520,8 @@ class Forum_mcp {
 		
 		foreach ($tables as $table)
 		{
-			$this->EE->db->query("DELETE FROM `{$table}` WHERE board_id = '{$board_id}'");			
+			$this->EE->db->where('board_id', $board_id);
+			$this->EE->db->delete($table);
 		}
 		
 		$this->update_triggers();
@@ -892,7 +894,7 @@ class Forum_mcp {
 			$_POST['forum_hot_topic'] = 10;
 			$_POST['forum_max_post_chars'] = 6000;
 			
-			$this->EE->db->query($this->EE->db->insert_string('exp_forums', $_POST));  
+			$this->EE->db->insert('forums', $_POST);
 
 			$this->_forum_update_order($this->EE->db->insert_id(), (( ! isset($_POST['forum_parent'])) ? 0 : $_POST['forum_parent']));
 
@@ -902,8 +904,9 @@ class Forum_mcp {
 		{
 			$this->EE->db->select('forum_parent');
 			$query = $this->EE->db->get_where('forums', array('forum_id' => $forum_id));
-						
-			$this->EE->db->query($this->EE->db->update_string('exp_forums', $_POST, 'forum_id='.$this->EE->db->escape_str($forum_id)));
+			
+			$this->EE->db->where('forum_id', $forum_id);
+			$this->EE->db->update('forums', $_POST);			
 
 			if (isset($_POST['forum_parent']))
 			{
@@ -994,7 +997,8 @@ class Forum_mcp {
 		$i = 1;
 		foreach ($new_order as $id)
 		{
-			$this->EE->db->query("UPDATE exp_forums SET forum_order = '{$i}' WHERE forum_id = '$id'");
+			$this->EE->db->where('forum_id', $id);
+			$this->EE->db->update('forums', array('forum_order' => $i));
 			$i++;
 		}		
 	}
@@ -1100,9 +1104,15 @@ class Forum_mcp {
 		/** -------------------------------------*/
 		
 		$member_entries = array();
+		$this->EE->db->select('COUNT(*) as count, author_id');
+		$this->EE->db->group_by('author_id');
+		$this->EE->db->order_by('count', 'desc');
+		$forum_topics_count = $this->EE->db->get('forum_topics');
 
-		$forum_topics_count = $this->EE->db->query('SELECT COUNT(*) AS count, author_id FROM exp_forum_topics GROUP BY author_id ORDER BY count DESC');
-		$forum_posts_count = $this->EE->db->query('SELECT COUNT(*) AS count, author_id FROM exp_forum_posts GROUP BY author_id ORDER BY count DESC');
+		$this->EE->db->select('COUNT(*) as count, author_id');
+		$this->EE->db->group_by('author_id');
+		$this->EE->db->order_by('count', 'desc');
+		$forum_posts_count = $this->EE->db->get('forum_posts');
 
 		if ($forum_topics_count->num_rows() > 0)
 		{
@@ -1154,10 +1164,14 @@ class Forum_mcp {
 			$total_posts += $this->EE->db->count_all_results('forum_posts');
 		}
 		
-		$this->EE->db->query("UPDATE exp_stats SET total_forum_topics = '{$total_topics}', total_forum_posts = '{$total_posts}'");
+		$d = array(
+				'total_forum_topics'	=> $total_topics,
+				'total_forum_posts'		=> $total_posts
+			);
+			
+		$this->EE->db->update('stats', $d);
 
 		// Optimize the tables just to be nice
-
 		$this->EE->load->dbutil();
 		$this->EE->dbutil->optimize_table('forums');
 		$this->EE->dbutil->optimize_table('forum_topics');
@@ -1259,8 +1273,11 @@ class Forum_mcp {
 			$temp_pos	= $result->row('forum_order') ;
 			
 			// Swap the numbers...
-			$this->EE->db->query("UPDATE exp_forums SET forum_order = '{$cur_position}' WHERE forum_id = '{$temp_id}'");
-			$this->EE->db->query("UPDATE exp_forums SET forum_order = '{$temp_pos}' WHERE forum_id = '{$forum_id}'");
+			$this->EE->db->where('forum_id', $temp_id);
+			$this->EE->db->update('forums', array('forum_order' => $cur_position));
+
+			$this->EE->db->where('forum_id', $forum_id);
+			$this->EE->db->update('forums', array('forum_order' => $temp_pos));
 
 			// Now that we've made the swap, the order of the forums is messed up so we'll re-synchronize them
 			$this->_forum_update_order(0, 0, FALSE);
@@ -1268,9 +1285,7 @@ class Forum_mcp {
 			$this->EE->functions->redirect($this->id_base.AMP.'method=forum_management');
 		}
 		
-		
   		// Re-order the forum!
-
 		
 		// First we'll create an array with the correct order...
 		
@@ -1338,8 +1353,14 @@ class Forum_mcp {
 				$new_parent = ($query->row('forum_is_cat')  == 'y') ? $query->row('forum_id')  : $query->row('forum_parent') ;
 		
 				$new_order  =  ($direction == 'up') ? 100 : 0;
-				$this->EE->db->query("UPDATE exp_forums SET forum_parent = '{$new_parent}', forum_order = '{$new_order}' WHERE forum_id = '".$this->EE->db->escape_str($forum_id)."'");
-						
+				
+				$d = array(
+					'forum_parent'	=> $new_parent,
+					'forum_order'	=> $new_order
+				);
+				$this->EE->db->where('forum_id', $forum_id);
+				$this->EE->db->update('forums', $d);
+										
 				$this->_forum_update_order(0,0,FALSE);
 				
 				$this->EE->functions->redirect($this->id_base.AMP.'method=forum_management');
@@ -1352,12 +1373,12 @@ class Forum_mcp {
 		$i = 1;
 		foreach ($new_order as $id)
 		{
-			$this->EE->db->query("UPDATE exp_forums SET forum_order = '{$i}' WHERE forum_id = '$id'");
+			$this->EE->db->where('forum_id', $id);
+			$this->EE->db->update('forums', array('forum_order' => $i));
 			$i++;
 		}
 		
 		// Back whence you came Binky!
-
 		$this->EE->functions->redirect($this->id_base.AMP.'method=forum_management');
 	}
 
@@ -1382,12 +1403,6 @@ class Forum_mcp {
 		$vars['star']	= $this->prefs['board_theme_url'].$this->prefs['board_default_theme'].'/images/rank.gif';
 		
 		return $this->_content_wrapper('forum_ranks', 'forum_ranks', $vars);
-/*		 
-		$crumb = array(
-						$this->EE->lang->line('forum_user_manager') => $this->id_base.AMP.'method=forum_admins',
-						$this->EE->lang->line('forum_ranks') => ''
-					  );
-*/
 	}
 
 	// --------------------------------------------------------------------
@@ -1413,12 +1428,6 @@ class Forum_mcp {
 		$vars['star']	= $this->prefs['board_theme_url'].$this->prefs['board_default_theme'].'/images/rank.gif';
 		
 		return $this->_content_wrapper('rank_form', 'forum_ranks', $vars);
-/*
-		$crumb = array(
-						$this->EE->lang->line('forum_user_manager') => $this->id_base.AMP.'method=forum_admins',
-						$this->EE->lang->line('forum_ranks') => ''
-					  );
-*/
 	}
 
 	// --------------------------------------------------------------------
@@ -1432,10 +1441,8 @@ class Forum_mcp {
 	function forum_update_rank()
 	{
 		unset($_POST['submit']);
-		
 
 		// Error correction
-		
 		$required = array('rank_title', 'rank_min_posts');
 		
 		foreach ($required as $val)
@@ -1456,27 +1463,22 @@ class Forum_mcp {
 			}
 		}
 
-
-		// Are we updatting or inserting?
-			
+		// Are we updatting or inserting?			
 		if ( ! $this->EE->input->get_post('rank_id'))
 		{
-			$sql = $this->EE->db->insert_string('exp_forum_ranks', $_POST);
+			$this->EE->db->insert('forum_ranks', $_POST);
 			
 			$msg = 'forum_rank_added';
 		}
 		else
 		{
-			$sql = $this->EE->db->update_string('exp_forum_ranks', $_POST, "rank_id = '".$this->EE->input->get_post('rank_id')."'");
+			$this->EE->db->where('rank_id', $this->EE->input->get_post('rank_id'));
+			$this->EE->db->update('forum_ranks', $_POST);
 			
 			$msg = 'forum_rank_updated';
 		}
-	
-		$this->EE->db->query($sql);	
-		
 
-		// Send Binky back whence Binky came...
-		
+		// Send Binky back whence Binky came...		
 		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line($msg));
 		$this->EE->functions->redirect($this->id_base.AMP.'method=forum_ranks');
 	}
@@ -1507,14 +1509,7 @@ class Forum_mcp {
 			'item'		=> $query->row('rank_title'),
 			'hidden'	=> array('rank_id' => $rank_id)
 		);
-	
-	/*
-		$crumb = array(
-						$this->EE->lang->line('forum_manager')	=> $this->id_base.AMP.'method=forum_management',
-						$this->EE->lang->line('forum_ranks')	=>  $this->id_base.AMP.'method=forum_ranks',
-						$title => ''
-					  );
-	*/
+
 		return $this->_content_wrapper('confirm', 'forum_delete_rank_confirm', $vars);
 	}
 
@@ -1535,7 +1530,8 @@ class Forum_mcp {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		$this->EE->db->query("DELETE FROM exp_forum_ranks WHERE rank_id = '".$this->EE->db->escape_str($rank_id)."'");
+		$this->EE->db->where('rank_id', $rank_id);
+		$this->EE->db->delete('forum_ranks');
 		
 		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('forum_rank_deleted'));
 		$this->EE->functions->redirect($this->id_base.AMP.'method=forum_ranks');
@@ -1733,14 +1729,22 @@ class Forum_mcp {
 		// Two versions:
 		if ($forum_id == 'global')
 		{
-			$this->EE->db->query("UPDATE exp_forum_boards SET board_forum_permissions = '".serialize($perms)."', board_use_deft_permissions = '".$this->EE->input->get_post('board_use_deft_permissions')."' WHERE board_id = '".$this->EE->db->escape_str($this->board_id)."'");
+			$this->EE->db->where('board_id', $this->board_id);
+			
+			$d = array(
+					'board_forum_permissions'		=> serialize($perms),
+					'board_use_deft_permissions'	=> $this->EE->input->get_post('board_use_deft_permissions')
+				);
+			
+			$this->EE->db->update('forum_boards', $d);
 		
 			$msg = 'forum_deft_permissions_updated';
 		}
 		else
 		{
-			$this->EE->db->query("UPDATE exp_forums SET forum_permissions = '".serialize($perms)."' WHERE forum_id = '".$this->EE->db->escape_str($forum_id)."'");
-		
+			$this->EE->db->where('forum_id', $forum_id);
+			$this->EE->db->update('forums', array('forum_permissions' => serialize($perms)));
+			
 			$msg = 'forum_permissions_updated';
 		}
 		
@@ -1812,13 +1816,6 @@ class Forum_mcp {
 		}
 		
 		return $this->_content_wrapper('forum_admins', 'forum_admins', $vars);
-
-		/*	
-		$crumb = array(
-						$this->EE->lang->line('forum_user_manager') => $this->id_base.AMP.'method=forum_admins',
-						$this->EE->lang->line('forum_admins') => ''
-					  );
-		*/
 	}
 
 	// --------------------------------------------------------------------
@@ -1864,7 +1861,7 @@ class Forum_mcp {
 
 		$_POST['board_id'] = $this->board_id;
 		
-		$this->EE->db->query($this->EE->db->insert_string('exp_forum_administrators', $_POST));
+		$this->EE->db->insert('forum_administrators', $_POST);
 
 		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('forum_admin_added'));
 		$this->EE->functions->redirect($this->id_base.AMP.'method=forum_admins');
@@ -1919,13 +1916,6 @@ class Forum_mcp {
 		);
 
 		return $this->_content_wrapper('confirm', 'forum_remove_admin_confirm', $vars);
-/*
-		$crumb = array(
-						$this->EE->lang->line('forum_manager') => $this->id_base.AMP.'method=forum_management',
-						$this->EE->lang->line('forum_admins')	=>  $this->id_base.AMP.'method=forum_admins',
-						$title => ''
-					  );
-*/
 	}
 
 	// --------------------------------------------------------------------
@@ -1946,8 +1936,9 @@ class Forum_mcp {
 			$this->EE->functions->redirect($this->id_base.AMP.'method=forum_admins');
 		}
 		
-		$this->EE->db->query("DELETE FROM exp_forum_administrators WHERE admin_id = '{$admin_id}'");
-		
+		$this->EE->db->where('admin_id', $admin_id);
+		$this->EE->db->delete('forum_administrators');
+				
 		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('admin_removed'));
 		$this->EE->functions->redirect($this->id_base.AMP.'method=forum_admins');
 	}
@@ -1990,9 +1981,7 @@ class Forum_mcp {
 		$vars['groups'] = $groups;
 		$vars['forums'] = array();
 
-
-		//Fetch the Forums
-		
+		//Fetch the Forums		
 		$this->EE->db->order_by('forum_order');
 		$query = $this->EE->db->get_where('forums', array('board_id' => $this->board_id));
 				
@@ -2005,7 +1994,9 @@ class Forum_mcp {
 				if ($row['forum_is_cat'] != 'y')
 				{
 					$this->EE->db->select('mod_id, mod_member_id, mod_member_name, mod_group_id');
-					$query = $this->EE->db->get_where('forum_moderators', array('mod_forum_id' => $row['forum_id']));
+					$query = $this->EE->db->get_where('forum_moderators', 
+												array('mod_forum_id' => $row['forum_id'])
+					);
 
 					$mods = array();
 					
@@ -2031,12 +2022,6 @@ class Forum_mcp {
 				$vars['forums'][] = $row;
 			}
 		}
-/*
-		$crumb = array(
-						$this->EE->lang->line('forum_user_manager') => $this->id_base.AMP.'method=forum_admins',
-						$this->EE->lang->line('forum_moderators') => ''
-					  );
-*/
 
 		return $this->_content_wrapper('forum_moderators', 'forum_moderators', $vars);
 	}
@@ -2071,7 +2056,6 @@ class Forum_mcp {
  		
 
 		// Assign default values
- 
 		$matrix = array(
 							'mod_can_edit' 				=> 'y',
 							'mod_can_move' 				=> 'y',
@@ -2082,10 +2066,8 @@ class Forum_mcp {
 							'mod_can_announce' 			=> 'n',
 							'mod_can_view_ip' 			=> 'n'
 						);
-		
 
 		// If editing, fetch the moderator data
-		
 		if ($is_new == FALSE)
 		{
 			$query = $this->EE->db->get_where('forum_moderators', array('mod_id' => $mod_id));
@@ -2152,13 +2134,7 @@ class Forum_mcp {
 		{
 			$vars[$var] = $$var;
 		}
-		
-/*
-		$crumb = array(
-						$this->EE->lang->line('forum_user_manager') => $this->id_base.AMP.'method=forum_admins',
-						$this->EE->lang->line('forum_moderators') => ''
-					  );
-*/
+
 		return $this->_content_wrapper('add_edit_moderator', $title, $vars);
 	}
 
@@ -2213,11 +2189,12 @@ class Forum_mcp {
 		if ($is_new == TRUE)
 		{
 			$_POST['board_id'] = $this->board_id;
-			$this->EE->db->query($this->EE->db->insert_string('exp_forum_moderators', $_POST));
+			$this->EE->db->insert('forum_moderators', $_POST);
 		}
 		else
 		{
-			$this->EE->db->query($this->EE->db->update_string('exp_forum_moderators', $_POST, "mod_id = '{$mod_id}'"));		 
+			$this->EE->db->where('mod_id', $mod_id);
+			$this->EE->db->update('forum_moderators', $_POST);
 		}
 
 		$message = ($is_new == TRUE) ? 'forum_moderator_added' : 'forum_moderator_updated';
@@ -2278,14 +2255,7 @@ class Forum_mcp {
 			'hidden'	=> array('mod_id' => $mod_id)
 		);
 
-		return $this->_content_wrapper('confirm', 'forum_remove_moderator_confirm', $vars);
-/*
-		$crumb = array(
-						$this->EE->lang->line('forum_manager') => $this->id_base.AMP.'method=forum_management',
-						$this->EE->lang->line('forum_moderators')	=>  $this->id_base.AMP.'method=forum_moderators',
-						$title => ''
-					  );
-*/			
+		return $this->_content_wrapper('confirm', 'forum_remove_moderator_confirm', $vars);		
 	}
 	
 	// --------------------------------------------------------------------
@@ -2305,8 +2275,9 @@ class Forum_mcp {
 			$this->EE->session->set_flashdata('message_failure', $this->EE->lang->line('invalid_mod_id'));
 			$this->EE->functions->redirect($this->id_base.AMP.'method=forum_moderators');
 		}
-
-		$this->EE->db->query("DELETE FROM exp_forum_moderators WHERE mod_id = '{$mod_id}'");
+		
+		$this->EE->db->where('mod_id', $mod_id);
+		$this->EE->db->delete('forum_moderators');
 
 		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('moderator_removed'));
 		$this->EE->functions->redirect($this->id_base.AMP.'method=forum_moderators');
@@ -2350,14 +2321,18 @@ class Forum_mcp {
 		
 		if ($query->num_rows() == 0)
 		{
-			exit('{"error": "'.$this->EE->lang->line('forum_no_results').'"}');
+			$this->EE->output->send_ajax_response(
+				array('error' => $this->EE->lang->line('forum_no_results')), TRUE
+			);
 		}
 		elseif ($query->num_rows() > 99)
 		{
-			exit('{"error": "'.$this->EE->lang->line('forum_toomany_results').'"}');
+			$this->EE->output->send_ajax_response(
+				array('error' => $this->EE->lang->line('forum_toomany_results')), TRUE
+			);
 		}
-		
-		exit($this->EE->javascript->generate_json($query->result_array(), TRUE));
+
+		$this->EE->output->send_ajax_response($query->result_array());
 	}
 
 	// --------------------------------------------------------------------
@@ -2373,77 +2348,77 @@ class Forum_mcp {
 		// Preferences Matrix
 
 		$P = array(
-						'general'	=> array(
-											'board_label'	 			=> array('t', '150'),
-											'board_name'	 			=> array('t', '50'),
-											'board_forum_url' 			=> array('t', '150'),
-											'board_site_id' 			=> array('f', '_forum_site_menu'),
-											'board_forum_trigger' 		=> array('t', '70'),
-											'board_enabled'				=> array('r', array('y' => 'yes', 'n' => 'no'))
-											),
+			'general'	=> array(
+							'board_label'	 			=> array('t', '150'),
+							'board_name'	 			=> array('t', '50'),
+							'board_forum_url' 			=> array('t', '150'),
+							'board_site_id' 			=> array('f', '_forum_site_menu'),
+							'board_forum_trigger' 		=> array('t', '70'),
+							'board_enabled'				=> array('r', array('y' => 'yes', 'n' => 'no'))
+						),
 
-						'php'	=> array(
-											'board_allow_php'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'board_php_stage'			=> array('r', array('i' => 'input', 'o' => 'output'))
-											),											
+			'php'	=> array(
+							'board_allow_php'			=> array('r', array('y' => 'yes', 'n' => 'no')),
+							'board_php_stage'			=> array('r', array('i' => 'input', 'o' => 'output'))
+						),
 
-						'themes'	=> array(
-											'board_default_theme'		=> array('f', '_forum_theme_menu')
-											),
+			'themes'	=> array(
+							'board_default_theme'		=> array('f', '_forum_theme_menu')
+						),
 
-						'image'		=> array(
-											'board_upload_path'			=> array('t', '150'),
-											'board_attach_types'		=> array('r', array('img' => 'images_only', 'all' => 'all_files')),
-											'board_max_attach_perpost'	=> array('t', '4'),
-											'board_max_attach_size'		=> array('t', '6'),
-											'board_max_width'			=> array('t', '5'),
-											'board_max_height'			=> array('t', '5'),
-											'board_use_img_thumbs'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'board_thumb_width'			=> array('t', '4'),
-											'board_thumb_height'		=> array('t', '4')
-											),
+			'image'		=> array(
+							'board_upload_path'			=> array('t', '150'),
+							'board_attach_types'		=> array('r', array('img' => 'images_only', 'all' => 'all_files')),
+							'board_max_attach_perpost'	=> array('t', '4'),
+							'board_max_attach_size'		=> array('t', '6'),
+							'board_max_width'			=> array('t', '5'),
+							'board_max_height'			=> array('t', '5'),
+							'board_use_img_thumbs'		=> array('r', array('y' => 'yes', 'n' => 'no')),
+							'board_thumb_width'			=> array('t', '4'),
+							'board_thumb_height'		=> array('t', '4')
+						),
 
-						'notification'	=> array(
-											'board_notify_emails_topics'=> array('t', '255'),
-											'board_notify_emails'		=> array('t', '255'),
-											),
+			'notification'	=> array(
+							'board_notify_emails_topics'=> array('t', '255'),
+							'board_notify_emails'		=> array('t', '255'),
+						),
 
-						'topics'	=> array(
-											'board_topics_perpage'		=> array('t', '4'),
-											'board_posts_perpage'		=> array('t', '4'),
-											'board_topic_order'			=> array('d', array('d' => 'descending', 'a' => 'ascending', 'r' => 'most_recent_topic')),				
-											'board_post_order'			=> array('d', array('d' => 'descending', 'a' => 'ascending')),				
-											'board_hot_topic'			=> array('t', '4'),
-											'board_max_post_chars'		=> array('t', '5'),
-											'board_post_timelock'		=> array('t', '4'),
-											'board_display_edit_date'	=> array('r', array('y' => 'yes', 'n' => 'no'))
-											),
+			'topics'	=> array(
+							'board_topics_perpage'		=> array('t', '4'),
+							'board_posts_perpage'		=> array('t', '4'),
+							'board_topic_order'			=> array('d', array('d' => 'descending', 'a' => 'ascending', 'r' => 'most_recent_topic')),				
+							'board_post_order'			=> array('d', array('d' => 'descending', 'a' => 'ascending')),				
+							'board_hot_topic'			=> array('t', '4'),
+							'board_max_post_chars'		=> array('t', '5'),
+							'board_post_timelock'		=> array('t', '4'),
+							'board_display_edit_date'	=> array('r', array('y' => 'yes', 'n' => 'no'))
+						),
 
-						'formatting'	=> array(
-											'board_text_formatting'		=> array('d', $this->fmt_options),
-											'board_html_formatting'		=> array('d', array('safe' => 'safe', 'none' => 'none', 'all' => 'all')),				
-											'board_auto_link_urls'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'board_allow_img_urls'		=> array('r', array('y' => 'yes', 'n' => 'no'))
-											),
+			'formatting'	=> array(
+							'board_text_formatting'		=> array('d', $this->fmt_options),
+							'board_html_formatting'		=> array('d', array('safe' => 'safe', 'none' => 'none', 'all' => 'all')),				
+							'board_auto_link_urls'		=> array('r', array('y' => 'yes', 'n' => 'no')),
+							'board_allow_img_urls'		=> array('r', array('y' => 'yes', 'n' => 'no'))
+						),
 
-						'rss' => array(
-											'board_enable_rss'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'board_use_http_auth'		=> array('r', array('y' => 'yes', 'n' => 'no'))
-											)
+			'rss' => array(
+							'board_enable_rss'			=> array('r', array('y' => 'yes', 'n' => 'no')),
+							'board_use_http_auth'		=> array('r', array('y' => 'yes', 'n' => 'no'))
+						)
 					);
 		
 		
 		$subtext = array(
-								'board_name'					=> 'single_word_no_spaces',
-								'board_forum_trigger'			=> 'pref_forum_trigger_notes',
-								'board_upload_path' 			=> 'path_message',
-								'board_image_lib_path'			=> 'path_lib_message',
-								'board_use_img_thumbs'			=> 'will_show_in_pop',
-								'board_post_timelock'			=> 'pref_post_timelock_more',
-								'board_notify_emails'			=> 'pref_notify_emails_all',
-								'board_notify_emails_topics'	=> 'pref_notify_emails_topics_all',
-								'board_forum_enabled'			=> 'pref_forum_enabled_info'
-							);
+							'board_name'					=> 'single_word_no_spaces',
+							'board_forum_trigger'			=> 'pref_forum_trigger_notes',
+							'board_upload_path' 			=> 'path_message',
+							'board_image_lib_path'			=> 'path_lib_message',
+							'board_use_img_thumbs'			=> 'will_show_in_pop',
+							'board_post_timelock'			=> 'pref_post_timelock_more',
+							'board_notify_emails'			=> 'pref_notify_emails_all',
+							'board_notify_emails_topics'	=> 'pref_notify_emails_topics_all',
+							'board_forum_enabled'			=> 'pref_forum_enabled_info'
+						);
 							
 		if ($this->EE->config->item('multiple_sites_enabled') !== 'y')
 		{
@@ -2501,7 +2476,7 @@ class Forum_mcp {
 				$label = ( ! isset($this->EE->lang->language[$item])) ? str_replace('board_', 'pref_', $item) : $item;
 				$form = '';
 				
-				if ($val['0'] == 't')								// text input fields
+				if ($val['0'] == 't') // text input fields
 				{
 					$label = lang($label, $item);
 					$form = form_input(array(
@@ -2513,7 +2488,7 @@ class Forum_mcp {
 						'style'		=> 'width: 98%'
 					));
 				}
-				elseif ($val['0'] == 'r')							// radio buttons
+				elseif ($val['0'] == 'r') // radio buttons
 				{
 					$label = '<strong>'.lang($label).'</strong>';
 					
@@ -2654,9 +2629,7 @@ class Forum_mcp {
 			show_error($msg);
 		}
 
-
 		// Add slashes if needed
-		
 		$slashes = array('board_forum_url', 'board_upload_path');
 		
 		foreach ($slashes as $val)
@@ -2666,7 +2639,6 @@ class Forum_mcp {
 				$_POST[$val] .= '/';
 			}
 		}
-
 
 		// Validate Upload path
 
@@ -2688,10 +2660,8 @@ class Forum_mcp {
 				show_error($msg);
 			}
 		}
-		
 
 		// Validate Forum Name
-		
 		$this->EE->db->where('board_name', $_POST['board_name']);
 		$this->EE->db->where('board_id !=', $_POST['board_id']);
 		$count = $this->EE->db->count_all_results('forum_boards');
@@ -2706,9 +2676,7 @@ class Forum_mcp {
 			show_error($this->EE->lang->line('illegal_characters_shortname'));
 		}
 
-
 		// Validate Forum Trigger
-
 		if ($_POST['board_forum_trigger'] != '')
 		{
 			$this->EE->db->where('group_name', $_POST['board_forum_trigger']);
@@ -2736,17 +2704,13 @@ class Forum_mcp {
 			}
 		}
 		
-		
 		// Do we have a theme?
-
 		if ( ! isset($_POST['board_default_theme']))
 		{
 			$_POST['board_default_theme'] = 'default';
 		}
 
-
 		// Do we have an install date?
-		
 		$page = AMP.'method=forum_prefs';
 
 		if ($this->prefs['board_install_date'] < 1 OR $_POST['board_id'] == '')
@@ -2756,9 +2720,7 @@ class Forum_mcp {
 			$page = '';
 		}	
 
-
 		// Some clean up
-		
 		if (isset($_POST['board_max_attach_size']))
 		{
 			$_POST['board_max_attach_size'] = str_replace('K', '', $_POST['board_max_attach_size']);
@@ -2766,35 +2728,36 @@ class Forum_mcp {
 			$_POST['board_max_attach_size'] = str_replace('KB', '', $_POST['board_max_attach_size']);
 			$_POST['board_max_attach_size'] = str_replace('kb', '', $_POST['board_max_attach_size']);
 		}
+		
 		if (isset($_POST['board_max_width']))
 		{
 			$_POST['board_max_width'] = str_replace('px', '', $_POST['board_max_width']);
 			$_POST['board_max_width'] = str_replace('PX', '', $_POST['board_max_width']);
 		}
+		
 		if (isset($_POST['board_max_height']))
 		{
 			$_POST['board_max_height'] = str_replace('px', '', $_POST['board_max_height']);
 			$_POST['board_max_height'] = str_replace('PX', '', $_POST['board_max_height']);
 		}
 
-
 		// Insert/Update the DB
-
 		if ($_POST['board_id'] != '' && is_numeric($_POST['board_id']))
-		{	
-			$this->EE->db->query($this->EE->db->update_string('exp_forum_boards', $_POST, "board_id = '".$this->EE->db->escape_str($_POST['board_id'])."'"));
-			$board_id = $_POST['board_id'];
+		{
+			$board_id = $this->EE->input->post('board_id');
+
+			$this->EE->db->where('board_id', $board_id);
+			$this->EE->db->update('forum_boards', $_POST);			
 		}
 		else
 		{
 			unset($_POST['board_id']);
-			$this->EE->db->query($this->EE->db->insert_string('exp_forum_boards', $_POST));
+			
+			$this->EE->db->insert('forum_boards', $_POST);
 			$board_id = $this->EE->db->insert_id();
 		}
 		
-
 		// Create Specialty Templates, If Missing
-		
 		$this->EE->db->where('site_id', $_POST['board_site_id']);
 		$this->EE->db->where('template_name', 'forum_post_notification');
 		$count = $this->EE->db->count_all_results('specialty_templates');
@@ -2803,28 +2766,48 @@ class Forum_mcp {
 		{
 			require_once APPPATH.'language/'.$this->EE->config->item('deft_lang').'/email_data'.EXT;
 			
-			$this->EE->db->query("INSERT INTO exp_specialty_templates(site_id, template_name, data_title, template_data) 
-					  VALUES ('".$this->EE->db->escape_str($_POST['board_site_id'])."', 'admin_notify_forum_post', '".addslashes(trim(admin_notify_forum_post_title()))."', '".addslashes(admin_notify_forum_post())."')");
+			$d = array(
+					'site_id'			=> $this->EE->input->post('board_site_id'),
+					'template_name'		=> 'admin_notify_forum_post',
+					'data_title'		=> addslashes(trim(admin_notify_forum_post_title())),
+					'template_data'		=> addslashes(admin_notify_forum_post())
+				);
+
+			$this->EE->db->insert('specialty_templates', $d);
+
+			$d = array(
+					'site_id'			=> $this->EE->input->post('board_site_id'),
+					'template_name'		=> 'forum_post_notification',
+					'data_title'		=> addslashes(trim(forum_post_notification_title())),
+					'template_data'		=> addslashes(forum_post_notification())
+				);
+
+			$this->EE->db->insert('specialty_templates', $d);
 					  
-			$this->EE->db->query("INSERT INTO exp_specialty_templates(site_id, template_name, data_title, template_data) 
-					  VALUES ('".$this->EE->db->escape_str($_POST['board_site_id'])."', 'forum_post_notification', '".addslashes(trim(forum_post_notification_title()))."', '".addslashes(forum_post_notification())."')");
-					  
-			$this->EE->db->query("INSERT INTO exp_specialty_templates(site_id, template_name, data_title, template_data) 
-					  VALUES ('".$this->EE->db->escape_str($_POST['board_site_id'])."', 'forum_moderation_notification', '".addslashes(trim(forum_moderation_notification_title()))."', '".addslashes(forum_moderation_notification())."')");
-					  
-			$this->EE->db->query("INSERT INTO exp_specialty_templates(site_id, template_name, data_title, template_data) 
-					  VALUES ('".$this->EE->db->escape_str($_POST['board_site_id'])."', 'forum_report_notification', '".addslashes(trim(forum_report_notification_title()))."', '".addslashes(forum_report_notification())."')");
-		}
-			
+			$d = array(
+					'site_id'			=> $this->EE->input->post('board_site_id'),
+					'template_name'		=> 'forum_moderation_notification',
+					'data_title'		=> addslashes(trim(forum_moderation_notification_title())),
+					'template_data'		=> addslashes(forum_moderation_notification())
+				);
+
+			$this->EE->db->insert('specialty_templates', $d);
+
+			$d = array(
+					'site_id'			=> $this->EE->input->post('board_site_id'),
+					'template_name'		=> 'forum_report_notification',
+					'data_title'		=> addslashes(trim(forum_report_notification_title())),
+					'template_data'		=> addslashes(forum_report_notification())
+				);
+
+			$this->EE->db->insert('specialty_templates', $d);
+		}			
 		
 		// Update the Triggers
-		
 		$this->update_triggers();
 		
-
 		// Update the local forum prefs
 
-		
 		// If this is the first time the prefs are being updated it means that
 		// we have a brand new forum installation.  In this case we need to update
 		// the initial forum with these prefs.
@@ -2840,7 +2823,9 @@ class Forum_mcp {
 			foreach ($query_slave->row_array() as $key => $val)
 			{
 				if (in_array($key, $exceptions))
-					continue;
+				{
+					continue;					
+				}
 			
 				if (isset($query_master->row[$key]))
 				{
@@ -2849,7 +2834,9 @@ class Forum_mcp {
 			}
 			
 			if (count($sql_array) > 0)
-				$this->EE->db->query($this->EE->db->update_string('exp_forums', $sql_array, 'forum_id=2'));
+			{
+				$this->EE->db->query($this->EE->db->update_string('exp_forums', $sql_array, 'forum_id=2'));				
+			}
 		}
 		
 		if (isset($_POST['board_alias_id']))
@@ -3390,9 +3377,11 @@ class Forum_mcp {
 			
 			$prefs['forum_trigger'] = implode('|', $triggers);
 
-			$this->EE->db->query($this->EE->db->update_string('exp_sites', 
-										  array('site_system_preferences' => base64_encode(serialize($prefs))),
-										  "site_id = '".$this->EE->db->escape_str($row['site_id'])."'"));
+			$d = array(
+					'site_system_preferences'	=> base64_encode(serialize($prefs))
+				);
+			$this->EE->db->where('site_id', $row['site_id']);
+			$this->EE->db->update('sites', $d);
 		}
 	}
 
