@@ -1263,7 +1263,7 @@ class Forum_Core extends Forum {
 		}
 
 		// Update the thread count and last post date
-		$this->EE->db->select('COUNT(*) as count MAX(post_date) as last_post');
+		$this->EE->db->select('COUNT(*) as count, MAX(post_date) as last_post');
 		$query = $this->EE->db->get_where('forum_posts', array('topic_id' => $topic_id));
 
 		$this->thread_post_total = $query->row('count') ;
