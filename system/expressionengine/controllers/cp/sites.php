@@ -1724,7 +1724,66 @@ class Sites extends Controller {
 		}
 		
 		$this->logger->log_action($this->lang->line('site_deleted').':'.NBS.NBS.$query->row('site_label') );
-		
+
+		$this->db->select('entry_id');
+		$this->db->where('site_id', $site_id);
+		$query = $this->db->get('channel_titles');
+
+		$entries = array();
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result() as $row)
+			{
+				$entries[] = $row->entry_id;
+			}
+		}
+
+		// Just like a gossipy so-and-so, we will now destroy relationships! Category post is also toast.
+		if (count($entries) > 0)
+		{
+			// delete leftovers in category_posts
+			$this->db->where_in('entry_id', $entries);
+			$this->db->delete('category_posts');
+
+			// delete parents
+			$this->db->where_in('rel_parent_id', $entries);
+			$this->db->delete('relationships');
+			
+			// are there children?
+			$this->db->select('rel_id');
+			$this->db->where_in('rel_child_id', $entries);
+			$child_results = $this->db->get('relationships');
+
+			if ($child_results->num_rows() > 0)
+			{
+				// gather related fields
+				$this->db->select('field_id');
+				$this->db->where('field_type', 'rel');
+				$fquery = $this->db->get('channel_fields');
+
+				// We have children, so we need to do a bit of housekeeping
+				// so parent entries don't continue to try to reference them
+				$cids = array();
+
+				foreach ($child_results->result_array() as $row)
+				{
+					$cids[] = $row['rel_id'];
+				}
+
+				foreach($fquery->result_array() as $row)
+				{
+					$this->db->where_in('field_id_'.$row['field_id'], $cids);
+					$this->db->update('channel_data', array('field_id_'.$row['field_id'] => 0));
+				}
+			}
+
+			// aaaand delete
+			$this->db->where_in('rel_child_id', $entries);
+			$this->db->delete('relationships');
+		}
+
+
 		/** -----------------------------------------
 		/**  Delete Channel Custom Field Columns for Site
 		/** -----------------------------------------*/
@@ -1762,18 +1821,6 @@ class Sites extends Controller {
 			}
 		}
 		
-		$query = $this->db->query("SELECT cat_id FROM `exp_categories` WHERE site_id = '".$this->db->escape_str($site_id)."'");
-		$cat_ids = array();
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				$cat_ids[] = $row['cat_id'];
-			}
-
-			$this->db->query("DELETE FROM `exp_category_posts` WHERE cat_id IN (".implode(',', $cat_ids).")");
-		}
 
 		/** -----------------------------------------
 		/**  Delete Upload Permissions for Site
