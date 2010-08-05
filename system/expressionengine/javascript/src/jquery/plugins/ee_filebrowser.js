@@ -527,7 +527,7 @@
 			draggable: true,
 			title: EE.filebrowser.window_title,
 			autoOpen: false,
-			zIndex: 1000,
+			zIndex: 99999,
 			open: function(event, ui) {
 				// keyboard naviation is disabled so form elements are usable,
 				// re-initialize it when file browser is open
