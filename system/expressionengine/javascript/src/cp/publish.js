@@ -675,7 +675,10 @@ $(document).ready(function() {
 		$(this).parent().siblings('.glossary_content, .spellcheck_content').hide();
 
 		$('.glossary_content a').click(function(){
-			$.markItUp({ replaceWith:$(this).attr('title') });
+			var parent_div = $(this).closest('.publish_field'),
+				field_id = parent_div.attr('id').replace('hold_field_', 'field_id_');
+			parent_div.find('#'+field_id).insertAtCursor( $(this).attr('title') );
+			
 			return false;
 		});
 	}
@@ -810,6 +813,42 @@ $(document).ready(function() {
 		return false;
 	});
 	
+	
+	// @todo rewrite dependencies and remove
+	
+	var abort = false;
+	
+	function magicMarkups(string) {
+		if (string) {
+			string = string.toString();
+			string = string.replace(/\(\!\(([\s\S]*?)\)\!\)/g,
+				function(x, a) {
+					var b = a.split('|!|');
+					if (altKey === true) {
+						return (b[1] !== undefined) ? b[1] : b[0];
+					} else {
+						return (b[1] === undefined) ? "" : b[0];
+					}
+				}
+			);
+			// [![prompt]!], [![prompt:!:value]!]
+			string = string.replace(/\[\!\[([\s\S]*?)\]\!\]/g,
+				function(x, a) {
+					var b = a.split(':!:');
+					if (abort === true) {
+						return false;
+					}
+					value = prompt(b[0], (b[1]) ? b[1] : '');
+					if (value === null) {
+						abort = true;
+					}
+					return value;
+				}
+			);
+			return string;
+		}
+		return "";
+	}
 
 	// Bind the image html buttons
 	$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
@@ -891,9 +930,9 @@ $(document).ready(function() {
 		}
 		else
 		{
-		//	textarea.val(function(i, v) { return v + "{filedir_"+file.directory+"}"+file.name; });
 			textarea.val(function(i, v) {
-				return v + open + replace + close;
+				v += open + replace + close;
+				return magicMarkups(v);
 			});
 			
 		}
