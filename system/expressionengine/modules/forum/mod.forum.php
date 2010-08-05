@@ -80,6 +80,7 @@ class Forum {
 	var $preferences		= array();
 	var $form_actions		= array();
 	var $uri_segments 		= array('viewcategory', 'viewpost', 'viewreply', 'viewforum', 'viewthread', 'viewannounce', 'newtopic', 'quotetopic', 'quotereply', 'reporttopic', 'reportreply', 'do_report', 'newreply', 'edittopic', 'editreply', 'deletetopic', 'deletereply', 'movetopic', 'merge', 'do_merge', 'split', 'do_split', 'movereply', 'subscribe', 'unsubscribe', 'smileys', 'member', 'search', 'member_search', 'new_topic_search', 'active_topic_search', 'view_pending_topics', 'do_search', 'search_results', 'search_thread', 'ban_member', 'do_ban_member', 'spellcheck_iframe', 'spellcheck', 'mark_all_read', 'rss', 'atom', 'ignore_member', 'do_ignore_member');
+	
 	var $include_exceptions	= array('head_extra', 'spellcheck_js', 'body_extra');
 
 	/**
@@ -820,14 +821,13 @@ class Forum {
 				// If the user is logged in we'll update their forum selection
 				if ($forum_theme != '' AND $this->EE->session->userdata('member_id') != 0)
 				{
-					$this->EE->db->query("UPDATE exp_members SET forum_theme = '".$this->EE->db->escape_str($forum_theme)."' WHERE member_id = '".$this->EE->db->escape_str($this->EE->session->userdata('member_id'))."'");
+					$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
+					$this->EE->db->update('members', array('forum_theme' => $forum_theme));					
 				}				
 			}
 		}
-		
 
-		// Check path to folder containing the requested theme
-				
+		// Check path to folder containing the requested theme		
 		$this->theme = ($forum_theme != '' AND @is_dir($this->_fetch_pref('board_theme_path').$forum_theme)) ? $forum_theme : $this->_fetch_pref('board_default_theme');
 		
 		if ( ! @is_dir($this->_fetch_pref('board_theme_path').$this->theme))
@@ -1228,15 +1228,15 @@ class Forum {
 		return $str;
 	}
 
+	// --------------------------------------------------------------------
 
-
-	/** -------------------------------------
-	/**  Fetch classname
-	/** -------------------------------------*/
-	// Given an element (function) name, this function
-	// returns the name of the subfolder folder that contains the
-	// corresponding template file.
-
+	/**
+	 * Fetch classname
+	 *
+	 * Given an element (function) name, this function
+	 * returns the name of the subfolder folder that contains the
+	 * corresponding template file.
+	 */
 	function _fetch_filename($index)
 	{
 		$matrix = array(
@@ -1377,7 +1377,7 @@ class Forum {
 		return ( ! isset($matrix[$index])) ? FALSE : $matrix[$index];
 	}
 
-
+	// --------------------------------------------------------------------	
 
 	/** -------------------------------------
 	/**  Load Mime-types
@@ -1391,8 +1391,8 @@ class Forum {
 		}
 	}
 
-
-
+	// --------------------------------------------------------------------
+	
 	/** -------------------------------------
 	/**  Is the user authorized for the specfic page?
 	/** -------------------------------------*/
@@ -1401,6 +1401,7 @@ class Forum {
 		return TRUE;
 	}
 
+	// --------------------------------------------------------------------
 
 	/** --------------------------------
 	/**  Generate Error Page
@@ -1414,7 +1415,7 @@ class Forum {
 		return $this->_display_forum('error_page');			
 	}
 
-
+	// --------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Trigger the log-in page 
@@ -1431,7 +1432,8 @@ class Forum {
 		return FALSE;
 	}
 
-	
+	// --------------------------------------------------------------------
+		
 	/** -------------------------------------
 	/**  Is a particular user an admin?
 	/** -------------------------------------*/
@@ -1463,7 +1465,8 @@ class Forum {
 		
 		if ($member_id != 0 AND $group_id == 0)
 		{
-			$query = $this->EE->db->query("SELECT group_id FROM exp_members WHERE member_id = '{$member_id}'");
+			$this->EE->db->select('group_id');
+			$query = $this->EE->db->get_where('members', array('member_id' => $member_id));
 		
 			if ($query->num_rows() == 0)
 			{
@@ -1479,16 +1482,17 @@ class Forum {
 		return FALSE;
 	}
 
-	
+	// --------------------------------------------------------------------	
 	
 	/** -------------------------------------
 	/**  Individual Member's Last Visit
 	/** -------------------------------------*/
 	function member_post_total()
 	{
-		return str_replace('%x', $this->EE->session->userdata['total_forum_posts'], $this->EE->lang->line('your_post_total'));
+		return str_replace('%x', $this->EE->session->userdata('total_forum_posts'), $this->EE->lang->line('your_post_total'));
 	}
 
+	// --------------------------------------------------------------------
 	
 	/** -------------------------------------
 	/**  Quick Search Form
@@ -1509,7 +1513,7 @@ class Forum {
 							);
 	}
 
-
+	// --------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Quick Search Form - restricts to current forum
@@ -1530,7 +1534,7 @@ class Forum {
 							);
 	}
 
-
+	// --------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Page subheader
@@ -1552,7 +1556,7 @@ class Forum {
 		return $template;
 	}
 
-	
+	// --------------------------------------------------------------------	
 	
 	/** -------------------------------------
 	/**  Finalize the Crumbs
@@ -1566,9 +1570,7 @@ class Forum {
 		return str_replace('{breadcrumb_links}', $crumbs, $this->_load_element('breadcrumb'));			
 	}
 
-	
-	
-	
+	// --------------------------------------------------------------------	
 
 	/** -------------------------------------
 	/**  Breadcrumb
@@ -1658,8 +1660,11 @@ class Forum {
 			}
 			
 			if (is_numeric($this->EE->uri->segment(3+$this->seg_addition)))
-			{				
-				$query = $this->EE->db->query("SELECT screen_name FROM exp_members WHERE member_id = '".$this->EE->uri->segment(3+$this->seg_addition)."'");
+			{
+				$this->EE->db->select('screen_name');
+				$query = $this->EE->db->get_where('members', 
+										array('member_id' => $this->EE->uri->segment(3+$this->seg_addition))
+									);
 				
 				$crumbs .= $this->_crumb_trail(array(	
 													'link' => $this->_forum_path('/'.$this->EE->config->item('profile_trigger').'/memberlist'), 
@@ -1947,7 +1952,7 @@ class Forum {
 		return $this->_build_crumbs('', $crumbs, $this->EE->lang->line('error'));
 	}
 
-	
+	// --------------------------------------------------------------------	
 	
 	/** -------------------------------------
 	/**  Sets the title of the page
@@ -1960,8 +1965,7 @@ class Forum {
 		}
 	}
 
-
-	
+	// --------------------------------------------------------------------
 	
 	/** -------------------------------------
 	/**  Breadcrumb trail links
@@ -1981,8 +1985,7 @@ class Forum {
 		return $crumbs;
 	}
 
-	
-	
+	// --------------------------------------------------------------------	
 	
 	/** -------------------------------------
 	/**  Theme Option List
@@ -2006,7 +2009,7 @@ class Forum {
 		return $str;
 	}
 
-	
+	// --------------------------------------------------------------------	
 	
 	/** -------------------------------------
 	/**  Set the theme
@@ -2023,7 +2026,8 @@ class Forum {
 		// If the user is logged in we'll update their member table
 		if ($this->EE->session->userdata('member_id') != 0)
 		{
-			$this->EE->db->query("UPDATE exp_members SET forum_theme = '".$this->EE->db->escape_str($theme)."' WHERE member_id = '".$this->EE->db->escape_str($this->EE->session->userdata('member_id'))."'");
+			$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
+			$this->EE->db->update('members', array('forum_theme' => $theme));
 		}
 
 		$this->_load_preferences();
@@ -2045,7 +2049,7 @@ class Forum {
 		$this->EE->functions->redirect($this->_forum_path());
 	}
 
-	
+	// --------------------------------------------------------------------	
 	
 	/** -------------------------------------
 	/**  Fetch installed themes
@@ -2071,7 +2075,7 @@ class Forum {
 		return $filelist;
 	}
 
-
+	// --------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Private Message Box in header
@@ -2106,7 +2110,7 @@ class Forum {
 								);
 	}
 
-
+	// --------------------------------------------------------------------
 	
 	/** -----------------------------------------
 	/**  Base IFRAME for Spell Check
@@ -2130,7 +2134,7 @@ class Forum {
 		return EE_Spellcheck::iframe();
 	}
 
-	
+	// --------------------------------------------------------------------	
 	
 	/** -----------------------------------------
 	/**  Spell Check for Textareas
@@ -2145,7 +2149,8 @@ class Forum {
 		return EE_Spellcheck::check();
 	}
 
-	
+	// --------------------------------------------------------------------
+
 	/** --------------------------------
 	/**  SpellCheck - JS
 	/** --------------------------------*/
@@ -2168,6 +2173,7 @@ class Forum {
 		return $this->SPELL->JavaScript($this->_forum_path('/spellcheck/'), TRUE);
 	}
 
+	// --------------------------------------------------------------------
 	
 	/** -------------------------------------
 	/**  Parse PHP in template
@@ -2191,7 +2197,7 @@ class Forum {
 		return $str;
 	 }
 
-	 
+	// -------------------------------------------------------------------- 
 
 	/** -------------------------------------------------
 	/**  Removes slashes from array
@@ -2212,8 +2218,6 @@ class Forum {
 	 	
 	 	return $vals;
 	}
-
-
 }
 // END CLASS
 

@@ -1,59 +1,35 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
 
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://expressionengine.com/
------------------------------------------------------
- Copyright (c) 2003 - 2010, EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/user_guide/license.html
-=====================================================
- File: mcp.emoticon.php
------------------------------------------------------
- Purpose: Emoticon class - CP
-=====================================================
-*/
-if ( ! defined('EXT'))
-{
-	exit('Invalid file request');
-}
+// ------------------------------------------------------------------------
 
+/**
+ * ExpressionEngine Emotion Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Modules
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
 class Emoticon_mcp {
 
 	/**
 	  *  Constructor
 	  */
-	function Emoticon_mcp( $switch = TRUE )
+	function Emoticon_mcp()
 	{
-		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-
-		//  Onward!
-
-		if ($switch)
-		{
-			switch($this->EE->input->get_post('M'))
-			{
-				default :	$this->show_simileys();
-					break;
-			}
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	  *  Show installed smileys
-	  *
-	  * This function is in progress
-	  */
-	function show_simileys($message = '')
-	{
-		die('not implemented');
 	}
 }
 

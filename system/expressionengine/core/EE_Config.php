@@ -77,7 +77,11 @@ class EE_Config Extends CI_Config {
 			// If the admin file is not found we show an error
 			show_error('ExpressionEngine does not appear to be installed.  If you are accessing this page for the first time, please consult the user guide for installation instructions.');
 		}
-
+		
+		// Temporarily disable db caching for this build unless enable_db_caching
+		// is explicitly set to 'y' in the config file.
+		$this->set_item('enable_db_caching', 'n');
+		
 		// Add the EE config data to the master CI config array
 		foreach ($config as $key => $val)
 		{
@@ -206,7 +210,7 @@ class EE_Config Extends CI_Config {
 			if (substr($name, -12) == '_preferences')
 			{
 				$data = base64_decode($data);
-			
+
 				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
 				{
 					exit("Site Error:  Unable to Load Site Preferences; Invalid Preference Data");
@@ -248,7 +252,7 @@ class EE_Config Extends CI_Config {
 					$this->config['site_bootstrap_checksums'] = array();
 					continue;
 				}
-			
+				
 				$this->config['site_bootstrap_checksums'] = unserialize($data);
 			}
 			else

@@ -94,7 +94,6 @@ if ($EE_view_disable !== TRUE)
             'id'        => 'tmpl_file_basepath',
         	'name'      => 'tmpl_file_basepath',
         	'size'      => 30,
-        	'maxlength' => 100,
         	'value'     => set_value('tmpl_file_basepath', $tmpl_file_basepath)
         );
         

@@ -2567,6 +2567,12 @@ class Admin_content extends Controller {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Category URL Title
+	 *
+	 *
+	 *
+	 */
 	function _cat_url_title($str)
 	{
 		$this->load->model('category_model');
@@ -2593,11 +2599,11 @@ class Admin_content extends Controller {
 		}
 	}
 
-
-
-	/** -----------------------------------
-	/**  Set Global Category Order
-	/** -----------------------------------*/
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Set Global Category Order
+	 */
 	function global_category_order()
 	{
 		if (AJAX_REQUEST)
@@ -2644,6 +2650,10 @@ class Admin_content extends Controller {
 		$zurl .= ($this->input->get_post('cat_group') !== FALSE) ? AMP.'cat_group='.$this->input->get_post('cat_group') : '';
 		$zurl .= ($this->input->get_post('integrated') !== FALSE) ? AMP.'integrated='.$this->input->get_post('integrated') : '';
 
+
+		// Clear 'ze cache
+		$this->functions->clear_caching('db');
+
 		$this->session->set_flashdata('message_success', $this->lang->line('preferences_updated'));
 
 		// Return Location
@@ -2651,11 +2661,11 @@ class Admin_content extends Controller {
 		$this->functions->redirect($return);
 	}
 
+	// --------------------------------------------------------------------
 
-
-	/** --------------------------------------
-	/**  Category order change confirm
-	/** --------------------------------------*/
+	/**
+	 * Category order change confirm
+	 */
 	function global_category_order_confirm()
 	{
 		if (AJAX_REQUEST)

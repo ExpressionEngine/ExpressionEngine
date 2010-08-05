@@ -87,7 +87,7 @@ input#upload_file.field {
 	width: 75px;
 	height:75px;
 	float: left;
-	overflow: hidden;
+	word-wrap:break-word;
 	margin: 0 10px 20px 10px;
 	font-size: 10px;
 	line-height: 15px;

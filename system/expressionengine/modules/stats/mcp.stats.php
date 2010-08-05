@@ -26,9 +26,17 @@ class Stats_mcp {
 
 	var $statdata	= array();
 	
+	var $cache_off  = FALSE;
+	
 	function Stats_mcp()
 	{
 		$this->EE =& get_instance();
+
+		if ($this->EE->db->cache_on === TRUE)
+		{
+			$this->EE->db->cache_off();
+			$this->cache_off = TRUE;
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -37,7 +45,7 @@ class Stats_mcp {
 	  *  Update statistics
 	  */
 	function update_stats()
-	{
+	{		
 		$time_limit = 15; // Number of minutes to track users
 
 		//  Fetch current user's name
@@ -226,6 +234,11 @@ class Stats_mcp {
 			$this->EE->db->where('date <', $cutoff);
 			$this->EE->db->delete('online_users');
 		}	
+		
+		if ($this->cache_off)
+		{
+			$this->EE->db->cache_on();
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -254,6 +267,11 @@ class Stats_mcp {
 		}
 		
 		$sql = substr($sql, 0, -1).") ";
+
+		if ($this->cache_off)
+		{
+			$this->EE->db->cache_on();
+		}
 	
 		return $sql;
 	}
@@ -287,6 +305,11 @@ class Stats_mcp {
 			);
 		
 		$this->EE->db->update('stats', $data);
+
+		if ($this->cache_off)
+		{
+			$this->EE->db->cache_on();
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -327,6 +350,11 @@ class Stats_mcp {
 								
 			$this->EE->db->query("UPDATE exp_channels SET total_entries = '$total', last_entry_date = '$date' WHERE site_id = '".$this->EE->db->escape_str($site_id)."' AND channel_id = '$channel_id'");
 		}
+
+		if ($this->cache_off)
+		{
+			$this->EE->db->cache_on();
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -336,7 +364,6 @@ class Stats_mcp {
 	  */
 	function update_comment_stats($channel_id = '', $newtime = '', $global=TRUE)
 	{
-		
 		// Is the comments module installed?  Bail out if not.
 		if ( ! $this->EE->db->table_exists('comments'))
 		{
@@ -415,6 +442,11 @@ class Stats_mcp {
 
 			$this->EE->db->where('channel_id', $channel_id);
 			$this->EE->db->update('channels', $data);			
+		}
+
+		if ($this->cache_off)
+		{
+			$this->EE->db->cache_on();
 		}
 	}
 
@@ -551,6 +583,11 @@ class Stats_mcp {
 					'current_names'				=> $current_names
 				);
 		unset($query);
+
+		if ($this->cache_off)
+		{
+			$this->EE->db->cache_on();
+		}
 	}
 	
 	// --------------------------------------------------------------------

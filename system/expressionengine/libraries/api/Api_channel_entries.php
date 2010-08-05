@@ -1440,7 +1440,7 @@ class Api_channel_entries extends Api {
 		}
 		else
 		{
-			$this->_cache['dst_enabled'] = isset($data['dst_enabled']) ? $data['dst_enabled'] : FALSE;
+			$this->_cache['dst_enabled'] = isset($data['dst_enabled']) ? $data['dst_enabled'] : 'n';
 			
 			$data['field_id_'.$row['field_id']] = $this->EE->localize->offset_entry_dst($data['field_id_'.$row['field_id']], $this->_cache['dst_enabled']);
 

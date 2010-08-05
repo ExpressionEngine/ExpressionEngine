@@ -320,7 +320,7 @@ class MyAccount extends Controller {
 				{
 					$rows = ( ! isset($row['m_field_ta_rows'])) ? '10' : $row['m_field_ta_rows'];
 
-					$vars['custom_profile_fields'][] = $required.form_label($row['m_field_label'], 'm_field_id_'.$row['m_field_id']).NBS.form_textarea(array('name'=>'m_field_id_'.$row['m_field_id'], 'class'=>'field','id'=>'m_field_id_'.$row['m_field_id'], 'rows'=>$rows, 'value'=>$field_data));
+					$vars['custom_profile_fields'][] = form_label($required.$row['m_field_label'], 'm_field_id_'.$row['m_field_id']).form_textarea(array('name'=>'m_field_id_'.$row['m_field_id'], 'class'=>'field','id'=>'m_field_id_'.$row['m_field_id'], 'rows'=>$rows, 'value'=>$field_data));
 				}
 				elseif ($row['m_field_type'] == 'select') // Drop-down lists
 				{
@@ -331,11 +331,11 @@ class MyAccount extends Controller {
 						$dropdown_options[$v] = $v;
 					}
 
-					$vars['custom_profile_fields'][] = $required.form_label($row['m_field_label'], 'm_field_id_'.$row['m_field_id']).NBS.form_dropdown('m_field_id_'.$row['m_field_id'], $dropdown_options, $field_data, 'id="m_field_id_'.$row['m_field_id'].'"');
+					$vars['custom_profile_fields'][] = form_label($required.$row['m_field_label'], 'm_field_id_'.$row['m_field_id']).form_dropdown('m_field_id_'.$row['m_field_id'], $dropdown_options, $field_data, 'id="m_field_id_'.$row['m_field_id'].'"');
 				}
 				elseif ($row['m_field_type'] == 'text') // Text input fields
 				{
-					$vars['custom_profile_fields'][] = $required.form_label($row['m_field_label'], 'm_field_id_'.$row['m_field_id']).NBS.form_input(array('name'=>'m_field_id_'.$row['m_field_id'], 'id'=>'m_field_id_'.$row['m_field_id'], 'class'=>'field', 'value'=>$field_data, 'maxlength'=>$row['m_field_maxl']));
+					$vars['custom_profile_fields'][] = form_label($required.$row['m_field_label'], 'm_field_id_'.$row['m_field_id']).form_input(array('name'=>'m_field_id_'.$row['m_field_id'], 'id'=>'m_field_id_'.$row['m_field_id'], 'class'=>'field', 'value'=>$field_data, 'maxlength'=>$row['m_field_maxl']));
 				}
 			}
 		}

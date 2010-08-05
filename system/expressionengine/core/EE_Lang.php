@@ -23,7 +23,9 @@
  * @link		http://expressionengine.com
  */
 class EE_Lang extends CI_Lang {
-		
+	
+	var $user_lang = '';
+	
 	/**
 	 * Constructor
 	 */	  
@@ -53,21 +55,21 @@ class EE_Lang extends CI_Lang {
 		
 		if (isset($EE->session->userdata['language']) && $EE->session->userdata['language'] != '')
 		{
-			$user_lang = $EE->session->userdata['language'];
+			$this->user_lang = $EE->session->userdata['language'];
 		}
 		else
 		{
 			if ($EE->input->cookie('language'))
 			{
-				$user_lang = $EE->input->cookie('language');
+				$this->user_lang = $EE->input->cookie('language');
 			}
 			elseif ($EE->config->item('deft_lang') != '')
 			{
-				$user_lang = $EE->config->item('deft_lang');
+				$this->user_lang = $EE->config->item('deft_lang');
 			}
 			else
 			{
-				$user_lang = 'english';
+				$this->user_lang = 'english';
 			}
 		}
 
@@ -75,10 +77,10 @@ class EE_Lang extends CI_Lang {
 		
 		// Sec.ur.ity code.  ::sigh::
 		$package = ($package == '') ? $EE->security->sanitize_filename(str_replace(array('lang.', EXT), '', $which)) : $EE->security->sanitize_filename($package);
-		$which = 'lang.'.str_replace('lang.', '', $which);
-		$user_lang = $EE->security->sanitize_filename($user_lang);
+		$which = str_replace('lang.', '', $which);
+		$this->user_lang = $EE->security->sanitize_filename($this->user_lang);
 	
-		if ($which == 'lang.sites_cp')
+		if ($which == 'sites_cp')
 		{			
 			$phrase = 'base'.'6'.'4_d'.'ecode';
 
@@ -97,7 +99,7 @@ class EE_Lang extends CI_Lang {
 			oIk11bHRpcGxlIFNpdGUgTWFuYWdlciBFcnJvciAtIFNpdGUgTGltaXQgUmVhY2hlZCIpOyB9IH0="))); return;
 		}
 
-		$this->load($which, $user_lang, FALSE, FALSE, PATH_THIRD.$package.'/');
+		$this->load($which, $this->user_lang, FALSE, TRUE, PATH_THIRD.$package.'/');
 	}
 	
 	// --------------------------------------------------------------------
@@ -139,7 +141,7 @@ class EE_Lang extends CI_Lang {
 	
 		if ($idiom == '')
 		{
-			$idiom = ($deft_lang == '') ? 'english' : $deft_lang;
+			$idiom = ($this->user_lang == '') ? 'english' : $this->user_lang;
 		}
 
 		// figure out where the lang file is, checking for the requested
@@ -157,10 +159,15 @@ class EE_Lang extends CI_Lang {
 			array_unshift($paths, $alt_path.'language/'.$deft_lang.'/'.$langfile);
 			array_unshift($paths, $alt_path.'language/'.$idiom.'/'.$langfile);
 		}
+		
+		// echo '<pre>';
+		// print_r($paths);
+		// echo '</pre>';
+		
 
 		// if idiom and deft_lang are the same, don't check those paths twice
 		$paths = array_unique($paths);
-
+		
 		$success = FALSE;
 		
 		foreach($paths as $path)
