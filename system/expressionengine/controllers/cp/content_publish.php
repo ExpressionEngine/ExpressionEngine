@@ -815,13 +815,20 @@ class Content_publish extends Controller {
 											  'value'		=> 'y'
 											);
 		}
+		
+		
+		// Validation failed?
+		if (is_array($_POST) && count($_POST) && ! isset($_POST['dst_enabled']))
+		{
+			$dst_enabled = 'n';
+		}
+		
+		$vars['dst_enabled'] = $dst_enabled;
 
 		//	"Daylight Saving Time" checkbox
 		if ($this->config->item('honor_entry_dst') == 'y')
 		{
 			$vars['show_dst'] = TRUE;
-			$dst_enabled = ( ! isset($_POST['dst_enabled'])) ? 'n' :  $dst_enabled;
-
 			$vars['dst_data'] = array(
 									  'name'		=> 'dst_enabled',
 									  'id'			=> 'dst_enabled',
@@ -829,6 +836,8 @@ class Content_publish extends Controller {
 									  'value'		=> 'y'
 									);
 		}
+		
+		
 		
 		$vars['publish_tabs']['publish'] = array();
 		
