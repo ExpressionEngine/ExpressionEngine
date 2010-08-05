@@ -131,7 +131,6 @@ if ($EE_view_disable !== TRUE)
     	'name'      => 'tmpl_file_basepath',
     	'class'     => 'input fullfield',
     	'size'      => 20,
-    	'maxlength' => 100,
     	'value'     => set_value('tmpl_file_basepath', $tmpl_file_basepath)
     );
     
