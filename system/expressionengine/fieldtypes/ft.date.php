@@ -71,7 +71,7 @@ class Date_ft extends EE_Fieldtype {
 		$date = $this->EE->localize->set_localized_time();
 		$custom_date = '';
 		
-		$localize = TRUE;
+		$localize = FALSE;
 	
 		if (isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))	// Validation failed - autosave is numeric
 		{
@@ -89,6 +89,8 @@ class Date_ft extends EE_Fieldtype {
 		}
 		elseif ($data)	// Everything else
 		{
+			$localize = TRUE;
+			
 			if (isset($this->settings['field_dt']))
 			{
 				// Are we dealing with a fixed date?
@@ -102,13 +104,14 @@ class Date_ft extends EE_Fieldtype {
 			}
 			else
 			{
-				$data = $this->EE->localize->offset_entry_dst($data, $this->settings['dst_enabled']);
+				$data = $this->EE->localize->offset_entry_dst($data, $this->settings['dst_enabled'], FALSE);
 			}
 			
 			$custom_date = $this->EE->localize->set_human_time($data, $localize);
 			$date = $this->EE->localize->set_localized_time($data);
 		}
-
+		
+		
 		$cal_date = $date * 1000;
 
 		$this->EE->javascript->output('
