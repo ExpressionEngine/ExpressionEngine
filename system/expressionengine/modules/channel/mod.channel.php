@@ -586,9 +586,10 @@ class Channel {
 					{
 						if ( isset($cfields[$order]))
 						{
-							$order = 'field_id_'.$cfields[$order];
+							$multi_order[] = 'field_id_'.$cfields[$order]; 
 							$set = 'y';
-							break;
+							$str_sort[] = 'field_id_'.$cfields[$order];
+							//break;
 						}
 					}
 
@@ -667,20 +668,47 @@ class Channel {
 
 				foreach($entry_data[$entry_id] as $relating_data)
 				{
+					$post_fix = ' '.$r;
+					$order_set = FALSE;					
+					
 					if ( ! isset($params['channel']) OR ($relating_data['query']->row('channel_id') &&  array_key_exists($relating_data['query']->row('channel_id'), $allowed))) 
 					{
 						$query_row = $relating_data['query']->row_array();
 						
+						if (isset($multi_order))
+						{
+							foreach ($multi_order as $field_val)
+							{
+								if (isset($query_row[$field_val]))
+								{
+								 	$order_set = TRUE;
+									$order_key = '';
+									
+									if ($query_row[$field_val] != '')
+									{
+										$order_key = $query_row[$field_val];
+										$order = $field_val;
+										break;
+									}
+								}
+							}
+						}
+						elseif (isset($query_row[$order]))
+						{
+							$order_set = TRUE;
+							$order_key = $query_row[$order];
+						}					
+
 						// Needs to have the field we're ordering by
-						if (isset($query_row[$order]))
+						if ($order_set)
 						{
 							if ($status_state == 'negative' && ! in_array(strtolower($query_row['status']) , $stati))
 							{
-								$new[$query_row[$order].' '.$r] = $relating_data;
+								$new[$order_key.$post_fix] = $relating_data;
 							}
 							elseif (in_array(strtolower($query_row['status']) , $stati))
 							{
-								$new[$query_row[$order].' '.$r] = $relating_data;
+								$new[$order_key.$post_fix] = $relating_data;
 							}
 						}
 
