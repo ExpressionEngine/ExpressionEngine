@@ -347,9 +347,8 @@
 
 			// non-images get a "default" icon
 			if (file.mime == false || file.mime.indexOf("image") < 0) {
-				thumbs += '<div><div title="{filedir_'+directory.id+'}|'+file.name+'"><img title="'+default_img_url+'" src="'+default_img_url+'" alt="default thumbnail" /></div>'+file.name+'</div>';
-			}
-			else {
+				thumbs += '<div><div title="{filedir_'+directory.id+'}|'+file.name+'"><img title="'+default_img_url+'" src="'+default_img_url+'" alt="'+file.name+'" /></div>'+file.short_name+'</div>';
+			} else {
 				// generic image if no thumb exists	(@todo generic thumbnail thing?)
 				// thumb only on first page
 				// spinner for thumbs on subsequent pages
@@ -378,7 +377,7 @@
 					thumbs += spinner_url;
 				}
 				
-				thumbs += '" alt="thumbnail" /></div>'+file.name+'</div>';
+				thumbs += '" alt="'+file.name+'" /></div>'+file.short_name+'</div>';
 			}
 
 			item_count++;

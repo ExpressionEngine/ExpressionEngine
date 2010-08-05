@@ -494,6 +494,7 @@ class Tools_model extends CI_Model {
 	
 		$this->EE->load->helper('file');
 		$this->EE->load->helper('string');
+		$this->EE->load->helper('text');
 		$this->EE->load->helper('directory');
 		$this->EE->load->library('encrypt');
 
@@ -525,6 +526,8 @@ class Tools_model extends CI_Model {
 					{
 						$file['relative_path'] = $full_server_path; // allow for paths to be passed into this function
 					}
+
+					$file['short_name'] = ellipsize($file['name'], 16, .5);
 
 					$file['relative_path'] = reduce_double_slashes($file['relative_path']);
 
