@@ -152,17 +152,15 @@ class EE_Lang extends CI_Lang {
 						BASEPATH.'language/'.$idiom.'/'.$langfile,
 						BASEPATH.'language/'.$deft_lang.'/'.$langfile
 					);
-
-
-		// Temporary! Rename your language files!
-		$third_party_lang = 'lang.'.str_replace('_lang'.EXT, '', $langfile).EXT;
-
+		
 		// if it's in an alternate location, such as a package, check there first
 		if ($alt_path != '')
 		{
 			// Temporary! Rename your language files!
-			array_unshift($paths, $alt_path.'language/'.$deft_lang.'/'.$third_party_lang);
-			array_unshift($paths, $alt_path.'language/'.$idiom.'/'.$third_party_lang);
+			$third_party_old = 'lang.'.str_replace('_lang.', '.', $langfile);
+			
+			array_unshift($paths, $alt_path.'language/'.$deft_lang.'/'.$third_party_old);
+			array_unshift($paths, $alt_path.'language/'.$idiom.'/'.$third_party_old);
 			
 			array_unshift($paths, $alt_path.'language/'.$deft_lang.'/'.$langfile);
 			array_unshift($paths, $alt_path.'language/'.$idiom.'/'.$langfile);
