@@ -652,7 +652,7 @@ class Wizard extends Controller {
 		
 		$template_module_vars = '';
 		$this->load->library('javascript');
-			
+		
 		$this->userdata['extra_header'] = $this->_install_form_extra_header($this->javascript->generate_json($this->theme_required_modules, TRUE));
 		
 		// Display the form and pass the userdata array to it	
@@ -1609,7 +1609,7 @@ PAPAYA;
 			{
 				if (strncmp($file, '_', 1) != 0 && strpos($file, '.') === FALSE && ! in_array($file, $this->required_modules))
 				{				
-					$this->lang->load('lang.'.$file, '', FALSE, FALSE, EE_APPPATH.'/');
+					$this->lang->load($file, '', FALSE, TRUE, EE_APPPATH.'/');
 					$name = ($this->lang->line(strtolower($file).'_module_name') != FALSE) ? $this->lang->line(strtolower($file).'_module_name') : $file;			
 					$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
 				}
@@ -1617,6 +1617,7 @@ PAPAYA;
 			
 			closedir($fp); 
 		}
+
 		
 		$this->load->helper('directory');
 		$ext_len = strlen(EXT);
