@@ -487,6 +487,13 @@ class EE_Core {
 		
 		// Load the Super Model
 		$this->EE->load->model('super_model');
+		
+		// update documentation URL if site was running the beta and had the old location
+		// @todo remove after 2.1.1's release, move to the update script
+		if (strncmp($this->EE->config->item('doc_url'), 'http://expressionengine.com/docs', 32) == 0)
+		{
+			$this->EE->config->update_site_prefs(array('doc_url' => 'http://expressionengine.com/user_guide/'));
+		}
 	}
 	
 	// ------------------------------------------------------------------------
