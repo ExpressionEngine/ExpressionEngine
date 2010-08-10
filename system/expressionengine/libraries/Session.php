@@ -480,8 +480,8 @@ class EE_Session {
 		if ($this->validation == 'c' OR $this->validation == 'cs')
 		{
 			$this->EE->db->where('g.site_id', $this->EE->config->item('site_id'));
-			$this->EE->db->where('unique_id', $this->EE->input->cookie($this->c_uniqueid));
-			$this->EE->db->where('password', $this->EE->input->cookie($this->c_password));
+			$this->EE->db->where('unique_id', (string) $this->EE->input->cookie($this->c_uniqueid));
+			$this->EE->db->where('password', (string) $this->EE->input->cookie($this->c_password));
 			$this->EE->db->where('m.group_id', ' g.group_id', FALSE);
 		}
 		else
