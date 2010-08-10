@@ -4310,7 +4310,7 @@ class Forum_Core extends Forum {
 					$temp = $this->_var_swap($temp,
 											array(
 													'lang:change_status' 	=> ($row['status'] == 'o') ? $this->EE->lang->line('close_thread') : $this->EE->lang->line('activate_thread'),
-													'path:change_status'	=> $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Forum', 'change_status').'&amp;topic_id='.$row['post_id'].'&amp;trigger='.$this->trigger,
+													'path:change_status'	=> $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Forum', 'change_status').'&amp;topic_id='.$row['post_id'].'&amp;board_id='.$this->_fetch_pref('board_id').'&amp;trigger='.$this->trigger,
 													'css:status_button'		=> ($row['status'] == 'o') ? 'buttonStatusOff' : 'buttonStatusOn'
 												)
 											);				
