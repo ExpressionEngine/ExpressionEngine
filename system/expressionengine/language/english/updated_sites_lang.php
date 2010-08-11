@@ -140,5 +140,5 @@ must be in this list. Separate multiple sites by line break, please.',
 ''=>''
 );
 
-/* End of file lang.updated_sites.php */
-/* Location: ./system/expressionengine/language/english/lang.updated_sites.php */
+/* End of file updated_sites_lang.php */
+/* Location: ./system/expressionengine/language/english/updated_sites_lang.php */

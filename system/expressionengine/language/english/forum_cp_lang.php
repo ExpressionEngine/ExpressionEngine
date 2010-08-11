@@ -1243,5 +1243,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.forum_cp.php */
-/* Location: ./system/expressionengine/language/english/lang.forum_cp.php */
+/* End of file forum_cp_lang.php */
+/* Location: ./system/expressionengine/language/english/forum_cp_lang.php */

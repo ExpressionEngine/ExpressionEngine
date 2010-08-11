@@ -400,5 +400,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.moblog.php */
-/* Location: ./system/expressionengine/language/english/lang.moblog.php */
+/* End of file moblog_lang.php */
+/* Location: ./system/expressionengine/language/english/moblog_lang.php */

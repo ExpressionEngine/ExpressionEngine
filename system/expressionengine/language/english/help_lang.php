@@ -10,5 +10,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.help.php */
-/* Location: ./system/expressionengine/language/english/lang.help.php */
+/* End of file help_lang.php */
+/* Location: ./system/expressionengine/language/english/help_lang.php */

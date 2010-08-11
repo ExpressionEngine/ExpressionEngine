@@ -1752,5 +1752,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.admin.php */
-/* Location: ./system/expressionengine/language/english/lang.admin.php */
+/* End of file admin_lang.php */
+/* Location: ./system/expressionengine/language/english/admin_lang.php */

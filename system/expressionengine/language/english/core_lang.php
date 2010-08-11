@@ -431,5 +431,5 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 
 // IGNORE
 ''=>'');
-/* End of file lang.core.php */
-/* Location: ./system/expressionengine/language/english/lang.core.php */
+/* End of file core_lang.php */
+/* Location: ./system/expressionengine/language/english/core_lang.php */

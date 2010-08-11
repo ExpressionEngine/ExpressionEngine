@@ -60,5 +60,5 @@ $lang = array(
 
 // IGNORE
 ''=>'');
-/* End of file lang.addons.php */
-/* Location: ./system/expressionengine/language/english/lang.addons.php */
+/* End of file addons_lang.php */
+/* Location: ./system/expressionengine/language/english/addons_lang.php */
