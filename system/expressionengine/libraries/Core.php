@@ -321,9 +321,8 @@ class EE_Core {
 		 *  Update system stats
 		 * -----------------------------------------------------------------
 		 */
-			require PATH_MOD.'stats/mcp.stats'.EXT;    
-			
-			$this->EE->stats = new Stats_mcp();
+
+			$this->EE->load->library('stats');
 		 		
 			if (REQ == 'PAGE' && $this->EE->config->item('enable_online_user_tracking') != 'n')
 			{
@@ -650,9 +649,12 @@ class EE_Core {
 	
 		if (class_exists('Stats'))
 		{ 
-			if (isset($this->EE->stats->statdata['last_cache_clear']) AND $this->EE->stats->statdata['last_cache_clear'] > 1)
+			
+			
+			if ($this->EE->stats->statdata('last_cache_clear') 
+				&& $this->EE->stats->statdata('last_cache_clear') > 1)
 			{
-				$last_clear = $this->EE->stats->statdata['last_cache_clear'];
+				$last_clear = $this->EE->stats->statdata('last_cache_clear');
 			}
 		}
 	

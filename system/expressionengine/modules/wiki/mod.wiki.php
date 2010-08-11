@@ -3703,7 +3703,7 @@ class Wiki {
 			return $str;
 		}
 		
-		if (count($this->EE->stats->statdata['current_names']) == 0) 		
+		if (count($this->EE->stats->statdata('current_names')) == 0) 		
 		{
 			return str_replace($match['0'], '', $str);
 		}
@@ -3714,7 +3714,7 @@ class Wiki {
 		
 		$names = '';
 				
-		foreach ($this->EE->stats->statdata['current_names'] as $k => $v)
+		foreach ($this->EE->stats->statdata('current_names') as $k => $v)
 		{
 			$temp = $match['1'];
 		

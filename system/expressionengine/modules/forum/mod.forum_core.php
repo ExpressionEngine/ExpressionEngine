@@ -9467,7 +9467,7 @@ class Forum_Core extends Forum {
 			{	
 				for ($j = 0; $j < count($matches['0']); $j++)
 				{
-					$str = str_replace($matches['0'][$j], $this->EE->localize->decode_date($matches['1'][$j], $this->EE->stats->statdata[$stat]), $str);
+					$str = str_replace($matches['0'][$j], $this->EE->localize->decode_date($matches['1'][$j], $this->EE->stats->statdata($stat)), $str);
 				}
 			}
 		}
@@ -9477,7 +9477,7 @@ class Forum_Core extends Forum {
 		/** -------------------------------------*/
 		foreach (array('total_members', 'total_logged_in', 'total_guests', 'total_anon', 'total_entries', 'total_forum_topics', 'total_forum_posts', 'total_forum_replies', 'total_comments', 'most_visitors', 'recent_member') as $stat )
 		{
-			$str = str_replace('{'.$stat.'}', $this->EE->stats->statdata[$stat], $str);
+			$str = str_replace('{'.$stat.'}', $this->EE->stats->statdata($stat), $str);
 		}
 		
 		/** -------------------------------------
@@ -9541,12 +9541,12 @@ class Forum_Core extends Forum {
 			}
  		}
  		
-		if (count($this->EE->stats->statdata['current_names']) == 0) 		
+		if (count($this->EE->stats->statdata('current_names')) == 0) 		
 		{
 			return preg_replace("/\{member_names.*?\}.*?\{\/member_names\}/s", '', $str);
 		}
 				
-		foreach ($this->EE->stats->statdata['current_names'] as $k => $v)
+		foreach ($this->EE->stats->statdata('current_names') as $k => $v)
 		{
 			$temp = $chunk;
 			
