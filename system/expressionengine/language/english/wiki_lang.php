@@ -227,5 +227,5 @@ referencing the namespace.  Your short name should only contain word characters 
 ''=>''
 );
 
-/* End of file lang.wiki.php */
-/* Location: ./system/expressionengine/language/english/lang.wiki.php */
+/* End of file wiki_lang.php */
+/* Location: ./system/expressionengine/language/english/wiki_lang.php */

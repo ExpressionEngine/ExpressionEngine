@@ -99,5 +99,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.comment.php */
-/* Location: ./system/expressionengine/language/english/lang.comment.php */
+/* End of file comment_lang.php */
+/* Location: ./system/expressionengine/language/english/comment_lang.php */

@@ -121,5 +121,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.cp_search.php */
-/* Location: ./system/expressionengine/language/english/lang.cp_search.php */
+/* End of file cp_search_lang.php */
+/* Location: ./system/expressionengine/language/english/cp_search_lang.php */

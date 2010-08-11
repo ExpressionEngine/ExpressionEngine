@@ -19,5 +19,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.query.php */
-/* Location: ./system/expressionengine/language/english/lang.query.php */
+/* End of file query_lang.php */
+/* Location: ./system/expressionengine/language/english/query_lang.php */

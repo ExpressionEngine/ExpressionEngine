@@ -385,5 +385,5 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 ''=>''
 );
 
-/* End of file lang.simple_commerce.php */
-/* Location: ./system/expressionengine/language/english/lang.simple_commerce.php */
+/* End of file simple_commerce_lang.php */
+/* Location: ./system/expressionengine/language/english/simple_commerce_lang.php */

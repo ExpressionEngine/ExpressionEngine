@@ -171,5 +171,5 @@ backup your database before performing a duplication, and if you experience prob
 ''=>''
 );
 
-/* End of file lang.sites.php */
-/* Location: ./system/expressionengine/language/english/lang.sites.php */
+/* End of file sites_lang.php */
+/* Location: ./system/expressionengine/language/english/sites_lang.php */

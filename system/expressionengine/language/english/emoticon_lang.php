@@ -40,5 +40,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.emoticon.php */
-/* Location: ./system/expressionengine/language/english/lang.emoticon.php */
+/* End of file emoticon_lang.php */
+/* Location: ./system/expressionengine/language/english/emoticon_lang.php */

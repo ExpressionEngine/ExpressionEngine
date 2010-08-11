@@ -1057,5 +1057,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.members.php */
-/* Location: ./system/expressionengine/language/english/lang.members.php */
+/* End of file members_lang.php */
+/* Location: ./system/expressionengine/language/english/members_lang.php */

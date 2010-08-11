@@ -6,5 +6,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.css.php */
-/* Location: ./system/expressionengine/language/english/lang.css.php */
+/* End of file css_lang.php */
+/* Location: ./system/expressionengine/language/english/css_lang.php */

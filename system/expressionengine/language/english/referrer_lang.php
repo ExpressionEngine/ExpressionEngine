@@ -100,5 +100,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.referrer.php */
-/* Location: ./system/expressionengine/language/english/lang.referrer.php */
+/* End of file referrer_lang.php */
+/* Location: ./system/expressionengine/language/english/referrer_lang.php */

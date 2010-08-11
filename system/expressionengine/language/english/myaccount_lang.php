@@ -581,5 +581,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.myaccount.php */
-/* Location: ./system/expressionengine/language/english/lang.myaccount.php */
+/* End of file myaccount_lang.php */
+/* Location: ./system/expressionengine/language/english/myaccount_lang.php */

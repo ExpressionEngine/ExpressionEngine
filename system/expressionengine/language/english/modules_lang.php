@@ -69,5 +69,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.modules.php */
-/* Location: ./system/expressionengine/language/english/lang.modules.php */
+/* End of file modules_lang.php */
+/* Location: ./system/expressionengine/language/english/modules_lang.php */

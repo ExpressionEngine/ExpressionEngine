@@ -13,5 +13,5 @@ $lang = array(
 );
 
 
-/* End of file lang.publish_tabs_custom.php */
-/* Location: ./system/expressionengine/language/english/lang.publish_tabs_custom.php */
+/* End of file publish_tabs_custom_lang.php */
+/* Location: ./system/expressionengine/language/english/publish_tabs_custom_lang.php */

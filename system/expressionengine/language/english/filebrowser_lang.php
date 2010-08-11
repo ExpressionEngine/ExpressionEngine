@@ -53,5 +53,5 @@ $lang = array(
 
 // IGNORE
 ''=>'');
-/* End of file lang.filebrowser.php */
-/* Location: ./system/expressionengine/language/english/lang.filebrowser.php */
+/* End of file filebrowser_lang.php */
+/* Location: ./system/expressionengine/language/english/filebrowser_lang.php */

@@ -42,5 +42,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.login.php */
-/* Location: ./system/expressionengine/language/english/lang.login.php */
+/* End of file login_lang.php */
+/* Location: ./system/expressionengine/language/english/login_lang.php */

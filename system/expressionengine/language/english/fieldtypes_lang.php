@@ -10,5 +10,5 @@ $lang = array(
 
 // IGNORE
 ''=>'');
-/* End of file lang.fieldtypes.php */
-/* Location: ./system/expressionengine/language/english/lang.fieldtypes.php */
+/* End of file fieldtypes_lang.php */
+/* Location: ./system/expressionengine/language/english/fieldtypes_lang.php */

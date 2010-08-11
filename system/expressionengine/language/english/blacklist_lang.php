@@ -98,5 +98,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.blacklist.php */
-/* Location: ./system/expressionengine/language/english/lang.blacklist.php */
+/* End of file blacklist_lang.php */
+/* Location: ./system/expressionengine/language/english/blacklist_lang.php */
