@@ -332,7 +332,7 @@ class Comment {
 		$temp = array();
 		$i = 0;
 
-		$comments_exist = FALSE;
+		//$comments_exist = FALSE;
 
 		// Left this here for backward compatibility
 		// We need to deprecate the "order_by" parameter
@@ -381,11 +381,14 @@ class Comment {
 
 		$query = $this->EE->db->get('comments');
 
+
 		if ($query->num_rows() > 0)
 		{
-			$comments_exist = TRUE;
+			//$comments_exist = TRUE;
 			foreach ($query->result_array() as $row)
 			{
+				$result_ids[] = $row['comment_id'];
+				/*
 				$key = $row['comment_date'];
 
 				while(isset($temp[$key]))
@@ -394,6 +397,8 @@ class Comment {
 				}
 
 				$temp[$key] = 'c'.$row['comment_id'];
+				
+				*/
 			}
 		}
 
@@ -405,7 +410,7 @@ class Comment {
 		/**  No results?  No reason to continue...
 		/** ------------------------------------*/
 
-		if (count($temp) == 0)
+		if (count($result_ids) == 0)
 		{
 			return $this->EE->TMPL->no_results();
 		}
@@ -413,6 +418,7 @@ class Comment {
 		// Sort the array based on the keys (which contain the Unix timesamps
 		// of the comments)
 
+		/*
 		if ($order_by == 'comment_date')
 		{
 			ksort($temp);
@@ -433,6 +439,8 @@ class Comment {
 		{
 			$result_ids = array_reverse($result_ids);
 		}
+		
+		*/
 
 		/** ---------------------------------
 		/**  Do we need pagination?
@@ -563,8 +571,9 @@ class Comment {
 		$results = $result_ids;
 		$mfields = array();
 
-		if ($comments_exist == TRUE)
-		{
+		//if ($comments_exist == TRUE)
+		//{
+			/*
 			$com = array();
 			foreach ($result_ids as $val)
 			{
@@ -576,6 +585,9 @@ class Comment {
 
 			if (count($com) > 0)
 			{
+			
+			*/
+			
 				/** ----------------------------------------
 				/**  "Search by Member" link
 				/** ----------------------------------------*/
@@ -599,19 +611,22 @@ class Comment {
 				$this->EE->db->join('members',			'members.member_id = comments.author_id',		'left');
 				$this->EE->db->join('member_data',		'member_data.member_id = members.member_id',	'left');
 				
-				$this->EE->db->where_in('comments.comment_id', $com);
+				//$this->EE->db->where_in('comments.comment_id', $com);
+				
+				$this->EE->db->where_in('comments.comment_id', $result_ids);
+				
 				$query = $this->EE->db->get('comments');
-
+				
 				if ($query->num_rows() > 0)
 				{
 					$i = 0;
 					foreach ($query->result_array() as $row)
 					{
-						if (isset($results['c'.$row['comment_id']]))
-						{
-							$results['c'.$row['comment_id']] = $query->result_array[$i];
+						//if (isset($results[$row['comment_id']]))
+						//{
+							$results[$row['comment_id']] = $query->result_array[$i];
 							$i++;
-						}
+						//}
 					}
 					
 					// Potentially a lot of information
@@ -633,10 +648,11 @@ class Comment {
 					}
 				}
 
-			}
-		}
-
-
+			//}  end count comments check
+		//}  end comments_exist check
+		
+//print_r($results);	
+//print_r($mfields);	
 		/** ----------------------------------------
 		/**  Instantiate Typography class
 		/** ----------------------------------------*/
@@ -727,7 +743,7 @@ class Comment {
 
 			// This lets the {if location} variable work
 
-			if ($comments_exist == TRUE AND isset($row['author_id']))
+			if (isset($row['author_id']))
 			{
 				if ($row['author_id'] == 0)
 					$row['location'] = $row['c_location'];
@@ -845,7 +861,7 @@ class Comment {
 				/**  parse comment date
 				/** ----------------------------------------*/
 
-				if (isset($comment_date[$key]) AND $comments_exist == TRUE AND isset($row['comment_date']))
+				if (isset($comment_date[$key]) && isset($row['comment_date']))
 				{
 					foreach ($comment_date[$key] as $dvar)
 					{
@@ -859,7 +875,7 @@ class Comment {
 				/**  parse GMT comment date
 				/** ----------------------------------------*/
 
-				if (isset($gmt_comment_date[$key]) AND $comments_exist == TRUE AND isset($row['comment_date']))
+				if (isset($gmt_comment_date[$key]) && isset($row['comment_date']))
 				{
 					foreach ($gmt_comment_date[$key] as $dvar)
 					{
@@ -980,8 +996,8 @@ class Comment {
 					}
 				}
 
-				if (substr($id, 0, 1) == 'c')
-				{
+				//if (substr($id, 0, 1) == 'c')
+				//{
 					/** ----------------------------------------
 					/**  {comment_auto_path}
 					/** ----------------------------------------*/
@@ -997,7 +1013,7 @@ class Comment {
 					/**  {comment_url_title_auto_path}
 					/** ----------------------------------------*/
 
-					if ($key == "comment_url_title_auto_path" AND $comments_exist == TRUE)
+					if ($key == "comment_url_title_auto_path")
 					{
 						$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
 
@@ -1012,7 +1028,7 @@ class Comment {
 					/**  {comment_entry_id_auto_path}
 					/** ----------------------------------------*/
 
-					if ($key == "comment_entry_id_auto_path" AND $comments_exist == TRUE)
+					if ($key == "comment_entry_id_auto_path")
 					{
 						$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
 
@@ -1055,12 +1071,11 @@ class Comment {
 
 						$tagdata = $this->EE->TMPL->swap_var_single($key, $comment, $tagdata);
 					}
-				}
+				//}  // ence substr c check
+				
+				
 
-
-				/** ----------------------------------------
-				/**  {location}
-				/** ----------------------------------------*/
+				//  {location}
 
 				if ($key == 'location' AND (isset($row['location']) OR isset($row['c_location'])))
 				{
@@ -1823,37 +1838,29 @@ class Comment {
 
 		foreach ($this->EE->TMPL->var_single as $key => $val)
 		{
-			/** ----------------------------------------
-			/**  {name}
-			/** ----------------------------------------*/
 
+			//  {name}
 			if ($key == 'name')
 			{
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $name, $tagdata);
 			}
 
-			/** ----------------------------------------
-			/**  {email}
-			/** ----------------------------------------*/
 
+			//  {email}
 			if ($key == 'email')
 			{
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $email, $tagdata);
 			}
 
-			/** ----------------------------------------
-			/**  {url}
-			/** ----------------------------------------*/
 
+			//  {url}
 			if ($key == 'url')
 			{
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $url, $tagdata);
 			}
 
-			/** ----------------------------------------
-			/**  {location}
-			/** ----------------------------------------*/
 
+			//  {location}
 			if ($key == 'location')
 			{
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $location, $tagdata);
@@ -1868,10 +1875,8 @@ class Comment {
 				$url = prep_url($url);
 			}
 
-			/** ----------------------------------------
-			/**  {url_or_email}
-			/** ----------------------------------------*/
 
+			//  {url_or_email}
 			if ($key == "url_or_email")
 			{
 				$temp = $url;
@@ -1884,10 +1889,8 @@ class Comment {
 				$tagdata = $this->EE->TMPL->swap_var_single($val, $temp, $tagdata);
 			}
 
-			/** ----------------------------------------
-			/**  {url_or_email_as_author}
-			/** ----------------------------------------*/
 
+			//  {url_or_email_as_author}
 			if ($key == "url_or_email_as_author")
 			{
 				if ($url != '')
@@ -1907,9 +1910,7 @@ class Comment {
 				}
 			}
 
-			/** ----------------------------------------
-			/**  {url_or_email_as_link}
-			/** ----------------------------------------*/
+			//  {url_or_email_as_link}
 
 			if ($key == "url_or_email_as_link")
 			{
@@ -1929,10 +1930,8 @@ class Comment {
 					}
 				}
 			}
-			
-			/** ----------------------------------------
-			/**  {url_as_author}
-			/** ----------------------------------------*/			
+
+			//  {url_as_author}
 
             if ($key == 'url_as_author')
             {
@@ -2492,7 +2491,7 @@ class Comment {
 						'comment_date'	=> $this->EE->localize->now,
 						'ip_address'	=> $this->EE->input->ip_address(),
 						'notify'		=> $notify,
-						'status'		=> ($comment_moderate == 'y') ? 'c' : 'o',
+						'status'		=> ($comment_moderate == 'y') ? 'p' : 'o',
 						'site_id'		=> $this->EE->config->item('site_id')
 					 );
 
