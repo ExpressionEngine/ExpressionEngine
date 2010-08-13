@@ -332,8 +332,6 @@ class Comment {
 		$temp = array();
 		$i = 0;
 
-		//$comments_exist = FALSE;
-
 		// Left this here for backward compatibility
 		// We need to deprecate the "order_by" parameter
 
@@ -384,21 +382,9 @@ class Comment {
 
 		if ($query->num_rows() > 0)
 		{
-			//$comments_exist = TRUE;
 			foreach ($query->result_array() as $row)
 			{
 				$result_ids[] = $row['comment_id'];
-				/*
-				$key = $row['comment_date'];
-
-				while(isset($temp[$key]))
-				{
-					$key++;
-				}
-
-				$temp[$key] = 'c'.$row['comment_id'];
-				
-				*/
 			}
 		}
 
@@ -571,88 +557,61 @@ class Comment {
 		$results = $result_ids;
 		$mfields = array();
 
-		//if ($comments_exist == TRUE)
-		//{
-			/*
-			$com = array();
-			foreach ($result_ids as $val)
-			{
-				if (substr($val, 0, 1) == 'c')
-				{
-					$com[] = substr($val, 1);
-				}
-			}
+		/** ----------------------------------------
+		/**  "Search by Member" link
+		/** ----------------------------------------*/
+		// We use this with the {member_search_path} variable
 
-			if (count($com) > 0)
-			{
-			
-			*/
-			
-				/** ----------------------------------------
-				/**  "Search by Member" link
-				/** ----------------------------------------*/
-				// We use this with the {member_search_path} variable
+		$result_path = (preg_match("/".LD."member_search_path\s*=(.*?)".RD."/s", $this->EE->TMPL->tagdata, $match)) ? $match['1'] : 'search/results';
+		$result_path = str_replace("\"", "", $result_path);
+		$result_path = str_replace("'",  "", $result_path);
 
-				$result_path = (preg_match("/".LD."member_search_path\s*=(.*?)".RD."/s", $this->EE->TMPL->tagdata, $match)) ? $match['1'] : 'search/results';
-				$result_path = str_replace("\"", "", $result_path);
-				$result_path = str_replace("'",  "", $result_path);
+		$search_link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
 
-				$search_link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
-
-				$this->EE->db->select('comments.comment_id, comments.entry_id, comments.channel_id, comments.author_id, comments.name, comments.email, comments.url, comments.location AS c_location, comments.ip_address, comments.comment_date, comments.edit_date, comments.comment, comments.notify, comments.site_id AS comment_site_id,
-										members.location, members.occupation, members.interests, members.aol_im, members.yahoo_im, members.msn_im, members.icq, members.group_id, members.member_id, members.signature, members.sig_img_filename, members.sig_img_width, members.sig_img_height, members.avatar_filename, members.avatar_width, members.avatar_height, members.photo_filename, members.photo_width, members.photo_height,
+		$this->EE->db->select('comments.comment_id, comments.entry_id, comments.channel_id, comments.author_id, comments.name, comments.email, comments.url, comments.location AS c_location, comments.ip_address, comments.comment_date, comments.edit_date, comments.comment, comments.notify, comments.site_id AS comment_site_id,
+										members.username, members.group_id, members.location, members.occupation, members.interests, members.aol_im, members.yahoo_im, members.msn_im, members.icq, members.group_id, members.member_id, members.signature, members.sig_img_filename, members.sig_img_width, members.sig_img_height, members.avatar_filename, members.avatar_width, members.avatar_height, members.photo_filename, members.photo_width, members.photo_height,
 										member_data.*,
 										channel_titles.title, channel_titles.url_title, channel_titles.author_id AS entry_author_id,
 										channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.channel_url, channels.comment_url, channels.channel_title'
 				);
 				
-				$this->EE->db->join('channels',			'comments.channel_id = channels.channel_id',	'left');
-				$this->EE->db->join('channel_titles',	'comments.entry_id = channel_titles.entry_id',	'left');
-				$this->EE->db->join('members',			'members.member_id = comments.author_id',		'left');
-				$this->EE->db->join('member_data',		'member_data.member_id = members.member_id',	'left');
+		$this->EE->db->join('channels',			'comments.channel_id = channels.channel_id',	'left');
+		$this->EE->db->join('channel_titles',	'comments.entry_id = channel_titles.entry_id',	'left');
+		$this->EE->db->join('members',			'members.member_id = comments.author_id',		'left');
+		$this->EE->db->join('member_data',		'member_data.member_id = members.member_id',	'left');
 				
-				//$this->EE->db->where_in('comments.comment_id', $com);
+		$this->EE->db->where_in('comments.comment_id', $result_ids);
 				
-				$this->EE->db->where_in('comments.comment_id', $result_ids);
+		$query = $this->EE->db->get('comments');
 				
-				$query = $this->EE->db->get('comments');
-				
-				if ($query->num_rows() > 0)
-				{
-					$i = 0;
-					foreach ($query->result_array() as $row)
-					{
-						//if (isset($results[$row['comment_id']]))
-						//{
-							$results[$row['comment_id']] = $query->result_array[$i];
-							$i++;
-						//}
-					}
+		if ($query->num_rows() > 0)
+		{
+			$i = 0;
+			foreach ($query->result_array() as $row)
+			{
+				$results[$row['comment_id']] = $query->result_array[$i];
+				$i++;
+			}
 					
-					// Potentially a lot of information
-					$query->free_result();
-				}
+		// Potentially a lot of information
+		$query->free_result();
+		}
 
-				/** ----------------------------------------
-				/**  Fetch custom member field IDs
-				/** ----------------------------------------*/
+		/** ----------------------------------------
+		/**  Fetch custom member field IDs
+		/** ----------------------------------------*/
 
-				$this->EE->db->select('m_field_id, m_field_name');
-				$query = $this->EE->db->get('member_fields');
+		$this->EE->db->select('m_field_id, m_field_name');
+		$query = $this->EE->db->get('member_fields');
 
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{
-						$mfields[$row['m_field_name']] = $row['m_field_id'];
-					}
-				}
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				$mfields[$row['m_field_name']] = $row['m_field_id'];
+			}
+		}
 
-			//}  end count comments check
-		//}  end comments_exist check
-		
-//print_r($results);	
-//print_r($mfields);	
 		/** ----------------------------------------
 		/**  Instantiate Typography class
 		/** ----------------------------------------*/
@@ -918,6 +877,14 @@ class Comment {
 				}
 
 				/** ----------------------------------------
+				/**  {username}
+				/** ----------------------------------------*/
+				if ($key == "username")
+				{
+					$tagdata = $this->EE->TMPL->swap_var_single($val, (isset($row['username'])) ? $row['username'] : '', $tagdata);
+				}
+
+				/** ----------------------------------------
 				/**  {author}
 				/** ----------------------------------------*/
 				if ($key == "author")
@@ -996,84 +963,78 @@ class Comment {
 					}
 				}
 
-				//if (substr($id, 0, 1) == 'c')
-				//{
-					/** ----------------------------------------
-					/**  {comment_auto_path}
-					/** ----------------------------------------*/
+				/** ----------------------------------------
+				/**  {comment_auto_path}
+				/** ----------------------------------------*/
 
-					if ($key == "comment_auto_path")
-					{
-						$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
+				if ($key == "comment_auto_path")
+				{
+					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
 
-						$tagdata = $this->EE->TMPL->swap_var_single($key, $path, $tagdata);
-					}
+					$tagdata = $this->EE->TMPL->swap_var_single($key, $path, $tagdata);
+				}
 
-					/** ----------------------------------------
-					/**  {comment_url_title_auto_path}
-					/** ----------------------------------------*/
+				/** ----------------------------------------
+				/**  {comment_url_title_auto_path}
+				/** ----------------------------------------*/
 
-					if ($key == "comment_url_title_auto_path")
-					{
-						$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
+				if ($key == "comment_url_title_auto_path")
+				{
+					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
 
-						$tagdata = $this->EE->TMPL->swap_var_single(
+					$tagdata = $this->EE->TMPL->swap_var_single(
 															$key,
 															$path.$row['url_title'].'/',
 															$tagdata
 														 );
-					}
+				}
 
-					/** ----------------------------------------
-					/**  {comment_entry_id_auto_path}
-					/** ----------------------------------------*/
+				/** ----------------------------------------
+				/**  {comment_entry_id_auto_path}
+				/** ----------------------------------------*/
 
-					if ($key == "comment_entry_id_auto_path")
-					{
-						$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
+				if ($key == "comment_entry_id_auto_path")
+				{
+					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
 
-						$tagdata = $this->EE->TMPL->swap_var_single(
+					$tagdata = $this->EE->TMPL->swap_var_single(
 															$key,
 															$path.$row['entry_id'].'/',
 															$tagdata
 														 );
-					}
+				}
 
 
-					/** ----------------------------------------
-					/**  parse comment field
-					/** ----------------------------------------*/
+				/** ----------------------------------------
+				/**  parse comment field
+				/** ----------------------------------------*/
 
-					if ($key == 'comment' AND isset($row['comment']))
-					{
-						// -------------------------------------------
-						// 'comment_entries_comment_format' hook.
-						//  - Play with the tagdata contents of the comment entries
-						//
-							if ($this->EE->extensions->active_hook('comment_entries_comment_format') === TRUE)
-							{
-								$comment = $this->EE->extensions->call('comment_entries_comment_format', $row);
-								if ($this->EE->extensions->end_script === TRUE) return;
-							}
-							else
-							{
-								$comment = $this->EE->typography->parse_type( $row['comment'],
-																array(
-																		'text_format'	=> $row['comment_text_formatting'],
-																		'html_format'	=> $row['comment_html_formatting'],
-																		'auto_links'	=> $row['comment_auto_link_urls'],
-																		'allow_img_url' => $row['comment_allow_img_urls']
-																	)
-															);
-							}
-						//
-						// -------------------------------------------
-
-						$tagdata = $this->EE->TMPL->swap_var_single($key, $comment, $tagdata);
-					}
-				//}  // ence substr c check
+				if ($key == 'comment' AND isset($row['comment']))
+				{
+					// -------------------------------------------
+					// 'comment_entries_comment_format' hook.
+					//  - Play with the tagdata contents of the comment entries
+					//
+						if ($this->EE->extensions->active_hook('comment_entries_comment_format') === TRUE)
+						{
+							$comment = $this->EE->extensions->call('comment_entries_comment_format', $row);
 				
-				
+							if ($this->EE->extensions->end_script === TRUE) return;
+						}
+						else
+						{
+							$comment = $this->EE->typography->parse_type( $row['comment'],
+															array(
+																	'text_format'	=> $row['comment_text_formatting'],
+																	'html_format'	=> $row['comment_html_formatting'],
+																	'auto_links'	=> $row['comment_auto_link_urls'],
+																	'allow_img_url' => $row['comment_allow_img_urls']
+																)
+														);
+						}
+
+					$tagdata = $this->EE->TMPL->swap_var_single($key, $comment, $tagdata);
+				}
 
 				//  {location}
 
