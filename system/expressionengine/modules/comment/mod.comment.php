@@ -1570,7 +1570,18 @@ class Comment {
 		/** ----------------------------------------
 		/**  Create form
 		/** ----------------------------------------*/
-		$RET = (isset($_POST['RET'])) ? $_POST['RET'] : $this->EE->functions->fetch_current_uri();
+
+		$RET = $this->EE->functions->fetch_current_uri();
+		
+		if (isset($_POST['RET']))
+		{
+			$RET = $_POST['RET'];
+		}
+		elseif ($this->EE->TMPL->fetch_param('return') && $this->EE->TMPL->fetch_param('return') != "")
+		{
+			$RET = $this->EE->TMPL->fetch_param('return');
+		}
+		
 		$PRV = (isset($_POST['PRV'])) ? $_POST['PRV'] : $this->EE->TMPL->fetch_param('preview');
 		$XID = (isset($_POST['XID'])) ? $_POST['XID'] : '';
 
