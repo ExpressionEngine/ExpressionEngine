@@ -35,12 +35,12 @@ class Comment {
 	// Determines whether to show the <a name> anchor above each comment
 
 	var $show_anchor = FALSE;
-
-
+	
 	// Comment Expiration Mode
 	// 0 -	Comments only expire if the comment expiration field in the PUBLISH page contains a value.
-	// 1 -	If the comment expiration field is blank, comments will still expire if the	// 		is set in the Channel Preferences page.  Use this option only if you used EE prior to
-	//		version 1.1 and you want your old comments to expire.
+	// 1 -	If the comment expiration field is blank, comments will still expire if the global preference
+	// 		is set in the Channel Preferences page.  Use this option only if you used EE prior to
+	//		version 1.1 and you want your old comments to expire.	
 
 	var $comment_expiration_mode = 0;
 
@@ -1383,29 +1383,33 @@ class Comment {
 
 		$mode = ( ! isset($this->comment_expiration_mode)) ? 0 : $this->comment_expiration_mode;
 
-		if ($mode == 0)
+		//  First check whether expiration is overriden
+		if ($this->EE->config->item('comment_moderation_override') !== 'y')
 		{
-			if ($query->row('comment_expiration_date')  > 0)
+			if ($mode == 0)
 			{
-				if ($this->EE->localize->now > $query->row('comment_expiration_date') )
+				if ($query->row('comment_expiration_date')  > 0)
 				{
-					$this->EE->lang->loadfile('comment');
+					if ($this->EE->localize->now > $query->row('comment_expiration_date') )
+					{
+						$this->EE->lang->loadfile('comment');
 
-					return $this->EE->lang->line('cmt_commenting_has_expired');
+						return $this->EE->lang->line('cmt_commenting_has_expired');
+					}
 				}
 			}
-		}
-		else
-		{
-			if ($query->row('comment_expiration')  > 0)
+			else
 			{
-				 $days = $query->row('entry_date')  + ($query->row('comment_expiration')  * 86400);
-
-				if ($this->EE->localize->now > $days)
+				if ($query->row('comment_expiration')  > 0)
 				{
-					$this->EE->lang->loadfile('comment');
+				 	$days = $query->row('entry_date')  + ($query->row('comment_expiration')  * 86400);
 
-					return $this->EE->lang->line('cmt_commenting_has_expired');
+					if ($this->EE->localize->now > $days)
+					{
+						$this->EE->lang->loadfile('comment');
+
+						return $this->EE->lang->line('cmt_commenting_has_expired');
+					}
 				}
 			}
 		}
@@ -2215,13 +2219,22 @@ class Comment {
 		/**  Has commenting expired?
 		/** ----------------------------------------*/
 
+		$force_moderation = $query->row('comment_moderate');
+
 		if ($this->comment_expiration_mode == 0)
 		{
 			if ($query->row('comment_expiration_date')  > 0)
 			{
 				if ($this->EE->localize->now > $query->row('comment_expiration_date') )
 				{
-					return $this->EE->output->show_user_error('submission', $this->EE->lang->line('cmt_commenting_has_expired'));
+					if ($this->EE->config->item('comment_moderation_override') == 'y')
+					{
+						$force_moderation = 'y';
+					}
+					else
+					{
+						return $this->EE->output->show_user_error('submission', $this->EE->lang->line('cmt_commenting_has_expired'));
+					}
 				}
 			}
 		}
@@ -2229,14 +2242,22 @@ class Comment {
 		{
 			if ($query->row('comment_expiration')  > 0)
 			{
-				 $days = $query->row('entry_date')  + ($query->row('comment_expiration')  * 86400);
+			 	$days = $query->row('entry_date')  + ($query->row('comment_expiration')  * 86400);
 
 				if ($this->EE->localize->now > $days)
 				{
-					return $this->EE->output->show_user_error('submission', $this->EE->lang->line('cmt_commenting_has_expired'));
+					if ($this->EE->config->item('comment_moderation_override') == 'y')
+					{
+						$force_moderation = 'y';
+					}
+					else
+					{
+						return $this->EE->output->show_user_error('submission', $this->EE->lang->line('cmt_commenting_has_expired'));
+					}
 				}
 			}
 		}
+
 
 		/** ----------------------------------------
 		/**  Is there a comment timelock?
@@ -2287,7 +2308,7 @@ class Comment {
 		$channel_id			  	= $query->row('channel_id') ;
 		$comment_total	 	 	= $query->row('comment_total')  + 1;
 		$require_membership 	= $query->row('comment_require_membership') ;
-		$comment_moderate		= ($this->EE->session->userdata['group_id'] == 1 OR $this->EE->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $query->row('comment_moderate') ;
+		$comment_moderate		= ($this->EE->session->userdata['group_id'] == 1 OR $this->EE->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
 		$author_notify			= $query->row('comment_notify_authors') ;
 
 		$notify_address = ($query->row('comment_notify')  == 'y' AND $query->row('comment_notify_emails')  != '') ? $query->row('comment_notify_emails')  : '';
