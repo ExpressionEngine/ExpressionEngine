@@ -371,7 +371,7 @@ class EE_Session {
 			if ($query->row('last_activity')  < ($this->EE->localize->now - $this->session_length))
 			{
 				$this->EE->db->delete('sessions', array(
-							'session_id', $this->sdata['session_id']));
+							'session_id' => $this->sdata['session_id']));
 				
 				$this->initialize_session();
 				
