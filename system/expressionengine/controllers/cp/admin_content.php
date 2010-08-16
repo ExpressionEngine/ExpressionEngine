@@ -583,9 +583,21 @@ class Admin_content extends Controller {
 			}
 		}
 
-		// Create Channel
+		if ($this->input->post('apply_comment_enabled_to_existing'))
+		{
+			if ($this->input->post('comment_system_enabled') == 'y')
+			{
+				$this->channel_model->update_comments_allowed($_POST['channel_id'], 'y');
+			}
+			elseif ($this->input->post('comment_system_enabled') == 'n')
+			{
+				$this->channel_model->update_comments_allowed($_POST['channel_id'], 'n');
+			}	
+		}
 
-		// Construct the query based on whether we are updating or inserting
+		unset($_POST['apply_comment_enabled_to_existing']);
+
+
 
 		if (isset($_POST['apply_expiration_to_existing']))
 		{
@@ -610,6 +622,9 @@ class Admin_content extends Controller {
 
 			$_POST['cat_group'] = implode('|', $_POST['cat_group']);
 		}
+
+		// Create Channel
+		// Construct the query based on whether we are updating or inserting
 
 		if ($edit == FALSE)
 		{

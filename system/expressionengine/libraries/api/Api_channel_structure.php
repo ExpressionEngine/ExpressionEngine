@@ -535,6 +535,18 @@ class Api_channel_structure extends Api {
 			return FALSE;
 		}
 				
+		if (isset($apply_expiration_to_existing) && isset($comment_system_enabled))
+		{			
+			if ($comment_system_enabled == 'y')
+			{
+				$this->channel_model->update_comments_allowed($channel_id, 'y');
+			}
+			elseif ($comment_system_enabled == 'n')
+			{
+				$this->channel_model->update_comments_allowed($channel_id, 'n');
+			}			
+		}
+
 		// validate comment expiration
 		if (isset($comment_expiration) && ( ! is_numeric($comment_expiration) OR $comment_expiration == ''))
 		{

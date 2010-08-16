@@ -214,6 +214,7 @@ if ($EE_view_disable !== TRUE)
 					$preference = lang('comment_system_enabled', 'comment_system_enabled');
 					$controls = lang('yes', 'comment_system_enabled_y').NBS.form_radio(array('name'=>'comment_system_enabled', 'id'=>'comment_system_enabled_y', 'value'=>'y', 'checked'=>($comment_system_enabled == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
 					$controls .= lang('no', 'comment_system_enabled_n').NBS.form_radio(array('name'=>'comment_system_enabled', 'id'=>'comment_system_enabled_n', 'value'=>'n', 'checked'=>($comment_system_enabled == 'n') ? TRUE : FALSE));
+					$controls .= '<br/>'.form_checkbox(array('name'=>'apply_comment_enabled_to_existing', 'id'=>'apply_comment_enabled_to_existing', 'value'=>'y', 'checked'=>FALSE)).NBS.'<span class="notice">'.lang('update_existing_comments_mod', 'apply_comment_enabled_to_existing').'</span>';					
 					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
 
 					$preference = lang('comment_require_membership', 'comment_require_membership');
