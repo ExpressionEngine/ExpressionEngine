@@ -2162,6 +2162,7 @@ class Comment {
 */
 		$sql = "SELECT exp_channel_titles.title,
 						exp_channel_titles.url_title,
+						exp_channel_titles.entry_id,
 						exp_channel_titles.channel_id,
 						exp_channel_titles.author_id,
 						exp_channel_titles.comment_total,
@@ -2179,7 +2180,9 @@ class Comment {
 						exp_channels.comment_notify,
 						exp_channels.comment_notify_authors,
 						exp_channels.comment_notify_emails,
-						exp_channels.comment_expiration
+						exp_channels.comment_expiration, 
+						exp_channels.channel_url, 
+						exp_channels.comment_url 
 				FROM	exp_channel_titles, exp_channels
 				WHERE	exp_channel_titles.channel_id = exp_channels.channel_id
 				AND	exp_channel_titles.entry_id = '".$this->EE->db->escape_str($_POST['entry_id'])."'
@@ -2311,7 +2314,13 @@ class Comment {
 		$comment_moderate		= ($this->EE->session->userdata['group_id'] == 1 OR $this->EE->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
 		$author_notify			= $query->row('comment_notify_authors') ;
 
+		$comment_url			= $query->row('comment_url');
+		$channel_url			= $query->row('channel_url');
+		$entry_id				= $query->row('entry_id');
+
+
 		$notify_address = ($query->row('comment_notify')  == 'y' AND $query->row('comment_notify_emails')  != '') ? $query->row('comment_notify_emails')  : '';
+	
 
 		/** ----------------------------------------
 		/**  Start error trapping
@@ -2635,12 +2644,20 @@ class Comment {
 											)
 									);
 
+		$path = ($comment_url == '') ? $channel_url : $comment_url;
+		
+		$comment_url_title_auto_path = reduce_double_slashes($path.'/'.$url_title);
+
 		/** ----------------------------
 		/**  Send admin notification
 		/** ----------------------------*/
 
 		if ($notify_address != '')
 		{
+			$cp_url = $this->EE->config->item('cp_url').'?S=0&C=addons_modules&M=show_module_cp&module=comment';
+
+
+			
 			$swap = array(
 							'name'				=> $cmtr_name,
 							'name_of_commenter'	=> $cmtr_name,
@@ -2652,7 +2669,13 @@ class Comment {
 							'comment_id'		=> $comment_id,
 							'comment'			=> $comment,
 							'comment_url'		=> $this->remove_session_id($_POST['RET']),
-							'delete_link'		=> $this->EE->config->item('cp_url').'?S=0&C=publish'.'&M=delete_comment_confirm'.'&channel_id='.$channel_id.'&entry_id='.$_POST['entry_id'].'&comment_id='.$comment_id
+							'delete_link'		=> $cp_url.'&method=delete_comment_confirm&comment_id='.$comment_id, 
+							'approve_link' => $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=o', 
+							'close_link'	=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=c', 
+							'channel_id'		=> $channel_id,
+							'entry_id'			=> $entry_id,
+							'url_title'			=> $url_title,
+							'comment_url_title_auto_path' => $comment_url_title_auto_path
 						 );
 
 			$template = $this->EE->functions->fetch_email_template('admin_notify_comment');
@@ -2729,8 +2752,13 @@ class Comment {
 								'site_url'			=> $this->EE->config->item('site_url'),
 								'comment_url'		=> $this->remove_session_id($_POST['RET']),
 								'comment_id'		=> $comment_id,
-								'comment'			=> $comment
+								'comment'			=> $comment,
+								'channel_id'		=> $channel_id,
+								'entry_id'			=> $entry_id,
+								'url_title'			=> $url_title,
+								'comment_url_title_auto_path' => $comment_url_title_auto_path 
 							 );
+
 
 				$template = $this->EE->functions->fetch_email_template('comment_notification');
 				$email_tit = $this->EE->functions->var_swap($template['title'], $swap);
