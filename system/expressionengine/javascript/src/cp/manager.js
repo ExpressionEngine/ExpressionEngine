@@ -20,7 +20,7 @@
 
 "use strict";
 
-function access_edit_ajax(el, template_id, m_group_id, kind) {
+function _access_edit_ajax(el, template_id, m_group_id, kind) {
 	
 	var str = '',
 		no_auth_bounce;
@@ -77,16 +77,16 @@ function access_edit_ajax(el) {
 	// access_gid_tid
 	if (el.attr('name').substr(0, 14) === 'no_auth_bounce') {
 		template_id = (el.attr('name').substr(15)) ? el.attr('name').substr(15) : $('input:hidden[name=template_id]').val();
-		access_edit_ajax(el, template_id, '', 'no_auth_bounce');
+		_access_edit_ajax(el, template_id, '', 'no_auth_bounce');
 	}
 	else if (el.attr('name').substr(0, 16) === 'enable_http_auth') {
 		template_id = (el.attr('name').substr(17)) ? el.attr('name').substr(17) : $('input:hidden[name=template_id]').val();
-		access_edit_ajax(el, template_id, '', 'enable_http_auth');
+		_access_edit_ajax(el, template_id, '', 'enable_http_auth');
 	} else {
 		ids = el.attr('name').replace('access_', '').split('_');
 		template_id = (ids.length < 2) ? $('input:hidden[name=template_id]').val() : ids[1];
 
-		access_edit_ajax(el, template_id, ids[0], 'access');
+		_access_edit_ajax(el, template_id, ids[0], 'access');
 	}
 }
 
