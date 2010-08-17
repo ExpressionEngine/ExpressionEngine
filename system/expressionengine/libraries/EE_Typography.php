@@ -83,7 +83,7 @@ class EE_Typography extends CI_Typography {
 	 * @access	public
 	 * @return	void
 	 */
-	function initialize()
+	function initialize($config = array())
 	{
 		// reset class properties
 		$this->single_line_pgfs		= TRUE;		// Whether to treat single lines as paragraphs in auto-xhtml
@@ -114,6 +114,11 @@ class EE_Typography extends CI_Typography {
 		$this->code_chunks			= array();
 		$this->code_counter			= 0;
 		$this->http_hidden 			= 'ed9f01a60cc1ac21bf6f1684e5a3be23f38a51b9'; // hash to protect URLs in [url] BBCode
+
+		foreach ($config as $key => $val)
+		{
+			$this->$key = $val;
+		}
 
 		/** -------------------------------------
 		/**  Allowed tags
@@ -181,8 +186,13 @@ class EE_Typography extends CI_Typography {
 		/**  Fetch word censoring prefs
 		/** -------------------------------------*/
 		
-		if ($this->EE->config->item('enable_censoring') == 'y' AND $this->EE->config->item('censored_words') != '')
+		if ($this->EE->config->item('enable_censoring') == 'y')
 		{
+			$this->word_censor = TRUE;
+		}
+		
+		if ($this->word_censor == TRUE && $this->EE->config->item('censored_words') != '')
+		{	
 			if ($this->EE->config->item('censor_replacement') !== FALSE)
 			{
 				$this->censored_replace = $this->EE->config->item('censor_replacement');
@@ -197,10 +207,14 @@ class EE_Typography extends CI_Typography {
 					
 			$this->censored_words = explode("|", $words);
 			
-			if (count($this->censored_words) > 0)
+			if (count($this->censored_words) == 0)
 			{
-				$this->word_censor = TRUE;
+				$this->word_censor = FALSE;
 			}
+		}
+		else
+		{
+			$this->word_censor = FALSE;
 		}
 		
 		/** -------------------------------------

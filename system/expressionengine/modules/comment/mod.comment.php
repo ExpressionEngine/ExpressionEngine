@@ -378,6 +378,7 @@ class Comment {
 		}
 
 		$query = $this->EE->db->get('comments');
+		$result_ids = array();
 
 
 		if ($query->num_rows() > 0)
@@ -401,32 +402,6 @@ class Comment {
 			return $this->EE->TMPL->no_results();
 		}
 
-		// Sort the array based on the keys (which contain the Unix timesamps
-		// of the comments)
-
-		/*
-		if ($order_by == 'comment_date')
-		{
-			ksort($temp);
-		}
-
-		// Create a new, sequentially indexed array
-
-		$result_ids = array();
-
-		foreach ($temp as $val)
-		{
-			$result_ids[$val] = $val;
-		}
-
-		// Reverse the array if order is descending
-
-		if ($sort == 'desc')
-		{
-			$result_ids = array_reverse($result_ids);
-		}
-		
-		*/
 
 		/** ---------------------------------
 		/**  Do we need pagination?
@@ -616,8 +591,11 @@ class Comment {
 		/**  Instantiate Typography class
 		/** ----------------------------------------*/
 
+		$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
+		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
+		$this->EE->typography->initialize($config);
+		
 		$this->EE->typography->parse_images = FALSE;
 		$this->EE->typography->allow_headings = FALSE;
 
@@ -1686,8 +1664,11 @@ class Comment {
 		/**  Instantiate Typography class
 		/** ----------------------------------------*/
 
+		$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
+		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
+		$this->EE->typography->initialize($config);
+		
 		$this->EE->typography->parse_images = FALSE;
 		$this->EE->typography->allow_headings = FALSE;
 		$this->EE->typography->encode_email = FALSE;
@@ -2628,8 +2609,11 @@ class Comment {
 		/**  Instantiate Typography class
 		/** ----------------------------------------*/
 
+		$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
+		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
+		$this->EE->typography->initialize($config);
+		
 		$this->EE->typography->parse_images = FALSE;
 		$this->EE->typography->allow_headings = FALSE;
  		$this->EE->typography->smileys = FALSE;
