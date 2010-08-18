@@ -1,0 +1,385 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class EE_Subscription {
+
+	var $hash;
+	var $module;				// module, also used as table name
+	var $anonymous	= FALSE;	// allow anonymous subscriptions? if true, table must have email column
+
+	var $publisher	= array();
+	
+	var $table;
+
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
+	function EE_Subscription()
+	{
+		// Get EE superobject reference
+		$this->EE =& get_instance();
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * init the library
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function init($module, $publisher = array(), $anonymous = FALSE)
+	{
+		$this->module	 = $module;
+		$this->publisher = $publisher;
+		$this->anonymous = $anonymous;
+		
+		$this->table	 = $module.'_subscriptions';
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Mark post as read
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function mark_as_read($identifiers = FALSE)
+	{
+		$this->_mark($identifiers, 'y');
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Mark post as unread
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function mark_as_unread($identifiers = FALSE)
+	{
+		$this->_mark($identifiers, 'n');
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Add subscriptions for current post
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function subscribe($identifiers = FALSE, $mark_existing = TRUE)
+	{
+		list($member_ids, $emails) = $this->_prep($identifiers);
+		list($existing_ids, $existing_emails) = $this->get_subscribers(TRUE);
+		
+		// Handle duplicates
+		$new_member_ids = array_diff($member_ids, $existing_ids);
+		$new_emails = array_diff($emails, $existing_emails);
+		
+		if (count($new_member_ids) OR count($new_emails))
+		{
+			$data	 = array();
+			$default = $this->publisher;
+			
+			// Add member ids
+			foreach($new_member_ids as $id)
+			{
+				$rand = $id.$this->EE->functions->random('alnum', 8);
+				
+				$data[] = array_merge($default, array(
+					'hash'				=> $rand,
+					'member_id'			=> $id,
+					'subscription_date'	=> $this->EE->localize->now
+				));
+			}
+			
+			// Add emails
+			foreach($emails as $email)
+			{
+				$rand = $this->EE->functions->random('alnum', 15);
+				
+				$data[] = array_merge($default, array(
+					'hash'				=> $rand,
+					'email'				=> $email,
+					'subscription_date'	=> $this->EE->localize->now
+				));
+			}
+			
+			// Batch it in case there are lots of them
+            $this->EE->db->insert_batch($this->table, $data);
+		}
+		
+		// Refresh existing subscriptions if there were any
+		if ($mark_existing)
+		{
+			$member_ids = array_intersect($member_ids, $existing_ids);
+			$emails = array_intersect($emails, $existing_emails);
+			
+			$dupes = implode('member_ids', 'emails');
+			$this->_mark($dupes, 'n', TRUE);
+		}
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Remove subscriptions for current post
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function unsubscribe($identifiers = FALSE, $all_entries = FALSE)
+	{
+		list($member_ids, $emails) = $this->_prep($identifiers);
+		
+		if ( ! count($member_ids) && ! count($emails))
+		{
+			return;
+		}
+		
+		$func = 'where_in';
+		
+		if (count($member_ids))
+		{
+			$this->EE->db->where_in('member_id', $member_ids);
+			$func = 'or_where_in';
+		}
+		
+		if (count($emails))
+		{
+			$this->EE->db->$func('email', $emails);
+		}
+		
+		if ( ! $all_entries)
+		{
+			$this->EE->db->where($this->publisher);
+		}
+		$this->EE->db->delete($this->table);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Remove subscriptions to all posts
+	 *
+	 * Use when deleting a member
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function unsubscribe_all($identifiers = FALSE)
+	{
+		$this->unsubscribe($identifiers, TRUE);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Remove all subscriptions for a publisher
+	 *
+	 * Call this when removing posts to avoid cluttering up the subscription table
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function delete_subscriptions()
+	{
+		$this->EE->db->where($this->publisher);
+		$this->EE->db->delete($this->table);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get subscribers
+	 *
+	 * @access	public
+	 * @param	bool	Return array with member ids instead of looking up their emails (used internally)
+	 * @return	mixed	Array of email addresses
+	 */
+	function get_subscribers($return_member_ids = FALSE)
+	{
+		$emails		= array();
+		$member_ids	= array();
+		
+		// Grab them all
+		if ($this->anonymous)
+		{
+			$this->EE->db->select('email');
+		}
+		
+		$this->EE->db->select('member_id');
+		$this->EE->db->where($this->publisher);
+		$query = $this->EE->db->get('subscriptions');
+		
+		foreach($query->result_array() as $subscription)
+		{
+			if ($subscription['member_id'])
+			{
+				$member_ids[] = $subscription['member_id'];
+			}
+			else if ($this->anonymous && isset($subscription['email']))
+			{
+				$emails[] = $subscription['email'];
+			}
+		}
+		
+		// Return as if coming from _prep?
+		if ($return_member_ids)
+		{
+			return implode('member_ids', 'emails');
+		}
+		
+		// Grab member emails from the members table - is this too slow?
+		if (count($member_ids))
+		{
+			$this->EE->db->select('email');
+			$this->EE->db->where_in('member_id', $member_ids);
+			$query = $this->EE->db->get('members');
+			
+			if ($query->num_rows())
+			{
+				$member_emails = array_map('array_pop', $query->result_array());
+				$emails = array_unique(array_merge($emails, $member_emails));
+			}
+		}
+		
+		return $emails;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Prep user data
+	 *
+	 * Figure out the member ids and email addresses we're working with
+	 *
+	 * @access	private
+	 * @param	mixed	Values to identify the subscriber(s)
+	 * @return	mixed
+	 */
+	function _prep($identifiers = FALSE)
+	{
+		static $current_user = '';
+		
+		$emails		= array();
+		$member_ids	= array();
+		
+		// No user specified? Use the current one
+		if ($identifiers == FALSE)
+		{
+			if ($current_user === '')
+			{
+				$current_user = $this->_get_current_user();
+			}
+			
+			if ($current_user === FALSE)
+			{
+				
+			}
+			
+			$array = key($current_user).'s';
+			${$array}[] = current($current_user);
+		}
+		else
+		{
+			if ( ! is_array($identifiers))
+			{
+				$identifiers = array($identifiers);
+			}
+
+			foreach($identifiers as $email_or_id)
+			{
+				if ( ! is_numeric($email_or_id))
+				{
+					if ($this->anonymous == TRUE)
+					{
+						$emails[] = $email_or_id;
+					}
+				}
+				else
+				{
+					$member_ids[] = $member_ids;
+				}
+			}
+		}
+		
+		return array('member_ids' => $member_ids, 'emails' => $email);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Mark a subscription as read / unread
+	 *
+	 *
+	 * @access	private
+	 * @param	mixed	Values to identify the subscriber(s)
+	 * @param	string	New subscription_sent status (y | n)
+	 * @param	bool	Skip call to _prep (used internally)
+	 * @return	void
+	 */
+	function _mark($identifiers, $new_state, $skip_prep = FALSE)
+	{
+		if ( ! $skip_prep)
+		{
+			list($member_ids, $emails) = $this->_prep($identifiers);
+		}
+		
+		if ( ! count($member_ids) && ! count($emails))
+		{
+			return;
+		}
+		
+		$func = 'where_in';
+		
+		if (count($member_ids))
+		{
+			$this->EE->db->where_in('member_id', $member_ids);
+			$func = 'or_where_in';
+		}
+		
+		if (count($emails))
+		{
+			$this->EE->db->$func('email', $emails);
+		}
+		
+		$this->EE->db->set('notification_sent', $new_state);
+		
+		$this->EE->db->where($this->publisher);
+		$this->EE->db->update($this->table);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	function _get_current_user()
+	{
+		if ($this->EE->session->userdata('member_id') != 0)
+		{
+			return array('member_id' => $this->EE->session->userdata('member_id'))
+		}
+		elseif ($this->EE->session->userdata('email'))	// my_email cookie
+		{
+			return array('email' => $this->EE->session->userdata('email'));
+		}
+		
+		// Check for a hash in the url
+		if ($this->EE->input->get('subscription'))
+		{
+			$this->hash = $this->EE->input->get('subscription');
+		}
+		
+		return FALSE;
+	}
+	
+}
+
+// END Subscription class
+
+/* End of file Subscription.php */
+/* Location: ./system/expressionengine/libraries/Subscription.php */
