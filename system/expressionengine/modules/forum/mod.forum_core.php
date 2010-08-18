@@ -6784,11 +6784,10 @@ class Forum_Core extends Forum {
 						'topic_id'		=> $topic_id,
 						'post_id'		=> $post_id,
 						'board_id'		=> $board_id,
-						'is_temp'		=> 'n',
-						'attachment_id'	=> $id
+						'is_temp'		=> 'n'
 					);
 				
-				$this->EE->db->update('forum_attachments', $d);
+				$this->EE->db->update('forum_attachments', $d, array('attachment_id' => $id));
 			}
 		}		
 				
