@@ -5413,7 +5413,7 @@ class Wiki {
 							'image_width'			=> $file_data['image_width'],
 							'image_height'			=> $file_data['image_height'],
 							'file_type'				=> $file_data['file_type'],
-							'file_size'				=> ceil($file_data['file_size'] / 1024),
+							'file_size'				=> $file_data['file_size'],
 							'file_hash'				=> $this->EE->functions->random('md5')
 						 );
 			
