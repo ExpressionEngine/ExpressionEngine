@@ -358,12 +358,11 @@ EE.publish.save_layout = function() {
 			{
 				lay_name = tab_name;
 				layout_object[lay_name] = {};
+				layout_object[lay_name][mypre] = tab_label;
 			} else {
 				merge = true;
 				visible = false;
 			}
-
-			layout_object[lay_name][mypre] = tab_label;
 			
 			$("#"+tab_id).find(".publish_field").each(function() {
 
