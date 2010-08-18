@@ -5345,16 +5345,22 @@ class Wiki {
 			{
 				$new_name = $this->valid_title($this->EE->security->sanitize_filename(strip_tags($_FILES['userfile']['name'])));
 			}
-			
-			$no_extension_name = substr($new_name, 0, strrpos($new_name, '.'));
-			
+						
 			$server_path = $query->row('server_path');
 
-			$allowed_types = ($query->row('allowed_types') == 'all') ? '*' : $query->row('allowed_types');
+			switch($query->row('allowed_types'))
+			{
+				case 'all' : $allowed_types = '*';
+					break;
+				case 'img' : $allowed_types = 'jpg|png|gif';
+					break;
+				default :
+					$allowed_types = $query->row('allowed_types');
+			}
 
 			// Upload the image
 			$config = array(
-					'file_name'		=> $no_extension_name,
+					'file_name'		=> $new_name,
 					'upload_path'	=> $server_path,
 					'allowed_types'	=> $allowed_types,
 					'max_size'		=> $query->row('max_size'),
