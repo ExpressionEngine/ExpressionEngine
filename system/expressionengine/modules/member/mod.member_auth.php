@@ -128,7 +128,7 @@ class Member_auth extends Member {
 		/**  No username/password?  Bounce them...
 		/** ----------------------------------------*/
 
-		if ( ! $this->EE->input->post('multi') && ( ! $this->EE->input->get_post('username') OR ! $this->EE->input->get_post('password')))
+		if ( ! $this->EE->input->get('multi') && ( ! $this->EE->input->get_post('username') OR ! $this->EE->input->get_post('password')))
 		{
 			$this->EE->output->show_user_error('submission', array($this->EE->lang->line('mbr_form_empty')));
 		}
