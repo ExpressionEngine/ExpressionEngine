@@ -57,7 +57,7 @@ if ($EE_view_disable !== TRUE)
 					<?php else:?>
 						<li><p><?=$instructions?></p></li>
 					<?php foreach($cp_menu_items['content']['publish'] as $channel_name => $uri):?>	   
-							<li><a href="<?=$uri?>" title="<?=$channel_name?>"><?=$channel_name?></li>
+							<li><a href="<?=$uri?>" title="<?=$channel_name?>"><?=$channel_name?></a></li>
 						<?php endforeach; ?>
 					<?php endif; ?>
 				</ul>
@@ -124,7 +124,7 @@ if ($EE_view_disable !== TRUE)
 			<li class="submission"><a href="<?=BASE.AMP.'C=content_edit'.AMP.'M=show_recent_comments'.AMP.'count=10'?>" class="submenu"><?=lang('recent_comments')?></a></li>
 			<?php endif;?>
 
-			<li class="items"><a href="<?=BASE.AMP.'C=content_edit'.AMP.'M=show_recent_entries'.AMP.'count=10'?>" class="submenu accordion"><?=lang('recent_entries')?></a>
+			<li class="item"><a href="<?=BASE.AMP.'C=content_edit'.AMP.'M=show_recent_entries'.AMP.'count=10'?>" class="submenu accordion"><?=lang('recent_entries')?></a>
 				<ul class="submenu" style="display: none;">
 					<?php if (count($recent_entries) == 0):?>
 						<li><p><?=lang('no_entries'); ?></p></li>
