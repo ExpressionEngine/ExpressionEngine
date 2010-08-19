@@ -48,9 +48,14 @@ if ($EE_view_disable !== TRUE)
 						<?php foreach ($field_output as $name => $field):
 							$f = is_array($field) ? $field : $this->api_channel_fields->settings[$name];
 							if (in_array($name, $required_fields)):?>
-							<li><a href="#" class="field_selector" id="hide_field_<?=$f['field_id']?>"><?=required()?><?=$f['field_label']?></a></li> 
+								<li><a href="#" class="field_selector" id="hide_field_<?=$f['field_id']?>"><?=required()?><?=$f['field_label']?></a></li> 
 							<?php else:?>
-							<li><a href="#" class="field_selector" id="hide_field_<?=$f['field_id']?>"><?=$f['field_label']?></a> <a href="#" class="delete delete_field" id="remove_field_<?=$f['field_id']?>"><img src="<?=$cp_theme_url?>images/open_eye.png" alt="<?=lang('delete')?>" width="15" height="15" /></a></li> 
+								<li>
+									<a href="#" class="field_selector" id="hide_field_<?=$f['field_id']?>"><?=$f['field_label']?></a>
+									<a href="#" class="delete delete_field" id="remove_field_<?=$f['field_id']?>">
+										<img src="<?=$cp_theme_url?>images/open_eye.png" alt="<?=lang('delete')?>" width="15" height="15" />
+									</a>
+								</li> 
 						<?php endif;?>
 						
 						<?php endforeach;?>
