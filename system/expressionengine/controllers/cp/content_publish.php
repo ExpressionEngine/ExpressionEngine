@@ -716,7 +716,7 @@ class Content_publish extends Controller {
 			}
 			else
 			{
-				$button_js[] = array('name' => $button->tag_name, 'key' => $button->accesskey, 'openWith' => $button->tag_open, 'closeWith' => $button->tag_close, 'className' => $button->classname);
+				$button_js[] = array('name' => $button->tag_name, 'key' => strtoupper($button->accesskey), 'openWith' => $button->tag_open, 'closeWith' => $button->tag_close, 'className' => $button->classname);
 			}
 		}
 		

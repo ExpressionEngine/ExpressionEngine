@@ -435,7 +435,7 @@ class Channel_standalone extends Channel {
 			{
 				$button_js[] = array(
 									'name' 		=> $button->tag_name, 
-									'key' 		=> $button->accesskey, 
+									'key' 		=> strtoupper($button->accesskey), 
 									'openWith' 	=> $button->tag_open, 
 									'closeWith' => $button->tag_close, 
 									'className' => $button->classname
