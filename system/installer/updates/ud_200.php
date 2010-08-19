@@ -115,7 +115,7 @@ class Updater {
                         $data['show_profiler'] = $data['show_queries'];
                         unset($data['show_queries']);
                     }
-                    // public beta docs location
+                    // docs location
                     elseif (isset($data['doc_url']))
                     {
                         $data['doc_url'] = 'http://expressionengine.com/user_guide/';

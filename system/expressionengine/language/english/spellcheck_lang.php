@@ -38,5 +38,5 @@ $lang = array(
 );
 
 
-/* End of file lang.spellcheck.php */
-/* Location: ./system/expressionengine/language/english/lang.spellcheck.php */
+/* End of file spellcheck_lang.php */
+/* Location: ./system/expressionengine/language/english/spellcheck_lang.php */

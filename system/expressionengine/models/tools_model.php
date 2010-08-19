@@ -315,13 +315,16 @@ class Tools_model extends CI_Model {
 		$path = APPPATH.'language/'.$language_directory;
 		$ext_len = strlen(EXT);
 
+		$filename_end = '_lang'.EXT;
+		$filename_end_len = strlen($filename_end);
+
 		$languages = array();
 		
 		$language_files = get_filenames($path);
 
 		foreach ($language_files as $file)
 		{
-			if (strncasecmp($file, 'lang', 4) == 0 && substr($file, -$ext_len) == EXT)
+			if (substr($file, -$filename_end_len) && substr($file, -$ext_len) == EXT)
 			{
 				$languages[] = $file;
 			}

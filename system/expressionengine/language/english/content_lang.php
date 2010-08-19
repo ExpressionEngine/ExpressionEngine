@@ -965,5 +965,5 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 );
 
 
-/* End of file lang.publish.php */
-/* Location: ./system/expressionengine/language/english/lang.publish.php */
+/* End of file publish_lang.php */
+/* Location: ./system/expressionengine/language/english/publish_lang.php */

@@ -411,10 +411,8 @@ $lang = array(
 'channel' 						=>	'Channel',
 'site' 							=>	'Site',
 
-'most_recent_entry' 			=>	'Most recent Entry',
-'most_recent_edited_entry' 		=>	'Most recently edited Entry',
-'most_recent_comment' 			=>	'Most recent Comment',
-'most_recent_edited_template' 	=>	'Most recently edited Template',
+'most_recent_entry' 			=>	'Most Recent Entry',
+'most_recent_comment' 			=>	'Most Recent Comment',
 
 'recent_entries' 				=>	'Recent Entries',
 'recent_comments'	 			=>	'Recent Comments',
@@ -477,5 +475,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.cp.php */
-/* Location: ./system/expressionengine/language/english/lang.cp.php */
+/* End of file cp_lang.php */
+/* Location: ./system/expressionengine/language/english/cp_lang.php */

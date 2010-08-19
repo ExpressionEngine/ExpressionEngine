@@ -239,5 +239,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.mailinglist.php */
-/* Location: ./system/expressionengine/language/english/lang.mailinglist.php */
+/* End of file mailinglist_lang.php */
+/* Location: ./system/expressionengine/language/english/mailinglist_lang.php */

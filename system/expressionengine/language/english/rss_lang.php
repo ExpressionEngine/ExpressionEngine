@@ -21,5 +21,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.rss.php */
-/* Location: ./system/expressionengine/language/english/lang.rss.php */
+/* End of file rss_lang.php */
+/* Location: ./system/expressionengine/language/english/rss_lang.php */

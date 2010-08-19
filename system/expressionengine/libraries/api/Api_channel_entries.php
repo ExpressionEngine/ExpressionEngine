@@ -77,6 +77,9 @@ class Api_channel_entries extends Api {
 	 */
 	function submit_new_entry($channel_id, $data)
 	{
+		// yoost incase
+		$data['channel_id'] = $channel_id;
+		
 		$this->data =& $data;
 		$mod_data = array();
 		

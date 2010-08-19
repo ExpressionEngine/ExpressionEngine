@@ -132,5 +132,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.pages.php */
-/* Location: ./system/expressionengine/language/english/lang.pages.php */
+/* End of file pages_lang.php */
+/* Location: ./system/expressionengine/language/english/pages_lang.php */

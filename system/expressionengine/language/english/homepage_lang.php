@@ -171,5 +171,5 @@ Download <a href=\'%s\' title=\'Download Here\'>here</a> and follow the <a href=
 ''=>''
 );
 
-/* End of file lang.homepage.php */
-/* Location: ./system/expressionengine/language/english/lang.homepage.php */
+/* End of file homepage_lang.php */
+/* Location: ./system/expressionengine/language/english/homepage_lang.php */

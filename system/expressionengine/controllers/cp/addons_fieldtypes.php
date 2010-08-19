@@ -237,7 +237,7 @@ class Addons_fieldtypes extends Controller {
 		// Update if version changed
 		$version = $installed[$ft]['version'];
 		
-		if ($FT->info['version'] < $version && method_exists($FT, 'update') && $FT->update($version) !== FALSE)
+		if ($FT->info['version'] > $version && method_exists($FT, 'update') && $FT->update($version) !== FALSE)
 		{
 			$this->db->update('fieldtypes', array('version' => $FT->info['version']), array('name' => $ft));
 		}

@@ -158,5 +158,5 @@ over the API, so setting to \'None\' will prevent any file uploads via channel e
 ''=>''
 );
 
-/* End of file lang.metaweblog_api.php */
-/* Location: ./system/expressionengine/language/english/lang.metaweblog_api.php */
+/* End of file metaweblog_api_lang.php */
+/* Location: ./system/expressionengine/language/english/metaweblog_api_lang.php */

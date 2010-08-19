@@ -4310,7 +4310,7 @@ class Forum_Core extends Forum {
 					$temp = $this->_var_swap($temp,
 											array(
 													'lang:change_status' 	=> ($row['status'] == 'o') ? $this->EE->lang->line('close_thread') : $this->EE->lang->line('activate_thread'),
-													'path:change_status'	=> $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Forum', 'change_status').'&amp;topic_id='.$row['post_id'].'&amp;trigger='.$this->trigger,
+													'path:change_status'	=> $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Forum', 'change_status').'&amp;topic_id='.$row['post_id'].'&amp;board_id='.$this->_fetch_pref('board_id').'&amp;trigger='.$this->trigger,
 													'css:status_button'		=> ($row['status'] == 'o') ? 'buttonStatusOff' : 'buttonStatusOn'
 												)
 											);				
@@ -6784,11 +6784,10 @@ class Forum_Core extends Forum {
 						'topic_id'		=> $topic_id,
 						'post_id'		=> $post_id,
 						'board_id'		=> $board_id,
-						'is_temp'		=> 'n',
-						'attachment_id'	=> $id
+						'is_temp'		=> 'n'
 					);
 				
-				$this->EE->db->update('forum_attachments', $d);
+				$this->EE->db->update('forum_attachments', $d, array('attachment_id' => $id));
 			}
 		}		
 				
@@ -9467,7 +9466,7 @@ class Forum_Core extends Forum {
 			{	
 				for ($j = 0; $j < count($matches['0']); $j++)
 				{
-					$str = str_replace($matches['0'][$j], $this->EE->localize->decode_date($matches['1'][$j], $this->EE->stats->statdata[$stat]), $str);
+					$str = str_replace($matches['0'][$j], $this->EE->localize->decode_date($matches['1'][$j], $this->EE->stats->statdata($stat)), $str);
 				}
 			}
 		}
@@ -9477,7 +9476,7 @@ class Forum_Core extends Forum {
 		/** -------------------------------------*/
 		foreach (array('total_members', 'total_logged_in', 'total_guests', 'total_anon', 'total_entries', 'total_forum_topics', 'total_forum_posts', 'total_forum_replies', 'total_comments', 'most_visitors', 'recent_member') as $stat )
 		{
-			$str = str_replace('{'.$stat.'}', $this->EE->stats->statdata[$stat], $str);
+			$str = str_replace('{'.$stat.'}', $this->EE->stats->statdata($stat), $str);
 		}
 		
 		/** -------------------------------------
@@ -9541,12 +9540,12 @@ class Forum_Core extends Forum {
 			}
  		}
  		
-		if (count($this->EE->stats->statdata['current_names']) == 0) 		
+		if (count($this->EE->stats->statdata('current_names')) == 0) 		
 		{
 			return preg_replace("/\{member_names.*?\}.*?\{\/member_names\}/s", '', $str);
 		}
 				
-		foreach ($this->EE->stats->statdata['current_names'] as $k => $v)
+		foreach ($this->EE->stats->statdata('current_names') as $k => $v)
 		{
 			$temp = $chunk;
 			

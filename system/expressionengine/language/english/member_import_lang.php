@@ -300,5 +300,5 @@ type of your imported data, the passwords will not work, and affected members wi
 ''=>''
 );
 
-/* End of file lang.member_import.php */
-/* Location: ./system/expressionengine/language/english/lang.member_import.php */
+/* End of file member_import_lang.php */
+/* Location: ./system/expressionengine/language/english/member_import_lang.php */

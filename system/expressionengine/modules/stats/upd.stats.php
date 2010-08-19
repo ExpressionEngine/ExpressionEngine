@@ -29,7 +29,6 @@ class Stats_upd {
 	
 	function Stats_upd()
 	{
-		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 		$this->EE->load->dbforge();
 	}

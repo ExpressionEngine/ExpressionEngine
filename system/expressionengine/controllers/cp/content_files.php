@@ -458,7 +458,7 @@ class Content_files extends Controller {
 				$this->zip->read_file($file);
 			}
 
-			$this->zip->download('images.zip'); 
+			$this->zip->download('downloaded_files.zip'); 
 		}
 	}
 

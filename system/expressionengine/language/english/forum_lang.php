@@ -1045,5 +1045,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.forum.php */
-/* Location: ./system/expressionengine/language/english/lang.forum.php */
+/* End of file forum_lang.php */
+/* Location: ./system/expressionengine/language/english/forum_lang.php */

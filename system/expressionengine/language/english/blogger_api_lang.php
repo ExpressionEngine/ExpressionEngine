@@ -155,5 +155,5 @@ fields before sending it to the desktop program.',
 ''=>''
 );
 
-/* End of file lang.blogger_api.php */
-/* Location: ./system/expressionengine/language/english/lang.blogger_api.php */
+/* End of file blogger_api_lang.php */
+/* Location: ./system/expressionengine/language/english/blogger_api_lang.php */

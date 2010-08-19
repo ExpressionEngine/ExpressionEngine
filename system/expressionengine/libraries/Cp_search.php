@@ -375,7 +375,7 @@ class Cp_search {
 
 		foreach($lang_files as $langfile)
 		{
-			include(APPPATH.'language/'.$language.'/lang.'.$langfile.EXT);
+			include(APPPATH.'language/'.$language.'/'.$langfile.'_lang'.EXT);
 
 			if (isset($lang))
 			{

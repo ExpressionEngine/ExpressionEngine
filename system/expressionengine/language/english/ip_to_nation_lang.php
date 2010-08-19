@@ -51,5 +51,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.ip_to_nation.php */
-/* Location: ./system/expressionengine/language/english/lang.ip_to_nation.php */
+/* End of file ip_to_nation_lang.php */
+/* Location: ./system/expressionengine/language/english/ip_to_nation_lang.php */

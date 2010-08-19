@@ -3703,7 +3703,7 @@ class Wiki {
 			return $str;
 		}
 		
-		if (count($this->EE->stats->statdata['current_names']) == 0) 		
+		if (count($this->EE->stats->statdata('current_names')) == 0) 		
 		{
 			return str_replace($match['0'], '', $str);
 		}
@@ -3714,7 +3714,7 @@ class Wiki {
 		
 		$names = '';
 				
-		foreach ($this->EE->stats->statdata['current_names'] as $k => $v)
+		foreach ($this->EE->stats->statdata('current_names') as $k => $v)
 		{
 			$temp = $match['1'];
 		
@@ -5345,16 +5345,22 @@ class Wiki {
 			{
 				$new_name = $this->valid_title($this->EE->security->sanitize_filename(strip_tags($_FILES['userfile']['name'])));
 			}
-			
-			$no_extension_name = substr($new_name, 0, strrpos($new_name, '.'));
-			
+						
 			$server_path = $query->row('server_path');
 
-			$allowed_types = ($query->row('allowed_types') == 'all') ? '*' : $query->row('allowed_types');
+			switch($query->row('allowed_types'))
+			{
+				case 'all' : $allowed_types = '*';
+					break;
+				case 'img' : $allowed_types = 'jpg|png|gif';
+					break;
+				default :
+					$allowed_types = $query->row('allowed_types');
+			}
 
 			// Upload the image
 			$config = array(
-					'file_name'		=> $no_extension_name,
+					'file_name'		=> $new_name,
 					'upload_path'	=> $server_path,
 					'allowed_types'	=> $allowed_types,
 					'max_size'		=> $query->row('max_size'),
@@ -5407,7 +5413,7 @@ class Wiki {
 							'image_width'			=> $file_data['image_width'],
 							'image_height'			=> $file_data['image_height'],
 							'file_type'				=> $file_data['file_type'],
-							'file_size'				=> ceil($file_data['file_size'] / 1024),
+							'file_size'				=> $file_data['file_size'],
 							'file_hash'				=> $this->EE->functions->random('md5')
 						 );
 			

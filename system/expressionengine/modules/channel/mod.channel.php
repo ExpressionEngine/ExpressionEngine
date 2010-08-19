@@ -3865,21 +3865,11 @@ class Channel {
 				{
 					if (isset($this->categories[$row['entry_id']]) AND is_array($this->categories[$row['entry_id']]) AND count($cat_chunk) > 0)
 					{
-						if (isset($cat_chunk[0][1]['limit']))
-						{
-							$cat_limit = $cat_chunk[0][1]['limit'];
-						}
-						else
-						{
-							$cat_limit = FALSE;
-						}
-
-						$i = 0;
-
 						foreach ($cat_chunk as $catkey => $catval)
 						{
 							$cats = '';
-
+							$i = 0;
+							
 							//  We do the pulling out of categories before the "prepping" of conditionals
 							//  So, we have to do it here again too.  How annoying...
 							$catval[0] = $this->EE->functions->prep_conditionals($catval[0], $cond);
@@ -4005,7 +3995,7 @@ class Channel {
 
 								$cats .= $temp;
 
-								if ($cat_limit !== FALSE && $cat_limit == ++$i)
+								if (is_array($catval[1]) && isset($catval[1]['limit']) && $catval[1]['limit'] == ++$i)
 								{
 									break;
 								}

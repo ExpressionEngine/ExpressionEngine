@@ -161,6 +161,11 @@ class EE_Functions {
 		// Load the string helper
 		$this->EE->load->helper('string');       
 
+		if ($this->EE->config->item('force_query_string') == 'y')
+		{
+			$base_url .= '?';
+		}
+		
 		$base = $base_url.'/'.trim_slashes($segment);
        
        if (substr($base, -1) != '/' && $trailing_slash == TRUE)

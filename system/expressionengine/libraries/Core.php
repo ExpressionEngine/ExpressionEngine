@@ -321,9 +321,8 @@ class EE_Core {
 		 *  Update system stats
 		 * -----------------------------------------------------------------
 		 */
-			require PATH_MOD.'stats/mcp.stats'.EXT;    
-			
-			$this->EE->stats = new Stats_mcp();
+
+			$this->EE->load->library('stats');
 		 		
 			if (REQ == 'PAGE' && $this->EE->config->item('enable_online_user_tracking') != 'n')
 			{
@@ -487,6 +486,13 @@ class EE_Core {
 		
 		// Load the Super Model
 		$this->EE->load->model('super_model');
+		
+		// update documentation URL if site was running the beta and had the old location
+		// @todo remove after 2.1.1's release, move to the update script
+		if (strncmp($this->EE->config->item('doc_url'), 'http://expressionengine.com/docs', 32) == 0)
+		{
+			$this->EE->config->update_site_prefs(array('doc_url' => 'http://expressionengine.com/user_guide/'));
+		}
 	}
 	
 	// ------------------------------------------------------------------------
@@ -643,9 +649,12 @@ class EE_Core {
 	
 		if (class_exists('Stats'))
 		{ 
-			if (isset($this->EE->stats->statdata['last_cache_clear']) AND $this->EE->stats->statdata['last_cache_clear'] > 1)
+			
+			
+			if ($this->EE->stats->statdata('last_cache_clear') 
+				&& $this->EE->stats->statdata('last_cache_clear') > 1)
 			{
-				$last_clear = $this->EE->stats->statdata['last_cache_clear'];
+				$last_clear = $this->EE->stats->statdata('last_cache_clear');
 			}
 		}
 	

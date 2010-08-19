@@ -8,5 +8,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.xmlrpc.php */
-/* Location: ./system/expressionengine/language/english/lang.xmlrpc.php */
+/* End of file xmlrpc_lang.php */
+/* Location: ./system/expressionengine/language/english/xmlrpc_lang.php */

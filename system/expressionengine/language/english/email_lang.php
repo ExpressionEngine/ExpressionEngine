@@ -47,5 +47,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.email.php */
-/* Location: ./system/expressionengine/language/english/lang.email.php */
+/* End of file email_lang.php */
+/* Location: ./system/expressionengine/language/english/email_lang.php */

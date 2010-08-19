@@ -1377,8 +1377,10 @@ class EE_Template {
 				}
 
 				// if it's a third party add-on, remove the temporarily added path for local libraries, models, etc.
-				if ( ! in_array($this->tag_data[$i]['class'] , $this->EE->core->native_modules)
-					&& ! in_array($this->tag_data[$i]['class'] , $this->EE->core->native_plugins))
+				// if a "no results" template is returned, $this->tag_data will be reset inside of the scope
+				// of the tag being processed.  So let's use the locally scoped variable for the class name
+				if ( ! in_array(strtolower($class_name) , $this->EE->core->native_modules)
+					&& ! in_array(strtolower($class_name) , $this->EE->core->native_plugins))
 				{
 					$this->EE->load->remove_package_path();
 				}

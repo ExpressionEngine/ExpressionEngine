@@ -1486,5 +1486,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.tools.php */
-/* Location: ./system/expressionengine/language/english/lang.tools.php */
+/* End of file tools_lang.php */
+/* Location: ./system/expressionengine/language/english/tools_lang.php */

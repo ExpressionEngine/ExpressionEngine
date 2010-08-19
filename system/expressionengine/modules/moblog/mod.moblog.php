@@ -280,8 +280,21 @@ class Moblog {
 		/** ------------------------------
 		/**  Email Login Check
 		/** ------------------------------*/
+		
+		$port = 110;
+		$ssl = (substr($this->moblog_array['moblog_email_server'], 0, 6) == 'ssl://');
+		
+		if ($ssl OR stripos($this->moblog_array['moblog_email_server'], 'gmail') !== FALSE)
+		{
+			if ( ! $ssl)
+			{
+				$this->moblog_array['moblog_email_server'] = 'ssl://'.$this->moblog_array['moblog_email_server'];
+			}
 
-		if ( ! $this->fp = @fsockopen($this->moblog_array['moblog_email_server'], 110, $errno, $errstr, 20))
+			$port = 995;
+		}
+
+		if ( ! $this->fp = @fsockopen($this->moblog_array['moblog_email_server'], $port, $errno, $errstr, 20))
 		{
 			$this->message_array[] = 'no_server_connection';
 			return FALSE;

@@ -233,5 +233,5 @@ $lang = array(
 ''=>''
 );
 
-/* End of file lang.search.php */
-/* Location: ./system/expressionengine/language/english/lang.search.php */
+/* End of file search_lang.php */
+/* Location: ./system/expressionengine/language/english/search_lang.php */
