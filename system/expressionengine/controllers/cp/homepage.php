@@ -154,18 +154,17 @@ class Homepage extends Controller {
 			$result = $query->result();
 			foreach($result as $row)
 			{
-				$c_link = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'entry_id='.$row->entry_id;
-				$link = BASE.AMP.'C=content_publish'.AMP.'M=view_entry'.AMP.'channel_id='.$row->channel_id.AMP.'entry_id='.$row->entry_id;
+				$link = '';
 				
 				if (($row->author_id == $this->session->userdata('member_id')) OR $this->cp->allowed_group('can_edit_other_entries'))
 				{
 					$link = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row->channel_id.AMP.'entry_id='.$row->entry_id;
 				}
 				
-				$c_link = '<a href="'.$c_link.'">'.$row->comment_total.'</a>';
-				$link = '<a href="'.$link.'">'.$row->title.'</a>';
+
+				$link = ($link == '') ? $row->title: '<a href="'.$link.'">'.$row->title.'</a>';
 				
-				$entries[$link] = $c_link;
+				$entries[] = $link;
 			}
 		}
 		

@@ -112,8 +112,8 @@ if ($EE_view_disable !== TRUE)
 		<?php if ($cp_recent_ids['entry']): ?>
 			<li class="group"><a href="<?=BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$cp_recent_ids['entry']['channel_id'].AMP.'entry_id='.$cp_recent_ids['entry']['entry_id']?>"><?=lang('most_recent_entry')?></a></li>
 		<?php endif;?>
-		<?php if ($cp_recent_ids['comment']): ?>
-			<li class="submission"><a href="<?=BASE.AMP.'C=content_edit'.AMP.'M=view_comment'.AMP.'comment_id='.$cp_recent_ids['comment']?>"><?=lang('most_recent_comment')?></a></li>
+		<?php if ($can_moderate_comments): ?>			
+			<li class="item"><a href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'status=p'?>"><?=lang('total_validating_comments').':'.NBS.'('.$comment_validation_count.')'?></a></li>
 		<?php endif;?>
 		</ul>
 	</div>
@@ -123,10 +123,20 @@ if ($EE_view_disable !== TRUE)
 		<div class="heading"><h2><?=lang('view')?></h2></div>
 		<ul>
 			<li class="site"><?=anchor($this->config->item('base_url').$this->config->item('index_page').'?URL='.$this->config->item('base_url').$this->config->item('index_page'), lang('site'))?></li>
-			<?php if (isset($this->cp->installed_modules['comment'])):?>
-			<li class="submission"><a href="<?=BASE.AMP.'C=content_edit'.AMP.'M=show_recent_comments'.AMP.'count=10'?>" class="submenu"><?=lang('recent_comments')?></a></li>
+			<?php if (isset($this->cp->installed_modules['comment']) && $can_moderate_comments):?>
+			<li class="item"><a href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'?>"><?=lang('recent_comments')?></a></li>
 			<?php endif;?>
-			<li class="item"><a href="<?=BASE.AMP.'C=content_edit'.AMP.'M=show_recent_entries'.AMP.'count=10'?>" class="submenu"><?=lang('recent_entries')?></a></li>
+			<li class="item"><a href="<?=BASE.AMP.'C=content_edit'.AMP.'M=show_recent_entries'.AMP.'count=10'?>" class="submenu accordion"><?=lang('recent_entries')?></a>
+				<ul class="submenu" style="display: none;">
+					<?php if (count($recent_entries) == 0):?>
+						<li><p><?=lang('no_entries'); ?></p></li>
+					<?php else:?>
+						<?php foreach($recent_entries as $entry_link):?>	   
+							<li><?=$entry_link?></li>
+						<?php endforeach; ?>
+					<?php endif; ?>
+				</ul>
+			</li>
 			<li class="resource"><a rel="external" href="<?=config_item('doc_url')?>"><?=lang('user_guide')?></a></li>
 			<li class="resource"><a rel="external" href="http://expressionengine.com/wiki/"><?=lang('ee_wiki')?></a></li>
 		</ul>
