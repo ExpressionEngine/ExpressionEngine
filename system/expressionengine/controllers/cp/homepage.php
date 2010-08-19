@@ -82,6 +82,7 @@ class Homepage extends Controller {
 			$vars['show_page_option'] = $this->member_model->can_access_module('pages');
 		}
 		
+		$vars['recent_entries'] = $this->recent_entries();
 
 		// A few more permission checks
 		
@@ -100,6 +101,10 @@ class Homepage extends Controller {
 			}
 		}
 		
+		//  Can they moderate ALL comments
+		$vars['can_moderate_comments'] = $this->cp->allowed_group('can_moderate_comments') ? TRUE : FALSE;
+		
+		$vars['comment_validation_count'] = $this->total_validating_comments();
 		
 		// Most recent comment and most recent entry
 		
@@ -126,6 +131,48 @@ class Homepage extends Controller {
 		
 		$this->load->view('homepage', $vars);
 	}
+
+	function total_validating_comments()
+	{  
+		$this->db->where('status', 'p');
+		$this->db->where('site_id', $this->config->item('site_id'));
+		$this->db->from('comments');
+
+		return $this->db->count_all_results();
+  	}
+  	/* END */
+
+	function recent_entries()
+	{
+		$this->load->model('channel_entries_model');
+		$entries = array();
+
+		$query = $this->channel_entries_model->get_recent_entries(10);
+		
+		if ($query && $query->num_rows() > 0)
+		{
+			$result = $query->result();
+			foreach($result as $row)
+			{
+				$c_link = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'entry_id='.$row->entry_id;
+				$link = BASE.AMP.'C=content_publish'.AMP.'M=view_entry'.AMP.'channel_id='.$row->channel_id.AMP.'entry_id='.$row->entry_id;
+				
+				if (($row->author_id == $this->session->userdata('member_id')) OR $this->cp->allowed_group('can_edit_other_entries'))
+				{
+					$link = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row->channel_id.AMP.'entry_id='.$row->entry_id;
+				}
+				
+				$c_link = '<a href="'.$c_link.'">'.$row->comment_total.'</a>';
+				$link = '<a href="'.$link.'">'.$row->title.'</a>';
+				
+				$entries[$link] = $c_link;
+			}
+		}
+		
+		return $entries;
+	}
+
+
 
 	// --------------------------------------------------------------------
 
