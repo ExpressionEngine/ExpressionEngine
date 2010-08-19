@@ -24,7 +24,7 @@
  */
 class Comment_mcp {
 
-	var $pipe_length		= '1';
+	var $pipe_length		= '2';
 	var $comment_chars			= "100";
 	var $comment_leave_breaks = 'y';
 	var $perpage = 5;
@@ -45,7 +45,7 @@ class Comment_mcp {
 
 		$this->EE->cp->set_right_nav(array(
 								'settings'				=> $this->base_url.AMP.'method=settings',
-								'comment_module_name' => $this->base_url)
+								'comments' 				=> $this->base_url)
 							);		
 		
 	}
@@ -74,10 +74,13 @@ class Comment_mcp {
 		$this->EE->load->library('table');
 		$this->EE->load->helper('form');
 		
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('comment_module_name'));
+		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('comments'));
 		// Add javascript
 
 		$this->EE->cp->add_js_script(array('plugin' => 'dataTables'));
+		//$this->EE->cp->add_js_script(array('plugin' => 'base64'));
+		$this->EE->cp->add_js_script(array('plugin' => 'crypt'));
+
 		$this->EE->cp->add_js_script('ui', 'datepicker');
 			
 		$this->EE->javascript->output($this->ajax_filters('comments_ajax_filter', 9));
@@ -221,7 +224,6 @@ class Comment_mcp {
 		/** ---------------------------------------*/
 
 /*
-		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('comment_module_name'));
 
 		$this->EE->db->select('comment_text_formatting, comment_html_formatting, comment_allow_img_urls, comment_auto_link_urls');
 
@@ -313,7 +315,7 @@ class Comment_mcp {
 			$data['status_search_url'] = $this->base_url.AMP.'status='.$row['status'];
 			
 			
-			$data['ip_search_url'] = $this->base_url.AMP.'ip_address='.base64_encode(str_replace('.','_',$row['ip_address']));
+			$data['ip_search_url'] = $this->base_url.AMP.'ip_address='.base64_encode($row['ip_address']);
 			
 			$data['channel_search_url'] = $this->base_url.AMP.'channel_id='.$row['channel_id'];
 			
@@ -439,13 +441,18 @@ function fnGetKey( aoData, sKey )
    			search_in		= document.getElementById("f_search_in"),
    			date_range		= document.getElementById("date_range");
 
-			if (search_in.value == "ip_address")
+			//keywordFix = $.base64Encode(keywords.value);
+			if (keywords.value.length)
 			{
-			//	keywords.value = keywords.value.replace(/\./g, "_");
+				keywordFix = $().crypt({method:"b64enc",source: keywords.value}); 
 			}
-
+			else
+			{
+				keywordFix = keywords.value;
+			}
+			
 		aoData.push( 
-			 { "name": "keywords", "value": keywords.value },
+			 { "name": "keywords", "value": keywordFix },
 	         { "name": "status", "value": status.value },
 			 { "name": "channel_id", "value": channel_id.value },
 	         { "name": "search_in", "value": search_in.value },
@@ -499,7 +506,7 @@ function fnGetKey( aoData, sKey )
 		
 
 					aoData.push(  
-			 			{ "name": "keywords", "value": keywords.value },
+			 			{ "name": "keywords", "value": keywordFix },
 	         			{ "name": "status", "value": status.value },
 			 			{ "name": "channel_id", "value": channel_id.value },
 	         			{ "name": "search_in", "value": search_in.value },
@@ -700,7 +707,7 @@ function fnGetKey( aoData, sKey )
 			
 			$edit_url = $this->base_url.AMP.'method=edit_comment_form'.AMP.'comment_id='.$comment['comment_id'];
 			$status_search_url = $this->base_url.AMP.'status='.$comment['status'];
-			$ip_search_url = $this->base_url.AMP.'ip_address='.base64_encode(str_replace('.','_',$comment['ip_address']));
+			$ip_search_url = $this->base_url.AMP.'ip_address='.base64_encode($comment['ip_address']);
 			$channel_search_url = $this->base_url.AMP.'channel_id='.$comment['channel_id'];
 			$email_search_url = $this->base_url.AMP.'email='.base64_encode($comment['email']);
 
@@ -750,15 +757,7 @@ function fnGetKey( aoData, sKey )
 		}
 		elseif ($this->EE->input->get('keywords'))
 		{
-			if ($ajax)
-			{
-				$keywords = ($this->EE->input->post('ip_address') OR $this->EE->input->post('search_in') == 'ip_address') ? str_replace('_', '.', $this->EE->input->get('keywords')) : $this->EE->input->get('keywords');
-			}
-			else
-			{
-				$keywords = base64_decode($this->EE->input->get('keywords'));
-			}
-			
+			$keywords = base64_decode($this->EE->input->get('keywords'));
 		}
 		
 		$channel_id = ($this->EE->input->get_post('channel_id') && $this->EE->input->get_post('channel_id') != 'null') ? $this->EE->input->get_post('channel_id') : '';
@@ -806,7 +805,7 @@ function fnGetKey( aoData, sKey )
 		elseif($this->EE->input->get('ip_address'))
 		{
 			$filter_on['search_in'] = 'ip_address';
-			$filter_on['keywords'] = str_replace('_', '.', base64_decode($this->EE->input->get('ip_address')));
+			$filter_on['keywords'] = base64_decode($this->EE->input->get('ip_address'));
 		}
 
 		//  Create the get variables for non-js pagination
@@ -1061,7 +1060,7 @@ function fnGetKey( aoData, sKey )
 
 		// a bit of a breadcrumb override is needed
 		$this->EE->cp->set_variable('cp_breadcrumbs', array(
-			$this->base_url => $this->EE->lang->line('edit_comment')));
+			$this->base_url => $this->EE->lang->line('comments')));
 
 		$vars['hidden'] = $hidden;
 
@@ -1387,11 +1386,15 @@ function fnGetKey( aoData, sKey )
 			$this->EE->functions->redirect($this->base_url);
 		}
 
-		$comments	= array();
+		$this->EE->load->library('table');
+		$comments = array();
 
-		foreach ($_POST['toggle'] as $key => $val)
+		if ($this->EE->input->post('toggle'))
 		{
-			$comments[] = $val;
+			foreach ($_POST['toggle'] as $key => $val)
+			{
+				$comments[] = $val;
+			}
 		}
 		
 		if ($this->EE->input->get_post('comment_id') !== FALSE && is_numeric($this->EE->input->get_post('comment_id')))
@@ -1404,27 +1407,44 @@ function fnGetKey( aoData, sKey )
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 
+		$this->EE->db->select('channel_titles.author_id, title, comments.comment_id, comment');
+		$this->EE->db->from(array('channel_titles', 'comments'));
+		$this->EE->db->where('channel_titles.entry_id = '.$this->EE->db->dbprefix('comments.entry_id'));
+		$this->EE->db->where_in('comments.comment_id', $comments);
 
-		if ( ! $this->EE->cp->allowed_group('can_delete_all_comments'))
+		$comments	= array();
+
+		$query = $this->EE->db->get();
+
+		if ($query->num_rows() > 0)
 		{
-			$this->EE->db->select('channel_titles.author_id, comments.comment_id');
-			$this->EE->db->from(array('channel_titles', 'comments'));
-			$this->EE->db->where('channel_titles.entry_id = '.$this->EE->db->dbprefix('comments.entry_id'));
-			$this->EE->db->where_in('comments.comment_id', $comments);
-
-			$comments	= array();
-
-			$query = $this->EE->db->get();
-
-			if ($query->num_rows() > 0)
+			foreach($query->result_array() as $row)
 			{
-				foreach($query->result_array() as $row)
-				{
-					if ($row['author_id'] == $this->EE->session->userdata('member_id'))
-					{
-						$comments[] = $row['comment_id'];
-					}
+				if ( ! $this->EE->cp->allowed_group('can_delete_all_comments')  && ($row['author_id'] != $this->EE->session->userdata('member_id')))
+				{					
+					continue;
 				}
+				
+
+				if ($this->comment_leave_breaks == 'y')
+				{
+					$row['comment'] = str_replace(array("\n","\r"),
+												  '<br />',
+												  strip_tags($row['comment'])
+												  );
+				}
+				else
+				{
+					$row['comment'] = strip_tags(str_replace(array("\t","\n","\r"), '', $row['comment']));
+				}
+
+				if ($this->comment_chars != 0)
+				{
+					$row['comment'] = $this->EE->functions->char_limiter(trim($row['comment']), $this->comment_chars);
+				}
+
+				$comments[$row['comment_id']]['entry_title'] = $row['title'];
+				$comments[$row['comment_id']]['comment'] = $row['comment'];
 			}
 		}
 
@@ -1439,19 +1459,22 @@ function fnGetKey( aoData, sKey )
 		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('delete_confirm'));
 
 		$this->EE->cp->set_variable('cp_breadcrumbs', array(
-			$this->base_url => $this->EE->lang->line('edit'),
+			$this->base_url => $this->EE->lang->line('comments'),
 
 		));
 		
 		$vars = array();
 
 		$vars['hidden'] = array(
-								'comment_ids'	=> implode('|', $comments),
+								'comment_ids'	=> implode('|', array_keys($comments)),
 								'add_to_blacklist' => $this->EE->input->get_post('add_to_blacklist')
 								);
+								
+								
 
 		$message = (count($comments) > 1) ? 'delete_comments_confirm' : 'delete_comment_confirm';
 
+		$vars['comments'] = $comments;
 		$vars['message'] = $message;
 		return $this->EE->load->view('delete_comments', $vars, TRUE);
 		//$this->EE->load->view('delete_comments', $vars);
@@ -1466,7 +1489,7 @@ function fnGetKey( aoData, sKey )
 	 * @param	string	new status
 	 * @return	void
 	 */
-	function change_comment_status($status)
+	function change_comment_status($status = '')
 	{
 		if ( ! $this->EE->cp->allowed_group('can_access_content'))
 		{
@@ -1503,11 +1526,18 @@ function fnGetKey( aoData, sKey )
 
 		if (count($comments) == 0)
 		{
-			//show_error($this->EE->lang->line('unauthorized_access'));
+			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 
-
-
+		if ($status == '')
+		{
+			$status = $this->EE->input->get('status');
+		}
+		
+		if ( ! in_array($status, array('o', 'c', 'p')))
+		{
+			show_error($this->EE->lang->line('unauthorized_access'));
+		}
 
 		$this->EE->db->select('entry_id, channel_id, author_id');
 		$this->EE->db->where_in('comment_id', $comments);
@@ -1517,7 +1547,7 @@ function fnGetKey( aoData, sKey )
 
 		if ($query->num_rows() == 0)
 		{
-			//show_error($this->EE->lang->line('unauthorized_access'));
+			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 
 		$entry_ids	= array();
@@ -1538,14 +1568,6 @@ function fnGetKey( aoData, sKey )
 		/** -------------------------------
 		/**	 Change Status
 		/** -------------------------------*/
-
-		$valid = array('o', 'c', 'p');
-		
-		if ( ! in_array($status, $valid))
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-		
 
 		$this->EE->db->set('status', $status);
 		$this->EE->db->where_in('comment_id', $comments);
@@ -1908,9 +1930,14 @@ function fnGetKey( aoData, sKey )
 		$this->EE->load->helper('form');
 
 
-		$vars = array('cp_page_title'	=> $this->EE->lang->line('comment_module_name'), 
-			'action_url' => 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=save_settings'
+		$vars = array('action_url' => 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=save_settings'
 		);
+
+		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('comment_settings'));
+
+		// a bit of a breadcrumb override is needed
+		$this->EE->cp->set_variable('cp_breadcrumbs', array(
+			$this->base_url => $this->EE->lang->line('comments')));		
 				
 		$vars['comment_moderation_override'] = ($this->EE->config->item('comment_moderation_override') == 'y') ? TRUE : FALSE;
 		

@@ -31,7 +31,7 @@ if ( ! defined('EXT'))
 
 class Comment_upd {
 
-	var $version = '2.0';
+	var $version = '2.1';
 
 	function Comment_upd()
 	{
@@ -188,6 +188,12 @@ class Comment_upd {
 		{
 			$this->EE->db->query("ALTER TABLE `exp_comments` CHANGE `weblog_id` `channel_id` INT(4) UNSIGNED NOT NULL DEFAULT 1");
 		}
+		
+		if ($current < 2.1)
+		{
+			$this->EE->db->query("UPDATE `exp_modules` SET `has_cp_backend` = 'y' WHERE module_name = 'comment'");
+
+		}		
 
 		return TRUE;
 	}

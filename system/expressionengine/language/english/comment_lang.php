@@ -36,6 +36,24 @@ $lang = array(
 'settings' =>
 'Settings',
 
+'comment_settings' =>
+'Comment Settings',
+
+'delete_confirm' =>
+'Delete Comment Confirmation',
+
+'delete_comment_confirm' =>
+'Are you sure you want to permanently delete this comment?',
+
+'delete_comments_confirm' =>
+'Are you sure you want to permanently delete these comments?',
+
+'comment_deleted' =>
+'Comment Deleted',
+
+'status_changed' =>
+'Status Changed',
+
 'comment_word_censoring' =>
 'Force word censoring for comments', 
 

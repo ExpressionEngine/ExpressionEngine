@@ -1,4 +1,3 @@
-<h3><?=lang('simple_commerce_module_name')?></h3>
 <?php
 
 echo form_open($action_url);
@@ -8,12 +7,6 @@ $this->table->set_heading(
     array('data' => lang('preference'), 'style' => 'width:50%;'),
     lang('setting')
 );
-
-$this->table->add_row(array(
-		'colspan' 	=> 2,
-		'data'		=> lang('ipn_details')
-	)
-); 
 
 $this->table->add_row(array(
 		lang('comment_word_censoring', 'comment_word_censoring'),
