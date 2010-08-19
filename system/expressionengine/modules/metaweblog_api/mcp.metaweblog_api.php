@@ -483,6 +483,7 @@ class Metaweblog_api_mcp {
 		/** -----------------------------*/
 		
 		$this->EE->db->select('group_id, status');
+		$this->EE->db->where_not_in('status', array('open', 'closed'));
 		$this->EE->db->order_by('status_order');
 		$query = $this->EE->db->get('statuses');
 
@@ -509,13 +510,14 @@ class Metaweblog_api_mcp {
 		{
 			foreach ($query->result_array() as $row)
 			{
-				$this->field_array[$row['group_id']]  = array($row['group_id'], $row['field_id'], str_replace('"','',$row['field_label']));
+				$this->field_array[]  = array($row['group_id'], $row['field_id'], str_replace('"','',$row['field_label']));
 			}
 		}
 
+		$this->EE->lang->loadfile('content');
 		$channel_info = array();
 
-		foreach ($this->field_array as $key => $val)
+		foreach ($this->group_array as $key => $val)
 		{
 			$statuses = array();
 
@@ -525,10 +527,12 @@ class Metaweblog_api_mcp {
 			{
 				foreach ($this->status_array as $k => $v)
 				{
-					if ($v['0'] == $val['1'])
+					$statuses[] = array('open', $this->EE->lang->line('open'));
+					$statuses[] = array('closed', $this->EE->lang->line('closed'));
+					
+					if ($v['0'] == $key)
 					{
-						$status_name = ($v['1'] == 'closed' OR $v['1'] == 'open') ?  $this->EE->lang->line($v['1']) : $v['1'];
-						$statuses[] = array($v['1'], $status_name);
+						$statuses[] = array($v['1'], $v['1']);
 					}
 				}
 			}
@@ -548,7 +552,7 @@ class Metaweblog_api_mcp {
 			{
 				foreach ($this->field_array as $k => $v)
 				{
-					if ($v['0'] == $val['0'])
+					if ($v['0'] == $key)
 					{
 						$fields[] = array($v['1'], $v['2']);
 					}
