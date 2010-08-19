@@ -899,9 +899,9 @@ $(document).ready(function() {
 			
 			open = EE.upload_directories[file.directory].pre_format;
 			close = EE.upload_directories[file.directory].post_format;
-			
-			replace = EE.filebrowser.image_tag.replace(/src="[^"]*"/, '');
-			replace = replace.replace('<img', '<img src="{filedir_'+file.directory+'}'+file.name+'"');
+
+			replace = EE.filebrowser.image_tag.replace(/\[!\[Link:!:http:\/\/\]!\]/, '');
+			replace = replace.replace(/src="([^"]*)"/, 'src="$1{filedir_'+file.directory+'}'+file.name+'"');
 			replace = replace.replace(/\/?>$/, file.dimensions+' '+props+' />');
 			
 			replace = open + replace + close;
