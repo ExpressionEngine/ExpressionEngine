@@ -354,7 +354,7 @@ class Content_publish extends Controller {
 			'message'				=> '',
 			'cp_page_title'			=> $this->lang->line('new_entry'),								// modified below if this is an "edit"
 			'BK'					=> ($this->input->get_post('BK')) ? AMP.'BK=1'.AMP.'Z=1' : '',
-			'required_fields'		=> array('title', 'entry_date', 'url_title')
+			'required_fields'		=> array('title', 'entry_date')
 		);
 
 		$vars['smileys_enabled'] = (isset($this->installed_modules['emoticon']) ? TRUE : FALSE);
@@ -1733,131 +1733,165 @@ class Content_publish extends Controller {
 		$vars['which'] = $which;
 		$vars['channel_id'] = $channel_id;
 		$vars['field_definitions'] = $this->field_definitions;
-		$vars['field_output'] = array();
+		$field_output = array();
 		
-		if ($this->form_validation->run() == FALSE OR is_numeric($version_id) OR $this->input->get_post('use_autosave') == 'y')
-		{
-			$this->cp->add_to_foot($this->insert_javascript());
 		
-			if ($vars['smileys_enabled'])
-			{
-				$this->cp->add_to_foot(smiley_js());				
-			}
-
-			foreach($this->api_channel_fields->settings as $field => $field_info)
-			{
-				if (isset($opts['string_override']))
-				{
-					$vars['field_output'][$field] = $opts;
-				}
-								
-				if (isset($field_info['field_required']) && $field_info['field_required'] == 'y')
-				{
-					$vars['required_fields'][] = $field_info['field_id'];
-				}
+		
+		// Run Validation
+		
+		$attempt_saving = FALSE;
 				
-				if ($vars['smileys_enabled'])
-				{
-					$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), $field_info['field_name']);
-					$col_array = $this->table->make_columns($image_array, 8);
-					$vars['smiley_table'][$field] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
-					$this->table->clear(); // clear out tables for the next smiley					
-				}
-
-				$this->api_channel_fields->setup_handler($field);
-				$field_value = set_value($field_info['field_name'], $field_info['field_data']);
-				$vars['field_output'][$field_info['field_id']] = $this->api_channel_fields->apply('display_publish_field', array($field_value));
-			}
-
-			$this->javascript->set_global('publish.required_fields', $vars['required_fields']);
-
-			$this->_define_options_fields($vars, $which);
-			
-			if ($show_revision_cluster == 'y')
-			{
-				$this->_define_revisions_fields($vars, $versioning);
-			}
-			
-			$this->_define_forum_fields($vars);
-
-			foreach($this->field_definitions as $field => $opts)
-			{
-				$vars['field_output'][$field] = $opts;
-			}
-			
-			// Publish tabs need a label
-			foreach ($vars['publish_tabs'] as $tab => $fields)
-			{
-				$vars['tab_labels'][$tab] = ( ! isset($vars['publish_tabs'][$tab]['_tab_label'])) ? $tab : $vars['publish_tabs'][$tab]['_tab_label'];
-				unset($vars['publish_tabs'][$tab]['_tab_label']);				
-			}
-
-			$this->javascript->compile();
-			$this->load->view('content/publish', $vars);
+		if ($this->form_validation->run() == TRUE && ! is_numeric($version_id) && $this->input->get_post('use_autosave') != 'y')
+		{
+			$attempt_saving = TRUE;
 		}
-		else
+		
+		
+		// Final setup
+		
+		$this->cp->add_to_foot($this->insert_javascript());
+	
+		if ($vars['smileys_enabled'])
 		{
-			$this->cp->add_to_foot($this->insert_javascript());
+			$this->cp->add_to_foot(smiley_js());				
+		}
+
+		foreach($this->api_channel_fields->settings as $field => $field_info)
+		{
+			if (isset($opts['string_override']))
+			{
+				$field_output[$field] = $opts;
+			}
+							
+			if (isset($field_info['field_required']) && $field_info['field_required'] == 'y')
+			{
+				$vars['required_fields'][] = $field_info['field_id'];
+			}
 			
 			if ($vars['smileys_enabled'])
 			{
-				$this->cp->add_to_foot(smiley_js());				
-			}
-			
-			foreach($this->api_channel_fields->settings as $field => $field_info)
-			{
-				if (isset($opts['string_override']))
-				{
-					$vars['field_output'][$field] = $opts;
-				}
-
-				if (isset($field_info['field_required']) && $field_info['field_required'] == 'y')
-				{
-					$vars['required_fields'][] = $field_info['field_id'];
-				}	
-				
-				if ($vars['smileys_enabled'])
-				{				
-					$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), $field_info['field_name']);
-					$col_array = $this->table->make_columns($image_array, 8);
-					$vars['smiley_table'][$field] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
-					$this->table->clear(); // clear out tables for the next smiley	
-				}
-				
-				$this->api_channel_fields->setup_handler($field);
-				$field_value = set_value($field_info['field_name'], $field_info['field_data']);
-
-				$vars['field_output'][$field_info['field_id']] = $this->api_channel_fields->apply('display_publish_field', array($field_value));
+				$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), $field_info['field_name']);
+				$col_array = $this->table->make_columns($image_array, 8);
+				$vars['smiley_table'][$field] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
+				$this->table->clear(); // clear out tables for the next smiley					
 			}
 
-			$this->javascript->set_global('publish.required_fields', $vars['required_fields']);
-			
-			$this->_define_options_fields($vars, $which);
+			$this->api_channel_fields->setup_handler($field);
+			$field_value = set_value($field_info['field_name'], $field_info['field_data']);
+			$field_output[$field_info['field_id']] = $this->api_channel_fields->apply('display_publish_field', array($field_value));
+		}
+
+		$this->javascript->set_global('publish.required_fields', $vars['required_fields']);
+
+		$this->_define_options_fields($vars, $which);
+		
+		if ($show_revision_cluster == 'y')
+		{
 			$this->_define_revisions_fields($vars, $versioning);
-			$this->_define_forum_fields($vars);
-			
-			foreach($this->field_definitions as $field => $opts)
-			{
-				$vars['field_output'][$field] = $opts;
-			}
+		}
+		
+		$this->_define_forum_fields($vars);
 
-			// Publish tabs need a label
-			foreach ($vars['publish_tabs'] as $tab => $fields)
-			{
-				$vars['tab_labels'][$tab] = ( ! isset($vars['publish_tabs'][$tab]['_tab_label'])) ? $tab : $vars['publish_tabs'][$tab]['_tab_label'];
-				unset($vars['publish_tabs'][$tab]['_tab_label']);				
-			}
-
-			// Entry submission will return false if no channel id is provided, and
-			// in that event, just reload the publish page
-			
+		foreach($this->field_definitions as $field => $opts)
+		{
+			$field_output[$field] = $opts;
+		}
+		
+		// Publish tabs need a label
+		foreach ($vars['publish_tabs'] as $tab => $fields)
+		{
+			$vars['tab_labels'][$tab] = ( ! isset($vars['publish_tabs'][$tab]['_tab_label'])) ? $tab : $vars['publish_tabs'][$tab]['_tab_label'];
+			unset($vars['publish_tabs'][$tab]['_tab_label']);				
+		}
+		
+		
+		
+		// Sort field output array to show up in sidebar with a sensible sort order
+		
+		$vars['field_output'] = $this->_sort_sidebar_list($field_output, $vars['required_fields']);
+		unset($field_output);		
+		
+		
+		
+		// Run validation
+		
+		if ($attempt_saving == TRUE)
+		{
 			if (($err = $this->_submit_new_entry()) !== TRUE)
 			{
-				$this->javascript->compile();
 				$vars['submission_error'] = $err;
-				$this->load->view('content/publish', $vars);
+				
+				if (isset($this->api_channel_entries->errors['url_title']))
+				{
+					$this->form_validation->_field_data['url_title']['error'] = $this->api_channel_entries->errors['url_title'];
+					
+					foreach($vars['publish_tabs'] as $tab => $fields)
+					{
+						foreach($fields as $field_name => $field)
+						{
+							if ($field_name == 'url_title')
+							{
+								$vars['publish_tabs'][$tab][$field_name]['visible'] = TRUE;
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				// It submitted or we're showing the pings error page - do nothing
+				return;
 			}
 		}
+		
+		$this->javascript->compile();
+		$this->load->view('content/publish', $vars);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Sort field list for sidebar
+	 *
+	 * Takes the field output array and resorts it to show alphabetically by
+	 * label with the required fields grouped at the top.
+	 *
+	 * @access	private
+	 * @return	mixed
+	 */
+	function _sort_sidebar_list($fields, $required)
+	{
+		$sorted = array();
+		
+		$_required_field_labels = array();
+		$_optional_field_labels = array();
+		
+		foreach($fields as $name => $field)
+		{
+			$f = is_array($field) ? $field : $this->api_channel_fields->settings[$name];
+			
+			if (in_array($name, $required))
+			{
+				$_required_field_labels[$name] = $f['field_label'];
+			}
+			else
+			{
+				$_optional_field_labels[$name] = $f['field_label'];
+			}
+		}
+		
+		asort($_required_field_labels);
+		asort($_optional_field_labels);
+		
+		foreach(array($_required_field_labels, $_optional_field_labels) as $sidebar_field_groups)
+		{
+			foreach($sidebar_field_groups as $name => $label)
+			{
+				$sorted[$name] = $fields[$name];
+			}
+		}
+		
+		return $sorted;
 	}
 
 	// --------------------------------------------------------------------

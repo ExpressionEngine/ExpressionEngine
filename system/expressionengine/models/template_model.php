@@ -631,8 +631,7 @@ class Template_model extends CI_Model {
 		$vars = array(
 						'admin_notify_reg'						=> array('name', 'username', 'email', 'site_name', 'control_panel_url'),
 						'admin_notify_entry'					=> array('channel_name', 'entry_title', 'entry_url', 'comment_url', 'name', 'email'),
-						'admin_notify_comment'					=> array('channel_name', 'entry_title', 'comment_url', 'comment', 'comment_id', 'name', 'url', 'email', 'location', 'unwrap}{delete_link}{/unwrap'),
-						'admin_notify_trackback'				=> array('entry_title', 'comment_url', 'sending_channel_name', 'sending_entry_title', 'sending_channel_url', 'trackback_id', 'unwrap}{delete_link}{/unwrap'),
+						'admin_notify_comment'					=> array('channel_name', 'entry_title', 'entry_id', 'url_title', 'channel_id', 'comment_url_title_auto_path',  'comment_url', 'comment', 'comment_id', 'name', 'url', 'email', 'location', 'unwrap}{delete_link}{/unwrap', 'unwrap}{close_link}{/unwrap', 'unwrap}{approve_link}{/unwrap'),
 						'admin_notify_forum_post'				=> array('name_of_poster', 'forum_name', 'title', 'body', 'thread_url', 'post_url'),
 						'admin_notify_mailinglist'				=> array('email', 'mailing_list'),
 						'mbr_activation_instructions'			=> array('name',  'username', 'email', 'activation_url', 'site_name', 'site_url'),
@@ -641,7 +640,7 @@ class Template_model extends CI_Model {
 						'decline_member_validation'				=> array('name', 'site_name', 'site_url'),
 						'validated_member_notify'				=> array('name', 'site_name', 'site_url'),
 						'mailinglist_activation_instructions'	=> array('activation_url', 'site_name', 'site_url', 'mailing_list'),
-						'comment_notification'					=> array('name_of_commenter', 'name_of_recipient', 'channel_name', 'entry_title', 'comment_url', 'comment', 'notification_removal_url', 'site_name', 'site_url', 'comment_id'),
+						'comment_notification'					=> array('name_of_commenter', 'name_of_recipient', 'channel_name', 'entry_title', 'entry_id', 'url_title', 'channel_id', 'comment_url_title_auto_path', 'comment_url', 'comment', 'notification_removal_url', 'site_name', 'site_url', 'comment_id'),
 						'admin_notify_gallery_comment'			=> array('name_of_commenter', 'gallery_name', 'entry_title', 'comment_url', 'comment', 'comment_id'),
 						'gallery_comment_notification'			=> array('name_of_commenter', 'name_of_recipient', 'gallery_name', 'entry_title', 'comment_url', 'comment', 'notification_removal_url', 'site_name', 'site_url', 'comment_id'),
 						'forum_post_notification'				=> array('name_of_recipient', 'forum_name', 'title', 'thread_url', 'body', 'post_url'),

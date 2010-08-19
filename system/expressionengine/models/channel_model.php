@@ -479,6 +479,36 @@ class Channel_model extends CI_Model {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Update Allowed Comments
+	 *
+	 * Updates allowed comments setting for all entries for a channel
+	 *
+	 * @access	public
+	 * @param	int		channel id
+	 * @param	int		comments allowed
+	 * @return	int		affected rows
+	 */
+	function update_comments_allowed($channel_id, $allow_comments)
+	{
+		$this->db->where('channel_id', $channel_id);
+		
+		if ($allow_comments == 'y')
+		{
+			$this->db->set('allow_comments', 'y');
+		}
+		else
+		{
+			$this->db->set('allow_comments', 'n');
+		}
+		
+		$this->db->update('channel_titles');
+		return $this->db->affected_rows();
+	}
+
+
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Clear Versioning Data
 	 *
 	 * @access	public

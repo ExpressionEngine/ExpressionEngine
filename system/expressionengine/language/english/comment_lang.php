@@ -14,6 +14,147 @@ $lang = array(
 
 //----------------------------------------
 
+
+'comment_moved' =>
+'Comment moved', 
+
+'comments_moved' =>
+'Comments moved',
+
+'search_comments' =>
+'Search Comments',
+
+'comment' =>
+'Comment',
+
+'comments' =>
+'Comments',
+
+'edit_comment' =>
+'Edit Comment',
+
+'settings' =>
+'Settings',
+
+'comment_word_censoring' =>
+'Force word censoring for comments', 
+
+'comment_moderation_override' =>
+'Moderate expired entries',
+
+'selection_required' => 
+'At least one selection is required to submit',
+
+'close_selected' =>
+'Set Status to Closed',
+
+'open_selected' =>
+'Set Status to Open',
+
+'pending_selected' =>
+'Set Status to Pending',
+
+'move_selected' =>
+'Move Selected',
+
+'instructions' =>
+'Instructions: ',
+
+'move' =>
+'Move',
+
+'move_comment_instr' =>
+'Enter the entry id number of the entry you wish to move the comment to:', 
+
+'url' =>
+'URL',
+
+'location' =>
+'Location',
+
+'choose_entry_for_comment_move' =>
+'Choose Entry for Comment Move',
+
+'move_comments_to_entry' =>
+'Move Comments to Entry',
+
+'filter_by_channel' =>
+'Filter by Channel',
+
+
+'filter_by_status' =>
+'Filter by Status',
+
+'filter_by_author' =>
+'Filter by Author',
+
+'date_range' =>
+'Date Range',
+
+'keywords' =>
+'Keywords',
+
+'open' =>
+'Open',
+
+'closed' =>
+'Closed',
+
+'entry_title' =>
+'Entry Title',
+
+'email' =>
+'Email',
+
+'name' =>
+'Name',
+
+'ip_address' =>
+'IP',
+
+'delete_selected' =>
+'Delete Selected',
+
+
+'blacklist' =>
+'Add IPs to Blacklist',
+
+'search_in_comments' =>
+'Search in Comments',
+
+'search_in_ips' =>
+'Search in IPs',
+
+'search_in_names' =>
+'Search in Names',
+
+'search_in_emails' =>
+'Search in Email Addresses',
+
+'today' =>
+'Today',
+
+'past_day' =>
+'Last 24 hours',
+
+'past_week' =>
+'Last 7 days',
+
+'past_month' =>
+'Last 30 days',
+
+'past_six_months' =>
+'Last 180 days',
+
+'past_year' =>
+'Last 365 days',
+
+'any_date' =>
+'Custom Date Range',
+
+
+//
+
 "cmt_invalid_form_submission" =>
 "Invalid form submission.",
 

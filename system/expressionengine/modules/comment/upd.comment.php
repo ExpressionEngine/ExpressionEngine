@@ -69,7 +69,7 @@ class Comment_upd {
 		$data = array(
 			'module_name' => 'Comment' ,
 			'module_version' => $this->version,
-			'has_cp_backend' => 'n'
+			'has_cp_backend' => 'y'
 		);
 
 		$this->EE->db->insert('modules', $data);

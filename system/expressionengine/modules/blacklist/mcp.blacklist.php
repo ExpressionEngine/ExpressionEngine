@@ -161,7 +161,7 @@ class Blacklist_mcp {
 	 * @access	public
 	 * @return	void
 	 */
-	function write_htaccess($htaccess_path = '')
+	function write_htaccess($htaccess_path = '', $return = 'redirect')
 	{
 		$htaccess_path = ($htaccess_path == '') ? $this->EE->config->item('htaccess_path') : $htaccess_path;
 		
@@ -172,6 +172,11 @@ class Blacklist_mcp {
 
 		if ( ! $fp = @fopen($htaccess_path, FOPEN_READ))
 		{
+			if ($return == 'bool')
+			{
+				return FALSE;
+			}
+			
 			show_error($this->EE->lang->line('invalid_htaccess_path'));
 		}
 
@@ -324,19 +329,22 @@ class Blacklist_mcp {
 	 * @access	public
 	 * @return	void
 	 */
-	function update_blacklist()
+	function update_blacklist($additions = array(), $write = FALSE, $return = 'redirect')
 	{
 		if ( ! $this->EE->db->table_exists('blacklisted'))
 		{
 			show_error($this->EE->lang->line('ref_no_blacklist_table'));
 		}
 
+		$write_htaccess = ($write) ? $write : $this->EE->input->get_post('write_htaccess');
+		
 		// Current Blacklisted
 
 		$query 			= $this->EE->db->get('blacklisted');
 		$old['url']		= array();
 		$old['agent']	= array();
 		$old['ip']		= array();
+		$use_post		= TRUE;
 
 		if ($query->num_rows() > 0)
 		{
@@ -377,6 +385,16 @@ class Blacklist_mcp {
 		$default = array('ip', 'agent', 'url');
 		$modified_channels = array();
 
+		if (count($additions) > 0)
+		{
+			$use_post = FALSE;
+			
+			$new_data['agent']		= (isset($additions['agent'])) ? array_merge($old['agent'], $additions['agent']) : $old['agent'];
+			$new_data['url']		= (isset($additions['url'])) ? array_merge($old['url'], $additions['url']) : $old['url'];
+			$new_data['ip']		= (isset($additions['ip'])) ? array_merge($old['ip'], $additions['ip']) : array();			
+
+		}
+		
 		foreach ($default as $val)
 		{
 			if (isset($_POST[$val]))
@@ -384,54 +402,68 @@ class Blacklist_mcp {
 				 $_POST[$val] = str_replace('[-]', '', $_POST[$val]);
 				 $_POST[$val] = str_replace('[+]', '', $_POST[$val]);
 				 $_POST[$val] = trim(stripslashes($_POST[$val]));
-
+ 
 				 $new_values = explode(NL,strip_tags($_POST[$val]));
-
-				 // Clean out user mistakes; and
-				 // Clean out Referrers with new additions
-				 foreach ($new_values as $key => $this->value)
-				 {
-					if (trim($this->value) == "" OR trim($this->value) == NL)
-					{
-						unset($new_values[$key]);
-					}
-					elseif ( ! in_array($this->value, $old[$val]))
-					{
-						$name = ($val == 'url') ? 'from' : $val;
-
-						if ($this->EE->db->table_exists('referrers'))
-						{
-							$this->EE->db->like('ref_'.$name, $this->value);
-
-							foreach ($white[$val] as $w_value)
-							{
-								$this->EE->db->not_like('ref_'.$name, $w_value);
-							}
-
-							$this->EE->db->delete('referrers');
-						}
-					}
-				 }
-
-				 sort($new_values);
-
-				 $_POST[$val] = implode("|", array_unique($new_values));
-
-				 $this->EE->db->where('blacklisted_type', $val);
-				 $this->EE->db->delete('blacklisted');
-
-				 $data = array(
-				 	'blacklisted_type' => $val,
-				 	'blacklisted_value' => $_POST[$val]
-				 );
-
-				 $this->EE->db->insert('blacklisted', $data);
 			}
+			elseif (isset($new_data[$val]))
+			{
+				$new_values = $new_data[$val];
+			}
+			else
+			{
+				continue;
+			}
+
+			 // Clean out user mistakes; and
+			 // Clean out Referrers with new additions
+			 foreach ($new_values as $key => $this->value)
+			 {
+				if (trim($this->value) == "" OR trim($this->value) == NL)
+				{
+					unset($new_values[$key]);
+				}
+				elseif ( ! in_array($this->value, $old[$val]))
+				{
+					$name = ($val == 'url') ? 'from' : $val;
+
+					if ($this->EE->db->table_exists('referrers'))
+					{
+						$this->EE->db->like('ref_'.$name, $this->value);
+
+						foreach ($white[$val] as $w_value)
+						{
+							$this->EE->db->not_like('ref_'.$name, $w_value);
+						}
+
+						$this->EE->db->delete('referrers');
+					}
+				}
+			 }
+
+			 sort($new_values);
+
+			 $_POST[$val] = implode("|", array_unique($new_values));
+
+			 $this->EE->db->where('blacklisted_type', $val);
+			 $this->EE->db->delete('blacklisted');
+
+			 $data = array(
+			 	'blacklisted_type' => $val,
+			 	'blacklisted_value' => $_POST[$val]
+			 );
+
+			 $this->EE->db->insert('blacklisted', $data);
 		}
 
-		if ($this->EE->input->get_post('write_htaccess') == 'y')
+
+		if ($write_htaccess == 'y')
 		{
 			$this->write_htaccess();
+		}
+
+		if ($return == 'bool')
+		{
+			return TRUE;
 		}
 
 		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('blacklist_updated'));

@@ -35,12 +35,12 @@ class Comment {
 	// Determines whether to show the <a name> anchor above each comment
 
 	var $show_anchor = FALSE;
-
-
+	
 	// Comment Expiration Mode
 	// 0 -	Comments only expire if the comment expiration field in the PUBLISH page contains a value.
-	// 1 -	If the comment expiration field is blank, comments will still expire if the	// 		is set in the Channel Preferences page.  Use this option only if you used EE prior to
-	//		version 1.1 and you want your old comments to expire.
+	// 1 -	If the comment expiration field is blank, comments will still expire if the global preference
+	// 		is set in the Channel Preferences page.  Use this option only if you used EE prior to
+	//		version 1.1 and you want your old comments to expire.	
 
 	var $comment_expiration_mode = 0;
 
@@ -332,8 +332,6 @@ class Comment {
 		$temp = array();
 		$i = 0;
 
-		$comments_exist = FALSE;
-
 		// Left this here for backward compatibility
 		// We need to deprecate the "order_by" parameter
 
@@ -380,20 +378,14 @@ class Comment {
 		}
 
 		$query = $this->EE->db->get('comments');
+		$result_ids = array();
+
 
 		if ($query->num_rows() > 0)
 		{
-			$comments_exist = TRUE;
 			foreach ($query->result_array() as $row)
 			{
-				$key = $row['comment_date'];
-
-				while(isset($temp[$key]))
-				{
-					$key++;
-				}
-
-				$temp[$key] = 'c'.$row['comment_id'];
+				$result_ids[] = $row['comment_id'];
 			}
 		}
 
@@ -405,34 +397,11 @@ class Comment {
 		/**  No results?  No reason to continue...
 		/** ------------------------------------*/
 
-		if (count($temp) == 0)
+		if (count($result_ids) == 0)
 		{
 			return $this->EE->TMPL->no_results();
 		}
 
-		// Sort the array based on the keys (which contain the Unix timesamps
-		// of the comments)
-
-		if ($order_by == 'comment_date')
-		{
-			ksort($temp);
-		}
-
-		// Create a new, sequentially indexed array
-
-		$result_ids = array();
-
-		foreach ($temp as $val)
-		{
-			$result_ids[$val] = $val;
-		}
-
-		// Reverse the array if order is descending
-
-		if ($sort == 'desc')
-		{
-			$result_ids = array_reverse($result_ids);
-		}
 
 		/** ---------------------------------
 		/**  Do we need pagination?
@@ -563,86 +532,70 @@ class Comment {
 		$results = $result_ids;
 		$mfields = array();
 
-		if ($comments_exist == TRUE)
-		{
-			$com = array();
-			foreach ($result_ids as $val)
-			{
-				if (substr($val, 0, 1) == 'c')
-				{
-					$com[] = substr($val, 1);
-				}
-			}
+		/** ----------------------------------------
+		/**  "Search by Member" link
+		/** ----------------------------------------*/
+		// We use this with the {member_search_path} variable
 
-			if (count($com) > 0)
-			{
-				/** ----------------------------------------
-				/**  "Search by Member" link
-				/** ----------------------------------------*/
-				// We use this with the {member_search_path} variable
+		$result_path = (preg_match("/".LD."member_search_path\s*=(.*?)".RD."/s", $this->EE->TMPL->tagdata, $match)) ? $match['1'] : 'search/results';
+		$result_path = str_replace("\"", "", $result_path);
+		$result_path = str_replace("'",  "", $result_path);
 
-				$result_path = (preg_match("/".LD."member_search_path\s*=(.*?)".RD."/s", $this->EE->TMPL->tagdata, $match)) ? $match['1'] : 'search/results';
-				$result_path = str_replace("\"", "", $result_path);
-				$result_path = str_replace("'",  "", $result_path);
+		$search_link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
 
-				$search_link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
-
-				$this->EE->db->select('comments.comment_id, comments.entry_id, comments.channel_id, comments.author_id, comments.name, comments.email, comments.url, comments.location AS c_location, comments.ip_address, comments.comment_date, comments.edit_date, comments.comment, comments.notify, comments.site_id AS comment_site_id,
-										members.location, members.occupation, members.interests, members.aol_im, members.yahoo_im, members.msn_im, members.icq, members.group_id, members.member_id, members.signature, members.sig_img_filename, members.sig_img_width, members.sig_img_height, members.avatar_filename, members.avatar_width, members.avatar_height, members.photo_filename, members.photo_width, members.photo_height,
+		$this->EE->db->select('comments.comment_id, comments.entry_id, comments.channel_id, comments.author_id, comments.name, comments.email, comments.url, comments.location AS c_location, comments.ip_address, comments.comment_date, comments.edit_date, comments.comment, comments.notify, comments.site_id AS comment_site_id,
+										members.username, members.group_id, members.location, members.occupation, members.interests, members.aol_im, members.yahoo_im, members.msn_im, members.icq, members.group_id, members.member_id, members.signature, members.sig_img_filename, members.sig_img_width, members.sig_img_height, members.avatar_filename, members.avatar_width, members.avatar_height, members.photo_filename, members.photo_width, members.photo_height,
 										member_data.*,
 										channel_titles.title, channel_titles.url_title, channel_titles.author_id AS entry_author_id,
 										channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.channel_url, channels.comment_url, channels.channel_title'
 				);
 				
-				$this->EE->db->join('channels',			'comments.channel_id = channels.channel_id',	'left');
-				$this->EE->db->join('channel_titles',	'comments.entry_id = channel_titles.entry_id',	'left');
-				$this->EE->db->join('members',			'members.member_id = comments.author_id',		'left');
-				$this->EE->db->join('member_data',		'member_data.member_id = members.member_id',	'left');
+		$this->EE->db->join('channels',			'comments.channel_id = channels.channel_id',	'left');
+		$this->EE->db->join('channel_titles',	'comments.entry_id = channel_titles.entry_id',	'left');
+		$this->EE->db->join('members',			'members.member_id = comments.author_id',		'left');
+		$this->EE->db->join('member_data',		'member_data.member_id = members.member_id',	'left');
 				
-				$this->EE->db->where_in('comments.comment_id', $com);
-				$query = $this->EE->db->get('comments');
-
-				if ($query->num_rows() > 0)
-				{
-					$i = 0;
-					foreach ($query->result_array() as $row)
-					{
-						if (isset($results['c'.$row['comment_id']]))
-						{
-							$results['c'.$row['comment_id']] = $query->result_array[$i];
-							$i++;
-						}
-					}
-					
-					// Potentially a lot of information
-					$query->free_result();
-				}
-
-				/** ----------------------------------------
-				/**  Fetch custom member field IDs
-				/** ----------------------------------------*/
-
-				$this->EE->db->select('m_field_id, m_field_name');
-				$query = $this->EE->db->get('member_fields');
-
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{
-						$mfields[$row['m_field_name']] = $row['m_field_id'];
-					}
-				}
-
+		$this->EE->db->where_in('comments.comment_id', $result_ids);
+				
+		$query = $this->EE->db->get('comments');
+				
+		if ($query->num_rows() > 0)
+		{
+			$i = 0;
+			foreach ($query->result_array() as $row)
+			{
+				$results[$row['comment_id']] = $query->result_array[$i];
+				$i++;
 			}
+					
+		// Potentially a lot of information
+		$query->free_result();
 		}
 
+		/** ----------------------------------------
+		/**  Fetch custom member field IDs
+		/** ----------------------------------------*/
+
+		$this->EE->db->select('m_field_id, m_field_name');
+		$query = $this->EE->db->get('member_fields');
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				$mfields[$row['m_field_name']] = $row['m_field_id'];
+			}
+		}
 
 		/** ----------------------------------------
 		/**  Instantiate Typography class
 		/** ----------------------------------------*/
 
+		$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
+		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
+		$this->EE->typography->initialize($config);
+		
 		$this->EE->typography->parse_images = FALSE;
 		$this->EE->typography->allow_headings = FALSE;
 
@@ -727,7 +680,7 @@ class Comment {
 
 			// This lets the {if location} variable work
 
-			if ($comments_exist == TRUE AND isset($row['author_id']))
+			if (isset($row['author_id']))
 			{
 				if ($row['author_id'] == 0)
 					$row['location'] = $row['c_location'];
@@ -845,7 +798,7 @@ class Comment {
 				/**  parse comment date
 				/** ----------------------------------------*/
 
-				if (isset($comment_date[$key]) AND $comments_exist == TRUE AND isset($row['comment_date']))
+				if (isset($comment_date[$key]) && isset($row['comment_date']))
 				{
 					foreach ($comment_date[$key] as $dvar)
 					{
@@ -859,7 +812,7 @@ class Comment {
 				/**  parse GMT comment date
 				/** ----------------------------------------*/
 
-				if (isset($gmt_comment_date[$key]) AND $comments_exist == TRUE AND isset($row['comment_date']))
+				if (isset($gmt_comment_date[$key]) && isset($row['comment_date']))
 				{
 					foreach ($gmt_comment_date[$key] as $dvar)
 					{
@@ -899,6 +852,14 @@ class Comment {
 				{
 					$this->EE->load->helper('url');
 					$row['url'] = prep_url($row['url']);
+				}
+
+				/** ----------------------------------------
+				/**  {username}
+				/** ----------------------------------------*/
+				if ($key == "username")
+				{
+					$tagdata = $this->EE->TMPL->swap_var_single($val, (isset($row['username'])) ? $row['username'] : '', $tagdata);
 				}
 
 				/** ----------------------------------------
@@ -980,87 +941,80 @@ class Comment {
 					}
 				}
 
-				if (substr($id, 0, 1) == 'c')
+				/** ----------------------------------------
+				/**  {comment_auto_path}
+				/** ----------------------------------------*/
+
+				if ($key == "comment_auto_path")
 				{
-					/** ----------------------------------------
-					/**  {comment_auto_path}
-					/** ----------------------------------------*/
+					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
 
-					if ($key == "comment_auto_path")
-					{
-						$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
+					$tagdata = $this->EE->TMPL->swap_var_single($key, $path, $tagdata);
+				}
 
-						$tagdata = $this->EE->TMPL->swap_var_single($key, $path, $tagdata);
-					}
+				/** ----------------------------------------
+				/**  {comment_url_title_auto_path}
+				/** ----------------------------------------*/
 
-					/** ----------------------------------------
-					/**  {comment_url_title_auto_path}
-					/** ----------------------------------------*/
+				if ($key == "comment_url_title_auto_path")
+				{
+					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
 
-					if ($key == "comment_url_title_auto_path" AND $comments_exist == TRUE)
-					{
-						$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
-
-						$tagdata = $this->EE->TMPL->swap_var_single(
+					$tagdata = $this->EE->TMPL->swap_var_single(
 															$key,
 															$path.$row['url_title'].'/',
 															$tagdata
 														 );
-					}
+				}
 
-					/** ----------------------------------------
-					/**  {comment_entry_id_auto_path}
-					/** ----------------------------------------*/
+				/** ----------------------------------------
+				/**  {comment_entry_id_auto_path}
+				/** ----------------------------------------*/
 
-					if ($key == "comment_entry_id_auto_path" AND $comments_exist == TRUE)
-					{
-						$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
+				if ($key == "comment_entry_id_auto_path")
+				{
+					$path = ($row['comment_url'] == '') ? $row['channel_url'] : $row['comment_url'];
 
-						$tagdata = $this->EE->TMPL->swap_var_single(
+					$tagdata = $this->EE->TMPL->swap_var_single(
 															$key,
 															$path.$row['entry_id'].'/',
 															$tagdata
 														 );
-					}
-
-
-					/** ----------------------------------------
-					/**  parse comment field
-					/** ----------------------------------------*/
-
-					if ($key == 'comment' AND isset($row['comment']))
-					{
-						// -------------------------------------------
-						// 'comment_entries_comment_format' hook.
-						//  - Play with the tagdata contents of the comment entries
-						//
-							if ($this->EE->extensions->active_hook('comment_entries_comment_format') === TRUE)
-							{
-								$comment = $this->EE->extensions->call('comment_entries_comment_format', $row);
-								if ($this->EE->extensions->end_script === TRUE) return;
-							}
-							else
-							{
-								$comment = $this->EE->typography->parse_type( $row['comment'],
-																array(
-																		'text_format'	=> $row['comment_text_formatting'],
-																		'html_format'	=> $row['comment_html_formatting'],
-																		'auto_links'	=> $row['comment_auto_link_urls'],
-																		'allow_img_url' => $row['comment_allow_img_urls']
-																	)
-															);
-							}
-						//
-						// -------------------------------------------
-
-						$tagdata = $this->EE->TMPL->swap_var_single($key, $comment, $tagdata);
-					}
 				}
 
 
 				/** ----------------------------------------
-				/**  {location}
+				/**  parse comment field
 				/** ----------------------------------------*/
+
+				if ($key == 'comment' AND isset($row['comment']))
+				{
+					// -------------------------------------------
+					// 'comment_entries_comment_format' hook.
+					//  - Play with the tagdata contents of the comment entries
+					//
+						if ($this->EE->extensions->active_hook('comment_entries_comment_format') === TRUE)
+						{
+							$comment = $this->EE->extensions->call('comment_entries_comment_format', $row);
+				
+							if ($this->EE->extensions->end_script === TRUE) return;
+						}
+						else
+						{
+							$comment = $this->EE->typography->parse_type( $row['comment'],
+															array(
+																	'text_format'	=> $row['comment_text_formatting'],
+																	'html_format'	=> $row['comment_html_formatting'],
+																	'auto_links'	=> $row['comment_auto_link_urls'],
+																	'allow_img_url' => $row['comment_allow_img_urls']
+																)
+														);
+						}
+
+					$tagdata = $this->EE->TMPL->swap_var_single($key, $comment, $tagdata);
+				}
+
+				//  {location}
 
 				if ($key == 'location' AND (isset($row['location']) OR isset($row['c_location'])))
 				{
@@ -1407,29 +1361,33 @@ class Comment {
 
 		$mode = ( ! isset($this->comment_expiration_mode)) ? 0 : $this->comment_expiration_mode;
 
-		if ($mode == 0)
+		//  First check whether expiration is overriden
+		if ($this->EE->config->item('comment_moderation_override') !== 'y')
 		{
-			if ($query->row('comment_expiration_date')  > 0)
+			if ($mode == 0)
 			{
-				if ($this->EE->localize->now > $query->row('comment_expiration_date') )
+				if ($query->row('comment_expiration_date')  > 0)
 				{
-					$this->EE->lang->loadfile('comment');
+					if ($this->EE->localize->now > $query->row('comment_expiration_date') )
+					{
+						$this->EE->lang->loadfile('comment');
 
-					return $this->EE->lang->line('cmt_commenting_has_expired');
+						return $this->EE->lang->line('cmt_commenting_has_expired');
+					}
 				}
 			}
-		}
-		else
-		{
-			if ($query->row('comment_expiration')  > 0)
+			else
 			{
-				 $days = $query->row('entry_date')  + ($query->row('comment_expiration')  * 86400);
-
-				if ($this->EE->localize->now > $days)
+				if ($query->row('comment_expiration')  > 0)
 				{
-					$this->EE->lang->loadfile('comment');
+				 	$days = $query->row('entry_date')  + ($query->row('comment_expiration')  * 86400);
 
-					return $this->EE->lang->line('cmt_commenting_has_expired');
+					if ($this->EE->localize->now > $days)
+					{
+						$this->EE->lang->loadfile('comment');
+
+						return $this->EE->lang->line('cmt_commenting_has_expired');
+					}
 				}
 			}
 		}
@@ -1594,7 +1552,18 @@ class Comment {
 		/** ----------------------------------------
 		/**  Create form
 		/** ----------------------------------------*/
-		$RET = (isset($_POST['RET'])) ? $_POST['RET'] : $this->EE->functions->fetch_current_uri();
+
+		$RET = $this->EE->functions->fetch_current_uri();
+		
+		if (isset($_POST['RET']))
+		{
+			$RET = $_POST['RET'];
+		}
+		elseif ($this->EE->TMPL->fetch_param('return') && $this->EE->TMPL->fetch_param('return') != "")
+		{
+			$RET = $this->EE->TMPL->fetch_param('return');
+		}
+		
 		$PRV = (isset($_POST['PRV'])) ? $_POST['PRV'] : $this->EE->TMPL->fetch_param('preview');
 		$XID = (isset($_POST['XID'])) ? $_POST['XID'] : '';
 
@@ -1695,8 +1664,11 @@ class Comment {
 		/**  Instantiate Typography class
 		/** ----------------------------------------*/
 
+		$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
+		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
+		$this->EE->typography->initialize($config);
+		
 		$this->EE->typography->parse_images = FALSE;
 		$this->EE->typography->allow_headings = FALSE;
 		$this->EE->typography->encode_email = FALSE;
@@ -1823,37 +1795,29 @@ class Comment {
 
 		foreach ($this->EE->TMPL->var_single as $key => $val)
 		{
-			/** ----------------------------------------
-			/**  {name}
-			/** ----------------------------------------*/
 
+			//  {name}
 			if ($key == 'name')
 			{
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $name, $tagdata);
 			}
 
-			/** ----------------------------------------
-			/**  {email}
-			/** ----------------------------------------*/
 
+			//  {email}
 			if ($key == 'email')
 			{
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $email, $tagdata);
 			}
 
-			/** ----------------------------------------
-			/**  {url}
-			/** ----------------------------------------*/
 
+			//  {url}
 			if ($key == 'url')
 			{
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $url, $tagdata);
 			}
 
-			/** ----------------------------------------
-			/**  {location}
-			/** ----------------------------------------*/
 
+			//  {location}
 			if ($key == 'location')
 			{
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $location, $tagdata);
@@ -1868,10 +1832,8 @@ class Comment {
 				$url = prep_url($url);
 			}
 
-			/** ----------------------------------------
-			/**  {url_or_email}
-			/** ----------------------------------------*/
 
+			//  {url_or_email}
 			if ($key == "url_or_email")
 			{
 				$temp = $url;
@@ -1884,10 +1846,8 @@ class Comment {
 				$tagdata = $this->EE->TMPL->swap_var_single($val, $temp, $tagdata);
 			}
 
-			/** ----------------------------------------
-			/**  {url_or_email_as_author}
-			/** ----------------------------------------*/
 
+			//  {url_or_email_as_author}
 			if ($key == "url_or_email_as_author")
 			{
 				if ($url != '')
@@ -1907,9 +1867,7 @@ class Comment {
 				}
 			}
 
-			/** ----------------------------------------
-			/**  {url_or_email_as_link}
-			/** ----------------------------------------*/
+			//  {url_or_email_as_link}
 
 			if ($key == "url_or_email_as_link")
 			{
@@ -1929,10 +1887,8 @@ class Comment {
 					}
 				}
 			}
-			
-			/** ----------------------------------------
-			/**  {url_as_author}
-			/** ----------------------------------------*/			
+
+			//  {url_as_author}
 
             if ($key == 'url_as_author')
             {
@@ -2187,6 +2143,7 @@ class Comment {
 */
 		$sql = "SELECT exp_channel_titles.title,
 						exp_channel_titles.url_title,
+						exp_channel_titles.entry_id,
 						exp_channel_titles.channel_id,
 						exp_channel_titles.author_id,
 						exp_channel_titles.comment_total,
@@ -2204,7 +2161,9 @@ class Comment {
 						exp_channels.comment_notify,
 						exp_channels.comment_notify_authors,
 						exp_channels.comment_notify_emails,
-						exp_channels.comment_expiration
+						exp_channels.comment_expiration, 
+						exp_channels.channel_url, 
+						exp_channels.comment_url 
 				FROM	exp_channel_titles, exp_channels
 				WHERE	exp_channel_titles.channel_id = exp_channels.channel_id
 				AND	exp_channel_titles.entry_id = '".$this->EE->db->escape_str($_POST['entry_id'])."'
@@ -2244,13 +2203,22 @@ class Comment {
 		/**  Has commenting expired?
 		/** ----------------------------------------*/
 
+		$force_moderation = $query->row('comment_moderate');
+
 		if ($this->comment_expiration_mode == 0)
 		{
 			if ($query->row('comment_expiration_date')  > 0)
 			{
 				if ($this->EE->localize->now > $query->row('comment_expiration_date') )
 				{
-					return $this->EE->output->show_user_error('submission', $this->EE->lang->line('cmt_commenting_has_expired'));
+					if ($this->EE->config->item('comment_moderation_override') == 'y')
+					{
+						$force_moderation = 'y';
+					}
+					else
+					{
+						return $this->EE->output->show_user_error('submission', $this->EE->lang->line('cmt_commenting_has_expired'));
+					}
 				}
 			}
 		}
@@ -2258,14 +2226,22 @@ class Comment {
 		{
 			if ($query->row('comment_expiration')  > 0)
 			{
-				 $days = $query->row('entry_date')  + ($query->row('comment_expiration')  * 86400);
+			 	$days = $query->row('entry_date')  + ($query->row('comment_expiration')  * 86400);
 
 				if ($this->EE->localize->now > $days)
 				{
-					return $this->EE->output->show_user_error('submission', $this->EE->lang->line('cmt_commenting_has_expired'));
+					if ($this->EE->config->item('comment_moderation_override') == 'y')
+					{
+						$force_moderation = 'y';
+					}
+					else
+					{
+						return $this->EE->output->show_user_error('submission', $this->EE->lang->line('cmt_commenting_has_expired'));
+					}
 				}
 			}
 		}
+
 
 		/** ----------------------------------------
 		/**  Is there a comment timelock?
@@ -2316,10 +2292,16 @@ class Comment {
 		$channel_id			  	= $query->row('channel_id') ;
 		$comment_total	 	 	= $query->row('comment_total')  + 1;
 		$require_membership 	= $query->row('comment_require_membership') ;
-		$comment_moderate		= ($this->EE->session->userdata['group_id'] == 1 OR $this->EE->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $query->row('comment_moderate') ;
+		$comment_moderate		= ($this->EE->session->userdata['group_id'] == 1 OR $this->EE->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
 		$author_notify			= $query->row('comment_notify_authors') ;
 
+		$comment_url			= $query->row('comment_url');
+		$channel_url			= $query->row('channel_url');
+		$entry_id				= $query->row('entry_id');
+
+
 		$notify_address = ($query->row('comment_notify')  == 'y' AND $query->row('comment_notify_emails')  != '') ? $query->row('comment_notify_emails')  : '';
+	
 
 		/** ----------------------------------------
 		/**  Start error trapping
@@ -2492,7 +2474,7 @@ class Comment {
 						'comment_date'	=> $this->EE->localize->now,
 						'ip_address'	=> $this->EE->input->ip_address(),
 						'notify'		=> $notify,
-						'status'		=> ($comment_moderate == 'y') ? 'c' : 'o',
+						'status'		=> ($comment_moderate == 'y') ? 'p' : 'o',
 						'site_id'		=> $this->EE->config->item('site_id')
 					 );
 
@@ -2627,8 +2609,11 @@ class Comment {
 		/**  Instantiate Typography class
 		/** ----------------------------------------*/
 
+		$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
+		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
+		$this->EE->typography->initialize($config);
+		
 		$this->EE->typography->parse_images = FALSE;
 		$this->EE->typography->allow_headings = FALSE;
  		$this->EE->typography->smileys = FALSE;
@@ -2643,12 +2628,20 @@ class Comment {
 											)
 									);
 
+		$path = ($comment_url == '') ? $channel_url : $comment_url;
+		
+		$comment_url_title_auto_path = reduce_double_slashes($path.'/'.$url_title);
+
 		/** ----------------------------
 		/**  Send admin notification
 		/** ----------------------------*/
 
 		if ($notify_address != '')
 		{
+			$cp_url = $this->EE->config->item('cp_url').'?S=0&C=addons_modules&M=show_module_cp&module=comment';
+
+
+			
 			$swap = array(
 							'name'				=> $cmtr_name,
 							'name_of_commenter'	=> $cmtr_name,
@@ -2660,7 +2653,13 @@ class Comment {
 							'comment_id'		=> $comment_id,
 							'comment'			=> $comment,
 							'comment_url'		=> $this->remove_session_id($_POST['RET']),
-							'delete_link'		=> $this->EE->config->item('cp_url').'?S=0&C=publish'.'&M=delete_comment_confirm'.'&channel_id='.$channel_id.'&entry_id='.$_POST['entry_id'].'&comment_id='.$comment_id
+							'delete_link'		=> $cp_url.'&method=delete_comment_confirm&comment_id='.$comment_id, 
+							'approve_link' => $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=o', 
+							'close_link'	=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=c', 
+							'channel_id'		=> $channel_id,
+							'entry_id'			=> $entry_id,
+							'url_title'			=> $url_title,
+							'comment_url_title_auto_path' => $comment_url_title_auto_path
 						 );
 
 			$template = $this->EE->functions->fetch_email_template('admin_notify_comment');
@@ -2737,8 +2736,13 @@ class Comment {
 								'site_url'			=> $this->EE->config->item('site_url'),
 								'comment_url'		=> $this->remove_session_id($_POST['RET']),
 								'comment_id'		=> $comment_id,
-								'comment'			=> $comment
+								'comment'			=> $comment,
+								'channel_id'		=> $channel_id,
+								'entry_id'			=> $entry_id,
+								'url_title'			=> $url_title,
+								'comment_url_title_auto_path' => $comment_url_title_auto_path 
 							 );
+
 
 				$template = $this->EE->functions->fetch_email_template('comment_notification');
 				$email_tit = $this->EE->functions->var_swap($template['title'], $swap);

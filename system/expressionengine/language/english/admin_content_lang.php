@@ -140,6 +140,9 @@ $lang = array(
 'comment_notify' =>
 'Enable recipient list below for comment notification?',
 
+'update_existing_comments_mod' =>
+'Update all existing comments to be consistent with this setting?',
+
 'update_existing_comments' =>
 'Update all existing comments with this expiration setting?',
 
