@@ -240,6 +240,8 @@ function tab_focus(tab_id)
 	$(".main_tab").css("z-index", "");
 	$("#"+tab_id).css("z-index", "5");
 	selected_tab = tab_id;
+	
+	$(".main_tab").sortable("refreshPositions");
 }
 
 // @todo hacky, hacky, hacky
@@ -253,6 +255,10 @@ function setup_tabs() {
 
 	// allow sorting of publish fields
 	$(".main_tab").sortable({
+		connectWith: '.main_tab',
+		appendTo: '#holder',
+		helper: 'clone',
+		forceHelperSize: true,
 		handle: ".handle",
 		start: function(event, ui) {
 			ui.item.css("width", $(this).parent().css("width"));
@@ -263,8 +269,9 @@ function setup_tabs() {
 	});
 
 	$(".tab_menu li a").droppable({
-		accept: ".field_selector",
+		accept: ".field_selector, .publish_field",
 		tolerance: "pointer",
+		forceHelperSize: true,
 		deactivate: function(e, ui) {
 			clearTimeout(spring);
 			$(".tab_menu li").removeClass("highlight_tab");
@@ -353,7 +360,7 @@ EE.publish.save_layout = function() {
 				tab_label = $(this).parent('li').attr('title'); //$(this).text();
 			field_index = 0;
 			visible = true;
-
+			
 			if( $(this).parent('li').is(':visible') )
 			{
 				lay_name = tab_name;
