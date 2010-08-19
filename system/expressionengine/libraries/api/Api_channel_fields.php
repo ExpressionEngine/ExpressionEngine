@@ -401,7 +401,7 @@ class Api_channel_fields extends Api {
 	function get_required_fields($channel_id)
 	{
 		$this->EE->load->model('channel_model');
-		$required = array('title', 'entry_date', 'url_title');
+		$required = array('title', 'entry_date');
 		
 		$query = $this->EE->channel_model->get_channel_info($channel_id, array('field_group'));
 		
