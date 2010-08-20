@@ -2987,6 +2987,81 @@ class Comment {
 		}
 	}
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Comment subscription tag
+	 *
+	 *
+	 * @access	public
+	 * @return	string
+	 */
+	function notification_links()
+	{
+		// entry_id is required
+		if (($entry_id = $this->EE->TMPL->fetch_param('entry_id')) === FALSE) return;
+		
+		// So is membership, but we'll give them a no_results conditional for that one
+		if ($this->EE->session->userdata('member_id') == 0)
+		{
+			return $this->EE->TMPL->no_results();
+		}
+		
+		$action_id  = $this->EE->functions->fetch_action_id('Comment', 'comment_subscribe');
+
+		// Bleh- really need a conditional for if they are subscribed
+
+		$sub_link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&entry_id='.$entry_id;
+		$unsub_link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&entry_id='.$entry_id.'&type=unsubscribe';
+ 		
+		$data[] = array('subscribe_link' => $sub_link, 'unsubscribe_link' => $unsub_link );
+		
+
+		$tagdata = $this->EE->TMPL->tagdata;
+		return $this->EE->TMPL->parse_variables($tagdata, $data); 		
+		
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Comment subscription w/out commenting
+	 *
+	 *
+	 * @access	public
+	 * @return	string
+	 */
+	function comment_subscribe()
+	{
+		
+
+
+
+
+
+
+
+		// Show success message
+		
+		$this->EE->lang->loadfile('comment');
+		$type = ($this->EE->input->get_post('type')) ? 'unsubscribe' : 'subscribe';
+		
+		$title = ($type == 'unsubscribe') ? 'cmt_unsubscribe' : 'cmt_subscribe';
+		$content = ($type == 'unsubscribe') ? 'you_have_been_unsubscribed' : 'you_have_been_subscribed';		
+
+		$data = array(	'title' 	=> $this->EE->lang->line($title),
+						'heading'	=> $this->EE->lang->line('thank_you'),
+						'content'	=> $this->EE->lang->line($content),
+						'redirect'	=> '',
+						'link'		=> array('javascript:history.go(-1)', $this->EE->lang->line('cmt_return_to_comments')),
+						'rate'		=> 3
+					 );		
+
+			$this->EE->output->show_message($data);
+		
+	}
+
 	// --------------------------------------------------------------------
 
 	/**

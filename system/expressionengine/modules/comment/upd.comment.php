@@ -87,6 +87,21 @@ class Comment_upd {
 		);
 
 		$this->EE->db->insert('actions', $data);
+		
+		$data = array(
+			'class'		=> 'Comment' ,
+			'method'	=> 'comment_subscribe'
+		);
+
+		$this->EE->db->insert('actions', $data);
+		
+		$data = array(
+			'class'		=> 'Comment' ,
+			'method'	=> 'edit_comment'
+		);
+
+		$this->EE->db->insert('actions', $data);		
+		
 
 		$fields = array(
 						'comment_id'		  => array(	'type' 			 => 'int',
@@ -193,6 +208,19 @@ class Comment_upd {
 		{
 			$this->EE->db->query("UPDATE `exp_modules` SET `has_cp_backend` = 'y' WHERE module_name = 'comment'");
 
+			$data = array(
+				'class'		=> 'Comment' ,
+				'method'	=> 'comment_subscribe'
+				);
+
+			$this->EE->db->insert('actions', $data);
+		
+			$data = array(
+				'class'		=> 'Comment' ,
+				'method'	=> 'edit_comment'
+				);
+
+			$this->EE->db->insert('actions', $data);
 		}		
 
 		return TRUE;

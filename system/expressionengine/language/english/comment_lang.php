@@ -257,6 +257,18 @@ $lang = array(
 "cmt_return_to_comments" =>
 "Return to Comments",
 
+'you_have_been_subscribed' =>
+'You are now subscribed to the following entry:',
+
+'you_have_been_unsubscribed' =>
+'Your subscription to the following entry has been removed:',
+
+'cmt_subscribe' =>
+'Subscribe to this comment',
+
+'cmt_unsubscribe' =>
+'Un-subscribe from this comment',
+
 
 ''=>''
 );
