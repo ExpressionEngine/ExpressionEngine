@@ -191,11 +191,17 @@ class Comment {
 			// Check if an entry_id or url_title was specified
 			if ($entry_id = $this->EE->TMPL->fetch_param('entry_id'))
 			{
-				$this->EE->db->where('entry_id', $entry_id);
+				//$this->EE->db->where('entry_id', $entry_id);
+				$sql = $this->EE->functions->sql_andor_string($entry_id, 'entry_id');
+				$this->EE->db->where($sql, NULL, FALSE);
 			}
 			elseif ($url_title = $this->EE->TMPL->fetch_param('url_title'))
 			{
-				$this->EE->db->where('url_title', $url_title);
+				//$this->EE->db->where('url_title', $url_title);
+				
+				$sql = $this->EE->functions->sql_andor_string($url_title, 'url_title');
+				$this->EE->db->where($sql, NULL, FALSE);
+				
 			}
 			else
 			{
@@ -231,7 +237,37 @@ class Comment {
 				$this->EE->db->where($date_where);
 			}
 
-			$this->EE->db->where('status !=', 'closed');
+			if ($author_id = $this->EE->TMPL->fetch_param('author_id'))
+			{
+				$this->EE->db->where('author_id', $author_id);
+			}
+
+			//$this->EE->db->where('status !=', 'closed');
+			
+			if ($e_status = $this->EE->TMPL->fetch_param('entry_status'))
+			{
+				$e_status = str_replace('Open',	'open',	$e_status);
+				$e_status = str_replace('Closed', 'closed', $e_status);
+
+				$sql = $this->EE->functions->sql_andor_string($e_status, 'status');
+
+				if (stristr($sql, "'closed'") === FALSE)
+				{
+					$sql .= " AND status != 'closed' ";
+				}
+				
+				//  We need to drop the leading AND from the generated string 
+				$sql = substr($sql, 4);
+
+				
+				$this->EE->db->where($sql, NULL, FALSE);
+			}
+			else
+			{
+				$this->EE->db->where('status !=', 'closed');
+			}
+			
+			
 
 			/** ----------------------------------------------
 			/**  Limit to/exclude specific channels
@@ -344,10 +380,38 @@ class Comment {
 			$order_by = $this->EE->TMPL->fetch_param('order_by');
 		}
 
+		$random = ($order_by == 'random') ? TRUE : FALSE;
 		$order_by  = ($order_by == 'date' OR ! in_array($order_by, $allowed_sorts))  ? 'comment_date' : $order_by;
 
 		$this->EE->db->select('comment_date, comment_id');
-		$this->EE->db->where('status', 'o');
+		
+		//$this->EE->db->where('status', 'o');
+		
+		$comment_sql = FALSE;
+		
+		if ($status = $this->EE->TMPL->fetch_param('status'))
+		{
+			$status = strtolower($status);
+			$status = str_replace('open',	'o', $status);
+			$status = str_replace('closed', 'c', $status);
+			$status = str_replace('pending', 'p', $status);
+
+			$comment_sql = $this->EE->functions->sql_andor_string($status, 'status');
+
+			if (stristr($comment_sql, "'c'") === FALSE)
+			{
+				$comment_sql .= " AND status != 'c' ";
+			}
+
+			//  We need to drop the leading AND from the generated string 
+			$comment_sql = substr($comment_sql, 4);
+			$this->EE->db->where($comment_sql, NULL, FALSE);
+		}
+		else
+		{
+			$this->EE->db->where('status', 'o');
+		}
+		
 
 		if ( ! $dynamic)
 		{
@@ -363,10 +427,18 @@ class Comment {
 
 			// We lose these in the counting process
 			$this->EE->db->select('comment_date, comment_id');
-			$this->EE->db->where('status', 'o');
+			
+			if ($comment_sql)
+			{
+				$this->EE->db->where($comment_sql, NULL, FALSE);
+			}
+			else
+			{
+				$this->EE->db->where('status', 'o');
+			}			
 
 			$this_page = ($current_page == '' OR ($limit > 1 AND $current_page == 1)) ? 0 : $current_page;
-			$this_sort = strtolower($sort);
+			$this_sort = ($random) ? 'random' : strtolower($sort);
 
 			$this->EE->db->order_by($order_by, $this_sort);
 			$this->EE->db->limit($limit, $this_page);
@@ -374,7 +446,9 @@ class Comment {
 		else
 		{
 			$this->EE->db->where('entry_id', $entry_id);
-			$this->EE->db->order_by($order_by);
+			$this_sort = ($random) ? 'random' : strtolower($sort);
+
+			$this->EE->db->order_by($order_by, $this_sort);
 		}
 
 		$query = $this->EE->db->get('comments');
@@ -1220,6 +1294,7 @@ class Comment {
 	{
 		$qstring = $this->EE->uri->query_string;
 		$entry_where = array();
+		$halt_processing = FALSE;
 
 		/** --------------------------------------
 		/**  Remove page number
@@ -1305,7 +1380,32 @@ class Comment {
 		
 		$this->EE->db->where_in('channel_titles.site_id', $this->EE->TMPL->site_ids);
 		$this->EE->db->where('channel_titles.channel_id = '.$this->EE->db->dbprefix('channels').'.channel_id');
-		$this->EE->db->where('status !=', 'closed');
+		
+			if ($e_status = $this->EE->TMPL->fetch_param('entry_status'))
+			{
+				$e_status = str_replace('Open',	'open',	$e_status);
+				$e_status = str_replace('Closed', 'closed', $e_status);
+
+				$sql = $this->EE->functions->sql_andor_string($e_status, 'status');
+
+				if (stristr($sql, "'closed'") === FALSE)
+				{
+					$sql .= " AND status != 'closed' ";
+				}
+				
+				//  We need to drop the leading AND from the generated string 
+				$sql = substr($sql, 4);
+
+				
+				$this->EE->db->where($sql, NULL, FALSE);
+			}
+			else
+			{
+				$this->EE->db->where('status !=', 'closed');
+			}
+		
+		
+		
 		$this->EE->db->where($entry_where);
 	
 		$query = $this->EE->db->get();
@@ -1317,8 +1417,7 @@ class Comment {
 
 		if ($query->row('allow_comments')  == 'n' OR $query->row('comment_system_enabled')  == 'n')
 		{
-			$this->EE->lang->loadfile('comment');
-			return $this->EE->lang->line('cmt_commenting_has_expired');
+			$halt_processing = 'disabled';
 		}
 
 		/** ----------------------------------------
@@ -1370,9 +1469,7 @@ class Comment {
 				{
 					if ($this->EE->localize->now > $query->row('comment_expiration_date') )
 					{
-						$this->EE->lang->loadfile('comment');
-
-						return $this->EE->lang->line('cmt_commenting_has_expired');
+						$halt_processing = 'expired';
 					}
 				}
 			}
@@ -1384,15 +1481,30 @@ class Comment {
 
 					if ($this->EE->localize->now > $days)
 					{
-						$this->EE->lang->loadfile('comment');
-
-						return $this->EE->lang->line('cmt_commenting_has_expired');
+						$halt_processing = 'expired';
 					}
 				}
 			}
 		}
 
 		$tagdata = $this->EE->TMPL->tagdata;
+
+
+		if ($halt_processing != FALSE)
+		{
+			foreach ($this->EE->TMPL->var_cond as $key => $val) 
+			{
+				if (isset($val['3']) && ($val['3'] == 'comments_expired' OR $val['3'] == 'comments_disabled'))
+				{
+					return $val['2'];
+				}
+			}
+
+			// If there is no conditional- just return the message
+			$this->EE->lang->loadfile('comment');
+			return $this->EE->lang->line('cmt_commenting_has_expired');				
+		}
+
 
 		// -------------------------------------------
 		// 'comment_form_tagdata' hook.
@@ -2166,8 +2278,10 @@ class Comment {
 						exp_channels.comment_url 
 				FROM	exp_channel_titles, exp_channels
 				WHERE	exp_channel_titles.channel_id = exp_channels.channel_id
-				AND	exp_channel_titles.entry_id = '".$this->EE->db->escape_str($_POST['entry_id'])."'
-				AND	exp_channel_titles.status != 'closed' ";
+				AND	exp_channel_titles.entry_id = '".$this->EE->db->escape_str($_POST['entry_id'])."'";
+				
+				//  Added entry_status param, so it is possible to post to closed title
+				//AND	exp_channel_titles.status != 'closed' ";
 
 		// -------------------------------------------
 		// 'insert_comment_preferences_sql' hook.
@@ -2185,6 +2299,7 @@ class Comment {
 		$query = $this->EE->db->query($sql);
 
 		unset($sql);
+
 
 		if ($query->num_rows() == 0)
 		{
