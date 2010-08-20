@@ -580,6 +580,7 @@ class Tools_data extends Controller {
 
 		$this->javascript->compile();
 
+		$vars['save_tmpl_files'] = ($this->config->item('save_tmpl_files') == 'y') ? TRUE : FALSE;
 		$vars['replace_options'] = $this->tools_model->get_search_replace_options();
 		$vars['replaced'] = ($replaced !== FALSE) ? $this->lang->line('rows_replaced').' '.$replaced : FALSE;
 
