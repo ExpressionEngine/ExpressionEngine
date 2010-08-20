@@ -30,7 +30,7 @@ $(document).ready(function () {
 		resizable: false,
 		modal: true,
 		position: "center",
-		minHeight: "0px", // fix display bug, where the height of the dialog is too big
+		minHeight: "0", // fix display bug, where the height of the dialog is too big
 		buttons: ajaxContentButtons
 	});
 	
