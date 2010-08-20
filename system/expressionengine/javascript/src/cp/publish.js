@@ -900,8 +900,8 @@ $(document).ready(function() {
 			open = EE.upload_directories[file.directory].pre_format;
 			close = EE.upload_directories[file.directory].post_format;
 
-			replace = EE.filebrowser.image_tag.replace(/\[!\[Link:!:http:\/\/\]!\]/, '');
-			replace = replace.replace(/src="([^"]*)"/, 'src="$1{filedir_'+file.directory+'}'+file.name+'"');
+			// Include any user additions before or after the image link
+			replace = EE.filebrowser.image_tag.replace(/src="(.*)\[!\[Link:!:http:\/\/\]!\](.*)"/, 'src="$1{filedir_'+file.directory+'}'+file.name+'$2"');
 			replace = replace.replace(/\/?>$/, file.dimensions+' '+props+' />');
 			
 			replace = open + replace + close;
