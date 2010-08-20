@@ -60,6 +60,9 @@ $lang = array(
 'comment_moderation_override' =>
 'Moderate expired entries',
 
+'comment_smart_notifications' =>
+'Enable Smart Notifications',
+
 'selection_required' => 
 'At least one selection is required to submit',
 
