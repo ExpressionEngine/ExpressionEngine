@@ -48,6 +48,18 @@ $lang = array(
 'install' =>
 'Install',
 
+'update_modules' =>
+'Run Module Updates',
+
+'updated' =>
+'Updated',
+
+'updated_to_version' =>
+'updated to version',
+
+'all_modules_up_to_date' =>
+'All modules are up to date.',
+
 'deinstall' =>
 'Remove',
 
