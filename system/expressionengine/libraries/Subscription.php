@@ -46,9 +46,9 @@ class EE_Subscription {
 	 * @access	public
 	 * @return	void
 	 */
-	function mark_as_read($identifiers = FALSE)
+	function mark_as_read($identifiers = FALSE, $skip_prep = FALSE)
 	{
-		$this->_mark($identifiers, 'y');
+		$this->_mark($identifiers, 'n', $skip_prep);
 	}
 	
 	// --------------------------------------------------------------------
@@ -59,9 +59,9 @@ class EE_Subscription {
 	 * @access	public
 	 * @return	void
 	 */
-	function mark_as_unread($identifiers = FALSE)
+	function mark_as_unread($identifiers = FALSE, $skip_prep = FALSE)
 	{
-		$this->_mark($identifiers, 'n');
+		$this->_mark($identifiers, 'y', $skip_prep);
 	}
 	
 	// --------------------------------------------------------------------
@@ -74,8 +74,15 @@ class EE_Subscription {
 	 */
 	function subscribe($identifiers = FALSE, $mark_existing = TRUE)
 	{
-		list($member_ids, $emails) = $this->_prep($identifiers);
-		list($existing_ids, $existing_emails) = $this->get_subscribers(TRUE);
+		$user = $this->_prep($identifiers);
+		
+		if ( ! $user)
+		{
+			return;
+		}
+		
+		list($member_ids, $emails) = $user;
+		list($existing_ids, $existing_emails) = $this->get_subscribers(TRUE, TRUE);
 		
 		// Handle duplicates
 		$new_member_ids = array_diff($member_ids, $existing_ids);
@@ -99,7 +106,7 @@ class EE_Subscription {
 			}
 			
 			// Add emails
-			foreach($emails as $email)
+			foreach($new_emails as $email)
 			{
 				$rand = $this->EE->functions->random('alnum', 15);
 				
@@ -120,8 +127,8 @@ class EE_Subscription {
 			$member_ids = array_intersect($member_ids, $existing_ids);
 			$emails = array_intersect($emails, $existing_emails);
 			
-			$dupes = implode('member_ids', 'emails');
-			$this->_mark($dupes, 'n', TRUE);
+			$dupes = array($member_ids, $emails);
+			$this->mark_as_read($dupes, TRUE);
 		}
 	}
 	
@@ -135,7 +142,14 @@ class EE_Subscription {
 	 */
 	function unsubscribe($identifiers = FALSE, $all_entries = FALSE)
 	{
-		list($member_ids, $emails) = $this->_prep($identifiers);
+		$user = $this->_prep($identifiers);
+		
+		if ( ! $user)
+		{
+			return;
+		}
+		
+		list($member_ids, $emails) = $user;
 		
 		if ( ! count($member_ids) && ! count($emails))
 		{
@@ -202,7 +216,7 @@ class EE_Subscription {
 	 * @param	bool	Return array with member ids instead of looking up their emails (used internally)
 	 * @return	mixed	Array of email addresses
 	 */
-	function get_subscribers($return_member_ids = FALSE)
+	function get_subscribers($mark_as_unread = TRUE, $return_member_ids = FALSE)
 	{
 		$emails		= array();
 		$member_ids	= array();
@@ -215,7 +229,7 @@ class EE_Subscription {
 		
 		$this->EE->db->select('member_id');
 		$this->EE->db->where($this->publisher);
-		$query = $this->EE->db->get('subscriptions');
+		$query = $this->EE->db->get($this->table);
 		
 		foreach($query->result_array() as $subscription)
 		{
@@ -229,10 +243,15 @@ class EE_Subscription {
 			}
 		}
 		
+		if ($mark_as_unread)
+		{
+			$this->mark_as_unread(array($member_ids, $emails), TRUE);
+		}
+		
 		// Return as if coming from _prep?
 		if ($return_member_ids)
 		{
-			return implode('member_ids', 'emails');
+			return array($member_ids, $emails);
 		}
 		
 		// Grab member emails from the members table - is this too slow?
@@ -278,10 +297,12 @@ class EE_Subscription {
 				$current_user = $this->_get_current_user();
 			}
 			
+			// get_current_user returns false if it can't
+			// find an existing identifier
 			if ($current_user === FALSE)
 			{
-				
-			}
+				return FALSE;
+			}			
 			
 			$array = key($current_user).'s';
 			${$array}[] = current($current_user);
@@ -304,19 +325,18 @@ class EE_Subscription {
 				}
 				else
 				{
-					$member_ids[] = $member_ids;
+					$member_ids[] = $email_or_id;
 				}
 			}
 		}
 		
-		return array('member_ids' => $member_ids, 'emails' => $email);
+		return array($member_ids, $emails);
 	}
 	
 	// --------------------------------------------------------------------
 	
 	/**
 	 * Mark a subscription as read / unread
-	 *
 	 *
 	 * @access	private
 	 * @param	mixed	Values to identify the subscriber(s)
@@ -328,8 +348,15 @@ class EE_Subscription {
 	{
 		if ( ! $skip_prep)
 		{
-			list($member_ids, $emails) = $this->_prep($identifiers);
+			$identifiers = $this->_prep($identifiers);
+			
+			if ( ! $identifiers)
+			{
+				return;
+			}
 		}
+		
+		list($member_ids, $emails) = $identifiers;
 		
 		if ( ! count($member_ids) && ! count($emails))
 		{
@@ -357,21 +384,100 @@ class EE_Subscription {
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Identify the current user
+	 *
+	 * @access	private
+	 * @return	mixed
+	 */
 	function _get_current_user()
 	{
+		$this->EE->load->helper('cookie');
+		
+		$hash = '';
+		$cookie = get_cookie('subscription');
+		
+		// They're logged in!
 		if ($this->EE->session->userdata('member_id') != 0)
 		{
-			return array('member_id' => $this->EE->session->userdata('member_id'))
+			if ($cookie)
+			{
+				delete_cookie('subscription');
+			}
+			
+			return array('member_id' => $this->EE->session->userdata('member_id'));
 		}
-		elseif ($this->EE->session->userdata('email'))	// my_email cookie
+		// my_email cookie is set
+		elseif ($this->EE->session->userdata('email'))
 		{
+			if ($cookie)
+			{
+				delete_cookie('subscription');
+			}
+			
 			return array('email' => $this->EE->session->userdata('email'));
 		}
 		
 		// Check for a hash in the url
-		if ($this->EE->input->get('subscription'))
+		$hash = $this->EE->input->get('subscription', TRUE);
+		
+		if ($hash OR $cookie)
 		{
-			$this->hash = $this->EE->input->get('subscription');
+			return $this->_identify_from_hash($hash);
+		}
+		
+		return FALSE;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Identify the user from a subscription hash
+	 *
+	 * @access	private
+	 * @param	string	a subscription hash
+	 * @return	mixed
+	 */
+	function _identify_from_hash($hash = '')
+	{
+		$cookie = get_cookie('subscription', TRUE);
+		$cookie = $cookie ? explode('|', $cookie) : array();
+		
+		if ($hash)
+		{
+			$this->EE->db->where('hash', $hash);
+		}
+		elseif (count($cookie))
+		{
+			$this->EE->db->where_in('hash', $cookie);
+		}
+		else
+		{
+			return FALSE;
+		}
+		
+		$query = $this->EE->db->get($this->table);
+		
+		if ($query->num_rows())
+		{
+			// Found one - track them in the cookie
+			if ($hash)
+			{
+				$cookie[] = $hash;
+				$cookie = implode('|', array_unique($cookie));
+				
+				set_cookie('subscription', $cookie, 60*60*24*365);
+			}
+			
+			if ($user['member_id'])
+			{
+				return array('member_id' => $user['member_id']);
+			}
+			
+			if ($this->anonymous && $user['email'])
+			{
+				return array('email' => $user['email']);
+			}
 		}
 		
 		return FALSE;
