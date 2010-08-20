@@ -143,6 +143,9 @@ $lang = array(
 'search_in_ips' =>
 'Search in IPs',
 
+'search_in_entry_titles' =>
+'Search in Entry Titles',
+
 'search_in_names' =>
 'Search in Names',
 

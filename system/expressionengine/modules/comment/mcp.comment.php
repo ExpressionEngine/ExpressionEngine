@@ -921,7 +921,7 @@ function fnGetKey( aoData, sKey )
 		$vars['search_in_options']['ip_address'] =  $this->EE->lang->line('search_in_ips');
 		$vars['search_in_options']['email'] =  $this->EE->lang->line('search_in_emails');
 		$vars['search_in_options']['name'] =  $this->EE->lang->line('search_in_names');	
-		$vars['search_in_options']['entry_title'] =  $this->EE->lang->line('search_in_entry_title');			
+		$vars['search_in_options']['entry_title'] =  $this->EE->lang->line('search_in_entry_titles');			
 		
 		$vars['keywords'] = $filter['keywords'];
 		$vars['search_in_selected'] = $filter['search_in'];
