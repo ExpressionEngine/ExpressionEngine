@@ -1032,6 +1032,11 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 		$channel_ids = array();
 
+		if ($this->db->table_exists('comment_subscriptions'))
+		{
+			$this->db->query("DELETE FROM exp_comment_subscriptions WHERE ".$IDS);
+		}
+
 		if ($this->db->table_exists('comments'))
 		{
 			$IDS = str_replace('member_id', 'author_id', $IDS);
