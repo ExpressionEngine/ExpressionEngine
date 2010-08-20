@@ -516,7 +516,7 @@ class Content_publish extends Controller {
 
 		if ($which == 'new')
 		{
-			$title		= $default_entry_title;
+			$title		= ($title == '') ? $default_entry_title : $title; // title might be set by bookmarklet
 			$url_title	= $url_title_prefix;
 		}
 		elseif ($which == 'edit')
@@ -1393,9 +1393,11 @@ class Content_publish extends Controller {
 				$field_dt	= ( ! isset( $resrow['field_dt_'.$row['field_id']] )) ? 'y' : $resrow['field_dt_'.$row['field_id']];
 
 			}
-			elseif ($field_data = $this->input->get('field_id_'.$row['field_id'])) // Is this coming from a bookmarklet?
+			elseif (($field_data = $this->input->get('field_id_'.$row['field_id'])) !== FALSE) // Is this coming from a bookmarklet?
 			{
-				$field_data = $this->bm_qstr_decode( $this->input->get('tb_url')."\n\n".$field_data );
+				// I really hate that we're still using tb_url, but we don't want
+				// people's existing bookmarklets to break (2010-08-20 dj)
+				$field_data = $this->bm_qstr_decode($this->input->get('tb_url')."\n\n".$field_data );
 				$field_fmt	= $row['field_fmt'];
 			}
 			else // New entry- use the default setting
