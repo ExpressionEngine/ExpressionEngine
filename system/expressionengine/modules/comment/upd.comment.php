@@ -143,6 +143,21 @@ class Comment_upd {
 		$this->EE->dbforge->add_key('comment_id', TRUE);
 		$this->EE->dbforge->add_key(array('entry_id', 'channel_id', 'author_id', 'status', 'site_id'));
 		$this->EE->dbforge->create_table('comments');
+		
+		
+		$fields = array(
+			'entry_id'			=> array('type' => 'int'	, 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+			'member_id'			=> array('type' => 'int'	, 'constraint' => '10', 'default' => 0),
+			'email'				=> array('type' => 'varchar', 'constraint' => '50'),
+			'subscription_date'	=> array('type' => 'varchar', 'constraint' => '10'),
+			'notification_sent'	=> array('type' => 'char'	, 'constraint' => '1', 'default' => 'n'),
+			'hash'				=> array('type' => 'varchar', 'constraint' => '15')
+		);
+		
+		$this->EE->dbforge->add_field($fields);
+		$this->EE->dbforge->add_key('entry_id', TRUE);
+		$this->EE->dbforge->create_table('comment_subscriptions');
+		
 
 		$this->EE->load->library('layout');
 		$this->EE->layout->add_layout_fields($this->tabs());
@@ -178,6 +193,7 @@ class Comment_upd {
 		$this->EE->db->delete('actions');
 
 		$this->EE->dbforge->drop_table('comments');
+		$this->EE->dbforge->drop_table('comment_subscriptions');
 
 		$this->EE->db->update('channel_titles', array('comment_total' => 0, 'recent_comment_date' => 0));
 
@@ -221,6 +237,21 @@ class Comment_upd {
 				);
 
 			$this->EE->db->insert('actions', $data);
+			
+			
+			
+			$fields = array(
+				'entry_id'			=> array('type' => 'int'	, 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+				'member_id'			=> array('type' => 'int'	, 'constraint' => '10', 'default' => 0),
+				'email'				=> array('type' => 'varchar', 'constraint' => '50'),
+				'subscription_date'	=> array('type' => 'varchar', 'constraint' => '10'),
+				'notification_sent'	=> array('type' => 'char'	, 'constraint' => '1', 'default' => 'n'),
+				'hash'				=> array('type' => 'varchar', 'constraint' => '15')
+			);
+
+			$this->EE->dbforge->add_field($fields);
+			$this->EE->dbforge->add_key('entry_id', TRUE);
+			$this->EE->dbforge->create_table('comment_subscriptions');
 		}		
 
 		return TRUE;
