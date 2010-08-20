@@ -62,7 +62,9 @@ class Addons_modules extends Controller {
 		$this->load->library('table');
 		$this->load->library('addons');
 		$this->load->helper('directory');
-		
+
+		$this->cp->set_right_nav(array('update_modules' => BASE.AMP.'C=addons_modules'.AMP.'check_updates=y'));
+
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {0: {sorter: false}},
         	textExtraction: "complex",			
@@ -115,7 +117,8 @@ class Addons_modules extends Controller {
 		$vars['modules'] = array();
 		$names = array();
 		$data = array();
-
+		$updated = array();
+		
 		foreach ($modules as $module => $module_info)
 		{
 			if ( ! $can_admin)
@@ -174,6 +177,42 @@ class Addons_modules extends Controller {
 			$data[$modcount][] = $show_action;
 
 			$modcount++;
+
+			// Check for updates to module
+			// Send version to update class and let it do any required work
+			if ($this->input->get('check_updates') && $status == 'installed' && file_exists($this->installed_modules[$module]['path'].'upd.'.$module.EXT))
+			{
+				require $this->installed_modules[$module]['path'].'upd.'.$module.EXT;
+
+				$class = ucfirst($module).'_upd';
+				$version = $this->installed_modules[$module]['module_version'];
+
+				$UPD = new $class;
+				$UPD->_ee_path = APPPATH;
+		
+				if ($UPD->version > $version && method_exists($UPD, 'update') && $UPD->update($version) !== FALSE)
+				{
+					$this->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));
+					$updated[] = $name.': '.$this->lang->line('updated_to_version').' '.$UPD->version;
+				}
+			}
+		}
+
+		// if we were running an update check, redirect with the appropriate message
+		if ($this->input->get('check_updates'))
+		{
+			if (count($updated) > 0)
+			{
+				$flashmsg = '<strong>'.$this->lang->line('updated').'</strong>:<br />'.implode('<br />', $updated);
+			}
+			else
+			{
+				$flashmsg = $this->lang->line('all_modules_up_to_date');
+			}
+			
+			$this->session->set_flashdata('message_success', $flashmsg);
+			
+			$this->functions->redirect(BASE.AMP.'C=addons_modules');
 		}
 		
 		// Let's order by name just in case
