@@ -56,6 +56,13 @@ if ($EE_view_disable !== TRUE)
 
 			<p><?=lang('search_replace_disclaimer')?></p>	
 
+			<?php if ($save_tmpl_files):?>
+			<p>
+				<?=str_replace('%x', BASE.AMP.'C=design'.AMP.'M=sync_templates', lang('if_replacing_templates'))?>
+				<span class="notice"><?=lang('permanent_data_loss')?></span>
+			</p>
+			<?php endif;?>
+			
 			<p><?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'))?></p>
 
 			<?=form_close()?>

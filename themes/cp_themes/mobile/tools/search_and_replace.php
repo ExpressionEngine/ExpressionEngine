@@ -61,7 +61,14 @@ if ($EE_view_disable !== TRUE)
 	<div class="pad container">
 		<p class="notice"><?=lang('be_careful')?> <?=lang('action_can_not_be_undone')?></p>
 
-		<p><?=lang('search_replace_disclaimer')?></p>	
+		<p><?=lang('search_replace_disclaimer')?></p>
+		
+		<?php if ($save_tmpl_files):?>
+		<p>
+			<?=str_replace('%x', BASE.AMP.'C=design'.AMP.'M=sync_templates', lang('if_replacing_templates'))?>
+			<span class="notice"><?=lang('permanent_data_loss')?></span>
+		</p>
+		<?php endif;?>	
 	</div>
 	<p><?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'whiteButton'))?></p>
 	<?=form_close()?>

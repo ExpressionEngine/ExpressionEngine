@@ -49,6 +49,8 @@ $lang = array(
 'template_groups'		=> 'Template Groups',
 'rows_replaced'			=> 'Number of database records in which a replacement occurred:',
 'choose_below'			=> '(Choose from the following)',
+'if_replacing_templates'=> 'If you are replacing within templates, <a href="%x">synchronize with the database</a> first, or',
+'permanent_data_loss'	=> 'permanent data loss can occur!',
 
 /* Recount Stats */
 'recalculate' 			=> 'Recount Statistics',
