@@ -1612,7 +1612,7 @@ function fnGetKey( aoData, sKey )
 
 		if ($status == 'o')
 		{
-			//	 Instantiate Typography class
+			// Instantiate Typography class
 			$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
 		
 			$this->EE->load->library('typography');
@@ -1620,7 +1620,7 @@ function fnGetKey( aoData, sKey )
 			$this->EE->typography->parse_images = FALSE;
 
 
-			//	 Go Through Array of Entries
+			// Go Through Array of Entries
 			foreach ($comments as $comment_id)
 			{
 				$this->EE->db->select('comment, name, email, comment_date, entry_id');
@@ -1938,10 +1938,10 @@ function fnGetKey( aoData, sKey )
 		// a bit of a breadcrumb override is needed
 		$this->EE->cp->set_variable('cp_breadcrumbs', array(
 			$this->base_url => $this->EE->lang->line('comments')));		
-				
-		$vars['comment_moderation_override'] = ($this->EE->config->item('comment_moderation_override') == 'y') ? TRUE : FALSE;
 		
-		$vars['comment_word_censoring'] = ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE;
+		$vars['comment_word_censoring']			= ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE;
+		$vars['comment_moderation_override']	= ($this->EE->config->item('comment_moderation_override') == 'y') ? TRUE : FALSE;
+		$vars['comment_smart_notifications']	= ($this->EE->config->item('comment_smart_notifications') == 'y') ? TRUE : FALSE;
 
 		return $this->EE->load->view('settings', $vars, TRUE);		
 	}
@@ -1949,9 +1949,9 @@ function fnGetKey( aoData, sKey )
 	
 	function save_settings()
 	{
-
 		$insert['comment_word_censoring'] = ($this->EE->input->post('comment_word_censoring')) ? 'y' : 'n';
 		$insert['comment_moderation_override'] = ($this->EE->input->post('comment_moderation_override')) ? 'y' : 'n';
+		$insert['comment_smart_notifications'] = ($this->EE->input->post('comment_smart_notifications')) ? 'y' : 'n';
 
 		$this->EE->config->_update_config($insert);
 
