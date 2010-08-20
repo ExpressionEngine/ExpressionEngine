@@ -537,6 +537,7 @@ class Api_channel_entries extends Api {
 				}
 
 				$this->EE->db->delete('comments', array('entry_id' => $val));
+				$this->EE->db->delete('comment_subscriptions', array('entry_id' => $val));
 			}
 			
 			
