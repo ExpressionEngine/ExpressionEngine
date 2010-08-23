@@ -97,8 +97,22 @@ class Comment_mcp {
 				});
 			}
 		);');
-		
-		
+
+
+		$this->EE->javascript->output('
+		$("#comment_action").change(function() {
+			if ($("#comment_action").val() == "delete")
+			{
+				$(this).nextAll("#blacklist").show();
+			}
+			else
+			{
+				$(this).nextAll("#blacklist").hide();
+			}			
+			
+		});');
+
+
 		$this->EE->javascript->output('
 			$("#custom_date_start_span").datepicker({
 				dateFormat: "yy-mm-dd",
@@ -165,8 +179,7 @@ class Comment_mcp {
 			}
 		");
 		
-		
-			
+
 		$this->EE->javascript->compile();
 
 		$filter = $this->filter_settings();
@@ -1008,8 +1021,26 @@ function fnGetKey( aoData, sKey )
 		}
 		
 		$this->EE->load->library('table');
+				
+		$this->EE->load->library('javascript');	
+
+		
+		
+		$this->EE->javascript->output('		
+		if ($("#move_to").val() != "")
+		{
+			$("#move_link").hide();
+			$("#move_field").show();
+		}
+		
+		$("#move_link").click(function() {
+			$("#move_link").hide();
+			$("#move_field").show();
+			return false;
+		});');
 
 
+		$this->EE->javascript->compile();
 		$comment_id	= ( ! $comment_id) ? $this->EE->input->get_post('comment_id') : $comment_id;
 
 
@@ -1181,22 +1212,35 @@ function fnGetKey( aoData, sKey )
 		
 		if ($move_to != '')
 		{
-			$this->EE->form_validation->set_rules('move_to', 'lang:move_to', 'callback__move_check');
-
-			$this->EE->db->select('title, entry_id, channel_id');
-			$this->EE->db->where('entry_id', $move_to);
-			$query = $this->EE->db->get('channel_titles');
+			$tcount = 0;
 			
-			$row = $query->row();
+			if (ctype_digit($move_to))
+			{
+				$this->EE->db->select('title, entry_id, channel_id');
+				$this->EE->db->where('entry_id', $move_to);
+				$query = $this->EE->db->get('channel_titles');
+			
+				$tcount = $query->num_rows();
+			}
 
-			$new_entry_id = $row->entry_id;
-			$new_channel_id = $row->channel_id;
 
-			$recount_ids[] = $entry_id;
-			$recount_channels[] = $channel_id;
+			if ($tcount == 0)
+			{
+				$this->EE->form_validation->set_rules('move_to', 'lang:move_to', 'callback__move_check');
+			}
+			else
+			{
+				$row = $query->row();
+			
+				$new_entry_id = $row->entry_id;
+				$new_channel_id = $row->channel_id;
 
-			$recount_ids[] = $row->entry_id;
-			$recount_channels[] = $row->channel_id;
+				$recount_ids[] = $entry_id;
+				$recount_channels[] = $channel_id;
+
+				$recount_ids[] = $row->entry_id;
+				$recount_channels[] = $row->channel_id;
+			}
 		}
 
 		
@@ -1300,13 +1344,11 @@ function fnGetKey( aoData, sKey )
 		}
 	}
 	
-	function _move_to_check($str)
+	function _move_check($str)
 	{
-			if ( ! cdigit($str))
-			{
-				$this->EE->form_validation->set_message('_email_check', $this->EE->lang->line('invalid_entry_id'));
-				return FALSE;
-			}
+		// failed by definition
+		$this->EE->form_validation->set_message('_move_check', $this->EE->lang->line('invalid_entry_id'));
+		return FALSE;
 	}
 
 
@@ -1466,18 +1508,16 @@ function fnGetKey( aoData, sKey )
 		$vars = array();
 
 		$vars['hidden'] = array(
-								'comment_ids'	=> implode('|', array_keys($comments)),
-								'add_to_blacklist' => $this->EE->input->get_post('add_to_blacklist')
+								'comment_ids'	=> implode('|', array_keys($comments))
 								);
 								
+		$vars['blacklist'] = ($this->EE->input->get_post('add_to_blacklist') != 'y') ? FALSE : TRUE;
 								
-
 		$message = (count($comments) > 1) ? 'delete_comments_confirm' : 'delete_comment_confirm';
 
 		$vars['comments'] = $comments;
 		$vars['message'] = $message;
 		return $this->EE->load->view('delete_comments', $vars, TRUE);
-		//$this->EE->load->view('delete_comments', $vars);
 	}
 
 	// --------------------------------------------------------------------

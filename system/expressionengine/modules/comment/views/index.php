@@ -94,10 +94,10 @@
 <div class="tableFooter">
 	<div class="tableSubmit">
 				<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
-				<?=form_dropdown('action', $form_options).NBS.NBS?>
-				<p>
+				<?=form_dropdown('action', $form_options, '', 'id="comment_action"').NBS.NBS?>
+				<div class="notice js_hide" id="blacklist">
 				<?=lang('blacklist').NBS.form_checkbox('add_to_blacklist', 'y', FALSE)?>
-				</p>
+				</div>
 				
 	</div>
 
