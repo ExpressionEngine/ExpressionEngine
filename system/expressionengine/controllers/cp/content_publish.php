@@ -1344,7 +1344,7 @@ class Content_publish extends Controller {
 					'field_id'				=> 'title',
 					'field_label'			=> lang('title'),
 					'field_required'		=> 'y',
-					'field_data'			=> ($this->input->post('title') == '') ? $this->bm_qstr_decode($title) : $this->input->post('title'),
+					'field_data'			=> ($this->input->post('title') == '') ? $title : $this->input->post('title'),
 					'field_fmt'				=> 'xhtml',
 					'field_instructions'	=> '',
 					'field_show_fmt'		=> 'n',
