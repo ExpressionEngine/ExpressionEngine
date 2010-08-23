@@ -241,7 +241,7 @@ jQuery(document).ready(function () {
 			modal: true,
 			title: EE.lang.logout,
 			position: "center",
-			minHeight: "0px",
+			minHeight: "0",
 			buttons: buttons,
 			beforeClose: cancelLogout
 		});
@@ -566,7 +566,7 @@ jQuery(document).ready(function () {
 			modal: true,
 			title: EE.lang.logout,
 			position: "center",
-			minHeight: "0px",
+			minHeight: "0",
 			buttons: buttons,
 			beforeClose: cancel_logout
 		});
