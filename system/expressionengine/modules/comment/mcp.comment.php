@@ -1784,19 +1784,18 @@ function fnGetKey( aoData, sKey )
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 		
-			$this->EE->db->where_in('comment_id', explode('|', $comment_id));
-			$count = $this->EE->db->count_all_results('comments');
+		$this->EE->db->where_in('comment_id', explode('|', $comment_id));
+		$count = $this->EE->db->count_all_results('comments');
 
-			if ($count == 0)
-			{
-				show_error($this->EE->lang->line('unauthorized_access'));
-			}
-		
-			if ( ! $this->EE->cp->allowed_group('can_delete_all_comments') &&  ! $this->EE->cp->allowed_group('can_delete_own_comments'))
-			{
-				show_error($this->EE->lang->line('unauthorized_access'));
-			}
-		
+		if ($count == 0)
+		{
+			show_error($this->EE->lang->line('unauthorized_access'));
+		}
+	
+		if ( ! $this->EE->cp->allowed_group('can_delete_all_comments') &&  ! $this->EE->cp->allowed_group('can_delete_own_comments'))
+		{
+			show_error($this->EE->lang->line('unauthorized_access'));
+		}
 		
 
 		$this->EE->db->select('channel_titles.author_id, channel_titles.entry_id, channel_titles.channel_id, channel_titles.comment_total, comments.ip_address');

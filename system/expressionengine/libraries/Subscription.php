@@ -74,6 +74,7 @@ class EE_Subscription {
 	 */
 	function subscribe($identifiers = FALSE, $mark_existing = TRUE)
 	{
+		$rand = '';
 		$user = $this->_prep($identifiers);
 		
 		if ( ! $user)
@@ -82,12 +83,12 @@ class EE_Subscription {
 		}
 		
 		list($member_ids, $emails) = $user;
-		list($existing_ids, $existing_emails) = $this->get_subscribers(TRUE, TRUE);
-		
+		list($existing_ids, $existing_emails) = $this->get_subscribers();
+
 		// Handle duplicates
 		$new_member_ids = array_diff($member_ids, $existing_ids);
 		$new_emails = array_diff($emails, $existing_emails);
-		
+
 		if (count($new_member_ids) OR count($new_emails))
 		{
 			$data	 = array();
@@ -121,12 +122,26 @@ class EE_Subscription {
             $this->EE->db->insert_batch($this->table, $data);
 		}
 		
+		// Member is anonymous - set a cookie for them
+		if ($this->EE->session->userdata('member_id') == 0 && $this->anonymous && $rand)
+		{
+			$this->EE->load->helper('cookie');
+			
+			$cookie = get_cookie('subscription', TRUE);
+			$cookie = $cookie ? explode('|', $cookie) : array();
+			
+			$cookie[] = $rand;
+			$cookie = implode('|', array_unique($cookie));
+			
+			set_cookie('subscription', $cookie, 60*60*24*365);
+		}
+		
 		// Refresh existing subscriptions if there were any
 		if ($mark_existing)
 		{
 			$member_ids = array_intersect($member_ids, $existing_ids);
 			$emails = array_intersect($emails, $existing_emails);
-			
+
 			$dupes = array($member_ids, $emails);
 			$this->mark_as_read($dupes, TRUE);
 		}
@@ -173,22 +188,15 @@ class EE_Subscription {
 		{
 			$this->EE->db->where($this->publisher);
 		}
+		
+		// Member is anonymous - delete the cookie
+		if ($this->EE->session->userdata('member_id') == 0 && $this->anonymous)
+		{
+			$this->EE->load->helper('cookie');
+			delete_cookie('subscription');
+		}
+		
 		$this->EE->db->delete($this->table);
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Remove subscriptions to all posts
-	 *
-	 * Use when deleting a member
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function unsubscribe_all($identifiers = FALSE)
-	{
-		$this->unsubscribe($identifiers, TRUE);
 	}
 	
 	// --------------------------------------------------------------------
@@ -216,7 +224,7 @@ class EE_Subscription {
 	 * @param	bool	Return array with member ids instead of looking up their emails (used internally)
 	 * @return	mixed	Array of email addresses
 	 */
-	function get_subscribers($mark_as_unread = TRUE, $return_member_ids = FALSE)
+	function get_subscribers($smart_notifications = FALSE)
 	{
 		$emails		= array();
 		$member_ids	= array();
@@ -225,6 +233,11 @@ class EE_Subscription {
 		if ($this->anonymous)
 		{
 			$this->EE->db->select('email');
+		}
+		
+		if ($smart_notifications)
+		{
+			$this->EE->db->where('notification_sent', 'n');
 		}
 		
 		$this->EE->db->select('member_id');
@@ -242,33 +255,8 @@ class EE_Subscription {
 				$emails[] = $subscription['email'];
 			}
 		}
-		
-		if ($mark_as_unread)
-		{
-			$this->mark_as_unread(array($member_ids, $emails), TRUE);
-		}
-		
-		// Return as if coming from _prep?
-		if ($return_member_ids)
-		{
-			return array($member_ids, $emails);
-		}
-		
-		// Grab member emails from the members table - is this too slow?
-		if (count($member_ids))
-		{
-			$this->EE->db->select('email');
-			$this->EE->db->where_in('member_id', $member_ids);
-			$query = $this->EE->db->get('members');
-			
-			if ($query->num_rows())
-			{
-				$member_emails = array_map('array_pop', $query->result_array());
-				$emails = array_unique(array_merge($emails, $member_emails));
-			}
-		}
-		
-		return $emails;
+
+		return array($member_ids, $emails);
 	}
 	
 	// --------------------------------------------------------------------
@@ -400,21 +388,13 @@ class EE_Subscription {
 		// They're logged in!
 		if ($this->EE->session->userdata('member_id') != 0)
 		{
-			if ($cookie)
-			{
-				delete_cookie('subscription');
-			}
-			
+			delete_cookie('subscription');
 			return array('member_id' => $this->EE->session->userdata('member_id'));
 		}
 		// my_email cookie is set
 		elseif ($this->EE->session->userdata('email'))
 		{
-			if ($cookie)
-			{
-				delete_cookie('subscription');
-			}
-			
+			delete_cookie('subscription');
 			return array('email' => $this->EE->session->userdata('email'));
 		}
 		
@@ -453,6 +433,7 @@ class EE_Subscription {
 		}
 		else
 		{
+			// no hash - bail
 			return FALSE;
 		}
 		
@@ -480,9 +461,9 @@ class EE_Subscription {
 			}
 		}
 		
+		delete_cookie('subscription');
 		return FALSE;
 	}
-	
 }
 
 // END Subscription class

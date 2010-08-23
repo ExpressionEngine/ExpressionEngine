@@ -146,7 +146,8 @@ class Comment_upd {
 		
 		
 		$fields = array(
-			'entry_id'			=> array('type' => 'int'	, 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+			'subscription_id'	=> array('type' => 'int'	, 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+			'entry_id'			=> array('type' => 'int'	, 'constraint' => '10', 'unsigned' => TRUE),
 			'member_id'			=> array('type' => 'int'	, 'constraint' => '10', 'default' => 0),
 			'email'				=> array('type' => 'varchar', 'constraint' => '50'),
 			'subscription_date'	=> array('type' => 'varchar', 'constraint' => '10'),
@@ -155,7 +156,8 @@ class Comment_upd {
 		);
 		
 		$this->EE->dbforge->add_field($fields);
-		$this->EE->dbforge->add_key('entry_id', TRUE);
+		$this->EE->dbforge->add_key('subscription_id', TRUE);
+		$this->EE->dbforge->add_key(array('entry_id', 'member_id'));
 		$this->EE->dbforge->create_table('comment_subscriptions');
 		
 
@@ -241,7 +243,8 @@ class Comment_upd {
 			
 			
 			$fields = array(
-				'entry_id'			=> array('type' => 'int'	, 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+				'subscription_id'	=> array('type' => 'int'	, 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+				'entry_id'			=> array('type' => 'int'	, 'constraint' => '10', 'unsigned' => TRUE),
 				'member_id'			=> array('type' => 'int'	, 'constraint' => '10', 'default' => 0),
 				'email'				=> array('type' => 'varchar', 'constraint' => '50'),
 				'subscription_date'	=> array('type' => 'varchar', 'constraint' => '10'),
@@ -250,7 +253,8 @@ class Comment_upd {
 			);
 
 			$this->EE->dbforge->add_field($fields);
-			$this->EE->dbforge->add_key('entry_id', TRUE);
+			$this->EE->dbforge->add_key('subscription_id', TRUE);
+			$this->EE->dbforge->add_key(array('entry_id', 'member_id'));
 			$this->EE->dbforge->create_table('comment_subscriptions');
 		}		
 

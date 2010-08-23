@@ -1292,8 +1292,8 @@ class Comment {
 	 */
 	function form($return_form = FALSE, $captcha = '')
 	{
-		$qstring = $this->EE->uri->query_string;
-		$entry_where = array();
+		$qstring		 = $this->EE->uri->query_string;
+		$entry_where	 = array();
 		$halt_processing = FALSE;
 
 		/** --------------------------------------
@@ -1310,17 +1310,14 @@ class Comment {
 		if (isset($_POST['entry_id']))
 		{
 			$entry_where = array('entry_id' => $_POST['entry_id']);
-//			$entry_sql = " entry_id = '".$this->EE->db->escape_str($_POST['entry_id'])."' ";
 		}
 		elseif ($entry_id = $this->EE->TMPL->fetch_param('entry_id'))
 		{
 			$entry_where = array('entry_id' => $entry_id);
-//			$entry_sql = " entry_id = '".$this->EE->db->escape_str($entry_id)."' ";
 		}
 		elseif ($url_title = $this->EE->TMPL->fetch_param('url_title'))
 		{
 			$entry_where = array('url_title' => $url_title);
-//			$entry_sql = " url_title = '".$this->EE->db->escape_str($url_title)."' ";
 		}
 		else
 		{
@@ -1336,9 +1333,8 @@ class Comment {
 			{
 				$entry_where = array('entry_id' => $entry_id);
 			}
-			
-	//		$entry_sql = ( ! is_numeric($entry_id)) ? " url_title = '".$this->EE->db->escape_str($entry_id)."' " : " entry_id = '".$this->EE->db->escape_str($entry_id)."' ";
 		}
+		
 
 		/** ----------------------------------------
 		/**  Are comments allowed?
@@ -1381,29 +1377,28 @@ class Comment {
 		$this->EE->db->where_in('channel_titles.site_id', $this->EE->TMPL->site_ids);
 		$this->EE->db->where('channel_titles.channel_id = '.$this->EE->db->dbprefix('channels').'.channel_id');
 		
-			if ($e_status = $this->EE->TMPL->fetch_param('entry_status'))
+		if ($e_status = $this->EE->TMPL->fetch_param('entry_status'))
+		{
+			$e_status = str_replace('Open',	'open',	$e_status);
+			$e_status = str_replace('Closed', 'closed', $e_status);
+
+			$sql = $this->EE->functions->sql_andor_string($e_status, 'status');
+
+			if (stristr($sql, "'closed'") === FALSE)
 			{
-				$e_status = str_replace('Open',	'open',	$e_status);
-				$e_status = str_replace('Closed', 'closed', $e_status);
-
-				$sql = $this->EE->functions->sql_andor_string($e_status, 'status');
-
-				if (stristr($sql, "'closed'") === FALSE)
-				{
-					$sql .= " AND status != 'closed' ";
-				}
-				
-				//  We need to drop the leading AND from the generated string 
-				$sql = substr($sql, 4);
-
-				
-				$this->EE->db->where($sql, NULL, FALSE);
+				$sql .= " AND status != 'closed' ";
 			}
-			else
-			{
-				$this->EE->db->where('status !=', 'closed');
-			}
-		
+			
+			//  We need to drop the leading AND from the generated string 
+			$sql = substr($sql, 4);
+
+			
+			$this->EE->db->where($sql, NULL, FALSE);
+		}
+		else
+		{
+			$this->EE->db->where('status !=', 'closed');
+		}
 		
 		
 		$this->EE->db->where($entry_where);
@@ -1419,6 +1414,19 @@ class Comment {
 		{
 			$halt_processing = 'disabled';
 		}
+		
+		
+		/** ----------------------------------------
+		/**  Smart Notifications? Mark comments as read.
+		/** ----------------------------------------*/
+		
+		if ($this->EE->config->item('comment_smart_notifications') == 'y')
+		{
+			$this->EE->load->library('subscription');
+			$this->EE->subscription->init('comment', array('entry_id' => $query->row('entry_id')), TRUE);
+			$this->EE->subscription->mark_as_read();
+		}
+		
 
 		/** ----------------------------------------
 		/**  Return the "no cache" version of the form
@@ -2588,7 +2596,7 @@ class Comment {
 						'comment'		=> $this->EE->security->xss_clean($_POST['comment']),
 						'comment_date'	=> $this->EE->localize->now,
 						'ip_address'	=> $this->EE->input->ip_address(),
-						'notify'		=> $notify,
+						'notify'		=> 'n',
 						'status'		=> ($comment_moderate == 'y') ? 'p' : 'o',
 						'site_id'		=> $this->EE->config->item('site_id')
 					 );
@@ -2634,6 +2642,24 @@ class Comment {
 			$sql = $this->EE->db->insert_string('exp_comments', $data);
 
 			$this->EE->db->query($sql);
+			
+			
+			if ($notify == 'y')
+			{
+				$this->EE->load->library('subscription');
+				$this->EE->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
+
+				if ($cmtr_id = $this->EE->session->userdata('member_id'))
+				{
+					$this->EE->subscription->subscribe($cmtr_id);
+				}
+				else
+				{
+					$this->EE->subscription->subscribe($cmtr_email);
+				}
+			}
+			
+			
 
 			$comment_id = $this->EE->db->insert_id();
 		}
@@ -2677,30 +2703,88 @@ class Comment {
 			/** ----------------------------------------
 			/**  Fetch email notification addresses
 			/** ----------------------------------------*/
-
-			$query = $this->EE->db->query("SELECT DISTINCT(email), name, comment_id, author_id FROM exp_comments WHERE status = 'o' AND entry_id = '".$this->EE->db->escape_str($_POST['entry_id'])."' AND notify = 'y'");
-
-			$recipients = array();
-
-			if ($query->num_rows() > 0)
+			
+			$this->EE->load->library('subscription');
+			$this->EE->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
+			
+			$smart_notifications = ($this->EE->config->item('comment_smart_notifications') == 'y') ? TRUE : FALSE;
+			
+			list($recipient_members, $recipient_emails) = $this->EE->subscription->get_subscribers($smart_notifications);
+			
+			// Filter out current user
+			
+			if ($cur_mem_id = $this->EE->session->userdata('member_id'))
 			{
-				foreach ($query->result_array() as $row)
+				$recipient_members = array_diff($recipient_members, array($cur_mem_id));
+			}
+			else if (isset($_POST['email']))
+			{
+				$recipient_emails = array_diff($recipient_emails, array($_POST['email']));
+			}
+			
+			
+			$recipients = array();
+			$member_data = array();
+			
+			// No subscribers - skip!
+			
+			if (count($recipient_members) OR count($recipient_emails))
+			{
+				if (count($recipient_members))
 				{
-					if ($row['email'] == "" AND $row['author_id'] != 0)
-					{
-						$this->EE->db->select('email, screen_name');
-						$this->EE->db->where('member_id', $row['author_id']);
-						
-						$result = $this->EE->db->get('members');
+					$this->EE->db->select('member_id, email, screen_name');
+					$this->EE->db->where_in('member_id', $recipient_members);
+					$member_q = $this->EE->db->get('members');
 
-						if ($result->num_rows() == 1)
+					if ($member_q->num_rows() > 0)
+					{
+						foreach ($member_q->result_array() as $row)
 						{
-							$recipients[] = array($result->row('email') , $row['comment_id'], $result->row('screen_name') );
+							$member_data[$row['member_id']] = array($row['email'], $row['screen_name']);
 						}
 					}
-					elseif ($row['email'] != "")
+				}
+
+
+				// Get all comments by these subscribers
+
+				$this->EE->db->select('DISTINCT(email), name, author_id, comment_id');
+				$this->EE->db->where('status', 'o');
+				$this->EE->db->where('entry_id', $_POST['entry_id']);
+
+				$func = 'where_in';
+
+				if (count($recipient_members))
+				{
+					$this->EE->db->where_in('author_id', $recipient_members);
+					$func = 'or_where_in';
+				}
+
+				if (count($recipient_emails))
+				{
+					$this->EE->db->$func('email', $recipient_emails);
+				}			
+
+				$comment_q = $this->EE->db->get('comments');
+
+
+				// Assemble an array of recipients with email, comment id, and screen name
+
+				if ($comment_q->num_rows() > 0)
+				{
+					foreach ($comment_q->result() as $row)
 					{
-						$recipients[] = array($row['email'], $row['comment_id'], $row['name']);
+						if (isset($member_data[$row->author_id]))
+						{
+							list($email, $name) = $member_data[$row->author_id];
+						}
+						else
+						{
+							$email = $row->email;
+							$name = $row->name;
+						}
+
+						$recipients[] = array($email, $row->comment_id, $name);
 					}
 				}
 			}
@@ -2838,7 +2922,7 @@ class Comment {
 		if ($comment_moderate == 'n')
 		{
 			$email_msg = '';
-
+			
 			if (count($recipients) > 0)
 			{
 				$action_id  = $this->EE->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
@@ -2906,6 +2990,14 @@ class Comment {
 						$sent[] = $val['0'];
 					}
 				}
+			}
+			
+			// Mark it as unread if smart notifications are turned on,
+			// that will prevent further emails from being sent
+			
+			if ($this->EE->config->item('comment_smart_notifications') == 'y')
+			{
+				$this->EE->subscription->mark_as_unread(array($recipient_members, $recipient_emails), TRUE);
 			}
 
 			/** ----------------------------------------
@@ -3034,18 +3126,19 @@ class Comment {
 	 */
 	function comment_subscribe()
 	{
+		$id		= $this->EE->input->get_post('entry_id');
+		$type	= ($this->EE->input->get_post('type')) ? 'unsubscribe' : 'subscribe';
 		
-
-
-
-
-
-
+		if ($id)
+		{
+			$this->EE->load->library('subscription');
+			$this->EE->subscription->init('comment', array('entry_id' => $id), TRUE);
+			$this->EE->subscription->$type();
+		}
 
 		// Show success message
 		
 		$this->EE->lang->loadfile('comment');
-		$type = ($this->EE->input->get_post('type')) ? 'unsubscribe' : 'subscribe';
 		
 		$title = ($type == 'unsubscribe') ? 'cmt_unsubscribe' : 'cmt_subscribe';
 		$content = ($type == 'unsubscribe') ? 'you_have_been_unsubscribed' : 'you_have_been_subscribed';		
