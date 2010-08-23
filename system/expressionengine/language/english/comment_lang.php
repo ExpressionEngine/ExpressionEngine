@@ -272,6 +272,9 @@ $lang = array(
 'cmt_unsubscribe' =>
 'Un-subscribe from this comment',
 
+'invalid_entry_id' =>
+'Invalid Entry ID',
+
 
 ''=>''
 );

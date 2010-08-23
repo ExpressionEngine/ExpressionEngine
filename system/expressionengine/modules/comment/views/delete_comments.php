@@ -17,9 +17,11 @@ foreach ($comments as $comment_data)
 
 echo $this->table->generate();
 ?>			
-			
 
 <p><?=form_submit('delete_comments', lang('delete'), 'class="submit"')?></p>
+<div class="notice blacklist">
+<?=lang('blacklist').NBS.form_checkbox('add_to_blacklist', 'y', $blacklist)?>
+</div>
 
 <?=form_close()?>
 
