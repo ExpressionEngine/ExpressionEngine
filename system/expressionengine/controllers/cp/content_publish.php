@@ -864,7 +864,7 @@ class Content_publish extends Controller {
 		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
 		
 		// Expiration Date
-		
+
 		$settings = array(
 					'field_id'				=> 'expiration_date',
 					'field_label'			=> $this->lang->line('expiration_date'),
@@ -885,6 +885,14 @@ class Content_publish extends Controller {
 		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
 		
 		// Comment Expiration Date
+		if ($comment_expiration_date == '' || $comment_expiration_date == 0)
+		{
+			if ($comment_expiration > 0 AND $which != 'edit')
+			{
+				$comment_expiration_date = $comment_expiration * 86400;
+				$comment_expiration_date = $comment_expiration_date + $this->localize->now;
+			}
+		}
 
 		if (isset($this->installed_modules['comment']) && $vars['show_comments'])
 		{
