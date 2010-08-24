@@ -242,9 +242,6 @@ $lang = array(
 "cmt_comment_removal" =>
 "To stop receiving notifications for this comment, click here:",
 
-"cmt_comment_removal_all" =>
-"To stop receiving all notifications, click here:",
-
 "cmt_notification_removal" =>
 "Notification removal",
 
@@ -274,6 +271,9 @@ $lang = array(
 
 'invalid_entry_id' =>
 'Invalid Entry ID',
+
+'no_valid_comments' =>
+'No Valid Comments',
 
 
 ''=>''

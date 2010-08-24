@@ -565,7 +565,7 @@ function fnGetKey( aoData, sKey )
 			'.$col_defs.'
 					
 		"oLanguage": {
-			"sZeroRecords": "'.$this->EE->lang->line('invalid_entries').'",
+			"sZeroRecords": "'.$this->EE->lang->line('no_valid_comments').'",
 			
 			"oPaginate": {
 				"sFirst": "<img src=\"'.$this->EE->cp->cp_theme_url.'images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
