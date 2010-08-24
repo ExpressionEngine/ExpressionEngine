@@ -84,6 +84,11 @@ class Comment_mcp {
 		$this->EE->cp->add_js_script('ui', 'datepicker');
 			
 		$this->EE->javascript->output($this->ajax_filters('comments_ajax_filter', 9));
+		
+		$this->EE->cp->get_installed_modules();
+		
+		$blacklist_installed =  (isset($this->EE->cp->installed_modules['blacklist'])) ? TRUE : FALSE;		
+		
 
 		$this->EE->javascript->output('
 		$(".toggle_comments").toggle(
@@ -99,19 +104,21 @@ class Comment_mcp {
 		);');
 
 
-		$this->EE->javascript->output('
-		$("#comment_action").change(function() {
-			if ($("#comment_action").val() == "delete")
-			{
-				$(this).nextAll("#blacklist").show();
-			}
-			else
-			{
-				$(this).nextAll("#blacklist").hide();
-			}			
+		if ($blacklist_installed)
+		{
+			$this->EE->javascript->output('
+			$("#comment_action").change(function() {
+				if ($("#comment_action").val() == "delete")
+				{
+					$(this).nextAll("#blacklist").show();
+				}
+				else
+				{
+					$(this).nextAll("#blacklist").hide();
+				}			
 			
-		});');
-
+			});');
+		}
 
 		$this->EE->javascript->output('
 			$("#custom_date_start_span").datepicker({
@@ -203,13 +210,12 @@ class Comment_mcp {
 		// No results?  No reason to continue...
 		if ($total == 0)
 		{
+			$vars['blacklist_intalled'] = $blacklist_installed;
 			$vars['message'] = $this->EE->lang->line('no_comments');
 			$vars['comments'] = array();
 			$vars['form_options'] = array();
 			return $this->EE->load->view('index', $vars, TRUE);
 		}
-
-
 
 		$comment_ids = array_slice($comment_id_query->result_array(), $rownum, $this->perpage);
 		
@@ -362,6 +368,7 @@ class Comment_mcp {
 		
 		$vars['pagination'] = $pagination_links;
 		$vars['message'] = $message;
+		$vars['blacklist_installed'] = $blacklist_installed;
 
 
 		return $this->EE->load->view('index', $vars, TRUE);
@@ -1422,6 +1429,10 @@ function fnGetKey( aoData, sKey )
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 
+		$this->EE->cp->get_installed_modules();
+		
+		$blacklist_installed =  (isset($this->EE->cp->installed_modules['blacklist'])) ? TRUE : FALSE;
+
 		if ( ! $this->EE->input->post('toggle') && ! $this->EE->input->get_post('comment_id'))
 		{
 			$this->EE->session->set_flashdata('message_failure', $this->EE->lang->line('no_valid_selections'));
@@ -1511,6 +1522,7 @@ function fnGetKey( aoData, sKey )
 								'comment_ids'	=> implode('|', array_keys($comments))
 								);
 								
+		$vars['blacklist_installed'] = (isset($this->EE->cp->installed_modules['blacklist'])) ? TRUE : FALSE;
 		$vars['blacklist'] = ($this->EE->input->get_post('add_to_blacklist') != 'y') ? FALSE : TRUE;
 								
 		$message = (count($comments) > 1) ? 'delete_comments_confirm' : 'delete_comment_confirm';
@@ -1837,6 +1849,9 @@ function fnGetKey( aoData, sKey )
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 		
+		$this->EE->cp->get_installed_modules();
+		
+		$blacklist_installed =  (isset($this->EE->cp->installed_modules['blacklist'])) ? TRUE : FALSE;
 
 		$this->EE->db->select('channel_titles.author_id, channel_titles.entry_id, channel_titles.channel_id, channel_titles.comment_total, comments.ip_address');
 		$this->EE->db->from(array('channel_titles', 'comments'));
@@ -1884,7 +1899,7 @@ function fnGetKey( aoData, sKey )
 		}
 
 		// If blacklist was checked- blacklist!
-		if ($this->EE->input->post('add_to_blacklist') == 'y')
+		if ($blacklist_installed && $this->EE->input->post('add_to_blacklist') == 'y')
 		{
 			include_once PATH_MOD.'blacklist/mcp.blacklist'.EXT;
 
@@ -1892,7 +1907,6 @@ function fnGetKey( aoData, sKey )
 			
 			// Write to htaccess?
 			$write_htacces = ($this->EE->session->userdata('group_id') == '1' && $this->EE->config->item('htaccess_path') != '')	? TRUE : FALSE;		
-			
 			
 			$blacklisted = $bl->update_blacklist($ips, $write_htacces, 'bool');
 		}

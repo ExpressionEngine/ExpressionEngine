@@ -19,9 +19,10 @@ echo $this->table->generate();
 ?>			
 
 <p><?=form_submit('delete_comments', lang('delete'), 'class="submit"')?></p>
+<?php if ($blacklist_installed): ?>
 <div class="notice blacklist">
 <?=lang('blacklist').NBS.form_checkbox('add_to_blacklist', 'y', $blacklist)?>
 </div>
-
+<?php endif; ?>
 <?=form_close()?>
 
