@@ -139,6 +139,13 @@ class Channel_entries_model extends CI_Model {
 	 */
 	function get_recent_entries($limit = '10')
 	{
+		$allowed_channels = $this->functions->fetch_assigned_channels();
+		
+		if (count($allowed_channels) == 0)
+		{
+			return FALSE;
+		}
+
 		$this->db->select('
 						channel_titles.channel_id, 
 						channel_titles.author_id,
@@ -159,16 +166,11 @@ class Channel_entries_model extends CI_Model {
 		
 		$allowed_channels = $this->functions->fetch_assigned_channels();
 		
-		if (count($allowed_channels) > 0)
-		{
-			$this->db->where_in('channel_titles.channel_id', $allowed_channels);
+		$this->db->where_in('channel_titles.channel_id', $allowed_channels);
 			
-			$this->db->limit($limit);
-			$this->db->order_by('entry_date', 'DESC');
-			return $this->db->get();
-		}
-		
-		return FALSE;
+		$this->db->limit($limit);
+		$this->db->order_by('entry_date', 'DESC');
+		return $this->db->get();
 	}
 	
 	// --------------------------------------------------------------------
