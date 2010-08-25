@@ -104,19 +104,18 @@ class Homepage extends Controller {
 		//  Can they moderate ALL comments
 		$vars['can_moderate_comments'] = $this->cp->allowed_group('can_moderate_comments') ? TRUE : FALSE;
 		
-		$vars['comment_validation_count'] = $this->total_validating_comments();
-		
 		// Most recent comment and most recent entry
-		
 		$this->load->model('channel_model');
-		$comments_installed = $this->db->table_exists('comments');
+
+		$vars['comments_installed'] = $this->db->table_exists('comments');
+		
+
+		$vars['comment_validation_count'] = ($vars['comments_installed']) ? $this->total_validating_comments() : FALSE;	
 		
 		$vars['cp_recent_ids'] = array(
-			'entry'		=> $this->channel_model->get_most_recent_id('entry'),
-			'comment'	=> $comments_installed ? $this->channel_model->get_most_recent_id('comment') : FALSE
+			'entry'		=> $this->channel_model->get_most_recent_id('entry')
 		);
-		
-		
+
 		// Prep js
 		
 		$this->javascript->set_global('lang.close', $this->lang->line('close'));
@@ -132,6 +131,16 @@ class Homepage extends Controller {
 		$this->load->view('homepage', $vars);
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get Comments Awaiting Validation
+	 * 
+	 *
+	 * @access	public
+	 * @return int
+	 */
+
 	function total_validating_comments()
 	{  
 		$this->db->where('status', 'p');
@@ -142,6 +151,16 @@ class Homepage extends Controller {
   	}
   	/* END */
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get Recent Entries
+	 * 
+	 *
+	 * @access	public
+	 * @return array
+	 */
 	function recent_entries()
 	{
 		$this->load->model('channel_entries_model');

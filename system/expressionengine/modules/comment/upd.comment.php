@@ -199,6 +199,10 @@ class Comment_upd {
 
 		$this->EE->db->update('channel_titles', array('comment_total' => 0, 'recent_comment_date' => 0));
 
+		//  Remove a couple items from the config file
+		
+		$this->EE->config->_update_config(array(), array('comment_word_censoring' => '', 'comment_moderation_override' => '', 'comment_smart_notifications' => ''));
+
 		
 		$this->EE->load->library('layout');
 		$this->EE->layout->delete_layout_fields('comment_expiration_date');
