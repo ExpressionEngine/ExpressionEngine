@@ -311,6 +311,9 @@ class EE_Template {
 		{
 			$this->EE->config->_global_vars[$site_var] = stripslashes($this->EE->config->item($site_var));
 		}
+		
+		// Parse {last_segment} variable
+		$this->EE->config->_global_vars['last_segment'] = array_pop($this->EE->uri->segment_array());
 
 		/** -------------------------------------
 		/**  Parse manual variables and Snippets
@@ -344,7 +347,7 @@ class EE_Template {
 			$this->template = str_replace(LD.'segment_'.$i.RD, $this->EE->uri->segment($i), $this->template); 
 			$this->segment_vars['segment_'.$i] = $this->EE->uri->segment($i);
 		}
-
+		
 		/** -------------------------------------
 		/**  Parse {embed} tag variables
 		/** -------------------------------------*/
@@ -2832,7 +2835,7 @@ class EE_Template {
 				$str = str_replace(LD.$row['variable_name'].RD, $row['variable_data'], $str); 
 			}
 		}
-				
+		
 		/** --------------------------------------------------
 		/**  {hits}
 		/** --------------------------------------------------*/
