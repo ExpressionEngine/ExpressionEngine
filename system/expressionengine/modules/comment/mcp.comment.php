@@ -210,7 +210,7 @@ class Comment_mcp {
 		// No results?  No reason to continue...
 		if ($total == 0)
 		{
-			$vars['blacklist_intalled'] = $blacklist_installed;
+			$vars['blacklist_installed'] = $blacklist_installed;
 			$vars['message'] = $this->EE->lang->line('no_comments');
 			$vars['comments'] = array();
 			$vars['form_options'] = array();
