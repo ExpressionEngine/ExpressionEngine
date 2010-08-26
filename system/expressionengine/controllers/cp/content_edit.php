@@ -105,7 +105,7 @@ class Content_edit extends Controller {
 
 		$cp_theme  = ( ! $this->session->userdata('cp_theme')) ? $this->config->item('cp_theme') : $this->session->userdata('cp_theme');
 
-		if (((mt_rand(0, 5000) == 42 && $this->session->userdata['group_id'] == 1) OR $this->config->item('kill_all_humans')) && $this->config->item('kill_all_humans') != 'disable')
+		if ($this->config->item('kill_all_humans') !== 'disable' && ((mt_rand(0, 5000) == 42 && $this->session->userdata['group_id'] == 1) OR $this->config->item('kill_all_humans')))
 		{
 			$this->load->helper('html');
 			$image_properties = array(
