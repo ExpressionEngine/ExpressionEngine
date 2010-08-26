@@ -1774,7 +1774,6 @@ function fnGetKey( aoData, sKey )
 							$title	 = str_replace('{name_of_recipient}', $val['2'], $title);
 							$message = str_replace('{name_of_recipient}', $val['2'], $message);
 
-
 							$title	 = str_replace('{notification_removal_url}', $this->EE->functions->fetch_site_index(0, 0).$qs.'ACT='.$action_id.'&id='.$val['1'], $title);
 							$message = str_replace('{notification_removal_url}', $this->EE->functions->fetch_site_index(0, 0).$qs.'ACT='.$action_id.'&id='.$val['1'], $message);
 
@@ -1821,7 +1820,6 @@ function fnGetKey( aoData, sKey )
 		{
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
-
 
 		$comment_id = $this->EE->input->post('comment_ids');
 
