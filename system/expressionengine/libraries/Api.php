@@ -61,7 +61,7 @@ class Api {
 	 * @param	array
 	 * @return	void
 	 */
-	function instantiate($which = '')
+	function instantiate($which = '', $params = array())
 	{
 		if ( ! is_array($which) && $which != '')
 		{
@@ -74,7 +74,9 @@ class Api {
 			{
 				if (in_array($api, $this->apis))
 				{
-					$this->EE->load->library('api/api_'.$api);
+					$api_driver = 'api_'.$api;
+					$this->EE->load->library('api/'.$api_driver);
+					$this->EE->{$api_driver}->_initialize($params);
 				}				
 			}
 		}
