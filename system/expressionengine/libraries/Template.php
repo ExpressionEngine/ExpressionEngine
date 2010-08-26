@@ -313,7 +313,8 @@ class EE_Template {
 		}
 		
 		// Parse {last_segment} variable
-		$this->EE->config->_global_vars['last_segment'] = array_pop($this->EE->uri->segment_array());
+		$seg_array = $this->EE->uri->segment_array();
+		$this->EE->config->_global_vars['last_segment'] = end($seg_array);
 
 		/** -------------------------------------
 		/**  Parse manual variables and Snippets
