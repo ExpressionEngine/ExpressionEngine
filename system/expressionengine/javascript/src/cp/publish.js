@@ -777,7 +777,7 @@ $(document).ready(function() {
 	$("#write_mode_writer").css("height", write_mode_height+"px");
 	$("#write_mode_writer textarea").css("height", (write_mode_height - 67 - 17) + "px"); // for formatting buttons + 17px for appearance
 	
-	
+
 	var triggers = $(".write_mode_trigger").overlay({
 
 		// Mask to create modal look
@@ -790,13 +790,14 @@ $(document).ready(function() {
 		onBeforeLoad: function(evt) {
 			var trigger = this.getTrigger()[0],
 				textarea = $("#write_mode_textarea");
+
 									
 			if (trigger.id.match(/^id_\d+$/)) {
 				field_for_writemode_publish = "field_"+trigger.id;
 			} else {
 				field_for_writemode_publish = trigger.id.replace(/id_/, '');
 			}
-
+			
 			// put contents from other page into here
 			textarea.val( $("#"+field_for_writemode_publish).val() );
 			textarea.focus();
@@ -808,14 +809,21 @@ $(document).ready(function() {
 	
 	// set up the "publish to field" buttons
 	$(".publish_to_field").click(function() {
+
+		var currentID = document.getElementById(field_for_writemode_publish.replace(/field_/, ''));
+		var i =  $('.write_mode_trigger').index(currentID);
+
 		$("#"+field_for_writemode_publish).val($("#write_mode_textarea").val());
-		triggers.eq(0).overlay().close();
+		triggers.eq(i).overlay().close();
 		return false;
 	});
 	
 	
 	$(".closeWindowButton").click(function() {
-		triggers.eq(0).overlay().close();
+		var currentID = document.getElementById(field_for_writemode_publish.replace(/field_/, ''));
+		var i =  $('.write_mode_trigger').index(currentID);
+
+		triggers.eq(i).overlay().close();
 		return false;
 	});
 	
