@@ -1702,6 +1702,7 @@ class Api_channel_entries extends Api {
 		// Insert custom field data
 		
 		$cust_fields = array('entry_id' => $this->entry_id, 'channel_id' => $this->channel_id, 'site_id' => $this->EE->config->item('site_id'));
+		
 
 		foreach($data as $key => $val)
 		{
@@ -1730,6 +1731,28 @@ class Api_channel_entries extends Api {
 				}
 			}
 		}
+		
+
+		// Check that data complies with mysql strict mode rules
+		$all_fields = $this->EE->db->field_data('channel_data');
+
+		foreach ($all_fields as $field)
+		{
+			if (strncmp($field->name, 'field_id_', 9) == 0)
+			{
+				if ($field->type == 'text' OR $field->type == 'blob')
+				{
+					if ( ! isset($cust_fields[$field->name]) OR is_null($cust_fields[$field->name]))
+					{
+						$cust_fields[$field->name] = '';
+					}
+				}
+				elseif ($field->type == 'int' && isset($cust_fields[$field->name]) && $cust_fields[$field->name] == '')
+				{
+					unset($cust_fields[$field->name]);
+				}
+			}
+		} 		
 
 		$this->EE->db->query($this->EE->db->insert_string('exp_channel_data', $cust_fields));
 
