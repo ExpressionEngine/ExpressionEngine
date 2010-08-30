@@ -1034,6 +1034,9 @@ class EE_Typography extends CI_Typography {
 	{		
 		$url = str_replace(array('(', ')'), '', $matches['1']);
 
+		$width = '';
+		$height = '';
+
 		if (preg_match("/\s+width=(\"|\')([^\\1]*?)\\1/", $matches[1], $width_match))
 		{
 			$url = trim(str_replace($width_match[0], '', $url));
