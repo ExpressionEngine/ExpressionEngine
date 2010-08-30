@@ -1,15 +1,3 @@
-/*!
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
- * @license		http://expressionengine.com/user_guide/license.html
- * @link		http://expressionengine.com
- * @since		Version 2.0
- * @filesource
- */
-
 EE.publish=EE.publish||{};
 EE.publish.category_editor=function(){var d=[],e=$("<div />"),c=$('<div id="cat_modal_container" />').appendTo(e),g={},n={},j=EE.BASE+"&C=admin_content&M=category_editor&group_id=",m,k,a;e.dialog({autoOpen:false,height:450,width:600,modal:true});$(".edit_categories_link").each(function(){var b=this.href.substr(this.href.lastIndexOf("=")+1);$(this).data("gid",b);d.push(b)});for(a=0;a<d.length;a++){g[d[a]]=$("#cat_group_container_"+[d[a]]);g[d[a]].data("gid",d[a]);n[d[a]]=$("#cat_group_container_"+
 [d[a]]).find(".cat_action_buttons").remove()}m=function(b){g[b].text("loading...").load(j+b+"&timestamp="+ +new Date+" .pageContents table",function(){k.call(g[b],g[b].html(),false)})};k=function(b,h){var f=$(this),i=f.data("gid");b=$.trim(b);if(f.hasClass("edit_categories_link"))f=$("#cat_group_container_"+i);if(b[0]!=="<"&&h)return m(i);f.closest(".cat_group_container").find("#refresh_categories").show();var l=$(b),p;if(l.find("form").length){c.html(l);l=c.find("input[type=submit]");p=c.find("form");
