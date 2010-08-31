@@ -1497,14 +1497,23 @@ class Comment {
 
 		$tagdata = $this->EE->TMPL->tagdata;
 
-
 		if ($halt_processing != FALSE)
 		{
 			foreach ($this->EE->TMPL->var_cond as $key => $val) 
 			{
-				if (isset($val['3']) && ($val['3'] == 'comments_expired' OR $val['3'] == 'comments_disabled'))
+				if ($halt_processing == 'expired')
 				{
-					return $val['2'];
+					if (isset($val['3']) && $val['3'] == 'comments_expired')
+					{
+						return $val['2'];
+					}					
+				}
+				elseif ($halt_processing == 'disabled')
+				{
+					if (isset($val['3']) && $val['3'] == 'comments_disabled')
+					{
+						return $val['2'];
+					}					
 				}
 			}
 
@@ -2642,27 +2651,25 @@ class Comment {
 			$sql = $this->EE->db->insert_string('exp_comments', $data);
 
 			$this->EE->db->query($sql);
-			
-			
-			if ($notify == 'y')
-			{
-				$this->EE->load->library('subscription');
-				$this->EE->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
 
-				if ($cmtr_id = $this->EE->session->userdata('member_id'))
-				{
-					$this->EE->subscription->subscribe($cmtr_id);
-				}
-				else
-				{
-					$this->EE->subscription->subscribe($cmtr_email);
-				}
-			}
-			
-			
-
-			$comment_id = $this->EE->db->insert_id();
+			$comment_id = $this->EE->db->insert_id();			
 		}
+		
+		if ($notify == 'y')
+		{
+			$this->EE->load->library('subscription');
+			$this->EE->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
+
+			if ($cmtr_id = $this->EE->session->userdata('member_id'))
+			{
+				$this->EE->subscription->subscribe($cmtr_id);
+			}
+			else
+			{
+				$this->EE->subscription->subscribe($cmtr_email);
+			}
+		}
+		
 
 		if ($comment_moderate == 'n')
 		{
@@ -3092,12 +3099,15 @@ class Comment {
 	function notification_links()
 	{
 		// entry_id is required
-		if (($entry_id = $this->EE->TMPL->fetch_param('entry_id')) === FALSE) return;
+		if (($entry_id = $this->EE->TMPL->fetch_param('entry_id')) === FALSE)
+		{
+			return;
+		}
 		
-		// So is membership, but we'll give them a no_results conditional for that one
+		// So is membership
 		if ($this->EE->session->userdata('member_id') == 0)
 		{
-			return $this->EE->TMPL->no_results();
+			return;
 		}
 		
 		$action_id  = $this->EE->functions->fetch_action_id('Comment', 'comment_subscribe');
