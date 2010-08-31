@@ -2869,9 +2869,12 @@ PAPAYA;
 			
 			if (file_exists($path.'upd.'.$module.EXT))
 			{
-				require $path.'upd.'.$module.EXT;
-				
 				$class = ucfirst($module).'_upd';
+				
+				if ( ! class_exists($class))
+				{
+					require $path.'upd.'.$module.EXT;
+				}
 				
 				$UPD = new $class;
 				$UPD->_ee_path = EE_APPPATH;

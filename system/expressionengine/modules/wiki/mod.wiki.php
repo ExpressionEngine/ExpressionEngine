@@ -1722,7 +1722,7 @@ class Wiki {
 		}
 		
 		/** ----------------------------------------
-		/**  Pagination Crapola
+		/**  Pagination
 		/** ----------------------------------------*/
 		
 		if ($this->paginate === TRUE)
@@ -4952,11 +4952,11 @@ class Wiki {
 			
 			$results .= str_replace(array_keys($data), array_values($data), $temp);
 		}
-		
+
 		/** ----------------------------------------
-		/**  Pagination Crapola
+		/**  Pagination
 		/** ----------------------------------------*/
-		
+
 		if ($this->paginate === TRUE)
 		{
 			$this->paginate_data = str_replace(LD.'current_page'.RD, $this->current_page, $this->paginate_data);
@@ -4976,7 +4976,7 @@ class Wiki {
 			
 					$this->paginate_data = str_replace($matches['0'], $matches['1'], $this->paginate_data);
 				}
-			 	}
+			 }
 			
 			
 			if (preg_match("/".LD."if next_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
@@ -5008,7 +5008,8 @@ class Wiki {
 		return $results;
 	}
 
-	
+
+
 	/** ----------------------------------------
 	/**  List Of Files
 	/** ----------------------------------------*/
@@ -5224,6 +5225,10 @@ class Wiki {
 			$files .= str_replace(array_keys($data), array_values($data), $temp);
 		}
 		
+		/** ----------------------------------------
+		/**  Pagination - Files
+		/** ----------------------------------------*/
+
 		if ($this->paginate === TRUE)
 		{
 			$this->paginate_data = str_replace(LD.'current_page'.RD, $this->current_page, $this->paginate_data);
@@ -5529,6 +5534,8 @@ class Wiki {
 				$config['total_rows'] 	= $count;
 				$config['per_page']		= $limit;
 				$config['cur_page']		= $this->p_page;
+
+				$config['first_url'] 	= rtrim($base_path, '/');
 
 				$this->EE->pagination->initialize($config);
 				$this->pagination_links = $this->EE->pagination->create_links();

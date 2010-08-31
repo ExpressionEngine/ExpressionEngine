@@ -351,13 +351,33 @@ class Api_channel_fields extends Api {
 		
 		$this->EE->load->_ci_view_path = $_ft_path.'views/';
 		$this->EE->load->add_package_path($_ft_path);
-		
+
 		$res = call_user_func_array(array(&$this->field_types[$this->field_type], $method), $parameters);
-		
+
 		$this->EE->load->remove_package_path($_ft_path);
 		$this->EE->load->_ci_view_path = $_old_view_path;
 		
 		return $res;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Checks for the method
+	 *
+	 *
+	 * Used as a conditional before calling apply in some modules
+	 *
+	 * @access	public
+	 */
+	function check_method_exists($method)
+	{
+		if (method_exists(&$this->field_types[$this->field_type], $method))
+		{
+			return TRUE;
+		}
+		
+		return FALSE;
 	}
 
 	// --------------------------------------------------------------------

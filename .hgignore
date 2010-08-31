@@ -8,6 +8,7 @@ system/expressionengine/config/config1x.php
 system/expressionengine/config/config_1x.php
 members_1k.xml
 themes/solspace_themes/*
+themes/third_party/*
 *.swp
 
 syntax: regexp

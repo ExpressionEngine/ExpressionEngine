@@ -1113,20 +1113,24 @@ class Search {
 		/**  Fetch ID number and page number
 		/** ----------------------------------------*/
 		
-		// We cleverly disguise the page number in the ID hash string
-				
 		$cur_page = 0;
-		
-		if (strlen($this->EE->uri->query_string) == 32)
+		$qstring = $this->EE->uri->query_string;
+
+		// Parse page number
+		if (preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match))
 		{
-			$search_id = $this->EE->uri->query_string;
+			$cur_page = (isset($match[2])) ? $match[2] : $match[1];
+			$search_id = trim_slashes(str_replace($match[0], '', $qstring));
 		}
 		else
 		{
-			$search_id = substr($this->EE->uri->query_string, 0, 32);
-			$cur_page  = substr($this->EE->uri->query_string, 33);
+			$search_id = $qstring;
 		}
-
+		
+		// If there is a slash in the search ID we'll kill everything after it.
+		$search_id = trim($search_id); 
+		$search_id = preg_replace("#/.+#", "", $search_id);			
+		
 		/** ----------------------------------------
 		/**  Fetch the cached search query
 		/** ----------------------------------------*/

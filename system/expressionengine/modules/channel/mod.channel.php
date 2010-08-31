@@ -3837,11 +3837,18 @@ class Channel {
 							{
 								$this->EE->api_channel_fields->apply('_init', array(array('row' => $row)));
 								$data = $this->EE->api_channel_fields->apply('pre_process', array($cond[$key]));
-								$cond[$key.':'.$modifier] = $this->EE->api_channel_fields->apply('replace_'.$modifier, array($data, array(), FALSE));
+								if ($this->EE->api_channel_fields->check_method_exists('replace_'.$modifier))
+								{
+									$cond[$key.':'.$modifier] = $this->EE->api_channel_fields->apply('replace_'.$modifier, array($data, array(), FALSE));
+								}
+								else
+								{							
+									$cond[$key.':'.$modifier] = FALSE;
+									$this->EE->TMPL->log_item('Unable to find parse type for custom field conditional: '.$key.':'.$modifier);
+								}
 							}
 						}
 					}
-					
 				}
 			}
 
@@ -4819,7 +4826,17 @@ class Channel {
 						{
 							$this->EE->api_channel_fields->apply('_init', array(array('row' => $row)));
 							$data = $this->EE->api_channel_fields->apply('pre_process', array($row['field_id_'.$field_id]));
-							$entry = $this->EE->api_channel_fields->apply($parse_fnc, array($data, $params, FALSE));
+							
+							
+							if ($this->EE->api_channel_fields->check_method_exists($parse_fnc))
+							{
+								$entry = $this->EE->api_channel_fields->apply($parse_fnc, array($data, $params, FALSE));
+							}
+							else
+							{							
+								$entry = '';
+								$this->EE->TMPL->log_item('Unable to find parse type for custom field: '.$parse_fnc);
+							}							
 						}
 						else
 						{
