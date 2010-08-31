@@ -271,83 +271,172 @@ class Homepage extends Controller {
 	 * @return	bool|string
 	 */
 	function _version_check()
-	{
+	{		
 		// Attempt to grab the local cached file
 		$cached = $this->_check_version_cache();
 
 		$download_url = $this->cp->masked_url('https://secure.expressionengine.com/download.php');
-
-		$ver = '';
 		
-		// Is the cache current?
+		$data = '';
+		
 		if ( ! $cached)
 		{
 			$details['timestamp'] = time();
 			
-			$dl_page_url = 'http://expressionengine.com/eeversion2.txt';
+			$dl_page_url = 'http://como.aker.ws/ee_version.php';
+
 			$target = parse_url($dl_page_url);
-			
+
 			$fp = @fsockopen($target['host'], 80, $errno, $errstr, 3);
 			
 			if (is_resource($fp))
 			{
-				fputs ($fp,"GET ".$dl_page_url." HTTP/1.0\r\n" );
-				fputs ($fp,"Host: ".$target['host'] . "\r\n" );
-				fputs ($fp,"User-Agent: EE/EllisLab PHP/\r\n");
-				fputs ($fp,"If-Modified-Since: Fri, 01 Jan 2004 12:24:04\r\n\r\n");
-				
+				fputs($fp,"GET ".$dl_page_url." HTTP/1.0\r\n" );
+				fputs($fp,"Host: ".$target['host'] . "\r\n" );
+				fputs($fp,"User-Agent: EE/EllisLab PHP/\r\n");
+				fputs($fp,"If-Modified-Since: Fri, 01 Jan 2004 12:24:04\r\n\r\n");
+
+				$headers = TRUE;
+
 				while ( ! feof($fp))
 				{
-					$ver .= trim(fgets($fp, 128));
+					$line = fgets($fp, 4096);
+
+					if ($headers === FALSE)
+					{
+						$data .= $line;
+					}
+					elseif(trim($line) == '')
+					{
+						$headers = FALSE;
+					}
 				}
 
 				fclose($fp);
 				
-				if ($ver != '')
+				if ($data !== '')
 				{
-					$details['version'] = trim(str_replace('Version:', '', strstr($ver, 'Version:')));
-				
-					if ($details['version'] != '')
+					// We have a file, now parse & make an array of arrays.
+					$display_new_build = FALSE;
+					
+					$data = explode("\n", $data);
+					
+					$version_file = array();
+					
+					foreach ($data as $d)
 					{
-						// We have the version from ExpressionEngine.com, write a cache file
-						$this->_write_version_cache($details);						
+						$version_file[] = explode('|', $d);
+					}
+
+				  // 1 => 
+				  //   array
+				  //     0 => string '2.1.0' (length=5)
+				  //     1 => string '20100805' (length=8)
+				  //     2 => string 'normal' (length=6)
+					
+					if ($data === NULL)
+					{
+						// something's not right...
+						unset($details['version']);
+						$details['error'] = TRUE;
 					}
 					else
 					{
-						// Something went wrong.
-						unset($details['version']);
+						// We'll deal with the last piece of the array
+						$cur_ver = end($version_file);
+						
+						// Extracting the date the build was released.  IF the build was 
+						// released in the past 2 calendar days, we don't show anything
+						// on the control panel home page unless it was a security release
+						$date_threshold = mktime(0, 0, 0, 
+												substr($cur_ver[1], 4, -2), // Month
+												(substr($cur_ver[1], -2) + 2), // Day + 2 
+												substr($cur_ver[1], 0, 4) // Year
+								);
 
-						$details['error'] = TRUE;
-						$this->_write_version_cache($details);						
+						$details['version'] = $cur_ver[0];
+						$details['build'] = $cur_ver[1];
+						$details['priority'] = $cur_ver[2];
+						
+						if (($this->localize->now < $date_threshold) && $details['priority'] != 'high')
+						{
+							$this->_write_version_cache($version_file);
+							return FALSE;
+						}
 					}
 				}
 				else
 				{
 					$details['error'] = TRUE;
-					$this->_write_version_cache($details);
 				}
+				
+				$this->_write_version_cache($version_file);
 			}
 			else
 			{
-				// Something went wrong.
 				$details['error'] = TRUE;
-				
-				$this->_write_version_cache($details);	
+				$this->_write_version_cache($version_file);				
 			}
 		}
 		else
 		{
-			$details = $cached;
+			$version_file = $cached;
 		}
 		
-		if (isset($details['version']))
+		if (isset($version_file))
 		{
-			if ($details['version'] > APP_VER)
+			$new_release = FALSE;
+			$high_priority = FALSE;
+			
+			$cur_ver = end($version_file);
+
+			// Do we have a newer version out?
+			foreach ($version_file as $app_data)
 			{
-				return sprintf($this->lang->line('new_version_notice'),
-							   $details['version'],
-							   $download_url,
-							   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));
+				if ($app_data[0] > APP_VER && $app_data[2] == 'high')
+				{
+					$new_release = TRUE;
+					$high_priority = TRUE;
+					$high_priority_release = array(
+							'version'		=> $app_data[0],
+							'build'			=> $app_data[1]
+						);
+
+					continue;
+				}
+				elseif ($app_data[1] > APP_BUILD && $app_data[2] == 'high')
+				{
+					// A build could sometimes be a security release.  So we can plan for it here.
+					$new_release = TRUE;
+					$high_priority = TRUE;
+					$high_priority_release = array(
+							'version'		=> $app_data[0],
+							'build'			=> $app_data[1]
+						);
+
+					continue;					
+				}
+			}
+			
+			if ($new_release)
+			{
+				if ($high_priority)
+				{
+					return sprintf($this->lang->line('new_version_notice_high_priority'),
+								   $high_priority_release['version'],
+								   $high_priority_release['build'],
+								   $cur_ver[0],
+								   $cur_ver[1],
+								   $download_url,
+								   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));
+				}
+				else
+				{
+					return sprintf($this->lang->line('new_version_notice'),
+								   $details['version'],
+								   $download_url,
+								   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));					
+				}
 			}
 		}
 		else
@@ -380,7 +469,7 @@ class Homepage extends Controller {
 
 			if (($details['timestamp'] + $cache_expire) > $this->localize->now)
 			{
-				return $details;
+				return $details['data'];
 			}
 			else
 			{
@@ -406,8 +495,13 @@ class Homepage extends Controller {
 			mkdir(APPPATH.'cache/ee_version', DIR_WRITE_MODE);
 			@chmod(APPPATH.'cache/ee_version', DIR_WRITE_MODE);	
 		}
+		
+		$data = array(
+				'timestamp'	=> $this->localize->now,
+				'data' 		=> $details
+			);
 
-		if (write_file(APPPATH.'cache/ee_version/current_version', serialize($details)))
+		if (write_file(APPPATH.'cache/ee_version/current_version', serialize($data)))
 		{
 			@chmod(APPPATH.'cache/ee_version/current_version', FILE_WRITE_MODE);			
 		}		
