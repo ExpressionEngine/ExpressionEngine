@@ -283,7 +283,7 @@ class Homepage extends Controller {
 		{
 			$details['timestamp'] = time();
 			
-			$dl_page_url = 'http://como.aker.ws/ee_version.php';
+			$dl_page_url = 'http://expressionengine.com/version.txt';
 
 			$target = parse_url($dl_page_url);
 
@@ -319,7 +319,7 @@ class Homepage extends Controller {
 					// We have a file, now parse & make an array of arrays.
 					$display_new_build = FALSE;
 					
-					$data = explode("\n", $data);
+					$data = explode("\n", trim($data));
 					
 					$version_file = array();
 					
@@ -367,14 +367,14 @@ class Homepage extends Controller {
 				}
 				else
 				{
-					$details['error'] = TRUE;
+					$version_file['error'] = TRUE;
 				}
 				
 				$this->_write_version_cache($version_file);
 			}
 			else
 			{
-				$details['error'] = TRUE;
+				$version_file['error'] = TRUE;
 				$this->_write_version_cache($version_file);				
 			}
 		}
