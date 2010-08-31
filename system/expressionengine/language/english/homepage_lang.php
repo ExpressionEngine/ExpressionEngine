@@ -36,6 +36,11 @@ http://expressionengine.com/support/policy/',
 'ExpressionEngine version %s is now available.'."\n".'
 Download <a href=\'%s\' title=\'Download Here\'>here</a> and follow the <a href=\'%s\' title=\'Version Update Docs\'>Version Update Docs</a>.',
 
+'new_version_notice_high_priority' =>
+'<span style="font-size:18px;color:#3BA1DB;font-weight:bold">Security Update Release</span><br />
+An ExpressionEngine version %s, build %s has been released as a security release.  The latest version is: %s, and the latest build is: %s.<br /><br />
+Please download <a href="%s" title="Download Here">here</a> and follow the <a href="%s" title="Update Docs">update docs</a> to ensure you are running on the most up-to-date version.',
+
 'new_version_error' =>
 'An unexpected error occurred attempting to download the current ExpressionEngine version number.  Please visit your <a href=\'%s\' title=\'download account\'>Download Account</a> to verify you are on the current version.  If this error persists, please contact your system administrator',
 
