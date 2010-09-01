@@ -414,11 +414,12 @@ class Addons_modules extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
+		$this->lang->loadfile($module);
 		$this->load->helper('form');
 		
 		$vars['form_action'] = 'C=addons_modules'.AMP.'M=module_uninstaller';
 		$vars['form_hidden'] = array('module' => $module, 'confirm' => 'delete');
-		$vars['module_name'] = ucfirst(str_replace('_', ' ', $module));
+		$vars['module_name'] = ($this->lang->line($module.'_module_name') == FALSE) ? ucwords(str_replace('_', ' ', $module)) : $this->lang->line($module.'_module_name');
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('delete_module'));
 		

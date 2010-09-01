@@ -7,6 +7,7 @@ $lang = array(
 
 'forum_module_description' =>
 'Discussion Forum Module',
+
 'avatar' =>
 'Avatar',
 
