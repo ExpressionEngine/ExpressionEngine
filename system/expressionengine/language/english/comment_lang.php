@@ -179,9 +179,6 @@ $lang = array(
 
 //
 
-"cmt_invalid_form_submission" =>
-"Invalid form submission.",
-
 "cmt_commenting_has_expired" =>
 "Commenting is not available in this channel entry.",
 

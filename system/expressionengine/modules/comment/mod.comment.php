@@ -2183,7 +2183,7 @@ class Comment {
 		//  No comment- let's end it here
 		if ($_POST['comment'] == '')
 		{
-			$error = $this->EE->lang->line('cmt_invalid_form_submission');
+			$error = $this->EE->lang->line('cmt_missing_comment');
 			return $this->EE->output->show_user_error('submission', $error);
 		}		
 
