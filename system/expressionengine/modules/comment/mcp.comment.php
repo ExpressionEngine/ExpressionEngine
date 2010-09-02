@@ -1993,6 +1993,7 @@ function fnGetKey( aoData, sKey )
 		$vars['comment_word_censoring']			= ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE;
 		$vars['comment_moderation_override']	= ($this->EE->config->item('comment_moderation_override') == 'y') ? TRUE : FALSE;
 		$vars['comment_smart_notifications']	= ($this->EE->config->item('comment_smart_notifications') == 'y') ? TRUE : FALSE;
+		$vars['comment_edit_time_limit']	= ($this->EE->config->item('comment_edit_time_limit') && ctype_digit($this->EE->config->item('comment_edit_time_limit'))) ? $this->EE->config->item('comment_edit_time_limit') : 0;		
 
 		return $this->EE->load->view('settings', $vars, TRUE);		
 	}
