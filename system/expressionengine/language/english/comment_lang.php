@@ -275,6 +275,9 @@ $lang = array(
 'no_valid_comments' =>
 'No Valid Comments',
 
+'comment_edit_time_limit' =>
+'Comment Edit Time Limit',
+
 
 ''=>''
 );
