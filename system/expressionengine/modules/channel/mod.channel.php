@@ -5115,7 +5115,7 @@ class Channel {
 		//
 		// -------------------------------------------
 		
-		$sql = "SELECT DISTINCT cat_group FROM exp_channels WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+		$sql = "SELECT DISTINCT cat_group, channel_id FROM exp_channels WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
 
 		if ($channel = $this->EE->TMPL->fetch_param('channel'))
 		{
@@ -5129,7 +5129,8 @@ class Channel {
 			return '';
 		}
 
-		$group_id = $query->row('cat_group') ;
+		$group_id = $query->row('cat_group');
+		$channel_id = $query->row('channel_id');
 
 		if ($category_group = $this->EE->TMPL->fetch_param('category_group'))
 		{
@@ -5178,11 +5179,13 @@ class Channel {
 			$this->category_tree(
 									array(
 											'group_id'		=> $group_id,
+											'channel_id'		=> $channel_id,											
 											'template'		=> $this->EE->TMPL->tagdata,
 											'path'			=> $path,
 											'channel_array' 	=> '',
 											'parent_only'	=> $parent_only,
-											'show_empty'	=> $this->EE->TMPL->fetch_param('show_empty')
+											'show_empty'	=> $this->EE->TMPL->fetch_param('show_empty'),
+											'strict_empty'	=> $this->EE->TMPL->fetch_param('restrict_channel')
 										  )
 								);
 
@@ -5231,6 +5234,7 @@ class Channel {
 			}
 
 			$show_empty = $this->EE->TMPL->fetch_param('show_empty');
+			$strict_empty = $this->EE->TMPL->fetch_param('restrict_channel');
 
 			if ($show_empty == 'no')
 			{
@@ -5259,9 +5263,19 @@ class Channel {
 				$sql = "SELECT DISTINCT(exp_categories.cat_id), parent_id FROM exp_categories
 						LEFT JOIN exp_category_posts ON exp_categories.cat_id = exp_category_posts.cat_id
 						LEFT JOIN exp_channel_titles ON exp_category_posts.entry_id = exp_channel_titles.entry_id
-						WHERE group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_id))."')
-						AND exp_channel_titles.site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."')
-						AND exp_category_posts.cat_id IS NOT NULL ";
+						WHERE group_id IN ('".str_replace('|', "','", $this->EE->db->escape_str($group_id))."') ";
+		        
+
+				$sql .= "AND exp_category_posts.cat_id IS NOT NULL ";
+
+				if ($strict_empty == 'yes')
+				{
+					$sql .= "AND exp_channel_titles.channel_id = '".$channel_id."' ";
+				}
+				else
+				{
+					$sql .= "AND exp_channel_titles.site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
+				}
 
 		        if (($status = $this->EE->TMPL->fetch_param('status')) !== FALSE)
 		        {
@@ -5727,7 +5741,8 @@ class Channel {
 											'template'		=> $cat_chunk,
 											'channel_array' 	=> $channel_array,
 											'parent_only'	=> $parent_only,
-											'show_empty'	=> $this->EE->TMPL->fetch_param('show_empty')
+											'show_empty'	=> $this->EE->TMPL->fetch_param('show_empty'),
+											'strict_empty'	=> 'yes'										
 										  )
 								);
 
@@ -5989,7 +6004,7 @@ class Channel {
 	  */
 	function category_tree($cdata = array())
 	{
-		$default = array('group_id', 'channel_id', 'path', 'template', 'depth', 'channel_array', 'parent_only', 'show_empty');
+		$default = array('group_id', 'channel_id', 'path', 'template', 'depth', 'channel_array', 'parent_only', 'show_empty', 'strict_empty');
 
 		foreach ($default as $val)
 		{
@@ -6072,7 +6087,7 @@ class Channel {
 
 			$sql .= "AND exp_category_posts.cat_id IS NOT NULL ";
 
-			if ($channel_id != '')
+			if ($channel_id != '' && $strict_empty == 'yes')
 			{
 				$sql .= "AND exp_channel_titles.channel_id = '".$channel_id."' ";
 			}

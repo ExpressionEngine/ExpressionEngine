@@ -41,6 +41,20 @@ class EE_Subscription {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Check if they're subscribed
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function is_subscribed()
+	{
+
+	}
+
+
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Mark post as read
 	 *
 	 * @access	public
