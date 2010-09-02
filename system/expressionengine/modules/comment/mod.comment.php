@@ -786,6 +786,21 @@ class Comment {
 			$cond['avatar']				= ( ! isset($row['avatar_filename']) OR $row['avatar_filename'] == '' OR $this->EE->config->item('enable_avatars') == 'n' OR $this->EE->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
 			$cond['photo']				= ( ! isset($row['photo_filename']) OR $row['photo_filename'] == '' OR $this->EE->config->item('enable_photos') == 'n' OR $this->EE->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
 			$cond['is_ignored']			= ( ! isset($row['member_id']) OR ! in_array($row['member_id'], $this->EE->session->userdata['ignore_list'])) ? 'FALSE' : 'TRUE';
+			
+			$cond['editable'] = FALSE;
+			$cond['can_moderate_comment'] = FALSE;
+			
+		if ($this->EE->session->userdata['group_id'] == 1 OR 
+			$this->EE->session->userdata['can_edit_all_comments'] == 'y' OR 
+			($this->EE->session->userdata['can_edit_own_comments'] == 'y' && $row['entry_author_id'] == $this->EE->session->userdata['member_id']))
+			{
+				$cond['editable'] = TRUE;
+				$cond['can_moderate_comment'] = TRUE;								
+			}
+			elseif ($this->EE->session->userdata['member_id'] != '0'  && $author_id == $this->EE->session->userdata['member_id'])
+			{
+				$cond['editable'] = TRUE;
+			}			
 
 			if ( isset($mfields) && is_array($mfields) && count($mfields) > 0)
 			{
@@ -3068,13 +3083,15 @@ class Comment {
 		/**  Bounce user back to the comment page
 		/** -------------------------------------------*/
 
+			$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? $this->EE->functions->create_url($_POST['RET']) : $_POST['RET'];
+
 		if ($comment_moderate == 'y')
 		{
 			$data = array(	'title' 	=> $this->EE->lang->line('cmt_comment_accepted'),
 							'heading'	=> $this->EE->lang->line('thank_you'),
 							'content'	=> $this->EE->lang->line('cmt_will_be_reviewed'),
-							'redirect'	=> $_POST['RET'],
-							'link'		=> array($_POST['RET'], $this->EE->lang->line('cmt_return_to_comments')),
+							'redirect'	=> $return_link,
+							'link'		=> array($return_link, $this->EE->lang->line('cmt_return_to_comments')),
 							'rate'		=> 3
 						 );
 
@@ -3082,7 +3099,7 @@ class Comment {
 		}
 		else
 		{
-			$this->EE->functions->redirect($_POST['RET']);
+			$this->EE->functions->redirect($return_link);
 		}
 	}
 
@@ -3181,6 +3198,118 @@ class Comment {
 	{
 		return preg_replace("#S=.+?/#", "", $str);
 	}
+	
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Frontend comment editing
+	 *
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	string
+	 */
+	function edit_comment($ajax_request = TRUE)
+	{
+		@header("Content-type: text/html; charset=UTF-8");
+		
+		if ($this->EE->input->get_post('comment_id') === FALSE OR ($this->EE->input->get_post('comment') === FALSE &&  $this->EE->input->get_post('status') != 'close'))
+		{
+			exit('null');
+		}
+		
+		// Not logged in member- eject
+		if ($this->EE->session->userdata['member_id'] == '0')
+		{
+			exit('null');
+		}
+
+		$edited_status = ($this->EE->input->get_post('status') != 'close') ? FALSE : 'c';
+		$edited_comment = $this->EE->input->get_post('comment');
+		$can_edit = FALSE;
+		$can_moderate = FALSE;
+				
+		$this->EE->db->from('comments');
+		$this->EE->db->from('channels');
+		$this->EE->db->from('channel_titles');
+		$this->EE->db->select('comments.author_id, comments.comment_date, channel_titles.author_id AS entry_author_id, channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls');
+		$this->EE->db->where('comment_id', $this->EE->input->get_post('comment_id'));
+		$this->EE->db->where('comments.channel_id = '.$this->EE->db->dbprefix('channels').'.channel_id');
+		$this->EE->db->where('comments.entry_id = '.$this->EE->db->dbprefix('channel_titles').'.entry_id');
+		$query = $this->EE->db->get();
+		
+		if ($query->num_rows() > 0)
+		{
+			if ($this->EE->session->userdata['group_id'] == 1 OR 
+				$this->EE->session->userdata['can_edit_all_comments'] == 'y' OR 
+				($this->EE->session->userdata['can_edit_own_comments'] == 'y' && $query->row('entry_author_id') == $this->EE->session->userdata['member_id']))
+				{
+					$can_edit = TRUE;
+					$can_moderate = TRUE;								
+				}
+				elseif ($this->EE->session->userdata['member_id'] != '0'  && $query->row('author_id') == $this->EE->session->userdata['member_id'])
+				{
+					// Check for time limit
+					if ($this->EE->config->item('comment_edit_time_limit') > 0)
+					{
+						if ($query->row('comment_date') > $this->EE->localize->now - 60*$this->EE->config->item('edit_time_limit'))
+						{
+							$can_edit = TRUE;
+						}
+					}
+					else
+					{
+						$can_edit = TRUE;
+					}
+				}
+
+			$data = array();
+
+			if ($edited_status != FALSE & $can_moderate != FALSE)
+			{
+				$data['status'] = 'c';
+			}
+				
+			if ($edited_comment != FALSE & $can_edit != FALSE)
+			{
+				$data['comment'] = $edited_comment;
+			}				
+			
+			if (count($data) > 0)
+			{
+				$this->EE->db->where('comment_id', $this->EE->input->get_post('comment_id'));
+				$this->EE->db->update('comments', $data); 
+					
+				if ($edited_status != FALSE & $can_moderate != FALSE)
+				{
+					exit('Comment Closed');
+				}				
+
+				$this->EE->load->library('typography'); 
+				
+				exit( $this->EE->typography->parse_type( stripslashes($this->EE->input->get_post('comment')), 
+										   array(
+													'text_format'   => $query->row('comment_text_formatting'),
+													'html_format'   => $query->row('comment_html_formatting'),
+													'auto_links'    => $query->row('comment_auto_link_urls'),
+													'allow_img_url' => $query->row('comment_allow_img_urls')
+												)
+										));
+			}
+		}
+
+		exit('null');    
+	}	
+	
+	function ajax_edit_url()
+	{
+
+		$url = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Comment', 'edit_comment');
+		
+		return $url;
+	}
+	
 
 }
 // END CLASS
