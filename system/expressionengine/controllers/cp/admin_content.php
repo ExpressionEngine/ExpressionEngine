@@ -3388,7 +3388,7 @@ class Admin_content extends Controller {
 
 			$insert_id = $this->db->insert_id();
 
-			$this->db->query("ALTER TABLE exp_category_field_data ADD COLUMN field_id_{$insert_id} text NOT NULL");
+			$this->db->query("ALTER TABLE exp_category_field_data ADD COLUMN field_id_{$insert_id} text NULL");
 			$this->db->query("ALTER TABLE exp_category_field_data ADD COLUMN field_ft_{$insert_id} varchar(40) NULL default 'none'");
 			$this->db->query("UPDATE exp_category_field_data SET field_ft_{$insert_id} = '".$this->db->escape_str($_POST['field_default_fmt'])."'");
 			
@@ -4559,7 +4559,7 @@ class Admin_content extends Controller {
 						$type = 'INT DEFAULT 0';
 						break;
 					default:
-						$type = 'text NOT NULL';
+						$type = 'text';
 				}
 				
 				$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$insert_id.' '.$type);

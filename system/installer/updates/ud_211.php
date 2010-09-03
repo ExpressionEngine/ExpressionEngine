@@ -54,9 +54,8 @@ class Updater {
         {
 			foreach ($fields_to_alter as $row)
             {
- 				// First we have to switch null values to empty string or we will get a truncate error
+ 				// We'll switch null values to empty string for our text fields
           		$Q[] = "UPDATE `exp_channel_data` SET {$row['0']} = '' WHERE {$row['0']} IS NULL";				
-				$Q[] = "ALTER TABLE `exp_channel_data` MODIFY `{$row['0']}` TEXT NOT NULL";
         	}
 		}
 
