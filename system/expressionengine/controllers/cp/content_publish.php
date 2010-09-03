@@ -2766,7 +2766,8 @@ class Content_publish extends Controller {
 
 				$this->db->query_count--;
 
-				$vars['show_comments_link'] = BASE.AMP.'C=content_edit'.AMP.'M=view_comments'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id;
+				$vars['show_comments_link'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'entry_id='.$row->entry_id;
+
 				$vars['comment_count'] = $res->row('count');
 			}
 

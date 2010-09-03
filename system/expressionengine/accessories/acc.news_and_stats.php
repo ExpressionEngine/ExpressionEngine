@@ -244,10 +244,10 @@ class News_and_stats_acc {
 			{
 				$values['data'] = 0;
 			
-				$this->EE->db->where(array('status' => 'c', 'site_id' => $this->EE->config->item('site_id')));
+				$this->EE->db->where(array('status' => 'p', 'site_id' => $this->EE->config->item('site_id')));
 				$values['data'] = $this->EE->db->count_all_results('comments');
 				
-				$l = anchor(BASE.AMP.'C=publish&M=view_comments&validate=1',
+				$l = anchor(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'status=p',
 					   required(
 							$this->EE->lang->line('total_validating_comments')
 						)
