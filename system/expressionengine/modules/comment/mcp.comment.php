@@ -102,6 +102,17 @@ class Comment_mcp {
 				});
 			}
 		);');
+		
+
+		// Require at least one comment checked to submit
+		$this->EE->javascript->output('
+		$("#target").submit(function() {
+			if ( ! $("input[class=comment_toggle]", this).is(":checked")) {
+			$.ee_notice("'.$this->EE->lang->line('selection_required').'", {"type" : "error"});
+			return false;
+			}
+		});');
+				
 
 
 		if ($blacklist_installed)
