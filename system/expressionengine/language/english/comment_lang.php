@@ -275,6 +275,15 @@ $lang = array(
 'comment_edit_time_limit' =>
 'Comment Edit Time Limit',
 
+'already_subscribed' =>
+'You are already subscribed to this comment.',
+
+'not_currently_subscribed' =>
+'You do not appear to be subscribed to the entry ID you submitted',
+
+'invalid_subscription' =>
+'The URL you submitted is invalid',
+
 
 ''=>''
 );

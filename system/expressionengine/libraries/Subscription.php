@@ -46,9 +46,31 @@ class EE_Subscription {
 	 * @access	public
 	 * @return	void
 	 */
-	function is_subscribed()
+	function is_subscribed($identifiers = FALSE)
 	{
+		$user = $this->_prep($identifiers);
+		
+		if ( ! $user)
+		{
+			return;
+		}
 
+		// Grab them all
+		if ($this->anonymous)
+		{
+			$this->EE->db->select('email');
+		}
+		
+		$this->EE->db->select('member_id');
+		$this->EE->db->where($this->publisher);
+		$query = $this->EE->db->get($this->table);
+
+		if ($query->num_rows() > 0)
+		{
+			return TRUE;
+		}
+		
+		return FALSE;
 	}
 
 

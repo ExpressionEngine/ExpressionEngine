@@ -3115,28 +3115,63 @@ class Comment {
 	 */
 	function notification_links()
 	{
-		// entry_id is required
-		if (($entry_id = $this->EE->TMPL->fetch_param('entry_id')) === FALSE)
-		{
-			return;
-		}
-		
-		// So is membership
+		// Membership is required
 		if ($this->EE->session->userdata('member_id') == 0)
 		{
 			return;
 		}
 		
+		$entry_id = FALSE;
+		$qstring = $this->EE->uri->query_string;
+		
+		if (preg_match("#/P\d+#", $qstring, $match))
+		{
+			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $qstring));
+		}
+
+		// Figure out the right entry ID
+		// If there is a slash in the entry ID we'll kill everything after it.
+		$entry_seg = trim($qstring); 
+		$entry_seg= preg_replace("#/.+#", "", $entry_seg);
+
+		if (is_numeric($entry_seg))
+		{
+			$entry_id = $entry_seg;
+		}
+		else
+		{
+			$this->EE->db->select('entry_id');
+			$query = $this->EE->db->get_where('channel_titles', array('url_title' => $entry_seg));
+			
+			if ($query->num_rows() == 1)
+			{
+   				$row = $query->row();
+  				$entry_id = $row->entry_id;
+			}
+		}
+
+		// entry_id is required
+		if ( ! $entry_id)
+		{
+			return;
+		}
+		
+		$smart = ($this->EE->config->item('comment_smart_notifications') == 'y') ? TRUE : FALSE;
+		
+		$this->EE->load->library('subscription');
+		$this->EE->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
+		$subscribed = $this->EE->subscription->is_subscribed(FALSE);
+
+
 		$action_id  = $this->EE->functions->fetch_action_id('Comment', 'comment_subscribe');
 
 		// Bleh- really need a conditional for if they are subscribed
 
-		$sub_link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&entry_id='.$entry_id;
-		$unsub_link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&entry_id='.$entry_id.'&type=unsubscribe';
+		$sub_link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&entry_id='.$entry_id.'&ret='.$this->EE->uri->uri_string();
+		$unsub_link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&entry_id='.$entry_id.'&type=unsubscribe'.'&ret='. $this->EE->uri->uri_string();
  		
-		$data[] = array('subscribe_link' => $sub_link, 'unsubscribe_link' => $unsub_link );
+		$data[] = array('subscribe_link' => $sub_link, 'unsubscribe_link' => $unsub_link, 'subscribed' => $subscribed);
 		
-
 		$tagdata = $this->EE->TMPL->tagdata;
 		return $this->EE->TMPL->parse_variables($tagdata, $data); 		
 		
@@ -3153,28 +3188,71 @@ class Comment {
 	 */
 	function comment_subscribe()
 	{
-		$id		= $this->EE->input->get_post('entry_id');
-		$type	= ($this->EE->input->get_post('type')) ? 'unsubscribe' : 'subscribe';
-		
-		if ($id)
+		// Membership is required
+		if ($this->EE->session->userdata('member_id') == 0)
 		{
-			$this->EE->load->library('subscription');
-			$this->EE->subscription->init('comment', array('entry_id' => $id), TRUE);
-			$this->EE->subscription->$type();
+			return;
 		}
+
+		$id		= $this->EE->input->get('entry_id');
+		$type	= ($this->EE->input->get('type')) ? 'unsubscribe' : 'subscribe';
+		$ret	= $this->EE->input->get('ret');
+
+		if ( ! $id)
+		{
+			return;
+		}
+
+		$this->EE->lang->loadfile('comment');
+		
+		// Does entry exist?
+		
+		$this->EE->db->select('title');
+		$query = $this->EE->db->get_where('channel_titles', array('entry_id' => $id));
+			
+		if ($query->num_rows() != 1)
+		{
+ 			return $this->EE->output->show_user_error('submission', 'invalid_subscription');
+		}
+
+  		$row = $query->row();
+  		$entry_title = $row->title;
+
+		// Are they currently subscribed
+		
+		$this->EE->load->library('subscription');
+		$this->EE->subscription->init('comment', array('entry_id' => $id), TRUE);
+		$subscribed = $this->EE->subscription->is_subscribed();	
+		
+		if ($type == 'subscribe' && $subscribed == TRUE)
+		{
+			return $this->EE->output->show_user_error('submission', $this->EE->lang->line('already_subscribed'));
+		}	
+		
+		if ($type == 'unsubscribe' && $subscribed == FALSE)
+		{
+			return $this->EE->output->show_user_error('submission', $this->EE->lang->line('not_currently_subscribed'));
+		}
+
+		// They check out- let them through
+		$this->EE->subscription->$type();
 
 		// Show success message
 		
 		$this->EE->lang->loadfile('comment');
 		
 		$title = ($type == 'unsubscribe') ? 'cmt_unsubscribe' : 'cmt_subscribe';
-		$content = ($type == 'unsubscribe') ? 'you_have_been_unsubscribed' : 'you_have_been_subscribed';		
+		$content = ($type == 'unsubscribe') ? 'you_have_been_unsubscribed' : 'you_have_been_subscribed';
+		
+		
+		$return_link = $this->EE->functions->create_url($ret);
+		
 
 		$data = array(	'title' 	=> $this->EE->lang->line($title),
 						'heading'	=> $this->EE->lang->line('thank_you'),
-						'content'	=> $this->EE->lang->line($content),
-						'redirect'	=> '',
-						'link'		=> array('javascript:history.go(-1)', $this->EE->lang->line('cmt_return_to_comments')),
+						'content'	=> $this->EE->lang->line($content).' '.$entry_title,
+						'redirect'	=> $return_link,
+						'link'		=> array($return_link, $this->EE->lang->line('cmt_return_to_comments')),
 						'rate'		=> 3
 					 );		
 
