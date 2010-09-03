@@ -1073,6 +1073,20 @@ class Comment {
 
 
 				/** ----------------------------------------
+				/**  parse comment_stripped field
+				/** ----------------------------------------*/
+
+				if ($key == "comment_stripped" AND isset($row['comment']))
+				{
+
+					$tagdata = $this->EE->TMPL->swap_var_single(
+															$key,
+															$this->EE->functions->encode_ee_tags($row['comment'], TRUE),
+															$tagdata
+														 );
+				}
+
+				/** ----------------------------------------
 				/**  parse comment field
 				/** ----------------------------------------*/
 
@@ -3292,7 +3306,7 @@ class Comment {
 	{
 		@header("Content-type: text/html; charset=UTF-8");
 		
-		if ($this->EE->input->get_post('comment_id') === FALSE OR ($this->EE->input->get_post('comment') === FALSE &&  $this->EE->input->get_post('status') != 'close'))
+		if ($this->EE->input->get_post('comment_id') === FALSE OR ($this->EE->input->get_post('comment') === FALSE && $this->EE->input->get_post('status') != 'close'))
 		{
 			exit('null');
 		}
