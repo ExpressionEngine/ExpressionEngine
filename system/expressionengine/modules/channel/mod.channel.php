@@ -5173,6 +5173,7 @@ class Channel {
 		}
 
 		$str = '';
+		$strict_empty = ($this->EE->TMPL->fetch_param('restrict_channel') == 'no') ? 'no' : 'yes';
 
 		if ($this->EE->TMPL->fetch_param('style') == '' OR $this->EE->TMPL->fetch_param('style') == 'nested')
 		{
@@ -5185,7 +5186,7 @@ class Channel {
 											'channel_array' 	=> '',
 											'parent_only'	=> $parent_only,
 											'show_empty'	=> $this->EE->TMPL->fetch_param('show_empty'),
-											'strict_empty'	=> $this->EE->TMPL->fetch_param('restrict_channel')
+											'strict_empty'	=> $strict_empty
 										  )
 								);
 
@@ -5234,7 +5235,6 @@ class Channel {
 			}
 
 			$show_empty = $this->EE->TMPL->fetch_param('show_empty');
-			$strict_empty = $this->EE->TMPL->fetch_param('restrict_channel');
 
 			if ($show_empty == 'no')
 			{
