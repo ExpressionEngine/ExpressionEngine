@@ -1094,6 +1094,8 @@ class Content_edit extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
+		
+		$this->load->library('table');
 
 		if ( ! $this->input->post('toggle'))
 		{
@@ -1106,8 +1108,8 @@ class Content_edit extends Controller {
 		}
 
 		$this->load->helper('form');
-
-		$this->jquery->ui(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'ui=datepicker', TRUE);
+		
+		$this->cp->add_js_script(array('ui' => 'datepicker'));
 
 		// -----------------------------
 		// Fetch the entry IDs 
