@@ -372,7 +372,9 @@ class Api_channel_fields extends Api {
 	 */
 	function check_method_exists($method)
 	{
-		if (method_exists(&$this->field_types[$this->field_type], $method))
+		$field_type = &$this->field_types[$this->field_type];
+		
+		if (method_exists($field_type, $method))
 		{
 			return TRUE;
 		}
