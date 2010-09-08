@@ -617,7 +617,7 @@ class Comment {
 
 		$search_link = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Search', 'do_search').'&amp;result_path='.$result_path.'&amp;mbr=';
 
-		$this->EE->db->select('comments.comment_id, comments.entry_id, comments.channel_id, comments.author_id, comments.name, comments.email, comments.url, comments.location AS c_location, comments.ip_address, comments.comment_date, comments.edit_date, comments.comment, comments.notify, comments.site_id AS comment_site_id,
+		$this->EE->db->select('comments.comment_id, comments.entry_id, comments.channel_id, comments.author_id, comments.name, comments.email, comments.url, comments.location AS c_location, comments.ip_address, comments.comment_date, comments.edit_date, comments.comment, comments.site_id AS comment_site_id,
 										members.username, members.group_id, members.location, members.occupation, members.interests, members.aol_im, members.yahoo_im, members.msn_im, members.icq, members.group_id, members.member_id, members.signature, members.sig_img_filename, members.sig_img_width, members.sig_img_height, members.avatar_filename, members.avatar_width, members.avatar_height, members.photo_filename, members.photo_width, members.photo_height,
 										member_data.*,
 										channel_titles.title, channel_titles.url_title, channel_titles.author_id AS entry_author_id,
@@ -2873,7 +2873,7 @@ class Comment {
 
 		if ($notify_address != '')
 		{
-			$cp_url = $this->EE->config->item('cp_url').'?S=0&C=addons_modules&M=show_module_cp&module=comment';
+			$cp_url = $this->EE->config->item('cp_url').'?S=0&D=cp&C=addons_modules&M=show_module_cp&module=comment';
 
 
 			
