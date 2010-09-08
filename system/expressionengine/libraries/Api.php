@@ -166,7 +166,7 @@ class Api {
 	 */
 	function is_url_safe($str)
 	{
-		return preg_match("/^[a-zA-Z0-9_\-\.]+$/i", $str);
+		return preg_match("/^[a-zA-Z0-9_\-\.]+$/i", $str) ? TRUE : FALSE;
 	}
 
 	// --------------------------------------------------------------------
