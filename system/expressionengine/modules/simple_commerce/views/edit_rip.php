@@ -56,7 +56,7 @@
 
 			<div class="tableSubmit">
 				<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
-				<?php if (count($action_options) > 0):?>
+				<?php if (is_array($action_options)):?>
 				<?=form_dropdown('action', $action_options).NBS.NBS?>
 				<?php endif;?>
 			</div>
