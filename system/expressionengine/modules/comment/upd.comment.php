@@ -37,6 +37,7 @@ class Comment_upd {
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
+		$this->EE->load->dbforge();
 	}
 
 	function tabs()
@@ -64,8 +65,6 @@ class Comment_upd {
 	 */
 	function install()
 	{
-		$this->EE->load->dbforge();
-
 		$data = array(
 			'module_name' => 'Comment' ,
 			'module_version' => $this->version,
@@ -177,8 +176,6 @@ class Comment_upd {
 	 */
 	function uninstall()
 	{
-		$this->EE->load->dbforge();
-
 		$this->EE->db->select('module_id');
 		$query = $this->EE->db->get_where('modules', array('module_name' => 'Comment'));
 
