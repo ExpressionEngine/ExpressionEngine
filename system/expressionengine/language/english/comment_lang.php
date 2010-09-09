@@ -284,6 +284,9 @@ $lang = array(
 'invalid_subscription' =>
 'The URL you submitted is invalid',
 
+'settings_updated' =>
+'Settings Updated',
+
 
 ''=>''
 );

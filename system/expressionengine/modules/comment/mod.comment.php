@@ -3306,7 +3306,7 @@ class Comment {
 	{
 		@header("Content-type: text/html; charset=UTF-8");
 		
-		if ($this->EE->input->get_post('comment_id') === FALSE OR ($this->EE->input->get_post('comment') === FALSE && $this->EE->input->get_post('status') != 'close'))
+		if ($this->EE->input->get_post('comment_id') === FALSE OR (($this->EE->input->get_post('comment') === FALSE $this->EE->input->get_post('comment') == '') && $this->EE->input->get_post('status') != 'close'))
 		{
 			exit('null');
 		}

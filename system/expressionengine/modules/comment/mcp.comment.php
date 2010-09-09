@@ -43,11 +43,13 @@ class Comment_mcp {
 		
 		$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment';
 
-		$this->EE->cp->set_right_nav(array(
+		if ($this->EE->cp->allowed_group('can_moderate_comments') &&  $this->EE->cp->allowed_group('can_edit_all_comments') && $this->EE->cp->allowed_group('can_delete_all_comments'))
+		{
+			$this->EE->cp->set_right_nav(array(
 								'settings'				=> $this->base_url.AMP.'method=settings',
 								'comments' 				=> $this->base_url)
-							);		
-		
+							);	
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -60,9 +62,9 @@ class Comment_mcp {
 	 */
 	function index($channel_id = '', $entry_id = '', $message = '', $id_array = '', $total_rows = '', $pag_base_url = '')
 	{
-		if ( ! $this->EE->cp->allowed_group('can_access_content'))
+		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
 		{
-			//show_error($this->EE->lang->line('unauthorized_access'));
+			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 
 		$this->EE->load->helper('text');
@@ -78,9 +80,7 @@ class Comment_mcp {
 		// Add javascript
 
 		$this->EE->cp->add_js_script(array('plugin' => 'dataTables'));
-		//$this->EE->cp->add_js_script(array('plugin' => 'base64'));
 		$this->EE->cp->add_js_script(array('plugin' => 'crypt'));
-
 		$this->EE->cp->add_js_script('ui', 'datepicker');
 			
 		$this->EE->javascript->output($this->ajax_filters('comments_ajax_filter', 9));
@@ -248,30 +248,7 @@ class Comment_mcp {
 		$this->comment_chars		= ($this->EE->config->item('view_comment_chars') !== FALSE) ? $this->EE->config->item('view_comment_chars') : $this->comment_chars;
 		$this->comment_leave_breaks = ($this->EE->config->item('view_comment_leave_breaks') !== FALSE) ? $this->EE->config->item('view_comment_leave_breaks') : $this->comment_leave_breaks;
 	
-//
-		/** ---------------------------------------
-		/**	 Assign page header and breadcrumb
-		/** ---------------------------------------*/
-
-/*
-
-		$this->EE->db->select('comment_text_formatting, comment_html_formatting, comment_allow_img_urls, comment_auto_link_urls');
-
-		$query = $this->EE->db->get_where('channels', array('channel_id' => $channel_id));
-
-		if ($query->num_rows() == 0)
-		{
-			show_error($this->EE->lang->line('no_channel_exist'));
-		}
-
-		foreach ($query->row_array() as $key => $val)
-		{
-			$$key = $val;
-		}
-			
-*/
-
-			// Do we need pagination?
+		// Do we need pagination?
 
 		$this->EE->load->library('pagination');
 
@@ -367,14 +344,13 @@ class Comment_mcp {
 		$vars['form_options'] = array(
 									'close' => $this->EE->lang->line('close_selected'),
 									'open' => $this->EE->lang->line('open_selected'),
-									'delete' => $this->EE->lang->line('delete_selected'),
 									'pending' => $this->EE->lang->line('pending_selected'),
 									);
 
-		if ($this->EE->cp->allowed_group('can_edit_all_comments') OR $this->EE->cp->allowed_group('can_moderate_comments'))
+		if ($this->EE->cp->allowed_group('can_delete_all_comments') OR $this->EE->cp->allowed_group('can_delete_own_comments'))
 		{
 			$vars['form_options']['null'] = '------';
-			$vars['form_options']['move'] = $this->EE->lang->line('move_selected');
+			$vars['form_options']['delete'] = $this->EE->lang->line('delete_selected');
 		}
 		
 		$vars['pagination'] = $pagination_links;
@@ -636,21 +612,8 @@ function fnGetKey( aoData, sKey )
 		$this->EE->load->model('comment_model');
 		$ids = array();
 		
-		// get all member groups for the dropdown list
-		/*
-		$member_groups = $this->EE->member_model->get_member_groups();
-		
-		foreach($member_groups->result() as $group)
-		{
-			$member_group[$group->group_id] = $group->group_title;
-		}
-		*/
 				
 		$col_map = array('comment', 'title', 'channel_title', 'name', 'email', 'comment_date', 'ip_address', 'status');
-
-		//$id = ($this->EE->input->get_post('id')) ? $this->EE->input->get_post('id') : '';		
-		
-
 
 		// Note- we pipeline the js, so pull more data than are displayed on the page		
 		$perpage = $this->EE->input->get_post('iDisplayLength');
@@ -706,9 +669,6 @@ function fnGetKey( aoData, sKey )
 		$i = 0;			
 		
 		$comment_results = $this->EE->comment_model->fetch_comment_data($ids, $order);
-
-
-		//$query = $this->EE->db->get('download_files', $perpage, $offset);
 		
 		// Note- empty string added because otherwise it will throw a js error
 		if ($comment_results != FALSE)
@@ -860,7 +820,7 @@ function fnGetKey( aoData, sKey )
 				$url[$name] = $name.'='.$this->EE->input->get($name);
 			}
 		}
-//print_r($url);		
+		
 		if ( ! isset($url['keywords']))
 		{
 			unset($url['search_in']);
@@ -874,6 +834,10 @@ function fnGetKey( aoData, sKey )
 
 	function create_filter($filter)
 	{
+		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
+		{
+			show_error($this->EE->lang->line('unauthorized_access'));
+		}
 
 		// Channel selection pull-down menu
 		// Fetch the names of all channels and write each one in an <option> field
@@ -881,32 +845,20 @@ function fnGetKey( aoData, sKey )
 		$fields = array('channel_title', 'channel_id', 'cat_group');
 		$where = array();
 		
-		// If the user is restricted to specific channels, add that to the query
+		//  We only limit to channels they are assigned to if they can't moderate and can't edit all
+		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments'))
+		{
+			$query = $this->EE->channel_model->get_channels($this->EE->config->item('site_id'), $fields, $where);
+		}
+		else
+		{
+			$this->EE->db->select('channel_title, channel_id, cat_group');
+			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+			$this->EE->db->order_by('channel_title');
 		
-		if ($this->EE->session->userdata['group_id'] != 1)
-		{
-			$where[] = array('channel_id' => $allowed_channels);
-		}
-
-		$query = $this->EE->channel_model->get_channels($this->EE->config->item('site_id'), $fields, $where);
-
-		/*
-		if ($query->num_rows() == 1)
-		{
-			$channel_id = $query->row('channel_id');
-		}
-		elseif($channel_id != '')
-		{
-			foreach($query->result_array() as $row)
-			{
-				if ($row['channel_id'] == $channel_id)
-				{
-					$channel_id = $row['channel_id'];
-				}
-			}
-		}
-		*/
-
+			$query = $this->EE->db->get('channels'); 
+		}		
+		
 		$vars['channel_selected'] = $filter['channel_id'];
 
 		$vars['channel_select_options'] = array('' => $this->EE->lang->line('filter_by_channel'));
@@ -1028,22 +980,14 @@ function fnGetKey( aoData, sKey )
 	function edit_comment_form($comment_id = FALSE)
 	{
 
-		if ( ! $this->EE->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->EE->cp->allowed_group('can_moderate_comments'))
+		if ( ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
 		{
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 		
 		$this->EE->load->library('table');
-				
 		$this->EE->load->library('javascript');	
 
-		
-		
 		$this->EE->javascript->output('		
 		if ($("#move_to").val() != "")
 		{
@@ -1069,11 +1013,7 @@ function fnGetKey( aoData, sKey )
 
 		$this->EE->load->helper(array('form', 'snippets'));
 
-		if ( ! $this->EE->cp->allowed_group('can_edit_all_comments') OR ! $this->EE->cp->allowed_group('can_edit_own_comments'))
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-		
+
 		$this->EE->db->select('channel_titles.author_id as entry_author, title, channel_title, comment_require_email, comment, comment_id, comments.author_id, comments.status, name, email, url, location, comments.ip_address, comment_date');
 		$this->EE->db->from(array('channel_titles', 'comments'));
 		$this->EE->db->join('channels', 'exp_comments.channel_id = exp_channels.channel_id ', 'left');
@@ -1128,18 +1068,12 @@ function fnGetKey( aoData, sKey )
 	 */
 	function update_comment()
 	{
-		if ( ! $this->EE->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->EE->cp->allowed_group('can_moderate_comments'))
+		if ( ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
 		{
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 
 		$comment_id = $this->EE->input->get_post('comment_id');
-
 
 		if ($comment_id == FALSE OR ! is_numeric($comment_id))
 		{
@@ -1152,7 +1086,7 @@ function fnGetKey( aoData, sKey )
 		{
 			$query = $this->EE->db->get_where('comments', array('comment_id' => $comment_id));
 		}
-		elseif ($this->EE->cp->allowed_group('can_edit_own_comments'))
+		else
 		{
 			$this->EE->db->select('channel_titles.author_id, comments.channel_id, comments.entry_id');
 			$this->EE->db->from(array('channel_titles', 'comments'));
@@ -1165,11 +1099,6 @@ function fnGetKey( aoData, sKey )
 			{
 				show_error($this->EE->lang->line('unauthorized_access'));
 			}
-
-		}
-		else
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 
 		if ($query->num_rows() == 0)
@@ -1380,16 +1309,6 @@ function fnGetKey( aoData, sKey )
 	 */
 	function modify_comments()
 	{
-		if ( ! $this->EE->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->EE->cp->allowed_group('can_moderate_comments'))
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-
 		// This only happens if they submit with no comments checked, so we send
 		// them home.
 		if ( ! $this->EE->input->post('toggle') && ! $this->EE->input->get_post('comment_id'))
@@ -1425,16 +1344,6 @@ function fnGetKey( aoData, sKey )
 	 */
 	function delete_comment_confirm()
 	{
-		if ( ! $this->EE->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->EE->cp->allowed_group('can_moderate_comments'))
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-
 		if ( ! $this->EE->cp->allowed_group('can_delete_all_comments') && ! $this->EE->cp->allowed_group('can_delete_own_comments'))
 		{
 			show_error($this->EE->lang->line('unauthorized_access'));
@@ -1554,20 +1463,7 @@ function fnGetKey( aoData, sKey )
 	 */
 	function change_comment_status($status = '')
 	{
-		if ( ! $this->EE->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->EE->cp->allowed_group('can_moderate_comments'))
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-
-
-		// This is legacy- no clue.  seems weird on the edit all??  @todo
-		
-		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments'))
+		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
 		{
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
@@ -1578,13 +1474,13 @@ function fnGetKey( aoData, sKey )
 		{
 			foreach ($_POST['toggle'] as $key => $val)
 			{
-				$comments[] = $val;
+				$comments[$val] = $val;
 			}
 		}
 
 		if($this->EE->input->get_post('comment_id') !== FALSE && is_numeric($this->EE->input->get_post('comment_id')))
 		{
-			$comments[] = $this->EE->input->get_post('comment_id');
+			$comments[$this->EE->input->get_post('comment_id')] = $this->EE->input->get_post('comment_id');
 		}
 
 		if (count($comments) == 0)
@@ -1602,7 +1498,7 @@ function fnGetKey( aoData, sKey )
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 
-		$this->EE->db->select('entry_id, channel_id, author_id');
+		$this->EE->db->select('entry_id, channel_id, author_id, comment_id');
 		$this->EE->db->where_in('comment_id', $comments);
 		$query = $this->EE->db->get('comments');
 
@@ -1619,6 +1515,12 @@ function fnGetKey( aoData, sKey )
 
 		foreach($query->result_array() as $row)
 		{
+			if (( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments')) && ($row['author_id'] != $this->EE->session->userdata('member_id')))
+			{					
+				unset($comments[$row['comment_id']]);
+				continue;
+			}
+
 			$entry_ids[]  = $row['entry_id'];
 			$author_ids[] = $row['author_id'];
 			$channel_ids[] = $row['channel_id'];
@@ -1822,12 +1724,7 @@ function fnGetKey( aoData, sKey )
 	 */
 	function delete_comment()
 	{
-		if ( ! $this->EE->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->EE->cp->allowed_group('can_moderate_comments'))
+		if ( ! $this->EE->cp->allowed_group('can_delete_all_comments') && ! $this->EE->cp->allowed_group('can_delete_own_comments'))
 		{
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
@@ -1853,11 +1750,6 @@ function fnGetKey( aoData, sKey )
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 	
-		if ( ! $this->EE->cp->allowed_group('can_delete_all_comments') &&  ! $this->EE->cp->allowed_group('can_delete_own_comments'))
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-		
 		$this->EE->cp->get_installed_modules();
 		
 		$blacklist_installed =  (isset($this->EE->cp->installed_modules['blacklist'])) ? TRUE : FALSE;
@@ -1886,8 +1778,6 @@ function fnGetKey( aoData, sKey )
 			$channel_ids[] = $row['channel_id'];
 			$bad_ips[] = $row['ip_address'];
 		}
-
-
 
 		$entry_ids	= array_unique($entry_ids);
 		$author_ids = array_unique($author_ids);
@@ -1977,16 +1867,14 @@ function fnGetKey( aoData, sKey )
 		$this->EE->functions->redirect($this->base_url);
 
 	}
-	
-///////////////////
-
-	
-	
-	
-////////////////////////////////
 
 	function settings()
 	{
+		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_delete_all_comments'))
+		{
+			show_error($this->EE->lang->line('unauthorized_access'));
+		}
+
 		$this->EE->load->library('table');
 		$this->EE->load->library('javascript');
 		$this->EE->load->helper('form');
@@ -1997,7 +1885,6 @@ function fnGetKey( aoData, sKey )
 
 		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('comment_settings'));
 
-		// a bit of a breadcrumb override is needed
 		$this->EE->cp->set_variable('cp_breadcrumbs', array(
 			$this->base_url => $this->EE->lang->line('comments')));		
 		
@@ -2012,6 +1899,11 @@ function fnGetKey( aoData, sKey )
 	
 	function save_settings()
 	{
+		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_delete_all_comments'))
+		{
+			show_error($this->EE->lang->line('unauthorized_access'));
+		}
+		
 		$insert['comment_word_censoring'] = ($this->EE->input->post('comment_word_censoring')) ? 'y' : 'n';
 		$insert['comment_moderation_override'] = ($this->EE->input->post('comment_moderation_override')) ? 'y' : 'n';
 		$insert['comment_smart_notifications'] = ($this->EE->input->post('comment_smart_notifications')) ? 'y' : 'n';

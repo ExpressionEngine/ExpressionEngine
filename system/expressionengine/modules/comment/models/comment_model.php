@@ -32,38 +32,18 @@ class Comment_model extends CI_Model {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Get Config Fields
+	 * Get Comment IDs
 	 *
-	 * Fetches the config/preference fields, their types, and their default values
+	 * Fetches the comment ids that match the submitted filter data
 	 *
 	 * @access	public
-	 * @param	string
-	 * @return	array
+	 * @param	array
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	obj
 	 */
 	function get_comment_ids($where, $entry_id = array(), $order = array())
 	{
-
-		/*
-		comment_status
-		entry_status
-		author - ie name
-		order
-		limit
-		ip
-		comment_date
-		email
-		entry_ids
-		comment_ids
-		channel_id
-		sort
-		
-		?? username
-		?? category id
-		
-		
-		*/
-		
-		//print_r($where); exit;
 		
 		if ( ! is_array($entry_id))
 		{
@@ -76,19 +56,27 @@ class Comment_model extends CI_Model {
 		//  If we are sorting by the entry title or the channel name- we need to pull in more tables
 		//  Ditto for search in titles
 		$title_included = FALSE;
+		
+		//  If the can ONLY edit their own comments- need to bring in title table to limit on author
+		$own_entries_only = FALSE;
+		
+		if (( ! $this->cp->allowed_group('can_moderate_comments') && ! $this->cp->allowed_group('can_edit_all_comments')) && $this->cp->allowed_group('can_edit_own_comments'))
+		{
+			$own_entries_only = TRUE;
+		}
+				
 
 		if (is_array($order))
 		{
 			if (in_array('title', array_keys($order)))
 			{
 				$this->db->join('channel_titles', 'exp_comments.entry_id = exp_channel_titles.entry_id', 'left');
-				
+				$title_included = TRUE;				
 			}
 
 			if (in_array('channel_title', array_keys($order)))
 			{
 				$this->db->join('channels', 'exp_comments.channel_id = exp_channels.channel_id ', 'left');
-				$title_included = TRUE;
 			}			
 		}
 		
@@ -96,6 +84,15 @@ class Comment_model extends CI_Model {
 		{
 			$this->db->join('channel_titles', 'exp_comments.entry_id = exp_channel_titles.entry_id', 'left');
 		}
+		elseif ($title_included == FALSE && $own_entries_only == TRUE)
+		{
+			$this->db->join('channel_titles', 'exp_comments.entry_id = exp_channel_titles.entry_id', 'left');
+		}
+		
+		if ($own_entries_only == TRUE)
+		{
+			$this->db->where('exp_channel_titles.author_id', $this->session->userdata('member_id'));			
+		}		
 		
 		if (isset($where['site_id']))
 		{
