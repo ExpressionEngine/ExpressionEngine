@@ -287,6 +287,9 @@ $lang = array(
 'settings_updated' =>
 'Settings Updated',
 
+'comment_updated' =>
+'Comment Updated',
+
 
 ''=>''
 );

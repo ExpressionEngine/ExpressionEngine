@@ -27,7 +27,7 @@ class Comment_mcp {
 	var $pipe_length		= '2';
 	var $comment_chars			= "100";
 	var $comment_leave_breaks = 'y';
-	var $perpage = 5;
+	var $perpage = 50;
 	var $base_url = '';
 	var $search_url;
 
@@ -296,7 +296,7 @@ class Comment_mcp {
 
 			$row['can_edit_comment'] = TRUE;
 
-			if (($row['author_id'] != $this->EE->session->userdata('member_id')) && ! $this->EE->cp->allowed_group('can_edit_other_entries'))
+			if (($row['entry_author_id'] != $this->EE->session->userdata('member_id')) && ! $this->EE->cp->allowed_group('can_edit_all_comments'))
 			{
 				$row['can_edit_comment'] = FALSE;
 			}
@@ -320,6 +320,7 @@ class Comment_mcp {
 			
 			$data['status_label'] = $status_label;
 			$data['status_search_url'] = $this->base_url.AMP.'status='.$row['status'];
+			$data['can_edit_comment'] = $row['can_edit_comment'];
 			
 			
 			$data['ip_search_url'] = $this->base_url.AMP.'ip_address='.base64_encode($row['ip_address']);
@@ -678,7 +679,7 @@ function fnGetKey( aoData, sKey )
 		{
 			$can_edit_comment = TRUE;
 
-			if (($comment['author_id'] != $this->EE->session->userdata('member_id')) && ! $this->EE->cp->allowed_group('can_edit_other_entries'))
+			if (($comment['entry_author_id'] != $this->EE->session->userdata('member_id')) && ! $this->EE->cp->allowed_group('can_edit_all_comments'))
 			{
 				$can_edit_comment = FALSE;
 			}
@@ -696,6 +697,27 @@ function fnGetKey( aoData, sKey )
 				$status_label = $this->EE->lang->line('pending');
 			}
 			
+
+			if ($this->comment_leave_breaks == 'y')
+			{
+				$display_comment = str_replace(array("\n","\r"),
+												  '<br />',
+												  strip_tags($comment['comment'])
+												  );
+			}
+			else
+			{
+				$display_comment = strip_tags(str_replace(array("\t","\n","\r"), '', $comment['comment']));
+			}
+
+			if ($this->comment_chars != 0)
+			{
+				$display_comment = $this->EE->functions->char_limiter(trim($display_comment), $this->comment_chars);
+			}
+			
+			
+			
+			
 			$edit_url = $this->base_url.AMP.'method=edit_comment_form'.AMP.'comment_id='.$comment['comment_id'];
 			$status_search_url = $this->base_url.AMP.'status='.$comment['status'];
 			$ip_search_url = $this->base_url.AMP.'ip_address='.base64_encode($comment['ip_address']);
@@ -708,7 +730,7 @@ function fnGetKey( aoData, sKey )
 			$entry_search_url = $this->base_url.AMP.'entry_id='.$comment['entry_id'];
 			$entry_title = $this->EE->functions->char_limiter(trim(strip_tags($comment['title'])), 26);
 			
-			$m[] = "<a class='less_important_link' href='{$edit_url}'>{$comment['comment']}</a>";
+			$m[] = "<a class='less_important_link' href='{$edit_url}'>{$display_comment}</a>";
 			$m[] = "<a class='less_important_link' href='{$entry_search_url}'>{$entry_title}</a>";
 			$m[] = "<a class='less_important_link' href='{$channel_search_url}'>{$comment['channel_title']}</a>";
 			$m[] = "<a class='less_important_link'  href='{$name_search_url}'>{$comment['name']}</a>";
@@ -979,12 +1001,13 @@ function fnGetKey( aoData, sKey )
 	 */
 	function edit_comment_form($comment_id = FALSE)
 	{
-
-		if ( ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
+		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
 		{
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
-		
+
+		$can_edit = FALSE;
+
 		$this->EE->load->library('table');
 		$this->EE->load->library('javascript');	
 
@@ -1014,7 +1037,7 @@ function fnGetKey( aoData, sKey )
 		$this->EE->load->helper(array('form', 'snippets'));
 
 
-		$this->EE->db->select('channel_titles.author_id as entry_author, title, channel_title, comment_require_email, comment, comment_id, comments.author_id, comments.status, name, email, url, location, comments.ip_address, comment_date');
+		$this->EE->db->select('channel_titles.author_id as entry_author, title, channel_title, comment_require_email, comment, comment_id, comments.author_id, comments.status, name, email, url, location, comments.ip_address, comment_date, channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls');
 		$this->EE->db->from(array('channel_titles', 'comments'));
 		$this->EE->db->join('channels', 'exp_comments.channel_id = exp_channels.channel_id ', 'left');
 		$this->EE->db->where('channel_titles.entry_id = '.$this->EE->db->dbprefix('comments.entry_id'));
@@ -1032,15 +1055,49 @@ function fnGetKey( aoData, sKey )
 		{
 			if ($query->row('entry_author') != $this->EE->session->userdata('member_id'))
 			{
-				show_error($this->EE->lang->line('unauthorized_access'));
+				if ( ! $this->EE->cp->allowed_group('can_moderate_comments'))
+				{
+					show_error($this->EE->lang->line('unauthorized_access'));
+				}
 			}
+			else
+			{
+				$can_edit = TRUE;			
+			}
+		}
+		else
+		{
+			$can_edit = TRUE;
 		}
 
 		$vars = $query->row_array();
 
 		$vars['move_link'] = '';
 		$vars['move_to'] = '';
+		$vars['can_edit'] = $can_edit;
+		
+	 	$vars['status_select_options']['p'] = $this->EE->lang->line('pending');
+		$vars['status_select_options']['o'] = $this->EE->lang->line('open');
+		$vars['status_select_options']['c'] = $this->EE->lang->line('closed');	
+		
+		$vars['status'] = ($this->EE->input->post('status')) ? $this->EE->input->post('status') : $vars['status'];
 
+		// Instantiate Typography class
+		$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
+		
+		$this->EE->load->library('typography');
+		$this->EE->typography->initialize($config);
+		$this->EE->typography->parse_images = FALSE;
+
+		$vars['display_comment'] = $this->EE->typography->parse_type($vars['comment'],
+										array(
+												'text_format'	=> $vars['comment_text_formatting'],
+												'html_format'	=> $vars['comment_html_formatting'],
+												'auto_links'	=> $vars['comment_auto_link_urls'],
+												'allow_img_url' => $vars['comment_allow_img_urls']
+											)
+									);
+		
 		$hidden = array(
 						'comment_id'	=> $comment_id
 						);
@@ -1068,7 +1125,7 @@ function fnGetKey( aoData, sKey )
 	 */
 	function update_comment()
 	{
-		if ( ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
+		if ( !  ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
 		{
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
@@ -1081,10 +1138,12 @@ function fnGetKey( aoData, sKey )
 		}
 
 		$this->EE->load->library('form_validation');
+		$can_edit = FALSE;
 		
 		if ($this->EE->cp->allowed_group('can_edit_all_comments'))
 		{
 			$query = $this->EE->db->get_where('comments', array('comment_id' => $comment_id));
+			$can_edit = TRUE;
 		}
 		else
 		{
@@ -1097,7 +1156,14 @@ function fnGetKey( aoData, sKey )
 
 			if ($query->row('author_id') != $this->EE->session->userdata('member_id'))
 			{
-				show_error($this->EE->lang->line('unauthorized_access'));
+				if ( ! $this->EE->cp->allowed_group('can_moderate_comments'))
+				{
+					show_error($this->EE->lang->line('unauthorized_access'));
+				}
+				else
+				{
+					$can_edit = TRUE;			
+				}
 			}
 		}
 
@@ -1111,11 +1177,12 @@ function fnGetKey( aoData, sKey )
    		$author_id = $row['author_id'];
 		$channel_id = $row['channel_id'];
 		$entry_id = $row['entry_id'];
+		$current_status = $row['status'];
 		
 		$new_channel_id = $row['channel_id'];
 		$new_entry_id = $row['entry_id'];
 
-		//	 Fetch comment display preferences
+		//	 Are emails required?
 		$this->EE->db->select('channels.comment_require_email');
 		$this->EE->db->from(array('channels', 'comments'));
 		$this->EE->db->where('comments.channel_id = '.$this->EE->db->dbprefix('channels.channel_id'));
@@ -1133,6 +1200,37 @@ function fnGetKey( aoData, sKey )
 		}
 
 
+		$status = $this->EE->input->post('status');
+
+		//  If they can not edit- only the status may change
+		if ( ! $can_edit)
+		{
+			if ( ! in_array($status, array('o', 'c', 'p')))
+			{
+				show_error($this->EE->lang->line('unauthorized_access'));
+			}
+			
+			$data = array('status' => $status);
+			$this->EE->db->query($this->EE->db->update_string('exp_comments', $data, "comment_id = '$comment_id'"));
+			
+			$this->update_stats(array($entry_id), array($channel_id), array($author_id));
+
+			//  Did status change to open?  Notify
+			if ($status == 'o' && $current_status != 'o')
+			{
+				$this->send_notification_emails(array($comment_id));
+			}
+			
+			$this->EE->functions->clear_caching('all');
+
+			$url = $this->base_url.AMP.'comment_id='.$comment_id;
+
+			$this->EE->session->set_flashdata('message_success',  $this->EE->lang->line('comment_updated'));
+			$this->EE->functions->redirect($url);			
+		}
+		
+		
+		
 		// Error checks
 		if ($author_id == 0)
 		{
@@ -1211,7 +1309,8 @@ function fnGetKey( aoData, sKey )
 							'email'		=> $_POST['email'],
 							'url'		=> $_POST['url'],
 							'location'	=> $_POST['location'],
-							'comment'	=> $_POST['comment']
+							'comment'	=> $_POST['comment'],
+							'status'	=> $status
 						 );
 		}
 		else
@@ -1219,15 +1318,28 @@ function fnGetKey( aoData, sKey )
 			$data = array(
 							'entry_id' => $new_entry_id,
 							'channel_id' => $new_channel_id,
-							'comment'	=> $_POST['comment']
+							'comment'	=> $_POST['comment'],
+							'status'	=> $status
 						 );
 		}
 		
 	
 
-		$this->EE->db->query($this->EE->db->update_string('exp_comments', $data, "comment_id = '$comment_id'"));
+
+		if ($status != $current_status)
+		{
+			$this->EE->db->query($this->EE->db->update_string('exp_comments', $data, "comment_id = '$comment_id'"));
 		
-		
+			$this->update_stats(array($entry_id), array($channel_id), array($author_id));
+
+			//  Did status change to open?  Notify
+			if ($status == 'o' && $current_status != 'o')
+			{
+				$this->send_notification_emails(array($comment_id));
+			}			
+		}
+
+
 		if (count($recount_ids) > 0)
 		{
 			$this->EE->load->model('comment_model');
@@ -1255,8 +1367,6 @@ function fnGetKey( aoData, sKey )
 		/* -------------------------------------------*/
 		
 		$this->EE->functions->clear_caching('all');
-
-		$current_page = ( ! isset($_POST['current_page'])) ? 0 : $_POST['current_page'];
 
 		$url = $this->base_url.AMP.'comment_id='.$comment_id;
 
@@ -1498,7 +1608,8 @@ function fnGetKey( aoData, sKey )
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 
-		$this->EE->db->select('entry_id, channel_id, author_id, comment_id');
+		$this->EE->db->select('exp_comments.entry_id, exp_comments.channel_id, exp_comments.author_id, comment_id, exp_channel_titles.author_id AS entry_author');
+		$this->EE->db->join('channel_titles', 'exp_comments.entry_id = exp_channel_titles.entry_id', 'left');
 		$this->EE->db->where_in('comment_id', $comments);
 		$query = $this->EE->db->get('comments');
 
@@ -1513,9 +1624,10 @@ function fnGetKey( aoData, sKey )
 		$author_ids = array();
 		$channel_ids = array();
 
+
 		foreach($query->result_array() as $row)
 		{
-			if (( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments')) && ($row['author_id'] != $this->EE->session->userdata('member_id')))
+			if (( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments')) && ($row['entry_author'] != $this->EE->session->userdata('member_id')))
 			{					
 				unset($comments[$row['comment_id']]);
 				continue;
@@ -1525,6 +1637,12 @@ function fnGetKey( aoData, sKey )
 			$author_ids[] = $row['author_id'];
 			$channel_ids[] = $row['channel_id'];
 		}
+		
+		if (count($comments) == 0)
+		{
+			show_error($this->EE->lang->line('unauthorized_access'));
+		}		
+		
 
 		$entry_ids	= array_unique($entry_ids);
 		$author_ids = array_unique($author_ids);
@@ -1538,45 +1656,154 @@ function fnGetKey( aoData, sKey )
 		$this->EE->db->where_in('comment_id', $comments);
 		$this->EE->db->update('comments');
 		
-		foreach(array_unique($entry_ids) as $entry_id)
-		{
-			$query = $this->EE->db->query("SELECT MAX(comment_date) AS max_date FROM exp_comments WHERE status = 'o' AND entry_id = '".$this->EE->db->escape_str($entry_id)."'");
-
-			$comment_date = ($query->num_rows() == 0 OR ! is_numeric($query->row('max_date') )) ? 0 : $query->row('max_date') ;
-
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_comments WHERE entry_id = '".$this->EE->db->escape_str($entry_id)."' AND status = 'o'");
-
-			$this->EE->db->set('comment_total', $query->row('count'));
-			$this->EE->db->set('recent_comment_date', $comment_date);
-			$this->EE->db->where('entry_id', $entry_id);
-			$this->EE->db->update('channel_titles');
-		}
-
-		// Quicker and updates just the channels
-		foreach(array_unique($channel_ids) as $channel_id)
-		{
-			$this->EE->stats->update_comment_stats($channel_id, '', FALSE);
-		}
-
-		// Updates the total stats
-		$this->EE->stats->update_comment_stats();
-
-		foreach(array_unique($author_ids) as $author_id)
-		{
-			$res = $this->EE->db->query("SELECT COUNT(comment_id) AS comment_total, MAX(comment_date) AS comment_date FROM exp_comments WHERE author_id = '$author_id'");
-			$resrow = $res->row_array();
-
-			$comment_total = $resrow['comment_total'];
-			$comment_date  = ( ! empty($resrow['comment_date'])) ? $resrow['comment_date'] : 0;
-
-			$this->EE->db->query($this->EE->db->update_string('exp_members', array('total_comments' => $comment_total, 'last_comment_date' => $comment_date), "member_id = '$author_id'"));
-		}
-
-
+		$this->update_stats($entry_ids, $channel_ids, $author_ids);
+		
 		//	 Send email notification
 
 		if ($status == 'o')
 		{
+			$this->send_notification_emails($comments);
+		}
+
+		$this->EE->functions->clear_caching('all');
+
+		$url = $this->base_url;
+
+		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('status_changed'));
+		$this->EE->functions->redirect($url);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Delete Comment
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function delete_comment()
+	{
+		if ( ! $this->EE->cp->allowed_group('can_delete_all_comments') && ! $this->EE->cp->allowed_group('can_delete_own_comments'))
+		{
+			show_error($this->EE->lang->line('unauthorized_access'));
+		}
+
+		$comment_id = $this->EE->input->post('comment_ids');
+
+		if ($comment_id == FALSE)
+		{
+			show_error($this->EE->lang->line('unauthorized_access'));
+		}
+
+
+		if ( ! preg_match("/^[0-9]+$/", str_replace('|', '', $comment_id)))
+		{
+			show_error($this->EE->lang->line('unauthorized_access'));
+		}
+		
+		$this->EE->db->where_in('comment_id', explode('|', $comment_id));
+		$count = $this->EE->db->count_all_results('comments');
+
+		if ($count == 0)
+		{
+			show_error($this->EE->lang->line('unauthorized_access'));
+		}
+	
+		$this->EE->cp->get_installed_modules();
+		
+		$blacklist_installed =  (isset($this->EE->cp->installed_modules['blacklist'])) ? TRUE : FALSE;
+
+		$this->EE->db->select('channel_titles.author_id, channel_titles.entry_id, channel_titles.channel_id, channel_titles.comment_total, comments.ip_address');
+		$this->EE->db->from(array('channel_titles', 'comments'));
+		$this->EE->db->where('channel_titles.entry_id = '.$this->EE->db->dbprefix('comments.entry_id'));
+		$this->EE->db->where_in('comments.comment_id', explode('|', $comment_id));
+
+		$query = $this->EE->db->get();
+
+		if ($query->num_rows() == 0)
+		{
+			show_error($this->EE->lang->line('unauthorized_access'));
+		}
+
+		$entry_ids	= array();
+		$author_ids = array();
+		$channel_ids = array();
+		$bad_ips = array();
+
+		foreach($query->result_array() as $row)
+		{
+			$entry_ids[]  = $row['entry_id'];
+			$author_ids[] = $row['author_id'];
+			$channel_ids[] = $row['channel_id'];
+			$bad_ips[] = $row['ip_address'];
+		}
+
+		$entry_ids	= array_unique($entry_ids);
+		$author_ids = array_unique($author_ids);
+		$channel_ids = array_unique($channel_ids);
+		$ips['ip'] = array_unique($bad_ips);
+		unset($bad_ips);
+
+
+		if ( ! $this->EE->cp->allowed_group('can_delete_all_comments'))
+		{
+			foreach($query->result_array() as $row)
+			{
+				if ($row['author_id'] != $this->EE->session->userdata('member_id'))
+				{
+					show_error($this->EE->lang->line('unauthorized_access'));
+				}
+			}
+		}
+
+		// If blacklist was checked- blacklist!
+		if ($blacklist_installed && $this->EE->input->post('add_to_blacklist') == 'y')
+		{
+			include_once PATH_MOD.'blacklist/mcp.blacklist'.EXT;
+
+			$bl = new Blacklist_mcp();
+			
+			// Write to htaccess?
+			$write_htacces = ($this->EE->session->userdata('group_id') == '1' && $this->EE->config->item('htaccess_path') != '')	? TRUE : FALSE;		
+			
+			$blacklisted = $bl->update_blacklist($ips, $write_htacces, 'bool');
+		}
+
+		$this->EE->db->where_in('comment_id', explode('|', $comment_id));
+		$this->EE->db->delete('comments');
+		
+		$this->update_stats($entry_ids, $channel_ids, $author_ids);
+
+
+		$msg = $this->EE->lang->line('comment_deleted');
+
+		/* -------------------------------------------
+		/* 'delete_comment_additional' hook.
+		/*  - Add additional processing on comment delete
+		*/
+			$edata = $this->EE->extensions->call('delete_comment_additional');
+			if ($this->EE->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+		
+		$this->EE->functions->clear_caching('all');
+
+		$this->EE->session->set_flashdata('message_success', $msg);
+
+		$this->EE->functions->redirect($this->base_url);
+
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Send Notification Emails
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function send_notification_emails($comments)
+	{
 			// Instantiate Typography class
 			$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
 		
@@ -1701,123 +1928,21 @@ function fnGetKey( aoData, sKey )
 						}
 					}
 				}
-			}
-		}
+			}		
 
-		$this->EE->functions->clear_caching('all');
-
-		$val = ($this->EE->input->get_post('validate') == 1) ? AMP.'validate=1' : '';
-
-		$url = $this->base_url;
-
-		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('status_changed'));
-		$this->EE->functions->redirect($url);
+		return;
 	}
-
+		
 	// --------------------------------------------------------------------
 
 	/**
-	 * Delete Comment
+	 * Update Entry and Channel Stats
 	 *
 	 * @access	public
 	 * @return	void
 	 */
-	function delete_comment()
+	function update_stats($entry_ids, $channel_ids, $author_ids)
 	{
-		if ( ! $this->EE->cp->allowed_group('can_delete_all_comments') && ! $this->EE->cp->allowed_group('can_delete_own_comments'))
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-
-		$comment_id = $this->EE->input->post('comment_ids');
-
-		if ($comment_id == FALSE)
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-
-
-		if ( ! preg_match("/^[0-9]+$/", str_replace('|', '', $comment_id)))
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-		
-		$this->EE->db->where_in('comment_id', explode('|', $comment_id));
-		$count = $this->EE->db->count_all_results('comments');
-
-		if ($count == 0)
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-	
-		$this->EE->cp->get_installed_modules();
-		
-		$blacklist_installed =  (isset($this->EE->cp->installed_modules['blacklist'])) ? TRUE : FALSE;
-
-		$this->EE->db->select('channel_titles.author_id, channel_titles.entry_id, channel_titles.channel_id, channel_titles.comment_total, comments.ip_address');
-		$this->EE->db->from(array('channel_titles', 'comments'));
-		$this->EE->db->where('channel_titles.entry_id = '.$this->EE->db->dbprefix('comments.entry_id'));
-		$this->EE->db->where_in('comments.comment_id', explode('|', $comment_id));
-
-		$query = $this->EE->db->get();
-
-		if ($query->num_rows() == 0)
-		{
-			show_error($this->EE->lang->line('unauthorized_access'));
-		}
-
-		$entry_ids	= array();
-		$author_ids = array();
-		$channel_ids = array();
-		$bad_ips = array();
-
-		foreach($query->result_array() as $row)
-		{
-			$entry_ids[]  = $row['entry_id'];
-			$author_ids[] = $row['author_id'];
-			$channel_ids[] = $row['channel_id'];
-			$bad_ips[] = $row['ip_address'];
-		}
-
-		$entry_ids	= array_unique($entry_ids);
-		$author_ids = array_unique($author_ids);
-		$channel_ids = array_unique($channel_ids);
-		$ips['ip'] = array_unique($bad_ips);
-		unset($bad_ips);
-
-
-		if ( ! $this->EE->cp->allowed_group('can_delete_all_comments'))
-		{
-			foreach($query->result_array() as $row)
-			{
-				if ($row['author_id'] != $this->EE->session->userdata('member_id'))
-				{
-					show_error($this->EE->lang->line('unauthorized_access'));
-				}
-			}
-		}
-
-		// If blacklist was checked- blacklist!
-		if ($blacklist_installed && $this->EE->input->post('add_to_blacklist') == 'y')
-		{
-			include_once PATH_MOD.'blacklist/mcp.blacklist'.EXT;
-
-			$bl = new Blacklist_mcp();
-			
-			// Write to htaccess?
-			$write_htacces = ($this->EE->session->userdata('group_id') == '1' && $this->EE->config->item('htaccess_path') != '')	? TRUE : FALSE;		
-			
-			$blacklisted = $bl->update_blacklist($ips, $write_htacces, 'bool');
-		}
-
-
-		/** --------------------------------
-		/**	 Update Entry and Channel Stats
-		/** --------------------------------*/
-
-		$this->EE->db->where_in('comment_id', explode('|', $comment_id));
-		$this->EE->db->delete('comments');
-
 		foreach($entry_ids as $entry_id)
 		{
 			$query = $this->EE->db->query("SELECT MAX(comment_date) AS max_date FROM exp_comments WHERE status = 'o' AND entry_id = '".$this->EE->db->escape_str($entry_id)."'");
@@ -1848,26 +1973,19 @@ function fnGetKey( aoData, sKey )
 
 			$this->EE->db->query($this->EE->db->update_string('exp_members', array('total_comments' => $comment_total, 'last_comment_date' => $comment_date), "member_id = '$author_id'"));
 		}
-
-		$msg = $this->EE->lang->line('comment_deleted');
-
-		/* -------------------------------------------
-		/* 'delete_comment_additional' hook.
-		/*  - Add additional processing on comment delete
-		*/
-			$edata = $this->EE->extensions->call('delete_comment_additional');
-			if ($this->EE->extensions->end_script === TRUE) return;
-		/*
-		/* -------------------------------------------*/
 		
-		$this->EE->functions->clear_caching('all');
-
-		$this->EE->session->set_flashdata('message_success', $msg);
-
-		$this->EE->functions->redirect($this->base_url);
-
+		return;
 	}
+	
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Settings page
+	 *
+	 * @access	public
+	 * @return	void
+	 */
 	function settings()
 	{
 		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_delete_all_comments'))
@@ -1896,7 +2014,14 @@ function fnGetKey( aoData, sKey )
 		return $this->EE->load->view('settings', $vars, TRUE);		
 	}
 	
-	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update Comment Settings
+	 *
+	 * @access	public
+	 * @return	void
+	 */	
 	function save_settings()
 	{
 		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_delete_all_comments'))

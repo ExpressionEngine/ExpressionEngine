@@ -58,15 +58,12 @@
 				foreach ($comments as $comment)
 				{
 					$row = array(
-						"<a class='less_important_link' href='{$comment['edit_url']}'>{$comment['comment']}</a>",
+					"<a class='less_important_link' href='{$comment['edit_url']}'>{$comment['comment']}</a>",
 
 					"<a class='less_important_link' href='{$comment['entry_search_url']}'>{$comment['entry_title']}</a>",
 						
 					"<a class='less_important_link' href='{$comment['channel_search_url']}'>{$comment['channel_title']}</a>",
 	
-
-					
-					
 					"<a class='less_important_link'  href='{$comment['name_search_url']}'>{$comment['name']}</a>",
 					
 					"<a class='less_important_link'  href='{$comment['email_search_url']}'>{$comment['email']}</a>",					

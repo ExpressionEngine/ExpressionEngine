@@ -1,5 +1,4 @@
-
-				<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=update_comment', '', $hidden)?>
+<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=update_comment', '', $hidden)?>
 				<?php
 				$this->table->set_template($cp_pad_table_template);
 				$this->table->set_heading(
@@ -19,7 +18,7 @@
 						)
 					);
 
-				if ($author_id == 0) 
+				if ($author_id == 0 && $can_edit == TRUE) 
 				{
 					$this->table->add_row(array(
 							$required.lang('name', 'name'),
@@ -57,10 +56,23 @@
 				}
 
 				$this->table->add_row(array(
+							lang('status', 'status'),
+							form_dropdown('status', $status_select_options, set_value('status', $status))
+							)
+					);						
+				
+				if ($can_edit)
+				{
+					$this->table->add_row(array(
 							$required.lang('comment', 'comment'),
 							form_textarea('comment', set_value('comment', $comment), 'class="field", name="comment",  id="comment"').form_error('comment')
-					)
-				);
+							)
+					);
+				}
+				else
+				{
+					$this->table->add_row(array(lang('comment'), $display_comment));
+				}
 
 				echo $this->table->generate();
 				?>
@@ -68,3 +80,7 @@
 				<p><?=form_submit('update_comment', lang('update'), 'class="submit"')?></p>
 			
 			<?=form_close()?>
+<?php
+
+/* End of file edit.php */
+/* Location: ./system/expressionengine/modules/comment/views/edit.php */
