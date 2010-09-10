@@ -19,3 +19,17 @@
 	right:15px;
 	top:10px;
 }
+
+#mainContent #showToolbarLink {
+	position:relative;
+}
+
+img#showToolbarImg {
+	top:0;
+	right:-20px;
+}
+
+img#hideToolbarImg {
+	top:0;
+	right:-20px;
+}
