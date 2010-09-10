@@ -1216,6 +1216,16 @@ class Api_channel_entries extends Api {
 				$this->_set_error('invalid_page_uri', 'pages_uri');
 			}
 			
+			// How many segments are we trying out?
+			$page_uri_str = trim($data['pages_uri'], '/');
+			$pages_uri_segs = count(explode('/', $page_uri_str));			
+
+			// More than 9 pages URI segs?  goodbye
+			if ($pages_uri_segs > 9)
+			{
+				$this->_set_error('invalid_page_num_segs', 'pages_uri');
+			}
+			
 			// Check if duplicate uri
 			$static_pages = $this->EE->config->item('site_pages');
 			$uris = $static_pages[$this->EE->config->item('site_id')]['uris'];
