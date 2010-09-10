@@ -14,3 +14,8 @@
 
 #mainMenu {position:relative;z-index:999;}
  
+.heading span.msg_open_close {
+	position:absolute;
+	right:15px;
+	top:10px;
+}

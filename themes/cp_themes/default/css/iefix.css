@@ -90,3 +90,9 @@ ul#navigationTabs {
 #notePad #notePadTextEdit {
 	min-height:				36px;
 }
+
+.heading span.msg_open_close {
+	position:absolute;
+	right:15px;
+	top:10px;
+}
