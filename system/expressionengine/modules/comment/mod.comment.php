@@ -1051,7 +1051,7 @@ class Comment {
 
 					$tagdata = $this->EE->TMPL->swap_var_single(
 															$key,
-															$path.'/'.$row['url_title'].'/',
+															$path.'/'.$row['url_title'],
 															$tagdata
 														 );
 				}
@@ -1066,7 +1066,7 @@ class Comment {
 
 					$tagdata = $this->EE->TMPL->swap_var_single(
 															$key,
-															$path.'/'.$row['entry_id'].'/',
+															$path.'/'.$row['entry_id'],
 															$tagdata
 														 );
 				}
