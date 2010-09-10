@@ -29,7 +29,12 @@ if ($EE_view_disable !== TRUE)
 				<div class="group">
 					<?=form_dropdown('channel_id', $channel_select_options, $channel_selected, 'id="f_channel_id"').NBS.NBS?>
 					<?=form_dropdown('cat_id', $category_select_options, $category_selected, 'id="f_cat_id"').NBS.NBS?>
+					<?=form_dropdown('status', $status_select_options, $status_selected, 'id="f_status"').NBS.NBS?>
 					<?=form_dropdown('date_range', $date_select_options, $date_selected, 'id="date_range"').NBS.NBS?>
+					<?php
+						// JS required theme, so ordering handled by table sorter
+						//form_dropdown('order', $order_select_options, $order_selected, 'id="f_select_options"').NBS.NBS
+					?>
 
 					<?=form_dropdown('perpage', $perpage_select_options, $perpage_selected, 'id="f_perpage"')?>
 				</div>
@@ -70,9 +75,6 @@ if ($EE_view_disable !== TRUE)
 
 					echo $this->table->generate($entries);
 				?>
-		<div class="tableFooter">
-				 <span class="js_hide"><?=$pagination?></span>
-			<span class="pagination" id="filter_pagination"></span>
 			<?php if ($autosave_show):?>
 				<p class="notice"><?=required()?><?=lang('autosave_data_available')?></p>
 			<?php endif;?>

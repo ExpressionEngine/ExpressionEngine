@@ -637,13 +637,22 @@ class Content_edit extends Controller {
 					$show_link = FALSE;
 				}
 			}
-
-			// Setup an array of entry IDs here so we can do an aggregate query to
-			// get an accurate count of total comments for each entry.
-			if (isset($this->installed_modules['comment']))
+			
+			if (isset($this->cp->installed_modules['comment']))
 			{
+				$view_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment	'.AMP.'method=index'.AMP.'entry_id='.$row['entry_id'];
+				
+				$view_link = ($show_link === FALSE) ? '<div class="lightLinks">--</div>' : 
+					'<div class="lightLinks">(0)'.NBS.anchor($view_url, $this->lang->line('view')).'</div>';
+				
+				$vars['entries'][$row['entry_id']][] = $view_link;
+
+				// Setup an array of entry IDs here so we can do an aggregate query to
+				// get an accurate count of total comments for each entry.
 				$comment_totals[] = $row['entry_id'];
-			}
+
+			}			
+			
 			
 			// Username
 			$name = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
@@ -702,8 +711,9 @@ class Content_edit extends Controller {
 
 			// Delete checkbox
 			$vars['entries'][$row['entry_id']][] = form_checkbox('toggle[]', $row['entry_id'], '', ' class="toggle" id="delete_box_'.$row['entry_id'].'"');
-		} // End foreach
 		
+		}
+
 		if (isset($this->cp->installed_modules['comment']))
 		{
 			// Get the total number of comments for each entry
@@ -712,22 +722,18 @@ class Content_edit extends Controller {
 			$this->db->group_by('entry_id');
 			$comment_query = $this->db->get('comments');
 
-			if (isset($this->installed_modules['comment']))
-			{
-				foreach ($comment_query->result() as $row)
+			foreach ($comment_query->result() as $row)
+ 			{
+				if ($show_link !== FALSE)
 				{
-					if ($show_link !== FALSE)
-					{
-						$view_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'entry_id='.$row->entry_id;
-					}
-					
-					$view_link = ($show_link === FALSE) ? '<div class="lightLinks">--</div>' : 
-					'<div class="lightLinks">('.$row->count.')'.NBS.anchor($view_url, $this->lang->line('view')).'</div>';
-				
-					$vars['entries'][$row->entry_id][3] = $view_link;
-				
+					$view_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'entry_id='.$row->entry_id;
 				}
-			}
+					
+				$view_link = ($show_link === FALSE) ? '<div class="lightLinks">--</div>' : 
+				'<div class="lightLinks">('.$row->count.')'.NBS.anchor($view_url, $this->lang->line('view')).'</div>';
+				
+				$vars['entries'][$row->entry_id][3] = $view_link;
+ 			}
 		}
 
 		// Pass the relevant data to the paginate class
