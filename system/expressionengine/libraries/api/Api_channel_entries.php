@@ -1217,11 +1217,10 @@ class Api_channel_entries extends Api {
 			}
 			
 			// How many segments are we trying out?
-			$page_uri_str = trim($data['pages_uri'], '/');
-			$pages_uri_segs = count(explode('/', $page_uri_str));			
+			$pages_uri_segs = substr_count(trim($data['pages_uri'], '/'), '/');		
 
 			// More than 9 pages URI segs?  goodbye
-			if ($pages_uri_segs > 9)
+			if ($pages_uri_segs > (10 + 1))
 			{
 				$this->_set_error('invalid_page_num_segs', 'pages_uri');
 			}
