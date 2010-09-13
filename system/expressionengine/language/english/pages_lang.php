@@ -89,6 +89,9 @@ $lang = array(
 'invalid_page_uri' =>
 'Invalid Page URI',
 
+'invalid_page_num_segs' =>
+'You have exceeded the number of allowed URI segments in the pages URL',
+
 'pages_configuration' =>
 'Module Configuration',
 
