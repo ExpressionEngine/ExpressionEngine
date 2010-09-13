@@ -9,6 +9,8 @@ if ($EE_view_disable !== TRUE)
 ?>
 
 <div id="mainContent"<?=$maincontent_state?>>
+	
+	
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
