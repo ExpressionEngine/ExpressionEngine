@@ -242,8 +242,6 @@ class Comment {
 				$this->EE->db->where('author_id', $author_id);
 			}
 
-			//$this->EE->db->where('status !=', 'closed');
-			
 			if ($e_status = $this->EE->TMPL->fetch_param('entry_status'))
 			{
 				$e_status = str_replace('Open',	'open',	$e_status);
@@ -384,8 +382,6 @@ class Comment {
 		$order_by  = ($order_by == 'date' OR ! in_array($order_by, $allowed_sorts))  ? 'comment_date' : $order_by;
 
 		$this->EE->db->select('comment_date, comment_id');
-		
-		//$this->EE->db->where('status', 'o');
 		
 		$comment_sql = FALSE;
 		
@@ -584,7 +580,7 @@ class Comment {
 			}
 		}
 
-		// When only non-dynamic comments are show, all results are valid as the
+		// When only non-dynamic comments are shown, all results are valid as the
 		// query is restricted with a LIMIT clause
 
 		if ($dynamic)
@@ -630,6 +626,7 @@ class Comment {
 		$this->EE->db->join('member_data',		'member_data.member_id = members.member_id',	'left');
 				
 		$this->EE->db->where_in('comments.comment_id', $result_ids);
+		$this->EE->db->order_by($order_by, $this_sort);
 				
 		$query = $this->EE->db->get('comments');
 				
