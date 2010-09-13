@@ -957,6 +957,8 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 
 'invalid_selection' => 'Invalid Selection',
 
+'field_not_editable'	=> 'This field may not be edited.',
+
 'screen_name'	=> 'Screen Name',
 
 'member_group'	=> 'Member Group',

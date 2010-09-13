@@ -1531,33 +1531,28 @@ class Content_publish extends Controller {
 			{
 				foreach($val as $key => $custom)
 				{
-					$revealed_fields[] .= $key;
+					$revealed_fields[] = $key;
 
 					// Override forum tab display if it's an edit
 					if ($hide_forum_fields)
 					{
 						if ($key == 'forum_title')
 						{
-							$custom['visible'] = 'false';
+							if ( ! isset($vars['forum_title']) OR $vars['forum_title'] == '')
+							{
+								$vars['publish_tabs'][$tab][$key]['visible'] = FALSE;
+							}
 						}
 						elseif ($key == 'forum_body')
 						{
-							$custom['visible'] = 'false';
+							$vars['publish_tabs'][$tab][$key]['visible'] = FALSE;
 						}
 						elseif ($key == 'forum_id')
 						{
-							$custom['visible'] = 'false';
+							$vars['publish_tabs'][$tab][$key]['visible'] = FALSE;
 						}						
 					}
 					
-					// set up hidden fields (not visible)
-					if ($custom['visible'] === FALSE OR $custom['visible'] === 'false')
-					{
-						$name = (isset($this->field_definitions[$key]['field_id'])) ? $this->field_definitions[$key]['field_id'] : $key;
-						
-						// this can happen after the form loads...
-						$this->javascript->output('$("#remove_field_'.$name.'").children().attr("src", "'.$this->cp->cp_theme_url.'images/closed_eye.png");');
-					}
 					// set up collapsed fields
 					if ($custom['collapse'] === 'true' OR $custom['collapse'] === TRUE)
 					{
@@ -1592,7 +1587,7 @@ class Content_publish extends Controller {
 
 			foreach ($this->field_definitions as $field => $data)
 			{
-				$all_fields[] .= $field;
+				$all_fields[] = $field;
 			}
 
 			$vars['unrevealed_fields'] = array_diff($all_fields, $revealed_fields);
@@ -1650,10 +1645,16 @@ class Content_publish extends Controller {
 					
 					$vars['publish_tabs']['publish'][$field] = $field_display;
 				}
-			}
+			} // end foreach
 			
-			$field_display['is_hidden'] = FALSE;
-			
+			$field_display = array(
+						'visible'		=> TRUE,
+						'collapse'		=> FALSE,
+						'html_buttons'	=> TRUE,
+						'is_hidden'		=> FALSE,
+						'width'			=> '100%'
+			);
+
 			// show revisions tab?
 			if ($show_revision_cluster != 'n')
 			{
@@ -1672,24 +1673,46 @@ class Content_publish extends Controller {
 
 			if ($this->config->item('forum_is_installed') == "y")
 			{
-				if (isset($vars['forum_title']))
-				{
-					$vars['publish_tabs']['forum']['forum_title'] = $field_display;
-				}
-			
-				if (isset($vars['forum_body']) AND isset($vars['forum_id']))
-				{
-					$vars['publish_tabs']['forum']['forum_body'] = $field_display;
-					
-					$vars['publish_tabs']['forum']['forum_id'] = $field_display;
-					$vars['publish_tabs']['forum']['forum_id']['html_buttons'] = FALSE;
-					$vars['publish_tabs']['forum']['forum_id']['width'] = '50%';
-				}
-		
+				$vars['publish_tabs']['forum']['forum_title'] = $field_display;
+				$vars['publish_tabs']['forum']['forum_body'] = $field_display;
+				$vars['publish_tabs']['forum']['forum_id'] = $field_display;
 				$vars['publish_tabs']['forum']['forum_topic_id'] = $field_display;
+				
+				$vars['publish_tabs']['forum']['forum_id']['html_buttons'] = FALSE;
+				$vars['publish_tabs']['forum']['forum_id']['width'] = '50%';				
+				
+				if ($which == 'edit')
+				{
+					$vars['publish_tabs']['forum']['forum_body']['visible'] = FALSE;
+					$vars['publish_tabs']['forum']['forum_id']['visible'] = FALSE;
+					
+					if ( ! isset($vars['forum_title']) OR $vars['forum_title'] == '')
+					{
+						$vars['publish_tabs']['forum']['forum_title']['visible'] = FALSE;
+					}
+				}
 			}
 		}
 
+		
+		foreach($vars['publish_tabs'] as $tab => $val)
+		{
+			foreach($val as $key => $custom)
+			{			
+				// set up hidden fields (not visible)
+				if ($vars['publish_tabs'][$tab][$key]['visible'] === FALSE)
+				{
+					$name = (isset($this->field_definitions[$key]['field_id'])) ? $this->field_definitions[$key]['field_id'] : $key;
+						
+					// this can happen after the form loads...
+
+					$this->javascript->output('$("#remove_field_'.$name.'").children().attr("src", "'.$this->cp->cp_theme_url.'images/closed_eye.png");');
+				}
+			}
+		}
+		
+		
+		
 		$this->javascript->set_global('publish.channel_id', $channel_id);
 		$this->javascript->set_global('publish.field_group', $field_group);
 
@@ -1800,7 +1823,7 @@ class Content_publish extends Controller {
 			$this->_define_revisions_fields($vars, $versioning);
 		}
 		
-		$this->_define_forum_fields($vars);
+		$this->_define_forum_fields($vars, $which);
 
 		foreach($this->field_definitions as $field => $opts)
 		{
@@ -2988,17 +3011,21 @@ class Content_publish extends Controller {
 		);
 	}
 	
-	function _define_forum_fields(&$vars)
+	function _define_forum_fields(&$vars, $which)
 	{
-		
+		// On edit- only forum topic id can take a value and only forum topic id and 
+		// topic title (if it exists) should show
+
 		if ( ! isset($vars['forum_topic_id']))
 		{
 			unset($vars['publish_tabs']['forum']);
 			return;
 		}
+
 		
 		if ($this->config->item('forum_is_installed') == "y")
 		{
+			
 			// Forum tab
 			$this->field_definitions['forum_topic_id'] = array(
 				'string_override'		=> form_input('forum_topic_id', $vars['forum_topic_id']),
@@ -3015,10 +3042,22 @@ class Content_publish extends Controller {
 				'field_maxl' 			=> 100
 			);
 			
-			if (isset($vars['forum_body']) AND isset($vars['forum_id']))
+
+			if ($which == 'edit')
 			{
-				$this->field_definitions['forum_title'] = array(
-					'string_override'		=> form_input('forum_title', $vars['forum_title']),
+				$title = (isset($vars['forum_title']) && $vars['forum_title'] != '') ? $vars['forum_title'] : '<p>'.$this->lang->line('field_not_editable').'</p>';
+				$body = '<p>'.$this->lang->line('field_not_editable').'</p>';
+				$forum_id = '<p>'.$this->lang->line('field_not_editable').'</p>';
+			}
+			else
+			{
+				$title = form_input('forum_title', $vars['forum_title']);
+				$body = form_textarea(array('name' => 'forum_body', 'id' => 'forum_body'), $vars['forum_body']);
+				$forum_id = $vars['forum_id'];				
+			}
+
+			$this->field_definitions['forum_title'] = array(
+					'string_override'		=> $title,
 					'field_id'				=> 'forum_title',
 					'field_label'			=> $this->lang->line('forum_title'),
 					'field_name'			=> 'forum_title',
@@ -3030,10 +3069,10 @@ class Content_publish extends Controller {
 					'field_text_direction'	=> 'ltr',
 					'field_type' 			=> 'text',
 					'field_maxl' 			=> 100
-				);
+			);
 
-				$this->field_definitions['forum_body'] = array(
-					'string_override'		=> form_textarea(array('name' => 'forum_body', 'id' => 'forum_body'), $vars['forum_body']),
+			$this->field_definitions['forum_body'] = array(
+					'string_override'		=> $body,
 					'field_id'				=> 'forum_body',
 					'field_label'			=> $this->lang->line('forum_body'),
 					'field_name'			=> 'forum_body',
@@ -3045,10 +3084,10 @@ class Content_publish extends Controller {
 					'field_text_direction'	=> 'ltr',
 					'field_type' 			=> 'textarea',
 					'rows'					=> 15
-				);
+			);
 
-				$this->field_definitions['forum_id'] = array(
-					'string_override'		=> $vars['forum_id'],
+			$this->field_definitions['forum_id'] = array(
+					'string_override'		=> $forum_id,
 					'field_id'				=> 'forum_id',
 					'field_label'			=> $this->lang->line('forum'),
 					'field_name'			=> 'forum_id',
@@ -3060,27 +3099,7 @@ class Content_publish extends Controller {
 					'field_text_direction'	=> 'ltr',
 					'field_type' 			=> 'select',
 					'field_maxl' 			=> 100
-				);
-			}
-			else
-			{
-				if (isset($vars['forum_title']))
-				{
-					$this->field_definitions['forum_title'] = array(
-						'string_override'		=> $vars['forum_title'],
-						'field_id'				=> 'forum_title',
-						'field_label'			=> $this->lang->line('forum_title'),
-						'field_name'			=> 'forum_title',
-						'field_required' 		=> 'n',
-						'field_fmt'				=> 'text',
-						'field_instructions' 	=> '',
-						'field_show_fmt'		=> 'n',
-						'field_text_direction'	=> 'ltr',
-						'field_type' 			=> 'static',
-						'field_maxl' 			=> 100
-					);
-				}
-			}
+			);
 		}
 	}
 
