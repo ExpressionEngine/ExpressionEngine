@@ -1307,7 +1307,7 @@ class Forum_Core extends Forum {
 		else
 		{
 			$this->EE->db->set('last_post_author_id', 'author_id', FALSE);
-			$this->EE->db->set('last_post_id', $query->row('post_id'));
+			$this->EE->db->set('last_post_id', 0);
 			$this->EE->db->where('topic_id', $topic_id);
 			$this->EE->db->update('forum_topics');			
 		}
