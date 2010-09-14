@@ -810,7 +810,7 @@ $(document).ready(function() {
 	// set up the "publish to field" buttons
 	$(".publish_to_field").click(function() {
 
-		var currentID = document.getElementById(field_for_writemode_publish.replace(/field_/, ''));
+		var currentID = "#" + field_for_writemode_publish.replace(/field_/, '');
 		var i =  $('.write_mode_trigger').index(currentID);
 
 		$("#"+field_for_writemode_publish).val($("#write_mode_textarea").val());
@@ -820,7 +820,7 @@ $(document).ready(function() {
 	
 	
 	$(".closeWindowButton").click(function() {
-		var currentID = document.getElementById(field_for_writemode_publish.replace(/field_/, ''));
+		var currentID = "#" + field_for_writemode_publish.replace(/field_/, '');
 		var i =  $('.write_mode_trigger').index(currentID);
 
 		triggers.eq(i).overlay().close();
