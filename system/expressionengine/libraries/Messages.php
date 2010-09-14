@@ -3311,7 +3311,7 @@ DOH;
 			}
 			else
 			{
-				$this->single_parts['path']['delete_bulletin']	= $this->_create_path('delete_bulletin').$row['bulletin_id'].'/';
+				$this->single_parts['path']['delete_bulletin']	= $this->_create_path('delete_bulletin').'/'.$row['bulletin_id'];
 			}
 			
 			$data['bulletin_message'] = ($censor === FALSE) ? $data['bulletin_message'] : $this->EE->typography->filter_censored_words($data['bulletin_message']);
