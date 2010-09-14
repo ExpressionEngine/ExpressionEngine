@@ -2058,14 +2058,17 @@ class Tools_utilities extends Controller {
 		if (file_exists($dest_loc))
 		{
 			@chmod($dest_loc, FILE_WRITE_MODE);
-		}
 
-		if ( ! is_really_writable($dest_loc))
-		{
-			$this->session->set_flashdata('message_failure', $this->lang->line('trans_file_not_writable'));
-			$this->functions->redirect(
+
+			if ( ! is_really_writable($dest_loc))
+			{
+				exit($dest_loc);
+				$this->session->set_flashdata('message_failure', $this->lang->line('trans_file_not_writable'));
+				$this->functions->redirect(
 					BASE.AMP.'C=tools_utilities'.AMP.'M=translate'.AMP.'language_file='.$filename
-			);			
+					);			
+			}
+		
 		}
 
 		$this->load->helper('file');
