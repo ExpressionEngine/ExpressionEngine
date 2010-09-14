@@ -3450,10 +3450,15 @@ class Member {
 				//  "last_visit"
 				if (strncmp($key, 'last_visit', 10) == 0)
 				{
-					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_activity'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_activity']) : '', $this->EE->TMPL->tagdata);
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_visit'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_visit']) : '', $this->EE->TMPL->tagdata);
 				}
 
-
+				//  "last_activity"
+				if (strncmp($key, 'last_activity', 10) == 0)
+				{
+					$this->EE->TMPL->tagdata = $this->_var_swap_single($key, ($default_fields['last_activity'] > 0) ? $this->EE->localize->decode_date($val, $default_fields['last_activity']) : '', $this->EE->TMPL->tagdata);
+				}
+				
 				//  "join_date"
 				if (strncmp($key, 'join_date', 9) == 0)
 				{
