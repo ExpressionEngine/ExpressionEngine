@@ -36,8 +36,8 @@ if ($EE_view_disable !== TRUE)
 										'ID',
 										lang('order'),
 										lang('category_name'),
-										lang('edit'),
-										''
+										(($can_edit) ? lang('edit') : FALSE),
+										(($can_delete) ? lang('delete') : FALSE)
 									);
 									
 			if (count($categories) > 0)
@@ -57,8 +57,8 @@ if ($EE_view_disable !== TRUE)
 					 	$category['0'],
 					 	$link,
 					 	$indent.$category['1'],
-					 	'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_edit'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.'">'. lang('edit').'</a>',
-					 	'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_delete_conf'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.'"><img src="'.$cp_theme_url.'images/content_custom_tab_delete.png" alt="'.lang('delete').'" width="19" height="18" /></a>'
+					 	(($can_edit) ? '<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_edit'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.'">'. lang('edit').'</a>' : NULL),
+					 	(($can_delete) ? '<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_delete_conf'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.'">'. lang('delete').'</a>' : NULL)
 					 );
 				}
 			}

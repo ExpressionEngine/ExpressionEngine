@@ -31,16 +31,19 @@ if ($EE_view_disable !== TRUE)
 
 		<div class="clear_left"></div>
 
-		<?php
+
+
+		<?php 
+
 			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 										'ID',
 										lang('order'),
 										lang('category_name'),
-										lang('edit'),
-										lang('delete')
+										(($can_edit) ? lang('edit') : FALSE),
+										(($can_delete) ? lang('delete') : FALSE)
 									);
-									
+						
 			if (count($categories) > 0)
 			{
 				$up		= '<img src="'.PATH_CP_GBL_IMG.'arrow_up.gif" border="0"  width="16" height="16" alt="" title="" />';
@@ -58,8 +61,8 @@ if ($EE_view_disable !== TRUE)
 					 	$category['0'],
 					 	$link,
 					 	$indent.$category['1'],
-					 	'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_edit'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.'">'. lang('edit').'</a>',
-					 	'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_delete_conf'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.'">'. lang('delete').'</a>'
+					 	(($can_edit) ? '<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_edit'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.'">'. lang('edit').'</a>' : NULL),
+					 	(($can_delete) ? '<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_delete_conf'.AMP.'cat_id='.$category['0'].AMP.'group_id='.$group_id.'">'. lang('delete').'</a>' : NULL)
 					 );
 				}
 			}

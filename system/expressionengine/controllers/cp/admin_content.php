@@ -1308,10 +1308,14 @@ class Admin_content extends Controller {
 	 */
 	function category_management()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-		{
+
+		if ( ! ($this->cp->allowed_group('can_edit_categories') OR 
+				$this->cp->allowed_group('can_delete_categories') OR
+				$this->cp->allowed_group('can_access_admin') OR
+				$this->cp->allowed_group('can_access_content_prefs')))
+		{		
 			show_error($this->lang->line('unauthorized_access'));
-		}
+		}		
 
 		$this->load->library('table');
 		$this->load->model('category_model');
@@ -1713,20 +1717,15 @@ class Admin_content extends Controller {
 		if (AJAX_REQUEST)
 		{
 			$vars['EE_view_disable'] = TRUE;
-
-			
-			if ( ! $this->cp->allowed_group('can_edit_categories'))
-			{
-				show_error($this->lang->line('unauthorized_access'));
-			}
 		}
-		else
-		{
-			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-			{
-				show_error($this->lang->line('unauthorized_access'));
-			}
-		}		
+		
+		if ( ! ($this->cp->allowed_group('can_edit_categories') OR 
+				$this->cp->allowed_group('can_access_admin') OR
+				$this->cp->allowed_group('can_access_content_prefs')))
+		{		
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
 
 		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
@@ -1817,7 +1816,9 @@ class Admin_content extends Controller {
 				$vars['sort_order'] = $sort_order;
 			}
 		}
-
+		
+		$vars['can_edit'] = ($this->session->userdata('can_edit_categories') == 'y') ? TRUE : FALSE;
+		$vars['can_delete'] = ($this->session->userdata('can_delete_categories') == 'y') ? TRUE : FALSE;
 		$vars['group_id'] = $group_id;
 
         $this->cp->set_right_nav(array(
@@ -1839,14 +1840,7 @@ class Admin_content extends Controller {
 	 */
 	function category_edit()
 	{
-		if (AJAX_REQUEST)
-		{
-			if ( ! $this->cp->allowed_group('can_edit_categories'))
-			{
-				show_error($this->lang->line('unauthorized_access'));
-			}
-		}
-		elseif ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		if ( ! $this->cp->allowed_group('can_edit_categories'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1856,7 +1850,6 @@ class Admin_content extends Controller {
 		$this->load->helper('form');
 		$this->load->helper('string');
 		$this->load->library('form_validation');
-
 
 		$group_id = $this->input->get_post('group_id');
 
@@ -2120,35 +2113,9 @@ class Admin_content extends Controller {
 	 */
 	function category_delete_conf()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		if ( ! $this->cp->allowed_group('can_delete_categories'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		// Check discrete privileges
-		if (AJAX_REQUEST)
-		{
-			$this->db->select('can_delete_categories');
-			$zquery = $this->db->get_where('category_groups', array('group_id' => $this->input->get_post('group_id')));
-
-			if ($zquery->num_rows() == 0)
-			{
-				show_error(lang('not_authorized'));
-			}
-
-			$can_delete = explode('|', rtrim($zquery->row('can_delete_categories') , '|'));
-
-			if ($this->session->userdata['group_id'] != 1 AND ! in_array($this->session->userdata['group_id'], $can_delete))
-			{
-				show_error($this->lang->line('unauthorized_access'));
-			}
-		}
-		else
-		{
-			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-			{
-				show_error($this->lang->line('unauthorized_access'));
-			}
 		}
 
 		$cat_id = $this->input->get_post('cat_id');
@@ -2205,35 +2172,10 @@ class Admin_content extends Controller {
 	 */
 	function category_delete()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-		{
+		if ( ! ($this->cp->allowed_group('can_delete_categories') OR
+				$this->cp->allowed_group('can_access_admin')))
+		{		
 			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		// Check discrete privileges
-		if (AJAX_REQUEST)
-		{
-			$this->db->select('can_delete_categories');
-			$zquery = $this->db->get_where('category_groups', array('group_id' => $this->input->post('group_id')));
-
-			if ($zquery->num_rows() == 0)
-			{
-				show_error(lang('not_authorized'));
-			}
-
-			$can_delete = explode('|', rtrim($zquery->row('can_delete_categories') , '|'));
-
-			if ($this->session->userdata['group_id'] != 1 AND ! in_array($this->session->userdata['group_id'], $can_delete))
-			{
-				show_error($this->lang->line('unauthorized_access'));
-			}
-		}
-		else
-		{
-			if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-			{
-				show_error($this->lang->line('unauthorized_access'));
-			}
 		}
 
 		$cat_id = $this->input->get_post('cat_id');
@@ -2242,7 +2184,6 @@ class Admin_content extends Controller {
 		{
 			show_error(lang('not_authorized'));
 		}
-
 
 		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
@@ -2265,14 +2206,7 @@ class Admin_content extends Controller {
 
 	function category_update()
 	{
-		if (AJAX_REQUEST)
-		{
-			if ( ! $this->cp->allowed_group('can_edit_categories'))
-			{
-				show_error($this->lang->line('unauthorized_access'));
-			}
-		}
-		elseif ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		if ( ! $this->cp->allowed_group('can_edit_categories'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
