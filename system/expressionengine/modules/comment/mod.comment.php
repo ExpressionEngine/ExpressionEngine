@@ -3235,7 +3235,7 @@ class Comment {
 		
 		$this->EE->load->library('subscription');
 		$this->EE->subscription->init('comment', array('entry_id' => $id), TRUE);
-		$subscribed = $this->EE->subscription->is_subscribed();	
+		$subscribed = $this->EE->subscription->is_subscribed(FALSE);	
 		
 		if ($type == 'subscribe' && $subscribed == TRUE)
 		{

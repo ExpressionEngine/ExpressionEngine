@@ -55,11 +55,25 @@ class EE_Subscription {
 		{
 			return FALSE;
 		}
+		
+		list($member_ids, $emails) = $user;
 
-		// Grab them all
-		if ($this->anonymous)
+		if ( ! count($member_ids) && ! count($emails))
 		{
-			$this->EE->db->select('email');
+			return;
+		}
+			
+		$func = 'where_in';
+
+		if (count($member_ids))
+		{
+			$this->EE->db->where_in('member_id', $member_ids);
+			$func = 'or_where_in';
+		}
+
+		if (count($emails))
+		{
+			$this->EE->db->$func('email', $emails);
 		}
 		
 		$this->EE->db->select('member_id');
