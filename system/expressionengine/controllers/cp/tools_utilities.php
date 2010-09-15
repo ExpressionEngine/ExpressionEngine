@@ -2059,7 +2059,6 @@ class Tools_utilities extends Controller {
 		{
 			@chmod($dest_loc, FILE_WRITE_MODE);
 
-
 			if ( ! is_really_writable($dest_loc))
 			{
 				exit($dest_loc);
@@ -2068,7 +2067,6 @@ class Tools_utilities extends Controller {
 					BASE.AMP.'C=tools_utilities'.AMP.'M=translate'.AMP.'language_file='.$filename
 					);			
 			}
-		
 		}
 
 		$this->load->helper('file');
