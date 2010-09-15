@@ -30,6 +30,27 @@ class Updater {
     function Updater()
     {
         $this->EE =& get_instance();
+
+        // Grab the config file
+        if ( ! @include($this->EE->config->config_path))
+        {
+            show_error('Your config'.EXT.' file is unreadable. Please make sure the file exists and that the file permissions to 666 on the following file: expressionengine/config/config.php');
+        }
+        
+        if (isset($conf))
+        {
+            $config = $conf;
+        }
+        
+        // Does the config array exist?
+        if ( ! isset($config) OR ! is_array($config))
+        {
+            show_error('Your config'.EXT.'file does not appear to contain any data.');
+        }
+        
+        $this->EE->load->library('progress');
+        
+        $this->config =& $config;
     }
 
     function do_update()
@@ -70,9 +91,78 @@ class Updater {
 	        $this->EE->db->query($sql);
 		}
 		
+		if ($this->db->table_exists('comment'))
+		{
+			// there's another step yet
+        	return 'comment_notification_conversion';			
+		}
+		
 		return TRUE;
 	}
 	
+	function comment_notification_conversion()
+	{
+		// this step can be a doozy.  Set time limit to infinity.
+        // Server process timeouts are out of our control, unfortunately
+        @set_time_limit(0);
+        $this->EE->db->save_queries = FALSE;
+        
+        $this->EE->progress->update_state('Moving Comment Notifications to Subscriptions');
+                
+        $batch = 500;
+		$offset = 0;
+		$progress   = "Moving Comment Notifications: %s";
+		
+		$this->EE->db->distinct();
+		$this->EE->db->select('entry_id, email, name, author_id');
+		$this->EE->db->where('notify', 'y');
+		
+		$count = $this->db->count_all_results('comments');
+
+		if (count($count) > 0)
+		{
+			for ($i = 0; $i < $count; $i = $i + $batch)
+            {
+            	$this->EE->progress->update_state(str_replace('%s', "{$offset} of {$count} queries", $progress));	
+		
+				$this->EE->db->distinct();
+				$this->EE->db->select('entry_id, email, name, author_id');
+				$this->EE->db->where('notify', 'y');
+				$this->EE->db->limit($offset, 500);
+				$comment_data = $this->EE->db->get('comments');
+							
+				$s_date = $this->EE->localize->now;
+					
+				// convert to comments
+            	foreach($comment_data->result_array() as $row)
+            	{
+					$author_id = $row['author_id'];
+					$rand = $author_id.$this->EE->functions->random('alnum', 8);
+					$email = ($row['email'] == '') ? NULL : $row['email'];
+			
+               		$data[] = array(
+                    		'entry_id'       		=> $row['entry_id'],
+                    		'member_id'     		=> $author_id,
+                    		'email'        			=> $email,
+                    		'subscription_date'		=> $s_date,
+                    		'notification_sent'     => 'n',
+                    		'hash'           		=> $rand
+                			);
+
+				}
+				
+				$this->EE->db->insert_batch('comment_subscriptions', $data);
+				$offset = $offset + $batch; 
+			}
+		}
+		
+		//  Lastly- we get rid of the notify field
+		$this->EE->db->query("ALTER TABLE `exp_comments` DROP COLUMN `notify`");
+		
+		return TRUE;
+	}
+
+
 	function comments_opened_notification()
 	{
 return <<<EOF
