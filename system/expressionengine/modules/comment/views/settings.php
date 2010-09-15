@@ -8,7 +8,7 @@ $this->table->set_heading(
     lang('setting')
 );
 
-foreach(array('comment_word_censoring', 'comment_moderation_override', 'comment_smart_notifications') as $setting)
+foreach(array('comment_word_censoring', 'comment_moderation_override') as $setting)
 {
 	$this->table->add_row(array(
 			lang($setting, $setting),
