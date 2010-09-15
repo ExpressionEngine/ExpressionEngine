@@ -59,6 +59,9 @@ class Updater {
         	}
 		}
 
+		
+		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) values ('comments_opened_notification', 'New comments have been added', '".addslashes(comments_opened_notification())."')";
+
 		$count = count($Q);
 		
 		foreach ($Q as $num => $sql)
@@ -69,6 +72,30 @@ class Updater {
 		
 		return TRUE;
 	}
+	
+	function comments_opened_notification()
+	{
+return <<<EOF
+
+Responses have been added to the entry you subscribed to at:
+{channel_name}
+
+The title of the entry is:
+{entry_title}
+
+You can see the comments at the following URL:
+{comment_url}
+
+{comments}
+{comment} 
+{/comments}
+
+To stop receiving notifications for this entry, click here:
+{notification_removal_url}
+EOF;
+	}	
+	
+	
 }   
 /* END CLASS */
 
