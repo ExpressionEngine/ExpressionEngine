@@ -1228,7 +1228,6 @@ class EE_Schema {
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('admin_notify_entry', '".addslashes(trim(admin_notify_entry_title()))."', '".addslashes(admin_notify_entry())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('admin_notify_mailinglist', '".addslashes(trim(admin_notify_mailinglist_title()))."', '".addslashes(admin_notify_mailinglist())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('admin_notify_comment', '".addslashes(trim(admin_notify_comment_title()))."', '".addslashes(admin_notify_comment())."')";
-		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('admin_notify_gallery_comment', '".addslashes(trim(admin_notify_gallery_comment_title()))."', '".addslashes(admin_notify_gallery_comment())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('mbr_activation_instructions', '".addslashes(trim(mbr_activation_instructions_title()))."', '".addslashes(mbr_activation_instructions())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('forgot_password_instructions', '".addslashes(trim(forgot_password_instructions_title()))."', '".addslashes(forgot_password_instructions())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('reset_password_notification', '".addslashes(trim(reset_password_notification_title()))."', '".addslashes(reset_password_notification())."')";
@@ -1236,7 +1235,7 @@ class EE_Schema {
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('decline_member_validation', '".addslashes(trim(decline_member_validation_title()))."', '".addslashes(decline_member_validation())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('mailinglist_activation_instructions', '".addslashes(trim(mailinglist_activation_instructions_title()))."', '".addslashes(mailinglist_activation_instructions())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('comment_notification', '".addslashes(trim(comment_notification_title()))."', '".addslashes(comment_notification())."')";
-		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('gallery_comment_notification', '".addslashes(trim(gallery_comment_notification_title()))."', '".addslashes(gallery_comment_notification())."')";
+		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('comments_opened_notification', '".addslashes(trim(comments_opened_notification_title()))."', '".addslashes(comments_opened_notification())."')";		
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('private_message_notification', '".addslashes(trim(private_message_notification_title()))."', '".addslashes(private_message_notification())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('pm_inbox_full', '".addslashes(trim(pm_inbox_full_title()))."', '".addslashes(pm_inbox_full())."')";
 		

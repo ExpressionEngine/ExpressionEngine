@@ -65,6 +65,9 @@ $lang = array(
 'comment_notification' =>
 'User Comment Notification',
 
+'comments_opened_notification' =>
+'User Comments Added Notification',
+
 'comment_notification_desc' =>
 'This template defines the message that a user receives when someone has responded to their commment',
 
