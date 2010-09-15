@@ -2631,7 +2631,7 @@ class Comment {
 						'comment'		=> $this->EE->security->xss_clean($_POST['comment']),
 						'comment_date'	=> $this->EE->localize->now,
 						'ip_address'	=> $this->EE->input->ip_address(),
-						'notify'		=> 'n',
+						'notify'		=> $notify,
 						'status'		=> ($comment_moderate == 'y') ? 'p' : 'o',
 						'site_id'		=> $this->EE->config->item('site_id')
 					 );
@@ -2740,86 +2740,85 @@ class Comment {
 			$this->EE->load->library('subscription');
 			$this->EE->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
 			
+			// Remove the current user
+			$ignore = $this->EE->session->userdata('member_id');
+			$ignore = $ignore ? $ignore : $this->EE->input->post('email');
+			
+			// Smart notifications?
 			$smart_notifications = ($this->EE->config->item('comment_smart_notifications') == 'y') ? TRUE : FALSE;
 			
-			list($recipient_members, $recipient_emails) = $this->EE->subscription->get_subscribers($smart_notifications);
-			
-			// Filter out current user
-			
-			if ($cur_mem_id = $this->EE->session->userdata('member_id'))
-			{
-				$recipient_members = array_diff($recipient_members, array($cur_mem_id));
-			}
-			else if (isset($_POST['email']))
-			{
-				$recipient_emails = array_diff($recipient_emails, array($_POST['email']));
-			}
-			
+			// Grab them all
+			$subscriptions = $this->EE->subscription->get_subscriptions($smart_notifications, $ignore);
 			
 			$recipients = array();
-			$member_data = array();
+			
+			$subscribed_members = array();
+			$subscribed_emails = array();
 			
 			// No subscribers - skip!
 			
-			if (count($recipient_members) OR count($recipient_emails))
+			if (count($subscriptions))
 			{
-				if (count($recipient_members))
+				// Do some work to figure out the user's name,
+				// either based on their user id or on the comment
+				// data (stored with their email)
+				
+				$subscription_map = array();
+			
+				foreach($subscriptions as $id => $row)
+				{
+					if ($row['member_id'])
+					{
+						$subscribed_members[] = $row['member_id'];
+						$subscription_map[$row['member_id']] = $id;
+					}
+					else
+					{
+						$subscribed_emails[] = $row['email'];
+						$subscription_map[$row['email']] = $id;
+					}
+				}
+				
+				
+				if (count($subscribed_members))
 				{
 					$this->EE->db->select('member_id, email, screen_name');
-					$this->EE->db->where_in('member_id', $recipient_members);
+					$this->EE->db->where_in('member_id', $subscribed_members);
 					$member_q = $this->EE->db->get('members');
 
 					if ($member_q->num_rows() > 0)
 					{
-						foreach ($member_q->result_array() as $row)
+						foreach ($member_q->result() as $row)
 						{
-							$member_data[$row['member_id']] = array($row['email'], $row['screen_name']);
+							$sub_id = $subscription_map[$row->member_id];
+							$recipients[] = array($row->email, $sub_id, $row->screen_name);
 						}
 					}
 				}
 
 
-				// Get all comments by these subscribers
+				// Get all comments by these subscribers so we can grab their names
 
-				$this->EE->db->select('DISTINCT(email), name, author_id, comment_id');
-				$this->EE->db->where('status', 'o');
-				$this->EE->db->where('entry_id', $_POST['entry_id']);
-
-				$func = 'where_in';
-
-				if (count($recipient_members))
+				if (count($subscribed_emails))
 				{
-					$this->EE->db->where_in('author_id', $recipient_members);
-					$func = 'or_where_in';
-				}
+					$this->EE->db->select('DISTINCT(email), name');
+					$this->EE->db->where('status', 'o');
+					$this->EE->db->where('entry_id', $_POST['entry_id']);
+					$this->EE->db->where_in('email', $subscribed_emails);
 
-				if (count($recipient_emails))
-				{
-					$this->EE->db->$func('email', $recipient_emails);
-				}			
-
-				$comment_q = $this->EE->db->get('comments');
-
-
-				// Assemble an array of recipients with email, comment id, and screen name
-
-				if ($comment_q->num_rows() > 0)
-				{
-					foreach ($comment_q->result() as $row)
+					$comment_q = $this->EE->db->get('comments');
+					
+					if ($comment_q->num_rows() > 0)
 					{
-						if (isset($member_data[$row->author_id]))
+						foreach ($comment_q->result() as $row)
 						{
-							list($email, $name) = $member_data[$row->author_id];
+							$sub_id = $subscription_map[$row->email];
+							$recipients[] = array($row->email, $sub_id, $row->name);
 						}
-						else
-						{
-							$email = $row->email;
-							$name = $row->name;
-						}
-
-						$recipients[] = array($email, $row->comment_id, $name);
 					}
 				}
+				
+				unset($subscription_map);
 			}
 		}
 
@@ -2886,8 +2885,8 @@ class Comment {
 							'comment'			=> $comment,
 							'comment_url'		=> $this->remove_session_id($_POST['RET']),
 							'delete_link'		=> $cp_url.'&method=delete_comment_confirm&comment_id='.$comment_id, 
-							'approve_link' => $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=o', 
-							'close_link'	=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=c', 
+							'approve_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=o', 
+							'close_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=c', 
 							'channel_id'		=> $channel_id,
 							'entry_id'			=> $entry_id,
 							'url_title'			=> $url_title,
@@ -3002,6 +3001,9 @@ class Comment {
 					{
 						$title	 = $email_tit;
 						$message = $email_msg;
+						
+						$sub	= $subscriptions[$val['1']];
+						$sub_qs	= 'id='.$sub['subscription_id'].'&hash='.$sub['hash'];
 
 						// Deprecate the {name} variable at some point
 						$title	 = str_replace('{name}', $val['2'], $title);
@@ -3010,8 +3012,8 @@ class Comment {
 						$title	 = str_replace('{name_of_recipient}', $val['2'], $title);
 						$message = str_replace('{name_of_recipient}', $val['2'], $message);
 
-						$title	 = str_replace('{notification_removal_url}', $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$val['1'], $title);
-						$message = str_replace('{notification_removal_url}', $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$val['1'], $message);
+						$title	 = str_replace('{notification_removal_url}', $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&'.$sub_qs, $title);
+						$message = str_replace('{notification_removal_url}', $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&'.$sub_qs, $message);
 
 						$this->EE->email->EE_initialize();
 						$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));
@@ -3030,7 +3032,7 @@ class Comment {
 			
 			if ($this->EE->config->item('comment_smart_notifications') == 'y')
 			{
-				$this->EE->subscription->mark_as_unread(array($recipient_members, $recipient_emails), TRUE);
+				$this->EE->subscription->mark_as_unread(array($subscribed_members, $subscribed_emails), TRUE);
 			}
 
 			/** ----------------------------------------
