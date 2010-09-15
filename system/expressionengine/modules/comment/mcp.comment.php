@@ -40,15 +40,18 @@ class Comment_mcp {
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-		
-		$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment';
-
-		if ($this->EE->cp->allowed_group('can_moderate_comments') &&  $this->EE->cp->allowed_group('can_edit_all_comments') && $this->EE->cp->allowed_group('can_delete_all_comments'))
+				
+		if (REQ == 'CP')
 		{
-			$this->EE->cp->set_right_nav(array(
-								'settings'				=> $this->base_url.AMP.'method=settings',
-								'comments' 				=> $this->base_url)
-							);	
+			$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment';
+
+			if ($this->EE->cp->allowed_group('can_moderate_comments') &&  $this->EE->cp->allowed_group('can_edit_all_comments') && $this->EE->cp->allowed_group('can_delete_all_comments'))
+			{
+				$this->EE->cp->set_right_nav(array(
+									'settings'				=> $this->base_url.AMP.'method=settings',
+									'comments' 				=> $this->base_url)
+								);	
+			}
 		}
 	}
 
@@ -947,7 +950,7 @@ function fnGetKey( aoData, sKey )
 	 */
 	function delete_comment_notification()
 	{
-		if ( ! $id = $this->EE->input->get_post('id'))
+		if ( ! $id = $this->EE->input->get_post('id') OR ! $hash = $this->EE->input->get_post('hash'))
 		{
 			return FALSE;
 		}
@@ -959,26 +962,9 @@ function fnGetKey( aoData, sKey )
 
 		$this->EE->lang->loadfile('comment');
 
-		$this->EE->db->select('entry_id, email');
-		$query = $this->EE->db->get_where('comments', array('comment_id' => $id));
-
-		if ($query->num_rows() != 1)
-		{
-			return FALSE;
-		}
-
-		if ($query->num_rows() == 1)
-		{ 
-			$this->EE->db->set('notify', 'n');
-
-			$conditions = array(
-				'entry_id' => $query->row('entry_id'),
-				'email'	   => $query->row('email')
-			);
-
-			$this->EE->db->where($conditions);
-			$this->EE->db->update('comments');
-		}
+		$this->EE->load->library('subscription');
+		$this->EE->subscription->init('comment', array('subscription_id' => $id), TRUE);
+		$this->EE->subscription->unsubscribe('', $hash);
 
 		$data = array(	'title' 	=> $this->EE->lang->line('cmt_notification_removal'),
 						'heading'	=> $this->EE->lang->line('thank_you'),
@@ -990,8 +976,7 @@ function fnGetKey( aoData, sKey )
 		$this->EE->output->show_message($data);
 	}
 	
-
-
+	// --------------------------------------------------------------------
 
 	/**
 	 * Edit Comment Form
@@ -1658,11 +1643,15 @@ function fnGetKey( aoData, sKey )
 		
 		$this->update_stats($entry_ids, $channel_ids, $author_ids);
 		
-		//	 Send email notification
+		//	 Send email notification or remove notifications
 
 		if ($status == 'o')
 		{
 			$this->send_notification_emails($comments);
+		}
+		else
+		{
+			$this->remove_subscriptions($comments);
 		}
 
 		$this->EE->functions->clear_caching('all');
@@ -1769,7 +1758,11 @@ function fnGetKey( aoData, sKey )
 			$blacklisted = $bl->update_blacklist($ips, $write_htacces, 'bool');
 		}
 
-		$this->EE->db->where_in('comment_id', explode('|', $comment_id));
+
+		$comment_ids = explode('|', $comment_id);
+		$this->remove_subscriptions($comment_ids);
+
+		$this->EE->db->where_in('comment_id', $comment_ids);
 		$this->EE->db->delete('comments');
 		
 		$this->update_stats($entry_ids, $channel_ids, $author_ids);
@@ -1804,132 +1797,318 @@ function fnGetKey( aoData, sKey )
 	 */
 	function send_notification_emails($comments)
 	{
-			// Instantiate Typography class
-			$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
+		// Load subscription class
+		$this->EE->load->library('subscription');
+		$smart_notifications = ($this->EE->config->item('comment_smart_notifications') == 'y') ? TRUE : FALSE;
+			
+		// Instantiate Typography class
+		$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
+	
+		$this->EE->load->library('typography');
+		$this->EE->typography->initialize($config);
+		$this->EE->typography->parse_images = FALSE;
+
+
+		// Grab the required comments
+		$this->EE->db->select('comment, comment_id, author_id, name, email, comment_date, entry_id, notify');
+		$this->EE->db->where_in('comment_id', $comments);
+		$query = $this->EE->db->get('comments');
+
+
+		// Grab unique entry ids and their latest comment
+		$entries = array();
 		
-			$this->EE->load->library('typography');
-			$this->EE->typography->initialize($config);
-			$this->EE->typography->parse_images = FALSE;
-
-
-			// Go Through Array of Entries
-			foreach ($comments as $comment_id)
+		foreach ($query->result() as $row)
+		{
+			// Add a subscription for the new comment if they chose to subscribe
+			if ($row->notify == 'y')
 			{
-				$this->EE->db->select('comment, name, email, comment_date, entry_id');
-				$query = $this->EE->db->get_where('comments', array('comment_id' => $comment_id));
-
-				/*
-				Find all of the unique commenters for this entry that have
-				notification turned on, posted at/before this comment
-				and do not have the same email address as this comment.
-				*/
-
-				$results = $this->EE->db->query("SELECT DISTINCT(email), name, comment_id
-										FROM exp_comments
-										WHERE status = 'o'
-										AND entry_id = '".$this->EE->db->escape_str($query->row('entry_id') )."'
-										AND notify = 'y'
-										AND email != '".$this->EE->db->escape_str($query->row('email') )."'
-										AND comment_date <= '".$this->EE->db->escape_str($query->row('comment_date') )."'");
-
-				$recipients = array();
-
-				if ($results->num_rows() > 0)
-				{
-					foreach ($results->result_array() as $row)
-					{
-						$recipients[] = array($row['email'], $row['comment_id'], $row['name']);
-					}
-				}
-
-				$email_msg = '';
-
-				if (count($recipients) > 0)
-				{
-					$comment = $this->EE->typography->parse_type( $query->row('comment') ,
-													array(
-															'text_format'	=> 'none',
-															'html_format'	=> 'none',
-															'auto_links'	=> 'n',
-															'allow_img_url' => 'n'
-														)
-												);
-
-					$qs = ($this->EE->config->item('force_query_string') == 'y') ? '' : '?';
-
-					$action_id	= $this->EE->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
-
-					$this->EE->db->select('channel_titles.title, channel_titles.entry_id, channel_titles.url_title, channels.channel_title, channels.comment_url, channels.channel_url, channels.channel_id');
-					$this->EE->db->join('channels', 'exp_channel_titles.channel_id = exp_channels.channel_id', 'left');
-					$this->EE->db->where('channel_titles.entry_id', $query->row('entry_id'));
-					$results = $this->EE->db->get('channel_titles');		
-
-					$com_url = ($results->row('comment_url')  == '') ? $results->row('channel_url')	 : $results->row('comment_url') ;
-
-					$comment_url_title_auto_path = reduce_double_slashes($com_url.'/'.$results->row('url_title'));
+				$this->EE->subscription->init('comment', array('entry_id' => $row->entry_id), TRUE);
 				
-					$swap = array(
-									'name_of_commenter'			=> $query->row('name') ,
-									'name'						=> $query->row('name') ,
-									'channel_name'				=> $results->row('channel_title') ,
-									'entry_title'				=> $results->row('title') ,
-									'site_name'					=> stripslashes($this->EE->config->item('site_name')),
-									'site_url'					=> $this->EE->config->item('site_url'),
-									'comment'					=> $comment,
-									'comment_id'				=> $comment_id,
-									'comment_url'				=> $this->EE->functions->remove_double_slashes($com_url.'/'.$results->row('url_title') .'/'),
-									
-									'channel_id'		=> $results->row('channel_id'),
-									'entry_id'			=> $results->row('entry_id'),
-									'url_title'			=> $results->row('url_title'),
-									'comment_url_title_auto_path' => $comment_url_title_auto_path
-								 );
+				if ($cmtr_id = $row->author_id)
+				{
+					$this->EE->subscription->subscribe($cmtr_id);
+				}
+				else
+				{
+					$this->EE->subscription->subscribe($row->email);
+				}
+			}
+			
+			
+			// Grab latest comment for this entry so we know
+			// where to cutoff our subscriptions
+			
+			if ( ! isset($entries[$row->entry_id]) OR $entries[$row->entry_id] < $row->comment_date)
+			{
+				$entries[$row->entry_id] = $row;
+			}
+		}
+				
 
-					$template = $this->EE->functions->fetch_email_template('comment_notification');
-					$email_tit = $this->EE->functions->var_swap($template['title'], $swap);
-					$email_msg = $this->EE->functions->var_swap($template['data'], $swap);
+		// Go through the entries and send subscriptions
+		
+		foreach ($entries as $entry_id => $last_comment)
+		{
+			$this->EE->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
+			
+			// Remove the user for this comment
+			$ignore = $last_comment->author_id;
+			$ignore = $ignore ? $ignore : $last_comment->email;
 
-
-					//	Send email
-
-					$this->EE->load->library('email');
-					$this->EE->email->wordwrap = true;
-
-					// Load the text helper
-					$this->EE->load->helper('text');
-
-					$sent = array();
-
-					foreach ($recipients as $val)
+			
+			// Grab them all
+			$subscriptions = $this->EE->subscription->get_subscriptions($smart_notifications, $ignore);
+			
+			$recipients = array();
+			
+			$subscribed_members = array();
+			$subscribed_emails = array();
+			
+			// No subscribers - skip!
+			
+			if (count($subscriptions))
+			{
+				// Do some work to figure out the user's name,
+				// either based on their user id or on the comment
+				// data (stored with their email)
+				
+				$subscription_map = array();
+			
+				foreach($subscriptions as $id => $row)
+				{
+					// Only send to previous commenters
+					
+					if ($row['subscription_date'] < $last_comment->comment_date)
 					{
-						if ( ! in_array($val['0'], $sent))
+						if ($row['member_id'])
 						{
-							$title	 = $email_tit;
-							$message = $email_msg;
-
-							// Deprecate the {name} variable at some point
-							$title	 = str_replace('{name}', $val['2'], $title);
-							$message = str_replace('{name}', $val['2'], $message);
-
-							$title	 = str_replace('{name_of_recipient}', $val['2'], $title);
-							$message = str_replace('{name_of_recipient}', $val['2'], $message);
-
-							$title	 = str_replace('{notification_removal_url}', $this->EE->functions->fetch_site_index(0, 0).$qs.'ACT='.$action_id.'&id='.$val['1'], $title);
-							$message = str_replace('{notification_removal_url}', $this->EE->functions->fetch_site_index(0, 0).$qs.'ACT='.$action_id.'&id='.$val['1'], $message);
-
-							$this->EE->email->EE_initialize();
-							$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));
-							$this->EE->email->to($val['0']);
-							$this->EE->email->subject($title);
-							$this->EE->email->message(entities_to_ascii($message));
-							$this->EE->email->send();
-
-							$sent[] = $val['0'];
+							$subscribed_members[] = $row['member_id'];
+							$subscription_map[$row['member_id']] = $id;
+						}
+						else
+						{
+							$subscribed_emails[] = $row['email'];
+							$subscription_map[$row['email']] = $id;
 						}
 					}
 				}
-			}		
+				
+				
+				if (count($subscribed_members))
+				{
+					$this->EE->db->select('member_id, email, screen_name');
+					$this->EE->db->where_in('member_id', $subscribed_members);
+					$member_q = $this->EE->db->get('members');
 
+					if ($member_q->num_rows() > 0)
+					{
+						foreach ($member_q->result() as $row)
+						{
+							$sub_id = $subscription_map[$row->member_id];
+							$recipients[] = array($row->email, $sub_id, $row->screen_name);
+						}
+					}
+				}
+
+
+				// Get all comments by these subscribers so we can grab their names
+
+				if (count($subscribed_emails))
+				{
+					$this->EE->db->select('DISTINCT(email), name');
+					$this->EE->db->where('status', 'o');
+					$this->EE->db->where('entry_id', $_POST['entry_id']);
+					$this->EE->db->where_in('email', $subscribed_emails);
+
+					$comment_q = $this->EE->db->get('comments');
+					
+					if ($comment_q->num_rows() > 0)
+					{
+						foreach ($comment_q->result() as $row)
+						{
+							$sub_id = $subscription_map[$row->email];
+							$recipients[] = array($row->email, $sub_id, $row->name);
+						}
+					}
+				}
+				
+				unset($subscription_map);
+			}
+			
+			
+			
+			
+			if (count($recipients) > 0)
+			{
+				$comment = $this->EE->typography->parse_type(
+					$last_comment->comment,
+					array(
+						'text_format'	=> 'none',
+						'html_format'	=> 'none',
+						'auto_links'	=> 'n',
+						'allow_img_url' => 'n'
+					)
+				);
+
+				$qs = ($this->EE->config->item('force_query_string') == 'y') ? '' : '?';
+
+				$action_id	= $this->EE->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
+
+				$this->EE->db->select('channel_titles.title, channel_titles.entry_id, channel_titles.url_title, channels.channel_title, channels.comment_url, channels.channel_url, channels.channel_id');
+				$this->EE->db->join('channels', 'exp_channel_titles.channel_id = exp_channels.channel_id', 'left');
+				$this->EE->db->where('channel_titles.entry_id', $entry_id);
+				$results = $this->EE->db->get('channel_titles');		
+
+				$com_url = ($results->row('comment_url')  == '') ? $results->row('channel_url')	 : $results->row('comment_url') ;
+
+				$comment_url_title_auto_path = reduce_double_slashes($com_url.'/'.$results->row('url_title'));
+			
+				$swap = array(
+								'name_of_commenter'			=> $last_comment->name,
+								'name'						=> $last_comment->name,
+								'channel_name'				=> $results->row('channel_title'),
+								'entry_title'				=> $results->row('title'),
+								'site_name'					=> stripslashes($this->EE->config->item('site_name')),
+								'site_url'					=> $this->EE->config->item('site_url'),
+								'comment'					=> $comment,
+								'comment_id'				=> $last_comment->comment_id,
+								'comment_url'				=> $this->EE->functions->remove_double_slashes($com_url.'/'.$results->row('url_title') .'/'),
+								
+								'channel_id'		=> $results->row('channel_id'),
+								'entry_id'			=> $results->row('entry_id'),
+								'url_title'			=> $results->row('url_title'),
+								'comment_url_title_auto_path' => $comment_url_title_auto_path
+							 );
+
+				$template = $this->EE->functions->fetch_email_template('comment_notification');
+				$email_tit = $this->EE->functions->var_swap($template['title'], $swap);
+				$email_msg = $this->EE->functions->var_swap($template['data'], $swap);
+
+
+				//	Send email
+
+				$this->EE->load->library('email');
+				$this->EE->email->wordwrap = true;
+
+				// Load the text helper
+				$this->EE->load->helper('text');
+
+				$sent = array();
+
+				foreach ($recipients as $val)
+				{
+					if ( ! in_array($val['0'], $sent))
+					{
+						$title	 = $email_tit;
+						$message = $email_msg;
+
+						$sub	= $subscriptions[$val['1']];
+						$sub_qs	= 'id='.$sub['subscription_id'].'&hash='.$sub['hash'];
+
+						// Deprecate the {name} variable at some point
+						$title	 = str_replace('{name}', $val['2'], $title);
+						$message = str_replace('{name}', $val['2'], $message);
+
+						$title	 = str_replace('{name_of_recipient}', $val['2'], $title);
+						$message = str_replace('{name_of_recipient}', $val['2'], $message);
+
+						$title	 = str_replace('{notification_removal_url}', $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&'.$sub_qs, $title);
+						$message = str_replace('{notification_removal_url}', $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&'.$sub_qs, $message);
+
+						$this->EE->email->EE_initialize();
+						$this->EE->email->from($this->EE->config->item('webmaster_email'), $this->EE->config->item('webmaster_name'));
+						$this->EE->email->to($val['0']);
+						$this->EE->email->subject($title);
+						$this->EE->email->message(entities_to_ascii($message));
+						$this->EE->email->send();
+
+						$sent[] = $val['0'];
+					}
+				}
+			}
+		}
+
+		return;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Remove Subscriptions
+	 *
+	 * This must happen *before* deletion
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function remove_subscriptions($comments)
+	{
+		// Grab affected comments
+		$this->EE->db->select('comment_id, author_id, email, comment_date, entry_id');
+		$this->EE->db->where_in('comment_id', $comments);
+		$query = $this->EE->db->get('comments');
+		
+		$entry_ids = array();
+		
+		if ($query->num_rows())
+		{
+			$this->EE->load->library('subscription');
+			
+			// Organize by entry id
+			foreach ($query->result() as $row)
+			{
+				if ( ! isset($entry_ids[$row->entry_id]))
+				{
+					$entry_ids[$row->entry_id] = array();
+				}
+				
+				$entry_ids[$row->entry_id][] = $row;
+			}
+			
+			// Grab subscriptions for each entry id and
+			
+			foreach ($entry_ids as $entry_id => $comments)
+			{
+				$comment_count = array();
+				
+				$this->EE->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
+				$subscriptions = $this->EE->subscription->get_subscriptions();
+				
+				// Count removed comments per member id / email
+				foreach ($comments as $comment)
+				{
+					$key = $row->author_id ? $row->author_id : $row->email;
+					
+					if ( ! isset($comment_count[$key]))
+					{
+						$comment_count[$key] = 0;
+					}
+					
+					$comment_count[$key]++;
+				}
+				
+				// Go through subscriptions and for each comment match decrement
+				// the count. If we hit zero -> unsubscribe
+				foreach ($subscriptions as $row)
+				{
+					$key = $row['member_id'] ? $row['member_id'] : $row['email'];
+					
+					if (isset($comment_count[$key]))
+					{
+						$comment_count[$key]--;
+						
+						if ($comment_count[$key] < 1)
+						{
+							$this->EE->subscription->unsubscribe('', $row['hash']);
+							unset($comment_count[$key]);
+						}
+					}
+				}
+			}
+		}
+		
+		
 		return;
 	}
 		
@@ -1958,7 +2137,10 @@ function fnGetKey( aoData, sKey )
 		}
 
 		// Quicker and updates just the channels
-		foreach($channel_ids as $channel_id) { $this->EE->stats->update_comment_stats($channel_id, '', FALSE); }
+		foreach($channel_ids as $channel_id)
+		{
+			$this->EE->stats->update_comment_stats($channel_id, '', FALSE);
+		}
 
 		// Updates the total stats
 		$this->EE->stats->update_comment_stats();
