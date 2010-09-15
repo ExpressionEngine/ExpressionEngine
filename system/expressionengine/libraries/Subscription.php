@@ -44,7 +44,8 @@ class EE_Subscription {
 	 * Check if they're subscribed
 	 *
 	 * @access	public
-	 * @return	void
+	 * @param	mixed	identifiers
+	 * @return	bool
 	 */
 	function is_subscribed($identifiers = FALSE)
 	{
@@ -52,7 +53,7 @@ class EE_Subscription {
 		
 		if ( ! $user)
 		{
-			return;
+			return FALSE;
 		}
 
 		// Grab them all
@@ -118,8 +119,25 @@ class EE_Subscription {
 			return;
 		}
 		
+		$existing_ids = array();
+		$existing_emails = array();
+		
+		$subscriptions = $this->get_subscriptions();
+		
+		foreach($subscriptions as $row)
+		{
+			if ($row['member_id'])
+			{
+				$existing_ids[] = $row['member_id'];
+			}
+			else
+			{
+				$existing_emails[] = $row['email'];
+			}
+		}
+		
+		
 		list($member_ids, $emails) = $user;
-		list($existing_ids, $existing_emails) = $this->get_subscribers();
 
 		// Handle duplicates
 		$new_member_ids = array_diff($member_ids, $existing_ids);
@@ -158,21 +176,8 @@ class EE_Subscription {
             $this->EE->db->insert_batch($this->table, $data);
 		}
 		
-		// Member is anonymous - set a cookie for them
-		if ($this->EE->session->userdata('member_id') == 0 && $this->anonymous && $rand)
-		{
-			$this->EE->load->helper('cookie');
-			
-			$cookie = get_cookie('subscription', TRUE);
-			$cookie = $cookie ? explode('|', $cookie) : array();
-			
-			$cookie[] = $rand;
-			$cookie = implode('|', array_unique($cookie));
-			
-			set_cookie('subscription', $cookie, 60*60*24*365);
-		}
-		
 		// Refresh existing subscriptions if there were any
+		// @todo update subscription date
 		if ($mark_existing)
 		{
 			$member_ids = array_intersect($member_ids, $existing_ids);
@@ -191,47 +196,44 @@ class EE_Subscription {
 	 * @access	public
 	 * @return	void
 	 */
-	function unsubscribe($identifiers = FALSE, $all_entries = FALSE)
+	function unsubscribe($identifiers = FALSE, $hash = FALSE)
 	{
-		$user = $this->_prep($identifiers);
-		
-		if ( ! $user)
+		if ($hash != '')
 		{
-			return;
+			$this->EE->db->where('hash', $hash);
+		}
+		else
+		{
+			$user = $this->_prep($identifiers);
+
+			if ( ! $user)
+			{
+				return;
+			}
+
+			list($member_ids, $emails) = $user;
+
+			if ( ! count($member_ids) && ! count($emails))
+			{
+				return;
+			}
+			
+			
+			$func = 'where_in';
+
+			if (count($member_ids))
+			{
+				$this->EE->db->where_in('member_id', $member_ids);
+				$func = 'or_where_in';
+			}
+
+			if (count($emails))
+			{
+				$this->EE->db->$func('email', $emails);
+			}
 		}
 		
-		list($member_ids, $emails) = $user;
-		
-		if ( ! count($member_ids) && ! count($emails))
-		{
-			return;
-		}
-		
-		$func = 'where_in';
-		
-		if (count($member_ids))
-		{
-			$this->EE->db->where_in('member_id', $member_ids);
-			$func = 'or_where_in';
-		}
-		
-		if (count($emails))
-		{
-			$this->EE->db->$func('email', $emails);
-		}
-		
-		if ( ! $all_entries)
-		{
-			$this->EE->db->where($this->publisher);
-		}
-		
-		// Member is anonymous - delete the cookie
-		if ($this->EE->session->userdata('member_id') == 0 && $this->anonymous)
-		{
-			$this->EE->load->helper('cookie');
-			delete_cookie('subscription');
-		}
-		
+		$this->EE->db->where($this->publisher);
 		$this->EE->db->delete($this->table);
 	}
 	
@@ -252,7 +254,7 @@ class EE_Subscription {
 	}
 	
 	// --------------------------------------------------------------------
-	
+		
 	/**
 	 * Get subscribers
 	 *
@@ -260,7 +262,7 @@ class EE_Subscription {
 	 * @param	bool	Return array with member ids instead of looking up their emails (used internally)
 	 * @return	mixed	Array of email addresses
 	 */
-	function get_subscribers($smart_notifications = FALSE)
+	function get_subscriptions($smart_notifications = FALSE, $ignore = FALSE)
 	{
 		$emails		= array();
 		$member_ids	= array();
@@ -271,28 +273,45 @@ class EE_Subscription {
 			$this->EE->db->select('email');
 		}
 		
-		if ($smart_notifications)
+		if ($ignore)
 		{
-			$this->EE->db->where('notification_sent', 'n');
+			if (is_numeric($ignore))
+			{
+				$this->EE->db->where('member_id !=', $ignore);
+			}
+			elseif ($this->anonymous)
+			{
+				$this->EE->db->where('email !=', $ignore);
+			}
 		}
 		
-		$this->EE->db->select('member_id');
+		$this->EE->db->select('subscription_id, member_id, hash');
 		$this->EE->db->where($this->publisher);
 		$query = $this->EE->db->get($this->table);
+		
+		if ( ! $query->num_rows())
+		{
+			return array();
+		}
+		
+		$return = array();
 		
 		foreach($query->result_array() as $subscription)
 		{
 			if ($subscription['member_id'])
 			{
-				$member_ids[] = $subscription['member_id'];
+				if ( ! $smart_notifications OR $subscription['notification_sent'] == 'n')
+				{
+					$return[$subscription['subscription_id']] = $subscription;
+				}
 			}
-			else if ($this->anonymous && isset($subscription['email']))
+			else if ($this->anonymous && $subscription['email'])
 			{
-				$emails[] = $subscription['email'];
+				$return[$subscription['subscription_id']] = $subscription;
 			}
 		}
 
-		return array($member_ids, $emails);
+		return $return;
 	}
 	
 	// --------------------------------------------------------------------
@@ -416,88 +435,18 @@ class EE_Subscription {
 	 */
 	function _get_current_user()
 	{
-		$this->EE->load->helper('cookie');
-		
-		$hash = '';
-		$cookie = get_cookie('subscription');
-		
 		// They're logged in!
 		if ($this->EE->session->userdata('member_id') != 0)
 		{
-			delete_cookie('subscription');
 			return array('member_id' => $this->EE->session->userdata('member_id'));
 		}
 		// my_email cookie is set
 		elseif ($this->EE->session->userdata('email'))
 		{
-			delete_cookie('subscription');
 			return array('email' => $this->EE->session->userdata('email'));
 		}
 		
-		// Check for a hash in the url
-		$hash = $this->EE->input->get('subscription', TRUE);
-		
-		if ($hash OR $cookie)
-		{
-			return $this->_identify_from_hash($hash);
-		}
-		
-		return FALSE;
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Identify the user from a subscription hash
-	 *
-	 * @access	private
-	 * @param	string	a subscription hash
-	 * @return	mixed
-	 */
-	function _identify_from_hash($hash = '')
-	{
-		$cookie = get_cookie('subscription', TRUE);
-		$cookie = $cookie ? explode('|', $cookie) : array();
-		
-		if ($hash)
-		{
-			$this->EE->db->where('hash', $hash);
-		}
-		elseif (count($cookie))
-		{
-			$this->EE->db->where_in('hash', $cookie);
-		}
-		else
-		{
-			// no hash - bail
-			return FALSE;
-		}
-		
-		$query = $this->EE->db->get($this->table);
-		
-		if ($query->num_rows())
-		{
-			// Found one - track them in the cookie
-			if ($hash)
-			{
-				$cookie[] = $hash;
-				$cookie = implode('|', array_unique($cookie));
-				
-				set_cookie('subscription', $cookie, 60*60*24*365);
-			}
-			
-			if ($user['member_id'])
-			{
-				return array('member_id' => $user['member_id']);
-			}
-			
-			if ($this->anonymous && $user['email'])
-			{
-				return array('email' => $user['email']);
-			}
-		}
-		
-		delete_cookie('subscription');
+		// anonymous
 		return FALSE;
 	}
 }
