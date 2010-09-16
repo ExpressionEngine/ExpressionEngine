@@ -1299,7 +1299,12 @@ class Content_edit extends Controller {
 
 				if ($status_query->num_rows() == 0)
 				{
-					$vars['entries_status'][$entry_id]['open'] = $this->lang->line('open');
+					// if there is no status group assigned, only Super Admins can create 'open' entries
+					if ($this->session->userdata['group_id'] == 1)
+					{
+						$vars['entries_status'][$entry_id]['open'] = $this->lang->line('open');
+					}
+					
 					$vars['entries_status'][$entry_id]['closed'] = $this->lang->line('closed');
 				}
 				else
