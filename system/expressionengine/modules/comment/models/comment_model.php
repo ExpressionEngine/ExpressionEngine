@@ -44,7 +44,6 @@ class Comment_model extends CI_Model {
 	 */
 	function get_comment_ids($where, $entry_id = array(), $order = array())
 	{
-		
 		if ( ! is_array($entry_id))
 		{
 			$entry_id = ( ! ctype_digit($entry_id)) ? array() : array($entry_id);
@@ -187,6 +186,11 @@ class Comment_model extends CI_Model {
 		{
 			foreach ($order as $key => $val)
 			{
+				if (in_array($key, array('ip_address', 'status')))
+				{
+					$key = 'exp_comments.'.$key;
+				}				
+				
 				$this->db->order_by($key, $val);
 			}
 		}
@@ -237,6 +241,11 @@ class Comment_model extends CI_Model {
 		{
 			foreach ($order as $key => $val)
 			{
+				if (in_array($key, array('ip_address', 'status')))
+				{
+					$key = 'exp_comments.'.$key;
+				}				
+				
 				$this->db->order_by($key, $val);
 			}
 		}
@@ -244,7 +253,6 @@ class Comment_model extends CI_Model {
 		{
 			$this->db->order_by('comment_date', 'desc');
 		}
-
 
 		$query = $this->db->get('comments');
 

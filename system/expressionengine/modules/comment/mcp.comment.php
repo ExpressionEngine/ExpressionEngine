@@ -637,19 +637,6 @@ function fnGetKey( aoData, sKey )
 
 		}
 
-		if (count($order) > 0)
-		{
-			foreach ($order as $key => $val)
-			{
-				$this->EE->db->order_by($key, $val);
-			}
-		}
-		else
-		{
-			$this->EE->db->order_by('comment_date');
-		}
-
-
 		$filter = $this->filter_settings($ajax = TRUE);
 		
 		//  Get comment ids
@@ -663,7 +650,8 @@ function fnGetKey( aoData, sKey )
 			$ids[] = $id['comment_id'];
 		}
 		
-		$total = $this->EE->db->count_all('comments');
+		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+		$total = $this->EE->db->count_all_results('comments');
 
 		$j_response['sEcho'] = $sEcho;
 		$j_response['iTotalRecords'] = $total;
