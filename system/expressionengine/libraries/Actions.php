@@ -149,19 +149,19 @@ class EE_Actions {
 		}
 		
 		// Assign the path
-		$orig_view_path = $EE->load->_ci_view_path;
+		$orig_view_path	= $EE->load->_ci_view_path;
+		$package_path	= PATH_MOD.$base_class.'/';
 		
-		if (in_array($base_class, $EE->core->native_modules))
+		// Third parties have a different package and view path
+		if ( ! in_array($base_class, $EE->core->native_modules))
 		{
-			$path = PATH_MOD.$base_class.'/'.$type.'.'.$base_class.EXT;
+			$package_path = PATH_THIRD.$base_class.'/';
+			$EE->load->_ci_view_path = $package_path.'views/';
 		}
-		else
-		{
-			// set path for local libraries, models, etc.
-			$EE->load->_ci_view_path = PATH_THIRD.$base_class.'/views/';
-			$EE->load->add_package_path(PATH_THIRD.$base_class.'/');		
-			$path = PATH_THIRD.$base_class.'/'.$type.'.'.$base_class.EXT;
-		}
+				
+		$EE->load->add_package_path($package_path);
+		
+		$path = $package_path.$type.'.'.$base_class.EXT;
 
 		// Does the path exist?		
 		if ( ! file_exists($path))
@@ -202,12 +202,9 @@ class EE_Actions {
 			$ACT->$method();
 		}
 		
-		// if it's a third party add-on, remove the temporarily added path for local libraries, models, etc.
-		if ( ! in_array($base_class, $EE->core->native_modules))
-		{
-		    $EE->load->_ci_view_path = $orig_view_path;
-			$EE->load->remove_package_path();
-		}
+		// remove the temporarily added path for local libraries, models, etc.
+		$EE->load->_ci_view_path = $orig_view_path;
+		$EE->load->remove_package_path();
 	}
 
 }
