@@ -103,7 +103,7 @@ function Datepicker() {
 		stepBigMonths: 12, // Number of months to step back/forward for the big links
 		altField: '', // Selector for an alternate field to store selected dates into
 		altFormat: '', // The date format to use for the alternate field
-		constrainInput: true, // The input is constrained by the current date format
+		constrainInput: false, // The input is constrained by the current date format
 		showButtonPanel: false, // True to show button panel, false to not show it
 		autoSize: false // True to size the input for the date format, false to leave as is
 	};
