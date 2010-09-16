@@ -30,6 +30,7 @@ class Updater {
     function Updater()
     {
         $this->EE =& get_instance();
+		$this->EE->load->library('progress');
 
     }
 
@@ -61,13 +62,13 @@ class Updater {
 		}
 
 		
-		$Q[] = "INSERT INTO exp_specialty_templates(template_name, data_title, template_data) values ('comments_opened_notification', 'New comments have been added', '".addslashes($this->comments_opened_notification())."')";
+		$Q[] = "INSERT INTO exp_specialty_templates (template_name, data_title, template_data) values ('comments_opened_notification', 'New comments have been added', '".addslashes($this->comments_opened_notification())."')";
 
 		$count = count($Q);
 		
 		foreach ($Q as $num => $sql)
 		{
-			//$this->EE->progress->update_state("Running Query $num of $count");
+			$this->EE->progress->update_state("Running Query $num of $count");
 	        $this->EE->db->query($sql);
 		}
 		
@@ -76,7 +77,6 @@ class Updater {
 		{
         	return TRUE;			
 		}		
-		
 		
 		$this->EE->progress->update_state("Creating Comment Subscription Table");
 			
@@ -90,11 +90,11 @@ class Updater {
 				'hash'				=> array('type' => 'varchar', 'constraint' => '15')
 			);
 
-			$this->EE->load->dbforge();
-			$this->EE->dbforge->add_field($fields);
-			$this->EE->dbforge->add_key('subscription_id', TRUE);
-			$this->EE->dbforge->add_key(array('entry_id', 'member_id'));
-			$this->EE->dbforge->create_table('comment_subscriptions');		
+		$this->EE->load->dbforge();
+		$this->EE->dbforge->add_field($fields);
+		$this->EE->dbforge->add_key('subscription_id', TRUE);
+		$this->EE->dbforge->add_key(array('entry_id', 'member_id'));
+		$this->EE->dbforge->create_table('comment_subscriptions');		
 
 
 		// this step can be a doozy.  Set time limit to infinity.
@@ -102,7 +102,7 @@ class Updater {
         @set_time_limit(0);
         $this->EE->db->save_queries = FALSE;
         
-        //$this->EE->progress->update_state('Moving Comment Notifications to Subscriptions');
+        $this->EE->progress->update_state('Moving Comment Notifications to Subscriptions');
                 
         $batch = 50;
 		$offset = 0;
@@ -120,7 +120,7 @@ class Updater {
             {
             	$this->EE->progress->update_state(str_replace('%s', "{$offset} of {$count} queries", $progress));	
 
-				unset($data);
+				$data = array();
 		
 				$this->EE->db->distinct();
 				$this->EE->db->select('entry_id, email, name, author_id');
@@ -145,10 +145,9 @@ class Updater {
                     		'notification_sent'     => 'n',
                     		'hash'           		=> $rand
                 			);
-
 				}
 				
-				if (isset($data))
+				if (count($data) > 0)
 				{
 					$this->EE->db->insert_batch('comment_subscriptions', $data);
 				}
@@ -157,14 +156,14 @@ class Updater {
 			}
 		}
 		
+	
 		//  Lastly- we get rid of the notify field
 		$this->EE->db->query("ALTER TABLE `exp_comments` DROP COLUMN `notify`");
 		
 		return TRUE;
-	
-		
 	}
 
+    // ------------------------------------------------------------------------
 
 
 	function comments_opened_notification()
@@ -189,12 +188,13 @@ To stop receiving notifications for this entry, click here:
 EOF;
 	}
 	
+    // ------------------------------------------------------------------------
+
 	function random($type = 'encrypt', $len = 8)
 	{
 		$this->EE->load->helper('string');
 		return random_string($type, $len);
 	}	
-	
 	
 }   
 /* END CLASS */
