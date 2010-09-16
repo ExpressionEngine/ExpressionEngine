@@ -81,8 +81,6 @@ class Comment {
 	 */
 	function entries()
 	{
-		// Base variables
-
 		$return 		= '';
 		$current_page	= '';
 		$qstring		= $this->EE->uri->query_string;
@@ -1446,7 +1444,7 @@ class Comment {
 		/**  Smart Notifications? Mark comments as read.
 		/** ----------------------------------------*/
 		
-		if ($this->EE->config->item('comment_smart_notifications') == 'y')
+		if ($this->EE->session->userdata('smart_notifications') == 'y')
 		{
 			$this->EE->load->library('subscription');
 			$this->EE->subscription->init('comment', array('entry_id' => $query->row('entry_id')), TRUE);
@@ -2730,7 +2728,7 @@ class Comment {
 			/** ----------------------------------------
 			/**  Update comment stats
 			/** ----------------------------------------*/
-
+		
 			$this->EE->stats->update_comment_stats($channel_id, $this->EE->localize->now);
 
 			/** ----------------------------------------
@@ -2744,82 +2742,11 @@ class Comment {
 			$ignore = $this->EE->session->userdata('member_id');
 			$ignore = $ignore ? $ignore : $this->EE->input->post('email');
 			
-			// Smart notifications?
-			$smart_notifications = ($this->EE->config->item('comment_smart_notifications') == 'y') ? TRUE : FALSE;
-			
 			// Grab them all
-			$subscriptions = $this->EE->subscription->get_subscriptions($smart_notifications, $ignore);
+			$subscriptions = $this->EE->subscription->get_subscriptions($ignore);
 			
-			$recipients = array();
-			
-			$subscribed_members = array();
-			$subscribed_emails = array();
-			
-			// No subscribers - skip!
-			
-			if (count($subscriptions))
-			{
-				// Do some work to figure out the user's name,
-				// either based on their user id or on the comment
-				// data (stored with their email)
-				
-				$subscription_map = array();
-			
-				foreach($subscriptions as $id => $row)
-				{
-					if ($row['member_id'])
-					{
-						$subscribed_members[] = $row['member_id'];
-						$subscription_map[$row['member_id']] = $id;
-					}
-					else
-					{
-						$subscribed_emails[] = $row['email'];
-						$subscription_map[$row['email']] = $id;
-					}
-				}
-				
-				
-				if (count($subscribed_members))
-				{
-					$this->EE->db->select('member_id, email, screen_name');
-					$this->EE->db->where_in('member_id', $subscribed_members);
-					$member_q = $this->EE->db->get('members');
-
-					if ($member_q->num_rows() > 0)
-					{
-						foreach ($member_q->result() as $row)
-						{
-							$sub_id = $subscription_map[$row->member_id];
-							$recipients[] = array($row->email, $sub_id, $row->screen_name);
-						}
-					}
-				}
-
-
-				// Get all comments by these subscribers so we can grab their names
-
-				if (count($subscribed_emails))
-				{
-					$this->EE->db->select('DISTINCT(email), name');
-					$this->EE->db->where('status', 'o');
-					$this->EE->db->where('entry_id', $_POST['entry_id']);
-					$this->EE->db->where_in('email', $subscribed_emails);
-
-					$comment_q = $this->EE->db->get('comments');
-					
-					if ($comment_q->num_rows() > 0)
-					{
-						foreach ($comment_q->result() as $row)
-						{
-							$sub_id = $subscription_map[$row->email];
-							$recipients[] = array($row->email, $sub_id, $row->name);
-						}
-					}
-				}
-				
-				unset($subscription_map);
-			}
+			$this->EE->load->model('comment_model');
+			$recipients = $this->EE->comment_model->fetch_email_recipients($_POST['entry_id'], $subscriptions);
 		}
 
 		/** ----------------------------------------
@@ -2833,7 +2760,7 @@ class Comment {
 
 			$result = $this->EE->db->get('members');
 
-			$notify_address	.= ','.$result->row('email') ;
+			$notify_address	.= ','.$result->row('email');
 		}
 
 		/** ----------------------------------------
@@ -3026,14 +2953,6 @@ class Comment {
 					}
 				}
 			}
-			
-			// Mark it as unread if smart notifications are turned on,
-			// that will prevent further emails from being sent
-			
-			if ($this->EE->config->item('comment_smart_notifications') == 'y')
-			{
-				$this->EE->subscription->mark_as_unread(array($subscribed_members, $subscribed_emails), TRUE);
-			}
 
 			/** ----------------------------------------
 			/**  Clear cache files
@@ -3169,8 +3088,7 @@ class Comment {
 			return;
 		}
 		
-		$smart = ($this->EE->config->item('comment_smart_notifications') == 'y') ? TRUE : FALSE;
-		
+				
 		$this->EE->load->library('subscription');
 		$this->EE->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
 		$subscribed = $this->EE->subscription->is_subscribed(FALSE);

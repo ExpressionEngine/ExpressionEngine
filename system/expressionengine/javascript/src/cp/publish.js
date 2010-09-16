@@ -809,9 +809,8 @@ $(document).ready(function() {
 	
 	// set up the "publish to field" buttons
 	$(".publish_to_field").click(function() {
-
-		var currentID = "#" + field_for_writemode_publish.replace(/field_/, '');
-		var i =  $('.write_mode_trigger').index(currentID);
+		var currentID = "#" + field_for_writemode_publish.replace(/field_/, ''),
+			i =  $('.write_mode_trigger').index(currentID);
 
 		$("#"+field_for_writemode_publish).val($("#write_mode_textarea").val());
 		triggers.eq(i).overlay().close();

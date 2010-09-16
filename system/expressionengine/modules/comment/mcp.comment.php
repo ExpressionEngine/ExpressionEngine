@@ -872,10 +872,11 @@ function fnGetKey( aoData, sKey )
 			$query = $this->EE->db->get('channels'); 
 		}		
 		
-		$vars['channel_selected'] = $filter['channel_id'];
-
-		$vars['channel_select_options'] = array('' => $this->EE->lang->line('filter_by_channel'));
-
+		$vars = array(
+			'channel_selected'			=> $filter['channel_id'],
+			'channel_select_options'	=> array('' => $this->EE->lang->line('filter_by_channel'))
+		);
+		
 		if ($query->num_rows() > 1)
 		{
 			$vars['channel_select_options']['all'] = $this->EE->lang->line('all');
@@ -888,7 +889,7 @@ function fnGetKey( aoData, sKey )
 
 		// Status pull-down menu
 		$vars['status_selected'] = $filter['status'];
-
+		
 		$vars['status_select_options'][''] = $this->EE->lang->line('filter_by_status');
 		$vars['status_select_options']['all'] = $this->EE->lang->line('all');
 
@@ -954,12 +955,13 @@ function fnGetKey( aoData, sKey )
 		$this->EE->subscription->init('comment', array('subscription_id' => $id), TRUE);
 		$this->EE->subscription->unsubscribe('', $hash);
 
-		$data = array(	'title' 	=> $this->EE->lang->line('cmt_notification_removal'),
-						'heading'	=> $this->EE->lang->line('thank_you'),
-						'content'	=> $this->EE->lang->line('cmt_you_have_been_removed'),
-						'redirect'	=> '',
-						'link'		=> array($this->EE->config->item('site_url'), stripslashes($this->EE->config->item('site_name')))
-					 );
+		$data = array(
+				'title' 	=> $this->EE->lang->line('cmt_notification_removal'),
+				'heading'	=> $this->EE->lang->line('thank_you'),
+				'content'	=> $this->EE->lang->line('cmt_you_have_been_removed'),
+				'redirect'	=> '',
+				'link'		=> array($this->EE->config->item('site_url'), stripslashes($this->EE->config->item('site_name')))
+		);
 
 		$this->EE->output->show_message($data);
 	}
@@ -1637,10 +1639,6 @@ function fnGetKey( aoData, sKey )
 		{
 			$this->send_notification_emails($comments);
 		}
-		else
-		{
-			$this->remove_subscriptions($comments);
-		}
 
 		$this->EE->functions->clear_caching('all');
 
@@ -1748,7 +1746,6 @@ function fnGetKey( aoData, sKey )
 
 
 		$comment_ids = explode('|', $comment_id);
-		$this->remove_subscriptions($comment_ids);
 
 		$this->EE->db->where_in('comment_id', $comment_ids);
 		$this->EE->db->delete('comments');
@@ -1787,7 +1784,6 @@ function fnGetKey( aoData, sKey )
 	{
 		// Load subscription class
 		$this->EE->load->library('subscription');
-		$smart_notifications = ($this->EE->config->item('comment_smart_notifications') == 'y') ? TRUE : FALSE;
 			
 		// Instantiate Typography class
 		$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
@@ -1798,149 +1794,41 @@ function fnGetKey( aoData, sKey )
 
 
 		// Grab the required comments
-		$this->EE->db->select('comment, comment_id, author_id, name, email, comment_date, entry_id, notify');
+		$this->EE->db->select('comment, comment_id, author_id, name, email, comment_date, entry_id');
 		$this->EE->db->where_in('comment_id', $comments);
 		$query = $this->EE->db->get('comments');
 
 
-		// Grab unique entry ids and their latest comment
+		// Sort based on entry
 		$entries = array();
 		
 		foreach ($query->result() as $row)
 		{
-			// Add a subscription for the new comment if they chose to subscribe
-			if ($row->notify == 'y')
+			if ( ! isset($entries[$row->entry_id]))
 			{
-				$this->EE->subscription->init('comment', array('entry_id' => $row->entry_id), TRUE);
-				
-				if ($cmtr_id = $row->author_id)
-				{
-					$this->EE->subscription->subscribe($cmtr_id);
-				}
-				else
-				{
-					$this->EE->subscription->subscribe($row->email);
-				}
+				$entries[$row->entry_id] = array();
 			}
 			
-			
-			// Grab latest comment for this entry so we know
-			// where to cutoff our subscriptions
-			
-			if ( ! isset($entries[$row->entry_id]) OR $entries[$row->entry_id] < $row->comment_date)
-			{
-				$entries[$row->entry_id] = $row;
-			}
+			$entries[$row->entry_id][] = $row;
 		}
-				
+		
 
 		// Go through the entries and send subscriptions
 		
-		foreach ($entries as $entry_id => $last_comment)
+		foreach ($entries as $entry_id => $comments)
 		{
 			$this->EE->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
 			
-			// Remove the user for this comment
-			$ignore = $last_comment->author_id;
-			$ignore = $ignore ? $ignore : $last_comment->email;
-
-			
 			// Grab them all
-			$subscriptions = $this->EE->subscription->get_subscriptions($smart_notifications, $ignore);
+			$subscriptions = $this->EE->subscription->get_subscriptions();
 			
-			$recipients = array();
+			$this->EE->load->model('comment_model');
+			$recipients = $this->EE->comment_model->fetch_email_recipients($entry_id, $subscriptions);
 			
-			$subscribed_members = array();
-			$subscribed_emails = array();
-			
-			// No subscribers - skip!
-			
-			if (count($subscriptions))
+			if (count($recipients))
 			{
-				// Do some work to figure out the user's name,
-				// either based on their user id or on the comment
-				// data (stored with their email)
+				// Grab generic entry info
 				
-				$subscription_map = array();
-			
-				foreach($subscriptions as $id => $row)
-				{
-					// Only send to previous commenters
-					
-					if ($row['subscription_date'] < $last_comment->comment_date)
-					{
-						if ($row['member_id'])
-						{
-							$subscribed_members[] = $row['member_id'];
-							$subscription_map[$row['member_id']] = $id;
-						}
-						else
-						{
-							$subscribed_emails[] = $row['email'];
-							$subscription_map[$row['email']] = $id;
-						}
-					}
-				}
-				
-				
-				if (count($subscribed_members))
-				{
-					$this->EE->db->select('member_id, email, screen_name');
-					$this->EE->db->where_in('member_id', $subscribed_members);
-					$member_q = $this->EE->db->get('members');
-
-					if ($member_q->num_rows() > 0)
-					{
-						foreach ($member_q->result() as $row)
-						{
-							$sub_id = $subscription_map[$row->member_id];
-							$recipients[] = array($row->email, $sub_id, $row->screen_name);
-						}
-					}
-				}
-
-
-				// Get all comments by these subscribers so we can grab their names
-
-				if (count($subscribed_emails))
-				{
-					$this->EE->db->select('DISTINCT(email), name');
-					$this->EE->db->where('status', 'o');
-					$this->EE->db->where('entry_id', $_POST['entry_id']);
-					$this->EE->db->where_in('email', $subscribed_emails);
-
-					$comment_q = $this->EE->db->get('comments');
-					
-					if ($comment_q->num_rows() > 0)
-					{
-						foreach ($comment_q->result() as $row)
-						{
-							$sub_id = $subscription_map[$row->email];
-							$recipients[] = array($row->email, $sub_id, $row->name);
-						}
-					}
-				}
-				
-				unset($subscription_map);
-			}
-			
-			
-			
-			
-			if (count($recipients) > 0)
-			{
-				$comment = $this->EE->typography->parse_type(
-					$last_comment->comment,
-					array(
-						'text_format'	=> 'none',
-						'html_format'	=> 'none',
-						'auto_links'	=> 'n',
-						'allow_img_url' => 'n'
-					)
-				);
-
-				$qs = ($this->EE->config->item('force_query_string') == 'y') ? '' : '?';
-
 				$action_id	= $this->EE->functions->fetch_action_id('Comment_mcp', 'delete_comment_notification');
 
 				$this->EE->db->select('channel_titles.title, channel_titles.entry_id, channel_titles.url_title, channels.channel_title, channels.comment_url, channels.channel_url, channels.channel_id');
@@ -1948,34 +1836,57 @@ function fnGetKey( aoData, sKey )
 				$this->EE->db->where('channel_titles.entry_id', $entry_id);
 				$results = $this->EE->db->get('channel_titles');		
 
-				$com_url = ($results->row('comment_url')  == '') ? $results->row('channel_url')	 : $results->row('comment_url') ;
-
-				$comment_url_title_auto_path = reduce_double_slashes($com_url.'/'.$results->row('url_title'));
-			
+				$com_url = ($results->row('comment_url')  == '') ? $results->row('channel_url')	 : $results->row('comment_url');				
+				
+				
+				// Create an array of comments to add to the email
+				
+				$comment_swap = array();
+				
+				foreach ($comments as $c)
+				{
+					$comment_text = $this->EE->typography->parse_type(
+						$c->comment,
+						array(
+							'text_format'	=> 'none',
+							'html_format'	=> 'none',
+							'auto_links'	=> 'n',
+							'allow_img_url' => 'n'
+						)
+					);
+					
+					$comments_swap[] = array(
+						'name_of_commenter'	=> $c->name,
+						'name'				=> $c->name,
+						'comment'			=> $comment_text,
+						'comment_id'		=> $c->comment_id,
+					);
+				}
+				
+				
 				$swap = array(
-								'name_of_commenter'			=> $last_comment->name,
-								'name'						=> $last_comment->name,
-								'channel_name'				=> $results->row('channel_title'),
-								'entry_title'				=> $results->row('title'),
-								'site_name'					=> stripslashes($this->EE->config->item('site_name')),
-								'site_url'					=> $this->EE->config->item('site_url'),
-								'comment'					=> $comment,
-								'comment_id'				=> $last_comment->comment_id,
-								'comment_url'				=> $this->EE->functions->remove_double_slashes($com_url.'/'.$results->row('url_title') .'/'),
-								
-								'channel_id'		=> $results->row('channel_id'),
-								'entry_id'			=> $results->row('entry_id'),
-								'url_title'			=> $results->row('url_title'),
-								'comment_url_title_auto_path' => $comment_url_title_auto_path
-							 );
-
-				$template = $this->EE->functions->fetch_email_template('comment_notification');
-				$email_tit = $this->EE->functions->var_swap($template['title'], $swap);
-				$email_msg = $this->EE->functions->var_swap($template['data'], $swap);
-
+					'channel_name'					=> $results->row('channel_title'),
+					'entry_title'					=> $results->row('title'),
+					'site_name'						=> stripslashes($this->EE->config->item('site_name')),
+					'site_url'						=> $this->EE->config->item('site_url'),
+					'comment_url'					=> $this->EE->functions->remove_double_slashes($com_url.'/'.$results->row('url_title') .'/'),
+					'channel_id'					=> $results->row('channel_id'),
+					'entry_id'						=> $results->row('entry_id'),
+					'url_title'						=> $results->row('url_title'),
+					'comment_url_title_auto_path'	=> reduce_double_slashes($com_url.'/'.$results->row('url_title')),
+					
+					'comments'						=> $comments_swap
+				);
+				
+				$template = $this->EE->functions->fetch_email_template('comments_opened_notification');
+				
+				$this->EE->load->library('template');
+				
+				
+				$email_tit = $this->EE->template->parse_variables_row($template['title'], $swap);
+				$email_msg = $this->EE->template->parse_variables_row($template['data'], $swap);
 
 				//	Send email
-
 				$this->EE->load->library('email');
 				$this->EE->email->wordwrap = true;
 
@@ -2017,86 +1928,6 @@ function fnGetKey( aoData, sKey )
 			}
 		}
 
-		return;
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Remove Subscriptions
-	 *
-	 * This must happen *before* deletion
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function remove_subscriptions($comments)
-	{
-		// Grab affected comments
-		$this->EE->db->select('comment_id, author_id, email, comment_date, entry_id');
-		$this->EE->db->where_in('comment_id', $comments);
-		$query = $this->EE->db->get('comments');
-		
-		$entry_ids = array();
-		
-		if ($query->num_rows())
-		{
-			$this->EE->load->library('subscription');
-			
-			// Organize by entry id
-			foreach ($query->result() as $row)
-			{
-				if ( ! isset($entry_ids[$row->entry_id]))
-				{
-					$entry_ids[$row->entry_id] = array();
-				}
-				
-				$entry_ids[$row->entry_id][] = $row;
-			}
-			
-			// Grab subscriptions for each entry id and
-			
-			foreach ($entry_ids as $entry_id => $comments)
-			{
-				$comment_count = array();
-				
-				$this->EE->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
-				$subscriptions = $this->EE->subscription->get_subscriptions();
-				
-				// Count removed comments per member id / email
-				foreach ($comments as $comment)
-				{
-					$key = $row->author_id ? $row->author_id : $row->email;
-					
-					if ( ! isset($comment_count[$key]))
-					{
-						$comment_count[$key] = 0;
-					}
-					
-					$comment_count[$key]++;
-				}
-				
-				// Go through subscriptions and for each comment match decrement
-				// the count. If we hit zero -> unsubscribe
-				foreach ($subscriptions as $row)
-				{
-					$key = $row['member_id'] ? $row['member_id'] : $row['email'];
-					
-					if (isset($comment_count[$key]))
-					{
-						$comment_count[$key]--;
-						
-						if ($comment_count[$key] < 1)
-						{
-							$this->EE->subscription->unsubscribe('', $row['hash']);
-							unset($comment_count[$key]);
-						}
-					}
-				}
-			}
-		}
-		
-		
 		return;
 	}
 		
@@ -2178,7 +2009,6 @@ function fnGetKey( aoData, sKey )
 		
 		$vars['comment_word_censoring']			= ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE;
 		$vars['comment_moderation_override']	= ($this->EE->config->item('comment_moderation_override') == 'y') ? TRUE : FALSE;
-		$vars['comment_smart_notifications']	= ($this->EE->config->item('comment_smart_notifications') == 'y') ? TRUE : FALSE;
 		$vars['comment_edit_time_limit']	= ($this->EE->config->item('comment_edit_time_limit') && ctype_digit($this->EE->config->item('comment_edit_time_limit'))) ? $this->EE->config->item('comment_edit_time_limit') : 0;		
 
 		return $this->EE->load->view('settings', $vars, TRUE);		
@@ -2201,7 +2031,6 @@ function fnGetKey( aoData, sKey )
 		
 		$insert['comment_word_censoring'] = ($this->EE->input->post('comment_word_censoring')) ? 'y' : 'n';
 		$insert['comment_moderation_override'] = ($this->EE->input->post('comment_moderation_override')) ? 'y' : 'n';
-		$insert['comment_smart_notifications'] = ($this->EE->input->post('comment_smart_notifications')) ? 'y' : 'n';
 
 		$this->EE->config->_update_config($insert);
 

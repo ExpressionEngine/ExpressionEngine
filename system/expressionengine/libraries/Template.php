@@ -1301,11 +1301,19 @@ class EE_Template {
 				$class_name = ucfirst($this->tag_data[$i]['class']);
 				$meth_name  = $this->tag_data[$i]['method'];
 				
-				// if it's a third party add-on, set path for local libraries, models, etc.
-				if ( ! in_array($this->tag_data[$i]['class'] , $this->EE->core->native_modules)
-					&& ! in_array($this->tag_data[$i]['class'] , $this->EE->core->native_plugins))
+				
+				// If it's a third party class or a first party module,
+				// add the root folder to the loader paths so we can use
+				// libraries, models, and helpers
+				
+				$package_path = '';
+				
+				if ( ! in_array($this->tag_data[$i]['class'], $this->EE->core->native_plugins))
 				{
-					$this->EE->load->add_package_path(PATH_THIRD.strtolower($this->tag_data[$i]['class'].'/'));
+					$package_path = in_array($this->tag_data[$i]['class'], $this->EE->core->native_modules) ? PATH_MOD : PATH_THIRD;
+					$package_path .= strtolower($this->tag_data[$i]['class'].'/');
+					
+					$this->EE->load->add_package_path($package_path);
 				}
 				
 				// Dynamically instantiate the class.
@@ -1380,11 +1388,11 @@ class EE_Template {
 					$return_data = $EE->$meth_name();
 				}
 
-				// if it's a third party add-on, remove the temporarily added path for local libraries, models, etc.
+				// if it's a third party add-on or module, remove the temporarily added path for local libraries, models, etc.
 				// if a "no results" template is returned, $this->tag_data will be reset inside of the scope
 				// of the tag being processed.  So let's use the locally scoped variable for the class name
-				if ( ! in_array(strtolower($class_name) , $this->EE->core->native_modules)
-					&& ! in_array(strtolower($class_name) , $this->EE->core->native_plugins))
+				
+				if ($package_path)
 				{
 					$this->EE->load->remove_package_path();
 				}
