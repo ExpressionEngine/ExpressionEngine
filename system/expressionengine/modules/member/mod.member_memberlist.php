@@ -411,23 +411,45 @@ class Member_memberlist extends Member {
 			}
 		}
 
-
 		/** ----------------------------------------
 		/**  Assign default variables
 		/** ----------------------------------------*/
-																	 
-		$vars = array(
-						'group_id'		=>	0,
-						'order_by'		=>	($this->EE->config->item('memberlist_order_by') == '') ? 'total_posts' : $this->EE->config->item('memberlist_order_by'),
-						'sort_order'	=>	($this->EE->config->item('memberlist_sort_order') == '') ? 'desc' : $this->EE->config->item('memberlist_sort_order'),
-						'row_limit'		=>	($this->EE->config->item('memberlist_row_limit') == '') ? 20 : $this->EE->config->item('memberlist_row_limit'),
-						'row_count'		=>	0
-					);
 
-
-		foreach ($vars as $key => $val)
+		$valid_order_bys = array(
+				'screen_name','total_posts', 'join_date'
+			);
+	
+		$sort_orders = array('asc', 'desc');
+		
+		if (($group_id = (int) $this->EE->input->post('group_id')) === 0)
 		{
-			$$key = ( ! isset($_POST[$key])) ? $val : $_POST[$key];
+			$group_id = 0;
+		}
+		
+		$sort_order = ( ! in_array($this->EE->input->post('sort_order'), $sort_orders)) ? $this->EE->config->item('memberlist_sort_order') : $this->EE->input->post('sort_order', 'post');
+		
+		if (($row_limit = (int) $this->EE->input->post('row_limit')) === 0)
+		{
+			$row_limit = $this->EE->config->item('memberlist_row_limit');
+		}	
+
+		if ($this->EE->input->post('order_by'))
+		{
+			$order_by = $this->EE->input->post('order_by', 'post');
+			
+			if ( ! in_array($order_by, $valid_order_bys))
+			{
+				$order_by = $this->EE->config->item('memberlist_order_by');
+			}
+		}
+		else
+		{
+			$order_by = $this->EE->config->item('memberlist_order_by');
+		}
+		
+		if (($row_count = (int) $this->EE->input->post('row_count')) === 0)
+		{
+			$row_count = 0;
 		}
 
 		/* ----------------------------------------
