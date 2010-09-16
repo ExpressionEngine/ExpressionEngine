@@ -132,10 +132,7 @@ class Comment_upd {
 						'ip_address'		 => array('type' => 'varchar' , 'constraint' => '16'),
 						'comment_date'		 => array('type'	=> 'int'  , 'constraint' => '10'),
 						'edit_date'			 => array('type'	=> 'int'  , 'constraint' => '10'),
-						'comment'			 => array('type'	=> 'text'),
-						'notify'			 => array('type'		=> 'char',
-													  'constraint' 	=> '1',
-													  'default'		=> 'n')
+						'comment'			 => array('type'	=> 'text')
 		);
 
 		$this->EE->dbforge->add_field($fields);
@@ -241,7 +238,7 @@ class Comment_upd {
 
 			$this->EE->db->insert('actions', $data);
 			
-			// Note that the subscription table and migration occur in the ud_211.php file
+			// Note that the subscription table and notify migration occur in the ud_211.php file
 		}		
 
 		return TRUE;
