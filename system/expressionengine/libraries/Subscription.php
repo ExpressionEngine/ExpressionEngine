@@ -88,7 +88,6 @@ class EE_Subscription {
 		return FALSE;
 	}
 
-
 	// --------------------------------------------------------------------
 	
 	/**
@@ -276,7 +275,7 @@ class EE_Subscription {
 	 * @param	bool	Return array with member ids instead of looking up their emails (used internally)
 	 * @return	mixed	Array of email addresses
 	 */
-	function get_subscriptions($smart_notifications = FALSE, $ignore = FALSE)
+	function get_subscriptions($ignore = FALSE)
 	{
 		$emails		= array();
 		$member_ids	= array();
@@ -299,7 +298,7 @@ class EE_Subscription {
 			}
 		}
 		
-		$this->EE->db->select('subscription_id, member_id, hash');
+		$this->EE->db->select('subscription_id, member_id, notification_sent, hash');
 		$this->EE->db->where($this->publisher);
 		$query = $this->EE->db->get($this->table);
 		
@@ -314,10 +313,7 @@ class EE_Subscription {
 		{
 			if ($subscription['member_id'])
 			{
-				if ( ! $smart_notifications OR $subscription['notification_sent'] == 'n')
-				{
-					$return[$subscription['subscription_id']] = $subscription;
-				}
+				$return[$subscription['subscription_id']] = $subscription;
 			}
 			else if ($this->anonymous && $subscription['email'])
 			{
@@ -359,7 +355,7 @@ class EE_Subscription {
 			if ($current_user === FALSE)
 			{
 				return FALSE;
-			}			
+			}
 			
 			$array = key($current_user).'s';
 			${$array}[] = current($current_user);
