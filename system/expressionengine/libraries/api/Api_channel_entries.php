@@ -1438,7 +1438,11 @@ class Api_channel_entries extends Api {
 			return;
 		}
 
-		$data['field_id_'.$row['field_id']] = $this->EE->localize->convert_human_date_to_gmt($data['field_id_'.$row['field_id']]);
+		//  Date might already be numeric format- so we check
+		if ( ! is_numeric($data['field_id_'.$row['field_id']]))
+		{
+			$data['field_id_'.$row['field_id']] = $this->EE->localize->convert_human_date_to_gmt($data['field_id_'.$row['field_id']]);
+		}
 
 		if ( ! is_numeric($data['field_id_'.$row['field_id']]))
 		{
