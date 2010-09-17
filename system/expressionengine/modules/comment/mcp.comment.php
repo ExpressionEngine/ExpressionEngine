@@ -1215,7 +1215,6 @@ function fnOpenClose ( oSettings )
 			$$key = $val;
 		}
 
-
 		$status = $this->EE->input->post('status');
 
 		//  If they can not edit- only the status may change
@@ -1245,8 +1244,6 @@ function fnOpenClose ( oSettings )
 			$this->EE->functions->redirect($url);			
 		}
 		
-		
-		
 		// Error checks
 		if ($author_id == 0)
 		{
@@ -1255,11 +1252,15 @@ function fnOpenClose ( oSettings )
 
 			if ($comment_require_email == 'y')
 			{
-				$this->EE->form_validation->set_rules('email_check', '', 'callback__email_check');
+				$this->EE->form_validation->set_rules('email', 'lang:email', 'callback__email_check');
+			}
+			else
+			{
+				$this->EE->form_validation->set_rules('email', 'lang:email', '');
 			}
 
 			$this->EE->form_validation->set_rules('name', 'lang:name', 'required');
-			$this->EE->form_validation->set_rules('email', 'lang:email', 'required');	
+	
 		
 			$this->EE->form_validation->set_rules('url', '', '');			
 			$this->EE->form_validation->set_rules('location', '', '');
@@ -1270,7 +1271,7 @@ function fnOpenClose ( oSettings )
 		$move_to = $this->EE->input->get_post('move_to');
 		$recount_ids = array();
 		$recount_channels = array();
-		
+
 		if ($move_to != '')
 		{
 			$tcount = 0;
@@ -1339,13 +1340,10 @@ function fnOpenClose ( oSettings )
 						 );
 		}
 		
-	
-
+		$this->EE->db->query($this->EE->db->update_string('exp_comments', $data, "comment_id = '$comment_id'"));
 
 		if ($status != $current_status)
 		{
-			$this->EE->db->query($this->EE->db->update_string('exp_comments', $data, "comment_id = '$comment_id'"));
-		
 			$this->update_stats(array($entry_id), array($channel_id), array($author_id));
 
 			//  Did status change to open?  Notify
@@ -1403,6 +1401,7 @@ function fnOpenClose ( oSettings )
 
 		// Is email valid?
 		$this->EE->load->helper('email');
+		
 		if ( ! valid_email($str))
 		{
 			$this->EE->form_validation->set_message('_email_check', $this->EE->lang->line('invalid_email_address'));
@@ -1415,6 +1414,8 @@ function fnOpenClose ( oSettings )
 			$this->EE->form_validation->set_message('_email_check', $this->EE->lang->line('banned_email'));
 			return FALSE;
 		}
+		
+		return TRUE;
 	}
 	
 	function _move_check($str)
