@@ -25,8 +25,8 @@
 class Comment_mcp {
 
 	var $pipe_length		= '2';
-	var $comment_chars			= "100";
-	var $comment_leave_breaks = 'y';
+	var $comment_chars			= "20";
+	var $comment_leave_breaks = 'n';
 	var $perpage = 50;
 	var $base_url = '';
 	var $search_url;
@@ -90,9 +90,6 @@ class Comment_mcp {
 		
 		$this->EE->cp->get_installed_modules();
 		
-		$blacklist_installed =  (isset($this->EE->cp->installed_modules['blacklist'])) ? TRUE : FALSE;		
-		
-
 		$this->EE->javascript->output('
 		$(".toggle_comments").toggle(
 			function(){
@@ -116,24 +113,6 @@ class Comment_mcp {
 			}
 		});');
 				
-
-
-		if ($blacklist_installed)
-		{
-			$this->EE->javascript->output('
-			$("#comment_action").change(function() {
-				if ($("#comment_action").val() == "delete")
-				{
-					$(this).nextAll("#blacklist").show();
-				}
-				else
-				{
-					$(this).nextAll("#blacklist").hide();
-				}			
-			
-			});');
-		}
-
 		$this->EE->javascript->output('
 			$("#custom_date_start_span").datepicker({
 				dateFormat: "yy-mm-dd",
@@ -224,7 +203,6 @@ class Comment_mcp {
 		// No results?  No reason to continue...
 		if ($total == 0)
 		{
-			$vars['blacklist_installed'] = $blacklist_installed;
 			$vars['message'] = $this->EE->lang->line('no_comments');
 			$vars['comments'] = array();
 			$vars['form_options'] = array();
@@ -305,7 +283,7 @@ class Comment_mcp {
 				}
 				else
 				{
-					$row['comment'] = strip_tags(str_replace(array("\t","\n","\r"), '', $row['comment']));
+					$row['comment'] = strip_tags(str_replace(array("\t","\n","\r"), NBS, $row['comment']));
 				}
 
 				if ($this->comment_chars != 0)
@@ -367,8 +345,6 @@ class Comment_mcp {
 		
 		$vars['pagination'] = $pagination_links;
 		$vars['message'] = $message;
-		$vars['blacklist_installed'] = $blacklist_installed;
-
 
 		return $this->EE->load->view('index', $vars, TRUE);
 	}
@@ -756,7 +732,7 @@ function fnOpenClose ( oSettings )
 				}
 				else
 				{
-					$display_comment = strip_tags(str_replace(array("\t","\n","\r"), '', $comment['comment']));
+					$display_comment = strip_tags(str_replace(array("\t","\n","\r"), NBS, $comment['comment']));
 				}
 
 				if ($this->comment_chars != 0)
@@ -1530,7 +1506,7 @@ function fnOpenClose ( oSettings )
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 
-		$this->EE->db->select('channel_titles.author_id, title, comments.comment_id, comment');
+		$this->EE->db->select('channel_titles.author_id, title, comments.comment_id, comment, comments.ip_address');
 		$this->EE->db->from(array('channel_titles', 'comments'));
 		$this->EE->db->where('channel_titles.entry_id = '.$this->EE->db->dbprefix('comments.entry_id'));
 		$this->EE->db->where_in('comments.comment_id', $comments);
@@ -1548,26 +1524,13 @@ function fnOpenClose ( oSettings )
 					continue;
 				}
 				
+				$row['comment'] = strip_tags(str_replace(array("\t","\n","\r"), NBS, $row['comment']));
+				$row['comment'] = $this->EE->functions->char_limiter(trim($row['comment']), 100);
 
-				if ($this->comment_leave_breaks == 'y')
-				{
-					$row['comment'] = str_replace(array("\n","\r"),
-												  '<br />',
-												  strip_tags($row['comment'])
-												  );
-				}
-				else
-				{
-					$row['comment'] = strip_tags(str_replace(array("\t","\n","\r"), '', $row['comment']));
-				}
-
-				if ($this->comment_chars != 0)
-				{
-					$row['comment'] = $this->EE->functions->char_limiter(trim($row['comment']), $this->comment_chars);
-				}
 
 				$comments[$row['comment_id']]['entry_title'] = $row['title'];
 				$comments[$row['comment_id']]['comment'] = $row['comment'];
+				$comments[$row['comment_id']]['ip_address'] = $row['ip_address'];
 			}
 		}
 
@@ -1593,7 +1556,6 @@ function fnOpenClose ( oSettings )
 								);
 								
 		$vars['blacklist_installed'] = (isset($this->EE->cp->installed_modules['blacklist'])) ? TRUE : FALSE;
-		$vars['blacklist'] = ($this->EE->input->get_post('add_to_blacklist') != 'y') ? FALSE : TRUE;
 								
 		$message = (count($comments) > 1) ? 'delete_comments_confirm' : 'delete_comment_confirm';
 
