@@ -2130,23 +2130,29 @@ table.accessTable div.tableCellHeading {
 	border-right: 		1px solid #505f66;
 	border-left: 		4px solid #2d383e;
 	border-top:			1px solid #4f5e65;
+	padding-bottom:		3px;
 }
 
 #mainContent .tab_menu li a {
 /*	margin-top:			12px;*/
 	float:				left;
 	display:			block;
-	padding:			7px 12px 5px 12px;
+	padding:			7px 12px 4px 12px;
 	font-size:			13px;
 	color:				#ffffff;
 	font-weight: 		bold;
 }
 
+#mainContent .tab_menu li a:hover {
+	text-decoration:	none;
+}
+
 #mainContent .tab_menu li.current {
 	background:			#ECF1F4;
-	border-left: 		4px solid #ECF1F4;
 	margin-bottom: 		-3px; /* needed to pull the current tab down over the 1px white border of the toolbar */
-	border-bottom: 		3px solid #ECF1F4;
+	
+	border-left: 		4px solid #ECF1F4;
+	border-bottom: 		2px solid #ECF1F4;
 	border-right: 		1px solid #ECF1F4;
 	border-top:			1px solid #FEFFFF;
 }
@@ -2304,8 +2310,12 @@ label.hide_field {
 	background:			url('<?=$cp_theme_url?>images/content_custom_tab.jpg') repeat-x top;
 	margin-left:		-4px;
 	margin-bottom:		0;
-	padding-bottom:		0px;
-	padding-left:		0;	
+	padding-bottom:		0;
+	padding-left:		0;
+	font-size:			15px;
+	text-shadow:		0 1px 0 #888;
+	
+	-webkit-font-smoothing: antialiased;
 }
 
 #mainContent #tools div {
