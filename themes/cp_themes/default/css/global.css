@@ -3212,42 +3212,44 @@ div.contentWrap {
 }
 
 #mainContent #file_manager #showToolbarLink {
-	text-align:			right;
-	font-size:			10px;
-	height: 			15px;
-	line-height:		18px;
-	background:			#ECF1F4 url('<?=$cp_theme_url?>images/publish_toolbar_background.png') repeat-x top;
+
 	margin-right: 		314px;
-	clear: 				left;
 }
 
-#mainContent #file_manager #showToolbarLink img {
-	position: 			absolute;
-}
-
-#mainContent #file_manager #showToolbarLink a {
-	color:				#B20000;
-}
-
+/*
 #file_manager_tools h3 {
 	background:			url('<?=$cp_theme_url?>images/content_custom_tab.jpg') repeat-x top;
 	height: 			27px;
 	margin-bottom:		0px;
 	border-bottom:		0px solid #D2D7DB;
 }
+*/
+#file_manager_tools h3 {
+	background:			url('<?=$cp_theme_url?>images/content_custom_tab.jpg') repeat-x top;
+	margin-left:		-4px;
+	margin-bottom:		0;
+	padding-bottom:		0;
+	padding-left:		0;
+	font-size:			15px;
+	text-shadow:		0 1px 0 #888;
+	
+	-webkit-font-smoothing: antialiased;
+}
 
 #file_manager_tools h3 a.closed {
-	background-image:	url('<?=$cp_theme_url?>images/content_custom_tab_arrow_closed.jpg')!important;
+	background-image:			url('<?=$cp_theme_url?>images/content_custom_tab_arrow_closed_shadow.jpg');
+	border-bottom:				1px solid #CBD9E2;
 }
 
 #file_manager_tools h3 a {
-	background:			url('<?=$cp_theme_url?>images/content_custom_tab_arrow_open.jpg') no-repeat left top;
-	padding: 			0 0 0 20px;
+	background:			url('<?=$cp_theme_url?>images/content_custom_tab_arrow_open_shadow.jpg') no-repeat left top;
+	padding: 			0 0 0 25px;
 	margin: 			0;
-	color: 				#fff;
+	color: 				#ffffff;
 	text-decoration: 	none;
 	display: 			block;
 	line-height: 		26px;
+	border-bottom:		1px solid #F7FBFC;
 }
 
 #file_manager_tools h3 a.open {
@@ -3340,7 +3342,7 @@ div.contentWrap {
 #file_manager_holder {
 	margin-right: 		300px;
 	padding-right:		4px;
-	/*border-right: 	4px solid #2d383e;*/
+	border-right:		4px solid #C1C8CE;
 	background:			#ECF1F4;
 }
 
