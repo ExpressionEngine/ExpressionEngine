@@ -1189,6 +1189,7 @@ table.detailTable {
 	line-height:		13px;
 	border:				0px;
 	padding:			0px;
+	background-color:	#ffffff;
 }
 
 table.detailTable tr {
@@ -1197,10 +1198,16 @@ table.detailTable tr {
 
 table.detailTable td {
 	border:			0px;
+	background-color:	#ffffff;
 }
 
 table.detailTable td:last-child {
 	border-right: 0px!important;
+}
+
+table td.details {
+	background-color:	#ffffff;
+	padding:			0px;
 }
 
 th.hidden_col { display: none; } td.hidden_col { display: none; }

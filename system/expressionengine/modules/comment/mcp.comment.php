@@ -283,7 +283,7 @@ class Comment_mcp {
 				}
 				else
 				{
-					$row['comment'] = strip_tags(str_replace(array("\t","\n","\r"), NBS, $row['comment']));
+					$row['comment'] = strip_tags(str_replace(array("\t","\n","\r"), ' ', $row['comment']));
 				}
 
 				if ($this->comment_chars != 0)
@@ -732,7 +732,7 @@ function fnOpenClose ( oSettings )
 				}
 				else
 				{
-					$display_comment = strip_tags(str_replace(array("\t","\n","\r"), NBS, $comment['comment']));
+					$display_comment = strip_tags(str_replace(array("\t","\n","\r"), ' ', $comment['comment']));
 				}
 
 				if ($this->comment_chars != 0)
@@ -1525,7 +1525,7 @@ function fnOpenClose ( oSettings )
 					continue;
 				}
 				
-				$row['comment'] = strip_tags(str_replace(array("\t","\n","\r"), NBS, $row['comment']));
+				$row['comment'] = strip_tags(str_replace(array("\t","\n","\r"), ' ', $row['comment']));
 				$row['comment'] = $this->EE->functions->char_limiter(trim($row['comment']), 100);
 
 
