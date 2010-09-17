@@ -2349,7 +2349,7 @@ label.hide_field {
 
 #mainContent #file_manager_tools .submit_alt {
 	display: 			block;
-	width: 				275px;
+	width: 				100%;
 	margin-top: 		2px;
 	border:				1px solid #b7c7d2; /*  won't work with rounded corners, but looks best for non js */
 	text-align:			left;
@@ -2362,7 +2362,7 @@ label.hide_field {
 }
 
 select#upload_dir {
-	width:				274px;
+	width:				100%;
 	margin:				8px 0 0 0;
 }
 
@@ -3206,24 +3206,15 @@ div.contentWrap {
 }
 
 #mainContent #file_manager_tools {
-	width:				300px;
+	width:				250px;
 	float: 				right;
 	clear: 				left;
 }
 
 #mainContent #file_manager #showToolbarLink {
-
-	margin-right: 		314px;
+	margin-right: 		264px;
 }
 
-/*
-#file_manager_tools h3 {
-	background:			url('<?=$cp_theme_url?>images/content_custom_tab.jpg') repeat-x top;
-	height: 			27px;
-	margin-bottom:		0px;
-	border-bottom:		0px solid #D2D7DB;
-}
-*/
 #file_manager_tools h3 {
 	background:			url('<?=$cp_theme_url?>images/content_custom_tab.jpg') repeat-x top;
 	margin-left:		-4px;
@@ -3340,7 +3331,7 @@ div.contentWrap {
 }
 
 #file_manager_holder {
-	margin-right: 		300px;
+	margin-right: 		250px;
 	padding-right:		4px;
 	border-right:		4px solid #C1C8CE;
 	background:			#ECF1F4;

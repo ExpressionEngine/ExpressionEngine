@@ -79,10 +79,10 @@ $(document).ready(function () {
 		}, function () {
 			$("#showToolbarLink a span").text(EE.lang.hide_toolbar);
 			$("#showToolbarLink").animate({
-				marginRight: "314"
+				marginRight: "264"
 			});
 			$("#file_manager_holder").animate({
-				marginRight: "300"
+				marginRight: "250"
 			}, function () {
 				$("#file_manager_tools").show();
 			});
