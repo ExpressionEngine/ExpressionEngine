@@ -1109,6 +1109,11 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 .contentMenu li.site a {		background:	transparent url('<?=$cp_theme_url?>images/list_item_site.gif') 10px no-repeat; }
 .contentMenu li.submission a {	background:	transparent url('<?=$cp_theme_url?>images/list_item_submission.gif') 10px no-repeat; }
 
+.contentMenu li span {
+	float:				right;
+	color:				#aaa;
+	margin-right:		14px;
+}
 
 .contentMenu li a:hover {
 	text-decoration:	none;
@@ -1722,33 +1727,16 @@ div.notice_texts ul.bad_path_error_list li ul li {color:#fff; font-weight:normal
 }
 
 .heading span.msg_open_close {
-	background:transparent url('../themes/jquery_ui/corporate/images/ui-icons_27343C_256x240.png') -15px -192px no-repeat;
+	background:	transparent url('../themes/jquery_ui/corporate/images/ui-icons_27343C_256x240.png') -15px -192px no-repeat;
 }
 
 #ee_important_message.closed {
-	position:absolute;
-	width:120px;
-	height:18px;
-	top:32px;
-	left:-20px;
+	display:	none;
 }
 
-#ee_important_message.closed .heading h2 {
-	display:none;
-}
-
-#ee_important_message.closed .closedHeading {
-	display:block;
-	height:15px;
-	width:119px;
-	background:transparent url('<?=$cp_theme_url?>images/notice_toolbar.png') no-repeat;
-	color:#fff;
-	padding:2px 5px 0 5px;
-	cursor: pointer;
-}
 
 #mainContent .pageContents p#newVersionNotice {
-	margin-bottom:15px;
+	margin-bottom:	15px;
 }
 
 #checksumFailure {

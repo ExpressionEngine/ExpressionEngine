@@ -96,7 +96,7 @@ Please download <a href="%s" title="Download Here">here</a> and follow the <a hr
 'Members Awaiting Activation',
 
 'total_validating_comments' =>
-'Comments Awaiting Validation',
+'Pending Comments',
 
 'total_entries' =>
 'Total Channel Entries',
