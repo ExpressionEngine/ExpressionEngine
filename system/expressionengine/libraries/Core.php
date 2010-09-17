@@ -64,15 +64,6 @@ class EE_Core {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 		
-		// Make sure app_version has no periods (only a problem on 2.0.2 installs)
-		$app_version = $this->EE->config->item('app_version');
-		
-		if (strpos($app_version, '.'))
-		{
-			$this->EE->config->_update_config(array('app_version' => str_replace('.', '', $app_version)));
-			$this->EE->config->set_item('app_version', str_replace('.', '', $app_version));
-		}		
-		
 		// some path constants to simplify things
 		define('PATH_MOD',		APPPATH.'modules/');
 		define('PATH_PI',		APPPATH.'plugins/');
