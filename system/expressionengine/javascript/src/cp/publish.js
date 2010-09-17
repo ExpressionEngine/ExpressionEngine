@@ -663,8 +663,6 @@ $(document).ready(function() {
 	});
 
 	$("#write_mode_header .reveal_formatting_buttons").hide();
-	$("#holder").corner("bottom-left");
-
 
 	if (EE.publish.smileys == true) {
 		$("a.glossary_link").click(function(){
