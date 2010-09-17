@@ -275,74 +275,82 @@ class Comment_mcp {
 		
 		if ($comment_results != FALSE)
 		{
-		foreach ($comment_results->result_array() as $row)
-		{
-			$data = array();
-
-			if ($this->comment_leave_breaks == 'y')
+			$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
+		
+			$this->EE->load->library('typography');
+			$this->EE->typography->initialize($config);
+			
+			$this->EE->typography->parse_images = FALSE;
+			$this->EE->typography->allow_headings = FALSE;
+			
+			foreach ($comment_results->result_array() as $row)
 			{
-				$row['comment'] = str_replace(array("\n","\r"),
+				$data = array();
+
+				$row['full_comment'] = $this->EE->typography->parse_type($row['comment'],
+					array(
+						'text_format'	=> $row['comment_text_formatting'],
+						'html_format'	=> $row['comment_html_formatting'],
+						'auto_links'	=> $row['comment_auto_link_urls'],
+						'allow_img_url' => $row['comment_allow_img_urls']
+						)
+					);
+
+				if ($this->comment_leave_breaks == 'y')
+				{
+					$row['comment'] = str_replace(array("\n","\r"),
 												  '<br />',
 												  strip_tags($row['comment'])
 												  );
-			}
-			else
-			{
-				$row['comment'] = strip_tags(str_replace(array("\t","\n","\r"), '', $row['comment']));
-			}
+				}
+				else
+				{
+					$row['comment'] = strip_tags(str_replace(array("\t","\n","\r"), '', $row['comment']));
+				}
 
-			if ($this->comment_chars != 0)
-			{
-				$row['comment'] = $this->EE->functions->char_limiter(trim($row['comment']), $this->comment_chars);
-			}
+				if ($this->comment_chars != 0)
+				{
+					$row['comment'] = $this->EE->functions->char_limiter(trim($row['comment']), $this->comment_chars);
+				}
 
+				$row['can_edit_comment'] = TRUE;
 
-			$row['can_edit_comment'] = TRUE;
-
-			if (($row['entry_author_id'] != $this->EE->session->userdata('member_id')) && ! $this->EE->cp->allowed_group('can_edit_all_comments'))
-			{
-				$row['can_edit_comment'] = FALSE;
-			}
+				if (($row['entry_author_id'] != $this->EE->session->userdata('member_id')) && ! $this->EE->cp->allowed_group('can_edit_all_comments'))
+				{
+					$row['can_edit_comment'] = FALSE;
+				}
 	
-			if ($row['status'] == 'o')
-			{
-				$status_label = $this->EE->lang->line('open');
-			}
-			elseif ($row['status'] == 'c')
-			{
-				$status_label = $this->EE->lang->line('closed');
-			}
-			else
-			{
-				$status_label = $this->EE->lang->line('pending');
-			}
+				if ($row['status'] == 'o')
+				{
+					$status_label = $this->EE->lang->line('open');
+				}
+				elseif ($row['status'] == 'c')
+				{
+					$status_label = $this->EE->lang->line('closed');
+				}
+				else
+				{
+					$status_label = $this->EE->lang->line('pending');
+				}
 
-			$data = $row;
+				$data = $row;
  			
-			$data['edit_url'] = $this->base_url.AMP.'method=edit_comment_form'.AMP.'comment_id='.$row['comment_id'];
+				$data['edit_url'] = $this->base_url.AMP.'method=edit_comment_form'.AMP.'comment_id='.$row['comment_id'];
 			
-			$data['status_label'] = $status_label;
-			$data['status_search_url'] = $this->base_url.AMP.'status='.$row['status'];
-			$data['can_edit_comment'] = $row['can_edit_comment'];
-			
-			
-			$data['ip_search_url'] = $this->base_url.AMP.'ip_address='.base64_encode($row['ip_address']);
-			
-			$data['channel_search_url'] = $this->base_url.AMP.'channel_id='.$row['channel_id'];
-			
-			
-			$data['email_search_url'] = $this->base_url.AMP.'email='.base64_encode($row['email']);
-			$data['mail_to'] = ($row['email'] != '') ? mailto($row['email']) : FALSE;
-			$data['name_search_url'] = $this->base_url.AMP.'name='.base64_encode($row['name']);
-			$data['date'] = $this->EE->localize->set_human_time($row['comment_date']);
+				$data['status_label'] = $status_label;
+				$data['status_search_url'] = $this->base_url.AMP.'status='.$row['status'];
+				$data['can_edit_comment'] = $row['can_edit_comment'];
+				$data['ip_search_url'] = $this->base_url.AMP.'ip_address='.base64_encode($row['ip_address']);
+				$data['channel_search_url'] = $this->base_url.AMP.'channel_id='.$row['channel_id'];
+				$data['email_search_url'] = $this->base_url.AMP.'email='.base64_encode($row['email']);
+				$data['mail_to'] = ($row['email'] != '') ? mailto($row['email']) : FALSE;
+				$data['name_search_url'] = $this->base_url.AMP.'name='.base64_encode($row['name']);
+				$data['date'] = $this->EE->localize->set_human_time($row['comment_date']);
+				$data['entry_search_url'] = $this->base_url.AMP.'entry_id='.$row['entry_id'];
+				$data['entry_title'] = $this->EE->functions->char_limiter(trim(strip_tags($row['title'])), 26);
 
-
-			$data['entry_search_url'] = $this->base_url.AMP.'entry_id='.$row['entry_id'];
-			$data['entry_title'] = $this->EE->functions->char_limiter(trim(strip_tags($row['title'])), 26);
-
-			$vars['comments'][] = $data;
-		}
-		// END FOREACH
+				$vars['comments'][] = $data;
+			} // END FOREACH
 		}
 
 		$vars['form_options'] = array(
@@ -407,6 +415,9 @@ class Comment_mcp {
 				$col_defs .= 'null, ';
 				$i++;
 			}
+
+			// One more for our hidden full comment column			
+			$col_defs .= '{ "bVisible" : false }, ';
 			
 			$col_defs .= '{ "bSortable" : false } ],';
 		}
@@ -558,6 +569,7 @@ function fnGetKey( aoData, sKey )
 			"sWrapper": false,
 			"sInfo": false,
 			"bAutoWidth": false,
+			"fnDrawCallback": fnOpenClose,
 			"iDisplayLength": '.$this->perpage.', 
 			
 			'.$col_defs.'
@@ -579,6 +591,42 @@ function fnGetKey( aoData, sKey )
 			"fnServerData": fnDataTablesPipeline
 
 	} );
+	
+	/* Formating function for row details */
+	function fnFormatDetails ( nTr )
+	{
+		var aData = oTable.fnGetData( nTr );
+		var sOut = "<table class=\"detailTable\">";
+		sOut += "<tr><td>"+aData[8]+"</td></tr>";
+		sOut += "</table>";
+	
+		return sOut;
+	}
+	
+	/* Event handler function */
+function fnOpenClose ( oSettings )
+{
+	$("td img", oTable.fnGetNodes() ).each( function () {
+		$(this).click( function () {
+			var nTr = this.parentNode.parentNode;
+			if ( this.src.match("field_expand") )
+			{
+				/* This row is already open - close it */
+				this.src = "'.$this->EE->cp->cp_theme_url.'images/field_collapse.png";
+
+				var nRemove = $(nTr).next()[0];
+				nRemove.parentNode.removeChild( nRemove );
+			}
+			else
+			{
+				/* Open this row */
+				this.src = "'.$this->EE->cp->cp_theme_url.'images/field_expand.png";
+				oTable.fnOpen( nTr, fnFormatDetails(nTr), "details");
+			}
+		} );
+	} );
+}
+	
 	
 	
 			$("#keywords").keyup( function () {
@@ -652,6 +700,8 @@ function fnGetKey( aoData, sKey )
 		
 		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
 		$total = $this->EE->db->count_all_results('comments');
+		
+		
 
 		$j_response['sEcho'] = $sEcho;
 		$j_response['iTotalRecords'] = $total;
@@ -665,79 +715,94 @@ function fnGetKey( aoData, sKey )
 		// Note- empty string added because otherwise it will throw a js error
 		if ($comment_results != FALSE)
 		{
-		
-		foreach ($comment_results->result_array() as $comment)
-		{
-			$can_edit_comment = TRUE;
 
-			if (($comment['entry_author_id'] != $this->EE->session->userdata('member_id')) && ! $this->EE->cp->allowed_group('can_edit_all_comments'))
+			$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
+		
+			$this->EE->load->library('typography');
+			$this->EE->typography->initialize($config);
+		
+			$this->EE->typography->parse_images = FALSE;
+			$this->EE->typography->allow_headings = FALSE;
+		
+			foreach ($comment_results->result_array() as $comment)
 			{
-				$can_edit_comment = FALSE;
-			}
+				$can_edit_comment = TRUE;
+
+				if (($comment['entry_author_id'] != $this->EE->session->userdata('member_id')) && ! $this->EE->cp->allowed_group('can_edit_all_comments'))
+				{
+					$can_edit_comment = FALSE;
+				}
 	
-			if ($comment['status'] == 'o')
-			{
-				$status_label = $this->EE->lang->line('open');
-			}
-			elseif ($comment['status'] == 'c')
-			{
-				$status_label = $this->EE->lang->line('closed');
-			}
-			else
-			{
-				$status_label = $this->EE->lang->line('pending');
-			}
+				if ($comment['status'] == 'o')
+				{
+					$status_label = $this->EE->lang->line('open');
+				}
+				elseif ($comment['status'] == 'c')
+				{
+					$status_label = $this->EE->lang->line('closed');
+				}
+				else
+				{
+					$status_label = $this->EE->lang->line('pending');
+				}
 			
 
-			if ($this->comment_leave_breaks == 'y')
-			{
-				$display_comment = str_replace(array("\n","\r"),
+				if ($this->comment_leave_breaks == 'y')
+				{
+					$display_comment = str_replace(array("\n","\r"),
 												  '<br />',
 												  strip_tags($comment['comment'])
 												  );
-			}
-			else
-			{
-				$display_comment = strip_tags(str_replace(array("\t","\n","\r"), '', $comment['comment']));
-			}
+				}
+				else
+				{
+					$display_comment = strip_tags(str_replace(array("\t","\n","\r"), '', $comment['comment']));
+				}
 
-			if ($this->comment_chars != 0)
-			{
-				$display_comment = $this->EE->functions->char_limiter(trim($display_comment), $this->comment_chars);
-			}
+				if ($this->comment_chars != 0)
+				{
+					$display_comment = $this->EE->functions->char_limiter(trim($display_comment), $this->comment_chars);
+				}
 			
+
+				$full_comment = $this->EE->typography->parse_type($comment['comment'],
+					array(
+						'text_format'	=> $comment['comment_text_formatting'],
+						'html_format'	=> $comment['comment_html_formatting'],
+						'auto_links'	=> $comment['comment_auto_link_urls'],
+						'allow_img_url' => $comment['comment_allow_img_urls']
+						)
+					);
 			
+				$edit_url = $this->base_url.AMP.'method=edit_comment_form'.AMP.'comment_id='.$comment['comment_id'];
+				$status_search_url = $this->base_url.AMP.'status='.$comment['status'];
+				$ip_search_url = $this->base_url.AMP.'ip_address='.base64_encode($comment['ip_address']);
+				$channel_search_url = $this->base_url.AMP.'channel_id='.$comment['channel_id'];
+				$email_search_url = $this->base_url.AMP.'email='.base64_encode($comment['email']);
+
+				$mail_to = ($comment['email'] != '') ? mailto($comment['email']) : FALSE;
+				$name_search_url = $this->base_url.AMP.'name='.base64_encode($comment['name']);
+				$date = $this->EE->localize->set_human_time($comment['comment_date']);
+				$entry_search_url = $this->base_url.AMP.'entry_id='.$comment['entry_id'];
+				$entry_title = $this->EE->functions->char_limiter(trim(strip_tags($comment['title'])), 26);
 			
+				$expand_img = '<img src="'.$this->EE->cp->cp_theme_url.'images/field_collapse.png" alt="expand" />';
 			
-			$edit_url = $this->base_url.AMP.'method=edit_comment_form'.AMP.'comment_id='.$comment['comment_id'];
-			$status_search_url = $this->base_url.AMP.'status='.$comment['status'];
-			$ip_search_url = $this->base_url.AMP.'ip_address='.base64_encode($comment['ip_address']);
-			$channel_search_url = $this->base_url.AMP.'channel_id='.$comment['channel_id'];
-			$email_search_url = $this->base_url.AMP.'email='.base64_encode($comment['email']);
+				$m[] = $expand_img.NBS.NBS."<a class='less_important_link' href='{$edit_url}'>{$display_comment}</a>";
+				$m[] = "<a class='less_important_link' href='{$entry_search_url}'>{$entry_title}</a>";
+				$m[] = "<a class='less_important_link' href='{$channel_search_url}'>{$comment['channel_title']}</a>";
+				$m[] = "<a class='less_important_link'  href='{$name_search_url}'>{$comment['name']}</a>";
+				$m[] = "<a class='less_important_link'  href='{$email_search_url}'>{$comment['email']}</a>";
+				$m[] = $date;
+				$m[] = "<a class='less_important_link' href='{$ip_search_url}'>{$comment['ip_address']}</a>";
+				$m[] = "<a class='less_important_link' href='{$status_search_url}'>{$status_label}</a>";
+				$m[] = $full_comment;
+				$m[] = '<input class="comment_toggle" type="checkbox" name="toggle[]" value="'.$comment['comment_id'].'" />';
 
-			$mail_to = ($comment['email'] != '') ? mailto($comment['email']) : FALSE;
-			$name_search_url = $this->base_url.AMP.'name='.base64_encode($comment['name']);
-			$date = $this->EE->localize->set_human_time($comment['comment_date']);
-			$entry_search_url = $this->base_url.AMP.'entry_id='.$comment['entry_id'];
-			$entry_title = $this->EE->functions->char_limiter(trim(strip_tags($comment['title'])), 26);
-			
-			$m[] = "<a class='less_important_link' href='{$edit_url}'>{$display_comment}</a>";
-			$m[] = "<a class='less_important_link' href='{$entry_search_url}'>{$entry_title}</a>";
-			$m[] = "<a class='less_important_link' href='{$channel_search_url}'>{$comment['channel_title']}</a>";
-			$m[] = "<a class='less_important_link'  href='{$name_search_url}'>{$comment['name']}</a>";
-			$m[] = "<a class='less_important_link'  href='{$email_search_url}'>{$comment['email']}</a>";
-			$m[] = $date;
-			$m[] = "<a class='less_important_link' href='{$ip_search_url}'>{$comment['ip_address']}</a>";
-			$m[] = "<a class='less_important_link' href='{$status_search_url}'>{$status_label}</a>";
-			$m[] = '<input class="comment_toggle" type="checkbox" name="toggle[]" value="'.$comment['comment_id'].'" />';
-
-
-			$tdata[$i] = $m;
-			$i++;
-			unset($m);
-		}		
-
-
+				$tdata[$i] = $m;
+				$i++;
+				unset($m);
+			}		
 		} // end false check
 	
 	

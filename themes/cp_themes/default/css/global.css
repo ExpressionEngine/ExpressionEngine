@@ -1183,6 +1183,29 @@ table.mainTable td:last-child {
 	text-decoration:	underline;
 }
 
+table.detailTable {
+	width:				100%;
+	text-align:			left;
+	line-height:		13px;
+	border:				0px;
+	padding:			0px;
+}
+
+table.detailTable tr {
+	border:			0px;
+}
+
+table.detailTable td {
+	border:			0px;
+}
+
+table.detailTable td:last-child {
+	border-right: 0px!important;
+}
+
+th.hidden_col { display: none; } td.hidden_col { display: none; }
+
+
 #mainContent .tableFooter {
 	background-color:	#ECF1F4;
 	padding:			12px 11px 20px 11px;

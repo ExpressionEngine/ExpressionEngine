@@ -47,6 +47,7 @@
 				lang('date'),
 				lang('ip_address'),
 				lang('status'),
+				array('data' => '', 'class' => 'hidden_col'),
 				array('data' => form_checkbox('toggle_comments', 'true', FALSE, 'class="toggle_comments"'), 'style' => 'width: 5%;')
 			);
 
@@ -75,6 +76,7 @@
 						
 						"<a class='less_important_link' href='{$comment['status_search_url']}'>{$comment['status_label']}</a>",	
 						
+						array('data' => '', 'class' => 'hidden_col'),
 																	
 						form_checkbox('toggle[]', $comment['comment_id'], FALSE, 'class="comment_toggle"')
 					);
