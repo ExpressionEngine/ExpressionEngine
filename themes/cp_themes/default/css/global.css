@@ -397,6 +397,10 @@ span.button .submit {
 	padding-top:		2px;
 }
 
+#navigationTabs a {
+	outline:			0;
+}
+
 /* Style the top level */
 
 #navigationTabs > li {
