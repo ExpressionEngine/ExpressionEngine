@@ -71,10 +71,14 @@ if ($EE_view_disable !== TRUE)
 					<div class="fu_pref">	<p class="file_tool"><a id="upload_prefs" href="<?=BASE.AMP."C=admin_content".AMP."M=file_upload_preferences"?>" class="submit_alt"><?=lang('file_upload_prefs')?></a></p></div>
 					<?php endif;?>
 				</div>
-
 			</div>
 
-			<div id="showToolbarLink"><a href="#"><span><?=lang('hide_toolbar')?></span>&nbsp;<img alt="" id="showToolbarImg" width="20" height="23" src="<?=$cp_theme_url?>images/file_manager_show_image_toolbar.png" /></a></div>
+			<div id="showToolbarLink">
+				<a href="#"><span><?=lang('hide_toolbar')?></span>&nbsp;
+					<img alt="<?=lang('hide')?>" id="hideToolbarImg" width="24" height="27" src="<?=$cp_theme_url?>images/content_hide_image_toolbar.png" style="display: inline" />
+					<img alt="<?=lang('show')?>" id="showToolbarImg" width="20" height="27" src="<?=$cp_theme_url?>images/content_show_image_toolbar.png" class="js_hide" />
+				</a>
+			</div>
 			
 			<div id="file_manager_holder">
 				<div class="main_tab solo" id="file_manager_list">
