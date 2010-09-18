@@ -3247,15 +3247,21 @@ div.contentWrap {
 	background:			url('<?=$cp_theme_url?>images/content_custom_tab_arrow_open.jpg') no-repeat left top;
 }
 
-#file_manager_tools li a {
+#file_manager_tools li a,
+#file_manager_tools li a:visited {
 	display: 			block;
+	color:				#5f6c74;
 }
 
 #mainContent #file_manager .f_m_s p.preview {
 	text-align: 		center;
 }
 
-#mainContent #file_manager #file_information_hold ul li.file_name {
+#file_information_hold {
+	padding: 10px;
+}
+
+#file_information_hold ul li.file_name {
 	font-size: 			120%;
 	border-bottom: 		1px solid #D2D7DB;
 	color: 				#37444d;
@@ -3264,28 +3270,39 @@ div.contentWrap {
 
 }
 
-#mainContent #file_manager #file_information_hold ul {
+#file_information_hold ul {
 	margin-bottom: 		5px;
 	border-bottom: 		1px solid #D2D7DB;
 	padding-bottom:	 	5px;
 }
 
-#mainContent #file_manager #file_information_hold ul li {
+#file_information_hold li {
 	line-height: 		120%;
 	font-size: 			110%;
 	clear: 				left;
 }
 
-#mainContent #file_manager #file_information_hold ul li span {
+#file_information_hold li span {
 	float: 				left;
-	display:			block;
+	display:			inline-block;
 	font-weight:		bold;
-	width: 				30%;
+	width: 				38%;
 	text-align:			right;
 	padding-right: 		5px;
+	margin-bottom:		5px;
 }
 
-#mainContent #file_manager #file_information_hold ul li.file_location {
+#file_information_hold li.file_permissions span {
+	width: 38%;
+}
+
+#file_information_hold li.file_location span {
+	width: 				21%;
+}
+
+#file_information_hold li.file_location p {
+	width: 75%;
+	display:			inline-block;
 	word-wrap: break-word;
 }
 
@@ -3315,10 +3332,7 @@ div.contentWrap {
 	background: transparent url(<?=$cp_theme_url?>/images/upload_item.png) no-repeat;
 }
 
-
-
-#mainContent #file_manager .f_m_s .cp_button{
-	/*padding-left: 18px;*/
+#mainContent #file_manager .f_m_s .cp_button {
 	margin:0 0 14px 0;
 }
 
