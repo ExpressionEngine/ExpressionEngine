@@ -259,33 +259,33 @@ class Content_files extends Controller {
 
 		$file_info = get_file_info($file, array('name', 'size', 'fileperms'));
 
-		if ( ! $file_info)
-		{
-			exit($this->lang->line('no_file'));
-		}
-		else
+		$data = array();
+
+		if ($file_info)
 		{
 			$file_type = get_mime_by_extension($file);
-			$where = str_replace(str_replace(SYSDIR.'/', '', BASEPATH), '', substr($file, 0, strrpos($file, '/')).'/');
+			
+			// Remove any system path information
+			$theme_path = trim(PATH_THEMES, '/');
+			$theme_path = substr($theme_path, 0, strrpos($theme_path, '/'));
+			
+			$remove	= array(SYSDIR, BASEPATH, APPPATH, $theme_path);
+			$where	= str_replace($remove, '', dirname($file));
+			
+			$this->load->helper('text');
+			
+			$data['file'] = array(
+				'name'			=> $file_info['name'],
+				'size'			=> number_format($file_info['size']/1000, 1),
+				'type'			=> $file_type,
+				'permissions'	=> symbolic_permissions($file_info['fileperms']),
+				'location'		=> trim($where, '/'),
+				'src'			=> '' // how was this meant to be used?
+			);
 
-			$output = '<ul>';
-
-			$output .= '<li class="file_name">'.$file_info['name'].'</li>';
-			$output .= '<li><span>'.$this->lang->line('size').':</span> '.number_format($file_info['size']/1000, 1).'KB</li>';
-
-			if ($file_type != FALSE)
-			{
-				$output .= '<li><span>'.$this->lang->line('kind').':</span> '.$file_type.'</li>';
-			}
-
-			$output .= '<li class="file_location"><span>'.$this->lang->line('where').':</span> '.$where.'</li>';
-			$output .= '<li><span>'.$this->lang->line('permissions').':</span> '.symbolic_permissions($file_info['fileperms']).'</li>';
-			$output .= '</ul>';
-
-//			$output .= '<div id="file_tags"></div>'; // not currently used, but in there for potential future compatibility
-
-			exit($output);
 		}
+		
+		exit($this->load->view('content/_assets/file_sidebar_info', $data, TRUE));
 	}
 
 	// --------------------------------------------------------------------

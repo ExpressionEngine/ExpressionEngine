@@ -19,27 +19,7 @@ if ($EE_view_disable !== TRUE)
 				<h3 class="closed" class="file_information_header"><a href="#"><?=lang('file_information')?></a></h3>
 				<div id="file_information_hold" class="f_m_s">
 
-				<?php if (isset($file)):?>
-
-					<ul>
-						<li class="file_name"><?=$file['name']?></li>
-						<li><span><?=lang('size')?>:</span> <?=number_format($file['size']/100, 1)?>KB</li>
-						<li><span><?=lang('kind')?>:</span> <?=$file['type']?></li>
-						<li class="file_location"><span><?=lang('where')?>:</span> <?=$file['location']?></li>
-						<li><span><?=lang('permissions')?></span> <?=$file['permissions']?></li>
-					</ul>
-
-					<?php if ($file['src'] != ''):?>
-						<p class="preview"><img src="<?=$file['src']?>" alt="<?=$file['name']?>" /></p>
-					<?php endif;?>
-
-					<div id="file_tags"></div>
-
-				<?php else:?>
-
-					<p class="subtext"><?=lang('no_file')?></p>
-
-				<?php endif;?>
+				<?php $this->load->view('content/_assets/file_sidebar_info');?>
 
 				</div>
 
