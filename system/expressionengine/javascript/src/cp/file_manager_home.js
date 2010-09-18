@@ -76,6 +76,11 @@ $(document).ready(function () {
 			$("#file_manager_holder").animate({
 				marginRight: "10"
 			});
+			
+			// Swap the image
+			$("#hideToolbarImg").hide();
+			$("#showToolbarImg").css("display", "inline");	// .show() uses block
+
 		}, function () {
 			$("#showToolbarLink a span").text(EE.lang.hide_toolbar);
 			$("#showToolbarLink").animate({
@@ -86,6 +91,10 @@ $(document).ready(function () {
 			}, function () {
 				$("#file_manager_tools").show();
 			});
+			
+			// Swap the image
+			$("#showToolbarImg").hide();
+			$("#hideToolbarImg").css("display", "inline");	// .show() uses block
 		}
 	);
 
