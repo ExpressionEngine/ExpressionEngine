@@ -40,7 +40,7 @@ if ($EE_view_disable !== TRUE)
 					</p>
 					
 					<div>
-						<?=form_label(lang('upload_file'), 'upload_file')?>
+						<?=form_label(lang('upload_file'), 'upload_file', array('class' => 'visualEscapism'))?>
 						<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>15,'class'=>'field'))?>
 					</div>
 
