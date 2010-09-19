@@ -69,17 +69,16 @@ class Login extends Controller {
 			die('C=login');
 		}
 		
-		
 		$this->load->helper('form');
-
-		$message = ($this->input->get('auto_expire')) ? $this->lang->line('session_auto_timeout') : $this->session->flashdata('message');
-
-		$this->cp->set_variable('return_path',		SELF);
-		$this->cp->set_variable('message',			$message);
-		$this->cp->set_variable('cp_page_title',	$this->lang->line('login'));
-		$this->cp->set_variable('cp_page_onload',	"document.forms[0].username.focus();");
 		
-		$vars['username'] = ($this->username) ? form_prep($this->username) : '';
+		$username = $this->session->flashdata('username');
+
+		$vars = array(
+			'return_path'	=> '',
+			'focus_field'	=> ($username) ? 'password' : 'username',
+			'username'		=> ($username) ? form_prep($username) : '',
+			'message'		=> ($this->input->get('auto_expire')) ? $this->lang->line('session_auto_timeout') : $this->session->flashdata('message')
+		);
 		
 		if ($this->input->get('BK'))
 		{
@@ -89,10 +88,9 @@ class Login extends Controller {
 		{
 			$vars['return_path'] = $this->input->get('return');
 		}
-		else
-		{
-			$vars['return_path'] = '';
-		}
+		
+		$this->cp->set_variable('return_path',		SELF);
+		$this->cp->set_variable('cp_page_title',	$this->lang->line('login'));
 
 		$this->load->view('account/login', $vars);
 	}  
@@ -127,8 +125,9 @@ class Login extends Controller {
 			
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
-		
-		$this->username = $this->input->post('username');
+				
+		$username = $this->input->post('username');
+		$this->session->set_flashdata('username', $username);
 		
 		if ( ! $this->input->get_post('password'))
 		{
@@ -172,7 +171,7 @@ class Login extends Controller {
 		/**  Check password lockout status
 		/** ----------------------------------------*/
 		
-		if ($this->session->check_password_lockout($this->username) === TRUE)
+		if ($this->session->check_password_lockout($username) === TRUE)
 		{
 			$line = $this->lang->line('password_lockout_in_effect');
 		
@@ -203,7 +202,7 @@ class Login extends Controller {
 		//  Invalid Username
 		if ($query->num_rows() == 0)
 		{
-			$this->session->save_password_lockout($this->username);
+			$this->session->save_password_lockout($username);
 			
 			$this->session->set_flashdata('message', $this->lang->line('credential_missmatch'));
 			
@@ -247,7 +246,7 @@ class Login extends Controller {
 				/**  Invalid password
 				/** ----------------------------------------*/
 					
-				$this->session->save_password_lockout($this->username);
+				$this->session->save_password_lockout($username);
 
 				$this->session->set_flashdata('message', $this->lang->line('credential_missmatch'));
 				

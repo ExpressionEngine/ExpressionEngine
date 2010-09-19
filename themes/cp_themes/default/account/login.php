@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<meta charset="utf-8">
 <title><?=$cp_page_title?> | ExpressionEngine</title>
 <style type="text/css">
 
@@ -63,6 +64,10 @@ dd {
 	color:				#666;
 }
 
+input {
+	outline:			0;
+}
+
 input, .error {
 	font-size:			16px;
 	border:				none;
@@ -100,8 +105,10 @@ input.submit {
 	margin:				-48px 0 20px 0;
 	width:				374px;
 	
-	-webkit-border-radius: 6px;
-	-moz-border-radius:	6px;
+	-webkit-border-radius:	6px;
+	-moz-border-radius:		6px;
+	-o-border-radius:		6px;
+	border-radius:			6px;
 }
 
 .error p {
@@ -110,12 +117,11 @@ input.submit {
 
 </style>
 </head>
-<body id="login" onload="<?=$cp_page_onload?>">
+<body>
 
 <div id="branding"><a href="http://expressionengine.com/"><img src="<?=$cp_theme_url?>images/ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
 
 	<div id="content">
-		
 		
 		<?php if ($message != ''):?>
 		<div class="error">
@@ -137,6 +143,10 @@ input.submit {
 			  <?=form_password(array('style' => 'width:90%', 'size' => '32', 'dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => 32))?> 
 			</dd>
 		</dl>
+		
+		<script>
+			document.getElementById('<?=$focus_field?>').focus();
+		</script>
 		
 		<?php if ($this->config->item('admin_session_type') == 'c'):?>
 			<p><?=form_checkbox('remember_me', '1', '', 'id="remember_me"')?><span><?=lang('remember_me', 'remember_me')?></span></p>
