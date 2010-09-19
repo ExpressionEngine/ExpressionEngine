@@ -49,7 +49,7 @@ class Cp {
 	{
 		$this->EE =& get_instance();
 		
-		if ($this->EE->router->class == 'ee')
+		if ($this->EE->router->fetch_class() == 'ee')
 		{
 			show_error("The CP library is only available on Control Panel requests.");
 		}
@@ -110,10 +110,10 @@ class Cp {
 		}
 		
 		$cp_table_template = array(
-									'table_open'		=> '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">',
-									'row_start'			=> '<tr class="even">',
-									'row_alt_start'		=> '<tr class="odd">'				
-								);
+				'table_open'		=> '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">',
+				'row_start'			=> '<tr class="even">',
+				'row_alt_start'		=> '<tr class="odd">'
+		);
 
 		$cp_pad_table_template = $cp_table_template;
 		$cp_pad_table_template['table_open'] = '<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">';
@@ -202,7 +202,13 @@ class Cp {
 			$js_lang_keys['session_expiring'] = $this->EE->lang->line('session_expiring');
 			$js_lang_keys['username'] = $this->EE->lang->line('username');
 			$js_lang_keys['password'] = $this->EE->lang->line('password');
-			$js_lang_keys['login'] = $this->EE->lang->line('login');			
+			$js_lang_keys['login'] = $this->EE->lang->line('login');
+			
+			$this->EE->javascript->set_global(array(
+				'SESS_TIMEOUT'		=> $this->EE->session->cpan_session_len * 1000,
+				'XID_TIMEOUT'		=> $this->xid_ttl * 1000,
+				'SESS_TYPE'			=> $this->EE->config->item('admin_session_type')	
+			));			
 		}
 		
 		$this->EE->javascript->set_global(array(
@@ -216,20 +222,6 @@ class Cp {
 			'lang'				=> $js_lang_keys,
 			'THEME_URL'			=> $this->cp_theme_url
 		));
-
-		/* -------------------------------------------
-		/*	Hidden Configuration Variable
-		/*	- login_reminder => y/n  to turn the CP Login Reminder On or Off.  Default is 'y'
-	    /* -------------------------------------------*/
-		if ($this->EE->config->item('login_reminder') != 'n')
-		{
-			$this->EE->javascript->set_global(array(
-					'SESS_TIMEOUT'		=> $this->EE->session->cpan_session_len * 1000,
-					'XID_TIMEOUT'		=> $this->xid_ttl * 1000,
-					'SESS_TYPE'			=> $this->EE->config->item('admin_session_type')	
-				)
-			);
-		}
 		
 		// Combo-load the javascript files we need for every request
 
@@ -278,8 +270,6 @@ class Cp {
 	 *
 	 * @access public
 	 * @param array - associative array of
-	 *
-	 *
 	 */
 	function add_js_script($script = array(), $in_footer = TRUE)
 	{
