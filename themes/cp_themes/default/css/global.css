@@ -25,7 +25,7 @@ optgroup option {
 	padding-left:			10px;
 }
 
-img, fieldse {
+img, fieldset {
 	border:					0;
 }
 
@@ -34,7 +34,7 @@ ul {
 }
 
 fieldset {
-	border:1px solid;
+	border: 1px solid #D0D7DF;
 }
 
 textarea,
