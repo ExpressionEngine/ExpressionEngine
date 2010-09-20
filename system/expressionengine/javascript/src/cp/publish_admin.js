@@ -144,6 +144,10 @@ $("a", "#showToolbarLink").toggle(
 			marginRight: "196"
 		}, function(){
 			$("#tools").show();
+			
+			// Swap the image
+			$("#showToolbarImg").hide();
+			$("#hideToolbarImg").css("display", "inline");	// .show() uses block
 		});
 		$(".publish_field").animate({backgroundPosition: "0px 0px"}, "slow");
 		$(".handle").css("display", "block");
@@ -152,10 +156,6 @@ $("a", "#showToolbarLink").toggle(
 			marginRight: "0px"
 		});
 		$(".addTabButton").css("display", "inline");
-		
-		// Swap the image
-		$("#showToolbarImg").hide();
-		$("#hideToolbarImg").css("display", "inline");	// .show() uses block
 		
 	}, function (){
 

@@ -47,11 +47,13 @@ $(document).ready(function() {
 				marginRight: "250"
 			}, function () {
 				$("#file_manager_tools").show();
+				
+				// Swap the image
+				// Doing after the animation in this step as the header background won't show up to
+				// that point, and the hide image blends in with that header. Looks strange without it.
+				$("#showToolbarImg").hide();
+				$("#hideToolbarImg").css("display", "inline");	// .show() uses block
 			});
-			
-			// Swap the image
-			$("#showToolbarImg").hide();
-			$("#hideToolbarImg").css("display", "inline");	// .show() uses block
 		}
 	);
 	
