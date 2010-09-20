@@ -2629,7 +2629,6 @@ class Comment {
 						'comment'		=> $this->EE->security->xss_clean($_POST['comment']),
 						'comment_date'	=> $this->EE->localize->now,
 						'ip_address'	=> $this->EE->input->ip_address(),
-						'notify'		=> $notify,
 						'status'		=> ($comment_moderate == 'y') ? 'p' : 'o',
 						'site_id'		=> $this->EE->config->item('site_id')
 					 );
