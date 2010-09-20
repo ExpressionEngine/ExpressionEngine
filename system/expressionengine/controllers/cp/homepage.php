@@ -82,7 +82,7 @@ class Homepage extends Controller {
 			$vars['show_page_option'] = $this->member_model->can_access_module('pages');
 		}
 		
-		$vars['recent_entries'] = $this->recent_entries();
+		$vars['recent_entries'] = $this->_recent_entries();
 
 		// A few more permission checks
 		
@@ -104,7 +104,7 @@ class Homepage extends Controller {
 		//  Comment blocks
 		$vars['comments_installed']			= $this->db->table_exists('comments');
 		$vars['can_moderate_comments']		= $this->cp->allowed_group('can_moderate_comments') ? TRUE : FALSE;
-		$vars['comment_validation_count']	= ($vars['comments_installed']) ? $this->total_validating_comments() : FALSE;	
+		$vars['comment_validation_count']	= ($vars['comments_installed']) ? $this->_total_validating_comments() : FALSE;	
 
 		// Most recent comment and most recent entry
 		$this->load->model('channel_model');
@@ -128,17 +128,18 @@ class Homepage extends Controller {
 		$this->load->view('homepage', $vars);
 	}
 
+
 	// --------------------------------------------------------------------
-
+	
 	/**
-	 * Get Comments Awaiting Validation
-	 * 
+	 *  Get Comments Awaiting Validation
 	 *
-	 * @access	public
-	 * @return int
+	 * Gets total number of comments with 'pending' status
+	 *
+	 * @access	private
+	 * @return	integer
 	 */
-
-	function total_validating_comments()
+	function _total_validating_comments()
 	{  
 		$this->db->where('status', 'p');
 		$this->db->where('site_id', $this->config->item('site_id'));
@@ -150,15 +151,16 @@ class Homepage extends Controller {
 
 
 	// --------------------------------------------------------------------
-
+	
 	/**
-	 * Get Recent Entries
-	 * 
+	 *  Get Recent Entries
 	 *
-	 * @access	public
-	 * @return array
+	 * Gets total number of comments with 'pending' status
+	 *
+	 * @access	private
+	 * @return	array
 	 */
-	function recent_entries()
+	function _recent_entries()
 	{
 		$this->load->model('channel_entries_model');
 		$entries = array();
