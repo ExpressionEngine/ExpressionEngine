@@ -1775,6 +1775,15 @@ function fnOpenClose ( oSettings )
 
 		$comment_ids = explode('|', $comment_id);
 
+		/* -------------------------------------------
+		/* 'delete_comment_additional' hook.
+		/*  - Add additional processing on comment delete
+		*/
+			$edata = $this->EE->extensions->call('delete_comment_additional', $comment_ids);
+			if ($this->EE->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+
 		$this->EE->db->where_in('comment_id', $comment_ids);
 		$this->EE->db->delete('comments');
 		
@@ -1783,15 +1792,6 @@ function fnOpenClose ( oSettings )
 
 		$msg = $this->EE->lang->line('comment_deleted');
 
-		/* -------------------------------------------
-		/* 'delete_comment_additional' hook.
-		/*  - Add additional processing on comment delete
-		*/
-			$edata = $this->EE->extensions->call('delete_comment_additional');
-			if ($this->EE->extensions->end_script === TRUE) return;
-		/*
-		/* -------------------------------------------*/
-		
 		$this->EE->functions->clear_caching('all');
 
 		$this->EE->session->set_flashdata('message_success', $msg);
