@@ -22,9 +22,9 @@ $(document).ready(function() {
 	// dropdown and revealing the list of icons (hidden via css)
 	$("#rotate_fieldset p").hide();
 	$("#rotate_fieldset .icons").show();
-
+	
 	$("#showToolbarLink a").toggle(
-		function(){
+		function () {
 			$("#file_manager_tools").hide();
 			$("#showToolbarLink a span").text(EE.lang.show_toolbar);
 			$("#showToolbarLink").animate({
@@ -33,19 +33,28 @@ $(document).ready(function() {
 			$("#file_manager_holder").animate({
 				marginRight: "10"
 			});
-		}, function (){
+			
+			// Swap the image
+			$("#hideToolbarImg").hide();
+			$("#showToolbarImg").css("display", "inline");	// .show() uses block
+
+		}, function () {
 			$("#showToolbarLink a span").text(EE.lang.hide_toolbar);
 			$("#showToolbarLink").animate({
-				marginRight: "314"
+				marginRight: "264"
 			});
 			$("#file_manager_holder").animate({
-				marginRight: "300"
-			}, function(){
+				marginRight: "250"
+			}, function () {
 				$("#file_manager_tools").show();
 			});
+			
+			// Swap the image
+			$("#showToolbarImg").hide();
+			$("#hideToolbarImg").css("display", "inline");	// .show() uses block
 		}
 	);
-
+	
 	$("#file_manager_tools h3 a").toggle(
 		function(){
 			$(this).parent().next("div").slideUp();

@@ -63,7 +63,7 @@ class EE_Blacklist {
 		if (count($_POST) == 0 OR ! $this->EE->db->table_exists('exp_blacklisted'))
 		{
 			unset($_POST['HTTP_REFERER']);
-			return true;
+			return TRUE;
 		}
 												
 		// Whitelisted Items		
@@ -122,7 +122,7 @@ class EE_Blacklist {
 		if ($query->num_rows() == 0)
 		{
 			unset($_POST['HTTP_REFERER']);
-			return true;
+			return TRUE;
 		}
 
 		// Load the typography helper so we can do entity_decode()
@@ -168,7 +168,7 @@ class EE_Blacklist {
 							
 							foreach($blacklist_values as $bad_url)
 							{
-								if ($bad_url != '' && stristr($matches['0'][$i], $bad_url) !== false)
+								if ($bad_url != '' && stristr($matches['0'][$i], $bad_url) !== FALSE)
 								{
 									$bad = 'y';
 									
@@ -180,7 +180,7 @@ class EE_Blacklist {
 										
 										foreach($whitelisted_url as $pure)
 										{
-											if ($pure != '' && stristr($parts['0'], $pure) !== false)
+											if ($pure != '' && stristr($parts['0'], $pure) !== FALSE)
 											{
 												$bad = 'n';
 												$this->whitelisted = 'y';
@@ -194,7 +194,7 @@ class EE_Blacklist {
 									{
 										foreach($whitelisted_ip as $pure)
 										{
-											if ($pure != '' && strpos($this->EE->input->ip_address(), $pure) !== false)
+											if ($pure != '' && strpos($this->EE->input->ip_address(), $pure) !== FALSE)
 											{
 												$bad = 'n';												
 												$this->whitelisted = 'y';												
@@ -243,7 +243,7 @@ class EE_Blacklist {
 						{
 							foreach($whitelisted_ip as $pure)
 							{
-								if ($pure != '' && strpos($this->EE->input->ip_address(), $pure) !== false)
+								if ($pure != '' && strpos($this->EE->input->ip_address(), $pure) !== FALSE)
 								{
 									$bad = 'n';
 									$this->whitelisted = 'y';
@@ -260,7 +260,7 @@ class EE_Blacklist {
 						else
 						{
 							unset($_POST['HTTP_REFERER']);
-							return true; // whitelisted, so end
+							return TRUE; // whitelisted, so end
 						}
 					}
 				}				
@@ -276,7 +276,7 @@ class EE_Blacklist {
 				
 				foreach($blacklist_values as $bad_agent)
 				{
-					if ($bad_agent != '' && stristr($this->EE->input->user_agent(), $bad_agent) !== false)
+					if ($bad_agent != '' && stristr($this->EE->input->user_agent(), $bad_agent) !== FALSE)
 					{
 						$bad = 'y';
 						
@@ -284,7 +284,7 @@ class EE_Blacklist {
 						{
 							foreach($whitelisted_ip as $pure)
 							{
-								if ($pure != '' && strpos($this->EE->input->user_agent(), $pure) !== false)
+								if ($pure != '' && strpos($this->EE->input->user_agent(), $pure) !== FALSE)
 								{
 									$bad = 'n';
 									$this->whitelisted = 'y';
@@ -297,7 +297,7 @@ class EE_Blacklist {
 						{
 							foreach($whitelisted_agent as $pure)
 							{
-								if ($pure != '' && strpos($this->EE->input->agent, $pure) !== false)
+								if ($pure != '' && strpos($this->EE->input->agent, $pure) !== FALSE)
 								{
 									$bad = 'n';
 									$this->whitelisted = 'y';
@@ -313,7 +313,7 @@ class EE_Blacklist {
 						else
 						{
 							unset($_POST['HTTP_REFERER']);
-							return true; // whitelisted, so end
+							return TRUE; // whitelisted, so end
 						}
 					}
 				}				
@@ -322,7 +322,7 @@ class EE_Blacklist {
 		
 		unset($_POST['HTTP_REFERER']);
 		
-		return true;		
+		return TRUE;		
 	}	
 	
 

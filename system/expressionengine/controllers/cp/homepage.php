@@ -101,17 +101,14 @@ class Homepage extends Controller {
 			}
 		}
 		
-		//  Can they moderate ALL comments
-		$vars['can_moderate_comments'] = $this->cp->allowed_group('can_moderate_comments') ? TRUE : FALSE;
-		
+		//  Comment blocks
+		$vars['comments_installed']			= $this->db->table_exists('comments');
+		$vars['can_moderate_comments']		= $this->cp->allowed_group('can_moderate_comments') ? TRUE : FALSE;
+		$vars['comment_validation_count']	= ($vars['comments_installed']) ? $this->total_validating_comments() : FALSE;	
+
 		// Most recent comment and most recent entry
 		$this->load->model('channel_model');
 
-		$vars['comments_installed'] = $this->db->table_exists('comments');
-		
-
-		$vars['comment_validation_count'] = ($vars['comments_installed']) ? $this->total_validating_comments() : FALSE;	
-		
 		$vars['cp_recent_ids'] = array(
 			'entry'		=> $this->channel_model->get_most_recent_id('entry')
 		);

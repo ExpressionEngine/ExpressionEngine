@@ -19,27 +19,7 @@ if ($EE_view_disable !== TRUE)
 				<h3 class="closed" class="file_information_header"><a href="#"><?=lang('file_information')?></a></h3>
 				<div id="file_information_hold" class="f_m_s">
 
-				<?php if (isset($file)):?>
-
-					<ul>
-						<li class="file_name"><?=$file['name']?></li>
-						<li><span><?=lang('size')?>:</span> <?=number_format($file['size']/100, 1)?>KB</li>
-						<li><span><?=lang('kind')?>:</span> <?=$file['type']?></li>
-						<li class="file_location"><span><?=lang('where')?>:</span> <?=$file['location']?></li>
-						<li><span><?=lang('permissions')?></span> <?=$file['permissions']?></li>
-					</ul>
-
-					<?php if ($file['src'] != ''):?>
-						<p class="preview"><img src="<?=$file['src']?>" alt="<?=$file['name']?>" /></p>
-					<?php endif;?>
-
-					<div id="file_tags"></div>
-
-				<?php else:?>
-
-					<p class="subtext"><?=lang('no_file')?></p>
-
-				<?php endif;?>
+				<?php $this->load->view('content/_assets/file_sidebar_info');?>
 
 				</div>
 
@@ -91,10 +71,14 @@ if ($EE_view_disable !== TRUE)
 					<div class="fu_pref">	<p class="file_tool"><a id="upload_prefs" href="<?=BASE.AMP."C=admin_content".AMP."M=file_upload_preferences"?>" class="submit_alt"><?=lang('file_upload_prefs')?></a></p></div>
 					<?php endif;?>
 				</div>
-
 			</div>
 
-			<div id="showToolbarLink"><a href="#"><span><?=lang('hide_toolbar')?></span>&nbsp;<img alt="" id="showToolbarImg" width="20" height="23" src="<?=$cp_theme_url?>images/file_manager_show_image_toolbar.png" /></a></div>
+			<div id="showToolbarLink">
+				<a href="#"><span><?=lang('hide_toolbar')?></span>&nbsp;
+					<img alt="<?=lang('hide')?>" id="hideToolbarImg" width="24" height="27" src="<?=$cp_theme_url?>images/content_hide_image_toolbar.png" style="display: inline" />
+					<img alt="<?=lang('show')?>" id="showToolbarImg" width="20" height="27" src="<?=$cp_theme_url?>images/content_show_image_toolbar.png" class="js_hide" />
+				</a>
+			</div>
 			
 			<div id="file_manager_holder">
 				<div class="main_tab solo" id="file_manager_list">

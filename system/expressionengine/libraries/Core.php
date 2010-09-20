@@ -461,10 +461,6 @@ class EE_Core {
 			return;
 		}
 		
-		/** ------------------------------------
-		/**  Instantiate Display Class.
-		/** ------------------------------------*/
-		
 		// Load common helper files
 		$this->EE->load->helper(array('form', 'quicktab'));
 

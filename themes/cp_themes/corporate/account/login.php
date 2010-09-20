@@ -72,6 +72,7 @@ input[type=text],input[type=password], .error {
 	padding:			10px;
 	width:				430px;
 	margin-right:		5px;
+	outline:			0;
 }
 
 .error {
@@ -118,7 +119,7 @@ input.submit:hover{
 
 </style>
 </head>
-<body id="login" onload="<?=$cp_page_onload?>">
+<body>
 
 <div id="branding"><a href="http://expressionengine.com/"><img src="<?=$cp_theme_url?>images/ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
 
@@ -128,7 +129,6 @@ input.submit:hover{
 		<?php if ($message != ''):?>
 		<div class="error"><?=$message?></div>
 		<?php endif;?>
-
 
 		<?=form_open('C=login'.AMP.'M=authenticate', array(), array('return_path' => $return_path))?>
 
@@ -143,6 +143,10 @@ input.submit:hover{
 			  <?=form_password(array('style' => 'width:90%', 'size' => '32', 'dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => 32))?> 
 			</dd>
 		</dl>
+		
+		<script>
+			document.getElementById('<?=$focus_field?>').focus();
+		</script>
 
 		<?php if ($this->config->item('admin_session_type') == 'c'):?>
 			<p><?=form_checkbox('remember_me', '1', '', 'id="remember_me"')?><span><?=lang('remember_me', 'remember_me')?></span></p>

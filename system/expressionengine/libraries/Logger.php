@@ -25,59 +25,50 @@
  
 class EE_Logger {
 
-
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function EE_Logger()
 	{
-		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}
 
+	// --------------------------------------------------------------------
 
-	/** -------------------------------------
-	/**  Log an action
-	/** -------------------------------------*/
+	/**
+	 * Log an action
+	 *
+	 * @access	public
+	 * @param	string	action
+	 */
 	function log_action($action = '')
 	{
-		if ($action == '')
+		if (is_array($action))
+		{
+			$action = implode("\n", $action);
+		}
+		
+		if (trim($action) == '')
 		{
 			return;
 		}
-				
-		if (is_array($action))
-		{
-			if (count($action) == 0)
-			{
-				return;
-			}
-		
-			$msg = '';
-		
-			foreach ($action as $val)
-			{
-				$msg .= $val."\n";	
-			}
-			
-			$action = $msg;
-		}
 												
 		$this->EE->db->query(
-					 $this->EE->db->insert_string(
-											'exp_cp_log',
-				
-											array(
-													'member_id'  => $this->EE->session->userdata('member_id'),
-													'username'	=> $this->EE->session->userdata['username'],
-													'ip_address' => $this->EE->input->ip_address(),
-													'act_date'	=> $this->EE->localize->now,
-													'action'	 => $action,
-													'site_id'	 => $this->EE->config->item('site_id')
-												 )
-											)
-					);	
+			$this->EE->db->insert_string(
+				'exp_cp_log',
+				array(
+					'member_id'	=> $this->EE->session->userdata('member_id'),
+					'username'	=> $this->EE->session->userdata['username'],
+					'ip_address'=> $this->EE->input->ip_address(),
+					'act_date'	=> $this->EE->localize->now,
+					'action'	=> $action,
+					'site_id'	=> $this->EE->config->item('site_id')
+				)
+			)
+		);
 	}
-
-
-
 }
 // END CLASS
 

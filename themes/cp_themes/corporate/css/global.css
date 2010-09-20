@@ -349,7 +349,7 @@ p.custom_field_add a.submit_alt {
 
 p.file_tool a.submit_alt {
 	background:			#FFF url('<?=$cp_theme_url?>images/submit_alt_button_bg.jpg') bottom left repeat-x!important;
-	padding:			6px 8px 5px 15px;
+	padding:			6px 8px 5px 6px;
 	color:				#5a6b81;
 	font-weight:		bold;
 	border:				0;
@@ -1109,6 +1109,11 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 .contentMenu li.site a {		background:	transparent url('<?=$cp_theme_url?>images/list_item_site.gif') 10px no-repeat; }
 .contentMenu li.submission a {	background:	transparent url('<?=$cp_theme_url?>images/list_item_submission.gif') 10px no-repeat; }
 
+.contentMenu li span {
+	float:				right;
+	color:				#aaa;
+	margin-right:		14px;
+}
 
 .contentMenu li a:hover {
 	text-decoration:	none;
@@ -1701,33 +1706,16 @@ div.notice_texts ul.bad_path_error_list li ul li {color:#fff; font-weight:normal
 }
 
 .heading span.msg_open_close {
-	background:transparent url('../themes/jquery_ui/corporate/images/ui-icons_27343C_256x240.png') -15px -192px no-repeat;
+	background:	transparent url('../themes/jquery_ui/corporate/images/ui-icons_27343C_256x240.png') -15px -192px no-repeat;
 }
 
 #ee_important_message.closed {
-	position:absolute;
-	width:120px;
-	height:18px;
-	top:32px;
-	left:-20px;
+	display:	none;
 }
 
-#ee_important_message.closed .heading h2 {
-	display:none;
-}
-
-#ee_important_message.closed .closedHeading {
-	display:block;
-	height:15px;
-	width:119px;
-	background:transparent url('<?=$cp_theme_url?>images/notice_toolbar.png') no-repeat;
-	color:#fff;
-	padding:2px 5px 0 5px;
-	cursor: pointer;
-}
 
 #mainContent .pageContents p#newVersionNotice {
-	margin-bottom:15px;
+	margin-bottom:	15px;
 }
 
 #checksumFailure {
@@ -2615,7 +2603,7 @@ ul.tab_menu li.addTabButton a {
 	display: 			block;
 	width: 				180px;
 	margin-top: 		0;
-	margin-left: 		15px;
+	margin-left: 		0;
 	text-decoration: 	none;
 	border:				1px solid #d0d2d5; /* won't work with rounded corners, but looks best for non js */
 	
@@ -2772,7 +2760,7 @@ p.custom_field_add {
 
 p.file_tool {
 	padding: 			0;
-	margin: 		8px 20px;
+	margin: 			8px 15px;
 }
 .upload_bar {
 	padding-top: 		2px;
@@ -3544,19 +3532,44 @@ div.contentWrap {
 }
 
 #mainContent #file_manager_tools {
-	width:				300px;
+	width:				250px;
 	float: 				right;
 	clear: 				left;
 
 }
 
+
+#mainContent #showToolbarLink {
+	text-align:			right;
+	font-size:			10px;
+	line-height:		20px;
+	height:				27px;
+	margin-right: 		20px;
+	background:			#f6f7f9 url('<?=$cp_theme_url?>images/publish_field_background.jpg') repeat-x top;
+	clear: 				left;
+
+}
+
+#mainContent #showToolbarLink  img {
+		position:absolute;
+
+}
+
+#mainContent #showToolbarLink a span{
+	color:				#005eb0;
+	font-weight:		bold;
+	margin:				0;
+	padding:			0;
+}
+
+
 #mainContent #file_manager #showToolbarLink {
 	text-align:			right;
 	font-size:			10px;
-	height: 			23px;
-	line-height:		18px;
+	height: 			27px;
+	line-height:		20px;
+	margin-right: 		262px;
 	background:			#ECF1F4 url('<?=$cp_theme_url?>images/publish_toolbar_background.png') repeat-x top;
-	margin-right: 		312px;
 	clear: 				left;
 }
 
@@ -3567,13 +3580,13 @@ div.contentWrap {
 #mainContent #file_manager #showToolbarLink a {
 	color:				#005eb0;
 	font-weight:		bold;
-	margin:0;
-	padding:0;
+	margin:				0;
+	padding:			0;
 }
 
 #mainContent #file_manager_tools h3 {
 	background:			url('<?=$cp_theme_url?>images/content_custom_tab.png') repeat-x top;
-	margin-left:		0px;
+	margin-left:		-4px;
 	margin-bottom:		-1px;	/* makes the bottom border disappear when collapsed */
 	margin-top:0;
 	padding-bottom:		0;
@@ -3614,7 +3627,7 @@ div.contentWrap {
 
 }
 #mainContent #file_manager  #upload_dir{
-	width:				280px;
+	width:				100%;
 	margin:				5px 0;
 	
 }
@@ -3659,10 +3672,13 @@ div.contentWrap {
 }
 
 #file_manager_holder {
-	margin-right: 		300px;
+	margin-right: 		250px;
 	background:			#f3f5f8 ;
 	min-height:			310px;
+	border-right:		4px solid #cfd5d9;
 }
+
+
 #file_manager_holder p input.delete{
 		margin:20px 25px;
 }

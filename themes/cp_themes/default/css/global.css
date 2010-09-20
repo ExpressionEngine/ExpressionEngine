@@ -25,7 +25,7 @@ optgroup option {
 	padding-left:			10px;
 }
 
-img, fieldse {
+img, fieldset {
 	border:					0;
 }
 
@@ -34,7 +34,7 @@ ul {
 }
 
 fieldset {
-	border:1px solid;
+	border: 1px solid #D0D7DF;
 }
 
 textarea,
@@ -395,6 +395,10 @@ span.button .submit {
 	margin-left:		25px;
 	margin-top:			-6px;
 	padding-top:		2px;
+}
+
+#navigationTabs a {
+	outline:			0;
 }
 
 /* Style the top level */
@@ -920,6 +924,13 @@ div#search {
 .contentMenu li.submission a {	background:	#ECF1F4 url('<?=$cp_theme_url?>images/contentmenu_icons.gif') no-repeat  17px -160px; }
 .contentMenu li.submission a:hover {background-position:17px -179px; }
 
+.contentMenu li span {
+	float:				right;
+	color:				#8C9DAF;
+	margin-right:		14px;
+	text-shadow:		0 1px 0 #fff;
+}
+
 .contentMenu li a:hover {
 	border-bottom:		1px solid #d0d7df;
 	background-color:	#fff;
@@ -1368,11 +1379,11 @@ h2 a:hover {
 div.notice_texts .bad_path_error_list li ul li {color:#fff; font-weight:normal;}
 
 #noticeContents.closed {
-	display:none;
+	display:	none;
 }
 
 .heading span.msg_open_close {
-	float:right;
+	float:		right;
 	text-indent:-5000em;
 	display:block;
 	height:15px;
@@ -1385,8 +1396,8 @@ div.notice_texts .bad_path_error_list li ul li {color:#fff; font-weight:normal;}
 }
 
 #mainContent .pageContents#noticeContents {
-	background:#e5f7fc;
-	color:#4d6a7c;
+	background:		#e5f7fc;
+	color:			#4d6a7c;
 }
 
 span.ee_notice_icon {
@@ -2123,23 +2134,29 @@ table.accessTable div.tableCellHeading {
 	border-right: 		1px solid #505f66;
 	border-left: 		4px solid #2d383e;
 	border-top:			1px solid #4f5e65;
+	padding-bottom:		3px;
 }
 
 #mainContent .tab_menu li a {
 /*	margin-top:			12px;*/
 	float:				left;
 	display:			block;
-	padding:			7px 12px 5px 12px;
+	padding:			7px 12px 4px 12px;
 	font-size:			13px;
 	color:				#ffffff;
 	font-weight: 		bold;
 }
 
+#mainContent .tab_menu li a:hover {
+	text-decoration:	none;
+}
+
 #mainContent .tab_menu li.current {
 	background:			#ECF1F4;
-	border-left: 		4px solid #ECF1F4;
 	margin-bottom: 		-3px; /* needed to pull the current tab down over the 1px white border of the toolbar */
-	border-bottom: 		3px solid #ECF1F4;
+	
+	border-left: 		4px solid #ECF1F4;
+	border-bottom: 		2px solid #ECF1F4;
 	border-right: 		1px solid #ECF1F4;
 	border-top:			1px solid #FEFFFF;
 }
@@ -2297,8 +2314,12 @@ label.hide_field {
 	background:			url('<?=$cp_theme_url?>images/content_custom_tab.jpg') repeat-x top;
 	margin-left:		-4px;
 	margin-bottom:		0;
-	padding-bottom:		0px;
-	padding-left:		0;	
+	padding-bottom:		0;
+	padding-left:		0;
+	font-size:			15px;
+	text-shadow:		0 1px 0 #888;
+	
+	-webkit-font-smoothing: antialiased;
 }
 
 #mainContent #tools div {
@@ -2332,7 +2353,7 @@ label.hide_field {
 
 #mainContent #file_manager_tools .submit_alt {
 	display: 			block;
-	width: 				275px;
+	width: 				100%;
 	margin-top: 		2px;
 	border:				1px solid #b7c7d2; /*  won't work with rounded corners, but looks best for non js */
 	text-align:			left;
@@ -2345,7 +2366,7 @@ label.hide_field {
 }
 
 select#upload_dir {
-	width:				274px;
+	width:				100%;
 	margin:				8px 0 0 0;
 }
 
@@ -3189,63 +3210,62 @@ div.contentWrap {
 }
 
 #mainContent #file_manager_tools {
-	width:				300px;
+	width:				250px;
 	float: 				right;
 	clear: 				left;
 }
 
 #mainContent #file_manager #showToolbarLink {
-	text-align:			right;
-	font-size:			10px;
-	height: 			15px;
-	line-height:		18px;
-	background:			#ECF1F4 url('<?=$cp_theme_url?>images/publish_toolbar_background.png') repeat-x top;
-	margin-right: 		314px;
-	clear: 				left;
-}
-
-#mainContent #file_manager #showToolbarLink img {
-	position: 			absolute;
-}
-
-#mainContent #file_manager #showToolbarLink a {
-	color:				#B20000;
+	margin-right: 		264px;
 }
 
 #file_manager_tools h3 {
 	background:			url('<?=$cp_theme_url?>images/content_custom_tab.jpg') repeat-x top;
-	height: 			27px;
-	margin-bottom:		0px;
-	border-bottom:		0px solid #D2D7DB;
+	margin-left:		-4px;
+	margin-bottom:		0;
+	padding-bottom:		0;
+	padding-left:		0;
+	font-size:			15px;
+	text-shadow:		0 1px 0 #888;
+	
+	-webkit-font-smoothing: antialiased;
 }
 
 #file_manager_tools h3 a.closed {
-	background-image:	url('<?=$cp_theme_url?>images/content_custom_tab_arrow_closed.jpg')!important;
+	background-image:			url('<?=$cp_theme_url?>images/content_custom_tab_arrow_closed_shadow.jpg');
+	border-bottom:				1px solid #CBD9E2;
 }
 
 #file_manager_tools h3 a {
-	background:			url('<?=$cp_theme_url?>images/content_custom_tab_arrow_open.jpg') no-repeat left top;
-	padding: 			0 0 0 20px;
+	background:			url('<?=$cp_theme_url?>images/content_custom_tab_arrow_open_shadow.jpg') no-repeat left top;
+	padding: 			0 0 0 25px;
 	margin: 			0;
-	color: 				#fff;
+	color: 				#ffffff;
 	text-decoration: 	none;
 	display: 			block;
 	line-height: 		26px;
+	border-bottom:		1px solid #F7FBFC;
 }
 
 #file_manager_tools h3 a.open {
 	background:			url('<?=$cp_theme_url?>images/content_custom_tab_arrow_open.jpg') no-repeat left top;
 }
 
-#file_manager_tools li a {
+#file_manager_tools li a,
+#file_manager_tools li a:visited {
 	display: 			block;
+	color:				#5f6c74;
 }
 
 #mainContent #file_manager .f_m_s p.preview {
 	text-align: 		center;
 }
 
-#mainContent #file_manager #file_information_hold ul li.file_name {
+#file_information_hold {
+	padding: 10px;
+}
+
+#file_information_hold ul li.file_name {
 	font-size: 			120%;
 	border-bottom: 		1px solid #D2D7DB;
 	color: 				#37444d;
@@ -3254,28 +3274,39 @@ div.contentWrap {
 
 }
 
-#mainContent #file_manager #file_information_hold ul {
+#file_information_hold ul {
 	margin-bottom: 		5px;
 	border-bottom: 		1px solid #D2D7DB;
 	padding-bottom:	 	5px;
 }
 
-#mainContent #file_manager #file_information_hold ul li {
+#file_information_hold li {
 	line-height: 		120%;
 	font-size: 			110%;
 	clear: 				left;
 }
 
-#mainContent #file_manager #file_information_hold ul li span {
+#file_information_hold li span {
 	float: 				left;
-	display:			block;
+	display:			inline-block;
 	font-weight:		bold;
-	width: 				30%;
+	width: 				38%;
 	text-align:			right;
 	padding-right: 		5px;
+	margin-bottom:		5px;
 }
 
-#mainContent #file_manager #file_information_hold ul li.file_location {
+#file_information_hold li.file_permissions span {
+	width: 38%;
+}
+
+#file_information_hold li.file_location span {
+	width: 				21%;
+}
+
+#file_information_hold li.file_location p {
+	width: 75%;
+	display:			inline-block;
 	word-wrap: break-word;
 }
 
@@ -3305,10 +3336,7 @@ div.contentWrap {
 	background: transparent url(<?=$cp_theme_url?>/images/upload_item.png) no-repeat;
 }
 
-
-
-#mainContent #file_manager .f_m_s .cp_button{
-	/*padding-left: 18px;*/
+#mainContent #file_manager .f_m_s .cp_button {
 	margin:0 0 14px 0;
 }
 
@@ -3321,9 +3349,9 @@ div.contentWrap {
 }
 
 #file_manager_holder {
-	margin-right: 		300px;
+	margin-right: 		250px;
 	padding-right:		4px;
-	/*border-right: 	4px solid #2d383e;*/
+	border-right:		4px solid #C1C8CE;
 	background:			#ECF1F4;
 }
 

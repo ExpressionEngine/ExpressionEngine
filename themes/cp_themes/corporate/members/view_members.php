@@ -24,30 +24,31 @@ if ($EE_view_disable !== TRUE)
 			<?php $this->load->view('_shared/message');?>
 
 				<?=form_open('C=members'.AMP.'M=view_all_members', array('id' => 'member_form'))?>
+					<br>
 					<fieldset class="pad">
-					<p><strong><?=lang('total_members').'</strong> '.$total_members?></p>
-			
-					<p>
-						<?=form_label(lang('keywords'), 'member_name')?>
-						<?=form_input(array('id'=>'member_name','name'=>'member_name','value'=>$member_name))?> 
-					
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<legend><?=lang('total_members')?> <?=$total_members?></legend>
 
-						<?=form_label(lang('member_group'), 'group_id')?>
-						<?=form_dropdown('group_id', $member_groups_dropdown, $selected_group, 'id="group_id"')?> 
-					
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<p>
+							<?=form_label(lang('keywords'), 'member_name', 'class="field"')?>&nbsp;
+							<?=form_input(array('id'=>'member_name', 'name'=>'member_name', 'class'=>'field ', 'value'=>$member_name))?> 
+						
+							<br />
+						
+							<?=form_label(lang('member_group'), 'group_id')?>&nbsp;
+							<?=form_dropdown('group_id', $member_groups_dropdown, $selected_group, 'id="group_id"')?> 
 
-						<?=form_label(lang('filter_by'), 'column_filter')?>
-						<?=form_dropdown('column_filter', $column_filter_options, $column_filter_selected, 'id="column_filter"')?> 
-					
-						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+							<?=form_label(lang('filter_by'), 'column_filter')?>&nbsp;
+							<?=form_dropdown('column_filter', $column_filter_options, $column_filter_selected, 'id="column_filter"')?> 
+
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 
-						<?=form_submit('submit', lang('search'), 'id="filter_member_submit" class="submit"')?>
-						</fieldset>
-					</p>
-
+							<?=form_submit('submit', lang('search'), 'id="filter_member_submit" class="submit"')?>
+						</p>
+					</fieldset>
+					<br>
 	            <?=form_close()?>
 	
 <?php

@@ -25,27 +25,26 @@ if ($EE_view_disable !== TRUE)
 	        	<?=form_open('C=members'.AMP.'M=view_all_members', array('id' => 'member_form'))?>
 					<div id="filterMenu">
 						<fieldset>
-							<p><strong><?=lang('total_members').'</strong> '.$total_members?></p>
-			
-						<p>
-							<?=form_label(lang('keywords'), 'member_name')?>
-							<?=form_input(array('id'=>'member_name','name'=>'member_name','value'=>$member_name))?> 
+							<legend><?=lang('total_members')?> <?=$total_members?></legend>
+
+							<p>
+								<?=form_label(lang('keywords'), 'member_name', 'class="field"')?>&nbsp;
+								<?=form_input(array('id'=>'member_name', 'name'=>'member_name', 'class'=>'field', 'value'=>$member_name))?> 
+							</p>
+							<p>
+								<?=form_label(lang('member_group'), 'group_id')?>&nbsp;
+								<?=form_dropdown('group_id', $member_groups_dropdown, $selected_group, 'id="group_id"')?> 
 					
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-							<?=form_label(lang('member_group'), 'group_id')?>
-							<?=form_dropdown('group_id', $member_groups_dropdown, $selected_group, 'id="group_id"')?> 
+								<?=form_label(lang('filter_by'), 'column_filter')?>&nbsp;
+								<?=form_dropdown('column_filter', $column_filter_options, $column_filter_selected, 'id="column_filter"')?> 
 					
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-							<?=form_label(lang('filter_by'), 'column_filter')?>
-							<?=form_dropdown('column_filter', $column_filter_options, $column_filter_selected, 'id="column_filter"')?> 
-					
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 
-							<?=form_submit('submit', lang('search'), 'id="filter_member_submit" class="submit"')?>
-						</p>
+								<?=form_submit('submit', lang('search'), 'id="filter_member_submit" class="submit"')?>
+							</p>
 						</fieldset>
 					</div>
 	            <?=form_close()?>

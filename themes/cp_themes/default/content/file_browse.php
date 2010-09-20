@@ -19,28 +19,9 @@ if ($EE_view_disable !== TRUE)
 
 			<div id="file_manager_tools">
 				<h3 class="closed file_information_header"><a href="#"><?=lang('file_information')?></a></h3>
-				<div id="file_information_hold" class="f_m_s">
+				<div id="file_information_hold">
 
-				<?php if (isset($file)):?>
-					<ul>
-						<li class="file_name"><?=$file['name']?></li>
-						<li><span><?=lang('size')?>:</span> <?=number_format($file['size']/100, 1)?>KB</li>
-						<li><span><?=lang('kind')?>:</span> <?=$file['type']?></li>
-						<li class="file_location"><span><?=lang('where')?>:</span> <?=$file['location']?></li>
-						<li><span><?=lang('permissions')?></span> <?=$file['permissions']?></li>
-					</ul>
-
-					<?php if ($file['src'] != ''):?>
-						<p class="preview"><img src="<?=$file['src']?>" alt="<?=$file['name']?>" /></p>
-					<?php endif;?>
-
-					<div id="file_tags"></div>
-
-				<?php else:?>
-
-					<p><?=lang('no_file')?></p>
-
-				<?php endif;?>
+					<?php $this->load->view('content/_assets/file_sidebar_info');?>
 
 				</div>
 
@@ -59,7 +40,7 @@ if ($EE_view_disable !== TRUE)
 					</p>
 					
 					<div>
-						<?=form_label(lang('upload_file'), 'upload_file')?>
+						<?=form_label(lang('upload_file'), 'upload_file', array('class' => 'visualEscapism'))?>
 						<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>15,'class'=>'field'))?>
 					</div>
 
@@ -92,8 +73,13 @@ if ($EE_view_disable !== TRUE)
 				</div>
 			</div>
 
-			<div id="showToolbarLink"><a href="#"><span><?=lang('hide_toolbar')?></span>&nbsp;<img alt="" width="18" height="17" src="<?=$cp_theme_url?>images/content_hide_image_toolbar.png" /></a></div>
-
+			<div id="showToolbarLink">
+				<a href="#"><span><?=lang('hide_toolbar')?></span>&nbsp;
+					<img alt="<?=lang('hide')?>" id="hideToolbarImg" width="20" height="17" src="<?=$cp_theme_url?>images/content_hide_image_toolbar.png" style="display: inline" />
+					<img alt="<?=lang('show')?>" id="showToolbarImg" width="20" height="17" src="<?=$cp_theme_url?>images/content_show_image_toolbar.png" class="js_hide" />
+				</a>
+			</div>
+			
 			<div id="file_manager_holder">
 				<div class="main_tab solo" id="file_manager_list">
 
