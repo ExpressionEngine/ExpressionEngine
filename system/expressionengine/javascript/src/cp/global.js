@@ -306,6 +306,7 @@ jQuery(document).ready(function () {
 				"width": w[this.id],
 				"height": show ? larger_height : main_height
 			}, function () {
+				main_content.height('');
 				$("#sideBar").css({
 					'position': '',
 					'float': 'right'
