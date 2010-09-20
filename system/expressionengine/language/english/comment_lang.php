@@ -85,7 +85,10 @@ $lang = array(
 'Move',
 
 'move_comment_instr' =>
-'Enter the entry id number of the entry you wish to move the comment to:', 
+'Enter the new entry id number:', 
+
+'registered_member' =>
+'Registered member',
 
 'url' =>
 'URL',

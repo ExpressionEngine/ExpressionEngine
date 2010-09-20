@@ -12,8 +12,8 @@
 					$this->table->add_row(array(
 							lang('entry_title'), 
 							
-							$title.NBS.NBS.'('.$channel_title.')'.'<div><a id="move_link" href"#">'.lang('move').'</a><span id="move_field" class="js_hide">'.
-							lang('move_comment_instr').NBS.form_input('move_to', set_value('move_to', $move_to), 'class="field" name="move_to" id="move_to" size="5" style="width:20px"').form_error('move_to').'</span>'
+							$title.NBS.NBS.'('.$channel_title.')'.'<div><a id="move_link" href="#">'.lang('move').'</a><span id="move_field" class="js_hide">'.
+							lang('move_comment_instr').NBS.form_input('move_to', set_value('move_to', $move_to), 'class="field" id="move_to" size="10" style="width:50px"').form_error('move_to').'</span></div>'
 							
 						)
 					);
@@ -46,7 +46,7 @@
 				}
 				else
 				{
-					$this->table->add_row(array(lang('name').NBS.NBS.lang('registered_member'),	$name));
+					$this->table->add_row(array(lang('name').NBS.NBS.'('.lang('registered_member').')',	$name));
 					
 					$this->table->add_row(array(lang('email'), $email));
 					
@@ -65,7 +65,7 @@
 				{
 					$this->table->add_row(array(
 							$required.lang('comment', 'comment'),
-							form_textarea('comment', set_value('comment', $comment), 'class="field", name="comment",  id="comment"').form_error('comment')
+							form_textarea('comment', set_value('comment', $comment), 'class="field" name="comment"  id="comment"').form_error('comment')
 							)
 					);
 				}

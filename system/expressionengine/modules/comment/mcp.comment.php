@@ -187,6 +187,18 @@ class Comment_mcp {
 		$vars = $this->create_filter($filter);
 		$vars['hidden'] = array();
 		$vars['pagination'] = FALSE;
+		
+		$vars['form_options'] = array(
+									'close' => $this->EE->lang->line('close_selected'),
+									'open' => $this->EE->lang->line('open_selected'),
+									'pending' => $this->EE->lang->line('pending_selected'),
+									);
+
+		if ($this->EE->cp->allowed_group('can_delete_all_comments') OR $this->EE->cp->allowed_group('can_delete_own_comments'))
+		{
+			$vars['form_options']['null'] = '------';
+			$vars['form_options']['delete'] = $this->EE->lang->line('delete_selected');
+		}		
 			
 		if ( ! $rownum = $this->EE->input->get_post('rownum'))
 		{		
@@ -199,13 +211,14 @@ class Comment_mcp {
 
 		//  Check for pagination
 		$total = $comment_id_query->num_rows();
+		
+		
 
 		// No results?  No reason to continue...
 		if ($total == 0)
 		{
 			$vars['message'] = $this->EE->lang->line('no_comments');
 			$vars['comments'] = array();
-			$vars['form_options'] = array();
 			return $this->EE->load->view('index', $vars, TRUE);
 		}
 
@@ -331,18 +344,6 @@ class Comment_mcp {
 			} // END FOREACH
 		}
 
-		$vars['form_options'] = array(
-									'close' => $this->EE->lang->line('close_selected'),
-									'open' => $this->EE->lang->line('open_selected'),
-									'pending' => $this->EE->lang->line('pending_selected'),
-									);
-
-		if ($this->EE->cp->allowed_group('can_delete_all_comments') OR $this->EE->cp->allowed_group('can_delete_own_comments'))
-		{
-			$vars['form_options']['null'] = '------';
-			$vars['form_options']['delete'] = $this->EE->lang->line('delete_selected');
-		}
-		
 		$vars['pagination'] = $pagination_links;
 		$vars['message'] = $message;
 
