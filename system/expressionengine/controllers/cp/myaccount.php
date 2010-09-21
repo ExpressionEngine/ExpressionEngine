@@ -1245,8 +1245,14 @@ class MyAccount extends Controller {
 		if (isset($this->cp->installed_modules['comment']))
 		{
 			// Fetch Channel Comments
-			$query = $this->db->query("SELECT DISTINCT(entry_id) FROM exp_comments WHERE email = '".$this->db->escape_str($email)."' AND notify = 'y' ORDER BY comment_date DESC");
-
+			$this->db->distinct();
+			$this->db->select('comment_subscriptions.entry_id');
+			$this->db->from('comment_subscriptions');
+			$this->db->join('comments', 'comment_subscriptions.entry_id = comments.entry_id', 'left');
+			$this->db->where('member_id', $this->id);
+			$this->db->order_by("comment_date", "desc"); 
+			$query = $this->db->get();
+			
 			if ($query->num_rows() > 0)
 			{
 				$channel_subscriptions = TRUE;
@@ -1257,7 +1263,6 @@ class MyAccount extends Controller {
 					$total_count++;
 				}
 			}
-			
 		}
 
 		// Fetch Forum Topic Subscriptions
@@ -1287,8 +1292,8 @@ class MyAccount extends Controller {
 		if ($channel_subscriptions == TRUE)
 		{
 			$sql = "SELECT
-					exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.channel_id, exp_channel_titles.entry_id,
-					exp_channels.comment_url, exp_channels.channel_url
+					exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.channel_id, exp_channel_titles.entry_id, exp_channel_titles.recent_comment_date, 
+					exp_channels.comment_url, exp_channels.channel_url 
 					FROM exp_channel_titles
 					LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id
 					WHERE entry_id IN (";
@@ -1416,15 +1421,18 @@ class MyAccount extends Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		$email = $query->row('email') ;
+		$email = $query->row('email');
+		
+		$this->load->library('subscription');
 
 		foreach ($_POST['toggle'] as $key => $val)
 		{
 			switch (substr($val, 0, 1))
 			{
-				case "b"	: $this->db->query("UPDATE exp_comments SET notify = 'n' WHERE entry_id = '".substr($val, 1)."' AND email = '".$this->db->escape_str($email)."'");
+				case "b"	: 	$this->subscription->init('comment', array('entry_id' => substr($val, 1)), TRUE);
+								$this->subscription->unsubscribe($this->id);
 					break;
-				case "f"	: $this->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '".substr($val, 1)."'");
+				case "f"	: $this->db->delete('forum_subscriptions', array('topic_id' => substr($val, 1))); 
 					break;
 			}
 		}
