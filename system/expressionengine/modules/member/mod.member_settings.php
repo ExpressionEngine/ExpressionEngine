@@ -2118,7 +2118,8 @@ UNGA;
 								array(
 										'form_declaration' 	=> $this->EE->functions->form_declaration($data),
 										'lang:username_length'	=> str_replace('%x', $this->EE->config->item('un_min_len'), $this->EE->lang->line('un_len')),
-										'lang:password_length'	=> str_replace('%x', $this->EE->config->item('pw_min_len'), $this->EE->lang->line('pw_len'))
+										'lang:password_length'	=> sprintf($this->EE->lang->line('pw_len'),	
+																		$this->EE->config->item('pw_min_len'))
 									)
 								);
 	}
