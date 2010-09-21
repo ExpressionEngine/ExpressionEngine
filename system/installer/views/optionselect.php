@@ -1,4 +1,4 @@
-<?php if ($this->is_installed == TRUE) : ?>
+<?php if ($is_installed == TRUE) : ?>
 
 <p><?php echo str_replace('%x', $installed_version, $this->lang->line('your_version')); ?></p>
 
