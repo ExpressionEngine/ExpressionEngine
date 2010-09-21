@@ -1043,6 +1043,33 @@ $lang = array(
 'forum_not_installed' =>
 'Forum does not appear to be installed',
 
+'sort_results_by' =>
+'Sort Results By',
+
+'exact_name_match' =>
+'Exact Name Match',
+
+'any_date' =>
+'Any date',
+
+'today_and' =>
+'Today and...',
+
+'this_week_and' =>
+'This Week and...',
+
+'one_month_ago_and' =>
+'1 Month Ago and...',
+
+'three_months_ago_and' =>
+'3 Months Ago and...',
+
+'six_months_ago_and' =>
+'6 Months Ago and...',
+
+'one_year_ago_and' =>
+'1 Year Ago and...',
+
 ''=>''
 );
 
