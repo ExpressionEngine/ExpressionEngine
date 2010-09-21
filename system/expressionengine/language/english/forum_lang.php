@@ -1070,6 +1070,21 @@ $lang = array(
 'one_year_ago_and' =>
 '1 Year Ago and...',
 
+'newer' => 
+'Newer',
+
+'older' => 
+'Older',
+
+'sort_results_by' => 
+'Sort Results by',
+
+'descending' => 
+'Descending',
+
+'ascending' => 
+'Ascending',
+
 ''=>''
 );
 
