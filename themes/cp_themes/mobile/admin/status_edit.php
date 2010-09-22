@@ -23,7 +23,7 @@ if ($EE_view_disable !== TRUE)
 			<?php
 				// open and closed names not editable
 				if ($status == 'open' OR $status == 'closed'):?>
-				<li><?=lang('status_name')?> <?=$status?></li>
+				<li><?=lang('status_name')?> <?=lang($status);?></li>
 				<?php else:?>
 				<li><?=form_input(array(
 								'id'		=> 'status',

@@ -31,9 +31,11 @@ if ($EE_view_disable !== TRUE)
 				foreach ($statuses->result() as $status)
 				{
 					$delete = ($status->status != 'open' AND $status->status != 'closed') ? '<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_delete_confirm'.AMP.'status_id='.$status->status_id.'">'. lang('delete').'</a>' : '--';
+					
+					$status_name = ($status->status == 'open' OR $status->status == 'closed') ? lang($status->status) : $status->status;
 
 					$this->table->add_row(
-						$status->status,
+						$status_name,
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_edit'.AMP.'status_id='.$status->status_id.'">'. lang('edit').'</a>',
 						$delete
 					);
