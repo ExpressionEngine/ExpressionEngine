@@ -1261,7 +1261,7 @@ class Channel {
 
 				if ($qstring != '' AND $this->reserved_cat_segment != '' AND in_array($this->reserved_cat_segment, explode("/", $qstring)) AND $dynamic AND $this->EE->TMPL->fetch_param('channel'))
 				{
-					$qstring = preg_replace("/(.*?)".preg_quote($this->reserved_cat_segment)."\//i", '', $qstring);
+					$qstring = preg_replace("/(.*?)\/".preg_quote($this->reserved_cat_segment)."\//i", '', '/'.$qstring);
 
 					$sql = "SELECT DISTINCT cat_group FROM exp_channels WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') AND ";
 
@@ -6648,8 +6648,8 @@ class Channel {
 
 		if ($qstring != '' AND $this->reserved_cat_segment != '' AND in_array($this->reserved_cat_segment, explode("/", $qstring)) AND $this->EE->TMPL->fetch_param('channel'))
 		{
-			$qstring = preg_replace("/(.*?)".preg_quote($this->reserved_cat_segment)."\//i", '', $qstring);
-
+			$qstring = preg_replace("/(.*?)\/".preg_quote($this->reserved_cat_segment)."\//i", '', '/'.$qstring);
+			
 			$sql = "SELECT DISTINCT cat_group FROM exp_channels WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') AND ";
 
 			$xsql = $this->EE->functions->sql_andor_string($this->EE->TMPL->fetch_param('channel'), 'channel_name');
