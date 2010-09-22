@@ -60,6 +60,10 @@ class Updater {
           		$Q[] = "UPDATE `exp_channel_data` SET {$row['0']} = '' WHERE {$row['0']} IS NULL";				
         	}
 		}
+		
+		// There was a brief time where this was altered but installer still set to 50 characters
+		// so we update again to catch any from that window
+		$Q[] = "ALTER TABLE `exp_members` CHANGE `email` `email` varchar(72) NOT NULL";		
 
 		
 		$Q[] = "INSERT INTO exp_specialty_templates (template_name, data_title, template_data) values ('comments_opened_notification', 'New comments have been added', '".addslashes($this->comments_opened_notification())."')";
