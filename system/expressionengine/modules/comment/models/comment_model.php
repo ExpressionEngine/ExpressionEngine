@@ -46,7 +46,7 @@ class Comment_model extends CI_Model {
 	{
 		if ( ! is_array($entry_id))
 		{
-			$entry_id = ( ! ctype_digit($entry_id)) ? array() : array($entry_id);
+			$entry_id = ( $entry_id == '' OR ! ctype_digit($entry_id)) ? array() : array($entry_id);
 		}
 		
 		$this->db->select('comments.comment_id');		

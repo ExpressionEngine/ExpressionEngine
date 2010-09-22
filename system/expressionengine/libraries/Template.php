@@ -3368,8 +3368,8 @@ class EE_Template {
 				count(preg_split("/(\!=|==|<=|>=|<>|<|>|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
 			{
 				continue;	
-			}
-
+			}			
+			
 			$cond = $this->EE->functions->prep_conditional($val[0]);
 			
 			$lcond	= substr($cond, 0, strpos($cond, ' '));
@@ -3421,9 +3421,8 @@ class EE_Template {
 				$str = str_replace($val[1], '', $str);				 
 			}	
 		}		
-		
+
 		return $str;
-		
 	}
 	
 	

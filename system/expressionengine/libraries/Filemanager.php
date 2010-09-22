@@ -590,8 +590,7 @@ class Filemanager {
 		}
 
 		// Is this a custom field?
-		
-		if (strpos('field_id_', $field_name) === 0)
+		if (strpos($field_name, 'field_id_') === 0)
 		{
 			$field_id = str_replace('field_id_', '', $field_name);
 
@@ -603,7 +602,7 @@ class Filemanager {
 				// Permissions can only get more strict!
 				if ($type_query->row('field_content_type') == 'image')
 				{
-					$allowed_types = 'gif|jpg|jpeg|png|jpe';
+					$allowed_types = 'gif|jpg|jpeg|png|jpe'; 				
 				}
 			}
 		}

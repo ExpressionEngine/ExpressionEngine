@@ -604,6 +604,17 @@ function fnOpenClose ( oSettings )
 	} );
 }
 	
+			
+			
+			$("select#display_toggle").change(function () {
+				displayState = document.getElementById("display_toggle");
+				if (displayState.value == "collapsed") {
+					$("[src$=\'field_expand.png\']").click();
+				}
+				else {
+						$("[src$=\'field_collapse.png\']").click();
+				}
+			});
 	
 	
 			$("#keywords").keyup( function () {
@@ -770,10 +781,10 @@ function fnOpenClose ( oSettings )
 				$m[] = "<a class='less_important_link' href='{$channel_search_url}'>{$comment['channel_title']}</a>";
 				$m[] = "<a class='less_important_link'  href='{$name_search_url}'>{$comment['name']}</a>";
 				$m[] = "<a class='less_important_link'  href='{$email_search_url}'>{$comment['email']}</a>";
-				$m[] = $date;
+				$m[] = ( ! is_null($date)) ? $date : '';
 				$m[] = "<a class='less_important_link' href='{$ip_search_url}'>{$comment['ip_address']}</a>";
 				$m[] = "<a class='less_important_link' href='{$status_search_url}'>{$status_label}</a>";
-				$m[] = $full_comment;
+				$m[] = ( ! is_null($full_comment)) ? $full_comment : '';
 				$m[] = '<input class="comment_toggle" type="checkbox" name="toggle[]" value="'.$comment['comment_id'].'" />';
 
 				$tdata[$i] = $m;
@@ -939,6 +950,12 @@ function fnOpenClose ( oSettings )
 		$vars['status_select_options']['o'] = $this->EE->lang->line('open');
 		$vars['status_select_options']['c'] = $this->EE->lang->line('closed');
 
+
+		// Display pull-down menu
+		$vars['display_selected'] = '';
+		
+		$vars['display_select_options']['collapsed'] = $this->EE->lang->line('collapsed_display');
+		$vars['display_select_options']['expanded'] = $this->EE->lang->line('expanded_display');
 
 		// Date range pull-down menu
 		$vars['date_selected'] = $filter['date_range'];

@@ -581,6 +581,8 @@ class Wizard extends Controller {
 		{
 			$data['link'] = $this->set_qstr('license', str_replace('%s', $this->version, $this->lang->line('click_to_update')));			
 		}
+		
+		$data['is_installed'] = $this->is_installed;
 
 		return $this->_set_output('optionselect', $data);	
 	}

@@ -112,6 +112,12 @@ $lang = array(
 'filter_by_author' =>
 'Filter by Author',
 
+'collapsed_display' =>
+'Collapsed Display',
+
+'expanded_display' =>
+'Expanded Display',
+
 'date_range' =>
 'Date Range',
 
