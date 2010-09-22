@@ -3362,14 +3362,10 @@ class EE_Template {
 			// Make sure this is for a segment conditional
 			// And that this is not an advanced conditional
 			
-			if ( ! preg_match('/^segment_\d+$/i', $val['3']) OR
+				if ( ! preg_match('/^segment_\d+$/i', $val['3']) OR
+				strpos($val[2], 'if:else') !== FALSE OR
 				strpos($val[0], 'if:else') !== FALSE OR
 				count(preg_split("/(\!=|==|<=|>=|<>|<|>|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
-			{
-				continue;	
-			}
-			
-			if (strpos($val[2], 'if:else') !== FALSE && (count(explode(LD.'if ', $val[2])) != count(explode(LD.'/if'.RD, $val[2]))))
 			{
 				continue;	
 			}			
@@ -3425,9 +3421,8 @@ class EE_Template {
 				$str = str_replace($val[1], '', $str);				 
 			}	
 		}		
-		
+
 		return $str;
-		
 	}
 	
 	
@@ -3464,19 +3459,11 @@ class EE_Template {
 		{
 			// Make sure there is such a $global_var
 			// And that this is not an advanced conditional
-	
+			
 			if ( ! isset($vars[$val[3]]) OR 
+				strpos($val[2], 'if:else') !== FALSE OR
 				strpos($val[0], 'if:else') !== FALSE OR
 				count(preg_split("/(\!=|==|<=|>=|<>|<|>|AND|XOR|OR|&&|\|\|)/", $val[0])) > 2)
-			{
-
-				continue;
-			}
-
-			// It MAY have an advanced conditional nested inside- in which case, the open and closed if
-			// counts should match up and we won't mistakenly take it for an advanced conditional
-			
-			if (strpos($val[2], 'if:else') !== FALSE && (count(explode(LD.'if ', $val[2])) != count(explode(LD.'/if'.RD, $val[2]))))
 			{
 				continue;	
 			}
