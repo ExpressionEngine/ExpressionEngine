@@ -3080,7 +3080,7 @@ class Forum_Core extends Forum {
 		// If it's an announcement, they are barking up the wrong tree
 		if ($tquery->row('announcement')  != 'n')
 		{
-			$this->EE->functions->redirect($this->_forum_path('viewannounce/'.$this->current_id.'_'.$tquery->row['forum_id']));
+			$this->EE->functions->redirect($this->_forum_path('viewannounce/'.$this->current_id.'_'.$tquery->row('forum_id')));
 			exit;
 		}
 		
