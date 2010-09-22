@@ -614,12 +614,17 @@ class Content_files extends Controller {
 		$vars['url_path'] = $this->encrypt->decode(rawurldecode($this->input->get_post('url_path')), $this->session->sess_crypt_key).'?f='.time();
 		
 		$this->javascript->set_global('filemanager.url_path', $vars['url_path']);
-		$this->javascript->set_global('lang.hide_toolbar', $this->lang->line('hide_toolbar'));
-		$this->javascript->set_global('lang.show_toolbar', $this->lang->line('show_toolbar'));
+		$this->javascript->set_global('lang', array(
+				'hide_toolbar'	=> $this->lang->line('hide_toolbar'),
+				'show_toolbar'	=> $this->lang->line('show_toolbar'),
+				'yes'			=> $this->lang->line('yes'),
+				'no'			=> $this->lang->line('no')
+			)
+		);
 		
 		$this->cp->add_js_script(array(
-				'ui'		=> 'resizable',
-				'plugin'	=> array('jcrop', 'simplemodal'),
+				'ui'		=> array('resizable', 'dialog'),
+				'plugin'	=> 'jcrop',
 				'file'		=> 'cp/file_manager_edit'
 			)
 		);

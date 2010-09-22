@@ -72,13 +72,6 @@ if ($EE_view_disable !== TRUE)
 					<div id="edit_image_holder">
 						<img src="<?=$url_path?>" alt="" id="edit_image" />
 					</div>
-					<div id='confirm' style='display:none'>
-						<h2><?=lang('apply_changes')?></h2>
-						<p class='message'></p>
-						<div class='button'><a href="#" class='no'><?=lang('no')?></a></div>
-						<div class='button'><a href="#" class='yes'><?=lang('yes')?></a></div>
-						<div class="clear shun"></div>
-					</div>
 
 					<div id='dialog_message' class="dialog" style='display:none; padding: 20px;'>
 						<p class='message'><img alt="" width="16" height="16" src="<?=$cp_theme_url?>images/indicator.gif" /></p>
@@ -91,6 +84,10 @@ if ($EE_view_disable !== TRUE)
 		</div>
 	</div><!-- contents -->
 </div><!-- mainContent -->
+
+<div id="confirm" style="display:none" title="<?=lang('apply_changes')?>">
+	<div></div>
+</div>
 
 <?php
 if ($EE_view_disable !== TRUE)
