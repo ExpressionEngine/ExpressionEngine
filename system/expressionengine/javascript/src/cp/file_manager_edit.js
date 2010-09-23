@@ -109,7 +109,6 @@ $(document).ready(function () {
 	}
 
 	function confirm(message, callback_true, callback_false) {
-		
 		var buttons = {};
 		
 		buttons[EE.lang.no] = function () {
@@ -121,7 +120,7 @@ $(document).ready(function () {
 			$(this).dialog('close');
 		};
 		
-		buttons[EE.lang.yes] = function () {
+		buttons[EE.lang.apply_changes] = function () {
 			// call the callback
 			if ($.isFunction(callback_true)) {
 				callback_true.apply();
@@ -135,11 +134,7 @@ $(document).ready(function () {
 			open: function (event, ui) {
 				$(this).find('div').html(message);
 			},
-			close: function (event, ui) {
-				$(this).find('div').innerhtml = '';
-				
-
-			}
+			modal: true
 		});
 	}
 	
@@ -217,6 +212,9 @@ $(document).ready(function () {
 	}
 
 	function confirm_win(mode) {
+		
+		console.log(edit_mode);
+		
 		if (edit_mode !== false) {
 			confirm(
 				EE.lang.exit_apply_changes,

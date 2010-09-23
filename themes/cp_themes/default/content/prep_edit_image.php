@@ -87,6 +87,11 @@ if ($EE_view_disable !== TRUE)
 	</div><!-- contents -->
 </div><!-- mainContent -->
 
+
+<div id="confirm" style="display:none" title="<?=lang('apply_changes')?>">
+	<div></div>
+</div>
+
 <?php
 if ($EE_view_disable !== TRUE)
 {

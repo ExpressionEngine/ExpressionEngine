@@ -617,7 +617,7 @@ class Content_files extends Controller {
 		$this->javascript->set_global('lang', array(
 				'hide_toolbar'	=> $this->lang->line('hide_toolbar'),
 				'show_toolbar'	=> $this->lang->line('show_toolbar'),
-				'yes'			=> $this->lang->line('yes'),
+				'apply_changes'	=> $this->lang->line('apply_changes'),
 				'no'			=> $this->lang->line('no')
 			)
 		);
