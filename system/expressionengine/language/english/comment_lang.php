@@ -282,7 +282,7 @@ $lang = array(
 'No Valid Comments',
 
 'comment_edit_time_limit' =>
-'Comment Edit Time Limit',
+'Comment Edit Time Limit (in seconds)',
 
 'already_subscribed' =>
 'You are already subscribed to this comment.',

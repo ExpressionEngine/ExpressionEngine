@@ -10,8 +10,6 @@
 
 - Re: Greg's #19 I'm also still seeing a JS error when uploading a file from the File Manager which is a bit of a biggie because it prevents feedback.  "Click is not a function" occurs on line 139 of file_manager_home.js, presumably because something isn't fully in the DOM when setup_events() gets run again following the upload? (this is the only JS error I have encountered in the CP)
 
-- Comment Editing Time Limit setting in the module's new CP page is ambiguous as to what units of time are being specified (the documentation does not specify this either)
-
 - Was not able to get Moblog to work with my Gmail account. It did connect on port 995 (whether I set the Incoming Mail Server to pop.gmail.com or pop.gmail.com:995) but appeared to go around in circles for approximately a minute (just watching tcpdump) and then say No Emails Found.
 
 - (minor) When I gave a known-bad password Moblog detected this but returned somewhat contradictory output (invalid password + successfully checked):
@@ -75,6 +73,9 @@ in index.php?S=8bda723f8890679f6b3534108001a7194c9717fa&D=cp&C=javascript
 16. #13829 verified
 
 21. #13071, verified that ctrl+shortcut does work in Safari 5.0.2/Firefox 4.0b5/Chrome 6.0.472.62 beta. Selected text is wrapped appropriately.
+
+
+- Comment Editing Time Limit setting in the module's new CP page is ambiguous as to what units of time are being specified (the documentation does not specify this either)
 
 - Re: (#13363) where {page_url} variables were not respecting the "Force Query Strings" setting
 >> Forcing query strings breaks {page_url} (http://site/index.php/?/pagetest (extra slash before and after ?)
