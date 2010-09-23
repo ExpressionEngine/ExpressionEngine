@@ -72,13 +72,9 @@ ul#navigationTabs {
 	height:33px;
 }
 
-#navigationTabs li ul a:hover {
-	color:#fff!important;
-}
-
-
+#navigationTabs li ul a:hover,
 #navigationTabs li ul li.active a,
-#navigationTabs li.parent .active ul li.parent .active .hover ul li.active a {
+#navigationTabs li.parent ul li.parent ul li a:hover {
 	color:#fff;
 }
 
