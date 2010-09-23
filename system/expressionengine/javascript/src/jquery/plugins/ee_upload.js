@@ -207,7 +207,7 @@
 				var d; 
 				 
 			    // Event is bound twice - stop the callback after the first fires
-			    if (jQuery.data(_internal.iframe, 'upload_complete')) {
+			    if ($(_internal.iframe).data('upload_complete')) {
 			        return;
 			    }
 			    
@@ -231,7 +231,7 @@
 					options.onFailure('Connection timed out. Please try again.', that, options.data);
 				}
 			
-			    jQuery.data(_internal.iframe, 'upload_complete', true);
+			    $(_internal.iframe).data('upload_complete', true);
 			    
                 // Remove upload and yield
 			    setTimeout(function () {
