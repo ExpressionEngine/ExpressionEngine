@@ -2781,7 +2781,7 @@ class Channel {
 		// The exp_member_data table needs to be called before the exp_members table.
 
 		$this->sql .= " t.entry_id, t.channel_id, t.forum_topic_id, t.author_id, t.ip_address, t.title, t.url_title, t.status, t.dst_enabled, t.view_count_one, t.view_count_two, t.view_count_three, t.view_count_four, t.allow_comments, t.comment_expiration_date, t.sticky, t.entry_date, t.year, t.month, t.day, t.edit_date, t.expiration_date, t.recent_comment_date, t.comment_total, t.site_id as entry_site_id,
-						w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, 
+						w.channel_title, w.channel_name, w.channel_url, w.comment_url, w.comment_moderate, w.channel_html_formatting, w.channel_allow_img_urls, w.channel_auto_link_urls, w.comment_system_enabled, 
 						m.username, m.email, m.url, m.screen_name, m.location, m.occupation, m.interests, m.aol_im, m.yahoo_im, m.msn_im, m.icq, m.signature, m.sig_img_filename, m.sig_img_width, m.sig_img_height, m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.group_id, m.member_id, m.bday_d, m.bday_m, m.bday_y, m.bio,
 						md.*,
 						wd.*
@@ -3123,7 +3123,7 @@ class Channel {
 			$row['logged_in'] = ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
 			$row['logged_out'] = ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
 
-			if (($row['comment_expiration_date'] > 0 && $this->EE->localize->now > $row['comment_expiration_date']) OR $row['allow_comments'] == 'n')
+			if ((($row['comment_expiration_date'] > 0 && $this->EE->localize->now > $row['comment_expiration_date']) && $this->EE->config->item('comment_moderation_override') !== 'y') OR $row['allow_comments'] == 'n' OR $row['comment_system_enabled']  == 'n')
 			{
 				$row['allow_comments'] = 'FALSE';
 			}
@@ -3781,7 +3781,7 @@ class Channel {
 			$cond['logged_in']			= ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
 			$cond['logged_out']			= ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
 
-			if (($row['comment_expiration_date'] > 0 && $this->EE->localize->now > $row['comment_expiration_date']) OR $row['allow_comments'] == 'n')
+			if ((($row['comment_expiration_date'] > 0 && $this->EE->localize->now > $row['comment_expiration_date']) && $this->EE->config->item('comment_moderation_override') !== 'y') OR $row['allow_comments'] == 'n' OR $row['comment_system_enabled']  == 'n')
 			{
 				$cond['allow_comments'] = 'FALSE';
 			}
