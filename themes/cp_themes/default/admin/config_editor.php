@@ -81,7 +81,6 @@ if ($EE_view_disable !== TRUE)
 
 					<td><?=form_label('$config[\''.$config_item.'\']', $config_item)?></td>
 					<td><?=form_input(array('id'=>$config_item,'name'=>$config_item,'style'=>'width:100%;','value'=>$config_value))?></td>
-				</p>
 
 			<?php endif;?>
 
