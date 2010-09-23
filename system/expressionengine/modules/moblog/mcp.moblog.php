@@ -403,7 +403,7 @@ EOT;
 			/**  Modify Form Creation Data
 			/** ------------------------------*/
 			
-			if ($row['moblog_channel_id']  != 0)
+			if ($row['moblog_channel_id'] != 0 && array_key_exists($row['moblog_channel_id'], $this->channel_array))
 			{
 				$form_data['channel_id'][1] = $row['moblog_channel_id'];
 				
@@ -448,7 +448,7 @@ EOT;
 
 				foreach($this->status_array as $val)
 				{
-					if (is_array($val) && $val['0'] == $this->channel_array[$row['moblog_channel_id'] ]['2'])
+					if (is_array($val) && $val['0'] == $this->channel_array[$row['moblog_channel_id']]['2'])
 					{
 						if ($val['1'] == 'open' OR $val['1'] == 'closed')
 						{
@@ -468,10 +468,10 @@ EOT;
 					
 				$form_data['status'] = array($new_array, $data['status']);
 				$new_array = array('none'=> $this->EE->lang->line('none'));
-				
+
 				foreach($this->field_array as $val)
 				{
-					if (is_array($val) && $val['0'] == $this->channel_array[$row['moblog_channel_id'] ]['3'])
+					if (is_array($val) && $val['0'] == $this->channel_array[$row['moblog_channel_id']]['3'])
 					{
 						$new_array[$val['1']] = $val['2'];
 					}
