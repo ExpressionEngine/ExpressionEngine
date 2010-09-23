@@ -1,7 +1,5 @@
 1. When installing above web root the value for 'URL to the directory where the above index page is located' is the masked file URL and not the site root.
 
-9. Corporate theme publish tab, the glossary won't open on a textarea using Chrome 6.0.472.62 beta.
-
 12. When modifying the publish layout it is possible to drag the entry date field off the layout and it disappears completely. This should not be possible since the entry date can't be removed.
 
 13. Corporate theme with Chrome 6.0.472.62 beta/Safari 5.0.2 and Firefox 4.0b5, going to the Content Edit page generates several JS errors and the page does not render properly. Does not occur in Default or Fruit themes.
@@ -63,6 +61,8 @@ in index.php?S=8bda723f8890679f6b3534108001a7194c9717fa&D=cp&C=javascript
 7. Corporate theme, the File Manager overlaps the accessory tabs if the sidebar is opened/closed.
 
 8. {last_segment} seems to work as described.
+
+9. Corporate theme publish tab, the glossary won't open on a textarea using Chrome 6.0.472.62 beta.  -- I dont' replicate this issue -- GA
 
 10. After publishing an entry the preview shows a 'View Comments' link. This link is incorrect.
 
