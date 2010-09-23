@@ -170,7 +170,7 @@ class Api_channel_entries extends Api {
 			return TRUE;
 		}
 		
-		if (count($data['ping_servers']) > 0)
+		if (isset($data['ping_servers']) && count($data['ping_servers']) > 0)
 		{
 			$this->send_pings($data['ping_servers'], $channel_id, $this->entry_id);
 		}
@@ -312,7 +312,7 @@ class Api_channel_entries extends Api {
 			return TRUE;
 		}
 		
-		if (count($data['ping_servers']) > 0)
+		if (isset($data['ping_servers']) && count($data['ping_servers']) > 0)
 		{
 			$this->send_pings($data['ping_servers'], $this->channel_id, $entry_id);
 		}
@@ -959,7 +959,7 @@ class Api_channel_entries extends Api {
 			$channel_id = $this->channel_id;
 		}
 		
-		$query = $this->EE->api_channel_structure->get_channel_info($this->channel_id);
+		$query = $this->EE->api_channel_structure->get_channel_info($channel_id);
 
 		foreach(array('channel_url', 'rss_url', 'deft_status', 'comment_url', 'comment_system_enabled', 'enable_versioning', 'max_revisions') as $key)
 		{
