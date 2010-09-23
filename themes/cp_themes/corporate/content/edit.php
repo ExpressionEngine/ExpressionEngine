@@ -13,15 +13,14 @@ if ($EE_view_disable !== TRUE)
 	<div class="contents">
 		
 		<div class="heading">
-			<h2>
-			<span id="filter_ajax_indicator"><img src="<?=$cp_theme_url?>images/indicator2.gif" /></span>
+			<h2 class="edit">
+			<span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>
 			<?=lang($heading)?></h2>			
-		</div>		
-		
+		</div>
 		<div class="pageContents">
-
 		<div id="filterMenu">
-
+			<fieldset>
+				<legend><?=lang('search_entries')?></legend>
 			<?php $this->load->view('_shared/message');?>
 
 			<?=form_open($search_form, array('name'=>'filterform', 'id'=>'filterform'), $search_form_hidden)?>
@@ -35,7 +34,6 @@ if ($EE_view_disable !== TRUE)
 						// JS required theme, so ordering handled by table sorter
 						//form_dropdown('order', $order_select_options, $order_selected, 'id="f_select_options"').NBS.NBS
 					?>
-
 					<?=form_dropdown('perpage', $perpage_select_options, $perpage_selected, 'id="f_perpage"')?>
 				</div>
 
@@ -51,14 +49,14 @@ if ($EE_view_disable !== TRUE)
                 </div>
 
 				<div>
-					<?=lang('keywords', 'keywords')?> <?=form_input($keywords).NBS.NBS?>
+					<?=lang('keywords', 'keywords')?> <?=form_input($keywords, NULL,  'class="field shun"')?><br />
 					<?=form_checkbox('exact_match', 'yes', $exact_match, 'id="exact_match"')?> <?=lang('exact_match', 'exact_match').NBS.NBS?>
 					<?=form_dropdown('search_in', $search_in_options, $search_in_selected, 'id="f_search_in"').NBS.NBS?>
 					<?=form_submit('submit', lang('search'), 'class="submit" id="search_button"')?>
 				</div>
 
 			<?=form_close()?>
-	
+			</fieldset>
 			</div> <!-- filterMenu -->
 
 			<?php if ($total_count == 0):?>
@@ -86,14 +84,14 @@ if ($EE_view_disable !== TRUE)
 				<?php endif;?>
 			</div>
 
-		
-
-		</div> <!-- tableFooter -->
+			<span class="js_hide"><?=$pagination?></span>
+			<span class="pagination" id="filter_pagination"></span>
+			
 
 			<?php endif; /* if $total_count > 0*/?>
 
 		<?=form_close()?>
-			</div> <!-- pageContents -->
+		</div>
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 

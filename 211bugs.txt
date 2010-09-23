@@ -2,8 +2,6 @@
 
 12. When modifying the publish layout it is possible to drag the entry date field off the layout and it disappears completely. This should not be possible since the entry date can't be removed.
 
-13. Corporate theme with Chrome 6.0.472.62 beta/Safari 5.0.2 and Firefox 4.0b5, going to the Content Edit page generates several JS errors and the page does not render properly. Does not occur in Default or Fruit themes.
-
 17. IE8 (Windows 7), the file manager upload dialog (from the publish page) does not have a choose file button. The dialog will open if the field is double-clicked though.
 
 19. Occasionally (I can't see a pattern here) if you click an image in the file manager list the modal is offset to the right partially out of the browser viewport. It is not possible to click to close this image. A JS error is generated "Cannot read property 'nodeName' of '. This seems to happen with at least Mac Chrome and Windows 7.
@@ -67,6 +65,8 @@ in index.php?S=8bda723f8890679f6b3534108001a7194c9717fa&D=cp&C=javascript
 10. After publishing an entry the preview shows a 'View Comments' link. This link is incorrect.
 
 11. Changelog link for new 'restrict_channel' parameter is incorrect.
+
+13. Corporate theme with Chrome 6.0.472.62 beta/Safari 5.0.2 and Firefox 4.0b5, going to the Content Edit page generates several JS errors and the page does not render properly. Does not occur in Default or Fruit themes.
 
 14. Complex publish layouts successfully tested including removal of url_title field and dragging of fields between tabs.
 
