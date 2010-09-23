@@ -1,9 +1,5 @@
 1. When installing above web root the value for 'URL to the directory where the above index page is located' is the masked file URL and not the site root.
 
-5. Default, Fruit and Corporate theme, going to Content > File Manager generates a console error:
-"TypeError: Result of expression 'a' [undefined] is not an object"
-in index.php?S=8bda723f8890679f6b3534108001a7194c9717fa&D=cp&C=javascript
-
 6. Safari 5.0.2 Inspector reports multiple HTML validation errors in Config Editor in Default and Fruit themes.
 
 9. Corporate theme publish tab, the glossary won't open on a textarea using Chrome 6.0.472.62 beta.
@@ -63,6 +59,10 @@ Missing column notify in field list when posting a comment
 3. With Safari 5.0.2 the Comment module homepage overlaps the ExpressionEngine Info accessory tab when opening/closing the sidebar.
 
 4. Comment module homepage, without any comments the pagination links, an empty select and a submit button are shown.
+
+5. Default, Fruit and Corporate theme, going to Content > File Manager generates a console error:
+"TypeError: Result of expression 'a' [undefined] is not an object"
+in index.php?S=8bda723f8890679f6b3534108001a7194c9717fa&D=cp&C=javascript
 
 7. Corporate theme, the File Manager overlaps the accessory tabs if the sidebar is opened/closed.
 
