@@ -12,10 +12,6 @@
 
 20. Safari/Chrome/Firefox, after logging in with the mobile theme and trying to select another theme it is not then possible to change the default CP theme in a desktop browser.
 
-
-- Re: (#13363) where {page_url} variables were not respecting the "Force Query Strings" setting
->> Forcing query strings breaks {page_url} (http://site/index.php/?/pagetest (extra slash before and after ?)
-
 - Re: Greg's #19 I'm also still seeing a JS error when uploading a file from the File Manager which is a bit of a biggie because it prevents feedback.  "Click is not a function" occurs on line 139 of file_manager_home.js, presumably because something isn't fully in the DOM when setup_events() gets run again following the upload? (this is the only JS error I have encountered in the CP)
 
 - Comment Editing Time Limit setting in the module's new CP page is ambiguous as to what units of time are being specified (the documentation does not specify this either)
@@ -79,6 +75,9 @@ in index.php?S=8bda723f8890679f6b3534108001a7194c9717fa&D=cp&C=javascript
 16. #13829 verified
 
 21. #13071, verified that ctrl+shortcut does work in Safari 5.0.2/Firefox 4.0b5/Chrome 6.0.472.62 beta. Selected text is wrapped appropriately.
+
+- Re: (#13363) where {page_url} variables were not respecting the "Force Query Strings" setting
+>> Forcing query strings breaks {page_url} (http://site/index.php/?/pagetest (extra slash before and after ?)
 
 - (#13585) where the Wiki would not accept uploads if the allowed types was set to "Images only"
 - (#13503) where deleting tabs from the publish layout could cause kept tabs to be mislabeled.

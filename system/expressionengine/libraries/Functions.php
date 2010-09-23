@@ -163,6 +163,11 @@ class EE_Functions {
 
 		if ($this->EE->config->item('force_query_string') == 'y')
 		{
+			if (strpos($base_url, $this->EE->config->item('index_page') . '/') !== FALSE)
+			{
+				$base_url = rtrim($base_url, '/');
+			}
+			
 			$base_url .= '?';
 		}
 		
