@@ -211,10 +211,7 @@ $(document).ready(function () {
 		}
 	}
 
-	function confirm_win(mode) {
-		
-		console.log(edit_mode);
-		
+	function confirm_win(mode) {		
 		if (edit_mode !== false) {
 			confirm(
 				EE.lang.exit_apply_changes,
