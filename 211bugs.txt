@@ -1,6 +1,6 @@
 1. When installing above web root the value for 'URL to the directory where the above index page is located' is the masked file URL and not the site root.
 
-12. When modifying the publish layout it is possible to drag the entry date field off the layout and it disappears completely. This should not be possible since the entry date can't be removed.
+
 
 17. IE8 (Windows 7), the file manager upload dialog (from the publish page) does not have a choose file button. The dialog will open if the field is double-clicked though.
 
@@ -25,6 +25,9 @@ Done
 - Filemanger: Edit > crop mode, makes the image disappear on the first attempt - fails with NaN in all fields (PK)
 
 - 18. When uploading images via the file manager sometimes the file is uploaded to the server successfully but the file manager dialog does not recognise or record this fact when it is refreshed. In at least Chrome several JS errors are generated. See also #19. (PK)
+
+robin's on:
+12. When modifying the publish layout it is possible to drag the entry date field off the layout and it disappears completely. This should not be possible since the entry date can't be removed.
 
 --------- FIXED / NOT A BUG ----------
 
