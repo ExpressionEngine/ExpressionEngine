@@ -191,6 +191,7 @@ class EE_Subscription {
 				$data[] = array_merge($default, array(
 					'hash'				=> $rand,
 					'member_id'			=> $id,
+					'email'				=> '',
 					'subscription_date'	=> $this->EE->localize->now
 				));
 			}
@@ -202,6 +203,7 @@ class EE_Subscription {
 				
 				$data[] = array_merge($default, array(
 					'hash'				=> $rand,
+					'member_id'			=> 0,
 					'email'				=> $email,
 					'subscription_date'	=> $this->EE->localize->now
 				));
@@ -310,7 +312,7 @@ class EE_Subscription {
 		
 		if ($ignore)
 		{
-			if (is_numeric($ignore))
+			if (is_numeric($ignore) && $ignore != 0)
 			{
 				$this->EE->db->where('member_id !=', $ignore);
 			}
@@ -333,16 +335,16 @@ class EE_Subscription {
 		
 		foreach($query->result_array() as $subscription)
 		{
-			if ($subscription['member_id'])
+			if ($subscription['member_id'] != 0)
 			{
 				$return[$subscription['subscription_id']] = $subscription;
 			}
-			else if ($this->anonymous && $subscription['email'])
+			elseif ($this->anonymous && $subscription['email'])
 			{
 				$return[$subscription['subscription_id']] = $subscription;
 			}
 		}
-
+		
 		return $return;
 	}
 	
