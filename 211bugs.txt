@@ -26,8 +26,6 @@ Done
 
 - 18. When uploading images via the file manager sometimes the file is uploaded to the server successfully but the file manager dialog does not recognise or record this fact when it is refreshed. In at least Chrome several JS errors are generated. See also #19. (PK)
 
-robin's on:
-12. When modifying the publish layout it is possible to drag the entry date field off the layout and it disappears completely. This should not be possible since the entry date can't be removed.
 
 --------- FIXED / NOT A BUG ----------
 
@@ -92,3 +90,7 @@ in index.php?S=8bda723f8890679f6b3534108001a7194c9717fa&D=cp&C=javascript
 - Suggest tweak to new documentation on restrict_channel: "... When restrict_channel is set to "no", the show_empty parameter will display categories that have no entries from all channels, rather than categories that have no entries from the specified channel. (break) By default, the empty categories shown will be restricted to the specified channel."
 
 
+
+12. When modifying the publish layout it is possible to drag the entry date field off the layout and it disappears completely. This should not be possible since the entry date can't be removed.
+
+*** NOTE- neither Greg nore Robin can replicate this one so we yelled for Brandon and he couldn't either.  You move it far enough away, it ends up on publish main tab- but I'd say it's expected.  So 12 'not a bug' unless proven different.
