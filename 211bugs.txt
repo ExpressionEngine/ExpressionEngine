@@ -16,7 +16,7 @@
 
 
 ---------- DOCUMENTATION -----------
-
+Done
 
 --------- WORKING ON IT -------------
 
@@ -25,18 +25,6 @@
 - Filemanger: Edit > crop mode, makes the image disappear on the first attempt - fails with NaN in all fields (PK)
 
 - 18. When uploading images via the file manager sometimes the file is uploaded to the server successfully but the file manager dialog does not recognise or record this fact when it is refreshed. In at least Chrome several JS errors are generated. See also #19. (PK)
-
-
----------- DOCUMENTATION ----------- Robin snagged these cause the involve no js and no moblog.  Go Robin!
-
-- the channel= parameter is listed out-of-order on modules/channel/parameters.html
-- typo in changelog: "Added a new status for comments. Moderated comments will no go..." should be "...now go..."
-
-- Re: #13551 Search and Replace in conjunction with flat files could lead to data loss - Documentation and screenshot at cp/tools/data/search_and_replace.html do not reflect the new warning in the S&R utility (If you are replacing within templates, synchronize with the database first, or	permanent data loss can occur!)  Ideally the utility would refuse to run if templates are out of sync...?
-- Both links in the changelog re: restrict_channel parameter and show_empty parameter have an extra /channel/ in their URL 
-- Suggest tweak to new documentation on restrict_channel: "... When restrict_channel is set to "no", the show_empty parameter will display categories that have no entries from all channels, rather than categories that have no entries from the specified channel. (break) By default, the empty categories shown will be restricted to the specified channel."
-
-
 
 --------- FIXED / NOT A BUG ----------
 
@@ -90,3 +78,14 @@ in index.php?S=8bda723f8890679f6b3534108001a7194c9717fa&D=cp&C=javascript
 - IE8 works as well as can be expected (can't reproduce Greg's #17 albeit with IE8 on XP)
 - Lots of other general usage patterns that worked well
 - {last_segment} is not documented in templates/globals/single_variables.html (Documented with segment variables)
+
+---------- DOCUMENTATION ----------- Robin snagged these cause the involve no js and no moblog.  Go Robin!
+
+- the channel= parameter is listed out-of-order on modules/channel/parameters.html
+- typo in changelog: "Added a new status for comments. Moderated comments will no go..." should be "...now go..."
+
+- Re: #13551 Search and Replace in conjunction with flat files could lead to data loss - Documentation and screenshot at cp/tools/data/search_and_replace.html do not reflect the new warning in the S&R utility (If you are replacing within templates, synchronize with the database first, or	permanent data loss can occur!)  Ideally the utility would refuse to run if templates are out of sync...?
+- Both links in the changelog re: restrict_channel parameter and show_empty parameter have an extra /channel/ in their URL 
+- Suggest tweak to new documentation on restrict_channel: "... When restrict_channel is set to "no", the show_empty parameter will display categories that have no entries from all channels, rather than categories that have no entries from the specified channel. (break) By default, the empty categories shown will be restricted to the specified channel."
+
+
