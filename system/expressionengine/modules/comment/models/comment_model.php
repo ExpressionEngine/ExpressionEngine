@@ -303,9 +303,8 @@ class Comment_model extends CI_Model {
 		
 		$subscribed_members = array();
 		$subscribed_emails = array();
-		
+	
 		// No subscribers - skip!
-		
 		if (count($subscriptions))
 		{
 			// Do some work to figure out the user's name,
@@ -327,7 +326,6 @@ class Comment_model extends CI_Model {
 					$subscription_map[$row['email']] = $id;
 				}
 			}
-			
 			
 			if (count($subscribed_members))
 			{

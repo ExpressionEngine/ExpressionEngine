@@ -1439,7 +1439,6 @@ class Comment {
 			$halt_processing = 'disabled';
 		}
 		
-		
 		/** ----------------------------------------
 		/**  Smart Notifications? Mark comments as read.
 		/** ----------------------------------------*/
@@ -1450,7 +1449,6 @@ class Comment {
 			$this->EE->subscription->init('comment', array('entry_id' => $query->row('entry_id')), TRUE);
 			$this->EE->subscription->mark_as_read();
 		}
-		
 
 		/** ----------------------------------------
 		/**  Return the "no cache" version of the form
@@ -1705,7 +1703,7 @@ class Comment {
 		/** ----------------------------------------
 		/**  Create form
 		/** ----------------------------------------*/
-
+		
 		$RET = $this->EE->functions->fetch_current_uri();
 		
 		if (isset($_POST['RET']))
@@ -1714,7 +1712,7 @@ class Comment {
 		}
 		elseif ($this->EE->TMPL->fetch_param('return') && $this->EE->TMPL->fetch_param('return') != "")
 		{
-			$RET = $this->EE->TMPL->fetch_param('return');
+			$RET =  $this->EE->TMPL->fetch_param('return');
 		}
 		
 		$PRV = (isset($_POST['PRV'])) ? $_POST['PRV'] : $this->EE->TMPL->fetch_param('preview');
@@ -1749,22 +1747,8 @@ class Comment {
 		//
 		// -------------------------------------------
 
-		// -------------------------------------------
-		// 'comment_form_action' hook.
-		//  - Modify action="" attribute for comment form
-		//  - Added 1.4.2
-		//
-			if ($this->EE->extensions->active_hook('comment_form_action') === TRUE)
-			{
-				$RET = $this->EE->extensions->call('comment_form_action', $RET);
-				if ($this->EE->extensions->end_script === TRUE) return;
-			}
-		//
-		// -------------------------------------------
-
 		$data = array(
 						'hidden_fields'	=> $hidden_fields,
-						'action'		=> $RET,
 						'id'			=> ( ! isset($this->EE->TMPL->tagparams['id'])) ? 'comment_form' : $this->EE->TMPL->tagparams['id'],
 						'class'			=> ( ! isset($this->EE->TMPL->tagparams['class'])) ? NULL : $this->EE->TMPL->tagparams['class']
 					);
@@ -2127,6 +2111,9 @@ class Comment {
 		{
 			exit('Preview template not specified in your comment form tag');
 		}
+		
+		// Clean return value- segments only
+		$clean_return = str_replace($this->EE->functions->fetch_site_index(), '', $_POST['RET']);
 
 		// Load the string helper
 		$this->EE->load->helper('string');
@@ -2134,7 +2121,7 @@ class Comment {
 		$_POST['PRV'] = trim_slashes($this->EE->security->xss_clean($_POST['PRV']));
 
 		$this->EE->functions->clear_caching('all', $_POST['PRV']);
-		$this->EE->functions->clear_caching('all', $_POST['RET']);
+		$this->EE->functions->clear_caching('all', $clean_return);
 
 		require APPPATH.'libraries/Template'.EXT;
 
@@ -2646,6 +2633,8 @@ class Comment {
 		// -------------------------------------------
 
 
+			$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? $this->EE->functions->create_url($_POST['RET']) : $_POST['RET'];
+
 		/** ----------------------------------------
 		/**  Insert data
 		/** ----------------------------------------*/
@@ -2666,7 +2655,7 @@ class Comment {
 			}
 			else
 			{
-				$this->EE->functions->redirect(stripslashes($_POST['RET']));
+				$this->EE->functions->redirect(stripslashes($return_link));
 			}
 		}
 		else
@@ -2738,12 +2727,10 @@ class Comment {
 			$this->EE->subscription->init('comment', array('entry_id' => $entry_id), TRUE);
 			
 			// Remove the current user
-			$ignore = $this->EE->session->userdata('member_id');
-			$ignore = $ignore ? $ignore : $this->EE->input->post('email');
+			$ignore = ($this->EE->session->userdata('member_id') != 0) ? $this->EE->session->userdata('member_id') : $this->EE->input->post('email');
 			
 			// Grab them all
 			$subscriptions = $this->EE->subscription->get_subscriptions($ignore);
-			
 			$this->EE->load->model('comment_model');
 			$recipients = $this->EE->comment_model->fetch_email_recipients($_POST['entry_id'], $subscriptions);
 		}
@@ -2809,7 +2796,7 @@ class Comment {
 							'entry_title'		=> $entry_title,
 							'comment_id'		=> $comment_id,
 							'comment'			=> $comment,
-							'comment_url'		=> $this->remove_session_id($_POST['RET']),
+							'comment_url'		=> $this->remove_session_id($this->EE->functions->fetch_site_index().$_POST['URI']),
 							'delete_link'		=> $cp_url.'&method=delete_comment_confirm&comment_id='.$comment_id, 
 							'approve_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=o', 
 							'close_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=c', 
@@ -2891,7 +2878,7 @@ class Comment {
 								'entry_title'		=> $entry_title,
 								'site_name'			=> stripslashes($this->EE->config->item('site_name')),
 								'site_url'			=> $this->EE->config->item('site_url'),
-								'comment_url'		=> $this->remove_session_id($_POST['RET']),
+								'comment_url'		=> $this->remove_session_id($this->EE->functions->fetch_site_index().$_POST['URI']),
 								'comment_id'		=> $comment_id,
 								'comment'			=> $comment,
 								'channel_id'		=> $channel_id,
@@ -2923,7 +2910,7 @@ class Comment {
 				{
 					// We don't notify the person currently commenting.  That would be silly.
 
-					if ($val['0'] != $cur_email AND ! in_array($val['0'], $sent))
+					if ( ! in_array($val['0'], $sent))
 					{
 						$title	 = $email_tit;
 						$message = $email_msg;
@@ -3013,8 +3000,6 @@ class Comment {
 		/** -------------------------------------------
 		/**  Bounce user back to the comment page
 		/** -------------------------------------------*/
-
-			$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? $this->EE->functions->create_url($_POST['RET']) : $_POST['RET'];
 
 		if ($comment_moderate == 'y')
 		{
