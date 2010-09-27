@@ -1190,6 +1190,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$config['total_rows'] = $total;
 			$config['per_page'] = $this->perpage;
 			$config['page_query_string'] = TRUE;
+			$config['first_link'] = $this->lang->line('pag_first_link');
+			$config['last_link'] = $this->lang->line('pag_last_link');
 			
 			$this->pagination->initialize($config);	
 			$vars['pagination'] = $this->pagination->create_links();

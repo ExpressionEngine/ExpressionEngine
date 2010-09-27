@@ -556,7 +556,9 @@ class Comment {
 				$config['total_rows'] 	= $total_rows;
 				$config['per_page']		= $limit;
 				$config['cur_page']		= $current_page;
-				$config['suffix']	= $anchor;
+				$config['suffix']		= $anchor;
+				$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
+				$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
 				
 				$this->EE->pagination->initialize($config);
 				$pagination_links = $this->EE->pagination->create_links();

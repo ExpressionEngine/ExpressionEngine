@@ -1192,6 +1192,8 @@ class Search {
 			$config['total_rows'] 	= $query->row('count') ;
 			$config['per_page']		= $per_page;
 			$config['cur_page']		= $cur_page;	
+			$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
+			$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
 
 			$this->EE->pagination->initialize($config);
 			$pager = $this->EE->pagination->create_links();			

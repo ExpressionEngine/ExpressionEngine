@@ -943,7 +943,8 @@ class EE_Messages {
 			$config['total_rows'] 	= $query->row('count');
 			$config['per_page']		= $this->per_page;
 			$config['cur_page']		= $row_count;			
-			
+			$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
+			$config['last_link'] 	= $this->EE->lang->line('pag_last_link');			
 			
 			$this->EE->pagination->initialize($config);
 			$this->single_parts['include']['pagination_link'] = $this->EE->pagination->create_links();
@@ -1223,7 +1224,9 @@ class EE_Messages {
 			$config['total_rows'] 	= $query->row('count');
 			$config['per_page']		= $this->per_page;
 			$config['cur_page']		= $row_count;		
-			
+			$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
+			$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
+						
 			$this->EE->pagination->initialize($config);
 			$this->single_parts['include']['pagination_link'] = $this->EE->pagination->create_links();
 
@@ -3263,6 +3266,8 @@ DOH;
 			$config['total_rows'] 	= $query->row('count');
 			$config['per_page']		= $this->per_page;
 			$config['cur_page']		= $row_count;
+			$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
+			$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
 
 			$this->EE->pagination->initialize($config);
 			$this->single_parts['include']['pagination_link'] = $this->EE->pagination->create_links();

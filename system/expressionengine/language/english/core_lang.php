@@ -90,6 +90,9 @@ $lang = array(
 'preference' =>
 'Preference',
 
+'pag_first_link' => '&lsaquo; First',
+'pag_last_link' => 'Last &rsaquo;',
+
 //----------------------------
 // Errors
 //----------------------------

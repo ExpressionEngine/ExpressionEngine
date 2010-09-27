@@ -173,7 +173,8 @@ class Member_subscriptions extends Member {
 			$config['cur_page']		= $rownum;
 			$config['query_string_segment']	  = 'rownum';
 			$config['page_query_string']	= TRUE;
-
+			$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
+			$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
 
 			$this->EE->pagination->initialize($config);
 			$page_links = $this->EE->pagination->create_links();			

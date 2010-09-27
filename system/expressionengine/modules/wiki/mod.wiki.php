@@ -5534,6 +5534,8 @@ class Wiki {
 				$config['total_rows'] 	= $count;
 				$config['per_page']		= $limit;
 				$config['cur_page']		= $this->p_page;
+				$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
+				$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
 
 				$config['first_url'] 	= rtrim($base_path, '/');
 

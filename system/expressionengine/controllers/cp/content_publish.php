@@ -2049,6 +2049,8 @@ class Content_publish extends Controller {
 		$pconfig['offset'] = $this->input->get_post('offset');
 		$pconfig['query_string_segment'] = 'offset';
 		$pconfig['page_query_string'] = TRUE;
+		$pconfig['first_link'] = $this->lang->line('pag_first_link');
+		$pconfig['last_link'] = $this->lang->line('pag_last_link');
 		
 		$this->pagination->initialize($pconfig);
 		$pagination_links = $this->pagination->create_links();

@@ -489,7 +489,9 @@ class Tools_data extends Controller {
 						$config['total_rows'] = $total_results;
 						$config['per_page'] = $row_limit;
 						$config['page_query_string'] = TRUE;
-
+						$config['first_link'] = $this->lang->line('pag_first_link');
+						$config['last_link'] = $this->lang->line('pag_last_link');
+						
 						$this->pagination->initialize($config);
 					}
 				}

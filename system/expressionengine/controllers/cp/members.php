@@ -1163,10 +1163,14 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$vars['clone_group_options'][$row['group_id']] = $row['group_title'];
 		}
 
-		$config['base_url'] = BASE.AMP.'C=members'.AMP.'M=member_group_manager';
-		$config['total_rows'] = $g_query->num_rows();
-		$config['per_page'] = $row_limit;
-		$config['page_query_string'] = TRUE;
+		$config = array(
+				'base_url'		=> BASE.AMP.'C=members'.AMP.'M=member_group_manager',
+				'total_rows'	=> $g_query->num_rows(),
+				'per_page'		=> $row_limit,
+				'page_query_string'	=> TRUE,
+				'first_link'	=> $this->lang->line('pag_first_link'),
+				'last_link'		=> $this->lang->line('pag_last_link')
+			);
 
 		$this->pagination->initialize($config);
 

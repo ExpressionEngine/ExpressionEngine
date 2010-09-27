@@ -388,6 +388,8 @@ class Member_images extends Member {
 			$config['total_rows'] 	= $total_rows;
 			$config['per_page']		= $perpage;
 			$config['cur_page']		= $rownum;
+			$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
+			$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
 				
 			$this->EE->pagination->initialize($config);
 			$pagination = $this->EE->pagination->create_links();			
