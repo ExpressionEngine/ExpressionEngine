@@ -362,8 +362,16 @@ class Content_files extends Controller {
 			$file_info = $this->upload->data();
 			$encrypted_path = rawurlencode($this->encrypt->encode($file_info['full_path'], $this->session->sess_crypt_key));
 
-			$this->filemanager->create_thumb(array('server_path' => $file_info['file_path']), 
-											array('name' => $file_info['file_name']));
+			$this->filemanager->create_thumb(
+								array('server_path' => $file_info['file_path']), 
+								array('name' => $file_info['file_name'])
+							);
+			
+			/* 	It makes me kind of cry a bit to do this, but some hosts have
+				stupid permissions, so unless you chmod the file like so, the
+				user won't be able to delete it with their ftp client.  :( */
+			
+			@chmod($file_info['full_path'], DIR_WRITE_MODE);
 
 			if ($this->input->get_post('is_ajax') == 'true')
 			{

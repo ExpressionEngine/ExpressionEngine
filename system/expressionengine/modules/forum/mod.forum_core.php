@@ -5876,6 +5876,8 @@ class Forum_Core extends Forum {
 		
 		$upload_data = $this->EE->upload->data();
 
+		@chmod($upload_data['full_path'], DIR_WRITE_MODE);
+
 		$width		= 0;
 		$height		= 0;
 		$t_width	= 0;

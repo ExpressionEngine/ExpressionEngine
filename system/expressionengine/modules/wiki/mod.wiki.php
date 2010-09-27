@@ -5410,6 +5410,8 @@ class Wiki {
 
 			$file_data = $this->EE->upload->data();
 			
+			@chmod($file_data['full_path'], DIR_WRITE_MODE);
+			
 			$data = array(	'wiki_id'				=> $this->wiki_id,
 							'file_name'				=> $new_name,
 							'upload_summary'		=> ($this->EE->input->get_post('summary') !== FALSE) ? $this->EE->security->xss_clean($this->EE->input->get_post('summary')) : '',

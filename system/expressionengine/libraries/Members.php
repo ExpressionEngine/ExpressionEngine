@@ -428,6 +428,8 @@ class Members {
 
 		$file_info = $this->EE->upload->data();
 		
+		@chmod($file_info['full_path'], DIR_WRITE_MODE);
+		
 		// Do we need to resize?
 		$width	= $file_info['image_width'];
 		$height = $file_info['image_height'];

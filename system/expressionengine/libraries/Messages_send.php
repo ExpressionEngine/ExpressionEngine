@@ -145,6 +145,8 @@ class EE_Messages_send extends EE_Messages {
 	
 		$upload_data = $this->EE->upload->data();
 
+		@chmod($upload_data['full_path'], DIR_WRITE_MODE);
+
 		$this->temp_message_id = $this->EE->functions->random('nozero', 9);
 
 		$data = array(

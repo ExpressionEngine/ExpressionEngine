@@ -445,6 +445,7 @@ class Filemanager {
 			die($this->EE->image_lib->display_errors());
 		}
 	
+		@chmod($config['new_image'], DIR_WRITE_MODE);
 		return TRUE;
 	}
 
