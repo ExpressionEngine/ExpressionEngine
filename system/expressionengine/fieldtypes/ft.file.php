@@ -120,7 +120,9 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function display_field($data)
 	{
-		$filedir = set_value($this->field_name.'_directory', '');
+		$fdir = (isset($_POST[$this->field_name.'_directory'])) ? $_POST[$this->field_name.'_directory'] : '';
+		
+		$filedir = set_value($this->field_name.'_directory', $fdir);
 		$filename = set_value($this->field_name, '');
 		$upload_dirs = array();
 				
