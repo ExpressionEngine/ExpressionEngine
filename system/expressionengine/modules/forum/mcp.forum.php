@@ -1786,8 +1786,11 @@ class Forum_mcp {
 			}
 		}
 
+		$groups = $vars['member_groups'];
+
 		$this->EE->db->select('admin_id, admin_member_id, admin_group_id');
-		$query = $this->EE->db->get_where('forum_administrators', array('board_id' => $this->board_id));
+		$query = $this->EE->db->get_where('forum_administrators', 
+									array('board_id' => $this->board_id));
 		
 		if ($query->num_rows() > 0)
 		{
