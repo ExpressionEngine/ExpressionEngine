@@ -197,9 +197,13 @@ class File_ft extends EE_Fieldtype {
 			$path = substr($data, 0, 10 + strlen($matches[1]));
 
 			$file_dirs = $this->EE->functions->fetch_file_paths();
-
-			$file_info['path'] = str_replace($matches[0], $file_dirs[$matches[1]], $path);
-			$data = str_replace($matches[0], '', $data);
+			
+			if (isset($file_dirs[$matches[1]]))
+			{
+				$file_info['path'] = str_replace($matches[0], 
+												 $file_dirs[$matches[1]], $path);
+				$data = str_replace($matches[0], '', $data);				
+			}
 		}
 
 		$file_info['extension'] = substr(strrchr($data, '.'), 1);
