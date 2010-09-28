@@ -2849,7 +2849,7 @@ class EE_Functions {
 
 		if ($query->num_rows() == 0)
 		{
-			return;
+			return array();
 		}
 				
 		foreach ($query->result_array() as $row)
