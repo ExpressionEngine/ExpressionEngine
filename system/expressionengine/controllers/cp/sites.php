@@ -1172,22 +1172,42 @@ class Sites extends Controller {
 									/**  Channel Data Field Creation, Whee!
 									/** -----------------------------------------*/
 									
-									switch($row['field_type'])
+									
+									if ($row['field_type'] == 'date' OR $row['field_type'] == 'rel')
 									{
-										case 'date'	:
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN `field_id_".$this->db->escape_str($field_id)."` int(10) NOT NULL DEFAULT 0");		
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN `field_ft_".$this->db->escape_str($field_id)."` tinytext NULL");
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN `field_dt_".$this->db->escape_str($field_id)."` varchar(8) AFTER field_ft_".$this->db->escape_str($field_id).""); 
-										break;
-										case 'rel'	:
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN `field_id_".$this->db->escape_str($field_id)."` int(10) NOT NULL DEFAULT 0");		
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN `field_ft_".$this->db->escape_str($field_id)."` tinytext NULL");
-										break;
-										default		:
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN `field_id_".$this->db->escape_str($field_id)."` text");		
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN `field_ft_".$this->db->escape_str($field_id)."` tinytext NULL");
-										break;
+										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$this->db->escape_str($field_id)." int(10) NOT NULL DEFAULT 0");
+										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_ft_".$this->db->escape_str($field_id)." tinytext NULL");
+
+										if ($row['field_type'] == 'date')
+										{
+											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_dt_".$this->db->escape_str($field_id)." varchar(8) AFTER field_ft_".$this->db->escape_str($field_id));
+										}
 									}
+									else
+									{
+										switch ($row['field_content_type'])
+										{
+											case 'numeric':
+												$type = 'FLOAT DEFAULT 0';
+												break;
+											case 'integer':
+												$type = 'INT DEFAULT 0';
+												break;
+											default:
+												$type = 'text';
+										}
+				
+										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$this->db->escape_str($field_id).' '.$type);
+										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_ft_".$this->db->escape_str($field_id)." tinytext NULL");
+										$this->db->query("UPDATE exp_channel_data SET field_ft_".$this->db->escape_str($field_id)." = '".$this->db->escape_str($field_id)."'");
+										
+										// Replace NULL values
+										if ($type == 'text')
+										{
+											$this->db->query("UPDATE exp_channel_data SET field_id_".$this->db->escape_str($field_id)." = ''");
+										}
+									}
+
 									
 									/** -----------------------------------------
 									/**  Duplicate Each Fields Formatting Options Too
@@ -1507,21 +1527,6 @@ class Sites extends Controller {
 								{
 									$related_fields[] = 'field_ft_'.$field_match[$row['field_id']];  // We used this for moved relationships, see above
 								}
-								
-								if ($row['field_type'] == 'date' OR $row['field_type'] == 'rel')
-								{
-									$this->db->query("UPDATE exp_channel_data 
-											SET `field_id_".$this->db->escape_str($row['field_id'])."` = 0
-											WHERE channel_id = '".$this->db->escape_str($channel_id)."'");
-									
-								}
-								else
-								{
-									$this->db->query("UPDATE exp_channel_data 
-											SET `field_id_".$this->db->escape_str($row['field_id'])."` = ''
-											WHERE channel_id = '".$this->db->escape_str($channel_id)."'");
-								}
-								
 							}
 							
 							/** -----------------------------------------
@@ -1578,7 +1583,10 @@ class Sites extends Controller {
 					}
 				}
 			}
+			
 		}
+		
+		
 		
 		/** -----------------------------------------
 		/**  Refresh Sites List
