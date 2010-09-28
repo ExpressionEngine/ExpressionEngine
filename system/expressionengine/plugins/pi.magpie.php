@@ -345,7 +345,7 @@ author_email - [ATOM]
 content - [ATOM/RSS-2.0]
 created - [ATOM]
 creator - [RSS-1.0]
-date - [RSS-2.0]
+pubdate/date - (varies by feed design)
 description - [ATOM]
 id - [ATOM]
 issued - [ATOM]
