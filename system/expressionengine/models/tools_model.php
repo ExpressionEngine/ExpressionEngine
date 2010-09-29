@@ -353,9 +353,16 @@ class Tools_model extends CI_Model {
 		{
 			show_error('no_lang_file');
 		}
+		
+		$language_file = $this->security->sanitize_filename($language_file);
 
 		$source_dir = APPPATH.'language/english/';
 		$dest_dir = APPPATH.$dest_folder.'/';
+
+		if ( ! file_exists($source_dir.$language_file))
+		{
+			show_error(lang('no_lang_keys'));
+		}
 
 		require($source_dir.$language_file);
 
