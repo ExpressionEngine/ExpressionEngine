@@ -1383,12 +1383,13 @@ div.notice_texts .bad_path_error_list li ul li {color:#fff; font-weight:normal;}
 }
 
 .heading span.msg_open_close {
-	float:		right;
-	text-indent:-5000em;
-	display:block;
-	height:15px;
-	width:15px;
-	cursor:pointer;
+	float:			right;
+	text-indent:	-5000em;
+	display:		block;
+	height:			15px;
+	width:			15px;
+	cursor:			pointer;
+	margin:			3px -5px 0 0;
 }
 
 #ee_important_message .closedHeading {
