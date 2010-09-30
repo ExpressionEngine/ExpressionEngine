@@ -625,6 +625,7 @@ class Sites extends Controller {
 			$channel_ids = array();
 			$moved	= array();
 			$entries	= array();
+			$upload_updates = array();
 		
 			foreach($_POST as $key => $value)
 			{
@@ -833,7 +834,9 @@ class Sites extends Controller {
 					
 						$this->db->query($this->db->insert_string('exp_upload_prefs', $row, TRUE));
 						
-						$new_upload_id = $this->db->insert_id();						
+						$new_upload_id = $this->db->insert_id();	
+						
+						$upload_updates[$upload_id] = $new_upload_id;					
 						
 						$disallowed_query = $this->db->query("SELECT member_group, upload_loc FROM exp_upload_no_access WHERE upload_id = '".$this->db->escape_str($upload_id)."'");
 						
@@ -1172,22 +1175,42 @@ class Sites extends Controller {
 									/**  Channel Data Field Creation, Whee!
 									/** -----------------------------------------*/
 									
-									switch($row['field_type'])
+									
+									if ($row['field_type'] == 'date' OR $row['field_type'] == 'rel')
 									{
-										case 'date'	:
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN `field_id_".$this->db->escape_str($field_id)."` int(10) NOT NULL DEFAULT 0");		
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN `field_ft_".$this->db->escape_str($field_id)."` tinytext NULL");
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN `field_dt_".$this->db->escape_str($field_id)."` varchar(8) AFTER field_ft_".$this->db->escape_str($field_id).""); 
-										break;
-										case 'rel'	:
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN `field_id_".$this->db->escape_str($field_id)."` int(10) NOT NULL DEFAULT 0");		
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN `field_ft_".$this->db->escape_str($field_id)."` tinytext NULL");
-										break;
-										default		:
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN `field_id_".$this->db->escape_str($field_id)."` text");		
-											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN `field_ft_".$this->db->escape_str($field_id)."` tinytext NULL");
-										break;
+										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$this->db->escape_str($field_id)." int(10) NOT NULL DEFAULT 0");
+										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_ft_".$this->db->escape_str($field_id)." tinytext NULL");
+
+										if ($row['field_type'] == 'date')
+										{
+											$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_dt_".$this->db->escape_str($field_id)." varchar(8) AFTER field_ft_".$this->db->escape_str($field_id));
+										}
 									}
+									else
+									{
+										switch ($row['field_content_type'])
+										{
+											case 'numeric':
+												$type = 'FLOAT DEFAULT 0';
+												break;
+											case 'integer':
+												$type = 'INT DEFAULT 0';
+												break;
+											default:
+												$type = 'text';
+										}
+				
+										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$this->db->escape_str($field_id).' '.$type);
+										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_ft_".$this->db->escape_str($field_id)." tinytext NULL");
+
+										
+										// Replace NULL values
+										if ($type == 'text')
+										{
+											$this->db->query("UPDATE exp_channel_data SET field_id_".$this->db->escape_str($field_id)." = ''");
+										}
+									}
+
 									
 									/** -----------------------------------------
 									/**  Duplicate Each Fields Formatting Options Too
@@ -1429,7 +1452,7 @@ class Sites extends Controller {
 				if (count($moved) > 0)
 				{
 					$moved_relationships = array();
-				
+					
 					/** -----------------------------------------
 					/**  Relationship Field Checking? - For 'duplicate_all' for channels, NOT enabled
 					/** -----------------------------------------*/
@@ -1470,6 +1493,27 @@ class Sites extends Controller {
 					/** -----------------------------------------
 					/**  Moving Field Data for Moved Entries
 					/** -----------------------------------------*/
+					
+					// We need to change the directory for any moved fields - if the directory was duplicated
+					// Create the string here- then replace the placeholder with the correct field id
+					
+					if (count($upload_updates))
+					{
+						$file_string = 'CASE ';
+	
+						foreach ($upload_updates as $old_dir => $new_dir)
+						{
+							$file_string .= "WHEN field_id_a8bxdee LIKE '{filedir_".$old_dir."}%' THEN REPLACE(field_id_a8bxdee, '{filedir_".$old_dir."}', '{filedir_".$new_dir."}') ";
+						}
+
+						$file_string .= 'ELSE field_id_a8bxdee END ';
+
+					}
+					else
+					{
+						$file_string = 'field_id_a8bxdee ';
+					}					
+
 				
 					foreach($moved as $channel_id => $field_group)
 					{
@@ -1488,10 +1532,22 @@ class Sites extends Controller {
 							{
 								if ( ! isset($field_match[$row['field_id']])) continue;
 								
-								$this->db->query("UPDATE exp_channel_data 
+								
+								if ($row['field_type'] == 'file')
+								{
+									$this->db->query("UPDATE exp_channel_data 
+										SET `field_id_".$this->db->escape_str($field_match[$row['field_id']])."` = ".
+										str_replace('a8bxdee', $row['field_id'], $file_string).
+											"WHERE channel_id = '".$this->db->escape_str($channel_id)."'");
+
+								}
+								else
+								{
+									$this->db->query("UPDATE exp_channel_data 
 											SET `field_id_".$this->db->escape_str($field_match[$row['field_id']])."` = `field_id_".$this->db->escape_str($row['field_id'])."` 
-											WHERE channel_id = '".$this->db->escape_str($channel_id)."'");
-											
+											WHERE channel_id = '".$this->db->escape_str($channel_id)."'");									
+								}								
+								
 								$this->db->query("UPDATE exp_channel_data 
 											SET `field_ft_".$this->db->escape_str($field_match[$row['field_id']])."` = `field_ft_".$this->db->escape_str($row['field_id'])."` 
 											WHERE channel_id = '".$this->db->escape_str($channel_id)."'");
@@ -1507,21 +1563,6 @@ class Sites extends Controller {
 								{
 									$related_fields[] = 'field_ft_'.$field_match[$row['field_id']];  // We used this for moved relationships, see above
 								}
-								
-								if ($row['field_type'] == 'date' OR $row['field_type'] == 'rel')
-								{
-									$this->db->query("UPDATE exp_channel_data 
-											SET `field_id_".$this->db->escape_str($row['field_id'])."` = 0
-											WHERE channel_id = '".$this->db->escape_str($channel_id)."'");
-									
-								}
-								else
-								{
-									$this->db->query("UPDATE exp_channel_data 
-											SET `field_id_".$this->db->escape_str($row['field_id'])."` = ''
-											WHERE channel_id = '".$this->db->escape_str($channel_id)."'");
-								}
-								
 							}
 							
 							/** -----------------------------------------
@@ -1578,7 +1619,10 @@ class Sites extends Controller {
 					}
 				}
 			}
+			
 		}
+		
+		
 		
 		/** -----------------------------------------
 		/**  Refresh Sites List

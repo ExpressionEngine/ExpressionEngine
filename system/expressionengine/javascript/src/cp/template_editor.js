@@ -61,8 +61,8 @@ $(document).ready(function () {
 			var id = $("#revision_id").val();
 
 			if (id === "clear") {
-				window.open(EE.template.url + id, "Revision", "width=500, height=350, location=0, menubar=0, resizable=0, scrollbars=0, status=0, titlebar=0, toolbar=0, screenX=60, left=60, screenY=60, top=60");
-			} else if (id !== "") {
+				window.open(EE.template.url + id, "Revision", "height=350, location=0, menubar=0, resizable=0, scrollbars=0, status=0, titlebar=0, toolbar=0, screenX=60, left=60, screenY=60, top=60");
+			} else if (id != "0") {
 				window.open(EE.template.url + id, "Revision");
 			}
 			return false;
