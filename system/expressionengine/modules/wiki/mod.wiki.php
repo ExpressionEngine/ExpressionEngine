@@ -5538,8 +5538,10 @@ class Wiki {
 				$config['cur_page']		= $this->p_page;
 				$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
 				$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
-
 				$config['first_url'] 	= rtrim($base_path, '/');
+
+				// Allows $config['cur_page'] to override
+				$config['uri_segment'] = 0;
 
 				$this->EE->pagination->initialize($config);
 				$this->pagination_links = $this->EE->pagination->create_links();

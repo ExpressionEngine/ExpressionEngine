@@ -560,6 +560,9 @@ class Comment {
 				$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
 				$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
 				
+				// Allows $config['cur_page'] to override
+				$config['uri_segment'] = 0;
+
 				$this->EE->pagination->initialize($config);
 				$pagination_links = $this->EE->pagination->create_links();
 
@@ -2254,7 +2257,7 @@ class Comment {
 		{
 			return $this->preview_handler();
 		}
-
+		
 		// -------------------------------------------
 		// 'insert_comment_start' hook.
 		//  - Allows complete rewrite of comment submission routine.
@@ -2633,7 +2636,6 @@ class Comment {
 			}
 		//
 		// -------------------------------------------
-
 
 			$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? $this->EE->functions->create_url($_POST['RET']) : $_POST['RET'];
 

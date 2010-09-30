@@ -64,12 +64,18 @@ class Member_subscriptions extends Member {
 		/** ----------------------------------------*/
 		if ($this->EE->db->table_exists('exp_comments'))
 		{
-			$query = $this->EE->db->query("SELECT DISTINCT(entry_id)  FROM exp_comments WHERE email = '".$this->EE->session->userdata['email']."' AND notify = 'y' ORDER BY comment_date DESC");
-
+			// Fetch Channel Comments
+			$this->EE->db->distinct();
+			$this->EE->db->select('comment_subscriptions.entry_id');
+			$this->EE->db->from('comment_subscriptions');
+			$this->EE->db->join('comments', 'comment_subscriptions.entry_id = comments.entry_id', 'left');
+			$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
+			$this->EE->db->order_by("comment_date", "desc"); 
+			$query = $this->EE->db->get();
+			
 			if ($query->num_rows() > 0)
 			{
-				$channel_subscriptions	= TRUE;
-
+				$channel_subscriptions = TRUE;
 				$temp_ids = array();
 
 				foreach ($query->result_array() as $row)
@@ -78,7 +84,9 @@ class Member_subscriptions extends Member {
 				}
 
 				// and now grab the most recent activity for each subscription for ordering later
-				$query = $this->EE->db->query("SELECT entry_id, recent_comment_date FROM exp_channel_titles WHERE entry_id IN (".implode(',', $temp_ids).")");
+				$this->EE->db->select('entry_id, recent_comment_date');
+				$this->EE->db->where_in('entry_id', $temp_ids);
+				$query = $this->EE->db->get('channel_titles');
 
 				if ($query->num_rows() > 0)
 				{
@@ -87,7 +95,7 @@ class Member_subscriptions extends Member {
 						$result_ids[$row->recent_comment_date.'b'] = $row->entry_id;
 					}
 				}
-			}			
+			}
 		}
 		
 		/** ----------------------------------------
@@ -97,7 +105,11 @@ class Member_subscriptions extends Member {
 						
 		if ($this->EE->db->table_exists('exp_forum_subscriptions'))
 		{
-			$query = $this->EE->db->query("SELECT topic_id FROM exp_forum_subscriptions WHERE member_id = '".$this->EE->db->escape_str($this->EE->session->userdata('member_id'))."' ORDER BY subscription_date DESC");
+			$this->EE->db->select('topic_id');
+			$this->EE->db->from('forum_subscriptions');
+			$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
+			$this->EE->db->order_by("subscription_date", "desc"); 
+			$query = $this->EE->db->get();
 		
 			if ($query->num_rows() > 0)
 			{
@@ -111,7 +123,10 @@ class Member_subscriptions extends Member {
 				}
 				
 				// and now grab the most recent activity for each subscription for ordering later
-				$query = $this->EE->db->query("SELECT topic_id, last_post_date FROM exp_forum_topics WHERE topic_id IN (".implode(',', $temp_ids).")");
+				$this->EE->db->select('topic_id, last_post_date');
+				$this->EE->db->where_in('topic_id', $temp_ids);
+				$query = $this->EE->db->get('forum_topics');				
+				
 
 				if ($query->num_rows() > 0)
 				{
@@ -171,10 +186,11 @@ class Member_subscriptions extends Member {
 			$config['total_rows'] 	= $total_rows;
 			$config['per_page']		= $perpage;
 			$config['cur_page']		= $rownum;
-			$config['query_string_segment']	  = 'rownum';
-			$config['page_query_string']	= TRUE;
 			$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
 			$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
+
+			// Allows $config['cur_page'] to override
+			$config['uri_segment'] = 0;
 
 			$this->EE->pagination->initialize($config);
 			$page_links = $this->EE->pagination->create_links();			
@@ -328,11 +344,14 @@ class Member_subscriptions extends Member {
 			exit;	
 		}
 				
+		$this->EE->load->library('subscription');
+
 		foreach ($_POST['toggle'] as $key => $val)
 		{		
 			switch (substr($val, 0, 1))
 			{
-				case "b"	: $this->EE->db->query("UPDATE exp_comments SET notify = 'n' WHERE entry_id = '".substr($val, 1)."' AND email = '".$this->EE->db->escape_str($this->EE->session->userdata('email'))."'");
+				case "b"	: $this->EE->subscription->init('comment', array('entry_id' => substr($val, 1)), TRUE);
+								$this->EE->subscription->unsubscribe($this->EE->session->userdata['member_id']);
 					break;
 				case "f"	: $this->EE->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '".substr($val, 1)."' AND member_id = '{$this->EE->session->userdata['member_id']}'");
 					break;
