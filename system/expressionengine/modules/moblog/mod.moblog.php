@@ -1235,6 +1235,7 @@ class Moblog {
 
 		if ( ! $result)
 		{
+			// echo '<pre>';print_r($this->EE->api_channel_entries->errors);echo'</pre>';
 		}
 		else
 		{
