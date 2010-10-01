@@ -1,4 +1,4 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -345,7 +345,7 @@ class Content_publish extends Controller {
 		$channel_id					= '';
 
 		$which 						= 'new';
-		$entry_id 					= ( ! $this->input->get_post('entry_id')) ? '' : $this->input->get_post('entry_id');
+		$entry_id 					= ( ! $this->input->get_post('entry_id')) ? '' : (int) $this->input->get_post('entry_id');
 		$hidden 					= array();
 
 		$convert_ascii				= ($this->config->item('auto_convert_high_ascii') == 'y') ? TRUE : FALSE; // Javascript stuff
@@ -1130,7 +1130,13 @@ class Content_publish extends Controller {
 					{
 						if ( ! isset($forum_topic_id))
 						{
-							$fquery2 = $this->db->query("SELECT forum_topic_id FROM exp_channel_titles WHERE entry_id = '{$entry_id}'");
+							$this->db->select('forum_topic_id');
+							$fquery2 = $this->db->get_where('channel_titles', 
+										array(
+											'entry_id' => $entry_id
+										)
+									);
+							
 							$forum_topic_id = $fquery2->row('forum_topic_id');
 						}
 
@@ -1178,7 +1184,9 @@ class Content_publish extends Controller {
 				$hide_forum_fields = TRUE;
 				if ( ! isset($forum_topic_id))
 				{
-					$fquery = $this->db->query("SELECT forum_topic_id FROM exp_channel_titles WHERE entry_id = '{$entry_id}'");
+					$this->db->select('forum_topic_id');
+					$fquery = $this->db->get_where('channel_titles', array('entry_id' => $entry_id));
+					
 					$forum_topic_id = $fquery->row('forum_topic_id');
 				}
 				
@@ -1187,7 +1195,9 @@ class Content_publish extends Controller {
 				
 				if ($forum_topic_id != 0)
 				{
-					$fquery = $this->db->query("SELECT title FROM exp_forum_topics WHERE topic_id = '{$forum_topic_id}'");
+					$this->db->select('title');
+					$fquery = $this->db->get_where('forum_topics', 
+									array('topic_id' => (int) $forum_topic_id));
 
 					$ftitle = ($fquery->num_rows() == 0) ? '' : $fquery->row('title');
 					$vars['forum_title'] = $ftitle;
@@ -2496,8 +2506,9 @@ class Content_publish extends Controller {
 
 		if ($entry_id != '')
 		{
-			$query = $this->db->query("SELECT ping_id FROM exp_entry_ping_status WHERE entry_id = '$entry_id'");
-
+			$this->db->select('ping_id');
+			$query = $this->db->get_where('entry_ping_status', array('entry_id' => $entry_id));
+			
 			if ($query->num_rows() > 0)
 			{
 				foreach ($query->result_array() as $row)
@@ -2673,7 +2684,11 @@ class Content_publish extends Controller {
 
 		$field_group = $query->row('field_group');
 
-		$query = $this->db->query("SELECT field_id, field_type FROM exp_channel_fields WHERE group_id = '$field_group' AND field_type != 'select' ORDER BY field_order");
+		$this->db->select('field_id, field_type');
+		$this->db->where('group_id', $field_group);
+		$this->db->where('field_type !=', 'select');
+		$this->db->order_by('field_order');
+		$query = $this->db->get('channel_fields');
 
 		$fields = array();
 
@@ -2787,8 +2802,9 @@ class Content_publish extends Controller {
 		{
 			if (isset($this->installed_modules['comment']))
 			{
-				$res = $this->db->query("SELECT COUNT(*) AS count FROM exp_comments WHERE entry_id = '".$entry_id."'");
-
+				$this->db->select('COUNT(*) as count');
+				$res = $this->db->get_where('comments', array('entry_id' => $entry_id));
+				
 				$this->db->query_count--;
 
 				$vars['show_comments_link'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'entry_id='.$entry_id;
