@@ -293,12 +293,15 @@ class Addons_extensions extends Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-			
-		if ($this->input->get_post('file') === FALSE OR ! preg_match("/^[a-z0-9][\w.-]*$/i",$this->input->get_post('file')))
-		{
-			return FALSE;
-		}
 		
+		$file = $this->security->sanitize_filename($this->input->get_post('file'));
+			
+		if ($this->input->get_post('file') === FALSE 
+			OR ! preg_match("/^[a-z0-9][\w.-]*$/i", $file))
+		{
+			show_error(lang('not_authorized'));
+		}
+
 		$this->lang->loadfile('admin');
 		$this->load->helper('form');
 		$this->load->library('table');
@@ -307,7 +310,7 @@ class Addons_extensions extends Controller {
 		$this->cp->set_breadcrumb(BASE.AMP.'C=addons_extensions', $this->lang->line('extensions'));
 		
 		$vars['message'] = $message;
-		$vars['file'] = $this->input->get_post('file');
+		$vars['file'] = $file;
 		$class_name = ucfirst($vars['file']).'_ext';
 		$current	= array();
 		
@@ -344,7 +347,10 @@ class Addons_extensions extends Controller {
 				@include_once(PATH_THIRD.strtolower($vars['file']).'/ext.'.strtolower($vars['file']).EXT);
 			}
 				
-			if ( ! class_exists($class_name)) return FALSE;
+			if ( ! class_exists($class_name))
+			{
+				show_error(lang('not_authorized'));
+			}
 		}
 
 		$OBJ = new $class_name();
