@@ -2341,20 +2341,21 @@ class MyAccount extends Controller {
 	/**
 	  * Quicktab Manager
 	  */
-	function quicktab_manager()
+	function main_menu_manager()
 	{
 		$this->load->library('table');
 		$this->load->helper(array('form'));
 
-		$vars['cp_page_title'] = $this->lang->line('tab_manager');
+		$vars['cp_page_title'] = $this->lang->line('main_menu_manager');
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['form_hidden'] = array();
 
-		if ($this->session->userdata['group_id'] != 1 AND $this->id != $this->session->userdata('member_id'))
+		if ($this->session->userdata('group_id') != 1 && 
+			$this->id != $this->session->userdata('member_id'))
 		{
-			show_error($this->lang->line('only_self_tab_manager_access'));
+			show_error($this->lang->line('only_self_main_menu_manager_access'));
 		}
 
 		// Build the rows of previously saved links
@@ -2393,8 +2394,7 @@ class MyAccount extends Controller {
 
 		$this->javascript->compile();
 
-
-		$this->load->view('account/quicktab_manager', $vars);
+		$this->load->view('account/main_menu_manager', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2402,11 +2402,12 @@ class MyAccount extends Controller {
 	/**
 	  * Quicktab Manager
 	  */
-	function quicktab_manager_add()
+	function main_menu_manager_add()
 	{
-		if ($this->session->userdata['group_id'] != 1 AND $this->id != $this->session->userdata('member_id'))
+		if ($this->session->userdata('group_id') != 1 && 
+			$this->id != $this->session->userdata('member_id'))
 		{
-			show_error($this->lang->line('only_self_tab_manager_access'));
+			show_error($this->lang->line('only_self_main_menu_manager_access'));
 		}
 
 		$this->load->library('table');
@@ -2421,7 +2422,7 @@ class MyAccount extends Controller {
 
 		if ($link == '')
 		{
-			return $this->quicktab_manager();
+			return $this->main_menu_manager();
 		}
 
 		// Build the rows of previously saved links
@@ -2450,8 +2451,9 @@ class MyAccount extends Controller {
 
 		$this->member_model->update_member($this->id, array('quick_tabs' => trim($str)));
 
-		$this->session->set_flashdata('message_success', $this->lang->line('tab_manager_updated'));
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=quicktab_manager'.AMP.'id='.$this->id);
+		$this->session->set_flashdata('message_success',
+									  $this->lang->line('main_menu_manager_updated'));
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=main_menu_manager'.AMP.'id='.$this->id);
 	}
 
 	// --------------------------------------------------------------------
@@ -2459,15 +2461,17 @@ class MyAccount extends Controller {
 	/**
 	  *	 Save Quicktabs
 	  */
-	function quicktab_update()
+	function main_menu_update()
 	{
-		if ($this->session->userdata['group_id'] != 1 AND ($this->id != $this->session->userdata('member_id')))
+		if ($this->session->userdata['group_id'] != 1 && 
+		   ($this->id != $this->session->userdata('member_id')))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
 		// validate for unallowed blank values
-		if (empty($_POST)) {
+		if (empty($_POST)) 
+		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
@@ -2539,8 +2543,9 @@ class MyAccount extends Controller {
 
 		$this->member_model->update_member($this->id, array('quick_tabs' => trim($str)));
 
-		$this->session->set_flashdata('message_success', $this->lang->line('tab_manager_updated'));
-		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=quicktab_manager'.AMP.'id='.$this->id);
+		$this->session->set_flashdata('message_success', 
+										$this->lang->line('main_menu_manager_updated'));
+		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=main_menu_manager'.AMP.'id='.$this->id);
 	}
 
 	// --------------------------------------------------------------------
