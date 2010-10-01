@@ -2,11 +2,11 @@
 
 
 
-<?=form_open('C=myaccount'.AMP.'M=quicktab_update', '', $form_hidden)?>
+<?=form_open('C=myaccount'.AMP.'M=main_menu_update', '', $form_hidden)?>
 
-<p class="pad"><?=lang('tab_manager_description')?></p>
-<p class="pad"><?=lang('tab_manager_instructions')?></p>
-<p class="pad container"><?=lang('tab_manager_description_more')?></p>
+<p class="pad"><?=lang('main_menu_manager_description')?></p>
+<p class="pad"><?=lang('main_menu_manager_instructions')?></p>
+<p class="pad container"><?=lang('main_menu_manager_description_more')?></p>
 
 <?php if (count($quicktabs) > 0):?>
 	<p class="pad"><?=lang('quicklinks_delete_instructions')?></p>
@@ -39,5 +39,5 @@ if ($EE_view_disable !== TRUE)
 	$this->load->view('_shared/footer');
 }
 
-/* End of file quicktab_manager.php */
-/* Location: ./themes/cp_themes/default/account/quicktab_manager.php */
+/* End of file main_menu_manager.php */
+/* Location: ./themes/cp_themes/default/account/main_menu_manager.php */

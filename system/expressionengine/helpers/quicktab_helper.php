@@ -11,7 +11,8 @@ function generate_quicktab($title = '')
 	$linkt = '';
 	$top_level_items = array('content', 'design', 'addons', 'members', 'admin', 'tools', 'help');
 
-	if ($EE->input->get_post('M') != 'quicktab_manager' OR in_array($EE->input->get_post('Cdis'), $top_level_items))
+	if ($EE->input->get_post('M') != 'main_menu_manager' 
+		OR in_array($EE->input->get_post('Cdis'), $top_level_items))
 	{
 		foreach ($_GET as $key => $val)
 		{
@@ -46,7 +47,7 @@ function generate_quicktab($title = '')
 	// so we protect it in this rare instance.
 	$tablink = ($link != '' AND $show_link == TRUE) ? AMP.'link='.$link.AMP.'linkt='.base64_encode($title) : '';
 
-	return BASE.AMP.'C=myaccount'.AMP.'M=quicktab_manager_add'.$tablink;
+	return BASE.AMP.'C=myaccount'.AMP.'M=main_menu_manager_add'.$tablink;
 }
 
 
