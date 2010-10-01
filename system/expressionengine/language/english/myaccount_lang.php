@@ -47,23 +47,23 @@ $lang = array(
 'last_forum_post_date' =>
 'Most Recent Forum Post',
 
-'tab_manager' =>
-'Tab Manager',
+'main_menu_manager' =>
+'Main Menu Manager',
 
-'only_self_tab_manager_access' =>
-'You are not allowed to access another member\'s tab manager',
+'only_self_main_menu_manager_access' =>
+'You are not allowed to access another member\'s main menu manager',
 
-'tab_manager_updated' =>
+'main_menu_manager_updated' =>
 'Tab Manager has been updated',
 
-'tab_manager_description' =>
-'This page lets you manage your tabs on the main navigation of the control panel.  The tabs you add are viewable only by you.',
+'main_menu_manager_description' =>
+'This page lets you manage your custom main navigation buttons.  The buttons you add are viewable only by you.',
 
-'tab_manager_description_more' =>
-'Note: You can not make tabs for top-level pages since tabs already exist for them.',
+'main_menu_manager_description_more' =>
+'Note: You can not make buttons for top-level pages since tabs already exist for them.',
 
-'tab_manager_instructions' =>
-'To add a new tab, first visit the destination page, then click the \'Add Tab\' link at the top right of the page.',
+'main_menu_manager_instructions' =>
+'To add a new main menu button, first visit the destination page, then click the \'+ Add\' link at the top right of the main navigation.',
 
 'tab_manager_newlink' =>
 'Add a new Tab',

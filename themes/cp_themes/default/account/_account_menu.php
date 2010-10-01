@@ -39,7 +39,7 @@
 		<ul>
 <?php //	<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=cp_homepage'.AMP.'id='.$id? >"><?=lang('cp_homepage')? ></a></li>?>
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=cp_theme'.AMP.'id='.$id?>"><?=lang('myaccount_cp_theme')?></a></li>
-			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=quicktab_manager'.AMP.'id='.$id?>"><?=lang('tab_manager')?></a></li>
+			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=main_menu_manager'.AMP.'id='.$id?>"><?=lang('main_menu_manager')?></a></li>
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=quicklinks'.AMP.'id='.$id?>"><?=lang('quicklinks_manager')?></a></li>
 		</ul>
 	</li>
