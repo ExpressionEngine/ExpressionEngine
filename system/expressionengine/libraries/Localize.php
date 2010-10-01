@@ -80,7 +80,7 @@ class EE_Localize {
 						 gmdate("d", $now),
 						 gmdate("Y", $now),
 						 -1	// this must be explicitly set or some FreeBSD servers behave erratically
-						);	
+						);
 
 		// mktime() has a bug that causes it to fail during the DST "spring forward gap"
 		// when clocks are offset an hour forward (around April 4).  Instead of returning a valid
@@ -465,24 +465,6 @@ class EE_Localize {
 		if ($fib_seconds === TRUE)
 		{
 			$time = $time - 1;
-		}
-		
-		// Offset the time by one hour if the user is submitting a date
-		// in the future or past so that it is no longer in the same
-		// Daylight saving time.	
-		if (date("I", $this->now))
-		{ 
-			if ( ! date("I", $time))
-			{
-				$time -= 3600;			
-			}
-		}
-		else
-		{
-			if (date("I", $time))
-			{
-				$time += 3600;			
-			}
 		}
 
 		$time += $this->set_localized_offset();
