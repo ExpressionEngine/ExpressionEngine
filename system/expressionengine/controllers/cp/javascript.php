@@ -126,6 +126,8 @@ class Javascript extends Controller {
 		$loadfile = ($loadfile) ? $loadfile : $this->input->get_post('file');
 		$package = $this->input->get_post('package');
 		
+		$loadfile = $this->security->sanitize_filename($loadfile);
+		
 		if ($package && $loadfile)
 		{
 			$file = PATH_THIRD.$package.'/javascript/'.$loadfile.'.js';
@@ -240,6 +242,26 @@ class Javascript extends Controller {
 				{
 					$file = $file.'/javascript/'.$file;
 				}
+			
+				if ($type == 'file')
+				{
+					$parts = explode('/', $file);
+					$file = array();
+					
+					foreach ($parts as $part)
+					{
+						if ($part != '..')
+						{
+							$file[] = $this->security->sanitize_filename($part);
+						}
+					}
+								
+					$file = implode('/', $file);
+				}
+				else
+				{
+					$file = $this->security->sanitize_filename($file);
+				}
 				
 				$file = $path.$file.'.js';
 
@@ -251,9 +273,9 @@ class Javascript extends Controller {
 		}
 
 		$modified = $this->input->get_post('v');
-		
-		$this->_set_headers($mock_name, $modified);
 
+		$this->_set_headers($mock_name, $modified);
+		
 		$this->output->set_header('Content-Length: '.strlen($contents));
 		$this->output->set_output($contents);
 	}
@@ -271,7 +293,7 @@ class Javascript extends Controller {
     {
 		$this->output->out_type = 'cp_asset';
 		$this->output->set_header("Content-Type: text/javascript");
-		
+
 		if ($this->config->item('send_headers') != 'y')
 		{
 			// All we need is content type - we're done
