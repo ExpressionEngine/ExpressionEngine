@@ -1180,7 +1180,7 @@ class Forum_Core extends Forum {
 
 		$this->EE->db->query($this->EE->db->update_string('exp_forums', $data, "forum_id='{$forum_id}'"));
 		unset($data);
-
+		
 		// Update member stats
 		$this->EE->db->select('COUNT(*) as count');
 		$query = $this->EE->db->get_where('forum_topics', 
@@ -1220,22 +1220,8 @@ class Forum_Core extends Forum {
 			$cache_off = TRUE;
 		}
 
-		$this->EE->db->select('forum_id');
-		$query = $this->EE->db->get('forums');
-		
-		$total_topics = 0;
-		$total_posts  = 0;
-		
-		foreach ($query->result_array() as $row)
-		{
-			$this->EE->db->select('COUNT(*) as count');
-			$q = $this->EE->db->get_where('forum_topics', array('forum_id' => $row['forum_id']));
-			$total_topics = ($total_topics == 0) ? $q->row('count')  : $total_topics + $q->row('count') ;
-
-			$this->EE->db->select('COUNT(*) as count');
-			$this->EE->db->get_where('forum_posts', array('forum_id' => $row['forum_id']));
-			$total_posts = ($total_posts == 0) ? $q->row('count')  : $total_posts + $q->row('count') ;
-		}
+		$total_topics = $this->EE->db->count_all('forum_topics');
+		$total_posts  = $this->EE->db->count_all('forum_posts');
 
 		$this->EE->db->update('stats', array(
 										'total_forum_topics'	=> $total_topics,
@@ -6099,8 +6085,6 @@ class Forum_Core extends Forum {
 		$_POST['attach'] = $at;	
 	}
 
-		
-
 	/** -------------------------------------
 	/**  Forum Submission Handler
 	/** -------------------------------------*/
@@ -6350,7 +6334,7 @@ class Forum_Core extends Forum {
 					$this->submission_error = $this->EE->lang->line('duplicate_data_warning');
 				}
 			}
-			}
+		}
 			
 		/** ----------------------------------------
 		/**  Is the post too big?
@@ -7129,8 +7113,6 @@ class Forum_Core extends Forum {
 		$this->EE->functions->redirect($redirect);
 		exit;	
 	}
-
-
 
 	/** -------------------------------------
 	/**  Submit/update a poll
@@ -9451,7 +9433,9 @@ class Forum_Core extends Forum {
 	/** -------------------------------------*/
 	function visitor_stats()
 	{
-		if (empty($this->EE->stats->statdata))
+		$statdata = $this->EE->stats->statdata();
+		
+		if (empty($statdata))
 		{
 			return;
 		}
