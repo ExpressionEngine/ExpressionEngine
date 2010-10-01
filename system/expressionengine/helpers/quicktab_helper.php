@@ -11,8 +11,8 @@ function generate_quicktab($title = '')
 	$linkt = '';
 	$top_level_items = array('content', 'design', 'addons', 'members', 'admin', 'tools', 'help');
 
-	if ($EE->input->get_post('M') != 'main_menu_manager' 
-		OR in_array($EE->input->get_post('Cdis'), $top_level_items))
+	if ($EE->input->get_post('M', TRUE) != 'main_menu_manager' 
+		OR in_array($EE->input->get_post('Cdis', TRUE), $top_level_items))
 	{
 		foreach ($_GET as $key => $val)
 		{
@@ -21,7 +21,7 @@ function generate_quicktab($title = '')
 				continue;
 			}
 
-			$link .= $key.'--'.$val.'/';
+			$link .= $key.'--'.$EE->input->get($key, TRUE).'/';
 		}
 
 		$link = substr($link, 0, -1);
