@@ -1129,6 +1129,8 @@ class Api_channel_entries extends Api {
 		// Required and custom fields
 		
 		$this->EE->db->select('field_id, field_label, field_type, field_required');
+		$this->EE->db->join('channels', 'channels.field_group = channel_fields.group_id', 'left');
+		$this->EE->db->where('channel_id', $this->channel_id);
 		$query = $this->EE->db->get('channel_fields');
 
 		if ($query->num_rows() > 0)
@@ -1149,6 +1151,11 @@ class Api_channel_entries extends Api {
 						$this->_set_error('custom_field_empty', $row['field_label']);
 						continue;
 					}
+				}
+				elseif ( ! isset($data['field_id_'.$row['field_id']]))
+				{
+					// fields that aren't required should still be set
+					$data['field_id_'.$row['field_id']] = '';
 				}
 				
 				// Custom fields that need processing
@@ -1574,26 +1581,38 @@ class Api_channel_entries extends Api {
 		
 		$this->instantiate('channel_fields');
 
-		foreach($this->EE->api_channel_fields->settings as $field_id => $settings)
+		$this->EE->db->select('field_id, field_name, field_label, field_type, field_required');
+		$this->EE->db->join('channels', 'channels.field_group = channel_fields.group_id', 'left');
+		$this->EE->db->where('channel_id', $this->channel_id);
+		$query = $this->EE->db->get('channel_fields');
+		
+		if ($query->num_rows() > 0)
 		{
-			$field_name = $settings['field_name'];
-
-			// if a field isn't filled out, we still want to pass an empty array back to the module method
-			//$mod_data[$field_name] = array();
-
-			if (isset($data[$field_name]) OR isset($mod_data[$field_name]))
+			foreach ($query->result_array() as $row)
 			{
-				$this->EE->api_channel_fields->setup_handler($field_id);
+				$field_name = 'field_id_'.$row['field_id'];
+				
+				// @todo remove in 2.1.2
+				// backwards compatible for some incorrect code noticed in a few third party modules.
+				// Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
+				// $this->field_id should be used instead as documented
+				// http://expressionengine.com/user_guide/development/fieldtypes.html#class_variables
+				$this->EE->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
+				
+				if (isset($data[$field_name]) OR isset($mod_data[$field_name]))
+				{
+					$this->EE->api_channel_fields->setup_handler($row['field_id']);
 
-				// Break out module fields here
-				if (isset($data[$field_name]))
-				{
-					$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
-				}
-				elseif (isset($mod_data[$field_name]))
-				{
-					$mod_data[$field_name] = $this->EE->api_channel_fields->apply('save', array($mod_data[$field_name]));
-				}
+					// Break out module fields here
+					if (isset($data[$field_name]))
+					{
+						$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
+					}
+					elseif (isset($mod_data[$field_name]))
+					{
+						$mod_data[$field_name] = $this->EE->api_channel_fields->apply('save', array($mod_data[$field_name]));
+					}
+				}				
 			}
 		}
 	}
@@ -2083,15 +2102,29 @@ class Api_channel_entries extends Api {
 		
 		// Post update custom fields
 		
-		foreach($this->EE->api_channel_fields->settings as $field_id => $settings)
-		{
-			$this->EE->api_channel_fields->settings[$field_id]['entry_id'] = $this->entry_id;
-			
-			$field_name = $settings['field_name'];
-			$fdata = isset($data[$field_name]) ? $data[$field_name] : '';
+		$this->EE->db->select('field_id, field_name, field_label, field_type, field_required');
+		$this->EE->db->join('channels', 'channels.field_group = channel_fields.group_id', 'left');
+		$this->EE->db->where('channel_id', $this->channel_id);
+		$query = $this->EE->db->get('channel_fields');
 
-			$this->EE->api_channel_fields->setup_handler($field_id);
-			$this->EE->api_channel_fields->apply('post_save', array($fdata));
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				$field_name = $row['field_name'];
+				$this->EE->api_channel_fields->settings[$row['field_id']]['entry_id'] = $this->entry_id;
+				
+				// @todo remove in 2.1.2
+				// backwards compatible for some incorrect code noticed in a few third party modules.
+				// Will be removed in 2.1.2, and a note to that effect is in the 2.1.1 update notes
+				// $this->field_id should be used instead as documented
+				// http://expressionengine.com/user_guide/development/fieldtypes.html#class_variables
+				$this->EE->api_channel_fields->settings[$row['field_id']]['field_id'] = $row['field_id'];
+				
+				$fdata = isset($data[$field_name]) ? $data[$field_name] : '';
+				$this->EE->api_channel_fields->setup_handler($row['field_id']);
+				$this->EE->api_channel_fields->apply('post_save', array($fdata));				
+			}
 		}
 	}
 	
