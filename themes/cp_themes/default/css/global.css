@@ -287,10 +287,10 @@ ul.bulleted {
 }
 
 .submit {
-	background:   #f72a58 url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -298px;
-	padding:      4px 8px 5px 8px;
-	color:        #fff/*!important*/;
-	border:       0;
+	background:			#f72a58 url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -298px;
+	padding:			5px 9px;
+	color:				#fff/*!important*/;
+	border:				0;
 }
 
 .less_important_bttn,
@@ -315,8 +315,17 @@ input.submit,
 button.submit,
 .submit_alt,
 .button a.submit {
+	font: 12px/12px Arial, 'Hevlvetica Neue', sans-serif;
+	
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
+}
+
+/* Removes extra padding from FF */
+input[type="submit"]::-moz-focus-inner,
+button::-moz-focus-inner { 
+    border: 0;
+    padding: 0;
 }
 
 .disabled_field {
@@ -1260,7 +1269,7 @@ th.hidden_col { display: none; } td.hidden_col { display: none; }
 	color:				#34424b;
 	font-size:			18px;
 	font-weight:		normal;
-	margin-bottom:	10px;
+	margin-bottom:		10px;
 }
 
 #mainContent .formArea .formHeading {
