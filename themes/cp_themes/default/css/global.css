@@ -996,6 +996,7 @@ div#search {
 
 .heading .headingSubtext {
 	font-size:			11px;
+	text-shadow:		0 1px 0 #888;
 	vertical-align:		30%;
 }
 
