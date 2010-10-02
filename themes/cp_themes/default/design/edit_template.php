@@ -25,6 +25,8 @@ if ($EE_view_disable !== TRUE)
 			<span class="notice"><?=$message?></span>
 		<?php endif;?>
 
+		<div id="template_create" class="pageContents">
+
 		<div class="clear_left" id="template_details" style="margin-bottom: 0">
 			<?php if ($this->config->item('save_tmpl_revisions') == 'y'):?>
 			<span class="button" style="margin-top:-6px">
@@ -38,23 +40,23 @@ if ($EE_view_disable !== TRUE)
 			<?php endif; ?>
 			<p>
 			<?php if ($file_synced === FALSE):?>
-			<?=lang('from_file')?> [<?=$last_file_edit?>] (<?=lang('save_to_sync')?>)
+				<?=lang('from_file')?> [<?=$last_file_edit?>] (<?=lang('save_to_sync')?>)
 			<?php else:?>
-			<?=lang('from_db')?> [<?=$edit_date?>] <?=lang('by').NBS.$last_author?>
+				<?=lang('from_db')?> <span class="last_edit js_hide">(<?=lang('last_edit')?> <?=$edit_date?> <?=lang('by').NBS.$last_author?>)</span>
 			<?php endif;?>
 			</p>
 
 		</div>
 
-		<div id="template_create" class="pageContents">
 			<?=form_open('C=design'.AMP.'M=update_template'.AMP.'tgpref='.$group_id, '', array('template_id' => $template_id, 'group_id' => $group_id))?>
-			
+
 
 			<?=form_textarea(array(
 									'name'	=> 'template_data',
 									'id'	=> 'template_data',
 									'cols'	=> '100',
 									'rows'	=> $prefs['template_size'],
+									'wrap'	=> 'off',
 									'value' => $template_data
 							));?>
 

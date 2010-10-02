@@ -1501,12 +1501,25 @@ span.ee_notice_icon {
 }
 
 #template_details {
-	margin: 10px 0;
+	line-height:		1;
+	margin:				0 0 10px 0;
 	background:			#3f4d55 url('<?=$cp_theme_url?>images/template_edit_header_background.png') top left repeat-x;
-	padding: 			14px 17px 4px 17px;
+	padding: 			10px 17px 12px 10px;
 	font-weight:		bold;
 	font-size:			13px;
 	color:				#FFF;
+}
+
+#template_details .last_edit {
+	font-weight:	normal;
+	color:			#9EA2AA;
+}
+
+#mainContent #template_create {
+	border: none;
+	padding: 0 0 0 0;
+	margin-top: 10px;
+	width: 100%;
 }
 
 #template_create p {
@@ -1515,14 +1528,27 @@ span.ee_notice_icon {
 
 #template_data,
 #template_create textarea {
-	padding:			0;
-	width:				100%;
+	position:			relative;
+	height:				auto;
+	margin:				0;
 	border:				none;
+	resize:				none;
+}
+
+#template_create textarea {
+	padding:			1%;
+	width:				98%;
+	
+	overflow: auto;
+	
+	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+	
+	box-sizing: content-box;
+	-moz-box-sizing: content-box;
 }
 
 #template_create textarea:focus {
-	margin:				0;
-	padding:			0;
+	margin:					0;
 }
 
 #template_create textarea.notes {
@@ -1536,16 +1562,16 @@ span.ee_notice_icon {
 	padding:				2px;
 }
 
-#template_create {
-	padding: 0 0 18px 0;
+#template_create #markItUpTemplate_data {
+	padding:				0;
 }
 
 #template_create div.markItUpHeader {
-  display:none;
+  display:					none;
 }
 
 #template_create div.markItUpFooter {
-  margin-bottom:10px;
+  margin-bottom:			0;
 }
 
 select#site_list_pulldown {margin-bottom:10px;}
@@ -1985,6 +2011,8 @@ select.template_type {
 }
 
 input.group_name,
+input.refresh,
+input.template_size,
 input.template_name,
 input.hits {
   width:90%;
@@ -2056,14 +2084,14 @@ table.accessTable div.tableCellHeading {
 }
 
 #mainContent .editAccordion {
-	background:			#8FA1AD url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -450px;
+	background:			#8FA1AD url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -426px;
 	border:				1px solid #A1B4C2;
 }
 
 #mainContent .editAccordion.collapsed {
 	border:				0;
 	border-bottom:		1px solid #d0d7df;
-	background-image: none;
+	background-image:	none;
 }
 
 #mainContent .editAccordion > div {
@@ -2079,6 +2107,7 @@ table.accessTable div.tableCellHeading {
 	font-size:			13px;
 	color:				#fff;
 	text-shadow:		1px 1px 1px #888;
+	-webkit-font-smoothing: antialiased;
 }
 
 #mainContent .editAccordion.collapsed h3 {

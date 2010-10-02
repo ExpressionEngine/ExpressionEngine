@@ -422,7 +422,14 @@ function bind_prefs_events() {
 		};		
 	});
 
-
+	$('.last_edit').css('opacity', 0).show();
+	
+	$('#template_details').hover(function() {
+		$('.last_edit').animate({'opacity': 1}, 50);
+	}, function() {
+		$('.last_edit').animate({'opacity': 0}, 50);
+	});
+		
 	// Find and replace template stuff
 	$(document).ready(function () {
 		
