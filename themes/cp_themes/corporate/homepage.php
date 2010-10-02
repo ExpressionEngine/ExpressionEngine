@@ -113,7 +113,7 @@ if ($EE_view_disable !== TRUE)
 			<li class="group"><a href="<?=BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$cp_recent_ids['entry']['channel_id'].AMP.'entry_id='.$cp_recent_ids['entry']['entry_id']?>"><?=lang('most_recent_entry')?></a></li>
 		<?php endif;?>
 		<?php if ($comments_installed && $can_moderate_comments): ?>			
-			<li class="item"><a href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'status=p'?>"><?=lang('total_validating_comments')?><span><?=$comment_validation_count?></span></a></li>
+			<li class="item"><a href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'status=p'?>"><span><?=$comment_validation_count?></span><?=lang('total_validating_comments')?></a></li>
 		<?php endif;?>
 		</ul>
 	</div>
