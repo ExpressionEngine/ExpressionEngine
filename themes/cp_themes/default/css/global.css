@@ -1,6 +1,5 @@
 /* CSS */
 
-
 /* -------------------------------------
 /*  Standardize for all browsers
 /* -------------------------------------*/
@@ -16,7 +15,7 @@ html {
 
 body {
 	background-color:		#fff;
-	font-family:			Helvetica, Arial, sans-serif;
+	font-family:			Arial, 'Helvetica Neue', Helvetica, sans-serif;
 	font-size:				76%;
 	min-width: 				930px;
 }
@@ -41,7 +40,7 @@ textarea,
 textarea.markItUpEditor,
 input[type="text"],
 input[type="password"] {
-	font-family:			Helvetica, Arial, sans-serif;
+	font-family:			Arial, 'Helvetica Neue', Helvetica, sans-serif;
 	font-size:				100%;
 	border:					1px solid #b6c0c2;
 	color:					#5f6c74;
@@ -637,7 +636,8 @@ span.button .submit {
 
 #activeUser .userName {
 	font-size:			14px;
-	font-weight:		bold;
+	font-family:		'Helvetica Neue', Arial, sans-serif;
+	font-weight:		500;
 }
 
 #activeUser a:link, #activeUser a:visited {
@@ -692,7 +692,8 @@ div#search {
 
 #sideBar h4 {
 	font-size:			18px;
-	font-weight:		bold;
+	font-family:		'Helvetica Neue', Arial, sans-serif;
+	font-weight:		500;
 	color:				#5f6c74;
 	padding:			13px 0;
 }
@@ -987,9 +988,10 @@ div#search {
 	background:			transparent url('<?=$cp_theme_url?>images/heading_images_sprite.gif') right -203px no-repeat;
 	font-weight:		normal;
 	color:				#fff;
-	font-size:			20px;
+	font-size:			19px;
+	line-height:		1;
 	padding:			7px 17px 7px 17px;
-	text-shadow:		#666 0px 1px 0px;
+	text-shadow:		#666 0 1px 0;
 }
 
 .heading .headingSubtext {
@@ -2553,7 +2555,7 @@ a#refresh_categories {
 
 #mainContent #showToolbarLink a {
 	color:				#6D808E;
-	font-weight:		bold;
+	font-weight:		normal;
 }
 
 #publish_tab .publish_field .help_info, #publish_tab .publish_field .spellcheck a, .glossary_content a, .spellcheck_content a {
