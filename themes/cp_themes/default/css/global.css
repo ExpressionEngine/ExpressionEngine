@@ -2820,26 +2820,32 @@ a#refresh_categories {
 	float:				left;
 	margin-right:		3px;
 	font-size:			18px;
+	line-height:		18px;
 	color:				#dee4e4;
 	background:			#98AAB6 url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -426px;
-	padding:			4px 12px;
+	padding:			6px 12px;
 }
 
-#accessoryTabs li a {
+#accessoryTabs li a:link,
+#accessoryTabs li a:visited {
 	display:			block;
 	padding-right:		18px;
 	color:				#fff;
-	text-shadow:		#666 0px 1px 0px;
-	position:relative;
+	text-shadow:		#666 0 1px 0px;
+	position:			relative;
+}
+
+#accessoryTabs li.current a {
+	text-shadow:		0 1px 0 #000;
 }
 
 #accessoryTabs li a span.accessoryHandle {
 		background:			transparent url('<?=$cp_theme_url?>images/cp_sprite.png') no-repeat left top;
-		position:absolute;
-		right:0;
-		top:4px;
-		width:11px;
-		height:11px;
+		position:			absolute;
+		right:				0;
+		top:				4px;
+		width:				11px;
+		height:				11px;
 }
 
 #accessoryTabs li.current {
@@ -2849,17 +2855,8 @@ a#refresh_categories {
 }
 
 #accessoryTabs li.current a span.accessoryHandle {
-	background:		#243038 url('<?=$cp_theme_url?>images/cp_sprite.png') no-repeat left -16px;
-	text-shadow:		none;
-	top:3px;
-}
-
-#accessoryTabs li a:link, #accessoryTabs li a:visited {
-	color:				#dee4e4;
-}
-
-#accessoryTabs li.current a:link, #accessoryTabs li.current a:visited {
-	color:				#fff;
+	background:			#243038 url('<?=$cp_theme_url?>images/cp_sprite.png') no-repeat left -16px;
+	top:				3px;
 }
 
 #accessoriesDiv .accessory {
@@ -2880,7 +2877,8 @@ a#refresh_categories {
 #accessoriesDiv .accessorySection h5 {
 	font-size:			18px;
 	font-weight:		normal;
-	color:				#929596;
+	color:				#fff;
+	text-shadow:		0 1px 0 #000;
 	margin-bottom:		18px;
 }
 
