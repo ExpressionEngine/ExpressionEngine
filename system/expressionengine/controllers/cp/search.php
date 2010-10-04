@@ -49,6 +49,7 @@ class Search extends Controller {
 	function index($message = '')
 	{
 		$this->load->helper('html');
+		$this->load->helper('search');
 		
 		$vars['cp_page_title'] = $this->lang->line('search_results');
 		$this->cp->set_variable('cp_page_title', $vars['cp_page_title']);
@@ -81,7 +82,7 @@ class Search extends Controller {
 		}
 		
 		
-		$vars['keywords'] = htmlentities($search);
+		$vars['keywords'] = sanitize_search_terms($search);
 		$vars['can_rebuild'] = $this->cp->allowed_group('can_access_utilities');
 		$vars['search_data'] = $this->cp_search->generate_results($search);
 		$vars['num_rows'] = count($vars['search_data']);
