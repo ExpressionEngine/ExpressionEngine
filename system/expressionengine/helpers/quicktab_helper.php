@@ -21,7 +21,7 @@ function generate_quicktab($title = '')
 				continue;
 			}
 
-			$link .= $key.'--'.$EE->input->get($key, TRUE).'/';
+			$link .= htmlentities($key).'--'.htmlentities($val).'/';
 		}
 
 		$link = substr($link, 0, -1);
@@ -33,11 +33,11 @@ function generate_quicktab($title = '')
 
 	$show_link = TRUE;
 
-	if (isset($EE->session->userdata['quick_tabs']) AND $EE->session->userdata['quick_tabs'] != '')
+	if ($EE->session->userdata('quick_tabs') !== FALSE)
 	{
 		$newlink = str_replace('/', '&', str_replace('--', '=', $link)).'|';
 
-		if (strpos($EE->session->userdata['quick_tabs'], $newlink))
+		if (strpos($EE->session->userdata('quick_tabs'), $newlink))
 		{
 			$show_link = FALSE;
 		}
