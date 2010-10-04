@@ -105,34 +105,41 @@ class Member_settings extends Member {
 		/**  Can the user view profiles?
 		/** ----------------------------------------*/
 
-		if ($this->EE->session->userdata['can_view_profiles'] == 'n')
+		if ($this->EE->session->userdata('can_view_profiles') == 'n')
 		{
-			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('mbr_not_allowed_to_view_profiles')));
+			return $this->EE->output->show_user_error('general', 
+					array($this->EE->lang->line('mbr_not_allowed_to_view_profiles')));
 		}
 
 		/** ----------------------------------------
 		/**  Fetch the member data
 		/** ----------------------------------------*/
 
-		$sql = " SELECT m.member_id, m.group_id, m.username, m.screen_name, m.email, m.signature, m.avatar_filename, m.avatar_width,
-						m.avatar_height, m.photo_filename, m.photo_width, m.photo_height, m.url, m.location, m.occupation, m.interests,
-						m.icq, m.aol_im, m.yahoo_im, m.msn_im, m.bio, m.join_date, m.last_visit, m.last_activity, m.last_entry_date,
-						m.last_comment_date, m.last_forum_post_date, m.total_entries, m.total_comments, m.total_forum_topics,
-						m.total_forum_posts, m.language, m.timezone, m.daylight_savings, m.bday_d, m.bday_m, m.bday_y, m.accept_user_email, m.accept_messages,
-						g.group_title, g.can_send_private_messages
-				 FROM exp_members m, exp_member_groups g
-				 WHERE m.member_id = '".$this->cur_id."'
-				 AND g.site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'
-				 AND m.group_id = g.group_id ";
+		$select = 'm.member_id, m.group_id, m.username, m.screen_name, m.email, m.signature, 
+					m.avatar_filename, m.avatar_width, m.avatar_height, m.photo_filename, 
+					m.photo_width, m.photo_height, m.url, m.location, m.occupation, m.interests,
+					m.icq, m.aol_im, m.yahoo_im, m.msn_im, m.bio, m.join_date, m.last_visit, 
+					m.last_activity, m.last_entry_date, m.last_comment_date, m.last_forum_post_date, 
+					m.total_entries, m.total_comments, m.total_forum_topics,
+					m.total_forum_posts, m.language, m.timezone, m.daylight_savings, 
+					m.bday_d, m.bday_m, m.bday_y, m.accept_user_email, m.accept_messages,
+					g.group_title, g.can_send_private_messages';
+
+		$this->EE->db->select($select);
+		$this->EE->db->from(array('members m', 'member_groups g'));
+		$this->EE->db->where('m.member_id', $this->cur_id, FALSE);
+		$this->EE->db->where('g.site_id', $this->EE->config->item('site_id'));
+		$this->EE->db->where('m.group_id', 'g.group_id', FALSE);
 
 		if ($this->is_admin == FALSE OR $this->EE->session->userdata('group_id') != 1)
 		{
-			$sql .= "AND m.group_id != '2' ";
+			$this->EE->db->where('m.group_id !=', 2);
 		}
 
-		$sql .=" AND m.group_id != '3' AND m.group_id != '4'";
+		$this->EE->db->where('m.group_id !=', 3);
+		$this->EE->db->where('m.group_id !=', 4);
 
-		$query = $this->EE->db->query($sql);
+		$query = $this->EE->db->get();
 
 		if ($query->num_rows() == 0)
 		{
@@ -141,7 +148,6 @@ class Member_settings extends Member {
 
 		// Fetch the row
 		$row = $query->row_array();
-
 
 		/** ----------------------------------------
 		/**  Fetch the template
@@ -648,11 +654,11 @@ class Member_settings extends Member {
 			/** ----------------------------------------
 			/**  parse basic fields (username, screen_name, etc.)
 			/** ----------------------------------------*/
-			
+
 			// array_key_exists instead of isset since some columns may be NULL
 			if (array_key_exists($val, $row))
-			{
-				$content = $this->_var_swap_single($val, $row[$val], $content);
+			{				
+				$content = $this->_var_swap_single($val, strip_tags($row[$val]), $content);
 			}
 		}
 
