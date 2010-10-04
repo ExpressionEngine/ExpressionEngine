@@ -2760,9 +2760,11 @@ class Admin_content extends Controller {
 		}
 	}
 
-	/** --------------------------------------
-	/**  Change Category Order
-	/** --------------------------------------*/
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Change Category Order
+	 */
 	function change_category_order()
 	{
 		if (AJAX_REQUEST)
@@ -2778,25 +2780,25 @@ class Admin_content extends Controller {
 		}
 
 		// Fetch required globals
-
 		foreach (array('cat_id', 'group_id', 'order') as $val)
 		{
-			if ( ! isset($_GET[$val]))
+			if ($this->input->get($val) === FALSE)
 			{
 				return FALSE;
 			}
 
-			$$val = $_GET[$val];
+			if ($val == 'cat_id' OR $val == 'group_id')
+			{
+				$$val = (int) $this->input->get($val);
+			}
+			else
+			{
+				$order = $this->input->get('order');
+			}
 		}
 
-		$zurl = '';
-		/*
-		$zurl = ($this->input->get_post('Z') == 1) ? AMP.'Z=1' : '';
-		$zurl .= ($this->input->get_post('cat_group') !== FALSE) ? AMP.'cat_group='.$this->input->get_post('cat_group') : '';
-		$zurl .= ($this->input->get_post('integrated') !== FALSE) ? AMP.'integrated='.$this->input->get_post('integrated') : '';
-		*/
 		// Return Location
-		$return = BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$group_id.$zurl;
+		$return = BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$group_id;
 
 		// Fetch the parent ID
 
@@ -2865,14 +2867,15 @@ class Admin_content extends Controller {
 
 		foreach ($cats as $val)
 		{
-			$this->db->query("UPDATE exp_categories SET cat_order = '$i' WHERE cat_id = '$val'");
+			$this->db->where('cat_id', $val);
+			$this->db->update('categories', array('cat_order' => $i));
 
 			$i++;
 		}
 
 		// Switch to custom order
-
-		$this->db->query("UPDATE exp_category_groups SET sort_order = 'c' WHERE group_id = '".$this->db->escape_str($group_id)."'");
+		$this->db->where("group_id", $group_id);
+		$this->db->update('category_groups', array('sort_order' => 'c'));
 
 		$this->session->set_flashdata('message_success', $this->lang->line('preferences_updated'));
 		$this->functions->redirect($return);
