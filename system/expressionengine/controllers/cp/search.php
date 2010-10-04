@@ -60,7 +60,7 @@ class Search extends Controller {
 		}
 		else
 		{
-			$search = $this->input->get_post('cp_search_keywords');
+			$search = $this->input->get_post('cp_search_keywords', TRUE);
 		}
 
 		if ( ! $this->cp_search->_check_index())
@@ -81,7 +81,7 @@ class Search extends Controller {
 		}
 		
 		
-		$vars['keywords'] = $search;
+		$vars['keywords'] = htmlentities($search);
 		$vars['can_rebuild'] = $this->cp->allowed_group('can_access_utilities');
 		$vars['search_data'] = $this->cp_search->generate_results($search);
 		$vars['num_rows'] = count($vars['search_data']);
