@@ -1519,7 +1519,17 @@ class Content_publish extends Controller {
 		$vars['form_additional']['id'] = 'publishForm';
 		
 		// get all member groups with cp access for the layout list
-		$vars['member_groups'] = $this->member_model->get_member_groups(array('can_access_admin'), array('can_access_publish'=>'y'));
+		$vars['member_groups_laylist'] = array();
+		
+		$listable = $this->member_model->get_member_groups(array('can_access_admin', 'can_access_edit'), array('can_access_content'=>'y'));
+		
+		foreach($listable->result() as $group)
+		{
+			if ($group->can_access_admin == 'y' OR $group->can_access_edit == 'y')
+			{
+				$vars['member_groups_laylist'][] = array('group_id' => $group->group_id, 'group_title' => $group->group_title);
+			}
+		}
 
 		// If fields have been hidden by an admin, then they won't get "drawn" into the document, however without
 		// them, they can't be moved at a later time into a tab. What we'll do is store all revealed fields in an
@@ -1736,10 +1746,11 @@ class Content_publish extends Controller {
 
 		$layout_preview_links = "<p>".$this->lang->line('choose_layout_group_preview').NBS."<span class='notice'>".$this->lang->line('layout_save_warning')."</span></p><ul class='bullets'>";
 		
-		foreach($vars['member_groups']->result() as $group)
+		foreach($vars['member_groups_laylist'] as $group)
 		{
-			$layout_preview_links .= '<li><a href=\"'.BASE.AMP.'C=content_publish'.AMP."M=entry_form".AMP."channel_id=".$channel_id.AMP."layout_preview=".$group->group_id.'\">'.$group->group_title."</a></li>";
+			$layout_preview_links .= '<li><a href=\"'.BASE.AMP.'C=content_publish'.AMP."M=entry_form".AMP."channel_id=".$channel_id.AMP."layout_preview=".$group['group_id'].'\">'.$group['group_title']."</a></li>";
 		}
+
 		$layout_preview_links .= "</ul>";
 
 		$this->javascript->click("#layout_group_preview", '
