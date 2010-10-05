@@ -651,11 +651,6 @@ class EE_Config Extends CI_Config {
 		// to the EE counterparts
 		$ci_config = array();
 
-		if (isset($new_values['site_url']))
-		{
-			$ci_config['base_url'] = $new_values['site_url'];
-		}
-
 		if (isset($new_values['site_index']))
 		{
 			$ci_config['index_page'] = $new_values['site_index'];

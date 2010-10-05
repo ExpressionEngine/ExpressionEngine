@@ -122,7 +122,7 @@ if ($EE_view_disable !== TRUE)
 	<div class="contentMenu view">
 		<div class="heading"><h2><?=lang('view')?></h2></div>
 		<ul>
-			<li class="site"><?=anchor($this->config->item('base_url').$this->config->item('index_page').'?URL='.$this->config->item('base_url').$this->config->item('index_page'), lang('site'))?></li>
+			<li class="site"><?=anchor($this->config->item('site_url').$this->config->item('index_page').'?URL='.$this->config->item('site_url').$this->config->item('index_page'), lang('site'))?></li>
 			<?php if ($comments_installed && $can_moderate_comments):?>
 			<li class="item"><a href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'?>"><?=lang('recent_comments')?></a></li>
 			<?php endif;?>
