@@ -116,7 +116,7 @@ class File_ft extends EE_Fieldtype {
 		{
 			if ($filedir != '' OR ( ! $this->EE->input->post('entry_id') OR $this->EE->input->post('entry_id') == ''))
 			{
-				return $this->EE->lang->line('directory_no_access1');
+				return $this->EE->lang->line('directory_no_access');
 			}
 			
 			// The existing directory couldn't be selected because they didn't have permission to upload
@@ -129,12 +129,12 @@ class File_ft extends EE_Fieldtype {
 
 			if ($query->num_rows() == 0)
 			{
-				return $this->EE->lang->line('directory_no_access2');
+				return $this->EE->lang->line('directory_no_access');
 			}
 			
 			if ('{filedir_'.$hidden_dir.'}'.$_POST[$this->field_name] != $query->row($this->field_name))
 			{
-				return $this->EE->lang->line('directory_no_access3');
+				return $this->EE->lang->line('directory_no_access');
 			}
 			
 			// Replace the empty directory with the existing directory
