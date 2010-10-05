@@ -69,16 +69,22 @@ class File_ft extends EE_Fieldtype {
 	{
 		$dir_field		= $this->field_name.'_directory';
 		$hidden_field	= $this->field_name.'_hidden';
-		
+		$hidden_dir		= ($this->EE->input->post($this->field_name.'_hidden_dir')) ? $this->EE->input->post($this->field_name.'_hidden_dir') : '';
+		$allowed_dirs	= array();
+
 		// Default to blank - allows us to remove files
 		$_POST[$this->field_name] = '';
 		
 		// Default directory
 		$upload_directories = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata('group_id'));
-		$filedir = $upload_directories->row('id');
 		
 		// Directory selected - switch
-		$filedir = ($this->EE->input->post($dir_field)) ? $this->EE->input->post($dir_field) : $filedir;
+		$filedir = ($this->EE->input->post($dir_field)) ? $this->EE->input->post($dir_field) : '';
+
+		foreach($upload_directories->result() as $row)
+		{
+			$allowed_dirs[] = $row->id;
+		}		
 
 		// Upload or maybe just a path in the hidden field?
 		if (isset($_FILES[$this->field_name]) && $_FILES[$this->field_name]['size'] > 0)
@@ -103,11 +109,44 @@ class File_ft extends EE_Fieldtype {
 		
 		unset($_POST[$hidden_field]);
 		
+		// If the current file directory is not one the user has access to
+		// make sure it is an edit and value hasn't changed
+		
+		if ($_POST[$this->field_name] && ! in_array($filedir, $allowed_dirs))
+		{
+			if ($filedir != '' OR ( ! $this->EE->input->post('entry_id') OR $this->EE->input->post('entry_id') == ''))
+			{
+				return $this->EE->lang->line('directory_no_access1');
+			}
+			
+			// The existing directory couldn't be selected because they didn't have permission to upload
+			// Let's make sure that the existing file in that directory is the one that's going back in
+			
+			$eid = (int) $this->EE->input->post('entry_id');
+			
+			$this->EE->db->select($this->field_name);
+			$query = $this->EE->db->get_where('channel_data', array('entry_id'=>$eid));	
+
+			if ($query->num_rows() == 0)
+			{
+				return $this->EE->lang->line('directory_no_access2');
+			}
+			
+			if ('{filedir_'.$hidden_dir.'}'.$_POST[$this->field_name] != $query->row($this->field_name))
+			{
+				return $this->EE->lang->line('directory_no_access3');
+			}
+			
+			// Replace the empty directory with the existing directory
+			$_POST[$this->field_name.'_directory'] = $hidden_dir;
+		}
+		
 		if ($this->settings['field_required'] == 'y' && ! $_POST[$this->field_name])
 		{
 			return $this->EE->lang->line('required');
 		}
 		
+		unset($_POST[$this->field_name.'_hidden_dir']);
 		return array('value' => $_POST[$this->field_name]);
 	}
 	
@@ -121,11 +160,13 @@ class File_ft extends EE_Fieldtype {
 	function display_field($data)
 	{
 		$filedir = (isset($_POST[$this->field_name.'_directory'])) ? $_POST[$this->field_name.'_directory'] : '';
-		$filename = set_value($this->field_name, '');
+		$filename = (isset($_POST[$this->field_name])) ? $_POST[$this->field_name] : '';
 		$upload_dirs = array();
 				
 		$upload_directories = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata('group_id'));
 
+		$upload_dirs[''] = $this->EE->lang->line('directory');
+		
 		foreach($upload_directories->result() as $row)
 		{
 			$upload_dirs[$row->id] = $row->name;
@@ -136,9 +177,11 @@ class File_ft extends EE_Fieldtype {
 			$filedir = $matches[1];
 			$filename = str_replace($matches[0], '', $data);
 		}
-
+		
 		// Get dir info
-		$upload_directory_info = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata('group_id'), $filedir);
+		// Note- if editing, the upload directory may be one the user does not have access to
+		
+		$upload_directory_info = $this->EE->tools_model->get_upload_preferences(1, $filedir);
 		$upload_directory_server_path = $upload_directory_info->row('server_path');
 		$upload_directory_url = $upload_directory_info->row('url');
 
@@ -153,6 +196,7 @@ class File_ft extends EE_Fieldtype {
 		}
 
 		$hidden	  = form_hidden($this->field_name.'_hidden', $filename);
+		$hidden	  .= form_hidden($this->field_name.'_hidden_dir', $filedir);
 		$upload   = form_upload($this->field_name, $filename);
 		$dropdown = form_dropdown($this->field_name.'_directory', $upload_dirs, $filedir);
 

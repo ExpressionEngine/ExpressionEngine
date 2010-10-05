@@ -97,8 +97,8 @@ if ($EE_view_disable !== TRUE)
 				<h3><a href="#"><?=lang('publish_layout')?></a></h3>
 				<div>
 					<p id="layout_groups_holder">
-						<?php foreach($member_groups->result() as $group):?>
-							<label><?=form_checkbox('member_group[]', $group->group_id, FALSE, 'class="toggle_member_groups"')?> <?=$group->group_title?></label><br />
++						<?php foreach($member_groups_laylist as $group):?>
++							<label><?=form_checkbox('member_group[]', $group['group_id'], FALSE, 'class="toggle_member_groups"')?> <?=$group['group_title']?></label><br />
 						<?php endforeach;?>
 						<label><?=form_checkbox('toggle_member_groups', 'toggle_member_groups', FALSE, 'class="toggle_member_groups" id="toggle_member_groups_all"').' '.$this->lang->line('select_all')?></label>
 					</p>
