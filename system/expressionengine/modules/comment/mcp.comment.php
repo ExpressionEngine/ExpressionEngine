@@ -381,24 +381,6 @@ class Comment_mcp {
 			return;
 		}
 		
-		$col_defs = '';
-		if ($cols != '')
-		{
-			$col_defs .= '"aoColumns": [ ';
-			$i = 1;
-			
-			while ($i < $cols)
-			{
-				$col_defs .= 'null, ';
-				$i++;
-			}
-
-			// One more for our hidden full comment column			
-			$col_defs .= '{ "bVisible" : false }, ';
-			
-			$col_defs .= '{ "bSortable" : false } ],';
-		}
-		
 		$js = '
 var oCache = {
 	iCacheLower: -1
@@ -548,8 +530,7 @@ function fnGetKey( aoData, sKey )
 			"bAutoWidth": false,
 			"fnDrawCallback": fnOpenClose,
 			"iDisplayLength": '.$this->perpage.', 
-			
-			'.$col_defs.'
+			"aoColumns": [{ "bSortable" : false }, null, null, { "bVisible" : false }, null, null, null, null, null, { "bVisible" : false }, { "bSortable" : false } ],
 					
 		"oLanguage": {
 			"sZeroRecords": "'.$this->EE->lang->line('no_valid_comments').'",
@@ -776,7 +757,8 @@ function fnOpenClose ( oSettings )
 			
 				$expand_img = '<img src="'.$this->EE->cp->cp_theme_url.'images/field_collapse.png" alt="expand" />';
 			
-				$m[] = $expand_img.NBS.NBS."<a class='less_important_link' href='{$edit_url}'>{$display_comment}</a>";
+				$m[] = $expand_img;
+				$m[] = "<a class='less_important_link' href='{$edit_url}'>{$display_comment}</a>";
 				$m[] = "<a class='less_important_link' href='{$entry_search_url}'>{$entry_title}</a>";
 				$m[] = "<a class='less_important_link' href='{$channel_search_url}'>{$comment['channel_title']}</a>";
 				$m[] = "<a class='less_important_link'  href='{$name_search_url}'>{$comment['name']}</a>";
@@ -949,13 +931,6 @@ function fnOpenClose ( oSettings )
 	 	$vars['status_select_options']['p'] = $this->EE->lang->line('pending');
 		$vars['status_select_options']['o'] = $this->EE->lang->line('open');
 		$vars['status_select_options']['c'] = $this->EE->lang->line('closed');
-
-
-		// Display pull-down menu
-		$vars['display_selected'] = '';
-		
-		$vars['display_select_options']['collapsed'] = $this->EE->lang->line('collapsed_display');
-		$vars['display_select_options']['expanded'] = $this->EE->lang->line('expanded_display');
 
 		// Date range pull-down menu
 		$vars['date_selected'] = $filter['date_range'];

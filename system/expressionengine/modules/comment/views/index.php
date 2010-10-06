@@ -8,7 +8,6 @@
 					<?=form_dropdown('channel_id', $channel_select_options, $channel_selected, 'id="f_channel_id"').NBS.NBS?>
 					<?=form_dropdown('status', $status_select_options, $status_selected, 'id="f_status"').NBS.NBS?>
 					<?=form_dropdown('date_range', $date_select_options, $date_selected, 'id="date_range"').NBS.NBS?>
-					<?=form_dropdown('display_toggle', $display_select_options, '', 'id="display_toggle"').NBS.NBS?>
 				</div>
 
         		<div id="custom_date_picker" style="display: none; margin: 0 auto 50px auto;width: 500px; height: 235px; padding: 5px 15px 5px 15px;border: 1px solid black;  background: #FFF;">
@@ -39,6 +38,7 @@
 			$this->table->set_template($cp_pad_table_template);
 
 			$heading = array(
+				'+/-',
 				lang('comment'),
 				lang('entry_title'),
 				lang('channel'),
@@ -59,11 +59,13 @@
 				foreach ($comments as $comment)
 				{
 					$row = array(
+					'--',	
+						
 					"<a class='less_important_link' href='{$comment['edit_url']}'>{$comment['comment']}</a>",
 
 					"<a class='less_important_link' href='{$comment['entry_search_url']}'>{$comment['entry_title']}</a>",
 						
-					"<a class='less_important_link' href='{$comment['channel_search_url']}'>{$comment['channel_title']}</a>",
+					array('data' => '', 'class' => 'hidden_col'),
 	
 					"<a class='less_important_link'  href='{$comment['name_search_url']}'>{$comment['name']}</a>",
 					

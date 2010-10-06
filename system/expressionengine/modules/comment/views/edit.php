@@ -26,11 +26,8 @@
 						)
 					);
 					
-					$this->table->add_row(array(
-							$email_required.lang('email', 'email'),
-							form_input('email', set_value('email', $email), 'class="field" name="email" id="email"').form_error('email')
-						)
-					);
+					// Not editable
+					$this->table->add_row(array(lang('email'), $email));
 					
 					$this->table->add_row(array(
 							lang('url', 'url'),
@@ -65,7 +62,7 @@
 				{
 					$this->table->add_row(array(
 							$required.lang('comment', 'comment'),
-							form_textarea('comment', set_value('comment', $comment), 'class="field" name="comment"  id="comment"').form_error('comment')
+							form_textarea('comment', set_value('comment', $comment), 'class="field" style="width:99%"  name="comment"  id="comment"').form_error('comment')
 							)
 					);
 				}
