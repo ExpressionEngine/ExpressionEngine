@@ -30,7 +30,7 @@ If you made these changes, please accept the modifications on the control panel 
 http://expressionengine.com/forums/viewforum/105/
 
 Please review the support policy before posting to the forums:
-http://expressionengine.com/support/policy/',
+http://expressionengine.com/support/support_policy/',
 
 'new_version_notice' =>
 'ExpressionEngine version %s is now available.'."\n".'
