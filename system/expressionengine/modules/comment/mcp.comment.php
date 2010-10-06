@@ -555,7 +555,7 @@ function fnGetKey( aoData, sKey )
 	{
 		var aData = oTable.fnGetData( nTr );
 		var sOut = "<table class=\"detailTable\">";
-		sOut += "<tr><td>"+aData[8]+"</td></tr>";
+		sOut += "<tr><td>"+aData[9]+"</td></tr>";
 		sOut += "</table>";
 	
 		return sOut;
@@ -585,19 +585,12 @@ function fnOpenClose ( oSettings )
 	} );
 }
 	
-			
-			
-			$("select#display_toggle").change(function () {
-				displayState = document.getElementById("display_toggle");
-				if (displayState.value == "collapsed") {
+			$("#expand_contract").toggle(function () {
+					$("[src$=\'field_collapse.png\']").click();
+				}, function() {
 					$("[src$=\'field_expand.png\']").click();
-				}
-				else {
-						$("[src$=\'field_collapse.png\']").click();
-				}
 			});
-	
-	
+			
 			$("#keywords").keyup( function () {
 			/* Filter on the column (the index) of this element */
 				oTable.fnDraw();
@@ -634,7 +627,7 @@ function fnOpenClose ( oSettings )
 		$ids = array();
 		
 				
-		$col_map = array('comment', 'title', 'channel_title', 'name', 'email', 'comment_date', 'ip_address', 'status');
+		$col_map = array('comment', 'comment', 'title', 'channel_title', 'name', 'email', 'comment_date', 'ip_address', 'status');
 
 		// Note- we pipeline the js, so pull more data than are displayed on the page		
 		$perpage = $this->EE->input->get_post('iDisplayLength');

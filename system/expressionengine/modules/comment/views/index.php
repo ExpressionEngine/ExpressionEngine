@@ -38,7 +38,7 @@
 			$this->table->set_template($cp_pad_table_template);
 
 			$heading = array(
-				'+/-',
+				'<a id="expand_contract" style="text-decoration: none" href="#">+/-</a>',
 				lang('comment'),
 				lang('entry_title'),
 				lang('channel'),
