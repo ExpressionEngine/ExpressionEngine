@@ -13,7 +13,7 @@
 							lang('entry_title'), 
 							
 							$title.NBS.NBS.'('.$channel_title.')'.'<div><a id="move_link" href="#">'.lang('move').'</a><span id="move_field" class="js_hide">'.
-							lang('move_comment_instr').NBS.form_input('move_to', set_value('move_to', $move_to), 'class="field" id="move_to" size="10" style="width:50px"').form_error('move_to').'</span></div>'
+							lang('move_comment_instr').NBS.form_input('move_to', set_value('move_to', $move_to), 'class="field" id="move_to" size="10" style="width:50px"').form_error('move_to').'<br /><a id="cancel_link" href="#">'.lang('cancel').'</a></span></div>'
 							
 						)
 					);

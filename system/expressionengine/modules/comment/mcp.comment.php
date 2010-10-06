@@ -1014,6 +1014,8 @@ function fnOpenClose ( oSettings )
 		$this->EE->load->library('javascript');	
 
 		$this->EE->javascript->output('		
+
+		// If validation fails- want to be sure to show the move field if populated
 		if ($("#move_to").val() != "")
 		{
 			$("#move_link").hide();
@@ -1024,7 +1026,15 @@ function fnOpenClose ( oSettings )
 			$("#move_link").hide();
 			$("#move_field").show();
 			return false;
-		});');
+		});
+		
+		$("#cancel_link").click(function() {
+			$("input#move_to").val("");
+			$("#move_link").show();
+			$("#move_field").hide();
+			return false;
+		});		
+		');
 
 
 		$this->EE->javascript->compile();
