@@ -2408,7 +2408,7 @@ label.hide_field {
 }
 
 select#upload_dir {
-	width:				100%;
+	display:			block;
 	margin:				8px 0 0 0;
 }
 
