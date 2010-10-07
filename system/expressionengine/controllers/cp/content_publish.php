@@ -838,6 +838,7 @@ class Content_publish extends Controller {
 		}
 		
 		
+		
 		$vars['publish_tabs']['publish'] = array();
 		
 		// Entry date

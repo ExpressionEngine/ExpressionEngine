@@ -1278,7 +1278,7 @@ class Member_model extends CI_Model {
 		$this->db->select('member_id, timezone, daylight_savings, time_format');
 		$this->db->where('localization_is_site_default', 'y');
 		$query = $this->db->get('members');
-		
+
 		if ($query->num_rows() == 1)
 		{
 			$config = array(

@@ -116,7 +116,8 @@ class Date_ft extends EE_Fieldtype {
 
 			$date = $this->EE->localize->set_localized_time($field_data);
 		}
-		
+
+
 		$cal_date = $date * 1000;
 
 		$this->EE->javascript->output('

@@ -76,22 +76,6 @@ class Updater {
 	        $this->EE->db->query($sql);
 		}
 		
-		
-		// Remove default_site_timezone and default_site_dst if they
-		// don't have a default user set
-		
-		$this->EE->db->where('localization_is_site_default', 'y');
-		$has_loc_member = (bool) $this->EE->db->count_all_results('members');
-		
-		if ( ! $has_loc_member)
-		{
-			array(
-				'default_site_timezone' => '',
-				'default_site_dst'		=> ''
-			);
-		}
-		
-		
 		// Do we need to move comment notifications?
 		if ( ! $this->EE->db->table_exists('exp_comments'))
 		{

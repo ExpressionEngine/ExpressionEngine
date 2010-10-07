@@ -911,7 +911,6 @@ class Moblog {
 				}
 				else
 				{
-					die('wth');
 					$this->emails_done++;
 					continue;
 				}

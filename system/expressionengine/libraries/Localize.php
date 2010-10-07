@@ -350,25 +350,25 @@ class EE_Localize {
 			$now = $this->set_localized_time($now);
 		}
 			
-		$r  = gmdate('Y', $now).'-'.gmdate('m', $now).'-'.gmdate('d', $now).' ';
+		$r  = date('Y', $now).'-'.date('m', $now).'-'.date('d', $now).' ';
 			
 		if ($fmt == 'us')
 		{
-			$r .= gmdate('h', $now).':'.gmdate('i', $now);
+			$r .= date('h', $now).':'.date('i', $now);
 		}
 		else
 		{
-			$r .= gmdate('H', $now).':'.gmdate('i', $now);
+			$r .= date('H', $now).':'.date('i', $now);
 		}
 		
 		if ($seconds)
 		{
-			$r .= ':'.gmdate('s', $now);
+			$r .= ':'.date('s', $now);
 		}
 		
 		if ($fmt == 'us')
 		{
-			$r .= ' '.gmdate('A', $now);
+			$r .= ' '.date('A', $now);
 		}
 			
 		return $r;
@@ -800,68 +800,68 @@ class EE_Localize {
 	  
 			switch ($which)
 			{
-				case '%a': 	$var = ($translate === FALSE) ? gmdate('a', $time) : $this->EE->lang->line(gmdate('a', $time)); // am/pm
+				case '%a': 	$var = ($translate === FALSE) ? date('a', $time) : $this->EE->lang->line(date('a', $time)); // am/pm
 					break;
-				case '%A': 	$var = ($translate === FALSE) ? gmdate('A', $time) : $this->EE->lang->line(gmdate('A', $time)); // AM/PM
+				case '%A': 	$var = ($translate === FALSE) ? date('A', $time) : $this->EE->lang->line(date('A', $time)); // AM/PM
 					break;
-				case '%B': 	$var = gmdate('B', $time);
+				case '%B': 	$var = date('B', $time);
 					break;
-				case '%d': 	$var = gmdate('d', $time);
+				case '%d': 	$var = date('d', $time);
 					break;
-				case '%D': 	$var = ($translate === FALSE) ? gmdate('D', $time) : $this->EE->lang->line(gmdate('D', $time)); // Mon, Tues
+				case '%D': 	$var = ($translate === FALSE) ? date('D', $time) : $this->EE->lang->line(date('D', $time)); // Mon, Tues
 					break;
-				case '%F': 	$may = (gmdate('F', $time) == 'May') ? gmdate('F', $time).'_l' : gmdate('F', $time);
-							$var = ($translate === FALSE) ? gmdate('F', $time) : $this->EE->lang->line($may); // January, February
+				case '%F': 	$may = (date('F', $time) == 'May') ? date('F', $time).'_l' : date('F', $time);
+							$var = ($translate === FALSE) ? date('F', $time) : $this->EE->lang->line($may); // January, February
 					break;
-				case '%g': 	$var = gmdate('g', $time);
+				case '%g': 	$var = date('g', $time);
 					break;
-				case '%G': 	$var = gmdate('G', $time);
+				case '%G': 	$var = date('G', $time);
 					break;
-				case '%h': 	$var = gmdate('h', $time);
+				case '%h': 	$var = date('h', $time);
 					break;
-				case '%H': 	$var = gmdate('H', $time);
+				case '%H': 	$var = date('H', $time);
 					break;
-				case '%i': 	$var = gmdate('i', $time);
+				case '%i': 	$var = date('i', $time);
 					break;
 				case '%I': 	$var = ($localized_tz == TRUE) ? date('I', $time) : gmdate('I', $time);
 					break;
-				case '%j': 	$var = gmdate('j', $time);
+				case '%j': 	$var = date('j', $time);
 					break;
-				case '%l': 	$var = ($translate === FALSE) ? gmdate('l', $time) : $this->EE->lang->line(gmdate('l', $time)); // Monday, Tuesday
+				case '%l': 	$var = ($translate === FALSE) ? date('l', $time) : $this->EE->lang->line(date('l', $time)); // Monday, Tuesday
 					break;
-				case '%L': 	$var = gmdate('L', $time); 
+				case '%L': 	$var = date('L', $time); 
 					break;
-				case '%m': 	$var = gmdate('m', $time);	
+				case '%m': 	$var = date('m', $time);	
 					break;
-				case '%M': 	$var = ($translate === FALSE) ? gmdate('M', $time) : $this->EE->lang->line(gmdate('M', $time)); // Jan, Feb
+				case '%M': 	$var = ($translate === FALSE) ? date('M', $time) : $this->EE->lang->line(date('M', $time)); // Jan, Feb
 					break;
-				case '%n': 	$var = gmdate('n', $time);
+				case '%n': 	$var = date('n', $time);
 					break;
 				case '%O': 	$var = ($localized_tz == TRUE) ? date('O', $time) : gmdate('O', $time);
 					break;
-				case '%r': 	$var = ($translate === FALSE) ? gmdate('D', $time).gmdate(', d ', $time).gmdate('M', $time).gmdate(' Y H:i:s O', $time) : $this->EE->lang->line(gmdate('D', $time)).gmdate(', d ', $time).$this->EE->lang->line(gmdate('M', $time)).gmdate(' Y H:i:s O', $time);
+				case '%r': 	$var = ($translate === FALSE) ? date('D', $time).date(', d ', $time).date('M', $time).date(' Y H:i:s O', $time) : $this->EE->lang->line(date('D', $time)).date(', d ', $time).$this->EE->lang->line(date('M', $time)).date(' Y H:i:s O', $time);
 					break;
-				case '%s': 	$var = gmdate('s', $time);
+				case '%s': 	$var = date('s', $time);
 					break;
-				case '%S': 	$var = gmdate('S', $time);
+				case '%S': 	$var = date('S', $time);
 					break;
-				case '%t': 	$var = gmdate('t', $time);
+				case '%t': 	$var = date('t', $time);
 					break;
 				case '%T': 	$var = ($localized_tz == TRUE) ? $this->ctz : gmdate('T', $time);
 					break;
-				case '%U': 	$var = gmdate('U', $time);
+				case '%U': 	$var = date('U', $time);
 					break;
-				case '%w': 	$var = gmdate('w', $time);
+				case '%w': 	$var = date('w', $time);
 					break;
-				case '%W': 	$var = gmdate('W', $time);
+				case '%W': 	$var = date('W', $time);
 					break;
-				case '%y': 	$var = gmdate('y', $time);
+				case '%y': 	$var = date('y', $time);
 					break;
-				case '%Y': 	$var = gmdate('Y', $time);
+				case '%Y': 	$var = date('Y', $time);
 					break;
 				case '%Q':	$var = ($localized_tz == TRUE) ? $this->zone_offset($this->EE->session->userdata['timezone']) : '+00:00'; // equiv to date('P'), but P is not available in PHP < 5.1.3
 					break;
-				case '%z': 	$var = gmdate('z', $time);
+				case '%z': 	$var = date('z', $time);
 					break;
 				case '%Z':	$var = ($localized_tz == TRUE) ? date('Z', $time) : gmdate('Z', $time);
 					break;
