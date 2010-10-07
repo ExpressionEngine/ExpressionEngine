@@ -1003,7 +1003,9 @@ function fnOpenClose ( oSettings )
 	 */
 	function edit_comment_form($comment_id = FALSE)
 	{
-		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
+		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') 
+		  && ! $this->EE->cp->allowed_group('can_edit_all_comments') 
+		  && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
 		{
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
@@ -1057,9 +1059,9 @@ function fnOpenClose ( oSettings )
 
 		$query = $this->EE->db->get();
 			
-		if ($query->num_rows() == 0)
+		if ($query->num_rows() === 0)
 		{
-			return false;
+			return FALSE;
 		}
 
 			
@@ -1111,7 +1113,8 @@ function fnOpenClose ( oSettings )
 									);
 		
 		$hidden = array(
-						'comment_id'	=> $comment_id
+						'comment_id'	=> $comment_id,
+						'email'			=> $query->row('email')
 						);
 
 		$this->EE->cp->set_variable('cp_page_title', $this->EE->lang->line('edit_comment'));
@@ -1137,7 +1140,9 @@ function fnOpenClose ( oSettings )
 	 */
 	function update_comment()
 	{
-		if ( !  ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
+		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') 
+		  && ! $this->EE->cp->allowed_group('can_edit_all_comments') 
+		  && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
 		{
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
@@ -1307,7 +1312,7 @@ function fnOpenClose ( oSettings )
 		$this->EE->form_validation->set_error_delimiters('<br /><span class="notice">', '<br />');
 		
 		if ($this->EE->form_validation->run() === FALSE)
-		{
+		{var_dump($this->EE->form_validation);exit;
 			return $this->edit_comment_form($comment_id);
 		}		
 
@@ -1318,11 +1323,11 @@ function fnOpenClose ( oSettings )
 			$data = array(
 							'entry_id' => $new_entry_id,
 							'channel_id' => $new_channel_id,
-							'name'		=> $_POST['name'],
-							'email'		=> $_POST['email'],
-							'url'		=> $_POST['url'],
-							'location'	=> $_POST['location'],
-							'comment'	=> $_POST['comment'],
+							'name'		=> $this->EE->input->post('name'),
+							'email'		=> $this->EE->input->post('email'),
+							'url'		=> $this->EE->input->post('url'),
+							'location'	=> $this->EE->input->post('location'),
+							'comment'	=> $this->EE->input->post('comment'),
 							'status'	=> $status
 						 );
 		}
@@ -1331,7 +1336,7 @@ function fnOpenClose ( oSettings )
 			$data = array(
 							'entry_id' => $new_entry_id,
 							'channel_id' => $new_channel_id,
-							'comment'	=> $_POST['comment'],
+							'comment'	=> $this->EE->input->post('comment'),
 							'status'	=> $status
 						 );
 		}
@@ -1467,7 +1472,8 @@ function fnOpenClose ( oSettings )
 	 */
 	function delete_comment_confirm()
 	{
-		if ( ! $this->EE->cp->allowed_group('can_delete_all_comments') && ! $this->EE->cp->allowed_group('can_delete_own_comments'))
+		if ( ! $this->EE->cp->allowed_group('can_delete_all_comments') 
+		  && ! $this->EE->cp->allowed_group('can_delete_own_comments'))
 		{
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
@@ -1572,7 +1578,9 @@ function fnOpenClose ( oSettings )
 	 */
 	function change_comment_status($status = '')
 	{
-		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments') && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
+		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') 
+		  && ! $this->EE->cp->allowed_group('can_edit_all_comments') 
+		  && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
 		{
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
@@ -1626,7 +1634,9 @@ function fnOpenClose ( oSettings )
 
 		foreach($query->result_array() as $row)
 		{
-			if (( ! $this->EE->cp->allowed_group('can_moderate_comments') && ! $this->EE->cp->allowed_group('can_edit_all_comments')) && ($row['entry_author'] != $this->EE->session->userdata('member_id')))
+			if (( ! $this->EE->cp->allowed_group('can_moderate_comments') 
+			   && ! $this->EE->cp->allowed_group('can_edit_all_comments')) 
+			   && ($row['entry_author'] != $this->EE->session->userdata('member_id')))
 			{					
 				unset($comments[$row['comment_id']]);
 				continue;
@@ -2064,9 +2074,6 @@ function fnOpenClose ( oSettings )
 		$this->EE->functions->redirect($this->base_url.AMP.'method=settings');
 
 	}
-
-	
-	
 }
 // END CLASS
 
