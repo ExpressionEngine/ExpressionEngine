@@ -722,6 +722,12 @@ div#search {
 #hideSidebarLink:link, #hideSidebarLink:visited,
 #revealSidebarLink:link, #revealSidebarLink:visited  {
 	color:				#a0aaa4;
+	text-decoration:	none;
+}
+
+#hideSidebarLink:hover,
+#revealSidebarLink:hover {
+	text-decoration:	underline;
 }
 
 #notePad #notePadTextEdit {

@@ -1691,7 +1691,8 @@ class Channel {
 		/**------*/
 
 		$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
-
+		// @pk echo $timestamp.'<br />';
+		
 		if ($this->EE->TMPL->fetch_param('show_future_entries') != 'yes')
 		{
 			$sql .= " AND t.entry_date < ".$timestamp." ";
@@ -3317,7 +3318,6 @@ class Channel {
 				foreach ($this->dfields[$row['site_id']] as $dkey => $dval)
 				{
 					// Empty, Null, Zero, Zilch, Nada...
-
 					if ( ! isset($existing_variables[$dkey])) continue;
 
 					if ($row['field_id_'.$dval] == 0 OR $row['field_id_'.$dval] == '')

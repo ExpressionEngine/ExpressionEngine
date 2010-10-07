@@ -24,7 +24,6 @@
  */
 class Members {
 	
-	
 	var $EE;
 	
 	function Members()
@@ -34,19 +33,18 @@ class Members {
 	
 	// ------------------------------------------------------------------------	
 
-
 	/**
-	 *	Upload Member Images
+	 * Upload Member Images
 	 *
-	 *	This method is used by both the member module (mod.member_images.php) and the myaccount controller
-	 *	Return values are dependent on if this is a CP or PAGE request.
+	 * This method is used by both the member module (mod.member_images.php) and the myaccount controller
+	 * Return values are dependent on if this is a CP or PAGE request.
 	 *
-	 *	@param 	string	avatar/photo/sig_img
-	 *	@param 	int		member id being updated
-	 *	@return mixed
+	 * @access	public
+	 * @param	string	avatar/photo/sig_img
+	 * @param	int		member id being updated
+	 * @return	mixed
 	 */
-	
-	function upload_member_images($type = 'avatar', $id)
+	function upload_member_images($type, $id)
 	{
 		// validate for unallowed blank values
 		if (empty($_POST)) 
@@ -55,10 +53,8 @@ class Members {
 			{
 				show_error($this->EE->lang->line('not_authorized'));				
 			}
-			else
-			{
-				$this->EE->output->show_user_error('submission', $this->EE->lang->line('not_authorized'));
-			}
+
+			$this->EE->output->show_user_error('submission', $this->EE->lang->line('not_authorized'));
 		}
 		
 		// Load the member model!
@@ -93,132 +89,81 @@ class Members {
 				break;
 		}
 
-		//Is this a remove request?
+		// Is this a remove request?
 
-		if ( ! isset($_POST['remove']))
+		if (isset($_POST['remove']))
 		{
-			if ($this->EE->config->item($enable_pref) == 'n')
+			// It's a remove request
+			// We have an id, grab the filename
+			$this->EE->db->select($type.'_filename');
+			$this->EE->db->where('member_id', $id);
+			$query = $this->EE->db->get('members');
+			
+			// Blank? Bail!
+			if ( ! $query->row($type.'_filename'))
 			{
 				if (REQ == 'CP')
 				{
-					show_error($this->EE->lang->line($not_enabled));					
-				}
-				else
-				{
-					return array('error', array($not_enabled, $not_enabled));
-				}
-			}
-		}
-		else
-		{
-			if ($type == 'avatar')
-			{
-				$this->EE->db->select('avatar_filename');
-				$this->EE->db->where('member_id', $id);
-				$query = $this->EE->db->get('members');
-
-				if ($query->row('avatar_filename')	== '')
-				{
-					if (REQ == 'CP')
+					if ($type == 'avatar')
 					{
-						// Returning type, method to call.
 						return array('page', 'edit_avatar');
 					}
-					else
-					{
-						return array('redirect', array($edit_image));
-					}
-				}
-
-				$this->EE->db->where('member_id', $id);
-				$this->EE->db->set('avatar_filename', '');
-				$this->EE->db->update('members');
-
-				if (strncmp($query->row('avatar_filename'), 'uploads/', 8) == 0)
-				{
-					@unlink($this->EE->config->slash_item('avatar_path').$query->row('avatar_filename') );
-				}
-
-				if (REQ == 'CP')
-				{
-					$this->EE->session->set_flashdata('message_success', $this->EE->lang->line($removed));
-					$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_avatar'.AMP.'id='.$id);					
-				}
-			}
-			elseif ($type == 'photo')
-			{
-				$this->EE->db->select('photo_filename');
-				$this->EE->db->where('member_id', $id);
-				$query = $this->EE->db->get('members');
-
-				if ($query->row('photo_filename')  == '')
-				{
-					if (REQ == 'CP')
-					{
-						$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_photo'.AMP.'id='.$id);						
-					}
-					else
-					{
-						return array('redirect', array($edit_image));
-					}
+					
+					$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M='.$edit_image.AMP.'id='.$id);
 				}
 				
-				$this->EE->db->set('photo_filename', '');
-				$this->EE->db->where('member_id', $id);
-				$this->EE->db->update('members');
-
-				@unlink($this->EE->config->slash_item('photo_path').$query->row('photo_filename') );
-
-				if (REQ == 'CP')
-				{
-					// Returning type, method to call + args.
-					return array('page', 'edit_avatar', array($this->EE->lang->line($removed)));
-				}
-			}
-			else
-			{
-				$this->EE->db->select('sig_img_filename');
-				$this->EE->db->where('member_id', $id);
-				$query = $this->EE->db->get('members');
-				
-				if ($query->row('sig_img_filename')	 == '')
-				{
-					if (REQ == 'CP')
-					{
-						return $this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature'.AMP.'id='.$id);						
-					}
-					else
-					{
-						return array('redirect', array($edit_image));
-					}
-				}
-				
-				$this->EE->db->set('sig_img_filename', '');
-				$this->EE->db->where('member_id', $id);
-				$this->EE->db->update('members');
-
-				@unlink($this->EE->config->slash_item('sig_img_path').$query->row('sig_img_filename') );
-
-				if (REQ == 'CP')
-				{
-					$this->EE->session->set_flashdata('message_success', $this->EE->lang->line($removed));
-					$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature'.AMP.'id='.$id);					
-				}
+				return array('redirect', array($edit_image));
 			}
 			
-			if (REQ == 'PAGE')
+			// Blank out the filename
+			$this->EE->db->set($type.'_filename', '');
+			$this->EE->db->where('member_id', $id);
+			$this->EE->db->update('members');
+			
+			// Unlink the file
+			if ($type != 'avatar')
 			{
-				return array('var_swap',
-							array('success',
-								array(
-									'lang:heading'	=>	$this->EE->lang->line($remove),
-									'lang:message'	=>	$this->EE->lang->line($removed)								
-								)
-							)
-						);				
+				@unlink($this->EE->config->slash_item($type.'_path').$query->row($type.'_filename') );
 			}
+			elseif (strncmp($query->row('avatar_filename'), 'uploads/', 8) == 0)
+			{
+				@unlink($this->EE->config->slash_item('avatar_path').$query->row('avatar_filename') );
+			}
+			
+			if (REQ == 'CP')
+			{
+				if ($type == 'photo')
+				{
+					return array('page', 'edit_avatar', array($this->EE->lang->line($removed)));
+				}
+				
+				$this->EE->session->set_flashdata('message_success', $this->EE->lang->line($removed));
+				$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M='.$edit_image.AMP.'id='.$id);
+			}
+			
+			return array('var_swap',
+				array('success',
+					array(
+						'lang:heading'	=>	$this->EE->lang->line($remove),
+						'lang:message'	=>	$this->EE->lang->line($removed)								
+					)
+				)
+			);
+		}
+		
+		
+		// Are they allowed to set this image?
+		if ($this->EE->config->item($enable_pref) == 'n')
+		{
+			if (REQ == 'CP')
+			{
+				show_error($this->EE->lang->line($not_enabled));					
+			}
+
+			return array('error', array($not_enabled, $not_enabled));
 		}
 
+		
 		// Do the have the GD library?
 		if ( ! function_exists('getimagesize'))
 		{
@@ -226,42 +171,27 @@ class Members {
 			{
 				show_error('gd_required');				
 			}
-			else
-			{
-				return array('error', array($edit_image, 'gd_required'));
-			}
+
+			return array('error', array($edit_image, 'gd_required'));
 		}
-
+		
+		
 		// Is there $_FILES data?
-
 		if ( ! isset($_FILES['userfile']))
 		{
 			if (REQ == 'CP')
 			{
 				$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_'.$type.AMP.'id='.$id);				
 			}
-			else
-			{
-				return array('redirect', $edit_image);
-			}
+
+			return array('redirect', $edit_image);
 		}
+
 
 		// Check the image size
 		$size = ceil(($_FILES['userfile']['size'] / 1024));
 
-		if ($type == 'avatar')
-		{
-			$max_size = ($this->EE->config->item('avatar_max_kb') == '' OR $this->EE->config->item('avatar_max_kb') == 0) ? 50 : $this->EE->config->item('avatar_max_kb');
-		}
-		elseif ($type == 'photo')
-		{
-			$max_size = ($this->EE->config->item('photo_max_kb') == '' OR $this->EE->config->item('photo_max_kb') == 0) ? 50 : $this->EE->config->item('photo_max_kb');
-		}
-		else
-		{
-			$max_size = ($this->EE->config->item('sig_img_max_kb') == '' OR $this->EE->config->item('sig_img_max_kb') == 0) ? 50 : $this->EE->config->item('sig_img_max_kb');
-		}
-
+		$max_size = ( ! $this->EE->config->item($type.'_max_kb')) ? 50 : $this->EE->config->item($type.'_max_kb');
 		$max_size = preg_replace("/(\D+)/", "", $max_size);
 
 		if ($size > $max_size)
@@ -270,29 +200,23 @@ class Members {
 			{
 				show_error(sprintf($this->EE->lang->line('image_max_size_exceeded'), $max_size));				
 			}
-			else
-			{
-				$this->EE->output->show_user_error('submission',
-												sprintf(
-													$this->EE->lang->line('image_max_size_exceeded'), 
-													$max_size)
-										);
-			}
+			
+			$this->EE->output->show_user_error(
+				'submission',
+				sprintf(
+					$this->EE->lang->line('image_max_size_exceeded'), 
+					$max_size
+				)
+			);
 		}
 
 		// Is the upload path valid and writable?
 
+		$upload_path = $this->EE->config->slash_item($type.'_path');
+
 		if ($type == 'avatar')
 		{
-			$upload_path = $this->EE->config->slash_item('avatar_path').'uploads/';
-		}
-		elseif ($type == 'photo')
-		{
-			$upload_path = $this->EE->config->slash_item('photo_path');
-		}
-		else
-		{
-			$upload_path = $this->EE->config->slash_item('sig_img_path');
+			$upload_path .= 'uploads/';
 		}
 
 		if ( ! @is_dir($upload_path) OR ! is_really_writable($upload_path))
@@ -301,33 +225,16 @@ class Members {
 			{
 				show_error('image_assignment_error');				
 			}
-			else
-			{
-				return array('error', array($edit_image, 'image_assignment_error'));
-			}
+
+			return array('error', array($edit_image, 'image_assignment_error'));
 		}
 
 		// Set some defaults
 		$filename = $_FILES['userfile']['name'];
-
-		if ($type == 'avatar')
-		{
-			$max_width	= ($this->EE->config->item('avatar_max_width') == '' OR $this->EE->config->item('avatar_max_width') == 0) ? 100 : $this->EE->config->item('avatar_max_width');
-			$max_height = ($this->EE->config->item('avatar_max_height') == '' OR $this->EE->config->item('avatar_max_height') == 0) ? 100 : $this->EE->config->item('avatar_max_height');
-			$max_kb		= ($this->EE->config->item('avatar_max_kb') == '' OR $this->EE->config->item('avatar_max_kb') == 0) ? 50 : $this->EE->config->item('avatar_max_kb');
-		}
-		elseif ($type == 'photo')
-		{
-			$max_width	= ($this->EE->config->item('photo_max_width') == '' OR $this->EE->config->item('photo_max_width') == 0) ? 100 : $this->EE->config->item('photo_max_width');
-			$max_height = ($this->EE->config->item('photo_max_height') == '' OR $this->EE->config->item('photo_max_height') == 0) ? 100 : $this->EE->config->item('photo_max_height');
-			$max_kb		= ($this->EE->config->item('photo_max_kb') == '' OR $this->EE->config->item('photo_max_kb') == 0) ? 50 : $this->EE->config->item('photo_max_kb');
-		}
-		else
-		{
-			$max_width	= ($this->EE->config->item('sig_img_max_width') == '' OR $this->EE->config->item('sig_img_max_width') == 0) ? 100 : $this->EE->config->item('sig_img_max_width');
-			$max_height = ($this->EE->config->item('sig_img_max_height') == '' OR $this->EE->config->item('sig_img_max_height') == 0) ? 100 : $this->EE->config->item('sig_img_max_height');
-			$max_kb		= ($this->EE->config->item('sig_img_max_kb') == '' OR $this->EE->config->item('sig_img_max_kb') == 0) ? 50 : $this->EE->config->item('sig_img_max_kb');
-		}
+		
+		$max_width	= ( ! $this->EE->config->item($type.'_max_width')) ? 100 : $this->EE->config->item($type.'_max_width');
+		$max_height = ( ! $this->EE->config->item($type.'_max_height')) ? 100 : $this->EE->config->item($type.'_max_height');
+		$max_kb		= ( ! $this->EE->config->item($type.'_max_kb')) ? 50 : $this->EE->config->item($type.'_max_kb');
 
 		// Does the image have a file extension?
 		if (strpos($filename, '.') === FALSE)
@@ -336,10 +243,8 @@ class Members {
 			{
 				show_error($this->EE->lang->line('invalid_image_type'));				
 			}
-			else
-			{
-				$this->EE->output->show_user_error('submission', $this->EE->lang->line('invalid_image_type'));
-			}
+			
+			$this->EE->output->show_user_error('submission', $this->EE->lang->line('invalid_image_type'));
 		}
 
 		// Is it an allowed image type?
@@ -358,10 +263,8 @@ class Members {
 			{
 				show_error($this->EE->lang->line('invalid_image_type'));				
 			}
-			else
-			{
-				return $this->EE->output->show_user_error('submission', $this->EE->lang->line('invalid_image_type'));
-			}
+			
+			return $this->EE->output->show_user_error('submission', $this->EE->lang->line('invalid_image_type'));
 		}
 
 		// Assign the name of the image
@@ -398,14 +301,11 @@ class Members {
 		$config['max_width']  = $max_width;
 		$config['max_height']  = $max_height;
 		$config['overwrite'] = TRUE;
+		$config['xss_clean'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
 
 		if ($this->EE->config->item('xss_clean_uploads') == 'n')
 		{
 			$config['xss_clean'] = FALSE;
-		}
-		else
-		{
-			$config['xss_clean'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
 		}
 
 		$this->EE->load->library('upload', $config);
@@ -417,13 +317,11 @@ class Members {
 				$this->EE->session->set_flashdata('message_failure', $this->EE->upload->display_errors());
 				$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M='.$edit_image.AMP.'id='.$id);				
 			}
-			else
-			{
-				return $this->EE->output->show_user_error(
-											'submission',
-				 							$this->EE->lang->line($this->EE->upload->display_errors())
-										);
-			}
+
+			return $this->EE->output->show_user_error(
+				'submission',
+				$this->EE->lang->line($this->EE->upload->display_errors())
+			);
 		}
 
 		$file_info = $this->EE->upload->data();
@@ -443,29 +341,14 @@ class Members {
 		// Update DB
 		if ($type == 'avatar')
 		{
-			$avatar = 'uploads/'.$new_filename;
-			$data = array(
-							'avatar_filename' 	=> $avatar,
-							'avatar_width' 		=> $width,
-							'avatar_height' 	=> $height
-			);
+			$new_filename = 'uploads/'.$new_filename;
 		}
-		elseif ($type == 'photo')
-		{
-			$data = array(
-							'photo_filename' 	=> $new_filename,
-							'photo_width' 		=> $width,
-							'photo_height'		=> $height
-			);
-		}
-		else
-		{
-			$data = array(
-							'sig_img_filename' 	=> $new_filename,
-							'sig_img_width' 	=> $width,
-							'sig_img_height' 	=> $height
-			);
-		}
+		
+		$data = array(
+			$type.'_filename' 	=> $new_filename,
+			$type.'_width' 		=> $width,
+			$type.'_height' 	=> $height
+		);
 
 		$this->EE->member_model->update_member($id, $data);
 
@@ -475,15 +358,14 @@ class Members {
 	// ------------------------------------------------------------------------
 
 	/**
-	 *	Resize Member Images
+	 * Resize Member Images
 	 *
-	 *
-	 *	@param 	string
-	 *	@param 	string	avatar/photo/sig_img
-	 *	@param 	string
-	 *	@return bool
+	 * @access	public
+	 * @param 	string	filename
+	 * @param 	string	avatar/photo/sig_img
+	 * @param 	string
+	 * @return	bool
 	 */
-	
 	function image_resize($filename, $type = 'avatar', $axis = 'width')
 	{
 		$this->EE->load->library('image_lib');
@@ -502,18 +384,17 @@ class Members {
 		}
 
 		$config = array(
-				'image_library'		=> $this->config->item('image_resize_protocol'),
-				'libpath'			=> $this->config->item('image_library_path'),
-				'maintain_ratio'	=> TRUE,
-				'master_dim'		=> $axis,
-				'source_image'		=> $image_path.$filename,
-				'quality'			=> 75,
-				'width'				=> $max_width,
-				'height'			=> $max_height				
-			);
+			'image_library'		=> $this->config->item('image_resize_protocol'),
+			'libpath'			=> $this->config->item('image_library_path'),
+			'maintain_ratio'	=> TRUE,
+			'master_dim'		=> $axis,
+			'source_image'		=> $image_path.$filename,
+			'quality'			=> 75,
+			'width'				=> $max_width,
+			'height'			=> $max_height				
+		);
 			
 		$this->EE->image_lib->clear();
-		
 		$this->EE->image_lib->initialize($config);
 
 		if ($this->EE->image_lib->resize() === FALSE)
@@ -523,8 +404,6 @@ class Members {
 
 		return TRUE;
 	}
-
-	
 }
 /* End of file members.php */
 /* Location: ./system/expressionengine/libraries/members.php */

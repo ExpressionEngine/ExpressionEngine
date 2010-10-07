@@ -1323,12 +1323,11 @@ class MyAccount extends Controller {
 						$path = reduce_double_slashes($this->functions->prep_query_string(($row['comment_url'] != '') ? $row['comment_url'] : $row['channel_url']).'/'.$row['url_title'].'/');
 
 						$vars['subscriptions'][] = array(
-												'title' => $row['title'],
-												'active_date' => $row['recent_comment_date'],
-												'url_title' => url_title($row['title']),
-												'path' => $this->functions->fetch_site_index().$qm.'URL='.$path,
-												'id'	=> 'b'.$row['entry_id'],
-												'type'	=> $this->lang->line('comment')
+												'title'			=> $row['title'],
+												'url_title'		=> url_title($row['title']),
+												'path'			=> $this->functions->fetch_site_index().$qm.'URL='.$path,
+												'id'			=> 'b'.$row['entry_id'],
+												'type'			=> $this->lang->line('comment')
 												);
 					}
 				}
@@ -1368,7 +1367,6 @@ class MyAccount extends Controller {
 
 						$vars['subscriptions'][] = array(
 												'title' => $row['title'],
-												'active_date' => $row['last_post_date'],
 												'url_title' => url_title($row['title']),
 												'path' => $this->functions->fetch_site_index().$qm.'URL='.$path,
 												'id'	=> 'f'.$row['topic_id'],

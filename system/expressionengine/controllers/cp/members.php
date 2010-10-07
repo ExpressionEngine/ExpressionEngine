@@ -67,10 +67,8 @@ class Members extends Controller {
 		$this->cp->set_variable('cp_page_title', $this->lang->line('members'));
 
 		$this->javascript->compile();
-
-		$this->load->vars(array('controller'=>'members'));
-
-		$this->load->view('_shared/overview');
+		
+		$this->load->view('_shared/overview', array('controller' => 'members'));
 	}
 	
 	// --------------------------------------------------------------------

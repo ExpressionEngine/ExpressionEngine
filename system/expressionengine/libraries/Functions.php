@@ -133,7 +133,7 @@ class EE_Functions {
 		{
 			$qs = ($this->EE->config->item('force_query_string') == 'y') ? '' : '?';		
 			return $this->fetch_site_index(0, 0).$qs.'ACT='.$this->fetch_action_id('Member', 'member_logout');
-		}	
+		}
 		// END Specials
 
 		// Load the string helper
@@ -154,9 +154,9 @@ class EE_Functions {
 	 * Creates a url for Pages links
 	 *
 	 * @access	public
-	 * @return	string
+	 * @return	strings
 	 */
-	function create_page_url($base_url, $segment, $trailing_slash = true)
+	function create_page_url($base_url, $segment, $trailing_slash = TRUE)
 	{
 		// Load the string helper
 		$this->EE->load->helper('string');       

@@ -366,13 +366,13 @@ class Javascript extends Controller {
 				css_radii = {};
 
 			/* Detect browser support and define a proper prefix */
-			
+
 			$.each(prefixes, function(i) {
-				
+
 				var name = i ? this+"BorderRadius" : "borderRadius";
 
 				if (compat_el.style[name] !== undefined) {
-					
+
 					if (i == 0) {
 						use = ["border", "-radius", ""];
 					}
@@ -387,7 +387,8 @@ class Javascript extends Controller {
 					return false;
 				}
 			});
-			
+						
+
 			/*
 			 * Different names for the same thing.
 			 * Spec: border-bottom-left-radius, Moz: border-radius-bottomleft, Plugin: bl
@@ -404,7 +405,7 @@ class Javascript extends Controller {
 			function process_css(key, value) {
 
 				if (key.indexOf("@") == -1) {
-					
+
 					var apply_radius = "",
 						sep = (supported) ? ":" : " ",
 						jQel;
@@ -431,7 +432,7 @@ class Javascript extends Controller {
 					$.each(value, process_css);
 				}
 			}
-			
+
 			if (supported) {
 				$.each(adv_css, process_css);
 
@@ -450,6 +451,8 @@ class Javascript extends Controller {
 			}
 
 		})(jQuery, this.document)';
+
+		return $js;
 
 		$js = preg_replace('|/\*.*?\*/|s', '', $js);
 		return str_replace(array("\t", "\n"), '', $js);
