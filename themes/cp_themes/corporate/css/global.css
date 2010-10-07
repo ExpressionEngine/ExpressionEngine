@@ -3628,9 +3628,18 @@ div.contentWrap {
 }
 #mainContent #file_manager  #upload_dir{
 	width:				100%;
-	margin:				5px 0;
-	
+	margin:				5px 0 8px 0;
 }
+
+#file_manager_main #upload_dir, #file_manager_main .submit{
+	margin-top:			1em; /* even out elements on file chooser modal */
+}
+
+#mainContent #file_manager_tools .submit_alt {
+	width:				100%;
+	margin-top:			8px;
+}
+
 #mainContent #file_manager #file_information_hold label{
 	
 }

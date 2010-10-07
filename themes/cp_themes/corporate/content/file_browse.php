@@ -38,11 +38,11 @@ if ($EE_view_disable !== TRUE)
 					</p>
 					
 					<div class="subtext">
-						<?=form_label(lang('upload_file'), 'upload_file')?>
-						<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>18,'class'=>'field'))?>
+						<?=form_label(lang('upload_file'), 'upload_file', array('class' => 'visualEscapism'))?>
+						<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>18))?>
 					</div>
 
-					<p><?=form_submit('upload', lang('upload'), 'class="submit"')?></p>
+					<p><?=form_submit('upload', lang('upload'), 'class="submit submit_alt"')?></p>
 					<p id="progress"><img src="<?=$cp_theme_url?>/images/indicator.gif" alt="<?=lang('loading')?>..." /><br /><?=lang('loading')?>...</p>
 
 					<?=form_close()?>

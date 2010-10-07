@@ -26,15 +26,8 @@
 								<input type="hidden" name="frame_id" value="target_upload" id="frame_id" />
 								
 							<p>
-								<?=form_label(lang('upload_file'), 'upload_file', array("style"=>"display:none;"))?>
-								<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>20,'class'=>'field'))?>
-							</p>
-
-							<div class="shun"></div>
-							
-							<p>
 							<?php if (count($filemanager_directories) > 1):?>
-								<?=form_label(lang('upload_dir_choose'), 'upload_dir')?>
+								<?=form_label(lang('upload_dir_choose'), 'upload_dir')?>&nbsp;
 								<?=form_dropdown('upload_dir', $filemanager_directories, '', 'id="upload_dir"')?>
 							<?php else:
 								reset($filemanager_directories); // force us to be on the first array key
@@ -45,6 +38,13 @@
 
 							<div class="shun"></div>
 
+							<p>
+								<?=form_label(lang('upload_file'), 'upload_file', array("style"=>"display:none;"))?>
+								<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>20))?>
+							</p>
+
+							<div class="shun"></div>
+							
 							<p><button class="submit submit_alt"><?=lang('upload')?></button></p>
 
 							<p id="progress"><img src="<?=$cp_theme_url?>/images/indicator.gif" /><br /><?=lang('loading')?>...</p>

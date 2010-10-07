@@ -29,7 +29,7 @@
 
 							<p>
 							<?php if (count($filemanager_directories) > 1):?>
-								<?=form_label(lang('upload_dir_choose'), 'upload_dir')?>
+								<?=form_label(lang('upload_dir_choose'), 'upload_dir')?>&nbsp;
 								<?=form_dropdown('upload_dir', $filemanager_directories, '', 'id="upload_dir"')?>
 							<?php else:
 								reset($filemanager_directories); // force us to be on the first array key

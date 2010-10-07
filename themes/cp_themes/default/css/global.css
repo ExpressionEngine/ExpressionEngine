@@ -2403,13 +2403,17 @@ label.hide_field {
 
 #upload_form #upload_file.field {
 	width:				196px;
-	margin:				8px 0 8px 4px;
+	margin:				8px 0;
 	padding:			3px;
 }
 
 select#upload_dir {
-	display:			block;
 	margin:				8px 0 0 0;
+	width:				100%;
+}
+
+#file_manager_main select#upload_dir {
+	width:				auto; /* otherwise it extends outside the file chooser modal */
 }
 
 #mainContent #tools .submit_alt img, #mainContent #file_manager_tools .submit_alt img {
