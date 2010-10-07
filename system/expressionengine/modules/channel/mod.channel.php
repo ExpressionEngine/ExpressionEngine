@@ -4715,13 +4715,12 @@ class Channel {
 					$tagdata = $this->EE->TMPL->swap_var_single($val, $row[$val], $tagdata);
 				}
 
-
 				//  parse custom date fields
 				if (isset($custom_date_fields[$key]) && isset($this->dfields[$row['site_id']]))
 				{
 					foreach ($this->dfields[$row['site_id']] as $dkey => $dval)
 					{
-						if (strncmp($key, $dkey, strlen($dkey)) !== 0)
+						if (strncmp($key.' ', $dkey.' ', strlen($dkey.' ')) !== 0)
 							continue;
 
 						if ($row['field_id_'.$dval] == 0 OR $row['field_id_'.$dval] == '')
