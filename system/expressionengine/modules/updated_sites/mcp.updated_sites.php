@@ -527,14 +527,17 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		/* Ordering */
 		$order = array();
 		
-		if ( isset($_GET['iSortCol_0']))
+		if ($this->EE->input->get('iSortCol_0'))
 		{
-			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
+			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
 			{
-				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['sSortDir_'.$i];
+				if (isset($col_map[$this->EE->input->get('iSortCol_'.$i)]))
+				{
+					$order[$col_map[$this->EE->input->get('iSortCol_'.$i)]] = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
+				}
 			}
 		}
-
+		
 		$query = $this->pings_search($id, $order, $offset, $perpage);
 
 		$this->EE->db->where('ping_config_id', $id);

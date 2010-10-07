@@ -408,15 +408,18 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 		/* Ordering */
 		$order = array();
-
-		if ( isset($_GET['iSortCol_0']))
+		
+		if ($this->input->get('iSortCol_0'))
 		{
-			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
+			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
 			{
-				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['sSortDir_'.$i];
+				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
+				{
+					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
+				}
 			}
 		}
-
+		
 		$column_filter = ($this->input->get_post('column_filter')) ? $this->input->get_post('column_filter') : 'all';
 
 		$members = $this->member_model->get_members($group_id, $perpage, $offset, $search_value, $order, $column_filter);

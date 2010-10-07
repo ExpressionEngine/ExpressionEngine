@@ -154,17 +154,20 @@ class Tools_logs extends Controller {
 		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
 		$sEcho = $this->input->get_post('sEcho');	
 
-		$order = array();
-
 		/* Ordering */
-		if ( isset($_GET['iSortCol_0']))
+		$order = array();
+		
+		if ($this->input->get('iSortCol_0'))
 		{
-			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
+			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
 			{
-				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['sSortDir_'.$i];
+				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
+				{
+					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
+				}
 			}
 		}
-
+		
 		$query = $this->tools_model->get_cp_log($perpage, $offset, $order);
 		
 		$total = $this->db->count_all('cp_log');
@@ -282,17 +285,20 @@ class Tools_logs extends Controller {
 		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
 		$sEcho = $this->input->get_post('sEcho');	
 
-		$order = array();
-
 		/* Ordering */
-		if ( isset($_GET['iSortCol_0']))
+		$order = array();
+		
+		if ($this->input->get('iSortCol_0'))
 		{
-			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
+			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
 			{
-				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['sSortDir_'.$i];
+				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
+				{
+					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
+				}
 			}
 		}
-
+		
 		$query = $this->tools_model->get_search_log($perpage, $offset, $order);
 		
 		$total = $this->db->count_all('search_log');
@@ -446,14 +452,17 @@ class Tools_logs extends Controller {
 		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
 		$sEcho = $this->input->get_post('sEcho');	
 
-		$order = array();
-
 		/* Ordering */
-		if ( isset($_GET['iSortCol_0']))
+		$order = array();
+		
+		if ($this->input->get('iSortCol_0'))
 		{
-			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
+			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
 			{
-				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['sSortDir_'.$i];
+				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
+				{
+					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
+				}
 			}
 		}
 
@@ -597,17 +606,20 @@ class Tools_logs extends Controller {
 		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
 		$sEcho = $this->input->get_post('sEcho');	
 
-		$order = array();
-
 		/* Ordering */
-		if ( isset($_GET['iSortCol_0']))
+		$order = array();
+		
+		if ($this->input->get('iSortCol_0'))
 		{
-			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
+			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
 			{
-				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['sSortDir_'.$i];
+				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
+				{
+					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
+				}
 			}
-		}
-
+		}		
+		
 		$query = $this->tools_model->get_email_logs(FALSE, $perpage, $offset, $order);
 		
 		$total = $this->db->count_all('email_console_cache');

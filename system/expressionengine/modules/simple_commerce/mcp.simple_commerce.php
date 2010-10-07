@@ -668,14 +668,20 @@ class Simple_commerce_mcp {
 		/* Ordering */
 		$order_by = 'item_id desc';
 
-		if ( isset($_GET['iSortCol_0']))
+		if ($this->EE->input->get('iSortCol_0'))
 		{
-			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
+			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
 			{
-				$order[] = $col_map[$_GET['iSortCol_'.$i]].' '.$_GET['sSortDir_'.$i];
+				if (isset($col_map[$this->EE->input->get('iSortCol_'.$i)]))
+				{
+					$o = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
+					$order[] = $col_map[$this->EE->input->get('iSortCol_'.$i)].' '.$o;
+				}
 			}
+			
 			$order_by = implode(', ', $order);
-		}
+		}		
+		
 
 		$total = $this->EE->db->count_all('simple_commerce_items');
 
@@ -1115,15 +1121,18 @@ class Simple_commerce_mcp {
 
 		/* Ordering */
 		$order = array();
-
-		if ( isset($_GET['iSortCol_0']))
+		
+		if ($this->EE->input->get('iSortCol_0'))
 		{
-			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
+			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
 			{
-				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['sSortDir_'.$i];
+				if (isset($col_map[$this->EE->input->get('iSortCol_'.$i)]))
+				{
+					$order[$col_map[$this->EE->input->get('iSortCol_'.$i)]] = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
+				}
 			}
 		}
-
+		
 		$total = $this->EE->db->count_all('simple_commerce_emails');
 
 		$j_response['sEcho'] = $sEcho;
@@ -1687,15 +1696,18 @@ class Simple_commerce_mcp {
 
 		/* Ordering */
 		$order = array();
-
-		if ( isset($_GET['iSortCol_0']))
+		
+		if ($this->EE->input->get('iSortCol_0'))
 		{
-			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
+			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
 			{
-				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['sSortDir_'.$i];
+				if (isset($col_map[$this->EE->input->get('iSortCol_'.$i)]))
+				{
+					$order[$col_map[$this->EE->input->get('iSortCol_'.$i)]] = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
+				}
 			}
 		}
-
+		
 		$total = $this->EE->db->count_all('simple_commerce_emails');
 
 		$j_response['sEcho'] = $sEcho;
