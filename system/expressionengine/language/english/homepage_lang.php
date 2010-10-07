@@ -27,10 +27,10 @@ The following files are affected:
 {changed}
 
 If you made these changes, please accept the modifications on the control panel homepage.  If you did not alter these files it may indicate a hacking attempt. Check the files for any suspicious contents (JavaScript or iFrames) and contact ExpressionEngine support:
-http://expressionengine.com/forums/viewcategory/4/
+http://expressionengine.com/forums/viewforum/105/
 
 Please review the support policy before posting to the forums:
-http://expressionengine.com/support/policy/',
+http://expressionengine.com/support/support_policy/',
 
 'new_version_notice' =>
 'ExpressionEngine version %s is now available.'."\n".'
