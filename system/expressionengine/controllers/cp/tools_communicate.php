@@ -1237,17 +1237,22 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
 		$sEcho = $this->input->get_post('sEcho');	
 
-		$order = array();
-
 		/* Ordering */
-		if ( isset($_GET['iSortCol_0']))
+		$order = array();
+		
+		if ($this->input->get('iSortCol_0'))
 		{
-			for ( $i=0; $i < $_GET['iSortingCols']; $i++ )
+			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
 			{
-				$order[$col_map[$_GET['iSortCol_'.$i]]] = $_GET['sSortDir_'.$i];
+				if ( ! $this->input->get('iSortCol_'.$i))
+				{
+					continue;
+				}
+				
+				$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
 			}
 		}
-
+		
 		$query = $this->communicate_model->get_cached_email('', $perpage, $offset, $order);
 		
 		$total = $this->db->count_all('email_cache');
