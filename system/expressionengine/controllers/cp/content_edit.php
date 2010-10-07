@@ -836,12 +836,10 @@ class Content_edit extends Controller {
 		{
 			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
 			{
-				if ( ! $this->input->get('iSortCol_'.$i))
+				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
 				{
-					continue;
+					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
 				}
-				
-				$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
 			}
 		}
 		

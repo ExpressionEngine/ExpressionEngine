@@ -672,13 +672,11 @@ class Simple_commerce_mcp {
 		{
 			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
 			{
-				if ( ! $this->EE->input->get('iSortCol_'.$i))
+				if (isset($col_map[$this->EE->input->get('iSortCol_'.$i)]))
 				{
-					continue;
+					$o = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
+					$order[] = $col_map[$this->EE->input->get('iSortCol_'.$i)].' '.$o;
 				}
-				
-				$o = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
-				$order[] = $col_map[$this->EE->input->get('iSortCol_'.$i)].' '.$o;
 			}
 			
 			$order_by = implode(', ', $order);
@@ -1128,12 +1126,10 @@ class Simple_commerce_mcp {
 		{
 			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
 			{
-				if ( ! $this->EE->input->get('iSortCol_'.$i))
+				if (isset($col_map[$this->EE->input->get('iSortCol_'.$i)]))
 				{
-					continue;
+					$order[$col_map[$this->EE->input->get('iSortCol_'.$i)]] = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
 				}
-				
-				$order[$col_map[$this->EE->input->get('iSortCol_'.$i)]] = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
 			}
 		}
 		
@@ -1705,12 +1701,10 @@ class Simple_commerce_mcp {
 		{
 			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
 			{
-				if ( ! $this->EE->input->get('iSortCol_'.$i))
+				if (isset($col_map[$this->EE->input->get('iSortCol_'.$i)]))
 				{
-					continue;
+					$order[$col_map[$this->EE->input->get('iSortCol_'.$i)]] = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
 				}
-				
-				$order[$col_map[$this->EE->input->get('iSortCol_'.$i)]] = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
 			}
 		}
 		

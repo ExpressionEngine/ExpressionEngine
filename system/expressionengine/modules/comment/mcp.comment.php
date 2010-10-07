@@ -642,12 +642,10 @@ function fnOpenClose ( oSettings )
 		{
 			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
 			{
-				if ( ! $this->EE->input->get('iSortCol_'.$i))
+				if (isset($col_map[$this->EE->input->get('iSortCol_'.$i)]))
 				{
-					continue;
+					$order[$col_map[$this->EE->input->get('iSortCol_'.$i)]] = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
 				}
-				
-				$order[$col_map[$this->EE->input->get('iSortCol_'.$i)]] = ($this->EE->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
 			}
 		}
 
