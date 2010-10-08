@@ -3786,7 +3786,7 @@ class Channel {
 			$cond['logged_in']			= ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
 			$cond['logged_out']			= ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
 
-			if ((($row['comment_expiration_date'] > 0 && $this->EE->localize->now > $row['comment_expiration_date']) && $this->EE->config->item('comment_moderation_override') !== 'y') OR $row['allow_comments'] == 'n' OR (isset($row['comment_system_enabled']) && $row['comment_system_enabled']  == 'n')
+			if ((($row['comment_expiration_date'] > 0 && $this->EE->localize->now > $row['comment_expiration_date']) && $this->EE->config->item('comment_moderation_override') !== 'y') OR $row['allow_comments'] == 'n' OR (isset($row['comment_system_enabled']) && $row['comment_system_enabled']  == 'n'))
 			{
 				$cond['allow_comments'] = 'FALSE';
 			}
