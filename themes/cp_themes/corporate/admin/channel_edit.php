@@ -104,9 +104,9 @@ if ($EE_view_disable !== TRUE)
 					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
 
 					$preference = lang('deft_comments', 'deft_comments');
-					$controls = lang('yes', 'deft_comments_y').NBS.form_radio(array('name'=>'deft_comments', 'id'=>'deft_comments_y', 'value'=>'y', 'checked'=>($deft_comments == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('no', 'deft_comments_n').NBS.form_radio(array('name'=>'deft_comments', 'id'=>'deft_comments_n', 'value'=>'n', 'checked'=>($deft_comments == 'n') ? TRUE : FALSE));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_radio(array('name'=>'deft_comments', 'id'=>'deft_comments_y', 'value'=>'y', 'checked'=>($deft_comments == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'deft_comments_y').NBS.NBS.NBS.NBS.NBS;
+					$controls .= form_radio(array('name'=>'deft_comments', 'id'=>'deft_comments_n', 'value'=>'n', 'checked'=>($deft_comments == 'n') ? TRUE : FALSE)).NBS.lang('no', 'deft_comments_n');
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('search_excerpt', 'search_excerpt');
 					$controls = form_dropdown('search_excerpt', $search_excerpt_options, $search_excerpt, 'id="search_excerpt"');
@@ -129,14 +129,14 @@ if ($EE_view_disable !== TRUE)
 					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
 
 					$preference = lang('channel_allow_img_urls', 'channel_allow_img_urls');
-					$controls = lang('yes', 'channel_allow_img_urls_y').NBS.form_radio(array('name'=>'channel_allow_img_urls', 'id'=>'channel_allow_img_urls_y', 'value'=>'y', 'checked'=>($channel_allow_img_urls == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('no', 'channel_allow_img_urls_n').NBS.form_radio(array('name'=>'channel_allow_img_urls', 'id'=>'channel_allow_img_urls_n', 'value'=>'n', 'checked'=>($channel_allow_img_urls == 'n') ? TRUE : FALSE));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_radio(array('name'=>'channel_allow_img_urls', 'id'=>'channel_allow_img_urls_y', 'value'=>'y', 'checked'=>($channel_allow_img_urls == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'channel_allow_img_urls_y').NBS.NBS.NBS.NBS.NBS;
+					$controls .= form_radio(array('name'=>'channel_allow_img_urls', 'id'=>'channel_allow_img_urls_n', 'value'=>'n', 'checked'=>($channel_allow_img_urls == 'n') ? TRUE : FALSE)).NBS.lang('no', 'channel_allow_img_urls_n');
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('auto_link_urls', 'channel_auto_link_urls');
-					$controls = lang('yes', 'channel_auto_link_urls_y').NBS.form_radio(array('name'=>'channel_auto_link_urls', 'id'=>'channel_auto_link_urls_y', 'value'=>'y', 'checked'=>($channel_auto_link_urls == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('no', 'channel_auto_link_urls_n').NBS.form_radio(array('name'=>'channel_auto_link_urls', 'id'=>'channel_auto_link_urls_n', 'value'=>'n', 'checked'=>($channel_auto_link_urls == 'n') ? TRUE : FALSE));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_radio(array('name'=>'channel_auto_link_urls', 'id'=>'channel_auto_link_urls_y', 'value'=>'y', 'checked'=>($channel_auto_link_urls == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'channel_auto_link_urls_y').NBS.NBS.NBS.NBS.NBS;
+					$controls .= form_radio(array('name'=>'channel_auto_link_urls', 'id'=>'channel_auto_link_urls_n', 'value'=>'n', 'checked'=>($channel_auto_link_urls == 'n') ? TRUE : FALSE)).NBS.lang('no', 'channel_auto_link_urls_n');
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					echo $this->table->generate();
 					$this->table->clear(); // Clear out for the next one
@@ -151,9 +151,9 @@ if ($EE_view_disable !== TRUE)
 					$this->table->set_heading(lang('preference'), lang('setting'));
 
 					$preference = lang('enable_versioning', 'enable_versioning');
-					$controls = lang('yes', 'enable_versioning_y').NBS.form_radio(array('name'=>'enable_versioning', 'id'=>'enable_versioning_y', 'value'=>'y', 'checked'=>($enable_versioning == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('no', 'enable_versioning_n').NBS.form_radio(array('name'=>'enable_versioning', 'id'=>'enable_versioning_n', 'value'=>'n', 'checked'=>($enable_versioning == 'n') ? TRUE : FALSE));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_radio(array('name'=>'enable_versioning', 'id'=>'enable_versioning_y', 'value'=>'y', 'checked'=>($enable_versioning == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'enable_versioning_y').NBS.NBS.NBS.NBS.NBS;
+					$controls .= form_radio(array('name'=>'enable_versioning', 'id'=>'enable_versioning_n', 'value'=>'n', 'checked'=>($enable_versioning == 'n') ? TRUE : FALSE)).NBS.lang('no', 'enable_versioning_n');
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('max_revisions', 'max_revisions');
 					$controls = form_input(array('id'=>'max_revisions','name'=>'max_revisions','style'=>'width:100px', 'value'=>$max_revisions));
@@ -173,9 +173,9 @@ if ($EE_view_disable !== TRUE)
 					$this->table->set_heading(lang('preference'), lang('setting'));
 
 					$preference = lang('channel_notify', 'channel_notify');
-					$controls = lang('yes', 'channel_notify_y').NBS.form_radio(array('name'=>'channel_notify', 'id'=>'channel_notify_y', 'value'=>'y', 'checked'=>($channel_notify == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('no', 'channel_notify_n').NBS.form_radio(array('name'=>'channel_notify', 'id'=>'channel_notify_n', 'value'=>'n', 'checked'=>($channel_notify == 'n') ? TRUE : FALSE));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_radio(array('name'=>'channel_notify', 'id'=>'channel_notify_y', 'value'=>'y', 'checked'=>($channel_notify == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'channel_notify_y').NBS.NBS.NBS.NBS.NBS;
+					$controls .= form_radio(array('name'=>'channel_notify', 'id'=>'channel_notify_n', 'value'=>'n', 'checked'=>($channel_notify == 'n') ? TRUE : FALSE)).NBS.lang('no', 'channel_notify_n');
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('comment_notify_emails', 'channel_notify_emails');
 					$controls = form_input(array('id'=>'channel_notify_emails','name'=>'channel_notify_emails','class'=>'fullfield', 'value'=>$channel_notify_emails));
@@ -184,18 +184,18 @@ if ($EE_view_disable !== TRUE)
 					if (isset($this->cp->installed_modules['comment'])) 
 					{
 						$preference = lang('comment_notify', 'comment_notify');
-						$controls = lang('yes', 'comment_notify_y').NBS.form_radio(array('name'=>'comment_notify', 'id'=>'comment_notify_y', 'value'=>'y', 'checked'=>($comment_notify == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-						$controls .= lang('no', 'comment_notify_n').NBS.form_radio(array('name'=>'comment_notify', 'id'=>'comment_notify_n', 'value'=>'n', 'checked'=>($comment_notify == 'n') ? TRUE : FALSE));
-						$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
-
+						$controls = form_radio(array('name'=>'comment_notify', 'id'=>'comment_notify_y', 'value'=>'y', 'checked'=>($comment_notify == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_notify_y').NBS.NBS.NBS.NBS.NBS;
+						$controls .= form_radio(array('name'=>'comment_notify', 'id'=>'comment_notify_n', 'value'=>'n', 'checked'=>($comment_notify == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_notify_n');
+						$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+					
 						$preference = lang('comment_notify_emails', 'comment_notify_emails');
 						$controls = form_input(array('id'=>'comment_notify_emails','name'=>'comment_notify_emails','class'=>'fullfield', 'value'=>$comment_notify_emails));
-						$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
-
-						$preference = lang('comment_notify_authors', 'comment_notify_authors');
-						$controls = lang('yes', 'comment_notify_authors_y').NBS.form_radio(array('name'=>'comment_notify_authors', 'id'=>'comment_notify_authors_y', 'value'=>'y', 'checked'=>($comment_notify_authors == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-						$controls .= lang('no', 'comment_notify_authors_n').NBS.form_radio(array('name'=>'comment_notify_authors', 'id'=>'comment_notify_authors_n', 'value'=>'n', 'checked'=>($comment_notify_authors == 'n') ? TRUE : FALSE));
 						$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+						
+						$preference = lang('comment_notify_authors', 'comment_notify_authors');
+						$controls = form_radio(array('name'=>'comment_notify_authors', 'id'=>'comment_notify_authors_y', 'value'=>'y', 'checked'=>($comment_notify_authors == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_notify_authors_y').NBS.NBS.NBS.NBS.NBS;
+						$controls .= form_radio(array('name'=>'comment_notify_authors', 'id'=>'comment_notify_authors_n', 'value'=>'n', 'checked'=>($comment_notify_authors == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_notify_authors_n');
+						$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));						
 					}
 					
 					echo $this->table->generate();
@@ -212,61 +212,61 @@ if ($EE_view_disable !== TRUE)
 					$this->table->set_heading(lang('preference'), lang('setting'));
 
 					$preference = lang('comment_system_enabled', 'comment_system_enabled');
-					$controls = lang('yes', 'comment_system_enabled_y').NBS.form_radio(array('name'=>'comment_system_enabled', 'id'=>'comment_system_enabled_y', 'value'=>'y', 'checked'=>($comment_system_enabled == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('no', 'comment_system_enabled_n').NBS.form_radio(array('name'=>'comment_system_enabled', 'id'=>'comment_system_enabled_n', 'value'=>'n', 'checked'=>($comment_system_enabled == 'n') ? TRUE : FALSE));
+					$controls = form_radio(array('name'=>'comment_system_enabled', 'id'=>'comment_system_enabled_y', 'value'=>'y', 'checked'=>($comment_system_enabled == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_system_enabled_y').NBS.NBS.NBS.NBS.NBS;
+					$controls .= form_radio(array('name'=>'comment_system_enabled', 'id'=>'comment_system_enabled_n', 'value'=>'n', 'checked'=>($comment_system_enabled == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_system_enabled_n');
 					$controls .= '<br/>'.form_checkbox(array('name'=>'apply_comment_enabled_to_existing', 'id'=>'apply_comment_enabled_to_existing', 'value'=>'y', 'checked'=>FALSE)).NBS.'<span class="notice">'.lang('update_existing_comments_mod', 'apply_comment_enabled_to_existing').'</span>';					
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('comment_require_membership', 'comment_require_membership');
-					$controls = lang('yes', 'comment_require_membership_y').NBS.form_radio(array('name'=>'comment_require_membership', 'id'=>'comment_require_membership_y', 'value'=>'y', 'checked'=>($comment_require_membership == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('no', 'comment_require_membership_n').NBS.form_radio(array('name'=>'comment_require_membership', 'id'=>'comment_require_membership_n', 'value'=>'n', 'checked'=>($comment_require_membership == 'n') ? TRUE : FALSE));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_radio(array('name'=>'comment_require_membership', 'id'=>'comment_require_membership_y', 'value'=>'y', 'checked'=>($comment_require_membership == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_require_membership_y').NBS.NBS.NBS.NBS.NBS;
+					$controls .= form_radio(array('name'=>'comment_require_membership', 'id'=>'comment_require_membership_n', 'value'=>'n', 'checked'=>($comment_require_membership == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_require_membership_n');
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('comment_use_captcha', 'comment_use_captcha').'<br />'.lang('captcha_explanation');
-					$controls = lang('yes', 'comment_use_captcha_y').NBS.form_radio(array('name'=>'comment_use_captcha', 'id'=>'comment_use_captcha_y', 'value'=>'y', 'checked'=>($comment_use_captcha == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('no', 'comment_use_captcha_n').NBS.form_radio(array('name'=>'comment_use_captcha', 'id'=>'comment_use_captcha_n', 'value'=>'n', 'checked'=>($comment_use_captcha == 'n') ? TRUE : FALSE));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_radio(array('name'=>'comment_use_captcha', 'id'=>'comment_use_captcha_y', 'value'=>'y', 'checked'=>($comment_use_captcha == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_use_captcha_y').NBS.NBS.NBS.NBS.NBS;
+					$controls .= form_radio(array('name'=>'comment_use_captcha', 'id'=>'comment_use_captcha_n', 'value'=>'n', 'checked'=>($comment_use_captcha == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_use_captcha_n');
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('comment_require_email', 'comment_require_email');
-					$controls = lang('yes', 'comment_require_email_y').NBS.form_radio(array('name'=>'comment_require_email', 'id'=>'comment_require_email_y', 'value'=>'y', 'checked'=>($comment_require_email == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('no', 'comment_require_email_n').NBS.form_radio(array('name'=>'comment_require_email', 'id'=>'comment_require_email_n', 'value'=>'n', 'checked'=>($comment_require_email == 'n') ? TRUE : FALSE));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_radio(array('name'=>'comment_require_email', 'id'=>'comment_require_email_y', 'value'=>'y', 'checked'=>($comment_require_email == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_require_email_y').NBS.NBS.NBS.NBS.NBS;
+					$controls .= form_radio(array('name'=>'comment_require_email', 'id'=>'comment_require_email_n', 'value'=>'n', 'checked'=>($comment_require_email == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_require_email_n');
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('comment_moderate', 'comment_moderate').'<br />'.lang('comment_moderate_exp');
-					$controls = lang('yes', 'comment_moderate_y').NBS.form_radio(array('name'=>'comment_moderate', 'id'=>'comment_moderate_y', 'value'=>'y', 'checked'=>($comment_moderate == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('no', 'comment_moderate_n').NBS.form_radio(array('name'=>'comment_moderate', 'id'=>'comment_moderate_n', 'value'=>'n', 'checked'=>($comment_moderate == 'n') ? TRUE : FALSE));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_radio(array('name'=>'comment_moderate', 'id'=>'comment_moderate_y', 'value'=>'y', 'checked'=>($comment_moderate == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_moderate_y').NBS.NBS.NBS.NBS.NBS;
+					$controls .= form_radio(array('name'=>'comment_moderate', 'id'=>'comment_moderate_n', 'value'=>'n', 'checked'=>($comment_moderate == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_moderate_n');
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('comment_max_chars', 'comment_max_chars');
-					$controls = form_input(array('id'=>'comment_max_chars','name'=>'comment_max_chars','style'=>'width:100px', 'value'=>$comment_max_chars));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_input(array('id'=>'comment_max_chars','name'=>'comment_max_chars','class'=>'fullfield', 'value'=>$comment_max_chars));
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('comment_timelock', 'comment_timelock').'<br />'.lang('comment_timelock_desc');
-					$controls = form_input(array('id'=>'comment_timelock','name'=>'comment_timelock','style'=>'width:100px', 'value'=>$comment_timelock));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_input(array('id'=>'comment_timelock','name'=>'comment_timelock','class'=>'fullfield', 'value'=>$comment_timelock));
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('comment_expiration', 'comment_expiration').'<br />'.lang('comment_expiration_desc');
-					$controls = form_input(array('id'=>'comment_expiration','name'=>'comment_expiration','style'=>'width:100px', 'value'=>$comment_expiration));
-					$controls .= '<br/><br/>'.form_checkbox(array('name'=>'apply_expiration_to_existing', 'id'=>'apply_expiration_to_existing', 'value'=>'y', 'checked'=>FALSE)).NBS.'<span class="notice">'.lang('update_existing_comments', 'apply_expiration_to_existing').'</span>';
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_input(array('id'=>'comment_expiration','name'=>'comment_expiration','class'=>'fullfield', 'value'=>$comment_expiration));
+					$controls .= '<br/>'.form_checkbox(array('name'=>'apply_expiration_to_existing', 'id'=>'apply_expiration_to_existing', 'value'=>'y', 'checked'=>FALSE)).NBS.'<span class="notice">'.lang('update_existing_comments', 'apply_expiration_to_existing').'</span>';
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('comment_text_formatting', 'comment_text_formatting');
 					$controls = form_dropdown('comment_text_formatting', $comment_text_formatting_options, $comment_text_formatting, 'id="comment_text_formatting"');
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('comment_html_formatting', 'comment_html_formatting');
 					$controls = form_dropdown('comment_html_formatting', $comment_html_formatting_options, $comment_html_formatting, 'id="comment_html_formatting"');
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('comment_allow_img_urls', 'comment_allow_img_urls');
-					$controls = lang('yes', 'comment_allow_img_urls_y').NBS.form_radio(array('name'=>'comment_allow_img_urls', 'id'=>'comment_allow_img_urls_y', 'value'=>'y', 'checked'=>($comment_allow_img_urls == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('no', 'comment_allow_img_urls_n').NBS.form_radio(array('name'=>'comment_allow_img_urls', 'id'=>'comment_allow_img_urls_n', 'value'=>'n', 'checked'=>($comment_allow_img_urls == 'n') ? TRUE : FALSE));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_radio(array('name'=>'comment_allow_img_urls', 'id'=>'comment_allow_img_urls_y', 'value'=>'y', 'checked'=>($comment_allow_img_urls == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_allow_img_urls_y').NBS.NBS.NBS.NBS.NBS;
+					$controls .= form_radio(array('name'=>'comment_allow_img_urls', 'id'=>'comment_allow_img_urls_n', 'value'=>'n', 'checked'=>($comment_allow_img_urls == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_allow_img_urls_n');
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('auto_link_urls', 'comment_auto_link_urls');
-					$controls = lang('yes', 'comment_auto_link_urls_y').NBS.form_radio(array('name'=>'comment_auto_link_urls', 'id'=>'comment_auto_link_urls_y', 'value'=>'y', 'checked'=>($comment_auto_link_urls == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('no', 'comment_auto_link_urls_n').NBS.form_radio(array('name'=>'comment_auto_link_urls', 'id'=>'comment_auto_link_urls_n', 'value'=>'n', 'checked'=>($comment_auto_link_urls == 'n') ? TRUE : FALSE));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_radio(array('name'=>'comment_auto_link_urls', 'id'=>'comment_auto_link_urls_y', 'value'=>'y', 'checked'=>($comment_auto_link_urls == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_auto_link_urls_y').NBS.NBS.NBS.NBS.NBS;
+					$controls .= form_radio(array('name'=>'comment_auto_link_urls', 'id'=>'comment_auto_link_urls_n', 'value'=>'n', 'checked'=>($comment_auto_link_urls == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_auto_link_urls_n');
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					echo $this->table->generate();
 					$this->table->clear(); // Clear out for the next one
@@ -282,8 +282,8 @@ if ($EE_view_disable !== TRUE)
 					$this->table->set_heading(lang('preference'), lang('setting'));
 
 					$preference = lang('show_button_cluster', 'show_button_cluster');
-					$controls = lang('yes', 'show_button_cluster_y').NBS.form_radio(array('name'=>'show_button_cluster', 'id'=>'show_button_cluster_y', 'value'=>'y', 'checked'=>($show_button_cluster == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('no', 'show_button_cluster_n').NBS.form_radio(array('name'=>'show_button_cluster', 'id'=>'show_button_cluster_n', 'value'=>'n', 'checked'=>($show_button_cluster == 'n') ? TRUE : FALSE));
+					$controls = form_radio(array('name'=>'show_button_cluster', 'id'=>'show_button_cluster_y', 'value'=>'y', 'checked'=>($show_button_cluster == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'show_button_cluster_y').NBS.NBS.NBS.NBS.NBS;
+					$controls .= form_radio(array('name'=>'show_button_cluster', 'id'=>'show_button_cluster_n', 'value'=>'n', 'checked'=>($show_button_cluster == 'n') ? TRUE : FALSE)).NBS.lang('no', 'show_button_cluster_n');
 					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('default_entry_title', 'default_entry_title');
