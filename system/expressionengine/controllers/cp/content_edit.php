@@ -325,19 +325,6 @@ class Content_edit extends Controller {
 			}
 		}
 
-		// Authors list
-		$vars['author_selected'] = $this->input->get_post('author_id');
-		
-		$filter_data['author_id'] = $this->input->get_post('author_id');
-
-		$query = $this->member_model->get_authors();
-		$vars['author_select_options'][''] = $this->lang->line('filter_by_author');
-
-		foreach ($query->result_array() as $row)
-		{
-			$vars['author_select_options'][$row['member_id']] = ($row['screen_name'] == '') ? $row['username'] : $row['screen_name'];
-		}
-
 		// Status pull-down menu
 		$vars['status_selected'] = $filter_data['status'];
 
