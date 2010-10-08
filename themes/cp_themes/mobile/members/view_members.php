@@ -70,7 +70,7 @@ if ($EE_view_disable !== TRUE)
 										$this->localize->convert_timestamp('%m', $member->join_date).'-'.
 										$this->localize->convert_timestamp('%d', $member->join_date),
 										($member->last_visit == 0) ? ' - ' : $this->localize->set_human_time($member->last_visit),
-										array('class' => 'group_'.$member->group_id, 'data' => $member->group_title),
+									array('class' => 'group_'.$member->group_id, 'data' => $member_groups_dropdown[$member->group_id]),
 										'<input class="toggle" type="checkbox" name="toggle[]" value="'.$member->member_id.'" />'
 									);					
 			}		

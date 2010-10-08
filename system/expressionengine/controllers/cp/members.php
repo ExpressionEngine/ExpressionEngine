@@ -121,7 +121,6 @@ class Members extends Controller {
 		
 		$group_id = ($this->input->get_post('group_id')) ? $this->input->get_post('group_id') : '';
 		$order	  = $this->input->get_post('order');		
-		$per_page = $this->input->get_post('per_page');
 
 		$vars['column_filter_options'] = array(
 			'all'				=> $this->lang->line('all'),
@@ -134,6 +133,7 @@ class Members extends Controller {
 
 		// Repopulate Search Box ?
 		$member_name = $this->input->get_post('member_name') ? $this->input->get_post('member_name') : '';	
+		$per_page = ($this->input->get('per_page') != '') ? $this->input->get('per_page') : '0';
 
 		// remember previously selected values
 		$vars['selected_group'] = $group_id;
@@ -336,7 +336,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			"bAutoWidth": false,
 			"iDisplayLength": '.$this->perpage.',  
 
-		"aoColumns": [null, null, null, null, null, null, { "bSortable" : false } ],
+		"aoColumns": [null, null, null, null, null, { "bSortable" : false }, { "bSortable" : false } ],
 			
 			
 		"oLanguage": {
@@ -395,7 +395,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->output->enable_profiler(FALSE);
 		
-		$col_map = array('username', 'screen_name', 'email', 'join_date', 'last_visit', 'group_title');
+		$col_map = array('username', 'screen_name', 'email', 'join_date', 'last_visit');
 		
 		$search_value = ($this->input->get_post('k_search')) ? $this->input->get_post('k_search') : '';
 		$group_id = ($this->input->get_post('group')) ? $this->input->get_post('group') : '';		
@@ -409,10 +409,14 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		/* Ordering */
 		$order = array();
 		
-		if ($this->input->get('iSortCol_0'))
+		if ($this->input->get('iSortCol_0') !== FALSE)
 		{
+			var_dump($this->input->get('iSortCol_0')); exit;
+			
 			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
 			{
+				var_dump($col_map[$this->input->get('iSortCol_'.$i)]);
+				
 				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
 				{
 					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
@@ -430,7 +434,17 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$j_response['sEcho'] = $sEcho;
 		$j_response['iTotalRecords'] = $total;
 		$j_response['iTotalDisplayRecords'] = $f_total;
+		
+		// Get the group titles- we need this in the display
 
+		$member_groups = $this->member_model->get_member_groups();
+		$groups = array();
+		
+		foreach($member_groups->result() as $group)
+		{
+			$groups[$group->group_id] = $group->group_title;
+		}
+		
 		$tdata = array();
 		$i = 0;
 
@@ -446,7 +460,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 										$this->localize->convert_timestamp('%m', $member['join_date']).'-'.
 										$this->localize->convert_timestamp('%d', $member['join_date']);
 				$m[] = ($member['last_visit'] == 0) ? ' - ' : $this->localize->set_human_time($member['last_visit']);
-				$m[] = $member['group_title'];		
+				$m[] = $groups[$member['group_id']];		
 				$m[] = '<input class="toggle" type="checkbox" name="toggle[]" value="'.$member['member_id'].'" />';
 
 				$tdata[$i] = $m;

@@ -2063,6 +2063,15 @@ class Content_publish extends Controller {
 
 		// get all members
 		$member_list = $this->member_model->get_members('', 20, $this->input->get_post('offset'));
+		
+		// Get the group titles- we need this in the display
+		$member_groups = $this->member_model->get_member_groups();
+		$groups = array();
+		
+		foreach($member_groups->result() as $group)
+		{
+			$groups[$group->group_id] = $group->group_title;
+		}		
 
 		$this->load->library('pagination');
 		$pconfig['base_url'] = BASE.AMP.'C=content_publish'.AMP.'M=build_author_table'.AMP.'is_ajax=y';
@@ -2104,7 +2113,7 @@ class Content_publish extends Controller {
 					$this->table->add_row(
 								array('class' => 'username', 'data' => '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $member->member_id .'">'.$member->username.'</a>'),
 								array('class' => 'screen_name', 'data' => $member->screen_name),
-								array('class' => 'group_'.$member->group_id, 'data' => $member->group_title),
+								array('class' => 'group_'.$member->group_id, 'data' => $groups[$member->group_id]),
 								'<img onclick="add_authors_sidebar(this);" class="add_author_modal" id="modal_author_id_'.$member->member_id.'" width="177" height="23" src="'.$this->cp->cp_theme_url.'images/content_add_author_button.png" alt="'.$this->lang->line('add_author').'" /> '
 								);
 

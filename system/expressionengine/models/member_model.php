@@ -106,35 +106,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_members($group_id = '', $limit = '', $offset = '', $search_value = '', $order = array(), $column = 'all')
 	{
-
-		/**
-		 * running a query first, do get the ids we need, as member_id is indexed, this makes a difference
-		 * on very large member lists
-		 */
-		$member_ids = array();
-
-		if ($group_id != '')
-		{
-			$this->db->select('member_id');
-			$this->db->where('group_id', $group_id);
-			$query = $this->db->get('members');
-
-			foreach($query->result() as $member)
-			{
-				$member_ids[] = $member->member_id;
-			}
-
-			// no member_ids in that group?	 Might as well return now
-			if (count($member_ids) < 1)
-			{
-				return FALSE;
-			}
-		}
-
-		// now run the query for the actual results
 		if ($group_id !== '')
 		{
-			$this->db->where_in("members.member_id", $member_ids);
+			$this->db->where("members.group_id", $group_id);
 		}
 
 		if ($limit != '')
@@ -151,9 +125,6 @@ class Member_model extends CI_Model {
 		{
 			if ($column == 'all')
 			{
-				//$this->db->or_like('members.screen_name', $search_value);
-				//$this->db->or_like('members.username', $search_value);
-				//$this->db->or_like('members.email', $search_value);	
 				$this->db->where("(`exp_members`.`screen_name` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`username` LIKE '%".$this->db->escape_like_str($search_value)."%' OR `exp_members`.`email` LIKE '%".$this->db->escape_like_str($search_value)."%')", NULL, TRUE);		
 			}
 			else
@@ -174,11 +145,9 @@ class Member_model extends CI_Model {
 			$this->db->order_by('join_date');
 		}
 
-		$this->db->distinct();
-		$this->db->select("members.username, members.member_id, members.screen_name, members.email, members.join_date, members.last_visit, member_groups.group_title, member_groups.group_id, members.member_id, members.in_authorlist");
+		$this->db->select("members.username, members.member_id, members.screen_name, members.email, members.join_date, members.last_visit, members.group_id, members.member_id, members.in_authorlist");
 		$this->db->from("members");
-		$this->db->join('member_groups', 'member_groups.group_id = members.group_id', 'left');
-		$this->db->where("member_groups.site_id", $this->config->item('site_id'));
+
 
 		$members = $this->db->get();
 
