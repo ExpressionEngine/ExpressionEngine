@@ -2288,7 +2288,7 @@ class Content_publish extends Controller {
 		$vars['menu_author_options'][$author_id] = $author;
 
 		// Next we'll gather all the authors that are allowed to be in this list
-		$vars['author_list'] = $this->member_model->get_authors();
+		$vars['author_list'] = $this->member_model->get_authors_simple();
 
 		// We'll confirm that the user is assigned to a member group that allows posting in this channel
 		if ($vars['author_list']->num_rows() > 0)

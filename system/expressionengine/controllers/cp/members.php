@@ -411,12 +411,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 		if ($this->input->get('iSortCol_0') !== FALSE)
 		{
-			var_dump($this->input->get('iSortCol_0')); exit;
-			
 			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
 			{
-				var_dump($col_map[$this->input->get('iSortCol_'.$i)]);
-				
 				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
 				{
 					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
