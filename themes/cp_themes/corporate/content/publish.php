@@ -71,26 +71,6 @@ if ($EE_view_disable !== TRUE)
 				</div>
 
 				<?php
-					// Can the current user assign the entry to a different author?
-					if ($this->cp->allowed_group('can_assign_post_authors')):
-					?>
-						<h3><a href="#"><?=lang('authors')?></a></h3>
-						<div>
-						<ul id="author_list_sidebar">
-						<?php foreach ($author_list->result() as $author):?>
-							<li>
-								<a href="<?=BASE.AMP.'C=myaccount'.AMP.'id='.$author->member_id?>"><?=$author->screen_name?></a>
-								<?php if ($author->in_authorlist == 'y' && $author->include_in_authorlist == 'n'):?>
-								<a href="#" class="delete" id="mid<?=$author->member_id?>"><img src="<?=$cp_theme_url?>images/content_custom_tab_delete.png" alt="<?=lang('delete')?>" width="19" height="18" /></a>
-								<?php endif;?>
-							</li>
-						<?php endforeach;?>
-						</ul>
-						<p class="custom_field_add"><a href="#" class="add_author_link submit_alt"><?=lang('add_author')?></a></p>
-						</div>
-
-				<?php endif;?>
-				<?php
 				// is the user admin? This feature can only be used by admins
 				if ($this->session->userdata('group_id') == 1):
 				?>
@@ -302,12 +282,6 @@ if ($EE_view_disable !== TRUE)
 				<label><?=lang('tab_name')?></label> 
 				<input id="tab_name" type="text" value="" name="tab_name"/>
 			</p>
-		</form>
-	</div>
-
-	<div id="add_author_dialog" title="<?=lang('add_author')?>" style="display: none;">
-		<form id="add_authors_dialog_form" action="#">
-			<div><img src="<?=PATH_CP_GBL_IMG?>indicator.gif" alt="" /></div>
 		</form>
 	</div>
 	<?php endif;?>

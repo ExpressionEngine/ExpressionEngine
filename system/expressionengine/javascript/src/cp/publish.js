@@ -529,40 +529,6 @@ function disable_fields(state) {
 	}
 }
 
-function removeAuthor(e) {
-	$.get(EE.BASE + "&C=content_publish&M=remove_author", { mid: e.attr("id")});
-	e.parent().fadeOut();
-}
-
-function updateAuthorTable() {
-	$.ajax({
-		type: "POST",
-		url: EE.BASE + "&C=content_publish&M=build_author_table",
-		data: "XID=" + EE.XID + "&is_ajax=true",
-		success: function(e){
-			$("#authorsForm").html(e);
-		}
-	});
-
-	$(".add_author_modal").bind("click", function(e){
-		add_authors_sidebar(this);
-	});
-}
-
-function add_authors_sidebar(e) {
-	var author_id = $(e).attr("id").substring(16);
-
-	$.ajax({
-		type: "POST",
-		url: EE.BASE + "&C=content_publish&M=build_author_sidebar",
-		data: "XID=" + EE.XID + "&author_id="+author_id,
-		success: function(e){
-			$("#author_list_sidebar").append(e).fadeIn();
-			updateAuthorTable();
-		}
-	});
-}
-
 function liveUrlTitle()
 {
 	var defaultTitle = EE.publish.default_entry_title,
@@ -626,33 +592,6 @@ $(document).ready(function() {
 
 	$("#layout_group_remove").click(function(){
 		EE.publish.remove_layout();
-		return false;
-	});
-
-	$(".add_author_link").click(function(){
-		$("#add_author_dialog").dialog("open");
-		return false;
-	});
-
-	function removeAuthor(el) {
-		$.get(EE.BASE+"&C=content_publish&M=remove_author", { mid: el.attr("id")});
-		
-		el.parent().fadeOut();
-		
-		// rebuild author table
-		$.ajax({
-			type: "POST",
-			url: EE.BASE+"&C=content_publish&M=build_author_table",
-			data: "is_ajax=true"+$("#publishForm").serialize(),
-			success: function(result){
-				$("#authorsForm").html(result);
-				updateAuthorTable();
-			}
-		});
-	}
-
-	$("#author_list_sidebar .delete").click(function(){
-		removeAuthor($(this));
 		return false;
 	});
 

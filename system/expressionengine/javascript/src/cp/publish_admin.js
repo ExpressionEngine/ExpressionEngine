@@ -64,17 +64,6 @@ $("a", "#showToolbarLink").one("click", function() {
 	});
 
 
-	$("#add_author_dialog").dialog({
-		autoOpen: false,
-		resizable: false,
-		modal: true,
-		position: "center",
-		height: 400,
-		width: 700,
-		buttons: addAuthorButtons
-	});
-	
-	
 	$(".add_tab_link").click(function(){
 		$("#tab_name").val("");
 		$("#add_tab label").text(EE.lang.tab_name+": ");
@@ -86,25 +75,6 @@ $("a", "#showToolbarLink").one("click", function() {
 	});
 });
 
-$('.add_author_link').click(function() {
-	$.get(EE.BASE+'&C=content_publish&M=build_author_table&channel_id='+EE.publish.channel_id+'&is_ajax=y', function(data) {
-		$('#add_authors_dialog_form div').html(data);
-		$('#add_author_dialog').find('#add_author_pagination').appendTo('.ui-dialog-buttonpane');
-		
-		$('#add_author_pagination a').live('click', function() {
-			
-			$('.ui-dialog-buttonpane #add_author_pagination').remove();
-			
-			$.get(this.href, function(data) {
-				$('#add_authors_dialog_form div').html(data);
-				$('#add_author_dialog').find('#add_author_pagination').appendTo('.ui-dialog-buttonpane');
-			});
-
-		});
-		return false;
-	});
-
-});
 
 $("#tab_menu_tabs").sortable({
 	tolerance: "intersect",
