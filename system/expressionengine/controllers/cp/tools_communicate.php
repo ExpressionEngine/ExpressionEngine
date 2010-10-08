@@ -1240,7 +1240,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		/* Ordering */
 		$order = array();
 		
-		if ($this->input->get('iSortCol_0'))
+		if ($this->input->get('iSortCol_0') !== FALSE)
 		{
 			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
 			{

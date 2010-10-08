@@ -668,7 +668,7 @@ class Simple_commerce_mcp {
 		/* Ordering */
 		$order_by = 'item_id desc';
 
-		if ($this->EE->input->get('iSortCol_0'))
+		if ($this->EE->input->get('iSortCol_0') !== FALSE)
 		{
 			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
 			{
@@ -1122,7 +1122,7 @@ class Simple_commerce_mcp {
 		/* Ordering */
 		$order = array();
 		
-		if ($this->EE->input->get('iSortCol_0'))
+		if ($this->EE->input->get('iSortCol_0') !== FALSE)
 		{
 			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
 			{
@@ -1697,7 +1697,7 @@ class Simple_commerce_mcp {
 		/* Ordering */
 		$order = array();
 		
-		if ($this->EE->input->get('iSortCol_0'))
+		if ($this->EE->input->get('iSortCol_0') !== FALSE)
 		{
 			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
 			{

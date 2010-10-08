@@ -566,7 +566,7 @@ EOF;
 		/* Ordering */
 		$order = array();
 		
-		if ($this->EE->input->get('iSortCol_0'))
+		if ($this->EE->input->get('iSortCol_0') !== FALSE)
 		{
 			for ( $i=0; $i < $this->EE->input->get('iSortingCols'); $i++ )
 			{
