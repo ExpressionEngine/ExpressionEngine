@@ -1187,16 +1187,16 @@ class Search {
 		{ 											
 			$this->EE->load->library('pagination');
 
-			$config['base_url']		= $this->EE->functions->create_url($res_page.'/'.$search_id, 0, 0);
-			$config['prefix']		= 'P';
-			$config['total_rows'] 	= $query->row('count') ;
-			$config['per_page']		= $per_page;
-			$config['cur_page']		= $cur_page;	
-			$config['first_link'] 	= $this->EE->lang->line('pag_first_link');
-			$config['last_link'] 	= $this->EE->lang->line('pag_last_link');
-
-			// Allows $config['cur_page'] to override
-			$config['uri_segment'] = 0;
+			$config = array(
+					'base_url' 		=> $this->EE->functions->create_url($res_page.'/'.$search_id, 0, 0),
+					'prefix'		=> 'P',
+					'total_rows'	=> $query->row('count'),
+					'per_page'		=> $per_page,
+					'cur_page'		=> $cur_page,
+					'first_link'	=> $this->EE->lang->line('pag_first_link'),
+					'last_link'		=> $this->EE->lang->line('pag_last_link'),
+					'uri_segment'	=> 0 // Allows $config['cur_page'] to override
+				);
 
 			$this->EE->pagination->initialize($config);
 			$pager = $this->EE->pagination->create_links();			
@@ -1404,7 +1404,7 @@ class Search {
 
 		$this->EE->TMPL->template = str_replace(LD.'paginate'.RD, $pager, $this->EE->TMPL->template);
 		$this->EE->TMPL->template = str_replace(LD.'page_count'.RD, $page_count, $this->EE->TMPL->template);
-
+		
 		return stripslashes($this->EE->TMPL->tagdata);
 	}
 
