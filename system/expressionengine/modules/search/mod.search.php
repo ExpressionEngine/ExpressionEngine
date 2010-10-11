@@ -1084,16 +1084,10 @@ class Search {
 	
 	function search_results()
 	{
-		/** ----------------------------------------
-		/**  Fetch the search language file
-		/** ----------------------------------------*/
-		
+		// Fetch the search language file
 		$this->EE->lang->loadfile('search');
 		
-		/** ----------------------------------------
-		/**  Check search ID number
-		/** ----------------------------------------*/
-		
+		// Check search ID number
 		// If the QSTR variable is less than 32 characters long we
 		// don't have a valid search ID number
 		
@@ -1102,17 +1096,12 @@ class Search {
 			return $this->EE->output->show_user_error('off', array($this->EE->lang->line('search_no_result')), $this->EE->lang->line('search_result_heading'));		
 		}		
 				
-		/** ----------------------------------------
-		/**  Clear old search results
-		/** ----------------------------------------*/
+		// Clear old search results
 		$expire = time() - ($this->cache_expire * 3600);
 		
 		$this->EE->db->query("DELETE FROM exp_search WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND search_date < '$expire'");
 		
-		/** ----------------------------------------
-		/**  Fetch ID number and page number
-		/** ----------------------------------------*/
-		
+		// Fetch ID number and page number
 		$cur_page = 0;
 		$qstring = $this->EE->uri->query_string;
 
@@ -1131,28 +1120,22 @@ class Search {
 		$search_id = trim($search_id); 
 		$search_id = preg_replace("#/.+#", "", $search_id);			
 		
-		/** ----------------------------------------
-		/**  Fetch the cached search query
-		/** ----------------------------------------*/
-					
-		$query = $this->EE->db->query("SELECT * FROM exp_search WHERE search_id = '".$this->EE->db->escape_str($search_id)."'");
+		// Fetch the cached search query
+		$query = $this->EE->db->get_where('search', array('search_id' => $search_id));
 		
 		if ($query->num_rows() == 0 OR $query->row('total_results')  == 0)
 		{
 			return $this->EE->output->show_user_error('off', array($this->EE->lang->line('search_no_result')), $this->EE->lang->line('search_result_heading'));		
 		}
 		
-		$fields = ($query->row('custom_fields')  == '') ? array() : unserialize(stripslashes($query->row('custom_fields') ));
-		$sql 	= unserialize(stripslashes($query->row('query') ));
+		$fields = ($query->row('custom_fields') == '') ? array() : unserialize(stripslashes($query->row('custom_fields') ));
+		$sql 	= unserialize(stripslashes($query->row('query')));
 		$sql	= str_replace('MDBMPREFIX', 'exp_', $sql);
 		
-		$per_page = $query->row('per_page') ;
-		$res_page = $query->row('result_page') ;
+		$per_page = $query->row('per_page');
+		$res_page = $query->row('result_page');
 		
-		/** ----------------------------------------
-		/**  Run the search query
-		/** ----------------------------------------*/
-				
+		// Run the search query
 		$query = $this->EE->db->query(preg_replace("/SELECT(.*?)\s+FROM\s+/is", 'SELECT COUNT(*) AS count FROM ', $sql));
 		
 		if ($query->row('count')  == 0)
@@ -1160,10 +1143,7 @@ class Search {
 			return $this->EE->output->show_user_error('off', array($this->EE->lang->line('search_no_result')), $this->EE->lang->line('search_result_heading'));		
 		}
 		
-		/** ----------------------------------------
-		/**  Calculate total number of pages
-		/** ----------------------------------------*/
-			
+		// Calculate total number of pages
 		$current_page =  ($cur_page / $per_page) + 1;
 			
 		$total_pages = intval($query->row('count')  / $per_page);
@@ -1175,12 +1155,8 @@ class Search {
 		
 		$page_count = $this->EE->lang->line('page').' '.$current_page.' '.$this->EE->lang->line('of').' '.$total_pages;
 		
-		/** -----------------------------
-		/**  Do we need pagination?
-		/** -----------------------------*/
-		
-		// If so, we'll add the LIMIT clause to the SQL statement and run the query again
-				
+		//  Do we need pagination?
+		// If so, we'll add the LIMIT clause to the SQL statement and run the query again				
 		$pager = ''; 		
 		
 		if ($query->row('count')  > $per_page)
@@ -1227,10 +1203,10 @@ class Search {
 			}
 		}
 
-			$channel = new Channel;		
+		$channel = new Channel;		
 
 		// This allows the channel {absolute_count} variable to work
-			$channel->p_page = ($per_page * $current_page) - $per_page;
+		$channel->p_page = ($per_page * $current_page) - $per_page;
 
 		$channel->fetch_custom_channel_fields();
 		$channel->fetch_custom_member_fields();
@@ -1252,7 +1228,6 @@ class Search {
 		$tagdata = $this->EE->TMPL->tagdata;
 
 		// Does the tag contain "related entries" that we need to parse out?
-
 		if (count($this->EE->TMPL->related_data) > 0 AND count($channel->related_entries) > 0)
 		{
 			$channel->parse_related_entries();
@@ -1267,12 +1242,8 @@ class Search {
 		
 		$this->EE->TMPL->tagdata = $tagdata;
 		
-		/** -----------------------------
-		/**  Fetch member path variable
-		/** -----------------------------*/
-		
-		// We do it here in case it's used in multiple places.
-		
+		// Fetch member path variable
+		// We do it here in case it's used in multiple places.		
 		$m_paths = array();
 		
 		if (preg_match_all("/".LD."member_path(\s*=.*?)".RD."/s", $this->EE->TMPL->tagdata, $matches))
@@ -1283,10 +1254,7 @@ class Search {
 			}
 		}
 		
-		/** -----------------------------
-		/**  Fetch switch param
-		/** -----------------------------*/
-		
+		// Fetch switch param
 		$switch1 = '';
 		$switch2 = '';
 		
