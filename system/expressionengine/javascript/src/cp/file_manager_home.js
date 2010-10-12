@@ -133,25 +133,6 @@ $(document).ready(function () {
 	}
 
 	function setup_events() {
-		$("td.overlay a").unbind("click").
-			overlay({
-				mask: {
-					color: '#ebecff',
-					loadSpeed: 200,
-					opacity: 1.0
-				},
-				closeOnClick: true,
-				onBeforeLoad: function () { 
-					var wrap = this.getOverlay().find('.contentWrap');
-					$('.contentWrap img').remove();
-					$('<img />', {'src': this.getTrigger().attr('href')}).appendTo(wrap);
-				}
-			}).
-			click(function () {	
-				show_file_info($(this).parent().attr("id"));
-			}
-		);
-
 		// Set the row as "selected"
 		$(".toggle").unbind("click").click(function (e) {
 			$(this).parent().parent().toggleClass("selected");
@@ -169,6 +150,26 @@ $(document).ready(function () {
 				}
 			}
 		});
+	}
+
+	function show_image() {
+		// Destroy any existing overlay
+		$('#overlay').hide().removeData('overlay');
+		$('#overlay .contentWrap img').remove();
+		
+		// Launch overlay once image finishes loading
+		$('<img />').appendTo('#overlay .contentWrap').load(function() {		
+			$('#overlay').overlay({
+				load: true,
+				speed: 100
+			});
+		})
+		.attr('src', $(this).attr('href')); // start loading
+
+		show_file_info($(this).parent().attr("id"));
+
+		// Prevent default click event
+		return false;
 	}
 
 	$("input[type=file]").ee_upload({
@@ -262,6 +263,12 @@ $(document).ready(function () {
 	});
 
 
-	setup_events();	
+	setup_events();
+	
+	// Set up image viewer (overlay)
+	$('a.overlay').live('click', show_image);
+	$('#overlay').css('cursor', 'pointer').click(function() {
+		$(this).fadeOut(100);
+	});
 	
 });
