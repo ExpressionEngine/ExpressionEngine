@@ -158,10 +158,38 @@ $(document).ready(function () {
 		$('#overlay .contentWrap img').remove();
 		
 		// Launch overlay once image finishes loading
-		$('<img />').appendTo('#overlay .contentWrap').load(function() {		
+		$('<img />').appendTo('#overlay .contentWrap').load(function() {
+			
+			// We need to scale very large images down just a bit. To do that we
+			// need a reference element that we can set to visible very briefly
+			// or we won't get a proper width / height
+			var ref = $(this).clone().appendTo(document.body).show(),
+			
+				w = ref.width(),
+				h = ref.height(),
+				
+				max_w = $(window).width() * 0.8,			// 10% margin
+				max_h = $(window).height() * 0.8,
+				
+				rat_w = max_w / w,							// ratios
+				rat_h = max_h / h,
+				
+				ratio = (rat_w > rat_h) ? rat_h : rat_w;	// use the smaller
+			
+			ref.remove();
+			
+			// We only scale down - up would be silly
+			if (ratio < 1) {
+				h = h * ratio;
+				w = w * ratio;
+				
+				$(this).height(h).width(w);
+			}
+								
 			$('#overlay').overlay({
 				load: true,
-				speed: 100
+				speed: 100,
+				top: 'center'
 			});
 		})
 		.attr('src', $(this).attr('href')); // start loading
