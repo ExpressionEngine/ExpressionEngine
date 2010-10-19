@@ -13,7 +13,7 @@ $lang['license_agree'] = 'I agree to abide by the license Terms and Conditions a
 $lang['license_disagree'] = 'I do NOT agree to abide by the license Terms and Conditions as stated above';
 $lang['server_settings'] = 'Server Settings';
 $lang['license_number'] = 'ExpressionEngine License Number';
-$lang['locate_license_number'] = 'Available in the <a href="https://secure.expressionengine.com/download.php">download area</a> of the ExpressionEngine.com site.  30 Day Trial installations may leave this field empty.';
+$lang['locate_license_number'] = 'Available in the <a href="https://secure.expressionengine.com/download.php">download area</a> of the ExpressionEngine.com site.';
 $lang['name_of_index'] = 'Name of the index page of your ExpressionEngine site';
 $lang['normally_index'] = 'Unless you renamed the file it will be named <strong>index.php</strong>';
 $lang['url_of_index'] = 'URL to the directory where the above index page is located';
