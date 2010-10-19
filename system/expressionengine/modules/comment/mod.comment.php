@@ -139,7 +139,7 @@ class Comment {
 
 		if ( ! $dynamic)
 		{
-			if (preg_match("#/n(\d+)#i", '/'.$qstring, $match) OR preg_match("#/N(\d+)#i", '/'.$qstring, $match))
+			if (preg_match("#/N(\d+)/?$#i", '/'.$qstring, $match))
 			{				
 				$current_page = $match['1'];
 				$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $uristr));
@@ -147,7 +147,7 @@ class Comment {
 		}
 		else
 		{
-			if (preg_match("#/P(\d+)#", '/'.$qstring, $match))
+			if (preg_match("#/P(\d+)/?$#", '/'.$qstring, $match))
 			{
 				$current_page = $match['1'];
 				$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $uristr));
