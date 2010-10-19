@@ -260,7 +260,6 @@ class Comment {
 			}
 			
 			
-
 			/** ----------------------------------------------
 			/**  Limit to/exclude specific channels
 			/** ----------------------------------------------*/
@@ -283,8 +282,11 @@ class Comment {
 				return FALSE;
 			}
 
-			// We'll reassign the entry ID so it's the true numeric ID
-			$entry_id = $query->row('entry_id') ;
+			// We'll reassign the entry IDs so they're the true numeric ID
+			foreach($query->result_array() as $row)
+			{
+				$entry_ids[] = $row['entry_id'];
+			}
 		}
 
 
@@ -408,9 +410,9 @@ class Comment {
 			// When we are only showing comments and it is not based on an entry id or url title
 			// in the URL, we can make the query much more efficient and save some work.
 
-			if (isset($entry_id) && $entry_id != '')
+			if (isset($entry_ids) && count($entry_ids) > 0)
 			{
-				$this->EE->db->where('entry_id', $entry_id);
+				$this->EE->db->where_in('entry_id', $entry_ids);
 			}
 			
 			$total_rows = $this->EE->db->count_all_results('comments');
@@ -425,7 +427,12 @@ class Comment {
 			else
 			{
 				$this->EE->db->where('status', 'o');
-			}			
+			}
+			
+			if (isset($entry_ids) && count($entry_ids) > 0)
+			{
+				$this->EE->db->where_in('entry_id', $entry_ids);
+			}						
 
 			$this_page = ($current_page == '' OR ($limit > 1 AND $current_page == 1)) ? 0 : $current_page;
 			$this_sort = ($random) ? 'random' : strtolower($sort);
@@ -435,7 +442,16 @@ class Comment {
 		}
 		else
 		{
-			$this->EE->db->where('entry_id', $entry_id);
+			// Force entry may result in multiple entry ids
+			if (isset($entry_ids) && count($entry_ids) > 0)
+			{
+				$this->EE->db->where_in('entry_id', $entry_ids);
+			}
+			else
+			{
+				$this->EE->db->where('entry_id', $entry_id);
+			}
+			
 			$this_sort = ($random) ? 'random' : strtolower($sort);
 
 			$this->EE->db->order_by($order_by, $this_sort);
@@ -582,6 +598,7 @@ class Comment {
 		// When only non-dynamic comments are shown, all results are valid as the
 		// query is restricted with a LIMIT clause
 
+		/*
 		if ($dynamic)
 		{
 			if ($current_page == '')
@@ -593,6 +610,8 @@ class Comment {
 				$result_ids = array_slice($result_ids, $current_page, $limit);
 			}
 		}
+		
+		*/
 
 		/** -----------------------------------
 		/**  Fetch Comments if necessary
