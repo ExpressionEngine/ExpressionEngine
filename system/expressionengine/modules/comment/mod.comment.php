@@ -629,6 +629,8 @@ class Comment {
 				
 		$query = $this->EE->db->get('comments');
 				
+		$total_results = $query->num_rows();
+		
 		if ($query->num_rows() > 0)
 		{
 			$i = 0;
@@ -733,7 +735,6 @@ class Comment {
 
 		$relative_count = 0;
 		$absolute_count = ($current_page == '') ? 0 : $current_page;
-		$total_results  = count($results);
 
 		foreach ($results as $id => $row)
 		{
