@@ -139,7 +139,7 @@ class Comment {
 
 		if ( ! $dynamic)
 		{
-			if (preg_match("#/n(\d+)#i", '/'.$qstring, $match) OR preg_match("#/N(\d+)#i", $qstring, $match))
+			if (preg_match("#/n(\d+)#i", '/'.$qstring, $match) OR preg_match("#/N(\d+)#i", '/'.$qstring, $match))
 			{				
 				$current_page = $match['1'];
 				$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $uristr));
@@ -576,15 +576,14 @@ class Comment {
 				$this->EE->pagination->initialize($config);
 				$pagination_links = $this->EE->pagination->create_links();
 
-
 				if ((($total_pages * $limit) - $limit) > $current_page)
 				{
-					$page_next = $basepath.'P'.($current_page + $limit).'/';
+					$page_next = $basepath.$config['prefix'].($current_page + $limit).'/';
 				}
 
 				if (($current_page - $limit ) >= 0)
 				{
-					$page_previous = $basepath.'P'.($current_page - $limit).'/';
+					$page_previous = $basepath.$config['prefix'].($current_page - $limit).'/';
 				}
 			}
 			else
