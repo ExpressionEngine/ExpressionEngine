@@ -126,7 +126,7 @@ class Javascript extends Controller {
 		$loadfile = ($loadfile) ? $loadfile : $this->input->get_post('file');
 		$package = $this->input->get_post('package');
 		
-		$loadfile = $this->security->sanitize_filename($loadfile);
+		$loadfile = $this->security->sanitize_filename($loadfile, TRUE);
 		
 		if ($package && $loadfile)
 		{
