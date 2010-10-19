@@ -139,19 +139,19 @@ class Comment {
 
 		if ( ! $dynamic)
 		{
-			if (preg_match("#/N(\d+)/?$#i", '/'.$qstring, $match))
+			if (preg_match("#(^|/)N(\d+)(/|$)#i", $qstring, $match))
 			{				
-				$current_page = $match['1'];
-				$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $uristr));
+				$current_page = $match['2'];
+				$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $uristr));
 			}
 		}
 		else
 		{
-			if (preg_match("#/P(\d+)/?$#", '/'.$qstring, $match))
+			if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
 			{
-				$current_page = $match['1'];
-				$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $uristr));
-				$qstring = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $qstring));
+				$current_page = $match['2'];
+				$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $uristr));
+				$qstring = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring));
 			}
 		}
 		
@@ -1337,11 +1337,11 @@ class Comment {
 		/** --------------------------------------
 		/**  Remove page number
 		/** --------------------------------------*/
-
-		if (preg_match("#/P\d+#", $qstring, $match))
+		
+		if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
 		{
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $qstring));
-		}
+			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring));
+		}		
 
 		// Figure out the right entry ID
 		// Order of precedence: POST, entry_id=, url_title=, $qstring
@@ -3053,9 +3053,9 @@ class Comment {
 		$entry_id = FALSE;
 		$qstring = $this->EE->uri->query_string;
 		
-		if (preg_match("#/P\d+#", $qstring, $match))
+		if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
 		{
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $qstring));
+			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring));
 		}
 
 		// Figure out the right entry ID
