@@ -404,7 +404,6 @@ class Comment {
 			$this->EE->db->where('status', 'o');
 		}
 		
-
 		if ( ! $dynamic)
 		{
 			// When we are only showing comments and it is not based on an entry id or url title
@@ -434,8 +433,8 @@ class Comment {
 				$this->EE->db->where_in('entry_id', $entry_ids);
 			}						
 
-			$this_page = ($current_page == '' OR ($limit > 1 AND $current_page == 1)) ? 0 : $current_page;
 			$this_sort = ($random) ? 'random' : strtolower($sort);
+			$this_page = ($current_page == '' OR ($limit > 1 AND $current_page == 1)) ? 0 : $current_page;
 
 			$this->EE->db->order_by($order_by, $this_sort);
 			$this->EE->db->limit($limit, $this_page);
@@ -597,8 +596,6 @@ class Comment {
 
 		// When only non-dynamic comments are shown, all results are valid as the
 		// query is restricted with a LIMIT clause
-
-		/*
 		if ($dynamic)
 		{
 			if ($current_page == '')
@@ -611,8 +608,6 @@ class Comment {
 			}
 		}
 		
-		*/
-
 		/** -----------------------------------
 		/**  Fetch Comments if necessary
 		/** -----------------------------------*/
