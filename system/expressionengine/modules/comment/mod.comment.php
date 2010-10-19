@@ -189,15 +189,12 @@ class Comment {
 			// Check if an entry_id or url_title was specified
 			if ($entry_id = $this->EE->TMPL->fetch_param('entry_id'))
 			{
-				//$this->EE->db->where('entry_id', $entry_id);
-				$sql = $this->EE->functions->sql_andor_string($entry_id, 'entry_id');
+				$sql = substr($this->EE->functions->sql_andor_string($entry_id, 'entry_id'), 4);
 				$this->EE->db->where($sql, NULL, FALSE);
 			}
 			elseif ($url_title = $this->EE->TMPL->fetch_param('url_title'))
 			{
-				//$this->EE->db->where('url_title', $url_title);
-				
-				$sql = $this->EE->functions->sql_andor_string($url_title, 'url_title');
+				$sql = substr($this->EE->functions->sql_andor_string($url_title, 'url_title'), 4);
 				$this->EE->db->where($sql, NULL, FALSE);
 				
 			}
@@ -255,7 +252,6 @@ class Comment {
 				//  We need to drop the leading AND from the generated string 
 				$sql = substr($sql, 4);
 
-				
 				$this->EE->db->where($sql, NULL, FALSE);
 			}
 			else
