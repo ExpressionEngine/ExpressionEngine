@@ -2303,7 +2303,7 @@ PAPAYA;
 						'log_search_terms'				=>	'y',
 						'un_min_len'            		=>  '4',
 						'pw_min_len'            		=>  '5',
-						'allow_member_registration' 	=>  'y',
+						'allow_member_registration' 	=>  'n',
 						'allow_member_localization' 	=>  'y',
 						'req_mbr_activation'    		=>  'email',
 						'new_member_notification'		=>	'n',
