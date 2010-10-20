@@ -1648,7 +1648,7 @@ PAPAYA;
 
 						if ($file == $pkg_name)
 						{
-							$this->lang->load('lang.'.$file, '', FALSE, FALSE, EE_APPPATH.'/third_party/'.$pkg_name.'/');
+							$this->lang->load($file.'_lang', '', FALSE, FALSE, EE_APPPATH.'/third_party/'.$pkg_name.'/');
 							$name = ($this->lang->line(strtolower($file).'_module_name') != FALSE) ? $this->lang->line(strtolower($file).'_module_name') : $file;			
 							$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
 						}
