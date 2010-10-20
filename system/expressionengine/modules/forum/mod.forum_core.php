@@ -11773,7 +11773,7 @@ class Forum_Core extends Forum {
 				el.setSelectionRange(newStart, newStart);
 			}
 			else if (opener.document.selection) {
-				opener.document.selection.createRange().text = text;
+				opener.document.selection.createRange().text = smiley;
 			}
 			else {
 				el.value += " " + smiley + " ";
