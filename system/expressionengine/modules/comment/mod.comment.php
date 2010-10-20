@@ -139,21 +139,20 @@ class Comment {
 
 		if ( ! $dynamic)
 		{
-			if (preg_match("#n(\d+)#i", $qstring, $match) OR preg_match("#/N(\d+)#i", $qstring, $match))
+			if (preg_match("#(^|/)N(\d+)(/|$)#i", $qstring, $match))
 			{				
-				$current_page = $match['1'];
-				$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $uristr));
+				$current_page = $match['2'];
+				$uristr  = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $uristr)), '/');
 			}
 		}
 		else
 		{
-			if (preg_match("#/P(\d+)#i", $qstring, $match))
+			if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
 			{
-				$current_page = $match['1'];
-
-				$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $uristr));
-				$qstring = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $qstring));
-			}			
+				$current_page = $match['2'];
+				$uristr  = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $uristr));
+				$qstring = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
+			}
 		}
 		
 		if  ($dynamic == TRUE OR $force_entry == TRUE)
@@ -203,7 +202,7 @@ class Comment {
 				// If there is a slash in the entry ID we'll kill everything after it.
 				$entry_id = trim($qstring); 
 				$entry_id = preg_replace("#/.+#", "", $entry_id);
-
+				
 				// Have to choose between id or url title
 				if ( ! is_numeric($entry_id))
 				{
@@ -577,15 +576,14 @@ class Comment {
 				$this->EE->pagination->initialize($config);
 				$pagination_links = $this->EE->pagination->create_links();
 
-
 				if ((($total_pages * $limit) - $limit) > $current_page)
 				{
-					$page_next = $basepath.'P'.($current_page + $limit).'/';
+					$page_next = $basepath.$config['prefix'].($current_page + $limit).'/';
 				}
 
 				if (($current_page - $limit ) >= 0)
 				{
-					$page_previous = $basepath.'P'.($current_page - $limit).'/';
+					$page_previous = $basepath.$config['prefix'].($current_page - $limit).'/';
 				}
 			}
 			else
@@ -1339,11 +1337,11 @@ class Comment {
 		/** --------------------------------------
 		/**  Remove page number
 		/** --------------------------------------*/
-
-		if (preg_match("#/P\d+#", $qstring, $match))
+		
+		if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
 		{
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $qstring));
-		}
+			$qstring = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
+		}		
 
 		// Figure out the right entry ID
 		// Order of precedence: POST, entry_id=, url_title=, $qstring
@@ -3055,9 +3053,9 @@ class Comment {
 		$entry_id = FALSE;
 		$qstring = $this->EE->uri->query_string;
 		
-		if (preg_match("#/P\d+#", $qstring, $match))
+		if (preg_match("#(^|/)P(\d+)(/|$)#", $qstring, $match))
 		{
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $qstring));
+			$qstring = trim($this->EE->functions->remove_double_slashes(str_replace($match['0'], '/', $qstring)), '/');
 		}
 
 		// Figure out the right entry ID
