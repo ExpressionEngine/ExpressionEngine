@@ -1767,7 +1767,8 @@ class Content_publish extends Controller {
 
 		$autosave_interval_seconds = ($this->config->item('autosave_interval_seconds') === FALSE) ? 60 : $this->config->item('autosave_interval_seconds');
 
-		if ($entry_id != '' AND $autosave_interval_seconds != 0)
+		// @todo reenable autosave when fixed
+		if (FALSE && $entry_id != '' AND $autosave_interval_seconds != 0)
 		{
 			$this->javascript->set_global('publish.autosave', array(
 				'interval'	=> $autosave_interval_seconds,
@@ -2343,11 +2344,13 @@ class Content_publish extends Controller {
 		}
 
 		$this->load->library('api');
-		$this->api->instantiate(array('channel_categories', 'channel_entries'));
+		$this->api->instantiate(array('channel_categories', 'channel_entries', 'channel_fields'));
 
 		$autosave_entry_id = (is_numeric($this->input->post("autosave_entry_id"))) ? $this->input->post("autosave_entry_id") : TRUE;
 
 		$this->output->enable_profiler(FALSE);
+		
+		// $this->api_channel_fields->fetch_custom_channel_fields();
 
 		// If the entry was saved successfully, we'll get back the entry_id,
 		// which we then need to insert into the hidden field for subsequent

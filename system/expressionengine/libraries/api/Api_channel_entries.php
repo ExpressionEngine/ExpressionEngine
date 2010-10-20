@@ -1601,7 +1601,6 @@ class Api_channel_entries extends Api {
 				
 				if (isset($data[$field_name]) OR isset($mod_data[$field_name]))
 				{
-					$this->EE->api_channel_fields->set_settings($row['field_id'], $row);
 					$this->EE->api_channel_fields->setup_handler($row['field_id']);
 
 					// Break out module fields here
