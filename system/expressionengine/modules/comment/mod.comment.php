@@ -2648,37 +2648,19 @@ class Comment {
 
 			$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? $this->EE->functions->create_url($_POST['RET']) : $_POST['RET'];
 
-		/** ----------------------------------------
-		/**  Insert data
-		/** ----------------------------------------*/
 
-		if ($this->EE->config->item('secure_forms') == 'y')
+		// Secure Forms check
+		$this->EE->load->library('security');
+		
+		if ($this->EE->security->secure_forms_check($_POST['XID']) == FALSE)
 		{
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_security_hashes WHERE hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."' AND date > UNIX_TIMESTAMP()-7200");
-
-			if ($query->row('count')  > 0)
-			{
-				$sql = $this->EE->db->insert_string('exp_comments', $data);
-
-				$this->EE->db->query($sql);
-
-				$comment_id = $this->EE->db->insert_id();
-
-				$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
-			}
-			else
-			{
-				$this->EE->functions->redirect(stripslashes($return_link));
-			}
+			$this->EE->functions->redirect(stripslashes($return_link));
 		}
-		else
-		{
-			$sql = $this->EE->db->insert_string('exp_comments', $data);
 
-			$this->EE->db->query($sql);
-
-			$comment_id = $this->EE->db->insert_id();			
-		}
+		//  Insert data
+		$sql = $this->EE->db->insert_string('exp_comments', $data);
+		$this->EE->db->query($sql);
+		$comment_id = $this->EE->db->insert_id();			
 		
 		if ($notify == 'y')
 		{
@@ -3230,11 +3212,12 @@ class Comment {
 		{
 			exit('null');
 		}
-
+		
 		$edited_status = ($this->EE->input->get_post('status') != 'close') ? FALSE : 'c';
 		$edited_comment = $this->EE->input->get_post('comment');
 		$can_edit = FALSE;
 		$can_moderate = FALSE;
+		$xid = $this->EE->input->get_post('XID');
 				
 		$this->EE->db->from('comments');
 		$this->EE->db->from('channels');
