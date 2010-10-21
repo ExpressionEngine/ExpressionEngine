@@ -128,6 +128,11 @@ class Javascript extends Controller {
 		
 		$loadfile = $this->security->sanitize_filename($loadfile, TRUE);
 		
+		if ($loadfile == 'ext_scripts')
+		{
+			return $this->_ext_scripts();
+		}
+		
 		if ($package && $loadfile)
 		{
 			$file = PATH_THIRD.$package.'/javascript/'.$loadfile.'.js';
@@ -200,6 +205,37 @@ class Javascript extends Controller {
 
 		$this->output->set_header('Content-Length: '.strlen($contents));
 		$this->output->set_output($contents);
+	}
+	
+	// --------------------------------------------------------------------	
+
+	/**
+	 * Javascript from extensions
+	 *
+	 * This private method is intended for usage by the 'add_global_cp_js' hook 
+	 *
+	 * @access 	private
+	 * @return 	void
+	 */
+	function _ext_scripts()
+	{
+		$str = '';
+
+		/* -------------------------------------------
+		/* 'cp_js_end' hook.
+		/*  - Add More Stuff to do when you first submit an entry
+		/*  - Added 2.1.2
+		*/
+			$str .= $this->extensions->call('cp_js_end');
+			if ($this->extensions->end_script === TRUE) return TRUE;
+		/*
+		/* -------------------------------------------*/
+		
+		$this->output->out_type = 'cp_asset';
+		$this->output->set_header("Content-Type: text/javascript");
+		
+		$this->output->set_header('Content-Length: '.strlen($str));
+		$this->output->set_output($str);
 	}
 
 

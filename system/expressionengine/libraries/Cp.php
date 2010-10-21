@@ -326,6 +326,11 @@ class Cp {
 		{
 			$str .= '<script type="text/javascript" charset="utf-8" src="'.BASE.AMP.'C=javascript'.AMP.'M=combo_load'.$req.'"></script>';
 		}
+		
+		if ($this->EE->extensions->active_hook('cp_js_end') === TRUE)
+		{
+			$str .= '<script type="text/javascript" src="'.BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=ext_scripts"></script>';			
+		}
 
 		return $str;
 	}
