@@ -2521,6 +2521,7 @@ class Member {
 				el.setSelectionRange(newStart, newStart);
 			}
 			else if (opener.document.selection) {
+				el.focus();
 				opener.document.selection.createRange().text = smiley;
 			}
 			else {
