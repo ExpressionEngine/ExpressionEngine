@@ -38,6 +38,7 @@ class Cp {
 			'plugin'			=> array(),
 			'file'				=> array(),
 			'package'			=> array(),
+			'fp_module'			=> array()
 	);
 	
 	
@@ -366,7 +367,7 @@ class Cp {
 				$str .= AMP.$type.'='.implode(',', $files);
 			}
 		}
-		
+				
 		if ($str)
 		{
 			$loaded = array_merge_recursive($loaded, $this->js_files);
@@ -375,7 +376,8 @@ class Cp {
 					'ui'				=> array(),
 					'plugin'			=> array(),
 					'file'				=> array(),
-					'package'			=> array()
+					'package'			=> array(),
+					'fp_module'			=> array()
 			);
 
 			$requests[] = $str.AMP.'v='.max($mtimes);
@@ -413,13 +415,15 @@ class Cp {
 		
 		switch($type)
 		{
-			case 'ui':		$file = APPPATH.'javascript/'.$folder.'/jquery/ui/ui.'.$name.'.js';
+			case 'ui':			$file = APPPATH.'javascript/'.$folder.'/jquery/ui/ui.'.$name.'.js';
 				break;
-			case 'plugin':	$file = APPPATH.'javascript/'.$folder.'/jquery/plugins/'.$name.'.js';
+			case 'plugin':		$file = APPPATH.'javascript/'.$folder.'/jquery/plugins/'.$name.'.js';
 				break;
-			case 'file':	$file = APPPATH.'javascript/'.$folder.'/'.$name.'.js';
+			case 'file':		$file = APPPATH.'javascript/'.$folder.'/'.$name.'.js';
 				break;
-			case 'package':	$file = PATH_THIRD.$name.'/'.$name.'.js';
+			case 'package':		$file = PATH_THIRD.$name.'/javascript/'.$name.'.js';
+				break;
+			case 'fp_module':	$file = PATH_MOD.$name.'/javascript/'.$name.'.js';
 				break;
 			default:
 				return 0;
