@@ -2646,13 +2646,10 @@ class Comment {
 		//
 		// -------------------------------------------
 
-			$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? $this->EE->functions->create_url($_POST['RET']) : $_POST['RET'];
-
+		$return_link = ( ! stristr($_POST['RET'],'http://') && ! stristr($_POST['RET'],'https://')) ? $this->EE->functions->create_url($_POST['RET']) : $_POST['RET'];
 
 		// Secure Forms check
-		$this->EE->load->library('security');
-		
-		if ($this->EE->security->secure_forms_check($_POST['XID']) == FALSE)
+		if ($this->EE->security->secure_forms_check($this->EE->input->post('XID')) == FALSE)
 		{
 			$this->EE->functions->redirect(stripslashes($return_link));
 		}

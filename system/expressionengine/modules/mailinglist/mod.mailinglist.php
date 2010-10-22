@@ -162,21 +162,13 @@ class Mailinglist {
 
 		if (count($errors) == 0)
 		{
-			/** ----------------------------------------
-			/**  Is the security hash valid?
-			/** ----------------------------------------*/
-
-			if ($this->EE->config->item('secure_forms') == 'y')
-			{
-				$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_security_hashes WHERE hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."' AND date > UNIX_TIMESTAMP()-7200");
-
-				if ($query->row('count')  == 0)
-				{
-					$this->EE->functions->redirect(stripslashes($_POST['RET']));
-					exit;
-				}
+	
+			// Secure Forms check - do it early due to amount of further data manipulation before insert
+			if ($this->EE->security->check_xid($this->EE->input->post('XID')) == FALSE) 
+			{ 
+			 	$this->EE->functions->redirect(stripslashes($this->EE->input->post('RET')));
 			}
-
+			
 			/** ----------------------------------------
 			/**  Which list is being subscribed to?
 			/** ----------------------------------------*/
@@ -268,15 +260,8 @@ class Mailinglist {
 			$content .= $this->EE->lang->line('ml_click_confirmation_link');
 		}
 
-		/** ----------------------------------------
-		/**  Clear security hash
-		/** ----------------------------------------*/
-
-		if ($this->EE->config->item('secure_forms') == 'y')
-		{
-			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
-		}
-
+		//  Clear security hash
+		$this->EE->security->delete_xid($this->EE->input->post('XID'));
 
 		$site_name = ($this->EE->config->item('site_name') == '') ? $this->EE->lang->line('back') : stripslashes($this->EE->config->item('site_name'));
 
@@ -288,8 +273,6 @@ class Mailinglist {
 
 		$this->EE->output->show_message($data);
 	}
-
-
 
 
 
