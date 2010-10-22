@@ -55,11 +55,7 @@ class Wiki_mcp {
 		$this->EE->load->helper('form');
 		$this->EE->load->model('wiki_model');
 
-		$this->EE->cp->add_js_script(array(
-			'plugin' 	=> 'tablesorter',
-			'fp_module'	=> 'wiki'
-			)
-		);
+		$this->EE->cp->add_js_script('fp_module', 'wiki');
 
 		$vars['cp_page_title'] = $this->EE->lang->line('wiki_module_name');
 
@@ -422,13 +418,14 @@ class Wiki_mcp {
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 		
+		$this->EE->load->model('wiki_model');
+		
 		if ($this->EE->wiki_model->delete_namespace($this->EE->input->get_post('namespace_id')) === TRUE)
 		{
-			echo $this->EE->output->send_ajax_response(array('response' => 'success')); 
+			$this->EE->output->send_ajax_response(array('response' => 'success')); 
 		}
 
-		echo $this->EE->output->send_ajax_response(array('response' => 'failure'));
-
+		$this->EE->output->send_ajax_response(array('response' => 'failure'));
 	}
 
 	// --------------------------------------------------------------------

@@ -164,6 +164,12 @@ referencing the namespace.  Your short name should only contain word characters 
 'invalid_namespace' =>
 'Invalid Namespace Submitted',
 
+'namespace_not_deleted' =>
+'Could not delete namespace.',
+
+'namespace_deleted' =>
+'Namespace deleted',
+
 'namespaces' =>
 'Namespaces',
 

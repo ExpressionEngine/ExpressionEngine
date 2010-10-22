@@ -16,9 +16,7 @@ $(document).ready(function() {
 		}
 	);
 
-
-	$('.remove_namespace').click(function() {
-
+	$('.remove_namespace').click(function(e) {
 		var namespace_id	= $(this).attr('name').substr(17),
 			row				= $(this).parent().parent();
 
@@ -29,11 +27,12 @@ $(document).ready(function() {
 			success:	function(result) {
 				if (result.response === 'success') {
 					$.ee_notice(EE.lang.namespace_deleted, {type: 'success', open: true, close_on_click: true});
-					$(row).fadeOut('slow', function() {$(this).remove(); });
+					$(row).fadeOut('slow', function() {
+						$(this).remove();
+					});
 				} else {
 					$.ee_notice(EE.lang.namespace_not_deleted, {type: 'error', open: true, close_on_click: true});
 				}
-				return false;
 			}
 		});
 		
