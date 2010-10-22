@@ -64,6 +64,7 @@ class Wiki {
 	var $revision_limit			= 100;
 	var $author_limit			= 75;
 	var $min_length_keywords	= 3;
+	var	$cache_expire			= 2;  // How many hours should we keep wiki search caches?	
 	var $cats_separator			= '::';
 	var $cats_display_separator = ' -> ';
 	var $cats_use_namespaces	= 'n';
@@ -3795,27 +3796,13 @@ class Wiki {
 		
 		$this->edit_limit();
 		
-		/** -------------------------------------
-		/**  Secure Forms
-		/** -------------------------------------*/
-	  	
+  		// Secure Forms check
 	  	// If the hash is not found we'll simply reload the page.
-	  
-		if ($this->EE->config->item('secure_forms') == 'y')
+		if ($this->EE->security->secure_forms_check($this->EE->input->post('XID')) == FALSE)
 		{
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_security_hashes 
-								 WHERE hash='".$this->EE->db->escape_str($_POST['XID'])."' 
-								 AND ip_address = '".$this->EE->input->ip_address()."' 
-								 AND date > UNIX_TIMESTAMP()-7200");
-		
-			if ($query->row('count')  == 0)
-			{
-				$this->redirect('', $this->EE->input->get_post('title'));
-			}
-			
-			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
+			$this->redirect('', $this->EE->input->get_post('title'));
 		}
-		
+	  
 		/** -------------------------------------
 		/**  Process Edit Form
 		/** -------------------------------------*/
@@ -4400,27 +4387,13 @@ class Wiki {
 	/** -------------------------------------*/
 	function find_page()
 	{
-		/** -------------------------------------
-		/**  Secure Forms
-		/** -------------------------------------*/
-	  	
+  		// Secure Forms check
 	  	// If the hash is not found we'll simply reload the page.
-	  
-		if ($this->EE->config->item('secure_forms') == 'y')
+		if ($this->EE->security->secure_forms_check($this->EE->input->post('XID')) == FALSE)
 		{
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_security_hashes 
-								 WHERE hash='".$this->EE->db->escape_str($_POST['XID'])."' 
-								 AND ip_address = '".$this->EE->input->ip_address()."' 
-								 AND date > UNIX_TIMESTAMP()-7200");
-		
-			if ($query->row('count')  == 0)
-			{
-				$this->redirect('', 'index');
-			}
-			
-			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
-		}
-		
+			$this->redirect('', 'index');
+		}	  
+
 		if ($this->EE->input->post('title') !== FALSE && $this->EE->input->get_post('title') != '')
 		{
 			$title = $this->valid_title($this->EE->security->xss_clean(strip_tags($this->EE->input->post('title'))));
@@ -4477,9 +4450,9 @@ class Wiki {
 			{
 				return $this->return_data = '';
 			}
-			
-			$query = $this->EE->db->query("SELECT * FROM exp_wiki_search
-								 WHERE wiki_search_id = '".$this->EE->db->escape_str($this->seg_parts['1'])."'");
+								
+			$this->EE->db->where('wiki_search_id', $this->seg_parts['1']);
+			$query = $this->EE->db->get('wiki_search');
 								 
 			if ($query->num_rows() > 0)
 			{
@@ -4563,25 +4536,15 @@ class Wiki {
 		
 		$dates = $this->parse_dates($this->return_data);
 		
-		/** -------------------------------------
-		/**  Secure Forms
-		/** -------------------------------------*/
-	  	
+		// Secure Forms check
 	  	// If the hash is not found we'll simply reload the page.
 	  
 		if ($this->EE->config->item('secure_forms') == 'y' && $search_paginate === FALSE)
 		{
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_security_hashes 
-								 WHERE hash='".$this->EE->db->escape_str($_POST['XID'])."' 
-								 AND ip_address = '".$this->EE->input->ip_address()."' 
-								 AND date > UNIX_TIMESTAMP()-7200");
-		
-			if ($query->row('count')  == 0)
+			if ($this->EE->security->secure_forms_check($this->EE->input->post('XID')) == FALSE)
 			{
 				$this->redirect('', $this->EE->input->get_post('title'));
 			}
-			
-			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
 		}
 		
 		/** ----------------------------------------
@@ -4708,19 +4671,21 @@ class Wiki {
 		}
 		
 		/** ----------------------------------------
-		/**  Store Pagination Hash and Query
+		/**  Store Pagination Hash and Query and do Garbage Collection
 		/** ----------------------------------------*/
 		
 		if ($query->row('count')  > $parameters['limit'] && $search_paginate === FALSE)
 		{
 			$paginate_hash = $this->EE->functions->random('md5');
+			$search_data = array('wiki_search_id' => $paginate_hash, 'search_date' => time(), 'wiki_search_query' => $sql, 'wiki_search_keywords' => $keywords);
 			
-			$this->EE->db->query($this->EE->db->insert_string('exp_wiki_search', 
-										  array('wiki_search_id'		=> $paginate_hash, 
-										  		'wiki_search_query' 	=> $sql,
-										  		'wiki_search_keywords'	=> $keywords)
-										  )
-					  );
+			$this->EE->db->insert('wiki_search', $search_data);
+
+			// Clear old search results
+			$expire = time() - ($this->cache_expire * 3600);
+			
+			$this->EE->db->where('search_date <', $expire);
+			$this->EE->db->delete('wiki_search');			
 		}
 		
 		$base_paginate = $this->base_url.$this->special_ns.':Search_results/';

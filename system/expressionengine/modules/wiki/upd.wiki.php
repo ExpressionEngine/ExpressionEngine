@@ -25,7 +25,7 @@ if ( ! defined('EXT'))
 
 class Wiki_upd {
 
-	var $version = '2.1';
+	var $version = '2.2';
 	
 	function Wiki_upd()
 	{
@@ -93,6 +93,7 @@ class Wiki_upd {
 				)";
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_wiki_search (
 				wiki_search_id VARCHAR(32) NOT NULL,
+				search_date int(10) NOT NULL,
 				wiki_search_query TEXT,
 				wiki_search_keywords VARCHAR(150) NOT NULL,
 				PRIMARY KEY `wiki_search_id` (`wiki_search_id`)
@@ -204,8 +205,12 @@ class Wiki_upd {
 		{
 			$this->EE->db->query("ALTER TABLE `exp_wiki_page` CHANGE `page_namespace` `page_namespace` VARCHAR(125) NOT NULL DEFAULT ''");
 		}
-				
 		
+		if ($current < 2.2)
+		{
+			$this->EE->db->query("ALTER TABLE `exp_wiki_search` ADD COLUMN search_date int(10) NOT NULL AFTER wiki_search_id");
+		}		
+				
 		return TRUE;
 	}
 	
