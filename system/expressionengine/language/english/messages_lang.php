@@ -251,6 +251,18 @@ $lang = array(
 'forward_prefix' =>
 'FWD: ',
 
+'forward_from' =>
+'From: ',
+
+'forward_date' =>
+'Date: ',
+
+'forward_subject' =>
+'Subject: ',
+
+'forward_header' =>
+'---- Forwarded message ----',
+
 'member_name' =>
 'Member Name',
 

@@ -2515,7 +2515,7 @@ DOH;
 			if ($this->EE->input->post('daction') !== FALSE && ($this->EE->input->get_post('daction') == 'reply' OR $this->EE->input->get_post('daction') == 'reply_all' OR $this->EE->input->get_post('daction') == 'forward'))
 			{
 				$data = $this->_message_data($id, '', $this->member_id);
-		
+	
 				if ($this->EE->config->item('enable_censoring') == 'y' && $this->EE->config->item('censored_words') != '')
         		{
 					$this->EE->load->library('typography');
@@ -2536,7 +2536,23 @@ DOH;
 				$prefix = (substr($data['subject'], 0, strlen($this->EE->lang->line($prefix))) == $this->EE->lang->line($prefix)) ? '' : '{lang:'.$prefix.'}';
 				
 				$this->single_parts['input']['subject']				= ($data === FALSE) ? '' : $prefix.$subject;
-				$this->single_parts['input']['body']				= ($data === FALSE) ? '' : NL.NL.NL.'[quote]'.NL.$body.NL.'[/quote]';
+				$this->single_parts['input']['body'] 				= '';
+
+				if ($data !== FALSE)
+				{
+					if ($this->EE->input->post('daction') == 'forward')
+					{
+						$forward_message = NL.NL.NL.$this->EE->lang->line('forward_header').NL;
+						$forward_message .= $this->EE->lang->line('forward_from').$data['sender'].NL;
+						$forward_message .= $this->EE->lang->line('forward_date').$data['date'].NL;
+						$forward_message .= $this->EE->lang->line('forward_subject').$data['subject'];
+						
+						$this->single_parts['input']['body'] .= $forward_message;
+					}
+					
+					$this->single_parts['input']['body'] .= NL.NL.NL.'[quote]'.NL.$body.NL.'[/quote]';
+				}
+			
 				$this->single_parts['input']['recipients']			= ($data === FALSE OR $this->EE->input->post('daction') == 'forward') ? '' : $this->convert_recipients($data['sender_id']);
 				
 				if ($data === FALSE OR $this->EE->input->post('daction') != 'reply_all')
