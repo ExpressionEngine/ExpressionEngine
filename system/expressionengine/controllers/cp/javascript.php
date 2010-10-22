@@ -223,11 +223,11 @@ class Javascript extends Controller {
 
 		/* -------------------------------------------
 		/* 'cp_js_end' hook.
-		/*  - Add More Stuff to do when you first submit an entry
+		/*  - Add Javascript into a file call at the end of the control panel
 		/*  - Added 2.1.2
 		*/
-			$str .= $this->extensions->call('cp_js_end');
-			if ($this->extensions->end_script === TRUE) return TRUE;
+			$str = $this->extensions->call('cp_js_end');
+			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
 		
