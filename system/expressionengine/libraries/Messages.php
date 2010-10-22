@@ -2755,7 +2755,7 @@ DOH;
 									 		 								 ));
 											
 		$data['preview'] = $this->_process_template($this->retrieve_template('preview_message'));
- 		
+		
  		/** ---------------------------------
  		/**  Fetch Attachment Information
  		/** ---------------------------------*/
