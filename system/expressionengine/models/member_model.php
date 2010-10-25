@@ -222,17 +222,34 @@ class Member_model extends CI_Model {
 	 * Get All Member Fields
 	 *
 	 * @access	public
+	 * @param	array	// associative array of where 	
+	 * @param	bool	// restricts to public fields for non-superadmins
 	 * @return	object
 	 */
-	function get_all_member_fields()
+	function get_all_member_fields($additional_where = array(), $restricted = TRUE)
 	{
 		// Extended profile fields
 		$this->db->from('member_fields');
 
-		if ($this->session->userdata('group_id') != 1)
+		if ($restricted == TRUE && $this->session->userdata('group_id') != 1)
 		{
 			$this->db->where('m_field_public', 'y');
 		}
+		
+		foreach ($additional_where as $where)
+		{
+			foreach ($where as $field => $value)
+			{
+				if (is_array($value))
+				{
+					$this->db->where_in($field, $value);
+				}
+				else
+				{
+					$this->db->where($field, $value);
+				}
+			}
+		}		
 
 		$this->db->order_by('m_field_order');
 
