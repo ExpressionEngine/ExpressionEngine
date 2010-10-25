@@ -1277,18 +1277,13 @@ class Moblog {
 			return FALSE;
 		}
 
-		if ( ! class_exists('XML_RPC'))
-		{
-			require APPPATH.'libraries/Xmlrpc'.EXT;
-		}
-
-		$XRPC = new XML_RPC;
-
+		$this->EE->load->library('xmlrpc');
+		
 		$result = array();
 
 		foreach ($query->result_array() as $row)
 		{
-			if ($XRPC->channels_com_ping($row['server_url'], $row['port'], $title, $url))
+			if ($this->EE->xmlrpc->weblogs_com_ping($row['server_url'], $row['port'], $title, $url))
 			{
 				$result[] = $row['server_name'];
 			}
