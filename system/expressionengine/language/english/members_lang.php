@@ -115,9 +115,6 @@ $lang = array(
 "comments" =>
 "Comments",
 
-"gallery_comments" =>
-"Gallery Comments",
-
 "channel_entries" =>
 "Channel Entries",
 

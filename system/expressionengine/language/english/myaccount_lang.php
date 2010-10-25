@@ -101,9 +101,6 @@ $lang = array(
 'member_email' =>
 'Email Member',
 
-'image_gallery' =>
-'Photo Gallery',
-
 'no_subscriptions' =>
 'You do not currently have any subscriptions',
 
