@@ -255,6 +255,7 @@ $(document).ready(function () {
 			
 		$("#files_form").attr("action", action.replace(/delete_files_confirm/, "download_files"));
 		$("#files_form").submit();
+		$("#files_form").attr("action", action);
 		
 		return false;
 	});
