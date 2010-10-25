@@ -305,7 +305,7 @@ class Homepage extends Controller {
 					{
 						$data .= $line;
 					}
-					elseif(trim($line) == '')
+					elseif (trim($line) == '')
 					{
 						$headers = FALSE;
 					}
@@ -327,11 +327,11 @@ class Homepage extends Controller {
 						$version_file[] = explode('|', $d);
 					}
 
-				  // 1 => 
-				  //   array
-				  //     0 => string '2.1.0' (length=5)
-				  //     1 => string '20100805' (length=8)
-				  //     2 => string 'normal' (length=6)
+					// 1 => 
+					//   array
+					//     0 => string '2.1.0' (length=5)
+					//     1 => string '20100805' (length=8)
+					//     2 => string 'normal' (length=6)
 					
 					if ($data === NULL)
 					{
