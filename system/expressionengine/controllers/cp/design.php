@@ -3277,7 +3277,7 @@ class Design extends Controller {
 		
 		$vars['message'] = $message;
 		$vars['default_group'] = '';
-		$vars['search_terms'] = FALSE;
+		$vars['search_terms'] = $this->input->post('template_keywords');
 
 		$this->javascript->output('
 			// messages are hidden because they push the table out of the way with empty paragraphs
@@ -3377,8 +3377,13 @@ class Design extends Controller {
 		
 		if ($query->num_rows() == 0)
 		{
-			if ($vars['search_terms'] != FALSE)
+			if ($vars['search_terms'] !== FALSE)
 			{
+				// I'm using htmlentities here and not sanitize_search_terms from the
+				// search helper on purpose.  We want <script>alert('boo');</script> to
+				// show up on the page so there is feedback to *exactly* what was searched for
+				// the search helper is a bit too overzealous for what is needed here.
+				$vars['search_terms'] = htmlentities($vars['search_terms']);
 				$vars['no_results'] = $this->lang->line('no_results');
 			}
 			else
