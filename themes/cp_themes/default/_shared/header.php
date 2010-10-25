@@ -7,6 +7,9 @@
 
 	<link rel="stylesheet" href="<?=$this->config->item('theme_folder_url')?>jquery_ui/default/jquery-ui-1.7.2.custom.css" type="text/css" media="screen" />
 	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'theme=default'.AMP.'v='.$theme_css_mtime?>" type="text/css" media="screen" title="Global Styles" charset="utf-8" />
+	<?php if ($this->extensions->active_hook('cp_js_end') === TRUE):?>
+	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'M=cp_global_ext';?>" type="text/css" />
+	<?php endif;?>
 	<!--[if lte IE 7]>
 	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'M=iefix'?>" type="text/css" media="screen" charset="utf-8" />
 	<![endif]-->

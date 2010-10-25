@@ -58,7 +58,11 @@ class Css extends Controller {
 	 */
 	function _remap()
 	{
-		if ($this->input->get_post('M') == 'third_party' && $package = $this->input->get_post('package'))
+		if ($this->input->get('M') == 'cp_global_ext')
+		{
+			return $this->_cp_global_ext();
+		}
+		elseif ($this->input->get_post('M') == 'third_party' && $package = $this->input->get_post('package'))
 		{
 			$file = $this->input->get_post('file');
 			$this->load->_ci_view_path = PATH_THIRD.$package.'/';
@@ -127,7 +131,34 @@ class Css extends Controller {
 			show_404($file.'css');
 		}
 	}
+
+	// ------------------------------------------------------------------------	
 	
+	/**
+	 *
+	 *
+	 *
+	 */
+	function _cp_global_ext()
+	{
+		$str = '';
+
+		/* -------------------------------------------
+		/* 'cp_css_end' hook.
+		/*  - Add CSS into a file call at the end of the control panel
+		/*  - Added 2.1.2
+		*/
+			$str = $this->extensions->call('cp_css_end');
+			if ($this->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+		
+		$this->output->out_type = 'cp_asset';
+		$this->output->set_header("Content-Type: text/css");
+		
+		$this->output->set_header('Content-Length: '.strlen($str));
+		$this->output->set_output($str);		
+	}
 	
 }
 // END CLASS
