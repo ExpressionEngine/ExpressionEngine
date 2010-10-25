@@ -277,8 +277,7 @@ class Javascript extends Controller {
 				{
 					$file = $file.'/javascript/'.$file;
 				}
-			
-				if ($type == 'file')
+				elseif ($type == 'file')
 				{
 					$parts = explode('/', $file);
 					$file = array();
