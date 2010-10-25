@@ -37,19 +37,6 @@ class Css extends Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Index function
-	 *
-	 * @access	public
-	 * @return	void
-	 */	
-	function index()
-	{
-		// everything's handled by _remap()
-	}
-	
-	// --------------------------------------------------------------------
-
-	/**
 	 * _remap function
 	 * 
 	 * Any CSS file in the view collection
@@ -73,6 +60,8 @@ class Css extends Controller {
 		}
 		
 		$path = $this->load->_ci_view_path.'css/'.$file.'.css';
+
+		$path = $this->security->sanitize_filename($path, TRUE);
 		
 		if (file_exists($path))
 		{
@@ -149,7 +138,6 @@ class Css extends Controller {
 		/*  - Added 2.1.2
 		*/
 			$str = $this->extensions->call('cp_css_end');
-			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
 		
