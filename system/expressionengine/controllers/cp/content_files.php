@@ -191,7 +191,8 @@ class Content_files extends Controller {
 							'data' => $file['mime'],
 						),
 						array(
-							'class'=>'', 
+							'class'=>'',
+							'data-rawdate' => $file['date'],
 							'data' => date('M d Y - H:ia', $file['date']),
 						),
 						array(
