@@ -121,12 +121,12 @@ class Expressionengine_info_acc {
 		}
 		
 		// no cache, so get current downloadable version
-		$version = $this->_fsockopen_process('http://expressionengine.com/eeversion2.txt');
+		$response = $this->_fsockopen_process('http://expressionengine.com/version.txt');
 		
-		$version = 'v'.trim(str_replace('Version:', '', $version));
+		list($version, $build, $priority) = explode('|', $response);
 		
-		$build = $this->_fsockopen_process('https://secure.expressionengine.com/extra/ee_current_build/v2');
-
+		$version = 'v'.$version;
+		
 		$details = array(
 							'timestamp'	=> $this->EE->localize->now,
 							'version'	=> $version,
@@ -187,7 +187,7 @@ class Expressionengine_info_acc {
 			$ret = substr($ret, $pos);
 		}
 		
-		return trim($ret);
+		return end(explode("\n", trim($ret)));
 	}
 
 	// --------------------------------------------------------------------
