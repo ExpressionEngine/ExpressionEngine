@@ -3277,7 +3277,13 @@ class Design extends Controller {
 		
 		$vars['message'] = $message;
 		$vars['default_group'] = '';
-		$vars['search_terms'] = $this->input->post('template_keywords');
+		
+		// I'm using htmlentities here and not sanitize_search_terms from the
+		// search helper on purpose.  We want <script>alert('boo');</script> to
+		// show up on the page so there is feedback to *exactly* what was searched for
+		// the search helper is a bit too overzealous for what is needed here.
+		$vars['search_terms'] = htmlentities($this->input->post('template_keywords'));
+		$vars['result_count'] = NULL;
 
 		$this->javascript->output('
 			// messages are hidden because they push the table out of the way with empty paragraphs
@@ -3374,23 +3380,35 @@ class Design extends Controller {
 		$hidden_indicator_length = strlen($hidden_indicator);
 
 		$query = $this->design_model->fetch_templates();
-		
+
 		if ($query->num_rows() == 0)
 		{
-			if ($vars['search_terms'] !== FALSE)
-			{
-				// I'm using htmlentities here and not sanitize_search_terms from the
-				// search helper on purpose.  We want <script>alert('boo');</script> to
-				// show up on the page so there is feedback to *exactly* what was searched for
-				// the search helper is a bit too overzealous for what is needed here.
-				$vars['search_terms'] = htmlentities($vars['search_terms']);
-				$vars['no_results'] = $this->lang->line('no_results');
-			}
-			else
-			{
-				$vars['no_results'] = $this->lang->line('no_templates_available');
-			}
+			$vars['no_results'] = $this->lang->line('no_templates_available');
+			$vars['result_count'] = 0;
 		}
+		else
+		{
+			$vars['result_count'] = $query->num_rows();	
+		}
+		
+		
+		
+		// if ($query->num_rows() == 0)
+		// {
+		// 	if ($vars['search_terms'] !== FALSE)
+		// 	{
+		// 		// I'm using htmlentities here and not sanitize_search_terms from the
+		// 		// search helper on purpose.  We want <script>alert('boo');</script> to
+		// 		// show up on the page so there is feedback to *exactly* what was searched for
+		// 		// the search helper is a bit too overzealous for what is needed here.
+		// 		$vars['search_terms'] = htmlentities($vars['search_terms']);
+		// 		$vars['no_results'] = $this->lang->line('no_results');
+		// 	}
+		// 	else
+		// 	{
+		// 		$vars['no_results'] = $this->lang->line('no_templates_available');
+		// 	}
+		// }
 		
 		// template access restrictions query
 		$denied_groups = $this->design_model->template_access_restrictions();
