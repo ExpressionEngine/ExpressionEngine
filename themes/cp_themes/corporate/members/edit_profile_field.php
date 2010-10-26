@@ -112,26 +112,77 @@ if ($EE_view_disable !== TRUE)
 
         // Required Field?
         $this->table->add_row(array(
-                 '<strong>'.lang('is_field_required', 'm_field_required').'</strong>',
-				form_dropdown('m_field_required', $m_field_required_options, set_value('m_field_required', $m_field_required), 'style="width:100px"')
-            )
+                lang('is_field_required', 'm_field_required'),
+				form_radio(array(
+					'name'        => 'm_field_required',
+					'id'          => 'm_field_required_y',
+					'value'       => 'y',
+					'checked'     => ($m_field_required == 'y') ? TRUE : FALSE)).NBS.
+				lang('yes', 'm_field_required_y').repeater(NBS, 5).
+				form_radio(array(
+					'name'        => 'm_field_required',
+					'id'          => 'm_field_required_n',
+					'value'       => 'n',
+					'checked'     => ($m_field_required == 'y') ? FALSE : TRUE)).NBS.
+				lang('no', 'm_field_required_n')		
+           )
         );
 
         // Visible in Public Profiles?
         $this->table->add_row(array(
-                 '<strong>'.lang('is_field_public', 'm_field_reg').'</strong><br />'.
+                lang('is_field_public', 'm_field_public').'<br />'.
                 lang('is_field_public_cont'),
-				form_dropdown('m_field_public', $m_field_public_options, set_value('m_field_public', $m_field_public), 'style="width:100px"')
-             )
+				form_radio(array(
+					'name'        => 'm_field_public',
+					'id'          => 'm_field_public_y',
+					'value'       => 'y',
+					'checked'     => ($m_field_public == 'y') ? TRUE : FALSE)).NBS.
+				lang('yes', 'm_field_public_y').repeater(NBS, 5).
+				form_radio(array(
+					'name'        => 'm_field_public',
+					'id'          => 'm_field_public_n',
+					'value'       => 'n',
+					'checked'     => ($m_field_public == 'y') ? FALSE : TRUE)).NBS.
+				lang('no', 'm_field_public_n')		
+           )
         );
 
         // Visible in Registration Page?
         $this->table->add_row(array(
-               '<strong>'. lang('is_field_reg', 'm_field_reg').'</strong><br />'.
-               lang('is_field_public_cont'),
-				form_dropdown('m_field_reg', $m_field_reg_options, set_value('m_field_reg', $m_field_reg), 'style="width:100px"')
-            )
+               lang('is_field_reg', 'm_field_reg'),
+				form_radio(array(
+					'name'        => 'm_field_reg',
+					'id'          => 'm_field_reg_y',
+					'value'       => 'y',
+					'checked'     => ($m_field_reg == 'y') ? TRUE : FALSE)).NBS.
+				lang('yes', 'm_field_reg_y').repeater(NBS, 5).
+				form_radio(array(
+					'name'        => 'm_field_reg',
+					'id'          => 'm_field_reg_n',
+					'value'       => 'n',
+					'checked'     => ($m_field_reg == 'y') ? FALSE : TRUE)).NBS.
+				lang('no', 'm_field_reg_n')		
+           )
         );
+
+       // Visible in Control Panel Registration Page?
+        $this->table->add_row(array(
+               lang('is_field_cp_reg', 'm_field_cp_reg'),
+				form_radio(array(
+					'name'        => 'm_field_cp_reg',
+					'id'          => 'm_field_cp_reg_y',
+					'value'       => 'y',
+					'checked'     => ($m_field_cp_reg == 'y') ? TRUE : FALSE)).NBS.
+				lang('yes', 'm_field_cp_reg_y').repeater(NBS, 5).
+				form_radio(array(
+					'name'        => 'm_field_cp_reg',
+					'id'          => 'm_field_cp_reg_n',
+					'value'       => 'n',
+					'checked'     => ($m_field_cp_reg == 'y') ? FALSE : TRUE)).NBS.
+				lang('no', 'm_field_cp_reg_n')		
+           )
+        );
+
             echo $this->table->generate();
     			?>
 

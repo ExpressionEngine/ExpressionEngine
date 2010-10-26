@@ -92,28 +92,92 @@ if ($EE_view_disable !== TRUE)
 				<li><?=form_dropdown('m_field_fmt', $m_field_fmt_options, set_value('m_field_fmt', $m_field_fmt))?></li>
 			</ul>
 
+
 			<div class="label">
-			<?=lang('is_field_required', 'm_field_required')?>
+			<?=lang('is_field_required', 'm_field_required')?><br />
 			</div>
 			<ul class="rounded">
-				<li><?=form_dropdown('m_field_required', $m_field_required_options, set_value('m_field_required', $m_field_required))?></li>
+			<li>
+				<?=form_radio(array(
+					'name'        => 'm_field_required',
+					'id'          => 'm_field_required_y',
+					'value'       => 'y',
+					'checked'     => ($m_field_required == 'y') ? TRUE : FALSE))?>
+				<?=form_label(lang('yes'), 'm_field_required_y')?>
+				<?=repeater(NBS, 5)?>
+				<?=form_radio(array(
+					'name'        => 'm_field_required',
+					'id'          => 'm_field_required_n',
+					'value'       => 'n',
+					'checked'     => ($m_field_required == 'y') ? FALSE : TRUE))?>
+				<?=form_label(lang('no'), 'm_field_required_n')?>
+			</li>
 			</ul>
 
 			<div class="label">
-			<?=lang('is_field_public', 'm_field_reg')?><br />
+			<?=lang('is_field_public', 'm_field_public')?><br />
 			<?=lang('is_field_public_cont')?>
 			</div>
 			<ul class="rounded">
-				<li><?=form_dropdown('m_field_public', $m_field_public_options, set_value('m_field_public', $m_field_public))?></li>
+			<li>
+				<?=form_radio(array(
+					'name'        => 'm_field_public',
+					'id'          => 'm_field_public_y',
+					'value'       => 'y',
+					'checked'     => ($m_field_public == 'y') ? TRUE : FALSE))?>
+				<?=form_label(lang('yes'), 'm_field_public_y')?>
+				<?=repeater(NBS, 5)?>
+				<?=form_radio(array(
+					'name'        => 'm_field_public',
+					'id'          => 'm_field_public_n',
+					'value'       => 'n',
+					'checked'     => ($m_field_public == 'y') ? FALSE : TRUE))?>
+				<?=form_label(lang('no'), 'm_field_public_n')?>
+			</li>
+			</ul>
+			
+			<div class="label">
+			<?=lang('is_field_reg', 'm_field_reg')?>
+			</div>
+			<ul class="rounded">
+			<li>
+				<?=form_radio(array(
+					'name'        => 'm_field_reg',
+					'id'          => 'm_field_reg_y',
+					'value'       => 'y',
+					'checked'     => ($m_field_reg == 'y') ? TRUE : FALSE))?>
+				<?=form_label(lang('yes'), 'm_field_reg_y')?>
+				<?=repeater(NBS, 5)?>
+				<?=form_radio(array(
+					'name'        => 'm_field_reg',
+					'id'          => 'm_field_reg_n',
+					'value'       => 'n',
+					'checked'     => ($m_field_reg == 'y') ? FALSE : TRUE))?>
+				<?=form_label(lang('no'), 'm_field_reg_n')?>
+			</li>
 			</ul>
 
 			<div class="label">
-			<?=lang('is_field_reg', 'm_field_reg')?><br />
-			<?=lang('is_field_public_cont')?>
+			<?=lang('is_field_cp_reg', 'm_field_cp_reg')?>
 			</div>
 			<ul class="rounded">
-				<li><?=form_dropdown('m_field_reg', $m_field_reg_options, set_value('m_field_reg', $m_field_reg))?></li>
+			<li>
+				<?=form_radio(array(
+					'name'        => 'm_field_cp_reg',
+					'id'          => 'm_field_cp_reg_y',
+					'value'       => 'y',
+					'checked'     => ($m_field_cp_reg == 'y') ? TRUE : FALSE))?>
+				<?=form_label(lang('yes'), 'm_field_cp_reg_y')?>
+				<?=repeater(NBS, 5)?>
+				<?=form_radio(array(
+					'name'        => 'm_field_cp_reg',
+					'id'          => 'm_field_cp_reg_n',
+					'value'       => 'n',
+					'checked'     => ($m_field_cp_reg == 'y') ? FALSE : TRUE))?>
+				<?=form_label(lang('no'), 'm_field_cp_reg_n')?>
+			</li>
 			</ul>
+
 
 			<div class="container pad">* <?=lang('required_fields')?></div>
 
