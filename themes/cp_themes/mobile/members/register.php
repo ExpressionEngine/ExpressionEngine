@@ -45,6 +45,150 @@ if ($EE_view_disable !== TRUE)
 				<?=form_dropdown('group_id', $member_groups, set_value('group_id', 5), 'id="group_id"')?>
 			</li>
 		<?php endif;?>	
+		
+		
+		<li><?=form_label(lang('birthday'), 'bday_y')?><br />
+			<?=form_dropdown('bday_y', $bday_y_options, $bday_y, 'id="bday_y"').' '.
+				form_dropdown('bday_m', $bday_m_options, $bday_m, 'id="bday_m"').' '.
+				form_dropdown('bday_d', $bday_d_options, $bday_d, 'id="bday_d"')?>	
+		</li>
+
+		<li><?=form_label(lang('url'), 'url')?><br />
+				<?=form_input(array(
+					'id'=>'url',
+					'name'=>'url',
+					'class'=>'field',
+					'value'=>$url,
+					'max_length'=>75))?>	
+		</li>
+
+		<li><?=form_label(lang('location'), 'location')?><br />
+				<?=form_input(array(
+					'id'=>'location',
+					'name'=>'location',
+					'class'=>'field',
+					'value'=>$location,
+					'max_length'=>50))?>	
+		</li>
+
+		<li><?=form_label(lang('occupation'), 'occupation')?><br />
+				<?=form_input(array(
+					'id'=>'occupation',
+					'name'=>'occupation',
+					'class'=>'field',
+					'value'=>$occupation,
+					'max_length'=>80))?>	
+		</li>
+
+		<li><?=form_label(lang('interests'), 'interests')?><br />
+				<?=form_input(array(
+					'id'=>'interests',
+					'name'=>'interests',
+					'class'=>'field',
+					'value'=>$interests,
+					'max_length'=>75))?>	
+		</li>
+
+		<li><?=form_label(lang('aol_im'), 'aol_im')?><br />
+				<?=form_input(array(
+					'id'=>'aol_im',
+					'name'=>'aol_im',
+					'class'=>'field',
+					'value'=>$aol_im,
+					'max_length'=>50))?>	
+		</li>
+
+		<li><?=form_label(lang('icq'), 'icq')?><br />
+				<?=form_input(array(
+					'id'=>'icq',
+					'name'=>'icq',
+					'class'=>'field',
+					'value'=>$icq,
+					'max_length'=>50))?>	
+		</li>
+
+		<li><?=form_label(lang('yahoo_im'), 'yahoo_im')?><br />
+				<?=form_input(array(
+					'id'=>'yahoo_im',
+					'name'=>'yahoo_im',
+					'class'=>'field',
+					'value'=>$yahoo_im,
+					'max_length'=>50))?>	
+		</li>
+
+		<li><?=form_label(lang('msn_im'), 'msn_im')?><br />
+				<?=form_input(array(
+					'id'=>'msn_im',
+					'name'=>'msn_im',
+					'class'=>'field',
+					'value'=>$msn_im,
+					'max_length'=>50))?>	
+		</li>
+		
+		<li><?=form_label(lang('bio'), 'bio')?><br />
+				<?=form_textarea(array(
+					'id'=>'bio',
+					'rows'=> 12,
+					'name'=>'bio',
+					'class'=>'field',
+					'style'=>'width:99%;',  
+					'value'=>$bio))?>	
+		</li>	
+		
+			<?php
+			// Custom Fields
+			foreach($custom_profile_fields as $row)
+			{
+				$required  = ($row['m_field_required'] == 'n') ? '' : required();
+				
+				if ($row['m_field_type'] == 'textarea') // Textarea fieled types
+				{
+					$rows = ( ! isset($row['m_field_ta_rows'])) ? '10' : $row['m_field_ta_rows'];
+
+					echo '<li>'.form_error('m_field_id_'.$row['m_field_id']);
+					echo form_label($required.$row['m_field_label'], 'm_field_id_'.$row['m_field_id']).
+						BR.$row['m_field_description']; 
+					echo form_textarea(array(
+							'name'	=>	'm_field_id_'.$row['m_field_id'],
+							'class'	=>	'field',
+							'id'	=>	'm_field_id_'.$row['m_field_id'], 
+							'rows'	=>	$rows, 
+							'style'=>'width:99%;', 
+							'value'	=> 	set_value('m_field_id_'.$row['m_field_id'])));
+					echo '</li>';
+				}
+				elseif ($row['m_field_type'] == 'select') // Drop-down lists
+				{
+					$dropdown_options = array();
+					foreach (explode("\n", trim($row['m_field_list_items'])) as $v)
+					{
+						$v = trim($v);
+						$dropdown_options[$v] = $v;
+					}
+
+					echo '<li>'.form_error('m_field_id_'.$row['m_field_id']);
+					echo form_label($required.$row['m_field_label'], 'm_field_id_'.$row['m_field_id']).
+						BR.$row['m_field_description'];
+					echo form_dropdown('m_field_id_'.$row['m_field_id'], $dropdown_options, set_value('m_field_id_'.$row['m_field_id']), 'id="m_field_id_'.$row['m_field_id'].'"');
+					echo '</li>';
+				}
+				elseif ($row['m_field_type'] == 'text') // Text input fields
+				{
+					echo '<li>'.form_error('m_field_id_'.$row['m_field_id']);
+					echo form_label($required.$row['m_field_label'], 'm_field_id_'.$row['m_field_id']).
+						BR.$row['m_field_description'];
+					echo form_input(array(
+							'name'		=>	'm_field_id_'.$row['m_field_id'], 
+							'id'		=>	'm_field_id_'.$row['m_field_id'], 
+							'class'		=>	'field', 
+							'value'		=>	set_value('m_field_id_'.$row['m_field_id']), 
+							'maxlength'	=>	$row['m_field_maxl']));
+					echo '</li>';
+				}
+			}
+			
+		?>				
+		
 	</ul>
 	<?=form_submit('members', lang('register_member'), 'class="whiteButton"')?>
 	<?=form_close()?>
