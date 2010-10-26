@@ -2358,9 +2358,12 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}		
 		
 		$this->load->library('form_validation');
-		$this->load->helper(array('form', 'string'));
+		$this->load->helper(array('form', 'string', 'snippets'));
 		$this->lang->loadfile('myaccount');
 		$this->load->library('table');
+		$this->load->language('calendar');
+		
+		$vars['custom_profile_fields'] = array();
 		
 		$config = array(
 						array(
@@ -2394,6 +2397,80 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			   				'rules'  => 'required|integer'
 						)
 		            );
+
+		$stock_member_fields = array('url', 'location', 'occupation', 'interests', 'aol_im', 'yahoo_im', 'msn_im', 'icq', 'bio', 'bday_y', 'bday_m', 'bday_d');
+		
+		foreach ($stock_member_fields as $fname)
+		{
+			$vars[$fname] = '';
+
+			if ($this->input->post($fname) !== FALSE)
+			{
+				$vars[$fname] = $this->input->post($fname);
+			}
+		}
+
+
+		// Birthday Options
+		$vars['bday_d_options'] = array();
+
+		$vars['bday_y_options'][''] = $this->lang->line('year');
+		
+		for ($i = date('Y', $this->localize->now); $i > 1904; $i--)
+		{
+		  $vars['bday_y_options'][$i] = $i;
+		}
+
+		$vars['bday_m_options'] = array(
+							''	 => $this->lang->line('month'),
+							'01' => $this->lang->line('cal_january'),
+							'02' => $this->lang->line('cal_february'),
+							'03' => $this->lang->line('cal_march'),
+							'04' => $this->lang->line('cal_april'),
+							'05' => $this->lang->line('cal_mayl'),
+							'06' => $this->lang->line('cal_june'),
+							'07' => $this->lang->line('cal_july'),
+							'08' => $this->lang->line('cal_august'),
+							'09' => $this->lang->line('cal_september'),
+							'10' => $this->lang->line('cal_october'),
+							'11' => $this->lang->line('cal_november'),
+							'12' => $this->lang->line('cal_december')
+						);
+
+		$vars['bday_d_options'][''] = $this->lang->line('day');
+		
+		for ($i = 1; $i <= 31; $i++)
+		{
+		  $vars['bday_d_options'][$i] = $i;
+		}
+
+		if ($vars['url'] == '')
+		{
+		  $vars['url'] = 'http://';
+		}
+
+		// Extended profile fields
+		$query = $this->member_model->get_all_member_fields(array(array('m_field_cp_reg' => 'y')), FALSE);
+		
+		
+		if ($query->num_rows() > 0)
+		{
+			$vars['custom_profile_fields'] = $query->result_array();
+			
+			//  Add validation rules for custom fields
+			foreach ($query->result_array() as $row)
+			{
+				$required  = ($row['m_field_required'] == 'n') ? '' : 'required';
+				$c_config[] = array(
+							'field'  => 'm_field_id_'.$row['m_field_id'], 
+							'label'  => $row['m_field_label'], 
+							'rules'  => $required
+						);
+			}
+			
+			$config = array_merge($config, $c_config);
+		}
+
 
 		$this->form_validation->set_rules($config);
 		$this->form_validation->set_error_delimiters('<br /><span class="notice">', '</span>');
@@ -2481,7 +2558,46 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$data['group_id'] = ( ! $this->input->post('group_id')) ? 2 : $_POST['group_id'];
 
-		$member_id = $this->member_model->create_member($data);
+		$base_fields = array('bday_y', 'bday_m', 'bday_d', 'url', 'location', 'occupation', 'interests', 'aol_im',
+							'icq', 'yahoo_im', 'msn_im', 'bio');
+
+		foreach ($base_fields as $val)
+		{
+			$data[$val] = ($this->input->post($val) === FALSE) ? '' : $this->input->post($val, TRUE);
+		}
+
+		if (is_numeric($data['bday_d']) && is_numeric($data['bday_m']))
+		{
+			$year = ($data['bday_y'] != '') ? $data['bday_y'] : date('Y');
+			$mdays = $this->localize->fetch_days_in_month($data['bday_m'], $year);
+
+			if ($data['bday_d'] > $mdays)
+			{
+				$data['bday_d'] = $mdays;
+			}
+		}
+		
+		if ($data['url'] == 'http://')
+		{
+			$data['url'] = '';
+		}
+		
+		// Extended profile fields
+		$cust_fields = FALSE;
+		$query = $this->member_model->get_all_member_fields(array(array('m_field_cp_reg' => 'y')), FALSE);
+		
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				if ($this->input->post('m_field_id_'.$row['m_field_id']) !== FALSE)
+				{
+					$cust_fields['m_field_id_'.$row['m_field_id']] = $this->input->post('m_field_id_'.$row['m_field_id'], TRUE);
+				}
+			}
+		}
+
+		$member_id = $this->member_model->create_member($data, $cust_fields);
 
 		// Write log file
 
@@ -2783,7 +2899,13 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		{
 			$m_field_reg = 'n';
 		}
-	
+
+		if ($m_field_cp_reg == '')
+		{
+			$m_field_cp_reg = 'n';
+		}
+
+
 		$vars['m_field_name'] = $m_field_name;
 		$vars['m_field_label'] = $m_field_label;
 		$vars['m_field_description'] = $m_field_description;
@@ -2855,7 +2977,19 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
                                                 'y'   => lang('yes')
 		                                        );
 
-        $vars['m_field_reg'] = $m_field_reg;
+
+		// Set our radio values- overriding w/post data if it exists
+		foreach (array('m_field_required', 'm_field_public', 'm_field_reg', 'm_field_cp_reg') as $fname)
+		{
+			if ($this->input->post($fname) !== FALSE)
+			{
+				$vars[$fname] = $this->input->post($fname);
+			}
+			else
+			{
+				$vars[$fname] = $$fname;
+			}
+		}
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line($title));
 
@@ -2898,10 +3032,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$this->form_validation->set_rules("m_field_maxl", '', '');
 		$this->form_validation->set_rules("m_field_ta_rows", '', '');
 		$this->form_validation->set_rules("m_field_fmt", '', '');
-		$this->form_validation->set_rules("m_field_required", '', '');
-		$this->form_validation->set_rules("m_field_public", '', '');
-		$this->form_validation->set_rules("m_field_reg", '', '');
-		
+				
 		$this->form_validation->set_error_delimiters('<br /><span class="notice">', '</span>');
 		
 	}

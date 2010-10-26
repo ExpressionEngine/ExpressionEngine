@@ -778,6 +778,9 @@ $lang = array(
 "is_field_reg" =>
 "Is field visible in registration page?",
 
+"is_field_cp_reg" =>
+"Is field visible in the control panel's administrative registration page?",
+
 "field_width" =>
 "Field Width",
 
