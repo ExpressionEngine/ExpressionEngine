@@ -419,9 +419,10 @@ class Member_model extends CI_Model {
 	 *
 	 * @access	public
 	 * @param	array
+	 * @param	mixed // custom member data optional
 	 * @return	int		member id
 	 */
-	function create_member($data = array())
+	function create_member($data = array(), $cdata = FALSE)
 	{
 		// Insert into the main table
 		$this->db->insert('members', $data);
@@ -430,7 +431,14 @@ class Member_model extends CI_Model {
 		$member_id = $this->db->insert_id();
 
 		// Create a record in the custom field table
-		$this->db->insert('member_data', array('member_id' => $member_id));
+		if ($cdata)
+		{
+			$this->db->insert('member_data', array_merge(array('member_id' => $member_id), $cdata));
+		}
+		else
+		{
+			$this->db->insert('member_data', array('member_id' => $member_id));
+		}
 
 		// Create a record in the member homepage table
 		$this->db->insert('member_homepage', array('member_id' => $member_id));
