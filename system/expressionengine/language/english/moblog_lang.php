@@ -33,47 +33,17 @@ $lang = array(
 'channel' =>
 'Channel',
 
-'gallery' =>
-'Gallery',
-
-'moblog_gallery_settings' =>
-'Gallery Settings for Moblog',
-
-'gallery_id'	=>
-'Choose Gallery',
-
-'gallery_cat' =>
-'Entry Category',
-
-'gallery_status' =>
-'Entry Status',
-
-'gallery_comments' =>
-'Allow Comments',
-
 'ping_sites' =>
 'Sites To Ping',
 
 'ping_servers' =>
 'Ping Servers',
 
-'choose_gallery_category' =>
-'You Must Choose a Category for Your Gallery Entry',
-
-'choose_gallery' =>
-'You Must Choose Gallery for Entry',
-
-'invalid_gallery' =>
-'Invalid Gallery Chosen for Entries',
-
 'invalid_upload_directory' =>
 'Invalid Upload Directory',
 
 'upload_directory_unwriteable' =>
 'Unable to Write File to Upload Directory',
-
-'gallery_author' =>
-'Default Author',
 
 'pings_sent' =>
 'Pings Sent:',

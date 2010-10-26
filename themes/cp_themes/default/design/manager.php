@@ -53,10 +53,10 @@ if ($EE_view_disable !== TRUE)
 			<div id="templates">
 				<div class="column">					
 					<div class="linkBar">
-						<?php if ($search_terms):?><div style="float:left"><h2><?=lang('search_terms')?> <?=$search_terms?></h2></div><?php endif;?>
+						<?php if ($search_terms):?><div style="float:left"><h2><?=lang('you_searched_for')?> <strong class="notice"><?=$search_terms?></strong> (<?=$result_count?>)</h2></div><?php endif;?>
 						<div class="search">
 							<?=form_open('C=design'.AMP.'M=manager')?>
-								<input type="text" id="template_keywords" name="template_keywords" value="" maxlength="80" class="input" />
+								<input type="text" id="template_keywords" name="template_keywords" value="<?=set_value('template_keywords')?>" maxlength="80" class="input" />
 							</form>
 						</div>
 					</div>

@@ -617,6 +617,9 @@ ExpressionEngine tags, variables, or PHP, consider <a href =\'%s\'>Global Variab
 'search_terms' =>
 'Search Terms:',
 
+'you_searched_for' =>
+"You've Searched For: ",
+
 'xml' =>
 'XML',
 

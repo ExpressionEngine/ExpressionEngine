@@ -65,17 +65,8 @@ $lang = array(
 'related_to_channel' =>
 'Relate channel entries to other channel entries',
 
-'related_to_gallery' =>
-'Relate channel entries to gallery entries',
-
 'select_related_channel' =>
 'Select the channel you wish to create a relationship with:',
-
-'select_related_gallery' =>
-'Select the Gallery you wish to create a relationship with:',
-
-'gallery_not_installed' =>
-'The Gallery Module is not currently installed.',
 
 'rss_url' =>
 'RSS Feed URL',

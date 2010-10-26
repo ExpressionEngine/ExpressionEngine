@@ -32,18 +32,6 @@ $lang = array(
 'forum_post_notification' =>
 'User Notification of Forum Posts',
 
-'gallery_comment_notification' =>
-'User Gallery Comment Notification',
-
-'gallery_comment_notification_desc' =>
-'This template defines the message that a user receives when someone has responded to their commment',
-
-'admin_notify_gallery_comment' =>
-'Admin Notification of Gallery Comments',
-
-'admin_notify_gallery_comment_desc' =>
-'This template defines the message that an admin receives when a comment is submitted in the gallery',
-
 'email_title' =>
 'Email Title',
 

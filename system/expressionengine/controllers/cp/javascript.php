@@ -227,7 +227,6 @@ class Javascript extends Controller {
 		/*  - Added 2.1.2
 		*/
 			$str = $this->extensions->call('cp_js_end');
-			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
 		
@@ -278,8 +277,7 @@ class Javascript extends Controller {
 				{
 					$file = $file.'/javascript/'.$file;
 				}
-			
-				if ($type == 'file')
+				elseif ($type == 'file')
 				{
 					$parts = explode('/', $file);
 					$file = array();

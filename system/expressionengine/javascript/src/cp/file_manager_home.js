@@ -16,8 +16,9 @@
 
 "use strict";
 
+// Add a parser for filesize
 $.tablesorter.addParser({ 
-	id: 'filesize', 
+	id: 'ee_filesize', 
 	is: function (s) {
 		return false; 
 	}, 
@@ -28,12 +29,25 @@ $.tablesorter.addParser({
 	type: 'numeric' 
 });
 
+// Add a parser for dates
+$.tablesorter.addParser({ 
+	id: 'ee_date', 
+	is: function (s) {
+		return false; 
+	}, 
+	format: function (s, table, node) {
+		return $(node).attr('data-rawdate');
+	}, 
+	type: 'numeric' 
+});
+
 
 $(document).ready(function () {
 
 	$(".mainTable").tablesorter({
 		headers: {
-			1: {sorter: "filesize"},
+			1: {sorter: "ee_filesize"},
+			3: {sorter: "ee_date"},
 			4: {sorter: false},
 			5: {sorter: false},
 			6: {sorter: false}
@@ -255,6 +269,7 @@ $(document).ready(function () {
 			
 		$("#files_form").attr("action", action.replace(/delete_files_confirm/, "download_files"));
 		$("#files_form").submit();
+		$("#files_form").attr("action", action);
 		
 		return false;
 	});

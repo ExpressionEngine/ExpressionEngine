@@ -1320,14 +1320,6 @@ class Member_settings extends Member {
 		if ($query->row('email')  != $_POST['email'])
 		{
 			$this->EE->db->query($this->EE->db->update_string('exp_comments', array('email' => $_POST['email']), "author_id = '".$this->EE->session->userdata('member_id')."'"));
-
-			// We need to update the gallery comments
-			// But!  Only if the table exists
-
-			if ($this->EE->db->table_exists('exp_gallery_comments'))
-			{
-				$this->EE->db->query($this->EE->db->update_string('exp_gallery_comments', array('email' => $_POST['email']), "author_id = '".$this->EE->session->userdata('member_id')."'"));
-			}
 		}
 
 		/** -------------------------------------
@@ -1487,14 +1479,6 @@ class Member_settings extends Member {
 		if ($query->row('screen_name')  != $_POST['screen_name'])
 		{
 			$this->EE->db->query($this->EE->db->update_string('exp_comments', array('name' => $_POST['screen_name']), "author_id = '".$this->EE->session->userdata('member_id')."'"));
-
-			// We need to update the gallery comments
-			// But!  Only if the table exists
-
-			if ($this->EE->db->table_exists('exp_gallery_comments'))
-			{
-				$this->EE->db->query($this->EE->db->update_string('exp_gallery_comments', array('name' => $_POST['screen_name']), "author_id = '".$this->EE->session->userdata('member_id')."'"));
-			}
 
 			$this->EE->session->userdata['screen_name'] = stripslashes($_POST['screen_name']);
 		}
