@@ -2511,7 +2511,8 @@ class Admin_content extends Controller {
 
 		$this->functions->clear_caching('relationships');
 
-		return $this->category_editor($group_id, $update);
+		$this->session->set_flashdata('message_success', $this->lang->line('preference_updated'));
+		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP."group_id={$group_id}");
 	}
 
 	// --------------------------------------------------------------------
