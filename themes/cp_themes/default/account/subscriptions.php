@@ -10,7 +10,7 @@
 			$this->table->set_heading(
 				lang('title'), 
 				lang('type'), 
-				array('style'=>'width:2%','data'=>form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"'))
+				array('style'=>'width:5%','data'=>form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"'))
 			);
 
 			if (count($subscriptions) == 0) // No results?  Bah, how boring...
