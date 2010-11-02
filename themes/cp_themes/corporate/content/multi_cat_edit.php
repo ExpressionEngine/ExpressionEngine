@@ -10,11 +10,11 @@ if ($EE_view_disable !== TRUE)
 
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
-	<div class="contents multi_edit">
+	<div class="contents">
 	
 		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
-        <div id="registerUser">	
-
+        <div class="pageContents">	
+		<div style="padding:25px">
 		<?php $this->load->view('_shared/message');?>
 
 		<?php if(count($cats) > 0):?>
@@ -24,7 +24,7 @@ if ($EE_view_disable !== TRUE)
 		<h3><?=$this->lang->line('categories')?></h3>
 
         <?php foreach ($cats as $key => $val):?>
-		<fieldset><legend><?=$key?></legend>
+		<fieldset style="margin-bottom:25px"><legend><?=$key?></legend>
 			<?php foreach ($val as $v):?>
 				<?php $indent = ($v['5'] != 1) ? repeater(NBS.NBS.NBS.NBS, $v['5']) : '';    ?>
 				<?=$indent.form_checkbox('category[]', $v['0'], $v['4'], 'style="width:auto!important;"').NBS.NBS.$v['1']?><br />
@@ -34,21 +34,27 @@ if ($EE_view_disable !== TRUE)
 
 		<?php if ($edit_categories_link !== FALSE):?>
 
-		<div>
 		<?php if (count($edit_categories_link) == 1):?>
 			<a href="<?=$edit_categories_link['0']['url']?>"><?=lang('edit_categories')?></a>
 		<?php else: ?>
+			<?php
+				$total_results = count($edit_categories_link);
+				$count = 0;
+			?>
 			<?php foreach ($edit_categories_link as $link) : ?>
-				<a href="<?=$link['url']?>"><?=$link['group_name']?></a>, 
+				<?php $count++;?>
+				<a href="<?=$link['url']?>"><?=$link['group_name']?></a>
+				<?php if ($count != $total_results):?>, <?php endif;?> 
 			<?php endforeach; endif;?>
-		</div>
 		<?php endif;?>
 		
-		<div><?=form_submit('update_entries', lang('update'), 'class="submit"')?></div>
+		<p><?=form_submit('update_entries', lang('update'), 'class="submit"')?></p>
 
 		<?=form_close()?>
 
+	
 	<?php endif; ?>
+		</div>
 	</div>
 
 	</div> <!-- contents -->
