@@ -3391,25 +3391,6 @@ class Design extends Controller {
 			$vars['result_count'] = $query->num_rows();	
 		}
 		
-		
-		
-		// if ($query->num_rows() == 0)
-		// {
-		// 	if ($vars['search_terms'] !== FALSE)
-		// 	{
-		// 		// I'm using htmlentities here and not sanitize_search_terms from the
-		// 		// search helper on purpose.  We want <script>alert('boo');</script> to
-		// 		// show up on the page so there is feedback to *exactly* what was searched for
-		// 		// the search helper is a bit too overzealous for what is needed here.
-		// 		$vars['search_terms'] = htmlentities($vars['search_terms']);
-		// 		$vars['no_results'] = $this->lang->line('no_results');
-		// 	}
-		// 	else
-		// 	{
-		// 		$vars['no_results'] = $this->lang->line('no_templates_available');
-		// 	}
-		// }
-		
 		// template access restrictions query
 		$denied_groups = $this->design_model->template_access_restrictions();
 		
@@ -3498,6 +3479,17 @@ class Design extends Controller {
 		$vars['table_template'] = array(
 					'table_open'			=> '<table class="templateTable" border="0" cellspacing="0" cellpadding="0">'
 		);
+
+		if ($vars['result_count'] !== NULL) 
+		{
+			$vars['result_count_lang'] = sprintf(
+											$this->lang->line('tmpl_search_result'),
+											$vars['result_count'],
+											count($displayed_groups)
+									);
+
+		}
+
 
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 

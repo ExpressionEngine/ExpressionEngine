@@ -11,7 +11,14 @@ if ($EE_view_disable !== TRUE)
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
-		<div class="heading"><h2><?=lang('template_management')?></h2></div>
+		<div class="heading" style="position:relative">
+			<h2><?=lang('template_management')?></h2>
+			<div class="search" id="templateGroupSearch">
+				<?=form_open('C=design'.AMP.'M=manager')?>
+					<input type="text" id="template_keywords" name="template_keywords" value="<?=set_value('template_keywords')?>" maxlength="80" class="input" />
+				</form>
+			</div>	
+		</div>
 				<div class="pageContents">
 		<div class="formArea">
 
@@ -52,15 +59,18 @@ if ($EE_view_disable !== TRUE)
 
 			<div id="templates">
 				<div class="column">					
-					<div class="linkBar">
-						
-						<div class="search">
-							<?=form_open('C=design'.AMP.'M=manager')?>
-								<input type="text" id="template_keywords" name="template_keywords" value="<?=set_value('template_keywords')?>" maxlength="80" class="input" />
-							</form>
-						</div>
+					<div class="searchResults">
+						<?php if ($search_terms):?>
+						<div>
+							<h3><?=lang('search_terms')?></h3>
+							<div><strong class="notice"><?=$search_terms?></strong></div>
+							<?php if ($result_count != 0):?>
+							<?=$result_count_lang?>
+							<?php endif; ?>
+						</div><?php endif;?>
+
 					</div>
-<?php if ($search_terms):?><div style=" width:100%"><h2><?=lang('you_searched_for')?> <strong class="notice"><?=$search_terms?></strong> (<?=$result_count?>)</h2></div><?php endif;?>
+
 					<?=$this->load->view('_shared/message')?>
 					
 				<?php if ($can_admin_templates): ?>

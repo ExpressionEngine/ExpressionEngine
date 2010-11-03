@@ -1480,6 +1480,11 @@ span.ee_notice_icon {
 	margin-left:		16px;
 }
 
+#template_keywords {
+	width:				200px;	
+}
+
+
 .del_row {
 	display:			none;
 	text-align:			center;
@@ -1667,6 +1672,7 @@ div#templates {
 #templateGroups .linkBar, #templates .linkBar, #templateEditor .linkBar {
 	min-height:			28px;
 	padding:			10px 0;
+
 }
 
 #templateGroups .groupList {

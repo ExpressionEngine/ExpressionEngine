@@ -611,14 +611,15 @@ ExpressionEngine tags, variables, or PHP, consider <a href =\'%s\'>Global Variab
 'search' =>
 'Search',
 
+'tmpl_search_result' =>
+'(%s) Results in (%s) Template Groups',
+
+
 'no_results' =>
 'The search term you submitted was not found in any of your templates.',
 
 'search_terms' =>
 'Search Terms:',
-
-'you_searched_for' =>
-"You've Searched For: ",
 
 'xml' =>
 'XML',
