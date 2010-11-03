@@ -26,6 +26,7 @@ class MyAccount extends Controller {
 
 	var $id			= '';
 	var $username	= '';
+	var $unique_dates = array();
 
 	/**
 	 * Constructor
@@ -1191,6 +1192,7 @@ class MyAccount extends Controller {
 		$this->load->helper(array('form', 'snippets', 'url', 'string'));
 		$this->load->library('table');
 		$this->load->library('pagination');
+		$this->load->library('members');
 		$this->cp->get_installed_modules();
 
 		$vars['cp_page_title'] = $this->lang->line('subscriptions');
@@ -1221,19 +1223,15 @@ class MyAccount extends Controller {
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		// Set some base values
-		$channel_subscriptions		= FALSE;
-		$galery_subscriptions	= FALSE;
-		$forum_subscriptions	= FALSE;
-		$result_ids				= array();
 		$vars['subscriptions']	= array();
-		$perpage				= 50;
 		$total_count			= 0;
+		$perpage				= 50;
 		$rownum					= ($this->input->get_post('per_page') == '') ? 0 : $this->input->get_post('per_page');
-		$qm						= ($this->config->item('force_query_string') == 'y') ? '' : '?';
+
 
 		$vars['form_hidden']['id'] = $this->id;
 
-		$query = $this->member_model->get_member_data($this->id, array('email'));
+		$query = $this->member_model->get_member_data($this->id, array('email'), $perpage);
 
 		if ($query->num_rows() != 1)
 		{
@@ -1242,146 +1240,13 @@ class MyAccount extends Controller {
 
 		$email = $query->row('email') ;
 
-		if (isset($this->cp->installed_modules['comment']))
-		{
-			// Fetch Channel Comments
-			$this->db->distinct();
-			$this->db->select('comment_subscriptions.entry_id');
-			$this->db->from('comment_subscriptions');
-			$this->db->join('comments', 'comment_subscriptions.entry_id = comments.entry_id', 'left');
-			$this->db->where('member_id', $this->id);
-			$this->db->order_by("comment_date", "desc"); 
-			$query = $this->db->get();
-			
-			if ($query->num_rows() > 0)
-			{
-				$channel_subscriptions = TRUE;
+		$subscription_data = $this->members->get_member_subscriptions($this->id, $rownum);
 
-				foreach ($query->result_array() as $row)
-				{
-					$result_ids[$total_count.'b'] = $row['entry_id'];
-					$total_count++;
-				}
-			}
-		}
-
-		// Fetch Forum Topic Subscriptions
-		// Since the forum module might not be installed we'll test for it first.
-
-		if (isset($this->cp->installed_modules['forum']))
-		{
-			$query = $this->db->query("SELECT topic_id FROM exp_forum_subscriptions WHERE member_id = '".$this->db->escape_str($this->id)."' ORDER BY subscription_date DESC");
-
-			if ($query->num_rows() > 0)
-			{
-				$forum_subscriptions = TRUE;
-
-				foreach ($query->result_array() as $row)
-				{
-					$result_ids[$total_count.'f'] = $row['topic_id'];
-					$total_count++;
-				}
-			}
-		}
-
-		ksort($result_ids); // Sort the array
-
-		$result_ids = array_slice($result_ids, $rownum, $perpage);
-
-		// Fetch Channel Titles
-		if ($channel_subscriptions == TRUE)
-		{
-			$sql = "SELECT
-					exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.channel_id, exp_channel_titles.entry_id, exp_channel_titles.recent_comment_date, 
-					exp_channels.comment_url, exp_channels.channel_url 
-					FROM exp_channel_titles
-					LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id
-					WHERE entry_id IN (";
-
-			$idx = '';
-
-			foreach ($result_ids as $key => $val)
-			{
-				if (substr($key, strlen($key)-1) == 'b')
-				{
-					$idx .= $val.",";
-				}
-			}
-
-			$idx = substr($idx, 0, -1);
-
-			if ($idx != '')
-			{
-				$query = $this->db->query($sql.$idx.') ');
-
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{
-						$row['title'] = str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), $row['title']);
-
-						$path = reduce_double_slashes($this->functions->prep_query_string(($row['comment_url'] != '') ? $row['comment_url'] : $row['channel_url']).'/'.$row['url_title'].'/');
-
-						$vars['subscriptions'][] = array(
-												'title' => $row['title'],
-												'active_date' => $row['recent_comment_date'],
-												'url_title' => url_title($row['title']),
-												'path' => $this->functions->fetch_site_index().$qm.'URL='.$path,
-												'id'	=> 'b'.$row['entry_id'],
-												'type'	=> $this->lang->line('comment')
-												);
-					}
-				}
-			}
-		}
-
-		// Fetch Forum Topics
-		if ($forum_subscriptions == TRUE)
-		{
-			$sql = "SELECT title, topic_id, board_forum_url, last_post_date FROM exp_forum_topics, exp_forum_boards
-					WHERE exp_forum_topics.board_id = exp_forum_boards.board_id
-					AND topic_id IN (";
-
-			$idx = '';
-
-			foreach ($result_ids as $key => $val)
-			{
-				if (substr($key, strlen($key)-1) == 'f')
-				{
-					$idx .= $val.",";
-				}
-			}
-
-			$idx = substr($idx, 0, -1);
-
-			if ($idx != '')
-			{
-				$query = $this->db->query($sql.$idx.') ');
-
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{
-						$row['title'] = str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), $row['title']);
-
-						$path = reduce_double_slashes($this->functions->prep_query_string($row['board_forum_url'] ).'/viewthread/'.$row['topic_id'].'/');
-
-						$vars['subscriptions'][] = array(
-												'title' => $row['title'],
-												'active_date' => $row['last_post_date'],
-												'url_title' => url_title($row['title']),
-												'path' => $this->functions->fetch_site_index().$qm.'URL='.$path,
-												'id'	=> 'f'.$row['topic_id'],
-												'type'	=> $this->lang->line('forum_post')
-												);
-					}
-				}
-			}
-		}
+		$vars['subscriptions'] = $subscription_data['result_array'];
 
 		// Pagination stuff
 		$config['base_url'] = BASE.AMP.'C=myaccount'.AMP.'M=subscriptions';
-		$config['total_rows'] = $total_count;
+		$config['total_rows'] = $subscription_data['total_results'];
 		$config['per_page'] = $perpage;
 		$config['page_query_string'] = TRUE;
 		$config['full_tag_open'] = '<p id="paginationLinks">';
