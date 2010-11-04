@@ -21,7 +21,7 @@ if ($EE_view_disable !== TRUE)
 		<li>
 			<?=form_error('password')?>
 			<?=form_label(lang('password'), 'password')?><br />
-			<?=form_password(array('id'=>'password','name'=>'password','class'=>'long_field','value'=>set_value('password'), 'placeholder' => lang('password')))?>
+			<?=form_password(array('id'=>'password','name'=>'password','class'=>'long_field','value'=>set_value('password'), 'maxlength'=>40, 'placeholder' => lang('password')))?>
 		</li>
 		<li>
 			<?=form_error('password_confirm')?>

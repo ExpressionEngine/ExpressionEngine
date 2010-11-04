@@ -16,7 +16,7 @@
 	<?=lang('url', 'url')?>
 </div>
 <ul>
-	<li><?=form_input(array('id'=>'url','name'=>'url','class'=>'field','value'=>$url,'maxlength'=>75))?></li>
+	<li><?=form_input(array('id'=>'url','name'=>'url','class'=>'field','value'=>$url,'maxlength'=>150))?></li>
 </ul>
 
 <div class="label">
@@ -37,7 +37,7 @@
 	<?=lang('interests', 'interests')?>
 </div>
 <ul>
-	<li><?=form_input(array('id'=>'interests','name'=>'interests','class'=>'field','value'=>$interests,'maxlength'=>75))?></li>
+	<li><?=form_input(array('id'=>'interests','name'=>'interests','class'=>'field','value'=>$interests,'maxlength'=>120))?></li>
 </ul>
 
 <div class="label">

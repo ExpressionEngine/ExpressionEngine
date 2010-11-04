@@ -14,7 +14,7 @@
 
 		<p>
 			<?=lang('url', 'url')?>
-			<?=form_input(array('id'=>'url','name'=>'url','class'=>'field','value'=>$url,'maxlength'=>75))?>
+			<?=form_input(array('id'=>'url','name'=>'url','class'=>'field','value'=>$url,'maxlength'=>150))?>
 		</p>
 
 		<p>
@@ -29,7 +29,7 @@
 
 		<p>
 			<?=lang('interests', 'interests')?>
-			<?=form_input(array('id'=>'interests','name'=>'interests','class'=>'field','value'=>$interests,'maxlength'=>75))?>
+			<?=form_input(array('id'=>'interests','name'=>'interests','class'=>'field','value'=>$interests,'maxlength'=>120))?>
 		</p>
 
 		<p>
