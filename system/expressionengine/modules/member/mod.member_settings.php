@@ -111,7 +111,6 @@ class Member_settings extends Member {
 					array($this->EE->lang->line('mbr_not_allowed_to_view_profiles')));
 		}
 
-
 		// No member id, no view
 		if ($this->cur_id == '')
 		{
