@@ -131,7 +131,7 @@ class EE_Form_validation extends CI_Form_validation {
 
 		// Is username max length correct?
 		
-		if (strlen($str) > 32)
+		if (strlen($str) > 50)
 		{
 			$this->set_message('valid_username', $this->EE->lang->line('username_password_too_long'));      
 			return FALSE;
@@ -269,7 +269,7 @@ class EE_Form_validation extends CI_Form_validation {
 		
 		// Is password max length correct?
 		
-		if (strlen($str) > 32)
+		if (strlen($str) > 40)
 		{
 			$this->set_message('valid_password', $this->EE->lang->line('username_password_too_long'));
 		}		

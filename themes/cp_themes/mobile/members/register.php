@@ -16,7 +16,7 @@ if ($EE_view_disable !== TRUE)
 		<li>
 			<?=form_error('username')?>
 			<?=form_label(lang('username'), 'username')?><br />
-			<?=form_input(array('id'=>'username', 'name'=>'username', 'value'=>set_value('username'), 'placeholder' => lang('username')))?>
+			<?=form_input(array('id'=>'username', 'name'=>'username', 'value'=>set_value('username'), 'max_length'=>50, 'placeholder' => lang('username')))?>
 		</li>
 		<li>
 			<?=form_error('password')?>
@@ -26,17 +26,17 @@ if ($EE_view_disable !== TRUE)
 		<li>
 			<?=form_error('password_confirm')?>
 			<?=form_label(lang('password_confirm'), 'password_confirm')?><br />
-			<?=form_password(array('id'=>'password_confirm','name'=>'password_confirm','value'=>set_value('password_confirm'), 'placeholder' => lang('password_confirm')))?>
+			<?=form_password(array('id'=>'password_confirm','name'=>'password_confirm','value'=>set_value('password_confirm'), 'max_length'=>40, 'placeholder' => lang('password_confirm')))?>
 		</li>		
 		<li>
 			<?=form_error('screen_name')?>
 			<?=form_label(lang('screen_name'), 'screen_name')?><br />
-			<?=form_input(array('id'=>'screen_name','name'=>'screen_name','class'=>'long_field','value'=>set_value('screen_name'), 'placeholder' => lang('screen_name')))?>
+			<?=form_input(array('id'=>'screen_name','name'=>'screen_name','class'=>'long_field','value'=>set_value('screen_name'), 'max_length'=>50, 'placeholder' => lang('screen_name')))?>
 		</li>
 		
 		<li><?=form_error('email')?>
 			<?=form_label(lang('email'), 'email')?><br />
-			<?=form_input(array('id'=>'email','name'=>'email','class'=>'long_field','value'=>set_value('email'), 'placeholder' => lang('email')))?>	
+			<?=form_input(array('id'=>'email','name'=>'email','class'=>'long_field','value'=>set_value('email'), 'max_length'=>72, 'placeholder' => lang('email')))?>	
 		</li>
 		<?php if ($this->cp->allowed_group('can_admin_mbr_groups')):?>			
 			<li>
@@ -59,7 +59,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'url',
 					'class'=>'field',
 					'value'=>$url,
-					'max_length'=>75))?>	
+					'max_length'=>150))?>	
 		</li>
 
 		<li><?=form_label(lang('location'), 'location')?><br />
@@ -86,7 +86,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'interests',
 					'class'=>'field',
 					'value'=>$interests,
-					'max_length'=>75))?>	
+					'max_length'=>120))?>	
 		</li>
 
 		<li><?=form_label(lang('aol_im'), 'aol_im')?><br />

@@ -28,14 +28,14 @@
 	<?=lang('new_password', 'password')?>
 </div>
 <ul>
-	<li><?=form_password(array('id'=>'password','name'=>'password','class'=>'field','value'=>'','max_length'=>32))?></li>
+	<li><?=form_password(array('id'=>'password','name'=>'password','class'=>'field','value'=>'', 'max_length'=>40))?></li>
 </ul>
 
 <div class="label">
 	<?=lang('new_password_confirm', 'password_confirm')?>
 </div>
 <ul>
-	<li><?=form_password(array('id'=>'password_confirm','name'=>'password_confirm','class'=>'field','value'=>'','max_length'=>32))?></li>
+	<li><?=form_password(array('id'=>'password_confirm','name'=>'password_confirm','class'=>'field','value'=>'','max_length'=>40))?></li>
 </ul>
 
 <?php if ($this->session->userdata('group_id') != 1):?>
@@ -46,7 +46,7 @@
 	<?=lang('existing_password', 'current_password')?>
 </div>
 <ul>
-	<li><?=form_password(array('id'=>'current_password','name'=>'current_password','class'=>'field','value'=>'','max_length'=>32))?></li>
+	<li><?=form_password(array('id'=>'current_password','name'=>'current_password','class'=>'field','value'=>'','max_length'=>40))?></li>
 </ul>
 
 <?php endif;?>

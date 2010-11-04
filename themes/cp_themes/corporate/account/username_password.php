@@ -25,12 +25,12 @@
 
 			<p>
 				<?=lang('new_password', 'password')?>
-				<?=form_password(array('id'=>'password','name'=>'password','class'=>'field','value'=>'','max_length'=>32))?>
+				<?=form_password(array('id'=>'password','name'=>'password','class'=>'field','value'=>'','max_length'=>40))?>
 			</p>
 
 			<p class="noback">
 				<?=lang('new_password_confirm', 'password_confirm')?>
-				<?=form_password(array('id'=>'password_confirm','name'=>'password_confirm','class'=>'field','value'=>'','max_length'=>32))?>
+				<?=form_password(array('id'=>'password_confirm','name'=>'password_confirm','class'=>'field','value'=>'','max_length'=>40))?>
 			</p>
 
 			<?php if ($this->session->userdata('group_id') != 1):?>
@@ -39,7 +39,7 @@
 
 			<p class="noback">
 				<?=lang('existing_password', 'current_password')?>
-				<?=form_password(array('id'=>'current_password','name'=>'current_password','class'=>'field','value'=>'','max_length'=>32))?>
+				<?=form_password(array('id'=>'current_password','name'=>'current_password','class'=>'field','value'=>'','max_length'=>40))?>
 			</p>
 
 			<?php endif;?>

@@ -135,12 +135,12 @@ input.submit:hover{
 		<dl>
 			<dt><?=lang('username', 'username')?>:</dt>
 			<dd>
-				<?=form_input(array('style' => 'width:90%', 'size' => '35', 'dir' => 'ltr', 'name' => "username", 'id' => "username", 'value' => $username, 'maxlength' => 32))?>
+				<?=form_input(array('style' => 'width:90%', 'size' => '35', 'dir' => 'ltr', 'name' => "username", 'id' => "username", 'value' => $username, 'maxlength' => 50))?>
 			</dd>
 
 			<dt><?=lang('password', 'password')?>:</dt>
 			<dd>
-			  <?=form_password(array('style' => 'width:90%', 'size' => '32', 'dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => 32))?> 
+			  <?=form_password(array('style' => 'width:90%', 'size' => '32', 'dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => 40))?> 
 			</dd>
 		</dl>
 		
