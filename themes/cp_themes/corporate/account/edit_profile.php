@@ -14,42 +14,42 @@
 
 		<p>
 			<?=lang('url', 'url')?>
-			<?=form_input(array('id'=>'url','name'=>'url','class'=>'fullfield','value'=>$url,'max_length'=>75))?>
+			<?=form_input(array('id'=>'url','name'=>'url','class'=>'fullfield','value'=>$url,'maxlength'=>150))?>
 		</p>
 
 		<p>
 			<?=lang('location', 'location')?>
-			<?=form_input(array('id'=>'location','name'=>'location','class'=>'fullfield','value'=>$location,'max_length'=>50))?>
+			<?=form_input(array('id'=>'location','name'=>'location','class'=>'fullfield','value'=>$location,'maxlength'=>50))?>
 		</p>
 
 		<p>
 			<?=lang('occupation', 'occupation')?>
-			<?=form_input(array('id'=>'occupation','name'=>'occupation','class'=>'fullfield','value'=>$occupation,'max_length'=>80))?>
+			<?=form_input(array('id'=>'occupation','name'=>'occupation','class'=>'fullfield','value'=>$occupation,'maxlength'=>80))?>
 		</p>
 
 		<p>
 			<?=lang('interests', 'interests')?>
-			<?=form_input(array('id'=>'interests','name'=>'interests','class'=>'fullfield','value'=>$interests,'max_length'=>75))?>
+			<?=form_input(array('id'=>'interests','name'=>'interests','class'=>'fullfield','value'=>$interests,'maxlength'=>120))?>
 		</p>
 
 		<p>
 			<?=lang('aol_im', 'aol_im')?>
-			<?=form_input(array('id'=>'aol_im','name'=>'aol_im','class'=>'fullfield','value'=>$aol_im,'max_length'=>50))?>
+			<?=form_input(array('id'=>'aol_im','name'=>'aol_im','class'=>'fullfield','value'=>$aol_im,'maxlength'=>50))?>
 		</p>
 
 		<p>
 			<?=lang('icq', 'icq')?>
-			<?=form_input(array('id'=>'icq','name'=>'icq','class'=>'fullfield','value'=>$icq,'max_length'=>50))?>
+			<?=form_input(array('id'=>'icq','name'=>'icq','class'=>'fullfield','value'=>$icq,'maxlength'=>50))?>
 		</p>
 
 		<p>
 			<?=lang('yahoo_im', 'yahoo_im')?>
-			<?=form_input(array('id'=>'yahoo_im','name'=>'yahoo_im','class'=>'fullfield','value'=>$yahoo_im,'max_length'=>50))?>
+			<?=form_input(array('id'=>'yahoo_im','name'=>'yahoo_im','class'=>'fullfield','value'=>$yahoo_im,'maxlength'=>50))?>
 		</p>
 
 		<p>
 			<?=lang('msn_im', 'msn_im')?>
-			<?=form_input(array('id'=>'msn_im','name'=>'msn_im','class'=>'fullfield','value'=>$msn_im,'max_length'=>50))?>
+			<?=form_input(array('id'=>'msn_im','name'=>'msn_im','class'=>'fullfield','value'=>$msn_im,'maxlength'=>50))?>
 		</p>
 
 		<p>

@@ -524,6 +524,188 @@ class Members {
 		return TRUE;
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	 *	Get formatted list of member subscriptions
+	 *
+	 *
+	 *	@param 	int
+	 *	@param 	int
+	 *	@param 	int
+	 *	@return array
+	 */
+
+
+	function get_member_subscriptions($member_id, $rownum = 0, $perpage = 50)
+	{
+		$this->EE->load->helper(array('url', 'string'));
+		
+		// Set some base values
+		$channel_subscriptions		= FALSE;
+		$forum_subscriptions	= FALSE;
+		$result_ids				= array();
+		$total_count			= 0;
+		$qm						= ($this->EE->config->item('force_query_string') == 'y') ? '' : '?';
+		
+		if ($this->EE->db->table_exists('exp_comment_subscriptions'))
+		{
+			// Fetch Comment Subscriptions
+			$this->EE->db->distinct();
+			$this->EE->db->select('comment_subscriptions.entry_id, recent_comment_date, subscription_date');
+			$this->EE->db->from('comment_subscriptions');
+			$this->EE->db->join('channel_titles', 'comment_subscriptions.entry_id = channel_titles.entry_id', 'left');
+			$this->EE->db->where('member_id', $member_id);
+			$this->EE->db->order_by("recent_comment_date", "desc"); 
+			$query = $this->EE->db->get();
+			
+			if ($query->num_rows() > 0)
+			{
+				$channel_subscriptions = TRUE;
+
+				foreach ($query->result_array() as $row)
+				{
+					// Can have duplicate zeros for comment date- so combine with subscription date
+					$date_key = str_pad($row['recent_comment_date'], 14, '0',  STR_PAD_LEFT).
+						str_pad($row['subscription_date'], 14, '0',  STR_PAD_LEFT).
+						'b';
+
+					$result_ids[$date_key] = $row['entry_id'];
+					$total_count++;
+				}
+			}
+		}
+		// Fetch Forum Topic Subscriptions
+		// Since the forum module might not be installed we'll test for it first.
+
+		if ($this->EE->db->table_exists('exp_forum_subscriptions'))
+		{
+			// Fetch Forum Subscriptions
+			$this->EE->db->select('forum_subscriptions.topic_id, last_post_date, subscription_date');
+			$this->EE->db->from('forum_subscriptions');
+			$this->EE->db->join('forum_topics', 'forum_subscriptions.topic_id = forum_topics.topic_id', 'left');
+			$this->EE->db->where('member_id', $member_id);
+			$this->EE->db->order_by("last_post_date", "desc"); 
+			$query = $this->EE->db->get();
+
+			if ($query->num_rows() > 0)
+			{
+				$forum_subscriptions = TRUE;
+
+				foreach ($query->result_array() as $row)
+				{
+					$date_key = str_pad($row['last_post_date'], 14, '0',  STR_PAD_LEFT).
+						str_pad($row['subscription_date'], 14, '0',  STR_PAD_LEFT).
+						'f';
+						
+					$result_ids[$date_key] = $row['topic_id'];
+					$total_count++;
+				}
+			}
+		}
+
+		
+		krsort($result_ids); // Sort the array
+		
+		$result_ids = array_slice($result_ids, $rownum, $perpage);
+		
+		// Fetch Channel Titles
+		if ($channel_subscriptions == TRUE)
+		{
+			$sql = "SELECT
+					exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.channel_id, exp_channel_titles.entry_id, exp_channel_titles.recent_comment_date, 
+					exp_channels.comment_url, exp_channels.channel_url 
+					FROM exp_channel_titles
+					LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id
+					WHERE entry_id IN (";
+
+			$idx = '';
+			$channel_keys = array();
+			
+			foreach ($result_ids as $key => $val)
+			{
+				if (substr($key, strlen($key)-1) == 'b')
+				{
+					$idx .= $val.",";
+					$channel_keys[$val] = $key;
+				}
+			}
+
+			$idx = substr($idx, 0, -1);
+
+			if ($idx != '')
+			{
+				$query = $this->EE->db->query($sql.$idx.') ');
+
+				if ($query->num_rows() > 0)
+				{
+					foreach ($query->result_array() as $row)
+					{
+						$row['title'] = str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), $row['title']);
+
+						$path = reduce_double_slashes($this->EE->functions->prep_query_string(($row['comment_url'] != '') ? $row['comment_url'] : $row['channel_url']).'/'.$row['url_title'].'/');
+
+						$result_ids[$channel_keys[$row['entry_id']]] = array(
+												'title' => $row['title'],
+												'active_date' => $row['recent_comment_date'],
+												'url_title' => url_title($row['title']),
+												'path' => $this->EE->functions->fetch_site_index().$qm.'URL='.$path,
+												'id'	=> 'b'.$row['entry_id'],
+												'type'	=> $this->EE->lang->line('comment')
+												);
+					}
+				}
+			}
+		}
+
+		// Fetch Forum Topics
+		if ($forum_subscriptions == TRUE)
+		{
+			$sql = "SELECT title, topic_id, board_forum_url, last_post_date FROM exp_forum_topics, exp_forum_boards
+					WHERE exp_forum_topics.board_id = exp_forum_boards.board_id
+					AND topic_id IN (";
+
+			$idx = '';
+			$forum_keys = array();
+
+			foreach ($result_ids as $key => $val)
+			{
+				if (substr($key, strlen($key)-1) == 'f')
+				{
+					$idx .= $val.",";
+					$forum_keys[$val] = $key;
+				}
+			}
+
+			$idx = substr($idx, 0, -1);
+
+			if ($idx != '')
+			{
+				$query = $this->EE->db->query($sql.$idx.') ');
+
+				if ($query->num_rows() > 0)
+				{
+					foreach ($query->result_array() as $row)
+					{
+						$row['title'] = str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), $row['title']);
+
+						$path = reduce_double_slashes($this->EE->functions->prep_query_string($row['board_forum_url'] ).'/viewthread/'.$row['topic_id'].'/');
+
+						$result_ids[$forum_keys[$row['topic_id']]] = array(
+												'title' => $row['title'],
+												'active_date' => $row['last_post_date'],
+												'url_title' => url_title($row['title']),
+												'path' => $this->EE->functions->fetch_site_index().$qm.'URL='.$path,
+												'id'	=> 'f'.$row['topic_id'],
+												'type'	=> $this->EE->lang->line('forum_post')
+												);
+					}
+				}
+			}
+		}
+		
+		return array('total_results' => $total_count, 'result_array' => $result_ids);		
+	}
 	
 }
 /* End of file members.php */

@@ -42,129 +42,52 @@ class Member_subscriptions extends Member {
 	
 	function edit_subscriptions()
 	{
+		$this->EE->load->library('members');
+		
 		// Set some base values
 		
-		$channel_subscriptions		= FALSE;
-		$forum_subscriptions	= FALSE;
-		$result_ids				= array();
 		$result_data			= array();
 		$pageurl 				= $this->_member_path('edit_subscriptions');
 		$perpage				= 50;
 		$rownum  				= $this->cur_id;
 		$page_links				= '';
+		$total_count			= 0;
+		
+		if ($rownum != '') 
+		{
+ 			$rownum = substr($rownum, 1);
+		}
+		else
+		{
+			$rownum = 0;
+		}
+		
+		$rownum = ($rownum == '' OR ($perpage > 1 AND $rownum == 1)) ? 0 : $rownum;
 		
 		/** ----------------------------------------
 		/**  Set update path
 		/** ----------------------------------------*/
 		$swap['path:update_subscriptions'] = $this->_member_path('update_subscriptions');
 		
-		
-		/** ----------------------------------------
-		/**  Fetch Channel Comment Subscriptions
-		/** ----------------------------------------*/
-		if ($this->EE->db->table_exists('exp_comments'))
-		{
-			// Fetch Channel Comments
-			$this->EE->db->distinct();
-			$this->EE->db->select('comment_subscriptions.entry_id');
-			$this->EE->db->from('comment_subscriptions');
-			$this->EE->db->join('comments', 'comment_subscriptions.entry_id = comments.entry_id', 'left');
-			$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
-			$this->EE->db->order_by("comment_date", "desc"); 
-			$query = $this->EE->db->get();
-			
-			if ($query->num_rows() > 0)
-			{
-				$channel_subscriptions = TRUE;
-				$temp_ids = array();
+		$subscription_data = $this->EE->members->get_member_subscriptions($this->EE->session->userdata('member_id'), $rownum, $perpage);		
 
-				foreach ($query->result_array() as $row)
-				{
-					$temp_ids[] = $row['entry_id'];
-				}
-
-				// and now grab the most recent activity for each subscription for ordering later
-				$this->EE->db->select('entry_id, recent_comment_date');
-				$this->EE->db->where_in('entry_id', $temp_ids);
-				$query = $this->EE->db->get('channel_titles');
-
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result() as $row)
-					{
-						$result_ids[$row->recent_comment_date.'b'] = $row->entry_id;
-					}
-				}
-			}
-		}
-		
-		/** ----------------------------------------
-		/**  Fetch Forum Topic Subscriptions
-		/** ----------------------------------------*/
-		// Since the forum module might not be installed we'll test for it first.
-						
-		if ($this->EE->db->table_exists('exp_forum_subscriptions'))
-		{
-			$this->EE->db->select('topic_id');
-			$this->EE->db->from('forum_subscriptions');
-			$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
-			$this->EE->db->order_by("subscription_date", "desc"); 
-			$query = $this->EE->db->get();
-		
-			if ($query->num_rows() > 0)
-			{
-				$forum_subscriptions = TRUE;
-				
-				$temp_ids = array();
-				
-				foreach ($query->result_array() as $row)
-				{
-					$temp_ids[] = $row['topic_id'];
-				}
-				
-				// and now grab the most recent activity for each subscription for ordering later
-				$this->EE->db->select('topic_id, last_post_date');
-				$this->EE->db->where_in('topic_id', $temp_ids);
-				$query = $this->EE->db->get('forum_topics');				
-				
-
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result() as $row)
-					{
-						$result_ids[$row->last_post_date.'f'] = $row->topic_id;
-					}
-				}
-			}
-		}
-		
-		
 		/** ------------------------------------
 		/**  No results?  Bah, how boring...
 		/** ------------------------------------*/
-		
-		if (count($result_ids) == 0)
+		$total_rows = $subscription_data['total_results'];	
+		$result_data = $subscription_data['result_array'];	
+
+		if ($total_rows == 0)
 		{
 			$swap['subscription_results'] = $this->_var_swap($this->_load_element('no_subscriptions_message'), array('lang:no_subscriptions'=> $this->EE->lang->line('no_subscriptions')));
 											
 			return $this->_var_swap($this->_load_element('subscriptions_form'), $swap);
 		}
 		
-		// Sort the array for newest activity first
-		// we'll end up doing this twice, one to determine what entries
-		// belong on the page for pagination, then again for the data queries
-		krsort($result_ids);
 				
 		/** ---------------------------------
 		/**  Do we need pagination?
 		/** ---------------------------------*/
-		
-		$total_rows = count($result_ids);
-		
-		if ($rownum != '')
-			$rownum = substr($rownum, 1);
-
-		$rownum = ($rownum == '' OR ($perpage > 1 AND $rownum == 1)) ? 0 : $rownum;
 		
 		if ($rownum > $total_rows)
 		{
@@ -194,101 +117,9 @@ class Member_subscriptions extends Member {
 
 			$this->EE->pagination->initialize($config);
 			$page_links = $this->EE->pagination->create_links();			
-			
-			
-			$result_ids = array_slice($result_ids, $rownum, $perpage);
-		}
-		else
-		{
-			$result_ids = array_slice($result_ids, 0, $perpage);	
 		}
 
 
-		/** ---------------------------------
-		/**  Fetch Channel Titles
-		/** ---------------------------------*/
-		if ($channel_subscriptions	== TRUE)
-		{
-			$sql = "SELECT
-					exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.channel_id, exp_channel_titles.entry_id, exp_channel_titles.recent_comment_date,
-					exp_channels.comment_url, exp_channels.channel_url	
-					FROM exp_channel_titles
-					LEFT JOIN exp_channels ON exp_channel_titles.channel_id = exp_channels.channel_id
-					WHERE entry_id IN (";
-		
-			$idx = '';
-		
-			foreach ($result_ids as $key => $val)
-			{			
-				if (substr($key, strlen($key)-1) == 'b')
-				{
-					$idx .= $val.",";
-				}
-			}
-		
-			$idx = substr($idx, 0, -1);
-			
-			if ($idx != '')
-			{
-				$query = $this->EE->db->query($sql.$idx.') ');
-	
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{																
-						$result_data[$row['recent_comment_date']] = array(
-												'path'	=> $this->EE->functions->remove_double_slashes($this->EE->functions->prep_query_string(($row['comment_url'] != '') ? $row['comment_url'] : $row['channel_url']).'/'.$row['url_title'].'/'),
-												'title'	=> str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), $row['title']),
-												'id'	=> 'b'.$row['entry_id'],
-												'type'	=> $this->EE->lang->line('comment')
-												);
-					}
-				}
-			}
-		}
-
-		/** ---------------------------------
-		/**  Fetch Forum Topics
-		/** ---------------------------------*/
-		if ($forum_subscriptions == TRUE)
-		{
-			$sql = "SELECT title, topic_id, board_forum_url, last_post_date FROM exp_forum_topics, exp_forum_boards
-					WHERE exp_forum_topics.board_id = exp_forum_boards.board_id
-					AND topic_id IN (";
-					
-			$idx = '';
-		
-			foreach ($result_ids as $key => $val)
-			{			
-				if (substr($key, strlen($key)-1) == 'f')
-				{
-					$idx .= $val.",";
-				}
-			}
-		
-			$idx = substr($idx, 0, -1);
-			
-			if ($idx != '')
-			{
-				$query = $this->EE->db->query($sql.$idx.') ');
-	
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{																
-						$result_data[$row['last_post_date']] = array(
-												'path'	=> $this->EE->functions->remove_double_slashes($this->EE->functions->prep_query_string($row['board_forum_url'] ).'/viewthread/'.$row['topic_id'].'/'),
-												'title'	=> str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), $row['title']),
-												'id'	=> 'f'.$row['topic_id'],
-												'type'	=> $this->EE->lang->line('mbr_forum_post')
-												);
-					}
-				}
-			}
-		}
-		
-		// sort the data results
-		krsort($result_data);	
 	
 		// Build the result table...
 

@@ -124,16 +124,16 @@ else
 
 <h5><?php echo $this->lang->line('password'); ?></h5>
 <p><?php echo $this->lang->line('5_chars'); ?></p>
-<p><input type='password' id='password' name='password' value='<?php echo $password; ?>' size='40' maxlength='32' class='input' /></p>
+<p><input type='password' id='password' name='password' value='<?php echo $password; ?>' size='40' maxlength='40' class='input' /></p>
 
 <h5><?php echo $this->lang->line('password_confirm'); ?></h5>
 <p><?php echo $this->lang->line('pw_retype'); ?></p>
-<p><input type='password' id='password_confirm' name='password_confirm' value='<?php echo $password_confirm; ?>' size='40' maxlength='32' class='input' onkeyup="confirm_password();return false;"/></p>
+<p><input type='password' id='password_confirm' name='password_confirm' value='<?php echo $password_confirm; ?>' size='40' maxlength='40' class='input' onkeyup="confirm_password();return false;"/></p>
 
 <div id="password_mismatch" class="pad"></div>
 
 <h5><?php echo $this->lang->line('email'); ?></h5>
-<p><input type='text' id='email_address' name='email_address' value='<?php echo $email_address; ?>' size='40'  maxlength='80' class='input' /></p>
+<p><input type='text' id='email_address' name='email_address' value='<?php echo $email_address; ?>' size='40'  maxlength='72' class='input' /></p>
 
 
 <h5><?php echo $this->lang->line('screen_name'); ?></h5>

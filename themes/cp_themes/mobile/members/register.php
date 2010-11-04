@@ -16,27 +16,27 @@ if ($EE_view_disable !== TRUE)
 		<li>
 			<?=form_error('username')?>
 			<?=form_label(lang('username'), 'username')?><br />
-			<?=form_input(array('id'=>'username', 'name'=>'username', 'value'=>set_value('username'), 'placeholder' => lang('username')))?>
+			<?=form_input(array('id'=>'username', 'name'=>'username', 'value'=>set_value('username'), 'maxlength'=>50, 'placeholder' => lang('username')))?>
 		</li>
 		<li>
 			<?=form_error('password')?>
 			<?=form_label(lang('password'), 'password')?><br />
-			<?=form_password(array('id'=>'password','name'=>'password','class'=>'long_field','value'=>set_value('password'), 'placeholder' => lang('password')))?>
+			<?=form_password(array('id'=>'password','name'=>'password','class'=>'long_field','value'=>set_value('password'), 'maxlength'=>40, 'placeholder' => lang('password')))?>
 		</li>
 		<li>
 			<?=form_error('password_confirm')?>
 			<?=form_label(lang('password_confirm'), 'password_confirm')?><br />
-			<?=form_password(array('id'=>'password_confirm','name'=>'password_confirm','value'=>set_value('password_confirm'), 'placeholder' => lang('password_confirm')))?>
+			<?=form_password(array('id'=>'password_confirm','name'=>'password_confirm','value'=>set_value('password_confirm'), 'maxlength'=>40, 'placeholder' => lang('password_confirm')))?>
 		</li>		
 		<li>
 			<?=form_error('screen_name')?>
 			<?=form_label(lang('screen_name'), 'screen_name')?><br />
-			<?=form_input(array('id'=>'screen_name','name'=>'screen_name','class'=>'long_field','value'=>set_value('screen_name'), 'placeholder' => lang('screen_name')))?>
+			<?=form_input(array('id'=>'screen_name','name'=>'screen_name','class'=>'long_field','value'=>set_value('screen_name'), 'maxlength'=>50, 'placeholder' => lang('screen_name')))?>
 		</li>
 		
 		<li><?=form_error('email')?>
 			<?=form_label(lang('email'), 'email')?><br />
-			<?=form_input(array('id'=>'email','name'=>'email','class'=>'long_field','value'=>set_value('email'), 'placeholder' => lang('email')))?>	
+			<?=form_input(array('id'=>'email','name'=>'email','class'=>'long_field','value'=>set_value('email'), 'maxlength'=>72, 'placeholder' => lang('email')))?>	
 		</li>
 		<?php if ($this->cp->allowed_group('can_admin_mbr_groups')):?>			
 			<li>
@@ -59,7 +59,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'url',
 					'class'=>'field',
 					'value'=>$url,
-					'max_length'=>75))?>	
+					'maxlength'=>150))?>	
 		</li>
 
 		<li><?=form_label(lang('location'), 'location')?><br />
@@ -68,7 +68,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'location',
 					'class'=>'field',
 					'value'=>$location,
-					'max_length'=>50))?>	
+					'maxlength'=>50))?>	
 		</li>
 
 		<li><?=form_label(lang('occupation'), 'occupation')?><br />
@@ -77,7 +77,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'occupation',
 					'class'=>'field',
 					'value'=>$occupation,
-					'max_length'=>80))?>	
+					'maxlength'=>80))?>	
 		</li>
 
 		<li><?=form_label(lang('interests'), 'interests')?><br />
@@ -86,7 +86,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'interests',
 					'class'=>'field',
 					'value'=>$interests,
-					'max_length'=>75))?>	
+					'maxlength'=>120))?>	
 		</li>
 
 		<li><?=form_label(lang('aol_im'), 'aol_im')?><br />
@@ -95,7 +95,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'aol_im',
 					'class'=>'field',
 					'value'=>$aol_im,
-					'max_length'=>50))?>	
+					'maxlength'=>50))?>	
 		</li>
 
 		<li><?=form_label(lang('icq'), 'icq')?><br />
@@ -104,7 +104,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'icq',
 					'class'=>'field',
 					'value'=>$icq,
-					'max_length'=>50))?>	
+					'maxlength'=>50))?>	
 		</li>
 
 		<li><?=form_label(lang('yahoo_im'), 'yahoo_im')?><br />
@@ -113,7 +113,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'yahoo_im',
 					'class'=>'field',
 					'value'=>$yahoo_im,
-					'max_length'=>50))?>	
+					'maxlength'=>50))?>	
 		</li>
 
 		<li><?=form_label(lang('msn_im'), 'msn_im')?><br />
@@ -122,7 +122,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'msn_im',
 					'class'=>'field',
 					'value'=>$msn_im,
-					'max_length'=>50))?>	
+					'maxlength'=>50))?>	
 		</li>
 		
 		<li><?=form_label(lang('bio'), 'bio')?><br />

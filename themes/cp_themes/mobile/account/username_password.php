@@ -8,7 +8,7 @@
 	<?=lang('username', 'username')?>
 </div>
 <ul>
-	<li><?=form_input(array('id'=>'username','name'=>'username','class'=>'field','value'=>$username,'max_length'=>50))?></li>
+	<li><?=form_input(array('id'=>'username','name'=>'username','class'=>'field','value'=>$username,'maxlength'=>50))?></li>
 </ul>
 <?php endif;?>
 
@@ -16,7 +16,7 @@
 	<?=lang('screen_name', 'screen_name')?>
 </div>
 <ul>
-	<li><?=form_input(array('id'=>'screen_name','name'=>'screen_name','class'=>'field','value'=>$screen_name,'max_length'=>50))?></li>
+	<li><?=form_input(array('id'=>'screen_name','name'=>'screen_name','class'=>'field','value'=>$screen_name,'maxlength'=>50))?></li>
 </ul>
 
 <h3 class="pad"><?=lang('password_change')?></h3>
@@ -28,14 +28,14 @@
 	<?=lang('new_password', 'password')?>
 </div>
 <ul>
-	<li><?=form_password(array('id'=>'password','name'=>'password','class'=>'field','value'=>'','max_length'=>32))?></li>
+	<li><?=form_password(array('id'=>'password','name'=>'password','class'=>'field','value'=>'', 'maxlength'=>40))?></li>
 </ul>
 
 <div class="label">
 	<?=lang('new_password_confirm', 'password_confirm')?>
 </div>
 <ul>
-	<li><?=form_password(array('id'=>'password_confirm','name'=>'password_confirm','class'=>'field','value'=>'','max_length'=>32))?></li>
+	<li><?=form_password(array('id'=>'password_confirm','name'=>'password_confirm','class'=>'field','value'=>'','maxlength'=>40))?></li>
 </ul>
 
 <?php if ($this->session->userdata('group_id') != 1):?>
@@ -46,7 +46,7 @@
 	<?=lang('existing_password', 'current_password')?>
 </div>
 <ul>
-	<li><?=form_password(array('id'=>'current_password','name'=>'current_password','class'=>'field','value'=>'','max_length'=>32))?></li>
+	<li><?=form_password(array('id'=>'current_password','name'=>'current_password','class'=>'field','value'=>'','maxlength'=>40))?></li>
 </ul>
 
 <?php endif;?>

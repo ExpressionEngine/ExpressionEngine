@@ -1144,7 +1144,7 @@ table.mainTable td.id {
 								'name' 			=> 'username', 
 								'id' 			=> 'username', 
 								'value' 		=> $username, 
-								'maxlength' 	=> 32, 
+								'maxlength' 	=> 50, 
 								'placeholder' 	=> lang('username')))?>
 			</li>
 			<li>
@@ -1152,7 +1152,7 @@ table.mainTable td.id {
 								'size' 			=> '20',
 								'name' 			=> 'password', 
 								'id' 			=> 'password', 
-								'maxlength' 	=> 32,
+								'maxlength' 	=> 40,
 								'placeholder'	=> lang('password')))?>
 			</li>
 
