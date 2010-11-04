@@ -30,7 +30,7 @@ if ($EE_view_disable !== TRUE)
 						'id'	=> 'username',
 						'name'	=> 'username',
 						'class' => 'field',
-						'max_length' => 50,
+						'maxlength' => 50,
 						'value' => set_value('username')
 						)
 					)
@@ -44,7 +44,7 @@ if ($EE_view_disable !== TRUE)
 						'id'	=> 'password',
 						'name'	=> 'password',
 						'class' => 'field',
-						'max_length' => 40,
+						'maxlength' => 40,
 						'value' => set_value('password')
 						)
 					)
@@ -58,7 +58,7 @@ if ($EE_view_disable !== TRUE)
 						'id'	=> 'password_confirm',
 						'name'	=> 'password_confirm',
 						'class' => 'field',
-						'max_length' => 40,
+						'maxlength' => 40,
 						'value' => set_value('password_confirm')
 						)
 					)
@@ -72,7 +72,7 @@ if ($EE_view_disable !== TRUE)
 						'id'	=> 'screen_name',
 						'name'	=> 'screen_name',
 						'class' => 'field',
-						'max_length' => 50,
+						'maxlength' => 50,
 						'value' => set_value('screen_name')
 						)
 					)
@@ -86,7 +86,7 @@ if ($EE_view_disable !== TRUE)
 						'id'	=> 'email',
 						'name'	=> 'email',
 						'class' => 'field',
-						'max_length' => 72,
+						'maxlength' => 72,
 						'value' => set_value('email')
 						)
 					)
@@ -119,7 +119,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'url',
 					'class'=>'field',
 					'value'=>$url,
-					'max_length'=>150))
+					'maxlength'=>150))
 				));
 
 			$this->table->add_row(array(
@@ -129,7 +129,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'location',
 					'class'=>'field',
 					'value'=>$location,
-					'max_length'=>50))
+					'maxlength'=>50))
 			));
 
 			$this->table->add_row(array(
@@ -139,7 +139,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'occupation',
 					'class'=>'field',
 					'value'=>$occupation,
-					'max_length'=>80))
+					'maxlength'=>80))
 				));
 
 			$this->table->add_row(array(
@@ -149,7 +149,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'interests',
 					'class'=>'field',
 					'value'=>$interests,
-					'max_length'=>120))
+					'maxlength'=>120))
 				));
 
 			$this->table->add_row(array(
@@ -159,7 +159,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'aol_im',
 					'class'=>'field',
 					'value'=>$aol_im,
-					'max_length'=>50))
+					'maxlength'=>50))
 					));
 
 			$this->table->add_row(array(
@@ -169,7 +169,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'icq',
 					'class'=>'field',
 					'value'=>$icq,
-					'max_length'=>50))
+					'maxlength'=>50))
 				));
 
 			$this->table->add_row(array(
@@ -179,7 +179,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'yahoo_im',
 					'class'=>'field',
 					'value'=>$yahoo_im,
-					'max_length'=>50))
+					'maxlength'=>50))
 					));
 
 			$this->table->add_row(array(
@@ -189,7 +189,7 @@ if ($EE_view_disable !== TRUE)
 					'name'=>'msn_im',
 					'class'=>'field',
 					'value'=>$msn_im,
-					'max_length'=>50))
+					'maxlength'=>50))
 				));
 
 			$this->table->add_row(array(

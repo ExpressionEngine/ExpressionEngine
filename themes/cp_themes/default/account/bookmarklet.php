@@ -10,7 +10,7 @@
 
 			<p>
 				<?=lang('bookmarklet_name', 'bookmarklet')?>
-				<?=form_input(array('id'=>'bookmarklet','name'=>'bm_name','class'=>'field','value'=>'Bookmarklet','max_length'=>50))?>
+				<?=form_input(array('id'=>'bookmarklet','name'=>'bm_name','class'=>'field','value'=>'Bookmarklet','maxlength'=>50))?>
 				<br ><?=lang('single_word_no_spaces')?>
 			</p>
 
