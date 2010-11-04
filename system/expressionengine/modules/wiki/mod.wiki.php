@@ -1514,7 +1514,7 @@ class Wiki {
 		if (trim($match['1']) != '' && ($params = $this->EE->functions->assign_parameters($match['1'])) !== FALSE)
 		{
 			$parameters['limit']	= (isset($params['limit']) && is_numeric($params['limit'])) ? $params['limit'] : $parameters['limit'];
-			$parameters['paginate']	= (isset($params['paginate']) && is_numeric($params['paginate'])) ? $params['paginate'] : $parameters['paginate'];
+			$parameters['paginate']	= (isset($params['paginate'])) ? $params['paginate'] : $parameters['paginate'];
 		}
 		
 		/** ----------------------------------------
@@ -3397,7 +3397,7 @@ class Wiki {
 			{
 				$parameters['backspace'] = (isset($params['backspace']) && is_numeric($params['backspace'])) ? $params['backspace'] : $parameters['backspace'];
 				$parameters['limit']	 = (isset($params['limit'])) ? $params['limit'] : $parameters['limit'];
-				$parameters['paginate']	 = (isset($params['paginate'])) ? $params['paginate'] : $parameters['paginate'];
+				$parameters['paginate']	= (isset($params['paginate'])) ? $params['paginate'] : $parameters['paginate'];
 			}
 			
 			if (preg_match("|".LD."if\s+no_results".RD."(.*?)".LD."\/if".RD."|s",$match['2'], $block))
@@ -4508,7 +4508,7 @@ class Wiki {
 		if (trim($match['1']) != '' && ($params = $this->EE->functions->assign_parameters($match['1'])) !== FALSE)
 		{
 			$parameters['limit'] = (isset($params['limit']) && is_numeric($params['limit'])) ? $params['limit'] : $parameters['limit'];
-			$parameters['paginate'] = (isset($params['paginate']) && is_numeric($params['paginate'])) ? $params['paginate'] : $parameters['paginate'];
+			$parameters['paginate']	= (isset($params['paginate'])) ? $params['paginate'] : $parameters['paginate'];
 			
 			if (isset($params['switch']))
 			{
