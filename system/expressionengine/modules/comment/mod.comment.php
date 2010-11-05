@@ -751,7 +751,9 @@ class Comment {
 		foreach ($results as $id => $row)
 		{
 			if ( ! is_array($row))
-				continue;
+			{
+				continue;				
+			}
 
 			$relative_count++;
 			$absolute_count++;
@@ -943,6 +945,13 @@ class Comment {
 				if (strncmp($key, 'member_search_path', 18) == 0)
 				{
 					$tagdata = $this->EE->TMPL->swap_var_single($key, $search_link.$row['author_id'], $tagdata);
+				}
+
+				
+				// {member_group_id}
+				if ($key == 'member_group_id')
+				{
+					$tagdata = $this->EE->TMPL->swap_var_single($key, $row['group_id'], $tagdata);
 				}
 
 				// Prep the URL
