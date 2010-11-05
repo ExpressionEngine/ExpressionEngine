@@ -12,13 +12,27 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 		<div class="formArea">
+			<div>
+					<div class="templateEditorTop">
+						<h2><?=lang('template_management')?></h2>
+
+						<div class="search">
+							<?=form_open('C=design'.AMP.'M=manager')?>
+								<input type="text" id="template_keywords" name="template_keywords" value="<?=set_value('template_keywords')?>" maxlength="80" class="input" />
+							</form>
+						</div>
+						<?php if ($search_terms):?>
+						<div class="templateSearchResults">
+							<h3><?=lang('search_terms')?></h3>
+							<div><strong class="notice"><?=$search_terms?></strong></div>
+							<?=$result_count_lang?>
+						</div><?php endif;?>
+					</div>
+			</div>
+
 
 			<div id="templateGroups">
 				<div class="column">
-					<div class="linkBar">
-						<h2><?=lang('template_management')?></h2>
-					</div>
-
 					<div class="formHeading">
 						<div class="newTemplate">
 						<?php if ($can_admin_templates): ?>
@@ -52,25 +66,9 @@ if ($EE_view_disable !== TRUE)
 
 			<div id="templates">
 				<div class="column">					
-					<div class="linkBar">
-						<div class="search">
-							<?=form_open('C=design'.AMP.'M=manager')?>
-								<input type="text" id="template_keywords" name="template_keywords" value="<?=set_value('template_keywords')?>" maxlength="80" class="input" />
-							</form>
-						</div>
-						<?php if ($search_terms):?>
-						<div>
-							<h3><?=lang('search_terms')?></h3>
-							<div><strong class="notice"><?=$search_terms?></strong></div>
-							<?php if ($result_count != 0):?>
-							<?=$result_count_lang?>
-							<?php endif; ?>
-						</div><?php endif;?>
 
-					</div>
+				<?=$this->load->view('_shared/message')?>
 
-					<?=$this->load->view('_shared/message')?>
-					
 				<?php if ($can_admin_templates): ?>
 					<div id="prefRowTemplate" style="display:none">
 						<table class="templateTable accessTable" border="0" cellspacing="0" cellpadding="0">
@@ -147,7 +145,11 @@ if ($EE_view_disable !== TRUE)
 					</div>
 				<?php endif; ?>
 				
-				<?php if ($no_results):?><?=$no_results?><?php endif;?>
+				<?php if ($no_results):?>
+					<div class="noTemplateResultsMessage">
+					<?=$no_results?>
+					</div>
+				<?php endif;?>
 
 					<?php
 					

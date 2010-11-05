@@ -1669,11 +1669,27 @@ div#templates {
 	padding:			0 18px;
 }
 
-#templateGroups .linkBar, #templates .linkBar, #templateEditor .linkBar {
-	min-height:			28px;
-	padding:			10px 0;
-
+.templateEditorTop {
+	padding:			18px 18px 10px 18px;
+	min-height:		28px;
 }
+
+.templateEditorTop h2 {
+	float:			left;
+}
+
+.noTemplateResultsMessage {
+	margin:				50px auto 0 25px;
+	font-size:		18px;
+	font-weight:	bold;
+}
+
+.templateSearchResults {
+	margin-left:		32%;
+	color: #5F6C74;
+}
+
+.templateSearchResults h3 { margin:0; }
 
 #templateGroups .groupList {
 	background-color:	#e2e8eb;
@@ -1761,7 +1777,7 @@ span.defaultIndicator {
 	font-weight:		bold;
 }
 
-#templates .search {
+.search {
 	float:				right;
 }
 
