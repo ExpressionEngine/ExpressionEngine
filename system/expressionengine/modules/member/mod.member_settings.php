@@ -127,7 +127,7 @@ class Member_settings extends Member {
 
 		$this->EE->db->select($select);
 		$this->EE->db->from(array('members m', 'member_groups g'));
-		$this->EE->db->where('m.member_id', $this->cur_id, FALSE);
+		$this->EE->db->where('m.member_id', (int)$this->cur_id);
 		$this->EE->db->where('g.site_id', $this->EE->config->item('site_id'));
 		$this->EE->db->where('m.group_id', 'g.group_id', FALSE);
 

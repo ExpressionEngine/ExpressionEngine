@@ -6,7 +6,7 @@
 	<?=form_label(required().lang('email'), 'email')?>
 </div>
 <ul>
-	<li><?=form_input(array('id'=>'email','name'=>'email','class'=>'field','value'=>$email,'max_length'=>80))?></li>
+	<li><?=form_input(array('id'=>'email','name'=>'email','class'=>'field','value'=>$email,'maxlength'=>72))?></li>
 </ul>
 
 <?php if ($this->session->userdata('group_id') != 1):?>
@@ -15,7 +15,7 @@
 	<?=form_label(lang('existing_password'), 'password')?>
 </div>
 <ul>
-	<li><?=form_password(array('id'=>'password','name'=>'password','class'=>'password','value'=>'','max_length'=>32))?></li>
+	<li><?=form_password(array('id'=>'password','name'=>'password','class'=>'password','value'=>'','maxlength'=>40))?></li>
 </ul>
 <?php endif;?>
 <ul>

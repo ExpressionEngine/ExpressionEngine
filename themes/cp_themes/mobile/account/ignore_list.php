@@ -9,7 +9,7 @@
 <div id="add_member">
 	<div class="label"><?=lang('Member Screen Name', 'name')?></div>
 	<ul>
-		<li><?=form_input(array('id'=>'name','name'=>'name','class'=>'field','value'=>'','max_length'=>50))?></li>
+		<li><?=form_input(array('id'=>'name','name'=>'name','class'=>'field','value'=>'','maxlength'=>50))?></li>
 	</ul>
 
 	<?=form_submit('daction', lang('add_member'), 'class="whiteButton"')?>

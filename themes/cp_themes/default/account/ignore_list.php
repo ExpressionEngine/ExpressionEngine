@@ -10,7 +10,7 @@
 		<div id="add_member">
 		<p>
 			<?=lang('Member Screen Name', 'name')?>
-			<?=form_input(array('id'=>'name','name'=>'name','class'=>'field','value'=>'','max_length'=>50))?>
+			<?=form_input(array('id'=>'name','name'=>'name','class'=>'field','value'=>'','maxlength'=>50))?>
 		</p>
 		<p class="submit">
 			<?=form_submit('daction', lang('add_member'), 'class="submit"')?>
