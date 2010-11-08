@@ -126,6 +126,8 @@ class Addons_model extends CI_Model {
 		{
 			show_error('PclZip Library does not appear to be installed.  It is required.');
 		}
+		
+		$this->load->helper('directory');
 
 		$plugins = array();
 		$info 	= array();
