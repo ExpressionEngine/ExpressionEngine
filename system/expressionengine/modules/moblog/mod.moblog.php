@@ -2866,7 +2866,7 @@ class Moblog {
 		while (file_exists($this->upload_path.$filename))
 		{
 			$i++;
-			$n			=  ($i > 10) ? -2 : -1;
+			$n			= - strlen($i);
 			$x			= explode('.',$filename);
 			$name		=  ( ! isset($x['1'])) ? $filename : $x['0'];
 			$sfx		=  ( ! isset($x['1'])) ? '' : '.'.$x[count($x) - 1];
