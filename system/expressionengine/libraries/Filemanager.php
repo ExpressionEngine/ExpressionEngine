@@ -611,7 +611,7 @@ class Filemanager {
 		$config = array(
 				'upload_path'	=> $dir['server_path'],
 				'allowed_types'	=> $allowed_types,
-				'max_size'		=> $dir['max_size'],
+				'max_size'		=> round($dir['max_size']/1024, 2),
 				'max_width'		=> $dir['max_width'],
 				'max_height'	=> $dir['max_height']
 			);

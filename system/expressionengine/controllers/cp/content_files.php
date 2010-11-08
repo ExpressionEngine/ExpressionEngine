@@ -83,6 +83,14 @@ class Content_files extends Controller {
 		);
 
 		$vars = array();
+		
+		// Can they access file preferences?
+		$vars['can_edit_upload_prefs'] = TRUE;
+		
+		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs') OR ! $this->cp->allowed_group('can_admin_channels'))
+		{
+			$vars['can_edit_upload_prefs'] = FALSE;
+		}
 
 		if ($this->input->get_post('ajax') == 'true')
 		{
@@ -317,9 +325,10 @@ class Content_files extends Controller {
 								
 		$upload_dir_prefs = $upload_dir_result->row();
 
-		$max_file_size = ($upload_dir_prefs->max_size = '') ? 0 : ($upload_dir_prefs->max_size * 1024);
-		$max_width = ($upload_dir_prefs->max_width = '') ? 0 : $upload_dir_prefs->max_width;
-		$max_height = ($upload_dir_prefs->max_height = '') ? 0 : $upload_dir_prefs->max_height;
+		// Convert the file size to kilobytes
+		$max_file_size = ($upload_dir_prefs->max_size == '') ? 0 : round($upload_dir_prefs->max_size/1024, 2);
+		$max_width = ($upload_dir_prefs->max_width == '') ? 0 : $upload_dir_prefs->max_width;
+		$max_height = ($upload_dir_prefs->max_height == '') ? 0 : $upload_dir_prefs->max_height;
 
 		$config = array(
 			'upload_path'	=> $upload_dir_prefs->server_path,
@@ -339,7 +348,7 @@ class Content_files extends Controller {
 		}
 
 		$this->load->library('upload', $config);
-
+		
 		// We use an iframe to simulate asynchronous uploading.  Files submitted
 		// in this way will have the "is_ajax" field, otherwise they where normal
 		// file upload submissions.

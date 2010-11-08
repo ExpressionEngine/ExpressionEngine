@@ -5315,7 +5315,7 @@ class Wiki {
 					'file_name'		=> $new_name,
 					'upload_path'	=> $server_path,
 					'allowed_types'	=> $allowed_types,
-					'max_size'		=> $query->row('max_size'),
+					'max_size'		=> round($query->row('max_size')/1024, 2),
 					'max_width'		=> $query->row('max_width'),
 					'max_height'	=> $query->row('max_height'),
 				);
