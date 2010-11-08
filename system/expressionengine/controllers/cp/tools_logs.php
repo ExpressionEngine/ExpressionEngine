@@ -185,7 +185,7 @@ class Tools_logs extends Controller {
 			$m[] = $log['member_id'];
 			$m[] = "<strong><a href='".BASE.AMP.'C=myaccount'.AMP.'id='.$log['member_id']."'>{$log['username']}</a></strong>";
 			$m[] = $log['ip_address'];
-			$m[] = date('Y-m-d h:i A', $log['act_date']);
+			$m[] = $this->localize->set_human_time($log['act_date']);
 			$m[] = $log['site_label'];	
 			$m[] = $log['action'];	
 
@@ -317,7 +317,7 @@ class Tools_logs extends Controller {
 			
 			$m[] = $screen_name;
 			$m[] = $log['ip_address'];
-			$m[] = date('Y-m-d h:i A', $log['search_date']);
+			$m[] = $this->localize->set_human_time($log['search_date']);
 			$m[] = $log['site_label'];	
 			$m[] = $log['search_type'];	
 			$m[] = $log['search_terms'];	
@@ -484,7 +484,7 @@ class Tools_logs extends Controller {
 		
 			$m[] = $log['ip_address'];
 			$m[] = $log['hits'];
-			$m[] = date('Y-m-d h:i A', $log['last_activity']);
+			$m[] = $this->localize->set_human_time($log['last_activity']);
 
 			$tdata[$i] = $m;
 			$i++;
@@ -636,7 +636,7 @@ class Tools_logs extends Controller {
 			$m[] = '<a href="'.BASE.AMP.'C=tools_logs'.AMP.'M=view_email'.AMP.'id='.$log['cache_id'].'">'.$log['subject'].'</a>';
 			$m[] = '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $log['member_id'].'">'.$log['member_name'].'</a>';
 			$m[] = $log['recipient_name'];
-			$m[] = date("Y-m-d h:i A", $log['cache_date']);
+			$m[] = $this->localize->set_human_time($log['cache_date']);
 			$m[] = form_checkbox(array('id'=>'delete_box_'.$log['cache_id'],'name'=>'toggle[]','value'=>$log['cache_id'], 'class'=>'toggle_email', 'checked'=>FALSE));
 			
 			$tdata[$i] = $m;
