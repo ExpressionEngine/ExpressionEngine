@@ -720,27 +720,9 @@ class Wiki {
 		// Remove all numeric entities
 		$str = preg_replace('/&#x([0-9a-f]{2,5});{0,1}|&#([0-9]{2,4});{0,1}/', '', $str);
 			
-		/*  
-			The PCRE_UTF8 ('u') modifier is not available until PHP 4.2.3 for Windows, so if it is not
-			available, then for the time being we are not allowing those higher end characters.  We 
-			will change this once the character library is finished and ready for prime time.
-			
-			UPDATE:  Well, while the PHP documentation says the flag is "available", this does not seem
-			to denote that it will actually "work".  Seems with the myriad of problems with servers
-			having the correct PCRE library *and* compiling PHP with it correctly (RedHat Enterprise 3, for example),
-			we cannot realistically do this until a version of PHP greater than PHP 4.3.2.  Sheesh...
-		*/
-		
 		$trans = array();
 		
-		if (is_php('4.3.2') === TRUE)
-		{
-			$trans["#[^a-z0-9\-\_@&\'\"!\.:\+\x{A1}-\x{44F}\s]#iu"] = '';
-		}
-		else
-		{
-			$trans["#[^a-z0-9\-\_@&\'\"!\.:\+\xA1-\xFF\s]#i"] = '';
-		}
+		$trans["#[^a-z0-9\-\_@&\'\"!\.:\+\xA1-\xFF\s]#i"] = '';
 		
 		// Use dash or underscore as separator		
 		$replace = ($this->EE->config->item('word_separator') == 'dash') ? '-' : '_';
@@ -1514,7 +1496,7 @@ class Wiki {
 		if (trim($match['1']) != '' && ($params = $this->EE->functions->assign_parameters($match['1'])) !== FALSE)
 		{
 			$parameters['limit']	= (isset($params['limit']) && is_numeric($params['limit'])) ? $params['limit'] : $parameters['limit'];
-			$parameters['paginate']	= (isset($params['paginate']) && is_numeric($params['paginate'])) ? $params['paginate'] : $parameters['paginate'];
+			$parameters['paginate']	= (isset($params['paginate'])) ? $params['paginate'] : $parameters['paginate'];
 		}
 		
 		/** ----------------------------------------
@@ -3397,7 +3379,7 @@ class Wiki {
 			{
 				$parameters['backspace'] = (isset($params['backspace']) && is_numeric($params['backspace'])) ? $params['backspace'] : $parameters['backspace'];
 				$parameters['limit']	 = (isset($params['limit'])) ? $params['limit'] : $parameters['limit'];
-				$parameters['paginate']	 = (isset($params['paginate'])) ? $params['paginate'] : $parameters['paginate'];
+				$parameters['paginate']	= (isset($params['paginate'])) ? $params['paginate'] : $parameters['paginate'];
 			}
 			
 			if (preg_match("|".LD."if\s+no_results".RD."(.*?)".LD."\/if".RD."|s",$match['2'], $block))
@@ -3965,7 +3947,7 @@ class Wiki {
 							if ($label['1'] == $parts['0'])
 							{
 								$data['page_namespace']  = $name;
-								$data['page_name']		 = $this->valid_title(substr($this->EE->input->get_post('rename'), strlen($label.':')));
+								$data['page_name'] = $this->valid_title(substr($this->EE->input->get_post('rename'), strlen($label['1'].':')));
 								$this->title			 = $label['1'].':'.$data['page_name'];
 								$this->topic			 = $data['page_name'];
 								$this->current_namespace = $label['1'];
@@ -4508,7 +4490,7 @@ class Wiki {
 		if (trim($match['1']) != '' && ($params = $this->EE->functions->assign_parameters($match['1'])) !== FALSE)
 		{
 			$parameters['limit'] = (isset($params['limit']) && is_numeric($params['limit'])) ? $params['limit'] : $parameters['limit'];
-			$parameters['paginate'] = (isset($params['paginate']) && is_numeric($params['paginate'])) ? $params['paginate'] : $parameters['paginate'];
+			$parameters['paginate']	= (isset($params['paginate'])) ? $params['paginate'] : $parameters['paginate'];
 			
 			if (isset($params['switch']))
 			{
