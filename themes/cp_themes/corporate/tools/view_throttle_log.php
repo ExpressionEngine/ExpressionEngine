@@ -44,8 +44,10 @@ if ($EE_view_disable !== TRUE)
 				}
 			?>
 				<?php if($blacklist_installed): ?>
-					<div class="buttonRightHeader"><a href="<?=BASE.AMP.'C=tools_logs'.AMP.'M=blacklist_throttled_ips'?>"><?=lang('blacklist_all_ips')?></a></div>
+				<div class="cp_button"><a href="<?=BASE.AMP.'C=tools_logs'.AMP.'M=blacklist_throttled_ips'?>"><?=lang('blacklist_all_ips')?></a></div>
+				<div class="clear_left"></div>
 				<?php endif;?>
+				
 				<?=$this->table->generate()?>
 
 				<span class="js_hide"><?=$pagination?></span>

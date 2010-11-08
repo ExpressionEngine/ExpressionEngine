@@ -379,7 +379,6 @@ class Tools_logs extends Controller {
 
 		$this->javascript->compile();
 		
-		
 		$this->db->where('(hits >= "'.$max_page_loads.'" OR (locked_out = "y" AND last_activity > "'.$lockout_time.'"))', NULL, FALSE);
 		$this->db->from('throttle');
 		$total = $this->db->count_all_results();		
@@ -465,8 +464,8 @@ class Tools_logs extends Controller {
 				}
 			}
 		}
-
-		$query = $this->tools_model->get_throttle_log($perpage, $offset, $order);
+		
+		$query = $this->tools_model->get_throttle_log($max_page_loads, $lockout_time, $perpage, $offset, $order);
 		
 		$this->db->where('(hits >= "'.$max_page_loads.'" OR (locked_out = "y" AND last_activity > "'.$lockout_time.'"))', NULL, FALSE);
 		$this->db->from('throttle');
