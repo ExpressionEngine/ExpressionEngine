@@ -5850,13 +5850,13 @@ class Forum_Core extends Forum {
 		}
 		else
 		{
-			$config['xss_clean'] = ($this->EE->session->userdata('group_id') == 1) ? FALSE : TRUE;
+			$config['xss_clean'] = ($this->EE->session->userdata('group_id') === 1) ? FALSE : TRUE;
 		}
 
 		$this->EE->load->library('upload', $config);
 
 		if ($this->EE->upload->do_upload() === FALSE)
-		{;
+		{
 			return $this->submission_error = $this->EE->lang->line($this->EE->upload->display_errors());
 		}
 		
