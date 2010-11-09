@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Sites extends Controller {
+class Sites extends CI_Controller {
 
 	var $version 			= '2.0';
 	var $build_number		= '20100101';
@@ -35,7 +35,7 @@ class Sites extends Controller {
 	 */
 	function Sites()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 		
 		$this->lang->loadfile('sites');
 		

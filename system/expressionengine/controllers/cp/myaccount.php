@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class MyAccount extends Controller {
+class MyAccount extends CI_Controller {
 
 	var $id			= '';
 	var $username	= '';
@@ -35,7 +35,7 @@ class MyAccount extends Controller {
 	 */
 	function MyAccount()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		if (FALSE === ($this->id = $this->auth_id()))
 		{

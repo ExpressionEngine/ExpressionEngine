@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Css extends Controller {
+class Css extends CI_Controller {
 
 	/**
 	 * Constructor
@@ -31,7 +31,7 @@ class Css extends Controller {
 	 */
 	function Css()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 	}
 	
 	// --------------------------------------------------------------------

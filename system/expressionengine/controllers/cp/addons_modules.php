@@ -23,7 +23,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Addons_modules extends Controller {
+class Addons_modules extends CI_Controller {
 
 	var $_mcp_reference;
 
@@ -34,7 +34,7 @@ class Addons_modules extends Controller {
 	 */
 	function Addons_modules()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
 		{

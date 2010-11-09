@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Javascript extends Controller {
+class Javascript extends CI_Controller {
 
 	/**
 	 * Constructor
@@ -31,7 +31,7 @@ class Javascript extends Controller {
 	 */
 	function Javascript()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		if ( ! defined('PATH_JQUERY'))
 		{

@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Wizard extends Controller {
+class Wizard extends CI_Controller {
 
 	var $version			= '2.1.2';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
@@ -163,7 +163,7 @@ class Wizard extends Controller {
 	 */	
 	function Wizard()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 		
 		// Third party constants
 		define('PATH_THIRD',	EE_APPPATH.'third_party/');

@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Design extends Controller {
+class Design extends CI_Controller {
 
 	var $sub_breadcrumbs = array();
 
@@ -51,7 +51,7 @@ class Design extends Controller {
 	 */
 	function Design()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{

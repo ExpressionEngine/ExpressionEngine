@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Tools_data extends Controller {
+class Tools_data extends CI_Controller {
 
 	var $sub_breadcrumbs = array();
 
@@ -33,7 +33,7 @@ class Tools_data extends Controller {
 	 */
 	function Tools_data()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
 		{

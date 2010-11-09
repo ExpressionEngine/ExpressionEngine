@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Search extends Controller {
+class Search extends CI_Controller {
 
 	/**
 	 * Constructor
@@ -31,7 +31,7 @@ class Search extends Controller {
 	 */
 	function Search()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		$this->lang->loadfile('admin');
 		

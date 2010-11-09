@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Content_files extends Controller {
+class Content_files extends CI_Controller {
 
 	/**
 	 * Constructor
@@ -31,7 +31,7 @@ class Content_files extends Controller {
 	 */
 	function Content_files()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
 		{

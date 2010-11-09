@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Homepage extends Controller {
+class Homepage extends CI_Controller {
 
 	/**
 	 * Constructor
@@ -31,7 +31,7 @@ class Homepage extends Controller {
 	 */
 	function Homepage()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 	}
 
 	// --------------------------------------------------------------------

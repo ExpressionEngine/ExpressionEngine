@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Addons_accessories extends Controller {
+class Addons_accessories extends CI_Controller {
 	
 	var $human_names = array();
 	
@@ -37,7 +37,7 @@ class Addons_accessories extends Controller {
 	 */
 	function Addons_accessories()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
 		{

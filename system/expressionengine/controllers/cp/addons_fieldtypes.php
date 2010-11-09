@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Addons_fieldtypes extends Controller {
+class Addons_fieldtypes extends CI_Controller {
 
 	/**
 	 * Constructor
@@ -9,7 +9,7 @@ class Addons_fieldtypes extends Controller {
 	 */
 	function Addons_fieldtypes()
 	{
-		parent::Controller();	
+		parent::CI_Controller();	
 	}
 	
 	// --------------------------------------------------------------------

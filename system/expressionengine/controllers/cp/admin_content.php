@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Admin_content extends Controller {
+class Admin_content extends CI_Controller {
 
 	var $reserved = array('random', 'date', 'title', 'url_title', 'edit_date', 'comment_total', 'username', 'screen_name', 'most_recent_comment', 'expiration_date');
 
@@ -43,7 +43,7 @@ class Admin_content extends Controller {
 	 */
 	function Admin_content()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		$this->lang->loadfile('admin');
 

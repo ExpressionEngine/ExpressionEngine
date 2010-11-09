@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Content extends Controller {
+class Content extends CI_Controller {
 
 	/**
 	 * Constructor
@@ -31,7 +31,7 @@ class Content extends Controller {
 	 */
 	function Content()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{

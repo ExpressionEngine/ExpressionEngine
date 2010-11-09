@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Tools extends Controller {
+class Tools extends CI_Controller {
 
 	/**
 	 * Constructor
@@ -31,7 +31,7 @@ class Tools extends Controller {
 	 */
 	function Tools()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 		
 		if ( ! $this->cp->allowed_group('can_access_tools'))
 		{

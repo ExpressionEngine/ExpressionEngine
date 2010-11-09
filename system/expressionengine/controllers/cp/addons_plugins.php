@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Addons_plugins extends Controller {
+class Addons_plugins extends CI_Controller {
 
 	var $paths = array();
 
@@ -33,7 +33,7 @@ class Addons_plugins extends Controller {
 	 */
 	function Addons_plugins()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
 		{

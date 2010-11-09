@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Tools_communicate extends Controller {
+class Tools_communicate extends CI_Controller {
 
 	var $mailinglist_exists	= FALSE;
 	var $attachments		= array();
@@ -36,7 +36,7 @@ class Tools_communicate extends Controller {
 	 */
 	function Tools_communicate()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 		
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_comm'))
 		{

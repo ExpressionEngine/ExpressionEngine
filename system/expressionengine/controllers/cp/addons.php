@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Addons extends Controller {
+class Addons extends CI_Controller {
 
 	/**
 	 * Constructor
@@ -31,7 +31,7 @@ class Addons extends Controller {
 	 */
 	function Addons()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		// Can't access addons? Can't see this page!
 		if ( ! $this->cp->allowed_group('can_access_addons'))

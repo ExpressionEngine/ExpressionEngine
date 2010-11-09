@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */ 
-class Login extends Controller {
+class Login extends CI_Controller {
 	
 	var $username = '';		// stores username on login failure
 
@@ -33,7 +33,7 @@ class Login extends Controller {
 	 */
 	function Login()
 	{
-		parent::Controller();	
+		parent::CI_Controller();	
 
 		$this->lang->loadfile('login');
 	}

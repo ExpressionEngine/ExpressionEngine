@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Content_edit extends Controller {
+class Content_edit extends CI_Controller {
 
 	var $nest_categories	= 'y';
 	var $installed_modules	= FALSE;
@@ -38,7 +38,7 @@ class Content_edit extends Controller {
 	 */
 	function Content_edit()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		$this->installed_modules = $this->cp->get_installed_modules();
 		

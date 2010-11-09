@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Content_publish extends Controller { 
+class Content_publish extends CI_Controller { 
 
 	var $SPELL				= FALSE;
 	var $autosave_error		= FALSE;
@@ -38,7 +38,7 @@ class Content_publish extends Controller {
 	 */
 	function Content_publish()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{

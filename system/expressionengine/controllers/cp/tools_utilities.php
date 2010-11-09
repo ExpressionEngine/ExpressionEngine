@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Tools_utilities extends Controller {
+class Tools_utilities extends CI_Controller {
 
 	var $errors					= array();
 	var $members				= array();
@@ -39,7 +39,7 @@ class Tools_utilities extends Controller {
 	 */
 	function Tools_utilities()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{

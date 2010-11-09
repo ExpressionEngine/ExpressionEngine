@@ -23,7 +23,7 @@
  * @link		http://expressionengine.com
  */
 
-class Members extends Controller {
+class Members extends CI_Controller {
 
 	// Default member groups.  We used these for translation purposes
 	var $english		= array('Guests', 'Banned', 'Members', 'Pending', 'Super Admins');
@@ -38,7 +38,7 @@ class Members extends Controller {
 	 */
 	function Members()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 		
 		if ( ! $this->cp->allowed_group('can_access_members'))
 		{

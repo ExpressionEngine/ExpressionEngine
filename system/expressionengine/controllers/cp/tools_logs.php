@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Tools_logs extends Controller {
+class Tools_logs extends CI_Controller {
 	
 	var $perpage		= 50;
 	var $pipe_length	= 3;
@@ -34,7 +34,7 @@ class Tools_logs extends Controller {
 	 */
 	function Tools_logs()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{

@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Admin_system extends Controller {
+class Admin_system extends CI_Controller {
 
 	/**
 	 * Constructor
@@ -31,7 +31,7 @@ class Admin_system extends Controller {
 	 */
 	function Admin_system()
 	{
-		parent::Controller();
+		parent::CI_Controller();
 
 		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
 		{

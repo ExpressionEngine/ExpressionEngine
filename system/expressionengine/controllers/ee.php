@@ -17,14 +17,14 @@
  * This class doesn't do much work.  Most of the heavy lifting is done via
  * libraries/Core.php, which runs automatically behind the scenes.  
  */
-class EE extends Controller {
+class EE extends CI_Controller {
 
 	/**
 	 * Construct
 	 */
 	function EE()
 	{
-		parent::Controller();	
+		parent::CI_Controller();	
 	}
 
 	// --------------------------------------------------------------------
