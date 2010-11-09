@@ -616,6 +616,15 @@ class Filemanager {
 				'max_height'	=> $dir['max_height']
 			);
 
+		if ($this->EE->config->item('xss_clean_uploads') == 'n')
+		{
+			$config['xss_clean'] = FALSE;
+		}
+		else
+		{
+			$config['xss_clean'] = ($this->EE->session->userdata('group_id') === 1) ? FALSE : TRUE;
+		}
+
 		$this->EE->load->library('upload', $config);
 
 		if ( ! $this->EE->upload->do_upload($field_name))

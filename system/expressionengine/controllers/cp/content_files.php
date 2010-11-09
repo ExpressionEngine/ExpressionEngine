@@ -337,6 +337,15 @@ class Content_files extends Controller {
 			'max_height'	=> $max_height
 		);
 
+		if ($this->config->item('xss_clean_uploads') == 'n')
+		{
+			$config['xss_clean'] = FALSE;
+		}
+		else
+		{
+			$config['xss_clean'] = ($this->session->userdata('group_id') === 1) ? FALSE : TRUE;
+		}
+
 		switch($upload_dir_prefs->allowed_types)
 		{
 			case 'all' : $config['allowed_types'] = '*';
