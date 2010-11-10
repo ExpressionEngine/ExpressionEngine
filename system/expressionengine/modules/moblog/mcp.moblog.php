@@ -783,7 +783,7 @@ EOT;
 // An object to represent our channels
 var channel_map = $channel_info;
 
-var empty_select =  '<option value="none">$none_text</option>';     // new Option("{$none_text}", 'none');
+var empty_select =  '<option value="none">$none_text</option>';
 var spaceString = new RegExp('!-!', "g");
 
 // We prep the magic array as soon as we can, basically
