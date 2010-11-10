@@ -759,7 +759,7 @@ class Channel {
 				{
 					if ($i == 0)
 					{
-						$query = $this->EE->functions->clone_object($relating_data['query']);
+						$query = clone $relating_data['query'];
 					}
 					else
 					{

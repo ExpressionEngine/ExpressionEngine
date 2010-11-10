@@ -1155,7 +1155,7 @@ class EE_Template {
 						{
 							$this->log_item("Plugin in Parameter, Processing Plugin First");
 						
-							$TMPL2 = $this->EE->functions->clone_object($this);
+							$TMPL2 = clone $this;
 
 							while (is_int(strpos($TMPL2->tag_data[$i]['params'][$name], LD.'exp:')))
 							{
@@ -1198,7 +1198,7 @@ class EE_Template {
 					{
 						$this->log_item("Nested Plugins in Tag, Parsing Outward First");
 						
-						$TMPL2 = $this->EE->functions->clone_object($this);
+						$TMPL2 = clone $this;
 
 						while (is_int(strpos($TMPL2->tag_data[$i]['block'], LD.'exp:')))
 						{

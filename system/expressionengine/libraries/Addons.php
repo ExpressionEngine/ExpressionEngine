@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Addons {
+class EE_Addons {
 
 	var $EE;
 	var $_map;						// addons sorted by addon_type (plural)
