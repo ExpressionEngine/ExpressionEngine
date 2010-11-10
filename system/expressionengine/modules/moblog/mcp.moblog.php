@@ -783,7 +783,7 @@ EOT;
 // An object to represent our channels
 var channel_map = $channel_info;
 
-var empty_select = new Option("{$none_text}", 'none');
+var empty_select =  '<option value="none">$none_text</option>';     // new Option("{$none_text}", 'none');
 var spaceString = new RegExp('!-!', "g");
 
 // We prep the magic array as soon as we can, basically
@@ -793,15 +793,14 @@ var spaceString = new RegExp('!-!', "g");
 		
 		// Go through each of the individual settings and build a proper dom element
 		jQuery.each(details, function(group, values) {
-			var newval = new Array();
+			var html = new String();
 			
 			// Add the new option fields
 			jQuery.each(values, function(a, b) {
-				newval.push(new Option(b[1].replace(spaceString, String.fromCharCode(160)), b[0]));
+				html += '<option value="' + b[0] + '">' + b[1].replace(spaceString, String.fromCharCode(160)) + "</option>";
 			});
 
-			// Set the new values
-			channel_map[key][group] = $(newval);
+			channel_map[key][group] = html;
 		});
 	});
 })();
@@ -834,6 +833,7 @@ function changemenu(index)
 $('select[name=channel_id]').change(function() {
 	changemenu(this.value);
 });
+
 
 MAGIC;
 		$this->EE->javascript->output($javascript);
