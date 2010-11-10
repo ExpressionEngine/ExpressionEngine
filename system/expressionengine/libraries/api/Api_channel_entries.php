@@ -1524,7 +1524,7 @@ class Api_channel_entries extends Api {
 	 */
 	function _prepare_data(&$data, &$mod_data)
 	{
-		$this->instantiate('channel_categories');
+		$this->instantiate('channel_categories', array('categories' => array(), 'cat_parents' => array(), 'cat_array' => array()));
 		
 		// Category parents - we toss the rest
 		
@@ -1540,6 +1540,7 @@ class Api_channel_entries extends Api {
 				$this->EE->api_channel_categories->fetch_category_parents($data['category']);
 			}
 		}
+
 		unset($data['category']);
 
 		// Prep y / n values		
