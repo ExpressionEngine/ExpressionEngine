@@ -24,7 +24,7 @@
 
 class EE_Stats {
 
-	var $_statdata	= array(); // @php4 protected -- access with statdata()
+	protected $_statdata	= array();
 	
 	var $stats_cache = array();
 	
