@@ -70,7 +70,7 @@ foreach($group_data as $key => $site): ?>
 		<?php
 			// channels, modules and templates need their names translated
 			$key = $k;
-			$k = substr($k, 2);
+			$k = substr($k, strpos($key, '_') + 1);
 
 			$line = '';
 

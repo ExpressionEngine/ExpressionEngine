@@ -102,7 +102,7 @@ if ($EE_view_disable !== TRUE)
 									// channels, modules and templates need their names translated
 								
 									$key = $k;
-									$k = substr($k, 2);
+									$k = substr($k, strpos($key, '_') + 1);
 								
 									$line = '';
 
