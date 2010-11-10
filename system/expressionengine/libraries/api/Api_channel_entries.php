@@ -77,6 +77,8 @@ class Api_channel_entries extends Api {
 	 */
 	function submit_new_entry($channel_id, $data)
 	{
+		$this->entry_id = 0;
+		
 		// yoost incase
 		$data['channel_id'] = $channel_id;
 		
@@ -296,8 +298,10 @@ class Api_channel_entries extends Api {
 			// no revisions, stat updating or cache clearing needed.
 			return $this->_update_entry($meta, $data, $mod_data);
 		}
-
+		
 		$this->_update_entry($meta, $data, $mod_data);
+
+
 
 		if (count($mod_data) > 0)
 		{
@@ -1654,27 +1658,40 @@ class Api_channel_entries extends Api {
 					
 					if ($this->entry_id)
 					{
-						// First we fetch the previously stored related entry ID.
-						
-						$this->EE->db->select('field_id_'.$row['field_id']);
-						$relrow = $this->EE->db->get_where('channel_data', array('entry_id' => $this->entry_id));
-						$relrow = $relrow->row_array();
+						// First we fetch the previously stored related child id.
 
+						$this->EE->db->select('field_id_'.$row['field_id'].', rel_child_id, rel_id');
+						$this->EE->db->from('channel_data');
+						$this->EE->db->join('relationships', 'field_id_'.$row['field_id'].' = rel_id', 'left');
+						$this->EE->db->where('entry_id', $this->entry_id);
+						$rel_data = $this->EE->db->get();
+						
+						$current_related = FALSE;
+						$rel_id = FALSE;
+						
+
+						if ($rel_data->num_rows() > 0)
+						{
+   							foreach ($rel_data->result() as $r)
+   							{
+      							$current_related = $r->rel_child_id;
+								$rel_id = $r->rel_id;
+   							}
+						}
+												
 						// If the previous ID matches the current ID being submitted it means that
 						// the existing relationship has not changed so there's no need to recompile.
 						// If it has changed we'll clear the old relationship.
 
-						if (is_numeric($relrow['field_id_'.$row['field_id']]))
+						if ($current_related  == $data['field_id_'.$row['field_id']])
 						{
-							if ($relrow['field_id_'.$row['field_id']] == $data['field_id_'.$row['field_id']])
-							{
-								$rel_exists = TRUE;
-							}
-							else
-							{
-								$this->EE->db->where('rel_id', $relrow['field_id_'.$row['field_id']]);
-								$this->EE->db->delete('relationships');
-							}
+							$rel_exists = TRUE;
+							$data['field_id_'.$row['field_id']] = $rel_id;
+						}
+						elseif ($rel_id)
+						{
+							$this->EE->db->where('rel_id', $rel_id);
+							$this->EE->db->delete('relationships');
 						}
 					}
 
@@ -1683,8 +1700,7 @@ class Api_channel_entries extends Api {
 						$reldata = array(
 							'type'			=> $row['field_related_to'],
 							'parent_id'		=> $this->entry_id, // we may have an empty entry_id at this point, if so, zero for now, gets updated below
-							'child_id'		=> $data['field_id_'.$row['field_id']],
-							'related_id'	=> $this->channel_id
+							'child_id'		=> $data['field_id_'.$row['field_id']]
 						);
 
 						$data['field_id_'.$row['field_id']] = $this->EE->functions->compile_relationship($reldata, TRUE);
@@ -1761,6 +1777,8 @@ class Api_channel_entries extends Api {
 				{
 					$cust_fields[$key] = $val;
 				}
+				
+				// set missing defaults here.  					$data['field_ft_'.$row['field_id']] = 'none';
 			}
 		}
 		
@@ -1779,7 +1797,7 @@ class Api_channel_entries extends Api {
 						$cust_fields[$field->name] = '';
 					}
 				}
-				elseif ($field->type == 'int' && isset($cust_fields[$field->name]) && $cust_fields[$field->name] == '')
+				elseif ($field->type == 'int' && isset($cust_fields[$field->name]) && $cust_fields[$field->name] === '')
 				{
 					unset($cust_fields[$field->name]);
 				}
@@ -1868,7 +1886,7 @@ class Api_channel_entries extends Api {
 		// Update the entry data
 		
 		unset($meta['entry_id']);
-
+		
 		if ($this->autosave)
 		{
 			$this->EE->db->delete('channel_entries_autosave', array('original_entry_id' => $this->entry_id)); // remove all entries for this
@@ -1882,9 +1900,8 @@ class Api_channel_entries extends Api {
 		}
 		
 		// Update Custom fields
-		
-
 		$cust_fields = array('channel_id' =>  $this->channel_id);
+
 		foreach ($data as $key => $val)
 		{
 			if (strncmp($key, 'field_offset_', 13) == 0)
@@ -1967,13 +1984,14 @@ class Api_channel_entries extends Api {
 								$cust_fields[$field->name] = '';
 							}
 						}
-						elseif ($field->type == 'int' && isset($cust_fields[$field->name]) && $cust_fields[$field->name] == '')
+						elseif ($field->type == 'int' && isset($cust_fields[$field->name]) && $cust_fields[$field->name] === '')
 						{
+							//$cust_fields[$field->name] = 0;
 							unset($cust_fields[$field->name]);
 						}
 					}
 				} 		
-				
+
 				$this->EE->db->where('entry_id', $this->entry_id);
 				$this->EE->db->update('channel_data', $cust_fields);
 			}
@@ -2053,11 +2071,8 @@ class Api_channel_entries extends Api {
 			}
 		}
 
-
 		// Recompile Relationships
-
 		$this->update_related_cache($this->entry_id);
-		
 		
 		// Is a page being updated or created?
 		
