@@ -2925,7 +2925,7 @@ class EE_Template {
 						if ($this->EE->config->item('save_tmpl_files') == 'y' AND $this->EE->config->item('tmpl_file_basepath') != '' AND $row['save_template_file'] == 'y')
 						{
 							$basepath = $this->EE->config->slash_item('tmpl_file_basepath').$this->EE->config->item('site_short_name').'/';
-							$basepath .= $ex['0'].'.group/'.$row['template_name'].'.css';
+							$basepath .= $row['group_name'].'.group/'.$row['template_name'].'.css';
 							
 							if (is_file($basepath))
 							{
