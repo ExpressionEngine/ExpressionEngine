@@ -85,7 +85,7 @@ class Api_channel_entries extends Api {
 		$this->data =& $data;
 		$mod_data = array();
 		
-		$this->_initialize(array('channel_id', 'entry_id', 'autosave'));
+		$this->_initialize(array('channel_id' => $channel_id, 'entry_id' => 0, 'autosave' => FALSE));
 
 		if ( ! $this->_base_prep($data))
 		{
@@ -215,11 +215,8 @@ class Api_channel_entries extends Api {
 	{
 		$this->data =& $data;
 		$mod_data = array();
-		$this->_initialize(array('channel_id', 'autosave'));
+		$this->_initialize(array('entry_id' => $entry_id, 'autosave' => $autosave));
 
-		$this->entry_id = $entry_id;
-		$this->autosave = $autosave;
-		
 		if ( ! $this->entry_exists($this->entry_id))
 		{
 			return $this->_set_error('no_entry_to_update');
@@ -1642,75 +1639,83 @@ class Api_channel_entries extends Api {
 		$this->EE->db->select('field_id, field_related_to, field_related_id');
 		$query = $this->EE->db->get_where('channel_fields', array('field_type' => 'rel'));
 		
+		// No results, bail out early
+		if ( ! $query->num_rows())
+		{
+			$this->_cache['rel_updates'] = array();
+			return;
+		}
+
 		$rel_updates = array();
 		
-		if ($query->num_rows() > 0)
+		foreach ($query->result_array() as $row)
 		{
-			foreach ($query->result_array() as $row)
+			$field_id = $row['field_id'];
+
+			// No field - skip
+			if ( ! isset($data['field_id_'.$field_id]))
 			{
-				if (isset($data['field_id_'.$row['field_id']]))
-				{
-					$data['field_ft_'.$row['field_id']] = 'none';
-					$rel_exists = FALSE;
+				continue;
+			}
 
-					// If editing an existing entry....
-					// Does an existing relationship exist? If so, we may not need to recompile the data
+			$data['field_ft_'.$field_id] = 'none';
+			$rel_exists = FALSE;
+
+			// If editing an existing entry....
+			// Does an existing relationship exist? If so, we may not need to recompile the data
 					
-					if ($this->entry_id)
-					{
-						// First we fetch the previously stored related child id.
+			if ($this->entry_id)
+			{
+				// First we fetch the previously stored related child id.
 
-						$this->EE->db->select('field_id_'.$row['field_id'].', rel_child_id, rel_id');
-						$this->EE->db->from('channel_data');
-						$this->EE->db->join('relationships', 'field_id_'.$row['field_id'].' = rel_id', 'left');
-						$this->EE->db->where('entry_id', $this->entry_id);
-						$rel_data = $this->EE->db->get();
+				$this->EE->db->select('field_id_'.$field_id.', rel_child_id, rel_id');
+				$this->EE->db->from('channel_data');
+				$this->EE->db->join('relationships', 'field_id_'.$field_id.' = rel_id', 'left');
+				$this->EE->db->where('entry_id', $this->entry_id);
+				$rel_data = $this->EE->db->get();
 						
-						$current_related = FALSE;
-						$rel_id = FALSE;
+				$current_related = FALSE;
+				$rel_id = FALSE;
 						
-
-						if ($rel_data->num_rows() > 0)
-						{
-   							foreach ($rel_data->result() as $r)
-   							{
-      							$current_related = $r->rel_child_id;
-								$rel_id = $r->rel_id;
-   							}
-						}
-												
-						// If the previous ID matches the current ID being submitted it means that
-						// the existing relationship has not changed so there's no need to recompile.
-						// If it has changed we'll clear the old relationship.
-
-						if ($current_related  == $data['field_id_'.$row['field_id']])
-						{
-							$rel_exists = TRUE;
-							$data['field_id_'.$row['field_id']] = $rel_id;
-						}
-						elseif ($rel_id)
-						{
-							$this->EE->db->where('rel_id', $rel_id);
-							$this->EE->db->delete('relationships');
-						}
-					}
-
-					if (is_numeric($data['field_id_'.$row['field_id']]) AND $rel_exists == FALSE)
+				if ($rel_data->num_rows() > 0)
+				{
+					foreach ($rel_data->result() as $r)
 					{
-						$reldata = array(
-							'type'			=> $row['field_related_to'],
-							'parent_id'		=> $this->entry_id, // we may have an empty entry_id at this point, if so, zero for now, gets updated below
-							'child_id'		=> $data['field_id_'.$row['field_id']]
-						);
-
-						$data['field_id_'.$row['field_id']] = $this->EE->functions->compile_relationship($reldata, TRUE);
-						$rel_updates[] = $data['field_id_'.$row['field_id']];
-					}
-					elseif($data['field_id_'.$row['field_id']] == '')
-					{
-						$data['field_id_'.$row['field_id']] = 0;
+						$current_related = $r->rel_child_id;
+						$rel_id = $r->rel_id;
 					}
 				}
+												
+				// If the previous ID matches the current ID being submitted it means that
+				// the existing relationship has not changed so there's no need to recompile.
+				// If it has changed we'll clear the old relationship.
+
+				if ($current_related  == $data['field_id_'.$field_id])
+				{
+					$rel_exists = TRUE;
+					$data['field_id_'.$field_id] = $rel_id;
+				}
+				elseif ($rel_id)
+				{
+					$this->EE->db->where('rel_id', $rel_id);
+					$this->EE->db->delete('relationships');
+				}
+			}
+
+			if (is_numeric($data['field_id_'.$field_id]) AND $rel_exists == FALSE)
+			{
+				$reldata = array(
+					'type'			=> $row['field_related_to'],
+					'parent_id'		=> $this->entry_id, // we may have an empty entry_id at this point, if so, zero for now, gets updated below
+					'child_id'		=> $data['field_id_'.$field_id]
+				);
+
+				$data['field_id_'.$field_id] = $this->EE->functions->compile_relationship($reldata, TRUE);
+				$rel_updates[] = $data['field_id_'.$field_id];
+			}
+			elseif($data['field_id_'.$field_id] == '')
+			{
+				$data['field_id_'.$field_id] = 0;
 			}
 		}
 		
