@@ -2131,7 +2131,8 @@ class Api_channel_entries extends Api {
 		{
 			foreach ($query->result_array() as $row)
 			{
-				$field_name = $row['field_name'];
+				$field_name = 'field_id_'.$row['field_id'];
+				
 				$this->EE->api_channel_fields->settings[$row['field_id']]['entry_id'] = $this->entry_id;
 				
 				// @todo remove in 2.1.2
