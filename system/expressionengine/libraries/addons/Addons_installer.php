@@ -28,10 +28,8 @@ class Addons_installer {
 
 	/**
 	 * Constructor
-	 *
-	 * @access	public
 	 */
-	function Addons_installer()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 		$this->EE->load->library('api');

@@ -33,12 +33,10 @@ class Content_publish extends CI_Controller {
 
 	/**
 	 * Constructor
-	 *
-	 * @access	public
 	 */
-	function Content_publish()
+	function __construct()
 	{
-		parent::CI_Controller();
+		parent::__construct();
 
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{

@@ -28,12 +28,10 @@ class Login extends CI_Controller {
 
 	/**
 	 * Constructor
-	 *
-	 * @access	public
 	 */
-	function Login()
+	function __construct()
 	{
-		parent::CI_Controller();	
+		parent::__construct();	
 
 		$this->lang->loadfile('login');
 	}

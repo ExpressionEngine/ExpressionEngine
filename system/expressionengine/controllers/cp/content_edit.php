@@ -33,12 +33,10 @@ class Content_edit extends CI_Controller {
 
 	/**
 	 * Constructor
-	 *
-	 * @access	public
 	 */
-	function Content_edit()
+	function __construct()
 	{
-		parent::CI_Controller();
+		parent::__construct();
 
 		$this->installed_modules = $this->cp->get_installed_modules();
 		

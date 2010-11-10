@@ -28,14 +28,6 @@
  */
 class Super_model extends CI_Model {
 
-	/**
-	 * Constructor
-	 */
-    function Super_model()
-    {
-        parent::CI_Model();
-    }
-
 	// --------------------------------------------------------------------
 	
 	/**

@@ -28,7 +28,7 @@ class EE_Autoload_ee {
 	 * Constructor
 	 *
 	 */	
-	function EE_Autoload_ee()
+	function __construct()
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();

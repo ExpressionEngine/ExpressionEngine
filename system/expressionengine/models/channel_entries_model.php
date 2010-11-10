@@ -25,16 +25,6 @@
 class Channel_entries_model extends CI_Model {
 
 	/**
-	 * Constructor
-	 */
-	function Channel_entries_model()
-	{
-		parent::CI_Model();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Get Entries
 	 *
 	 * Gets all entry ids for a channel.  Other fields and where can be specified optionally

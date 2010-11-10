@@ -25,18 +25,6 @@
 class Css extends CI_Controller {
 
 	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function Css()
-	{
-		parent::CI_Controller();
-	}
-	
-	// --------------------------------------------------------------------
-
-	/**
 	 * _remap function
 	 * 
 	 * Any CSS file in the view collection

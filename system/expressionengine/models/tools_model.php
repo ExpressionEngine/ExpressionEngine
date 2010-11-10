@@ -24,14 +24,6 @@
  */
 class Tools_model extends CI_Model {
 
-	function Tools_model()
-	{
-		parent::CI_Model();
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Recount Batch Total
 	 *
@@ -40,7 +32,7 @@ class Tools_model extends CI_Model {
 	 */
 	function get_recount_batch_total()
 	{
-		return $this->EE->config->item('recount_batch_total');
+		return $this->config->item('recount_batch_total');
 	}
 
 	// --------------------------------------------------------------------
@@ -310,7 +302,7 @@ class Tools_model extends CI_Model {
 	 */
 	function get_language_filelist($language_directory = 'english')
 	{
-		$this->EE->load->helper('file');
+		$this->load->helper('file');
 		
 		$path = APPPATH.'language/'.$language_directory;
 		$ext_len = strlen(EXT);
@@ -502,11 +494,11 @@ class Tools_model extends CI_Model {
 			$allowed_types = array($allowed_types);
 		}
 	
-		$this->EE->load->helper('file');
-		$this->EE->load->helper('string');
-		$this->EE->load->helper('text');
-		$this->EE->load->helper('directory');
-		$this->EE->load->library('encrypt');
+		$this->load->helper('file');
+		$this->load->helper('string');
+		$this->load->helper('text');
+		$this->load->helper('directory');
+		$this->load->library('encrypt');
 
 		if (count($directories) == 0)
 		{
@@ -541,7 +533,7 @@ class Tools_model extends CI_Model {
 
 					$file['relative_path'] = reduce_double_slashes($file['relative_path']);
 
-					$file['encrypted_path'] = rawurlencode($this->EE->encrypt->encode($file['relative_path'].$file['name'], $this->EE->session->sess_crypt_key));
+					$file['encrypted_path'] = rawurlencode($this->encrypt->encode($file['relative_path'].$file['name'], $this->session->sess_crypt_key));
 
 					$file['mime'] = get_mime_by_extension($file['name']);
 

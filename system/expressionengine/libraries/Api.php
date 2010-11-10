@@ -39,7 +39,7 @@ class Api {
 	 * Constructor
 	 *
 	 */
-	function Api($which = '')
+	function __construct($which = '')
 	{
 		// Set the EE super object to a class variable
 		$this->EE =& get_instance();

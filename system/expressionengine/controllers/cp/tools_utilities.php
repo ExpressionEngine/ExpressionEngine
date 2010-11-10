@@ -34,12 +34,10 @@ class Tools_utilities extends CI_Controller {
 
 	/**
 	 * Constructor
-	 *
-	 * @access	public
 	 */
-	function Tools_utilities()
+	function __construct()
 	{
-		parent::CI_Controller();
+		parent::__construct();
 
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{

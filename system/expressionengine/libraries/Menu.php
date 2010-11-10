@@ -29,7 +29,7 @@ class EE_Menu {
 	 *
 	 * @access	public
 	 */
-	function EE_Menu()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 		$this->EE->load->library('api');

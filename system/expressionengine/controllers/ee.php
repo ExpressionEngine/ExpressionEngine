@@ -20,16 +20,6 @@
 class EE extends CI_Controller {
 
 	/**
-	 * Construct
-	 */
-	function EE()
-	{
-		parent::CI_Controller();	
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Index
 	 */
 	function index()

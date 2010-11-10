@@ -46,7 +46,7 @@ class Cp {
 	 * Constructor
 	 *
 	 */	
-	function Cp()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 		

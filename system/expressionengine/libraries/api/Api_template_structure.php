@@ -45,9 +45,9 @@ class Api_template_structure extends Api {
 	/**
 	 * Constructor
 	 */
-	function Api_template_structure()
+	function __construct()
 	{
-		parent::Api();
+		parent::__construct();
 		
 		$this->EE->load->model('template_model');
 		

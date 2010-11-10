@@ -105,7 +105,7 @@ class EE_Template {
 	 * @access	public
 	 * @return	void
 	 */	
-	function EE_Template()
+	function __construct()
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();

@@ -34,7 +34,7 @@ class Api_channel_categories extends Api {
 	 * Constructor
 	 *
 	 */
-	function Api_channel_categories()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 		$this->EE->load->model('channel_model');

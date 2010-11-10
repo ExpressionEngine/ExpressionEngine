@@ -26,12 +26,10 @@ class Addons extends CI_Controller {
 
 	/**
 	 * Constructor
-	 *
-	 * @access	public
 	 */
-	function Addons()
+	public function __construct()
 	{
-		parent::CI_Controller();
+		parent::__construct();
 
 		// Can't access addons? Can't see this page!
 		if ( ! $this->cp->allowed_group('can_access_addons'))

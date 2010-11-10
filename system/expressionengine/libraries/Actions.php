@@ -57,7 +57,7 @@ class EE_Actions {
 	 *
 	 */	
 		
-	function EE_Actions($can_view_system = FALSE)
+	function __construct($can_view_system = FALSE)
 	{  		
 		// Set the EE super object to a local variable
 		$EE =& get_instance();

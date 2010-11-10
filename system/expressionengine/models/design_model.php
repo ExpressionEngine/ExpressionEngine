@@ -24,15 +24,6 @@
  */
 class Design_model extends CI_Model {
 
-	function Design_model()
-	{
-		parent::CI_Model();
-		$this->EE =& get_instance();
-	}
-
-	// ------------------------------------------------------------------------
-
-
 	function fetch_templates()
 	{
 		$this->db->select(array('t.template_id', 't.group_id', 't.template_name', 't.template_type', 't.cache', 't.refresh', 't.no_auth_bounce', 't.enable_http_auth', 't.allow_php', 't.php_parse_location', 't.hits', 'tg.group_name'));
@@ -103,11 +94,6 @@ class Design_model extends CI_Model {
 
 	/**
 	 * 	Fetch Templates in a specified group
-	 *
-	 *	
-	 *
-	 *
-	 *
 	 */
 	function export_tmpl_group($tmpl_group = FALSE)
 	{

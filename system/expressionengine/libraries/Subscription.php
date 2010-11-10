@@ -37,7 +37,7 @@ class EE_Subscription {
 	 *
 	 * @access	public
 	 */
-	function EE_Subscription()
+	function __construct()
 	{
 		// Get EE superobject reference
 		$this->EE =& get_instance();

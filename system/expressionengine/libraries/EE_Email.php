@@ -28,9 +28,9 @@ class EE_Email extends CI_Email {
 	/**
 	 * Constructor
 	 */	
-	function EE_Email($init = TRUE)
+	function __construct($init = TRUE)
 	{
-		parent::CI_Email();
+		parent::__construct();
 
 		if ($init != TRUE)
 			return;

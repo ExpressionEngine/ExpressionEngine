@@ -23,13 +23,6 @@
  * @link		http://expressionengine.com
  */
 class Mailinglist_model extends CI_Model  {
-
-	function Mailinglist_model()
-	{
-		parent::CI_Model();
-	}
-
-	// ------------------------------------------------------------------------
 	
 	/**
 	 * Get Mailinglists

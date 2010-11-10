@@ -24,13 +24,6 @@
  */
 class Category_model extends CI_Model {
 
-	function Category_model()
-	{
-		parent::CI_Model();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Categories
 	 *

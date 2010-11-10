@@ -26,14 +26,6 @@ class EE_Lang extends CI_Lang {
 	
 	var $user_lang = '';
 	
-	/**
-	 * Constructor
-	 */	  
-	function EE_Lang()
-	{
-		parent::CI_Lang();
-	}
-	
 	// --------------------------------------------------------------------
 
 	/**

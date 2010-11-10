@@ -23,13 +23,6 @@
  * @link		http://expressionengine.com
  */
 class Admin_model extends CI_Model {
-
-	function Admin_model()
-	{
-		parent::CI_Model();
-	}
-
-	// --------------------------------------------------------------------
 	
 	/**
 	 * Get Config Fields

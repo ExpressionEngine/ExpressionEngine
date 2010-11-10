@@ -25,16 +25,6 @@
 class EE_Javascript extends CI_Javascript {
 
 	var $global_vars = array();
-
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function EE_Javascript($params = array())
-	{
-		parent::CI_Javascript($params);
-	}
 	
 	// --------------------------------------------------------------------
 

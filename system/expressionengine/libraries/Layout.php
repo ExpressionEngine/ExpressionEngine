@@ -31,7 +31,7 @@ class Layout {
 	 *
 	 * Get reference to EE SuperObject
 	 */
-	function Layout()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 	}

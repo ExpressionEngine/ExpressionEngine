@@ -29,9 +29,9 @@ class Tools extends CI_Controller {
 	 *
 	 * @access	public
 	 */
-	function Tools()
+	function __construct()
 	{
-		parent::CI_Controller();
+		parent::__construct();
 		
 		if ( ! $this->cp->allowed_group('can_access_tools'))
 		{

@@ -31,9 +31,9 @@ class Tools_data extends CI_Controller {
 	 *
 	 * @access	public
 	 */
-	function Tools_data()
+	function __construct()
 	{
-		parent::CI_Controller();
+		parent::__construct();
 
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
 		{

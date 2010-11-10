@@ -31,14 +31,6 @@ class EE_URI extends CI_URI {
 	// These are reserved words that have special meaning when they are the first
 	// segment of a URI string.  Template groups can not be named any of these words
 	var $reserved  = array('css');
-	
-	/**
-	 * Constructor
-	 */	
-	function EE_URI()
-	{
-		parent::CI_URI();	
-	}
 
 	// --------------------------------------------------------------------
 	

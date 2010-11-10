@@ -24,12 +24,6 @@
  */
 class Template_model extends CI_Model {
 
-    function Template_model()
-    {
-        parent::CI_Model();
-    }
-
-	// --------------------------------------------------------------------
 	
 	/**
 	 * Get Template Group Metadata

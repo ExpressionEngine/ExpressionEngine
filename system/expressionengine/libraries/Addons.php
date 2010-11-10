@@ -22,7 +22,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class EE_Addons {
+class Addons {
 
 	var $EE;
 	var $_map;						// addons sorted by addon_type (plural)
@@ -33,7 +33,7 @@ class EE_Addons {
 	 *
 	 * @access	public
 	 */
-	function EE_Addons()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 	}

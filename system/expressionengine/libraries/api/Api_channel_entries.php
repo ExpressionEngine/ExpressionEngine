@@ -38,9 +38,9 @@ class Api_channel_entries extends Api {
 	 * Constructor
 	 *
 	 */
-	function Api_channel_entries()
+	function __construct()
 	{
-		parent::Api();
+		parent::__construct();
 		$this->EE->load->model('channel_entries_model');
 	}
 

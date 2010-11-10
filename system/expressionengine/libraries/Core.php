@@ -31,7 +31,7 @@ class EE_Core {
 	 * Constructor
 	 *
 	 */	
-	function EE_Core()
+	function __construct()
 	{
 		/*
 		 * -----------------------------------------------------------------

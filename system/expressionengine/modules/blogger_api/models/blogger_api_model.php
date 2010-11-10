@@ -23,13 +23,6 @@
  * @link		http://expressionengine.com
  */
 class Blogger_api_model extends CI_Model  {
-
-	function Blogger_api_model()
-	{
-		parent::CI_Model();
-	}
-
-	// ------------------------------------------------------------------------
 	
 	/**
 	 * Get Blogger Preferences

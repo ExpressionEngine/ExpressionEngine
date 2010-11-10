@@ -30,7 +30,7 @@ class EE_Logger {
 	 *
 	 * @access	public
 	 */
-	function EE_Logger()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 	}

@@ -24,17 +24,6 @@
  */
 class Sc_model extends CI_Model {
 
-	/**
-	 * Construct
-	 */
-	function Sc_model()
-	{
-		parent::CI_Model();
-	}
-
-	// ------------------------------------------------------------------------
-
-
 }
 // End Class
 /* End of file sc_model.php */

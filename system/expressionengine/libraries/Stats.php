@@ -35,7 +35,7 @@ class EE_Stats {
 	/**
 	 * Class Constructor
 	 */
-	function EE_Stats()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 

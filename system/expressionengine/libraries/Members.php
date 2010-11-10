@@ -27,7 +27,7 @@ class Members {
 	
 	var $EE;
 	
-	function Members()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 	}

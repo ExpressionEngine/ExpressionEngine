@@ -8,16 +8,6 @@ class Api_channel_fields extends Api {
 
 	var $ee_base_ft			= FALSE;
 	var $global_settings;
-
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function Api_channel_fields()
-	{
-		parent::Api();
-	}
 	
 	// --------------------------------------------------------------------
 	
@@ -326,7 +316,7 @@ class Api_channel_fields extends Api {
 		$_ft_path	= $this->ft_paths[$field_type];
 		
 		$this->EE->load->add_package_path($_ft_path);
-		$obj =& instantiate_class(new $class());
+		$obj = new $class();
 		$this->EE->load->remove_package_path($_ft_path);
 		
 		return $obj;
