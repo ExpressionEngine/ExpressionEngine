@@ -358,12 +358,8 @@ class EE_Typography extends CI_Typography {
 			}
 		}
 		
-		/** -------------------------------------
-		/**  Fix emoticon bug
-		/** -------------------------------------*/
-		
+		//  Fix emoticon bug
 		$str = str_replace(array('>:-(', '>:('), array(':angry:', ':mad:'), $str);
-		
 		
 		/** -------------------------------------
 		/**  Highlight text within [code] tags
@@ -399,33 +395,22 @@ class EE_Typography extends CI_Typography {
 			}
 		}	
 
-		/** -------------------------------------
-		/**  Strip IMG tags if not allowed
-		/** -------------------------------------*/
+		//  Strip IMG tags if not allowed
 		if ($this->allow_img_url == 'n')
 		{
 			$str = $this->strip_images($str);
 		}
 
-		/** -------------------------------------
-		/**  Format HTML
-		/** -------------------------------------*/
-	
+		//  Format HTML
 		$str = $this->format_html($str);
 
-		/** -------------------------------------
-		/**  Auto-link URLs and email addresses
-		/** -------------------------------------*/
-				
+		//  Auto-link URLs and email addresses
 		if ($this->auto_links == 'y' AND $this->html_format != 'none')
 		{
 			$str = $this->auto_linker($str);
 		}
 		
-		/** -------------------------------------
-		/**  Parse file paths (in images)
-		/** -------------------------------------*/
-
+		//  Parse file paths (in images)
 		$str = $this->parse_file_paths($str);
 
 		/** ---------------------------------------
@@ -441,12 +426,10 @@ class EE_Typography extends CI_Typography {
 			$str = preg_replace("#<a\s+(.*?)href=(\042|\047)([^\\2]*?)\\2(.*?)\>(.*?)</a>#si", "[url=\"\\3\"\\1\\4]\\5[/url]", $str);
 		}
 		
-		/** -------------------------------------
-		/**  Decode BBCode
-		/** -------------------------------------*/
-	
+
+		//  Decode BBCode
 		$str = $this->decode_bbcode($str);
-  
+
 		/** -------------------------------------
 		/**  Format text
 		/** -------------------------------------*/
@@ -495,15 +478,11 @@ class EE_Typography extends CI_Typography {
 				break;
 		}
 		
-		/** -------------------------------------
-		/**  Parse emoticons
-		/** -------------------------------------*/
+
+		//  Parse emoticons
 		$str = $this->emoticon_replace($str);
 		
-		/** -------------------------------------
-		/**  Parse censored words
-		/** -------------------------------------*/
-		
+		//  Parse censored words
 		if ($this->word_censor === TRUE && count($this->censored_words > 0))
 		{
 			$this->EE->load->helper('text');
@@ -891,7 +870,7 @@ class EE_Typography extends CI_Typography {
 					// remove all attributes except for the href in "Safe" HTML formatting
 					// Also force links output in the CP with the Typography class as "safe" so that
 					// any other tag attributes that it might have are not slapped in with the URL
-					if (($this->html_format == 'safe' OR REQ == 'CP') && stristr($matches['1'][$i],' '))
+					if (($this->html_format == 'safe' OR REQ == 'CP' OR $this->html_format == 'none') && stristr($matches['1'][$i],' '))
 					{
 						for($a=0, $sa=count($allowed); $a < $sa; ++$a)
 						{
