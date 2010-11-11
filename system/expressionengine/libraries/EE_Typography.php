@@ -870,7 +870,7 @@ class EE_Typography extends CI_Typography {
 					// remove all attributes except for the href in "Safe" HTML formatting
 					// Also force links output in the CP with the Typography class as "safe" so that
 					// any other tag attributes that it might have are not slapped in with the URL
-					if (($this->html_format == 'safe' OR REQ == 'CP' OR $this->html_format == 'none') && stristr($matches['1'][$i],' '))
+					if (($this->html_format == 'safe' OR REQ == 'CP') && stristr($matches['1'][$i],' '))
 					{
 						for($a=0, $sa=count($allowed); $a < $sa; ++$a)
 						{
@@ -905,6 +905,13 @@ class EE_Typography extends CI_Typography {
 	        		}
 					else
 					{
+						// If allowed is none- we ditch everything but the url
+						if ($this->html_format == 'none' && ($space_pos = strpos($url, ' ')) !== FALSE)
+						{
+							$url = substr($url, 0, $space_pos);
+						}
+						
+						
 						// get rid of opening = and surrounding quotes (again for allow all!)
 						$url = preg_replace(array('/^=(\042|\047)?/', '/(\042|\047)$/'), '', $url);	
 					}
