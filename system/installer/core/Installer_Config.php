@@ -41,11 +41,10 @@ class Installer_Config Extends EE_Config {
 	
 	/**
 	 * Constructor
-	 *
 	 */	
-	function Installer_Config()
+	public function __construct()
 	{	
-		parent::CI_Config();
+		parent::__construct();
 
 		$this->config_path		= EE_APPPATH.'/config/config'.EXT;
 		$this->database_path	= EE_APPPATH.'/config/database'.EXT;
