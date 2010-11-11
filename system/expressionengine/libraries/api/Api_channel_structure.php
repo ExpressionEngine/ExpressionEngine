@@ -34,9 +34,9 @@ class Api_channel_structure extends Api {
 	 * Constructor
 	 *
 	 */
-	function Api_channel_structure()
+	function __construct()
 	{
-		parent::Api();
+		parent::__construct();
 		$this->EE->load->model('channel_model');
 	}
 

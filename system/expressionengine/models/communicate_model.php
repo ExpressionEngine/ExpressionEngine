@@ -23,13 +23,6 @@
  * @link		http://expressionengine.com
  */
 class Communicate_model extends CI_Model {
-	
-	function Communicate_model()
-	{
-		parent::CI_Model();
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Email Cache

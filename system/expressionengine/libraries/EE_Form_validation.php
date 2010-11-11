@@ -32,9 +32,9 @@ class EE_Form_validation extends CI_Form_validation {
 	 *
 	 * @access	public
 	 */	
-	function EE_Form_validation($rules = array())
+	function __construct($rules = array())
 	{	
-		parent::CI_Form_validation($rules);
+		parent::__construct($rules);
 		$this->EE =& get_instance();
 		
 		if ($this->EE->input->get('C') == 'addons_modules' &&

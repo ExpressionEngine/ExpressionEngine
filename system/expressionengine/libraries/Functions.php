@@ -39,7 +39,7 @@ class EE_Functions {
 	/**
 	 * Constructor
 	 */	  
-	function EE_Functions()
+	function __construct()
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
@@ -1168,7 +1168,7 @@ class EE_Functions {
 		{
 			if ($del_root === FALSE)
 			{
-				mkdir($path, 0777);
+				@mkdir($path, 0777);
 				
 				if ($fp = @fopen($path.'/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
 				{
@@ -2868,20 +2868,13 @@ class EE_Functions {
 	 * This is required because of the way PHP 5 handles the passing of objects
 	 * @php4
 	 * 
-	 * @access	public
+	 * @deprecated as of EE 2.1.2
 	 * @param	object
 	 * @return	object
 	 */
 	function clone_object($object)
 	{
-		if (is_php('5.0.0') == TRUE)
-		{
-			return eval('return clone $object;');
-		}
-		else
-		{
-			return $object;
-		}
+		return clone $object;
 	}
 }
 // END CLASS

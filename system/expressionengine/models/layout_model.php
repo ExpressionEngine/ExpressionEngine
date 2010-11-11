@@ -24,14 +24,6 @@
  */
 class Layout_model extends CI_Model {
 
-	function Layout_model()
-	{
-		parent::CI_Model();
-	}
-
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Update Layouts
 	 *

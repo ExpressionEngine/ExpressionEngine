@@ -23,12 +23,7 @@
  * @link		http://expressionengine.com
  */
 class Status_model extends CI_Model {
-
-    function Status_model()
-    {
-        parent::CI_Model();
-    }
-
+	
 	/**
 	 * Get Statuses
 	 *

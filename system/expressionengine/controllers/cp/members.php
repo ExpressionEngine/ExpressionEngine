@@ -36,9 +36,9 @@ class Members extends CI_Controller {
 	 *
 	 * @access	public
 	 */
-	function Members()
+	function __construct()
 	{
-		parent::CI_Controller();
+		parent::__construct();
 		
 		if ( ! $this->cp->allowed_group('can_access_members'))
 		{

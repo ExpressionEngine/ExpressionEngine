@@ -24,12 +24,6 @@
  */
 class Search_model extends CI_Model {
 
-	function Search_model()
-	{
-		parent::CI_Model();
-		$this->EE =& get_instance();
-    }
-
 	// --------------------------------------------------------------------
 
 	/**

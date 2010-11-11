@@ -24,12 +24,6 @@
  */
 class Comment_model extends CI_Model {
 
-	function Comment_model()
-	{
-		parent::CI_Model();
-	}
-
-	// --------------------------------------------------------------------
 	
 	/**
 	 * Get Comment IDs

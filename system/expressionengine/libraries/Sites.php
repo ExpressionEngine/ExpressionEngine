@@ -24,18 +24,9 @@
  */
 class EE_Sites { 
 
-	var $num_sites_allowed = 'A04EMwBnXgRRFwBbAmZQDQAj';
-	var $the_sites_allowed = 'BjhfMFdCUxUBWQ9CVgUANFMx';
-	var $sites_allowed_num = 'UVwNWVcbUggHYwl3VjVTbA';
-  
-	/**
-	 * Constructor
-	 *
-	 */
-	function EE_Sites()
-  	{ }
-
-
+	public $num_sites_allowed = 'A04EMwBnXgRRFwBbAmZQDQAj';
+	public $the_sites_allowed = 'BjhfMFdCUxUBWQ9CVgUANFMx';
+	public $sites_allowed_num = 'UVwNWVcbUggHYwl3VjVTbA';
 }
 // END CLASS
 

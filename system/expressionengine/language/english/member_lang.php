@@ -831,7 +831,7 @@ We reserve the right to remove, edit, or move any messages for any reason.',
 'Enable Smart Notification',
 
 'private_message' =>
-'Private Message',
+'Private Messages',
 
 'am_online' =>
 'I am Online',

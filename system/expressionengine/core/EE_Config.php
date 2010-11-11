@@ -37,9 +37,9 @@ class EE_Config Extends CI_Config {
 	 * Constructor
 	 *
 	 */	
-	function EE_Config()
+	public function __construct()
 	{	
-		parent::CI_Config();
+		parent::__construct();
 		
 		// Change this path before release.  
 		$this->config_path		= APPPATH.'config/config'.EXT;

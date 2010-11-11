@@ -52,7 +52,7 @@ class EE_XMLparser {
 	var $encoding 	= '';		// 'ISO-8859-1', 'UTF-8', or 'US-ASCII' - empty string should auto-detect
 
 	
-	function EE_XML_parser()
+	function __construct()
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();

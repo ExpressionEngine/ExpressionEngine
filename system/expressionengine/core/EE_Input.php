@@ -25,15 +25,7 @@
 class EE_Input extends CI_Input {
 
 	var $SID = ''; // Session ID extracted from the URI segments
-	
-	
-	/**
-	 * Constructor
-	 */	
-	function EE_Input()
-	{
-		parent::CI_Input();		
-	}
+
 
 	// --------------------------------------------------------------------
 	

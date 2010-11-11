@@ -28,11 +28,10 @@ class EE_Security extends CI_Security {
 	/**
 	 * Constructor
 	 */	
-	function EE_Security()
+	public function __construct()
 	{
-		parent::CI_Security();
+		parent::__construct();
 
-		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}	
 

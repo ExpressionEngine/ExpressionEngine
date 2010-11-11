@@ -126,10 +126,9 @@ class Member {
 								);
 
 
-
-	/** ----------------------------------
-	/**  Member Profile Constructor
-	/** ----------------------------------*/
+	/**
+	 * Constructor
+	 */
 	function Member()
 	{
 		// Make a local reference to the ExpressionEngine super object
@@ -144,8 +143,6 @@ class Member {
 		$this->EE->functions->template_type = 'webpage';
 		$this->EE->db->cache_off();
 	}
-
-
 
 	/** ----------------------------------
 	/**  Prep the Request String
@@ -265,9 +262,6 @@ class Member {
  		return TRUE;
 	}
 
-
-
-
 	/** ----------------------------------
 	/**  Run the Member Class
 	/** ----------------------------------*/
@@ -383,20 +377,9 @@ class Member {
 
 			$MI = new Member_images();
 
-			if (is_php('5.0.0') == TRUE)
+			foreach(get_object_vars($this) as $key => $value)
 			{
-				foreach(get_object_vars($this) as $key => $value)
-				{
-					$MI->{$key} = $value;
-				}			
-			}
-			else
-			{
-				// sync everything since PHP4 was working from a copy
-				foreach (array_keys(get_object_vars($this)) as $attribute)
-				{
-					$MI->$attribute =& $this->$attribute;
-				}			
+				$MI->{$key} = $value;
 			}
 
 			$content = $MI->$function();
@@ -431,15 +414,9 @@ class Member {
 									 );
 		}
 
-
-		/** ------------------------------
-		/**  Output the finalized request
-		/** ------------------------------*/
-
+		// Output the finalized request
 		return $this->_final_prep($out);
 	}
-
-
 
 	/** ----------------------------------------
 	/**  Private Messages
@@ -470,8 +447,6 @@ class Member {
 		return $MESS->return_data;
 	}
 
-
-
 	/** ----------------------------------------
 	/**  Member Profile - Menu
 	/** ----------------------------------------*/
@@ -484,20 +459,9 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->profile_menu();
@@ -529,9 +493,6 @@ class Member {
 		return $MESS->menu;
 	}
 
-
-
-
 	/** ----------------------------------------
 	/**  Member Profile Main Page
 	/** ----------------------------------------*/
@@ -544,27 +505,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->profile_main();
 	}
-
-
-
 
 	/** ----------------------------------------
 	/**  Member Public Profile
@@ -578,27 +525,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->public_profile();
 	}
-
-
-
 
 	/** ----------------------------------------
 	/**  Login Page
@@ -613,26 +546,13 @@ class Member {
 
 		$MA = new Member_auth();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MA->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MA->$attribute =& $this->$attribute;
-			}			
+			$MA->{$key} = $value;
 		}
 
 		return $MA->profile_login_form($return);
 	}
-
-
 
 	/** ----------------------------------------
 	/**  Member Profile Edit Page
@@ -646,27 +566,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->edit_profile();
 	}
-
-
-
 
 	/** ----------------------------------------
 	/**  Profile Update
@@ -680,26 +586,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
+			$MS->{$key} = $value;
 		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
-		}
-
+		
 		return $MS->update_profile();
 	}
-
-
 
 	/** ----------------------------------------
 	/**  Forum Preferences
@@ -713,28 +606,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->edit_preferences();
 	}
-
-
-
-
 
 	/** ----------------------------------------
 	/**  Update  Preferences
@@ -748,26 +626,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->update_preferences();
 	}
-
-
 
 	/** ----------------------------------------
 	/**  Email Settings
@@ -781,28 +646,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->edit_email();
 	}
-
-
-
-
 
 	/** ----------------------------------------
 	/**  Email Update
@@ -816,27 +666,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->update_email();
 	}
-
-
-
 
 	/** ----------------------------------------
 	/**  Username/Password Preferences
@@ -850,28 +686,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->edit_userpass();
 	}
-
-
-
-
 
 	/** ----------------------------------------
 	/**  Username/Password Update
@@ -885,27 +706,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->update_userpass();
 	}
-
-
-
 
 	/** ----------------------------------------
 	/**  Localization Edit Form
@@ -920,28 +727,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->edit_localization();
 	}
-
-
-
-
 
 	/** ----------------------------------------
 	/**  Update Localization Prefs
@@ -956,27 +748,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->update_localization();
 	}
-
-
-
 
 	/** ----------------------------------------
 	/**  Signature Edit Form
@@ -991,26 +769,13 @@ class Member {
 
 		$MI = new Member_images();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MI->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MI->$attribute =& $this->$attribute;
-			}			
+			$MI->{$key} = $value;
 		}
 
 		return $MI->edit_signature();
 	}
-
-
 
 	/** ----------------------------------------
 	/**  Update Signature
@@ -1025,27 +790,13 @@ class Member {
 
 		$MI = new Member_images();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MI->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MI->$attribute =& $this->$attribute;
-			}			
+			$MI->{$key} = $value;
 		}
 
 		return $MI->update_signature();
 	}
-
-
-
 
 	/** ----------------------------------------
 	/**  Avatar Edit Form
@@ -1060,26 +811,13 @@ class Member {
 
 		$MI = new Member_images();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MI->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MI->$attribute =& $this->$attribute;
-			}			
+			$MI->{$key} = $value;
 		}
 
 		return $MI->edit_avatar();
 	}
-
-
 
 	/** ----------------------------------------
 	/**  Browse Avatars
@@ -1094,26 +832,13 @@ class Member {
 
 		$MI = new Member_images();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MI->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MI->$attribute =& $this->$attribute;
-			}			
+			$MI->{$key} = $value;
 		}
 
 		return $MI->browse_avatars();
 	}
-
-
 
 	/** ----------------------------------------
 	/**  Select Avatar From  Library
@@ -1128,27 +853,13 @@ class Member {
 
 		$MI = new Member_images();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MI->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MI->$attribute =& $this->$attribute;
-			}			
+			$MI->{$key} = $value;
 		}
 
 		return $MI->select_avatar();
 	}
-
-
-
 
 	/** ----------------------------------------
 	/**  Photo Edit Form
@@ -1163,27 +874,13 @@ class Member {
 
 		$MI = new Member_images();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MI->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MI->$attribute =& $this->$attribute;
-			}			
+			$MI->{$key} = $value;
 		}
 
 		return $MI->edit_photo();
 	}
-
-
-
 
 	/** ----------------------------------------
 	/**  Notepad Edit Form
@@ -1198,26 +895,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->edit_notepad();
 	}
-
-
 
 	/** ----------------------------------------
 	/**  Update Notepad
@@ -1232,27 +916,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->update_notepad();
 	}
-
-
-
 
 	/** ----------------------------------------
 	/**  Member Login
@@ -1266,26 +936,13 @@ class Member {
 
 		$MA = new Member_auth();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MA->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MA->$attribute =& $this->$attribute;
-			}			
+			$MA->{$key} = $value;
 		}
 
 		$MA->member_login();
 	}
-
-
 
 	/** ----------------------------------------
 	/**  Member Logout
@@ -1299,28 +956,13 @@ class Member {
 
 		$MA = new Member_auth();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MA->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MA->$attribute =& $this->$attribute;
-			}			
+			$MA->{$key} = $value;
 		}
 
 		$MA->member_logout();
 	}
-
-
-
-
 
 	/** ----------------------------------------
 	/**  Member Forgot Password Form
@@ -1334,27 +976,13 @@ class Member {
 
 		$MA = new Member_auth();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MA->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MA->$attribute =& $this->$attribute;
-			}			
+			$MA->{$key} = $value;
 		}
 
 		return $MA->forgot_password($ret);
 	}
-
-
-
 
 	/** ----------------------------------------
 	/**  Retreive Forgotten Password
@@ -1368,27 +996,13 @@ class Member {
 
 		$MA = new Member_auth();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MA->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MA->$attribute =& $this->$attribute;
-			}			
+			$MA->{$key} = $value;
 		}
 
 		$MA->retrieve_password();
 	}
-
-
-
 
 	/** ----------------------------------------
 	/**  Reset the user's password
@@ -1402,27 +1016,13 @@ class Member {
 
 		$MA = new Member_auth();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MA->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MA->$attribute =& $this->$attribute;
-			}			
+			$MA->{$key} = $value;
 		}
 
 		$MA->reset_password();
 	}
-
-
-
 
 	/** ----------------------------------------
 	/**  Subscriptions Edit Form
@@ -1437,26 +1037,13 @@ class Member {
 
 		$MS = new Member_subscriptions();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->edit_subscriptions();
 	}
-
-
 
 	/** ----------------------------------------
 	/**  Update Subscriptions
@@ -1471,26 +1058,13 @@ class Member {
 
 		$MS = new Member_subscriptions();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
+			$MS->{$key} = $value;
 		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
-		}
-
+		
 		return $MS->update_subscriptions();
 	}
-
-
 
 	/** -------------------------------------
 	/**  Edit Ignore List Form
@@ -1504,26 +1078,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->edit_ignore_list();
 	}
-
-
 
 	/** -------------------------------------
 	/**  Update Ignore List
@@ -1538,26 +1099,13 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->update_ignore_list();
 	}
-
-
 
 	/** -------------------------------------
 	/**  Member Mini Search
@@ -1572,20 +1120,9 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		$this->_set_page_title($this->EE->lang->line('member_search'));
@@ -1607,20 +1144,9 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		$this->_set_page_title($this->EE->lang->line('member_search'));
@@ -1641,28 +1167,13 @@ class Member {
 
 		$MR = new Member_register();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MR->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MR->$attribute =& $this->$attribute;
-			}			
+			$MR->{$key} = $value;
 		}
 
 		return $MR->registration_form();
 	}
-
-
-
-
 
 	/** ----------------------------------------
 	/**  Register Member
@@ -1676,27 +1187,13 @@ class Member {
 
 		$MR = new Member_register();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MR->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MR->$attribute =& $this->$attribute;
-			}			
+			$MR->{$key} = $value;
 		}
 
 		$MR->register_member();
 	}
-
-
-
 
 
 	/** ----------------------------------------
@@ -1711,20 +1208,9 @@ class Member {
 
 		$MR = new Member_register();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MR->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MR->$attribute =& $this->$attribute;
-			}			
+			$MR->{$key} = $value;
 		}
 
 		$MR->activate_member();
@@ -2186,20 +1672,9 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		return $MS->unpw_update();
@@ -2220,20 +1695,9 @@ class Member {
 
 		$MS = new Member_settings();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MS->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MS->$attribute =& $this->$attribute;
-			}			
+			$MS->{$key} = $value;
 		}
 
 		$MS->update_un_pw();
@@ -2253,28 +1717,13 @@ class Member {
 
 		$MM = new Member_memberlist();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MM->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MM->$attribute =& $this->$attribute;
-			}			
+			$MM->{$key} = $value;
 		}
 
 		return $MM->email_console();
 	}
-
-
-
-
 
 	/** ----------------------------------
 	/**  Send Member Email
@@ -2288,27 +1737,13 @@ class Member {
 
 		$MM = new Member_memberlist();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MM->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MM->$attribute =& $this->$attribute;
-			}			
+			$MM->{$key} = $value;
 		}
 
 		return $MM->send_email();
 	}
-
-
-
 
 	/** ----------------------------------
 	/**  AIM Console
@@ -2322,20 +1757,9 @@ class Member {
 
 		$MM = new Member_memberlist();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MM->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MM->$attribute =& $this->$attribute;
-			}			
+			$MM->{$key} = $value;
 		}
 
 		return $MM->aim_console();
@@ -2358,20 +1782,9 @@ class Member {
 
 		$MM = new Member_memberlist();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MM->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MM->$attribute =& $this->$attribute;
-			}			
+			$MM->{$key} = $value;
 		}
 
 		return $MM->icq_console();
@@ -2392,20 +1805,9 @@ class Member {
 
 		$MM = new Member_memberlist();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MM->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MM->$attribute =& $this->$attribute;
-			}			
+			$MM->{$key} = $value;
 		}
 
 		return $MM->memberlist();
@@ -2425,20 +1827,9 @@ class Member {
 
 		$MM = new Member_memberlist();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MM->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MM->$attribute =& $this->$attribute;
-			}			
+			$MM->{$key} = $value;
 		}
 
 		return $MM->memberlist();
@@ -2457,20 +1848,9 @@ class Member {
 
 		$MM = new Member_memberlist();
 
-		if (is_php('5.0.0') == TRUE)
+		foreach(get_object_vars($this) as $key => $value)
 		{
-			foreach(get_object_vars($this) as $key => $value)
-			{
-				$MM->{$key} = $value;
-			}			
-		}
-		else
-		{
-			// sync everything since PHP4 was working from a copy
-			foreach (array_keys(get_object_vars($this)) as $attribute)
-			{
-				$MM->$attribute =& $this->$attribute;
-			}			
+			$MM->{$key} = $value;
 		}
 
 		return $MM->do_member_search();
@@ -3691,8 +3071,6 @@ class Member {
 
 		return $this->EE->TMPL->tagdata = $out;
 	}
-
-
 }
 // END CLASS
 

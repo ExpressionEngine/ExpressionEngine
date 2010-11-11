@@ -46,12 +46,10 @@ class Design extends CI_Controller {
 
 	/**
 	 * Constructor
-	 *
-	 * @access	public
 	 */
-	function Design()
+	function __construct()
 	{
-		parent::CI_Controller();
+		parent::__construct();
 
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{

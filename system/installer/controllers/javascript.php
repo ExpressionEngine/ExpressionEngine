@@ -26,10 +26,8 @@ class Javascript {
 
 	/**
 	 * Constructor
-	 *
-	 * @access	public
 	 */
-	function Javascript()
+	function __construct()
 	{
 		$file = EE_APPPATH.'javascript/compressed/jquery/jquery.js';
 

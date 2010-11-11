@@ -34,7 +34,7 @@ class Filemanager {
 	 *
 	 * @access	public
 	 */
-	function Filemanager()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 		$this->EE->load->library('javascript');

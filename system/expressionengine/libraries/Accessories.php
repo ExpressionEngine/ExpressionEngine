@@ -30,7 +30,7 @@ class EE_Accessories {
 	/**
 	 * Constructor
 	 */
-	function EE_Accessories()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 		

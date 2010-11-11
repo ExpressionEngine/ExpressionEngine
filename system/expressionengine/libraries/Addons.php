@@ -33,7 +33,7 @@ class EE_Addons {
 	 *
 	 * @access	public
 	 */
-	function EE_Addons()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 	}

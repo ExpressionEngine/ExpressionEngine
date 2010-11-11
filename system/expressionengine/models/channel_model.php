@@ -24,13 +24,6 @@
  */
 class Channel_model extends CI_Model {
 
-	function Channel_model()
-	{
-		parent::CI_Model();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Channels
 	 *

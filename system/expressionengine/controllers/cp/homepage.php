@@ -25,18 +25,6 @@
 class Homepage extends CI_Controller {
 
 	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function Homepage()
-	{
-		parent::CI_Controller();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Index function
 	 *
 	 * @access	public

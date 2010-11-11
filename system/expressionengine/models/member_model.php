@@ -23,14 +23,7 @@
  * @link		http://expressionengine.com
  */
 class Member_model extends CI_Model {
-
-	function Member_model()
-	{
-		parent::CI_Model();
-	}
-
-	// --------------------------------------------------------------------
-
+	
 	/**
 	 * Get Username
 	 *

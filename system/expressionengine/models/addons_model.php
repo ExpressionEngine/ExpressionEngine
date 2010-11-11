@@ -24,12 +24,6 @@
  */
 class Addons_model extends CI_Model {
 
-	function Addons_model()
-	{
-		parent::CI_Model();
-    }
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Get Plugin Formatting

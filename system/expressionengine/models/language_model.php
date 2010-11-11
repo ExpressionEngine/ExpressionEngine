@@ -24,14 +24,6 @@
  */
 class Language_model extends CI_Model {
 
-	function Language_model()
-	{
-		parent::CI_Model();
-		$this->EE =& get_instance();
-	}
-
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Language Pack Names
 	 *

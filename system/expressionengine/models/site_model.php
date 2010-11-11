@@ -24,14 +24,6 @@
  */
 class Site_model extends CI_Model {
 
-    function Site_model()
-    {
-//        parent::CI_Model();
-//		$this->CI =& get_instance();
-    }
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Site
 	 *

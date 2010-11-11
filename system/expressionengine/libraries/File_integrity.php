@@ -32,7 +32,7 @@ class File_integrity {
 	 *
 	 * @access	public
 	 */
-	function File_integrity()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 	}

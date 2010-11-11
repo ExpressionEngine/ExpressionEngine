@@ -158,12 +158,11 @@ class Wizard extends CI_Controller {
 	 *
 	 * Sets some base values
 	 *
-	 * @access	public
 	 * @return	void
 	 */	
-	function Wizard()
+	function __construct()
 	{
-		parent::CI_Controller();
+		parent::__construct();
 		
 		// Third party constants
 		define('PATH_THIRD',	EE_APPPATH.'third_party/');
@@ -1266,7 +1265,7 @@ PAPAYA;
 		$this->load->library('progress');
 		
 		$next_version = $this->next_update[0].'.'.$this->next_update[1].'.'.$this->next_update[2];
-		$this->progress->_prefix = $next_version.': ';
+		$this->progress->prefix = $next_version.': ';
 		
 		// Is this a call from the Progress Indicator?
 		if ($this->input->get('progress') == 'yes')
@@ -1281,7 +1280,7 @@ PAPAYA;
 			$this->refresh_url = $this->set_qstr('do_update&agree=yes');
 			return $this->_set_output('update_msg', array(
 												'remaining_updates' => $this->remaining_updates,
-												'next_version'		=> $this->progress->_prefix.$this->lang->line('version_update_text')
+												'next_version'		=> $this->progress->prefix.$this->lang->line('version_update_text')
 			));
 		}
 		
@@ -1362,7 +1361,7 @@ PAPAYA;
 		$this->_set_output('update_msg', array(
 											'remaining_updates' => $this->remaining_updates,
 											'extra_header'		=> $progress_head,
-											'next_version'		=> $this->progress->_prefix.$this->lang->line('version_update_text')
+											'next_version'		=> $this->progress->prefix.$this->lang->line('version_update_text')
 		));
 	}
 	

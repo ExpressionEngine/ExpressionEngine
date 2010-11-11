@@ -25,16 +25,6 @@
 class Wiki_model extends CI_Model {
 
 	/**
-	 * Construct
-	 */
-	function Wiki_model()
-	{
-		parent::CI_Model();
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
 	 * Get Wikis
 	 *
 	 * @param mixed		can be a single integer or an array of ids.

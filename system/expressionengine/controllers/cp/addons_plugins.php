@@ -31,9 +31,9 @@ class Addons_plugins extends CI_Controller {
 	 *
 	 * @access	public
 	 */
-	function Addons_plugins()
+	function __construct()
 	{
-		parent::CI_Controller();
+		parent::__construct();
 
 		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
 		{

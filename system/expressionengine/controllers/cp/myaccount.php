@@ -30,12 +30,10 @@ class MyAccount extends CI_Controller {
 
 	/**
 	 * Constructor
-	 *
-	 * @access	public
 	 */
-	function MyAccount()
+	function __construct()
 	{
-		parent::CI_Controller();
+		parent::__construct();
 
 		if (FALSE === ($this->id = $this->auth_id()))
 		{

@@ -27,9 +27,9 @@ class EE_Xmlrpc extends CI_Xmlrpc {
 	/**
 	 * Constructor
 	 */	
-	function EE_Xmlrpc($init = TRUE)
+	function __construct($init = TRUE)
 	{
-		parent::CI_Xmlrpc();
+		parent::__construct();
 
 		if ($init != TRUE)
 		{

@@ -124,7 +124,7 @@ class Services_JSON
     *                                   "{...}" syntax creates associative arrays
     *                                   instead of objects in decode().
     */
-    function Services_JSON($use = 0)
+    function __construct($use = 0)
     {
         $this->use = $use;
     }

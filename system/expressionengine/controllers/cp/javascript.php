@@ -26,12 +26,10 @@ class Javascript extends CI_Controller {
 
 	/**
 	 * Constructor
-	 *
-	 * @access	public
 	 */
-	function Javascript()
+	function __construct()
 	{
-		parent::CI_Controller();
+		parent::__construct();
 
 		if ( ! defined('PATH_JQUERY'))
 		{

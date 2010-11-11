@@ -38,12 +38,10 @@ class Admin_content extends CI_Controller {
 
 	/**
 	 * Constructor
-	 *
-	 * @access	public
 	 */
-	function Admin_content()
+	function __construct()
 	{
-		parent::CI_Controller();
+		parent::__construct();
 
 		$this->lang->loadfile('admin');
 

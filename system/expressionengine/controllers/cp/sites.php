@@ -30,12 +30,10 @@ class Sites extends CI_Controller {
 
 	/**
 	 * Constructor
-	 *
-	 * @access	public
 	 */
-	function Sites()
+	function __construct()
 	{
-		parent::CI_Controller();
+		parent::__construct();
 		
 		$this->lang->loadfile('sites');
 		

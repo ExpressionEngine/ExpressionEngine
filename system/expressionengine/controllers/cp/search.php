@@ -26,15 +26,12 @@ class Search extends CI_Controller {
 
 	/**
 	 * Constructor
-	 *
-	 * @access	public
 	 */
-	function Search()
+	function __construct()
 	{
-		parent::CI_Controller();
+		parent::__construct();
 
 		$this->lang->loadfile('admin');
-		
 		$this->load->library('Cp_search');
 	}
 	

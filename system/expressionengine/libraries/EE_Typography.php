@@ -60,15 +60,10 @@ class EE_Typography extends CI_Typography {
 	/** -------------------------------------
 	/**  Constructor
 	/** -------------------------------------*/
-	function EE_Typography()
+	function __construct()
 	{
-		// Call the parent constructor
-		parent::CI_Typography();	
-		
-		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 		$this->initialize();
-
 	}
 
 	// --------------------------------------------------------------------

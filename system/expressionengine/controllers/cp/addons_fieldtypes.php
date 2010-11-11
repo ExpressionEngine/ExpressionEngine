@@ -2,17 +2,6 @@
 
 class Addons_fieldtypes extends CI_Controller {
 
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function Addons_fieldtypes()
-	{
-		parent::CI_Controller();	
-	}
-	
-	// --------------------------------------------------------------------
 
 	/**
 	 * Fieldtype Listing

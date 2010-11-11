@@ -29,16 +29,6 @@ class EE_Output extends CI_Output {
 	var $refresh_time	= 1;			// Number of seconds for redirects
 	
 	var $remove_unparsed_variables = TRUE; // whether to remove left-over variables that had bad syntax
-
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function EE_Output()
-	{
-		parent::CI_Output();
-	}
 	
 	// --------------------------------------------------------------------
 

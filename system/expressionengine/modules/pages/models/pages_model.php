@@ -23,13 +23,6 @@
  * @link		http://expressionengine.com
  */
 class Pages_model extends CI_Model {
-	
-	function Pages_model()
-	{
-		parent::CI_Model();
-	}
-
-// ------------------------------------------------------------------------
 
     /**
      * Fetch Pages Configuration

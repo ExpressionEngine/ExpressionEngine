@@ -24,21 +24,9 @@
  */
 class Progress {
 
-	var $_config = array();
-	var $_prefix = '';
-
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function Progress()
-	{
-		// Empty on purpose - do not put session_start in here!
-	}
+	public $prefix = '';
+	protected $_config = array();
 	
-	// --------------------------------------------------------------------
-
 	/**
 	 * Updates the current state
 	 *
@@ -46,11 +34,10 @@ class Progress {
 	 * with a file based solution.  Using native sessions to avoid file
 	 * permission problems.
 	 *
-	 * @access	public
 	 * @param	string
 	 * @return	void
 	 */
-	function update_state($new_state)
+	public function update_state($new_state)
 	{
 		session_start();
 		$_SESSION['_progress_state'] = $new_state;
@@ -64,13 +51,12 @@ class Progress {
 	 *
 	 * Returns the current status message
 	 *
-	 * @access	public
 	 * @return	string
 	 */
-	function get_state()
+	public function get_state()
 	{
 		session_start();
-		return isset($_SESSION['_progress_state']) ? $this->_prefix.$_SESSION['_progress_state'] : FALSE;
+		return isset($_SESSION['_progress_state']) ? $this->prefix.$_SESSION['_progress_state'] : FALSE;
 	}
 	
 	// --------------------------------------------------------------------
@@ -80,11 +66,10 @@ class Progress {
 	 *
 	 * Use this on the intermediate page to make it non-js compatible
 	 *
-	 * @access	public
 	 * @param	mixed
 	 * @return	string
 	 */
-	function fetch_progress_header($settings)
+	public function fetch_progress_header($settings)
 	{
 		$EE =& get_instance();
 		return $EE->load->view('progress_header', $settings, TRUE);

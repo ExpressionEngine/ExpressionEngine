@@ -24,13 +24,6 @@
  */
 class Field_model extends CI_Model {
 
-	function Field_model()
-	{
-		parent::CI_Model();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Field
 	 *

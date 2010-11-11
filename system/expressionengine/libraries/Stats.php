@@ -24,7 +24,7 @@
 
 class EE_Stats {
 
-	var $_statdata	= array(); // @php4 protected -- access with statdata()
+	protected $_statdata	= array();
 	
 	var $stats_cache = array();
 	
@@ -35,7 +35,7 @@ class EE_Stats {
 	/**
 	 * Class Constructor
 	 */
-	function EE_Stats()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 
@@ -263,9 +263,8 @@ class EE_Stats {
 	 * in this class.  
 	 *
 	 * @return 	mixed	FALSE if no channels, else array of channel ids
-	 * @php4	private method
 	 */
-	function _fetch_channel_ids()
+	protected function _fetch_channel_ids()
 	{	
 		$this->EE->db->select('channel_id');
 		$this->EE->db->where('site_id', $this->EE->config->item('site_id'));

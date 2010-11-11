@@ -27,10 +27,8 @@ class Notifications {
 
 	/**
 	 * Constructor
-	 *
-	 * @access	public
 	 */
-	function Notifications()
+	function __construct()
 	{
 		// Get EE superobject reference
 		$this->EE =& get_instance();

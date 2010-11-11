@@ -32,7 +32,7 @@ class Cp_search {
 	 *
 	 * @access	public
 	 */
-	function Cp_search()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 		$this->_search_map();
