@@ -599,7 +599,6 @@ class Api_channel_entries extends Api {
 		
 		$this->EE->api_channel_fields->get_module_methods($methods, $params);
 		
-
 		// Clear caches
 		$this->EE->functions->clear_caching('all');
 
@@ -811,23 +810,21 @@ class Api_channel_entries extends Api {
 					{
 						return $loc;
 					}
-			
-					$this->trigger_hook('entry_submission_absolute_end');
 					return $loc;
 				break;
 			case 'entry_submission_absolute_end':
-					$this->EE->extensions->call('entry_submission_absolute_end', $this->entry_id, $this->meta, $this->data);
+					$this->EE->extensions->call('entry_submission_absolute_end', $this->entry_id, $this->meta, $this->data, $orig_var);
 				break;
 			case 'entry_submission_end':
 					$this->EE->extensions->call('entry_submission_end', $this->entry_id, $this->meta, $this->data);
 				break;
 			default:
 				return FALSE;
-				
-			if ($this->EE->extensions->end_script === TRUE)
-			{
-				return TRUE;
-			}
+		}
+
+		if ($this->EE->extensions->end_script === TRUE)
+		{
+			return TRUE;
 		}
 	}
 	

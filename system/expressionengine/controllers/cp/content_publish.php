@@ -2493,6 +2493,7 @@ class Content_publish extends CI_Controller {
 		
 		// Trigger the submit new entry redirect hook
 		$loc = $this->api_channel_entries->trigger_hook('entry_submission_redirect', $loc);
+		
 		// have to check this manually since trigger_hook() is returning $loc
 		if ($this->extensions->end_script === TRUE)
 		{
@@ -2508,6 +2509,12 @@ class Content_publish extends CI_Controller {
 		
 			$this->load->view('content/ping_errors', $vars);
 			return TRUE;	// tricking it into not publish again
+		}
+
+		// Trigger the entry submission absolute end hook
+		if ($this->api_channel_entries->trigger_hook('entry_submission_absolute_end', $loc) === TRUE)
+		{
+			return TRUE;
 		}
 
 		$this->functions->redirect($loc);
