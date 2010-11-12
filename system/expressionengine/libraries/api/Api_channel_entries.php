@@ -1523,7 +1523,11 @@ class Api_channel_entries extends Api {
 	{
 		$this->instantiate('channel_categories');
 
-		$this->channel_categories->initialize(array('categories' => array(), 'cat_parents' => array(), 'cat_array' => array());
+		$this->channel_categories->initialize(array(
+			'categories'  => array(),
+			'cat_parents' => array(),
+			'cat_array'   => array()
+		));
 		
 		// Category parents - we toss the rest
 		
