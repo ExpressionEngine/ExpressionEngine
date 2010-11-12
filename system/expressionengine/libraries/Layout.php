@@ -176,6 +176,7 @@ class Layout {
 		$hide_tab_fields = array();
 		$show_fields = '';
 		$show_tab_fields = array();
+		$delete_fields = array();
 		
 		$default_settings = array(
 							'visible'		=> 'TRUE',
@@ -184,8 +185,9 @@ class Layout {
 							'width'			=> '100%'
 						);		
 		
-		$layout_fields = array('enable_versioning');
+		$layout_fields = array('enable_versioning', 'comment_system_enabled');
 		
+
 		foreach ($layout_fields as $field)
 		{
 			if (isset($fields[$field]))
@@ -194,7 +196,7 @@ class Layout {
 			}
 		}
 		
-		$this->EE->db->select('enable_versioning');
+		$this->EE->db->select('enable_versioning, comment_system_enabled');
 		$this->EE->db->where('channel_id', $channel_id);
 		$current = $this->EE->db->get('channels');
 		
@@ -228,6 +230,18 @@ class Layout {
 						}
 
 						break;
+					case 'comment_system_enabled':
+
+						if ($val == 'n')
+						{
+							$delete_fields[] = 'comment_expiration_date';
+						}
+						else
+						{
+							$show_tab_fields['date'] = array('comment_expiration_date' => $default_settings);
+						}
+
+						break;
 					}
 			}
 		}
@@ -238,11 +252,15 @@ class Layout {
 			$this->EE->layout_model->update_layouts($hide_tab_fields, 'delete_tabs', $channel_id);
 		}
 		
-
 		if ( ! empty($show_tab_fields))
 		{
 			//$this->EE->layout_model->edit_layout_fields($show_tab_fields, 'show_tab_fields', $channel_id, TRUE);
 			$this->EE->layout_model->update_layouts($show_tab_fields, 'add_tabs', $channel_id);
+		}
+
+		if ( ! empty($delete_fields))
+		{
+			$this->EE->layout_model->update_layouts($delete_fields, 'delete_fields', $channel_id);
 		}
 
 		return;
