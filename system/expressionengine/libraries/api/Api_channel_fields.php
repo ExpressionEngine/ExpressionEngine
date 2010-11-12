@@ -2,6 +2,7 @@
 
 class Api_channel_fields extends Api {
 
+	var $custom_fields		= array();
 	var $field_types		= array();
 	var $ft_paths			= array();
 	var $settings			= array();
