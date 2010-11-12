@@ -48,7 +48,7 @@ class Layout_model extends CI_Model {
 		{
 			$this->db->where_in('channel_id', $channel_id);
 		}
-				
+
 		$query = $this->db->get('layout_publish');
 		$errors = array();
 		
