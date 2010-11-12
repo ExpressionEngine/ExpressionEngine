@@ -36,7 +36,8 @@ class Api_channel_categories extends Api {
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
+		parent::__construct();
+		
 		$this->EE->load->model('channel_model');
 		$this->assign_cat_parent = ($this->EE->config->item('auto_assign_cat_parents') == 'n') ? FALSE : TRUE; 
 	}
