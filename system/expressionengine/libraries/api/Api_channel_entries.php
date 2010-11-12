@@ -1521,7 +1521,9 @@ class Api_channel_entries extends Api {
 	 */
 	function _prepare_data(&$data, &$mod_data)
 	{
-		$this->instantiate('channel_categories', array('categories' => array(), 'cat_parents' => array(), 'cat_array' => array()));
+		$this->instantiate('channel_categories');
+
+		$this->channel_categories->initialize(array('categories' => array(), 'cat_parents' => array(), 'cat_array' => array());
 		
 		// Category parents - we toss the rest
 		
