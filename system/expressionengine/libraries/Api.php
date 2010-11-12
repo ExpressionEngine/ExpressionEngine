@@ -27,26 +27,22 @@
  */
 class Api {
 	
-	var $errors	= array();  // holds any and all errors on failure
-	var $apis	= array(	// apis available to initialize when loading the parent Api class
-						'channel_structure', 'channel_entries', 'channel_fields',
-						'channel_categories', 'channel_statuses', 'channel_uploads',
-						'template_structure',
-						'members'
+	var $errors		= array();  // holds any and all errors on failure
+	private $apis	= array(	// apis available to initialize when loading the parent Api class
+							'channel_structure', 'channel_entries', 'channel_fields',
+							'channel_categories', 'channel_statuses', 'channel_uploads',
+							'template_structure',
+							'members'
 						);
 	
 	/**
 	 * Constructor
 	 *
 	 */
-	function __construct($which = '')
+	function __construct()
 	{
 		// Set the EE super object to a class variable
 		$this->EE =& get_instance();
-		
-		// Removed for now - can only be used once per request,
-		// not worth the debugging hassle.
-		// $this->instantiate($which);
 	}
 	
 	// --------------------------------------------------------------------
@@ -61,24 +57,20 @@ class Api {
 	 * @param	array
 	 * @return	void
 	 */
-	function instantiate($which = '', $params = array())
+	function instantiate($which)
 	{
-		if ( ! is_array($which) && $which != '')
+		if ( ! is_array($which))
 		{
 			$which = array($which);
 		}
-		
-		if (is_array($which))
+
+		foreach ($which as $api)
 		{
-			foreach ($which as $api)
+			if (in_array($api, $this->apis))
 			{
-				if (in_array($api, $this->apis))
-				{
-					$api_driver = 'api_'.$api;
-					$this->EE->load->library('api/'.$api_driver);
-					$this->EE->{$api_driver}->_initialize($params);
-				}				
-			}
+				$api_driver = 'api_'.$api;
+				$this->EE->load->library('api/'.$api_driver);
+			}				
 		}
 	}
 
@@ -89,12 +81,11 @@ class Api {
 	 *
 	 * Reset the errors array and any config options
 	 *
-	 * @php4	private Method
 	 * @access	protected
 	 * @param	array
 	 * @return	void
 	 */
-	function _initialize($params = array())
+	protected function initialize($params = array())
 	{
 		$this->errors = array();
 		
@@ -267,7 +258,22 @@ class Api {
 		return $url_title;
 	}
 	
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Magic Get Method
+	 * 
+	 * It can be quite useful to read out some of the private members in the
+	 * API libraries, but some of the workflows require that they remain
+	 * unchanged. So we meet in the middle and give read access to all of them.
+	 *
+	 * @param	string	variable name
+	 * @return	mixed	variable value
+	 */
+	function __get($key)
+	{
+		return $this->$key;
+	}
 }
 // END CLASS
 
