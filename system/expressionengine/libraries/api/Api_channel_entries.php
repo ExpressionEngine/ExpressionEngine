@@ -55,12 +55,12 @@ class Api_channel_entries extends Api {
 	 * @param	array
 	 * @return	void
 	 */
-	function _initialize($params = array())
+	protected function initialize($params = array())
 	{
 		$this->c_prefs = array();
 		$this->_cache = array();
 
-		parent::_initialize($params);
+		parent::initialize($params);
 	}
 
 	// --------------------------------------------------------------------
@@ -85,7 +85,7 @@ class Api_channel_entries extends Api {
 		$this->data =& $data;
 		$mod_data = array();
 		
-		$this->_initialize(array('channel_id' => $channel_id, 'entry_id' => 0, 'autosave' => FALSE));
+		$this->initialize(array('channel_id' => $channel_id, 'entry_id' => 0, 'autosave' => FALSE));
 
 		if ( ! $this->_base_prep($data))
 		{
@@ -215,7 +215,7 @@ class Api_channel_entries extends Api {
 	{
 		$this->data =& $data;
 		$mod_data = array();
-		$this->_initialize(array('entry_id' => $entry_id, 'autosave' => $autosave));
+		$this->initialize(array('entry_id' => $entry_id, 'autosave' => $autosave));
 
 		if ( ! $this->entry_exists($this->entry_id))
 		{
