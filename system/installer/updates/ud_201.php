@@ -85,8 +85,8 @@ class Updater {
 		// Set settings to yes so nothing disappears
 		
 		$set_to_yes = array(
-			'text'		=> array('show_smileys', 'show_glossary', 'show_spellcheck', 'show_file_selector'),
-			'textarea'	=> array('show_smileys', 'show_glossary', 'show_spellcheck', 'show_file_selector')
+			'text'		=> array('show_smileys', 'show_glossary', 'show_spellcheck', 'field_show_formatting_btns', 'show_file_selector'),
+			'textarea'	=> array('show_smileys', 'show_glossary', 'show_spellcheck', 'field_show_formatting_btns', 'show_file_selector')
 		);
 		
 		foreach($set_to_yes as $fieldtype => $yes_settings)
