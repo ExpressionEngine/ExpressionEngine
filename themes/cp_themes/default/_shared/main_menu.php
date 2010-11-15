@@ -8,3 +8,5 @@
 	</ul>
 	<div class="clear"></div>
 </div>
+
+<div id="mainWrapper">

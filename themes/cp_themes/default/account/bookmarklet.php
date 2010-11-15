@@ -28,10 +28,6 @@
 				<?=form_dropdown('field_id', $field_id_options, '', 'id="field_id"')?>
 			</p>
 
-			<div>
-				<label><?=form_checkbox('safari', 'y', FALSE, 'id="safari"')?> <?=lang('safari_users')?></label>
-			</div>
-
 			<p class="submit"><?=form_submit('', lang('create_the_bookmarklet'), 'class="submit"')?></p>
 
 		<?php elseif ($step == 3):?>

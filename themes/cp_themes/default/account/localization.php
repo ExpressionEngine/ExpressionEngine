@@ -12,7 +12,7 @@
 
 		<p>
 			<?=lang('daylight_savings_time', 'daylight_savings_time')?><br />
-			<?=form_radio('daylight_savings', 'y', $daylight_savings_y, 'id="daylight_savings_y"')?> <?=lang('yes')?> <br />
+			<?=form_radio('daylight_savings', 'y', $daylight_savings_y, 'id="daylight_savings_y"')?> <?=lang('yes').NBS.NBS.NBS.NBS.NBS ?>
 			<?=form_radio('daylight_savings', 'n', $daylight_savings_n, 'id="daylight_savings_n"')?> <?=lang('no')?>
 		</p>
 

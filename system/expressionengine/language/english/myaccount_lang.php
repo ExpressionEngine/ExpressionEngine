@@ -528,19 +528,19 @@ $lang = array(
 'Please consult the user guide for more info.',
 
 'bookmarklet_name' =>
-'Name The Bookmarklet',
+'Bookmarklet Name',
 
 'single_word_no_spaces' => 
 'single word, no spaces',
 
 'channel_name' =>
-'Choose the channel you want entries posted to',
+'Post entries to channel',
 
 'no_channels_assigned_to_user' =>
 'There are no channels assigned to this account.',
 
 'select_field' =>
-'Select the default field you want the entry posted to',
+'Default field to post to',
 
 'bookmarklet_next_step' =>
 'Next Step',
