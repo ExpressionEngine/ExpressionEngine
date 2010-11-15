@@ -57,27 +57,9 @@ if ($EE_view_disable !== TRUE)
 		);
 
 		// Default Template Data
-		$template_data = '
-			<ul id="template_data_type" class="shun">
-				<li><label>'.
-				form_radio(array(
-				  'name'		=> 'template_data',
-				  'value'		=> 'template',
-				  'checked'		=> TRUE)).' '.
-				lang('blank_template').'</label></li>
-				<li><label style="display:inline">'.
-				form_radio(array(
-				  'name'		=> 'template_data',
-				  'value'		=> 'existing_template',
-				  'checked'		=> FALSE)).' ' .
-				lang('an_existing_template').'</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.
-				form_dropdown('existing_template', $templates).'
-				</li>
-			</ul>';
-
 		$this->table->add_row(array(
 				lang('choose_default_data', 'choose_default_data'),
-				$template_data
+				form_dropdown('existing_template', $templates)
 			)
 		);
 

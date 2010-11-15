@@ -369,8 +369,8 @@ class Design extends CI_Controller {
 
 		$templates = $this->template_model->get_templates($this->config->item('site_id'));
 
-		$vars['templates'] = array();
-
+		$vars['templates'][0] = $this->lang->line('blank_template');
+		
 		foreach($templates->result() as $template)
 		{
 			$vars['templates'][$template->group_name][$template->template_id] = $template->template_name;
@@ -383,14 +383,6 @@ class Design extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', $this->lang->line('new_template_form'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, $this->lang->line('template_manager'));		
 
-		$templates = $this->template_model->get_templates($this->config->item('site_id'));
-
-		$vars['templates'] = array();
-
-		foreach($templates->result() as $template)
-		{
-			$vars['templates'][$template->group_name][$template->template_id] = $template->template_name;
-		}
 
 		$this->javascript->compile();
 		$this->load->view('design/new_template', $vars);
@@ -1575,8 +1567,8 @@ class Design extends CI_Controller {
 			show_error($this->lang->line('reserved_name'));
 		}
 		
-		$this->db->where('group_id', $_POST['group_id']);
-		$this->db->where('template_name', $_POST['template_name']);
+		$this->db->where('group_id', $group_id);
+		$this->db->where('template_name', $template_name);
 
 		if ($this->db->count_all_results('templates'))
 		{
@@ -1587,11 +1579,11 @@ class Design extends CI_Controller {
 
 		$template_type = $this->input->post('template_type');
 
-		if ($_POST['template_data'] == 'existing_template')
+		if ($this->input->post('existing_template') != 0)
 		{
 			$this->db->from('templates t, template_groups tg');
 			$this->db->select('tg.group_name, template_name, template_data, template_type, template_notes, cache, refresh, no_auth_bounce, allow_php, php_parse_location, save_template_file');
-			$this->db->where('t.template_id', $_POST['existing_template']);
+			$this->db->where('t.template_id', $this->input->post('existing_template'));
 			$this->db->where('tg.group_id = t.group_id');
 			
 			$query = $this->db->get();
