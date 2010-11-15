@@ -963,6 +963,15 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 
 'member_group'	=> 'Member Group',
 
+/* PUblish Tabs */
+'menu_publish'		=> 'Publish',
+'menu_date'			=> 'Date',
+'menu_pings'		=> 'Pings',
+'menu_pages'		=> 'Pages',
+'menu_options'		=> 'Options',
+'menu_categories'	=> 'Categories',
+'menu_forum'		=> 'Forums',
+
 ''=>''
 );
 
