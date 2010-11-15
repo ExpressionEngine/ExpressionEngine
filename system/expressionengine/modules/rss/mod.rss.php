@@ -63,7 +63,7 @@ class Rss {
 			return $this->_empty_feed($this->EE->lang->line('rss_invalid_channel'));
 		}
 		
-		$tmp = $this->_setup_timestamp_query($query);		
+		$tmp = $this->_setup_meta_query($query);		
 		$query = $tmp[0];
 		$last_update = $tmp[1];
 		$edit_date = $tmp[2];
@@ -77,7 +77,7 @@ class Rss {
 		
 		$query = $this->_feed_vars_query($query->row('entry_id'));
 		
-		$request 		= ( ! function_exists('getallheaders')) ? array() : @getallheaders();
+		$request 		= $this->EE->input->request_headers(TRUE);
 		$start_on 		= '';
 		$diffe_request 	= FALSE;
 		$feed_request	= FALSE;
@@ -200,7 +200,6 @@ class Rss {
 				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single($key, $val, $this->EE->TMPL->tagdata);					
 			}
 
-
 			//  GMT date - entry date in GMT
 			if (isset($gmt_entry_date_array[$key]))
 			{
@@ -232,7 +231,6 @@ class Rss {
 				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single($key, $val, $this->EE->TMPL->tagdata);					
 			}
 
-
 			//  "last edit" date as GMT
 			if (isset($gmt_edit_date_array[$key]))
 			{
@@ -244,7 +242,6 @@ class Rss {
 				$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single($key, $val, $this->EE->TMPL->tagdata);					
 			}			
 		}
-
 		
 		// Setup {trimmed_url}
 		$channel_url = $query->row('channel_url');
@@ -270,7 +267,6 @@ class Rss {
 				''
 			)
 		);
-
 		
 		$this->EE->TMPL->tagdata = $this->EE->TMPL->parse_variables($this->EE->TMPL->tagdata, $vars);
 
@@ -303,15 +299,19 @@ class Rss {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Setup the meta query 
 	 *
-	 *
-	 *
-	 *
-	 *
-	 *
+	 * @todo -- Convert the query to active record
+	 * @param 	object		query object
+	 * @return 	object
 	 */
-	protected function _setup_timestamp_query($query)
+	protected function _setup_meta_query($query)
 	{
+		//  Create Meta Query
+		//
+		// Since UTC_TIMESTAMP() is what we need, but it is not available until
+		// MySQL 4.1.1, we have to use this ever so clever SQL to figure it out:
+		// DATE_ADD( '1970-01-01', INTERVAL UNIX_TIMESTAMP() SECOND )
 		$sql = "SELECT exp_channel_titles.entry_id, exp_channel_titles.entry_date, exp_channel_titles.edit_date, 
 				GREATEST((UNIX_TIMESTAMP(exp_channel_titles.edit_date) + 
 						 (UNIX_TIMESTAMP(DATE_ADD( '1970-01-01', INTERVAL UNIX_TIMESTAMP() SECOND)) - UNIX_TIMESTAMP())),
@@ -321,8 +321,6 @@ class Rss {
 				LEFT JOIN exp_members ON exp_members.member_id = exp_channel_titles.author_id
 				WHERE exp_channel_titles.entry_id !=''
 				AND exp_channels.site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."') ";
-		
-		
 		
 		if ($query->num_rows() == 1)
 		{
@@ -495,8 +493,6 @@ class Rss {
 </rss>		
 HUMPTYDANCE;
 	}
-	/* END */
-	
 }
 // END CLASS
 
