@@ -1,36 +1,34 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://expressionengine.com/
------------------------------------------------------
- Copyright (c) 2003 - 2010, EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/user_guide/license.html
-=====================================================
- File: mcp.rss.php
------------------------------------------------------
- Purpose: Rss class - CP
-=====================================================
-*/
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
 
-if ( ! defined('EXT'))
-{
-	exit('Invalid file request');
-}
+// --------------------------------------------------------------------
 
-
+/**
+ * ExpressionEngine RSS Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Modules
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
 class Rss_upd {
 
 	var $version = '2.0';
 
-	function Rss_upd()
+	public function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}
 
@@ -39,10 +37,9 @@ class Rss_upd {
 	/**
 	 * Module Installer
 	 *
-	 * @access	public
 	 * @return	bool
 	 */	
-	function install()
+	public function install()
 	{
 		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend) VALUES ('Rss', '$this->version', 'n')";
 	
@@ -53,18 +50,15 @@ class Rss_upd {
 		
 		return TRUE;
 	}
-
-	
 	
 	// --------------------------------------------------------------------
 
 	/**
 	 * Module Uninstaller
 	 *
-	 * @access	public
 	 * @return	bool
 	 */	
-	function uninstall()
+	public function uninstall()
 	{
 		$query = $this->EE->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Rss'"); 
 				
@@ -81,17 +75,15 @@ class Rss_upd {
 		return TRUE;
 	}
 	
-	
 	// --------------------------------------------------------------------
 
 	/**
 	 * Module Updater
 	 *
-	 * @access	public
 	 * @return	bool
 	 */	
 	
-	function update($current='')
+	public function update($current='')
 	{
 		return FALSE;
 	}
