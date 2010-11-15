@@ -25,16 +25,20 @@
 class Api_channel_categories extends Api {
 
 	
-	var $assign_cat_parent	= TRUE;
-	var $categories			= array();
-	var $cat_parents		= array();
-	var $cat_array			= array();
+	/**
+	 * Just a note, these really should be protected/private and set by the API itself
+	 * However, we're abusing them in other places, so they are set to public for now.
+	 * Third-party devs, don't rely on these being public, m'kay?
+	 */
+	public $assign_cat_parent	= TRUE;
+	public $categories			= array();
+	public $cat_parents			= array();
+	public $cat_array			= array();
 		
 	/**
 	 * Constructor
-	 *
 	 */
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 		
@@ -44,27 +48,38 @@ class Api_channel_categories extends Api {
 
 	// --------------------------------------------------------------------
 
-	/** --------------------------------------------
-	/**	 Category tree
-	/** --------------------------------------------*/
-	// This function (and the next) create a higherarchy tree
-	// of categories.  There are two versions of the tree. The
-	// "text" version is a list of links allowing the categories
-	// to be edited.  The "form" version is displayed in a
-	// multi-select form on the new entry page.
-	//--------------------------------------------
-
-	function category_tree($group_id, $selected = '', $order = 'c')
+	/**
+	 * Category tree
+	 *
+	 * This function (and the next) create a higherarchy tree
+	 * of categories.  There are two versions of the tree. The
+	 * "text" version is a list of links allowing the categories
+	 * to be edited.  The "form" version is displayed in a
+	 * multi-select form on the new entry page.
+	 *
+	 * @param 	mixed		int or array of category group ids
+	 * @param 	
+	 * @param 	string		c for custom, a alphabetical
+	 *
+	 * @return 	mixed		FALSE if no results or cat array of results.
+	 */
+	public function category_tree($group_id, $selected = '', $order = 'c')
 	{
-		// Fetch category group ID number
-
-		if (is_array($group_id))
+		// reset $this->categories
+		$this->initialize(array(
+				'categories'	=> array(),
+				'cat_parents'	=> array(),
+				'cat_array'		=> array(),
+			)
+		);
+		
+		// Fetch the category group ID number
+		// Drop it into an array for where_in()
+		$group_ids = $group_id;
+		
+		if ( ! is_array($group_id))
 		{
-			$group_ids = implode("','", $group_id);
-		}
-		else
-		{
-			$group_ids = str_replace('|', "','", $this->EE->db->escape_str($group_id));
+			$group_ids = explode('|', $group_id);
 		}
 		
 		$catarray = array();
@@ -80,23 +95,19 @@ class Api_channel_categories extends Api {
 		{
 			$catarray[$selected] = $selected;
 		}
-
-		// Fetch category groups
-		if ( ! is_numeric(str_replace('|', "", $group_id)))
-		{
-			return FALSE;
-		}
-
+		
 		$order = ($order == 'a') ? "cat_name" : "cat_order";
 		
-		$query = $this->EE->db->query("SELECT cat_name, cat_id, parent_id, g.group_id, group_name 
-							 FROM exp_category_groups g, exp_categories c
-							 WHERE g.group_id = c.group_id AND g.group_id IN ('".$group_ids."')
-							 ORDER BY group_id, parent_id, ".$order);
+		$query = $this->EE->db->select('cat_name, cat_id, parent_id, g.group_id, group_name')
+						->from('category_groups g, categories c')
+						->where('g.group_id', 'c.group_id', FALSE)
+						->where_in('g.group_id', $group_ids)
+						->order_by('group_id, parent_id', $order)
+						->get();
 
-		if ($query->num_rows() == 0)
+		if ($query->num_rows() === 0)
 		{
-			return false;
+			return FALSE;
 		}
 
 		// Assign the query result to a multi-dimensional array
@@ -110,12 +121,12 @@ class Api_channel_categories extends Api {
 
 		foreach($cat_array as $key => $val)
 		{
-			if (0 == $val['0'])
+			if (0 == $val[0])
 			{
 				$sel = (isset($catarray[$key])) ? TRUE : FALSE;
 				$depth = 1;
 
-				$this->categories[$key] = array($key, $val['1'], $val['2'], $val['3'], $sel, $depth);
+				$this->categories[$key] = array($key, $val[1], $val[2], $val[3], $sel, $depth);
 				//$this->categories[$key] = array('cat_id' => $key, 'cat_name' => $val['1'], 'group_id' => $val['2'], 'group_name' => $val['3'], 'selected' => $sel, 'depth' => $depth);				
 				$this->_category_subtree($key, $cat_array, $depth, $selected);
 			}
@@ -124,15 +135,20 @@ class Api_channel_categories extends Api {
 		return $this->categories;
 	}
 
-
-	/** --------------------------------------------
-	/**	 Category sub-tree
-	/** --------------------------------------------*/
-	// This function works with the preceeding one to show a
-	// hierarchical display of categories
-	//--------------------------------------------
-
-	function _category_subtree($cat_id, $cat_array, $depth, $selected = array())
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Category sub-tree
+	 *
+	 * This function works with the preceeding one to show a
+	 * hierarchical display of categories
+	 *
+	 * @param	mixed
+	 * @param 	array
+	 * @param 	int
+	 * @param 	
+	 */
+	protected function _category_subtree($cat_id, $cat_array, $depth, $selected = array())
 	{
 		// Just as in the function above, we'll figure out which items are selected.
 
@@ -160,11 +176,19 @@ class Api_channel_categories extends Api {
 			}
 		}
 	}
+	
+	// --------------------------------------------------------------------
 
-	// --------------------------------
-	// Category Edit Sub-tree legacy
-	// --------------------------------
-	function category_edit_subtree($cat_id, $categories, $depth)
+	/**
+	 * Category Edit Sub-tree 
+	 *
+	 * @deprecated 
+	 *
+	 * @param 	mixed
+	 * @param 	
+	 *
+	 */
+	public function category_edit_subtree($cat_id, $categories, $depth)
 	{
 		$spcr = '!-!';
 
@@ -196,8 +220,16 @@ class Api_channel_categories extends Api {
 		}
 	}
 
-
-	function category_form_tree($nested = 'y', $categories = FALSE, $sites = FALSE)
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Category Form Tree
+	 *
+	 * @param 	string
+	 * @param	mixed
+	 * @param	boolean
+	 */
+	public function category_form_tree($nested = 'y', $categories = FALSE, $sites = FALSE)
 	{
 		$order  = ($nested == 'y') ? 'group_id, parent_id, cat_name' : 'cat_name';
 
@@ -265,11 +297,17 @@ class Api_channel_categories extends Api {
 		return $this->cat_array;
 	}
 
+	// --------------------------------------------------------------------
 	
-	// --------------------------------
-	// Category Edit Sub-tree
-	// --------------------------------
-	function _category_form_subtree($cat_id, $categories, $depth)
+	/**
+	 * Category Edit Sub-tree
+	 *
+	 * @param 	string	category id
+	 * @param	array 	array of categories
+	 * @param 	int		
+	 * @return 	void
+	 */
+	protected function _category_form_subtree($cat_id, $categories, $depth)
 	{
 		$spcr = '!-!';
 
@@ -301,12 +339,14 @@ class Api_channel_categories extends Api {
 		}
 	}
 
+	// --------------------------------------------------------------------
 
-	/** ----------------------------------------
-	/**	 Fetch the parent category ID
-	/** ----------------------------------------*/
-
-	function fetch_category_parents($cat_array)
+	/**
+	 * Fetch Parent Category ID
+	 *
+	 * @param 	array 	category array
+	 */
+	public function fetch_category_parents($cat_array)
 	{
 		if (count($cat_array) == 0)
 		{
@@ -344,12 +384,15 @@ class Api_channel_categories extends Api {
 		$this->fetch_category_parents($temp);
 	}
 
-
-	/** ----------------------------------------
-	/**	 Fetch allowed category group edit links
-	/** ----------------------------------------*/
-
-	function fetch_allowed_category_groups($cat_group)
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Fetch Allowed Category Groups
+	 *
+	 * @param 	string		String of cat groups.  either one, or a piped list
+	 * @return 	mixed		
+	 */
+	public function fetch_allowed_category_groups($cat_group)
 	{	
 		if ($this->EE->cp->allowed_group('can_admin_channels') OR $this->EE->cp->allowed_group('can_edit_categories'))
 		{

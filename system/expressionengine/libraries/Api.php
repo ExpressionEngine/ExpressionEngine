@@ -106,10 +106,9 @@ class Api {
 	 * Just a way to keep syntax simple and not have to access
 	 * $this->errors directly in the child libraries
 	 *
-	 * @access	public
 	 * @return	int
 	 */
-	function error_count()
+	public function error_count()
 	{
 		return count($this->errors);
 	}
@@ -142,7 +141,7 @@ class Api {
 	 * @param	string
 	 * @return	string
 	 */
-	function make_url_safe($str)
+	public function make_url_safe($str)
 	{
 		return preg_replace("/[^a-zA-Z0-9_\-\.]+$/i", '', $str);
 	}
@@ -154,11 +153,10 @@ class Api {
 	 *
 	 * Checks if a string is safe for use in a URL segment - similar restrictions on short names
 	 *
-	 * @access	public
 	 * @param	string
 	 * @return	bool
 	 */
-	function is_url_safe($str)
+	public function is_url_safe($str)
 	{
 		return preg_match("/^[a-zA-Z0-9_\-\.]+$/i", $str) ? TRUE : FALSE;
 	}
@@ -172,14 +170,13 @@ class Api {
 	 * string and which type of data we are checking against and returns a valid URL Title or FALSE
 	 * if it is unable to create one.
 	 *
-	 * @php4	protected 
 	 * @param	string
 	 * @param	string integer
 	 * @param	string integer
 	 * @param	string
 	 * @return	string
 	 */	
-	function _unique_url_title($url_title, $self_id, $type_id = '', $type = 'channel')
+	protected function _unique_url_title($url_title, $self_id, $type_id = '', $type = 'channel')
 	{
 		if ($type_id == '')
 		{
@@ -273,7 +270,7 @@ class Api {
 	 * @param	string	variable name
 	 * @return	mixed	variable value
 	 */
-	function __get($key)
+	public function __get($key)
 	{
 		return $this->$key;
 	}
