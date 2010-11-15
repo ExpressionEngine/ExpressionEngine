@@ -1,3 +1,5 @@
+<!-- 	<div class="clear"></div> -->
+</div>
 
 <div id="footer">
 	<a rel="external" href="<?=$this->cp->masked_url('http://expressionengine.com/')?>"><img src="<?=$cp_theme_url?>images/ee_logo_footer.gif" alt="<?=APP_NAME?>" width="109" height="15" /></a>

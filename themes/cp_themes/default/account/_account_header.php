@@ -18,7 +18,7 @@ if ($EE_view_disable !== TRUE)
 			<?php $this->load->view('_shared/message');?>
 
 			<table width="100%">
-			<tr><td valign="top" width="260">
+			<tr><td valign="top" width="250">
 				
 			<?php $this->load->view('account/_account_menu.php', $private_messaging_menu);?>
 

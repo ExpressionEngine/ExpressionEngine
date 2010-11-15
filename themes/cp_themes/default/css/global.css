@@ -627,7 +627,7 @@ span.button .submit {
 
 #activeUser {
 	color:				#fff;
-	padding:			0 14px;
+	padding:			1px 14px;
 	font-size:			10px;
 	line-height:		29px;
 	text-align:			right;
@@ -738,6 +738,19 @@ div#search {
 /*  Breadcrumbs
 /* -------------------------------------*/
 
+#breadCrumb {
+	font-size:			12px;
+	color:				#5f6c74;
+	background-color:	#ECF1F4;
+	margin-bottom:		25px;
+	padding:			2px 25px 0px 5px;
+}
+
+#breadCrumb ol {
+	list-style:			none;
+	padding-left:		24px; /* combines with the li padding to inset the first crumb 25px */
+}
+
 #breadCrumb li {
 	line-height:		29px;
 	display:			block;
@@ -745,7 +758,6 @@ div#search {
 	padding:			0 25px 0 1px;
 	background:			#ECF1F4 url('<?=$cp_theme_url?>images/cp_sprite.png') right -90px no-repeat;
 	color:				#5E6871;
-
 }
 
 #breadCrumb li.last {
@@ -763,30 +775,6 @@ div#search {
 
 #breadCrumb a:hover {
 	text-decoration:	underline;
-}
-
-
-#breadCrumb {
-	font-size:			12px;
-	color:				#5f6c74;
-	background-color:	#ECF1F4;
-	margin-bottom:		34px;
-	width:				77%;
-}
-
-#breadCrumb ol {
-	list-style:			none;
-	padding-left:		24px; /* combines with the li padding to inset the first crumb 25px */
-}
-
-#breadCrumb li {
-	line-height:		29px;
-	display:			block;
-	float:				left;
-	padding:			0 25px 0 1px;
-	background:			#ECF1F4 url('<?=$cp_theme_url?>images/cp_sprite.png') right -90px no-repeat;
-	color:				#5f6c74;
-
 }
 
 #breadCrumb li.last {
@@ -813,10 +801,15 @@ div#search {
 /*  Main Content
 /* -------------------------------------*/
 
+#mainWrapper {
+	background-color: 	#fff;
+}
+
 #mainContent {
 	width:				77%;
 	position:relative;
 }
+
 
 #mainContent .pageContents {
 	background-color:	#ECF1F4;
@@ -1338,6 +1331,7 @@ th.hidden_col { display: none; } td.hidden_col { display: none; }
 }
 #registerUser {
 	/*padding: 0;*/
+	margin-left: 10px;
 }
 
 
