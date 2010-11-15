@@ -422,7 +422,7 @@ class Content_edit extends CI_Controller {
 		}
 
 		
-		$filter = $this-create_return_filter($filter_data);
+		$filter = $this->create_return_filter($filter_data);
 
 		if ($search_url != '')
 		{
@@ -791,7 +791,7 @@ class Content_edit extends CI_Controller {
 
 		$filter_data['search_keywords'] = $search_keywords;
 
-		$filter = $this-create_return_filter($filter_data);
+		$filter = $this->create_return_filter($filter_data);
 		
 		// Apply only to comments- not part of edit page filter
 		$filter_data['entry_id'] = $this->input->get_post('entry_id');

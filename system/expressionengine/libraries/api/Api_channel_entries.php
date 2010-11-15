@@ -33,6 +33,7 @@ class Api_channel_entries extends Api {
 	var $meta		= array();
 	var $c_prefs	= array();
 	var $_cache		= array();
+	var $mod_fields	= array();
 	
 	/**
 	 * Constructor
