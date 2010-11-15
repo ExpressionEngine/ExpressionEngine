@@ -589,6 +589,9 @@ $lang = array(
 'edit_this_entry' => 
 'Edit This Entry',
 
+'view_filtered' => 
+'Return to Filtered Entries',
+
 'date_range' =>
 'Date Range',
 
