@@ -344,10 +344,16 @@ class Content_publish extends CI_Controller {
 
 		$which 						= 'new';
 		$entry_id 					= ( ! $this->input->get_post('entry_id')) ? '' : (int) $this->input->get_post('entry_id');
-		$hidden 					= array();
-
+		
+		$hidden						= array();
 		$convert_ascii				= ($this->config->item('auto_convert_high_ascii') == 'y') ? TRUE : FALSE; // Javascript stuff
+		
 
+		if ($this->input->get_post('filter') !== FALSE) 
+		{
+			$hidden['filter'] = $this->input->get_post('filter');
+		}
+		
 		$vars = array(
 			'message'				=> '',
 			'cp_page_title'			=> $this->lang->line('new_entry'),								// modified below if this is an "edit"
@@ -1857,15 +1863,11 @@ class Content_publish extends CI_Controller {
 			unset($vars['publish_tabs'][$tab]['_tab_label']);				
 		}
 		
-		
-		
 		// Sort field output array to show up in sidebar with a sensible sort order
 		
 		$vars['field_output'] = $this->_sort_sidebar_list($field_output, $vars['required_fields']);
 		unset($field_output);		
-		
-		
-		
+
 		// Run validation
 		
 		if ($attempt_saving == TRUE)
@@ -2394,6 +2396,14 @@ class Content_publish extends CI_Controller {
 		{
 			return FALSE;
 		}
+		
+		$filter = '';
+		
+		if ($this->input->post('filter') !== FALSE)
+		{
+			$filter = AMP.'filter='.$this->input->post('filter');
+			unset($_POST['filter']);
+		}
 
 		/* -------------------------------------------
 		/* 'submit_new_entry_start' hook.
@@ -2479,7 +2489,7 @@ class Content_publish extends CI_Controller {
 
 		if ($this->input->post('save_revision'))
 		{
-			$this->functions->redirect(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.AMP.'revision=saved');
+			$this->functions->redirect(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.$filter.AMP.'revision=saved');
 		}
 
 		// Redirect to ths "success" page
@@ -2487,7 +2497,7 @@ class Content_publish extends CI_Controller {
 			
 		$this->session->set_flashdata('message_success', $message);
 
-		$loc = BASE.AMP.'C=content_publish'.AMP.'M=view_entry'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id;
+		$loc = BASE.AMP.'C=content_publish'.AMP.'M=view_entry'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.$filter;
 		
 		// Trigger the submit new entry redirect hook
 		$loc = $this->api_channel_entries->trigger_hook('entry_submission_redirect', $loc);
@@ -2818,6 +2828,29 @@ class Content_publish extends CI_Controller {
 		$vars['show_edit_link'] = FALSE;
 		$vars['show_comments_link'] = FALSE;
 		$vars['live_look_link'] = FALSE;
+		
+		
+		if ($this->input->get('filter') === FALSE)
+		{
+			$filter_link = FALSE;
+		}
+		else
+		{
+			$filter_link = BASE.AMP.'C=content_edit';
+			$filters = unserialize(base64_decode($this->input->get('filter')));
+			
+			foreach($filters as $k => $v)
+			{
+				if ($k == 'keywords')
+				{
+					$v = base64_encode($v);
+				}
+				
+				$filter_link .= AMP.$k.'='.$v;
+			}
+		}	
+		
+		$vars['filter_link'] = $filter_link;
 
 		$vars['entry_contents'] = $r;
 

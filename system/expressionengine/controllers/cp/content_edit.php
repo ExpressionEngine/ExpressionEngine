@@ -421,6 +421,9 @@ class Content_edit extends CI_Controller {
 			$vars['search_in_options']['everywhere'] =  $this->lang->line('title_body_comments');
 		}
 
+		
+		$filter = $this-create_return_filter($filter_data);
+
 		if ($search_url != '')
 		{
 			$pageurl = BASE.AMP.$search_url;
@@ -578,7 +581,7 @@ class Content_edit extends CI_Controller {
 			$vars['entries'][$row['entry_id']][] = $row['entry_id'];
 
 			// Channel entry title (view entry)			
-			$output = anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'], $row['title']);
+			$output = anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'].$filter, $row['title']);
 			
 			$output .= (in_array($row['entry_id'], $autosave_array)) ? NBS.required() : '';
 			$vars['entries'][$row['entry_id']][] = $output;
@@ -787,6 +790,8 @@ class Content_edit extends CI_Controller {
 		$search_keywords = ($this->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($filter_data['keywords']) : $filter_data['keywords'];
 
 		$filter_data['search_keywords'] = $search_keywords;
+
+		$filter = $this-create_return_filter($filter_data);
 		
 		// Apply only to comments- not part of edit page filter
 		$filter_data['entry_id'] = $this->input->get_post('entry_id');
@@ -945,7 +950,7 @@ class Content_edit extends CI_Controller {
 		foreach($query_results as $row)
 		{
 			$m[] = $row['entry_id'];
-			$title_output = anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'], $row['title']);
+			$title_output = anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'].$filter, $row['title']);
 			$title_output .= (in_array($row['entry_id'], $autosave_array)) ? NBS.required() : '';
 
 			$m[] = $title_output;
@@ -1072,6 +1077,47 @@ class Content_edit extends CI_Controller {
 		$this->output->send_ajax_response($j_response);
 	}
 	
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Create Return Filter
+	 *
+	 * Creates a properly format variable to pass in the url indicating the filter state
+	 *
+	 * @access	public
+	 * @param	array
+	 * @return	string
+	 */
+
+	function create_return_filter($filter_data)
+	{
+		
+		$filters = array();
+		$filter = '';
+		$filter_keys = array('channel_id', 'cat_id', 'status', 'date_range', 'keywords', 'exact_match', 'search_in');
+		
+		foreach($filter_keys as $k)
+		{
+			if ( isset($filter_data[$k]) && $filter_data[$k] != '')
+			{
+				$filters[$k] = $filter_data[$k];
+			}
+		}
+			
+		if ( ! isset($filters['keywords']))
+		{
+			unset($filters['exact_match']);
+			unset($filters['search_in']);				
+		}
+
+		if ( ! empty($filters))
+		{
+			$filter = AMP.'filter='.base64_encode(serialize($filters));
+		}
+		
+		return $filter;
+	}
 
 	// --------------------------------------------
 	//	 Multi Edit Form
