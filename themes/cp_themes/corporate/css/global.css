@@ -1851,7 +1851,7 @@ textarea#template_data{
 }
 
 #template_details {
-	margin:				-10px 0 10px 0;
+	margin-bottom:		10px;
 	background-color:	#7a90a2;
 	padding: 			17px;
 	font-weight:		bold;
