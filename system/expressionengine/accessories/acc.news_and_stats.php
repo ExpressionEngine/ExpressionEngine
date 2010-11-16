@@ -33,7 +33,7 @@ class News_and_stats_acc {
 	/**
 	 * Constructor
 	 */
-	function News_and_stats_acc()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 		$this->EE->lang->loadfile('homepage');

@@ -33,7 +33,7 @@ class Learning_acc {
 	/**
 	 * Constructor
 	 */
-	function Learning_acc()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 	}
