@@ -33,7 +33,7 @@ class Expressionengine_info_acc {
 	/**
 	 * Constructor
 	 */
-	function Expressionengine_info_acc()
+	function __construct()
 	{
 		$this->EE =& get_instance();
 	}

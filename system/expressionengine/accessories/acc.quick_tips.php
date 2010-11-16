@@ -51,7 +51,7 @@ class Quick_tips_acc {
 	/**
 	 * Constructor
 	 */
-	function Quick_tips_acc()
+	function __construct()
 	{
 		
 		$this->EE =& get_instance();
