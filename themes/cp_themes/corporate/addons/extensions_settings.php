@@ -12,8 +12,9 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 		
-		<div class="heading"><h2><?=lang('extension_settings')?>: <?=$name?></h2></div>
-        
+		<div class="heading">
+				<h2><?=lang('extension_settings')?>: <?=$name?></h2>
+		</div>
 		<div class="pageContents">
 
 		<?php $this->load->view('_shared/message');?>	
@@ -21,7 +22,7 @@ if ($EE_view_disable !== TRUE)
 		<?php echo form_open('C=addons_extensions'.AMP.'M=save_extension_settings', '', $hidden)?>
 			
 		<?php
-		$this->table->set_template($cp_table_template);
+		$this->table->set_template($cp_pad_table_template);
 		$this->table->set_heading(
 									array('data' => lang('preference'), 'style' => 'width:50%;'),
 									lang('setting')
@@ -76,11 +77,13 @@ if ($EE_view_disable !== TRUE)
 		
 		echo $this->table->generate();
 		?>
-		<p class="centerSubmit"><?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'))?></p>
-		
+		<?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'))?>
 		<?=form_close()?>
+			
+		<div class="clear_right"></div>
 
-		</div> <!-- pageContents -->
+		</div>
+
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
@@ -92,4 +95,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file extensions_settings.php */
-/* Location: ./themes/cp_themes/corporate/addons/extensions_settings.php */
+/* Location: ./themes/cp_themes/default/addons/extensions_settings.php */

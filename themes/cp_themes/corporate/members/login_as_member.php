@@ -22,29 +22,32 @@ if ($EE_view_disable !== TRUE)
 
 			<p><?=$message?></p>
 
-			<p>
+			<div>
 				<?=form_radio(array('name'=>'return_destination','id'=>'site_homepage', 'value'=>'site'))?>
 				<?=lang('site_homepage', 'site_homepage')?>
-			<br />
+			</div>
 			<?php if ($can_access_cp):?>
-				
+				<div>
 					<?=form_radio(array('name'=>'return_destination','id'=>'cp', 'value'=>'cp'))?>
 					<?=lang('control_panel', 'cp')?>
-				<br />
+				</div>
 			<?php endif;?>
-		
+			<div>
 				<?=form_radio(array('name'=>'return_destination','id'=>'other', 'value'=>'other'))?>
 				<?=lang('other', 'other')?> 
-				<?=form_input(array('id'=>'other_url','name'=>'other_url','class'=>'field','size'=>50,'value'=>$this->functions->fetch_site_index()))?>
-			</p>
+				<?=form_input(array('id'=>'other_url','name'=>'other_url','size'=>50,'value'=>$this->functions->fetch_site_index()))?>
+			</div>
 
 			<p>
-                <?=form_submit('login_as_member', lang('submit'), 'class="submit"')?>
+				<?=form_submit('login_as_member', lang('submit'), 'class="submit"')?>
 			</p>
+
 			<?=form_close()?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+
+		</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -55,4 +58,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file login_as_member.php */
-/* Location: ./themes/cp_themes/corporate/members/login_as_member.php */
+/* Location: ./themes/cp_themes/default/members/login_as_member.php */

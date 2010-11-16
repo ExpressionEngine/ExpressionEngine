@@ -12,12 +12,11 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-		<div class="heading"><h2><?=lang($cp_page_title)?></h2></div>
-		
-		<div class="pageContents">
-			
+		<div class="heading"><h2 class="edit"><?=lang($cp_page_title)?></h2></div>
 		<?php $this->load->view('_shared/message');?>
 		
+		<div class="pageContents">
+
 			<?=form_open('C=members'.AMP.'M=update_field_order')?>
 
 			<?php
@@ -52,8 +51,9 @@ if ($EE_view_disable !== TRUE)
 
 			<?=form_close()?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -64,4 +64,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file edit_custom_profile_field.php */
-/* Location: ./themes/cp_themes/corporate/members/edit_custom_profile_field.php */
+/* Location: ./themes/cp_themes/default/members/edit_custom_profile_field.php */

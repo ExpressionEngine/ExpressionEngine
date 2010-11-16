@@ -12,15 +12,15 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-        
+		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
+
 			<h3><?=lang('field_group').': '.$group_name?></h3>
-			<br />
+
 		<?php $this->load->view('_shared/message');?>
 
 		<?php
-			$this->table->set_template($cp_pad_table_template);
+			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 										lang('field_label'),
 										lang('order'),
@@ -38,7 +38,7 @@ if ($EE_view_disable !== TRUE)
 						$field['field_order'],
 						$field['field_name'],
 						$field['field_type'],
-						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=field_delete_confirm'.AMP.'field_id='.$field['field_id'].AMP.'group_id='.$group_id.'"><img src="'.$cp_theme_url.'images/content_custom_tab_delete.png" alt="'.lang('delete').'" width="19" height="18" /></a>'
+						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=field_delete_confirm'.AMP.'field_id='.$field['field_id'].AMP.'group_id='.$group_id.'">'.lang('delete').'</a>'
 					);
 				}
 			}
@@ -49,9 +49,11 @@ if ($EE_view_disable !== TRUE)
 			
 			echo $this->table->generate();
 		?>
+		
+		</div>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -62,4 +64,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file field_management.php */
-/* Location: ./themes/cp_themes/corporate/admin/field_management.php */
+/* Location: ./themes/cp_themes/default/admin/field_management.php */

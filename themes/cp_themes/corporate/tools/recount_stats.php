@@ -12,10 +12,9 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=lang('recount_stats')?></h2></div>
-
+			<div class="heading"><h2 class="edit"><?=lang('recount_stats')?></h2></div>
 			<div class="pageContents">
-            
+			
 			<?php $this->load->view('_shared/message');?>
 			
 			<?php
@@ -35,12 +34,13 @@ if ($EE_view_disable !== TRUE)
 			}
 			?>
 			
-			<p class="instructional_notice"><?=lang('recount_info')?></p>
+			<p><?=lang('recount_info')?></p>
 
 			<?=$this->table->generate()?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -51,4 +51,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file recount_stats.php */
-/* Location: ./themes/cp_themes/corporate/tools/recount_stats.php */
+/* Location: ./themes/cp_themes/default/tools/recount_stats.php */

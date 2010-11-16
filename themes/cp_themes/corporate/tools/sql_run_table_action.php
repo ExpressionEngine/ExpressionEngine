@@ -11,18 +11,20 @@ if ($EE_view_disable !== TRUE)
 
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
+
 		<div class="contents">
 			
-			<div class="heading"><h2><?=lang($action)?></h2></div>
-
+			<div class="heading"><h2 class="edit"><?=lang($action)?></h2></div>
+		
 			<div class="pageContents">
 				<?php
 					$this->table->set_template($cp_pad_table_template);
 					$this->table->set_heading($headings);
 				?>
 				<div class="cupRunnethOver shun"><?=$this->table->generate($results)?></div>				
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+			
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -33,4 +35,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file sql_view_database.php */
-/* Location: ./themes/cp_themes/corporate/tools/sql_view_database.php */
+/* Location: ./themes/cp_themes/default/tools/sql_view_database.php */

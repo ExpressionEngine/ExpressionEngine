@@ -12,8 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-
+		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
 
 			<?=form_open('C=admin_content'.AMP.'M=channel_add', array('id'=>'channel_edit'))?>
@@ -21,20 +20,20 @@ if ($EE_view_disable !== TRUE)
 			<table class="mainTable solo" border="0" cellspacing="0" cellpadding="0">
 				<tr>
 					<td style="width: 50%;">
-						<strong><?=required()?> <?=lang('channel_title', 'channel_title')?></strong>
+						<?=required()?> <?=lang('channel_title', 'channel_title')?>
 						<?=form_error('channel_title')?>
 					</td>
 					<td><?=form_input(array('id'=>'channel_title','name'=>'channel_title','class'=>'fullfield','value'=>set_value('channel_title')))?></td>
 				</tr>
 				<tr>
 					<td>
-						<strong><?=required()?> <?=lang('channel_name', 'channel_name')?></strong><br /><?=lang('single_word_no_spaces')?>
+						<?=required()?> <?=lang('channel_name', 'channel_name')?><br /><?=lang('single_word_no_spaces')?>
 						<?=form_error('channel_name')?>
 					</td>
 					<td><?=form_input(array('id'=>'channel_name','name'=>'channel_name','class'=>'fullfield','value'=>set_value('channel_name')))?></td>
 				</tr>
 				<tr>
-					<td><strong><?=lang('duplicate_channel_prefs', 'duplicate_channel_prefs')?></strong></td>
+					<td><?=lang('duplicate_channel_prefs', 'duplicate_channel_prefs')?></td>
 					<td><?=form_dropdown('duplicate_channel_prefs', $duplicate_channel_prefs_options, '', 'id="duplicate_channel_prefs"')?></td>
 				</tr>
 				<tr>
@@ -99,7 +98,7 @@ if ($EE_view_disable !== TRUE)
 						<td><?=form_dropdown('old_group_id', $old_group_id, '', 'id="old_group_id"')?></td>
 					</tr>
 					<tr>
-						<td><strong><?=required()?> <?=lang('template_group_name', 'group_name')?></strong><br /><?=lang('new_group_instructions')?></td>
+						<td><?=required()?> <?=lang('template_group_name', 'group_name')?><br /><?=lang('new_group_instructions')?></td>
 						<td><?=form_input(array('id'=>'group_name','name'=>'group_name','class'=>'fullfield'))?></td>
 					</tr>
 				</tbody>
@@ -107,12 +106,14 @@ if ($EE_view_disable !== TRUE)
 
 		<?php endif;?>
 
-			<p class="centerSubmit"><?=form_submit(array('name' => 'channel_prefs_submit', 'value' => lang('submit'), 'class' => 'submit'))?></p>
-			
+			<p>
+				<?=form_submit(array('name' => 'channel_prefs_submit', 'value' => lang('submit'), 'class' => 'submit'))?>
+			</p>
 			<?=form_close()?>
-			
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+
+		</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -123,4 +124,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file channel_add.php */
-/* Location: ./themes/cp_themes/corporate/admin/channel_add.php */
+/* Location: ./themes/cp_themes/default/admin/channel_add.php */

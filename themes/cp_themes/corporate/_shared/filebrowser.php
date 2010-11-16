@@ -11,6 +11,8 @@
 		</div>
 	</div>
 
+
+
 	<div id="file_manager_main">
 		<div id="pages">
 
@@ -19,12 +21,12 @@
 					<div class="items">
 
 							<h3><?=lang("upload_file")?></h3>
-							
+
 							<iframe id='target_upload' name='target_upload' src='about:blank' style='width:200px;height:50px;border:1;display:none;'></iframe>
 
 							<?=form_open_multipart($filemanager_backend_url.'&action=upload', array('target'=>'target_upload','id'=>'upload_form'))?>
 								<input type="hidden" name="frame_id" value="target_upload" id="frame_id" />
-								
+
 							<p>
 							<?php if (count($filemanager_directories) > 1):?>
 								<?=form_label(lang('upload_dir_choose'), 'upload_dir')?>&nbsp;
@@ -40,14 +42,14 @@
 
 							<p>
 								<?=form_label(lang('upload_file'), 'upload_file', array("style"=>"display:none;"))?>
-								<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>20))?>
+								<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>20,'class'=>'field'))?>
 							</p>
 
 							<div class="shun"></div>
-							
-							<p><button class="submit submit_alt"><?=lang('upload')?></button></p>
 
-							<p id="progress"><img src="<?=$cp_theme_url?>/images/indicator.gif" /><br /><?=lang('loading')?>...</p>
+							<p><button class="submit submit_alt"><img src="<?=$cp_theme_url?>images/upload_item.png" width="12" height="14" alt="<?=lang('upload')?>" />&nbsp;&nbsp;<?=lang('upload')?></button></p>
+
+							<p id="progress"><img src="<?=$cp_theme_url?>/images/indicator_ECF1F4.gif" /><br /><?=lang('loading')?>...</p>
 
 							<?=form_close()?>
 

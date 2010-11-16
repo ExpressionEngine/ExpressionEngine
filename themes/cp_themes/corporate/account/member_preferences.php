@@ -20,7 +20,7 @@
 			<strong><?=lang('localization_is_site_default')?></strong>
 		</p>
 
-		<p class="noback"><?=form_submit('member_preferences', lang('update'), 'class="submit"')?></p>
+		<p class="submit"><?=form_submit('member_preferences', lang('update'), 'class="submit"')?></p>
 
 		<?=form_close()?>
 	</div>

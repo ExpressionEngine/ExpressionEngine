@@ -11,19 +11,16 @@ if ($EE_view_disable !== TRUE)
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
-		
-        <div class="heading"><h2><?=$cp_page_title?></h2></div>
 
-		<div class="pageContents">
+			<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
+		    <div class="pageContents">
 
 				<?=form_open('C=members'.AMP.'M=delete_member_group'.AMP.'group_id='.$group_id, '', $form_hidden)?>
 
-				<p class="notice"><?=$this->lang->line('delete_member_group_confirm')?></p>
+				<p><strong><?=$this->lang->line('delete_member_group_confirm')?></strong></p>
 				
-				<ul class="subtext">
-					<li>&lsquo;<?=$group_title?>&rsquo;</li>
-				</ul>	
-											
+				<p><em><?=$group_title?></em></p>
+				
 				<p class="notice"><?=$this->lang->line('action_can_not_be_undone')?></p>
 
 				<?php if ($member_count > 0):?>
@@ -31,13 +28,13 @@ if ($EE_view_disable !== TRUE)
 					<p><?=form_dropdown('new_group_id', $new_group_id)?></p>
 				<?php endif;?>
 
-				<p><?=form_submit('delete', $this->lang->line('delete'), 'class="delete"')?></p>
+				<p><?=form_submit('delete', $this->lang->line('delete'), 'class="submit"')?></p>
 	
 				<?=form_close()?>
 
-
-				</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+		
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -48,4 +45,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file delete_member_group_conf.php */
-/* Location: ./themes/cp_themes/corporate/members/delete_member_group_conf.php */
+/* Location: ./themes/cp_themes/default/members/delete_member_group_conf.php */

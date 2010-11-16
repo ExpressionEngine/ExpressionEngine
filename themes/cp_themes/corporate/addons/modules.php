@@ -12,19 +12,19 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 		
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
+		<div class="heading">
+				<h2><?=$cp_page_title?></h2>
+		</div>
+        <div class="pageContents">
+		<?php $this->load->view('_shared/message');?>
 
-		<div class="pageContents">
+		<?php
+			$this->table->set_template($cp_table_template);
+			$this->table->set_heading($table_headings);
+			echo $this->table->generate($modules);
+		?>
 
-			<?php $this->load->view('_shared/message');?>
-
-			<?php
-				$this->table->set_template($cp_pad_table_template);
-				$this->table->set_heading($table_headings);
-				echo $this->table->generate($modules);
-			?>
-
-		</div> <!-- pageContents -->
+        </div>
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
@@ -36,4 +36,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file modules.php */
-/* Location: ./themes/cp_themes/corporate/addons/modules.php */
+/* Location: ./themes/cp_themes/default/addons/modules.php */

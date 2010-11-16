@@ -71,4 +71,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file refresh_message.php */
-/* Location: ./themes/cp_themes/corporate/_shared/refresh_message.php */
+/* Location: ./themes/cp_themes/default/_shared/refresh_message.php */

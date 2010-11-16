@@ -12,8 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-		
+		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
 
 		<?php $this->load->view('_shared/message');?>
@@ -22,10 +21,10 @@ if ($EE_view_disable !== TRUE)
 
 		<?=form_open ('C=admin_system'.AMP.'M=config_editor_process', '', $hidden)?>
 
-		<table id="entries" class="mainTable" cellspacing="0" cellpadding="0" border="0" summary="Config Editor Preferences">
+		<table id="entries" class="mainTable padTable" cellspacing="0" cellpadding="0" border="0">
 			<thead>
 				<tr>
-					<th style="cursor: default;width:50%"><?=lang('preference')?></th>
+					<th style="cursor: default;"><?=lang('preference')?></th>
 					<th style="cursor: default;"><?=lang('setting')?></th>
 				</tr>
 			</thead>
@@ -80,9 +79,8 @@ if ($EE_view_disable !== TRUE)
 
 			<?php else:?>
 
-					<td><strong><?=form_label('$config[\''.$config_item.'\']', $config_item)?></strong></td>
-					<td><?=form_input(array('id'=>$config_item,'name'=>$config_item,'class'=>'fullfield','value'=>$config_value))?></td>
-
+					<td><?=form_label('$config[\''.$config_item.'\']', $config_item)?></td>
+					<td><?=form_input(array('id'=>$config_item,'name'=>$config_item,'style'=>'width:100%;','value'=>$config_value))?></td>
 
 			<?php endif;?>
 
@@ -90,17 +88,19 @@ if ($EE_view_disable !== TRUE)
 		<?php endforeach;?>
 
 				<tr>
-					<td><strong><label>$config['<?=form_input('config_name')?>']</label></strong></td>
-					<td><label style="display:none;" for="config_setting"><?=lang('setting')?></label><?=form_input(array('name'=>'config_setting', 'id'=>'config_setting', 'class'=>'fullfield'))?></td>
+					<td><label>$config['<?=form_input('config_name')?>']</label></td>
+					<td><label style="display:none;" for="config_setting"><?=lang('setting')?></label><?=form_input(array('name'=>'config_setting', 'id'=>'config_setting', 'style'=>'width:100%;'))?></td>
 				</tr>
 			</tbody>
 		</table>
-			<p class="centerSubmit"><?=form_submit(array('name' => 'update', 'value' => lang('update'), 'class' => 'submit'))?></p>
-		
-			<?=form_close()?>
-		
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+
+		<p><?=form_submit('update', lang('update'), 'class="submit"')?></p>
+
+		<?=form_close()?>
+		</div>
+
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -111,4 +111,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file config_editor.php */
-/* Location: ./themes/cp_themes/corporate/admin_system/config_editor.php */
+/* Location: ./themes/cp_themes/default/admin_system/config_editor.php */

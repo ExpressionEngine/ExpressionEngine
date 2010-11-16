@@ -12,12 +12,12 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=$heading?></h2></div>
-			
+			<div class="heading"><h2 class="edit"><?=$heading?></h2></div>
 			<div class="pageContents">
 				<?=$output?>
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -28,4 +28,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file view_xml.php */
-/* Location: ./themes/cp_themes/corporate/tools/view_xml.php */
+/* Location: ./themes/cp_themes/default/tools/view_xml.php */

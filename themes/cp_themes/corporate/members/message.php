@@ -12,11 +12,12 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 		<?php $this->load->view('_shared/message');?>
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-		<div class="pageContents">
-			<?=$message?>
-		</div> <!-- pageContents -->
-	</div> <!-- contents -->
+
+	<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
+    <div class="pageContents">
+		<?=$message?>
+	</div>
+</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -27,4 +28,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file message.php */
-/* Location: ./themes/cp_themes/corporate/members/message.php */
+/* Location: ./themes/cp_themes/default/members/message.php */

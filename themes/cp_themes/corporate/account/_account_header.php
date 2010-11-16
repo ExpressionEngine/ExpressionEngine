@@ -12,15 +12,14 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=lang('my_account').' : '.$member_username?></h2></div>
-
-		<div class="pageContents reg">
+		<div class="heading"><h2 class="edit"><?=lang('my_account').' : '.$member_username?></h2></div>
+		<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
 
 			<table width="100%">
 			<tr><td valign="top" width="250">
-
+				
 			<?php $this->load->view('account/_account_menu.php', $private_messaging_menu);?>
 
 			</td><td valign="top">
@@ -29,4 +28,4 @@ if ($EE_view_disable !== TRUE)
 
 <?php
 /* End of file _account_header.php */
-/* Location: ./themes/cp_themes/corporate/members/_account_header.php */
+/* Location: ./themes/cp_themes/default/members/_account_header.php */

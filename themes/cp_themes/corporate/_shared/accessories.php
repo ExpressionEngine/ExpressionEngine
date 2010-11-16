@@ -8,15 +8,14 @@
 			<li><a href="#" class="<?=$acc->id?>"><?=$acc->name?><span class="accessoryHandle">&nbsp;</span></a></li>
 			<?php endforeach; ?>
 		</ul>
-		<div class="clear"></div>
 	</div> <!-- accessoryTabs -->
 	<?php endif;?>
 
 	<?php foreach ($cp_accessories as $acc): ?>
 	<div id="<?=$acc->id?>" class="accessory">
 		
-		<?php $i = 0; foreach ($acc->sections as $heading => $contents): $i++; ?>
-		<div class="accessorySection accessory<?=$i?>">
+		<?php foreach ($acc->sections as $heading => $contents): ?>
+		<div class="accessorySection">
 			<h5><?=$heading?></h5>
 			
 			<?=$contents?>

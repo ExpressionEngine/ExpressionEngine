@@ -14,9 +14,10 @@ if ($EE_view_disable !== TRUE)
 		<?php $this->load->view('_shared/message')?>
 
 		<div class="heading">
-			<h2><span id="filter_ajax_indicator"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span><?=$cp_page_title?></h2>
+			<h2 class="edit"><span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>
+			<?=$cp_page_title?></h2>
 		</div>
-		<div class="pageContents moduleWrap">
+		<div class="pageContents">
 
 			<?=form_open('C=addons_fieldtypes'.AMP.'M=global_settings'.AMP.'ft='.$_ft_name)?>
 				<?=$_ft_settings_body?>
@@ -24,9 +25,9 @@ if ($EE_view_disable !== TRUE)
 			<?=form_close()?>
 			
 		</div>
+
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
-
 
 <?php
 if ($EE_view_disable !== TRUE)
@@ -36,4 +37,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file fieldtype_global_settings.php */
-/* Location: ./themes/cp_themes/fruit/addons/fieldtype_global_settings.php */
+/* Location: ./themes/cp_themes/default/addons/fieldtype_global_settings.php */

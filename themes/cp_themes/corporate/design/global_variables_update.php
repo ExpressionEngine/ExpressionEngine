@@ -12,59 +12,36 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 		
-		<div class="heading"><h2><?=lang('global_var_update')?></h2></div>
-
-		<div id="new_global_var" class="pageContents">
+		<div class="heading">
+				<h2><?=lang('global_var_update')?></h2>
+		</div>
+		<div class="pageContents">
 
 			<?=form_open('C=design'.AMP.'M=global_variables_update')?>
-
 				<?=form_hidden('variable_id', $variable_id)?>
+				<?php $this->table->set_template(array('table_open' => '<table class="mainTable clear_left" cellspacing="0" cellpadding="0">'));
+				$this->table->set_heading(NBS, NBS);
 				
-		<?php
-		    $this->table->set_template($cp_table_template);
-		    $this->table->set_heading(
-                array('data' => lang('preference'), 'style' => 'width:50%;'),
-				lang('setting')
-			);
+				$this->table->add_row(array(
+						lang('variable_name', 'global_variable_name'),
+						lang('template_group_instructions') . ' ' . lang('undersores_allowed').BR.
+						form_input(array('id'=>'variable_name','name'=>'variable_name','size'=>70,'class'=>'field','value'=>$variable_name))
+					)
+				);
 
-			$variable_name = array(
-				'id'		=> 'variable_name',
-				'name'		=> 'variable_name',
-				'size'		=> 70,
-				'class'		=> 'fullfield',
-				'value'		=>	$variable_name
-			);
-			
-					$this->table->add_row(array(
-					lang('global_variable_name', 'global_variable_name').'<br />'.
-					lang('template_group_instructions').' '.lang('undersores_allowed'),
-					form_error('variable_name').
-					form_input($variable_name)
-				)
-			);
-			
-				$variable_data = array(
-				'id'		=> 'variable_data',
-				'name'		=> 'variable_data',
-				'cols'		=>	70,
-				'rows'		=>	10,
-				'class'		=> 'fullfield',
-				'value'		=>	$variable_data
-			);
-			
-					$this->table->add_row(array(
-					lang('variable_data', 'variable_data').'<br />',
-					form_error('variable_data').
-					form_textarea($variable_data)
-				)
-			);
-						echo $this->table->generate();
-		?>				
+				$this->table->add_row(array(
+						lang('variable_data', 'variable_data'),
+						form_textarea(array('id'=>'variable_data','name'=>'variable_data','cols'=>70,'rows'=>10,'class'=>'field','value'=>$variable_data))
+					)
+				);
 				
-				<p class="centerSubmit"><?=form_submit('template', lang('update'), 'class="submit"')?></p>
+				echo $this->table->generate();
+				?>				
+				<?=form_submit('template', lang('update'), 'class="submit"')?>
 			<?=form_close()?>
+		
+		</div>
 	
-		</div> <!-- pageContents -->
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
@@ -76,4 +53,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file global_variables_update.php */
-/* Location: ./themes/cp_themes/corporate/design/global_variables_update.php */
+/* Location: ./themes/cp_themes/default/design/global_variables_update.php */

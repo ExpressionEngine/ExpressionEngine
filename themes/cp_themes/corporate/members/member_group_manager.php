@@ -13,22 +13,19 @@ if ($EE_view_disable !== TRUE)
 		<div class="contents">
 
         <div class="heading"><h2><?=lang('member_groups')?></h2></div>
-        
+
 		<div class="pageContents">
-
-		<?php $this->load->view('_shared/message');?>
-
-		
-
+			<?php $this->load->view('_shared/message');?>
+			<div class="clear_left"></div>
 		<?php
-			$this->table->set_template(array('table_open' => '<table class="mainTable padTable clear_left" cellspacing="0" cellpadding="0">'));
+			$this->table->set_template(array('table_open' => '<table class="mainTable clear_left" cellspacing="0" cellpadding="0">'));
 			$this->table->set_heading(
 										lang('group_title'),
 										lang('edit_group'),
 										lang('security_lock'),
 										lang('group_id'),
 										lang('members'),
-										''
+										lang('delete')
 									  );
 
 			foreach($groups as $group)
@@ -39,27 +36,26 @@ if ($EE_view_disable !== TRUE)
 										$group['security_lock'],
 										$group['group_id'],
 										'('.$group['member_count'].') <a href="'.BASE.AMP.'C=members'.AMP.'M=view_all_members'.AMP.'group_id='.$group['group_id'].'">'.lang('view').'</a>',
-										($group['delete']) ? '<a href="'.BASE.AMP.'C=members'.AMP.'M=delete_member_group_conf'.AMP.'group_id='.$group['group_id'].'"><img src="'.$cp_theme_url.'images/content_custom_tab_delete.png" alt="'.lang('delete').'" width="19" height="18" /></a>' : '--'
+										($group['delete']) ? '<a href="'.BASE.AMP.'C=members'.AMP.'M=delete_member_group_conf'.AMP.'group_id='.$group['group_id'].'">'.lang('delete').'</a>' : '--'
 									  );
 			}
 			
 			echo $this->table->generate();
 		?>
+			<p><strong class="notice">* <?=lang('member_has_cp_access')?></strong></p>
 
-		<p><strong class="notice">* <?=lang('member_has_cp_access')?></strong></p>
+			<?=$paginate?>
+		
+			<?=form_open('C=members'.AMP.'M=edit_member_group')?>
+		
+			<p><?=lang('create_group_based_on_old', 'clone_id')?> <?=form_dropdown('clone_id', $clone_group_options)?></p>
+		
+			<p><?=form_submit('submit', lang('submit'), 'class="submit"')?>
+		
+			<?=form_close()?>
+		</div>
 
-		<?=$paginate?>
-		
-		<?=form_open('C=members'.AMP.'M=edit_member_group')?>
-		
-		<p><?=lang('create_group_based_on_old', 'clone_id')?> <?=form_dropdown('clone_id', $clone_group_options)?></p>
-		
-		<p><?=form_submit('submit', lang('submit'), 'class="submit"')?></p>
-		
-		<?=form_close()?>
-
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -70,4 +66,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file groups.php */
-/* Location: ./themes/cp_themes/corporate/members/groups.php */
+/* Location: ./themes/cp_themes/default/members/groups.php */

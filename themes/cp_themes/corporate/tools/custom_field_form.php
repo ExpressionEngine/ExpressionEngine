@@ -12,8 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=lang('confirm_field_assignment')?></h2></div>
-			
+			<div class="heading"><h2 class="edit"><?=lang('confirm_field_assignment')?></h2></div>
 			<div class="pageContents">
 				
 			<?=validation_errors(); ?>
@@ -63,8 +62,9 @@ if ($EE_view_disable !== TRUE)
 
 			<?=form_close()?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -75,4 +75,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file custom_field_form.php */
-/* Location: ./themes/cp_themes/corporate/tools/custom_field_form.php */
+/* Location: ./themes/cp_themes/default/tools/custom_field_form.php */

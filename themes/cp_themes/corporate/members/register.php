@@ -277,4 +277,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file register.php */
-/* Location: ./themes/cp_themes/corporate/members/register.php */
+/* Location: ./themes/cp_themes/default/members/register.php */

@@ -12,13 +12,14 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=lang('plugins')?></h2></div>
-
+		<div class="heading">
+				<h2><?=lang('plugins')?></h2>
+		</div>
 		<div class="pageContents">
 
 			<?php
-				$this->table->set_template($cp_pad_table_template);
-				$this->table->set_heading('', lang('plugin_information'));
+				$this->table->set_template($cp_table_template);
+				$this->table->set_heading(lang('plugin_information'), '');
 
 				foreach($plugin as $key => $data)
 				{
@@ -31,7 +32,9 @@ if ($EE_view_disable !== TRUE)
 				echo $this->table->generate();
 			?>
 
-		</div> <!-- pageContents -->
+			<div class="clear_right"></div>
+		</div>
+
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
@@ -43,4 +46,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file plugin_info.php */
-/* Location: ./themes/cp_themes/corporate/addons/plugin_info.php */
+/* Location: ./themes/cp_themes/default/addons/plugin_info.php */

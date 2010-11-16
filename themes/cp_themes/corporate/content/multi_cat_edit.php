@@ -11,10 +11,9 @@ if ($EE_view_disable !== TRUE)
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
-	
 		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
         <div class="pageContents">	
-		<div style="padding:25px">
+
 		<?php $this->load->view('_shared/message');?>
 
 		<?php if(count($cats) > 0):?>
@@ -41,20 +40,20 @@ if ($EE_view_disable !== TRUE)
 				$total_results = count($edit_categories_link);
 				$count = 0;
 			?>
+			<p>
 			<?php foreach ($edit_categories_link as $link) : ?>
 				<?php $count++;?>
 				<a href="<?=$link['url']?>"><?=$link['group_name']?></a>
 				<?php if ($count != $total_results):?>, <?php endif;?> 
 			<?php endforeach; endif;?>
+			</p><br />
 		<?php endif;?>
 		
 		<p><?=form_submit('update_entries', lang('update'), 'class="submit"')?></p>
 
 		<?=form_close()?>
 
-	
 	<?php endif; ?>
-		</div>
 	</div>
 
 	</div> <!-- contents -->

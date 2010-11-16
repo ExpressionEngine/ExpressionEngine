@@ -12,8 +12,9 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-			<div class="heading"><h2><?=$cp_page_title?></h2></div>
+			<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		     <div class="pageContents"> 
+			
 			
 			<?php $this->load->view('_shared/message');?>
 				
@@ -25,8 +26,8 @@ if ($EE_view_disable !== TRUE)
 
 				<?=form_open('C=design'.AMP.'M=sync_run', '', $form_hidden)?>
 
-				<p><strong><?=lang('sync_templates_info1')?><br />
-				<?=lang('sync_templates_info2')?></strong></p><br />
+				<h4><?=lang('sync_templates_info1')?></h4>
+				<p><?=lang('sync_templates_info2')?></p>
 
 					<?php
 					$this->table->set_template($table_template);
@@ -38,7 +39,6 @@ if ($EE_view_disable !== TRUE)
 											lang('file_edit_date'),
 											form_checkbox('select_all', 'true', FALSE, 'class="toggle_all" id="select_all"').NBS.lang('sync')											
 											);
-				
 					
 						foreach ($templates as $group => $templates): 
 						$this->table->add_row($group, '', '', '', '', '');
@@ -80,4 +80,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file sync_confirm.php */
-/* Location: ./themes/cp_themes/corporate/design/sync_confirm.php */
+/* Location: ./themes/cp_themes/default/design/sync_confirm.php */

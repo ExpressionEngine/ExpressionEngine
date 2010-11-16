@@ -12,8 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=lang('search_and_replace')?></h2></div>
-
+			<div class="heading"><h2 class="edit"><?=lang('search_and_replace')?></h2></div>
 			<div class="pageContents">
 			
 			<?php if ($replaced): ?>
@@ -22,22 +21,22 @@ if ($EE_view_disable !== TRUE)
 			
 			<?=form_open('C=tools_data'.AMP.'M=search_and_replace')?>
 
-			<p class="instructional_notice"><?=lang('sandr_instructions')?></p>
+			<p><?=lang('sandr_instructions')?></p>
 	
-			<p class="notice" style="padding:0;"><?=lang('advanced_users_only')?></p>
+			<p class="notice"><?=lang('advanced_users_only')?></p>
 
 			<p>
-				<strong><?=form_label(lang('search_term'), 'search_term')?></strong>
-				<?=form_textarea(array('id'=>'search_term','name'=>'search_term','cols'=>70,'rows'=>10,'class'=>'fullfield'))?>
+				<?=lang('search_term', 'search_term')?><br />
+				<?=form_textarea(array('id'=>'search_term','name'=>'search_term','cols'=>70,'rows'=>10,'class'=>'field'))?>
 			</p>
 
 			<p>
-				<strong><?=form_label(lang('replace_term'), 'replace_term')?></strong>
-				<?=form_textarea(array('id'=>'replace_term','name'=>'replace_term','cols'=>70,'rows'=>10,'class'=>'fullfield'))?>
+				<?=lang('replace_term', 'replace_term')?><br />
+				<?=form_textarea(array('id'=>'replace_term','name'=>'replace_term','cols'=>70,'rows'=>10,'class'=>'field'))?>
 			</p>
 
 			<p>
-				<strong><?=form_label(lang('replace_where'), 'replace_where')?></strong><br />
+				<?=lang('replace_where', 'replace_where')?><br />
 				<select name="replace_where" id="replace_where">
 				<?php foreach ($replace_options as $label => $option): ?>
 					<option value="">----</option>
@@ -68,8 +67,9 @@ if ($EE_view_disable !== TRUE)
 
 			<?=form_close()?>
 			
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -80,4 +80,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file search_and_replace.php */
-/* Location: ./themes/cp_themes/corporate/tools/search_and_replace.php */
+/* Location: ./themes/cp_themes/default/tools/search_and_replace.php */

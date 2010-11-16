@@ -5,7 +5,7 @@
 
 		<?=form_open('C=myaccount'.AMP.'M=save_ping_servers', array('id' => 'ping_server_form'), $form_hidden)?>
 
-		<p class="noback"><?=lang('define_ping_servers')?></p>
+		<p><?=lang('define_ping_servers')?></p>
 
 		<?php 
 		$this->table->set_template($cp_table_template);
@@ -62,7 +62,7 @@
 
 		<p class="notice del_instructions"><?=lang('pingserver_delete_instructions')?></p>
 
-		<p class="noback"><?=form_submit('ping_server_submit', lang('submit'), 'class="submit"')?></p>
+		<p class="submit"><?=form_submit('ping_server_submit', lang('submit'), 'class="submit"')?></p>
 
 
 		<?=form_close()?>

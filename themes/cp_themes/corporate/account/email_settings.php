@@ -7,7 +7,7 @@
 
 		<p>
 			<?=form_label(required().lang('email'), 'email')?>
-			<?=form_input(array('id'=>'email','name'=>'email','class'=>'fullfield','value'=>$email,'maxlength'=>72))?>
+			<?=form_input(array('id'=>'email','name'=>'email','class'=>'field','value'=>$email,'maxlength'=>72))?>
 		</p>
 
 		<?php if ($this->session->userdata('group_id') != 1):?>
@@ -31,7 +31,7 @@
 		</table>
 		</fieldset>
 
-		<p class="noback"><?=form_submit('edit_profile', lang('update'), 'class="submit"')?></p>
+		<p class="submit"><?=form_submit('edit_profile', lang('update'), 'class="submit"')?></p>
 
 		<?=form_close()?>
 	</div>

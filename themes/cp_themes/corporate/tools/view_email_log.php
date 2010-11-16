@@ -12,10 +12,9 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-		<div class="heading"><h2>
-		<span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>		
+		<div class="heading"><h2 class="edit">
+		<span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>			
 		<?=$cp_page_title?></h2></div>
-
 		<div class="pageContents">
 			
 			<?php $this->load->view('_shared/message'); ?>
@@ -44,22 +43,21 @@ if ($EE_view_disable !== TRUE)
 			}
 		?>
 
-
 			<?=form_open('C=tools_logs'.AMP.'M=delete_email')?>
 			
 			<?=$this->table->generate()?>
 			
-			<div class="tableFooter">
-				<div class="tableSubmit">
-					<?=form_submit('email_logs', lang('delete'), 'class="delete"')?>
-				</div>		
+			
+		<div class="tableFooter">
+			<div class="tableSubmit">
+					<?=form_submit('email_logs', lang('delete'), 'class="submit"')?>
+			</div>		
 					<?php if ($pagination): ?>					
 						<span class="js_hide"><?=$pagination?></span>
 					<?php endif; ?>
 						<span class="pagination" id="filter_pagination"></span>
-			</div> <!-- tableFooter -->
-		
-	
+		</div> <!-- tableFooter -->
+			
 			<?=form_close()?>
 
 		<?php else:?>
@@ -68,8 +66,9 @@ if ($EE_view_disable !== TRUE)
 
 		<?php endif;?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -80,4 +79,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file view_email_log.php */
-/* Location: ./themes/cp_themes/corporate/tools/view_email_log.php */
+/* Location: ./themes/cp_themes/default/tools/view_email_log.php */

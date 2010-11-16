@@ -10,11 +10,10 @@ if ($EE_view_disable !== TRUE)
 
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
-		<div class="contents">
+	<div class="contents">
 
-        <div class="heading"><h2><?=$cp_page_title?></h2></div>
-
-		<div class="pageContents">
+			<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
+		    <div class="pageContents">
 
 				<?=form_open('C=members'.AMP.'M=member_delete')?>
 	
@@ -22,12 +21,9 @@ if ($EE_view_disable !== TRUE)
 					<?=form_hidden('delete[]', $member_id)?>
 				<?php endforeach;?>
 
-				<p class="notice"><?=lang('delete_members_confirm')?><p>
-					
-				<ul class="subtext">
-					<li>&lsquo;<?=$user_name?>&rsquo;</li>
-				</ul>	
-					
+				<p><strong><?=lang('delete_members_confirm')?></strong></p>
+		
+				<?=$user_name?>
 		
 				<p class="notice"><?=lang('action_can_not_be_undone')?></p>
 
@@ -37,13 +33,13 @@ if ($EE_view_disable !== TRUE)
 				<p><?=lang('heir_to_members_entries', 'heir').BR.form_dropdown('heir', $heirs)?></p>
 				<?php endif;?>
 
-				<p><?=form_submit('delete_members', lang('delete'), 'class="delete"')?></p>
+				<p><?=form_submit('delete_members', lang('delete'), 'class="submit"')?></p>
 	
 				<?=form_close()?>
 
-
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+		
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -54,4 +50,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file delete_confirm.php */
-/* Location: ./themes/cp_themes/corporate/members/delete_confirm.php */
+/* Location: ./themes/cp_themes/default/members/delete_confirm.php */

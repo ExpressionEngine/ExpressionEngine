@@ -36,4 +36,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file fieldtypes.php */
-/* Location: ./themes/cp_themes/fruit/addons/fieldtypes.php */
+/* Location: ./themes/cp_themes/default/addons/fieldtypes.php */

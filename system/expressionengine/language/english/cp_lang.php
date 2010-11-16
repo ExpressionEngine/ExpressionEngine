@@ -172,7 +172,7 @@ $lang = array(
 'nav_help'			   			=> 'Help',
 'nav_overview'					=> 'Overview',
 
-'nav_add_tab'					=> 'Add',
+'nav_add_tab'					=> '+ Add',
 
 //----------------------------
 // Control Panel

@@ -10,7 +10,7 @@
 			<?=form_dropdown('cp_theme', $cp_theme_options, $cp_theme, 'id="cp_theme"')?>
 		</p>
 
-		<p class="noback"><?=form_submit('save_theme', lang('update'), 'class="submit"')?></p>
+		<p class="submit"><?=form_submit('save_theme', lang('update'), 'class="submit"')?></p>
 
 		<?=form_close()?>
 	</div>

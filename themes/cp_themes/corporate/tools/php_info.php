@@ -12,7 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=lang('php_info')?></h2></div>
+			<div class="heading"><h2 class="edit"><?=lang('php_info')?></h2></div>
 			<div class="pageContents phpinfo_display">
 	
 			<?=$php_info?>
@@ -30,4 +30,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file php_info.php */
-/* Location: ./themes/cp_themes/corporate/tools/php_info.php */
+/* Location: ./themes/cp_themes/default/tools/php_info.php */

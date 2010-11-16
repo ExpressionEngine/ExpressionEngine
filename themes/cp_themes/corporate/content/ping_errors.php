@@ -12,8 +12,8 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-	    <div class="pageHeading">
+		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
+	    <div class="pageContents">
 	
 			<?php if (isset($ping_errors) and is_array($ping_errors)):?>
 			<?=lang('xmlrpc_ping_errors')?>
@@ -39,4 +39,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file ping_errors.php */
-/* Location: ./themes/cp_themes/corporate/content/ping_errors.php */
+/* Location: ./themes/cp_themes/default/content/ping_errors.php */

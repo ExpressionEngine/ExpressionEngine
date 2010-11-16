@@ -12,80 +12,79 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-        
+		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
-
-				<?=form_open('C=admin_content'.AMP.'M=update_category_group', '', $form_hidden)?>
-			<?php
-			$this->table->set_template($cp_table_template);
-			$this->table->set_heading(
-										array('data' => lang('preference'), 'style' => 'width:50%;'),
-										lang('setting')
-									);
-
-			$this->table->add_row(array(
-					'<strong>'.lang('name_of_category_group', 'group_name').'</strong>',
-					form_input(array('id'=>'group_name','name'=>'group_name','class'=>'fullfield', 'value'=>$group_name))
-				)
-			);
-
-			$this->table->add_row(array(
-					'<strong>'.lang('cat_field_html_formatting', 'field_html_formatting').'</strong>',
-					form_dropdown('field_html_formatting', $formatting_options, $field_html_formatting)
-				)
-			);
-
-			$setting = '';
-
-			if (count($can_edit_checks) == 0)
+			<?=form_open('C=admin_content'.AMP.'M=update_category_group', '', $form_hidden)?>
+		<?php
+		$this->table->set_template($cp_pad_table_template);
+		$this->table->set_heading(
+									lang('preference'),
+									lang('setting')
+								);
+								
+		$this->table->add_row(array(
+				lang('name_of_category_group', 'group_name'),
+				form_input(array('id'=>'group_name','name'=>'group_name','class'=>'field', 'value'=>$group_name))
+			)
+		);
+		
+		$this->table->add_row(array(
+				lang('cat_field_html_formatting', 'field_html_formatting'),
+				form_dropdown('field_html_formatting', $formatting_options, $field_html_formatting)
+			)
+		);
+		
+		$setting = '';
+		
+		if (count($can_edit_checks) == 0)
+		{
+			$setting = '<br /><span class="notice">'.str_replace('%x', strtolower(lang('edit')), lang('no_member_groups_available')).'<a class="less_important_link" title="'.lang('member_groups').'" href="'.BASE.AMP.'C=members'.AMP.'M=member_group_manager">'.lang('member_groups').'</a></span>';
+		}
+		else
+		{
+			foreach($can_edit_checks as $check)
 			{
-				$setting = '<span class="notice">'.str_replace('%x', strtolower(lang('edit')), lang('no_member_groups_available')).'<a class="less_important_link" title="'.lang('member_groups').'" href="'.BASE.AMP.'C=members'.AMP.'M=member_group_manager">'.lang('member_groups').'</a></span>';
+				$setting .= '<br /><label>'.form_checkbox('can_edit_categories[]', $check['id'], $check['checked']).' '.$check['value'].'</label>';
 			}
-			else
+		}
+		
+		$this->table->add_row(array(
+				lang('can_edit_categories', 'can_edit_categories'),
+				$setting
+			)
+		);
+		
+		$setting = '';
+
+		if (count($can_delete_checks) == 0)
+		{
+			$setting .= '<br /><span class="notice">'.str_replace('%x', strtolower(lang('delete')), lang('no_member_groups_available')).
+					   '<a class="less_important_link" title="'.lang('member_groups').'" href="'.BASE.AMP.'C=members'.AMP.'M=member_group_manager">'.lang('member_groups').'</a></span>';
+		}
+		else 
+		{
+			foreach ($can_delete_checks as $check)
 			{
-				foreach($can_edit_checks as $check)
-				{
-					$setting .= '<label>'.form_checkbox('can_edit_categories[]', $check['id'], $check['checked']).' '.$check['value'].'</label>';
-				}
+				$setting .= '<br /><label>'.form_checkbox('can_delete_categories[]', $check['id'], $check['checked']).' '.$check['value'].'</label>';
 			}
+		}
+		
+		$this->table->add_row(array(
+				lang('can_delete_categories', 'can_delete_categories'),
+				$setting
+			)
+		);
+								
+		echo $this->table->generate();
+		?>
 
-			$this->table->add_row(array(
-					'<strong>'.lang('can_edit_categories', 'can_edit_categories').'</strong>',
-					$setting
-				)
-			);
+			<?=form_submit('submit', lang('submit'), 'class="submit"')?>
 
-			$setting = '';
-
-			if (count($can_delete_checks) == 0)
-			{
-				$setting .= '<span class="notice">'.str_replace('%x', strtolower(lang('delete')), lang('no_member_groups_available')).
-						   '<a class="less_important_link" title="'.lang('member_groups').'" href="'.BASE.AMP.'C=members'.AMP.'M=member_group_manager">'.lang('member_groups').'</a></span>';
-			}
-			else 
-			{
-				foreach ($can_delete_checks as $check)
-				{
-					$setting .= '<label>'.form_checkbox('can_delete_categories[]', $check['id'], $check['checked']).' '.$check['value'].'</label>';
-				}
-			}
-
-			$this->table->add_row(array(
-					'<strong>'.lang('can_delete_categories', 'can_delete_categories').'</strong>',
-					$setting
-				)
-			);
-
-			echo $this->table->generate();
-			?>
-
-				<p class="centerSubmit"><?=form_submit('submit', lang('submit'), 'class="submit"')?></p>
-
-				<?=form_close()?>
+			<?=form_close()?>
 			
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -96,4 +95,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file field_group_create.php */
-/* Location: ./themes/cp_themes/corporate/admin/edit_category_group.php */
+/* Location: ./themes/cp_themes/default/admin/field_group_create.php */

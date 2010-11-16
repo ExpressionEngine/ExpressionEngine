@@ -11,10 +11,10 @@ if ($EE_view_disable !== TRUE)
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
-<!--	<div class="contentMenu addonsContentMenu">-->
-		<div class="contentIndexMenu">
-			<div class="heading"><h2><?=lang('import_utilities')?></h2></div>        
-			<ul>
+<div class="heading"><h2><?=lang('import_utilities')?></h2></div>
+		<div class="pageContents">
+			
+			<ul class="bullets">
 					<li><a href="<?=BASE.AMP."C=tools_utilities".AMP."M=member_import"?>"><?=lang('member_import')?></a></li>
 			</ul>
 		</div>
@@ -31,4 +31,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file import_utilities.php */
-/* Location: ./themes/cp_themes/corporate/tools/import_utilities.php */
+/* Location: ./themes/cp_themes/default/tools/import_utilities.php */

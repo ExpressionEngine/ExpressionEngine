@@ -12,9 +12,10 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-
-		<div class="pageContents">
+		<div class="heading">
+			<h2 class="edit"><?=$cp_page_title?></h2>
+		</div>
+			<div class="pageContents">
 		
 				<?=form_open($form_action)?>
 				
@@ -46,7 +47,8 @@ if ($EE_view_disable !== TRUE)
 	
 				<?=form_close()?>
 
-		</div> <!-- pageContents -->
+			</div>
+		
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
@@ -58,4 +60,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file delete_confirm.php */
-/* Location: ./themes/cp_themes/corporate/addons/package_settings.php */
+/* Location: ./themes/cp_themes/default/addons/package_settings.php */

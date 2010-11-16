@@ -39,10 +39,10 @@ if ($EE_view_disable !== TRUE)
 					<?php endif;?>
 					</p>
 					
-					<div>
+					<p>
 						<?=form_label(lang('upload_file'), 'upload_file', array('class' => 'visualEscapism'))?>
 						<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>15,'class'=>'field'))?>
-					</div>
+					</p>
 
 					<p class="custom_field_add"><button class="submit submit_alt"><img src="<?=$cp_theme_url?>images/upload_item.png" width="12" height="14" alt="<?=lang('upload')?>" />&nbsp;&nbsp;<?=lang('upload')?></button></p>
 
@@ -75,8 +75,8 @@ if ($EE_view_disable !== TRUE)
 
 			<div id="showToolbarLink">
 				<a href="#"><span><?=lang('hide_toolbar')?></span>&nbsp;
-					<img alt="<?=lang('hide')?>" id="hideToolbarImg" width="20" height="17" src="<?=$cp_theme_url?>images/content_hide_image_toolbar.png" style="display: inline" />
-					<img alt="<?=lang('show')?>" id="showToolbarImg" width="20" height="17" src="<?=$cp_theme_url?>images/content_show_image_toolbar.png" class="js_hide" />
+					<img alt="<?=lang('hide')?>" id="hideToolbarImg" src="<?=$cp_theme_url?>images/content_hide_image_toolbar.png" style="display: inline" />
+					<img alt="<?=lang('show')?>" id="showToolbarImg" src="<?=$cp_theme_url?>images/content_show_image_toolbar.png" class="js_hide" />
 				</a>
 			</div>
 			

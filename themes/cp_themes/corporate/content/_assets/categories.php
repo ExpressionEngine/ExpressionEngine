@@ -79,4 +79,4 @@ if (count($edit_categories_link) > count($categories))
 
 <?php
 /* End of file categories.php */
-/* Location: ./themes/cp_themes/corporate/content/_assets/categories.php */
+/* Location: ./themes/cp_themes/default/content/_assets/categories.php */

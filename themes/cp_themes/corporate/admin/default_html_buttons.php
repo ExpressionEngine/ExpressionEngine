@@ -12,14 +12,12 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=lang('default_html_buttons')?></h2>
- 
-			</div>      
+		<div class="heading"><h2 class="edit"><?=lang('default_html_buttons')?></h2></div>
 		<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
 
-			<div class="cp_button">				<p class="custom_field_add"><a href="" class="cp_button submit_alt"><?=lang('add_html_button')?></a></p></div>
+			<div class="cp_button"><a href="#"><?=lang('add_html_button')?></a></div>
 			<div class="clear_left"></div>
 
 			<?=form_open('C=admin_content'.AMP.'M=default_html_buttons', '', $form_hidden)?>
@@ -39,24 +37,24 @@ if ($EE_view_disable !== TRUE)
 				<h3><?=lang('add_new_html_button')?></h3>
 
 				<p>
-					<?=lang('tag_name', "tag_name_{$i}")?> <br />
+					<?=lang('tag_name', "tag_name_{$i}")?> 
 					<?=form_input(array('id'=>"tag_name_{$i}",'name'=>"tag_name_{$i}"))?>
 				</p>
 				<p>
-					<?=lang('tag_open', "tag_open_{$i}")?> <br />
+					<?=lang('tag_open', "tag_open_{$i}")?> 
 					<?=form_input(array('id'=>"tag_open_{$i}",'name'=>"tag_open_{$i}"))?>
 				</p>
 				<p>
-					<?=lang('tag_close', "tag_close_{$i}")?> <br />
+					<?=lang('tag_close', "tag_close_{$i}")?> 
 					<?=form_input(array('id'=>"tag_close_{$i}",'name'=>"tag_close_{$i}"))?>
 				</p>
 				<p>
-					<?=lang('accesskey', "accesskey_{$i}")?> <br />
+					<?=lang('accesskey', "accesskey_{$i}")?> 
 					<?=form_input(array('id'=>"accesskey_{$i}",'name'=>"accesskey_{$i}"))?>
 				</p>
-				
-					<p><?=form_submit('html_buttons', lang('submit'), 'class="submit"')?></p>
-				
+				<div class="shun">
+					<?=form_submit('html_buttons', lang('submit'), 'class="submit"')?>
+				</div>
 			</div>
 			</div>
 
@@ -77,10 +75,9 @@ if ($EE_view_disable !== TRUE)
 			?>
 
 			<h3><?=lang('edit').' '.lang('define_html_buttons')?></h3>
-            <br />
 
 			<?php 
-			$this->table->set_template($cp_pad_table_template);
+			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 									'',
 									lang('tag_name'),
@@ -124,7 +121,7 @@ if ($EE_view_disable !== TRUE)
 										),
 									
 										array(
-											'data'=>'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=delete_html_button'.AMP.'id='.$button->id.'"><img src="'.$cp_theme_url.'images/content_custom_tab_delete.gif" alt="'.lang('delete').'" width="19" height="18" /></a>', 
+											'data'=>'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=delete_html_button'.AMP.'id='.$button->id.'"><img src="'.$cp_theme_url.'images/content_custom_tab_delete.png" alt="'.lang('delete').'" width="19" height="18" /></a>', 
 											'class'=>'del_row'
 										)
 									);
@@ -137,11 +134,12 @@ if ($EE_view_disable !== TRUE)
 			<p class="notice del_instructions"><?=lang('htmlbutton_delete_instructions')?></p>
 
 			<p><?=form_submit('html_buttons', lang('submit'), 'class="submit"')?></p>
-            
+
 			<?=form_close()?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -152,4 +150,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file default_html_buttons.php */
-/* Location: ./themes/cp_themes/corporate/admin/default_html_buttons.php */
+/* Location: ./themes/cp_themes/default/admin/default_html_buttons.php */

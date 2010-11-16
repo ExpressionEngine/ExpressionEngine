@@ -12,8 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=lang('assign_fields')?></h2></div>
-			
+			<div class="heading"><h2 class="edit"><?=lang('assign_fields')?></h2></div>
 			<div class="pageContents">
 				
 			<?=validation_errors(); ?>
@@ -69,12 +68,13 @@ if ($EE_view_disable !== TRUE)
 
 				</p>
 
-           <p><?=form_submit('map', lang('map_elements'), 'class="submit"')?></p>
+			<p><?=form_submit('map', lang('map_elements'), 'class="submit"')?></p>
 
 			<?=form_close()?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -85,4 +85,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file convert_xml_pairs.php */
-/* Location: ./themes/cp_themes/corporate/tools/convert_xml_pairs.php */
+/* Location: ./themes/cp_themes/default/tools/convert_xml_pairs.php */

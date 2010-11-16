@@ -12,8 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-		<div class="heading"><h2><?=lang('member_validation')?></h2></div>
-
+		<div class="heading"><h2 class="edit"><?=lang('member_validation')?></h2></div>
 		<div class="pageContents">
 
 		<?php if ($message):?>
@@ -21,7 +20,7 @@ if ($EE_view_disable !== TRUE)
 		<?php
 		else:
 
-			$this->table->set_template($cp_pad_table_template);
+			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 				'',
 				form_checkbox(array('class'=>'toggle_all','id'=>'toggle_all', 'name'=>'toggle_all','value'=>'toggle_all','checked'=>FALSE)),
@@ -66,8 +65,9 @@ if ($EE_view_disable !== TRUE)
 		
 		?>
 	
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -78,4 +78,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file activate.php */
-/* Location: ./themes/cp_themes/corporate/members/activate.php */
+/* Location: ./themes/cp_themes/default/members/activate.php */

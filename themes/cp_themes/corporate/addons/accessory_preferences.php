@@ -12,8 +12,10 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 	
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-
+		<div class="heading">
+			<h2><?=$cp_page_title?></h2>
+		</div>
+		
 		<div class="pageContents">
 							
 		<?=form_open('C=addons_accessories'.AMP.'M=update_prefs', '', array('accessory' => $name))?>
@@ -39,7 +41,7 @@ if ($EE_view_disable !== TRUE)
 				$this->table->clear();
 			?>
 			
-			<p class="centerSubmit"><?=form_submit('remove_plugins', lang('update'), 'class="submit"')?></p>
+			<p><?=form_submit('remove_plugins', lang('update'), 'class="submit"')?></p>
 			
 		</div>
 		<div style="width: 48%;">
@@ -63,11 +65,13 @@ if ($EE_view_disable !== TRUE)
 			</table>
 
 		</div>
-		
 		<?=form_close()?>
+		
+		<div class="clear_left"></div>
 
-		</div> <!-- pageContents -->
+	</div> <!-- page_contents -->
 	</div> <!-- contents -->
+
 </div> <!-- mainContent -->
 
 <?php
@@ -78,4 +82,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file index.php */
-/* Location: ./themes/cp_themes/corporate/accessories/index.php */
+/* Location: ./themes/cp_themes/default/accessories/index.php */

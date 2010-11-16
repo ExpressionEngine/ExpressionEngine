@@ -55,6 +55,9 @@ input[type=text],input[type=password], textarea, select{
   	margin:					2px 0;
 }
 
+p.submit {
+	background: 			none !important;
+}
 
 /* -------------------------------------
 /*  Page Contents
@@ -62,13 +65,14 @@ input[type=text],input[type=password], textarea, select{
 
 .pageContents {
 	background:				#f0f2f6 url('<?=$cp_theme_url?>images/submenu_bg.png') bottom right no-repeat;
-	padding:				0px 0 34px 0;
+	padding:				0 0 34px 0;
 	color:					#505050;
 	border-top:				1px solid #fff;
 	font-size:				11px;
 }
 .publishPageContents {
-	background:				#e6eaef url('<?=$cp_theme_url?>images/publish_page_background.png') bottom right no-repeat;
+/* 	background:				#e6eaef url('<?=$cp_theme_url?>images/publish_page_background.png') bottom right no-repeat; */
+	background-color: 		#e6eaef;
 	padding:				0;
 	color:					#505050;
 	border-top:				1px solid #fff;
@@ -85,12 +89,13 @@ input[type=text],input[type=password], textarea, select{
 
 .pageContents p, .pageContents ul {
 	margin:					0 24px;
-	padding-top:			15px;
+/* 	padding-top:			15px; */
 	font-size:				13px;
 }
 
 .pageContents p label {
 	line-height: 			24px;
+	padding-top:			3px;
 }
 
 .pageContents p button {
@@ -107,7 +112,8 @@ input[type=text],input[type=password], textarea, select{
 	border:					none;
 	font-size:				14px;
 	font-weight:			bold;
-	margin:					15px 25px 0 25px;
+/* 	margin:					15px 25px 0 25px; */
+	margin:					16px 10px 6px;
 	color:					#005eb0;
 	text-shadow:			0px 1px 2px #ffffff;
 	text-transform:			none;
@@ -218,7 +224,7 @@ input[type=text],input[type=password], textarea, select{
 .notice {
 	color:				#ce0000;
 	font-weight: 		bold;
-	padding: 			10px 0;
+	padding-top:		20px;
 	margin-bottom:		0;
 }
 
@@ -314,6 +320,7 @@ ul.bulleted {
 	margin-right:		6px;
 }
 
+/*
 .button a:link, .button a:visited {
 	display:			block;
 	color:				#5f6c74;
@@ -331,6 +338,7 @@ ul.bulleted {
 	color:				#005EB0;
 	text-decoration: underline;
 }
+*/
 
 
 p.custom_field_add a.submit_alt {
@@ -367,12 +375,17 @@ a:hover .submit_alt{
 
 
 .submit_alt img {
-	vertical-align:		text-top;
+	vertical-align:		middle; /* text-top */
 	padding-top:		2px;
 }
 
 input.submit, button.submit, a.submit {
-	background:			#80a210 url('<?=$cp_theme_url?>images/btn_grad.png') top left repeat-x;
+/* 	background:			#80a210 url('<?=$cp_theme_url?>images/btn_grad.png') top left repeat-x; */
+	background: 		#80a210;
+	background: 		-webkit-gradient(linear, left top, left bottom, from(#a7b63e), to(#879e2e));
+	background: 		-moz-linear-gradient(top,  #a7b63e,  #879e2e);
+
+
 	display: 			inline-block;
 	padding:			3px 31px 3px 31px;
 	color:				#fff;
@@ -393,8 +406,9 @@ input.submit, button.submit, a.submit {
 }
 
 a.submit {
-	height:20px;
-	padding:8px 10px 0 10px;
+	height:18px;
+	padding-top: 10px;
+	margin-bottom: 10px;
 }
 
 input.submit{
@@ -405,8 +419,13 @@ p input.submit, p input.delete {
 	margin:				15px 10px 0 0;
 }
 
-input.submit:hover{
-	background:			#95a700 url('<?=$cp_theme_url?>images/btn_grad.png') 0 -28px  repeat-x;
+input.submit:hover, a.submit:hover {
+/* 	background:			#95a700 url('<?=$cp_theme_url?>images/btn_grad.png') 0 -28px  repeat-x; */
+	background: 		#95a700;
+	background: 		-webkit-gradient(linear, left top, left bottom, from(#889e2e), to(#677d21));
+	background: 		-moz-linear-gradient(top,  #889e2e,  #677d21);
+
+	text-decoration: 	none;
 }
 
 input.delete {
@@ -437,8 +456,10 @@ input.delete:hover{
 
 button { 
 	position: 			relative;
+/*
 	border: 			0; 
 	padding: 			0;
+*/
 	cursor: 			pointer;
 	overflow: 			visible; /* removes extra side padding in IE */
 }
@@ -486,7 +507,7 @@ select.select {
 
 /* for those elements that just don't like to be next to each other */
 .shun {
-	margin-bottom:		14px!important;
+	margin-bottom:		16px!important;
 }
 
 .subtext {
@@ -607,13 +628,13 @@ ul#navigationTabs .home a:active span{
 
 ul#navigationTabs li #addQuickTab,
 ul#navigationTabs li #addQuickTab:link {
-	background:			url('<?=$cp_theme_url?>images/add_tab_icon.png') 0 5px no-repeat;
+	background:			none #27343C;
 	color:				#209ad9;
 	font:				bold 11px/20px Helvetica, Arial, sans-serif;
 	text-decoration:	none;
 	text-transform:		uppercase;
 	margin-left:		6px;
-	padding:			3px 0 0 20px;
+	padding:			3px 0 0 3px;
 }
 
 ul#navigationTabs li #addQuickTab:hover,
@@ -762,9 +783,11 @@ ul#navigationTabs li #addQuickTab:active {
 /* -------------------------------------*/
 
 #sideBar {
-	background:	url('<?=$cp_theme_url?>images/sidebar_bg.gif') no-repeat;
 	float:				right;
 	width:				23%;
+	box-shadow:			-1px 0px 10px #CCCECE;
+	-moz-box-shadow:	-1px 0px 10px #CCCECE;
+	-webkit-box-shadow:	-1px 0px 10px #CCCECE;
 }
 
 #sideBar a {
@@ -790,10 +813,11 @@ ul#navigationTabs li #addQuickTab:active {
 
 #activeUser {
 	color:				#005eb0;
-	padding:			0 14px;
+	padding:			2px 14px 0;
 	font-size:			10px;
-	line-height:		32px;
+	line-height:		28px;
 	text-align:			right;
+	filter: 			progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f2f2f2');
 }
 
 #activeUser .userName {
@@ -897,9 +921,10 @@ a#hideSidebarLink, a#revealSidebarLink {
 	display:			block;
 	font-size:			9px;
 	padding:			2px 25px 0 25px;
+	margin-top:			2px;
 	margin-right:		0;
 	text-align:			left;
-	height:16px;
+	height:				16px;
 }
 
 a#revealSidebarLink {
@@ -934,8 +959,17 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 #breadCrumb {
 	font-size:			12px;
 	color:				#005eb0;
-	margin-bottom:		10px;
-	padding:			2px 25px 0px 5px;
+	border-bottom:		1px solid #fff;
+	padding:			3px 25px 0px 5px;
+	width: auto;
+	
+	box-shadow:			0px 1px 2px #CCCECE;
+	-moz-box-shadow:	0px 1px 2px #CCCECE;
+	-webkit-box-shadow:	0px 1px 2px #CCCECE;
+
+	background: 		-webkit-gradient(linear, left top, left bottom, from(#fff), to(#f2f2f2));
+	background: 		-moz-linear-gradient(top,  #fff,  #f2f2f2);
+	filter: 			progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f2f2f2');
 }
 
 #breadCrumb ol {
@@ -944,11 +978,12 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 }
 
 #breadCrumb li {
-	line-height:		27px;
+	line-height:		28px;
 	display:			block;
 	float:				left;
-	padding:			0 10px 0 0;
+	padding:			0 25px 0 0;
 	color:				#767676;
+	background:			url('<?=$cp_theme_url?>images/breadcrumb_separator.png') no-repeat right;
 
 }
 
@@ -980,11 +1015,12 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 	width:				77%;
 	background: 		#fff;
 	margin-top:			20px;
+/* 	margin-left:		25px; */
 }
+
 #mainWrapper {
 	margin:				0 25px 25px 25px;	
-	background:			#fff url('<?=$cp_theme_url?>images/subnav_bg.gif') top left repeat-x;
-	position:relative;
+	background-color: 	#fff;
 }
 
 
@@ -1229,10 +1265,10 @@ h2.innerHeading{
 #mainContent #registerUser label, #mainContent #registerUser span {
 	font-weight:		bold;
 	display: 			block;
-	width:				50%;
+	width:				37%;
 	float:				left;
-	line-height:16px;
-	font-size:12px;
+/* 	line-height:16px; */
+/* 	font-size:12px; */
 }
 #mainContent #registerUser p.timezoneSelect select,
 td.timezoneSelect select{
@@ -1246,15 +1282,16 @@ width:100%;
 
 #mainContent #registerUser p {
 	background:			url('<?=$cp_theme_url?>images/field_divider.gif') bottom repeat-x;
-	padding:			5px 0 12px 0;
+/* 	padding:			5px 0 12px 0; */
+	padding:			7px 0;
 	clear:				left;
 	margin:				5px 10px;
 }
 #mainContent #registerUser fieldset{
 	padding:			10px;
 	clear:				left;
-	margin:10px 10px;
-	border:1px solid #cccccc;
+	margin:				20px 10px 10px;
+	border:				1px solid #cccccc;
 }
 
 #mainContent #registerUser  fieldset label, #mainContent #registerUser  fieldset span {
@@ -1265,7 +1302,7 @@ width:100%;
 	font-size:12px;
 }
 
-#mainContent #registerUser p.noback {
+#mainContent #registerUser p:last-child {
 	background:			none;
 }
 
@@ -1273,8 +1310,8 @@ input.submit,input.delete, a.submit {
 	cursor:				pointer;
 }
 
-#mainContent #filterMenu, #mainContent #registerUser{
-	background-color:	#ECF1F4;
+#mainContent #filterMenu, #mainContent #registerUser {
+/* 	background-color:	#ECF1F4; */
 	padding:			12px 10px;
 	color:				#505050;
 	font-size:			11px;
@@ -1410,12 +1447,16 @@ td#tableEndRight p.commentend{
 
 /* Table Footer */
 
+
+/* @todo - Remove div.tableFooter from markup? */
+/*
 #mainContent .tableFooter {
 	background-color:	#f0f2f6;
 	padding:			12px 11px 0 11px;
 	border-right:		1px solid #dae0e5;
 	margin-bottom:		10px;
 }
+*/
 
 #mainContent .tableSubmit {
 	float:				right;
@@ -1428,9 +1469,8 @@ td#tableEndRight p.commentend{
 }
 
 .dataTables_info{
-	margin-top: 20px;
+	margin-top: 10px;
 	margin-left: 25px;
-	margin-bottom 5px;
 }
 
 div.dataTables_paginate span.first,
@@ -1476,15 +1516,18 @@ div.dataTables_paginate span.next {
 
 #mainContent .formArea {
 		/*background:	#f0f2f6 url('<?=$cp_theme_url?>images/submenu_bg.png') bottom right no-repeat;*/
+		background-color: #f0f2f6;
+/*
 		margin-top:10px;
 		padding-top:12px;
+*/
 		margin-bottom:0;
 }
 
 #mainContent .formArea h2 {
 	color:				#34424b;
 	font-size:			18px;
-	font-weight:		normal;
+	font-weight:		bold;
 }
 
 #mainContent .formArea .formHeading {
@@ -1813,11 +1856,11 @@ textarea#template_data{
 }
 
 #template_create p{
-	margin:		0;
+	margin:0 5px 10px;
 }
 
 #template_create textarea {
-	width: 100%;
+/* 	width: 100%; */
 }
 
 #template_create {
@@ -1917,6 +1960,20 @@ div#templates {
 #templateEditor {
 	padding:			0 18px;
 	margin:0;
+}
+
+div.templateEditorTop {
+	min-height: 28px;
+	padding: 18px 18px 10px;
+}
+
+.templateEditorTop h2 {
+/* 	font-weight: bold !important; */
+	float: left;
+}
+
+div.templateEditorTop div.search {
+	float: right;
 }
 
 #templateGroups .groupList {
@@ -2212,7 +2269,7 @@ select.template_type {
 input.group_name,
 input.template_name,
 input.hits {
-  width:98%;
+/*   width:92%; */
 }
 
 .templateTable tr.accessRowHeader td .accessTable th {
@@ -2278,7 +2335,7 @@ input.hits {
 
 
 .editAccordion {
-	background:			#7a90a2 url('<?=$cp_theme_url?>images/template_table_heading_bg.gif') top left repeat-x;
+/* 	background:			#7a90a2 url('<?=$cp_theme_url?>images/template_table_heading_bg.gif') top left repeat-x; */
 	border:				2px solid #7a90a2;
 }
 
@@ -2294,6 +2351,7 @@ input.hits {
 
 .editAccordion h3 {
 	background:			#7a90a2 url('<?=$cp_theme_url?>images/template_edit_minus.png') 7px 9px no-repeat;
+	margin:				0;
 	padding:			4px 5px 5px 26px;
 	font-size:			12px;
 	color:				#fff;
@@ -2357,18 +2415,19 @@ input.hits {
 
 
 ul.tab_menu{
-	background:	#7a90a2 url('<?=$cp_theme_url?>images/publish_tabs_bg.gif') bottom left repeat-x;
-	padding:0 0 0 10px;
-	height:46px;
-	border-top:			2px solid #27343C;
-	margin:0;
+/* 	background:	#7a90a2 url('<?=$cp_theme_url?>images/publish_tabs_bg.gif') bottom left repeat-x; */
+	background-color:	#7a90a2;
+	padding:			0 0 0 10px;
+	height:				46px;
+/* 	border-top:			2px solid #27343C; */
+	margin:				0;
 }
 
 ul.tab_menu  li {
 	float:				left;
-	padding:0;
-	height:30px;
-	margin:		16px 1px 0 0;
+	padding:			0;
+	height:				28px;
+	margin:				18px 1px 0 0;
 
 }
 
@@ -2418,14 +2477,14 @@ ul.tab_menu li.current a, ul.tab_menu li.current a:active, ul.tab_menu li.adminH
 
 ul.tab_menu li.addTabButton a, ul.tab_menu li.addTabButton a:visited {
 	display:			block;
-	background:			transparent url('<?=$cp_theme_url?>images/add_tab_icon.png') 0 50% no-repeat;
+	background:			none;
 	font-family:		Helvetica, Arial, sans-serif;
 	color:				#eaeaea;
 	text-decoration:	none;
 	font-size:			11px;
 	text-transform:		uppercase;
 	font-weight:		bold;
-	padding:			7px 10px 7px 20px;
+/* 	padding:			7px 10px 7px 20px; */
 
 }
 
@@ -2448,6 +2507,11 @@ ul.tab_menu li.highlight_tab {
 
 ul.tab_menu li.addTabButton a {
 	color: 					#FFFFFF;
+}
+
+ul.tab_menu li.addTabButton a img {
+	vertical-align: middle;
+	margin-right: 5px;
 }
 
 #mainContent #publishForm h3 {
@@ -2500,6 +2564,12 @@ ul.tab_menu li.addTabButton a {
 	color: #505050;
 }
 
+/*
+#mainPublish {
+	background-color: #E6EAEF;
+}
+*/
+
 #holder {
 	margin-top:			-5px;
 	margin-right: 		10px;
@@ -2523,7 +2593,7 @@ ul.tab_menu li.addTabButton a {
 	color:			#000000;
 }
 #mainContent .publish_text input{
-	width: 				100%;
+	width: 				99%;
 }
 
 
@@ -2596,9 +2666,12 @@ ul.tab_menu li.addTabButton a {
 
 #mainContent #tools .submit_alt {
 	display: 			block;
-	width: 				141px;
+/* 	width: 				141px; */
+	margin:				5px 10px;
+/*
 	margin-top: 		5px;
 	margin-left: 		15px;
+*/
 	text-decoration: 	none;
 	border:				1px solid #d0d2d5; /* won't work with rounded corners, but looks best for non js */
 	
@@ -2622,7 +2695,7 @@ ul.tab_menu li.addTabButton a {
 
 #mainContent #tools .submit_alt img,
 #mainContent #file_manager_tools a:hover.submit_alt {
-	vertical-align: text-top;
+	vertical-align: bottom; /* text-top */
 }
 #mainContent #tools #layout_groups_holder{
 	margin:			10px 20px;
@@ -2800,13 +2873,13 @@ p.file_tool {
 
 }
 
+
 #mainContent #showToolbarLink a span{
 	color:				#005eb0;
 	font-weight:		bold;
 	margin:0;
 	padding:0;
 }
-
 
 
 #publish_tab .publish_field .help_info, #publish_tab .publish_field .spellcheck a, .glossary_content a, .spellcheck_content a {
@@ -2885,8 +2958,10 @@ p.file_tool {
 }
 
 #communicate_compose, .spellcheck_content {
+/*
 	margin-top: 		7px;
 	margin-left: 		-5px;
+*/
 }
 
 .glossary_content ul {
@@ -3110,7 +3185,7 @@ div#view_content_entry_links {
 }
 
 #accessoryTabs {
-	border-bottom:6px solid #e2eaf0;
+/* 	border-bottom:6px solid #e2eaf0; */
 }
 
 #accessoryTabs ul{
@@ -3400,7 +3475,7 @@ div.accordionContent table tr:last-of-type  td{
 
 .dataTables_paginate span span.paginate_button {padding:0 5px;}
 
-.dataTables_wrapper {margin-bottom:20px;}
+.dataTables_wrapper {margin-bottom:10px;}
 
 /* -------------------------------------
 /*  Admin
@@ -3545,7 +3620,14 @@ div.contentWrap {
 
 }
 
+#file_manager_tools div {
+	padding: 			16px;
+	font-size:			12px;
+	line-height:		18px;
+}
 
+
+/*
 #mainContent #showToolbarLink {
 	text-align:			right;
 	font-size:			10px;
@@ -3568,6 +3650,7 @@ div.contentWrap {
 	margin:				0;
 	padding:			0;
 }
+*/
 
 
 #mainContent #file_manager #showToolbarLink {
@@ -3675,12 +3758,10 @@ div.contentWrap {
 	word-wrap: break-word;
 }
 
-#mainContent #file_manager .f_m_s {
-	padding: 			3px 12px 12px 12px;
-}
-
-#mainContent #file_manager .f_m_s .cp_button{
-	padding-left: 18px;	
+#mainContent #file_manager .f_m_s .cp_button {
+	clear:left;
+	margin-left: 0;
+	width: 100%;	
 }
 
 .file_info {
@@ -3839,6 +3920,10 @@ they still look correct
 	width: 				20%;
 	line-height: 		24px;
 	font-weight:		bold;
+}
+
+#communicate_compose p, #communicate_info p {
+	padding-top: 10px;
 }
 
 #communicate_compose p label {

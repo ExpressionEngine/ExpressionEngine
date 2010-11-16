@@ -12,14 +12,13 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=lang('import_from_xml')?></h2></div>
-
+			<div class="heading"><h2 class="edit"><?=lang('import_from_xml')?></h2></div>
 			<div class="pageContents">
 				
 			<?php $this->load->view('_shared/message');?>
 
 			<?=form_open('C=tools_utilities'.AMP.'M=confirm_xml_form')?>
-			<h4 style="margin:10px"><?=lang('import_from_xml_blurb')?></h4>
+			<h4 style="margin-bottom:10px"><?=lang('import_from_xml_blurb')?></h4>
 			<table cellspacing="0" cellpadding="0" border="0" class="mainTable padTable">
 			<tbody>
 				<tr class="even">
@@ -73,12 +72,13 @@ if ($EE_view_disable !== TRUE)
 			</tbody>
 			</table>
 
-			<p class="centerSubmit"><?=form_submit('convert_from_delimited', lang('submit'), 'class="submit"')?> </p>
+			<p><?=form_submit('convert_from_delimited', lang('submit'), 'class="submit"')?> </p>
 
 			<?=form_close()?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -89,4 +89,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file import_from_xml.php */
-/* Location: ./themes/cp_themes/corporate/tools/import_from_xml.php */
+/* Location: ./themes/cp_themes/default/tools/import_from_xml.php */

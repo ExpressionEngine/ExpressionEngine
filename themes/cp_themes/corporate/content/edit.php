@@ -73,9 +73,6 @@ if ($EE_view_disable !== TRUE)
 
 					echo $this->table->generate($entries);
 				?>
-			<?php if ($autosave_show):?>
-				<p class="notice"><?=required()?><?=lang('autosave_data_available')?></p>
-			<?php endif;?>
 
 			<div class="tableSubmit">
 				<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
@@ -86,6 +83,10 @@ if ($EE_view_disable !== TRUE)
 
 			<span class="js_hide"><?=$pagination?></span>
 			<span class="pagination" id="filter_pagination"></span>
+
+			<?php if ($autosave_show):?>
+				<p class="notice"><?=required()?><?=lang('autosave_data_available')?></p>
+			<?php endif;?>
 			
 
 			<?php endif; /* if $total_count > 0*/?>
@@ -103,4 +104,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file edit.php */
-/* Location: ./themes/cp_themes/corporate/content/edit.php */
+/* Location: ./themes/cp_themes/default/content/edit.php */

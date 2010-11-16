@@ -32,4 +32,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file extensions_settings_custom.php */
-/* Location: ./themes/cp_themes/corporate/addons/extensions_settings_custom.php */
+/* Location: ./themes/cp_themes/default/addons/extensions_settings_custom.php */

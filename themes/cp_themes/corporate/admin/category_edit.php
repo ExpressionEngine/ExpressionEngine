@@ -12,12 +12,10 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-
+		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
-			
 
-			<?=form_open('C=admin_content'.AMP.'M=category_update', '', $form_hidden)?>
+		<?=form_open('C=admin_content'.AMP.'M=category_update', '', $form_hidden)?>
 
 			<p>
 				<?=form_label(lang('category_name'), 'cat_name')?>
@@ -108,12 +106,13 @@ if ($EE_view_disable !== TRUE)
 
 				<?php endforeach;?>
 
-			<p><?=form_submit('category_edit', lang($submit_lang_key), 'class="submit"')?></p>
+		<p><?=form_submit('category_edit', lang($submit_lang_key), 'class="submit"')?></p>
 
-			<?=form_close()?>
-		
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		<?=form_close()?>
+		</div>
+
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -124,4 +123,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file category_edit.php */
-/* Location: ./themes/cp_themes/corporate/admin/category_edit.php */
+/* Location: ./themes/cp_themes/default/admin/category_edit.php */

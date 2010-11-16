@@ -12,8 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=lang('convert_from_delimited')?></h2></div>
-			
+			<div class="heading"><h2 class="edit"><?=lang('convert_from_delimited')?></h2></div>
 			<div class="pageContents">
 
 			<?=form_open('C=tools_utilities'.AMP.'M=pair_fields')?>
@@ -82,8 +81,9 @@ if ($EE_view_disable !== TRUE)
 
 			<?=form_close()?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -94,4 +94,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file convert_from_delimited.php */
-/* Location: ./themes/cp_themes/corporate/tools/convert_from_delimited.php */
+/* Location: ./themes/cp_themes/default/tools/convert_from_delimited.php */

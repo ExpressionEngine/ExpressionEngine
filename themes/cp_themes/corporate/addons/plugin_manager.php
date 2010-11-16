@@ -12,8 +12,9 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=lang('plugins')?></h2></div>
-
+		<div class="heading">
+				<h2><?=lang('plugins')?></h2>
+		</div>
 		<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
@@ -30,7 +31,7 @@ if ($EE_view_disable !== TRUE)
 					$heading[] = form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"');
 				}
 
-				$this->table->set_template($cp_pad_table_template);
+				$this->table->set_template($cp_table_template);
 				$this->table->set_heading($heading);
 
 
@@ -61,16 +62,15 @@ if ($EE_view_disable !== TRUE)
 				}
 			?>
 
-				<?=$this->table->generate()?>
-<p align="right">
-				<?php
-					if ($is_writable)
-					{
-						echo form_submit('submit', lang('plugin_remove'), 'class="delete"');
-						
-					}
-				?>
-</p>
+			<?=$this->table->generate()?>
+
+			<?php
+				if ($is_writable)
+				{
+					echo '<p>'.form_submit('remove_plugins', lang('plugin_remove'), 'class="submit"').'</p>';
+				}
+			?>
+
 			<?php
 				if ($is_writable)
 				{
@@ -78,7 +78,8 @@ if ($EE_view_disable !== TRUE)
 				}
 			?>
 			<div class="clear_right"></div>
-		</div> <!-- pageContents -->
+		</div>
+
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
@@ -90,4 +91,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file plugin_manager.php */
-/* Location: ./themes/cp_themes/corporate/addons/plugin_manager.php */
+/* Location: ./themes/cp_themes/default/addons/plugin_manager.php */

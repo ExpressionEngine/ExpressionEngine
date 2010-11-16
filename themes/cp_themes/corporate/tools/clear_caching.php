@@ -12,11 +12,10 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=lang('clear_caching')?></h2></div>
-
+			<div class="heading"><h2 class="edit"><?=lang('clear_caching')?></h2></div>
 			<div class="pageContents">
-					<?php $this->load->view('_shared/message');?>
-					<?=form_open('C=tools_data'.AMP.'M=clear_caching')?>
+			<?php $this->load->view('_shared/message');?>
+			<?=form_open('C=tools_data'.AMP.'M=clear_caching')?>
 			
 			<p>
 				<?php
@@ -61,21 +60,22 @@ if ($EE_view_disable !== TRUE)
 			<p>
 				<?php
 				$data = array(
-					'name'        => 'type',
-					'id'          => 'all',
-					'value'       => 'all',
+					'name'		=> 'type',
+					'id'		=> 'all',
+					'value'		=> 'all',
 					'checked'	=> TRUE	
 				);
 				echo form_radio($data);?>
 				<?=lang('all_caching', 'all')?>
 			</p>
 
-           <p><?=form_submit('clear_caching', lang('submit'), 'class="submit"')?></p>
+			<p><?=form_submit('clear_caching', lang('submit'), 'class="submit"')?></p>
 
 			<?=form_close()?>
 		
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -86,4 +86,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file clear_caching.php */
-/* Location: ./themes/cp_themes/corporate/tools/clear_caching.php */
+/* Location: ./themes/cp_themes/default/tools/clear_caching.php */

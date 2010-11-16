@@ -94,4 +94,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file overview.php */
-/* Location: ./themes/cp_themes/corporate/_shared/overview.php */
+/* Location: ./themes/cp_themes/default/_shared/overview.php */

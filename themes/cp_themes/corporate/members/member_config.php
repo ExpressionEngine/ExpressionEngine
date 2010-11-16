@@ -12,8 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-		<div class="heading"><h2><?=lang('member_cfg')?> <?=lang('general_cfg')?></h2></div>
-		
+		<div class="heading"><h2 class="edit"><?=lang('member_cfg')?> <?=lang('general_cfg')?></h2></div>
 		<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
@@ -23,22 +22,22 @@ if ($EE_view_disable !== TRUE)
 			<div>
 
 				<?php
-				$this->table->set_template($cp_table_template);
+				$this->table->set_template($cp_pad_table_template);
 				$this->table->template['thead_open'] = '<thead class="visualEscapism">';
 				foreach ($menu_head as $prefname=>$prefs):
 				?>
 
 					<h3 class="accordion"><?=lang($prefname)?></h3>
-					<div style="padding:0;" class="accordionContent">
+					<div style="padding: 5px 1px;">
 						<?php					
 							foreach ($prefs as $pref)
 							{
 								// preferences sometimes have subtext, other times not
-								$preference = '<strong>'.$pref['preference'].'</strong>';
+								$preference = $pref['preference'];
 								
 								if ($pref['preference_subtext'] != '')
 								{
-									$preference .= '<br />'.$pref['preference_subtext'];
+									$preference .= '<div class="subtext">'.$pref['preference_subtext'].'</div>';
 								}
 						
 								if ($pref['preference_controls']['type']=='dropdown')
@@ -58,11 +57,9 @@ if ($EE_view_disable !== TRUE)
 								else
 								{
 									$controls = form_input($pref['preference_controls']['data']);
-									
 								}
 								
 								$this->table->set_heading(lang('preference'), lang('setting'));
-								
 								$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 							}
 							
@@ -75,13 +72,11 @@ if ($EE_view_disable !== TRUE)
 				<?php endforeach;?>
 
 			</div>
+			<p><?=form_submit('submit', lang('update'), 'class="submit"')?></p>
+			<?=form_close()?>
+		</div>
 
-				<p class="centerSubmit"><?=form_submit('submit', lang('update'), 'class="submit"')?></p>
-  				
-				<?=form_close()?>
-
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -92,4 +87,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file preferences.php */
-/* Location: ./themes/cp_themes/corporate/members/preferences.php */
+/* Location: ./themes/cp_themes/default/members/preferences.php */

@@ -14,7 +14,7 @@ if ($EE_view_disable !== TRUE)
 
 		<div class="contentMenu addonsContentMenu">
 
-			<div class="heading"><h2><?=$cp_page_title?></h2></div>
+			<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 
 			<ul>
 				<li><a href="<?=BASE.AMP.'C=content_publish'?>"><?=lang('publish')?></a></li>
@@ -35,4 +35,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file index.php */
-/* Location: ./themes/cp_themes/corporate/content/index.php */
+/* Location: ./themes/cp_themes/default/content/index.php */

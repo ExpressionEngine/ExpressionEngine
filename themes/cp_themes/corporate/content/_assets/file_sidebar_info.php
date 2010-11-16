@@ -14,6 +14,6 @@
 
 <?php else:?>
 
-	<p class="subtext"><?=lang('no_file')?></p>
+	<p><?=lang('no_file')?></p>
 
 <?php endif;?>

@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <title><?=$cp_page_title?> | ExpressionEngine</title>
@@ -7,7 +7,7 @@
 
 body {
 	background-color:	#27343C;
-	font-family: 		Helvetica, Arial, sans-serif;
+	font-family:		"Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
 	text-align:			center;
 	font-size:			12px;
 	color:				#ecf1f3;
@@ -41,12 +41,12 @@ h1 {
 }
 
 a:link, a:visited {
-	color:				#8fb11f;
+	color:				#f62958;
 	text-decoration:	underline;
 }
 
 a:hover {
-	color:				#ffffff;
+	color:				#ff5479;
 	text-decoration:	underline;
 }
 
@@ -63,19 +63,15 @@ dd {
 	color:				#666;
 }
 
-input[type=text],input[type=password], .error {
-	font-family: 		Helvetica, Arial, sans-serif;
-	font-size:			1.2em;
+input, .error {
+	font-size:			16px;
 	border:				none;
-	-webkit-border-radius: 16px;
-	-moz-border-radius:	16px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius:	6px;
 	padding:			10px;
 	width:				430px;
 	margin-right:		5px;
-}
-
-.error {
-	color:				#ff0000;
+	color:				#333;
 }
 
 input[type=checkbox] {
@@ -87,33 +83,29 @@ span {
 }
 
 input.submit {
-	background:			#80a210 url('<?=$cp_theme_url?>images/btn_grad.png') top left repeat-x;
-	display: 			inline-block;
-	padding:			3px 31px 3px 31px;
+	background:			#fc2e5a url('<?=$cp_theme_url?>images/submit_button_bg.gif') bottom left repeat-x;
+	padding:			7px 16px 9px 16px;
 	color:				#fff;
-	font-family: 		Helvetica, Arial, sans-serif;
-	font-size:			12px;
-	line-height: 		1;
-	font-weight: 		bold;
-	letter-spacing: 	0.9px;
-	text-transform:		uppercase;
-	border:				none;
-	height:				28px;
-	text-align: 		center;
-	cursor:				pointer;
-	-moz-border-radius: 14px;
-	-webkit-border-radius: 14px;
-	-moz-box-shadow:	0 1px 1px #2b3941;
-	-webkit-box-shadow:	0 1px 1px #2b3941;
-	text-shadow:		-1px -1px 1px #4d5c08;
+	font-weight:		bold;
+	border:				0;
+	width:				auto;
 }
 
-p input.submit {
-	margin:				15px 10px 0 0;
+.error {
+	font-size:			14px;
+	color:				#ce0000;
+	background:			#fdf5b2 url('<?=$cp_theme_url?>images/icon-error.png') no-repeat 8px 10px;
+	border:				1px solid #f3d589;
+	padding:			3px 15px 3px 25px;
+	margin:				-48px 0 20px 0;
+	width:				374px;
+	
+	-webkit-border-radius: 6px;
+	-moz-border-radius:	6px;
 }
 
-input.submit:hover{
-	background:			#95a700 url('<?=$cp_theme_url?>images/btn_grad.png') 0 -28px  repeat-x;
+.error p {
+	margin:				8px 0;
 }
 
 </style>
@@ -154,7 +146,6 @@ input.submit:hover{
 		</dl>
 		<p><?=form_submit('submit', 'Submit', 'class="submit"')?></p>
 		<?=form_close()?>
-
 	</div>
 
 </body>

@@ -5,11 +5,11 @@
 
 		<?=form_open('C=myaccount'.AMP.'M=quicklinks_update', '', $form_hidden)?>
 
-		<p>
+		<div class="shun">
 			<?=lang('quick_link_description')?> <?=lang('quick_link_description_more')?>
-		</p>
+		</div>
 
-		<p class="notice del_instructions noback"><?=lang('quicklinks_delete_instructions')?></p>
+		<div class="notice del_instructions"><?=lang('quicklinks_delete_instructions')?></div>
 
 		<?php 
 		$this->table->set_template($cp_table_template);
@@ -59,7 +59,7 @@
 
 		?>
 
-		<p class="noback"><?=form_submit('quicklinks_update', lang('submit'), 'class="submit"')?></p>
+		<p class="submit"><?=form_submit('quicklinks_update', lang('submit'), 'class="submit"')?></p>
 
 		<?=form_close()?>
 	</div>

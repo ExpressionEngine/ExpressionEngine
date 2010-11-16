@@ -10,7 +10,7 @@
 		<p class="go_notice"><?=lang('main_menu_manager_description_more')?></p>
 
 		<?php if (count($quicktabs) > 0):?>
-			<p class="go_notice noback"><?=lang('quicklinks_delete_instructions')?></p>
+			<p class="go_notice"><?=lang('quicklinks_delete_instructions')?></p>
 
 			<?php
 				$this->table->set_template($cp_table_template);
@@ -30,7 +30,7 @@
 				echo $this->table->generate();
 			?>
 
-			<p class="noback"><?=form_submit('quicktabs_submit', lang('update'), 'class="submit"')?></p>
+			<p class="submit"><?=form_submit('quicktabs_submit', lang('update'), 'class="submit"')?></p>
 		<?php endif;?>
 		<?=form_close()?>
 	</div>

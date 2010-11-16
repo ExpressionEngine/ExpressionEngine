@@ -12,8 +12,9 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=lang('template_preferences_manager')?></h2></div>
-
+		<div class="heading">
+				<h2><?=lang('template_preferences_manager')?></h2>
+		</div>
 		<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
@@ -21,11 +22,11 @@ if ($EE_view_disable !== TRUE)
 		<?php if ($show_template_manager !== FALSE):?>
 
 			<?=form_open('C=design'.AMP.'M=update_manager_prefs')?>
-
-			<table style="width:100%; text-align:left;" cellpadding="10" cellspacing="10">
+			<fieldset>
+			<table style="width:100%; text-align:left;">
 				<thead>
 					<tr>
-						<th style="width: 50%;">
+						<th style="width: 400px;">
 							<?=lang('template_groups')?>
 						</th>
 						<th>
@@ -48,6 +49,7 @@ if ($EE_view_disable !== TRUE)
 					</tr>
 				</tbody>
 			</table>
+			</fieldset>
 
 			<?php
 				$this->table->set_template($cp_pad_table_template);
@@ -70,7 +72,6 @@ if ($EE_view_disable !== TRUE)
 				echo $this->table->generate();
 			?>
 
-
 			<?php if ($this->session->userdata['group_id'] == 1):?>
 				<p class="notice"><?=str_replace('%s', $this->cp->masked_url(
 					$this->config->item('doc_url').'templates/php_templates.html'), 
@@ -85,20 +86,20 @@ if ($EE_view_disable !== TRUE)
 				$this->table->set_heading(array(lang('member_group'), lang('can_view_template')));
 				echo $this->table->generate($template_access);
 			?>
+			<fieldset>
+				<h3><?=lang('no_access_select_blurb')?></h3>
 
-			<h3><?=lang('no_access_select_blurb')?></h3>
+				<p><?=lang('no_access_instructions', 'no_auth_bounce').NBS.NBS.NBS.NBS.form_dropdown('no_auth_bounce', $no_auth_bounce_options, 'null', 'id="no_auth_bounce"')?></p>
 
-			<p><?=lang('no_access_instructions', 'no_auth_bounce').NBS.NBS.NBS.NBS.form_dropdown('no_auth_bounce', $no_auth_bounce_options, 'null', 'id="no_auth_bounce"')?></p>
-
-			<p><?=lang('enable_http_authentication', 'enable_http_auth').NBS.NBS.NBS.NBS.form_dropdown('enable_http_auth', $enable_http_auth_options, 'null', 'id="enable_http_auth"')?></p>
-
+				<p><?=lang('enable_http_authentication', 'enable_http_auth').NBS.NBS.NBS.NBS.form_dropdown('enable_http_auth', $enable_http_auth_options, 'null', 'id="enable_http_auth"')?></p>
+			</fieldset>
 			<p><?=form_submit('template_preferences_manager', lang('update'), 'class="submit"')?></p>
 
 			<?=form_close()?>
 
 		<?php endif;?>
+		</div>
 
-		</div> <!-- pageContents -->
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
@@ -110,4 +111,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file template_preferences_manager.php */
-/* Location: ./themes/cp_themes/corporate/design/template_preferences_manager.php */
+/* Location: ./themes/cp_themes/default/design/template_preferences_manager.php */

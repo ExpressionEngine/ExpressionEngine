@@ -11,12 +11,10 @@ if ($EE_view_disable !== TRUE)
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
-
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-				
+		
+				<div class="heading"><h2><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
 		<?php $this->load->view('_shared/message');?>
-
 			<?php if ($specialty_email_templates_summary->num_rows() < 1):?>
 
 				<p class="notice"><?=lang('unable_to_find_templates')?></p>
@@ -35,8 +33,10 @@ if ($EE_view_disable !== TRUE)
 
 			<?php endif;?>
 
-		</div> <!-- pageContents -->
-	</div><!-- contents -->
+		</div>
+
+	</div> 
+	<!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -47,4 +47,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file email_notification.php */
-/* Location: ./themes/cp_themes/corporate/design/email_notification.php */
+/* Location: ./themes/cp_themes/default/design/email_notification.php */

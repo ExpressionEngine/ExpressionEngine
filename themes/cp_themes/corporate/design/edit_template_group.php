@@ -12,12 +12,14 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-	<div class="heading"><h2><?=lang('edit_template_group_form')?></h2></div>
+	<div class="heading">
+			<h2><?=lang('edit_template_group_form')?></h2>
+	</div>
 
-		<div class="pageContents">
+	<div class="pageContents">
 		<?=form_open('C=design'.AMP.'M=edit_template_group'.AMP.'tgpref='.$form_hidden['group_id'], '', $form_hidden)?>
 		<?php
-		    $this->table->set_template($cp_table_template);
+		    $this->table->set_template($cp_pad_table_template);
 		    $this->table->set_heading(
                 array('data' => lang('preference'), 'style' => 'width:50%;'),
 				lang('setting')
@@ -29,7 +31,6 @@ if ($EE_view_disable !== TRUE)
 				'name'		=> 'group_name',
 				'size'		=> 30,
 				'maxlength'	=> 50,
-				'class' => 'fullfield',
 				'value'		=> set_value('group_name', $group_name)
 			);
 		
@@ -57,12 +58,13 @@ if ($EE_view_disable !== TRUE)
 			echo $this->table->generate();
 		?>
 
-		<p class="centerSubmit"><?=form_submit('template', lang('update'), 'class="submit"')?></p>
+		<p><?=form_submit('template', lang('update'), 'class="submit"')?></p>
 
 		<?=form_close()?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+	</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php

@@ -10,8 +10,8 @@
 
 			<p>
 				<?=lang('bookmarklet_name', 'bookmarklet')?>
-				<?=form_input(array('id'=>'bookmarklet','name'=>'bm_name','class'=>'fullfield','value'=>'Bookmarklet','maxlength'=>50))?>
-				<br /><em><?=lang('single_word_no_spaces')?></em>
+				<?=form_input(array('id'=>'bookmarklet','name'=>'bm_name','class'=>'field','value'=>'Bookmarklet','maxlength'=>50))?>
+				<br ><?=lang('single_word_no_spaces')?>
 			</p>
 
 			<p>
@@ -28,12 +28,7 @@
 				<?=form_dropdown('field_id', $field_id_options, '', 'id="field_id"')?>
 			</p>
 
-			<p>
-				<label><?=form_checkbox('safari', 'y', FALSE, 'id="safari"')?> <?=lang('safari_users')?></label>
-			
-			</p>
-
-			<p class="noback"><?=form_submit('', lang('create_the_bookmarklet'), 'class="submit"')?></p>
+			<p class="submit"><?=form_submit('', lang('create_the_bookmarklet'), 'class="submit"')?></p>
 
 		<?php elseif ($step == 3):?>
 			<p class="go_notice"><?=lang('bookmarklet_created')?></p>

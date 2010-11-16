@@ -15,12 +15,12 @@ if ($EE_view_disable !== TRUE)
         <div class="heading"><h2><?=lang('ip_search')?></h2></div>
 
 		<div class="pageContents">
-			
+
 			<?=form_open('C=members'.AMP.'M=do_ip_search')?>
 
 			<?php $this->load->view('_shared/message');?>
             <?php
-                $this->table->set_template($cp_table_template);
+                $this->table->set_template($cp_pad_table_template);
                 $this->table->set_heading(
                     array('data' => '&nbsp;', 'style' => 'width:50%;'),
                     '&nbsp;'
@@ -31,8 +31,7 @@ if ($EE_view_disable !== TRUE)
                         lang('ip_search_instructions'),
                         form_input(array(
                                 'id'    => 'ip_address',
-                                'name'  => 'ip_address',
-                                'class' => 'fullfield'
+                                'name'  => 'ip_address'
                             )
                         )
                     )
@@ -40,11 +39,12 @@ if ($EE_view_disable !== TRUE)
               
                 echo $this->table->generate();
             ?>
-			<p class="centerSubmit"><?=form_submit('user_ban_sumbit', lang('submit'), 'class="submit"')?></p>
-			
+			<p>
+				<?=form_submit('user_ban_sumbit', lang('submit'), 'class="submit"')?>
+			</p>
 			<?=form_close()?>
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div>
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -55,4 +55,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file ipsearch.php */
-/* Location: ./themes/cp_themes/corporate/members/ipsearch.php */
+/* Location: ./themes/cp_themes/default/members/ipsearch.php */

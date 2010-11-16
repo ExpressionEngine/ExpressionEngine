@@ -12,63 +12,41 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-
+		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
 
 		<?=form_open('C=admin_content'.AMP.'M=status_update', '', $form_hidden)?>
-		<table id="prefs" class="mainTable" cellspacing="0" cellpadding="0" border="0" summary="File Upload Preferences">
-			<thead>
-				<tr>
-					<th style="cursor: default;width:50%;"><?=lang('preference')?></th>
-					<th style="cursor: default;"><?=lang('setting')?></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>
-						<?=form_label(lang('status_name'), 'status')?>
-					</td>
-					<td>
+
+		<p>
+			<?=form_label(lang('status_name'), 'status')?>
 			<?php
 				// open and closed names not editable
 				if ($status == 'open' OR $status == 'closed'):
 					echo lang($status);
 				else:
 			?>
-					<?=form_input(array('id'=>'status','name'=>'status','class'=>'fullfield','value'=>$status))?>
+					<?=form_input(array('id'=>'status','name'=>'status','class'=>'field','value'=>$status))?>
 			<?php
 				endif;
 			?>
-					</td>
-				</tr>
+		</p>
 
-				<tr>
-					<td> 
-						<?=form_label(lang('status_order'), 'status_order')?>
-					</td>
-					<td>
-						<?=form_input(array('id'=>'status_order','name'=>'status_order','class'=>'field','value'=>$status_order))?>
-					</td>
-				</tr>
+		<p>
+			<?=form_label(lang('status_order'), 'status_order')?>
+			<?=form_input(array('id'=>'status_order','name'=>'status_order','class'=>'field','value'=>$status_order))?>
+		</p>
 
-				<tr>
-					<td> 
-						<?=form_label(lang('highlight'), 'highlight')?>
-					</td>
-					<td>
-						<?=form_input(array('id'=>'highlight','name'=>'highlight','class'=>'field','value'=>$highlight))?>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<p>
+			<?=form_label(lang('highlight'), 'highlight')?>
+			<?=form_input(array('id'=>'highlight','name'=>'highlight','class'=>'field','value'=>$highlight))?>
+		</p>
 
 		<?php if ($this->session->userdata('group_id') == 1):?>
-		<h2 class="innerHeading"><?=lang('restrict_status_to_group')?></h2><br />
+		<h3><?=lang('restrict_status_to_group')?></h3>
 		<?php
 		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
-									array('data' => lang('member_group'), 'style' => 'width:50%;'),
+									lang('member_group'),
 									lang('can_edit_status')
 								);
 
@@ -89,12 +67,13 @@ if ($EE_view_disable !== TRUE)
 
 		<?php endif;?>
 
-		<p class="centerSubmit"><?=form_submit('category_edit', lang($submit_lang_key), 'class="submit"')?>	</p>	
+		<p><?=form_submit('category_edit', lang($submit_lang_key), 'class="submit"')?></p>
+		
 
 		<?=form_close()?>
-		
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -105,4 +84,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file status_edit.php */
-/* Location: ./themes/cp_themes/corporate/admin/status_edit.php */
+/* Location: ./themes/cp_themes/default/admin/status_edit.php */

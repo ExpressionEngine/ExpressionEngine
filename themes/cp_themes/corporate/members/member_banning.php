@@ -12,8 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-		<div class="heading"><h2><?=lang('user_banning')?></h2></div>
-		
+		<div class="heading"><h2 class="edit"><?=lang('user_banning')?></h2></div>
 		<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
@@ -21,7 +20,7 @@ if ($EE_view_disable !== TRUE)
 			<?=form_open('C=members'.AMP.'M=update_banning_data')?>
 
             <?php 
-            $this->table->set_template($cp_table_template);
+            $this->table->set_template($cp_pad_table_template);
             $this->table->set_heading(
                 array('data' => lang('preference'), 'style' => 'width:50%;'),
 				lang('setting')
@@ -37,7 +36,7 @@ if ($EE_view_disable !== TRUE)
                         'name'  => 'banned_ips',
                         'cols'  => 70,
                         'rows'  => 5, 
-                        'class' => 'fullfield', 
+                        'class' => 'field', 
                         'value' => $banned_ips
                         )
                     )
@@ -54,7 +53,7 @@ if ($EE_view_disable !== TRUE)
                         'name'  => 'banned_emails',
                         'cols'  => 70,
                         'rows'  => 5, 
-                        'class' => 'fullfield', 
+                        'class' => 'field', 
                         'value' =>$banned_emails
                         )
                     )
@@ -70,7 +69,7 @@ if ($EE_view_disable !== TRUE)
                         'name'  => 'banned_usernames',
                         'cols'  => 70,
                         'rows'  => 5, 
-                        'class' => 'fullfield', 
+                        'class' => 'field', 
                         'value' => $banned_usernames
                         )
                     )
@@ -86,7 +85,7 @@ if ($EE_view_disable !== TRUE)
                         'name'  => 'banned_screen_names',
                         'cols'  => 70,
                         'rows'  => 5, 
-                        'class' => 'fullfield', 
+                        'class' => 'field', 
                         'value' => $banned_screen_names
                         )
                     )
@@ -120,7 +119,7 @@ if ($EE_view_disable !== TRUE)
                         form_input(array(
                             'id'    => 'ban_message',
                             'name'  => 'ban_message',
-                            'class' => 'fullfield',
+                            'class' => 'field',
                             'value' => $ban_message,
                             'style' => 'margin-left:15px')
                             ).'</p>';
@@ -138,7 +137,7 @@ if ($EE_view_disable !== TRUE)
                         form_input(array(
                             'id'    =>  'ban_destination',
                             'name'  =>  'ban_destination',
-                            'class' =>  'fullfield',
+                            'class' =>  'field',
                             'value' =>  $ban_destination,
                             'style' => 'margin-left:15px')
                         );
@@ -151,12 +150,13 @@ if ($EE_view_disable !== TRUE)
             
             echo $this->table->generate();
             ?>
-			<p class="centerSubmit"><?=form_submit('user_ban_sumbit', lang('update'), 'class="submit"')?></p>
+			<?=form_submit('user_ban_sumbit', lang('update'), 'class="submit"')?>
 
 			<?=form_close()?>
 	
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div>
+		
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -167,4 +167,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file banning.php */
-/* Location: ./themes/cp_themes/corporate/members/banning.php */
+/* Location: ./themes/cp_themes/default/members/banning.php */

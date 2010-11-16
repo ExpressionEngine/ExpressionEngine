@@ -13,17 +13,17 @@ if ($EE_view_disable !== TRUE)
 		<div class="contents">
 
 		<div class="heading">
-			<h2>
-			<span id="filter_ajax_indicator"><img src="<?=$cp_theme_url?>images/indicator2.gif" alt="" /></span>
+			<h2 class="edit">
+			<span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>
 			<?=lang('view_email_cache')?></h2>
 		</div>
-				<div class="pageContents">
-
+			<div class="pageContents">
 			<?php if ($cached_email === FALSE): ?>
 				<p class="notice"><?=lang('no_cached_email')?></p>
 			<?php else: ?>
 
 				<?php $this->load->view('_shared/message');?>
+
 
 				<?=form_open('C=tools_communicate'.AMP.'M=delete_emails_confirm')?>
 				<?php
@@ -44,7 +44,7 @@ if ($EE_view_disable !== TRUE)
 												$email['email_date'],
 												$email['total_sent'],
 												($email['status'] === TRUE) ? lang('complete') :
-																			lang('incomplete').NBS.NBS.'<a href="'.BASE.AMP.'C=tools_communicate'.AMP.'M=batch_send'.AMP.'id='.$email['cache_id'].'">Finish Sending</a>',
+																			lang('incomplete').NBS.NBS.'<a href="'.BASE.AMP.'C=tools_communicate'.AMP.'M=batch_send'.AMP.'id='.$email['cache_id'].'">'.lang('finish_sending').'</a>',
 												'<a href="'.BASE.AMP.'C=tools_communicate'.AMP.'id='.$email['cache_id'].'">'.lang('resend').'</a>',
 												'<input class="toggle" type="checkbox" name="email[]" value="'.$email['cache_id'].'" />'
 											);
@@ -53,21 +53,22 @@ if ($EE_view_disable !== TRUE)
 					echo $this->table->generate();
 				?>
 
-		<div class="tableFooter">
-			<div class="tableSubmit">
-					<?=form_submit(array('name' => 'submit', 'value' => lang('delete'), 'class' => 'delete'))?>
-			</div>		
-					<?php if ($pagination): ?>					
-						<span class="js_hide"><?=$pagination?></span>
-					<?php endif; ?>
-						<span class="pagination" id="filter_pagination"></span>
-		</div> <!-- tableFooter -->
+				<div class="tableFooter">
+					<div class="tableSubmit">
+							<?=form_submit(array('name' => 'submit', 'value' => lang('delete'), 'class' => 'submit'))?>
+					</div>		
+							<?php if ($pagination): ?>					
+								<span class="js_hide"><?=$pagination?></span>
+							<?php endif; ?>
+								<span class="pagination" id="filter_pagination"></span>
+				</div> <!-- tableFooter -->
+			
 
 				<?=form_close()?>
 
 			<?php endif; ?>
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div>
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -78,4 +79,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file view_cached_email.php */
-/* Location: ./themes/cp_themes/corporate/tools/view_cached_email.php */
+/* Location: ./themes/cp_themes/default/tools/view_cached_email.php */

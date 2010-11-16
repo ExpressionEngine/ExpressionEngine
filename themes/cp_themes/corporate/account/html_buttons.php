@@ -3,7 +3,7 @@
 	<div>
 		<h3><?=lang('html_buttons')?></h3>
 
-			<p class="custom_field_add"><a href="" class="cp_button submit_alt"><?=lang('add_html_button')?></a></p>
+		<div class="cp_button"><a href=""><?=lang('add_html_button')?></a></div>
 		
 		<div class="clear"></div>
 
@@ -12,7 +12,7 @@
 		<div id="add_new_html_button">
 		<h3><?=lang('add_predefined_html_button')?></h3>
 
-		<div class="markItUpHeader" style="margin-left:10px;">
+		<div class="markItUpHeader">
 		<ul class="markItUp">
 			<?php foreach($predefined_buttons as $key=>$button):?>
 			<li class="<?=$button['classname']?>"><a href="<?=BASE.AMP."C=myaccount".AMP."M=html_buttons".AMP.'button='.$key?>"><?=$button['tag_name']?></a></li>
@@ -21,7 +21,7 @@
 		</div>
 
 		<div id="custom_html_button">
-			<h3 ><?=lang('add_new_html_button')?></h3>
+			<h3><?=lang('add_new_html_button')?></h3>
 
 			<p>
 				<?=lang('tag_name', "tag_name_{$i}")?> 
@@ -40,7 +40,7 @@
 				<?=form_input(array('id'=>"accesskey_{$i}", 'class'=>'field', 'name'=>"accesskey_{$i}"))?>
 			</p>
 			<div class="shun">
-				<p class="noback"><?=form_submit('html_buttons', lang('submit'), 'class="submit"')?></p>
+				<p class="submit"><?=form_submit('html_buttons', lang('submit'), 'class="submit"')?></p>
 			</div>
 		</div>
 		</div>
@@ -104,7 +104,7 @@
 
 		<p class="notice del_instructions"><?=lang('htmlbutton_delete_instructions')?></p>
 
-		<p class="noback"><?=form_submit('html_buttons', lang('submit'), 'class="submit"')?></p>
+		<p class="submit"><?=form_submit('html_buttons', lang('submit'), 'class="submit"')?></p>
 
 		<?=form_close()?>
 	</div>

@@ -12,15 +12,13 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading">
-            <h2 class="edit"><?=$cp_page_title?></h2>
-            <?php if ($can_rebuild):?>
-             <div class="buttonRightHeader"><a class="button" href="<?=BASE.AMP.'C=search'.AMP.'M=build_index'?>"><?=lang('rebuild_search_index')?></a></div>
-             <?php endif;?>
-            </div>
+			<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 			<div class="pageContents">
+				<?php if ($can_rebuild):?>
 				
-				<?php 
+					<div class="cp_button"><a href="<?=BASE.AMP.'C=search'.AMP.'M=build_index'?>"><?=lang('rebuild_search_index')?></a></div>
+					<div class="clear_left"></div>
+				<?php endif;
 
 				if ($num_rows > 0):
 			
@@ -36,8 +34,8 @@ if ($EE_view_disable !== TRUE)
 
 				<?php else:?>
 
-					<p class="failure"><?=lang('no_search_results')?></p>
-					<p><?=lang('searched_for')?> <strong><?=$keywords?></strong></p>
+					<p><?=lang('no_search_results')?></p>
+					<p><?=lang('searched_for')?> <?=$keywords?></p>
 
 				<?php endif;?>
 			</div>
@@ -53,4 +51,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file index.php */
-/* Location: ./themes/cp_themes/corporate/search/index.php */
+/* Location: ./themes/cp_themes/default/search/index.php */

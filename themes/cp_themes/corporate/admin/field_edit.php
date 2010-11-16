@@ -145,4 +145,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file field_edit.php */
-/* Location: ./themes/cp_themes/corporate/admin/field_edit.php */
+/* Location: ./themes/cp_themes/default/admin/field_edit.php */

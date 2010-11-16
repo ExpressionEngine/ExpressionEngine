@@ -14,15 +14,15 @@ if ($EE_view_disable !== TRUE)
 		<?php $this->load->view('_shared/message')?>
 
 		<div class="heading">
-			<h2><span id="filter_ajax_indicator"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span><?=$cp_page_title?></h2>
-		</div>		
-		
-
-		<div class="pageContents moduleWrap">
+			<h2 class="edit"><span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>
+			<?=$cp_page_title?></h2>
+		</div>
+		<div class="pageContents">
 
 		<?=$_module_cp_body?>
 
-		</div> <!-- pageContents -->
+		</div>
+
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
@@ -34,4 +34,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file module_cp_container.php */
-/* Location: ./themes/cp_themes/corporate/modules/module_cp_container.php */
+/* Location: ./themes/cp_themes/default/modules/module_cp_container.php */

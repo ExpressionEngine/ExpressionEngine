@@ -36,7 +36,7 @@
 		<?=$pagination?>
 
 		<?php if (count($subscriptions) > 0):?>
-		<p class="noback"><?=form_submit('unsubscribe', lang('unsubscribe'), 'class="submit"')?></p>
+		<p class="submit"><?=form_submit('unsubscribe', lang('unsubscribe'), 'class="submit"')?></p>
 		<?php endif;?>
 
 		<?=form_close()?>

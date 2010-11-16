@@ -7,7 +7,7 @@
 
 		<p>
 			<?=lang('signature', 'signature')?>
-			<?=form_textarea(array('id'=>'signature','rows'=> 8,'name'=>'signature','class'=>'fullfield','value'=>$signature))?>
+			<?=form_textarea(array('id'=>'signature','rows'=> 8,'name'=>'signature','class'=>'field','value'=>$signature))?>
 		</p>
 
 		<?php if ($this->config->item('sig_allow_img_upload') == 'y'):?>
@@ -25,10 +25,10 @@
 
 		<?php endif;?>
 
-		<p class="noback"><?=form_submit('update_signature', lang('update_signature'), 'class="submit"')?></p>
+		<p class="submit"><?=form_submit('update_signature', lang('update_signature'), 'class="submit"')?></p>
 
 		<?php if($sig_image_remove):?>
-		<p class="noback"><?=form_submit('remove', lang('remove_image'), 'class="submit"')?></p>
+		<p class="submit"><?=form_submit('remove', lang('remove_image'), 'class="submit"')?></p>
 		<?php endif;?>
 
 		<?=form_close()?>

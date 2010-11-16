@@ -11,10 +11,11 @@ if ($EE_view_disable !== TRUE)
 
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
+
 		<div class="contents">
 			
-			<div class="heading"><h2><?=lang('sql_view_database')?></h2></div>
-			
+			<div class="heading"><h2 class="edit"><?=lang('sql_view_database')?></h2></div>
+		
 			<div class="pageContents">
 				<?=form_open('C=tools_data'.AMP.'M=sql_run_table_action')?>
 				<?php
@@ -53,13 +54,12 @@ if ($EE_view_disable !== TRUE)
 										);
 				?>
 				<div class="cupRunnethOver shun"><?=$this->table->generate()?></div>
-                <p>
 				<?=form_dropdown('table_action', array('OPTIMIZE' => lang('optimize_table'), 'REPAIR' => lang('repair_table')))?>
-				&nbsp; <?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'))?>
-                </p>
+				&nbsp;<?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'))?>
 				<?=form_close()?>
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+			
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -70,4 +70,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file sql_view_database.php */
-/* Location: ./themes/cp_themes/corporate/tools/sql_view_database.php */
+/* Location: ./themes/cp_themes/default/tools/sql_view_database.php */

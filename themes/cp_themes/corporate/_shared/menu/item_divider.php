@@ -1,1 +1,1 @@
-<li class="nav_divider">&nbsp;</li>
+<li class="nav_divider"></li>

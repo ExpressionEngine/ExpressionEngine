@@ -12,11 +12,10 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 		<?php if ($view_email_cache): ?>
-			<div class="heading"><h2><?=lang('view_email_cache')?></h2></div>
+			<div class="heading"><h2 class="edit"><?=lang('view_email_cache')?></h2></div>
 		<?php else: ?>
-			<div class="heading"><h2><?=lang('send_an_email')?> <span class="headingSubtext">(<a href="<?=BASE.AMP.'C=tools_communicate'.AMP.'M=view_cache'?>"><?= lang('view_email_cache')?></a>)</span></h2></div>
+			<div class="heading"><h2 class="edit"><?=lang('send_an_email')?> <span class="headingSubtext">(<a href="<?=BASE.AMP.'C=tools_communicate'.AMP.'M=view_cache'?>"><?= lang('view_email_cache')?></a>)</span></h2></div>
 		<?php endif; ?>
-
 			<div class="pageContents">
 
 				<?php if ($alert): ?>
@@ -84,48 +83,73 @@ if ($EE_view_disable !== TRUE)
 						<?=form_error('subject')?>
 					</p>
 
-					<p>
+					<p style="margin-bottom:15px">
 						<strong class="notice">*</strong> <?=lang('message', 'message')?><br />
 						<?=form_error('message')?>
 						<?=form_textarea(array('id'=>'message','name'=>'message','rows'=>20,'cols'=>85,'class'=>'fullfield','value'=>set_value('message', $message)))?>
 					</p>
+					<?php
+					
+					$this->table->set_template($cp_pad_table_template);
+					$this->table->template['thead_open'] = '<thead class="visualEscapism">';
+					
+					$this->table->set_heading(
+												array('data' => '&nbsp;', 'width' => '30%'),
+												'&nbsp;'
+											);
+					if ($spell_enabled) 
+					{
+						$this->table->add_row(array(
+								'<a href="#" class="spellcheck_link" id="spelltrigger_message" title="'.lang('check_spelling').'">'.lang('check_spelling').'</a>',
+								build_spellcheck('message')
+							)
+						);						
+					}
+						
+					$this->table->add_row(array(
+							lang('mail_format', 'mailtype'),
+							form_dropdown('mailtype', $mailtype_options, $mailtype, 'id="mailtype"').
+							'<p class="" id="plaintext_alt_cont">'.
+								lang('plaintext_alt', 'plaintext_alt').
+								form_textarea(array(
+											'id'		=> 'plaintext_alt',
+											'name'		=> 'plaintext_alt', 
+											'value'		=> set_value('plaintext_alt', $plaintext_alt), 
+											'rows'		=> 8,
+											'cols'		=> 80)).
+							'</p>'
+						)
+					);
+					
+					$this->table->add_row(array(
+							lang('text_formatting', 'text_fmt'),
+							form_dropdown('text_fmt', $text_formatting_options, $text_fmt, 'id="text_fmt"')
+						)
+					);
 
-					<ul>
-						<?php if ($spell_enabled): ?>
-						<li class="even">
-							<a href="#" class="spellcheck_link" id="spelltrigger_message" title="<?=lang('check_spelling')?>"><?=lang('check_spelling')?></a>
-							<?=build_spellcheck('message')?>
-						</li>
-						<?php endif; ?>
-						<li class="odd">
-							<?=lang('mail_format', 'mailtype')?>
-							<?=form_dropdown('mailtype', $mailtype_options, $mailtype, 'id="mailtype"')?>
-
-							<p class="clear_left" id="plaintext_alt_cont">
-								<label style="width:auto;" for="plaintext_alt"><?=lang('plaintext_alt')?></label><br />
-								<?=form_textarea(array('id'=>'plaintext_alt','name'=>'plaintext_alt', 'value'=>set_value('plaintext_alt', $plaintext_alt), 'rows'=>8,'cols'=>90))?>
-							</p>
-						</li>
-						<li class="even">
-							<?=lang('text_formatting', 'text_fmt')?>
-							<?=form_dropdown('text_fmt', $text_formatting_options, $text_fmt, 'id="text_fmt"')?>
-						</li>
-						<li class="odd">
-							<?=lang('wordwrap', 'wordwrap')?>
-							<?=form_dropdown('wordwrap', $word_wrap_options, $wordwrap, 'id="wordwrap"')?>
-						</li>
-						<li class="even">
-							<?=lang('priority', 'priority')?>
-							<?=form_dropdown('priority', $priority_options,  $priority, 'id="priority"')?>
-						</li>
-						<li class="odd">
-							<?=form_error('attachment')?>
-							<?=lang('attachment', 'attachment')?>
-							<?=form_upload(array('id'=>'attachment','name'=>'attachment'))?><br />
-							<?=lang('attachment_warning')?>
-						</li>
-					</ul>
-
+					$this->table->add_row(array(
+							lang('wordwrap', 'wordwrap'),
+							form_dropdown('wordwrap', $word_wrap_options, $wordwrap, 'id="wordwrap"')
+						)
+					);
+					
+					$this->table->add_row(array(
+							lang('priority', 'priority'),
+							form_dropdown('priority', $priority_options,  $priority, 'id="priority"')
+						)
+					);
+					
+					$this->table->add_row(array(
+							form_error('attachment').
+							lang('attachment', 'attachment'),
+							form_upload(array('id'=>'attachment','name'=>'attachment')).
+							'<p>'.lang('attachment_warning').'</p>'
+						)
+					);
+						
+					echo $this->table->generate();
+						
+?>
 					<p style="margin-top:15px;">
 						<?php
 						$accept_admin_email = array(
@@ -141,14 +165,15 @@ if ($EE_view_disable !== TRUE)
 
 					<p><strong class="notice">*</strong> <?=lang('required_fields')?></p>
 
-					<p><?=form_submit(array('name' => 'submit', 'value' => lang('send_it'), 'class' => 'submit'))?></p>
-					
+					<p><?=form_submit(array('name' => 'submit', 'value' => lang('send_it'), 'class' => 'submit'))?>
 				</div>
 
 				<?=form_close()?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+				<div class="clear_right"></div>
+			</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -159,4 +184,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file communicate.php */
-/* Location: ./themes/cp_themes/corporate/tools/communicate.php */
+/* Location: ./themes/cp_themes/default/tools/communicate.php */

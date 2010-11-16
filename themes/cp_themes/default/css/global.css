@@ -2436,6 +2436,10 @@ select#upload_dir {
 	vertical-align: text-top;
 }
 
+#mainContent #tools #layout_groups_holder{
+	margin:			0 7px;
+}
+
 #mainContent #tools ul {
 	list-style-type: 	none;
 	margin: 			0;
@@ -3398,7 +3402,9 @@ div.contentWrap {
 }
 
 #mainContent #file_manager .f_m_s .cp_button {
-	margin:0 0 14px 0;
+	clear:left;
+	margin-left: 0;
+	width: 100%;	
 }
 
 .file_info {

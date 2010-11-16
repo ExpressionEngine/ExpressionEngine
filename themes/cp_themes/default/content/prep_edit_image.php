@@ -23,9 +23,9 @@ if ($EE_view_disable !== TRUE)
 				<h3 class="closed" class="file_information_header"><a href="#"><?=lang('edit_modes')?></a></h3>
 				<div id="file_information_hold" class="f_m_s">
 
-					<div class="cp_button"><a href="#" id="crop_mode"><?=lang('crop_mode')?></a></div>
-					<div class="cp_button"><a href="#" id="resize_mode"><?=lang('resize_mode')?></a></div>
-					<div class="cp_button"><a href="#" id="rotate_mode"><?=lang('rotate_mode')?></a></div>
+					<p class="cp_button"><a href="#" id="crop_mode"><?=lang('crop_mode')?></a></p>
+					<p class="cp_button"><a href="#" id="resize_mode"><?=lang('resize_mode')?></a></p>
+					<p class="cp_button"><a href="#" id="rotate_mode"><?=lang('rotate_mode')?></a></p>
 
 					<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_edit_form'), $form_hidden)?>
 						<input type="hidden" name="ajax" value="FALSE" id="ajax" />

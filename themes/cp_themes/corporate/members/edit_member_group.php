@@ -12,47 +12,44 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-		<div class="heading"><h2><?=lang('member_cfg')?> <?=lang('general_cfg')?></h2></div>
-		
+		<div class="heading"><h2 class="edit"><?=lang('member_cfg')?> <?=lang('general_cfg')?></h2></div>
 		<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
 
-			
+			<p>
 				<?php if ($group_id == 1):?>
-					<p><?=lang('super_admin_edit_note')?></p>
+					<?=lang('super_admin_edit_note')?>
 				<?php else:?>
-					<p class="notice"><?=lang('warning').NBS.NBS.lang('be_careful_assigning_groups')?></p>
+					<?=lang('warning').NBS.NBS.lang('be_careful_assigning_groups')?>
 				<?php endif;?>
-			
+			</p>
 
 			<?=form_open('C=members'.AMP.'M=update_member_group', array('id'=>'edit_member_group'), $form_hidden)?>
 			<?php
 				// setup table template
-				$this->table->set_template($cp_table_template);
+				$this->table->set_template($cp_pad_table_template);
 				$this->table->template['thead_open'] = '<thead class="visualEscapism">';
 			?>
 
 			<?php if ($this->config->item('multiple_sites_enabled') == 'y'):?>
-				<p>
 					<?=form_dropdown('site_list_pulldown', $sites_dropdown, '', 'id="site_list_pulldown"')?>
-					<span id="site_loader" style="display:none;"><img src="<?=PATH_CP_GBL_IMG?>loader.gif" width="16" height="16" style="vertical-align:sub;" /></span><br /><br />
-				</p>
+					<span id="site_loader" style="display:none;"><img src="<?=PATH_CP_GBL_IMG?>loader.gif" width="16" height="16" style="vertical-align:sub;" /></span>
 			<?php endif;?>
 
 						
 			<div>
 				<h3 class="accordion"><?=lang('group_name')?></h3>
-				<div style="padding:0;" class="accordionContent">
+				<div style="padding: 5px 1px;">
 						<?php
 							$this->table->set_heading(lang('preference'), lang('setting'));
 
 							$preference = lang('group_name', 'group_title');
-							$controls = form_input(array('id'=>'group_title','name'=>'group_title','class'=>'fullfield', 'value'=>$group_title));
+							$controls = form_input(array('id'=>'group_title','name'=>'group_title','class'=>'field', 'value'=>$group_title));
 							$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 							$preference = lang('group_description', 'group_description');
-							$controls = form_textarea(array('id'=>'group_description','name'=>'group_description','cols'=>70,'rows'=>10,'class'=>'fullfield', 'value'=>$group_description));
+							$controls = form_textarea(array('id'=>'group_description','name'=>'group_description','cols'=>70,'rows'=>10,'class'=>'field', 'value'=>$group_description));
 							$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 							
 							echo $this->table->generate();
@@ -64,7 +61,7 @@ if ($EE_view_disable !== TRUE)
 				<?php if ($group_id != 1):?>
 	
 					<h3 class="accordion"><?=lang('security_lock')?></h3>
-					<div style="padding:0;" class="accordionContent">
+					<div style="padding: 5px 1px;">
 						<?php
 							$preference = '<p><strong class="notice">'.lang('enable_lock').'</strong><br />'.lang('lock_description').'</p>';
 							$controls = lang('locked', 'is_locked_y').NBS.form_radio(array('name'=>'is_locked', 'id'=>'is_locked_y', 'value'=>'y', 'checked'=>($is_locked == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
@@ -94,7 +91,7 @@ if ($EE_view_disable !== TRUE)
 					?>
 
 						<h3 class="accordion"><?=lang($prefname)?></h3>
-						<div style="padding:0;" class="accordionContent">
+						<div style="padding: 5px 1px;">
 							<?php
 
 								foreach ($prefs as $k=>$pref)
@@ -103,7 +100,7 @@ if ($EE_view_disable !== TRUE)
 								
 									$key = $k;
 									$k = substr($k, strpos($key, '_') + 1);
-								
+									
 									$line = '';
 
 									if (substr($k, 0, 11) == 'channel_id_')
@@ -165,7 +162,7 @@ if ($EE_view_disable !== TRUE)
 			
 				<div id="modules">
 							<h3 class="accordion"><?=lang('cp_module_access_privs')?></h3>
-							<div style="padding:0;" class="accordionContent">
+							<div style="padding: 5px 1px;">
 							<?php					
 								if ( ! empty($module_perms))
 								{
@@ -197,19 +194,22 @@ if ($EE_view_disable !== TRUE)
 				endif;
 			?>
 
-
-			
-
-						<p class="centerSubmit"><?php if($action == 'submit'):?>
+				<p>
+					<?php if($action == 'submit'):?>
 						<?=form_submit('submit', lang('submit'), 'class="submit"')?>
 					<?php else:?>
 						<?=form_submit('submit', lang('update'), 'class="submit"')?>
-					<?php endif;?></p>
-					
-					<?=form_close()?>
-	
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+					<?php endif;?>
+				</p>
+			<div class="shun"></div>
+			<?=form_close()?>
+			</div>
+
+
+
+		</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -220,4 +220,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file preferences.php */
-/* Location: ./themes/cp_themes/corporate/members/preferences.php */
+/* Location: ./themes/cp_themes/default/members/preferences.php */

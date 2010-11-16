@@ -3,6 +3,18 @@
  * This just fixes some issues with IE
  *
  */
+
+#breadCrumb, #activeUser {
+	border-bottom:		1px solid #efefef;
+}
+
+#breadCrumb {
+	height: 28px;
+}
+
+#activeUser {
+	height: 29px;
+}
  
 #publish_tab .publish_textarea textarea, .publish_input input {
 	width:				99%;

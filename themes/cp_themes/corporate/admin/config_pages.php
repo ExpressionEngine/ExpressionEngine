@@ -11,9 +11,8 @@ if ($EE_view_disable !== TRUE)
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
-
-			<div class="heading"><h2><?=lang($type)?></h2></div>
 			
+			<div class="heading"><h2 class="edit"><?=lang($type)?></h2></div>
 			<div class="pageContents">
 				
 				<?php $this->load->view('_shared/message');?>
@@ -21,7 +20,7 @@ if ($EE_view_disable !== TRUE)
 				<?=form_open($form_action, '', array('return_location' => $return_loc))?>
 					
 				<?php
-				$this->table->set_template($cp_table_template);
+				$this->table->set_template($cp_pad_table_template);
 				$this->table->set_heading(
 											array('data' => lang('preference'), 'style' => 'width:50%;'),
 											lang('setting')
@@ -83,13 +82,13 @@ if ($EE_view_disable !== TRUE)
 				
 				echo $this->table->generate();
 				?>
-                
-    						<p class="centerSubmit"><?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'))?></p>
- 
+				<?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'))?>
 				<?=form_close()?>
-				
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+					
+				<div class="clear_right"></div>		
+			</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -100,4 +99,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file config_pages.php */
-/* Location: ./themes/cp_themes/corporate/admin/config_pages.php */
+/* Location: ./themes/cp_themes/default/admin/config_pages.php */

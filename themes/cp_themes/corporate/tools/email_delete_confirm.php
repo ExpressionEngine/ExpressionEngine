@@ -12,27 +12,28 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 	
-		<div class="heading"><h2><?=lang('delete_confirm')?></h2></div>
-
+		<div class="heading">
+			<h2 class="edit"><?=lang('delete_confirm')?></h2>
+		</div>
 		<div class="pageContents">
 
 			<?=form_open('C=tools_communicate'.AMP.'M=delete_emails', '', $hidden)?>
 			
 			<p class="notice"><?=lang('delete_question')?></p>
 			
-			<ul class="subtext">
+			<p>
 			<?php foreach ($emails as $email): ?>
-				<li>&lsquo;<?=$email?>&rsquo;</li>
+			<?=$email?><br />
 			<?php endforeach; ?>
-			</ul>
+			</p>
 			
-			<p><?=form_submit(array('name' => 'submit', 'value' => lang('delete'), 'class' => 'delete'))?></p>
+			<p><?=form_submit(array('name' => 'submit', 'value' => lang('delete'), 'class' => 'submit'))?></p>
 
 			<?=form_close()?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
-</div> <!-- mainContent -->
+		</div>
+	</div><!-- contents -->
+</div><!-- mainContent -->
 
 
 <?php
@@ -44,4 +45,4 @@ if ($EE_view_disable !== TRUE)
 
 
 /* End of file email_delete_confirm.php */
-/* Location: ./themes/cp_themes/corporate/tools/email_delete_confirm.php */
+/* Location: ./themes/cp_themes/default/tools/email_delete_confirm.php */

@@ -12,14 +12,15 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 			
-		<div class="heading"><h2><?=$subject?></h2></div>
-		
-		<div class="pageContents">
+		<div class="heading"><h2 class="edit"><?=$subject?></h2></div>
+
+			<div class="pageContents">
 
 				<?=$message?>
 				<div class="clear_right"></div>		
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -30,4 +31,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file view_email.php */
-/* Location: ./themes/cp_themes/corporate/tools/view_email.php */
+/* Location: ./themes/cp_themes/default/tools/view_email.php */

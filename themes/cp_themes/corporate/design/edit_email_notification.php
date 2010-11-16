@@ -29,13 +29,13 @@ if ($EE_view_disable !== TRUE)
 			<div id="templateEditor" class="formArea">				
 				<div id="template_create">
 					<?=form_open('C=design'.AMP.'M=update_email_notification', '', array('template_id' => $template_id, 'template' => $template))?>
+					
 					<p>
 						<?=lang('email_subject', 'template_title')?>
 						<?=form_input('template_title', $template_title, 'class="fullfield"')?>
 					</p>
 					<p>
 						<?=lang('message_body', 'template_data')?>
-
 					<?=form_textarea(array(
 											'name'	=> 'template_data',
 							              	'id'	=> 'template_data',
@@ -57,8 +57,10 @@ if ($EE_view_disable !== TRUE)
 
 				</div>
 			</div>
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div> <!-- pageContents -->
+
+	</div> 
+	<!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -69,4 +71,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file edit_email_notification.php */
-/* Location: ./themes/cp_themes/corporate/edit_email_notification.php */
+/* Location: ./themes/cp_themes/default/design/edit_email_notification.php */

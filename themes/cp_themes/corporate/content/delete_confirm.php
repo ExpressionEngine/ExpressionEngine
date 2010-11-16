@@ -12,7 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-			<div class="heading"><h2><?=$cp_page_title?></h2></div>
+			<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		    <div class="pageContents">
 		
 				<?=form_open('C=content_edit'.AMP.'M=delete_entries')?>
@@ -29,7 +29,7 @@ if ($EE_view_disable !== TRUE)
 
 				<p class="notice"><?=lang('action_can_not_be_undone')?></p>
 
-				<?=form_submit('delete_members', lang('delete'), 'class="delete"')?>
+				<p><?=form_submit('delete_members', lang('delete'), 'class="submit"')?></p>
 	
 				<?=form_close()?>
 
@@ -46,4 +46,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file delete_confirm.php */
-/* Location: ./themes/cp_themes/corporate/content/delete_confirm.php */
+/* Location: ./themes/cp_themes/default/content/delete_confirm.php */

@@ -52,8 +52,7 @@ if ($EE_view_disable !== TRUE)
 					              	'cols'	=> '100',
 					              	'rows'	=> '20',
 									'value'	=> $revision_data,
-									'style'	=> 'border: 0;',
-									'class'	=> 'field'
+									'style' => 'border: 0;'
 							));?>
 
 			</div>

@@ -11,7 +11,9 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 	
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
+		<div class="heading">
+			<h2 class="edit"><?=$cp_page_title?></h2>
+		</div>
 
 		<?php $this->load->view('_shared/message');?>
 
@@ -21,9 +23,9 @@ if ($EE_view_disable !== TRUE)
 				<h3 class="closed" class="file_information_header"><a href="#"><?=lang('edit_modes')?></a></h3>
 				<div id="file_information_hold" class="f_m_s">
 
-					<p class="file_tool"><a href="#" class="submit_alt" id="crop_mode"><?=lang('crop_mode')?></a></p>
-					<p class="file_tool"><a href="#" class="submit_alt" id="resize_mode"><?=lang('resize_mode')?></a></p>
-					<p class="file_tool"><a href="#" class="submit_alt" id="rotate_mode"><?=lang('rotate_mode')?></a></p>
+					<p class="cp_button"><a href="#" id="crop_mode"><?=lang('crop_mode')?></a></p>
+					<p class="cp_button"><a href="#" id="resize_mode"><?=lang('resize_mode')?></a></p>
+					<p class="cp_button"><a href="#" id="rotate_mode"><?=lang('rotate_mode')?></a></p>
 
 					<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_edit_form'), $form_hidden)?>
 						<input type="hidden" name="ajax" value="FALSE" id="ajax" />
@@ -61,11 +63,11 @@ if ($EE_view_disable !== TRUE)
 
 			<div id="showToolbarLink">
 				<a href="#"><span><?=lang('hide_toolbar')?></span>&nbsp;
-					<img alt="<?=lang('hide')?>" id="hideToolbarImg" width="24" height="27" src="<?=$cp_theme_url?>images/content_hide_image_toolbar.png" style="display: inline" />
-					<img alt="<?=lang('show')?>" id="showToolbarImg" width="20" height="27" src="<?=$cp_theme_url?>images/content_show_image_toolbar.png" class="js_hide" />
+					<img alt="<?=lang('hide')?>" id="hideToolbarImg" width="20" height="17" src="<?=$cp_theme_url?>images/content_hide_image_toolbar.png" style="display: inline" />
+					<img alt="<?=lang('show')?>" id="showToolbarImg" width="20" height="17" src="<?=$cp_theme_url?>images/content_show_image_toolbar.png" class="js_hide" />
 				</a>
 			</div>
-
+			
 			<div id="file_manager_holder">
 				<div class="main_tab solo" id="file_manager_list">
 
@@ -85,6 +87,7 @@ if ($EE_view_disable !== TRUE)
 	</div><!-- contents -->
 </div><!-- mainContent -->
 
+
 <div id="confirm" style="display:none" title="<?=lang('apply_changes')?>">
 	<div></div>
 </div>
@@ -97,4 +100,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file file_browse.php */
-/* Location: ./themes/cp_themes/corporate/tools/file_browse.php */
+/* Location: ./themes/cp_themes/default/tools/file_browse.php */

@@ -12,16 +12,16 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-		<div class="heading"><h2><?=lang('custom_profile_fields')?></h2></div>
-		
+		<div class="heading"><h2 class="edit"><?=lang('custom_profile_fields')?></h2></div>
 		<div class="pageContents">
 
 		<?php $this->load->view('_shared/message');?>
 
+		<div class="clear_left"></div>
 		
 		<?php if ($fields->num_rows() > 0):
 
-			$this->table->set_template($cp_pad_table_template);
+			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 				lang('field_id'), 
 				lang('fieldlabel'), 
@@ -39,21 +39,22 @@ if ($EE_view_disable !== TRUE)
 								$field->m_field_name,
 								$field->m_field_order,
 								'<a href="'.BASE.AMP.'C=members'.AMP.'M=edit_profile_field'.AMP.'m_field_id='.$field->m_field_id.'">'.lang('edit').'</a>',
-								'<a href="'.BASE.AMP.'C=members'.AMP.'M=delete_profile_field_conf'.AMP.'m_field_id='.$field->m_field_id.'"><img src="'.$cp_theme_url.'images/content_custom_tab_delete.gif" alt="'.lang('delete').'" width="19" height="18" /></a>'
+								'<a href="'.BASE.AMP.'C=members'.AMP.'M=delete_profile_field_conf'.AMP.'m_field_id='.$field->m_field_id.'">'.lang('delete').'</a>'
 								);					
 			}
 
 			echo $this->table->generate();
 		?>	
 		
-			<p><a href="<?=BASE.AMP.'C=members'.AMP.'M=edit_field_order'?>"><?=lang('edit_field_order')?></a></p>
+			<p class="shun"><a href="<?=BASE.AMP.'C=members'.AMP.'M=edit_field_order'?>"><?=lang('edit_field_order')?></a></p>
 		
 		<?php else:?>
 			<p class="notice"><?=lang('no_custom_profile_fields')?></p>
 		<?php endif;?>
 	
-				</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -64,4 +65,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file custom_fields.php */
-/* Location: ./themes/cp_themes/corporate/members/custom_fields.php */
+/* Location: ./themes/cp_themes/default/members/custom_fields.php */

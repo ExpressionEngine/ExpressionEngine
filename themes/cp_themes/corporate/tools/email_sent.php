@@ -12,8 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=lang('email_success')?></h2></div>
-
+			<div class="heading"><h2 class="edit"><?=lang('email_success')?></h2></div>
 			<div class="pageContents">
 				
 				<p class="go_notice">
@@ -30,12 +29,13 @@ if ($EE_view_disable !== TRUE)
 				
 				<?php if ($debug): ?>
 					<?php foreach ($debug as $message): ?>
-					<p class="notice"><?=$message?></p>
+					<?=$message?><br />
 					<?php endforeach; ?>
-				<?php endif; ?>	
+				<?php endif; ?>
+				<div class="clear_right"></div>		
+			</div>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -47,4 +47,4 @@ if ($EE_view_disable !== TRUE)
 
 
 /* End of file email_sent.php */
-/* Location: ./themes/cp_themes/corporate/tools/email_sent.php */
+/* Location: ./themes/cp_themes/default/tools/email_sent.php */

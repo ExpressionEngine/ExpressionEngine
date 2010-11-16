@@ -12,19 +12,22 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
+		<div class="heading">
+				<h2><?=$cp_page_title?></h2>
+		</div>
 
 		<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
 
 			<?php if($instructions!=''):?>
-				<p class="instructional_notice"><?=$instructions?></p>
+				<p><?=$instructions?></p>
 			<?php endif;?>
+
 			<?=form_open('C=admin_content'.AMP.'M=save_ping_servers', array('id' => 'ping_server_form'), $form_hidden)?>
 
 			<?php 
-			$this->table->set_template($cp_pad_table_template);
+			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 									lang('server_name'),
 									lang('server_url'),
@@ -77,12 +80,13 @@ if ($EE_view_disable !== TRUE)
 			?>
 
 			<p class="notice del_instructions"><?=lang('pingserver_delete_instructions')?></p>
+
 			<p><?=form_submit('ping_servers', lang('submit'), 'class="submit"')?></p>
 
 			<?=form_close()?>
-			
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -93,4 +97,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file default_ping_servers.php */
-/* Location: ./themes/cp_themes/corporate/admin/default_ping_servers.php */
+/* Location: ./themes/cp_themes/default/admin/default_ping_servers.php */

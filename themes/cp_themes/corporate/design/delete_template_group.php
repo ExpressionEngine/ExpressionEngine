@@ -12,20 +12,23 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 		
-		<div class="heading"><h2><?=lang('delete_template_group')?></h2></div>
+	<div class="heading">
+			<h2><?=lang('delete_template_group')?></h2>
+	</div>
 	
-		<div class="pageContents">
+	<div class="pageContents">
 
-		<p class="notice"><?=lang('choose_delete_template_group')?></p>
+		<p><?=lang('choose_delete_template_group')?></p>
 
-		<ul class="subtext">
+		<ul class="bullets">
 			<?php foreach ($template_groups as $group):?>
 				<li><a href="<?=BASE.AMP.'C=design'.AMP.'M=template_group_delete_confirm'.AMP.'group_id='.$group['group_id']?>"><?=$group['group_name']?></a></li>
 			<?php endforeach;?>
 		</ul>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+	</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -36,4 +39,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file new_template.php */
-/* Location: ./themes/cp_themes/corporate/design/new_template.php */
+/* Location: ./themes/cp_themes/default/design/new_template.php */

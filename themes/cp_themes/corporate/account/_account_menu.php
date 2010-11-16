@@ -1,4 +1,4 @@
-<ul id="menu">
+<ul id="menu" class="side_navigation">
 	<li><span class="top_menu"><?=lang('personal_settings')?></span>
 		<ul>
 			<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=edit_profile'.AMP.'id='.$id?>"><?=lang('edit_profile')?></a></li>

@@ -12,21 +12,21 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-			<div class="heading"><h2><?=$cp_page_title?></h2></div>
-			
+			<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		    <div class="pageContents">
 		
 				<?=form_open($form_action, '', $form_hidden)?>
 
-				<p class="notice"><?=$message?></p>
+				<p><strong><?=$message?></strong></p>
 
 				<p class="notice"><?=lang('data_will_be_lost')?></p>
 
-				<p><?=form_submit('submit', lang('delete_module'), 'class="delete"')?></p>
+				<p><?=form_submit('delete', lang('delete_module'), 'class="submit"')?></p>
 	
 				<?=form_close()?>
 
-		</div> <!-- pageContents -->
+			</div>
+		
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
@@ -38,4 +38,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file delete_confirm.php */
-/* Location: ./themes/cp_themes/corporate/addons/delete_confirm.php */
+/* Location: ./themes/cp_themes/default/addons/delete_confirm.php */

@@ -12,7 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 	
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
+		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
             <?php if (!$channels_exist):?>
                 <h3><?=lang('no_channels_exist'); ?></h3>
@@ -28,6 +28,7 @@ if ($EE_view_disable !== TRUE)
                 </ul>           
             <?php endif;?>
 		</div>
+
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 

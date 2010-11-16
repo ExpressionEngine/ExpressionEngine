@@ -14,10 +14,11 @@ if ($EE_view_disable !== TRUE)
 	<?php endif; ?>
 	<div class="contents">
 		
-		<div class="heading"><h2><?=lang('site_management')?></h2></div>
-
+		<div class="heading"><h2 class="edit"><?=lang('site_management')?></h2></div>
 		<div class="pageContents">
-
+			<div class="clear_left"></div>
+			
+	
 			<?php
 				$this->table->set_template($cp_table_template);
 				$this->table->set_heading(lang('choose_site'));
@@ -35,7 +36,8 @@ if ($EE_view_disable !== TRUE)
 			<div class="tableFooter">
 	
 			</div>
-		</div> <!-- pageContents -->
+		</div>
+
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
@@ -47,4 +49,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file index.php */
-/* Location: ./themes/cp_themes/corporate/accessories/index.php */
+/* Location: ./themes/cp_themes/default/accessories/index.php */

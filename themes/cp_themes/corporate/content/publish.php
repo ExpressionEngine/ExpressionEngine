@@ -11,7 +11,7 @@ if ($EE_view_disable !== TRUE)
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">		
-		<div class="publishheading">
+		<div class="heading">
 			<h2><?=$cp_page_title?></h2>
 		</div>
 		
@@ -35,7 +35,7 @@ if ($EE_view_disable !== TRUE)
 		<?=form_open_multipart('C=content_publish'.AMP.'M=entry_form'.$BK, $form_additional, $form_hidden)?>
 
 			<ul class="tab_menu" id="tab_menu_tabs">
-				<?php foreach($publish_tabs as $tab => $field_list):?><li id="menu_<?=$tab?>" title="<?=form_prep($tab_labels[$tab])?>" class="content_tab"><a href="#" title="<?=lang("menu_{$tab}")?>" class="menu_<?=$tab?>"><?=lang($tab_labels[$tab])?></a>&nbsp;</li><?php endforeach; if ($this->session->userdata('group_id') == 1):?><li class="addTabButton"><a class="add_tab_link" href="#"><?=lang('add_tab')?></a>&nbsp;</li><?php endif?>
+				<?php foreach($publish_tabs as $tab => $field_list):?><li id="menu_<?=$tab?>" title="<?=form_prep($tab_labels[$tab])?>" class="content_tab"><a href="#" title="menu_<?=$tab?>" class="menu_<?=$tab?>"><?=lang($tab_labels[$tab])?></a>&nbsp;</li><?php endforeach; if ($this->session->userdata('group_id') == 1):?><li class="addTabButton"><a class="add_tab_link" href="#"><?=lang('add_tab')?></a>&nbsp;</li><?php endif?>
 			</ul>
 
 		<?php
@@ -62,12 +62,12 @@ if ($EE_view_disable !== TRUE)
 				<ul id="publish_tab_list">
 					<?php foreach($publish_tabs as $tab => $field_list):?>
 						<li id="remove_tab_<?=$tab?>">
-							<a href="#" title="<?=lang("menu_{$tab}")?>" class="menu_focus"><?=lang($tab_labels[$tab])?></a> 
+							<a href="#" title="menu_<?=$tab?>" class="menu_focus"><?=lang($tab_labels[$tab])?></a> 
 							<a href="#<?=$tab?>" class="delete delete_tab"><img src="<?=$cp_theme_url?>images/content_custom_tab_delete.png" alt="<?=lang('delete')?>" width="19" height="18" /></a>
 						</li>
 					<?php endforeach;?>
 				</ul>
-				<p class="custom_field_add"><a href="#" class="add_tab_link submit_alt"><?=lang('add_tab')?></a></p>
+				<p class="custom_field_add"><a href="#" class="add_tab_link submit submit_alt"><img src="<?=$cp_theme_url?>images/add_tab.png" width="22" height="14" alt="<?=lang('add_tab')?>" />&nbsp;&nbsp;<?=lang('add_tab')?></a></p>
 				</div>
 
 				<?php
@@ -77,15 +77,15 @@ if ($EE_view_disable !== TRUE)
 				<h3><a href="#"><?=lang('publish_layout')?></a></h3>
 				<div>
 					<p id="layout_groups_holder">
-+						<?php foreach($member_groups_laylist as $group):?>
-+							<label><?=form_checkbox('member_group[]', $group['group_id'], FALSE, 'class="toggle_member_groups"')?> <?=$group['group_title']?></label><br />
+						<?php foreach($member_groups_laylist as $group):?>
+							<label><?=form_checkbox('member_group[]', $group['group_id'], FALSE, 'class="toggle_member_groups"')?> <?=$group['group_title']?></label><br />
 						<?php endforeach;?>
 						<label><?=form_checkbox('toggle_member_groups', 'toggle_member_groups', FALSE, 'class="toggle_member_groups" id="toggle_member_groups_all"').' '.$this->lang->line('select_all')?></label>
 					</p>
 					<p class="custom_field_add">
-						<a href="#" id="layout_group_submit" class="submit_alt"><?=lang('save_layout')?></a>
-						<a href="#" id="layout_group_remove" class="submit_alt"><?=lang('remove_layout')?></a>
-						<a href="#" id="layout_group_preview" class="submit_alt"><?=lang('preview_layout')?></a>
+						<a href="#" id="layout_group_submit" class="submit submit_alt"><img src="<?=$cp_theme_url?>images/save_layout.png" width="12" height="14" alt="<?=lang('save_layout')?>" />&nbsp;&nbsp;<?=lang('save_layout')?></a>
+						<a href="#" id="layout_group_remove" class="submit submit_alt"><img src="<?=$cp_theme_url?>images/remove_layout.png" width="12" height="14" alt="<?=lang('remove_layout')?>" />&nbsp;&nbsp;<?=lang('remove_layout')?></a>
+						<a href="#" id="layout_group_preview" class="submit submit_alt"><img src="<?=$cp_theme_url?>images/preview_layout.png" width="12" height="14" alt="<?=lang('preview_layout')?>" />&nbsp;&nbsp;<?=lang('preview_layout')?></a>
 					</p>
 				</div>
 				<?php endif;?>
@@ -93,8 +93,8 @@ if ($EE_view_disable !== TRUE)
 			</div>
 
 			<div id="showToolbarLink"><a href="#"><span><?=lang('show_toolbar')?></span>&nbsp;
-				<img alt="<?=lang('hide')?>" id="hideToolbarImg" width="24" height="27" src="<?=$cp_theme_url?>images/content_hide_image_toolbar.png"  class="js_hide" />
-				<img alt="<?=lang('show')?>" id="showToolbarImg" width="20" height="27" src="<?=$cp_theme_url?>images/content_show_image_toolbar.png" />
+				<img alt="<?=lang('hide')?>" id="hideToolbarImg" src="<?=$cp_theme_url?>images/content_hide_image_toolbar.png"  class="js_hide" />
+				<img alt="<?=lang('show')?>" id="showToolbarImg" src="<?=$cp_theme_url?>images/content_show_image_toolbar.png" />
 			</a></div>
 
 		<?php
@@ -121,7 +121,7 @@ if ($EE_view_disable !== TRUE)
 						<div class="handle"></div>
 							<label class="hide_field">
 								<span>
-								<img class="field_collapse" src="<?=$cp_theme_url?>images/field_expand.png" width="13" height="13" alt="" />
+								<img class="field_collapse" src="<?=$cp_theme_url?>images/field_expand.png" alt="" />
 								<?php if ($f['field_required'] == 'y'):?><?=required()?><?php endif?>
 								<?=$f['field_label']?>
 								</span>
@@ -256,7 +256,7 @@ if ($EE_view_disable !== TRUE)
 				<div class="handle"></div>
 				<p>
 					<label class="hide_field" for="<?=$field?>">
-						<img class="field_collapse" src="<?=$cp_theme_url?>images/field_expand.png" width="10" height="13" alt="" />
+						<img class="field_collapse" src="<?=$cp_theme_url?>images/field_expand.png" alt="" />
 						<?php if ($f['field_required'] == 'y'):?><?=required()?><?php endif?>
 						<?=$f['field_label']?>
 					</label>

@@ -12,8 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-
+		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
 
 		<?php $this->load->view('_shared/message');?>
@@ -30,8 +29,13 @@ if ($EE_view_disable !== TRUE)
 			}
 		?>
 
-		<?php
-			$this->table->set_template($cp_pad_table_template);
+		<div class="clear_left"></div>
+
+
+
+		<?php 
+
+			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 										'ID',
 										lang('order'),
@@ -39,7 +43,7 @@ if ($EE_view_disable !== TRUE)
 										(($can_edit) ? lang('edit') : FALSE),
 										(($can_delete) ? lang('delete') : FALSE)
 									);
-									
+						
 			if (count($categories) > 0)
 			{
 				$up		= '<img src="'.PATH_CP_GBL_IMG.'arrow_up.gif" border="0"  width="16" height="16" alt="" title="" />';
@@ -78,20 +82,22 @@ if ($EE_view_disable !== TRUE)
 	
 <?=form_open($form_action)?>
 
-
-<p>
-<strong><?=lang('global_sort_order')?></strong><br />
-
+<div class='box320' >
+<div class='defaultBold'><?=lang('global_sort_order')?></div>
+<div class='itemWrapper'>
 <?=form_radio('sort_order', 'a', (($sort_order == 'a') ? TRUE : FALSE)).NBS.lang('alpha').NBS.NBS.form_radio('sort_order', 'c', (($sort_order == 'c') ? TRUE : FALSE)).NBS.lang('custom').NBS.NBS.NBS?>
-<?=form_submit('update', lang('update'), 'class="submit"')?>
-</p>
+<?=form_submit('submit', lang('update'), 'class="submit"')?>	
 
+</div>
+</div>
 	<?=form_close()?>
 		
 	<?php endif;?>	
 		
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div>
+
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -102,4 +108,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file category_editor.php */
-/* Location: ./themes/cp_themes/corporate/admin/category_editor.php */
+/* Location: ./themes/cp_themes/default/admin/category_editor.php */

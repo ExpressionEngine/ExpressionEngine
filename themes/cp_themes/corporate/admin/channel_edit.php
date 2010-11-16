@@ -12,39 +12,38 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-		
+		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
 
 			<?php
 				echo form_open('C=admin_content'.AMP.'M=channel_edit', array('id'=>'channel_prefs'), $form_hidden);
-				$this->table->set_template($cp_table_template);
+				$this->table->set_template($cp_pad_table_template);
 				$this->table->template['thead_open'] = '<thead class="visualEscapism">';
 			?>
 
 			<h3 class="accordion"><?=lang('channel_base_setup')?></h3>
-			<div style="padding:0;" class="accordionContent">
+			<div style="padding: 5px 1px;">
 
 				<?php
 					$this->table->set_heading(lang('preference'), lang('setting'));
 
 					$preference = required().lang('channel_title', 'channel_title').form_error('channel_title');
 					$controls = form_input(array('id'=>'channel_title','name'=>'channel_title','class'=>'fullfield', 'value'=>set_value('channel_title', $channel_title)));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = required().lang('channel_name', 'channel_name').form_error('channel_name');
 					$controls = form_input(array('id'=>'channel_name','name'=>'channel_name','class'=>'fullfield', 'value'=>set_value('channel_name', $channel_name)));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('channel_description', 'channel_description');
 					$controls = form_input(array('id'=>'channel_description','name'=>'channel_description','class'=>'fullfield', 'value'=>$channel_description));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('channel_lang', 'channel_lang');
 					$controls = $this->functions->encoding_menu('channel_lang', $channel_lang);
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 
 					echo $this->table->generate();
@@ -54,34 +53,34 @@ if ($EE_view_disable !== TRUE)
 			</div>
 
 			<h3 class="accordion"><?=lang('paths')?></h3>
-			<div style="padding:0;" class="accordionContent">
+			<div style="padding: 5px 1px;">
 
 			<?php
 				$this->table->set_heading(lang('preference'), lang('setting'));
 
 				$preference = lang('channel_url', 'channel_url').'<br />'.lang('channel_url_exp');
 				$controls = form_input(array('id'=>'channel_url','name'=>'channel_url','class'=>'fullfield', 'value'=>$channel_url));
-				$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 				$preference = lang('comment_url', 'comment_url').'<br />'.lang('comment_url_exp');
 				$controls = form_input(array('id'=>'comment_url','name'=>'comment_url','class'=>'fullfield', 'value'=>$comment_url));
-				$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 				$preference = lang('search_results_url', 'search_results_url').'<br />'.lang('search_results_url_exp');
 				$controls = form_input(array('id'=>'search_results_url','name'=>'search_results_url','class'=>'fullfield', 'value'=>$search_results_url));
-				$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 				$preference = lang('ping_return_url', 'ping_return_url').'<br />'.lang('ping_return_url_exp');
 				$controls = form_input(array('id'=>'ping_return_url','name'=>'ping_return_url','class'=>'fullfield', 'value'=>$ping_return_url));
-				$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 				$preference = lang('rss_url', 'rss_url').'<br />'.lang('rss_url_exp');
 				$controls = form_input(array('id'=>'rss_url','name'=>'rss_url','class'=>'fullfield', 'value'=>$rss_url));
-				$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 				$preference = lang('live_look_template', 'live_look_template');
 				$controls = form_dropdown('live_look_template', $live_look_template_options, $live_look_template, 'id="live_look_template"');
-				$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 				echo $this->table->generate();
 				$this->table->clear(); // Clear out for the next one
@@ -90,18 +89,18 @@ if ($EE_view_disable !== TRUE)
 			</div>
 
 			<h3 class="accordion"><?=lang('default_settings')?></h3>
-			<div style="padding:0;" class="accordionContent">
+			<div style="padding: 5px 1px;">
 
 				<?php
 					$this->table->set_heading(lang('preference'), lang('setting'));
 
 					$preference = lang('deft_status', 'deft_status');
 					$controls = form_dropdown('deft_status', $deft_status_options, $deft_status, 'id="deft_status"');
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('deft_category', 'deft_category');
 					$controls = form_dropdown('deft_category', $deft_category_options, $deft_category, 'id="deft_category"');
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('deft_comments', 'deft_comments');
 					$controls = form_radio(array('name'=>'deft_comments', 'id'=>'deft_comments_y', 'value'=>'y', 'checked'=>($deft_comments == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'deft_comments_y').NBS.NBS.NBS.NBS.NBS;
@@ -110,7 +109,7 @@ if ($EE_view_disable !== TRUE)
 
 					$preference = lang('search_excerpt', 'search_excerpt');
 					$controls = form_dropdown('search_excerpt', $search_excerpt_options, $search_excerpt, 'id="search_excerpt"');
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					echo $this->table->generate();
 					$this->table->clear(); // Clear out for the next one
@@ -119,14 +118,14 @@ if ($EE_view_disable !== TRUE)
 			</div>
 
 			<h3 class="accordion"><?=lang('channel_settings')?></h3>
-			<div style="padding:0;" class="accordionContent">
+			<div style="padding: 5px 1px;">
 
 				<?php
 					$this->table->set_heading(lang('preference'), lang('setting'));
 
 					$preference = lang('channel_html_formatting', 'channel_html_formatting');
 					$controls = form_dropdown('channel_html_formatting', $channel_html_formatting_options, $channel_html_formatting, 'id="channel_html_formatting"');
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('channel_allow_img_urls', 'channel_allow_img_urls');
 					$controls = form_radio(array('name'=>'channel_allow_img_urls', 'id'=>'channel_allow_img_urls_y', 'value'=>'y', 'checked'=>($channel_allow_img_urls == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'channel_allow_img_urls_y').NBS.NBS.NBS.NBS.NBS;
@@ -145,7 +144,7 @@ if ($EE_view_disable !== TRUE)
 			</div>
 
 			<h3 class="accordion"><?=lang('versioning')?></h3>
-			<div style="padding:0;" class="accordionContent">
+			<div style="padding: 5px 1px;">
 
 				<?php
 					$this->table->set_heading(lang('preference'), lang('setting'));
@@ -156,9 +155,9 @@ if ($EE_view_disable !== TRUE)
 					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('max_revisions', 'max_revisions');
-					$controls = form_input(array('id'=>'max_revisions','name'=>'max_revisions','style'=>'width:100px', 'value'=>$max_revisions));
-					$controls .= '<br/><br/>'.form_checkbox(array('name'=>'clear_versioning_data', 'id'=>'clear_versioning_data', 'value'=>'y', 'checked'=>FALSE)).NBS.'<span class="notice">'.lang('clear_versioning_data', 'clear_versioning_data').'</span>';
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_input(array('id'=>'max_revisions','name'=>'max_revisions','class'=>'fullfield', 'value'=>$max_revisions));
+					$controls .= '<br/>'.form_checkbox(array('name'=>'clear_versioning_data', 'id'=>'clear_versioning_data', 'value'=>'y', 'checked'=>FALSE)).NBS.'<span class="notice">'.lang('clear_versioning_data', 'clear_versioning_data').'</span>';
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					echo $this->table->generate();
 					$this->table->clear(); // Clear out for the next one
@@ -167,7 +166,7 @@ if ($EE_view_disable !== TRUE)
 			</div>
 
 			<h3 class="accordion"><?=lang('notification_settings')?></h3>
-			<div style="padding:0;" class="accordionContent">
+			<div style="padding: 5px 1px;">
 
 				<?php
 					$this->table->set_heading(lang('preference'), lang('setting'));
@@ -179,8 +178,8 @@ if ($EE_view_disable !== TRUE)
 
 					$preference = lang('comment_notify_emails', 'channel_notify_emails');
 					$controls = form_input(array('id'=>'channel_notify_emails','name'=>'channel_notify_emails','class'=>'fullfield', 'value'=>$channel_notify_emails));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
-					
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+
 					if (isset($this->cp->installed_modules['comment'])) 
 					{
 						$preference = lang('comment_notify', 'comment_notify');
@@ -206,7 +205,7 @@ if ($EE_view_disable !== TRUE)
 			
 			<?php if (isset($this->cp->installed_modules['comment'])):?>
 			<h3 class="accordion"><?=lang('comment_prefs')?></h3>
-			<div style="padding:0;" class="accordionContent">
+			<div style="padding: 5px 1px;">
 
 				<?php
 					$this->table->set_heading(lang('preference'), lang('setting'));
@@ -273,10 +272,10 @@ if ($EE_view_disable !== TRUE)
 				?>
 
 			</div>
-			<?php endif; ?>
-			
+			<?php endif;?>
+
 			<h3 class="accordion"><?=lang('publish_page_customization')?></h3>
-			<div style="padding:0;" class="accordionContent">
+			<div style="padding: 5px 1px;">
 
 				<?php
 					$this->table->set_heading(lang('preference'), lang('setting'));
@@ -288,11 +287,11 @@ if ($EE_view_disable !== TRUE)
 
 					$preference = lang('default_entry_title', 'default_entry_title');
 					$controls = form_input(array('id'=>'default_entry_title','name'=>'default_entry_title','class'=>'fullfield', 'value'=>$default_entry_title));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					$preference = lang('url_title_prefix', 'url_title_prefix').'<br />'.lang('single_word_no_spaces').form_error('url_title_prefix');
-					$controls = form_input(array('id'=>'url_title_prefix','name'=>'url_title_prefix','class'=>'field', 'value'=>set_value('url_title_prefix', $url_title_prefix)));
-					$this->table->add_row(array('style'=> 'width:50%;', 'data'=>$preference), $controls);
+					$controls = form_input(array('id'=>'url_title_prefix','name'=>'url_title_prefix','class'=>'fullfield', 'value'=>set_value('url_title_prefix', $url_title_prefix)));
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 					echo $this->table->generate();
 					$this->table->clear(); // Clear out for the next one
@@ -300,15 +299,15 @@ if ($EE_view_disable !== TRUE)
 
 			</div>
 
-			<p>
+			<p style="margin-top: 15px;">
 				<?=form_submit(array('name' => 'channel_prefs_submit', 'value' => lang('update'), 'class' => 'submit'))?> 
 				<?=form_submit(array('name' => 'return', 'value' => lang('update_and_return'), 'class' => 'submit'))?>
 			</p>
-			
 			<?=form_close()?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -319,4 +318,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file channel_edit.php */
-/* Location: ./themes/cp_themes/corporate/admin/channel_edit.php */
+/* Location: ./themes/cp_themes/default/admin/channel_edit.php */

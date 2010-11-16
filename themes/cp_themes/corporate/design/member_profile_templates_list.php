@@ -10,10 +10,9 @@ if ($EE_view_disable !== TRUE)
 
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
-	<div class="contents">
+		<div class="contents">
 
-		<div class="heading"><h2><?=$cp_page_title?> (<?=$theme_display_name?>)</h2></div>
-
+        <div class="heading"><h2><?=$cp_page_title?> (<?=$theme_display_name?>)</h2></div>
 		<div class="pageContents">
 		<?php $this->load->view('_shared/message');?>
 		
@@ -35,8 +34,9 @@ if ($EE_view_disable !== TRUE)
 
 			<?php endif;?>
 
-		</div> <!-- pageContents -->
-	</div><!-- contents -->
+		</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -47,4 +47,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file profile_templates.php */
-/* Location: ./themes/cp_themes/corporate/members/profile_templates.php */
+/* Location: ./themes/cp_themes/default/members/profile_templates.php */

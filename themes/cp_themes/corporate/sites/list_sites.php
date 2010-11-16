@@ -13,18 +13,18 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<?php endif; ?>
 	<div class="contents">
-
-		<div class="heading"><h2><?=$cp_page_title?></h2>
-			<?php if (lang('create_new_site')):?>
-			<?php endif;?>
-		</div>
+		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
 
+			<?php if (lang('create_new_site')):?>
+				<div class="clear_left"></div>
+			<?php endif;?>
+
 			<h4><?=lang('msm_product_name')?></h4>
 			<p><?=lang('msm_version').$msm_version.'  '.lang('msm_build_number').$msm_build_number?></p>
-			
+
 			<?php
 				$this->table->set_template($cp_pad_table_template);
 				$this->table->set_heading(
@@ -43,14 +43,15 @@ if ($EE_view_disable !== TRUE)
 											$site->site_name,
 											'<a href="'.BASE.AMP.'C=sites'.AMP.'M=add_edit_site'.AMP.'site_id='.$site->site_id.'">'.lang('edit_site').'</a>',
 											
-											($site->site_id == 1) ? '----' : '<a href="'.BASE.AMP.'C=sites'.AMP.'M=site_delete_confirm'.AMP.'site_id='.$site->site_id.'"><img src="'.$cp_theme_url.'images/content_custom_tab_delete.gif" alt="'.lang('delete').'" width="19" height="18" /></a>'
+											($site->site_id == 1) ? '----' : '<a href="'.BASE.AMP.'C=sites'.AMP.'M=site_delete_confirm'.AMP.'site_id='.$site->site_id.'">'.lang('delete').'</a>'
 										);
 				}
 
 				echo $this->table->generate();
 			?>
 
-			</div> <!-- pageContents -->
+		</div>
+
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
@@ -62,4 +63,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file list_sites.php */
-/* Location: ./themes/cp_themes/corporate/sites/list_sites.php */
+/* Location: ./themes/cp_themes/default/sites/list_sites.php */

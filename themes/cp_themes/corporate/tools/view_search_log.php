@@ -12,13 +12,12 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2>
+			<div class="heading"><h2 class="edit">
 			<span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>			
 			<?=$cp_page_title?></h2></div>
-
 			<div class="pageContents">
 			<?php $this->load->view('_shared/message');?>
-			
+
 			<?php
 			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
@@ -45,11 +44,12 @@ if ($EE_view_disable !== TRUE)
 									);
 				}
 			?>
-				<div class="buttonRightHeader"><a href="<?=BASE.AMP.'C=tools_logs'.AMP.'M=clear_log_files'.AMP.'type=search'?>"><?=lang('clear_logs')?></a></div>
+			
+				<div class="cp_button"><a href="<?=BASE.AMP.'C=tools_logs'.AMP.'M=clear_log_files'.AMP.'type=search'?>"><?=lang('clear_logs')?></a></div>
 				<div class="clear_left"></div>
 
 				<?=$this->table->generate()?>
-
+				
 				<span class="js_hide"><?=$pagination?></span>
 				<span class="pagination" id="filter_pagination"></span>
 
@@ -58,8 +58,9 @@ if ($EE_view_disable !== TRUE)
 				<p><?=lang('no_search_results')?></p>
 
 			<?php endif;?>
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -70,4 +71,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file view_search_log.php */
-/* Location: ./themes/cp_themes/corporate/tools/view_search_log.php */
+/* Location: ./themes/cp_themes/default/tools/view_search_log.php */

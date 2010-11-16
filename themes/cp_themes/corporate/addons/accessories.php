@@ -12,13 +12,12 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 		
-	<div class="heading"><h2><?=lang('accessories')?></h2></div>
-	
-	<?php $this->load->view('_shared/message');?>
+	<div class="heading"><h2 class="edit"><?=lang('accessories')?></h2></div>
+	<div class="pageContents">
+	<?php $this->load->view('_shared/message');?>	
 
-		<div class="pageContents">
 		<?php
-			$this->table->set_template($cp_pad_table_template);
+			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(array('data' => lang('accessory_name'), 'width' => '50%'), lang('available_to_member_groups'), lang('specific_page'), lang('status'));
 			
 			foreach ($accessories as $accessory)
@@ -36,8 +35,9 @@ if ($EE_view_disable !== TRUE)
 			
 			echo $this->table->generate();
 		?>
-		
-		</div> <!-- pageContents -->
+	
+		</div>
+
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
@@ -49,4 +49,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file index.php */
-/* Location: ./themes/cp_themes/corporate/accessories/index.php */
+/* Location: ./themes/cp_themes/default/accessories/index.php */

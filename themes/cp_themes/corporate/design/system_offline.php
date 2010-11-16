@@ -12,11 +12,14 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 		
-		<div class="heading"><h2><?=lang('offline_template')?></h2></div>
-
+		<div class="heading">
+				<h2><?=lang('offline_template')?></h2>
+		</div>
 		<div class="pageContents">
 			<?php $this->load->view('_shared/message');?>
-			
+	
+			<div id="template_create">
+		
 				<?=form_open('C=design'.AMP.'M=system_offline')?>
 				<?=form_hidden('template_id', $template_id)?>
 
@@ -24,11 +27,13 @@ if ($EE_view_disable !== TRUE)
 
 				<p><?=lang('offline_template_desc')?></p>
 
-				<p><?=form_textarea(array('id'=>'template_data','name'=>'template_data','cols'=>100,'rows'=>25,'value'=>$template_data))?></p>
+				<p><?=form_textarea(array('id'=>'template_data','name'=>'template_data','cols'=>100,'rows'=>25,'class'=>'markItUpEditor','value'=>$template_data))?></p>
 				<p><?=form_submit('template', lang('update'), 'class="submit"')?></p>
 				<?=form_close()?>
 
-		</div> <!-- pageContents -->
+			</div>
+		</div>
+
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
@@ -40,4 +45,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file system_offline.php */
-/* Location: ./themes/cp_themes/corporate/design/system_offline.php */
+/* Location: ./themes/cp_themes/default/design/system_offline.php */

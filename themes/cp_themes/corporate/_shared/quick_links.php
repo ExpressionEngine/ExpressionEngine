@@ -15,8 +15,8 @@
 		<?php endforeach;?>
 		<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=quicklinks'.AMP.'id='.$this->session->userdata['member_id']?>"><?=lang('quicklinks_manager')?></a></li>
 	</ul>
-</div>
+</div> 
 
 <?php
 /* End of file quick_links.php */
-/* Location: ./themes/cp_themes/corporate/_shared/quick_links.php */
+/* Location: ./themes/cp_themes/default/_shared/quick_links.php */

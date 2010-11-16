@@ -12,53 +12,52 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-		<div class="heading"><h2><?=lang($cp_page_title)?></h2></div>
-		
+		<div class="heading"><h2 class="edit"><?=lang($cp_page_title)?></h2></div>
 		<div class="pageContents">
 
-    			<?=form_open('C=members'.AMP.'M=update_profile_fields'.AMP.'U=1', '', $hidden_form_fields)?>
-                <?php 
-
-                $notice = '<span class="notice">*</span> ';
-
-    		    $this->table->set_template($cp_table_template);
-    		    $this->table->set_heading(
-                    array('data' => lang('preference'), 'style' => 'width:50%;'),
-    				lang('setting')
-    			);
+			<?=form_open('C=members'.AMP.'M=update_profile_fields'.AMP.'U=1', '', $hidden_form_fields)?>
+            <?php 
+            
+            $notice = '<span class="notice">*</span> ';
+            
+		    $this->table->set_template($cp_pad_table_template);
+		    $this->table->set_heading(
+                array('data' => lang('preference'), 'style' => 'width:50%;'),
+				lang('setting')
+			);
 
 	    // Field Name
         $this->table->add_row(array(
-                '<strong>'.$notice.form_label(lang('fieldname'), 'm_field_name').'</strong>'.'<br />'.lang('fieldname_cont').form_error('m_field_name'),
-				form_input('m_field_name', set_value('m_field_name', $m_field_name), 'class="fullfield"')
+                $notice.form_label(lang('fieldname'), 'm_field_name').'<br />'.lang('fieldname_cont').form_error('m_field_name'),
+				form_input('m_field_name', set_value('m_field_name', $m_field_name), 'class="field"')
             )
         );
         
         // Field Label
         $this->table->add_row(array(
-                 '<strong>'.$notice.form_label(lang('fieldlabel'), 'm_field_label').'</strong>'.'<br />'.lang('for_profile_page').form_error('m_field_label'),
-				form_input('m_field_label', set_value('m_field_label', $m_field_label), 'class="fullfield"')
+                $notice.form_label(lang('fieldlabel'), 'm_field_label').'<br />'.lang('for_profile_page').form_error('m_field_label'),
+				form_input('m_field_label', set_value('m_field_label', $m_field_label), 'class="field"')
             )
         );
         
         // Field Description
         $this->table->add_row(array(
-                 '<strong>'.form_label(lang('field_description'), 'm_field_description').'</strong>'.'<br />'.lang('field_description_info'),
-				form_input('m_field_description', set_value('m_field_description', $m_field_description), 'class="fullfield" id="m_field_description"')               
+                form_label(lang('field_description'), 'm_field_description').'<br />'.lang('field_description_info'),
+				form_input('m_field_description', set_value('m_field_description', $m_field_description), 'class="field" id="m_field_description"')               
             )
         );
         
         // Field Order
         $this->table->add_row(array(
-                '<strong>'. form_label(lang('field_order'), 'm_field_order').'</strong>',
-				form_input('m_field_order', set_value('m_field_order', $m_field_order), 'class="fullfield" id="m_field_order"')               
+                form_label(lang('field_order'), 'm_field_order'),
+				form_input('m_field_order', set_value('m_field_order', $m_field_order), 'class="field" id="m_field_order"')               
             )
         );
         
         // Field Width
         $this->table->add_row(array(
-                '<strong>'. form_label(lang('field_width'), 'm_field_width').'</strong>',
-				form_input('m_field_width', set_value('m_field_width', $m_field_width), 'style="width:100px" id="m_field_width"')               
+                form_label(lang('field_width'), 'm_field_width'),
+				form_input('m_field_width', set_value('m_field_width', $m_field_width), 'class="field" id="m_field_width"')               
             )
         );
         
@@ -66,29 +65,30 @@ if ($EE_view_disable !== TRUE)
         
         // Left Side:
         $left_side = form_label(lang('field_type'), 'm_field_type').'<br />'.
-			 form_dropdown('m_field_type', $m_field_type_options, set_value('m_field_type', $m_field_type), "onchange='showhide_element(this.options[this.selectedIndex].value);'");
+			form_dropdown('m_field_type', $m_field_type_options, set_value('m_field_type', $m_field_type), "onchange='showhide_element(this.options[this.selectedIndex].value);'");
         
         // Select Block
         $right_side = '<p id="select_block" style="display: '.$select_js.'">'.
-                        '<strong>'.form_label(lang('pull_down_items'), 'm_field_list_items').'</strong>'.
+                       form_label(lang('pull_down_items'), 'm_field_list_items').'<br />'.
                        form_textarea(array(
                            'id'    => 'm_field_list_items',
                            'name'  => 'm_field_list_items',
                            'cols'  => 90,
                            'rows'  => 10,
-                           'class' =>'fullfield',
+                           'class' =>
+                           'field',
                            'value' => set_value('m_field_list_items', $m_field_list_items))).
                        '</p>';
         
         // Text Block
         $right_side .= '<p id="text_block" style="display: '.$text_js.';">'.
-                        '<strong>'. lang('m_max_length', 'm_field_maxl').'</strong>'.
+                        lang('m_max_length', 'm_field_maxl').'<br />'.
 						form_input('m_field_maxl', set_value('m_field_maxl', $m_field_maxl), 'class="field" id="m_field_maxl"').
                         '</p>';
         
         // Textarea Block
         $right_side .= '<p id="textarea_block" style="display: '.$textarea_js.';">'.
-                        '<strong>'. lang('text_area_rows', 'm_field_ta_rows').'</strong>'.
+                        lang('text_area_rows', 'm_field_ta_rows').'<br />'.
                         form_input(array(
                             'id'    => 'm_field_ta_rows',
                             'name'  => 'm_field_ta_rows',
@@ -96,17 +96,17 @@ if ($EE_view_disable !== TRUE)
                             'value' => set_value('m_field_ta_rows', $m_field_ta_rows))).
                         '</p>';
         
-        $this->table->add_row(
-        	array('data' => $left_side, 'style' => 'vertical-align:top;'),
-        	array('data' => $right_side, 'class' => 'shift')
-            
+        $this->table->add_row(array(
+            $left_side,
+            $right_side
+            )
         );
 
         // Text Formatting
         $this->table->add_row(array(
-                 '<strong>'.lang('field_format', 'm_field_fmt').'</strong><br />'.
+                lang('field_format', 'm_field_fmt').'<br />'.
                 lang('text_area_rows_cont'),
-				form_dropdown('m_field_fmt', $m_field_fmt_options, set_value('m_field_fmt', $m_field_fmt), 'style="width:150px"')
+				form_dropdown('m_field_fmt', $m_field_fmt_options, set_value('m_field_fmt', $m_field_fmt))
             )
         );
 
@@ -183,17 +183,18 @@ if ($EE_view_disable !== TRUE)
            )
         );
 
-            echo $this->table->generate();
-    			?>
+        echo $this->table->generate();
+			?>
+			
+			<p><span class="notice">*</span> <?=lang('required_fields')?></p>
+			
+			<p><?=form_submit('', $submit_label, 'class="submit"')?></p>
 
-    			<p><span class="notice">*</span> <?=lang('required_fields')?></p>
+			<?=form_close()?>
 
-    			<p class="centerSubmit"><?=form_submit('', $submit_label, 'class="submit"')?></p>
+		</div>
 
-    			<?=form_close()?>
-
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -204,4 +205,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file edit_custom_profile_field.php */
-/* Location: ./themes/cp_themes/corporate/members/edit_custom_profile_field.php */
+/* Location: ./themes/cp_themes/default/members/edit_custom_profile_field.php */

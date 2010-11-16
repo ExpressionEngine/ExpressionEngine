@@ -12,7 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=$cp_page_title?></h2></div>
+			<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 			<div class="pageContents">
 
 			<p>Building Search Index.  Please do not refresh.</p>
@@ -30,4 +30,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file index.php */
-/* Location: ./themes/cp_themes/corporate/search/index.php */
+/* Location: ./themes/cp_themes/default/search/index.php */

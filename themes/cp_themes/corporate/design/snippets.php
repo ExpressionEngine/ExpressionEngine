@@ -12,21 +12,21 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 		
-		<div class="heading"><h2><?=lang('snippets')?></h2></div>
-		
+		<div class="heading">
+				<h2><?=lang('snippets')?></h2>
+		</div>
 		<div id="new_snippet" class="pageContents">
 
 		<?php $this->load->view('_shared/message');?>
-	
 
-		<p><?=str_replace('%s', BASE.AMP.'C=design'.AMP.'M=global_variables', lang('snippets_explanation'))?></p><br />
+		<h4 class="genericHeading clear_left"><?=str_replace('%s', BASE.AMP.'C=design'.AMP.'M=global_variables', lang('snippets_explanation'))?></h4>
 
 		<?php
-			$this->table->set_template(array('table_open' => '<table class="mainTable padTable clear_left" cellspacing="0" cellpadding="0">'));
+			$this->table->set_template(array('table_open' => '<table class="mainTable clear_left" cellspacing="0" cellpadding="0">'));
 			$this->table->set_heading(
 										lang('snippets'),
 										lang('snippet_syntax'),
-										''
+										lang('delete')
 									);
 									
 			if ($snippets_count >= 1)
@@ -36,7 +36,7 @@ if ($EE_view_disable !== TRUE)
 					$this->table->add_row(
 						'<a href="'.BASE.AMP.'C=design'.AMP.'M=snippets_edit'.AMP.'snippet='.$variable->snippet_name.'">'.$variable->snippet_name.'</a>', 
 						'{'.$variable->snippet_name.'}', 
-						'<a href="'.BASE.AMP.'C=design'.AMP.'M=snippets_delete'.AMP.'snippet_id='.$variable->snippet_id.'"><img src="'.$cp_theme_url.'images/content_custom_tab_delete.gif" alt="'.lang('delete').'" width="19" height="18" /></a>'
+						'<a href="'.BASE.AMP.'C=design'.AMP.'M=snippets_delete'.AMP.'snippet_id='.$variable->snippet_id.'">'.lang('delete').'</a>'
 					);
 				}
 			}
@@ -48,7 +48,8 @@ if ($EE_view_disable !== TRUE)
 			echo $this->table->generate();
 		?>
 		
-		</div> <!-- pageContents -->
+		</div>
+	
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
@@ -60,4 +61,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file snippets.php */
-/* Location: ./themes/cp_themes/corporate/design/snippets.php */
+/* Location: ./themes/cp_themes/default/design/snippets.php */

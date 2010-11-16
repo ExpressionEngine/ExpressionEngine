@@ -12,16 +12,17 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=lang('translation')?></h2></div>
-
+			<div class="heading"><h2 class="edit"><?=lang('translation')?></h2></div>
 			<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
-			
+			<?php if ( ! $language_list): ?>
+				<p class="notice"><?=lang('no_lang_keys')?></p>
+			<?php else: ?>	
 			<?=form_open('C=tools_utilities'.AMP.'M=translation_save', '', $form_hidden)?>
 
 			<?php
-			$this->table->set_template($cp_table_template);
+			$this->table->set_template($cp_pad_table_template);
 			$this->table->set_heading(
 										array('data'=>lang('english'), 'class'=>'translatePhrase'),
 										lang('translation')
@@ -34,19 +35,20 @@ if ($EE_view_disable !== TRUE)
 					form_input(array('id' => $label,
 						 'name' => $label,
 						 'value' => $value['trans'],
-						 'class'=>'fullfield translate_field'))
+						 'class'=>'field translate_field'))
 				);
 			}
 				
 			echo $this->table->generate();
 			?>
+			
+			<p><?=form_submit('translate', lang('update'), 'class="submit"')?></p>
 
-			<p class="centerSubmit"><?=form_submit('translate', lang('update'), 'class="submit"')?></p>
+			<?=form_close()?>
+			<?php endif; ?>
+			</div>
 
-  			<?=form_close()?>	
-
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -57,4 +59,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file translate.php */
-/* Location: ./themes/cp_themes/corporate/tools/translate.php */
+/* Location: ./themes/cp_themes/default/tools/translate.php */

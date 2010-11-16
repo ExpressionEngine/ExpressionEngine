@@ -1,5 +1,6 @@
 	<div class="clear"></div>
 </div>
+
 <div id="footer">
 	<a rel="external" href="<?=$this->cp->masked_url('http://expressionengine.com/')?>"><img src="<?=$cp_theme_url?>images/ee_logo_footer.gif" alt="<?=APP_NAME?>" width="109" height="15" /></a>
 	<?=(IS_FREELANCER)?' Freelancer':''?> v<?=APP_VER?> - &copy; <?=lang('copyright')?> 2003 - 2010 <a href="<?=$this->cp->masked_url('http://ellislab.com/')?>" rel="external">EllisLab, Inc.</a><br />
@@ -12,6 +13,7 @@
 		echo lang('build'). ' &nbsp;&nbsp;'.APP_BUILD;
 	?>
 </div> <!-- footer -->
+
 <?php
 
 echo $this->cp->render_footer_js();
@@ -55,4 +57,4 @@ foreach ($this->cp->footer_item as $item)
 </html>
 <?php
 /* End of file footer.php */
-/* Location: ./themes/cp_themes/corporate/_shared/footer.php */
+/* Location: ./themes/cp_themes/default/_shared/footer.php */

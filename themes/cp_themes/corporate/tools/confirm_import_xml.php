@@ -12,8 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=lang('confirm_details')?></h2></div>
-
+			<div class="heading"><h2 class="edit"><?=lang('confirm_details')?></h2></div>
 			<div class="pageContents">
 				
 			<?php if (count($added_fields) > 0):?>
@@ -45,13 +44,14 @@ if ($EE_view_disable !== TRUE)
 			
 			
 			<p><?=lang('member_id_warning')?></p>		
-		
-            <p><?=form_submit('import_from_xml', lang('import'), 'class="submit"')?></p>
+
+			<p><?=form_submit('import_from_xml', lang('import'), 'class="submit"')?></p>
 
 			<?=form_close()?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -62,4 +62,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file confirm_import_xml.php */
-/* Location: ./themes/cp_themes/corporate/tools/confirm_import_xml.php */
+/* Location: ./themes/cp_themes/default/tools/confirm_import_xml.php */

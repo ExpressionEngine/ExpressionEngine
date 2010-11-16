@@ -12,8 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2><?=lang('confirm_field_assignment')?></h2></div>
-			     
+			<div class="heading"><h2 class="edit"><?=lang('confirm_field_assignment')?></h2></div>
 			<div class="pageContents">
 
 			<?=validation_errors(); ?>
@@ -74,11 +73,12 @@ if ($EE_view_disable !== TRUE)
 				</p>
 
 			<p><?=form_submit('create_xml', lang('create_xml'), 'class="submit"')?></p>
-            
+
 			<?=form_close()?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -89,4 +89,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file confirm_convert_xml.php */
-/* Location: ./themes/cp_themes/corporate/tools/confirm_convert_xml.php */
+/* Location: ./themes/cp_themes/default/tools/confirm_convert_xml.php */

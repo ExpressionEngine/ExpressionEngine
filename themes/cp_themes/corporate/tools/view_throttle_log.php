@@ -12,13 +12,12 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-			<div class="heading"><h2>
+			<div class="heading"><h2 class="edit">
 			<span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>			
 			<?=$cp_page_title?></h2></div>
-			
 			<div class="pageContents">
 				
-				<?php $this->load->view('_shared/message'); ?>
+			<?php $this->load->view('_shared/message'); ?>
 
 			<?php
 			$this->table->set_template($cp_table_template);
@@ -43,6 +42,7 @@ if ($EE_view_disable !== TRUE)
 									);
 				}
 			?>
+
 				<?php if($blacklist_installed): ?>
 				<div class="cp_button"><a href="<?=BASE.AMP.'C=tools_logs'.AMP.'M=blacklist_throttled_ips'?>"><?=lang('blacklist_all_ips')?></a></div>
 				<div class="clear_left"></div>
@@ -59,8 +59,9 @@ if ($EE_view_disable !== TRUE)
 
 			<?php endif;?>
 
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+			</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -71,4 +72,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file view_throttle_log.php */
-/* Location: ./themes/cp_themes/corporate/tools/view_throttle_log.php */
+/* Location: ./themes/cp_themes/default/tools/view_throttle_log.php */

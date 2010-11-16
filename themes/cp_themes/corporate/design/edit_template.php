@@ -13,53 +13,51 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	</div>
 	<div class="contents">
-
+        <div class="heading">
+            <h2 class="edit"><?=lang('edit_template')?>: <?=$template_group?>/<span id="templateId_<?=$template_id?>"><?=$template_name?></span></h2>
+        </div>
+        
+        <div class="pageContents">
 	<?php $this->load->view('_shared/message')?>
 		
-        <div class="lightHeading"><h2><?=lang('edit_template')?>: <?=$template_group?>/<span id="templateId_<?=$template_id?>"><?=$template_name?></span></h2></div>
-        
-        <div class="templatePageContents">
-        	
-			<div id="templateEditor" class="formArea">
-				
-				
+	<div id="templateEditor" class="formArea">
 		<?php if ($message):?>
 			<span class="notice"><?=$message?></span>
 		<?php endif;?>
 
+		<div id="template_create" class="pageContents">
+
 		<div class="clear_left" id="template_details" style="margin-bottom: 0">
 			<?php if ($this->config->item('save_tmpl_revisions') == 'y'):?>
 			<span class="button" style="margin-top:-6px">
-
 			<?=form_open('C=design'.AMP.'M=template_revision_history'.AMP.'tgpref='.$group_id, array('id' => 'revisions', 'name' => 'revisions', 'template_id' => $template_id, 'target' => 'Revisions'))?>	
 			
 			<?=form_dropdown('revision_id', $revision_options, '', 'id="revision_id"')?>
+			
 			<?=form_submit('submit', lang('view'), 'class="submit" id="revision_button"')?>
 			<?=form_close()?>
 			</span>
 			<?php endif; ?>
-			
 			<p>
 			<?php if ($file_synced === FALSE):?>
-			<?=lang('from_file')?> [<?=$last_file_edit?>] (<?=lang('save_to_sync')?>)
+				<?=lang('from_file')?> [<?=$last_file_edit?>] (<?=lang('save_to_sync')?>)
 			<?php else:?>
-			<?=lang('from_db')?> [<?=$edit_date?>] <?=lang('by').NBS.$last_author?>
+				<?=lang('from_db')?> <span class="last_edit js_hide">(<?=lang('last_edit')?> <?=$edit_date?> <?=lang('by').NBS.$last_author?>)</span>
 			<?php endif;?>
 			</p>
 
 		</div>
 
-		<div id="template_create">
 			<?=form_open('C=design'.AMP.'M=update_template'.AMP.'tgpref='.$group_id, '', array('template_id' => $template_id, 'group_id' => $group_id))?>
-			
+
 
 			<?=form_textarea(array(
 									'name'	=> 'template_data',
 									'id'	=> 'template_data',
 									'cols'	=> '100',
 									'rows'	=> $prefs['template_size'],
-									'value' => $template_data,
-									'style' => 'border-left: 1px solid #ced7de;'
+									'wrap'	=> 'off',
+									'value' => $template_data
 							));?>
 
 
@@ -87,7 +85,7 @@ if ($EE_view_disable !== TRUE)
 									<?php endforeach; ?>
 								</ul>
 							</td>
-							<td style="padding: 5px; font-weight: bold;">
+							<td style="padding: 5px;">
 								<p>
 									<?php if (in_array('tag_install_error', $info['errors'])): ?>
 									<a href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=module_installer'.AMP.'module='.ucfirst($tag_name)?>" rel="external" id="install_<?=$tag_name?>" class="submit install_module">Install Module</a>
@@ -106,8 +104,9 @@ if ($EE_view_disable !== TRUE)
 				</div>
 			</div>
 		<?php endif; ?>
+		
+		<?php if ($can_admin_templates): ?>	
 
-		<?php if ($can_admin_templates): ?>
 			<div class="editAccordion">
 				<h3><?=lang('preferences')?></h3>
 				<div>
@@ -123,7 +122,7 @@ if ($EE_view_disable !== TRUE)
 							<th><?=lang('template_size')?></th>
 						</tr>
 						<tr>
-							<td><input name="template_name" class="template_name" type="text" size="15" value="<?=$template_name?>" /></td>
+							<td><input name="template_name" class="template_name" type="text" size="15" value="<?=$template_name?>" <?=($template_name == 'index') ? 'readonly="readonly"' : ''?>/></td>
 							<td><select class="template_type" name="template_type" id="template_type">
 								<option value="css" <?=($prefs['template_type'] == 'css') ? 'selected="selected"':''?>><?=lang('css_stylesheet')?></option>
 								<option value="js" <?=($prefs['template_type'] == 'js') ? 'selected="selected"':''?>><?=lang('js')?></option>
@@ -136,8 +135,8 @@ if ($EE_view_disable !== TRUE)
 								<?=form_dropdown('cache', array('y' => lang('yes'), 'n' => lang('no')), $prefs['cache'])?>
 							</td>
 							<td>
-								<table><tr><td style="text-align:left;"><input class="refresh" name="refresh" type="text" size="4" value="<?=$prefs['refresh']?>" /></td></tr><tr>
-									<td style="text-align:left;"><?=lang('refresh_in_minutes')?></td>
+								<table><tr><td style="text-align:left;"><?=lang('refresh_in_minutes')?></td></tr><tr>
+									<td style="text-align:left;"><input class="refresh" name="refresh" type="text" size="4" value="<?=$prefs['refresh']?>" /></td>
 								</tr></table>
 							</td>
 							<td>
@@ -189,8 +188,9 @@ if ($EE_view_disable !== TRUE)
 				</table>
 				</div>
 			</div>
-
+			
 		<?php endif; ?>
+
 
 			<div class="editAccordion shun">
 				<h3><?=lang('template_notes')?></h3>
@@ -204,7 +204,7 @@ if ($EE_view_disable !== TRUE)
 							<?=form_textarea(array(
 								'name'	=> 'template_notes',
 								'id'	=> 'template_notes',
-								'class'	=> 'field',
+								'class'	=> 'notes',
 								'rows'	=> '10',
 								'value'	=> $template_notes
 							))?>
@@ -229,9 +229,9 @@ if ($EE_view_disable !== TRUE)
 			<p><?=form_submit('update', lang('update'), 'class="submit"')?> <?=form_submit('update_and_return', lang('update_and_return'), 'class="submit"')?></p>
 			<?=form_close()?>
 
-				</div>
-			</div>
 		</div>
+	</div>
+    </div> <!-- pageContents -->
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 

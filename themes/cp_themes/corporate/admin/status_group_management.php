@@ -12,20 +12,18 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=lang('status_management')?></h2></div>
-
+		<div class="heading"><h2 class="edit"><?=lang('status_management')?></h2></div>
 		<div class="pageContents">
 
 		<?php $this->load->view('_shared/message');?>
-
+		<div class="clear_left"></div>
 
 		<?php
-			$this->table->set_template($cp_pad_table_template);
+			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
-										lang('ID'),
 										lang('status_group'),
-										lang('add_edit_statuses'),
-										lang('edit_status_group'),
+										'',
+										'',
 										''
 									);
 									
@@ -34,23 +32,25 @@ if ($EE_view_disable !== TRUE)
 				foreach ($status_groups->result() as $status)
 				{
 					$this->table->add_row(
-						'<strong>'.$status->group_id.'</strong>',
-						 '<strong>'.$status->group_name.'</strong>',
+						'<strong>'.$status->group_id.' '.$status->group_name.'</strong>',
 						'('.$status->count.') <a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_management'.AMP.'group_id='.$status->group_id.'">'. lang('add_edit_statuses').'</a>', // $todo, replace 'X' with count
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_group_edit'.AMP.'group_id='.$status->group_id.'">'.lang('edit_status_group_name').'</a>',
-						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_group_delete_confirm'.AMP.'group_id='.$status->group_id.'"><img src="'.$cp_theme_url.'images/content_custom_tab_delete.png" alt="'.lang('delete').'" width="19" height="18" /></a>'
+						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_group_delete_confirm'.AMP.'group_id='.$status->group_id.'">'.lang('delete_status_group').'</a>'
 					);
 				}
 			}
 			else
 			{
-				$this->table->add_row(array('data' => lang('no_status_group_message'), 'colspan' => 5));
+				$this->table->add_row(array('data' => lang('no_status_group_message'), 'colspan' => 4));
 			}
 			
 			echo $this->table->generate();
 		?>
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		
+		</div>
+
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -61,4 +61,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file status_group_management.php */
-/* Location: ./themes/cp_themes/corporate/admin/status_group_management.php */
+/* Location: ./themes/cp_themes/default/admin/status_group_management.php */

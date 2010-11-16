@@ -12,8 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-		
+		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
 
 			<?=form_open($form_action, '', $form_hidden)?>
@@ -21,7 +20,7 @@ if ($EE_view_disable !== TRUE)
 	<?php
 		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
-			array('data' => lang('formatting_options'), 'style' => 'width:50%;'),
+			lang('formatting_options'),
 			''
 		);
 
@@ -36,12 +35,13 @@ if ($EE_view_disable !== TRUE)
 	?>
 	<?=$this->table->generate()?>
 
-	<p class="centerSubmit"><?=form_submit('submit', lang('submit'), 'class="submit"')?></p>
+	<p><?=form_submit('submit', lang('submit'), 'class="submit"')?></p>
 
 	<?=form_close()?>
 			
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -52,4 +52,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file edit_formatting_options.php */
-/* Location: ./themes/cp_themes/corporate/admin/edit_formatting_options.php */
+/* Location: ./themes/cp_themes/default/admin/edit_formatting_options.php */

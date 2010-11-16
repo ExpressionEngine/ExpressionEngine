@@ -19,7 +19,7 @@
 		</table>
 		</fieldset>
 		
-		<p class="noback"><?=form_submit('update_preferences', lang('update'), 'class="submit"')?></p>
+		<p class="submit"><?=form_submit('update_preferences', lang('update'), 'class="submit"')?></p>
 
 		<?=form_close()?>
 	</div>

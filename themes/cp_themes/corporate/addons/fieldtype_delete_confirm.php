@@ -38,4 +38,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file fieldtype_delete_confirm.php */
-/* Location: ./themes/cp_themes/fruit/addons/fieldtype_delete_confirm.php */
+/* Location: ./themes/cp_themes/default/addons/fieldtype_delete_confirm.php */

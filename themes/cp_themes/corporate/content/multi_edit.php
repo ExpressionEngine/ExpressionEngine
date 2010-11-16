@@ -95,4 +95,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file edit.php */
-/* Location: ./themes/cp_themes/corporate/content/edit.php */
+/* Location: ./themes/cp_themes/default/content/edit.php */

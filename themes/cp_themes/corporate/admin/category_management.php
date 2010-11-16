@@ -12,15 +12,15 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2><?=$cp_page_title?></h2></div>
-		
+		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
 
 		<?php $this->load->view('_shared/message');?>
 
+		<div class="clear_left"></div>
 
 		<?php
-			$this->table->set_template($cp_pad_table_template);
+			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 										lang('ID'),
 										lang('category_group'),
@@ -40,7 +40,7 @@ if ($EE_view_disable !== TRUE)
 						'('.$group['category_count'].') <a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$group['group_id'].'">'. lang('add_edit_categories').'</a>',
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=edit_category_group'.AMP.'group_id='.$group['group_id'].'">'.lang('edit_category_group').'</a>',
 						'('.$group['custom_field_count'].') <a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_custom_field_group_manager'.AMP.'group_id='.$group['group_id'].'">'. lang('manage_custom_fields').'</a>',
-						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_group_delete_conf'.AMP.'group_id='.$group['group_id'].'"><img src="'.$cp_theme_url.'images/content_custom_tab_delete.png" alt="'.lang('delete').'" width="19" height="18" /></a>'
+						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_group_delete_conf'.AMP.'group_id='.$group['group_id'].'">'.lang('delete_group').'</a>'
 					);
 				}
 			}
@@ -51,8 +51,11 @@ if ($EE_view_disable !== TRUE)
 			
 			echo $this->table->generate();
 		?>
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		
+		</div>
+
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -63,4 +66,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file category_management.php */
-/* Location: ./themes/cp_themes/corporate/admin/category_management.php */
+/* Location: ./themes/cp_themes/default/admin/category_management.php */

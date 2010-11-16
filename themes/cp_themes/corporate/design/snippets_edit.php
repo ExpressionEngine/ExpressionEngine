@@ -61,4 +61,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file snippets_update.php */
-/* Location: ./themes/cp_themes/corporate/design/snippets_update.php */
+/* Location: ./themes/cp_themes/default/design/snippets_update.php */

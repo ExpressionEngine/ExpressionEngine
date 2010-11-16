@@ -13,8 +13,7 @@ if ($EE_view_disable !== TRUE)
 		<div class="contents">
 
 		<div class="heading"><h2><?=lang('ip_search')?></h2></div>
-		
-		<div class="pageContents">
+        <div class="pageContents">
 
 		<?php $this->load->view('_shared/message');?>
 
@@ -24,7 +23,7 @@ if ($EE_view_disable !== TRUE)
 		
 		<?php
 			// set table template used by all results
-			$this->table->set_template($cp_pad_table_template);
+			$this->table->set_template($cp_table_template);
 		?>
 
 		<?php
@@ -52,11 +51,11 @@ if ($EE_view_disable !== TRUE)
 				$this->table->clear(); // get out of the way for the next table
 
 		?>
-		
-			<h3><?=lang('member_accounts')?></h3><br />
+		<div id="filterMenu">
+			<h3><?=lang('member_accounts')?></h3>
 			<?=$member_accounts_table?><br />
 			<?=$member_accounts_pagination?>
-		
+		</div>
 		<?php endif; /*end member accounts*/?>
 
 		<?php
@@ -110,11 +109,11 @@ if ($EE_view_disable !== TRUE)
 				$this->table->clear(); // get out of the way for the next table
 
 		?>
-	
-			<h3><?=lang('channel_entries')?></h3><br />
+		<div id="filterMenu">
+			<h3><?=lang('channel_entries')?></h3>
 			<?=$channel_entries_table?><br />
 			<?=$channel_entries_pagination?>
-		
+		</div>
 		<?php endif; /* end channel entries*/ ?>
 
 		<?php
@@ -150,11 +149,11 @@ if ($EE_view_disable !== TRUE)
 				$comments_table = $this->table->generate();
 				$this->table->clear(); // get out of the way for the next table
 		?>
-	
-			<h3><?=lang('channel_entries')?></h3><br />
+		<div id="filterMenu">
+			<h3><?=lang('channel_entries')?></h3>
 			<?=$comments_table?><br />
 			<?=$comments_pagination?>
-		
+		</div>
 		
 		<?php endif; /*end comments*/?>
 
@@ -187,11 +186,11 @@ if ($EE_view_disable !== TRUE)
 				$this->table->clear(); // get out of the way for the next table
 		?>
 
-	
-			<h3><?=lang('forum_topics')?></h3><br />
+		<div id="filterMenu">
+			<h3><?=lang('forum_topics')?></h3>
 			<?=$forum_topics_table?><br />
 			<?=$forum_topics_pagination?>
-		
+		</div>
 		<?php endif; /* forum_topics */?>
 
 		<?php
@@ -220,18 +219,18 @@ if ($EE_view_disable !== TRUE)
 				$forum_posts_table = $this->table->generate();
 				$this->table->clear(); // get out of the way for the next table
 		?>
-	
-			<h3><?=lang('forum_posts')?></h3><br />
+		<div id="filterMenu">
+			<h3><?=lang('forum_posts')?></h3>
 			<?=$forum_posts_table?><br />
 			<?=$forum_posts_pagination?>
-		
+		</div>
 		<?php endif; /*end forum_posts */?>
+
 
 		
 		<?php endif;?>
-		
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		</div>
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
@@ -242,4 +241,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file ipsearch_results.php */
-/* Location: ./themes/cp_themes/corporate/members/ipsearch_results.php */
+/* Location: ./themes/cp_themes/default/members/ipsearch_results.php */

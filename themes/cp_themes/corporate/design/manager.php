@@ -11,27 +11,34 @@ if ($EE_view_disable !== TRUE)
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
-		<div class="heading" style="position:relative">
-			<h2><?=lang('template_management')?></h2>
-			<div class="search" id="templateGroupSearch">
-				<?=form_open('C=design'.AMP.'M=manager')?>
-					<input type="text" id="template_keywords" name="template_keywords" value="<?=set_value('template_keywords')?>" maxlength="80" class="input" />
-				</form>
-			</div>	
-		</div>
-				<div class="pageContents">
 		<div class="formArea">
+			<div>
+					<div class="templateEditorTop">
+						<h2><?=lang('template_management')?></h2>
+
+						<div class="search">
+							<?=form_open('C=design'.AMP.'M=manager')?>
+								<input type="text" id="template_keywords" name="template_keywords" value="<?=set_value('template_keywords')?>" maxlength="80" class="input" />
+							</form>
+						</div>
+						<?php if ($search_terms):?>
+						<div class="templateSearchResults">
+							<h3><?=lang('search_terms')?></h3>
+							<div><strong class="notice"><?=$search_terms?></strong></div>
+							<?=$result_count_lang?>
+						</div><?php endif;?>
+					</div>
+			</div>
+
 
 			<div id="templateGroups">
 				<div class="column">
-		
-	
 					<div class="formHeading">
 						<div class="newTemplate">
 						<?php if ($can_admin_templates): ?>
 							<a href="<?=BASE.AMP.'C=design'.AMP.'M=new_template_group'?>"><?=lang('new_template_group')?></a>
 						<?php endif; ?></div>
-
+						
 						<?=lang('template_groups')?>
 					</div>
 					
@@ -59,20 +66,9 @@ if ($EE_view_disable !== TRUE)
 
 			<div id="templates">
 				<div class="column">					
-					<div class="searchResults">
-						<?php if ($search_terms):?>
-						<div>
-							<h3><?=lang('search_terms')?></h3>
-							<div><strong class="notice"><?=$search_terms?></strong></div>
-							<?php if ($result_count != 0):?>
-							<?=$result_count_lang?>
-							<?php endif; ?>
-						</div><?php endif;?>
 
-					</div>
+				<?=$this->load->view('_shared/message')?>
 
-					<?=$this->load->view('_shared/message')?>
-					
 				<?php if ($can_admin_templates): ?>
 					<div id="prefRowTemplate" style="display:none">
 						<table class="templateTable accessTable" border="0" cellspacing="0" cellpadding="0">
@@ -133,6 +129,7 @@ if ($EE_view_disable !== TRUE)
 							<tr>
 								<td>Select All</td>
 								<td><?=lang('yes')?> <input type="radio" name="select_all_bottom" id="select_all_bottom_y" class="ignore_radio" value="y" /> &nbsp; <?=lang('no')?> <input type="radio" name="select_all_bottom" id="select_all_bottom_n" class="ignore_radio" value="n" /></td>
+							</tr>
 							<tr>
 								<td><?=lang('no_access_select_blurb', 'no_auth_bounce')?><div class="subtext"><?=lang('no_access_instructions')?></div></td>
 								<td><?=form_dropdown('no_auth_bounce', $no_auth_bounce_options, '', 'class="no_auth_bounce"')?></td>
@@ -144,12 +141,15 @@ if ($EE_view_disable !== TRUE)
 								</td>
 								<td><?=form_dropdown('enable_http_auth',  array('y' => lang('yes'), 'n' => lang('no')), '', 'class="enable_http_auth"')?></td>
 							</tr>
-							</tr>
 						</table>
 					</div>
 				<?php endif; ?>
-
-				<?php if ($no_results):?><?=$no_results?><?php endif;?>
+				
+				<?php if ($no_results):?>
+					<div class="noTemplateResultsMessage">
+					<?=$no_results?>
+					</div>
+				<?php endif;?>
 
 					<?php
 					
@@ -163,15 +163,15 @@ if ($EE_view_disable !== TRUE)
 							?>
 							<div id="template_group_<?=$group_id?>_templates" class="templateGrouping">
 							<div class="formHeading">
-							<?php if ($can_admin_templates): ?>									
 								<div style="margin-left:15px" class="newTemplate"><a href="<?=BASE.AMP.'C=design'.AMP.'M=new_template'.AMP.'group_id='.$group_id?>"><?=lang('create_new_template')?></a></div>
+								
+							<?php if ($can_admin_templates): ?>								
 								<div style="margin-left:15px" class="newTemplate"><a href="<?=BASE.AMP.'C=design'.AMP.'M=template_group_delete_confirm'.AMP.'group_id='.$group_id?>"><?=lang('delete_template_group')?></a></div>
 								<div class="newTemplate"><a href="<?=BASE.AMP.'C=design'.AMP.'M=edit_template_group'.AMP.'group_id='.$group_id?>"><?=lang('edit_template_group')?></a></div>
-							<?php endif; ?>								
-								
+							<?php endif; ?>
 								<?=lang('name_of_template_group')?>: <?=$groups[$group_id]?>
 							</div>
-
+							
 							<?php
 							$main_table_headings = array(lang('edit_template'), lang('view'));
 							
@@ -202,8 +202,8 @@ if ($EE_view_disable !== TRUE)
 								
 								$delete_link = ($template['template_name'] == 'index') ? '--' :
 								'<a href="'.BASE.AMP.'C=design'.AMP.'M=template_delete_confirm'.AMP.
-								'template_id='.$template['template_id'].'"><img src="'.$cp_theme_url.'images/content_custom_tab_delete.gif" alt="'.lang('delete').'" width="19" height="18" /></a>';
-
+								'template_id='.$template['template_id'].'">'.lang('delete').'</a>';
+								
 								$auth_key = ($template['enable_http_auth'] == 'y') ? '<img style="float:right" class="auth_icon" src="'.$cp_theme_url.'images/key_10.gif" /> ' : FALSE;
 
 								$main_table_data = 	array(
@@ -211,7 +211,6 @@ if ($EE_view_disable !== TRUE)
 									 'class' => 'templateName '.$template['class']),
 									'<a rel="external" href="'.$template['view_path'].'">'.lang('view').'</a>');
 									
-
 								if ($can_admin_templates)
 								{
 									$main_table_data = array_merge($main_table_data, array('<a href="#" class="show_access_link" id="show_access_link_'.$template['template_id'].'">'.lang('access').'</a>',
@@ -219,7 +218,7 @@ if ($EE_view_disable !== TRUE)
 								}
 									
 								$main_table_data = array_merge($main_table_data, array(
-									array('data' => $template['hits'], 'style' => 'text-align:right;', 'id'=>'hitsId_'.$template['template_id']),
+									array('data' => $template['hits'], 'style' => 'text-align:right;', 'id'=>'hitsId_'.$template['template_id'], 'class' => 'less_important'),
 									array('data' => $delete_link, 'class' => 'cellRight')));
 								
 								$this->table->add_row($main_table_data);
@@ -234,7 +233,6 @@ if ($EE_view_disable !== TRUE)
 						$prefs_json = $this->javascript->generate_json($prefs_json);
 					?>
 					<script type="text/javascript" charset="utf-8">
-					
 						EE.pref_json = <?=$prefs_json?>;
 					</script>
 				</div>
@@ -242,7 +240,7 @@ if ($EE_view_disable !== TRUE)
 			
 		<div class="clear_left">&nbsp;</div>
 		</div>
-		</div> <!-- pageContents -->
+
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
@@ -254,4 +252,4 @@ if ($EE_view_disable !== TRUE)
 }
 
 /* End of file manager.php */
-/* Location: ./themes/cp_themes/corporate/design/manager.php */
+/* Location: ./themes/cp_themes/default/design/manager.php */

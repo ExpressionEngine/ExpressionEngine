@@ -12,9 +12,11 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 		
-	<div class="heading"><h2><?=lang('edit_template_group_order')?></h2></div>
+	<div class="heading">
+			<h2><?=lang('edit_template_group_order')?></h2>
+	</div>
 
-		<div id="template_create" class="pageContents">
+	<div id="template_create" class="pageContents">
 
 		<?php $this->load->view('_shared/message');?>
 
@@ -33,12 +35,11 @@ if ($EE_view_disable !== TRUE)
 				<label for="<?=$template_group->group_name?>"><?=$template_group->group_name?></label>
 			</p>
 		<?php endforeach;?>
-			<p><?=form_submit('template_group_order', lang('update'), 'class="submit"')?></p>
-		
-			<?=form_close()?>
-		
-			</div> <!-- pageContents -->
-		</div> <!-- contents -->
+		<p><?=form_submit('template_group_order', lang('update'), 'class="submit"')?></p>
+		<?=form_close()?>
+	</div>
+
+	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
 <?php
