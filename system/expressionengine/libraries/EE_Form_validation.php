@@ -391,18 +391,15 @@ class EE_Form_validation extends CI_Form_validation {
 			}
 
 
-			// Do we allow multiple identical emails?
+			// Duplicate emails?
 			
-			if ($this->EE->config->item('allow_multi_emails') == 'n')
-			{
-				$this->EE->db->where('email', $str);
-				$count = $this->EE->db->count_all_results('members');
+			$this->EE->db->where('email', $str);
+			$count = $this->EE->db->count_all_results('members');
 
-				if ($count > 0)
-				{							
-					$this->set_message('valid_email', $this->EE->lang->line('email_taken'));      
-					return FALSE;
-				}
+			if ($count > 0)
+			{							
+				$this->set_message('valid_email', $this->EE->lang->line('email_taken'));      
+				return FALSE;
 			}
 		}
 		

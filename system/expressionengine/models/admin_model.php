@@ -98,7 +98,6 @@ class Admin_model extends CI_Model {
 											'deny_duplicate_data'		=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'redirect_submitted_links'	=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'allow_username_change'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'allow_multi_emails'		=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'allow_multi_logins'		=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'require_ip_for_login'		=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'require_ip_for_posting'	=> array('r', array('y' => 'yes', 'n' => 'no')),

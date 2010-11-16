@@ -37,7 +37,7 @@ class Updater {
 		
 		$Q[] = "ALTER TABLE exp_member_fields ADD m_field_cp_reg char(1) NOT NULL default 'n' AFTER m_field_reg";
 		$Q[] = "ALTER TABLE exp_accessories CHANGE member_groups member_groups varchar(255) NOT NULL";
-		
+
 		$count = count($Q);
 		
 		foreach ($Q as $num => $sql)
@@ -45,6 +45,11 @@ class Updater {
 			$this->EE->progress->update_state("Running Query $num of $count");
 	        $this->EE->db->query($sql);
 		}
+		
+		// Remove allow_multi_emails from config
+		$this->EE->config->update_site_prefs(array('doc_url' => 'http://expressionengine.com/user_guide/'), 1);
+		
+		$this->EE->config->_update_config(array(), array('allow_multi_emails' => ''));
 		
 		return TRUE;
 	}

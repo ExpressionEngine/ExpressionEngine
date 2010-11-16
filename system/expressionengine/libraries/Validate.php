@@ -417,17 +417,14 @@ class EE_Validate {
 			}
 
 			/** -------------------------------------
-			/**  Do we allow multiple identical emails?
+			/**  Duplicate emails?
 			/** -------------------------------------*/
 			
-			if ($this->EE->config->item('allow_multi_emails') == 'n')
-			{
-				$query = $this->EE->db->query("SELECT COUNT(*) as count FROM exp_members WHERE email = '".$this->EE->db->escape_str($this->email)."'");
+			$query = $this->EE->db->query("SELECT COUNT(*) as count FROM exp_members WHERE email = '".$this->EE->db->escape_str($this->email)."'");
 			
-				if ($query->row('count')  > 0)
-				{
-					$this->errors[] = $this->EE->lang->line('email_taken');
-				}
+			if ($query->row('count')  > 0)
+			{
+				$this->errors[] = $this->EE->lang->line('email_taken');
 			}
 		}
 	}

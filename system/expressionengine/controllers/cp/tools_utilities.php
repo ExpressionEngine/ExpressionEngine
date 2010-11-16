@@ -851,7 +851,7 @@ class Tools_utilities extends CI_Controller {
 								}
 								break;
 							case 'email':
-								if ( ! in_array($tag->value, $e) OR $this->config->item('allow_multi_emails') == 'y')
+								if ( ! in_array($tag->value, $e))
 								{
 									$e[] = $tag->value;
 								}

@@ -420,7 +420,6 @@ class EE_Config Extends CI_Config {
 								'password_lockout_interval',
 								'require_ip_for_login',
 								'require_ip_for_posting',
-								'allow_multi_emails',
 								'require_secure_passwords',
 								'allow_dictionary_pw',
 								'name_of_dictionary_file',

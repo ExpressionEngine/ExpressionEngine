@@ -1030,9 +1030,6 @@ $lang = array(
 'require_ip_explanation' =>
 'Prevents users from logging in unless their browser generates IP Address and User Agent data. This keeps hackers from logging in using direct socket connections.',
 
-'allow_multi_emails' =>
-'Allow Multiple Accounts Using the Same Email Address?',
-
 'allow_username_change' =>
 'Allow members to change their username?',
 
