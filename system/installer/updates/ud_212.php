@@ -47,8 +47,6 @@ class Updater {
 		}
 		
 		// Remove allow_multi_emails from config
-		$this->EE->config->update_site_prefs(array('doc_url' => 'http://expressionengine.com/user_guide/'), 1);
-		
 		$this->EE->config->_update_config(array(), array('allow_multi_emails' => ''));
 		
 		return TRUE;
