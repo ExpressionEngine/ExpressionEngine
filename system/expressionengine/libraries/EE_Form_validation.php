@@ -367,7 +367,7 @@ class EE_Form_validation extends CI_Form_validation {
 
 		if ( ! $this->valid_email($str))
 		{
-			$this->set_message('valid_email', $this->EE->lang->line('invalid_email_address'));      
+			$this->set_message('valid_user_email', $this->EE->lang->line('invalid_email_address'));      
 			return FALSE;
 		}
 		
@@ -386,7 +386,7 @@ class EE_Form_validation extends CI_Form_validation {
 		
 			if ($this->EE->session->ban_check('email', $str))
 			{
-				$this->set_message('valid_email', $this->EE->lang->line('email_taken'));      
+				$this->set_message('valid_user_email', $this->EE->lang->line('email_taken'));      
 				return FALSE;
 			}
 
@@ -398,7 +398,7 @@ class EE_Form_validation extends CI_Form_validation {
 
 			if ($count > 0)
 			{							
-				$this->set_message('valid_email', $this->EE->lang->line('email_taken'));      
+				$this->set_message('valid_user_email', $this->EE->lang->line('email_taken'));      
 				return FALSE;
 			}
 		}
