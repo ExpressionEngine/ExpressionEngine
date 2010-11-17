@@ -317,7 +317,7 @@ class Homepage extends CI_Controller {
 							substr($cur_ver[1], 0, 4) // Year
 					);		
 		
-		if (($EE->localize->now < $date_threshold) && $high_priority != TRUE)
+		if (($this->localize->now < $date_threshold) && $high_priority != TRUE)
 		{
 			return FALSE;
 		}		
