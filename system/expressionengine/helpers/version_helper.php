@@ -118,10 +118,10 @@
 	function _check_version_cache()
 	{
 		$EE =& get_instance();
+		$EE->load->helper('file');
 		
 		// check cache first
 		$cache_expire = 60 * 60 * 24;	// only do this once per day
-		$EE->load->helper('file');	
 		$contents = read_file(APPPATH.'cache/ee_version/current_version');
 
 		if ($contents !== FALSE)
@@ -149,6 +149,7 @@
 	 */
 	function _write_version_cache($details)
 	{
+		$EE =& get_instance();
 		$EE->load->helper('file');
 		
 		if ( ! is_dir(APPPATH.'cache/ee_version'))
