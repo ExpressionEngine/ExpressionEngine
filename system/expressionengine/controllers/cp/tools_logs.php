@@ -956,6 +956,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	}
 }
 
+	var time = new Date().getTime();
+
 	oTable = $(".mainTable").dataTable( {	
 			"sPaginationType": "full_numbers",
 			"bLengthChange": false,
@@ -981,7 +983,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 			"bProcessing": true,
 			"bServerSide": true,
-			"sAjaxSource": EE.BASE+"&C=tools_logs&M='.$ajax_method.'",
+			"sAjaxSource": EE.BASE+"&C=tools_logs&M='.$ajax_method.'&time=" + time,
 			"fnServerData": fnDataTablesPipeline
 
 	} );';

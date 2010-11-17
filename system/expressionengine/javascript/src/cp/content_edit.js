@@ -61,8 +61,9 @@ $(document).ready(function() {
 
 	// The oracle knows everything.  
 
-	var channel_oracle = EE.edit.channelInfo,
-			spaceString = new RegExp('!-!', "g");
+	var channel_oracle 	= EE.edit.channelInfo,
+		spaceString 	= new RegExp('!-!', "g"),
+		time			= new Date().getTime();
 
 	// We prep our magic arrays as soons as we can, basically
 	// converting everything into option elements
@@ -295,7 +296,7 @@ $(document).ready(function() {
 				},
 				"bProcessing": true,
 				"bServerSide": true,
-				"sAjaxSource": EE.BASE+"&C=content_edit&M=edit_ajax_filter",
+				"sAjaxSource": EE.BASE+"&C=content_edit&M=edit_ajax_filter&time=" + time,
 				"fnServerData": fnDataTablesPipeline
 			});
 

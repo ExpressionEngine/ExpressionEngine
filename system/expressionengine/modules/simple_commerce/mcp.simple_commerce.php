@@ -1990,6 +1990,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	}
 }
 
+	var time = new Date().getTime();
+
 	oTable = $(".mainTable").dataTable( {
 			"sPaginationType": "full_numbers",
 			"bLengthChange": false,
@@ -2014,7 +2016,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 			"bProcessing": true,
 			"bServerSide": true,
-			"sAjaxSource": EE.BASE+"&C=addons_modules&M=show_module_cp&module=simple_commerce&method='.$ajax_method.'",
+			"sAjaxSource": EE.BASE+"&C=addons_modules&M=show_module_cp&module=simple_commerce&method='.$ajax_method.'&time=" + time,
 			"fnServerData": fnDataTablesPipeline
 
 	} );';

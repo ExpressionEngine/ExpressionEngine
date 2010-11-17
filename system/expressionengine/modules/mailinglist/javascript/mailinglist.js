@@ -134,6 +134,8 @@ $(document).ready(function() {
 			}
 		}
 		
+		var time = new Date().getTime();
+		
 		oTable = $(".mainTable").dataTable( {	
 				"sPaginationType": "full_numbers",
 				"bLengthChange": false,
@@ -158,7 +160,7 @@ $(document).ready(function() {
 
 			"bProcessing": true,
 			"bServerSide": true,
-			"sAjaxSource": EE.BASE+"&C=addons_modules&M=show_module_cp&module=mailinglist&method=view_ajax_filter",
+			"sAjaxSource": EE.BASE+"&C=addons_modules&M=show_module_cp&module=mailinglist&method=view_ajax_filter&time=" + time,
 			"fnServerData": fnDataTablesPipeline
 		});
 

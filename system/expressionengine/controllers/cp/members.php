@@ -234,16 +234,15 @@ function fnGetKey( aoData, sKey )
 }
 
 function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
-	var iPipe = '.$this->pipe_length.';  /* Adjust the pipe size */
-	
-	var bNeedServer = false;
-	var sEcho = fnGetKey(aoData, "sEcho");
-	var iRequestStart = fnGetKey(aoData, "iDisplayStart");
-	var iRequestLength = fnGetKey(aoData, "iDisplayLength");
-	var iRequestEnd = iRequestStart + iRequestLength;
-	var k_search    = document.getElementById("member_name");
-    var group       = document.getElementById("group_id");
-    var column_filter       = document.getElementById("column_filter");
+	var iPipe = '.$this->pipe_length.',
+		bNeedServer = false,
+		sEcho = fnGetKey(aoData, "sEcho"),
+		iRequestStart = fnGetKey(aoData, "iDisplayStart"),
+		iRequestLength = fnGetKey(aoData, "iDisplayLength"),
+		iRequestEnd = iRequestStart + iRequestLength,
+		k_search    = document.getElementById("member_name"),
+		group       = document.getElementById("group_id"),
+		column_filter       = document.getElementById("column_filter");
 
 	aoData.push( 
 		{ "name": "k_search", "value": k_search.value },
@@ -324,9 +323,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		return;
 	}
 }
+	var time = new Date().getTime();
 
-
-		
 	oTable = $(".mainTable").dataTable( {	
 			"sPaginationType": "full_numbers",
 			"bLengthChange": false,
@@ -352,7 +350,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 			"bProcessing": true,
 			"bServerSide": true,
-			"sAjaxSource": EE.BASE+"&C=members&M=member_search",
+			"sAjaxSource": EE.BASE+"&C=members&M=member_search&time=" + time,
 			"fnServerData": fnDataTablesPipeline
 	} );
 

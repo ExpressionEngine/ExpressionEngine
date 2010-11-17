@@ -1749,7 +1749,11 @@ div.notice_texts ul.bad_path_error_list li ul li {color:#fff; font-weight:normal
 
 
 #mainContent .pageContents p#newVersionNotice {
-	margin-bottom:	15px;
+	margin:			15px 15px 0;
+}
+
+#mainContent .pageContents p#newVersionNotice span {
+	display:		block;
 }
 
 #checksumFailure {
@@ -1847,7 +1851,7 @@ textarea#template_data{
 }
 
 #template_details {
-	margin:				-10px 0 10px 0;
+	margin-bottom:		10px;
 	background-color:	#7a90a2;
 	padding: 			17px;
 	font-weight:		bold;
