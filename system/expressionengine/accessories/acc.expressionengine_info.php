@@ -91,129 +91,35 @@ class Expressionengine_info_acc {
 	 */
 	function _fetch_version()
 	{
-		// check cache first
-		$cache_expire = 60 * 60 * 24;	// only do this once per day
-		
-		$this->EE->load->helper('file');	
-		$contents = read_file(APPPATH.'cache/expressionengine_info/version');
-
-		if ($contents !== FALSE)
-		{
-			$details = unserialize($contents);
-			if (isset($details['timestamp'])) 
-			{
-				if (($details['timestamp'] + $cache_expire) > $this->EE->localize->now)
-				{
-					if (isset($details['error']))
-					{
-						return $details['error'];
-					}
-					else
-					{
-						return str_replace(array('%v', '%b'), array($details['version'], $details['build']), $this->EE->lang->line('version_info'));
-					}
-				}
-			}
-			else
-			{
-				return $details['error'];
-			}
-		}
-		
-		// no cache, so get current downloadable version
-		$response = $this->_fsockopen_process('http://expressionengine.com/version.txt');
-		
-		list($version, $build, $priority) = explode('|', $response);
-		
-		$version = 'v'.$version;
-		
-		$details = array(
-							'timestamp'	=> $this->EE->localize->now,
-							'version'	=> $version,
-							'build'		=> $build
-						);
-
-		$this->_write_cache($details);
-		return str_replace(array('%v', '%b'), array($details['version'], $details['build']), $this->EE->lang->line('version_info'));
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * fsockopen process
-	 *
-	 * Someday I'll write a proper Connection library
-	 *
-	 * @access	public
-	 * @param	string	url
-	 * @return	string
-	 */
-	function _fsockopen_process($url)
-	{
-		$parts	= parse_url($url);
-		$host	= $parts['host'];
-		$path	= ( ! isset($parts['path'])) ? '/' : $parts['path'];
-		$port	= ($parts['scheme'] == "https") ? '443' : '80';
-		$ssl	= ($parts['scheme'] == "https") ? 'ssl://' : '';
-
-		$ret = '';
-
-		$fp = @fsockopen($ssl.$host, $port, $error_num, $error_str, 4); 
-
-		if (is_resource($fp))
-		{
-			fwrite($fp,"GET {$path} HTTP/1.0\r\n" );
-			fwrite($fp,"Host: {$host}\r\n" );
-			fwrite($fp,"User-Agent: EE/EllisLab PHP/\r\n\r\n");
+		$this->EE->load->helper('version_helper');
 			
-			// There is evidently a bug in PHP < 5.2 with SSL and fsockopen() when the $length is
-			// greater than the remaining data - so distasteful as it is, we'll suppress errors
-			while($datum = @fread($fp, 4096))
-			{
-				$ret .= $datum;
-			}
-
-			@fclose($fp); 
-		}
-		else
+		$details = get_version_info();
+		
+		if ( ! $details)
 		{
-			$this->_write_cache(array('error' => $this->EE->lang->line('error_getting_version')));
-			return $this->EE->lang->line('error_getting_version');
+			return str_replace(array('%v', '%b'), array(APP_VER, APP_BUILD), $this->EE->lang->line('error_getting_version'));
 		}
 
-		// and get rid of headers
-		if ($pos = strpos($ret, "\r\n\r\n"))
+		end($details);
+		$latest_version = current($details);
+		
+		if ($latest_version[0] > APP_VER OR $latest_version[1] > APP_BUILD)
 		{
-			$ret = substr($ret, $pos);
+			$download_url = $this->EE->cp->masked_url('https://secure.expressionengine.com/download.php');
+			$instruct_url = $this->EE->cp->masked_url($this->EE->config->item('doc_url').'installation/update.html');
+			
+			$str = $this->EE->lang->line('update_available');
+			$str .= '<ul>';
+			$str .= '<li>'.str_replace(array('%v', '%b'), array($latest_version[0], $latest_version[1]), $this->EE->lang->line('current_version')).'</li>';
+			$str .= '<li>'.str_replace(array('%v', '%b'), array(APP_VER, APP_BUILD), $this->EE->lang->line('installed_version')).'</li>';
+			$str .= '</ul>';			
+			$str .= NL.str_replace(array('%d', '%i'), array($download_url, $instruct_url), $this->EE->lang->line('update_inst'));
+			
+			return $str;
 		}
 		
-		return end(explode("\n", trim($ret)));
+		return str_replace(array('%v', '%b'), array(APP_VER, APP_BUILD), $this->EE->lang->line('running_current'));
 	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Write Cache
-	 *
-	 * @access	public
-	 * @param	array
-	 * @return	void
-	 */
-	function _write_cache($details)
-	{
-		if ( ! is_dir(APPPATH.'cache/expressionengine_info'))
-		{
-			mkdir(APPPATH.'cache/expressionengine_info', DIR_WRITE_MODE);
-			@chmod(APPPATH.'cache/expressionengine_info', DIR_WRITE_MODE);
-		}
-		
-		if (write_file(APPPATH.'cache/expressionengine_info/version', serialize($details)))
-		{
-			@chmod(APPPATH.'cache/expressionengine_info/version', FILE_WRITE_MODE);			
-		}
-	}
-
-	// --------------------------------------------------------------------
 	
 }
 // END CLASS

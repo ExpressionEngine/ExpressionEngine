@@ -245,254 +245,102 @@ class Homepage extends CI_Controller {
 		
 		return FALSE;
 	}
-
 	// --------------------------------------------------------------------
 
 	/**
 	 * EE Version Check function
 	 * 
 	 * Requests a file from ExpressionEngine.com that informs us what the current available version
-	 * of ExpressionEngine.  In the future, we might put the build number in there as well.
+	 * of ExpressionEngine.
 	 *
 	 * @access	private
 	 * @return	bool|string
-	 */
+	 */	
 	function _version_check()
-	{		
-		// Attempt to grab the local cached file
-		$cached = $this->_check_version_cache();
-
+	{	
 		$download_url = $this->cp->masked_url('https://secure.expressionengine.com/download.php');
 		
-		$data = '';
+		$this->load->helper('version_helper');
+			
+		$version_file = get_version_info();	
 		
-		if ( ! $cached)
-		{
-			$details['timestamp'] = time();
-			
-			$dl_page_url = 'http://expressionengine.com/version.txt';
-
-			$target = parse_url($dl_page_url);
-
-			$fp = @fsockopen($target['host'], 80, $errno, $errstr, 3);
-			
-			if (is_resource($fp))
-			{
-				fputs($fp,"GET ".$dl_page_url." HTTP/1.0\r\n" );
-				fputs($fp,"Host: ".$target['host'] . "\r\n" );
-				fputs($fp,"User-Agent: EE/EllisLab PHP/\r\n");
-				fputs($fp,"If-Modified-Since: Fri, 01 Jan 2004 12:24:04\r\n\r\n");
-
-				$headers = TRUE;
-
-				while ( ! feof($fp))
-				{
-					$line = fgets($fp, 4096);
-
-					if ($headers === FALSE)
-					{
-						$data .= $line;
-					}
-					elseif (trim($line) == '')
-					{
-						$headers = FALSE;
-					}
-				}
-
-				fclose($fp);
-				
-				if ($data !== '')
-				{
-					// We have a file, now parse & make an array of arrays.
-					$display_new_build = FALSE;
-					
-					$data = explode("\n", trim($data));
-					
-					$version_file = array();
-					
-					foreach ($data as $d)
-					{
-						$version_file[] = explode('|', $d);
-					}
-
-					// 1 => 
-					//   array
-					//     0 => string '2.1.0' (length=5)
-					//     1 => string '20100805' (length=8)
-					//     2 => string 'normal' (length=6)
-					
-					if ($data === NULL)
-					{
-						// something's not right...
-						unset($details['version']);
-						$details['error'] = TRUE;
-					}
-					else
-					{
-						// We'll deal with the last piece of the array
-						$cur_ver = end($version_file);
-						
-						// Extracting the date the build was released.  IF the build was 
-						// released in the past 2 calendar days, we don't show anything
-						// on the control panel home page unless it was a security release
-						$date_threshold = mktime(0, 0, 0, 
-												substr($cur_ver[1], 4, -2), // Month
-												(substr($cur_ver[1], -2) + 2), // Day + 2 
-												substr($cur_ver[1], 0, 4) // Year
-								);
-
-						$details['version'] = $cur_ver[0];
-						$details['build'] = $cur_ver[1];
-						$details['priority'] = $cur_ver[2];
-						
-						if (($this->localize->now < $date_threshold) && $details['priority'] != 'high')
-						{
-							$this->_write_version_cache($version_file);
-							return FALSE;
-						}
-					}
-				}
-				else
-				{
-					$version_file['error'] = TRUE;
-				}
-				
-				$this->_write_version_cache($version_file);
-			}
-			else
-			{
-				$version_file['error'] = TRUE;
-				$this->_write_version_cache($version_file);				
-			}
-		}
-		else
-		{
-			$version_file = $cached;
-		}
-		
-		if (isset($version_file))
-		{
-			$new_release = FALSE;
-			$high_priority = FALSE;
-			
-			$cur_ver = end($version_file);
-
-			// Do we have a newer version out?
-			foreach ($version_file as $app_data)
-			{
-				if ($app_data[0] > APP_VER && $app_data[2] == 'high')
-				{
-					$new_release = TRUE;
-					$high_priority = TRUE;
-					$high_priority_release = array(
-							'version'		=> $app_data[0],
-							'build'			=> $app_data[1]
-						);
-
-					continue;
-				}
-				elseif ($app_data[1] > APP_BUILD && $app_data[2] == 'high')
-				{
-					// A build could sometimes be a security release.  So we can plan for it here.
-					$new_release = TRUE;
-					$high_priority = TRUE;
-					$high_priority_release = array(
-							'version'		=> $app_data[0],
-							'build'			=> $app_data[1]
-						);
-
-					continue;					
-				}
-			}
-			
-			if ($new_release)
-			{
-				if ($high_priority)
-				{
-					return sprintf($this->lang->line('new_version_notice_high_priority'),
-								   $high_priority_release['version'],
-								   $high_priority_release['build'],
-								   $cur_ver[0],
-								   $cur_ver[1],
-								   $download_url,
-								   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));
-				}
-				else
-				{
-					return sprintf($this->lang->line('new_version_notice'),
-								   $details['version'],
-								   $download_url,
-								   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));					
-				}
-			}
-		}
-		else
+		if ( ! $version_file)
 		{
 			return sprintf($this->lang->line('new_version_error'),
-							$download_url);
+							$download_url);			
 		}
-		
-		return FALSE;
-	}
-	
-	// --------------------------------------------------------------------
 
-	/**
-	 * Check EE Version Cache.
-	 *
-	 * @access	private
-	 * @return	bool|string
-	 */
-	function _check_version_cache()
-	{
-		// check cache first
-		$cache_expire = 60 * 60 * 24;	// only do this once per day
-		$this->load->helper('file');	
-		$contents = read_file(APPPATH.'cache/ee_version/current_version');
+		$new_release = FALSE;
+		$high_priority = FALSE;
 
-		if ($contents !== FALSE)
+		// Do we have a newer version out?
+		foreach ($version_file as $app_data)
 		{
-			$details = unserialize($contents);
-
-			if (($details['timestamp'] + $cache_expire) > $this->localize->now)
+			if ($app_data[0] > APP_VER && $app_data[2] == 'high')
 			{
-				return $details['data'];
+				$new_release = TRUE;
+				$high_priority = TRUE;
+				$high_priority_release = array(
+						'version'		=> $app_data[0],
+						'build'			=> $app_data[1]
+					);
+
+				continue;
 			}
-			else
+			elseif ($app_data[1] > APP_BUILD && $app_data[2] == 'high')
 			{
-				return FALSE;
+				// A build could sometimes be a security release.  So we can plan for it here.
+				$new_release = TRUE;
+				$high_priority = TRUE;
+				$high_priority_release = array(
+						'version'		=> $app_data[0],
+						'build'			=> $app_data[1]
+					);
+
+				continue;					
 			}
 		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Write EE Version Cache
-	 *
-	 * @param array - details of version needed to be cached.
-	 * @return void
-	 */
-	function _write_version_cache($details)
-	{
-		$this->load->helper('file');
 		
-		if ( ! is_dir(APPPATH.'cache/ee_version'))
+		if (! $new_release)
 		{
-			mkdir(APPPATH.'cache/ee_version', DIR_WRITE_MODE);
-			@chmod(APPPATH.'cache/ee_version', DIR_WRITE_MODE);	
+			return FALSE;
 		}
-		
-		$data = array(
-				'timestamp'	=> $this->localize->now,
-				'data' 		=> $details
-			);
 
-		if (write_file(APPPATH.'cache/ee_version/current_version', serialize($data)))
+		$cur_ver = end($version_file);
+
+		// Extracting the date the build was released.  IF the build was 
+		// released in the past 2 calendar days, we don't show anything
+		// on the control panel home page unless it was a security release
+		$date_threshold = mktime(0, 0, 0, 
+							substr($cur_ver[1], 4, -2), // Month
+							(substr($cur_ver[1], -2) + 2), // Day + 2 
+							substr($cur_ver[1], 0, 4) // Year
+					);		
+		
+		if (($EE->localize->now < $date_threshold) && $high_priority != TRUE)
 		{
-			@chmod(APPPATH.'cache/ee_version/current_version', FILE_WRITE_MODE);			
+			return FALSE;
 		}		
+		
+		if ($high_priority)
+		{
+			return sprintf($this->lang->line('new_version_notice_high_priority'),
+						   $high_priority_release['version'],	
+						   $high_priority_release['build'],
+						   $cur_ver[0],
+						   $cur_ver[1],
+						   $download_url,
+						   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));
+		}
+		else
+		{
+			return sprintf($this->lang->line('new_version_notice'),
+						   $details['version'],
+						   $download_url,
+						   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));					
+		}
 	}
+
 }
 
 /* End of file homepage.php */
