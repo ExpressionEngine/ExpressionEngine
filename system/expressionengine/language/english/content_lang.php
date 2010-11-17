@@ -369,7 +369,7 @@ $lang = array(
 
 'tabs' 				=> 'Tabs',
 
-'add_tab' 			=> '+ Add',
+'add_tab' 			=> 'Add Tab',
 
 'tab_name' 			=> 'Tab Name',
 'tab_name_required'	=> 'Please choose a name for your tab.',
