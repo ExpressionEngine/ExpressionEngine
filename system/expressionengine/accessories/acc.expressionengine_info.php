@@ -106,7 +106,7 @@ class Expressionengine_info_acc {
 		if ($latest_version[0] > APP_VER OR $latest_version[1] > APP_BUILD)
 		{
 			$download_url = $this->EE->cp->masked_url('https://secure.expressionengine.com/download.php');
-			$instruct_url = $this->EE->cp->masked_url($this->EE->config->item('doc_url').'installation/update.html');
+			$instruct_url = $this->EE->cp->masked_url($this->EE->config->item('doc_url').'#install_docs');
 			
 			$str = $this->EE->lang->line('update_available');
 			$str .= '<ul>';
