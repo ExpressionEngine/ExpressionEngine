@@ -108,12 +108,12 @@ class Expressionengine_info_acc {
 			$download_url = $this->EE->cp->masked_url('https://secure.expressionengine.com/download.php');
 			$instruct_url = $this->EE->cp->masked_url($this->EE->config->item('doc_url').'#install_docs');
 			
-			$str = $this->EE->lang->line('update_available');
+			$str = '<p><strong>' . $this->EE->lang->line('update_available') . '</strong></p><br />';
 			$str .= '<ul>';
 			$str .= '<li>'.str_replace(array('%v', '%b'), array($latest_version[0], $latest_version[1]), $this->EE->lang->line('current_version')).'</li>';
 			$str .= '<li>'.str_replace(array('%v', '%b'), array(APP_VER, APP_BUILD), $this->EE->lang->line('installed_version')).'</li>';
 			$str .= '</ul>';			
-			$str .= NL.str_replace(array('%d', '%i'), array($download_url, $instruct_url), $this->EE->lang->line('update_inst'));
+			$str .= '<br /><p>'.NL.str_replace(array('%d', '%i'), array($download_url, $instruct_url), $this->EE->lang->line('update_inst')).'</p>';
 			
 			return $str;
 		}
