@@ -374,6 +374,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	}
 }
 
+	var time = new Date().getTime();
+
 	oTable = $(".mainTable").dataTable( {	
 			"sPaginationType": "full_numbers",
 			"bLengthChange": false,
@@ -398,7 +400,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 			"bProcessing": true,
 			"bServerSide": true,
-			"sAjaxSource": EE.BASE+"&C=addons_modules&M=show_module_cp&module=updated_sites&method=pings_ajax_filter'.$id_get.'",
+			"sAjaxSource": EE.BASE+"&C=addons_modules&M=show_module_cp&module=updated_sites&method=pings_ajax_filter'.$id_get.'&time=" + time,
 			"fnServerData": fnDataTablesPipeline
 
 	} );

@@ -520,6 +520,8 @@ function fnGetKey( aoData, sKey )
 	}
 }
 
+	var time = new Date().getTime();
+
 	oTable = $(".mainTable").dataTable( {	
 			"sPaginationType": "full_numbers",
 			"bLengthChange": false,
@@ -545,7 +547,7 @@ function fnGetKey( aoData, sKey )
 		
 			"bProcessing": true,
 			"bServerSide": true,
-			"sAjaxSource": EE.BASE+"&C=addons_modules&M=show_module_cp&module=comment&method='.$ajax_method.'",
+			"sAjaxSource": EE.BASE+"&C=addons_modules&M=show_module_cp&module=comment&method='.$ajax_method.'&time=" + time,
 			"fnServerData": fnDataTablesPipeline
 
 	} );
