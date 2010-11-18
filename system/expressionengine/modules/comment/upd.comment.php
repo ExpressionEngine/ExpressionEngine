@@ -159,7 +159,7 @@ class Comment_upd {
 
 		$this->EE->load->library('layout');
 		$this->EE->layout->add_layout_fields($this->tabs());
-
+		
 		return TRUE;
 	}
 
@@ -195,7 +195,7 @@ class Comment_upd {
 
 		//  Remove a couple items from the file
 		
-		$this->EE->config->_update_config(array(), array('comment_word_censoring' => '', 'comment_moderation_override' => '', 'comment_smart_notifications' => '', 'comment_edit_time_limit' => ''));
+		$this->EE->config->_update_config(array(), array('comment_word_censoring' => '', 'comment_moderation_override' => '', 'comment_edit_time_limit' => ''));
 
 		
 		$this->EE->load->library('layout');

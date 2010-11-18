@@ -2067,9 +2067,12 @@ function fnOpenClose ( oSettings )
 			show_error($this->EE->lang->line('unauthorized_access'));
 		}
 		
+		$timelimit = $this->EE->input->post('comment_edit_time_limit');
+		
 		$insert['comment_word_censoring'] = ($this->EE->input->post('comment_word_censoring')) ? 'y' : 'n';
 		$insert['comment_moderation_override'] = ($this->EE->input->post('comment_moderation_override')) ? 'y' : 'n';
-
+		$insert['comment_edit_time_limit'] = ($timelimit && ctype_digit($timelimit)) ? $timelimit : '';
+		
 		$this->EE->config->_update_config($insert);
 
 
