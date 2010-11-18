@@ -405,17 +405,23 @@ class EE_Core {
 		}
 		
 		// make sure the theme exists, and shunt to default if it does not
-		if ( ! is_dir(PATH_CP_THEME.$cp_theme))
+		// always add default as a fallback.
+		if ($cp_theme == 'default' OR ! is_dir(PATH_CP_THEME.$cp_theme))
 		{
+			$this->EE->load->_ci_view_path = PATH_CP_THEME.'default/';
 			$cp_theme = 'default';
 		}
-
+		else
+		{
+			$this->EE->load->_ci_view_path = array(
+				PATH_CP_THEME.$cp_theme.'/',
+				PATH_CP_THEME.'default/'
+			);
+		}
+		
 		// go ahead and set this so we can use it from here on out
 		$this->EE->session->userdata['cp_theme'] = $cp_theme;
-		
-		// We explicitly set the view path since the theme files need to reside
-		// above the "system" folder.
-		$this->EE->load->_ci_view_path = PATH_CP_THEME.$cp_theme.'/';	
+
 		
 		// Fetch control panel language file	
 		$this->EE->lang->loadfile('cp');
