@@ -183,7 +183,7 @@ table a:hover {
 	margin-right:		-10px;
 	height:				10px!important;
 	width:				10px;
-	background:			url("<?=$cp_theme_url?>images/resize_handle.gif") no-repeat right bottom;
+	background:			url("../images/resize_handle.gif") no-repeat right bottom;
 	cursor:				w-resize;
 	float:				right;
 	position:			relative!important;
@@ -232,7 +232,7 @@ th .go_notice {
 
 ul.bullets li {
 	padding:			3px 11px;
-	background:			transparent url('<?=$cp_theme_url?>images/list_arrow.gif') center left no-repeat;
+	background:			transparent url('../images/list_arrow.gif') center left no-repeat;
 }
 
 .clear {
@@ -274,7 +274,7 @@ ul.bullets li {
 }
 
 ul.videos li a {
-	background:			transparent url('<?=$cp_theme_url?>images/list_item_video.gif') 15px no-repeat;
+	background:			transparent url('../images/list_item_video.gif') 15px no-repeat;
 }
 
 ul.bulleted {
@@ -283,7 +283,7 @@ ul.bulleted {
 }
 
 .submit {
-	background:			#f72a58 url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -298px;
+	background:			#f72a58 url('../images/backgrounds_sprite.png') repeat-x 0 -298px;
 	padding:			5px 9px;
 	color:				#fff/*!important*/;
 	border:				0;
@@ -303,7 +303,7 @@ ul.bulleted {
 }
 
 .submit_alt {
-	background:			#FFF url('<?=$cp_theme_url?>images/submit_alt_button_bg.jpg') bottom left repeat-x!important;
+	background:			#FFF url('../images/submit_alt_button_bg.jpg') bottom left repeat-x!important;
 	color:				#465660!important;
 }
 
@@ -376,7 +376,7 @@ span.button .submit {
 /* -------------------------------------*/
 
 #branding {
-	background: 		#27343c url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 0;
+	background: 		#27343c url('../images/backgrounds_sprite.png') repeat-x 0 0;
 	height:					17px;
 	margin-bottom:	5px;
 }
@@ -413,13 +413,13 @@ span.button .submit {
 }
 
 #navigationTabs > .parent.active {
-	background: 		url('<?=$cp_theme_url?>images/nav_active_arrow.png') bottom center no-repeat;
+	background: 		url('../images/nav_active_arrow.png') bottom center no-repeat;
 }
 
 #navigationTabs li a.first_level,
 #navigationTabs li a.first_level:link,
 #navigationTabs li a.first_level:visited {
-	background:			#27343C url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -79px;
+	background:			#27343C url('../images/backgrounds_sprite.png') repeat-x 0 -79px;
 	color:				#fff;
 	display:			block;
 	letter-spacing:		.1em;
@@ -432,13 +432,13 @@ span.button .submit {
 }
 
 #navigationTabs li a.first_level:hover {
-	background:	#27343C url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -103px;
+	background:	#27343C url('../images/backgrounds_sprite.png') repeat-x 0 -103px;
 	color:				#E7174B;
 }
 
 #navigationTabs li.active a.first_level,
 #navigationTabs li:active a.first_level {
-	background:	#F23055 url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -127px;
+	background:	#F23055 url('../images/backgrounds_sprite.png') repeat-x 0 -127px;
 	color:				#fff;
 }
 
@@ -504,23 +504,23 @@ span.button .submit {
 	
 	font-size:			12px;
 	color:				#5f6c74;
-	background: 		transparent url('<?=$cp_theme_url?>images/nav_bubble_top.png') top left no-repeat;
+	background: 		transparent url('../images/nav_bubble_top.png') top left no-repeat;
 			
 	padding:			8px 0 0 0;
 }
 
 #navigationTabs li.parent {
-	background:			url('<?=$cp_theme_url?>images/nav_arrow_light.png') center right no-repeat;
+	background:			url('../images/nav_arrow_light.png') center right no-repeat;
 }
 
 #navigationTabs li.bubble_footer {
-	background:			transparent url('<?=$cp_theme_url?>images/nav_bubble_bottom.png') bottom left no-repeat;
+	background:			transparent url('../images/nav_bubble_bottom.png') bottom left no-repeat;
 	height:				10px;
 	margin-bottom:		-10px;	/* drag it down and out into the open */
 }
 
 #navigationTabs li.bubble_footer:hover {	/* override highlight behavior */
-	background:			transparent url('<?=$cp_theme_url?>images/nav_bubble_bottom.png') bottom left no-repeat;
+	background:			transparent url('../images/nav_bubble_bottom.png') bottom left no-repeat;
 }
 
 #navigationTabs li ul a { /* second-level links */
@@ -538,17 +538,17 @@ span.button .submit {
 
 #navigationTabs li li.parent:focus, #navigationTabs li li.parent.active {
 	color:				#fff;
-	background:			#F81A53 url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -386px;
+	background:			#F81A53 url('../images/backgrounds_sprite.png') repeat-x 0 -386px;
 }
 
 /* third-and-above-level lists */
 #navigationTabs li ul ul {
-	background: 		transparent url('<?=$cp_theme_url?>images/nav_bubble_top.png') top left repeat-x;
+	background: 		transparent url('../images/nav_bubble_top.png') top left repeat-x;
 	margin:				-28px 0 0 160px;
 }
 
 #navigationTabs ul ul li:first-child > a {
-	background:			transparent url('<?=$cp_theme_url?>images/nav_submenu_arrow.png') top left no-repeat;
+	background:			transparent url('../images/nav_submenu_arrow.png') top left no-repeat;
 }
 
 #navigationTabs li.active ul ul,
@@ -628,7 +628,7 @@ span.button .submit {
 	font-size:			10px;
 	line-height:		29px;
 	text-align:			right;
-	background:			#d91350 url('<?=$cp_theme_url?>images/active_user.png') repeat-y;
+	background:			#d91350 url('../images/active_user.png') repeat-y;
 }
 
 #activeUser .userName {
@@ -704,7 +704,7 @@ div#search {
 #hideSidebarLink, #revealSidebarLink {
 	display:       	 	none;
 	border-top:			1px solid #a0aaa4;
-	background:			transparent url('<?=$cp_theme_url?>images/hide_sidebar_arrow.gif') top right no-repeat;
+	background:			transparent url('../images/hide_sidebar_arrow.gif') top right no-repeat;
 	display:			block;
 	font-size:			9px;
 	padding:			2px 25px 7px 0;
@@ -753,7 +753,7 @@ div#search {
 	display:			block;
 	float:				left;
 	padding:			0 25px 0 1px;
-	background:			#ECF1F4 url('<?=$cp_theme_url?>images/cp_sprite.png') right -90px no-repeat;
+	background:			#ECF1F4 url('../images/cp_sprite.png') right -90px no-repeat;
 	color:				#5E6871;
 }
 
@@ -880,7 +880,7 @@ div#search {
 
 
 .contentMenu .heading {
-	background:			#ABB7C3 url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -17px;
+	background:			#ABB7C3 url('../images/backgrounds_sprite.png') repeat-x 0 -17px;
 }
 
 .contentMenu h2 span {
@@ -913,15 +913,15 @@ div#search {
 	/*text-shadow:		0 1px 1px #fff;*/
 }
 
-.contentMenu li.group a {background:	#ECF1F4 url('<?=$cp_theme_url?>images/contentmenu_icons.gif') no-repeat 17px -80px;}
+.contentMenu li.group a {background:	#ECF1F4 url('../images/contentmenu_icons.gif') no-repeat 17px -80px;}
 .contentMenu li.group a:hover {background-position:17px -100px;}
-.contentMenu li.resource a {background:	#ECF1F4 url('<?=$cp_theme_url?>images/contentmenu_icons.gif') no-repeat 17px -38px;}
+.contentMenu li.resource a {background:	#ECF1F4 url('../images/contentmenu_icons.gif') no-repeat 17px -38px;}
 .contentMenu li.resource a:hover {background-position: 17px -60px;}
-.contentMenu li.item a {background: #ECF1F4 url('<?=$cp_theme_url?>images/contentmenu_icons.gif') no-repeat 17px -120px; }
+.contentMenu li.item a {background: #ECF1F4 url('../images/contentmenu_icons.gif') no-repeat 17px -120px; }
 .contentMenu li.item a:hover {background-position:17px -140px;}
-.contentMenu li.site a {background:	#ECF1F4 url('<?=$cp_theme_url?>images/contentmenu_icons.gif') no-repeat 17px 6px;}
+.contentMenu li.site a {background:	#ECF1F4 url('../images/contentmenu_icons.gif') no-repeat 17px 6px;}
 .contentMenu li.site a:hover {background-position:17px -17px;}
-.contentMenu li.submission a {	background:	#ECF1F4 url('<?=$cp_theme_url?>images/contentmenu_icons.gif') no-repeat  17px -160px; }
+.contentMenu li.submission a {	background:	#ECF1F4 url('../images/contentmenu_icons.gif') no-repeat  17px -160px; }
 .contentMenu li.submission a:hover {background-position:17px -179px; }
 
 .contentMenu li span {
@@ -975,7 +975,7 @@ div#search {
 }
 
 .heading h2 {
-	background:			transparent url('<?=$cp_theme_url?>images/heading_images_sprite.gif') right -203px no-repeat;
+	background:			transparent url('../images/heading_images_sprite.gif') right -203px no-repeat;
 	font-weight:		normal;
 	color:				#fff;
 	font-size:			19px;
@@ -1007,15 +1007,15 @@ div#search {
 }
 
 #mainContent .create h2 {
-	background:			transparent url('<?=$cp_theme_url?>images/heading_images_sprite.gif') right -11px no-repeat;
+	background:			transparent url('../images/heading_images_sprite.gif') right -11px no-repeat;
 }
 
 #mainContent .modify h2 {
-	background:			transparent url('<?=$cp_theme_url?>images/heading_images_sprite.gif') right -131px no-repeat;
+	background:			transparent url('../images/heading_images_sprite.gif') right -131px no-repeat;
 }
 
 #mainContent .view h2 {
-	background:			transparent url('<?=$cp_theme_url?>images/heading_images_sprite.gif') right -72px no-repeat;
+	background:			transparent url('../images/heading_images_sprite.gif') right -72px no-repeat;
 }
 
 .contents {
@@ -1034,7 +1034,7 @@ div#search {
 }
 
 .contents .heading {
-	background:			#ABB7C3 url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -330px;
+	background:			#ABB7C3 url('../images/backgrounds_sprite.png') repeat-x 0 -330px;
 	clear:				left;
 }
 
@@ -1055,7 +1055,7 @@ div#search {
 }
 
 #mainContent #registerUser p {
-	background:			url('<?=$cp_theme_url?>images/field_divider.gif') bottom repeat-x;
+	background:			url('../images/field_divider.gif') bottom repeat-x;
 	padding:			6px 0 6px 0;
 	clear:				left;
 	line-height:		20px;
@@ -1131,7 +1131,7 @@ table.padTable td:last-child {
 }
 
 table.mainTable th {
-	background:		#2a3940 url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -540px;
+	background:		#2a3940 url('../images/backgrounds_sprite.png') repeat-x 0 -540px;
 	color:				#fff;
 	padding:			9px 8px 10px 8px;
 	border-left:		1px solid #45555f;
@@ -1139,17 +1139,17 @@ table.mainTable th {
 }
 
 table.mainTable thead {
-	background:			#C60047 url('<?=$cp_theme_url?>images/table_column_heading_active_bg.jpg') bottom left repeat-x;
+	background:			#C60047 url('../images/table_column_heading_active_bg.jpg') bottom left repeat-x;
 }
 
 table.mainTable .headerSortUp {
-	background:			transparent url('<?=$cp_theme_url?>images/table_sort_desc.gif') bottom right no-repeat;
+	background:			transparent url('../images/table_sort_desc.gif') bottom right no-repeat;
 	border-left:		1px solid #C60047;
 
 }
 
 table.mainTable th.headerSortDown {
-	background:			transparent url('<?=$cp_theme_url?>images/table_sort_asc.gif') bottom right no-repeat;
+	background:			transparent url('../images/table_sort_asc.gif') bottom right no-repeat;
 	border-left:		1px solid #C60047;
 
 }
@@ -1266,7 +1266,7 @@ th.hidden_col { display: none; } td.hidden_col { display: none; }
 }
 
 #mainContent .formArea .formHeading {
-	background:			#39464F url('<?=$cp_theme_url?>images/form_area_heading_bg.gif') bottom left repeat-x;
+	background:			#39464F url('../images/form_area_heading_bg.gif') bottom left repeat-x;
 	border-bottom:		1px solid #3f4d55;
 	padding:			9px 8px;
 	color:				#ECF1F4;
@@ -1279,7 +1279,7 @@ th.hidden_col { display: none; } td.hidden_col { display: none; }
 	font-size:			12px;
 	font-weight:		normal;
 	float:				right;
-	background:			#E11842 url('<?=$cp_theme_url?>images/submit_button_bg.gif') bottom left repeat-x;
+	background:			#E11842 url('../images/submit_button_bg.gif') bottom left repeat-x;
 }
 
 #mainContent .formArea .formHeading .newTemplate a {
@@ -1312,7 +1312,7 @@ th.hidden_col { display: none; } td.hidden_col { display: none; }
 	}	
 #menu span, #myAccount h3 {
 	display:			block;
-	background:			#3f4d55 url('<?=$cp_theme_url?>images/form_area_heading_bg.gif') bottom left repeat-x;
+	background:			#3f4d55 url('../images/form_area_heading_bg.gif') bottom left repeat-x;
 	border-left: 0;
 	border-top: 0;
 	border-bottom:		1px solid #28353D;
@@ -1405,7 +1405,7 @@ div.notice_texts .bad_path_error_list li ul li {color:#fff; font-weight:normal;}
 }
 
 span.ee_notice_icon {
-	background:transparent url(<?=$cp_theme_url?>images/cp_sprite.png) no-repeat 0 -90px;
+	background:transparent url(../images/cp_sprite.png) no-repeat 0 -90px;
 	width:13px;
 	height:14px;
 	display:block;
@@ -1414,7 +1414,7 @@ span.ee_notice_icon {
 }
 
 .heading span.msg_open_close {
-	background:transparent url(<?=$cp_theme_url?>images/cp_sprite.png) no-repeat -145px -90px;
+	background:transparent url(../images/cp_sprite.png) no-repeat -145px -90px;
 }
 
 #ee_important_message.closed {
@@ -1499,7 +1499,7 @@ span.ee_notice_icon {
 #template_details {
 	line-height:		1;
 	margin:				0 0 10px 0;
-	background:			#3f4d55 url('<?=$cp_theme_url?>images/template_edit_header_background.png') top left repeat-x;
+	background:			#3f4d55 url('../images/template_edit_header_background.png') top left repeat-x;
 	padding: 			10px 17px 12px 10px;
 	font-weight:		bold;
 	font-size:			13px;
@@ -1584,7 +1584,7 @@ select#site_list_pulldown {margin-bottom:10px;}
 	padding:			5px 0 5px 40px;
 	font-weight:		bold;
 	font-size:			13px;
-	background: 		#ECF1F4 url('<?=$cp_theme_url?>images/list_item_group.gif') 17px center no-repeat;
+	background: 		#ECF1F4 url('../images/list_item_group.gif') 17px center no-repeat;
 	border-bottom:		1px solid #d0d7df;
 }
 
@@ -1598,7 +1598,7 @@ select#site_list_pulldown {margin-bottom:10px;}
 .member_profile_themes li a:hover, .wiki_themes li a:hover, 
 .forum_themes li a:hover, .translation_files li a:hover {
 	/*border-bottom:		1px solid #fff;*/
-	background:			#fff url('<?=$cp_theme_url?>images/list_item_group_hover.gif') 17px center no-repeat;
+	background:			#fff url('../images/list_item_group_hover.gif') 17px center no-repeat;
 	color:				#e11842;
 }
 
@@ -1715,7 +1715,7 @@ div#templates {
 	width:				108px;
 	line-height:		46px;
 	height:				46px;
-	background:			url('<?=$cp_theme_url?>images/template_group_edit_balloon.png') left center no-repeat;
+	background:			url('../images/template_group_edit_balloon.png') left center no-repeat;
 	color:				#FFF;
 	font-size:			14px;
 	text-align:			center;
@@ -1725,7 +1725,7 @@ div#templates {
 
 #templateGroups .groupList li a.templateGroupName:link, #templateGroups .groupList li a.templateGroupName:visited {
 	display:			block;
-	background:			#ecf1f3 url('<?=$cp_theme_url?>images/design_sprite.png') 0 -42px no-repeat;
+	background:			#ecf1f3 url('../images/design_sprite.png') 0 -42px no-repeat;
 	padding-left:		25px;
 	font-weight:		bold;
 	color:				#5f6c74;
@@ -1735,13 +1735,13 @@ div#templates {
 }
 
 #templateGroups .groupList li a.templateGroupName:hover {
-	background: #fff	url('<?=$cp_theme_url?>images/design_sprite.png') 0 -42px no-repeat;
+	background: #fff	url('../images/design_sprite.png') 0 -42px no-repeat;
 	color:				#e11842;
 	text-decoration:	none;
 }
 
 #templateGroups .groupList li.selected a.templateGroupName:link, #templateGroups .groupList li.selected a.templateGroupName:visited {
-	background: #a9bac3	url('<?=$cp_theme_url?>images/design_sprite.png') 0 3px no-repeat;
+	background: #a9bac3	url('../images/design_sprite.png') 0 3px no-repeat;
 	border-bottom:		1px solid #d2d7db;
 	border-top:			none;
 	color:				#fff;
@@ -1749,7 +1749,7 @@ div#templates {
 
 
 #templateGroups .groupList #edit_group_order_lock {
-	background:			#ECF1F4 url('<?=$cp_theme_url?>images/lock_closed.gif') right top no-repeat;
+	background:			#ECF1F4 url('../images/lock_closed.gif') right top no-repeat;
 }
 
 div.exportTemplateGroup{
@@ -1788,7 +1788,7 @@ span.defaultIndicator {
 }
 
 .templateTable thead {
-	background:			#8fa2ad url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -474px;
+	background:			#8fa2ad url('../images/backgrounds_sprite.png') repeat-x 0 -474px;
 }
 
 .templateTable th {
@@ -1799,11 +1799,11 @@ span.defaultIndicator {
 }
 
 .templateTable .headerSortUp {
-	background:			transparent url('<?=$cp_theme_url?>images/template_table_sort_desc.gif') bottom right no-repeat;
+	background:			transparent url('../images/template_table_sort_desc.gif') bottom right no-repeat;
 }
 
 .templateTable th.headerSortDown {
-	background:			transparent url('<?=$cp_theme_url?>images/template_table_sort_asc.gif') bottom right no-repeat;
+	background:			transparent url('../images/template_table_sort_asc.gif') bottom right no-repeat;
 }
 
 .templateTable td {
@@ -1859,7 +1859,7 @@ a.less_important_link:hover {
 }
 
 .templateTable tr.highlightRow td {
-	background:			#8FA1AD url('<?=$cp_theme_url?>images/template_table_heading_bg.gif') bottom left repeat-x;
+	background:			#8FA1AD url('../images/template_table_heading_bg.gif') bottom left repeat-x;
 	border-bottom:		1px solid #8FA1AD;
 	color:				#fff;
 }
@@ -1881,75 +1881,75 @@ a.less_important_link:hover {
 }
 
 .templateTable td.webpage {
-	background:			url('<?=$cp_theme_url?>images/design_sprite.png') 0 -88px no-repeat;
+	background:			url('../images/design_sprite.png') 0 -88px no-repeat;
 }
 
 .templateTable tr.odd td.webpage {
-	background:		#ECF1F4	url('<?=$cp_theme_url?>images/design_sprite.png') -500px -88px no-repeat;
+	background:		#ECF1F4	url('../images/design_sprite.png') -500px -88px no-repeat;
 }
 
 .templateTable tr.highlightRow td.webpage {
-	background:		#8FA1AD url('<?=$cp_theme_url?>images/design_sprite.png') 0 -170px no-repeat;
+	background:		#8FA1AD url('../images/design_sprite.png') 0 -170px no-repeat;
 }
 
 .templateTable td.static {
-	background:			url('<?=$cp_theme_url?>images/design_sprite.png') 0 -88px no-repeat;
+	background:			url('../images/design_sprite.png') 0 -88px no-repeat;
 }
 
 .templateTable tr.odd td.static {
-	background:		#ECF1F4	url('<?=$cp_theme_url?>images/design_sprite.png') -500px -88px no-repeat;
+	background:		#ECF1F4	url('../images/design_sprite.png') -500px -88px no-repeat;
 }
 
 .templateTable tr.highlightRow td.static {
-	background:		#8FA1AD url('<?=$cp_theme_url?>images/design_sprite.png') 0 -170px no-repeat;
+	background:		#8FA1AD url('../images/design_sprite.png') 0 -170px no-repeat;
 }
 
 .templateTable td.index {
-	background:		url('<?=$cp_theme_url?>images/design_sprite.png') 0 -600px no-repeat;
+	background:		url('../images/design_sprite.png') 0 -600px no-repeat;
 }
 
 .templateTable tr.odd td.index {
-	background:	#ECF1F4 url('<?=$cp_theme_url?>images/design_sprite.png') -500px -600px no-repeat;
+	background:	#ECF1F4 url('../images/design_sprite.png') -500px -600px no-repeat;
 }
 
 .templateTable tr.highlightRow td.index {
-	background:		#8FA1AD url('<?=$cp_theme_url?>images/design_sprite.png') 0 -668px no-repeat;
+	background:		#8FA1AD url('../images/design_sprite.png') 0 -668px no-repeat;
 }
 
 .templateTable td.feed, .templateTable td.xml {
-	background:		url('<?=$cp_theme_url?>images/design_sprite.png') 0 -225px no-repeat;
+	background:		url('../images/design_sprite.png') 0 -225px no-repeat;
 }
 
 .templateTable tr.odd td.feed, .templateTable tr.odd td.xml {
-	background:	#ECF1F4 url('<?=$cp_theme_url?>images/design_sprite.png') -502px -225px no-repeat;
+	background:	#ECF1F4 url('../images/design_sprite.png') -502px -225px no-repeat;
 }
 
 .templateTable tr.highlightRow td.feed, .templateTable tr.highlightRow td.xml {
-	background:		#8FA1AD url('<?=$cp_theme_url?>images/design_sprite.png') 0 -292px no-repeat;
+	background:		#8FA1AD url('../images/design_sprite.png') 0 -292px no-repeat;
 }
 
 .templateTable td.css {
-	background:		url('<?=$cp_theme_url?>images/design_sprite.png') 0 -345px no-repeat;
+	background:		url('../images/design_sprite.png') 0 -345px no-repeat;
 }
 
 .templateTable tr.odd td.css {
-	background:		#ECF1F4 url('<?=$cp_theme_url?>images/design_sprite.png') -500px -345px no-repeat;
+	background:		#ECF1F4 url('../images/design_sprite.png') -500px -345px no-repeat;
 }
 
 .templateTable tr.highlightRow td.css {
-	background:		 url('<?=$cp_theme_url?>images/design_sprite.png') 0 -420px no-repeat;
+	background:		 url('../images/design_sprite.png') 0 -420px no-repeat;
 }
 
 .templateTable td.js {
-	background:		url('<?=$cp_theme_url?>images/design_sprite.png') 0 -478px no-repeat;
+	background:		url('../images/design_sprite.png') 0 -478px no-repeat;
 }
 
 .templateTable tr.odd td.js {
-	background:	#ECF1F4 url('<?=$cp_theme_url?>images/design_sprite.png') -500px -478px no-repeat;
+	background:	#ECF1F4 url('../images/design_sprite.png') -500px -478px no-repeat;
 }
 
 .templateTable tr.highlightRow td.js {
-	background:		#8FA1AD url('<?=$cp_theme_url?>images/design_sprite.png') 0 -548px no-repeat;
+	background:		#8FA1AD url('../images/design_sprite.png') 0 -548px no-repeat;
 }
 
 .templateTable tr.accessRowHeader td {
@@ -2097,7 +2097,7 @@ table.accessTable div.tableCellHeading {
 }
 
 #mainContent .editAccordion {
-	background:			#8FA1AD url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -426px;
+	background:			#8FA1AD url('../images/backgrounds_sprite.png') repeat-x 0 -426px;
 	border:				1px solid #A1B4C2;
 }
 
@@ -2112,7 +2112,7 @@ table.accessTable div.tableCellHeading {
 }
 
 #mainContent .editAccordion h3 {
-	background:			transparent url('<?=$cp_theme_url?>images/template_edit_minus.png') 6px 7px no-repeat;
+	background:			transparent url('../images/template_edit_minus.png') 6px 7px no-repeat;
 	border:				0;
 	padding:			5px;
 	padding-left:		22px;
@@ -2124,7 +2124,7 @@ table.accessTable div.tableCellHeading {
 }
 
 #mainContent .editAccordion.collapsed h3 {
-	background:			#DEE6E9 url('<?=$cp_theme_url?>images/template_edit_plus.png') 7px 8px no-repeat;
+	background:			#DEE6E9 url('../images/template_edit_plus.png') 7px 8px no-repeat;
 	color:				#34424B;
 	text-shadow:		none;
 }
@@ -2150,7 +2150,7 @@ table.accessTable div.tableCellHeading {
 	border:				0;
 	margin:				0;
 	padding:			0;
-	background:			url('<?=$cp_theme_url?>images/field_divider.gif') bottom repeat-x;
+	background:			url('../images/field_divider.gif') bottom repeat-x;
 }
 
 .multi_edit legend {
@@ -2185,7 +2185,7 @@ table.accessTable div.tableCellHeading {
 #mainContent .tab_menu li {
 	float: 				left;
 	display:			inline;
-	background:			#3a4850 url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -217px;
+	background:			#3a4850 url('../images/backgrounds_sprite.png') repeat-x 0 -217px;
 	border-right: 		1px solid #505f66;
 	border-left: 		4px solid #2d383e;
 	border-top:			1px solid #4f5e65;
@@ -2262,7 +2262,7 @@ table.accessTable div.tableCellHeading {
 }
 
 .publish_field {
-	background:			#ECF1F4 url('<?=$cp_theme_url?>images/publish_field_background.jpg') no-repeat left top;
+	background:			#ECF1F4 url('../images/publish_field_background.jpg') no-repeat left top;
 	background-position:-15px 0px;
 	border-left: 		1px solid #d0d7df;
 	border-top:			1px solid #D1D5DE;
@@ -2319,7 +2319,7 @@ label.hide_field {
 }
 
 #mainContent .dates_tab {
-	background:			url('<?=$cp_theme_url?>images/content_custom_tab.png') repeat-x top;
+	background:			url('../images/content_custom_tab.png') repeat-x top;
 }
 
 /*
@@ -2333,7 +2333,7 @@ label.hide_field {
  	padding: 			2px;
 	border:				0;
 	margin:				0;
-	background:			url('<?=$cp_theme_url?>images/field_divider.gif') bottom repeat-x;
+	background:			url('../images/field_divider.gif') bottom repeat-x;
 
 }
 
@@ -2366,7 +2366,7 @@ label.hide_field {
 }
 
 #mainContent #tools h3 {
-	background:			url('<?=$cp_theme_url?>images/content_custom_tab.jpg') repeat-x top;
+	background:			url('../images/content_custom_tab.jpg') repeat-x top;
 	margin-left:		-4px;
 	margin-bottom:		0;
 	padding-bottom:		0;
@@ -2383,12 +2383,12 @@ label.hide_field {
 }
 
 #mainContent #tools h3 a.closed {
-	background-image:			url('<?=$cp_theme_url?>images/content_custom_tab_arrow_closed_shadow.jpg');
+	background-image:			url('../images/content_custom_tab_arrow_closed_shadow.jpg');
 	border-bottom:				1px solid #CBD9E2;
 }
 
 #mainContent #tools h3 a {
-	background:			url('<?=$cp_theme_url?>images/content_custom_tab_arrow_open_shadow.jpg') no-repeat left top;
+	background:			url('../images/content_custom_tab_arrow_open_shadow.jpg') no-repeat left top;
 	padding: 			0 0 0 25px;
 	margin: 			0;
 	color: 				#ffffff;
@@ -2449,7 +2449,7 @@ select#upload_dir {
 
 #mainContent #tools li a {
 	display: 			block;
-	background:			url(<?=$cp_theme_url?>images/content_custom_tab_edit.png) no-repeat scroll left bottom;
+	background:			url(../images/content_custom_tab_edit.png) no-repeat scroll left bottom;
 	padding-left: 		32px;
 	padding-right:		4px;
 	line-height: 		20px;
@@ -2533,7 +2533,7 @@ a#refresh_categories {
 }
 
 .hasDatepicker { /* UI datepicker automatically adds this class */
-	background: #fff url('<?=$cp_theme_url?>images/calendar_bg.gif') no-repeat 98% 2px;
+	background: #fff url('../images/calendar_bg.gif') no-repeat 98% 2px;
 	
 	background-repeat: no-repeat;
 	background-position: 99%;
@@ -2542,7 +2542,7 @@ a#refresh_categories {
 }
 
 #custom_date_picker input[type="text"] {
-	background: transparent url('<?=$cp_theme_url?>images/calendar_bg.gif') no-repeat 98% 2px;
+	background: transparent url('../images/calendar_bg.gif') no-repeat 98% 2px;
 	width:90%;
 }
 
@@ -2596,7 +2596,7 @@ a#refresh_categories {
 	font-size:			10px;
 	height: 			15px;
 	line-height:		18px;
-	background:			#ECF1F4 url('<?=$cp_theme_url?>images/publish_toolbar_background.png') repeat-x top;
+	background:			#ECF1F4 url('../images/publish_toolbar_background.png') repeat-x top;
 	margin-right: 		20px;
 	clear: 				left;
 }
@@ -2873,7 +2873,7 @@ a#refresh_categories {
 	font-size:			18px;
 	line-height:		18px;
 	color:				#dee4e4;
-	background:			#98AAB6 url('<?=$cp_theme_url?>images/backgrounds_sprite.png') repeat-x 0 -426px;
+	background:			#98AAB6 url('../images/backgrounds_sprite.png') repeat-x 0 -426px;
 	padding:			6px 12px;
 }
 
@@ -2891,7 +2891,7 @@ a#refresh_categories {
 }
 
 #accessoryTabs li a span.accessoryHandle {
-		background:			transparent url('<?=$cp_theme_url?>images/cp_sprite.png') no-repeat left top;
+		background:			transparent url('../images/cp_sprite.png') no-repeat left top;
 		position:			absolute;
 		right:				0;
 		top:				4px;
@@ -2906,7 +2906,7 @@ a#refresh_categories {
 }
 
 #accessoryTabs li.current a span.accessoryHandle {
-	background:			#243038 url('<?=$cp_theme_url?>images/cp_sprite.png') no-repeat left -16px;
+	background:			#243038 url('../images/cp_sprite.png') no-repeat left -16px;
 	top:				3px;
 }
 
@@ -2953,16 +2953,16 @@ a#refresh_categories {
 
 #learningEE ul.videos {
 	padding-left:		40px;
-	background:			transparent url('<?=$cp_theme_url?>images/video_list_icon.gif') top left no-repeat;
+	background:			transparent url('../images/video_list_icon.gif') top left no-repeat;
 }
 
 #learningEE ul.videos li a {
 	padding-left:		16px;
-	background:			transparent url('<?=$cp_theme_url?>images/list_item_video.gif') left no-repeat;
+	background:			transparent url('../images/list_item_video.gif') left no-repeat;
 }
 
 #learningEE ul.videos li a:hover {
-	background-image:			url('<?=$cp_theme_url?>images/list_item_video_hover.gif');
+	background-image:			url('../images/list_item_video_hover.gif');
 }
 
 #newsAndStats .accessorySection {
@@ -2983,7 +2983,7 @@ a#refresh_categories {
 #newsAndStats a.entryLink:link, #newsAndStats a.entryLink:visited {
 	color:				#a0aaa4;
 	padding-left:		12px;
-	background:			transparent url('<?=$cp_theme_url?>images/news_link_icon.gif') left center no-repeat;
+	background:			transparent url('../images/news_link_icon.gif') left center no-repeat;
 }
 
 #newsAndStats a.entryLink:hover {
@@ -3077,7 +3077,7 @@ input#ip_address {
 }
 
 #mainContent h3.accordion {
-	/*background:			#3f4d55 url('<?=$cp_theme_url?>images/form_area_heading_bg.gif') bottom left repeat-x;*/
+	/*background:			#3f4d55 url('../images/form_area_heading_bg.gif') bottom left repeat-x;*/
 	border-bottom:		1px solid #d2d7db;
 	padding:			3px 4px 3px 28px;
 	color:				#FFF!important;
@@ -3104,7 +3104,7 @@ input#ip_address {
 }
 
 #mainContent .prefSettings p {
-	background:			url('<?=$cp_theme_url?>images/field_divider.gif') bottom repeat-x;
+	background:			url('../images/field_divider.gif') bottom repeat-x;
 	padding:			5px 0 8px 0;
 	clear:				left;
 }
@@ -3148,7 +3148,7 @@ input#ip_address {
 }
 
 .toolsMenu h2 {
-	background:			transparent url('<?=$cp_theme_url?>images/tools_watermark.gif') bottom right no-repeat;
+	background:			transparent url('../images/tools_watermark.gif') bottom right no-repeat;
 	
 }
 
@@ -3165,7 +3165,7 @@ input#ip_address {
 
 /* close button positioned on upper right corner */
 #overlay .close {
-	background-image: 		url('<?=$cp_theme_url?>images/fancybox/fancybox.png');
+	background-image: 		url('../images/fancybox/fancybox.png');
 	background-position: 	-40px 0px;
 	position:				absolute;
 	right:					-10px;
@@ -3202,7 +3202,7 @@ div.contentWrap {
 
 
 #file_list li h3 {
-	background:			#3f4d55 url('<?=$cp_theme_url?>images/form_area_heading_bg.gif') bottom left repeat-x;
+	background:			#3f4d55 url('../images/form_area_heading_bg.gif') bottom left repeat-x;
 	padding:			6px 0 3px 5px!important;
 	color:				#ECF1F4;
 	cursor:				pointer;
@@ -3244,7 +3244,7 @@ div.contentWrap {
 
 #file_list li li {
 	clear: 				left;
-	list-style-image:   url(<?=$cp_theme_url?>images/list_item_item.gif);
+	list-style-image:   url(../images/list_item_item.gif);
 	margin:		0 0 0 23px;
 	height: 15px;
 }
@@ -3282,7 +3282,7 @@ div.contentWrap {
 }
 
 #file_manager_tools h3 {
-	background:			url('<?=$cp_theme_url?>images/content_custom_tab.jpg') repeat-x top;
+	background:			url('../images/content_custom_tab.jpg') repeat-x top;
 	margin-left:		-4px;
 	margin-bottom:		0;
 	padding-bottom:		0;
@@ -3294,12 +3294,12 @@ div.contentWrap {
 }
 
 #file_manager_tools h3 a.closed {
-	background-image:			url('<?=$cp_theme_url?>images/content_custom_tab_arrow_closed_shadow.jpg');
+	background-image:			url('../images/content_custom_tab_arrow_closed_shadow.jpg');
 	border-bottom:				1px solid #CBD9E2;
 }
 
 #file_manager_tools h3 a {
-	background:			url('<?=$cp_theme_url?>images/content_custom_tab_arrow_open_shadow.jpg') no-repeat left top;
+	background:			url('../images/content_custom_tab_arrow_open_shadow.jpg') no-repeat left top;
 	padding: 			0 0 0 25px;
 	margin: 			0;
 	color: 				#ffffff;
@@ -3310,7 +3310,7 @@ div.contentWrap {
 }
 
 #file_manager_tools h3 a.open {
-	background:			url('<?=$cp_theme_url?>images/content_custom_tab_arrow_open.jpg') no-repeat left top;
+	background:			url('../images/content_custom_tab_arrow_open.jpg') no-repeat left top;
 }
 
 #file_manager_tools li a,
@@ -3383,19 +3383,19 @@ div.contentWrap {
 }
 
 #mainContent #file_manager .f_m_s ul #download_selected {
-	background: transparent url(<?=$cp_theme_url?>/images/icon-download-file.png) no-repeat;
+	background: transparent url(../images/icon-download-file.png) no-repeat;
 }
 
 #mainContent #file_manager .f_m_s ul #delete_selected_files {
-	background: transparent url(<?=$cp_theme_url?>/images/icon-delete.png) no-repeat;
+	background: transparent url(../images/icon-delete.png) no-repeat;
 }
 
 #mainContent #file_manager .f_m_s ul #create_new_upload_pref {
-	background: transparent url(<?=$cp_theme_url?>/images/icon-create-upload-file.png) no-repeat;
+	background: transparent url(../images/icon-create-upload-file.png) no-repeat;
 }
 
 #mainContent #file_manager .f_m_s ul #upload_item {
-	background: transparent url(<?=$cp_theme_url?>/images/upload_item.png) no-repeat;
+	background: transparent url(../images/upload_item.png) no-repeat;
 }
 
 #mainContent #file_manager .f_m_s .cp_button {
@@ -3433,7 +3433,7 @@ div.contentWrap {
 }
 
 #file_manager_list h3 {
-	background: 		#ECF1F4 url('<?=$cp_theme_url?>images/folder_icon_open.gif') no-repeat left;
+	background: 		#ECF1F4 url('../images/folder_icon_open.gif') no-repeat left;
 	margin-bottom: 		0;
 	padding-left: 		35px;
 	padding:			5px 20px;
@@ -3442,7 +3442,7 @@ div.contentWrap {
 }
 
 #file_manager_list h3.closed {
-	background-image: url('<?=$cp_theme_url?>images/folder_icon_closed.gif');
+	background-image: url('../images/folder_icon_closed.gif');
 }
 #file_manager_list p {
 	margin-bottom:10px;
@@ -3492,7 +3492,7 @@ table.solo {
 }
 
 #image_edit_form p {
-	background:			url('<?=$cp_theme_url?>images/field_divider.gif') bottom repeat-x;
+	background:			url('../images/field_divider.gif') bottom repeat-x;
 	padding:			5px 0 8px 0;
 	clear:				left;
 }
@@ -3674,7 +3674,7 @@ table.solo {
 {
 	font-size: 0;
 	position: absolute;
-	background: white url('<?=$cp_theme_url?>images/jcrop.gif') top left repeat;
+	background: white url('../images/jcrop.gif') top left repeat;
 }
 .jcrop-vline { height: 100%; width: 1px !important; }
 .jcrop-hline { width: 100%; height: 1px !important; }
@@ -3734,7 +3734,7 @@ html.js #revealSidebarLink {
 	width:22px; height:5px;
 	margin-left:auto;
 	margin-right:auto;
-	background: transparent url(<?=$cp_theme_url?>images/cp_sprite.png) no-repeat left -34px;
+	background: transparent url(../images/cp_sprite.png) no-repeat left -34px;
 	cursor:n-resize;
 }
 /***************************************************************************************/
@@ -3857,117 +3857,117 @@ html.js #revealSidebarLink {
 	text-decoration: none!important;
 }
 .markItUp .btn_b a, .markItUp .btn_strong a {
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -85px 0;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -85px 0;
 	text-indent:-10000px;
 	border:0!important;
 	width: 19px;
 }
 .markItUp .btn_i a, .markItUp .btn_em a {
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -175px 0;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -175px 0;
 	text-indent:-10000px;
 	border:0!important;
 	width: 19px;
 }
 .markItUp .btn_s a, .markItUp .btn_strike a, .markItUp .btn_del a {
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -131px 0;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -131px 0;
 	text-indent:-10000px;
 	border:0!important;
 	width: 19px;
 }
 .markItUp .btn_ins a, .markItUp .btn_insert a {
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -198px 0;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -198px 0;
 	text-indent:-10000px;
 	border:0!important;
 	width: 19px;
 }
 .markItUp .btn_ul a {
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -107px -21px;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -107px -21px;
 	text-indent:-10000px;
 	border:0!important;
 	width: 19px;
 }
 .markItUp .btn_ol a {
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -198px -21px;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -198px -21px;
 	text-indent:-10000px;
 	border:0!important;
 	width: 19px;
 }
 .markItUp .btn_li a, .markItUp .btn_indent a {
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -107px 0;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -107px 0;
 	text-indent:-10000px;
 	border:0!important;
 	background-color: transparent;
 	width: 19px;
 }
 .markItUp .btn_p a, .markItUp .btn_paragraph a {
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -221px 0;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -221px 0;
 	text-indent:-10000px;
 	border:0!important;
 	width: 19px;
 }
 .markItUp .btn_blockquote a, .markItUp .btn_bq a {
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -85px -21px;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -85px -21px;
 	text-indent:-10000px;
 	border:0!important;
 	width: 19px;
 }
 .markItUp .btn_h1 a, .markItUp .btn_heading1 a, .markItUp .btn_headingone a {
 	width: 25px;
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat 0 0;
+	background: transparent url(../images/formatting_buttons.png) no-repeat 0 0;
 	text-indent:-10000px;
 	border:0!important;
 }
 .markItUp .btn_h2 a, .markItUp .btn_heading2 a, .markItUp .btn_headingtwo a {
 	width: 25px;
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -27px 0;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -27px 0;
 	text-indent:-10000px;
 	border:0!important;
 }
 .markItUp .btn_h3 a, .markItUp .btn_heading3 a, .markItUp .btn_headingthree a {
 	width: 25px;
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -54px 0;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -54px 0;
 	text-indent:-10000px;
 	border:0!important;
 }
 .markItUp .btn_h4 a, .markItUp .btn_heading4 a, .markItUp .btn_headingfour a {
 	width: 25px;
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat 0 -21px;
+	background: transparent url(../images/formatting_buttons.png) no-repeat 0 -21px;
 	text-indent:-10000px;
 	border:0!important;
 }
 .markItUp .btn_h5 a, .markItUp .btn_heading5 a, .markItUp .btn_headingfive a {
 	width: 25px;
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -27px -21px;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -27px -21px;
 	text-indent:-10000px;
 	border:0!important;
 }
 .markItUp .btn_h6 a, .markItUp .btn_heading6 a, .markItUp .btn_headingsix a {
 	width: 25px;
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -54px -21px;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -54px -21px;
 	text-indent:-10000px;
 	border:0!important;
 }
 .markItUp .btn_a a, .markItUp .btn_link a, .markItUp .btn_anchor a {
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -153px 0;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -153px 0;
 	text-indent:-10000px;
 	border:0!important;
 	width: 19px;
 }
 .markItUp .btn_img a, .markItUp .btn_image a, .markItUp .btn_graphic a {
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -175px -21px;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -175px -21px;
 	text-indent:-10000px;
 	border:0!important;
 	width: 19px;
 }
 .markItUp .btn_separator a {
-	background-image:url(<?=$cp_theme_url?>images/publish_separator.gif);
+	background-image:url(../images/publish_separator.gif);
 	text-indent:-10000px;
 	border:0!important;
 	background-color: transparent;
 	width: 19px;
 }
 .markItUp .btn_plus a {
-	background: transparent url(<?=$cp_theme_url?>images/formatting_buttons.png) no-repeat -132px -21px;
+	background: transparent url(../images/formatting_buttons.png) no-repeat -132px -21px;
 	text-indent:-10000px;
 	border:0!important;
 	width: 19px;
