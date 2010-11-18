@@ -156,8 +156,24 @@ class Javascript extends CI_Controller {
 		}
 		elseif ($loadfile == 'css')
 		{
-			$file = $this->load->_ci_view_path.'css/advanced.css';
 			$contents = 'css';
+			
+			if ( ! is_array($this->load->_ci_view_path))
+			{
+				$file = $this->load->_ci_view_path.'css/advanced.css';
+			}
+			else
+			{
+				foreach ($this->load->_ci_view_path as $a_path)
+				{
+					$file = $a_path.'css/advanced.css';
+					
+					if (file_exists($file))
+					{
+						break;
+					}
+				}
+			}
 		}
 		else
 		{
@@ -311,7 +327,7 @@ class Javascript extends CI_Controller {
 		$this->output->set_header('Content-Length: '.strlen($contents));
 		$this->output->set_output($contents);
 	}
-
+	
 	// --------------------------------------------------------------------
 	
 	/**
