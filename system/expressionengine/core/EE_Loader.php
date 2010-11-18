@@ -47,13 +47,23 @@ class EE_Loader extends CI_Loader {
 	 */
 	function view($view, $vars = array(), $return = FALSE)
 	{
+		$paths = $this->_ci_view_path;
+		
 		if (is_array($this->_ci_view_path))
 		{
-			
+			foreach ($this->_ci_view_path as $path)
+			{
+				if (file_exists($path.$view))
+				{
+					$this->_ci_view_path = $path;
+				}
+			}
 		}
+
+		$ret = parent::view($view, $vars, $return);
 		
-		
-		return $this->_ci_load(array('_ci_view' => $view, '_ci_vars' => $this->_ci_object_to_array($vars), '_ci_return' => $return));
+		$this->_ci_view_path = $paths;
+		return $ret;
 	}
 	
 }
