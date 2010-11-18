@@ -5,7 +5,7 @@
 
 	<title><?=$cp_page_title?> | ExpressionEngine</title>
 
-	<link rel="stylesheet" href="<?=$this->config->item('theme_folder_url')?>jquery_ui/<?=$this->cp->cp_theme;?>/jquery-ui-1.7.2.custom.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="<?=$this->config->item('theme_folder_url')?>cp_themes/<?=$this->cp->cp_theme;?>/css/jquery-ui-1.7.2.custom.css" type="text/css" media="screen" />
 	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'theme='. $this->cp->cp_theme .AMP.'v='.$theme_css_mtime?>" type="text/css" media="screen" title="Global Styles" charset="utf-8" />
 	<?php if ($this->extensions->active_hook('cp_css_end') === TRUE):?>
 	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'M=cp_global_ext';?>" type="text/css" />
