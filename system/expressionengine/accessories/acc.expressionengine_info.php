@@ -94,6 +94,7 @@ class Expressionengine_info_acc {
 		$this->EE->load->helper('version_helper');
 			
 		$details = get_version_info();
+		$download_url = $this->EE->cp->masked_url('https://secure.expressionengine.com/download.php');
 		
 		if ( ! $details)
 		{
@@ -103,18 +104,30 @@ class Expressionengine_info_acc {
 		end($details);
 		$latest_version = current($details);
 		
-		if ($latest_version[0] > APP_VER OR $latest_version[1] > APP_BUILD)
+		if ($latest_version[0] > APP_VER)
 		{
-			$download_url = $this->EE->cp->masked_url('https://secure.expressionengine.com/download.php');
-			$instruct_url = $this->EE->cp->masked_url($this->EE->config->item('doc_url').'#install_docs');
+			$instruct_url = $this->EE->cp->masked_url($this->EE->config->item('doc_url').'installation/update.html');
 			
-			$str = '<p><strong>' . $this->EE->lang->line('update_available') . '</strong></p><br />';
+			$str = '<p><strong>' . $this->EE->lang->line('version_update_available') . '</strong></p><br />';
 			$str .= '<ul>';
 			$str .= '<li>'.str_replace(array('%v', '%b'), array($latest_version[0], $latest_version[1]), $this->EE->lang->line('current_version')).'</li>';
 			$str .= '<li>'.str_replace(array('%v', '%b'), array(APP_VER, APP_BUILD), $this->EE->lang->line('installed_version')).'</li>';
 			$str .= '</ul>';			
-			$str .= '<br /><p>'.NL.str_replace(array('%d', '%i'), array($download_url, $instruct_url), $this->EE->lang->line('update_inst')).'</p>';
+			$str .= '<br /><p>'.NL.str_replace(array('%d', '%i'), array($download_url, $instruct_url), $this->EE->lang->line('version_update_inst')).'</p>';
 			
+			return $str;
+		}
+		elseif($latest_version[1] > APP_BUILD)
+		{
+			$instruct_url = $this->EE->cp->masked_url($this->EE->config->item('doc_url').'installation/update_build.html');
+			
+			$str = '<p><strong>' . $this->EE->lang->line('build_update_available') . '</strong></p><br />';
+			$str .= '<ul>';
+			$str .= '<li>'.str_replace(array('%v', '%b'), array($latest_version[0], $latest_version[1]), $this->EE->lang->line('current_version')).'</li>';
+			$str .= '<li>'.str_replace(array('%v', '%b'), array(APP_VER, APP_BUILD), $this->EE->lang->line('installed_version')).'</li>';
+			$str .= '</ul>';			
+			$str .= '<br /><p>'.NL.str_replace(array('%d', '%i'), array($download_url, $instruct_url), $this->EE->lang->line('build_update_inst')).'</p>';			
+
 			return $str;
 		}
 		
