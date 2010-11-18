@@ -46,66 +46,75 @@ class Css extends CI_Controller {
 		{
 			$file = ($this->input->get_post('M') !== FALSE) ? $this->input->get_post('M') : 'global';
 		}
-		
-		
-		
-		foreach ($this->load->_ci_view_path as $path)
+
+		if (is_array($this->load->_ci_view_path))
 		{
-			if (file_exists($path.'css/'.$file.'.css'))
+			foreach($this->load->_ci_view_path as $path)
 			{
-				$this->output->out_type = 'cp_asset';
-				$this->output->enable_profiler(FALSE);
+				$this->_load_css_file($path, $file);
+			}
+		}
 
-				$max_age		= 5184000;
-				$modified		= filemtime($path);
-				$modified_since	= $this->input->server('HTTP_IF_MODIFIED_SINCE');
-
-				// Remove anything after the semicolon
-
-				if ($pos = strrpos($modified_since, ';') !== FALSE)
-				{
-					$modified_since = substr($modified_since, 0, $pos);
-				}
-
-				// If the file is in the client cache, we'll
-				// send a 304 and be done with it.
-
-				if ($modified_since && (strtotime($modified_since) == $modified))
-				{
-					$this->output->set_status_header(304);
-					exit;
-				}
-
-				// Send a custom ETag to maintain a useful cache in
-				// load-balanced environments
-
-				$this->output->set_header("ETag: ".md5($modified.$path));
+		$this->_load_css_file($this->load->_ci_view_path, $file);
+		
+	}
 
 
-				// All times GMT
-				$modified = gmdate('D, d M Y H:i:s', $modified).' GMT';
-				$expires  = gmdate('D, d M Y H:i:s', time() + $max_age).' GMT';
+	private function _load_css_file($path, $file)
+	{
+		if (file_exists($path.'css/'.$file.'.css'))
+		{
+			$this->output->out_type = 'cp_asset';
+			$this->output->enable_profiler(FALSE);
 
-				$this->output->set_status_header(200);
+			$max_age		= 5184000;
+			$modified		= filemtime($path);
+			$modified_since	= $this->input->server('HTTP_IF_MODIFIED_SINCE');
 
-				$this->output->set_header('Content-type: text/css');
-				$this->output->set_header("Cache-Control: max-age={$max_age}, must-revalidate");
-				$this->output->set_header('Vary: Accept-Encoding');
-				$this->output->set_header('Last-Modified: '.$modified);
-				$this->output->set_header('Expires: '.$expires);
+			// Remove anything after the semicolon
+
+			if ($pos = strrpos($modified_since, ';') !== FALSE)
+			{
+				$modified_since = substr($modified_since, 0, $pos);
+			}
+
+			// If the file is in the client cache, we'll
+			// send a 304 and be done with it.
+
+			if ($modified_since && (strtotime($modified_since) == $modified))
+			{
+				$this->output->set_status_header(304);
+				exit;
+			}
+
+			// Send a custom ETag to maintain a useful cache in
+			// load-balanced environments
+
+			$this->output->set_header("ETag: ".md5($modified.$path));
 
 
-				$this->load->view('css/'.$file.'.css', '');
+			// All times GMT
+			$modified = gmdate('D, d M Y H:i:s', $modified).' GMT';
+			$expires  = gmdate('D, d M Y H:i:s', time() + $max_age).' GMT';
 
-				if ($this->config->item('send_headers') == 'y')
-				{
-					$this->output->set_header('Content-Length: '.strlen($this->output->final_output));
-				}
-				
-				continue;
+			$this->output->set_status_header(200);
+
+			@header('Content-type: text/css');
+			@header("Cache-Control: max-age={$max_age}, must-revalidate");
+			@header('Vary: Accept-Encoding');
+			@header('Last-Modified: '.$modified);
+			@header('Expires: '.$expires);
+
+
+			$this->load->view('css/'.$file.'.css', '');
+
+			if ($this->config->item('send_headers') == 'y')
+			{
+				@header('Content-Length: '.strlen($this->output->final_output));
 			}
 		}
 	}
+
 
 	// ------------------------------------------------------------------------	
 	

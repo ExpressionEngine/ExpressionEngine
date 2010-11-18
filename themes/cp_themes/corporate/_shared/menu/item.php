@@ -1,1 +1,0 @@
-<li class="{li_class}"><a href="{url}" class="{link_class}">{title}</a></li>
