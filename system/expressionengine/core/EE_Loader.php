@@ -45,7 +45,7 @@ class EE_Loader extends CI_Loader {
 		{
 			foreach ($this->_ci_view_path as $path)
 			{
-				if (file_exists($path.$view))
+				if (file_exists($path.$view.EXT))
 				{
 					$this->_ci_view_path = $path;
 				}
