@@ -38,6 +38,8 @@ class Search {
 	var $fields			= array();
 	var $num_rows		= 0;
 
+	protected $_meta 	= array();
+
 
 	function Search()
 	{
@@ -56,6 +58,9 @@ class Search {
 		/** ----------------------------------------*/
 		
 		$this->EE->lang->loadfile('search');
+
+		// Get hidden meta vars 
+		$this->_get_meta_vars();
 		
 		/** ----------------------------------------
 		/**  Profile Exception
@@ -68,7 +73,7 @@ class Search {
 		
 		if ($this->EE->input->get_post('mbr'))
 		{
-			$_POST['RP'] 			= ($this->EE->input->get_post('result_path') != '') ? $this->EE->input->get_post('result_path') : 'search/results';
+			$this->_meta['result_page']	= ($this->EE->input->get_post('result_path') != '') ? $this->EE->input->get_post('result_path') : 'search/results';
 			$_POST['keywords']		= '';
 			$_POST['exact_match'] 	= 'y';
 			$_POST['exact_keyword'] = 'n';
@@ -76,18 +81,17 @@ class Search {
 		//	$_POST['member_name'] 	= urldecode($this->EE->input->get_post('fetch_posts_by'));
 		}
 		
-		
 		// RP can be used in a query string,
 		// so we need to clean it a bit
 		
-		$_POST['RP'] = str_replace(array('=', '&'), '', $_POST['RP']);
+		$this->_meta['result_page'] = str_replace(array('=', '&'), '', $this->_meta['result_page']);
 
 
 		/** ----------------------------------------
 		/**  Pulldown Addition - Any, All, Exact
 		/** ----------------------------------------*/
 		
-		if (isset($_POST['where']) && $_POST['where'] == 'exact')
+		if (isset($this->_meta['where']) && $this->_meta['where'] == 'exact')
 		{
 			$_POST['exact_keyword'] = 'y';
 		}
@@ -100,7 +104,7 @@ class Search {
 		// If the parameter is missing we'll issue an error since we don't know where to 
 		// show the results
 		
-		if ( ! isset($_POST['RP']) OR $_POST['RP'] == '')
+		if ( ! isset($this->_meta['result_page']) OR $this->_meta['result_page'] == '')
 		{
 			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('search_path_error')));
 		}
@@ -108,7 +112,7 @@ class Search {
 		/** ----------------------------------------
 		/**  Is the current user allowed to search?
 		/** ----------------------------------------*/
-		if ($this->EE->session->userdata['can_search'] == 'n' AND $this->EE->session->userdata['group_id'] != 1)
+		if ($this->EE->session->userdata('can_search') == 'n' AND $this->EE->session->userdata('group_id') != 1)
 		{			
 			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('search_not_allowed')));
 		}
@@ -244,7 +248,7 @@ class Search {
 		
 		if ($sql == FALSE)
 		{	
-			if (isset($_POST['NRP']) AND $_POST['NRP'] != '')
+			if (isset($this->_meta['no_results_page']) AND $this->_meta['no_results_page'] != '')
 			{
 				$hash = $this->EE->functions->random('md5');
 				
@@ -264,7 +268,7 @@ class Search {
 		
 				$this->EE->db->query($this->EE->db->insert_string('exp_search', $data));
 				
-				return $this->EE->functions->redirect($this->EE->functions->create_url($this->EE->functions->extract_path("='".$_POST['NRP']."'")).'/'.$hash.'/');
+				return $this->EE->functions->redirect($this->EE->functions->create_url($this->EE->functions->extract_path("='".$this->_meta['no_results_page']."'")).'/'.$hash.'/');
 			}
 			else
 			{
@@ -294,7 +298,7 @@ class Search {
 						'per_page'		=> (isset($_POST['RES']) AND is_numeric($_POST['RES']) AND $_POST['RES'] < 999 ) ? $_POST['RES'] : 50,
 						'query'			=> addslashes(serialize($sql)),
 						'custom_fields'	=> addslashes(serialize($this->fields)),
-						'result_page'	=> $_POST['RP'],
+						'result_page'	=> $this->_meta['result_page'],
 						'site_id'		=> $this->EE->config->item('site_id')
 						);
 		
@@ -307,14 +311,76 @@ class Search {
 		// Load the string helper
 		$this->EE->load->helper('string');
 			
-		$path = $this->EE->functions->remove_double_slashes($this->EE->functions->create_url(trim_slashes($_POST['RP'])).'/'.$hash.'/');
+		$path = $this->EE->functions->remove_double_slashes($this->EE->functions->create_url(trim_slashes($this->_meta['result_page'])).'/'.$hash.'/');
 		
 		return $this->EE->functions->redirect($path);
 	}
 
+	protected function _build_meta_array()
+	{
+		$result_page = ( ! $this->EE->TMPL->fetch_param('result_page')) ? 'search/results' : $this->EE->TMPL->fetch_param('result_page');
+
+		$meta = array(
+			'status'				=> $this->EE->TMPL->fetch_param('status', ''),
+			'channel'				=> $this->EE->TMPL->fetch_param('channel', ''),
+			'search_in'				=> $this->EE->TMPL->fetch_param('search_in', ''),
+			'where'					=> $this->EE->TMPL->fetch_param('where', 'all'),
+			'show_expired'			=> $this->EE->TMPL->fetch_param('show_expired', ''),
+			'show_future_entries'	=> $this->EE->TMPL->fetch_param('show_future_entries'),
+			'result_page'			=> $result_page,
+			'no_results_page'		=> $this->EE->TMPL->fetch_param('no_result_page', '')
+		);
+		
+		$meta = serialize($meta);
+
+		if ( function_exists('mcrypt_encrypt') )
+		{
+			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
+
+			$meta = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($this->EE->session->sess_crypt_key), $meta, MCRYPT_MODE_ECB, $init_vect);
+		}
+		else
+		{
+			$meta = $meta.md5($this->EE->session->sess_crypt_key.$meta);
+		}
+		
+		
+		return base64_encode($meta);
+	}
+
 	
-	
-	
+	protected function _get_meta_vars()
+	{
+		// Get data from the meta input
+		
+		if ( function_exists('mcrypt_encrypt') )
+		{
+			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
+
+			$meta_array = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, 
+								md5($this->EE->session->sess_crypt_key), 
+								base64_decode($_POST['meta']), 
+								MCRYPT_MODE_ECB, 
+								$init_vect), 
+						"\0");
+		}
+		else
+		{
+			$raw = base64_decode($_POST['meta']);
+
+			$hash = substr($raw, -32);
+			$meta_array = substr($raw, 0, -32);
+
+			if ($hash != md5($this->EE->session->sess_crypt_key.$meta_array))
+			{
+				$meta_array = '';
+			}
+		}
+		
+		$this->_meta = unserialize($meta_array);
+	}
 	
 	/** ---------------------------------------
 	/**  Create the search query
@@ -347,9 +413,9 @@ class Search {
 		
 		$sql = "SELECT channel_id FROM exp_channels WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."'";
 		
-		if (isset($_POST['channel']) AND $_POST['channel'] != '')
+		if (isset($this->_meta['channel']) AND $this->_meta['channel'] != '')
 		{
-			$sql .= $this->EE->functions->sql_andor_string($_POST['channel'], 'channel_name');
+			$sql .= $this->EE->functions->sql_andor_string($this->_meta['channel'], 'channel_name');
 		}
 							
 		$query = $this->EE->db->query($sql);
@@ -528,24 +594,24 @@ class Search {
 		/** ----------------------------------------------
 		/**  We only select entries that have not expired 
 		/** ----------------------------------------------*/
-		
-		if ( ! isset($_POST['show_future_entries']) OR $_POST['show_future_entries'] != 'yes')
+	
+		if ( ! isset($this->_meta['show_future_entries']) OR $this->_meta['show_future_entries'] != 'yes')
 		{
 			$sql .= "\nAND exp_channel_titles.entry_date < ".$this->EE->localize->now." ";
 		}
 		
-		if ( ! isset($_POST['show_expired']) OR $_POST['show_expired'] != 'yes')
+		if ( ! isset($this->_meta['show_expired']) OR $this->_meta['show_expired'] != 'yes')
 		{
 			$sql .= "\nAND (exp_channel_titles.expiration_date = 0 OR exp_channel_titles.expiration_date > ".$this->EE->localize->now.") ";
 		}
-		
+
 		/** ----------------------------------------------
 		/**  Add status declaration to the query
 		/** ----------------------------------------------*/
 		
 		$sql .= "\nAND exp_channel_titles.status != 'closed' ";
 		
-		if (($status = $this->EE->input->get_post('status')) !== FALSE)
+		if (($status = $this->_meta['status']) != '')
 		{
 			$status = str_replace('Open',	'open',	$status);
 			$status = str_replace('Closed', 'closed', $status);
@@ -603,7 +669,7 @@ class Search {
 		
 			$this->keywords = stripslashes($this->keywords);
 			$terms = array();
-			$criteria = (isset($_POST['where']) && $_POST['where'] == 'all') ? 'AND' : 'OR'; 
+			$criteria = (isset($this->_meta['where']) && $this->_meta['where'] == 'all') ? 'AND' : 'OR'; 
 			
 			if (preg_match_all("/\-*\"(.*?)\"/", $this->keywords, $matches))
 			{
@@ -613,7 +679,7 @@ class Search {
 					$this->keywords = str_replace($matches['0'][$m],'', $this->keywords);
 				}	
 			}
-			
+	
 			if (trim($this->keywords) != '')
 			{
 				$terms = array_merge($terms, preg_split("/\s+/", trim($this->keywords)));
@@ -628,7 +694,7 @@ class Search {
 			/**  Search in Title Field
 			/** ----------------------------------*/
 			
-			if (count($terms) == 1 && isset($_POST['where']) && $_POST['where'] == 'word') // Exact word match
+			if (count($terms) == 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'word') // Exact word match
 			{
 				$sql .= "((exp_channel_titles.title = '".$terms['0']."' OR exp_channel_titles.title LIKE '".$terms_like['0']." %' OR exp_channel_titles.title LIKE '% ".$terms_like['0']." %') ";
 				
@@ -688,14 +754,13 @@ class Search {
 				}
 			}
 			
-			
 			/** ----------------------------------
 			/**  Search in Searchable Fields
 			/** ----------------------------------*/
 			
-			if (isset($_POST['search_in']) AND ($_POST['search_in'] == 'entries' OR $_POST['search_in'] == 'everywhere'))
+			if (isset($this->_meta['search_in']) AND ($this->_meta['search_in'] == 'entries' OR $this->_meta['search_in'] == 'everywhere'))
 			{
-				if (count($terms) > 1 && isset($_POST['where']) && $_POST['where'] == 'all' && ! isset($_POST['exact_keyword']) && count($fields) > 0)
+				if (count($terms) > 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'all' && ! isset($_POST['exact_keyword']) && count($fields) > 0)
 				{
 					$concat_fields = "CAST(CONCAT_WS(' ', exp_channel_data.field_id_".implode(', exp_channel_data.field_id_', $fields).') AS CHAR)'; 
 					
@@ -732,7 +797,7 @@ class Search {
 				{
 					foreach ($fields as $val)
 					{					
-						if (count($terms) == 1 && isset($_POST['where']) && $_POST['where'] == 'word')
+						if (count($terms) == 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'word')
 						{
 							$sql .= "\nOR ((exp_channel_data.field_id_".$val." LIKE '".$terms_like['0']." %' OR exp_channel_data.field_id_".$val." LIKE '% ".$terms_like['0']." %' OR exp_channel_data.field_id_".$val." LIKE '% ".$terms_like['0']." %' OR exp_channel_data.field_id_".$val." = '".$terms['0']."') ";
 							
@@ -802,9 +867,9 @@ class Search {
 			/**  Search in Comments
 			/** ----------------------------------*/
 
-			if (isset($_POST['search_in']) AND $_POST['search_in'] == 'everywhere' AND $this->EE->addons_model->module_installed('comments'))
+			if (isset($this->_meta['search_in']) AND $this->_meta['search_in'] == 'everywhere' AND $this->EE->addons_model->module_installed('comments'))
 			{
-				if (count($terms) == 1 && isset($_POST['where']) && $_POST['where'] == 'word')
+				if (count($terms) == 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'word')
 				{
 					$sql .= " OR (exp_comments.comment LIKE '% ".$terms_like['0']." %' ";
 					
@@ -880,7 +945,7 @@ class Search {
 				$sql .= "AND (exp_channel_titles.author_id {$member_ids} ";
 
 				// searching comments too?
-				if (isset($_POST['search_in']) AND $_POST['search_in'] == 'everywhere' AND $this->EE->addons_model->module_installed('comments'))
+				if (isset($this->_meta['search_in']) AND $this->_meta['search_in'] == 'everywhere' AND $this->EE->addons_model->module_installed('comments'))
 				{
 					$sql .= " OR exp_comments.author_id {$member_ids}";
 				}
@@ -1375,44 +1440,25 @@ class Search {
 		
 		return stripslashes($this->EE->TMPL->tagdata);
 	}
+	
+	// --------------------------------------------------------------------------
 
-
-
-
-
-	/** ----------------------------------------
-	/**  Simple Search Form
-	/** ----------------------------------------*/
+	/**
+	 * Simple Search Form
+	 *
+	 * Generate the simple search form
+	 */
 	function simple_form()
 	{
-		/** ----------------------------------------
-		/**  Create form
-		/** ----------------------------------------*/
-		$result_page = ( ! $this->EE->TMPL->fetch_param('result_page')) ? 'search/results' : $this->EE->TMPL->fetch_param('result_page');
-		
+		$meta = $this->_build_meta_array();
+
 		$data['hidden_fields'] = array(
 										'ACT'					=> $this->EE->functions->fetch_action_id('Search', 'do_search'),
 										'XID'					=> '',
-										'RP'					=> $result_page,
-										'NRP'					=> ($this->EE->TMPL->fetch_param('no_result_page')) ? $this->EE->TMPL->fetch_param('no_result_page') : '',
 										'RES'					=> $this->EE->TMPL->fetch_param('results'),
-										'status'				=> $this->EE->TMPL->fetch_param('status'),
-										'channel'				=> $this->EE->TMPL->fetch_param('channel'),
-										'search_in'				=> $this->EE->TMPL->fetch_param('search_in'),
-										'where'					=> ( ! $this->EE->TMPL->fetch_param('where')) ? 'all' : $this->EE->TMPL->fetch_param('where')
+										'meta'					=> $meta
 										);
-										
-										
-		if ($this->EE->TMPL->fetch_param('show_expired') !== FALSE)
-		{
-			$data['hidden_fields']['show_expired'] = $this->EE->TMPL->fetch_param('show_expired');
-		}
-		
-		if ($this->EE->TMPL->fetch_param('show_future_entries') !== FALSE)
-		{
-			$data['hidden_fields']['show_future_entries'] = $this->EE->TMPL->fetch_param('show_future_entries');
-		}	  
-		
+				
 		if ($this->EE->TMPL->fetch_param('name') !== FALSE && 
 			preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('name')))
 		{
@@ -1440,8 +1486,6 @@ class Search {
 
 		return $res;
 	}
-
-
 
 
 	/** ----------------------------------------
@@ -1573,35 +1617,18 @@ class Search {
 		/** ----------------------------------------
 		/**  Create form
 		/** ----------------------------------------*/
-				
-		$result_page = ( ! $this->EE->TMPL->fetch_param('result_page')) ? 'search/results' : $this->EE->TMPL->fetch_param('result_page');
+		
+		$meta = $this->_build_meta_array();
 		 
 		$data['class'] = $this->EE->TMPL->form_class;
 		$data['hidden_fields'] = array(
 										'ACT'					=> $this->EE->functions->fetch_action_id('Search', 'do_search'),
 										'XID'					=> '',
-										'RP'					=> $result_page,
-										'NRP'					=> ($this->EE->TMPL->fetch_param('no_result_page')) ? $this->EE->TMPL->fetch_param('no_result_page') : '',
 										'RES'					=> $this->EE->TMPL->fetch_param('results'),
-										'status'				=> $this->EE->TMPL->fetch_param('status'),
-										'search_in'				=> $this->EE->TMPL->fetch_param('search_in')
-									  );							  
-									  
- 		if ($this->EE->TMPL->fetch_param('channel') != '')
- 		{
- 			$data['hidden_fields']['channel'] = $this->EE->TMPL->fetch_param('channel');
- 		}
-		
-		if ($this->EE->TMPL->fetch_param('show_expired') !== FALSE)
-		{
-			$data['hidden_fields']['show_expired'] = $this->EE->TMPL->fetch_param('show_expired');
-		}
-		
-		if ($this->EE->TMPL->fetch_param('show_future_entries') !== FALSE)
-		{
-			$data['hidden_fields']['show_future_entries'] = $this->EE->TMPL->fetch_param('show_future_entries');
-		} 
-		
+										'meta'					=> $meta
+									  );
+								  
+
 		if ($this->EE->TMPL->fetch_param('name') !== FALSE && 
 			preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('name')))
 		{
