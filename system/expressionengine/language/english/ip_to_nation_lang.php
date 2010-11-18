@@ -47,6 +47,21 @@ $lang = array(
 'banlist_updated' =>
 'Banlist has been successfully updated',
 
+'update_ips' =>
+'Update IP Database', 
+
+'update_info' =>
+'Update the IP and country code information using the latest export from <a href=\'%d\' title=\'Download Here\'>ip2nation.com</a>', 
+
+'update_blurb' =>
+'In order to update, you must first put the unzipped file containing the ip2nation sql data on your server, and then submit the location of the file.',
+
+'ip2nation_file_loc' => 
+'SQL File Location', 
+
+'unable_to_read_file' =>
+'Unable to read file.',
+
 
 ''=>''
 );
