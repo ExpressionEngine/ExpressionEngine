@@ -23,7 +23,6 @@
  * @link		http://expressionengine.com
  */
 
-
 class Search {
 
 	var	$min_length		= 3;			// Minimum length of search keywords
@@ -40,23 +39,20 @@ class Search {
 
 	protected $_meta 	= array();
 
-
-	function Search()
+	/**
+	 * Constructor
+	 */
+	public function __construct()
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}
 
-	/** ----------------------------------------
-	/**  Perform Search
-	/** ----------------------------------------*/
-	
+	/**
+	 * Do Search
+	 */
 	function do_search()
 	{
-		/** ----------------------------------------
-		/**  Fetch the search language file
-		/** ----------------------------------------*/
-		
 		$this->EE->lang->loadfile('search');
 
 		// Get hidden meta vars 
@@ -77,15 +73,12 @@ class Search {
 			$_POST['keywords']		= '';
 			$_POST['exact_match'] 	= 'y';
 			$_POST['exact_keyword'] = 'n';
-			
-		//	$_POST['member_name'] 	= urldecode($this->EE->input->get_post('fetch_posts_by'));
 		}
 		
 		// RP can be used in a query string,
 		// so we need to clean it a bit
 		
 		$this->_meta['result_page'] = str_replace(array('=', '&'), '', $this->_meta['result_page']);
-
 
 		/** ----------------------------------------
 		/**  Pulldown Addition - Any, All, Exact
@@ -315,11 +308,17 @@ class Search {
 		
 		return $this->EE->functions->redirect($path);
 	}
-
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Build Meta Array
+	 *
+	 * This builds the array of parameters that are stored in a secure hash in a hidden input
+	 * on the search forms.  
+	 */
 	protected function _build_meta_array()
 	{
-		$result_page = ( ! $this->EE->TMPL->fetch_param('result_page')) ? 'search/results' : $this->EE->TMPL->fetch_param('result_page');
-
 		$meta = array(
 			'status'				=> $this->EE->TMPL->fetch_param('status', ''),
 			'channel'				=> $this->EE->TMPL->fetch_param('channel', ''),
@@ -327,7 +326,7 @@ class Search {
 			'where'					=> $this->EE->TMPL->fetch_param('where', 'all'),
 			'show_expired'			=> $this->EE->TMPL->fetch_param('show_expired', ''),
 			'show_future_entries'	=> $this->EE->TMPL->fetch_param('show_future_entries'),
-			'result_page'			=> $result_page,
+			'result_page'			=> $this->EE->TMPL->fetch_param('result_page', 'search/results'),
 			'no_results_page'		=> $this->EE->TMPL->fetch_param('no_result_page', '')
 		);
 		
@@ -348,8 +347,15 @@ class Search {
 		
 		return base64_encode($meta);
 	}
-
 	
+	// ------------------------------------------------------------------------
+
+	/**
+	 * get Meta vars
+	 *
+	 * Get the meta variables on the POSTed form.
+	 *
+	 */
 	protected function _get_meta_vars()
 	{
 		// Get data from the meta input
@@ -381,6 +387,8 @@ class Search {
 		
 		$this->_meta = unserialize($meta_array);
 	}
+	
+	// ------------------------------------------------------------------------
 	
 	/** ---------------------------------------
 	/**  Create the search query
@@ -1051,9 +1059,7 @@ class Search {
 		return $sql;
 	}
 
-
-
-
+	// ------------------------------------------------------------------------
 
 	/** ----------------------------------------
 	/**  Total search results
