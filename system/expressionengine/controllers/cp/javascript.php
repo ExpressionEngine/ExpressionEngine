@@ -35,11 +35,11 @@ class Javascript extends CI_Controller {
 		{
 			if ($this->config->item('use_compressed_js') == 'n')
 			{
-				define('PATH_JQUERY', APPPATH.'javascript/src/jquery/');
+				define('PATH_JQUERY', PATH_THEMES.'javascript/src/jquery/');
 			}
 			else
 			{
-				define('PATH_JQUERY', APPPATH.'javascript/compressed/jquery/');
+				define('PATH_JQUERY', PATH_THEMES.'javascript/compressed/jquery/');
 			}
 		}
 
@@ -179,11 +179,11 @@ class Javascript extends CI_Controller {
 		{
 			if ($this->config->item('use_compressed_js') == 'n')
 			{
-				$file = APPPATH.'javascript/src/'.$loadfile.'.js';
+				$file = PATH_THEMES.'javascript/src/'.$loadfile.'.js';
 			}
 			else
 			{
-				$file = APPPATH.'javascript/compressed/'.$loadfile.'.js';
+				$file = PATH_THEMES.'javascript/compressed/'.$loadfile.'.js';
 			}
 		}
 
@@ -273,7 +273,7 @@ class Javascript extends CI_Controller {
 			'effect'	=> PATH_JQUERY.'ui/jquery.effect.',
 			'ui'		=> PATH_JQUERY.'ui/jquery.ui.',
 			'plugin'	=> PATH_JQUERY.'plugins/',
-			'file'		=> APPPATH.'javascript/'.$folder.'/',
+			'file'		=> PATH_THEMES.'javascript/'.$folder.'/',
 			'package'	=> PATH_THIRD,
 			'fp_module'	=> PATH_MOD
 		);

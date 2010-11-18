@@ -22,7 +22,8 @@
 		echo $cp_global_js;
 	}
 	?>
-	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'v='.$jquery_mtime?>"></script>
+		<script type="text/javascript" src="<?=$this->config->item('theme_folder_url')?>javascript/<?=JS_FOLDER?>/jquery/jquery.js?v=<?=$jquery_mtime?>"></script>
+	
 	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=corner'.AMP.'v='.$corner_mtime?>"></script>
 	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=css'.AMP.'theme='.$this->cp->cp_theme.AMP.'v='.$advanced_css_mtime?>"></script>
 
