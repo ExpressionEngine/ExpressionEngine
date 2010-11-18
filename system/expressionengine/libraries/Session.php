@@ -469,7 +469,7 @@ class EE_Session {
 		
 		if (REQ == 'CP')
 		{			
-			$select .= ', m.cp_theme, m.quick_links, m.quick_tabs, m.template_size';
+			$select .= ', m.cp_theme, m.quick_links, m.quick_tabs, m.template_size, show_sidebar';
 		}
 		
 		$select .= ', g.*';

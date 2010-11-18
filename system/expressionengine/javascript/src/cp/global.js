@@ -269,7 +269,7 @@ jQuery(document).ready(function () {
 		
 		// Sidebar state
 
-		if (EE.CP_SIDEBAR_STATE === "off") {
+		if (EE.CP_SIDEBAR_STATE === "n") {
 			main_content.css("width", "100%");
 			$("#revealSidebarLink").css('display', 'block');
 			$("#hideSidebarLink").hide();
@@ -290,6 +290,18 @@ jQuery(document).ready(function () {
 			var that = $(this),
 				other = that.siblings('a'),
 				show = (this.id === 'revealSidebarLink');		
+
+			$.ajax({
+				type: "POST",
+				dataType: 'json',
+				url: EE.BASE + '&C=myaccount&M=update_sidebar_status',
+				data: {'XID' : EE.XID, 'show' : show},
+				success: function(result){
+					if (result.messageType === 'success') {
+						// log?
+					}
+				}
+			});	
 
 			$("#sideBar").css({
 				'position': 'absolute',
@@ -312,11 +324,11 @@ jQuery(document).ready(function () {
 					'float': 'right'
 				});
 			});
-		
+			
 			return false;
 		});
 	}
-
+		
 	show_hide_sidebar();
 
 

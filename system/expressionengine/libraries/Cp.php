@@ -170,7 +170,7 @@ class Cp {
 			$this->set_breadcrumb(BASE.AMP.'C='.$this->EE->router->class, $this->EE->lang->line($this->EE->router->class));
 		}
 		
-		if ($this->EE->input->cookie('cp_sidebar_state') == 'off')
+		if ($this->EE->session->userdata('show_sidebar') == 'n')
 		{
 			$vars['sidebar_state']		= ' style="display:none"';
 			$vars['maincontent_state']	= ' style="width:100%; display:block"';
@@ -216,7 +216,7 @@ class Cp {
 			'BASE'				=> str_replace(AMP, '&', BASE),
 			'XID'				=> XID_SECURE_HASH,
 			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
-			'CP_SIDEBAR_STATE'	=> ($this->EE->input->cookie('cp_sidebar_state') == 'off') ? 'off' : 'on',
+			'CP_SIDEBAR_STATE'	=> $this->EE->session->userdata('show_sidebar'),
 			'flashdata'			=> $this->EE->session->flashdata,
 			'username'			=> $this->EE->session->userdata('username'),
 			'router_class'		=> $this->EE->router->class,				// advanced css

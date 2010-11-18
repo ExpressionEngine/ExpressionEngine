@@ -34,7 +34,7 @@ class Updater {
 
     function do_update()
     {
-		
+		$Q[] = "ALTER TABLE exp_members ADD show_sidebar char(1) NOT NULL default 'y' AFTER quick_tabs";		
 		$Q[] = "ALTER TABLE exp_member_fields ADD m_field_cp_reg char(1) NOT NULL default 'n' AFTER m_field_reg";
 		$Q[] = "ALTER TABLE exp_accessories CHANGE member_groups member_groups varchar(255) NOT NULL";
 

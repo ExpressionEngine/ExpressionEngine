@@ -2646,6 +2646,29 @@ class MyAccount extends CI_Controller {
 
 		$this->load->view('account/ignore_list', $vars);
 	}
+	
+	/**
+	  *	 Update Sidebar
+	  */
+	function update_sidebar_status()
+	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+	
+		$this->output->enable_profiler(FALSE);
+
+		$show['show_sidebar'] = ($this->input->get_post('show') == 'false') ? 'n' : 'y';
+
+		$this->db->where('member_id', $this->session->userdata['member_id'] );
+		$this->db->update('members', $show); 
+		
+		$resp['messageType'] = 'success';
+		$resp['message'] = 'Sidebar State Updated';
+		$this->output->send_ajax_response($resp); 
+
+	}
 }
 
 /* End of file myaccount.php */

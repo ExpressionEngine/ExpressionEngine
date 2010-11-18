@@ -50,6 +50,6 @@
 		
 	</div> <!-- sidebar_state -->
 	
-	<a href="#" id="hideSidebarLink" onclick="document.cookie='exp_cp_sidebar_state=off;'"><?=lang('hide_sidebar')?></a>
-	<a href="#" id="revealSidebarLink" onclick="document.cookie='exp_cp_sidebar_state=on;'"><?=lang('reveal_sidebar')?></a>
+	<a href="#" id="hideSidebarLink"><?=lang('hide_sidebar')?></a>
+	<a href="#" id="revealSidebarLink"><?=lang('reveal_sidebar')?></a>
 </div> <!-- sideBar -->
