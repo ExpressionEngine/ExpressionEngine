@@ -1,18 +1,15 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
- * CodeIgniter
+ * ExpressionEngine - by EllisLab
  *
- * An open source application development framework for PHP 5.1.6 or newer
- *
- * @package		CodeIgniter
+ * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2008 - 2010, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
  * @filesource
  */
-
 // ------------------------------------------------------------------------
 
 /**
@@ -21,31 +18,26 @@
  * Loads views and files
  *
  * @package		CodeIgniter
- * @subpackage	Libraries
+ * @subpackage	Core
+ * @category	Core
  * @author		ExpressionEngine Dev Team
- * @category	Loader
- * @link		http://codeigniter.com/user_guide/libraries/loader.html
+ * @link		http://expressionengine.com
  */
 class EE_Loader extends CI_Loader {
 	
 	/**
 	 * Load View
 	 *
-	 * This function is used to load a "view" file.  It has three parameters:
+	 * This extended function exists to provide overloading of themes.  It's silly and
+	 * difficult trying to maintain multiple themes that are just tweaks to CSS and images.
+	 * Brandon is a smart cookie for thinking this idea up.  -ga
 	 *
-	 * 1. The name of the "view" file to be included.
-	 * 2. An associative array of data to be extracted for use in the view.
-	 * 3. TRUE/FALSE - whether to return the data or load it.  In
-	 * some cases it's advantageous to be able to return data so that
-	 * a developer can process it in some way.
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	array
-	 * @param	bool
+	 * @param	string		
+	 * @param	array 	variables to be loaded into the view
+	 * @param	bool 	return or not
 	 * @return	void
 	 */
-	function view($view, $vars = array(), $return = FALSE)
+	public function view($view, $vars = array(), $return = FALSE)
 	{
 		$paths = $this->_ci_view_path;
 		
@@ -65,5 +57,7 @@ class EE_Loader extends CI_Loader {
 		$this->_ci_view_path = $paths;
 		return $ret;
 	}
-	
 }
+
+/* End of file EE_Loader.php */
+/* Location: ./system/expressionengine/core/EE_Loader.php */
