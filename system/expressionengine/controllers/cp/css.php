@@ -112,9 +112,6 @@ class Css extends CI_Controller {
 			{
 				@header('Content-Length: '.strlen($this->output->final_output));
 			}
-			
-			echo file_get_contents($path.'css/'.$file.'.css');
-			exit();
 		}
 	}
 
