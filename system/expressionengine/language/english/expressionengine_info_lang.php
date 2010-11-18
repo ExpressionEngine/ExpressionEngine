@@ -10,13 +10,13 @@ $lang = array(
 'downloads'				=> 'My ExpressionEngine Store Downloads',
 'support_resources'		=> 'Support Resources',
 
-'running_current'		=> 'This ExpressionEngine installation is current: Version %v Build %b',
-'update_available'		=> 'A newer version of ExpressionEngine is available:',
-'current_version'		=> 'Current release: Version %v Build %b',
-'installed_version'		=> 'Installed: Version %v Build %b',
-'update_inst'	=> 'Please download the latest release <a href=\'%d\' title=\'Download Here\'>here</a> and follow the <a href=\'%i\' title=\'Update Docs\'>Update Docs</a>.',
+'running_current'		=> 'You are using the latest version of ExpressionEngine: %v Build %b',
+'update_available'		=> 'A newer version of ExpressionEngine is available!',
+'current_version'		=> 'Latest version: %v Build %b',
+'installed_version'		=> 'Installed version: %v Build %b',
+'update_inst'			=> 'Please download the latest version <a href=\'%d\' title=\'Download Here\'>here</a> and follow the <a href=\'%i\' title=\'Update Docs\'>Update Instructions</a>.',
 'version_and_build'		=> 'Version and Build',
-'error_getting_version'	=> 'This ExpressionEngine installation is using Version %v Build %b.  Unable to retrieve the most current version available at this time',
+'error_getting_version'	=> 'You are using ExpressionEngine %v Build %b.  Unable to determine if a newer version is available at this time.',
 
 ''=>''
 );
