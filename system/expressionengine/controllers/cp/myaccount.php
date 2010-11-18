@@ -2665,7 +2665,7 @@ class MyAccount extends CI_Controller {
 		$this->db->update('members', $show); 
 		
 		$resp['messageType'] = 'success';
-		$resp['message'] = 'Sidebar State Updated';
+		$resp['message'] = $this->lang->line('sidebar_updated');
 		$this->output->send_ajax_response($resp); 
 
 	}

@@ -575,6 +575,9 @@ $lang = array(
 'html_buttons_updated' =>
 'HTML Buttons Updated',
 
+'sidebar_updated' =>
+'Sidebar State Updated',
+
 ''=>''
 );
 
