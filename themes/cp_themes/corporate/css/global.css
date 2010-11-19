@@ -784,9 +784,9 @@ ul#navigationTabs li #addQuickTab:active {
 #sideBar {
 	float:				right;
 	width:				23%;
-	box-shadow:			-1px 0px 10px #CCCECE;
-	-moz-box-shadow:	-1px 0px 10px #CCCECE;
-	-webkit-box-shadow:	-1px 0px 10px #CCCECE;
+	box-shadow:			-1px 1px 5px #DDDDDD;
+	-moz-box-shadow:	-1px 1px 5px #DDDDDD;
+	-webkit-box-shadow:	-1px 1px 5px #DDDDDD;
 }
 
 #sideBar a {
@@ -915,13 +915,13 @@ div#search {
 }
 
 a#hideSidebarLink, a#revealSidebarLink {
-	border-top:			1px solid #a0aaa4;
-	background:			transparent url('../images/hide_sidebar_arrow.gif') top left no-repeat;
+/* 	border-top:			1px solid #a0aaa4; */
+	background:			transparent url('../images/hide_sidebar_arrow.gif') bottom left no-repeat;
 	display:			block;
 	font-size:			9px;
-	padding:			2px 25px 0 25px;
+	padding:			8px 20px 0;
 	margin-top:			2px;
-	margin-right:		0;
+/* 	margin-right:		0; */
 	text-align:			left;
 	height:				16px;
 }
@@ -3090,7 +3090,7 @@ label.hide_field {
 /* Show Entry */
 div#view_content_entry_links {
   margin-top:   15px;
-  width:        125px;
+/*   width:        125px; */
   padding:      10px;
   font-weight:  bold;
 }
@@ -3189,6 +3189,7 @@ div#view_content_entry_links {
 
 #accessoryTabs {
 /* 	border-bottom:6px solid #e2eaf0; */
+	display:			inline-block;
 }
 
 #accessoryTabs ul{
