@@ -2178,8 +2178,8 @@ table.accessTable div.tableCellHeading {
 }
 
 #mainContent .tab_menu {
-	margin-bottom: 6px;
-	height:24px;
+	margin-bottom: 		6px;
+	height:				24px;
 }
 
 #mainContent .tab_menu li {
@@ -2316,20 +2316,15 @@ label.hide_field {
 	padding-right:		4px;
 	border-right: 		4px solid #c1c8ce;
 	background:			#ECF1F4;
+	clear:				left;
 }
 
 #mainContent .dates_tab {
 	background:			url('../images/content_custom_tab.png') repeat-x top;
 }
 
-/*
-#dates_tab, #categories_tab, #custom_tab {
-	display:none;
-}
-*/
 
 #categories_tab fieldset {
-/* 	border:				0; */ 
  	padding: 			2px;
 	border:				0;
 	margin:				0;
@@ -2338,7 +2333,6 @@ label.hide_field {
 }
 
 #categories_tab legend {
-/* 	display:			none; */ 
 	font-weight:		bold;
 	padding-top:		5px;
 }

@@ -1571,7 +1571,7 @@ div.dataTables_paginate span.next {
 
 #menu {
 	width: 230px;
-	margin:0 0 0 10px;
+	margin:10px 0 0 10px;
 }
 
 ul#menu span{
@@ -2418,11 +2418,9 @@ input.hits {
 
 
 ul.tab_menu{
-/* 	background:	#7a90a2 url('../images/publish_tabs_bg.gif') bottom left repeat-x; */
 	background-color:	#7a90a2;
-	padding:			0 0 0 10px;
+	padding-left:		10px;
 	height:				46px;
-/* 	border-top:			2px solid #27343C; */
 	margin:				0;
 }
 
@@ -2431,7 +2429,6 @@ ul.tab_menu  li {
 	padding:			0;
 	height:				28px;
 	margin:				18px 1px 0 0;
-
 }
 
 
@@ -2567,11 +2564,6 @@ ul.tab_menu li.addTabButton a img {
 	color: #505050;
 }
 
-/*
-#mainPublish {
-	background-color: #E6EAEF;
-}
-*/
 
 #holder {
 	margin-top:			-5px;
@@ -2579,6 +2571,7 @@ ul.tab_menu li.addTabButton a img {
 	padding-right:		4px;
 	background:			#f3f5f8 ;
 	border-right:		4px solid #cfd5d9;
+	clear: left;
 }
 
 #holder p,
