@@ -443,6 +443,7 @@ class EE_Schema {
 			  can_email_mailinglist char(1) NOT NULL default 'n',
 			  can_email_from_profile char(1) NOT NULL default 'n',
 			  can_view_profiles char(1) NOT NULL default 'n',
+			  can_edit_html_buttons char(1) NOT NULL DEFAULT 'n',
 			  can_delete_self char(1) NOT NULL default 'n',
 			  mbr_delete_notify_emails varchar(255) NULL DEFAULT NULL,
 			  can_post_comments char(1) NOT NULL default 'n', 

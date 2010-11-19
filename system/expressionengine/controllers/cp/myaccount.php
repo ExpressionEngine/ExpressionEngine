@@ -53,9 +53,12 @@ class MyAccount extends CI_Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		$this->javascript->output('
-			$("#myaccountHtmlButtonsLink").show(); // JS only feature, its hidden by default
-		');
+		if ($this->cp->allowed_group('can_edit_html_buttons'))
+		{
+			$this->javascript->output('
+				$("#myaccountHtmlButtonsLink").show(); // JS only feature, its hidden by default
+			');
+		}
 
 		$this->cp->set_variable('message', '');
 		$this->cp->set_variable('id', $this->id);
@@ -169,7 +172,7 @@ class MyAccount extends CI_Controller {
 			$vars['login_as_member'] = ($this->session->userdata('group_id') == 1 && $this->id != $this->session->userdata('member_id')) ? TRUE : FALSE;
 			$vars['can_delete_members'] = ($this->cp->allowed_group('can_delete_members') AND $this->id != $this->session->userdata('member_id')) ? TRUE : FALSE;
 		}
-
+		
 		return $vars;
 	}
 
@@ -967,7 +970,8 @@ class MyAccount extends CI_Controller {
 	{
 		// Is the user authorized to access the publish page? And does the user have
 		// at least one channel assigned? If not, show the no access message
-		if ( ! $this->cp->allowed_group('can_access_publish'))
+		if ( ! $this->cp->allowed_group('can_access_publish') OR
+			 ! $this->cp->allowed_group('can_edit_html_buttons'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1094,7 +1098,8 @@ class MyAccount extends CI_Controller {
 	function delete_html_button()
 	{
 		// validate for unallowed blank values
-		if ( ! $this->input->get_post('button_id')) 
+		if ( ! $this->input->get_post('button_id') OR 
+			 ! $this->cp->allowed_group('can_edit_html_buttons')) 
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -1114,7 +1119,7 @@ class MyAccount extends CI_Controller {
 	function reorder_html_buttons()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST))
+		if (empty($_POST) OR ! $this->cp->allowed_group('can_edit_html_buttons'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
