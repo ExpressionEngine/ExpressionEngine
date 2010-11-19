@@ -419,6 +419,13 @@ class EE_Core {
 			);
 		}
 		
+		$this->EE->load->library('view', array(
+											$cp_theme, 
+											$this->EE->load->_ci_view_path,
+											$this->EE->config->item('theme_folder_url')
+										)
+									);
+		
 		// go ahead and set this so we can use it from here on out
 		$this->EE->session->userdata['cp_theme'] = $cp_theme;
 

@@ -1,35 +1,30 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta charset="utf-8">
 
-	<title><?=$cp_page_title?> | ExpressionEngine</title>
+	<?=$this->view->head_title($cp_page_title)?>
+	<?=$this->view->head_link('css/jquery-ui-1.7.2.custom.css'); ?>
+	<?=$this->view->head_link('css/global.css'); ?>
 
-	<link rel="stylesheet" href="<?=$this->config->item('theme_folder_url')?>cp_themes/<?=$this->cp->cp_theme;?>/css/jquery-ui-1.7.2.custom.css" type="text/css" media="screen" />
-	<link rel="stylesheet" href="<?=$this->config->item('theme_folder_url')?>cp_themes/<?=$this->cp->cp_theme;?>/css/global.css?v=<?=$theme_css_mtime;?>" type="text/css" media="screen" />
-	
 	<?php if ($this->extensions->active_hook('cp_css_end') === TRUE):?>
 	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'M=cp_global_ext';?>" type="text/css" />
 	<?php endif;?>
-	<!--[if lte IE 7]>
-	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'M=iefix'?>" type="text/css" media="screen" charset="utf-8" />
-	<![endif]-->
+	<!--[if lte IE 7]><?=$this->view->head_link('css/iefix.css')?><![endif]-->
 
-	<?php
-
+	<?php 
 	if (isset($cp_global_js))
 	{
 		echo $cp_global_js;
-	}
-	?>
-		<script type="text/javascript" src="<?=$this->config->item('theme_folder_url')?>javascript/<?=JS_FOLDER?>/jquery/jquery.js?v=<?=$jquery_mtime?>"></script>
+	} ?>
 	
-	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=corner'.AMP.'v='.$corner_mtime?>"></script>
+	<?=$this->view->script_tag('jquery/jquery.js')?>
+	<?=$this->view->script_tag('jquery/plugins/corner.js')?>
+
 	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=css'.AMP.'theme='.$this->cp->cp_theme.AMP.'v='.$advanced_css_mtime?>"></script>
 
 	<?php
-	if (isset($script_head))
-	{
+	if (isset($script_head)) {
 		echo $script_head;
 	}
 

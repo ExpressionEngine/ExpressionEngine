@@ -153,11 +153,6 @@ class Cp {
 					// Sidebar state (overwritten below if needed)
 					'sidebar_state'			=> '',
 					'maincontent_state'		=> '',
-
-					// Asset mtimes to force caching
-					'jquery_mtime' 		=> filemtime(PATH_JQUERY.'jquery.js'),
-					'corner_mtime' 		=> filemtime(PATH_JQUERY.'plugins/corner.js'),
-					'theme_css_mtime'	=> filemtime(PATH_CP_THEME.$this->cp_theme.'/css/global.css')
 		);
 
 
