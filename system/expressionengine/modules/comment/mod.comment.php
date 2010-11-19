@@ -1802,7 +1802,7 @@ class Comment {
 
 		return $res;
 	}
-
+	
 	// --------------------------------------------------------------------
 
 	/**
@@ -3208,22 +3208,32 @@ class Comment {
 	{
 		@header("Content-type: text/html; charset=UTF-8");
 		
+		$unauthorized = $this->EE->lang->line('not_authorized');
+		
 		if ($this->EE->input->get_post('comment_id') === FALSE OR (($this->EE->input->get_post('comment') === FALSE OR $this->EE->input->get_post('comment') == '') && $this->EE->input->get_post('status') != 'close'))
 		{
-			exit('null');
+			$this->EE->output->send_ajax_response(array('error' => $unauthorized));
 		}
 		
 		// Not logged in member- eject
 		if ($this->EE->session->userdata['member_id'] == '0')
 		{
-			exit('null');
+			$this->EE->output->send_ajax_response(array('error' => $unauthorized));
+		}
+		
+		$xid = $this->EE->input->get_post('XID');
+		
+		
+		// Secure Forms check - do it early due to amount of further data manipulation before insert
+		if ($this->EE->security->check_xid($xid) == FALSE) 
+		{ 
+		 	$this->EE->output->send_ajax_response(array('error' => $unauthorized));
 		}
 		
 		$edited_status = ($this->EE->input->get_post('status') != 'close') ? FALSE : 'c';
 		$edited_comment = $this->EE->input->get_post('comment');
 		$can_edit = FALSE;
 		$can_moderate = FALSE;
-		$xid = $this->EE->input->get_post('XID');
 				
 		$this->EE->db->from('comments');
 		$this->EE->db->from('channels');
@@ -3273,29 +3283,81 @@ class Comment {
 			
 			if (count($data) > 0)
 			{
+				//  Clear security hash
+				$this->EE->security->delete_xid($xid);
+
 				$this->EE->db->where('comment_id', $this->EE->input->get_post('comment_id'));
 				$this->EE->db->update('comments', $data); 
 					
 				if ($edited_status != FALSE & $can_moderate != FALSE)
 				{
-					exit('Comment Closed');
+					// create new security hash and send it back with updated comment.
+				
+					$new_hash = $this->_new_hash();
+
+					$this->EE->output->send_ajax_response(array('moderated' => $this->EE->lang->line('closed'), 'XID' => $new_hash));
 				}				
 
 				$this->EE->load->library('typography'); 
 				
-				exit( $this->EE->typography->parse_type( stripslashes($this->EE->input->get_post('comment')), 
+				$f_comment = $this->EE->typography->parse_type(stripslashes($this->EE->input->get_post('comment')), 
 										   array(
 													'text_format'   => $query->row('comment_text_formatting'),
 													'html_format'   => $query->row('comment_html_formatting'),
 													'auto_links'    => $query->row('comment_auto_link_urls'),
 													'allow_img_url' => $query->row('comment_allow_img_urls')
-												)
-										));
+												));
+												
+				// create new security hash and send it back with updated comment.
+				
+				$new_hash = $this->_new_hash();
+
+				$this->EE->output->send_ajax_response(array('comment' => $f_comment, 'XID' => $new_hash));
 			}
 		}
 
-		exit('null');    
+		$this->EE->output->send_ajax_response(array('error' => $unauthorized));
 	}	
+
+	function _new_hash()
+	{
+		if ($this->EE->config->item('secure_forms') != 'y')
+		{
+			return FALSE;
+		}
+		
+		$db_reset = FALSE;
+
+		if ($this->EE->db->cache_on == TRUE)
+		{
+			$this->EE->db->cache_off();
+			$db_reset = TRUE;
+		}
+
+		$this->EE->load->helper('string');
+		$hash = random_string('encrypt', 8);
+
+		/*
+		$data = array(
+               'date' => UNIX_TIMESTAMP(),
+               'ip_address' => $this->EE->input->ip_address(),
+               'hash' => $hash
+            );
+
+		$this->EE->db->insert('security_hashes', $data); 
+		*/
+		
+		$this->EE->db->query("INSERT INTO exp_security_hashes (date, ip_address, hash) VALUES (UNIX_TIMESTAMP(), '".$this->EE->input->ip_address()."', '".$this->EE->db->escape_str($hash)."')");
+
+		// Re-enable DB caching
+				
+		if ($db_reset == TRUE)
+		{
+			$this->EE->db->cache_on();			
+		}
+		
+		return $hash;
+	}
 	
 	function ajax_edit_url()
 	{
