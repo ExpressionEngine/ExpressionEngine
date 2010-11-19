@@ -1,11 +1,11 @@
 <h3><?=$update_info?></h3>
 
-<strong><?=lang('update_blurb')?></strong><br>
+<p><strong><?=lang('update_blurb')?></strong></p><br/>
 
-<? if ($last_update):
-	echo lang('last_update').$last_update;
-	endif;
-?>
+	<? if ($last_update):
+		echo '<p>' . lang('last_update').$last_update . '</p><br/>';
+		endif;
+	?>
 	
 <?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation'.AMP.'method=import_form')?>
 

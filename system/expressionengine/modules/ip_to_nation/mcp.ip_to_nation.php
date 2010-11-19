@@ -115,16 +115,20 @@ class Ip_to_nation_mcp {
 
 		foreach ($countries as $key => $val)
 		{
-			$vars['countries'][$key]['code'] = $key;
-			$vars['countries'][$key]['name'] = $val;
-
-			if ($key == 'gb')
+			// Don't show countries for which we lack IP information
+			if (isset($status[$key]))
 			{
-				$vars['countries'][$key]['status'] = ($status['uk'] == 'y') ? TRUE : FALSE;				
-			}
-			else
-			{
-				$vars['countries'][$key]['status'] = ($status[$key] == 'y') ? TRUE : FALSE;				
+				$vars['countries'][$key]['code'] = $key;
+				$vars['countries'][$key]['name'] = $val;
+	
+				if ($key == 'gb')
+				{
+					$vars['countries'][$key]['status'] = ($status['uk'] == 'y') ? TRUE : FALSE;				
+				}
+				else
+				{
+					$vars['countries'][$key]['status'] = ($status[$key] == 'y') ? TRUE : FALSE;				
+				}
 			}
 		}
 
@@ -172,7 +176,7 @@ class Ip_to_nation_mcp {
 		unset($countries);
 		
 		$this->EE->session->set_flashdata('message_success', $this->EE->lang->line('banlist_updated'));
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation'.AMP.'method=banlist');
+		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation'.AMP.'method=index');
 	}
 	
 	// ------------------------------------------------------------------------
@@ -216,7 +220,7 @@ class Ip_to_nation_mcp {
 			$this->EE->session->set_flashdata('message_success', $message);
 		}
 			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.
-				'M=show_module_cp'.AMP.'module=ip_to_nation'.AMP.'method=import_form');		
+				'M=show_module_cp'.AMP.'module=ip_to_nation'.AMP.'method=index');		
 	}
 	
 	// ------------------------------------------------------------------------
