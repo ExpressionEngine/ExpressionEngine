@@ -175,9 +175,13 @@ class Ip_to_nation_mcp {
 		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation'.AMP.'method=banlist');
 	}
 	
+	// ------------------------------------------------------------------------
+
+	/**
+	  * Import Form
+	  */
 	function import_form()
 	{
-
 		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation', $this->EE->lang->line('ip_to_nation_module_name'));
 
 		$vars['cp_page_title'] = $this->EE->lang->line('update_ips');
@@ -186,29 +190,51 @@ class Ip_to_nation_mcp {
 					
 		$this->EE->form_validation->set_rules('ip2nation_file',	'File',	'required|callback__file_exists');
 		$this->EE->form_validation->set_error_delimiters('<p class="notice">', '</p>');
+		
+		$vars['update_info'] = str_replace('%d', $this->EE->cp->masked_url('http://www.ip2nation.com/'), $this->EE->lang->line('update_info'));
+		
+		$last_update =	$this->EE->config->item('ip2nation_db_date');
+		$vars['last_update'] = ($last_update && $last_update != '') ? $this->EE->localize->set_human_time($last_update) : FALSE;
 
 		if ($this->EE->form_validation->run() === FALSE)
 		{
-			$vars['update_info'] = str_replace('%d', $this->EE->cp->masked_url('http://www.ip2nation.com/'), $this->EE->lang->line('update_info'));
-			
 			return $this->EE->load->view('import', $vars, TRUE);
 		}
 		
-		$this->_convert_file($this->EE->input->post('ip2nation_file'));
+		$result = $this->_convert_file($this->EE->input->post('ip2nation_file'));
 		
-		$message = 'updated';
+		if ( ! $result)
+		{
+			$message = $this->EE->lang->line('ip_db_failed');
 
-		$this->EE->session->set_flashdata('message_success', $message);
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation'.AMP.'method=import_form');		
-	
+			$this->EE->session->set_flashdata('message_failure', $message);			
+		}
+		else
+		{
+			$message = $this->EE->lang->line('ip_db_updated');
+
+			$this->EE->session->set_flashdata('message_success', $message);
+		}
+			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.
+				'M=show_module_cp'.AMP.'module=ip_to_nation'.AMP.'method=import_form');		
 	}
 	
+	// ------------------------------------------------------------------------
+
+	/**
+	  * Convert SQL File
+	  */
 	function _convert_file($ip_file)
 	{
-		
+
 		//  Read data file into an array
 		$master_array = $this->_datafile_to_array($ip_file);
-
+		
+		if ( ! $master_array)
+		{
+			return FALSE;
+		}
+		
 		// Fetch banned nations
 		$query = $this->EE->db->get_where('ip2nation_countries', array('banned'=>'y'));
 
@@ -216,16 +242,11 @@ class Ip_to_nation_mcp {
 		$this->EE->db->truncate('ip2nation_countries');
 		$this->EE->db->truncate('ip2nation');
 
-		for ($i = 0, $total = count($master_array['cc']); $i < $total; $i = $i + 100)
-		{
-			$this->EE->db->query("INSERT INTO exp_ip2nation_countries (code) VALUES ('".implode("'), ('", array_slice($master_array['cc'], $i, 100))."')");
-		}
-
 		// Re-insert the massive number of records
-		for ($i = 0, $total = count($master_array['ip']); $i < $total; $i = $i + 100)
-		{
-			$this->EE->db->query("INSERT INTO exp_ip2nation (ip, country) VALUES (".implode("), (", array_slice($master_array['ip'], $i, 100)).")");
-		}
+		
+		$this->EE->db->insert_batch('ip2nation', $master_array['ips']);
+
+		$this->EE->db->insert_batch('ip2nation_countries', $master_array['cc']);		
 
 		// update banned nations
 		if ($query->num_rows() > 0)
@@ -236,8 +257,9 @@ class Ip_to_nation_mcp {
 			}
 		}
 		
-		$vars = array();
-		return $this->EE->load->view('import', $vars, TRUE);
+		$this->EE->config->_update_config(array('ip2nation_db_date' => $this->EE->localize->now));
+		
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
@@ -245,28 +267,49 @@ class Ip_to_nation_mcp {
 	/**
 	 * Datafile to Array
 	 *
-	 * Read delimited data file into an array
+	 * Read ip2nation sql file into an array
 	 * 
-	 * @access	public
+	 * @access	private
 	 * @return	array
 	 */	
 	function _datafile_to_array($file)
 	{
-
 		$contents = file($file);
-		$master = array();
-
 
 		//  Parse file into array
 		foreach ($contents as $line)
 		{
 			if (strncmp($line, 'INSERT INTO ip2nation (', 23) == 0)
 			{
-				$data = substr(trim($line), 43, -2);
-				$master_array['ip'][] = $data;
+				//$line = str_replace('INSERT INTO ip2nation (ip, country)', '', $line);
+				//$data = str_replace(array('"', "'", ' '), '', substr(trim($line), 43, -2));
 				
-				$cc[] =  substr($data, -3, -1);
+				if ( ! preg_match_all("/\((.+?)\)/", $line, $matches))
+				{
+					return FALSE;
+				}
 
+				$security_check = explode(',', $matches[1][1]);
+				
+				if (count($security_check) > 2)
+				{
+					return FALSE;
+				}
+				
+				if ( ! ctype_digit($security_check[0]))
+				{
+					return FALSE;
+				}
+
+				$country = trim($security_check[1], "' ");
+				
+				if (strlen($country) != 2)
+				{
+					return FALSE;
+				}								
+				
+				$master_array['ips'][] = array('ip' => $security_check[0], 'country' => $country);
+				$master_array['cc'][$country] = array('code' => $country);
 			}
 			elseif (strncmp($line, 'INSERT INTO ip2nationCountries', 30) == 0)
 			{
@@ -274,10 +317,6 @@ class Ip_to_nation_mcp {
 			}
 		}
 		
-		sort($master_array['ip']); 
-		$master_array['cc'] = array_unique($cc);	
-		sort($master_array['cc']);		
-
 		return $master_array;
 	}
 

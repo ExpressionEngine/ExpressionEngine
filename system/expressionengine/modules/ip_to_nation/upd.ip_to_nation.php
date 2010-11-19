@@ -26,7 +26,7 @@ if ( ! defined('EXT'))
 
 class Ip_to_nation_upd {
 
-	var $version = '2.2';
+	var $version = '2.3';
 
 	/**
 	  * Constructor
@@ -118,7 +118,7 @@ class Ip_to_nation_upd {
 			$this->EE->db->query("INSERT INTO exp_ip2nation (ip, country) VALUES (".implode("), (", array_slice($ip, $i, 100)).")");
 		}
 
-		$this->EE->config->_update_config(array('ip2nation' => 'y'));
+		$this->EE->config->_update_config(array('ip2nation' => 'y', 'ip2nation_db_date' => 1290177198));
 
 		return TRUE;
 	}
@@ -153,7 +153,9 @@ class Ip_to_nation_upd {
 		$this->EE->dbforge->drop_table('ip2nation');
 		$this->EE->dbforge->drop_table('ip2nation_countries');
 
-		$this->EE->config->_update_config('', array('ip2nation' => ''));
+		//  Remove a couple items from the file
+		
+		$this->EE->config->_update_config(array(), array('ip2nation' => '', 'ip2nation_db_date' => ''));
 
 		return TRUE;
 	}
@@ -218,6 +220,48 @@ class Ip_to_nation_upd {
 				}
 			}
 		}
+		
+		// Version 2.3 user data based on 11/19/2010 sql from ip2nation.com
+		// Add dl date to config via $this->EE->localize->now which is 1290177198
+		if ($current < 2.3)
+		{
+			if ( ! include_once($this->_ee_path.'modules/ip_to_nation/iptonation.php'))
+			{
+				$this->EE->lang->loadfile('ip_to_nation');
+				show_error($this->EE->lang->line('iptonation_missing'));
+			}
+
+			// Fetch banned nations
+			$query = $this->EE->db->get_where('ip2nation_countries', array('banned'=>'y'));
+
+			// Truncate tables
+			$this->EE->db->truncate('ip2nation_countries');
+			$this->EE->db->truncate('ip2nation');
+
+			// Re-insert the massive number of records
+			for ($i = 0, $total = count($cc); $i < $total; $i = $i + 100)
+			{
+				$this->EE->db->query("INSERT INTO exp_ip2nation_countries (code) VALUES ('".implode("'), ('", array_slice($cc, $i, 100))."')");
+			}
+
+			for ($i = 0, $total = count($ip); $i < $total; $i = $i + 100)
+			{
+				$this->EE->db->query("INSERT INTO exp_ip2nation (ip, country) VALUES (".implode("), (", array_slice($ip, $i, 100)).")");
+			}
+
+			// update banned nations
+			if ($query->num_rows() > 0)
+			{
+				foreach ($query->result_array() as $row)
+				{
+					$this->EE->db->query($this->EE->db->update_string('exp_ip2nation_countries', array('banned' => 'y'), array('code' => $row['code'])));
+				}
+			}
+			
+			$this->EE->config->_update_config(array('ip2nation_db_date' => 1290177198));
+		}
+		
+		
 		return TRUE;
 	}
 

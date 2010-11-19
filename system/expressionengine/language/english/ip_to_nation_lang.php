@@ -62,6 +62,13 @@ $lang = array(
 'unable_to_read_file' =>
 'Unable to read file.',
 
+'last_update' => 'Last update: ',
+
+'ip_db_updated' =>
+'IP Database Update Successful',
+
+'ip_db_failed' =>
+'Disallowed characters in Import File',
 
 ''=>''
 );
