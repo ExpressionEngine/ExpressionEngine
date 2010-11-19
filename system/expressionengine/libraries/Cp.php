@@ -83,8 +83,9 @@ class Cp {
 		
 		// Javascript Path Constants
 		
-		define('PATH_JQUERY', APPPATH.'javascript/'.$js_folder.'/jquery/');
-		define('PATH_JAVASCRIPT', APPPATH.'javascript/'.$js_folder.'/');
+		define('PATH_JQUERY', PATH_THEMES.'javascript/'.$js_folder.'/jquery/');
+		define('PATH_JAVASCRIPT', PATH_THEMES.'javascript/'.$js_folder.'/');
+		define('JS_FOLDER', $js_folder);
 
 
 		$this->EE->load->library('menu');

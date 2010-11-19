@@ -23,12 +23,6 @@
  * @link		http://expressionengine.com
  */
 
-if ( ! defined('EXT'))
-{
-	exit('Invalid file request');
-}
-
-
 class Comment_upd {
 
 	var $version = '2.1';
