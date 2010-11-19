@@ -696,6 +696,7 @@ class Content_publish extends CI_Controller {
 			}
 		}
 		
+		$this->javascript->set_global('user.can_edit_html_buttons', $this->cp->allowed_group('can_edit_html_buttons'));
 		$this->javascript->set_global('upload_directories', $vars['file_list']);
 
 		$html_buttons = $this->admin_model->get_html_buttons($this->session->userdata('member_id'));

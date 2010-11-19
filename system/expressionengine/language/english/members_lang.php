@@ -526,6 +526,9 @@ $lang = array(
 "can_view_profiles" =>
 "Can view public profiles",
 
+"can_edit_html_buttons" =>
+"Can edit own HTML formatting buttons",
+
 'can_delete_self' =>
 "Can delete own account - deletes all posts, entries, and comments as well",
 

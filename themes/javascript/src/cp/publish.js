@@ -968,12 +968,13 @@ $(document).ready(function() {
 		}
 	);
 	
+	if (EE.user.can_edit_html_buttons) {
+		$(".markItUp ul").append("<li class=\"btn_plus\"><a title=\""+EE.lang.add_new_html_button+"\" href=\""+EE.BASE+"&C=myaccount&M=html_buttons&id="+EE.user_id+"\">+</a></li>");
 	
-	$(".markItUp ul").append("<li class=\"btn_plus\"><a title=\""+EE.lang.add_new_html_button+"\" href=\""+EE.BASE+"&C=myaccount&M=html_buttons&id="+EE.user_id+"\">+</a></li>");
-	
-	$(".btn_plus a").click(function(){
-		return confirm(EE.lang.confirm_exit, "");
-	});
+		$(".btn_plus a").click(function(){
+			return confirm(EE.lang.confirm_exit, "");
+		});
+	}
 
 	// inject the collapse button into the formatting buttons list
 	$(".markItUpHeader ul").prepend("<li class=\"close_formatting_buttons\"><a href=\"#\"><img width=\"10\" height=\"10\" src=\""+EE.THEME_URL+"images/publish_minus.gif\" alt=\"Close Formatting Buttons\"/></a></li>");

@@ -1455,6 +1455,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				'mbr_account_privs' => array (
 												'can_view_profiles'			=> 'n',
 												'can_email_from_profile'	=> 'n',
+												'can_edit_html_buttons'		=> 'n',
 												'include_in_authorlist'		=> 'n',
 												'include_in_memberlist'		=> 'n',
 												'include_in_mailinglists'	=> 'y',
