@@ -380,9 +380,9 @@ a:hover .submit_alt{
 
 input.submit, button.submit, a.submit {
 /* 	background:			#80a210 url('../images/btn_grad.png') top left repeat-x; */
-	background: 		#80a210;
-	background: 		-webkit-gradient(linear, left top, left bottom, from(#a7b63e), to(#879e2e));
-	background: 		-moz-linear-gradient(top,  #a7b63e,  #879e2e);
+	background: 		#0048a8;
+	background: 		-webkit-gradient(linear, left top, left bottom, from(#648191), to(#a6b4bb));
+	background: 		-moz-linear-gradient(top,  #648191,  #a6b4bb);
 
 
 	display: 			inline-block;
@@ -418,11 +418,12 @@ p input.submit, p input.delete {
 	margin:				15px 10px 0 0;
 }
 
+
 input.submit:hover, a.submit:hover {
 /* 	background:			#95a700 url('../images/btn_grad.png') 0 -28px  repeat-x; */
-	background: 		#95a700;
-	background: 		-webkit-gradient(linear, left top, left bottom, from(#889e2e), to(#677d21));
-	background: 		-moz-linear-gradient(top,  #889e2e,  #677d21);
+	background: 		#0048a8;
+	background: 		-webkit-gradient(linear, left top, left bottom, from(#648191), to(#c0cfd7));
+	background: 		-moz-linear-gradient(top,  #648191,  #c0cfd7);
 
 	text-decoration: 	none;
 }
