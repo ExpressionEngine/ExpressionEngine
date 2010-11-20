@@ -3369,6 +3369,11 @@ div#view_content_entry_links {
 	width:				95%;
 }
 
+#expressionengine_info a.update {
+	text-decoration: 	underline;
+	font-weight: 		bold;
+}
+
 /*  Forum Theme */
 .moduleWrap #forum_global_nav {
 	height:30px;
