@@ -1989,6 +1989,10 @@ div.templateEditorTop div.search {
 	float: right;
 }
 
+div.templateSearchResults {
+	margin-left: 270px;
+}
+
 #templateGroups .groupList {
 	background-color:	#fafafc;
 	padding:			8px;
