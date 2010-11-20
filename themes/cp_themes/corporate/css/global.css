@@ -1739,7 +1739,7 @@ div.notice_texts ul.bad_path_error_list li ul li {color:#fff; font-weight:normal
 }
 
 .heading span.msg_open_close {
-	background:	transparent url('../themes/jquery_ui/corporate/images/ui-icons_27343C_256x240.png') -15px -192px no-repeat;
+	background:	transparent url('../images/ui-icons_27343C_256x240.png') -15px -192px no-repeat;
 }
 
 #ee_important_message.closed {
