@@ -3622,7 +3622,7 @@ div.contentWrap {
 }
 
 #mainContent div#file_manager {
-	background:				#f3f5f8 url('../images/file_manager_background.png') bottom right no-repeat;
+	background-color:		#f3f5f8;
 	padding:				0;
 	color:					#505050;
 	border-top:				1px solid #fff;
