@@ -516,12 +516,30 @@ class Javascript extends CI_Controller {
 	 */	
 	function _advanced_css()
 	{
-		if ( ! file_exists($this->load->_ci_view_path.'css/advanced.css'))
+		$paths = $this->load->_ci_view_path;
+		
+		if ( ! is_array($this->load->_ci_view_path))
+		{
+			$paths = $this->load->_ci_view_path;
+		}
+		
+		$file = FALSE;
+		
+		foreach ($paths as $path)
+		{
+			if (file_exists($path.'css/advanced.css'))
+			{
+				$file = $path.'css/advanced.css';
+				break;
+			}
+		}
+		
+		if ( ! $file)
 		{
 			return array();
 		}
 
-		$this->css = file_get_contents($this->load->_ci_view_path.'css/advanced.css');
+		$this->css = file_get_contents($file);
 		$this->css = preg_replace('/\/\*.+?\*\//s', '', $this->css);
 		
 		if (trim($this->css) == '')
