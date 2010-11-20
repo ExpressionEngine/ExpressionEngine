@@ -1,3 +1,10 @@
+
+2.1.2
+- Loader for themes' advanced.css is still being tweaked. This currently causes a (harmless) JS error in the control panel and results in no rounded corners.
+- When advanced.css is missing there is no fallback behavior.
+- Need to update compressed js.
+
+
 1. When installing above web root the value for 'URL to the directory where the above index page is located' is the masked file URL and not the site root.
 
 20. Safari/Chrome/Firefox, after logging in with the mobile theme and trying to select another theme it is not then possible to change the default CP theme in a desktop browser.
