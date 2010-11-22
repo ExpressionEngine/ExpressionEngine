@@ -520,7 +520,7 @@ class Javascript extends CI_Controller {
 		
 		if ( ! is_array($this->load->_ci_view_path))
 		{
-			$paths = $this->load->_ci_view_path;
+			$paths = array($this->load->_ci_view_path);
 		}
 		
 		$file = FALSE;
