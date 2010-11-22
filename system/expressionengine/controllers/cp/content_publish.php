@@ -57,7 +57,6 @@ class Content_publish extends CI_Controller {
 	/**
 	 * Index function
 	 *
-	 * @access	public
 	 * @return	void
 	 */
 	public function index()
@@ -108,7 +107,7 @@ class Content_publish extends CI_Controller {
 		$this->load->model('channel_model');
 		$channels = $this->channel_model->get_channels();
 
-		$vars['channels_exist'] = ($channels !== FALSE AND $channels->num_rows() == 0) ? FALSE : TRUE;
+		$vars['channels_exist'] = ($channels !== FALSE AND $channels->num_rows() === 0) ? FALSE : TRUE;
 
 		$vars['assigned_channels'] = $this->session->userdata('assigned_channels');
 
