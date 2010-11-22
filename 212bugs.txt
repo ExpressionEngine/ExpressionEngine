@@ -7,18 +7,7 @@
 - Missing reset button for template search field.
 
 
-NUMBER 1
----------------------------------------------------------------------
-Non-fatal error on displaying installer licence agreement:
---
-Message: Object expected
-Line: 238
-Char: 2
-Code: 0
-URI: http://ee2testing.intranet/system/index.php?C=wizard&M=license&language=english
---
 
-Error occurs in other browsers because jQuery is not loaded in views/container.php
 
 NUMBER 2
 ---------------------------------------------------------------------
@@ -184,4 +173,18 @@ When creating a member custom field using the Corporate theme the Field Type Set
 offset to the right.
 19. Occasionally (I can't see a pattern here) if you click an image in the file manager list the modal is offset to the right partially out of the browser viewport. It is not possible to click to close this image. A JS error is generated "Cannot read property 'nodeName' of '. This seems to happen with at least Mac Chrome and Windows 7.
 
+
+
+NUMBER 1
+---------------------------------------------------------------------
+Non-fatal error on displaying installer licence agreement:
+--
+Message: Object expected
+Line: 238
+Char: 2
+Code: 0
+URI: http://ee2testing.intranet/system/index.php?C=wizard&M=license&language=english
+--
+
+Error occurs in other browsers because jQuery is not loaded in views/container.php
 

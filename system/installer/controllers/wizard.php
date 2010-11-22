@@ -107,6 +107,7 @@ class Wizard extends CI_Controller {
 						'redirect_method'		=> 'redirect',
 						'upload_folder'			=> 'uploads/',
 						'image_path'			=> '',
+						'javascript_path'		=> 'themes/javascript/compressed/',
 						'cp_images'				=> 'cp_images/',
 						'avatar_path'			=> '../images/avatars/',
 						'avatar_url'			=> 'images/avatars/',
@@ -199,6 +200,9 @@ class Wizard extends CI_Controller {
 		
 		// Set the image URL				
 		$this->image_path = $this->_set_image_path();
+		
+		// Set the Javascript URL
+		$this->javascript_path = $this->_set_javascript_path();
 
 		// First try the current directory, if they are running the system with an admin.php file
 		$this->theme_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(SELF));
@@ -1476,6 +1480,23 @@ PAPAYA;
 	// --------------------------------------------------------------------
 
 	/**
+	 * Set path to the javascript directory 
+	 *
+	 * Same functionality as above, but this is for the javascript directory
+	 */
+	protected function _set_javascript_path($path = 'themes/javascript/compressed/', $n = NULL)
+	{
+		if ( ! is_dir($path) && $n < 10)
+		{
+			$path = $this->_set_javascript_path('../'.$path, ++$n);
+		}
+
+		return $path;		
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Set output
 	 *
 	 * Loads the "container" view file and sets the content
@@ -1496,6 +1517,7 @@ PAPAYA;
 						'next_version'		=> substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1),
 						'installed_version'	=> $this->installed_version,
 						'languages'			=> $this->languages,
+						'javascript_path'	=> $this->_set_javascript_path(),
 					);
 
 		$data = array_merge($data, $array);
