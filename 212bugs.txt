@@ -24,15 +24,6 @@ URI: http://ee2testing.intranet/system/index.php?S=7d414e50b581a598db4281eff49fd
 In all browsers this looks like it's because in cp/javascript.php on line 28 the $paths variable is a string
 rather than an array ($paths = $this->load->_ci_view_path).
 
-NUMBER 3
----------------------------------------------------------------------
-
-Using Classic theme the Main Upload Directory server path is incorrectly set. Was set as:
-
-../themes/cp_global_images/uploads/
-
-On changing the server path to be valid for my local install (/Users/greg/Sites/ee2testing.intranet/images/uploads)
-The File Manager shows index.html as a valid file.
 
 NUMBER 4
 ---------------------------------------------------------------------
@@ -173,8 +164,6 @@ When creating a member custom field using the Corporate theme the Field Type Set
 offset to the right.
 19. Occasionally (I can't see a pattern here) if you click an image in the file manager list the modal is offset to the right partially out of the browser viewport. It is not possible to click to close this image. A JS error is generated "Cannot read property 'nodeName' of '. This seems to happen with at least Mac Chrome and Windows 7.
 
-
-
 NUMBER 1
 ---------------------------------------------------------------------
 Non-fatal error on displaying installer licence agreement:
@@ -188,3 +177,16 @@ URI: http://ee2testing.intranet/system/index.php?C=wizard&M=license&language=eng
 
 Error occurs in other browsers because jQuery is not loaded in views/container.php
 
+
+
+NUMBER 3
+---------------------------------------------------------------------
+
+** Not a bug, the classic theme is not distributed **
+
+Using Classic theme the Main Upload Directory server path is incorrectly set. Was set as:
+
+../themes/cp_global_images/uploads/
+
+On changing the server path to be valid for my local install (/Users/greg/Sites/ee2testing.intranet/images/uploads)
+The File Manager shows index.html as a valid file.
