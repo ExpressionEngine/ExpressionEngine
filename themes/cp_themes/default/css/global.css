@@ -2479,6 +2479,10 @@ div.cat_group_container {
   margin-left:15px;
 }
 
+#categories fieldset {
+	margin-bottom: 15px;
+}
+
 #sub_hold_field_category label { 
 	font-weight:		normal!important;
 }
