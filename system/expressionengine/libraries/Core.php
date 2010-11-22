@@ -85,9 +85,7 @@ class EE_Core {
 		define('BR', 			'<br />');
 		define('NL',			"\n");
 		define('PATH_DICT', 	APPPATH.'config/');
-
-		$req_source = $this->EE->input->server('HTTP_X_REQUESTED_WITH');
-		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);
+		define('AJAX_REQUEST',	$this->EE->input->is_ajax_request());
 
 		$this->native_modules = array('blacklist', 'blogger_api', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 									'forum', 'gallery', 'ip_to_nation', 'jquery', 'mailinglist', 'member', 'metaweblog_api',
