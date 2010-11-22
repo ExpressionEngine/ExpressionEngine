@@ -126,9 +126,76 @@ class Search_model extends CI_Model {
 			$data['search_channels'] = array_intersect($data['search_channels'], $allowed_channels);
 		}
 
-		$searchable_fields = array();  $this->get_searchable_fields($data['search_channels']);
+		$searchable_fields = array();
 
+		// Joins with channel and member tables slow us down at this point
+		// So- to order by channel name or screen name- we'll manually specify sort order if 
+		// we need to order!
+
+		if (isset($order['channel_name']))
+		{
+			$this->db->select('channel_id, channel_name');
+			
+			if ($data['search_channels'] != '')
+			{
+				$this->db->where_in('channel_id', $data['search_channels']);
+			}
+			
+			$this->db->where('site_id', $this->config->item('site_id'));
+			$channel_names = $this->db->get('channels');
+
+			foreach($channel_names->result_array() as $row)
+			{
+				$channels[$row['channel_id']] = $row['channel_name'];
+			}
+			
+			if ($order['channel_name'] == 'asc')
+			{
+				asort($channels);
+			}
+			else
+			{
+				arsort($channels);
+			}
+			
+			$channels = array_flip($channels);
+			
+			$channel_name_order = implode(', ', $channels);
+		}
 		
+		if (isset($order['screen_name']))
+		{
+			// OK- if they can't view entries by others, nothing to sort
+			if ( ! $this->cp->allowed_group('can_view_other_entries'))
+			{
+				$screen_name_order = $this->session->userdata('member_id');
+			}
+			else
+			{
+				$this->db->select('member_id, screen_name');
+
+				$this->db->where('total_entries >', 0);
+				$screen_names = $this->db->get('members');
+
+				foreach($screen_names->result_array() as $row)
+				{
+					$names[$row['member_id']] = $row['screen_name'];
+				}
+			
+				if ($order['screen_name'] == 'asc')
+				{
+					asort($names);
+				}
+				else
+				{
+					arsort($names);
+				}
+
+				$names = array_flip($names);
+			
+				$screen_name_order = implode(', ', $names);
+			}
+		}		
 		
 		if ($data['search_in'] == 'comments')
 		{
@@ -154,9 +221,6 @@ class Search_model extends CI_Model {
 			$this->db->from('channel_titles');
 		}
 
-
-		$this->db->join('channels', 'exp_channel_titles.channel_id = exp_channels.channel_id ', 'left');
-
 		if ($data['keywords'] != '')
 		{
 			if ($data['search_in'] != 'title')
@@ -170,8 +234,6 @@ class Search_model extends CI_Model {
 			}
 		}
 
-		$this->db->join('members', 'exp_members.member_id = exp_channel_titles.author_id', 'left');
-
 
 		if ($data['cat_id'] == 'none' OR $data['cat_id'] != "")					 
 		{
@@ -182,8 +244,7 @@ class Search_model extends CI_Model {
 		// Construct our where clause - this is annoying
 		// Limit to channels assigned to user  
 
-		$where_clause .= "exp_channels.site_id = '".$this->db->escape_str($this->config->item('site_id'))."'";
-
+		$where_clause .= "exp_channel_titles.site_id = '".$this->db->escape_str($this->config->item('site_id'))."'";
 
 		if ( ! $this->cp->allowed_group('can_edit_other_entries') AND ! $this->cp->allowed_group('can_view_other_entries'))
 		{
@@ -321,7 +382,18 @@ class Search_model extends CI_Model {
 		{
 			foreach ($order as $key => $val)
 			{
-				$this->db->order_by($key, $val);
+				if ($key == 'channel_name')
+				{
+					$this->db->order_by('FIELD(channel_id, '.$channel_name_order.')');
+				}
+				elseif ($key == 'screen_name')
+				{
+					$this->db->order_by('FIELD(author_id, '.$screen_name_order.')');
+				}
+				else
+				{
+					$this->db->order_by($key, $val);
+				}
 			}
 		}
 		else
