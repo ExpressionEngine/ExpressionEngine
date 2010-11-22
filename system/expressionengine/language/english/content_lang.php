@@ -396,8 +396,7 @@ $lang = array(
 'choose_layout_group_preview' => 'Select the group layout you wish to preview.',
 'layout_save_warning' => 'If you have altered your layout, the changes will not be saved.',
 
-'autosave_success'	=> 'Entry autosaved',
-'autosave_failure'	=> 'This entry could not be autosaved',
+'autosave_success'	=> 'Autosaved at ',
 'autosave_title'	=> 'Saved data available',
 'autosave_warning_1'	=> 'ExpressionEngine has saved data from this entry since it was last saved.',
 'autosave_warning_2'	=> 'Saved data is removed when an entry is saved or re-saved.',

@@ -1771,15 +1771,10 @@ class Content_publish extends CI_Controller {
 		}
 
 		$autosave_interval_seconds = ($this->config->item('autosave_interval_seconds') === FALSE) ? 60 : $this->config->item('autosave_interval_seconds');
-
-		// @todo reenable autosave when fixed
-		if (FALSE && $entry_id != '' AND $autosave_interval_seconds != 0)
+		
+		if ($autosave_interval_seconds != 0)
 		{
-			$this->javascript->set_global('publish.autosave', array(
-				'interval'	=> $autosave_interval_seconds,
-				'success'	=> $this->lang->line('autosave_success'),
-				'error_state' => 'false'
-			));
+			$this->javascript->set_global('publish.autosave.interval', $autosave_interval_seconds);
 		}
 		
 		$this->javascript->set_global('publish.url_title_prefix', $url_title_prefix);
@@ -2361,25 +2356,31 @@ class Content_publish extends CI_Controller {
 
 		if ( ! $this->autosave_error)
 		{
-			exit($data['entry_id']);
+			$msg = $this->lang->line('autosave_success');
+			$time = $this->localize->set_human_time($this->localize->now);
+			$time = trim(strstr($time, ' '));
+			
+			$this->output->send_ajax_response(array(
+				'success' => $msg.$time
+			));
 		}
 		else
 		{
-			$error_message = '<h3>'.$this->lang->line('autosave_failure').'</h3>';
+			$error_message[] = $this->lang->line('autosave_failure');
 
 			if (is_array($data))
 			{
 				foreach ($data as $field => $error)
 				{
-					$error_message .= '<p>'.$error.': '.$field.'</p>';
+					$error_message[] = $error.': '.$field;
 				}
 			}
 			else
 			{
-				$error_message .= $data;
+				$error_messagep[] = $data;
 			}
 
-			exit($error_message);
+			$this->output->send_ajax_response(array('error' => $error_message));
 		}
 	}
 

@@ -583,7 +583,8 @@ function liveUrlTitle()
 
 $(document).ready(function() {
 		
-	var autosave_entry;
+	var autosave_entry,
+		start_autosave;
 
 	$("#layout_group_submit").click(function(){
 		EE.publish.save_layout();
@@ -627,47 +628,45 @@ $(document).ready(function() {
 	}
 
 	if (EE.publish.autosave) {
+		
+		start_autosave = function() {
+			setInterval(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
+		}
 
 		autosave_entry = function() {
 			var tools = $("#tools:visible"),
 				form_data;
-				
-				
-
-			// If the sidebar is showing, then form fields are disabled. Thus, enable all form elements,
-			// grab the data and re-disable (re-dis-able... does not feel like a word) them.
+			
+			// If the sidebar is showing, then form fields are disabled. Skip it.
 			if (tools.length === 1) {
-				disable_fields(true);
+				start_autosave();
+				return;
 			}
-			
-			
 			
 			form_data = $("#publishForm").serialize();
-
-			if (tools.length === 0) {
-				disable_fields(false);
-				$.ajax({
-					type: "POST",
-					url: EE.BASE+"&C=content_publish&M=autosave_entry",
-					data: form_data,
-					success: function(result){		
-						if (isNaN(result)) {
-							if (EE.publish.autosave.error_state == 'false') {
-								$.ee_notice(result, {type:"error"});
-								EE.publish.autosave.error_state = 'true';
-							}
-						}
-						else {
-							if (EE.publish.autosave.error_state == 'true') {
-								EE.publish.autosave.error_state = 'false';
-							}
-							$.ee_notice(EE.publish.autosave.success, {type:"success"});
-						}
+			
+			$.ajax({
+				type: "POST",
+				dataType: 'json',
+				url: EE.BASE+"&C=content_publish&M=autosave_entry",
+				data: form_data,
+				success: function(result){
+					if (result.error) {
+						console.log(result.error);
 					}
-				});
-			}
+					else if (result.success) {
+						$('#autosave_notice').text(result.success);
+					}
+					else {
+						console.log('Autosave Failed');
+					}
+					
+					start_autosave();
+				}
+			});
 		};
-		setInterval(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
+		
+		start_autosave();
 	}
 
 
