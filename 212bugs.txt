@@ -7,6 +7,148 @@
 - Missing reset button for template search field.
 
 
+NUMBER 1
+---------------------------------------------------------------------
+Non-fatal error on displaying installer licence agreement:
+--
+Message: Object expected
+Line: 238
+Char: 2
+Code: 0
+URI: http://ee2testing.intranet/system/index.php?C=wizard&M=license&language=english
+--
+
+Error occurs in other browsers because jQuery is not loaded in views/container.php
+
+NUMBER 2
+---------------------------------------------------------------------
+
+Non-fatal error on first access to CP:
+--
+Message: Syntax error
+Line: 1
+Char: 1
+Code: 0
+URI: http://ee2testing.intranet/system/index.php?S=7d414e50b581a598db4281eff49fd6a30319dbdd&D=cp&C=javascript&M=load&file=css&theme=default&v=1290270006
+--
+
+In all browsers this looks like it's because in cp/javascript.php on line 28 the $paths variable is a string
+rather than an array ($paths = $this->load->_ci_view_path).
+
+NUMBER 3
+---------------------------------------------------------------------
+
+Using Classic theme the Main Upload Directory server path is incorrectly set. Was set as:
+
+../themes/cp_global_images/uploads/
+
+On changing the server path to be valid for my local install (/Users/greg/Sites/ee2testing.intranet/images/uploads)
+The File Manager shows index.html as a valid file.
+
+NUMBER 4
+---------------------------------------------------------------------
+
+On uploading a file using the File Manager the upload is successful but the spinner and 'Uploading File...' message
+stays static on the template when the upload is completed.
+
+NUMBER 5
+---------------------------------------------------------------------
+
+After uploading an image file in the File Manager any attempt to load a second image file results in a
+"You did not select a file to upload" message. No JS errors noted.
+
+NUMBER 6
+---------------------------------------------------------------------
+
+After resizing an image I saved it successfully. Then I used the rotate function and tried to save the image. This
+generated an error:
+
+--
+An Error Was Encountered
+A width or width/height must be selected, or a rotate/flip direction selected.
+--
+
+In fact the image save did complete successfully even though the error message was shown.
+
+NUMBER 7
+---------------------------------------------------------------------
+
+After going back to the File Manager from the image edit mode and trying to view an image by clicking on its name
+the modal window is not shown i.e. the image is directly rendered from the upload directory. This error is generated:
+
+--
+Message: Object expected
+Line: 259
+Char: 92
+Code: 0
+URI: http://ee2testing.intranet/system/index.php?S=7d414e50b581a598db4281eff49fd6a30319dbdd&D=cp&C=javascript&M=combo_load&ui=core,widget,mouse,position,sortable,dialog&plugin=ee_focus,ee_notice,ee_txtarea,tablesorter,ee_navigation&file=cp/global&effect=core&v=0
+--
+
+NUMBER 8
+---------------------------------------------------------------------
+
+Content > Edit (and many other similar page layouts) has no margins or padding in the Search/Filter area. Additionally, the field legend is unstyled i.e. in the IE default blue.
+
+NUMBER 9
+---------------------------------------------------------------------
+
+When creating or editing a member group there is a 'rippling' effect of the preference group heading bars when the mouse
+is moved over them. The first 'mouse swipe' causes the top and bottom margins to collapse and a second swipe causes them
+to expand again. The effect is not generated again until a new preference group is selected.
+
+NUMBER 10
+---------------------------------------------------------------------
+
+Using the Corporate theme the 'reveal sidebar' link and image is offset to the left to the position of the 
+left hand side of the sidebar were it to be shown.
+
+NUMBER 11
+---------------------------------------------------------------------
+
+See number 9: In the Corporate theme this causes all the preference groups to appear as one coloured block.
+
+
+NUMBER 13
+---------------------------------------------------------------------
+
+Re the 211bugs.txt report about dragging the entry date field around, if attempting to drop the entry date field
+on any other tab by waiting until the tab is highlighted the entry date seems to be randomly added to a tab and not
+the one that was selected. A JS error is generated (NB: In Safari 5.0.3 the entry date field can disappear completely):
+
+--
+TypeError: Result of expression 'defaultTitle' [null] is not an object on index.php line 6776.
+--
+
+NUMBER 14
+---------------------------------------------------------------------
+
+See number 13: This error causes the url_title field to not be populated by JS even though the 
+entry is saved successfully with the correct url_title.
+
+NUMBER 15
+---------------------------------------------------------------------
+
+The Markitup generated windows (Alt text etc) cause a 'Scripted windows blocked alert' notification in a stock installation of IE.
+
+NUMBER 16
+---------------------------------------------------------------------
+
+The Image formatting button does not maintain cursor position when inserting an image in a custom field - it places the image at the beginning of any existing text.
+
+NUMBER 17
+---------------------------------------------------------------------
+
+The SAEF generates this error which seems to prevent proper notification of file selection when uploading images.
+Images are uploaded correctly though.
+
+Message: Syntax error
+Line: 1
+Char: 1
+Code: 0
+URI: http://ee2testing.intranet/index.php?ACT=saef&use_live_url=y
+
+
+
 2.1.1
 -----
 
@@ -21,8 +163,9 @@
 - (minor) When I gave a known-bad password Moblog detected this but returned somewhat contradictory output (invalid password + successfully checked):
 
 
----------- DOCUMENTATION -----------
-Done
+
+
+
 
 --------- WORKING ON IT -------------
 
@@ -34,72 +177,11 @@ Done
 
 
 --------- FIXED / NOT A BUG ----------
+
+NUMBER 12
+---------
+When creating a member custom field using the Corporate theme the Field Type Setting column content is
+offset to the right.
 19. Occasionally (I can't see a pattern here) if you click an image in the file manager list the modal is offset to the right partially out of the browser viewport. It is not possible to click to close this image. A JS error is generated "Cannot read property 'nodeName' of '. This seems to happen with at least Mac Chrome and Windows 7.
 
-17. IE8 (Windows 7), the file manager upload dialog (from the publish page) does not have a choose file button. The dialog will open if the field is double-clicked though.
 
-- #13568 (Modules without CP backends never updated)
-- Publish page improvements look good and appear to work well, including field drag and drop to other tabs. Only suggestion would be to change the mouse pointer when over a field's grippie similar to the feedback when you hover over the 'resize' corner of a field.
-
-- {last_segment} will let you access a 10th segment, however the individual segment variables only access up to {segment_9} (is this by design?)
-
-Missing column notify in field list when posting a comment
-
-3. With Safari 5.0.2 the Comment module homepage overlaps the ExpressionEngine Info accessory tab when opening/closing the sidebar.
-
-4. Comment module homepage, without any comments the pagination links, an empty select and a submit button are shown.
-
-5. Default, Fruit and Corporate theme, going to Content > File Manager generates a console error:
-"TypeError: Result of expression 'a' [undefined] is not an object"
-in index.php?S=8bda723f8890679f6b3534108001a7194c9717fa&D=cp&C=javascript
-
-6. Safari 5.0.2 Inspector reports multiple HTML validation errors in Config Editor in Default and Fruit themes.
-
-7. Corporate theme, the File Manager overlaps the accessory tabs if the sidebar is opened/closed.
-
-8. {last_segment} seems to work as described.
-
-9. Corporate theme publish tab, the glossary won't open on a textarea using Chrome 6.0.472.62 beta.  -- I dont' replicate this issue -- GA
-
-10. After publishing an entry the preview shows a 'View Comments' link. This link is incorrect.
-
-11. Changelog link for new 'restrict_channel' parameter is incorrect.
-
-13. Corporate theme with Chrome 6.0.472.62 beta/Safari 5.0.2 and Firefox 4.0b5, going to the Content Edit page generates several JS errors and the page does not render properly. Does not occur in Default or Fruit themes.
-
-14. Complex publish layouts successfully tested including removal of url_title field and dragging of fields between tabs.
-
-15. #13175 successful manual change of AM/PM on entry date.
-
-16. #13829 verified
-
-21. #13071, verified that ctrl+shortcut does work in Safari 5.0.2/Firefox 4.0b5/Chrome 6.0.472.62 beta. Selected text is wrapped appropriately.
-
-
-- Comment Editing Time Limit setting in the module's new CP page is ambiguous as to what units of time are being specified (the documentation does not specify this either)
-
-- Re: (#13363) where {page_url} variables were not respecting the "Force Query Strings" setting
->> Forcing query strings breaks {page_url} (http://site/index.php/?/pagetest (extra slash before and after ?)
-
-- (#13585) where the Wiki would not accept uploads if the allowed types was set to "Images only"
-- (#13503) where deleting tabs from the publish layout could cause kept tabs to be mislabeled.
-- (#13575) where the CP search was looking in the wrong location for language keys.
-- (#13071) with HTML formatting buttons where the shortcut keys (Ctrl+key) were not working.
-- IE8 works as well as can be expected (can't reproduce Greg's #17 albeit with IE8 on XP)
-- Lots of other general usage patterns that worked well
-- {last_segment} is not documented in templates/globals/single_variables.html (Documented with segment variables)
-
----------- DOCUMENTATION ----------- Robin snagged these cause the involve no js and no moblog.  Go Robin!
-
-- the channel= parameter is listed out-of-order on modules/channel/parameters.html
-- typo in changelog: "Added a new status for comments. Moderated comments will no go..." should be "...now go..."
-
-- Re: #13551 Search and Replace in conjunction with flat files could lead to data loss - Documentation and screenshot at cp/tools/data/search_and_replace.html do not reflect the new warning in the S&R utility (If you are replacing within templates, synchronize with the database first, or	permanent data loss can occur!)  Ideally the utility would refuse to run if templates are out of sync...?
-- Both links in the changelog re: restrict_channel parameter and show_empty parameter have an extra /channel/ in their URL 
-- Suggest tweak to new documentation on restrict_channel: "... When restrict_channel is set to "no", the show_empty parameter will display categories that have no entries from all channels, rather than categories that have no entries from the specified channel. (break) By default, the empty categories shown will be restricted to the specified channel."
-
-
-
-12. When modifying the publish layout it is possible to drag the entry date field off the layout and it disappears completely. This should not be possible since the entry date can't be removed.
-
-*** NOTE- neither Greg nore Robin can replicate this one so we yelled for Brandon and he couldn't either.  You move it far enough away, it ends up on publish main tab- but I'd say it's expected.  So 12 'not a bug' unless proven different.

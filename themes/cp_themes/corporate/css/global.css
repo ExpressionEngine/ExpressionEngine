@@ -3441,6 +3441,10 @@ div.accordionContent table tr:last-of-type  td{
 	border-bottom: 		none!important;
 }
 
+.pageContents p#text_block {
+	margin:				0;
+}
+
 
 /* -------------------------------------
 /*  Add ons
