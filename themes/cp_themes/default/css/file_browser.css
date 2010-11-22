@@ -173,7 +173,7 @@ div#nav_wreaper {
 }
 
 .navi_area {
-	background: #8ea1ad url(../themes/jquery_ui/default/images/ui-bg_highlight-soft_40_8ea1ad_1x100.png) 50% 50% repeat-x;
+	background: #8ea1ad url(<?=$cp_theme_url?>images/ui-bg_highlight-soft_40_8ea1ad_1x100.png) 50% 50% repeat-x;
 	min-height:40px;
 	margin-top:-40px;
 	line-height:40px;

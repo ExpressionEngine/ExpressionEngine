@@ -24,17 +24,17 @@
  */
 class Content_edit extends CI_Controller {
 
-	var $nest_categories	= 'y';
-	var $installed_modules	= FALSE;
+	private $nest_categories	= 'y';
+	private $installed_modules	= FALSE;
 	
-	var $pipe_length			= 3;
-	var $comment_chars			= 25;
-	var $comment_leave_breaks	= 'n';
+	private $pipe_length			= 3;
+	private $comment_chars			= 25;
+	private $comment_leave_breaks	= 'n';
 
 	/**
 	 * Constructor
 	 */
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 
@@ -54,10 +54,10 @@ class Content_edit extends CI_Controller {
 	/**
 	 * Index function
 	 *
-	 * @access	public
 	 * @return	void
 	 */	
-	function index($channel_id = '', $message = '', $extra_sql = '', $search_url = '', $form_url = '', $action = '', $extra_fields_search='', $extra_fields_entries='', $heading='')
+	public function index($channel_id = '', $message = '', $extra_sql = '', $search_url = '', 
+						  $form_url = '', $action = '', $extra_fields_search='', $extra_fields_entries='', $heading='')
 	{		
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -763,8 +763,12 @@ class Content_edit extends CI_Controller {
 		$this->load->view('content/edit', $vars);
 	}
 
+	// --------------------------------------------------------------------
 
-	function edit_ajax_filter()
+	/**
+	 * Edit ajax filter
+	 */
+	public function edit_ajax_filter()
 	{
 		if ( ! AJAX_REQUEST)
 		{
@@ -1085,12 +1089,10 @@ class Content_edit extends CI_Controller {
 	 *
 	 * Creates a properly format variable to pass in the url indicating the filter state
 	 *
-	 * @access	public
 	 * @param	array
 	 * @return	string
 	 */
-
-	function create_return_filter($filter_data)
+	public function create_return_filter($filter_data)
 	{
 		
 		$filters = array();
@@ -1119,11 +1121,12 @@ class Content_edit extends CI_Controller {
 		return $filter;
 	}
 
-	// --------------------------------------------
-	//	 Multi Edit Form
-	// --------------------------------------------
- 
-	function multi_edit_form()
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Multi edit form
+	 */
+	public function multi_edit_form()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -1408,11 +1411,12 @@ class Content_edit extends CI_Controller {
 		$this->load->view('content/multi_edit', $vars);
 	}
 
+	// --------------------------------------------------------------------
 
-	/** -----------------------------------------
-	/**	 Update Multi Entries
-	/** -----------------------------------------*/
-	function update_multi_entries()
+	/**
+	 * Update multi entries
+	 */
+	public function update_multi_entries()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -1602,12 +1606,13 @@ class Content_edit extends CI_Controller {
 		}
 	}
 
-	/** --------------------------------------------
-    /**  Multi Categories Edit Form
-    /** --------------------------------------------*/
- 
-    function multi_categories_edit($type, $query)
-    {
+	// --------------------------------------------------------------------
+
+	/**
+	 * multi categories edit form
+	 */
+	public function multi_categories_edit($type, $query)
+	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
@@ -1717,10 +1722,12 @@ class Content_edit extends CI_Controller {
 		$this->load->view('content/multi_cat_edit', $vars);
 	}
 
+	// --------------------------------------------------------------------
+
 	/**
-	  *  Update Multiple Entries with Categories
-	  */
-	function multi_entry_category_update()
+	 *  Update Multiple Entries with Categories
+	 */
+	public function multi_entry_category_update()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -1853,16 +1860,12 @@ class Content_edit extends CI_Controller {
 		$this->functions->redirect(BASE.AMP.'C=content_edit');
 	}
 
- 	/* END */
+	// --------------------------------------------------------------------
 
-
-	// --------------------------------------------
-	// Delete Entries (confirm)
-	//
-	// Warning message if you try to delete an entry
-	//--------------------------------------------
-
-	function delete_entries_confirm()
+	/**
+	 * Delete entries confirm
+	 */
+	public function delete_entries_confirm()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -1923,12 +1926,12 @@ class Content_edit extends CI_Controller {
 		$this->load->view('content/delete_confirm', $vars);
 	}
 
-	
-	// --------------------------------------------
-	// Delete Entries
-	// Kill the specified entries
-	//--------------------------------------------
-	function delete_entries()
+	// --------------------------------------------------------------------
+
+	/**
+	 * Delete entries
+	 */
+	public function delete_entries()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -1970,14 +1973,16 @@ class Content_edit extends CI_Controller {
 		$this->functions->redirect(BASE.AMP.'C=content_edit');
 	}
 
-	// --------------------------------------------
-	//	 JavaScript filtering code
-	//
-	// This function writes some JavaScript functions that
-	// are used to switch the various pull-down menus in the
-	// EDIT page
-	//--------------------------------------------
-	function filtering_menus($cat_form_array)
+	// --------------------------------------------------------------------
+
+	/**
+	 * JavaScript filtering code
+	 *
+	 * This function writes some JavaScript functions that
+	 * are used to switch the various pull-down menus in the
+	 * EDIT page
+	 */
+	public function filtering_menus($cat_form_array)
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2090,7 +2095,12 @@ class Content_edit extends CI_Controller {
 		$this->javascript->set_global('edit.channelInfo', $channel_info);
 	}
 	
-	function custom_dates()
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Custom dates
+	 */
+	public function custom_dates()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2110,10 +2120,9 @@ class Content_edit extends CI_Controller {
 	 *
 	 * Used by "recent entries" homepage link
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function show_recent_entries()
+	public function show_recent_entries()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2167,10 +2176,9 @@ class Content_edit extends CI_Controller {
 	 *
 	 * Used by quicklinks to link to most recent comment
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function view_comment()
+	public function view_comment()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2188,10 +2196,9 @@ class Content_edit extends CI_Controller {
 	/**
 	 * View Comments - Deprecated
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function view_comments($channel_id = '', $entry_id = '', $message = '', $id_array = '', $total_rows = '', $pag_base_url = '')
+	public function view_comments($channel_id = '', $entry_id = '', $message = '', $id_array = '', $total_rows = '', $pag_base_url = '')
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2217,10 +2224,9 @@ class Content_edit extends CI_Controller {
 	/**
 	 * Delete Comments Confirmation - Deprecated
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function delete_comment_confirm()
+	public function delete_comment_confirm()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2245,11 +2251,10 @@ class Content_edit extends CI_Controller {
 	/**
 	 * Change Comment Status - Deprecated
 	 *
-	 * @access	public
 	 * @param	string	new status
 	 * @return	void
 	 */
-	function change_comment_status($status='')
+	public function change_comment_status($status='')
 	{
 		//  Flipped back and forth between two statuses.
 		//  COULD be accessed via get for email notification approve
@@ -2271,7 +2276,6 @@ class Content_edit extends CI_Controller {
 		}
 
 		show_error($this->lang->line('unauthorized_access'));
-
 	}
 }
 // END CLASS
