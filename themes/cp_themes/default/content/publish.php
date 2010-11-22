@@ -221,6 +221,7 @@ if ($EE_view_disable !== TRUE)
 			<?php endforeach;?>
 
 			<ul id="publish_submit_buttons">
+				<li id="autosave_notice" style="margin-right: 7px; color: #5F6C74;">Autosaved at 22:45</li>
 			<?php if ($show_revision_cluster == 'y'):?><li><input type="submit" class="submit" name="save_revision" id="revision_button" value="<?=lang('save_revision')?>" /></li><?php endif?>
 				<li><input type="submit" class="submit" name="submit" id="submit_button" value="<?=lang('submit')?>" /></li>
 			</ul>
