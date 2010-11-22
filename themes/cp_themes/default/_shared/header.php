@@ -24,7 +24,8 @@
 	<script charset="utf-8" type="text/javascript" src="<?=BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'file=css'.AMP.'theme='.$this->cp->cp_theme.AMP.'v='.$advanced_css_mtime?>"></script>
 
 	<?php
-	if (isset($script_head)) {
+	if (isset($script_head)) 
+	{
 		echo $script_head;
 	}
 

@@ -51,7 +51,7 @@ class View  {
 	 */
 	public function head_title($title)
 	{
-		return '<title>' . $title . ' | ExpressionEngine</title>';
+		return '<title>' . $title . ' | ExpressionEngine</title>'.PHP_EOL;
 	}
 	
 	// --------------------------------------------------------------------------
@@ -81,7 +81,7 @@ class View  {
 		
 		$url = $this->EE->config->item('theme_folder_url') . 'javascript/' . $src_dir . $file . '?v=' . $filemtime;
 		
-		return '<script type="text/javascript" src="' . $url . '"></script>';
+		return '<script type="text/javascript" src="' . $url . '"></script>'.PHP_EOL;
 	}
 
 	// --------------------------------------------------------------------------
@@ -128,7 +128,7 @@ class View  {
 			return NULL;
 		}
 
-		return '<link rel="stylesheet" href="'.$file_url.'?v='.$filemtime.'" type="text/css" media="'.$media.'" />';
+		return '<link rel="stylesheet" href="'.$file_url.'?v='.$filemtime.'" type="text/css" media="'.$media.'" />'.PHP_EOL;
 	}
 
 	// --------------------------------------------------------------------------

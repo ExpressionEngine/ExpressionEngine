@@ -3369,6 +3369,11 @@ div#view_content_entry_links {
 	width:				95%;
 }
 
+#expressionengine_info a.update {
+	text-decoration: 	underline;
+	font-weight: 		bold;
+}
+
 /*  Forum Theme */
 .moduleWrap #forum_global_nav {
 	height:30px;
@@ -3434,6 +3439,10 @@ div.accordionContent table{
 
 div.accordionContent table tr:last-of-type  td{
 	border-bottom: 		none!important;
+}
+
+.pageContents p#text_block {
+	margin:				0;
 }
 
 
@@ -3617,7 +3626,7 @@ div.contentWrap {
 }
 
 #mainContent div#file_manager {
-	background:				#f3f5f8 url('../images/file_manager_background.png') bottom right no-repeat;
+	background-color:		#f3f5f8;
 	padding:				0;
 	color:					#505050;
 	border-top:				1px solid #fff;

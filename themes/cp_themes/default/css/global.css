@@ -3023,6 +3023,12 @@ a#refresh_categories {
 	color:				#929596;
 }
 
+#expressionengine_info a.update {
+	text-decoration: 	underline;
+	font-weight: 		bold;
+}
+
+
 /* -------------------------------------
 /*  Members
 /* -------------------------------------*/

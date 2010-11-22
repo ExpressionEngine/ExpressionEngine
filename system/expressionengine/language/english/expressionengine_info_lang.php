@@ -12,13 +12,13 @@ $lang = array(
 
 'running_current'		=> 'You are running the latest version of ExpressionEngine: Version %v Build %b',
 'version_update_available'	=> 'A newer version of ExpressionEngine is available!',
-'version_update_inst'		=> 'Please download the latest version <a href=\'%d\' title=\'Download Here\'>here</a> and follow the <a href=\'%i\' title=\'Version Update Docs\'>Version Update Instructions</a>.',
+'version_update_inst'		=> 'Please download the <a class="update" href=\'%d\' title=\'Download Here\'>latest version</a> and follow the <a class="update" href=\'%i\' title=\'Version Update Instructions\'>Version Update Instructions</a>.',
 
-'build_update_available'		=> 'A newer build of ExpressionEngine is available!',
-'build_update_inst'			=> 'Please download the latest build <a href=\'%d\' title=\'Download Here\'>here</a> and follow the <a href=\'%i\' title=\'Build Update Docs\'>Build Update Instructions</a>.',
+'build_update_available'	=> 'A newer build of ExpressionEngine is available!',
+'build_update_inst'			=> 'Please download the <a class="update" href=\'%d\' title=\'Download Here\'>latest build</a> and follow the <a class="update" href=\'%i\' title=\'Build Update Instructions\'>Build Update Instructions</a>.',
 
-'current_version'		=> 'Latest version: %v Build %b',
-'installed_version'		=> 'Installed version: %v Build %b',
+'current_version'		=> '&nbsp;&nbsp;&nbsp;Latest: %v Build %b',
+'installed_version'		=> 'Installed: %v Build %b',
 
 
 'version_and_build'		=> 'Version and Build',

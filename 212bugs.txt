@@ -1,0 +1,192 @@
+2.1.2
+-----
+
+- Loader for themes' advanced.css is still being tweaked. This currently causes a (harmless) JS error in the control panel and results in no rounded corners.
+- When advanced.css is missing there is no fallback behavior.
+- Need to update compressed js.
+- Missing reset button for template search field.
+
+
+
+
+NUMBER 2
+---------------------------------------------------------------------
+
+Non-fatal error on first access to CP:
+--
+Message: Syntax error
+Line: 1
+Char: 1
+Code: 0
+URI: http://ee2testing.intranet/system/index.php?S=7d414e50b581a598db4281eff49fd6a30319dbdd&D=cp&C=javascript&M=load&file=css&theme=default&v=1290270006
+--
+
+In all browsers this looks like it's because in cp/javascript.php on line 28 the $paths variable is a string
+rather than an array ($paths = $this->load->_ci_view_path).
+
+
+NUMBER 4
+---------------------------------------------------------------------
+
+On uploading a file using the File Manager the upload is successful but the spinner and 'Uploading File...' message
+stays static on the template when the upload is completed.
+
+NUMBER 5
+---------------------------------------------------------------------
+
+After uploading an image file in the File Manager any attempt to load a second image file results in a
+"You did not select a file to upload" message. No JS errors noted.
+
+NUMBER 6
+---------------------------------------------------------------------
+
+After resizing an image I saved it successfully. Then I used the rotate function and tried to save the image. This
+generated an error:
+
+--
+An Error Was Encountered
+A width or width/height must be selected, or a rotate/flip direction selected.
+--
+
+In fact the image save did complete successfully even though the error message was shown.
+
+NUMBER 7
+---------------------------------------------------------------------
+
+After going back to the File Manager from the image edit mode and trying to view an image by clicking on its name
+the modal window is not shown i.e. the image is directly rendered from the upload directory. This error is generated:
+
+--
+Message: Object expected
+Line: 259
+Char: 92
+Code: 0
+URI: http://ee2testing.intranet/system/index.php?S=7d414e50b581a598db4281eff49fd6a30319dbdd&D=cp&C=javascript&M=combo_load&ui=core,widget,mouse,position,sortable,dialog&plugin=ee_focus,ee_notice,ee_txtarea,tablesorter,ee_navigation&file=cp/global&effect=core&v=0
+--
+
+NUMBER 8
+---------------------------------------------------------------------
+
+Content > Edit (and many other similar page layouts) has no margins or padding in the Search/Filter area. Additionally, the field legend is unstyled i.e. in the IE default blue.
+
+NUMBER 9
+---------------------------------------------------------------------
+
+When creating or editing a member group there is a 'rippling' effect of the preference group heading bars when the mouse
+is moved over them. The first 'mouse swipe' causes the top and bottom margins to collapse and a second swipe causes them
+to expand again. The effect is not generated again until a new preference group is selected.
+
+NUMBER 10
+---------------------------------------------------------------------
+
+Using the Corporate theme the 'reveal sidebar' link and image is offset to the left to the position of the 
+left hand side of the sidebar were it to be shown.
+
+NUMBER 11
+---------------------------------------------------------------------
+
+See number 9: In the Corporate theme this causes all the preference groups to appear as one coloured block.
+
+
+NUMBER 13
+---------------------------------------------------------------------
+
+Re the 211bugs.txt report about dragging the entry date field around, if attempting to drop the entry date field
+on any other tab by waiting until the tab is highlighted the entry date seems to be randomly added to a tab and not
+the one that was selected. A JS error is generated (NB: In Safari 5.0.3 the entry date field can disappear completely):
+
+--
+TypeError: Result of expression 'defaultTitle' [null] is not an object on index.php line 6776.
+--
+
+NUMBER 14
+---------------------------------------------------------------------
+
+See number 13: This error causes the url_title field to not be populated by JS even though the 
+entry is saved successfully with the correct url_title.
+
+NUMBER 15
+---------------------------------------------------------------------
+
+The Markitup generated windows (Alt text etc) cause a 'Scripted windows blocked alert' notification in a stock installation of IE.
+
+NUMBER 16
+---------------------------------------------------------------------
+
+The Image formatting button does not maintain cursor position when inserting an image in a custom field - it places the image at the beginning of any existing text.
+
+NUMBER 17
+---------------------------------------------------------------------
+
+The SAEF generates this error which seems to prevent proper notification of file selection when uploading images.
+Images are uploaded correctly though.
+
+Message: Syntax error
+Line: 1
+Char: 1
+Code: 0
+URI: http://ee2testing.intranet/index.php?ACT=saef&use_live_url=y
+
+
+
+2.1.1
+-----
+
+1. When installing above web root the value for 'URL to the directory where the above index page is located' is the masked file URL and not the site root.
+
+20. Safari/Chrome/Firefox, after logging in with the mobile theme and trying to select another theme it is not then possible to change the default CP theme in a desktop browser.
+
+- Re: Greg's #19 I'm also still seeing a JS error when uploading a file from the File Manager which is a bit of a biggie because it prevents feedback.  "Click is not a function" occurs on line 139 of file_manager_home.js, presumably because something isn't fully in the DOM when setup_events() gets run again following the upload? (this is the only JS error I have encountered in the CP)
+
+- Was not able to get Moblog to work with my Gmail account. It did connect on port 995 (whether I set the Incoming Mail Server to pop.gmail.com or pop.gmail.com:995) but appeared to go around in circles for approximately a minute (just watching tcpdump) and then say No Emails Found.
+
+- (minor) When I gave a known-bad password Moblog detected this but returned somewhat contradictory output (invalid password + successfully checked):
+
+
+
+
+
+
+--------- WORKING ON IT -------------
+
+- When installing above web root it's still necessary to manually change the config file because of 'Unable to load the requested file: account/login.php' (PK)
+
+- Filemanger: Edit > crop mode, makes the image disappear on the first attempt - fails with NaN in all fields (PK)
+
+- 18. When uploading images via the file manager sometimes the file is uploaded to the server successfully but the file manager dialog does not recognise or record this fact when it is refreshed. In at least Chrome several JS errors are generated. See also #19. (PK)
+
+
+--------- FIXED / NOT A BUG ----------
+
+NUMBER 12
+---------
+When creating a member custom field using the Corporate theme the Field Type Setting column content is
+offset to the right.
+19. Occasionally (I can't see a pattern here) if you click an image in the file manager list the modal is offset to the right partially out of the browser viewport. It is not possible to click to close this image. A JS error is generated "Cannot read property 'nodeName' of '. This seems to happen with at least Mac Chrome and Windows 7.
+
+NUMBER 1
+---------------------------------------------------------------------
+Non-fatal error on displaying installer licence agreement:
+--
+Message: Object expected
+Line: 238
+Char: 2
+Code: 0
+URI: http://ee2testing.intranet/system/index.php?C=wizard&M=license&language=english
+--
+
+Error occurs in other browsers because jQuery is not loaded in views/container.php
+
+
+
+NUMBER 3
+---------------------------------------------------------------------
+
+** Not a bug, the classic theme is not distributed **
+
+Using Classic theme the Main Upload Directory server path is incorrectly set. Was set as:
+
+../themes/cp_global_images/uploads/
+
+On changing the server path to be valid for my local install (/Users/greg/Sites/ee2testing.intranet/images/uploads)
+The File Manager shows index.html as a valid file.
