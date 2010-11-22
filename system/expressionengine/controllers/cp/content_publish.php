@@ -24,17 +24,17 @@
  */
 class Content_publish extends CI_Controller { 
 
-	var $SPELL				= FALSE;
-	var $autosave_error		= FALSE;
+	public $SPELL				= FALSE;
+	public $autosave_error		= FALSE;
 	
-	var $installed_modules	= FALSE;
-	var $field_definitions	= array();
-	var $required_fields	= array();
+	public $installed_modules	= FALSE;
+	public $field_definitions	= array();
+	public $required_fields		= array();
 
 	/**
 	 * Constructor
 	 */
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 
@@ -60,7 +60,7 @@ class Content_publish extends CI_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function index()
+	public function index()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -83,10 +83,9 @@ class Content_publish extends CI_Controller {
 	 * This list will be displayed when a user clicks the
 	 * "publish" link when more than one channel exist.
 	 *
-	 * @access	public
 	 * @return	mixed
 	 */
-	function channel_select_list()
+	public function channel_select_list()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -136,10 +135,9 @@ class Content_publish extends CI_Controller {
 	/**
 	 * Save publish layout
 	 *
-	 * @access	public
 	 * @return	mixed
 	 */
-	function save_layout()
+	public function save_layout()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -258,9 +256,8 @@ class Content_publish extends CI_Controller {
 	 * So before we save our fields we need to reorder them according to
 	 * their index parameter.
 	 *
-	 * @access private
 	 */
-	function _sort_publish_fields($fields)
+	protected function _sort_publish_fields($fields)
 	{
 		// array_multisort couldn't be coerced into maintaining our
 		// array keys, so we sort manually ... le sigh.
@@ -298,9 +295,8 @@ class Content_publish extends CI_Controller {
 	 * This function displays the form used to submit, edit, or
 	 * preview new channel entries with.
 	 *
-	 * @access public
 	 */
-	function entry_form()
+	public function entry_form()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -1912,10 +1908,9 @@ class Content_publish extends CI_Controller {
 	 * Takes the field output array and resorts it to show alphabetically by
 	 * label with the required fields grouped at the top.
 	 *
-	 * @access	private
 	 * @return	mixed
 	 */
-	function _sort_sidebar_list($fields, $required)
+	protected function _sort_sidebar_list($fields, $required)
 	{
 		$sorted = array();
 		
@@ -1957,10 +1952,9 @@ class Content_publish extends CI_Controller {
 	 *
 	 * Called via ajax right after page load to build the filebrowser
 	 *
-	 * @access	private
 	 * @return	mixed
 	 */
-	function filemanager_endpoint($function = '', $params = array())
+	public function filemanager_endpoint($function = '', $params = array())
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -1987,10 +1981,9 @@ class Content_publish extends CI_Controller {
 	 *
 	 * Construct a list authors for the publish page
 	 *
-	 * @access	private
 	 * @return	mixed
 	 */
-	function build_author_sidebar()
+	public function build_author_sidebar()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2023,10 +2016,9 @@ class Content_publish extends CI_Controller {
 	 * Removes an author from the sidebar, and changes their "in_authorlist"
 	 * status to "n"
 	 *
-	 * @access	private
 	 * @return	mixed
 	 */
-	function remove_author()
+	public function remove_author()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2048,11 +2040,10 @@ class Content_publish extends CI_Controller {
 	 *
 	 * Construct a table of authors for any channel
 	 *
-	 * @access	private
 	 * @param	integer		the channel id
 	 * @return	mixed
 	 */
-	function build_author_table($channel_id = 1)
+	public function build_author_table($channel_id = 1)
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2143,7 +2134,20 @@ class Content_publish extends CI_Controller {
 		}
 	}
 
-	function _build_channel_vars($which, $status_group, $cat_group, $field_group, $assigned_channels, $channel_id, $channel_title)
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Build Channel Vars
+	 *
+	 * @param 	string
+	 * @param 	integer
+	 * @param 	integer
+	 * @param 	integer
+	 * @param 	array
+	 * @param 	integer
+	 * @param 	string
+	 */
+	protected function _build_channel_vars($which, $status_group, $cat_group, $field_group, $assigned_channels, $channel_id, $channel_title)
 	{
 		$this->load->model('channel_model');
 
@@ -2176,7 +2180,16 @@ class Content_publish extends CI_Controller {
 		return $vars;
 	}
 
-	function _build_status_vars($status_group, $status, $deft_status)
+	// --------------------------------------------------------------------
+
+	/**
+	 * Build status vars
+	 *
+	 * @param	integer
+	 * @param 	string
+	 * @param	string
+	 */
+	protected function _build_status_vars($status_group, $status, $deft_status)
 	{
 		$this->load->model('status_model');
 
@@ -2270,7 +2283,15 @@ class Content_publish extends CI_Controller {
 		return $vars;
 	}
 
-	function _build_author_vars($author_id, $channel_id)
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Build Author Vars
+	 *
+	 * @param 	integer
+	 * @param 	integer
+	 */
+	protected function _build_author_vars($author_id, $channel_id)
 	{
 		$this->load->model('member_model');
 
@@ -2307,10 +2328,14 @@ class Content_publish extends CI_Controller {
 		return $vars;
 	}
 
-	/** -------------------------------------
-	/**	 Bookmarklet query string decode
-	/** -------------------------------------*/
-	function bm_qstr_decode($str)
+	// --------------------------------------------------------------------
+
+	/**
+	 * bookmarklet qstr decode
+	 *
+	 * @param 	string
+	 */
+	public function bm_qstr_decode($str)
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2337,7 +2362,12 @@ class Content_publish extends CI_Controller {
 	}
 
 
-	function autosave_entry()
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Autosave Entry
+	 */
+	public function autosave_entry()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2383,15 +2413,15 @@ class Content_publish extends CI_Controller {
 		}
 	}
 
+	// --------------------------------------------------------------------
 
 	/**
 	  * Channel entry submission handler
 	  *
 	  * This function receives a new or edited channel entry and
 	  * stores it in the database.	It also sends pings
-	  * 
 	  */
-	function _submit_new_entry($cp_call = TRUE, $autosave = FALSE)
+	protected function _submit_new_entry($cp_call = TRUE, $autosave = FALSE)
 	{
 		if ( ! $channel_id = $this->input->post('channel_id') OR ! is_numeric($channel_id))
 		{
@@ -2529,12 +2559,17 @@ class Content_publish extends CI_Controller {
 		$this->functions->redirect($loc);
 	}
 
-	/** ---------------------------------------------------------------
-	/**	 Fetch ping servers
-	/** ---------------------------------------------------------------*/
-	// This function displays the ping server checkboxes
-	//---------------------------------------------------------------
-	function fetch_ping_servers($member_id = '', $entry_id = '', $which = 'new', $show = TRUE)
+	// --------------------------------------------------------------------
+
+	/**
+	 * fetch ping servers
+	 *
+	 * @param 	integer
+	 * @param 	integer
+	 * @param 	string
+	 * @param 	boolean
+	 */
+	public function fetch_ping_servers($member_id = '', $entry_id = '', $which = 'new', $show = TRUE)
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2629,12 +2664,12 @@ class Content_publish extends CI_Controller {
 		return $r;
 	}
 
+	// --------------------------------------------------------------------
 
-	/** ---------------------------------------------------------------
-	/**	 JavaScript For Inserting BBCode, Glossary, and Smileys
-	/** ---------------------------------------------------------------*/
-
-	function insert_javascript()
+	/**
+	 * Insert Javascript
+	 */
+	public function insert_javascript()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2661,14 +2696,12 @@ class Content_publish extends CI_Controller {
 		$this->javascript->set_global('publish.word_separator', $this->config->item('word_separator') != "dash" ? '_' : '-');
 	}
 
+	// --------------------------------------------------------------------
 
-	// --------------------------------------------
-	//	 View channel entry
-	//
-	// This function displays an individual channel entry
-	//--------------------------------------------
-
-	function view_entry()
+	/**
+	 * View Entry
+	 */
+	public function view_entry()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2899,10 +2932,12 @@ class Content_publish extends CI_Controller {
 		$this->load->view('content/view_entry', $vars);
 	}
 
-	/** -----------------------------------------
-	/**	 Base IFRAME for Spell Check
-	/** -----------------------------------------*/
-	function spellcheck_iframe()
+	// --------------------------------------------------------------------
+
+	/**
+	 * Spellcheck iFrame
+	 */
+	public function spellcheck_iframe()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2917,10 +2952,12 @@ class Content_publish extends CI_Controller {
 		return EE_Spellcheck::iframe();
 	}
 
-	/** -----------------------------------------
-	/**	 Spell Check for Textareas
-	/** -----------------------------------------*/
-	function spellcheck()
+	// --------------------------------------------------------------------
+
+	/**
+	 * spellcheck
+	 */
+	public function spellcheck()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -2934,8 +2971,16 @@ class Content_publish extends CI_Controller {
 
 		return EE_Spellcheck::check();
 	}
+	
+	// --------------------------------------------------------------------
 
-	function _define_options_fields($vars, $which)
+	/**
+	 * Define options field
+	 *
+	 * @param 	array
+	 * @param 	string
+	 */
+	protected function _define_options_fields($vars, $which)
 	{
 		//options
 		$this->field_definitions['new_channel'] = array(
@@ -3007,7 +3052,12 @@ class Content_publish extends CI_Controller {
 		);
 	}
 	
-	function ajax_update_cat_fields()
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Ajax Update category fields
+	 */
+	public function ajax_update_cat_fields()
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
@@ -3029,7 +3079,12 @@ class Content_publish extends CI_Controller {
 		exit($this->field_definitions['category']['string_override']);
 	}
 
-	function _define_category_fields($categories, $edit_categories_link, $cat_groups = '')
+	// --------------------------------------------------------------------
+
+	/**
+	 * Define category fields
+	 */
+	protected function _define_category_fields($categories, $edit_categories_link, $cat_groups = '')
 	{
 		$vars = compact('categories', 'edit_categories_link');
 		$category_r = $this->load->view('content/_assets/categories', $vars, TRUE);
@@ -3051,7 +3106,13 @@ class Content_publish extends CI_Controller {
 		);
 	}
 
-	function _define_ping_fields($vars)
+	// --------------------------------------------------------------------
+
+	/**
+	 * define ping fields
+	 * 
+	 */
+	protected function _define_ping_fields($vars)
 	{
 		$this->api_channel_fields->set_settings('ping', array(
 			'string_override'		=> (isset($vars['ping_servers']) && $vars['ping_servers'] != '') ? '<fieldset>'.$vars['ping_servers'].'</fieldset>' : lang('no_ping_sites').'<p><a href="'.BASE.AMP.'C=myaccount'.AMP.'M=ping_servers'.AMP.'id='.$this->session->userdata('member_id').'">'.$this->lang->line('add_ping_sites').'</a></p>',
@@ -3066,8 +3127,16 @@ class Content_publish extends CI_Controller {
 			'field_show_fmt'		=> 'n'
 		));
 	}
+	
+	// --------------------------------------------------------------------
 
-	function _define_revisions_fields($vars, $versioning)
+	/**
+	 * Define revisions fields
+	 *
+	 * @param 	array
+	 * @param 	boolean
+	 */
+	protected function _define_revisions_fields($vars, $versioning)
 	{
 		$revisions_r = $versioning;
 		$revisions_checked = ($vars['versioning_enabled'] == 'y')? TRUE : FALSE;
@@ -3090,7 +3159,15 @@ class Content_publish extends CI_Controller {
 			'field_show_fmt'		=> 'n'
 		);
 	}
+
+	// --------------------------------------------------------------------
 	
+	/**
+	 * Define forum fields
+	 *
+	 * @param 	array
+	 * @param 	string
+	 */
 	function _define_forum_fields(&$vars, $which)
 	{
 		// On edit- only forum topic id can take a value and only forum topic id and 
@@ -3182,8 +3259,13 @@ class Content_publish extends CI_Controller {
 			);
 		}
 	}
+	
+	// --------------------------------------------------------------------
 
-	function _static_publish_admin()
+	/**
+	 * Static publish admin
+	 */
+	protected function _static_publish_admin()
 	{
 		$this->javascript->set_global(array(
 				'lang.add_tab' 				=> $this->lang->line('add_tab'),
@@ -3199,7 +3281,12 @@ class Content_publish extends CI_Controller {
 		$this->cp->add_js_script(array('file' => 'cp/publish_admin'));
 	}
 
-	function _static_publish_formatting_buttons()
+	// --------------------------------------------------------------------
+
+	/**
+	 * Static public formatting buttons
+	 */
+	protected function _static_publish_formatting_buttons()
 	{
 		$this->javascript->set_global(array(
 					'user_id' 					=> $this->session->userdata('member_id'),
@@ -3209,11 +3296,18 @@ class Content_publish extends CI_Controller {
 		);		
 	}
 
-	function _static_publish_non_admin()
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Static publish non-admin
+	 */
+	protected function _static_publish_non_admin()
 	{
 		$this->load->library('filemanager');
 		$this->filemanager->filebrowser('C=content_publish&M=filemanager_endpoint');
 	}
+	
+	// --------------------------------------------------------------------
 }
 // END CLASS
 
