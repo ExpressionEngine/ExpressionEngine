@@ -195,6 +195,7 @@ class Content_publish extends CI_Controller {
 			'date'			=> lang('date')
 		);
 		
+		reset($tab_hierarchy);
 		
 		$data = array(
 			'cp_page_title'	=> $entry_id ? lang('edit_entry') : lang('new_entry'),
@@ -205,7 +206,10 @@ class Content_publish extends CI_Controller {
 			'tab_labels'	=> $tab_labels,
 			'field_list'	=> $field_list,
 			'layout_styles'	=> $layout_styles,
-			'field_output'	=> $field_output
+			'field_output'	=> $field_output,
+			
+			'spell_enabled'		=> TRUE,
+			'smileys_enabled'	=> TRUE
 		);
 
 		
