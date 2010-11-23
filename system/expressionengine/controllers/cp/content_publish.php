@@ -166,14 +166,16 @@ class Content_publish extends CI_Controller {
 		
 		$tab_labels = array(
 			'publish' 		=> lang('publish'),
-			'categories' 	=> lang('categories')
+			'categories' 	=> lang('categories'),
+			'pings'			=> lang('pings')
 		);
 		
 		$tabs = array(
-			'publish' => array(
+			'publish' 		=> array(
 				'foo'
 			),
-			'categories' => $this->_categories_block($entry_id)
+			'categories' 	=> $this->_categories_block($entry_id),
+			'pings'			=> $this->_ping_block(),
 		);
 		
 		// $this->_categories_block($entry_id, $entry_data);
@@ -717,9 +719,14 @@ class Content_publish extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
-	private function _ping_block() 
+	private function _ping_block($entry_id) 
 	{
+		$vars['ping_servers'] = $this->fetch_ping_servers($entry_id);
+		// $this->_define_ping_fields($vars);
+
 		
+
+
 	}
 
 	// --------------------------------------------------------------------
@@ -832,5 +839,108 @@ class Content_publish extends CI_Controller {
 	}
 
 	// --------------------------------------------------------------------
+
+	/**
+	 * fetch ping servers
+	 *
+	 * This needs to be moved somewhere else
+	 *
+	 * @param 	integer
+	 * @param 	integer
+	 * @param 	string
+	 * @param 	boolean
+	 */
+	public function fetch_ping_servers($entry_id = '')
+	{
+		$sent_pings = array();
+
+		if ($entry_id != '')
+		{
+			$qry = $this->db->select('ping_id')
+							->get_where('entry_ping_status', 
+										array('entry_id' => (int) $entry_id)
+									);
+			
+			if ($qry->num_rows() > 0)
+			{
+				foreach ($qry->result_array() as $row)
+				{
+					$sent_pings[$row['ping_id']] = TRUE;
+				}
+			}
+		}
+
+		$qry = $this->db->select('COUNT(*) as count')
+						->where('site_id', $this->config->item('site_id'))
+						->where('member_id', $this->session->userdata('member_id'))
+						->get('ping_servers');
+
+		$member_id = ($qry->row('count') === 0) ? 0 : $this->session->userdata('member_id');
+
+		$qry = $this->db->select('id, server_name, is_default')
+						->where('site_id', $this->config->item('site_id'))
+						->where('member_id', $member_id)
+						->order_by('server_order')
+						->get('ping_servers');
+
+		if ($qry->num_rows() == 0)
+		{
+			return FALSE;
+		}
+
+		$r = '';
+
+		foreach($qry->result_array() as $row)
+		{
+			if (isset($_POST['preview']))
+			{
+				$selected = '';
+				if ($this->input->post('ping') && is_array($this->input->post('ping')))
+				{
+					if (in_array($row['id'], $this->input->post('ping')))
+					{
+						$selected = 1; 
+					}
+				}
+			}
+			else
+			{
+				if ($entry_id != '')
+				{
+					$selected = (isset($sent_pings[$row['id']])) ? 1 : '';
+				}
+				else
+				{
+					$selected = ($row['is_default'] == 'y') ? 1 : '';
+				}
+			}
+
+			if ($which == 'edit')
+			{
+				$selected = '';
+			}
+
+			if ($show == TRUE)
+			{
+				$r .= '<label>'.form_checkbox('ping[]', $row['id'], $selected, 'class="ping_toggle"').' '.$row['server_name'].'</label>';
+			}
+			else
+			{
+				if ($which != 'edit' AND $selected == 1)
+				{
+					$r .= form_hidden('ping[]', $row['id']);
+				}
+			}
+		}
+
+		if ($show == TRUE)
+		{
+			$r .= '<label>'.form_checkbox('toggle_pings', 'toggle_pings', FALSE, 'class="ping_toggle_all"').' '.lang('select_all').'</label>';
+
+		}
+
+		return $r;
+	}
+
 	
 }
