@@ -993,6 +993,7 @@ $this->api_channel_fields->set_settings('ping', $settings['ping']);
 				'field_required'		=> 'y',
 				'field_data'			=> ( ! $this->input->post('title')) ? $entry_data['title'] : $this->input->post('title'),
 				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> '',
 				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'text',
 				'field_maxl'			=> 100
