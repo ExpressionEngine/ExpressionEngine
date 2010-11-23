@@ -895,12 +895,12 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _setup_field_blocks($field_data, $entry_data)
 	{
-		$categories 	= $this->_categories_block($entry_data['entry_id']);
+		// $categories 	= $this->_categories_block($entry_data['entry_id']);
 		$pings 			= $this->_ping_block($entry_data['entry_id']);
 		$options		= $this->_options_block($entry_data);
-		$forum			= $this->_forum_block($entry_data);
-		
-		return array_merge($field_data, $categories, $pings, $options, $forum);
+		// $forum			= $this->_forum_block($entry_data);
+		// var_dump($options); exit;
+		return array_merge($field_data, $pings, $options);
 	}
 
 	// --------------------------------------------------------------------
@@ -1045,35 +1045,36 @@ class Content_publish extends CI_Controller {
 					'field_label'			=> lang('dst_enabled'),
 					'field_required'		=> 'n',
 					'field_instructions'	=> '',
-					'field_type'			=> 'select',
-					'field_data'			=> ($entry_data['dst_enabled']) ? TRUE : FALSE
+					'field_type'			=> 'checkbox',
+					'field_data'			=> '',//($entry_data['dst_enabled']) ? TRUE : FALSE
 			);
 		}
 		
 		// ---------------------------------------------------
 		// This is breaking up in here.  Help!	
 			
-		// Options Field
+		// // Options Field
 		// $settings['options'] = array(
 		// 	'field_id'				=> 'options',
 		// 	'field_required'		=> 'n',
 		// 	'field_label'			=> lang('options'),
-		// 	'field_data'			=> $options_array,
+		// 	'field_data'			=> '',
 		// 	'field_instructions'	=> '',
 		// 	'field_type'			=> 'select'
 		// );
-		
-
+		// 
+		// 
 		// $this->api_channel_fields->set_settings('dst_enabled', $settings['options']);
 				
 		// ---------------------------------------------------				
 		
 		
-		$options_array['author'] = $this->_build_author($entry_data);
+		$settings['author'] 	= $this->_build_author_select($entry_data);
+		$settings['channel']	= $this->_build_channel_select();
+		$settings['status']		= $this->_build_status_select($entry_data);
 				
 				
-				
-				
+				// var_dump($settings); exit;
 		return $settings;
 	}
 
@@ -1084,7 +1085,7 @@ class Content_publish extends CI_Controller {
 	 *
 	 * @param 	array
 	 */
-	protected function _build_author($entry_data)
+	protected function _build_author_select($entry_data)
 	{
 		$this->load->model('member_model');
 
@@ -1130,7 +1131,163 @@ class Content_publish extends CI_Controller {
 		);
 
 		$this->api_channel_fields->set_settings('author', $settings['author']);
-		return $settings;
+		return $settings['author'];
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Build Channel Select Options Field
+	 *
+	 * @return 	array
+	 */
+	private function _build_channel_select()
+	{
+		$menu_channel_options 	= array();
+		$menu_channel_selected	= '';
+		
+		$query = $this->channel_model->get_channel_menu(
+														$this->_channel_data['status_group'], 
+														$this->_channel_data['cat_group'], 
+														$this->_channel_data['field_group']
+													);
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				if ($this->session->userdata['group_id'] == 1 OR in_array($row['channel_id'], $assigned_channels))
+				{
+					if (isset($_POST['new_channel']) && is_numeric($_POST['new_channel']) && $_POST['new_channel'] == $row['channel_id'])
+					{
+						$menu_channel_selected = $row['channel_id'];
+					}
+					elseif ($this->_channel_data['channel_id'] == $row['channel_id'])
+					{
+						$menu_channel_selected =  $row['channel_id'];
+					}
+
+					$menu_channel_options[$row['channel_id']] = form_prep($row['channel_title']);
+				}
+			}
+		}
+		
+		$settings = array(
+			'channel'	=> array(
+				'field_id'				=> 'channel',
+				'field_label'			=> lang('channel'),
+				'field_required'		=> 'n',
+				'field_instructions'	=> '',
+				'field_type'			=> 'select',
+				'field_pre_populate'	=> 'n',
+				'field_text_direction'	=> 'ltr',
+				'field_list_items'		=> $menu_channel_options,
+				'field_data'			=> $menu_channel_selected
+			)
+		);
+
+		$this->api_channel_fields->set_settings('channel', $settings['channel']);
+		return $settings['channel'];		
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Build Status Select
+	 *
+	 * @return 	array
+	 */
+	private function _build_status_select($entry_data)
+	{
+		$this->load->model('status_model');
+		
+		// check the logic here...
+		if ( ! isset($this->_channel_data['deft_status']) && $this->_channel_data['deft_status'] == '')
+		{
+			$this->_channel_data['deft_status'] = 'open';
+		}
+		
+		if ($entry_data['status'] == '' OR $entry_data['status'] == 'NULL')
+		{
+			$entry_data['status'] = $this->_channel_data['deft_status'];
+		}
+		
+		$no_status_access 		= array();
+		$menu_status_options 	= array();
+		$menu_status_selected 	= $entry_data['status'];
+
+		if ($this->session->userdata('group_id') !== 1)
+		{
+			$query = $this->status_model->get_disallowed_statuses($this->session->userdata('group_id'));
+
+			if ($query->num_rows() > 0)
+			{
+				foreach ($query->result_array() as $row)
+				{
+					$no_status_access[] = $row['status_id'];
+				}
+			}
+			
+			// if there is no status group assigned, 
+			// only Super Admins can create 'open' entries
+			$menu_status_options['open'] = lang('open');		
+		}
+		
+		$menu_status_options['closed'] = lang('closed');
+		
+		if (isset($this->_channel_data['status_group']))
+		{
+			$query = $this->status_model->get_statuses($this->_channel_data['status_group']);
+			
+			if ($query->num_rows())
+			{
+				$no_status_flag = TRUE;
+				$vars['menu_status_options'] = array();
+
+				foreach ($query->result_array() as $row)
+				{
+					// pre-selected status
+					if ($entry_data['status'] == $row['status'])
+					{
+						$menu_status_selected = $row['status'];
+					}
+
+					if (in_array($row['status_id'], $no_status_access))
+					{
+						continue;
+					}
+
+					$no_status_flag = FALSE;
+					$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? lang($row['status']) : $row['status'];
+					$menu_status_options[form_prep($row['status'])] = form_prep($status_name);
+				}
+
+				//	Were there no statuses?
+				// If the current user is not allowed to submit any statuses we'll set the default to closed
+
+				if ($no_status_flag === TRUE)
+				{
+					$menu_status_selected = 'closed';
+				}
+			}
+		}
+		
+		$settings = array(
+			'status'	=> array(
+				'field_id'				=> 'status',
+				'field_label'			=> lang('status'),
+				'field_required'		=> 'n',
+				'field_instructions'	=> '',
+				'field_type'			=> 'select',
+				'field_pre_populate'	=> 'n',
+				'field_text_direction'	=> 'ltr',
+				'field_list_items'		=> $menu_status_options,
+				'field_data'			=> $menu_status_selected
+			)
+		);
+
+		$this->api_channel_fields->set_settings('status', $settings['status']);
+		return $settings['status'];
 	}
 
 	// --------------------------------------------------------------------
