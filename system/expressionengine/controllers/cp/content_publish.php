@@ -143,7 +143,7 @@ class Content_publish extends CI_Controller {
 	 */
 	function view_entry()
 	{
-		// 
+		
 	}
 	
 	
@@ -191,5 +191,40 @@ class Content_publish extends CI_Controller {
 	
 	// --------------------------------------------------------------------
 
+	/**
+	 * Load channel data
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _load_channel_data($channel_id)
+	{
+		
+	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup channel field settings
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _set_field_settings($channel_id/channel_data)
+	{
+		
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup channel field validation
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _set_field_validation($field_id/field_label)
+	{
+		
+	}
 }
