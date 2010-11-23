@@ -93,6 +93,10 @@ class Content_publish extends CI_Controller {
 		$field_data			= $this->_set_field_settings($this->channel_data);
 		$deft_field_data 	= $this->_setup_default_fields($this->channel_data);
 
+		$field_data = array_merge($field_data, $deft_field_data);
+
+		var_dump($field_data);
+
 		$this->_set_field_validation($this->channel_data, $field_data);
 		
 		// @todo setup validation for categories, etc?
@@ -637,10 +641,35 @@ class Content_publish extends CI_Controller {
 				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'text',
 				'field_maxl'			=> 75
-			)
+			),
+			'entry_date'	=> array(
+				'field_id'				=> 'entry_date',
+				'field_label'			=> lang('entry_date'),
+				'field_required'		=> 'n',
+				'field_type'			=> 'date',
+				'field_text_direction'	=> 'ltr',
+				'field_data'			=> '',
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'default_offset'		=> 0,
+				'selected'				=> 'y',
+				'dst_enabled'			=> ''				
+			),
+			'expiration_date' => array(
+				'field_id'				=> 'expiration_date',
+				'field_label'			=> lang('expiration_date'),
+				'field_required'		=> 'n',
+				'field_type'			=> 'date',
+				'field_text_direction'	=> 'ltr',
+				'field_data'			=> '',
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'selected'				=> 'y',
+				'dst_enabled'			=> ''				
+			),
 		);
-		
-		$field_settings = array();
 		
 		foreach ($deft_fields as $field_name => $f_data)
 		{
@@ -648,11 +677,11 @@ class Content_publish extends CI_Controller {
 			
 			$rules = 'required|call_field_validation['.$f_data['field_id'].']';
 			$this->form_validation->set_rules($f_data['field_id'], $f_data['field_label'], $rules);
-			
-			$field_settings[] = $f_data;
 		}
 		
-		return $field_settings;
+		return $deft_fields;
 	}
+
+	// --------------------------------------------------------------------
 	
 }
