@@ -154,7 +154,7 @@ class Content_publish extends CI_Controller {
 		$tab_hierarchy	= $this->_setup_tab_hierarchy($field_data);
 		$layout_styles	= $this->_setup_layout_styles($field_data);
 		$field_list		= $this->_sort_field_list($field_data);		// @todo admin only? or use as master list? skip sorting for non admins, but still compile?
-	
+
 		
 		// Start to assemble view data
 		// WORK IN PROGRESS, just need a few things on the page to
@@ -188,32 +188,23 @@ class Content_publish extends CI_Controller {
 		$tab_labels = array(
 			'publish' 		=> lang('publish'),
 			'categories' 	=> lang('categories'),
-			'pings'			=> lang('pings')
+			'pings'			=> lang('pings'),
+			'options'		=> lang('options'),
+			'date'			=> lang('date')
 		);
-		
-		$tabs = array(
-			'publish' 		=> array(
-				'foo'
-			),
-			'categories' => array('boo'),
-			'pings' => array('bah'),
-		);
-	
-		
-		// $this->_categories_block($entry_id, $entry_data);
-		// $this->_ping_block();
-		// $this->_forum_block();
-		// $this->_options_block();
 		
 		
 		$data = array(
 			'cp_page_title'	=> $entry_id ? lang('edit_entry') : lang('new_entry'),
 			'message'		=> '',	// @todo consider pulling?
 			
-			'tabs'			=> $tabs,
+			'tabs'			=> $tab_hierarchy,
+			'first_tab'		=> key($tab_hierarchy),
 			'tab_labels'	=> $tab_labels,
-			'field_list'	=> $field_list
+			'field_list'	=> $field_list,
+			'layout_styles'	=> $layout_styles
 		);
+
 		
 		$this->cp->set_breadcrumb(
 			BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id,

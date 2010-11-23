@@ -37,6 +37,7 @@ if ($EE_view_disable !== TRUE)
 			
 			<?=form_open_multipart('C=content_publish'.AMP.'M=entry_form', array('id' => 'publishForm'))?>
 			
+			
 				<!-- Tabs -->
 				<ul class="tab_menu" id="tab_menu_tabs">
 					<?php foreach ($tabs as $tab => $tab_fields):?>
@@ -56,6 +57,7 @@ if ($EE_view_disable !== TRUE)
 				
 					<div id="tools">
 						
+						<!-- Sidebar fields -->
 						<h3><a href="#"><?=lang('fields')?></a></h3>
 						<div>
 							<ul>
@@ -74,10 +76,26 @@ if ($EE_view_disable !== TRUE)
 							</ul><br />
 						</div>
 						
+						<!-- Sidebar tabs -->
 						<h3><a href="#"><?=lang('tabs')?></a></h3>
 						<div>
+							<ul id="publish_tab_list">
+								<?php foreach($tabs as $tab => $_field_list):?>
+									<li id="remove_tab_<?=$tab?>">
+										<a href="#" title="menu_<?=$tab?>" class="menu_focus"><?=lang($tab_labels[$tab])?></a> 
+										<a href="#<?=$tab?>" class="delete delete_tab"><img src="<?=$cp_theme_url?>images/content_custom_tab_delete.png" alt="<?=lang('delete')?>" width="19" height="18" /></a>
+									</li>
+								<?php endforeach;?>
+							</ul>
+							<p class="custom_field_add">
+								<a href="#" class="add_tab_link submit submit_alt">
+									<img src="<?=$cp_theme_url?>images/add_tab.png" width="22" height="14" alt="<?=lang('add_tab')?>" />&nbsp;&nbsp;
+									<?=lang('add_tab')?>
+								</a>
+							</p>
 						</div>
 						
+						<!-- Sidebar layouts -->
 						<h3><a href="#"><?=lang('publish_layout')?></a></h3>
 						<div>
 						</div>
@@ -93,10 +111,40 @@ if ($EE_view_disable !== TRUE)
 				<?php endif;?>
 				
 				
+				<!-- Main Content -->
 				<div id="holder">
 					
+					<?php foreach ($tabs as $tab => $_fields):?>
+						<div id="<?=url_title($tab, 'underscore', TRUE)?>" class="main_tab<?=($tab == $first_tab) ? '' : ' js_hide'?>">
+							
+							<?php foreach($_fields as $_n):?>
+								<div class="publish_field publish_<?=$field_list[$_n]['field_type']?>" id="hold_field_<?=$field_list[$_n]['field_id']?>" <?=$layout_styles[$_n]['visible'] ? '' : 'style="display: none;"'?>>
+									<div class="handle"></div>
+									
+									<label class="hide_field">
+										<span>
+										<img class="field_collapse" src="<?=$cp_theme_url?>images/field_expand.png" alt="" />
+										<?php if ($field_list[$_n]['field_required'] == 'y'):?><?=required()?><?php endif?>
+										<?=$field_list[$_n]['field_label']?>
+										</span>
+									</label>
+									
+									
+									<div id="sub_hold_field_<?=$field_list[$_n]['field_id']?>" <?=$layout_styles[$_n]['is_hidden']? 'class="js_hide"': '';?>>
+										<?php if($field_list[$_n]['field_instructions'] != ''):?>
+											<div class="instruction_text"><?=auto_typography('<strong>'.$this->lang->line('instructions').'</strong>'.NBS.$field_list[$_n]['field_instructions'])?></div>
+										<?php endif;?>
+										
+									</div> <!-- /sub_hold_field -->
+									
+								</div> <!-- /publish_field -->
+							<?php endforeach;?>
+							
+						</div>
+					<?php endforeach;?>
 					
-				</div>
+				</div> <!-- /holder -->
+			
 			
 			<?=form_close()?>
 			
