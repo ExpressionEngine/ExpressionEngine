@@ -898,9 +898,9 @@ class Content_publish extends CI_Controller {
 		// $categories 	= $this->_categories_block($entry_data['entry_id']);
 		$pings 			= $this->_ping_block($entry_data['entry_id']);
 		$options		= $this->_options_block($entry_data);
-		// $forum			= $this->_forum_block($entry_data);
+		$forum			= $this->_forum_block($entry_data);
 		// var_dump($options); exit;
-		return array_merge($field_data, $pings, $options);
+		return array_merge($field_data, $pings, $forum, $options);
 	}
 
 	// --------------------------------------------------------------------
@@ -1074,12 +1074,14 @@ class Content_publish extends CI_Controller {
 		// Next we'll gather all the authors that are allowed to be in this list
 		$author_list = $this->member_model->get_authors_simple();
 
+		$channel_id = (isset($entry_data['channel_id'])) ? $entry_data['channel_id'] : $this->input->get('channel_id');
+
 		// We'll confirm that the user is assigned to a member group that allows posting in this channel
 		if ($author_list->num_rows() > 0)
 		{
 			foreach ($author_list->result() as $row)
 			{
-				if (isset($this->session->userdata['assigned_channels'][$entry_data['channel_id']]))
+				if (isset($this->session->userdata['assigned_channels'][$channel_id]))
 				{
 					$menu_author_options[$row->member_id] = ($row->screen_name == '') ? $row->username : $row->screen_name;
 				}
@@ -1177,10 +1179,7 @@ class Content_publish extends CI_Controller {
 			$this->_channel_data['deft_status'] = 'open';
 		}
 		
-		if ($entry_data['status'] == '' OR $entry_data['status'] == 'NULL')
-		{
-			$entry_data['status'] = $this->_channel_data['deft_status'];
-		}
+		$entry_data['status'] = (isset($entry_data['status']) && $entry_data['status'] != 'NULL') ? $entry_data['status'] : $this->_channel_data['deft_status'];
 		
 		$no_status_access 		= array();
 		$menu_status_options 	= array();
@@ -1273,7 +1272,11 @@ class Content_publish extends CI_Controller {
 			return $settings;
 		}
 
-		
+		$forum_title			= '';
+		$forum_body				= '';
+		$forum_topic_id_descp	= '';
+		$forum_id				= '';
+		$forum_topic_id			= ( ! isset($entry_data['forum_topic_id'])) ? '' : $entry_data['forum_topic_id'];		
 		
 		
 		/*
@@ -1282,14 +1285,6 @@ $hide_forum_fields = FALSE;
 
 if ($this->config->item('forum_is_installed') == "y")
 {
-	// New forum topics will only be accepted by the submit_new_entry_form() when there is no entry_id sent
-
-	$vars['forum_title']			= '';
-	$vars['forum_body']				= '';
-	$vars['forum_topic_id_descp']	= '';
-	$vars['forum_id']	= '';
-	$vars['forum_topic_id']			= ( ! isset($_POST['forum_topic_id'])) ? '' : $_POST['forum_topic_id'];		
-	
 	if ($which == 'new' OR $entry_id == '')
 	{
 		// Fetch the list of available forums

@@ -262,7 +262,7 @@ class Channel_entries_model extends CI_Model {
 	 * @param 	string
 	 * @param 	boolean
 	 */
-	public function fetch_ping_servers($entry_id = '')
+	public function fetch_ping_servers($entry_id = '', $show = TRUE)
 	{
 		$sent_pings = array();
 
@@ -327,7 +327,7 @@ class Channel_entries_model extends CI_Model {
 				}
 			}
 
-			if ($which == 'edit')
+			if ($entry_id != '')
 			{
 				$selected = '';
 			}
@@ -338,7 +338,7 @@ class Channel_entries_model extends CI_Model {
 			}
 			else
 			{
-				if ($which != 'edit' AND $selected == 1)
+				if ($entry_id != '')
 				{
 					$r .= form_hidden('ping[]', $row['id']);
 				}
