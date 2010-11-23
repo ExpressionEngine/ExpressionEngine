@@ -157,7 +157,7 @@ class Content_publish extends CI_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function filemanager_endpoint()
+	function filemanager_actions()
 	{
 		
 	}
@@ -170,10 +170,10 @@ class Content_publish extends CI_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function ajax_update_cat_fields()
+	function category_actions()
 	{
 		
-	} // @confirm, need to be here?
+	}
 	
 	
 	// --------------------------------------------------------------------
@@ -184,25 +184,12 @@ class Content_publish extends CI_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function spellcheck()
+	function spellcheck_actions()
 	{
 		
 	}
 	
 	// --------------------------------------------------------------------
 
-	/**
-	 * Spellcheck iFrame
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function spellcheck_iframe()
-	{
-		
-	}
-	
-	// --------------------------------------------------------------------
-	
 	
 }
