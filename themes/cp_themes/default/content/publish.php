@@ -39,7 +39,7 @@ if ($EE_view_disable !== TRUE)
 			
 				<!-- Tabs -->
 				<ul class="tab_menu" id="tab_menu_tabs">
-					<?php foreach($tabs as $tab => $field_list):?>
+					<?php foreach ($tabs as $tab => $tab_fields):?>
 						<li id="menu_<?=$tab?>" title="<?=form_prep($tab_labels[$tab])?>" class="content_tab">
 							<a href="#" title="menu_<?=$tab?>" class="menu_<?=$tab?>"><?=lang($tab_labels[$tab])?></a>&nbsp;
 						</li>
@@ -58,6 +58,20 @@ if ($EE_view_disable !== TRUE)
 						
 						<h3><a href="#"><?=lang('fields')?></a></h3>
 						<div>
+							<ul>
+								<?php foreach ($field_list as $name => $field):?>
+								<?php if ($field['field_required'] == 'y'):?>
+									<li><a href="#" class="field_selector" id="hide_field_<?=$field['field_id']?>"><?=required()?><?=$field['field_label']?></a></li>	
+								<?php else:?>
+									<li>
+										<a href="#" class="field_selector" id="hide_field_<?=$field['field_id']?>"><?=$field['field_label']?></a>
+										<a href="#" class="delete delete_field" id="remove_field_<?=$field['field_id']?>">
+											<img src="<?=$cp_theme_url?>images/open_eye.png" alt="<?=lang('delete')?>" width="15" height="15" />
+										</a>
+									</li>
+								<?php endif;?>						
+								<?php endforeach;?>
+							</ul><br />
 						</div>
 						
 						<h3><a href="#"><?=lang('tabs')?></a></h3>

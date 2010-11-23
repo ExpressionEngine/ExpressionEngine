@@ -145,12 +145,26 @@ class Content_publish extends CI_Controller {
 		
 		show_form();
 		*/
+
+		// First figure out what tabs to show, and what fields
+		// they contain. Then work through the details of how
+		// they are show.
+		
+		$tab_hierarchy	= $this->_setup_tab_hierarchy($field_data);
+		$layout_styles	= $this->_setup_layout_styles($field_data);
+		$field_list		= $this->_sort_field_list($field_data);		// @todo admin only? or use as master list? skip sorting for non admins, but still compile?
 		
 		
+	
 		
 		// Start to assemble view data
 		// WORK IN PROGRESS, just need a few things on the page to
 		// work with the html - will clean this crap up
+		
+		$this->load->library('filemanager');
+		$this->load->helper('snippets');
+		
+		$this->filemanager->filebrowser('C=content_publish&M=filemanager_actions');
 		
 		$this->cp->add_js_script(array(
 		        'ui'        => array('datepicker', 'resizable', 'draggable', 'droppable'),
@@ -159,7 +173,15 @@ class Content_publish extends CI_Controller {
 		    )
 		);
 		
-		$this->javascript->set_global('date.format', 'us');
+		
+		// @todo only admins
+		$this->cp->add_js_script(array('file' => 'cp/publish_admin'));
+		
+		$this->javascript->set_global(array(
+			'date.format'			=> 'us',
+			'user.foo'				=> FALSE,
+			'publish.markitup.foo'	=> FALSE
+		));
 		
 		$this->javascript->compile();
 		
@@ -189,7 +211,8 @@ class Content_publish extends CI_Controller {
 			'message'		=> '',	// @todo consider pulling?
 			
 			'tabs'			=> $tabs,
-			'tab_labels'	=> $tab_labels
+			'tab_labels'	=> $tab_labels,
+			'field_list'	=> $field_list
 		);
 		
 		$this->cp->set_breadcrumb(
@@ -301,8 +324,6 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _load_channel_data($channel_id)
 	{
-		$this->load->model('channel_model');
-		
 		$query = $this->channel_model->get_channel_info($channel_id);
 		
 		if ($query->num_rows() == 0)
@@ -373,7 +394,7 @@ class Content_publish extends CI_Controller {
 			$settings = array_merge($row, $settings, $ft_settings);
 			$this->api_channel_fields->set_settings($row['field_id'], $settings);
 			
-			$field_settings[] = $settings;
+			$field_settings[$settings['field_name']] = $settings;
 		}
 		
 		return $field_settings;
@@ -646,8 +667,10 @@ class Content_publish extends CI_Controller {
 			$entry_link = $view_url;
 			$data = compact('ping_errors', 'channel_id', 'entry_id', 'entry_link');
 			
-			$this->cp->set_variable('cp_page_title', lang('xmlrpc_ping_errors'));
-			$this->load->view('content/ping_errors', $vars);
+			$data['cp_page_title'] = lang('xmlrpc_ping_errors');
+			
+			$this->load->view('content/ping_errors', $data);
+			
 			return TRUE;	// tricking it into not publish again
 		}
 		
@@ -661,6 +684,118 @@ class Content_publish extends CI_Controller {
 		// Redirect to ths "success" page
 		$this->session->set_flashdata('message_success', lang($page_title));
 		$this->functions->redirect($view_url);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Create Sidebar field list
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _sort_field_list($field_data)
+	{
+		$sorted = array();
+		
+		$_required_field_labels = array();
+		$_optional_field_labels = array();
+		
+		foreach($field_data as $name => $field)
+		{
+			if ($field['field_required'] == 'y')
+			{
+				$_required_field_labels[$name] = $field['field_label'];
+			}
+			else
+			{
+				$_optional_field_labels[$name] = $field['field_label'];
+			}
+		}
+		
+		asort($_required_field_labels);
+		asort($_optional_field_labels);
+		
+		foreach(array($_required_field_labels, $_optional_field_labels) as $sidebar_field_groups)
+		{
+			foreach($sidebar_field_groups as $name => $label)
+			{
+				// @todo field_data bad key
+				$sorted[$name] = $field_data[$name];
+			}
+		}
+		
+		return $sorted;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup Layout Styles for all fields
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _setup_layout_styles($field_data)
+	{
+		$field_display = array(
+			'visible'		=> TRUE,
+			'collapse'		=> FALSE,
+			'html_buttons'	=> TRUE,
+			'is_hidden'		=> FALSE,
+			'width'			=> '100%'
+		);
+		
+		$layout = array();
+
+		foreach($field_data as $name => $field)
+		{
+			$layout[$name] = $field_display;
+		}
+		
+		return $layout;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup Tab Hierarchy
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _setup_tab_hierarchy($field_data)
+	{
+		$default = array(
+			'publish'		=> array('title', 'url_title'),
+			'date'			=> array('entry_date', 'expiration_date', 'comment_expiration_date'),
+			'categories'	=> array('categories'),
+			'options'		=> array('channel', 'status', 'author', 'options')
+		);
+		
+		// Add predefined fields to their specific tabs
+		foreach ($default as $tab => $fields)
+		{
+			foreach ($fields as $i => $field_name)
+			{
+				if (isset($field_data[$field_name]))
+				{
+					unset($field_data[$field_name]);
+				}
+				else
+				{
+					unset($default[$tab][$i]);
+				}
+			}
+		}
+		
+		// Add anything else to the publish tab
+		foreach ($field_data as $name => $field)
+		{
+			$default['publish'][] = $name;
+		}
+		
+		return $default;
 	}
 
 	// --------------------------------------------------------------------
