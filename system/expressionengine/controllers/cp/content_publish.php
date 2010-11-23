@@ -149,12 +149,11 @@ class Content_publish extends CI_Controller {
 		// First figure out what tabs to show, and what fields
 		// they contain. Then work through the details of how
 		// they are show.
-		
+	
+		$field_data 	= $this->_setup_field_blocks($field_data, $entry_data);
 		$tab_hierarchy	= $this->_setup_tab_hierarchy($field_data);
 		$layout_styles	= $this->_setup_layout_styles($field_data);
 		$field_list		= $this->_sort_field_list($field_data);		// @todo admin only? or use as master list? skip sorting for non admins, but still compile?
-		
-		
 	
 		
 		// Start to assemble view data
@@ -196,9 +195,10 @@ class Content_publish extends CI_Controller {
 			'publish' 		=> array(
 				'foo'
 			),
-			'categories' 	=> $this->_categories_block($entry_id),
-			'pings'			=> $this->_ping_block(),
+			'categories' => array('boo'),
+			'pings' => array('bah'),
 		);
+	
 		
 		// $this->_categories_block($entry_id, $entry_data);
 		// $this->_ping_block();
@@ -800,6 +800,17 @@ class Content_publish extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
+	private function _setup_field_blocks($field_data, $entry_data)
+	{
+		$categories 	= $this->_categories_block($entry_data['entry_id']);
+		$pings 			= $this->_ping_block($entry_data['entry_id']);
+		$options		= $this->_options_block($entry_data);
+		
+		return array_merge($field_data, $categories, $pings, $options);
+	}
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * Categories Block
 	 *
@@ -854,26 +865,118 @@ class Content_publish extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Ping Block
+	 *
+	 * Setup block that contains ping servers
+	 *
+	 * @param 	integer		Entry Id
+	 * @return 	array
+	 */
 	private function _ping_block($entry_id) 
 	{
-		$vars['ping_servers'] = $this->fetch_ping_servers($entry_id);
-		// $this->_define_ping_fields($vars);
+		$ping_servers = $this->channel_entries_model->fetch_ping_servers($entry_id);
 
+		$settings = array('ping' => 
+			array(
+				'string_override'		=> (isset($ping_servers) && $ping_servers != '') ? '<fieldset>'.$ping_servers.'</fieldset>' : lang('no_ping_sites').'<p><a href="'.BASE.AMP.'C=myaccount'.AMP.'M=ping_servers'.AMP.'id='.$this->session->userdata('member_id').'">'.$this->lang->line('add_ping_sites').'</a></p>',
+				'field_id'				=> 'ping',
+				'field_label'			=> $this->lang->line('pings'),
+				'field_required'		=> 'n',
+				'field_type'			=> 'checkboxes',
+				'field_text_direction'	=> 'ltr',
+				'field_data'			=> $ping_servers,
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n'
+			)
+		);
+
+		$this->api_channel_fields->set_settings('ping', $settings['ping']);
+
+		return $settings;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Options Block
+	 *
+	 * 
+	 *
+	 */
+	private function _options_block($entry_data)
+	{
+		// sticky, comments, dst
+		$settings			= array();
 		
+		$show_comments		= FALSE;
+		$show_sticky		= FALSE;
+		$show_dst			= FALSE;
+		$show_sticky		= TRUE;
+		
+		// StickyBox
+		
+		$sticky = (isset($entry_data['sticky'])) ? $entry_data['sticky'] : 'n';
+
+		$settings['sticky'] = array(
+			'field_id'			=> 'sticky',
+			'field_label'		=> lang('sticky'),
+			'field_type'		=> 'checkboxes',
+			'field_required'	=> 'n',
+			'field_data'		=> $sticky,
+			'field_show_fmt'	=> 'n',
+			'field_instructions'=> '',
+		);
+		
+		$this->api_channel_fields->set_settings('sticky', $settings['sticky']);
+
+		// Allow Comments?
+		if ( ! isset($this->cp->installed_modules['comment']))
+		{
+			$allow_comments = (isset($entry_data['allow_comments'])) ? $entry_data['allow_comments'] : 'n';
+		}
+		elseif ($this->_channel_data['comment_system_enabled'] == 'y')
+		{
+			$settings['allow_comments'] = array(
+					'field_id'			=> 'allow_comments',
+					'field_label'		=> lang('allow_comments'),
+					'field_type'		=> 'checkboxes',
+					'field_required'	=> 'n',
+					''	
+				
+			);
+		}
+		
+		
+		/*
+
+$settings = array('ping' => 
+	array(
+		'string_override'		=> (isset($ping_servers) && $ping_servers != '') ? '<fieldset>'.$ping_servers.'</fieldset>' : lang('no_ping_sites').'<p><a href="'.BASE.AMP.'C=myaccount'.AMP.'M=ping_servers'.AMP.'id='.$this->session->userdata('member_id').'">'.$this->lang->line('add_ping_sites').'</a></p>',
+		'field_id'				=> 'ping',
+		'field_label'			=> $this->lang->line('pings'),
+		'field_required'		=> 'n',
+		'field_type'			=> 'checkboxes',
+		'field_text_direction'	=> 'ltr',
+		'field_data'			=> $ping_servers,
+		'field_fmt'				=> 'text',
+		'field_instructions'	=> '',
+		'field_show_fmt'		=> 'n'
+	)
+);
+
+$this->api_channel_fields->set_settings('ping', $settings['ping']);
 
 
+		*/
+		
+		return $settings;
 	}
 
 	// --------------------------------------------------------------------
 
 	private function _forum_block()
-	{
-		
-	}
-
-	// --------------------------------------------------------------------
-
-	private function _options_block()
 	{
 		
 	}
@@ -975,107 +1078,7 @@ class Content_publish extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
-	/**
-	 * fetch ping servers
-	 *
-	 * This needs to be moved somewhere else
-	 *
-	 * @param 	integer
-	 * @param 	integer
-	 * @param 	string
-	 * @param 	boolean
-	 */
-	public function fetch_ping_servers($entry_id = '')
-	{
-		$sent_pings = array();
 
-		if ($entry_id != '')
-		{
-			$qry = $this->db->select('ping_id')
-							->get_where('entry_ping_status', 
-										array('entry_id' => (int) $entry_id)
-									);
-			
-			if ($qry->num_rows() > 0)
-			{
-				foreach ($qry->result_array() as $row)
-				{
-					$sent_pings[$row['ping_id']] = TRUE;
-				}
-			}
-		}
-
-		$qry = $this->db->select('COUNT(*) as count')
-						->where('site_id', $this->config->item('site_id'))
-						->where('member_id', $this->session->userdata('member_id'))
-						->get('ping_servers');
-
-		$member_id = ($qry->row('count') === 0) ? 0 : $this->session->userdata('member_id');
-
-		$qry = $this->db->select('id, server_name, is_default')
-						->where('site_id', $this->config->item('site_id'))
-						->where('member_id', $member_id)
-						->order_by('server_order')
-						->get('ping_servers');
-
-		if ($qry->num_rows() == 0)
-		{
-			return FALSE;
-		}
-
-		$r = '';
-
-		foreach($qry->result_array() as $row)
-		{
-			if (isset($_POST['preview']))
-			{
-				$selected = '';
-				if ($this->input->post('ping') && is_array($this->input->post('ping')))
-				{
-					if (in_array($row['id'], $this->input->post('ping')))
-					{
-						$selected = 1; 
-					}
-				}
-			}
-			else
-			{
-				if ($entry_id != '')
-				{
-					$selected = (isset($sent_pings[$row['id']])) ? 1 : '';
-				}
-				else
-				{
-					$selected = ($row['is_default'] == 'y') ? 1 : '';
-				}
-			}
-
-			if ($which == 'edit')
-			{
-				$selected = '';
-			}
-
-			if ($show == TRUE)
-			{
-				$r .= '<label>'.form_checkbox('ping[]', $row['id'], $selected, 'class="ping_toggle"').' '.$row['server_name'].'</label>';
-			}
-			else
-			{
-				if ($which != 'edit' AND $selected == 1)
-				{
-					$r .= form_hidden('ping[]', $row['id']);
-				}
-			}
-		}
-
-		if ($show == TRUE)
-		{
-			$r .= '<label>'.form_checkbox('toggle_pings', 'toggle_pings', FALSE, 'class="ping_toggle_all"').' '.lang('select_all').'</label>';
-
-		}
-
-		return $r;
-	}
 
 	
 }
