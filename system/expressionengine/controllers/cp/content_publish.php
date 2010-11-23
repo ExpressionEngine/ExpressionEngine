@@ -1013,74 +1013,51 @@ class Content_publish extends CI_Controller {
 				'field_data'			=> '',
 				'field_instructions'	=> '',
 				'field_type'			=> 'select'				
-			),
-			
-			
+			)			
 		);
-		
-		// Options Field
-		$settings['options'] = array(
-			'field_id'				=> 'options',
-			'field_required'		=> 'n',
-			'field_label'			=> lang('options'),
-			'field_data'			=> $options_array,
-			'field_instructions'	=> '',
-			'field_type'			=> 'select'
-		);
-		
 
-		
-		// // StickyBox
-		// 
-		// $sticky = (isset($entry_data['sticky'])) ? $entry_data['sticky'] : 'n';
-		// 
-		// $settings['options']['sticky'] = array(
-		// 	'field_id'				=> 'sticky',
+		// Allow Comments?
+		if ( ! isset($this->cp->installed_modules['comment']))
+		{
+			$allow_comments = (isset($entry_data['allow_comments'])) ? $entry_data['allow_comments'] : 'n';
+		}
+		elseif ($this->_channel_data['comment_system_enabled'] == 'y')
+		{
+			$options_array['allow_comments'] = array(
+					'field_id'				=> 'allow_comments',
+					'field_label'			=> lang('allow_comments'),
+					'field_type'			=> 'select',
+					'field_required'		=> 'n',
+					'field_instructions'	=> '',	
+					'field_data'			=> '',
+			);
+		}
+
+		// Is DST active? 
+		if ($this->config->item('honor_entry_dst') == 'y')
+		{
+			$options_array['dst_enabled'] = array(
+					'field_id'				=> 'dst_enabled',
+					'field_label'			=> lang('dst_enabled'),
+					'field_required'		=> 'n',
+					'field_instructions'	=> '',
+					'field_type'			=> 'select',
+					'field_data'			=> ($entry_data['dst_enabled']) ? TRUE : FALSE
+			);
+		}
+			
+		// Options Field
+		// $settings['options'] = array(
+		// 	'field_id'				=> 'options',
 		// 	'field_required'		=> 'n',
-		// 	'field_label'			=> lang('sticky'),
-		// 	'field_data'			=> '',
+		// 	'field_label'			=> lang('options'),
+		// 	'field_data'			=> $options_array,
 		// 	'field_instructions'	=> '',
 		// 	'field_type'			=> 'select'
 		// );
-		// 
-		// $this->api_channel_fields->set_settings('sticky', $settings['options']['sticky']);
-		// 
-		// // Allow Comments?
-		// if ( ! isset($this->cp->installed_modules['comment']))
-		// {
-		// 	$allow_comments = (isset($entry_data['allow_comments'])) ? $entry_data['allow_comments'] : 'n';
-		// }
-		// elseif ($this->_channel_data['comment_system_enabled'] == 'y')
-		// {
-		// 	$settings['options']['allow_comments'] = array(
-		// 			'field_id'				=> 'allow_comments',
-		// 			'field_label'			=> lang('allow_comments'),
-		// 			'field_type'			=> 'select',
-		// 			'field_required'		=> 'n',
-		// 			'field_instructions'	=> '',	
-		// 		
-		// 	);
-		// 	
-		// 	$this->api_channel_fields->set_settings('allow_comments', $settings['options']['allow_comments']);
-		// }
-		// 
-		// // Is DST active? 
-		// if ($this->config->item('honor_entry_dst') == 'y')
-		// {
-		// 	$settings['options']['dst_enabled'] = array(
-		// 			'field_id'				=> 'dst_enabled',
-		// 			'field_label'			=> lang('dst_enabled'),
-		// 			'field_required'		=> 'n',
-		// 			'field_instructions'	=> '',
-		// 			'field_type'			=> 'select',
-		// 			'field_data'			=> ($entry_data['dst_enabled']) ? TRUE : FALSE
-		// 	);
-		// 	
-		// 	$this->api_channel_fields->set_settings('dst_enabled', $settings['options']['dst_enabled']);
-		// }
-		// 
-		// 
-		// var_dump($settings);exit;
+		
+
+			// $this->api_channel_fields->set_settings('dst_enabled', $settings['options']);
 				
 		return $settings;
 	}
