@@ -1045,6 +1045,9 @@ class Content_publish extends CI_Controller {
 					'field_data'			=> ($entry_data['dst_enabled']) ? TRUE : FALSE
 			);
 		}
+		
+		// ---------------------------------------------------
+		// This is breaking up in here.  Help!	
 			
 		// Options Field
 		// $settings['options'] = array(
@@ -1057,9 +1060,76 @@ class Content_publish extends CI_Controller {
 		// );
 		
 
-			// $this->api_channel_fields->set_settings('dst_enabled', $settings['options']);
+		// $this->api_channel_fields->set_settings('dst_enabled', $settings['options']);
+				
+		// ---------------------------------------------------				
+		
+		
+		$options_array['author'] = $this->_build_author($entry_data);
+				
+				
+				
 				
 		return $settings;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Build Author Vars
+	 *
+	 * @param 	array
+	 */
+	protected function _build_author($entry_data)
+	{
+		$this->load->model('member_model');
+
+		// Default author
+		$author_id = (isset($entry_data['author_id'])) ? $entry_data['author_id'] : $this->session->userdata('member_id');
+
+		$menu_author_options = array();
+		$menu_author_selected = $author_id;
+		
+		$qry = $this->db->select('username, screen_name')
+						->get_where('members', array('member_id' => (int) $author_id));
+			
+		$author = ($qry->row('screen_name')  == '') ? $qry->row('username') : $qry->row('screen_name');
+		$menu_author_options[$author_id] = $author;
+		
+		// Next we'll gather all the authors that are allowed to be in this list
+		$author_list = $this->member_model->get_authors_simple();
+
+		// We'll confirm that the user is assigned to a member group that allows posting in this channel
+		if ($author_list->num_rows() > 0)
+		{
+			foreach ($author_list->result() as $row)
+			{
+				if (isset($this->session->userdata['assigned_channels'][$entry_data['channel_id']]))
+				{
+					$menu_author_options[$row->member_id] = ($row->screen_name == '') ? $row->username : $row->screen_name;
+				}
+			}
+		}
+		
+		$settings = array(
+			'author'	=> array(
+				'field_id'		=> 'author'
+			)
+		);
+		
+	// 'field_id'				=> 'title',
+	// 'field_label'			=> lang('title'),
+	// 'field_required'		=> 'y',
+	// 'field_data'			=> ( ! $this->input->post('title')) ? $entry_data['title'] : $this->input->post('title'),
+	// 'field_show_fmt'		=> 'n',
+	// 'field_instructions'	=> '',
+	// 'field_text_direction'	=> 'ltr',
+	// 'field_type'			=> 'text',
+	// 'field_maxl'			=> 100
+
+		
+		var_dump($menu_author_options, $menu_author_selected);
+		// return $vars;
 	}
 
 	// --------------------------------------------------------------------
