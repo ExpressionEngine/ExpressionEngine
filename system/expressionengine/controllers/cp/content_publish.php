@@ -25,9 +25,10 @@
  */
 class Content_publish extends CI_Controller {
 
-	private $_channel_fields 	= array();
-	private $channel_data 		= array();
 	private $_dst_enabled 		= FALSE;
+
+	private $_channel_data 		= array();
+	private $_channel_fields 	= array();
 	private $_publish_blocks 	= array();
 	private $_publish_layouts 	= array();
 
@@ -92,19 +93,21 @@ class Content_publish extends CI_Controller {
 		
 		
 		// Get channel data
-		$this->channel_data	= $this->_load_channel_data($channel_id);
+		$this->_channel_data = $this->_load_channel_data($channel_id);
 		
-		$field_data			= $this->_set_field_settings($this->channel_data);
-		$entry_data			= $this->_load_entry_data($channel_id, $entry_id, $autosave);
-		$entry_id			= $entry_data['entry_id'];
+		// Grab, fields and entry data
+		$field_data		= $this->_set_field_settings($this->_channel_data);
+		$entry_data		= $this->_load_entry_data($channel_id, $entry_id, $autosave);
+		$entry_id		= $entry_data['entry_id'];
 		
-		$deft_field_data 	= $this->_setup_default_fields($this->channel_data, $entry_data);
+		// Merge in default fields
+		$deft_field_data = $this->_setup_default_fields($this->_channel_data, $entry_data);
 
 		$field_data = array_merge($field_data, $deft_field_data);
 
-		var_dump($field_data);
+	//	var_dump($field_data);
 
-		$this->_set_field_validation($this->channel_data, $field_data);
+		$this->_set_field_validation($this->_channel_data, $field_data);
 		
 		// @todo setup validation for categories, etc?
 		// @todo third party tabs
@@ -132,11 +135,7 @@ class Content_publish extends CI_Controller {
 		
 
 		
-		echo '<pre>';
-		print_r($entry_data);
-		echo '</pre>';
-		
-		
+
 		/*
 		
 		prep_field_output();
@@ -149,7 +148,48 @@ class Content_publish extends CI_Controller {
 		show_form();
 		*/
 		
-		$this->load->view('content/publish'); //, $data);
+		
+		
+		// Start to assemble view data
+		// WORK IN PROGRESS, just need a few things on the page to
+		// work with the html - will clean this crap up
+		
+		$this->cp->add_js_script(array(
+		        'ui'        => array('datepicker', 'resizable', 'draggable', 'droppable'),
+		        'plugin'    => array('markitup', 'toolbox.expose', 'overlay'),
+				'file'		=> array('json2', 'cp/publish')
+		    )
+		);
+		
+		$this->javascript->set_global('date.format', 'us');
+		
+		$this->javascript->compile();
+		
+		
+		$tab_labels = array(
+			'publish' => 'Publish'
+		);
+		
+		$tabs = array(
+			'publish' => array(
+				'foo'
+			)
+		);
+		
+		$data = array(
+			'cp_page_title'	=> $entry_id ? lang('edit_entry') : lang('new_entry'),
+			'message'		=> '',	// @todo consider pulling?
+			
+			'tabs'			=> $tabs,
+			'tab_labels'	=> $tab_labels
+		);
+		
+		$this->cp->set_breadcrumb(
+			BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id,
+			$this->_channel_data['channel_title']
+		);
+		
+		$this->load->view('content/publish', $data);
 	}
 	
 	
@@ -445,8 +485,8 @@ class Content_publish extends CI_Controller {
 	function _load_entry_data($channel_id, $entry_id = FALSE, $autosave = FALSE)
 	{
 		$result = array(
-			'title'		=> $this->channel_data['default_entry_title'],
-			'url_title'	=> $this->channel_data['url_title_prefix'],
+			'title'		=> $this->_channel_data['default_entry_title'],
+			'url_title'	=> $this->_channel_data['url_title_prefix'],
 			'entry_id'	=> 0
 		);
 		
