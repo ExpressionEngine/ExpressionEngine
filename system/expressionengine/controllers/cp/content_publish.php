@@ -325,15 +325,12 @@ class Content_publish extends CI_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	private function _set_field_validation($field_data, $channel_data)
-	{	
-		var_dump($field_data);
-		
+	private function _set_field_validation($channel_data, $field_data)
+	{
 		foreach ($field_data as $fd)
 		{
-			
-			// $rules = 'call_field_validation['.$fd['field_id'].']';
-			// $this->form_validation->set_rules($fd['field_id'], $fd['field_label'], $rules);
+			$rules = 'call_field_validation['.$fd['field_id'].']';
+			$this->form_validation->set_rules($fd['field_id'], $fd['field_label'], $rules);
 		}
 	}
 	
