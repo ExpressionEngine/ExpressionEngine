@@ -90,7 +90,11 @@ class Content_publish extends CI_Controller {
 		
 		// Get channel data
 		$this->channel_data	= $this->_load_channel_data($channel_id);
+		
 		$field_data			= $this->_set_field_settings($this->channel_data);
+		$entry_data			= $this->_load_entry_data($channel_id, $entry_id, $autosave);
+		$entry_id			= $entry_data['entry_id'];
+		
 		$deft_field_data 	= $this->_setup_default_fields($this->channel_data);
 
 		$field_data = array_merge($field_data, $deft_field_data);
@@ -123,8 +127,7 @@ class Content_publish extends CI_Controller {
 
 		}
 		
-		$entry_data = $this->_load_entry_data($channel_id, $entry_id, $autosave);
-		$entry_id	= $entry_data['entry_id'];
+
 		
 		echo '<pre>';
 		print_r($entry_data);
