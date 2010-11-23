@@ -84,9 +84,9 @@ class Content_publish extends CI_Controller {
 		
 		// Get channel data
 		$channel_data	= $this->_load_channel_data($channel_id);
-		$field_data		= $this->_set_field_settings($channel_data);
+		$this->_set_field_settings($channel_data);
 		
-		$this->_set_field_validation($field_data, $channel_data);
+		$this->_set_field_validation($channel_data);
 		
 		// @todo setup validation for categories, etc?
 		// @todo third party tabs
@@ -236,7 +236,7 @@ class Content_publish extends CI_Controller {
 			show_error(lang('no_channel_exists'));
 		}
 
-		return $query;
+		return $query->result_array();
 	}
 	
 	// --------------------------------------------------------------------
@@ -252,7 +252,7 @@ class Content_publish extends CI_Controller {
 		$this->api->instantiate('channel_fields');
 		
 		// Get Channel fields in the field group
-		$channel_fields = $this->channel_model->get_channel_fields($channel_data->row('field_group'));
+		$channel_fields = $this->channel_model->get_channel_fields($channel_data[0]['field_group']);
 
 		foreach ($channel_fields->result_array() as $row)
 		{
@@ -268,8 +268,14 @@ class Content_publish extends CI_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	private function _set_field_validation($field_id, $field_label)
+	private function _set_field_validation($channel_data)
 	{
+		var_dump($this->api_channel_fields);exit;
+		
+		foreach($channel_data as $data)
+		{
+			// $this->api_channel_fields->get_settings($data)
+		}
 		
 	}
 	
