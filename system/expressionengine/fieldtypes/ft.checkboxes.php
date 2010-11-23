@@ -49,6 +49,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 	function Checkboxes_ft()
 	{
 		parent::EE_Fieldtype();
+		$this->EE->load->helper('custom_field');
 	}
 	
 	// --------------------------------------------------------------------
@@ -109,7 +110,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 		}
 		
 		$field_options	= $this->_get_field_options($data);
-		
+
 		$values = decode_multi_field($data);
 
 		$r = form_fieldset('');

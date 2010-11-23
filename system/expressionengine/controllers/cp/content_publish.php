@@ -1009,16 +1009,7 @@ class Content_publish extends CI_Controller {
 		$show_sticky		= FALSE;
 		$show_dst			= FALSE;
 		
-		$options_array = array(
-			'sticky'	=> array(
-				'field_id'				=> 'sticky',
-				'field_required'		=> 'n',
-				'field_label'			=> lang('sticky'),
-				'field_data'			=> '',
-				'field_instructions'	=> '',
-				'field_type'			=> 'select'				
-			)			
-		);
+		$options_array[] = 'sticky';
 
 		// Allow Comments?
 		if ( ! isset($this->cp->installed_modules['comment']))
@@ -1027,54 +1018,33 @@ class Content_publish extends CI_Controller {
 		}
 		elseif ($this->_channel_data['comment_system_enabled'] == 'y')
 		{
-			$options_array['allow_comments'] = array(
-					'field_id'				=> 'allow_comments',
-					'field_label'			=> lang('allow_comments'),
-					'field_type'			=> 'select',
-					'field_required'		=> 'n',
-					'field_instructions'	=> '',	
-					'field_data'			=> '',
-			);
+			$options_array[] = 'allow_comments';
 		}
 
 		// Is DST active? 
 		if ($this->config->item('honor_entry_dst') == 'y')
 		{
-			$options_array['dst_enabled'] = array(
-					'field_id'				=> 'dst_enabled',
-					'field_label'			=> lang('dst_enabled'),
-					'field_required'		=> 'n',
-					'field_instructions'	=> '',
-					'field_type'			=> 'checkbox',
-					'field_data'			=> '',//($entry_data['dst_enabled']) ? TRUE : FALSE
-			);
+			$options_array[] = 'dst_enabled';
 		}
-		
-		// ---------------------------------------------------
-		// This is breaking up in here.  Help!	
 			
-		// // Options Field
-		// $settings['options'] = array(
-		// 	'field_id'				=> 'options',
-		// 	'field_required'		=> 'n',
-		// 	'field_label'			=> lang('options'),
-		// 	'field_data'			=> '',
-		// 	'field_instructions'	=> '',
-		// 	'field_type'			=> 'select'
-		// );
-		// 
-		// 
-		// $this->api_channel_fields->set_settings('dst_enabled', $settings['options']);
+		// Options Field
+		$settings['options'] = array(
+			'field_id'				=> 'options',
+			'field_required'		=> 'n',
+			'field_label'			=> lang('options'),
+			'field_data'			=> '',
+			'field_instructions'	=> '',
+			'field_pre_populate'	=> 'n',
+			'field_type'			=> 'checkboxes',
+			'field_list_items'		=> $options_array,
+		);
+
+		$this->api_channel_fields->set_settings('options', $settings['options']);
 				
-		// ---------------------------------------------------				
-		
-		
 		$settings['author'] 	= $this->_build_author_select($entry_data);
 		$settings['channel']	= $this->_build_channel_select();
 		$settings['status']		= $this->_build_status_select($entry_data);
-				
-				
-				// var_dump($settings); exit;
+
 		return $settings;
 	}
 
