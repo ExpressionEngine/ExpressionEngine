@@ -432,14 +432,29 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _save($channel_id, $entry_id = FALSE)
 	{
+		// Editing a non-existant entry?
+		if ($entry_id && ! $this->api_channel_entries->entry_exists($entry_id))
+		{
+			return FALSE;
+		}
+		
+		
+		// We need these later
 		$return_url = $this->input->post('return_url');
 		$return_url = $return_url ? $return_url : '';
 		
+		$filter = $this->input->post('filter');
+		$filter = $filter ? AMP.'filter='.$filter : '';
+		
+		
+		// Copy over new author id, save revision data,
+		// and enabled comment status switching (cp_call)
 		$data = $_POST;
 		$data['cp_call']		= TRUE;
 		$data['author_id']		= $this->input->post('author');		// @todo double check if this is validated
 		$data['revision_post']	= $_POST;							// @todo only if revisions - memory
 		$data['ping_servers']	= array();
+		
 		
 		// Fetch xml-rpc ping server IDs
 		if (isset($_POST['ping']) && is_array($_POST['ping']))
@@ -447,21 +462,17 @@ class Content_publish extends CI_Controller {
 			$data['ping_servers'] = $_POST['ping'];
 		}
 		
+		
 		// Remove leftovers
-		unset(
-			$data['ping'],
-			$data['author'],
-			$data['return_url']
-		);
+		unset($data['ping']);
+		unset($data['author']);
+		unset($data['filter']);
+		unset($data['return_url']);
 		
 		
+		// New entry or saving an existing one?
 		if ($entry_id)
 		{
-			if ( ! $this->api_channel_entries->entry_exists($entry_id))
-			{
-				return FALSE;
-			}
-
 			$type		= '';
 			$page_title	= 'entry_has_been_updated';
 			$success	= $this->api_channel_entries->update_entry($entry_id, $data);
@@ -480,6 +491,7 @@ class Content_publish extends CI_Controller {
 			return TRUE;
 		}
 		
+		
 		// I want this to be above the extension check, but
 		// 1.x didn't do that, so we'll be blissfully ignorant
 		// that something went totally wrong.
@@ -496,6 +508,47 @@ class Content_publish extends CI_Controller {
 		$entry_id	= $this->api_channel_entries->entry_id;
 		$channel_id	= $this->api_channel_entries->channel_id;
 		
-		// @todo various redirects and other black magic
+		$edit_url = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.$filter;
+		$view_url = BASE.AMP.'C=content_publish'.AMP.'M=view_entry'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.$filter;
+		
+		
+		// Saved a revision - carry on editing
+		if ($this->input->post('save_revision'))
+		{
+			$this->functions->redirect($edit_url.AMP.'revision=saved');
+		}
+
+		
+		// Trigger the submit new entry redirect hook
+		$view_url = $this->api_channel_entries->trigger_hook('entry_submission_redirect', $view_url);
+		
+		// have to check this manually since trigger_hook() is returning $view_url
+		if ($this->extensions->end_script === TRUE)
+		{
+			return TRUE;
+		}
+		
+		
+		// Check for ping errors
+		if ($ping_errors = $this->api_channel_entries->get_errors('pings'))
+		{
+			$entry_link = $view_url;
+			$data = compact('ping_errors', 'channel_id', 'entry_id', 'entry_link');
+			
+			$this->cp->set_variable('cp_page_title', lang('xmlrpc_ping_errors'));
+			$this->load->view('content/ping_errors', $vars);
+			return TRUE;	// tricking it into not publish again
+		}
+		
+
+		// Trigger the entry submission absolute end hook
+		if ($this->api_channel_entries->trigger_hook('entry_submission_absolute_end', $view_url) === TRUE)
+		{
+			return TRUE;
+		}
+
+		// Redirect to ths "success" page
+		$this->session->set_flashdata('message_success', lang($page_title));
+		$this->functions->redirect($view_url);
 	}
 }
