@@ -1,4 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -32,6 +33,9 @@ class Content_publish extends CI_Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
+		
+		$this->load->model('channel_model');
+		
 	}
 	
 	// --------------------------------------------------------------------
@@ -63,6 +67,18 @@ class Content_publish extends CI_Controller {
 	 */
 	function entry_form()
 	{
+		// Need a channel ID, or there's no use in being here.
+		if ( ! $channel_id = $this->input->get('channel_id'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		// Get channel Data
+		$channel_data = $this->_load_channel_data($channel_id);
+		
+		$this->_set_field_settings($channel_id, $channel_data);
+		
+		
 		/*
 		check_permissions();
 		
@@ -210,7 +226,7 @@ class Content_publish extends CI_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	private function _set_field_settings($channel_id/channel_data)
+	private function _set_field_settings($channel_id, $channel_data)
 	{
 		
 	}
@@ -223,7 +239,7 @@ class Content_publish extends CI_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	private function _set_field_validation($field_id/field_label)
+	private function _set_field_validation($field_id, $field_label)
 	{
 		
 	}
