@@ -895,11 +895,11 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _setup_field_blocks($field_data, $entry_data)
 	{
-		$categories 	= $this->_build_categories_block($entry_data['entry_id']);
+		$categories 	= $this->_build_categories_block($entry_data);
 		$pings 			= $this->_build_ping_block($entry_data['entry_id']);
 		$options		= $this->_build_options_block($entry_data);
 		$forum			= $this->_build_forum_block($entry_data);
-		// var_dump($options); exit;
+
 		return array_merge($field_data, $categories, $pings, $forum, $options);
 	}
 
@@ -910,33 +910,63 @@ class Content_publish extends CI_Controller {
 	 *
 	 *
 	 */
-	private function _build_categories_block($entry_id)
-	{	
+	private function _build_categories_block($entry_data)
+	{
+		$this->api->instantiate('channel_categories');
+		
 		$cat_data_array = array();
 		
 		$vars = array(
 			'edit_categories_link'	=> FALSE,
 			'categories'			=> array()
 		);
-					
-		$qry = $this->db->select('c.cat_name, p.*')
-						->from('categories AS c, category_posts AS p')
-						->where_in('c.group_id', explode('|', $this->_channel_data['cat_group']))
-						->where('p.entry_id', $entry_id)
-						->where('c.cat_id = p.cat_id', NULL, FALSE)
-						->get();
 		
-		foreach ($qry->result() as $row)
+		if ( ! isset($entry_data['category']))
 		{
-			// $catlist[$row->cat_id] = $row->cat_id;
+			$qry = $this->db->select('c.cat_name, p.*')
+							->from('categories AS c, category_posts AS p')
+							->where_in('c.group_id', explode('|', $this->_channel_data['cat_group']))
+							->where('p.entry_id', $entry_data['entry_id'])
+							->where('c.cat_id = p.cat_id', NULL, FALSE)
+							->get();
+
+			foreach ($qry->result() as $row)
+			{
+				$catlist[$row->cat_id] = $row->cat_id;
+			}			
+		}
+		else
+		{
+			if (is_array($entry_data['category']))
+			{
+				foreach ($entry_data['category'] as $val)
+				{
+					$catlist[$val] = $val;
+				}
+			}
+		}
+		
+		$link_info = $this->api_channel_categories->fetch_allowed_category_groups($this->_channel_data['cat_group']);
+
+		$links = array();
+
+		if ($link_info !== FALSE)
+		{
+			foreach ($link_info as $val)
+			{
+				$links[] = array('url' => BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$val['group_id'],
+					'group_name' => $val['group_name']);
+
+			}
 		}
 
-		$settings = array(
-			'categories' => array(
-				
-			)
-		);
-
+		// One more check to see if the user can edit categories.  
+		// If so, we give them the link on the publish page.
+		// Peek at fetch_allowed_category_groups, and it will all make sense.
+		if ($this->session->userdata('can_edit_categories') == 'y')
+		{
+			$edit_categories_link = $links;			
+		}
 
 		return array();
 
