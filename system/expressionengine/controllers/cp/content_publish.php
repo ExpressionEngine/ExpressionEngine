@@ -67,40 +67,42 @@ class Content_publish extends CI_Controller {
 	 */
 	function entry_form()
 	{
-		// Need a channel ID, or there's no use in being here.
-		if ( ! $channel_id = $this->input->get('channel_id'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		// Get channel Data
-		$channel_data = $this->_load_channel_data($channel_id);
+		$this->load->library('form_validation');
 		
-		$this->_set_field_settings($channel_id, $channel_data);
+		$entry_id	= $this->input->get_post('entry_id');
+		$channel_id	= $this->input->get_post('channeld_id');
 		
+		// check_permissions();
 		
-		/*
-		check_permissions();
+		// Get channel data
+		$channel_data	= $this->_load_channel_data($channel_id);
+		$field_data		= $this->_set_field_settings($channel_data);
 		
-		load_channel_data();
-		
-		set_field_settings();
-		set_field_validation();
+		$this->_set_field_validation($field_data, $channel_data);
 		
 		// @todo setup validation for categories, etc?
 		// @todo third party tabs
 		
-		if (run_validation() === TRUE)
+		if ($this->form_validation->run() === TRUE)
 		{
-			merge_post_and_channel_data();
-			// @todo look up how saving works for revisions
-			save();
-			exit;
+			// merge post and row data
+			// save
+			// redirect to view page
+			exit('saved');
 		}
 		
-		check_for_id();
-			check_for_autosave();
-			check_for_revisions();
+		
+		// if ($autosaved)
+		// {
+		// 	$row_data = $this->_get_row_data_autosave($entry_id);
+		// }
+		// else if ($entry_id)
+		// {
+		// 	$revision = $this->input->get_post('revision');
+		// 	$row_data = $this->_get_row_data($entry_id, $revision);
+		// }
+		
+		/*
 		
 		prep_field_output();
 		
@@ -111,6 +113,8 @@ class Content_publish extends CI_Controller {
 		
 		show_form();
 		*/
+		
+		$this->load->view('content/publish'), $data);
 	}
 	
 	
@@ -226,7 +230,7 @@ class Content_publish extends CI_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	private function _set_field_settings($channel_id, $channel_data)
+	private function _set_field_settings($channel_data)
 	{
 		
 	}
