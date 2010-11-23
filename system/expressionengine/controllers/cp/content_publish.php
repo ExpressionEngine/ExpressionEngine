@@ -72,6 +72,13 @@ class Content_publish extends CI_Controller {
 		$entry_id	= $this->input->get_post('entry_id');
 		$channel_id	= $this->input->get_post('channel_id');
 		
+		$channel_id = $this->_member_can_publish($channel_id, $entry_id);
+		
+		if ( ! $channel_id)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
 		// check_permissions();
 		
 		// Get channel data
@@ -219,7 +226,16 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _load_channel_data($channel_id)
 	{
+		$this->load->model('channel_model');
 		
+		$query = $this->channel_model->get_channel_info($channel_id);
+		
+		if ($query->num_rows() == 0)
+		{
+			show_error(lang('no_channel_exists'));
+		}
+
+		return $query->row_array();
 	}
 	
 	// --------------------------------------------------------------------
@@ -246,5 +262,18 @@ class Content_publish extends CI_Controller {
 	private function _set_field_validation($field_id, $field_label)
 	{
 		
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Member has access
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _member_can_publish($channel_id, $entry_id)
+	{
+		$assigned_channels = $this->functions->fetch_assigned_channels();
 	}
 }
