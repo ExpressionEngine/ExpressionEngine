@@ -40,7 +40,7 @@ class Content_publish extends CI_Controller {
 		
 		$this->load->library('api');
 		$this->load->model('channel_model');
-		
+		$this->cp->get_installed_modules();
 	}
 	
 	// --------------------------------------------------------------------
@@ -625,7 +625,7 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _setup_default_fields($channel_data, $entry_data)
 	{
-		// 'entry_date', 'expiration_date', 'comment_expiration_date', 'categories', 'pings', 'revisions', 'pages', all forum tab fields, all options tab fields
+		// 'categories', 'pings', 'revisions', 'pages', all forum tab fields, all options tab fields
 		
 		$deft_fields = array(
 			'title' 		=> array(
@@ -676,8 +676,26 @@ class Content_publish extends CI_Controller {
 				'field_show_fmt'		=> 'n',
 				'selected'				=> 'y',
 				'dst_enabled'			=> $this->_dst_enabled				
-			),
+			)	
 		);
+		
+		// comment expiry here.
+		if (isset($this->cp->installed_modules['comment']))
+		{
+			$deft_fields['comment_expiration_date'] = array(
+				'field_id'				=> 'comment_expiration_date',
+				'field_label'			=> lang('comment_expiration_date'),
+				'field_required'		=> 'n',
+				'field_type'			=> 'date',
+				'field_text_direction'	=> 'ltr',
+				'field_data'			=> $entry_data['comment_expiration_date'],
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'selected'				=> 'y',
+				'dst_enabled'			=> $this->_dst_enabled
+			);
+		}
 		
 		foreach ($deft_fields as $field_name => $f_data)
 		{
