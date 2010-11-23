@@ -276,7 +276,7 @@ class Content_publish extends CI_Controller {
 		$this->api->instantiate('channel_fields');
 		
 		// Get Channel fields in the field group
-		$channel_fields = $this->channel_model->get_channel_fields($channel_data[0]['field_group']);
+		$channel_fields = $this->channel_model->get_channel_fields($channel_data['field_group']);
 
 		foreach ($channel_fields->result_array() as $row)
 		{
