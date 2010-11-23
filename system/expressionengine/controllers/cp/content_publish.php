@@ -25,6 +25,8 @@
  */
 class Content_publish extends CI_Controller {
 
+	protected $_channel_fields = array();
+
 	function __construct()
 	{
 		parent::__construct();
@@ -87,7 +89,7 @@ class Content_publish extends CI_Controller {
 		$channel_data	= $this->_load_channel_data($channel_id);
 		$field_data		= $this->_set_field_settings($channel_data);
 		
-		$this->_set_field_validation($field_data, $channel_data);
+		$this->_set_field_validation($channel_data, $field_data);
 		
 		
 		// @todo setup validation for categories, etc?
@@ -255,7 +257,7 @@ class Content_publish extends CI_Controller {
 		*/
 			if ($this->extensions->active_hook('publish_form_channel_preferences') === TRUE)
 			{
-				$row = $this->extensions->call('publish_form_channel_preferences', $query->row_array());
+				$row = $this->extensions->call('publish_form_channel_preferences', $row);
 			}
 		/*
 		/* -------------------------------------------*/
@@ -278,10 +280,41 @@ class Content_publish extends CI_Controller {
 		// Get Channel fields in the field group
 		$channel_fields = $this->channel_model->get_channel_fields($channel_data['field_group']);
 
+		$dst = ($this->session->userdata('daylight_savings') == 'y' ? TRUE : FALSE);
+
+		$field_settings = array();
+
 		foreach ($channel_fields->result_array() as $row)
 		{
-			$this->api_channel_fields->set_settings($row['field_id'], $row);
+			$field_fmt 		= '';
+			$field_dt 		= '';
+			$field_data		= '';
+			$dst_enabled	= '';
+			
+			$settings = array(
+				'field_instructions'	=> trim($row['field_instructions']),
+				'field_text_direction'	=> ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
+				'field_fmt'				=> $field_fmt,
+				'field_dt'				=> $field_dt,
+				'field_data'			=> $field_data,
+				'field_name'			=> 'field_id_'.$row['field_id'],
+				'dst_enabled'			=> $dst_enabled
+			);
+			
+			$ft_settings = array();
+
+			if (isset($row['field_settings']) && strlen($row['field_settings']))
+			{
+				$ft_settings = unserialize(base64_decode($row['field_settings']));
+			}
+			
+			$settings = array_merge($row, $settings, $ft_settings);
+			$this->api_channel_fields->set_settings($row['field_id'], $settings);
+			
+			$field_settings[] = $settings;
 		}
+		
+		return $field_settings;
 	}
 	
 	// --------------------------------------------------------------------
@@ -292,15 +325,16 @@ class Content_publish extends CI_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	private function _set_field_validation($channel_data)
-	{
-		var_dump($this->api_channel_fields);exit;
+	private function _set_field_validation($field_data, $channel_data)
+	{	
+		var_dump($field_data);
 		
-		foreach($channel_data as $data)
+		foreach ($field_data as $fd)
 		{
-			// $this->api_channel_fields->get_settings($data)
+			
+			// $rules = 'call_field_validation['.$fd['field_id'].']';
+			// $this->form_validation->set_rules($fd['field_id'], $fd['field_label'], $rules);
 		}
-		
 	}
 	
 	// --------------------------------------------------------------------
@@ -364,7 +398,6 @@ class Content_publish extends CI_Controller {
 
 			$channel_id = $assigned_channels[0];
 		}
-		
 		
 		// After all that mucking around, double check to make
 		// sure the channel is actually one they can post to.
