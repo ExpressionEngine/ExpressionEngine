@@ -34,6 +34,7 @@ class Content_publish extends CI_Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
+		$this->load->library('api');
 		$this->load->model('channel_model');
 		
 	}
@@ -72,7 +73,7 @@ class Content_publish extends CI_Controller {
 		$entry_id	= $this->input->get_post('entry_id');
 		$channel_id	= $this->input->get_post('channel_id');
 		
-		$channel_id = $this->_member_can_publish($channel_id, $entry_id);
+		// $channel_id = $this->_member_can_publish($channel_id, $entry_id);
 		
 		if ( ! $channel_id)
 		{
@@ -121,7 +122,7 @@ class Content_publish extends CI_Controller {
 		show_form();
 		*/
 		
-		$this->load->view('content/publish'), $data);
+		$this->load->view('content/publish'); //, $data);
 	}
 	
 	
@@ -235,7 +236,7 @@ class Content_publish extends CI_Controller {
 			show_error(lang('no_channel_exists'));
 		}
 
-		return $query->row_array();
+		return $query;
 	}
 	
 	// --------------------------------------------------------------------
@@ -248,7 +249,15 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _set_field_settings($channel_data)
 	{
+		$this->api->instantiate('channel_fields');
 		
+		// Get Channel fields in the field group
+		$channel_fields = $this->channel_model->get_channel_fields($channel_data->row('field_group'));
+
+		foreach ($channel_fields->result_array() as $row)
+		{
+			$this->api_channel_fields->set_settings($row['field_id'], $row);
+		}
 	}
 	
 	// --------------------------------------------------------------------
