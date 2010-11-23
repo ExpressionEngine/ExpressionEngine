@@ -155,7 +155,7 @@ class Content_publish extends CI_Controller {
 		$layout_styles	= $this->_setup_layout_styles($field_data);
 		$field_list		= $this->_sort_field_list($field_data);		// @todo admin only? or use as master list? skip sorting for non admins, but still compile?
 
-		
+		// var_dump($field_data);
 		// Start to assemble view data
 		// WORK IN PROGRESS, just need a few things on the page to
 		// work with the html - will clean this crap up
@@ -914,77 +914,47 @@ class Content_publish extends CI_Controller {
 			'field_id'				=> 'sticky',
 			'field_required'		=> 'n',
 			'field_label'			=> lang('sticky'),
-			'field_data'			=> ''
+			'field_data'			=> '',
+			'field_instructions'	=> '',
+			'field_type'			=> 'select'
 		);
 
+		$this->api_channel_fields->set_settings('sticky', $settings['sticky']);
 
-		// 'title' 		=> array(
-		// 	'field_id'				=> 'title',
-		// 	'field_label'			=> lang('title'),
-		// 	'field_required'		=> 'y',
-		// 	'field_data'			=> ( ! $this->input->post('title')) ? $entry_data['title'] : $this->input->post('title'),
-		// 	'field_show_fmt'		=> 'n',
-		// 	'field_instructions'	=> '',
-		// 	'field_text_direction'	=> 'ltr',
-		// 	'field_type'			=> 'text',
-		// 	'field_maxl'			=> 100
-		// ),
+		// Allow Comments?
+		if ( ! isset($this->cp->installed_modules['comment']))
+		{
+			$allow_comments = (isset($entry_data['allow_comments'])) ? $entry_data['allow_comments'] : 'n';
+		}
+		elseif ($this->_channel_data['comment_system_enabled'] == 'y')
+		{
+			$settings['allow_comments'] = array(
+					'field_id'				=> 'allow_comments',
+					'field_label'			=> lang('allow_comments'),
+					'field_type'			=> 'select',
+					'field_required'		=> 'n',
+					'field_instructions'	=> '',	
+				
+			);
+			
+			$this->api_channel_fields->set_settings('allow_comments', $settings['allow_comments']);
+		}
 
-
-		// $settings['sticky'] = array('sticky' => 
-		// array(
-		// 	'field_id'			=> 'sticky',
-		// 	'field_label'		=> lang('sticky'),
-		// 	'field_type'		=> 'checkboxes',
-		// 	'field_required'	=> 'n',
-		// 	
-		// 	'field_data'		=> '',
-		// 	'field_show_fmt'	=> 'n',
-		// 	'field_instructions'=> '',
-		// ));
-		// 
-		// $this->api_channel_fields->set_settings('sticky', $settings['sticky']);
-
-		// // Allow Comments?
-		// if ( ! isset($this->cp->installed_modules['comment']))
-		// {
-		// 	$allow_comments = (isset($entry_data['allow_comments'])) ? $entry_data['allow_comments'] : 'n';
-		// }
-		// elseif ($this->_channel_data['comment_system_enabled'] == 'y')
-		// {
-		// 	$settings['allow_comments'] = array(
-		// 			'field_id'			=> 'allow_comments',
-		// 			'field_label'		=> lang('allow_comments'),
-		// 			'field_type'		=> 'checkboxes',
-		// 			'field_required'	=> 'n',
-		// 			''	
-		// 		
-		// 	);
-		// }
-		
-		
-		/*
-
-$settings = array('ping' => 
-	array(
-		'string_override'		=> (isset($ping_servers) && $ping_servers != '') ? '<fieldset>'.$ping_servers.'</fieldset>' : lang('no_ping_sites').'<p><a href="'.BASE.AMP.'C=myaccount'.AMP.'M=ping_servers'.AMP.'id='.$this->session->userdata('member_id').'">'.$this->lang->line('add_ping_sites').'</a></p>',
-		'field_id'				=> 'ping',
-		'field_label'			=> $this->lang->line('pings'),
-		'field_required'		=> 'n',
-		'field_type'			=> 'checkboxes',
-		'field_text_direction'	=> 'ltr',
-		'field_data'			=> $ping_servers,
-		'field_fmt'				=> 'text',
-		'field_instructions'	=> '',
-		'field_show_fmt'		=> 'n'
-	)
-);
-
-$this->api_channel_fields->set_settings('ping', $settings['ping']);
-
-
-		*/
-		
+		// Is DST active? 
+		if ($this->config->item('honor_entry_dst') == 'y')
+		{
+			$settings['dst_enabled'] = array(
+					'field_id'				=> 'dst_enabled',
+					'field_label'			=> lang('dst_enabled'),
+					'field_required'		=> 'n',
+					'field_instructions'	=> '',
+					'field_type'			=> 'select',
+					'field_data'			=> ($entry_data['dst_enabled']) ? TRUE : FALSE
+			);
+			
+			$this->api_channel_fields->set_settings('dst_enabled', $settings['dst_enabled']);
+		}
+				
 		return $settings;
 	}
 
