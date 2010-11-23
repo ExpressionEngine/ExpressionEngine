@@ -25,9 +25,11 @@
  */
 class Content_publish extends CI_Controller {
 
-	protected $_channel_fields = array();
-	private $channel_data = array();
-	protected $_dst_enabled = FALSE;
+	private $_channel_fields 	= array();
+	private $channel_data 		= array();
+	private $_dst_enabled 		= FALSE;
+	private $_publish_blocks 	= array();
+	private $_publish_layouts 	= array();
 
 	function __construct()
 	{
@@ -611,6 +613,51 @@ class Content_publish extends CI_Controller {
 		// Redirect to ths "success" page
 		$this->session->set_flashdata('message_success', lang($page_title));
 		$this->functions->redirect($view_url);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Categories Block
+	 *
+	 *
+	 */
+	private function _categories_block()
+	{
+		$this->db->select('c.cat_name, p.*');
+		$this->db->from('categories AS c, category_posts AS p');
+		$this->db->where_in('c.group_id', explode('|', $cat_group));
+		$this->db->where('p.entry_id', $entry_id);
+		$this->db->where('c.cat_id = p.cat_id', NULL, FALSE);
+		
+		$query = $this->db->get();
+
+		foreach ($query->result() as $row)
+		{
+			$catlist[$row->cat_id] = $row->cat_id;
+		}
+		
+		
+		
+		/*
+		$vars = compact('categories', 'edit_categories_link');
+		$category_r = $this->load->view('content/_assets/categories', $vars, TRUE);
+		
+		$this->field_definitions['category'] = array(
+			'string_override'		=> ($cat_groups == '') ? $this->lang->line('no_categories') : $category_r,
+			'field_id'				=> 'category',
+			'field_name'			=> 'category',
+			'field_label'			=> $this->lang->line('categories'),
+			'field_required'		=> 'n',
+			'field_type'			=> 'multiselect',
+			'field_text_direction'	=> 'ltr',
+			'field_data'			=> '',
+			'field_fmt'				=> 'text',
+			'field_instructions'	=> '',
+			'field_show_fmt'		=> 'n',
+			'selected'				=> 'n',
+			'options'				=> $categories
+		);		*/
 	}
 	
 	// --------------------------------------------------------------------
