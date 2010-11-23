@@ -911,33 +911,56 @@ class Content_publish extends CI_Controller {
 		$sticky = (isset($entry_data['sticky'])) ? $entry_data['sticky'] : 'n';
 
 		$settings['sticky'] = array(
-			'field_id'			=> 'sticky',
-			'field_label'		=> lang('sticky'),
-			'field_type'		=> 'checkboxes',
-			'field_required'	=> 'n',
-			'field_data'		=> $sticky,
-			'field_show_fmt'	=> 'n',
-			'field_instructions'=> '',
+			'field_id'				=> 'sticky',
+			'field_required'		=> 'n',
+			'field_label'			=> lang('sticky'),
+			'field_data'			=> ''
 		);
-		
-		$this->api_channel_fields->set_settings('sticky', $settings['sticky']);
 
-		// Allow Comments?
-		if ( ! isset($this->cp->installed_modules['comment']))
-		{
-			$allow_comments = (isset($entry_data['allow_comments'])) ? $entry_data['allow_comments'] : 'n';
-		}
-		elseif ($this->_channel_data['comment_system_enabled'] == 'y')
-		{
-			$settings['allow_comments'] = array(
-					'field_id'			=> 'allow_comments',
-					'field_label'		=> lang('allow_comments'),
-					'field_type'		=> 'checkboxes',
-					'field_required'	=> 'n',
-					''	
-				
-			);
-		}
+
+		// 'title' 		=> array(
+		// 	'field_id'				=> 'title',
+		// 	'field_label'			=> lang('title'),
+		// 	'field_required'		=> 'y',
+		// 	'field_data'			=> ( ! $this->input->post('title')) ? $entry_data['title'] : $this->input->post('title'),
+		// 	'field_show_fmt'		=> 'n',
+		// 	'field_instructions'	=> '',
+		// 	'field_text_direction'	=> 'ltr',
+		// 	'field_type'			=> 'text',
+		// 	'field_maxl'			=> 100
+		// ),
+
+
+		// $settings['sticky'] = array('sticky' => 
+		// array(
+		// 	'field_id'			=> 'sticky',
+		// 	'field_label'		=> lang('sticky'),
+		// 	'field_type'		=> 'checkboxes',
+		// 	'field_required'	=> 'n',
+		// 	
+		// 	'field_data'		=> '',
+		// 	'field_show_fmt'	=> 'n',
+		// 	'field_instructions'=> '',
+		// ));
+		// 
+		// $this->api_channel_fields->set_settings('sticky', $settings['sticky']);
+
+		// // Allow Comments?
+		// if ( ! isset($this->cp->installed_modules['comment']))
+		// {
+		// 	$allow_comments = (isset($entry_data['allow_comments'])) ? $entry_data['allow_comments'] : 'n';
+		// }
+		// elseif ($this->_channel_data['comment_system_enabled'] == 'y')
+		// {
+		// 	$settings['allow_comments'] = array(
+		// 			'field_id'			=> 'allow_comments',
+		// 			'field_label'		=> lang('allow_comments'),
+		// 			'field_type'		=> 'checkboxes',
+		// 			'field_required'	=> 'n',
+		// 			''	
+		// 		
+		// 	);
+		// }
 		
 		
 		/*
