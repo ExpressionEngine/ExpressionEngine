@@ -26,6 +26,7 @@
 class Content_publish extends CI_Controller {
 
 	protected $_channel_fields = array();
+	private $channel_data = array();
 
 	function __construct()
 	{
@@ -74,11 +75,13 @@ class Content_publish extends CI_Controller {
 		
 		$entry_id	= (int) $this->input->get_post('entry_id');
 		$channel_id	= (int) $this->input->get_post('channel_id');
+		
+		$autosave	= ($this->input->get_post('use_autosave') == 'y');
 
 
 		// Grab the channel_id associated with this entry if
 		// required and make sure the current member has access.
-		$channel_id = $this->_member_can_publish($channel_id, $entry_id);
+		$channel_id = $this->_member_can_publish($channel_id, $entry_id, $autosave);
 		
 		
 		// If they're loading a revision, we stop here
@@ -86,19 +89,21 @@ class Content_publish extends CI_Controller {
 		
 		
 		// Get channel data
-		$channel_data		= $this->_load_channel_data($channel_id);
-		$field_data			= $this->_set_field_settings($channel_data);
-		$deft_field_data 	= $this->_setup_default_fields($channel_data);
-		
-		$field_data = array_merge($deft_field_data, $field_data);
-		
-		$this->_set_field_validation($channel_data, $field_data);
+		$this->channel_data	= $this->_load_channel_data($channel_id);
+		$field_data			= $this->_set_field_settings($this->channel_data);
+		$deft_field_data 	= $this->_setup_default_fields($this->channel_data);
+
+		$this->_set_field_validation($this->channel_data, $field_data);
 		
 		// @todo setup validation for categories, etc?
 		// @todo third party tabs
 		
 		if ($this->form_validation->run() === TRUE)
 		{
+			// @todo if autosave is set to yes we
+			// have the entry id wrong. This should
+			// of course never happen, but double check
+			
 			if ($this->_save($channel_id, $entry_id) === TRUE)
 			{
 				exit('saved');
@@ -106,7 +111,7 @@ class Content_publish extends CI_Controller {
 				// pass along filter!
 			}
 
-			// Process errors, and proceed with
+			// @todo Process errors, and proceed with
 			// showing the page. These are rather
 			// special errors - consider how to
 			// best show them . . .
@@ -114,16 +119,9 @@ class Content_publish extends CI_Controller {
 
 		}
 		
+		$entry_data = $this->_load_entry_data($channel_id, $entry_id, $autosave);
+		$entry_id	= $entry_data['entry_id'];
 		
-		// if ($autosaved)
-		// {
-		// 	$row_data = $this->_get_row_data_autosave($entry_id);
-		// }
-		// else if ($entry_id)
-		// {
-		// 	$revision = $this->input->get_post('revision');
-		// 	$row_data = $this->_get_row_data($entry_id, $revision);
-		// }
 		
 		/*
 		
@@ -344,13 +342,11 @@ class Content_publish extends CI_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	private function _member_can_publish($channel_id, $entry_id)
+	private function _member_can_publish($channel_id, $entry_id, $autosave)
 	{
 		$this->load->model('channel_entries_model');
 		
-		$autosave			= ($this->input->get_post('use_autosave') == 'y') ? TRUE : FALSE;
-		$assigned_channels	= $this->functions->fetch_assigned_channels();
-		
+		$assigned_channels = $this->functions->fetch_assigned_channels();
 		
 		// A given entry id is either a real channel entry id
 		// or the unique id for an autosave row.
@@ -424,6 +420,57 @@ class Content_publish extends CI_Controller {
 		
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Member has access
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	function _load_entry_data($channel_id, $entry_id = FALSE, $autosave = FALSE)
+	{
+		$result = array(
+			'title'		=> $title ? $title : $default_entry_title,
+			'url_title'	=> $url_title_prefix,
+			'entry_id'	=> 0
+		);
+		
+		if ($entry_id)
+		{
+			$query = $this->channel_entries_model->get_entry($entry_id, $channel_id, $autosave);
+			
+			if ( ! $result->num_rows())
+			{
+				show_error(lang('no_channel_exists'));
+			}
+
+			$result = $result->row_array();
+			
+			if ($autosave)
+			{
+				$res_entry_data = unserialize($result['entry_data']);
+
+				// overwrite and add to this array with entry_data
+				foreach ($res_entry_data as $k => $v)
+				{
+					$result[$k] = $v;
+				}
+				
+				// if the autosave was a new entry, kill the entry id
+				if ($result['original_entry_id'] == 0)
+				{
+					$result['entry_id'] = 0;
+				}
+				
+				unset($result['entry_data']);
+				unset($result['original_entry_id']);
+			}
+		}
+		
+		return $result;
+	}
+
 	// --------------------------------------------------------------------
 
 	/**

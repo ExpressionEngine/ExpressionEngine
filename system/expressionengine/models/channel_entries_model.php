@@ -89,11 +89,10 @@ class Channel_entries_model extends CI_Model {
 	{
 		if ($channel_id != '')
 		{
-
 			if ($autosave === TRUE)
 			{
 				$this->db->from('channel_entries_autosave AS t');
-				$this->db->where('t.original_entry_id', $entry_id);
+				$this->db->where('t.entry_id', $entry_id);
 			}
 			else
 			{
