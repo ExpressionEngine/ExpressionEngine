@@ -86,11 +86,13 @@ class Content_publish extends CI_Controller {
 		
 		
 		// Get channel data
-		$channel_data	= $this->_load_channel_data($channel_id);
-		$field_data		= $this->_set_field_settings($channel_data);
+		$channel_data		= $this->_load_channel_data($channel_id);
+		$field_data			= $this->_set_field_settings($channel_data);
+		$deft_field_data 	= $this->_setup_default_fields($channel_data);
+		
+		$field_data = array_merge($deft_field_data, $field_data);
 		
 		$this->_set_field_validation($channel_data, $field_data);
-		
 		
 		// @todo setup validation for categories, etc?
 		// @todo third party tabs
@@ -551,4 +553,55 @@ class Content_publish extends CI_Controller {
 		$this->session->set_flashdata('message_success', lang($page_title));
 		$this->functions->redirect($view_url);
 	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup Default Fields
+	 *
+	 * This method sets up Default fields that are required on the entry page.
+	 *
+	 * @return 	array
+	 */
+	private function _setup_default_fields($channel_data)
+	{
+		// 'title', 'url_title', 'entry_date', 'expiration_date', 'comment_expiration_date', 'categories', 'pings', 'revisions', 'pages', all forum tab fields, all options tab fields
+		
+		$deft_fields = array(
+			'title' 		=> array(
+				'field_id'				=> 'title',
+				'field_label'			=> lang('title'),
+				'field_required'		=> 'y',
+				'field_data'			=> ( ! $this->input->post('title')) ? 'title' : $this->input->post('title'),
+				'field_show_fmt'		=> 'n',
+				'field_text_direction'	=> 'ltr',		// @todo, make this configurable
+				'field_type'			=> 'text',
+				'field_maxl'			=> 100
+			),
+			'url_title'		=> array(
+				
+			)
+		);
+		
+		foreach ($deft_fields as $field_name => $f_data)
+		{
+			// $this->api_channel_fields->set_settings($field_name, $f_data);
+		}
+		
+	}
+/*
+$field_settings = array();
+
+foreach ($deft_fields as $field)
+{
+	$this->api_channel_fields->set_settings($field, $settings);
+
+	$rules = 'required|call_field_validation['.$settings['field_id'].']';
+	$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);		
+}		
+
+return $field_settings;
+
+*/
+	
 }
