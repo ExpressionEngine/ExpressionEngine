@@ -70,7 +70,7 @@ class Content_publish extends CI_Controller {
 		$this->load->library('form_validation');
 		
 		$entry_id	= $this->input->get_post('entry_id');
-		$channel_id	= $this->input->get_post('channeld_id');
+		$channel_id	= $this->input->get_post('channel_id');
 		
 		// check_permissions();
 		
