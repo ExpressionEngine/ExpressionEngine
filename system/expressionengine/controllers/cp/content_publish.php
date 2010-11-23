@@ -105,8 +105,6 @@ class Content_publish extends CI_Controller {
 
 		$field_data = array_merge($field_data, $deft_field_data);
 
-		$this->_setup_publish_blocks($entry_id, $entry_data);
-
 		$this->_set_field_validation($this->_channel_data, $field_data);
 		
 		// @todo setup validation for categories, etc?
@@ -167,14 +165,22 @@ class Content_publish extends CI_Controller {
 		
 		
 		$tab_labels = array(
-			'publish' => 'Publish'
+			'publish' 		=> lang('publish'),
+			'categories' 	=> lang('categories')
 		);
 		
 		$tabs = array(
 			'publish' => array(
 				'foo'
-			)
+			),
+			'categories' => $this->_categories_block($entry_id)
 		);
+		
+		// $this->_categories_block($entry_id, $entry_data);
+		// $this->_ping_block();
+		// $this->_forum_block();
+		// $this->_options_block();
+		
 		
 		$data = array(
 			'cp_page_title'	=> $entry_id ? lang('edit_entry') : lang('new_entry'),
@@ -658,42 +664,36 @@ class Content_publish extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Setup publish blocks
-	 */
-	private function _setup_publish_blocks($entry_id, $entry_data)
-	{
-		$this->_categories_block($entry_id, $entry_data);
-		$this->_ping_block();
-		$this->_forum_block();
-		$this->_options_block();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Categories Block
 	 *
 	 *
 	 */
-	private function _categories_block($entry_id, $entry_data)
-	{
-		// var_dump($entry_data); exit;
+	private function _categories_block($entry_id)
+	{	
+		$cat_data_array = array();
 		
-		
+		$vars = array(
+			'edit_categories_link'	=> FALSE,
+			'categories'			=> array()
+		);
+					
 		$qry = $this->db->select('c.cat_name, p.*')
 						->from('categories AS c, category_posts AS p')
-						->where_in('c.group_id', explode('|', $cat_group))
+						->where_in('c.group_id', explode('|', $this->_channel_data['cat_group']))
 						->where('p.entry_id', $entry_id)
 						->where('c.cat_id = p.cat_id', NULL, FALSE)
 						->get();
 		
 		foreach ($qry->result() as $row)
 		{
-			$catlist[$row->cat_id] = $row->cat_id;
+			// $catlist[$row->cat_id] = $row->cat_id;
 		}
-		
-		// var_dump($catlist);
-		
+
+
+		$this->load->view('content/_assets/categories', $vars, TRUE);
+
+		return $cat_data_array;
+
 		/*
 		$vars = compact('categories', 'edit_categories_link');
 		$category_r = $this->load->view('content/_assets/categories', $vars, TRUE);
