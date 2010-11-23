@@ -108,7 +108,8 @@ class Channel_entries_model extends CI_Model {
 		{
 			$from = $autosave ? 'channel_entries_autosave' : 'channel_titles';
 
-			$this->db->select('entry_id, author_id');
+			$this->db->from($from);
+			$this->db->select('channel_id, entry_id, author_id');
 			$this->db->where('entry_id', $entry_id);
 		}
 

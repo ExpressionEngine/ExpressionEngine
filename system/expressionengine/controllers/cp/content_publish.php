@@ -122,6 +122,10 @@ class Content_publish extends CI_Controller {
 		$entry_data = $this->_load_entry_data($channel_id, $entry_id, $autosave);
 		$entry_id	= $entry_data['entry_id'];
 		
+		echo '<pre>';
+		print_r($entry_data);
+		echo '</pre>';
+		
 		
 		/*
 		
@@ -396,7 +400,7 @@ class Content_publish extends CI_Controller {
 		
 		// After all that mucking around, double check to make
 		// sure the channel is actually one they can post to.
-		
+				
 		$channel_id = (int) $channel_id;
 		
 		if ( ! $channel_id OR ! in_array($channel_id, $assigned_channels))
