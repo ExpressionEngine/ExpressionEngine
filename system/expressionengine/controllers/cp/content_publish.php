@@ -154,8 +154,10 @@ class Content_publish extends CI_Controller {
 		$tab_hierarchy	= $this->_setup_tab_hierarchy($field_data);
 		$layout_styles	= $this->_setup_layout_styles($field_data);
 		$field_list		= $this->_sort_field_list($field_data);		// @todo admin only? or use as master list? skip sorting for non admins, but still compile?
+		$field_list		= $this->_prep_field_wrapper($field_list);
 
-		// var_dump($field_data);
+		$field_output	= $this->_setup_field_display($field_data);
+		
 		// Start to assemble view data
 		// WORK IN PROGRESS, just need a few things on the page to
 		// work with the html - will clean this crap up
@@ -202,7 +204,8 @@ class Content_publish extends CI_Controller {
 			'first_tab'		=> key($tab_hierarchy),
 			'tab_labels'	=> $tab_labels,
 			'field_list'	=> $field_list,
-			'layout_styles'	=> $layout_styles
+			'layout_styles'	=> $layout_styles,
+			'field_output'	=> $field_output
 		);
 
 		
@@ -722,6 +725,92 @@ class Content_publish extends CI_Controller {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Setup Field Display
+	 *
+	 * Calls the fieldtype display_field method
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _setup_field_display($field_data)
+	{
+		$field_output = array();
+		
+
+		foreach ($field_data as $name => $data)
+		{
+			if (isset($data['string_override']))
+			{
+				$field_output[$name] = $data['string_override'];
+				continue;
+			}
+			
+			$this->api_channel_fields->setup_handler($data['field_id']);
+			
+			$field_value = set_value($data['field_id'], $data['field_data']);
+			$field_output[$name] = $this->api_channel_fields->apply('display_publish_field', array($field_value));
+		}
+		
+		return $field_output;
+			
+		// if (isset($field_info['field_required']) && $field_info['field_required'] == 'y')
+		// {
+		// 	$vars['required_fields'][] = $field_info['field_id'];
+		// }
+		
+		// if ($vars['smileys_enabled'])
+		// {
+		// 	$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), $field_info['field_name']);
+		// 	$col_array = $this->table->make_columns($image_array, 8);
+		// 	$vars['smiley_table'][$field] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
+		// 	$this->table->clear(); // clear out tables for the next smiley					
+		// }
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup Field Wrapper Stuff
+	 *
+	 * Sets up smileys, spellcheck, glossary, etc
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _prep_field_wrapper($field_list)
+	{
+		$defaults = array(
+			'field_show_spellcheck'			=> 'n',
+			'field_show_smileys'			=> 'n',
+			'field_show_glossary'			=> 'n',
+			'field_show_formatting_btns'	=> 'n',
+			'field_show_writemode'			=> 'n',
+			'field_show_file_selector'		=> 'n',
+			'field_show_fmt'				=> 'n'
+		);
+		
+		foreach ($field_list as $field => &$data)
+		{
+			$data['has_extras'] = FALSE;
+			
+			foreach($defaults as $key => $val)
+			{
+				if (isset($data[$key]) && $data[$key] == 'y')
+				{
+					$data['has_extras'] = TRUE;
+					continue;
+				}
+
+				$data[$key] = $val;
+			}
+		}
+		
+		return $field_list;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Setup Layout Styles for all fields
 	 *
 	 * @access	private
@@ -795,7 +884,8 @@ class Content_publish extends CI_Controller {
 	{
 		$categories 	= $this->_categories_block($entry_data['entry_id']);
 		$pings 			= $this->_ping_block($entry_data['entry_id']);
-		$options		= $this->_options_block($entry_data);
+		// $options		= $this->_options_block($entry_data);
+		return array_merge($field_data, $categories, $pings);
 		
 		return array_merge($field_data, $categories, $pings, $options);
 	}

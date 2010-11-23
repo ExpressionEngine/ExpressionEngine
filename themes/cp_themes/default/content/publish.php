@@ -131,9 +131,19 @@ if ($EE_view_disable !== TRUE)
 									
 									
 									<div id="sub_hold_field_<?=$field_list[$_n]['field_id']?>" <?=$layout_styles[$_n]['is_hidden']? 'class="js_hide"': '';?>>
+										
 										<?php if($field_list[$_n]['field_instructions'] != ''):?>
-											<div class="instruction_text"><?=auto_typography('<strong>'.$this->lang->line('instructions').'</strong>'.NBS.$field_list[$_n]['field_instructions'])?></div>
+											<div class="instruction_text">
+												<?=auto_typography('<strong>'.$this->lang->line('instructions').'</strong>'.NBS.$field_list[$_n]['field_instructions'])?>
+											</div>
 										<?php endif;?>
+										
+										<fieldset class="holder">
+											<?=isset($field_list[$_n]['string_override']) ? $field_list[$_n]['string_override'] : $field_output[$_n]?>
+											<?=form_error($_n)?>
+										</fieldset>
+										
+										
 										
 									</div> <!-- /sub_hold_field -->
 									
