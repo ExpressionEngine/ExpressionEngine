@@ -880,14 +880,23 @@ class Content_publish extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Setup Field Blocks
+	 *
+	 * This function sets up default fields and field blocks
+	 *
+	 * @param 	array
+	 * @param	array
+	 * @return 	array
+	 */
 	private function _setup_field_blocks($field_data, $entry_data)
 	{
 		$categories 	= $this->_categories_block($entry_data['entry_id']);
 		$pings 			= $this->_ping_block($entry_data['entry_id']);
-		// $options		= $this->_options_block($entry_data);
-		return array_merge($field_data, $categories, $pings);
+		$options		= $this->_options_block($entry_data);
+		$forum			= $this->_forum_block($entry_data);
 		
-		return array_merge($field_data, $categories, $pings, $options);
+		return array_merge($field_data, $categories, $pings, $options, $forum);
 	}
 
 	// --------------------------------------------------------------------
@@ -989,70 +998,223 @@ class Content_publish extends CI_Controller {
 	private function _options_block($entry_data)
 	{
 		// sticky, comments, dst
+		// author, channel, status
 		$settings			= array();
 		
 		$show_comments		= FALSE;
 		$show_sticky		= FALSE;
 		$show_dst			= FALSE;
-		$show_sticky		= TRUE;
 		
-		// StickyBox
+		$options_array = array(
+			'sticky'	=> array(
+				'field_id'				=> 'sticky',
+				'field_required'		=> 'n',
+				'field_label'			=> lang('sticky'),
+				'field_data'			=> '',
+				'field_instructions'	=> '',
+				'field_type'			=> 'select'				
+			),
+			
+			
+		);
 		
-		$sticky = (isset($entry_data['sticky'])) ? $entry_data['sticky'] : 'n';
-
-		$settings['sticky'] = array(
-			'field_id'				=> 'sticky',
+		// Options Field
+		$settings['options'] = array(
+			'field_id'				=> 'options',
 			'field_required'		=> 'n',
-			'field_label'			=> lang('sticky'),
-			'field_data'			=> '',
+			'field_label'			=> lang('options'),
+			'field_data'			=> $options_array,
 			'field_instructions'	=> '',
 			'field_type'			=> 'select'
 		);
+		
 
-		$this->api_channel_fields->set_settings('sticky', $settings['sticky']);
-
-		// Allow Comments?
-		if ( ! isset($this->cp->installed_modules['comment']))
-		{
-			$allow_comments = (isset($entry_data['allow_comments'])) ? $entry_data['allow_comments'] : 'n';
-		}
-		elseif ($this->_channel_data['comment_system_enabled'] == 'y')
-		{
-			$settings['allow_comments'] = array(
-					'field_id'				=> 'allow_comments',
-					'field_label'			=> lang('allow_comments'),
-					'field_type'			=> 'select',
-					'field_required'		=> 'n',
-					'field_instructions'	=> '',	
-				
-			);
-			
-			$this->api_channel_fields->set_settings('allow_comments', $settings['allow_comments']);
-		}
-
-		// Is DST active? 
-		if ($this->config->item('honor_entry_dst') == 'y')
-		{
-			$settings['dst_enabled'] = array(
-					'field_id'				=> 'dst_enabled',
-					'field_label'			=> lang('dst_enabled'),
-					'field_required'		=> 'n',
-					'field_instructions'	=> '',
-					'field_type'			=> 'select',
-					'field_data'			=> ($entry_data['dst_enabled']) ? TRUE : FALSE
-			);
-			
-			$this->api_channel_fields->set_settings('dst_enabled', $settings['dst_enabled']);
-		}
+		
+		// // StickyBox
+		// 
+		// $sticky = (isset($entry_data['sticky'])) ? $entry_data['sticky'] : 'n';
+		// 
+		// $settings['options']['sticky'] = array(
+		// 	'field_id'				=> 'sticky',
+		// 	'field_required'		=> 'n',
+		// 	'field_label'			=> lang('sticky'),
+		// 	'field_data'			=> '',
+		// 	'field_instructions'	=> '',
+		// 	'field_type'			=> 'select'
+		// );
+		// 
+		// $this->api_channel_fields->set_settings('sticky', $settings['options']['sticky']);
+		// 
+		// // Allow Comments?
+		// if ( ! isset($this->cp->installed_modules['comment']))
+		// {
+		// 	$allow_comments = (isset($entry_data['allow_comments'])) ? $entry_data['allow_comments'] : 'n';
+		// }
+		// elseif ($this->_channel_data['comment_system_enabled'] == 'y')
+		// {
+		// 	$settings['options']['allow_comments'] = array(
+		// 			'field_id'				=> 'allow_comments',
+		// 			'field_label'			=> lang('allow_comments'),
+		// 			'field_type'			=> 'select',
+		// 			'field_required'		=> 'n',
+		// 			'field_instructions'	=> '',	
+		// 		
+		// 	);
+		// 	
+		// 	$this->api_channel_fields->set_settings('allow_comments', $settings['options']['allow_comments']);
+		// }
+		// 
+		// // Is DST active? 
+		// if ($this->config->item('honor_entry_dst') == 'y')
+		// {
+		// 	$settings['options']['dst_enabled'] = array(
+		// 			'field_id'				=> 'dst_enabled',
+		// 			'field_label'			=> lang('dst_enabled'),
+		// 			'field_required'		=> 'n',
+		// 			'field_instructions'	=> '',
+		// 			'field_type'			=> 'select',
+		// 			'field_data'			=> ($entry_data['dst_enabled']) ? TRUE : FALSE
+		// 	);
+		// 	
+		// 	$this->api_channel_fields->set_settings('dst_enabled', $settings['options']['dst_enabled']);
+		// }
+		// 
+		// 
+		// var_dump($settings);exit;
 				
 		return $settings;
 	}
 
 	// --------------------------------------------------------------------
 
-	private function _forum_block()
+	private function _forum_block($entry_data)
 	{
+		$settings = array();
 		
+		$hide_forum_fields = FALSE;
+
+		if ($this->config->item('forum_is_installed') == 'n')
+		{
+			return $settings;
+		}
+
+		
+		
+		
+		/*
+
+$hide_forum_fields = FALSE;
+
+if ($this->config->item('forum_is_installed') == "y")
+{
+	// New forum topics will only be accepted by the submit_new_entry_form() when there is no entry_id sent
+
+	$vars['forum_title']			= '';
+	$vars['forum_body']				= '';
+	$vars['forum_topic_id_descp']	= '';
+	$vars['forum_id']	= '';
+	$vars['forum_topic_id']			= ( ! isset($_POST['forum_topic_id'])) ? '' : $_POST['forum_topic_id'];		
+	
+	if ($which == 'new' OR $entry_id == '')
+	{
+		// Fetch the list of available forums
+
+		$this->db->select('f.forum_id, f.forum_name, b.board_label');
+		$this->db->from('forums AS f, forum_boards AS b');
+		$this->db->where('f.forum_is_cat', 'n');
+		$this->db->where('b.board_id = f.board_id', NULL, FALSE);
+		$this->db->order_by('b.board_label asc, forum_order asc');
+		
+		$fquery = $this->db->get();
+
+		if ($fquery->num_rows() == 0)
+		{
+			$vars['forum_id'] = $this->lang->line('forums_unavailable');
+		}
+		else
+		{
+			if (isset($entry_id) AND $entry_id != 0)
+			{
+				if ( ! isset($forum_topic_id))
+				{
+					$this->db->select('forum_topic_id');
+					$fquery2 = $this->db->get_where('channel_titles', 
+								array(
+									'entry_id' => $entry_id
+								)
+							);
+					
+					$forum_topic_id = $fquery2->row('forum_topic_id');
+				}
+
+				$vars['form_hidden']['forum_topic_id'] = $forum_topic_id;
+			}
+			
+			foreach ($fquery->result_array() as $forum)
+			{
+				$forums[$forum['forum_id']] = $forum['board_label'].': '.$forum['forum_name'];
+			}
+
+			$forum_title = ( ! $this->input->get_post('forum_title')) ? '' : $this->input->get_post('forum_title');
+			$forum_body	 = ( ! $this->input->get_post('forum_body')) ? '' : $this->input->get_post('forum_body');
+
+			$vars['forum_title']			= $forum_title;
+			$vars['forum_body']				= $forum_body;
+			$vars['forum_topic_id']			= ( ! isset($_POST['forum_topic_id'])) ? '' : $_POST['forum_topic_id'];
+			$vars['forum_id']	= form_dropdown('forum_id', $forums, $this->input->get_post('forum_id'));
+
+			$vars['forum_topic_id_descp']	= $this->lang->line('forum_topic_id_exitsts');
+
+			//	Smileys Panes									
+			if ($vars['smileys_enabled'])
+			{
+				$this->table->set_template(array(
+					'table_open'			=> '<table style="text-align: center; margin-top: 5px;" class="mainTable padTable smileyTable" border="0" cellspacing="0" cellpadding="0">'
+				));
+
+				$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), 'forum_title');
+				$col_array = $this->table->make_columns($image_array, 8);
+				$vars['smiley_table']['forum_title'] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
+				$this->table->clear(); // clear out tables for the next smiley
+
+			
+				$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), 'forum_body');
+				$col_array = $this->table->make_columns($image_array, 8);
+				$vars['smiley_table']['forum_body'] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
+				$this->table->clear(); // clear out tables for the next smiley						
+			}				
+		}
+
+	}
+	else
+	{
+		$hide_forum_fields = TRUE;
+		if ( ! isset($forum_topic_id))
+		{
+			$this->db->select('forum_topic_id');
+			$fquery = $this->db->get_where('channel_titles', array('entry_id' => $entry_id));
+			
+			$forum_topic_id = $fquery->row('forum_topic_id');
+		}
+		
+		$vars['forum_topic_id_descp']	= $this->lang->line('forum_topic_id_info');
+		$vars['forum_topic_id'] = $forum_topic_id;
+		
+		if ($forum_topic_id != 0)
+		{
+			$this->db->select('title');
+			$fquery = $this->db->get_where('forum_topics', 
+							array('topic_id' => (int) $forum_topic_id));
+
+			$ftitle = ($fquery->num_rows() == 0) ? '' : $fquery->row('title');
+			$vars['forum_title'] = $ftitle;
+		}
+	}
+}
+		
+		*/
+		
+		return $settings;
 	}
 	
 	// --------------------------------------------------------------------
