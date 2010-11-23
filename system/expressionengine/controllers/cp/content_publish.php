@@ -27,6 +27,7 @@ class Content_publish extends CI_Controller {
 
 	protected $_channel_fields = array();
 	private $channel_data = array();
+	protected $_dst_enabled = FALSE;
 
 	function __construct()
 	{
@@ -95,7 +96,7 @@ class Content_publish extends CI_Controller {
 		$entry_data			= $this->_load_entry_data($channel_id, $entry_id, $autosave);
 		$entry_id			= $entry_data['entry_id'];
 		
-		$deft_field_data 	= $this->_setup_default_fields($this->channel_data);
+		$deft_field_data 	= $this->_setup_default_fields($this->channel_data, $entry_data);
 
 		$field_data = array_merge($field_data, $deft_field_data);
 
@@ -291,7 +292,7 @@ class Content_publish extends CI_Controller {
 		// Get Channel fields in the field group
 		$channel_fields = $this->channel_model->get_channel_fields($channel_data['field_group']);
 
-		$dst = ($this->session->userdata('daylight_savings') == 'y' ? TRUE : FALSE);
+		$this->_dst_enabled = ($this->session->userdata('daylight_savings') == 'y' ? TRUE : FALSE);
 
 		$field_settings = array();
 
@@ -309,7 +310,7 @@ class Content_publish extends CI_Controller {
 				'field_dt'				=> $field_dt,
 				'field_data'			=> $field_data,
 				'field_name'			=> 'field_id_'.$row['field_id'],
-				'dst_enabled'			=> $dst_enabled
+				'dst_enabled'			=> $this->_dst_enabled
 			);
 			
 			$ft_settings = array();
@@ -622,7 +623,7 @@ class Content_publish extends CI_Controller {
 	 * @todo 	Make field_text_directions configurable
 	 * @return 	array
 	 */
-	private function _setup_default_fields($channel_data)
+	private function _setup_default_fields($channel_data, $entry_data)
 	{
 		// 'entry_date', 'expiration_date', 'comment_expiration_date', 'categories', 'pings', 'revisions', 'pages', all forum tab fields, all options tab fields
 		
@@ -631,7 +632,7 @@ class Content_publish extends CI_Controller {
 				'field_id'				=> 'title',
 				'field_label'			=> lang('title'),
 				'field_required'		=> 'y',
-				'field_data'			=> ( ! $this->input->post('title')) ? 'title' : $this->input->post('title'),
+				'field_data'			=> ( ! $this->input->post('title')) ? $entry_data['title'] : $this->input->post('title'),
 				'field_show_fmt'		=> 'n',
 				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'text',
@@ -641,7 +642,7 @@ class Content_publish extends CI_Controller {
 				'field_id'				=> 'url_title',
 				'field_label'			=> lang('url_title'),
 				'field_required'		=> 'n',
-				'field_data'			=> ($this->input->post('url_title') == '') ? 'url_title' : $this->input->post('url_title'),
+				'field_data'			=> ($this->input->post('url_title') == '') ? $entry_data['url_title'] : $this->input->post('url_title'),
 				'field_fmt'				=> 'xhtml',
 				'field_instructions'	=> '',
 				'field_show_fmt'		=> 'n',
@@ -655,13 +656,13 @@ class Content_publish extends CI_Controller {
 				'field_required'		=> 'n',
 				'field_type'			=> 'date',
 				'field_text_direction'	=> 'ltr',
-				'field_data'			=> '',
+				'field_data'			=> $entry_data['entry_date'],
 				'field_fmt'				=> 'text',
 				'field_instructions'	=> '',
 				'field_show_fmt'		=> 'n',
 				'default_offset'		=> 0,
 				'selected'				=> 'y',
-				'dst_enabled'			=> ''				
+				'dst_enabled'			=> $this->_dst_enabled				
 			),
 			'expiration_date' => array(
 				'field_id'				=> 'expiration_date',
@@ -669,12 +670,12 @@ class Content_publish extends CI_Controller {
 				'field_required'		=> 'n',
 				'field_type'			=> 'date',
 				'field_text_direction'	=> 'ltr',
-				'field_data'			=> '',
+				'field_data'			=> $entry_data['expiration_date'],
 				'field_fmt'				=> 'text',
 				'field_instructions'	=> '',
 				'field_show_fmt'		=> 'n',
 				'selected'				=> 'y',
-				'dst_enabled'			=> ''				
+				'dst_enabled'			=> $this->_dst_enabled				
 			),
 		);
 		
