@@ -431,8 +431,8 @@ class Content_publish extends CI_Controller {
 	function _load_entry_data($channel_id, $entry_id = FALSE, $autosave = FALSE)
 	{
 		$result = array(
-			'title'		=> $title ? $title : $default_entry_title,
-			'url_title'	=> $url_title_prefix,
+			'title'		=> $this->channel_data['default_entry_title'],
+			'url_title'	=> $this->channel_data['url_title_prefix'],
 			'entry_id'	=> 0
 		);
 		
@@ -440,12 +440,12 @@ class Content_publish extends CI_Controller {
 		{
 			$query = $this->channel_entries_model->get_entry($entry_id, $channel_id, $autosave);
 			
-			if ( ! $result->num_rows())
+			if ( ! $query->num_rows())
 			{
 				show_error(lang('no_channel_exists'));
 			}
 
-			$result = $result->row_array();
+			$result = $query->row_array();
 			
 			if ($autosave)
 			{
@@ -456,13 +456,13 @@ class Content_publish extends CI_Controller {
 				{
 					$result[$k] = $v;
 				}
-				
+
 				// if the autosave was a new entry, kill the entry id
 				if ($result['original_entry_id'] == 0)
 				{
 					$result['entry_id'] = 0;
 				}
-				
+
 				unset($result['entry_data']);
 				unset($result['original_entry_id']);
 			}
