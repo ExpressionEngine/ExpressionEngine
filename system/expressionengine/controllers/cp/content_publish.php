@@ -1117,23 +1117,20 @@ class Content_publish extends CI_Controller {
 		
 		$settings = array(
 			'author'	=> array(
-				'field_id'		=> 'author'
+				'field_id'				=> 'author',
+				'field_label'			=> lang('author'),
+				'field_required'		=> 'n',
+				'field_instructions'	=> '',
+				'field_type'			=> 'select',
+				'field_pre_populate'	=> 'n',
+				'field_text_direction'	=> 'ltr',
+				'field_list_items'		=> $menu_author_options,
+				'field_data'			=> $menu_author_selected
 			)
 		);
-		
-	// 'field_id'				=> 'title',
-	// 'field_label'			=> lang('title'),
-	// 'field_required'		=> 'y',
-	// 'field_data'			=> ( ! $this->input->post('title')) ? $entry_data['title'] : $this->input->post('title'),
-	// 'field_show_fmt'		=> 'n',
-	// 'field_instructions'	=> '',
-	// 'field_text_direction'	=> 'ltr',
-	// 'field_type'			=> 'text',
-	// 'field_maxl'			=> 100
 
-		
-		var_dump($menu_author_options, $menu_author_selected);
-		// return $vars;
+		$this->api_channel_fields->set_settings('author', $settings['author']);
+		return $settings;
 	}
 
 	// --------------------------------------------------------------------
