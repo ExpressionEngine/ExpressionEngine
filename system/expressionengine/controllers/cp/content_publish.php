@@ -102,7 +102,7 @@ class Content_publish extends CI_Controller {
 
 		$field_data = array_merge($field_data, $deft_field_data);
 
-		var_dump($field_data);
+		$this->_setup_publish_blocks($entry_id, $entry_data);
 
 		$this->_set_field_validation($this->channel_data, $field_data);
 		
@@ -618,26 +618,41 @@ class Content_publish extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Setup publish blocks
+	 */
+	private function _setup_publish_blocks($entry_id, $entry_data)
+	{
+		$this->_categories_block($entry_id, $entry_data);
+		$this->_ping_block();
+		$this->_forum_block();
+		$this->_options_block();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Categories Block
 	 *
 	 *
 	 */
-	private function _categories_block()
+	private function _categories_block($entry_id, $entry_data)
 	{
-		$this->db->select('c.cat_name, p.*');
-		$this->db->from('categories AS c, category_posts AS p');
-		$this->db->where_in('c.group_id', explode('|', $cat_group));
-		$this->db->where('p.entry_id', $entry_id);
-		$this->db->where('c.cat_id = p.cat_id', NULL, FALSE);
+		var_dump($entry_data); exit;
 		
-		$query = $this->db->get();
-
-		foreach ($query->result() as $row)
+		
+		$qry = $this->db->select('c.cat_name, p.*')
+						->from('categories AS c, category_posts AS p')
+						->where_in('c.group_id', explode('|', $cat_group))
+						->where('p.entry_id', $entry_id)
+						->where('c.cat_id = p.cat_id', NULL, FALSE)
+						->get();
+		
+		foreach ($qry->result() as $row)
 		{
 			$catlist[$row->cat_id] = $row->cat_id;
 		}
 		
-		
+		var_dump($catlist);
 		
 		/*
 		$vars = compact('categories', 'edit_categories_link');
@@ -658,6 +673,27 @@ class Content_publish extends CI_Controller {
 			'selected'				=> 'n',
 			'options'				=> $categories
 		);		*/
+	}
+
+	// --------------------------------------------------------------------
+
+	private function _ping_block() 
+	{
+		
+	}
+
+	// --------------------------------------------------------------------
+
+	private function _forum_block()
+	{
+		
+	}
+
+	// --------------------------------------------------------------------
+
+	private function _options_block()
+	{
+		
 	}
 	
 	// --------------------------------------------------------------------
