@@ -115,6 +115,7 @@ if ($EE_view_disable !== TRUE)
 				<div id="holder">
 					
 					<?php foreach ($tabs as $tab => $_fields):?>
+						
 						<div id="<?=url_title($tab, 'underscore', TRUE)?>" class="main_tab<?=($tab == $first_tab) ? '' : ' js_hide'?>">
 							
 							<?php foreach($_fields as $_n):?>
@@ -130,7 +131,7 @@ if ($EE_view_disable !== TRUE)
 									</label>
 									
 									
-									<div id="sub_hold_field_<?=$field_list[$_n]['field_id']?>" <?=$layout_styles[$_n]['is_hidden']? 'class="js_hide"': '';?>>
+									<div id="sub_hold_field_<?=$field_list[$_n]['field_id']?>" <?=$layout_styles[$_n]['is_hidden'] ? 'class="js_hide"': '';?>>
 										
 										<?php if($field_list[$_n]['field_instructions'] != ''):?>
 											<div class="instruction_text">
@@ -144,11 +145,59 @@ if ($EE_view_disable !== TRUE)
 										</fieldset>
 										
 										
+										<?php if ($field_list[$_n]['has_extras']): ?>
+											<p class="spellcheck markitup">
+
+												<?php if ($field_list[$_n]['field_show_writemode'] == 'y'):?>
+													<a href="#" class="write_mode_trigger" rel="#write_mode_container" id="id_<?=$field_list[$_n]['field_id']?>" title="<?=lang('write_mode')?>"><img alt="<?=lang('write_mode')?>" width="22" height="21" src="<?=$cp_theme_url?>images/publish_write_mode.png" /></a> 
+												<?php endif;?>
+
+												<?php if ($field_list[$_n]['field_show_file_selector'] == 'y' && count($file_list) > 0):?>
+													<a href="#" class="markItUpButton">
+													<img class="file_manipulate js_show" src="<?=$cp_theme_url?>images/publish_format_picture.gif" alt="<?=lang('file')?>" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+												<?php endif;?>
+
+												<?php if($spell_enabled && $field_list[$_n]['field_show_spellcheck'] == 'y'):?>
+													<a href="#" class="spellcheck_link" id="spelltrigger_<?=(ctype_digit($field_list[$_n]['field_id']))?'field_id_':''?><?=$field_list[$_n]['field_id']?>" title="<?=lang('check_spelling')?>"><img src="<?=$cp_theme_url.'images/spell_check_icon.png'?>" style="margin-bottom: -8px;" alt="<?=lang('check_spelling')?>" /></a>
+												<?php endif;?>
+
+												<?php if($field_list[$_n]['field_show_glossary'] == 'y'):?>
+													<a href="#" class="glossary_link" title="<?=lang('glossary')?>"><img src="<?=$cp_theme_url.'images/spell_check_glossary.png'?>" style="margin-bottom: -8px;" alt="<?=lang('glossary')?>" /></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+												<?php endif;?>
+
+												<?php if ($smileys_enabled && $field_list[$_n]['field_show_smileys'] == 'y'):?>
+													<a href="#" class="smiley_link" title="<?=lang('emoticons')?>"><?=lang('emoticons')?></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+												<?php endif;?>
+
+												<?php if ($field_list[$_n]['field_show_fmt'] == 'y' && count($field_list[$_n]['field_fmt_options']) > 0):?>
+													<?=lang('formatting')?>
+													<?=form_dropdown('field_ft_'.$field_list[$_n]['field_id'], $field_list[$_n]['field_fmt_options'], $field_list[$_n]['field_fmt'])?> 
+												<?php endif;?>
+
+											</p>
+
+											<?php if($spell_enabled && $field_list[$_n]['field_show_spellcheck'] == 'y'):
+												echo (ctype_digit($field_list[$_n]['field_id'])) ? build_spellcheck($_n) : build_spellcheck($_n);
+											endif;?>
+
+											<?php if($field_list[$_n]['field_show_glossary'] == 'y'):
+												echo $glossary_items;
+											endif;?>
+
+											<?php if ($smileys_enabled && $field_list[$_n]['field_show_smileys'] == 'y'):
+												echo $smiley_table[$field_list[$_n]['field_id']];									
+											endif;?>
+
+										<?php endif; ?>
+										
 										
 									</div> <!-- /sub_hold_field -->
 									
 								</div> <!-- /publish_field -->
 							<?php endforeach;?>
+						
+							<div class="insertpoint"></div>
+							<div class="clear"></div>
 							
 						</div>
 					<?php endforeach;?>
