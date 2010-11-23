@@ -895,12 +895,12 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _setup_field_blocks($field_data, $entry_data)
 	{
-		// $categories 	= $this->_categories_block($entry_data['entry_id']);
-		$pings 			= $this->_ping_block($entry_data['entry_id']);
-		$options		= $this->_options_block($entry_data);
-		$forum			= $this->_forum_block($entry_data);
+		$categories 	= $this->_build_categories_block($entry_data['entry_id']);
+		$pings 			= $this->_build_ping_block($entry_data['entry_id']);
+		$options		= $this->_build_options_block($entry_data);
+		$forum			= $this->_build_forum_block($entry_data);
 		// var_dump($options); exit;
-		return array_merge($field_data, $pings, $forum, $options);
+		return array_merge($field_data, $categories, $pings, $forum, $options);
 	}
 
 	// --------------------------------------------------------------------
@@ -910,7 +910,7 @@ class Content_publish extends CI_Controller {
 	 *
 	 *
 	 */
-	private function _categories_block($entry_id)
+	private function _build_categories_block($entry_id)
 	{	
 		$cat_data_array = array();
 		
@@ -931,30 +931,40 @@ class Content_publish extends CI_Controller {
 			// $catlist[$row->cat_id] = $row->cat_id;
 		}
 
+		$settings = array(
+			'categories' => array(
+				
+			)
+		);
 
-		$this->load->view('content/_assets/categories', $vars, TRUE);
 
-		return $cat_data_array;
+		return array();
+
+		// $this->load->view('content/_assets/categories', '', TRUE);
 
 		/*
-		$vars = compact('categories', 'edit_categories_link');
-		$category_r = $this->load->view('content/_assets/categories', $vars, TRUE);
-		
-		$this->field_definitions['category'] = array(
-			'string_override'		=> ($cat_groups == '') ? $this->lang->line('no_categories') : $category_r,
-			'field_id'				=> 'category',
-			'field_name'			=> 'category',
-			'field_label'			=> $this->lang->line('categories'),
-			'field_required'		=> 'n',
-			'field_type'			=> 'multiselect',
-			'field_text_direction'	=> 'ltr',
-			'field_data'			=> '',
-			'field_fmt'				=> 'text',
-			'field_instructions'	=> '',
-			'field_show_fmt'		=> 'n',
-			'selected'				=> 'n',
-			'options'				=> $categories
-		);		*/
+		protected function _define_category_fields($categories, $edit_categories_link, $cat_groups = '')
+		{
+			$vars = compact('categories', 'edit_categories_link');
+			$category_r = $this->load->view('content/_assets/categories', $vars, TRUE);
+
+			$this->field_definitions['category'] = array(
+				'string_override'		=> ($cat_groups == '') ? $this->lang->line('no_categories') : $category_r,
+				'field_id'				=> 'category',
+				'field_name'			=> 'category',
+				'field_label'			=> $this->lang->line('categories'),
+				'field_required'		=> 'n',
+				'field_type'			=> 'multiselect',
+				'field_text_direction'	=> 'ltr',
+				'field_data'			=> '',
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'selected'				=> 'n',
+				'options'				=> $categories
+			);
+		}		
+		*/
 	}
 
 	// --------------------------------------------------------------------
@@ -967,7 +977,7 @@ class Content_publish extends CI_Controller {
 	 * @param 	integer		Entry Id
 	 * @return 	array
 	 */
-	private function _ping_block($entry_id) 
+	private function _build_ping_block($entry_id) 
 	{
 		$ping_servers = $this->channel_entries_model->fetch_ping_servers($entry_id);
 
@@ -999,7 +1009,7 @@ class Content_publish extends CI_Controller {
 	 * 
 	 *
 	 */
-	private function _options_block($entry_data)
+	private function _build_options_block($entry_data)
 	{
 		// sticky, comments, dst
 		// author, channel, status
@@ -1261,7 +1271,7 @@ class Content_publish extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
-	private function _forum_block($entry_data)
+	private function _build_forum_block($entry_data)
 	{
 		$settings = array();
 		
