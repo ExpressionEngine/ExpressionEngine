@@ -71,15 +71,17 @@ class Content_publish extends CI_Controller {
 		$this->load->library('form_validation');
 		
 		$entry_id	= (int) $this->input->get_post('entry_id');
-		$channel_id	= $this->input->get_post('channel_id');
+		$channel_id	= (int) $this->input->get_post('channel_id');
 
 
 		// Grab the channel_id associated with this entry if
 		// required and make sure the current member has access.
 		$channel_id = $this->_member_can_publish($channel_id, $entry_id);
-
+		
+		
 		// If they're loading a revision, we stop here
 		$this->_check_revisions($entry_id);
+		
 		
 		// Get channel data
 		$channel_data	= $this->_load_channel_data($channel_id);
@@ -87,15 +89,25 @@ class Content_publish extends CI_Controller {
 		
 		$this->_set_field_validation($field_data, $channel_data);
 		
+		
 		// @todo setup validation for categories, etc?
 		// @todo third party tabs
 		
 		if ($this->form_validation->run() === TRUE)
 		{
-			// merge post and row data
-			// save
-			// redirect to view page
-			exit('saved');
+			if ($this->_save($channel_id, $entry_id) === TRUE)
+			{
+				exit('saved');
+				// @todo redirect to view page
+				// pass along filter!
+			}
+
+			// Process errors, and proceed with
+			// showing the page. These are rather
+			// special errors - consider how to
+			// best show them . . .
+			// $errors = $this->errors
+
 		}
 		
 		
@@ -378,5 +390,82 @@ class Content_publish extends CI_Controller {
 	private function _check_revisions($entry_id)
 	{
 		
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Member has access
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _save($channel_id, $entry_id = FALSE)
+	{
+		$return_url = $this->input->post('return_url');
+		$return_url = $return_url ? $return_url : '';
+		
+		$data = $_POST;
+		$data['cp_call']		= TRUE;
+		$data['author_id']		= $this->input->post('author');		// @todo double check if this is validated
+		$data['revision_post']	= $_POST;							// @todo only if revisions - memory
+		$data['ping_servers']	= array();
+		
+		// Fetch xml-rpc ping server IDs
+		if (isset($_POST['ping']) && is_array($_POST['ping']))
+		{
+			$data['ping_servers'] = $_POST['ping'];
+		}
+		
+		// Remove leftovers
+		unset(
+			$data['ping'],
+			$data['author'],
+			$data['return_url']
+		);
+		
+		
+		if ($entry_id)
+		{
+			if ( ! $this->api_channel_entries->entry_exists($entry_id))
+			{
+				return FALSE;
+			}
+
+			$type		= '';
+			$page_title	= 'entry_has_been_updated';
+			$success	= $this->api_channel_entries->update_entry($entry_id, $data);
+		}
+		else
+		{
+			$type		= 'new';
+			$page_title	= 'entry_has_been_added';
+			$success	= $this->api_channel_entries->submit_new_entry($_POST['channel_id'], $data);
+		}
+		
+		
+		// Do we have a reason to quit?
+		if ($this->extensions->end_script === TRUE)
+		{
+			return TRUE;
+		}
+		
+		// I want this to be above the extension check, but
+		// 1.x didn't do that, so we'll be blissfully ignorant
+		// that something went totally wrong.
+		
+		if ( ! $success)
+		{
+			// @todo consider returning false or an array?
+			return implode('<br />', $this->api_channel_entries->errors);
+		}
+		
+		
+		// Ok, we've succesfully submitted, but a few more things need doing
+		
+		$entry_id	= $this->api_channel_entries->entry_id;
+		$channel_id	= $this->api_channel_entries->channel_id;
+		
+		// @todo various redirects and other black magic
 	}
 }
