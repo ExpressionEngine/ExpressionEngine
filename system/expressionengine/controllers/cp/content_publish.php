@@ -677,7 +677,7 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _categories_block($entry_id, $entry_data)
 	{
-		var_dump($entry_data); exit;
+		// var_dump($entry_data); exit;
 		
 		
 		$qry = $this->db->select('c.cat_name, p.*')
@@ -692,7 +692,7 @@ class Content_publish extends CI_Controller {
 			$catlist[$row->cat_id] = $row->cat_id;
 		}
 		
-		var_dump($catlist);
+		// var_dump($catlist);
 		
 		/*
 		$vars = compact('categories', 'edit_categories_link');
