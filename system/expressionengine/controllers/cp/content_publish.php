@@ -608,11 +608,12 @@ class Content_publish extends CI_Controller {
 	 *
 	 * This method sets up Default fields that are required on the entry page.
 	 *
+	 * @todo 	Make field_text_directions configurable
 	 * @return 	array
 	 */
 	private function _setup_default_fields($channel_data)
 	{
-		// 'title', 'url_title', 'entry_date', 'expiration_date', 'comment_expiration_date', 'categories', 'pings', 'revisions', 'pages', all forum tab fields, all options tab fields
+		// 'entry_date', 'expiration_date', 'comment_expiration_date', 'categories', 'pings', 'revisions', 'pages', all forum tab fields, all options tab fields
 		
 		$deft_fields = array(
 			'title' 		=> array(
@@ -621,34 +622,37 @@ class Content_publish extends CI_Controller {
 				'field_required'		=> 'y',
 				'field_data'			=> ( ! $this->input->post('title')) ? 'title' : $this->input->post('title'),
 				'field_show_fmt'		=> 'n',
-				'field_text_direction'	=> 'ltr',		// @todo, make this configurable
+				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'text',
 				'field_maxl'			=> 100
 			),
 			'url_title'		=> array(
-				
+				'field_id'				=> 'url_title',
+				'field_label'			=> lang('url_title'),
+				'field_required'		=> 'n',
+				'field_data'			=> ($this->input->post('url_title') == '') ? 'url_title' : $this->input->post('url_title'),
+				'field_fmt'				=> 'xhtml',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'text',
+				'field_maxl'			=> 75
 			)
 		);
 		
+		$field_settings = array();
+		
 		foreach ($deft_fields as $field_name => $f_data)
 		{
-			// $this->api_channel_fields->set_settings($field_name, $f_data);
+			$this->api_channel_fields->set_settings($field_name, $f_data);
+			
+			$rules = 'required|call_field_validation['.$f_data['field_id'].']';
+			$this->form_validation->set_rules($f_data['field_id'], $f_data['field_label'], $rules);
+			
+			$field_settings[] = $f_data;
 		}
 		
+		return $field_settings;
 	}
-/*
-$field_settings = array();
-
-foreach ($deft_fields as $field)
-{
-	$this->api_channel_fields->set_settings($field, $settings);
-
-	$rules = 'required|call_field_validation['.$settings['field_id'].']';
-	$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);		
-}		
-
-return $field_settings;
-
-*/
 	
 }
