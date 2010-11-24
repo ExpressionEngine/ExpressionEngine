@@ -1,41 +1,25 @@
 2.1.2
 -----
 
-- Loader for themes' advanced.css is still being tweaked. This currently causes a (harmless) JS error in the control panel and results in no rounded corners.
-- When advanced.css is missing there is no fallback behavior.
+- When advanced.css is missing a PHP Error is generated:
+
+<p>Severity: Notice</p>
+<p>Message:  Undefined variable: advanced_css_mtime</p>
+<p>Filename: _shared/header.php</p>
+<p>Line Number: 24</p>
+
 - Need to update compressed js.
 - Missing reset button for template search field.
 
 
 
 
-NUMBER 2
----------------------------------------------------------------------
-
-Non-fatal error on first access to CP:
---
-Message: Syntax error
-Line: 1
-Char: 1
-Code: 0
-URI: http://ee2testing.intranet/system/index.php?S=7d414e50b581a598db4281eff49fd6a30319dbdd&D=cp&C=javascript&M=load&file=css&theme=default&v=1290270006
---
-
-In all browsers this looks like it's because in cp/javascript.php on line 28 the $paths variable is a string
-rather than an array ($paths = $this->load->_ci_view_path).
 
 
-NUMBER 4
----------------------------------------------------------------------
 
-On uploading a file using the File Manager the upload is successful but the spinner and 'Uploading File...' message
-stays static on the template when the upload is completed.
 
-NUMBER 5
----------------------------------------------------------------------
 
-After uploading an image file in the File Manager any attempt to load a second image file results in a
-"You did not select a file to upload" message. No JS errors noted.
+
 
 NUMBER 6
 ---------------------------------------------------------------------
@@ -162,6 +146,7 @@ NUMBER 12
 ---------
 When creating a member custom field using the Corporate theme the Field Type Setting column content is
 offset to the right.
+
 19. Occasionally (I can't see a pattern here) if you click an image in the file manager list the modal is offset to the right partially out of the browser viewport. It is not possible to click to close this image. A JS error is generated "Cannot read property 'nodeName' of '. This seems to happen with at least Mac Chrome and Windows 7.
 
 NUMBER 1
@@ -190,3 +175,35 @@ Using Classic theme the Main Upload Directory server path is incorrectly set. Wa
 
 On changing the server path to be valid for my local install (/Users/greg/Sites/ee2testing.intranet/images/uploads)
 The File Manager shows index.html as a valid file.
+
+
+NUMBER 4
+---------------------------------------------------------------------
+
+** Already reported at http://expressionengine.com/bug_tracker/bug/13283/ **
+
+On uploading a file using the File Manager the upload is successful but the spinner and 'Uploading File...' message
+stays static on the template when the upload is completed.
+
+NUMBER 5
+---------------------------------------------------------------------
+
+** Already reported at http://expressionengine.com/bug_tracker/bug/14590/ **
+
+After uploading an image file in the File Manager any attempt to load a second image file results in a
+"You did not select a file to upload" message. No JS errors noted.
+
+NUMBER 2
+---------------------------------------------------------------------
+
+Non-fatal error on first access to CP:
+--
+Message: Syntax error
+Line: 1
+Char: 1
+Code: 0
+URI: http://ee2testing.intranet/system/index.php?S=7d414e50b581a598db4281eff49fd6a30319dbdd&D=cp&C=javascript&M=load&file=css&theme=default&v=1290270006
+--
+
+In all browsers this looks like it's because in cp/javascript.php on line 28 the $paths variable is a string
+rather than an array ($paths = $this->load->_ci_view_path).
