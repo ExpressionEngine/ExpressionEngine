@@ -177,9 +177,9 @@ class Content_publish extends CI_Controller {
 		
 		// @todo only admins
 		$this->cp->add_js_script(array('file' => 'cp/publish_admin'));
-		
+
 		$this->javascript->set_global(array(
-			'date.format'			=> 'us',
+			'date.format'			=> $this->config->item('time_format'),
 			'user.foo'				=> FALSE,
 			'publish.markitup.foo'	=> FALSE
 		));
@@ -194,6 +194,11 @@ class Content_publish extends CI_Controller {
 			'options'		=> lang('options'),
 			'date'			=> lang('date')
 		);
+		
+		if (isset($this->cp->installed_modules['forum']))
+		{
+			$tab_labels['forum'] = lang('forum');
+		}
 		
 		reset($tab_hierarchy);
 		
@@ -854,7 +859,8 @@ class Content_publish extends CI_Controller {
 			'publish'		=> array('title', 'url_title'),
 			'date'			=> array('entry_date', 'expiration_date', 'comment_expiration_date'),
 			'categories'	=> array('categories'),
-			'options'		=> array('channel', 'status', 'author', 'options')
+			'options'		=> array('channel', 'status', 'author', 'options', 'ping'),
+			'forum'			=> array('forum_title', 'forum_body')
 		);
 		
 		// Add predefined fields to their specific tabs
@@ -1301,6 +1307,12 @@ class Content_publish extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Build forum block
+	 *
+	 * @param 	array 	entry data
+	 * @return 	array
+	 */
 	private function _build_forum_block($entry_data)
 	{
 		$settings = array();
@@ -1316,114 +1328,110 @@ class Content_publish extends CI_Controller {
 		$forum_body				= '';
 		$forum_topic_id_descp	= '';
 		$forum_id				= '';
-		$forum_topic_id			= ( ! isset($entry_data['forum_topic_id'])) ? '' : $entry_data['forum_topic_id'];		
-		
-		
-		/*
+		$forum_topic_id			= ( ! isset($entry_data['forum_topic_id'])) ? '' : $entry_data['forum_topic_id'];	
 
-$hide_forum_fields = FALSE;
+		$entry_id = (isset($entry_data['entry_id'])) ? $entry_data['entry_id'] : 0;
 
-if ($this->config->item('forum_is_installed') == "y")
-{
-	if ($which == 'new' OR $entry_id == '')
-	{
-		// Fetch the list of available forums
-
-		$this->db->select('f.forum_id, f.forum_name, b.board_label');
-		$this->db->from('forums AS f, forum_boards AS b');
-		$this->db->where('f.forum_is_cat', 'n');
-		$this->db->where('b.board_id = f.board_id', NULL, FALSE);
-		$this->db->order_by('b.board_label asc, forum_order asc');
-		
-		$fquery = $this->db->get();
-
-		if ($fquery->num_rows() == 0)
+		if ($entry_id !== 0)
 		{
-			$vars['forum_id'] = $this->lang->line('forums_unavailable');
+			$qry = $this->db->select('f.forum_id, f.forum_name, b.board_label')
+							->from('forums f, forum_boards b')
+							->where('f.forum_is_cat', 'n')
+							->where('b.board_id = f.board_id', NULL, FALSE)
+							->order_by('b.board_label asc, forum_order asc')
+							->get();
+
+			if ($qry->num_rows() === 0)
+			{
+				$forum_id = lang('forums_unavailable');
+			}
+			else
+			{
+				if ($forum_topic_id != '')
+				{
+					$qr2 = $this->db->select('forum_topic_id')
+									->get_where('channel_titles', array('entry_id'	=> (int) $entry_id));
+					
+					if ($qr2->num_rows() !== 0)
+					{
+						$forum_topic_id = $qr2->row('forum_topic_id');
+					}
+				}
+				
+				foreach ($qry->result() as $row)
+				{
+					$forums[$row->forum_id] = $row->board_label . ': ' . $row->forum_name;
+				}
+
+				$forum_id		= form_dropdown('forum_id', $forums, $this->input->get_post('forum_id'));			
+				$forum_title 	= ( ! isset($entry_data['forum_title'])) ? '' : $entry_data['forum_title'];
+				$forum_body 	= ( ! isset($entry_data['forum_body']))	 ? '' : $entry_data['forum_body'];
+				$forum_topic_id	= ( ! isset($entry_data['forum_topic_id'])) ? '' : $entry_data['forum_topic_id'];
+				$forum_topic_id_desc = lang('forum_topic_id_exists');
+			}			
 		}
 		else
 		{
-			if (isset($entry_id) AND $entry_id != 0)
+			$hide_forum_fields = TRUE;
+			
+			if ( ! isset($forum_topic_id))
 			{
-				if ( ! isset($forum_topic_id))
+				$qry = $this->db->select('forum_topic_id')
+								->get_where('channel_titles', array('entry_id' => (int) $entry_id));
+				
+				if ($qry->num_rows() !== 0)
 				{
-					$this->db->select('forum_topic_id');
-					$fquery2 = $this->db->get_where('channel_titles', 
-								array(
-									'entry_id' => $entry_id
-								)
-							);
-					
-					$forum_topic_id = $fquery2->row('forum_topic_id');
-				}
-
-				$vars['form_hidden']['forum_topic_id'] = $forum_topic_id;
+					$forum_topic_id = $qry->row('forum_topic_id');
+				}				
 			}
 			
-			foreach ($fquery->result_array() as $forum)
+			$forum_topic_id_desc	= lang('forum_topic_id_info');
+
+			if ($forum_topic_id !== 0)
 			{
-				$forums[$forum['forum_id']] = $forum['board_label'].': '.$forum['forum_name'];
+				$fq2 = $this->db->select('title')
+								->get_where('forum_topics',
+									array('topic_id' => (int) $forum_topic_id));
+				
+				$forum_title = ($fq2->num_rows() === 0) ? '' : $fq2->row('title');
 			}
-
-			$forum_title = ( ! $this->input->get_post('forum_title')) ? '' : $this->input->get_post('forum_title');
-			$forum_body	 = ( ! $this->input->get_post('forum_body')) ? '' : $this->input->get_post('forum_body');
-
-			$vars['forum_title']			= $forum_title;
-			$vars['forum_body']				= $forum_body;
-			$vars['forum_topic_id']			= ( ! isset($_POST['forum_topic_id'])) ? '' : $_POST['forum_topic_id'];
-			$vars['forum_id']	= form_dropdown('forum_id', $forums, $this->input->get_post('forum_id'));
-
-			$vars['forum_topic_id_descp']	= $this->lang->line('forum_topic_id_exitsts');
-
-			//	Smileys Panes									
-			if ($vars['smileys_enabled'])
-			{
-				$this->table->set_template(array(
-					'table_open'			=> '<table style="text-align: center; margin-top: 5px;" class="mainTable padTable smileyTable" border="0" cellspacing="0" cellpadding="0">'
-				));
-
-				$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), 'forum_title');
-				$col_array = $this->table->make_columns($image_array, 8);
-				$vars['smiley_table']['forum_title'] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
-				$this->table->clear(); // clear out tables for the next smiley
-
-			
-				$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), 'forum_body');
-				$col_array = $this->table->make_columns($image_array, 8);
-				$vars['smiley_table']['forum_body'] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
-				$this->table->clear(); // clear out tables for the next smiley						
-			}				
-		}
-
-	}
-	else
-	{
-		$hide_forum_fields = TRUE;
-		if ( ! isset($forum_topic_id))
-		{
-			$this->db->select('forum_topic_id');
-			$fquery = $this->db->get_where('channel_titles', array('entry_id' => $entry_id));
-			
-			$forum_topic_id = $fquery->row('forum_topic_id');
 		}
 		
-		$vars['forum_topic_id_descp']	= $this->lang->line('forum_topic_id_info');
-		$vars['forum_topic_id'] = $forum_topic_id;
+		$settings = array(
+			'forum_title'		=> array(
+				'field_id'				=> 'forum_title',
+				'field_label'			=> lang('forum_title'),
+				'field_required'		=> 'n',
+				'field_data'			=> $forum_title,
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> '',
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'text',
+				'field_maxl'			=> 150
+			),
+			'forum_body'		=> array(
+				'field_id'				=> 'forum_body',
+				'field_label'			=> lang('forum_body'),
+				'field_required'		=> 'n',
+				'field_data'			=> $forum_body,
+				'field_show_fmt'		=> 'y',
+				'field_fmt_options'		=> array(),
+				'field_instructions'	=> '',
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'textarea',
+				'field_ta_rows'			=> 150
+			),
+		);
 		
-		if ($forum_topic_id != 0)
-		{
-			$this->db->select('title');
-			$fquery = $this->db->get_where('forum_topics', 
-							array('topic_id' => (int) $forum_topic_id));
 
-			$ftitle = ($fquery->num_rows() == 0) ? '' : $fquery->row('title');
-			$vars['forum_title'] = $ftitle;
-		}
-	}
-}
+		// var_dump($forum_title, $forum_body, $forum_topic_id_descp, $forum_id, $forum_topic_id);
+
 		
-		*/
-		
+		// $forum_title			= '';
+		// $forum_body				= '';
+		// $forum_topic_id_descp	= '';
+		// $forum_id				= '';
+		// $forum_topic_id			= ( ! isset($entry_data['forum_topic_id'])) ? '' : $entry_data['forum_topic_id'];
 		return $settings;
 	}
 	
