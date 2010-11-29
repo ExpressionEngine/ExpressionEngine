@@ -1,32 +1,31 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://expressionengine.com/
------------------------------------------------------
- Copyright (c) 2003 - 2010, EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/user_guide/license.html
-=====================================================
- File: mcp.pages.php
------------------------------------------------------
- Purpose: Pages class - CP
-=====================================================
-*/
-if ( ! defined('EXT'))
-{
-	exit('Invalid file request');
-}
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2010, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
 
+// --------------------------------------------------------------------
 
-
+/**
+ * ExpressionEngine Discussion Pages Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Modules
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
 class Pages_upd {
 
-	var $version		= '2.0';
+	var $version		= '2.1';
 
 	function Pages_upd($switch=TRUE)
 	{
@@ -133,12 +132,20 @@ class Pages_upd {
 	 * @access	public
 	 * @return	bool
 	 */
-	function update($current='')
-	{
-		return FALSE;
+	function update($current = '')
+	{	
+
+		if ($current === $this->version)
+		{
+			return FALSE;
+		}
+		
+		if ($current < '2.1')
+		{
+			$this->EE->db->where('module_name', 'Pages');
+			$this->EE->db->update('modules', array('has_publish_fields' => 'y'));
+		}
 	}
-
-
 }
 // END CLASS
 

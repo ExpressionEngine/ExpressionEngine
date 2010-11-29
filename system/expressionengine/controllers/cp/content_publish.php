@@ -951,13 +951,11 @@ class Content_publish extends CI_Controller {
 		$categories 	= $this->_build_categories_block($entry_data);
 		$pings 			= $this->_build_ping_block($entry_data['entry_id']);
 		$options		= $this->_build_options_block($entry_data);
-		$forum			= $this->_build_forum_block($entry_data);
-		$pages			= $this->_build_pages_block($entry_data);
 		$third_party  	= $this->_build_third_party_blocks($entry_data);
 
 		return array_merge(
-							$field_data, $categories, $pings, $forum, 
-							$options, $pages, $third_party);
+							$field_data, $categories, $pings, 
+							$options, $third_party);
 	}
 
 	// --------------------------------------------------------------------
@@ -1376,268 +1374,6 @@ class Content_publish extends CI_Controller {
 	}
 
 	// --------------------------------------------------------------------
-
-	/**
-	 * Build forum block
-	 *
-	 * @param 	array 	entry data
-	 * @return 	array
-	 */
-	private function _build_forum_block($entry_data)
-	{
-		$settings = array();
-		
-		$hide_forum_fields = FALSE;
-
-		if ($this->config->item('forum_is_installed') == 'n')
-		{
-			return $settings;
-		}
-
-		$forum_title			= '';
-		$forum_body				= '';
-		$forum_topic_id_descp	= '';
-		$forum_id				= '';
-		$forum_topic_id			= ( ! isset($entry_data['forum_topic_id'])) ? '' : $entry_data['forum_topic_id'];	
-
-		$entry_id = (isset($entry_data['entry_id'])) ? $entry_data['entry_id'] : 0;
-
-		if ($entry_id !== 0)
-		{
-			$qry = $this->db->select('f.forum_id, f.forum_name, b.board_label')
-							->from('forums f, forum_boards b')
-							->where('f.forum_is_cat', 'n')
-							->where('b.board_id = f.board_id', NULL, FALSE)
-							->order_by('b.board_label asc, forum_order asc')
-							->get();
-
-			if ($qry->num_rows() === 0)
-			{
-				$forum_id = lang('forums_unavailable');
-			}
-			else
-			{
-				if ($forum_topic_id != '')
-				{
-					$qr2 = $this->db->select('forum_topic_id')
-									->get_where('channel_titles', array('entry_id'	=> (int) $entry_id));
-					
-					if ($qr2->num_rows() !== 0)
-					{
-						$forum_topic_id = $qr2->row('forum_topic_id');
-					}
-				}
-				
-				foreach ($qry->result() as $row)
-				{
-					$forums[$row->forum_id] = $row->board_label . ': ' . $row->forum_name;
-				}
-
-				$forum_id		= array('selected'	=> $this->input->get_post('forum_id'),
-										'choices'	=> $forums);
-				$forum_title 	= ( ! isset($entry_data['forum_title'])) ? '' : $entry_data['forum_title'];
-				$forum_body 	= ( ! isset($entry_data['forum_body']))	 ? '' : $entry_data['forum_body'];
-				$forum_topic_id	= ( ! isset($entry_data['forum_topic_id'])) ? '' : $entry_data['forum_topic_id'];
-				$forum_topic_id_desc = lang('forum_topic_id_exists');
-			}			
-		}
-		else
-		{
-			$hide_forum_fields = TRUE;
-			
-			if ( ! isset($forum_topic_id))
-			{
-				$qry = $this->db->select('forum_topic_id')
-								->get_where('channel_titles', array('entry_id' => (int) $entry_id));
-				
-				if ($qry->num_rows() !== 0)
-				{
-					$forum_topic_id = $qry->row('forum_topic_id');
-				}				
-			}
-			
-			$forum_topic_id_desc	= lang('forum_topic_id_info');
-
-			if ($forum_topic_id !== 0)
-			{
-				$fq2 = $this->db->select('title')
-								->get_where('forum_topics',
-									array('topic_id' => (int) $forum_topic_id));
-				
-				$forum_title = ($fq2->num_rows() === 0) ? '' : $fq2->row('title');
-			}
-		}
-		
-		$settings = array(
-			'forum_title'		=> array(
-				'field_id'				=> 'forum_title',
-				'field_label'			=> lang('forum_title'),
-				'field_required'		=> 'n',
-				'field_data'			=> $forum_title,
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> '',
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'text',
-				'field_maxl'			=> 150
-			),
-			'forum_body'		=> array(
-				'field_id'				=> 'forum_body',
-				'field_label'			=> lang('forum_body'),
-				'field_required'		=> 'n',
-				'field_data'			=> $forum_body,
-				'field_show_fmt'		=> 'y',
-				'field_fmt_options'		=> array(),
-				'field_instructions'	=> '',
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'textarea',
-				'field_ta_rows'			=> 8
-			),
-			'forum_id'			=> array(
-				'field_id'				=> 'forum_id',
-				'field_label'			=> lang('forum'),
-				'field_required'		=> 'n',
-				'field_pre_populate'	=> 'n',
-				'field_list_items'		=> (isset($forum_id['choices'])) ? $forum_id['choices'] : '',
-				'field_data'			=> (isset($forum_id['selected'])) ? $forum_id['selected'] : '',
- 				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'select',
-				'field_instructions'	=> ''
-			),
-			'forum_topic_id'	=> array(
-				'field_id'				=> 'forum_topic_id',
-				'field_label'			=> lang('forum_topic_id'),
-				'field_type'			=> 'text',
-				'field_required'		=> 'n',
-				'field_data'			=> ( ! isset($entry_data['forum_topic_id'])) ? '' : $entry_data['forum_topic_id'],
-				'field_text_direction'	=> 'ltr',
-				'field_maxl'			=> '',
-				'field_instructions'	=> ''
-			),
-		);
-		
-		foreach ($settings as $k => $v)
-		{
-			$this->api_channel_fields->set_settings($k, $v);
-		}
-		
-		return $settings;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Build pages block
-	 *
-	 * This method builds the necessary array items for the pages module block
-	 *
-	 * @param 	array 	
-	 * @return 	array
-	 */
-	private function _build_pages_block($entry_data)
-	{
-		// Bail if the pages module isn't installed
-		if ( ! isset($this->cp->installed_modules['pages']))
-		{
-			return array();
-		}
-
-		$this->lang->loadfile('pages');
-
-		$entry_id 			= $entry_data['entry_id'];
-		$site_id			= $this->_channel_data['site_id'];
-
-		$settings 			= array();
-
-		$no_templates 		= NULL;		
-		$pages 				= $this->config->item('site_pages');
-		
-		$pages_template_id 	= 0;
-		$pages_dropdown 	= array();
-		$pages_uri 			= (isset($entry_data['pages_uri'])) ? $entry_data['pages_uri'] : '';
-
-		if ($entry_id !== 0)
-		{
-			if (isset($pages[$site_id]['uris'][$entry_id]))
-			{
-				$pages_uri = $pages[$site_id]['uris'][$entry_id];				
-			}
-
-			if (isset($pages[$site_id]['templates'][$entry_id]))
-			{
-				$pages_template_id = $pages[$site_id]['templates'][$entry_id];
-			}
-		}
-		else
-		{
-			$qry = $this->db->select('configuration_value')
-							->where('configuration_name', 'template_channel_'.$this->_channel_data['channel_id'])
-							->where('site_id', $this->config->item('site_id'))
-							->get('pages_configuration');
-			
-			if ($qry->num_rows() > 0)
-			{
-				$pages_template_id = (int) $qry->row('configuration_value');
-			}
-		}
-
-		if ($pages_uri == '')
-		{
-			$this->javascript->set_global('publish.pages.pagesUri', lang('example_uri'));
-		}
-		else
-		{
-			$this->javascript->set_global('publish.pages.pageUri', $pages_uri);
-		}
-		
-		$templates = $this->template_model->get_templates($this->config->item('site_id'));
-		
-		foreach ($templates->result() as $template)
-		{
-			$pages_dropdown[$template->group_name][$template->template_id] = $template->template_name;
-		}
-		
-		if ($templates->num_rows() === 0)
-		{
-			$no_templates = lang('no_templates');
-		}
-		
-		$settings = array(
-			'pages_uri'				=> array(
-				'field_id'				=> 'pages_uri',
-				'field_label'			=> lang('pages_uri'),
-				'field_type'			=> 'text',
-				'field_required'		=> 'n',
-				'field_data'			=> $pages_uri,
-				'field_text_direction'	=> 'ltr',
-				'field_maxl'			=> 100,
-				'field_instructions'	=> '',
-			),
-			'pages_template_id'		=> array(
-				'field_id'				=> 'pages_template_id',
-				'field_label'			=> lang('template'),
-				'field_type'			=> 'select',
-				'field_required'		=> 'n',
-				'field_pre_populate'	=> 'n',
-				'field_list_items'		=> $pages_dropdown,
-				'field_data'			=> $pages_template_id,
-				'options'				=> $pages_dropdown,
-				'selected'				=> $pages_template_id,
-				'field_text_direction'	=> 'ltr',
-				'field_maxl'			=> 100,
-				'field_instructions'	=> '',
-				'string_override'		=> $no_templates,			
-			),
-		);
-		
-		foreach ($settings as $k => $v)
-		{
-			$this->api_channel_fields->set_settings($k, $v);
-		}
-		
-		return $settings;
-	}
-	
-	// --------------------------------------------------------------------
 	
 	/**
 	 * Setup Default Fields
@@ -1758,7 +1494,7 @@ class Content_publish extends CI_Controller {
 				foreach ($v as $val)
 				{
 					$settings[$val['field_id']] = $val;
-					$this->_module_tabs[$tab] = array(
+					$this->_module_tabs[$tab][] = array(
 													'id' 	=> $val['field_id'],
 													'label'	=> $val['field_label']
 													);
@@ -1776,21 +1512,37 @@ class Content_publish extends CI_Controller {
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Third Party Tabs
+	 *
+	 * This method returns an array of third party tabs for merging into
+	 * the default tabs array in _setup_tab_hierarchy()
+	 *
+	 * @return 	array
+	 */
 	private function _third_party_tabs()
 	{
 		if (empty($this->_module_tabs))
 		{
 			return array();
 		}
-		
+
 		$out = array();
 
 		foreach ($this->_module_tabs as $k => $v)
 		{
-			$out[$k][] = $v['id'];				
+			foreach ($v as $key => $val)
+			{
+				$out[$k][] = $val['id'];			
+			}		
 		}
 
 		return $out;
 	}
-	
+
+	// --------------------------------------------------------------------	
 }
+// END CLASS
+
+/* End of file content_publish.php */
+/* Location: ./system/expressionengine/controllers/cp/content_publish.php */
