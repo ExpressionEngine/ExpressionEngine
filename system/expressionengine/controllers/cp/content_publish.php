@@ -27,6 +27,7 @@ class Content_publish extends CI_Controller {
 
 	private $_dst_enabled 		= FALSE;
 
+	private $_module_tabs		= array();
 	private $_channel_data 		= array();
 	private $_channel_fields 	= array();
 	private $_publish_blocks 	= array();
@@ -43,6 +44,7 @@ class Content_publish extends CI_Controller {
 		
 		$this->load->library('api');
 		$this->load->model('channel_model');
+		$this->load->helper('typography');
 		$this->cp->get_installed_modules();
 	}
 	
@@ -186,7 +188,6 @@ class Content_publish extends CI_Controller {
 		
 		$this->javascript->compile();
 		
-		
 		$tab_labels = array(
 			'publish' 		=> lang('publish'),
 			'categories' 	=> lang('categories'),
@@ -204,7 +205,12 @@ class Content_publish extends CI_Controller {
 		{
 			$tab_labels['pages'] = lang('pages');
 		}
-		
+
+		foreach ($this->_module_tabs as $k => $tab)
+		{
+			$tab_labels[$k] = lang($k);
+		}
+
 		reset($tab_hierarchy);
 		
 		$data = array(
@@ -750,7 +756,6 @@ class Content_publish extends CI_Controller {
 	{
 		$field_output = array();
 		
-
 		foreach ($field_data as $name => $data)
 		{
 			if (isset($data['string_override']))
@@ -865,14 +870,20 @@ class Content_publish extends CI_Controller {
 			'date'			=> array('entry_date', 'expiration_date', 'comment_expiration_date'),
 			'categories'	=> array('categories'),
 			'options'		=> array('channel', 'status', 'author', 'options', 'ping'),
-			'forum'			=> array('forum_id', 'forum_title', 'forum_body', 'forum_topic_id')
 		);
+		
+		if (isset($this->cp->installed_modules['forum']))
+		{
+			$default['forum'] = array('forum_id', 'forum_title', 'forum_body', 'forum_topic_id');
+		}
 		
 		if (isset($this->cp->installed_modules['pages']))
 		{
 			$default['pages'] = array('pages_uri', 'pages_template_id');
 		}
-		
+
+		$default = array_merge($default, $this->_third_party_tabs());
+
 		// Add predefined fields to their specific tabs
 		foreach ($default as $tab => $fields)
 		{
@@ -916,8 +927,11 @@ class Content_publish extends CI_Controller {
 		$options		= $this->_build_options_block($entry_data);
 		$forum			= $this->_build_forum_block($entry_data);
 		$pages			= $this->_build_pages_block($entry_data);
+		$third_party  	= $this->_build_third_party_blocks($entry_data);
 
-		return array_merge($field_data, $categories, $pings, $forum, $options, $pages);
+		return array_merge(
+							$field_data, $categories, $pings, $forum, 
+							$options, $pages, $third_party);
 	}
 
 	// --------------------------------------------------------------------
@@ -1676,7 +1690,62 @@ class Content_publish extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Build Third Party tab blocks
+	 *
+	 * This method assembles tabs from modules that include a publish tab
+	 *
+	 * @param 	array
+	 * @return 	array
+	 */
+	private function _build_third_party_blocks($entry_data)
+	{
+		$module_fields = $this->api_channel_fields->get_module_fields(
+														$this->_channel_data['channel_id'], 
+														$entry_data['entry_id']
+													);
+		$settings = array();
+		
+		if ($module_fields && is_array($module_fields))
+		{
+			foreach ($module_fields as $tab => $v)
+			{
+				foreach ($v as $val)
+				{
+					$settings[$tab] = $val;
+					$this->_module_tabs[$tab] = array(
+													'id' 	=> $val['field_id'],
+													'label'	=> $val['field_label']
+													);
+					
+					$this->api_channel_fields->set_settings($val['field_id'], $val);
+					
+					$rules = 'call_field_validation['.$val['field_id'].']';
+					$this->form_validation->set_rules($val['field_id'], $val['field_label'], $rules);
+				}
+			}
+		}
 
+		return $settings;		
+	}
+	
+	// --------------------------------------------------------------------
+	
+	private function _third_party_tabs()
+	{
+		if (empty($this->_module_tabs))
+		{
+			return array();
+		}
+		
+		$out = array();
 
+		foreach ($this->_module_tabs as $k => $v)
+		{
+			$out[$k][] = $v['id'];				
+		}
+
+		return $out;
+	}
 	
 }
