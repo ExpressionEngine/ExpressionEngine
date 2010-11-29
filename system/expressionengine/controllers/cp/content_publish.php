@@ -1712,7 +1712,7 @@ class Content_publish extends CI_Controller {
 			{
 				foreach ($v as $val)
 				{
-					$settings[$tab] = $val;
+					$settings[$val['field_id']] = $val;
 					$this->_module_tabs[$tab] = array(
 													'id' 	=> $val['field_id'],
 													'label'	=> $val['field_label']
