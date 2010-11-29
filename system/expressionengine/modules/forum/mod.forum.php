@@ -27,7 +27,7 @@
 class Forum {
 
 
-	var $version			= '3.1.0';
+	var $version			= '3.1.1';
 	var $build				= '20100625';
 	var $use_site_profile	= FALSE;
 	var $search_limit		= 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)
