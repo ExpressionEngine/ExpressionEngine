@@ -860,7 +860,7 @@ class Content_publish extends CI_Controller {
 			'date'			=> array('entry_date', 'expiration_date', 'comment_expiration_date'),
 			'categories'	=> array('categories'),
 			'options'		=> array('channel', 'status', 'author', 'options', 'ping'),
-			'forum'			=> array('forum_title', 'forum_body')
+			'forum'			=> array('forum_id', 'forum_title', 'forum_body', 'forum_topic_id')
 		);
 		
 		// Add predefined fields to their specific tabs
@@ -1363,7 +1363,8 @@ class Content_publish extends CI_Controller {
 					$forums[$row->forum_id] = $row->board_label . ': ' . $row->forum_name;
 				}
 
-				$forum_id		= form_dropdown('forum_id', $forums, $this->input->get_post('forum_id'));			
+				$forum_id		= array('selected'	=> $this->input->get_post('forum_id'),
+										'choices'	=> $forums);
 				$forum_title 	= ( ! isset($entry_data['forum_title'])) ? '' : $entry_data['forum_title'];
 				$forum_body 	= ( ! isset($entry_data['forum_body']))	 ? '' : $entry_data['forum_body'];
 				$forum_topic_id	= ( ! isset($entry_data['forum_topic_id'])) ? '' : $entry_data['forum_topic_id'];
@@ -1419,19 +1420,36 @@ class Content_publish extends CI_Controller {
 				'field_instructions'	=> '',
 				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'textarea',
-				'field_ta_rows'			=> 150
+				'field_ta_rows'			=> 8
+			),
+			'forum_id'			=> array(
+				'field_id'				=> 'forum_id',
+				'field_label'			=> lang('forum'),
+				'field_required'		=> 'n',
+				'field_pre_populate'	=> 'n',
+				'field_list_items'		=> $forum_id['choices'],
+				'field_data'			=> $forum_id['selected'],
+ 				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'select',
+				'field_instructions'	=> ''
+			),
+			'forum_topic_id'	=> array(
+				'field_id'				=> 'forum_topic_id',
+				'field_label'			=> lang('forum_topic_id'),
+				'field_type'			=> 'text',
+				'field_required'		=> 'n',
+				'field_data'			=> ( ! isset($entry_data['forum_topic_id'])) ? '' : $entry_data['forum_topic_id'],
+				'field_text_direction'	=> 'ltr',
+				'field_maxl'			=> '',
+				'field_instructions'	=> ''
 			),
 		);
 		
-
-		// var_dump($forum_title, $forum_body, $forum_topic_id_descp, $forum_id, $forum_topic_id);
-
+		foreach ($settings as $k => $v)
+		{
+			$this->api_channel_fields->set_settings($k, $v);
+		}
 		
-		// $forum_title			= '';
-		// $forum_body				= '';
-		// $forum_topic_id_descp	= '';
-		// $forum_id				= '';
-		// $forum_topic_id			= ( ! isset($entry_data['forum_topic_id'])) ? '' : $entry_data['forum_topic_id'];
 		return $settings;
 	}
 	
