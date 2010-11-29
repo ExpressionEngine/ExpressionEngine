@@ -192,12 +192,17 @@ class Content_publish extends CI_Controller {
 			'categories' 	=> lang('categories'),
 			'pings'			=> lang('pings'),
 			'options'		=> lang('options'),
-			'date'			=> lang('date')
+			'date'			=> lang('date'),
 		);
 		
 		if (isset($this->cp->installed_modules['forum']))
 		{
 			$tab_labels['forum'] = lang('forum');
+		}
+		
+		if (isset($this->cp->installed_modules['pages']))
+		{
+			$tab_labels['pages'] = lang('pages');
 		}
 		
 		reset($tab_hierarchy);
@@ -863,6 +868,11 @@ class Content_publish extends CI_Controller {
 			'forum'			=> array('forum_id', 'forum_title', 'forum_body', 'forum_topic_id')
 		);
 		
+		if (isset($this->cp->installed_modules['pages']))
+		{
+			$default['pages'] = array('pages_uri', 'pages_template_id');
+		}
+		
 		// Add predefined fields to their specific tabs
 		foreach ($default as $tab => $fields)
 		{
@@ -905,8 +915,9 @@ class Content_publish extends CI_Controller {
 		$pings 			= $this->_build_ping_block($entry_data['entry_id']);
 		$options		= $this->_build_options_block($entry_data);
 		$forum			= $this->_build_forum_block($entry_data);
+		$pages			= $this->_build_pages_block($entry_data);
 
-		return array_merge($field_data, $categories, $pings, $forum, $options);
+		return array_merge($field_data, $categories, $pings, $forum, $options, $pages);
 	}
 
 	// --------------------------------------------------------------------
@@ -1427,8 +1438,8 @@ class Content_publish extends CI_Controller {
 				'field_label'			=> lang('forum'),
 				'field_required'		=> 'n',
 				'field_pre_populate'	=> 'n',
-				'field_list_items'		=> $forum_id['choices'],
-				'field_data'			=> $forum_id['selected'],
+				'field_list_items'		=> (isset($forum_id['choices'])) ? $forum_id['choices'] : '',
+				'field_data'			=> (isset($forum_id['selected'])) ? $forum_id['selected'] : '',
  				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'select',
 				'field_instructions'	=> ''
@@ -1442,6 +1453,120 @@ class Content_publish extends CI_Controller {
 				'field_text_direction'	=> 'ltr',
 				'field_maxl'			=> '',
 				'field_instructions'	=> ''
+			),
+		);
+		
+		foreach ($settings as $k => $v)
+		{
+			$this->api_channel_fields->set_settings($k, $v);
+		}
+		
+		return $settings;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Build pages block
+	 *
+	 * This method builds the necessary array items for the pages module block
+	 *
+	 * @param 	array 	
+	 * @return 	array
+	 */
+	private function _build_pages_block($entry_data)
+	{
+		// Bail if the pages module isn't installed
+		if ( ! isset($this->cp->installed_modules['pages']))
+		{
+			return array();
+		}
+
+		$this->lang->loadfile('pages');
+
+		$entry_id 			= $entry_data['entry_id'];
+		$site_id			= $this->_channel_data['site_id'];
+
+		$settings 			= array();
+
+		$no_templates 		= NULL;		
+		$pages 				= $this->config->item('site_pages');
+		
+		$pages_template_id 	= 0;
+		$pages_dropdown 	= array();
+		$pages_uri 			= (isset($entry_data['pages_uri'])) ? $entry_data['pages_uri'] : '';
+
+		if ($entry_id !== 0)
+		{
+			if (isset($pages[$site_id]['uris'][$entry_id]))
+			{
+				$pages_uri = $pages[$site_id]['uris'][$entry_id];				
+			}
+
+			if (isset($pages[$site_id]['templates'][$entry_id]))
+			{
+				$pages_template_id = $pages[$site_id]['templates'][$entry_id];
+			}
+		}
+		else
+		{
+			$qry = $this->db->select('configuration_value')
+							->where('configuration_name', 'template_channel_'.$this->_channel_data['channel_id'])
+							->where('site_id', $this->config->item('site_id'))
+							->get('pages_configuration');
+			
+			if ($qry->num_rows() > 0)
+			{
+				$pages_template_id = (int) $qry->row('configuration_value');
+			}
+		}
+
+		if ($pages_uri == '')
+		{
+			$this->javascript->set_global('publish.pages.pagesUri', lang('example_uri'));
+		}
+		else
+		{
+			$this->javascript->set_global('publish.pages.pageUri', $pages_uri);
+		}
+		
+		$templates = $this->template_model->get_templates($this->config->item('site_id'));
+		
+		foreach ($templates->result() as $template)
+		{
+			$pages_dropdown[$template->group_name][$template->template_id] = $template->template_name;
+		}
+		
+		if ($templates->num_rows() === 0)
+		{
+			$no_templates = lang('no_templates');
+		}
+		
+		$settings = array(
+			'pages_uri'				=> array(
+				'field_id'				=> 'pages_uri',
+				'field_label'			=> lang('pages_uri'),
+				'field_type'			=> 'text',
+				'field_required'		=> 'n',
+				'field_data'			=> $pages_uri,
+				'field_text_direction'	=> 'ltr',
+				'field_maxl'			=> 100,
+				'field_instructions'	=> '',
+			),
+			'pages_template_id'		=> array(
+				'field_id'				=> 'pages_template_id',
+				'field_label'			=> lang('template'),
+				'field_type'			=> 'select',
+				'field_required'		=> 'n',
+				'field_pre_populate'	=> 'n',
+				'field_list_items'		=> $pages_dropdown,
+				'field_data'			=> $pages_template_id,
+				'options'				=> $pages_dropdown,
+				'selected'				=> $pages_template_id,
+				'field_text_direction'	=> 'ltr',
+				'field_maxl'			=> 100,
+				'field_instructions'	=> '',
+				'string_override'		=> $no_templates,			
 			),
 		);
 		
