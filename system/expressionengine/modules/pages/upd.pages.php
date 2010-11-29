@@ -25,7 +25,7 @@
  */
 class Pages_upd {
 
-	var $version		= '2.0';
+	var $version		= '2.1';
 
 	function Pages_upd($switch=TRUE)
 	{
@@ -134,17 +134,18 @@ class Pages_upd {
 	 */
 	function update($current = '')
 	{	
-				var_dump($this->version);exit;
-		if ($current == $this->version)
+
+		if ($current === $this->version)
 		{
 			return FALSE;
 		}
 		
-
-		
+		if ($current < '2.1')
+		{
+			$this->EE->db->where('module_name', 'Pages');
+			$this->EE->db->update('modules', array('has_publish_fields' => 'y'));
+		}
 	}
-
-
 }
 // END CLASS
 
