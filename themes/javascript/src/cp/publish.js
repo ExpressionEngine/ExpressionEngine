@@ -204,7 +204,7 @@ EE.publish.category_editor = function() {
 	// Last but not least - update the checkboxes
 	$(".cats_done").live("click", function() {
 		var that = $(this).closest(".cat_group_container");
-		that.text("loading...").load(EE.BASE+"&C=content_publish&M=ajax_update_cat_fields&group_id="+that.data("gid")+"&timestamp="+now(), function(response) {
+		that.text("loading...").load(EE.BASE+"&C=content_publish&M=category_actions&group_id="+that.data("gid")+"&timestamp="+now(), function(response) {
 			that.html( $(response).html() );
 		});
 				

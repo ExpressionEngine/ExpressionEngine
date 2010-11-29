@@ -311,7 +311,33 @@ class Content_publish extends CI_Controller {
 	 */
 	function category_actions()
 	{
+		if ( ! $this->cp->allowed_group('can_access_content'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
 		
+		$group_id = $this->input->get_post('group_id');
+		
+		if ( ! $group_id)
+		{
+			exit($this->lang->line('no_categories'));
+		}
+		
+		$this->load->library('api');
+		$this->api->instantiate('channel_categories');
+		
+		$this->load->model('category_model');
+		$this->load->helper('form');
+		
+		$query = $this->category_model->get_categories($group_id, FALSE);
+		$this->api_channel_categories->category_tree($group_id, '', $query->row('sort_order'));
+
+		$vars = array(
+			'edit_links' => FALSE,
+			'categories' => array('' => $this->api_channel_categories->categories)
+		);
+
+		exit($this->load->view('content/_assets/categories', $vars, TRUE));
 	}
 	
 	
@@ -868,7 +894,7 @@ class Content_publish extends CI_Controller {
 		$default = array(
 			'publish'		=> array('title', 'url_title'),
 			'date'			=> array('entry_date', 'expiration_date', 'comment_expiration_date'),
-			'categories'	=> array('categories'),
+			'categories'	=> array('category'),
 			'options'		=> array('channel', 'status', 'author', 'options', 'ping'),
 		);
 		
@@ -943,16 +969,43 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _build_categories_block($entry_data)
 	{
-		$this->api->instantiate('channel_categories');
-		
-		$cat_data_array = array();
-		
-		$vars = array(
-			'edit_categories_link'	=> FALSE,
-			'categories'			=> array()
+		$default	= array(
+			'string_override'		=> lang('no_categories'),
+			'field_id'				=> 'category',
+			'field_name'			=> 'category',
+			'field_label'			=> $this->lang->line('categories'),
+			'field_required'		=> 'n',
+			'field_type'			=> 'multiselect',
+			'field_text_direction'	=> 'ltr',
+			'field_data'			=> '',
+			'field_fmt'				=> 'text',
+			'field_instructions'	=> '',
+			'field_show_fmt'		=> 'n',
+			'selected'				=> 'n',
+			'options'				=> array()
 		);
 		
-		if ( ! isset($entry_data['category']))
+		// No categories? Easy peasy
+		if ( ! $this->_channel_data['cat_group'])
+		{
+			return array('category' => $default);
+		}
+		
+		
+		
+		$this->api->instantiate('channel_categories');
+				
+		$catlist	= array();
+		$categories	= array();
+		
+		
+		// Figure out selected categories
+		if ( ! $entry_data['entry_id'] && $this->_channel_data['deft_category'])
+		{
+			// new entry and a default exists
+			$catlist = $this->_channel_data['deft_category'];
+		}
+		elseif ( ! isset($entry_data['category']))
 		{
 			$qry = $this->db->select('c.cat_name, p.*')
 							->from('categories AS c, category_posts AS p')
@@ -966,66 +1019,58 @@ class Content_publish extends CI_Controller {
 				$catlist[$row->cat_id] = $row->cat_id;
 			}			
 		}
-		else
+		elseif (is_array($entry_data['category']))
 		{
-			if (is_array($entry_data['category']))
+			foreach ($entry_data['category'] as $val)
 			{
-				foreach ($entry_data['category'] as $val)
-				{
-					$catlist[$val] = $val;
-				}
+				$catlist[$val] = $val;
 			}
 		}
 		
-		$link_info = $this->api_channel_categories->fetch_allowed_category_groups($this->_channel_data['cat_group']);
+		
+		// Figure out valid category options		
+		$this->api_channel_categories->category_tree($this->_channel_data['cat_group'], $catlist);
 
-		$links = array();
-
-		if ($link_info !== FALSE)
-		{
-			foreach ($link_info as $val)
+		if (count($this->api_channel_categories->categories) > 0)
+		{  
+			// add categories in again, over-ride setting above
+			foreach ($this->api_channel_categories->categories as $val)
 			{
-				$links[] = array('url' => BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$val['group_id'],
-					'group_name' => $val['group_name']);
+				$categories[$val['3']][] = $val;
+			}
+		}
+		
+		
+		// If the user can edit categories, we'll go ahead and
+		// show the links to make that work
+		$edit_links = FALSE;
+		
+		if ($this->session->userdata('can_edit_categories') == 'y')
+		{
+			$link_info = $this->api_channel_categories->fetch_allowed_category_groups($this->_channel_data['cat_group']);
 
+			if (is_array($link_info) && count($link_info))
+			{
+				$edit_links = array();
+				
+				foreach ($link_info as $val)
+				{
+					$edit_links[] = array(
+						'url' => BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$val['group_id'],
+						'group_name' => $val['group_name']
+					);
+				}
 			}
 		}
 
-		// One more check to see if the user can edit categories.  
-		// If so, we give them the link on the publish page.
-		// Peek at fetch_allowed_category_groups, and it will all make sense.
-		if ($this->session->userdata('can_edit_categories') == 'y')
-		{
-			$edit_categories_link = $links;			
-		}
 
-		return array();
+		// Build the mess
+		$vars = compact('categories', 'edit_links');
 
-		// $this->load->view('content/_assets/categories', '', TRUE);
-
-		/*
-		protected function _define_category_fields($categories, $edit_categories_link, $cat_groups = '')
-		{
-			$vars = compact('categories', 'edit_categories_link');
-			$category_r = $this->load->view('content/_assets/categories', $vars, TRUE);
-
-			$this->field_definitions['category'] = array(
-				'string_override'		=> ($cat_groups == '') ? $this->lang->line('no_categories') : $category_r,
-				'field_id'				=> 'category',
-				'field_name'			=> 'category',
-				'field_label'			=> $this->lang->line('categories'),
-				'field_required'		=> 'n',
-				'field_type'			=> 'multiselect',
-				'field_text_direction'	=> 'ltr',
-				'field_data'			=> '',
-				'field_fmt'				=> 'text',
-				'field_instructions'	=> '',
-				'field_show_fmt'		=> 'n',
-				'selected'				=> 'n',
-				'options'				=> $categories
-			);
-		}		
-		*/
+		$default['options']			= $categories;		
+		$default['string_override'] = $this->load->view('content/_assets/categories', $vars, TRUE);
+		
+		return array('category' => $default);
 	}
 
 	// --------------------------------------------------------------------
