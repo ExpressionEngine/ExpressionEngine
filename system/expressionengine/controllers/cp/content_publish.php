@@ -39,7 +39,7 @@ class Content_publish extends CI_Controller {
 
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->library('api');
@@ -117,12 +117,12 @@ class Content_publish extends CI_Controller {
 			// @todo if autosave is set to yes we
 			// have the entry id wrong. This should
 			// of course never happen, but double check
-			
+
 			if ($this->_save($channel_id, $entry_id) === TRUE)
 			{
-				exit('saved');
-				// @todo redirect to view page
-				// pass along filter!
+				// under normal circumstances _save will redirect
+				// if we get here, a hook triggered end_script
+				return;
 			}
 
 			// @todo Process errors, and proceed with
@@ -213,6 +213,11 @@ class Content_publish extends CI_Controller {
 
 		reset($tab_hierarchy);
 		
+		
+		$parts = $_GET;
+		unset($parts['S'], $parts['D']);
+		$current_url = http_build_query($parts, '', '&amp;');
+		
 		$data = array(
 			'cp_page_title'	=> $entry_id ? lang('edit_entry') : lang('new_entry'),
 			'message'		=> '',	// @todo consider pulling?
@@ -225,7 +230,14 @@ class Content_publish extends CI_Controller {
 			'field_output'	=> $field_output,
 			
 			'spell_enabled'		=> TRUE,
-			'smileys_enabled'	=> TRUE
+			'smileys_enabled'	=> TRUE,
+			
+			'show_revision_cluster' => FALSE,
+			
+			'current_url'	=> $current_url,
+			'hidden_fields'	=> array(
+				'channel_id'	=> $channel_id
+			)
 		);
 
 		
@@ -283,6 +295,90 @@ class Content_publish extends CI_Controller {
 	 */
 	function view_entry()
 	{
+		$entry_id	= $this->input->get('entry_id');
+		$channel_id	= $this->input->get('channel_id');
+		
+		if ( ! $channel_id OR ! $entry_id OR ! $this->cp->allowed_group('can_access_content'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$assigned_channels = $this->functions->fetch_assigned_channels();
+
+		if ( ! in_array($channel_id, $assigned_channels))
+		{
+			show_error(lang('unauthorized_for_this_channel'));
+		}
+		
+		$qry = $this->db->select('field_group')
+						->where('channel_id', $channel_id)
+						->get('channels');
+		
+		if ( ! $qry->num_rows())
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$field_group = $qry->row('field_group');
+
+		$qry = $this->db->select('field_id, field_type')
+						->where('group_id', $field_group)
+						->where('field_type !=', 'select')
+						->order_by('field_order')
+						->get('channel_fields');
+
+		$fields = array();
+
+		foreach ($qry->result_array() as $row)
+		{
+			$fields['field_id_'.$row['field_id']] = $row['field_type'];
+		}
+
+		$res = $this->db->from('channel_titles AS ct, channel_data AS cd, channels AS c')
+						->select('ct.*, cd.*, c.*')
+						->where('ct.entry_id', $entry_id)
+						->where('ct.entry_id = cd.entry_id', NULL, FALSE)
+						->where('c.channel_id = ct.channel_id', NULL, FALSE)
+						->get();
+		
+		if ( ! $res->num_rows())
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		
+		$show_edit_link = TRUE;
+		$show_comments_link = TRUE;
+			
+		$resrow = $res->row_array();
+		
+		$comment_perms = array(
+			'can_edit_own_comments',
+			'can_delete_own_comments',
+			'can_moderate_comments'
+		);
+				
+		if ($resrow['author_id'] != $this->session->userdata('member_id'))
+		{
+			if ( ! $this->cp->allowed_group('can_view_other_entries'))
+			{
+				show_error(lang('unauthorized_access'));
+			}
+
+			if ( ! $this->cp->allowed_group('can_edit_other_entries'))
+			{
+				$show_edit_link = FALSE;
+			}
+
+			$comment_perms = array(
+				'can_view_other_comments',
+				'can_delete_all_comments',
+				'can_moderate_comments'
+			);
+		}
+		
+		$comment_perms		= array_map(array($this->cp, 'allowed_group'), $comment_perms);
+		$show_comments_link = (bool) count(array_filter($comment_perms)); // false if all perms fail
 		
 	}
 	
@@ -313,14 +409,14 @@ class Content_publish extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$group_id = $this->input->get_post('group_id');
 		
 		if ( ! $group_id)
 		{
-			exit($this->lang->line('no_categories'));
+			exit(lang('no_categories'));
 		}
 		
 		$this->load->library('api');
@@ -604,12 +700,14 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _save($channel_id, $entry_id = FALSE)
 	{
+		$this->api->instantiate('channel_entries');
+
 		// Editing a non-existant entry?
 		if ($entry_id && ! $this->api_channel_entries->entry_exists($entry_id))
 		{
 			return FALSE;
 		}
-		
+
 		
 		// We need these later
 		$return_url = $this->input->post('return_url');
@@ -971,7 +1069,7 @@ class Content_publish extends CI_Controller {
 			'string_override'		=> lang('no_categories'),
 			'field_id'				=> 'category',
 			'field_name'			=> 'category',
-			'field_label'			=> $this->lang->line('categories'),
+			'field_label'			=> lang('categories'),
 			'field_required'		=> 'n',
 			'field_type'			=> 'multiselect',
 			'field_text_direction'	=> 'ltr',
@@ -1087,9 +1185,9 @@ class Content_publish extends CI_Controller {
 
 		$settings = array('ping' => 
 			array(
-				'string_override'		=> (isset($ping_servers) && $ping_servers != '') ? '<fieldset>'.$ping_servers.'</fieldset>' : lang('no_ping_sites').'<p><a href="'.BASE.AMP.'C=myaccount'.AMP.'M=ping_servers'.AMP.'id='.$this->session->userdata('member_id').'">'.$this->lang->line('add_ping_sites').'</a></p>',
+				'string_override'		=> (isset($ping_servers) && $ping_servers != '') ? '<fieldset>'.$ping_servers.'</fieldset>' : lang('no_ping_sites').'<p><a href="'.BASE.AMP.'C=myaccount'.AMP.'M=ping_servers'.AMP.'id='.$this->session->userdata('member_id').'">'.lang('add_ping_sites').'</a></p>',
 				'field_id'				=> 'ping',
-				'field_label'			=> $this->lang->line('pings'),
+				'field_label'			=> lang('pings'),
 				'field_required'		=> 'n',
 				'field_type'			=> 'checkboxes',
 				'field_text_direction'	=> 'ltr',
