@@ -1,7 +1,7 @@
 /**
  * ExpressionEngine Default Theme 
  */
-html, body, p, img, div, h1, h2, h3, h4, h5, h6, ol, ul, li, form, input, select, option {
+html, body, p, img, div, h1, h2, h3, h4, h5, h6, ol, ul, li, form, input, select, option, fieldset {
 	margin:					0;
 	padding:				0;
 }
@@ -31,6 +31,7 @@ ul {
 
 fieldset {
 	border: 1px solid #D0D7DF;
+	padding: .75em;
 }
 
 textarea,
@@ -1099,6 +1100,7 @@ input.submit {
 	}
 #mainContent #filterMenu .group {
 	margin-bottom:		12px;
+	padding-top:		5px; /* IE stupidity */
 }
 
 #filterMenu a, #filterMenu a:link, #filterMenu a:visited {
