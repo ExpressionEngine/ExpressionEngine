@@ -129,6 +129,14 @@ class Pages_tab {
 		return $settings;
 	}
 	
+	// --------------------------------------------------------------------	
+
+	/**
+	 * Validate Publish
+	 *
+	 * @param	array
+	 * @return 	mixed
+	 */
 	public function validate_publish($params)
 	{
 	    $errors         = FALSE;
@@ -183,46 +191,77 @@ class Pages_tab {
     	return $errors;        
 	}
 	
+	// --------------------------------------------------------------------	
+	
+	/**
+	 * Publish Data.
+	 *
+	 * @param 	array
+	 * @return 	void
+	 */	
 	public function publish_data_db($params)
 	{
 	    $site_id    = $this->EE->config->item('site_id');
 	    $mod_data   = (isset($params['mod_data'])) ? $params['mod_data'] : NULL;
 	    $site_pages = $this->EE->config->item('site_pages');
-	    
+		
         if ($site_pages !== FALSE
             && isset($mod_data['pages_uri']) 
             && $mod_data['pages_uri'] != lang('example_uri')
-            && $mod_data['pages_uri'] != '')
+   			&& $mod_data['pages_uri'] != '')
         {
             if (isset($mod_data['pages_template_id'])
                 && is_numeric($mod_data['pages_template_id']))
             {
-                $page = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '',
-                                    str_replace($this->EE->config->item('site_url'), '',
-                                                $mod_data['pages_uri']));
-                $page = '/'.ltrim($page, '/');
-                
-                $site_pages['static_pages'][$site_id] = array(
-                    'uris'      => array(
-                        $params['entry_id'] => $page,
-                    ),
-                    'templates' => array(
-                        $params['entry_id'] => preg_replace("#[^0-9]+$#i", '',
-                                                            $mod_data['pages_template_id'])
-                    ),
-                );
-                
-                if ($site_pages['static_pages'][$site_id]['uris'][$params['entry_id']] == '//')
-                {
-                    $site_pages['static_pages'][$site_id]['uris'][$params['entry_id']] = '/';
-                }
-                
-                $this->EE->db->where('site_id', (int) $site_id)
-                            ->update('sites', array(
-                                        'site_pages'    => 
-                                            base64_encode(serialize($site_pages['static_pages']))
-                            ));
+				$page = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '',
+				                    str_replace($this->EE->config->item('site_url'), '',
+				                                $mod_data['pages_uri']));
+				
+				$page = '/' . ltrim($page, '/');
+				
+				$site_pages[$site_id]['uris'][$params['entry_id']] = $page;
+				$site_pages[$site_id]['templates'][$params['entry_id']] = preg_replace("#[^0-9]+$#i", '',
+		                                            						$mod_data['pages_template_id']);
+
+				if ($site_pages[$site_id]['uris'][$params['entry_id']] == '//')
+				{
+					$site_pages[$site_id]['uris'][$params['entry_id']] = '/';
+				}
+				
+				$this->EE->db->where('site_id', (int) $site_id)
+				            ->update('sites', array(
+				                        'site_pages'    => 
+				                            base64_encode(serialize($site_pages))
+				            ));
             }
         }
 	}
+
+	// --------------------------------------------------------------------	
+	
+	/**
+	 * Delete Actions
+	 *
+	 * @param 	array
+	 * @return 	void
+	 */
+	public function publish_data_delete_db($params)
+	{
+		$site_pages = $this->EE->config->item('site_pages');
+		$site_id	= $this->EE->config->item('site_id');
+		
+		foreach ($params['entry_ids'] as $entry_id)
+		{
+			unset($site_pages[$site_id]['uris'][$entry_id]);
+			unset($site_pages[$site_id]['templates'][$entry_id]);
+		}
+
+		$this->EE->db->where('site_id', (int) $site_id)
+					 ->update('sites', array(
+					 			'site_pages'	=> 
+									base64_encode(serialize($site_pages))
+					 ));
+	}
+
+	// --------------------------------------------------------------------		
 }
