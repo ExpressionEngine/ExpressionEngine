@@ -148,7 +148,7 @@ class Forum_tab {
 				'field_pre_populate'	=> 'n',
 				'field_list_items'		=> (isset($forum_id['choices'])) ? $forum_id['choices'] : '',
 				'field_data'			=> (isset($forum_id['selected'])) ? $forum_id['selected'] : '',
-	 				'field_text_direction'	=> 'ltr',
+	 			'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'select',
 				'field_instructions'	=> ''
 			),

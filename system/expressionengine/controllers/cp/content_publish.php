@@ -33,7 +33,10 @@ class Content_publish extends CI_Controller {
 	private $_publish_blocks 	= array();
 	private $_publish_layouts 	= array();
 
-	function __construct()
+	/**
+	 * Constructor
+	 */
+	public function __construct()
 	{
 		parent::__construct();
 
@@ -53,10 +56,9 @@ class Content_publish extends CI_Controller {
 	/**
 	 * Index function
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function index()
+	public function index()
 	{
 		// currently simply calls channel_select_list,
 		// can be combined into one
@@ -72,10 +74,9 @@ class Content_publish extends CI_Controller {
 	 *
 	 * Handles new and existing entries. Self submits to save.
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function entry_form()
+	public function entry_form()
 	{
 		$this->load->library('form_validation');
 		
@@ -245,10 +246,9 @@ class Content_publish extends CI_Controller {
 	/**
 	 * Autosave
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function autosave()
+	public function autosave()
 	{
 		/*
 		check_permissions();
@@ -266,12 +266,108 @@ class Content_publish extends CI_Controller {
 	/**
 	 * Save Layout
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function save_layout()
+	public function save_layout()
 	{
-		// self explanatory - works ok
+		if ( ! $this->cp->allowed_group('can_admin_channels'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		if (empty($_POST))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		if ( ! function_exists('json_decode'))
+		{
+			$this->load->library('Services_json');
+		}
+
+		$this->output->enable_profiler(FALSE);
+		$error 				= array();
+		$valid_name_error 	= array();
+
+		$member_group 		= $this->input->post('member_group');
+		$channel_id 		= $this->input->post('channel_id');
+		$json_tab_layout 	= $this->input->post('json_tab_layout');
+
+		$layout_info = json_decode($json_tab_layout, TRUE);
+		
+		// Check for required fields being hidden
+		$required = $this->api_channel_fields->get_required_fields($channel_id);
+		
+		$clean_layout = array();
+
+		foreach($layout_info as $tab => $field)
+		{
+			foreach ($field as $name => $info)
+			{
+				if (count($required) > 0)
+				{					
+					// Check for hiding a required field
+					if (in_array($name, $required) && $info['visible'] === FALSE)
+					{
+						$error[] = $name;
+					}
+				}
+					
+				// Check for hinkiness in field names
+				if (preg_match('/[^a-z0-9\_\-]/i', $name))
+				{
+					$valid_name_error[] = $name;
+				}
+				elseif (trim($name) == '')
+				{
+					$valid_name_error[] = 'missing_name';
+				}
+			}
+			
+			$clean_layout[strtolower($tab)] = $layout_info[$tab];	
+		}
+			
+		if (count($error) > 0 OR count($valid_name_error) > 0)
+		{
+			$resp['messageType'] = 'failure';
+			$message = lang('layout_failure');
+				
+			if (count($error))
+			{
+				$message .= NBS.NBS.lang('layout_failure_required').implode(', ', $error);
+			}
+				
+			if (count($valid_name_error))
+			{
+				$message .= NBS.NBS.lang('layout_failure_invalid_name').implode(', ', $valid_name_error);
+			}
+				
+			$resp['message'] = $message; 
+
+			$this->output->send_ajax_response($resp);
+		}
+
+		// make this into an array, insert_group_layout will serialize and save
+		$layout_info = array_map(array($this, '_sort_publish_fields'), $clean_layout);
+		
+		if ($this->member_model->insert_group_layout($member_group, $channel_id, $layout_info))
+		{
+			$resp = array(
+				'messageType'	=> 'success',
+				'message'		=> lang('layout_success')
+			);
+
+			$this->output->send_ajax_response($resp);
+		}
+		else
+		{
+			$resp = array(
+				'messageType'	=> 'failure',
+				'message'		=> lang('layout_failure')
+			);
+
+			$this->output->send_ajax_response($resp);	
+		}
 	}
 	
 	
@@ -1629,6 +1725,46 @@ class Content_publish extends CI_Controller {
 	}
 
 	// --------------------------------------------------------------------	
+
+	/**
+	 * Sort Publish Fields
+	 *
+	 * Some browsers (read: chrome) sort JSON arrays by key automatically.
+	 * So before we save our fields we need to reorder them according to
+	 * their index parameter.
+	 *
+	 */
+	private function _sort_publish_fields($fields)
+	{
+		// array_multisort couldn't be coerced into maintaining our
+		// array keys, so we sort manually ... le sigh.
+		
+		$positions = array();
+		$new_fields = array();
+		
+		foreach($fields as $id => $field)
+		{
+			if ($id == '_tab_label')
+			{
+				$new_fields[$id] = $field;
+				continue;
+			}
+			
+			$positions[$field['index']] = $id;
+			unset($fields[$id]['index']);
+		}
+		
+		ksort($positions);
+		
+		foreach($positions as $id)
+		{
+			$new_fields[$id] = $fields[$id];
+		}
+
+		return $new_fields;
+	}
+
+	// --------------------------------------------------------------------
 }
 // END CLASS
 

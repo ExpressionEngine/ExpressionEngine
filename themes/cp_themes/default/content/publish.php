@@ -98,6 +98,8 @@ if ($EE_view_disable !== TRUE)
 						<!-- Sidebar layouts -->
 						<h3><a href="#"><?=lang('publish_layout')?></a></h3>
 						<div>
+
+
 						</div>
 						
 					</div> <!-- /tools -->
