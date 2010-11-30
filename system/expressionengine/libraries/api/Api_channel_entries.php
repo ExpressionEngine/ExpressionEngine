@@ -1196,61 +1196,6 @@ class Api_channel_entries extends Api {
 		
 		$data['url_title'] = isset($data['url_title']) ? $data['url_title'] : '';
 		$data['url_title'] = $this->_validate_url_title($data['url_title'], $data['title'], (bool) $this->entry_id);
-
-		// Pages
-		$this->_cache['pages_enabled'] = $this->EE->config->item('site_pages');
-
-		// Pages URI is just the default example URI submitted.
-		if (isset($data['pages_uri']) && $data['pages_uri'] == '/example/pages/uri/')
-		{
-			$data['pages_uri'] = '';
-		}
-
-		if ($this->EE->config->item('site_pages') !== FALSE && isset($data['pages_uri']) && $data['pages_uri'] != '')
-		{
-			$this->_cache['pages_enabled'] = TRUE;
-			
-			if ( ! isset($data['pages_template_id']) OR ! is_numeric($data['pages_template_id']))
-			{
-				$this->_set_error('invalid_template', 'pages_template_id');
-			}
-			
-			$page_uri = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '', str_replace($this->EE->config->item('site_url'), '', $data['pages_uri']));
-			
-			if ($page_uri !== $data['pages_uri'])
-			{
-				$this->_set_error('invalid_page_uri', 'pages_uri');
-			}
-			
-			// How many segments are we trying out?
-			$pages_uri_segs = substr_count(trim($data['pages_uri'], '/'), '/');		
-
-			// More than 9 pages URI segs?  goodbye
-			if ($pages_uri_segs > 8)
-			{
-				$this->_set_error('invalid_page_num_segs', 'pages_uri');
-			}
-			
-			// Check if duplicate uri
-			$static_pages = $this->EE->config->item('site_pages');
-			$uris = $static_pages[$this->EE->config->item('site_id')]['uris'];
-			
-			if ($this->entry_id)
-			{
-				unset($uris[$this->entry_id]);
-			}
-			
-			if (in_array($data['pages_uri'], $uris))
-			{
-				$this->_set_error('duplicate_page_uri', 'pages_uri');
-			}
-			
-			// Need this later...
-			$this->_cache['static_pages'] = $static_pages;
-			
-			unset($uris, $static_pages);
-		}
-		
 		
 		// Validate author id
 		
@@ -2084,29 +2029,6 @@ class Api_channel_entries extends Api {
 		// Recompile Relationships
 		$this->update_related_cache($this->entry_id);
 		
-		// Is a page being updated or created?
-		
-		if ($this->EE->config->item('site_pages') !== FALSE && $this->_cache['pages_enabled'] && $this->EE->input->post('pages_uri') != '/example/pages/uri/' && $this->EE->input->post('pages_uri') != '')
-		{
-			if (isset($data['pages_template_id']) && is_numeric($data['pages_template_id']))
-			{
-				$site_id = $this->EE->config->item('site_id');
-				
-				$this->_cache['static_pages'][$site_id]['uris'][$this->entry_id]		= preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '', str_replace($this->EE->config->item('site_url'), '', $data['pages_uri']));
-				$this->_cache['static_pages'][$site_id]['uris'][$this->entry_id]		= '/'.ltrim($this->_cache['static_pages'][$site_id]['uris'][$this->entry_id], '/');
-				$this->_cache['static_pages'][$site_id]['templates'][$this->entry_id]	= preg_replace("#[^0-9]+$#i", '', $data['pages_template_id']);
-
-				if ($this->_cache['static_pages'][$site_id]['uris'][$this->entry_id] == '//')
-				{
-					$this->_cache['static_pages'][$site_id]['uris'][$this->entry_id] = '/';
-				}
-
-				$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-				$this->EE->db->update('sites', array('site_pages' => base64_encode(serialize($this->_cache['static_pages']))) );
-			}
-		}
-		
-
 		// Save revisions if needed
 		
 		if ($this->c_prefs['enable_versioning'] == 'y')
@@ -2124,9 +2046,7 @@ class Api_channel_entries extends Api {
 			$this->EE->channel_entries_model->prune_revisions($this->entry_id, $max);
 		}
 		
-		
 		// Post update custom fields
-		
 		$this->EE->db->select('field_id, field_name, field_label, field_type, field_required');
 		$this->EE->db->join('channels', 'channels.field_group = channel_fields.group_id', 'left');
 		$this->EE->db->where('channel_id', $this->channel_id);

@@ -82,7 +82,7 @@ class Forum_tab {
 					$forums[$row->forum_id] = $row->board_label . ': ' . $row->forum_name;
 				}
 	
-				$forum_id		= array('selected'	=> $this->input->get_post('forum_id'),
+				$forum_id		= array('selected'	=> $this->EE->input->get_post('forum_id'),
 										'choices'	=> $forums);
 				$forum_title 	= ( ! isset($entry_data['forum_title'])) ? '' : $entry_data['forum_title'];
 				$forum_body 	= ( ! isset($entry_data['forum_body']))	 ? '' : $entry_data['forum_body'];
@@ -170,5 +170,10 @@ class Forum_tab {
 		}
 		
 		return $settings;
+	}
+	
+	public function validate_publish($params)
+	{
+        // var_dump($params); exit;
 	}
 }

@@ -128,4 +128,101 @@ class Pages_tab {
 		
 		return $settings;
 	}
+	
+	public function validate_publish($params)
+	{
+	    $errors         = FALSE;
+        $pages_enabled  = FALSE;
+
+        $params = $params[0];
+
+        $pages          = $this->EE->config->item('site_pages');
+
+        if (isset($params['pages_uri']) && $params['pages_uri'] === lang('example_uri'))
+        {
+            $pages_uri = '';
+        }
+        
+        if ($pages !== FALSE && isset($params['pages_uri']) && $params['pages_uri'] != '')
+        {
+            $pages = TRUE;
+            
+        	if ( ! isset($params['pages_template_id']) OR 
+        	     ! is_numeric($params['pages_template_id']))
+        	{
+        		$errors = array(lang('invalid_template'), 'pages_template_id');
+        	}
+        }
+        
+        $page_uri = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '',
+                    str_replace($this->EE->config->item('site_url'), '', $params['pages_uri']));
+        
+        if ($page_uri !== $params['pages_uri'])
+        {
+            $errors = array(lang('invalid_page_uri'), 'pages_uri');
+        }
+        
+        // How many segments are we trying out?
+    	$pages_uri_segs = substr_count(trim($params['pages_uri'], '/'), '/');		
+
+    	// More than 9 pages URI segs?  goodbye
+    	if ($pages_uri_segs > 8)
+    	{
+    		$errors = array(lang('invalid_page_num_segs'), 'pages_uri');
+    	}
+    	
+    	// Check if duplicate uri
+    	$static_pages = $this->EE->config->item('site_pages');
+    	$uris = $static_pages[$this->EE->config->item('site_id')]['uris'];
+
+    	if (in_array($params['pages_uri'], $uris))
+    	{
+    		$errors = array(lang('duplicate_page_uri'), 'pages_uri');
+    	}
+
+    	return $errors;        
+	}
+	
+	public function publish_data_db($params)
+	{
+	    $site_id    = $this->EE->config->item('site_id');
+	    $mod_data   = (isset($params['mod_data'])) ? $params['mod_data'] : NULL;
+	    $site_pages = $this->EE->config->item('site_pages');
+	    
+        if ($site_pages !== FALSE
+            && isset($mod_data['pages_uri']) 
+            && $mod_data['pages_uri'] != lang('example_uri')
+            && $mod_data['pages_uri'] != '')
+        {
+            if (isset($mod_data['pages_template_id'])
+                && is_numeric($mod_data['pages_template_id']))
+            {
+                $page = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '',
+                                    str_replace($this->EE->config->item('site_url'), '',
+                                                $mod_data['pages_uri']));
+                $page = '/'.ltrim($page, '/');
+                
+                $site_pages['static_pages'][$site_id] = array(
+                    'uris'      => array(
+                        $params['entry_id'] => $page,
+                    ),
+                    'templates' => array(
+                        $params['entry_id'] => preg_replace("#[^0-9]+$#i", '',
+                                                            $mod_data['pages_template_id'])
+                    ),
+                );
+                
+                if ($site_pages['static_pages'][$site_id]['uris'][$params['entry_id']] == '//')
+                {
+                    $site_pages['static_pages'][$site_id]['uris'][$params['entry_id']] = '/';
+                }
+                
+                $this->EE->db->where('site_id', (int) $site_id)
+                            ->update('sites', array(
+                                        'site_pages'    => 
+                                            base64_encode(serialize($site_pages['static_pages']))
+                            ));
+            }
+        }
+	}
 }
