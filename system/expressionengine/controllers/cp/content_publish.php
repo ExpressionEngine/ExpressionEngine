@@ -195,16 +195,6 @@ class Content_publish extends CI_Controller {
 			'options'		=> lang('options'),
 			'date'			=> lang('date'),
 		);
-		
-		if (isset($this->cp->installed_modules['forum']))
-		{
-			$tab_labels['forum'] = lang('forum');
-		}
-		
-		if (isset($this->cp->installed_modules['pages']))
-		{
-			$tab_labels['pages'] = lang('pages');
-		}
 
 		foreach ($this->_module_tabs as $k => $tab)
 		{
