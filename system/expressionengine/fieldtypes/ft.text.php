@@ -53,6 +53,7 @@ class Text_ft extends EE_Fieldtype {
 		
 		if ( ! isset($this->field_content_types))
 		{
+			$this->EE->load->model('field_model');
 			$this->field_content_types = $this->EE->field_model->get_field_content_types();
 		}
 
