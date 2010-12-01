@@ -185,11 +185,9 @@ if ($EE_view_disable !== TRUE)
 											<?php if($field_list[$_n]['field_show_glossary'] == 'y'):
 												echo $glossary_items;
 											endif;?>
-
-											<?php if ($smileys_enabled && $field_list[$_n]['field_show_smileys'] == 'y'):
-												echo $smiley_table[$field_list[$_n]['field_id']];									
+											<?php if(isset($field_list[$_n]['smiley_table'])):
+												echo $field_list[$_n]['smiley_table'];
 											endif;?>
-
 										<?php endif; ?>
 										
 										

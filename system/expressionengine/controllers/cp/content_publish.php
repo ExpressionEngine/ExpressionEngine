@@ -32,6 +32,7 @@ class Content_publish extends CI_Controller {
 	private $_channel_fields 	= array();
 	private $_publish_blocks 	= array();
 	private $_publish_layouts 	= array();
+	private $_smileys_enabled	= FALSE;
 
 	/**
 	 * Constructor
@@ -85,6 +86,7 @@ class Content_publish extends CI_Controller {
 		
 		$autosave	= ($this->input->get_post('use_autosave') == 'y');
 
+		$this->_smileys_enabled = (isset($this->cp->installed_modules['emoticon']) ? TRUE : FALSE);
 
 		// Grab the channel_id associated with this entry if
 		// required and make sure the current member has access.
@@ -184,7 +186,8 @@ class Content_publish extends CI_Controller {
 		$this->javascript->set_global(array(
 			'date.format'			=> $this->config->item('time_format'),
 			'user.foo'				=> FALSE,
-			'publish.markitup.foo'	=> FALSE
+			'publish.markitup.foo'	=> FALSE,
+			'publish.smileys'		=> ($this->_smileys_enabled) ? TRUE : FALSE,
 		));
 		
 		$this->javascript->compile();
@@ -221,7 +224,7 @@ class Content_publish extends CI_Controller {
 			'field_output'	=> $field_output,
 			
 			'spell_enabled'		=> TRUE,
-			'smileys_enabled'	=> TRUE,
+			'smileys_enabled'	=> $this->_smileys_enabled,
 			
 			'show_revision_cluster' => FALSE,
 			
@@ -230,7 +233,6 @@ class Content_publish extends CI_Controller {
 				'channel_id'	=> $channel_id
 			)
 		);
-
 		
 		$this->cp->set_breadcrumb(
 			BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id,
@@ -1017,7 +1019,7 @@ class Content_publish extends CI_Controller {
 			'field_show_file_selector'		=> 'n',
 			'field_show_fmt'				=> 'n'
 		);
-		
+	
 		foreach ($field_list as $field => &$data)
 		{
 			$data['has_extras'] = FALSE;
@@ -1032,8 +1034,13 @@ class Content_publish extends CI_Controller {
 
 				$data[$key] = $val;
 			}
+			
+			if ($data['field_show_smileys'] == 'y' && $this->_smileys_enabled === TRUE)
+			{
+				$data['smiley_table'] = $this->_build_smiley_table($field);
+			}
 		}
-		
+
 		return $field_list;
 	}
 	
@@ -1765,6 +1772,36 @@ class Content_publish extends CI_Controller {
 	}
 
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Build Smiley Table
+	 *
+	 * This function builds the smiley table for a given field.
+	 *
+	 * @param 	string 	Field Name
+	 * @return 	string 	Smiley Table HTML
+	 */
+	private function _build_smiley_table($field_name)
+	{
+		$this->load->helper('smiley');
+		$this->load->library('table');
+		
+		$this->table->set_template(array(
+			'table_open' => 
+				'<table style="text-align: center; margin-top: 5px;" class="mainTable padTable smileyTable">'
+		));
+
+		$image_array = get_clickable_smileys($this->config->slash_item('emoticon_path'), 
+											 $field_name);
+		$col_array = $this->table->make_columns($image_array, 8);
+		$smilies = '<div class="smileyContent" style="display: none;">';
+		$smilies .= $this->table->generate($col_array).'</div>';
+		$this->table->clear();
+		
+		return $smilies;
+	}
+	
+	
 }
 // END CLASS
 
