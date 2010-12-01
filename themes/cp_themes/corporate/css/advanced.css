@@ -12,11 +12,6 @@
  *
  */
 
-#accessoryTabs ul li a,
-#accessoryTabs  ul li.current{
-	border-top-right-radius: 5px;
-	border-top-left-radius: 5px;
-}
 
 ul#navigationTabs li a:not(.addTab) {
 	border-top-right-radius: 3px;
@@ -27,13 +22,15 @@ ul#navigationTabs  > li {
 	border-top-left-radius: 3px;
 }
 
-#navigationTabs li ul {
-	border-radius:			3px;
-}
-
 #cp_search_form {
 	border-bottom-right-radius: 1px;
 	border-bottom-left-radius: 1px;
+}
+
+#accessoryTabs ul li a,
+#accessoryTabs  ul li.current{
+	border-top-right-radius: 5px;
+	border-top-left-radius: 5px;
 }
 
 /* Radius 12 bottom*/
@@ -58,8 +55,8 @@ ul#navigationTabs  > li {
 		border-radius: 10px;
 	}
 	
-/* Radius 0 */	
-h3.accordion{
+/* Other */	
+h3.accordion {
 	border-bottom-right-radius: 3px;
 	border-bottom-left-radius: 3px;
 	border-top-right-radius: 3px;
