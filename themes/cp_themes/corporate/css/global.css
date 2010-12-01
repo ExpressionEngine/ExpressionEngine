@@ -598,20 +598,17 @@ ul#navigationTabs li #addQuickTab:active {
 
 #navigationTabs ul li {
 	width:				177px;
-/* 	margin:				0 0 0 7px; */
 }
 
 #navigationTabs ul li.nav_divider {
 	margin:				2px 0;
 	border-top:			1px solid #eaeaea;
 	height:				0;
-	width:				177px;
 }
 
 #navigationTabs li ul {
 	border:		 		1px solid #dedede !important;
 	border-top:		 	none !important;
-	padding:			1px;
 	z-index:			50;
 	position:			absolute;
 	width:				177px;
