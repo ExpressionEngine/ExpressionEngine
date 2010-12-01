@@ -47,6 +47,7 @@ class Content_publish extends CI_Controller {
 		}
 		
 		$this->load->library('api');
+		$this->load->library('spellcheck');
 		$this->load->model('channel_model');
 		$this->load->helper(array('typography', 'spellcheck'));
 		$this->cp->get_installed_modules();
@@ -189,6 +190,21 @@ class Content_publish extends CI_Controller {
 			'publish.markitup.foo'	=> FALSE,
 			'publish.smileys'		=> ($this->_smileys_enabled) ? TRUE : FALSE,
 		));
+		
+		// -------------------------------------------
+		//	Publish Page Title Focus - makes the title field gain focus when the page is loaded
+		//
+		//	Hidden Configuration Variable - publish_page_title_focus => Set focus to the tile? (y/n)
+		// if ($which != 'edit' && $this->config->item('publish_page_title_focus') !== 'n')
+		// {
+		// 	$this->javascript->set_global('publish.title_focus', TRUE);
+		// }
+		// else
+		// {
+		// 	$this->javascript->set_global('publish.title_focus', FALSE);
+		// }
+
+		// -------------------------------------------
 		
 		$this->javascript->compile();
 		
@@ -530,10 +546,9 @@ class Content_publish extends CI_Controller {
 	/**
 	 * Spellcheck
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function spellcheck_actions()
+	public function spellcheck_actions()
 	{
 		if ( ! $this->input->get('action'))
 		{
@@ -553,6 +568,7 @@ class Content_publish extends CI_Controller {
 				return EE_Spellcheck::iframe();
 				break;
 			case 'check':
+				return EE_Spellcheck::check();
 				break;
 		}
 
