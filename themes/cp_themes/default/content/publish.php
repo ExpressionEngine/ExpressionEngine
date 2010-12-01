@@ -179,7 +179,7 @@ if ($EE_view_disable !== TRUE)
 											</p>
 
 											<?php if($spell_enabled && $field_list[$_n]['field_show_spellcheck'] == 'y'):
-												echo (ctype_digit($field_list[$_n]['field_id'])) ? build_spellcheck($_n) : build_spellcheck($_n);
+												echo build_spellcheck($_n);
 											endif;?>
 
 											<?php if($field_list[$_n]['field_show_glossary'] == 'y'):
@@ -220,6 +220,16 @@ if ($EE_view_disable !== TRUE)
 
 	</div> <!-- /contents -->
 <div> <!-- /mainContent -->
+
+	<div id="write_mode_container">
+		<div id="write_mode_close_container"><a href="#" class="closeWindowButton"><img alt="<?=lang('close')?>" width="13" height="13" src="<?=$cp_theme_url?>images/write_mode_close.png" /></a><a href="#" class="publish_to_field"><img alt="Publish to Field" width="103" height="18" src="<?=$cp_theme_url?>images/write_mode_publish_to_field.png" /></a>&nbsp;</div>
+
+		<div id="write_mode_writer">
+			<div id="write_mode_header"><a href="#" class="reveal_formatting_buttons"><img class="show_tools" alt="<?=lang('show_tools')?>" width="109" height="18" src="<?=$cp_theme_url?>images/write_mode_show_tools.png" /></a></div>
+			<textarea id="write_mode_textarea"></textarea>
+		</div>
+		<div id="write_mode_footer"><a href="#" class="publish_to_field"><img alt="<?=lang('publish_to_field')?>" width="103" height="18" src="<?=$cp_theme_url?>images/write_mode_publish_to_field.png" /></a></div>
+	</div>
 
 <?php
 if ($EE_view_disable !== TRUE)

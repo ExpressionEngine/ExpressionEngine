@@ -48,7 +48,7 @@ class Content_publish extends CI_Controller {
 		
 		$this->load->library('api');
 		$this->load->model('channel_model');
-		$this->load->helper('typography');
+		$this->load->helper(array('typography', 'spellcheck'));
 		$this->cp->get_installed_modules();
 	}
 	
@@ -535,6 +535,27 @@ class Content_publish extends CI_Controller {
 	 */
 	function spellcheck_actions()
 	{
+		if ( ! $this->input->get('action'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		if ( ! class_exists('EE_Spellcheck'))
+		{
+			require APPPATH.'libraries/Spellcheck'.EXT;
+		}
+		
+		$this->output->enable_profiler(FALSE);
+
+		switch ($this->input->get('action'))
+		{
+			case 'iframe':
+				return EE_Spellcheck::iframe();
+				break;
+			case 'check':
+				break;
+		}
+
 		
 	}
 	
@@ -1801,6 +1822,7 @@ class Content_publish extends CI_Controller {
 		return $smilies;
 	}
 	
+	// --------------------------------------------------------------------
 	
 }
 // END CLASS
