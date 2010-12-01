@@ -597,8 +597,23 @@ span.button .submit {
 /* -------------------------------------*/
 
 #sideBar {
+	clear:both;
 	float:				right;
 	width:				23%;
+}
+
+#sidebarContent {
+	padding:			8px 18px 18px;
+	background:			#fff;
+/* 	border-left:		1px solid #dedede; */
+	border-bottom:		1px solid #dedede;
+}
+
+#sidebarContent h4 {
+	font-size:			14px;
+	font-weight:		bold;
+	color:				#212121;
+	padding-top:		18px;
 }
 
 #sideBar a {
@@ -616,7 +631,6 @@ span.button .submit {
 	color:				#E7174B;
 	border-bottom:		1px solid #E7174B;
 }
-
 #sideBar .sidebar_hover_desc {
 	color:				#aaa;
 	font-size:			11px;
@@ -624,18 +638,25 @@ span.button .submit {
 }
 
 #activeUser {
+	padding-top:		1px;
+	padding-bottom:		2px;
 	color:				#fff;
-	padding:			1px 14px;
 	font-size:			10px;
-	line-height:		29px;
+	line-height:		28px;
 	text-align:			right;
+/* 	border-left:		1px solid #dedede; */
 	background:			#d91350 url('../images/active_user.png') repeat-y;
 }
 
 #activeUser .userName {
+	float:				left;
+	margin-left:		18px;
 	font-size:			14px;
-	font-family:		'Helvetica Neue', Arial, sans-serif;
 	font-weight:		500;
+}
+
+#activeUser .logOutButton{
+	padding-right:		18px;
 }
 
 #activeUser a:link, #activeUser a:visited {
@@ -652,8 +673,8 @@ span.button .submit {
 }
 
 #siteLogo a, #siteLogo span {
-	display:			block;
-	margin-bottom:		5px;
+	display: block;
+	margin-bottom: 5px;
 }
 
 #siteLogo span {
@@ -663,20 +684,14 @@ span.button .submit {
 #siteLogo p {
 	float:				left;
 	margin-left:		14px;
-	display: 			block;
-	color:				#5f6c74;
-}
-
-
-div#search {
-	margin-top:			6px;
-	padding-right:		25px;
+	display: block;
 	color:				#5f6c74;
 }
 
 #search form {
-	background-color:	#ECF1F4;
 	padding:			13px;
+	background-color:	#ECF1F4;
+	margin-bottom:		10px;
 }
 
 #search form .input {
@@ -684,52 +699,75 @@ div#search {
 }
 
 #search form .searchButton {
-	margin-bottom:		-5px;
-	padding-left:		8px;
+	margin-bottom:		-6px;
+	padding-left:		2px;
 }
 
 #sideBar h4 {
-	font-size:			18px;
+	font-size:			16px;
 	font-family:		'Helvetica Neue', Arial, sans-serif;
 	font-weight:		500;
 	color:				#5f6c74;
-	padding:			13px 0;
 }
+
+#sideBar #search h4 {
+	padding-bottom:		3px;
+}
+
 
 #quickLinks {
 	font-size:			11px;
-	padding-right:		25px;
-	margin-bottom:		25px;
+}
+
+#quickLinks ul{
+	padding-left:		25px;
+
+}
+
+#quickLinks li a:link, #quickLinks li a:visited {
+	line-height:		18px;
+}
+
+
+#sidebarControl {
+/*     border-top: 		1px solid #CCCCCC; */
+	padding-right:		15px;
 }
 
 #hideSidebarLink, #revealSidebarLink {
 	display:       	 	none;
-	border-top:			1px solid #a0aaa4;
 	background:			transparent url('../images/hide_sidebar_arrow.gif') top right no-repeat;
 	display:			block;
 	font-size:			9px;
-	padding:			2px 25px 7px 0;
-	margin-right:		25px;
+	padding:			2px 24px 6px 0;
 	text-align:			right;
 }
 
-#revealSidebarLink {
+a#revealSidebarLink {
 	border-top:			none;
+	height:				12px;
 }
 
-#hideSidebarLink:link, #hideSidebarLink:visited,
-#revealSidebarLink:link, #revealSidebarLink:visited  {
+a#hideSidebarLink:link, a#hideSidebarLink:visited,
+a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 	color:				#a0aaa4;
 }
 
 #notePad #notePadTextEdit {
-	width:				90%;
+	width:				80%;
 	height:				5em;
+	margin:				10px 20px;
 }
 
 #notePad #notePadText {
-	margin-right:		20px;
+	margin:				14px 20px;
 	color:				#5f6c74;
+}
+
+
+#notePad #notePadControls {
+	display:			none;
+	margin:				-15px 20px 5px 20px;
 }
 
 /* -------------------------------------

@@ -784,12 +784,22 @@ ul#navigationTabs li #addQuickTab:active {
 /* -------------------------------------*/
 
 #sideBar {
+	clear:both;
 	float:				right;
 	width:				23%;
-	box-shadow:			-1px 1px 5px #DDDDDD;
-	-moz-box-shadow:	-1px 1px 5px #DDDDDD;
-	-webkit-box-shadow:	-1px 1px 5px #DDDDDD;
-	background-color: 	#fff;
+}
+
+#sidebarContent {
+	padding:			8px 18px 18px;
+	background:			#fff;
+	border-left:		1px solid #dedede;
+}
+
+#sidebarContent h4 {
+	font-size:			14px;
+	font-weight:		bold;
+	color:				#212121;
+	padding-top:		18px;
 }
 
 #sideBar a {
@@ -814,23 +824,24 @@ ul#navigationTabs li #addQuickTab:active {
 }
 
 #activeUser {
+	padding:			4px 0;
 	color:				#005eb0;
-	padding:			3px 14px 0;
 	font-size:			10px;
 	line-height:		28px;
 	text-align:			right;
-	border-bottom:		1px solid #fff;
-	box-shadow:			0px 1px 2px #CCCECE;
-	-moz-box-shadow:	0px 1px 2px #CCCECE;
-	-webkit-box-shadow:	0px 1px 2px #CCCECE;
-	background: 		-webkit-gradient(linear, left top, left bottom, from(#fff), to(#f2f2f2));
-	background: 		-moz-linear-gradient(top,  #fff,  #f2f2f2);
-	filter: 			progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f2f2f2');
+	border-left:		1px solid #dedede;
+	background:			#fff;
 }
 
 #activeUser .userName {
+	float:				left;
+	margin-left:		18px;
 	font-size:			14px;
 	font-weight:		bold;
+}
+
+#activeUser .logOutButton{
+	padding-right:		18px;
 }
 
 #activeUser a:link, #activeUser a:visited {
@@ -841,9 +852,7 @@ ul#navigationTabs li #addQuickTab:active {
 #activeUser a:hover {
 	text-decoration:	underline;
 }
-#siteLogo  {
-	margin-left:20px;
-}
+
 #siteLogo img {
 	float: left;
 }
@@ -863,14 +872,6 @@ ul#navigationTabs li #addQuickTab:active {
 	display: block;
 }
 
-div#search {
-	margin-top:			6px;
-	margin-left:			24px;
-	margin-right:			24px;
-	border-bottom:1px solid #d9d9d9;
-	border-top:1px solid #d9d9d9;
-}
-
 #search form {
 	padding:			0 0 18px 0;
 	background: #fff;
@@ -885,24 +886,14 @@ div#search {
 	margin-bottom:		-6px;
 	padding-left:		2px;
 }
+
 #sideBar #search h4 {
-	font-size:			14px;
-	font-weight:		bold;
-	color:				#212121;
-	padding:			13px 0 2px 0;
-}
-#sideBar h4 {
-	font-size:			14px;
-	font-weight:		bold;
-	color:				#212121;
-	padding:			18px 0 2px 24px;
+	padding-bottom:		3px;
 }
 
 
 #quickLinks {
 	font-size:			11px;
-	padding-right:		25px;
-	margin-bottom:		25px;
 }
 
 #quickLinks ul{
@@ -913,7 +904,7 @@ div#search {
 #quickLinks li a:link, #quickLinks li a:visited {
 	color:				#005eb0;
 	text-decoration:	none;
-	line-height:18px;
+	line-height:		18px;
 	border-bottom:		none;
 }
 
@@ -923,21 +914,23 @@ div#search {
 	border-bottom:		none;
 }
 
-a#hideSidebarLink, a#revealSidebarLink {
-/* 	border-top:			1px solid #a0aaa4; */
-	background:			transparent url('../images/hide_sidebar_arrow.gif') bottom left no-repeat;
+#sidebarControl {
+    border-top: 		1px solid #CCCCCC;
+	padding-right:		15px;
+}
+
+#hideSidebarLink, #revealSidebarLink {
+	display:       	 	none;
+	background:			transparent url('../images/hide_sidebar_arrow.gif') top right no-repeat;
 	display:			block;
 	font-size:			9px;
-	padding:			8px 20px 0;
-	margin-top:			2px;
-/* 	margin-right:		0; */
-	text-align:			left;
-	height:				16px;
+	padding:			2px 24px 6px 0;
+	text-align:			right;
 }
 
 a#revealSidebarLink {
 	border-top:			none;
-	height:12px;
+	height:				12px;
 }
 
 a#hideSidebarLink:link, a#hideSidebarLink:visited,
@@ -952,7 +945,7 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 }
 
 #notePad #notePadText {
-	margin:				10px 20px 0 20px;
+	margin:				14px 20px;
 }
 
 
@@ -960,24 +953,22 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 	display:			none;
 	margin:				-15px 20px 5px 20px;
 }
+
+
 /* -------------------------------------
 /*  Breadcrumbs
 /* -------------------------------------*/
 
 #breadCrumb {
+	width:				auto;
 	font-size:			12px;
 	color:				#005eb0;
-	border-bottom:		1px solid #fff;
-	padding:			3px 25px 0px 5px;
-	width: auto;
-	
-	box-shadow:			0px 1px 2px #CCCECE;
-	-moz-box-shadow:	0px 1px 2px #CCCECE;
-	-webkit-box-shadow:	0px 1px 2px #CCCECE;
-
-	background: 		-webkit-gradient(linear, left top, left bottom, from(#fff), to(#f2f2f2));
-	background: 		-moz-linear-gradient(top,  #fff,  #f2f2f2);
-	filter: 			progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f2f2f2');
+	border-bottom:		1px solid #d1d3d3;
+	padding:			4px 0;
+	background: #FFFFFF; /* old browsers */
+	background: -moz-linear-gradient(top, #FFFFFF 0%, #F2F2F2 98%, #FFFFFF 100%); /* firefox */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FFFFFF), color-stop(98%,#F2F2F2), color-stop(100%,#FFFFFF)); /* webkit */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFFFFF', endColorstr='#F2F2F2',GradientType=0 ); /* ie */
 }
 
 #breadCrumb ol {
@@ -1023,7 +1014,6 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 	width:				77%;
 	background: 		#fff;
 	margin-top:			20px;
-/* 	margin-left:		25px; */
 }
 
 #mainWrapper {

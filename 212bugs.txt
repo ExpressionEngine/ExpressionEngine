@@ -48,10 +48,7 @@ Code: 0
 URI: http://ee2testing.intranet/system/index.php?S=7d414e50b581a598db4281eff49fd6a30319dbdd&D=cp&C=javascript&M=combo_load&ui=core,widget,mouse,position,sortable,dialog&plugin=ee_focus,ee_notice,ee_txtarea,tablesorter,ee_navigation&file=cp/global&effect=core&v=0
 --
 
-NUMBER 8
----------------------------------------------------------------------
 
-Content > Edit (and many other similar page layouts) has no margins or padding in the Search/Filter area. Additionally, the field legend is unstyled i.e. in the IE default blue.
 
 NUMBER 9
 ---------------------------------------------------------------------
@@ -60,11 +57,6 @@ When creating or editing a member group there is a 'rippling' effect of the pref
 is moved over them. The first 'mouse swipe' causes the top and bottom margins to collapse and a second swipe causes them
 to expand again. The effect is not generated again until a new preference group is selected.
 
-NUMBER 10
----------------------------------------------------------------------
-
-Using the Corporate theme the 'reveal sidebar' link and image is offset to the left to the position of the 
-left hand side of the sidebar were it to be shown.
 
 NUMBER 11
 ---------------------------------------------------------------------
@@ -207,3 +199,14 @@ URI: http://ee2testing.intranet/system/index.php?S=7d414e50b581a598db4281eff49fd
 
 In all browsers this looks like it's because in cp/javascript.php on line 28 the $paths variable is a string
 rather than an array ($paths = $this->load->_ci_view_path).
+
+NUMBER 8
+---------------------------------------------------------------------
+
+Content > Edit (and many other similar page layouts) has no margins or padding in the Search/Filter area. Additionally, the field legend is unstyled i.e. in the IE default blue.
+
+NUMBER 10
+---------------------------------------------------------------------
+
+Using the Corporate theme the 'reveal sidebar' link and image is offset to the left to the position of the 
+left hand side of the sidebar were it to be shown.

@@ -27,6 +27,10 @@ ul#navigationTabs  > li {
 	border-top-left-radius: 3px;
 }
 
+#navigationTabs li ul {
+	border-radius:			3px;
+}
+
 #cp_search_form {
 	border-bottom-right-radius: 1px;
 	border-bottom-left-radius: 1px;
