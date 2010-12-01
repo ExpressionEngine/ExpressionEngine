@@ -19,7 +19,6 @@ if ($EE_view_disable !== TRUE)
 		
 		<?php $this->load->view('_shared/message');?>
 
-
 		<div class="publishPageContents">
 			
 			<!-- @todo consider changing this? -->
