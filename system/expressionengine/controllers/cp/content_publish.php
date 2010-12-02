@@ -62,11 +62,50 @@ class Content_publish extends CI_Controller {
 	 */
 	public function index()
 	{
-		// currently simply calls channel_select_list,
-		// can be combined into one
+		if ($this->input->get_post('C') == 'content_publish')
+		{
+			$title = $this->lang->line('publish');
+			
+			$data = array(
+				'instructions'		=> lang('select_channel_to_post_in'),
+				'link_location'		=> BASE.AMP.'C=content_publish'.AMP.'M=entry_form'
+			);
+		}
+		else
+		{
+			$title = $this->lang->line('edit');
+			
+			$data = array(
+				'instructions'		=> lang('select_channel_to_edit'),
+				'link_location'		=> BASE.AMP.'C=content_edit'.AMP.'M=edit_entries'
+			);
+		}
 		
-		// @todo move ajax call from homepage elsewhere?
-		// shouldn't need to parse this entire file to get that
+		$this->cp->set_variable('cp_page_title', $title);
+
+		$this->load->model('channel_model');
+		$channels = $this->channel_model->get_channels();
+
+		$data['channels_exist'] = ($channels !== FALSE AND $channels->num_rows() === 0) ? FALSE : TRUE;
+		$data['assigned_channels'] = $this->session->userdata('assigned_channels');
+
+		// Base Url
+		$base_url = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id=';
+		
+		// If there's only one publishable channel, no point in asking them which one
+		// they want. Auto direct them to the publish form for the only channel available.
+		if (count($data['assigned_channels']) === 1)
+		{
+			if (isset($_GET['print_redirect']))
+			{
+				exit(str_replace(AMP, '&', $base_url.key($data['assigned_channels'])));
+			}
+
+			$this->functions->redirect($base_url.key($data['assigned_channels']));
+		}
+
+		$this->javascript->compile();
+		$this->load->view('content/channel_select_list', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -566,13 +605,9 @@ class Content_publish extends CI_Controller {
 		{
 			case 'iframe':
 				return EE_Spellcheck::iframe();
-				break;
 			case 'check':
 				return EE_Spellcheck::check();
-				break;
 		}
-
-		
 	}
 	
 	// --------------------------------------------------------------------
