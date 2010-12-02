@@ -4338,81 +4338,20 @@ class Admin_content extends CI_Controller {
 				return FALSE;
 			}
 
-			// Date or relationship types don't need formatting.
-			if ($field_type == 'date' OR $field_type == 'rel')
-			{
-				$native_settings['field_fmt'] = 'none';
-				$native_settings['field_show_fmt'] = 'n';
-				$_POST['update_formatting'] = 'y';
-			}
-
 			// Update the formatting for all existing entries
 			if ($this->_get_ft_post_data($field_type, 'update_formatting') == 'y')
 			{
 				$this->db->update('channel_data', array('field_ft_'.$native_settings['field_id'] => $native_settings['field_fmt']));
 			}
 
-			// Do we need to alter the table in order to deal with a new data type?
-
-			$this->db->select('field_type, field_content_type');
-			$query = $this->db->get_where('channel_fields', array('field_id' => $native_settings['field_id']));
-
-			$this->db->select('field_id_'.$native_settings['field_id']);
-			$this->db->limit(1);
-			$q = $this->db->get('channel_data');
-
-			$d_type = $q->field_data('channel_data');
-
-			if ($query->row('field_content_type') != $d_type[0]->type)
-			{
-				$this->api_channel_fields->set_datatype(
-									$native_settings['field_id'], 
-									$this->_get_ft_post_data($field_type, 'field_content_type')
-				);				
-			}
-
-			if ($query->row('field_type') != $field_type)
-			{
-				if ($query->row('field_type')  == 'rel')
-				{
-					$rquery = $this->db->query("SELECT field_id_".$this->db->escape_str($native_settings['field_id'])." AS rel_id FROM exp_channel_data WHERE field_id_".$this->db->escape_str($native_settings['field_id'])." != '0'");
-
-					if ($rquery->num_rows() > 0)
-					{
-						$rel_ids = array();
-
-						foreach ($rquery->result_array() as $row)
-						{
-							$rel_ids[] = $row['rel_id'];
-						}
-
-						$this->db->where_in('rel_id', $rel_ids);
-						$this->db->delete('relationships');
-					}
-				}
-
-				if ($query->row('field_type')  == 'date')
-				{
-					$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN `field_dt_".$this->db->escape_str($native_settings['field_id'])."`");
-				}
 				
-				switch($field_type)
-				{
-					case 'date'	:
-						$this->db->query("ALTER IGNORE TABLE exp_channel_data CHANGE COLUMN field_id_".$this->db->escape_str($native_settings['field_id'])." field_id_".$this->db->escape_str($native_settings['field_id'])." int(10) NOT NULL DEFAULT 0");
-						$this->db->query("ALTER TABLE exp_channel_data CHANGE COLUMN field_ft_".$this->db->escape_str($native_settings['field_id'])." field_ft_".$this->db->escape_str($native_settings['field_id'])." tinytext NULL");
-						$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_dt_".$this->db->escape_str($native_settings['field_id'])." varchar(8) AFTER field_ft_".$this->db->escape_str($native_settings['field_id'])."");
-					break;
-					case 'rel'	:
-						$this->db->query("ALTER IGNORE TABLE exp_channel_data CHANGE COLUMN field_id_".$this->db->escape_str($native_settings['field_id'])." field_id_".$this->db->escape_str($native_settings['field_id'])." int(10) NOT NULL DEFAULT 0");
-						$this->db->query("ALTER TABLE exp_channel_data CHANGE COLUMN field_ft_".$this->db->escape_str($native_settings['field_id'])." field_ft_".$this->db->escape_str($native_settings['field_id'])." tinytext NULL");
-					break;
-					default		:
-						$this->db->query("ALTER TABLE exp_channel_data CHANGE COLUMN field_id_".$this->db->escape_str($native_settings['field_id'])." field_id_".$this->db->escape_str($native_settings['field_id'])." text");
-						$this->db->query("ALTER TABLE exp_channel_data CHANGE COLUMN field_ft_".$this->db->escape_str($native_settings['field_id'])." field_ft_".$this->db->escape_str($native_settings['field_id'])." tinytext NULL");
-					break;
-				}
-			}
+			// Send it over to drop old fields, add new ones, and modify as needed
+			$this->api_channel_fields->edit_datatype(
+								$native_settings['field_id'], 
+								$field_type,
+								$native_settings['field_content_type']
+				);
+
 
 			unset($native_settings['group_id']);
 
@@ -4433,8 +4372,6 @@ class Admin_content extends CI_Controller {
 			);
 			
 			// Add to any custom layouts
-			
-			// echo '<pre>'; print_r($_POST); print_r($native_settings); print_r($ft_settings); exit;
 
 			$query = $this->field_model->get_assigned_channels($group_id);
 			
@@ -4448,8 +4385,6 @@ class Admin_content extends CI_Controller {
 				$this->load->library('layout');
 				$this->layout->edit_layout_fields($field_info, $channel_ids);
 			}
-						
-			
 		}
 		else
 		{
@@ -4474,34 +4409,17 @@ class Admin_content extends CI_Controller {
 			$insert_id = $this->db->insert_id();
 			$native_settings['field_id'] = $insert_id;
 
-			if ($field_type == 'date' OR $field_type == 'rel')
-			{
-				$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$insert_id." int(10) NOT NULL DEFAULT 0");
-				$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_ft_".$insert_id." tinytext NULL");
+			
+			$this->api_channel_fields->add_datatype(
+									$insert_id, 
+									$native_settings['field_content_type']
+				);
 
-				if ($field_type == 'date')
-				{
-					$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_dt_".$insert_id." varchar(8)");
-				}
-			}
-			else
-			{
-				switch ($this->_get_ft_post_data($field_type, 'field_content_type'))
-				{
-					case 'numeric':
-						$type = 'FLOAT DEFAULT 0';
-						break;
-					case 'integer':
-						$type = 'INT DEFAULT 0';
-						break;
-					default:
-						$type = 'text';
-				}
-				
-				$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$insert_id.' '.$type);
-				$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_ft_".$insert_id." tinytext NULL");
-				$this->db->query("UPDATE exp_channel_data SET field_ft_".$insert_id." = '".$this->db->escape_str($native_settings['field_fmt'])."'");
-			}
+// hack	
+// check this- did not apply w/date or rel
+
+			
+			$this->db->query("UPDATE exp_channel_data SET field_ft_".$insert_id." = '".$this->db->escape_str($native_settings['field_fmt'])."'");
 
 			foreach (array('none', 'br', 'xhtml') as $val)
 			{

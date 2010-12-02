@@ -161,6 +161,34 @@ class Date_ft extends EE_Fieldtype {
 		// if we're here, they're just using the date field without formatting, e.g. {custom_date}
 		return $date;
 	}
+
+	function save_settings($data)
+	{
+		// Date or relationship types don't need formatting.
+		$data['field_fmt'] = 'none';
+		$data['field_show_fmt'] = 'n';
+		$_POST['update_formatting'] = 'y';
+		
+		return $data;
+	}
+
+	// --------------------------------------------------------------------
+	
+	function settings_modify_column($params)
+	{
+		$fields['field_id_'.$params['field_id']] = array(
+			'type' 			=> 'INT',
+			'constraint'	=> 10,
+			'default'		=> 0
+			);
+
+		$fields['field_dt_'.$params['field_id']] = array(
+			'type' 			=> 'VARCHAR',
+			'constraint'	=> 8
+			);			
+		
+		return $fields;
+	}	
 }
 
 // END Date_ft class

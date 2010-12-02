@@ -179,6 +179,53 @@ class Rel_ft extends EE_Fieldtype {
 					lang('limit').NBS.form_dropdown('field_related_max', $field_related_max_options, $data['field_related_max'], 'id="field_related_max"')
 		);
 	}
+	
+	
+	function save_settings($data)
+	{
+		// Date or relationship types don't need formatting.
+		$data['field_fmt'] = 'none';
+		$data['field_show_fmt'] = 'n';
+		$_POST['update_formatting'] = 'y';
+		
+		return $data;
+	}	
+	
+	
+
+	// --------------------------------------------------------------------
+	
+	function settings_modify_column($params)
+	{
+		if ($params['type'] == 'delete')
+		{
+			$this->db->select('field_id_'.$params['field_id']);
+			$this->db->where('field_id_'.$params['field_id'].' !=', '0');
+			$rquery = $this->db->get('channel_data');
+
+			if ($rquery->num_rows() > 0)
+			{
+				$rel_ids = array();
+
+				foreach ($rquery->result_array() as $row)
+				{
+					$rel_ids[] = $row['field_id_'.$params['field_id']];
+				}
+
+				$this->EE->db->where_in('rel_id', $rel_ids);
+				$this->EE->db->delete('relationships');
+			}
+		}
+	
+		$fields['field_id_'.$params['field_id']] = array(
+			'type' 			=> 'INT',
+			'constraint'	=> 10,
+			'default'		=> 0
+			);	
+
+		return $fields;
+	}		
+	
 }
 
 // END Rel_ft class

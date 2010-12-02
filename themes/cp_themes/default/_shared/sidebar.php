@@ -1,18 +1,17 @@
 <div id="sideBar">
 	<div id="activeUser">
-		<span class="userName" style="float: left;"><?=$cp_screen_name?></span>
+		<a class="userName" href="<?=BASE.AMP.'C=myaccount'?>" title="<?=lang('myaccount')?>"><?=$cp_screen_name?></a>
 		<a class="logOutButton" href="<?=BASE.AMP.'C=login'.AMP.'M=logout'?>" title="<?=lang('logout')?>"><?=lang('logout')?></a>
 	</div>
 	
 	<div<?=$sidebar_state?> id="sidebarContent">
-		<h4><?=lang('myaccount')?></h4>
 
 		<div id="siteLogo">
 			<a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=edit_avatar'?>" id="user_avatar"><img src="<?=$cp_avatar_path ? $cp_avatar_path : $cp_theme_url.'images/site_logo.gif'?>" width="50" alt="Site Logo" /></a>
 			<p>
 				<strong><?=$this->session->userdata('username')?></strong>
 				<span><?=$this->session->userdata('group_title')?></span>
-				<a href="<?=BASE.AMP.'C=myaccount'?>"><?=lang('control_panel')?></a>
+				<a href="<?=BASE.AMP.'C=myaccount'?>"><?=lang('myaccount')?></a>
 			</p>
 			<div class="clear_left"></div>
 		</div> <!-- my account -->
@@ -50,6 +49,8 @@
 		
 	</div> <!-- sidebar_state -->
 	
-	<a href="#" id="hideSidebarLink"><?=lang('hide_sidebar')?></a>
-	<a href="#" id="revealSidebarLink"><?=lang('reveal_sidebar')?></a>
+	<div id="sidebarControl">
+		<a href="#" id="hideSidebarLink"><?=lang('hide_sidebar')?></a>
+		<a href="#" id="revealSidebarLink"><?=lang('reveal_sidebar')?></a>
+	</div>
 </div> <!-- sideBar -->

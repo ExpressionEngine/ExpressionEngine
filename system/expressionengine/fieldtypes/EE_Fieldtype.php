@@ -110,6 +110,8 @@ class EE_Fieldtype {
 		return $data;
 	}
 	
+
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -150,6 +152,33 @@ class EE_Fieldtype {
 	{
 		return array();
 	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Save Settings
+	 *
+	 * @access	public
+	 * @param	array
+	 * @param	string (add/delete/content_type)
+	 * @return	void
+	 */
+	function settings_modify_column($params)
+	{
+		// Default custom field additions to channel_data
+		$fields['field_id_'.$params['field_id']] = array(
+			'type' 			=> 'text',
+			'null'			=> TRUE
+			);
+
+		$fields['field_ft_'.$params['field_id']] = array(
+			'type' 			=> 'tinytext',
+			'null'			=> TRUE;
+			);			
+		
+		return $fields;
+	}
+	
 	
 	// --------------------------------------------------------------------
 	
