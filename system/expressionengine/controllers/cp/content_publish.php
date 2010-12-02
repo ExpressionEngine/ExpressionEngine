@@ -1860,10 +1860,9 @@ class Content_publish extends CI_Controller {
 	 * @return 	string 	Smiley Table HTML
 	 */
 	private function _build_smiley_table($field_name)
-	{
-		$this->load->helper('smiley');
+	{		
 		$this->load->library('table');
-		
+
 		$this->table->set_template(array(
 			'table_open' => 
 				'<table style="text-align: center; margin-top: 5px;" class="mainTable padTable smileyTable">'
