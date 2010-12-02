@@ -342,7 +342,7 @@ class Api_channel_fields extends Api {
 		
 		$this->EE->load->_ci_view_path = $_ft_path.'views/';
 		$this->EE->load->add_package_path($_ft_path);
-
+		
 		$res = call_user_func_array(array(&$this->field_types[$this->field_type], $method), $parameters);
 
 		$this->EE->load->remove_package_path($_ft_path);
@@ -373,34 +373,154 @@ class Api_channel_fields extends Api {
 		return FALSE;
 	}
 
+	function add_datatype($field_id, $c_type)
+	{
+
+		$this->set_datatype($field_id, $c_type, array(), TRUE);
+	}
+	
+	function delete_datatype($field_id, $c_type)
+	{
+		$fields = $this->apply('settings_modify_column', array(array('field_id' => $field_id, 'content_type' => $c_type, 'type' => 'delete')));
+		
+		if ( ! isset($fields['field_id_'.$field_id]))
+		{
+			$fields['field_id_'.$field_id] = '';
+		}
+		
+		if ( ! isset($fields['field_ft_'.$field_id]))
+		{
+			$fields['field_ft_'.$field_id] = '';
+		}		
+
+		$this->EE->load->dbforge();
+		$delete_fields = array_keys($fields);
+				
+		foreach ($delete_fields as $col)
+		{
+			$this->EE->dbforge->drop_column('channel_data', $col);
+		}
+	}	
+	
+	
+	function edit_datatype($field_id, $field_type, $c_type)
+	{
+		$old_fields = array();
+		
+		// First we get the existing field type and content type
+		$this->EE->db->select('field_type, field_content_type');
+		$query = $this->EE->db->get_where('channel_fields', array('field_id' => $field_id));
+		
+		$this->setup_handler($query->row('field_type'));
+		
+		// Field type changed ?
+		$type = ($query->row('field_type') == $field_type) ? 'get_data' : 'delete';
+
+		$old_fields = $this->apply('settings_modify_column', array(array('field_id' => $field_id, 'content_type' => $query->row('field_type'), 'type' => $type)));
+
+		// Switch handler back to the new field
+		$this->setup_handler($field_type);
+
+		if ( ! isset($old_fields['field_id_'.$field_id]))
+		{
+			$old_fields['field_id_'.$field_id]['type'] = 'text';
+			$old_fields['field_id_'.$field_id]['null'] = TRUE;
+		}
+		
+		if ( ! isset($old_fields['field_ft_'.$field_id]))
+		{
+			$old_fields['field_ft_'.$field_id]['type'] = 'tinytext';
+			$old_fields['field_ft_'.$field_id]['null'] = TRUE;
+		}
+
+		// Delete extra fields
+		if ($type == 'delete')
+		{
+			$this->EE->load->dbforge();
+			$delete_fields = array_keys($old_fields);
+				
+			foreach ($delete_fields as $col)
+			{
+				if ($col == 'field_id_'.$field_id OR $col == 'field_ft_'.$field_id)
+				{
+					continue;
+				}
+
+				$this->EE->dbforge->drop_column('channel_data', $col);
+			}
+			
+		}
+		
+		$type_change = ($type == 'delete') ? TRUE : FALSE;
+		
+		$this->set_datatype($field_id, $c_type, $old_fields, FALSE, $type_change);
+	}	
+	
+
+
 	// --------------------------------------------------------------------
 
-	function set_datatype($field_id, $c_type)
+	
+	function set_datatype($field_id, $c_type, $old_fields = array(), $new = TRUE, $type_change = FALSE)
 	{		
 		$this->EE->load->dbforge();
 		
-		$fields = array(
-				'field_id_'.$field_id => array(
-						'name'	=> 'field_id_'.$field_id
-					)
-			);
-	
-		switch($c_type)
+		// We have to get the new fields regardless to check whether they were modified
+		$fields = $this->apply('settings_modify_column', array(array('field_id' => $field_id, 'content_type' => $c_type, 'type' => 'add')));
+		
+		if ( ! isset($fields['field_id_'.$field_id]))
 		{
-			case 'numeric':
-				$fields['field_id_'.$field_id]['type'] = 'FLOAT';
-				$fields['field_id_'.$field_id]['default'] = 0;
-				break;
-			case 'integer':
-				$fields['field_id_'.$field_id]['type'] = 'INT';
-				$fields['field_id_'.$field_id]['default'] = 0;
-				break;
-			default:
-				$fields['field_id_'.$field_id]['type'] = 'text';
-				$fields['field_id_'.$field_id]['null'] = TRUE;
+			$fields['field_id_'.$field_id]['type'] = 'text';
+			$fields['field_id_'.$field_id]['null'] = TRUE;
+		}
+		
+		if ( ! isset($fields['field_ft_'.$field_id]))
+		{
+			$fields['field_ft_'.$field_id]['type'] = 'tinytext';
+			$fields['field_ft_'.$field_id]['null'] = TRUE;
+		}
+		
+		// Do we need to modify the field_id
+		$modify = FALSE;
+
+		if ( ! $new)
+		{
+			$diff1 = array_diff_assoc($old_fields['field_id_'.$field_id], $fields['field_id_'.$field_id]);
+			$diff2 = array_diff_assoc($fields['field_id_'.$field_id], $old_fields['field_id_'.$field_id]);
+		
+			if ( ! empty($diff1) OR ! empty($diff2))
+			{
+				$modify = TRUE;	
+			}
+		}
+
+
+		// Add any new fields
+		if ($type_change == TRUE or $new == TRUE)
+		{
+			foreach ($fields as $field => $prefs)
+			{
+				if ( ! $new)
+				{
+					if ($field == 'field_id_'.$field_id OR $field == 'field_ft_'.$field_id)
+					{
+						continue;
+					}
+				}
+					
+				$this->EE->dbforge->add_column('channel_data', array($field => $prefs));	
+			}
 		}
 	
-		$this->EE->dbforge->modify_column('channel_data', $fields);		
+		
+		// And modify any necessary fields
+		if ($modify == TRUE)
+		{
+			$mod['field_id_'.$field_id] = $fields['field_id_'.$field_id];
+			$mod['field_id_'.$field_id]['name'] = 'field_id_'.$field_id;			
+			
+			$this->EE->dbforge->modify_column('channel_data', $mod);	
+		}
 	}
 
 	

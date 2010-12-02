@@ -203,6 +203,10 @@ class Field_model extends CI_Model {
 	 */
 	function _remove_fields($results)
 	{
+		$this->load->library('api');
+		$this->api->instantiate('channel_fields');
+		$this->api_channel_fields->fetch_all_fieldtypes();
+		
 		$rel_ids = array();
 		$deleted_fields = array();
 		
@@ -210,28 +214,9 @@ class Field_model extends CI_Model {
 		{
 			foreach ($results->result() as $field)
 			{
-				if ($field->field_type == 'rel')
-				{
-					$rquery = $this->db->query("SELECT field_id_".$this->db->escape_str($field->field_id)." AS rel_id FROM exp_channel_data WHERE field_id_".$this->db->escape_str($field->field_id)." != '0'");
-
-					if ($rquery->num_rows() > 0)
-					{
-						$rel_ids = array();
-
-						foreach ($rquery->result_array() as $row)
-						{
-							$rel_ids[] = $row['rel_id'];
-						}
-					}
-				}
-
-				$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_id_".$field->field_id);
-				$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_ft_".$field->field_id);
-				
-				if ($field->field_type == 'date')
-				{
-					$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_dt_".$field->field_id);
-				}
+			
+				$this->api_channel_fields->setup_handler($field->field_type);
+				$this->api_channel_fields->delete_datatype($field->field_id, $field->field_content_type);
 
 				$deleted_fields['field_ids'][] = $field->field_id;
 				$deleted_fields['group_id'] = (isset($field->group_id)) ? $field->group_id : '';

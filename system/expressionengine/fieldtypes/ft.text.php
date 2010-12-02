@@ -133,6 +133,30 @@ class Text_ft extends EE_Fieldtype {
 			'field_content_text'	=> $this->EE->input->post('field_content_text')
 		);
 	}
+	
+
+	// --------------------------------------------------------------------
+	
+	function settings_modify_column($params)
+	{
+		switch($params['content_type'])
+		{
+			case 'numeric':
+				$fields['field_id_'.$params['field_id']]['type'] = 'FLOAT';
+				$fields['field_id_'.$params['field_id']]['default'] = 0;
+				break;
+			case 'integer':
+				$fields['field_id_'.$params['field_id']]['type'] = 'INT';
+				$fields['field_id_'.$params['field_id']]['default'] = 0;
+				break;
+			default:
+				$fields['field_id_'.$params['field_id']]['type'] = 'text';
+				$fields['field_id_'.$params['field_id']]['null'] = TRUE;
+		}
+		
+		return $fields;
+	}		
+	
 }
 
 // END Text_Ft class
