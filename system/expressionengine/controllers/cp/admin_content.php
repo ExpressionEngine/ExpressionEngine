@@ -4338,14 +4338,6 @@ class Admin_content extends CI_Controller {
 				return FALSE;
 			}
 
-			// Date or relationship types don't need formatting.
-			if ($field_type == 'date' OR $field_type == 'rel')
-			{
-				$native_settings['field_fmt'] = 'none';
-				$native_settings['field_show_fmt'] = 'n';
-				$_POST['update_formatting'] = 'y';
-			}
-
 			// Update the formatting for all existing entries
 			if ($this->_get_ft_post_data($field_type, 'update_formatting') == 'y')
 			{
@@ -4393,8 +4385,6 @@ class Admin_content extends CI_Controller {
 				$this->load->library('layout');
 				$this->layout->edit_layout_fields($field_info, $channel_ids);
 			}
-						
-			
 		}
 		else
 		{
