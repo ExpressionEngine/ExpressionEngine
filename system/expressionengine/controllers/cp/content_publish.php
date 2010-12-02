@@ -244,15 +244,14 @@ class Content_publish extends CI_Controller {
 		//	Publish Page Title Focus - makes the title field gain focus when the page is loaded
 		//
 		//	Hidden Configuration Variable - publish_page_title_focus => Set focus to the tile? (y/n)
-		// if ($which != 'edit' && $this->config->item('publish_page_title_focus') !== 'n')
-		// {
-		// 	$this->javascript->set_global('publish.title_focus', TRUE);
-		// }
-		// else
-		// {
-		// 	$this->javascript->set_global('publish.title_focus', FALSE);
-		// }
 
+		$this->javascript->set_global('publish.title_focus', FALSE);
+
+		if ($entry_id === 0 && $this->config->item('publish_page_title_focus') != 'n')
+		{
+			$this->javascript->set_global('publish.title_focus', TRUE);
+		}
+		
 		// -------------------------------------------
 		
 		$this->javascript->compile();
@@ -1658,14 +1657,19 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _setup_default_fields($channel_data, $entry_data)
 	{
-		// 'categories', 'pings', 'revisions', 'pages', all forum tab fields, all options tab fields
+		$title = ( ! $this->input->post('title')) ? $entry_data['title'] : $this->input->post('title');
+		
+		if ($this->_channel_data['default_entry_title'] != '' && $title == '')
+		{
+			$title = $this->_channel_data['default_entry_title'];
+		}
 		
 		$deft_fields = array(
 			'title' 		=> array(
 				'field_id'				=> 'title',
 				'field_label'			=> lang('title'),
 				'field_required'		=> 'y',
-				'field_data'			=> ( ! $this->input->post('title')) ? $entry_data['title'] : $this->input->post('title'),
+				'field_data'			=> $title,
 				'field_show_fmt'		=> 'n',
 				'field_instructions'	=> '',
 				'field_text_direction'	=> 'ltr',
