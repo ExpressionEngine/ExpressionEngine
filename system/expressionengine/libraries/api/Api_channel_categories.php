@@ -418,6 +418,19 @@ class Api_channel_categories extends Api {
 			return FALSE;
 		}
 	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get Categories
+	 *
+	 * @return 	array
+	 */
+	public function get_categories()
+	{
+		return $this->categories;
+	}
+	
 }
 
 // END CLASS

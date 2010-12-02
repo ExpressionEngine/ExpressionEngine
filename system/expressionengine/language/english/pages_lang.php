@@ -131,6 +131,9 @@ $lang = array(
 'setting' =>
 'Setting',
 
+'example_uri' =>
+'/example/pages/uri/',
+
 
 ''=>''
 );

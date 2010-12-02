@@ -139,7 +139,6 @@ class Api_channel_entries extends Api {
 						'sticky'					=> (isset($data['sticky']) && $data['sticky'] == 'y') ? 'y' : 'n',
 						'status'					=> $data['status'],
 						'allow_comments'			=> $data['allow_comments'],
-						'forum_topic_id'			=> (isset($data['forum_topic_id']) && $data['forum_topic_id'] != '' && is_numeric($data['forum_topic_id'])) ? trim($data['forum_topic_id']) : 0
 					 );
 
 		$this->meta =& $meta;
@@ -164,9 +163,7 @@ class Api_channel_entries extends Api {
 			$this->_set_mod_data($meta, $data, $mod_data);
 		}
 		
-		$this->_create_forum_post($meta, $data);
 		$this->_sync_related($meta, $data);
-		
 		
 		if (isset($data['save_revision']) && $data['save_revision'])
 		{
@@ -271,7 +268,6 @@ class Api_channel_entries extends Api {
 						'sticky'					=> (isset($data['sticky']) && $data['sticky'] == 'y') ? 'y' : 'n',
 						'status'					=> $data['status'],
 						'allow_comments'			=> $data['allow_comments'],
-						'forum_topic_id'			=> (isset($data['forum_topic_id']) && $data['forum_topic_id'] != '' && is_numeric($data['forum_topic_id'])) ? trim($data['forum_topic_id']) : 0
 					 );
 
 		$this->meta =& $meta;
@@ -306,7 +302,6 @@ class Api_channel_entries extends Api {
 			$this->_set_mod_data($meta, $data, $mod_data);
 		}		
 		
-		$this->_update_forum_post($meta, $data);
 		$this->_sync_related($meta, $data);
 
 		if (isset($data['save_revision']) && $data['save_revision'])
@@ -562,26 +557,6 @@ class Api_channel_entries extends Api {
 			}
 
 			$entries[] = $val;
-		}
-
-
-		// Delete Pages Stored in Database For Entries
-		if (count($entries) > 0 && $this->EE->config->item('site_pages') !== FALSE)
-		{
-			$pages = $this->EE->config->item('site_pages');
-
-			if (count($pages[$this->EE->config->item('site_id')]) > 0)
-			{
-				foreach($entries as $entry_id)
-				{
-					unset($pages[$this->EE->config->item('site_id')]['uris'][$entry_id]);
-					unset($pages[$this->EE->config->item('site_id')]['templates'][$entry_id]);
-				}
-				//  No need for set_item();
-
-				$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-				$this->EE->db->update('sites', array('site_pages' => base64_encode(serialize($pages))));
-			}
 		}
 		
 		$fts = $this->EE->api_channel_fields->fetch_installed_fieldtypes();
@@ -881,12 +856,6 @@ class Api_channel_entries extends Api {
 	 */
 	function _base_prep(&$data)
 	{	
-		// Language Files
-		if ($this->EE->config->item('site_pages') !== FALSE)
-		{
-			$this->EE->lang->loadfile('pages');
-		}
-		
 		$this->EE->lang->loadfile('admin_content');
 		
 		// Sanity Check
@@ -1196,61 +1165,6 @@ class Api_channel_entries extends Api {
 		
 		$data['url_title'] = isset($data['url_title']) ? $data['url_title'] : '';
 		$data['url_title'] = $this->_validate_url_title($data['url_title'], $data['title'], (bool) $this->entry_id);
-
-		// Pages
-		$this->_cache['pages_enabled'] = $this->EE->config->item('site_pages');
-
-		// Pages URI is just the default example URI submitted.
-		if (isset($data['pages_uri']) && $data['pages_uri'] == '/example/pages/uri/')
-		{
-			$data['pages_uri'] = '';
-		}
-
-		if ($this->EE->config->item('site_pages') !== FALSE && isset($data['pages_uri']) && $data['pages_uri'] != '')
-		{
-			$this->_cache['pages_enabled'] = TRUE;
-			
-			if ( ! isset($data['pages_template_id']) OR ! is_numeric($data['pages_template_id']))
-			{
-				$this->_set_error('invalid_template', 'pages_template_id');
-			}
-			
-			$page_uri = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '', str_replace($this->EE->config->item('site_url'), '', $data['pages_uri']));
-			
-			if ($page_uri !== $data['pages_uri'])
-			{
-				$this->_set_error('invalid_page_uri', 'pages_uri');
-			}
-			
-			// How many segments are we trying out?
-			$pages_uri_segs = substr_count(trim($data['pages_uri'], '/'), '/');		
-
-			// More than 9 pages URI segs?  goodbye
-			if ($pages_uri_segs > 8)
-			{
-				$this->_set_error('invalid_page_num_segs', 'pages_uri');
-			}
-			
-			// Check if duplicate uri
-			$static_pages = $this->EE->config->item('site_pages');
-			$uris = $static_pages[$this->EE->config->item('site_id')]['uris'];
-			
-			if ($this->entry_id)
-			{
-				unset($uris[$this->entry_id]);
-			}
-			
-			if (in_array($data['pages_uri'], $uris))
-			{
-				$this->_set_error('duplicate_page_uri', 'pages_uri');
-			}
-			
-			// Need this later...
-			$this->_cache['static_pages'] = $static_pages;
-			
-			unset($uris, $static_pages);
-		}
-		
 		
 		// Validate author id
 		
@@ -1962,14 +1876,7 @@ class Api_channel_entries extends Api {
 						}
 					}
 				}
-				
-				if ($this->EE->config->item('site_pages') !== FALSE && $this->_cache['pages_enabled'] && $this->EE->input->post('pages_uri') != '/example/pages/uri/' && $this->EE->input->post('pages_uri') != '')
-				{
-					$mod_data['pages_uri'] = $data['pages_uri'];
-					$mod_data['pages_template_id'] = $data['pages_template_id'];
-				}
 
-				
 				// Entry for this was made earlier, now its an update not an insert
 				$cust_fields['entry_id'] = $this->entry_id;
 				$cust_fields['original_entry_id'] = $this->entry_id;
@@ -1979,7 +1886,6 @@ class Api_channel_entries extends Api {
 			}
 			else
 			{
-				
 				// Check that data complies with mysql strict mode rules
 				$all_fields = $this->EE->db->field_data('channel_data');
 
@@ -2084,29 +1990,6 @@ class Api_channel_entries extends Api {
 		// Recompile Relationships
 		$this->update_related_cache($this->entry_id);
 		
-		// Is a page being updated or created?
-		
-		if ($this->EE->config->item('site_pages') !== FALSE && $this->_cache['pages_enabled'] && $this->EE->input->post('pages_uri') != '/example/pages/uri/' && $this->EE->input->post('pages_uri') != '')
-		{
-			if (isset($data['pages_template_id']) && is_numeric($data['pages_template_id']))
-			{
-				$site_id = $this->EE->config->item('site_id');
-				
-				$this->_cache['static_pages'][$site_id]['uris'][$this->entry_id]		= preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '', str_replace($this->EE->config->item('site_url'), '', $data['pages_uri']));
-				$this->_cache['static_pages'][$site_id]['uris'][$this->entry_id]		= '/'.ltrim($this->_cache['static_pages'][$site_id]['uris'][$this->entry_id], '/');
-				$this->_cache['static_pages'][$site_id]['templates'][$this->entry_id]	= preg_replace("#[^0-9]+$#i", '', $data['pages_template_id']);
-
-				if ($this->_cache['static_pages'][$site_id]['uris'][$this->entry_id] == '//')
-				{
-					$this->_cache['static_pages'][$site_id]['uris'][$this->entry_id] = '/';
-				}
-
-				$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-				$this->EE->db->update('sites', array('site_pages' => base64_encode(serialize($this->_cache['static_pages']))) );
-			}
-		}
-		
-
 		// Save revisions if needed
 		
 		if ($this->c_prefs['enable_versioning'] == 'y')
@@ -2124,9 +2007,7 @@ class Api_channel_entries extends Api {
 			$this->EE->channel_entries_model->prune_revisions($this->entry_id, $max);
 		}
 		
-		
 		// Post update custom fields
-		
 		$this->EE->db->select('field_id, field_name, field_label, field_type, field_required');
 		$this->EE->db->join('channels', 'channels.field_group = channel_fields.group_id', 'left');
 		$this->EE->db->where('channel_id', $this->channel_id);
@@ -2170,133 +2051,6 @@ class Api_channel_entries extends Api {
 		
 		$module_data = $this->EE->api_channel_fields->get_module_methods($methods, $params);
 
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Create a forum post if forum data was passed in
-	 *
-	 * @access	private
-	 * @param	string
-	 * @return	string
-	 */
-	function _create_forum_post($meta, &$data)
-	{
-		if ($this->EE->config->item('forum_is_installed') == "y" AND isset($data['forum_title'], $data['forum_body'], $data['forum_id']) && $data['forum_title'] != '' AND $data['forum_body'] != '')
-		{
-			$this->EE->db->select('board_id');
-			$query = $this->EE->db->get_where('forums', array('forum_id' => $data['forum_id']));
-			
-			if ($query->num_rows() > 0)
-			{
-				$this->EE->load->library('security');
-				
-				$title = $this->_convert_forum_tags($data['forum_title']);
-				$body = $this->_convert_forum_tags(str_replace('{permalink}', 
-																$this->EE->functions->remove_double_slashes($this->c_prefs['comment_url'].'/'.$meta['url_title'].'/'), 
-																$data['forum_body']));
-				
-				$this->EE->db->insert('forum_topics', array(
-						'forum_id'				=> $data['forum_id'],
-						'board_id'				=> $query->row('board_id'),
-						'topic_date'			=> $this->EE->localize->now,
-						'title'					=> $this->EE->security->xss_clean($title),
-						'body'					=> $this->EE->security->xss_clean($body),
-                  		'author_id'         	=> $meta['author_id'],
-						'ip_address'			=> $this->EE->input->ip_address(),
-						'last_post_date'		=> $this->EE->localize->now,
-						'last_post_author_id'	=> $meta['author_id'],
-						'sticky'				=> 'n',
-						'status'				=> 'o',
-						'announcement'			=> 'n',
-						'poll'					=> 'n',
-						'parse_smileys'			=> 'y',
-						'thread_total'			=> 1
-				));
-				
-				$topic_id = $this->EE->db->insert_id();
-
-				$this->EE->db->where('entry_id', $this->entry_id);
-				$this->EE->db->update('channel_titles', array('forum_topic_id' => $topic_id));
-				
-				$this->EE->db->insert('forum_subscriptions', array(
-					'topic_id'			=> $topic_id,
-					'member_id'			=> $meta['author_id'],
-					'subscription_date'	=> $this->EE->localize->now,
-					'hash'				=> $meta['author_id'].$this->EE->functions->random('alpha', 8)
-				));
-
-				// Update the forum stats
-
-				if ( ! class_exists('Forum'))
-				{
-					require PATH_MOD.'forum/mod.forum'.EXT;
-					require PATH_MOD.'forum/mod.forum_core'.EXT;
-				}
-				Forum_Core::_update_post_stats($data['forum_id']);
-
-				// Update member post total
-				$this->EE->db->where('member_id', $meta['author_id']);
-				$this->EE->db->update('members', array('last_forum_post_date' => $this->EE->localize->now));
-			}			
-        }
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Check for an existing forum post and update
-	 *
-	 * @access	private
-	 * @param	string
-	 * @return	string
-	 */
-	function _update_forum_post($meta, &$data)
-	{
-		// A majority of the time one of these will fail
-		if ($this->EE->config->item('forum_is_installed') != "y" OR $meta['forum_topic_id'] == 0)
-		{
-			return;
-		}
-		
-		// We need data to update
-		if (isset($data['forum_title'], $data['forum_body']) && $data['forum_title'] != '' AND $data['forum_body'] != '')
-		{
-			$title = $this->_convert_forum_tags($data['forum_title']);
-			$body = $this->_convert_forum_tags(str_replace('{permalink}',
-															$this->EE->functions->remove_double_slashes($this->c_prefs['comment_url'].'/'.$meta['url_title'].'/'),
-															$meta['forum_body']));
-
-			$this->EE->db->where('topic_id', $meta['forum_topic_id']);
-			$this->EE->db->update('forum_topics', array('title' => $title, 'body' => $body));
-			
-			// Update the forum stats
-			if ( ! class_exists('Forum'))
-			{
-				require PATH_MOD.'forum/mod.forum'.EXT;
-				require PATH_MOD.'forum/mod.forum_core'.EXT;
-			}
-			Forum_Core::_update_post_stats($data['forum_id']);
-		}
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Convert forum special characters
-	 *
-	 * @access	private
-	 * @param	string
-	 * @return	string
-	 */
-	function _convert_forum_tags($str)
-	{
-		$str = str_replace('{include:', '&#123;include:', $str);
-		$str = str_replace('{path:', '&#123;path:', $str);
-		$str = str_replace('{lang:', '&#123;lang:', $str);
-
-		return $str;
 	}
 	
 	// --------------------------------------------------------------------

@@ -118,7 +118,7 @@ class Channel_model extends CI_Model {
 	 * @param	int
 	 * @return	mixed
 	 */
-	function get_channel_info($channel_id = '', $fields = array())
+	function get_channel_info($channel_id, $fields = array())
 	{
 		if (count($fields) > 0)
 		{

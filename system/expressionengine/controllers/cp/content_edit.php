@@ -540,11 +540,9 @@ class Content_edit extends CI_Controller {
 
 		$vars['table_headings'] = $table_headings;
 
-
-
 		// load the site's templates
 		$templates = array();
-
+		
 		$tquery = $this->db->query("SELECT exp_template_groups.group_name, exp_templates.template_name, exp_templates.template_id
 							FROM exp_template_groups, exp_templates
 							WHERE exp_template_groups.group_id = exp_templates.group_id

@@ -26,10 +26,10 @@ class EE_Spellcheck {
 
 	var $enabled = FALSE;
 
-	/** -------------------------------------
-	/**  Constructor
-	/** -------------------------------------*/
-	function __construct()
+	/**
+	 * Constructor
+	 */
+	public function __construct()
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
@@ -54,13 +54,17 @@ class EE_Spellcheck {
 		$this->EE->load->vars(array('spell_enabled' => $this->enabled));
 	}
 
-	//-------------------------------------
-	//  JavaScript Required By Class
-	//  
-	//  Put this before the eeSpell object
-	//  is called.
-	//-------------------------------------
-	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Spellcheck Javascript
+	 *
+	 * put this before the EESpell Object is called
+	 *
+	 * @param 	string
+	 * @param 	boolean
+	 * @return 	string
+	 */
 	function Javascript($check_url = '', $wrap = FALSE)
 	{
 		if ($this->enabled === FALSE)
@@ -79,7 +83,7 @@ class EE_Spellcheck {
 		if (REQ == 'CP')
 		{
 			$is_frontend = 'false';
-			$check_url = ($check_url == "") ? str_replace('&amp;', '&', BASE).'&C=content_publish&M=spellcheck' : str_replace('&amp;', '&', $check_url);
+			$check_url = ($check_url == "") ? str_replace('&amp;', '&', BASE).'&C=content_publish&M=spellcheck_actions&action=check' : str_replace('&amp;', '&', $check_url);
 		}
 		
 		$check_url = str_replace('&amp;', '&', $check_url);
@@ -1122,11 +1126,12 @@ EOT;
 	
 	}
 
-		
-	/** -----------------------------------------
-	/**  Base IFRAME for Spell Check
-	/** -----------------------------------------*/
-	function iframe()
+	// --------------------------------------------------------------------
+	
+	/**
+	 * iFrame
+	 */
+	public function iframe()
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();

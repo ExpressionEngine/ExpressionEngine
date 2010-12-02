@@ -39,6 +39,7 @@ class File_ft extends EE_Fieldtype {
 	function File_ft()
 	{
 		parent::EE_Fieldtype();
+		$this->EE->load->model('tools_model');
 	}
 	
 	// --------------------------------------------------------------------
