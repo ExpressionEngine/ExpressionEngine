@@ -181,7 +181,7 @@ class Content_publish extends CI_Controller {
 			// $errors = $this->errors
 
 		}
-
+// var_dump($this->form_validation->_error_array);
 
 		/*
 		
