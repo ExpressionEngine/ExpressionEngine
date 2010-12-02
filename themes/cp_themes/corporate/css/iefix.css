@@ -4,16 +4,9 @@
  *
  */
 
-#breadCrumb, #activeUser {
-	border-bottom:		1px solid #efefef;
-}
-
 #breadCrumb {
+	border-bottom:		1px solid #efefef;
 	height: 28px;
-}
-
-#activeUser {
-	height: 29px;
 }
  
 #publish_tab .publish_textarea textarea, .publish_input input {
@@ -21,7 +14,6 @@
 }
 #mainContent #showToolbarLink {
 	margin-right: 		24px;
-
 }
 
 #mainMenu {position:relative;z-index:999;}
