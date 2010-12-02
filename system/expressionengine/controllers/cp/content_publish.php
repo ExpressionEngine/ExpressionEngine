@@ -128,6 +128,12 @@ class Content_publish extends CI_Controller {
 
 		$this->_smileys_enabled = (isset($this->cp->installed_modules['emoticon']) ? TRUE : FALSE);
 
+		if ($this->_smileys_enabled)
+		{
+			$this->load->helper('smiley');
+			$this->cp->add_to_foot(smiley_js());				
+		}
+
 		// Grab the channel_id associated with this entry if
 		// required and make sure the current member has access.
 		$channel_id = $this->_member_can_publish($channel_id, $entry_id, $autosave);
