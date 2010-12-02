@@ -181,9 +181,7 @@ class Content_publish extends CI_Controller {
 			// $errors = $this->errors
 
 		}
-		
 
-		
 
 		/*
 		
@@ -225,9 +223,10 @@ class Content_publish extends CI_Controller {
 		    )
 		);
 		
-		
-		// @todo only admins
-		$this->cp->add_js_script(array('file' => 'cp/publish_admin'));
+		if ($this->session->userdata('group_id') === 1)
+		{
+			$this->cp->add_js_script(array('file' => 'cp/publish_admin'));			
+		}
 
 		$this->javascript->set_global(array(
 			'date.format'					=> $this->config->item('time_format'),
@@ -247,7 +246,7 @@ class Content_publish extends CI_Controller {
 
 		$this->javascript->set_global('publish.title_focus', FALSE);
 
-		if ($entry_id === 0 && $this->config->item('publish_page_title_focus') != 'n')
+		if ( ! $entry_id && $this->config->item('publish_page_title_focus') != 'n')
 		{
 			$this->javascript->set_global('publish.title_focus', TRUE);
 		}

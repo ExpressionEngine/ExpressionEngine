@@ -19,10 +19,9 @@ if ($EE_view_disable !== TRUE)
 		
 		<?php $this->load->view('_shared/message');?>
 
-		<div class="publishPageContents">
-			
-			<!-- @todo consider changing this? -->
-			<!-- <?php if (isset($submission_error)):?>
+		<div class="publishPageContents">			
+
+			<?php if (isset($submission_error)):?>
 				<fieldset class="previewBox" id="previewBox"><legend class="previewItemTitle">&nbsp;<span class='alert'><?=lang('error')?></span>&nbsp;</legend>
 					<?php echo $submission_error; ?>
 					<?php echo $message; ?>
@@ -31,8 +30,7 @@ if ($EE_view_disable !== TRUE)
 				<fieldset class="previewBox" id="previewBox"><legend class="previewItemTitle">&nbsp;<span class='notice'><?=lang('success')?></span>&nbsp;</legend>
 					<?php echo $message; ?>
 				</fieldset>
-			<?php endif;?> -->
-			
+			<?php endif;?>
 			
 			<?=form_open_multipart($current_url, array('id' => 'publishForm'), $hidden_fields)?>
 			
