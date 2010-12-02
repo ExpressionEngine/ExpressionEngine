@@ -62,11 +62,50 @@ class Content_publish extends CI_Controller {
 	 */
 	public function index()
 	{
-		// currently simply calls channel_select_list,
-		// can be combined into one
+		if ($this->input->get_post('C') == 'content_publish')
+		{
+			$title = $this->lang->line('publish');
+			
+			$data = array(
+				'instructions'		=> lang('select_channel_to_post_in'),
+				'link_location'		=> BASE.AMP.'C=content_publish'.AMP.'M=entry_form'
+			);
+		}
+		else
+		{
+			$title = $this->lang->line('edit');
+			
+			$data = array(
+				'instructions'		=> lang('select_channel_to_edit'),
+				'link_location'		=> BASE.AMP.'C=content_edit'.AMP.'M=edit_entries'
+			);
+		}
 		
-		// @todo move ajax call from homepage elsewhere?
-		// shouldn't need to parse this entire file to get that
+		$this->cp->set_variable('cp_page_title', $title);
+
+		$this->load->model('channel_model');
+		$channels = $this->channel_model->get_channels();
+
+		$data['channels_exist'] = ($channels !== FALSE AND $channels->num_rows() === 0) ? FALSE : TRUE;
+		$data['assigned_channels'] = $this->session->userdata('assigned_channels');
+
+		// Base Url
+		$base_url = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id=';
+		
+		// If there's only one publishable channel, no point in asking them which one
+		// they want. Auto direct them to the publish form for the only channel available.
+		if (count($data['assigned_channels']) === 1)
+		{
+			if (isset($_GET['print_redirect']))
+			{
+				exit(str_replace(AMP, '&', $base_url.key($data['assigned_channels'])));
+			}
+
+			$this->functions->redirect($base_url.key($data['assigned_channels']));
+		}
+
+		$this->javascript->compile();
+		$this->load->view('content/channel_select_list', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -88,6 +127,12 @@ class Content_publish extends CI_Controller {
 		$autosave	= ($this->input->get_post('use_autosave') == 'y');
 
 		$this->_smileys_enabled = (isset($this->cp->installed_modules['emoticon']) ? TRUE : FALSE);
+
+		if ($this->_smileys_enabled)
+		{
+			$this->load->helper('smiley');
+			$this->cp->add_to_foot(smiley_js());				
+		}
 
 		// Grab the channel_id associated with this entry if
 		// required and make sure the current member has access.
@@ -185,25 +230,28 @@ class Content_publish extends CI_Controller {
 		$this->cp->add_js_script(array('file' => 'cp/publish_admin'));
 
 		$this->javascript->set_global(array(
-			'date.format'			=> $this->config->item('time_format'),
-			'user.foo'				=> FALSE,
-			'publish.markitup.foo'	=> FALSE,
-			'publish.smileys'		=> ($this->_smileys_enabled) ? TRUE : FALSE,
+			'date.format'					=> $this->config->item('time_format'),
+			'user.foo'						=> FALSE,
+			'publish.markitup.foo'			=> FALSE,
+			'publish.smileys'				=> ($this->_smileys_enabled) ? TRUE : FALSE,
+			'publish.which'					=> ($entry_id === 0) ? 'new' : 'edit',
+			'publish.default_entry_title'	=> $this->_channel_data['default_entry_title'],
+			'publish.word_separator'		=> $this->config->item('word_separator'),
+			'publish.url_title_prefix'		=> $this->_channel_data['url_title_prefix'],
 		));
-		
+
 		// -------------------------------------------
 		//	Publish Page Title Focus - makes the title field gain focus when the page is loaded
 		//
 		//	Hidden Configuration Variable - publish_page_title_focus => Set focus to the tile? (y/n)
-		// if ($which != 'edit' && $this->config->item('publish_page_title_focus') !== 'n')
-		// {
-		// 	$this->javascript->set_global('publish.title_focus', TRUE);
-		// }
-		// else
-		// {
-		// 	$this->javascript->set_global('publish.title_focus', FALSE);
-		// }
 
+		$this->javascript->set_global('publish.title_focus', FALSE);
+
+		if ($entry_id === 0 && $this->config->item('publish_page_title_focus') != 'n')
+		{
+			$this->javascript->set_global('publish.title_focus', TRUE);
+		}
+		
 		// -------------------------------------------
 		
 		$this->javascript->compile();
@@ -566,13 +614,9 @@ class Content_publish extends CI_Controller {
 		{
 			case 'iframe':
 				return EE_Spellcheck::iframe();
-				break;
 			case 'check':
 				return EE_Spellcheck::check();
-				break;
 		}
-
-		
 	}
 	
 	// --------------------------------------------------------------------
@@ -1613,14 +1657,19 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _setup_default_fields($channel_data, $entry_data)
 	{
-		// 'categories', 'pings', 'revisions', 'pages', all forum tab fields, all options tab fields
+		$title = ( ! $this->input->post('title')) ? $entry_data['title'] : $this->input->post('title');
+		
+		if ($this->_channel_data['default_entry_title'] != '' && $title == '')
+		{
+			$title = $this->_channel_data['default_entry_title'];
+		}
 		
 		$deft_fields = array(
 			'title' 		=> array(
 				'field_id'				=> 'title',
 				'field_label'			=> lang('title'),
 				'field_required'		=> 'y',
-				'field_data'			=> ( ! $this->input->post('title')) ? $entry_data['title'] : $this->input->post('title'),
+				'field_data'			=> $title,
 				'field_show_fmt'		=> 'n',
 				'field_instructions'	=> '',
 				'field_text_direction'	=> 'ltr',
@@ -1819,10 +1868,9 @@ class Content_publish extends CI_Controller {
 	 * @return 	string 	Smiley Table HTML
 	 */
 	private function _build_smiley_table($field_name)
-	{
-		$this->load->helper('smiley');
+	{		
 		$this->load->library('table');
-		
+
 		$this->table->set_template(array(
 			'table_open' => 
 				'<table style="text-align: center; margin-top: 5px;" class="mainTable padTable smileyTable">'
