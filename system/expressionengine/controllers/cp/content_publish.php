@@ -230,12 +230,16 @@ class Content_publish extends CI_Controller {
 		$this->cp->add_js_script(array('file' => 'cp/publish_admin'));
 
 		$this->javascript->set_global(array(
-			'date.format'			=> $this->config->item('time_format'),
-			'user.foo'				=> FALSE,
-			'publish.markitup.foo'	=> FALSE,
-			'publish.smileys'		=> ($this->_smileys_enabled) ? TRUE : FALSE,
+			'date.format'					=> $this->config->item('time_format'),
+			'user.foo'						=> FALSE,
+			'publish.markitup.foo'			=> FALSE,
+			'publish.smileys'				=> ($this->_smileys_enabled) ? TRUE : FALSE,
+			'publish.which'					=> ($entry_id === 0) ? 'new' : 'edit',
+			'publish.default_entry_title'	=> $this->_channel_data['default_entry_title'],
+			'publish.word_separator'		=> $this->config->item('word_separator'),
+			'publish.url_title_prefix'		=> $this->_channel_data['url_title_prefix'],
 		));
-		
+
 		// -------------------------------------------
 		//	Publish Page Title Focus - makes the title field gain focus when the page is loaded
 		//
