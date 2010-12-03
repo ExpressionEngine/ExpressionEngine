@@ -1755,9 +1755,9 @@ class Content_publish extends CI_Controller {
 			}
 			
 			$rules = $required.'call_field_validation['.$f_data['field_id'].']';
-			$this->form_validation->set_rules($f_data['field_id'], $f_data['field_label'], $rules);
+			$this->form_validation->set_rules($field_name, $f_data['field_label'], $rules);
 		}
-
+		
 		return $deft_fields;
 	}
 
