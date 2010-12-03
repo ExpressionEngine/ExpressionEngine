@@ -137,21 +137,21 @@ class Text_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 	
-	function settings_modify_column($params)
+	function settings_modify_column($data)
 	{
-		switch($params['content_type'])
+		switch($data['field_content_type'])
 		{
 			case 'numeric':
-				$fields['field_id_'.$params['field_id']]['type'] = 'FLOAT';
-				$fields['field_id_'.$params['field_id']]['default'] = 0;
+				$fields['field_id_'.$data['field_id']]['type'] = 'FLOAT';
+				$fields['field_id_'.$data['field_id']]['default'] = 0;
 				break;
 			case 'integer':
-				$fields['field_id_'.$params['field_id']]['type'] = 'INT';
-				$fields['field_id_'.$params['field_id']]['default'] = 0;
+				$fields['field_id_'.$data['field_id']]['type'] = 'INT';
+				$fields['field_id_'.$data['field_id']]['default'] = 0;
 				break;
 			default:
-				$fields['field_id_'.$params['field_id']]['type'] = 'text';
-				$fields['field_id_'.$params['field_id']]['null'] = TRUE;
+				$fields['field_id_'.$data['field_id']]['type'] = 'text';
+				$fields['field_id_'.$data['field_id']]['null'] = TRUE;
 		}
 		
 		return $fields;

@@ -212,15 +212,15 @@ class Field_model extends CI_Model {
 		
 		if ($results->num_rows() > 0)
 		{
-			foreach ($results->result() as $field)
+			foreach ($results->result_array() as $field)
 			{
 			
-				$this->api_channel_fields->setup_handler($field->field_type);
-				$this->api_channel_fields->delete_datatype($field->field_id, $field->field_content_type);
+				$this->api_channel_fields->setup_handler($field['field_type']);
+				$this->api_channel_fields->delete_datatype($field['field_id'], $field);
 
-				$deleted_fields['field_ids'][] = $field->field_id;
-				$deleted_fields['group_id'] = (isset($field->group_id)) ? $field->group_id : '';
-				$deleted_fields['field_label'] = (isset($field->field_label)) ? $field->field_label : '';
+				$deleted_fields['field_ids'][] = $field['field_id'];
+				$deleted_fields['group_id'] = (isset($field['group_id'])) ? $field['group_id'] : '';
+				$deleted_fields['field_label'] = (isset($field['field_label'])) ? $field['field_label'] : '';
 			}
 			
 			// Make sure a deleted field is not assigned as the search excerpt
