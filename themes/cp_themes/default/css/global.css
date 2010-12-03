@@ -501,7 +501,7 @@ span.button .submit {
 	border:		 		1px solid #dedede !important;
 	border-top:		 	none !important;
 */
-	border-left:		 	none !important;
+	border-left:		none !important;
 	z-index:			50;
 	position:			absolute;
 	width:				169px;
@@ -512,17 +512,23 @@ span.button .submit {
 	margin-left:		-1px;
 	padding:			8px 0 8px 0;
 
-	-moz-border-radius: 0 0 3px 3px;
-	border-radius: 		0 0 3px 3px;
+	-moz-border-radius:		5px;
+	-webkit-border-radius:	5px;
+	border-radius:			5px;
 
-	-webkit-box-shadow: rgba(0, 0, 0, 0.347656) 2px 2px 4px;
-    -moz-box-shadow:    rgba(0, 0, 0, 0.347656) 2px 2px 4px;
-	box-shadow:			rgba(0, 0, 0, 0.347656) 2px 2px 4px;
+	background:			-moz-linear-gradient(#d6e1e7, #ecf1f4);
+	background:			-webkit-gradient(linear, 0 0, 0 100%, from(#d6e1e7), to(#ecf1f4));
+
+	-webkit-box-shadow: rgba(0, 0, 0, 0.3) 1px 2px 4px;
+    -moz-box-shadow:    rgba(0, 0, 0, 0.3) 1px 2px 4px;
+	box-shadow:			rgba(0, 0, 0, 0.3) 1px 2px 4px;	
 }
+
 
 #navigationTabs li.parent {
 	background:			url('../images/nav_arrow_light.png') center right no-repeat;
 }
+
 
 #navigationTabs li ul a { /* second-level links */
 	padding:			4px 15px;
@@ -534,13 +540,23 @@ span.button .submit {
 #navigationTabs li li.hover,
 #navigationTabs ul li li.hover {
 	color:				#fff;
-	background:			#F81A53;
+	background:			#F81A53
 }
 
 #navigationTabs li li.parent:focus, #navigationTabs li li.parent.active {
 	color:				#fff;
 	background:			#F81A53;
+	
 /* 	background:			#F81A53 url('../images/backgrounds_sprite.png') repeat-x 0 -386px; */
+}
+
+#navigationTabs li li.parent:focus > a,
+#navigationTabs li li.parent.active > a {
+	position:			relative;
+	z-index:			55;
+	background:			#F81A53;
+	color:				#fff;
+	width:				130px;
 }
 
 /* third-and-above-level lists */
@@ -549,9 +565,27 @@ span.button .submit {
 	margin:				-28px 0 0 160px;
 }
 
+/*
 #navigationTabs ul ul li:first-child > a {
 	background:			transparent url('../images/nav_submenu_arrow.png') top left no-repeat;
 }
+*/
+#navigationTabs li li.parent:focus > a:after,
+#navigationTabs li li.parent.active > a:after {
+	top:				0px;
+	right:				-20px;
+	
+	content:			' ';
+	position:			absolute;
+	display:			block;
+	width:				0;
+	height:				0;
+	
+	border:				10px solid transparent;
+	border-left:		10px solid #F81A53;
+}
+
+
 
 #navigationTabs li.active ul ul,
 #navigationTabs li.active ul ul ul,
@@ -604,18 +638,19 @@ span.button .submit {
 }
 
 #sidebarContent {
-	padding:			8px 18px 18px;
+	padding:			6px 18px 18px 0;
 	background:			#fff;
-/* 	border-left:		1px solid #dedede; */
-	border-bottom:		1px solid #dedede;
+	border-bottom:		1px solid #A0AAA4;
 }
 
+/*
 #sidebarContent h4 {
 	font-size:			14px;
 	font-weight:		bold;
 	color:				#212121;
 	padding-top:		18px;
 }
+*/
 
 #sideBar a {
 	color:				#F5275C;
@@ -651,7 +686,7 @@ span.button .submit {
 
 #activeUser .userName {
 	float:				left;
-	margin-left:		18px;
+	margin-left:		14px;
 	font-size:			14px;
 	font-weight:		500;
 }
@@ -667,6 +702,10 @@ span.button .submit {
 
 #activeUser a:hover {
 	text-decoration:	underline;
+}
+
+#siteLogo {
+	margin-bottom: 4px;
 }
 
 #siteLogo img {
@@ -705,10 +744,12 @@ span.button .submit {
 }
 
 #sideBar h4 {
-	font-size:			16px;
+	font-size:			18px;
 	font-family:		'Helvetica Neue', Arial, sans-serif;
 	font-weight:		500;
 	color:				#5f6c74;
+	padding-top:		18px;
+	margin-bottom:		12px;
 }
 
 #sideBar #search h4 {
@@ -720,10 +761,12 @@ span.button .submit {
 	font-size:			11px;
 }
 
+/*
 #quickLinks ul{
 	padding-left:		25px;
 
 }
+*/
 
 #quickLinks li a:link, #quickLinks li a:visited {
 	line-height:		18px;
@@ -761,7 +804,7 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 }
 
 #notePad #notePadText {
-	margin:				14px 20px;
+	margin:				14px 20px 14px 0;
 	color:				#5f6c74;
 }
 

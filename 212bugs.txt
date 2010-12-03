@@ -12,44 +12,6 @@
 - Missing reset button for template search field.
 
 
-
-
-
-
-
-
-
-
-
-NUMBER 6
----------------------------------------------------------------------
-
-After resizing an image I saved it successfully. Then I used the rotate function and tried to save the image. This
-generated an error:
-
---
-An Error Was Encountered
-A width or width/height must be selected, or a rotate/flip direction selected.
---
-
-In fact the image save did complete successfully even though the error message was shown.
-
-NUMBER 7
----------------------------------------------------------------------
-
-After going back to the File Manager from the image edit mode and trying to view an image by clicking on its name
-the modal window is not shown i.e. the image is directly rendered from the upload directory. This error is generated:
-
---
-Message: Object expected
-Line: 259
-Char: 92
-Code: 0
-URI: http://ee2testing.intranet/system/index.php?S=7d414e50b581a598db4281eff49fd6a30319dbdd&D=cp&C=javascript&M=combo_load&ui=core,widget,mouse,position,sortable,dialog&plugin=ee_focus,ee_notice,ee_txtarea,tablesorter,ee_navigation&file=cp/global&effect=core&v=0
---
-
-
-
 NUMBER 9
 ---------------------------------------------------------------------
 
@@ -210,3 +172,35 @@ NUMBER 10
 
 Using the Corporate theme the 'reveal sidebar' link and image is offset to the left to the position of the 
 left hand side of the sidebar were it to be shown.
+
+NUMBER 6
+---------------------------------------------------------------------
+
+** Already reported at http://expressionengine.com/bug_tracker/bug/14359/ **
+
+After resizing an image I saved it successfully. Then I used the rotate function and tried to save the image. This
+generated an error:
+
+--
+An Error Was Encountered
+A width or width/height must be selected, or a rotate/flip direction selected.
+--
+
+In fact the image save did complete successfully even though the error message was shown.
+
+NUMBER 7
+---------------------------------------------------------------------
+
+** cannot replicate **
+
+After going back to the File Manager from the image edit mode and trying to view an image by clicking on its name
+the modal window is not shown i.e. the image is directly rendered from the upload directory. This error is generated:
+
+--
+Message: Object expected
+Line: 259
+Char: 92
+Code: 0
+URI: http://ee2testing.intranet/system/index.php?S=7d414e50b581a598db4281eff49fd6a30319dbdd&D=cp&C=javascript&M=combo_load&ui=core,widget,mouse,position,sortable,dialog&plugin=ee_focus,ee_notice,ee_txtarea,tablesorter,ee_navigation&file=cp/global&effect=core&v=0
+--
+
