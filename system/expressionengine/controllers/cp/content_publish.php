@@ -887,6 +887,16 @@ class Content_publish extends CI_Controller {
 			}
 		}
 		
+		// -------------------------------------------
+		// 'publish_form_entry_data' hook.
+		//  - Modify entry's data
+		//  - Added: 1.4.1
+			if ($this->extensions->active_hook('publish_form_entry_data') === TRUE)
+			{
+				$result = $this->extensions->call('publish_form_entry_data', $result->row_array());
+			}
+		// -------------------------------------------
+		
 		return $result;
 	}
 
