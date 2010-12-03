@@ -274,7 +274,7 @@ class Content_publish extends CI_Controller {
 		$parts = $_GET;
 		unset($parts['S'], $parts['D']);
 		$current_url = http_build_query($parts, '', '&amp;');
-		
+	
 		$data = array(
 			'cp_page_title'	=> $entry_id ? lang('edit_entry') : lang('new_entry'),
 			'message'		=> '',	// @todo consider pulling?
@@ -678,6 +678,8 @@ class Content_publish extends CI_Controller {
 			$field_data		= '';
 			$dst_enabled	= '';
 			
+			$field_data = ($this->input->get_post('field_id_'.$row['field_id'])) ? $this->input->get_post('field_id_'.$row['field_id']) : $field_data;
+			
 			$settings = array(
 				'field_instructions'	=> trim($row['field_instructions']),
 				'field_text_direction'	=> ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
@@ -709,7 +711,6 @@ class Content_publish extends CI_Controller {
 	/**
 	 * Setup channel field validation
 	 *
-	 * @access	private
 	 * @return	void
 	 */
 	private function _set_field_validation($channel_data, $field_data)
@@ -726,7 +727,6 @@ class Content_publish extends CI_Controller {
 	/**
 	 * Member has access
 	 *
-	 * @access	private
 	 * @return	void
 	 */
 	private function _member_can_publish($channel_id, $entry_id, $autosave)
@@ -799,7 +799,6 @@ class Content_publish extends CI_Controller {
 	/**
 	 * Member has access
 	 *
-	 * @access	private
 	 * @return	void
 	 */
 	private function _check_revisions($entry_id)
@@ -812,7 +811,6 @@ class Content_publish extends CI_Controller {
 	/**
 	 * Member has access
 	 *
-	 * @access	private
 	 * @return	void
 	 */
 	function _load_entry_data($channel_id, $entry_id = FALSE, $autosave = FALSE)
@@ -1656,7 +1654,7 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _setup_default_fields($channel_data, $entry_data)
 	{
-		$title = ( ! $this->input->post('title')) ? $entry_data['title'] : $this->input->post('title');
+		$title = ($this->input->get_post('title')) ? $this->input->get_post('title') : $entry_data['title'];
 		
 		if ($this->_channel_data['default_entry_title'] != '' && $title == '')
 		{
@@ -1679,7 +1677,7 @@ class Content_publish extends CI_Controller {
 				'field_id'				=> 'url_title',
 				'field_label'			=> lang('url_title'),
 				'field_required'		=> 'n',
-				'field_data'			=> ($this->input->post('url_title') == '') ? $entry_data['url_title'] : $this->input->post('url_title'),
+				'field_data'			=> ($this->input->get_post('url_title') == '') ? $entry_data['url_title'] : $this->input->get_post('url_title'),
 				'field_fmt'				=> 'xhtml',
 				'field_instructions'	=> '',
 				'field_show_fmt'		=> 'n',

@@ -1891,7 +1891,7 @@ class Content_publish_old extends CI_Controller {
 		}
 		
 		$this->javascript->compile();
-		$this->load->view('content/publish', $vars);
+		$this->load->view('content/publish_old', $vars);
 	}
 	
 	// --------------------------------------------------------------------
