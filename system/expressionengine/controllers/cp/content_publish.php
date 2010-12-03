@@ -910,6 +910,19 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _save($channel_id, $entry_id = FALSE)
 	{
+		/* -------------------------------------------
+		/* 'submit_new_entry_start' hook.
+		/*  - Add More Stuff to do when you first submit an entry
+		/*  - Added 1.4.2
+		*/
+			if ( ! $autosave)
+			{
+				$edata = $this->extensions->call('submit_new_entry_start');
+				if ($this->extensions->end_script === TRUE) return TRUE;
+			}
+		/*
+		/* -------------------------------------------*/
+		
 		$this->api->instantiate('channel_entries');
 
 		// Editing a non-existant entry?
@@ -918,7 +931,6 @@ class Content_publish extends CI_Controller {
 			return FALSE;
 		}
 
-		
 		// We need these later
 		$return_url = $this->input->post('return_url');
 		$return_url = $return_url ? $return_url : '';
