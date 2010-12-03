@@ -29,6 +29,7 @@ class Content_publish extends CI_Controller {
 
 	private $_module_tabs		= array();
 	private $_channel_data 		= array();
+	private $_file_manager 		= array();
 	private $_channel_fields 	= array();
 	private $_publish_blocks 	= array();
 	private $_publish_layouts 	= array();
@@ -148,7 +149,7 @@ class Content_publish extends CI_Controller {
 		$this->_channel_data = $this->_load_channel_data($channel_id);
 		
 		// Grab, fields and entry data
-		$field_data		= $this->_set_field_settings($this->_channel_data);
+		$field_data		= $this->_set_field_settings($entry_id);
 		$entry_data		= $this->_load_entry_data($channel_id, $entry_id, $autosave);
 		$entry_id		= $entry_data['entry_id'];
 		
@@ -201,6 +202,9 @@ class Content_publish extends CI_Controller {
 		show_form();
 		*/
 
+		$this->_setup_file_list();
+
+
 		// First figure out what tabs to show, and what fields
 		// they contain. Then work through the details of how
 		// they are show.
@@ -234,7 +238,8 @@ class Content_publish extends CI_Controller {
 			$this->cp->add_js_script(array('file' => 'cp/publish_admin'));			
 		}
 
-		$autosave_interval_seconds = ($this->config->item('autosave_interval_seconds') === FALSE) ? 60 : $this->config->item('autosave_interval_seconds');
+		$autosave_interval_seconds = ($this->config->item('autosave_interval_seconds') === FALSE) ? 
+										60 : $this->config->item('autosave_interval_seconds');
 
 		$this->javascript->set_global(array(
 			'date.format'					=> $this->config->item('time_format'),
@@ -246,6 +251,7 @@ class Content_publish extends CI_Controller {
 			'publish.word_separator'		=> $this->config->item('word_separator'),
 			'publish.url_title_prefix'		=> $this->_channel_data['url_title_prefix'],
 			'publish.autosave.interval'		=> $autosave_interval_seconds,
+			'upload_directories'			=> $this->_file_manager['file_list']
 		));
 
 		// -------------------------------------------
@@ -303,9 +309,10 @@ class Content_publish extends CI_Controller {
 			'current_url'	=> $current_url,
 			'hidden_fields'	=> array(
 				'channel_id'	=> $channel_id
-			)
+			),
+			'file_list'		=> $this->_file_manager['file_list'],
 		);
-		
+
 		$this->cp->set_breadcrumb(
 			BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id,
 			$this->_channel_data['channel_title']
@@ -669,12 +676,12 @@ class Content_publish extends CI_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	private function _set_field_settings($channel_data)
+	private function _set_field_settings($entry_id)
 	{
 		$this->api->instantiate('channel_fields');
 		
 		// Get Channel fields in the field group
-		$channel_fields = $this->channel_model->get_channel_fields($channel_data['field_group']);
+		$channel_fields = $this->channel_model->get_channel_fields($this->_channel_data['field_group']);
 
 		$this->_dst_enabled = ($this->session->userdata('daylight_savings') == 'y' ? TRUE : FALSE);
 
@@ -686,8 +693,19 @@ class Content_publish extends CI_Controller {
 			$field_dt 		= '';
 			$field_data		= '';
 			$dst_enabled	= '';
-			
-			$field_data = ($this->input->get_post('field_id_'.$row['field_id'])) ? $this->input->get_post('field_id_'.$row['field_id']) : $field_data;
+						
+			if ($entry_id === 0)
+			{
+				// Bookmarklet perhaps?
+				if (($field_data = $this->input->get('field_id_'.$row['field_id'])) !== FALSE)
+				{
+					$field_data = $this->_bm_qstr_decode($this->input->get('tb_url')."\n\n".$field_data );
+				}
+			}
+			else
+			{
+				$field_data = ($this->input->get_post('field_id_'.$row['field_id'])) ? $this->input->get_post('field_id_'.$row['field_id']) : $field_data;				
+			}			
 			
 			$settings = array(
 				'field_instructions'	=> trim($row['field_instructions']),
@@ -726,7 +744,14 @@ class Content_publish extends CI_Controller {
 	{
 		foreach ($field_data as $fd)
 		{
-			$rules = 'call_field_validation['.$fd['field_id'].']';
+			$required = '';
+			
+			if ($fd['field_required'] == 'y')
+			{
+				$required = 'required|';				
+			}		
+			
+			$rules = $required.'call_field_validation['.$fd['field_id'].']';
 			$this->form_validation->set_rules($fd['field_id'], $fd['field_label'], $rules);
 		}
 	}
@@ -1092,7 +1117,6 @@ class Content_publish extends CI_Controller {
 	 *
 	 * Sets up smileys, spellcheck, glossary, etc
 	 *
-	 * @access	private
 	 * @return	void
 	 */
 	private function _prep_field_wrapper($field_list)
@@ -1104,7 +1128,8 @@ class Content_publish extends CI_Controller {
 			'field_show_formatting_btns'	=> 'n',
 			'field_show_writemode'			=> 'n',
 			'field_show_file_selector'		=> 'n',
-			'field_show_fmt'				=> 'n'
+			'field_show_fmt'				=> 'n',
+			'field_fmt_options'				=> array(),
 		);
 	
 		foreach ($field_list as $field => &$data)
@@ -1685,7 +1710,7 @@ class Content_publish extends CI_Controller {
 			'url_title'		=> array(
 				'field_id'				=> 'url_title',
 				'field_label'			=> lang('url_title'),
-				'field_required'		=> 'n',
+				'field_required'		=> 'y',
 				'field_data'			=> ($this->input->get_post('url_title') == '') ? $entry_data['url_title'] : $this->input->get_post('url_title'),
 				'field_fmt'				=> 'xhtml',
 				'field_instructions'	=> '',
@@ -1697,7 +1722,7 @@ class Content_publish extends CI_Controller {
 			'entry_date'	=> array(
 				'field_id'				=> 'entry_date',
 				'field_label'			=> lang('entry_date'),
-				'field_required'		=> 'n',
+				'field_required'		=> 'y',
 				'field_type'			=> 'date',
 				'field_text_direction'	=> 'ltr',
 				'field_data'			=> (isset($entry_data['entry_date'])) ? $entry_data['entry_date'] : '',
@@ -1741,21 +1766,9 @@ class Content_publish extends CI_Controller {
 			);
 		}
 		
-		$not_required = array('expiration_date', 'comment_expiration_date');
-		
 		foreach ($deft_fields as $field_name => $f_data)
 		{
 			$this->api_channel_fields->set_settings($field_name, $f_data);
-			
-			$required = '';
-			
-			if ( ! in_array($field_name, $not_required))
-			{
-				$required = 'required|';
-			}
-			
-			$rules = $required.'call_field_validation['.$f_data['field_id'].']';
-			$this->form_validation->set_rules($field_name, $f_data['field_label'], $rules);
 		}
 		
 		return $deft_fields;
@@ -1792,9 +1805,6 @@ class Content_publish extends CI_Controller {
 													);
 					
 					$this->api_channel_fields->set_settings($val['field_id'], $val);
-					
-					$rules = 'call_field_validation['.$val['field_id'].']';
-					$this->form_validation->set_rules($val['field_id'], $val['field_label'], $rules);
 				}
 			}
 		}
@@ -1901,6 +1911,69 @@ class Content_publish extends CI_Controller {
 		return $smilies;
 	}
 	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * bookmarklet qstr decode
+	 *
+	 * @param 	string
+	 */
+	private function _bm_qstr_decode($str)
+	{
+		$str = str_replace("%20",	" ",		$str);
+		$str = str_replace("%uFFA5", "&#8226;", $str);
+		$str = str_replace("%uFFCA", " ",		$str);
+		$str = str_replace("%uFFC1", "-",		$str);
+		$str = str_replace("%uFFC9", "...",	 $str);
+		$str = str_replace("%uFFD0", "-",		$str);
+		$str = str_replace("%uFFD1", "-",		$str);
+		$str = str_replace("%uFFD2", "\"",	  $str);
+		$str = str_replace("%uFFD3", "\"",	  $str);
+		$str = str_replace("%uFFD4", "\'",	  $str);
+		$str = str_replace("%uFFD5", "\'",	  $str);
+
+		$str =	preg_replace("/\%u([0-9A-F]{4,4})/e","'&#'.base_convert('\\1',16,10).';'", $str);
+
+		$str = $this->security->xss_clean(stripslashes(urldecode($str)));
+
+		return $str;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup File List Actions
+	 * 
+	 * @return 	void
+	 */
+	private function _setup_file_list()
+	{
+		$this->load->model('tools_model');
+		
+		$upload_directories = $this->tools_model->get_upload_preferences($this->session->userdata('group_id'));
+	
+		$this->_file_manager = array(
+			'file_list'						=> array(),
+			'upload_directories'			=> array(),
+		);
+	
+		$fm_opts = array(
+							'id', 'name', 'url', 'pre_format', 'post_format', 
+							'file_pre_format', 'file_post_format', 'properties', 
+							'file_properties'
+						);
+	
+		foreach($upload_directories->result() as $row)
+		{
+			$this->_file_manager['upload_directories'][$row->id] = $row->name;
+
+			foreach($fm_opts as $prop)
+			{
+				$this->_file_manager['file_list'][$row->id][$prop] = $row->$prop;
+			}
+		}
+	}
+
 	// --------------------------------------------------------------------
 	
 }

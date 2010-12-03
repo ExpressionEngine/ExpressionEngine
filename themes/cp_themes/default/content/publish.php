@@ -33,8 +33,7 @@ if ($EE_view_disable !== TRUE)
 			<?php endif;?>
 			
 			<?=form_open_multipart($current_url, array('id' => 'publishForm'), $hidden_fields)?>
-			<?php // var_dump($this->form_validation)?>
-			<?php echo validation_errors(); ?>
+
 				<!-- Tabs -->
 				<ul class="tab_menu" id="tab_menu_tabs">
 					<?php foreach ($tabs as $tab => $tab_fields):?>
@@ -167,7 +166,7 @@ if ($EE_view_disable !== TRUE)
 												<?php if ($smileys_enabled && $field_list[$_n]['field_show_smileys'] == 'y'):?>
 													<a href="#" class="smiley_link" title="<?=lang('emoticons')?>"><?=lang('emoticons')?></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 												<?php endif;?>
-
+												
 												<?php if ($field_list[$_n]['field_show_fmt'] == 'y' && count($field_list[$_n]['field_fmt_options']) > 0):?>
 													<?=lang('formatting')?>
 													<?=form_dropdown('field_ft_'.$field_list[$_n]['field_id'], $field_list[$_n]['field_fmt_options'], $field_list[$_n]['field_fmt'])?> 
