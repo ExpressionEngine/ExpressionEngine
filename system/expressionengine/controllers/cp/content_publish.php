@@ -29,6 +29,7 @@ class Content_publish extends CI_Controller {
 
 	private $_module_tabs		= array();
 	private $_channel_data 		= array();
+	private $_file_manager 		= array();
 	private $_channel_fields 	= array();
 	private $_publish_blocks 	= array();
 	private $_publish_layouts 	= array();
@@ -201,6 +202,9 @@ class Content_publish extends CI_Controller {
 		show_form();
 		*/
 
+		$this->_setup_file_list();
+
+
 		// First figure out what tabs to show, and what fields
 		// they contain. Then work through the details of how
 		// they are show.
@@ -234,7 +238,8 @@ class Content_publish extends CI_Controller {
 			$this->cp->add_js_script(array('file' => 'cp/publish_admin'));			
 		}
 
-		$autosave_interval_seconds = ($this->config->item('autosave_interval_seconds') === FALSE) ? 60 : $this->config->item('autosave_interval_seconds');
+		$autosave_interval_seconds = ($this->config->item('autosave_interval_seconds') === FALSE) ? 
+										60 : $this->config->item('autosave_interval_seconds');
 
 		$this->javascript->set_global(array(
 			'date.format'					=> $this->config->item('time_format'),
@@ -246,6 +251,7 @@ class Content_publish extends CI_Controller {
 			'publish.word_separator'		=> $this->config->item('word_separator'),
 			'publish.url_title_prefix'		=> $this->_channel_data['url_title_prefix'],
 			'publish.autosave.interval'		=> $autosave_interval_seconds,
+			'upload_directories'			=> $this->_file_manager['file_list']
 		));
 
 		// -------------------------------------------
@@ -303,9 +309,10 @@ class Content_publish extends CI_Controller {
 			'current_url'	=> $current_url,
 			'hidden_fields'	=> array(
 				'channel_id'	=> $channel_id
-			)
+			),
+			'file_list'		=> $this->_file_manager['file_list'],
 		);
-		
+
 		$this->cp->set_breadcrumb(
 			BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id,
 			$this->_channel_data['channel_title']
@@ -1110,7 +1117,6 @@ class Content_publish extends CI_Controller {
 	 *
 	 * Sets up smileys, spellcheck, glossary, etc
 	 *
-	 * @access	private
 	 * @return	void
 	 */
 	private function _prep_field_wrapper($field_list)
@@ -1122,7 +1128,8 @@ class Content_publish extends CI_Controller {
 			'field_show_formatting_btns'	=> 'n',
 			'field_show_writemode'			=> 'n',
 			'field_show_file_selector'		=> 'n',
-			'field_show_fmt'				=> 'n'
+			'field_show_fmt'				=> 'n',
+			'field_fmt_options'				=> array(),
 		);
 	
 		foreach ($field_list as $field => &$data)
@@ -1931,6 +1938,43 @@ class Content_publish extends CI_Controller {
 
 		return $str;
 	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup File List Actions
+	 * 
+	 * @return 	void
+	 */
+	private function _setup_file_list()
+	{
+		$this->load->model('tools_model');
+		
+		$upload_directories = $this->tools_model->get_upload_preferences($this->session->userdata('group_id'));
+	
+		$this->_file_manager = array(
+			'file_list'						=> array(),
+			'upload_directories'			=> array(),
+		);
+	
+		$fm_opts = array(
+							'id', 'name', 'url', 'pre_format', 'post_format', 
+							'file_pre_format', 'file_post_format', 'properties', 
+							'file_properties'
+						);
+	
+		foreach($upload_directories->result() as $row)
+		{
+			$this->_file_manager['upload_directories'][$row->id] = $row->name;
+
+			foreach($fm_opts as $prop)
+			{
+				$this->_file_manager['file_list'][$row->id][$prop] = $row->$prop;
+			}
+		}
+	}
+
+	// --------------------------------------------------------------------
 	
 }
 // END CLASS
