@@ -508,10 +508,6 @@ span.button .submit {
 }
 
 #navigationTabs li ul {
-/*
-	border:		 		1px solid #dedede !important;
-	border-top:		 	none !important;
-*/
 	border-left:		none !important;
 	z-index:			50;
 	position:			absolute;
@@ -688,7 +684,6 @@ span.button .submit {
 	font-size:			10px;
 	line-height:		28px;
 	text-align:			right;
-/* 	border-left:		1px solid #dedede; */
 	background:			#d91350 url('../images/active_user.png') repeat-y;
 }
 
@@ -704,7 +699,7 @@ span.button .submit {
 }
 
 #activeUser a:link, #activeUser a:visited {
-	color:				inherit;
+	color:				#fff;
 	text-decoration:	none;
 }
 
