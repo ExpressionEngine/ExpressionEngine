@@ -726,7 +726,14 @@ class Content_publish extends CI_Controller {
 	{
 		foreach ($field_data as $fd)
 		{
-			$rules = 'call_field_validation['.$fd['field_id'].']';
+			$required = '';
+			
+			if ($fd['field_required'] == 'y')
+			{
+				$required = 'required|';				
+			}		
+			
+			$rules = $required.'call_field_validation['.$fd['field_id'].']';
 			$this->form_validation->set_rules($fd['field_id'], $fd['field_label'], $rules);
 		}
 	}
@@ -1685,7 +1692,7 @@ class Content_publish extends CI_Controller {
 			'url_title'		=> array(
 				'field_id'				=> 'url_title',
 				'field_label'			=> lang('url_title'),
-				'field_required'		=> 'n',
+				'field_required'		=> 'y',
 				'field_data'			=> ($this->input->get_post('url_title') == '') ? $entry_data['url_title'] : $this->input->get_post('url_title'),
 				'field_fmt'				=> 'xhtml',
 				'field_instructions'	=> '',
@@ -1697,7 +1704,7 @@ class Content_publish extends CI_Controller {
 			'entry_date'	=> array(
 				'field_id'				=> 'entry_date',
 				'field_label'			=> lang('entry_date'),
-				'field_required'		=> 'n',
+				'field_required'		=> 'y',
 				'field_type'			=> 'date',
 				'field_text_direction'	=> 'ltr',
 				'field_data'			=> (isset($entry_data['entry_date'])) ? $entry_data['entry_date'] : '',
@@ -1741,21 +1748,9 @@ class Content_publish extends CI_Controller {
 			);
 		}
 		
-		$not_required = array('expiration_date', 'comment_expiration_date');
-		
 		foreach ($deft_fields as $field_name => $f_data)
 		{
 			$this->api_channel_fields->set_settings($field_name, $f_data);
-			
-			$required = '';
-			
-			if ( ! in_array($field_name, $not_required))
-			{
-				$required = 'required|';
-			}
-			
-			$rules = $required.'call_field_validation['.$f_data['field_id'].']';
-			$this->form_validation->set_rules($field_name, $f_data['field_label'], $rules);
 		}
 		
 		return $deft_fields;
@@ -1792,9 +1787,6 @@ class Content_publish extends CI_Controller {
 													);
 					
 					$this->api_channel_fields->set_settings($val['field_id'], $val);
-					
-					$rules = 'call_field_validation['.$val['field_id'].']';
-					$this->form_validation->set_rules($val['field_id'], $val['field_label'], $rules);
 				}
 			}
 		}
