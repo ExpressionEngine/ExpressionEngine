@@ -307,10 +307,12 @@ class Content_publish extends CI_Controller {
 			'show_revision_cluster' => FALSE,
 			
 			'current_url'	=> $current_url,
-			'hidden_fields'	=> array(
-				'channel_id'	=> $channel_id
-			),
 			'file_list'		=> $this->_file_manager['file_list'],
+			
+			'hidden_fields'	=> array(
+				'channel_id'	=> $channel_id,
+				'filter'		=> $this->input->get_post('filter')
+			),
 		);
 
 		$this->cp->set_breadcrumb(
@@ -477,19 +479,24 @@ class Content_publish extends CI_Controller {
 			show_error(lang('unauthorized_for_this_channel'));
 		}
 		
-		$qry = $this->db->select('field_group')
-						->where('channel_id', $channel_id)
-						->get('channels');
+		$channel_info_fields = array(
+			'field_group',
+			'channel_html_formatting',
+			'channel_allow_img_urls',
+			'channel_auto_link_urls'
+		);
+		
+		$qry = $this->channel_model->get_channel_info($channel_id, $channel_info_fields);
 		
 		if ( ! $qry->num_rows())
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
-		$field_group = $qry->row('field_group');
+				
+		$channel_info = $qry->row();
 
 		$qry = $this->db->select('field_id, field_type')
-						->where('group_id', $field_group)
+						->where('group_id', $channel_info->field_group)
 						->where('field_type !=', 'select')
 						->order_by('field_order')
 						->get('channel_fields');
@@ -513,6 +520,10 @@ class Content_publish extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
+		$this->load->library('typography');
+		
+		$this->typography->initialize();
+		$this->typography->convert_curly = FALSE;
 		
 		$show_edit_link = TRUE;
 		$show_comments_link = TRUE;
@@ -547,6 +558,121 @@ class Content_publish extends CI_Controller {
 		$comment_perms		= array_map(array($this->cp, 'allowed_group'), $comment_perms);
 		$show_comments_link = (bool) count(array_filter($comment_perms)); // false if all perms fail
 		
+		$r = '';
+
+		$entry_title = $this->typography->format_characters(stripslashes($resrow['title']));
+
+		foreach ($fields as $key => $val)
+		{
+			if (isset($resrow[$key]) AND $val != 'rel' and $resrow[$key] != '')
+			{
+				$expl = explode('field_id_', $key);
+
+				if (isset($resrow['field_dt_'.$expl['1']]))
+				{
+					if ($resrow[$key] > 0)
+					{
+						$localize = TRUE;
+						$date = $resrow[$key];
+						if ($resrow['field_dt_'.$expl['1']] != '')
+						{
+							$date = $this->localize->offset_entry_dst($date, $resrow['dst_enabled']);
+							$date = $this->localize->simpl_offset($date, $resrow['field_dt_'.$expl['1']]);
+							$localize = FALSE;
+						}
+
+						$r .= $this->localize->set_human_time($date, $localize);
+					}
+				}
+				else
+				{
+					$r .= $this->typography->parse_type(stripslashes($resrow[$key]),
+											 array(
+														'text_format'	=> $resrow['field_ft_'.$expl['1']],
+														'html_format'	=> $channel_info->channel_html_formatting,
+														'auto_links'	=> $channel_info->channel_auto_link_urls,
+														'allow_img_url' => $channel_info->channel_allow_img_urls,
+													)
+											);
+				}
+			}
+		}
+		
+		
+		// Ugh, we just overwrite? Strong typing please!!
+		if ($show_edit_link)
+		{
+			$show_edit_link = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id;
+		}
+		
+		
+		$filter_link = $this->input->get('filter');
+		
+		if ($filter_link)
+		{
+			$show_edit_link .= AMP.'filter='.$filter_link;
+			
+			$filters	 = unserialize(base64_decode($filter_link));
+			$filter_link = BASE.AMP.'C=content_edit';
+			
+			if (isset($filters['keywords']))
+			{
+				$filters['keywords'] = base64_encode($filters['keywords']);
+			}
+			
+			$filter_link = BASE.AMP.'C=content_edit'.AMP.http_build_query($filters);
+		}
+		
+		
+		$comment_count = 0;
+		
+		if ($show_comments_link)
+		{
+			if (isset($this->installed_modules['comment']))
+			{
+				$comment_count = $this->db->where('entry_id', $entry_id)
+										  ->count_all_results('comments');
+				
+				$this->db->query_count--;
+			}
+			
+			$show_comments_link	= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'entry_id='.$entry_id;
+		}
+		
+		
+		$live_look_link = FALSE;
+		
+		if ($resrow['live_look_template'] != 0)
+		{
+			$this->db->select('template_groups.group_name, templates.template_name');
+			$this->db->from('template_groups, templates');
+			$this->db->where('exp_template_groups.group_id = exp_templates.group_id', NULL, FALSE);
+			$this->db->where('templates.template_id', $result->row('live_look_template'));
+			
+			$res = $this->db->get();
+
+			if ($res->num_rows() == 1)
+			{
+				$live_look_link = $this->cp->masked_url($this->functions->create_url($res->row('group_name').'/'.$res->row('template_name').'/'.$entry_id));
+			}
+		}
+		
+		
+		$data = array(
+			'filter_link'			=> $filter_link,
+			'live_look_link'		=> $live_look_link,
+			'show_edit_link'		=> $show_edit_link,
+			'comment_count'			=> $comment_count,
+			'show_comments_link'	=> $show_comments_link,
+			
+			'entry_title'			=> $entry_title,
+			'entry_contents'		=> $r
+		);
+		
+		$this->javascript->compile();
+
+		$this->cp->set_variable('cp_page_title', $this->lang->line('view_entry'));
+		$this->load->view('content/view_entry', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -913,7 +1039,7 @@ class Content_publish extends CI_Controller {
 		$return_url = $this->input->post('return_url');
 		$return_url = $return_url ? $return_url : '';
 		
-		$filter = $this->input->post('filter');
+		$filter = $this->input->get_post('filter');
 		$filter = $filter ? AMP.'filter='.$filter : '';
 		
 		
@@ -978,9 +1104,9 @@ class Content_publish extends CI_Controller {
 		$entry_id	= $this->api_channel_entries->entry_id;
 		$channel_id	= $this->api_channel_entries->channel_id;
 		
+		
 		$edit_url = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.$filter;
 		$view_url = BASE.AMP.'C=content_publish'.AMP.'M=view_entry'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.$filter;
-		
 		
 		// Saved a revision - carry on editing
 		if ($this->input->post('save_revision'))
