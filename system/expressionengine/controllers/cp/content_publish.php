@@ -284,9 +284,7 @@ class Content_publish extends CI_Controller {
 		}
 		
 		// -------------------------------------------
-		
-		$this->javascript->compile();
-		
+				
 		$tab_labels = array(
 			'publish' 		=> lang('publish'),
 			'categories' 	=> lang('categories'),
@@ -302,6 +300,7 @@ class Content_publish extends CI_Controller {
 
 		reset($tab_hierarchy);
 		
+		$this->_markitup();
 		
 		$parts = $_GET;
 		unset($parts['S'], $parts['D']);
@@ -337,6 +336,7 @@ class Content_publish extends CI_Controller {
 			$this->_channel_data['channel_title']
 		);
 		
+		$this->javascript->compile();
 		$this->load->view('content/publish', $data);
 	}
 	
@@ -702,9 +702,24 @@ class Content_publish extends CI_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function filemanager_actions()
+	function filemanager_actions($function = '', $params = array())
 	{
+		if ( ! $this->cp->allowed_group('can_access_content'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
 		
+		$this->load->library('filemanager');
+		
+		$config = array();
+		
+		if ($function)
+		{
+			$this->filemanager->_initialize($config);
+			
+			return call_user_func_array(array($this->filemanager, $function), $params);
+		}
+		$this->filemanager->process_request($config);
 	}
 	
 	// --------------------------------------------------------------------
@@ -1296,6 +1311,8 @@ class Content_publish extends CI_Controller {
 			'field_show_fmt'				=> 'n',
 			'field_fmt_options'				=> array(),
 		);
+		
+		$markitup_buttons = array();
 	
 		foreach ($field_list as $field => &$data)
 		{
@@ -1316,7 +1333,14 @@ class Content_publish extends CI_Controller {
 			{
 				$data['smiley_table'] = $this->_build_smiley_table($field);
 			}
+			
+			if ($this->_channel_data['show_button_cluster'] == 'y' && isset($data['field_show_formatting_btns']) && $data['field_show_formatting_btns'] == 'y')
+			{
+				$markitup_buttons['fields'][$field] = $data['field_id'];
+			}
 		}
+		
+		$this->javascript->set_global('publish.markitup', $markitup_buttons);
 
 		return $field_list;
 	}
@@ -2104,6 +2128,83 @@ class Content_publish extends CI_Controller {
 		return $str;
 	}
 
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup Markitup Data
+	 * 
+	 * @return 	void
+	 */	
+	function _markitup()
+	{
+		$this->load->model('admin_model');
+		
+		$html_buttons = $this->admin_model->get_html_buttons($this->session->userdata('member_id'));
+		$button_js = array();
+		
+		foreach ($html_buttons->result() as $button)
+		{
+			if (strpos($button->classname, 'btn_img') !== FALSE)
+			{
+				// images are handled differently because of the file browser
+				// at least one image must be available for this to work
+				if (count($this->_file_manager['file_list']))
+				{
+					$button_js[] = array('name' => $button->tag_name, 'key' => $button->accesskey, 'replaceWith' => '', 'className' => $button->classname);
+					$this->javascript->set_global('filebrowser.image_tag', $button->tag_open);
+				}
+			}
+			elseif(strpos($button->classname, 'markItUpSeparator') !== FALSE)
+			{
+				// separators are purely presentational
+				$button_js[] = array('separator' => '---');
+			}
+			else
+			{
+				$button_js[] = array('name' => $button->tag_name, 'key' => strtoupper($button->accesskey), 'openWith' => $button->tag_open, 'closeWith' => $button->tag_close, 'className' => $button->classname);
+			}
+		}
+		$this->javascript->set_global('p.image_tag', 'foo you!');
+
+		$markItUp = $markItUp_writemode = array(
+			'nameSpace'		=> "html",
+			'onShiftEnter'	=> array('keepDefault' => FALSE, 'replaceWith' => "<br />\n"),
+			'onCtrlEnter'	=> array('keepDefault' => FALSE, 'openWith' => "\n<p>", 'closeWith' => "</p>\n"),
+			'markupSet'		=> $button_js,
+		);
+
+		// -------------------------------------------
+		//	Hidden Configuration Variable
+		//	- allow_textarea_tabs => Add tab preservation to all textareas or disable completely
+		// -------------------------------------------
+
+		if ($this->config->item('allow_textarea_tabs') == 'y')
+		{
+			$markItUp['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
+			$markItUp_writemode['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
+		}
+		elseif ($this->config->item('allow_textarea_tabs') != 'n')
+		{
+			$markItUp_writemode['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
+		}
+
+		$markItUp_nobtns = $markItUp;
+		unset($markItUp_nobtns['markupSet']);
+
+		$this->cp->add_js_script(array("
+			<script type=\"text/javascript\" charset=\"utf-8\">
+			// <![CDATA[
+			mySettings = ".$this->javascript->generate_json($markItUp, TRUE).";
+			myNobuttonSettings = ".$this->javascript->generate_json($markItUp_nobtns, TRUE).";
+			myWritemodeSettings = ".$this->javascript->generate_json($markItUp_writemode, TRUE).";
+			// ]]>
+			</script>
+
+		"), FALSE);
+
+		$this->javascript->set_global('publish.show_write_mode', ($this->_channel_data['show_button_cluster'] == 'y') ? TRUE : FALSE);
+	}
+	
 	// --------------------------------------------------------------------
 	
 	/**
