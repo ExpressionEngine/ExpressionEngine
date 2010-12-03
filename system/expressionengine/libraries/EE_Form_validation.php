@@ -501,7 +501,7 @@ class EE_Form_validation extends CI_Form_validation {
 	 * This is almost a direct copy out of the CI Form_validation lib.
 	 * however there are a couple of differences in order to work with EE.
 	 *
-	 * @access	private
+	 * @param 	protected 
 	 * @param	array
 	 * @param	array
 	 * @param	mixed
@@ -527,7 +527,7 @@ class EE_Form_validation extends CI_Form_validation {
 		// If the field is blank, but NOT required, no further tests are necessary
 		$callback = FALSE;
 		$ee_hack = FALSE;
-		
+	
 		if ( ! in_array('required', $rules) AND is_null($postdata))
 		{
 			// Before we bail out, does the rule contain a callback?
@@ -628,7 +628,7 @@ class EE_Form_validation extends CI_Form_validation {
 				$rule	= $match[1];
 				$param	= $match[2];
 			}
-			
+
 			// Call the function that corresponds to the rule
 			if ($callback === TRUE)
 			{
