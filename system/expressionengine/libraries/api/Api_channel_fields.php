@@ -373,15 +373,42 @@ class Api_channel_fields extends Api {
 		return FALSE;
 	}
 
-	function add_datatype($field_id, $c_type)
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Adds new custom field table fields
+	 *
+	 *
+	 * Add new fields to channel_data on custom field creation
+	 *
+	 * @access	public
+	 * @param	array	
+	 * @return	void
+	 */
+	function add_datatype($field_id, $data)
 	{
-
-		$this->set_datatype($field_id, $c_type, array(), TRUE);
+		$this->set_datatype($field_id, $data, array(), TRUE);
 	}
 	
-	function delete_datatype($field_id, $c_type)
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Delete custom field table fields
+	 *
+	 *
+	 * Deletes fields from channel_data on custom field deletion
+	 *
+	 * @access	public
+	 * @param	array	
+	 * @return	void
+	 */
+	function delete_datatype($field_id, $data)
 	{
-		$fields = $this->apply('settings_modify_column', array(array('field_id' => $field_id, 'content_type' => $c_type, 'type' => 'delete')));
+		// merge in a few variables to the data array
+		$data['field_id'] = $field_id;
+		$data['ee_action'] = 'delete';
+		
+		$fields = $this->apply('settings_modify_column', array($data));
 		
 		if ( ! isset($fields['field_id_'.$field_id]))
 		{
@@ -402,13 +429,27 @@ class Api_channel_fields extends Api {
 		}
 	}	
 	
+	// --------------------------------------------------------------------
 	
-	function edit_datatype($field_id, $field_type, $c_type)
+	/**
+	 * Edit custom field table fields
+	 *
+	 *
+	 * Compares old field data to new field data and adds/modifies exp_channel_data
+	 * fields as needed
+	 *
+	 * @access	public
+	 * @param	mixed (field_id)
+	 * @param	string (field_type)	
+	 * @param	array	
+	 * @return	void
+	 */
+	function edit_datatype($field_id, $field_type, $data)
 	{
 		$old_fields = array();
+		$c_type = $data['field_content_type'];
 		
-		// First we get the existing field type and content type
-		$this->EE->db->select('field_type, field_content_type');
+		// First we get the data
 		$query = $this->EE->db->get_where('channel_fields', array('field_id' => $field_id));
 		
 		$this->setup_handler($query->row('field_type'));
@@ -416,9 +457,15 @@ class Api_channel_fields extends Api {
 		// Field type changed ?
 		$type = ($query->row('field_type') == $field_type) ? 'get_data' : 'delete';
 
-		$old_fields = $this->apply('settings_modify_column', array(array('field_id' => $field_id, 'content_type' => $query->row('field_type'), 'type' => $type)));
+		$old_data = $query->row_array();
+		
+		// merge in a few variables to the data array
+		$old_data['field_id'] = $field_id;
+		$old_data['ee_action'] = $type;
 
-		// Switch handler back to the new field
+		$old_fields = $this->apply('settings_modify_column', array($old_data));
+
+		// Switch handler back to the new field type
 		$this->setup_handler($field_type);
 
 		if ( ! isset($old_fields['field_id_'.$field_id]))
@@ -453,20 +500,37 @@ class Api_channel_fields extends Api {
 		
 		$type_change = ($type == 'delete') ? TRUE : FALSE;
 		
-		$this->set_datatype($field_id, $c_type, $old_fields, FALSE, $type_change);
+		$this->set_datatype($field_id, $data, $old_fields, FALSE, $type_change);
 	}	
 	
-
-
 	// --------------------------------------------------------------------
-
 	
-	function set_datatype($field_id, $c_type, $old_fields = array(), $new = TRUE, $type_change = FALSE)
+	/**
+	 * Set data type
+	 *
+	 *
+	 * Used primarily by add_datatype and edit_datatype to do the actual table manipulation
+	 * when a custom field is added or edited
+	 *
+	 * @access	public
+	 * @param	mixed (field_id)
+	 * @param	array (new custom field data)	
+	 * @param	array (old custom field data)		
+	 * @param	bool (TRUE if it is a new field)
+	 * @param	bool (TRUE if the field type changed)
+	 * @return	void
+	 */
+	function set_datatype($field_id, $data, $old_fields = array(), $new = TRUE, $type_change = FALSE)
 	{		
 		$this->EE->load->dbforge();
+		$c_type = $data['field_content_type'];
 		
+		// merge in a few variables to the data array
+		$data['field_id'] = $field_id;
+		$data['ee_action'] = 'add';
+						
 		// We have to get the new fields regardless to check whether they were modified
-		$fields = $this->apply('settings_modify_column', array(array('field_id' => $field_id, 'content_type' => $c_type, 'type' => 'add')));
+		$fields = $this->apply('settings_modify_column', array($data));
 		
 		if ( ! isset($fields['field_id_'.$field_id]))
 		{
