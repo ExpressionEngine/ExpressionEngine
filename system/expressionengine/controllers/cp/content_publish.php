@@ -148,7 +148,7 @@ class Content_publish extends CI_Controller {
 		$this->_channel_data = $this->_load_channel_data($channel_id);
 		
 		// Grab, fields and entry data
-		$field_data		= $this->_set_field_settings($this->_channel_data);
+		$field_data		= $this->_set_field_settings($entry_id);
 		$entry_data		= $this->_load_entry_data($channel_id, $entry_id, $autosave);
 		$entry_id		= $entry_data['entry_id'];
 		
@@ -669,12 +669,12 @@ class Content_publish extends CI_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	private function _set_field_settings($channel_data)
+	private function _set_field_settings($entry_id)
 	{
 		$this->api->instantiate('channel_fields');
 		
 		// Get Channel fields in the field group
-		$channel_fields = $this->channel_model->get_channel_fields($channel_data['field_group']);
+		$channel_fields = $this->channel_model->get_channel_fields($this->_channel_data['field_group']);
 
 		$this->_dst_enabled = ($this->session->userdata('daylight_savings') == 'y' ? TRUE : FALSE);
 
@@ -686,8 +686,19 @@ class Content_publish extends CI_Controller {
 			$field_dt 		= '';
 			$field_data		= '';
 			$dst_enabled	= '';
-			
-			$field_data = ($this->input->get_post('field_id_'.$row['field_id'])) ? $this->input->get_post('field_id_'.$row['field_id']) : $field_data;
+						
+			if ($entry_id === 0)
+			{
+				// Bookmarklet perhaps?
+				if (($field_data = $this->input->get('field_id_'.$row['field_id'])) !== FALSE)
+				{
+					$field_data = $this->_bm_qstr_decode($this->input->get('tb_url')."\n\n".$field_data );
+				}
+			}
+			else
+			{
+				$field_data = ($this->input->get_post('field_id_'.$row['field_id'])) ? $this->input->get_post('field_id_'.$row['field_id']) : $field_data;				
+			}			
 			
 			$settings = array(
 				'field_instructions'	=> trim($row['field_instructions']),
@@ -1894,6 +1905,32 @@ class Content_publish extends CI_Controller {
 	}
 	
 	// --------------------------------------------------------------------
+	
+	/**
+	 * bookmarklet qstr decode
+	 *
+	 * @param 	string
+	 */
+	private function _bm_qstr_decode($str)
+	{
+		$str = str_replace("%20",	" ",		$str);
+		$str = str_replace("%uFFA5", "&#8226;", $str);
+		$str = str_replace("%uFFCA", " ",		$str);
+		$str = str_replace("%uFFC1", "-",		$str);
+		$str = str_replace("%uFFC9", "...",	 $str);
+		$str = str_replace("%uFFD0", "-",		$str);
+		$str = str_replace("%uFFD1", "-",		$str);
+		$str = str_replace("%uFFD2", "\"",	  $str);
+		$str = str_replace("%uFFD3", "\"",	  $str);
+		$str = str_replace("%uFFD4", "\'",	  $str);
+		$str = str_replace("%uFFD5", "\'",	  $str);
+
+		$str =	preg_replace("/\%u([0-9A-F]{4,4})/e","'&#'.base_convert('\\1',16,10).';'", $str);
+
+		$str = $this->security->xss_clean(stripslashes(urldecode($str)));
+
+		return $str;
+	}
 	
 }
 // END CLASS
