@@ -126,7 +126,7 @@ class Forum_tab {
 				'field_data'			=> $forum_topic_id,
 				'field_text_direction'	=> 'ltr',
 				'field_maxl'			=> '',
-				'field_instructions'	=> ''
+				'field_instructions'	=> lang('forum_topic_id_exitsts')
 			),
 		);
 
