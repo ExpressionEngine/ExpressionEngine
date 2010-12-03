@@ -241,6 +241,22 @@ class Content_publish extends CI_Controller {
 		$autosave_interval_seconds = ($this->config->item('autosave_interval_seconds') === FALSE) ? 
 										60 : $this->config->item('autosave_interval_seconds');
 
+		//	Create Foreign Character Conversion JS
+		include(APPPATH.'config/foreign_chars.php');
+
+		/* -------------------------------------
+		/*  'foreign_character_conversion_array' hook.
+		/*  - Allows you to use your own foreign character conversion array
+		/*  - Added 1.6.0
+		* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
+		*/  
+			if (isset($this->extensions->extensions['foreign_character_conversion_array']))
+			{
+				$foreign_characters = $this->extensions->call('foreign_character_conversion_array');
+			}
+		/*
+		/* -------------------------------------*/
+
 		$this->javascript->set_global(array(
 			'date.format'					=> $this->config->item('time_format'),
 			'user.foo'						=> FALSE,
@@ -249,6 +265,7 @@ class Content_publish extends CI_Controller {
 			'publish.which'					=> ($entry_id === 0) ? 'new' : 'edit',
 			'publish.default_entry_title'	=> $this->_channel_data['default_entry_title'],
 			'publish.word_separator'		=> $this->config->item('word_separator'),
+			'publish.foreignChars'			=> $foreign_characters,
 			'publish.url_title_prefix'		=> $this->_channel_data['url_title_prefix'],
 			'publish.autosave.interval'		=> $autosave_interval_seconds,
 			'upload_directories'			=> $this->_file_manager['file_list']
@@ -1013,6 +1030,16 @@ class Content_publish extends CI_Controller {
 			}
 		}
 		
+		// -------------------------------------------
+		// 'publish_form_entry_data' hook.
+		//  - Modify entry's data
+		//  - Added: 1.4.1
+			if ($this->extensions->active_hook('publish_form_entry_data') === TRUE)
+			{
+				$result = $this->extensions->call('publish_form_entry_data', $result->row_array());
+			}
+		// -------------------------------------------
+		
 		return $result;
 	}
 
@@ -1026,6 +1053,19 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _save($channel_id, $entry_id = FALSE)
 	{
+		/* -------------------------------------------
+		/* 'submit_new_entry_start' hook.
+		/*  - Add More Stuff to do when you first submit an entry
+		/*  - Added 1.4.2
+		*/
+			if ( ! $autosave)
+			{
+				$edata = $this->extensions->call('submit_new_entry_start');
+				if ($this->extensions->end_script === TRUE) return TRUE;
+			}
+		/*
+		/* -------------------------------------------*/
+		
 		$this->api->instantiate('channel_entries');
 
 		// Editing a non-existant entry?
@@ -1034,7 +1074,6 @@ class Content_publish extends CI_Controller {
 			return FALSE;
 		}
 
-		
 		// We need these later
 		$return_url = $this->input->post('return_url');
 		$return_url = $return_url ? $return_url : '';
