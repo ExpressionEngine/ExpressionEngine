@@ -120,6 +120,7 @@ class Content_publish extends CI_Controller {
 	public function entry_form()
 	{
 		$this->load->library('form_validation');
+		$this->load->helper('form');
 		
 		$entry_id	= (int) $this->input->get_post('entry_id');
 		$channel_id	= (int) $this->input->get_post('channel_id');
@@ -160,6 +161,11 @@ class Content_publish extends CI_Controller {
 		
 		// @todo setup validation for categories, etc?
 		// @todo third party tabs
+
+		$this->form_validation->set_message('title', $this->lang->line('missing_title'));
+		$this->form_validation->set_message('entry_date', $this->lang->line('missing_date'));
+
+		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
 		
 		if ($this->form_validation->run() === TRUE)
 		{
@@ -228,6 +234,8 @@ class Content_publish extends CI_Controller {
 			$this->cp->add_js_script(array('file' => 'cp/publish_admin'));			
 		}
 
+		$autosave_interval_seconds = ($this->config->item('autosave_interval_seconds') === FALSE) ? 60 : $this->config->item('autosave_interval_seconds');
+
 		$this->javascript->set_global(array(
 			'date.format'					=> $this->config->item('time_format'),
 			'user.foo'						=> FALSE,
@@ -237,6 +245,7 @@ class Content_publish extends CI_Controller {
 			'publish.default_entry_title'	=> $this->_channel_data['default_entry_title'],
 			'publish.word_separator'		=> $this->config->item('word_separator'),
 			'publish.url_title_prefix'		=> $this->_channel_data['url_title_prefix'],
+			'publish.autosave.interval'		=> $autosave_interval_seconds,
 		));
 
 		// -------------------------------------------
@@ -1732,12 +1741,21 @@ class Content_publish extends CI_Controller {
 			);
 		}
 		
+		$not_required = array('expiration_date', 'comment_expiration_date');
+		
 		foreach ($deft_fields as $field_name => $f_data)
 		{
 			$this->api_channel_fields->set_settings($field_name, $f_data);
 			
-			$rules = 'required|call_field_validation['.$f_data['field_id'].']';
-			$this->form_validation->set_rules($f_data['field_id'], $f_data['field_label'], $rules);
+			$required = '';
+			
+			if ( ! in_array($field_name, $not_required))
+			{
+				$required = 'required|';
+			}
+			
+			$rules = $required.'call_field_validation['.$f_data['field_id'].']';
+			$this->form_validation->set_rules($field_name, $f_data['field_label'], $rules);
 		}
 		
 		return $deft_fields;

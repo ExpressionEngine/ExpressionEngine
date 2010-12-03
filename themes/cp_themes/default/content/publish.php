@@ -33,8 +33,8 @@ if ($EE_view_disable !== TRUE)
 			<?php endif;?>
 			
 			<?=form_open_multipart($current_url, array('id' => 'publishForm'), $hidden_fields)?>
-			
-			
+			<?php // var_dump($this->form_validation)?>
+			<?php echo validation_errors(); ?>
 				<!-- Tabs -->
 				<ul class="tab_menu" id="tab_menu_tabs">
 					<?php foreach ($tabs as $tab => $tab_fields):?>
