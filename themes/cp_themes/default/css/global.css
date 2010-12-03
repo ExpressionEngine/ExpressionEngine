@@ -413,9 +413,20 @@ span.button .submit {
 	line-height: 		13px;
 }
 
-#navigationTabs > .parent.active {
-	background: 		url('../images/nav_active_arrow.png') bottom center no-repeat;
+#navigationTabs > .parent:focus > a:after,
+#navigationTabs > .parent.active > a:after {
+	top:				12px;
+	content:			' ';
+	position:			relative;
+	display:			block;
+	width:				0;
+	height:				0;
+	margin:				0 auto;
+    border-bottom: 		5px solid #e6ecef;
+    border-left: 		5px solid transparent;
+    border-right: 		5px solid transparent;
 }
+
 
 #navigationTabs li a.first_level,
 #navigationTabs li a.first_level:link,
@@ -512,9 +523,9 @@ span.button .submit {
 	margin-left:		-1px;
 	padding:			8px 0 8px 0;
 
-	-moz-border-radius:		5px;
-	-webkit-border-radius:	5px;
-	border-radius:			5px;
+	-moz-border-radius:		10px;
+	-webkit-border-radius:	10px;
+	border-radius:			10px;
 
 	background:			-moz-linear-gradient(#d6e1e7, #ecf1f4);
 	background:			-webkit-gradient(linear, 0 0, 0 100%, from(#d6e1e7), to(#ecf1f4));
@@ -546,8 +557,6 @@ span.button .submit {
 #navigationTabs li li.parent:focus, #navigationTabs li li.parent.active {
 	color:				#fff;
 	background:			#F81A53;
-	
-/* 	background:			#F81A53 url('../images/backgrounds_sprite.png') repeat-x 0 -386px; */
 }
 
 #navigationTabs li li.parent:focus > a,
@@ -561,15 +570,9 @@ span.button .submit {
 
 /* third-and-above-level lists */
 #navigationTabs li ul ul {
-/* 	background: 		transparent url('../images/nav_bubble_top.png') top left repeat-x; */
 	margin:				-28px 0 0 160px;
 }
 
-/*
-#navigationTabs ul ul li:first-child > a {
-	background:			transparent url('../images/nav_submenu_arrow.png') top left no-repeat;
-}
-*/
 #navigationTabs li li.parent:focus > a:after,
 #navigationTabs li li.parent.active > a:after {
 	top:				0px;
@@ -643,14 +646,19 @@ span.button .submit {
 	border-bottom:		1px solid #A0AAA4;
 }
 
-/*
-#sidebarContent h4 {
-	font-size:			14px;
-	font-weight:		bold;
-	color:				#212121;
+
+#sideBar h4 {
+	font-size:			18px;
+	font-family:		'Helvetica Neue', Arial, sans-serif;
+	font-weight:		500;
+	color:				#5f6c74;
 	padding-top:		18px;
+	margin-bottom:		12px;
 }
-*/
+
+#sideBar #search h4 {
+	padding-bottom:		3px;
+}
 
 #sideBar a {
 	color:				#F5275C;
@@ -743,30 +751,9 @@ span.button .submit {
 	padding-left:		2px;
 }
 
-#sideBar h4 {
-	font-size:			18px;
-	font-family:		'Helvetica Neue', Arial, sans-serif;
-	font-weight:		500;
-	color:				#5f6c74;
-	padding-top:		18px;
-	margin-bottom:		12px;
-}
-
-#sideBar #search h4 {
-	padding-bottom:		3px;
-}
-
-
 #quickLinks {
 	font-size:			11px;
 }
-
-/*
-#quickLinks ul{
-	padding-left:		25px;
-
-}
-*/
 
 #quickLinks li a:link, #quickLinks li a:visited {
 	line-height:		18px;
@@ -774,7 +761,6 @@ span.button .submit {
 
 
 #sidebarControl {
-/*     border-top: 		1px solid #CCCCCC; */
 	padding-right:		15px;
 }
 
