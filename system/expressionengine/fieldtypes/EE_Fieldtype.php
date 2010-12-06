@@ -156,22 +156,21 @@ class EE_Fieldtype {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Save Settings
+	 * Settings Modify Column
 	 *
 	 * @access	public
 	 * @param	array
-	 * @param	string (add/delete/content_type)
-	 * @return	void
+	 * @return	array
 	 */
-	function settings_modify_column($params)
+	function settings_modify_column($data)
 	{
 		// Default custom field additions to channel_data
-		$fields['field_id_'.$params['field_id']] = array(
+		$fields['field_id_'.$data['field_id']] = array(
 			'type' 			=> 'text',
 			'null'			=> TRUE
 			);
 
-		$fields['field_ft_'.$params['field_id']] = array(
+		$fields['field_ft_'.$data['field_id']] = array(
 			'type' 			=> 'tinytext',
 			'null'			=> TRUE,
 			);			

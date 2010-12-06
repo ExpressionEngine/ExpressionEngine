@@ -195,12 +195,12 @@ class Rel_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 	
-	function settings_modify_column($params)
+	function settings_modify_column($data)
 	{
-		if ($params['type'] == 'delete')
+		if ($data['ee_action'] == 'delete')
 		{
-			$this->db->select('field_id_'.$params['field_id']);
-			$this->db->where('field_id_'.$params['field_id'].' !=', '0');
+			$this->db->select('field_id_'.$data['field_id']);
+			$this->db->where('field_id_'.$data['field_id'].' !=', '0');
 			$rquery = $this->db->get('channel_data');
 
 			if ($rquery->num_rows() > 0)
@@ -209,7 +209,7 @@ class Rel_ft extends EE_Fieldtype {
 
 				foreach ($rquery->result_array() as $row)
 				{
-					$rel_ids[] = $row['field_id_'.$params['field_id']];
+					$rel_ids[] = $row['field_id_'.$data['field_id']];
 				}
 
 				$this->EE->db->where_in('rel_id', $rel_ids);
@@ -217,7 +217,7 @@ class Rel_ft extends EE_Fieldtype {
 			}
 		}
 	
-		$fields['field_id_'.$params['field_id']] = array(
+		$fields['field_id_'.$data['field_id']] = array(
 			'type' 			=> 'INT',
 			'constraint'	=> 10,
 			'default'		=> 0

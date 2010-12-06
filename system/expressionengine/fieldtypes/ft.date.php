@@ -174,15 +174,15 @@ class Date_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 	
-	function settings_modify_column($params)
+	function settings_modify_column($data)
 	{
-		$fields['field_id_'.$params['field_id']] = array(
+		$fields['field_id_'.$data['field_id']] = array(
 			'type' 			=> 'INT',
 			'constraint'	=> 10,
 			'default'		=> 0
 			);
 
-		$fields['field_dt_'.$params['field_id']] = array(
+		$fields['field_dt_'.$data['field_id']] = array(
 			'type' 			=> 'VARCHAR',
 			'constraint'	=> 8
 			);			

@@ -790,17 +790,12 @@ class Admin_content extends CI_Controller {
 				$query = $this->db->query("SELECT COUNT(*) AS count FROM exp_template_groups");
 				$group_order = $query->row('count')  +1;
 
-				$this->db->query(
-							$this->db->insert_string(
-												 'exp_template_groups',
-												  array(
+				$this->db->insert('template_groups', array(
 														 'group_name'	  => $group_name,
 														 'group_order'	 => $group_order,
 														 'is_site_default' => 'n',
 														 'site_id'			=> $this->config->item('site_id')
-														)
-												)
-							);
+														));
 
 				$group_id = $this->db->insert_id();
 
@@ -819,17 +814,12 @@ class Admin_content extends CI_Controller {
 
 					if ($query->num_rows() == 0)
 					{
-						$this->db->query(
-								$this->db->insert_string(
-													'exp_templates',
-													array(
+						$this->db->insert('templates', array(
 															'group_id'	  => $group_id,
 															'template_name' => 'index',
 															'edit_date'		=> $this->localize->now,
 															'site_id'		=> $this->config->item('site_id')
-														 )
-												 )
-								);
+														 ));
 					}
 					else
 					{
@@ -878,7 +868,7 @@ class Admin_content extends CI_Controller {
 											'site_id'				=> $this->config->item('site_id')
 										 );
 
-									$this->db->query($this->db->insert_string('exp_templates', $data));
+									$this->db->insert('templates', $data);
 							}
 					}
 				}
@@ -2500,7 +2490,7 @@ class Admin_content extends CI_Controller {
 			$fields['cat_id'] = $field_cat_id;
 			$fields['group_id'] = $group_id;
 
-			$this->db->query($this->db->insert_string('exp_category_field_data', $fields));
+			$this->db->insert('category_field_data', $fields);
 		}
 		elseif ( ! empty($fields))
 		{
@@ -3320,7 +3310,7 @@ class Admin_content extends CI_Controller {
 
 			$_POST['site_id'] = $this->config->item('site_id');
 
-			$this->db->query($this->db->insert_string('exp_category_fields', $_POST));
+			$this->db->insert('category_fields', $_POST);
 
 			$insert_id = $this->db->insert_id();
 
@@ -4349,7 +4339,7 @@ class Admin_content extends CI_Controller {
 			$this->api_channel_fields->edit_datatype(
 								$native_settings['field_id'], 
 								$field_type,
-								$native_settings['field_content_type']
+								$native_settings
 				);
 
 
@@ -4412,18 +4402,17 @@ class Admin_content extends CI_Controller {
 			
 			$this->api_channel_fields->add_datatype(
 									$insert_id, 
-									$native_settings['field_content_type']
+									$native_settings
 				);
 
-// hack	
-// check this- did not apply w/date or rel
 
-			
-			$this->db->query("UPDATE exp_channel_data SET field_ft_".$insert_id." = '".$this->db->escape_str($native_settings['field_fmt'])."'");
+			$this->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt'])); 
+
 
 			foreach (array('none', 'br', 'xhtml') as $val)
 			{
-				$this->db->query("INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ('$insert_id', '$val')");
+				$f_data = array('field_id' => $insert_id, 'field_fmt' => $val);
+				$this->db->insert('field_formatting', $f_data); 
 			}
 			
 			$collapse = ($native_settings['field_is_hidden'] == 'y') ? 'true' : 'false';
@@ -5205,9 +5194,7 @@ class Admin_content extends CI_Controller {
 			$data['group_id'] = $_POST['group_id'];
 			$data['site_id'] = $this->config->item('site_id');
 
-			$sql = $this->db->insert_string('exp_statuses', $data);
-
-			$this->db->query($sql);
+			$this->db->insert('statuses', $data);
 			
 			$status_id = $this->db->insert_id();
 			$cp_message = $this->lang->line('status_created');
