@@ -296,7 +296,10 @@ class EE_Output extends CI_Output {
 			$data['content'] = $EE->typography->parse_type(stripslashes($data['content']), array('text_format' => 'xhtml'));
 		}		
 
-		$query = $EE->db->query("SELECT template_data FROM exp_specialty_templates WHERE site_id = '".$EE->db->escape_str($EE->config->item('site_id'))."' AND template_name = 'message_template'");
+		$EE->db->select('template_data');
+		$EE->db->select('site_id', $EE->config->item('site_id'));
+		$EE->db->select('template_name', 'message_template');		
+		$query = $EE->db->get('specialty_templates');
 		
 		$row = $query->row_array();
 		

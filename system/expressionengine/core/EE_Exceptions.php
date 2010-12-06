@@ -42,7 +42,7 @@ class EE_Exceptions extends CI_Exceptions {
 		// "safe" HTML typography in EE will strip paragraph tags, and needs newlines to indicate paragraphs
 		$message = '<p>'.implode("</p>\n\n<p>", ( ! is_array($message)) ? array($message) : $message).'</p>';
 	
-		if (function_exists('get_instance'))
+		if (class_exists('CI_Controller'))
 		{
 			$EE =& get_instance();
 		}
@@ -51,7 +51,7 @@ class EE_Exceptions extends CI_Exceptions {
 			// too early to do anything pretty
 			exit($message);
 		}
-
+		
 		// let's be kind if it's a submission error, and offer a back link
 		if ( ! empty($_POST) && ! AJAX_REQUEST)
 		{
@@ -100,11 +100,18 @@ class EE_Exceptions extends CI_Exceptions {
 			ob_end_clean();
 			return $buffer;
 		}
+
 		
-		// error occurred on a front end request
-		// and everything is in place to show the
+		// Error occurred on a frontend request
+
+		// AR DB errors can result in a memory loop on subsequent queries so we output them now
+		if ($template == 'error_db')
+		{
+			exit($message);
+		}
+		
+		// everything is in place to show the
 		// custom error template
-		
 		$EE->output->fatal_error($message);
 	}
 
