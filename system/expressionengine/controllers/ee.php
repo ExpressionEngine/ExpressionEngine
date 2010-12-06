@@ -32,9 +32,6 @@ class EE extends CI_Controller {
 		{
 			define('REQ', FALSE);
 		}
-
-		// intialize the Core library
-		$this->core->_initialize_core();
 		
 		$can_view_system =  FALSE;
 		
