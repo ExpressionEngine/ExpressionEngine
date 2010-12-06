@@ -259,12 +259,11 @@ class Content_publish extends CI_Controller {
 
 		$this->javascript->set_global(array(
 			'date.format'					=> $this->config->item('time_format'),
-			'user.foo'						=> FALSE,
-			'publish.markitup.foo'			=> FALSE,
+			'user.can_edit_html_buttons'	=> $this->cp->allowed_group('can_edit_html_buttons'),
 			'publish.smileys'				=> ($this->_smileys_enabled) ? TRUE : FALSE,
 			'publish.which'					=> ($entry_id === 0) ? 'new' : 'edit',
 			'publish.default_entry_title'	=> $this->_channel_data['default_entry_title'],
-			'publish.word_separator'		=> $this->config->item('word_separator'),
+			'publish.word_separator'		=> $this->config->item('word_separator') != "dash" ? '_' : '-',
 			'publish.foreignChars'			=> $foreign_characters,
 			'publish.url_title_prefix'		=> $this->_channel_data['url_title_prefix'],
 			'publish.autosave.interval'		=> $autosave_interval_seconds,
@@ -326,6 +325,7 @@ class Content_publish extends CI_Controller {
 			'file_list'		=> $this->_file_manager['file_list'],
 			
 			'hidden_fields'	=> array(
+				'entry_id'		=> $entry_id,
 				'channel_id'	=> $channel_id,
 				'filter'		=> $this->input->get_post('filter')
 			),
@@ -350,6 +350,59 @@ class Content_publish extends CI_Controller {
 	 */
 	public function autosave()
 	{
+		$entry_id	= (int) $this->input->get_post('entry_id');
+		$channel_id	= (int) $this->input->get_post('channel_id');
+		
+		$assigned_channels = $this->functions->fetch_assigned_channels();
+		
+		// can they access this channel?
+		if ( ! $channel_id OR ! in_array($channel_id, $assigned_channels))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$this->_channel_data = $this->_load_channel_data($channel_id);
+		
+		// Grab, fields and entry data
+		$entry_data		= $this->_load_entry_data($channel_id, $entry_id);
+		$field_data		= $this->_set_field_settings($entry_id, $entry_data);
+		$entry_id		= $entry_data['entry_id'];
+		
+		$this->_setup_default_fields($this->_channel_data, $entry_data);
+		
+		$this->api->instantiate('channel_entries');
+
+		// Editing a non-existant entry?
+		if ($entry_id && ! $this->api_channel_entries->entry_exists($entry_id))
+		{
+			return FALSE;
+		}
+		
+		
+		$data = $_POST;
+		$data['cp_call']		= TRUE;
+		$data['author_id']		= $this->input->post('author');		// @todo double check if this is validated
+		$data['revision_post']	= $_POST;							// @todo only if revisions - memory
+		$data['ping_servers']	= array();
+		
+		
+		// Fetch xml-rpc ping server IDs
+		if (isset($_POST['ping']) && is_array($_POST['ping']))
+		{
+			$data['ping_servers'] = $_POST['ping'];
+		}
+		
+		
+		// Remove leftovers
+		unset($data['ping']);
+		unset($data['author']);
+		unset($data['filter']);
+		unset($data['return_url']);
+		
+		$this->output->enable_profiler(FALSE);
+		
+		$ret = $this->api_channel_entries->autosave_entry($data);
+		var_dump($ret);
 		/*
 		check_permissions();
 		
@@ -1012,6 +1065,8 @@ class Content_publish extends CI_Controller {
 		
 		if ($entry_id)
 		{
+			$this->load->model('channel_entries_model');
+			
 			$query = $this->channel_entries_model->get_entry($entry_id, $channel_id, $autosave);
 			
 			if ( ! $query->num_rows())
@@ -1070,11 +1125,8 @@ class Content_publish extends CI_Controller {
 		/*  - Add More Stuff to do when you first submit an entry
 		/*  - Added 1.4.2
 		*/
-			if ( ! $autosave)
-			{
-				$edata = $this->extensions->call('submit_new_entry_start');
-				if ($this->extensions->end_script === TRUE) return TRUE;
-			}
+			$edata = $this->extensions->call('submit_new_entry_start');
+			if ($this->extensions->end_script === TRUE) return TRUE;
 		/*
 		/* -------------------------------------------*/
 		
