@@ -76,7 +76,7 @@ class Api_channel_entries extends Api {
 	 * @param	array
 	 * @return	mixed
 	 */
-	function submit_new_entry($channel_id, $data)
+	function submit_new_entry($channel_id, $data, $autosave = FALSE)
 	{
 		$this->entry_id = 0;
 		
@@ -86,7 +86,7 @@ class Api_channel_entries extends Api {
 		$this->data =& $data;
 		$mod_data = array();
 		
-		$this->initialize(array('channel_id' => $channel_id, 'entry_id' => 0, 'autosave' => FALSE));
+		$this->initialize(array('channel_id' => $channel_id, 'entry_id' => 0, 'autosave' => $autosave));
 
 		if ( ! $this->_base_prep($data))
 		{
@@ -114,7 +114,7 @@ class Api_channel_entries extends Api {
 		
 		if (count($this->errors) > 0)
 		{
-			return FALSE;
+			return ($this->autosave) ? $this->errors : FALSE;
 		}
 		
 		$this->_prepare_data($data, $mod_data);
@@ -155,8 +155,15 @@ class Api_channel_entries extends Api {
 		{
 			return TRUE;
 		}
-
-		$this->_insert_entry($meta, $data);
+		
+		if ($this->autosave)
+		{
+			// autosave is done at this point, title and custom field insertion.
+			// no revisions, stat updating or cache clearing needed.
+			return $this->_insert_entry($meta, $data, $mod_data);
+		}
+		
+		$this->_insert_entry($meta, $data, $mod_data);
 		
 		if (count($mod_data) > 0)
 		{
@@ -339,6 +346,33 @@ class Api_channel_entries extends Api {
 		}
 
 		return TRUE;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Autosave Entry
+	 *
+	 * Handles deleting of existing entries from arbitrary, authenticated source
+	 *
+	 * @access	public
+	 * @param	int
+	 * @return	bool
+	 */
+	function autosave_entry($data)
+	{
+		if ( ! isset($data['entry_id']) OR ! $data['entry_id'])
+		{
+			// new entry
+			if ( ! $data['title'])
+			{
+				$data['title'] = 'autosave_'.$this->EE->localize->now;
+			}
+			
+			return $this->submit_new_entry($data['channel_id'], $data, TRUE);
+		}
+		
+		return $this->update_entry($data['entry_id'], $data, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -1265,6 +1299,7 @@ class Api_channel_entries extends Api {
 	function _validate_url_title($url_title = '', $title = '', $update = FALSE)
 	{
 		$word_separator = $this->EE->config->item('word_separator');
+		
 		$this->EE->load->helper('url');
 
 		if ( ! trim($url_title))
@@ -1653,11 +1688,13 @@ class Api_channel_entries extends Api {
 	 * @param	mixed
 	 * @return	void
 	 */
-	function _insert_entry($meta, &$data)
+	function _insert_entry($meta, &$data, &$mod_data)
 	{
 		$meta['dst_enabled'] =  $this->_cache['dst_enabled'];
 		
-		$this->EE->db->query($this->EE->db->insert_string('exp_channel_titles', $meta));
+		$table = ($this->autosave) ? 'channel_entries_autosave': 'channel_titles';
+		
+		$this->EE->db->insert($table, $meta);
 		$this->entry_id = $this->EE->db->insert_id();
 		
 		
@@ -1726,9 +1763,26 @@ class Api_channel_entries extends Api {
 					unset($cust_fields[$field->name]);
 				}
 			}
-		} 		
+		}
+		
+		if ($this->autosave)
+		{
+			echo '<pre>';
+			print_r($cust_fields);
+			echo '</pre>';
+			
+			
+			// Entry for this was made earlier, now its an update not an insert
+			$cust_fields['entry_id'] = $this->entry_id;
+			$cust_fields['original_entry_id'] = 0;
+			$this->EE->db->where('entry_id', $this->entry_id);
+			$this->EE->db->set('entry_data', serialize(array_merge($cust_fields, $mod_data))); 
+			$this->EE->db->update('channel_entries_autosave'); // reinsert
+			
+			return $this->entry_id;
+		}
 
-		$this->EE->db->query($this->EE->db->insert_string('exp_channel_data', $cust_fields));
+		$this->EE->db->insert('channel_data', $cust_fields);
 
 		// Update member stats
 		
