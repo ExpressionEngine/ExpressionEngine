@@ -69,17 +69,21 @@ class Forum_tab {
 		$query = $this->EE->db->select('forum_topic_id')
 							  ->get_where('channel_titles', array('entry_id' => (int) $entry_id));
 		
-		if ($query->num_rows() !== 0)
+		if ($query->num_rows() > 0)
 		{
-			$forum_topic_ic = $query->row('forum_topic_id');
+			$forum_topic_id = $query->row('forum_topic_id');
+			
 			
 			$frm_q = $this->EE->db->select('forum_id, title, body')
-								  ->where('topic_id', (int) $forum_topic_ic)
+								  ->where('topic_id', (int) $forum_topic_id)
 								  ->get('forum_topics');
 			
-			$forum_title 			= $frm_q->row('title');
-			$forum_body  			= $frm_q->row('body');
-			$forum_id['selected'] 	= $frm_q->row('forum_id');
+			if ($frm_q->num_rows() > 0)
+			{
+				$forum_title 			= $frm_q->row('title');
+				$forum_body  			= $frm_q->row('body');
+				$forum_id['selected'] 	= $frm_q->row('forum_id');				
+			}			
 		}
 		
 		$settings = array(
