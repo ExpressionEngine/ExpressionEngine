@@ -217,6 +217,8 @@ if ($EE_view_disable !== TRUE)
 	</div> <!-- /contents -->
 <div> <!-- /mainContent -->
 
+
+<!-- Modals -->
 	<div id="write_mode_container">
 		<div id="write_mode_close_container"><a href="#" class="closeWindowButton"><img alt="<?=lang('close')?>" width="13" height="13" src="<?=$cp_theme_url?>images/write_mode_close.png" /></a><a href="#" class="publish_to_field"><img alt="Publish to Field" width="103" height="18" src="<?=$cp_theme_url?>images/write_mode_publish_to_field.png" /></a>&nbsp;</div>
 
@@ -226,6 +228,19 @@ if ($EE_view_disable !== TRUE)
 		</div>
 		<div id="write_mode_footer"><a href="#" class="publish_to_field"><img alt="<?=lang('publish_to_field')?>" width="103" height="18" src="<?=$cp_theme_url?>images/write_mode_publish_to_field.png" /></a></div>
 	</div>
+	
+	<?php if ($this->session->userdata('group_id') == 1):?>
+		<div id="new_tab_dialog" title="<?=lang('add_tab')?>" style="display: none;">
+			<form action="#">
+				<p>
+					<label><?=lang('tab_name')?></label> 
+					<input id="tab_name" type="text" value="" name="tab_name"/>
+				</p>
+			</form>
+		</div>
+	<?php endif;?>
+<!-- /Modals -->
+
 
 <?php
 if ($EE_view_disable !== TRUE)
