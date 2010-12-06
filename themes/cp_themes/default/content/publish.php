@@ -195,7 +195,7 @@ if ($EE_view_disable !== TRUE)
 							<div class="insertpoint"></div>
 							<div class="clear"></div>
 							
-						</div>
+						</div> <!-- /.main_tab -->
 					<?php endforeach;?>
 					
 					<ul id="publish_submit_buttons">
@@ -215,7 +215,7 @@ if ($EE_view_disable !== TRUE)
 
 
 	</div> <!-- /contents -->
-<div> <!-- /mainContent -->
+</div> <!-- /mainContent -->
 
 
 <!-- Modals -->

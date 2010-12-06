@@ -591,6 +591,18 @@ $lang = array(
 'view_filtered' => 
 'Return to Filtered Entries',
 
+'autosaved_entries' =>
+'Autosaved Entries',
+
+'autosaved' =>
+'Autosaved',
+
+'original' =>
+'Original',
+
+'discard_autosave' =>
+'Discard Autosaved Data',
+
 'date_range' =>
 'Date Range',
 
@@ -856,6 +868,7 @@ $lang = array(
 'Remove Categories',
 
 'autosave_data_available' => 'autosaved data available',
+'autosaved_entries' => 'Autosaved Entries',
 
 'no_category_group_match' =>
 'No Category Group Match was found for all of the entries.  Please choose entries that have at least one category group in common.',

@@ -436,7 +436,7 @@ class Content_edit extends CI_Controller {
 		// Get the current row number and add the LIMIT clause to the SQL query
 
 		if ( ! $rownum = $this->input->get_post('rownum'))
-		{		
+		{
 			$rownum = 0;
 		}
 		
@@ -557,15 +557,20 @@ class Content_edit extends CI_Controller {
 		}
 
 		// Grab all autosaved entries
-		$this->db->select('original_entry_id');
+		$this->db->select('entry_id, original_entry_id, channel_id, title, author_id, status, entry_date, dst_enabled, comment_total');
 		$autosave = $this->db->get('channel_entries_autosave');
+		
 		$autosave_array = array();
+		
 		foreach ($autosave->result() as $entry)
 		{
-			$autosave_array[] = $entry->original_entry_id;
+			if ($entry->original_entry_id)
+			{
+				$autosave_array[] = $entry->original_entry_id;
+			}
 		}
 
-		$vars['autosave_show'] = (count($autosave_array) > 0) ? TRUE : FALSE;
+		$vars['autosave_show'] = ($autosave->num_rows() > 0) ? TRUE : FALSE;
 
 		// Loop through the main query result and set up data structure for table
 
@@ -573,23 +578,35 @@ class Content_edit extends CI_Controller {
 		
 		$comment_totals = array();
 
+		$i = 0;
+
 		foreach($query_results as $row)
 		{
 			// Entry ID number
-			$vars['entries'][$row['entry_id']][] = $row['entry_id'];
+			$id_column = $i++;
+			
+			if ( ! isset($row['original_entry_id']))
+			{
+				$vars['entries'][$id_column][] = $row['entry_id'];
+			}
+			elseif ($row['original_entry_id'] == 0)
+			{
+				$row['entry_id'] = 0;
+				$vars['entries'][$id_column][] = $row['original_entry_id'];
+			}
 
 			// Channel entry title (view entry)			
-			$output = anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'].$filter, $row['title']);
+			$output = anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$id_column.$filter, $row['title']);
 			
-			$output .= (in_array($row['entry_id'], $autosave_array)) ? NBS.required() : '';
-			$vars['entries'][$row['entry_id']][] = $output;
+			$output .= isset($autosave_array[$row['entry_id']]) ? NBS.required() : '';
+			$vars['entries'][$id_column][] = $output;
 
 			// "View"
 			if ($row['live_look_template'] != 0 && isset($templates[$row['live_look_template']]))
 			{
 				$qm = ($this->config->item('force_query_string') == 'y') ? '' : '?';
 
-				$url = $this->functions->create_url($templates[$row['live_look_template']].'/'.$row['entry_id']);
+				$url = $this->functions->create_url($templates[$row['live_look_template']].'/'.$id_column);
 
 				$view_link = anchor($this->functions->fetch_site_index().QUERY_MARKER.'URL='.$url,
 									$this->lang->line('view'));
@@ -599,7 +616,7 @@ class Content_edit extends CI_Controller {
 					$view_link = '--';
 			}
 
-			$vars['entries'][$row['entry_id']][] = $view_link;
+			$vars['entries'][$id_column][] = $view_link;
 
 
 			// Comment count
@@ -626,23 +643,23 @@ class Content_edit extends CI_Controller {
 			
 			if (isset($this->cp->installed_modules['comment']))
 			{
-				$view_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment	'.AMP.'method=index'.AMP.'entry_id='.$row['entry_id'];
+				$view_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment	'.AMP.'method=index'.AMP.'entry_id='.$id_column;
 				
 				$view_link = ($show_link === FALSE) ? '<div class="lightLinks">--</div>' : 
 					'<div class="lightLinks">(0)'.NBS.anchor($view_url, $this->lang->line('view')).'</div>';
 				
-				$vars['entries'][$row['entry_id']][] = $view_link;
+				$vars['entries'][$id_column][] = $view_link;
 
 				// Setup an array of entry IDs here so we can do an aggregate query to
 				// get an accurate count of total comments for each entry.
-				$comment_totals[] = $row['entry_id'];
+				$comment_totals[] = $id_column;
 
 			}			
 			
 			
 			// Username
 			$name = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
-			$vars['entries'][$row['entry_id']][] = mailto($row['email'], $name);
+			$vars['entries'][$id_column][] = mailto($row['email'], $name);
 
 			// Date
 			$date_fmt = ($this->session->userdata('time_format') != '') ? $this->session->userdata('time_format') : $this->config->item('time_format');
@@ -674,10 +691,10 @@ class Content_edit extends CI_Controller {
 				}
 			}
 
-			$vars['entries'][$row['entry_id']][] = $this->localize->decode_date($datestr, $row['entry_date'], TRUE);
+			$vars['entries'][$id_column][] = $this->localize->decode_date($datestr, $row['entry_date'], TRUE);
 
 			// Channel
-			$vars['entries'][$row['entry_id']][] = (isset($w_array[$row['channel_id']])) ? '<div class="smallNoWrap">'. $w_array[$row['channel_id']].'</div>' : '';
+			$vars['entries'][$id_column][] = (isset($w_array[$row['channel_id']])) ? '<div class="smallNoWrap">'. $w_array[$row['channel_id']].'</div>' : '';
 
 			// Status
 			$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? $this->lang->line($row['status']) : $row['status'];
@@ -693,10 +710,10 @@ class Content_edit extends CI_Controller {
 				$color_info = 'style="color:'.$prefix.$color.';"';
 			}
 
-			$vars['entries'][$row['entry_id']][] = '<span class="status_'.$row['status'].'"'.$color_info.'>'.$status_name.'</span>';
+			$vars['entries'][$id_column][] = '<span class="status_'.$row['status'].'"'.$color_info.'>'.$status_name.'</span>';
 
 			// Delete checkbox
-			$vars['entries'][$row['entry_id']][] = form_checkbox('toggle[]', $row['entry_id'], '', ' class="toggle" id="delete_box_'.$row['entry_id'].'"');
+			$vars['entries'][$id_column][] = form_checkbox('toggle[]', $id_column, '', ' class="toggle" id="delete_box_'.$id_column.'"');
 		
 		}
 
@@ -756,6 +773,8 @@ class Content_edit extends CI_Controller {
 												'remove_categories'	=> $this->lang->line('remove_categories')
 											);
 		}
+
+		$this->javascript->set_global('autosave_map', $autosave_array);
 
 		$this->javascript->compile();
 		$this->load->view('content/edit', $vars);
@@ -1407,6 +1426,113 @@ class Content_edit extends CI_Controller {
 		));
 
 		$this->load->view('content/multi_edit', $vars);
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * List Autosaved Entries
+	 *
+	 * @access public
+	 */
+	public function autosaved()
+	{
+		$this->load->library('table');
+		
+		$data['cp_page_title'] = lang('autosaved_entries');
+		
+		$data['table_headings'] = array(
+			lang('autosaved'),
+			lang('original'),
+			lang('channel'),
+			lang('discard_autosave')
+		);
+		
+		$this->cp->set_breadcrumb(BASE.AMP.'C=content_edit', lang('edit'));
+		
+		$allowed_channels = $this->functions->fetch_assigned_channels();
+		
+		$data['entries'] = array();
+		
+		$qry = $this->db->select('channel_id, entry_id, original_entry_id, title')
+						->order_by('original_entry_id', 'ASC')
+						->where_in('channel_id', $allowed_channels)
+						->get('channel_entries_autosave');
+				
+		foreach($qry->result() as $row)
+		{
+			$channel = $row->channel_id;
+			$save_id = $row->entry_id;
+			$orig_id = $row->original_entry_id;
+			
+			$data['entries'][] = array(
+				anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel.AMP.'entry_id='.$save_id.AMP.'use_autosave=y', $row->title),
+				$orig_id ? anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel.AMP.'entry_id='.$orig_id, $row->title) : '--',
+				'Blog',
+				anchor(BASE.AMP.'C=content_edit'.AMP.'M=autosaved_discard'.AMP.'id='.$save_id, lang('delete'))
+			);
+		}
+		
+		$this->load->view('content/autosave', $data);
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Delete Autosave Data
+	 *
+	 * @access public
+	 */
+	function autosaved_discard()
+	{
+		$id = $this->input->get_post('id');
+		
+		$qry = $this->db->select('author_id, channel_id')
+						->order_by('original_entry_id', 'ASC')
+						->get_where('channel_entries_autosave', array('entry_id' => $id));
+		
+		
+		if ($qry->num_rows() != 1)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$row = $qry->row();
+		$can_delete = TRUE;
+		
+		// Check permissions
+		$allowed_channels = $this->functions->fetch_assigned_channels();
+		
+		if ($this->session->userdata('group_id') != 1)
+		{
+			if ( ! in_array($row['channel_id'], $allowed_channels))
+			{
+				$can_delete = FALSE;
+			}
+		}
+		
+		if ($row->author_id == $this->session->userdata('member_id'))
+		{
+			if ($this->session->userdata('can_delete_self_entries') != 'y')
+			{
+				$can_delete = FALSE;
+			}
+		}
+		else
+		{
+			if ($this->session->userdata('can_delete_all_entries') != 'y')
+			{
+				$can_delete = FALSE;
+			}
+		}
+		
+		if ( ! $can_delete)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$this->db->where('entry_id', $id)->delete('channel_entries_autosave');
+		$this->functions->redirect(BASE.AMP.'C=content_edit'.AMP.'M=autosaved');
 	}
 
 	// --------------------------------------------------------------------

@@ -57,6 +57,15 @@ if ($EE_view_disable !== TRUE)
 
 			<?=form_close()?>
 			</fieldset>
+			
+			<?php if ($autosave_show):?>
+				<p>
+					<span class="notice"><?=required()?></span>
+					<a href="<?=BASE.AMP.'C=content_edit'.AMP.'M=autosaved'?>"><?=lang('autosaved_entries')?></a>
+					<img src="<?=$cp_theme_url?>images/list_arrow.gif" />
+				</p>
+			<?php endif;?>
+			
 			</div> <!-- filterMenu -->
 
 			<?php if ($total_count == 0):?>
@@ -83,11 +92,6 @@ if ($EE_view_disable !== TRUE)
 
 			<span class="js_hide"><?=$pagination?></span>
 			<span class="pagination" id="filter_pagination"></span>
-
-			<?php if ($autosave_show):?>
-				<p class="notice"><?=required()?><?=lang('autosave_data_available')?></p>
-			<?php endif;?>
-			
 
 			<?php endif; /* if $total_count > 0*/?>
 

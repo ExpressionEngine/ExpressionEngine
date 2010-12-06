@@ -648,7 +648,7 @@ $(document).ready(function() {
 			$.ajax({
 				type: "POST",
 				dataType: 'json',
-				url: EE.BASE+"&C=content_publish&M=autosave_entry",
+				url: EE.BASE+"&C=content_publish&M=autosave",
 				data: form_data,
 				success: function(result){
 					if (result.error) {

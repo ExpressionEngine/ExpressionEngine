@@ -4,6 +4,7 @@ $lang = array(
 
 
 ''=>''
+
 );
 
 /* End of file edit_lang.php */
