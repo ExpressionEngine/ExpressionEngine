@@ -760,25 +760,25 @@ class Login extends CI_Controller {
 		$this->db->query($this->db->insert_string('exp_reset_password', $data));
 		
 		// Buid the email message
-		
-		$message  = $username.",".
-					"\n\n".
-					$this->lang->line('reset_link').
-					"\n\n".
-					$this->config->item('cp_url')."?D=cp&C=login&M=reset_password&id=".$rand.
-					"\n\n".
-					$this->lang->line('password_will_be_reset').
-					"\n\n".
-					$this->lang->line('ignore_password_message');
-		 
-		 
+		$swap = array(
+						'name'		=> $username,
+						'reset_url'	=> $this->config->item('cp_url')."?D=cp&C=login&M=reset_password&id=".$rand,
+						'site_name'	=> stripslashes($this->config->item('site_name')),
+						'site_url'	=> $this->config->item('site_url')
+					 );
+					
+		$template = $this->functions->fetch_email_template('forgot_password_instructions');
+		$message_title = $this->_var_swap($template['title'], $swap);
+		$message = $this->_var_swap($template['data'], $swap);
+
+
 		// Instantiate the email class
 			 
 		$this->load->library('email');
 		$this->email->wordwrap = true;
 		$this->email->from($this->config->item('webmaster_email'), $this->config->item('webmaster_name'));	
 		$this->email->to($address); 
-		$this->email->subject($this->lang->line('your_new_login_info'));	
+		$this->email->subject($message_title);	
 		$this->email->message($message);	
 
 		$vars['message_success'] = '';
@@ -860,15 +860,18 @@ class Login extends CI_Controller {
 		$this->db->delete('reset_password');
 				
 		// Buid the email message
-		
-		$message  = $username.",".
-					"\n\n".
-					$this->lang->line('new_login_info').
-					"\n\n".
-					$this->lang->line('username').': '.$username.
-					"\n".
-					$this->lang->line('password').': '.$rand;
-		 
+		$swap = array(
+						'name'		=> $username,
+						'username'	=> $username,
+						'password'	=> $rand,
+						'site_name'	=> stripslashes($this->config->item('site_name')),
+						'site_url'	=> $this->config->item('site_url')
+					 );
+
+
+		$template = $this->functions->fetch_email_template('reset_password_notification');
+		$message_title = $this->_var_swap($template['title'], $swap);
+		$message = $this->_var_swap($template['data'], $swap);					
 		 
 		// Instantiate the email class
 			 
@@ -876,7 +879,7 @@ class Login extends CI_Controller {
 		$this->email->wordwrap = true;
 		$this->email->from($this->config->item('webmaster_email'), $this->config->item('webmaster_name'));
 		$this->email->to($address); 
-		$this->email->subject($this->lang->line('your_new_login_info'));	
+		$this->email->subject($message_title);	
 		$this->email->message($message);	
 		
 		if ( ! $this->email->send())
@@ -892,6 +895,26 @@ class Login extends CI_Controller {
 		$this->functions->redirect(BASE.AMP.'C=login');
 	}
 	
+	// --------------------------------------------------------------------
+	
+	/**
+	*  Replace variables
+	*/
+	function _var_swap($str, $data)
+	{
+		if ( ! is_array($data))
+		{
+			return FALSE;
+		}
+
+		foreach ($data as $key => $val)
+		{
+			$str = str_replace('{'.$key.'}', $val, $str);
+		}
+
+		return $str;
+	}
+
 	// --------------------------------------------------------------------
 	
 	/**
