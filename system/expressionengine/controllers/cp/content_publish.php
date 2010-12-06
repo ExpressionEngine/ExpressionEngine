@@ -149,8 +149,8 @@ class Content_publish extends CI_Controller {
 		$this->_channel_data = $this->_load_channel_data($channel_id);
 		
 		// Grab, fields and entry data
-		$field_data		= $this->_set_field_settings($entry_id);
 		$entry_data		= $this->_load_entry_data($channel_id, $entry_id, $autosave);
+		$field_data		= $this->_set_field_settings($entry_id, $entry_data);
 		$entry_id		= $entry_data['entry_id'];
 		
 		// Merge in default fields
@@ -831,7 +831,7 @@ class Content_publish extends CI_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	private function _set_field_settings($entry_id)
+	private function _set_field_settings($entry_id, $entry_data)
 	{
 		$this->api->instantiate('channel_fields');
 		
@@ -859,9 +859,9 @@ class Content_publish extends CI_Controller {
 			}
 			else
 			{
-				$field_data = ($this->input->get_post('field_id_'.$row['field_id'])) ? $this->input->get_post('field_id_'.$row['field_id']) : $field_data;				
+				$field_data = (isset($entry_data['field_id_'.$row['field_id']])) ? $entry_data['field_id_'.$row['field_id']] : $field_data;				
 			}			
-			
+
 			$settings = array(
 				'field_instructions'	=> trim($row['field_instructions']),
 				'field_text_direction'	=> ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
@@ -2107,16 +2107,16 @@ class Content_publish extends CI_Controller {
 	private function _bm_qstr_decode($str)
 	{
 		$str = str_replace("%20",	" ",		$str);
-		$str = str_replace("%uFFA5", "&#8226;", $str);
+		$str = str_replace("%uFFA5", "&#8226;",	$str);
 		$str = str_replace("%uFFCA", " ",		$str);
 		$str = str_replace("%uFFC1", "-",		$str);
-		$str = str_replace("%uFFC9", "...",	 $str);
+		$str = str_replace("%uFFC9", "...",		$str);
 		$str = str_replace("%uFFD0", "-",		$str);
 		$str = str_replace("%uFFD1", "-",		$str);
-		$str = str_replace("%uFFD2", "\"",	  $str);
-		$str = str_replace("%uFFD3", "\"",	  $str);
-		$str = str_replace("%uFFD4", "\'",	  $str);
-		$str = str_replace("%uFFD5", "\'",	  $str);
+		$str = str_replace("%uFFD2", "\"",		$str);
+		$str = str_replace("%uFFD3", "\"",		$str);
+		$str = str_replace("%uFFD4", "\'",		$str);
+		$str = str_replace("%uFFD5", "\'",		$str);
 
 		$str =	preg_replace("/\%u([0-9A-F]{4,4})/e","'&#'.base_convert('\\1',16,10).';'", $str);
 
