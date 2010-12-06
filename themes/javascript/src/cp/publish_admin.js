@@ -19,7 +19,7 @@
 // don't really need these until the sidebar is shown so to save on yet more
 // things happening on document.ready we'll init them when they click on the sidebar link
 
-$("a", "#showToolbarLink").one("click", function() {
+$("#showToolbarLink").find("a").one("click", function() {
 	
 	// set up resizing of publish fields
 	$(".publish_field").resizable({
@@ -62,9 +62,9 @@ $("a", "#showToolbarLink").one("click", function() {
 		minHeight: "0px",
 		buttons: newTabButtons
 	});
-
-
-	$(".add_tab_link").click(function(){
+	
+	$(".add_tab_link").click(function() {
+		
 		$("#tab_name").val("");
 		$("#add_tab label").text(EE.lang.tab_name+": ");
 		$("#new_tab_dialog").dialog("open");
@@ -73,29 +73,8 @@ $("a", "#showToolbarLink").one("click", function() {
 
 		return false;
 	});
-});
-
-
-$("#tab_menu_tabs").sortable({
-	tolerance: "intersect",
-	items: "li:not(.addTabButton)",
-	axis: "x"
-});
-
-$("#tools h3 a").toggle(
+}).toggle(
 	function(){
-		$(this).parent().next("div").slideUp();
-		$(this).toggleClass("closed");
-	}, function(){
-		$(this).parent().next("div").slideDown();
-		$(this).toggleClass("closed");
-	}
-);
-
-
-$("a", "#showToolbarLink").toggle(
-	function(){
-		
 		// disable all form elements
 		disable_fields(true);
 
@@ -154,6 +133,25 @@ $("a", "#showToolbarLink").toggle(
 		$("#showToolbarImg").css("display", "inline");	// .show() uses block
 	}
 );
+
+
+$("#tab_menu_tabs").sortable({
+	tolerance: "intersect",
+	items: "li:not(.addTabButton)",
+	axis: "x"
+});
+
+$("#tools h3 a").toggle(
+	function(){
+		$(this).parent().next("div").slideUp();
+		$(this).toggleClass("closed");
+	}, function(){
+		$(this).parent().next("div").slideDown();
+		$(this).toggleClass("closed");
+	}
+);
+
+
 
 $("#toggle_member_groups_all").toggle(
 	function(){
