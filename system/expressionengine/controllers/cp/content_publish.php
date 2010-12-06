@@ -1054,9 +1054,10 @@ class Content_publish extends CI_Controller {
 				
 				if ($vquery->num_rows() === 1)
 				{
-					// REVISIONS ARE HERE
+					$vdata = unserialize($vquery->row('version_data'));
+					
+					$result = array_merge($result, $vdata);
 				}
-						
 			}
 		}
 		
@@ -1690,7 +1691,7 @@ class Content_publish extends CI_Controller {
 		$version_id = $this->input->get('version_id');
 
 		if ($this->_channel_data['enable_versioning'] == 'n' 
-			&& $entry_data['versioning_enabled'] == 'n')
+			&& isset($entry_data['versioning_enabled']) && $entry_data['versioning_enabled'] == 'n')
 		{
 			return $settings;
 		}
@@ -1711,7 +1712,11 @@ class Content_publish extends CI_Controller {
 		{
 			$this->load->library('table');
 			
-			$this->table->set_template(array('table_open'	=> '<table class="mainTable">'));
+			$this->table->set_template(array(
+					'table_open'		=> '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">',
+					'row_start'			=> '<tr class="even">',
+					'row_alt_start'		=> '<tr class="odd">'
+			));
 			$this->table->set_heading(
 				lang('revision'),
 				lang('rev_date'),
