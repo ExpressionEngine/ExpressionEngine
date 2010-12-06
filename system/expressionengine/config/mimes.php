@@ -120,7 +120,6 @@ $mimes = array(
 				'pptm'	=>	'application/vnd.ms-powerpoint.presentation.macroEnabled.12',
 				'pptx'	=>	'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 				'ps'	=>	'application/postscript',
-				'ps'	=>	'application/postscript',
 				'psd'	=>	'application/x-photoshop',
 				'qt'	=>	'video/quicktime',
 				'ra'	=>	'audio/x-realaudio',
@@ -163,8 +162,6 @@ $mimes = array(
 				'xsl'	=>	'text/xml',
 				'zip'	=>  array('application/x-zip', 'application/zip', 'application/x-zip-compressed')
 			);
-
-
 
 /* End of file CI_mimes.php */
 /* Location: ./system/expressionengine/config/mimes.php */
