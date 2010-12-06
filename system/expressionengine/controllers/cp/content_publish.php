@@ -232,8 +232,8 @@ class Content_publish extends CI_Controller {
 				'file'		=> array('json2', 'cp/publish')
 		    )
 		);
-		
-		if ($this->session->userdata('group_id') === 1)
+				
+		if ($this->session->userdata('group_id') == 1)
 		{
 			$this->cp->add_js_script(array('file' => 'cp/publish_admin'));			
 		}
@@ -297,7 +297,7 @@ class Content_publish extends CI_Controller {
 		{
 			$tab_labels[$k] = lang($k);
 		}
-
+		
 		reset($tab_hierarchy);
 		
 		$this->_markitup();
@@ -771,25 +771,22 @@ class Content_publish extends CI_Controller {
 	 */
 	public function spellcheck_actions()
 	{
-		if ( ! $this->input->get('action'))
+		if ($act = $this->input->get('action'))
 		{
-			show_error(lang('unauthorized_access'));
+			$this->output->enable_profiler(FALSE);
+			
+			if ( ! class_exists('EE_Spellcheck'))
+			{
+				require APPPATH.'libraries/Spellcheck'.EXT;
+			}
+			
+			if ($act == 'iframe' OR $act == 'check')
+			{
+				return EE_Spellcheck::$act();
+			}
 		}
 		
-		if ( ! class_exists('EE_Spellcheck'))
-		{
-			require APPPATH.'libraries/Spellcheck'.EXT;
-		}
-		
-		$this->output->enable_profiler(FALSE);
-
-		switch ($this->input->get('action'))
-		{
-			case 'iframe':
-				return EE_Spellcheck::iframe();
-			case 'check':
-				return EE_Spellcheck::check();
-		}
+		show_error(lang('unauthorized_access'));
 	}
 	
 	// --------------------------------------------------------------------
