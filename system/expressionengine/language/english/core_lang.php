@@ -180,20 +180,8 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 'your_new_login_info' => 
 'Login information',
 
-'reset_link' => 
-'To reset your password, please go to the following page:',
-
-'password_will_be_reset' => 
-'Your password will be automatically reset, and a new password will be emailed to you.',
-
-'ignore_password_message' => 
-'If you do not wish to reset your password, ignore this message. It will expire in 24 hours.',
-
 'password_has_been_reset' => 
 'Your password was reset and a new one has been emailed to you.',
-
-'new_login_info' => 
-'Here is your new login information:',
 
 //----------------------------
 // Date
