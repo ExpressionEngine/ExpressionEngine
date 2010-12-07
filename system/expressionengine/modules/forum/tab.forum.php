@@ -133,6 +133,26 @@ class Forum_tab {
 				'field_instructions'	=> lang('forum_topic_id_exitsts')
 			),
 		);
+		
+		// No forums, nothing to show
+		if ($forum_id_override)
+		{
+			$settings = array('forum_id' => $settings['forum_id']);
+		}
+		
+		
+		// Edit - can't change text
+		if ($entry_id)
+		{
+			unset($settings['forum_body']);
+			unset($settings['forum_id']);
+			
+			if ( $forum_title == '')
+			{
+				unset($settings['forum_title']);
+			}
+		}
+
 
 		foreach ($settings as $k => $v)
 		{

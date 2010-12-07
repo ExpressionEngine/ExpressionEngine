@@ -37,7 +37,6 @@ class Pages_tab {
 		$this->EE->lang->loadfile('pages');
 	
 		$site_id			= $this->EE->config->item('site_id');
-	
 		$settings 			= array();
 	
 		$no_templates 		= NULL;		
@@ -144,7 +143,7 @@ class Pages_tab {
 
         $params = $params[0];
 
-        $pages          = $this->EE->config->item('site_pages');
+        $pages = $this->EE->config->item('site_pages');
 
         if (isset($params['pages_uri']) && $params['pages_uri'] === lang('example_uri'))
         {

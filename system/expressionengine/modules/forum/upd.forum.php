@@ -158,7 +158,7 @@ class Forum_upd {
 			return $this->EE->output->fatal_error($this->EE->lang->line('config_not_writable'));
 		}
 				
-		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend) VALUES ('Forum', '$this->version', 'y')";
+		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend, has_publish_fields) VALUES ('Forum', '$this->version', 'y', 'y')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Forum', 'submit_post')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Forum', 'delete_post')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Forum', 'change_status')";
