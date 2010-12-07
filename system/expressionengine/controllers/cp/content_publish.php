@@ -170,10 +170,6 @@ class Content_publish extends CI_Controller {
 		
 		if ($this->form_validation->run() === TRUE)
 		{
-			// @todo if autosave is set to yes we
-			// have the entry id wrong. This should
-			// of course never happen, but double check
-
 			if ($this->_save($channel_id, $entry_id) === TRUE)
 			{
 				// under normal circumstances _save will redirect
@@ -188,19 +184,6 @@ class Content_publish extends CI_Controller {
 			// $errors = $this->errors
 
 		}
-// var_dump($this->form_validation->_error_array);
-
-		/*
-		
-		prep_field_output();
-		
-		setup_layout();
-		
-		setup_view_vars();
-		setup_javascript_vars();
-		
-		show_form();
-		*/
 
 		$this->_setup_file_list();
 
@@ -262,6 +245,8 @@ class Content_publish extends CI_Controller {
 		$parts = $_GET;
 		unset($parts['S'], $parts['D']);
 		$current_url = http_build_query($parts, '', '&amp;');
+		
+		$autosave_id = isset($entry_data['autosave_entry_id']) ? $entry_data['autosave_entry_id'] : 0;
 	
 		$data = array(
 			'cp_page_title'	=> $entry_id ? lang('edit_entry') : lang('new_entry'),
@@ -283,9 +268,10 @@ class Content_publish extends CI_Controller {
 			'file_list'		=> $this->_file_manager['file_list'],
 			
 			'hidden_fields'	=> array(
-				'entry_id'		=> $entry_id,
-				'channel_id'	=> $channel_id,
-				'filter'		=> $this->input->get_post('filter')
+				'entry_id'			=> $entry_id,
+				'channel_id'		=> $channel_id,
+				'autosave_entry_id'	=> $autosave_id,
+				'filter'			=> $this->input->get_post('filter')
 			),
 		);
 
@@ -359,16 +345,18 @@ class Content_publish extends CI_Controller {
 		
 		$this->output->enable_profiler(FALSE);
 		
-		$ret = $this->api_channel_entries->autosave_entry($data);
-		var_dump($ret);
-		/*
-		check_permissions();
+		$id = $this->api_channel_entries->autosave_entry($data);
 		
-		load_channel_data();	// @todo consider revisions?
-		set_field_settings();	// @todo consider third party tabs
+		// @todo check for errors
 		
-		save();
-		*/
+		$msg = $this->lang->line('autosave_success');
+		$time = $this->localize->set_human_time($this->localize->now);
+		$time = trim(strstr($time, ' '));
+		
+		$this->output->send_ajax_response(array(
+			'success' => $msg.$time,
+			'autosave_entry_id' => $id
+		));
 	}
 	
 	
@@ -1047,6 +1035,7 @@ class Content_publish extends CI_Controller {
 				// if the autosave was a new entry, kill the entry id
 				if ($result['original_entry_id'] == 0)
 				{
+					$result['autosave_entry_id'] = $entry_id;
 					$result['entry_id'] = 0;
 				}
 

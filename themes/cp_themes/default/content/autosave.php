@@ -16,7 +16,7 @@ if ($EE_view_disable !== TRUE)
 		<div class="pageContents">
 
 			<?php if (count($entries) < 1):?>
-				<p class="notice"><?=$no_result?></p>
+				<p class="notice"><?=lang('no_autosave_data')?></p>
 			<?php else:
 				
 				$this->table->set_template($cp_table_template);

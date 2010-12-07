@@ -867,6 +867,9 @@ $lang = array(
 'remove_categories' =>
 'Remove Categories',
 
+'no_autosave_data' =>
+'No Autosaved Entries',
+
 'autosave_data_available' => 'autosaved data available',
 'autosaved_entries' => 'Autosaved Entries',
 

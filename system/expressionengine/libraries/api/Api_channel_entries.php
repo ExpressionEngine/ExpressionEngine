@@ -35,6 +35,8 @@ class Api_channel_entries extends Api {
 	var $_cache		= array();
 	var $mod_fields	= array();
 	
+	var $autosave_entry_id = 0;
+	
 	/**
 	 * Constructor
 	 *
@@ -79,6 +81,7 @@ class Api_channel_entries extends Api {
 	function submit_new_entry($channel_id, $data, $autosave = FALSE)
 	{
 		$this->entry_id = 0;
+		$this->autosave_entry_id = isset($data['autosave_entry_id']) ? $data['autosave_entry_id'] : 0;
 		
 		// yoost incase
 		$data['channel_id'] = $channel_id;
@@ -361,6 +364,13 @@ class Api_channel_entries extends Api {
 	 */
 	function autosave_entry($data)
 	{
+		$this->autosave_entry_id = 0;
+		
+		if (isset($data['autosave_entry_id']))
+		{
+			$this->autosave_entry_id = $data['autosave_entry_id'];
+		}
+		
 		if ( ! isset($data['entry_id']) OR ! $data['entry_id'])
 		{
 			// new entry
@@ -1692,11 +1702,25 @@ class Api_channel_entries extends Api {
 	{
 		$meta['dst_enabled'] =  $this->_cache['dst_enabled'];
 		
-		$table = ($this->autosave) ? 'channel_entries_autosave': 'channel_titles';
-		
-		$this->EE->db->insert($table, $meta);
-		$this->entry_id = $this->EE->db->insert_id();
-		
+		if ($this->autosave)
+		{
+			if ($this->autosave_entry_id)
+			{
+				$this->EE->db->where('entry_id', $this->autosave_entry_id);
+				$this->EE->db->update('channel_entries_autosave', $meta);
+				$this->entry_id = $this->autosave_entry_id;
+			}
+			else
+			{
+				$this->EE->db->insert('channel_entries_autosave', $meta);
+				$this->entry_id = $this->EE->db->insert_id();
+			}
+		}
+		else
+		{
+			$this->EE->db->insert('channel_titles', $meta);
+			$this->entry_id = $this->EE->db->insert_id();
+		}		
 		
 		// Update Relationships (autosave skips this)
 		
@@ -1767,11 +1791,6 @@ class Api_channel_entries extends Api {
 		
 		if ($this->autosave)
 		{
-			echo '<pre>';
-			print_r($cust_fields);
-			echo '</pre>';
-			
-			
 			// Entry for this was made earlier, now its an update not an insert
 			$cust_fields['entry_id'] = $this->entry_id;
 			$cust_fields['original_entry_id'] = 0;
@@ -1783,6 +1802,14 @@ class Api_channel_entries extends Api {
 		}
 
 		$this->EE->db->insert('channel_data', $cust_fields);
+
+
+		// If remove old autosave data
+		if ($this->autosave_entry_id)
+		{
+			$this->EE->db->delete('channel_entries_autosave', array('entry_id' => $this->autosave_entry_id));
+		}
+
 
 		// Update member stats
 		

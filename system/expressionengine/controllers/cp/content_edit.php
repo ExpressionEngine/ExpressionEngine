@@ -557,6 +557,8 @@ class Content_edit extends CI_Controller {
 		}
 
 		// Grab all autosaved entries
+		$this->prune_autosave();
+		
 		$this->db->select('entry_id, original_entry_id, channel_id, title, author_id, status, entry_date, dst_enabled, comment_total');
 		$autosave = $this->db->get('channel_entries_autosave');
 		
@@ -1437,6 +1439,8 @@ class Content_edit extends CI_Controller {
 	 */
 	public function autosaved()
 	{
+		$this->prune_autosave();
+		
 		$this->load->library('table');
 		
 		$data['cp_page_title'] = lang('autosaved_entries');
@@ -1533,6 +1537,30 @@ class Content_edit extends CI_Controller {
 		
 		$this->db->where('entry_id', $id)->delete('channel_entries_autosave');
 		$this->functions->redirect(BASE.AMP.'C=content_edit'.AMP.'M=autosaved');
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Prune Autosaved Data
+	 *
+	 * @access public
+	 */
+	function prune_autosave()
+	{
+		// default to pruning every 6 hours
+		$autosave_prune = ($this->config->item('autosave_prune_hours') === FALSE) ? 
+										6 : $this->config->item('autosave_prune_hours');
+		
+		
+		// Convert to seconds
+		$autosave_prune = $autosave_prune * 60 * 60;
+		
+		$cutoff_date = time();
+		$cutoff_date -= $autosave_prune;
+		$cutoff_date = date("YmdHis", $cutoff_date);
+		
+		$this->db->where('edit_date <', $cutoff_date)->delete('channel_entries_autosave');
 	}
 
 	// --------------------------------------------------------------------

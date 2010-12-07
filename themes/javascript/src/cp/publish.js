@@ -629,8 +629,10 @@ $(document).ready(function() {
 
 	if (EE.publish.autosave) {
 		
+		var autosave_entry_id;
+		
 		start_autosave = function() {
-		//	setInterval(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
+			setInterval(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
 		}
 		
 		autosave_entry = function() {
@@ -645,16 +647,23 @@ $(document).ready(function() {
 			
 			form_data = $("#publishForm").serialize();
 			
+			if (autosave_entry_id) {
+				form_data += '&autosave_entry_id='+autosave_entry_id;
+			}
+			
 			$.ajax({
 				type: "POST",
 				dataType: 'json',
 				url: EE.BASE+"&C=content_publish&M=autosave",
 				data: form_data,
-				success: function(result){
+				success: function(result) {
 					if (result.error) {
 						console.log(result.error);
 					}
 					else if (result.success) {
+						if (result.autosave_entry_id) {
+							autosave_entry_id = result.autosave_entry_id;
+						}
 						$('#autosave_notice').text(result.success);
 					}
 					else {
@@ -665,10 +674,6 @@ $(document).ready(function() {
 				}
 			});
 		};
-		
-		$('#autosave_notice').click(function() {
-			autosave_entry();
-		});
 		
 		start_autosave();
 	}
