@@ -53,18 +53,19 @@ if ($EE_view_disable !== TRUE)
 					<?=form_checkbox('exact_match', 'yes', $exact_match, 'id="exact_match"')?> <?=lang('exact_match', 'exact_match').NBS.NBS?>
 					<?=form_dropdown('search_in', $search_in_options, $search_in_selected, 'id="f_search_in"').NBS.NBS?>
 					<?=form_submit('submit', lang('search'), 'class="submit" id="search_button"')?>
+					
+					<?php if ($autosave_show):?>
+						<a href="<?=BASE.AMP.'C=content_edit'.AMP.'M=autosaved'?>" class="submit submit_alt" id="autosaved_entries">
+							<img src="http://ellislab.dev/ee2/themes/cp_themes/default/images/save_layout.png" width="12" height="14" alt="<?=lang('autosaved_entries')?>">
+							<?=lang('autosaved_entries')?> <span class="notice"><?=required()?></span>
+						</a>
+					<?php endif;?>
+					
 				</div>
 
 			<?=form_close()?>
-			</fieldset>
 			
-			<?php if ($autosave_show):?>
-				<p>
-					<span class="notice"><?=required()?></span>
-					<a href="<?=BASE.AMP.'C=content_edit'.AMP.'M=autosaved'?>"><?=lang('autosaved_entries')?></a>
-					<img src="<?=$cp_theme_url?>images/list_arrow.gif" />
-				</p>
-			<?php endif;?>
+			</fieldset>
 			
 			</div> <!-- filterMenu -->
 

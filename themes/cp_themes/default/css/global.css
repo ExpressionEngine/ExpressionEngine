@@ -3576,6 +3576,29 @@ table.solo {
 	font-size:			12px;
 }
 
+
+/* Image link that shows up in
+ * edit if you have autosave data */
+
+#autosaved_entries {
+	float:				right;
+	text-decoration: 	none;
+	border:				1px solid #b7c7d2; /* won't work with rounded corners, but looks best for non js */
+	padding:			4px 8px;
+}
+
+#autosaved_entries img {
+	padding-right:		2px;
+	vertical-align:		text-bottom;
+	margin-bottom:		-1px;
+}
+
+
+#mainContent #tools .submit_alt
+#autosaved_entries {
+	border: 1px solid #ccc;
+}
+
 .image_edit_form_options #image_edit_form fieldset {
 	width:				440px;
 	padding:			3px 10px;
