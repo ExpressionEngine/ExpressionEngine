@@ -628,8 +628,15 @@ $(document).ready(function() {
 	}
 
 	if (EE.publish.autosave) {
-				
+		
+		var autosaving = false;
+		
 		start_autosave = function() {
+			if (autosaving) {
+				return;
+			}
+			
+			autosaving = true;
 			setTimeout(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
 		}
 		
@@ -664,12 +671,17 @@ $(document).ready(function() {
 						console.log('Autosave Failed');
 					}
 					
-					start_autosave();
+					autosaving = false;
 				}
 			});
 		};
 		
-		start_autosave();
+		// Start autosave when something changes
+		var writeable = $('textarea, input').not(':password,:checkbox,:radio,:submit,:button,:hidden'),
+			changeable = $('select, :checkbox, :radio, :file');
+		
+		writeable.bind('keypress change', start_autosave);
+		changeable.bind('change', start_autosave);
 	}
 
 
