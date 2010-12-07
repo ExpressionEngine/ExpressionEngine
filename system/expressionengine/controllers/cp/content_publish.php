@@ -65,7 +65,7 @@ class Content_publish extends CI_Controller {
 	{
 		if ($this->input->get_post('C') == 'content_publish')
 		{
-			$title = $this->lang->line('publish');
+			$title = lang('publish');
 			
 			$data = array(
 				'instructions'		=> lang('select_channel_to_post_in'),
@@ -74,7 +74,7 @@ class Content_publish extends CI_Controller {
 		}
 		else
 		{
-			$title = $this->lang->line('edit');
+			$title = lang('edit');
 			
 			$data = array(
 				'instructions'		=> lang('select_channel_to_edit'),
@@ -163,8 +163,8 @@ class Content_publish extends CI_Controller {
 		// @todo setup validation for categories, etc?
 		// @todo third party tabs
 
-		$this->form_validation->set_message('title', $this->lang->line('missing_title'));
-		$this->form_validation->set_message('entry_date', $this->lang->line('missing_date'));
+		$this->form_validation->set_message('title', lang('missing_title'));
+		$this->form_validation->set_message('entry_date', lang('missing_date'));
 
 		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
 		
@@ -369,7 +369,7 @@ class Content_publish extends CI_Controller {
 		
 		// @todo check for errors
 		
-		$msg = $this->lang->line('autosave_success');
+		$msg = lang('autosave_success');
 		$time = $this->localize->set_human_time($this->localize->now);
 		$time = trim(strstr($time, ' '));
 		
@@ -391,12 +391,12 @@ class Content_publish extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_admin_channels'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if (empty($_POST))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->api->instantiate('channel_fields');
@@ -709,7 +709,7 @@ class Content_publish extends CI_Controller {
 		
 		$this->javascript->compile();
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('view_entry'));
+		$this->cp->set_variable('cp_page_title', lang('view_entry'));
 		$this->load->view('content/view_entry', $data);
 	}
 	
@@ -727,7 +727,7 @@ class Content_publish extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->library('filemanager');
