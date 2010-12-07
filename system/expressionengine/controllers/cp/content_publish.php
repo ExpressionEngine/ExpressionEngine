@@ -774,12 +774,12 @@ class Content_publish extends CI_Controller {
 		$query = $this->category_model->get_categories($group_id, FALSE);
 		$this->api_channel_categories->category_tree($group_id, '', $query->row('sort_order'));
 
-		$vars = array(
+		$data = array(
 			'edit_links' => FALSE,
 			'categories' => array('' => $this->api_channel_categories->categories)
 		);
 
-		exit($this->load->view('content/_assets/categories', $vars, TRUE));
+		exit($this->load->view('content/_assets/categories', $data, TRUE));
 	}
 	
 	
@@ -1392,19 +1392,6 @@ class Content_publish extends CI_Controller {
 		}
 		
 		return $field_output;
-			
-		// if (isset($field_info['field_required']) && $field_info['field_required'] == 'y')
-		// {
-		// 	$vars['required_fields'][] = $field_info['field_id'];
-		// }
-		
-		// if ($vars['smileys_enabled'])
-		// {
-		// 	$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), $field_info['field_name']);
-		// 	$col_array = $this->table->make_columns($image_array, 8);
-		// 	$vars['smiley_table'][$field] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
-		// 	$this->table->clear(); // clear out tables for the next smiley					
-		// }
 	}
 	
 	// --------------------------------------------------------------------
@@ -1747,10 +1734,10 @@ class Content_publish extends CI_Controller {
 
 
 		// Build the mess
-		$vars = compact('categories', 'edit_links');
+		$data = compact('categories', 'edit_links');
 
 		$default['options']			= $categories;		
-		$default['string_override'] = $this->load->view('content/_assets/categories', $vars, TRUE);
+		$default['string_override'] = $this->load->view('content/_assets/categories', $data, TRUE);
 		
 		return array('category' => $default);
 	}
@@ -2161,7 +2148,7 @@ class Content_publish extends CI_Controller {
 					$menu_status_options[form_prep($row['status'])] = form_prep($status_name);
 				}
 
-				//	Were there no statuses?
+				// Were there no statuses?
 				// If the current user is not allowed to submit any statuses we'll set the default to closed
 
 				if ($no_status_flag === TRUE)
