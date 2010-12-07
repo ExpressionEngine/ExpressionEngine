@@ -131,14 +131,14 @@ if ($EE_view_disable !== TRUE)
 									
 									<label class="hide_field">
 										<span>
-										<img class="field_collapse" src="<?=$cp_theme_url?>images/field_expand.png" alt="" />
-										<?php if ($field_list[$_n]['field_required'] == 'y'):?><?=required()?><?php endif?>
-										<?=$field_list[$_n]['field_label']?>
+											<img class="field_collapse" src="<?=$cp_theme_url?>images/field_<?=$layout_styles[$_n]['collapse'] ? 'collapse': 'expand'?>.png" alt="" />
+											<?php if ($field_list[$_n]['field_required'] == 'y'):?><?=required()?><?php endif?>
+												<?=$field_list[$_n]['field_label']?>
 										</span>
 									</label>
 									
 									
-									<div id="sub_hold_field_<?=$field_list[$_n]['field_id']?>" <?=$layout_styles[$_n]['is_hidden'] ? 'class="js_hide"': '';?>>
+									<div id="sub_hold_field_<?=$field_list[$_n]['field_id']?>" <?=$layout_styles[$_n]['collapse'] ? 'class="js_hide"': '';?>>
 										
 										<?php if($field_list[$_n]['field_instructions'] != ''):?>
 											<div class="instruction_text">
