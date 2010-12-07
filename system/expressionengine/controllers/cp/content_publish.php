@@ -1552,7 +1552,6 @@ class Content_publish extends CI_Controller {
 			return $hierarchy;
 		}
 		
-		
 		// Otherwise apply the default
 		
 		$default = array(
@@ -1565,16 +1564,6 @@ class Content_publish extends CI_Controller {
 		if ($this->_channel_data['enable_versioning'] == 'y')
 		{
 			$default['revisions'] = array('revisions');
-		}
-		
-		if (isset($this->cp->installed_modules['forum']))
-		{
-			$default['forum'] = array('forum_id', 'forum_title', 'forum_body', 'forum_topic_id');
-		}
-		
-		if (isset($this->cp->installed_modules['pages']))
-		{
-			$default['pages'] = array('pages_uri', 'pages_template_id');
 		}
 
 		$default = array_merge($default, $this->_third_party_tabs());
