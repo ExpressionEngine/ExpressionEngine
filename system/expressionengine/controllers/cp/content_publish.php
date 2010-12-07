@@ -1220,6 +1220,12 @@ class Content_publish extends CI_Controller {
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Set Global Javascript
+	 *
+	 * @param 	int
+	 * @return 	void
+	 */
 	private function _set_global_js($entry_id)
 	{
 		$autosave_interval_seconds = ($this->config->item('autosave_interval_seconds') === FALSE) ? 

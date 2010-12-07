@@ -4137,7 +4137,7 @@ class Wiki {
 
 		// Old preg_match_all before we added support for alternate text links, e.g. [[Category:Foo | Bar]]
     	//if (preg_match_all("|\[\[".preg_quote($this->category_ns)."(ID)*\:([^\|])*?.*?\]\]|", $str, $matches))
-		if (preg_match_all("/\[\[Category(ID)*\:([^\|\]]*)/", $str, $matches))		
+		if (preg_match_all("/\[\[Category(ID)*\:([^\||\]]*)/", $str, $matches))		
 		{
 			if ($this->cats_use_namespaces == 'n')
 			{
