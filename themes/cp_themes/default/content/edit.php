@@ -56,7 +56,7 @@ if ($EE_view_disable !== TRUE)
 					
 					<?php if ($autosave_show):?>
 						<a href="<?=BASE.AMP.'C=content_edit'.AMP.'M=autosaved'?>" class="submit submit_alt" id="autosaved_entries">
-							<img src="http://ellislab.dev/ee2/themes/cp_themes/default/images/save_layout.png" width="12" height="14" alt="<?=lang('autosaved_entries')?>">
+							<img src="<?=$cp_theme_url?>images/save_layout.png" width="12" height="14" alt="<?=lang('autosaved_entries')?>">
 							<?=lang('autosaved_entries')?> <span class="notice"><?=required()?></span>
 						</a>
 					<?php endif;?>
