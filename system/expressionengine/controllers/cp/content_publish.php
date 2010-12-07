@@ -1,4 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -22,14 +23,17 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Content_publish extends CI_Controller { 
+class Content_publish extends CI_Controller {
 
-	public $SPELL				= FALSE;
-	public $autosave_error		= FALSE;
-	
-	public $installed_modules	= FALSE;
-	public $field_definitions	= array();
-	public $required_fields		= array();
+	private $_dst_enabled 		= FALSE;
+
+	private $_module_tabs		= array();
+	private $_channel_data 		= array();
+	private $_file_manager 		= array();
+	private $_channel_fields 	= array();
+	private $_publish_blocks 	= array();
+	private $_publish_layouts 	= array();
+	private $_smileys_enabled	= FALSE;
 
 	/**
 	 * Constructor
@@ -40,18 +44,16 @@ class Content_publish extends CI_Controller {
 
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
-
-		$this->installed_modules = $this->cp->get_installed_modules();
-
-		$cp_theme = ($this->session->userdata['cp_theme'] == '') ? $this->config->item('cp_theme') : $this->session->userdata['cp_theme'];
-
-		$this->theme_img_url = $this->config->item('theme_folder_url').'cp_themes/'.$cp_theme.'/images/';
-
-		$this->assign_cat_parent = ($this->config->item('auto_assign_cat_parents') == 'n') ? FALSE : TRUE;
+		
+		$this->load->library('api');
+		$this->load->library('spellcheck');
+		$this->load->model('channel_model');
+		$this->load->helper(array('typography', 'spellcheck'));
+		$this->cp->get_installed_modules();
 	}
-
+	
 	// --------------------------------------------------------------------
 
 	/**
@@ -61,115 +63,357 @@ class Content_publish extends CI_Controller {
 	 */
 	public function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		// There needs to be a way to choose a channel.
-		// This is an intermediary page.
-
-		$this->javascript->compile();
-		$this->channel_select_list();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Channel Select List
-	 *
-	 * This function shows a list of available channels.
-	 * This list will be displayed when a user clicks the
-	 * "publish" link when more than one channel exist.
-	 *
-	 * @return	mixed
-	 */
-	public function channel_select_list()
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		if ($this->input->get_post('C') == 'content_publish')
 		{
-			$vars['instructions'] = $this->lang->line('select_channel_to_post_in');
-			$title = $this->lang->line('publish');
-			$vars['link_location'] = BASE.AMP.'C=content_publish'.AMP.'M=entry_form';
+			$title = lang('publish');
+			
+			$data = array(
+				'instructions'		=> lang('select_channel_to_post_in'),
+				'link_location'		=> BASE.AMP.'C=content_publish'.AMP.'M=entry_form'
+			);
 		}
 		else
 		{
-			$vars['instructions'] = $this->lang->line('select_channel_to_edit');
-			$title = $this->lang->line('edit');
-			$vars['link_location'] = BASE.AMP.'C=content_edit'.AMP.'M=edit_entries';
+			$title = lang('edit');
+			
+			$data = array(
+				'instructions'		=> lang('select_channel_to_edit'),
+				'link_location'		=> BASE.AMP.'C=content_edit'.AMP.'M=edit_entries'
+			);
 		}
+		
+		$this->cp->set_variable('cp_page_title', $title);
 
 		$this->load->model('channel_model');
 		$channels = $this->channel_model->get_channels();
 
-		$vars['channels_exist'] = ($channels !== FALSE AND $channels->num_rows() === 0) ? FALSE : TRUE;
+		$data['channels_exist'] = ($channels !== FALSE AND $channels->num_rows() === 0) ? FALSE : TRUE;
+		$data['assigned_channels'] = $this->session->userdata('assigned_channels');
 
-		$vars['assigned_channels'] = $this->session->userdata('assigned_channels');
-
-		$this->cp->set_variable('cp_page_title', $title);
+		// Base Url
+		$base_url = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id=';
 		
 		// If there's only one publishable channel, no point in asking them which one
 		// they want. Auto direct them to the publish form for the only channel available.
-		if (count($vars['assigned_channels']) == 1)
+		if (count($data['assigned_channels']) === 1)
 		{
 			if (isset($_GET['print_redirect']))
 			{
-				exit(str_replace(AMP, '&', BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.key($vars['assigned_channels'])));
+				exit(str_replace(AMP, '&', $base_url.key($data['assigned_channels'])));
 			}
-			
-			$this->functions->redirect(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.key($vars['assigned_channels']));
+
+			$this->functions->redirect($base_url.key($data['assigned_channels']));
 		}
 
 		$this->javascript->compile();
-		$this->load->view('content/channel_select_list', $vars);
+		$this->load->view('content/channel_select_list', $data);
 	}
-
+	
 	// --------------------------------------------------------------------
 
 	/**
-	 * Save publish layout
+	 * Entry Form
 	 *
-	 * @return	mixed
+	 * Handles new and existing entries. Self submits to save.
+	 *
+	 * @return	void
+	 */
+	public function entry_form()
+	{
+		$this->load->library('form_validation');
+		$this->load->helper('form');
+		
+		$entry_id	= (int) $this->input->get_post('entry_id');
+		$channel_id	= (int) $this->input->get_post('channel_id');
+		
+		$autosave	= ($this->input->get_post('use_autosave') == 'y');
+
+		$this->_smileys_enabled = (isset($this->cp->installed_modules['emoticon']) ? TRUE : FALSE);
+
+		if ($this->_smileys_enabled)
+		{
+			$this->load->helper('smiley');
+			$this->cp->add_to_foot(smiley_js());				
+		}
+
+		// Grab the channel_id associated with this entry if
+		// required and make sure the current member has access.
+		$channel_id = $this->_member_can_publish($channel_id, $entry_id, $autosave);
+		
+		
+		// If they're loading a revision, we stop here
+		$this->_check_revisions($entry_id);
+		
+		
+		// Get channel data
+		$this->_channel_data = $this->_load_channel_data($channel_id);
+		
+		// Grab, fields and entry data
+		$entry_data		= $this->_load_entry_data($channel_id, $entry_id, $autosave);
+		$field_data		= $this->_set_field_settings($entry_id, $entry_data);
+		$entry_id		= $entry_data['entry_id'];
+		
+		// Merge in default fields
+		$deft_field_data = $this->_setup_default_fields($this->_channel_data, $entry_data);
+
+		$field_data = array_merge($field_data, $deft_field_data);
+
+		$this->_set_field_validation($this->_channel_data, $field_data);
+		
+		// @todo setup validation for categories, etc?
+		// @todo third party tabs
+
+		$this->form_validation->set_message('title', lang('missing_title'));
+		$this->form_validation->set_message('entry_date', lang('missing_date'));
+
+		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
+		
+		if ($this->form_validation->run() === TRUE)
+		{
+			if ($this->_save($channel_id, $entry_id) === TRUE)
+			{
+				// under normal circumstances _save will redirect
+				// if we get here, a hook triggered end_script
+				return;
+			}
+
+			// @todo Process errors, and proceed with
+			// showing the page. These are rather
+			// special errors - consider how to
+			// best show them . . .
+			// $errors = $this->errors
+
+		}
+
+		$this->_setup_file_list();
+		
+		// get all member groups with cp access for the layout list
+		$member_groups_laylist = array();
+		
+		$listable = $this->member_model->get_member_groups(array('can_access_admin', 'can_access_edit'), array('can_access_content'=>'y'));
+		
+		foreach($listable->result() as $group)
+		{
+			if ($group->can_access_admin == 'y' OR $group->can_access_edit == 'y')
+			{
+				$member_groups_laylist[] = array('group_id' => $group->group_id, 'group_title' => $group->group_title);
+			}
+		}
+		
+		
+		// Load layouts - we'll need them for the steps below
+		// if this is a layout group preview, we'll use it, otherwise, we'll use the author's group_id
+		
+		$layout_info = $this->_load_layout($channel_id);
+
+
+		// First figure out what tabs to show, and what fields
+		// they contain. Then work through the details of how
+		// they are show.
+	
+		$field_data 	= $this->_setup_field_blocks($field_data, $entry_data);
+		$tab_hierarchy	= $this->_setup_tab_hierarchy($field_data, $layout_info);
+		$layout_styles	= $this->_setup_layout_styles($field_data, $layout_info);
+		$field_list		= $this->_sort_field_list($field_data);		// @todo admin only? or use as master list? skip sorting for non admins, but still compile?
+		$field_list		= $this->_prep_field_wrapper($field_list);
+
+		$field_output	= $this->_setup_field_display($field_data);
+		
+		// Start to assemble view data
+		// WORK IN PROGRESS, just need a few things on the page to
+		// work with the html - will clean this crap up
+		
+		$this->load->library('filemanager');
+		$this->load->helper('snippets');
+		
+		$this->filemanager->filebrowser('C=content_publish&M=filemanager_actions');
+		
+		$this->cp->add_js_script(array(
+		        'ui'        => array('datepicker', 'resizable', 'draggable', 'droppable'),
+		        'plugin'    => array('markitup', 'toolbox.expose', 'overlay'),
+				'file'		=> array('json2', 'cp/publish')
+		    )
+		);
+				
+		if ($this->session->userdata('group_id') == 1)
+		{
+			$this->cp->add_js_script(array('file' => 'cp/publish_admin'));			
+		}
+
+		$this->_set_global_js($entry_id);
+
+				
+		$tab_labels = array(
+			'publish' 		=> lang('publish'),
+			'categories' 	=> lang('categories'),
+			'pings'			=> lang('pings'),
+			'options'		=> lang('options'),
+			'date'			=> lang('date'),
+		);
+
+		if (isset($this->_channel_data['enable_versioning']) 
+			&& $this->_channel_data['enable_versioning'] = 'y')
+		{
+			$tab_labels['revisions'] = lang('revisions');
+		}
+
+		foreach ($this->_module_tabs as $k => $tab)
+		{
+			$tab_labels[$k] = lang($k);
+		}
+		
+		reset($tab_hierarchy);
+		
+		$this->_markitup();
+		
+		$parts = $_GET;
+		unset($parts['S'], $parts['D']);
+		$current_url = http_build_query($parts, '', '&amp;');
+		
+		$autosave_id = isset($entry_data['autosave_entry_id']) ? $entry_data['autosave_entry_id'] : 0;
+	
+		$data = array(
+			'message'			=> '',	// @todo consider pulling?
+			'cp_page_title'		=> $entry_id ? lang('edit_entry') : lang('new_entry'),
+			
+			'tabs'				=> $tab_hierarchy,
+			'first_tab'			=> key($tab_hierarchy),
+			'tab_labels'		=> $tab_labels,
+			'field_list'		=> $field_list,
+			'layout_styles'		=> $layout_styles,
+			'field_output'		=> $field_output,
+			
+			'spell_enabled'		=> TRUE,
+			'smileys_enabled'	=> $this->_smileys_enabled,
+			
+			'current_url'		=> $current_url,
+			'file_list'			=> $this->_file_manager['file_list'],
+			
+			'show_revision_cluster' => FALSE,
+			'member_groups_laylist'	=> $member_groups_laylist,
+			
+			'hidden_fields'		=> array(
+				'entry_id'			=> $entry_id,
+				'channel_id'		=> $channel_id,
+				'autosave_entry_id'	=> $autosave_id,
+				'filter'			=> $this->input->get_post('filter')
+			)
+		);
+
+		$this->cp->set_breadcrumb(
+			BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id,
+			$this->_channel_data['channel_title']
+		);
+		
+		$this->javascript->compile();
+		$this->load->view('content/publish', $data);
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Autosave
+	 *
+	 * @return	void
+	 */
+	public function autosave()
+	{
+		$entry_id	= (int) $this->input->get_post('entry_id');
+		$channel_id	= (int) $this->input->get_post('channel_id');
+		
+		$assigned_channels = $this->functions->fetch_assigned_channels();
+		
+		// can they access this channel?
+		if ( ! $channel_id OR ! in_array($channel_id, $assigned_channels))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$this->_channel_data = $this->_load_channel_data($channel_id);
+		
+		// Grab, fields and entry data
+		$entry_data		= $this->_load_entry_data($channel_id, $entry_id);
+		$field_data		= $this->_set_field_settings($entry_id, $entry_data);
+		$entry_id		= $entry_data['entry_id'];
+		
+		$this->_setup_default_fields($this->_channel_data, $entry_data);
+		
+		$this->api->instantiate('channel_entries');
+
+		// Editing a non-existant entry?
+		if ($entry_id && ! $this->api_channel_entries->entry_exists($entry_id))
+		{
+			return FALSE;
+		}
+		
+		$data = $_POST;
+		$data['cp_call']		= TRUE;
+		$data['author_id']		= $this->input->post('author');	// @todo double check if this is validated
+		$data['revision_post']	= $_POST;			// @todo only if revisions - memory
+		$data['ping_servers']	= array();
+		
+		// Fetch xml-rpc ping server IDs
+		if (isset($_POST['ping']) && is_array($_POST['ping']))
+		{
+			$data['ping_servers'] = $_POST['ping'];
+		}
+		
+		// Remove leftovers
+		unset($data['ping']);
+		unset($data['author']);
+		unset($data['filter']);
+		unset($data['return_url']);
+		
+		$this->output->enable_profiler(FALSE);
+		
+		$id = $this->api_channel_entries->autosave_entry($data);
+		
+		// @todo check for errors
+		
+		$msg = lang('autosave_success');
+		$time = $this->localize->set_human_time($this->localize->now);
+		$time = trim(strstr($time, ' '));
+		
+		$this->output->send_ajax_response(array(
+			'success' => $msg.$time,
+			'autosave_entry_id' => $id
+		));
+	}
+	
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Save Layout
+	 *
+	 * @return	void
 	 */
 	public function save_layout()
 	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		if ( ! $this->cp->allowed_group('can_admin_channels'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->library('api');
-		$this->api->instantiate(array('channel_fields'));
-		$this->output->enable_profiler(FALSE);
-		$error = array();
-		$valid_name_error = array();
+		if (empty($_POST))
+		{
+			show_error(lang('unauthorized_access'));
+		}
 
-		$member_group = $this->input->post('member_group');
-		$channel_id = $this->input->post('channel_id');
-		$json_tab_layout = $this->input->post('json_tab_layout');
+		$this->api->instantiate('channel_fields');
 
-		// A word about JSON decoding... it's more computationally expensive then would generally
-		// be a good idea to use in EE, but the javascript data structure, combined with
-		// potentially reuse in other scenarios, and the fact that it is only running when an
-		// admin saves a layout makes it useful in this circumstance.
-
-		// Not all servers will have json_decode() available but those that do should use it,
-		// and we'll fall back to another solution for those who don't. The end goal is to get
-		// this into a serialized string for layout purposes on next publish load.
 		if ( ! function_exists('json_decode'))
 		{
 			$this->load->library('Services_json');
 		}
+
+		$this->output->enable_profiler(FALSE);
+		$error 				= array();
+		$valid_name_error 	= array();
+
+		$member_group 		= $this->input->post('member_group');
+		$channel_id 		= $this->input->post('channel_id');
+		$json_tab_layout 	= $this->input->post('json_tab_layout');
 
 		$layout_info = json_decode($json_tab_layout, TRUE);
 		
@@ -208,21 +452,21 @@ class Content_publish extends CI_Controller {
 		if (count($error) > 0 OR count($valid_name_error) > 0)
 		{
 			$resp['messageType'] = 'failure';
-			$message = $this->lang->line('layout_failure');
+			$message = lang('layout_failure');
 				
 			if (count($error))
 			{
-				$message .= NBS.NBS.$this->lang->line('layout_failure_required').implode(', ', $error);
+				$message .= NBS.NBS.lang('layout_failure_required').implode(', ', $error);
 			}
 				
 			if (count($valid_name_error))
 			{
-				$message .= NBS.NBS.$this->lang->line('layout_failure_invalid_name').implode(', ', $valid_name_error);
+				$message .= NBS.NBS.lang('layout_failure_invalid_name').implode(', ', $valid_name_error);
 			}
 				
 			$resp['message'] = $message; 
 
-			$this->output->send_ajax_response($resp); exit;	
+			$this->output->send_ajax_response($resp);
 		}
 
 		// make this into an array, insert_group_layout will serialize and save
@@ -230,23 +474,1862 @@ class Content_publish extends CI_Controller {
 		
 		if ($this->member_model->insert_group_layout($member_group, $channel_id, $layout_info))
 		{
-			$resp['messageType'] = 'success';
-			$resp['message'] = $this->lang->line('layout_success');
+			$resp = array(
+				'messageType'	=> 'success',
+				'message'		=> lang('layout_success')
+			);
 
-			$this->output->send_ajax_response($resp); exit;	
-
+			$this->output->send_ajax_response($resp);
 		}
 		else
 		{
-			$resp['messageType'] = 'failure';
-			$resp['message'] = $this->lang->line('layout_failure');
+			$resp = array(
+				'messageType'	=> 'failure',
+				'message'		=> lang('layout_failure')
+			);
 
-			$this->output->send_ajax_response($resp); exit;	
+			$this->output->send_ajax_response($resp);	
+		}
+	}
+	
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * View Entry
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function view_entry()
+	{
+		$entry_id	= $this->input->get('entry_id');
+		$channel_id	= $this->input->get('channel_id');
+		
+		if ( ! $channel_id OR ! $entry_id OR ! $this->cp->allowed_group('can_access_content'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$assigned_channels = $this->functions->fetch_assigned_channels();
+
+		if ( ! in_array($channel_id, $assigned_channels))
+		{
+			show_error(lang('unauthorized_for_this_channel'));
+		}
+		
+		$channel_info_fields = array(
+			'field_group',
+			'channel_html_formatting',
+			'channel_allow_img_urls',
+			'channel_auto_link_urls'
+		);
+		
+		$qry = $this->channel_model->get_channel_info($channel_id, $channel_info_fields);
+		
+		if ( ! $qry->num_rows())
+		{
+			show_error(lang('unauthorized_access'));
+		}
+				
+		$channel_info = $qry->row();
+
+		$qry = $this->db->select('field_id, field_type')
+						->where('group_id', $channel_info->field_group)
+						->where('field_type !=', 'select')
+						->order_by('field_order')
+						->get('channel_fields');
+
+		$fields = array();
+
+		foreach ($qry->result_array() as $row)
+		{
+			$fields['field_id_'.$row['field_id']] = $row['field_type'];
+		}
+
+		$res = $this->db->from('channel_titles AS ct, channel_data AS cd, channels AS c')
+						->select('ct.*, cd.*, c.*')
+						->where('ct.entry_id', $entry_id)
+						->where('ct.entry_id = cd.entry_id', NULL, FALSE)
+						->where('c.channel_id = ct.channel_id', NULL, FALSE)
+						->get();
+		
+		if ( ! $res->num_rows())
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$this->load->library('typography');
+		
+		$this->typography->initialize();
+		$this->typography->convert_curly = FALSE;
+		
+		$show_edit_link = TRUE;
+		$show_comments_link = TRUE;
 			
+		$resrow = $res->row_array();
+		
+		$comment_perms = array(
+			'can_edit_own_comments',
+			'can_delete_own_comments',
+			'can_moderate_comments'
+		);
+				
+		if ($resrow['author_id'] != $this->session->userdata('member_id'))
+		{
+			if ( ! $this->cp->allowed_group('can_view_other_entries'))
+			{
+				show_error(lang('unauthorized_access'));
+			}
+
+			if ( ! $this->cp->allowed_group('can_edit_other_entries'))
+			{
+				$show_edit_link = FALSE;
+			}
+
+			$comment_perms = array(
+				'can_view_other_comments',
+				'can_delete_all_comments',
+				'can_moderate_comments'
+			);
+		}
+		
+		$comment_perms		= array_map(array($this->cp, 'allowed_group'), $comment_perms);
+		$show_comments_link = (bool) count(array_filter($comment_perms)); // false if all perms fail
+		
+		$r = '';
+
+		$entry_title = $this->typography->format_characters(stripslashes($resrow['title']));
+
+		foreach ($fields as $key => $val)
+		{
+			if (isset($resrow[$key]) AND $val != 'rel' and $resrow[$key] != '')
+			{
+				$expl = explode('field_id_', $key);
+
+				if (isset($resrow['field_dt_'.$expl['1']]))
+				{
+					if ($resrow[$key] > 0)
+					{
+						$localize = TRUE;
+						$date = $resrow[$key];
+						if ($resrow['field_dt_'.$expl['1']] != '')
+						{
+							$date = $this->localize->offset_entry_dst($date, $resrow['dst_enabled']);
+							$date = $this->localize->simpl_offset($date, $resrow['field_dt_'.$expl['1']]);
+							$localize = FALSE;
+						}
+
+						$r .= $this->localize->set_human_time($date, $localize);
+					}
+				}
+				else
+				{
+					$r .= $this->typography->parse_type(stripslashes($resrow[$key]),
+											 array(
+														'text_format'	=> $resrow['field_ft_'.$expl['1']],
+														'html_format'	=> $channel_info->channel_html_formatting,
+														'auto_links'	=> $channel_info->channel_auto_link_urls,
+														'allow_img_url' => $channel_info->channel_allow_img_urls,
+													)
+											);
+				}
+			}
+		}
+		
+		
+		// Ugh, we just overwrite? Strong typing please!!
+		if ($show_edit_link)
+		{
+			$show_edit_link = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id;
+		}
+		
+		
+		$filter_link = $this->input->get('filter');
+		
+		if ($filter_link)
+		{
+			$show_edit_link .= AMP.'filter='.$filter_link;
+			
+			$filters	 = unserialize(base64_decode($filter_link));
+			$filter_link = BASE.AMP.'C=content_edit';
+			
+			if (isset($filters['keywords']))
+			{
+				$filters['keywords'] = base64_encode($filters['keywords']);
+			}
+			
+			$filter_link = BASE.AMP.'C=content_edit'.AMP.http_build_query($filters);
+		}
+		
+		
+		$comment_count = 0;
+		
+		if ($show_comments_link)
+		{
+			if (isset($this->installed_modules['comment']))
+			{
+				$comment_count = $this->db->where('entry_id', $entry_id)
+										  ->count_all_results('comments');
+				
+				$this->db->query_count--;
+			}
+			
+			$show_comments_link	= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'entry_id='.$entry_id;
+		}
+		
+		$live_look_link = FALSE;
+		
+		if ($resrow['live_look_template'] != 0)
+		{
+			$this->db->select('template_groups.group_name, templates.template_name');
+			$this->db->from('template_groups, templates');
+			$this->db->where('exp_template_groups.group_id = exp_templates.group_id', NULL, FALSE);
+			$this->db->where('templates.template_id', $result->row('live_look_template'));
+			
+			$res = $this->db->get();
+
+			if ($res->num_rows() == 1)
+			{
+				$live_look_link = $this->cp->masked_url($this->functions->create_url($res->row('group_name').'/'.$res->row('template_name').'/'.$entry_id));
+			}
+		}
+		
+		$data = array(
+			'filter_link'			=> $filter_link,
+			'live_look_link'		=> $live_look_link,
+			'show_edit_link'		=> $show_edit_link,
+			'comment_count'			=> $comment_count,
+			'show_comments_link'	=> $show_comments_link,
+			
+			'entry_title'			=> $entry_title,
+			'entry_contents'		=> $r
+		);
+		
+		$this->javascript->compile();
+
+		$this->cp->set_variable('cp_page_title', lang('view_entry'));
+		$this->load->view('content/view_entry', $data);
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Filemanager Endpoint
+	 *
+	 * Handles all file actions.
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function filemanager_actions($function = '', $params = array())
+	{
+		if ( ! $this->cp->allowed_group('can_access_content'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$this->load->library('filemanager');
+		
+		$config = array();
+		
+		if ($function)
+		{
+			$this->filemanager->_initialize($config);
+			
+			return call_user_func_array(array($this->filemanager, $function), $params);
+		}
+		$this->filemanager->process_request($config);
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Ajax Update Categories
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function category_actions()
+	{
+		if ( ! $this->cp->allowed_group('can_access_content'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$group_id = $this->input->get_post('group_id');
+		
+		if ( ! $group_id)
+		{
+			exit(lang('no_categories'));
+		}
+		
+		$this->load->library('api');
+		$this->api->instantiate('channel_categories');
+		
+		$this->load->model('category_model');
+		$this->load->helper('form');
+		
+		$query = $this->category_model->get_categories($group_id, FALSE);
+		$this->api_channel_categories->category_tree($group_id, '', $query->row('sort_order'));
+
+		$data = array(
+			'edit_links' => FALSE,
+			'categories' => array('' => $this->api_channel_categories->categories)
+		);
+
+		exit($this->load->view('content/_assets/categories', $data, TRUE));
+	}
+	
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Spellcheck
+	 *
+	 * @return	void
+	 */
+	public function spellcheck_actions()
+	{
+		if ($act = $this->input->get('action'))
+		{
+			$this->output->enable_profiler(FALSE);
+			
+			if ( ! class_exists('EE_Spellcheck'))
+			{
+				require APPPATH.'libraries/Spellcheck'.EXT;
+			}
+			
+			if ($act == 'iframe' OR $act == 'check')
+			{
+				return EE_Spellcheck::$act();
+			}
+		}
+		
+		show_error(lang('unauthorized_access'));
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load channel data
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _load_channel_data($channel_id)
+	{
+		$query = $this->channel_model->get_channel_info($channel_id);
+		
+		if ($query->num_rows() == 0)
+		{
+			show_error(lang('no_channel_exists'));
+		}
+		
+		$row = $query->row_array();
+		
+		/* -------------------------------------------
+		/* 'publish_form_channel_preferences' hook.
+		/*  - Modify channel preferences
+		/*  - Added: 1.4.1
+		*/
+			if ($this->extensions->active_hook('publish_form_channel_preferences') === TRUE)
+			{
+				$row = $this->extensions->call('publish_form_channel_preferences', $row);
+			}
+		/*
+		/* -------------------------------------------*/
+
+		return $row;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup channel field settings
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _set_field_settings($entry_id, $entry_data)
+	{
+		$this->api->instantiate('channel_fields');
+		
+		// Get Channel fields in the field group
+		$channel_fields = $this->channel_model->get_channel_fields($this->_channel_data['field_group']);
+
+		$this->_dst_enabled = ($this->session->userdata('daylight_savings') == 'y' ? TRUE : FALSE);
+
+		$field_settings = array();
+
+		foreach ($channel_fields->result_array() as $row)
+		{
+			$field_fmt 		= '';
+			$field_dt 		= '';
+			$field_data		= '';
+			$dst_enabled	= '';
+						
+			if ($entry_id === 0)
+			{
+				// Bookmarklet perhaps?
+				if (($field_data = $this->input->get('field_id_'.$row['field_id'])) !== FALSE)
+				{
+					$field_data = $this->_bm_qstr_decode($this->input->get('tb_url')."\n\n".$field_data );
+				}
+			}
+			else
+			{
+				$field_data = (isset($entry_data['field_id_'.$row['field_id']])) ? $entry_data['field_id_'.$row['field_id']] : $field_data;				
+			}			
+
+			$settings = array(
+				'field_instructions'	=> trim($row['field_instructions']),
+				'field_text_direction'	=> ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
+				'field_fmt'				=> $field_fmt,
+				'field_dt'				=> $field_dt,
+				'field_data'			=> $field_data,
+				'field_name'			=> 'field_id_'.$row['field_id'],
+				'dst_enabled'			=> $this->_dst_enabled
+			);
+			
+			$ft_settings = array();
+
+			if (isset($row['field_settings']) && strlen($row['field_settings']))
+			{
+				$ft_settings = unserialize(base64_decode($row['field_settings']));
+			}
+			
+			$settings = array_merge($row, $settings, $ft_settings);
+			$this->api_channel_fields->set_settings($row['field_id'], $settings);
+			
+			$field_settings[$settings['field_name']] = $settings;
+		}
+		
+		return $field_settings;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup channel field validation
+	 *
+	 * @return	void
+	 */
+	private function _set_field_validation($channel_data, $field_data)
+	{
+		foreach ($field_data as $fd)
+		{
+			$required = '';
+			
+			if ($fd['field_required'] == 'y')
+			{
+				$required = 'required|';				
+			}		
+			
+			$rules = $required.'call_field_validation['.$fd['field_id'].']';
+			$this->form_validation->set_rules($fd['field_id'], $fd['field_label'], $rules);
 		}
 	}
 	
 	// --------------------------------------------------------------------
+
+	/**
+	 * Member has access
+	 *
+	 * @return	void
+	 */
+	private function _member_can_publish($channel_id, $entry_id, $autosave)
+	{
+		$this->load->model('channel_entries_model');
+		
+		$assigned_channels = $this->functions->fetch_assigned_channels();
+		
+		// A given entry id is either a real channel entry id
+		// or the unique id for an autosave row.
+		
+		if ($entry_id)
+		{
+			$query = $this->channel_entries_model->get_entry($entry_id, '', $autosave);
+			
+			if ( ! $query->num_rows())
+			{
+				show_error(lang('unauthorized_access'));
+			}
+			
+			$channel_id = $query->row('channel_id');
+			$author_id = $query->row('author_id');
+			
+			// Different author? No thanks.
+			if ($author_id != $this->session->userdata('member_id'))
+			{
+				if ( ! $this->cp->allowed_group('can_edit_other_entries'))
+				{
+					show_error(lang('unauthorized_access'));
+				}
+			}
+		}
+		
+		
+		// Do some autodiscovery on the channel id if it wasn't
+		// given. We can cleverly redirect them, or - if they only
+		// have one channel - we can choose for them.
+		
+		if ( ! $channel_id)
+		{
+			if ( ! count($assigned_channels))
+			{
+				show_error(lang('unauthorized_access'));
+			}
+			
+			if (count($assigned_channels) > 1)
+			{
+				// go to the channel select list
+				$this->functions->redirect('C=content_publish');
+			}
+
+			$channel_id = $assigned_channels[0];
+		}
+		
+		// After all that mucking around, double check to make
+		// sure the channel is actually one they can post to.
+				
+		$channel_id = (int) $channel_id;
+		
+		if ( ! $channel_id OR ! in_array($channel_id, $assigned_channels))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		return $channel_id;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Member has access
+	 *
+	 * @return	void
+	 */
+	private function _check_revisions($entry_id)
+	{
+		
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Member has access
+	 *
+	 * @return	void
+	 */
+	function _load_entry_data($channel_id, $entry_id = FALSE, $autosave = FALSE)
+	{
+		$result = array(
+			'title'		=> $this->_channel_data['default_entry_title'],
+			'url_title'	=> $this->_channel_data['url_title_prefix'],
+			'entry_id'	=> 0
+		);
+		
+		if ($entry_id)
+		{
+			$this->load->model('channel_entries_model');
+			
+			$query = $this->channel_entries_model->get_entry($entry_id, $channel_id, $autosave);
+			
+			if ( ! $query->num_rows())
+			{
+				show_error(lang('no_channel_exists'));
+			}
+
+			$result = $query->row_array();
+			
+			if ($autosave)
+			{
+				$res_entry_data = unserialize($result['entry_data']);
+
+				// overwrite and add to this array with entry_data
+				foreach ($res_entry_data as $k => $v)
+				{
+					$result[$k] = $v;
+				}
+
+				// if the autosave was a new entry, kill the entry id
+				if ($result['original_entry_id'] == 0)
+				{
+					$result['autosave_entry_id'] = $entry_id;
+					$result['entry_id'] = 0;
+				}
+
+				unset($result['entry_data']);
+				unset($result['original_entry_id']);
+			}
+			
+			$version_id = $this->input->get_post('version_id');
+			
+			if ($result['versioning_enabled'] == 'y'
+				&& is_numeric($version_id))
+			{
+				$vquery = $this->db->select('version_data')
+									->where('entry_id', $entry_id)
+									->where('version_id', $version_id)
+									->get('entry_versioning');
+				
+				if ($vquery->num_rows() === 1)
+				{
+					$vdata = unserialize($vquery->row('version_data'));
+					
+					$result = array_merge($result, $vdata);
+				}
+			}
+		}
+		
+		// -------------------------------------------
+		// 'publish_form_entry_data' hook.
+		//  - Modify entry's data
+		//  - Added: 1.4.1
+			if ($this->extensions->active_hook('publish_form_entry_data') === TRUE)
+			{
+				$result = $this->extensions->call('publish_form_entry_data', $result->row_array());
+			}
+		// -------------------------------------------
+		
+		return $result;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Member has access
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _save($channel_id, $entry_id = FALSE)
+	{
+		/* -------------------------------------------
+		/* 'submit_new_entry_start' hook.
+		/*  - Add More Stuff to do when you first submit an entry
+		/*  - Added 1.4.2
+		*/
+			$edata = $this->extensions->call('submit_new_entry_start');
+			if ($this->extensions->end_script === TRUE) return TRUE;
+		/*
+		/* -------------------------------------------*/
+		
+		$this->api->instantiate('channel_entries');
+
+		// Editing a non-existant entry?
+		if ($entry_id && ! $this->api_channel_entries->entry_exists($entry_id))
+		{
+			return FALSE;
+		}
+
+		// We need these later
+		$return_url = $this->input->post('return_url');
+		$return_url = $return_url ? $return_url : '';
+		
+		$filter = $this->input->get_post('filter');
+		$filter = $filter ? AMP.'filter='.$filter : '';
+		
+		
+		// Copy over new author id, save revision data,
+		// and enabled comment status switching (cp_call)
+		$data = $_POST;
+		$data['cp_call']		= TRUE;
+		$data['author_id']		= $this->input->post('author');		// @todo double check if this is validated
+		$data['revision_post']	= $_POST;							// @todo only if revisions - memory
+		$data['ping_servers']	= array();
+		
+		
+		// Fetch xml-rpc ping server IDs
+		if (isset($_POST['ping']) && is_array($_POST['ping']))
+		{
+			$data['ping_servers'] = $_POST['ping'];
+		}
+		
+		
+		// Remove leftovers
+		unset($data['ping']);
+		unset($data['author']);
+		unset($data['filter']);
+		unset($data['return_url']);
+		
+		
+		// New entry or saving an existing one?
+		if ($entry_id)
+		{
+			$type		= '';
+			$page_title	= 'entry_has_been_updated';
+			$success	= $this->api_channel_entries->update_entry($entry_id, $data);
+		}
+		else
+		{
+			$type		= 'new';
+			$page_title	= 'entry_has_been_added';
+			$success	= $this->api_channel_entries->submit_new_entry($_POST['channel_id'], $data);
+		}
+		
+		
+		// Do we have a reason to quit?
+		if ($this->extensions->end_script === TRUE)
+		{
+			return TRUE;
+		}
+		
+		
+		// I want this to be above the extension check, but
+		// 1.x didn't do that, so we'll be blissfully ignorant
+		// that something went totally wrong.
+		
+		if ( ! $success)
+		{
+			// @todo consider returning false or an array?
+			return implode('<br />', $this->api_channel_entries->errors);
+		}
+		
+		
+		// Ok, we've succesfully submitted, but a few more things need doing
+		
+		$entry_id	= $this->api_channel_entries->entry_id;
+		$channel_id	= $this->api_channel_entries->channel_id;
+		
+		
+		$edit_url = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.$filter;
+		$view_url = BASE.AMP.'C=content_publish'.AMP.'M=view_entry'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.$filter;
+		
+		// Saved a revision - carry on editing
+		if ($this->input->post('save_revision'))
+		{
+			$this->functions->redirect($edit_url.AMP.'revision=saved');
+		}
+
+		
+		// Trigger the submit new entry redirect hook
+		$view_url = $this->api_channel_entries->trigger_hook('entry_submission_redirect', $view_url);
+		
+		// have to check this manually since trigger_hook() is returning $view_url
+		if ($this->extensions->end_script === TRUE)
+		{
+			return TRUE;
+		}
+		
+		
+		// Check for ping errors
+		if ($ping_errors = $this->api_channel_entries->get_errors('pings'))
+		{
+			$entry_link = $view_url;
+			$data = compact('ping_errors', 'channel_id', 'entry_id', 'entry_link');
+			
+			$data['cp_page_title'] = lang('xmlrpc_ping_errors');
+			
+			$this->load->view('content/ping_errors', $data);
+			
+			return TRUE;	// tricking it into not publish again
+		}
+		
+
+		// Trigger the entry submission absolute end hook
+		if ($this->api_channel_entries->trigger_hook('entry_submission_absolute_end', $view_url) === TRUE)
+		{
+			return TRUE;
+		}
+
+		// Redirect to ths "success" page
+		$this->session->set_flashdata('message_success', lang($page_title));
+		$this->functions->redirect($view_url);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Set Global Javascript
+	 *
+	 * @param 	int
+	 * @return 	void
+	 */
+	private function _set_global_js($entry_id)
+	{
+		$autosave_interval_seconds = ($this->config->item('autosave_interval_seconds') === FALSE) ? 
+										60 : $this->config->item('autosave_interval_seconds');
+
+		//	Create Foreign Character Conversion JS
+		include(APPPATH.'config/foreign_chars.php');
+
+		/* -------------------------------------
+		/*  'foreign_character_conversion_array' hook.
+		/*  - Allows you to use your own foreign character conversion array
+		/*  - Added 1.6.0
+		* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
+		*/  
+			if (isset($this->extensions->extensions['foreign_character_conversion_array']))
+			{
+				$foreign_characters = $this->extensions->call('foreign_character_conversion_array');
+			}
+		/*
+		/* -------------------------------------*/
+
+		$date_fmt = ($this->session->userdata('time_format') != '') 
+					? $this->session->userdata('time_format') : $this->config->item('time_format');
+
+		$this->javascript->set_global(array(
+			'date.format'						=> $date_fmt,
+			'add_new_html_button'				=> lang('add_new_html_button'),
+			'lang.add_tab' 						=> lang('add_tab'),
+			'lang.close' 						=> lang('close'),
+			'lang.confirm_exit'					=> lang('confirm_exit'),
+			'lang.duplicate_tab_name'			=> lang('duplicate_tab_name'),
+			'lang.hide_toolbar' 				=> lang('hide_toolbar'),
+			'lang.illegal_characters'			=> lang('illegal_characters'),
+			'lang.loading'						=> lang('loading'),
+			'lang.tab_name'						=> lang('tab_name'),
+			'lang.show_toolbar' 				=> lang('show_toolbar'),
+			'lang.tab_name_required' 			=> lang('tab_name_required'),
+			'publish.autosave.interval'			=> $autosave_interval_seconds,
+			'publish.channel_id'				=> $this->_channel_data['channel_id'],
+			'publish.default_entry_title'		=> $this->_channel_data['default_entry_title'],
+			'publish.field_group'				=> $this->_channel_data['field_group'],
+			'publish.foreignChars'				=> $foreign_characters,
+			'publish.lang.layout_removed'		=> lang('layout_removed'),
+			'publish.lang.no_member_groups'		=> lang('no_member_groups'),
+			'publish.lang.refresh_layout'		=> lang('refresh_layout'),
+			'publish.lang.tab_count_zero'		=> lang('tab_count_zero'),
+			'publish.lang.tab_has_req_field'	=> lang('tab_has_req_field'),
+			'publish.markitup.foo'				=> FALSE,
+			'publish.smileys'					=> ($this->_smileys_enabled) ? TRUE : FALSE,
+			'publish.url_title_prefix'			=> $this->_channel_data['url_title_prefix'],
+			'publish.which'						=> ($entry_id === 0) ? 'new' : 'edit',
+			'publish.word_separator'			=> $this->config->item('word_separator') != "dash" ? '_' : '-',
+			'user.can_edit_html_buttons'		=> $this->cp->allowed_group('can_edit_html_buttons'),
+			'user.foo'							=> FALSE,
+			'user_id'							=> $this->session->userdata('member_id'),
+			'upload_directories'				=> $this->_file_manager['file_list'],
+		));
+
+		// -------------------------------------------
+		//	Publish Page Title Focus - makes the title field gain focus when the page is loaded
+		//
+		//	Hidden Configuration Variable - publish_page_title_focus => Set focus to the tile? (y/n)
+
+		$this->javascript->set_global('publish.title_focus', FALSE);
+
+		if ( ! $entry_id && $this->config->item('publish_page_title_focus') != 'n')
+		{
+			$this->javascript->set_global('publish.title_focus', TRUE);
+		}
+		
+		// -------------------------------------------
+	}
+	
+	// --------------------------------------------------------------------
+		
+	/**
+	 * Create Sidebar field list
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _sort_field_list($field_data)
+	{
+		$sorted = array();
+		
+		$_required_field_labels = array();
+		$_optional_field_labels = array();
+		
+		foreach($field_data as $name => $field)
+		{
+			if ($field['field_required'] == 'y')
+			{
+				$_required_field_labels[$name] = $field['field_label'];
+			}
+			else
+			{
+				$_optional_field_labels[$name] = $field['field_label'];
+			}
+		}
+		
+		asort($_required_field_labels);
+		asort($_optional_field_labels);
+		
+		foreach(array($_required_field_labels, $_optional_field_labels) as $sidebar_field_groups)
+		{
+			foreach($sidebar_field_groups as $name => $label)
+			{
+				// @todo field_data bad key
+				$sorted[$name] = $field_data[$name];
+			}
+		}
+		
+		return $sorted;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup Field Display
+	 *
+	 * Calls the fieldtype display_field method
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _setup_field_display($field_data)
+	{
+		$field_output = array();
+		
+		foreach ($field_data as $name => $data)
+		{
+			if (isset($data['string_override']))
+			{
+				$field_output[$name] = $data['string_override'];
+				continue;
+			}
+			
+			$this->api_channel_fields->setup_handler($data['field_id']);
+			
+			$field_value = set_value($data['field_id'], $data['field_data']);
+			$field_output[$name] = $this->api_channel_fields->apply('display_publish_field', array($field_value));
+		}
+		
+		return $field_output;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup Field Wrapper Stuff
+	 *
+	 * Sets up smileys, spellcheck, glossary, etc
+	 *
+	 * @return	void
+	 */
+	private function _prep_field_wrapper($field_list)
+	{
+		$defaults = array(
+			'field_show_spellcheck'			=> 'n',
+			'field_show_smileys'			=> 'n',
+			'field_show_glossary'			=> 'n',
+			'field_show_formatting_btns'	=> 'n',
+			'field_show_writemode'			=> 'n',
+			'field_show_file_selector'		=> 'n',
+			'field_show_fmt'				=> 'n',
+			'field_fmt_options'				=> array(),
+		);
+		
+		$markitup_buttons = array();
+	
+		foreach ($field_list as $field => &$data)
+		{
+			$data['has_extras'] = FALSE;
+			
+			foreach($defaults as $key => $val)
+			{
+				if (isset($data[$key]) && $data[$key] == 'y')
+				{
+					$data['has_extras'] = TRUE;
+					continue;
+				}
+
+				$data[$key] = $val;
+			}
+			
+			if ($data['field_show_smileys'] == 'y' && $this->_smileys_enabled === TRUE)
+			{
+				$data['smiley_table'] = $this->_build_smiley_table($field);
+			}
+			
+			if ($this->_channel_data['show_button_cluster'] == 'y' && isset($data['field_show_formatting_btns']) && $data['field_show_formatting_btns'] == 'y')
+			{
+				$markitup_buttons['fields'][$field] = $data['field_id'];
+			}
+		}
+		
+		$this->javascript->set_global('publish.markitup', $markitup_buttons);
+
+		return $field_list;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup Layout Styles for all fields
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _setup_layout_styles($field_data, $layout_info)
+	{
+		$field_display = array(
+			'visible'		=> TRUE,
+			'collapse'		=> FALSE,
+			'html_buttons'	=> TRUE,
+			'is_hidden'		=> FALSE,
+			'width'			=> '100%'
+		);
+		
+		$layout = array();
+		
+		// do we have a layout? use it
+		if ($layout_info)
+		{
+			foreach ($layout_info as $tab => $fields)
+			{
+				unset($fields['_tab_label']);
+				
+				foreach ($fields as $name => $display)
+				{
+					$layout[$name] = array_merge($field_display, $display);
+				}
+			}
+			
+			return $layout;
+		}
+
+		// otherwise - assign default to all
+		
+		foreach($field_data as $name => $field)
+		{
+			$layout[$name] = $field_display;
+		}
+		
+		return $layout;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load a layout
+	 *
+	 * @param	int
+	 * @return	mixed
+	 */
+	function _load_layout($channel_id)
+	{
+		$layout_group = (is_numeric($this->input->get_post('layout_preview'))) ? $this->input->get_post('layout_preview') : $this->session->userdata('group_id');
+		$layout_info = $this->member_model->get_group_layout($layout_group, $channel_id);
+		
+		if ( ! is_array($layout_info) OR ! count($layout_info))
+		{
+			return FALSE;
+		}
+
+		// turn # keys into field_id_#
+		foreach ($layout_info as $tab => &$fields)
+		{
+			foreach ($fields as $name => $data)
+			{
+				if (is_numeric($name))
+				{
+					$fields['field_id_'.$name] = $data;
+					unset($fields[$name]);
+				}
+			}
+		}
+		
+		return $layout_info;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup Tab Hierarchy
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _setup_tab_hierarchy($field_data, $layout_info)
+	{
+		// Do we have a layout? Woot, saves time!
+		if (is_array($layout_info))
+		{
+			$hierarchy = array();
+			
+			foreach ($layout_info as $tab => $fields)
+			{
+				unset($fields['_tab_label']);
+				$hierarchy[$tab] = array_keys($fields);
+			}
+			
+			return $hierarchy;
+		}
+		
+		// Otherwise apply the default
+		
+		$default = array(
+			'publish'		=> array('title', 'url_title'),
+			'date'			=> array('entry_date', 'expiration_date', 'comment_expiration_date'),
+			'categories'	=> array('category'),
+			'options'		=> array('channel', 'status', 'author', 'options', 'ping'),
+		);
+
+		if ($this->_channel_data['enable_versioning'] == 'y')
+		{
+			$default['revisions'] = array('revisions');
+		}
+
+		$default = array_merge($default, $this->_third_party_tabs());
+
+		// Add predefined fields to their specific tabs
+		foreach ($default as $tab => $fields)
+		{
+			foreach ($fields as $i => $field_name)
+			{
+				if (isset($field_data[$field_name]))
+				{
+					unset($field_data[$field_name]);
+				}
+				else
+				{
+					unset($default[$tab][$i]);
+				}
+			}
+		}
+		
+		// Add anything else to the publish tab
+		foreach ($field_data as $name => $field)
+		{
+			$default['publish'][] = $name;
+		}
+		
+		return $default;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup Field Blocks
+	 *
+	 * This function sets up default fields and field blocks
+	 *
+	 * @param 	array
+	 * @param	array
+	 * @return 	array
+	 */
+	private function _setup_field_blocks($field_data, $entry_data)
+	{
+		$categories 	= $this->_build_categories_block($entry_data);
+		$pings 			= $this->_build_ping_block($entry_data['entry_id']);
+		$options		= $this->_build_options_block($entry_data);
+		$revisions		= $this->_build_revisions_block($entry_data);
+		$third_party  	= $this->_build_third_party_blocks($entry_data);
+
+		return array_merge(
+							$field_data, $categories, $pings, 
+							$options, $revisions, $third_party);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Categories Block
+	 *
+	 *
+	 */
+	private function _build_categories_block($entry_data)
+	{
+		$default	= array(
+			'string_override'		=> lang('no_categories'),
+			'field_id'				=> 'category',
+			'field_name'			=> 'category',
+			'field_label'			=> lang('categories'),
+			'field_required'		=> 'n',
+			'field_type'			=> 'multiselect',
+			'field_text_direction'	=> 'ltr',
+			'field_data'			=> '',
+			'field_fmt'				=> 'text',
+			'field_instructions'	=> '',
+			'field_show_fmt'		=> 'n',
+			'selected'				=> 'n',
+			'options'				=> array()
+		);
+		
+		// No categories? Easy peasy
+		if ( ! $this->_channel_data['cat_group'])
+		{
+			return array('category' => $default);
+		}
+		
+		
+		
+		$this->api->instantiate('channel_categories');
+				
+		$catlist	= array();
+		$categories	= array();
+		
+		
+		// Figure out selected categories
+		if ( ! $entry_data['entry_id'] && $this->_channel_data['deft_category'])
+		{
+			// new entry and a default exists
+			$catlist = $this->_channel_data['deft_category'];
+		}
+		elseif ( ! isset($entry_data['category']))
+		{
+			$qry = $this->db->select('c.cat_name, p.*')
+							->from('categories AS c, category_posts AS p')
+							->where_in('c.group_id', explode('|', $this->_channel_data['cat_group']))
+							->where('p.entry_id', $entry_data['entry_id'])
+							->where('c.cat_id = p.cat_id', NULL, FALSE)
+							->get();
+
+			foreach ($qry->result() as $row)
+			{
+				$catlist[$row->cat_id] = $row->cat_id;
+			}			
+		}
+		elseif (is_array($entry_data['category']))
+		{
+			foreach ($entry_data['category'] as $val)
+			{
+				$catlist[$val] = $val;
+			}
+		}
+		
+		
+		// Figure out valid category options		
+		$this->api_channel_categories->category_tree($this->_channel_data['cat_group'], $catlist);
+
+		if (count($this->api_channel_categories->categories) > 0)
+		{  
+			// add categories in again, over-ride setting above
+			foreach ($this->api_channel_categories->categories as $val)
+			{
+				$categories[$val['3']][] = $val;
+			}
+		}
+		
+		
+		// If the user can edit categories, we'll go ahead and
+		// show the links to make that work
+		$edit_links = FALSE;
+		
+		if ($this->session->userdata('can_edit_categories') == 'y')
+		{
+			$link_info = $this->api_channel_categories->fetch_allowed_category_groups($this->_channel_data['cat_group']);
+
+			if (is_array($link_info) && count($link_info))
+			{
+				$edit_links = array();
+				
+				foreach ($link_info as $val)
+				{
+					$edit_links[] = array(
+						'url' => BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$val['group_id'],
+						'group_name' => $val['group_name']
+					);
+				}
+			}
+		}
+
+
+		// Build the mess
+		$data = compact('categories', 'edit_links');
+
+		$default['options']			= $categories;		
+		$default['string_override'] = $this->load->view('content/_assets/categories', $data, TRUE);
+		
+		return array('category' => $default);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Ping Block
+	 *
+	 * Setup block that contains ping servers
+	 *
+	 * @param 	integer		Entry Id
+	 * @return 	array
+	 */
+	private function _build_ping_block($entry_id) 
+	{
+		$ping_servers = $this->channel_entries_model->fetch_ping_servers($entry_id);
+
+		$settings = array('ping' => 
+			array(
+				'string_override'		=> (isset($ping_servers) && $ping_servers != '') ? '<fieldset>'.$ping_servers.'</fieldset>' : lang('no_ping_sites').'<p><a href="'.BASE.AMP.'C=myaccount'.AMP.'M=ping_servers'.AMP.'id='.$this->session->userdata('member_id').'">'.lang('add_ping_sites').'</a></p>',
+				'field_id'				=> 'ping',
+				'field_label'			=> lang('pings'),
+				'field_required'		=> 'n',
+				'field_type'			=> 'checkboxes',
+				'field_text_direction'	=> 'ltr',
+				'field_data'			=> $ping_servers,
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n'
+			)
+		);
+
+		$this->api_channel_fields->set_settings('ping', $settings['ping']);
+
+		return $settings;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Options Block
+	 *
+	 * 
+	 *
+	 */
+	private function _build_options_block($entry_data)
+	{
+		// sticky, comments, dst
+		// author, channel, status
+		$settings			= array();
+		
+		$show_comments		= FALSE;
+		$show_sticky		= FALSE;
+		$show_dst			= FALSE;
+		
+		$options_array[] = 'sticky';
+
+		// Allow Comments?
+		if ( ! isset($this->cp->installed_modules['comment']))
+		{
+			$allow_comments = (isset($entry_data['allow_comments'])) ? $entry_data['allow_comments'] : 'n';
+		}
+		elseif ($this->_channel_data['comment_system_enabled'] == 'y')
+		{
+			$options_array[] = 'allow_comments';
+		}
+
+		// Is DST active? 
+		if ($this->config->item('honor_entry_dst') == 'y')
+		{
+			$options_array[] = 'dst_enabled';
+		}
+			
+		// Options Field
+		$settings['options'] = array(
+			'field_id'				=> 'options',
+			'field_required'		=> 'n',
+			'field_label'			=> lang('options'),
+			'field_data'			=> '',
+			'field_instructions'	=> '',
+			'field_pre_populate'	=> 'n',
+			'field_type'			=> 'checkboxes',
+			'field_list_items'		=> $options_array,
+		);
+
+		$this->api_channel_fields->set_settings('options', $settings['options']);
+				
+		$settings['author'] 	= $this->_build_author_select($entry_data);
+		$settings['channel']	= $this->_build_channel_select();
+		$settings['status']		= $this->_build_status_select($entry_data);
+
+		return $settings;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Build Revisions Block
+	 *
+	 * @param 	array
+	 * @return 	array
+	 */
+	private function _build_revisions_block($entry_data)
+	{
+		$settings = array();
+		
+		$version_id = $this->input->get('version_id');
+
+		if ($this->_channel_data['enable_versioning'] == 'n' OR 
+			(isset($entry_data['versioning_enabled']) && $entry_data['versioning_enabled'] == 'n'))
+		{
+			return $settings;
+		}
+
+		$versioning = lang('no_revisions_exist');
+		
+		$revisions_checked = (isset($entry_data['versioning_enabled']) 
+									&& $entry_data['versioning_enabled'] == 'y') ? TRUE : FALSE;
+	
+		$qry = $this->db->select('v.author_id, v.version_id, v.version_date, m.screen_name')
+						->from('entry_versioning as v, members as m')
+						->where('v.entry_id', $entry_data['entry_id'])
+						->where('v.author_id = m.member_id', NULL, FALSE)
+						->order_by('v.version_id', 'desc')
+						->get();
+		
+		if ($qry->num_rows() > 0)
+		{
+			$this->load->library('table');
+			
+			$this->table->set_template(array(
+					'table_open'		=> '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">',
+					'row_start'			=> '<tr class="even">',
+					'row_alt_start'		=> '<tr class="odd">'
+			));
+			$this->table->set_heading(
+				lang('revision'),
+				lang('rev_date'),
+				lang('rev_author'),
+				lang('load_revision')
+			);
+			
+			$i = 0;
+			$j = $qry->num_rows();
+			
+			$link_base = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$entry_data['channel_id'].AMP.'entry_id='.$entry_data['entry_id'].AMP;
+
+			foreach ($qry->result() as $row)
+			{
+				$revlink = '<a class="revision_warning" href="'.$link_base.'version_id='.$row->version_id.AMP.'version_num='.$j.AMP.'use_autosave=n">'.lang('load_revision').'</a>';
+				
+				if ( ! $version_id)
+				{
+					if ($row->version_id == $version_id)
+					{
+						$revlink = lang('current_rev');
+					}
+					elseif ($entry_data['entry_id'] != 0 && $i == 0)
+					{
+						$revlink = lang('current_rev');
+					}
+					
+					$this->table->add_row(array(
+							'<strong>' . lang('revision') . ' ' . $j . '</strong>',
+							$this->localize->set_human_time($row->version_date),
+							$row->screen_name,
+							$revlink
+						)
+					);
+					
+					$j--;
+					$i++;
+				}
+				
+				$versioning = $this->table->generate();
+				
+				$outputjs = '
+				var revision_target = "";
+
+				$("<div id=\"revision_warning\">'.lang('revision_warning').'</div>").dialog({
+					autoOpen: false,
+					resizable: false,
+					title: "'.lang('revisions').'",
+					modal: true,
+					position: "center",
+					minHeight: "0px", 
+					buttons: {
+						Cancel: function() {
+							$(this).dialog("close");
+						},
+					"'.lang('load_revision').'": function() {
+						location=revision_target;
+					}
+					}});
+
+				$(".revision_warning").click( function (){
+					$("#revision_warning").dialog("open");
+					revision_target = $(this).attr("href");
+					$(".ui-dialog-buttonpane button:eq(2)").focus();
+					return false;
+				});';
+
+				$this->javascript->output(str_replace(array("\n", "\t"), '', $outputjs));
+			}
+		}
+		
+		$versioning .= '<p><label>'.form_checkbox('versioning_enabled', 'y', $revisions_checked, 'id="versioning_enabled"').' '.lang('versioning_enabled').'</label></p>';
+		
+		$settings['revisions'] = array(
+			'field_id'				=> 'revisions',
+			'field_label'			=> lang('revisions'),
+			'field_name'			=> 'revisions',
+			'field_required'		=> 'n',
+			'field_type'			=> 'checkboxes',
+			'field_text_direction'	=> 'ltr',
+			'field_data'			=> '',
+			'field_fmt'				=> 'text',
+			'field_instructions'	=> '',
+			'field_show_fmt'		=> '',
+			'string_override'		=> $versioning,
+		);
+		
+		return $settings;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Build Author Vars
+	 *
+	 * @param 	array
+	 */
+	protected function _build_author_select($entry_data)
+	{
+		$this->load->model('member_model');
+
+		// Default author
+		$author_id = (isset($entry_data['author_id'])) ? $entry_data['author_id'] : $this->session->userdata('member_id');
+
+		$menu_author_options = array();
+		$menu_author_selected = $author_id;
+		
+		$qry = $this->db->select('username, screen_name')
+						->get_where('members', array('member_id' => (int) $author_id));
+			
+		$author = ($qry->row('screen_name')  == '') ? $qry->row('username') : $qry->row('screen_name');
+		$menu_author_options[$author_id] = $author;
+		
+		// Next we'll gather all the authors that are allowed to be in this list
+		$author_list = $this->member_model->get_authors_simple();
+
+		$channel_id = (isset($entry_data['channel_id'])) ? $entry_data['channel_id'] : $this->input->get('channel_id');
+
+		// We'll confirm that the user is assigned to a member group that allows posting in this channel
+		if ($author_list->num_rows() > 0)
+		{
+			foreach ($author_list->result() as $row)
+			{
+				if (isset($this->session->userdata['assigned_channels'][$channel_id]))
+				{
+					$menu_author_options[$row->member_id] = ($row->screen_name == '') ? $row->username : $row->screen_name;
+				}
+			}
+		}
+		
+		$settings = array(
+			'author'	=> array(
+				'field_id'				=> 'author',
+				'field_label'			=> lang('author'),
+				'field_required'		=> 'n',
+				'field_instructions'	=> '',
+				'field_type'			=> 'select',
+				'field_pre_populate'	=> 'n',
+				'field_text_direction'	=> 'ltr',
+				'field_list_items'		=> $menu_author_options,
+				'field_data'			=> $menu_author_selected
+			)
+		);
+
+		$this->api_channel_fields->set_settings('author', $settings['author']);
+		return $settings['author'];
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Build Channel Select Options Field
+	 *
+	 * @return 	array
+	 */
+	private function _build_channel_select()
+	{
+		$menu_channel_options 	= array();
+		$menu_channel_selected	= '';
+		
+		$query = $this->channel_model->get_channel_menu(
+														$this->_channel_data['status_group'], 
+														$this->_channel_data['cat_group'], 
+														$this->_channel_data['field_group']
+													);
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result_array() as $row)
+			{
+				if ($this->session->userdata['group_id'] == 1 OR in_array($row['channel_id'], $assigned_channels))
+				{
+					if (isset($_POST['new_channel']) && is_numeric($_POST['new_channel']) && $_POST['new_channel'] == $row['channel_id'])
+					{
+						$menu_channel_selected = $row['channel_id'];
+					}
+					elseif ($this->_channel_data['channel_id'] == $row['channel_id'])
+					{
+						$menu_channel_selected =  $row['channel_id'];
+					}
+
+					$menu_channel_options[$row['channel_id']] = form_prep($row['channel_title']);
+				}
+			}
+		}
+		
+		$settings = array(
+			'channel'	=> array(
+				'field_id'				=> 'channel',
+				'field_label'			=> lang('channel'),
+				'field_required'		=> 'n',
+				'field_instructions'	=> '',
+				'field_type'			=> 'select',
+				'field_pre_populate'	=> 'n',
+				'field_text_direction'	=> 'ltr',
+				'field_list_items'		=> $menu_channel_options,
+				'field_data'			=> $menu_channel_selected
+			)
+		);
+
+		$this->api_channel_fields->set_settings('channel', $settings['channel']);
+		return $settings['channel'];		
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Build Status Select
+	 *
+	 * @return 	array
+	 */
+	private function _build_status_select($entry_data)
+	{
+		$this->load->model('status_model');
+		
+		// check the logic here...
+		if ( ! isset($this->_channel_data['deft_status']) && $this->_channel_data['deft_status'] == '')
+		{
+			$this->_channel_data['deft_status'] = 'open';
+		}
+		
+		$entry_data['status'] = (isset($entry_data['status']) && $entry_data['status'] != 'NULL') ? $entry_data['status'] : $this->_channel_data['deft_status'];
+		
+		$no_status_access 		= array();
+		$menu_status_options 	= array();
+		$menu_status_selected 	= $entry_data['status'];
+
+		if ($this->session->userdata('group_id') !== 1)
+		{
+			$query = $this->status_model->get_disallowed_statuses($this->session->userdata('group_id'));
+
+			if ($query->num_rows() > 0)
+			{
+				foreach ($query->result_array() as $row)
+				{
+					$no_status_access[] = $row['status_id'];
+				}
+			}
+			
+			// if there is no status group assigned, 
+			// only Super Admins can create 'open' entries
+			$menu_status_options['open'] = lang('open');		
+		}
+		
+		$menu_status_options['closed'] = lang('closed');
+		
+		if (isset($this->_channel_data['status_group']))
+		{
+			$query = $this->status_model->get_statuses($this->_channel_data['status_group']);
+			
+			if ($query->num_rows())
+			{
+				$no_status_flag = TRUE;
+				$vars['menu_status_options'] = array();
+
+				foreach ($query->result_array() as $row)
+				{
+					// pre-selected status
+					if ($entry_data['status'] == $row['status'])
+					{
+						$menu_status_selected = $row['status'];
+					}
+
+					if (in_array($row['status_id'], $no_status_access))
+					{
+						continue;
+					}
+
+					$no_status_flag = FALSE;
+					$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? lang($row['status']) : $row['status'];
+					$menu_status_options[form_prep($row['status'])] = form_prep($status_name);
+				}
+
+				// Were there no statuses?
+				// If the current user is not allowed to submit any statuses we'll set the default to closed
+
+				if ($no_status_flag === TRUE)
+				{
+					$menu_status_selected = 'closed';
+				}
+			}
+		}
+		
+		$settings = array(
+			'status'	=> array(
+				'field_id'				=> 'status',
+				'field_label'			=> lang('status'),
+				'field_required'		=> 'n',
+				'field_instructions'	=> '',
+				'field_type'			=> 'select',
+				'field_pre_populate'	=> 'n',
+				'field_text_direction'	=> 'ltr',
+				'field_list_items'		=> $menu_status_options,
+				'field_data'			=> $menu_status_selected
+			)
+		);
+
+		$this->api_channel_fields->set_settings('status', $settings['status']);
+		return $settings['status'];
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup Default Fields
+	 *
+	 * This method sets up Default fields that are required on the entry page.
+	 *
+	 * @todo 	Make field_text_directions configurable
+	 * @return 	array
+	 */
+	private function _setup_default_fields($channel_data, $entry_data)
+	{
+		$title = ($this->input->get_post('title')) ? $this->input->get_post('title') : $entry_data['title'];
+		
+		if ($this->_channel_data['default_entry_title'] != '' && $title == '')
+		{
+			$title = $this->_channel_data['default_entry_title'];
+		}
+		
+		$deft_fields = array(
+			'title' 		=> array(
+				'field_id'				=> 'title',
+				'field_label'			=> lang('title'),
+				'field_required'		=> 'y',
+				'field_data'			=> $title,
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> '',
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'text',
+				'field_maxl'			=> 100
+			),
+			'url_title'		=> array(
+				'field_id'				=> 'url_title',
+				'field_label'			=> lang('url_title'),
+				'field_required'		=> 'y',
+				'field_data'			=> ($this->input->get_post('url_title') == '') ? $entry_data['url_title'] : $this->input->get_post('url_title'),
+				'field_fmt'				=> 'xhtml',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'text',
+				'field_maxl'			=> 75
+			),
+			'entry_date'	=> array(
+				'field_id'				=> 'entry_date',
+				'field_label'			=> lang('entry_date'),
+				'field_required'		=> 'y',
+				'field_type'			=> 'date',
+				'field_text_direction'	=> 'ltr',
+				'field_data'			=> (isset($entry_data['entry_date'])) ? $entry_data['entry_date'] : '',
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'default_offset'		=> 0,
+				'selected'				=> 'y',
+				'dst_enabled'			=> $this->_dst_enabled				
+			),
+			'expiration_date' => array(
+				'field_id'				=> 'expiration_date',
+				'field_label'			=> lang('expiration_date'),
+				'field_required'		=> 'n',
+				'field_type'			=> 'date',
+				'field_text_direction'	=> 'ltr',
+				'field_data'			=> (isset($entry_data['expiration_date'])) ? $entry_data['expiration_date'] : '',
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'selected'				=> 'y',
+				'dst_enabled'			=> $this->_dst_enabled				
+			)	
+		);
+		
+		// comment expiry here.
+		if (isset($this->cp->installed_modules['comment']))
+		{
+			$deft_fields['comment_expiration_date'] = array(
+				'field_id'				=> 'comment_expiration_date',
+				'field_label'			=> lang('comment_expiration_date'),
+				'field_required'		=> 'n',
+				'field_type'			=> 'date',
+				'field_text_direction'	=> 'ltr',
+				'field_data'			=> (isset($entry_data['comment_expiration_date'])) ? $entry_data['comment_expiration_date'] : '',
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'selected'				=> 'y',
+				'dst_enabled'			=> $this->_dst_enabled
+			);
+		}
+		
+		foreach ($deft_fields as $field_name => $f_data)
+		{
+			$this->api_channel_fields->set_settings($field_name, $f_data);
+		}
+		
+		return $deft_fields;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Build Third Party tab blocks
+	 *
+	 * This method assembles tabs from modules that include a publish tab
+	 *
+	 * @param 	array
+	 * @return 	array
+	 */
+	private function _build_third_party_blocks($entry_data)
+	{
+		$module_fields = $this->api_channel_fields->get_module_fields(
+														$this->_channel_data['channel_id'], 
+														$entry_data['entry_id']
+													);
+		$settings = array();
+		
+		if ($module_fields && is_array($module_fields))
+		{
+			foreach ($module_fields as $tab => $v)
+			{
+				foreach ($v as $val)
+				{
+					$settings[$val['field_id']] = $val;
+					$this->_module_tabs[$tab][] = array(
+													'id' 	=> $val['field_id'],
+													'label'	=> $val['field_label']
+													);
+					
+					$this->api_channel_fields->set_settings($val['field_id'], $val);
+				}
+			}
+		}
+
+		return $settings;		
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Third Party Tabs
+	 *
+	 * This method returns an array of third party tabs for merging into
+	 * the default tabs array in _setup_tab_hierarchy()
+	 *
+	 * @return 	array
+	 */
+	private function _third_party_tabs()
+	{
+		if (empty($this->_module_tabs))
+		{
+			return array();
+		}
+
+		$out = array();
+
+		foreach ($this->_module_tabs as $k => $v)
+		{
+			foreach ($v as $key => $val)
+			{
+				$out[$k][] = $val['id'];			
+			}		
+		}
+
+		return $out;
+	}
+
+	// --------------------------------------------------------------------	
 
 	/**
 	 * Sort Publish Fields
@@ -256,7 +2339,7 @@ class Content_publish extends CI_Controller {
 	 * their index parameter.
 	 *
 	 */
-	protected function _sort_publish_fields($fields)
+	private function _sort_publish_fields($fields)
 	{
 		// array_multisort couldn't be coerced into maintaining our
 		// array keys, so we sort manually ... le sigh.
@@ -287,423 +2370,83 @@ class Content_publish extends CI_Controller {
 	}
 
 	// --------------------------------------------------------------------
-
+	
 	/**
-	 * Channel "new entry" form
+	 * Build Smiley Table
 	 *
-	 * This function displays the form used to submit, edit, or
-	 * preview new channel entries with.
+	 * This function builds the smiley table for a given field.
 	 *
+	 * @param 	string 	Field Name
+	 * @return 	string 	Smiley Table HTML
 	 */
-	public function entry_form()
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$this->load->model('channel_entries_model');
-		$this->load->model('channel_model');
-		$this->load->model('status_model');
-		$this->load->model('tools_model');
-		$this->load->model('field_model');
-		$this->load->model('admin_model');
-		$this->load->model('template_model');
-		$this->load->helper(array('form', 'url', 'html', 'snippets', 'custom_field', 'typography', 'smiley'));
-		$this->load->library('api');
+	private function _build_smiley_table($field_name)
+	{		
 		$this->load->library('table');
-		$this->load->library('spellcheck');
-		$this->load->library('form_validation');
-		$this->lang->loadfile('publish_tabs_custom');
 
+		$this->table->set_template(array(
+			'table_open' => 
+				'<table style="text-align: center; margin-top: 5px;" class="mainTable padTable smileyTable">'
+		));
+
+		$image_array = get_clickable_smileys($this->config->slash_item('emoticon_path'), 
+											 $field_name);
+		$col_array = $this->table->make_columns($image_array, 8);
+		$smilies = '<div class="smileyContent" style="display: none;">';
+		$smilies .= $this->table->generate($col_array).'</div>';
+		$this->table->clear();
 		
-		$this->api->instantiate(array('channel_categories', 'channel_entries', 'channel_fields'));
+		return $smilies;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * bookmarklet qstr decode
+	 *
+	 * @param 	string
+	 */
+	private function _bm_qstr_decode($str)
+	{
+		$str = str_replace("%20",	" ",		$str);
+		$str = str_replace("%uFFA5", "&#8226;",	$str);
+		$str = str_replace("%uFFCA", " ",		$str);
+		$str = str_replace("%uFFC1", "-",		$str);
+		$str = str_replace("%uFFC9", "...",		$str);
+		$str = str_replace("%uFFD0", "-",		$str);
+		$str = str_replace("%uFFD1", "-",		$str);
+		$str = str_replace("%uFFD2", "\"",		$str);
+		$str = str_replace("%uFFD3", "\"",		$str);
+		$str = str_replace("%uFFD4", "\'",		$str);
+		$str = str_replace("%uFFD5", "\'",		$str);
 
-		$title						= ($this->input->get('title') != '') ? $this->bm_qstr_decode($this->input->get('title')) : '';
-		$url_title					= '';
-		$url_title_prefix			= '';
-		$default_entry_title		= '';
-		$status						= '';
-		$expiration_date			= '';
-		$comment_expiration_date	= '';
-		$entry_date					= '';
-		$sticky						= '';
-		$field_data					= '';
-		$allow_comments				= '';
-		$catlist					= '';
-		$author_id					= '';
-		$version_id					= $this->input->get_post('version_id');
-		$version_num				= $this->input->get_post('version_num');
-		$dst_enabled				= $this->session->userdata('daylight_savings');
-		$channel_id					= '';
+		$str =	preg_replace("/\%u([0-9A-F]{4,4})/e","'&#'.base_convert('\\1',16,10).';'", $str);
 
-		$which 						= 'new';
-		$entry_id 					= ( ! $this->input->get_post('entry_id')) ? '' : (int) $this->input->get_post('entry_id');
+		$str = $this->security->xss_clean(stripslashes(urldecode($str)));
+
+		return $str;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup Markitup Data
+	 * 
+	 * @return 	void
+	 */	
+	function _markitup()
+	{
+		$this->load->model('admin_model');
 		
-		$hidden						= array();
-		$convert_ascii				= ($this->config->item('auto_convert_high_ascii') == 'y') ? TRUE : FALSE; // Javascript stuff
-		
-
-		if ($this->input->get_post('filter') !== FALSE) 
-		{
-			$hidden['filter'] = $this->input->get_post('filter');
-		}
-		
-		$vars = array(
-			'message'				=> '',
-			'cp_page_title'			=> $this->lang->line('new_entry'),								// modified below if this is an "edit"
-			'BK'					=> ($this->input->get_post('BK')) ? AMP.'BK=1'.AMP.'Z=1' : '',
-			'required_fields'		=> array('title', 'entry_date')
-		);
-
-		$vars['smileys_enabled'] = (isset($this->installed_modules['emoticon']) ? TRUE : FALSE);
-
-		if ($this->config->item('site_pages') !== FALSE)
-		{
-			$this->lang->loadfile('pages');
-		}
-
-		//	We need to first determine which channel to post the entry into.
-		$assigned_channels = $this->functions->fetch_assigned_channels();
-
-		// if it's an edit, we just need the entry id and can figure out the rest
-		if ($entry_id !== FALSE AND is_numeric($entry_id) AND $channel_id == '')
-		{
-			$which = 'edit';
-
-			// If a "use_autosave" flag is present, then this entry has already come from the below page
-			// and the author has already made their decision. Skip it. If not, check if there is saved
-			// data available for this entry. Don't go for revisions.
-			if ($this->input->get_post('use_autosave') != 'y' AND $this->input->get_post('use_autosave') != 'n')
-			{
-				$this->db->select('entry_id');
-				$query = $this->db->get_where('channel_entries_autosave', array('original_entry_id'=>$this->input->get('entry_id')));
-
-				if ($query->num_rows() != 0)
-				{
-					// Allow user to choose if they want the autosaved or original entry
-					$this->javascript->compile();
-					$this->cp->set_variable('cp_page_title', $this->lang->line('autosave_title'));
-					return $this->load->view('content/autosave_options');
-				}
-			}
-
-			// If the "use_autosave" flag is set, let's grab title and custom fields from autosave tables
-			if ($this->input->get_post('use_autosave') == 'y')
-			{
-				$this->db->select('channel_id');
-				$this->db->where('entry_id', $entry_id);
-				$query = $this->db->get('channel_entries_autosave');
-
-				if ($query->num_rows() == 1)
-				{
-					$autosave_channel_id = $query->row('channel_id');
-				}
-			}
-			// end autosave code
-
-			$this->db->select('channel_id');
-			$this->db->where('entry_id', $entry_id);
-			$query = $this->db->get('channel_titles');
-			
-			if ($query->num_rows() == 1)
-			{
-				$channel_id = $query->row('channel_id');
-			}
-		}
-
-		if ($channel_id == '' AND ! ($channel_id = $this->input->get_post('channel_id')))
-		{
-			if (count($assigned_channels) == 1)
-			{
-				$channel_id = $assigned_channels['0'];
-			}
-			else
-			{
-				$query = $this->channel_model->get_channel_info();
-
-				if ($query->num_rows() == 1)
-				{
-					$channel_id = $query->row('channel_id');
-				}
-				else
-				{
-					show_error($this->lang->line('unauthorized_access'));
-				}
-			}
-		}
-
-		if ( ! is_numeric($channel_id))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		//	Security check
-		if ( ! in_array($channel_id, $assigned_channels))
-		{
-			$this->session->set_flashdata('message_failure', $this->lang->line('unauthorized_for_this_channel'));
-			$this->functions->redirect(BASE.AMP.'C=content_publish'.AMP.'M=index');
-		}
-
-		//	Fetch channel preferences
-
-		$query = $this->channel_model->get_channel_info($channel_id);
-
-		if ($query->num_rows() == 0)
-		{
-			show_error($this->lang->line('no_channel_exists'));
-		}
-
-		$row = $query->row_array();
-
-		/* -------------------------------------------
-		/* 'publish_form_channel_preferences' hook.
-		/*  - Modify channel preferences
-		/*  - Added: 1.4.1
-		*/
-			if ($this->extensions->active_hook('publish_form_channel_preferences') === TRUE)
-			{
-				$row = $this->extensions->call('publish_form_channel_preferences', $query->row_array());
-			}
-		/*
-		/* -------------------------------------------*/
-
-		// Sets 'new' / 'edit' in the global json array.  Neat, eh?
-		$this->javascript->set_global('publish.which', $which);
-		$this->javascript->set_global('lang.loading', $this->lang->line('loading'));
-
-		extract($row);
-
-		//	Fetch Revision if Necessary
-
-		$show_revision_cluster = ($enable_versioning == 'y') ? 'y' : 'n';
-
-		if ($which == 'new')
-		{
-			$vars['versioning_enabled'] = ($enable_versioning == 'y') ? 'y' : 'n';
-		}
-		else
-		{
-			$vars['versioning_enabled'] = (isset($_POST['versioning_enabled'])) ? 'y' : 'n';
-		}
-
-		if (is_numeric($version_id))
-		{
-			$this->db->select('version_data');
-			$this->db->where('entry_id', $entry_id);
-			$this->db->where('version_id', $version_id);
-			$revquery = $this->db->get('entry_versioning');
-
-			if ($revquery->num_rows() == 1)
-			{
-				// Load the string helper
-				$this->load->helper('string');
-
-				$_POST = @unserialize($revquery->row('version_data'));
-				$_POST['entry_id'] = $entry_id;
-			}
-			
-			unset($revquery);
-		}
-
-
-		// --------------------------------------------------------------------
-		// The $which variable determines what the page should show:
-		//	If $which = 'new' we'll show a blank "new entry" page
-		//	If $which = "edit", we are editing an already existing entry.
-		// --------------------------------------------------------------------
-
-		if ($which == 'new')
-		{
-			$title		= ($title == '') ? $default_entry_title : $title; // title might be set by bookmarklet
-			$url_title	= $url_title_prefix;
-		}
-		elseif ($which == 'edit')
-		{
-			if ( ! $entry_id)
-			{
-				show_error($this->lang->line('unauthorized_access'));
-			}
-
-			$vars['cp_page_title'] = $this->lang->line('edit_entry');
-			
-			if ($this->input->get_post('use_autosave') == 'y')
-			{
-				$result = $this->channel_entries_model->get_entry($entry_id, $channel_id, TRUE);
-			}
-			else
-			{
-				$result = $this->channel_entries_model->get_entry($entry_id, $channel_id);
-			}
-
-			if ($result->num_rows() == 0)
-			{
-				show_error($this->lang->line('no_channel_exists'));
-			}
-
-			$resrow = $result->row_array();
-
-			if ($this->input->get_post('use_autosave') == 'y')
-			{
-				$res_entry_data = unserialize($resrow['entry_data']);
-
-				// overwrite and add to this array with entry_data
-				foreach ($res_entry_data as $k => $v)
-				{
-					$resrow[$k] = $v;
-				}
-				
-				unset($resrow['entry_data']);
-			
-				//  This does not work
-				$_POST = $resrow;
-			}
-
-			if ($resrow['author_id'] != $this->session->userdata('member_id'))
-			{
-				if ( ! $this->cp->allowed_group('can_edit_other_entries'))
-				{
-					show_error($this->lang->line('unauthorized_access'));
-				}
-			}
-
-			if ($enable_versioning == 'y')
-			{
-				$this->javascript->set_global('publish.versioning_enabled', $resrow['versioning_enabled']);
-				$vars['versioning_enabled'] = $resrow['versioning_enabled'];
-			}
-
-			// If there's a live look template, show the live look option via ee_notice
-			if ($live_look_template != 0)
-			{
-				$this->db->select('template_groups.group_name, templates.template_name');
-				$this->db->from('template_groups, templates');
-				$this->db->where('exp_template_groups.group_id = exp_templates.group_id', NULL, FALSE);
-				$this->db->where('templates.template_id', $live_look_template);
-
-				$temp_res = $this->db->get();
-
-				if ($temp_res->num_rows() == 1)
-				{
-					$qm = ($this->config->item('force_query_string') == 'y') ? '' : '?';
-
-					$view_link = '<a href='. $this->functions->fetch_site_index().$qm.'URL='.$this->functions->create_url($temp_res->row('group_name').'/'.$temp_res->row('template_name').'/'.$entry_id).
-					" rel='external' >".$this->lang->line('live_view').'</a>';
-
-					if ($this->input->get('revision') == 'saved')
-					{
-						$view_link .= '<br />'.$this->lang->line('revision_saved');
-					}
-
-					$this->javascript->output('
-					
-						var publishForm = $("#publishForm");
-
-						_destroy_live_view = function() {
-							publishForm.trigger("destroy_live_view");
-						}
-
-						publishForm.find("input:text, textarea").focus(_destroy_live_view);
-						publishForm.find("input:radio, input:checkbox").click(_destroy_live_view);
-						publishForm.find("input:hidden, input:file, select").change(_destroy_live_view);
-
-						function view_live_look() {
-							$.ee_notice("'.$view_link.'",  {duration:0});
-							publishForm.one("destroy_live_view", $.ee_notice.destroy);
-						}
-
-						view_live_look();
-						');
-				}
-			}
-
-			// -------------------------------------------
-			// 'publish_form_entry_data' hook.
-			//  - Modify entry's data
-			//  - Added: 1.4.1
-				if ($this->extensions->active_hook('publish_form_entry_data') === TRUE)
-				{
-					$resrow = $this->extensions->call('publish_form_entry_data', $result->row_array());
-				}
-			// -------------------------------------------
-
-			extract($resrow);
-		}
-
-		$vars['cp_page_title'] .= ' - '.$channel_title;
-
-		// if this is a layout group preview, we'll use it, otherwise, we'll use the author's group_id
-		$layout_group	= (is_numeric($this->input->get_post('layout_preview'))) ? $this->input->get_post('layout_preview') : $this->session->userdata('group_id');
-		$layout_info	= $this->member_model->get_group_layout($layout_group, $channel_id);
-
-		$vars['form_hidden'] = array(
-			'channel_id'		=> $channel_id,
-			'f_group'			=> $field_group,
-			'entry_id'			=> $entry_id
-		);
-
-		foreach($hidden as $key => $value)
-		{
-			$vars['form_hidden'][$key] = $value;
-		}
-
-		// Create channel menu
-		$vars = array_merge_recursive($vars, $this->_build_channel_vars($which, $status_group, $cat_group, $field_group, $assigned_channels, $channel_id, $channel_title));
-
-		// Create status menu
-
-		$vars = array_merge_recursive($vars, $this->_build_status_vars($status_group, $status, $deft_status));
-
-		// Create author menu
-		$vars = array_merge_recursive($vars, $this->_build_author_vars($author_id, $channel_id));
-
-		$this->cp->add_js_script(array(
-		        'ui'        => array('datepicker', 'resizable', 'draggable', 'droppable'),
-		        'plugin'    => array('markitup', 'toolbox.expose', 'overlay'),
-				'file'		=> array('json2', 'cp/publish')
-		    )
-		);		
-		
-		//	HTML formatting buttons
-		$vars['show_button_cluster'] = $show_button_cluster;
-
-		// Fetch Custom Fields
-		$field_query = $this->channel_model->get_channel_fields($field_group);
-
-		// pass field info into view
-		$vars['fields'] = $field_query;
-
-		// Upload Directories
-
-		$upload_directories = $this->tools_model->get_upload_preferences($this->session->userdata('group_id'));
-		$vars['file_manager_directories'] = $upload_directories;
-
-		$vars['file_list'] = array();
-		$vars['upload_directories'] = array();
-
-		foreach($upload_directories->result() as $row)
-		{
-			$vars['upload_directories'][$row->id] = $row->name;
-
-			foreach(array('id', 'name', 'url', 'pre_format', 'post_format', 'file_pre_format', 'file_post_format', 'properties', 'file_properties') as $prop)
-			{
-				$vars['file_list'][$row->id][$prop] = $row->$prop;
-			}
-		}
-		
-		$this->javascript->set_global('user.can_edit_html_buttons', $this->cp->allowed_group('can_edit_html_buttons'));
-		$this->javascript->set_global('upload_directories', $vars['file_list']);
-
 		$html_buttons = $this->admin_model->get_html_buttons($this->session->userdata('member_id'));
 		$button_js = array();
-
+		
 		foreach ($html_buttons->result() as $button)
 		{
 			if (strpos($button->classname, 'btn_img') !== FALSE)
 			{
 				// images are handled differently because of the file browser
 				// at least one image must be available for this to work
-				if (count($vars['file_list']) > 0)
+				if (count($this->_file_manager['file_list']))
 				{
 					$button_js[] = array('name' => $button->tag_name, 'key' => $button->accesskey, 'replaceWith' => '', 'className' => $button->classname);
 					$this->javascript->set_global('filebrowser.image_tag', $button->tag_open);
@@ -719,20 +2462,20 @@ class Content_publish extends CI_Controller {
 				$button_js[] = array('name' => $button->tag_name, 'key' => strtoupper($button->accesskey), 'openWith' => $button->tag_open, 'closeWith' => $button->tag_close, 'className' => $button->classname);
 			}
 		}
-		
-		
+		$this->javascript->set_global('p.image_tag', 'foo you!');
+
 		$markItUp = $markItUp_writemode = array(
 			'nameSpace'		=> "html",
 			'onShiftEnter'	=> array('keepDefault' => FALSE, 'replaceWith' => "<br />\n"),
 			'onCtrlEnter'	=> array('keepDefault' => FALSE, 'openWith' => "\n<p>", 'closeWith' => "</p>\n"),
 			'markupSet'		=> $button_js,
 		);
-		
-		/* -------------------------------------------
-		/*	Hidden Configuration Variable
-		/*	- allow_textarea_tabs => Add tab preservation to all textareas or disable completely
-		/* -------------------------------------------*/
-		
+
+		// -------------------------------------------
+		//	Hidden Configuration Variable
+		//	- allow_textarea_tabs => Add tab preservation to all textareas or disable completely
+		// -------------------------------------------
+
 		if ($this->config->item('allow_textarea_tabs') == 'y')
 		{
 			$markItUp['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
@@ -742,10 +2485,10 @@ class Content_publish extends CI_Controller {
 		{
 			$markItUp_writemode['onTab'] = array('keepDefault' => FALSE, 'replaceWith' => "\t");
 		}
-		
+
 		$markItUp_nobtns = $markItUp;
 		unset($markItUp_nobtns['markupSet']);
-		
+
 		$this->cp->add_js_script(array("
 			<script type=\"text/javascript\" charset=\"utf-8\">
 			// <![CDATA[
@@ -754,2560 +2497,49 @@ class Content_publish extends CI_Controller {
 			myWritemodeSettings = ".$this->javascript->generate_json($markItUp_writemode, TRUE).";
 			// ]]>
 			</script>
-			
+
 		"), FALSE);
 
-		$this->javascript->set_global('publish.show_write_mode', ($show_button_cluster == 'y') ? TRUE : FALSE);
-
-		// -------------------------------------------
-		//	Publish Page Title Focus - makes the title field gain focus when the page is loaded
-		//
-		//	Hidden Configuration Variable - publish_page_title_focus => Set focus to the tile? (y/n)
-		if ($which != 'edit' && $this->config->item('publish_page_title_focus') !== 'n')
-		{
-			$this->javascript->set_global('publish.title_focus', TRUE);
-		}
-		else
-		{
-			$this->javascript->set_global('publish.title_focus', FALSE);
-		}
-
-		// -------------------------------------------
-
-		$fmt = ($this->session->userdata['time_format'] != '') ? $this->session->userdata['time_format'] : $this->config->item('time_format');
-		$this->javascript->set_global('date.format', $fmt);
-
-		// --------------------------------
-		//	Options Cluster
-		// --------------------------------
-		if ($allow_comments == '' AND $which == 'new')
-		{
-			$allow_comments = $deft_comments;
-		}
-
-		// some view options, set them all to FALSE for now, they'll be
-		// changed below
-		$vars['show_comments']	= FALSE;
-		$vars['show_sticky']	= FALSE;
-		$vars['show_dst']		= FALSE;
-
-		//	"Sticky" checkbox
-		$vars['show_sticky'] = TRUE;
-		$vars['sticky_data'] = array(
-									  'name'		=> 'sticky',
-									  'id'			=> 'sticky',
-									  'value'		=> 'y',
-									  'checked'		=> ($sticky == 'y') ? TRUE : FALSE
-									);
-
-		//	"Allow comments"?
-		if ( ! isset($this->installed_modules['comment']))
-		{
-			$vars['form_hidden']['allow_comments'] = $allow_comments;
-		}
-		elseif ($comment_system_enabled == 'y')
-		{
-			$vars['show_comments'] = TRUE;
-			$vars['comments_data'] = array(
-											  'name'		=> 'allow_comments',
-											  'id'			=> 'allow_comments',
-											  'checked'		=> ($allow_comments == 'y') ? TRUE : FALSE,
-											  'value'		=> 'y'
-											);
-		}
-		
-		
-		// Validation failed?
-		if (is_array($_POST) && count($_POST) && ! isset($_POST['dst_enabled']))
-		{
-			$dst_enabled = 'n';
-		}
-		
-		$vars['dst_enabled'] = $dst_enabled;
-
-		//	"Daylight Saving Time" checkbox
-		if ($this->config->item('honor_entry_dst') == 'y')
-		{
-			$vars['show_dst'] = TRUE;
-			$vars['dst_data'] = array(
-									  'name'		=> 'dst_enabled',
-									  'id'			=> 'dst_enabled',
-									  'checked'		=> ($dst_enabled == 'y') ? TRUE : FALSE,
-									  'value'		=> 'y'
-									);
-		}
-		
-		
-		
-		$vars['publish_tabs']['publish'] = array();
-		
-		// Entry date
-		
-		$settings = array(
-					'field_id'				=> 'entry_date',
-					'field_label'			=> $this->lang->line('entry_date'),
-					'field_required'		=> 'n',
-					'field_type'			=> 'date',
-					'field_text_direction'	=> 'ltr',
-					'field_data'			=> $entry_date,
-					'field_fmt'				=> 'text',
-					'field_instructions'	=> '',
-					'field_show_fmt'		=> 'n',
-					'default_offset'		=> 0,
-					'selected'				=> 'y',
-					'dst_enabled'			=> $dst_enabled
-		);
-		
-		$this->api_channel_fields->set_settings('entry_date', $settings);
-		
-		$rules = 'call_field_validation['.$settings['field_id'].']';
-		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
-		
-		// Expiration Date
-
-		$settings = array(
-					'field_id'				=> 'expiration_date',
-					'field_label'			=> $this->lang->line('expiration_date'),
-					'field_required'		=> 'n',
-					'field_type'			=> 'date',
-					'field_text_direction'	=> 'ltr',
-					'field_data'			=> $expiration_date,
-					'field_fmt'				=> 'text',
-					'field_instructions'	=> '',
-					'field_show_fmt'		=> 'n',
-					'selected'				=> 'y',
-					'dst_enabled'			=> $dst_enabled
-		);
-		
-		$this->api_channel_fields->set_settings('expiration_date', $settings);
-		
-		$rules = 'call_field_validation['.$settings['field_id'].']';
-		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
-		
-		// Comment Expiration Date
-		if ($comment_expiration_date == '' || $comment_expiration_date == 0)
-		{
-			if ($comment_expiration > 0 AND $which != 'edit')
-			{
-				$comment_expiration_date = $comment_expiration * 86400;
-				$comment_expiration_date = $comment_expiration_date + $this->localize->now;
-			}
-		}
-
-		if (isset($this->installed_modules['comment']) && $vars['show_comments'])
-		{
-			$settings = array(
-						'field_id'				=> 'comment_expiration_date',
-						'field_label'			=> $this->lang->line('comment_expiration_date'),
-						'field_required'		=> 'n',
-						'field_type'			=> 'date',
-						'field_text_direction'	=> 'ltr',
-						'field_data'			=> $comment_expiration_date,
-						'field_fmt'				=> 'text',
-						'field_instructions'	=> '',
-						'field_show_fmt'		=> 'n',
-						'selected'				=> 'y',
-						'dst_enabled'			=> $dst_enabled
-			);
-
-			$this->api_channel_fields->set_settings('comment_expiration_date', $settings);
-
-			$rules = 'call_field_validation['.$settings['field_id'].']';
-			$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
-		}
-
-
-		// ----------------------------------------------
-		//	CATEGORY BLOCK
-		// ----------------------------------------------
-
-		if ($which == 'edit' && ! isset($_POST['category']))
-		{
-			$this->db->select('c.cat_name, p.*');
-			$this->db->from('categories AS c, category_posts AS p');
-			$this->db->where_in('c.group_id', explode('|', $cat_group));
-			$this->db->where('p.entry_id', $entry_id);
-			$this->db->where('c.cat_id = p.cat_id', NULL, FALSE);
-			
-			$query = $this->db->get();
-
-			foreach ($query->result_array() as $row)
-			{
-				$catlist[$row['cat_id']] = $row['cat_id'];
-			}
-		}
-		else
-		{
-			if (isset($_POST['category']) AND is_array($_POST['category']))
-			{
-				foreach ($_POST['category'] as $val)
-				{
-					$catlist[$val] = $val;
-				}
-			}
-		}
-
-		$vars['categories'] = array();
-		
-		$edit_categories_link = FALSE; //start off as false, meaning user does not have privs
-
-		// Normal Category Display
-			
-		$catlist = ($which == 'new' && $deft_category != '') ? $deft_category : $catlist;
-		
-		$this->api_channel_categories->category_tree($cat_group, $catlist);
-
-		if (count($this->api_channel_categories->categories) > 0)
-		{  
-			// add categories in again, over-ride setting above
-			foreach ($this->api_channel_categories->categories as $val)
-			{
-				$vars['categories'][$val['3']][] = $val;
-			}
-		}
-
-		$link_info = $this->api_channel_categories->fetch_allowed_category_groups($cat_group);
-
-		$links = array();
-
-		if ($link_info !== FALSE)
-		{
-			foreach ($link_info as $val)
-			{
-				$links[] = array('url' => BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$val['group_id'],
-					'group_name' => $val['group_name']);
-
-			}
-		}
-		
-		// One more check to see if the user can edit categories.  
-		// If so, we give them the link on the publish page.
-		// Peek at fetch_allowed_category_groups, and it will all make sense.
-		if ($this->session->userdata('can_edit_categories') == 'y')
-		{
-			$edit_categories_link = $links;			
-		}
-	
-		$this->_define_category_fields($vars['categories'], $edit_categories_link, $cat_group);
-
-		// ----------------------------------------------
-		// PING BLOCK
-		// ----------------------------------------------
-
-		$vars['ping_servers'] = $this->fetch_ping_servers( ($which == 'edit') ? $author_id : '', isset($entry_id) ? $entry_id : '', $which, TRUE);
-		$this->_define_ping_fields($vars);
-
-		// ----------------------------------------------
-		// REVISIONS BLOCK
-		// ----------------------------------------------
-
-		$vars['show_revision_cluster'] = $show_revision_cluster;
-		$vars['revs_exist'] = FALSE;
-		$versioning = '';
-
-		if ($show_revision_cluster == 'y')
-		{
-			if (is_numeric($entry_id))
-			{
-				$this->db->select('v.author_id, v.version_id, v.version_date, m.screen_name');
-				$this->db->from('entry_versioning AS v, members AS m');
-				$this->db->where('v.entry_id', $entry_id);
-				$this->db->where('v.author_id = m.member_id', NULL, FALSE);
-				$this->db->order_by('v.version_id', 'desc');
-				
-				$revquery = $this->db->get();
-
-				if ($revquery->num_rows() > 0)
-				{
-					$vars['revs_exist'] = TRUE;
-
-					$this->table->set_template(array('table_open'=>'<table class="mainTable" border="0" cellspacing="0" cellpadding="0">'));
-					$this->table->set_heading(
-						$this->lang->line('revision'), 
-						$this->lang->line('rev_date'), 
-						$this->lang->line('rev_author'), 
-						$this->lang->line('load_revision')
-					);
-
-					$i = 0;
-					$j = $revquery->num_rows;
-
-					foreach($revquery->result_array() as $row)
-					{
-						$revlink = '<a class="revision_warning" href="'.BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.AMP.'version_id='.$row['version_id'].AMP.'version_num='.$j.AMP.'use_autosave=n">'.$this->lang->line('load_revision').'</a>';
-
-						if ($version_id !== FALSE)
-						{
-							if ($row['version_id'] == $version_id)
-							{
-								$revlink = $this->lang->line('current_rev');
-							}
-						}
-						elseif ($which == 'edit' AND $i == 0)
-						{
-							$revlink = $this->lang->line('current_rev');
-						}
-
-						$this->table->add_row(
-							array('data' => '<b>'.$this->lang->line('revision').' '.$j.'</b>'),
-							array('data' => $this->localize->set_human_time($row['version_date'])),
-							array('data' => $row['screen_name']),
-							array('data' => $revlink)
-						);
-
-						$j--;
-						$i++;
-					} // End foreach
-
-					$versioning = $this->table->generate();
-					// $("<div id=\"revision_warning\">'.$this->lang->line('revision_warning').'</div>").dialog({
-					$this->javascript->output('
-						var revision_target = "";
-						$("<div id=\"revision_warning\">'.$this->lang->line('revision_warning').'</div>").dialog({
-							autoOpen: false,
-							resizable: false,
-							title: "'.$this->lang->line('revisions').'",
-							modal: true,
-							position: "center",
-							minHeight: "0px", // fix display bug, where the height of the dialog is too big
-							buttons: {
-								Cancel: function() {
-									$(this).dialog("close");
-								},
-								"'.$this->lang->line('load_revision').'": function() {
-									location=revision_target;
-								}
-							}
-						});
-
-						 $(".revision_warning").click(function(){
-						 	$("#revision_warning").dialog("open");
-						 	revision_target = $(this).attr("href");
-						 	$(".ui-dialog-buttonpane button:eq(2)").focus();
-						 	return false;
-						 });
-					');
-				}
-			}
-		}
-
-
-		//----------------------------------------------
-		//	FORUM BLOCK
-		// ---------------------------------------------
-
-		$hide_forum_fields = FALSE;
-		
-		if ($this->config->item('forum_is_installed') == "y")
-		{
-			// New forum topics will only be accepted by the submit_new_entry_form() when there is no entry_id sent
-
-			$vars['forum_title']			= '';
-			$vars['forum_body']				= '';
-			$vars['forum_topic_id_descp']	= '';
-			$vars['forum_id']	= '';
-			$vars['forum_topic_id']			= ( ! isset($_POST['forum_topic_id'])) ? '' : $_POST['forum_topic_id'];		
-			
-			if ($which == 'new' OR $entry_id == '')
-			{
-				// Fetch the list of available forums
-
-				$this->db->select('f.forum_id, f.forum_name, b.board_label');
-				$this->db->from('forums AS f, forum_boards AS b');
-				$this->db->where('f.forum_is_cat', 'n');
-				$this->db->where('b.board_id = f.board_id', NULL, FALSE);
-				$this->db->order_by('b.board_label asc, forum_order asc');
-				
-				$fquery = $this->db->get();
-
-				if ($fquery->num_rows() == 0)
-				{
-					$vars['forum_id'] = $this->lang->line('forums_unavailable');
-				}
-				else
-				{
-					if (isset($entry_id) AND $entry_id != 0)
-					{
-						if ( ! isset($forum_topic_id))
-						{
-							$this->db->select('forum_topic_id');
-							$fquery2 = $this->db->get_where('channel_titles', 
-										array(
-											'entry_id' => $entry_id
-										)
-									);
-							
-							$forum_topic_id = $fquery2->row('forum_topic_id');
-						}
-
-						$vars['form_hidden']['forum_topic_id'] = $forum_topic_id;
-					}
-					
-					foreach ($fquery->result_array() as $forum)
-					{
-						$forums[$forum['forum_id']] = $forum['board_label'].': '.$forum['forum_name'];
-					}
-
-					$forum_title = ( ! $this->input->get_post('forum_title')) ? '' : $this->input->get_post('forum_title');
-					$forum_body	 = ( ! $this->input->get_post('forum_body')) ? '' : $this->input->get_post('forum_body');
-
-					$vars['forum_title']			= $forum_title;
-					$vars['forum_body']				= $forum_body;
-					$vars['forum_topic_id']			= ( ! isset($_POST['forum_topic_id'])) ? '' : $_POST['forum_topic_id'];
-					$vars['forum_id']	= form_dropdown('forum_id', $forums, $this->input->get_post('forum_id'));
-
-					$vars['forum_topic_id_descp']	= $this->lang->line('forum_topic_id_exitsts');
-
-					//	Smileys Panes									
-					if ($vars['smileys_enabled'])
-					{
-						$this->table->set_template(array(
-							'table_open'			=> '<table style="text-align: center; margin-top: 5px;" class="mainTable padTable smileyTable" border="0" cellspacing="0" cellpadding="0">'
-						));
-
-						$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), 'forum_title');
-						$col_array = $this->table->make_columns($image_array, 8);
-						$vars['smiley_table']['forum_title'] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
-						$this->table->clear(); // clear out tables for the next smiley
-
-					
-						$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), 'forum_body');
-						$col_array = $this->table->make_columns($image_array, 8);
-						$vars['smiley_table']['forum_body'] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
-						$this->table->clear(); // clear out tables for the next smiley						
-					}				
-				}
-
-			}
-			else
-			{
-				$hide_forum_fields = TRUE;
-				if ( ! isset($forum_topic_id))
-				{
-					$this->db->select('forum_topic_id');
-					$fquery = $this->db->get_where('channel_titles', array('entry_id' => $entry_id));
-					
-					$forum_topic_id = $fquery->row('forum_topic_id');
-				}
-				
-				$vars['forum_topic_id_descp']	= $this->lang->line('forum_topic_id_info');
-				$vars['forum_topic_id'] = $forum_topic_id;
-				
-				if ($forum_topic_id != 0)
-				{
-					$this->db->select('title');
-					$fquery = $this->db->get_where('forum_topics', 
-									array('topic_id' => (int) $forum_topic_id));
-
-					$ftitle = ($fquery->num_rows() == 0) ? '' : $fquery->row('title');
-					$vars['forum_title'] = $ftitle;
-				}
-			}
-		}
-
-
-		// ----------------------------------------------
-		//	PAGES BLOCK
-		// ----------------------------------------------
-
-		$vars['pages_uri']	= '';
-		$vars['pages_dropdown'] = array();
-		$vars['pages_dropdown_selected'] = '';
-		$pages = FALSE;
-
-		if (isset($this->installed_modules['pages']))
-		{
-			$pages = $this->config->item('site_pages');
-			$pages_uri = '';
-			$pages_template_id = '';
-
-			if ($entry_id != '' && isset($pages[$this->config->item('site_id')]['uris'][$entry_id]))
-			{
-				$pages_uri			= $pages[$this->config->item('site_id')]['uris'][$entry_id];
-				$pages_template_id	= $pages[$this->config->item('site_id')]['templates'][$entry_id];
-			}
-			else
-			{
-				$this->db->select('configuration_value');
-				$this->db->where('configuration_name', 'template_channel_'.$channel_id);
-				$this->db->where('site_id', $this->config->item('site_id'));
-				$query = $this->db->get('pages_configuration');
-				
-				if ($query->num_rows() > 0)
-				{
-					$pages_template_id = $query->row('configuration_value');
-				}
-			}
-
-			$pages_uri			= ( ! $this->input->get_post('pages_uri'))			 ? $pages_uri : $this->input->get_post('pages_uri');
-			$pages_template_id	= ( ! $this->input->get_post('pages_template_id')) ? $pages_template_id : $this->input->get_post('pages_template_id');
-			
-			// A few overwrites here if the pages_uri is empty
-			if ($pages_uri == '')
-			{
-				$this->javascript->set_global('publish.pages.pagesUri', '/example/pages/uri/');
-			}
-			else
-			{
-				$this->javascript->set_global('publish.pages.pageUri', $pages_uri);
-			}
-
-			$vars['pages_uri']	= $pages_uri;
-			$vars['pages_dropdown_selected'] = $pages_template_id;
-
-			$tquery = $this->template_model->get_templates($this->config->item('site_id'));
-
-			if ($tquery->num_rows())
-			{
-				foreach ($tquery->result() as $template)
-				{
-					$vars['pages_dropdown'][$template->group_name][$template->template_id] = $template->template_name;
-				}
-
-				// pages_uri options
-				$settings = array(
-							'field_id'				=> 'pages_uri',
-							'field_label'			=> $this->lang->line('pages_uri'),
-							'field_required'		=> 'n',
-							'field_data'			=> $vars['pages_uri'],
-							'field_fmt'				=> 'text',
-							'field_instructions'	=> '',
-							'field_show_fmt'		=> 'n',
-							'field_text_direction'	=> 'ltr',
-							'field_type'			=> 'text',
-							'field_maxl'			=> 100
-				);
-
-				$this->api_channel_fields->set_settings('pages_uri', $settings);
-
-				$rules = 'call_field_validation['.$settings['field_id'].']';
-				$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
-
-
-				$settings = array(
-					'field_id'				=> 'pages_template_id',
-					'field_label'			=> $this->lang->line('template'),
-					'field_required' 		=> 'n',
-					'field_data'			=> $vars['pages_dropdown_selected'],
-					'field_list_items'		=> $vars['pages_dropdown'],
-					'options'				=> $vars['pages_dropdown'],
-					'selected'				=> $vars['pages_dropdown_selected'],
-					'field_fmt'				=> 'text',
-					'field_instructions' 	=> '',
-					'field_show_fmt'		=> 'n',
-					'field_pre_populate'	=> 'n',
-					'field_text_direction'	=> 'ltr',
-					'field_type' 			=> 'select'
-				);
-
-
-				$this->api_channel_fields->set_settings('pages_template_id', $settings);
-
-				$rules = 'call_field_validation['.$settings['field_id'].']';
-				$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
-			}
-			else
-			{
-				$vars['publish_tabs']['pages']['pages_uri'] = array(
-								'visible'		=> TRUE,
-								'collapse'		=> FALSE,
-								'html_buttons'	=> TRUE,
-								'is_hidden'		=> FALSE,
-								'width'			=> '100%'
-				);
-
-				$this->field_definitions['pages_uri'] = array(
-					'string_override'		=> $this->lang->line('no_templates'),
-					'field_id'				=> 'pages_uri',
-					'field_label'			=> $this->lang->line('pages_uri'),
-					'field_name'			=> 'pages_uri',
-					'field_required'		=> 'n',
-					'field_type'			=> 'text',
-					'field_text_direction'	=> 'ltr',
-					'field_data'			=> '',
-					'field_fmt'				=> 'text',
-					'field_instructions'	=> '',
-					'field_show_fmt'		=> 'n'
-				);
-			}
-
-		}
-		
-		// ----------------------------------------------
-		//	Custom Blocks
-		// ----------------------------------------------		
-
-		$module_data = $this->api_channel_fields->get_module_fields($channel_id, $entry_id);
-		
-		$module_tabs = array();
-	
-		if ($module_data && is_array($module_data))
-		{
-			foreach ($module_data as $tab => $v)
-			{
-				foreach ($v as $val)
-				{			
-					$module_tabs[$tab][] = $val['field_id'];
-
-					$this->api_channel_fields->set_settings($val['field_id'], $val);
-
-					$rules = 'call_field_validation['.$val['field_id'].']';
-					$this->form_validation->set_rules($val['field_id'], $val['field_label'], $rules);
-				}
-			}
-		}
-
-		// Title options
-		$settings = array(
-					'field_id'				=> 'title',
-					'field_label'			=> lang('title'),
-					'field_required'		=> 'y',
-					'field_data'			=> ($this->input->post('title') == '') ? $title : $this->input->post('title'),
-					'field_fmt'				=> 'xhtml',
-					'field_instructions'	=> '',
-					'field_show_fmt'		=> 'n',
-					'field_text_direction'	=> 'ltr',
-					'field_type'			=> 'text',
-					'field_maxl'			=> 100
-		);
-
-		$this->api_channel_fields->set_settings('title', $settings);
-		
-		$rules = 'required|call_field_validation['.$settings['field_id'].']';
-		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
-
-		$settings = array(
-					'field_id'				=> 'url_title',
-					'field_label'			=> lang('url_title'),
-					'field_required'		=> 'n',
-					'field_data'			=> ($this->input->post('url_title') == '') ? $url_title : $this->input->post('url_title'),
-					'field_fmt'				=> 'xhtml',
-					'field_instructions'	=> '',
-					'field_show_fmt'		=> 'n',
-					'field_text_direction'	=> 'ltr',
-					'field_type'			=> 'text',
-					'field_maxl'			=> 75
-		);
-			
-		$this->api_channel_fields->set_settings('url_title', $settings);
-		
-		$rules = 'call_field_validation['.$settings['field_id'].']';
-		$this->form_validation->set_rules($settings['field_id'], $settings['field_label'], $rules);
-
-		$get_format = array();
-		
-		$markitup_buttons = array();
-
-		foreach ($field_query->result_array() as $row)
-		{
-			$field_data = '';
-			$field_fmt = '';
-			$field_dt = '';
-			
-			if ($which == 'edit')
-			{
-				$field_data = ( ! isset( $resrow['field_id_'.$row['field_id']])) ? '' : $resrow['field_id_'.$row['field_id']];
-				$field_fmt	= ( ! isset( $resrow['field_ft_'.$row['field_id']] )) ? $row['field_fmt'] : $resrow['field_ft_'.$row['field_id']];
-				$field_dt	= ( ! isset( $resrow['field_dt_'.$row['field_id']] )) ? 'y' : $resrow['field_dt_'.$row['field_id']];
-
-			}
-			elseif (($field_data = $this->input->get('field_id_'.$row['field_id'])) !== FALSE) // Is this coming from a bookmarklet?
-			{
-				// I really hate that we're still using tb_url, but we don't want
-				// people's existing bookmarklets to break (2010-08-20 dj)
-				$field_data = $this->bm_qstr_decode($this->input->get('tb_url')."\n\n".$field_data );
-				$field_fmt	= $row['field_fmt'];
-			}
-			else // New entry- use the default setting
-			{
-				$field_fmt	= $row['field_fmt'];
-			}
-
-			// Settings that need to be prepped			
-			$settings = array(
-				'field_instructions'	=> trim($row['field_instructions']),
-				'field_text_direction'	=> ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
-				'field_fmt'				=> $field_fmt,
-				'field_dt'				=> $field_dt,
-				'field_data'			=> $field_data,
-				'field_name'			=> 'field_id_'.$row['field_id'],
-				'dst_enabled'			=> $dst_enabled
-			);
-			
-			$ft_settings = array();
-			
-			if (isset($row['field_settings']) && strlen($row['field_settings']))
-			{
-				$ft_settings = unserialize(base64_decode($row['field_settings']));
-			}
-
-			$settings = array_merge($row, $settings, $ft_settings);
-			
-			$rules = 'call_field_validation['.$row['field_id'].']';
-			
-			if ($row['field_required'] == 'y' && $row['field_type'] != 'file')
-			{
-				$rules = 'required|'.$rules;
-			}
-
-			$this->api_channel_fields->set_settings($row['field_id'], $settings);
-			$this->form_validation->set_rules('field_id_'.$row['field_id'], $row['field_label'], $rules);
-
-			$set = $this->api_channel_fields->get_settings($row['field_id']);
-
-			if ($show_button_cluster == 'y' && isset($set['field_show_formatting_btns']) && $set['field_show_formatting_btns'] == 'y')
-			{
-				$markitup_buttons['fields']['field_id_'.$row['field_id']] = $row['field_id'];
-			}
-
-			// Formatting
-			if ($row['field_show_fmt'] == 'n')
-			{
-				$vars['form_hidden']['field_ft_'.$row['field_id']] = $field_fmt;
-			}
-			else
-			{
-				$get_format[] = $row['field_id'];
-			}
-		}
-		
-		$this->javascript->set_global('publish.markitup', $markitup_buttons);
-		
-
-		// Field formatting
-		if (count($get_format) > 0)
-		{
-			$this->db->select('field_id, field_fmt');
-			$this->db->where_in('field_id', $get_format);
-			$this->db->order_by('field_fmt');
-			$query = $this->db->get('field_formatting');
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $format)
-				{
-					$name = ucwords(str_replace('_', ' ', $format['field_fmt']));
-			
-					if ($name == 'Br')
-					{
-						$name = $this->lang->line('auto_br');
-					}
-					elseif ($name == 'Xhtml')
-					{
-						$name = $this->lang->line('xhtml');
-					}
-					
-					$this->api_channel_fields->settings[$format['field_id']]['field_fmt_options'][$format['field_fmt']] = $name;
-				}
-			}
-		}
-
-		// These resizable handles need to be initialized before _static_publish_script() is
-		// run, but should only be available to admins.
-		if ($this->session->userdata('group_id') == 1)
-		{
-			$this->_static_publish_admin(); // where a great deal of the static js for this page is saved
-		}
-
-		$this->_static_publish_non_admin(); // where a great deal of the static js for this page is saved
-
-		if ($show_button_cluster == 'y')
-		{
-			$this->_static_publish_formatting_buttons();
-		}
-
-		$vars['form_additional']['id'] = 'publishForm';
-		
-		// get all member groups with cp access for the layout list
-		$vars['member_groups_laylist'] = array();
-		
-		$listable = $this->member_model->get_member_groups(array('can_access_admin', 'can_access_edit'), array('can_access_content'=>'y'));
-		
-		foreach($listable->result() as $group)
-		{
-			if ($group->can_access_admin == 'y' OR $group->can_access_edit == 'y')
-			{
-				$vars['member_groups_laylist'][] = array('group_id' => $group->group_id, 'group_title' => $group->group_title);
-			}
-		}
-
-		// If fields have been hidden by an admin, then they won't get "drawn" into the document, however without
-		// them, they can't be moved at a later time into a tab. What we'll do is store all revealed fields in an
-		// array, and then afterwards, compare it to all known fields. Any fields not revealed will be added as
-		// hidden elements
-		$all_fields = array();
-		$revealed_fields = array();
-
-		$vars['unrevealed_fields'] = array(); // used in view to build hidden fields
-
-		// Layout
-		// If a custom layout has been defined, then we'll use it, but if not, we'll build the layout defaults
-
-		if (count($layout_info) > 0)
-		{
-			$vars['publish_tabs'] = $layout_info; // Custom Layout construction
-			
-			foreach($vars['publish_tabs'] as $tab => $val)
-			{
-				foreach($val as $key => $custom)
-				{
-					$revealed_fields[] = $key;
-
-					// Override forum tab display if it's an edit
-					if ($hide_forum_fields)
-					{
-						if ($key == 'forum_title')
-						{
-							if ( ! isset($vars['forum_title']) OR $vars['forum_title'] == '')
-							{
-								$vars['publish_tabs'][$tab][$key]['visible'] = FALSE;
-							}
-						}
-						elseif ($key == 'forum_body')
-						{
-							$vars['publish_tabs'][$tab][$key]['visible'] = FALSE;
-						}
-						elseif ($key == 'forum_id')
-						{
-							$vars['publish_tabs'][$tab][$key]['visible'] = FALSE;
-						}						
-					}
-					
-					// set up collapsed fields
-					if ($custom['collapse'] === 'true' OR $custom['collapse'] === TRUE)
-					{
-						// Catch the obvious one with .js_hide
-						$vars['publish_tabs'][$tab][$key]['is_hidden'] = TRUE;
-						
-						$this->javascript->output('
-							$("#hold_field_'.$key.' .ui-resizable-handle").hide();
-							$("#hold_field_'.$key.' .field_collapse").attr("src", "'.$this->cp->cp_theme_url . 'images/field_collapse.png");
-						');
-					}
-
-					// set up html buttons
-					// with third party modules able to set the value of 'htmlbuttons', its possible this value will
-					// be used/passed incorrectly, so an isset() for insurance that its a field that has the buttons
-					if (($custom['htmlbuttons'] == 'false' OR $custom['htmlbuttons'] === FALSE) AND isset($this->field_definitions[$key]['field_id']))
-					{
-						$this->javascript->output('
-							$("#hold_field_'.$this->field_definitions[$key]['field_id'].' .close_formatting_buttons a").click();
-						');
-					}
-
-					// set up field width
-					if ($custom['width'] != '100%')
-					{
-						$this->javascript->output('
-							$("#hold_field_'.$key.'").width("'.$custom['width'].'");
-						');
-					}
-				}
-			}
-
-			foreach ($this->field_definitions as $field => $data)
-			{
-				$all_fields[] = $field;
-			}
-
-			$vars['unrevealed_fields'] = array_diff($all_fields, $revealed_fields);
-		}
-		else
-		{
-			foreach($this->api_channel_fields->settings as $field => $values)
-			{
-				 $field_display = array(
-								'visible'		=> TRUE,
-								'collapse'		=> FALSE,
-								'html_buttons'	=> TRUE,
-								'is_hidden'		=> FALSE,
-								'width'			=> '100%'
-				);
-
-				// set up collapsed fields
-				if (isset($values['field_is_hidden']) AND $values['field_is_hidden'] == 'y')
-				{
-					// Catch the obvious one with .js_hide
-					$field_display['is_hidden'] = TRUE;
-
-					// this can happen after the form loads...
-					$this->javascript->output('
-						$("#hold_field_'.$field.' .ui-resizable-handle").hide();
-						$("#hold_field_'.$field.' .field_collapse").attr("src", "'.$this->cp->cp_theme_url . 'images/field_collapse.png");
-					');
-				}
-				
-				if ($field == 'ping')
-				{
-					$vars['publish_tabs']['pings'][$field] = $field_display;
-				}
-				elseif (in_array($field, array('entry_date', 'expiration_date', 'comment_expiration_date')))
-				{
-					$vars['publish_tabs']['date'][$field] = $field_display;
-				}
-				elseif (in_array($field, array('pages_uri', 'pages_template_id')))
-				{
-					if ($pages = isset($this->installed_modules['pages']))
-					{
-						$vars['publish_tabs']['pages'][$field] = $field_display;
-					}
-				}
-				else
-				{
-					foreach ($module_tabs as $m_tab => $m_fields)
-					{
-						if (in_array($field, $m_fields))
-						{
-							$vars['publish_tabs'][$m_tab][$field] = $field_display;
-							continue 2;
-						}
-					}
-					
-					$vars['publish_tabs']['publish'][$field] = $field_display;
-				}
-			} // end foreach
-			
-			$field_display = array(
-						'visible'		=> TRUE,
-						'collapse'		=> FALSE,
-						'html_buttons'	=> TRUE,
-						'is_hidden'		=> FALSE,
-						'width'			=> '100%'
-			);
-
-			// show revisions tab?
-			if ($show_revision_cluster != 'n')
-			{
-				$vars['publish_tabs']['revisions']['revisions'] = $field_display;
-			}
-
-			// Options tab
-			$vars['publish_tabs']['options'] = array(
-				'new_channel'	=> $field_display,
-				'status'		=> $field_display,
-				'author'		=> $field_display,
-				'options'		=> $field_display
-			);
-		
-			$vars['publish_tabs']['categories']['category'] = $field_display;
-
-			if ($this->config->item('forum_is_installed') == "y")
-			{
-				$vars['publish_tabs']['forum']['forum_title'] = $field_display;
-				$vars['publish_tabs']['forum']['forum_body'] = $field_display;
-				$vars['publish_tabs']['forum']['forum_id'] = $field_display;
-				$vars['publish_tabs']['forum']['forum_topic_id'] = $field_display;
-				
-				$vars['publish_tabs']['forum']['forum_id']['html_buttons'] = FALSE;
-				$vars['publish_tabs']['forum']['forum_id']['width'] = '50%';				
-				
-				if ($which == 'edit')
-				{
-					$vars['publish_tabs']['forum']['forum_body']['visible'] = FALSE;
-					$vars['publish_tabs']['forum']['forum_id']['visible'] = FALSE;
-					
-					if ( ! isset($vars['forum_title']) OR $vars['forum_title'] == '')
-					{
-						$vars['publish_tabs']['forum']['forum_title']['visible'] = FALSE;
-					}
-				}
-			}
-		}
-
-		
-		foreach($vars['publish_tabs'] as $tab => $val)
-		{
-			foreach($val as $key => $custom)
-			{			
-				// set up hidden fields (not visible)
-				if ($vars['publish_tabs'][$tab][$key]['visible'] === FALSE)
-				{
-					$name = (isset($this->field_definitions[$key]['field_id'])) ? $this->field_definitions[$key]['field_id'] : $key;
-						
-					// this can happen after the form loads...
-
-					$this->javascript->output('$("#remove_field_'.$name.'").children().attr("src", "'.$this->cp->cp_theme_url.'images/closed_eye.png");');
-				}
-			}
-		}
-		
-		
-		
-		$this->javascript->set_global('publish.channel_id', $channel_id);
-		$this->javascript->set_global('publish.field_group', $field_group);
-
-		$this->javascript->set_global('publish.lang', array(
-			'tab_count_zero'		=> $this->lang->line('tab_count_zero'),
-			'no_member_groups'		=> $this->lang->line('no_member_groups'),
-			'layout_removed'		=> $this->lang->line('layout_removed'),
-			'refresh_layout'		=> $this->lang->line('refresh_layout'),
-			'tab_has_req_field'		=> $this->lang->line('tab_has_req_field')
-		));
-
-		$layout_preview_links = "<p>".$this->lang->line('choose_layout_group_preview').NBS."<span class='notice'>".$this->lang->line('layout_save_warning')."</span></p><ul class='bullets'>";
-		
-		foreach($vars['member_groups_laylist'] as $group)
-		{
-			$layout_preview_links .= '<li><a href=\"'.BASE.AMP.'C=content_publish'.AMP."M=entry_form".AMP."channel_id=".$channel_id.AMP."layout_preview=".$group['group_id'].'\">'.$group['group_title']."</a></li>";
-		}
-
-		$layout_preview_links .= "</ul>";
-
-		$this->javascript->click("#layout_group_preview", '
-			$.ee_notice("'.$layout_preview_links.'", {duration:0, open: true});
-		');
-
-		$this->javascript->set_global('lang.tab_name', $this->lang->line('tab_name'));
-		$this->javascript->set_global('publish.smileys', ($vars['smileys_enabled']) ? TRUE : FALSE);
-
-		if ($this->session->userdata('group_id') != 1)
-		{
-			$this->javascript->output('$("#holder").css("margin-right", "10px");');
-		}
-
-		$autosave_interval_seconds = ($this->config->item('autosave_interval_seconds') === FALSE) ? 60 : $this->config->item('autosave_interval_seconds');
-		
-		if ($autosave_interval_seconds != 0)
-		{
-			$this->javascript->set_global('publish.autosave.interval', $autosave_interval_seconds);
-		}
-		
-		$this->javascript->set_global('publish.url_title_prefix', $url_title_prefix);
-		$this->javascript->set_global('publish.default_entry_title', $default_entry_title);
-
-		$this->form_validation->set_message('title', $this->lang->line('missing_title'));
-		$this->form_validation->set_message('entry_date', $this->lang->line('missing_date'));
-
-		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
-		
-		$vars['which'] = $which;
-		$vars['channel_id'] = $channel_id;
-		$vars['field_definitions'] = $this->field_definitions;
-		$field_output = array();
-		
-		
-		
-		// Run Validation
-		
-		$attempt_saving = FALSE;
-				
-		if ($this->form_validation->run() == TRUE && ! is_numeric($version_id) && $this->input->get_post('use_autosave') != 'y')
-		{
-			$attempt_saving = TRUE;
-		}
-		
-		
-		// Final setup
-		
-		$this->cp->add_to_foot($this->insert_javascript());
-	
-		if ($vars['smileys_enabled'])
-		{
-			$this->cp->add_to_foot(smiley_js());				
-		}
-
-		foreach($this->api_channel_fields->settings as $field => $field_info)
-		{
-			if (isset($opts['string_override']))
-			{
-				$field_output[$field] = $opts;
-			}
-							
-			if (isset($field_info['field_required']) && $field_info['field_required'] == 'y')
-			{
-				$vars['required_fields'][] = $field_info['field_id'];
-			}
-			
-			if ($vars['smileys_enabled'])
-			{
-				$image_array = get_clickable_smileys($path = $this->config->slash_item('emoticon_path'), $field_info['field_name']);
-				$col_array = $this->table->make_columns($image_array, 8);
-				$vars['smiley_table'][$field] = '<div class="smileyContent" style="display: none;">'.$this->table->generate($col_array).'</div>';
-				$this->table->clear(); // clear out tables for the next smiley					
-			}
-
-			$this->api_channel_fields->setup_handler($field);
-			$field_value = set_value($field_info['field_name'], $field_info['field_data']);
-			$field_output[$field_info['field_id']] = $this->api_channel_fields->apply('display_publish_field', array($field_value));
-		}
-
-		$this->javascript->set_global('publish.required_fields', $vars['required_fields']);
-
-		$this->_define_options_fields($vars, $which);
-		
-		if ($show_revision_cluster == 'y')
-		{
-			$this->_define_revisions_fields($vars, $versioning);
-		}
-		
-		$this->_define_forum_fields($vars, $which);
-
-		foreach($this->field_definitions as $field => $opts)
-		{
-			$field_output[$field] = $opts;
-		}
-		
-		// Publish tabs need a label
-		foreach ($vars['publish_tabs'] as $tab => $fields)
-		{
-			$vars['tab_labels'][$tab] = ( ! isset($vars['publish_tabs'][$tab]['_tab_label'])) ? $tab : $vars['publish_tabs'][$tab]['_tab_label'];
-			unset($vars['publish_tabs'][$tab]['_tab_label']);				
-		}
-		
-		// Sort field output array to show up in sidebar with a sensible sort order
-		
-		$vars['field_output'] = $this->_sort_sidebar_list($field_output, $vars['required_fields']);
-		unset($field_output);		
-
-		// Run validation
-		
-		if ($attempt_saving == TRUE)
-		{
-			if (($err = $this->_submit_new_entry()) !== TRUE)
-			{
-				$vars['submission_error'] = $err;
-				
-				if (isset($this->api_channel_entries->errors['url_title']))
-				{
-					$this->form_validation->_field_data['url_title']['error'] = $this->api_channel_entries->errors['url_title'];
-					
-					foreach($vars['publish_tabs'] as $tab => $fields)
-					{
-						foreach($fields as $field_name => $field)
-						{
-							if ($field_name == 'url_title')
-							{
-								$vars['publish_tabs'][$tab][$field_name]['visible'] = TRUE;
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				// It submitted or we're showing the pings error page - do nothing
-				return;
-			}
-		}
-		
-		$this->javascript->compile();
-		$this->load->view('content/publish', $vars);
+		$this->javascript->set_global('publish.show_write_mode', ($this->_channel_data['show_button_cluster'] == 'y') ? TRUE : FALSE);
 	}
 	
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Sort field list for sidebar
-	 *
-	 * Takes the field output array and resorts it to show alphabetically by
-	 * label with the required fields grouped at the top.
-	 *
-	 * @return	mixed
-	 */
-	protected function _sort_sidebar_list($fields, $required)
-	{
-		$sorted = array();
-		
-		$_required_field_labels = array();
-		$_optional_field_labels = array();
-		
-		foreach($fields as $name => $field)
-		{
-			$f = is_array($field) ? $field : $this->api_channel_fields->settings[$name];
-			
-			if (in_array($name, $required))
-			{
-				$_required_field_labels[$name] = $f['field_label'];
-			}
-			else
-			{
-				$_optional_field_labels[$name] = $f['field_label'];
-			}
-		}
-		
-		asort($_required_field_labels);
-		asort($_optional_field_labels);
-		
-		foreach(array($_required_field_labels, $_optional_field_labels) as $sidebar_field_groups)
-		{
-			foreach($sidebar_field_groups as $name => $label)
-			{
-				$sorted[$name] = $fields[$name];
-			}
-		}
-		
-		return $sorted;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get Upload Directory Files
-	 *
-	 * Called via ajax right after page load to build the filebrowser
-	 *
-	 * @return	mixed
-	 */
-	public function filemanager_endpoint($function = '', $params = array())
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
-		$this->load->library('filemanager');
-		
-		$config = array();
-		
-		if ($function)
-		{
-			$this->filemanager->_initialize($config);
-			
-			return call_user_func_array(array($this->filemanager, $function), $params);
-		}
-		$this->filemanager->process_request($config);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Build Author Sidebar
-	 *
-	 * Construct a list authors for the publish page
-	 *
-	 * @return	mixed
-	 */
-	public function build_author_sidebar()
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
-		$this->output->enable_profiler(FALSE);
-
-		if ($this->input->get_post('author_id') == "")
-		{
-			return;
-		}
-
-		$this->load->model('member_model');
-
-		// set the user to in_authorlist = "y"
-		$this->member_model->update_authorlist($this->input->get_post('author_id'));
-
-		// gather up info so we can return their data intelligently
-		$member = $this->member_model->get_member_data($this->input->get_post('author_id'));
-		$member = $member->row();
-		echo '<li><a href="'.BASE.AMP.'C=myaccount'.AMP.'id=' . $member->member_id.'">' .  $member->screen_name . '</a> <a onclick="removeAuthor($(this)); return false;" href="#" class="delete" id="mid'.$member->member_id.'"><img src="' . $this->cp->cp_theme_url . 'images/content_custom_tab_delete.png" alt="Delete" width="19" height="18" /></a></li>';
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Remove Author
-	 *
-	 * Removes an author from the sidebar, and changes their "in_authorlist"
-	 * status to "n"
-	 *
-	 * @return	mixed
-	 */
-	public function remove_author()
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
-		$this->output->enable_profiler(FALSE);
-		$this->load->model('member_model');
-
-		$id = (int)str_replace("mid", "", $this->input->get_post('mid'));
-
-		$this->member_model->delete_from_authorlist($id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Build Author List
-	 *
-	 * Construct a table of authors for any channel
-	 *
-	 * @param	integer		the channel id
-	 * @return	mixed
-	 */
-	public function build_author_table($channel_id = 1)
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
-		$this->lang->loadfile('content');
-		$this->load->library('table');
-		$this->table->clear();
-
-		// get all members
-		$member_list = $this->member_model->get_members('', 20, $this->input->get_post('offset'));
-		
-		// Get the group titles- we need this in the display
-		$member_groups = $this->member_model->get_member_groups();
-		$groups = array();
-		
-		foreach($member_groups->result() as $group)
-		{
-			$groups[$group->group_id] = $group->group_title;
-		}		
-
-		$this->load->library('pagination');
-		$pconfig['base_url'] = BASE.AMP.'C=content_publish'.AMP.'M=build_author_table'.AMP.'is_ajax=y';
-		$pconfig['total_rows'] = $this->member_model->get_member_count();
-		$pconfig['offset'] = $this->input->get_post('offset');
-		$pconfig['query_string_segment'] = 'offset';
-		$pconfig['page_query_string'] = TRUE;
-		$pconfig['first_link'] = $this->lang->line('pag_first_link');
-		$pconfig['last_link'] = $this->lang->line('pag_last_link');
-		
-		$this->pagination->initialize($pconfig);
-		$pagination_links = $this->pagination->create_links();
-
-		// get allowable member groups
-		$author_groups = $this->member_model->get_author_groups($channel_id);
-
-		$this->load->model('channel_model');
-		$channels = $this->channel_model->get_channels();
-
-		$authorsTableTemplate = array(
-									'table_open'			=> '<table id="authorsTable" class="mainTable" border="0" cellspacing="0" cellpadding="0" style="width: 100%;">'
-								);
-		$this->table->set_template($authorsTableTemplate);
-		$this->table->set_heading($this->lang->line('username'), $this->lang->line('screen_name'), $this->lang->line('member_group'), array('class'=>'author_header', 'data'=>$this->lang->line('author')));
-
-		$potential_author_count = 0; // the number of potential authors. If at the end this is still zero, we'll message that to the user
-
-		if ($member_list->num_rows() == 0)
-		{
-			$this->table->add_row(array('data'=>'no_potential_authors', 'colspan'=>4));
-		}
-		else
-		{
-			foreach ($member_list->result() as $member)
-			{
-				// is the user in an authorlist, a member of a groups in the authorlist, and not a superadmin (who always show)
-				if ($member->group_id != 1 AND $member->in_authorlist != 'y' AND ! in_array($member->group_id, $author_groups))
-				{
-					$this->table->add_row(
-								array('class' => 'username', 'data' => '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $member->member_id .'">'.$member->username.'</a>'),
-								array('class' => 'screen_name', 'data' => $member->screen_name),
-								array('class' => 'group_'.$member->group_id, 'data' => $groups[$member->group_id]),
-								'<img onclick="add_authors_sidebar(this);" class="add_author_modal" id="modal_author_id_'.$member->member_id.'" width="177" height="23" src="'.$this->cp->cp_theme_url.'images/content_add_author_button.png" alt="'.$this->lang->line('add_author').'" /> '
-								);
-
-					$potential_author_count++;
-				}
-			}
-		}
-
-		if ($potential_author_count == 0)
-		{
-			$message = '<p style="padding: 5px 15px;">'.$this->lang->line('no_potential_authors').'</p>';
-		}
-		else
-		{
-			$message = $this->table->generate();
-		}
-
-		$message .= '<span id="add_author_pagination">'.$pagination_links.'</span>';
-
-		$this->load->vars(array('authors_table' => $message, 'channels' => $channels));
-
-		if ($this->input->get_post('is_ajax'))
-		{
-			exit($message);
-		}
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Build Channel Vars
-	 *
-	 * @param 	string
-	 * @param 	integer
-	 * @param 	integer
-	 * @param 	integer
-	 * @param 	array
-	 * @param 	integer
-	 * @param 	string
-	 */
-	protected function _build_channel_vars($which, $status_group, $cat_group, $field_group, $assigned_channels, $channel_id, $channel_title)
-	{
-		$this->load->model('channel_model');
-
-		// Channel pull-down menu
-		$vars['menu_channel_options'] = array();
-		$vars['menu_channel_selected'] = '';
-
-		$query = $this->channel_model->get_channel_menu($status_group, $cat_group, $field_group);
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-			{
-				if ($this->session->userdata['group_id'] == 1 OR in_array($row['channel_id'], $assigned_channels))
-				{
-					if (isset($_POST['new_channel']) && is_numeric($_POST['new_channel']) && $_POST['new_channel'] == $row['channel_id'])
-					{
-						$vars['menu_channel_selected'] = $row['channel_id'];
-					}
-					elseif ($channel_id == $row['channel_id'])
-					{
-						$vars['menu_channel_selected'] =  $row['channel_id'];
-					}
-
-					$vars['menu_channel_options'][$row['channel_id']] = form_prep($row['channel_title']);
-				}
-			}
-		}
-
-		return $vars;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Build status vars
-	 *
-	 * @param	integer
-	 * @param 	string
-	 * @param	string
-	 */
-	protected function _build_status_vars($status_group, $status, $deft_status)
-	{
-		$this->load->model('status_model');
-
-		if ($deft_status == '')
-		{
-			$deft_status = 'open';
-		}
-		
-		// It seems some blogging tools that don't add in a status 
-		// will just pass a string of NULL back to us.
-		// So we fight it here.
-		if ($status == '' OR $status == 'NULL')
-		{
-			$status = $deft_status;
-		}
-
-		$vars = array();
-
-		// Fetch disallowed statuses
-
-		$no_status_access = array();
-		$vars = array();
-
-		if ($this->session->userdata['group_id'] != 1)
-		{
-			$query = $this->status_model->get_disallowed_statuses($this->session->userdata['group_id']);
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$no_status_access[] = $row['status_id'];
-				}
-			}
-		}
-
-		//	Create status menu options
-			
-		// Start with the default open/closed in case they didn't select
-		// a status group.
-			
-		$vars['menu_status_options'] = array();
-		$vars['menu_status_selected'] = $status;
-			
-		// if there is no status group assigned, only Super Admins can create 'open' entries
-		if ($this->session->userdata['group_id'] == 1)
-		{
-			$vars['menu_status_options']['open'] = $this->lang->line('open');
-		}
-
-		$vars['menu_status_options']['closed'] = $this->lang->line('closed');
-
-		// If the channel has a status group, grab those statuses
-			
-		if ($status_group)
-		{
-			$query = $this->status_model->get_statuses($status_group);
-			
-			if ($query->num_rows())
-			{
-				$no_status_flag = TRUE;
-				$vars['menu_status_options'] = array();
-
-				foreach ($query->result_array() as $row)
-				{
-					// pre-selected status
-					if ($status == $row['status'])
-					{
-						$vars['menu_status_selected'] = $row['status'];
-					}
-
-					if (in_array($row['status_id'], $no_status_access))
-					{
-						continue;
-					}
-
-					$no_status_flag = FALSE;
-					$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? $this->lang->line($row['status']) : $row['status'];
-					$vars['menu_status_options'][form_prep($row['status'])] = form_prep($status_name);
-				}
-
-				//	Were there no statuses?
-				// If the current user is not allowed to submit any statuses we'll set the default to closed
-
-				if ($no_status_flag == TRUE)
-				{
-					$vars['menu_status_selected'] = 'closed';
-				}
-			}
-		}
-		return $vars;
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Build Author Vars
-	 *
-	 * @param 	integer
-	 * @param 	integer
-	 */
-	protected function _build_author_vars($author_id, $channel_id)
-	{
-		$this->load->model('member_model');
-
-		// Default author
-		if ($author_id == '')
-		{
-			$author_id = $this->session->userdata('member_id');
-		}
-
-		$vars['menu_author_options'] = array();
-		$vars['menu_author_selected'] = $author_id;
-
-		$this->db->select('username, screen_name');
-		$query = $this->db->get_where('members', array('member_id' => $author_id));
-	
-		$author = ($query->row('screen_name')  == '') ? $query->row('username')	 : $query->row('screen_name');
-		$vars['menu_author_options'][$author_id] = $author;
-
-		// Next we'll gather all the authors that are allowed to be in this list
-		$vars['author_list'] = $this->member_model->get_authors_simple();
-
-		// We'll confirm that the user is assigned to a member group that allows posting in this channel
-		if ($vars['author_list']->num_rows() > 0)
-		{
-			foreach ($vars['author_list']->result() as $row)
-			{
-				if (isset($this->session->userdata['assigned_channels'][$channel_id]))
-				{
-					$vars['menu_author_options'][$row->member_id] = ($row->screen_name == '') ? $row->username : $row->screen_name;
-				}
-			}
-		}
-
-		return $vars;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * bookmarklet qstr decode
-	 *
-	 * @param 	string
-	 */
-	public function bm_qstr_decode($str)
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$str = str_replace("%20",	" ",		$str);
-		$str = str_replace("%uFFA5", "&#8226;", $str);
-		$str = str_replace("%uFFCA", " ",		$str);
-		$str = str_replace("%uFFC1", "-",		$str);
-		$str = str_replace("%uFFC9", "...",	 $str);
-		$str = str_replace("%uFFD0", "-",		$str);
-		$str = str_replace("%uFFD1", "-",		$str);
-		$str = str_replace("%uFFD2", "\"",	  $str);
-		$str = str_replace("%uFFD3", "\"",	  $str);
-		$str = str_replace("%uFFD4", "\'",	  $str);
-		$str = str_replace("%uFFD5", "\'",	  $str);
-
-		$str =	preg_replace("/\%u([0-9A-F]{4,4})/e","'&#'.base_convert('\\1',16,10).';'", $str);
-
-		$str = $this->security->xss_clean(stripslashes(urldecode($str)));
-
-		return $str;
-	}
-
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Autosave Entry
-	 */
-	public function autosave_entry()
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$this->load->library('api');
-		$this->api->instantiate(array('channel_categories', 'channel_entries', 'channel_fields'));
-
-		$autosave_entry_id = (is_numeric($this->input->post("autosave_entry_id"))) ? $this->input->post("autosave_entry_id") : TRUE;
-
-		$this->output->enable_profiler(FALSE);
-		
-		// $this->api_channel_fields->fetch_custom_channel_fields();
-
-		// If the entry was saved successfully, we'll get back the entry_id,
-		// which we then need to insert into the hidden field for subsequent
-		// saves. If there was an error, a string error message will be
-		// returned, and passed for display.
-		$data = $this->_submit_new_entry(TRUE, $autosave_entry_id);
-
-		if ( ! $this->autosave_error)
-		{
-			$msg = $this->lang->line('autosave_success');
-			$time = $this->localize->set_human_time($this->localize->now);
-			$time = trim(strstr($time, ' '));
-			
-			$this->output->send_ajax_response(array(
-				'success' => $msg.$time
-			));
-		}
-		else
-		{
-			$error_message[] = $this->lang->line('autosave_failure');
-
-			if (is_array($data))
-			{
-				foreach ($data as $field => $error)
-				{
-					$error_message[] = $error.': '.$field;
-				}
-			}
-			else
-			{
-				$error_messagep[] = $data;
-			}
-
-			$this->output->send_ajax_response(array('error' => $error_message));
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	  * Channel entry submission handler
-	  *
-	  * This function receives a new or edited channel entry and
-	  * stores it in the database.	It also sends pings
-	  */
-	protected function _submit_new_entry($cp_call = TRUE, $autosave = FALSE)
-	{
-		if ( ! $channel_id = $this->input->post('channel_id') OR ! is_numeric($channel_id))
-		{
-			return FALSE;
-		}
-		
-		$filter = '';
-		
-		if ($this->input->post('filter') !== FALSE)
-		{
-			$filter = AMP.'filter='.$this->input->post('filter');
-			unset($_POST['filter']);
-		}
-
-		/* -------------------------------------------
-		/* 'submit_new_entry_start' hook.
-		/*  - Add More Stuff to do when you first submit an entry
-		/*  - Added 1.4.2
-		*/
-			if ( ! $autosave)
-			{
-				$edata = $this->extensions->call('submit_new_entry_start');
-				if ($this->extensions->end_script === TRUE) return TRUE;
-			}
-		/*
-		/* -------------------------------------------*/
-		
-		$data = $_POST;
-		$data['cp_call'] = TRUE;
-		$data['revision_post'] = $_POST;
-		$data['author_id'] = $this->input->post('author');
-
-		unset($data['author']);
-
-		$return_url	= ( ! $this->input->post('return_url')) ? '' : $this->input->get_post('return_url');
-		unset($_POST['return_url']);
-		
-		// Fetch xml-rpc ping server IDs
-		$data['ping_servers'] = array();
-		
-		if (isset($_POST['ping']) && is_array($_POST['ping']))
-		{
-			$data['ping_servers'] = $_POST['ping'];
-			unset($_POST['ping']);
-		}
-
-		if ($entry_id = $this->input->post('entry_id'))
-		{
-			$entry_exists = $this->api_channel_entries->entry_exists($entry_id);
-		
-			if ( ! $entry_exists)
-			{
-				return FALSE;
-			}
-
-			$success = $this->api_channel_entries->update_entry($entry_id, $data, $autosave);
-
-			if ($autosave)
-			{
-				// a successful autosave will return the entry_id, unsuccessful may return
-				// a string error message, or an array of messages.
-				if (is_numeric($success))
-				{
-					return $data;
-				}
-				else
-				{
-					$this->autosave_error = TRUE; // there was an error
-					return $success; // error messages
-				}
-			}
-
-			$type = '';
-			$page_title = 'entry_has_been_updated';
-		}
-		else
-		{
-			$success = $this->api_channel_entries->submit_new_entry($_POST['channel_id'], $data);
-
-			$type = 'new';
-			$page_title = 'entry_has_been_added';
-		}
-	
-		// Do we have a reason to quit?
-		if ($this->extensions->end_script === TRUE)
-		{
-			return TRUE;
-		}
-		elseif ( ! $success)
-		{
-			return implode('<br />', $this->api_channel_entries->errors);
-		}
-		
-		$channel_id = $this->api_channel_entries->channel_id;
-		$entry_id = $this->api_channel_entries->entry_id;
-
-		if ($this->input->post('save_revision'))
-		{
-			$this->functions->redirect(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.$filter.AMP.'revision=saved');
-		}
-
-		// Redirect to ths "success" page
-		$message = ($type == 'new') ? $this->lang->line('entry_has_been_added') : $this->lang->line('entry_has_been_updated');
-			
-		$this->session->set_flashdata('message_success', $message);
-
-		$loc = BASE.AMP.'C=content_publish'.AMP.'M=view_entry'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id.$filter;
-		
-		// Trigger the submit new entry redirect hook
-		$loc = $this->api_channel_entries->trigger_hook('entry_submission_redirect', $loc);
-		
-		// have to check this manually since trigger_hook() is returning $loc
-		if ($this->extensions->end_script === TRUE)
-		{
-			return TRUE;
-		}
-
-		if (($vars['ping_errors'] = $this->api_channel_entries->get_errors('pings')) !== FALSE)
-		{
-			$vars['channel_id'] = $this->api_channel_entries->channel_id;
-			$vars['entry_id'] = $this->api_channel_entries->entry_id;
-			$vars['entry_link'] = BASE.AMP.'C=content_publish'.AMP.'M=view_entry'.AMP.'channel_id='.$vars['channel_id'].AMP.'entry_id='.$vars['entry_id'];
-			$this->cp->set_variable('cp_page_title', $this->lang->line('xmlrpc_ping_errors'));
-		
-			$this->load->view('content/ping_errors', $vars);
-			return TRUE;	// tricking it into not publish again
-		}
-
-		// Trigger the entry submission absolute end hook
-		if ($this->api_channel_entries->trigger_hook('entry_submission_absolute_end', $loc) === TRUE)
-		{
-			return TRUE;
-		}
-
-		$this->functions->redirect($loc);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * fetch ping servers
-	 *
-	 * @param 	integer
-	 * @param 	integer
-	 * @param 	string
-	 * @param 	boolean
-	 */
-	public function fetch_ping_servers($member_id = '', $entry_id = '', $which = 'new', $show = TRUE)
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
-		$sent_pings = array();
-
-		if ($entry_id != '')
-		{
-			$this->db->select('ping_id');
-			$query = $this->db->get_where('entry_ping_status', array('entry_id' => $entry_id));
-			
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$sent_pings[$row['ping_id']] = TRUE;
-				}
-			}
-		}
-
-		$this->db->select('COUNT(*) as count');
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$this->db->where('member_id', $this->session->userdata('member_id'));
-		$query = $this->db->get('ping_servers');
-
-		$member_id = ($query->row('count')	== 0) ? 0 : $this->session->userdata('member_id');
-
-		$this->db->select('id, server_name, is_default');
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$this->db->where('member_id', $member_id);
-		$this->db->order_by('server_order');
-		$query = $this->db->get('ping_servers');
-
-		if ($query->num_rows() == 0)
-		{
-			return false;
-		}
-
-		$r = '';
-
-		foreach($query->result_array() as $row)
-		{
-			if (isset($_POST['preview']))
-			{
-				$selected = '';
-				if ($this->input->post('ping') && is_array($this->input->post('ping')))
-				{
-					if (in_array($row['id'], $this->input->post('ping')))
-					{
-						$selected = 1; 
-					}
-				}
-			}
-			else
-			{
-				if ($entry_id != '')
-				{
-					$selected = (isset($sent_pings[$row['id']])) ? 1 : '';
-				}
-				else
-				{
-					$selected = ($row['is_default'] == 'y') ? 1 : '';
-				}
-			}
-
-			if ($which == 'edit')
-			{
-				$selected = '';
-			}
-
-			if ($show == TRUE)
-			{
-				$r .= '<label>'.form_checkbox('ping[]', $row['id'], $selected, 'class="ping_toggle"').' '.$row['server_name'].'</label>';
-			}
-			else
-			{
-				if ($which != 'edit' AND $selected == 1)
-				{
-					$r .= form_hidden('ping[]', $row['id']);
-				}
-			}
-		}
-
-		if ($show == TRUE)
-		{
-			$r .= '<label>'.form_checkbox('toggle_pings', 'toggle_pings', FALSE, 'class="ping_toggle_all"').' '.$this->lang->line('select_all').'</label>';
-
-		}
-
-		return $r;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Insert Javascript
-	 */
-	public function insert_javascript()
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
-		//	Create Foreign Character Conversion JS
-		include(APPPATH.'config/foreign_chars.php');
-
-		/* -------------------------------------
-		/*  'foreign_character_conversion_array' hook.
-		/*  - Allows you to use your own foreign character conversion array
-		/*  - Added 1.6.0
-		* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
-		*/  
-			if (isset($this->extensions->extensions['foreign_character_conversion_array']))
-			{
-				$foreign_characters = $this->extensions->call('foreign_character_conversion_array');
-			}
-		/*
-		/* -------------------------------------*/
-		
-		$this->javascript->set_global('publish.foreignChars', $foreign_characters);
-		$this->javascript->set_global('publish.word_separator', $this->config->item('word_separator') != "dash" ? '_' : '-');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * View Entry
-	 */
-	public function view_entry()
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $entry_id = $this->input->get('entry_id'))
-		{
-			return false;
-		}
-
-		if ( ! $channel_id = $this->input->get('channel_id'))
-		{
-			return false;
-		}
-
-		$assigned_channels = $this->functions->fetch_assigned_channels();
-
-		if ( ! in_array($channel_id, $assigned_channels))
-		{
-			show_error($this->lang->line('unauthorized_for_this_channel'));
-		}
-
-		//	 Instantiate Typography class
-
-		$this->load->library('typography');
-		$this->typography->initialize();
-		$this->typography->convert_curly = FALSE;
-
-		$this->db->select('channel_html_formatting, channel_allow_img_urls, channel_auto_link_urls');
-		$this->db->where('channel_id', $channel_id);
-		$query = $this->db->get('channels');
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->row_array() as $key => $val)
-			{
-				$$key = $val;
-			}
-		}
-
-		$message = '';
-
-		$this->db->select('field_group');
-		$this->db->where('channel_id', $channel_id);
-		$query = $this->db->get('channels');
-
-		if ($query->num_rows() == 0)
-		{
-			return false;
-		}
-
-		$field_group = $query->row('field_group');
-
-		$this->db->select('field_id, field_type');
-		$this->db->where('group_id', $field_group);
-		$this->db->where('field_type !=', 'select');
-		$this->db->order_by('field_order');
-		$query = $this->db->get('channel_fields');
-
-		$fields = array();
-
-		foreach ($query->result_array() as $row)
-		{
-			$fields['field_id_'.$row['field_id']] = $row['field_type'];
-		}
-
-		$sql = "SELECT exp_channel_titles.*, exp_channel_data.*, exp_channels.* 
-				FROM  exp_channel_titles, exp_channel_data, exp_channels 
-				WHERE exp_channel_titles.entry_id = '$entry_id' 
-				AND	  exp_channel_titles.entry_id = exp_channel_data.entry_id 
-				AND	  exp_channels.channel_id = exp_channel_titles.channel_id";
-
-		$result = $this->db->query($sql);
-		$resrow = $result->row_array();
-
-		$show_edit_link = TRUE;
-		$show_comments_link = TRUE;
-
-		if ( ! $result->num_rows() > 0)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ($resrow['author_id'] != $this->session->userdata('member_id'))
-		{
-			if ( ! $this->cp->allowed_group('can_view_other_entries'))
-			{
-				show_error($this->lang->line('unauthorized_access'));
-			}
-
-			if ( ! $this->cp->allowed_group('can_edit_other_entries'))
-			{
-				$show_edit_link = FALSE;
-			}
-
-			if ( ! $this->cp->allowed_group('can_view_other_comments') AND
-				 ! $this->cp->allowed_group('can_delete_all_comments') AND
-				 ! $this->cp->allowed_group('can_moderate_comments'))
-			{
-				$show_comments_link = FALSE;
-			}
-		}
-		else
-		{
-			if ( ! $this->cp->allowed_group('can_edit_own_comments') AND
-				 ! $this->cp->allowed_group('can_delete_own_comments') AND
-				 ! $this->cp->allowed_group('can_moderate_comments'))
-			{
-				$show_comments_link = FALSE;
-			}
-		}
-
-		$r = '';
-
-		if ($result->num_rows() > 0)
-		{
-			$vars['entry_title'] = $this->typography->format_characters(stripslashes($resrow['title']));
-
-			foreach ($fields as $key => $val)
-			{
-				if (isset($resrow[$key]) AND $val != 'rel' and $resrow[$key] != '')
-				{
-					$expl = explode('field_id_', $key);
-
-					if (isset($resrow['field_dt_'.$expl['1']]))
-					{
-						if ($resrow[$key] > 0)
-						{
-							$localize = TRUE;
-							$date = $resrow[$key];
-							if ($resrow['field_dt_'.$expl['1']] != '')
-							{
-								$date = $this->localize->offset_entry_dst($date, $resrow['dst_enabled']);
-								$date = $this->localize->simpl_offset($date, $resrow['field_dt_'.$expl['1']]);
-								$localize = FALSE;
-							}
-
-							$r .= $this->localize->set_human_time($date, $localize);
-						}
-					}
-					else
-					{
-						$r .= $this->typography->parse_type( stripslashes($resrow[$key]),
-												 array(
-															'text_format'	=> $resrow['field_ft_'.$expl['1']],
-															'html_format'	=> $channel_html_formatting,
-															'auto_links'	=> $channel_auto_link_urls,
-															'allow_img_url' => $channel_allow_img_urls,
-														)
-												);
-					}
-				}
-			}
-		}
-
-		// start by assuming we don't want to see an edit link or comments, and change them as needed below
-		$vars['show_edit_link'] = FALSE;
-		$vars['show_comments_link'] = FALSE;
-		$vars['live_look_link'] = FALSE;
-		
-		
-		if ($this->input->get('filter') === FALSE)
-		{
-			$filter_link = FALSE;
-		}
-		else
-		{
-			$filter_link = BASE.AMP.'C=content_edit';
-			$filters = unserialize(base64_decode($this->input->get('filter')));
-			
-			foreach($filters as $k => $v)
-			{
-				if ($k == 'keywords')
-				{
-					$v = base64_encode($v);
-				}
-				
-				$filter_link .= AMP.$k.'='.$v;
-			}
-		}	
-		
-		$vars['filter_link'] = $filter_link;
-
-		$vars['entry_contents'] = $r;
-
-		if ($show_edit_link)
-		{
-			$vars['show_edit_link'] = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id.AMP.'entry_id='.$entry_id;
-		}
-
-		if ($show_comments_link)
-		{
-			if (isset($this->installed_modules['comment']))
-			{
-				$this->db->select('COUNT(*) as count');
-				$res = $this->db->get_where('comments', array('entry_id' => $entry_id));
-				
-				$this->db->query_count--;
-
-				$vars['show_comments_link'] = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'entry_id='.$entry_id;
-
-				$vars['comment_count'] = $res->row('count');
-			}
-
-		}
-
-		if ($result->row('live_look_template') != 0)
-		{
-			$this->db->select('template_groups.group_name, templates.template_name');
-			$this->db->from('template_groups, templates');
-			$this->db->where('exp_template_groups.group_id = exp_templates.group_id', NULL, FALSE);
-			$this->db->where('templates.template_id', $result->row('live_look_template'));
-			
-			$res = $this->db->get();
-
-			if ($res->num_rows() == 1)
-			{
-				$qm = ($this->config->item('force_query_string') == 'y') ? '' : '?';
-
-				$vars['live_look_link'] = $this->functions->fetch_site_index().$qm.'URL='.$this->functions->create_url($res->row('group_name').'/'.$res->row('template_name').'/'.$entry_id);
-			}
-		}
-
-        $this->javascript->compile();
-
-		$this->cp->set_variable('cp_page_title', $this->lang->line('view_entry'));
-		$this->load->view('content/view_entry', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Spellcheck iFrame
-	 */
-	public function spellcheck_iframe()
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
-		if ( ! class_exists('EE_Spellcheck'))
-		{
-			require APPPATH.'libraries/Spellcheck'.EXT;
-		}
-
-		return EE_Spellcheck::iframe();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * spellcheck
-	 */
-	public function spellcheck()
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
-		if ( ! class_exists('EE_Spellcheck'))
-		{
-			require APPPATH.'libraries/Spellcheck'.EXT;
-		}
-
-		return EE_Spellcheck::check();
-	}
-	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Define options field
-	 *
-	 * @param 	array
-	 * @param 	string
-	 */
-	protected function _define_options_fields($vars, $which)
-	{
-		//options
-		$this->field_definitions['new_channel'] = array(
-				'string_override'		=> form_dropdown('new_channel', $vars['menu_channel_options'], $vars['menu_channel_selected']),
-				'field_id'				=> 'new_channel',
-				'field_label'			=> $this->lang->line('channel'),
-				'field_name'			=> 'new_channel',
-				'field_required'		=> 'n',
-				'field_type'			=> 'select',
-				'field_text_direction'	=> 'ltr',
-				'field_data'			=> '',
-				'field_fmt'				=> 'text',
-				'field_instructions'	=> '',
-				'field_show_fmt'		=> 'n',
-				'selected'				=> $vars['menu_channel_selected'],
-				'options'				=> $vars['menu_channel_options']
-		);
-
-		$this->field_definitions['status'] = array(
-		
-			'string_override'		=> form_dropdown('status', $vars['menu_status_options'], $vars['menu_status_selected']),
-			'field_id'				=> 'status',
-			'field_label'			=> $this->lang->line('status'),
-			'field_name'			=> 'status',
-			'field_required'		=> 'n',
-			'field_type'			=> 'select',
-			'field_text_direction'	=> 'ltr',
-			'field_data'			=> '',
-			'field_fmt'				=> 'text',
-			'field_instructions'	=> '',
-			'field_show_fmt'		=> 'n',
-			'selected'				=> $vars['menu_status_selected'],
-			'options'				=> $vars['menu_status_options']
-		);
-
-		$this->field_definitions['author'] = array(
-			'string_override'		=> form_dropdown('author', $vars['menu_author_options'], $vars['menu_author_selected']),
-			'field_id'				=> 'author',
-			'field_label'			=> $this->lang->line('author'),
-			'field_name'			=> 'author_id',
-			'field_required'		=> 'n',
-			'field_type'			=> 'select',
-			'field_text_direction'	=> 'ltr',
-			'field_data'			=> '',
-			'field_fmt'				=> 'text',
-			'field_instructions'	=> '',
-			'field_show_fmt'		=> 'n',
-			'selected'				=> $vars['menu_author_selected'],
-			'options'				=> $vars['menu_author_options']
-		);
-
-		$options_r = '';
-		$options_r .= ($vars['show_sticky']) ? '<label>'.form_checkbox($vars['sticky_data']).' '.lang('sticky').'</label>' : '';
-		$options_r .= ($vars['show_comments']) ? '<label>'.form_checkbox($vars['comments_data']).' '.lang('allow_comments').'</label>' : '';
-		$options_r .= ($vars['show_dst']) ? '<label>'.form_checkbox($vars['dst_data']).' '.lang('dst_enabled').'</label>' : '';
-
-		$this->field_definitions['options'] = array(
-			'string_override'		=> ($options_r != '') ? '<fieldset>'.$options_r.'</fieldset>&nbsp;' : '',
-			'field_id'				=> 'options',
-			'field_label'			=> $this->lang->line('options'),
-			'field_name'			=> 'options',
-			'field_required'		=> 'n',
-			'field_type'			=> '',
-			'field_text_direction'	=> 'ltr',
-			'field_data'			=> '',
-			'field_fmt'				=> 'text',
-			'field_instructions'	=> '',
-			'field_show_fmt'		=> 'n'
-		);
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Ajax Update category fields
-	 */
-	public function ajax_update_cat_fields()
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
-		$this->load->library('api');
-		$this->api->instantiate('channel_categories');
-		
-		$this->load->model('category_model');
-		$this->load->helper('form');
-		
-		$group_id = $this->input->get_post('group_id');
-		
-		$query = $this->category_model->get_categories($group_id, FALSE);
-		$this->api_channel_categories->category_tree($group_id, '', $query->row('sort_order'));
-
-		$this->_define_category_fields(array('' => $this->api_channel_categories->categories), FALSE, $group_id);
-		exit($this->field_definitions['category']['string_override']);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Define category fields
-	 */
-	protected function _define_category_fields($categories, $edit_categories_link, $cat_groups = '')
-	{
-		$vars = compact('categories', 'edit_categories_link');
-		$category_r = $this->load->view('content/_assets/categories', $vars, TRUE);
-		
-		$this->field_definitions['category'] = array(
-			'string_override'		=> ($cat_groups == '') ? $this->lang->line('no_categories') : $category_r,
-			'field_id'				=> 'category',
-			'field_name'			=> 'category',
-			'field_label'			=> $this->lang->line('categories'),
-			'field_required'		=> 'n',
-			'field_type'			=> 'multiselect',
-			'field_text_direction'	=> 'ltr',
-			'field_data'			=> '',
-			'field_fmt'				=> 'text',
-			'field_instructions'	=> '',
-			'field_show_fmt'		=> 'n',
-			'selected'				=> 'n',
-			'options'				=> $categories
-		);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * define ping fields
+	 * Setup File List Actions
 	 * 
+	 * @return 	void
 	 */
-	protected function _define_ping_fields($vars)
+	private function _setup_file_list()
 	{
-		$this->api_channel_fields->set_settings('ping', array(
-			'string_override'		=> (isset($vars['ping_servers']) && $vars['ping_servers'] != '') ? '<fieldset>'.$vars['ping_servers'].'</fieldset>' : lang('no_ping_sites').'<p><a href="'.BASE.AMP.'C=myaccount'.AMP.'M=ping_servers'.AMP.'id='.$this->session->userdata('member_id').'">'.$this->lang->line('add_ping_sites').'</a></p>',
-			'field_id'				=> 'ping',
-			'field_label'			=> $this->lang->line('pings'),
-			'field_required'		=> 'n',
-			'field_type'			=> 'checkboxes',
-			'field_text_direction'	=> 'ltr',
-			'field_data'			=> $vars['ping_servers'],
-			'field_fmt'				=> 'text',
-			'field_instructions'	=> '',
-			'field_show_fmt'		=> 'n'
-		));
-	}
-	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Define revisions fields
-	 *
-	 * @param 	array
-	 * @param 	boolean
-	 */
-	protected function _define_revisions_fields($vars, $versioning)
-	{
-		$revisions_r = $versioning;
-		$revisions_checked = ($vars['versioning_enabled'] == 'y')? TRUE : FALSE;
-		$revisions_r .= ($vars['revs_exist'] == FALSE) ? '<p>'.$this->lang->line('no_revisions_exist').'</p>' : '';
-		$revisions_r .= '<p><label>'.form_checkbox('versioning_enabled', 'y', $revisions_checked, 'id="versioning_enabled"').' '.$this->lang->line('versioning_enabled').'</label></p>';
-
-
-		// Revisions tab
-		$this->field_definitions['revisions'] = array(
-			'string_override'		=> $revisions_r,
-			'field_id'				=> 'revisions',
-			'field_label'			=> $this->lang->line('revisions'),
-			'field_name'			=> 'revisions',
-			'field_required'		=> 'n',
-			'field_type'			=> 'checkboxes',
-			'field_text_direction'	=> 'ltr',
-			'field_data'			=> '',
-			'field_fmt'				=> 'text',
-			'field_instructions'	=> '',
-			'field_show_fmt'		=> 'n'
-		);
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Define forum fields
-	 *
-	 * @param 	array
-	 * @param 	string
-	 */
-	function _define_forum_fields(&$vars, $which)
-	{
-		// On edit- only forum topic id can take a value and only forum topic id and 
-		// topic title (if it exists) should show
-
-		if ( ! isset($vars['forum_topic_id']))
-		{
-			unset($vars['publish_tabs']['forum']);
-			return;
-		}
-
+		$this->load->model('tools_model');
 		
-		if ($this->config->item('forum_is_installed') == "y")
+		$upload_directories = $this->tools_model->get_upload_preferences($this->session->userdata('group_id'));
+	
+		$this->_file_manager = array(
+			'file_list'						=> array(),
+			'upload_directories'			=> array(),
+		);
+	
+		$fm_opts = array(
+							'id', 'name', 'url', 'pre_format', 'post_format', 
+							'file_pre_format', 'file_post_format', 'properties', 
+							'file_properties'
+						);
+	
+		foreach($upload_directories->result() as $row)
 		{
-			
-			// Forum tab
-			$this->field_definitions['forum_topic_id'] = array(
-				'string_override'		=> form_input('forum_topic_id', $vars['forum_topic_id']),
-				'field_id'				=> 'forum_topic_id',
-				'field_label'			=> $this->lang->line('forum_topic_id'),
-				'field_name'			=> 'forum_topic_id',
-				'field_required' 		=> 'n',
-				'field_data'			=> $vars['forum_topic_id'],
-				'field_fmt'				=> 'text',
-				'field_instructions' 	=> $vars['forum_topic_id_descp'],
-				'field_show_fmt'		=> 'n',
-				'field_text_direction'	=> 'ltr',
-				'field_type' 			=> 'text',
-				'field_maxl' 			=> 100
-			);
-			
+			$this->_file_manager['upload_directories'][$row->id] = $row->name;
 
-			if ($which == 'edit')
+			foreach($fm_opts as $prop)
 			{
-				$title = (isset($vars['forum_title']) && $vars['forum_title'] != '') ? $vars['forum_title'] : '<p>'.$this->lang->line('field_not_editable').'</p>';
-				$body = '<p>'.$this->lang->line('field_not_editable').'</p>';
-				$forum_id = '<p>'.$this->lang->line('field_not_editable').'</p>';
+				$this->_file_manager['file_list'][$row->id][$prop] = $row->$prop;
 			}
-			else
-			{
-				$title = form_input('forum_title', $vars['forum_title']);
-				$body = form_textarea(array('name' => 'forum_body', 'id' => 'forum_body'), $vars['forum_body']);
-				$forum_id = $vars['forum_id'];				
-			}
-
-			$this->field_definitions['forum_title'] = array(
-					'string_override'		=> $title,
-					'field_id'				=> 'forum_title',
-					'field_label'			=> $this->lang->line('forum_title'),
-					'field_name'			=> 'forum_title',
-					'field_required' 		=> 'n',
-					'field_data'			=> $vars['forum_title'],
-					'field_fmt'				=> 'text',
-					'field_instructions' 	=> '',
-					'field_show_fmt'		=> 'n',
-					'field_text_direction'	=> 'ltr',
-					'field_type' 			=> 'text',
-					'field_maxl' 			=> 100
-			);
-
-			$this->field_definitions['forum_body'] = array(
-					'string_override'		=> $body,
-					'field_id'				=> 'forum_body',
-					'field_label'			=> $this->lang->line('forum_body'),
-					'field_name'			=> 'forum_body',
-					'field_required' 		=> 'n',
-					'field_data'			=> $vars['forum_body'],
-					'field_fmt'				=> 'text',
-					'field_instructions' 	=> '',
-					'field_show_fmt'		=> 'n',
-					'field_text_direction'	=> 'ltr',
-					'field_type' 			=> 'textarea',
-					'rows'					=> 15
-			);
-
-			$this->field_definitions['forum_id'] = array(
-					'string_override'		=> $forum_id,
-					'field_id'				=> 'forum_id',
-					'field_label'			=> $this->lang->line('forum'),
-					'field_name'			=> 'forum_id',
-					'field_required' 		=> 'n',
-					'field_data'			=> '',
-					'field_fmt'				=> 'none',
-					'field_instructions' 	=> '',
-					'field_show_fmt'		=> 'n',
-					'field_text_direction'	=> 'ltr',
-					'field_type' 			=> 'select',
-					'field_maxl' 			=> 100
-			);
 		}
 	}
-	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Static publish admin
-	 */
-	protected function _static_publish_admin()
-	{
-		$this->javascript->set_global(array(
-				'lang.add_tab' 				=> $this->lang->line('add_tab'),
-				'lang.close' 				=> $this->lang->line('close'),
-				'lang.hide_toolbar' 		=> $this->lang->line('hide_toolbar'),
-				'lang.show_toolbar' 		=> $this->lang->line('show_toolbar'),
-				'lang.illegal_characters'	=> $this->lang->line('illegal_characters'),
-				'lang.tab_name_required' 	=> $this->lang->line('tab_name_required'),
-				'lang.duplicate_tab_name'	=> $this->lang->line('duplicate_tab_name')
-			)
-		);
-		
-		$this->cp->add_js_script(array('file' => 'cp/publish_admin'));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Static public formatting buttons
-	 */
-	protected function _static_publish_formatting_buttons()
-	{
-		$this->javascript->set_global(array(
-					'user_id' 					=> $this->session->userdata('member_id'),
-					'lang.confirm_exit'			=> $this->lang->line('confirm_exit'),
-					'lang.add_new_html_button'	=> $this->lang->line('add_new_html_button')
-				)
-		);		
-	}
 
 	// --------------------------------------------------------------------
 	
-	/**
-	 * Static publish non-admin
-	 */
-	protected function _static_publish_non_admin()
-	{
-		$this->load->library('filemanager');
-		$this->filemanager->filebrowser('C=content_publish&M=filemanager_endpoint');
-	}
-	
-	// --------------------------------------------------------------------
 }
 // END CLASS
 

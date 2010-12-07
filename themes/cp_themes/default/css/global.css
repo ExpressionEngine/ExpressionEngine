@@ -779,20 +779,20 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 }
 
 #notePad #notePadTextEdit {
-	width:				80%;
+	width:				100%;
 	height:				5em;
-	margin:				10px 20px;
+	margin:				10px 20px 10px 0;
 }
 
 #notePad #notePadText {
-	margin:				14px 20px 14px 0;
+	margin:				14px 10px 14px 0;
 	color:				#5f6c74;
 }
 
 
 #notePad #notePadControls {
 	display:			none;
-	margin:				-15px 20px 5px 20px;
+	margin:				-15px 20px 5px 0px;
 }
 
 /* -------------------------------------
@@ -3574,6 +3574,29 @@ table.solo {
 	background-color:	#ECF1F4;
 	color:				#5f6c74;
 	font-size:			12px;
+}
+
+
+/* Image link that shows up in
+ * edit if you have autosave data */
+
+#autosaved_entries {
+	float:				right;
+	text-decoration: 	none;
+	border:				1px solid #b7c7d2; /* won't work with rounded corners, but looks best for non js */
+	padding:			4px 8px;
+}
+
+#autosaved_entries img {
+	padding-right:		2px;
+	vertical-align:		text-bottom;
+	margin-bottom:		-1px;
+}
+
+
+#mainContent #tools .submit_alt
+#autosaved_entries {
+	border: 1px solid #ccc;
 }
 
 .image_edit_form_options #image_edit_form fieldset {

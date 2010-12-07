@@ -15,13 +15,22 @@ if ($EE_view_disable !== TRUE)
 		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
 
-			<p><?=lang('autosave_warning_1')?></p>
-			<p class="notice"><?=lang('autosave_warning_2')?></p>
-			<p><?=lang('autosave_warning_3')?></p>
-			<div class="cp_button"><a href="<?=BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$this->input->get_post('channel_id').AMP.'entry_id='.$this->input->get_post('entry_id').AMP.'use_autosave=y'?>"><?=lang('yes')?></a></div>
-			<div class="cp_button"><a href="<?=BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$this->input->get_post('channel_id').AMP.'entry_id='.$this->input->get_post('entry_id').AMP.'use_autosave=n'?>"><?=lang('no')?></a></div>
+			<?php if (count($entries) < 1):?>
+				<p class="notice"><?=lang('no_autosave_data')?></p>
+			<?php else:
+				
+				$this->table->set_template($cp_table_template);
+				$this->table->set_heading($table_headings);
 
-			<div class="clear"></div>
+				foreach ($entries as $row)
+				{
+					$this->table->add_row($row);
+				}
+				echo $this->table->generate();
+				$this->table->clear();
+
+			endif;?>
+
 		</div>
 
 	</div> <!-- contents -->
@@ -33,6 +42,9 @@ if ($EE_view_disable !== TRUE)
 	$this->load->view('_shared/accessories');
 	$this->load->view('_shared/footer');
 }
+
+/* End of file edit.php */
+/* Location: ./themes/cp_themes/default/content/edit.php */
 
 /* End of file autosave_options.php */
 /* Location: ./themes/cp_themes/default/content/autosave_options.php */

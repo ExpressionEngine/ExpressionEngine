@@ -39,6 +39,7 @@ class File_ft extends EE_Fieldtype {
 	function File_ft()
 	{
 		parent::EE_Fieldtype();
+		$this->EE->load->model('tools_model');
 	}
 	
 	// --------------------------------------------------------------------
@@ -89,7 +90,7 @@ class File_ft extends EE_Fieldtype {
 		// Upload or maybe just a path in the hidden field?
 		if (isset($_FILES[$this->field_name]) && $_FILES[$this->field_name]['size'] > 0)
 		{
-			$data = $this->EE->filemanager_endpoint('upload_file', array($filedir, $this->field_name));
+			$data = $this->EE->filemanager_actions('upload_file', array($filedir, $this->field_name));
 			
 			if (array_key_exists('error', $data))
 			{

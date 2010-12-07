@@ -204,7 +204,7 @@ EE.publish.category_editor = function() {
 	// Last but not least - update the checkboxes
 	$(".cats_done").live("click", function() {
 		var that = $(this).closest(".cat_group_container");
-		that.text("loading...").load(EE.BASE+"&C=content_publish&M=ajax_update_cat_fields&group_id="+that.data("gid")+"&timestamp="+now(), function(response) {
+		that.text("loading...").load(EE.BASE+"&C=content_publish&M=category_actions&group_id="+that.data("gid")+"&timestamp="+now(), function(response) {
 			that.html( $(response).html() );
 		});
 				
@@ -628,9 +628,9 @@ $(document).ready(function() {
 	}
 
 	if (EE.publish.autosave) {
-		
+				
 		start_autosave = function() {
-		//	setInterval(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
+			setTimeout(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
 		}
 		
 		autosave_entry = function() {
@@ -648,13 +648,16 @@ $(document).ready(function() {
 			$.ajax({
 				type: "POST",
 				dataType: 'json',
-				url: EE.BASE+"&C=content_publish&M=autosave_entry",
+				url: EE.BASE+"&C=content_publish&M=autosave",
 				data: form_data,
-				success: function(result){
+				success: function(result) {
 					if (result.error) {
 						console.log(result.error);
 					}
 					else if (result.success) {
+						if (result.autosave_entry_id) {
+							$('input[name=autosave_entry_id]').val(result.autosave_entry_id);
+						}
 						$('#autosave_notice').text(result.success);
 					}
 					else {
@@ -666,17 +669,13 @@ $(document).ready(function() {
 			});
 		};
 		
-		$('#autosave_notice').click(function() {
-			autosave_entry();
-		});
-		
 		start_autosave();
 	}
 
 
 	// Pages URI Placeholder
 	if (EE.publish.pages) {
-		var pagesUri		= $("#pages_uri"),
+		var pagesUri		= $("#pages__pages_uri"),
 			placeholderText = EE.publish.pages.pagesUri;
 
 		if ( ! pagesUri.value) {

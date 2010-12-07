@@ -26,7 +26,7 @@
 
 class Forum_upd {
 
-	var $version			= '3.1.0';
+	var $version			= '3.1.1';
 	
 	function Forum_upd()
 	{
@@ -158,7 +158,7 @@ class Forum_upd {
 			return $this->EE->output->fatal_error($this->EE->lang->line('config_not_writable'));
 		}
 				
-		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend) VALUES ('Forum', '$this->version', 'y')";
+		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend, has_publish_fields) VALUES ('Forum', '$this->version', 'y', 'y')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Forum', 'submit_post')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Forum', 'delete_post')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Forum', 'change_status')";
@@ -880,7 +880,15 @@ class Forum_upd {
 			// setting of 'mod_member_name' to an empty string. (done - 20100625 - dj)
 			$this->EE->db->query("ALTER TABLE `exp_forum_moderators` CHANGE `mod_member_name` `mod_member_name` VARCHAR(50) NULL DEFAULT NULL");
 		}
-
+		
+		if ($current < '3.1.1')
+		{
+			// Add the publish tab.  wootage!
+			$data = array('has_publish_fields' => 'y');
+			$this->EE->db->where('module_name', 'Forum');
+			$this->EE->db->update('modules', $data);
+		}
+		
 	}
 
 }

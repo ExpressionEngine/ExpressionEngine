@@ -172,7 +172,7 @@ class EE_Fieldtype {
 
 		$fields['field_ft_'.$data['field_id']] = array(
 			'type' 			=> 'tinytext',
-			'null'			=> TRUE
+			'null'			=> TRUE,
 			);			
 		
 		return $fields;

@@ -40,7 +40,7 @@ class EE_Loader extends CI_Loader {
 	public function view($view, $vars = array(), $return = FALSE)
 	{
 		$paths = $this->_ci_view_path;
-		
+
 		if (is_array($this->_ci_view_path))
 		{
 			$ext = pathinfo($view, PATHINFO_EXTENSION);
@@ -51,6 +51,7 @@ class EE_Loader extends CI_Loader {
 				if (file_exists($path.$view.$ext))
 				{
 					$this->_ci_view_path = $path;
+					break;
 				}
 			}
 		}

@@ -45,10 +45,8 @@ class EE_Core {
 			define('REQ', (($CI->input->get_post('ACT') !== FALSE) ? 'ACTION' : 'PAGE')); 
 		}
 		
-		// We initialize the Core library either from a second
-		// autoloaded library, or from the EE controller, depending on if it's
-		// a front end or control panel request.  This solves a scope issue
-		// for code that would otherwise be ran from the Core constructor
+		// Call initialize to do the heavy lifting
+		$this->_initialize_core();
 	}
 
 	// --------------------------------------------------------------------
@@ -63,6 +61,12 @@ class EE_Core {
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
+		
+		// Yes, this is silly. No it won't work without it.
+		// For some reason PHP is won't bind the reference
+		// for core to the super object quickly enough.
+		// Breaks access to core in the menu lib.
+		$this->EE->core = $this;
 		
 		// some path constants to simplify things
 		define('PATH_MOD',		APPPATH.'modules/');
@@ -401,7 +405,7 @@ class EE_Core {
 		{
 			$cp_theme = ( ! $this->EE->session->userdata('cp_theme')) ? $this->EE->config->item('cp_theme') : $this->EE->session->userdata('cp_theme');	
 		}
-		
+
 		// make sure the theme exists, and shunt to default if it does not
 		// always add default as a fallback.
 		if ($cp_theme == 'default' OR ! is_dir(PATH_CP_THEME.$cp_theme))

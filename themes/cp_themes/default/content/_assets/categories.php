@@ -2,9 +2,9 @@
 $cat_action_buttons = FALSE;
 
 // Handle a special case of empty category groups
-if (count($edit_categories_link) > count($categories))
+if (count($edit_links) > count($categories))
 {
-	foreach($edit_categories_link as $i => $group_info)
+	foreach($edit_links as $i => $group_info)
 	{
 		if ( ! isset($categories[$group_info['group_name']]))
 		{
@@ -57,17 +57,17 @@ if (count($edit_categories_link) > count($categories))
 <?php endforeach;?>
 
 
-<?php if ($edit_categories_link !== FALSE):?>
+<?php if ($edit_links !== FALSE):?>
 	
 	<p style="margin: 15px;">
 		
-		<?php if (count($edit_categories_link) == 1):?>
-			<a href="<?=$edit_categories_link[0]['url']?>" class="edit_categories_link"><?=$this->lang->line('edit_categories')?></a>
+		<?php if (count($edit_links) == 1):?>
+			<a href="<?=$edit_links[0]['url']?>" class="edit_categories_link"><?=$this->lang->line('edit_categories')?></a>
 		<?php else:?>
 			<?=$this->lang->line('edit_categories')?>: 
 			
-			<?php foreach ($edit_categories_link as $i => $link):?>
-				<a href="<?=BASE.$link['url']?>" class="edit_categories_link"><?=$link['group_name']?></a><?=($i < count($edit_categories_link) - 1) ? ', ' : ''?>
+			<?php foreach ($edit_links as $i => $link):?>
+				<a href="<?=BASE.$link['url']?>" class="edit_categories_link"><?=$link['group_name']?></a><?=($i < count($edit_links) - 1) ? ', ' : ''?>
 			<?php endforeach;?>
 			
 		<?php endif;?>
