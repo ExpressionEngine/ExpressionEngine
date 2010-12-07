@@ -630,7 +630,7 @@ $(document).ready(function() {
 	if (EE.publish.autosave) {
 				
 		start_autosave = function() {
-			setInterval(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
+			setTimeout(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
 		}
 		
 		autosave_entry = function() {
