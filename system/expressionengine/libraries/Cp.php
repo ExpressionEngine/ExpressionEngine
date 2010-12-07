@@ -411,11 +411,11 @@ class Cp {
 		
 		switch($type)
 		{
-			case 'ui':			$file = APPPATH.'javascript/'.$folder.'/jquery/ui/ui.'.$name.'.js';
+			case 'ui':			$file = PATH_THEMES.'javascript/'.$folder.'/jquery/ui/ui.'.$name.'.js';
 				break;
-			case 'plugin':		$file = APPPATH.'javascript/'.$folder.'/jquery/plugins/'.$name.'.js';
+			case 'plugin':		$file = PATH_THEMES.'javascript/'.$folder.'/jquery/plugins/'.$name.'.js';
 				break;
-			case 'file':		$file = APPPATH.'javascript/'.$folder.'/'.$name.'.js';
+			case 'file':		$file = PATH_THEMES.'javascript/'.$folder.'/'.$name.'.js';
 				break;
 			case 'package':		$file = PATH_THIRD.$name.'/javascript/'.$name.'.js';
 				break;
