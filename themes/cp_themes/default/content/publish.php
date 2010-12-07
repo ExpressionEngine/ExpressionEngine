@@ -94,8 +94,17 @@ if ($EE_view_disable !== TRUE)
 						<!-- Sidebar layouts -->
 						<h3><a href="#"><?=lang('publish_layout')?></a></h3>
 						<div>
-
-
+							<p id="layout_groups_holder">
+								<?php foreach($member_groups_laylist as $group):?>
+									<label><?=form_checkbox('member_group[]', $group['group_id'], FALSE, 'class="toggle_member_groups"')?> <?=$group['group_title']?></label><br />
+								<?php endforeach;?>
+								<label><?=form_checkbox('toggle_member_groups', 'toggle_member_groups', FALSE, 'class="toggle_member_groups" id="toggle_member_groups_all"').' '.$this->lang->line('select_all')?></label>
+							</p>
+							<p class="custom_field_add">
+								<a href="#" id="layout_group_submit" class="submit submit_alt"><img src="<?=$cp_theme_url?>images/save_layout.png" width="12" height="14" alt="<?=lang('save_layout')?>" />&nbsp;&nbsp;<?=lang('save_layout')?></a>
+								<a href="#" id="layout_group_remove" class="submit submit_alt"><img src="<?=$cp_theme_url?>images/remove_layout.png" width="12" height="14" alt="<?=lang('remove_layout')?>" />&nbsp;&nbsp;<?=lang('remove_layout')?></a>
+								<a href="#" id="layout_group_preview" class="submit submit_alt"><img src="<?=$cp_theme_url?>images/preview_layout.png" width="12" height="14" alt="<?=lang('preview_layout')?>" />&nbsp;&nbsp;<?=lang('preview_layout')?></a>
+							</p>
 						</div>
 						
 					</div> <!-- /tools -->

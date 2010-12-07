@@ -186,6 +186,27 @@ class Content_publish extends CI_Controller {
 		}
 
 		$this->_setup_file_list();
+		
+		
+		
+		// get all member groups with cp access for the layout list
+		$member_groups_laylist = array();
+		
+		$listable = $this->member_model->get_member_groups(array('can_access_admin', 'can_access_edit'), array('can_access_content'=>'y'));
+		
+		foreach($listable->result() as $group)
+		{
+			if ($group->can_access_admin == 'y' OR $group->can_access_edit == 'y')
+			{
+				$member_groups_laylist[] = array('group_id' => $group->group_id, 'group_title' => $group->group_title);
+			}
+		}
+		
+		
+		// Load layouts - we'll need them for the steps below
+		// if this is a layout group preview, we'll use it, otherwise, we'll use the author's group_id
+		
+		$layout_info = $this->_load_layout($channel_id);
 
 
 		// First figure out what tabs to show, and what fields
@@ -193,8 +214,8 @@ class Content_publish extends CI_Controller {
 		// they are show.
 	
 		$field_data 	= $this->_setup_field_blocks($field_data, $entry_data);
-		$tab_hierarchy	= $this->_setup_tab_hierarchy($field_data);
-		$layout_styles	= $this->_setup_layout_styles($field_data);
+		$tab_hierarchy	= $this->_setup_tab_hierarchy($field_data, $layout_info);
+		$layout_styles	= $this->_setup_layout_styles($field_data, $layout_info);
 		$field_list		= $this->_sort_field_list($field_data);		// @todo admin only? or use as master list? skip sorting for non admins, but still compile?
 		$field_list		= $this->_prep_field_wrapper($field_list);
 
@@ -249,30 +270,31 @@ class Content_publish extends CI_Controller {
 		$autosave_id = isset($entry_data['autosave_entry_id']) ? $entry_data['autosave_entry_id'] : 0;
 	
 		$data = array(
-			'cp_page_title'	=> $entry_id ? lang('edit_entry') : lang('new_entry'),
-			'message'		=> '',	// @todo consider pulling?
+			'message'			=> '',	// @todo consider pulling?
+			'cp_page_title'		=> $entry_id ? lang('edit_entry') : lang('new_entry'),
 			
-			'tabs'			=> $tab_hierarchy,
-			'first_tab'		=> key($tab_hierarchy),
-			'tab_labels'	=> $tab_labels,
-			'field_list'	=> $field_list,
-			'layout_styles'	=> $layout_styles,
-			'field_output'	=> $field_output,
+			'tabs'				=> $tab_hierarchy,
+			'first_tab'			=> key($tab_hierarchy),
+			'tab_labels'		=> $tab_labels,
+			'field_list'		=> $field_list,
+			'layout_styles'		=> $layout_styles,
+			'field_output'		=> $field_output,
 			
 			'spell_enabled'		=> TRUE,
 			'smileys_enabled'	=> $this->_smileys_enabled,
 			
+			'current_url'		=> $current_url,
+			'file_list'			=> $this->_file_manager['file_list'],
+			
 			'show_revision_cluster' => FALSE,
+			'member_groups_laylist'	=> $member_groups_laylist,
 			
-			'current_url'	=> $current_url,
-			'file_list'		=> $this->_file_manager['file_list'],
-			
-			'hidden_fields'	=> array(
+			'hidden_fields'		=> array(
 				'entry_id'			=> $entry_id,
 				'channel_id'		=> $channel_id,
 				'autosave_entry_id'	=> $autosave_id,
 				'filter'			=> $this->input->get_post('filter')
-			),
+			)
 		);
 
 		$this->cp->set_breadcrumb(
@@ -283,7 +305,6 @@ class Content_publish extends CI_Controller {
 		$this->javascript->compile();
 		$this->load->view('content/publish', $data);
 	}
-	
 	
 	// --------------------------------------------------------------------
 
@@ -321,7 +342,6 @@ class Content_publish extends CI_Controller {
 		{
 			return FALSE;
 		}
-		
 		
 		$data = $_POST;
 		$data['cp_call']		= TRUE;
@@ -378,6 +398,8 @@ class Content_publish extends CI_Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
+
+		$this->api->instantiate('channel_fields');
 
 		if ( ! function_exists('json_decode'))
 		{
@@ -1448,7 +1470,7 @@ class Content_publish extends CI_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	private function _setup_layout_styles($field_data)
+	private function _setup_layout_styles($field_data, $layout_info)
 	{
 		$field_display = array(
 			'visible'		=> TRUE,
@@ -1459,13 +1481,65 @@ class Content_publish extends CI_Controller {
 		);
 		
 		$layout = array();
+		
+		// do we have a layout? use it
+		if ($layout_info)
+		{
+			foreach ($layout_info as $tab => $fields)
+			{
+				unset($fields['_tab_label']);
+				
+				foreach ($fields as $name => $display)
+				{
+					$layout[$name] = array_merge($field_display, $display);
+				}
+			}
+			
+			return $layout;
+		}
 
+		// otherwise - assign default to all
+		
 		foreach($field_data as $name => $field)
 		{
 			$layout[$name] = $field_display;
 		}
 		
 		return $layout;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load a layout
+	 *
+	 * @param	int
+	 * @return	mixed
+	 */
+	function _load_layout($channel_id)
+	{
+		$layout_group = (is_numeric($this->input->get_post('layout_preview'))) ? $this->input->get_post('layout_preview') : $this->session->userdata('group_id');
+		$layout_info = $this->member_model->get_group_layout($layout_group, $channel_id);
+		
+		if ( ! is_array($layout_info) OR ! count($layout_info))
+		{
+			return FALSE;
+		}
+
+		// turn # keys into field_id_#
+		foreach ($layout_info as $tab => &$fields)
+		{
+			foreach ($fields as $name => $data)
+			{
+				if (is_numeric($name))
+				{
+					$fields['field_id_'.$name] = $data;
+					unset($fields[$name]);
+				}
+			}
+		}
+		
+		return $layout_info;
 	}
 	
 	// --------------------------------------------------------------------
@@ -1476,8 +1550,25 @@ class Content_publish extends CI_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	private function _setup_tab_hierarchy($field_data)
+	private function _setup_tab_hierarchy($field_data, $layout_info)
 	{
+		// Do we have a layout? Woot, saves time!
+		if (is_array($layout_info))
+		{
+			$hierarchy = array();
+			
+			foreach ($layout_info as $tab => $fields)
+			{
+				unset($fields['_tab_label']);
+				$hierarchy[$tab] = array_keys($fields);
+			}
+			
+			return $hierarchy;
+		}
+		
+		
+		// Otherwise apply the default
+		
 		$default = array(
 			'publish'		=> array('title', 'url_title'),
 			'date'			=> array('entry_date', 'expiration_date', 'comment_expiration_date'),
