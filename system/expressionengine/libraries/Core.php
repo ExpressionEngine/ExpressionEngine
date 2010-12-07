@@ -62,6 +62,12 @@ class EE_Core {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 		
+		// Yes, this is silly. No it won't work without it.
+		// For some reason PHP is won't bind the reference
+		// for core to the super object quickly enough.
+		// Breaks access to core in the menu lib.
+		$this->EE->core = $this;
+		
 		// some path constants to simplify things
 		define('PATH_MOD',		APPPATH.'modules/');
 		define('PATH_PI',		APPPATH.'plugins/');
