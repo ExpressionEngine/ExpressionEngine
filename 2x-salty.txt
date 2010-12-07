@@ -1,9 +1,0 @@
-Bug: http://expressionengine.com/bug_tracker/bug/14605/
-Neither robin nor greg can confirm this- we suspect it was fixed when the params were encoded.  But would like a double check before closing it out.
-
-//----------------------
-
-The custom field create/delete/edit moved some bits to the ft files, so that all needs a good run through.
-
-
-//----------------------
