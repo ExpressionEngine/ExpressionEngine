@@ -628,9 +628,7 @@ $(document).ready(function() {
 	}
 
 	if (EE.publish.autosave) {
-		
-		var autosave_entry_id;
-		
+				
 		start_autosave = function() {
 			setInterval(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
 		}
@@ -647,10 +645,6 @@ $(document).ready(function() {
 			
 			form_data = $("#publishForm").serialize();
 			
-			if (autosave_entry_id) {
-				form_data += '&autosave_entry_id='+autosave_entry_id;
-			}
-			
 			$.ajax({
 				type: "POST",
 				dataType: 'json',
@@ -662,7 +656,7 @@ $(document).ready(function() {
 					}
 					else if (result.success) {
 						if (result.autosave_entry_id) {
-							autosave_entry_id = result.autosave_entry_id;
+							$('input[name=autosave_entry_id]').val(result.autosave_entry_id);
 						}
 						$('#autosave_notice').text(result.success);
 					}
