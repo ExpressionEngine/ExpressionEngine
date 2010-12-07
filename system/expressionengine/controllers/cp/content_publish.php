@@ -187,8 +187,6 @@ class Content_publish extends CI_Controller {
 
 		$this->_setup_file_list();
 		
-		
-		
 		// get all member groups with cp access for the layout list
 		$member_groups_laylist = array();
 		
@@ -251,8 +249,13 @@ class Content_publish extends CI_Controller {
 			'pings'			=> lang('pings'),
 			'options'		=> lang('options'),
 			'date'			=> lang('date'),
-			'revisions'		=> lang('revisions'),
 		);
+
+		if (isset($this->_channel_data['enable_versioning']) 
+			&& $this->_channel_data['enable_versioning'] = 'y')
+		{
+			$tab_labels['revisions'] = lang('revisions');
+		}
 
 		foreach ($this->_module_tabs as $k => $tab)
 		{
@@ -345,17 +348,15 @@ class Content_publish extends CI_Controller {
 		
 		$data = $_POST;
 		$data['cp_call']		= TRUE;
-		$data['author_id']		= $this->input->post('author');		// @todo double check if this is validated
-		$data['revision_post']	= $_POST;							// @todo only if revisions - memory
+		$data['author_id']		= $this->input->post('author');	// @todo double check if this is validated
+		$data['revision_post']	= $_POST;			// @todo only if revisions - memory
 		$data['ping_servers']	= array();
-		
 		
 		// Fetch xml-rpc ping server IDs
 		if (isset($_POST['ping']) && is_array($_POST['ping']))
 		{
 			$data['ping_servers'] = $_POST['ping'];
 		}
-		
 		
 		// Remove leftovers
 		unset($data['ping']);
@@ -677,7 +678,6 @@ class Content_publish extends CI_Controller {
 			$show_comments_link	= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'entry_id='.$entry_id;
 		}
 		
-		
 		$live_look_link = FALSE;
 		
 		if ($resrow['live_look_template'] != 0)
@@ -694,7 +694,6 @@ class Content_publish extends CI_Controller {
 				$live_look_link = $this->cp->masked_url($this->functions->create_url($res->row('group_name').'/'.$res->row('template_name').'/'.$entry_id));
 			}
 		}
-		
 		
 		$data = array(
 			'filter_link'			=> $filter_link,
@@ -1847,8 +1846,8 @@ class Content_publish extends CI_Controller {
 		
 		$version_id = $this->input->get('version_id');
 
-		if ($this->_channel_data['enable_versioning'] == 'n' 
-			&& isset($entry_data['versioning_enabled']) && $entry_data['versioning_enabled'] == 'n')
+		if ($this->_channel_data['enable_versioning'] == 'n' OR 
+			(isset($entry_data['versioning_enabled']) && $entry_data['versioning_enabled'] == 'n'))
 		{
 			return $settings;
 		}
