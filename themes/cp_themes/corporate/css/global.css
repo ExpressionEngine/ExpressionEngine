@@ -3782,6 +3782,17 @@ table.solo {
 	font-size:			11px;
 }
 
+
+/* Image link that shows up in
+ * edit if you have autosave data */
+
+#autosaved_entries {
+	float: right;
+	padding-top: 9px;
+	padding-bottom: 2px;
+}
+
+
 .image_edit_form_options #image_edit_form fieldset {
 	width:				440px;
 	padding:			6px 10px;

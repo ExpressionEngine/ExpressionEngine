@@ -779,20 +779,20 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 }
 
 #notePad #notePadTextEdit {
-	width:				80%;
+	width:				100%;
 	height:				5em;
-	margin:				10px 20px;
+	margin:				10px 20px 10px 0;
 }
 
 #notePad #notePadText {
-	margin:				14px 20px 14px 0;
+	margin:				14px 10px 14px 0;
 	color:				#5f6c74;
 }
 
 
 #notePad #notePadControls {
 	display:			none;
-	margin:				-15px 20px 5px 20px;
+	margin:				-15px 20px 5px 0px;
 }
 
 /* -------------------------------------
