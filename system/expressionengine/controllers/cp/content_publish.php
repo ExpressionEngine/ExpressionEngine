@@ -1960,7 +1960,6 @@ class Content_publish extends CI_Controller {
 			'string_override'		=> $versioning,
 		);
 		
-		// var_dump($settings); exit;
 		return $settings;
 	}
 	
