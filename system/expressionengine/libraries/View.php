@@ -68,7 +68,7 @@ class View  {
 	 */
 	public function script_tag($file)
 	{
-		$src_dir = ($this->EE->config->item('use_compressed_js') == 'y') ? 'compressed/' : 'src/';
+		$src_dir = ($this->EE->config->item('use_compressed_js') == 'n') ? 'src/' : 'compressed/';
 		
 		$path = PATH_THEMES . 'javascript/' . $src_dir . $file;
 		
