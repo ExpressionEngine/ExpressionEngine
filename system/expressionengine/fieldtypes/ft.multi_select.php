@@ -46,6 +46,8 @@ class Multi_select_ft extends EE_Fieldtype {
 	
 	function display_field($data)
 	{
+		$this->EE->load->helper('custom_field');
+		
 		$values = decode_multi_field($data);
 		$field_options = $this->_get_field_options($data);
 

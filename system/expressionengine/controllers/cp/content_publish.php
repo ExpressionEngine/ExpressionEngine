@@ -1781,19 +1781,28 @@ class Content_publish extends CI_Controller {
 		$show_comments		= FALSE;
 		$show_sticky		= FALSE;
 		$show_dst			= FALSE;
+
+		$selected = (isset($entry_data['sticky']) && $entry_data['sticky'] == 'y') ? 1 : '';
 		
-		$options_array[] = 'sticky';
+		$checks = '<label>'.form_checkbox('sticky', 'y', $selected, 'class="checkbox"').' '.lang('sticky').'</label>';
 
 		// Allow Comments?
-		if ( ! isset($this->cp->installed_modules['comment']))
+		if (isset($this->cp->installed_modules['comment']) && $this->_channel_data['comment_system_enabled'] == 'y')
 		{
-			$allow_comments = (isset($entry_data['allow_comments'])) ? $entry_data['allow_comments'] : 'n';
+			// Figure out selected categories
+			if ( ! $entry_data['entry_id'] && $this->_channel_data['deft_comments'])
+			{
+				$selected = ($this->_channel_data['deft_comments'] == 'y') ? 1 : '';
+			}
+			else
+			{
+				$selected = (isset($entry_data['allow_comments']) && $entry_data['allow_comments'] == 'y') ? 1 : '';
+			}			
+	
+			$checks .= '<label>'.form_checkbox('allow_comments', 'y', $selected, 'class="checkbox"').' '.lang('allow_comments').'</label>';
+
 		}
-		elseif ($this->_channel_data['comment_system_enabled'] == 'y')
-		{
-			$options_array[] = 'allow_comments';
-		}
-			
+
 		// Options Field
 		$settings['options'] = array(
 			'field_id'				=> 'options',
@@ -1803,10 +1812,13 @@ class Content_publish extends CI_Controller {
 			'field_instructions'	=> '',
 			'field_pre_populate'	=> 'n',
 			'field_type'			=> 'checkboxes',
-			'field_list_items'		=> $options_array,
+			'field_list_items'		=> array(),
+			'string_override'		=> $checks
 		);
 
+
 		$this->api_channel_fields->set_settings('options', $settings['options']);
+
 				
 		$settings['author'] 	= $this->_build_author_select($entry_data);
 		$settings['channel']	= $this->_build_channel_select();
