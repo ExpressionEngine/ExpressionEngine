@@ -1793,12 +1793,6 @@ class Content_publish extends CI_Controller {
 		{
 			$options_array[] = 'allow_comments';
 		}
-
-		// Is DST active? 
-		if ($this->config->item('honor_entry_dst') == 'y')
-		{
-			$options_array[] = 'dst_enabled';
-		}
 			
 		// Options Field
 		$settings['options'] = array(
