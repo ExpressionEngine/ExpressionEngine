@@ -1490,8 +1490,8 @@ PAPAYA;
 		{
 			$path = $this->_set_javascript_path('../'.$path, ++$n);
 		}
-
-		return $path;		
+		
+		return $path;
 	}
 
 	// --------------------------------------------------------------------
@@ -1517,10 +1517,10 @@ PAPAYA;
 						'next_version'		=> substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1),
 						'installed_version'	=> $this->installed_version,
 						'languages'			=> $this->languages,
-						'javascript_path'	=> $this->_set_javascript_path(),
+						'javascript_path'	=> $this->javascript_path,
 					);
 
-		$data = array_merge($data, $array);
+		$data = array_merge($array, $data);
 		
 		if ($content != '')
 		{
