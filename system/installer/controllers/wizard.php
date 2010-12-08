@@ -1901,7 +1901,7 @@ PAPAYA;
 					{
 						while (FALSE !== ($file = readdir($tgfp)))
 						{
-							if (@is_file($this->theme_path.$this->userdata['theme'].'/'.$folder.'/'.$file) && $file != '.DS_Store')
+							if (@is_file($this->theme_path.$this->userdata['theme'].'/'.$folder.'/'.$file) && $file != '.DS_Store' && $file != '.htaccess')
 							{
 								$templates[$file] = $file;
 							}
