@@ -1841,56 +1841,62 @@ class Content_publish extends CI_Controller {
 		
 		$version_id = $this->input->get('version_id');
 
-		if ($this->_channel_data['enable_versioning'] == 'n' OR 
-			(isset($entry_data['versioning_enabled']) && $entry_data['versioning_enabled'] == 'n'))
+		// Versioning isn't enabled, tab shouldn't be showing
+		if ($this->_channel_data['enable_versioning'] == 'n')
 		{
 			return $settings;
 		}
-
-		$versioning = lang('no_revisions_exist');
+		
+		$versioning = '';
 		
 		$revisions_checked = (isset($entry_data['versioning_enabled']) 
 									&& $entry_data['versioning_enabled'] == 'y') ? TRUE : FALSE;
 	
-		$qry = $this->db->select('v.author_id, v.version_id, v.version_date, m.screen_name')
+		if ($revisions_checked)
+		{
+			$versioning = lang('no_revisions_exist');
+
+			$qry = $this->db->select('v.author_id, v.version_id, v.version_date, m.screen_name')
 						->from('entry_versioning as v, members as m')
 						->where('v.entry_id', $entry_data['entry_id'])
 						->where('v.author_id = m.member_id', NULL, FALSE)
 						->order_by('v.version_id', 'desc')
 						->get();
 		
-		if ($qry->num_rows() > 0)
-		{
-			$this->load->library('table');
+			if ($qry->num_rows() > 0)
+			{
+				$this->load->library('table');
 			
-			$this->table->set_template(array(
+				$this->table->set_template(array(
 					'table_open'		=> '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">',
 					'row_start'			=> '<tr class="even">',
 					'row_alt_start'		=> '<tr class="odd">'
-			));
-			$this->table->set_heading(
-				lang('revision'),
-				lang('rev_date'),
-				lang('rev_author'),
-				lang('load_revision')
-			);
-			
-			$i = 0;
-			$j = $qry->num_rows();
-			
-			$link_base = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$entry_data['channel_id'].AMP.'entry_id='.$entry_data['entry_id'].AMP;
+				));
 
-			foreach ($qry->result() as $row)
-			{
-				$revlink = '<a class="revision_warning" href="'.$link_base.'version_id='.$row->version_id.AMP.'version_num='.$j.AMP.'use_autosave=n">'.lang('load_revision').'</a>';
-				
-				if ( ! $version_id)
+				$this->table->set_heading(
+					lang('revision'),
+					lang('rev_date'),
+					lang('rev_author'),
+					lang('load_revision')
+				);
+			
+				$i = 0;
+				$j = $qry->num_rows();
+			
+				$link_base = BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$entry_data['channel_id'].AMP.'entry_id='.$entry_data['entry_id'].AMP;
+
+				foreach ($qry->result() as $row)
 				{
-					if ($row->version_id == $version_id)
+					$revlink = '<a class="revision_warning" href="'.$link_base.'version_id='.$row->version_id.AMP.'version_num='.$j.AMP.'use_autosave=n">'.lang('load_revision').'</a>';
+					
+					if ($version_id)
 					{
-						$revlink = lang('current_rev');
+						if ($row->version_id == $version_id)
+						{
+							$revlink = lang('current_rev');
+						}
 					}
-					elseif ($entry_data['entry_id'] != 0 && $i == 0)
+					elseif ($i == 0)
 					{
 						$revlink = lang('current_rev');
 					}
@@ -1902,7 +1908,7 @@ class Content_publish extends CI_Controller {
 							$revlink
 						)
 					);
-					
+				
 					$j--;
 					$i++;
 				}
@@ -1910,36 +1916,37 @@ class Content_publish extends CI_Controller {
 				$versioning = $this->table->generate();
 				
 				$outputjs = '
-				var revision_target = "";
+						var revision_target = "";
 
-				$("<div id=\"revision_warning\">'.lang('revision_warning').'</div>").dialog({
-					autoOpen: false,
-					resizable: false,
-					title: "'.lang('revisions').'",
-					modal: true,
-					position: "center",
-					minHeight: "0px", 
-					buttons: {
-						Cancel: function() {
+					$("<div id=\"revision_warning\">'.lang('revision_warning').'</div>").dialog({
+						autoOpen: false,
+						resizable: false,
+						title: "'.lang('revisions').'",
+						modal: true,
+						position: "center",
+						minHeight: "0px", 
+						buttons: {
+							Cancel: function() {
 							$(this).dialog("close");
-						},
-					"'.lang('load_revision').'": function() {
-						location=revision_target;
-					}
-					}});
+							},
+						"'.lang('load_revision').'": function() {
+							location=revision_target;
+						}
+						}});
 
-				$(".revision_warning").click( function (){
-					$("#revision_warning").dialog("open");
-					revision_target = $(this).attr("href");
-					$(".ui-dialog-buttonpane button:eq(2)").focus();
-					return false;
+					$(".revision_warning").click( function (){
+						$("#revision_warning").dialog("open");
+						revision_target = $(this).attr("href");
+						$(".ui-dialog-buttonpane button:eq(2)").focus();	
+						return false;
 				});';
 
 				$this->javascript->output(str_replace(array("\n", "\t"), '', $outputjs));
 			}
-		}
+		} 
 		
 		$versioning .= '<p><label>'.form_checkbox('versioning_enabled', 'y', $revisions_checked, 'id="versioning_enabled"').' '.lang('versioning_enabled').'</label></p>';
+
 		
 		$settings['revisions'] = array(
 			'field_id'				=> 'revisions',
@@ -1952,9 +1959,9 @@ class Content_publish extends CI_Controller {
 			'field_fmt'				=> 'text',
 			'field_instructions'	=> '',
 			'field_show_fmt'		=> '',
-			'string_override'		=> $versioning,
+			'string_override'		=> $versioning
 		);
-		
+
 		return $settings;
 	}
 	
