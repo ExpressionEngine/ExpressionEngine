@@ -115,6 +115,13 @@ class Comment {
 			$force_entry = TRUE;
 		}			
 
+		// A note on returns!
+		// If dynamic is off - ANY no results triggers no_result template
+		// If dynamic is on- we do not want to trigger no_results on a non-single entry page
+		// so only trigger if no comment ids- not for no valid entry ids existing
+		// Do not vary by force_entry setting
+
+
 		/** ----------------------------------------------
 		/**  Do we allow dynamic POST variables to set parameters?
 		/** ----------------------------------------------*/
@@ -212,7 +219,12 @@ class Comment {
 					if (count($force_entry_ids) == 0)
 					{
 						// No entry ids for the comment ids?  How'd they manage that
-						return $this->EE->TMPL->no_results();
+						if ( ! $dynamic)
+						{
+							return $this->EE->TMPL->no_results();
+						}
+
+						return false;
 					}
 					
 					$this->EE->db->where_in('entry_id', $force_entry_ids);
@@ -289,7 +301,12 @@ class Comment {
 			// Bad ID?  See ya!
 			if ($query->num_rows() == 0)
 			{
-				return FALSE;
+				if ( ! $dynamic)
+				{
+					return $this->EE->TMPL->no_results();
+				}
+
+				return false;
 			}
 
 			// We'll reassign the entry IDs so they're the true numeric ID
