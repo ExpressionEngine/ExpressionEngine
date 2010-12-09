@@ -842,6 +842,8 @@ class Tools_logs extends CI_Controller {
 				$i++;
 			}
 			
+			$col_defs = rtrim($col_defs, ', '); // IE chokes on trailing commas in JSON
+			
 			if ($final_check == TRUE)
 			{
 				$col_defs .= '{ "bSortable" : false } ],';
