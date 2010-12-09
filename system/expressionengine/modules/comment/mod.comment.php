@@ -155,47 +155,68 @@ class Comment {
 			}
 		}
 		
+		// Fetch channel_ids if appropriate
+		$channel_ids = array();
+
+		if ($channel = $this->EE->TMPL->fetch_param('channel') OR $this->EE->TMPL->fetch_param('site'))
+		{
+			$this->EE->db->select('channel_id');
+			$this->EE->db->where_in('site_id', $this->EE->TMPL->site_ids);
+
+			if ($channel !== FALSE)
+			{
+				$this->EE->functions->ar_andor_string($channel, 'channel_name');
+			}
+
+			$channels = $this->EE->db->get('channels');
+				
+			if ($channels->num_rows() == 0)
+			{
+				if ( ! $dynamic)
+				{
+					return $this->EE->TMPL->no_results();
+				}
+
+				return false;
+			}
+			else
+			{
+				foreach($channels->result_array() as $row)
+				{
+					$channel_ids[] = $row['channel_id'];
+				}
+			}
+		}
+
+		$comment_id_param = FALSE;
+
+		// Fetch entry ids- we'll use them to make sure comments are to open, etc. entries
+		
 		if  ($dynamic == TRUE OR $force_entry == TRUE)
 		{
-			// Fetch channel_ids if appropriate
-			$channel_ids = array();
-
-			if ($channel = $this->EE->TMPL->fetch_param('channel') OR $this->EE->TMPL->fetch_param('site'))
+			if ($force_entry == TRUE)
 			{
-				$this->EE->db->select('channel_id');
-				$this->EE->db->where_in('site_id', $this->EE->TMPL->site_ids);
-
-				if ($channel !== FALSE)
+				// Check if an entry_id, url_title or comment_id was specified
+				if ($entry_id = $this->EE->TMPL->fetch_param('entry_id'))
 				{
-					$this->EE->functions->ar_andor_string($channel, 'channel_name');
+					$this->EE->functions->ar_andor_string($entry_id, 'entry_id');
 				}
-
-				$channels = $this->EE->db->get('channels');
-				
-				if ($channels->num_rows() == 0)
+				elseif ($url_title = $this->EE->TMPL->fetch_param('url_title'))
 				{
-					return false;
+					$this->EE->functions->ar_andor_string($url_title, 'url_title');
 				}
-				else
+				elseif ($comment_id_param = $this->EE->TMPL->fetch_param('comment_id'))
 				{
-					foreach($channels->result_array() as $row)
+					$force_entry_ids = $this->fetch_comment_ids_param($comment_id_param);
+					
+					if (count($force_entry_ids) == 0)
 					{
-						$channel_ids[] = $row['channel_id'];
+						// No entry ids for the comment ids?  How'd they manage that
+						return $this->EE->TMPL->no_results();
 					}
+					
+					$this->EE->db->where_in('entry_id', $force_entry_ids);
 				}
-			}
-
-			// Check if an entry_id or url_title was specified
-			if ($entry_id = $this->EE->TMPL->fetch_param('entry_id'))
-			{
-				$sql = substr($this->EE->functions->sql_andor_string($entry_id, 'entry_id'), 4);
-				$this->EE->db->where($sql, NULL, FALSE);
-			}
-			elseif ($url_title = $this->EE->TMPL->fetch_param('url_title'))
-			{
-				$sql = substr($this->EE->functions->sql_andor_string($url_title, 'url_title'), 4);
-				$this->EE->db->where($sql, NULL, FALSE);
-				
 			}
 			else
 			{
@@ -214,10 +235,7 @@ class Comment {
 				}
 			}
 
-			/** ----------------------------------------
-			/**  Do we have a valid entry ID number?
-			/** ----------------------------------------*/
-
+			//  Do we have a valid entry ID number?
 			$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
 
 			$this->EE->db->select('entry_id, channel_titles.channel_id');
@@ -235,33 +253,26 @@ class Comment {
 			{
 				$this->EE->db->where('author_id', $author_id);
 			}
-
+			
 			if ($e_status = $this->EE->TMPL->fetch_param('entry_status'))
 			{
 				$e_status = str_replace('Open',	'open',	$e_status);
 				$e_status = str_replace('Closed', 'closed', $e_status);
 
-				$sql = $this->EE->functions->sql_andor_string($e_status, 'status');
-
-				if (stristr($sql, "'closed'") === FALSE)
+				// If they don't specify closed, it defaults to it
+				if ( ! in_array('closed', explode('|', $e_status)))
 				{
-					$sql .= " AND status != 'closed' ";
+					$this->EE->db->where('status !=', 'closed');
 				}
-				
-				//  We need to drop the leading AND from the generated string 
-				$sql = substr($sql, 4);
 
-				$this->EE->db->where($sql, NULL, FALSE);
+				$this->EE->functions->ar_andor_string($e_status, 'status');
 			}
 			else
 			{
 				$this->EE->db->where('status !=', 'closed');
 			}
 			
-			
-			/** ----------------------------------------------
-			/**  Limit to/exclude specific channels
-			/** ----------------------------------------------*/
+			//  Limit to/exclude specific channels
 			if (count($channel_ids) == 1)
 			{
 				$this->EE->db->where('channel_titles.channel_id', $channel_ids['0']);
@@ -289,57 +300,7 @@ class Comment {
 		}
 
 
-		// If the comment tag is being used in freeform mode
-		// we need to fetch the channel ID numbers
-		
-		if ( ! $dynamic)
-		{
-			if ($channel = $this->EE->TMPL->fetch_param('channel') OR $this->EE->TMPL->fetch_param('site'))
-			{
-				$this->EE->db->select('channel_id');
-				$this->EE->db->where_in('site_id', $this->EE->TMPL->site_ids);
-
-				if ($channel !== FALSE)
-				{
-					$this->EE->functions->ar_andor_string($channel, 'channel_name');
-				}
-
-				$query = $this->EE->db->get('channels');
-
-				if ($query->num_rows() == 0)
-				{
-					return $this->EE->TMPL->no_results();
-				}
-				else
-				{
-					// Store the query components in the AR cache so we don't need to
-					// recompile them after we run count_all_results for pagination.
-					
-					$this->EE->db->start_cache();
-					
-					if ($query->num_rows() == 1)
-					{
-						$this->EE->db->where('channel_id', $query->row('channel_id'));
-					}
-					else
-					{
-						$ids = array();
-						
-						foreach ($query->result_array() as $row)
-						{
-							$ids[] = $row['channel_id'];
-						}
-						
-						$this->EE->db->where_in('channel_id', $ids);
-					}
-				}
-			}
-		}
-
-		/** ----------------------------------------
-		/**  Set sorting and limiting
-		/** ----------------------------------------*/
-
+		//  Set sorting and limiting
 		if ( ! $dynamic)
 		{
 			$limit = ( ! $this->EE->TMPL->fetch_param('limit')) ? 100 : $this->EE->TMPL->fetch_param('limit');
@@ -378,8 +339,6 @@ class Comment {
 
 		$this->EE->db->select('comment_date, comment_id');
 		
-		$comment_sql = FALSE;
-		
 		if ($status = $this->EE->TMPL->fetch_param('status'))
 		{
 			$status = strtolower($status);
@@ -387,51 +346,46 @@ class Comment {
 			$status = str_replace('closed', 'c', $status);
 			$status = str_replace('pending', 'p', $status);
 
-			$comment_sql = $this->EE->functions->sql_andor_string($status, 'status');
+			$this->EE->functions->ar_andor_string($status, 'status');
 
-			if (stristr($comment_sql, "'c'") === FALSE)
+			// No custom status for comments, so we can be leaner in check for 'c'
+			if (stristr($status, "'c'") === FALSE)
 			{
-				$comment_sql .= " AND status != 'c' ";
+				$this->EE->db->where('status !=', 'c');
 			}
-
-			//  We need to drop the leading AND from the generated string 
-			$comment_sql = substr($comment_sql, 4);
-			$this->EE->db->where($comment_sql, NULL, FALSE);
 		}
 		else
 		{
 			$this->EE->db->where('status', 'o');
 		}
 		
-		if ( ! $dynamic)
+		
+		// Note if it's not dynamic and the entry isn't forced?  We don't check on the entry criteria,
+		// so this point, dynamic and forced entry will have 'valid' entry ids, dynamic off may not
+
+		if ( ! $dynamic && ! $force_entry)
 		{
 			// When we are only showing comments and it is not based on an entry id or url title
 			// in the URL, we can make the query much more efficient and save some work.
-
-			if (isset($entry_ids) && count($entry_ids) > 0)
-			{
-				$this->EE->db->where_in('entry_id', $entry_ids);
-			}
-			
 			$total_rows = $this->EE->db->count_all_results('comments');
 
 			// We lose these in the counting process
 			$this->EE->db->select('comment_date, comment_id');
 			
-			if ($comment_sql)
+			if ($status)
 			{
-				$this->EE->db->where($comment_sql, NULL, FALSE);
+				$this->EE->functions->ar_andor_string($status, 'status');
+				
+				if (stristr($status, "'c'") === FALSE)
+				{
+					$this->EE->db->where('status !=', 'c');
+				}
 			}
 			else
 			{
 				$this->EE->db->where('status', 'o');
 			}
 			
-			if (isset($entry_ids) && count($entry_ids) > 0)
-			{
-				$this->EE->db->where_in('entry_id', $entry_ids);
-			}						
-
 			$this_sort = ($random) ? 'random' : strtolower($sort);
 			$this_page = ($current_page == '' OR ($limit > 1 AND $current_page == 1)) ? 0 : $current_page;
 
@@ -450,6 +404,11 @@ class Comment {
 				$this->EE->db->where('entry_id', $entry_id);
 			}
 			
+			if ($comment_id_param)
+			{
+				$this->EE->functions->ar_andor_string($comment_id_param, 'comment_id');
+			}
+			
 			$this_sort = ($random) ? 'random' : strtolower($sort);
 
 			$this->EE->db->order_by($order_by, $this_sort);
@@ -457,7 +416,6 @@ class Comment {
 
 		$query = $this->EE->db->get('comments');
 		$result_ids = array();
-
 
 		if ($query->num_rows() > 0)
 		{
@@ -467,27 +425,16 @@ class Comment {
 			}
 		}
 
-		// We are done with this
-		$this->EE->db->flush_cache();
-		$this->EE->db->stop_cache();
-
-		/** ------------------------------------
-		/**  No results?  No reason to continue...
-		/** ------------------------------------*/
-
+		//  No results?  No reason to continue...
 		if (count($result_ids) == 0)
 		{
 			return $this->EE->TMPL->no_results();
 		}
 
-
-		/** ---------------------------------
-		/**  Do we need pagination?
-		/** ---------------------------------*/
-
-		// When showing only comments and no using the URL, then we already have this value
-
-		if ($dynamic)
+		//  Do we need pagination?
+		
+		// If we had entry ids?  We don't have the count yet
+		if ($dynamic OR $force_entry)
 		{
 			$total_rows = count($result_ids);
 		}
@@ -594,7 +541,7 @@ class Comment {
 
 		// When only non-dynamic comments are shown, all results are valid as the
 		// query is restricted with a LIMIT clause
-		if ($dynamic)
+		if ($dynamic OR $force_entry)
 		{
 			if ($current_page == '')
 			{
@@ -1329,6 +1276,35 @@ class Comment {
 		return $return;
 	}
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Comment Submission Form
+	 *
+	 * @access	public
+	 * @return	string
+	 */
+	function fetch_comment_ids_param($comment_id_param)
+	{
+		$entry_ids = array();
+		
+		$this->EE->db->distinct();
+		$this->EE->db->select('entry_id');
+		$this->EE->functions->ar_andor_string($comment_id_param, 'comment_id');
+		$query = $this->EE->db->get('comments');
+
+		if ($query->num_rows() > 0)
+		{
+			foreach($query->result_array() as $row)
+			{
+				$entry_ids[] = $row['entry_id'];
+			}
+		}
+		
+		return $entry_ids;
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -1429,18 +1405,12 @@ class Comment {
 			$e_status = str_replace('Open',	'open',	$e_status);
 			$e_status = str_replace('Closed', 'closed', $e_status);
 
-			$sql = $this->EE->functions->sql_andor_string($e_status, 'status');
+			$this->EE->functions->ar_andor_string($e_status, 'status');
 
 			if (stristr($sql, "'closed'") === FALSE)
 			{
-				$sql .= " AND status != 'closed' ";
+				$this->EE->db->where('status !=', 'closed');
 			}
-			
-			//  We need to drop the leading AND from the generated string 
-			$sql = substr($sql, 4);
-
-			
-			$this->EE->db->where($sql, NULL, FALSE);
 		}
 		else
 		{
