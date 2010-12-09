@@ -6,6 +6,7 @@
 	<?=$this->view->head_title($cp_page_title)?>
 	<?=$this->view->head_link('css/jquery-ui-1.7.2.custom.css'); ?>
 	<?=$this->view->head_link('css/global.css'); ?>
+	<?=$this->view->head_link('css/override.css'); ?>
 
 	<?php if ($this->extensions->active_hook('cp_css_end') === TRUE):?>
 	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'M=cp_global_ext';?>" type="text/css" />
