@@ -842,6 +842,13 @@ class Tools_logs extends CI_Controller {
 				$i++;
 			}
 			
+			$col_defs = rtrim($col_defs, ', ');
+/*
+			print_r($col_defs);
+			die();
+*/
+			
+			
 			if ($final_check == TRUE)
 			{
 				$col_defs .= '{ "bSortable" : false } ],';
