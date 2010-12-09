@@ -842,12 +842,7 @@ class Tools_logs extends CI_Controller {
 				$i++;
 			}
 			
-			$col_defs = rtrim($col_defs, ', ');
-/*
-			print_r($col_defs);
-			die();
-*/
-			
+			$col_defs = rtrim($col_defs, ', '); // IE chokes on trailing commas in JSON
 			
 			if ($final_check == TRUE)
 			{
