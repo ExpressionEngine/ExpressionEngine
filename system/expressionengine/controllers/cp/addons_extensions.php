@@ -147,6 +147,7 @@ class Addons_extensions extends CI_Controller {
 			$extension_files[$ext_name]['settings_url'] = BASE.AMP.'C=addons_extensions'.AMP.'M=extension_settings'.AMP.'file='.$ext_name;
 			
 			$extension_files[$ext_name]['documentation'] = ($OBJ->docs_url) ? $this->config->item('base_url').$this->config->item('index_page').'?URL='.urlencode($OBJ->docs_url) : '';
+			$extension_files[$ext_name]['version'] = $OBJ->version;
 			
 			if ($this->config->item('allow_extensions') != 'y')
 			{

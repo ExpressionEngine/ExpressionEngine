@@ -26,6 +26,7 @@ if ($EE_view_disable !== TRUE)
 											lang('extension_name'),
 											lang('settings'),
 											lang('documentation'),
+											lang('version'),
 											lang('status')
 										);
 									
@@ -37,6 +38,7 @@ if ($EE_view_disable !== TRUE)
 							$extension['name'],
 							$extension['settings_enabled'] ? '<a href="'.$extension['settings_url'].'">'.lang('settings').'</a>' : $extension['no_settings'],
 							$extension['documentation'] ? '<a href="'.$extension['documentation'].'" rel="external">'.lang('documentation').'</a>' : '--',
+							$extension['version'],
 							($extensions_enabled) ? lang($extension['status']).' (<a href="'.BASE.AMP.'C=addons_extensions'.AMP.'M=toggle_extension'.AMP.'which='.$filename.'">'.lang($extension['status_switch']).'</a>)' : lang($extension['status'])
 						);
 					}
