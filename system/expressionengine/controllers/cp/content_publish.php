@@ -157,6 +157,8 @@ class Content_publish extends CI_Controller {
 		$deft_field_data = $this->_setup_default_fields($this->_channel_data, $entry_data);
 
 		$field_data = array_merge($field_data, $deft_field_data);
+		$field_data = $this->_setup_field_blocks($field_data, $entry_data);
+		
 
 		$this->_set_field_validation($this->_channel_data, $field_data);
 		
@@ -211,7 +213,6 @@ class Content_publish extends CI_Controller {
 		// they contain. Then work through the details of how
 		// they are show.
 	
-		$field_data 	= $this->_setup_field_blocks($field_data, $entry_data);
 		$tab_hierarchy	= $this->_setup_tab_hierarchy($field_data, $layout_info);
 		$layout_styles	= $this->_setup_layout_styles($field_data, $layout_info);
 		$field_list		= $this->_sort_field_list($field_data);		// @todo admin only? or use as master list? skip sorting for non admins, but still compile?
@@ -1387,6 +1388,7 @@ class Content_publish extends CI_Controller {
 			$this->api_channel_fields->setup_handler($data['field_id']);
 			
 			$field_value = set_value($data['field_id'], $data['field_data']);
+			
 			$field_output[$name] = $this->api_channel_fields->apply('display_publish_field', array($field_value));
 		}
 		
@@ -1755,12 +1757,14 @@ class Content_publish extends CI_Controller {
 				'field_data'			=> $ping_servers,
 				'field_fmt'				=> 'text',
 				'field_instructions'	=> '',
-				'field_show_fmt'		=> 'n'
+				'field_show_fmt'		=> 'n',
+				'field_pre_populate'	=> 'n',
+				'field_list_items'		=> array()
 			)
 		);
 
 		$this->api_channel_fields->set_settings('ping', $settings['ping']);
-
+		
 		return $settings;
 	}
 
@@ -1782,21 +1786,23 @@ class Content_publish extends CI_Controller {
 		$show_sticky		= FALSE;
 		$show_dst			= FALSE;
 
-		$selected = (isset($entry_data['sticky']) && $entry_data['sticky'] == 'y') ? 1 : '';
+		$selected = (isset($entry_data['sticky']) && $entry_data['sticky'] == 'y') ? TRUE : FALSE;
+		$selected = ($this->input->post('sticky') == 'y') ? TRUE : $selected;
 		
-		$checks = '<label>'.form_checkbox('sticky', 'y', $selected, 'class="checkbox"').' '.lang('sticky').'</label>';
+		$checks = '<label>'.form_checkbox('sticky', 'y', set_value('sticky', $selected), 'class="checkbox"').' '.lang('sticky').'</label>';
 
 		// Allow Comments?
 		if (isset($this->cp->installed_modules['comment']) && $this->_channel_data['comment_system_enabled'] == 'y')
 		{
 			// Figure out selected categories
-			if ( ! $entry_data['entry_id'] && $this->_channel_data['deft_comments'])
+			if ( ! count($_POST) && ! $entry_data['entry_id'] && $this->_channel_data['deft_comments'])
 			{
 				$selected = ($this->_channel_data['deft_comments'] == 'y') ? 1 : '';
 			}
 			else
 			{
-				$selected = (isset($entry_data['allow_comments']) && $entry_data['allow_comments'] == 'y') ? 1 : '';
+				$selected = (isset($entry_data['allow_comments']) && $entry_data['allow_comments'] == 'y') ? TRUE : FALSE;
+				$selected = ($this->input->post('allow_comments') == 'y') ? TRUE : $selected;
 			}			
 	
 			$checks .= '<label>'.form_checkbox('allow_comments', 'y', $selected, 'class="checkbox"').' '.lang('allow_comments').'</label>';
@@ -1810,6 +1816,7 @@ class Content_publish extends CI_Controller {
 			'field_label'			=> lang('options'),
 			'field_data'			=> '',
 			'field_instructions'	=> '',
+			'field_text_direction'	=> 'ltr',
 			'field_pre_populate'	=> 'n',
 			'field_type'			=> 'checkboxes',
 			'field_list_items'		=> array(),
