@@ -287,9 +287,6 @@ $lang = array(
 "email_charset" =>
 "Email Character Encoding",
 
-"honor_entry_dst" =>
-"Honor the Daylight Saving Time setting associated with each channel entry?",
-
 "allow_member_localization" =>
 "Allow members to set their own localization preferences?",
 

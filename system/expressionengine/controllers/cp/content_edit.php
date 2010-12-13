@@ -675,24 +675,6 @@ class Content_edit extends CI_Controller {
 				$datestr = '%Y-%m-%d %H:%i';
 			}
 
-			if ($this->config->item('honor_entry_dst') == 'y') 
-			{					
-				if ($row['dst_enabled'] == 'n' AND $this->session->userdata('daylight_savings') == 'y')
-				{
-					if ($row['entry_date'] != '')
-					{
-						$row['entry_date'] -= 3600;
-					}
-				}
-				elseif ($row['dst_enabled'] == 'y' AND $this->session->userdata('daylight_savings') == 'n')
-				{		
-					if ($row['entry_date'] != '')
-					{
-						$row['entry_date'] += 3600;
-					}
-				}
-			}
-
 			$vars['entries'][$id_column][] = $this->localize->decode_date($datestr, $row['entry_date'], TRUE);
 
 			// Channel
@@ -1045,25 +1027,7 @@ class Content_edit extends CI_Controller {
 			{
 				$datestr = '%Y-%m-%d %H:%i';
 			}
-
-			if ($this->config->item('honor_entry_dst') == 'y') 
-			{					
-				if ($row['dst_enabled'] == 'n' AND $this->session->userdata('daylight_savings') == 'y')
-				{
-					if ($row['entry_date'] != '')
-					{
-						$row['entry_date'] -= 3600;
-					}
-				}
-				elseif ($row['dst_enabled'] == 'y' AND $this->session->userdata('daylight_savings') == 'n')
-				{		
-					if ($row['entry_date'] != '')
-					{
-						$row['entry_date'] += 3600;
-					}
-				}
-			}
-
+			
 			$m[] = $this->localize->decode_date($datestr, $row['entry_date'], TRUE);
 
 			// Channel
@@ -1332,12 +1296,7 @@ class Content_edit extends CI_Controller {
 			$entry_id = $row['entry_id'];
 			$vars['form_hidden']["entry_id[$entry_id]"] = $entry_id;
 			$vars['form_hidden']["channel_id[$entry_id]"] = $row['channel_id'];
-
-			if ($this->config->item('honor_entry_dst') == 'y') 
-			{
-				$vars['form_hidden']["dst_enabled[$entry_id]"] = $row['dst_enabled'];
-			}
-
+			
 			// Status pull-down menu
 			$vars['entries_status'][$entry_id] = array();
 			$vars['entries_selected'][$entry_id] = $row['status'];

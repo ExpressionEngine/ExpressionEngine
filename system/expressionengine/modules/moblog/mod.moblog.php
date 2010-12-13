@@ -1028,11 +1028,6 @@ class Moblog {
 						'ping_servers'		=> FALSE   // Pings are already sent above.  Should probably be hooked into API CHannel Entries as well.
 					 );
 
-		if ($this->EE->config->item('honor_entry_dst') == 'y')
-		{
-			$data['dst_enabled'] = ($this->EE->config->item('daylight_savings') == 'y') ? 'y' : 'n';
-		}
-
 		// Remove ignore text
 
 		$this->body = preg_replace("#<img\s+src=\s*[\"']cid:(.*?)\>#si", '', $this->body);  // embedded images

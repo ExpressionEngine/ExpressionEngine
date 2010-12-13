@@ -444,7 +444,6 @@ class Channel_calendar extends Channel {
 					// we need to offset to the timestamp by an hour
 
 				if ($row['entry_date'] != '')
-					$row['entry_date'] = $this->EE->localize->offset_entry_dst($row['entry_date'], $row['dst_enabled'], FALSE);
 
 					/** ----------------------------------------
 					/**  Define empty arrays and strings

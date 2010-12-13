@@ -97,15 +97,9 @@ class Date_ft extends EE_Fieldtype {
 					// Are we dealing with a fixed date?
 					if ($this->settings['field_dt'] != '')
 					{
-						$field_data = $this->EE->localize->offset_entry_dst($field_data, $this->settings['dst_enabled'], FALSE);
 						$field_data = $this->EE->localize->simpl_offset($field_data, $this->settings['field_dt']);
-
 						$localize = FALSE;
 					}
-				}
-				else
-				{
-					$field_data = $this->EE->localize->offset_entry_dst($field_data, $this->settings['dst_enabled'], FALSE);
 				}
 			}
 

@@ -882,15 +882,7 @@ class Channel_standalone extends Channel {
 
 			if ($key == 'dst_enabled')
 			{
-				if ($which == 'preview')
-				{
-					$checked = (isset($_POST['dst_enabled']) && $this->EE->config->item('honor_entry_dst') == 'y') ? "checked='checked'" : '';
-				}
-				else
-				{
-					$checked = ($this->EE->session->userdata('daylight_savings') == 'y') ? "checked='checked'" : '';
-				}
-
+				$checked = ($this->EE->session->userdata('daylight_savings') == 'y') ? "checked='checked'" : '';
 				$tagdata = $this->EE->TMPL->swap_var_single($key, $checked, $tagdata);
 			}
 
@@ -1952,15 +1944,6 @@ class Channel_standalone extends Channel {
 				if ($dtwhich != 'preview')
 				{
 					$localize = TRUE;
-
-					/* $result is a leftover from the old cp Publish class, unused at present
-					if ($field_data != '' && $result->row('field_dt_'.$row['field_id']) != '')
-					{
-						$field_data = $this->EE->localize->offset_entry_dst($field_data, $dst_enabled);
-						$field_data = $this->EE->localize->simpl_offset($field_data, $result->row('field_dt_'.$row['field_id']));
-						$localize = FALSE;
-					}
-					*/
 
 					if ($field_data != '')
 					{

@@ -125,8 +125,7 @@ class Admin_model extends CI_Model {
 											'server_timezone'			=> array('f', 'timezone'),
 											'server_offset'				=> array('i', ''),
 											'time_format'				=> array('s', array('us' => 'united_states', 'eu' => 'european')),
-											'daylight_savings'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-											'honor_entry_dst'			=> array('r', array('y' => 'yes', 'n' => 'no'))											
+											'daylight_savings'			=> array('r', array('y' => 'yes', 'n' => 'no'))
 										  ),
 
 			'email_cfg'			=>	array(

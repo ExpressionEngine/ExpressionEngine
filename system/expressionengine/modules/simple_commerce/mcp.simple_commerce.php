@@ -3270,24 +3270,6 @@ MAGIC;
 				$datestr = '%Y-%m-%d %H:%i';
 			}
 
-			if ($this->EE->config->item('honor_entry_dst') == 'y')
-			{
-				if ($row['dst_enabled'] == 'n' AND $this->EE->session->userdata('daylight_savings') == 'y')
-				{
-					if ($row['entry_date'] != '')
-					{
-						$row['entry_date'] -= 3600;
-					}
-				}
-				elseif ($row['dst_enabled'] == 'y' AND $this->EE->session->userdata('daylight_savings') == 'n')
-				{
-					if ($row['entry_date'] != '')
-					{
-						$row['entry_date'] += 3600;
-					}
-				}
-			}
-
 			$vars['entries'][$row['entry_id']][] = $this->EE->localize->decode_date($datestr, $row['entry_date'], TRUE);
 
 			// Channel

@@ -1422,10 +1422,8 @@ class Api_channel_entries extends Api {
 		}
 		else
 		{
-			$this->_cache['dst_enabled'] = isset($data['dst_enabled']) ? $data['dst_enabled'] : 'n';
+			$this->_cache['dst_enabled'] = 'n';
 			
-			$data['field_id_'.$row['field_id']] = $this->EE->localize->offset_entry_dst($data['field_id_'.$row['field_id']], $this->_cache['dst_enabled']);
-
 			if ( ! isset($data['field_offset_'.$row['field_id']]))
 			{
 				$data['field_dt_'.$row['field_id']] = '';
@@ -1536,13 +1534,7 @@ class Api_channel_entries extends Api {
 		}
 		
 		
-		// If we have the "honor_entry_dst" pref turned on we need to reverse the effects.
 		$this->_cache['dst_enabled'] = 'n';
-
-		if ($this->EE->config->item('honor_entry_dst') == 'y')
-		{
-			$this->_cache['dst_enabled'] = (isset($data['dst_enabled']) && $data['dst_enabled'] == 'y') ? 'y' : 'n';
-		}
 		
 		$this->instantiate('channel_fields');
 
@@ -1851,21 +1843,6 @@ class Api_channel_entries extends Api {
 	function _update_entry($meta, &$data, &$mod_data)
 	{
 		$meta['dst_enabled'] =  $this->_cache['dst_enabled'];
-		
-		if ($this->EE->config->item('honor_entry_dst') == 'y')
-		{
-			$meta['entry_date'] = $this->EE->localize->offset_entry_dst($meta['entry_date'], $meta['dst_enabled']);
-
-			if ($meta['expiration_date'] != '' AND $meta['expiration_date'] != 0)
-			{
-				$meta['expiration_date'] = $this->EE->localize->offset_entry_dst($meta['expiration_date'], $meta['dst_enabled']);
-			}
-
-			if ($meta['comment_expiration_date'] != '' AND $meta['comment_expiration_date'] != 0)
-			{
-				$meta['comment_expiration_date'] = $this->EE->localize->offset_entry_dst($meta['comment_expiration_date'], $meta['dst_enabled']);
-			}
-		}
 		
 		// Check if the author changed
 		$this->EE->db->select('author_id');

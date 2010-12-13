@@ -3109,21 +3109,6 @@ class Channel {
 				$row['dst_enabled'] = 'n';
 			}
 
-			if (isset($existing_variables['entry_date']) && $row['entry_date'] != '')
-			{
-				$row['entry_date'] = $this->EE->localize->offset_entry_dst($row['entry_date'], $row['dst_enabled'], FALSE);				
-			}
-
-			if ( isset($existing_variables['expiration_date']) && $row['expiration_date'] != '' AND $row['expiration_date'] != 0)
-			{
-				$row['expiration_date'] = $this->EE->localize->offset_entry_dst($row['expiration_date'], $row['dst_enabled'], FALSE);				
-			}
-
-			if ( isset($existing_variables['comment_expiration_date']) && $row['comment_expiration_date'] != '' AND $row['comment_expiration_date'] != 0)
-			{
-				$row['comment_expiration_date'] = $this->EE->localize->offset_entry_dst($row['comment_expiration_date'], $row['dst_enabled'], FALSE);				
-			}
-
 			//  More Variables, Mostly for Conditionals
 			$row['logged_in'] = ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
 			$row['logged_out'] = ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
@@ -3326,8 +3311,7 @@ class Channel {
 						continue;
 					}
 
-					$temp_val   = $this->EE->localize->offset_entry_dst($row['field_id_'.$dval], $row['dst_enabled']);
-					$row[$dkey] = $this->EE->localize->simpl_offset($temp_val, $row['field_dt_'.$dval]);
+					$row[$dkey] = $this->EE->localize->simpl_offset($row['field_id_'.$dval], $row['field_dt_'.$dval]);
 				}
 			}
 
@@ -3725,18 +3709,6 @@ class Channel {
 
 			if ( ! isset($row['dst_enabled']))
 				$row['dst_enabled'] = 'n';
-
-			if ($date_variables_exist === TRUE)
-			{
-				if ($row['entry_date'] != '')
-					$row['entry_date'] = $this->EE->localize->offset_entry_dst($row['entry_date'], $row['dst_enabled'], FALSE);
-
-				if ($row['expiration_date'] != '' AND $row['expiration_date'] != 0)
-					$row['expiration_date'] = $this->EE->localize->offset_entry_dst($row['expiration_date'], $row['dst_enabled'], FALSE);
-
-				if ($row['comment_expiration_date'] != '' AND $row['comment_expiration_date'] != 0)
-					$row['comment_expiration_date'] = $this->EE->localize->offset_entry_dst($row['comment_expiration_date'], $row['dst_enabled'], FALSE);
-			}
 
 			/**--
 			/**  Reset custom date fields

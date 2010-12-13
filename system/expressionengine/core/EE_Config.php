@@ -437,7 +437,7 @@ class EE_Config Extends CI_Config {
 								'daylight_savings',
 								'default_site_timezone',
 								'default_site_dst',
-								'honor_entry_dst',
+				// deprecated	'honor_entry_dst',
 								'mail_protocol',
 								'smtp_server',
 								'smtp_username',

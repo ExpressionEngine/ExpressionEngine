@@ -520,6 +520,8 @@ class EE_Localize {
 	/**
 	 * Offset Entry DST
 	 *
+	 * DEPRECATED
+	 *
 	 * This adds/subtracts an hour if the submitted entry
 	 * has the "honor DST setting" clicked
 	 *
@@ -531,24 +533,6 @@ class EE_Localize {
 	 */
 	function offset_entry_dst($time = '', $dst_enabled = '', $add_time = TRUE)
 	{
-		if ($this->EE->config->item('honor_entry_dst') == 'y')
-		{
-			if ($dst_enabled == 'n' AND $this->EE->session->userdata('daylight_savings') == 'y')
-			{
-				if ($add_time == TRUE)
-					$time += 3600;
-				else
-					$time -= 3600;
-			}
-			elseif ($dst_enabled == 'y' AND $this->EE->session->userdata('daylight_savings') == 'n')
-			{
-				if ($add_time == TRUE)
-					$time -= 3600;
-				else
-					$time += 3600;
-			}
-		}
-		
 		return $time;
 	}
 	

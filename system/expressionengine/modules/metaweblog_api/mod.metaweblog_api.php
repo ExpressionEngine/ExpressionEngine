@@ -364,15 +364,6 @@ class Metaweblog_api {
 		}
 
 		/** ---------------------------------
-		/**  DST Setting
-		/** ---------------------------------*/
-
-		if ($this->EE->config->item('honor_entry_dst') == 'y')
-		{
-			$metadata['dst_enabled'] = ($this->EE->config->item('daylight_savings') == 'y') ? 'y' : 'n';
-		}
-
-		/** ---------------------------------
 		/**  Insert the entry data
 		/** ---------------------------------*/
 

@@ -25,8 +25,6 @@
  */
 class Content_publish extends CI_Controller {
 
-	private $_dst_enabled 		= FALSE;
-
 	private $_tab_labels		= array();
 	private $_module_tabs		= array();
 	private $_channel_data 		= array();
@@ -615,7 +613,6 @@ class Content_publish extends CI_Controller {
 						$date = $resrow[$key];
 						if ($resrow['field_dt_'.$expl['1']] != '')
 						{
-							$date = $this->localize->offset_entry_dst($date, $resrow['dst_enabled']);
 							$date = $this->localize->simpl_offset($date, $resrow['field_dt_'.$expl['1']]);
 							$localize = FALSE;
 						}
