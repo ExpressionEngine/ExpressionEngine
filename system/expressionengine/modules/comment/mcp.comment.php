@@ -525,7 +525,7 @@ function fnGetKey( aoData, sKey )
 	oTable = $(".mainTable").dataTable( {	
 			"sPaginationType": "full_numbers",
 			"bLengthChange": false,
-			"aaSorting": [[ 5, "desc" ]],
+			"aaSorting": [[ 6, "desc" ]],
 			"bFilter": false,
 			"sWrapper": false,
 			"sInfo": false,
@@ -1316,7 +1316,7 @@ function fnOpenClose ( oSettings )
 		$this->EE->form_validation->set_error_delimiters('<br /><span class="notice">', '<br />');
 		
 		if ($this->EE->form_validation->run() === FALSE)
-		{var_dump($this->EE->form_validation);exit;
+		{
 			return $this->edit_comment_form($comment_id);
 		}		
 
@@ -1429,8 +1429,7 @@ function fnOpenClose ( oSettings )
 		$this->EE->form_validation->set_message('_move_check', $this->EE->lang->line('invalid_entry_id'));
 		return FALSE;
 	}
-
-
+	
 	// --------------------------------------------------------------------
 
 	/**
