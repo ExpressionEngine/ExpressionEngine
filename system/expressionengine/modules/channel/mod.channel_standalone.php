@@ -1312,7 +1312,7 @@ class Channel_standalone extends Channel {
 
 		if ( ! defined('PATH_JQUERY'))
 		{			
-			define('PATH_JQUERY', APPPATH.'javascript/'.$type.'/jquery/');
+			define('PATH_JQUERY', PATH_THEMES.'javascript/'.$type.'/jquery/');
 		}
 		
 		$output = '';
@@ -1336,7 +1336,7 @@ class Channel_standalone extends Channel {
 		
 		$output .= ($this->EE->config->item('use_compressed_js') != 'n') ? str_replace(array("\n", "\t"), '', smiley_js('', '', FALSE)) : smiley_js('', '', FALSE);
 
-		$output .= file_get_contents(APPPATH.'javascript/'.$type.'/saef.js');
+		$output .= file_get_contents(PATH_THEMES.'javascript/'.$type.'/saef.js');
 
 		$this->EE->output->out_type = 'cp_asset';
 		$this->EE->output->set_header("Content-Type: text/javascript");
