@@ -428,6 +428,12 @@ class Search {
 							
 		$query = $this->EE->db->query($sql);
 				
+		// If channel's are specified and there NO valid channels returned?  There can be no results!
+		if ($query->num_rows() == 0)
+		{
+			return FALSE;
+		}
+
 		foreach ($query->result_array() as $row)
 		{
 			$channel_array[] = $row['channel_id'];
@@ -441,7 +447,7 @@ class Search {
 		{
 			$channel_array = array_intersect($channel_id_array, $channel_array);
 		}
-						
+
 		/** ----------------------------------------------
 		/**  Fetch the channel_id numbers (from Advanced search)
 		/** ----------------------------------------------*/
