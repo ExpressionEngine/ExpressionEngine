@@ -19,6 +19,9 @@ if ($EE_view_disable !== TRUE)
 						<div class="search">
 							<?=form_open('C=design'.AMP.'M=manager')?>
 								<input type="text" id="template_keywords" name="template_keywords" value="<?=set_value('template_keywords')?>" maxlength="80" class="input" />
+								<?php if ($search_terms):?>
+								<div id="template_keywords_reset"><span></span></div>
+								<?php endif;?>
 							</form>
 						</div>
 						<?php if ($search_terms):?>

@@ -155,7 +155,7 @@ $lang = array(
 'Duplicate an Existing Template Group?',
 
 'search_template' => 
-'Search Template',
+'Search Templates',
 
 'template_access' =>
 'Template Access Restriction',

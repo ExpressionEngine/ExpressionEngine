@@ -430,6 +430,7 @@ function bind_prefs_events() {
 		$('.last_edit').animate({'opacity': 0}, 50);
 	});
 		
+
 	// Find and replace template stuff
 	$(document).ready(function () {
 		
@@ -548,5 +549,13 @@ function bind_prefs_events() {
 			return false;
 		});
 	});
+	
+	
+	// Template search reset
+	$('#template_keywords_reset').click(function(){
+		$('#template_keywords').val('');
+		$('.search form').submit();
+	});
 
-})(jQuery);
+
+})(jQuery); 

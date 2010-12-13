@@ -111,3 +111,10 @@ img#hideToolbarImg {
 	right:-20px;
 }
 
+/* Template Search */
+
+div.search {
+	width: 210px;
+}
+
+

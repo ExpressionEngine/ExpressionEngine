@@ -1890,14 +1890,6 @@ div.templateEditorTop {
 	float: left;
 }
 
-div.templateEditorTop div.search {
-	float: right;
-}
-
-div.templateSearchResults {
-	margin-left: 270px;
-}
-
 #templateGroups .groupList {
 	background-color:	#fafafc;
 	padding:			8px;
@@ -1990,6 +1982,7 @@ span.defaultIndicator {
 	font-weight:		bold;
 }
 
+/*
 #templateGroupSearch {
 	position:			absolute;
 	right:				10px;
@@ -1999,6 +1992,7 @@ span.defaultIndicator {
 #templateGroupSearch input {
 	width:				200px;
 }
+*/
 
 .templateGrouping {
 	display:			none;
@@ -2219,6 +2213,52 @@ input.hits {
 	border:				0;
 	text-align:			center;
 }
+
+
+/* Template Keywords Search */
+
+div.search {
+	float: 				right;
+}
+
+#template_keywords {
+	float: 				left;
+	width:				200px;	
+}
+
+div#template_keywords_reset {
+	float: 				right;
+	margin-left: 		-24px;
+	padding: 			6px 4px 4px;
+	opacity: 			.3;
+	filter: 			progid:DXImageTransform.Microsoft.Alpha(Opacity=30);
+	cursor: 			pointer;
+	z-index: 			2;
+}
+div#template_keywords_reset:hover { opacity: .7 }
+
+div#template_keywords_reset span {
+	float: 				right;
+	width:				16px;
+	height:				16px;
+	background: 		url('../images/ui-icons_27343C_256x240.png') no-repeat -32px -192px;
+	z-index: 			2;
+}
+
+.noTemplateResultsMessage {
+	margin:				50px auto 0 25px;
+	font-size:			18px;
+	font-weight:		bold;
+}
+
+.templateSearchResults {
+	margin-left:		32%;
+	color: 				#5F6C74;
+}
+
+.templateSearchResults h3 { margin:0; }
+
+
 
 /* -------------------------------------
 /*  Edit Page

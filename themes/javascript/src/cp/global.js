@@ -40,7 +40,7 @@ jQuery(document).ready(function () {
 	
 		if ('placeholder' in ee_test_obj) {
 			create_func = function (placeholder, save) {
-				this.setAttribute('type', 'search');
+/* 				this.setAttribute('type', 'search'); */
 				$(this).attr({
 					autosave:		save,
 					results:		'10',
