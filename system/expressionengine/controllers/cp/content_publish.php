@@ -1571,6 +1571,8 @@ class Content_publish extends CI_Controller {
 		// Add predefined fields to their specific tabs
 		foreach ($default as $tab => $fields)
 		{
+			$this->_tab_labels[$tab] = lang($tab);
+			
 			foreach ($fields as $i => $field_name)
 			{
 				if (isset($field_data[$field_name]))
@@ -2339,8 +2341,6 @@ class Content_publish extends CI_Controller {
 
 		foreach ($this->_module_tabs as $k => $v)
 		{
-			var_dump($v);
-			
 			foreach ($v as $key => $val)
 			{
 				$out[$k][] = $val['id'];			
