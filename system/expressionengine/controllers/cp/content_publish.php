@@ -917,7 +917,7 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _set_field_validation($channel_data, $field_data)
 	{
-		foreach ($field_data as $fd)
+		foreach ($field_data as $field_name => $fd)
 		{
 			$required = '';
 			
@@ -927,7 +927,7 @@ class Content_publish extends CI_Controller {
 			}		
 			
 			$rules = $required.'call_field_validation['.$fd['field_id'].']';
-			$this->form_validation->set_rules($fd['field_id'], $fd['field_label'], $rules);
+			$this->form_validation->set_rules($field_name, $fd['field_label'], $rules);
 		}
 	}
 	

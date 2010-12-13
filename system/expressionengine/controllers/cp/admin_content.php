@@ -1986,7 +1986,12 @@ class Admin_content extends CI_Controller {
 			}");
 		
 		$this->cp->add_to_foot($live_title_js);
-		$this->javascript->keyup('#cat_name', 'liveUrlTitle()');
+
+		// New entry gets URL title js
+		if ($vars['submit_lang_key'] == 'submit')
+		{		
+			$this->javascript->keyup('#cat_name', 'liveUrlTitle()');
+		}
 
 		$vars['form_hidden']['group_id'] = $group_id;
 
