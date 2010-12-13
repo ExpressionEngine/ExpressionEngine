@@ -1297,7 +1297,7 @@ class Comment {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Comment Submission Form
+	 * Fetch comment ids associated entry ids
 	 *
 	 * @access	public
 	 * @return	string
@@ -2468,10 +2468,9 @@ class Comment {
 
 			 $_POST['name']		= ($this->EE->session->userdata['screen_name'] != '') ? $this->EE->session->userdata['screen_name'] : $this->EE->session->userdata['username'];
 			 $_POST['email']	=  $this->EE->session->userdata['email'];
-			 $_POST['url']		=  $this->EE->session->userdata['url'];
-			 $_POST['location']	=  $this->EE->session->userdata['location'];
+			 $_POST['url']		=  (is_null($this->EE->session->userdata['url'])) ? '' : $this->EE->session->userdata['url'];
+			 $_POST['location']	=  (is_null($this->EE->session->userdata['location'])) ? '' : $this->EE->session->userdata['location'];
 		}
-
 
 		/** ----------------------------------------
 		/**  Is membership is required to post...
@@ -2649,6 +2648,7 @@ class Comment {
 		{
 			$this->EE->functions->redirect(stripslashes($return_link));
 		}
+
 
 		//  Insert data
 		$sql = $this->EE->db->insert_string('exp_comments', $data);
