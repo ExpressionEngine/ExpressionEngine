@@ -27,6 +27,7 @@ class Content_publish extends CI_Controller {
 
 	private $_dst_enabled 		= FALSE;
 
+	private $_tab_labels		= array();
 	private $_module_tabs		= array();
 	private $_channel_data 		= array();
 	private $_file_manager 		= array();
@@ -203,6 +204,23 @@ class Content_publish extends CI_Controller {
 		}
 		
 		
+		// Set default tab labels
+		// They may be overwritten or added to in the steps below
+		
+		$this->_tab_labels = array(
+			'publish' 		=> lang('publish'),
+			'categories' 	=> lang('categories'),
+			'pings'			=> lang('pings'),
+			'options'		=> lang('options'),
+			'date'			=> lang('date'),
+		);
+
+		if (isset($this->_channel_data['enable_versioning']) 
+			&& $this->_channel_data['enable_versioning'] = 'y')
+		{
+			$this->_tab_labels['revisions'] = lang('revisions');
+		}
+		
 		// Load layouts - we'll need them for the steps below
 		// if this is a layout group preview, we'll use it, otherwise, we'll use the author's group_id
 		
@@ -242,26 +260,7 @@ class Content_publish extends CI_Controller {
 		}
 
 		$this->_set_global_js($entry_id);
-
-				
-		$tab_labels = array(
-			'publish' 		=> lang('publish'),
-			'categories' 	=> lang('categories'),
-			'pings'			=> lang('pings'),
-			'options'		=> lang('options'),
-			'date'			=> lang('date'),
-		);
-
-		if (isset($this->_channel_data['enable_versioning']) 
-			&& $this->_channel_data['enable_versioning'] = 'y')
-		{
-			$tab_labels['revisions'] = lang('revisions');
-		}
-
-		foreach ($this->_module_tabs as $k => $tab)
-		{
-			$tab_labels[$k] = lang($k);
-		}
+		
 		
 		reset($tab_hierarchy);
 		
@@ -279,7 +278,7 @@ class Content_publish extends CI_Controller {
 			
 			'tabs'				=> $tab_hierarchy,
 			'first_tab'			=> key($tab_hierarchy),
-			'tab_labels'		=> $tab_labels,
+			'tab_labels'		=> $this->_tab_labels,
 			'field_list'		=> $field_list,
 			'layout_styles'		=> $layout_styles,
 			'field_output'		=> $field_output,
@@ -1547,6 +1546,8 @@ class Content_publish extends CI_Controller {
 			
 			foreach ($layout_info as $tab => $fields)
 			{
+				$this->_tab_labels[$tab] = $fields['_tab_label'];
+				
 				unset($fields['_tab_label']);
 				$hierarchy[$tab] = array_keys($fields);
 			}
@@ -2306,6 +2307,7 @@ class Content_publish extends CI_Controller {
 				foreach ($v as $val)
 				{
 					$settings[$val['field_id']] = $val;
+					$this->_tab_labels[$tab]	= lang($tab);
 					$this->_module_tabs[$tab][] = array(
 													'id' 	=> $val['field_id'],
 													'label'	=> $val['field_label']
@@ -2340,6 +2342,8 @@ class Content_publish extends CI_Controller {
 
 		foreach ($this->_module_tabs as $k => $v)
 		{
+			var_dump($v);
+			
 			foreach ($v as $key => $val)
 			{
 				$out[$k][] = $val['id'];			
