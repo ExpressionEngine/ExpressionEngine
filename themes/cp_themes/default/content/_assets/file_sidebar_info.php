@@ -1,7 +1,7 @@
 <?php if (isset($file)):?>
 	<ul>
 		<li class="file_name"><?=$file['name']?></li>
-		<li class="file_size"><span><?=lang('size')?>:</span> <?=number_format($file['size']/100, 1)?>KB</li>
+		<li class="file_size"><span><?=lang('size')?>:</span> <?=$file['size']?>KB</li>
 		<li class="file_type"><span><?=lang('kind')?>:</span> <?=$file['type']?></li>
 		<li class="file_permissions"><span><?=lang('permissions')?>:</span> <?=$file['permissions']?></li>
 		
