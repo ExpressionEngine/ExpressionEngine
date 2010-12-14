@@ -1548,9 +1548,14 @@ class Content_edit extends CI_Controller {
 		/*
 		/* -------------------------------------------*/
 		
+		$channel_ids = array();
+
 		foreach ($_POST['entry_id'] as $id)
 		{
 			$channel_id = $_POST['channel_id'][$id];
+			
+			// Remember channels we've touched so we can update stats at the end
+			$channel_ids[] = intval($channel_id);
 		
 			$data = array(
 							'title'				=> strip_tags($_POST['title'][$id]),
@@ -1704,6 +1709,15 @@ class Content_edit extends CI_Controller {
 		{
 			$this->functions->clear_caching('sql', '', $clear_rel);
 		}
+
+
+		// Update each modified channel's stats. Might want to get update_channel_stats()
+		// to accept an array so we can avoid looping here.
+		foreach(array_unique($channel_ids) as $id)
+		{
+			//$this->stats->update_channel_stats($id);			
+		}
+
 
 		$this->session->set_flashdata('message_success', $this->lang->line('multi_entries_updated'));
 
