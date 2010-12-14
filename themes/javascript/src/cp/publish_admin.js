@@ -101,9 +101,7 @@ $("#showToolbarLink").find("a").one("click", function() {
 		$(".publish_field").animate({backgroundPosition: "0 0"}, "slow");
 		$(".handle").css("display", "block");
 
-		$(".ui-resizable-e").animate({
-			marginRight: 0
-		});
+		$(".ui-resizable-e").show(500);
 		$(".addTabButton").css("display", "inline");
 		
 	}, function (){
@@ -123,9 +121,7 @@ $("#showToolbarLink").find("a").one("click", function() {
 		$(".publish_field").animate({backgroundPosition: "-15px 0"}, "slow");
 		$(".handle").css("display", "none");
 
-		$(".ui-resizable-e").animate({
-			marginRight: "-10px"
-		});
+		$(".ui-resizable-e").hide();
 		$(".addTabButton").hide();
 		
 		// Swap the image
