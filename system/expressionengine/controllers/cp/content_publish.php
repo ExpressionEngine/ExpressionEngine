@@ -1672,13 +1672,24 @@ class Content_publish extends CI_Controller {
 				
 		$catlist	= array();
 		$categories	= array();
-		
-		
+
 		// Figure out selected categories
-		if ( ! $entry_data['entry_id'] && $this->_channel_data['deft_category'])
+		if ( ! count($_POST) && ! $entry_data['entry_id'] && $this->_channel_data['deft_category'])
 		{
 			// new entry and a default exists
 			$catlist = $this->_channel_data['deft_category'];
+		}
+		elseif (count($_POST) > 0)
+		{
+			$catlist = array();
+			
+			if (isset($_POST['category']) && is_array($_POST['category']))
+			{
+				foreach ($_POST['category'] as $val)
+				{
+					$catlist[$val] = $val;
+				}
+			}			
 		}
 		elseif ( ! isset($entry_data['category']))
 		{
