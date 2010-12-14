@@ -858,6 +858,10 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 	color:				#005eb0;
 }
 
+#notePad {
+	margin-top: 10px;
+}
+
 #notePad #notePadTextEdit {
 	width:				80%;
 	height:				5em;
