@@ -1388,7 +1388,7 @@ class Content_publish extends CI_Controller {
 			
 			$this->api_channel_fields->setup_handler($data['field_id']);
 			
-			$field_value = set_value($data['field_id'], $data['field_data']);
+			$field_value = set_value($name, $data['field_data']);
 			
 			$field_output[$name] = $this->api_channel_fields->apply('display_publish_field', array($field_value));
 		}
