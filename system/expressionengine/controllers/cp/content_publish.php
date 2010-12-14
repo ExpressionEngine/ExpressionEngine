@@ -216,8 +216,9 @@ class Content_publish extends CI_Controller {
 			'date'			=> lang('date'),
 		);
 
+		
 		if (isset($this->_channel_data['enable_versioning']) 
-			&& $this->_channel_data['enable_versioning'] = 'y')
+			&& $this->_channel_data['enable_versioning'] == 'y')
 		{
 			$this->_tab_labels['revisions'] = lang('revisions');
 		}
@@ -1578,10 +1579,11 @@ class Content_publish extends CI_Controller {
 			'options'		=> array('channel', 'status', 'author', 'options', 'ping'),
 		);
 
-		if ($this->_channel_data['enable_versioning'] == 'y')
+		if (isset($this->_channel_data['enable_versioning']) 
+			&& $this->_channel_data['enable_versioning'] == 'y')
 		{
 			$default['revisions'] = array('revisions');
-		}
+		}		
 
 		$default = array_merge($default, $this->_third_party_tabs());
 
