@@ -1461,7 +1461,7 @@ class Content_publish extends CI_Controller {
 	{
 		$field_display = array(
 			'visible'		=> TRUE,
-			'collapse'		=> FALSE,
+			'collapse'		=> FALSE, 
 			'html_buttons'	=> TRUE,
 			'is_hidden'		=> FALSE,
 			'width'			=> '100%'
@@ -1502,6 +1502,7 @@ class Content_publish extends CI_Controller {
 		
 		foreach($field_data as $name => $field)
 		{
+			$field_display['collapse'] = (isset($field['field_is_hidden']) && $field['field_is_hidden'] == 'y') ? TRUE : FALSE;
 			$layout[$name] = $field_display;
 		}
 		
@@ -1607,7 +1608,7 @@ class Content_publish extends CI_Controller {
 		{
 			$default['publish'][] = $name;
 		}
-		
+
 		return $default;
 	}
 
@@ -1665,8 +1666,6 @@ class Content_publish extends CI_Controller {
 		{
 			return array('category' => $default);
 		}
-		
-		
 		
 		$this->api->instantiate('channel_categories');
 				
