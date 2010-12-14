@@ -1715,7 +1715,7 @@ class Content_edit extends CI_Controller {
 		// to accept an array so we can avoid looping here.
 		foreach(array_unique($channel_ids) as $id)
 		{
-			//$this->stats->update_channel_stats($id);			
+			$this->stats->update_channel_stats($id);			
 		}
 
 
