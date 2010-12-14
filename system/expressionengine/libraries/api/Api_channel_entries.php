@@ -1037,6 +1037,12 @@ class Api_channel_entries extends Api {
 	{
 		//$errors = $this->EE->api_channel_fields->get_module_methods('validate_publish', array('data' => $data));
 
+		// Note coming from cp- return
+		if ( ! isset($data['cp_call']) OR $data['cp_call'] !== TRUE)
+		{
+			return;
+		}
+
 		$methods = array('validate_publish', 'publish_tabs');
 		$params = array('validate_publish' => array($data), 'publish_tabs' => array($data['channel_id'], $this->entry_id));
 
