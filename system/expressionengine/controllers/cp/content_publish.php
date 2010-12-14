@@ -32,6 +32,7 @@ class Content_publish extends CI_Controller {
 	private $_channel_fields 	= array();
 	private $_publish_blocks 	= array();
 	private $_publish_layouts 	= array();
+	private $_errors			= array();
 	private $_smileys_enabled	= FALSE;
 
 	/**
@@ -177,6 +178,8 @@ class Content_publish extends CI_Controller {
 				// if we get here, a hook triggered end_script
 				return;
 			}
+			
+			$this->errors = $this->api_channel_entries->errors;
 
 			// @todo Process errors, and proceed with
 			// showing the page. These are rather
@@ -1465,6 +1468,14 @@ class Content_publish extends CI_Controller {
 		);
 		
 		$layout = array();
+		$force_url_title = FALSE;
+		
+		if (isset($this->errors['url_title']))
+		{
+			$this->form_validation->_field_data['url_title']['error'] = $this->errors['url_title'];
+			$force_url_title = TRUE;
+		}
+		
 		
 		// do we have a layout? use it
 		if ($layout_info)
@@ -1476,6 +1487,11 @@ class Content_publish extends CI_Controller {
 				foreach ($fields as $name => $display)
 				{
 					$layout[$name] = array_merge($field_display, $display);
+					
+					if ($name == 'url_title' && $force_url_title)
+					{
+						$layout[$name]['visible'] = TRUE;
+					}
 				}
 			}
 			
@@ -2217,7 +2233,7 @@ class Content_publish extends CI_Controller {
 			'url_title'		=> array(
 				'field_id'				=> 'url_title',
 				'field_label'			=> lang('url_title'),
-				'field_required'		=> 'y',
+				'field_required'		=> 'n',
 				'field_data'			=> ($this->input->get_post('url_title') == '') ? $entry_data['url_title'] : $this->input->get_post('url_title'),
 				'field_fmt'				=> 'xhtml',
 				'field_instructions'	=> '',
