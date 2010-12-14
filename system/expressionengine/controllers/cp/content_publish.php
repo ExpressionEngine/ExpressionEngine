@@ -274,9 +274,10 @@ class Content_publish extends CI_Controller {
 		
 		$autosave_id = isset($entry_data['autosave_entry_id']) ? $entry_data['autosave_entry_id'] : 0;
 	
+	
 		$data = array(
 			'message'			=> '',	// @todo consider pulling?
-			'cp_page_title'		=> $entry_id ? lang('edit_entry') : lang('new_entry'),
+			'cp_page_title'		=> $entry_id ? lang('edit_entry') : lang('new_entry') . ': '. $this->_channel_data['channel_title'],
 			
 			'tabs'				=> $tab_hierarchy,
 			'first_tab'			=> key($tab_hierarchy),
