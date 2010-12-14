@@ -304,15 +304,13 @@ class Channel_entries_model extends CI_Model {
 
 		foreach($qry->result_array() as $row)
 		{
-			if (isset($_POST['preview']))
+			$selected = '';
+
+			if ( ! empty($_POST))
 			{
-				$selected = '';
-				if ($this->input->post('ping') && is_array($this->input->post('ping')))
+				if ($this->input->post('ping') !== FALSE && in_array($row['id'], $this->input->post('ping')))
 				{
-					if (in_array($row['id'], $this->input->post('ping')))
-					{
-						$selected = 1; 
-					}
+					$selected = 1; 
 				}
 			}
 			else
