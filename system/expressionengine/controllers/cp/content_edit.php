@@ -447,6 +447,8 @@ class Content_edit extends CI_Controller {
 		$filtered_entries = $this->search_model->get_filtered_entries($filter_data);
 
 		// No result?  Show the "no results" message
+		
+		$vars['autosave_show'] = FALSE;
 
 		$vars['total_count'] = $filtered_entries['total_count'];
 		$pageurl .= $filtered_entries['pageurl'];
