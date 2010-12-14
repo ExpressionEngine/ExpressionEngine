@@ -79,7 +79,7 @@ class Admin_model extends CI_Model {
 			'channel_cfg'		=>	array(
 											'use_category_name'			=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'reserved_category_word'	=> array('i', ''),
-											'auto_convert_high_ascii'	=> array('r', array('y' => 'yes', 'n' => 'no')),
+						//					'auto_convert_high_ascii'	=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'auto_assign_cat_parents'	=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'new_posts_clear_caches'	=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'enable_sql_caching'		=> array('r', array('y' => 'yes', 'n' => 'no')),
