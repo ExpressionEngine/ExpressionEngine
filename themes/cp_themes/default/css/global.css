@@ -2618,12 +2618,12 @@ a#refresh_categories {
 }
 
 .hasDatepicker { /* UI datepicker automatically adds this class */
+/*
 	background: #fff url('../images/calendar_bg.gif') no-repeat 98% 2px;
-	
-	background-repeat: no-repeat;
 	background-position: 99%;
 	border: 1px solid #B6C0C2;
 	padding: 2px;
+*/
 }
 
 #custom_date_picker input[type="text"] {

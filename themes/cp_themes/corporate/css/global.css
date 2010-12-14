@@ -2756,8 +2756,13 @@ div.cat_group_container {
 	padding-top:		7px;
 }
 
+#custom_date_picker p {
+	margin: 0;
+}
+
 #custom_date_picker input[type="text"] {
 	background: transparent url('../images/calendar_bg.gif') no-repeat 98% 2px;
+	width:90%;
 }
 
 #filterMenu table.ui-datepicker-calendar a {color:#fff;}
