@@ -179,15 +179,9 @@ class Content_publish extends CI_Controller {
 				return;
 			}
 			
+			// used in _setup_layout_styles
+			// @todo handle generic api errors
 			$this->errors = $this->api_channel_entries->errors;
-			
-
-			// @todo Process errors, and proceed with
-			// showing the page. These are rather
-			// special errors - consider how to
-			// best show them . . .
-			// $errors = $this->errors
-
 		}
 
 		$this->_setup_file_list();
@@ -1389,7 +1383,7 @@ class Content_publish extends CI_Controller {
 			}
 			
 			$this->api_channel_fields->setup_handler($data['field_id']);
-			
+						
 			$field_value = set_value($name, $data['field_data']);
 			
 			$field_output[$name] = $this->api_channel_fields->apply('display_publish_field', array($field_value));

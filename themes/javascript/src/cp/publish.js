@@ -691,7 +691,7 @@ $(document).ready(function() {
 		var pagesUri		= $("#pages__pages_uri"),
 			placeholderText = EE.publish.pages.pagesUri;
 
-		if ( ! pagesUri.value) {
+		if ( ! pagesUri.val()) {
 			pagesUri.val(placeholderText);
 		}
 
