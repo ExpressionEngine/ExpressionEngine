@@ -44,7 +44,7 @@ class Pages_tab {
 		
 		$pages_template_id 	= 0;
 		$pages_dropdown 	= array();
-		$pages_uri 			= (isset($entry_data['pages_uri'])) ? $entry_data['pages_uri'] : '';
+		$pages_uri 			= '';
 	
 		if ($entry_id !== 0)
 		{
@@ -158,16 +158,16 @@ class Pages_tab {
         	}
         }
         
-        $page_uri = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '',
-                    str_replace($this->EE->config->item('site_url'), '', $params['pages_uri']));
+        $c_page_uri = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '',
+                    str_replace($this->EE->config->item('site_url'), '', $pages_uri));
         
-        if ($page_uri !== $params['pages_uri'])
+        if ($c_page_uri !== $pages_uri)
         {
             $errors = array(lang('invalid_page_uri') => 'pages_uri');
         }
         
         // How many segments are we trying out?
-    	$pages_uri_segs = substr_count(trim($params['pages_uri'], '/'), '/');		
+    	$pages_uri_segs = substr_count(trim($pages_uri, '/'), '/');		
 
     	// More than 9 pages URI segs?  goodbye
     	if ($pages_uri_segs > 8)
@@ -181,12 +181,12 @@ class Pages_tab {
 
 		if ($params['entry_id'] !== 0)
 		{
-			if ( ! isset($uris[$params['entry_id']]) && in_array($params['pages_uri'], $uris))
+			if ( ! isset($uris[$params['entry_id']]) && in_array($pages_uri, $uris))
 			{
 				$errors = array(lang('duplicate_page_uri') => 'pages_uri');
 			}
 		}
-		elseif (in_array($params['pages_uri'], $uris))
+		elseif (in_array($pages_uri, $uris))
     	{
     		$errors = array(lang('duplicate_page_uri') => 'pages_uri');
     	}

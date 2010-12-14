@@ -508,7 +508,8 @@ class Channel_standalone extends Channel {
 								'XID'	  				=> $XID,
 								'return_url'			=> (isset($_POST['return_url'])) ? $_POST['return_url'] : $this->EE->TMPL->fetch_param('return'),
 								'author_id'				=> $this->EE->session->userdata('member_id'),
-								'channel_id'			=> $channel_id
+								'channel_id'			=> $channel_id,
+								'entry_id'				=> 0
 							  );
 		
 		$status_id = ( ! isset($_POST['status_id'])) ? $this->EE->TMPL->fetch_param('status') : $_POST['status_id'];
