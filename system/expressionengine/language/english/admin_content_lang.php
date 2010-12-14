@@ -132,10 +132,10 @@ $lang = array(
 'Enable recipient list below for comment notification?',
 
 'update_existing_comments_mod' =>
-'Update all existing comments to be consistent with this setting?',
+'Update all existing entries with this setting?',
 
 'update_existing_comments' =>
-'Update all existing comments with this expiration setting?',
+'Update all existing comments with this setting?',
 
 'category_order_confirm_text' =>
 'Are you sure you want to sort this category group alphabetically?',
