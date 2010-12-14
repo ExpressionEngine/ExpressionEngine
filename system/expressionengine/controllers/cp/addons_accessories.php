@@ -228,12 +228,17 @@ class Addons_accessories extends CI_Controller {
 		}
 
 		// only methods beginning with 'process_' are allowed to be called via this method
-		if (($name = $this->input->get_post('accessory')) === FALSE
-		OR ($method = $this->input->get_post('method')) === FALSE
-		OR strncmp($method, 'process_', 8) != 0)
+		if (($name = $this->input->get_post('accessory')) === FALSE 
+			OR ($method = $this->input->get_post('method')) === FALSE
+			OR strncmp($method, 'process_', 8) != 0)
 		{
 			return $this->index();
 		}
+		
+		// add the package and view paths
+		$this->load->add_package_path(PATH_THIRD.strtolower($file).'/');
+		$orig_view_path = $this->load->_ci_view_path;
+		$this->load->_ci_view_path = PATH_THIRD.strtolower($file).'/views/';
 		
 		$this->load->library('accessories');
 		$class = $this->accessories->_get_accessory_class($name);
@@ -243,12 +248,18 @@ class Addons_accessories extends CI_Controller {
 		// execute the requested method
 		if ( ! method_exists($ACC, $method))
 		{
-			return $this->index();
+			$return = $this->index();
 		}
 		else
 		{
-			return $ACC->$method();
+			$return = $ACC->$method();
 		}
+		
+		// switch the view path back to the original, remove package path
+		$this->load->_ci_view_path = $orig_view_path;
+		$this->load->remove_package_path($installed[$module]['path']);
+		
+		return $return;
 	}
 
 	// --------------------------------------------------------------------
