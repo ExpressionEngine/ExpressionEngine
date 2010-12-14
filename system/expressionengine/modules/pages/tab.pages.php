@@ -179,7 +179,14 @@ class Pages_tab {
     	$static_pages = $this->EE->config->item('site_pages');
     	$uris = $static_pages[$this->EE->config->item('site_id')]['uris'];
 
-    	if (in_array($params['pages_uri'], $uris))
+		if ($params['entry_id'] !== 0)
+		{
+			if ( ! isset($uris[$params['entry_id']]) && in_array($params['pages_uri'], $uris))
+			{
+				$errors = array(lang('duplicate_page_uri') => 'pages_uri');
+			}
+		}
+		elseif (in_array($params['pages_uri'], $uris))
     	{
     		$errors = array(lang('duplicate_page_uri') => 'pages_uri');
     	}
