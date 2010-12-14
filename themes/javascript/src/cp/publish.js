@@ -492,16 +492,20 @@ EE.date_obj_time = (function() {
 	}
 
 	if (EE.date.format == "us") {
-		if (date_obj_hours > 11) {
-			date_obj_hours = date_obj_hours - 12;
-			date_obj_am_pm = " PM";
-		} else {
-			date_obj_am_pm = " AM";
+		
+		date_obj_am_pm = (date_obj_hours < 12) ? ' AM': ' PM';
+
+		// This turns midnight into 12 AM, so ignore if it's already 0
+		if (date_obj_hours != 0) {
+		    date_obj_hours = ((date_obj_hours + 11) % 12) + 1;
 		}
 	}
-	
+		
 	return " '" + date_obj_hours + ":" + date_obj_mins + date_obj_am_pm + "'";
 }());
+
+console.log(EE.date.format);
+
 
 
 file_manager_context = "";	// @todo - yuck, should be on the EE global

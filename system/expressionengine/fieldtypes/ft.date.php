@@ -72,8 +72,8 @@ class Date_ft extends EE_Fieldtype {
 		$custom_date = '';
 
 		$localize = FALSE;
-
-		if (isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field]))	// Validation failed - autosave is numeric
+		
+		if (isset($_POST[$date_field]) && ! is_numeric($_POST[$date_field])) // string in $_POST, probably had a validation error
 		{
 			if ($_POST[$date_field])
 			{
@@ -84,11 +84,18 @@ class Date_ft extends EE_Fieldtype {
 		}
 		else
 		{
-			if ( ! $field_data && isset($this->settings['default_offset']))	// Initial load - no data and showing a field (no offset == blank)
+			$offset = isset($this->settings['default_offset']) ? $this->settings['default_offset'] : 0;
+			
+			if ( ! $field_data && ! $offset)
 			{
-				$field_data = $date + $this->settings['default_offset'];
+				$field_data = $date;
+				
+				if (isset($this->settings['always_show_date']) && $this->settings['always_show_date'] == 'y')
+				{
+					$custom_date = $this->EE->localize->set_human_time($field_data, $localize);
+				}
 			}
-			elseif ($field_data)	// Everything else
+			else	// Everything else
 			{
 				$localize = TRUE;
 
@@ -101,16 +108,23 @@ class Date_ft extends EE_Fieldtype {
 						$localize = FALSE;
 					}
 				}
-			}
-
-			if ($field_data)
-			{
-				$custom_date = $this->EE->localize->set_human_time($field_data, $localize);
+				elseif ( ! $field_data && $offset)
+				{
+					$localize = FALSE;
+					$field_data = $date + $offset;
+				}
+				
+				// doing it in here so that if we don't have field_data
+				// the field doesn't get populated, but the calendar still
+				// shows the correct default.
+				if ($field_data)
+				{
+					$custom_date = $this->EE->localize->set_human_time($field_data, $localize);
+				}
 			}
 
 			$date = $this->EE->localize->set_localized_time($field_data);
 		}
-
 
 		$cal_date = $date * 1000;
 

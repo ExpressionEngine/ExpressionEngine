@@ -881,6 +881,7 @@ class Content_publish extends CI_Controller {
 			else
 			{
 				$field_data = (isset($entry_data['field_id_'.$row['field_id']])) ? $entry_data['field_id_'.$row['field_id']] : $field_data;				
+				$field_dt	= (isset($entry_data['field_dt_'.$row['field_id']])) ? $entry_data['field_dt_'.$row['field_id']] : 'y';
 			}			
 
 			$settings = array(
@@ -2229,7 +2230,7 @@ class Content_publish extends CI_Controller {
 		{
 			$title = $this->_channel_data['default_entry_title'];
 		}
-		
+				
 		$deft_fields = array(
 			'title' 		=> array(
 				'field_id'				=> 'title',
@@ -2264,6 +2265,7 @@ class Content_publish extends CI_Controller {
 				'field_fmt'				=> 'text',
 				'field_instructions'	=> '',
 				'field_show_fmt'		=> 'n',
+				'always_show_date'		=> 'y',
 				'default_offset'		=> 0,
 				'selected'				=> 'y',
 				'dst_enabled'			=> $this->_dst_enabled				
@@ -2278,6 +2280,7 @@ class Content_publish extends CI_Controller {
 				'field_fmt'				=> 'text',
 				'field_instructions'	=> '',
 				'field_show_fmt'		=> 'n',
+				'default_offset'		=> 0,
 				'selected'				=> 'y',
 				'dst_enabled'			=> $this->_dst_enabled				
 			)	
@@ -2296,6 +2299,7 @@ class Content_publish extends CI_Controller {
 				'field_fmt'				=> 'text',
 				'field_instructions'	=> '',
 				'field_show_fmt'		=> 'n',
+				'default_offset'		=> $this->_channel_data['comment_expiration'] * 86400,
 				'selected'				=> 'y',
 				'dst_enabled'			=> $this->_dst_enabled
 			);
