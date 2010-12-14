@@ -156,10 +156,25 @@ class Cp {
 		);
 
 
-		if (file_exists(PATH_CP_THEME.$this->cp_theme.'/css/advanced.css'))
+		if ( ! is_array($this->EE->load->_ci_view_path))
 		{
-			$vars['advanced_css_mtime'] = filemtime(PATH_CP_THEME.$this->cp_theme.'/css/advanced.css');
+			$file = $this->EE->load->_ci_view_path.'css/advanced.css';
 		}
+		else
+		{
+			foreach ($this->EE->load->_ci_view_path as $a_path)
+			{
+				$file = $a_path.'css/advanced.css';
+				
+				if (file_exists($file))
+				{
+					break;
+				}
+			}
+		}
+		
+		$vars['advanced_css_mtime'] = (file_exists($file)) ? filemtime($file) : FALSE;
+		
 		
 		if ($this->EE->router->method != 'index')
 		{
