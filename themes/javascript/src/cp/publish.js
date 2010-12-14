@@ -504,9 +504,6 @@ EE.date_obj_time = (function() {
 	return " '" + date_obj_hours + ":" + date_obj_mins + date_obj_am_pm + "'";
 }());
 
-console.log(EE.date.format);
-
-
 
 file_manager_context = "";	// @todo - yuck, should be on the EE global
 
