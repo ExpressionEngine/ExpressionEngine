@@ -2762,7 +2762,7 @@ div.cat_group_container {
 
 #custom_date_picker input[type="text"] {
 	background: transparent url('../images/calendar_bg.gif') no-repeat 98% 2px;
-	width:90%;
+	width:60%;
 }
 
 #filterMenu table.ui-datepicker-calendar a {color:#fff;}

@@ -299,6 +299,11 @@ $lang = array(
 'comment_updated' =>
 'Comment Updated',
 
+'start_date' =>
+'Start Date',
+
+'end_date' =>
+'End Date',
 
 ''=>''
 );
