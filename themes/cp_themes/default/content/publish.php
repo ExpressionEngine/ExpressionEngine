@@ -126,7 +126,8 @@ if ($EE_view_disable !== TRUE)
 						<div id="<?=url_title($tab, 'underscore', TRUE)?>" class="main_tab<?=($tab == $first_tab) ? '' : ' js_hide'?>">
 							
 							<?php foreach($_fields as $_n):?>
-								<div class="publish_field publish_<?=$field_list[$_n]['field_type']?>" id="hold_field_<?=$field_list[$_n]['field_id']?>" <?=$layout_styles[$_n]['visible'] ? '' : 'style="display: none;"'?>>
+								<?php $style = 'width: '.$layout_styles[$_n]['width'].'; '.($layout_styles[$_n]['visible'] ? '' : 'display: none;');?>
+								<div class="publish_field publish_<?=$field_list[$_n]['field_type']?>" id="hold_field_<?=$field_list[$_n]['field_id']?>" style="<?=$style?>">
 									<div class="handle"></div>
 									
 									<label class="hide_field">
