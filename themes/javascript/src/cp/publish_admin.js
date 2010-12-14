@@ -56,10 +56,11 @@ $("#showToolbarLink").find("a").one("click", function() {
 
 	$("#new_tab_dialog").dialog({
 		autoOpen: false,
+		open: function() {$("#tab_name").focus();},
 		resizable: false,
 		modal: true,
 		position: "center",
-		minHeight: "0px",
+		minHeight: 0,
 		buttons: newTabButtons
 	});
 	
@@ -68,7 +69,6 @@ $("#showToolbarLink").find("a").one("click", function() {
 		$("#tab_name").val("");
 		$("#add_tab label").text(EE.lang.tab_name+": ");
 		$("#new_tab_dialog").dialog("open");
-		$("#tab_name").focus();
 		setup_tabs();
 
 		return false;
@@ -98,11 +98,11 @@ $("#showToolbarLink").find("a").one("click", function() {
 			$("#showToolbarImg").hide();
 			$("#hideToolbarImg").css("display", "inline");	// .show() uses block
 		});
-		$(".publish_field").animate({backgroundPosition: "0px 0px"}, "slow");
+		$(".publish_field").animate({backgroundPosition: "0 0"}, "slow");
 		$(".handle").css("display", "block");
 
 		$(".ui-resizable-e").animate({
-			marginRight: "0px"
+			marginRight: 0
 		});
 		$(".addTabButton").css("display", "inline");
 		
@@ -120,7 +120,7 @@ $("#showToolbarLink").find("a").one("click", function() {
 		$("#holder").animate({
 			marginRight: "10"
 		});
-		$(".publish_field").animate({backgroundPosition: "-15px 0px"}, "slow");
+		$(".publish_field").animate({backgroundPosition: "-15px 0"}, "slow");
 		$(".handle").css("display", "none");
 
 		$(".ui-resizable-e").animate({
