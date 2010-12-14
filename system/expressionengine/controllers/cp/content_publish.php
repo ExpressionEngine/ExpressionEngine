@@ -180,6 +180,7 @@ class Content_publish extends CI_Controller {
 			}
 			
 			$this->errors = $this->api_channel_entries->errors;
+			
 
 			// @todo Process errors, and proceed with
 			// showing the page. These are rather
@@ -1471,14 +1472,6 @@ class Content_publish extends CI_Controller {
 		);
 		
 		$layout = array();
-		$force_url_title = FALSE;
-		
-		if (isset($this->errors['url_title']))
-		{
-			$this->form_validation->_field_data['url_title']['error'] = $this->errors['url_title'];
-			$force_url_title = TRUE;
-		}
-		
 		
 		// do we have a layout? use it
 		if ($layout_info)
@@ -1491,22 +1484,30 @@ class Content_publish extends CI_Controller {
 				{
 					$layout[$name] = array_merge($field_display, $display);
 					
-					if ($name == 'url_title' && $force_url_title)
+					if (isset($this->errors[$name]))
 					{
 						$layout[$name]['visible'] = TRUE;
 					}
 				}
 			}
-			
-			return $layout;
+		}
+		else // defaults
+		{
+			foreach($field_data as $name => $field)
+			{
+				$field_display['collapse'] = (isset($field['field_is_hidden']) && $field['field_is_hidden'] == 'y') ? TRUE : FALSE;
+				$layout[$name] = $field_display;
+			}
 		}
 
-		// otherwise - assign default to all
-		
-		foreach($field_data as $name => $field)
+		// check for api errors
+		// @confirm, would be better off in the else for validation::run
+		foreach ($layout as $name => $info)
 		{
-			$field_display['collapse'] = (isset($field['field_is_hidden']) && $field['field_is_hidden'] == 'y') ? TRUE : FALSE;
-			$layout[$name] = $field_display;
+			if (isset($this->errors[$name]))
+			{
+				$this->form_validation->_field_data[$name]['error'] = $this->errors[$name];
+			}
 		}
 		
 		return $layout;

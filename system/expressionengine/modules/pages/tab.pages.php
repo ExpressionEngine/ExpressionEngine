@@ -157,7 +157,7 @@ class Pages_tab {
         	if ( ! isset($params['pages_template_id']) OR 
         	     ! is_numeric($params['pages_template_id']))
         	{
-        		$errors = array(lang('invalid_template'), 'pages_template_id');
+        		$errors = array(lang('invalid_template') => 'pages_template_id');
         	}
         }
         
@@ -166,7 +166,7 @@ class Pages_tab {
         
         if ($page_uri !== $params['pages_uri'])
         {
-            $errors = array(lang('invalid_page_uri'), 'pages_uri');
+            $errors = array(lang('invalid_page_uri') => 'pages_uri');
         }
         
         // How many segments are we trying out?
@@ -175,7 +175,7 @@ class Pages_tab {
     	// More than 9 pages URI segs?  goodbye
     	if ($pages_uri_segs > 8)
     	{
-    		$errors = array(lang('invalid_page_num_segs'), 'pages_uri');
+    		$errors = array(lang('invalid_page_num_segs') => 'pages_uri');
     	}
     	
     	// Check if duplicate uri
@@ -184,7 +184,7 @@ class Pages_tab {
 
     	if (in_array($params['pages_uri'], $uris))
     	{
-    		$errors = array(lang('duplicate_page_uri'), 'pages_uri');
+    		$errors = array(lang('duplicate_page_uri') => 'pages_uri');
     	}
 
     	return $errors;        

@@ -1041,7 +1041,7 @@ class Api_channel_entries extends Api {
 		$params = array('validate_publish' => array($data), 'publish_tabs' => array($data['channel_id'], $this->entry_id));
 
 		$this->instantiate('channel_fields');
-		$module_data = $this->EE->api_channel_fields->get_module_methods($methods, $params);
+		$module_data = $this->EE->api_channel_fields->get_module_methods($methods, $params);		
 
 		if ($module_data !== FALSE)
 		{
@@ -1049,9 +1049,9 @@ class Api_channel_entries extends Api {
 			{
 				if (is_array($m['validate_publish']))
 				{
-					foreach($m['validate_publish'] as $k => $v)
+					foreach($m['validate_publish'] as $msg => $field)
 					{
-						$this->_set_error($k, $v);
+						$this->_set_error($msg, $class.'__'.$field);
 					}
 				}
 
