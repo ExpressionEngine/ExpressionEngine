@@ -36,11 +36,6 @@ class Addons_accessories extends CI_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}		
 		
 		// make sure the files have the right extension for matching
 		for ($i = 0, $tot = count($this->accessories->ignored_controllers); $i < $tot; $i++)
@@ -59,12 +54,12 @@ class Addons_accessories extends CI_Controller {
 	/**
 	 * Index function
 	 *
-	 * @access	public
 	 * @return	void
 	 */	
-	function index()
+	public function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		if ( ! $this->cp->allowed_group('can_access_addons') 
+			OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}		
@@ -192,73 +187,47 @@ class Addons_accessories extends CI_Controller {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Get a human name
-	 *
-	 * Callback for array_map
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function _get_human_name($key)
-	{
-		if (is_numeric($key))
-		{
-			return isset($this->human_names['member_groups'][$key]) ? $this->human_names['member_groups'][$key] : $key;
-		}
-		return isset($this->human_names['controllers'][$key]) ? $this->human_names['controllers'][$key] : $key;
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
 	 * Process Request
 	 *
 	 * Process a request for an Accessory
 	 *
-	 * @access	public
 	 * @param	string
 	 * @return	void
 	 */
-	function process_request()
+	public function process_request()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		// only methods beginning with 'process_' are allowed to be called via this method
 		if (($name = $this->input->get_post('accessory')) === FALSE 
 			OR ($method = $this->input->get_post('method')) === FALSE
 			OR strncmp($method, 'process_', 8) != 0)
 		{
-			return $this->index();
+			$this->functions->redirect(BASE.AMP.'C=addons_accessories');
+
 		}
 		
-		// add the package and view paths
-		$this->load->add_package_path(PATH_THIRD.strtolower($file).'/');
-		$orig_view_path = $this->load->_ci_view_path;
-		$this->load->_ci_view_path = PATH_THIRD.strtolower($file).'/views/';
-		
-		$this->load->library('accessories');
 		$class = $this->accessories->_get_accessory_class($name);
 		
-		$ACC = new $class();
+		// add the package and view paths
+		$this->load->add_package_path(PATH_THIRD.strtolower($class).'/');
+		$orig_view_path = $this->load->_ci_view_path;
+		$this->load->_ci_view_path = PATH_THIRD.strtolower($class).'/views/';
 		
+		$this->load->library('accessories');
+		
+		$ACC = new $class();
+
 		// execute the requested method
 		if ( ! method_exists($ACC, $method))
 		{
-			$return = $this->index();
+			$this->functions->redirect(BASE.AMP.'C=addons_accessories');
 		}
-		else
-		{
-			$return = $ACC->$method();
-		}
+		
+		$return = $ACC->$method();
 		
 		// switch the view path back to the original, remove package path
 		$this->load->_ci_view_path = $orig_view_path;
 		$this->load->remove_package_path($installed[$module]['path']);
-		
+
 		return $return;
 	}
 
@@ -267,12 +236,12 @@ class Addons_accessories extends CI_Controller {
 	/**
 	 * Install
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function install()
+	public function install()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		if ( ! $this->cp->allowed_group('can_access_addons') 
+			OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -293,12 +262,12 @@ class Addons_accessories extends CI_Controller {
 	/**
 	 * Uninstall Accessory
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function uninstall()
+	public function uninstall()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		if ( ! $this->cp->allowed_group('can_access_addons') 
+			OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -319,12 +288,12 @@ class Addons_accessories extends CI_Controller {
 	/**
 	 * Edit visibility preferences
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function edit_prefs()
+	public function edit_prefs()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		if ( ! $this->cp->allowed_group('can_access_addons') 
+			OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -479,13 +448,13 @@ class Addons_accessories extends CI_Controller {
 	/**
 	 * Update Preferences
 	 *
-	 * @access	public
 	 * @param	type	description
 	 * @return	description
 	 */
-	function update_prefs()
+	public function update_prefs()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_accessories'))
+		if ( ! $this->cp->allowed_group('can_access_addons') 
+			OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -519,10 +488,9 @@ class Addons_accessories extends CI_Controller {
 	 * Get arrays for controllers or groups, create human readable
 	 * controller names on the fly.
 	 *
-	 * @access	private
 	 * @return	mixed	final array
 	 */
-	function _fetch_human_names()
+	private function _fetch_human_names()
 	{
 		$this->load->helper('directory');
 		
@@ -561,6 +529,26 @@ class Addons_accessories extends CI_Controller {
 		}
 	
 		return $data;
+	}
+
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get a human name
+	 *
+	 * Callback for array_map
+	 *
+	 * @param	string
+	 * @return	string
+	 */
+	private function _get_human_name($key)
+	{
+		if (is_numeric($key))
+		{
+			return isset($this->human_names['member_groups'][$key]) ? $this->human_names['member_groups'][$key] : $key;
+		}
+		return isset($this->human_names['controllers'][$key]) ? $this->human_names['controllers'][$key] : $key;
 	}
 
 	// --------------------------------------------------------------------
