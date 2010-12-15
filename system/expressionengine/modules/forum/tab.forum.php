@@ -186,6 +186,8 @@ class Forum_tab {
 	public function publish_data_db($params)
 	{
 		$c_prefs = $this->EE->api_channel_entries->c_prefs;
+		
+		//mod_data[]
 
 		if ((isset($params['mod_data']['forum_title'], $params['mod_data']['forum_body'],
 					  $params['mod_data']['forum_id'])
@@ -224,7 +226,7 @@ class Forum_tab {
 					'thread_total'			=> 1
 				);
 				
-				if (isset($params['mod_data']['forum_topic_id']))
+				if (isset($params['mod_data']['forum_topic_id']) && $params['mod_data']['forum_topic_id'] != '')
 				{
 					$topic_id = $params['mod_data']['forum_topic_id'];
 					$this->EE->db->where('topic_id', (int) $topic_id)
