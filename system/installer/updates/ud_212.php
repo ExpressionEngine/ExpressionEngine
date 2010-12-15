@@ -39,7 +39,12 @@ class Updater {
 		$Q[] = "ALTER TABLE exp_accessories CHANGE member_groups member_groups varchar(255) NOT NULL";
 		$Q[] = "ALTER TABLE exp_member_groups ADD can_edit_html_buttons char(1) NOT NULL DEFAULT 'n' AFTER can_view_profiles";
 		$Q[] = "UPDATE exp_member_groups SET can_edit_html_buttons = 'y' WHERE can_access_cp = 'y'";
-		$Q[] = "UPDATE exp_comments SET location = '' WHERE location = '0'";
+
+		if ($this->EE->db->table_exists('exp_comments'))
+		{
+			$Q[] = "UPDATE exp_comments SET location = '' WHERE location = '0'";	
+		}
+
 		$count = count($Q);
 		
 		foreach ($Q as $num => $sql)
