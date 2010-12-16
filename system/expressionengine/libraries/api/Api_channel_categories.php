@@ -242,7 +242,7 @@ class Api_channel_categories extends Api {
 		}
 		elseif ($sites != 'all')
 		{
-			if ( ! is_array($sites))
+			if (is_array($sites))
 			{
 				$sites = implode('|', $sites);
 			}
@@ -253,7 +253,7 @@ class Api_channel_categories extends Api {
 		
 		if ($categories !== FALSE)
 		{
-			if ( is_array($categories))
+			if (is_array($categories))
 			{
 				$categories = implode('|', $categories);
 			}
@@ -396,7 +396,7 @@ class Api_channel_categories extends Api {
 	{	
 		if ($this->EE->cp->allowed_group('can_admin_channels') OR $this->EE->cp->allowed_group('can_edit_categories'))
 		{
-			if ( ! is_array($cat_group))
+			if (! is_array($cat_group))
 			{
 				$cat_group = explode('|', $cat_group);
 			}
