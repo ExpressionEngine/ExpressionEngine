@@ -861,7 +861,7 @@ class Content_publish extends CI_Controller {
 
 		foreach ($channel_fields->result_array() as $row)
 		{
-			$field_fmt 		= '';
+			$field_fmt 		= $row['field_fmt'];
 			$field_dt 		= '';
 			$field_data		= '';
 			$dst_enabled	= '';
@@ -878,6 +878,7 @@ class Content_publish extends CI_Controller {
 			{
 				$field_data = (isset($entry_data['field_id_'.$row['field_id']])) ? $entry_data['field_id_'.$row['field_id']] : $field_data;				
 				$field_dt	= (isset($entry_data['field_dt_'.$row['field_id']])) ? $entry_data['field_dt_'.$row['field_id']] : 'y';
+				$field_fmt	= (isset($entry_data['field_ft_'.$row['field_id']])) ? $entry_data['field_ft_'.$row['field_id']] : $field_fmt;				
 			}			
 
 			$settings = array(
@@ -1411,10 +1412,11 @@ class Content_publish extends CI_Controller {
 			'field_show_writemode'			=> 'n',
 			'field_show_file_selector'		=> 'n',
 			'field_show_fmt'				=> 'n',
-			'field_fmt_options'				=> array(),
+			'field_fmt_options'				=> array()
 		);
 		
 		$markitup_buttons = array();
+		$get_format = array();
 	
 		foreach ($field_list as $field => &$data)
 		{
@@ -1436,9 +1438,43 @@ class Content_publish extends CI_Controller {
 				$data['smiley_table'] = $this->_build_smiley_table($field);
 			}
 			
+			if ($data['field_show_fmt'] == 'y')
+			{
+				// We'll get all the format options in one go
+				$get_format[] = $data['field_id'];
+			}
+			
 			if ($this->_channel_data['show_button_cluster'] == 'y' && isset($data['field_show_formatting_btns']) && $data['field_show_formatting_btns'] == 'y')
 			{
 				$markitup_buttons['fields'][$field] = $data['field_id'];
+			}
+		}
+		
+		// Field formatting
+		if (count($get_format) > 0)
+		{
+			$this->db->select('field_id, field_fmt');
+			$this->db->where_in('field_id', $get_format);
+			$this->db->order_by('field_fmt');
+			$query = $this->db->get('field_formatting');
+
+			if ($query->num_rows() > 0)
+			{
+				foreach ($query->result_array() as $format)
+				{
+					$name = ucwords(str_replace('_', ' ', $format['field_fmt']));
+			
+					if ($name == 'Br')
+					{
+						$name = $this->lang->line('auto_br');
+					}
+					elseif ($name == 'Xhtml')
+					{
+						$name = $this->lang->line('xhtml');
+					}
+					
+					$field_list['field_id_'.$format['field_id']]['field_fmt_options'][$format['field_fmt']] = $name;
+				}
 			}
 		}
 		
