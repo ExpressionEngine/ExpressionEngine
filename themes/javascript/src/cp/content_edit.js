@@ -72,15 +72,15 @@ $(document).ready(function() {
 
 			// Go through each of the individual settings and build a proper dom element
 			jQuery.each(details, function(group, values) {
-				var newval = new Array();
+				var html = new String();
 
 				// Add the new option fields
 				jQuery.each(values, function(a, b) {
-					newval.push(new Option(b[1].replace(spaceString, String.fromCharCode(160)), b[0]));
+					html += '<option value="' + b[0] + '">' + b[1].replace(spaceString, String.fromCharCode(160)) + "</option>";
 				});
 
 				// Set the new values
-				channel_oracle[key][group] = $(newval);
+				channel_oracle[key][group] = html;
 			});
 		});
 
