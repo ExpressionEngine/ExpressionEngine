@@ -390,10 +390,10 @@ $lang = array(
 'New Password',
 
 'password_confirm' =>
-'Password Confirm',
+'Confirm Password',
 
 'new_password_confirm' =>
-'New Password Confirm',
+'Confirm New Password',
 
 'existing_password' =>
 'Current Password',

@@ -509,7 +509,7 @@ content associated with your account will also be deleted.',
 'Update',
 
 'mbr_password_confirm' =>
-'Password Confirm',
+'Confirm Password',
 
 'mbr_auto_login' =>
 'Auto-login on future visits',
@@ -524,7 +524,7 @@ content associated with your account will also be deleted.',
 'Email Address',
 
 'mbr_email_confirm' =>
-'Email Address Confirm',
+'Confirm Email Address',
 
 'mbr_your_email' =>
 'Your Email Address',

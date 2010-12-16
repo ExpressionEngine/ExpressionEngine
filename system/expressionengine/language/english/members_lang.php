@@ -54,7 +54,7 @@ $lang = array(
 "Member Group Assignment",
 
 "password_confirm" =>
-"Password Confirm",
+"Confirm Password",
 
 "email" =>
 "Email",
