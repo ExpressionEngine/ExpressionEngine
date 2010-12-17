@@ -682,7 +682,7 @@ class Content_publish extends CI_Controller {
 			$this->db->select('template_groups.group_name, templates.template_name');
 			$this->db->from('template_groups, templates');
 			$this->db->where('exp_template_groups.group_id = exp_templates.group_id', NULL, FALSE);
-			$this->db->where('templates.template_id', $result->row('live_look_template'));
+			$this->db->where('templates.template_id', $resrow['live_look_template']);
 			
 			$res = $this->db->get();
 
@@ -920,7 +920,7 @@ class Content_publish extends CI_Controller {
 		{
 			$required = '';
 			
-			if ($fd['field_required'] == 'y')
+			if ($fd['field_required'] == 'y' && $fd['field_type'] != 'file')
 			{
 				$required = 'required|';				
 			}		

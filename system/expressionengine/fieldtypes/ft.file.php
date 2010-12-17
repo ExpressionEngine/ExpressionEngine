@@ -72,7 +72,7 @@ class File_ft extends EE_Fieldtype {
 		$hidden_field	= $this->field_name.'_hidden';
 		$hidden_dir		= ($this->EE->input->post($this->field_name.'_hidden_dir')) ? $this->EE->input->post($this->field_name.'_hidden_dir') : '';
 		$allowed_dirs	= array();
-
+		
 		// Default to blank - allows us to remove files
 		$_POST[$this->field_name] = '';
 		
