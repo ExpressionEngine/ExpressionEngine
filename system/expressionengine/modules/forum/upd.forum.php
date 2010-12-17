@@ -26,7 +26,7 @@
 
 class Forum_upd {
 
-	var $version			= '3.1.1';
+	var $version			= '3.1.2';
 	
 	function Forum_upd()
 	{
@@ -483,7 +483,7 @@ class Forum_upd {
 		}
 		
 		$this->EE->load->library('layout');
-		$this->EE->layout->add_layout_tabs($this->tabs());
+		$this->EE->layout->add_layout_tabs($this->tabs(), 'forum');
 
 		return TRUE;
 	}
@@ -889,7 +889,69 @@ class Forum_upd {
 			$this->EE->db->update('modules', $data);
 		}
 		
+		if ($current < '3.1.2')
+		{
+			$this->_do_312_update();
+		}
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * The publish page rewrite messed a few things up since we moved the 
+	 * forum/pages tabs into their own proper tab files.  This will correct
+	 * said issues with page layouts.
+	 *
+	 * @return void
+	 */
+	private function _do_312_update()
+	{
+		$this->EE->load->library('layout');
+		
+		$layouts = $this->EE->db->get('layout_publish');
+		
+		if ($layouts->num_rows() === 0)
+		{
+			return;
+		}
+		
+		$layouts = $layouts->result_array();
+		
+		$old_forum_fields = array(
+							'forum_title',
+							'forum_body',
+							'forum_id',
+							'forum_topic_id',
+						);	
+
+		foreach ($layouts as &$layout)
+		{
+			$old_layout = unserialize($layout['field_layout']);
+
+			foreach ($old_layout as $tab => &$fields)
+			{
+				$field_keys = array_keys($fields);				
+
+				foreach ($field_keys as &$key)
+				{
+					if (in_array($key, $old_forum_fields))
+					{
+						$key = 'forum__'.$key;
+					}
+				}
+
+				$fields = array_combine($field_keys, $fields);
+			}
+
+			$layout['field_layout'] = serialize($old_layout);
+
+		}
+		
+		$this->EE->db->update_batch('layout_publish', $layouts, 'layout_id');
+		
+		return TRUE;
+	}
+
 
 }
 // END CLASS
