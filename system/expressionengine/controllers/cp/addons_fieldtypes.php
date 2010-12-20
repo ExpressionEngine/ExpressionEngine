@@ -54,6 +54,11 @@ class Addons_fieldtypes extends CI_Controller {
 
 		foreach ($fieldtypes as $fieldtype => $ft_info)
 		{
+			if ($fieldtype == 'hidden')
+			{
+				continue;
+			}
+			
 			// Name and Version
 			$name = $ft_info['name'];
 			$names[$ftcount] = strtolower($name);
