@@ -34,6 +34,42 @@ class Updater {
 
     function do_update()
     {
+		$this->EE->load->library('layout');
+		
+		$layouts = $this->EE->db->get('layout_publish');
+		
+		if ($layouts->num_rows() === 0)
+		{
+			return;
+		}
+		
+		$layouts = $layouts->result_array();
+
+		foreach ($layouts as &$layout)
+		{
+			$old_layout = unserialize($layout['field_layout']);
+
+			foreach ($old_layout as $tab => &$fields)
+			{
+				$field_keys = array_keys($fields);				
+
+				foreach ($field_keys as &$key)
+				{
+					if ($key = 'channel')
+					{
+						$key = 'new_channel';
+					}
+				}
+
+				$fields = array_combine($field_keys, $fields);
+			}
+
+			$layout['field_layout'] = serialize($old_layout);
+
+		}
+		
+		$this->EE->db->update_batch('layout_publish', $layouts, 'layout_id');
+		
 		return TRUE;
 	}
 }   

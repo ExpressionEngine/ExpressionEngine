@@ -1592,7 +1592,7 @@ class Content_publish extends CI_Controller {
 	 * @return	void
 	 */
 	private function _setup_tab_hierarchy($field_data, $layout_info)
-	{
+	{var_dumP($layout_info); exit;
 		// Do we have a layout? Woot, saves time!
 		if (is_array($layout_info))
 		{
