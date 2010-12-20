@@ -538,7 +538,7 @@ class Forum_upd {
 		$this->EE->config->_update_config(array(), array('forum_is_installed' => '', 'forum_trigger' => ''));
 
 		$this->EE->load->library('layout');
-		$this->EE->layout->delete_layout_tabs($this->tabs());
+		$this->EE->layout->delete_layout_tabs($this->tabs(), 'forum');
 
 		return TRUE;
 	}

@@ -137,7 +137,11 @@ class Forum_tab {
 		// No forums, nothing to show
 		if ($forum_id_override)
 		{
-			$settings = array('forum_id' => $settings['forum_id']);
+			$settings['forum_body']['field_type'] = 'hidden';
+			$settings['forum_title']['field_type'] = 'hidden';
+			$settings['forum_topic_id']['field_type'] = 'hidden';
+			
+	//		$settings = array('forum_id' => $settings['forum_id']);
 		}
 		
 		
