@@ -430,6 +430,8 @@ class Wizard extends CI_Controller {
 			$move_db_data = TRUE;
 		}
 		
+		// is correct db_prefix
+		
 		// Still not $db array?  Hm... what's going on here?
 		if ( ! isset($db))
 		{
@@ -886,16 +888,16 @@ PAPAYA;
 		}
 
 		// Connect to the database.  We pass a multi-dimensional array since
-		// that's what is normally found in the database config file		
+		// that's what is normally found in the database config file
+				
 		$db['expressionengine'] = array(
 										'hostname'	=> $this->userdata['db_hostname'],
 										'username'	=> $this->userdata['db_username'],
 										'password'	=> $this->userdata['db_password'],
 										'database'	=> $this->userdata['db_name'],
 										'dbdriver'	=> $this->userdata['dbdriver'],
-										'dbprefix'	=> ($this->userdata['db_prefix'] == '') ? 'exp' : $this->userdata['db_prefix'],
 										'pconnect'	=> ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
-										'dbprefix'	=> preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']),
+										'dbprefix'	=> ($config['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $config['db_prefix']),
 										'swap_pre'	=> 'exp_',
 										'db_debug'	=> TRUE, // We show our own errors
 										'cache_on'	=> FALSE,
@@ -2802,6 +2804,9 @@ PAPAYA;
 			}
 		}
 	 
+		// Let's redefine swap_pre just in case
+		$db[$active_group]['swap_pre'] = 'exp_';
+	
 	 	// Build the string
 		$str  = '<?php '." if ( ! defined('BASEPATH')) exit('No direct script access allowed');\n\n";
 		
