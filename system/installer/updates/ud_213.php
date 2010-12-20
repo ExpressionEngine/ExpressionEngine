@@ -40,7 +40,7 @@ class Updater {
 		
 		if ($layouts->num_rows() === 0)
 		{
-			return;
+			return TRUE;
 		}
 		
 		$layouts = $layouts->result_array();
@@ -55,7 +55,7 @@ class Updater {
 
 				foreach ($field_keys as &$key)
 				{
-					if ($key = 'channel')
+					if ($key == 'channel')
 					{
 						$key = 'new_channel';
 					}
