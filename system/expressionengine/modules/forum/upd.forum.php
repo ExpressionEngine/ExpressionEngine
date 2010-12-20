@@ -39,27 +39,27 @@ class Forum_upd {
 	{
 		$tabs['forum'] = array(
 			'forum_title'	=> array(
-								'visible'		=> 'true',
-								'collapse'		=> 'false',
-								'htmlbuttons'	=> 'true',
+								'visible'		=> TRUE,
+								'collapse'		=> FALSE,
+								'htmlbuttons'	=> TRUE,
 								'width'			=> '100%'
 								),
 			'forum_body'	=> array(
-								'visible'		=> 'true',
-								'collapse'		=> 'false',
-								'htmlbuttons'	=> 'true',
+								'visible'		=> TRUE,
+								'collapse'		=> FALSE,
+								'htmlbuttons'	=> TRUE,
 								'width'			=> '100%'
 								),
 			'forum_id'	=> array(
-								'visible'		=> 'true',
-								'collapse'		=> 'false',
-								'htmlbuttons'	=> 'true',
+								'visible'		=> TRUE,
+								'collapse'		=> FALSE,
+								'htmlbuttons'	=> TRUE,
 								'width'			=> '100%'
 								),								
 			'forum_topic_id'	=> array(
-								'visible'		=> 'true',
-								'collapse'		=> 'false',
-								'htmlbuttons'	=> 'true',
+								'visible'		=> TRUE,
+								'collapse'		=> FALSE,
+								'htmlbuttons'	=> TRUE,
 								'width'			=> '100%'
 								)
 				);	
