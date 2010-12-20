@@ -85,6 +85,9 @@ $("#showToolbarLink").find("a").one("click", function() {
 			items: "li:not(.addTabButton)"
 		});
 		
+		// EE._hidden_fields is defined at the bottom of publish.js
+		$(EE._hidden_fields).closest('.publish_field').show();
+		
 		$("a span", "#showToolbarLink").text(EE.lang.hide_toolbar);
 		$("#showToolbarLink").animate({
 			marginRight: "210"
@@ -127,6 +130,9 @@ $("#showToolbarLink").find("a").one("click", function() {
 		// Swap the image
 		$("#hideToolbarImg").hide();
 		$("#showToolbarImg").css("display", "inline");	// .show() uses block
+		
+		// EE._hidden_fields is defined at the bottom of publish.js
+		$(EE._hidden_fields).closest('.publish_field').hide();
 	}
 );
 
