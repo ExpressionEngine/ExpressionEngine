@@ -56,9 +56,9 @@ class Forum_tab {
 		
 		$forum_title 			= '';
 		$forum_body 			= '';
-		$forum_topic_id_desc	= '';
 		$forum_id				= array();
 		$forum_topic_id			= '';
+		$forum_topic_id_desc	= '';
 		$forum_id_override		= ($forumsq->num_rows() === 0) ? lang('forums_unavailable') : NULL;
 		
 		foreach ($forumsq->result() as $row)
@@ -137,19 +137,23 @@ class Forum_tab {
 		// No forums, nothing to show
 		if ($forum_id_override)
 		{
-			$settings = array('forum_id' => $settings['forum_id']);
+			$settings['forum_body']['field_type'] = 'hidden';
+			$settings['forum_title']['field_type'] = 'hidden';
+			$settings['forum_topic_id']['field_type'] = 'hidden';
+			
+	//		$settings = array('forum_id' => $settings['forum_id']);
 		}
 		
 		
 		// Edit - can't change text
 		if ($entry_id)
 		{
-			unset($settings['forum_body']);
-			unset($settings['forum_id']);
+			$settings['forum_id']['field_type'] = 'hidden';
+			$settings['forum_body']['field_type'] = 'hidden';
 			
 			if ( $forum_title == '')
 			{
-				unset($settings['forum_title']);
+				$settings['forum_title']['field_type'] = 'hidden';
 			}
 		}
 

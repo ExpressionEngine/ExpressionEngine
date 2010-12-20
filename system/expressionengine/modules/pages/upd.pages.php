@@ -25,28 +25,29 @@
  */
 class Pages_upd {
 
-	var $version		= '2.1';
+	var $version		= '2.2';
 
 	function Pages_upd($switch=TRUE)
 	{
-		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}
+
+	// ----------------------------------------------------------------------
 	
 	function tabs()
 	{
 		$tabs['pages'] = array(
 			'pages_template_id'	=> array(
-								'visible'		=> 'true',
-								'collapse'		=> 'false',
-								'htmlbuttons'	=> 'true',
+								'visible'		=> TRUE,
+								'collapse'		=> FALSE,
+								'htmlbuttons'	=> TRUE,
 								'width'			=> '100%'
 								),
 			
 			'pages_uri'		=> array(
-								'visible'		=> 'true',
-								'collapse'		=> 'false',
-								'htmlbuttons'	=> 'true',
+								'visible'		=> TRUE,
+								'collapse'		=> FALSE,
+								'htmlbuttons'	=> TRUE,
 								'width'			=> '100%'
 								)
 				);	
@@ -86,7 +87,7 @@ class Pages_upd {
 		}
 		
 		$this->EE->load->library('layout');
-		$this->EE->layout->add_layout_tabs($this->tabs());
+		$this->EE->layout->add_layout_tabs($this->tabs(), 'pages');
 
 		return TRUE;
 	}
@@ -145,7 +146,67 @@ class Pages_upd {
 			$this->EE->db->where('module_name', 'Pages');
 			$this->EE->db->update('modules', array('has_publish_fields' => 'y'));
 		}
+		
+		if ($current < '2.2')
+		{
+			$this->_do_22_update();
+		}
 	}
+
+	// ----------------------------------------------------------------------
+
+	/**
+	 * This is basically identical to the forum update script.
+	 *
+	 * @return void
+	 */
+	private function _do_22_update()
+	{
+		$this->EE->load->library('layout');
+		
+		$layouts = $this->EE->db->get('layout_publish');
+		
+		if ($layouts->num_rows() === 0)
+		{
+			return;
+		}
+		
+		$layouts = $layouts->result_array();
+		
+		$old_pages_fields = array(
+							'pages_uri',
+							'pages_template_id',
+						);	
+
+		foreach ($layouts as &$layout)
+		{
+			$old_layout = unserialize($layout['field_layout']);
+
+			foreach ($old_layout as $tab => &$fields)
+			{
+				$field_keys = array_keys($fields);				
+
+				foreach ($field_keys as &$key)
+				{
+					if (in_array($key, $old_pages_fields))
+					{
+						$key = 'pages__'.$key;
+					}
+				}
+
+				$fields = array_combine($field_keys, $fields);
+			}
+
+			$layout['field_layout'] = serialize($old_layout);
+
+		}
+		
+		$this->EE->db->update_batch('layout_publish', $layouts, 'layout_id');
+		
+		return TRUE;
+	}
+
+
 }
 // END CLASS
 
