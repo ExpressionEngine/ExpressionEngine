@@ -1030,4 +1030,18 @@ $(document).ready(function() {
 	}
 	
 	EE.publish.category_editor();
+	
+	// @todo if admin bridge
+	if (EE.publish.hidden_fields) {
+		EE._hidden_fields = [];
+		
+		var inputs = $("input");
+					
+		$.each(EE.publish.hidden_fields, function(k) {
+			EE._hidden_fields.push(inputs.filter("[name="+k+"]")[0]);
+		});
+		
+		$(EE._hidden_fields).after('<p class="hidden_blurb">This module field only shows in certain circumstances. This is a placeholder to let you define it in your layout.</p>');
+	}
+	
 });

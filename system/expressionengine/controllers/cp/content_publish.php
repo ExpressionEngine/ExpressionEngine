@@ -222,17 +222,18 @@ class Content_publish extends CI_Controller {
 		// if this is a layout group preview, we'll use it, otherwise, we'll use the author's group_id
 		
 		$layout_info = $this->_load_layout($channel_id);
-
+		
 
 		// First figure out what tabs to show, and what fields
 		// they contain. Then work through the details of how
 		// they are show.
-	
+		
 		$tab_hierarchy	= $this->_setup_tab_hierarchy($field_data, $layout_info);
 		$layout_styles	= $this->_setup_layout_styles($field_data, $layout_info);
 		$field_list		= $this->_sort_field_list($field_data);		// @todo admin only? or use as master list? skip sorting for non admins, but still compile?
 		$field_list		= $this->_prep_field_wrapper($field_list);
-
+		
+		
 		$field_output	= $this->_setup_field_display($field_data);
 		
 		// Start to assemble view data
@@ -1531,9 +1532,14 @@ class Content_publish extends CI_Controller {
 		}
 
 		// check for api errors
-		// @confirm, would be better off in the else for validation::run
-		foreach ($layout as $name => $info)
+		// @confirm, would be better off in the else for validation::run?
+		foreach ($layout as $name => &$info)
 		{
+			if ($this->session->userdata('group_id') != 1 && $field_data[$name]['field_type'] == 'hidden')
+			{
+				$info['visible'] = FALSE;
+			}
+			
 			if (isset($this->errors[$name]))
 			{
 				$this->form_validation->_field_data[$name]['error'] = $this->errors[$name];
@@ -1594,7 +1600,7 @@ class Content_publish extends CI_Controller {
 			
 			foreach ($layout_info as $tab => $fields)
 			{
-				$this->_tab_labels[$tab] = $fields['_tab_label'];
+				$this->_tab_labels[$tab] = isset($fields['_tab_label']) ? $fields['_tab_label'] : $tab;
 				
 				unset($fields['_tab_label']);
 				$hierarchy[$tab] = array_keys($fields);
