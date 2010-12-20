@@ -131,7 +131,7 @@ class Forum_tab {
 				'field_text_direction'	=> 'ltr',
 				'field_maxl'			=> '',
 				'field_instructions'	=> lang('forum_topic_id_exitsts')
-			),
+			)
 		);
 		
 		// No forums, nothing to show
