@@ -574,15 +574,15 @@ var empty_select = new Option("{$none_text}", 'none');
 		
 		// Go through each of the individual settings and build a proper dom element
 		jQuery.each(details, function(group, values) {
-			var newval = new Array();
+			var html = new String();
 			
 			// Add the new option fields
 			jQuery.each(values, function(a, b) {
-				newval.push(new Option(b[1], b[0]));
+				html += '<option value="' + b[0] + '">' + b[1] + "</option>";
 			});
 
 			// Set the new values
-			channel_map[key][group] = $(newval);
+			channel_map[key][group] = html;
 		});
 	});
 	
@@ -603,9 +603,9 @@ function changemenu(index)
 			if (key == 'fields')
 			{
 				$('select[name=excerpt_field_id]').empty().append(val);
-				$('select[name=content_field_id]').empty().append(val.clone());
-				$('select[name=more_field_id]').empty().append(val.clone());
-				$('select[name=keywords_field_id]').empty().append(val.clone());				
+				$('select[name=content_field_id]').empty().append(val);
+				$('select[name=more_field_id]').empty().append(val);
+				$('select[name=keywords_field_id]').empty().append(val);				
 			}
 		});
 	}
