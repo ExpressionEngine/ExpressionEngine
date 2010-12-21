@@ -1615,7 +1615,7 @@ class Content_publish extends CI_Controller {
 			'publish'		=> array('title', 'url_title'),
 			'date'			=> array('entry_date', 'expiration_date', 'comment_expiration_date'),
 			'categories'	=> array('category'),
-			'options'		=> array('channel', 'status', 'author', 'options', 'ping'),
+			'options'		=> array('new_channel', 'status', 'author', 'options', 'ping'),
 		);
 
 		if (isset($this->_channel_data['enable_versioning']) 
@@ -1895,7 +1895,7 @@ class Content_publish extends CI_Controller {
 
 				
 		$settings['author'] 	= $this->_build_author_select($entry_data);
-		$settings['channel']	= $this->_build_channel_select();
+		$settings['new_channel']	= $this->_build_channel_select();
 		$settings['status']		= $this->_build_status_select($entry_data);
 
 		return $settings;
@@ -2136,8 +2136,8 @@ class Content_publish extends CI_Controller {
 		}
 		
 		$settings = array(
-			'channel'	=> array(
-				'field_id'				=> 'channel',
+			'new_channel'	=> array(
+				'field_id'				=> 'new_channel',
 				'field_label'			=> lang('channel'),
 				'field_required'		=> 'n',
 				'field_instructions'	=> '',
@@ -2149,8 +2149,8 @@ class Content_publish extends CI_Controller {
 			)
 		);
 
-		$this->api_channel_fields->set_settings('channel', $settings['channel']);
-		return $settings['channel'];		
+		$this->api_channel_fields->set_settings('new_channel', $settings['new_channel']);
+		return $settings['new_channel'];		
 	}
 
 	// --------------------------------------------------------------------

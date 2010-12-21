@@ -2855,6 +2855,22 @@ p.file_tool {
 	display:			none;
 }
 
+html.js .publish_hidden {
+	display:			none;
+}
+
+.publish_hidden {
+	opacity:			0.5;
+}
+
+.publish_hidden .instruction_text {
+	display:			none;
+}
+
+.publish_hidden .hidden_blurb {
+	text-align:			center;
+	padding:			10px 5px;
+}
 
 #publish_tab .publish_textarea .button_mode_holder {
 	margin-top:			12px;
