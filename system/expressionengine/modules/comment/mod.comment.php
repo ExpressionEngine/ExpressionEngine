@@ -2512,6 +2512,9 @@ class Comment {
 			{
 				$error[] = $this->EE->lang->line('cmt_name_not_allowed');
 			}
+			
+			// Let's make sure they aren't putting in funky html to bork our screens
+			$_POST['name'] = str_replace(array('<', '>'), array('&lt;', '&gt;'), $_POST['name']);			
 
 			/** ----------------------------------------
 			/**  Missing or invalid email address
