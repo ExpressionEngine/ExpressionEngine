@@ -609,15 +609,10 @@ class Comment {
 		
 		if ($query->num_rows() > 0)
 		{
-			$i = 0;
-			foreach ($query->result_array() as $row)
-			{
-				$results[$row['comment_id']] = $query->result_array[$i];
-				$i++;
-			}
+			$results = $query->result_array();
 					
-		// Potentially a lot of information
-		$query->free_result();
+			// Potentially a lot of information
+			$query->free_result();
 		}
 
 		/** ----------------------------------------
