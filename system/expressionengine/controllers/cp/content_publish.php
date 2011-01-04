@@ -33,6 +33,7 @@ class Content_publish extends CI_Controller {
 	private $_publish_blocks 	= array();
 	private $_publish_layouts 	= array();
 	private $_errors			= array();
+	private $_assigned_channels = array();
 	private $_smileys_enabled	= FALSE;
 
 	/**
@@ -52,6 +53,8 @@ class Content_publish extends CI_Controller {
 		$this->load->model('channel_model');
 		$this->load->helper(array('typography', 'spellcheck'));
 		$this->cp->get_installed_modules();
+		
+		$this->_assigned_channels = $this->functions->fetch_assigned_channels();
 	}
 	
 	// --------------------------------------------------------------------
@@ -320,10 +323,8 @@ class Content_publish extends CI_Controller {
 		$entry_id	= (int) $this->input->get_post('entry_id');
 		$channel_id	= (int) $this->input->get_post('channel_id');
 		
-		$assigned_channels = $this->functions->fetch_assigned_channels();
-		
 		// can they access this channel?
-		if ( ! $channel_id OR ! in_array($channel_id, $assigned_channels))
+		if ( ! $channel_id OR ! in_array($channel_id, $this->_assigned_channels))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -510,9 +511,7 @@ class Content_publish extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$assigned_channels = $this->functions->fetch_assigned_channels();
-
-		if ( ! in_array($channel_id, $assigned_channels))
+		if ( ! in_array($channel_id, $this->_assigned_channels))
 		{
 			show_error(lang('unauthorized_for_this_channel'));
 		}
@@ -942,8 +941,6 @@ class Content_publish extends CI_Controller {
 	{
 		$this->load->model('channel_entries_model');
 		
-		$assigned_channels = $this->functions->fetch_assigned_channels();
-		
 		// A given entry id is either a real channel entry id
 		// or the unique id for an autosave row.
 		
@@ -976,18 +973,18 @@ class Content_publish extends CI_Controller {
 		
 		if ( ! $channel_id)
 		{
-			if ( ! count($assigned_channels))
+			if ( ! count($this->_assigned_channels))
 			{
 				show_error(lang('unauthorized_access'));
 			}
 			
-			if (count($assigned_channels) > 1)
+			if (count($this->_assigned_channels) > 1)
 			{
 				// go to the channel select list
 				$this->functions->redirect('C=content_publish');
 			}
 
-			$channel_id = $assigned_channels[0];
+			$channel_id = $this->_assigned_channels[0];
 		}
 		
 		// After all that mucking around, double check to make
@@ -995,7 +992,7 @@ class Content_publish extends CI_Controller {
 				
 		$channel_id = (int) $channel_id;
 		
-		if ( ! $channel_id OR ! in_array($channel_id, $assigned_channels))
+		if ( ! $channel_id OR ! in_array($channel_id, $this->_assigned_channels))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -2114,14 +2111,16 @@ class Content_publish extends CI_Controller {
 														$this->_channel_data['cat_group'], 
 														$this->_channel_data['field_group']
 													);
-
+		
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result_array() as $row)
 			{
-				if ($this->session->userdata['group_id'] == 1 OR in_array($row['channel_id'], $assigned_channels))
+				if ($this->session->userdata('group_id') == 1 OR 
+					in_array($row['channel_id'], $this->_assigned_channels))
 				{
-					if (isset($_POST['new_channel']) && is_numeric($_POST['new_channel']) && $_POST['new_channel'] == $row['channel_id'])
+					if (isset($_POST['new_channel']) && is_numeric($_POST['new_channel']) && 
+						$_POST['new_channel'] == $row['channel_id'])
 					{
 						$menu_channel_selected = $row['channel_id'];
 					}
