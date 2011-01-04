@@ -600,7 +600,7 @@ class Content_edit extends CI_Controller {
 			}
 
 			// Channel entry title (view entry)			
-			$output = anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$id_column.$filter, $row['title']);
+			$output = anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$row['channel_id'].AMP.'entry_id='.$row['entry_id'].$filter, $row['title']);
 			
 			$output .= isset($autosave_array[$row['entry_id']]) ? NBS.required() : '';
 			$vars['entries'][$id_column][] = $output;
