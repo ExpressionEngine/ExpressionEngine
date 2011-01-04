@@ -150,8 +150,6 @@ fields before sending it to the desktop program.',
 'blogger_create_new' =>
 'Create New Configuration',
 
-
-
 ''=>''
 );
 
