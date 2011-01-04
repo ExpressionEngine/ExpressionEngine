@@ -24,19 +24,16 @@
 
 class Stats {
 
-	var $return_data 	= '';
+	public $return_data = '';
 
 	/**
 	 *  Constructor
 	 */
-	function Stats()
+	public function Stats()
 	{
 		$this->EE =& get_instance();
-		
-		if ( ! isset($this->EE->stats->statdata) OR empty($this->EE->stats->statdata))
-		{
-			$this->EE->stats->load_stats();
-		}
+
+		$this->EE->stats->load_stats();
 
 		// Limit stats by channel
 		// You can limit the stats by any combination of channels
@@ -124,7 +121,7 @@ class Stats {
 		//  Parse dates
 		$dates = array('last_entry_date', 'last_forum_post_date', 
 						'last_comment_date', 'last_visitor_date', 'most_visitor_date');
-
+		
 		foreach ($this->EE->TMPL->var_single as $key => $val)
 		{	
 			foreach ($dates as $date)

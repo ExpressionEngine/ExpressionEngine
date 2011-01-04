@@ -60,13 +60,10 @@ class EE_Stats {
 		$time_limit = 15; // Number of minutes to track users
 
 		//  Fetch current user's name
+		$name = '';
 		if ($this->EE->session->userdata('member_id') != 0)
 		{
 			$name = ($this->EE->session->userdata('screen_name') == '') ? $this->EE->session->userdata('username') : $this->EE->session->userdata('screen_name');
-		}
-		else
-		{
-			$name = '';
 		}
 
 		// Is user browsing anonymously?
@@ -296,25 +293,24 @@ class EE_Stats {
 	 */
 	function update_member_stats()
 	{
-		$this->EE->db->select_max('member_id', 'max_id');
-		$query = $this->EE->db->get('members');
+		$query = $this->EE->db->select_max('member_id', 'max_id')
+							  ->get('members');
 		
-		$this->EE->db->select('screen_name, member_id');
-		$this->EE->db->where('member_id', $query->row('max_id'));
-		$query = $this->EE->db->get('members');
+		$query = $this->EE->db->select('screen_name, member_id')
+							  ->where('member_id', $query->row('max_id'))
+							  ->get('members');
 
-		$name	= $query->row('screen_name') ;
-		$mid	= $query->row('member_id') ;
+		$name = $query->row('screen_name');
+		$mid  = $query->row('member_id');
 		
-		$this->EE->db->where_not_in('group_id', array('4', '2'));
-		$this->EE->db->select('COUNT(*) as count');
-		$query = $this->EE->db->get('members');
+		$query = $this->EE->db->where_not_in('group_id', array('4', '2'))
+							  ->select('COUNT(*) as count')
+							  ->get('members');
 
 		$data = array(
 				'total_members'		=> $query->row('count'),
 				'recent_member'		=> $name,
 				'recent_member_id'	=> $mid
-			
 			);
 		
 		$this->EE->db->update('stats', $data);
@@ -351,15 +347,15 @@ class EE_Stats {
 			$this->EE->db->where('channel_id', (int) 0);			
 		}
 		
-		$this->EE->db->where('entry_date <', $this->EE->localize->now);
-		$this->EE->db->where('(expiration_date = 0 OR expiration_date > '.$this->EE->localize->now.')');
-		$this->EE->db->where('status !=', 'closed');
+		$now = $this->EE->localize->now;
 		
-		$query = $this->EE->db->get('channel_titles');
+		$query = $this->EE->db->where('entry_date <', $now)
+							  ->where('(expiration_date = 0 OR expiration_date > '.$now.')')
+							  ->where('status !=', 'closed')
+							  ->get('channel_titles');
 		
 		$total = $query->row('count');
-		
-		
+				
 		$this->EE->db->select('MAX(entry_date) as max_date');
 		
 		if ($channel_ids !== FALSE)
@@ -371,12 +367,11 @@ class EE_Stats {
 			$this->EE->db->where('channel_id', (int) 0);			
 		}
 
-		$this->EE->db->where('entry_date <', $this->EE->localize->now);
-		$this->EE->db->where('(expiration_date = 0 OR expiration_date > '.$this->EE->localize->now.')');
-		$this->EE->db->where('status !=', 'closed');
+		$query = $this->EE->db->where('entry_date <', $now)
+							  ->where('(expiration_date = 0 OR expiration_date > '.$now.')')
+							  ->where('status !=', 'closed')
+							  ->get('channel_titles');
 
-		$query = $this->EE->db->get('channel_titles');
-		
 		$date = ($query->num_rows() == 0 OR ! is_numeric($query->row('max_date') )) ? 0 : $query->row('max_date') ;
 
 		$d = array(
@@ -395,32 +390,25 @@ class EE_Stats {
 			
 			$site_id = $query->row('site_id') ;
 
-			$this->EE->db->select('COUNT(*) as count, MAX(entry_date) as max_date');
-			$this->EE->db->where('channel_id', (int) $channel_id);
-			$this->EE->db->where('entry_date <', $this->EE->localize->now);
-			$this->EE->db->where('(expiration_date = 0 OR expiration_date > '.$this->EE->localize->now.')');
-			$this->EE->db->where('status !=', 'closed');
-			$query = $this->EE->db->get('channel_titles');	
-			
-			$total = $query->row('count');
-
-			$this->EE->db->select('');
-			$this->EE->db->where('channel_id', (int) $channel_id);
-			$this->EE->db->where('entry_date <', $this->EE->localize->now);
-			$this->EE->db->where('(expiration_date = 0 OR expiration_date > '.$this->EE->localize->now.')');
-			$this->EE->db->where('status !=', 'closed');
-			$query = $this->EE->db->get('channel_titles');			
+			$query = $this->EE->db->select('COUNT(*) as count, MAX(entry_date) as max_date')
+								  ->where('channel_id', (int) $channel_id)
+								  ->where('entry_date <', $now)
+								  ->where('(expiration_date = 0 OR expiration_date > '.$now.')')
+								  ->where('status !=', 'closed')
+								  ->get('channel_titles');	
 			
 			$date = ($query->num_rows() == 0 OR ! is_numeric($query->row('max_date') )) ? 0 : $query->row('max_date') ;
+			
+			$total = $query->row('count');
 			
 			$d = array(
 					'total_entries'		=> $total,
 					'last_entry_date'	=> $date
 				);
 			
-			$this->EE->db->where('site_id', $site_id);
-			$this->EE->db->where('channel_id', $channel_id);
-			$this->EE->db->update('channels', $d);
+			$this->EE->db->where('site_id', $site_id)
+						 ->where('channel_id', $channel_id)
+						 ->update('channels', $d);
 		}
 
 		if ($this->cache_off)
@@ -564,16 +552,21 @@ class EE_Stats {
 	 */
 	function load_stats()
 	{
+		if (isset($this->_statdata))
+		{
+			return;
+		}
+		
+		
 		$time_limit = 15; // Number of minutes to track users
 
 		// Fetch current user's name
+		$name = '';
+		
 		if ($this->EE->session->userdata('member_id') != 0)
 		{
-			$name = ($this->EE->session->userdata('screen_name') == '') ? $this->EE->session->userdata('username') : $this->EE->session->userdata('screen_name');
-		}
-		else
-		{
-			$name = '';
+			$name = ($this->EE->session->userdata('screen_name') == '') ? 
+				$this->EE->session->userdata('username') : $this->EE->session->userdata('screen_name');
 		}
 
 		// Is user browsing anonymously?
@@ -653,7 +646,7 @@ class EE_Stats {
 		
 		$query = $this->EE->db->get_where('stats', array('site_id' => $this->EE->config->item('site_id')));
 
-		$this->EE->stats->_statdata = array(
+		$this->_statdata = array(
 					'recent_member'				=> $query->row('recent_member'),
 					'recent_member_id'			=> $query->row('recent_member_id'),
 					'total_members'				=> $query->row('total_members'),
