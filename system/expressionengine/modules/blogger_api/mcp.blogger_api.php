@@ -24,253 +24,237 @@
  */
 class Blogger_api_mcp {
 
-	/**
-	  * Constructor
-	  */
-	function Blogger_api_mcp( $switch = TRUE )
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-		$this->EE->load->helper('form');
+	protected $_module_base_url;
 
+	public function __construct()
+	{
+		$this->EE =& get_instance();
+		
+		$this->EE->load->helper('form');
+		
+		$this->_module_base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blogger_api';
+		
 		$this->EE->cp->set_right_nav(array(
-					'blogger_create_new' => BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blogger_api'.AMP.'method=create', 
-				));		
+			'blogger_create_new' => $this->_module_base_url.AMP.'method=create_modify',
+		));
 	}
+
+	// ------------------------------------------------------------------------
 
 	/**
 	  *  Control Panel index
 	  */
 	function index()
 	{
-		$this->EE->load->library('table');
-		$this->EE->load->library('javascript');
-
-		$this->EE->cp->add_js_script(array('fp_module' => 'blogger_api'));
-
-		$vars['cp_page_title'] = $this->EE->lang->line('blogger_api_module_name');
-
-		$api_url = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->cp->fetch_action_id('Blogger_api', 'incoming');
-
+		$this->EE->load->library(array('table', 'javascript'));
 		$this->EE->load->model('blogger_api_model');
+		$this->EE->cp->add_js_script(array('fp_module' => 'blogger_api'));
+		
+		$vars = array(
+			'cp_page_title'		=> lang('blogger_api_module_name'),
+			'blogger_prefs'		=> array()
+		);
+		
+		$api_url = $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT='.$this->EE->cp->fetch_action_id('Blogger_api', 'incoming');
 		
 		$query = $this->EE->blogger_api_model->get_blogger_prefs();
-
-		$this->EE->javascript->compile();
 		
-		$vars['blogger_prefs'] = array();
+		foreach($query->result() as $row)
+		{
+			$vars['blogger_prefs'][$row->blogger_id] = array(
+					'id'		=> $row->blogger_id,
+					'name'		=> $row->blogger_pref_name,
+					'url'		=> $api_url.'&id='.$row->blogger_id,
+					'toggle'	=> array(
+						'name'		=> 'toggle[]',
+						'id'		=> "module_{$row->blogger_id}",
+						'value'		=> $row->blogger_id,
+						'class'		=> 'toggle' 
+					)
+			);
+		}
 		
-		if ($query->num_rows() == 0)
-		{
-			return $this->EE->load->view('index', $vars, TRUE);
-		}
-
-		foreach ($query->result() as $row)
-		{
-
-			$vars['blogger_prefs'][$row->blogger_id]['id'] = $row->blogger_id;
-			$vars['blogger_prefs'][$row->blogger_id]['name'] = $row->blogger_pref_name;
-			$vars['blogger_prefs'][$row->blogger_id]['url'] = $api_url.'&id='.$row->blogger_id;
-			$vars['blogger_prefs'][$row->blogger_id]['toggle'] = array(
-																			'name'		=> 'toggle[]',
-																			'id'		=> 'module_'.$row->blogger_id,
-																			'value'		=> $row->blogger_id,
-																			'class'		=>'toggle'
-			    														);
-		}
-
+		
 		return $this->EE->load->view('index', $vars, TRUE);
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
-	  *  Create
-	  */
-	function create()
+	 * Create or Modify a blogger API configuration
+	 *
+	 * 
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 */
+	public function create_modify()
 	{
-		return $this->modify('new');
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	  *  Modify Configuration
-	  */
-	function modify($id = '')
-	{
-		$id = ( ! $this->EE->input->get('id')) ? $id : $this->EE->input->get_post('id');
-
-		if ($id == '')
-		{
-			return $this->index();
-		}
-
-		//  Form Values
-		$vars['field_id']		= '1:2';
-		$vars['pref_name']		= '';
-		$vars['block_entry']	= 'n';
-		$vars['parse_type']		= 'y';
-		$vars['text_format']	= 'false';
-		$vars['html_format']	= 'safe';
-		$vars['submit_text']	= 'submit';
+		$id = ( ! $this->EE->input->get('id')) ? 0 : (int) $this->EE->input->get('id');
 		
-		if ($id != 'new')
-		{
-			$vars['submit_text']	= 'update';
+		$this->EE->load->model(array('blogger_api_model', 'channel_model'));
 
-			$this->EE->load->model('blogger_api_model');
-			
+		$vars = array(
+			'cp_page_title'	=> ($id === 0) ? lang('new_config') : lang('modify_config'),
+			'field_id'		=> '1:2',
+			'pref_name'		=> '',
+			'block_entry'	=> 'n',
+			'parse_type'	=> 'y',
+			'text_format'	=> False,
+			'html_format'	=> 'safe',
+			'submit_text'	=> ($id === 0) ? 'submit' : 'update',
+			'form_hidden'	=> array(
+						'id'	=> $id,
+			),
+		);
+		
+		if ($id !== 0)
+		{
 			$query = $this->EE->blogger_api_model->get_prefs_by_id($id);
-
-			if ($query->num_rows() == 0)
+			
+			if ($query->num_rows() === 0)
 			{
-				return $this->index();
+				// Something has gone wrong, or someone is messing with URLs
+				// in anycase, error out.
+				show_error(lang('not_authorized'));
 			}
-
-			foreach($query->row_array() as $name => $pref)
-			{
-				$name	= str_replace('blogger_', '', $name);
-				$vars["$name"] = $pref;
-			}
+			
+			// @todo, finish this!
 		}
-
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blogger_api', $this->EE->lang->line('blogger_api_module_name'));
-
-		$vars['cp_page_title'] = ($id == 'new') ? $this->EE->lang->line('new_config') : $this->EE->lang->line('modify_config');
-
-		$vars['form_hidden']['id'] =$id;
-
-		// Fetch Channels
-		$allowed_groups = array();
-		$channel_array = array();
-		$group_array = array();
 		
-		$this->EE->load->model('channel_model');
+		$allowed_groups	= array();
+		$channel_array 	= array();
+		$group_array 	= array();
+		
 		$fields = array('channel_id', 'field_group', 'channel_title');
-
+		
 		$query = $this->EE->channel_model->get_channels('all', $fields);
-
-
+		
 		if ($query && $query->num_rows() > 0)
 		{
-			foreach ($query->result_array() as $row)
+			foreach ($query->result() as $row)
 			{
-				$allowed_groups[$row['field_group']] = array($row['channel_id'], $row['channel_title']);
-				//$channel_array[$row['channel_id']] = array($row['field_group'], $row['channel_title']);
+				if ($row->field_group != NULL)
+				{
+					$allowed_groups[$row->field_group] = array(
+						$row->channel_id,
+						$row->channel_title
+					);					
+				}
+				
 			}
-
-				//  And only select field groups that are actually assigned to channels
 			
-				$this->EE->db->select('group_id, group_name, site_label');
-				$this->EE->db->from('field_groups');
-				$this->EE->db->where_in('group_id', array_keys($allowed_groups));		
-				$this->EE->db->join('sites', 'sites.site_id = field_groups.site_id');
-		
-				if ($this->EE->config->item('multiple_sites_enabled') !== 'y')
-				{
-					$this->EE->db->where('field_groups.site_id', '1');
-				}
-		
-				$query = $this->EE->db->get();
+			$msm_enabled = $this->EE->config->item('multiple_sites_enabled');
+			
+			// Only elect field groups that are actually assigned to channels
+			if ($msm_enabled !== 'y')
+			{
+				$this->EE->db->where('field_groups.site_id', '1');
+			}
+			
+			$qry = $this->EE->db->select('group_id, group_name, site_label')
+								->from('field_groups')
+								->where_in('group_id', array_keys($allowed_groups))		
+								->join('sites', 'sites.site_id = field_groups.site_id')
+								->get();
 
-				if ($query->num_rows() > 0)
+			if ($qry->num_rows() > 0)
+			{
+				foreach ($qry->result() as $row)
 				{
-					foreach ($query->result_array() as $row)
-					{
-						//  if (! isset($channel_array[$allowed_groups[$row['group_id']]])) continue;
-						
-						$label = ($this->EE->config->item('multiple_sites_enabled') === 'y') ? $row['site_label'].NBS.'-'.NBS.$allowed_groups[$row['group_id']['1']] : $allowed_groups[$row['group_id']['1']];
-						$channel_array[$allowed_groups[$row['group_id']['0']]] = array(str_replace('"','',$label), $row['group_name']);
-					}
-				}
+					$label = ($msm_enabled == 'y') ? 
+						$row->site_label.NBS.'-'.NBS.$allowed_groups[$row->group_id] :
+						$allowed_groups[$row->group_id[0]];
+
+					$channel_array[$allowed_groups[$row->group_id][0]] = 
+								array(str_replace('"','',$label), $row->group_name);
+				}	
+			}	
 		}
 
-		// Fetch Fields
 		$field_array = array();
 		
 		$query = $this->EE->blogger_api_model->get_channel_fields();
-
+		
 		if ($query->num_rows() > 0)
 		{
-			foreach($query->result_array() as $row)
+			foreach ($query->result() as $row)
 			{
-				$field_array[$row['group_id']][] = array($row['field_id'], $row['group_id'], $row['field_name']);
+				$field_array[$row->group_id][] = array(
+													$row->field_id,
+													$row->group_id,
+													$row->field_name,
+												);
 			}
 		}
-
-		// Fields to Channels
+		
 		$channel_fields = array();
 		
-
-		foreach($channel_array as $channel_id => $meta_channel)
+		foreach ($channel_array as $channel_id => $meta_channel)
 		{
-			/*
-			for($i = 0; $i < count($field_array); $i++)
+			for ($i = 1; $i <= count($field_array); $i++)
 			{
-				if ($field_array[$i]['1'] == $meta_channel['0'])
-				{
-					$channel_fields[$channel_id][] = array($field_array[$i]['0'], $field_array[$i]['2']);
-				}
+				// var_dump($field_array[$i][1], $meta_channel);
+
+				
+				// if ($field_array[$i][1] == $meta_channel[0])
+				// {
+				// 	$channel_fields[$channel_id][] = array($field_array[$i][0], $field_array[$i][2]);
+				// }
 			}
-			*/
+
+			// echo $channel_id.':'.$field_array[$channel_id][0][1]."<br>";
 			
-			$vars['field_id_options'][$channel_id.':'.$field_data[$i]['0']] = $channel_array[$channel_id]['1'].' : '.$field_data[$i]['1'];
+			
+			// $vars['field_id_options'][$channel_id.':'.$field_array[$channel_id[0]]] = 
+			// 	$channel_array[$channel_id[1].' : '.$field_array[$channel_id[0]]];
+
+
+			
 		}
+
 
 		$x = explode(':',$vars['field_id']);
 		$channel_match = ( ! isset($x['1'])) ? '1' : $x['0'];
 		$field_match  = ( ! isset($x['1'])) ? $x['0'] : $x['1'];
-
-		$vars['field_id_options'] = array();
-		$vars['field_id_selected'] = $vars['field_id'];
-
-		$t = 1;
-
-		/*
-		foreach($channel_fields as $channel_id => $field_data)
-		{
-			$t++;
-
-			for($i = 0; $i < count($field_data); $i++)
-			{
-				$selected = ($channel_id == $channel_match && $field_data[$i]['0'] == $field_match) ? 'y' : '';
-				$vars['field_id_options'][$channel_id.':'.$field_data[$i]['0']] = $channel_array[$channel_id]['1'].' : '.$field_data[$i]['1'];
-			}
-
-			if ($t <= count($channel_fields))
-			{
-				$vars['field_id_options'][$t] = NBS.'----------'.NBS;
-			}
-		}
-		*/
-
-		$vars['block_entry_options'] = array(
-												'y'=>$this->EE->lang->line('yes'),
-												'n'=>$this->EE->lang->line('no')
-											);
-		$vars['block_entry_selected'] = ($vars['block_entry'] == 'n') ? 'n' : 'y';
-
-		$vars['parse_type_options'] = array(
-												'y'=>$this->EE->lang->line('yes'),
-												'n'=>$this->EE->lang->line('no')
-										);
-		$vars['parse_type_selected'] = ($vars['parse_type'] == 'n') ? 'n' : 'y';
-
-		$vars['text_format_options'] = array(
-												'y'=>$this->EE->lang->line('yes'),
-												'n'=>$this->EE->lang->line('no')
-										);
-		$vars['text_format_selected'] = ($vars['text_format'] == 'n') ? 'n' : 'y';
-
-		$vars['html_format_options'] = array(
-												'none'=>$this->EE->lang->line('none'),
-												'safe'=>$this->EE->lang->line('safe'),
-												'all'=>$this->EE->lang->line('all')
-											);
-
-		$fields	= array('id', 'pref_name', 'field_id', 'block_entry', 'parse_type', 'text_format', 'html_format');
 		
+		$v = array(
+			'field_id_options'		=> array(),
+			'field_id_selected'		=> $vars['field_id'],
+			'block_entry_options'	=> array(
+										'y'	=> lang('yes'),
+										'n'	=> lang('no')
+									),
+			'block_entry_selected'	=> ($vars['block_entry'] == 'n') ? 'n' : 'y',
+			'parse_type_options'	=> array(
+										'y'	=> lang('yes'),
+										'n'	=> lang('no')
+									),
+			'parse_type_selected'	=> ($vars['parse_type'] == 'n') ? 'n' : 'y',
+			'text_format_options'	=> array(
+										'y'	=> lang('yes'),
+										'n'	=> lang('no')
+									),
+			'text_format_selected'	=> ($vars['text_format'] == 'n') ? 'n' : 'y',
+			'html_format_options'	=> array(
+										'none'	=> lang('none'),
+										'safe'	=> lang('safe'),
+										'all'	=> lang('all')
+									)
+		);
+
+		$vars = array_merge($vars, $v);
+
+		$fields	= array(
+						'id', 'pref_name', 'field_id', 'block_entry', 
+						'parse_type', 'text_format', 'html_format'
+					);
+
 		foreach ($fields as $val)
 		{
 			if ($this->EE->input->post($val))
@@ -285,60 +269,100 @@ class Blogger_api_mcp {
 	// ------------------------------------------------------------------------
 
 	/**
-	  * Save Configuration
-	  */
+	 * Save Configuration
+	 */
 	function save()
 	{
 		$this->EE->load->library('form_validation');
-		$data		= array();
+		$this->EE->load->model('blogger_api_model');
+		
+		$data = array();
 
-		$this->EE->form_validation->set_rules('id',				'lang:blogger_id',			'required');
-		$this->EE->form_validation->set_rules('pref_name',		'lang:blogger_pref_name',	'required');		
-		$this->EE->form_validation->set_rules('field_id',		'lang:blogger_default_field',	'required');
-		$this->EE->form_validation->set_rules('block_entry',	'lang:blogger_block_entry',	'required');
-		$this->EE->form_validation->set_rules('parse_type',		'lang:blogger_parse_type',	'required');
-		$this->EE->form_validation->set_rules('text_format',	'lang:blogger_text_format',	'required');
-		$this->EE->form_validation->set_rules('text_format',	'lang:blogger_text_format',	'required');										
-
-		$this->EE->form_validation->set_error_delimiters('<br /><span class="notice">', '</span>');
+		$this->EE->form_validation->set_rules(
+											'id',
+											'lang:blogger_id',
+											'required'
+										)
+								  ->set_rules(
+											'pref_name',
+											'lang:blogger_pref_name',
+											'required'
+										)		
+								  ->set_rules(
+											'field_id',
+											'lang:blogger_default_field',
+											'required'
+										)
+								  ->set_rules(
+											'block_entry',
+											'lang:blogger_block_entry',
+											'required'
+										)
+								  ->set_rules(
+											'parse_type',
+											'lang:blogger_parse_type',
+											'required'
+										)
+								  ->set_rules(
+											'text_format',
+											'lang:blogger_text_format',
+											'required'
+										)
+								  ->set_rules(
+											'text_format',
+											'lang:blogger_text_format',
+											'required'
+										)
+								  ->set_error_delimiters(
+											'<br /><span class="notice">', 
+											'</span>'
+									);
 
 		if ($this->EE->form_validation->run() === FALSE)
 		{
+			// @todo, look at this.
 			$new = ($this->EE->input->get_post('id') == 'new') ? $this->EE->input->get_post('id') : '';
 			return $this->modify($new);
 		}
 
-		$required = array('id', 'pref_name', 'field_id', 'block_entry', 'parse_type', 'text_format', 'html_format');
-		
+		$required = array(
+						'id', 'pref_name', 'field_id', 'block_entry', 
+						'parse_type', 'text_format', 'html_format'
+					);
+
 		foreach($required as $var)
 		{
-			$data['blogger_'.$var] = $_POST[$var];
+			$data['blogger_'.$var] = $this->EE->input->post($var);
 		}
-		
-		$this->EE->load->model('blogger_api_model');
-		
-		$save = $this->EE->blogger_api_model->save_configuration($_POST['id'], $data);
+
+		$save = $this->EE->blogger_api_model->save_configuration(
+												$this->EE->input->post('id'), 
+												$data
+											);
 
 		$this->EE->session->set_flashdata('message_success', $save['message']);
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blogger_api'.AMP
-		.'method=modify'.AMP.'id='.$save['id']);
+		$this->EE->functions->redirect($this->_module_base_url.AMP.'method=modify'.AMP.'id='.$save['id']);
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
-	  * Delete Confirm
-	  */
-	function delete_confirm()
+	 * Delete Confirm
+	 *
+	 * The first page the user is redirected to after choosing to 'delete' a
+	 * blogger api configuration.
+	 *
+	 *
+	 * @return void
+	 */
+	public function delete_confirm()
 	{
 		if ( ! $this->EE->input->post('toggle'))
 		{
-			$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blogger_api');
+			$this->EE->functions->redirect($this->_module_base_url);
 		}
 
-		$this->EE->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blogger_api', $this->EE->lang->line('blogger_api_module_name'));
-
-		$vars['cp_page_title'] = $this->EE->lang->line('blogger_delete_confirm');
+		$vars['cp_page_title'] = lang('blogger_delete_confirm');
 
 		foreach ($_POST['toggle'] as $key => $val)
 		{
@@ -348,26 +372,33 @@ class Blogger_api_mcp {
 		return $this->EE->load->view('delete_confirm', $vars, TRUE);
 	}
 
+
 	// ------------------------------------------------------------------------
 
 	/**
-	  * Delete Configurations
-	  */
-	function delete()
+	 * Delete Configurations
+	 *
+	 * This method handles deleting a blogger api configuration.  
+	 * A _POST variable of `delete` is required to proceed.  If it does not
+	 * exist, the user will be redirected back to the module control panel
+	 * home page.
+	 *
+	 * @return void
+	 */
+	public function delete()
 	{
-		if ( ! $this->EE->input->post('delete'))
+		if ( ! $config = $this->EE->input->post('delete'))
 		{
-			return $this->index();
+			$this->EE->functions->redirect($this->_module_base_url);
 		}
 
 		$this->EE->load->model('blogger_api_model');
-		
-		$message = $this->EE->blogger_api_model->delete_configuration($_POST['delete']);
+
+		$message = $this->EE->blogger_api_model->delete_configuration($config);
 
 		$this->EE->session->set_flashdata('message_success', $message);
-		$this->EE->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blogger_api');
+		$this->EE->functions->redirect($this->_module_base_url);
 	}
-
 }
 
 /* End of file mcp.blogger_api.php */
