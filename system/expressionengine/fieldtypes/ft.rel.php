@@ -199,9 +199,9 @@ class Rel_ft extends EE_Fieldtype {
 	{
 		if ($data['ee_action'] == 'delete')
 		{
-			$this->db->select('field_id_'.$data['field_id']);
-			$this->db->where('field_id_'.$data['field_id'].' !=', '0');
-			$rquery = $this->db->get('channel_data');
+			$this->EE->db->select('field_id_'.$data['field_id']);
+			$this->EE->db->where('field_id_'.$data['field_id'].' !=', '0');
+			$rquery = $this->EE->db->get('channel_data');
 
 			if ($rquery->num_rows() > 0)
 			{
