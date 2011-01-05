@@ -93,27 +93,28 @@ class Blogger_api_mcp {
 	 *
 	 *
 	 */
-	public function create_modify($id = NULL)
+	public function create_modify($id = 0)
 	{
-		$id = ( ! $this->EE->input->get('id')) ? 0 : (int) $this->EE->input->get('id');
-		
+
+		$id = ( ! $this->EE->input->get('id')) ? 0 : (int) $this->EE->input->get('id');			
+
 		$this->EE->load->model(array('blogger_api_model', 'channel_model'));
 
 		$vars = array(
-			'cp_page_title'	=> ($id === 0) ? lang('new_config') : lang('modify_config'),
+			'cp_page_title'	=> ($id) ? lang('modify_config') : lang('new_config'),
 			'field_id'		=> '1:2',
 			'pref_name'		=> '',
 			'block_entry'	=> 'n',
 			'parse_type'	=> 'y',
 			'text_format'	=> False,
 			'html_format'	=> 'safe',
-			'submit_text'	=> ($id === 0) ? 'submit' : 'update',
+			'submit_text'	=> ($id) ? 'update' : 'submit',
 			'form_hidden'	=> array(
 						'id'	=> $id,
 			),
 		);
 		
-		if ($id !== 0)
+		if ($id)
 		{
 			$query = $this->EE->blogger_api_model->get_prefs_by_id($id);
 			
@@ -124,7 +125,11 @@ class Blogger_api_mcp {
 				show_error(lang('not_authorized'));
 			}
 			
-			// @todo, finish this!
+			foreach($query->row_array() as $name => $pref)
+			{
+				$name	= str_replace('blogger_', '', $name);
+				$vars[$name] = $pref;
+			}
 		}
 		
 		$allowed_groups	= array();
@@ -278,9 +283,11 @@ class Blogger_api_mcp {
 
 		if ( ! $this->EE->form_validation->run())
 		{
-			// @todo, look at this.
-			$new = ($this->EE->input->get_post('id') !== 0) ? $this->EE->input->get_post('id') : '';
-			return $this->create_modify($new);
+			$id = $this->EE->input->get_post('id');
+			
+			$id = ($id !== 0 & $id != '') ? $id : FALSE;
+			var_dump($this->EE->form_validation);exit;
+			return $this->create_modify($id);
 		}
 
 		$required = array(

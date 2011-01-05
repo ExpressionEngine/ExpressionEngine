@@ -15,7 +15,7 @@
 	foreach($blogger_prefs as $blogger_pref)
 	{
 		$this->table->add_row(
-								'<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blogger_api'.AMP.'method=modify'.AMP.'id='.$blogger_pref['id'].'">'.$blogger_pref['name'].'</a>',
+								'<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blogger_api'.AMP.'method=create_modify'.AMP.'id='.$blogger_pref['id'].'">'.$blogger_pref['name'].'</a>',
 								$blogger_pref['url'],
 								form_checkbox($blogger_pref['toggle'])
 								);
