@@ -47,7 +47,7 @@
 
 							<div class="shun"></div>
 
-							<p><button class="submit submit_alt"><img src="<?=$cp_theme_url?>images/upload_item.png" width="12" height="14" alt="<?=lang('upload')?>" />&nbsp;&nbsp;<?=lang('upload')?></button></p>
+							<p><button type="submit" class="submit submit_alt"><img src="<?=$cp_theme_url?>images/upload_item.png" width="12" height="14" alt="<?=lang('upload')?>" />&nbsp;&nbsp;<?=lang('upload')?></button></p>
 
 							<p id="progress"><img src="<?=$cp_theme_url?>images/indicator_ECF1F4.gif" /><br /><?=lang('loading')?>...</p>
 
