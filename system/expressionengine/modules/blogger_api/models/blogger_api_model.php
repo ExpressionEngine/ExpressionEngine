@@ -90,7 +90,7 @@ class Blogger_api_model extends CI_Model  {
 			return $return_data;
 		}
 		
-		$this->db->where('blogger_id', $which);
+		$this->db->where('blogger_id', $data['blogger_id']);
 		$this->db->update('blogger', $data);
 			
 		$return_data['id'] = $data['blogger_id'];

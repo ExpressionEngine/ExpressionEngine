@@ -217,7 +217,7 @@ class Blogger_api_mcp {
 				$vars[$val] = $this->EE->input->post($val);
 			}
 		}
-
+		
 		return $this->EE->load->view('create_modify', $vars, TRUE);
 	}
 
