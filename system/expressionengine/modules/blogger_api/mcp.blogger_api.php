@@ -93,7 +93,7 @@ class Blogger_api_mcp {
 	 *
 	 *
 	 */
-	public function create_modify()
+	public function create_modify($id = NULL)
 	{
 		$id = ( ! $this->EE->input->get('id')) ? 0 : (int) $this->EE->input->get('id');
 		
@@ -145,43 +145,8 @@ class Blogger_api_mcp {
 								array($row->field_group, $row->channel_title);
 				}
 			}
-			
-			$msm_enabled = $this->EE->config->item('multiple_sites_enabled');
-			
-			// Only elect field groups that are actually assigned to channels
-			
-/*			
-			
-			if ($msm_enabled !== 'y')
-			{
-				$this->EE->db->where('field_groups.site_id', '1');
-			}
-			
-			$qry = $this->EE->db->select('group_id, group_name, site_label')
-								->from('field_groups')
-								->where_in('group_id', array_keys($allowed_groups))		
-								->join('sites', 'sites.site_id = field_groups.site_id')
-								->get();
-
-			if ($qry->num_rows() > 0)
-			{
-				foreach ($qry->result() as $row)
-				{
-					$label = ($msm_enabled == 'y') ? 
-						$row->site_label.NBS.'-'.NBS.$allowed_groups[$row->group_id] :
-						$allowed_groups[$row->group_id[0]][1];
-					
-					$channel_array[$allowed_groups[$row->group_id][0]] = 
-								array($row->group_id, str_replace('"','',$label));
-				}	
-			}	
-
-*/
-
 		}
 		
-
-
 		$field_array = array();
 		
 		$query = $this->EE->blogger_api_model->get_channel_fields();
@@ -200,44 +165,24 @@ class Blogger_api_mcp {
 
 		$channel_fields = array();
 		
-		//var_dump($channel_array);
-		//var_dump($field_array);
-		
-		
-
 		foreach ($channel_array as $channel_id => $meta_channel)
 		{
 			for ($i = 1; $i < count($field_array); $i++)
 			{
-
-				// var_dump($field_array[$i][1], $meta_channel);
-
-				
 				 if ($field_array[$i]['group_id'] == $meta_channel[0])
 				 {
-				 	$channel_fields[$channel_id][] = array($field_array[$i]['field_id'], $field_array[$i]['field_name']);
+				 	$channel_fields[$channel_id.':'.$field_array[$i]['field_id']] = 
+											$meta_channel[1].':'.$field_array[$i]['field_name'];
 				 }
 			}
-
-			// echo $channel_id.':'.$field_array[$channel_id][0][1]."<br>";
-			
-			
-			// $vars['field_id_options'][$channel_id.':'.$field_array[$channel_id[0]]] = 
-			// 	$channel_array[$channel_id[1].' : '.$field_array[$channel_id[0]]];
-
-
-			
 		}
-		
-	//	var_dump($channel_fields);
-
 
 		$x = explode(':',$vars['field_id']);
 		$channel_match = ( ! isset($x['1'])) ? '1' : $x['0'];
 		$field_match  = ( ! isset($x['1'])) ? $x['0'] : $x['1'];
 		
 		$v = array(
-			'field_id_options'		=> array(),
+			'field_id_options'		=> $channel_fields,
 			'field_id_selected'		=> $vars['field_id'],
 			'block_entry_options'	=> array(
 										'y'	=> lang('yes'),
@@ -331,11 +276,11 @@ class Blogger_api_mcp {
 											'</span>'
 									);
 
-		if ($this->EE->form_validation->run() === FALSE)
+		if ( ! $this->EE->form_validation->run())
 		{
 			// @todo, look at this.
-			$new = ($this->EE->input->get_post('id') == 'new') ? $this->EE->input->get_post('id') : '';
-			return $this->modify($new);
+			$new = ($this->EE->input->get_post('id') !== 0) ? $this->EE->input->get_post('id') : '';
+			return $this->create_modify($new);
 		}
 
 		$required = array(
@@ -348,13 +293,10 @@ class Blogger_api_mcp {
 			$data['blogger_'.$var] = $this->EE->input->post($var);
 		}
 
-		$save = $this->EE->blogger_api_model->save_configuration(
-												$this->EE->input->post('id'), 
-												$data
-											);
+		$save = $this->EE->blogger_api_model->save_configuration($data);
 
 		$this->EE->session->set_flashdata('message_success', $save['message']);
-		$this->EE->functions->redirect($this->_module_base_url.AMP.'method=modify'.AMP.'id='.$save['id']);
+		$this->EE->functions->redirect($this->_module_base_url.AMP.'method=create_modify'.AMP.'id='.$save['id']);
 	}
 
 	// ------------------------------------------------------------------------

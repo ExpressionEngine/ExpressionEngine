@@ -74,11 +74,11 @@ class Blogger_api_model extends CI_Model  {
 	 * @param array 	data being saved
 	 * @return array 	id & message
 	 */
-	function save_configuration($which, $data)
+	function save_configuration($data)
 	{
 		$return_data = array();
 		
-		if ($which == 'new')
+		if ($data['blogger_id'] == '0')
 		{
 			unset($data['blogger_id']);
 			
@@ -86,15 +86,15 @@ class Blogger_api_model extends CI_Model  {
 			
 			$return_data['id'] = $this->db->insert_id();
 			$return_data['message'] = $this->lang->line('configuration_created');
+
+			return $return_data;
 		}
-		else
-		{
-			$this->db->where('blogger_id', $which);
-			$this->db->update('blogger', $data);
+		
+		$this->db->where('blogger_id', $which);
+		$this->db->update('blogger', $data);
 			
-			$return_data['id'] = $which;
-			$return_data['message'] = $this->lang->line('configuration_updated');
-		}
+		$return_data['id'] = $data['blogger_id'];
+		$return_data['message'] = $this->lang->line('configuration_updated');
 		
 		return $return_data;	
 	}
