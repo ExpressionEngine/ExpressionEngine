@@ -26,6 +26,9 @@ class Blogger_api_mcp {
 
 	protected $_module_base_url;
 
+	/**
+	 * Constructor
+	 */
 	public function __construct()
 	{
 		$this->EE =& get_instance();
@@ -42,9 +45,9 @@ class Blogger_api_mcp {
 	// ------------------------------------------------------------------------
 
 	/**
-	  *  Control Panel index
-	  */
-	function index()
+	 *  Control Panel index
+	 */
+	public function index()
 	{
 		$this->EE->load->library(array('table', 'javascript'));
 		$this->EE->load->model('blogger_api_model');
@@ -74,7 +77,6 @@ class Blogger_api_mcp {
 			);
 		}
 		
-		
 		return $this->EE->load->view('index', $vars, TRUE);
 	}
 
@@ -83,15 +85,9 @@ class Blogger_api_mcp {
 	/**
 	 * Create or Modify a blogger API configuration
 	 *
-	 * 
+	 * Fetch configuration data depending on if this is a new post or not 
 	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
+	 * @return void
 	 */
 	public function create_modify($id = 0)
 	{
@@ -181,10 +177,6 @@ class Blogger_api_mcp {
 				 }
 			}
 		}
-
-		$x = explode(':',$vars['field_id']);
-		$channel_match = ( ! isset($x['1'])) ? '1' : $x['0'];
-		$field_match  = ( ! isset($x['1'])) ? $x['0'] : $x['1'];
 		
 		$v = array(
 			'field_id_options'		=> $channel_fields,
@@ -233,6 +225,12 @@ class Blogger_api_mcp {
 
 	/**
 	 * Save Configuration
+	 *
+	 * This function sets up form validation rules and checks them.  If
+	 * the POST data passes form_validation, send the data to the model for
+	 * saving.  Otherwise, display the form & validation errors.
+	 *
+	 * @return void
 	 */
 	function save()
 	{
@@ -284,9 +282,8 @@ class Blogger_api_mcp {
 		if ( ! $this->EE->form_validation->run())
 		{
 			$id = $this->EE->input->get_post('id');
-			
 			$id = ($id !== 0 & $id != '') ? $id : FALSE;
-			var_dump($this->EE->form_validation);exit;
+		
 			return $this->create_modify($id);
 		}
 
