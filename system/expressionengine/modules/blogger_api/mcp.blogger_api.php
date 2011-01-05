@@ -169,10 +169,10 @@ class Blogger_api_mcp {
 				{
 					$label = ($msm_enabled == 'y') ? 
 						$row->site_label.NBS.'-'.NBS.$allowed_groups[$row->group_id] :
-						$allowed_groups[$row->group_id[0]];
-
+						$allowed_groups[$row->group_id[0]][1];
+					
 					$channel_array[$allowed_groups[$row->group_id][0]] = 
-								array(str_replace('"','',$label), $row->group_name);
+								array($row->group_id, str_replace('"','',$label));
 				}	
 			}	
 		}
@@ -185,16 +185,16 @@ class Blogger_api_mcp {
 		{
 			foreach ($query->result() as $row)
 			{
-				$field_array[$row->group_id][] = array(
-													$row->field_id,
-													$row->group_id,
-													$row->field_name,
-												);
+				$field_array[] = array(
+										'field_id' 		=> $row->field_id,
+										'group_id' 		=> $row->group_id,
+										'field_name'	=> $row->field_name,
+									);
 			}
 		}
-		
+
 		$channel_fields = array();
-		
+
 		foreach ($channel_array as $channel_id => $meta_channel)
 		{
 			for ($i = 1; $i <= count($field_array); $i++)
