@@ -2876,6 +2876,35 @@ class EE_Functions {
 	{
 		return clone $object;
 	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * bookmarklet qstr decode
+	 *
+	 * @param 	string
+	 */
+	function bm_qstr_decode($str)
+	{
+		$str = str_replace("%20",	" ",		$str);
+		$str = str_replace("%uFFA5", "&#8226;",	$str);
+		$str = str_replace("%uFFCA", " ",		$str);
+		$str = str_replace("%uFFC1", "-",		$str);
+		$str = str_replace("%uFFC9", "...",		$str);
+		$str = str_replace("%uFFD0", "-",		$str);
+		$str = str_replace("%uFFD1", "-",		$str);
+		$str = str_replace("%uFFD2", "\"",		$str);
+		$str = str_replace("%uFFD3", "\"",		$str);
+		$str = str_replace("%uFFD4", "\'",		$str);
+		$str = str_replace("%uFFD5", "\'",		$str);
+
+		$str =	preg_replace("/\%u([0-9A-F]{4,4})/e","'&#'.base_convert('\\1',16,10).';'", $str);
+
+		$str = $this->security->xss_clean(stripslashes(urldecode($str)));
+
+		return $str;
+	}		
+	
 }
 // END CLASS
 

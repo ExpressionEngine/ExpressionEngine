@@ -914,15 +914,16 @@ class Api_channel_fields extends Api {
 		
 		// We start by setting our default fields
 		
-		$title = (isset($data['title']) && $data['title'] != '') ? $data['title'] : '';
+		$title = (isset($entry_data['title'])) ? $entry_data['title'] : '';
 		
 		if ($channel_data['default_entry_title'] != '' && $title == '')
 		{
 			$title = $channel_data['default_entry_title'];
 		}
 		
-		$url_title = '';
-
+		
+		$url_title = (isset($entry_data['url_title']) ? $entry_data['url_title'] : '';
+		
 
 		$deft_fields = array(
 			'title' 		=> array(
@@ -940,7 +941,7 @@ class Api_channel_fields extends Api {
 				'field_id'				=> 'url_title',
 				'field_label'			=> lang('url_title'),
 				'field_required'		=> 'n',
-				'field_data'			=> ($this->EE->input->get_post('url_title') == '') ? $url_title : $this->EE->input->get_post('url_title'),
+				'field_data'			=> $url_title,
 				'field_fmt'				=> 'xhtml',
 				'field_instructions'	=> '',
 				'field_show_fmt'		=> 'n',
@@ -1028,7 +1029,7 @@ class Api_channel_fields extends Api {
 				// Bookmarklet data perhaps?
 				if (($field_data = $this->EE->input->get('field_id_'.$row['field_id'])) !== FALSE)
 				{
-					$field_data = $this->_bm_qstr_decode($this->EE->input->get('tb_url')."\n\n".$field_data );
+					$field_data = $this->EE->functions->bm_qstr_decode($this->EE->input->get('tb_url')."\n\n".$field_data );
 				}
 			}
 			else
@@ -1067,36 +1068,6 @@ class Api_channel_fields extends Api {
 
 
 	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * bookmarklet qstr decode
-	 *
-	 * @param 	string
-	 */
-	private function _bm_qstr_decode($str)
-	{
-		$str = str_replace("%20",	" ",		$str);
-		$str = str_replace("%uFFA5", "&#8226;",	$str);
-		$str = str_replace("%uFFCA", " ",		$str);
-		$str = str_replace("%uFFC1", "-",		$str);
-		$str = str_replace("%uFFC9", "...",		$str);
-		$str = str_replace("%uFFD0", "-",		$str);
-		$str = str_replace("%uFFD1", "-",		$str);
-		$str = str_replace("%uFFD2", "\"",		$str);
-		$str = str_replace("%uFFD3", "\"",		$str);
-		$str = str_replace("%uFFD4", "\'",		$str);
-		$str = str_replace("%uFFD5", "\'",		$str);
-
-		$str =	preg_replace("/\%u([0-9A-F]{4,4})/e","'&#'.base_convert('\\1',16,10).';'", $str);
-
-		$str = $this->security->xss_clean(stripslashes(urldecode($str)));
-
-		return $str;
-	}	
-
-
 }
 
 // END Api_channel_fields class
