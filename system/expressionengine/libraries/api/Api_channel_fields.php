@@ -893,6 +893,210 @@ class Api_channel_fields extends Api {
 		
 		return $custom_field_modules;
 	}
+	
+	// --------------------------------------------------------------------
+
+	function setup_entry_settings($channel_id, $entry_data, $bookmarklet = FALSE)
+	{
+		// Let's grab our channel data- note should be cached if already called via api
+		$this->EE->api->instantiate('channel_structure');
+
+		$channel_query = $this->EE->api_channel_structure->get_channel_info($channel_id);
+		
+		if ($channel_query->num_rows() == 0)
+		{
+			// bad return false?
+		}
+		
+		$channel_data = $channel_query->row_array();
+		
+		$dst_enabled = ($this->EE->session->userdata('daylight_savings') == 'y' ? TRUE : FALSE);		
+		
+		// We start by setting our default fields
+		
+		$title = (isset($data['title']) && $data['title'] != '') ? $data['title'] : '';
+		
+		if ($channel_data['default_entry_title'] != '' && $title == '')
+		{
+			$title = $channel_data['default_entry_title'];
+		}
+		
+		$url_title = '';
+
+
+		$deft_fields = array(
+			'title' 		=> array(
+				'field_id'				=> 'title',
+				'field_label'			=> lang('title'),
+				'field_required'		=> 'y',
+				'field_data'			=> $title,
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> '',
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'text',
+				'field_maxl'			=> 100
+			),
+			'url_title'		=> array(
+				'field_id'				=> 'url_title',
+				'field_label'			=> lang('url_title'),
+				'field_required'		=> 'n',
+				'field_data'			=> ($this->EE->input->get_post('url_title') == '') ? $url_title : $this->EE->input->get_post('url_title'),
+				'field_fmt'				=> 'xhtml',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'text',
+				'field_maxl'			=> 75
+			),
+			'entry_date'	=> array(
+				'field_id'				=> 'entry_date',
+				'field_label'			=> lang('entry_date'),
+				'field_required'		=> 'y',
+				'field_type'			=> 'date',
+				'field_text_direction'	=> 'ltr',
+				'field_data'			=> (isset($entry_data['entry_date'])) ? $entry_data['entry_date'] : '',
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'always_show_date'		=> 'y',
+				'default_offset'		=> 0,
+				'selected'				=> 'y',
+				'dst_enabled'			=> $dst_enabled				
+			),
+			'expiration_date' => array(
+				'field_id'				=> 'expiration_date',
+				'field_label'			=> lang('expiration_date'),
+				'field_required'		=> 'n',
+				'field_type'			=> 'date',
+				'field_text_direction'	=> 'ltr',
+				'field_data'			=> (isset($entry_data['expiration_date'])) ? $entry_data['expiration_date'] : '',
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'default_offset'		=> 0,
+				'selected'				=> 'y',
+				'dst_enabled'			=> $dst_enabled				
+			)	
+		);
+
+//wtf dst_enabled?		
+		
+		
+		// comment expiry here.
+		if (isset($this->EE->cp->installed_modules['comment']))
+		{
+			$deft_fields['comment_expiration_date'] = array(
+				'field_id'				=> 'comment_expiration_date',
+				'field_label'			=> lang('comment_expiration_date'),
+				'field_required'		=> 'n',
+				'field_type'			=> 'date',
+				'field_text_direction'	=> 'ltr',
+				'field_data'			=> (isset($entry_data['comment_expiration_date'])) ? $entry_data['comment_expiration_date'] : '',
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'default_offset'		=> $channel_data['comment_expiration'] * 86400,
+				'selected'				=> 'y',
+				'dst_enabled'			=> $dst_enabled
+			);
+		}
+		
+		foreach ($deft_fields as $field_name => $f_data)
+		{
+			$this->set_settings($field_name, $f_data);
+		}
+		
+
+		// Now we set our custom fields
+		
+		// Get Channel fields in the field group
+		$channel_fields = $this->EE->channel_model->get_channel_fields($channel_data['field_group']);
+
+		
+
+		$field_settings = array();
+
+		foreach ($channel_fields->result_array() as $row)
+		{
+			$field_fmt 		= $row['field_fmt'];
+			$field_dt 		= '';
+			$field_data		= '';
+			$dst_enabled	= '';
+						
+			if ($bookmarklet)
+			{
+				// Bookmarklet data perhaps?
+				if (($field_data = $this->EE->input->get('field_id_'.$row['field_id'])) !== FALSE)
+				{
+					$field_data = $this->_bm_qstr_decode($this->EE->input->get('tb_url')."\n\n".$field_data );
+				}
+			}
+			else
+			{
+				$field_data = (isset($entry_data['field_id_'.$row['field_id']])) ? $entry_data['field_id_'.$row['field_id']] : $field_data;				
+				$field_dt	= (isset($entry_data['field_dt_'.$row['field_id']])) ? $entry_data['field_dt_'.$row['field_id']] : 'y';
+				$field_fmt	= (isset($entry_data['field_ft_'.$row['field_id']])) ? $entry_data['field_ft_'.$row['field_id']] : $field_fmt;				
+			}			
+
+			$settings = array(
+				'field_instructions'	=> trim($row['field_instructions']),
+				'field_text_direction'	=> ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
+				'field_fmt'				=> $field_fmt,
+				'field_dt'				=> $field_dt,
+				'field_data'			=> $field_data,
+				'field_name'			=> 'field_id_'.$row['field_id'],
+				'dst_enabled'			=> $dst_enabled
+			);
+			
+			$ft_settings = array();
+
+			if (isset($row['field_settings']) && strlen($row['field_settings']))
+			{
+				$ft_settings = unserialize(base64_decode($row['field_settings']));
+			}
+			
+			$settings = array_merge($row, $settings, $ft_settings);
+			$this->EE->api_channel_fields->set_settings($row['field_id'], $settings);
+			
+			$field_settings[$settings['field_name']] = $settings;
+		}
+		
+		// Merge the default and custom fields
+		
+		return array_merge($deft_fields, $field_settings);
+
+
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * bookmarklet qstr decode
+	 *
+	 * @param 	string
+	 */
+	private function _bm_qstr_decode($str)
+	{
+		$str = str_replace("%20",	" ",		$str);
+		$str = str_replace("%uFFA5", "&#8226;",	$str);
+		$str = str_replace("%uFFCA", " ",		$str);
+		$str = str_replace("%uFFC1", "-",		$str);
+		$str = str_replace("%uFFC9", "...",		$str);
+		$str = str_replace("%uFFD0", "-",		$str);
+		$str = str_replace("%uFFD1", "-",		$str);
+		$str = str_replace("%uFFD2", "\"",		$str);
+		$str = str_replace("%uFFD3", "\"",		$str);
+		$str = str_replace("%uFFD4", "\'",		$str);
+		$str = str_replace("%uFFD5", "\'",		$str);
+
+		$str =	preg_replace("/\%u([0-9A-F]{4,4})/e","'&#'.base_convert('\\1',16,10).';'", $str);
+
+		$str = $this->security->xss_clean(stripslashes(urldecode($str)));
+
+		return $str;
+	}	
+
+
 }
 
 // END Api_channel_fields class
