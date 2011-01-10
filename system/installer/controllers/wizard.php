@@ -2100,6 +2100,13 @@ PAPAYA;
 
 				if (file_exists($path.'upd.'.$module.EXT))
 				{
+					// Add the helper/library load path and temporarily
+					// switch the view path to the module's view folder
+					$this->load->add_package_path($path);
+
+					$orig_view_path = $this->load->_ci_view_path;
+					$this->load->_ci_view_path = MODULE_VIEWS;
+
 					require $path.'upd.'.$module.EXT;
 
 					$class = ucfirst($module).'_upd';
@@ -2117,6 +2124,10 @@ PAPAYA;
 							$this->module_install_errors[$module] = array_map('htmlentities', $UPD->install_errors);
 						}
 					}
+					
+					// switch the view path back to the original, remove package path
+					$this->load->_ci_view_path = $orig_view_path;
+					$this->load->remove_package_path($installed[$module]['path']);
 				}
 			}
 		}

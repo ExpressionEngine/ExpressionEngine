@@ -281,25 +281,6 @@ class Addons_modules extends CI_Controller {
 
 		$this->lang->loadfile($module);
 
-		// Update Module
-		// Send version to update class and let it do any required work
-		if (file_exists($installed[$module]['path'].'upd.'.$module.EXT))
-		{
-			require $installed[$module]['path'].'upd.'.$module.EXT;
-
-			$class = ucfirst($module).'_upd';
-			$version = $installed[$module]['module_version'];
-
-			$UPD = new $class;
-			$UPD->_ee_path = APPPATH;
-
-			if ($UPD->version > $version && method_exists($UPD, 'update') && $UPD->update($version) !== FALSE)
-			{
-				$this->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));
-			}
-		}
-		
-		
 		$view_folder = 'views';
 		
 		/* -------------------------------------------
@@ -322,7 +303,7 @@ class Addons_modules extends CI_Controller {
 				$view_folder = 'mobile';
 			}
 		}
-				
+
 		// set the view path
 		define('MODULE_VIEWS', $installed[$module]['path'].$view_folder.'/');
 		
@@ -333,6 +314,24 @@ class Addons_modules extends CI_Controller {
 		
 		$orig_view_path = $this->load->_ci_view_path;
 		$this->load->_ci_view_path = MODULE_VIEWS;
+
+		// Update Module
+		// Send version to update class and let it do any required work
+		if (file_exists($installed[$module]['path'].'upd.'.$module.EXT))
+		{
+			require $installed[$module]['path'].'upd.'.$module.EXT;
+
+			$class = ucfirst($module).'_upd';
+			$version = $installed[$module]['module_version'];
+
+			$UPD = new $class;
+			$UPD->_ee_path = APPPATH;
+
+			if ($UPD->version > $version && method_exists($UPD, 'update') && $UPD->update($version) !== FALSE)
+			{
+				$this->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));
+			}
+		}
 		
 		require_once $installed[$module]['path'].$installed[$module]['file'];
 
