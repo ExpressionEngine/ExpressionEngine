@@ -398,7 +398,7 @@ $lang = array(
 "Create a New Member Group",
 
 "member_has_cp_access" =>
-"can access the control panel",
+"Can access the control panel",
 
 "edit_member_group" => 
 "Edit Member Group",
