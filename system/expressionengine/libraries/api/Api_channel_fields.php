@@ -922,7 +922,7 @@ class Api_channel_fields extends Api {
 		}
 		
 		
-		$url_title = (isset($entry_data['url_title']) ? $entry_data['url_title'] : '';
+		$url_title = (isset($entry_data['url_title'])) ? $entry_data['url_title'] : '';
 		
 
 		$deft_fields = array(
