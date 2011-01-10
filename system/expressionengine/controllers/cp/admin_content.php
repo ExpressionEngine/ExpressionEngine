@@ -24,7 +24,10 @@
  */
 class Admin_content extends CI_Controller {
 
-	var $reserved = array('random', 'date', 'title', 'url_title', 'edit_date', 'comment_total', 'username', 'screen_name', 'most_recent_comment', 'expiration_date');
+	var $reserved = array(
+					'random', 'date', 'title', 'url_title', 'edit_date', 
+					'comment_total', 'username', 'screen_name', 
+					'most_recent_comment', 'expiration_date');
 
 	// Default "open" and "closed" status colors
 	var $status_color_open	= '009933';
@@ -44,7 +47,8 @@ class Admin_content extends CI_Controller {
 		parent::__construct();
 
 		$this->lang->loadfile('admin');
-
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
+		
 		// Note- no access check here to allow the publish page access to categories
 	}
 
@@ -97,7 +101,6 @@ class Admin_content extends CI_Controller {
 		$this->load->model('channel_model');
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('channel_management'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', $this->lang->line('admin_content'));
 		
 		$this->load->library('table');
 
@@ -1310,7 +1313,6 @@ class Admin_content extends CI_Controller {
 		$this->lang->loadfile('admin_content');
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('categories'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', $this->lang->line('admin_content'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}},
@@ -3459,6 +3461,7 @@ class Admin_content extends CI_Controller {
 		$this->lang->loadfile('admin_content');
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('field_management'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}, 3: {sorter: false}},
@@ -4719,7 +4722,8 @@ class Admin_content extends CI_Controller {
 	 */
 	function status_group_management($message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		if ( ! $this->cp->allowed_group('can_access_admin') OR
+		 	 ! $this->cp->allowed_group('can_access_content_prefs'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -4729,6 +4733,7 @@ class Admin_content extends CI_Controller {
 		$this->lang->loadfile('admin_content');
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('status_groups'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}, 3: {sorter: false}},
@@ -6134,6 +6139,8 @@ class Admin_content extends CI_Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
+		
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
 
 		$this->_config_manager('channel_cfg', __FUNCTION__);
 	}
