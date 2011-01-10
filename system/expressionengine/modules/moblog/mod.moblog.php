@@ -617,7 +617,7 @@ class Moblog {
 			/**  Determine Boundary
 			/** -------------------------------------*/
 
-			if ( ! $this->find_boundary($email_data) OR $this->moblog_array['moblog_upload_directory'] == '0')
+			if ( ! $this->find_boundary($email_data)) // OR $this->moblog_array['moblog_upload_directory'] == '0')
 			{
 				/** -------------------------
 				/**  No files, just text
@@ -864,7 +864,7 @@ class Moblog {
 				/* -------------------------------------*/
 				if ($this->EE->config->item('moblog_allow_nontextareas') != 'y')
 				{
-					$this->EE->db->where('channel_fields.field_name', 'textarea');
+					$this->EE->db->where('channel_fields.field_type', 'textarea');
 				}
 				
 				$results = $this->EE->db->get();
@@ -1012,6 +1012,7 @@ class Moblog {
 		$entry_date = ($this->EE->localize->now + $this->entries_added - $this->time_offset);
 
 		$data = array(
+						'entry_id'			=> 0,
 						'channel_id'		=> $channel_id,
 						'site_id'			=> $site_id,
 						'author_id'			=> $author_id,
@@ -1076,7 +1077,7 @@ class Moblog {
 			/* -------------------------------------*/
 			if ($this->EE->config->item('moblog_allow_nontextareas') != 'y')
 			{
-				$this->EE->db->where('channel_fields.field_name', 'textarea');
+				$this->EE->db->where('channel_fields.field_type', 'textarea');
 			}
 
 			$results = $this->EE->db->get();
@@ -1225,7 +1226,10 @@ class Moblog {
 		// Insert the Entry
 		$this->EE->load->library('api');
 		$this->EE->api->instantiate('channel_entries');
+		$this->EE->api->instantiate('channel_fields');
 
+		$this->EE->api_channel_fields->setup_entry_settings($data['channel_id'], $data);
+		
 		$result = $this->EE->api_channel_entries->submit_new_entry($data['channel_id'], $data);
 
 		if ( ! $result)
@@ -1380,7 +1384,7 @@ class Moblog {
 			{
 				$field_id = $this->moblog_array['moblog_field_id'];
 				
-				$this->EE->db->seledct('field_fmt');
+				$this->EE->db->select('field_fmt');
 				$this->EE->db->where('field_id', $field_id);
 				
 				$results = $this->EE->db->get('channel_fields');
@@ -1578,6 +1582,9 @@ class Moblog {
 			unset($email_data);
 		}
 
+	if ($this->moblog_array['moblog_upload_directory'] != 0)
+	{
+		
 		/** ---------------------------
 		/**  Determine Upload Path
 		/** ---------------------------*/
@@ -1626,6 +1633,8 @@ class Moblog {
 		}
 
 		$this->upload_dir_code = '{filedir_'.$this->moblog_array['moblog_upload_directory'].'}';
+
+	}
 
 		/** ---------------------------
 		/**  Find Attachments
@@ -1734,7 +1743,7 @@ class Moblog {
 					}
 
 				}
-
+				
 				/** ----------------------------------
 				/**  Spring PCS - Picture Share
 				/** ----------------------------------*/
@@ -1823,6 +1832,13 @@ class Moblog {
 			}
 			elseif($type == 'image' OR $type == 'application' OR $type == 'audio' OR $type == 'video' OR $subtype == 'appledouble' OR $type == 'text') // image or application
 			{
+//				// no upload directory?  skip
+				
+				if ($this->moblog_array['moblog_upload_directory'] == 0)
+				{
+					continue;
+				}
+
 				if ($subtype == 'appledouble')
 				{
 					if ( ! $data = $this->appledouble($value))
