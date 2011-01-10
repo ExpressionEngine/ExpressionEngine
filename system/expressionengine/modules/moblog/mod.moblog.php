@@ -1012,7 +1012,6 @@ class Moblog {
 		$entry_date = ($this->EE->localize->now + $this->entries_added - $this->time_offset);
 
 		$data = array(
-						'entry_id'			=> 0,
 						'channel_id'		=> $channel_id,
 						'site_id'			=> $site_id,
 						'author_id'			=> $author_id,
@@ -1582,64 +1581,58 @@ class Moblog {
 			unset($email_data);
 		}
 
-	if ($this->moblog_array['moblog_upload_directory'] != 0)
-	{
-		
-		/** ---------------------------
-		/**  Determine Upload Path
-		/** ---------------------------*/
+		if ($this->moblog_array['moblog_upload_directory'] != 0)
+		{
+			//  Determine Upload Path
 
-		$query = $this->EE->db->query("SELECT server_path FROM exp_upload_prefs
+			$query = $this->EE->db->query("SELECT server_path FROM exp_upload_prefs
 							  WHERE id = '".$this->EE->db->escape_str($this->moblog_array['moblog_upload_directory'])."'");
 							 
-		if ($query->num_rows() == 0)
-		{
-			$this->message_array[] = 'invalid_upload_directory';
-			return FALSE;
-		}
-
-		$this->upload_path = $query->row('server_path');
-
-		if ( ! is_really_writable($this->upload_path))
-		{
-			$system_absolute = str_replace('/modules/moblog/mod.moblog.php','',__FILE__);
-			$addon = (substr($this->upload_path,0,2) == './') ? substr($this->upload_path,2) : $this->upload_path;
-
-			while(substr($addon,0,3) == '../')
+			if ($query->num_rows() == 0)
 			{
-				$addon = substr($addon,3);
-
-				$p1 = (strrpos($system_absolute,'/') !== FALSE) ? strrpos($system_absolute,'/') : strlen($system_absolute);
-				$system_absolute = substr($system_absolute,0,$p1);
+				$this->message_array[] = 'invalid_upload_directory';
+				return FALSE;
 			}
 
-			if (substr($system_absolute,-1) != '/')
-			{
-				$system_absolute .= '/';
-			}
-
-			$this->upload_path = $system_absolute.$addon;
+			$this->upload_path = $query->row('server_path');
 
 			if ( ! is_really_writable($this->upload_path))
 			{
-				$this->message_array[] = 'upload_directory_unwriteable';
-				return FALSE;
+				$system_absolute = str_replace('/modules/moblog/mod.moblog.php','',__FILE__);
+				$addon = (substr($this->upload_path,0,2) == './') ? substr($this->upload_path,2) : $this->upload_path;
+
+				while(substr($addon,0,3) == '../')
+				{
+					$addon = substr($addon,3);
+
+					$p1 = (strrpos($system_absolute,'/') !== FALSE) ? strrpos($system_absolute,'/') : strlen($system_absolute);
+					$system_absolute = substr($system_absolute,0,$p1);
+				}
+
+				if (substr($system_absolute,-1) != '/')
+				{
+					$system_absolute .= '/';
+				}
+
+				$this->upload_path = $system_absolute.$addon;
+
+				if ( ! is_really_writable($this->upload_path))
+				{
+					$this->message_array[] = 'upload_directory_unwriteable';
+					return FALSE;
+				}
 			}
+
+			if (substr($this->upload_path, -1) != '/')
+			{
+				$this->upload_path .= '/';
+			}
+
+			$this->upload_dir_code = '{filedir_'.$this->moblog_array['moblog_upload_directory'].'}';
+
 		}
 
-		if (substr($this->upload_path, -1) != '/')
-		{
-			$this->upload_path .= '/';
-		}
-
-		$this->upload_dir_code = '{filedir_'.$this->moblog_array['moblog_upload_directory'].'}';
-
-	}
-
-		/** ---------------------------
-		/**  Find Attachments
-		/** ---------------------------*/
-
+		//  Find Attachments
 		foreach($email_parts as $key => $value)
 		{
 			// Skip headers and those with no content-type
