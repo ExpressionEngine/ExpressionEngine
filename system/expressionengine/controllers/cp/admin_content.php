@@ -4143,7 +4143,9 @@ class Admin_content extends CI_Controller {
 	  */
 	function field_update()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs') OR ! isset($_POST['group_id']))
+		if ( ! $this->cp->allowed_group('can_access_admin') OR 
+			 ! $this->cp->allowed_group('can_access_content_prefs') OR 
+			 ! isset($_POST['group_id']))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -4159,7 +4161,7 @@ class Admin_content extends CI_Controller {
 
 		// We need this as a variable as we'll unset the array index
 
-		$group_id = $_POST['group_id'];
+		$group_id = $this->input->post('group_id');
 
 		// Check for required fields
 
@@ -4359,11 +4361,11 @@ class Admin_content extends CI_Controller {
 
 			// Update saved layouts if necessary
 			
-			$collapse = ($native_settings['field_is_hidden'] == 'y') ? 'true' : 'false';
-			$buttons = ($ft_settings['field_show_formatting_btns'] == 'y') ? 'true' : 'false';
+			$collapse = ($native_settings['field_is_hidden'] == 'y') ? TRUE : FALSE;
+			$buttons = ($ft_settings['field_show_formatting_btns'] == 'y') ? TRUE : FALSE;
 			
 			$field_info[$native_settings['field_id']] = array(
-								'visible'		=> 'true',
+								'visible'		=> TRUE,
 								'collapse'		=> $collapse,
 								'htmlbuttons'	=> $buttons,
 								'width'			=> '100%'
@@ -4390,8 +4392,11 @@ class Admin_content extends CI_Controller {
 
 			if ($_POST['field_order'] == 0 OR $_POST['field_order'] == '')
 			{
-				$query = $this->db->query("SELECT count(*) AS count FROM exp_channel_fields WHERE group_id = '".$this->db->escape_str($group_id)."'");
-				$_POST['field_order'] = $query->row('count')  + 1;
+				$query = $this->db->select('COUNT(*) as COUNT')
+								  ->get_where('group_id', (int) $group_id)
+								  ->get('channel_fields');
+				
+				$_POST['field_order'] = $query->row('count') + 1;
 			}
 			
 			if ( ! $native_settings['field_ta_rows'])
@@ -4423,8 +4428,8 @@ class Admin_content extends CI_Controller {
 				$this->db->insert('field_formatting', $f_data); 
 			}
 			
-			$collapse = ($native_settings['field_is_hidden'] == 'y') ? 'true' : 'false';
-			$buttons = ($ft_settings['field_show_formatting_btns'] == 'y') ? 'true' : 'false';
+			$collapse = ($native_settings['field_is_hidden'] == 'y') ? TRUE : FALSE;
+			$buttons = ($ft_settings['field_show_formatting_btns'] == 'y') ? TRUE : FALSE;
 			
 			$field_info['publish'][$insert_id] = array(
 								'visible'		=> 'true',
