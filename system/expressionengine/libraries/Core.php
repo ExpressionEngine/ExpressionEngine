@@ -79,7 +79,7 @@ class EE_Core {
 		// application constants
 		define('IS_FREELANCER',	FALSE);
 		define('APP_NAME',		'ExpressionEngine'.((IS_FREELANCER) ? ' Freelancer' : ''));
-		define('APP_BUILD',		'20100101');
+		define('APP_BUILD',		'20101220');
 		define('APP_VER',		substr($this->EE->config->item('app_version'), 0, 1).'.'.substr($this->EE->config->item('app_version'), 1, 1).'.'.substr($this->EE->config->item('app_version'), 2));
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
