@@ -1419,11 +1419,13 @@ class Content_edit extends CI_Controller {
 		
 		$data['entries'] = array();
 		
-		$qry = $this->db->select('channel_id, entry_id, original_entry_id, title')
-						->order_by('original_entry_id', 'ASC')
-						->where_in('channel_id', $allowed_channels)
-						->get('channel_entries_autosave');
-				
+		$qry = $this->db->select('cea.channel_id, cea.entry_id, cea.original_entry_id, cea.title, c.channel_title')
+						->from('channel_entries_autosave as cea')
+						->order_by('cea.original_entry_id', 'ASC')
+						->where_in('cea.channel_id', $allowed_channels)
+						->join('channels c', 'cea.channel_id = c.channel_id')
+						->get();
+
 		foreach($qry->result() as $row)
 		{
 			$channel = $row->channel_id;
@@ -1433,7 +1435,7 @@ class Content_edit extends CI_Controller {
 			$data['entries'][] = array(
 				anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel.AMP.'entry_id='.$save_id.AMP.'use_autosave=y', $row->title),
 				$orig_id ? anchor(BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel.AMP.'entry_id='.$orig_id, $row->title) : '--',
-				'Blog',
+				$row->channel_title,
 				anchor(BASE.AMP.'C=content_edit'.AMP.'M=autosaved_discard'.AMP.'id='.$save_id, lang('delete'))
 			);
 		}
