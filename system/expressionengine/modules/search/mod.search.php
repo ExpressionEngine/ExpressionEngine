@@ -56,7 +56,10 @@ class Search {
 		$this->EE->lang->loadfile('search');
 
 		// Get hidden meta vars 
-		$this->_get_meta_vars();
+		if (isset($_POST['meta']))
+		{
+			$this->_get_meta_vars();			
+		}
 		
 		/** ----------------------------------------
 		/**  Profile Exception
