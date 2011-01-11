@@ -263,8 +263,6 @@
 							tableBody[0].appendChild(o[j]);
 						
 						}
-						
-						//tableBody.append(r[n[i][checkCell]]);
 					}
 				}	
 				
