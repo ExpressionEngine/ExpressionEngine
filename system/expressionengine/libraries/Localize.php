@@ -31,7 +31,7 @@ class EE_Localize {
  	var $cached				= array();
 	var $format				= array('DATE_ATOM'		=>	'%Y-%m-%dT%H:%i:%s%Q',
 									'DATE_COOKIE'	=>	'%l, %d-%M-%y %H:%i:%s UTC',
-									'DATE_ISO8601'	=>	'%Y-%m-%dT%H:%i:%s%O',
+									'DATE_ISO8601'	=>	'%Y-%m-%dT%H:%i:%s%Q',
 									'DATE_RFC822'	=>	'%D, %d %M %y %H:%i:%s %O',
 									'DATE_RFC850'	=>	'%l, %d-%M-%y %H:%m:%i UTC',
 									'DATE_RFC1036'	=>	'%D, %d %M %y %H:%i:%s %O',
@@ -678,13 +678,19 @@ class EE_Localize {
 		$prelocalized = FALSE;
 		
 		if ($datestr == '')
-			return;
+		{
+			return (int) 0;			
+		}
 			
 		if ($unixtime == 0)
-			return '';
-
+		{
+			return (int) 0;			
+		}
+	 
 		if ( ! preg_match_all("/(%\S)/", $datestr, $matches))
-				return;
+		{
+			return $unixtime;			
+		}
 		
 		$gmt_tz_offsets = FALSE;
 		
@@ -698,7 +704,7 @@ class EE_Localize {
 		{
 			$datestr = str_replace($val, $this->convert_timestamp($val, $unixtime, FALSE, $prelocalized), $datestr);
 		}
-				 
+			
 		return $datestr;
 	}
 	

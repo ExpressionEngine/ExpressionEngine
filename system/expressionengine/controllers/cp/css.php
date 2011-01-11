@@ -50,7 +50,14 @@ class Css extends CI_Controller {
 		{
 			$file = $this->input->get_post('M');
 		}
-
+		
+		// If this is a package request, there's a good chance we don't need 
+		// ci_view_path.  So try this first
+		if (file_exists($path.'css/'.$file.'.css'))
+		{
+			return $this->_load_css_file($path, $file);
+		}
+		
 		if (is_array($this->load->_ci_view_path))
 		{
 			foreach($this->load->_ci_view_path as $path)
@@ -62,7 +69,7 @@ class Css extends CI_Controller {
 			}
 		}
 		
-		$this->_load_css_file($path, $file);
+		return $this->_load_css_file($path, $file);
 	}
 
 

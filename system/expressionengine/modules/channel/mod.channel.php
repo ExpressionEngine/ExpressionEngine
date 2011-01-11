@@ -888,7 +888,7 @@ class Channel {
 			$this->paginate_data = str_replace(LD.'total_pages'.RD,			$this->total_pages,  		$this->paginate_data);
 			$this->paginate_data = str_replace(LD.'pagination_links'.RD,	$this->pagination_links,	$this->paginate_data);
 
-			if (preg_match("/".LD."if previous_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $match))
+			if (preg_match_all("/".LD."if previous_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
 			{
 				if ($this->page_previous == '')
 				{
@@ -896,15 +896,17 @@ class Channel {
 				}
 				else
 				{
-					$match[1] = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_previous, $match[1]);
-					$match[1] = preg_replace("/".LD.'auto_path'.RD."/",	$this->page_previous, $match[1]);
+					foreach($matches[1] as $count => $match)
+					{					
+						$match = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_previous, $match);
+						$match = preg_replace("/".LD.'auto_path'.RD."/", $this->page_previous, $match);
 
-					$this->paginate_data = str_replace($match[0],	$match[1], $this->paginate_data);
+						$this->paginate_data = str_replace($matches[0][$count], $match, $this->paginate_data);
+					}
 				}
 			}
 
-
-			if (preg_match("/".LD."if next_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $match))
+			if (preg_match_all("/".LD."if next_page".RD."(.+?)".LD.'\/'."if".RD."/s", $this->paginate_data, $matches))
 			{
 				if ($this->page_next == '')
 				{
@@ -912,10 +914,13 @@ class Channel {
 				}
 				else
 				{
-					$match[1] = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_next, $match[1]);
-					$match[1] = preg_replace("/".LD.'auto_path'.RD."/",	$this->page_next, $match[1]);
+					foreach ($matches[1] as $count => $match)
+					{
+						$match = preg_replace("/".LD.'path.*?'.RD."/", 	$this->page_next, $match);
+						$match = preg_replace("/".LD.'auto_path'.RD."/", $this->page_next, $match);
 
-					$this->paginate_data = str_replace($match[0],	$match[1], $this->paginate_data);
+						$this->paginate_data = str_replace($matches[0][$count],	$match, $this->paginate_data);
+					}					
 				}
 			}
 			

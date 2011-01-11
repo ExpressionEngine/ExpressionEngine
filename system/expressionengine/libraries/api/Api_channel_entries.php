@@ -938,7 +938,7 @@ class Api_channel_entries extends Api {
 					$nid = $id;
 					$id = 'field_id_'.$id;
 					
-					if ($data['entry_id'] == 0 && ! isset($data['field_ft_'.$id]))
+					if ($this->entry_id == 0 && ! isset($data['field_ft_'.$nid]))
 					{
 						$data['field_ft_'.$nid] = $this->EE->api_channel_fields->settings[$nid]['field_fmt'];
 					}
