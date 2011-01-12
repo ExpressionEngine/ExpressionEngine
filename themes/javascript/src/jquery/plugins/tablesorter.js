@@ -263,8 +263,6 @@
 							tableBody[0].appendChild(o[j]);
 						
 						}
-						
-						//tableBody.append(r[n[i][checkCell]]);
 					}
 				}	
 				
@@ -424,41 +422,51 @@
 			}
 			
 			/* sorting methods */
-			function multisort(table,sortList,cache) {
+			function multisort(table, sortList, cache) {
 				
-				if(table.config.debug) { var sortTime = new Date(); }
+				var sortTime;
 				
-				var dynamicExp = "var sortWrapper = function(a,b) {", l = sortList.length;
-					
-				for(var i=0; i < l; i++) {
-					
-					var c = sortList[i][0];
-					var order = sortList[i][1];
-					var s = (getCachedSortType(table.config.parsers,c) == "text") ? ((order == 0) ? "sortText" : "sortTextDesc") : ((order == 0) ? "sortNumeric" : "sortNumericDesc");
-					
-					var e = "e" + i;
-					
-					dynamicExp += "var " + e + " = " + s + "(a[" + c + "],b[" + c + "]); ";
-					dynamicExp += "if(" + e + ") { return " + e + "; } ";
-					dynamicExp += "else { ";
+				if(table.config.debug) {
+					sortTime = new Date();
 				}
 				
-				// if value is the same keep orignal order	
-				var orgOrderCol = cache.normalized[0].length - 1;
-				dynamicExp += "return a[" + orgOrderCol + "]-b[" + orgOrderCol + "];";
+				var sortWrapper = function(sortList) {
+					var key_stack = [],
+						func_stack = [],
+						l = sortList.length,
+						orgOrderCol, order, c;
+					
+					for(var i = 0; i < l; i++) {
+						c = sortList[i][0];
+						order = sortList[i][1];
 						
-				for(var i=0; i < l; i++) {
-					dynamicExp += "}; ";
+						key_stack[i] = c;
+						func_stack[i] = (getCachedSortType(table.config.parsers,c) == "text") ? ((order == 0) ? sortText : sortTextDesc) : ((order == 0) ? sortNumeric : sortNumericDesc);
+					}
+					
+					orgOrderCol = cache.normalized[0].length - 1;
+										
+					return function(a, b) {	
+						var key, res;
+						
+						for(var j = 0; j < l; j++) {
+							key = key_stack[j];
+							res = func_stack[j](a[key], b[key]);
+							
+							if (res) {
+								return res;
+							}
+						}
+						
+						return a[orgOrderCol] - b[orgOrderCol];
+					}
+				};
+				
+				cache.normalized.sort(sortWrapper(sortList));
+																
+				if(table.config.debug) {
+				//	benchmark("Sorting on " + sortList.toString() + " and dir " + order+ " time:", sortTime);
 				}
-				
-				dynamicExp += "return 0; ";	
-				dynamicExp += "}; ";	
-				
-				eval(dynamicExp);
-				
-				cache.normalized.sort(sortWrapper);
-				
-				if(table.config.debug) { benchmark("Sorting on " + sortList.toString() + " and dir " + order+ " time:", sortTime); }
 				
 				return cache;
 			};
