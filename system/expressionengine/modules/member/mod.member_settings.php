@@ -27,14 +27,6 @@
 class Member_settings extends Member {
 
 
-	/** ----------------------------------
-	/**  Member_settings Profile Constructor
-	/** ----------------------------------*/
-	function Member_settings()
-	{
-	}
-
-
 	/** ----------------------------------------
 	/**  Member Profile - Menu
 	/** ----------------------------------------*/
@@ -50,6 +42,25 @@ class Member_settings extends Member {
 		{
 			$menu = $this->_allow_if('allow_localization', $menu);
 		}
+
+		if ($this->EE->config->item('enable_photos') == 'y')
+		{
+			$menu = $this->_allow_if('enable_photos', $menu);
+		}
+		else
+		{
+			$menu = $this->_deny_if('enable_photos', $menu);
+		}
+		
+		if ($this->EE->config->item('enable_avatars') == 'y')
+		{
+			$menu = $this->_allow_if('enable_avatars', $menu);			
+		}
+		else
+		{
+			$menu = $this->_deny_if('enable_avatars', $menu);
+		}
+
 
 		return $this->_var_swap($menu,
 								array(

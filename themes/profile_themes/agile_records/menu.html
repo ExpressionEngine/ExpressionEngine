@@ -5,8 +5,8 @@
 	<ul>
 		<li><a href='{path:profile}'>{lang:edit_profile}</a></li>
 		<li><a href='{path:signature}'>{lang:edit_signature}</a></li>
-		<li><a href='{path:avatar}'>{lang:edit_avatar}</a></li>
-		<li><a href='{path:photo}'>{lang:edit_photo}</a></li>
+		{if enable_avatars}<li><a href='{path:avatar}'>{lang:edit_avatar}</a></li>{/if}
+		{if enable_photos}<li><a href='{path:photo}'>{lang:edit_photo}</a></li>{/if}
 		<li><a href='{path:email}'>{lang:email_settings}</a></li>
 		<li><a href='{path:username}'>{lang:username_and_password}</a></li>
 		<li><a href='{path:edit_preferences}'>{lang:edit_preferences}</a></li>
