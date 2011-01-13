@@ -126,7 +126,7 @@ class Content_publish extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->helper('form');
 		
-		$entry_id	= (int) $this->input->get_post('entry_id');
+		$entry_id	= (int) $this->input->get('entry_id');
 		$channel_id	= (int) $this->input->get_post('channel_id');
 		
 		$autosave	= ($this->input->get_post('use_autosave') == 'y');
@@ -168,10 +168,9 @@ class Content_publish extends CI_Controller {
 		// @todo setup validation for categories, etc?
 		// @todo third party tabs
 
-		$this->form_validation->set_message('title', lang('missing_title'));
-		$this->form_validation->set_message('entry_date', lang('missing_date'));
-
-		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
+		$this->form_validation->set_message('title', lang('missing_title'))
+							  ->set_message('entry_date', lang('missing_date'))
+							  ->set_error_delimiters('<div class="notice">', '</div>');
 		
 		if ($this->form_validation->run() === TRUE)
 		{
