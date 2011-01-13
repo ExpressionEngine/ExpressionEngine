@@ -75,7 +75,7 @@ class Login extends CI_Controller {
 			'return_path'	=> '',
 			'focus_field'	=> ($username) ? 'password' : 'username',
 			'username'		=> ($username) ? form_prep($username) : '',
-			'message'		=> ($this->input->get('auto_expire')) ? $this->lang->line('session_auto_timeout') : $this->session->flashdata('message')
+			'message'		=> ($this->input->get('auto_expire')) ? lang('session_auto_timeout') : $this->session->flashdata('message')
 		);
 		
 		if ($this->input->get('BK'))
@@ -88,7 +88,7 @@ class Login extends CI_Controller {
 		}
 		
 		$this->cp->set_variable('return_path',		SELF);
-		$this->cp->set_variable('cp_page_title',	$this->lang->line('login'));
+		$this->cp->set_variable('cp_page_title',	lang('login'));
 
 		$this->load->view('account/login', $vars);
 	}  
@@ -111,12 +111,12 @@ class Login extends CI_Controller {
 	
 		if ( ! $this->input->post('username'))
 		{
-			$this->session->set_flashdata('message', $this->lang->line('no_username'));
+			$this->session->set_flashdata('message', lang('no_username'));
 
 			if ($is_ajax)
 			{
 				$resp['messageType'] = 'failure';
-				$resp['message'] = $this->lang->line('no_username');
+				$resp['message'] = lang('no_username');
 
 				$this->output->send_ajax_response($resp); exit;				
 			}
@@ -129,14 +129,14 @@ class Login extends CI_Controller {
 		
 		if ( ! $this->input->get_post('password'))
 		{
-			$this->session->set_flashdata('message', $this->lang->line('no_password'));
+			$this->session->set_flashdata('message', lang('no_password'));
 
 			if ($is_ajax)
 			{
 				$resp['messageType'] = 'failure';
-				$resp['message'] = $this->lang->line('no_password');
+				$resp['message'] = lang('no_password');
 
-				$this->output->send_ajax_response($resp); exit;				
+				$this->output->send_ajax_response($resp);
 			}
 			
 			$this->functions->redirect(BASE.AMP.'C=login');
@@ -160,7 +160,7 @@ class Login extends CI_Controller {
 		{
 			if ($this->session->userdata['ip_address'] == '' OR $this->session->userdata['user_agent'] == '')
 			{
-				$this->session->set_flashdata('message', $this->lang->line('unauthorized_request'));
+				$this->session->set_flashdata('message', lang('unauthorized_request'));
 				$this->functions->redirect(BASE.AMP.'C=login');
 			}
 		}
@@ -171,7 +171,7 @@ class Login extends CI_Controller {
 		
 		if ($this->session->check_password_lockout($username) === TRUE)
 		{
-			$line = $this->lang->line('password_lockout_in_effect');
+			$line = lang('password_lockout_in_effect');
 		
 			$line = str_replace("%x", $this->config->item('password_lockout_interval'), $line);
 		
@@ -181,7 +181,7 @@ class Login extends CI_Controller {
 					'messageType'	=> 'logout'
 				);
 
-				$this->output->send_ajax_response($resp); exit;
+				$this->output->send_ajax_response($resp);
 			}
 		
 			$this->session->set_flashdata('message', $line);
@@ -202,14 +202,14 @@ class Login extends CI_Controller {
 		{
 			$this->session->save_password_lockout($username);
 			
-			$this->session->set_flashdata('message', $this->lang->line('credential_missmatch'));
+			$this->session->set_flashdata('message', lang('credential_missmatch'));
 			
 			if ($is_ajax)
 			{
 				$resp['messageType'] = 'failure';
-				$resp['message'] = $this->lang->line('credential_missmatch');
+				$resp['message'] = lang('credential_missmatch');
 
-				$this->output->send_ajax_response($resp); exit;				
+				$this->output->send_ajax_response($resp);			
 			}
 			
 			$this->functions->redirect(BASE.AMP.'C=login');
@@ -246,14 +246,14 @@ class Login extends CI_Controller {
 					
 				$this->session->save_password_lockout($username);
 
-				$this->session->set_flashdata('message', $this->lang->line('credential_missmatch'));
+				$this->session->set_flashdata('message', lang('credential_missmatch'));
 				
 				if ($is_ajax)
 				{
 					$resp['messageType'] = 'failure';
-					$resp['message'] = $this->lang->line('credential_missmatch');
+					$resp['message'] = lang('credential_missmatch');
 
-					$this->output->send_ajax_response($resp); exit;				
+					$this->output->send_ajax_response($resp);			
 				}
 				
 				$this->functions->redirect(BASE.AMP.'C=login');
@@ -271,7 +271,7 @@ class Login extends CI_Controller {
 		{
 			if ($this->session->ban_check())
 			{
-				return $this->output->fatal_error($this->lang->line('not_authorized'));
+				return $this->output->fatal_error(lang('not_authorized'));
 			}
 		}
 		
@@ -281,7 +281,7 @@ class Login extends CI_Controller {
 		
 		if ($query->row('can_access_cp') != 'y')
 		{
-			$this->session->set_flashdata('message', $this->lang->line('not_authorized'));
+			$this->session->set_flashdata('message', lang('not_authorized'));
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
 		
@@ -313,7 +313,7 @@ class Login extends CI_Controller {
 				if ($this->session->userdata['ip_address'] != $result->row('ip_address')  OR 
 					$this->session->userdata['user_agent'] != $result->row('user_agent')  )
 				{
-					$this->session->set_flashdata('message', $this->lang->line('multi_login_warning'));
+					$this->session->set_flashdata('message', lang('multi_login_warning'));
 					$this->functions->redirect(BASE.AMP.'C=login');
 				}				
 			} 
@@ -381,7 +381,7 @@ class Login extends CI_Controller {
 		// the LOG class can use it.
 		$this->session->userdata['username']  = $this->input->post('username');
 		
-		$this->logger->log_action($this->lang->line('member_logged_in'));
+		$this->logger->log_action(lang('member_logged_in'));
 		
 		/** ----------------------------------------
 		/**  Delete old password lockouts
@@ -393,22 +393,30 @@ class Login extends CI_Controller {
 		/**  Redirect the user to the CP home page
 		/** ----------------------------------------*/
 		
+		$base = BASE;
+		$sess_id = $this->session->sdata['session_id'];
+		
+		if ($this->config->item('admin_session_type') != 'c')
+		{
+			$base = preg_replace('/S=\d+/', 'S='.$sess_id, $base);
+		}
+		
 		if ($this->input->post('return_path'))
 		{
-			$return_path = BASE.AMP.base64_decode($this->input->post('return_path'));
+			$return_path = $base.AMP.base64_decode($this->input->post('return_path'));
 		}
 		else
 		{
-			$return_path = BASE.AMP.'C=homepage';
+			$return_path = $base.AMP.'C=homepage';
 		}
 		
 		if ($is_ajax)
 		{
 			$resp = array(
 				'xid'			=> XID_SECURE_HASH,
-				'session_id'	=> $this->session->sdata['session_id'],
+				'session_id'	=> $sess_id,
 				'messageType'	=> 'success',
-				'message'		=> $this->lang->line('logged_back_in')
+				'message'		=> lang('logged_back_in')
 			);
 			
 			$this->output->send_ajax_response($resp); exit;
@@ -436,7 +444,7 @@ class Login extends CI_Controller {
 		$this->lang->loadfile('member');
 		$this->load->helper('security');
 				
-		$vars['cp_page_title'] = $this->lang->line('login');
+		$vars['cp_page_title'] = lang('login');
 		
 		$uml = $this->config->item('un_min_len');
 		$pml = $this->config->item('pw_min_len');
@@ -448,7 +456,7 @@ class Login extends CI_Controller {
 		
 		$vars['message'][] = $message;
 		
-		$vars['message'][] = $this->lang->line('access_notice');
+		$vars['message'][] = lang('access_notice');
 		$vars['username'] = $this->input->post('username');
 		$vars['new_username_required'] = FALSE;
 		$vars['new_username'] = ($this->input->get_post('new_username') !== FALSE) ? $this->input->get_post('new_username') : '';
@@ -464,15 +472,15 @@ class Login extends CI_Controller {
 		if ($ulen < $uml)
 		{
 			$vars['new_username_required'] = TRUE;
-			$vars['notices']['un_len'] = sprintf($this->lang->line('un_len'), $uml);
-			$vars['notices']['yun_len'] = sprintf($this->lang->line('yun_len'), $ulen);
+			$vars['notices']['un_len'] = sprintf(lang('un_len'), $uml);
+			$vars['notices']['yun_len'] = sprintf(lang('yun_len'), $ulen);
 		}
 		
 		if ($plen < $pml)
 		{
 			$vars['new_password_required'] = TRUE;
-			$vars['notices']['pw_len'] = sprintf($this->lang->line('pw_len'), $pml);
-			$vars['notices']['ypw_len'] = sprintf($this->lang->line('ypw_len'), $plen);
+			$vars['notices']['pw_len'] = sprintf(lang('pw_len'), $pml);
+			$vars['notices']['ypw_len'] = sprintf(lang('ypw_len'), $plen);
 		}
 		
 		$this->load->view('account/update_un_pw', $vars);
@@ -501,7 +509,7 @@ class Login extends CI_Controller {
 			
 		if ($missing === TRUE)
 		{
-			return $this->_un_pw_update_form($this->lang->line('all_fields_required'));
+			return $this->_un_pw_update_form(lang('all_fields_required'));
 		}
 		
 		/** ----------------------------------------
@@ -510,7 +518,7 @@ class Login extends CI_Controller {
 		
 		if ($this->session->check_password_lockout($this->input->post('username')) === TRUE)
 		{		
-			$line = str_replace("%x", $this->config->item('password_lockout_interval'), $this->lang->line('password_lockout_in_effect'));	
+			$line = str_replace("%x", $this->config->item('password_lockout_interval'), lang('password_lockout_in_effect'));	
 				
 			return $this->_un_pw_update_form($line);
 		}
@@ -532,7 +540,7 @@ class Login extends CI_Controller {
 		if ($query->num_rows() == 0)
 		{
 			$this->session->save_password_lockout($this->input->post('username'));
-			return $this->_un_pw_update_form($this->lang->line('invalid_existing_un_pw'));
+			return $this->_un_pw_update_form(lang('invalid_existing_un_pw'));
 		}
 		
 		/** ----------------------------------------
@@ -545,7 +553,7 @@ class Login extends CI_Controller {
 		{
 			if ($this->session->ban_check())
 			{
-				return $this->output->fatal_error($this->lang->line('not_authorized'));
+				return $this->output->fatal_error(lang('not_authorized'));
 			}
 		}
 				
@@ -629,7 +637,7 @@ class Login extends CI_Controller {
 			$this->db->update('members');
 		}
 		
-		$this->session->set_flashdata('message', $this->lang->line('unpw_updated'));
+		$this->session->set_flashdata('message', lang('unpw_updated'));
 		$this->functions->redirect(BASE.AMP.'C=login'.AMP.'M=login_form');			
 	}
 	
@@ -654,7 +662,7 @@ class Login extends CI_Controller {
 
 		$this->db->where('session_id', $this->session->userdata['session_id']);
 		$this->db->delete('sessions');
-				
+		
 		$this->functions->set_cookie($this->session->c_uniqueid);		
 		$this->functions->set_cookie($this->session->c_password);	
 		$this->functions->set_cookie($this->session->c_session);	
@@ -663,7 +671,7 @@ class Login extends CI_Controller {
 		$this->functions->set_cookie('read_topics');  
 		$this->functions->set_cookie('tracker');  
 
-		$this->logger->log_action($this->lang->line('member_logged_out'));
+		$this->logger->log_action(lang('member_logged_out'));
 
 		if ($this->input->get('auto_expire'))
 		{
@@ -698,11 +706,12 @@ class Login extends CI_Controller {
 		$this->load->helper('form');
 		$message = $this->session->flashdata('message');
 		
-		$variables = array(	'email'			=> ( ! $this->input->post('email')) ? '' : $this->input->get_post('email'),
-							'message' 		=> $message,
-							'cp_page_title'	=> $this->lang->line('forgotten_password')
-						  );
-						  
+		$variables = array(
+			'email'			=> ( ! $this->input->post('email')) ? '' : $this->input->get_post('email'),
+			'message' 		=> $message,
+			'cp_page_title'	=> lang('forgotten_password')
+		);
+		
 		$this->load->view('account/forgot_password', $variables);
 	}  
 	
@@ -724,7 +733,7 @@ class Login extends CI_Controller {
 			$this->functions->redirect(BASE.AMP.'C=login'.AMP.'M=forgotten_password_form');
 		}
 		
-		$this->cp->set_variable('cp_page_title', $this->lang->line('new_password_request'));
+		$this->cp->set_variable('cp_page_title', lang('new_password_request'));
 		
 		$address = strip_tags($address);
 		
@@ -736,7 +745,7 @@ class Login extends CI_Controller {
 		
 		if ($query->num_rows() == 0)
 		{
-			$this->session->set_flashdata('message', $this->lang->line('no_email_found'));
+			$this->session->set_flashdata('message', lang('no_email_found'));
 			$this->functions->redirect(BASE.AMP.'C=login'.AMP.'M=forgotten_password_form');
 		}
 		
@@ -786,11 +795,11 @@ class Login extends CI_Controller {
 
 		if ( ! $this->email->send())
 		{
-			$vars['message_error'] = $this->lang->line('error_sending_email');
+			$vars['message_error'] = lang('error_sending_email');
 		} 
 		else 
 		{	
-			$vars['message_success'] = $this->lang->line('forgotten_email_sent');
+			$vars['message_success'] = lang('forgotten_email_sent');
 		}
 
 		$this->load->view('account/request_new_password', $vars);
@@ -861,12 +870,12 @@ class Login extends CI_Controller {
 				
 		// Buid the email message
 		$swap = array(
-						'name'		=> $username,
-						'username'	=> $username,
-						'password'	=> $rand,
-						'site_name'	=> stripslashes($this->config->item('site_name')),
-						'site_url'	=> $this->config->item('site_url')
-					 );
+			'name'		=> $username,
+			'username'	=> $username,
+			'password'	=> $rand,
+			'site_name'	=> stripslashes($this->config->item('site_name')),
+			'site_url'	=> $this->config->item('site_url')
+		 );
 
 
 		$template = $this->functions->fetch_email_template('reset_password_notification');
@@ -884,11 +893,11 @@ class Login extends CI_Controller {
 		
 		if ( ! $this->email->send())
 		{
-			$res = $this->lang->line('error_sending_email');
+			$res = lang('error_sending_email');
 		} 
 		else
 		{	
-			$res = $this->lang->line('password_has_been_reset');
+			$res = lang('password_has_been_reset');
 		}
 		
 		$this->session->set_flashdata('message', $res);
@@ -934,13 +943,13 @@ class Login extends CI_Controller {
 		// Any other way is monkeying with URLs.  I have no patience for URL monkiers.
 		if ( ! AJAX_REQUEST)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		// No CP access?  No reason to be here.  buh bye
 		if ( ! isset($this->session->userdata['can_access_cp']) OR $this->session->userdata['can_access_cp'] != 'y')
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$resp = array(

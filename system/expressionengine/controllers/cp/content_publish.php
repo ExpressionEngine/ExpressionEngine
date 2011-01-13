@@ -126,7 +126,7 @@ class Content_publish extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->helper('form');
 		
-		$entry_id	= (int) $this->input->get_post('entry_id');
+		$entry_id	= (int) $this->input->get('entry_id');
 		$channel_id	= (int) $this->input->get_post('channel_id');
 		
 		$autosave	= ($this->input->get_post('use_autosave') == 'y');
@@ -168,10 +168,9 @@ class Content_publish extends CI_Controller {
 		// @todo setup validation for categories, etc?
 		// @todo third party tabs
 
-		$this->form_validation->set_message('title', lang('missing_title'));
-		$this->form_validation->set_message('entry_date', lang('missing_date'));
-
-		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
+		$this->form_validation->set_message('title', lang('missing_title'))
+							  ->set_message('entry_date', lang('missing_date'))
+							  ->set_error_delimiters('<div class="notice">', '</div>');
 		
 		if ($this->form_validation->run() === TRUE)
 		{
@@ -2203,25 +2202,6 @@ class Content_publish extends CI_Controller {
 		$no_status_access 		= array();
 		$menu_status_options 	= array();
 		$menu_status_selected 	= $entry_data['status'];
-
-		if ($this->session->userdata('group_id') !== 1)
-		{
-			$query = $this->status_model->get_disallowed_statuses($this->session->userdata('group_id'));
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$no_status_access[] = $row['status_id'];
-				}
-			}
-			
-			// if there is no status group assigned, 
-			// only Super Admins can create 'open' entries
-			$menu_status_options['open'] = lang('open');		
-		}
-		
-		$menu_status_options['closed'] = lang('closed');
 		
 		if (isset($this->_channel_data['status_group']))
 		{
@@ -2232,22 +2212,23 @@ class Content_publish extends CI_Controller {
 				$no_status_flag = TRUE;
 				$vars['menu_status_options'] = array();
 
-				foreach ($query->result_array() as $row)
+				foreach ($query->result() as $row)
 				{
 					// pre-selected status
-					if ($entry_data['status'] == $row['status'])
+					if ($entry_data['status'] == $row->status)
 					{
-						$menu_status_selected = $row['status'];
+						$menu_status_selected = $row->status;
 					}
 
-					if (in_array($row['status_id'], $no_status_access))
+					if (in_array($row->status_id, $no_status_access))
 					{
 						continue;
 					}
 
 					$no_status_flag = FALSE;
-					$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? lang($row['status']) : $row['status'];
-					$menu_status_options[form_prep($row['status'])] = form_prep($status_name);
+					$status_name = ($row->status == 'open' OR $row->status == 'closed') ? lang($row->status) : $row->status;
+					$menu_status_options[form_prep($row->status)] = form_prep($status_name);
+					
 				}
 
 				// Were there no statuses?
@@ -2258,6 +2239,27 @@ class Content_publish extends CI_Controller {
 					$menu_status_selected = 'closed';
 				}
 			}
+		}
+		else
+		{
+			if ($this->session->userdata('group_id') !== 1)
+			{
+				$query = $this->status_model->get_disallowed_statuses($this->session->userdata('group_id'));
+
+				if ($query->num_rows() > 0)
+				{
+					foreach ($query->result_array() as $row)
+					{
+						$no_status_access[] = $row['status_id'];
+					}
+				}
+
+				// if there is no status group assigned, 
+				// only Super Admins can create 'open' entries
+				$menu_status_options['open'] = lang('open');		
+			}
+
+			$menu_status_options['closed'] = lang('closed');
 		}
 		
 		$settings = array(

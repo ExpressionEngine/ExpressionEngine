@@ -5459,7 +5459,7 @@ class Forum_Core extends Forum {
 		// Load the form helper
 		$this->EE->load->helper('form');
 
-		$body = ( ! $this->EE->input->get_post('body'))	? $data['body']  : stripslashes(form_prep($this->EE->input->get_post('body')));
+		$body = ( ! $this->EE->input->get_post('body'))	? $data['body']  : form_prep($this->EE->input->get_post('body'));
 		$body = $this->_convert_forum_tags($this->EE->functions->encode_ee_tags($body, TRUE));
 
 		$title = ( ! $this->EE->input->get_post('title'))  ? form_prep($data['title']) : stripslashes(form_prep($this->EE->input->get_post('title')));
@@ -5703,7 +5703,9 @@ class Forum_Core extends Forum {
 		$body = str_replace('{path:', '&#123;path:', $body);
 		$body = str_replace('{lang:', '&#123;lang:', $body);
 		
-		$body = $this->_quote_decode($this->EE->typography->parse_type(stripslashes($this->EE->security->xss_clean($body)), 
+		$body = $this->_quote_decode(
+							$this->EE->typography->parse_type(
+														$this->EE->security->xss_clean($body), 
 									 					array(
 																'text_format'	=> $forum_text_formatting,
 																'html_format'	=> $forum_html_formatting ,
@@ -5712,7 +5714,7 @@ class Forum_Core extends Forum {
 																	)
 										)
 															
-									);		
+								);		
 	
 		$title = str_replace('{include:', '&#123;include:', $this->EE->security->xss_clean($this->EE->input->get_post('title')));
 
