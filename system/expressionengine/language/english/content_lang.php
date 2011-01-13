@@ -942,6 +942,9 @@ $lang = array(
 'layout_failure_invalid_name' => 
 'The following fields have invalid characters in the short names: ',
 
+'layout_preview' =>
+'You&rsquo;re previewing the Publish Layout for ',
+
 'no_entry_to_update' =>
 'You have tried to update an entry that does not exist.',
 

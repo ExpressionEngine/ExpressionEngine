@@ -2518,6 +2518,17 @@ select#upload_dir {
 	margin:			0 7px;
 }
 
+#mainContent #tools #layout_preview {
+	border-top: 1px solid #aeb6c0;
+	margin: 8px 7px;
+	padding-top: 15px;
+}
+
+#mainContent #layout_preview select {
+	margin: 0 0 5px;
+	width: 100%;
+}
+
 #mainContent #tools ul {
 	list-style-type: 	none;
 	margin: 			0;

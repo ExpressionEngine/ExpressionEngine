@@ -136,7 +136,7 @@ class Content_publish extends CI_Controller {
 		if ($this->_smileys_enabled)
 		{
 			$this->load->helper('smiley');
-			$this->cp->add_to_foot(smiley_js());				
+			$this->cp->add_to_foot(smiley_js());
 		}
 
 		// Grab the channel_id associated with this entry if
@@ -223,7 +223,6 @@ class Content_publish extends CI_Controller {
 		
 		// Load layouts - we'll need them for the steps below
 		// if this is a layout group preview, we'll use it, otherwise, we'll use the author's group_id
-		
 		$layout_info = $this->_load_layout($channel_id);
 		
 
@@ -257,7 +256,7 @@ class Content_publish extends CI_Controller {
 				
 		if ($this->session->userdata('group_id') == 1)
 		{
-			$this->cp->add_js_script(array('file' => 'cp/publish_admin'));			
+			$this->cp->add_js_script(array('file' => 'cp/publish_admin'));
 		}
 
 		$this->_set_global_js($entry_id);
@@ -272,8 +271,18 @@ class Content_publish extends CI_Controller {
 		$current_url = http_build_query($parts, '', '&amp;');
 		
 		$autosave_id = isset($entry_data['autosave_entry_id']) ? $entry_data['autosave_entry_id'] : 0;
-	
-	
+		
+		// Remove 'layout_preview' from the URL, stripping anything after it
+		if (strpos($current_url, 'layout_preview') !== FALSE) 
+		{
+			$preview_url = explode(AMP.'layout_preview=', $current_url, 2);
+			$preview_url = $preview_url[0];
+		} 
+		else 
+		{
+			$preview_url = $current_url;
+		}
+		
 		$data = array(
 			'message'			=> '',	// @todo consider pulling?
 			'cp_page_title'		=> $entry_id ? lang('edit_entry') : lang('new_entry') . ': '. $this->_channel_data['channel_title'],
@@ -299,7 +308,9 @@ class Content_publish extends CI_Controller {
 				'channel_id'		=> $channel_id,
 				'autosave_entry_id'	=> $autosave_id,
 				'filter'			=> $this->input->get_post('filter')
-			)
+			),
+			
+			'preview_url' => $preview_url
 		);
 
 		$this->cp->set_breadcrumb(
@@ -427,7 +438,7 @@ class Content_publish extends CI_Controller {
 			foreach ($field as $name => $info)
 			{
 				if (count($required) > 0)
-				{					
+				{
 					// Check for hiding a required field
 					if (in_array($name, $required) && $info['visible'] === FALSE)
 					{
@@ -492,6 +503,24 @@ class Content_publish extends CI_Controller {
 		}
 	}
 	
+	
+	// --------------------------------------------------------------------
+	
+	function preview_layout()
+	{
+		if ( ! $this->cp->allowed_group('can_admin_channels'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		if (empty($_POST))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$member_group_name = $this->input->post('member_group');
+		$this->session->set_flashdata('message', lang('layout_preview') . $member_group_name);
+	}
 	
 	// --------------------------------------------------------------------
 

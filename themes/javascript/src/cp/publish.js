@@ -422,7 +422,7 @@ EE.publish.save_layout = function() {
 				if (layout_object[first_tab][darn2]['index'] > last_index) {
 					last_index = layout_object[first_tab][darn2]['index'];
 				}
-			}				
+			}
 			break;
 		}
 
@@ -479,6 +479,28 @@ EE.publish.remove_layout = function() {
 			$.ee_notice(EE.publish.lang.layout_removed + " <a href=\"javascript:location=location\">"+EE.publish.lang.refresh_layout+"</a>", {duration:0, type:"success"});
 		}
 	});
+};
+
+/**
+ * Change the Preview Layout link to use the member group's ID
+ * Hits the preview_layout method to create a message
+ */
+EE.publish.change_preview_link = function() {
+	$select = $('#layout_preview select');
+	$link = $('#layout_group_preview');
+	base = $link.attr('href').split('layout_preview')[0];
+	$link.attr('href', base + 'layout_preview=' + $select.val());
+	
+	$.ajax({
+		url: EE.BASE + "&C=content_publish&M=preview_layout",
+		type: 'POST',
+		dataType: 'json',
+		data: {
+			XID: EE.XID,
+			member_group: $select.find('option:selected').text()
+		}
+	});
+	
 };
 
 EE.date_obj_time = (function() {
@@ -595,6 +617,10 @@ $(document).ready(function() {
 	$("#layout_group_remove").click(function(){
 		EE.publish.remove_layout();
 		return false;
+	});
+	
+	$('#layout_preview select').change(function(){
+		EE.publish.change_preview_link();
 	});
 
 	$("a.reveal_formatting_buttons").click(function(){

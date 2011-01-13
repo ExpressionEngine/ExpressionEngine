@@ -67,7 +67,7 @@ if ($EE_view_disable !== TRUE)
 											<img src="<?=$cp_theme_url?>images/open_eye.png" alt="<?=lang('delete')?>" width="15" height="15" />
 										</a>
 									</li>
-								<?php endif;?>						
+								<?php endif;?>
 								<?php endforeach;?>
 							</ul><br />
 						</div>
@@ -103,8 +103,17 @@ if ($EE_view_disable !== TRUE)
 							<p class="custom_field_add">
 								<a href="#" id="layout_group_submit" class="submit submit_alt"><img src="<?=$cp_theme_url?>images/save_layout.png" width="12" height="14" alt="<?=lang('save_layout')?>" />&nbsp;&nbsp;<?=lang('save_layout')?></a>
 								<a href="#" id="layout_group_remove" class="submit submit_alt"><img src="<?=$cp_theme_url?>images/remove_layout.png" width="12" height="14" alt="<?=lang('remove_layout')?>" />&nbsp;&nbsp;<?=lang('remove_layout')?></a>
-								<a href="#" id="layout_group_preview" class="submit submit_alt"><img src="<?=$cp_theme_url?>images/preview_layout.png" width="12" height="14" alt="<?=lang('preview_layout')?>" />&nbsp;&nbsp;<?=lang('preview_layout')?></a>
 							</p>
+							<div id="layout_preview">
+								<select name="layout_preview">
+									<?php foreach($member_groups_laylist as $group):?>
+										<option value="<?= $group['group_id'] ?>">
+											<?= $group['group_title'] ?>
+										</option>
+									<?php endforeach;?>
+								</select>
+								<a href="<?= BASE.AMP.$preview_url.AMP.'layout_preview=1' ?>" id="layout_group_preview" class="submit submit_alt"><img src="<?=$cp_theme_url?>images/preview_layout.png" width="12" height="14" alt="<?=lang('preview_layout')?>" />&nbsp;&nbsp;<?=lang('preview_layout')?></a>
+							</div> <!-- #layout_preview -->
 						</div>
 						
 					</div> <!-- /tools -->
