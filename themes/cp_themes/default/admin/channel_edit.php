@@ -205,7 +205,7 @@ if ($EE_view_disable !== TRUE)
 			
 			<?php if (isset($this->cp->installed_modules['comment'])):?>
 			<h3 class="accordion"><?=lang('comment_prefs')?></h3>
-			<div style="padding: 5px 1px;">
+			<div style="padding: 5px 1px;" class="reg">
 
 				<?php
 					$this->table->set_heading(lang('preference'), lang('setting'));
