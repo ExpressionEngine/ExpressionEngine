@@ -1713,7 +1713,7 @@ class Admin_content extends CI_Controller {
 				$this->cp->allowed_group('can_access_admin') OR
 				$this->cp->allowed_group('can_access_content_prefs')))
 		{		
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 
@@ -1762,7 +1762,7 @@ class Admin_content extends CI_Controller {
 
 			if ($this->session->userdata['group_id'] != 1 AND ! in_array($this->session->userdata['group_id'], $can_edit))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
 
@@ -2767,18 +2767,19 @@ class Admin_content extends CI_Controller {
 		{
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		elseif ( ! $this->cp->allowed_group('can_access_admin') 
+				 OR ! $this->cp->allowed_group('can_access_content_prefs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// Fetch required globals
 		foreach (array('cat_id', 'group_id', 'order') as $val)
 		{
-			if ($this->input->get($val) === FALSE)
+			if ( ! $this->input->get($val))
 			{
 				return FALSE;
 			}
@@ -2798,27 +2799,28 @@ class Admin_content extends CI_Controller {
 
 		// Fetch the parent ID
 
-		$this->db->select('parent_id');
-		$this->db->where('cat_id', $cat_id);
-		$query = $this->db->get('categories');
+		$qry = $this->db->select('parent_id')
+						->where('cat_id', $cat_id)
+						->get('categories');
 
-		$parent_id = $query->row('parent_id') ;
+		$parent_id = $qry->row('parent_id');
 
 		// Is the requested category already at the beginning/end of the list?
 
 		$dir = ($order == 'up') ? 'asc' : 'desc';
 
-		$this->db->select('cat_id');
-		$this->db->where('group_id', $group_id);
-		$this->db->where('parent_id', $parent_id);
-		$this->db->order_by('cat_order', $dir);
-		$this->db->limit(1);
-		$query = $this->db->get('categories');
+		$qry = $this->db->select('cat_id')
+						->where('group_id', $group_id)
+						->where('parent_id', $parent_id)
+						->order_by('cat_order', $dir)
+						->limit(1)
+						->get('categories');
 
-		if ($query->row('cat_id') == $cat_id)
+		if ($qry->row('cat_id') == $cat_id)
 		{
 			$this->functions->redirect($return);
 		}
+
 
 		// Fetch all the categories in the parent
 		$this->db->select('cat_id, cat_order');
