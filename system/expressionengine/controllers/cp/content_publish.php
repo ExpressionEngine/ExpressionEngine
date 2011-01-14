@@ -1948,9 +1948,15 @@ class Content_publish extends CI_Controller {
 		
 		$versioning = '';
 		
-		$revisions_checked = (isset($entry_data['versioning_enabled']) 
-									&& $entry_data['versioning_enabled'] == 'y') ? TRUE : FALSE;
-	
+		// Revisions should be checked by default.
+		// $entry_data will say they aren't check if it isset(), righto?
+		$revisions_checked = TRUE;
+
+		if (isset($entry_data['versioning_enabled']))
+		{
+			$revisions_checked = ($entry_data['versioning_enabled'] == 'y') ? TRUE : FALSE;
+		}
+		
 		if ($revisions_checked)
 		{
 			$versioning = lang('no_revisions_exist');
