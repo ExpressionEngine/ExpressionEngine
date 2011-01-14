@@ -42,8 +42,7 @@ class Design extends CI_Controller {
 								'total_queries',
 								'XID_HASH'
 								);
-
-
+	
 	/**
 	 * Constructor
 	 */
@@ -1536,7 +1535,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$template_name = $this->input->post('template_name');
@@ -1544,12 +1543,12 @@ class Design extends CI_Controller {
 
 		if ($group_id == '')
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if ($template_name == '')
 		{
-			show_error($this->lang->line('you_must_submit_a_name'));
+			show_error(lang('you_must_submit_a_name'));
 		}
 
 		if ( ! $this->_template_access_privs(array('group_id' => $group_id)))
@@ -1567,8 +1566,8 @@ class Design extends CI_Controller {
 			show_error($this->lang->line('reserved_name'));
 		}
 		
-		$this->db->where('group_id', $group_id);
-		$this->db->where('template_name', $template_name);
+		$this->db->where('group_id', $group_id)
+				 ->where('template_name', $template_name);
 
 		if ($this->db->count_all_results('templates'))
 		{
@@ -1578,54 +1577,55 @@ class Design extends CI_Controller {
 		$template_data = '';
 
 		$template_type = $this->input->post('template_type');
-
+		
 		if ($this->input->post('existing_template') != 0)
 		{
-			$this->db->from('templates t, template_groups tg');
-			$this->db->select('tg.group_name, template_name, template_data, template_type, template_notes, cache, refresh, no_auth_bounce, allow_php, php_parse_location, save_template_file');
-			$this->db->where('t.template_id', $this->input->post('existing_template'));
-			$this->db->where('tg.group_id = t.group_id');
-			
-			$query = $this->db->get();
+			$qry = $this->db->select(
+								'tg.group_name, template_name, template_data, template_type, 
+						 		template_notes, cache, refresh, no_auth_bounce, 
+						 		allow_php, php_parse_location, save_template_file')
+							->from('templates t, template_groups tg')
+							->where('t.template_id', $this->input->post('existing_template'))
+							->where('tg.group_id = t.group_id')
+							->get();
 
-			if ($this->config->item('save_tmpl_files') == 'y' && $this->config->item('tmpl_file_basepath') != '' && $query->row('save_template_file')  == 'y')
+			if ($this->config->item('save_tmpl_files') == 'y' && $this->config->item('tmpl_file_basepath') != '' && $qry->row('save_template_file')  == 'y')
 			{
 				$basepath = $this->config->item('tmpl_file_basepath');
-				
+
 				if (substr($basepath, -1) != '/')
 				{
 					$basepath .= '/';
 				}
-									
-				$basepath .= $query->row('group_name') .'/'.$query->row('template_name') .'.php';
 				
-				if ($fp = @fopen($basepath, FOPEN_READ))
-				{
-					flock($fp, LOCK_SH);
-					
-					$query->set_row('template_data', (filesize($basepath) == 0) ? '' : fread($fp, filesize($basepath))); 
-					
-					flock($fp, LOCK_UN);
-					fclose($fp); 
-				}
+				$this->load->library('api');
+				$this->api->instantiate('template_structure');
+				$ext = $this->api_template_structure->file_extensions($qry->row('template_type'));
+				
+				$basepath .= $this->config->item('site_short_name').'/';
+				$basepath .= $qry->row('group_name').'.group/'.$qry->row('template_name').$ext;
+
+				$this->load->helper('file');
+				
+				$tmp_tmpl_data = read_file($basepath);
+				
+				$template_data = ($tmp_tmpl_data) ? $tmp_tmpl_data : $qry->row('template_data');				
 			}
-			
-			$template_data = $query->row('template_data') ;
-			
-			if ($template_type != $query->row('template_type') )
+
+			if ($template_type != $qry->row('template_type'))
 			{
-				$template_type = $query->row('template_type') ;
+				$template_type = $qry->row('template_type');
 			}
 
 			$data = array(
-							'group_id'				=> $_POST['group_id'],
-							'template_name'			=> $_POST['template_name'],
-							'template_notes'		=> $query->row('template_notes') ,
-							'cache'					=> $query->row('cache') ,
-							'refresh'				=> $query->row('refresh') ,
-							'no_auth_bounce'		=> $query->row('no_auth_bounce') ,
-							'php_parse_location'	=> $query->row('php_parse_location') ,
-							'allow_php'				=> ($this->session->userdata['group_id'] == 1) ? $query->row('allow_php')  : 'n',
+							'group_id'				=> $this->input->post('group_id'),
+							'template_name'			=> $this->input->post('template_name'),
+							'template_notes'		=> $qry->row('template_notes') ,
+							'cache'					=> $qry->row('cache') ,
+							'refresh'				=> $qry->row('refresh') ,
+							'no_auth_bounce'		=> $qry->row('no_auth_bounce') ,
+							'php_parse_location'	=> $qry->row('php_parse_location') ,
+							'allow_php'				=> ($this->session->userdata['group_id'] == 1) ? $qry->row('allow_php')  : 'n',
 							'template_type'			=> $template_type,
 							'template_data'			=> $template_data,
 							'edit_date'				=> $this->localize->now,
@@ -1638,8 +1638,8 @@ class Design extends CI_Controller {
 		else
 		{
 			$data = array(
-							'group_id'			=> $_POST['group_id'],
-							'template_name'		=> $_POST['template_name'],
+							'group_id'			=> $this->input->post('group_id'),
+							'template_name'		=> $this->input->post('template_name'),
 							'template_type'		=> $template_type,
 							'template_data'		=> '',
 							'edit_date'			=> $this->localize->now,
@@ -1652,11 +1652,11 @@ class Design extends CI_Controller {
 
 		if (isset($_POST['create']))
 		{
-			$this->manager($this->lang->line('template_created'));
+			$this->manager(lang('template_created'));
 		}
 		else
 		{
-			$this->edit_template($template_id, $this->lang->line('template_created'));
+			$this->edit_template($template_id, lang('template_created'));
 		}
 	}
 
