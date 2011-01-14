@@ -154,11 +154,9 @@ EE.publish.category_editor = function() {
 
 	// And a function to do the work
 	reload = function() {
-		var gid = $(this).data("gid"),
+		var link = $(this).hide(),
+			gid = $(this).data("gid"),
 			resp_filter = ".pageContents";
-		
-		// Hide the 'edit categories' link 
-		$('.edit_categories_link').hide();
 		
 		if ($(this).hasClass("edit_cat_order_trigger") || $(this).hasClass("edit_categories_link")) {
 			resp_filter += " table";
@@ -206,10 +204,18 @@ EE.publish.category_editor = function() {
 
 	// Last but not least - update the checkboxes
 	$(".cats_done").live("click", function() {
-		var that = $(this).closest(".cat_group_container");
+		var that = $(this).closest(".cat_group_container"),
+			gid = that.data("gid");
+
+		 $(".edit_categories_link").each(function(el, i) {
+		            if ($(this).data("gid") == gid) {
+		                $(this).show();
+		            }
+		        });
+
 		that.text("loading...").load(EE.BASE+"&C=content_publish&M=category_actions&group_id="+that.data("gid")+"&timestamp="+now(), function(response) {
 			that.html( $(response).html() );
-			$(".edit_categories_link").show();
+
 		});
 				
 		return false;
