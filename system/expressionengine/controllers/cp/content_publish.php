@@ -518,7 +518,7 @@ class Content_publish extends CI_Controller {
 		}
 		
 		$member_group_name = $this->input->post('member_group');
-		$this->session->set_flashdata('message', lang('layout_preview') . $member_group_name);
+		$this->session->set_flashdata('message', lang('layout_preview').$member_group_name);
 	}
 	
 	// --------------------------------------------------------------------
