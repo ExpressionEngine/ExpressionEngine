@@ -4347,43 +4347,75 @@ class Admin_content extends CI_Controller {
 				
 			// Send it over to drop old fields, add new ones, and modify as needed
 			$this->api_channel_fields->edit_datatype(
-								$native_settings['field_id'], 
-								$field_type,
-								$native_settings
-				);
-
-
+				$native_settings['field_id'],
+				$field_type,
+				$native_settings
+			);
+			
 			unset($native_settings['group_id']);
-
+			
 			$this->db->where('field_id', $native_settings['field_id']);
 			$this->db->where('group_id', $group_id);
 			$this->db->update('channel_fields', $native_settings);
 
 			// Update saved layouts if necessary
-			
 			$collapse = ($native_settings['field_is_hidden'] == 'y') ? TRUE : FALSE;
 			$buttons = ($ft_settings['field_show_formatting_btns'] == 'y') ? TRUE : FALSE;
 			
-			$field_info[$native_settings['field_id']] = array(
-								'visible'		=> TRUE,
-								'collapse'		=> $collapse,
-								'htmlbuttons'	=> $buttons,
-								'width'			=> '100%'
-			);
-			
 			// Add to any custom layouts
-
-			$query = $this->field_model->get_assigned_channels($group_id);
+			// First, figure out what channels are associated with this group
+			// Then using the list of channels, figure out the layouts associated with those channels
+			// Then update each layout individually
 			
-			if ($query->num_rows() > 0)
+			$channels_for_group = $this->field_model->get_assigned_channels($group_id);
+			
+			if ($channels_for_group->num_rows() > 0)
 			{
-				foreach ($query->result() as $row)
+				foreach ($channels_for_group->result() as $channel)
 				{
-					$channel_ids[] = $row->channel_id;
+					$channel_ids[] = $channel->channel_id;
 				}
 				
-				$this->load->library('layout');
-				$this->layout->edit_layout_fields($field_info, $channel_ids);
+				$this->db->where_in('channel_id', $channel_ids);
+				$layouts_for_group = $this->db->get('layout_publish');
+				
+				foreach ($layouts_for_group->result() as $layout) 
+				{
+					// Figure out visibility for the field in the layout
+					$layout_settings = unserialize($layout->field_layout);
+					$visibility = TRUE;
+					$width = '100%';
+					
+					// Find the field
+					foreach ($layout_settings as $existing_tab => $existing_fields) 
+					{
+						foreach ($existing_fields as $existing_field_id => $existing_field_settings) 
+						{
+							if ($existing_field_id == $native_settings['field_id']) 
+							{
+								$width = ($existing_field_settings['width'] !== NULL) ? 
+									$existing_field_settings['width'] : 
+									$width;
+								
+								$visibility = ($existing_field_settings['visible'] !== NULL) ? 
+									$existing_field_settings['visible'] : 
+									$visibility;
+								
+								continue;
+							}
+						}
+					}
+					
+					$field_info[$native_settings['field_id']] = array(
+						'visible'     => $visibility,
+						'collapse'    => $collapse,
+						'htmlbuttons' => $buttons,
+						'width'       => $width
+					);
+					
+					$this->load->model('layout_model');
+					$this->layout_model->edit_layout_group_fields($field_info, $layout->layout_id);
+				}
 			}
 		}
 		else

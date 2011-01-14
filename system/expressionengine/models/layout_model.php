@@ -273,6 +273,38 @@ class Layout_model extends CI_Model {
 			}
 		}
 	}
+	
+	function edit_layout_group_fields($layout_info, $layout_group_id)
+	{
+		if ( ! ctype_digit($layout_group_id)) {
+			return FALSE;
+		}
+		
+		$query = $this->db->get_where('layout_publish', array('layout_id' => $layout_group_id));
+		
+		if ($query->num_rows() > 0)
+		{
+			foreach($query->result() as $row)
+			{
+				$layout = unserialize($row->field_layout);
+				
+				foreach($layout_info AS $field_name => $settings)
+				{
+					foreach ($layout AS $existing_tab => $existing_field)
+					{
+						if (isset($layout[$existing_tab][$field_name]))
+						{
+							$layout[$existing_tab][$field_name] = $settings;
+						}
+					}
+				}
+				
+				$data = array('field_layout' => serialize($layout));
+				$this->db->where('layout_id', $row->layout_id);
+				$this->db->update('layout_publish', $data); 
+			}
+		}
+	}
 }
 
 /* End of file layout_model.php */
