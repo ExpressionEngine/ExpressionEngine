@@ -157,6 +157,9 @@ EE.publish.category_editor = function() {
 		var gid = $(this).data("gid"),
 			resp_filter = ".pageContents";
 		
+		// Hide the 'edit categories' link 
+		$('.edit_categories_link').hide();
+		
 		if ($(this).hasClass("edit_cat_order_trigger") || $(this).hasClass("edit_categories_link")) {
 			resp_filter += " table";
 		}
@@ -206,6 +209,7 @@ EE.publish.category_editor = function() {
 		var that = $(this).closest(".cat_group_container");
 		that.text("loading...").load(EE.BASE+"&C=content_publish&M=category_actions&group_id="+that.data("gid")+"&timestamp="+now(), function(response) {
 			that.html( $(response).html() );
+			$(".edit_categories_link").show();
 		});
 				
 		return false;
