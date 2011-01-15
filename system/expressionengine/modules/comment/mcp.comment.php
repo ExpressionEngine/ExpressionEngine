@@ -420,16 +420,25 @@ function fnGetKey( aoData, sKey )
 			status			= document.getElementById("f_status"),
 			channel_id		= document.getElementById("f_channel_id"),
    			search_in		= document.getElementById("f_search_in"),
-   			date_range		= document.getElementById("date_range");
+   			date_range		= document.getElementById("date_range"),
+			keywordFix;
 
-			//keywordFix = $.base64Encode(keywords.value);
-			if (keywords.value.length)
-			{
-				keywordFix = $().crypt({method:"b64enc",source: keywords.value}); 
+			// for browsers that don\'t support the placeholder
+			// attribute. See global.js :: insert_placeholders()
+			// for more info. -pk
+			function keywords_value() {
+				if ($(keywords).data("user_data") == "n") {
+					return "";
+				}
+
+				return keywords.value;
 			}
-			else
+
+			keywordFix = keywords_value();
+
+			if (keywordFix.length)
 			{
-				keywordFix = keywords.value;
+				keywordFix = $().crypt({method:"b64enc",source: keywordFix}); 
 			}
 			
 		aoData.push( 

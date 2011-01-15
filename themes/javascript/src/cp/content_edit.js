@@ -183,15 +183,29 @@ $(document).ready(function() {
 	    	cat_id			= document.getElementById("f_cat_id"),
 	    	search_in		= document.getElementById("f_search_in"),
 	    	date_range		= document.getElementById("date_range"),
-	    	per_page		= document.getElementById("f_perpage"),	
-			comment_url		= "&ajax=true&keywords="+keywords.value+"&channel_id="+channel_id.value;
+	    	per_page		= document.getElementById("f_perpage"),
+			comment_url;
+
+		// for browsers that don't support the placeholder
+		// attribute. See global.js :: insert_placeholders()
+		// for more info. -pk
+		function keywords_value() {
+			if ($(keywords).data('user_data') == 'n') {
+				return '';
+			}
+			
+			return keywords.value;
+		}
+		
+		
+		comment_url = "&ajax=true&keywords="+keywords_value()+"&channel_id="+channel_id.value;
 
 		if (search_in.value == "comments") {
 			window.location = EE.BASE+"&C=content_edit&M=view_comments"+comment_url;
 		}
 
 		aoData.push( 
-			 { "name": "keywords", "value": keywords.value },
+			 { "name": "keywords", "value": keywords_value() },
 	         { "name": "status", "value": status.value },
 			 { "name": "channel_id", "value": channel_id.value },
 	         { "name": "cat_id", "value": cat_id.value },
@@ -237,7 +251,7 @@ $(document).ready(function() {
 			fnSetKey( aoData, "iDisplayLength", iRequestLength * iPipe );
 
 					aoData.push(  
-			 			{ "name": "keywords", "value": keywords.value },
+			 			{ "name": "keywords", "value": keywords_value() },
 	         			{ "name": "status", "value": status.value },
 			 			{ "name": "channel_id", "value": channel_id.value },
 	         			{ "name": "cat_id", "value": cat_id.value },

@@ -22,7 +22,7 @@
                 </div>
 
 				<div>
-					<?=lang('keywords', 'keywords')?> <?=form_input('keywords', $keywords, 'class="field shun" id="keywords"')?><br />
+					<label for="keywords" class="js_hide"><?=lang('keywords')?> </label><?=form_input('keywords', $keywords, 'class="field shun" id="keywords" placeholder="'.lang('keywords').'"')?><br />
 					<?=form_dropdown('search_in', $search_in_options, $search_in_selected, 'id="f_search_in"').NBS.NBS?>
 					<?=form_submit('submit', lang('search'), 'class="submit" id="search_button"')?>
 				</div>

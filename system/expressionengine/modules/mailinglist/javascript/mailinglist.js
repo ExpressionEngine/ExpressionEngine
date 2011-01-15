@@ -56,10 +56,21 @@ $(document).ready(function() {
 			var email = document.getElementById("email");
 		    var list_id = document.getElementById("list_id");
 
-				aoData.push( 
-				 { "name": "email", "value": email.value },
+			// for browsers that don't support the placeholder
+			// attribute. See global.js :: insert_placeholders()
+			// for more info. -pk
+			function email_value() {
+				if ($(email).data('user_data') == 'n') {
+					return '';
+				}
+
+				return email.value;
+			}
+
+			aoData.push( 
+				 { "name": "email", "value": email_value() },
 		         { "name": "list_id", "value": list_id.value }
-				 );
+			 );
 
 			oCache.iDisplayStart = iRequestStart;
 
@@ -106,7 +117,7 @@ $(document).ready(function() {
 				fnSetKey( aoData, "iDisplayLength", iRequestLength*iPipe );
 
 						aoData.push( 
-						 { "name": "email", "value": email.value },
+						 { "name": "email", "value": email_value() },
 		        	     { "name": "list_id", "value": list_id.value }
 						 );
 

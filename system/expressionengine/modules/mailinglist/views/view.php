@@ -3,21 +3,18 @@
 	<div class="group">
 
 		<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=view')?>
-			
-			
-		<p>
-		<?=lang('ml_email_address_field', 'email')?>
-		<?=form_input(array('id'=>'email','name'=>'email','value'=>$email))?> 
-					
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-		<?=lang('mailing_list', 'list')?>
+		<div>
+			<label for="email" class="js_hide"><?=lang('ml_email_address_field')?></label>
+			<?=form_input('email', $email, 'class="field shun" id="email" placeholder="'.lang('ml_email_address_field').'"')?>
+		</div>
+		
+		<?=lang('mailing_list', 'list')?>&nbsp;
 		<?=form_dropdown('list_id', $mailinglists, $selected_list, 'id="list_id"')?> 
-					
-		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		
+		&nbsp;&nbsp;
 
 		<?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'))?>
-		</p>
 
 	    <?=form_close()?>
 	</div>
@@ -33,7 +30,6 @@
 	<?php
 		$this->table->set_template($cp_table_template);
 		$this->table->set_heading(
-//									'', // EE 1.6.X had a column for rowcount
 									lang('email'),
 									lang('ip'),
 									lang('ml_mailinglist'), 
@@ -43,7 +39,6 @@
 		foreach($subscribers as $subscriber)
 		{
 			$this->table->add_row(
-									
 									'<a href="mailto:'.$subscriber['email'].'">'.$subscriber['email'].'</a>',
 									$subscriber['ip_address'],
 									$subscriber['list'],

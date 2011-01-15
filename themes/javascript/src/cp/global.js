@@ -32,59 +32,47 @@ jQuery(document).ready(function () {
 		}
 	});
 
-	// OS X Style Search Boxes for Webkit
-	EE.create_searchbox = function () {
+	if ( ! 'placeholder' in document.createElement('input')) {
+
+		// Fallback for browsers without placeholder= support
+		EE.insert_placeholders = function () {
 	
-		var ee_test_obj = document.createElement('input'),
-			create_func;
-	
-		if ('placeholder' in ee_test_obj) {
-			create_func = function (placeholder, save) {
-/* 				this.setAttribute('type', 'search'); */
-				$(this).attr({
-					autosave:		save,
-					results:		'10',
-					placeholder:	placeholder
-				});
-			};
-		}
-		else {
-			create_func = function (placeholder) {
+			$('input[type="text"]').each(function() {
+				if ( ! this.placeholder) {
+					return;
+				}
+								
 				var jqEl = $(this),
+					placeholder = this.placeholder,
 					orig_color = jqEl.css('color');
+
+				if (jqEl.val() == '') {
+					jqEl.data('user_data', 'n');
+				}
 
 				jqEl.focus(function () {
 					// Reset color & remove placeholder text
 					jqEl.css('color', orig_color);
 					if (jqEl.val() === placeholder) {
 						jqEl.val('');
+						jqEl.data('user_data', 'y');
 					}
 				})
 				.blur(function () {
 					// If no user content -> add placeholder text and dim
 					if (jqEl.val() === '' || jqEl.val === placeholder) {
 						jqEl.val(placeholder).css('color', '#888');
+						jqEl.data('user_data', 'n');
 					}
 				})
 				.trigger('blur');
-			};
-		}
-
-		EE.create_searchbox = function (el, placeholder, save) {
-			el = document.getElementById(el);
-		
-			if (el) {
-				create_func.call(el, placeholder, save);
-			}
+			});
 		};
+		
+		EE.insert_placeholders();
+	}
+
 	
-		EE.create_searchbox.apply(EE.create_searchbox, arguments);
-	};
-
-	EE.create_searchbox('cp_search_keywords', EE.lang.search, 'ee_cp_search');
-	EE.create_searchbox('template_keywords', EE.lang.search_template, 'ee_template_search');
-
-
 	// External links open in new window
 
 	$('a[rel="external"]').click(function () {

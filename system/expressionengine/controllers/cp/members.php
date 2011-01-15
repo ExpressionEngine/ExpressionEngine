@@ -244,8 +244,19 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		group       = document.getElementById("group_id"),
 		column_filter       = document.getElementById("column_filter");
 
+	// for browsers that don\'t support the placeholder
+	// attribute. See global.js :: insert_placeholders()
+	// for more info. -pk
+	function k_search_value() {
+		if ($(k_search).data("user_data") == "n") {
+			return "";
+		}
+		
+		return k_search.value;
+	}
+
 	aoData.push( 
-		{ "name": "k_search", "value": k_search.value },
+		{ "name": "k_search", "value": k_search_value() },
 		{ "name": "group", "value": group.value },
 		{ "name": "column_filter", "value": column_filter.value }
 	 );
@@ -295,7 +306,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		fnSetKey( aoData, "iDisplayLength", iRequestLength*iPipe );
 		
 			aoData.push( 
-				{ "name": "k_search", "value": k_search.value },
+				{ "name": "k_search", "value": k_search_value() },
 				{ "name": "group", "value": group.value },
 				{ "name": "column_filter", "value": column_filter.value }
 			 );

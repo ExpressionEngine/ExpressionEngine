@@ -27,7 +27,7 @@ $lang = array(
 'Mailing List:',
 
 'ml_email_address_field' =>
-'Email Address:',
+'Email Address',
 
 'mailinglist_template' =>
 'Mailing List Template',

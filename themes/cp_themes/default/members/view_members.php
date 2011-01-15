@@ -28,8 +28,8 @@ if ($EE_view_disable !== TRUE)
 							<legend><?=lang('total_members')?> <?=$total_members?></legend>
 
 							<p>
-								<?=form_label(lang('keywords'), 'member_name', 'class="field"')?>&nbsp;
-								<?=form_input(array('id'=>'member_name', 'name'=>'member_name', 'class'=>'field', 'value'=>$member_name))?> 
+								<?=form_label(lang('keywords').NBS, 'member_name', array('class' => 'field js_hide'))?>
+								<?=form_input(array('id'=>'member_name', 'name'=>'member_name', 'class'=>'field', 'placeholder' => lang('keywords'), 'value'=>$member_name))?> 
 							</p>
 							<p>
 								<?=form_label(lang('member_group'), 'group_id')?>&nbsp;
