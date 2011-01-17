@@ -155,8 +155,7 @@ class Layout {
 		
 		$this->EE->layout_model->edit_layout_fields($field_info, 'edit_fields', $channel_id);
 	}
-
-
+	
 	// --------------------------------------------------------------------
 	
 	/**
