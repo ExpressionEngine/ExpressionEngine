@@ -4371,39 +4371,36 @@ class Admin_content extends CI_Controller {
 			
 			if ($channels_for_group->num_rows() > 0)
 			{
+				$this->load->model('layout_model');
+				
 				foreach ($channels_for_group->result() as $channel)
 				{
 					$channel_ids[] = $channel->channel_id;
 				}
 				
+				$this->db->select('layout_id');
 				$this->db->where_in('channel_id', $channel_ids);
 				$layouts_for_group = $this->db->get('layout_publish');
 				
 				foreach ($layouts_for_group->result() as $layout) 
 				{
 					// Figure out visibility for the field in the layout
-					$layout_settings = unserialize($layout->field_layout);
+					$layout_settings = $this->layout_model->get_layout_settings($layout->layout_id);
+					
 					$visibility = TRUE;
 					$width = '100%';
 					
-					// Find the field
-					foreach ($layout_settings as $existing_tab => $existing_fields) 
+					if (array_key_exists($native_settings['field_id'], $layout_settings)) 
 					{
-						foreach ($existing_fields as $existing_field_id => $existing_field_settings) 
-						{
-							if ($existing_field_id == $native_settings['field_id']) 
-							{
-								$width = ($existing_field_settings['width'] !== NULL) ? 
-									$existing_field_settings['width'] : 
-									$width;
-								
-								$visibility = ($existing_field_settings['visible'] !== NULL) ? 
-									$existing_field_settings['visible'] : 
-									$visibility;
-								
-								continue;
-							}
-						}
+						$field_settings = $layout_settings[$native_settings['field_id']];
+						
+						$width = ($field_settings['width'] !== NULL) ? 
+							$field_settings['width'] : 
+							$width;
+						
+						$visibility = ($field_settings['visible'] !== NULL) ? 
+							$field_settings['visible'] : 
+							$visibility;
 					}
 					
 					$field_info[$native_settings['field_id']] = array(
@@ -4413,7 +4410,6 @@ class Admin_content extends CI_Controller {
 						'width'       => $width
 					);
 					
-					$this->load->model('layout_model');
 					$this->layout_model->edit_layout_group_fields($field_info, $layout->layout_id);
 				}
 			}

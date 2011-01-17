@@ -274,6 +274,12 @@ class Layout_model extends CI_Model {
 		}
 	}
 	
+	/**
+	 * Edit one layout group's layout, as opposed to all of the layouts
+	 *
+	 * @param Array $layout_info Multidimensional array containing field names as the keys and their settings as the value
+	 * @param Integer $layout_group_id The layout you want to change settings for
+	 */
 	function edit_layout_group_fields($layout_info, $layout_group_id)
 	{
 		if ( ! ctype_digit($layout_group_id)) {
@@ -304,6 +310,45 @@ class Layout_model extends CI_Model {
 				$this->db->update('layout_publish', $data); 
 			}
 		}
+	}
+
+	/**
+	 * Create an array of layout settings for different fields
+	 * The array is a flat array, NOT organized by tab
+	 * 
+	 * @param Integer $layout_id The layout you want to pull settings for
+	 * @return datatype description
+	 */
+	function get_layout_settings($layout_id)
+	{
+		if (is_int($layout_id) OR ctype_digit($layout_id))
+		{
+			$this->db->where('layout_id', $layout_id);
+		}
+		else
+		{
+			return FALSE;
+		}
+		
+		$layout_settings = array();
+		
+		$this->db->select('field_layout');
+		$layouts_for_group = $this->db->get('layout_publish');
+		
+		$settings = unserialize($layouts_for_group->row('field_layout'));
+		
+		foreach ($settings as $tab => $fields)
+		{
+			foreach ($fields as $key => $settings)
+			{
+				// Check to see if the key starts with an underscore, we don't need those
+				if (strncmp($key, '_', 1) !== 0) {
+					$layout_settings[$key] = $settings;
+				}
+			}
+		}
+		
+		return $layout_settings;
 	}
 }
 
