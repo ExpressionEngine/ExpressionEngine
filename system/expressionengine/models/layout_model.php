@@ -343,7 +343,14 @@ class Layout_model extends CI_Model {
 			{
 				// Check to see if the key starts with an underscore, we don't need those
 				if (strncmp($key, '_', 1) !== 0) {
-					$layout_settings[$key] = $settings;
+					if (is_numeric($key))
+					{
+						$layout_settings['field_id_'.$key] = $settings
+					}
+					else
+					{
+						$layout_settings[$key] = $settings;
+					}
 				}
 			}
 		}

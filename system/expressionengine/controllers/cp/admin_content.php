@@ -4392,7 +4392,7 @@ class Admin_content extends CI_Controller {
 					
 					if (array_key_exists($native_settings['field_id'], $layout_settings)) 
 					{
-						$field_settings = $layout_settings[$native_settings['field_id']];
+						$field_settings = $layout_settings['field_id_'.$native_settings['field_id']];
 						
 						$width = ($field_settings['width'] !== NULL) ? 
 							$field_settings['width'] : 
