@@ -4385,7 +4385,7 @@ class Admin_content extends CI_Controller {
 				foreach ($layouts_for_group->result() as $layout) 
 				{
 					// Figure out visibility for the field in the layout
-					$layout_settings = $this->layout_model->get_layout_settings($layout->layout_id);
+					$layout_settings = $this->layout_model->get_layout_settings(array('layout_id' => $layout->layout_id));
 					
 					$visibility = TRUE;
 					$width = '100%';

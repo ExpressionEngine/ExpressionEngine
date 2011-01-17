@@ -316,14 +316,14 @@ class Layout_model extends CI_Model {
 	 * Create an array of layout settings for different fields
 	 * The array is a flat array, NOT organized by tab
 	 * 
-	 * @param Integer $layout_id The layout you want to pull settings for
+	 * @param Array $parameters The parameters you want to do WHERE clauses on
 	 * @return datatype description
 	 */
-	function get_layout_settings($layout_id)
+	function get_layout_settings($parameters, $flatten = FALSE)
 	{
-		if (is_int($layout_id) OR ctype_digit($layout_id))
+		if (is_array($parameters) AND count($parameters) > 0)
 		{
-			$this->db->where('layout_id', $layout_id);
+			$this->_where($parameters);
 		}
 		else
 		{
@@ -332,31 +332,85 @@ class Layout_model extends CI_Model {
 		
 		$layout_settings = array();
 		
-		$this->db->select('field_layout');
-		$layouts_for_group = $this->db->get('layout_publish');
+		$this->db->select('layout_id, field_layout');
+		$layouts = $this->db->get('layout_publish');
 		
-		$settings = unserialize($layouts_for_group->row('field_layout'));
-		
-		foreach ($settings as $tab => $fields)
+		if ($layouts->num_rows() > 0) // More than one row
 		{
-			foreach ($fields as $key => $settings)
+			foreach ($layouts->result() as $layout)
+			{
+				$field_layout = unserialize($layout->field_layout);
+				
+				if ($flatten === TRUE)
+				{
+					$layout_settings[$layout->layout_id] = $this->_flatten_layout_settings($field_layout);
+				}
+				else
+				{
+					$layout_settings[$layout->layout_id] = $field_layout;
+				}
+			}
+		}
+		
+		// If there's only one layout, remove the outermost array
+		if (count($layout_settings) == 1)
+		{
+			$layout_settings = array_shift($layout_settings);
+		}
+		
+		return $layout_settings;
+	}
+	
+	/**
+	 * Sets the WHERE clauses by checking an associative array against an array of valid columns
+	 *
+	 * @param Array $parameters Associative array of column names and values for WHERE clauses
+	 */
+	function _where($parameters)
+	{
+		$valid_columns = array('layout_id', 'site_id', 'member_group', 'channel_id');
+		
+		foreach ($parameters as $column_name => $value)
+		{
+			if (in_array($column_name, $valid_columns))
+			{
+				$this->db->where($column_name, $value);
+			}
+		}
+	}
+	
+	/**
+	 * Flatten layout settings, removing the concept of publish tabs from the array
+	 * Useful when just pulling settings for a field
+	 *
+	 * @param Array $layout_settings Unserialized array of layout settings, straight from the database
+	 * @return datatype description
+	 */
+	function _flatten_layout_settings($layout_settings)
+	{
+		$flattened_layout_settings = array();
+		
+		foreach ($layout_settings as $tab => $fields)
+		{
+			foreach ($fields as $field_key => $field_settings)
 			{
 				// Check to see if the key starts with an underscore, we don't need those
-				if (strncmp($key, '_', 1) !== 0) 
+				if (strncmp($field_key, '_', 1) !== 0) 
 				{
-					if (is_numeric($key))
+					// If it's numeric, then append 'field_id_'
+					if (is_numeric($field_key))
 					{
-						$layout_settings['field_id_'.$key] = $settings
+						$flattened_layout_settings['field_id_'.$field_key] = $field_settings;
 					}
 					else
 					{
-						$layout_settings[$key] = $settings;
+						$flattened_layout_settings[$field_key] = $field_settings;
 					}
 				}
 			}
 		}
 		
-		return $layout_settings;
+		return $flattened_layout_settings;
 	}
 }
 
