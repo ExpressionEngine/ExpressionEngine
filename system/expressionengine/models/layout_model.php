@@ -340,15 +340,7 @@ class Layout_model extends CI_Model {
 			foreach ($layouts->result() as $layout)
 			{
 				$field_layout = unserialize($layout->field_layout);
-				
-				if ($flatten === TRUE)
-				{
-					$layout_settings[$layout->layout_id] = $this->_flatten_layout_settings($field_layout);
-				}
-				else
-				{
-					$layout_settings[$layout->layout_id] = $field_layout;
-				}
+				$layout_settings[$layout->layout_id] = $this->_prep_layout_settings($field_layout, $flatten);
 			}
 		}
 		
@@ -380,37 +372,49 @@ class Layout_model extends CI_Model {
 	}
 	
 	/**
-	 * Flatten layout settings, removing the concept of publish tabs from the array
-	 * Useful when just pulling settings for a field
+	 * Prep layout settings, appending 'field_id_' to numeric keys
+	 * Can optionally flatten the layout settings array
 	 *
-	 * @param Array $layout_settings Unserialized array of layout settings, straight from the database
+	 * @param Array $field_layout Unserialized array of layout settings, straight from the database
+	 * @param Boolean $flatten Whether to flatten the array or not
 	 * @return datatype description
 	 */
-	function _flatten_layout_settings($layout_settings)
+	function _prep_layout_settings($field_layout, $flatten = FALSE)
 	{
-		$flattened_layout_settings = array();
+		$layout_settings = array();
 		
-		foreach ($layout_settings as $tab => $fields)
+		foreach ($field_layout as $layout_tab => $layout_fields)
 		{
-			foreach ($fields as $field_key => $field_settings)
+			foreach ($layout_fields as $field_key => $field_settings)
 			{
-				// Check to see if the key starts with an underscore, we don't need those
-				if (strncmp($field_key, '_', 1) !== 0) 
+				// Setup $current_settings as the layout settings with the tab name as the key
+				$current_settings =& $layout_settings[$layout_tab];
+				
+				if ($flatten === TRUE)
 				{
-					// If it's numeric, then append 'field_id_'
-					if (is_numeric($field_key))
+					// Check to see if the key starts with an underscore, we don't need those
+					if (strncmp($field_key, '_', 1) === 0)
 					{
-						$flattened_layout_settings['field_id_'.$field_key] = $field_settings;
+						continue;
 					}
-					else
-					{
-						$flattened_layout_settings[$field_key] = $field_settings;
-					}
+					
+					// If we're flattening the array, ditch the tab information
+					$current_settings =& $layout_settings;
+				}
+				
+				// If it's numeric, then append 'field_id_'
+				if (is_numeric($field_key))
+				{
+					$current_settings['field_id_'.$field_key] = $field_settings;
+				}
+				else
+				{
+					$current_settings[$field_key] = $field_settings;
 				}
 			}
 		}
 		
-		return $flattened_layout_settings;
+		return $layout_settings;
 	}
 }
 

@@ -1592,19 +1592,6 @@ class Content_publish extends CI_Controller {
 		{
 			return FALSE;
 		}
-
-		// turn # keys into field_id_#
-		foreach ($layout_info as $tab => &$fields)
-		{
-			foreach ($fields as $name => $data)
-			{
-				if (is_numeric($name))
-				{
-					$fields['field_id_'.$name] = $data;
-					unset($fields[$name]);
-				}
-			}
-		}
 		
 		return $layout_info;
 	}
