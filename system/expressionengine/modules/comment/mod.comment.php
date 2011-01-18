@@ -1624,7 +1624,9 @@ class Comment {
 				$url = ( ! isset($_POST['url'])) ? $this->EE->session->userdata['url'] : $_POST['url'];
 
 				if ($url == '')
-					$url = 'http://';
+				{
+					$url = 'http://';					
+				}
 
 				$tagdata = $this->EE->TMPL->swap_var_single($key, form_prep($url), $tagdata);
 			}
@@ -1670,7 +1672,7 @@ class Comment {
 
 				$notify = ( ! isset($this->EE->session->userdata['notify_by_default'])) ? $this->EE->input->cookie('save_info') : $this->EE->session->userdata['notify_by_default'];
 
-				$checked	= ( ! isset($_POST['PRV'])) ? $notify : $save_info;
+				$checked = ( ! isset($_POST['PRV'])) ? $notify : $save_info;
 
 				$tagdata = $this->EE->TMPL->swap_var_single($key, ($checked == 'yes') ? "checked=\"checked\"" : '', $tagdata);
 			}
@@ -1713,7 +1715,7 @@ class Comment {
 		
 		if (isset($_POST['RET']))
 		{
-			$RET = $_POST['RET'];
+			$RET = $this->EE->input->post('RET');
 		}
 		elseif ($this->EE->TMPL->fetch_param('return') && $this->EE->TMPL->fetch_param('return') != "")
 		{
@@ -1752,7 +1754,11 @@ class Comment {
 		//
 		// -------------------------------------------
 
+		$uri_string = ($this->EE->uri->uri_string == '') ? 'index' : $this->EE->uri->uri_string;
+		$url = $this->EE->functions->fetch_site_index(0,0).'/'.$uri_string;
+
 		$data = array(
+						'action'		=> $url,
 						'hidden_fields'	=> $hidden_fields,
 						'id'			=> ( ! isset($this->EE->TMPL->tagparams['id'])) ? 'comment_form' : $this->EE->TMPL->tagparams['id'],
 						'class'			=> ( ! isset($this->EE->TMPL->tagparams['class'])) ? NULL : $this->EE->TMPL->tagparams['class']
@@ -2148,16 +2154,9 @@ class Comment {
 			}
 		}
 
-		if ($preview == '')
-		{
-			$group = 'channel';
-			$templ = 'preview';
-		}
-		else
-		{
-			$group = $ex['0'];
-			$templ = $ex['1'];
-		}
+		$group = ($preview = '') ? 'channel' : $ex[0];
+		$templ = ($preview = '') ? 'preview' : $ex[1];
+		
 		
 		// this makes sure the query string is seen correctly by tags on the template
 		$this->EE->TMPL->parse_template_uri();
