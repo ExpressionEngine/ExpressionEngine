@@ -179,7 +179,11 @@ class Pages_tab {
     	$static_pages = $this->EE->config->item('site_pages');
     	$uris = $static_pages[$this->EE->config->item('site_id')]['uris'];
 
-		if ($params['entry_id'] !== 0)
+		if ( ! isset($params['entry_id']))
+		{
+			$params['entry_id'] == 0;
+		}
+		elseif ($params['entry_id'] !== 0)
 		{
 			if ( ! isset($uris[$params['entry_id']]) && in_array($pages_uri, $uris))
 			{
@@ -231,11 +235,12 @@ class Pages_tab {
 					$site_pages[$site_id]['uris'][$params['entry_id']] = '/';
 				}
 				
+				$this->EE->config->set_item('site_pages', $site_pages);
 				$this->EE->db->where('site_id', (int) $site_id)
-				            ->update('sites', array(
-				                        'site_pages'    => 
-				                            base64_encode(serialize($site_pages))
-				            ));
+							->update('sites', array(
+								'site_pages' => base64_encode(serialize($site_pages))
+							)
+				);
             }
         }
 	}
