@@ -58,16 +58,20 @@ if ($EE_view_disable !== TRUE)
 						<div>
 							<ul>
 								<?php foreach ($field_list as $name => $field):?>
-								<?php if ($field['field_required'] == 'y'):?>
-									<li><a href="#" class="field_selector" id="hide_field_<?=$field['field_id']?>"><?=required()?><?=$field['field_label']?></a></li>	
-								<?php else:?>
 									<li>
-										<a href="#" class="field_selector" id="hide_field_<?=$field['field_id']?>"><?=$field['field_label']?></a>
-										<a href="#" class="delete delete_field" id="remove_field_<?=$field['field_id']?>">
-											<img src="<?=$cp_theme_url?>images/open_eye.png" alt="<?=lang('delete')?>" width="15" height="15" />
+									<?php if ($field['field_required'] == 'y'):?>
+										<a href="#" class="field_selector" id="hide_field_<?=$field['field_id']?>">
+											<?=required()?><?=$field['field_label']?>
 										</a>
+									<?php else:?>
+										<a href="#" class="field_selector" id="hide_field_<?=$field['field_id']?>">
+											<?=$field['field_label']?>
+										</a> 
+										<a href="#" class="delete delete_field" id="remove_field_<?=$field['field_id']?>" data-visible="<?= $field['field_visibility'] ?>">
+											<img src="<?=$cp_theme_url?>images/<?= ($field['field_visibility'] == "y") ? 'open_eye' : 'closed_eye' ?>.png" alt="<?=lang('delete')?>" width="15" height="15" />
+										</a>
+									<?php endif;?>
 									</li>
-								<?php endif;?>
 								<?php endforeach;?>
 							</ul><br />
 						</div>

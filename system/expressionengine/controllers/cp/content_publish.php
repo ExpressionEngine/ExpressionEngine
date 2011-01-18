@@ -161,7 +161,6 @@ class Content_publish extends CI_Controller {
 
 		$field_data = array_merge($field_data, $deft_field_data);
 		$field_data = $this->_setup_field_blocks($field_data, $entry_data);
-		
 
 		$this->_set_field_validation($this->_channel_data, $field_data);
 		
@@ -225,16 +224,17 @@ class Content_publish extends CI_Controller {
 		// if this is a layout group preview, we'll use it, otherwise, we'll use the author's group_id
 		$layout_info = $this->_load_layout($channel_id);
 		
+		// Merge layout data (mostly width and visbility) into field data for use on the publish page
+		$field_data = $this->_set_field_layout_settings($field_data, $layout_info);
 
 		// First figure out what tabs to show, and what fields
 		// they contain. Then work through the details of how
 		// they are show.
-		
+
 		$tab_hierarchy	= $this->_setup_tab_hierarchy($field_data, $layout_info);
 		$layout_styles	= $this->_setup_layout_styles($field_data, $layout_info);
 		$field_list		= $this->_sort_field_list($field_data);		// @todo admin only? or use as master list? skip sorting for non admins, but still compile?
 		$field_list		= $this->_prep_field_wrapper($field_list);
-		
 		
 		$field_output	= $this->_setup_field_display($field_data);
 		
@@ -937,6 +937,31 @@ class Content_publish extends CI_Controller {
 	}
 	
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Add the field layout settings array to the field data
+	 *
+	 * @param Array $field_data Multidimensional array containing all of the fields and their settings
+	 * @param Array $layout_info Multidimensional array containing the publish layout info
+	 */
+	private function _set_field_layout_settings($field_data, $layout_info)
+	{
+		foreach ($layout_info as $layout_tab => $layout) 
+		{
+			foreach ($layout as $field_name => $field_layout_settings) 
+			{
+				if ($field_name !== '_tab_label' AND isset($field_data[$field_name]))
+				{
+					$field_data[$field_name]['field_visibility'] = ($field_layout_settings['visible']) ? 'y' : 'n';
+					$field_data[$field_name]['field_width'] = $field_layout_settings['width'];
+				}
+			}
+		}
+		
+		return $field_data;
+	}
+	
+	// --------------------------------------------------------------------
 
 	/**
 	 * Setup channel field validation
@@ -1506,7 +1531,7 @@ class Content_publish extends CI_Controller {
 		}
 		
 		$this->javascript->set_global('publish.markitup', $markitup_buttons);
-
+		
 		return $field_list;
 	}
 	
