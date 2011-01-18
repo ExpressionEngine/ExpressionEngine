@@ -1250,24 +1250,13 @@ class Member_model extends CI_Model {
 	 */
 	function get_group_layout($member_group = '', $channel_id = '')
 	{
-		$this->db->select('field_layout');
-		$this->db->where("site_id", $this->config->item('site_id'));
-		$this->db->where("channel_id", $channel_id);
-
-		$this->db->where("member_group", $member_group);
-
-		$layout_data = $this->db->get('layout_publish');
-
-		if ($layout_data->num_rows() > 0)
-		{
-			$returned_data = unserialize($layout_data->row('field_layout'));
-		}
-		else
-		{
-			$returned_data = array();
-		}
-
-		return $returned_data;
+		$this->load->model('layout_model');
+		
+		return $this->layout_model->get_layout_settings(array(
+			'site_id' => $this->config->item('site_id'),
+			'channel_id' => $channel_id,
+			'member_group' => $member_group
+		));
 	}
 
 	// --------------------------------------------------------------------

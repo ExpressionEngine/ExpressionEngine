@@ -2844,17 +2844,28 @@ class EE_Functions {
 			return $this->file_paths;
 		}
 		
-		$this->EE->db->select('id, url');
-		$query = $this->EE->db->get('upload_prefs');
-
-		if ($query->num_rows() == 0)
+		// if $this->file_paths === FALSE, 
+		// we've queried and have nuttin
+		if ($this->file_paths === FALSE)
 		{
+			return array();	
+		}
+
+		$qry = $this->EE->db->select('id, url')
+							->get('upload_prefs');
+
+		if ($qry->num_rows() === 0)
+		{
+			// Set $this->file_paths to FALSE so we check for it
+			// the next time through a coupla lines up.
+			// by default it's array().
+			$this->file_paths = FALSE;
 			return array();
 		}
 				
-		foreach ($query->result_array() as $row)
+		foreach ($qry->result() as $row)
 		{			
-			$this->file_paths[$row['id']] = $row['url'];
+			$this->file_paths[$row->id] = $row->url;
 		}
 		
 		return $this->file_paths;

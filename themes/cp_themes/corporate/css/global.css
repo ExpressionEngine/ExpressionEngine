@@ -2659,6 +2659,17 @@ ul.tab_menu li.addTabButton a img {
 #mainContent #tools #layout_groups_holder{
 	margin:			10px 20px;
 }
+#mainContent #tools #layout_preview {
+	margin: 0;
+}
+#mainContent #layout_preview .layout_preview_inner {
+	border-top: 1px solid #b7c0c9;
+	margin: 11px 10px 2px;
+	padding: 11px 8px 0;
+}
+#mainContent #layout_preview select {	
+	width: 100%;
+}
 #mainContent #tools ul {
 	list-style-type: 	none;
 	margin: 			0;

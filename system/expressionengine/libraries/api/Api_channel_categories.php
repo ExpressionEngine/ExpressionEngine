@@ -102,7 +102,7 @@ class Api_channel_categories extends Api {
 						->from('category_groups g, categories c')
 						->where('g.group_id', 'c.group_id', FALSE)
 						->where_in('g.group_id', $group_ids)
-						->order_by('group_id, parent_id', $order)
+						->order_by('group_id, parent_id, '.$order, 'asc')
 						->get();
 
 		if ($query->num_rows() === 0)

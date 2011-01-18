@@ -1713,7 +1713,7 @@ class Admin_content extends CI_Controller {
 				$this->cp->allowed_group('can_access_admin') OR
 				$this->cp->allowed_group('can_access_content_prefs')))
 		{		
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 
@@ -1762,7 +1762,7 @@ class Admin_content extends CI_Controller {
 
 			if ($this->session->userdata['group_id'] != 1 AND ! in_array($this->session->userdata['group_id'], $can_edit))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
 
@@ -2767,18 +2767,19 @@ class Admin_content extends CI_Controller {
 		{
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		elseif ( ! $this->cp->allowed_group('can_access_admin') 
+				 OR ! $this->cp->allowed_group('can_access_content_prefs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// Fetch required globals
 		foreach (array('cat_id', 'group_id', 'order') as $val)
 		{
-			if ($this->input->get($val) === FALSE)
+			if ( ! $this->input->get($val))
 			{
 				return FALSE;
 			}
@@ -2798,27 +2799,28 @@ class Admin_content extends CI_Controller {
 
 		// Fetch the parent ID
 
-		$this->db->select('parent_id');
-		$this->db->where('cat_id', $cat_id);
-		$query = $this->db->get('categories');
+		$qry = $this->db->select('parent_id')
+						->where('cat_id', $cat_id)
+						->get('categories');
 
-		$parent_id = $query->row('parent_id') ;
+		$parent_id = $qry->row('parent_id');
 
 		// Is the requested category already at the beginning/end of the list?
 
 		$dir = ($order == 'up') ? 'asc' : 'desc';
 
-		$this->db->select('cat_id');
-		$this->db->where('group_id', $group_id);
-		$this->db->where('parent_id', $parent_id);
-		$this->db->order_by('cat_order', $dir);
-		$this->db->limit(1);
-		$query = $this->db->get('categories');
+		$qry = $this->db->select('cat_id')
+						->where('group_id', $group_id)
+						->where('parent_id', $parent_id)
+						->order_by('cat_order', $dir)
+						->limit(1)
+						->get('categories');
 
-		if ($query->row('cat_id') == $cat_id)
+		if ($qry->row('cat_id') == $cat_id)
 		{
 			$this->functions->redirect($return);
 		}
+
 
 		// Fetch all the categories in the parent
 		$this->db->select('cat_id, cat_order');
@@ -4347,43 +4349,71 @@ class Admin_content extends CI_Controller {
 				
 			// Send it over to drop old fields, add new ones, and modify as needed
 			$this->api_channel_fields->edit_datatype(
-								$native_settings['field_id'], 
-								$field_type,
-								$native_settings
-				);
-
-
+				$native_settings['field_id'],
+				$field_type,
+				$native_settings
+			);
+			
 			unset($native_settings['group_id']);
-
+			
 			$this->db->where('field_id', $native_settings['field_id']);
 			$this->db->where('group_id', $group_id);
 			$this->db->update('channel_fields', $native_settings);
 
 			// Update saved layouts if necessary
-			
 			$collapse = ($native_settings['field_is_hidden'] == 'y') ? TRUE : FALSE;
 			$buttons = ($ft_settings['field_show_formatting_btns'] == 'y') ? TRUE : FALSE;
 			
-			$field_info[$native_settings['field_id']] = array(
-								'visible'		=> TRUE,
-								'collapse'		=> $collapse,
-								'htmlbuttons'	=> $buttons,
-								'width'			=> '100%'
-			);
-			
 			// Add to any custom layouts
-
-			$query = $this->field_model->get_assigned_channels($group_id);
+			// First, figure out what channels are associated with this group
+			// Then using the list of channels, figure out the layouts associated with those channels
+			// Then update each layout individually
 			
-			if ($query->num_rows() > 0)
+			$channels_for_group = $this->field_model->get_assigned_channels($group_id);
+			
+			if ($channels_for_group->num_rows() > 0)
 			{
-				foreach ($query->result() as $row)
+				$this->load->model('layout_model');
+				
+				foreach ($channels_for_group->result() as $channel)
 				{
-					$channel_ids[] = $row->channel_id;
+					$channel_ids[] = $channel->channel_id;
 				}
 				
-				$this->load->library('layout');
-				$this->layout->edit_layout_fields($field_info, $channel_ids);
+				$this->db->select('layout_id');
+				$this->db->where_in('channel_id', $channel_ids);
+				$layouts_for_group = $this->db->get('layout_publish');
+				
+				foreach ($layouts_for_group->result() as $layout) 
+				{
+					// Figure out visibility for the field in the layout
+					$layout_settings = $this->layout_model->get_layout_settings(array('layout_id' => $layout->layout_id));
+					
+					$visibility = TRUE;
+					$width = '100%';
+					
+					if (array_key_exists($native_settings['field_id'], $layout_settings)) 
+					{
+						$field_settings = $layout_settings['field_id_'.$native_settings['field_id']];
+						
+						$width = ($field_settings['width'] !== NULL) ? 
+							$field_settings['width'] : 
+							$width;
+						
+						$visibility = ($field_settings['visible'] !== NULL) ? 
+							$field_settings['visible'] : 
+							$visibility;
+					}
+					
+					$field_info[$native_settings['field_id']] = array(
+						'visible'     => $visibility,
+						'collapse'    => $collapse,
+						'htmlbuttons' => $buttons,
+						'width'       => $width
+					);
+					
+					$this->layout_model->edit_layout_group_fields($field_info, $layout->layout_id);
+				}
 			}
 		}
 		else

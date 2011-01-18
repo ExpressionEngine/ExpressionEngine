@@ -2522,6 +2522,7 @@ select#upload_dir {
 	border-top: 1px solid #aeb6c0;
 	margin: 8px 7px;
 	padding-top: 15px;
+	width: 181px;
 }
 
 #mainContent #layout_preview select {
