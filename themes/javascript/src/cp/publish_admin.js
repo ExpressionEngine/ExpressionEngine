@@ -167,30 +167,44 @@ $("#toggle_member_groups_all").toggle(
 	}
 );
 
-
-
-
-
-
-$(".delete_field").toggle(
-	function() {
-		var field_id = $(this).attr("id").substring(13),
-			field = $("#hold_field_"+field_id);
-		
-		// If the field is not in the active tab - slideUp has no effect
-		if (field.is(":hidden")) {
-			field.css("display", "none");
+$('.delete_field').click(function(event) {
+	event.preventDefault();
+	
+	var $link = $(this),
+		field_id = $link.attr('id').substr(13),
+		$field = $('#hold_field_'+field_id),
+		$image = $link.children('img');
+	
+	var hide_field = function() {
+		if ($field.is(":hidden")) {
+			$field.css("display", "none");
+		} else {
+			$field.slideUp();
 		}
 		
-		field.slideUp();
-		$(this).children().attr("src", EE.THEME_URL+"images/closed_eye.png");
-	},
-	function() {
-		var field_id = $(this).attr("id").substring(13);
-		$("#hold_field_"+field_id).slideDown();
-		$(this).children().attr("src", EE.THEME_URL+"images/open_eye.png");
-	}
-);
+		// set percent width to be used on hidden fields...
+		$field.attr('data-width', EE.publish.get_percentage_width($field));
+		
+		$link.attr('data-visible', 'n')
+			.children().attr("src", EE.THEME_URL+"images/closed_eye.png");
+	};
+	
+	var show_field = function() {
+		$field.slideDown();
+		
+		// remove percent width
+		$field.attr('data-width', '');
+		
+		$link.attr('data-visible', 'y')
+			.children().attr("src", EE.THEME_URL+"images/open_eye.png");
+	};
+	
+	if ($link.attr('data-visible') == 'y') {
+		hide_field();
+	} else {
+		show_field();
+	};
+});
 
 _delete_tab_hide = function(the_li, tab_to_delete) {
 

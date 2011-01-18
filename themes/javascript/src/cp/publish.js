@@ -136,7 +136,7 @@ EE.publish.category_editor = function() {
 			var buttons = {};
 			buttons[submit_button.remove().attr('value')] = function() {
 				handle_submit(container_form);
-			}
+			};
 			
 			cat_modal.dialog("open");
 			cat_modal.dialog("option", "buttons", buttons);
@@ -341,6 +341,37 @@ function setup_tabs() {
 
 setup_tabs();
 
+/**
+ * Check to see if a number or string is an integer
+ *
+ * @returns True if the value is an integer, false otherwise
+ * @type Boolean
+ */
+Number.prototype.is_integer = String.prototype.is_integer = function() {
+	var unparsed = this;
+	var parsed = parseInt(unparsed, 10);
+	
+	if (isNaN(parsed)) { return false; }
+	
+	return unparsed == parsed && unparsed.toString() == parsed.toString();
+};
+
+/**
+ * Get the percentage width of a field
+ *
+ * @param {jQuery Object} $element The jQuery object of a field in the publish form (e.g. $('.publish_field'))
+ * @returns The percentage width of the field
+ * @type Number
+ */
+EE.publish.get_percentage_width = function($element) {
+	var width = 0;
+	
+	if ($element.attr('data-width') && $element.attr('data-width').slice(0, -1).is_integer()) {
+		return parseInt($element.attr('data-width'), 10);
+	};
+	
+	return Math.round(($element.width() / $element.parent().width()) * 10) * 10;
+};
 
 
 EE.publish.save_layout = function() {
@@ -385,9 +416,13 @@ EE.publish.save_layout = function() {
 
 				var that = $(this),
 					id = this.id.replace(/hold_field_/, ""),
-					percent_width = Math.round((that.width() / that.parent().width()) * 10) * 10,
+					percent_width = EE.publish.get_percentage_width(that),
 					temp_buttons = $("#sub_hold_field_"+id+" .markItUp ul li:eq(2)"),
 					layout_settings;
+				
+				if (percent_width > 100) {
+					percent_width = 100;
+				};
 					
 				if (temp_buttons.html() !== "undefined" && temp_buttons.css("display") !== "none") {
 					temp_buttons = true;
@@ -487,8 +522,11 @@ EE.publish.remove_layout = function() {
 		data: "XID="+EE.XID+"&json_tab_layout="+json_tab_layout+"&"+$("#layout_groups_holder input").serialize()+"&channel_id="+EE.publish.channel_id+"&field_group="+EE.publish.field_group,
 		success: function(msg){
 			$.ee_notice(EE.publish.lang.layout_removed + " <a href=\"javascript:location=location\">"+EE.publish.lang.refresh_layout+"</a>", {duration:0, type:"success"});
+			return true;
 		}
 	});
+	
+	return false;
 };
 
 /**
@@ -569,7 +607,7 @@ function liveUrlTitle()
 		newText = document.getElementById("title").value || '',
 		replaceField = document.getElementById("url_title"),
 		multiReg = new RegExp(separator + '{2,}', 'g'),
-		separatorReg = (separator !== '_') ? /\_/g : /\-/g,
+		separatorReg = (separator !== '_') ? (/\_/g) : (/\-/g),
 		newTextTemp = '',
 		pos, c;
 	
@@ -675,7 +713,7 @@ $(document).ready(function() {
 			
 			autosaving = true;
 			setTimeout(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
-		}
+		};
 		
 		autosave_entry = function() {
 			var tools = $("#tools:visible"),
