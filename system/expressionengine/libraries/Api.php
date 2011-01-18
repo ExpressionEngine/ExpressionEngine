@@ -73,7 +73,8 @@ class Api {
 			{
 				$api_driver = 'api_'.$api;
 				$this->EE->load->library('api/'.$api_driver);
-			}				
+				$this->EE->$api_driver->initialize();
+			}
 		}
 	}
 
