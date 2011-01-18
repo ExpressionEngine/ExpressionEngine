@@ -207,12 +207,12 @@ p.submit {
 }
 
 .ui-resizable-e {
-	right:				0px;
+	right:				16px;
 	margin-top:			2px;
 	margin-right:		-10px;
 	height:				10px!important;
 	width:				10px;
-	background:			#F3F8E2 url("../images/resize_handle.gif") no-repeat right bottom;
+	background:			transparent url("../images/resize_handle.gif") no-repeat right bottom;
 	cursor:				w-resize;
 	float:				right;
 	position:			relative!important;
