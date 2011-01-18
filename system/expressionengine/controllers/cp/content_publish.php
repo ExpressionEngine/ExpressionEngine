@@ -946,15 +946,26 @@ class Content_publish extends CI_Controller {
 	 */
 	private function _set_field_layout_settings($field_data, $layout_info)
 	{
-		foreach ($layout_info as $layout_tab => $layout) 
+		if ($layout_info !== FALSE)
 		{
-			foreach ($layout as $field_name => $field_layout_settings) 
+			foreach ($layout_info as $layout_tab => $layout) 
 			{
-				if ($field_name !== '_tab_label' AND isset($field_data[$field_name]))
+				foreach ($layout as $field_name => $field_layout_settings) 
 				{
-					$field_data[$field_name]['field_visibility'] = ($field_layout_settings['visible']) ? 'y' : 'n';
-					$field_data[$field_name]['field_width'] = $field_layout_settings['width'];
+					if ($field_name !== '_tab_label' AND isset($field_data[$field_name]))
+					{
+						$field_data[$field_name]['field_visibility'] = ($field_layout_settings['visible']) ? 'y' : 'n';
+						$field_data[$field_name]['field_width'] = $field_layout_settings['width'];
+					}
 				}
+			}
+		}
+		else
+		{
+			foreach ($field_data as $field_name => &$field_settings) 
+			{
+				$field_settings['field_visibility'] = 'y';
+				$field_settings['field_width'] = '100%';
 			}
 		}
 		

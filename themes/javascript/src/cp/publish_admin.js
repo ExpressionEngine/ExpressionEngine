@@ -182,12 +182,18 @@ $('.delete_field').click(function(event) {
 			$field.slideUp();
 		}
 		
+		// set percent width to be used on hidden fields...
+		$field.attr('data-width', EE.publish.get_percentage_width($field));
+		
 		$link.attr('data-visible', 'n')
 			.children().attr("src", EE.THEME_URL+"images/closed_eye.png");
 	};
 	
 	var show_field = function() {
 		$field.slideDown();
+		
+		// remove percent width
+		$field.attr('data-width', '');
 		
 		$link.attr('data-visible', 'y')
 			.children().attr("src", EE.THEME_URL+"images/open_eye.png");
