@@ -26,7 +26,7 @@ $("#showToolbarLink").find("a").one("click", function() {
 		handles: "e",
 		minHeight: 49,
 		stop: function(e){
-			var percent_width = Math.round(($(this).width() / $(this).parent().width()) * 10) * 10;
+			var percent_width = Math.round(($(this).outerWidth() / $(this).parent().width()) * 10) * 10;
 			// minimum of 10%
 			if (percent_width < 10) {
 				percent_width = 10;
@@ -203,7 +203,7 @@ $('.delete_field').click(function(event) {
 		hide_field();
 	} else {
 		show_field();
-	};
+	}
 });
 
 _delete_tab_hide = function(the_li, tab_to_delete) {
@@ -229,11 +229,11 @@ _delete_tab_hide = function(the_li, tab_to_delete) {
 	// $("#"+tab_to_delete).remove() // remove from DOM
 
 	return false;
-}
+};
 
 get_selected_tab = function() {
- return jQuery("#tab_menu_tabs .current").attr('id').substring(5);
-}
+	return jQuery("#tab_menu_tabs .current").attr('id').substring(5);
+};
 
 _delete_tab_reveal = function() {
 	tab_to_show = $(this).attr("href").substring(1);
@@ -243,7 +243,7 @@ _delete_tab_reveal = function() {
 	$("#"+tab_to_delete).fadeIn(); // show the fields
 
 	return false;
-}
+};
 
 tab_req_check = function(tab_name) {
 	var illegal = false;
@@ -271,7 +271,7 @@ tab_req_check = function(tab_name) {
 	}
 	
 	return false;
-}
+};
 
 
 function delete_publish_tab()
@@ -306,7 +306,7 @@ add_publish_tab = function() {
 
 	if ( ! legalChars.test(tab_name)) {
 		$.ee_notice(EE.lang.illegal_characters);
-	} else if (tab_name == "") {
+	} else if (tab_name === "") {
 		$.ee_notice(EE.lang.tab_name_required);
 	} else {
 		if ( ! _add_tab(tab_name)) {
@@ -315,7 +315,7 @@ add_publish_tab = function() {
 			$("#new_tab_dialog").dialog("close");
 		}
 	}
-}
+};
 
 
 

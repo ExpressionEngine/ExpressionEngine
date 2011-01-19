@@ -1,3 +1,5 @@
+/* @override http://expressionengine2/themes/cp_themes/corporate/css/global.css?v=1295389867 */
+
 /**
  * ExpressionEngine Corporate Theme
  */
@@ -207,15 +209,16 @@ p.submit {
 }
 
 .ui-resizable-e {
-	right:				16px;
-	margin-top:			2px;
-	margin-right:		-10px;
-	height:				10px!important;
-	width:				10px;
 	background:			transparent url("../images/resize_handle.gif") no-repeat right bottom;
 	cursor:				w-resize;
 	float:				right;
+	height:				10px!important;
+	margin-right:		-10px;
+	margin-top:			2px;
 	position:			relative!important;
+	right:				13px;
+	top:				2px;
+	width:				10px;
 }
 
 .notice {
@@ -2529,12 +2532,11 @@ ul.tab_menu li.addTabButton a img {
 
 
 #holder {
-	margin-top:			-5px;
-	margin-right: 		10px;
-	padding-right:		4px;
-	background:			#f3f5f8 ;
+	background:			#f3f5f8;
 	border-right:		4px solid #cfd5d9;
-	clear: left;
+	clear:				left;
+	margin-right: 		10px;
+	margin-top:			-5px;
 }
 
 #holder p,
@@ -2750,7 +2752,7 @@ div.cat_group_container {
 
 .publish_textarea textarea {
 	margin-top:			-1px;
-	width: 				100%;
+	width: 				99%;
 	-moz-box-sizing:	border-box; /* firefox never does 100% textareas without this */
 }
 

@@ -179,9 +179,8 @@ table a:hover {
 }
 
 .ui-resizable-e {
-	right:				0px;
-	margin-top:			2px;
-	margin-right:		-10px;
+	right:				4px;
+	top: 				4px;
 	height:				10px!important;
 	width:				10px;
 	background:			url("../images/resize_handle.gif") no-repeat right bottom;
@@ -2342,28 +2341,28 @@ div#template_keywords_reset span {
 
 #mainContent .main_tab {
 	background-color:	#ECF1F4;
-	padding:			4px 0px 14px 12px;
+	padding:			4px 0px 14px;
 	/*margin-right: 		12px;*/
 	z-index:			4;
-	color:#5f6c74;
+	color:				#5f6c74;
 }
 
 .publish_field {
-	background:			#ECF1F4 url('../images/publish_field_background.jpg') no-repeat left top;
-	background-position:-15px 0px;
-	border-left: 		1px solid #d0d7df;
-	border-top:			1px solid #D1D5DE;
-	margin-left: 		-11px; /* for the left border */
-	margin-right: 		9px;
-	float:				left;
-	width:				100%;
-	padding-bottom: 	9px;
-	padding-top:		3px;
-/*	overflow: 			hidden;*/
-	z-index:			3;
+	background: 	#ECF1F4 url('../images/publish_field_background.jpg') no-repeat -15px 0px;
+	border-left: 	1px solid #d0d7df;
+	border-top: 	1px solid #D1D5DE;
+	float: 			left;
+	margin-left: 	1px;
+	margin-right: 	-2px;
+	padding-bottom:	9px;
+	padding-top: 	3px;
+	width: 			100%;
+	z-index: 		3;
 }
 
-.publish_field p, .publish_field h3, .publish_field .notice {
+.publish_field p, 
+.publish_field h3, 
+.publish_field .notice {
 	margin: 5px 17px 0px 12px;
 }
 
@@ -2400,7 +2399,7 @@ label.hide_field {
 
 #holder {
 	margin-right: 		10px;
-	padding-right:		4px;
+	padding-right:		2px;
 	border-right: 		4px solid #c1c8ce;
 	background:			#ECF1F4;
 	clear:				left;
@@ -2519,10 +2518,10 @@ select#upload_dir {
 }
 
 #mainContent #tools #layout_preview {
-	border-top: 1px solid #aeb6c0;
-	margin: 8px 7px;
-	padding-top: 15px;
-	width: 181px;
+	border-top: 	1px solid #aeb6c0;
+	margin: 		8px 7px;
+	padding-top: 	8px;
+	width: 			181px;
 }
 
 #mainContent #layout_preview select {
