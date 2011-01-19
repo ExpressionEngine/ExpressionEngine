@@ -47,38 +47,38 @@ class Search_upd {
 		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend) VALUES ('Search', '$this->version', 'n')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Search', 'do_search')";
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_search (
-														 search_id varchar(32) NOT NULL,
-														 site_id INT(4) NOT NULL DEFAULT 1,
-														 search_date int(10) NOT NULL,
-														 keywords varchar(60) NOT NULL,
-														 member_id int(10) unsigned NOT NULL,
-														 ip_address varchar(16) NOT NULL,
-														 total_results int(6) NOT NULL,
-														 per_page tinyint(3) unsigned NOT NULL,
-														 query mediumtext NULL DEFAULT NULL,
-														 custom_fields mediumtext NULL DEFAULT NULL,
-														 result_page varchar(70) NOT NULL,
-														 PRIMARY KEY `search_id` (`search_id`)
-														)";
+					 search_id varchar(32) NOT NULL,
+					 site_id INT(4) NOT NULL DEFAULT 1,
+					 search_date int(10) NOT NULL,
+					 keywords varchar(60) NOT NULL,
+					 member_id int(10) unsigned NOT NULL,
+					 ip_address varchar(16) NOT NULL,
+					 total_results int(6) NOT NULL,
+					 per_page tinyint(3) unsigned NOT NULL,
+					 query mediumtext NULL DEFAULT NULL,
+					 custom_fields mediumtext NULL DEFAULT NULL,
+					 result_page varchar(70) NOT NULL,
+					 PRIMARY KEY `search_id` (`search_id`)
+					) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci";
 														
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_search_log (
-											  id int(10) NOT NULL auto_increment,
-											  site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
-											  member_id int(10) unsigned NOT NULL,
-											  screen_name varchar(50) NOT NULL,
-											  ip_address varchar(16) default '0' NOT NULL,
-											  search_date int(10) NOT NULL,
-											  search_type varchar(32) NOT NULL,
-											  search_terms varchar(200) NOT NULL,
-											  PRIMARY KEY `id` (`id`),
-											  KEY `site_id` (`site_id`)
-											)"; 
+					id int(10) NOT NULL auto_increment,
+					site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
+					member_id int(10) unsigned NOT NULL,
+					screen_name varchar(50) NOT NULL,
+					ip_address varchar(16) default '0' NOT NULL,
+					search_date int(10) NOT NULL,
+					search_type varchar(32) NOT NULL,
+					search_terms varchar(200) NOT NULL,
+					PRIMARY KEY `id` (`id`),
+					KEY `site_id` (`site_id`)
+					) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"; 
 	
 		foreach ($sql as $query)
 		{
 			$this->EE->db->query($query);
 		}
-		
+	
 		return TRUE;
 	}
 	
@@ -102,8 +102,8 @@ class Search_upd {
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Search'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Search_mcp'";
 		
-		$this->EE->dbforge->drop_table('exp_search');
-		$this->EE->dbforge->drop_table('exp_search_log');
+		$this->EE->dbforge->drop_table('search');
+		$this->EE->dbforge->drop_table('search_log');
 	
 		foreach ($sql as $query)
 		{
