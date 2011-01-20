@@ -23,7 +23,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class Unicode_db_convert {
+class Utf8_db_convert {
 	
 	/**
 	 * Constructor
