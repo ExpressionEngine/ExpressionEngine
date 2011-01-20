@@ -3948,7 +3948,7 @@ class EE_Template {
 			}
 		
 			// Pair variables are an array of arrays
-			if (is_array($value))
+			if (is_array($value) AND is_array($value[0]))
 			{
 				$tagdata = $this->_parse_var_pair($name, $value, $tagdata, 1);
 			}
