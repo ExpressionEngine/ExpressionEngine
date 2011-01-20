@@ -1047,7 +1047,7 @@ class EE_Session {
 		{
 			if ($val == '*') continue;
 			
-			if (substr($val, -1 == '*'))
+			if (substr($val, -1) == '*')
 			{
 				$val = str_replace('*', '', $val);
 				
@@ -1057,7 +1057,7 @@ class EE_Session {
 				}
 			}
 			elseif (strncmp($val, '*', 1) == 0)
-			{ 
+			{
 				$val = str_replace('*', '', $val);
 			
 				if (substr($match, - strlen($val)) == $val)
@@ -1070,7 +1070,7 @@ class EE_Session {
 				return TRUE;
 			}
 		}
-
+		
 		return FALSE;
 	}
 
