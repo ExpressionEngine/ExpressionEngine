@@ -374,7 +374,7 @@ $lang = array(
 'tab_name' 			=> 'Tab Name',
 'tab_name_required'	=> 'Please choose a name for your tab.',
 'duplicate_tab_name'	=> 'A tab with this name already exists.',
-'illegal_characters'	=> 'Tab names may only contain alpha-numeric characters, underscores, and dashes',
+'illegal_characters'	=> 'Tab names may only contain alpha-numeric characters, underscores, dashes, and spaces',
 
 'authors' 			=> 'Authors',
 
