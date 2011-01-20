@@ -33,8 +33,7 @@ class Api_channel_entries extends Api {
 	var $meta		= array();
 	var $c_prefs	= array();
 	var $_cache		= array();
-	var $mod_fields	= array();
-	
+
 	var $autosave_entry_id = 0;
 	
 	/**
@@ -1074,7 +1073,6 @@ class Api_channel_entries extends Api {
 						//foreach ($v as $val)
 						//{
 							$name = $class.'__'.$v['field_id'];
-							$this->mod_fields[$name] = '';
 							//print_r($v);
 						//}
 				
