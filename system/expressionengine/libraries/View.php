@@ -143,9 +143,9 @@ class View  {
 	 */
 	protected function _get_theme_from_path($path)
 	{
-		$path = rtrim($path, '/');
+		$path = '/'.trim($path, '/');
 		
-		$theme_name = ltrim(substr($path, strrpos($path, '/')), '/');
+		$theme_name = ltrim(strrchr($path, '/'), '/');
 
 		return $this->EE->config->item('theme_folder_url') . 'cp_themes/' . $theme_name . '/';		
 	}
