@@ -25,7 +25,7 @@ if ( ! defined('EXT'))
 
 class Search_upd {
 
-	var $version = '2.0';
+	var $version = '2.1';
 	
 	function Search_upd()
 	{
@@ -125,6 +125,16 @@ class Search_upd {
 	
 	function update($current='')
 	{
+		if ($current < 2.1)
+		{
+			$this->EE->load->library('unicode_db_convert');			
+			
+			$this->EE->unicode_db_convert->do_conversion(array(
+				'exp_search_log', 'exp_search'
+			));
+		}
+		
+		
 		return TRUE;
 	}
 
