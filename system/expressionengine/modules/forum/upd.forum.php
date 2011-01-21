@@ -214,7 +214,7 @@ class Forum_upd {
 			board_enable_rss char(1) NOT NULL default 'y',
 			board_use_http_auth char(1) NOT NULL default 'n',
 			PRIMARY KEY `board_id` (`board_id`)
-		)";
+		) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 		$sql[] = "CREATE TABLE exp_forums (
 			forum_id int(6) unsigned NOT NULL auto_increment,
@@ -254,7 +254,7 @@ class Forum_upd {
 			forum_use_http_auth char(1) NOT NULL default 'n',
 			PRIMARY KEY `forum_id` (`forum_id`),
 			KEY `board_id` (`board_id`)
-		)";
+		) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 		$sql[] = "CREATE TABLE exp_forum_topics (
 			topic_id int(10) unsigned NOT NULL auto_increment,
@@ -286,7 +286,7 @@ class Forum_upd {
 			KEY `author_id` (`author_id`),
 			KEY `last_post_author_id` (`last_post_author_id`),
 			KEY `topic_date` (`topic_date`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 		$sql[] = "CREATE TABLE exp_forum_posts (
 			post_id int(10) unsigned NOT NULL auto_increment,
@@ -306,7 +306,7 @@ class Forum_upd {
 			KEY `forum_id` (`forum_id`),
 			KEY `board_id` (`board_id`),
 			KEY `author_id` (`author_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 		$sql[] = "CREATE TABLE exp_forum_ranks (
 			rank_id int(6) unsigned NOT NULL auto_increment,
@@ -314,7 +314,7 @@ class Forum_upd {
 			rank_min_posts int(6) NOT NULL, 
   			rank_stars smallint(3) NOT NULL,
 			PRIMARY KEY `rank_id` (`rank_id`)
-		)";
+		) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		$sql[] = "CREATE TABLE exp_forum_administrators (
 			admin_id int(6) unsigned NOT NULL auto_increment,
@@ -325,7 +325,7 @@ class Forum_upd {
 			KEY `board_id` (`board_id`),
 			KEY `admin_group_id` (`admin_group_id`),
 			KEY `admin_member_id` (`admin_member_id`)
-		)";
+		) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 		$sql[] = "CREATE TABLE exp_forum_moderators (
 
@@ -346,7 +346,7 @@ class Forum_upd {
 			PRIMARY KEY `mod_id` (`mod_id`),
 			KEY `board_id` (`board_id`),
 			KEY `mod_forum_id` (`mod_forum_id`)
-		)";
+		) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 
 		$sql[] = "CREATE TABLE exp_forum_subscriptions (
@@ -358,7 +358,7 @@ class Forum_upd {
 			hash varchar(15) NOT NULL,
 			PRIMARY KEY `topic_id_member_id` (`topic_id`, `member_id`),
 			KEY `board_id` (`board_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 			
 
 		$sql[] = "CREATE TABLE exp_forum_attachments (
@@ -384,7 +384,7 @@ class Forum_upd {
 			KEY `post_id` (`post_id`),
 			KEY `board_id` (`board_id`),
 			KEY `member_id` (`member_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 			
 		$sql[] = "CREATE TABLE exp_forum_search (
 			 search_id varchar(32) NOT NULL,
@@ -398,7 +398,7 @@ class Forum_upd {
 			 sort_order varchar(200) NOT NULL,
 			 PRIMARY KEY `search_id` (`search_id`),
 			 KEY `board_id` (`board_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 						
 			
 		$sql[] = "CREATE TABLE exp_forum_polls (
@@ -411,7 +411,7 @@ class Forum_upd {
 			total_votes int(10) unsigned NOT NULL default '0',
 			PRIMARY KEY `poll_id` (`poll_id`),
 			KEY `topic_id` (`topic_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 		$sql[] = "CREATE TABLE exp_forum_pollvotes (
 			vote_id int(10) unsigned NOT NULL auto_increment,
@@ -422,7 +422,7 @@ class Forum_upd {
 			PRIMARY KEY `vote_id` (`vote_id`),
 			KEY `member_id` (`member_id`),
 			KEY `topic_id` (`topic_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		$sql[] = "CREATE TABLE exp_forum_read_topics (
 		 member_id int(10) unsigned NOT NULL,
@@ -430,7 +430,7 @@ class Forum_upd {
 		 topics text NOT NULL,
 		 last_visit int(10) NOT NULL,
 		 PRIMARY KEY `member_id_board_id` (`member_id`, `board_id`)
-		)";				
+		) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";				
 						
 		$sql[] = "INSERT INTO exp_forum_ranks (rank_title, rank_min_posts, rank_stars) VALUES ('Newbie', 0, 1)";
 		$sql[] = "INSERT INTO exp_forum_ranks (rank_title, rank_min_posts, rank_stars) VALUES ('Jr. Member', 30, 2)";
