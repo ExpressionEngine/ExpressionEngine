@@ -247,6 +247,14 @@ ul.bullets li {
 	clear:				right;
 }
 
+.group:after {
+	clear: 				both;
+	content: 			".";
+	display: 			block;
+	height: 			0px;
+	visibility: 		hidden;
+}
+
 .align_right {
 	text-align:			right;
 }
@@ -3957,15 +3965,23 @@ html.js #revealSidebarLink {
 /***************************************************************************************/
 
 .markItUp ul {
+	background: 		#e1e8ed;
+	border: 			1px solid #d0d7df;
+	list-style: 		none;
 	margin: 			7px 0 0 0;
 	padding: 			3px 2px 3px 4px;
-	list-style: 		none;
-	border: 			1px solid #d0d7df;
-	background: 		#e1e8ed;
-	height:				22px;
-	border-radius:		4px;
-	-webkit-border-radius:		4px;
-	-moz-border-radius:		4px;
+	
+	-webkit-border-radius: 	4px;
+	-moz-border-radius: 	4px;
+	border-radius: 			4px;
+}
+
+.markItUp ul:after {
+	clear: 				both;
+	content: 			".";
+	display: 			block;
+	height: 			0px;
+	visibility: 		hidden;
 }
 
 .formatting_buttons {
@@ -3977,12 +3993,12 @@ html.js #revealSidebarLink {
 }
 
 .close_formatting_buttons a {
-	text-indent: 0!important;
-	width: 13px!important;
-	padding: 0!important;
-	border:0!important;
-	background-color: transparent;
-	height: 13px!important;
+	background-color: 	transparent;
+	border:				0!important;
+	height: 			13px!important;
+	padding: 			0!important;
+	text-indent: 		0!important;
+	width: 				13px!important;
 }
 
 .close_formatting_buttons {

@@ -1075,7 +1075,7 @@ $(document).ready(function() {
 			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_plus.png");
 		}, function () {
 			$(this).parent().parent().children().show();
-			$(this).parent().parent().css("height", "22px");
+			$(this).parent().parent().css("height", "auto");
 			$(this).children("img").attr("src", EE.THEME_URL+"images/publish_minus.gif");
 		}
 	);

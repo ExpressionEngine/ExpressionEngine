@@ -3,6 +3,11 @@
  * This just fixes some issues with IE
  *
  */
+
+.group,
+.markItUp ul {
+	zoom: 1;
+}
  
 #breadCrumb {
 	height: 29px;
