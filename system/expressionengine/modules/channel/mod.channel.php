@@ -469,13 +469,11 @@ class Channel {
 	  */
 	function parse_reverse_related_entries()
 	{
-		$sql = "SELECT rel_id, rel_parent_id, rel_child_id, rel_type, reverse_rel_data
-				FROM exp_relationships
-				WHERE rel_child_id IN ('".implode("','", array_keys($this->reverse_related_entries))."')
-				AND rel_type = 'channel'";
-
-		$query = $this->EE->db->query($sql);
-
+		$this->EE->db->select('rel_id, rel_parent_id, rel_child_id, rel_type, reverse_rel_data');
+		$this->EE->db->where_in('rel_child_id', array_keys($this->reverse_related_entries));
+		$this->EE->db->where('rel_type', 'channel');
+		$query = $this->EE->db->get('relationships');
+		
 		if ($query->num_rows() == 0)
 		{
 			// remove Reverse Related tags for these entries
@@ -512,8 +510,10 @@ class Channel {
 
 				$this->EE->functions->compile_relationship($rewrite, FALSE, TRUE);
 
-				$results = $this->EE->db->query("SELECT reverse_rel_data FROM exp_relationships WHERE rel_parent_id = '".$row['rel_parent_id']."'");
-				$row['reverse_rel_data'] = $results->row('reverse_rel_data') ;
+				$this->EE->db->select('reverse_rel_data');
+				$this->EE->db->where('rel_parent_id', $row['rel_parent_id']);
+				$results = $this->EE->db->get('relationships');
+				$row['reverse_rel_data'] = $results->row('reverse_rel_data');
 			}
 
 			//  Unserialize the entries data, please
@@ -523,7 +523,7 @@ class Channel {
 				$entry_data[$row['rel_child_id']][$row['rel_parent_id']] = $revreldata;
 			}
 		}
-
+		
 		//  Without this the Reverse Related Entries were inheriting the parameters of
 		//  the enclosing Channel Entries tag, which is not appropriate.
 
@@ -608,7 +608,9 @@ class Channel {
 				{
 					if (count($this->channels_array) == 0)
 					{
-						$results = $this->EE->db->query("SELECT channel_id, channel_name FROM exp_channels WHERE site_id IN ('".implode("','", $this->EE->TMPL->site_ids)."')");
+						$this->EE->db->select('channel_id, channel_name');
+						$this->EE->db->where_in('site_id', $this->EE->TMPL->site_ids);
+						$results = $this->EE->db->get('channels');
 
 						foreach($results->result_array() as $row)
 						{
@@ -669,7 +671,7 @@ class Channel {
 				foreach($entry_data[$entry_id] as $relating_data)
 				{
 					$post_fix = ' '.$r;
-					$order_set = FALSE;					
+					$order_set = FALSE;
 					
 					if ( ! isset($params['channel']) OR ($relating_data['query']->row('channel_id') &&  array_key_exists($relating_data['query']->row('channel_id'), $allowed))) 
 					{
@@ -715,7 +717,21 @@ class Channel {
 						++$r;
 					}
 				}
-
+				
+				$sort_flags = SORT_REGULAR;
+				
+				// Check if the custom field to sort on is numeric, sort numericaly if it is
+				if (strncmp($order, 'field_id_', 9) === 0)
+				{
+					$this->EE->load->library('api');
+					$this->EE->api->instantiate('channel_fields');
+					$field_settings = $this->EE->api_channel_fields->get_settings(substr($order, 9));
+					if (in_array($field_settings['field_content_type'], array('number', 'integer')))
+					{
+						$sort_flags = SORT_NUMERIC;
+					}
+				}
+				
 				if ($random === TRUE)
 				{
 					shuffle($new);
@@ -724,7 +740,7 @@ class Channel {
 				{
 					if (in_array($order, $str_sort))
 					{
-						ksort($new);
+						ksort($new, $sort_flags);
 					}
 					else
 					{
@@ -735,7 +751,7 @@ class Channel {
 				{
 					if (in_array($order, $str_sort))
 					{
-						ksort($new);
+						ksort($new, $sort_flags);
 					}
 					else
 					{
@@ -744,7 +760,7 @@ class Channel {
 					
 					$new = array_reverse($new, TRUE);
 				}
-
+				
 				$output_data[$entry_id] = array_slice($new, $offset, $limit);
 
 				if (count($output_data[$entry_id]) == 0)

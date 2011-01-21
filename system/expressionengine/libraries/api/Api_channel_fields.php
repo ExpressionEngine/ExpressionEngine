@@ -130,7 +130,7 @@ class Api_channel_fields extends Api {
 	 */
 	function fetch_custom_channel_fields()
 	{
-		$this->EE->db->select('field_id, field_type, field_fmt, field_name, site_id, field_settings');
+		$this->EE->db->select('field_id, field_type, field_fmt, field_name, site_id, field_content_type, field_settings');
 		$query = $this->EE->db->get('channel_fields');
 		
 		$cfields = array();
@@ -174,7 +174,8 @@ class Api_channel_fields extends Api {
 				$settings = unserialize(base64_decode($row['field_settings']));
 				$settings['field_type'] = $row['field_type'];
 				$settings['field_fmt'] = $row['field_fmt'];
-
+				$settings['field_content_type'] = $row['field_content_type'];
+				
 				$this->set_settings($row['field_id'], $settings);
 			}
 			
