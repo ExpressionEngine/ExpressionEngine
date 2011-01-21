@@ -89,7 +89,8 @@ class Moblog_upd {
 		`moblog_valid_from` text NOT NULL,
 		`moblog_ignore_text` text NOT NULL,
 		`moblog_ping_servers` varchar(50) NOT NULL default '',
-		PRIMARY KEY `moblog_id` (`moblog_id`))";
+		PRIMARY KEY `moblog_id` (`moblog_id`))
+		DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 		foreach ($sql as $query)
 		{
