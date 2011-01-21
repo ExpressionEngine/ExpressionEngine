@@ -24,7 +24,7 @@
  */
 class Wiki_upd {
 
-	var $version = '2.3';
+	var $version = '2.2';
 	
 	function Wiki_upd()
 	{
@@ -59,7 +59,7 @@ class Wiki_upd {
 				KEY `page_locked` (`page_locked`),
 				KEY `page_moderated` (`page_moderated`),
 				KEY `has_categories` (`has_categories`)
-				)";
+				) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		$sql[] = "CREATE TABLE IF NOT EXISTS `exp_wiki_revisions` (
 				`revision_id` int(12) unsigned NOT NULL auto_increment,
 				`page_id` int(10) unsigned NOT NULL,
@@ -73,7 +73,7 @@ class Wiki_upd {
 				KEY `page_id` (`page_id`),
 				KEY `wiki_id` (`wiki_id`),
 				KEY `revision_author` (`revision_author`)
-				)";
+				) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_wiki_uploads(
 				wiki_upload_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
 				wiki_id INT(3) UNSIGNED NOT NULL,
@@ -88,14 +88,14 @@ class Wiki_upd {
 				upload_date INT(10) UNSIGNED NOT NULL DEFAULT '0',
 				PRIMARY KEY `wiki_upload_id` (`wiki_upload_id`),
 				KEY `wiki_id` (`wiki_id`)
-				)";
+				) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_wiki_search (
 				wiki_search_id VARCHAR(32) NOT NULL,
 				search_date int(10) NOT NULL,
 				wiki_search_query TEXT,
 				wiki_search_keywords VARCHAR(150) NOT NULL,
 				PRIMARY KEY `wiki_search_id` (`wiki_search_id`)
-				)";
+				) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		$sql[] = "CREATE TABLE IF NOT EXISTS exp_wikis(
 				wiki_id INT(8) UNSIGNED NOT NULL AUTO_INCREMENT,
 				wiki_label_name VARCHAR(100) NOT NULL,
@@ -109,7 +109,7 @@ class Wiki_upd {
 				wiki_author_limit INT(5) UNSIGNED NOT NULL ,
 				wiki_moderation_emails TEXT,
 				PRIMARY KEY `wiki_id` (`wiki_id`)
-				)";
+				) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		$sql[] = "CREATE TABLE IF NOT EXISTS `exp_wiki_categories` (
 				`cat_id` int(10) unsigned NOT NULL auto_increment,
 				`wiki_id` INT(8) UNSIGNED NOT NULL,
@@ -118,12 +118,12 @@ class Wiki_upd {
 				`cat_namespace` varchar(125) NOT NULL,
 				PRIMARY KEY `cat_id` (`cat_id`),
 				KEY `wiki_id` (`wiki_id`)
-				)";
+				) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
   		$sql[] = "CREATE TABLE IF NOT EXISTS `exp_wiki_category_articles` (
 				`page_id` INT(10) UNSIGNED NOT NULL,
 				`cat_id` INT(10) UNSIGNED NOT NULL,
 				PRIMARY KEY `page_id_cat_id` (`page_id`, `cat_id`)
-				)";
+				) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		$sql[] = "CREATE TABLE IF NOT EXISTS `exp_wiki_namespaces` (
 				`namespace_id` int(6) NOT NULL auto_increment,
 				`wiki_id` int(10) UNSIGNED NOT NULL,
@@ -132,7 +132,8 @@ class Wiki_upd {
 				`namespace_users` TEXT,
 				`namespace_admins` TEXT,
 				PRIMARY KEY `namespace_id` (`namespace_id`),
-				KEY `wiki_id` (`wiki_id`))";
+				KEY `wiki_id` (`wiki_id`))
+				DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 				
 		foreach ($sql as $query)
 		{
@@ -207,17 +208,6 @@ class Wiki_upd {
 		if ($current < 2.2)
 		{
 			$this->EE->db->query("ALTER TABLE `exp_wiki_search` ADD COLUMN search_date int(10) NOT NULL AFTER wiki_search_id");
-		}
-		
-		if ($current < 2.3)
-		{
-			$this->EE->load->library('unicode_db_convert');			
-			
-			$this->EE->unicode_db_convert->do_conversion(array(
-				'exp_wiki_page', 'exp_wiki_revisions', 'exp_wikis', 'exp_wiki_uploads',
-				'exp_wiki_search', 'exp_wiki_categories', 'exp_wiki_category_articles',
-				'exp_wiki_namespaces'
-			));
 		}
 				
 		return TRUE;

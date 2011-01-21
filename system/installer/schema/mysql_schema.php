@@ -56,7 +56,7 @@ class EE_Schema {
 			  `site_bootstrap_checksums` TEXT NOT NULL ,
 			  PRIMARY KEY `site_id` (`site_id`),
 			  KEY `site_name` (`site_name`)
-			  )";
+			  ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 		// Session data
 		
@@ -71,7 +71,7 @@ class EE_Schema {
 			  PRIMARY KEY `session_id` (`session_id`),
 			  KEY `member_id` (`member_id`),
 			  KEY `site_id` (`site_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Throttle
 		
@@ -84,7 +84,7 @@ class EE_Schema {
 			  PRIMARY KEY `throttle_id` (`throttle_id`),
 			  KEY `ip_address` (`ip_address`),
 			  KEY `last_activity` (`last_activity`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 			
 		
 		// System stats
@@ -108,7 +108,7 @@ class EE_Schema {
 			  last_cache_clear int(10) unsigned default '0' NOT NULL,
 			  PRIMARY KEY `stat_id` (`stat_id`),
 			  KEY `site_id` (`site_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		
 		// Online users
@@ -125,7 +125,7 @@ class EE_Schema {
 			 PRIMARY KEY `online_id` (`online_id`),
 			 KEY `date` (`date`),
 			 KEY `site_id` (`site_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		
 		// Actions table
@@ -136,7 +136,7 @@ class EE_Schema {
 			 class varchar(50) NOT NULL,
 			 method varchar(50) NOT NULL,
 			 PRIMARY KEY `action_id` (`action_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Accessories table
 		// Contains a list and permissions for all installed accessories
@@ -148,7 +148,7 @@ class EE_Schema {
 				`controllers` text NULL,
 				`accessory_version` VARCHAR(12) NOT NULL,
 				PRIMARY KEY `accessory_id` (`accessory_id`)
-				)";
+				) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 		// Modules table
 		// Contains a list of all installed modules
@@ -160,7 +160,7 @@ class EE_Schema {
 			 has_cp_backend char(1) NOT NULL default 'n',
 			 has_publish_fields char(1) NOT NULL default 'n',
 			 PRIMARY KEY `module_id` (`module_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Security Hashes
 		// Used to store hashes needed to process forms in 'secure mode'
@@ -172,7 +172,7 @@ class EE_Schema {
 			 hash varchar(40) NOT NULL,
 			 PRIMARY KEY `hash_id` (`hash_id`),
 			 KEY `hash` (`hash`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// CAPTCHA data
 		
@@ -183,7 +183,7 @@ class EE_Schema {
 			 word varchar(20) NOT NULL,
 			 PRIMARY KEY `captcha_id` (`captcha_id`),
 			 KEY `word` (`word`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Password Lockout
 		// If password lockout is enabled, a user only gets
@@ -200,7 +200,7 @@ class EE_Schema {
 			 KEY `login_date` (`login_date`),
 			 KEY `ip_address` (`ip_address`),
 			 KEY `user_agent` (`user_agent`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Reset password
 		// If a user looses their password, this table
@@ -212,7 +212,7 @@ class EE_Schema {
 			  resetcode varchar(12) NOT NULL,
 			  date int(10) NOT NULL,
 			  PRIMARY KEY `reset_id` (`reset_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Email Cache
 		// We store all email messages that are sent from the CP
@@ -236,7 +236,7 @@ class EE_Schema {
 			wordwrap char(1) NOT NULL default 'y',
 			priority char(1) NOT NULL default '3',
 			PRIMARY KEY `cache_id` (`cache_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Cached Member Groups
 		// We use this table to store the member group assignments
@@ -249,7 +249,7 @@ class EE_Schema {
 			  cache_id int(6) unsigned NOT NULL,
 			  group_id smallint(4) NOT NULL,
 			  PRIMARY KEY `cache_id_group_id` (`cache_id`, `group_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// We do the same with mailing lists
 		
@@ -257,7 +257,7 @@ class EE_Schema {
 			  cache_id int(6) unsigned NOT NULL,
 			  list_id smallint(4) NOT NULL,
 			  PRIMARY KEY `cache_id_list_id` (`cache_id`, `list_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Email Console Cache
 		// Emails sent from the member profile email console are saved here.
@@ -273,7 +273,7 @@ class EE_Schema {
 			  subject varchar(120) NOT NULL,
 			  message mediumtext NOT NULL,
 			  PRIMARY KEY `cache_id` (`cache_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Member table
 		// Contains the member info
@@ -356,7 +356,7 @@ class EE_Schema {
 			  KEY `group_id` (`group_id`),
 			  KEY `unique_id` (`unique_id`),
 			  KEY `password` (`password`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// CP homepage layout
 		// Each member can have their own control panel layout.
@@ -381,7 +381,7 @@ class EE_Schema {
 			 pmachine_news_feed char(1) NOT NULL default 'n',
 			 pmachine_news_feed_order int(3) unsigned NOT NULL default '0',
 			 PRIMARY KEY `member_id` (`member_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		
 		// Member Groups table
@@ -459,7 +459,7 @@ class EE_Schema {
 			  include_in_memberlist char(1) NOT NULL default 'y',
 			  include_in_mailinglists char(1) NOT NULL default 'y',
 			  PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)
-			)";		
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";		
 		
 		// Channel access privs
 		// Member groups assignment for each channel
@@ -468,7 +468,7 @@ class EE_Schema {
 			  group_id smallint(4) unsigned NOT NULL,
 			  channel_id int(6) unsigned NOT NULL,
 			  PRIMARY KEY `group_id_channel_id` (`group_id`, `channel_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Module access privs
 		// Member Group assignment for each module
@@ -477,7 +477,7 @@ class EE_Schema {
 			  group_id smallint(4) unsigned NOT NULL,
 			  module_id mediumint(5) unsigned NOT NULL,
 			  PRIMARY KEY `group_id_module_id` (`group_id`, `module_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		
 		// Template Group access privs
@@ -487,7 +487,7 @@ class EE_Schema {
 			  group_id smallint(4) unsigned NOT NULL,
 			  template_group_id mediumint(5) unsigned NOT NULL,
 			  PRIMARY KEY `group_id_template_group_id` (`group_id`, `template_group_id`)
-			)";		
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";		
 		
 		// Member Custom Fields
 		// Stores the defenition of each field
@@ -510,7 +510,7 @@ class EE_Schema {
 			 m_field_fmt char(5) NOT NULL default 'none',
 			 m_field_order int(3) unsigned NOT NULL,
 			 PRIMARY KEY `m_field_id` (`m_field_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Member Data
 		// Stores the actual data
@@ -518,7 +518,7 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE exp_member_data (
 			 member_id int(10) unsigned NOT NULL,
 			 PRIMARY KEY `member_id` (`member_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Channel Table
 
@@ -580,7 +580,7 @@ class EE_Schema {
 			 KEY `status_group` (`status_group`),
 			 KEY `field_group` (`field_group`),
 			 KEY `site_id` (`site_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Channel Titles
 		// We store channel titles separately from channel data
@@ -621,7 +621,7 @@ class EE_Schema {
 			 KEY `entry_date` (`entry_date`),
 			 KEY `expiration_date` (`expiration_date`),
 			 KEY `site_id` (`site_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 		// Channel Titles Autosave
 		// Used for the autosave functionality
@@ -663,7 +663,7 @@ class EE_Schema {
 			 KEY `entry_date` (`entry_date`),
 			 KEY `expiration_date` (`expiration_date`),
 			 KEY `site_id` (`site_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		$Q[] = "CREATE TABLE exp_entry_versioning (
 			 version_id int(10) unsigned NOT NULL auto_increment,  
@@ -674,7 +674,7 @@ class EE_Schema {
 			 version_data mediumtext NOT NULL,
 			 PRIMARY KEY `version_id` (`version_id`),
 			 KEY `entry_id` (`entry_id`)
-			)";		
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";		
 		
 		// Channel Custom Field Groups
 		
@@ -684,7 +684,7 @@ class EE_Schema {
 			 group_name varchar(50) NOT NULL,
 			 PRIMARY KEY `group_id` (`group_id`),
 			 KEY `site_id` (`site_id`)
-			)"; 
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"; 
 		
 		// Channel Custom Field Definitions
 		
@@ -719,7 +719,7 @@ class EE_Schema {
 			 PRIMARY KEY `field_id` (`field_id`),
 			 KEY `group_id` (`group_id`),
 			 KEY `site_id` (`site_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		
 		// Relationships table
@@ -734,7 +734,7 @@ class EE_Schema {
 			 PRIMARY KEY `rel_id` (`rel_id`),
 			 KEY `rel_parent_id` (`rel_parent_id`),
 			 KEY `rel_child_id` (`rel_child_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		
 		// Field formatting definitions
@@ -743,7 +743,7 @@ class EE_Schema {
 			 field_id int(10) unsigned NOT NULL,
 			 field_fmt varchar(40) NOT NULL,
 			 PRIMARY KEY `formatting_id` (`formatting_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Channel data
 		$Q[] = "CREATE TABLE exp_channel_data (
@@ -753,7 +753,7 @@ class EE_Schema {
 			 PRIMARY KEY `entry_id` (`entry_id`),
 			 KEY `channel_id` (`channel_id`),
 			 KEY `site_id` (`site_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 		// Ping Status
 		// This table saves the status of the xml-rpc ping buttons
@@ -764,7 +764,7 @@ class EE_Schema {
 			 entry_id int(10) unsigned NOT NULL,
 			 ping_id int(10) unsigned NOT NULL,
 			 PRIMARY KEY `entry_id_ping_id` (`entry_id`, `ping_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Status Groups
 		
@@ -774,7 +774,7 @@ class EE_Schema {
 			 group_name varchar(50) NOT NULL,
 			 PRIMARY KEY `group_id` (`group_id`),
 			 KEY `site_id` (`site_id`)
-			)"; 
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"; 
 		
 		// Status data
 		
@@ -788,7 +788,7 @@ class EE_Schema {
 			 PRIMARY KEY `status_id` (`status_id`),
 			 KEY `group_id` (`group_id`),
 			 KEY `site_id` (`site_id`)
-			)"; 
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"; 
 		
 		// Status "no access" 
 		// Stores groups that can not access certain statuses
@@ -797,7 +797,7 @@ class EE_Schema {
 			 status_id int(6) unsigned NOT NULL,
 			 member_group smallint(4) unsigned NOT NULL,
 			 PRIMARY KEY `status_id_member_group` (`status_id`, `member_group`)
-			)";		
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";		
 		
 		// Category Groups
 		
@@ -811,7 +811,7 @@ class EE_Schema {
 			 `can_delete_categories` TEXT NULL,
 			 PRIMARY KEY `group_id` (`group_id`),
 			 KEY `site_id` (`site_id`)
-			)"; 
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"; 
 		
 		// Category data
 		
@@ -829,7 +829,7 @@ class EE_Schema {
 			 KEY `group_id` (`group_id`),
 			 KEY `cat_name` (`cat_name`),
 			 KEY `site_id` (`site_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		$Q[] = "CREATE TABLE `exp_category_fields` (
 			`field_id` int(6) unsigned NOT NULL auto_increment,
@@ -849,7 +849,7 @@ class EE_Schema {
 			PRIMARY KEY `field_id` (`field_id`),
 			KEY `site_id` (`site_id`),
 			KEY `group_id` (`group_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 				
 		$Q[] = "CREATE TABLE `exp_category_field_data` (
 			`cat_id` int(4) unsigned NOT NULL,
@@ -858,7 +858,7 @@ class EE_Schema {
 			PRIMARY KEY `cat_id` (`cat_id`),
 			KEY `site_id` (`site_id`),
 			KEY `group_id` (`group_id`)				
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		
 		// Category posts
@@ -869,7 +869,7 @@ class EE_Schema {
 			 entry_id int(10) unsigned NOT NULL,
 			 cat_id int(10) unsigned NOT NULL,
 			 PRIMARY KEY `entry_id_cat_id` (`entry_id`, `cat_id`)
-			)"; 
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"; 
 		
 		// Control panel log
 		
@@ -883,7 +883,7 @@ class EE_Schema {
 			  action varchar(200) NOT NULL,
 			  PRIMARY KEY `id` (`id`),
 			  KEY `site_id` (`site_id`)
-			)"; 
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"; 
 		
 		// Control panel search
 		
@@ -896,7 +896,7 @@ class EE_Schema {
 				`keywords` text, 
 				PRIMARY KEY `search_id` (`search_id`),
 				FULLTEXT(`keywords`) 
-		) TYPE=MyISAM "; 
+		) TYPE=MyISAM DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"; 
 		
 		// HTML buttons
 		// These are the buttons that appear on the PUBLISH page.
@@ -915,7 +915,7 @@ class EE_Schema {
 			  classname varchar(20) NULL DEFAULT NULL,
 			  PRIMARY KEY `id` (`id`),
 			  KEY `site_id` (`site_id`)
-			)";		
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";		
 		
 		// Layout Publish
 		// Custom layout for for the publish page.
@@ -929,7 +929,7 @@ class EE_Schema {
 			  KEY `site_id` (`site_id`),
 			  KEY `member_group` (`member_group`),
 			  KEY `channel_id` (`channel_id`)
-		)";
+		) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Ping Servers
 		// Each member can have their own set ping server definitions
@@ -946,7 +946,7 @@ class EE_Schema {
 			  server_order int(3) unsigned NOT NULL,
 			  PRIMARY KEY `id` (`id`),
 			  KEY `site_id` (`site_id`)
-			)";		
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";		
 		
 		// Template Groups
 		
@@ -958,7 +958,7 @@ class EE_Schema {
 			 is_site_default char(1) NOT NULL default 'n',
 			 PRIMARY KEY `group_id` (`group_id`),
 			 KEY `site_id` (`site_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Template data
 		
@@ -983,7 +983,7 @@ class EE_Schema {
 			 PRIMARY KEY `template_id` (`template_id`),
 			 KEY `group_id` (`group_id`),
 			 KEY `site_id` (`site_id`)
-			)"; 
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"; 
 		
 		// Template "no access"
 		// Since each template can be made private to specific member groups
@@ -993,7 +993,7 @@ class EE_Schema {
 			 template_id int(6) unsigned NOT NULL,
 			 member_group smallint(4) unsigned NOT NULL,
 			 PRIMARY KEY `template_id_member_group` (`template_id`, `member_group`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Specialty Templates
 		// This table contains the various specialty templates, like:
@@ -1014,7 +1014,7 @@ class EE_Schema {
 			 PRIMARY KEY `template_id` (`template_id`),
 			 KEY `template_name` (`template_name`),
 			 KEY `site_id` (`site_id`)
-			)"; 
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci"; 
 		
 		// Global variables
 		// These are user-definable variables
@@ -1027,7 +1027,7 @@ class EE_Schema {
 			 PRIMARY KEY `variable_id` (`variable_id`),
 			 KEY `variable_name` (`variable_name`),
 			 KEY `site_id` (`site_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 		// Snippets
 		// These are user-definable early-parsed variables
@@ -1040,7 +1040,7 @@ class EE_Schema {
 				`snippet_contents` text NULL,
 				PRIMARY KEY (`snippet_id`),
 				KEY `site_id` (`site_id`)
-				)";
+				) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 						
 		// Revision tracker
 		// This is our versioning table, used to store each
@@ -1056,7 +1056,7 @@ class EE_Schema {
 			 item_data mediumtext NOT NULL,
 			 PRIMARY KEY `tracker_id` (`tracker_id`),
 			 KEY `item_id` (`item_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 					
 		// Upload preferences
 				
@@ -1078,7 +1078,7 @@ class EE_Schema {
 			 file_post_format varchar(120) NULL DEFAULT NULL,
 			 PRIMARY KEY `id` (`id`),
 			 KEY `site_id` (`site_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Upload "no access"
 		// We store the member groups that can not access various upload destinations
@@ -1088,7 +1088,7 @@ class EE_Schema {
 			 upload_loc varchar(3) NOT NULL,
 			 member_group smallint(4) unsigned NOT NULL,
 			 PRIMARY KEY `upload_id_member_group` (`upload_id`, `member_group`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 		// Private messaging tables
 
@@ -1104,7 +1104,7 @@ class EE_Schema {
 			  attachment_size int(10) unsigned NOT NULL default 0,
 			  is_temp char(1) NOT NULL default 'y',
 			  PRIMARY KEY `attachment_id` (`attachment_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		$Q[] = "CREATE TABLE exp_message_copies (
 			  copy_id int(10) unsigned NOT NULL auto_increment,
@@ -1123,7 +1123,7 @@ class EE_Schema {
 			  KEY `message_id` (`message_id`),
 			  KEY `recipient_id` (`recipient_id`),
 			  KEY `sender_id` (`sender_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		$Q[] = "CREATE TABLE exp_message_data (
 			  message_id int(10) unsigned NOT NULL auto_increment,
@@ -1141,7 +1141,7 @@ class EE_Schema {
 			  message_status varchar(25) NOT NULL default '',
 			  PRIMARY KEY `message_id` (`message_id`),
 			  KEY `sender_id` (`sender_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		$Q[] = "CREATE TABLE exp_message_folders (
 			  member_id int(10) unsigned NOT NULL default 0,
@@ -1156,7 +1156,7 @@ class EE_Schema {
 			  folder9_name varchar(50) NOT NULL default '',
 			  folder10_name varchar(50) NOT NULL default '',
 			  PRIMARY KEY `member_id` (`member_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		$Q[] = "CREATE TABLE exp_message_listed (
 			  listed_id int(10) unsigned NOT NULL auto_increment,
@@ -1165,7 +1165,7 @@ class EE_Schema {
 			  listed_description varchar(100) NOT NULL default '',
 			  listed_type varchar(10) NOT NULL default 'blocked',
 			  PRIMARY KEY `listed_id` (`listed_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		$Q[] = "CREATE TABLE `exp_extensions` (
 				`extension_id` int(10) unsigned NOT NULL auto_increment,
@@ -1177,7 +1177,7 @@ class EE_Schema {
 				`version` varchar(10) NOT NULL default '',
 				`enabled` char(1) NOT NULL default 'y',
 				PRIMARY KEY `extension_id` (`extension_id`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		$Q[] = "CREATE TABLE `exp_member_search`  (
 			 `search_id` varchar(32) NOT NULL,
@@ -1192,7 +1192,7 @@ class EE_Schema {
 			 PRIMARY KEY `search_id` (`search_id`),
 			 KEY `member_id` (`member_id`),
 			 KEY `site_id` (`site_id`)
-		 )";
+		 ) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 				 
 		$Q[] =	"CREATE TABLE `exp_member_bulletin_board` (
 			`bulletin_id` int(10) unsigned NOT NULL auto_increment,
@@ -1205,7 +1205,7 @@ class EE_Schema {
 			PRIMARY KEY `bulletin_id` (`bulletin_id`),
 			KEY `sender_id` (`sender_id`),
 			KEY `hash` (`hash`)
-			)";
+			) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 		
 		// Fieldtype table
 		$Q[] = "CREATE TABLE exp_fieldtypes (
@@ -1215,7 +1215,7 @@ class EE_Schema {
 				settings text NULL, 
 				has_global_settings char(1) default 'n', 
         		PRIMARY KEY `fieldtype_id` (`fieldtype_id`)
-		)";
+		) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------

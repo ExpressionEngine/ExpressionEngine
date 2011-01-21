@@ -98,7 +98,7 @@ class Comment {
 		$current_page		= 0;
 		$t_current_page		= '';
 		$total_pages		= 1;
-
+		
 		if ($this->EE->TMPL->fetch_param('dynamic') == 'no')
 		{
 			$dynamic = FALSE;
@@ -164,7 +164,7 @@ class Comment {
 		
 		// Fetch channel_ids if appropriate
 		$channel_ids = array();
-
+		
 		if ($channel = $this->EE->TMPL->fetch_param('channel') OR $this->EE->TMPL->fetch_param('site'))
 		{
 			$this->EE->db->select('channel_id');
@@ -250,8 +250,8 @@ class Comment {
 			//  Do we have a valid entry ID number?
 			$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
 
-			$this->EE->db->select('entry_id, channel_titles.channel_id');
-			$this->EE->db->where('channel_titles.channel_id = '.$this->EE->db->dbprefix('channels').'.channel_id');
+			$this->EE->db->select('entry_id, channel_id');
+			//$this->EE->db->where('channel_titles.channel_id = '.$this->EE->db->dbprefix('channels').'.channel_id');
 			$this->EE->db->where_in('channel_titles.site_id', $this->EE->TMPL->site_ids);
 
 			if ($this->EE->TMPL->fetch_param('show_expired') !== 'yes')
@@ -295,7 +295,7 @@ class Comment {
 			}
 
 			$this->EE->db->from('channel_titles');
-			$this->EE->db->from('channels');
+			//$this->EE->db->from('channels');
 			$query = $this->EE->db->get();
 
 			// Bad ID?  See ya!
@@ -332,6 +332,14 @@ class Comment {
 		$allowed_sorts = array('date', 'email', 'location', 'name', 'url');
 
 
+		// We can skip the count in non-dynamic if we already know this
+		if (preg_match("/".LD."paginate(.*?)".RD."(.+?)".LD.'\/'."paginate".RD."/s", $this->EE->TMPL->tagdata, $match))
+		{
+			$paginate = TRUE;
+			$paginate_data	= $match['2'];
+		}
+
+
 		/** ----------------------------------------
 		/**  Fetch comment ID numbers
 		/** ----------------------------------------*/
@@ -353,6 +361,9 @@ class Comment {
 
 		$random = ($order_by == 'random') ? TRUE : FALSE;
 		$order_by  = ($order_by == 'date' OR ! in_array($order_by, $allowed_sorts))  ? 'comment_date' : $order_by;
+
+		// We cache the query in case we need to do a count for dynamic off pagination
+		$this->EE->db->start_cache();
 
 		$this->EE->db->select('comment_date, comment_id');
 		
@@ -376,31 +387,29 @@ class Comment {
 			$this->EE->db->where('status', 'o');
 		}
 		
-		
 		// Note if it's not dynamic and the entry isn't forced?  We don't check on the entry criteria,
 		// so this point, dynamic and forced entry will have 'valid' entry ids, dynamic off may not
 
 		if ( ! $dynamic && ! $force_entry)
 		{
-			// When we are only showing comments and it is not based on an entry id or url title
-			// in the URL, we can make the query much more efficient and save some work.
-			$total_rows = $this->EE->db->count_all_results('comments');
-
-			// We lose these in the counting process
-			$this->EE->db->select('comment_date, comment_id');
-			
-			if ($status)
+			//  Limit to/exclude specific channels
+			if (count($channel_ids) == 1)
 			{
-				$this->EE->functions->ar_andor_string($status, 'status');
-				
-				if (stristr($status, "'c'") === FALSE)
-				{
-					$this->EE->db->where('status !=', 'c');
-				}
+				$this->EE->db->where('channel_id', $channel_ids['0']);
 			}
-			else
+			elseif (count($channel_ids) > 1)
 			{
-				$this->EE->db->where('status', 'o');
+				$this->EE->db->where_in('channel_id', $channel_ids);
+			}
+
+			// seems redundant given channels
+			$this->EE->db->where_in('site_id', $this->EE->TMPL->site_ids);
+
+			if ($paginate == TRUE)
+			{
+				// When we are only showing comments and it is not based on an entry id or url title
+				// in the URL, we can make the query much more efficient and save some work.
+				$total_rows = $this->EE->db->count_all_results('comments');
 			}
 			
 			$this_sort = ($random) ? 'random' : strtolower($sort);
@@ -431,7 +440,10 @@ class Comment {
 			$this->EE->db->order_by($order_by, $this_sort);
 		}
 
+		$this->EE->db->stop_cache();
 		$query = $this->EE->db->get('comments');
+		
+		$this->EE->db->flush_cache();
 		$result_ids = array();
 
 		if ($query->num_rows() > 0)
@@ -448,18 +460,16 @@ class Comment {
 			return $this->EE->TMPL->no_results();
 		}
 
-		//  Do we need pagination?
+		//  Pagination bits if required
 		
-		// If we had entry ids?  We don't have the count yet
-		if ($dynamic OR $force_entry)
+		// If we had entry ids or no pagination?  We don't have the count yet
+		if ($dynamic OR $force_entry OR $paginate == FALSE)
 		{
 			$total_rows = count($result_ids);
 		}
 
-		if (preg_match("/".LD."paginate(.*?)".RD."(.+?)".LD.'\/'."paginate".RD."/s", $this->EE->TMPL->tagdata, $match))
+		if ($paginate == TRUE)
 		{
-			$paginate		= TRUE;
-			$paginate_data	= $match['2'];
 			$anchor = '';
 
 			if ($match['1'] != '')
@@ -2307,7 +2317,8 @@ class Comment {
 						exp_channels.comment_notify_emails,
 						exp_channels.comment_expiration, 
 						exp_channels.channel_url, 
-						exp_channels.comment_url 
+						exp_channels.comment_url,
+						exp_channels.site_id  
 				FROM	exp_channel_titles, exp_channels
 				WHERE	exp_channel_titles.channel_id = exp_channels.channel_id
 				AND	exp_channel_titles.entry_id = '".$this->EE->db->escape_str($_POST['entry_id'])."'";
@@ -2445,6 +2456,7 @@ class Comment {
 		$comment_url			= $query->row('comment_url');
 		$channel_url			= $query->row('channel_url');
 		$entry_id				= $query->row('entry_id');
+		$comment_site_id		= $query->row('site_id');
 
 
 		$notify_address = ($query->row('comment_notify')  == 'y' AND $query->row('comment_notify_emails')  != '') ? $query->row('comment_notify_emails')  : '';
@@ -2623,7 +2635,7 @@ class Comment {
 						'comment_date'	=> $this->EE->localize->now,
 						'ip_address'	=> $this->EE->input->ip_address(),
 						'status'		=> ($comment_moderate == 'y') ? 'p' : 'o',
-						'site_id'		=> $this->EE->config->item('site_id')
+						'site_id'		=> $comment_site_id
 					 );
 
 		// -------------------------------------------
