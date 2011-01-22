@@ -592,7 +592,7 @@ class Member_images extends Member {
 
 	function upload_signature_image()
 	{
-		return $this->_upload_image('sig');
+		return $this->_upload_image('sig_img');
 	}
 
 	function _upload_image($type = 'avatar')
