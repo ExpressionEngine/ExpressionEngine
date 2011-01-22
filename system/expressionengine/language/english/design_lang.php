@@ -897,7 +897,7 @@ username and password to view the template.',
 'Private Message - Member Search Result Rows',
 
 'message_submission_error' =>
-'Private Message - Submisssion Error',
+'Private Message - Submission Error',
 
 'message_attachment_link' =>
 'Private Message - Attachment Link',
