@@ -411,14 +411,15 @@ class EE_Output extends CI_Output {
 	/**
 	 * Send Cache Headers
 	 *
-	 * Used to control client caching
+	 * Used to control client caching for JS, CSS
 	 *
 	 * @access	public
 	 * @param	int		Unix Timestamp, date of "file" modification
 	 * @param	int		max-age value
-	 * @return	void
+	 * @param	string	path identifier for ETag, helpful in load balanced environs
+ 	 * @return	void
 	 */
-	function send_cache_headers($modified, $max_age = 172800)
+	function send_cache_headers($modified, $max_age = 172800, $etag_path = NULL)
 	{
 		$EE =& get_instance();
 		
@@ -449,9 +450,17 @@ class EE_Output extends CI_Output {
 			$expires = gmdate('D, d M Y H:i:s', time() + $max_age).' GMT';
 
 			$this->set_status_header(200);
-			@header("Cache-Control: max-age={$max_age}, must-revalidate");
-			@header('Last-Modified: '.$modified);
-			@header('Expires: '.$expires);
+			$this->set_header("Cache-Control: max-age={$max_age}, must-revalidate");
+			$this->set_header('Vary: Accept-Encoding');
+			$this->set_header('Last-Modified: '.$modified);
+			$this->set_header('Expires: '.$expires);
+
+			// Send a custom ETag to maintain a useful cache in
+			// load-balanced environments
+			if ( ! is_null($etag_path))
+			{
+				$this->set_header("ETag: ".md5($modified.$etag_path));				
+			}
 		}
 	}
 
