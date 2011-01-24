@@ -770,14 +770,15 @@ class Comment {
 			$cond['editable'] = FALSE;
 			$cond['can_moderate_comment'] = FALSE;
 			
-		if ($this->EE->session->userdata['group_id'] == 1 OR 
-			$this->EE->session->userdata['can_edit_all_comments'] == 'y' OR 
-			($this->EE->session->userdata['can_edit_own_comments'] == 'y' && $row['entry_author_id'] == $this->EE->session->userdata['member_id']))
+			if ($this->EE->session->userdata['group_id'] == 1 OR 
+				$this->EE->session->userdata['can_edit_all_comments'] == 'y' OR 
+				($this->EE->session->userdata['can_edit_own_comments'] == 'y' && $row['entry_author_id'] == $this->EE->session->userdata['member_id'])
+				)
 			{
 				$cond['editable'] = TRUE;
 				$cond['can_moderate_comment'] = TRUE;								
 			}
-			elseif ($this->EE->session->userdata['member_id'] != '0'  && $author_id == $this->EE->session->userdata['member_id'])
+			elseif ($this->EE->session->userdata['member_id'] != '0'  && $row['author_id'] == $this->EE->session->userdata['member_id'])
 			{
 				$cond['editable'] = TRUE;
 			}			
