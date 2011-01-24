@@ -72,7 +72,16 @@ class Css extends CI_Controller {
 		return $this->_load_css_file($path, $file);
 	}
 
-
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Load CSS File
+	 *
+	 * @access	public
+	 * @param	string		path to the CSS
+	 * @param	string		name of the CSS file, sans file extension
+	 * @return	void
+	 */
 	private function _load_css_file($path, $file)
 	{
 		if ( ! file_exists($path.'css/'.$file.'.css'))
@@ -85,43 +94,9 @@ class Css extends CI_Controller {
 		$this->output->out_type = 'cp_asset';
 		$this->output->enable_profiler(FALSE);
 
-		$max_age		= 5184000;
-		$modified		= filemtime($path);
-		$modified_since	= $this->input->server('HTTP_IF_MODIFIED_SINCE');
-
-		// Remove anything after the semicolon
-
-		if ($pos = strrpos($modified_since, ';') !== FALSE)
-		{
-			$modified_since = substr($modified_since, 0, $pos);
-		}
-
-		// If the file is in the client cache, we'll
-		// send a 304 and be done with it.
-
-		if ($modified_since && (strtotime($modified_since) == $modified))
-		{
-			$this->output->set_status_header(304);
-			exit;
-		}
-
-		// Send a custom ETag to maintain a useful cache in
-		// load-balanced environments
-
-		$this->output->set_header("ETag: ".md5($modified.$path));
-
-
-		// All times GMT
-		$modified = gmdate('D, d M Y H:i:s', $modified).' GMT';
-		$expires  = gmdate('D, d M Y H:i:s', time() + $max_age).' GMT';
-
-		$this->output->set_status_header(200);
+		$this->output->send_cache_headers(filemtime($path), 5184000, $path);
 
 		@header('Content-type: text/css');
-		@header("Cache-Control: max-age={$max_age}, must-revalidate");
-		@header('Vary: Accept-Encoding');
-		@header('Last-Modified: '.$modified);
-		@header('Expires: '.$expires);
 
 		$this->load->view('css/'.$file.'.css', '');
 
@@ -135,9 +110,10 @@ class Css extends CI_Controller {
 	// ------------------------------------------------------------------------	
 	
 	/**
+	 * Control Panel Global Extension
 	 *
-	 *
-	 *
+	 * @access	public
+	 * @return	void
 	 */
 	function _cp_global_ext()
 	{
@@ -158,6 +134,8 @@ class Css extends CI_Controller {
 		$this->output->set_header('Content-Length: '.strlen($str));
 		$this->output->set_output($str);		
 	}
+
+	// --------------------------------------------------------------------
 	
 }
 // END CLASS

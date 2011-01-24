@@ -119,41 +119,8 @@ class Jquery {
 
 		}
 
-		// Can't do any of this if we're not allowed
-		// to send any headers
-
-		if ($this->EE->config->item('send_headers') == 'y')
-		{
-			$max_age		= 172800;
-			$modified		= filemtime($file);
-			$modified_since	= $this->EE->input->server('HTTP_IF_MODIFIED_SINCE');
-
-			// Remove anything after the semicolon
-
-			if ($pos = strrpos($modified_since, ';') !== FALSE)
-			{
-				$modified_since = substr($modified_since, 0, $pos);
-			}
-
-			// If the file is in the client cache, we'll
-			// send a 304 and be done with it.
-
-			if ($modified_since && (strtotime($modified_since) == $modified))
-			{
-				$this->EE->output->set_status_header(304);
-				exit;
-			}
-
-			// All times GMT
-			$modified = gmdate('D, d M Y H:i:s', $modified).' GMT';
-			$expires = gmdate('D, d M Y H:i:s', time() + $max_age).' GMT';
-
-			$this->EE->output->set_status_header(200);
-			@header("Cache-Control: max-age={$max_age}, must-revalidate");
-			@header('Last-Modified: '.$modified);
-			@header('Expires: '.$expires);
-		}
-
+		$this->EE->output->send_cache_headers(filemtime($file));
+		
 		// Grab the file, content length and serve
 		// it up with the proper content type!
 
