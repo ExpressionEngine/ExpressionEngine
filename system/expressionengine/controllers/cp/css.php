@@ -72,7 +72,16 @@ class Css extends CI_Controller {
 		return $this->_load_css_file($path, $file);
 	}
 
-
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Load CSS File
+	 *
+	 * @access	public
+	 * @param	string		path to the CSS
+	 * @param	string		name of the CSS file, sans file extension
+	 * @return	void
+	 */
 	private function _load_css_file($path, $file)
 	{
 		if ( ! file_exists($path.'css/'.$file.'.css'))
@@ -101,9 +110,10 @@ class Css extends CI_Controller {
 	// ------------------------------------------------------------------------	
 	
 	/**
+	 * Control Panel Global Extension
 	 *
-	 *
-	 *
+	 * @access	public
+	 * @return	void
 	 */
 	function _cp_global_ext()
 	{
@@ -124,6 +134,8 @@ class Css extends CI_Controller {
 		$this->output->set_header('Content-Length: '.strlen($str));
 		$this->output->set_output($str);		
 	}
+
+	// --------------------------------------------------------------------
 	
 }
 // END CLASS
