@@ -3206,7 +3206,7 @@ class Comment {
 		@header("Content-type: text/html; charset=UTF-8");
 		
 		$unauthorized = $this->EE->lang->line('not_authorized');
-		
+
 		if ($this->EE->input->get_post('comment_id') === FALSE OR (($this->EE->input->get_post('comment') === FALSE OR $this->EE->input->get_post('comment') == '') && $this->EE->input->get_post('status') != 'close'))
 		{
 			$this->EE->output->send_ajax_response(array('error' => $unauthorized));
@@ -3423,7 +3423,8 @@ $(function() { $('.comment').CommentEditor(); });
 CMT_EDIT_SCR;
 
 		$script = $this->EE->functions->add_form_security_hash($script);
-
+		$script = $this->EE->functions->insert_action_ids($script);
+		
 		$this->EE->output->enable_profiler(FALSE);		
 		$this->EE->output->set_header("Content-Type: text/javascript");
 
