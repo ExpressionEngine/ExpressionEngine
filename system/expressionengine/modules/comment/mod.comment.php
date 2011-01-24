@@ -3316,6 +3316,17 @@ class Comment {
 		$this->EE->output->send_ajax_response(array('error' => $unauthorized));
 	}	
 
+	// --------------------------------------------------------------------
+	
+	/**
+	 * New Hash
+	 * 
+	 * Generates a new secure forms CSRF hash for the current user
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	string
+	 */
 	function _new_hash()
 	{
 		if ($this->EE->config->item('secure_forms') != 'y')
@@ -3356,15 +3367,23 @@ class Comment {
 		return $hash;
 	}
 	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * AJAX Edit URL
+	 *
+	 * @access	public
+	 * @return	string
+	 */
 	function ajax_edit_url()
 	{
-
 		$url = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Comment', 'edit_comment');
 		
 		return $url;
 	}
 	
-
+	// --------------------------------------------------------------------
+	
 }
 // END CLASS
 
