@@ -897,7 +897,7 @@ PAPAYA;
 										'database'	=> $this->userdata['db_name'],
 										'dbdriver'	=> $this->userdata['dbdriver'],
 										'pconnect'	=> ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
-										'dbprefix'	=> ($config['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $config['db_prefix']),
+										'dbprefix'	=> ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']),
 										'swap_pre'	=> 'exp_',
 										'db_debug'	=> TRUE, // We show our own errors
 										'cache_on'	=> FALSE,
@@ -2105,7 +2105,7 @@ PAPAYA;
 					$this->load->add_package_path($path);
 
 					$orig_view_path = $this->load->_ci_view_path;
-					$this->load->_ci_view_path = MODULE_VIEWS;
+					$this->load->_ci_view_path = $path.'views/';
 
 					require $path.'upd.'.$module.EXT;
 
@@ -2127,7 +2127,7 @@ PAPAYA;
 					
 					// switch the view path back to the original, remove package path
 					$this->load->_ci_view_path = $orig_view_path;
-					$this->load->remove_package_path($installed[$module]['path']);
+					$this->load->remove_package_path($path.'views/');
 				}
 			}
 		}

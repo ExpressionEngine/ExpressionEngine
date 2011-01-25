@@ -3206,7 +3206,7 @@ class Comment {
 		@header("Content-type: text/html; charset=UTF-8");
 		
 		$unauthorized = $this->EE->lang->line('not_authorized');
-		
+
 		if ($this->EE->input->get_post('comment_id') === FALSE OR (($this->EE->input->get_post('comment') === FALSE OR $this->EE->input->get_post('comment') == '') && $this->EE->input->get_post('status') != 'close'))
 		{
 			$this->EE->output->send_ajax_response(array('error' => $unauthorized));
@@ -3315,6 +3315,127 @@ class Comment {
 
 		$this->EE->output->send_ajax_response(array('error' => $unauthorized));
 	}	
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Edit Comment Script
+	 *
+	 * Outputs a script tag with an ACT request to the edit comment JavaScript
+	 *
+	 * @access	public
+	 * @return	type
+	 */
+	function edit_comment_script()
+	{
+		$src = $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT=comment_editor';
+		return $this->return_data = '<script type="text/javascript" charset="utf-8" src="'.$src.'"></script>';
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Comment Editor
+	 *
+	 * Outputs the JavaScript to edit comments on the front end, with JS headers.
+	 * Called via an action request by the exp:comment:edit_comment_script tag
+	 *
+	 * @access	public
+	 * @return	string
+	 */
+	function comment_editor()
+	{
+		$ajax_url = $this->ajax_edit_url();
+
+$script = <<<CMT_EDIT_SCR
+$.fn.CommentEditor = function(options) {
+
+	var OPT;
+		
+	OPT = $.extend({
+		url: "{$ajax_url}",
+		comment_body: '.comment_body',
+		showEditor: '.edit_link',
+		hideEditor: '.cancel_edit',
+		saveComment: '.submit_edit',
+		closeComment: '.mod_link'
+	}, options);
+		
+	var view_elements = [OPT.comment_body, OPT.showEditor, OPT.closeComment].join(','),
+		edit_elements = '.editCommentBox', 
+		hash = '{XID_HASH}';
+		
+	return this.each(function() {
+		var id = this.id.replace('comment_', ''),
+		parent = $(this);
+			
+		parent.find(OPT.showEditor).click(function() { showEditor(id); return false; });
+		parent.find(OPT.hideEditor).click(function() { hideEditor(id); return false; });
+		parent.find(OPT.saveComment).click(function() { saveComment(id); return false; });
+		parent.find(OPT.closeComment).click(function() { closeComment(id); return false; });
+	});
+
+	function showEditor(id) {
+		$("#comment_"+id)
+			.find(view_elements).hide().end()
+			.find(edit_elements).show().end();
+	}
+
+	function hideEditor(id) {
+		$("#comment_"+id)
+			.find(view_elements).show().end()
+			.find(edit_elements).hide();
+	}
+
+	function closeComment(id) {
+		var data = {status: "close", comment_id: id, XID: hash};
+
+		$.post(OPT.url, data, function (res) {
+			if (res.error) {
+				return $.error('Could not moderate comment.');
+			}
+			
+			hash = res.XID;
+			$('input[name=XID]').val(hash);
+			$('#comment_' + id).hide();
+	   });
+	}
+
+	function saveComment(id) {
+		var content = $("#comment_"+id).find('.editCommentBox'+' textarea').val(),
+			data = {comment: content, comment_id: id, XID: hash};
+		
+	$.post(OPT.url, data, function (res) {
+			if (res.error) {
+				return $.error('Could not save comment.');
+			}
+
+			hash = res.XID;
+			$('input[name=XID]').val(hash);
+			$("#comment_"+id).find('.comment_body').html(res.comment);
+			hideEditor(id);
+   		});
+	}
+};
+	
+
+$(function() { $('.comment').CommentEditor(); });
+CMT_EDIT_SCR;
+
+		$script = $this->EE->functions->add_form_security_hash($script);
+		$script = $this->EE->functions->insert_action_ids($script);
+		
+		$this->EE->output->enable_profiler(FALSE);		
+		$this->EE->output->set_header("Content-Type: text/javascript");
+
+		if ($this->EE->config->item('send_headers') == 'y')
+		{
+			$this->EE->output->send_cache_headers(strtotime(APP_BUILD));
+			$this->EE->output->set_header('Content-Length: '.strlen($script));
+		}
+
+		exit($script);
+	}
 
 	// --------------------------------------------------------------------
 	
