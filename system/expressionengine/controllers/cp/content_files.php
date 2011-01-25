@@ -33,12 +33,12 @@ class Content_files extends CI_Controller {
 
 		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('filemanager');
 		
-		if (isset($_GET['ajax']))
+		if (AJAX_REQUEST)
         {
             $this->output->enable_profiler(FALSE);
         }
@@ -54,17 +54,10 @@ class Content_files extends CI_Controller {
 	 */
 	function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$this->load->helper(array('form', 'string', 'url', 'file'));
 		$this->load->library('table');
-		$this->load->library('encrypt');
-		$this->load->model('tools_model');
+		$this->load->helper(array('form', 'string', 'url', 'file'));
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('content_files'));
+		$this->cp->set_variable('cp_page_title', lang('content_files'));
 		
 		$this->cp->add_js_script(array(
 		            'plugin'    => array('overlay', 'overlay.apple', 'tablesorter', 'ee_upload'),
@@ -72,40 +65,39 @@ class Content_files extends CI_Controller {
 		    )
 		);
 
-		$this->javascript->set_global('lang', array(
-					'loading'			=> $this->lang->line('loading'),
-					'uploading_file'	=> $this->lang->line('uploading_file').'&hellip;',
-					'show_toolbar'		=> $this->lang->line('show_toolbar'),
-					'hide_toolbar'		=> $this->lang->line('hide_toolbar')
-			)
-		);
-
-		$vars = array();
-		
-		// Can they access file preferences?
-		$vars['can_edit_upload_prefs'] = TRUE;
-		
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs') OR ! $this->cp->allowed_group('can_admin_channels'))
-		{
-			$vars['can_edit_upload_prefs'] = FALSE;
-		}
-
-		if ($this->input->get_post('ajax') == 'true')
+		if (AJAX_REQUEST)
 		{
 			$id = $this->input->get_post('directory');
 			$path = $this->input->get_post('enc_path');
-			$vars = array_merge($vars, $this->_map($id, $path));
+			$data = $this->_map($id, $path);
 			
-			$vars['EE_view_disable'] = TRUE;
+			$data['EE_view_disable'] = TRUE;
 		}
 		else
 		{
-			$vars = array_merge($vars, $this->_map());
+			$data = $this->_map();
 		}
+		
+		$data['can_edit_upload_prefs'] = TRUE;
+		
+		// Can they access file preferences?		
+		if ( ! $this->cp->allowed_group('can_access_admin') OR
+			 ! $this->cp->allowed_group('can_access_content_prefs') OR
+			 ! $this->cp->allowed_group('can_admin_channels'))
+		{
+			$data['can_edit_upload_prefs'] = FALSE;
+		}
+		
+		$this->javascript->set_global('lang', array(
+					'loading'			=> lang('loading'),
+					'uploading_file'	=> lang('uploading_file').'&hellip;',
+					'show_toolbar'		=> lang('show_toolbar'),
+					'hide_toolbar'		=> lang('hide_toolbar')
+			)
+		);
 
 		$this->javascript->compile();
-
-		$this->load->view('content/file_browse', $vars);
+		$this->load->view('content/file_browse', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -121,12 +113,14 @@ class Content_files extends CI_Controller {
 	 */
 	function _map($dir_id = FALSE, $enc_path = FALSE)
 	{
+		$this->load->model('tools_model');
+		
 		$upload_directories = $this->tools_model->get_upload_preferences($this->session->userdata('group_id'));
 		
 		// if a user has no directories available to them, then they have no right to be here
 		if ($this->session->userdata['group_id'] != 1 && $upload_directories->num_rows() == 0)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$vars['file_list'] = array(); // will hold the list of directories and files
@@ -136,7 +130,7 @@ class Content_files extends CI_Controller {
 		
 		if ($enc_path)
 		{
-			$enc_path = $this->encrypt->decode(rawurldecode($enc_path), $this->session->sess_crypt_key);
+			$enc_path = $this->_decode($enc_path);
 		}
 
 		foreach ($upload_directories->result() as $dir)
@@ -175,7 +169,7 @@ class Content_files extends CI_Controller {
 					continue;
 				}
 
-				$enc_url_path = rawurlencode($this->encrypt->encode($dir->url.$file['name'], $this->session->sess_crypt_key)); //needed for displaying image in edit mode
+				$enc_url_path = $this->_encode($dir->url.$file['name']); //needed for displaying image in edit mode
 
 				// the extension check is not needed, as allowed_types takes care of that.
 				// if (strncmp($file['mime'], 'image', 5) == 0 AND (in_array(strtolower(substr($file['name'], -3)), array('jpg', 'gif', 'png'))))
@@ -184,32 +178,32 @@ class Content_files extends CI_Controller {
 				{
 					$vars['file_list'][$dir->id]['files'][$file_count] = array(
 						array(
-							'class' => 'overlay',
+							'class'	=> 'overlay',
 							'id'	=> $file['encrypted_path'],
-							'data' => '<a class="overlay" id="img_'.str_replace(".", '', $file['name']).'" href="'.$dir->url.$file['name'].'" title="'.$file['name'].'" rel="#overlay">'.$file['name'].'</a>',
+							'data'	=> '<a class="overlay" id="img_'.str_replace(".", '', $file['name']).'" href="'.$dir->url.$file['name'].'" title="'.$file['name'].'" rel="#overlay">'.$file['name'].'</a>',
 						),
 						array(
-							'class'=>'align_right', 
-							'data' => number_format($file['size']/1000, 1).NBS.lang('file_size_unit'),
+							'class'	=>'align_right', 
+							'data'	=> number_format($file['size']/1000, 1).NBS.lang('file_size_unit'),
 						),
 						array(
-							'class'=>'', 
-							'data' => $file['mime'],
+							'class'	=>'', 
+							'data'	=> $file['mime']
 						),
 						array(
-							'class'=>'',
-							'data-rawdate' => $file['date'],
-							'data' => date('M d Y - H:ia', $file['date']),
+							'class'	=>'',
+							'data'	=> date('M d Y - H:ia', $file['date']),
+							'data-rawdate' => $file['date']
 						),
 						array(
-							'id' => 'edit_img_'.str_replace(".", '', $file['name']), 
-							'data' => '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=prep_edit_image'.AMP.'url_path='.$enc_url_path.AMP.'file='.$file['encrypted_path'].'" title="'.$file['name'].'">'.lang('edit').'</a>'
+							'id'	=> 'edit_img_'.str_replace(".", '', $file['name']), 
+							'data'	=> '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=prep_edit_image'.AMP.'url_path='.$enc_url_path.AMP.'file='.$file['encrypted_path'].'" title="'.$file['name'].'">'.lang('edit').'</a>'
 						),
 						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=download_files'.AMP.'file='.$file['encrypted_path'].'" title="'.lang('file_download').':'.NBS.$file['name'].'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png" alt="'.lang('file_download').'" /></a> '.NBS.NBS.NBS.
 						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=delete_files_confirm'.AMP.'file='.$file['encrypted_path'].'" title="'.lang('delete').':'.NBS.$file['name'].'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png" alt="'.lang('delete').'" /></a>',
 						array(
-							'class' => 'file_select', 
-							'data' => form_checkbox('file[]', $file['encrypted_path'], FALSE, 'class="toggle"')
+							'class'	=> 'file_select', 
+							'data'	=> form_checkbox('file[]', $file['encrypted_path'], FALSE, 'class="toggle"')
 						)
 					);
 				}
@@ -218,8 +212,8 @@ class Content_files extends CI_Controller {
 					$vars['file_list'][$dir->id]['files'][$file_count] = array(
 						$file['name'],
 						array(
-							'class'=>'align_right', 
-							'data' => number_format($file['size']/1000, 1).NBS.lang('file_size_unit'),
+							'class'	=>'align_right', 
+							'data'	=> number_format($file['size']/1000, 1).NBS.lang('file_size_unit'),
 						),
 						$file['mime'],
 						date('M d Y - H:ia', $file['date']),
@@ -227,8 +221,8 @@ class Content_files extends CI_Controller {
 						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=download_files'.AMP.'file='.$file['encrypted_path'].'" title="'.lang('file_download').':'.NBS.$file['name'].'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png" alt="'.lang('file_download').'" /></a> '.NBS.NBS.NBS.
 						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=delete_files_confirm'.AMP.'file='.$file['encrypted_path'].'" title="'.lang('delete').':'.NBS.$file['name'].'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png" alt="'.lang('delete').'" /></a>',
 						array(
-							'class' => 'file_select', 
-							'data' => form_checkbox('file[]', $file['encrypted_path'], FALSE, 'class="toggle"')
+							'class'	=> 'file_select', 
+							'data'	=> form_checkbox('file[]', $file['encrypted_path'], FALSE, 'class="toggle"')
 						)
 					);//iimages/icon-download-file.png") no-repeat scroll 0 0 transparent
 				}
@@ -255,15 +249,14 @@ class Content_files extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->output->enable_profiler(FALSE);
 		$this->load->helper(array('file', 'html'));
 
-		$this->load->library('encrypt');
-		$file = $this->encrypt->decode(rawurldecode($this->input->get_post('file')), $this->session->sess_crypt_key);
-
+		$file = $this->_decode($this->input->get_post('file'));
+		
 		$file_info = get_file_info($file, array('name', 'size', 'fileperms'));
 
 		$data = array();
@@ -305,11 +298,6 @@ class Content_files extends CI_Controller {
 	 */
 	function upload_file()
 	{
-		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		$this->load->library('filemanager');
 		$this->load->model('tools_model');
 		
@@ -324,9 +312,9 @@ class Content_files extends CI_Controller {
 		$upload_dir_prefs = $upload_dir_result->row();
 
 		// Convert the file size to kilobytes
-		$max_file_size = ($upload_dir_prefs->max_size == '') ? 0 : round($upload_dir_prefs->max_size/1024, 2);
-		$max_width = ($upload_dir_prefs->max_width == '') ? 0 : $upload_dir_prefs->max_width;
-		$max_height = ($upload_dir_prefs->max_height == '') ? 0 : $upload_dir_prefs->max_height;
+		$max_file_size	= ($upload_dir_prefs->max_size == '') ? 0 : round($upload_dir_prefs->max_size/1024, 2);
+		$max_width		= ($upload_dir_prefs->max_width == '') ? 0 : $upload_dir_prefs->max_width;
+		$max_height		= ($upload_dir_prefs->max_height == '') ? 0 : $upload_dir_prefs->max_height;
 
 		$config = array(
 			'upload_path'	=> $upload_dir_prefs->server_path,
@@ -367,22 +355,19 @@ class Content_files extends CI_Controller {
 				echo '<script type="text/javascript">parent.EE_uploads.'.$this->input->get('frame_id').' = '.$this->javascript->generate_json(array('error' => $this->upload->display_errors())).';</script>';
 				exit;
 			}
-			else
-			{
-				$this->session->set_flashdata('message_failure', $this->upload->display_errors());
-				$this->functions->redirect(BASE.AMP.'C=content_files');
-			}
+			
+			$this->session->set_flashdata('message_failure', $this->upload->display_errors());
+			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
 		else
 		{
-			$this->load->library('encrypt');
 			$file_info = $this->upload->data();
-			$encrypted_path = rawurlencode($this->encrypt->encode($file_info['full_path'], $this->session->sess_crypt_key));
+			$encrypted_path = $this->_encode($file_info['full_path']);
 
 			$this->filemanager->create_thumb(
-								array('server_path' => $file_info['file_path']), 
-								array('name' => $file_info['file_name'])
-							);
+				array('server_path' => $file_info['file_path']), 
+				array('name' => $file_info['file_name'])
+			);
 			
 			/* 	It makes me kind of cry a bit to do this, but some hosts have
 				stupid permissions, so unless you chmod the file like so, the
@@ -393,7 +378,7 @@ class Content_files extends CI_Controller {
 			if ($this->input->get_post('is_ajax') == 'true')
 			{
 				$response = array(
-					'success'		=> $this->lang->line('upload_success'),
+					'success'		=> lang('upload_success'),
 					'enc_path'		=> $encrypted_path,
 					'filename'		=> $file_info['file_name'],
 					'filesize'		=> $file_info['file_size'],
@@ -401,14 +386,11 @@ class Content_files extends CI_Controller {
 					'date'			=> date('M d Y - H:ia')
 				);
 
-				echo '<script type="text/javascript">parent.EE_uploads.'.$this->input->get('frame_id').' = '.$this->javascript->generate_json($response).';</script>';
-				exit;
+				exit('<script type="text/javascript">parent.EE_uploads.'.$this->input->get('frame_id').' = '.$this->javascript->generate_json($response).';</script>');
 			}
-			else
-			{
-				$this->session->set_flashdata('message_success', $this->lang->line('upload_success'));
-				$this->functions->redirect(BASE.AMP.'C=content_files');
-			}
+			
+			$this->session->set_flashdata('message_success', lang('upload_success'));
+			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
 	}
 
@@ -425,30 +407,22 @@ class Content_files extends CI_Controller {
 	 */
 	function download_files($files = array())
 	{
-		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		if ($this->input->get_post('file') == '')
 		{
 			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
 
-		$this->load->library('encrypt');
-
 		if (is_array($this->input->get_post('file')))
 		{
-
 			// extract each filename, add to files array
 			foreach ($this->input->get_post('file') as $scrambled_file)
 			{
-				$files[] = $this->encrypt->decode(rawurldecode($scrambled_file), $this->session->sess_crypt_key);
+				$files[] = $this->_decode($scrambled_file);
 			}
 		}
 		else
 		{
-			$file_offered = $this->encrypt->decode(rawurldecode($this->input->get_post('file')), $this->session->sess_crypt_key);
+			$file_offered = $this->_decode($this->input->get_post('file'));
 
 			if ($file_offered != '')
 			{
@@ -458,11 +432,12 @@ class Content_files extends CI_Controller {
 
 		$files_count = count($files);
 
-		if ($files_count == 0)
+		if ( ! $files_count)
 		{
 			return; // move along
 		}
-		elseif ($files_count == 1)
+		
+		if ($files_count == 1)
 		{
 			// no point in zipping for a single file... let's just send the file
 
@@ -501,7 +476,7 @@ class Content_files extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->helper('form');
@@ -524,7 +499,7 @@ class Content_files extends CI_Controller {
 			$vars['del_notice'] = 'confirm_del_files';
 		}
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('delete_selected_files'));
+		$this->cp->set_variable('cp_page_title', lang('delete_selected_files'));
 
 		$this->javascript->compile();
 
@@ -542,35 +517,28 @@ class Content_files extends CI_Controller {
 	 */
 	function delete_files()
 	{
-		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$this->load->library('encrypt');
-
 		$files = $this->input->get_post('file');
 
-		if ($files == '')
+		if ( ! $files)
 		{
-			// nothing for you here
-			$this->session->set_flashdata('message_failure', $this->lang->line('choose_file'));
+			$this->session->set_flashdata('message_failure', lang('choose_file'));
 			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
 
-		$delete_problem = 0;
+		$delete_problem = FALSE;
 
 		foreach($files as $file)
 		{
-			$file = rtrim($this->encrypt->decode(rawurldecode($file), $this->session->sess_crypt_key), DIRECTORY_SEPARATOR);
-
-			$path = substr($file, 0, strrpos($file, DIRECTORY_SEPARATOR)+1);
-			$thumb = substr($file, strrpos($file, DIRECTORY_SEPARATOR)+1);
-			$thumb_path = $path.'_thumbs'.DIRECTORY_SEPARATOR.'thumb_'.$thumb;
+			$file	= rtrim($this->_decode($file), DIRECTORY_SEPARATOR);
+			$thumb	= substr($file, strrpos($file, DIRECTORY_SEPARATOR) + 1);
+			
+			$path		= substr($file, 0, strrpos($file, DIRECTORY_SEPARATOR) + 1);
+			$thumb_path	= $path.'_thumbs'.DIRECTORY_SEPARATOR.'thumb_'.$thumb;
 
 			if ( ! @unlink($file))
 			{
-				$delete_problem++;
+				$delete_problem = TRUE;
+				// @confirm continue;
 			}
 
 			// Delete thumb also
@@ -580,18 +548,15 @@ class Content_files extends CI_Controller {
 			}
 		}
 
-		if ($delete_problem == 0)
-		{
-			// no problems
-			$this->session->set_flashdata('message_success', $this->lang->line('delete_success'));
-			$this->functions->redirect(BASE.AMP.'C=content_files');
-		}
-		else
+		if ($delete_problem)
 		{
 			// something's up.
-			$this->session->set_flashdata('message_failure', $this->lang->line('delete_fail'));
+			$this->session->set_flashdata('message_failure', lang('delete_fail'));
 			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
+
+		$this->session->set_flashdata('message_success', lang('delete_success'));
+		$this->functions->redirect(BASE.AMP.'C=content_files');
 	}
 
 	// --------------------------------------------------------------------
@@ -604,16 +569,10 @@ class Content_files extends CI_Controller {
 	 */
 	function display_image()
 	{
-		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$this->load->library('encrypt');
 		$this->load->helper('file');
 
 		$this->output->set_header('Content-Type: image/png');
-		$file = $this->encrypt->decode(rawurldecode($this->input->get_post('file')), $this->session->sess_crypt_key);
+		$file = $this->_decode($this->input->get_post('file'));
 		echo read_file($file);
 	}
 
@@ -627,112 +586,83 @@ class Content_files extends CI_Controller {
 	 */
 	function prep_edit_image()
 	{
-		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-	
 		$this->load->helper(array('form', 'string', 'url', 'file'));
-		$this->load->library('encrypt');
 
-		$vars['file'] = $this->encrypt->decode(rawurldecode($this->input->get_post('file')), $this->session->sess_crypt_key);
-		$vars['url_path'] = $this->encrypt->decode(rawurldecode($this->input->get_post('url_path')), $this->session->sess_crypt_key).'?f='.time();
-		
-		$this->javascript->set_global('filemanager.url_path', $vars['url_path']);
-		$this->javascript->set_global('lang', array(
-				'hide_toolbar'	=> $this->lang->line('hide_toolbar'),
-				'show_toolbar'	=> $this->lang->line('show_toolbar'),
-				'apply_changes'	=> $this->lang->line('apply_changes'),
-				'no'			=> $this->lang->line('no')
-			)
-		);
-		
-		$this->cp->add_js_script(array(
-				'ui'		=> array('resizable', 'dialog'),
-				'plugin'	=> 'jcrop',
-				'file'		=> 'cp/file_manager_edit'
-			)
-		);
+		$file	  = $this->_decode($this->input->get_post('file'));
+		$url_path = $this->_decode($this->input->get_post('url_path')).'?f='.time();
 
-		if ($vars['file'] == '')
+		if ($file == '')
 		{
-			// nothing for you here
-			$this->session->set_flashdata('message_failure', $this->lang->line('choose_file'));
+			$this->session->set_flashdata('message_failure', lang('choose_file'));
 			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
-
-		$this->cp->set_variable('cp_page_title', $this->lang->line('edit') .' '.substr(strrchr($vars['file'], '/'), 1));
-
-		// a bit of a breadcrumb override is needed
-		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=content_files'=> $this->lang->line('content_files')
+		
+		$this->javascript->set_global(array(
+			'filemanager.url_path'	=> $url_path,
+			
+			'lang'					=> array(
+				'no'					=> lang('no'),
+				'hide_toolbar'			=> lang('hide_toolbar'),
+				'show_toolbar'			=> lang('show_toolbar'),
+				'apply_changes'			=> lang('apply_changes'),
+				'exit_apply_changes'	=> lang('exit_apply_changes')
+			)
+		));
+		
+		$this->cp->add_js_script(array(
+			'ui'		=> array('resizable', 'dialog'),
+			'plugin'	=> 'jcrop',
+			'file'		=> 'cp/file_manager_edit'
 		));
 
-		$vars['form_hidden']['file'] = $this->input->get_post('file');
-		$vars['form_hidden']['url_path'] = $this->input->get_post('url_path');
+		$this->cp->set_variable('cp_page_title', lang('edit').' '.substr(strrchr($file, '/'), 1));
+		$this->cp->set_variable('cp_breadcrumbs', array(
+			BASE.AMP.'C=content_files' => lang('content_files')
+		));
+		
+		$data = array(
+			'file'				=> $file,
+			'url_path'			=> $url_path,
+			'rotate_selected'	=> 'none',
+			
+			'form_hidden'		=> array(
+				'file'				=> $this->input->get_post('file'),
+				'url_path'			=> $this->input->get_post('url_path')
+			),
+			'rotate_options'	=> array(
+				"none"				=> lang('none'),
+				"90"				=> lang('rotate_90r'),
+				"270"				=> lang('rotate_90l'),
+				"180"				=> lang('rotate_180'),
+				"vrt"				=> lang('rotate_flip_vert'),
+				"hor"				=> lang('rotate_flip_hor')
+			)
+		);
 
-		$vars['resize_width'] = array(
-										'autocomplete' => 'off',
-										'name' => 'resize_width',
-										'id' => 'resize_width',
-										'size' => 5,
-										'value' => 0
-									);
-		$vars['resize_height'] = array(
-										'autocomplete' => 'off',
-										'name' => 'resize_height',
-										'id' => 'resize_height',
-										'size' => 5,
-										'value' => 0
-									);
-		$vars['crop_width'] = array(
-										'autocomplete' => 'off',
-										'name' => 'crop_width',
-										'id' => 'crop_width',
-										'class' => 'crop_dim',
-										'size' => 5,
-										'value' => 0
-									);
-		$vars['crop_height'] = array(
-										'autocomplete' => 'off',
-										'name' => 'crop_height',
-										'id' => 'crop_height',
-										'class' => 'crop_dim',
-										'size' => 5,
-										'value' => 0
-									);
-		$vars['crop_x'] = array(
-										'autocomplete' => 'off',
-										'name' => 'crop_x',
-										'id' => 'crop_x',
-										'class' => 'crop_dim',
-										'size' => 5,
-										'value' => 0
-									);
-		$vars['crop_y'] = array(
-										'autocomplete' => 'off',
-										'name' => 'crop_y',
-										'id' => 'crop_y',
-										'class' => 'crop_dim',
-										'size' => 5,
-										'value' => 0
-									);
+		$params = array(
+			'resize_width', 'resize_height',
+			'crop_width', 'crop_height', 'crop_x', 'crop_y'
+		);
+		
+		foreach ($params as $k => $param)
+		{
+			$data[$param] = array(
+				'autocomplete' => 'off',
+				'name'	=> $param,
+				'id'	=> $param,
+				'size'	=> 5,
+				'value'	=> 0
+			);
+			
+			if ($k > 1)
+			{
+				$data[$param]['class'] = 'crop_dim';
+			}
+		}
 
-		$vars['rotate_options'] = array(
-										"none"			=> lang('none'),
-										"90"			=> lang('rotate_90r'),
-										"270"			=> lang('rotate_90l'),
-										"180"			=> lang('rotate_180'),
-										"vrt"			=> lang('rotate_flip_vert'),
-										"hor"			=> lang('rotate_flip_hor'),
-										);
-
-		$vars['rotate_selected'] = 'none';
-
-		$this->javascript->set_global('lang.exit_apply_changes', $this->lang->line('exit_apply_changes'));
 		$this->javascript->compile();
 
-		$this->load->view('content/prep_edit_image', $vars);
+		$this->load->view('content/prep_edit_image', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -745,11 +675,6 @@ class Content_files extends CI_Controller {
 	 */
 	function edit_image()
 	{
-		if ( ! $this->cp->allowed_group('can_access_content')  OR ! $this->cp->allowed_group('can_access_files'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		if ($this->input->get_post('edit_done'))
 		{
 			$this->functions->redirect(BASE.AMP.'C=content_files');
@@ -760,14 +685,12 @@ class Content_files extends CI_Controller {
 		$this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate");
 		$this->output->set_header("Pragma: no-cache");
 
-		$this->load->library('encrypt');
-
-		$file = str_replace(DIRECTORY_SEPARATOR, '/',$this->encrypt->decode(rawurldecode($this->input->get_post('file')), $this->session->sess_crypt_key));
+		$file = str_replace(DIRECTORY_SEPARATOR, '/', $this->_decode($this->input->get_post('file')));
 
 		if ($file == '')
 		{
 			// nothing for you here
-			$this->session->set_flashdata('message_failure', $this->lang->line('choose_file'));
+			$this->session->set_flashdata('message_failure', lang('choose_file'));
 			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
 
@@ -816,62 +739,38 @@ class Content_files extends CI_Controller {
 			if ($this->input->get_post('is_ajax'))
 			{
 				header('HTTP', true, 500);
-				exit($this->lang->line('width_needed'));
+				exit(lang('width_needed'));
 			}
-			else
-			{
-				show_error($this->lang->line('width_needed'));
-			}
+
+			show_error(lang('width_needed'));
 		}
 
-		$config['library_path'] = $this->config->item('image_library_path'); 
+		$config['library_path']	 = $this->config->item('image_library_path'); 
 		$config['image_library'] = $this->config->item('image_resize_protocol');
-		$config['source_image'] = $file;
-		$config['new_image'] = $file;
-
-//		$config['dynamic_output'] = TRUE;
+		$config['source_image']	 = $file;
+		$config['new_image']	 = $file;
 
 		$this->load->library('image_lib', $config);
 
 		$errors = '';
 
-		// Cropping and Resizing
-		if ($action == 'resize')
-		{
-			if ( ! $this->image_lib->resize())
-			{
-		    	$errors = $this->image_lib->display_errors();
-			}
-		}
-		elseif ($action == 'rotate')
-		{
+		// $action is one of: resize, rotate, crop
 
-			if ( ! $this->image_lib->rotate())
-			{
-			    $errors = $this->image_lib->display_errors();
-			}
-		}
-		else
+		if ( ! $this->image_lib->$action())
 		{
-			if ( ! $this->image_lib->crop())
-			{
-			    $errors = $this->image_lib->display_errors();
-			}
+	    	$errors = $this->image_lib->display_errors();
 		}
 
 		// Any reportable errors? If this is coming from ajax, just the error messages will suffice
 		if ($errors != '')
 		{
-			if ($this->input->get_post('is_ajax'))
+			if (AJAX_REQUEST)
 			{
 				header('HTTP', true, 500);
-				echo $errors;
-				exit;
+				exit($errors);
 			}
-			else
-			{
-				show_error($errors);
-			}
+			
+			show_error($errors);
 		}
 
 		$dimensions = $this->image_lib->get_image_properties('', TRUE);
@@ -880,20 +779,50 @@ class Content_files extends CI_Controller {
 		// Rebuild thumb
 		$this->filemanager->create_thumb(array(
 					'server_path'	=> substr($file, 0, strrpos($file, '/'))),
-					array('name'	=> basename($file))
-			);
-
+					array('name'	=> basename($file)
+			)
+		);
+		
+		if (AJAX_REQUEST)
+		{
+			exit('width="'.$dimensions['width'].'" height="'.$dimensions['height'].'" ');
+		}
+		
 		$url = BASE.AMP.'C=content_files'.AMP.'M=prep_edit_image'.AMP.'file='.rawurlencode($this->input->get_post('file')).AMP.'url_path='.rawurlencode($this->input->get_post('url_path'));
+		
+		$this->functions->redirect($url);
+	}
+	
+	// --------------------------------------------------------------------
 
-		if ($this->input->get_post('is_ajax'))
-		{
-			echo 'width="'.$dimensions['width'].'" height="'.$dimensions['height'].'" ';
-			exit;
-		}
-		else
-		{
-			$this->functions->redirect($url);
-		}
+	/**
+	 * Encode for url
+	 * 
+	 * @access	private
+	 * @param	string
+	 * @return	string
+	 */
+	private function _encode($data)
+	{
+		$this->load->library('encrypt');
+		
+		return rawurlencode($this->encrypt->encode($data, $this->session->sess_crypt_key));
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Decode from url
+	 * 
+	 * @access	private
+	 * @param	string
+	 * @return	string
+	 */
+	private function _decode($data)
+	{
+		$this->load->library('encrypt');
+		
+		return $this->encrypt->decode(rawurldecode($data), $this->session->sess_crypt_key);
 	}
 }
 // END CLASS
