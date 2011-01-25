@@ -77,18 +77,8 @@ class Api_channel_entries extends Api {
 	 * @param	array
 	 * @return	mixed
 	 */
-	function submit_new_entry($channel_id, $data, $autosave = FALSE, $cache_orig = FALSE)
+	function submit_new_entry($channel_id, $data, $autosave = FALSE)
 	{
-		$orig = FALSE;
-		
-		if ($cache_orig)
-		{
-			foreach (array('meta', 'data', 'channel_id', 'entry_id', 'autosave', 'c_prefs', '_cache') as $cached)
-			{
-				$orig[$cached] = $this->$cached;
-			}
-		}
-
 		$this->entry_id = 0;
 		$this->autosave_entry_id = isset($data['autosave_entry_id']) ? $data['autosave_entry_id'] : 0;
 		
@@ -210,39 +200,12 @@ class Api_channel_entries extends Api {
 		// forgotten in the future. -dj
 		if ($this->trigger_hook('entry_submission_end') === TRUE)
 		{
-			$this->cache_and_return(TRUE, $orig);
 			return TRUE;
 		}
 		
-		
-		$this->cache_and_return(TRUE, $orig);
 		return TRUE;
 	}
 	
-	function cache_and_return($response, $original)
-	{
-		if ($original == FALSE)
-		{
-			return $response;
-		}
-	
-		foreach (array('meta', 'data', 'channel_id', 'entry_id', 'autosave', 'c_prefs', '_cache') as $cached)
-		{
-			$this->$cached = $original[$cached];
-			
-			// oye- it appends the settings the way it works now- so settings array just keeps getting bigger and bigger and yea- gotta think that's not gonna work.  Below does not solve that- think you'd need to set settings = array and do below.  Which... ponders if appending settings is bad.  Yes, it really probably is.  Required fields, and such.  Bugger pie.
-			
-			//$this->EE->load->library('api');
-			//$this->EE->api->instantiate('channel_fields');
-
-			//$this->EE->api_channel_fields->setup_entry_settings($this->channel_id, $this->data);			
-			
-			
-		}
-		
-		return $response;
-	}
-
 	// --------------------------------------------------------------------
 	
 	/**
