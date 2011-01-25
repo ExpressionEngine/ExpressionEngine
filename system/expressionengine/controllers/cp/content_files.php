@@ -64,6 +64,7 @@ class Content_files extends CI_Controller {
 	 */
 	public function index()
 	{
+
 		$this->load->library(array('pagination'));
 		
 		// Page Title
@@ -136,14 +137,28 @@ class Content_files extends CI_Controller {
 		);
 
 		$this->pagination->initialize($p_config);
-
+		
+		$action_options = array(
+			'download'			=> $this->lang->line('download_selected'),
+			'delete'			=> $this->lang->line('delete_selected_files')
+		);
+		
+		// Figure out where the count is starting and ending for the dialog at the bottom of the page
+		$offset = ($this->input->get($p_config['query_string_segment'])) ? $this->input->get($p_config['query_string_segment']) : 0;
+		$count_from = $offset + 1;
+		$count_to = $offset + count($file_list);
+		
 		$data = array(
 			'upload_dirs_options' 	=> $upload_dirs_options,
 			'selected_dir'			=> $selected_dir,
 			'files'					=> $file_list,
 			'dir_size'				=> $dir_size,
 			'pagination_links'		=> $this->pagination->create_links(),
-		);		
+			'action_options' 		=> $action_options, 
+			'total_files' 			=> $total_rows,
+			'count_from'			=> $count_from,
+			'count_to'				=> $count_to
+		);
 		
 		$this->load->view('content/files/index', $data);
 	}
