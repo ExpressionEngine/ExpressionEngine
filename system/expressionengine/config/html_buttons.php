@@ -133,14 +133,14 @@ $predefined_buttons = array(
 												),
 							'anchor'	=> array(
 												'tag_name'  => 'a',
-												'tag_open'  => '<a href=\"[![Link:!:http://]!]\"(!( title=\"[![Title]!]\")!)>',
+												'tag_open'  => '<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>',
 												'tag_close' => '</a>',
 												'accesskey' => 'a',
 												'classname'	 => 'btn_a'
 												),
 							'picture'	=> array(
 												'tag_name'  => 'img',
-												'tag_open'  => '<img src=\"[![Link:!:http://]!]\" alt=\"[![Alternative text]!]\"\ />',
+												'tag_open'  => '<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />',
 												'tag_close' => '',
 												'accesskey' => '',
 												'classname'	 => 'btn_img'
