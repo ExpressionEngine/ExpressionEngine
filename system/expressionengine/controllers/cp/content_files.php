@@ -71,7 +71,7 @@ class Content_files extends CI_Controller {
 		
 		// Get upload dirs
 		$this->_upload_dirs = $this->filemanager->fetch_upload_dirs();
-		$per_page = ($per_page = $this->input->get('per_page')) ? $per_page : 10;
+		$per_page = ($per_page = $this->input->get('per_page')) ? $per_page : 40;
 		$offset = ($offset = $this->input->get('offset')) ? $offset : 0;
 		$upload_dirs_options = array();
 	
@@ -93,7 +93,7 @@ class Content_files extends CI_Controller {
 		
 		$file_list = array();
 		$dir_size = 0;
-		// var_dump($this->_upload_dirs[$selected_dir]);
+
 		// Setup file list
 		foreach ($files->files[$selected_dir] as $file)
 		{
@@ -117,7 +117,7 @@ class Content_files extends CI_Controller {
 		
 		$file_list = array_slice($file_list, $offset, $per_page);
 		
-		$base_url = BASE.AMP.'C=content_files'.AMP.'per_page='.$per_page;
+		$base_url = BASE.AMP.'C=content_files'.AMP.'directory='.$selected_dir.AMP.'per_page='.$per_page;
 		
 		$link = "<img src=\"{$this->cp->cp_theme_url}images/pagination_%s_button.gif\" width=\"13\" height=\"13\" alt=\"%s\" />";
 		
