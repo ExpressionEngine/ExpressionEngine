@@ -823,6 +823,47 @@ class Filemanager {
 
 		exit($image_name_reference);
 	}
+	
+	// --------------------------------------------------------------------
+	
+	public function fetch_upload_dirs()
+	{
+		return $this->_directories();
+	}
+
+	// --------------------------------------------------------------------	
+	
+	/**
+	 *
+	 *
+	 */
+	public function fetch_files($file_dir_id = NULL)
+	{
+		$this->EE->load->model('tools_model');
+		
+		$upload_dirs = $this->EE->tools_model->get_upload_preferences(
+										$this->EE->session->userdata('group_id'),
+										$file_dir_id);
+		
+		$dirs = new StdClass();
+		$dirs->files = array();
+		
+		foreach ($upload_dirs->result() as $dir)
+		{
+			$dirs->files[$dir->id] = array();
+			
+			$files = $this->EE->tools_model->get_files($dir->server_path, $dir->allowed_types);
+			
+			foreach ($files as $file)
+			{
+				$dirs->files[$dir->id] = $files;
+			}
+		}
+	
+		return $dirs;
+	}
+	
+	
 }
 
 // END Filemanager class
