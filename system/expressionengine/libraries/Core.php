@@ -536,26 +536,33 @@ class EE_Core {
 	 */	
 	final public function generate_page()
 	{
+		// Legacy, unsupported, but still more or less functional
+		// Templates and Template Groups can be hard-coded
+		// in $assign_to_config in the bootstrap file
+		$template = '';
+		$template_group = '';
+		
+		if ($this->EE->uri->uri_string == '' OR $this->EE->uri->uri_string == '/')
+		{
+			$template = (string)$this->EE->config->item('template');
+			$template_group = (string) $this->EE->config->item('template_group');
+		}
+		
+		
 		// If the forum module is installed and the URI contains the "triggering" word
 		// we will override the template parsing class and call the forum class directly.
 		// This permits the forum to be more light-weight as the template engine is 
-		// not needed under normal circumstances. 
+		// not needed under normal circumstances.
+		$forum_trigger = ($this->EE->config->item('forum_is_installed') == "y") ? $this->EE->config->item('forum_trigger') : '';
+		$profile_trigger = $this->EE->config->item('profile_trigger');
 		
-		$template_group = (string) $this->EE->config->item('template_group');
-		$template = (string)$this->EE->config->item('template');
 		
-		if ($this->EE->config->item('forum_is_installed') == "y" && 
-			$this->EE->config->item('forum_trigger') != '' && 
-			in_array($this->EE->uri->segment(1), 
-					 preg_split('/\|/', $this->EE->config->item('forum_trigger'), -1, PREG_SPLIT_NO_EMPTY)) && 
-			! IS_FREELANCER)
+		if ( ! IS_FREELANCER && $forum_trigger && in_array($this->EE->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY)))
 		{
 			require PATH_MOD.'forum/mod.forum.php';
 			$FRM = new Forum();
 		}			
-		elseif ($this->EE->config->item('profile_trigger') != "" && 
-				$this->EE->config->item('profile_trigger') == $this->EE->uri->segment(1) && 
-				! IS_FREELANCER)
+		elseif ( ! IS_FREELANCER && $profile_trigger && $profile_trigger == $this->EE->uri->segment(1))
 		{
 			// We do the same thing with the member profile area.  
 		
@@ -568,9 +575,7 @@ class EE_Core {
 				require PATH_MOD.'member/mod.member.php';
 				
 				$member = new Member();
-				$member->_set_properties(array(
-								'trigger' => $this->EE->config->item('profile_trigger')
-							));	
+				$member->_set_properties(array('trigger' => $profile_trigger));
 				
 				$this->EE->output->set_output($member->manager());
 			}
@@ -617,20 +622,7 @@ class EE_Core {
 
 			require APPPATH.'libraries/Template.php';
 
-			$this->EE->TMPL = new EE_Template();			
-
-			// Legacy, unsupported, but still more or less functional
-			// Templates and Template Groups can be hard-coded
-			// within either the main triggering file or via an include.			
-			// If template group is set, and there's no template
-			// set the template to segment 1, or index
-			if ($template_group != '')
-			{
-				// Make sure the template group isn't in the URL
-				$uri_seg = ($this->EE->uri->segment(1) === $template_group) ? 2 : 1;
-
-				$template = ($this->EE->uri->segment($uri_seg)) ? $this->EE->uri->segment($uri_seg) : 'index';
-			}
+			$this->EE->TMPL = new EE_Template();
 
 			// Parse the template
 			$this->EE->TMPL->run_template_engine($template_group, $template);
