@@ -65,6 +65,8 @@ $lang = array(
 'uploading_file'		=> 'Uploading File',
 'apply_changes'			=> 'Apply Changes',
 
+'pagination_count_text'	=> 'Showing %s to %s of %s files.',
+
 ''=>''
 );
 

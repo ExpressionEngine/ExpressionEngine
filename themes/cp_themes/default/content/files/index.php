@@ -15,7 +15,7 @@ if ( ! $EE_view_disable)
 		<div class="heading">
 			<h2 class="edit"><?=lang('content_files')?></h2>
 		</div>
-		<?php //var_dump($files->files[$selected_dir])?>
+		
 		<div class="pageContents group">
 			<?php if ( ! empty($upload_dirs_options)):?>
 				<?=form_label('Upload Directory:', 'dir_choice').NBS?>
@@ -41,25 +41,27 @@ if ( ! $EE_view_disable)
 					</tr>
 				</thead>
 				<tbody>
-					<?php if ( ! isset($files) OR empty($files)):?>
+				<?php if ( ! isset($files) OR empty($files)):?>
 					<tr>
 						<td colspan="5"><?=lang('no_uploaded_files')?></td>
 					</tr>
-					<?php else: ?>
+				<?php else: ?>
 					<?php foreach ($files as $file):?>
 					<tr>
 						<td><a class="less_important_link" href="#"><?=$file['name']?></a></td>
 						<td><?=number_format($file['size']/1000, 1);?> <?=lang('file_size_unit')?></td>
 						<td><?=$file['mime']?></td>
 						<td><?=$this->localize->set_human_time($file['date'], TRUE)?></td>
-						<td><?=lang('actions go here')?></td>
+						<td>
+							<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=download_files'.AMP.'dir='.$selected_dir.AMP.'file='.base64_encode($file['name'])?>" title="<?=lang('file_download')?>"><?=lang('file_download')?></a>
+						</td>
 						<td class="file_select"><?=form_checkbox('file[]', $file['name'], FALSE, 'class="toggle"')?></td>
 					</tr>
 					<?php endforeach; ?>
-					<?php endif;?>
+				<?php endif;?>
 				</tbody>
 			</table>
-			<p id="paginationCount">Showing <?=$count_from?> to <?=$count_to?> of <?=$total_files?> files.</p>
+			<p id="paginationCount"><?=$pagination_count_text;?></p>
 			<?=$pagination_links?>
 			<div class="tableSubmit">
 				<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
