@@ -2502,9 +2502,13 @@ label.hide_field {
 	text-align:			left;
 }
 
+#mainContent #upload_form {
+	margin:		 		-4px 0 10px;
+}
+
 #upload_form #upload_file.field {
 	width:				196px;
-	margin:				8px 0;
+	margin:				0;
 	padding:			3px;
 }
 
@@ -2954,9 +2958,14 @@ html.js .publish_hidden {
 #paginationLinks img {
 	vertical-align:top;
 }
+
 #paginationLinks a, #paginationLinks strong {
 	margin-right:5px;
-}	
+}
+
+#mainContent #paginationCount {
+	margin: 0 0 10px;
+}
 
 #remote_plugins h4,
 #remote_plugins h4 a {
