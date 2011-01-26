@@ -153,7 +153,8 @@ class Content_files extends CI_Controller {
 			'delete'			=> lang('delete_selected_files')
 		);
 		
-		// Figure out where the count is starting and ending for the dialog at the bottom of the page
+		// Figure out where the count is starting 
+		// and ending for the dialog at the bottom of the page
 		$offset = ($this->input->get($p_config['query_string_segment'])) ? $this->input->get($p_config['query_string_segment']) : 0;
 		$count_from = $offset + 1;
 		$count_to = $offset + count($file_list);
@@ -162,7 +163,6 @@ class Content_files extends CI_Controller {
 		$pagination_count_text = sprintf(
 									lang('pagination_count_text'),
 									$count_from, $count_to, $total_rows);
-		
 		
 		$data = array(
 			'upload_dirs_options' 	=> $upload_dirs_options,
@@ -186,10 +186,6 @@ class Content_files extends CI_Controller {
 	 */
 	public function download_files()
 	{
-		// var_dump($_GET, $_POST); exit;
-		
-		
-		
 		// Do some basic permissions checking
 		if ( ! ($file_dir = $this->input->get('dir')))
 		{
@@ -221,7 +217,54 @@ class Content_files extends CI_Controller {
 
 	// ------------------------------------------------------------------------	
 	
-	public function delete_files() {}
+	/**
+	 *
+	 *
+	 *
+	 */
+	public function delete_files()
+	{		
+		// Do some basic permissions checking
+		if ( ! ($file_dir = $this->input->get('dir')))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		// Bail if they dont' have access to this upload location.
+		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
+		{
+			show_error(lang('unauthorized_access'));			
+		}
+		
+		// No file, why are we here?
+		if ( ! ($file = $this->input->get('file')))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		if ( ! isset($_POST['delete_confirm']))
+		{
+			$this->_delete_files_confirm($file, $file_dir);
+		}
+				
+	}
+
+	// ------------------------------------------------------------------------	
+	
+	/**
+	 * Confirm File Deletion
+	 *
+	 * @param 	string		base64_encoded string of files to delete
+	 * @param 	string		directory to delete
+	 * @return 	void
+	 */
+	private function _delete_files_confirm($files, $file_dir)
+	{
+	
+	}
+
+
+	// ------------------------------------------------------------------------	
 	
 	public function edit_image() {}
 
