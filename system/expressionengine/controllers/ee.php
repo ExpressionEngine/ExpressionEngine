@@ -60,11 +60,11 @@ class EE extends CI_Controller {
 
 		if (REQ == 'ACTION')
 		{
-			$this->core->_generate_action($can_view_system);
+			$this->core->generate_action($can_view_system);
 		}
 		elseif (REQ == 'PAGE')
 		{
-			$this->core->_generate_page();
+			$this->core->generate_page();
 		}
 		else
 		{
