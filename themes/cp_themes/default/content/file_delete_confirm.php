@@ -19,6 +19,7 @@ if ($EE_view_disable !== TRUE)
 
 			<?=form_open('C=content_files'.AMP.'M=delete_files')?>
 
+			<?=form_hidden('file_dir', $file_dir)?>
 			<?php foreach($files as $file):?>
 				<?=form_hidden('file[]', $file)?>
 			<?php endforeach;?>

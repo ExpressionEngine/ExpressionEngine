@@ -177,17 +177,171 @@ class Content_files extends CI_Controller {
 		$this->load->view('content/files/index', $data);
 	}
 
+	// ------------------------------------------------------------------------	
+
+	/**
+	 * Controls the batch actions
+	 *
+	 * When submitted to, expects a GET/POST variable named action containing either download or delete
+	 */
+	public function multi_edit_form()
+	{
+		$file_settings = $this->_get_file_settings();
+		
+		$files    = $file_settings['files'];
+		$file_dir = $file_settings['file_dir'];
+		
+		switch ($this->input->get_post('action'))
+		{
+			case 'download':
+				$this->_download_files($files, $file_dir);
+				break;
+			
+			case 'delete':
+				$this->_delete_files_confirm($files, $file_dir);
+				break;
+			
+			default:
+				show_error(lang('unauthorized_access'));
+				break;
+		}
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Creates the confirmation page to delete a list of files
+	 *
+	 * @param array $files Array of file names to delete
+	 * @param integer $file_dir ID of the directory to delete from
+	 */
+	private function _delete_files_confirm($files, $file_dir)
+	{
+		$data['files']    = $files;
+		$data['file_dir'] = $file_dir;
+		
+		if (count($files) == 1)
+		{
+			$data['del_notice'] = 'confirm_del_file';
+		}
+		else
+		{
+			$data['del_notice'] = 'confirm_del_files';
+		}
+
+		$this->cp->set_variable('cp_page_title', lang('delete_selected_files'));
+
+		$this->load->view('content/file_delete_confirm', $data);
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Delete a list of files (and their thumbnails) from a particular directory
+	 * Expects two GET/POST variables:
+	 *  - file: an array of urlencoded file names to delete
+	 *  - file_dir: the ID of the file directory to delete from
+	 */
+	public function delete_files()
+	{
+		$files     = $this->input->get_post('file');
+		$file_dir  = $this->input->get_post('file_dir');
+		$file_path = $this->_upload_dirs[$file_dir]['server_path'];
+		
+		if ( ! $files OR ! $file_path OR $file_path === "")
+		{
+			$this->session->set_flashdata('message_failure', lang('choose_file'));
+			$this->functions->redirect(BASE.AMP.'C=content_files');
+		}
+
+		$delete_problem = FALSE;
+
+		foreach($files as $file_name)
+		{
+			$file_name = urldecode($file_name);
+			$file      = $file_path.$file_name;
+			$thumb     = $file_path.'_thumbs'.DIRECTORY_SEPARATOR.'thumb_'.$file_name;
+			
+			if ( ! @unlink($file))
+			{
+				$delete_problem = TRUE;
+			}
+			
+			// Delete thumb also
+			if (file_exists($thumb))
+			{
+				@unlink($thumb);
+			}
+		}
+
+		if ($delete_problem)
+		{
+			// something's up.
+			$this->session->set_flashdata('message_failure', lang('delete_fail'));
+		}
+		else
+		{
+			$this->session->set_flashdata('message_success', lang('delete_success'));
+		}
+
+		$this->functions->redirect(BASE.AMP.'C=content_files');
+	}
+	
 	// ------------------------------------------------------------------------
 	
 	/**
 	 * Download Files
 	 *
-	 *
+	 * @param array $files Array of file names to download
+	 * @param integer $file_dir ID of the directory to download from
 	 */
-	public function download_files()
+	private function _download_files($files, $file_dir)
+	{
+		$file_path = $this->_upload_dirs[$file_dir]['server_path'];
+		
+		$files_count = count($files);
+		
+		if ( ! $files_count)
+		{
+			return; // move along
+		}
+		else if ($files_count === 1)
+		{
+			// no point in zipping for a single file... let's just send the file
+			
+			$this->load->helper('download');
+			
+			$data = file_get_contents($file_path.urldecode($files[0]));
+			$name = urldecode($files[0]);
+			force_download($name, $data);
+		}
+		else
+		{
+			// its an array of files, zip 'em all
+			
+			$this->load->library('zip');
+			
+			foreach ($files as $file)
+			{
+				$this->zip->read_file($file_path.urldecode($file));
+			}
+			
+			$this->zip->download('downloaded_files.zip'); 
+		}
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Get the list of files and the directory ID for batch file actions
+	 *
+	 * @return array Associative array containing ['file_dir'] as the file directory 
+	 *    and ['files'] an array of the files to act upon.
+	 */
+	private function _get_file_settings()
 	{
 		// Do some basic permissions checking
-		if ( ! ($file_dir = $this->input->get('dir')))
+		if ( ! ($file_dir = $this->input->get_post('upload_dir')))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -195,74 +349,25 @@ class Content_files extends CI_Controller {
 		// Bail if they dont' have access to this upload location.
 		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
 		{
-			show_error(lang('unauthorized_access'));			
+			show_error(lang('unauthorized_access'));
 		}
 		
 		// No file, why are we here?
-		if ( ! ($file = $this->input->get('file')))
+		if ( ! ($files = $this->input->get_post('file')))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 		
-		// Base64 decode the filename from the URL.
-		$filename = base64_decode($file);
-		$file = $this->_upload_dirs[$file_dir]['server_path'] . $filename;
+		if ( ! is_array($files))
+		{
+			$files = array($files);
+		}
 		
-		$this->load->helper('download');
-		
-		$file_contents = file_get_contents($file);
-		
-		force_download($filename, $file_contents);
+		return array(
+			'file_dir' => $file_dir,
+			'files' => $files
+		);
 	}
-
-	// ------------------------------------------------------------------------	
-	
-	/**
-	 *
-	 *
-	 *
-	 */
-	public function delete_files()
-	{		
-		// Do some basic permissions checking
-		if ( ! ($file_dir = $this->input->get('dir')))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-		
-		// Bail if they dont' have access to this upload location.
-		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
-		{
-			show_error(lang('unauthorized_access'));			
-		}
-		
-		// No file, why are we here?
-		if ( ! ($file = $this->input->get('file')))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-		
-		if ( ! isset($_POST['delete_confirm']))
-		{
-			$this->_delete_files_confirm($file, $file_dir);
-		}
-				
-	}
-
-	// ------------------------------------------------------------------------	
-	
-	/**
-	 * Confirm File Deletion
-	 *
-	 * @param 	string		base64_encoded string of files to delete
-	 * @param 	string		directory to delete
-	 * @return 	void
-	 */
-	private function _delete_files_confirm($files, $file_dir)
-	{
-	
-	}
-
 
 	// ------------------------------------------------------------------------	
 	

@@ -29,49 +29,50 @@ if ( ! $EE_view_disable)
 					<a href="#" class="upload_file submit">Upload File</a>
 				<?=form_close()?>
 			<?php endif; ?>
-			<table class="mainTable" border="0" cellspacing="0" cellpadding="0">
-				<thead>
-					<tr>
-						<th><?=lang('name')?></th>
-						<th><?=lang('size')?></th>
-						<th><?=lang('kind')?></th>
-						<th><?=lang('date')?></th>
-						<th><?=lang('actions')?></th>
-						<th><?=form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')?></th>
-					</tr>
-				</thead>
-				<tbody>
-				<?php if ( ! isset($files) OR empty($files)):?>
-					<tr>
-						<td colspan="5"><?=lang('no_uploaded_files')?></td>
-					</tr>
-				<?php else: ?>
-					<?php foreach ($files as $file):?>
-					<tr>
-						<td><a class="less_important_link" href="#"><?=$file['name']?></a></td>
-						<td><?=number_format($file['size']/1000, 1);?> <?=lang('file_size_unit')?></td>
-						<td><?=$file['mime']?></td>
-						<td><?=$this->localize->set_human_time($file['date'], TRUE)?></td>
-						<td>
-							<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=download_files'.AMP.'dir='.$selected_dir.AMP.'file='.base64_encode($file['name'])?>" title="<?=lang('file_download')?>"><img src="<?=$cp_theme_url?>images/icon-download-file.png"></a>
-							&nbsp;&nbsp;<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=delete_files'.AMP.'dir='.$selected_dir.AMP.'file='.base64_encode($file['name'])?>" title="<?=lang('file_download')?>"><img src="<?=$cp_theme_url?>images/icon-delete.png"></a>
-
-							
-						</td>
-						<td class="file_select"><?=form_checkbox('file[]', $file['name'], FALSE, 'class="toggle"')?></td>
-					</tr>
-					<?php endforeach; ?>
-				<?php endif;?>
-				</tbody>
-			</table>
-			<p id="paginationCount"><?=$pagination_count_text;?></p>
-			<?=$pagination_links?>
-			<div class="tableSubmit">
-				<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
-				<?php if (count($action_options) > 0):?>
-				<?=form_dropdown('action', $action_options).NBS.NBS?>
-				<?php endif;?>
-			</div>
+			<?=form_open('C=content_files'.AMP.'M=multi_edit_form')?>
+				<table class="mainTable" border="0" cellspacing="0" cellpadding="0">
+					<thead>
+						<tr>
+							<th><?=lang('name')?></th>
+							<th><?=lang('size')?></th>
+							<th><?=lang('kind')?></th>
+							<th><?=lang('date')?></th>
+							<th><?=lang('actions')?></th>
+							<th><?=form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')?></th>
+						</tr>
+					</thead>
+					<tbody>
+					<?php if ( ! isset($files) OR empty($files)):?>
+						<tr>
+							<td colspan="5"><?=lang('no_uploaded_files')?></td>
+						</tr>
+					<?php else: ?>
+						<?php foreach ($files as $file):?>
+						<tr>
+							<td><a class="less_important_link" href="#"><?=$file['name']?></a></td>
+							<td><?=number_format($file['size']/1000, 1);?> <?=lang('file_size_unit')?></td>
+							<td><?=$file['mime']?></td>
+							<td><?=$this->localize->set_human_time($file['date'], TRUE)?></td>
+							<td>
+								<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=download_files'.AMP.'dir='.$selected_dir.AMP.'file='.base64_encode($file['name'])?>" title="<?=lang('file_download')?>"><img src="<?=$cp_theme_url?>images/icon-download-file.png"></a>
+								&nbsp;&nbsp;<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=delete_files'.AMP.'dir='.$selected_dir.AMP.'file='.base64_encode($file['name'])?>" title="<?=lang('file_download')?>"><img src="<?=$cp_theme_url?>images/icon-delete.png"></a>
+							</td>
+							<td class="file_select"><?=form_checkbox('file[]', urlencode($file['name']), FALSE, 'class="toggle"')?></td>
+						</tr>
+						<?php endforeach; ?>
+					<?php endif;?>
+					</tbody>
+				</table>
+				<p id="paginationCount"><?=$pagination_count_text;?></p>
+				<?=$pagination_links?>
+				<div class="tableSubmit">
+					<?=form_hidden('upload_dir', $selected_dir)?>
+					<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
+					<?php if (count($action_options) > 0):?>
+					<?=form_dropdown('action', $action_options).NBS.NBS?>
+					<?php endif;?>
+				</div>
+			<?=form_close()?>
 		</div>
 	</div>
 </div>
