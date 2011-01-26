@@ -829,30 +829,17 @@ $(document).ready(function() {
 			textarea.focus();
 		},
 		
+		onClose: function(event) {
+			var currentID = "#" + field_for_writemode_publish.replace(/field_/, ''),
+				i =  $('.write_mode_trigger').index(currentID);
+
+			$("#"+field_for_writemode_publish).val($("#write_mode_textarea").val());
+			triggers.eq(i).overlay().close();
+		},
+		
 		top: 'center',
 		closeOnClick: false
 	});
-	
-	// set up the "publish to field" buttons
-	$(".publish_to_field").click(pubToField);
-	$(".closeWindowButton").click(pubToField);
-	
-	// Let's check for escape as well
-	$(document).bind("keydown", function(e) {
-		if (e.keyCode == 27) { 
-			pubToField();
-		}
-	});	
-	
-	function pubToField() {
-		var currentID = "#" + field_for_writemode_publish.replace(/field_/, ''),
-			i =  $('.write_mode_trigger').index(currentID);
-
-		$("#"+field_for_writemode_publish).val($("#write_mode_textarea").val());
-		triggers.eq(i).overlay().close();
-		return false;
-	}
-	
 	
 	// @todo rewrite dependencies and remove
 	
