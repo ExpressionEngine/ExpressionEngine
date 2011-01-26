@@ -27,25 +27,27 @@ if ( ! $EE_view_disable)
 						<th><?=lang('size')?></th>
 						<th><?=lang('kind')?></th>
 						<th><?=lang('date')?></th>
-						<th><?=lang('actions')?></th>
+						<th>&nbsp;</th>
 					</tr>
 				</thead>
 				<tbody>
-					<?php if ( ! isset($files) OR empty($files)):?>
+				<?php if ( ! isset($files) OR empty($files)):?>
 					<tr>
 						<td colspan="5"><?=lang('no_uploaded_files')?></td>
 					</tr>
-					<?php else: ?>
+				<?php else: ?>
 					<?php foreach ($files as $file):?>
-					<tr>
+					<tr><?php var_dump($file)?>
 						<td><a class="less_important_link" href="#"><?=$file['name']?></a></td>
 						<td><?=number_format($file['size']/1000, 1);?> <?=lang('file_size_unit')?></td>
 						<td><?=$file['mime']?></td>
 						<td><?=$this->localize->set_human_time($file['date'], TRUE)?></td>
-						<td><?=lang('actions go here')?></td>
+						<td>
+							<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=download_files'.AMP.'dir='.$selected_dir.AMP.'file='.base64_encode($file['name'])?>" title="<?=lang('file_download')?>"><?=lang('file_download')?></a>
+						</td>
 					</tr>
 					<?php endforeach; ?>
-					<?php endif;?>
+				<?php endif;?>
 				</tbody>
 				<tfoot>
 					<tr>

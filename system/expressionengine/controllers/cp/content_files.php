@@ -45,6 +45,9 @@ class Content_files extends CI_Controller {
 		$this->load->library(array('filemanager'));
 		$this->load->helper(array('form'));
 		
+		// Get upload dirs
+		$this->_upload_dirs = $this->filemanager->fetch_upload_dirs();
+		
 		if (AJAX_REQUEST)
         {
             $this->output->enable_profiler(FALSE);
@@ -69,8 +72,6 @@ class Content_files extends CI_Controller {
 		// Page Title
 		$this->cp->set_variable('cp_page_title', lang('content_files'));
 		
-		// Get upload dirs
-		$this->_upload_dirs = $this->filemanager->fetch_upload_dirs();
 		$per_page = ($per_page = $this->input->get('per_page')) ? $per_page : 40;
 		$offset = ($offset = $this->input->get('offset')) ? $offset : 0;
 		$upload_dirs_options = array();
@@ -102,12 +103,21 @@ class Content_files extends CI_Controller {
 				continue;
 			}
 			
+			$file_location = $this->functions->remove_double_slashes(
+					$this->_upload_dirs[$selected_dir]['url'].'/'.$file['name']
+				);
+			
+			$file_path = $this->functions->remove_double_slashes(
+					$this->_upload_dirs[$selected_dir]['server_path'].'/'.$file['name']
+				);
+			
 			$file_list[] = array(
 				'name'		=> $file['name'],
-				'link'		=> '',
+				'link'		=> $file_location,
 				'mime'		=> $file['mime'],
 				'size'		=> $file['size'],
 				'date'		=> $file['date'],
+				'path'		=> $file_path,
 			);
 			
 			$dir_size = $dir_size + $file['size'];
@@ -149,10 +159,50 @@ class Content_files extends CI_Controller {
 	}
 
 	// ------------------------------------------------------------------------
-		
-	public function delete_files() {}
 	
-	public function download_files() {}
+	/**
+	 * Download Files
+	 *
+	 *
+	 */
+	public function download_files()
+	{
+		// var_dump($_GET, $_POST); exit;
+		
+		
+		
+		// Do some basic permissions checking
+		if ( ! ($file_dir = $this->input->get('dir')))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		// Bail if they dont' have access to this upload location.
+		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
+		{
+			show_error(lang('unauthorized_access'));			
+		}
+		
+		// No file, why are we here?
+		if ( ! ($file = $this->input->get('file')))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		// Base64 decode the filename from the URL.
+		$filename = base64_decode($file);
+		$file = $this->_upload_dirs[$file_dir]['server_path'] . $filename;
+		
+		$this->load->helper('download');
+		
+		$file_contents = file_get_contents($file);
+		
+		force_download($filename, $file_contents);
+	}
+
+	// ------------------------------------------------------------------------	
+	
+	public function delete_files() {}
 	
 	public function edit_image() {}
 
