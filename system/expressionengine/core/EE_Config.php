@@ -815,6 +815,11 @@ class EE_Config Extends CI_Config {
 		{
 			foreach ($new_values as $key => $val)
 			{
+				if (is_array($val))
+				{
+					continue;
+				}
+				
 				if (is_bool($val))
 				{
 					$val = ($val == TRUE) ? 'TRUE' : 'FALSE';

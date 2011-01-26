@@ -31,7 +31,7 @@ if ($EE_view_disable !== TRUE)
 	$this->table->add_row(
 			array(
 				lang('title', 'title['.$entry->entry_id.']'),
-				form_input('title['.$entry->entry_id.']', $entry->title, 'maxlength="100" onkeyup="liveUrlTitle();" id="title['.$entry->entry_id.']"')
+				form_input('title['.$entry->entry_id.']', $entry->title, 'maxlength="100"  id="title['.$entry->entry_id.']"')
 			)
 		);
 

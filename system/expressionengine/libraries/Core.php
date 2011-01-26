@@ -517,10 +517,10 @@ class EE_Core {
 	/**
 	 * Generate Page Request
 	 *
-	 * @access	private
+	 * @access	public 
 	 * @return	void
 	 */	
-	function _generate_action($can_view_system = FALSE)
+	final public function generate_action($can_view_system = FALSE)
 	{
 		require APPPATH.'libraries/Actions'.EXT;    
 		$ACT = new EE_Actions($can_view_system);
@@ -531,108 +531,104 @@ class EE_Core {
 	/**
 	 * Generate Page Request
 	 *
-	 * @access	private
+	 * @access	public
 	 * @return	void
 	 */	
-	function _generate_page()
+	final public function generate_page()
 	{
+		// Legacy, unsupported, but still more or less functional
+		// Templates and Template Groups can be hard-coded
+		// in $assign_to_config in the bootstrap file
+		$template = '';
+		$template_group = '';
+		
+		if ($this->EE->uri->uri_string == '' OR $this->EE->uri->uri_string == '/')
+		{
+			$template = (string)$this->EE->config->item('template');
+			$template_group = (string) $this->EE->config->item('template_group');
+		}
+		
+		
 		// If the forum module is installed and the URI contains the "triggering" word
 		// we will override the template parsing class and call the forum class directly.
 		// This permits the forum to be more light-weight as the template engine is 
-		// not needed under normal circumstances. 
+		// not needed under normal circumstances.
+		$forum_trigger = ($this->EE->config->item('forum_is_installed') == "y") ? $this->EE->config->item('forum_trigger') : '';
+		$profile_trigger = $this->EE->config->item('profile_trigger');
 		
-		$template_group = '';
-		$template = '';
 		
-		if ($this->EE->config->item('forum_is_installed') == "y" AND  $this->EE->config->item('forum_trigger') != '' AND in_array($this->EE->uri->segment(1), preg_split('/\|/', $this->EE->config->item('forum_trigger'), -1, PREG_SPLIT_NO_EMPTY)) && ! IS_FREELANCER)
+		if ( ! IS_FREELANCER && $forum_trigger && in_array($this->EE->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY)))
 		{
-			require PATH_MOD.'forum/mod.forum'.EXT;
+			require PATH_MOD.'forum/mod.forum.php';
 			$FRM = new Forum();
 		}			
-		elseif ($this->EE->config->item('profile_trigger') != "" AND $this->EE->config->item('profile_trigger') == $this->EE->uri->segment(1) && ! IS_FREELANCER)
+		elseif ( ! IS_FREELANCER && $profile_trigger && $profile_trigger == $this->EE->uri->segment(1))
 		{
 			// We do the same thing with the member profile area.  
 		
-			if ( ! file_exists(PATH_MOD.'member/mod.member'.EXT))
+			if ( ! file_exists(PATH_MOD.'member/mod.member.php'))
 			{
-				exit;
+				exit();
 			}
 			else
 			{
-				require PATH_MOD.'member/mod.member'.EXT;
+				require PATH_MOD.'member/mod.member.php';
 				
-				$MBR = new Member();  			
-				$MBR->_set_properties(
-										array(
-												'trigger' => $this->EE->config->item('profile_trigger')
-											)
-									);	
-	
-				$this->EE->output->set_output($MBR->manager());
+				$member = new Member();
+				$member->_set_properties(array('trigger' => $profile_trigger));
+				
+				$this->EE->output->set_output($member->manager());
 			}
 		}
-		else  // Instantiate the template parsing class and parse the requested template/page
-		{       		
-			if ($this->EE->config->item('template_group') == '' && $this->EE->config->item('template') == '')
+		else
+		{
+			// Instantiate the template parsing class and parse the requested template/page
+			if ($template_group == '' && $template == '')
 			{
 				$pages = $this->EE->config->item('site_pages');
 
 				$match_uri = ($this->EE->uri->uri_string == '') ? '/' : '/'.trim($this->EE->uri->uri_string, '/');
-				
-				if ($pages !== FALSE && isset($pages[$this->EE->config->item('site_id')]['uris']) && (($entry_id = array_search($match_uri, $pages[$this->EE->config->item('site_id')]['uris'])) !== FALSE OR ($entry_id = array_search($match_uri.'/', $pages[$this->EE->config->item('site_id')]['uris'])) !== FALSE))
-				{
-					$this->EE->db->select('t.template_name, tg.group_name');
-					$this->EE->db->from(array('templates t', 'template_groups tg'));
-					$this->EE->db->where('t.group_id', 'tg.group_id', FALSE);
-					$this->EE->db->where('t.template_id',
-								$pages[$this->EE->config->item('site_id')]['templates'][$entry_id]);
-					$query = $this->EE->db->get();
 
-										 
-					if ($query->num_rows() > 0)
+				if ($pages !== FALSE && 
+					isset($pages[$this->EE->config->item('site_id')]['uris']) && 
+					(($entry_id = array_search($match_uri, $pages[$this->EE->config->item('site_id')]['uris'])) !== FALSE OR 
+					($entry_id = array_search($match_uri.'/', $pages[$this->EE->config->item('site_id')]['uris'])) !== FALSE))
+				{
+
+					$qry = $this->EE->db->select('t.template_name, tg.group_name')
+										->from(array('templates t', 'template_groups tg'))
+										->where('t.group_id', 'tg.group_id', FALSE)
+										->where('t.template_id',
+											$pages[$this->EE->config->item('site_id')]['templates'][$entry_id])
+										->get();
+
+
+					if ($qry->num_rows() > 0)
 					{
 						/* 
-							We do it this way so that we are not messing with any of the segment variables,
-							which should reflect the actual URL and not our Pages redirect. We also
-							set a new QSTR variable so that we are not interfering with other module's 
-							besides the Channel module (which will use the new Pages_QSTR when available).
+							We do it this way so that we are not messing with 
+							any of the segment variables, which should reflect 
+							the actual URL and not our Pages redirect. We also
+							set a new QSTR variable so that we are not 
+							interfering with other module's besides the Channel 
+							module (which will use the new Pages_QSTR when available).
 						*/
-						
-						$template_group = $query->row('group_name') ;
-						$template = $query->row('template_name') ;
+						$template_group = $qry->row('group_name');
+						$template = $qry->row('template_name');
 						$this->EE->uri->page_query_string = $entry_id;
 					}
 				}
-
 			}
-			
-			require APPPATH.'libraries/Template'.EXT;
-			
+
+			require APPPATH.'libraries/Template.php';
+
 			$this->EE->TMPL = new EE_Template();
-						
-			// Legacy, unsupported, but still functional
-			// Templates and Template Groups can be hard-coded
-			// within either the main triggering file or via an include.
-			if ($template_group == '')
-			{
-				$template_group = (string) $this->EE->config->item('template_group');	
-			}
 
-			if ($template == '')
-			{
-				$template = (string)$this->EE->config->item('template');
-			}
-
-			// if there's a URI, disable let the override
-			if (( ! $template_group && ! $template) && $this->EE->uri->uri_string != '' && $this->EE->uri->uri_string != '/')
-			{
-				$template_group = '';
-				$template = '';
-			}
-			
 			// Parse the template
 			$this->EE->TMPL->run_template_engine($template_group, $template);
+			
 		}
+		
 	}
 	
 	// ------------------------------------------------------------------------
@@ -650,9 +646,7 @@ class EE_Core {
 		$this->EE->db->cache_off();
 	
 		if (class_exists('Stats'))
-		{ 
-			
-			
+		{
 			if ($this->EE->stats->statdata('last_cache_clear') 
 				&& $this->EE->stats->statdata('last_cache_clear') > 1)
 			{
