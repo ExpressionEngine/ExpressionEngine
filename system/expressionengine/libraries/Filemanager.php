@@ -995,8 +995,47 @@ class Filemanager {
 		
 		return ($delete_problem) ? FALSE : TRUE;		
 	}
+
+	// --------------------------------------------------------------------	
 	
-	
+	/**
+	 * Download Files.
+	 *
+	 * This is a helper wrapper around the zip lib and download helper
+	 * 
+	 * @param 	mixed   string or array of urlencoded file names
+	 * @param 	string	file directory the files are located in.
+	 * @return 	mixed 	nuttin' or boolean false if everything goes wrong.
+	 */
+	public function download_files($files, $file_path)
+	{
+		if (count($files) === 1)
+		{
+			// no point in zipping for a single file... let's just send the file
+			
+			$this->EE->load->helper('download');
+			
+			$data = file_get_contents($file_path.urldecode($files[0]));
+			$name = urldecode($files[0]);
+			force_download($name, $data);
+		}
+		else
+		{
+			// its an array of files, zip 'em all
+			$this->EE->load->library('zip');
+			
+			foreach ($files as $file)
+			{
+				$this->EE->zip->read_file($file_path.urldecode($file));
+			}
+			
+			$this->EE->zip->download('downloaded_files.zip'); 
+		}
+		
+		return FALSE;
+	}
+
+	// --------------------------------------------------------------------		
 }
 
 // END Filemanager class

@@ -363,36 +363,19 @@ class Content_files extends CI_Controller {
 	 */
 	private function _download_files($files, $file_dir)
 	{
-		$file_path = $this->_upload_dirs[$file_dir]['server_path'];
-		
 		$files_count = count($files);
 		
-		if ( ! $files_count)
+		if ( ! $files_count OR 
+			 ! isset($this->_upload_dirs[$file_dir]['server_path']))
 		{
-			return; // move along
+			show_error(lang('unauthorized_access'));
 		}
-		else if ($files_count === 1)
+		
+		$file_path = $this->_upload_dirs[$file_dir]['server_path'];
+		
+		if ( ! $this->filemanager->download_files($files, $file_path))
 		{
-			// no point in zipping for a single file... let's just send the file
-			
-			$this->load->helper('download');
-			
-			$data = file_get_contents($file_path.urldecode($files[0]));
-			$name = urldecode($files[0]);
-			force_download($name, $data);
-		}
-		else
-		{
-			// its an array of files, zip 'em all
-			
-			$this->load->library('zip');
-			
-			foreach ($files as $file)
-			{
-				$this->zip->read_file($file_path.urldecode($file));
-			}
-			
-			$this->zip->download('downloaded_files.zip'); 
+			show_error(lang('unauthorized_access'));
 		}
 	}
 	
