@@ -25,9 +25,12 @@
 
 class Filemanager {
 
-	var $EE;
 	var $config;
 	var $theme_url;
+	
+	public $upload_errors = FALSE;
+	public $upload_data = NULL;
+	private $EE;
 
 	/**
 	 * Constructor
@@ -863,7 +866,95 @@ class Filemanager {
 		return $dirs;
 	}
 	
+	// --------------------------------------------------------------------	
 	
+	/**
+	 * Save a file
+	 *
+	 * The purpose of this method is to make the upload process generally 
+	 * transparent to us and third party developers.  Pass in information on
+	 * the upload directory as per the array below, and you're off to the 
+	 * races.  
+	 *
+	 */
+	public function save($upload_dir_info)
+	{
+		/*
+		array
+		  'id' => string '1' (length=1)
+		  'site_id' => string '1' (length=1)
+		  'name' => string 'Main Upload Directory' (length=21)
+		  'server_path' => string '/Volumes/Development/ee/ee2/images/uploads/' (length=43)
+		  'url' => string 'http://10.0.0.5/ee/ee2/images/uploads/' (length=38)
+		  'allowed_types' => string 'all' (length=3)
+		  'max_size' => string '' (length=0)
+		  'max_height' => string '' (length=0)
+		  'max_width' => string '' (length=0)
+		  'properties' => string 'style="border: 0;" alt="image"' (length=30)
+		  'pre_format' => string '' (length=0)
+		  'post_format' => string '' (length=0)
+		  'file_properties' => string '' (length=0)
+		  'file_pre_format' => string '' (length=0)
+		  'file_post_format' => string '' (length=0)
+		*/
+		
+		// Allowed filetypes for this directory
+		switch($upload_dir_info['allowed_types'])
+		{
+			case 'all' : $allowed_types = '*';
+				break;
+			case 'img' : $allowed_types = 'jpg|png|gif';
+				break;
+			default :
+				$allowed_types = $upload_dir_info['allowed_types'];
+		}
+		
+		// Convert the file size to kilobytes
+		$max_file_size	= ($upload_dir_info['max_size'] == '') ? 0 : round($upload_dir_info['max_size']/1024, 2);
+		$max_width		= ($upload_dir_info['max_width'] == '') ? 0 : $upload_dir_info['max_width'];
+		$max_height		= ($upload_dir_info['max_height'] == '') ? 0 : $upload_dir_info['max_height'];
+		
+		if ($this->EE->config->item('xss_clean_uploads') == 'n')
+		{
+			$xss_clean_upload = FALSE;
+		}
+		else
+		{
+			$xss_clean_upload = ($this->EE->session->userdata('group_id') === 1) ? FALSE : TRUE;
+		}
+		
+		
+		$config = array(
+			'upload_path'		=> $upload_dir_info['server_path'],
+			'allowed_types'		=> $allowed_types,
+			'max_height'		=> $max_height,
+			'max_width'			=> $max_width,
+			'max_size'			=> $max_file_size,
+			'xss_clean'			=> $xss_clean_upload,
+		);
+		
+		$this->EE->load->library('upload', $config);
+		
+		if ( ! $this->EE->upload->do_upload())
+		{
+			$this->upload_errors = $this->EE->upload->display_errors();
+			
+			return $this;
+		}
+		
+		$this->upload_data = $this->EE->upload->data();		
+		
+		/* 	It makes me kind of cry a bit to do this, but some hosts have
+			stupid permissions, so unless you chmod the file like so, the
+			user won't be able to delete it with their ftp client.  :( */
+		
+		@chmod($this->upload_data['full_path'], DIR_WRITE_MODE);
+		
+		
+		return $this;
+	}
+	
+	// --------------------------------------------------------------------			
 }
 
 // END Filemanager class

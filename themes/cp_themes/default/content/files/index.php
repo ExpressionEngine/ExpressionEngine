@@ -26,7 +26,7 @@ if ( ! $EE_view_disable)
 					<?=form_label(lang('upload_file'), 'upload_file', array('class' => 'visualEscapism'))?>
 					<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>15,'class'=>'field'))?>
 					<p id="progress"><img src="<?=$cp_theme_url?>images/indicator.gif" alt="<?=lang('loading')?>..." /><br /><?=lang('loading')?>...</p>
-					<a href="#" class="upload_file submit"><?=lang('upload_file')?></a>
+					<input type="submit" class="submit" value="<?=lang('upload_file')?>">
 				<?=form_close()?>
 			<?php endif; ?>
 			<?=form_open('C=content_files'.AMP.'M=multi_edit_form')?>

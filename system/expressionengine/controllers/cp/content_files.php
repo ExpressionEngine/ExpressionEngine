@@ -375,7 +375,89 @@ class Content_files extends CI_Controller {
 	 */
 	public function upload_file()
 	{
-		var_dump($_POST, $_FILES);
+		if (empty($_POST))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		// Do some basic permissions checking
+		if ( ! ($file_dir = $this->input->get_post('upload_dir')))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		// Bail if they dont' have access to this upload location.
+		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		/*
+		
+		// All the directory information we need for the upload
+		// destination.
+		
+		array
+		  'id' => string '1' (length=1)
+		  'site_id' => string '1' (length=1)
+		  'name' => string 'Main Upload Directory' (length=21)
+		  'server_path' => string '/Volumes/Development/ee/ee2/images/uploads/' (length=43)
+		  'url' => string 'http://10.0.0.5/ee/ee2/images/uploads/' (length=38)
+		  'allowed_types' => string 'all' (length=3)
+		  'max_size' => string '' (length=0)
+		  'max_height' => string '' (length=0)
+		  'max_width' => string '' (length=0)
+		  'properties' => string 'style="border: 0;" alt="image"' (length=30)
+		  'pre_format' => string '' (length=0)
+		  'post_format' => string '' (length=0)
+		  'file_properties' => string '' (length=0)
+		  'file_pre_format' => string '' (length=0)
+		  'file_post_format' => string '' (length=0)
+		*/
+		
+		$fm = $this->filemanager->save($this->_upload_dirs[$file_dir]);
+		
+		if ($fm->upload_errors)
+		{
+			// Upload Failed
+			if ($this->input->is_ajax_request())
+			{
+				echo '<script type="text/javascript">parent.EE_uploads.'.$this->input->get('frame_id').' = '.$this->javascript->generate_json(array('error' => $this->upload->display_errors())).';</script>';
+				exit;
+			}
+			
+			$this->session->set_flashdata('message_failure', $fm->upload_errors);
+			$this->functions->redirect(BASE.AMP.'C=content_files');
+		}
+		
+		// Make the thumbnail
+		
+		$thumb = $fm->create_thumb(
+			array('server_path' => $fm->upload_data['file_path']), 
+			array('name' => $fm->upload_data['file_name'])
+		);
+		
+		if ( ! $thumb)
+		{
+			
+		}
+		
+		if ($this->input->is_ajax_request())
+		{
+			$response = array(
+				'success'		=> lang('upload_success'),
+				'filename'		=> $fm->upload_data['file_name'],
+				'filesize'		=> $fm->upload_data['file_size'],
+				'filetype'		=> $fm->upload_data['file_type'],
+				'date'			=> date('M d Y - H:ia')
+			);
+
+			exit('<script type="text/javascript">parent.EE_uploads.'.$this->input->get('frame_id').' = '.$this->javascript->generate_json($response).';</script>');
+		}
+		
+		$this->session->set_flashdata('message_success', lang('upload_success'));
+		$this->functions->redirect(BASE.AMP.'C=content_files');
+				
 	}
 	
 	
