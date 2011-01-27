@@ -54,8 +54,8 @@ if ( ! $EE_view_disable)
 							<td><?=$file['mime']?></td>
 							<td><?=$this->localize->set_human_time($file['date'], TRUE)?></td>
 							<td>
-								<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=download_files'.AMP.'dir='.$selected_dir.AMP.'file='.base64_encode($file['name'])?>" title="<?=lang('file_download')?>"><img src="<?=$cp_theme_url?>images/icon-download-file.png"></a>
-								&nbsp;&nbsp;<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=delete_files'.AMP.'dir='.$selected_dir.AMP.'file='.base64_encode($file['name'])?>" title="<?=lang('file_download')?>"><img src="<?=$cp_theme_url?>images/icon-delete.png"></a>
+								<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$selected_dir.AMP.'file='.$file['name'].AMP?>action=download" title="<?=lang('file_download')?>"><img src="<?=$cp_theme_url?>images/icon-download-file.png"></a>
+								&nbsp;&nbsp;<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$selected_dir.AMP.'file='.$file['name'].AMP?>action=delete" title="<?=lang('delete_selected_files')?>"><img src="<?=$cp_theme_url?>images/icon-delete.png"></a>
 							</td>
 							<td class="file_select"><?=form_checkbox('file[]', urlencode($file['name']), FALSE, 'class="toggle"')?></td>
 						</tr>
