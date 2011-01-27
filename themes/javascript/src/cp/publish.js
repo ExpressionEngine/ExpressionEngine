@@ -583,8 +583,9 @@ function disable_fields(state) {
 	var fields = $(".main_tab input, .main_tab textarea, .main_tab select, #submit_button"),
 		submit = $("#submit_button"),
 		admin_link = $("#holder").find('a');
-
+		
 	if (state) {
+		disabled_fields = fields.filter(':disabled');
 		fields.attr("disabled", true);
 		submit.addClass("disabled_field");
 		admin_link.addClass("admin_mode");
@@ -597,6 +598,7 @@ function disable_fields(state) {
 		submit.removeClass("disabled_field");
 		admin_link.removeClass("admin_mode");
 		$(".cover").remove();
+		disabled_fields.attr("disabled", true);
 	}
 }
 
