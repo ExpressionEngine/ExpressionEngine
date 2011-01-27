@@ -262,7 +262,7 @@ class Metaweblog_api {
 		{
 			$entry_date = $this->EE->localize->now;
 		}
-
+		
 		/** ---------------------------------
 		/**  Build our query string
 		/** --------------------------------*/
@@ -370,9 +370,15 @@ class Metaweblog_api {
 		$entry_data['site_id']	= $this->site_id;
 		$entry_data['versioning_enabled'] = 'n';
 
-		
 		$data = array_merge($metadata, $entry_data);
-		$data['categories'] = $this->categories;
+		
+		if (count($this->categories) > 0)
+		{
+			foreach($this->categories as $cat_id => $cat_name)
+			{
+				$data['category'][] = $cat_id;
+			}
+		}
 
 		$this->EE->session->userdata = array_merge(
 			$this->EE->session->userdata,
@@ -385,7 +391,10 @@ class Metaweblog_api {
 
 		$this->EE->load->library('api');
 		$this->EE->api->instantiate('channel_entries');
-		
+		$this->EE->api->instantiate('channel_fields');
+
+		$this->EE->api_channel_fields->setup_entry_settings($this->channel_id, $data);
+				
 		if ( ! $this->EE->api_channel_entries->submit_new_entry($this->channel_id, $data))
 		{
 			$errors = $this->EE->api_channel_entries->get_errors();
@@ -397,10 +406,8 @@ class Metaweblog_api {
 			return $this->EE->xmlrpc->send_response($response);
 		}
 		
-		//Return Entry ID of new entry
-		$response = array(
-			'entry_id' => array($this->EE->api_channel_entries->entry_id, 'string')
-		);
+		//Return Entry ID of new entry - defaults to string, so nothing fancy
+		$response = $this->EE->api_channel_entries->entry_id;
 
 		return $this->EE->xmlrpc->send_response($response);
 	}
