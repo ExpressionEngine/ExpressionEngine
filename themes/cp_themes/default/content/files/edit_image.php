@@ -57,7 +57,6 @@ if ( ! $EE_view_disable)
 
 					<fieldset id="resize_fieldset" class="" style="width:30%; margin-left:34%">
 						<legend><?=lang('resize')?></legend>
-						
 						<div style="width:48%; float:left;">
 							<?=lang('resize_width', 'resize_width')?>
 							<?=form_input()?>
@@ -68,15 +67,11 @@ if ( ! $EE_view_disable)
 							<?=form_input()?>
 						</div>						
 					</fieldset>
-					
-					<p class="submit_button"><?=form_submit('edit_image', lang('edit_image'), 'class="submit" id="edit_file_submit"')?> <?=form_submit('edit_done', lang('done'), 'class="submit" id="edit_done"')?></p>
+					<p class="submit_button"><?=form_submit('save_image', lang('save_image'), 'class="submit" id="edit_file_submit"')?> <?=form_submit('edit_done', lang('done'), 'class="submit" id="edit_done"')?></p>
 					
 				<?=form_close()?>
 			</div>
 			<img src="<?=$file_url?>" <?=$file_info['size_str']?>>
-
-
-
 		</div>
 	</div>
 </div>

@@ -431,6 +431,13 @@ class Content_files extends CI_Controller {
 	 */
 	public function edit_image()
 	{
+		// The form posts to this method, so if POST data is present
+		// send to _do_image_processing to, well, do the image processing
+		if ( ! empty($_POST))
+		{
+			return $this->_do_image_processing();
+		}
+		
 		// Page Title
 		$this->cp->set_variable('cp_page_title', lang('edit_image'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
@@ -463,8 +470,6 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		// var_dump($this->_upload_dirs[$file_dir], $file_path);
-
 		$data = array(
 				'file_url'		=> $file_url,
 				'file_path'		=> $file_path,
@@ -476,5 +481,18 @@ class Content_files extends CI_Controller {
 	}
 
 	// ------------------------------------------------------------------------		
+	
+	/**
+	 * This is the actual method to handle image processing
+	 *
+	 */
+	private function _do_image_processing()
+	{
+		
+		
+		
+	}
+	
+	
 	
 }
