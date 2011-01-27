@@ -58,12 +58,6 @@ class Content_files extends CI_Controller {
 	
 	/**
 	 * Index Page
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
 	 */
 	public function index()
 	{
@@ -179,9 +173,105 @@ class Content_files extends CI_Controller {
 	// ------------------------------------------------------------------------	
 
 	/**
+	 * Upload File
+	 */
+	public function upload_file()
+	{
+		if (empty($_POST))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		// Do some basic permissions checking
+		if ( ! ($file_dir = $this->input->get_post('upload_dir')))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		// Bail if they dont' have access to this upload location.
+		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		/*
+		
+		// All the directory information we need for the upload
+		// destination.
+		
+		array
+		  'id' => string '1' (length=1)
+		  'site_id' => string '1' (length=1)
+		  'name' => string 'Main Upload Directory' (length=21)
+		  'server_path' => string '/Volumes/Development/ee/ee2/images/uploads/' (length=43)
+		  'url' => string 'http://10.0.0.5/ee/ee2/images/uploads/' (length=38)
+		  'allowed_types' => string 'all' (length=3)
+		  'max_size' => string '' (length=0)
+		  'max_height' => string '' (length=0)
+		  'max_width' => string '' (length=0)
+		  'properties' => string 'style="border: 0;" alt="image"' (length=30)
+		  'pre_format' => string '' (length=0)
+		  'post_format' => string '' (length=0)
+		  'file_properties' => string '' (length=0)
+		  'file_pre_format' => string '' (length=0)
+		  'file_post_format' => string '' (length=0)
+		*/
+		
+		$fm = $this->filemanager->save($this->_upload_dirs[$file_dir]);
+		
+		if ($fm->upload_errors)
+		{
+			// Upload Failed
+			if ($this->input->is_ajax_request())
+			{
+				$errors = $this->javascript->generate_json(
+							array('error' => $this->upload->display_errors()));
+				
+				echo sprintf("<script type=\"text/javascript\">
+								parent.EE_uploads.%s = %s;</script>",
+								$this->input->get('frame_id'),
+								$errors);
+				exit();
+			}
+			
+			$this->session->set_flashdata('message_failure', $fm->upload_errors);
+			$this->functions->redirect(BASE.AMP.'C=content_files');
+		}
+		
+		// Make the thumbnail
+		
+		$thumb = $fm->create_thumb(
+			array('server_path' => $fm->upload_data['file_path']), 
+			array('name' => $fm->upload_data['file_name'])
+		);
+		
+		if ($this->input->is_ajax_request())
+		{
+			$resp = $this->javascript->generate_json(array(
+				'success'		=> lang('upload_success'),
+				'filename'		=> $fm->upload_data['file_name'],
+				'filesize'		=> $fm->upload_data['file_size'],
+				'filetype'		=> $fm->upload_data['file_type'],
+				'date'			=> date('M d Y - H:ia')
+			));
+
+			echo sprintf('<script type="text/javascript">
+							parent.EE_uploads.%s = %s;</script>', 
+						$this->input->get('frame_id'), $resp);
+			exit();
+		}
+		
+		$this->session->set_flashdata('message_success', lang('upload_success'));
+		$this->functions->redirect(BASE.AMP.'C=content_files');			
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
 	 * Controls the batch actions
 	 *
-	 * When submitted to, expects a GET/POST variable named action containing either download or delete
+	 * When submitted to, expects a GET/POST variable named action containing 
+	 * either download or delete
 	 */
 	public function multi_edit_form()
 	{
@@ -239,44 +329,27 @@ class Content_files extends CI_Controller {
 	{
 		$files     = $this->input->get_post('file');
 		$file_dir  = $this->input->get_post('file_dir');
-		$file_path = $this->_upload_dirs[$file_dir]['server_path'];
 		
+		// Bail if they dont' have access to this upload location.
+		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$file_path = $this->_upload_dirs[$file_dir]['server_path'];
+				
 		if ( ! $files OR ! $file_path OR $file_path === "")
 		{
 			$this->session->set_flashdata('message_failure', lang('choose_file'));
 			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
 
-		$delete_problem = FALSE;
-
-		foreach($files as $file_name)
-		{
-			$file_name = urldecode($file_name);
-			$file      = $file_path.$file_name;
-			$thumb     = $file_path.'_thumbs'.DIRECTORY_SEPARATOR.'thumb_'.$file_name;
-			
-			if ( ! @unlink($file))
-			{
-				$delete_problem = TRUE;
-			}
-			
-			// Delete thumb also
-			if (file_exists($thumb))
-			{
-				@unlink($thumb);
-			}
-		}
-
-		if ($delete_problem)
-		{
-			// something's up.
-			$this->session->set_flashdata('message_failure', lang('delete_fail'));
-		}
-		else
-		{
-			$this->session->set_flashdata('message_success', lang('delete_success'));
-		}
-
+		$delete = $this->filemanager->delete($files, $file_path, TRUE);		
+		
+		$message_type = ($delete) ? 'message_success' : 'message_failure';
+		$message = ($delete) ? lang('delete_success') : lang('message_failure');
+		
+		$this->session->set_flashdata($message_type, $message);
 		$this->functions->redirect(BASE.AMP.'C=content_files');
 	}
 	
@@ -369,96 +442,6 @@ class Content_files extends CI_Controller {
 	public function display_image() {}
 
 	// ------------------------------------------------------------------------	
-
-	/**
-	 * Upload File
-	 */
-	public function upload_file()
-	{
-		if (empty($_POST))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-		
-		// Do some basic permissions checking
-		if ( ! ($file_dir = $this->input->get_post('upload_dir')))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-		
-		// Bail if they dont' have access to this upload location.
-		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-		
-		/*
-		
-		// All the directory information we need for the upload
-		// destination.
-		
-		array
-		  'id' => string '1' (length=1)
-		  'site_id' => string '1' (length=1)
-		  'name' => string 'Main Upload Directory' (length=21)
-		  'server_path' => string '/Volumes/Development/ee/ee2/images/uploads/' (length=43)
-		  'url' => string 'http://10.0.0.5/ee/ee2/images/uploads/' (length=38)
-		  'allowed_types' => string 'all' (length=3)
-		  'max_size' => string '' (length=0)
-		  'max_height' => string '' (length=0)
-		  'max_width' => string '' (length=0)
-		  'properties' => string 'style="border: 0;" alt="image"' (length=30)
-		  'pre_format' => string '' (length=0)
-		  'post_format' => string '' (length=0)
-		  'file_properties' => string '' (length=0)
-		  'file_pre_format' => string '' (length=0)
-		  'file_post_format' => string '' (length=0)
-		*/
-		
-		$fm = $this->filemanager->save($this->_upload_dirs[$file_dir]);
-		
-		if ($fm->upload_errors)
-		{
-			// Upload Failed
-			if ($this->input->is_ajax_request())
-			{
-				echo '<script type="text/javascript">parent.EE_uploads.'.$this->input->get('frame_id').' = '.$this->javascript->generate_json(array('error' => $this->upload->display_errors())).';</script>';
-				exit;
-			}
-			
-			$this->session->set_flashdata('message_failure', $fm->upload_errors);
-			$this->functions->redirect(BASE.AMP.'C=content_files');
-		}
-		
-		// Make the thumbnail
-		
-		$thumb = $fm->create_thumb(
-			array('server_path' => $fm->upload_data['file_path']), 
-			array('name' => $fm->upload_data['file_name'])
-		);
-		
-		if ( ! $thumb)
-		{
-			
-		}
-		
-		if ($this->input->is_ajax_request())
-		{
-			$response = array(
-				'success'		=> lang('upload_success'),
-				'filename'		=> $fm->upload_data['file_name'],
-				'filesize'		=> $fm->upload_data['file_size'],
-				'filetype'		=> $fm->upload_data['file_type'],
-				'date'			=> date('M d Y - H:ia')
-			);
-
-			exit('<script type="text/javascript">parent.EE_uploads.'.$this->input->get('frame_id').' = '.$this->javascript->generate_json($response).';</script>');
-		}
-		
-		$this->session->set_flashdata('message_success', lang('upload_success'));
-		$this->functions->redirect(BASE.AMP.'C=content_files');
-				
-	}
 	
 	
 }

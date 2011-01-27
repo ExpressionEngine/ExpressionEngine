@@ -954,7 +954,49 @@ class Filemanager {
 		return $this;
 	}
 	
-	// --------------------------------------------------------------------			
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Delete files.
+	 *
+	 */
+	public function delete($files = array(), $file_path, $find_thumbs = True)
+	{
+		if (empty($files))
+		{
+			return FALSE;
+		}
+		
+		$delete_problem = FALSE;
+		
+		foreach($files as $file_name)
+		{
+			$file_name = urldecode($file_name);
+			$file_name = $this->EE->security->sanitize_filename($file_name);
+			
+			$file      = $file_path.$file_name;
+			
+			if ( ! @unlink($file))
+			{
+				$delete_problem = TRUE;
+			}
+			
+			if ($find_thumbs)
+			{
+				$thumb = $file_path.'_thumbs'.DIRECTORY_SEPARATOR.'thumb_'.$file_name;
+				
+				// Delete thumb also
+				if (file_exists($thumb))
+				{
+					@unlink($thumb);
+				}				
+			}			
+		}
+		
+		return ($delete_problem) ? FALSE : TRUE;		
+	}
+	
+	
 }
 
 // END Filemanager class
