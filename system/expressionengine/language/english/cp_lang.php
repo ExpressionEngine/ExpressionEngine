@@ -22,6 +22,7 @@ $lang = array(
 'nav_design'	   				=> 'Design',
 	'nav_create_group'				=> 'Create Group',
 	'nav_create_template'			=> 'Create Template',
+	'nav_edit_template_group' 		=> 'Edit Template Group', 
 'nav_templates'					=> 'Templates',
 	'nav_edit_templates'		 	=> 'Edit',
 	'nav_snippets'					=> 'Snippets',
