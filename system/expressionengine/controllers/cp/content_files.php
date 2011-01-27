@@ -219,7 +219,7 @@ class Content_files extends CI_Controller {
 		$data = array(
 			'files'			=> $files,
 			'file_dir'		=> $file_dir,
-			'del_notice'	=> (count($files) == 1) ? 'confirm_del_file' : 'confirm_del_files';
+			'del_notice'	=> (count($files) == 1) ? 'confirm_del_file' : 'confirm_del_files'
 		);
 
 		$this->cp->set_variable('cp_page_title', lang('delete_selected_files'));
@@ -367,8 +367,16 @@ class Content_files extends CI_Controller {
 	public function edit_image() {}
 
 	public function display_image() {}
-	
-	public function upload_file() {}
+
+	// ------------------------------------------------------------------------	
+
+	/**
+	 * Upload File
+	 */
+	public function upload_file()
+	{
+		var_dump($_POST, $_FILES);
+	}
 	
 	
 }

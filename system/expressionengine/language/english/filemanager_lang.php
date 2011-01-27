@@ -66,6 +66,7 @@ $lang = array(
 'apply_changes'			=> 'Apply Changes',
 
 'pagination_count_text'	=> 'Showing %s to %s of %s files.',
+'total_dir_size'		=> 'Total Directory Size:',
 
 ''=>''
 );
