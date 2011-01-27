@@ -49,7 +49,7 @@ if ( ! $EE_view_disable)
 					<?php else: ?>
 						<?php foreach ($files as $file):?>
 						<tr>
-							<td><a class="less_important_link" href="#"><?=$file['name']?></a></td>
+							<td><a class="less_important_link" href="<?=BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$selected_dir.AMP.'file='.urlencode($file['name'])?>"><?=$file['name']?></a></td>
 							<td><?=number_format($file['size']/1000, 1);?> <?=lang('file_size_unit')?></td>
 							<td><?=$file['mime']?></td>
 							<td><?=$this->localize->set_human_time($file['date'], TRUE)?></td>

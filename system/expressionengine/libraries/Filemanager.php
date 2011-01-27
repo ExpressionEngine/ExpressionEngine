@@ -1005,9 +1005,10 @@ class Filemanager {
 	 * 
 	 * @param 	mixed   string or array of urlencoded file names
 	 * @param 	string	file directory the files are located in.
+	 * @param 	string	optional name of zip file to download
 	 * @return 	mixed 	nuttin' or boolean false if everything goes wrong.
 	 */
-	public function download_files($files, $file_path)
+	public function download_files($files, $file_path, $zip_name = 'downloaded_files.zip')
 	{
 		if (count($files) === 1)
 		{
@@ -1029,13 +1030,33 @@ class Filemanager {
 				$this->EE->zip->read_file($file_path.urldecode($file));
 			}
 			
-			$this->EE->zip->download('downloaded_files.zip'); 
+			$this->EE->zip->download($zip_name); 
 		}
 		
 		return FALSE;
 	}
 
 	// --------------------------------------------------------------------		
+
+	/**
+	 * Get file info
+	 *
+	 * At this time, this is a basic wrapper around the CI image lib
+	 * It's here to make things forward compatible for if/when image uploads
+	 * could be tossed in the database.
+	 *
+	 * @param 	string		full system path to the image to examine
+	 * @return 	array
+	 */
+	public function get_file_info($file)
+	{
+		$this->EE->load->library('image_lib');
+
+		return $this->EE->image_lib->get_image_properties($file, TRUE);
+	}
+
+	// --------------------------------------------------------------------		
+
 }
 
 // END Filemanager class

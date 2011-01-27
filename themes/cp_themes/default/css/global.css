@@ -3681,10 +3681,6 @@ table.solo {
 	display: block;
 }
 
-#image_edit_form #rotate_fieldset ul {
-	display: none;
-}
-
 #image_edit_form #rotate_fieldset li {
 	display: inline;
 	cursor: pointer;
@@ -3697,6 +3693,17 @@ table.solo {
 .translatePhrase {
 	width:				50%;
 }
+
+
+/* File Manager -- New Stuff */
+.file_manager_toolbar {
+	border:				1px solid #B6C0C2;
+	padding:			12px 10px;
+	color:				#5f6c74;
+	font-size:			11px;
+	margin-bottom:		25px;
+}
+
 
 /* -------------------------------------
 /*  Communicate

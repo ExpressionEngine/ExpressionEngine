@@ -420,11 +420,61 @@ class Content_files extends CI_Controller {
 
 	// ------------------------------------------------------------------------	
 	
-	public function edit_image() {}
-
 	public function display_image() {}
 
 	// ------------------------------------------------------------------------	
 	
+	/**
+	 *
+	 *
+	 *
+	 */
+	public function edit_image()
+	{
+		// Page Title
+		$this->cp->set_variable('cp_page_title', lang('edit_image'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
+		
+		// Do some basic permissions checking
+		if ( ! ($file_dir = $this->input->get('upload_dir')))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		// Bail if they dont' have access to this upload location.
+		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate");
+		$this->output->set_header("Pragma: no-cache");
+
+		// It cleans itself
+		$file_name 	= $this->security->sanitize_filename($this->input->get('file'));
+		
+		// Some vars for later
+		$file_url 	= $this->_upload_dirs[$file_dir]['url'].urldecode($file_name);
+		$file_path 	= $this->_upload_dirs[$file_dir]['server_path'].urldecode($file_name); 
+		
+		// Does this file exist?
+		if ( ! file_exists($file_path))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		// var_dump($this->_upload_dirs[$file_dir], $file_path);
+
+		$data = array(
+				'file_url'		=> $file_url,
+				'file_path'		=> $file_path,
+				'file_info'		=> $this->filemanager->get_file_info($file_path),
+				
+		);
+
+		$this->load->view('content/files/edit_image', $data);
+	}
+
+	// ------------------------------------------------------------------------		
 	
 }
