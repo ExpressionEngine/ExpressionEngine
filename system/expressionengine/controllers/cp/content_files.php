@@ -67,7 +67,6 @@ class Content_files extends CI_Controller {
 	 */
 	public function index()
 	{
-
 		$this->load->library(array('pagination'));
 		
 		// Page Title
@@ -217,17 +216,11 @@ class Content_files extends CI_Controller {
 	 */
 	private function _delete_files_confirm($files, $file_dir)
 	{
-		$data['files']    = $files;
-		$data['file_dir'] = $file_dir;
-		
-		if (count($files) == 1)
-		{
-			$data['del_notice'] = 'confirm_del_file';
-		}
-		else
-		{
-			$data['del_notice'] = 'confirm_del_files';
-		}
+		$data = array(
+			'files'			=> $files,
+			'file_dir'		=> $file_dir,
+			'del_notice'	=> (count($files) == 1) ? 'confirm_del_file' : 'confirm_del_files';
+		);
 
 		$this->cp->set_variable('cp_page_title', lang('delete_selected_files'));
 
