@@ -246,7 +246,7 @@ function tab_focus(tab_id)
 	$(".tab_menu li").removeClass("current");
 	$(".menu_"+tab_id).parent().addClass("current");
 	$(".main_tab").hide();
-	$("#"+tab_id).fadeIn("fast");
+	$("#"+tab_id).show();
 	$(".main_tab").css("z-index", "");
 	$("#"+tab_id).css("z-index", "5");
 	selected_tab = tab_id;
@@ -287,15 +287,17 @@ function setup_tabs() {
 			$(".tab_menu li").removeClass("highlight_tab");
 		},
 		drop: function(e, ui) {
-			field_id = ui.draggable.attr("id").substring(11);
-			tab_id = $(this).attr("title").substring(5);
+		    field_id = ui.draggable.attr("id").substring(11);
+		    tab_id = $(this).attr("title").substring(5);
 
-			$("#hold_field_"+field_id).prependTo("#"+tab_id);
-			$("#hold_field_"+field_id).hide().slideDown();
+		    setTimeout(function() {
+		        $("#hold_field_"+field_id).prependTo("#"+tab_id);
+		        $("#hold_field_"+field_id).hide().slideDown();
+		    }, 0);
 
-			// bring focus
-			tab_focus(tab_id);
-			return false;
+		    // bring focus
+		    tab_focus(tab_id);
+		    return false;
 		},
 		over: function(e, ui) {
 
