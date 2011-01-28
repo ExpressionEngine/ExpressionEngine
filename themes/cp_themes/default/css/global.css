@@ -591,8 +591,6 @@ span.button .submit {
 	border-left:		10px solid #F81A53;
 }
 
-
-
 #navigationTabs li.active ul ul,
 #navigationTabs li.active ul ul ul,
 #navigationTabs li.active ul ul ul ul {
@@ -623,7 +621,6 @@ span.button .submit {
 	
 	float: right;
 }
-
 
 #activeSite a:link, #activeSite a:visited {
 	color:				#fff;
