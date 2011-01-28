@@ -21,7 +21,7 @@ if ($EE_view_disable !== TRUE)
 					$this->table->set_template($cp_pad_table_template);
 					$this->table->set_heading($headings);
 				?>
-				<div class="cupRunnethOver shun"><?=$this->table->generate($results)?></div>				
+				<div class="shun"><?=$this->table->generate($results)?></div>				
 			</div>
 			
 	</div> <!-- contents -->
