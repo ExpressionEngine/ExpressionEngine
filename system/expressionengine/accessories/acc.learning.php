@@ -63,6 +63,7 @@ class Learning_acc {
 						<li><a href="'.$this->EE->cp->masked_url('http://eeinsider.com/').'" title="'.$this->EE->lang->line('ee_insider').'">'.$this->EE->lang->line('ee_insider').'</a></li>
 						<li><a href="'.$this->EE->cp->masked_url('http://devot-ee.com/').'" title="'.$this->EE->lang->line('devot_ee').'">'.$this->EE->lang->line('devot_ee').'</a></li>
 						<li><a href="'.$this->EE->cp->masked_url('http://ee-podcast.com/').'" title="'.$this->EE->lang->line('ee_podcast').'">'.$this->EE->lang->line('ee_podcast').'</a></li>
+						<li><a href="'.$this->EE->cp->masked_url('http://show-ee.com/').'" title="Show-EE">Show-EE</a></li>
 					</ul>
 			',
 			$this->EE->lang->line('support') => '<ul>
