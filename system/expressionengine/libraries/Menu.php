@@ -191,11 +191,14 @@ class EE_Menu {
 		// Grab all the groups a user is assigned to
 		$allowed_groups = $this->EE->session->userdata('assigned_template_groups');
 
-		// The person responsible for the mess below wants you
-		// to know that he feels the same way about it
+		// Grab all of the template groups in their desired order
+		$template_groups = $this->EE->template_model->get_template_groups();
+		$template_groups = $template_groups->result_array();
 		
+		// If there are allowed groups or the user is a Super Admin, go through with it
 		if (count($allowed_groups) OR $this->EE->session->userdata('group_id') == 1)
 		{
+			// In the event $allowed_groups has information in it, build a where clause for them
 			$additional_where = count($allowed_groups) ? array('template_groups.group_id' => array_keys($allowed_groups)) : array();
 			
 			$templates = $this->EE->template_model->get_templates(NULL, array('template_groups.group_id'), $additional_where);
@@ -210,16 +213,29 @@ class EE_Menu {
 					$by_group[$row->group_name][] = $row;
 				}
 				
-				foreach($by_group as $group_name => $templates)
+				// Using the template groups as a guide for ordering, build the list of templates
+				foreach($template_groups as $group)
 				{
+					$group_id   = $group['group_id'];
+					$group_name = $group['group_name'];
+					
+					if ( ! isset($by_group[$group_name]))
+					{
+						continue;
+					}
+					
+					$templates  = $by_group[$group_name];
+					
 					foreach($templates as $row)
 					{
 						$menu['design']['templates']['edit_templates'][$group_name][$row->template_name] = BASE.AMP.'C=design'.AMP.'M=edit_template'.AMP.'id='.$row->template_id;
 					}
 
 					// All groups have an index template, so row->group_id will always be set :)
+					$menu['design']['templates']['edit_templates'][$group_name][lang('nav_edit_template_group_more')] = BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id;
 					$menu['design']['templates']['edit_templates'][$group_name][] = '----';
-					$menu['design']['templates']['edit_templates'][$group_name][lang('nav_create_template')] = BASE.AMP.'C=design'.AMP.'M=new_template'.AMP.'group_id='.$row->group_id;
+					$menu['design']['templates']['edit_templates'][$group_name][lang('nav_edit_template_group')] = BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id;
+					$menu['design']['templates']['edit_templates'][$group_name][lang('nav_create_template')] = BASE.AMP.'C=design'.AMP.'M=new_template'.AMP.'group_id='.$group_id;
 				}
 				
 				unset($by_group);
@@ -339,7 +355,7 @@ class EE_Menu {
 				}
 			}
 		}
-		
+
 		return $menu;
 	}
 
