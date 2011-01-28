@@ -3252,6 +3252,7 @@ div.contentWrap {
 }
 
 .rotate li {
+	cursor: 			pointer;
 	display:			inline;
 	height:				42px;
 	margin:				0 15px 0 ;
