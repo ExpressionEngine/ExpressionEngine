@@ -30,7 +30,7 @@ if ( ! $EE_view_disable)
 				<?=form_close()?>
 			<?php endif; ?>
 			<?=form_open('C=content_files'.AMP.'M=multi_edit_form')?>
-				<table class="mainTable" border="0" cellspacing="0" cellpadding="0">
+				<table class="mainTable clear" border="0" cellspacing="0" cellpadding="0">
 					<thead>
 						<tr>
 							<th><?=lang('name')?></th>
