@@ -53,7 +53,7 @@ if ($EE_view_disable !== TRUE)
 											array('data' => lang('select_all'), 'colspan' => 4)
 										);
 				?>
-				<div class="cupRunnethOver shun"><?=$this->table->generate()?></div>
+				<div class="shun"><?=$this->table->generate()?></div>
 				<?=form_dropdown('table_action', array('OPTIMIZE' => lang('optimize_table'), 'REPAIR' => lang('repair_table')))?>
 				&nbsp;<?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'))?>
 				<?=form_close()?>

@@ -19,7 +19,7 @@ if ($EE_view_disable !== TRUE)
 
 		<?php $this->load->view('_shared/message');?>
 
-		<h4 class="genericHeading clear_left"><?=str_replace('%s', BASE.AMP.'C=design'.AMP.'M=global_variables', lang('snippets_explanation'))?></h4>
+		<p><?=str_replace('%s', BASE.AMP.'C=design'.AMP.'M=global_variables', lang('snippets_explanation'))?></p>
 
 		<?php
 			$this->table->set_template(array('table_open' => '<table class="mainTable clear_left" cellspacing="0" cellpadding="0">'));

@@ -38,7 +38,7 @@ if ($EE_view_disable !== TRUE)
 		
 		<p><?=form_submit('remove_plugins', lang('update'), 'class="submit"')?></p>
 		
-		<table id="controllers" class="mainTable" cellspacing="0" cellpadding="0" border="0">
+		<table class="mainTable" cellspacing="0" cellpadding="0" border="0">
 			<thead>
 				<tr>
 					<th><?=lang('page_assignment')?></th>

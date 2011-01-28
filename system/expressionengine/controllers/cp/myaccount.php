@@ -1758,7 +1758,10 @@ class MyAccount extends CI_Controller {
 			$vars['avatars'][] = "<img src='".$avatar_url.$image."' alt='".$image."' border='0' /><br /><input id='".$image."' type='radio' name='avatar' value='".$image."' />";
 		}
 
-		$this->table->set_template(array('table_open' => '<table class="browseAvatar">'));
+		$this->table->set_template(array(
+						'table_open' => '<table style="width:100%">',
+						'cell_alt_start' => '<td style="width:30%">'
+					));
 
 		$this->load->view('account/browse_avatars', $vars);
 	}

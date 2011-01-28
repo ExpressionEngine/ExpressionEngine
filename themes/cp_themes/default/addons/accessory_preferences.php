@@ -45,7 +45,7 @@ if ($EE_view_disable !== TRUE)
 			
 		</div>
 		<div style="width: 48%;">
-			<table id="controllers" class="mainTable" cellspacing="0" cellpadding="0" border="0">
+			<table class="mainTable" cellspacing="0" cellpadding="0" border="0">
 				<thead>
 					<tr>
 						<th><?=lang('page_assignment')?></th>
