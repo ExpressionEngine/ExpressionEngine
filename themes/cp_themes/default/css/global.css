@@ -3199,14 +3199,71 @@ div.contentWrap {
 	width:				50%;
 }
 
-/* File Manager -- New Stuff */
+/*  File Manager */
+
 .file_manager_toolbar {
-	border:				1px solid #B6C0C2;
+	border-bottom:		1px solid #B6C0C2;
 	padding:			12px 10px;
 	color:				#5f6c74;
 	font-size:			11px;
 	margin-bottom:		25px;
 }
+
+#progress {
+	display:			none;
+}
+
+.file_manager_toolbar fieldset {
+	border:				none;
+}
+
+.file_manager_toolbar legend {
+	font-size: 			14px;
+}
+
+
+.file_manager_toolbar .crop {
+	float:				left;
+	width:				30%;
+}
+
+.file_manager_toolbar .rotate {
+	float:				right;
+	width:				30%;
+}
+
+.file_manager_toolbar .resize {
+	margin-left:		34%;
+	width:				30%;
+}
+
+.fm_left {
+	float:				left;
+	width:				48%; 
+}
+
+.fm_right {
+	float:				right;
+	width:				48%; 
+}
+
+.file_manager_toolbar  p.submit_button {
+	text-align:			right;
+}
+
+.rotate li {
+	display:			inline;
+	height:				42px;
+	margin:				0 15px 0 ;
+	width:				36px;
+}
+
+/*
+rotate_90
+rotate_270
+rotate_vrt
+rotate_hor
+*/
 
 /* Communicate */
 #communicate_info {

@@ -21,30 +21,30 @@ if ( ! $EE_view_disable)
 			<div class="file_manager_toolbar">
 				<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_edit_form'))?>
 
-					<fieldset id="crop_fieldset" class="" style="width:30%; float:left">
+					<fieldset id="crop_fieldset" class="crop">
 						<legend><?=lang('crop')?></legend>
-						<div style="width:48%; float:left">
+						<div class="fm_left">
 							<?=lang('crop_width', 'crop_width')?>
 							<?=form_input('width', $file_info['width'])?>
 						</div>
 						
-						<div style="width:48%; float:right;">
+						<div class="fm_right">
 							<?=lang('crop_height', 'crop_height')?>
 							<?=form_input('height', $file_info['height'])?>
 						</div>
 
-						<div style="width:48%; float:left; margin-top:15px">
+						<div class="fm_left">
 							<?=lang('crop_x', 'crop_x')?>
 							<?=form_input()?>
 						</div>
 						
-						<div style="width:48%; float:right; margin-top:15px">
+						<div class="fm_right">
 							<?=lang('crop_y', 'crop_y')?>
 							<?=form_input()?>
 						</div>
 					</fieldset>
 
-					<fieldset id="rotate_fieldset" class="" style="width:30%; float:right">
+					<fieldset id="rotate_fieldset" class="rotate">
 						<legend><?=lang('rotate')?></legend>
 						<?=lang('rotate', 'rotate')?>
 						<ul>
@@ -55,7 +55,7 @@ if ( ! $EE_view_disable)
 						</ul>
 					</fieldset>
 
-					<fieldset id="resize_fieldset" class="" style="width:30%; margin-left:34%">
+					<fieldset id="resize_fieldset" class="resize">
 						<legend><?=lang('resize')?></legend>
 						<div style="width:48%; float:left;">
 							<?=lang('resize_width', 'resize_width')?>
@@ -65,8 +65,10 @@ if ( ! $EE_view_disable)
 						<div style="width:48%; float:right;">
 							<?=lang('resize_height', 'resize_height')?>
 							<?=form_input()?>
-						</div>						
+						</div>
 					</fieldset>
+					<div class="clear_left"></div>
+					
 					<p class="submit_button"><?=form_submit('save_image', lang('save_image'), 'class="submit" id="edit_file_submit"')?> <?=form_submit('edit_done', lang('done'), 'class="submit" id="edit_done"')?></p>
 					
 				<?=form_close()?>
