@@ -38,10 +38,7 @@ jQuery(document).ready(function() {
 		top_level = $(NAV+">li."+PARENT),
 		t, 
 		current_hovered, 
-		moving = false,
-	
-		max_height = 300;
-
+		moving = false;
 
 	// Mouse navigation
 	// -----------------------------------------------
@@ -96,10 +93,10 @@ jQuery(document).ready(function() {
 			}
 		}, function() {
 			$(this).removeClass(HOVER);
-
-			// Cache the container to set the height and recall the original height
-			var $container = $(this).children('.container');
-			$container.height($container.data('original-height'));
+			
+			if ( ! moving) {
+				EE.navigation.untruncate_menus($(this).children('ul'));
+			};
 		}).find('.'+PARENT+'>a').click(function() {
 			return false;
 		});
@@ -118,111 +115,127 @@ jQuery(document).ready(function() {
 	};
 
 	EE.navigation.keyboard_listen = function() {
-	
-	};
-	nav.ee_focus("a."+TICTAC, {
-		removeTabs: "a",	
-		onEnter: function(event) {
-			var target = $(event.target),
-				li = target.parent();
+		nav.ee_focus("a."+TICTAC, {
+			removeTabs: "a",	
+			onEnter: function(event) {
+				var target = $(event.target),
+					li = target.parent();
 
-			if (li.hasClass(PARENT)) {
-				li.addClass(ACTIVE);
-				this.setFocus(li.find("ul>li>a").eq(0));
-			}
-		},
-		onRight: function(event) {
-			var target = $(event.target),
-				li = target.parent();
+				if (li.hasClass(PARENT)) {
+					li.addClass(ACTIVE);
+					this.setFocus(li.find("ul>li>a").eq(0));
+				}
+			},
+			onRight: function(event) {
+				var target = $(event.target),
+					li = target.parent();
 
-			if (li.hasClass(PARENT) && ! target.hasClass(TICTAC)) {
-				li.addClass(ACTIVE);
-				this.setFocus(li.find("ul>li>a").eq(0));
-			}
-			else {
-				EE.navigation.move_top_level(this, li, "next");
-			}
-		},
-		onLeft: function(event) {
-			var target = $(event.target),
-				li = target.parent();
-		
-			if (target.hasClass(TICTAC) && li.prev().length) {
-				this.setFocus(li.prev().children("a"));
-			}
-			else {
-				li = li.parent().closest("."+PARENT);
-				li.removeClass(ACTIVE);
-			
-				if (li.children("a."+TICTAC).length) {
-					EE.navigation.move_top_level(this, li, "prev");
+				if (li.hasClass(PARENT) && ! target.hasClass(TICTAC)) {
+					li.addClass(ACTIVE);
+					this.setFocus(li.find("ul>li>a").eq(0));
 				}
 				else {
-					this.setFocus(li.children("a").eq(0));
+					EE.navigation.move_top_level(this, li, "next");
 				}
-			}
-		},
-		onUp: function(event) {
-			var target = $(event.target),
-				li = target.parent(),
-				prev = li.prevAll(":not(.nav_divider)");
-		
-			if ( ! target.hasClass(TICTAC) && li.prev.length) {
-				this.setFocus(prev.eq(0).children("a"));
-			}
-		},
-		onDown: function(event) {
-			var target = $(event.target),
-				li = target.parent(),
-				next = li.nextAll(":not(.nav_divider)");
+			},
+			onLeft: function(event) {
+				var target = $(event.target),
+					li = target.parent();
 
-			if ( ! target.hasClass(TICTAC) && next.length) {
-				this.setFocus(next.eq(0).children("a"));
-			}
-			else if (li.hasClass(PARENT)) {
-				li.addClass(ACTIVE);
-				this.setFocus(li.find("ul>li>a").eq(0));
-			}
-		},
-		onEscape: function(event) {
-			var target = $(event.target),
-				li = target.parent();
-		
-			EE.navigation.move_top_level(this, li);
-		},
-		onBlur: function(event) {
-			this.getElements().parent.find('.'+ACTIVE).removeClass(ACTIVE);
-		}
-	});
+				if (target.hasClass(TICTAC) && li.prev().length) {
+					this.setFocus(li.prev().children("a"));
+				}
+				else {
+					li = li.parent().closest("."+PARENT);
+					li.removeClass(ACTIVE);
 
+					if (li.children("a."+TICTAC).length) {
+						EE.navigation.move_top_level(this, li, "prev");
+					}
+					else {
+						this.setFocus(li.children("a").eq(0));
+					}
+				}
+			},
+			onUp: function(event) {
+				var target = $(event.target),
+					li = target.parent(),
+					prev = li.prevAll(":not(.nav_divider)");
+
+				if ( ! target.hasClass(TICTAC) && li.prev.length) {
+					this.setFocus(prev.eq(0).children("a"));
+				}
+			},
+			onDown: function(event) {
+				var target = $(event.target),
+					li = target.parent(),
+					next = li.nextAll(":not(.nav_divider)");
+
+				if ( ! target.hasClass(TICTAC) && next.length) {
+					this.setFocus(next.eq(0).children("a"));
+				}
+				else if (li.hasClass(PARENT)) {
+					li.addClass(ACTIVE);
+					this.setFocus(li.find("ul>li>a").eq(0));
+				}
+			},
+			onEscape: function(event) {
+				var target = $(event.target),
+					li = target.parent();
+
+				EE.navigation.move_top_level(this, li);
+			},
+			onBlur: function(event) {
+				this.getElements().parent.find('.'+ACTIVE).removeClass(ACTIVE);
+			}
+		});
+	};
+	
 	// Menu Truncation
 	// -----------------------------------------------
-	EE.navigation.truncate_menus = function($menu) {
-		var offset        = 151,
-			menu_height   = $menu.height(),
-			window_height = $(window).height(),
-			link_height   = $menu.find('li:first').height(),
-			difference    = (offset + menu_height) - window_height;
+	/**
+	 * Hide menu items when it would make the drop down menu too long;
+	 * @param {jQuery Object} $menus jQuery collection of unordered lists representing submenus of the current hover
+	 */
+	EE.navigation.truncate_menus = function($menus) {
+		var window_height = $(window).height();
 		
-		if (difference > 0) {
-			var quantity_to_remove = Math.ceil(difference / link_height) + 3, // Add more to lift it off the bottom
-				last_index         = $menu.find('> li.nav_divider:first').index();
-		
-			$menu.find('> li').slice(last_index - quantity_to_remove, last_index).hide();
-		
-			$menu.find('> li:eq(' + (last_index - quantity_to_remove - 1) +')').after($('<li />', {
-				html: $('<a />', {
-					'href': $menu.find('> li > a[href*=tgpref]:first').attr('href'),
-					'text': "...view more" // TODO Where should this text come from?
-				}),
-				mouseover: function() {
-					$(this).addClass(HOVER);
-				},
-				mouseout: function() {
-					$(this).removeClass(HOVER);
-				}
-			}));
-		};
+		$.each($menus, function(index, val) {
+			var $menu         = $(this),
+				offset        = $menu.offset().top,
+				menu_height   = $menu.height(),
+				link_height   = $menu.find('li:first').height(),
+				difference    = (offset + menu_height) - window_height,
+				$more         = $menu.find('> li:has(> a[href*=tgpref]):first:visible');
+			
+			if (difference > 0) {
+				var quantity_to_remove = Math.ceil(difference / link_height) + 2, // Add more to lift it off the bottom
+					last_index         = $menu.find('> li.nav_divider:first:visible').prev().index();
+				
+				$menu.find('> li:visible').slice(last_index - quantity_to_remove, last_index).hide();
+			} else {
+				$more.hide();
+			};
+		});
+	};
+	
+	/**
+	 * Reveal the hidden menu items so truncate_menus continues to work normally
+	 * @param {jQuery Object} $menus jQuery collection of unordered lists representing submenus of the current hover
+	 */
+	EE.navigation.untruncate_menus = function($menus) {
+		$.each($menus, function(index, val) {
+			var $menu = $(this);
+			
+			// Check to see if the menu is visible, if it is, wait 15ms and try again
+			if ($menu.is(':visible')) {
+				setTimeout(function() {
+					EE.navigation.untruncate_menus($menus);
+				}, 15);
+			} else {
+				$menu.find('> li:hidden').show();
+			};
+		});
 	};
 
 	EE.navigation.mouse_listen();

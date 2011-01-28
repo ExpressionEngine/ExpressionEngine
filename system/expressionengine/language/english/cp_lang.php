@@ -23,6 +23,7 @@ $lang = array(
 	'nav_create_group'				=> 'Create Group',
 	'nav_create_template'			=> 'Create Template',
 	'nav_edit_template_group' 		=> 'Edit Template Group', 
+	'nav_edit_template_group_more'  => '...see more',
 'nav_templates'					=> 'Templates',
 	'nav_edit_templates'		 	=> 'Edit',
 	'nav_snippets'					=> 'Snippets',
