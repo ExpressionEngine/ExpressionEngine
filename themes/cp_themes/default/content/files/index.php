@@ -16,7 +16,7 @@ if ( ! $EE_view_disable)
 			<h2 class="edit"><?=lang('content_files')?></h2>
 		</div>
 		
-		<div class="pageContents group">
+		<div id="file_manager" class="pageContents group">
 			<?php if ( ! empty($upload_dirs_options)):?>
 				<?=form_open('', array('id' => 'dir_choice_form'))?>
 					<?=form_label('Upload Directory:', 'dir_choice').NBS?>
