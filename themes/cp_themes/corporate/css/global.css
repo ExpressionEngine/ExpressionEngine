@@ -1,5 +1,3 @@
-/* @override http://expressionengine2/themes/cp_themes/corporate/css/global.css?v=1295389867 */
-
 /**
  * ExpressionEngine Corporate Theme
  */
@@ -1425,6 +1423,8 @@ div.dataTables_paginate span.next {
 	text-decoration:	none;
 }
 
+#mainContent #paginationCount {
+}
 
 
 #mainContent .formArea {
@@ -3338,41 +3338,14 @@ div.contentWrap {
 	width:				250px;
 	float: 				right;
 	clear: 				left;
-
 }
+
 
 #file_manager_tools div {
 	padding: 			16px;
 	font-size:			12px;
 	line-height:		18px;
 }
-
-
-/*
-#mainContent #showToolbarLink {
-	text-align:			right;
-	font-size:			10px;
-	line-height:		20px;
-	height:				27px;
-	margin-right: 		20px;
-	background:			#f6f7f9 url('../images/publish_field_background.jpg') repeat-x top;
-	clear: 				left;
-
-}
-
-#mainContent #showToolbarLink  img {
-		position:absolute;
-
-}
-
-#mainContent #showToolbarLink a span{
-	color:				#005eb0;
-	font-weight:		bold;
-	margin:				0;
-	padding:			0;
-}
-*/
-
 
 #mainContent #file_manager #showToolbarLink {
 	text-align:			right;
@@ -3426,6 +3399,115 @@ div.contentWrap {
 }
 
 #mainContent #file_manager .f_m_s p.preview {
+}
+
+/* File Manager
+   ----------------------------------------------------------------------- */
+#mainContent #dir_choice_form,
+#mainContent #upload_form {
+	padding: 			7px 10px;
+}
+
+#mainContent #dir_choice_form {
+	float: 				left;
+}
+
+#mainContent #upload_form {
+	margin:		 		0;
+}
+
+#upload_form #upload_file.field {
+	width:				196px;
+	margin:				0;
+	padding:			3px;
+}
+
+#progress {
+	display:			none;
+}
+
+#file_manager_toolbar {
+	color:				#5f6c74;
+	float:				left;
+	font-size:			11px;
+	width:				14.5%;
+}
+
+#file_manager_toolbar h3 {
+	margin: 			2px 0 0;
+}
+
+#file_manager_toolbar .ui-accordion-content {
+	border: 			1px solid #D0D7DF;
+	border-width: 		0 1px 1px;
+	margin: 			-1px 0 4px;
+	overflow: 			hidden;
+	padding: 			5px 8px 8px;
+}
+
+#file_manager_toolbar label {
+	margin: 			0 0 0;
+}
+
+#file_manager_toolbar .ui-accordion-content input {
+	margin: 			0 0 5px;
+	width: 				92%;
+}
+
+#file_manager_toolbar ul {
+	margin: 			0;
+}
+
+#file_manager_toolbar legend {
+	font-size: 			14px;
+}
+
+#file_manager_toolbar  p.submit_button {
+	margin: 			0;
+	text-align:			right;
+}
+
+#file_manager_toolbar  p.submit_button input {
+	margin-bottom: 5px;
+	margin-right: 0;
+}
+
+#rotate_fieldset li {
+	margin:					6px 0;
+}
+
+#rotate_fieldset li a {
+	background-position: 	0 50%;
+	background-repeat: 		no-repeat;
+	cursor: 				pointer;
+	display: 				block;
+	height:					42px;
+	line-height: 			42px;
+	padding-left: 			42px;
+}
+
+#rotate_fieldset .rotate_90 a {
+	background-image: url(../images/image_edit_rotate_cw.png);
+}
+
+#rotate_fieldset .rotate_270 a {
+	background-image: url(../images/image_edit_rotate_ccw.png);
+}
+
+#rotate_fieldset .rotate_vrt a {
+	background-image: url(../images/image_edit_flip_vert.png);
+}
+
+#rotate_fieldset .rotate_hor a {
+	background-image: url(../images/image_edit_flip_hor.png);
+}
+
+#file_manager_edit_file {
+	float: right;
+	width: 84%;
+	overflow: auto;
+}
+
 
 #mainContent #filterMenu {
 	background-color:	#ECF1F4;

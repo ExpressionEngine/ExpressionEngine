@@ -474,9 +474,17 @@ class Content_files extends CI_Controller {
 				'file_url'		=> $file_url,
 				'file_path'		=> $file_path,
 				'file_info'		=> $this->filemanager->get_file_info($file_path),
-				
 		);
-
+		
+		$this->cp->add_js_script('ui', 'accordion');
+		
+		$this->javascript->output('
+		        $("#file_manager_toolbar").accordion({autoHeight: false, header: "h3"});
+		');
+		
+		$this->javascript->compile();
+		
+		
 		$this->load->view('content/files/edit_image', $data);
 	}
 

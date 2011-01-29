@@ -56,6 +56,7 @@ $lang = array(
 'resize_mode'			=> 'Resize Mode',
 'rotate_mode'			=> 'Rotate Mode',
 'apply_changes'			=> 'Apply Changes?',
+'cancel_changes'		=> 'Cancel Changes', 
 'exit_apply_changes'	=> 'You are about to exit this edit mode.  Permanently apply changes first?',
 'processing_image'		=> 'Processing Image',
 'done'					=> 'Exit',

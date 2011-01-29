@@ -2419,16 +2419,6 @@ label.hide_field {
 	text-align:			left;
 }
 
-#mainContent #upload_form {
-	margin:		 		-4px 0 10px;
-}
-
-#upload_form #upload_file.field {
-	width:				196px;
-	margin:				0;
-	padding:			3px;
-}
-
 select#upload_dir {
 	margin:				8px 0 0 0;
 	width:				100%;
@@ -3198,70 +3188,109 @@ div.contentWrap {
 
 /*  File Manager */
 
-.file_manager_toolbar {
-	border-bottom:		1px solid #B6C0C2;
-	padding:			12px 10px;
-	color:				#5f6c74;
-	font-size:			11px;
-	margin-bottom:		25px;
+#mainContent #dir_choice_form {
+	float: 				left;
+}
+
+#mainContent #upload_form {
+	margin:		 		-4px 0 10px;
+}
+
+#upload_form #upload_file.field {
+	width:				196px;
+	margin:				0;
+	padding:			3px;
 }
 
 #progress {
 	display:			none;
 }
 
-.file_manager_toolbar fieldset {
-	border:				none;
+#file_manager .tableSubmit {
+	margin-top: 		0;
 }
 
-.file_manager_toolbar legend {
+#file_manager_toolbar {
+	color:				#5f6c74;
+	float:				left;
+	font-size:			11px;
+	margin-top: 		-7px;
+	width:				14.5%;
+}
+
+#file_manager_toolbar h3 {
+	margin: 			7px 0 0;
+}
+
+#file_manager_toolbar .ui-accordion-content {
+	border: 			1px solid #D0D7DF;
+	border-width: 		0 1px 1px;
+	margin: 			-1px 0 10px;
+	overflow: 			hidden;
+	padding: 			5px 8px 8px;
+}
+
+#file_manager_toolbar label {
+	margin: 			0 0 0;
+}
+
+#file_manager_toolbar .ui-accordion-content input {
+	margin: 			0 0 5px;
+	width: 				92%;
+}
+
+#file_manager_toolbar ul {
+	margin: 			0;
+}
+
+#file_manager_toolbar legend {
 	font-size: 			14px;
 }
 
-
-.file_manager_toolbar .crop {
-	float:				left;
-	width:				30%;
-}
-
-.file_manager_toolbar .rotate {
-	float:				right;
-	width:				30%;
-}
-
-.file_manager_toolbar .resize {
-	margin-left:		34%;
-	width:				30%;
-}
-
-.fm_left {
-	float:				left;
-	width:				48%; 
-}
-
-.fm_right {
-	float:				right;
-	width:				48%; 
-}
-
-.file_manager_toolbar  p.submit_button {
+#file_manager_toolbar  p.submit_button {
+	margin-top: 		10px;
 	text-align:			right;
 }
 
-.rotate li {
-	cursor: 			pointer;
-	display:			inline;
-	height:				42px;
-	margin:				0 15px 0 ;
-	width:				36px;
+#file_manager_toolbar  p.submit_button input {
+	margin-bottom: 5px;
 }
 
-/*
-rotate_90
-rotate_270
-rotate_vrt
-rotate_hor
-*/
+#rotate_fieldset li {
+	margin:					0 0 8px;
+}
+
+#rotate_fieldset li a {
+	background-position: 	0 50%;
+	background-repeat: 		no-repeat;
+	cursor: 				pointer;
+	display: 				block;
+	height:					42px;
+	line-height: 			42px;
+	padding-left: 			42px;
+}
+
+#rotate_fieldset .rotate_90 a {
+	background-image: url(../images/image_edit_rotate_cw.png);
+}
+
+#rotate_fieldset .rotate_270 a {
+	background-image: url(../images/image_edit_rotate_ccw.png);
+}
+
+#rotate_fieldset .rotate_vrt a {
+	background-image: url(../images/image_edit_flip_vert.png);
+}
+
+#rotate_fieldset .rotate_hor a {
+	background-image: url(../images/image_edit_flip_hor.png);
+}
+
+#file_manager_edit_file {
+	float: right;
+	width: 84%;
+	overflow: auto;
+}
 
 /* Communicate */
 #communicate_info {

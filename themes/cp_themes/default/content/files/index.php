@@ -16,11 +16,13 @@ if ( ! $EE_view_disable)
 			<h2 class="edit"><?=lang('content_files')?></h2>
 		</div>
 		
-		<div class="pageContents group">
+		<div id="file_manager" class="pageContents group">
 			<?php if ( ! empty($upload_dirs_options)):?>
-				<?=form_label('Upload Directory:', 'dir_choice').NBS?>
-				<?=form_dropdown('dir_choice', $upload_dirs_options, $selected_dir, 'id="dir_choice"').NBS?>
-				<?=NBS?><small><?=lang('total_dir_size')?> <?=number_format($dir_size/1000, 1);?> <?=lang('file_size_unit')?></small>
+				<?=form_open('', array('id' => 'dir_choice_form'))?>
+					<?=form_label('Upload Directory:', 'dir_choice').NBS?>
+					<?=form_dropdown('dir_choice', $upload_dirs_options, $selected_dir, 'id="dir_choice"').NBS?>
+					<small><?=lang('total_dir_size')?> <?=number_format($dir_size/1000, 1);?> <?=lang('file_size_unit')?></small>
+				<?=form_close()?>
 				<?=form_open_multipart('C=content_files'.AMP.'M=upload_file', array('id'=>'upload_form', 'class' => 'tableSubmit', ))?>
 					<?=form_hidden('upload_dir', $selected_dir, array('id' => 'upload_dir'))?>
 					<?=form_label(lang('upload_file'), 'upload_file', array('class' => 'visualEscapism'))?>
@@ -30,7 +32,7 @@ if ( ! $EE_view_disable)
 				<?=form_close()?>
 			<?php endif; ?>
 			<?=form_open('C=content_files'.AMP.'M=multi_edit_form')?>
-				<table class="mainTable" border="0" cellspacing="0" cellpadding="0">
+				<table class="mainTable clear_left" border="0" cellspacing="0" cellpadding="0">
 					<thead>
 						<tr>
 							<th><?=lang('name')?></th>
@@ -63,8 +65,6 @@ if ( ! $EE_view_disable)
 					<?php endif;?>
 					</tbody>
 				</table>
-				<p id="paginationCount"><?=$pagination_count_text;?></p>
-				<?=$pagination_links?>
 				<div class="tableSubmit">
 					<?=form_hidden('upload_dir', $selected_dir)?>
 					<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
@@ -72,6 +72,9 @@ if ( ! $EE_view_disable)
 					<?=form_dropdown('action', $action_options).NBS.NBS?>
 					<?php endif;?>
 				</div>
+				
+				<p id="paginationCount"><?=$pagination_count_text;?></p>
+				<?=$pagination_links?>
 			<?=form_close()?>
 		</div>
 	</div>
