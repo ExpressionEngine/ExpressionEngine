@@ -66,7 +66,7 @@ class Content_files extends CI_Controller {
 		// Page Title
 		$this->cp->set_variable('cp_page_title', lang('content_files'));
 		
-		$per_page = ($per_page = $this->input->get('per_page')) ? $per_page : 20;
+		$per_page = ($per_page = $this->input->get('per_page')) ? $per_page : 40;
 		$offset = ($offset = $this->input->get('offset')) ? $offset : 0;
 		$upload_dirs_options = array();
 	

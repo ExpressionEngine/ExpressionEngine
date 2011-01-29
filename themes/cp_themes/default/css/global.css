@@ -3206,6 +3206,10 @@ div.contentWrap {
 	display:			none;
 }
 
+#file_manager .tableSubmit {
+	margin-top: 		0;
+}
+
 #file_manager_toolbar {
 	color:				#5f6c74;
 	float:				left;
