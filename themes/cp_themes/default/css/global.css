@@ -2419,16 +2419,6 @@ label.hide_field {
 	text-align:			left;
 }
 
-#mainContent #upload_form {
-	margin:		 		-4px 0 10px;
-}
-
-#upload_form #upload_file.field {
-	width:				196px;
-	margin:				0;
-	padding:			3px;
-}
-
 select#upload_dir {
 	margin:				8px 0 0 0;
 	width:				100%;
@@ -3198,16 +3188,30 @@ div.contentWrap {
 
 /*  File Manager */
 
+#mainContent #dir_choice_form {
+	float: 				left;
+}
+
+#mainContent #upload_form {
+	margin:		 		-4px 0 10px;
+}
+
+#upload_form #upload_file.field {
+	width:				196px;
+	margin:				0;
+	padding:			3px;
+}
+
+#progress {
+	display:			none;
+}
+
 #file_manager_toolbar {
 	color:				#5f6c74;
 	float:				left;
 	font-size:			11px;
 	margin-top: 		-7px;
 	width:				14.5%;
-}
-
-#progress {
-	display:			none;
 }
 
 #file_manager_toolbar h3 {

@@ -91,6 +91,7 @@ if ( ! $EE_view_disable)
 			<div id="file_manager_edit_file">
 				<img src="<?=$file_url?>" <?=$file_info['size_str']?>>
 			</div> <!-- #file_manager_edit_file -->
+			<div class="clear"></div>
 		</div>
 	</div>
 </div>

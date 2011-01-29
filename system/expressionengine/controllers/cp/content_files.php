@@ -66,7 +66,7 @@ class Content_files extends CI_Controller {
 		// Page Title
 		$this->cp->set_variable('cp_page_title', lang('content_files'));
 		
-		$per_page = ($per_page = $this->input->get('per_page')) ? $per_page : 40;
+		$per_page = ($per_page = $this->input->get('per_page')) ? $per_page : 20;
 		$offset = ($offset = $this->input->get('offset')) ? $offset : 0;
 		$upload_dirs_options = array();
 	
@@ -474,9 +474,17 @@ class Content_files extends CI_Controller {
 				'file_url'		=> $file_url,
 				'file_path'		=> $file_path,
 				'file_info'		=> $this->filemanager->get_file_info($file_path),
-				
 		);
-
+		
+		$this->cp->add_js_script('ui', 'accordion');
+		
+		$this->javascript->output('
+		        $("#file_manager_toolbar").accordion({autoHeight: false, header: "h3"});
+		');
+		
+		$this->javascript->compile();
+		
+		
 		$this->load->view('content/files/edit_image', $data);
 	}
 
