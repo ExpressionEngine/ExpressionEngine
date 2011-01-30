@@ -26,6 +26,9 @@
 class Content_files extends CI_Controller {
 	
 	private $_upload_dirs = array();
+	public $remove_spaces = TRUE;
+	public $temp_prefix = "temp_file_";
+	
 	
 	/**
 	 * Constructor
@@ -46,7 +49,12 @@ class Content_files extends CI_Controller {
 		$this->load->helper(array('form'));
 		
 		// Get upload dirs
-		$this->_upload_dirs = $this->filemanager->fetch_upload_dirs();
+		$upload_dirs = $this->filemanager->fetch_upload_dirs();
+		
+		foreach ($upload_dirs as $row)
+		{
+			$this->_upload_dirs[$row['id']] = $row;
+		}		
 		
 		if (AJAX_REQUEST)
         {
@@ -194,6 +202,7 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 		
+	
 		/*
 		
 		// All the directory information we need for the upload
@@ -219,6 +228,7 @@ class Content_files extends CI_Controller {
 		
 		$fm = $this->filemanager->save($this->_upload_dirs[$file_dir]);
 		
+		
 		if ($fm->upload_errors)
 		{
 			// Upload Failed
@@ -238,6 +248,28 @@ class Content_files extends CI_Controller {
 			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
 		
+
+		if ($fm->upload_data['file_name'] != $fm->upload_data['orig_name'])
+		{
+			// Page Title
+			$this->cp->set_variable('cp_page_title', lang('file_exists_warning'));
+			$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
+
+			$vars = $fm->upload_data;
+			$vars['duped_name'] = $fm->upload_data['orig_name'];
+			
+			$vars['hidden'] = array(
+				'orig_name'		=> $fm->upload_data['orig_name'],
+				'rename_attempt' => '',
+				'is_image' 		=> $fm->upload_data['is_image'],
+				'temp_file_name'=> $fm->upload_data['file_name'],
+				'remove_spaces'	=> '1',
+				 'id' 			=> $file_dir
+				);
+				
+			return $this->load->view('content/files/rename', $vars);
+		}
+
 		// Make the thumbnail
 		
 		$thumb = $fm->create_thumb(
@@ -263,6 +295,80 @@ class Content_files extends CI_Controller {
 		
 		$this->session->set_flashdata('message_success', lang('upload_success'));
 		$this->functions->redirect(BASE.AMP.'C=content_files');			
+	}
+
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Allows renaming and over writing of files
+	 *
+	 * 
+	 */
+	public function rename_file()
+	{
+
+		$required = array('file_name', 'rename_attempt', 'orig_name', 'temp_file_name', 'is_image', 'temp_prefix', 'remove_spaces', 'id');
+		
+		foreach ($required as $val)
+		{
+			$data[$val] = $this->input->post($val);
+		}
+
+		// Sigh- did they rename it w/an existing name?  We give them the rename form again.
+        if (($data['rename_attempt'] != '' && $data['rename_attempt'] != $data['file_name']) 
+			OR ($data['rename_attempt'] == '' && $data['orig_name'] != $data['file_name']))
+        {
+			if (file_exists($this->_upload_dirs[$data['id']]['server_path'].$data['file_name']))
+			{
+
+				// Page Title
+				$this->cp->set_variable('cp_page_title', lang('file_exists_warning'));
+				$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
+
+				$vars['file_name'] = $data['file_name'];
+				$vars['duped_name'] = ($data['file_name'] != '') ? $data['file_name'] : $data['orig_name'];
+
+				$vars['hidden'] = array(
+					'orig_name'		=> $data['orig_name'],
+					'rename_attempt' => $data['file_name'],
+					'is_image' 		=> $data['is_image'],
+					'temp_file_name'=> $data['temp_file_name'],
+					'remove_spaces'	=> $this->remove_spaces,
+				 	'id' 			=> $data['id']
+					);
+				
+				return $this->load->view('content/files/rename', $vars);			
+			}
+		}
+
+		$fm = $this->filemanager->replace_file($data);
+		
+		// Errors?
+		if ($fm->upload_errors)
+		{
+			// Rename Failed
+			if ($this->input->is_ajax_request())
+			{
+				$errors = $this->javascript->generate_json(
+							array('error' => $this->upload->display_errors()));
+				
+				echo sprintf("<script type=\"text/javascript\">
+								parent.EE_uploads.%s = %s;</script>",
+								$this->input->get('frame_id'),
+								$errors);
+				exit();
+			}
+			
+			$this->session->set_flashdata('message_failure', $fm->upload_errors);
+			$this->functions->redirect(BASE.AMP.'C=content_files');
+		}		
+		
+		
+		
+		// Woot- Success!
+		$this->session->set_flashdata('message_success', lang('upload_success'));
+		$this->functions->redirect(BASE.AMP.'C=content_files');		
 	}
 
 	// ------------------------------------------------------------------------

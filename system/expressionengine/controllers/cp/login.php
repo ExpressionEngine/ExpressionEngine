@@ -354,6 +354,9 @@ class Login extends CI_Controller {
 			$this->functions->set_cookie($this->session->c_anon , 1,  $expire);
 		}
 		
+		// Kill existing flash cookie
+		$this->functions->set_cookie('flash');
+		
 		if ( isset($_POST['site_id']) && is_numeric($_POST['site_id']))
 		{
 			$this->functions->set_cookie('cp_last_site_id', $this->input->post('site_id'), 0);

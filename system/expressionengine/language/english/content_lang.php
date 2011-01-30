@@ -684,6 +684,9 @@ $lang = array(
 'file_exists' =>
 'A file already exists with this name',
 
+'file_exists_warning' =>
+'File Exists Warning',
+
 'overwrite_instructions' =>
 'You can either choose a new name and the file will be renamed, or you can submit this form with the same name and the file will be overwritten.',
 

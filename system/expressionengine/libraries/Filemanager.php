@@ -29,6 +29,7 @@ class Filemanager {
 	var $theme_url;
 	
 	public $upload_errors = FALSE;
+	public $upload_warnings = FALSE;
 	public $upload_data = NULL;
 	private $EE;
 
@@ -642,6 +643,7 @@ class Filemanager {
 
 			return array(
 				'name'			=> $data['file_name'],
+				'orig_name'		=> $this->EE->upload->orig_name,
 				'is_image'		=> $data['is_image'],
 				'dimensions'	=> $data['image_size_str'],
 				'directory'		=> $dir['id'],
@@ -652,6 +654,101 @@ class Filemanager {
 			);
 		}
 	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Overwrite OR Rename Files Manually
+	 *
+	 * @access	public
+	 * @return	void
+	 */	 
+    function replace_file($data)
+    {
+        $id          	= $data['id']; 
+        $file_name   	= $data['file_name'];
+		$orig_name   	= $data['orig_name'];   
+        $temp_file_name	= $data['temp_file_name'];  
+        $is_image    	= $data['is_image'];
+		$remove_spaces	= $data['remove_spaces'];
+		$temp_prefix	= $data['temp_prefix'];
+        //$field_group 	= $data['field_group'];
+        
+
+		if ($remove_spaces == TRUE)
+        {
+            $file_name = preg_replace("/\s+/", "_", $file_name);
+            $temp_file_name = preg_replace("/\s+/", "_", $temp_file_name);
+        }
+
+		// Check they have permission for this directory and get directory info
+		$this->EE->load->model('tools_model');
+		$query = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata('group_id'), $id);
+		
+		if ($query->num_rows() == 0)
+		{
+			return;
+		}
+		
+		$dir_row = $query->row();
+
+		$config = array(
+				'upload_path'	=> $dir_row->server_path,
+				'allowed_types'	=> ($this->EE->session->userdata('group_id') == 1) ? 'all' : $dir_row->allowed_types,
+				'max_size'		=> round($dir_row->max_size/1024, 2),
+				'max_width'		=> $dir_row->max_width,
+				'max_height'	=> $dir_row->max_height, 
+				'temp_prefix'	=> $temp_prefix
+			);
+
+        //  This checks that the newly named file doesn't conflict with an existing file- 
+		//  if they newly named it of course!
+		/*
+        if ($orig_name != $file_name)
+        {
+			if (file_exists($dir_row->server_path.$file_name))
+			{
+				$this->upload_warnings = array('file_exists');
+				return $this;
+        	}
+        }
+		*/
+                
+		$this->EE->load->library('upload', $config);
+		
+
+		if ( ! $this->EE->upload->file_overwrite($temp_file_name, $file_name))
+		{
+			$this->upload_errors = array('error' => $this->EE->upload->display_errors());
+		} 
+		
+		return $this;
+        
+		// Not at all sure if I need this-
+		
+		/*
+		$data = $this->EE->upload->data();
+
+		$this->EE->load->library('encrypt');
+
+			return array(
+				'name'			=> $data['file_name'],
+				'orig_name'		=> $this->EE->upload->orig_name,
+				'is_image'		=> $data['is_image'],
+				'dimensions'	=> $data['image_size_str'],
+				'directory'		=> $dir['id'],
+				'width'			=> $data['image_width'],
+				'height'		=> $data['image_height'],
+				'thumb'			=> $dir['url'].'_thumbs/thumb_'.$data['file_name'],
+				'url_path'		=> rawurlencode($this->EE->encrypt->encode($data['full_path'], $this->EE->session->sess_crypt_key)) //needed for displaying image in edit mode
+			);
+			
+		*/
+    }
+
+    /* END */
+ 
 
 	// --------------------------------------------------------------------
 
@@ -932,6 +1029,7 @@ class Filemanager {
 			'max_size'			=> $max_file_size,
 			'xss_clean'			=> $xss_clean_upload,
 		);
+		
 		
 		$this->EE->load->library('upload', $config);
 		
