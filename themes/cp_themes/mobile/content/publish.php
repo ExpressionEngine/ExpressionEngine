@@ -186,7 +186,7 @@ if ($EE_view_disable !== TRUE)
 							<?php if ($f['field_type'] == 'text' && count($file_list) > 0):?>
 							<img class="file_manipulate js_show" src="<?=$cp_theme_url?>images/publish_format_picture.gif" alt="<?=lang('file')?>" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							<?php endif;?>
-							<?php if ($smileys_enabled):?>
+							<?php if ($smileys_enabled AND isset($f['smiley_table'])):?>
 							<a href="#" class="smiley_link" title="<?=lang('emoticons')?>"><?=lang('emoticons')?></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							<?php endif; ?>
 							<?php if ($f['field_show_fmt'] == 'y' && count($f['field_fmt_options']) > 0):?>
