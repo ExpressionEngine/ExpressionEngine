@@ -32,12 +32,12 @@ if ($EE_view_disable !== TRUE)
 	</div>
 <?php endif;?>
 
-	<?=form_open_multipart('C=content_publish'.AMP.'M=entry_form'.$BK, $form_additional, $form_hidden)?>
+	<?=form_open_multipart($current_url, array('id' => 'publishForm'), $hidden_fields)?>
 
 
 	<?php /* TABS */?>
 	<ul class="tab_menu" id="tab_menu_tabs">
-	<?php foreach($publish_tabs as $tab => $field_list):?>
+	<?php foreach($tabs as $tab => $fields):?>
 		<li id="menu_<?=$tab?>" title="<?=form_prep($tab_labels[$tab])?>" class="content_tab">
 			<a href="#" title="menu_<?=$tab?>" class="menu_<?=$tab?>"><?=lang($tab_labels[$tab])?></a>
 		</li>
@@ -114,16 +114,16 @@ if ($EE_view_disable !== TRUE)
 	<?php */?>
 
 	<div id="holder">
-		<?php foreach ($publish_tabs as $tab=>$fields):?>
+		
+		<?php foreach ($tabs as $tab => $fields):?>
 		<div id="<?=$tab?>" class="main_tab">
 
-			<?php foreach ($fields as $field=>$values):?>
+			<?php foreach ($fields as $field):?>
 
 				<?php
-
-				$f = is_array($field_output[$field]) ? $field_output[$field] : $this->api_channel_fields->settings[$field];
-				$values['is_hidden'] = isset($values['is_hidden']) ? $values['is_hidden'] : FALSE;
-
+				
+				$f = $field_list[$field];
+				
 				?>
 				
 				<div class="publish_field publish_<?=$f['field_type']?>" id="hold_field_<?=$f['field_id']?>">
@@ -168,7 +168,7 @@ if ($EE_view_disable !== TRUE)
 								?>
 							<?php 
 							echo isset($f['string_override']) ? $f['string_override'] : $field_output[$field];
-							echo form_error($f['field_name']);
+							echo form_error($field);
 							?></li>
 						</ul>
 							
@@ -207,11 +207,26 @@ if ($EE_view_disable !== TRUE)
 
 						<?php
 						// only text field types get these options
-						if(($f['field_type'] == 'text' OR $f['field_type'] == 'textarea') && $f['field_id'] != 'title' && $f['field_id'] != 'url_title' && $f['field_id'] != 'pages_uri' && $f['field_id'] != 'forum_topic_id' && ( ! isset($f['field_content_type']) OR $f['field_content_type'] == 'any'))
+						if(
+							(
+								$f['field_type'] == 'text' OR 
+								$f['field_type'] == 'textarea'
+							) 
+							&& 
+							$f['field_id'] != 'title' && 
+							$f['field_id'] != 'url_title' && 
+							$f['field_id'] != 'pages_uri' && 
+							$f['field_id'] != 'forum_topic_id' 
+							&& 
+							( 
+								! isset($f['field_content_type']) OR 
+								$f['field_content_type'] == 'any'
+							)
+						)
 						{
-							if ($smileys_enabled)
+							if ($smileys_enabled AND isset($f['smiley_table']))
 							{
-								echo $smiley_table[$f['field_id']];								
+								echo $f['smiley_table'];
 							}
 						}
 						?>
