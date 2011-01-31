@@ -1,5 +1,6 @@
 var jQT = new $.jQTouch({
     addGlossToIcon: true,
+	fullscreen: false
 });
 
 $(document).ready(function() {
