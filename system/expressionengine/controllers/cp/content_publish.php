@@ -311,10 +311,7 @@ class Content_publish extends CI_Controller {
 			'preview_url' => $preview_url
 		);
 
-		$this->cp->set_breadcrumb(
-			BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'channel_id='.$channel_id,
-			$this->_channel_data['channel_title']
-		);
+		$this->cp->set_breadcrumb(BASE.AMP.'C=content_publish', lang('publish'));
 		
 		$this->javascript->compile();
 		$this->load->view('content/publish', $data);

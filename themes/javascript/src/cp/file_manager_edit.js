@@ -17,22 +17,32 @@
 "use strict";
 
 var crop = null,
-	show_coors;
+	edit_mode,
+	cropCoords;
 
-show_coors = function (coords) {
+cropCoords = function (coords) {
 	$("#crop_x").val(Math.floor(coords.x));
 	$("#crop_y").val(Math.floor(coords.y));
 	$("#crop_width").val(Math.floor(coords.w));
 	$("#crop_height").val(Math.floor(coords.h));
 };
 
+function clearBoxes () {
+	$("#crop_x").val("");
+	$("#crop_y").val("");
+	$("#crop_width").val(EE.filemanager.image_width);
+	$("#crop_height").val(EE.filemanager.image_height);
+	$("#resize_width").val(EE.filemanager.image_width);
+	$("#resize_height").val(EE.filemanager.image_height);
+}
+
 
 $(document).ready(function () {
 
 	// cancel cropping
-	$('#cancel_crop').click(function () {		
+	$('#cancel_crop').click(function () {
 
-		if (crop !== null) {
+		if (crop !== undefined) {
 			// destroy the crop object
 			crop.destroy();
 			crop = null;
@@ -65,11 +75,23 @@ $(document).ready(function () {
 		$('#image_edit_form input[name=action]').val('crop');
 		
 		crop = $.Jcrop('#file_manager_edit_file img', {
-			onChange: show_coors,
-			onSelect: show_coors
+			onChange: cropCoords,
+			onSelect: function () {
+				edit_mode = true;
+			}
 		});
-						
+		
+		
+		// setSelect: crop_coords_array,
+		// onChange: cropCoords,
+		// onSelect: function () {
+		// 	edit_mode = true;
+		// }	
+					
 		return false;		
 	});
+	
+	
+	
 
 });

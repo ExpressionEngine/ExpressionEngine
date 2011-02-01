@@ -607,16 +607,12 @@ class Content_files extends CI_Controller {
 			),
 		));
 		
-		$hidden = array(
-			'action'		=> '',
-			'upload_dir'	=> $this->_upload_dirs[$file_dir]['id'],
-			'file'			=> urlencode($file_name)
-		);
 		$data = array(
 			'file_url'		=> $file_url,
 			'file_path'		=> $file_path,
 			'file_info'		=> $file_info,
-			'hidden'		=> $hidden,
+			'upload_dir'	=> $this->_upload_dirs[$file_dir]['id'],
+			'file'			=> urlencode($file_name)
 		);
 		
 		$this->cp->add_js_script('ui', 'accordion');
