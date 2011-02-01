@@ -50,14 +50,14 @@ $(document).ready(function () {
 			crop.destroy();
 			crop = null;
 		}
-		
-		// reset the crop form values
-		cropCoords({
-			'h': EE.filemanager.image_height,
-			'w': EE.filemanager.image_width,
-			'x': '',
-			'y': ''
-		});
+			
+			// reset the crop form values
+			cropCoords({
+				'h': EE.filemanager.image_height,
+				'w': EE.filemanager.image_width,
+				'x': '',
+				'y': ''
+			});
 
 		$('#toggle_crop').show();
 		$('#cancel_crop').hide();	
@@ -82,7 +82,7 @@ $(document).ready(function () {
 			}
 		});
 
-		return false;
+		return false;		
 	});
 	
 	$(".crop_dim").keyup(function () {
