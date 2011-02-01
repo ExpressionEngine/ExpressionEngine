@@ -54,7 +54,7 @@ if ( ! $EE_view_disable)
 							<th><?=lang('kind')?></th>
 							<th><?=lang('date')?></th>
 							<th><?=lang('actions')?></th>
-							<th><?=form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')?></th>
+							<th id="toggle_all"><?=form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')?></th>
 						</tr>
 					</thead>
 					<tbody>

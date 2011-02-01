@@ -1219,6 +1219,12 @@ table.mainTable th {
 	cursor:				pointer;
 }
 
+#toggle_all, td.file_select {
+	width: 19px;
+	padding: 0 7px 0 9px !important;
+}
+
+
 table.mainTable thead {
 	background:			#C60047 url('../images/table_column_heading_active_bg.jpg') bottom left repeat-x;
 }
