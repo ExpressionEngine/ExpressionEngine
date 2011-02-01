@@ -4322,12 +4322,12 @@ class Admin_content extends CI_Controller {
 				foreach ($layouts_for_group->result() as $layout) 
 				{
 					// Figure out visibility for the field in the layout
-					$layout_settings = $this->layout_model->get_layout_settings(array('layout_id' => $layout->layout_id));
+					$layout_settings = $this->layout_model->get_layout_settings(array('layout_id' => $layout->layout_id), TRUE);
 					
 					$visibility = TRUE;
 					$width = '100%';
 					
-					if (array_key_exists($native_settings['field_id'], $layout_settings)) 
+					if (array_key_exists('field_id_'.$native_settings['field_id'], $layout_settings)) 
 					{
 						$field_settings = $layout_settings['field_id_'.$native_settings['field_id']];
 						
