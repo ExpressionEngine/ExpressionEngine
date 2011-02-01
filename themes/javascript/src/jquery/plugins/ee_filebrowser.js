@@ -12,11 +12,18 @@
 
 (function($) {
 
-	var thumbs_per_page, dir_files_structure, dir_paths, backend_url, trigger_callback,
+	var backend_url,
 		current_directory = 0,
-		spinner_url = EE.THEME_URL+'/images/publish_file_manager_loader.gif',
+		dir_files_structure,
+		dir_paths,
 		default_img_url = EE.PATH_CP_GBL_IMG+'default.png',
-		file_manager_obj;
+		file_manager_obj,
+		spinner_url = EE.THEME_URL+'/images/publish_file_manager_loader.gif',
+		thumbs_per_page,
+		trigger_callback,
+		all_dirs = {},
+		
+		display_type;
 
 	/*
 	 * Sets up the filebrowser - call this before anything else
@@ -25,7 +32,7 @@
 	 */
 	$.ee_filebrowser = function() {
 
-		thumbs_per_page = 20;
+		thumbs_per_page = 10;
 
 		// Setup!
 		$.ee_filebrowser.endpoint_request('setup', function(data) {
@@ -63,6 +70,7 @@
 		}
 		
 		data = $.extend(data, {'action': type});
+		
 		$.getJSON(EE.BASE+'&'+EE.filebrowser.endpoint_url+'&'+$.param(data), callback);
 	}
 
@@ -156,6 +164,18 @@
 			}
 		});
 	}
+	
+	// --------------------------------------------------------------------
+	/*
+	 * Place Image
+	 *
+	 * Convenience method that gets bound as an inline click event. Yes,
+	 * inline click event - eat me.
+	 */
+	$.ee_filebrowser.placeImage = function(dir, img) {
+		$.ee_filebrowser.clean_up(dir_files_structure[dir][img], '');
+		return false;
+	}
 
 	// --------------------------------------------------------------------
 
@@ -171,11 +191,6 @@
 		trigger_callback(file);
 	}
 
-	$.ee_filebrowser.reset = function() {
-		$("#file_manager_main").data('scrollable').begin();
-		$(".vertscrollable").data('scrollable').begin();
-	}
-
 	// --------------------------------------------------------------------
 
 	/*
@@ -183,10 +198,15 @@
 	 */
 	var callbacks = {
 		upload_start: function() {
-			$("#progress", file_manager_obj).show();
+			$('input[name=upload_dir]').val($('#dir_choice').val());
+			// $("#progress", file_manager_obj).show();
 		},
 
 		upload_success: function(file) {
+			
+			$.ee_filebrowser.clean_up(file, '');
+			return;
+			
 			// change the contents of dir_files_structure to a blank string so that
 			// next time that directory is viewed it will be re-polled for contents
 			dir_files_structure[file.directory] = "";
@@ -319,116 +339,99 @@
 	 * Builds the horizontal navigation.
 	 * Only fills in thumbnails for the first page, all others are loaded when they come into view
 	 */
-	function build_pages(directory) {
+	function build_pages(directory, offset) {
 		
-		if ( ! directory.id in dir_files_structure) {
-			return;
+		if (isNaN(offset)) {
+			offset = 0;
+		}
+				
+		if (isNaN(directory)) {
+			all_dirs[directory.id] = directory;
+		}
+		else {
+			directory = all_dirs[directory];
 		}
 		
+		if ( ! directory in dir_files_structure) {
+			return;
+		}
+						
 		// Cache directory information
 		dir_files_structure[directory.id] = directory.files;
 		dir_paths[directory.id] = directory.url;
 		
-		// Time to pimp your file browser! (How lame am I? I actually found that funny when I first typed it. -Allard)
-		var thumbs = "",
-			item_count = 0,
-			_pages = [],
-			api = $("#page_"+directory.id, file_manager_obj).data('scrollable');
-
-		// For performance, we compile the thumbnails into a string and append once rather then appending each image
-		// We'll need to reload for every page, but it's efficient enough to make it worth it
-
-		$.each(directory.files, function(j, file) {
-
-			if (j % thumbs_per_page == 0 && j != 0) {
-				_pages.push(thumbs);
-				thumbs = '';
-			}
-
-			// non-images get a "default" icon
-			if (file.mime == false || file.mime.indexOf("image") < 0) {
-				thumbs += '<div><div title="{filedir_'+directory.id+'}|'+file.name+'"><img title="'+default_img_url+'" src="'+default_img_url+'" alt="'+file.name+'" /></div>'+file.short_name+'</div>';
-			} else {
-				// generic image if no thumb exists	(@todo generic thumbnail thing?)
-				// thumb only on first page
-				// spinner for thumbs on subsequent pages
-
-				thumbs += '<div><div title=\''+file.dimensions+'\'><img class="image" title="{filedir_'+directory.id+'}'+file.name+'" src="';
-
-				if ( ! file.has_thumb) {
-
-					thumbs += default_img_url
-
-					// If this is a viewable page without thumbs, build it
-					if (j < thumbs_per_page)
-					{
-						$.ajax({
-							type: "POST",
-							url: EE.BASE+"&"+EE.filebrowser.endpoint_url+"&action=ajax_create_thumb",
-							data: "XID=" + EE.XID + '&dir='+directory.id+'&image='+file.name
-						});
-					}
-
-				}
-				else if (j < thumbs_per_page) {
-					thumbs += directory.url+'_thumbs/thumb_'+file.name;
-				}
-				else {
-					thumbs += spinner_url;
-				}
+		var per_page = thumbs_per_page,
+			total_files = directory.files.length;
 				
-				thumbs += '" alt="'+file.name+'" /></div>'+file.short_name+'</div>';
+		$.each(directory.files, function(i, el) {
+			el['img_id'] = i+'';
+			el['directory'] = directory.id+'';
+			el['is_image'] = ! (el.mime.indexOf("image") < 0);
+			if (el['is_image']) {
+				el['thumb'] = directory.url + "/_thumbs/thumb_" + el.name;
 			}
-
-			item_count++;
 		});
 		
-		_pages.push(thumbs);
-
-		$.each(_pages, function() {
-			api.addItem('<div class="item">'+this+'</div>');
-		});
-
-		// Since items were added, we need to re-setup the events, but its possible that
-		// some already have events assigned. Mass Unbind called for here.
-		$(".item > div", file_manager_obj).unbind();
-
-		// setup activity
-		$(".item > div", file_manager_obj).click(function() {
-
-			var file,
-				is_image = ! ($(this).find("img").attr("src") == default_img_url);
-
-			if (is_image === true) {
-				file = {
-					is_image: true,
-					thumb: $(this).find("img").attr("src"),
-					directory: current_directory,
-					dimensions: $(this).find("div").attr("title"),
-					name: $(this).find("img").attr("title").split("}")[1]
-				};
-			}
-			else {
-				file = {
-					is_image: false,
-					thumb: default_img_url,
-					directory: current_directory,
-					name: $(this).find("div").attr("title").split("|")[1]
-				};
-			}
-
-			trigger_callback(file);
-			file_manager_obj.dialog("close");
-		});
-
-
-		// Our css defaults to hiding the navigation controls. We need
-		// to show them if we have more than one page.
-		if (api.getSize() > 1)
-		{
-			$("#nav_controls_"+directory.id, file_manager_obj).show();
+		// Clear everything
+		var table_view = $("#tableView").detach(),
+			viewSelectors = $("#viewSelectors").detach();
+			
+		table_view.find('tbody').empty();
+		$('#file_chooser_body').empty().append(table_view);
+		$("#file_chooser_footer").empty().append(viewSelectors);
+		
+		
+		var page_count = Math.ceil(total_files / per_page),
+			pages = [];
+		
+		for (var i = 0; i < page_count; i++) {
+			pages[i] = i + 1;
 		}
+		
+		var pagination = {
+			'directory': directory.id,
+			'pages_from': offset,
+			'pages_to': offset + per_page,
+			'pages_total': page_count,
+			'pages_current': Math.floor(offset + per_page / per_page),
+			'pages': pages
+		};
+		
+		offset = offset * per_page;
+		
+		var workon = directory.files.slice(offset, offset+per_page);
+				
+		if (display_type != 'list') {
+			var thumbs = [],
+				total = workon.length,
+				added = 0;
+			
+			while(added < per_page && total) {
+				total--;
+				
+				if (workon[total].has_thumb) {
+					thumbs.push(workon[total]);
+					added++;
+				}
+			}
+			
+			$("#tableView").hide();
+			$.tmpl("thumb", thumbs).appendTo("#file_chooser_body");
+			
+			// @todo need to fix pagination here in case some didn't
+			// have thumbnails?
+		}
+		else {
+			$("#tableView").show();
+			$.tmpl("fileRow", workon).appendTo("#tableView tbody");
+		}
+		
+		$.tmpl("pagination", pagination).appendTo("#file_chooser_footer");
+		
+		//	$.template("noFilesRow", $('#noFilesRowTmpl').remove());	
 	}
+	
+	$.ee_filebrowser.setPage = build_pages;
 
 	// --------------------------------------------------------------------
 
@@ -436,74 +439,9 @@
 	 * Dynamically loads files from a directory if it hasn't been loaded yet
 	 */
 	function loadFiles(directory) {
+		
 		if (dir_files_structure[directory] == "") {
 			$.ee_filebrowser.endpoint_request('directory_contents', {'directory': directory}, build_pages);
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/* 
-	 * In order to save on bandwidth, when the images are loaded into the file browser they
-	 * are only placeholders. This function takes care of intelligently loading thumbnails
-	 * for your viewing pleasure.
-	 */
-	function loadThumbs(directory)
-	{
-		var api = $("#page_"+directory).data('scrollable');
-
-		// Which page of thumbs do we need? Also, a bit of defensive coding
-		page_index = (api.getIndex() == "") ? 0 : api.getIndex();
-
-		// Go through and grab each image and modify the src now to load the
-		// pretty thumb if it needs loading
-		if ($("#page_"+directory+" .item:eq("+page_index+") img").length > 0) {
-			var sources = {};
-
-			// To create the illusion of "thinking" while the thumbnail is downloading, the thumbnail is first
-			// loaded into an empty DOM image. This image is never put anywhere on the page, but forces the
-			// browser to cache it. After it is completely loaded into the cache, it will then replace the image.
-			$("#page_"+directory+" .item:eq("+page_index+") img").each(function (i) {
-
-				var that = $(this),
-					regex = /^\{filedir_(\d+)\}/,
-					match = regex.exec(that.attr("title"));
-
-				// If it has a spinner we need to swap
-				if (that.attr('src') == spinner_url) {
-
-					sources[i] = dir_paths[match[1]]+'/_thumbs/thumb_'+that.attr("title").replace(regex, '');
-
-					$('<img src="'+sources[i]+'" />').load(function(){
-						that.attr("src", sources[i]);
-					});
-				}
-				else if (that.attr('class') == "image" && that.attr('src') == default_img_url)
-				{
-					// What we have here is an image file that the user is viewing that is 
-					// without a thumbnail. Let's get to work
-
-					// change thumb to the spinner to indicate we're working on it
-					that.attr('src', spinner_url);
-
-					// Get the filename (needed to generate the thumb)
-					var filename = that.attr("title").substring(that.attr("title").indexOf("}")+1);
-
-					// Generate it in the background, and if we're successful load it. If
-					// thumb creation fails for some reason, drop in the default image.
-					$.ajax({
-						type: "POST",
-						url: EE.BASE+"&"+EE.filebrowser.endpoint_url+"&action=ajax_create_thumb",
-						data: "XID=" + EE.XID + '&dir='+directory+'&image='+filename,
-						success: function (thumb_src) {
-							that.attr('src', dir_paths[match[1]]+'/_thumbs/thumb_'+that.attr("title").replace(regex, ''));
-						},
-						error: function () {
-							that.attr('src', default_img_url);
-						}
-					});
-				}
-			});
 		}
 	}
 
@@ -513,8 +451,6 @@
 	 * Sets up all filebrowser events
 	 */
 	function createBrowser() {
-
-		var focused_tab, cur_dir_seek;
 		
 		// Set up modal dialog
 		file_manager_obj.dialog({
@@ -528,78 +464,31 @@
 			autoOpen: false,
 			zIndex: 99999,
 			open: function(event, ui) {
-				// keyboard naviation is disabled so form elements are usable,
-				// re-initialize it when file browser is open
-				$("#file_manager_main").data('scrollable').getConf().keyboard = "static";
-
-				// enable keyboard navigation for pages (will get turned off if the file browser gets hidden)
-				$(".vertscrollable").data('scrollable').getConf().keyboard = true;
-			},
-			close: function(event, ui) {
-				$("#file_manager_main").data('scrollable').getConf().keyboard = false;
-
-				// Reset position
-				$.ee_filebrowser.reset()
+				var current_directory = $('#dir_choice').val();
+				
+				// Are there files that need to be retrieved for this dir?
+				// loadFiles will intelligently take care of minimizing HTTP requests
+				loadFiles(current_directory);
 			}
 		});
-
-		// Create vertical tabs
-		$("#file_manager_main").scrollable({
-			vertical: true,
-			clickable: false,
-			speed: 250,
-			keyboard: true,
-			onSeek: function(evt, i) {
-				
-				// onSeek (and onBeforeSeek which is the easiest to see this with) are firing twice, I believe
-				// because of the nested scrollable plugins. Its my theory that this is intermittently making
-				// the "pagination" wrong on the second, third, forth, etc directories.
-				// we'll just use a simple variable (cur_dir_seek) to make sure this doesn't fire twice. Also making
-				// efforts to get this patched in the scrollable plugin proper.
-
-				if (cur_dir_seek != i)
-				{
-					cur_dir_seek = i;
-					
-					// In order to figure out which (of potentially dozens) directory we are on, we need to read the DOM
-					current_directory = $('#main_navi').find('li').eq(i).attr('id').replace(/main_navi_/, "");
-
-					// Are there files that need to be retrieved for this dir?
-					// loadFiles will intelligently take care of minimizing HTTP requests
-					loadFiles(current_directory);
-					loadThumbs(current_directory);
-
-					// An up/down page has changed. Focus in on it
-					focused_tab.eq(i).data('scrollable').focus();
-				}
-			}
-		}).navigator("#main_navi");
-
-
-		// Create horizontal pages
-		focused_tab = $(".vertscrollable").scrollable({
-			clickable: false,
-			next: ".newThumbs",
-			prev: ".prevThumbs",
-			keyboard: true,
-			onSeek: function(evt, i) {
-				loadThumbs(current_directory);
-			}
-		}).navigator({navi: ".navi"});
-
-
-		// load content for default directory		
-		loadFiles(current_directory);
-		loadThumbs(current_directory);
-
-
-		// set keyboard focus on the first horizontal scrollable
-		focused_tab.eq(0).data('scrollable').focus();
 		
-		// Should work automatically, but without this it wasn't
-		// highlighting the first nav item correctly.
-		$('#file_manager_main').data('scrollable').begin();
+		display_type = 'list';
+		$('input[name=view_type]').click(function() {
+			display_type = this.value;
+			build_pages($('#dir_choice').val(), 0);
+		});
 		
+		$('#dir_choice').click(function() {
+			loadFiles(this.value);
+			//build_pages(this.value, 0);
+		})
+		
+		$.template("fileRow", $('<tbody />').append($('#rowTmpl').remove().attr('id', '')));
+		$.template("noFilesRow", $('#noFilesRowTmpl').remove());
+		$.template("pagination", $('#paginationTmpl').remove());
+		
+		$.template("thumb", $('#thumbTmpl').remove());
+		// $.template("NoFilesThumb", $('#rowTmpl'));
 		
 		// Bind the upload submit event
 		$("#upload_form", file_manager_obj).submit($.ee_filebrowser.upload_start);
