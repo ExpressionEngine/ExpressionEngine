@@ -1972,9 +1972,16 @@ class Content_publish extends CI_Controller {
 		
 		$versioning = '';
 		
-		$revisions_checked = (isset($entry_data['versioning_enabled']) 
-									&& $entry_data['versioning_enabled'] == 'y') ? TRUE : FALSE;
-	
+		// We default versioning to true
+		if ( ! isset($entry_data['versioning_enabled']))
+		{
+			$revisions_checked = TRUE;
+		}
+		else
+		{
+			$revisions_checked = ($entry_data['versioning_enabled'] == 'y') ? TRUE : FALSE;
+		}
+		
 		if ($revisions_checked)
 		{
 			$versioning = lang('no_revisions_exist');
