@@ -16,55 +16,56 @@ if ( ! $EE_view_disable)
 			<h2 class="edit"><?=lang('content_files')?></h2>
 		</div>
 		
-		<div id="file_manager" class="pageContents group">
+		<div id="file_manager">
+
+			<div id="filterMenu">
 			<?php if ( ! empty($upload_dirs_options)):?>
 				<?=form_open('', array('id' => 'dir_choice_form'))?>
 					<?=form_label('Upload Directory:', 'dir_choice').NBS?>
 					<?=form_dropdown('dir_choice', $upload_dirs_options, $selected_dir, 'id="dir_choice"').NBS?>
 					<small><?=lang('total_dir_size')?> <?=number_format($dir_size/1000, 1);?> <?=lang('file_size_unit')?></small>
-				<?=form_close()?>
-				<?=form_open_multipart('C=content_files'.AMP.'M=upload_file', array('id'=>'upload_form', 'class' => 'tableSubmit', ))?>
+					<?=form_close()?>
+				
+					<?=form_open_multipart('C=content_files'.AMP.'M=upload_file', array('id'=>'upload_form', 'class' => 'tableSubmit', ))?>
 					<?=form_hidden('upload_dir', $selected_dir, array('id' => 'upload_dir'))?>
 					<?=form_label(lang('upload_file'), 'upload_file', array('class' => 'visualEscapism'))?>
 					<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>15,'class'=>'field'))?>
-					<p id="progress"><img src="<?=$cp_theme_url?>images/indicator.gif" alt="<?=lang('loading')?>..." /><br /><?=lang('loading')?>...</p>
-					<input type="submit" class="submit" value="<?=lang('upload_file')?>">
+					&nbsp; &nbsp;<input type="submit" class="submit" value="<?=lang('upload_file')?>">
 				<?=form_close()?>
 			<?php endif; ?>
+			</div>  
+			
+			<div class="clear"></div>
+
+			
 			<?=form_open('C=content_files'.AMP.'M=multi_edit_form')?>
-				<table class="mainTable clear_left" border="0" cellspacing="0" cellpadding="0">
-					<thead>
-						<tr>
-							<th><?=lang('name')?></th>
-							<th><?=lang('size')?></th>
-							<th><?=lang('kind')?></th>
-							<th><?=lang('date')?></th>
-							<th><?=lang('actions')?></th>
-							<th><?=form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')?></th>
-						</tr>
-					</thead>
-					<tbody>
-					<?php if ( ! isset($files) OR empty($files)):?>
+			<?php 
+					$this->table->set_template($cp_pad_table_template);
+			
+					$this->table->set_heading(
+						array('data' => lang('file_name')),
+						array('data' => lang('file_size')),
+						array('data' => lang('kind')),
+						array('data' => lang('date')),
+						array('data' => lang('actions')),
+						array('data' => form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"'), 'style' => 'width:2%', 'class' => 'file_select')
+						);					
+					
+					if ( ! isset($files) OR empty($files)):?>
 						<tr>
 							<td colspan="5"><?=lang('no_uploaded_files')?></td>
 						</tr>
 					<?php else: ?>
-						<?php foreach ($files as $file):?>
-						<tr>
-							<td><a class="less_important_link" href="<?=BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$selected_dir.AMP.'file='.urlencode($file['name'])?>"><?=$file['name']?></a></td>
-							<td><?=number_format($file['size']/1000, 1);?> <?=lang('file_size_unit')?></td>
-							<td><?=$file['mime']?></td>
-							<td><?=$this->localize->set_human_time($file['date'], TRUE)?></td>
-							<td>
-								<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$selected_dir.AMP.'file='.$file['name'].AMP?>action=download" title="<?=lang('file_download')?>"><img src="<?=$cp_theme_url?>images/icon-download-file.png"></a>
-								&nbsp;&nbsp;<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$selected_dir.AMP.'file='.$file['name'].AMP?>action=delete" title="<?=lang('delete_selected_files')?>"><img src="<?=$cp_theme_url?>images/icon-delete.png"></a>
-							</td>
-							<td class="file_select"><?=form_checkbox('file[]', urlencode($file['name']), FALSE, 'class="toggle"')?></td>
-						</tr>
-						<?php endforeach; ?>
+						<?php
+						// Create a row for each file
+						foreach ($files as $file)
+						{
+							$this->table->add_row($file);
+						}
+						
+						echo $this->table->generate();
+						?>
 					<?php endif;?>
-					</tbody>
-				</table>
 				<div class="tableSubmit">
 					<?=form_hidden('upload_dir', $selected_dir)?>
 					<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
@@ -78,6 +79,10 @@ if ( ! $EE_view_disable)
 			<?=form_close()?>
 		</div>
 	</div>
+</div>
+
+<div class="image_overlay" id="overlay" style="display:none"><a class="close"></a>
+	<div class="contentWrap"></div>
 </div>
 
 <?php

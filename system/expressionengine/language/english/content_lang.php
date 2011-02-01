@@ -687,6 +687,9 @@ $lang = array(
 'file_exists_warning' =>
 'File Exists Warning',
 
+'actions' =>
+'Actions',
+
 'overwrite_instructions' =>
 'You can either choose a new name and the file will be renamed, or you can submit this form with the same name and the file will be overwritten.',
 
