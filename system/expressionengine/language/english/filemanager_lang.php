@@ -71,6 +71,9 @@ $lang = array(
 'total_dir_size'		=> 'Total Directory Size:',
 'no_upload_dirs_create_new' => 'No upload locations exist.  <a href="%s">Create a new upload location</a>',
 
+'save_crop' 			=> 'Save Crop',
+'cancel_crop'			=> 'Cancel Crop',
+
 ''=>''
 );
 
