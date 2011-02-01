@@ -937,7 +937,7 @@ class Filemanager {
 	 *
 	 *
 	 */
-	public function fetch_files($file_dir_id = NULL)
+	public function fetch_files($file_dir_id = NULL, $files = array())
 	{
 		$this->EE->load->model('tools_model');
 		
@@ -952,7 +952,7 @@ class Filemanager {
 		{
 			$dirs->files[$dir->id] = array();
 			
-			$files = $this->EE->tools_model->get_files($dir->server_path, $dir->allowed_types);
+			$files = $this->EE->tools_model->get_files($dir->server_path, $dir->allowed_types, '', FALSE, FALSE, $files);
 			
 			foreach ($files as $file)
 			{
@@ -961,6 +961,63 @@ class Filemanager {
 		}
 	
 		return $dirs;
+	}
+	
+	
+	// --------------------------------------------------------------------	
+
+	function directory_files_map($source_dir, $directory_depth = 0, $hidden = FALSE, $allowed_types = 'all')
+	{
+		$this->EE->load->helper('file');
+
+		if ($allowed_types == 'img')
+		{
+			$allowed_type = array('image/gif','image/jpeg','image/png');
+		}
+		elseif ($allowed_types == 'all')
+		{
+			$allowed_type = array();
+		}
+
+		if ($fp = @opendir($source_dir))
+		{
+			$filedata	= array();
+			$new_depth	= $directory_depth - 1;
+			$source_dir	= rtrim($source_dir, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+			
+			while (FALSE !== ($file = readdir($fp)))
+			{
+				// Remove '.', '..', and hidden files [optional]
+				if ( ! trim($file, '.') OR ($hidden == FALSE && $file[0] == '.'))
+				{
+					continue;
+				}
+				
+				if ( ! @is_dir($source_dir.$file))
+				{
+					if ( ! empty($allowed_type))
+					{
+						$mime = get_mime_by_extension($file);
+						
+						//echo $mime;
+						
+						if ( ! in_array($mime, $allowed_type))
+						{
+							continue;
+						}
+					}
+					
+					$filedata[] = $file;
+				}
+			}
+
+			closedir($fp);
+			
+			sort($filedata);
+			return $filedata;
+		}
+
+		return FALSE;
 	}
 	
 	// --------------------------------------------------------------------	
