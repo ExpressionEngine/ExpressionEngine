@@ -3187,6 +3187,11 @@ div.contentWrap {
 }
 
 /*  File Manager */
+#mainContent #dir_choice_form,
+#mainContent #upload_form {
+	padding: 			0 0 13px;
+}
+
 
 #mainContent #dir_choice_form {
 	float: 				left;
