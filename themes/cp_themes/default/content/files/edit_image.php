@@ -38,15 +38,11 @@ if ( ! $EE_view_disable)
 								<?=lang('crop_y', 'crop_y')?>
 								<?=form_input('crop_y', 0, 'id="crop_y"  class="crop_dim"')?>
 							</li>
-							<li>
-								<a href="#" id="toggle_crop"><?=lang('crop_mode')?></a>
-							</li>
-							<li style="display:none; float:right">
-								<a href="#" id="cancel_crop"><?=lang('cancel_crop')?></a>
-							</li>
 						</ul>
 						<p class="submit_button">
-							<?=form_submit('save_image', lang('save_image'), 'class="submit" id="edit_file_submit"')?><br />
+							<a href="#" id="toggle_crop" class="submit js_show"><?=lang('crop_mode')?></a>
+							<?=form_submit('save_image', lang('save_image'), 'class="submit"')?><br />
+							<a href="#" id="cancel_crop" style="display: none"><?=lang('cancel_changes')?></a>
 						</p>
 					</div>
 				<?=form_close()?>
@@ -81,7 +77,7 @@ if ( ! $EE_view_disable)
 							</li>
 						</ul>
 						<p class="submit_button">
-							<?=form_submit('save_image', lang('save_image'), 'class="submit" id="edit_file_submit"')?><br />
+							<?=form_submit('save_image', lang('save_image'), 'class="submit"')?><br />
 							<?=anchor('#', lang('cancel_changes'), 'class="disabled"')?>
 						</p>
 					</div>
@@ -100,8 +96,8 @@ if ( ! $EE_view_disable)
 							</li>
 						</ul>
 						<p class="submit_button">
-							<?=form_submit('save_image', lang('save_image'), 'class="submit" id="edit_file_submit"')?><br />
-							<?=anchor('#', lang('cancel_changes'), 'class="disabled"')?>
+							<?=form_submit('save_image', lang('save_image'), 'class="submit"')?><br />
+							<?=anchor('#', lang('cancel_changes'), 'id="cancel_resize" style="display: none"')?>
 						</p>
 					</div>
 					<div class="clear_left"></div>

@@ -660,6 +660,7 @@ class Content_files extends CI_Controller {
 				$this->_do_crop($file);
 				break;
 			case 'resize':
+				$this->_do_resize($file);
 				break;
 			default:
 				return ''; // todo, error

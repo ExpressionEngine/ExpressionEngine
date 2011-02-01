@@ -20,7 +20,8 @@ var crop = null,
 	edit_mode = false,
 	cropCoords,
 	do_crop,
-	crop_coords_array;
+	crop_coords_array,
+	$image = $('#file_manager_edit_file img');
 
 cropCoords = function (coords) {
 	$("#crop_x").val(Math.floor(coords.x));
@@ -44,25 +45,22 @@ $(document).ready(function () {
 	// cancel cropping
 	$('#cancel_crop').click(function () {
 
-		if (crop !== undefined) {
+		if (crop !== undefined && crop !== null) {
 			// destroy the crop object
 			crop.destroy();
 			crop = null;
-			
-			// reset the crop form values
-			cropCoords({
-				'h': EE.filemanager.image_height,
-				'w': EE.filemanager.image_width,
-				'x': '',
-				'y': '',
-			});
-
-			$('#toggle_crop').parent('li').show();
-			$('#cancel_crop').parent('li').hide();	
-			
-			// Update action form input
-			$('#image_edit_form input[name=action]').val('');
 		}
+		
+		// reset the crop form values
+		cropCoords({
+			'h': EE.filemanager.image_height,
+			'w': EE.filemanager.image_width,
+			'x': '',
+			'y': ''
+		});
+
+		$('#toggle_crop').show();
+		$('#cancel_crop').hide();	
 		
 		return false;
 	});
@@ -73,11 +71,8 @@ $(document).ready(function () {
 			crop_coords_array = [ 50, 50, 100, 100 ];
 		}
 
-		$('#toggle_crop').parent('li').hide();
-		$('#cancel_crop').parent('li').show();
-
-		// Update action form input
-		$('#image_edit_form input[name=action]').val('crop');
+		$('#toggle_crop').hide();
+		$('#cancel_crop').show();
 
 		crop = $.Jcrop('#file_manager_edit_file img', {
 			setSelect: crop_coords_array,
@@ -87,14 +82,84 @@ $(document).ready(function () {
 			}
 		});
 
-		return false;		
+		return false;
 	});
 	
 	$(".crop_dim").keyup(function () {
 		// todo, finish
+		$('#toggle_crop').hide();
+		$('#cancel_crop').show();
+	});
 
+	EE.filemanager.resize_listener();
+});
+
+EE.filemanager.resize_listener = function() {
+	var $resize_width = $('#resize_width'),
+		$resize_height = $('#resize_height'),
+		$cancel_button = $('#cancel_resize');
+	
+	$resize_width.add($resize_height).keyup(function(event) {
+		// Enable cancel button
+		$cancel_button.show();
+		
+		// Need to maintain proportions and resize image
+		// In order to do this, I need to figure out ratio and adhere to it
+		var $element = $(this),
+			id = $element.attr('id'),
+			$other_element = (id === "resize_height") ? $resize_width : $resize_height,
+			image_ratio;
+		
+		// Determine ratio
+		if (id === "resize_width") 
+		{
+			image_ratio = EE.filemanager.image_height / EE.filemanager.image_width;
+			
+		}
+		else
+		{
+			image_ratio = EE.filemanager.image_width / EE.filemanager.image_height;
+		}
+		
+		// Change other element's value
+		$other_element.val(Math.round(image_ratio * $element.val()));
+		
+		if ($resize_width.val() > EE.filemanager.image_width) 
+		{
+			$resize_width.addClass('oversized');
+		}
+		else
+		{
+			$resize_width.removeClass('oversized');
+		}
+		
+		if ($resize_height.val() > EE.filemanager.image_height) 
+		{
+			$resize_height.addClass('oversized');
+		}
+		else
+		{
+			$resize_height.removeClass('oversized');
+		}
+		
+		// Resize image
+		$image.attr({
+			'width': $resize_width.val(),
+			'height': $resize_height.val()
+		});
 	});
 	
-	
-
-});
+	$cancel_button.click(function(event) {
+		event.preventDefault();
+		
+		$resize_width.val(EE.filemanager.image_width);
+		$resize_height.val(EE.filemanager.image_height);
+		
+		$image.attr({
+			'width': EE.filemanager.image_width,
+			'height': EE.filemanager.image_height
+		});
+		
+		$cancel_button.hide();
+	});
+};

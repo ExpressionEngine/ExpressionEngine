@@ -3189,7 +3189,7 @@ div.contentWrap {
 /*  File Manager */
 #mainContent #dir_choice_form,
 #mainContent #upload_form {
-	padding: 			0 0 13px;
+	padding: 			0 0 4px;
 }
 
 
@@ -3257,6 +3257,12 @@ div.contentWrap {
 	text-align:			right;
 }
 
+#file_manager_toolbar  p.submit_button a {
+	font-size: 1.1em;
+	display: inline-block;
+	margin: 0 0 5px;
+}
+
 #file_manager_toolbar  p.submit_button input {
 	margin-bottom: 		5px;
 	width: 				auto;
@@ -3268,6 +3274,10 @@ div.contentWrap {
 
 #rotate_fieldset.ui-accordion-content li input {
 	width: 				auto;
+}
+
+#file_manager_toolbar .oversized {
+	border: 2px solid #c6220a;
 }
 
 #file_manager_edit_file {
