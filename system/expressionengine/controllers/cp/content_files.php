@@ -622,10 +622,13 @@ class Content_files extends CI_Controller {
 			),
 		));
 
+		$hidden_fields = form_hidden('directory_id', $file_dir).form_hidden('file', urlencode($file_name));
+		
 		$data = array(
-				'file_url'		=> $file_url,
-				'file_path'		=> $file_path,
-				'file_info'		=> $file_info,
+			'file_url'		=> $file_url,
+			'file_path'		=> $file_path,
+			'file_info'		=> $file_info,
+			'hidden_fields' => $hidden_fields,
 		);
 		
 		$this->cp->add_js_script('ui', 'accordion');
