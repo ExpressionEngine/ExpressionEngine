@@ -593,6 +593,13 @@ class Content_files extends CI_Controller {
 		$this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate");
 		$this->output->set_header("Pragma: no-cache");
 
+		$this->cp->add_js_script(array(
+			// 'plugin'	=> array(''),
+			'file'		=> 'cp/file_manager_edit',
+			'plugin'	=> 'jcrop',
+			)
+		);
+
 		// It cleans itself
 		$file_name 	= $this->security->sanitize_filename($this->input->get('file'));
 		
@@ -605,11 +612,20 @@ class Content_files extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
+		
+		$file_info = $this->filemanager->get_file_info($file_path);
+		
+		$this->javascript->set_global(array(
+			'filemanager'	=> array(
+				'image_width'	=> $file_info['width'],
+				'image_height'	=> $file_info['height'],
+			),
+		));
 
 		$data = array(
 				'file_url'		=> $file_url,
 				'file_path'		=> $file_path,
-				'file_info'		=> $this->filemanager->get_file_info($file_path),
+				'file_info'		=> $file_info,
 		);
 		
 		$this->cp->add_js_script('ui', 'accordion');
