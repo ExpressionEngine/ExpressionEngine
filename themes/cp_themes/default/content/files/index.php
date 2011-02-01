@@ -32,6 +32,7 @@ if ( ! $EE_view_disable)
 						&nbsp;&nbsp;<input type="submit" class="submit" value="<?=lang('upload_file')?>">
 					<?=form_close()?>
 				<?php endif; ?>
+				<div class="clear_left"></div>
 			</div>
 			
 			<?=form_open('C=content_files'.AMP.'M=multi_edit_form')?>
