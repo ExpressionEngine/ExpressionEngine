@@ -21,7 +21,8 @@ var crop = null,
 	cropCoords,
 	do_crop,
 	crop_coords_array,
-	$image = $('#file_manager_edit_file img');
+	$image = $('#file_manager_edit_file img'),
+	oversized_class = 'oversized';
 
 cropCoords = function (coords) {
 	$("#crop_x").val(Math.floor(coords.x));
@@ -126,20 +127,20 @@ EE.filemanager.resize_listener = function() {
 		
 		if ($resize_width.val() > EE.filemanager.image_width) 
 		{
-			$resize_width.addClass('oversized');
+			$resize_width.addClass(oversized_class);
 		}
 		else
 		{
-			$resize_width.removeClass('oversized');
+			$resize_width.removeClass(oversized_class);
 		}
 		
 		if ($resize_height.val() > EE.filemanager.image_height) 
 		{
-			$resize_height.addClass('oversized');
+			$resize_height.addClass(oversized_class);
 		}
 		else
 		{
-			$resize_height.removeClass('oversized');
+			$resize_height.removeClass(oversized_class);
 		}
 		
 		// Resize image
@@ -152,8 +153,8 @@ EE.filemanager.resize_listener = function() {
 	$cancel_button.click(function(event) {
 		event.preventDefault();
 		
-		$resize_width.val(EE.filemanager.image_width);
-		$resize_height.val(EE.filemanager.image_height);
+		$resize_width.val(EE.filemanager.image_width).removeClass(oversized_class);
+		$resize_height.val(EE.filemanager.image_height).removeClass(oversized_class);
 		
 		$image.attr({
 			'width': EE.filemanager.image_width,
