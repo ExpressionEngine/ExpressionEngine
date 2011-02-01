@@ -14,22 +14,16 @@ if ($EE_view_disable !== TRUE)
 
 			<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		    <div class="pageContents">
-			
-			
-				<?=form_open('C=content_files'.AMP.'M=rename_file', array('id'=>'rename_file_form'), $hidden)?>			
-						<ul>
-							<li><?=lang('file_exists')?>
-							</li>
-							<li><?=lang('overwrite_instructions')?>
-							</li>
-							
-							<li>
-								<?=lang('file_name', 'file_name')?>
-								<?=form_input('file_name', $duped_name)?>
 
-							</li>
-						</ul>
-
+				<p><?=lang('file_exists')?></p>
+				<p><?=lang('overwrite_instructions')?></p>
+				<?=form_open('C=content_files'.AMP.'M=rename_file', array('id'=>'rename_file_form'), $hidden)?>		
+					<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
+						<tr>
+							<td><?=lang('file_name', 'file_name')?></td>
+							<td><?=form_input('file_name', $duped_name)?></td>
+						</tr>
+					</table>
 					<p class="submit_button">
 						<?=form_submit('save_image', lang('save_image'), 'class="submit" id="rename_file_submit"')?>
 					</p>
