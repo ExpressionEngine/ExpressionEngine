@@ -135,15 +135,13 @@ class Content_files extends CI_Controller {
 			);				
 
 			// Lightbox links
-			if (strncmp($file['mime'], 'image', 5) == 0)
+			if (strncmp($file['mime'], 'image', 5) === 0)
 			{
 				$list['is_image'] = TRUE;
 				$list['link'] = '<a class="less_important_link overlay" id="img_'.str_replace(array(".", ' '), '', $file['name']).'" href="'.$file_location.'" title="'.$file['name'].'" rel="#overlay">'.$file['name'].'</a>';
 			}
-				//<a class="less_important_link" href="<?=BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$selected_dir.AMP.'file='.urlencode($file['name'])$file['name']</a>
-			
-			$file_list[] = $list;
 
+			$file_list[] = $list;
 			
 			$dir_size = $dir_size + $file['size'];
 		}
@@ -542,10 +540,6 @@ class Content_files extends CI_Controller {
 			'files' => $files
 		);
 	}
-
-	// ------------------------------------------------------------------------	
-	
-	public function display_image() {}
 
 	// ------------------------------------------------------------------------	
 	
