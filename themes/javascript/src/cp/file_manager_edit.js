@@ -17,10 +17,7 @@
 "use strict";
 
 var crop = null,
-	editing = false,
 	show_coors;
-
-
 
 show_coors = function (coords) {
 	$("#crop_x").val(Math.floor(coords.x));
@@ -35,7 +32,7 @@ $(document).ready(function () {
 	// cancel cropping
 	$('#cancel_crop').click(function () {		
 
-		if (crop !== null && editing === true) {
+		if (crop !== null) {
 			// destroy the crop object
 			crop.destroy();
 			crop = null;
@@ -49,29 +46,23 @@ $(document).ready(function () {
 			});
 
 			$('#toggle_crop').parent('li').show();
-			$('#save_crop').parent('li').hide();
 			$('#cancel_crop').parent('li').hide();	
+			
+			// Update action form input
+			$('#image_edit_form input[name=action]').val('');
 		}
 		
 		return false;
 	});
-	
-	// Save Crop
-	$('#save_crop').click(function () {
-		
-		
-		return false;
-	});
-
 
 	// crop
 	$('#toggle_crop').click(function () {
-
-		editing = true;
-		
+				
 		$('#toggle_crop').parent('li').hide();
-		$('#save_crop').parent('li').show();
 		$('#cancel_crop').parent('li').show();
+		
+		// Update action form input
+		$('#image_edit_form input[name=action]').val('crop');
 		
 		crop = $.Jcrop('#file_manager_edit_file img', {
 			onChange: show_coors,
