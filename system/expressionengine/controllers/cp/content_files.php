@@ -108,22 +108,18 @@ class Content_files extends CI_Controller {
 		}
 		else
 		{
-			//$files = $this->filemanager->fetch_files($selected_dir);
 			$all_files = $this->filemanager->directory_files_map($this->_upload_dirs[$selected_dir]['server_path'], 1, FALSE, $this->_upload_dirs[$selected_dir]['allowed_types']);
 
 			$file_list = array();
 			$dir_size = 0;
 
-			//$total_rows = count($files->files[$selected_dir]);
 			$total_rows = count($all_files);
 
-			//$files = array_slice($files->files[$selected_dir], $offset, $per_page);
 			$current_files = array_slice($all_files, $offset, $per_page);
 
 			$files = $this->filemanager->fetch_files($selected_dir, $current_files);
 
 			// Setup file list
-			//foreach ($files as $file)
 			foreach ($files->files[$selected_dir] as $file)
 			{
 				if ( ! $file['mime'])
@@ -341,7 +337,6 @@ class Content_files extends CI_Controller {
 	 */
 	public function rename_file()
 	{
-
 		$required = array('file_name', 'rename_attempt', 'orig_name', 'temp_file_name', 'is_image', 'temp_prefix', 'remove_spaces', 'id');
 		
 		foreach ($required as $val)
@@ -381,26 +376,16 @@ class Content_files extends CI_Controller {
 		// Errors?
 		if ($fm->upload_errors)
 		{
-			// Rename Failed
-			if ($this->input->is_ajax_request())
-			{
-				$errors = $this->javascript->generate_json(
-							array('error' => $this->upload->display_errors()));
-				
-				echo sprintf("<script type=\"text/javascript\">
-								parent.EE_uploads.%s = %s;</script>",
-								$this->input->get('frame_id'),
-								$errors);
-				exit();
-			}
-			
 			$this->session->set_flashdata('message_failure', $fm->upload_errors);
 			$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$data['id']);
 		}		
+
+		// Woot- Success!  Make a new thumb
+		$thumb = $fm->create_thumb(
+			array('server_path' => $this->_upload_dirs[$data['id']]['server_path']), 
+			array('name' => $data['file_name'])
+		);
 		
-		
-		
-		// Woot- Success!
 		$this->session->set_flashdata('message_success', lang('upload_success'));
 		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$data['id']);		
 	}
