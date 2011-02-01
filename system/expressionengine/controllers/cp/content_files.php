@@ -69,22 +69,22 @@ class Content_files extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->library(array('pagination', 'table', 'encrypt'));
-		
-		
-		$this->cp->add_js_script(array(
-		            'plugin'    => array('overlay', 'overlay.apple'),
-					'file'		=> 'cp/file_manager_home'
-		    )
-		);	
+		$this->load->library(array('pagination'));
 		
 		// Page Title
 		$this->cp->set_variable('cp_page_title', lang('content_files'));
 		
-		$per_page = ($per_page = $this->input->get('per_page')) ? $per_page : 50;
+		$this->cp->add_js_script(array(
+			'plugin'	=> array('overlay', 'overlay.apple', 'ee_upload'),
+			'file'		=> 'cp/file_manager_home'
+			)
+		);
+		
+		
+		$per_page = ($per_page = $this->input->get('per_page')) ? $per_page : 40;
 		$offset = ($offset = $this->input->get('offset')) ? $offset : 0;
 		$upload_dirs_options = array();
-		
+	
 		foreach ($this->_upload_dirs as $dir)
 		{
 			$upload_dirs_options[$dir['id']] = $dir['name'];
@@ -99,19 +99,15 @@ class Content_files extends CI_Controller {
 			$selected_dir = array_search(current($upload_dirs_options), $upload_dirs_options);
 		}
 		
-		
 		$files = $this->filemanager->fetch_files($selected_dir);
 		
-		$total_rows = count($files->files[$selected_dir]);
-		
-		// No sense cycling through full array
-		
-		$files = array_slice($files->files[$selected_dir], $offset, $per_page);
-		
-
 		$file_list = array();
 		$dir_size = 0;
 		
+		$total_rows = count($files->files[$selected_dir]);
+		
+		$files = array_slice($files->files[$selected_dir], $offset, $per_page);
+
 		// Setup file list
 		foreach ($files as $file)
 		{
@@ -127,63 +123,30 @@ class Content_files extends CI_Controller {
 			$file_path = $this->functions->remove_double_slashes(
 					$this->_upload_dirs[$selected_dir]['server_path'].'/'.$file['name']
 				);
-				
-			$enc_url_path = rawurlencode($this->encrypt->encode($file_path, $this->session->sess_crypt_key));	
 
-				if (strncmp($file['mime'], 'image', 5) == 0)
-				{
-					$file_list[] = array(
-						array(
-							'class' => 'overlay',
-							'id'	=> $file['encrypted_path'],
-							'data' => '<a class="overlay" id="img_'.str_replace(".", '', $file['name']).'" href="'.$file_location.'" title="'.$file['name'].'" rel="#overlay">'.$file['name'].'</a>',
-						),
-						array(
-							'class'=>'align_right', 
-							'data' => number_format($file['size']/1000, 1).NBS.lang('file_size_unit'),
-						),
-						array(
-							'class'=>'', 
-							'data' => $file['mime'],
-						),
-						array(
-							'class'=>'',
-							'data-rawdate' => $file['date'],
-							'data' => date('M d Y - H:ia', $file['date']),
-						),
-						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=download_files'.AMP.'file='.$file['encrypted_path'].'" title="'.lang('file_download').':'.NBS.$file['name'].'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png" alt="'.lang('file_download').'" /></a>'.NBS.NBS.NBS.
-						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=delete_files_confirm'.AMP.'file='.$file['encrypted_path'].'" title="'.lang('delete').':'.NBS.$file['name'].'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png" alt="'.lang('delete').'" /></a>'.NBS.NBS.NBS.'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$selected_dir.AMP.'file='.urlencode($file['name']).'" title="'.$file['name'].'"><img src="'.$this->cp->cp_theme_url.'images/icon-edit.png" alt="'.lang('delete').'" /></a>',
-						array(
-							'class' => 'file_select', 
-							'data' => form_checkbox('file[]', $file['encrypted_path'], FALSE, 'class="toggle"')
-						)
-					);
-				}
-				else
-				{
-					$file_list[] = array(
-						$file['name'],
-						array(
-							'class'=>'align_right', 
-							'data' => number_format($file['size']/1000, 1).NBS.lang('file_size_unit'),
-						),
-						$file['mime'],
-						date('M d Y - H:ia', $file['date']),
-						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=download_files'.AMP.'file='.$file['encrypted_path'].'" title="'.lang('file_download').':'.NBS.$file['name'].'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png" alt="'.lang('file_download').'" /></a>'.NBS.NBS.NBS.
-						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=delete_files_confirm'.AMP.'file='.$file['encrypted_path'].'" title="'.lang('delete').':'.NBS.$file['name'].'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png" alt="'.lang('delete').'" /></a>',
-						array(
-							'class' => 'file_select', 
-							'data' => form_checkbox('file[]', $file['encrypted_path'], FALSE, 'class="toggle"')
-						)
-					);//iimages/icon-download-file.png") no-repeat scroll 0 0 transparent
-				}			
+			$list = array(
+				'name'		=> $file['name'],
+				'link'		=> $file_location,
+				'mime'		=> $file['mime'],
+				'size'		=> $file['size'],
+				'date'		=> $file['date'],
+				'path'		=> $file_path,
+				'is_image'	=> FALSE,
+			);				
+
+			// Lightbox links
+			if (strncmp($file['mime'], 'image', 5) == 0)
+			{
+				$list['is_image'] = TRUE;
+				$list['link'] = '<a class="less_important_link overlay" id="img_'.str_replace(array(".", ' '), '', $file['name']).'" href="'.$file_location.'" title="'.$file['name'].'" rel="#overlay">'.$file['name'].'</a>';
+			}
+				//<a class="less_important_link" href="<?=BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$selected_dir.AMP.'file='.urlencode($file['name'])$file['name']</a>
 			
-			$dir_size = $dir_size + $file['size'];  // this will be wrong now
+			$file_list[] = $list;
+
+			
+			$dir_size = $dir_size + $file['size'];
 		}
-		
-		//$total_rows = count($file_list);
-		
-		//$file_list = array_slice($file_list, $offset, $per_page);
 		
 		$base_url = BASE.AMP.'C=content_files'.AMP.'directory='.$selected_dir.AMP.'per_page='.$per_page;
 		
@@ -220,7 +183,6 @@ class Content_files extends CI_Controller {
 		$pagination_count_text = sprintf(
 									lang('pagination_count_text'),
 									$count_from, $count_to, $total_rows);
-		
 		
 		$data = array(
 			'upload_dirs_options' 	=> $upload_dirs_options,
