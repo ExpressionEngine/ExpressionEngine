@@ -24,19 +24,28 @@ if ( ! $EE_view_disable)
 						<ul>
 							<li>
 								<?=lang('crop_width', 'crop_width')?>
-								<?=form_input('width', $file_info['width'])?>
+								<?=form_input('crop_width', $file_info['width'], 'id="crop_width"')?>
 							</li>
 							<li>
 								<?=lang('crop_height', 'crop_height')?>
-								<?=form_input('height', $file_info['height'])?>
+								<?=form_input('crop_height', $file_info['height'], 'id="crop_height"')?>
 							</li>
 							<li>
 								<?=lang('crop_x', 'crop_x')?>
-								<?=form_input()?>
+								<?=form_input('crop_x', '', 'id="crop_x"')?>
 							</li>
 							<li>
 								<?=lang('crop_y', 'crop_y')?>
-								<?=form_input()?>
+								<?=form_input('crop_y', '', 'id="crop_y"')?>
+							</li>
+							<li>
+								<a href="#" id="toggle_crop"><?=lang('crop_mode')?></a>
+							</li>
+							<li style="display:none; float:left">
+								<a href="#" id="save_crop"><?=lang('save_crop')?></a>
+							</li>
+							<li style="display:none; float:right">
+								<a href="#" id="cancel_crop"><?=lang('cancel_crop')?></a>
 							</li>
 						</ul>
 					</div>
@@ -72,11 +81,11 @@ if ( ! $EE_view_disable)
 						<ul>
 							<li>
 								<?=lang('resize_width', 'resize_width')?>
-								<?=form_input()?>
+								<?=form_input('resize_width', $file_info['width'], 'id="resize_width"')?>
 							</li>
 							<li>
 								<?=lang('resize_height', 'resize_height')?>
-								<?=form_input()?>
+								<?=form_input('resize_height', $file_info['height'], 'id="resize_height"')?>
 							</li>
 						</ul>
 					</div>
