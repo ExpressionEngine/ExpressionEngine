@@ -70,6 +70,7 @@ class Content_files extends CI_Controller {
 	public function index()
 	{
 		$this->load->library(array('pagination'));
+		$this->load->helper('string');
 		
 		// Page Title
 		$this->cp->set_variable('cp_page_title', lang('content_files'));

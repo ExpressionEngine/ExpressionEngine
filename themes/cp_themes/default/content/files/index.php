@@ -63,7 +63,7 @@ if ( ! $EE_view_disable)
 						</tr>
 					<?php else: ?>
 						<?php foreach ($files as $file):?>
-						<tr>
+						<tr class="<?=alternator('even', 'odd')?>">
 							<?php if ($file['is_image']):?>
 								<td class="overlay" id="<?=$file['name']?>"><?=$file['link']?></td>
 							<?php else: ?>
