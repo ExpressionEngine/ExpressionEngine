@@ -17,10 +17,7 @@
 "use strict";
 
 var crop = null,
-	edit_mode = false,
-	cropCoords,
-	do_crop,
-	crop_coords_array;
+	edit_mode = false;
 
 cropCoords = function (coords) {
 	$("#crop_x").val(Math.floor(coords.x));
@@ -40,6 +37,7 @@ function clearBoxes () {
 
 
 $(document).ready(function () {
+	$("#file_manager_toolbar").accordion({autoHeight: false,header: "h3"});
 
 	// cancel cropping
 	$('#cancel_crop').click(function () {
@@ -54,7 +52,7 @@ $(document).ready(function () {
 				'h': EE.filemanager.image_height,
 				'w': EE.filemanager.image_width,
 				'x': '',
-				'y': '',
+				'y': ''
 			});
 
 			$('#toggle_crop').parent('li').show();

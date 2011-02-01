@@ -616,11 +616,7 @@ class Content_files extends CI_Controller {
 		);
 		
 		$this->cp->add_js_script('ui', 'accordion');
-		
-		$this->javascript->output('
-		        $("#file_manager_toolbar").accordion({autoHeight: false, header: "h3"});
-		');
-		
+				
 		$this->javascript->compile();
 		
 		
