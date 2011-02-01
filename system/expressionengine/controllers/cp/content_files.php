@@ -612,11 +612,16 @@ class Content_files extends CI_Controller {
 			'file_path'		=> $file_path,
 			'file_info'		=> $file_info,
 			'upload_dir'	=> $this->_upload_dirs[$file_dir]['id'],
-			'file'			=> urlencode($file_name)
+			'file'			=> urlencode($file_name),
+			'filemtime'		=> ($filemtime = @filemtime($file_path)) ? $filemtime : 0,
 		);
 		
 		$this->cp->add_js_script('ui', 'accordion');
-				
+		
+		$this->javascript->output('
+		        $("#file_manager_toolbar").accordion({autoHeight: false, header: "h3"});
+		');
+		
 		$this->javascript->compile();
 		
 		

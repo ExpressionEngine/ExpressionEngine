@@ -17,7 +17,8 @@
 "use strict";
 
 var crop = null,
-	edit_mode = false;
+	edit_mode = false,
+	crop_coords_array;
 
 cropCoords = function (coords) {
 	$("#crop_x").val(Math.floor(coords.x));
@@ -37,8 +38,6 @@ function clearBoxes () {
 
 
 $(document).ready(function () {
-	$("#file_manager_toolbar").accordion({autoHeight: false,header: "h3"});
-
 	// cancel cropping
 	$('#cancel_crop').click(function () {
 
