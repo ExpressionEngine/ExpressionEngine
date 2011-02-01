@@ -728,7 +728,7 @@ class Content_files extends CI_Controller {
 	private function _do_rotate($file)
 	{
 		$config = array(
-			'rotation_angle'	=> $this->input->post('direction'),
+			'rotation_angle'	=> $this->input->post('rotate'),
 			'library_path'		=> $this->config->item('image_library_path'),
 			'image_library'		=> $this->config->item('image_resize_protocol'),
 			'source_image'		=> $file,

@@ -95,11 +95,6 @@ $(document).ready(function () {
 
 	});
 	
-	// rotate
-	$('#rotate_fieldset a').click(function () {
-		$('#image_rotate_form input[name=direction]').val($(this).attr('class'));
-		$('#image_rotate_form').submit();
-	});
 	
 
 });

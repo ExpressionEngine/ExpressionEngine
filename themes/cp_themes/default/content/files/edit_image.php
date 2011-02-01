@@ -51,31 +51,31 @@ if ( ! $EE_view_disable)
 					</div>
 				<?=form_close()?>
 				<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_rotate_form'), 
-								array('action'=> 'rotate', 'upload_dir' => $upload_dir, 'file' => $file, 'direction' => ''))?>
+								array('action'=> 'rotate', 'upload_dir' => $upload_dir, 'file' => $file))?>
 					<h3 class="accordion"><?=lang('rotate')?></h3>
 					<div id="rotate_fieldset">
 						<ul>
 							<li class="rotate_90">
 								<label>
-									<?=form_radio('rotate', 'rotate_90r', TRUE)?>
+									<?=form_radio('rotate', '90', TRUE)?>
 									<?=lang('rotate_90r')?>
 								</label>
 							</li>
 							<li class="rotate_270">
 								<label>
-									<?=form_radio('rotate', 'rotate_90l', TRUE)?>
+									<?=form_radio('rotate', '270', TRUE)?>
 									<?=lang('rotate_90l')?>
 								</label>
 							</li>
 							<li class="rotate_vrt">
 								<label>
-									<?=form_radio('rotate', 'rotate_vrt', TRUE)?>
+									<?=form_radio('rotate', 'vrt', TRUE)?>
 									<?=lang('rotate_flip_vert')?>
 								</label>
 							</li>
 							<li class="rotate_hor">
 								<label>
-									<?=form_radio('rotate', 'rotate_hor', TRUE)?>
+									<?=form_radio('rotate', 'hor', TRUE)?>
 									<?=lang('rotate_flip_hor')?>
 								</label>
 							</li>
