@@ -628,7 +628,7 @@ class Search {
 		
 		$sql .= "\nAND exp_channel_titles.status != 'closed' ";
 		
-		if (($status = $this->_meta['status']) != '')
+		if (isset($this->_meta['status']) AND ($status = $this->_meta['status']) != '')
 		{
 			$status = str_replace('Open',	'open',	$status);
 			$status = str_replace('Closed', 'closed', $status);
