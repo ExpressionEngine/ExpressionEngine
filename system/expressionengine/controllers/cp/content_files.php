@@ -718,6 +718,8 @@ class Content_files extends CI_Controller {
 			));
 		}
 		
+		
+		$this->session->set_flashdata('message_success', lang('file_saved'));
 		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file='.$this->input->post('file');
 		$this->functions->redirect($url);
 	}
@@ -767,6 +769,7 @@ class Content_files extends CI_Controller {
 			));
 		}
 		
+		$this->session->set_flashdata('message_success', lang('file_saved'));
 		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file='.$this->input->post('file');
 		$this->functions->redirect($url);
 	}
@@ -828,6 +831,7 @@ class Content_files extends CI_Controller {
 			));
 		}
 		
+		$this->session->set_flashdata('message_success', lang('file_saved'));
 		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file='.$this->input->post('file');
 		$this->functions->redirect($url);
 	}
