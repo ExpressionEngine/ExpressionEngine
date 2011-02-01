@@ -175,7 +175,7 @@
 	$.ee_filebrowser.placeImage = function(dir, img) {
 		$.ee_filebrowser.clean_up(dir_files_structure[dir][img], '');
 		return false;
-	}
+	}	
 
 	// --------------------------------------------------------------------
 
@@ -388,16 +388,19 @@
 			pages[i] = i + 1;
 		}
 		
+		offset = offset * per_page;
+		
+		
 		var pagination = {
 			'directory': directory.id,
 			'pages_from': offset,
 			'pages_to': offset + per_page,
-			'pages_total': page_count,
-			'pages_current': Math.floor(offset + per_page / per_page),
+			'pages_total': total_files,
+			'pages_current': Math.floor(offset / per_page) + 1,
 			'pages': pages
 		};
 		
-		offset = offset * per_page;
+	//	offset = offset * per_page;
 		
 		var workon = directory.files.slice(offset, offset+per_page);
 				
