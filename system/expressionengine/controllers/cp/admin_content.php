@@ -1913,86 +1913,22 @@ class Admin_content extends CI_Controller {
 
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_management', $this->lang->line('categories'));
 		$this->cp->set_variable('cp_page_title', ($vars['cat_id'] == '') ? $this->lang->line('new_category') : $this->lang->line('edit_category'));
-
-		$word_separator = $this->config->item('word_separator') != "dash" ? '_' : '-';
-
-		//  Create Foreign Character Conversion JS
-		include(APPPATH.'config/foreign_chars.php');
-
-		/* -------------------------------------
-		/*  'foreign_character_conversion_array' hook.
-		/*  - Allows you to use your own foreign character conversion array
-		/*  - Added 1.6.0
-		* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
-		*/  
-			if (isset($this->extensions->extensions['foreign_character_conversion_array']))
-			{
-				$foreign_characters = $this->extensions->call('foreign_character_conversion_array');
-			}
-		/*
-		/* -------------------------------------*/
-
-		$foreign_replace = '';
-
-		foreach($foreign_characters as $old => $new)
-		{
-			$foreign_replace .= "if (c == '$old') {NewTextTemp += '$new'; continue;}\n\t\t\t\t";
-		}
-
-		$live_title_js = $this->javascript->inline("
-			/** ------------------------------------
-			/**  Live URL Title Function
-			/** -------------------------------------*/
-			function liveUrlTitle()
-			{
-				var NewText = document.getElementById('cat_name').value;
-
-				NewText = NewText.toLowerCase();
-
-				var separator = '{$word_separator}';
-
-				// Foreign Character Attempt
-
-				var NewTextTemp = '';
-				for(var pos=0; pos<NewText.length; pos++)
-				{
-					var c = NewText.charCodeAt(pos);
-
-					if (c >= 32 && c < 128)
-					{
-						NewTextTemp += NewText.charAt(pos);
-					}
-					else
-					{
-						{$foreign_replace}
-					}
-				}
-
-				var multiReg = new RegExp(separator + '{2,}', 'g');
-
-				NewText = NewTextTemp;
-
-				NewText = NewText.replace('/<(.*?)>/g', '');
-				NewText = NewText.replace(/\s+/g, separator);
-				NewText = NewText.replace(/\//g, separator);
-				NewText = NewText.replace(/[^a-z0-9\-\._]/g,'');
-				NewText = NewText.replace(/\+/g, separator);
-				NewText = NewText.replace(multiReg, separator);
-				NewText = NewText.replace(/-$/g,'');
-				NewText = NewText.replace(/_$/g,'');
-				NewText = NewText.replace(/^_/g,'');
-				NewText = NewText.replace(/^-/g,'');
-				NewText = NewText.replace(/\.+$/g,'');
-
-				document.getElementById('cat_url_title').value = NewText;
-			}");
 		
-		$this->cp->add_to_foot($live_title_js);
-
 		// New entry gets URL title js
 		if ($vars['submit_lang_key'] == 'submit')
-		{		
-			$this->javascript->keyup('#cat_name', 'liveUrlTitle()');
+		{	
+			// Pipe in necessary globals
+			$this->javascript->set_global(array(
+				'publish.word_separator'   => $this->config->item('word_separator') != "dash" ? '_' : '-',
+			));
+			
+			// Load in necessary js files
+			$this->cp->add_js_script(array(
+				'file' => array('cp/global')
+			));
+			
+			// Bind keyup to live_url_title function
+			$this->javascript->keyup('#cat_name', 'EE.cp.live_url_title($("#cat_name"), $("#cat_url_title"))');
 		}
 
 		$vars['form_hidden']['group_id'] = $group_id;
@@ -2092,7 +2028,6 @@ class Admin_content extends CI_Controller {
 		}
 
 		$this->javascript->compile();
-
 		$this->load->view('admin/category_edit', $vars);
 	}
 

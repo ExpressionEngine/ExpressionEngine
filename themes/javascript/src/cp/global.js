@@ -17,7 +17,6 @@
  */
 
 // Setup Base EE Control Panel
-
 jQuery(document).ready(function () {
 
 	var $ = jQuery;
@@ -32,43 +31,8 @@ jQuery(document).ready(function () {
 		}
 	});
 
-	if ( ! 'placeholder' in document.createElement('input')) {
-
-		// Fallback for browsers without placeholder= support
-		EE.insert_placeholders = function () {
-	
-			$('input[type="text"]').each(function() {
-				if ( ! this.placeholder) {
-					return;
-				}
-								
-				var jqEl = $(this),
-					placeholder = this.placeholder,
-					orig_color = jqEl.css('color');
-
-				if (jqEl.val() == '') {
-					jqEl.data('user_data', 'n');
-				}
-
-				jqEl.focus(function () {
-					// Reset color & remove placeholder text
-					jqEl.css('color', orig_color);
-					if (jqEl.val() === placeholder) {
-						jqEl.val('');
-						jqEl.data('user_data', 'y');
-					}
-				})
-				.blur(function () {
-					// If no user content -> add placeholder text and dim
-					if (jqEl.val() === '' || jqEl.val === placeholder) {
-						jqEl.val(placeholder).css('color', '#888');
-						jqEl.data('user_data', 'n');
-					}
-				})
-				.trigger('blur');
-			});
-		};
-		
+	if ( ! 'placeholder' in document.createElement('input')) 
+	{
 		EE.insert_placeholders();
 	}
 
@@ -244,121 +208,15 @@ jQuery(document).ready(function () {
 	if (EE.SESS_TIMEOUT) {
 		logOutCheck();	
 	}
-
-	// Hook up show / hide actions for sidebar
-
-	function show_hide_sidebar() {
-		var w = {'revealSidebarLink': '77%', 'hideSidebarLink': '100%'},
-			main_content = $("#mainContent"),
-			sidebar = $("#sidebarContent"),
-			main_height = main_content.height(),
-			sidebar_height = sidebar.height(),
-			larger_height;
 		
-		// Sidebar state
-
-		if (EE.CP_SIDEBAR_STATE === "n") {
-			main_content.css("width", "100%");
-			$("#revealSidebarLink").css('display', 'block');
-			$("#hideSidebarLink").hide();
-		
-			sidebar.show();
-			sidebar_height = sidebar.height();
-			sidebar.hide();
-		}
-		else {
-			sidebar.hide();
-			main_height = main_content.height();
-			sidebar.show();
-		}
-	
-		larger_height = sidebar_height > main_height ? sidebar_height : main_height;
-		
-		$('#revealSidebarLink, #hideSidebarLink').click(function () {
-			var that = $(this),
-				other = that.siblings('a'),
-				show = (this.id === 'revealSidebarLink');		
-
-			$.ajax({
-				type: "POST",
-				dataType: 'json',
-				url: EE.BASE + '&C=myaccount&M=update_sidebar_status',
-				data: {'XID' : EE.XID, 'show' : show},
-				success: function(result){
-					if (result.messageType === 'success') {
-						// log?
-					}
-				}
-			});	
-
-			$("#sideBar").css({
-				'position': 'absolute',
-				'float': '',
-				'right': '0'
-			});
-		
-		
-			that.hide();
-			other.css('display', 'block');
-		
-			sidebar.slideToggle();
-			main_content.animate({
-				"width": w[this.id],
-				"height": show ? larger_height : main_height
-			}, function () {
-				main_content.height('');
-				$("#sideBar").css({
-					'position': '',
-					'float': 'right'
-				});
-			});
-			
-			return false;
-		});
-	}
-		
-	show_hide_sidebar();
-
-
-	// Move notices to notification bar for consistency
-	function display_notices() {
-		var notices = $(".notice").filter('p.js_hide'),	// make sure we only grab notices that are meant for our js
-			types = {success: "message_success", notice: "message", error: "message_failure"},
-			show_notices = [], i = 0,
-			type, notice;
-
-		for (type in types) {
-			if (EE.flashdata.hasOwnProperty(types[type])) {
-
-				if (type === "error") {
-					notice = notices.filter(".failure").slice(0, 1);
-				}
-				else if (type === "success") {
-					notice = notices.filter(".success").slice(0, 1);
-				}
-				else {
-					notice = notices.slice(0, 1);
-				}
-
-				// i++  is faster than show_notices.push();
-				show_notices[i++ ] = {message: EE.flashdata[types[type]], type: type};
-				notice.remove();
-			}
-		}
-
-		if (show_notices.length) {
-			$.ee_notice(show_notices);
-		}
-	}
+	EE.cp.show_hide_sidebar();
 
 
 	if (EE.flashdata !== undefined) {
-		display_notices();
+		EE.cp.display_notices();
 	}
 
-
 	// Setup Notepad
-
 	EE.notepad = (function () {
 	
 		var notepad = $('#notePad'),
@@ -428,78 +286,10 @@ jQuery(document).ready(function () {
 	}());
 
 	EE.notepad.init();
-
-
-	// Show / hide accessories
-
-	$('#accessoryTabs li a').click(function () {
-		var parent = $(this).parent("li"),
-			accessory = $("#"  +  this.className);
 	
-		if (parent.hasClass("current")) {
-			accessory.hide();
-			parent.removeClass("current");
-		}
-		else {
-			if (parent.siblings().hasClass("current")) {
-				accessory.show().siblings(":not(#accessoryTabs)").hide();
-				parent.siblings().removeClass("current");
-			}
-			else {
-				accessory.slideDown();
-			}
-			parent.addClass("current");
-		}
-	
-		return false;
-	});
+	EE.cp.accessory_toggle();
 
-
-	// Ajax for control panel search
-
-	function control_panel_search() {
-		var search = $('#search'),
-			result = search.clone(),
-			buttonImgs = $('#cp_search_form').find('.searchButton'),
-			submit_handler;
-	
-		submit_handler = function () {
-			var url = $(this).attr('action'),
-				data = {
-					'cp_search_keywords': $('#cp_search_keywords').attr('value')
-				};
-
-			$.ajax({
-				url: url + '&ajax=y',
-				data: data,
-				beforeSend: function () {
-					buttonImgs.toggle();
-				},
-				success: function (ret) {
-					buttonImgs.toggle();
-
-					search = search.replaceWith(result);
-					result.html(ret);
-
-					$('#cp_reset_search').click(function () {
-						result = result.replaceWith(search);
-
-						$('#cp_search_form').submit(submit_handler);
-						$('#cp_search_keywords').select();
-						return false;
-					});
-				},
-				dataType: 'html'
-			});
-
-			return false;
-		};
-
-		$('#cp_search_form').submit(submit_handler);
-	}
-
-	control_panel_search();
-
+	EE.cp.control_panel_search();
 
 	// Setup sidebar hover descriptions
 
@@ -513,9 +303,250 @@ jQuery(document).ready(function () {
 	})
 	.css('cursor', 'pointer');
 
+	EE.cp.logout_confirm();	
 
-	// Logout button confirmation
+	$(".js_show").show();
+	
+}); // ready
 
+/**
+ * Namespace function that non-destructively creates "namespace" objects (e.g. EE.publish.example)
+ * @param {String} namespace_string The namespace string (e.g. EE.publish.example)
+ * @returns The object to create
+ */
+EE.namespace = function(namespace_string) 
+{
+	var parts = namespace_string.split('.'),
+		parent = EE;
+	
+	// strip redundant leading global 
+	if (parts[0] === "EE") 
+	{
+		parts = parts.slice(1);
+	}
+	
+	// create a property if it doesn't exist if (typeof parent[parts[i]] === "undefined") {
+	for (var i = 0, max = parts.length; i < max; i += 1) 
+	{
+		if (typeof parent[parts[i]] === "undefined") {
+			parent[parts[i]] = {};
+		};
+		
+		parent = parent[parts[i]];
+	}
+	
+	return parent;
+};
+
+EE.namespace('EE.cp');
+
+// Show / hide accessories
+EE.cp.accessory_toggle = function() {
+	$('#accessoryTabs li a').click(function (event) {
+		event.preventDefault();
+		
+		var $parent = $(this).parent("li"),
+			$accessory = $("#" + this.className);
+
+		if ($parent.hasClass("current")) {
+			$accessory.hide();
+			$parent.removeClass("current");
+		}
+		else 
+		{
+			if ($parent.siblings().hasClass("current")) {
+				$accessory.show().siblings(":not(#accessoryTabs)").hide();
+				$parent.siblings().removeClass("current");
+			}
+			else {
+				$accessory.slideDown();
+			}
+			$parent.addClass("current");
+		}
+	});
+};
+
+// Ajax for control panel search
+EE.cp.control_panel_search = function() {
+	var search = $('#search'),
+		result = search.clone(),
+		buttonImgs = $('#cp_search_form').find('.searchButton'),
+		submit_handler;
+
+	submit_handler = function () {
+		var url = $(this).attr('action'),
+			data = {
+				'cp_search_keywords': $('#cp_search_keywords').attr('value')
+			};
+
+		$.ajax({
+			url: url + '&ajax=y',
+			data: data,
+			beforeSend: function () {
+				buttonImgs.toggle();
+			},
+			success: function (ret) {
+				buttonImgs.toggle();
+
+				search = search.replaceWith(result);
+				result.html(ret);
+
+				$('#cp_reset_search').click(function () {
+					result = result.replaceWith(search);
+
+					$('#cp_search_form').submit(submit_handler);
+					$('#cp_search_keywords').select();
+					return false;
+				});
+			},
+			dataType: 'html'
+		});
+
+		return false;
+	};
+
+	$('#cp_search_form').submit(submit_handler);
+};
+
+// Hook up show / hide actions for sidebar
+EE.cp.show_hide_sidebar = function() {
+	var w = {'revealSidebarLink': '77%', 'hideSidebarLink': '100%'},
+		main_content = $("#mainContent"),
+		sidebar = $("#sidebarContent"),
+		main_height = main_content.height(),
+		sidebar_height = sidebar.height(),
+		larger_height;
+	
+	// Sidebar state
+
+	if (EE.CP_SIDEBAR_STATE === "n") {
+		main_content.css("width", "100%");
+		$("#revealSidebarLink").css('display', 'block');
+		$("#hideSidebarLink").hide();
+	
+		sidebar.show();
+		sidebar_height = sidebar.height();
+		sidebar.hide();
+	}
+	else {
+		sidebar.hide();
+		main_height = main_content.height();
+		sidebar.show();
+	}
+
+	larger_height = sidebar_height > main_height ? sidebar_height : main_height;
+	
+	$('#revealSidebarLink, #hideSidebarLink').click(function () {
+		var that = $(this),
+			other = that.siblings('a'),
+			show = (this.id === 'revealSidebarLink');		
+
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			url: EE.BASE + '&C=myaccount&M=update_sidebar_status',
+			data: {'XID' : EE.XID, 'show' : show},
+			success: function(result){
+				if (result.messageType === 'success') {
+					// log?
+				}
+			}
+		});	
+
+		$("#sideBar").css({
+			'position': 'absolute',
+			'float': '',
+			'right': '0'
+		});
+	
+	
+		that.hide();
+		other.css('display', 'block');
+	
+		sidebar.slideToggle();
+		main_content.animate({
+			"width": w[this.id],
+			"height": show ? larger_height : main_height
+		}, function () {
+			main_content.height('');
+			$("#sideBar").css({
+				'position': '',
+				'float': 'right'
+			});
+		});
+		
+		return false;
+	});
+};
+
+// Move notices to notification bar for consistency
+EE.cp.display_notices = function() {
+	var notices = $(".notice").filter('p.js_hide'),	// make sure we only grab notices that are meant for our js
+		types = {success: "message_success", notice: "message", error: "message_failure"},
+		show_notices = [], i = 0,
+		type, notice;
+
+	for (type in types) {
+		if (EE.flashdata.hasOwnProperty(types[type])) {
+
+			if (type === "error") {
+				notice = notices.filter(".failure").slice(0, 1);
+			}
+			else if (type === "success") {
+				notice = notices.filter(".success").slice(0, 1);
+			}
+			else {
+				notice = notices.slice(0, 1);
+			}
+
+			// i++  is faster than show_notices.push();
+			show_notices[i++ ] = {message: EE.flashdata[types[type]], type: type};
+			notice.remove();
+		}
+	}
+
+	if (show_notices.length) {
+		$.ee_notice(show_notices);
+	}
+};
+
+// Fallback for browsers without placeholder= support
+EE.insert_placeholders = function () {
+
+	$('input[type="text"]').each(function() {
+		if ( ! this.placeholder) {
+			return;
+		}
+						
+		var jqEl = $(this),
+			placeholder = this.placeholder,
+			orig_color = jqEl.css('color');
+
+		if (jqEl.val() == '') {
+			jqEl.data('user_data', 'n');
+		}
+
+		jqEl.focus(function () {
+			// Reset color & remove placeholder text
+			jqEl.css('color', orig_color);
+			if (jqEl.val() === placeholder) {
+				jqEl.val('');
+				jqEl.data('user_data', 'y');
+			}
+		})
+		.blur(function () {
+			// If no user content -> add placeholder text and dim
+			if (jqEl.val() === '' || jqEl.val === placeholder) {
+				jqEl.val(placeholder).css('color', '#888');
+				jqEl.data('user_data', 'n');
+			}
+		})
+		.trigger('blur');
+	});
+};
+
+// Logout button confirmation
+EE.cp.logout_confirm = function() {
 	$("#activeUser").one("mouseover", function () {
 
 		var logout_modal = $('<div id="logOutConfirm">' + EE.lang.logout_confirm + ' </div>'),
@@ -534,7 +565,7 @@ jQuery(document).ready(function () {
 			// Redirect
 			window.location = EE.BASE + "&C=login&M=logout";
 		};
-	
+
 		delay_logout = function () {
 			if (ttl < 1) {
 				return setTimeout(log_me_out, 0);
@@ -542,25 +573,25 @@ jQuery(document).ready(function () {
 			else if (ttl === orig_ttl) {
 				$(window).bind("unload.logout", log_me_out);
 			}
-		
+
 			logout_modal.dialog("option", "title", EE.lang.logout + " (" +  (ttl-- || "...")  + ")");
 			countdown_timer = setTimeout(delay_logout, 1000);
 		};
-	
+
 		function cancel_logout() {
 			clearTimeout(countdown_timer);
 			$(window).unbind("unload.logout");
 			ttl = orig_ttl;
 		}
-	
+
 		buttons = { 
 			Cancel: function () { 
 				$(this).dialog("close"); 
 			}
 		};
-		
+
 		buttons[EE.lang.logout] = log_me_out;
-	
+
 		logout_modal.dialog({
 			autoOpen: false,
 			resizable: false,
@@ -575,12 +606,69 @@ jQuery(document).ready(function () {
 		$("a.logOutButton", this).click(function () {
 			$("#logOutConfirm").dialog("open");
 			$(".ui-dialog-buttonpane button:eq(2)").focus(); //focus on Log-out so pressing return logs out
-		
+
 			delay_logout();
 			return false;
 		});
 	});
+};
 
-	$(".js_show").show();
+/**
+ * Handle building URL Titles given the title field and the url_title field
+ * Useful for both normal entries and categories
+ *
+ * Make sure that you setup EE javascript globals
+ * 
+ * @param {jQuery Object} $title The input field representing the title
+ * @param {jQuery Object} $url_title The input field representing the url_title
+ */
+EE.cp.live_url_title = function ($title, $url_title)
+{
+	var defaultTitle  = (EE.publish.default_entry_title) ? EE.publish.default_entry_title : '',
+		separator     = EE.publish.word_separator,
+		newText       = $title.val() || '',
+		multiReg      = new RegExp(separator + '{2,}', 'g'),
+		separatorReg  = (separator !== '_') ? (/\_/g) : (/\-/g),
+		newTextTemp   = '',
+		prefix        = (EE.publish.url_title_prefix) ? EE.publish.url_title_prefix : '',
+		pos, 
+		c;
+	
+	if (defaultTitle !== '' && $title.attr('id') === "title") {
+		if (newText.substr(0, defaultTitle.length) === defaultTitle) {
+			newText = newText.substr(defaultTitle.length);
+		}
+	}
+	
+	newText = prefix + newText;
+	newText = newText.toLowerCase().replace(separatorReg, separator);
 
-});
+	// Foreign Character Attempt
+
+	for (pos = 0; pos < newText.length; pos++)
+	{
+		c = newText.charCodeAt(pos);
+
+		if (c >= 32 && c < 128) {
+			newTextTemp += newText.charAt(pos);
+		}
+		else if (c in EE.publish.foreignChars) {
+			newTextTemp += EE.publish.foreignChars[c];
+		}
+	}
+
+	newText = newTextTemp;
+
+	newText = newText.replace('/<(.*?)>/g', '');
+	newText = newText.replace(/\s+/g, separator);
+	newText = newText.replace(/\//g, separator);
+	newText = newText.replace(/[^a-z0-9\-\._]/g, '');
+	newText = newText.replace(/\+/g, separator);
+	newText = newText.replace(multiReg, separator);
+	newText = newText.replace(/^[-_]|[-_]$/g, '');
+	newText = newText.replace(/\.+$/g, '');
+
+	if ($url_title) {
+		$url_title.val(newText.substring(0,75));
+	}
+};
