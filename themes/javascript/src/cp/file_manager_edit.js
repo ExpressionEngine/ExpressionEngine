@@ -40,7 +40,7 @@ function clearBoxes () {
 $(document).ready(function () {
 
 	// cancel cropping
-	$('#cancel_crop').click(function () {		
+	$('#cancel_crop').click(function () {
 
 		if (crop !== undefined) {
 			// destroy the crop object
