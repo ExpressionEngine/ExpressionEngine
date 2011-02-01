@@ -22,7 +22,8 @@ if ( ! $EE_view_disable)
 				<?php if ($this->cp->allowed_group('can_access_content_prefs')): ?>
 				<?php echo sprintf(
 								lang('no_upload_dirs_create_new'),
-								BASE.AMP.'admin_content'.AMP.'M=edit_upload_preferences')?>
+								BASE.AMP.'C=admin_content'.AMP.'M=edit_upload_preferences')?>
+								
 				<?php else: ?>
 					<?=lang('no_upload_dirs')?>
 				<?php endif; ?>
