@@ -99,103 +99,113 @@ class Content_files extends CI_Controller {
 			$selected_dir = array_search(current($upload_dirs_options), $upload_dirs_options);
 		}
 		
-		//$files = $this->filemanager->fetch_files($selected_dir);
-		$all_files = $this->filemanager->directory_files_map($this->_upload_dirs[$selected_dir]['server_path'], 1, FALSE, $this->_upload_dirs[$selected_dir]['allowed_types']);
+		$no_upload_dirs = FALSE;
 		
-		$file_list = array();
-		$dir_size = 0;
-		
-		//$total_rows = count($files->files[$selected_dir]);
-		$total_rows = count($all_files);
-		
-		//$files = array_slice($files->files[$selected_dir], $offset, $per_page);
-		$current_files = array_slice($all_files, $offset, $per_page);
-		
-		$files = $this->filemanager->fetch_files($selected_dir, $current_files);
-
-		// Setup file list
-		//foreach ($files as $file)
-		foreach ($files->files[$selected_dir] as $file)
+		if (empty($this->_upload_dirs))
 		{
-			if ( ! $file['mime'])
+			$no_upload_dirs = TRUE;
+		}
+		else
+		{
+			//$files = $this->filemanager->fetch_files($selected_dir);
+			$all_files = $this->filemanager->directory_files_map($this->_upload_dirs[$selected_dir]['server_path'], 1, FALSE, $this->_upload_dirs[$selected_dir]['allowed_types']);
+
+			$file_list = array();
+			$dir_size = 0;
+
+			//$total_rows = count($files->files[$selected_dir]);
+			$total_rows = count($all_files);
+
+			//$files = array_slice($files->files[$selected_dir], $offset, $per_page);
+			$current_files = array_slice($all_files, $offset, $per_page);
+
+			$files = $this->filemanager->fetch_files($selected_dir, $current_files);
+
+			// Setup file list
+			//foreach ($files as $file)
+			foreach ($files->files[$selected_dir] as $file)
 			{
-				continue;
+				if ( ! $file['mime'])
+				{
+					continue;
+				}
+
+				$file_location = $this->functions->remove_double_slashes(
+						$this->_upload_dirs[$selected_dir]['url'].'/'.$file['name']
+					);
+
+				$file_path = $this->functions->remove_double_slashes(
+						$this->_upload_dirs[$selected_dir]['server_path'].'/'.$file['name']
+					);
+
+				$list = array(
+					'name'		=> $file['name'],
+					'link'		=> $file_location,
+					'mime'		=> $file['mime'],
+					'size'		=> $file['size'],
+					'date'		=> $file['date'],
+					'path'		=> $file_path,
+					'is_image'	=> FALSE,
+				);				
+
+				// Lightbox links
+				if (strncmp($file['mime'], 'image', 5) === 0)
+				{
+					$list['is_image'] = TRUE;
+					$list['link'] = '<a class="less_important_link overlay" id="img_'.str_replace(array(".", ' '), '', $file['name']).'" href="'.$file_location.'" title="'.$file['name'].'" rel="#overlay">'.$file['name'].'</a>';
+				}
+
+				$file_list[] = $list;
+
+				$dir_size = $dir_size + $file['size'];
 			}
-			
-			$file_location = $this->functions->remove_double_slashes(
-					$this->_upload_dirs[$selected_dir]['url'].'/'.$file['name']
-				);
-			
-			$file_path = $this->functions->remove_double_slashes(
-					$this->_upload_dirs[$selected_dir]['server_path'].'/'.$file['name']
-				);
 
-			$list = array(
-				'name'		=> $file['name'],
-				'link'		=> $file_location,
-				'mime'		=> $file['mime'],
-				'size'		=> $file['size'],
-				'date'		=> $file['date'],
-				'path'		=> $file_path,
-				'is_image'	=> FALSE,
-			);				
+			$base_url = BASE.AMP.'C=content_files'.AMP.'directory='.$selected_dir.AMP.'per_page='.$per_page;
 
-			// Lightbox links
-			if (strncmp($file['mime'], 'image', 5) === 0)
-			{
-				$list['is_image'] = TRUE;
-				$list['link'] = '<a class="less_important_link overlay" id="img_'.str_replace(array(".", ' '), '', $file['name']).'" href="'.$file_location.'" title="'.$file['name'].'" rel="#overlay">'.$file['name'].'</a>';
-			}
+			$link = "<img src=\"{$this->cp->cp_theme_url}images/pagination_%s_button.gif\" width=\"13\" height=\"13\" alt=\"%s\" />";
 
-			$file_list[] = $list;
-			
-			$dir_size = $dir_size + $file['size'];
+			$p_config = array(
+				'base_url'				=> $base_url,
+				'total_rows'			=> $total_rows,
+	 			'per_page'				=> $per_page,
+				'page_query_string'		=> TRUE,
+				'query_string_segment'	=> 'offset',
+				'full_tag_open'			=> '<p id="paginationLinks">',
+				'full_tag_close'		=> '</p>',
+				'prev_link'				=> sprintf($link, 'prev', '&lt;'),
+				'next_link'				=> sprintf($link, 'next', '&gt;'),
+				'first_link'			=> sprintf($link, 'first', '&lt; &lt;'),
+				'last_link'				=> sprintf($link, 'last', '&gt; &gt;')
+			);
+
+			$this->pagination->initialize($p_config);
+
+			$action_options = array(
+				'download'			=> lang('download_selected'),
+				'delete'			=> lang('delete_selected_files')
+			);
+
+			// Figure out where the count is starting 
+			// and ending for the dialog at the bottom of the page
+			$offset = ($this->input->get($p_config['query_string_segment'])) ? $this->input->get($p_config['query_string_segment']) : 0;
+			$count_from = $offset + 1;
+			$count_to = $offset + count($file_list);
+
+
+			$pagination_count_text = sprintf(
+										lang('pagination_count_text'),
+										$count_from, $count_to, $total_rows);			
 		}
 		
-		$base_url = BASE.AMP.'C=content_files'.AMP.'directory='.$selected_dir.AMP.'per_page='.$per_page;
-		
-		$link = "<img src=\"{$this->cp->cp_theme_url}images/pagination_%s_button.gif\" width=\"13\" height=\"13\" alt=\"%s\" />";
-		
-		$p_config = array(
-			'base_url'				=> $base_url,
-			'total_rows'			=> $total_rows,
- 			'per_page'				=> $per_page,
-			'page_query_string'		=> TRUE,
-			'query_string_segment'	=> 'offset',
-			'full_tag_open'			=> '<p id="paginationLinks">',
-			'full_tag_close'		=> '</p>',
-			'prev_link'				=> sprintf($link, 'prev', '&lt;'),
-			'next_link'				=> sprintf($link, 'next', '&gt;'),
-			'first_link'			=> sprintf($link, 'first', '&lt; &lt;'),
-			'last_link'				=> sprintf($link, 'last', '&gt; &gt;')
-		);
-
-		$this->pagination->initialize($p_config);
-		
-		$action_options = array(
-			'download'			=> lang('download_selected'),
-			'delete'			=> lang('delete_selected_files')
-		);
-		
-		// Figure out where the count is starting 
-		// and ending for the dialog at the bottom of the page
-		$offset = ($this->input->get($p_config['query_string_segment'])) ? $this->input->get($p_config['query_string_segment']) : 0;
-		$count_from = $offset + 1;
-		$count_to = $offset + count($file_list);
-		
-		
-		$pagination_count_text = sprintf(
-									lang('pagination_count_text'),
-									$count_from, $count_to, $total_rows);
-		
 		$data = array(
+			'no_upload_dirs'		=> $no_upload_dirs,
 			'upload_dirs_options' 	=> $upload_dirs_options,
 			'selected_dir'			=> $selected_dir,
-			'files'					=> $file_list,
-			'dir_size'				=> $dir_size,
+			'files'					=> (isset($file_list)) ? $file_list : array(),
+			'dir_size'				=> (isset($dir_size)) ? $dir_size : NULL,
 			'pagination_links'		=> $this->pagination->create_links(),
-			'action_options' 		=> $action_options, 
-			'pagination_count_text'	=> $pagination_count_text,
+			'action_options' 		=> (isset($action_options)) ? $action_options : NULL, 
+			'pagination_count_text'	=> (isset($pagination_count_text)) ? $pagination_count_text : NULL,
 		);
 		
 		$this->load->view('content/files/index', $data);

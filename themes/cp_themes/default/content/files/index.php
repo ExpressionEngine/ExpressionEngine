@@ -17,7 +17,16 @@ if ( ! $EE_view_disable)
 		</div>
 		
 		<div id="file_manager" class="pageContents group">
-
+			
+			<?php if ($no_upload_dirs):?>
+				<?php if ($this->cp->allowed_group('can_access_content_prefs')): ?>
+				<?php echo sprintf(
+								lang('no_upload_dirs_create_new'),
+								BASE.AMP.'admin_content'.AMP.'M=edit_upload_preferences')?>
+				<?php else: ?>
+					<?=lang('no_upload_dirs')?>
+				<?php endif; ?>
+			<?php else: ?>
 			<div id="filterMenu">
 				<?php if ( ! empty($upload_dirs_options)):?>
 					<?=form_open('', array('id' => 'dir_choice_form'))?>
@@ -50,7 +59,7 @@ if ( ! $EE_view_disable)
 					<tbody>
 					<?php if ( ! isset($files) OR empty($files)):?>
 						<tr>
-							<td colspan="5"><?=lang('no_uploaded_files')?></td>
+							<td colspan="6"><?=lang('no_uploaded_files')?></td>
 						</tr>
 					<?php else: ?>
 						<?php foreach ($files as $file):?>
@@ -87,6 +96,7 @@ if ( ! $EE_view_disable)
 				<p id="paginationCount"><?=$pagination_count_text;?></p>
 				<?=$pagination_links?>
 			<?=form_close()?>
+			<?php endif;?>
 		</div>
 	</div>
 </div>
