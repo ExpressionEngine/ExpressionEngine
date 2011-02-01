@@ -54,24 +54,28 @@ if ( ! $EE_view_disable)
 					<div id="rotate_fieldset">
 						<ul>
 							<li class="rotate_90">
-								<a href="#">
+								<label>
+									<?=form_radio('rotate', 'rotate_90r', TRUE)?>
 									<?=lang('rotate_90r')?>
-								</a>
+								</label>
 							</li>
 							<li class="rotate_270">
-								<a href="#">
+								<label>
+									<?=form_radio('rotate', 'rotate_90l', TRUE)?>
 									<?=lang('rotate_90l')?>
-								</a>
+								</label>
 							</li>
 							<li class="rotate_vrt">
-								<a href="#">
+								<label>
+									<?=form_radio('rotate', 'rotate_vrt', TRUE)?>
 									<?=lang('rotate_flip_vert')?>
-								</a>
+								</label>
 							</li>
 							<li class="rotate_hor">
-								<a href="#">
+								<label>
+									<?=form_radio('rotate', 'rotate_hor', TRUE)?>
 									<?=lang('rotate_flip_hor')?>
-								</a>
+								</label>
 							</li>
 						</ul>
 						<p class="submit_button">

@@ -3253,42 +3253,21 @@ div.contentWrap {
 }
 
 #file_manager_toolbar  p.submit_button {
-	margin-top: 		10px;
+	margin:				10px 0 0;
 	text-align:			right;
 }
 
 #file_manager_toolbar  p.submit_button input {
 	margin-bottom: 5px;
+	width: auto;
 }
 
 #rotate_fieldset li {
-	margin:					0 0 8px;
+	margin:					4px 0;
 }
 
-#rotate_fieldset li a {
-	background-position: 	0 50%;
-	background-repeat: 		no-repeat;
-	cursor: 				pointer;
-	display: 				block;
-	height:					42px;
-	line-height: 			42px;
-	padding-left: 			42px;
-}
-
-#rotate_fieldset .rotate_90 a {
-	background-image: url(../images/image_edit_rotate_cw.png);
-}
-
-#rotate_fieldset .rotate_270 a {
-	background-image: url(../images/image_edit_rotate_ccw.png);
-}
-
-#rotate_fieldset .rotate_vrt a {
-	background-image: url(../images/image_edit_flip_vert.png);
-}
-
-#rotate_fieldset .rotate_hor a {
-	background-image: url(../images/image_edit_flip_hor.png);
+#rotate_fieldset.ui-accordion-content li input {
+	width: auto;
 }
 
 #file_manager_edit_file {
