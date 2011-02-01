@@ -77,7 +77,7 @@ if ( ! $EE_view_disable)
 								<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$selected_dir.AMP.'file='.$file['name'].AMP?>action=download" title="<?=lang('file_download')?>"><img src="<?=$cp_theme_url?>images/icon-download-file.png"></a>
 								&nbsp;&nbsp;<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$selected_dir.AMP.'file='.$file['name'].AMP?>action=delete" title="<?=lang('delete_selected_files')?>"><img src="<?=$cp_theme_url?>images/icon-delete.png"></a>
 								<?php if ($file['is_image']):?>
-								&nbsp;&nbsp;<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$selected_dir.AMP.'file='.urlencode($file['name'])?>'" title="'.$file['name'].'"><img src="<?=$cp_theme_url?>images/icon-edit.png" alt="<?=lang('delete')?>" /></a>
+								&nbsp;&nbsp;<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$selected_dir.AMP.'file='.urlencode($file['name'])?>" title="<?=$file['name']?>"><img src="<?=$cp_theme_url?>images/icon-edit.png" alt="<?=lang('delete')?>" /></a>
 								<?php endif; ?>
 							</td>
 							<td class="file_select"><?=form_checkbox('file[]', urlencode($file['name']), FALSE, 'class="toggle"')?></td>
