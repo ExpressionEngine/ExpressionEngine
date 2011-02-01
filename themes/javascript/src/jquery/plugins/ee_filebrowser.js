@@ -478,9 +478,10 @@
 			build_pages($('#dir_choice').val(), 0);
 		});
 		
-		$('#dir_choice').click(function() {
+		$('#dir_choice').change(function() {
+			// @todo - not quite right, but works
 			loadFiles(this.value);
-			//build_pages(this.value, 0);
+			build_pages(this.value, 0);
 		})
 		
 		$.template("fileRow", $('<tbody />').append($('#rowTmpl').remove().attr('id', '')));
