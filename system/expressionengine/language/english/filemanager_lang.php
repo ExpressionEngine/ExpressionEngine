@@ -33,6 +33,7 @@ $lang = array(
 'download_selected'		=> 'Download Selected Files',
 'email_files'			=> 'Email Selected Files',
 'delete_selected_files'	=> 'Delete Selected Files',
+'edit_file'				=> 'Edit File',
 
 'edit_modes'			=> 'Edit Modes',
 'resize'				=> 'Resize',
