@@ -702,6 +702,9 @@ $lang = array(
 'file_type' =>
 'File Type',
 
+'file_saved' =>
+'File Saved',
+
 'image' =>
 'Image',
 

@@ -1102,6 +1102,8 @@ class Moblog {
 
 					if ($key = array_search($x['0'],$field_name) OR $key = array_search($x['0'],$field_label))
 					{
+						
+						
 						$format = ( ! isset($x['1']) OR ! stristr($x['1'],"format")) ? $field_format[$key] : preg_replace("/format\=[\"\'](.*?)[\'\"]/","$1",trim($x['1']));
 
 						$matches['2'][$i] = str_replace($this->newline, "\n",$matches['2'][$i]);
@@ -1116,7 +1118,7 @@ class Moblog {
 							$this->entry_data[$key] = array('data' => $matches['2'][$i].$this->entry_data[$key]['data'],
 															'format' => $format);
 						}
-
+						
 						$this->body = str_replace($matches['0'][$i], '', $this->body);
 					}
 				}
@@ -1145,7 +1147,14 @@ class Moblog {
 
 				$params['format']	= ( ! isset($params['format'])) ? '' : $params['format'];
 				$params['name'] 	= ( ! isset($params['name'])) 	? '' : $params['name'];
-
+				
+				// Was it overriden?
+				
+				if (isset($this->entry_data[$params['name']]['format']))
+				{
+					//$params['format'] = $this->entry_data[$params['name']]['format'];
+				}
+				
 				$this->parse_field($params,$matches['2'][$i], $query->row('field_group') ); 
 				$this->template = str_replace($matches['0'],'',$this->template);
 			}
