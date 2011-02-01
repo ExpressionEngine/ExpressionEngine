@@ -99,17 +99,23 @@ class Content_files extends CI_Controller {
 			$selected_dir = array_search(current($upload_dirs_options), $upload_dirs_options);
 		}
 		
-		$files = $this->filemanager->fetch_files($selected_dir);
+		//$files = $this->filemanager->fetch_files($selected_dir);
+		$all_files = $this->filemanager->directory_files_map($this->_upload_dirs[$selected_dir]['server_path'], 1, FALSE, $this->_upload_dirs[$selected_dir]['allowed_types']);
 		
 		$file_list = array();
 		$dir_size = 0;
 		
-		$total_rows = count($files->files[$selected_dir]);
+		//$total_rows = count($files->files[$selected_dir]);
+		$total_rows = count($all_files);
 		
-		$files = array_slice($files->files[$selected_dir], $offset, $per_page);
+		//$files = array_slice($files->files[$selected_dir], $offset, $per_page);
+		$current_files = array_slice($all_files, $offset, $per_page);
+		
+		$files = $this->filemanager->fetch_files($selected_dir, $current_files);
 
 		// Setup file list
-		foreach ($files as $file)
+		//foreach ($files as $file)
+		foreach ($files->files[$selected_dir] as $file)
 		{
 			if ( ! $file['mime'])
 			{
