@@ -480,7 +480,7 @@ class Tools_model extends CI_Model {
 	 * @param	int
 	 * @return	mixed
 	 */
-	function get_files($directories = array(), $allowed_types = array(), $full_server_path = '', $hide_sensitive_data = FALSE, $get_dimensions = FALSE)
+	function get_files($directories = array(), $allowed_types = array(), $full_server_path = '', $hide_sensitive_data = FALSE, $get_dimensions = FALSE, $files_array = array())
 	{
 		$files = array();
 
@@ -504,10 +504,22 @@ class Tools_model extends CI_Model {
 		{
 			return $files;
 		}
-
+		
 		foreach ($directories as $key => $directory)
 		{
-			$directory_files = get_dir_file_info($directory); //, array('name', 'server_path', 'size', 'date'));
+			if ( ! empty($files_array))
+			{
+				$source_dir = rtrim(realpath($directory), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+				
+				foreach($files_array as $file)
+				{
+					$directory_files[] = get_file_info($source_dir.$file);
+				}
+			}
+			else
+			{
+				$directory_files = get_dir_file_info($directory); //, array('name', 'server_path', 'size', 'date'));
+			}
 
 			if ($allowed_types[$key] == 'img')
 			{
@@ -531,7 +543,9 @@ class Tools_model extends CI_Model {
 
 					$file['short_name'] = ellipsize($file['name'], 16, .5);
 
-					$file['relative_path'] = reduce_double_slashes($file['relative_path']);
+					$file['relative_path'] = (isset($file['relative_path'])) ?
+					 	reduce_double_slashes($file['relative_path']) :
+						reduce_double_slashes($directory);
 
 					$file['encrypted_path'] = rawurlencode($this->encrypt->encode($file['relative_path'].$file['name'], $this->session->sess_crypt_key));
 
