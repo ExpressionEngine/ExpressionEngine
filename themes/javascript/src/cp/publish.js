@@ -921,8 +921,6 @@ $(document).ready(function() {
 			});
 			
 		}
-
-		$.ee_filebrowser.reset(); // restores everything to "default" state - also needed below for file fields
 	});
 
 	// File fields
@@ -939,8 +937,6 @@ $(document).ready(function() {
 
 		$("input[name="+field+"_hidden]").val(file.name);
 		$("select[name="+field+"_directory]").val(file.directory);
-
-		$.ee_filebrowser.reset(); // restores everything to "default" state - also needed above for textareas
 	}
 
 	$("input[type=file]", "#publishForm").each(function() {
