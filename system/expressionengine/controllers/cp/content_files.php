@@ -606,14 +606,17 @@ class Content_files extends CI_Controller {
 				'image_height'	=> $file_info['height'],
 			),
 		));
-
-		$hidden_fields = form_hidden('directory_id', $file_dir).form_hidden('file', urlencode($file_name));
 		
+		$hidden = array(
+			'action'		=> '',
+			'upload_dir'	=> $this->_upload_dirs[$file_dir]['id'],
+			'file'			=> urlencode($file_name)
+		);
 		$data = array(
 			'file_url'		=> $file_url,
 			'file_path'		=> $file_path,
 			'file_info'		=> $file_info,
-			'hidden_fields' => $hidden_fields,
+			'hidden'		=> $hidden,
 		);
 		
 		$this->cp->add_js_script('ui', 'accordion');
@@ -675,18 +678,18 @@ class Content_files extends CI_Controller {
 	private function _do_crop($file)
 	{
 		$config = array(
-			'width'				=> $this->input->post('width'),
+			'width'				=> $this->input->post('crop_width'),
 			'maintain_ratio'	=> FALSE,
 			'x_axis'			=> $this->input->post('crop_x'),
 			'y_axis'			=> $this->input->post('crop_y'),
-			'height'			=> ($this->input->post('height')) ? $this->input->post('height') : NULL,
+			'height'			=> ($this->input->post('crop_height')) ? $this->input->post('crop_height') : NULL,
 			'master_dim'		=> 'width',
 			'library_path'		=> $this->config->item('image_library_path'),
 			'image_library'		=> $this->config->item('image_resize_protocol'),
 			'source_image'		=> $file,
 			'new_image'			=> $file
 		);
-
+		
 		$this->load->library('image_lib', $config);
 		
 		if ( ! $this->image_lib->crop())

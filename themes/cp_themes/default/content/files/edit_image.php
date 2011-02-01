@@ -18,9 +18,7 @@ if ( ! $EE_view_disable)
 		
 		<div class="pageContents group">
 			<div id="file_manager_toolbar">
-				<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_edit_form'))?>
-					<?=form_hidden('action', 'crop')?>
-					<?=$hidden_fields?>
+				<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_edit_form'), $hidden)?>
 					<h3 class="accordion"><?=lang('crop')?></h3>
 					<div id="file_manager_crop">
 						<ul>
@@ -40,16 +38,19 @@ if ( ! $EE_view_disable)
 								<?=lang('crop_y', 'crop_y')?>
 								<?=form_input('crop_y', '', 'id="crop_y"')?>
 							</li>
+							<li>
+								<a href="#" id="toggle_crop"><?=lang('crop_mode')?></a>
+							</li>
+							<li style="display:none; float:right">
+								<a href="#" id="cancel_crop"><?=lang('cancel_crop')?></a>
+							</li>
 						</ul>
 						<p class="submit_button">
 							<?=form_submit('save_image', lang('save_image'), 'class="submit" id="edit_file_submit"')?><br />
-							<?=anchor('#', lang('cancel_changes'), 'class="disabled"')?>
 						</p>
 					</div>
 				<?=form_close()?>
-				<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_edit_form'))?>
-					<?=form_hidden('action', 'rotate')?>
-					<?=$hidden_fields?>
+				<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_edit_form'), $hidden)?>
 					<h3 class="accordion"><?=lang('rotate')?></h3>
 					<div id="rotate_fieldset">
 						<ul>
@@ -80,9 +81,7 @@ if ( ! $EE_view_disable)
 						</p>
 					</div>
 				<?=form_close()?>
-				<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_edit_form'))?>
-					<?=form_hidden('action', 'resize')?>
-					<?=$hidden_fields?>
+				<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_edit_form'), $hidden)?>
 					<h3 class="accordion"><?=lang('resize')?></h3>
 					<div id="resize_fieldset">
 						<ul>
