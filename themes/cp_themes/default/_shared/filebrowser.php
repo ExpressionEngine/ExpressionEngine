@@ -60,7 +60,7 @@ $dir_size = 4180;
 					<td colspan="4"><?=lang('no_uploaded_files')?></td>
 				</tr>
 				<tr id="rowTmpl">
-					<td>${name}</td>
+					<td><a href="#" onclick="$.ee_filebrowser.placeImage(${directory}, ${img_id}); return false;">${name}</a></td>
 					<td>${size}</td>
 					<td>${mime}</td>
 					<td>${date}</td>
