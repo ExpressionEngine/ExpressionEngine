@@ -728,7 +728,7 @@ class Content_files extends CI_Controller {
 	private function _do_rotate($file)
 	{
 		$config = array(
-			'rotation_angle'	=> $this->input->get_post('rotate'),
+			'rotation_angle'	=> $this->input->post('direction'),
 			'library_path'		=> $this->config->item('image_library_path'),
 			'image_library'		=> $this->config->item('image_resize_protocol'),
 			'source_image'		=> $file,
@@ -776,6 +776,8 @@ class Content_files extends CI_Controller {
 	 */
 	private function _do_resize($file)
 	{
+		
+		
 		$config = array(
 			'width'				=> $this->input->get_post('resize_width'),
 			'maintain_ratio'	=> $this->input->get_post('constrain'),
