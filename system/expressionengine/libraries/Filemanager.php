@@ -42,6 +42,7 @@ class Filemanager {
 	{
 		$this->EE =& get_instance();
 		$this->EE->load->library('javascript');
+		$this->EE->lang->loadfile('filemanager');
 		
 		$this->theme_url = $this->EE->config->item('theme_folder_url').'cp_themes/'.$this->EE->config->item('cp_theme').'/';
 		
@@ -336,8 +337,13 @@ class Filemanager {
 		{
 			$data['files'] = $this->find_thumbs($dir, $data['files']);
 			
+			foreach ($data['files'] as &$file)
+			{
+				unset($file['encrypted_path']);
+			}
+			
 			$data['id'] = $dir_id;
-			echo $this->EE->javascript->generate_json($data);
+			echo $this->EE->javascript->generate_json($data, TRUE);
 		}
 		exit;
 	}
@@ -506,20 +512,24 @@ class Filemanager {
 		$this->EE->load->helper('directory');
 		$map = directory_map($thumb_path, TRUE);
 
-		foreach($files as $key => $file)
+		foreach($files as $key => &$file)
 		{
 			// Hide the thumbs directory
-			if ($file['name'] == '_thumbs' OR $file['name'] == "folder")
+			if ($file['name'] == '_thumbs' OR ! $file['mime'] /* skips folders */)
 			{
 				unset($files[$key]);
+				continue;
 			}
-			else
-			{
-				$files[$key]['has_thumb'] = (in_array('thumb_'.$file['name'], $map));
-			}
+			
+			$file['date'] = $this->EE->localize->set_human_time($file['date'], TRUE);
+			$file['size'] = number_format($file['size']/1000, 1).' '.lang('file_size_unit');
+			$file['has_thumb'] = (in_array('thumb_'.$file['name'], $map));
 		}
 
-		return $files;
+		// if we unset a directory in the loop above our
+		// keys are no longer sequential and json won't turn
+		// into an array (which is what we need)
+		return array_values($files);
 	}
 	
 	// --------------------------------------------------------------------

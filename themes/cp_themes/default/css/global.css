@@ -854,7 +854,9 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 	border:				none;
 }
 
-#mainContent .pageContents p, #mainContent .pageContents table {
+#fileChooser .pageContents p,
+#mainContent .pageContents p,
+#mainContent .pageContents table {
 	margin-bottom:		11px;
 }
 
@@ -1157,6 +1159,7 @@ input.submit {
 	padding-bottom:		.2em
 }	
 
+#fileChooser #filterMenu,
 #mainContent #filterMenu, 
 #mainContent #registerUser {
 	background-color:	#ECF1F4;
@@ -1176,6 +1179,7 @@ input.submit {
 	width:				95%;
 }
 
+#fileChooser #filterMenu .group,
 #mainContent #filterMenu .group {
 	margin-bottom:		12px;
 	padding-top:		5px; /* IE stupidity */
@@ -1196,6 +1200,7 @@ input.submit {
 	z-index:			10;
 }
 
+#fileChooser table.mainTable,
 #mainContent table.mainTable {
 	width:				100%;
 	text-align:			left;
@@ -1289,6 +1294,7 @@ th.hidden_col { display: none; } td.hidden_col { display: none; }
 	margin-bottom: 15px;
 }
 
+#fileChooser .tableSubmit,
 #mainContent .tableSubmit {
 	float:				right;
 	margin-top:   -20px;
@@ -2821,6 +2827,7 @@ html.js .publish_hidden {
 	margin-right:5px;
 }
 
+#fileChooser #paginationCount,
 #mainContent #paginationCount {
 	margin: 0 0 10px;
 }
@@ -3157,7 +3164,7 @@ div.contentWrap {
 	text-align:center;
 }
 
-
+#fileChooser #filterMenu,
 #mainContent #filterMenu {
 	background-color:	#ECF1F4;
 	color:				#5f6c74;
@@ -3192,21 +3199,23 @@ div.contentWrap {
 	width:				50%;
 }
 
-/*  File Manager */
+/*  File Manager / Chooser */
 #mainContent #dir_choice_form,
 #mainContent #upload_form {
 	padding: 			0 0 4px;
 }
 
-
+#fileChooser #dir_choice_form,
 #mainContent #dir_choice_form {
 	float: 				left;
 }
 
+#fileChooser #upload_form,
 #mainContent #upload_form {
 	margin:		 		-4px 0 10px;
 }
 
+#fileChooser #upload_file.field,
 #upload_form #upload_file.field {
 	width:				196px;
 	margin:				0;

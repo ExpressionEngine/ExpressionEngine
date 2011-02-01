@@ -248,11 +248,12 @@ class Content_publish extends CI_Controller {
 		$this->filemanager->filebrowser('C=content_publish&M=filemanager_actions');
 		
 		$this->cp->add_js_script(array(
-			'ui'     => array('datepicker', 'resizable', 'draggable', 'droppable'),
-			'plugin' => array('markitup', 'toolbox.expose', 'overlay'),
-			'file'   => array('json2', 'cp/publish', 'cp/global')
-		));
-				
+		        'ui'        => array('datepicker', 'resizable', 'draggable', 'droppable'),
+		        'plugin'    => array('markitup', 'toolbox.expose', 'overlay', 'tmpl'),
+				'file'		=> array('json2', 'cp/publish', 'cp/global')
+		    )
+		);
+		
 		if ($this->session->userdata('group_id') == 1)
 		{
 			$this->cp->add_js_script(array('file' => 'cp/publish_admin'));

@@ -1,10 +1,10 @@
-/* headings */
+/* headings *
 .items h3 {
 	font-size:1.2em;
 	margin-bottom:10px;
 }
 
-/* Upload form */
+/* Upload form *
 input#upload_file.field {
 	padding: 4px;
 	border: 1px solid #b6c0c2;
@@ -31,7 +31,7 @@ input#upload_file.field {
 	margin-right:5px;
 }
 	
-/* main vertical scroll */
+/* main vertical scroll *
 #file_manager_main {
 	position:relative;
 	overflow:hidden;
@@ -43,13 +43,13 @@ input#upload_file.field {
 	background:url(<?=$cp_theme_url?>images/publish_file_manager_bg.gif) repeat-y 0px 0px;
 }
 
-/* root element for pages */
+/* root element for pages *
 #file_manager_main #pages {
 	position:absolute;
 	height:20000em;
 }
 
-/* single page */
+/* single page *
 .page {
 	padding:10px 10px 10px 0px;
 	height: 430px;
@@ -58,7 +58,7 @@ input#upload_file.field {
 	overflow-x: hidden;
 }
 
-/* root element for horizontal scrollables */
+/* root element for horizontal scrollables *
 .vertscrollable {
 	position:relative;
 	overflow:hidden;
@@ -66,14 +66,14 @@ input#upload_file.field {
 	height: 410px;
 }
 
-/* root element for scrollable items */
+/* root element for scrollable items *
 .vertscrollable .items {
 	width:20000em;
 	position:absolute;
 	clear:both;
 }
 
-/* single scrollable item */
+/* single scrollable item *
 .item {
 	float:left;
 	width:500px;
@@ -101,7 +101,7 @@ input#upload_file.field {
 	margin: 0;
 }
 
-/* main navigator */
+/* main navigator *
 
 div#nav_wreaper {
 	height:450px;
@@ -110,7 +110,7 @@ div#nav_wreaper {
 
 	width:215px;
 	float:left;
-/*	margin-top:40px;*/
+/*	margin-top:40px;*
 }
 
 #main_navi {
@@ -136,7 +136,7 @@ div#nav_wreaper {
 
 /*#main_navi li:hover {
 	background-color:#0072BC;
-}*/
+}*
 
 #main_navi li.active {
 	background:url(<?=$cp_theme_url?>images/publish_file_manager_nav_arrow.png) no-repeat right;
@@ -235,3 +235,4 @@ div#nav_wreaper {
 	display: inline;
 	cursor: pointer;
 }
+*/
