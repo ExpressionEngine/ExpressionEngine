@@ -731,8 +731,109 @@ class Content_files extends CI_Controller {
 	 */
 	private function _do_rotate($file)
 	{
+		$config = array(
+			'rotation_angle'	=> $this->input->get_post('rotate'),
+			'library_path'		=> $this->config->item('image_library_path'),
+			'image_library'		=> $this->config->item('image_resize_protocol'),
+			'source_image'		=> $file,
+			'new_image'			=> $file
+		);
 		
+		$this->load->library('image_lib', $config);
+		
+		if ( ! $this->image_lib->rotate())
+		{
+	    	$errors = $this->image_lib->display_errors();
+		}
+		
+		if (isset($errors))
+		{
+			if (AJAX_REQUEST)
+			{
+				$this->output->send_ajax_response($errors, TRUE);
+			}
+			
+			show_error($errors);
+		}
+		
+		$this->image_lib->clear();
+		
+		if (AJAX_REQUEST)
+		{
+			$dimensions = $this->image_lib->get_image_properties('', TRUE);
+			$this->image_lib->clear();
+			
+			$this->output->send_ajax_response(array(
+				'width'		=> $dimensions['width'],
+				'height'	=> $dimensions['height']
+			));
+		}
+		
+		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file='.$this->input->post('file');
+		$this->functions->redirect($url);
 	}
 
+	// ------------------------------------------------------------------------	
+	
+	/**
+	 * Do image rotation.
+	 */
+	private function _do_resize($file)
+	{
+		$config = array(
+			'width'				=> $this->input->get_post('resize_width'),
+			'maintain_ratio'	=> $this->input->get_post('constrain'),
+			'library_path'		=> $this->config->item('image_library_path'),
+			'image_library'		=> $this->config->item('image_resize_protocol'),
+			'source_image'		=> $file,
+			'new_image'			=> $file
+		);
+		
+		if ($this->input->get_post('resize_height') != '')
+		{
+			$config['height'] = $this->input->get_post('resize_height');
+		}
+		else
+		{
+			$config['master_dim'] = 'width';
+		}		
+		
+		$this->load->library('image_lib', $config);
+		
+		if ( ! $this->image_lib->resize())
+		{
+	    	$errors = $this->image_lib->display_errors();
+		}
+		
+		if (isset($errors))
+		{
+			if (AJAX_REQUEST)
+			{
+				$this->output->send_ajax_response($errors, TRUE);
+			}
+			
+			show_error($errors);
+		}
+		
+		$this->image_lib->clear();
+		
+		if (AJAX_REQUEST)
+		{
+			$dimensions = $this->image_lib->get_image_properties('', TRUE);
+			$this->image_lib->clear();
+			
+			$this->output->send_ajax_response(array(
+				'width'		=> $dimensions['width'],
+				'height'	=> $dimensions['height']
+			));
+		}
+		
+		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file='.$this->input->post('file');
+		$this->functions->redirect($url);
+	}
+	
+	
 	// ------------------------------------------------------------------------		
+	
+		
 }
