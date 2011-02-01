@@ -279,7 +279,7 @@ class Content_files extends CI_Controller {
 			}
 			
 			$this->session->set_flashdata('message_failure', $fm->upload_errors);
-			$this->functions->redirect(BASE.AMP.'C=content_files');
+			$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);
 		}
 		
 
@@ -328,7 +328,7 @@ class Content_files extends CI_Controller {
 		}
 		
 		$this->session->set_flashdata('message_success', lang('upload_success'));
-		$this->functions->redirect(BASE.AMP.'C=content_files');			
+		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);			
 	}
 
 
@@ -395,14 +395,14 @@ class Content_files extends CI_Controller {
 			}
 			
 			$this->session->set_flashdata('message_failure', $fm->upload_errors);
-			$this->functions->redirect(BASE.AMP.'C=content_files');
+			$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$data['id']);
 		}		
 		
 		
 		
 		// Woot- Success!
 		$this->session->set_flashdata('message_success', lang('upload_success'));
-		$this->functions->redirect(BASE.AMP.'C=content_files');		
+		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$data['id']);		
 	}
 
 	// ------------------------------------------------------------------------
@@ -481,7 +481,7 @@ class Content_files extends CI_Controller {
 		if ( ! $files OR ! $file_path OR $file_path === "")
 		{
 			$this->session->set_flashdata('message_failure', lang('choose_file'));
-			$this->functions->redirect(BASE.AMP.'C=content_files');
+			$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);
 		}
 
 		$delete = $this->filemanager->delete($files, $file_path, TRUE);		
@@ -490,7 +490,7 @@ class Content_files extends CI_Controller {
 		$message = ($delete) ? lang('delete_success') : lang('message_failure');
 		
 		$this->session->set_flashdata($message_type, $message);
-		$this->functions->redirect(BASE.AMP.'C=content_files');
+		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);
 	}
 	
 	// ------------------------------------------------------------------------
