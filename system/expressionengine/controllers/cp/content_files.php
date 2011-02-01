@@ -108,22 +108,18 @@ class Content_files extends CI_Controller {
 		}
 		else
 		{
-			//$files = $this->filemanager->fetch_files($selected_dir);
 			$all_files = $this->filemanager->directory_files_map($this->_upload_dirs[$selected_dir]['server_path'], 1, FALSE, $this->_upload_dirs[$selected_dir]['allowed_types']);
 
 			$file_list = array();
 			$dir_size = 0;
 
-			//$total_rows = count($files->files[$selected_dir]);
 			$total_rows = count($all_files);
 
-			//$files = array_slice($files->files[$selected_dir], $offset, $per_page);
 			$current_files = array_slice($all_files, $offset, $per_page);
 
 			$files = $this->filemanager->fetch_files($selected_dir, $current_files);
 
 			// Setup file list
-			//foreach ($files as $file)
 			foreach ($files->files[$selected_dir] as $file)
 			{
 				if ( ! $file['mime'])
@@ -341,7 +337,6 @@ class Content_files extends CI_Controller {
 	 */
 	public function rename_file()
 	{
-
 		$required = array('file_name', 'rename_attempt', 'orig_name', 'temp_file_name', 'is_image', 'temp_prefix', 'remove_spaces', 'id');
 		
 		foreach ($required as $val)
@@ -381,26 +376,16 @@ class Content_files extends CI_Controller {
 		// Errors?
 		if ($fm->upload_errors)
 		{
-			// Rename Failed
-			if ($this->input->is_ajax_request())
-			{
-				$errors = $this->javascript->generate_json(
-							array('error' => $this->upload->display_errors()));
-				
-				echo sprintf("<script type=\"text/javascript\">
-								parent.EE_uploads.%s = %s;</script>",
-								$this->input->get('frame_id'),
-								$errors);
-				exit();
-			}
-			
 			$this->session->set_flashdata('message_failure', $fm->upload_errors);
 			$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$data['id']);
 		}		
+
+		// Woot- Success!  Make a new thumb
+		$thumb = $fm->create_thumb(
+			array('server_path' => $this->_upload_dirs[$data['id']]['server_path']), 
+			array('name' => $data['file_name'])
+		);
 		
-		
-		
-		// Woot- Success!
 		$this->session->set_flashdata('message_success', lang('upload_success'));
 		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$data['id']);		
 	}
@@ -621,14 +606,13 @@ class Content_files extends CI_Controller {
 				'image_height'	=> $file_info['height'],
 			),
 		));
-
-		$hidden_fields = form_hidden('directory_id', $file_dir).form_hidden('file', urlencode($file_name));
 		
 		$data = array(
 			'file_url'		=> $file_url,
 			'file_path'		=> $file_path,
 			'file_info'		=> $file_info,
-			'hidden_fields' => $hidden_fields,
+			'upload_dir'	=> $this->_upload_dirs[$file_dir]['id'],
+			'file'			=> urlencode($file_name)
 		);
 		
 		$this->cp->add_js_script('ui', 'accordion');
@@ -690,18 +674,18 @@ class Content_files extends CI_Controller {
 	private function _do_crop($file)
 	{
 		$config = array(
-			'width'				=> $this->input->post('width'),
+			'width'				=> $this->input->post('crop_width'),
 			'maintain_ratio'	=> FALSE,
 			'x_axis'			=> $this->input->post('crop_x'),
 			'y_axis'			=> $this->input->post('crop_y'),
-			'height'			=> ($this->input->post('height')) ? $this->input->post('height') : NULL,
+			'height'			=> ($this->input->post('crop_height')) ? $this->input->post('crop_height') : NULL,
 			'master_dim'		=> 'width',
 			'library_path'		=> $this->config->item('image_library_path'),
 			'image_library'		=> $this->config->item('image_resize_protocol'),
 			'source_image'		=> $file,
 			'new_image'			=> $file
 		);
-
+		
 		$this->load->library('image_lib', $config);
 		
 		if ( ! $this->image_lib->crop())
@@ -743,8 +727,109 @@ class Content_files extends CI_Controller {
 	 */
 	private function _do_rotate($file)
 	{
+		$config = array(
+			'rotation_angle'	=> $this->input->get_post('rotate'),
+			'library_path'		=> $this->config->item('image_library_path'),
+			'image_library'		=> $this->config->item('image_resize_protocol'),
+			'source_image'		=> $file,
+			'new_image'			=> $file
+		);
 		
+		$this->load->library('image_lib', $config);
+		
+		if ( ! $this->image_lib->rotate())
+		{
+	    	$errors = $this->image_lib->display_errors();
+		}
+		
+		if (isset($errors))
+		{
+			if (AJAX_REQUEST)
+			{
+				$this->output->send_ajax_response($errors, TRUE);
+			}
+			
+			show_error($errors);
+		}
+		
+		$this->image_lib->clear();
+		
+		if (AJAX_REQUEST)
+		{
+			$dimensions = $this->image_lib->get_image_properties('', TRUE);
+			$this->image_lib->clear();
+			
+			$this->output->send_ajax_response(array(
+				'width'		=> $dimensions['width'],
+				'height'	=> $dimensions['height']
+			));
+		}
+		
+		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file='.$this->input->post('file');
+		$this->functions->redirect($url);
 	}
 
+	// ------------------------------------------------------------------------	
+	
+	/**
+	 * Do image rotation.
+	 */
+	private function _do_resize($file)
+	{
+		$config = array(
+			'width'				=> $this->input->get_post('resize_width'),
+			'maintain_ratio'	=> $this->input->get_post('constrain'),
+			'library_path'		=> $this->config->item('image_library_path'),
+			'image_library'		=> $this->config->item('image_resize_protocol'),
+			'source_image'		=> $file,
+			'new_image'			=> $file
+		);
+		
+		if ($this->input->get_post('resize_height') != '')
+		{
+			$config['height'] = $this->input->get_post('resize_height');
+		}
+		else
+		{
+			$config['master_dim'] = 'width';
+		}		
+		
+		$this->load->library('image_lib', $config);
+		
+		if ( ! $this->image_lib->resize())
+		{
+	    	$errors = $this->image_lib->display_errors();
+		}
+		
+		if (isset($errors))
+		{
+			if (AJAX_REQUEST)
+			{
+				$this->output->send_ajax_response($errors, TRUE);
+			}
+			
+			show_error($errors);
+		}
+		
+		$this->image_lib->clear();
+		
+		if (AJAX_REQUEST)
+		{
+			$dimensions = $this->image_lib->get_image_properties('', TRUE);
+			$this->image_lib->clear();
+			
+			$this->output->send_ajax_response(array(
+				'width'		=> $dimensions['width'],
+				'height'	=> $dimensions['height']
+			));
+		}
+		
+		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file='.$this->input->post('file');
+		$this->functions->redirect($url);
+	}
+	
+	
 	// ------------------------------------------------------------------------		
+	
+		
 }
