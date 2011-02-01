@@ -3258,22 +3258,22 @@ div.contentWrap {
 }
 
 #file_manager_toolbar  p.submit_button input {
-	margin-bottom: 5px;
-	width: auto;
+	margin-bottom: 		5px;
+	width: 				auto;
 }
 
 #rotate_fieldset li {
-	margin:					4px 0;
+	margin:				4px 0;
 }
 
 #rotate_fieldset.ui-accordion-content li input {
-	width: auto;
+	width: 				auto;
 }
 
 #file_manager_edit_file {
-	float: right;
-	width: 84%;
-	overflow: auto;
+	float: 				right;
+	width: 				84%;
+	overflow: 			auto;
 }
 
 /* Communicate */
