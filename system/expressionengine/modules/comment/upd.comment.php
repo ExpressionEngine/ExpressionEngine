@@ -25,7 +25,7 @@
 
 class Comment_upd {
 
-	var $version = '2.1';
+	var $version = '2.2';
 
 	function Comment_upd()
 	{
@@ -233,7 +233,29 @@ class Comment_upd {
 			$this->EE->db->insert('actions', $data);
 			
 			// Note that the subscription table and notify migration occur in the ud_211.php file
-		}		
+		}	
+		
+		if ($current < 2.2)
+		{
+			$query = $this->EE->db->query("SHOW INDEX FROM `exp_comments`");
+			$indexes = array();
+		
+			foreach ($query->result_array() as $row)
+			{
+				
+				$indexes[] = $row['Key_name'];
+			}
+			
+			if (in_array('weblog_id', $indexes))
+			{
+				$this->EE->db->query("ALTER TABLE `exp_comments` DROP KEY `weblog_id`");
+			}
+			
+			if ( ! in_array('channel_id', $indexes))
+			{
+				$this->EE->db->query("ALTER TABLE `exp_comments` ADD KEY (`channel_id`)");				
+			}
+		}	
 
 		return TRUE;
 	}

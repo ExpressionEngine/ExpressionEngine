@@ -127,9 +127,9 @@ class Search_upd {
 	{
 		if ($current < 2.1)
 		{
-			$this->EE->load->library('unicode_db_convert');			
+			$this->EE->load->library('utf8_db_convert');			
 			
-			$this->EE->unicode_db_convert->do_conversion(array(
+			$this->EE->utf8_db_convert->do_conversion(array(
 				'exp_search_log', 'exp_search'
 			));
 		}

@@ -129,5 +129,5 @@ class Utf8_db_convert {
 		return TRUE;
 	}
 }
-/* End of file Unicode_db_convert.php */
-/* Location: ./system/expressionengine/libraries/Unicode_db_convert.php */
+/* End of file Utf8_db_convert.php */
+/* Location: ./system/expressionengine/libraries/Utf8_db_convert.php */
