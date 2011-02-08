@@ -5306,7 +5306,7 @@ class Wiki {
 			{
 				case 'all' : $allowed_types = '*';
 					break;
-				case 'img' : $allowed_types = 'jpg|png|gif';
+				case 'img' : $allowed_types = 'jpg|jpeg|png|gif';
 					break;
 				default :
 					$allowed_types = $query->row('allowed_types');
