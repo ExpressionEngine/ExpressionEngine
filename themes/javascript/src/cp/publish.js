@@ -637,12 +637,12 @@ $(document).ready(function() {
 
 	$("#write_mode_header .reveal_formatting_buttons").hide();
 
-	if (EE.publish.smileys == true) {
-		$("a.glossary_link").click(function(){
-			$(this).parent().siblings('.glossary_content').slideToggle("fast");$(this).parent().siblings('.smileyContent .spellcheck_content').hide();
-			return false;
-		});
+	$("a.glossary_link").click(function(){
+		$(this).parent().siblings('.glossary_content').slideToggle("fast");$(this).parent().siblings('.smileyContent .spellcheck_content').hide();
+		return false;
+	});
 
+	if (EE.publish.smileys === true) {
 		$('a.smiley_link').toggle(function() {
 			$(this).parent().siblings('.smileyContent').slideDown('fast', function() { $(this).css('display', ''); });
 		}, function() {
