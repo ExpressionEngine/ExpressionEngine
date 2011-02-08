@@ -208,7 +208,7 @@ class Addons_accessories extends CI_Controller {
 		$class = $this->accessories->_get_accessory_class($name);
 		
 		// add the package and view paths
-		$path = PATH_THIRD.strtolower($class).'/';
+		$path = PATH_THIRD.strtolower($name).'/';
 		
 		$this->load->add_package_path($path);
 		$orig_view_path = $this->load->_ci_view_path;
