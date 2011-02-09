@@ -3601,7 +3601,7 @@ class Admin_content extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$group_id = $this->input->get_post('group_id');
@@ -3621,7 +3621,7 @@ class Admin_content extends CI_Controller {
 
 		if ( ! preg_match("#^[a-zA-Z0-9_\-/\s]+$#i", $group_name))
 		{
-			show_error($this->lang->line('illegal_characters'));
+			show_error(lang('illegal_characters'));
 		}
 
 		$this->load->model('field_model');
@@ -3629,7 +3629,7 @@ class Admin_content extends CI_Controller {
 		// Is the group name taken?
 		if ($this->field_model->is_duplicate_field_group_name($group_name, $group_id))
 		{
-			show_error($this->lang->line('taken_status_group_name'));
+			show_error(lang('taken_field_group_name'));
 		}
 
 		// Construct the query based on whether we are updating or inserting
