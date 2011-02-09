@@ -807,10 +807,10 @@ class EE_Template {
 				// These two segments represent either a "class:constructor"
 				// or a "class:method".  We need to determine which one it is.
 				
-				if (count($class) == 1)
-				{
-					$class[1] = $class[0];
-				}
+				// if (count($class) == 1)
+				// {
+				// 	$class[1] = $class[0];
+				// }
 				
 				foreach($class as $key => $value)
 				{
@@ -911,7 +911,7 @@ class EE_Template {
 
 				$this->tag_data[$this->loop_count]['tag']				= $raw_tag;
 				$this->tag_data[$this->loop_count]['class']				= $class[0];
-				$this->tag_data[$this->loop_count]['method']			= $class[1];
+				$this->tag_data[$this->loop_count]['method']			= (isset($class[1])) ? $class[1] : FALSE;
 				$this->tag_data[$this->loop_count]['tagparts']			= $class;
 				$this->tag_data[$this->loop_count]['params']			= $args;
 				$this->tag_data[$this->loop_count]['chunk']				= $chunk; // Matched data block - including opening/closing tags		  
@@ -1199,7 +1199,7 @@ class EE_Template {
 						$this->log_item("Nested Plugins in Tag, Parsing Outward First");
 						
 						$TMPL2 = clone $this;
-
+						
 						while (is_int(strpos($TMPL2->tag_data[$i]['block'], LD.'exp:')))
 						{
 							unset($this->EE->TMPL);
@@ -1297,10 +1297,8 @@ class EE_Template {
 				}
 				
 				// Assign the class name and method name
-			
 				$class_name = ucfirst($this->tag_data[$i]['class']);
-				$meth_name  = $this->tag_data[$i]['method'];
-				
+				$meth_name = $this->tag_data[$i]['method'];
 				
 				// If it's a third party class or a first party module,
 				// add the root folder to the loader paths so we can use
@@ -1318,7 +1316,6 @@ class EE_Template {
 				
 				// Dynamically instantiate the class.
 				// If module, only if it is installed...
-				
 				if (in_array($this->tag_data[$i]['class'], $this->modules) && ! isset($this->module_data[$class_name]))
 				{
 					$this->log_item("Problem Processing Module: Module Not Installed");
@@ -1330,11 +1327,29 @@ class EE_Template {
 					$EE = new $class_name();
 				}
 				
+				// This gives proper PHP5 __construct() support in 
+				// plugins and modules with only a single __construct()
+				// and allows them to be named __construct() instead of a 
+				// PHP4-style contructor.  
+				if ($meth_name === FALSE)
+				{
+					if (method_exists($EE, $class_name))
+					{
+						$meth_name = $class_name;
+					} 
+					elseif (method_exists($EE, '__construct'))
+					{
+						$meth_name = '__construct';
+					}
+				}
+				
 				/** ----------------------------------
 				/**  Does method exist?  Is This A Module and Is It Installed?
 				/** ----------------------------------*/
-		
-				if ((in_array($this->tag_data[$i]['class'], $this->modules) && ! isset($this->module_data[$class_name])) OR ! method_exists($EE, $meth_name))
+
+				if ((in_array($this->tag_data[$i]['class'], $this->modules) && 
+							  ! isset($this->module_data[$class_name])) OR 
+							  ! method_exists($EE, $meth_name))
 				{
 					
 					$this->log_item("Tag Not Processed: Method Inexistent or Module Not Installed");
@@ -1362,7 +1377,7 @@ class EE_Template {
 						return;						
 					}
 				}	
-				
+			
 				/*
 				
 				OK, lets grab the data returned from the class.
@@ -1379,7 +1394,7 @@ class EE_Template {
 				
 				$this->log_item(" -> Method Called: ".$meth_name);
 				
-				if (strtolower($class_name) == $meth_name)
+				if ((strtolower($class_name) == strtolower($meth_name)) OR ($meth_name == '__construct'))
 				{
 					$return_data = (isset($EE->return_data)) ? $EE->return_data : '';
 				}
