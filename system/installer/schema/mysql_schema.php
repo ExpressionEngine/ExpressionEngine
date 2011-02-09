@@ -896,7 +896,7 @@ class EE_Schema {
 				`keywords` text, 
 				PRIMARY KEY `search_id` (`search_id`),
 				FULLTEXT(`keywords`) 
-		) TYPE=MyISAM "; 
+		) ENGINE=MyISAM "; 
 		
 		// HTML buttons
 		// These are the buttons that appear on the PUBLISH page.
