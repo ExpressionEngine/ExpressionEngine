@@ -977,7 +977,7 @@ class Updater {
                 `keywords` text, 
                 PRIMARY KEY `search_id` (`search_id`),
                 FULLTEXT(`keywords`) 
-        ) TYPE=MyISAM ";
+        ) ENGINE=MyISAM ";
 
         // Channel Titles Autosave
         // Used for the autosave functionality
