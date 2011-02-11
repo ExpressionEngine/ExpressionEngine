@@ -947,7 +947,7 @@ class Filemanager {
 	 *
 	 *
 	 */
-	public function fetch_files($file_dir_id = NULL, $files = array())
+	public function fetch_files($file_dir_id = NULL, $files = array(), $get_dimensions = FALSE)
 	{
 		$this->EE->load->model('tools_model');
 		
@@ -962,7 +962,7 @@ class Filemanager {
 		{
 			$dirs->files[$dir->id] = array();
 			
-			$files = $this->EE->tools_model->get_files($dir->server_path, $dir->allowed_types, '', FALSE, FALSE, $files);
+			$files = $this->EE->tools_model->get_files($dir->server_path, $dir->allowed_types, '', FALSE, $get_dimensions, $files);
 			
 			foreach ($files as $file)
 			{
