@@ -390,75 +390,75 @@ class EE_Localize {
 	{
 		if ($datestr == '')
 		{
-			return FALSE;			
+			return FALSE;
 		}
-					
-			$datestr = trim($datestr);
-			
-			$datestr = preg_replace('/\040+/', ' ', $datestr);
-			
-			if ( ! preg_match('/^[0-9]{2,4}\-[0-9]{1,2}\-[0-9]{1,2}\s[0-9]{1,2}:[0-9]{1,2}(?::[0-9]{1,2})?(?:\s[AP]M)?$/i', $datestr))
-			{
-				return $this->EE->lang->line('invalid_date_formatting');
-			}
-			
-			$split = explode(' ', $datestr);
+		
+		$datestr = trim($datestr);
+		
+		$datestr = preg_replace('/\040+/', ' ', $datestr);
+		
+		if ( ! preg_match('/^[0-9]{2,4}\-[0-9]{1,2}\-[0-9]{1,2}\s[0-9]{1,2}:[0-9]{1,2}(?::[0-9]{1,2})?(?:\s[AP]M)?$/i', $datestr))
+		{
+			return $this->EE->lang->line('invalid_date_formatting');
+		}
+		
+		$split = explode(' ', $datestr);
 
-			$ex = explode("-", $split[0]);			
-			
-			$year  = (strlen($ex[0]) == 2) ? '20'.$ex[0] : $ex[0];
-			$month = (strlen($ex[1]) == 1) ? '0'.$ex[1]  : $ex[1];
-			$day	= (strlen($ex[2]) == 1) ? '0'.$ex[2]  : $ex[2];
+		$ex = explode("-", $split[0]);
+		
+		$year  = (strlen($ex[0]) == 2) ? '20'.$ex[0] : $ex[0];
+		$month = (strlen($ex[1]) == 1) ? '0'.$ex[1]  : $ex[1];
+		$day	= (strlen($ex[2]) == 1) ? '0'.$ex[2]  : $ex[2];
 
-			$ex = explode(":", $split[1]); 
-			
-			$hour = (strlen($ex[0]) == 1) ? '0'.$ex[0] : $ex[0];
-			$min  = (strlen($ex[1]) == 1) ? '0'.$ex[1] : $ex[1];
+		$ex = explode(":", $split[1]); 
+		
+		$hour = (strlen($ex[0]) == 1) ? '0'.$ex[0] : $ex[0];
+		$min  = (strlen($ex[1]) == 1) ? '0'.$ex[1] : $ex[1];
 
-			// I'll explain later
-			$fib_seconds = FALSE;
+		// I'll explain later
+		$fib_seconds = FALSE;
+		
+		if (isset($ex[2]) && preg_match('/[0-9]{1,2}/', $ex[2]))
+		{
+			$sec = sprintf('%02d', $ex[2]);
+		}
+		else
+		{
+        	// Unless specified, seconds get set to zero.
+			// $sec = '00'; 
+			// The above doesn't make sense to me, and can cause entries submitted within the same
+			// minute to have identical timestamps, so I'm reverting to an older behavior - D'Jones
+			// *********************************************************************************************
+			// I now see what Paul was initially avoiding.  So, here's the dealio and how we'll address it:
+			// Since the seconds were not specified, we're going to fib and roll back one second, otherwise
+			// the submitted entry will be considered to not be < $this->now and will not be displayed on
+			// the page request that creates it, a common scenario when submitting entries via a SAEF.
+			// So we'll set a flag, and adjust the time by one second after the timestamp is generated.
+			// If we do it here, we'd have to step backwards through minutes and hours and days etc. to
+			// check if each needs to roll back, for dates like January 1, 1990 12:00:00
+			$sec = date('s', $this->now);
+			$fib_seconds = TRUE;
+		}
+		
+		if (isset($split[2]))
+		{
+			$ampm = strtolower($split[2]);
 			
-			if (isset($ex[2]) && preg_match('/[0-9]{1,2}/', $ex[2]))
-			{
-				$sec = sprintf('%02d', $ex[2]);
-			}
-			else
-			{
-	        	// Unless specified, seconds get set to zero.
-				// $sec = '00'; 
-				// The above doesn't make sense to me, and can cause entries submitted within the same
-				// minute to have identical timestamps, so I'm reverting to an older behavior - D'Jones
-				// *********************************************************************************************
-				// I now see what Paul was initially avoiding.  So, here's the dealio and how we'll address it:
-				// Since the seconds were not specified, we're going to fib and roll back one second, otherwise
-				// the submitted entry will be considered to not be < $this->now and will not be displayed on
-				// the page request that creates it, a common scenario when submitting entries via a SAEF.
-				// So we'll set a flag, and adjust the time by one second after the timestamp is generated.
-				// If we do it here, we'd have to step backwards through minutes and hours and days etc. to
-				// check if each needs to roll back, for dates like January 1, 1990 12:00:00
-				$sec = date('s', $this->now);
-				$fib_seconds = TRUE;
-			}
-			
-			if (isset($split[2]))
-			{
-				$ampm = strtolower($split[2]);
+			if (substr($ampm, 0, 1) == 'p' AND $hour < 12)
+				$hour = $hour + 12;
 				
-				if (substr($ampm, 0, 1) == 'p' AND $hour < 12)
-					$hour = $hour + 12;
-					
-				if (substr($ampm, 0, 1) == 'a' AND $hour == 12)
-					$hour =  '00';
-					
-				if (strlen($hour) == 1)
-					$hour = '0'.$hour;
-			}
+			if (substr($ampm, 0, 1) == 'a' AND $hour == 12)
+				$hour =  '00';
+				
+			if (strlen($hour) == 1)
+				$hour = '0'.$hour;
+		}
 
-		if ($year < 1902 OR $year > 2037)			
+		if ($year < 1902 OR $year > 2037)
 		{
 			return $this->EE->lang->line('date_outside_of_range');
 		}
-				
+		
 		$time = $this->set_gmt(gmmktime($hour, $min, $sec, $month, $day, $year));
 
 		// Are we fibbing?
@@ -467,27 +467,9 @@ class EE_Localize {
 			$time = $time - 1;
 		}
 		
-		// Offset the time by one hour if the user is submitting a date
-		// in the future or past so that it is no longer in the same
-		// Daylight saving time.	
-		if (date("I", $this->now))
-		{
-			if ( ! date("I", $time))
-			{
-				$time -= 3600;			
-			}
-		}
-		else
-		{
-			if (date("I", $time))
-			{
-				$time += 3600;			
-			}
-		}
-
 		$time += $this->set_localized_offset();
 
-		return $time;	  
+		return $time;
 	}
 	
 	// --------------------------------------------------------------------
