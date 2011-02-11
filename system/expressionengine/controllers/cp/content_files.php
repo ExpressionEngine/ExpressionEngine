@@ -60,6 +60,11 @@ class Content_files extends CI_Controller {
         {
             $this->output->enable_profiler(FALSE);
         }
+
+		$this->cp->set_right_nav(array(
+			'directory_manager' => BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+		));	
+
 	}
 
 	// ------------------------------------------------------------------------
@@ -836,8 +841,271 @@ class Content_files extends CI_Controller {
 		$this->functions->redirect($url);
 	}
 	
+	// ------------------------------------------------------------------------	
 	
-	// ------------------------------------------------------------------------		
+	/**
+	 * Checks for images with no record in the database and adds them
+	 */	
+	function sync_directory()
+	{
+		$file_dir  = $this->input->get_post('id');
+		$id = $file_dir;
+		$batch_size = 50;  // conservative because we have to create a bunch of images
+		//$offset = ($this->input->get_post('offset')) ? $this->input->get_post('offset') : 0;
+		$total = $this->input->get_post('total');
+		$done = ($this->input->get_post('done')) ? $this->input->get_post('done') : 0;
+		
+		$resize_existing = FALSE;
+
+		if ($file_dir === FALSE)
+		{
+			// return false- we're gonna require this
+			return FALSE;
+			
+		}
+		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+			
+		// If I move this will need to fetch upload dir data
+		$dir_data = array($this->_upload_dirs[$file_dir]);
+		
+		// Sigh- this is stupid and will move to updater after initial testing
+		// Testing the updater is just a pain
+
+		if ( ! $this->db->table_exists('files'))
+		{
+			$Q[] = "CREATE TABLE exp_file_dimensions (
+			 id int(6) unsigned NOT NULL auto_increment,
+			 upload_location_id INT(4) UNSIGNED NOT NULL DEFAULT 0,
+			 title varchar(255) NOT NULL DEFAULT '',
+			 short_name varchar(255) NOT NULL DEFAULT '',
+			 width int(10) NOT NULL DEFAULT 0,
+			 height int(10) NOT NULL DEFAULT 0,
+			 PRIMARY KEY `id` (`id`),
+			 KEY `upload_location_id` (`upload_location_id`)
+			)";
+		
+			// Note- change to cat_id cause it's what we use in category_posts and I just like the consistency
+			
+			$Q[] = "CREATE TABLE exp_file_categories (
+			 file_id int(10) unsigned NOT NULL,
+			 cat_id int(10) unsigned NOT NULL,
+			 sort int(10) unsigned NOT NULL DEFAULT 0,
+			 is_cover char(1) NOT NULL default 'n',
+			 KEY `file_id` (`file_id`),
+			 KEY `cat_id` (`cat_id`)
+			)";
+
+			//field_2_fmt TINYTEXT NOT NULL DEFAULT 'xhtml',
+			// errors BLOB/TEXT column 'field_1_fmt' can't have a default value
+			
+
+			$Q[] = "CREATE TABLE exp_files (
+			 file_id int(6) unsigned NOT NULL auto_increment,
+			 site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
+			 title varchar(255) NOT NULL,
+			 upload_location_id INT(4) UNSIGNED NOT NULL DEFAULT 0,
+			 path varchar(255) NOT NULL,
+		 	 status char(1) NOT NULL default 'o',
+			 mime_type varchar(255) NOT NULL,
+			 file_name varchar(255) NOT NULL,
+			 file_size INT(4) NOT NULL DEFAULT 0,
+			 field_1 text NULL,
+			 field_1_fmt TINYTEXT NOT NULL,
+			 field_2 text NULL,
+			 field_2_fmt TINYTEXT NOT NULL,
+			 field_3 text NULL,
+			 field_3_fmt TINYTEXT NOT NULL,
+			 field_4 text NULL,
+			 field_4_fmt TINYTEXT NOT NULL,
+			 field_5 text NULL,
+			 field_5_fmt TINYTEXT NOT NULL,
+			 field_6 text NULL,
+			 field_6_fmt TINYTEXT NOT NULL,			
+			 metadata MEDIUMTEXT NULL,
+			 uploaded_by_member_id int(10) unsigned NOT NULL default 0,
+			 upload_date int(10) NOT NULL,
+			 modified_by_member_id int(10) unsigned NOT NULL default 0,
+			 modified_date int(10) NOT NULL,
+			 PRIMARY KEY `file_id` (`file_id`),
+			 KEY `upload_location_id` (`upload_location_id`),
+			 KEY `site_id` (`site_id`)
+			)";
+			
+			//KEY `file_dimension_id` (`file_dimension_id`),
+			
+			// doesn't look like anything changed in upload prefs
+			
+
+			// Pascal will have a cow- but TEST DATA!
+			// Add a column to files to hold the size for the new name			
+			// Seperate cause my go poof and couldn't normally hard code it
+			$Q[] = "ALTER TABLE `exp_files` ADD COLUMN `file_hw_original` VARCHAR(20) NOT NULL default ''";
+
+
+			foreach ($Q as $sql)
+			{
+				$this->db->query($sql);
+			}
+
+
+		} // End stupid - I hope
+
+		// If file exists- make sure it exists in db - otherwise add it to db and generate all child sizes
+		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
+		
+		$dir_data = $this->_upload_dirs[$id];
+		
+		$all_files = $this->filemanager->directory_files_map($dir_data['server_path'], 1, FALSE, $dir_data['allowed_types']);
+
+		$file_list = array();
+		$dir_size = 0;
+
+		$total_rows = count($all_files);
+			
+		// No files- nothing to add?
+		if ($total_rows == 0)
+		{
+			//$this->check_db_leftovers();
+		}
+			
+		$total = ($total === FALSE) ? $total_rows : $total;
+		$current_files = array_slice($all_files, $done, $batch_size);
+
+		$files = $this->filemanager->fetch_files($id, $current_files, TRUE);
+			
+		// Let's do a quick check of db to see if ANY file records for this directory
+		$this->db->where('upload_location_id', $id);
+		$this->db->from('files');
+		$do_db_check = ($this->db->count_all_results() == 0) ? FALSE : TRUE;			
+			
+		// Setup data for batch insert
+		foreach ($files->files[$id] as $file)
+		{
+			if ( ! $file['mime'])
+			{
+				continue;
+			}
+				
+			// Does it exist in DB?
+			if ($do_db_check)
+			{
+				$query = $this->db->get_where('files', array('file_name' => $file['name']));
+				
+				if ($query->num_rows() > 0)
+				{
+					continue;
+				}					
+			}
+
+			$file_location = $this->functions->remove_double_slashes(
+					$dir_data['url'].'/'.$file['name']
+				);
+					
+			$file_path = $this->functions->remove_double_slashes(
+					$dir_data['server_path'].'/'.$file['name']
+				);
+
+			$file_dim = (isset($file['dimensions']) && $file['dimensions'] != '') ? str_replace(array('width="', 'height="', '"'), '', $file['dimensions']) : '';
+
+			$file_data[] = array(
+					'site_id'				=> $this->config->item('site_id'),
+					'title'					=> $file['name'],
+					'path'					=> $file['size'],
+					'file_name'				=> $file['name'],
+					'file_size'				=> $file['size'],
+					'metadata'				=> '',
+					'uploaded_by_member_id'	=> 0,
+					'upload_date'			=> 0,
+					'field_1_fmt'			=> 'xhtml',
+					'field_2_fmt'			=> 'xhtml',
+					'field_3_fmt'			=> 'xhtml',					
+					'field_4_fmt'			=> 'xhtml',
+					'field_5_fmt'			=> 'xhtml',
+					'field_6_fmt'			=> 'xhtml',
+					'file_hw_original'		=> $file_dim
+			);				
+
+		// Insert into categories???
+
+
+		// Go ahead and create the thumb
+		// For syncing- will need to tap into dir prefs and make all image variations- so batch needs to be small
+			
+			
+		// Woot- Success!  Make a new thumb
+		$thumb = $this->filemanager->create_thumb(
+			array('server_path' => $this->_upload_dirs[$id]['server_path']), 
+			array('name' => $file['name'])
+		);			
+			
+				
+
+		}
+			
+		// $fm->create_resized() ??	
+			
+		// need better batch- heh
+		$this->db->insert_batch('files', $file_data);
+		$done = $done + $batch_size;
+			
+		if ($done >= $total)
+		{
+			echo 'done';
+		}
+		else
+		{
+			$url = BASE.AMP.'C=content_files'.AMP.'M=sync_directory'.AMP.'id='.$id.AMP.'total='.$total_rows.AMP.'done='.$done;
+			$this->functions->redirect($url);
+		}
+
+	}
+	
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * File Upload Preferences
+	 *
+	 * Creates the File Upload Preferences main page
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function file_upload_preferences($message = '')
+	{
+		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		if ( ! $this->cp->allowed_group('can_admin_channels'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		$this->load->library('table');
+		$this->load->model('tools_model');
+		$this->lang->loadfile('admin_content');
+
+		$this->cp->set_variable('cp_page_title', $this->lang->line('file_upload_prefs'));
+
+		$this->jquery->tablesorter('.mainTable', '{
+			headers: {1: {sorter: false}, 2: {sorter: false}},
+			widgets: ["zebra"]
+		}');
+
+		$vars['message'] = $message;
+		$vars['upload_locations'] = $this->tools_model->get_upload_preferences($this->session->userdata('member_group'));
+
+		$this->javascript->compile();
+
+		$this->cp->set_right_nav(array('create_new_upload_pref' => BASE.AMP.'C=admin_content'.AMP.'M=edit_upload_preferences'));
+		
+		$this->load->view('content/files/file_upload_preferences', $vars);
+	}
 	
 		
 }
