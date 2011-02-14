@@ -35,8 +35,8 @@ if ($EE_view_disable !== TRUE)
 				{
 					$this->table->add_row(
 						'<strong>'.$upload_location->id.' '.$upload_location->name.'</strong>',
-						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=edit_upload_preferences'.AMP.'id='.$upload_location->id.'" title="'.lang('edit').'"><img src="'.$cp_theme_url.'images/icon-edit.png" alt="'.lang('edit').'"</a>',
-						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=delete_upload_preferences_conf'.AMP.'id='.$upload_location->id.'" title="'.lang('delete').'"><img src="'.$cp_theme_url.'images/icon-delete.png" alt="'.lang('delete').'" /></a>',
+						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_upload_preferences'.AMP.'id='.$upload_location->id.'" title="'.lang('edit').'"><img src="'.$cp_theme_url.'images/icon-edit.png" alt="'.lang('edit').'"</a>',
+						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=delete_upload_preferences_conf'.AMP.'id='.$upload_location->id.'" title="'.lang('delete').'"><img src="'.$cp_theme_url.'images/icon-delete.png" alt="'.lang('delete').'" /></a>',
 						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=sync_directory'.AMP.'id='.$upload_location->id.'" title="'.lang('sync').'">'.lang('sync').'</a>'
 					
 					);

@@ -974,6 +974,8 @@ class Content_files extends CI_Controller {
 			//$this->check_db_leftovers();
 		}
 			
+			
+		// @todo, bail if there are no files in the directory!  :D
 		$total = ($total === FALSE) ? $total_rows : $total;
 		$current_files = array_slice($all_files, $done, $batch_size);
 
@@ -1074,21 +1076,10 @@ class Content_files extends CI_Controller {
 	 */
 	function file_upload_preferences($message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->cp->allowed_group('can_admin_channels'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		$this->load->library('table');
 		$this->load->model('tools_model');
-		$this->lang->loadfile('admin_content');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('file_upload_prefs'));
+		$this->cp->set_variable('cp_page_title', lang('file_upload_prefs'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}},
@@ -1100,54 +1091,114 @@ class Content_files extends CI_Controller {
 
 		$this->javascript->compile();
 
-		$this->cp->set_right_nav(array('create_new_upload_pref' => BASE.AMP.'C=admin_content'.AMP.'M=edit_upload_preferences'));
+		$this->cp->set_right_nav(array('create_new_upload_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_upload_preferences'));
 		
 		$this->load->view('content/files/file_upload_preferences', $vars);
 	}
 	
 	// --------------------------------------------------------------------
-	
+
+	/**
+	 * Creates or edits a file upload location
+	 *
+	 * @return void
+	 */	
 	public function edit_upload_preferences()
 	{
 		$id = $this->input->get_post('id');
-
-		$type = ($id != '') ? 'edit' : 'new';
+		
+		$type = ($id) ? 'edit' : 'new';
 
 		$upload_dirs = $this->tools_model->get_upload_preferences(
-			$this->session->userdata('member_group'), ($id == '') ? NULL : $id);
+			$this->session->userdata('member_group'), $id);
 		
-		if ($upload_dirs->num_rows() !== 0)
+		if ($type == 'new')
 		{
-			foreach ($upload_dirs->row_array() as $k => $v)
-			{
-				$data['field_'.$k] = $v;
-			}
+			$data = array(
+				'form_hidden'			=> NULL,
+				'field_name'			=> $this->input->post('field_name'),
+				'field_server_path'		=> $this->input->post('field_server_path'),
+				'field_url'				=> $this->input->post('field_url'),
+				'field_max_size'		=> $this->input->post('field_max_size'),
+				'field_max_height'		=> $this->input->post('field_max_height'),
+				'field_max_width'		=> $this->input->post('field_max_width'),
+				'field_properties'		=> $this->input->post('field_properties'),
+				'field_pre_format'		=> $this->input->post('field_pre_format'),
+				'field_post_format'		=> $this->input->post('field_post_format'),
+				'field_file_properties'	=> $this->input->post('field_file_properties'),
+				'field_file_pre_format'	=> $this->input->post('field_file_pre_format'),
+				'field_file_post_format'=> $this->input->post('field_file_post_format'),
+			);
 		}
 		else
 		{
-			if ($id !== '')
+			if ($upload_dirs->num_rows() !== 0)
 			{
-				show_error(lang('unauthorized_access'));
+				foreach ($upload_dirs->row_array() as $k => $v)
+				{
+					$data['field_'.$k] = $v;
+				}
+			}
+			else
+			{
+				if ($id)
+				{
+					show_error(lang('unauthorized_access'));
+				}
+
+				foreach ($upload_dirs->list_fields() as $f)
+				{
+					$data['field_'.$f] = '';
+				}
+
+				$data['field_url'] = base_url();
+				$data['field_server_path'] = str_replace(SYSDIR.'/', '', FCPATH);
 			}
 			
-			foreach ($upload_dirs->list_fields() as $f)
-			{
-				$data['field_'.$f] = '';
-			}
-			
-			$data['field_url'] = base_url();
-			$data['field_server_path'] = str_replace(SYSDIR.'/', '', FCPATH);
-			$data['field_properties'] = "style=\"border: 0;\" alt=\"image\"";
+			$data['form_hidden'] = array(
+				'id'		=> $data['field_id'],
+				'cur_name'	=> $data['field_name']
+			);	
 		}
-		
-		
-		// Load up libraries/helpers we need
+
 		$this->load->library('form_validation');
 		
-		$data['form_hidden'] = array(
-			'id'		=> $data['field_id'],
-			'cur_name'	=> $data['field_name']
-		);
+		$data['upload_groups'] = $this->member_model->get_upload_groups();
+		$data['banned_groups'] = array();
+
+		if ($data['upload_groups']->num_rows() > 0)
+		{
+			$this->db->select('member_group');
+
+			if ($id != '')
+			{
+				$this->db->where('upload_id', $id);
+			}
+
+			$result = $this->db->get('upload_no_access');
+
+			if ($result->num_rows() != 0)
+			{
+				foreach($result->result_array() as $row)
+				{
+					$data['banned_groups'][] = $row['member_group'];
+				}
+			}
+		}	
+
+		$title = ($type == 'edit') ? 'edit_file_upload_preferences' : 'new_file_upload_preferences';
+
+		$this->cp->set_variable('cp_page_title', lang($title));
+		$data['lang_line'] = ($type == 'edit') ? 'update' : 'submit';
+
+		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=file_upload_preferences',
+						lang('file_upload_preferences'));
+
+		$data['allowed_types'] = $upload_dirs->row('allowed_types');
+		$data['upload_pref_fields'] = array(
+							'max_size', 'max_height', 'max_width', 'properties', 
+							'pre_format', 'post_format', 'file_properties', 
+							'file_pre_format', 'file_post_format');
 
 		$config = array(
 					   array(
@@ -1189,44 +1240,7 @@ class Content_files extends CI_Controller {
 
 		$this->form_validation->set_error_delimiters('<span class="notice">', '</span>');
 
-		$this->form_validation->set_rules($config);		
-		
-		$title = ($type == 'edit') ? 'edit_file_upload_preferences' : 'new_file_upload_preferences';
-		
-		$this->cp->set_variable('cp_page_title', lang($title));
-		$data['lang_line'] = ($type == 'edit') ? 'update' : 'submit';
-			
-		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=file_upload_preferences',
-						lang('file_upload_preferences'));
-
-		$data['allowed_types'] = $upload_dirs->row('allowed_types');
-		$data['upload_pref_fields'] = array(
-							'max_size', 'max_height', 'max_width', 'properties', 
-							'pre_format', 'post_format', 'file_properties', 
-							'file_pre_format', 'file_post_format');
-
-		$data['upload_groups'] = $this->member_model->get_upload_groups();
-		$data['banned_groups'] = array();
-
-		if ($data['upload_groups']->num_rows() > 0)
-		{
-			$this->db->select('member_group');
-
-			if ($id != '')
-			{
-				$this->db->where('upload_id', $id);
-			}
-
-			$result = $this->db->get('upload_no_access');
-
-			if ($result->num_rows() != 0)
-			{
-				foreach($result->result_array() as $row)
-				{
-					$data['banned_groups'][] = $row['member_group'];
-				}
-			}
-		}
+		$this->form_validation->set_rules($config);			
 		
 		if ($this->form_validation->run() === FALSE)
 		{
@@ -1240,14 +1254,14 @@ class Content_files extends CI_Controller {
 	}
 
 	// --------------------------------------------------------------------
-	
+
+	/**
+	 * Update upload pref
+	 *
+	 * @return void
+	 */	
 	private function _update_upload_preferences()
 	{
-		if ( ! $this->cp->allowed_group('can_admin_channels'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		$this->load->model('admin_model');
 
 		// If the $id variable is present we are editing an
@@ -1308,7 +1322,7 @@ class Content_files extends CI_Controller {
 		if ($edit === TRUE)
 		{
 			$this->db->update('upload_prefs', $data, array('id' => $id));
-			$cp_message = $this->lang->line('preferences_updated');
+			$cp_message = lang('preferences_updated');
 		}
 		else
 		{
@@ -1316,7 +1330,7 @@ class Content_files extends CI_Controller {
 
 			$this->db->insert('upload_prefs', $data);
 			$id = $this->db->insert_id();
-			$cp_message = $this->lang->line('new_file_upload_created');
+			$cp_message = lang('new_file_upload_created');
 		}
 
 		if (count($no_access) > 0)
@@ -1336,6 +1350,97 @@ class Content_files extends CI_Controller {
 
 		$this->session->set_flashdata('message_success', $cp_message);
 		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'M=edit_upload_preferences'.AMP.'id='.$id);		
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 *  Delete Upload Preferences Confirm
+	 *
+	 * @access	public
+	 * @return	mixed
+	 */
+	function delete_upload_preferences_conf()
+	{
+		$id = $this->input->get_post('id');
+
+		if ( ! $id)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$this->load->helper('form');
+
+		$this->cp->set_variable('cp_page_title', lang('delete_upload_preference'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences', 
+								lang('file_upload_preferences'));
+
+		$data = array(
+			'form_action'	=> 'C=content_files'.AMP.'M=delete_upload_preferences'.AMP.'id='.$id,
+			'form_extra'	=> '',
+			'form_hidden'	=> array(
+				'id'			=> $id
+			),
+			'message'		=> lang('delete_upload_pref_confirmation')
+		);
+
+		// Grab all upload locations with this id
+		$this->db->where('id', $id);
+		$items = $this->db->get('upload_prefs');
+		$data['items'] = array();
+		
+		foreach($items->result() as $item)
+		{
+			$data['items'][] = $item->name;
+		}
+
+		$this->javascript->compile();
+		$this->load->view('content/files/pref_delete_confirm', $data);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 *  Delete Upload Preferences
+	 *
+	 * @access	public
+	 * @return	null
+	 */
+	function delete_upload_preferences()
+	{
+		$id = $this->input->get_post('id');
+
+		if ( ! $id)
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		$this->load->model('tools_model');
+		$this->lang->loadfile('admin_content');
+
+		$name = $this->tools_model->delete_upload_preferences($id);
+
+		$this->logger->log_action(lang('upload_pref_deleted').NBS.NBS.$name);
+
+		// Clear database cache
+		$this->functions->clear_caching('db');
+
+		$this->session->set_flashdata('message_success', lang('upload_pref_deleted').NBS.NBS.$name);
+		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 *
+	 *
+	 *
+	 *
+	 *
+	 */
+	public function batch_upload()
+	{
+		
 	}
 
 	// --------------------------------------------------------------------
