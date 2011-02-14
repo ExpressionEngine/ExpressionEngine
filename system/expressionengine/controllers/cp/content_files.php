@@ -851,29 +851,61 @@ class Content_files extends CI_Controller {
 	 */	
 	public function sync_directory()
 	{
-		$file_dir  = $this->input->get_post('id');
-		$id = $file_dir;
+		$file_dir  = $this->input->get('id');
+		$cid = $file_dir;
+		$var['sizes'] = array();
+		$this->load->library('javascript');
+
 		$batch_size = 50;  // conservative because we have to create a bunch of images
 		//$offset = ($this->input->get_post('offset')) ? $this->input->get_post('offset') : 0;
-		$total = $this->input->get_post('total');
-		$done = ($this->input->get_post('done')) ? $this->input->get_post('done') : 0;
+		//$total = $this->input->get_post('total');
+		//$done = ($this->input->get_post('done')) ? $this->input->get_post('done') : 0;
 		
 		$resize_existing = FALSE;
 
+		// No file directory- they want to sync them all
 		if ($file_dir === FALSE)
 		{
-			// return false- we're gonna require this
-			return FALSE;
+
 			
 		}
-		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
+		else
 		{
-			show_error(lang('unauthorized_access'));
+			if ( ! array_key_exists($file_dir, $this->_upload_dirs))
+			{
+				show_error(lang('unauthorized_access'));
+			}
+
+			$ids = array($file_dir);
 		}
+		
+		// Get the resize info for the directories
+		$this->db->where_in('upload_location_id', $ids);
+		$query = $this->db->get('file_dimensions');
+				
+		if ($query->num_rows() > 0)
+		{
+			
+		}		
 			
 		// If I move this will need to fetch upload dir data
-		$dir_data = array($this->_upload_dirs[$file_dir]);
+		foreach ($ids as $id)
+		{
+			$dir_data[$id] = $this->_upload_dirs[$id];
+			$vars['dirs'][$id] = $this->_upload_dirs[$id];
+			$vars['dirs'][$id]['count'] = '--';			
+		}
 		
+
+		$all_files = $this->filemanager->directory_files_map($dir_data[$cid]['server_path'], 1, FALSE, $dir_data[$cid]['allowed_types']);
+		
+		$js_files = $this->javascript->generate_json($all_files);
+		
+		
+		$this->javascript->output('var jsFiles = '.$js_files);
+
+		$this->javascript->compile();
+
 		// Sigh- this is stupid and will move to updater after initial testing
 		// Testing the updater is just a pain
 
@@ -952,56 +984,60 @@ class Content_files extends CI_Controller {
 			{
 				$this->db->query($sql);
 			}
-
-
 		} // End stupid - I hope
 
+
+		
+		$this->load->view('content/files/sync', $vars);
+
+
+// process file array - move to own method?
+
+
+	}
+	
+	function do_sync_files()
+	{
+		$type = 'insert';
+		
 		// If file exists- make sure it exists in db - otherwise add it to db and generate all child sizes
 		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
 		
+		if (($id = $this->input->post('dir_id')) == FALSE OR ($current_files = $this->input->post('files')) == FALSE)
+		{
+			return FALSE;
+		}
+		
 		$dir_data = $this->_upload_dirs[$id];
 		
-		$all_files = $this->filemanager->directory_files_map($dir_data['server_path'], 1, FALSE, $dir_data['allowed_types']);
-
-		$file_list = array();
-		$dir_size = 0;
-
-		$total_rows = count($all_files);
+		
 			
-		// No files- nothing to add?
-		if ($total_rows == 0)
-		{
-			//$this->check_db_leftovers();
-		}
-			
-		$total = ($total === FALSE) ? $total_rows : $total;
-		$current_files = array_slice($all_files, $done, $batch_size);
-
 		$files = $this->filemanager->fetch_files($id, $current_files, TRUE);
 			
 		// Let's do a quick check of db to see if ANY file records for this directory
-		$this->db->where('upload_location_id', $id);
-		$this->db->from('files');
-		$do_db_check = ($this->db->count_all_results() == 0) ? FALSE : TRUE;			
+		//$this->db->where('upload_location_id', $id);
+		//$this->db->from('files');
+		//$do_db_check = ($this->db->count_all_results() == 0) ? FALSE : TRUE;			
 			
 		// Setup data for batch insert
 		foreach ($files->files[$id] as $file)
 		{
 			if ( ! $file['mime'])
 			{
+				// set error
 				continue;
 			}
 				
 			// Does it exist in DB?
-			if ($do_db_check)
-			{
-				$query = $this->db->get_where('files', array('file_name' => $file['name']));
+			$query = $this->db->get_where('files', array('file_name' => $file['name']));
 				
-				if ($query->num_rows() > 0)
-				{
-					continue;
-				}					
-			}
+			if ($query->num_rows() > 0)
+			{
+				// It exists, but we need to check size - think this needs to be a setting
+				// Not set- just continue
+				$type = 'update';
+				
+			}					
 
 			$file_location = $this->functions->remove_double_slashes(
 					$dir_data['url'].'/'.$file['name']
@@ -1017,6 +1053,8 @@ class Content_files extends CI_Controller {
 					'site_id'				=> $this->config->item('site_id'),
 					'title'					=> $file['name'],
 					'path'					=> $file['size'],
+					'status'				=> 'o',
+					'mime_type'				=> $file['mime_type'],
 					'file_name'				=> $file['name'],
 					'file_size'				=> $file['size'],
 					'metadata'				=> '',
@@ -1037,15 +1075,20 @@ class Content_files extends CI_Controller {
 		// Go ahead and create the thumb
 		// For syncing- will need to tap into dir prefs and make all image variations- so batch needs to be small
 			
+			//new fm
 			
 			// Woot- Success!  Make a new thumb
 			$thumb = $this->filemanager->create_thumb(
 				array('server_path' => $this->_upload_dirs[$id]['server_path']), 
 				array('name' => $file['name'])
 			);	
+			
+			$this->filemanager->create_resized(
+				array('server_path' => $this->_upload_dirs[$id]['server_path']), 
+				array('name' => $file['name'])
+			);			
 		}
 			
-		// $fm->create_resized() ??	
 			
 		// need better batch- heh
 		$this->db->insert_batch('files', $file_data);
@@ -1060,9 +1103,13 @@ class Content_files extends CI_Controller {
 			$url = BASE.AMP.'C=content_files'.AMP.'M=sync_directory'.AMP.'id='.$id.AMP.'total='.$total_rows.AMP.'done='.$done;
 			$this->functions->redirect($url);
 		}
+		
+		
+		
 	}
-	
-	
+
+
+
 	// --------------------------------------------------------------------
 
 	/**

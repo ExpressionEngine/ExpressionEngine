@@ -31,6 +31,7 @@ class Filemanager {
 	public $upload_errors = FALSE;
 	public $upload_warnings = FALSE;
 	public $upload_data = NULL;
+	public $dir_sizes = FALSE;
 	private $EE;
 
 	/**
@@ -532,6 +533,124 @@ class Filemanager {
 		return array_values($files);
 	}
 	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Synchronize Resized Images
+	 *
+	 * Checks and creates resized images per directory settings
+	 *
+	 * @access	public
+	 * @param	mixed	directory information
+	 * @param	array	file information
+	 * @param	array	array of sizes
+	 * @return	bool	success / failure
+	 */
+	function sync_resized($dir, $data, $dimensions)
+	{
+		$this->EE->load->library('image_lib');
+		
+		$img_path = rtrim($dir['server_path'], '/').'/';
+		
+		
+		//$source_dir = rtrim(realpath($directory), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+
+		foreach ($dimensions as $name => $size)
+		{
+			$create_new = FALSE;
+			$resized_path = $img_path.'_'.$name.'/';
+				
+			if ( ! is_dir($resized_path))
+			{
+				mkdir($resized_path);
+			
+				if ( ! file_exists($resized_path.'index.html'))
+				{
+					$f = fopen($resized_path.'index.html', FOPEN_READ_WRITE_CREATE_DESTRUCTIVE);
+					fwrite($f, 'Directory access is forbidden.');
+					fclose($f);
+				}
+			}
+			elseif ( ! is_really_writable($resized_path))
+			{
+				return FALSE;
+			}
+		
+			// Does the image exist and is it the proper size?
+			if ( ! file_exists($resized_path.$data['name']))
+			{
+				$create_new = TRUE;
+			}
+			else  // probably best to have a param for this check
+			{
+				$file = get_file_info($resized_path.$data['name']);
+			
+				$file['relative_path'] = (isset($file['relative_path'])) ?
+					 	reduce_double_slashes($file['relative_path']) :
+						reduce_double_slashes($directory);
+						
+				if (function_exists('getimagesize')) 
+				{
+					if ($D = @getimagesize($file['relative_path'].$file['name']))
+					{
+						$file['width'] = $D[0];
+						$file['height'] = $D[1];
+					}
+				
+					// Check against image setting
+					if ($file['width'] > $size['width'])
+					{
+						$create_new = TRUE;
+					}
+					elseif ($file['height'] > $size['height'])
+					{
+						$create_new = TRUE;
+					}
+
+				}
+				else
+				{
+					// We can't give dimensions, so ???
+					$file['dimensions'] = FALSE;
+				}
+				
+				// If size is wrong- nuke old resized image
+				if ($create_new == TRUE)
+				{
+					@unlink($file['relative_path'].$file['name']);
+				}	
+			}		
+
+			if ($create_new == FALSE)
+			{
+				continue;
+			}
+			
+			$this->EE->image_lib->clear();
+
+			$config['source_image']		= $img_path.$data['name'];
+			$config['new_image']		= $resized_path.$data['name'];
+			$config['maintain_ratio']	= TRUE;
+			$config['image_library']	= $this->EE->config->item('image_resize_protocol');
+			$config['library_path']		= $this->EE->config->item('image_library_path');
+			$config['width']			= $size['width'];
+			$config['height']			= $size['height'];
+
+			$this->EE->image_lib->initialize($config);
+
+			if ( ! $this->EE->image_lib->resize())
+			{
+				return FALSE;
+				die($this->EE->image_lib->display_errors());
+			}
+	
+			@chmod($config['new_image'], DIR_WRITE_MODE);
+			return TRUE;
+		}
+	}
+
+
+
 	// --------------------------------------------------------------------
 	
 	// --------------------------------------------------------------------
