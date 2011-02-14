@@ -5336,49 +5336,6 @@ class Admin_content extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * File Upload Preferences
-	 *
-	 * Creates the File Upload Preferences main page
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function file_upload_preferences($message = '')
-	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->cp->allowed_group('can_admin_channels'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$this->load->library('table');
-		$this->load->model('tools_model');
-		$this->lang->loadfile('admin_content');
-
-		$this->cp->set_variable('cp_page_title', $this->lang->line('file_upload_prefs'));
-
-		$this->jquery->tablesorter('.mainTable', '{
-			headers: {1: {sorter: false}, 2: {sorter: false}},
-			widgets: ["zebra"]
-		}');
-
-		$vars['message'] = $message;
-		$vars['upload_locations'] = $this->tools_model->get_upload_preferences($this->session->userdata('member_group'));
-
-		$this->javascript->compile();
-
-		$this->cp->set_right_nav(array('create_new_upload_pref' => BASE.AMP.'C=admin_content'.AMP.'M=edit_upload_preferences'));
-		
-		$this->load->view('admin/file_upload_preferences', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Not Http
 	 *
 	 * Custom validation
