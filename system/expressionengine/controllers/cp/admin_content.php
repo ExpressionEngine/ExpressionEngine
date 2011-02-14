@@ -5393,10 +5393,8 @@ class Admin_content extends CI_Controller {
 			$this->form_validation->set_message('not_http', $this->lang->line('no_upload_dir_url'));
 			return FALSE;
 		}
-		else
-		{
-			return TRUE;
-		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------

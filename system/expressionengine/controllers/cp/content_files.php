@@ -1111,24 +1111,15 @@ class Content_files extends CI_Controller {
 
 		$upload_dirs = $this->tools_model->get_upload_preferences(
 			$this->session->userdata('member_group'), $id);
-		
+
 		if ($type == 'new')
 		{
-			$data = array(
-				'form_hidden'			=> NULL,
-				'field_name'			=> $this->input->post('field_name'),
-				'field_server_path'		=> $this->input->post('field_server_path'),
-				'field_url'				=> $this->input->post('field_url'),
-				'field_max_size'		=> $this->input->post('field_max_size'),
-				'field_max_height'		=> $this->input->post('field_max_height'),
-				'field_max_width'		=> $this->input->post('field_max_width'),
-				'field_properties'		=> $this->input->post('field_properties'),
-				'field_pre_format'		=> $this->input->post('field_pre_format'),
-				'field_post_format'		=> $this->input->post('field_post_format'),
-				'field_file_properties'	=> $this->input->post('field_file_properties'),
-				'field_file_pre_format'	=> $this->input->post('field_file_pre_format'),
-				'field_file_post_format'=> $this->input->post('field_file_post_format'),
-			);
+			$data['form_hidden'] = '';
+			
+			foreach ($upload_dirs->list_fields() as $field)
+			{
+				$data['field_'.$field] = $this->input->post($field);
+			}			
 		}
 		else
 		{
@@ -1198,7 +1189,7 @@ class Content_files extends CI_Controller {
 		$data['upload_pref_fields'] = array(
 							'max_size', 'max_height', 'max_width', 'properties', 
 							'pre_format', 'post_format', 'file_properties', 
-							'file_pre_format', 'file_post_format');
+							'file_pre_format', 'file_post_format', 'batch_location');
 
 		$config = array(
 					   array(

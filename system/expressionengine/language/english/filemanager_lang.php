@@ -74,7 +74,7 @@ $lang = array(
 
 'save_crop' 			=> 'Save Crop',
 'cancel_crop'			=> 'Cancel Crop',
-
+'batch_location'		=> 'Batch Upload Location',
 
 'edit_file_upload_preferences' =>
 'Edit File Upload Preferences',
