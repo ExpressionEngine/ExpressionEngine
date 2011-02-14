@@ -1035,14 +1035,11 @@ class Content_files extends CI_Controller {
 		// For syncing- will need to tap into dir prefs and make all image variations- so batch needs to be small
 			
 			
-		// Woot- Success!  Make a new thumb
-		$thumb = $this->filemanager->create_thumb(
-			array('server_path' => $this->_upload_dirs[$id]['server_path']), 
-			array('name' => $file['name'])
-		);			
-			
-				
-
+			// Woot- Success!  Make a new thumb
+			$thumb = $this->filemanager->create_thumb(
+				array('server_path' => $this->_upload_dirs[$id]['server_path']), 
+				array('name' => $file['name'])
+			);	
 		}
 			
 		// $fm->create_resized() ??	
@@ -1060,7 +1057,6 @@ class Content_files extends CI_Controller {
 			$url = BASE.AMP.'C=content_files'.AMP.'M=sync_directory'.AMP.'id='.$id.AMP.'total='.$total_rows.AMP.'done='.$done;
 			$this->functions->redirect($url);
 		}
-
 	}
 	
 	
