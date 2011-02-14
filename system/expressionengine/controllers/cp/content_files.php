@@ -1431,10 +1431,61 @@ class Content_files extends CI_Controller {
 	 */
 	public function batch_upload()
 	{
+		$this->cp->set_variable('cp_page_title', lang('batch_upload'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences', 
+								lang('file_upload_preferences'));
+
+		// Get Upload dirs, cycle through and figure out how many files
+		// are in each batch upload location.
+		$upload_dirs = array(lang('please_select'));
 		
+		foreach ($this->_upload_dirs as $dir)
+		{
+			$files = ($dir['batch_location'] === NULL) ? array() : get_dir_file_info($dir['batch_location'], TRUE);
+			
+			$upload_dirs[$dir['id']] = sprintf(lang('upload_dir_dropdown'),
+												$dir['name'], count($files));
+		}
+		
+		$data = array(
+			'upload_dirs'	=> $upload_dirs,
+			'stati'			=> array(
+								''		=> lang('please_select'),
+								'o'		=> lang('open'),
+								'c'		=> lang('closed')
+			),
+			'categories'	=> $this->_get_files_categories(),
+		);
+		
+		
+		
+		$this->load->view('content/files/batch_upload_index', $data);
+		
+			
 	}
 
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Get file categories
+	 *
+	 * This function returns a category checkbox tree of categories
+	 * that can be used with file entries
+	 *
+	 *
+	 */
+	private function _get_files_categories()
+	{
+		$this->load->library('api');
+		$this->api->instantiate('channel_categories');
+		
+		$categories = $this->api_channel_categories->category_form_tree();
+		
+		foreach ($categories as $cats)
+		{
+			
+		}
+		
+	}
 			
 }
