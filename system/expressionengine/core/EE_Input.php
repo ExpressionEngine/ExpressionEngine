@@ -62,6 +62,30 @@ class EE_Input extends CI_Input {
 	{
 		$EE =& get_instance();
 
+		/*
+ 		* --------------------------------------------------------------------
+ 		*  Is the request a URL redirect redirect?  Moved from the index so we can have config variables!
+ 		* --------------------------------------------------------------------
+ 		*
+ 		* All external links that appear in the ExpressionEngine control panel
+ 		* are redirected to this index.php file first, before being sent to the
+ 		* final destination, so that the location of the control panel will not 
+ 		* end up in the referrer logs of other sites.
+ 		*
+ 		*/	
+
+		if (isset($_GET['URL'])) 
+		{ 
+			if ( ! file_exists(APPPATH.'libraries/Redirect'.EXT))
+			{
+				exit('Some components appear to be missing from your ExpressionEngine installation.');	
+			}
+			
+			require(APPPATH.'libraries/Redirect'.EXT);
+
+			exit();  // We halt system execution since we're done
+		}		
+
 		$filter_keys = TRUE;
 	
 		if ($request_type == 'CP' && isset($_GET['BK']) && isset($_GET['channel_id']) && isset($_GET['title']) && $EE->session->userdata['admin_sess'] == 1)

@@ -183,27 +183,6 @@
 		error_reporting(0);	
 	}
 
-/*
- * --------------------------------------------------------------------
- *  Is the request a URL redirect redirect?
- * --------------------------------------------------------------------
- *
- * All external links that appear in the ExpressionEngine control panel
- * are redirected to this index.php file first, before being sent to the
- * final destination, so that the location of the control panel will not 
- * end up in the referrer logs of other sites.
- *
- */	
-	if (isset($_GET['URL'])) 
-	{ 
-		if ( ! file_exists(APPPATH.'libraries/Redirect'.EXT))
-		{
-			exit('Some components appear to be missing from your ExpressionEngine installation.');	
-		}
-		require(APPPATH.'libraries/Redirect'.EXT);
-
-		exit();  // We halt system execution since we're done
-	}
 
 /*
  *---------------------------------------------------------------
