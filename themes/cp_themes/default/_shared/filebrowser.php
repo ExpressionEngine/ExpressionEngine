@@ -37,7 +37,7 @@ $dir_size = 4180;
 				<?=form_label(lang('upload_file'), 'upload_file', array('class' => 'visualEscapism'))?>
 				<?=form_hidden('upload_dir', key($filemanager_directories))?>
 				<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>15,'class'=>'field'))?>
-				&nbsp;&nbsp;<input type="submit" class="submit" value="<?=lang('upload_file')?>">.
+				&nbsp;&nbsp;<input type="submit" class="submit" value="<?=lang('upload_file')?>">
 				
 			<?=form_close()?>
 		<?php endif; ?>

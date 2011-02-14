@@ -355,7 +355,7 @@
 		if ( ! directory in dir_files_structure) {
 			return;
 		}
-						
+		
 		// Cache directory information
 		dir_files_structure[directory.id] = directory.files;
 		dir_paths[directory.id] = directory.url;
@@ -390,17 +390,14 @@
 		
 		offset = offset * per_page;
 		
-		
 		var pagination = {
 			'directory': directory.id,
-			'pages_from': offset,
-			'pages_to': offset + per_page,
+			'pages_from': offset + 1, // Bump up offset by one because of zero indexed arrays
+			'pages_to': (offset + per_page > total_files) ? total_files : offset + per_page,
 			'pages_total': total_files,
 			'pages_current': Math.floor(offset / per_page) + 1,
 			'pages': pages
 		};
-		
-	//	offset = offset * per_page;
 		
 		var workon = directory.files.slice(offset, offset+per_page);
 				
