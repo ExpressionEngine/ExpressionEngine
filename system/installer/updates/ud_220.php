@@ -70,11 +70,20 @@ class Updater {
 					'batch_location' => array(
 								'type'			=> 'VARCHAR',
 								'constraint'	=> 255,
-								'null'			=> FALSE,
-								'default'		=> ''
 								));
 		
 		$this->EE->dbforge->add_column('upload_prefs', $fields);
+		
+		
+		$fields = array(
+					'server_path'	=> array(
+								'name'			=> 'server_path',
+								'type'			=> 'VARCHAR',
+								'constraint'	=> 255
+					),
+		);
+		
+		$this->EE->dbforge->modify_column('upload_prefs', $fields);
 	}
 
 	// ------------------------------------------------------------------------

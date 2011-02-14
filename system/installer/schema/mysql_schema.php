@@ -1064,7 +1064,7 @@ class EE_Schema {
 			 id int(4) unsigned NOT NULL auto_increment,
 			 site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			 name varchar(50) NOT NULL,
-			 server_path varchar(150) NOT NULL default '',
+			 server_path varchar(255) NOT NULL default '',
 			 url varchar(100) NOT NULL,
 			 allowed_types varchar(3) NOT NULL default 'img',
 			 max_size varchar(16) NULL DEFAULT NULL,
@@ -1076,6 +1076,7 @@ class EE_Schema {
 			 file_properties varchar(120) NULL DEFAULT NULL,
 			 file_pre_format varchar(120) NULL DEFAULT NULL,
 			 file_post_format varchar(120) NULL DEFAULT NULL,
+			 batch_location varchar(255) NULL DEFAULT NULL,
 			 PRIMARY KEY `id` (`id`),
 			 KEY `site_id` (`site_id`)
 			)";
