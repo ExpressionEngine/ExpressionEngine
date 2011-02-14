@@ -74,7 +74,7 @@ $lang = array(
 
 'save_crop' 			=> 'Save Crop',
 'cancel_crop'			=> 'Cancel Crop',
-
+'batch_location'		=> 'Batch Upload Location',
 
 'edit_file_upload_preferences' =>
 'Edit File Upload Preferences',
@@ -157,35 +157,25 @@ $lang = array(
 'restrict_notes_1' =>
 'These radio buttons let you to specify which Member Groups are allowed to upload files.',
 
-'restrict_notes_2' =>
-'Super Admins can always upload files',
+'restrict_notes_2' 			=> 'Super Admins can always upload files',
 
 'restrict_notes_3' =>
 'Note: File uploading is currently only allowed via the control panel',
 
-'member_group' =>
-'Member Group',
+'member_group' 				=> 'Member Group',
+'can_upload_files' 			=> 'Can upload files',
+'images_only' 				=> 'Images only',
+'all_filetypes' 			=> 'All file types',
+'file_properties' 			=> 'File Properties',
+'file_pre_format'			=> 'File Pre Formatting',
+'file_post_format' 			=> 'File Post Formatting',
+'preferences_updated' 		=>  'Preferences Updated',
 
-'can_upload_files' =>
-'Can upload files',
+'batch_upload' 				=> 'Batch Upload', 
 
-'images_only' =>
-'Images only',
-
-'all_filetypes' =>
-'All file types',
-
-'file_properties' =>
-'File Properties',
-
-'file_pre_format' =>
-'File Pre Formatting',
-
-'file_post_format' =>
-'File Post Formatting',
-
-'preferences_updated' => 
-'Preferences Updated',
+'upload_dir_dropdown'		=> '%s (%s files)',
+'please_select'				=> 'Please Select&hellip',
+'directory'					=> 'Directory',
 
 
 ''=>''

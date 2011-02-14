@@ -5336,142 +5336,6 @@ class Admin_content extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * File Upload Preferences
-	 *
-	 * Creates the File Upload Preferences main page
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function file_upload_preferences($message = '')
-	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->cp->allowed_group('can_admin_channels'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$this->load->library('table');
-		$this->load->model('tools_model');
-		$this->lang->loadfile('admin_content');
-
-		$this->cp->set_variable('cp_page_title', $this->lang->line('file_upload_prefs'));
-
-		$this->jquery->tablesorter('.mainTable', '{
-			headers: {1: {sorter: false}, 2: {sorter: false}},
-			widgets: ["zebra"]
-		}');
-
-		$vars['message'] = $message;
-		$vars['upload_locations'] = $this->tools_model->get_upload_preferences($this->session->userdata('member_group'));
-
-		$this->javascript->compile();
-
-		$this->cp->set_right_nav(array('create_new_upload_pref' => BASE.AMP.'C=admin_content'.AMP.'M=edit_upload_preferences'));
-		
-		$this->load->view('admin/file_upload_preferences', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 *  Delete Upload Preferences Confirm
-	 *
-	 * @access	public
-	 * @return	mixed
-	 */
-	function delete_upload_preferences_conf()
-	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->cp->allowed_group('can_admin_channels'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$id = $this->input->get_post('id');
-
-		if ( ! is_numeric($id))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$this->load->helper('form');
-		$this->lang->loadfile('admin_content');
-
-		$this->cp->set_variable('cp_page_title', $this->lang->line('delete_upload_preference'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences', $this->lang->line('file_upload_preferences'));
-
-		$vars['form_action'] = 'C=admin_content'.AMP.'M=delete_upload_preferences'.AMP.'id='.$id;
-		$vars['form_extra'] = '';
-		$vars['form_hidden']['id'] = $id;
-		$vars['message'] = $this->lang->line('delete_upload_pref_confirmation');
-
-		// Grab all upload locations with this id
-		$this->db->where('id', $id);
-		$items = $this->db->get('upload_prefs');
-		$vars['items'] = array();
-		
-		foreach($items->result() as $item)
-		{
-			$vars['items'][] = $item->name;
-		}
-
-		$this->javascript->compile();
-		$this->load->view('admin/preference_delete_confirm', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 *  Delete Upload Preferences
-	 *
-	 * @access	public
-	 * @return	null
-	 */
-	function delete_upload_preferences()
-	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->cp->allowed_group('can_admin_channels'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$id = $this->input->get_post('id');
-
-		if ( ! is_numeric($id))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$this->load->model('tools_model');
-		$this->lang->loadfile('admin_content');
-
-		$name = $this->tools_model->delete_upload_preferences($id);
-
-		$this->logger->log_action($this->lang->line('upload_pref_deleted').NBS.NBS.$name);
-
-		// Clear database cache
-		$this->functions->clear_caching('db');
-
-		$this->session->set_flashdata('message_success', $this->lang->line('upload_pref_deleted').NBS.NBS.$name);
-		$this->functions->redirect(BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Not Http
 	 *
 	 * Custom validation
@@ -5486,10 +5350,8 @@ class Admin_content extends CI_Controller {
 			$this->form_validation->set_message('not_http', $this->lang->line('no_upload_dir_url'));
 			return FALSE;
 		}
-		else
-		{
-			return TRUE;
-		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------

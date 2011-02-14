@@ -421,7 +421,7 @@ class Tools_model extends CI_Model {
 	 * @param	int
 	 * @return	mixed
 	 */
-	function get_upload_preferences($group_id = NULL, $id = '')
+	function get_upload_preferences($group_id = NULL, $id = NULL)
 	{
 		// for admins, no specific filtering, just give them everything
 		if ($group_id == 1)
@@ -456,7 +456,7 @@ class Tools_model extends CI_Model {
 			}
 
 			// there a specific upload location we're looking for?
-			if ($id != '')
+			if ($id)
 			{
 				$this->db->where('id', $id);
 			}
