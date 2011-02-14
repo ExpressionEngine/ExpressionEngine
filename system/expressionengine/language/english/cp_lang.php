@@ -14,7 +14,10 @@ $lang = array(
 'nav_content'	   				=> 'Content',
 'nav_publish'	   				=> 'Publish',
 'nav_edit'						=> 'Edit',
-'nav_files'	   					=> 'File Manager',
+'nav_files'	   					=> 'Files',
+	'nav_file_manager'				=> 'File Manager',
+	'nav_batch_upload'				=> 'Batch Upload',
+	'nav_sync_files'				=> 'Synchronize Files',
 
 'nav_files_short_desc'			=> 'Upload, edit, and delete Files',
 'nav_edit_short_desc'			=> 'Edit Entries',

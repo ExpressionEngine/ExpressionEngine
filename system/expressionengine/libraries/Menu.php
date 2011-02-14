@@ -56,8 +56,16 @@ class EE_Menu {
 		$menu['content'] = array(
 			'publish'	=> BASE.AMP.'C=content_publish',
 			'edit'		=> BASE.AMP.'C=content_edit',
-			'files'		=> BASE.AMP.'C=content_files'
+			'files'		=> array(
+				'file_manager'					=> BASE.AMP.'C=content_files',
+				'batch_upload'					=> BASE.AMP.'C=content_files'.AMP.'M=batch_upload',
+				'sync_files'					=> BASE.AMP.'C=content_files'.AMP.'M=sync_files',
+				'----',
+				'file_upload_preferences'		=> BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences',
+			)
 		);
+		
+		// 
 		
 		$menu['design'] = array(
 			'templates'		=> array(
@@ -115,7 +123,6 @@ class EE_Menu {
 			'email_configuration'			=> BASE.AMP.'C=admin_system'.AMP.'M=email_configuration',
 			'----',
 			'admin_content'	=> array(
-				'file_upload_preferences'		=> BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences',
 				'default_ping_servers'			=> BASE.AMP.'C=admin_content'.AMP.'M=default_ping_servers',
 				'default_html_buttons'			=> BASE.AMP.'C=admin_content'.AMP.'M=default_html_buttons'
 			),

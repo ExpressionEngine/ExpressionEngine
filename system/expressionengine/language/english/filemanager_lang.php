@@ -75,6 +75,119 @@ $lang = array(
 'save_crop' 			=> 'Save Crop',
 'cancel_crop'			=> 'Cancel Crop',
 
+
+'edit_file_upload_preferences' =>
+'Edit File Upload Preferences',
+
+'new_file_upload_preferences' =>
+'New File Upload Preferences',
+
+'new_file_upload_created' =>
+'New File Upload Created',
+
+'file_upload_preferences' =>
+'File Upload Preferences',
+
+'no_upload_prefs' =>
+'There are currently no file upload preferences',
+
+'please_add_upload' =>
+'There are currently no upload directories available. Please add one or more upload directories to use the File field type.',
+
+'upload_pref_name' =>
+'Descriptive name of upload directory',
+
+'new_file_upload_preferences' =>
+'New File Upload Destination',
+
+'server_path' =>
+'Server Path to Upload Directory',
+
+'url_to_upload_dir' =>
+'URL of Upload Directory',
+
+'allowed_types' =>
+'Allowed File Types',
+
+'max_size' =>
+'Maximum File Size (in bytes)',
+
+'max_height' =>
+'Maximum Image Height (in pixels)',
+
+'max_width' =>
+'Maximum Image Width',
+
+'properties' =>
+'Image Properties',
+
+'pre_format' =>
+'Image Pre Formatting',
+
+'post_format' =>
+'Image Post Formatting',
+
+'no_upload_dir_name' =>
+'You must submit a name for your upload directory',
+
+'no_upload_dir_path' =>
+'You must submit the path to your upload directory',
+
+'no_upload_dir_url' =>
+'You must submit the URL to your upload directory',
+
+'duplicate_dir_name' =>
+'The name of your directory is already taken',
+
+'delete_upload_preference' =>
+'Delete Upload Preference',
+
+'delete_upload_pref_confirmation' =>
+'Are you sure you want to permanently delete this preference?',
+
+'upload_pref_deleted' =>
+'Upload Preference Deleted:',
+
+'current_upload_prefs' =>
+'Current Preferences',
+
+'restrict_to_group' =>
+'Restrict file uploading to select member groups',
+
+'restrict_notes_1' =>
+'These radio buttons let you to specify which Member Groups are allowed to upload files.',
+
+'restrict_notes_2' =>
+'Super Admins can always upload files',
+
+'restrict_notes_3' =>
+'Note: File uploading is currently only allowed via the control panel',
+
+'member_group' =>
+'Member Group',
+
+'can_upload_files' =>
+'Can upload files',
+
+'images_only' =>
+'Images only',
+
+'all_filetypes' =>
+'All file types',
+
+'file_properties' =>
+'File Properties',
+
+'file_pre_format' =>
+'File Pre Formatting',
+
+'file_post_format' =>
+'File Post Formatting',
+
+'preferences_updated' => 
+'Preferences Updated',
+
+
 ''=>''
 );
 
