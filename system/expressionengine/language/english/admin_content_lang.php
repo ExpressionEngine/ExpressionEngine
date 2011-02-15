@@ -663,6 +663,11 @@ $lang = array(
 'can_delete_categories' =>
 'Can Delete Categories',
 
+'exclude_from_channels_or_publish' =>
+'Exclude from Channel or Field Category Assignment?',
+'publish' 	=> 'Channel Assignment',
+'files'		=> 'File Assignment',
+
 'no_member_groups_available' =>
 'There are no member groups allowed to %x categories.  You may assign these privileges using the member group editor: ',
 

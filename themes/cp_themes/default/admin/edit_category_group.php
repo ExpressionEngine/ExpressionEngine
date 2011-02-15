@@ -74,6 +74,18 @@ if ($EE_view_disable !== TRUE)
 				$setting
 			)
 		);
+		
+		$options = array(
+			0 => lang('none'),
+			1 => lang('publish'),
+			2 => lang('files')
+		);
+		
+		$this->table->add_row(array(
+				lang('exclude_from_channels_or_publish', 'exclude_group'),
+				form_dropdown('exclude_group', $options, $exclude_selected)
+			)
+		);
 								
 		echo $this->table->generate();
 		?>
