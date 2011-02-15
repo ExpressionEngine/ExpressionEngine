@@ -1467,7 +1467,10 @@ class Admin_content extends CI_Controller {
 				$vars['can_delete'][$row['group_id']] = $row['group_title'];
 			}
 		}
-
+		
+		// Get the selected 'excluded' group
+		$vars['exclude_selected'] = (isset($vars['exclude_group'])) ? $vars['exclude_group'] : FALSE;
+		
 		$this->javascript->compile();
 
 		$this->load->view('admin/edit_category_group', $vars);
