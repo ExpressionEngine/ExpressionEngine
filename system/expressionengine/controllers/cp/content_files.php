@@ -1177,6 +1177,7 @@ class Content_files extends CI_Controller {
 	 */	
 	public function edit_upload_preferences()
 	{
+		$this->load->library('table');
 		$id = $this->input->get_post('id');
 		
 		$type = ($id) ? 'edit' : 'new';

@@ -168,7 +168,7 @@ if ($EE_view_disable !== TRUE)
 				?>
 				<?=$this->table->generate()?>
 
-				<p class="notice"><?=required().lang('required_fields')?></p>
+				<p class="notice">* <?=lang('required_fields')?></p>
 
 				<p><?=form_submit('submit', lang($lang_line), 'class="submit"')?></p>
 
