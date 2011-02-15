@@ -552,13 +552,16 @@ class Filemanager {
 		
 		$img_path = rtrim($dir['server_path'], '/').'/';
 		
+//echo '<pre>';
+//print_r($dimensions); exit;
 		
-		//$source_dir = rtrim(realpath($directory), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+		//$source_dir = rtrim(realpath($dir), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 
 		foreach ($dimensions as $name => $size)
 		{
 			$create_new = FALSE;
 			$resized_path = $img_path.'_'.$name.'/';
+			
 				
 			if ( ! is_dir($resized_path))
 			{
@@ -576,6 +579,8 @@ class Filemanager {
 				return FALSE;
 			}
 		
+			$resized_dir = rtrim(realpath($resized_path), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+			
 			// Does the image exist and is it the proper size?
 			if ( ! file_exists($resized_path.$data['name']))
 			{
@@ -587,7 +592,7 @@ class Filemanager {
 			
 				$file['relative_path'] = (isset($file['relative_path'])) ?
 					 	reduce_double_slashes($file['relative_path']) :
-						reduce_double_slashes($directory);
+						reduce_double_slashes($resized_dir);
 						
 				if (function_exists('getimagesize')) 
 				{
@@ -612,6 +617,7 @@ class Filemanager {
 				{
 					// We can't give dimensions, so ???
 					$file['dimensions'] = FALSE;
+					exit('no dim'.$file['name']);
 				}
 				
 				// If size is wrong- nuke old resized image
@@ -647,8 +653,10 @@ class Filemanager {
 			}
 	
 			@chmod($config['new_image'], DIR_WRITE_MODE);
-			return TRUE;
+
 		}
+		
+		return TRUE;
 	}
 
 	function sync_database()

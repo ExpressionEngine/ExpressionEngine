@@ -886,7 +886,7 @@ class Content_files extends CI_Controller {
 			foreach ($query->result() as $row)
 			{
 				$js_size[$row->upload_location_id][$row->short_name] = array('resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height);
-				$vars['sizes'][$row->upload_location_id] = array('short_name' => $row->short_name, 'title' => $row->title, 'resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height);
+				$vars['sizes'][] = array('short_name' => $row->short_name, 'title' => $row->title, 'resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height);
 			}
 		}		
 			
@@ -901,6 +901,9 @@ class Content_files extends CI_Controller {
 
 		$js_data['sizes'] = $js_size;
 		$js_data['files'] = $this->filemanager->directory_files_map($dir_data[$cid]['server_path'], 1, FALSE, $dir_data[$cid]['allowed_types']);
+		
+		print_r($js_size);
+		print_r($js_data['files']);
 		
 		$js_files = $this->javascript->generate_json($js_data);
 		
@@ -1014,6 +1017,16 @@ class Content_files extends CI_Controller {
 			return FALSE;
 		}
 		
+/*
+Test data worked		
+$sizes[3] = array('small' => array('resize_type' => 'constrain', 'width' => 10, 'height' => 10),
+            	   'medium' => array('resize_type' => 'constrain', 'width' => 250, 'height' => 250));
+
+$current_files = array ('_bg_page_topbar 10.jpg', '_bg_page_topbar 11.jpg', '_bg_page_topbar 5.jpg', '_bg_page_topbar 6.jpg', '_bg_page_topbar 7.jpg', '_bg_page_topbar 8.jpg', '_bg_page_topbar 9.jpg', '_blank.png', 'DSC02078.JPG');
+		
+*/
+		
+		
 		$id = key($sizes);
 		
 		$dir_data = $this->_upload_dirs[$id];
@@ -1046,10 +1059,10 @@ class Content_files extends CI_Controller {
 			if ($query->num_rows() > 0)
 			{
 				// It exists, but we need to check sizes 
-				$this->filemanager->create_resized(
+				$this->filemanager->sync_resized(
 					array('server_path' => $this->_upload_dirs[$id]['server_path']), 
 					array('name' => $file['name']),
-					array('sizes' => $sizes[$id])
+					$sizes[$id]
 				);
 				
 				continue;
@@ -1067,11 +1080,12 @@ class Content_files extends CI_Controller {
 			$file_dim = (isset($file['dimensions']) && $file['dimensions'] != '') ? str_replace(array('width="', 'height="', '"'), '', $file['dimensions']) : '';
 
 			$file_data[] = array(
+					'upload_location_id'	=> $id,
 					'site_id'				=> $this->config->item('site_id'),
 					'title'					=> $file['name'],
 					'path'					=> $file['size'],
 					'status'				=> 'o',
-					'mime_type'				=> $file['mime_type'],
+					'mime_type'				=> $file['mime'],
 					'file_name'				=> $file['name'],
 					'file_size'				=> $file['size'],
 					'metadata'				=> '',
@@ -1098,10 +1112,10 @@ class Content_files extends CI_Controller {
 				array('name' => $file['name'])
 			);	
 			
-			$this->filemanager->create_resized(
+			$this->filemanager->sync_resized(
 				array('server_path' => $this->_upload_dirs[$id]['server_path']), 
 				array('name' => $file['name']),
-				array('sizes' => $sizes[$id])
+				$sizes[$id]
 			);			
 		}
 			
