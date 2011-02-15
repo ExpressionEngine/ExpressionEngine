@@ -638,6 +638,8 @@ class Filemanager {
 
 			$this->EE->image_lib->initialize($config);
 
+			// crop based on resize type
+			
 			if ( ! $this->EE->image_lib->resize())
 			{
 				return FALSE;
@@ -649,6 +651,10 @@ class Filemanager {
 		}
 	}
 
+	function sync_database()
+	{
+		
+	}
 
 
 	// --------------------------------------------------------------------

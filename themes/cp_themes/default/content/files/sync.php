@@ -52,8 +52,8 @@ if ( ! $EE_view_disable)
 				<tbody>
 				<?php foreach ($sizes as $data):?>
 					<tr class="<?=alternator('even', 'odd')?>">
-						<td><?=$data['size']?>></td>
-						<td><?=$data['type']?></td>
+						<td><?=$data['title']?></td>
+						<td><?=$data['resize_type']?></td>
 						<td><?=$data['width']?></td>
 						<td><?=$data['height']?></td>						
 					</tr>

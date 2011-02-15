@@ -857,9 +857,7 @@ class Content_files extends CI_Controller {
 		$this->load->library('javascript');
 
 		$batch_size = 50;  // conservative because we have to create a bunch of images
-		//$offset = ($this->input->get_post('offset')) ? $this->input->get_post('offset') : 0;
-		//$total = $this->input->get_post('total');
-		//$done = ($this->input->get_post('done')) ? $this->input->get_post('done') : 0;
+
 		
 		$resize_existing = FALSE;
 
@@ -885,7 +883,11 @@ class Content_files extends CI_Controller {
 				
 		if ($query->num_rows() > 0)
 		{
-			
+			foreach ($query->result() as $row)
+			{
+				$js_size[$row->upload_location_id][$row->short_name] = array('resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height);
+				$vars['sizes'][$row->upload_location_id] = array('short_name' => $row->short_name, 'title' => $row->title, 'resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height);
+			}
 		}		
 			
 		// If I move this will need to fetch upload dir data
@@ -897,9 +899,10 @@ class Content_files extends CI_Controller {
 		}
 		
 
-		$all_files = $this->filemanager->directory_files_map($dir_data[$cid]['server_path'], 1, FALSE, $dir_data[$cid]['allowed_types']);
+		$js_data['sizes'] = $js_size;
+		$js_data['files'] = $this->filemanager->directory_files_map($dir_data[$cid]['server_path'], 1, FALSE, $dir_data[$cid]['allowed_types']);
 		
-		$js_files = $this->javascript->generate_json($all_files);
+		$js_files = $this->javascript->generate_json($js_data);
 		
 		
 		$this->javascript->output('var jsFiles = '.$js_files);
@@ -916,6 +919,7 @@ class Content_files extends CI_Controller {
 			 upload_location_id INT(4) UNSIGNED NOT NULL DEFAULT 0,
 			 title varchar(255) NOT NULL DEFAULT '',
 			 short_name varchar(255) NOT NULL DEFAULT '',
+			 resize_type varchar(50) NOT NULL DEFAULT '',
 			 width int(10) NOT NULL DEFAULT 0,
 			 height int(10) NOT NULL DEFAULT 0,
 			 PRIMARY KEY `id` (`id`),
@@ -999,30 +1003,25 @@ class Content_files extends CI_Controller {
 	function do_sync_files()
 	{
 		$type = 'insert';
+		$errors = array();
+		$file_data = array();
 		
 		// If file exists- make sure it exists in db - otherwise add it to db and generate all child sizes
 		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
 		
-		if (($id = $this->input->post('dir_id')) == FALSE OR ($current_files = $this->input->post('files')) == FALSE)
+		if (($sizes = $this->input->post('sizes')) == FALSE OR ($current_files = $this->input->post('files')) == FALSE)
 		{
 			return FALSE;
 		}
 		
+		$id = key($sizes);
+		
 		$dir_data = $this->_upload_dirs[$id];
 		
-		
-			
+		//$this->sync_database();
 
-		// No files- nothing to add?
-		if ($total_rows == 0)
-		{
-			//$this->check_db_leftovers();
-		}
-			
-			
+
 		// @todo, bail if there are no files in the directory!  :D
-		$total = ($total === FALSE) ? $total_rows : $total;
-		$current_files = array_slice($all_files, $done, $batch_size);
 
 		$files = $this->filemanager->fetch_files($id, $current_files, TRUE);
 			
@@ -1037,6 +1036,7 @@ class Content_files extends CI_Controller {
 			if ( ! $file['mime'])
 			{
 				// set error
+				$errors[$file['name']] = 'No mime type';
 				continue;
 			}
 				
@@ -1045,9 +1045,14 @@ class Content_files extends CI_Controller {
 				
 			if ($query->num_rows() > 0)
 			{
-				// It exists, but we need to check size - think this needs to be a setting
-				// Not set- just continue
-				$type = 'update';
+				// It exists, but we need to check sizes 
+				$this->filemanager->create_resized(
+					array('server_path' => $this->_upload_dirs[$id]['server_path']), 
+					array('name' => $file['name']),
+					array('sizes' => $sizes[$id])
+				);
+				
+				continue;
 				
 			}					
 
@@ -1084,10 +1089,8 @@ class Content_files extends CI_Controller {
 		// Insert into categories???
 
 
-		// Go ahead and create the thumb
-		// For syncing- will need to tap into dir prefs and make all image variations- so batch needs to be small
-			
-			//new fm
+			// Go ahead and create the thumb
+			// For syncing- will need to tap into dir prefs and make all image variations- so batch needs to be small
 			
 			// Woot- Success!  Make a new thumb
 			$thumb = $this->filemanager->create_thumb(
@@ -1097,27 +1100,39 @@ class Content_files extends CI_Controller {
 			
 			$this->filemanager->create_resized(
 				array('server_path' => $this->_upload_dirs[$id]['server_path']), 
-				array('name' => $file['name'])
+				array('name' => $file['name']),
+				array('sizes' => $sizes[$id])
 			);			
 		}
 			
 			
-		// need better batch- heh
-		$this->db->insert_batch('files', $file_data);
-		$done = $done + $batch_size;
+		if ( ! empty($file_data))
+		{
+			$this->db->insert_batch('files', $file_data);
+		}
+
+		if (AJAX_REQUEST)
+		{
+			if ( ! empty($errors))
+			{
+				$this->output->send_ajax_response($errors, TRUE);
+			}
 			
-		if ($done >= $total)
+			$this->output->send_ajax_response('success');
+		}		
+	}
+
+	function sync_database()
+	{
+		$id = $this->input->post('dir_id');
+
+		if ( ! array_key_exists($id, $this->_upload_dirs))
 		{
-			echo 'done';
-		}
-		else
-		{
-			$url = BASE.AMP.'C=content_files'.AMP.'M=sync_directory'.AMP.'id='.$id.AMP.'total='.$total_rows.AMP.'done='.$done;
-			$this->functions->redirect($url);
+			show_error(lang('unauthorized_access'));
 		}
 		
 		
-		
+		$this->filemanager->sync_database($id);		
 	}
 
 
