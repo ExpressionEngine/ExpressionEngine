@@ -65,6 +65,23 @@ if ( ! $EE_view_disable)
 				<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
 				<div id="progress" style="width:200px;"></div>
 			</div>
+
+			<table id="sync_complete_template" cellspacing="0" cellpadding="0">
+				<tbody>
+					<tr>
+						<th><?=lang('files_processed')?></th>
+						<td>${files_processed}</td>
+					</tr>
+					<tr>
+						<th><?=lang('errors')?></th>
+						<td>${errors}</td>
+					</tr>
+					<tr>
+						<th><?=lang('error_count')?></th>
+						<td>${error_count}</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
 </div> 

@@ -909,8 +909,8 @@ class Content_files extends CI_Controller {
 		
 		$this->cp->add_js_script(array(
 				'plugin' => array('tmpl'), 
-				'ui'   => array('progressbar'),
-				'file' => array('underscore', 'cp/file_manager_synchronize')
+				'ui'     => array('progressbar'),
+				'file'   => array('underscore', 'cp/file_manager_synchronize')
 			)
 		);
 		
@@ -1107,6 +1107,8 @@ class Content_files extends CI_Controller {
 					'metadata'				=> '',
 					'uploaded_by_member_id'	=> 0,
 					'upload_date'			=> 0,
+					'modified_by_member_id' => 0, 
+					'modified_date' 		=> 0, 
 					'field_1_fmt'			=> 'xhtml',
 					'field_2_fmt'			=> 'xhtml',
 					'field_3_fmt'			=> 'xhtml',
@@ -1139,7 +1141,7 @@ class Content_files extends CI_Controller {
 		}
 		
 		// var_dump($file_data);
-		// exit($this->output->send_ajax_response('failure sizes :('));
+		// exit($this->output->send_ajax_response('failure before batch'));
 		
 		
 		if ( ! empty($file_data))
@@ -1147,7 +1149,7 @@ class Content_files extends CI_Controller {
 			$this->db->insert_batch('files', $file_data);
 		}
 		
-		// exit($this->output->send_ajax_response('failure sizes :('));
+		// exit($this->output->send_ajax_response('failure after batch'));
 		
 
 		if (AJAX_REQUEST)
