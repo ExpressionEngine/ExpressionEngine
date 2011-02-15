@@ -1500,11 +1500,17 @@ class Content_files extends CI_Controller {
 		{
 			$files = ($dir['batch_location'] === NULL) ? array() : get_dir_file_info($dir['batch_location'], TRUE);
 			
-			$upload_dirs[$dir['id']] = sprintf(lang('upload_dir_dropdown'),
-												$dir['name'], count($files));
+			$file_count = count($files);
+			
+			if ($file_count > 0)
+			{
+				$upload_dirs[$dir['id']] = sprintf(lang('upload_dir_dropdown'),
+													$dir['name'], count($files));				
+			}
 		}
 		
 		$data = array(
+			'no_sync_needed'=> (count($upload_dirs) === 1) ? TRUE : FALSE,
 			'upload_dirs'	=> $upload_dirs,
 			'stati'			=> array(
 								''		=> lang('please_select'),
