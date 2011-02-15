@@ -14,15 +14,21 @@ if ($EE_view_disable !== TRUE)
 
 			<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		    <div class="pageContents">
-				<?=form_open()?>
-				<p><?=lang('directory', 'upload_dirs')?><br>
-					<?=form_dropdown('upload_dirs', $upload_dirs)?></p>
+			
+				<?php if ($no_sync_needed):?>
+					<h2><?=lang('no_sync_title')?></h2>
+					<p><?=lang('no_file_sync_needed')?></p>
+				<?php else: ?>
+					<?=form_open()?>
+					<p><?=lang('directory', 'upload_dirs')?><br>
+						<?=form_dropdown('upload_dirs', $upload_dirs)?></p>
 				
-				<p><?=lang('status', 'status')?><br>
-					<?=form_dropdown('status', $stati)?></p>
+					<p><?=lang('status', 'status')?><br>
+						<?=form_dropdown('status', $stati)?></p>
 				
-				<p><?=form_submit('submit', lang('submit'), 'class="submit"')?></p>
-				</form>
+					<p><?=form_submit('submit', lang('submit'), 'class="submit"')?></p>
+					</form>
+				<?php endif; ?>
 			</div>
 		
 	</div> <!-- contents -->

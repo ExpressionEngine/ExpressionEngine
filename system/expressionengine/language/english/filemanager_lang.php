@@ -176,7 +176,8 @@ $lang = array(
 'upload_dir_dropdown'		=> '%s (%s files)',
 'please_select'				=> 'Please Select&hellip',
 'directory'					=> 'Directory',
-
+'no_sync_title'				=> 'No Results', // @todo, this phrase should change, just not sure what to put  -ga
+'no_file_sync_needed'		=> 'There are no files in your batch upload directories to sync.',
 
 ''=>''
 );
