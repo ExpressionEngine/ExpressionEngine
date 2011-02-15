@@ -61,11 +61,7 @@ EE.file_manager.sync = function(upload_directory_id) {
 		data: {
 			"XID": EE.XID,
 			"upload_directory_id": upload_directory_id,
-			"sizes": {
-				"1": {
-					"stuff": "yay"
-				}
-			},
+			"sizes": EE.file_manager.sync_sizes,
 			"files": files_to_sync
 		},
 		beforeSend: function(xhr, settings) {

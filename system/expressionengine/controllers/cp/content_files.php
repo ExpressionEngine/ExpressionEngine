@@ -881,6 +881,13 @@ class Content_files extends CI_Controller {
 		$this->db->where_in('upload_location_id', $ids);
 		$query = $this->db->get('file_dimensions');
 		
+		// Build skeleton of the size array with the upload directories loaded in
+		$js_size = array();
+		foreach ($ids as $upload_directory_id) 
+		{
+			$js_size[$upload_directory_id] = '';
+		}
+		
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result() as $row)
@@ -1030,6 +1037,8 @@ class Content_files extends CI_Controller {
 			// return FALSE;
 		}
 		
+		// var_dump($sizes);
+		
 		$id = key($sizes);
 		
 		$dir_data = $this->_upload_dirs[$id];
@@ -1040,7 +1049,7 @@ class Content_files extends CI_Controller {
 		// @todo, bail if there are no files in the directory!  :D
 
 		$files = $this->filemanager->fetch_files($id, $current_files, TRUE);
-			
+		
 		// Let's do a quick check of db to see if ANY file records for this directory
 		//$this->db->where('upload_location_id', $id);
 		//$this->db->from('files');
@@ -1058,20 +1067,24 @@ class Content_files extends CI_Controller {
 				
 			// Does it exist in DB?
 			$query = $this->db->get_where('files', array('file_name' => $file['name']));
-				
+			
+			// var_dump(is_array($sizes[$id]));
+			
 			if ($query->num_rows() > 0)
 			{
 				// It exists, but we need to check sizes 
-				$this->filemanager->sync_resized(
-					array('server_path' => $this->_upload_dirs[$id]['server_path']), 
-					array('name' => $file['name']),
-					$sizes[$id]
-				);
+				if (is_array($sizes[$id]))
+				{
+					$this->filemanager->sync_resized(
+						array('server_path' => $this->_upload_dirs[$id]['server_path']), 
+						array('name' => $file['name']),
+						$sizes[$id]
+					);
+				}
 				
 				continue;
-				
-			}					
-
+			}
+			
 			$file_location = $this->functions->remove_double_slashes(
 					$dir_data['url'].'/'.$file['name']
 				);
@@ -1086,7 +1099,7 @@ class Content_files extends CI_Controller {
 					'upload_location_id'	=> $id,
 					'site_id'				=> $this->config->item('site_id'),
 					'title'					=> $file['name'],
-					'path'					=> $file['size'],
+					'path'					=> $file_path,
 					'status'				=> 'o',
 					'mime_type'				=> $file['mime'],
 					'file_name'				=> $file['name'],
@@ -1115,18 +1128,27 @@ class Content_files extends CI_Controller {
 				array('name' => $file['name'])
 			);	
 			
-			$this->filemanager->sync_resized(
-				array('server_path' => $this->_upload_dirs[$id]['server_path']), 
-				array('name' => $file['name']),
-				$sizes[$id]
-			);			
+			if (is_array($sizes[$id]))
+			{
+				$this->filemanager->sync_resized(
+					array('server_path' => $this->_upload_dirs[$id]['server_path']), 
+					array('name' => $file['name']),
+					$sizes[$id]
+				);
+			}
 		}
-			
-			
+		
+		// var_dump($file_data);
+		// exit($this->output->send_ajax_response('failure sizes :('));
+		
+		
 		if ( ! empty($file_data))
 		{
 			$this->db->insert_batch('files', $file_data);
 		}
+		
+		// exit($this->output->send_ajax_response('failure sizes :('));
+		
 
 		if (AJAX_REQUEST)
 		{
