@@ -49,8 +49,11 @@ class Updater {
 		// Add batch dir preference to exp_upload_prefs
 		$this->_do_upload_pref_update();
 		
+		// Update category group
+		$this->_do_cat_group_update();
+		
 		// Build file-related tables
-		$this->_build_file_tables();
+		$this->_do_build_file_tables();
 		
 		return TRUE;
 	}
@@ -67,13 +70,16 @@ class Updater {
 	private function _do_upload_pref_update()
 	{
 		$fields = array(
-					'batch_location' => array(
+					'batch_location' 	=> array(
 								'type'			=> 'VARCHAR',
 								'constraint'	=> 255,
-								));
-		
+								)
+					'cat_group'			=> array(
+								'type'			=> 'VARCHAR',
+								'constraint'	=> 255
+					));
+
 		$this->EE->dbforge->add_column('upload_prefs', $fields);
-		
 		
 		$fields = array(
 					'server_path'	=> array(
@@ -93,10 +99,34 @@ class Updater {
 	 *
 	 *
 	 */
-	private function _build_file_tables()
+	private function _do_build_file_tables()
 	{
 		
 	}
+	
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Update exp_category_groups
+	 *
+	 * Add a column for excluding a group from files or channel group assignment
+	 *
+	 * @return void
+	 */
+	private function _do_cat_group_update()
+	{
+		$fields = array(
+					'exclude_group' 	=> array(
+								'type'			=> 'TINYINT',
+								'constraint'	=> 1,
+								'null'			=> FALSE,
+								'default'		=> 0
+								));
+
+		$this->EE->dbforge->add_column('category_groups', $fields);		
+	}
+
+	// ------------------------------------------------------------------------	
 	
 }
 /* END CLASS */
