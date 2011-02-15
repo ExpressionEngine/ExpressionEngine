@@ -881,19 +881,12 @@ class Content_files extends CI_Controller {
 		$this->db->where_in('upload_location_id', $ids);
 		$query = $this->db->get('file_dimensions');
 		
-		// Build skeleton of the size array with the upload directories loaded in
-		$js_size = array();
-		foreach ($ids as $upload_directory_id) 
-		{
-			$js_size[$upload_directory_id] = '';
-		}
-		
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result() as $row)
 			{
 				$js_size[$row->upload_location_id][$row->short_name] = array('resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height);
-				$vars['sizes'][$row->upload_location_id] = array('short_name' => $row->short_name, 'title' => $row->title, 'resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height);
+				$vars['sizes'][] = array('short_name' => $row->short_name, 'title' => $row->title, 'resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height);
 			}
 		}
 			
@@ -1069,10 +1062,10 @@ class Content_files extends CI_Controller {
 			if ($query->num_rows() > 0)
 			{
 				// It exists, but we need to check sizes 
-				$this->filemanager->create_resized(
+				$this->filemanager->sync_resized(
 					array('server_path' => $this->_upload_dirs[$id]['server_path']), 
 					array('name' => $file['name']),
-					array('sizes' => $sizes[$id])
+					$sizes[$id]
 				);
 				
 				continue;
@@ -1090,6 +1083,7 @@ class Content_files extends CI_Controller {
 			$file_dim = (isset($file['dimensions']) && $file['dimensions'] != '') ? str_replace(array('width="', 'height="', '"'), '', $file['dimensions']) : '';
 
 			$file_data[] = array(
+					'upload_location_id'	=> $id,
 					'site_id'				=> $this->config->item('site_id'),
 					'title'					=> $file['name'],
 					'path'					=> $file['size'],
@@ -1121,10 +1115,10 @@ class Content_files extends CI_Controller {
 				array('name' => $file['name'])
 			);	
 			
-			$this->filemanager->create_resized(
+			$this->filemanager->sync_resized(
 				array('server_path' => $this->_upload_dirs[$id]['server_path']), 
 				array('name' => $file['name']),
-				array('sizes' => $sizes[$id])
+				$sizes[$id]
 			);			
 		}
 			

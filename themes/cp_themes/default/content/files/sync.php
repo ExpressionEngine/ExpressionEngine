@@ -18,7 +18,7 @@ if ( ! $EE_view_disable)
 		
 		<div id="sync" class="pageContents group">
 			
-			<?=form_open('C=content_files'.AMP.'M=do_sync')?>
+			<?=form_open('C=content_files'.AMP.'M=do_sync_files')?>
 			<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
 				<thead>
 					<tr>
