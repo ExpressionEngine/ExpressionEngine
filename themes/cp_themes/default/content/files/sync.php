@@ -17,7 +17,7 @@ if ( ! $EE_view_disable)
 		</div>
 		
 		<div id="sync" class="pageContents group">
-
+			
 			<?=form_open('C=content_files'.AMP.'M=do_sync')?>
 			<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
 				<thead>
@@ -38,7 +38,6 @@ if ( ! $EE_view_disable)
 				</tbody>
 			</table>
 
-
 			<?php if ( ! empty($sizes)):?>
 			<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
 				<thead>
@@ -55,17 +54,17 @@ if ( ! $EE_view_disable)
 						<td><?=$data['title']?></td>
 						<td><?=$data['resize_type']?></td>
 						<td><?=$data['width']?></td>
-						<td><?=$data['height']?></td>						
+						<td><?=$data['height']?></td>
 					</tr>
 				<?php endforeach; ?>
 				</tbody>
 			</table>
 			<?php endif;?>
-
-				<div class="tableSubmit">
-					<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
-				</div>
-
+			
+			<div class="tableSubmit">
+				<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
+				<div id="progress" style="width:200px;"></div>
+			</div>
 		</div>
 	</div>
 </div> 

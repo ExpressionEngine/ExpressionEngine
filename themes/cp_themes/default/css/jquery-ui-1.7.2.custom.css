@@ -364,8 +364,8 @@
 .ui-draggable .ui-dialog-titlebar { cursor: move; }
 /* Progressbar
 ----------------------------------*/
-.ui-progressbar { height:2em; text-align: left; }
-.ui-progressbar .ui-progressbar-value {margin: -1px; height:100%; }/* Resizable
+.ui-progressbar { height:2em; text-align: left; border-color: #d0d7df;}
+.ui-progressbar .ui-progressbar-value {height:100%; border: 0 none;}/* Resizable
 ----------------------------------*/
 .ui-resizable { position: relative;}
 .ui-resizable-handle { position: absolute;font-size: 0.1px;z-index: 99999; display: block;}

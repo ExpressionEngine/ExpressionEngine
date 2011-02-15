@@ -10,7 +10,10 @@
  * @filesource
  */
 
-$('synchronize').click(function(event) {
+EE.file_manager = EE.file_manager || {};
+EE.file_manager.sync_files = EE.file_manager.sync_files || {};
+
+$('.tableSubmit input').click(function(event) {
 	event.preventDefault();
 	
 	// Hide button
@@ -20,74 +23,84 @@ $('synchronize').click(function(event) {
 	EE.file_manager.update_progress();
 	
 	// Get array of files
-	EE.file_manager.sync_files.files = jsFiles;
-	EE.file_manager.sync_files.file_count = jsFiles.length;
+	EE.file_manager.sync_files = _.toArray(EE.file_manager.sync_files);
 	
 	// Get upload directory
-	var upload_directory_id = $('#upload_directory_id');
+	var upload_directory_id = _.keys(EE.file_manager.sync_sizes)[0];
+	
+	EE.file_manager.update_progress(0);
 	
 	// Send first few ajax requests
 	for (var i = 0; i < 2; i++) {
 		setTimeout(function() {
-			EE.file_manager.sync_files(upload_directory_id);
+			EE.file_manager.sync(upload_directory_id);
 		}, 15);
 	};
 });
 
-EE.file_manager.sync_files.running = 0;
-EE.file_manager.sync_files.errors = [];
+EE.file_manager.sync_running = 0;
+EE.file_manager.sync_errors = [];
 
 /**
  * Fire off the Ajax request, which then listens for the finish and then fires off the next Ajax request and so on
  *
  * @param {Number} upload_directory_id The id of the upload directory to pass to the controller method
  */
-EE.file_manager.sync_files = function(upload_directory_id) {
-	if (EE.file_manager.sync_files.files.length <= 0) {
-		return EE.filemanager.finish_sync();
+EE.file_manager.sync = function(upload_directory_id) {
+	if (EE.file_manager.sync_files.length <= 0) {
+		return EE.file_manager.finish_sync();
 	};
 	
 	// There should only be one place we're splicing the files array and THIS is it
-	var files_to_sync = EE.file_manager.sync_files.files.splice(0, 5);
+	var files_to_sync = EE.file_manager.sync_files.splice(0, 5);
 
 	$.ajax({
-		url: EE.BASE + '&C=content_files&M=sync_directory',
+		url: EE.BASE + '&C=content_files&M=do_sync_files',
 		type: 'POST',
 		dataType: 'json',
 		data: {
 			"XID": EE.XID,
-			"upload_directory": upload_directory,
+			"upload_directory_id": upload_directory_id,
+			"sizes": {
+				"1": {
+					"stuff": "yay"
+				}
+			},
 			"files": files_to_sync
 		},
 		beforeSend: function(xhr, settings) {
 			// Increment the running count
-			EE.file_manager.sync_files.running += 1;
+			console.log('start');
+			EE.file_manager.sync_running += 1;
 		},
 		complete: function(xhr, textStatus) {
 			// Decrement the running count
-			EE.file_manager.sync_files.running -= 1;
+			console.log('finish');
+			EE.file_manager.sync_running -= 1;
 			
 			// Fire off another Ajax request
-			EE.file_manager.sync_files(upload_directory_id);
+			EE.file_manager.sync(upload_directory_id);
 			
 			// Update the progress bar
-			var total_count = EE.file_manager.sync_files.file_count,
-				current_count = EE.file_manager.sync_files.files.length,
+			var total_count = EE.file_manager.sync_file_count,
+				current_count = EE.file_manager.sync_files.length,
 				already_processed = total_count - current_count;
 			
 			EE.file_manager.update_progress(Math.round(already_processed / total_count));
 		},
 		success: function(data, textStatus, xhr) {
+			console.log(data);
 			// I doubt I'll need this...
 		},
 		error: function(xhr, textStatus, errorThrown){
+			console.log('Error: ' + errorThrown);
 			// If the errorThrown is not an array, make it so
 			if ( ! $.isArray(errorThrown)) {
 				errorThrown = [errorThrown];
 			};
 			
 			for (var i = 0, max = errorThrown.length; i < max; i++) {
-				EE.file_manager.sync_files.errors.push(errorThrown[i]);
+				EE.file_manager.sync_errors.push(errorThrown[i]);
 			};
 		}
 	});
@@ -99,13 +112,13 @@ EE.file_manager.sync_files = function(upload_directory_id) {
  * This should contain the number of files processed, the number of errors and the errors themselves
  */
 EE.file_manager.finish_sync = function() {
-	if (EE.file_manager.sync_files.running == 0) {
+	if (EE.file_manager.sync_running == 0) {
 		$('.progress').hide();
 		
 		var sync_complete = {
-			'files_processed': EE.file_manager.sync_files.file_count - EE.file_manager.sync_files.errors.length,
-			'errors': EE.file_manager.sync_files.errors,
-			'error_count': EE.file_manager.sync_files.errors.length
+			'files_processed': EE.file_manager.sync_file_count - EE.file_manager.sync_errors.length,
+			'errors': EE.file_manager.sync_errors,
+			'error_count': EE.file_manager.sync_errors.length
 		};
 		
 		$.tmpl('sync_complete_template', sync_complete).appendTo();

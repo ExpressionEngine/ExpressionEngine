@@ -880,7 +880,14 @@ class Content_files extends CI_Controller {
 		// Get the resize info for the directories
 		$this->db->where_in('upload_location_id', $ids);
 		$query = $this->db->get('file_dimensions');
-				
+		
+		// Build skeleton of the size array with the upload directories loaded in
+		$js_size = array();
+		foreach ($ids as $upload_directory_id) 
+		{
+			$js_size[$upload_directory_id] = '';
+		}
+		
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result() as $row)
@@ -888,27 +895,31 @@ class Content_files extends CI_Controller {
 				$js_size[$row->upload_location_id][$row->short_name] = array('resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height);
 				$vars['sizes'][$row->upload_location_id] = array('short_name' => $row->short_name, 'title' => $row->title, 'resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height);
 			}
-		}		
+		}
 			
 		// If I move this will need to fetch upload dir data
 		foreach ($ids as $id)
 		{
 			$dir_data[$id] = $this->_upload_dirs[$id];
 			$vars['dirs'][$id] = $this->_upload_dirs[$id];
-			$vars['dirs'][$id]['count'] = '--';			
+			$vars['dirs'][$id]['count'] = '--';
 		}
 		
-
-		$js_data['sizes'] = $js_size;
-		$js_data['files'] = $this->filemanager->directory_files_map($dir_data[$cid]['server_path'], 1, FALSE, $dir_data[$cid]['allowed_types']);
+		$js_files = $this->filemanager->directory_files_map($dir_data[$cid]['server_path'], 1, FALSE, $dir_data[$cid]['allowed_types']);
 		
-		$js_files = $this->javascript->generate_json($js_data);
+		$this->cp->add_js_script(array(
+				'plugin' => array('tmpl'), 
+				'ui'   => array('progressbar'),
+				'file' => array('underscore', 'cp/file_manager_synchronize')
+			)
+		);
 		
+		$this->javascript->set_global(array(
+			'file_manager.sync_files'      => $js_files,
+			'file_manager.sync_file_count' => count($js_files),
+			'file_manager.sync_sizes'      => $js_size
+		));
 		
-		$this->javascript->output('var jsFiles = '.$js_files);
-
-		$this->javascript->compile();
-
 		// Sigh- this is stupid and will move to updater after initial testing
 		// Testing the updater is just a pain
 
@@ -991,7 +1002,7 @@ class Content_files extends CI_Controller {
 		} // End stupid - I hope
 
 
-		
+		$this->javascript->compile();
 		$this->load->view('content/files/sync', $vars);
 
 
@@ -1009,9 +1020,21 @@ class Content_files extends CI_Controller {
 		// If file exists- make sure it exists in db - otherwise add it to db and generate all child sizes
 		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
 		
-		if (($sizes = $this->input->post('sizes')) == FALSE OR ($current_files = $this->input->post('files')) == FALSE)
+		// if (($sizes = $this->input->post('sizes')) === FALSE OR ($current_files = $this->input->post('files')) === FALSE)
+		// {
+		// 	exit($this->output->send_ajax_response('failure :('));
+		// 	// return FALSE;
+		// }
+		if (($current_files = $this->input->post('files')) === FALSE)
 		{
-			return FALSE;
+			exit($this->output->send_ajax_response('failure files :('));
+			// return FALSE;
+		}
+		
+		if (($sizes = $this->input->post('sizes')) === FALSE)
+		{
+			exit($this->output->send_ajax_response('failure sizes :('));
+			// return FALSE;
 		}
 		
 		$id = key($sizes);
@@ -1071,7 +1094,7 @@ class Content_files extends CI_Controller {
 					'title'					=> $file['name'],
 					'path'					=> $file['size'],
 					'status'				=> 'o',
-					'mime_type'				=> $file['mime_type'],
+					'mime_type'				=> $file['mime'],
 					'file_name'				=> $file['name'],
 					'file_size'				=> $file['size'],
 					'metadata'				=> '',
@@ -1079,7 +1102,7 @@ class Content_files extends CI_Controller {
 					'upload_date'			=> 0,
 					'field_1_fmt'			=> 'xhtml',
 					'field_2_fmt'			=> 'xhtml',
-					'field_3_fmt'			=> 'xhtml',					
+					'field_3_fmt'			=> 'xhtml',
 					'field_4_fmt'			=> 'xhtml',
 					'field_5_fmt'			=> 'xhtml',
 					'field_6_fmt'			=> 'xhtml',
