@@ -745,8 +745,20 @@ class EE_Functions {
 		}
 		
 		$value = stripslashes($value);
+		
+		$secure_cookie = ($this->EE->config->item('cookie_secure') === TRUE) ? 1 : 0;
+
+		if ($secure_cookie)
+		{
+			$req = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : FALSE;
+
+			if ( ! $req OR $req == 'off')
+			{
+				return FALSE;
+			}
+		}
 					
-		setcookie($prefix.$name, $value, $expire, $path, $domain, 0);
+		setcookie($prefix.$name, $value, $expire, $path, $domain, $secure_cookie);
 	}
 
 	// --------------------------------------------------------------------
