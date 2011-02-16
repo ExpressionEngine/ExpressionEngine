@@ -1176,8 +1176,6 @@ class Content_files extends CI_Controller {
 		$this->filemanager->sync_database($id);		
 	}
 
-
-
 	// --------------------------------------------------------------------
 
 	/**
@@ -1214,6 +1212,7 @@ class Content_files extends CI_Controller {
 	/**
 	 * Creates or edits a file upload location
 	 *
+	 * @todo -- more refactoring of this mess
 	 * @return void
 	 */	
 	public function edit_upload_preferences()
@@ -1223,25 +1222,49 @@ class Content_files extends CI_Controller {
 		
 		$type = ($id) ? 'edit' : 'new';
 
-		$upload_dirs = $this->tools_model->get_upload_preferences(
-			$this->session->userdata('member_group'), $id);
+		$fields = array(
+			'id', 'site_id', 'name', 'server_path',
+			'url', 'allowed_types', 'max_size',
+			'max_height', 'max_width', 'properties',
+			'pre_format', 'post_format', 'file_properties',
+			'file_pre_format', 'file_post_format', 'batch_location', 
+			'cat_group'
+		);
 
 		if ($type == 'new')
 		{
-			$data['form_hidden'] = '';
+			$data['form_hidden'] = NULL;
+			$data['allowed_types'] = NULL;
 			
-			foreach ($upload_dirs->list_fields() as $field)
+			foreach ($fields as $field)
 			{
 				$data['field_'.$field] = $this->input->post($field);
 			}			
 		}
 		else
 		{
-			if ($upload_dirs->num_rows() !== 0)
+			if (count($this->_upload_dirs) !== 0)
 			{
-				foreach ($upload_dirs->row_array() as $k => $v)
+				if ( ! isset($this->_upload_dirs[$id]))
 				{
-					$data['field_'.$k] = $v;
+					show_error(lang('unauthorized_access'));
+				}
+				
+				foreach ($this->_upload_dirs[$id] as $k => $v)
+				{
+					if ($k == 'allowed_types')
+					{
+						$data['allowed_types'] = $v;
+					}
+					else
+					{
+						$data['field_'.$k] = $v;						
+					}
+					
+					if ($k == 'cat_group')
+					{
+						$data['selected_cat_groups'] = explode('|', $v);
+					}
 				}
 			}
 			else
@@ -1250,12 +1273,12 @@ class Content_files extends CI_Controller {
 				{
 					show_error(lang('unauthorized_access'));
 				}
-
-				foreach ($upload_dirs->list_fields() as $f)
+				
+				foreach ($fields as $f)
 				{
 					$data['field_'.$f] = '';
 				}
-
+				
 				$data['field_url'] = base_url();
 				$data['field_server_path'] = str_replace(SYSDIR.'/', '', FCPATH);
 			}
@@ -1263,11 +1286,11 @@ class Content_files extends CI_Controller {
 			$data['form_hidden'] = array(
 				'id'		=> $data['field_id'],
 				'cur_name'	=> $data['field_name']
-			);	
+			);
 		}
-
-		$this->load->library('form_validation');
 		
+		$this->load->library('form_validation');
+
 		$data['upload_groups'] = $this->member_model->get_upload_groups();
 		$data['banned_groups'] = array();
 
@@ -1275,7 +1298,7 @@ class Content_files extends CI_Controller {
 		{
 			$this->db->select('member_group');
 
-			if ($id != '')
+			if ($id)
 			{
 				$this->db->where('upload_id', $id);
 			}
@@ -1297,14 +1320,29 @@ class Content_files extends CI_Controller {
 		$data['lang_line'] = ($type == 'edit') ? 'update' : 'submit';
 
 		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=file_upload_preferences',
-						lang('file_upload_preferences'));
+								  lang('file_upload_preferences'));
 
-		$data['allowed_types'] = $upload_dirs->row('allowed_types');
 		$data['upload_pref_fields'] = array(
 							'max_size', 'max_height', 'max_width', 'properties', 
 							'pre_format', 'post_format', 'file_properties', 
 							'file_pre_format', 'file_post_format', 'batch_location');
 
+		// Category Select List
+		$this->load->model('category_model');
+		$query = $this->category_model->get_category_groups('', FALSE, 1);
+
+		$data['cat_group_options'][] = $this->lang->line('none');
+
+		if ($query->num_rows() > 0)
+		{
+			foreach ($query->result() as $row)
+			{
+				$data['cat_group_options'][$row->group_id] = $row->group_name;
+			}
+		}
+
+		$data['selected_cat_groups'] = (isset($data['selected_cat_groups'])) ? $data['selected_cat_groups'] : NULL;
+		
 		$config = array(
 					   array(
 							 'field'   => 'name',
@@ -1343,11 +1381,11 @@ class Content_files extends CI_Controller {
 						  )
 					);
 
-		$this->form_validation->set_error_delimiters('<span class="notice">', '</span>');
-
-		$this->form_validation->set_rules($config);			
+		$this->load->library('form_validation');
+		$this->form_validation->set_error_delimiters('<span class="notice">', '</span>')
+							  ->set_rules($config);
 		
-		if ($this->form_validation->run() === FALSE)
+		if ( ! $this->form_validation->run())
 		{
 			$this->javascript->compile();
 			$this->load->view('content/files/file_upload_create', $data);
@@ -1363,6 +1401,7 @@ class Content_files extends CI_Controller {
 	/**
 	 * Update upload pref
 	 *
+	 * @todo -- more refactoring of this mess
 	 * @return void
 	 */	
 	private function _update_upload_preferences()
@@ -1408,6 +1447,11 @@ class Content_files extends CI_Controller {
 
 		$this->db->delete('upload_no_access', array('upload_id' => $id));
 
+		if ( ! isset($_POST['cat_group']))
+		{
+			$_POST['cat_group'] = '';
+		}
+		
 		foreach ($_POST as $key => $val)
 		{
 			if (substr($key, 0, 7) == 'access_')
@@ -1415,6 +1459,22 @@ class Content_files extends CI_Controller {
 				if ($val == 'n')
 				{
 					$no_access[] = substr($key, 7);
+				}
+			}
+			elseif ($key == 'cat_group')
+			{
+				if ((count($this->input->post('cat_group')) > 0) && $this->input->post('cat_group'))
+				{
+					if ($_POST['cat_group'][0] == 0)
+					{
+						unset($_POST['cat_group'][0]);
+					}
+					
+					$data['cat_group'] = implode('|', $this->input->post('cat_group'));
+				}
+				else
+				{
+					$data['cat_group'] = '';
 				}
 			}
 			else
@@ -1577,11 +1637,7 @@ class Content_files extends CI_Controller {
 			'categories'	=> $this->_get_files_categories(),
 		);
 		
-		
-		
-		$this->load->view('content/files/batch_upload_index', $data);
-		
-			
+		$this->load->view('content/files/batch_upload_index', $data);	
 	}
 
 	// --------------------------------------------------------------------

@@ -27,10 +27,46 @@ class Category_model extends CI_Model {
 	/**
 	 * Get Categories
 	 *
-	 * @access	public
-	 * @return	object
+	 * This is actually completely misnamed, as it returns category_groups
+	 * and not all categories, or something like the name suggests
+	 * So, deprecating this function as of 2.2.0, and aliasing 
+	 * get_category_groups() -- ga
+	 *
+	 * @deprecated 	2.2.0
 	 */
-	function get_categories($group_id = '', $site_id = TRUE)
+	public function get_categories($group_id = '', $site_id = TRUE)
+	{
+		return $this->get_category_groups($group_id, $site_id);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get category groups
+	 *
+	 * This function returns the db object of category groups.
+	 * 
+	 * @param 	int			group id to fetch
+	 * @param 	Boolean		whether or not to limit by site_id
+	 * @param 	int			whether or not to include the returned category
+	 * 						groups in publish or files category assignment lists.
+	 *
+	 * Valid options are:  
+	 * $options = array(
+	 *		(int) 0 => ALL Categories,
+	 *		(int) 1 => Excluded from publish,
+	 *		(int) 2 => Excluded form files
+	 * );
+	 *
+	 * So in the file upload preferences, we use:
+	 *			WHERE exclude_group = 0
+	 *			OR exclude_group != 1
+	 *
+	 * And basically the opposite on channel group assignment preferences.
+	 *
+	 * @return 	object		db class result object
+	 */
+	public function get_category_groups($group_id = '', $site_id = TRUE, $include=0)
 	{
 		if ($group_id != '')
 		{
@@ -41,12 +77,17 @@ class Category_model extends CI_Model {
 		{
 			$this->db->where('site_id', $this->config->item('site_id'));
 		}
-
-		$this->db->select('group_id, group_name, sort_order');
-		$this->db->from('category_groups');
-		$this->db->order_by('group_name');
 		
-		return $this->db->get();
+		if ($include !== 0)
+		{
+			$this->db->where('exclude_group', 0)
+					 ->or_where('exclude_group', (int) $include);
+		}
+
+		return $this->db->select('group_id, group_name, sort_order')
+						->from('category_groups')
+						->order_by('group_name')
+						->get();
 	}
 
 	// --------------------------------------------------------------------

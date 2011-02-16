@@ -100,7 +100,16 @@ if ($EE_view_disable !== TRUE)
 				echo $this->table->generate();
 				$this->table->clear();
 			?>
-
+				<h3 style="margin-top: 15px"><?=lang('category_groups')?></h3>
+				
+				<?php if (count($cat_group_options) === 1):?>
+					<?=sprintf(lang('no_assigned_category_groups'),
+							   BASE.AMP.'C=admin_content'.AMP.'M=category_management')?>
+				<?php else: ?>
+				<p><?=lang('category_groups_text')?></p>
+				<p><?=form_label(lang('category_group'), 'category_group')?><br>
+					<?=form_dropdown('cat_group[]', $cat_group_options, $selected_cat_groups, 'multiple="multiple" style="min-width:200px; padding:3px"')?></p>
+				<?php endif; ?>
 
 				<h3 style="margin-top: 15px;"><?=lang('restrict_to_group')?></h3>
 
@@ -118,7 +127,7 @@ if ($EE_view_disable !== TRUE)
 												lang('can_upload_files')
 											);
 
-					if($upload_groups->num_rows() == 0)
+					if ($upload_groups->num_rows() == 0)
 					{
 						$this->table->add_row(array('colspan'=>2, 'data'=>lang('no_results')));
 					}

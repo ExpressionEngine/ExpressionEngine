@@ -1122,7 +1122,7 @@ class Admin_content extends CI_Controller {
 
 
 		// Category Select List
-		$query = $this->category_model->get_categories('', FALSE);
+		$query = $this->category_model->get_category_groups('', FALSE, 2);
 
 		$vars['cat_group_options'][''] = $this->lang->line('none');
 

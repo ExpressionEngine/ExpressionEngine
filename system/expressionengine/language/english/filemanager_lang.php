@@ -179,6 +179,12 @@ $lang = array(
 'no_sync_title'				=> 'No Results', // @todo, this phrase should change, just not sure what to put  -ga
 'no_file_sync_needed'		=> 'There are no files in your batch upload directories to sync.',
 
+'category_groups'			=> 'File Category Groups',
+'category_group'			=> 'Category Groups',
+'no_assigned_category_groups' => 'No category groups have been assigned to be used by the File Manager.<br>
+								  <a href="%s" title="Assign Category Groups">Assign Category Groups</a>',
+'category_groups_text'		=> 'Assign one or more category group to the file upload location',
+
 ''=>''
 );
 
