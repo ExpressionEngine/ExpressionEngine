@@ -25,8 +25,15 @@ if ($EE_view_disable !== TRUE)
 				
 					<p><?=lang('status', 'status')?><br>
 						<?=form_dropdown('status', $stati)?></p>
-					<div id="file_cats"></div>
-					<p><?=form_submit('submit', lang('submit'), 'class="submit"')?></p>
+					
+					<p><?=lang('allow_comments', 'allow_comments')?>&nbsp;&nbsp;
+						<?=form_checkbox('allow_comments', 'allow_comments')?></p>
+					
+					<p><?=lang('categories', 'categories')?></p>
+					<div id="file_cats" class="publish_field"></div>
+					<div class="clear_left"></div>
+					<p style="margin-top:25px"><?=form_submit('manual_batch', lang('manual_batch'), 'class="submit"')?>&nbsp;&nbsp;
+												<?=form_submit('auto_batch', lang('auto_batch'), 'class="submit"')?></p>
 					</form>
 				<?php endif; ?>
 			</div>
@@ -41,34 +48,6 @@ if ($EE_view_disable !== TRUE)
 	$this->load->view('_shared/footer');
 }
 ?>
-
-<script type="text/javascript">
-$(document).ready(function () {
-	$('select[name=upload_dirs]').change(function () {
-		var val = $(this).val();
-		
-		$.ajax({
-			url: EE.BASE + '&C=content_files&M=get_dir_cats',
-			type: 'POST',
-			dataType: 'html',
-			data: {
-				"XID": EE.XID,
-				"upload_directory_id": val
-			},
-			success: function (res) {
-				console.log('here');
-				console.log(res)
-				$('#file_cats').html(res);
-			},
-			error: function (res) {
-				console.log('there');
-				$('#file_cats').html('');
-			}
-		});
-	});
-});
-
-</script>
 
 <?php
 /* End of file delete_confirm.php */

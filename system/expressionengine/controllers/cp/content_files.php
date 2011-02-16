@@ -1609,6 +1609,8 @@ class Content_files extends CI_Controller {
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences', 
 								lang('file_upload_preferences'));
 
+		$this->cp->add_js_script(array('file' => 'cp/files/batch_upload'));
+		
 		// Get Upload dirs, cycle through and figure out how many files
 		// are in each batch upload location.
 		$upload_dirs = array(lang('please_select'));
@@ -1658,9 +1660,9 @@ class Content_files extends CI_Controller {
 		
 		$id = $this->input->post('upload_directory_id');
 		
-		if ( ! isset($this->_upload_dirs[$id]))
+		if (($id === 0) OR ! isset($this->_upload_dirs[$id]))
 		{
-			return;
+			$this->output->send_ajax_response(array('error' => TRUE));
 		}
 		
 		$group_id = $this->_upload_dirs[$id]['cat_group'];
@@ -1678,7 +1680,7 @@ class Content_files extends CI_Controller {
 		
 		if ($qry->num_rows() === 0)
 		{
-			return;
+			$this->output->send_ajax_response(array('error' => TRUE));
 		}
 		
 		$this->api_channel_categories->category_tree($group_id, '', $qry->row('sort_order'));
