@@ -1641,6 +1641,59 @@ class Content_files extends CI_Controller {
 	}
 
 	// --------------------------------------------------------------------
+
+	/**
+	 * Get category tree for a specific upload directory
+	 *
+	 *
+	 */
+	public function get_dir_cats()
+	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$this->output->enable_profiler(FALSE);
+		
+		$id = $this->input->post('upload_directory_id');
+		
+		if ( ! isset($this->_upload_dirs[$id]))
+		{
+			return;
+		}
+		
+		$group_id = $this->_upload_dirs[$id]['cat_group'];
+		
+		// Load the channel API
+		$this->load->library('api');
+		$this->api->instantiate('channel_categories');
+		
+		$this->load->model('category_model');
+		$this->load->helper('form');
+		
+		$qry = $this->db->select('group_id, group_name, sort_order')
+						->where('group_id', $group_id)
+						->get('category_groups');
+		
+		if ($qry->num_rows() === 0)
+		{
+			return;
+		}
+		
+		$this->api_channel_categories->category_tree($group_id, '', $qry->row('sort_order'));
+
+		$data = array(
+			'edit_links' => TRUE,
+			'categories' => array('' => $this->api_channel_categories->categories)
+		);
+
+		$ret = $this->load->view('content/_assets/categories', $data, TRUE);
+		
+		echo trim($ret); exit();
+	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Get file categories
