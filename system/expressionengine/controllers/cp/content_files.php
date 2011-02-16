@@ -1605,6 +1605,18 @@ class Content_files extends CI_Controller {
 	 */
 	public function batch_upload()
 	{
+		if ( ! empty($_POST))
+		{
+			if ($this->input->post('manual_batch'))
+			{
+				$this->_process_batch_upload();
+			}
+			elseif ($this->input->post('auto_batch'))
+			{
+				$this->_do_auto_batch();
+			}
+		}
+		
 		$this->cp->set_variable('cp_page_title', lang('batch_upload'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences', 
 								lang('file_upload_preferences'));
@@ -1635,8 +1647,7 @@ class Content_files extends CI_Controller {
 								''		=> lang('please_select'),
 								'o'		=> lang('open'),
 								'c'		=> lang('closed')
-			),
-			'categories'	=> $this->_get_files_categories(),
+			)
 		);
 		
 		$this->load->view('content/files/batch_upload_index', $data);	
@@ -1698,25 +1709,29 @@ class Content_files extends CI_Controller {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Get file categories
+	 * Process Batch Upload
 	 *
-	 * This function returns a category checkbox tree of categories
-	 * that can be used with file entries
 	 *
 	 *
 	 */
-	private function _get_files_categories()
+	private function _process_batch_upload()
 	{
-		$this->load->library('api');
-		$this->api->instantiate('channel_categories');
 		
-		$categories = $this->api_channel_categories->category_form_tree();
 		
-		foreach ($categories as $cats)
-		{
-			
-		}
 		
+		
+		
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Do manual batch processing
+	 *
+	 */
+	private function _do_manual_batch()
+	{
+		var_dump($_POST);
 	}
 			
 }

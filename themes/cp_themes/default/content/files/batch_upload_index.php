@@ -19,7 +19,7 @@ if ($EE_view_disable !== TRUE)
 					<h2><?=lang('no_sync_title')?></h2>
 					<p><?=lang('no_file_sync_needed')?></p>
 				<?php else: ?>
-					<?=form_open()?>
+					<?=form_open('C=content_files'.AMP.'M=batch_upload')?>
 					<p><?=lang('directory', 'upload_dirs')?><br>
 						<?=form_dropdown('upload_dirs', $upload_dirs)?></p>
 				
