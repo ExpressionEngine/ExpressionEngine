@@ -1,0 +1,2 @@
+
+$(document).ready(function(){$("select[name=upload_dirs]").change(function(){var b=$(this).val();$.ajax({url:EE.BASE+"&C=content_files&M=get_dir_cats",type:"POST",data:{XID:EE.XID,upload_directory_id:b},success:function(a){if(a.error===true)$("#file_cats").html("");else{a='<fieldset class="holder">'+a+"</fieldset>";$("#file_cats").html(a);$("#file_cats").find(".edit_categories_link").hide()}},error:function(){$("#file_cats").html("")}})})});
