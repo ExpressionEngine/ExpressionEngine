@@ -6,6 +6,9 @@ $lang = array(
 // Required for MODULES page
 //----------------------------------------
 
+'content_files' =>
+'Files',
+
 'file_module_name' =>
 'File',
 
