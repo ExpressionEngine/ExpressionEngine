@@ -13,7 +13,7 @@ if ( ! $EE_view_disable)
 	<div class="contents">
 
 		<div class="heading">
-			<h2 class="edit"><?=lang('content_files')?></h2>
+			<h2 class="edit"><?=lang('synchronize_directory')?></h2>
 		</div>
 		
 		<div id="sync" class="pageContents group">

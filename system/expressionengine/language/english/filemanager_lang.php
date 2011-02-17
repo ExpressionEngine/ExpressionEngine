@@ -151,6 +151,9 @@ $lang = array(
 'current_upload_prefs' =>
 'Current Preferences',
 
+'file_directory_id' =>
+'ID',
+
 'restrict_to_group' =>
 'Restrict file uploading to select member groups',
 
@@ -185,6 +188,8 @@ $lang = array(
 'sync_complete'				=> 'The file synchronization is complete.', 
 'errors'					=> 'Errors Encountered',
 'no_errors'					=> 'No errors',
+'synchronize_directory'		=> 'Synchronize Directory',
+'directory_manager'			=> 'Upload Directory Manager',
 
 'category_groups'			=> 'File Category Groups',
 'category_group'			=> 'Category Groups',

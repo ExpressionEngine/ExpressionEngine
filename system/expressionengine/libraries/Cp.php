@@ -178,7 +178,7 @@ class Cp {
 		
 		if ($this->EE->router->method != 'index')
 		{
-			$this->set_breadcrumb(BASE.AMP.'C='.$this->EE->router->class, $this->EE->lang->line($this->EE->router->class));
+			$this->set_breadcrumb(BASE.AMP.'C='.$this->EE->router->class, lang($this->EE->router->class));
 		}
 		
 		if ($this->EE->session->userdata('show_sidebar') == 'n')
