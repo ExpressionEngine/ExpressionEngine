@@ -552,9 +552,6 @@ class Filemanager {
 		
 		$img_path = rtrim($dir['server_path'], '/').'/';
 		
-//echo '<pre>';
-//print_r($dimensions); exit;
-		
 		//$source_dir = rtrim(realpath($dir), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 
 		foreach ($dimensions as $name => $size)
