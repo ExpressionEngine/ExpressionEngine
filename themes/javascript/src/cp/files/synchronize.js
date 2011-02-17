@@ -17,7 +17,7 @@ EE.file_manager.sync_running = 0;
 EE.file_manager.sync_errors = [];
 
 $(document).ready(function() {
-	$.template("sync_complete_template", $('#sync_complete_template').remove());
+	$.template("sync_complete_template", $('<div />').append($('#sync_complete_template').remove()));
 	
 	EE.file_manager.sync_listen();
 });
@@ -86,12 +86,12 @@ EE.file_manager.sync = function(upload_directory_id) {
 			EE.file_manager.sync(upload_directory_id);
 			
 			// Update the progress bar
-			var total_count = EE.file_manager.sync_file_count,
-				current_count = EE.file_manager.sync_files.length,
+			var total_count       = EE.file_manager.sync_file_count,
+				current_count     = EE.file_manager.sync_files.length,
 				already_processed = total_count - current_count;
 			
 			EE.file_manager.update_progress(Math.round(already_processed / total_count * 100));
-			EE.file_manager.finish_sync();
+			EE.file_manager.finish_sync(upload_directory_id);
 		},
 		error: function(xhr, textStatus, errorThrown){
 			// If the errorThrown is not an array, make it so
@@ -106,24 +106,34 @@ EE.file_manager.sync = function(upload_directory_id) {
 	});
 };
 
+EE.file_manager.get_directory_name = function(upload_directory_id) {
+	return $('#sync table:first tr[data-id=' + upload_directory_id + '] td:first').text();	
+}
+
 /**
  * Show the sync complete summary
  *
  * This should contain the number of files processed, the number of errors and the errors themselves
  */
-EE.file_manager.finish_sync = function() {
+EE.file_manager.finish_sync = function(upload_directory_id) {
 	if (EE.file_manager.sync_running == 0) {
 		$('#progress').hide();
 		
 		var sync_complete = {
+			'directory_name':  EE.file_manager.get_directory_name(upload_directory_id),
 			'files_processed': EE.file_manager.sync_file_count - EE.file_manager.sync_errors.length,
-			'errors': EE.file_manager.sync_errors,
-			'error_count': EE.file_manager.sync_errors.length
+			'errors':          EE.file_manager.sync_errors,
+			'error_count':     EE.file_manager.sync_errors.length
 		};
-		
-		console.log(sync_complete);
-		
-		$.tmpl('sync_complete_template', sync_complete).appendTo($('#sync'));
+	
+		$.tmpl('sync_complete_template', sync_complete).attr('id', 'sync_complete').appendTo($('#sync'));
+
+        // You can't have a conditional template in a table because Firefox ignores anything in a table that's untablelike
+        if (sync_complete.error_count == 0) {
+            $('#sync_complete ul').hide();
+        } else {
+			$('#sync_complete span').hide();
+		}
 	};
 };
 

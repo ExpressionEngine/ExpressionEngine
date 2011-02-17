@@ -24,9 +24,9 @@ if ($EE_view_disable !== TRUE)
 			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 										lang('current_upload_prefs'),
-										array('data' => '', 'width' => '5%'),
-										array('data' => '', 'width' => '5%'),
-										array('data' => '', 'width' => '5%')
+										array('data' => lang('edit'), 'width' => '5%'),
+										array('data' => lang('delete'), 'width' => '5%'),
+										array('data' => lang('sync'), 'width' => '5%')
 									);
 									
 			if ($upload_locations->num_rows() > 0)
@@ -37,8 +37,7 @@ if ($EE_view_disable !== TRUE)
 						'<strong>'.$upload_location->id.' '.$upload_location->name.'</strong>',
 						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_upload_preferences'.AMP.'id='.$upload_location->id.'" title="'.lang('edit').'"><img src="'.$cp_theme_url.'images/icon-edit.png" alt="'.lang('edit').'"</a>',
 						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=delete_upload_preferences_conf'.AMP.'id='.$upload_location->id.'" title="'.lang('delete').'"><img src="'.$cp_theme_url.'images/icon-delete.png" alt="'.lang('delete').'" /></a>',
-						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=sync_directory'.AMP.'id='.$upload_location->id.'" title="'.lang('sync').'">'.lang('sync').'</a>'
-					
+						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=sync_directory'.AMP.'id='.$upload_location->id.'" title="'.lang('sync').'"><img src="'.PATH_CP_GBL_IMG.'database_refresh.png" alt="'.lang('sync').'" /><a>'
 					);
 				}
 			}

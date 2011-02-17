@@ -29,11 +29,11 @@ if ( ! $EE_view_disable)
 				</thead>
 				<tbody>
 				<?php foreach ($dirs as $dir):?>
-
-					<tr class="<?=alternator('even', 'odd')?>">
-						<td><?=$dir['name']?></td><td><?=$dir['count']?></td><td><?=$dir['allowed_types']?></td>
+					<tr class="<?=alternator('even', 'odd')?>" data-id="<?=$dir['id']?>">
+						<td><?=$dir['name']?></td>
+						<td><?=$dir['count']?></td>
+						<td><?=$dir['allowed_types']?></td>
 					</tr>
-
 				<?php endforeach; ?>
 				</tbody>
 			</table>
@@ -63,25 +63,35 @@ if ( ! $EE_view_disable)
 			
 			<div class="tableSubmit">
 				<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
-				<div id="progress" style="width:200px;"></div>
+				<div id="progress"></div>
 			</div>
-
-			<table id="sync_complete_template" cellspacing="0" cellpadding="0">
-				<tbody>
-					<tr>
-						<th><?=lang('files_processed')?></th>
-						<td>${files_processed}</td>
-					</tr>
-					<tr>
-						<th><?=lang('errors')?></th>
-						<td>${errors}</td>
-					</tr>
-					<tr>
-						<th><?=lang('error_count')?></th>
-						<td>${error_count}</td>
-					</tr>
-				</tbody>
-			</table>
+			
+			<div id="sync_complete_template">	
+				<p><?=lang('sync_complete')?></p>
+				<table cellspacing="0" cellpadding="0" class="padTable mainTable">
+					<tbody>
+						<tr>
+							<th><?=lang('directory')?></th>
+							<th><?=lang('files_processed')?></th>
+							<th><?=lang('error_count')?></th>
+							<th><?=lang('errors')?></th>
+						</tr>
+						<tr>
+							<td>${directory_name}</td>
+							<td>${files_processed}</td>
+							<td>${error_count}</td>
+							<td>
+								<ul>
+									{{each errors}}
+										<li>${$value}</li>
+									{{/each}}
+								</ul>
+								<span><?=lang('no_errors')?></span>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 </div> 
