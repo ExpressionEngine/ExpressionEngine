@@ -30,6 +30,9 @@ class Content_files extends CI_Controller {
 	public $remove_spaces = TRUE;
 	public $temp_prefix = "temp_file_";
 	
+	private $nest_categories	= 'y';
+	private $pipe_length		= 3;
+	
 	
 	/**
 	 * Constructor
@@ -48,6 +51,7 @@ class Content_files extends CI_Controller {
 		$this->lang->loadfile('filemanager');
 		$this->load->library(array('filemanager'));
 		$this->load->helper(array('form'));
+		$this->load->model('file_model');
 		
 		// Get upload dirs
 		$upload_dirs = $this->filemanager->fetch_upload_dirs();
@@ -79,35 +83,132 @@ class Content_files extends CI_Controller {
 	{
 		$this->load->library(array('pagination'));
 		$this->load->helper('string');
+		$this->api->instantiate('channel_categories');
 		
 		// Page Title
 		$this->cp->set_variable('cp_page_title', lang('content_files'));
 		
 		$this->cp->add_js_script(array(
-			'plugin'	=> array('overlay', 'overlay.apple', 'ee_upload'),
-			'file'		=> 'cp/file_manager_home'
+			'plugin'	=> array('overlay', 'overlay.apple', 'ee_upload', 'dataTables'),
+			'file'		=> 'cp/file_manager_home',
+			'ui' 		=> 'datepicker'
 			)
 		);
-		
-		
+
 		$per_page = ($per_page = $this->input->get('per_page')) ? $per_page : 40;
 		$offset = ($offset = $this->input->get('offset')) ? $offset : 0;
 		$upload_dirs_options = array();
-	
-		foreach ($this->_upload_dirs as $dir)
+		$allowed_dirs = array();
+		$comments_enabled = FALSE;
+		
+		$table_columns = ($comments_enabled) ? 9: 8;
+		
+
+
+		// We want the filter to work based on both get and post
+
+		$dir_id = $this->input->get_post('dir_id');
+		$cat_id = $this->input->get_post('cat_id');
+
+		$status = $this->input->get_post('status');
+		$order	= $this->input->get_post('order');
+		$date_range = $this->input->get_post('date_range');
+		$file_type = $this->input->get_post('file_type');
+		$search_type = $this->input->get_post('search_type');
+		$total_dirs = count($allowed_dirs);
+		
+		
+		$this->javascript->set_global(array(
+						'file.pipe' 		=> $this->pipe_length,
+						'file.perPage'		=> $per_page,
+						'file.themeUrl'		=> $this->cp->cp_theme_url,
+						'file.tableColumns'	=> $table_columns,
+						'lang.noEntries'	=> $this->lang->line('no_entries_matching_that_criteria')
+					)
+		);		
+
+		
+		if (isset($_POST['keywords'])) 
+		{
+			$keywords = sanitize_search_terms($_POST['keywords']);
+		}
+		elseif (isset($_GET['keywords'])) 
+		{
+			$keywords = sanitize_search_terms(base64_decode($_GET['keywords']));
+		}
+		else
+		{
+			$keywords = '';
+		}
+		
+
+
+		// Create our various filter data
+		
+		foreach ($this->_upload_dirs as $k => $dir)
 		{
 			$upload_dirs_options[$dir['id']] = $dir['name'];
+			$allowed_dirs[] = $k;
+		}
+		
+		$upload_dirs_options['null'] = $this->lang->line('filter_by_directory');
+
+		if (count($upload_dirs_options) > 2)
+		{
+			$upload_dirs_options['all'] = $this->lang->line('all');
 		}
 
 		ksort($upload_dirs_options);
 
-		$selected_dir = ($selected_dir = $this->input->get('directory')) ? $selected_dir : NULL;
+		$selected_dir = ($selected_dir = $this->input->get_post('directory')) ? $selected_dir : 'null';
 		
-		if ( ! $selected_dir)
-		{		
-			$selected_dir = array_search(current($upload_dirs_options), $upload_dirs_options);
+		// We need this for the filter, so grab it now
+		$cat_form_array = $this->api_channel_categories->category_form_tree($this->nest_categories);
+		
+		// If we have channels we'll write the JavaScript menu switching code
+		if (count($allowed_dirs) > 0)
+		{
+			$this->filtering_menus($cat_form_array);
 		}
+
 		
+		// Cat filter
+		$cat_group = ($selected_dir != 'null') ? $this->_upload_dirs[$selected_dir]['cat_group']: '';
+		$category_options = $this->category_filter_options($cat_group, $cat_form_array, count($allowed_dirs));
+
+		// Date range pull-down menu
+		$date_selected = $date_range;
+
+		$date_select_options[''] = $this->lang->line('date_range');
+		$date_select_options['1'] = $this->lang->line('past_day');
+		$date_select_options['7'] = $this->lang->line('past_week');
+		$date_select_options['31'] = $this->lang->line('past_month');
+		$date_select_options['182'] = $this->lang->line('past_six_months');
+		$date_select_options['365'] = $this->lang->line('past_year');
+		$date_select_options['custom_date'] = $this->lang->line('any_date');
+
+
+		$type_select_options[''] = $this->lang->line('file_type');
+		$type_select_options['all'] = $this->lang->line('all');
+		$type_select_options['image'] = $this->lang->line('image');
+		$type_select_options['non-image'] = $this->lang->line('non-image');
+
+		$search_select_options[''] = $this->lang->line('search_in');
+		$searcj_select_options['file_name'] = $this->lang->line('file_name');
+		$search_select_options['title'] = $this->lang->line('file_title');
+		$search_select_options['custom_field'] = $this->lang->line('custom_fields');
+		$search_select_options['all'] = $this->lang->line('all');
+
+
+
+
+
+
+
+
+
+
+
 		$no_upload_dirs = FALSE;
 		
 		if (empty($this->_upload_dirs))
@@ -116,53 +217,63 @@ class Content_files extends CI_Controller {
 		}
 		else
 		{
-			$all_files = $this->filemanager->directory_files_map($this->_upload_dirs[$selected_dir]['server_path'], 1, FALSE, $this->_upload_dirs[$selected_dir]['allowed_types']);
+			
+			$type = 'all';
+			$dirs = ($dir_id == FALSE) ? $allowed_dirs : $dir_id;
+		
+			$filtered_entries= $this->file_model->get_files($dirs, $cat_id, $type, $per_page, $offset, $keywords, $order);
+			$files = $filtered_entries['results'];
+		
+			// No result?  Show the "no results" message
+			if ( ! $files)
+			{
+				// no results-- bail
+			}
+			
+			$total = $this->file_model->count_files($allowed_dirs);
+		
 
 			$file_list = array();
 			$dir_size = 0;
 
-			$total_rows = count($all_files);
+			$total_rows = $this->file_model->count_files($allowed_dirs);
 
-			$current_files = array_slice($all_files, $offset, $per_page);
 
-			$files = $this->filemanager->fetch_files($selected_dir, $current_files);
-
+			
 			// Setup file list
-			foreach ($files->files[$selected_dir] as $file)
+			foreach ($files->result_array() as $k => $file)
 			{
-				if ( ! $file['mime'])
-				{
-					continue;
-				}
+
 
 				$file_location = $this->functions->remove_double_slashes(
-						$this->_upload_dirs[$selected_dir]['url'].'/'.$file['name']
+						$this->_upload_dirs[$file['upload_location_id']]['url'].'/'.$file['file_name']
 					);
 
 				$file_path = $this->functions->remove_double_slashes(
-						$this->_upload_dirs[$selected_dir]['server_path'].'/'.$file['name']
+						$this->_upload_dirs[$file['upload_location_id']]['server_path'].'/'.$file['file_name']
 					);
 
 				$list = array(
-					'name'		=> $file['name'],
+					'file_id'	=> $file['file_id'],
+					'title'		=> $file['title'],
+					'name'		=> $file['file_name'],
 					'link'		=> $file_location,
-					'mime'		=> $file['mime'],
-					'size'		=> $file['size'],
-					'date'		=> $file['date'],
+					'mime'		=> $file['mime_type'],
+					'size'		=> $file['file_id'],
+					'date'		=> $file['upload_date'],
 					'path'		=> $file_path,
 					'is_image'	=> FALSE,
+					'dir_name'	=> $this->_upload_dirs[$file['upload_location_id']]['name']
 				);				
 
 				// Lightbox links
-				if (strncmp($file['mime'], 'image', 5) === 0)
+				if (strncmp($file['mime_type'], 'image', 5) === 0)
 				{
 					$list['is_image'] = TRUE;
-					$list['link'] = '<a class="less_important_link overlay" id="img_'.str_replace(array(".", ' '), '', $file['name']).'" href="'.$file_location.'" title="'.$file['name'].'" rel="#overlay">'.$file['name'].'</a>';
+					$list['link'] = '<a class="less_important_link overlay" id="img_'.str_replace(array(".", ' '), '', $file['file_name']).'" href="'.$file_location.'" title="'.$file['file_name'].'" rel="#overlay">'.$file['file_name'].'</a>';
 				}
 
 				$file_list[] = $list;
-
-				$dir_size = $dir_size + $file['size'];
 			}
 
 			$base_url = BASE.AMP.'C=content_files'.AMP.'directory='.$selected_dir.AMP.'per_page='.$per_page;
@@ -203,9 +314,24 @@ class Content_files extends CI_Controller {
 		}
 		
 		$data = array(
+			'comments_enabled'		=> $comments_enabled,
 			'no_upload_dirs'		=> $no_upload_dirs,
 			'upload_dirs_options' 	=> $upload_dirs_options,
 			'selected_dir'			=> $selected_dir,
+			
+			'category_options' 		=> $category_options,
+			'selected_cat_id'		=> $cat_id,
+
+			'date_select_options'	=> $date_select_options,
+			'selected_date'			=> $date_range,
+
+			'type_select_options'	=> $type_select_options,
+			'selected_type'			=> $file_type,
+
+			'search_in_options'		=> $search_select_options,
+			'selected_search'		=> $search_type,
+			'keywords'				=> $keywords,
+			
 			'files'					=> (isset($file_list)) ? $file_list : array(),
 			'dir_size'				=> (isset($dir_size)) ? $dir_size : NULL,
 			'pagination_links'		=> $this->pagination->create_links(),
@@ -213,8 +339,291 @@ class Content_files extends CI_Controller {
 			'pagination_count_text'	=> (isset($pagination_count_text)) ? $pagination_count_text : NULL,
 		);
 		
+	
+		$this->javascript->compile();
 		$this->load->view('content/files/index', $data);
 	}
+
+
+	function category_filter_options($cat_group, $cat_form_array, $total_dirs)
+	{
+		$category_select_options[''] = $this->lang->line('filter_by_category');
+
+		if ($total_dirs > 1)
+		{				
+			$category_select_options['all'] = $this->lang->line('all');
+		}
+
+		$category_select_options['none'] = $this->lang->line('none');
+
+		if ($cat_group != '')
+		{
+			foreach($cat_form_array as $key => $val)
+			{
+				if ( ! in_array($val['0'], explode('|',$cat_group)))
+				{
+					unset($cat_form_array[$key]);
+				}
+			}
+
+			$i=1;
+			$new_array = array();
+
+			foreach ($cat_form_array as $ckey => $cat)
+			{
+		    	if ($ckey-1 < 0 OR ! isset($cat_form_array[$ckey-1]))
+    		   	{
+					$category_select_options['NULL_'.$i] = '-------';
+            	}
+            	
+				$category_select_options[$cat['1']] = (str_replace("!-!","&nbsp;", $cat['2']));
+
+            	if (isset($cat_form_array[$ckey+1]) && $cat_form_array[$ckey+1]['0'] != $cat['0'])
+	        	{
+					$category_select_options['NULL_'.$i] = '-------';
+       			}
+
+       			$i++;
+			}
+		}
+		
+		
+		return $category_select_options;
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * JavaScript filtering code
+	 *
+	 * This function writes some JavaScript functions that
+	 * are used to switch the various pull-down menus in the
+	 * EDIT page
+	 */
+	public function filtering_menus($cat_form_array)
+	{
+		if ( ! $this->cp->allowed_group('can_access_content'))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		// In order to build our filtering options we need to gather 
+		// all the channels and categories
+		
+		$dir_array	= array();
+		
+
+		foreach ($this->_upload_dirs as $id => $row)
+		{
+			$dir_array[$id] = array(str_replace('"','',$this->_upload_dirs[$id]['name']), $this->_upload_dirs[$id]['cat_group']);
+		}		
+		
+
+		$default_cats[] = array('', $this->lang->line('filter_by_category'));
+		$default_cats[] = array('all', $this->lang->line('all'));
+		$default_cats[] = array('none', $this->lang->line('none'));		
+		
+
+		$file_info['0']['categories'] = $default_cats;		
+	
+
+		foreach ($dir_array as $key => $val)
+		{
+			$any = 0;
+			$cats = $default_cats;
+	
+			if (count($cat_form_array) > 0)
+			{
+				$last_group = 0;
+		
+				foreach ($cat_form_array as $k => $v)
+				{
+					if (in_array($v['0'], explode('|', $val['1'])))
+					{
+						if ($last_group == 0 OR $last_group != $v['0'])
+						{
+							$cats[] = array('', '-------');
+							$last_group = $v['0'];
+						}
+
+						$cats[] = array($v['1'], $v['2']);
+					}
+				}
+			}
+
+			$file_info[$key]['categories'] = $cats;
+			
+		}
+
+		$this->javascript->set_global('file.directoryInfo', $file_info);
+	}
+
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * File ajax filter
+	 */
+	public function file_ajax_filter()
+	{
+		if ( ! AJAX_REQUEST)
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+		
+		$allowed_directories = array();
+		
+		foreach ($this->_upload_dirs as $k =>$v)
+		{
+			$allowed_dirs[] = $k;
+		}
+		
+		if (empty($allowed_dirs))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}		
+		
+		$this->output->enable_profiler(FALSE);
+		$this->load->helper(array('form', 'text', 'url', 'snippets'));
+		
+		$dir_id = ($this->input->get_post('dir_id') != 'null' && $this->input->get_post('dir_id') != 'all') ? $this->input->get_post('dir_id') : '';
+		$cat_id = ($this->input->get_post('cat_id') != 'all') ? $this->input->get_post('cat_id') : '';
+
+		$status = ($this->input->get_post('status') != 'all') ? $this->input->get_post('status') : '';
+		$date_range = $this->input->get_post('date_range');	
+		$author_id = $this->input->get_post('author_id');	
+	
+		$keywords = ($this->input->get_post('keywords')) ? $this->input->get_post('keywords') : '';
+		$search_in = ($this->input->get_post('search_in') != '') ? $this->input->get_post('search_in') : 'title';
+
+		//$filter = $this->create_return_filter($filter_data);
+
+
+		$perpage = $this->input->get_post('iDisplayLength');
+		$offset = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point		
+
+		$sEcho = $this->input->get_post('sEcho');	
+		
+		// name, size, kind, date *** we don't have size in db
+
+		$col_map = array('file_id', 'title', 'file_name', 'mime_type', 'upload_location_id', 'upload_date', '', '');
+
+
+		/* Ordering */
+		$order = array();
+		
+		if ($this->input->get('iSortCol_0') !== FALSE)
+		{
+			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
+			{
+				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
+				{
+					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
+				}
+			}
+		}
+		
+		$type = 'all';
+		$dirs = ($dir_id == FALSE) ? $allowed_dirs : $dir_id;
+		
+		$filtered_entries = $this->file_model->get_files($dirs, $cat_id, $type, $perpage, $offset, $keywords, $order);
+
+
+
+
+
+		
+		// No result?  Show the "no results" message
+		$total = $filtered_entries['filter_count'];
+		$query_results = $filtered_entries['results'];
+		
+
+		$j_response['sEcho'] = $sEcho;
+		$j_response['iTotalRecords'] = $this->file_model->count_files($allowed_dirs);  
+		$j_response['iTotalDisplayRecords'] = $total;		
+		
+		$edit_link_base = BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir=';
+		$i = 0;
+		
+		foreach($query_results->result_array() as $file)
+		{
+			$file_location = $this->functions->remove_double_slashes(
+						$this->_upload_dirs[$file['upload_location_id']]['url'].'/'.$file['file_name']
+					);
+
+			$file_path = $this->functions->remove_double_slashes(
+						$this->_upload_dirs[$file['upload_location_id']]['server_path'].'/'.$file['file_name']
+					);
+					
+			$is_image = FALSE;
+
+			$m[] = $file['file_id'];
+			$m[] = $file['title'];
+
+			// Lightbox links
+			if (strncmp($file['mime_type'], 'image', 5) === 0)
+			{
+				$is_image = TRUE;
+				$m[] = '<a class="less_important_link overlay" id="img_'.str_replace(array(".", ' '), '', $file['file_name']).'" href="'.$file_location.'" title="'.$file['file_name'].'" rel="#overlay">'.$file['file_name'].'</a>';
+			}
+			else
+			{
+				$m[] = $file['file_name'];
+			}
+			
+			$m[] = $file['mime_type'];
+			$m[] = $this->_upload_dirs[$file['upload_location_id']]['name'];
+			
+			// Date
+			$date_fmt = ($this->session->userdata('time_format') != '') ? $this->session->userdata('time_format') : $this->config->item('time_format');
+
+			if ($date_fmt == 'us')
+			{
+				$datestr = '%m/%d/%y %h:%i %a';
+			}
+			else
+			{
+				$datestr = '%Y-%m-%d %H:%i';
+			}
+			
+			$m[] = $this->localize->decode_date($datestr, $file['upload_date'], TRUE);
+
+			// Actions
+			$actions = '<a href="'.$edit_link_base.$file['upload_location_id'].AMP.'file='.$file['file_name'].AMP.'action=download" title="'.$this->lang->line('file_download').'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png"></a>
+						&nbsp;&nbsp;<a href="'.$edit_link_base.$file['upload_location_id'].AMP.'file='.$file['file_name'].AMP.'action=delete" title="'.$this->lang->line('delete_selected_files').'"><img src="'.$this->cp->cp_theme_url.'>images/icon-delete.png"></a>';
+
+			if (strncmp($file['mime_type'], 'image', 5) === 0)
+			{
+				$actions .= '&nbsp;&nbsp;<a href="'.$edit_link_base.$file['upload_location_id'].AMP.'file='.urlencode($file['file_name']).'" title="'.$this->lang->line('edit_file').'"><img src="'.$this->cp->cp_theme_url.'images/icon-edit.png" alt="'.$this->lang->line('delete').'" /></a>';
+			}
+			
+			$m[] = $actions;
+			
+
+
+			// Checkbox
+			$m[] = form_checkbox('toggle[]', $file['file_id'], '', ' class="toggle" id="toggle_box_'.$file['file_id'].'"');
+
+			$tdata[$i] = $m;
+			$i++;
+			unset($m);
+
+		} // End foreach
+		
+
+		$j_response['aaData'] = $tdata;	
+
+		$this->output->send_ajax_response($j_response);
+	}
+
+
+
+
+
+
+
 
 	// ------------------------------------------------------------------------	
 
