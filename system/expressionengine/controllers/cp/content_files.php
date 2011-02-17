@@ -55,7 +55,7 @@ class Content_files extends CI_Controller {
 		foreach ($upload_dirs as $row)
 		{
 			$this->_upload_dirs[$row['id']] = $row;
-		}		
+		}
 		
 		if (AJAX_REQUEST)
         {
@@ -856,16 +856,12 @@ class Content_files extends CI_Controller {
 		$var['sizes'] = array();
 		$this->load->library('javascript');
 
-		$batch_size = 50;  // conservative because we have to create a bunch of images
-
-		
 		$resize_existing = FALSE;
 
 		// No file directory- they want to sync them all
 		if ($file_dir === FALSE)
 		{
 
-			
 		}
 		else
 		{
@@ -896,28 +892,36 @@ class Content_files extends CI_Controller {
 				$vars['sizes'][] = array('short_name' => $row->short_name, 'title' => $row->title, 'resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height);
 			}
 		}
-			
+		
 		// If I move this will need to fetch upload dir data
 		foreach ($ids as $id)
 		{
 			$dir_data[$id] = $this->_upload_dirs[$id];
 			$vars['dirs'][$id] = $this->_upload_dirs[$id];
-			$vars['dirs'][$id]['count'] = '--';
+			
+			$vars['dirs'][$id]['files'] = $this->filemanager->directory_files_map(
+				$dir_data[$id]['server_path'], 
+				1, 
+				FALSE, 
+				$dir_data[$id]['allowed_types']
+			);
+			
+			$vars['dirs'][$id]['count'] = count($vars['dirs'][$id]['files']);
 		}
-		
-		$js_files = $this->filemanager->directory_files_map($dir_data[$cid]['server_path'], 1, FALSE, $dir_data[$cid]['allowed_types']);
 		
 		$this->cp->add_js_script(array(
 				'plugin' => array('tmpl'), 
 				'ui'     => array('progressbar'),
-				'file'   => array('underscore', 'cp/file_manager_synchronize')
+				'file'   => array('underscore', 'cp/files/synchronize')
 			)
 		);
 		
 		$this->javascript->set_global(array(
-			'file_manager.sync_files'      => $js_files,
-			'file_manager.sync_file_count' => count($js_files),
-			'file_manager.sync_sizes'      => $js_size
+			'file_manager' => array(
+				'sync_files'      => $vars['dirs'][$id]['files'],
+				'sync_file_count' => $vars['dirs'][$id]['count'],
+				'sync_sizes'      => $js_size
+			)
 		));
 		
 		// Sigh- this is stupid and will move to updater after initial testing
@@ -988,7 +992,6 @@ class Content_files extends CI_Controller {
 			
 			// doesn't look like anything changed in upload prefs
 			
-
 			// Pascal will have a cow- but TEST DATA!
 			// Add a column to files to hold the size for the new name			
 			// Seperate cause my go poof and couldn't normally hard code it
@@ -1020,24 +1023,10 @@ class Content_files extends CI_Controller {
 		// If file exists- make sure it exists in db - otherwise add it to db and generate all child sizes
 		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
 		
-		// if (($sizes = $this->input->post('sizes')) === FALSE OR ($current_files = $this->input->post('files')) === FALSE)
-		// {
-		// 	exit($this->output->send_ajax_response('failure :('));
-		// 	// return FALSE;
-		// }
-		if (($current_files = $this->input->post('files')) === FALSE)
+		if (($sizes = $this->input->post('sizes')) === FALSE OR ($current_files = $this->input->post('files')) === FALSE)
 		{
-			exit($this->output->send_ajax_response('failure files :('));
-			// return FALSE;
+			return FALSE;
 		}
-		
-		if (($sizes = $this->input->post('sizes')) === FALSE)
-		{
-			exit($this->output->send_ajax_response('failure sizes :('));
-			// return FALSE;
-		}
-		
-		// var_dump($sizes);
 		
 		$id = key($sizes);
 		
@@ -1067,8 +1056,6 @@ class Content_files extends CI_Controller {
 				
 			// Does it exist in DB?
 			$query = $this->db->get_where('files', array('file_name' => $file['name']));
-			
-			// var_dump(is_array($sizes[$id]));
 			
 			if ($query->num_rows() > 0)
 			{
