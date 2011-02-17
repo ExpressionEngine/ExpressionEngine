@@ -178,6 +178,13 @@ $lang = array(
 'directory'					=> 'Directory',
 'no_sync_title'				=> 'No Results', // @todo, this phrase should change, just not sure what to put  -ga
 'no_file_sync_needed'		=> 'There are no files in your batch upload directories to sync.',
+'file_count'				=> 'Number of Files',
+'file_types'				=> 'Types of Files',
+'files_processed'			=> 'Number of Files Processed',
+'error_count'				=> 'Number of Errors',
+'sync_complete'				=> 'The file synchronization is complete.', 
+'errors'					=> 'Errors Encountered',
+'no_errors'					=> 'No errors',
 
 'category_groups'			=> 'File Category Groups',
 'category_group'			=> 'Category Groups',

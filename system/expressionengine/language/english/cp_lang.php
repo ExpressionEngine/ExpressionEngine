@@ -361,6 +361,9 @@ $lang = array(
 'save' =>
 'Save',
 
+'sync' =>
+'Synchronize',
+
 'cancel' =>
 'Cancel',
 

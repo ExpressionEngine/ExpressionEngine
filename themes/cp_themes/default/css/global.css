@@ -7,7 +7,7 @@ html, body, p, img, div, h1, h2, h3, h4, h5, h6, ol, ul, li, form, input, select
 }
 
 html {
-	background-color:		#3e4c54;
+    background-color:		#3e4c54;
 }
 
 body {
@@ -3292,13 +3292,40 @@ div.contentWrap {
 }
 
 #file_manager_toolbar .oversized {
-	border: 2px solid #c6220a;
+	border:				2px solid #c6220a;
 }
 
 #file_manager_edit_file {
 	float: 				right;
 	width: 				84%;
 	overflow: 			auto;
+}
+
+/* Synchronize */
+#sync #progress {
+    width:              200px;
+}
+
+#sync_complete {
+	border-top:			1px solid #D0D7DF;
+	margin-top:			10px;
+	padding-top:		20px;
+}
+
+.summaryTable {
+	border:				1px solid #D0D7DF;
+	border-collapse:	collapse;
+}
+
+.summaryTable th,
+.summaryTable td {
+	border:				1px solid #D0D7DF;
+	padding:			7px 10px;
+	text-align:			left;
+}
+
+#sync .tableSubmit {
+	margin-top: 0px;
 }
 
 /* Communicate */
@@ -3311,7 +3338,8 @@ div.contentWrap {
 	margin-right: 		266px;
 }
 
-#communicate_compose ul label, #communicate_compose ul li span {
+#communicate_compose ul label, 
+#communicate_compose ul li span {
 	float: 				left;
 	display: 			block;
 	width: 				30%;
@@ -3324,7 +3352,8 @@ div.contentWrap {
 	padding: 			7px 0 7px 7px;
 }
 
-#communicate_info ul, #communicate_compose ul {
+#communicate_info ul, 
+#communicate_compose ul {
 	border-left:		1px solid #d0d7df;
 	border-top:			1px solid #d0d7df;
 	border-right:		1px solid #d0d7df;
@@ -3339,11 +3368,13 @@ div.contentWrap {
 	border-bottom:		1px solid #d0d7df;
 }
 
-#communicate_info li.even, #communicate_compose li.even {
+#communicate_info li.even, 
+#communicate_compose li.even {
 	background-color:	#dee6e9;
 }
 
-#communicate_info li.odd, #communicate_compose li.odd {
+#communicate_info li.odd, 
+#communicate_compose li.odd {
 	background-color:	#ECF1F4;
 }
 

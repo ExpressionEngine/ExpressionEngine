@@ -813,9 +813,10 @@ class Forum_upd {
 			// Find them.  Eliminate them!
 			$query = $this->EE->db->query("SELECT COUNT(*) AS count, topic_id, member_id
 											FROM exp_forum_subscriptions
-											GROUP BY topic_id
+											GROUP BY topic_id, member_id
 											HAVING count > 1
 											ORDER BY count DESC");
+
 
 			if ($query->num_rows() > 0)
 			{
@@ -826,14 +827,34 @@ class Forum_upd {
 				}
 			}
 
-			$this->EE->db->query("ALTER TABLE `exp_forum_read_topics` DROP KEY `member_id`");
-			$this->EE->db->query("ALTER TABLE `exp_forum_read_topics` ADD PRIMARY KEY `member_id_board_id` (`member_id`, `board_id`)");
 			$this->EE->db->query("ALTER TABLE `exp_forum_subscriptions` DROP KEY `topic_id`");
 			$this->EE->db->query("ALTER TABLE `exp_forum_subscriptions` DROP KEY `member_id`");
 			$this->EE->db->query("ALTER TABLE `exp_forum_subscriptions` ADD PRIMARY KEY `topic_id_member_id` (`topic_id`, `member_id`)");
+
+
+			// Remove any duplicates from exp_forum_read_topics before we set a primary key of member_id-board_id
+			$query = $this->EE->db->query("SELECT COUNT(*) AS count, member_id, board_id
+											FROM exp_forum_read_topics
+											GROUP BY member_id, board_id
+											HAVING count > 1
+											ORDER BY count DESC");  
+
+			if ($query->num_rows() > 0)
+			{
+				foreach ($query->result_array() as $row)
+				{
+					// delete all but one matching this member_id-board_id combo
+					$this->EE->db->query("DELETE FROM exp_forum_read_topics WHERE member_id = '{$row['member_id']}' AND board_id = '{$row['board_id']}' LIMIT ".($row['count'] - 1));					
+				}
+			}
+
+			$this->EE->db->query("ALTER TABLE `exp_forum_read_topics` DROP KEY `member_id`");
+			$this->EE->db->query("ALTER TABLE `exp_forum_read_topics` ADD PRIMARY KEY `member_id_board_id` (`member_id`, `board_id`)");
+
+
+			// Carry on my wayward son
 			$this->EE->db->query("ALTER TABLE `exp_forum_polls` MODIFY COLUMN `poll_id` int(10) unsigned NOT NULL PRIMARY KEY auto_increment");
 			$this->EE->db->query("ALTER TABLE `exp_forum_pollvotes` MODIFY COLUMN `vote_id` int(10) unsigned NOT NULL PRIMARY KEY auto_increment");
-
 			$this->EE->db->query("ALTER TABLE `exp_forum_boards` CHANGE `board_recent_poster` `board_recent_poster` VARCHAR(70) NULL DEFAULT NULL");
 			$this->EE->db->query("ALTER TABLE `exp_forums` CHANGE `forum_description` `forum_description` TEXT NULL DEFAULT NULL");
 			$this->EE->db->query("ALTER TABLE `exp_forums` CHANGE `forum_parent` `forum_parent` INT(6) unsigned NULL DEFAULT NULL");

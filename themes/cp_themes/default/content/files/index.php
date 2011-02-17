@@ -13,7 +13,9 @@ if ( ! $EE_view_disable)
 	<div class="contents">
 
 		<div class="heading">
-			<h2 class="edit"><?=lang('content_files')?></h2>
+			<h2 class="edit">
+			<span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>
+			<?=lang('content_files')?></h2>
 		</div>
 		
 		<div id="file_manager" class="pageContents group">
@@ -28,30 +30,69 @@ if ( ! $EE_view_disable)
 					<?=lang('no_upload_dirs')?>
 				<?php endif; ?>
 			<?php else: ?>
-			<div id="filterMenu">
-				<?php if ( ! empty($upload_dirs_options)):?>
-					<?=form_open('', array('id' => 'dir_choice_form'))?>
-						<?=form_label('Upload Directory:', 'dir_choice').NBS?>
-						<?=form_dropdown('dir_choice', $upload_dirs_options, $selected_dir, 'id="dir_choice"').NBS?>
-						<small><?=lang('total_dir_size')?> <?=number_format($dir_size/1000, 1);?> <?=lang('file_size_unit')?></small>
-					<?=form_close()?>
-					<?=form_open_multipart('C=content_files'.AMP.'M=upload_file', array('id'=>'upload_form', 'class' => 'tableSubmit', ))?>
-						<?=form_hidden('upload_dir', $selected_dir, array('id' => 'upload_dir'))?>
-						<?=form_label(lang('upload_file'), 'upload_file', array('class' => 'visualEscapism'))?>
-						<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>15,'class'=>'field'))?>
-						&nbsp;&nbsp;<input type="submit" class="submit" value="<?=lang('upload_file')?>">
-					<?=form_close()?>
-				<?php endif; ?>
-				<div class="clear_left"></div>
-			</div>
+
+
+
+
+		<div id="filterMenu">
+			<?php if ( ! empty($upload_dirs_options)):?>
+			<fieldset>
+				<legend><?=lang('search_files')?></legend>
+
+			<?=form_open('C=content_files'.AMP.'M=index', array('name'=>'filterform', 'id'=>'filterform'))?>
+
+				<div class="group">
+					<?=form_dropdown('dir_id', $upload_dirs_options, $selected_dir, 'id="dir_id"').NBS.NBS?>
+					<?=form_dropdown('cat_id', $category_options, $selected_cat_id, 'id="cat_id"').NBS.NBS?>
+					<?=form_dropdown('file_type', $type_select_options, $selected_type, 'id="file_type"').NBS.NBS?>
+					<?=form_dropdown('date_range', $date_select_options, $selected_date, 'id="date_range"').NBS.NBS?>
+				</div>
+
+        		<div id="custom_date_picker" style="display: none; margin: 0 auto 50px auto;width: 500px; height: 235px; padding: 5px 15px 5px 15px;border: 1px solid black;  background: #FFF;">
+					<div id="cal1" style="width:250px; float:left; text-align:center;">
+						<p style="text-align:left; margin-bottom:5px"><?=lang('start_date', 'custom_date_start')?>:&nbsp; <input type="text" name="custom_date_start" id="custom_date_start" value="yyyy-mm-dd" size="12" tabindex="1" /></p>
+						<span id="custom_date_start_span"></span>
+					</div>
+	                <div id="cal2" style="width:250px; float:left; text-align:center;">
+						<p style="text-align:left; margin-bottom:5px"><?=lang('end_date', 'custom_date_end')?>:&nbsp; <input type="text" name="custom_date_end" id="custom_date_end" value="yyyy-mm-dd" size="12" tabindex="2" /></p>
+						<span id="custom_date_end_span"></span>          
+					</div>
+                </div>
+
+				<div>
+					<label for="keywords" class="js_hide"><?=lang('keywords')?> </label><?=form_input('keywords', $keywords, 'class="field shun" id="keywords" placeholder="'.lang('keywords').'"')?><br />
+					<?=form_dropdown('search_in', $search_in_options, $selected_search, 'id="search_in"').NBS.NBS?>
+					<?=form_submit('submit', lang('search'), 'class="submit" id="search_button"')?>
+				</div>
+
+			<?=form_close()?>
+			</fieldset>
+			<?php endif; ?>
+			<div class="clear_left"></div>
+		</div> <!-- filterMenu -->
+
+
+
+
+
+
+
+
+
+
 			
-			<?=form_open('C=content_files'.AMP.'M=multi_edit_form')?>
+			<?=form_open('C=content_files'.AMP.'M=multi_edit_form', array('name'=>'file_form', 'id'=>'file_form'))?>
 				<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
 					<thead>
 						<tr>
-							<th><?=lang('name')?></th>
-							<th><?=lang('size')?></th>
+							<th>#</th>
+							<th><?=lang('title')?></th>
+							<th><?=lang('file_name')?></th>
 							<th><?=lang('kind')?></th>
+							<?php if ($comments_enabled):?>
+							<th><?=lang('comments')?></th>							
+							<?php endif;?>
+							<th><?=lang('dir_name')?></th>
 							<th><?=lang('date')?></th>
 							<th><?=lang('actions')?></th>
 							<th id="toggle_all"><?=form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')?></th>
@@ -65,13 +106,18 @@ if ( ! $EE_view_disable)
 					<?php else: ?>
 						<?php foreach ($files as $file):?>
 						<tr class="<?=alternator('even', 'odd')?>">
+							<td><?=$file['file_id']?></td>
+							<td><?=$file['title']?></td>
 							<?php if ($file['is_image']):?>
 								<td class="overlay" id="<?=$file['name']?>"><?=$file['link']?></td>
 							<?php else: ?>
 								<td><?=$file['name']?></td>
 							<?php endif; ?>
-							<td><?=number_format($file['size']/1000, 1);?> <?=lang('file_size_unit')?></td>
 							<td><?=$file['mime']?></td>
+							<?php if ($comments_enabled):?>
+							<td><?=$file['comments']?></td>							
+							<?php endif;?>							
+							<td><?=$file['dir_name']?></td>
 							<td><?=$this->localize->set_human_time($file['date'], TRUE)?></td>
 							<td>
 								<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$selected_dir.AMP.'file='.$file['name'].AMP?>action=download" title="<?=lang('file_download')?>"><img src="<?=$cp_theme_url?>images/icon-download-file.png"></a>
@@ -80,7 +126,7 @@ if ( ! $EE_view_disable)
 								&nbsp;&nbsp;<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$selected_dir.AMP.'file='.urlencode($file['name'])?>" title="<?=lang('edit_file')?>"><img src="<?=$cp_theme_url?>images/icon-edit.png" alt="<?=lang('delete')?>" /></a>
 								<?php endif; ?>
 							</td>
-							<td class="file_select"><?=form_checkbox('file[]', urlencode($file['name']), FALSE, 'class="toggle"')?></td>
+							<td class="file_select"><?=form_checkbox('file[]', $file['file_id'], FALSE, 'class="toggle"')?></td>
 						</tr>
 						<?php endforeach; ?>
 					<?php endif;?>
@@ -94,8 +140,12 @@ if ( ! $EE_view_disable)
 					<?php endif;?>
 				</div>
 				
-				<p id="paginationCount"><?=$pagination_count_text;?></p>
-				<?=$pagination_links?>
+				
+				<span class="js_hide"><?=$pagination_links?></span>
+				<span class="pagination" id="filter_pagination"></span>
+				
+				
+				
 			<?=form_close()?>
 			<?php endif;?>
 		</div>
