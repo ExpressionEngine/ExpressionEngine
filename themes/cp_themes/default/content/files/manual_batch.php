@@ -33,7 +33,7 @@ if ( ! $EE_view_disable)
 					</thead>
 					<tbody>
 					<?php foreach ($files as $file): ?>
-						<tr>
+						<tr class="<?=alternator('even', 'odd')?>">
 							<td><img src="<?=$file['image']?>"><br>
 								<?=$file['name']?></td>
 							<td><?=form_input('file_name', $file['name'])?></td>
