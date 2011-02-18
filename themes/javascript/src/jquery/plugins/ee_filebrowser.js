@@ -49,9 +49,30 @@
 			}
 
 			createBrowser();
+			create_dir_info();
 		});
 	}
 
+	function create_dir_info () {
+		// TODO: Figure out a way to populate all_dirs to avoid js errors...
+		var directories = [];
+
+		$('#dir_choice option').each(function(index) {
+			directories.push($(this).val());
+		});
+		
+		console.log(directories);
+		
+		$.ee_filebrowser.endpoint_request('directory_contents', {directory: directories}, function(data) {
+			console.log(data);
+
+			//$.each(data, function(index, element) {
+				//directories.push(index);
+			//});
+			
+			//$.ee_filebrowser.endpoint_request(<D-/>
+		}); 
+	}
 	// --------------------------------------------------------------------
 
 	/*
@@ -146,7 +167,7 @@
 			url: EE.BASE+"&"+EE.filebrowser.endpoint_url+"&action=edit_image",
 			data: $("#image_edit_form").serialize(),
 			success: function(file_name) {
-				file.name = file_name;
+				file.file_name = file_name;
 				file.dimensions = 'width="'+file.width+'" height="'+file.height+'" ';
 				$.ee_filebrowser.clean_up(file, original_upload_html);
 			},
@@ -340,7 +361,8 @@
 	 * Only fills in thumbnails for the first page, all others are loaded when they come into view
 	 */
 	function build_pages(directory, offset) {
-		
+		var directory = directory;
+
 		if (isNaN(offset)) {
 			offset = 0;
 		}
@@ -349,6 +371,7 @@
 			all_dirs[directory.id] = directory;
 		}
 		else {
+			EE.dirs = all_dirs;
 			directory = all_dirs[directory];
 		}
 		
@@ -366,9 +389,9 @@
 		$.each(directory.files, function(i, el) {
 			el['img_id'] = i+'';
 			el['directory'] = directory.id+'';
-			el['is_image'] = ! (el.mime.indexOf("image") < 0);
+			el['is_image'] = ! (el.mime_type.indexOf("image") < 0);
 			if (el['is_image']) {
-				el['thumb'] = directory.url + "/_thumbs/thumb_" + el.name;
+				el['thumb'] = directory.url + "/_thumbs/thumb_" + el.file_name;
 			}
 		});
 		

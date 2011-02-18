@@ -25,14 +25,14 @@
 
 class Content_files extends CI_Controller {
 	
-	private $_upload_dirs = array();
-	private $_base_url = '';
-	public $remove_spaces = TRUE;
-	public $temp_prefix = "temp_file_";
-	
-	private $nest_categories	= 'y';
-	private $pipe_length		= 3;
-	
+	private $_upload_dirs    = array();
+	private $_base_url       = '';
+	public $remove_spaces    = TRUE;
+	public $temp_prefix      = "temp_file_";
+
+	private $nest_categories = 'y';
+	private $pipe_length     = 3;
+
 	
 	/**
 	 * Constructor

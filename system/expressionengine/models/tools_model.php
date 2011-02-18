@@ -417,6 +417,7 @@ class Tools_model extends CI_Model {
 	/**
 	 * Get Upload Preferences
 	 *
+	 * @deprecated Deprecated since 2.2
 	 * @access	public
 	 * @param	int
 	 * @return	mixed
@@ -476,6 +477,7 @@ class Tools_model extends CI_Model {
 	/**
 	 * Get Files
 	 *
+	 * @deprecated Deprecated since 2.2
 	 * @access	public
 	 * @param	int
 	 * @return	mixed

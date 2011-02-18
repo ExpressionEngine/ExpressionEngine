@@ -60,20 +60,20 @@ $dir_size = 4180;
 					<td colspan="4"><?=lang('no_uploaded_files')?></td>
 				</tr>
 				<tr id="rowTmpl">
-					<td><a href="#" onclick="$.ee_filebrowser.placeImage(${directory}, ${img_id}); return false;">${name}</a></td>
+					<td><a href="#" onclick="$.ee_filebrowser.placeImage(${directory}, ${img_id}); return false;">${file_name}</a></td>
 					<td>${size}</td>
-					<td>${mime}</td>
+					<td>${mime_type}</td>
 					<td>${date}</td>
 				</tr>
 			</tbody>
 		</table>
 		
-		<div id="thumbTmpl">
-			<a title="${name}" href="#" onclick="$.ee_filebrowser.placeImage(${directory}, ${img_id}); return false;" style="width: 73px; height: 70px; padding: 2px; float: left; margin: 10px;">
-				<img src="${thumb}" data-dimensions="${dimensions}" /><br>
-				<p>${short_name}</p>
+		<script type="text/x-jquery-tmpl" id="thumbTmpl">
+			<a title="${file_name}" href="#" onclick="$.ee_filebrowser.placeImage(${directory}, ${img_id}); return false;" style="width: 73px; height: 70px; padding: 2px; float: left; margin: 10px;">
+				<img src="${thumb}" data-dimensions="${file_hw_original}" /><br>
+				<p>${file_name}</p>
 			</a>
-		</div>
+		</script>
 	</div>
 	
 	<div id="file_chooser_footer">

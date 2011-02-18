@@ -53,7 +53,7 @@ class File_model extends CI_Model {
 
 		if ($type !== 'all')
 		{
-			$this->db->where("id", $dir_id);
+			//$this->db->where("id", $dir_id);
 		}
 		
 		$this->db->where('site_id', $this->config->item('site_id'));
