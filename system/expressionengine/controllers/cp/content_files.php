@@ -1420,6 +1420,11 @@ class Content_files extends CI_Controller {
 			}
 		} // End stupid - I hope
 
+		$this->cp->set_variable('cp_page_title', $this->_upload_dirs[$cid]['name']);
+		$this->cp->set_breadcrumb(
+			BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences',
+			lang('file_upload_prefs')
+		);
 
 		$this->javascript->compile();
 		$this->load->view('content/files/sync', $vars);
