@@ -76,6 +76,7 @@ class File_model extends CI_Model {
 		
 		if ($return_data['filter_count'] == 0)
 		{
+			$this->db->flush_cache();
 			$return_data['results'] = FALSE;
 			return $return_data;
 		}
@@ -121,7 +122,17 @@ class File_model extends CI_Model {
 		return $this->db->count_all_results('files');
 	}
 	
-	
+	function get_files_by_id($file_id = array(), $dir_id = array())
+	{
+		if ( ! empty($dir_id))
+		{
+			$this->db->where_in('upload_location_id', $dir_id);
+		}
+
+		$this->db->where_in('file_id', $file_id);
+		
+		return $this->db->get('files');
+	}
 }
 
 /* End of file file_model.php */

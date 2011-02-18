@@ -1352,6 +1352,42 @@ class Filemanager {
 	}
 
 	// --------------------------------------------------------------------		
+	
+	/**
+	 * Is Image
+	 *
+	 * This function has been lifted from the CI file upload class, and tweaked
+	 * just a bit.
+	 *
+	 * @param 	string 		path to file
+	 * @return 	boolean		TRUE if image, FALSE if not
+	 */
+	public function is_image($mime)
+	{
+		// IE will sometimes return odd mime-types during upload, 
+		// so here we just standardize all jpegs or pngs to the same file type.
+
+		$png_mimes  = array('image/x-png');
+		$jpeg_mimes = array('image/jpg', 'image/jpe', 'image/jpeg', 'image/pjpeg');
+
+		if (in_array($mime, $png_mimes))
+		{
+			$mime = 'image/png';
+		}
+
+		if (in_array($mime, $jpeg_mimes))
+		{
+			$mime = 'image/jpeg';
+		}
+
+		$img_mimes = array(
+							'image/gif',
+							'image/jpeg',
+							'image/png',
+						);
+
+		return (in_array($mime, $img_mimes, TRUE)) ? TRUE : FALSE;
+	}
 
 }
 
