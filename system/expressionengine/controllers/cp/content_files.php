@@ -2015,14 +2015,7 @@ class Content_files extends CI_Controller {
 	{
 		if ( ! empty($_POST))
 		{
-			if ($this->input->post('manual_batch'))
-			{
-				$this->_process_batch_upload();
-			}
-			elseif ($this->input->post('auto_batch'))
-			{
-				$this->_do_auto_batch();
-			}
+			$this->_process_batch_upload();			
 		}
 		
 		$this->cp->set_variable('cp_page_title', lang('batch_upload'));
@@ -2124,11 +2117,38 @@ class Content_files extends CI_Controller {
 	 */
 	private function _process_batch_upload()
 	{
+		if ( ! ($upload_dir_id = $this->input->post('upload_dirs')))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$batch_location = (isset($this->_upload_dirs[$upload_dir_id]['batch_location'])) ? 
+							$this->_upload_dirs[$upload_dir_id]['batch_location'] : FALSE;
+		
+		if ( ! $batch_location)
+		{
+			// Batch Location isn't set, in the upload_dirs prop.  oops.
+			show_error(lang('unauthorized_access'));
+		}		
+		
+		$allow_comments = ($this->input->post('allow_comments')) ? TRUE : FALSE;
+		$status = ( ! $this->input->post('status')) ? 'c' : $this->input->post('status');
+		$categories = implode(',', $this->input->post('category'));
 		
 		
-		
-		
-		
+		if ($this->input->post('manual_batch'))
+		{
+			$batch_type = 'manual';
+		}
+		elseif ($this->input->post('auto_batch'))
+		{
+			$batch_type = 'auto';
+		}
+
+		$url = BASE.AMP.'C=content_files'.AMP.'M=do_batch'.AMP."allow_comments={$allow_comments}".AMP."categories={$categories}".AMP."status={$status}".AMP.'loc='.base64_encode($batch_location).AMP."type={$batch_type}".AMP."upload_dir={$upload_dir_id}";
+		$this->functions->redirect($url);
+
+		show_error(lang('unauthorized_access'));
 	}
 
 	// --------------------------------------------------------------------
@@ -2137,9 +2157,154 @@ class Content_files extends CI_Controller {
 	 * Do manual batch processing
 	 *
 	 */
-	private function _do_manual_batch()
+	public function do_batch()
 	{
-		var_dump($_POST);
+		$allow_comments = $this->input->get('allow_comments');
+		$batch_dir_loc = base64_decode($this->input->get('loc'));
+		$batch_type = $this->input->get('type');
+		$categories = str_replace(',', '|', $this->input->get('categories'));
+		$status = $this->input->get('status');
+		$upload_dir = $this->input->get('upload_dir');
+
+		// Sanitize the upload dir location since it's coming from _GET
+		$batch_dir_loc = $this->security->sanitize_filename($batch_dir_loc, TRUE);
+		
+		// If anyone is offended by this, feel free to make it one line
+		// My OCD with long lines of code got the best of me.  
+		// Before you move it, ask yourself if this is more readable than this:
+		// 'C=content_files'.AMP.'M=do_batch'.AMP."allow_comments={$allow_comments}".AMP."categories={$categories}".AMP."status={$status}".AMP."status={$status}".AMP.'loc='.base64_encode($batch_location).AMP."type={$batch_type}".AMP."upload_dir={$upload_dir_id}";
+		// I'll make you cookies if you disagree with me  :) -ga
+		$form_action = 'C=content_files'.AMP.'M=do_batch'.AMP;
+		$form_action .= "allow_comments={$allow_comments}".AMP;
+		$form_action .= "categories=".$this->input->get('categories').AMP;
+		$form_action .= "status={$status}".AMP;
+		$form_action .= 'loc='.base64_encode($batch_dir_loc).AMP;
+		$form_action .= "type={$batch_type}".AMP."upload_dir={$upload_dir}";
+		
+		
+		if ( ! is_dir($batch_dir_loc))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		if ($batch_type == 'auto')
+		{
+			$this->_do_auto_batch($batch_dir_loc, $categories, $status, 
+								$allow_comments, $upload_dir, $form_action);
+		}
+		
+		$this->_do_manual_batch($batch_dir_loc, $categories, $status, 
+								$allow_comments, $upload_dir, $form_action);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Do manual batch upload
+	 *
+	 * @param 	string		base64_encoded string of the batch location 
+	 * @param 	string		categories in format of 1,3,5,78
+	 * @param 	string		status 'o' or 'c'
+	 * @param 	int 		allow comments -- 1 / 0
+	 * @param 	int			Upload directory id
+	 */
+	private function _do_manual_batch($batch_dir_loc, $categories, $status, 
+									$allow_comments, $upload_dir, $form_action)
+	{		
+		$files = get_dir_file_info($batch_dir_loc, TRUE);
+		
+		if (empty($files))
+		{
+			// Show the success page
+			return;
+		}
+		
+		$total_files_count = count($files);
+		$files = array_slice($files, 0, 5);
+		$current_processing_count = count($files);
+		
+		foreach ($files as $k => $file)
+		{
+			$mime = get_mime_by_extension($file['name']);
+			
+			if ($this->filemanager->is_image($mime))
+			{
+				$files[$k]['image'] = BASE.AMP.'C=content_files'.AMP.'M=batch_thumbs'.AMP."file=".base64_encode($file['server_path']);
+			}
+			else
+			{
+				$files[$k]['image'] = $this->config->item('theme_folder_url').'/cp_global_images/default.png"';
+			}
+		}
+
+		// var_dump($files);
+		
+		$this->cp->set_variable('cp_page_title', lang('batch_upload'));
+		
+		$data = array(
+			'count_lang'			=> sprintf(lang('files_count_lang'),
+											   $current_processing_count, 
+											   $total_files_count),
+			'current_num_files'		=> $current_processing_count,
+			'files'					=> $files,
+			'files_count' 			=> $total_files_count,
+			'form_action'			=> $form_action,
+			'form_hidden'			=> array()
+			
+		);
+		
+		$this->load->view('content/files/manual_batch', $data);
+		// var_dump(, $files, $batch_dir_loc, $categories, $status, $allow_comments, $upload_dir);
+	}
+
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Automatic batch upload.
+	 *
+	 * @param 	string		base64_encoded string of the batch location 
+	 * @param 	string		categories in format of 1,3,5,78
+	 * @param 	string		status 'o' or 'c'
+	 * @param 	int 		allow comments -- 1 / 0
+	 * @param 	int			Upload directory id
+	 */
+	private function _do_auto_batch($batch_dir_loc, $categories, $status, 
+									$allow_comments, $upload_dir)
+	{
+		
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * This function provides for dynamic thumbnail creation for display 
+	 * in the file manager
+	 */
+	public function batch_thumbs()
+	{
+		$this->output->enable_profiler(FALSE);
+		
+		$width = ($this->input->get('width')) ? $this->input->get('width') : 64;
+		$height = ($this->input->get('height')) ? $this->input->get('height') : 64;
+		
+		$file_path = base64_decode($this->input->get('file'));		
+		$file_path = $this->security->sanitize_filename($file_path, TRUE);
+		
+		$config = array(
+			'master_dim'		=> 'width',
+			'library_path'		=> $this->config->item('image_library_path'),
+			'image_library'		=> $this->config->item('image_resize_protocol'),
+			'source_image'		=> $file_path,
+			'dynamic_output'	=> TRUE,
+			'height'			=> $height,
+			'width'				=> $width,
+			'create_thumb'		=> TRUE,
+			'maintain_ratio'	=> TRUE
+		);
+		
+		$this->load->library('image_lib', $config);
+		$this->image_lib->resize();
 	}
 			
 }
