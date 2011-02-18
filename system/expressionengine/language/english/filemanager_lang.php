@@ -194,8 +194,12 @@ $lang = array(
 
 'manual_batch'				=> 'Manual Batch Upload',
 'auto_batch'				=> 'Automatic Batch Upload',
-
 'files_count_lang'			=> 'Currently showing %s out of %s total files.',
+
+# Batch Page:
+'thumbnail'					=> 'Thumbnail',
+'caption'					=> 'Caption',
+'include'					=> 'Include?',
 
 ''=>''
 );

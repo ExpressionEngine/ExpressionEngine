@@ -21,9 +21,34 @@ if ( ! $EE_view_disable)
 			<p><?=lang('no_results')?></p>
 			<?php else: ?>
 				<h4><?=$count_lang?></h4>
-				<?=form_open('.')?>
-				
-				
+				<?=form_open($form_action, $form_hidden)?>
+				<table class="mainTable padTable" cellspacing="0" cellpadding="0" border="0">
+					<thead>
+						<tr>
+							<th><?=lang('thumbnail')?></th>
+							<th><?=lang('title')?></th>
+							<th><?=lang('caption')?></th>
+							<th style="width:10%"><?=lang('include')?> <?=form_checkbox('include')?></th>
+						</tr>
+					</thead>
+					<tbody>
+					<?php foreach ($files as $file): ?>
+						<tr>
+							<td><img src="<?=$file['image']?>"><br>
+								<?=$file['name']?></td>
+							<td><?=form_input('file_name', $file['name'])?></td>
+							<td><?=form_textarea(array(
+								'name'		=> 'test',
+								'cols'		=> 8,
+								'rows'		=> 3
+							))?></td>
+							<td><?=form_checkbox('include')?></td>						
+						</tr>
+					<?php endforeach; ?>
+					</tbody>
+					
+				</table>
+				<p><?=form_submit('submit', lang('submit'), 'class="submit"')?></p>
 				</form>
 			<?php endif; ?>
 		</div>

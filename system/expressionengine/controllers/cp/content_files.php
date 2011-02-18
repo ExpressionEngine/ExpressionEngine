@@ -239,7 +239,7 @@ class Content_files extends CI_Controller {
 			$total_rows = $this->file_model->count_files($allowed_dirs);
 
 
-			
+			;
 			// Setup file list
 			foreach ($files->result_array() as $k => $file)
 			{
@@ -2157,6 +2157,19 @@ class Content_files extends CI_Controller {
 		// Sanitize the upload dir location since it's coming from _GET
 		$batch_dir_loc = $this->security->sanitize_filename($batch_dir_loc, TRUE);
 		
+		// If anyone is offended by this, feel free to make it one line
+		// My OCD with long lines of code got the best of me.  
+		// Before you move it, ask yourself if this is more readable than this:
+		// 'C=content_files'.AMP.'M=do_batch'.AMP."allow_comments={$allow_comments}".AMP."categories={$categories}".AMP."status={$status}".AMP."status={$status}".AMP.'loc='.base64_encode($batch_location).AMP."type={$batch_type}".AMP."upload_dir={$upload_dir_id}";
+		// I'll make you cookies if you disagree with me  :) -ga
+		$form_action = 'C=content_files'.AMP.'M=do_batch'.AMP;
+		$form_action .= "allow_comments={$allow_comments}".AMP;
+		$form_action .= "categories=".$this->input->get('categories').AMP;
+		$form_action .= "status={$status}".AMP;
+		$form_action .= 'loc='.base64_encode($batch_dir_loc).AMP;
+		$form_action .= "type={$batch_type}".AMP."upload_dir={$upload_dir}";
+		
+		
 		if ( ! is_dir($batch_dir_loc))
 		{
 			show_error(lang('unauthorized_access'));
@@ -2165,11 +2178,11 @@ class Content_files extends CI_Controller {
 		if ($batch_type == 'auto')
 		{
 			$this->_do_auto_batch($batch_dir_loc, $categories, $status, 
-								$allow_comments, $upload_dir);
+								$allow_comments, $upload_dir, $form_action);
 		}
 		
 		$this->_do_manual_batch($batch_dir_loc, $categories, $status, 
-								$allow_comments, $upload_dir);
+								$allow_comments, $upload_dir, $form_action);
 	}
 	
 	// --------------------------------------------------------------------
@@ -2184,38 +2197,49 @@ class Content_files extends CI_Controller {
 	 * @param 	int			Upload directory id
 	 */
 	private function _do_manual_batch($batch_dir_loc, $categories, $status, 
-									$allow_comments, $upload_dir)
+									$allow_comments, $upload_dir, $form_action)
 	{		
 		$files = get_dir_file_info($batch_dir_loc, TRUE);
 		
 		if (empty($files))
 		{
 			// Show the success page
+			return;
 		}
 		
 		$total_files_count = count($files);
 		$files = array_slice($files, 0, 5);
 		$current_processing_count = count($files);
 		
-		// $new_path = $this->_upload_dirs[$upload_dir]['server_path'];
-		
-		// var_dump($this->_upload_dirs[$upload_dir]); exit;
-		
-		foreach ($files as $file)
+		foreach ($files as $k => $file)
 		{
-			var_dump($file);
+			$mime = get_mime_by_extension($file['name']);
+			
+			if ($this->filemanager->is_image($mime))
+			{
+				$files[$k]['image'] = BASE.AMP.'C=content_files'.AMP.'M=batch_thumbs'.AMP."file=".base64_encode($file['server_path']);
+			}
+			else
+			{
+				$files[$k]['image'] = $this->config->item('theme_folder_url').'/cp_global_images/default.png"';
+			}
 		}
+
+		// var_dump($files);
 		
 		$this->cp->set_variable('cp_page_title', lang('batch_upload'));
 		
 		$data = array(
-			'files_count' 			=> $total_files_count,
-			'current_num_files'		=> $current_processing_count,
 			'count_lang'			=> sprintf(lang('files_count_lang'),
 											   $current_processing_count, 
-											   $total_files_count)
+											   $total_files_count),
+			'current_num_files'		=> $current_processing_count,
+			'files'					=> $files,
+			'files_count' 			=> $total_files_count,
+			'form_action'			=> $form_action,
+			'form_hidden'			=> array()
+			
 		);
-		// Currently Showing <?=$current_num_files out of $files_count.
 		
 		$this->load->view('content/files/manual_batch', $data);
 		// var_dump(, $files, $batch_dir_loc, $categories, $status, $allow_comments, $upload_dir);
@@ -2240,5 +2264,35 @@ class Content_files extends CI_Controller {
 	}
 
 	// --------------------------------------------------------------------
+	
+	/**
+	 * This function provides for dynamic thumbnail creation for display 
+	 * in the file manager
+	 */
+	public function batch_thumbs()
+	{
+		$this->output->enable_profiler(FALSE);
+		
+		$width = ($this->input->get('width')) ? $this->input->get('width') : 64;
+		$height = ($this->input->get('height')) ? $this->input->get('height') : 64;
+		
+		$file_path = base64_decode($this->input->get('file'));		
+		$file_path = $this->security->sanitize_filename($file_path, TRUE);
+		
+		$config = array(
+			'master_dim'		=> 'width',
+			'library_path'		=> $this->config->item('image_library_path'),
+			'image_library'		=> $this->config->item('image_resize_protocol'),
+			'source_image'		=> $file_path,
+			'dynamic_output'	=> TRUE,
+			'height'			=> $height,
+			'width'				=> $width,
+			'create_thumb'		=> TRUE,
+			'maintain_ratio'	=> TRUE
+		);
+		
+		$this->load->library('image_lib', $config);
+		$this->image_lib->resize();
+	}
 			
 }
