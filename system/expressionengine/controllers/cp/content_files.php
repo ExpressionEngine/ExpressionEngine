@@ -82,7 +82,7 @@ class Content_files extends CI_Controller {
 	public function index()
 	{
 		$this->load->library(array('pagination'));
-		$this->load->helper('string');
+		$this->load->helper(array('string', 'search'));
 		$this->api->instantiate('channel_categories');
 		
 		// Page Title
@@ -223,6 +223,7 @@ class Content_files extends CI_Controller {
 		
 			$filtered_entries= $this->file_model->get_files($dirs, $cat_id, $type, $per_page, $offset, $keywords, $order);
 			$files = $filtered_entries['results'];
+			$total_filtered = $filtered_entries['filter_count'];
 		
 			// No result?  Show the "no results" message
 			if ( ! $files)
@@ -239,12 +240,11 @@ class Content_files extends CI_Controller {
 			$total_rows = $this->file_model->count_files($allowed_dirs);
 
 
-			
+			if ($total_filtered > 0)
+			{
 			// Setup file list
 			foreach ($files->result_array() as $k => $file)
 			{
-
-
 				$file_location = $this->functions->remove_double_slashes(
 						$this->_upload_dirs[$file['upload_location_id']]['url'].'/'.$file['file_name']
 					);
@@ -276,6 +276,8 @@ class Content_files extends CI_Controller {
 				$file_list[] = $list;
 			}
 
+			}
+			
 			$base_url = BASE.AMP.'C=content_files'.AMP.'directory='.$selected_dir.AMP.'per_page='.$per_page;
 
 			$link = "<img src=\"{$this->cp->cp_theme_url}images/pagination_%s_button.gif\" width=\"13\" height=\"13\" alt=\"%s\" />";
@@ -546,7 +548,10 @@ class Content_files extends CI_Controller {
 		
 		$edit_link_base = BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir=';
 		$i = 0;
+		$tdata = array();
 		
+		if ($total > 0)
+		{
 		foreach($query_results->result_array() as $file)
 		{
 			$file_location = $this->functions->remove_double_slashes(
@@ -611,7 +616,7 @@ class Content_files extends CI_Controller {
 			unset($m);
 
 		} // End foreach
-		
+		}
 
 		$j_response['aaData'] = $tdata;	
 
@@ -864,7 +869,7 @@ class Content_files extends CI_Controller {
 	/**
 	 * Delete a list of files (and their thumbnails) from a particular directory
 	 * Expects two GET/POST variables:
-	 *  - file: an array of urlencoded file names to delete
+	 *  - file: an array of file ids to delete
 	 *  - file_dir: the ID of the file directory to delete from
 	 */
 	public function delete_files()
@@ -885,6 +890,8 @@ class Content_files extends CI_Controller {
 			$this->session->set_flashdata('message_failure', lang('choose_file'));
 			$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);
 		}
+
+		$file_data = $this->file_model->get_files_by_id($files);
 
 		$delete = $this->filemanager->delete($files, $file_path, TRUE);		
 		
