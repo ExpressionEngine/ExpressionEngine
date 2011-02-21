@@ -94,8 +94,9 @@ class Content_files extends CI_Controller {
 			'ui' 		=> 'datepicker'));
 
 		$upload_dirs_options = array();
+		
+		// This is temporary for just a bit.
 		$comments_enabled = FALSE;
-
 		$table_columns = ($comments_enabled) ? 9: 8;
 
 		// Setup get/post vars in class vars
@@ -335,24 +336,39 @@ class Content_files extends CI_Controller {
 					$this->_upload_dirs[$file['upload_location_id']]['server_path'].'/'.$file['file_name']);
 
 				$list = array(
+					'date'		=> $this->localize->set_human_time($file['upload_date'], TRUE),
+					'dir_name'	=> $this->_upload_dirs[$file['upload_location_id']]['name'],
 					'file_id'	=> $file['file_id'],
 					'title'		=> $file['title'],
-					'name'		=> $file['file_name'],
-					'link'		=> $file_location,
 					'mime'		=> $file['mime_type'],
-					'size'		=> $file['file_id'],
-					'date'		=> $this->localize->decode_date($datestr, $file['upload_date'], TRUE),
-					'path'		=> $file_path,
-					'is_image'	=> FALSE,
-					'dir_name'	=> $this->_upload_dirs[$file['upload_location_id']]['name']
+					'checkbox'	=> form_checkbox('toggle[]', $file['file_id'], '', ' class="toggle" id="toggle_box_'.$file['file_id'].'"')
 				);
+
+				$is_image = FALSE;
 
 				// Lightbox links
 				if (strncmp($file['mime_type'], 'image', 5) === 0)
 				{
-					$list['is_image'] = TRUE;
+					$is_image = TRUE;
 					$list['link'] = '<a class="less_important_link overlay" id="img_'.str_replace(array(".", ' '), '', $file['file_name']).'" href="'.$file_location.'" title="'.$file['file_name'].'" rel="#overlay">'.$file['file_name'].'</a>';
 				}
+				else
+				{
+					$list['link'] = $file['file_name'];
+				}
+
+				$action_base = BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file='.$file['file_id'];
+				$actions = '<a href="'.$action_base.AMP.'action=download" title="'.lang('file_download').'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png"></a>';
+				$actions .= '&nbsp;&nbsp;';
+				$actions .= '<a href="'.$action_base.AMP.'action=delete" title="'.lang('delete_selected_files').'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png"></a>';
+
+				if ($is_image)
+				{
+					$actions .= '&nbsp;&nbsp;';
+					$actions .= '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file='.$file['file_id'].'" title="'.lang('edit_file').'"><img src="'.$this->cp->cp_theme_url.'images/icon-edit.png" alt="'.lang('delete').'" /></a>';
+				}
+				
+				$list['action_buttons'] = $actions;
 
 				$file_list[] = $list;
 			}

@@ -98,25 +98,15 @@ if ( ! $EE_view_disable)
 						<tr class="<?=alternator('even', 'odd')?>">
 							<td><?=$file['file_id']?></td>
 							<td><?=$file['title']?></td>
-							<?php if ($file['is_image']):?>
-								<td class="overlay" id="<?=$file['name']?>"><?=$file['link']?></td>
-							<?php else: ?>
-								<td><?=$file['name']?></td>
-							<?php endif; ?>
+							<td><?=$file['link']?></td>
 							<td><?=$file['mime']?></td>
 							<?php if ($comments_enabled):?>
 							<td><?=$file['comments']?></td>							
 							<?php endif;?>							
 							<td><?=$file['dir_name']?></td>
-							<td><?=$this->localize->set_human_time($file['date'], TRUE)?></td>
-							<td>
-								<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$selected_dir.AMP.'file='.$file['file_id'].AMP?>action=download" title="<?=lang('file_download')?>"><img src="<?=$cp_theme_url?>images/icon-download-file.png"></a>
-								&nbsp;&nbsp;<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$selected_dir.AMP.'file='.$file['file_id'].AMP?>action=delete" title="<?=lang('delete_selected_files')?>"><img src="<?=$cp_theme_url?>images/icon-delete.png"></a>
-								<?php if ($file['is_image']):?>
-								&nbsp;&nbsp;<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$selected_dir.AMP.'file='.$file['file_id']?>" title="<?=lang('edit_file')?>"><img src="<?=$cp_theme_url?>images/icon-edit.png" alt="<?=lang('delete')?>" /></a>
-								<?php endif; ?>
-							</td>
-							<td class="file_select"><?=form_checkbox('file[]', $file['file_id'], FALSE, 'class="toggle"')?></td>
+							<td><?=$file['date']?></td>
+							<td><?=$file['action_buttons']?></td>								
+							<td class="file_select"><?=$file['checkbox']?></td>
 						</tr>
 						<?php endforeach; ?>
 					<?php endif;?>
