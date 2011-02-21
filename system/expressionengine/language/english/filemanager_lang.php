@@ -201,6 +201,14 @@ $lang = array(
 'auto_batch'				=> 'Automatic Batch Upload',
 'files_count_lang'			=> 'Currently showing %s out of %s total files.',
 
+'filter_by_directory'		=> 'Filter By Directory',
+'search_in'					=> 'Search in',
+'file_title'				=> 'File Title',
+'custom_fields'				=> 'Custom Fields',
+'search_files'				=> 'Search Files',
+'dir_name'					=> 'Upload Directory Name',
+
+
 # Batch Page:
 'thumbnail'					=> 'Thumbnail',
 'caption'					=> 'Caption',

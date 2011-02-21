@@ -70,16 +70,6 @@ if ( ! $EE_view_disable)
 			<?php endif; ?>
 			<div class="clear_left"></div>
 		</div> <!-- filterMenu -->
-
-
-
-
-
-
-
-
-
-
 			
 			<?=form_open('C=content_files'.AMP.'M=multi_edit_form', array('name'=>'file_form', 'id'=>'file_form'))?>
 				<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
