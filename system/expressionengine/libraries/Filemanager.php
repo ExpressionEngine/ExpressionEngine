@@ -1,4 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -704,9 +705,16 @@ class Filemanager {
 	function _directory_contents($dir)
 	{
 		$this->EE->load->model('file_model');
+		$this->EE->load->helper('text');
+		
 		$files = $this->EE->file_model->get_files($dir['id'], '', $dir['allowed_types']);
 		$files = $files['results']->result_array();
-		
+
+		foreach ($files as &$file)
+		{
+			$file['short_name'] = ellipsize($file['title'], 10, 0.5);	
+		}
+
 		return array('url' => $dir['url'], 'files' => $files);
 	}
 	

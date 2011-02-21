@@ -3297,8 +3297,51 @@ div.contentWrap {
 
 #file_manager_edit_file {
 	float: 				right;
-	width: 				84%;
 	overflow: 			auto;
+	width: 				84%;
+}
+
+#file_chooser_body table {
+	margin-top: 5px
+}
+
+#file_chooser_body {
+	border-bottom:		1px solid #ccc;
+	border-top:			1px solid #ccc;
+	display:			block;
+	height:				355px;
+	padding-top:		5px;
+	overflow:			auto;
+	width:				100%;
+}
+
+.file_chooser_thumbnail:link,
+.file_chooser_thumbnail:visited {
+	border:				1px solid #ccc;
+	float:				left;
+	height:				70px;
+	margin:				8px;
+	overflow:			hidden;
+	padding:			6px 6px 9px;
+	width:				73px;
+}
+
+.file_chooser_thumbnail:hover {
+	background: #fff;
+
+	-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+	/*This is disabled for Firefox because their box-shadow causes overflow...*/
+	-moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); 
+	-o-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.file_chooser_thumbnail.first {
+	margin-left:		0;
+}
+
+.file_chooser_thumbnail.last {
+	margin-right:		0;
 }
 
 /* Synchronize */
