@@ -324,39 +324,40 @@ class Content_files extends CI_Controller {
 			$date_fmt = ($this->session->userdata('time_format') != '') ? 
 							$this->session->userdata('time_format') : $this->config->item('time_format');
 
-			$datestr = ($date_fmt == 'us') ? '%m/%d/%y %h:%i %a' : '%Y-%m-%d %H:%i';			
+			$datestr = ($date_fmt == 'us') ? '%m/%d/%y %h:%i %a' : '%Y-%m-%d %H:%i';
+						
+			$i = 0;
 			
 			// Setup file list
 			foreach ($files->result_array() as $k => $file)
 			{
+				$is_image = FALSE;
+				
 				$file_location = $this->functions->remove_double_slashes(
 					$this->_upload_dirs[$file['upload_location_id']]['url'].'/'.$file['file_name']);
 
 				$file_path = $this->functions->remove_double_slashes(
 					$this->_upload_dirs[$file['upload_location_id']]['server_path'].'/'.$file['file_name']);
 
-				$list = array(
-					'date'		=> $this->localize->set_human_time($file['upload_date'], TRUE),
-					'dir_name'	=> $this->_upload_dirs[$file['upload_location_id']]['name'],
-					'file_id'	=> $file['file_id'],
-					'title'		=> $file['title'],
-					'mime'		=> $file['mime_type'],
-					'checkbox'	=> form_checkbox('toggle[]', $file['file_id'], '', ' class="toggle" id="toggle_box_'.$file['file_id'].'"')
-				);
-
-				$is_image = FALSE;
-
+				$r[] = $file['file_id'];
+				$r[] = $file['title'];
+				
 				// Lightbox links
 				if (strncmp($file['mime_type'], 'image', 5) === 0)
 				{
 					$is_image = TRUE;
-					$list['link'] = '<a class="less_important_link overlay" id="img_'.str_replace(array(".", ' '), '', $file['file_name']).'" href="'.$file_location.'" title="'.$file['file_name'].'" rel="#overlay">'.$file['file_name'].'</a>';
+					$r[] = '<a class="less_important_link overlay" id="img_'.str_replace(array(".", ' '), '', $file['file_name']).'" href="'.$file_location.'" title="'.$file['file_name'].'" rel="#overlay">'.$file['file_name'].'</a>';
 				}
 				else
 				{
-					$list['link'] = $file['file_name'];
+					$r[] = $file['file_name'];
 				}
-
+				
+				$r[] = $file['mime_type'];
+				$r[] = $this->_upload_dirs[$file['upload_location_id']]['name'];
+				$r[] = $this->localize->set_human_time($file['upload_date'], TRUE);
+	           
+	
 				$action_base = BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file='.$file['file_id'];
 				$actions = '<a href="'.$action_base.AMP.'action=download" title="'.lang('file_download').'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png"></a>';
 				$actions .= '&nbsp;&nbsp;';
@@ -368,9 +369,12 @@ class Content_files extends CI_Controller {
 					$actions .= '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file='.$file['file_id'].'" title="'.lang('edit_file').'"><img src="'.$this->cp->cp_theme_url.'images/icon-edit.png" alt="'.lang('delete').'" /></a>';
 				}
 				
-				$list['action_buttons'] = $actions;
+				$r[] = $actions;
+				$r[] = form_checkbox('toggle[]', $file['file_id'], '', ' class="toggle" id="toggle_box_'.$file['file_id'].'"');
 
-				$file_list[] = $list;
+				$file_list[$i] = $r;
+				unset($r);
+				$i++;
 			}
 		}
 	

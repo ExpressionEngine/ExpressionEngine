@@ -96,17 +96,17 @@ if ( ! $EE_view_disable)
 					<?php else: ?>
 						<?php foreach ($files as $file):?>
 						<tr class="<?=alternator('even', 'odd')?>">
-							<td><?=$file['file_id']?></td>
-							<td><?=$file['title']?></td>
-							<td><?=$file['link']?></td>
-							<td><?=$file['mime']?></td>
+							<td><?=$file[0]?></td>
+							<td><?=$file[1]?></td>
+							<td><?=$file[2]?></td>
+							<td><?=$file[3]?></td>
 							<?php if ($comments_enabled):?>
-							<td><?=$file['comments']?></td>							
+							<td>// Comment stuff here</td>							
 							<?php endif;?>							
-							<td><?=$file['dir_name']?></td>
-							<td><?=$file['date']?></td>
-							<td><?=$file['action_buttons']?></td>								
-							<td class="file_select"><?=$file['checkbox']?></td>
+							<td><?=$file[4]?></td>
+							<td><?=$file[5]?></td>
+							<td><?=$file[6]?></td>								
+							<td class="file_select"><?=$file[7]?></td>
 						</tr>
 						<?php endforeach; ?>
 					<?php endif;?>
