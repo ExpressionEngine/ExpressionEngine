@@ -39,6 +39,7 @@ class File_model extends CI_Model {
 	 */
 	function get_files($dir_id = array(), $cat_id = '', $type = 'all', $limit = '', $offset = '', $search_value = '', $order = array(), $do_count = TRUE)
 	{
+		$this->load->helper('text');
 		// If we add a dir col- will need a join
 		
 		$dir_id = ( ! is_array($dir_id)) ? array($dir_id) : $dir_id;
@@ -109,9 +110,8 @@ class File_model extends CI_Model {
 		$this->db->flush_cache();
 
 		return $return_data;
-	
 	}
-	
+
 	function count_files($dir_id = array())
 	{
 		if ( ! empty($dir_id))

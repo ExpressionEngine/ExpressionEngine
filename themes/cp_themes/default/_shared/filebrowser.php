@@ -5,17 +5,6 @@ $dir_size = 4180;
 ?>
 
 <div id="fileChooser" class="pageContents" style="padding: 0 10px">
-	<style type="text/css" media="screen">
-		#file_chooser_body {
-			display: block;
-			overflow: auto;
-			height: 355px;
-			width: 100%;
-			
-			border-top: 1px solid #ccc;
-			border-bottom: 1px solid #ccc;
-		}
-	</style>
 	<div class="shun"></div>
 	<div id="filterMenu">
 		
@@ -69,9 +58,10 @@ $dir_size = 4180;
 		</table>
 		
 		<script type="text/x-jquery-tmpl" id="thumbTmpl">
-			<a title="${file_name}" href="#" onclick="$.ee_filebrowser.placeImage(${directory}, ${img_id}); return false;" style="width: 73px; height: 70px; padding: 2px; float: left; margin: 10px;">
+			<a title="${file_name}" href="#" onclick="$.ee_filebrowser.placeImage(${directory}, ${img_id}); return false;" class="file_chooser_thumbnail">
+			
 				<img src="${thumb}" data-dimensions="${file_hw_original}" /><br>
-				<p>${file_name}</p>
+				<p>${short_name}</p>
 			</a>
 		</script>
 	</div>

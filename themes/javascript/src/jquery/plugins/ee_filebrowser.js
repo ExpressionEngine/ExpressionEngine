@@ -19,6 +19,7 @@
 		default_img_url = EE.PATH_CP_GBL_IMG+'default.png',
 		file_manager_obj,
 		spinner_url = EE.THEME_URL+'/images/publish_file_manager_loader.gif',
+		files_per_table,
 		thumbs_per_page,
 		trigger_callback,
 		all_dirs = {},
@@ -32,7 +33,8 @@
 	 */
 	$.ee_filebrowser = function() {
 
-		thumbs_per_page = 10;
+		files_per_table = 10;
+		thumbs_per_page = 21;
 
 		// Setup!
 		$.ee_filebrowser.endpoint_request('setup', function(data) {
@@ -61,11 +63,7 @@
 			directories.push($(this).val());
 		});
 		
-		console.log(directories);
-		
 		$.ee_filebrowser.endpoint_request('directory_contents', {directory: directories}, function(data) {
-			console.log(data);
-
 			//$.each(data, function(index, element) {
 				//directories.push(index);
 			//});
@@ -194,6 +192,7 @@
 	 * inline click event - eat me.
 	 */
 	$.ee_filebrowser.placeImage = function(dir, img) {
+		console.log(dir_files_structure[dir][img]);
 		$.ee_filebrowser.clean_up(dir_files_structure[dir][img], '');
 		return false;
 	}	
@@ -383,7 +382,7 @@
 		dir_files_structure[directory.id] = directory.files;
 		dir_paths[directory.id] = directory.url;
 		
-		var per_page = thumbs_per_page,
+		var per_page = (display_type == 'list') ? files_per_table : thumbs_per_page,
 			total_files = directory.files.length;
 				
 		$.each(directory.files, function(i, el) {
@@ -439,7 +438,12 @@
 			}
 			
 			$("#tableView").hide();
+
 			$.tmpl("thumb", thumbs).appendTo("#file_chooser_body");
+			
+			// Add a last class to the 7th thumbnail
+			$('a.file_chooser_thumbnail:nth-child(7n+2)').addClass('first');
+			$('a.file_chooser_thumbnail:nth-child(7n+1)').addClass('last');
 			
 			// @todo need to fix pagination here in case some didn't
 			// have thumbnails?
