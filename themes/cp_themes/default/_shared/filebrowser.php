@@ -52,19 +52,24 @@
 	</div>
 	
 	<div id="file_chooser_footer">
-		<p id="paginationFilters"><?=sprintf(lang('pagination_filter_text'), $selected_filters, $category_filters, $view_filters);?></p>
 		<div id="paginationTmpl">
-			{{if pages.length}}
-			<p id="paginationCount"><?=sprintf(lang('pagination_count_text'), '${pages_from}', '${pages_to}', '${pages_total}');?></p>
-			<p id="paginationLinks">
-				{{each pages}}
-					{{if $value == pages_current}}
-					&nbsp;<strong>${$value}</strong>
-					{{else}}
-					&nbsp;<a href="#" onclick="$.ee_filebrowser.setPage(${directory}, ${$index}); return false;">${$value}</a>
-					{{/if}}
-				{{/each}}&nbsp;
+			<p id="pagination_meta">
+				<?=sprintf(lang('pagination_filter_text'), $selected_filters, $category_filters, $view_filters).NBS;?>
+				{{if pages.length}}
+					<?=sprintf(lang('pagination_count_text'), '${pages_from}', '${pages_to}', '${pages_total}');?>
+				{{/if}}
 			</p>
+
+			{{if pages.length}}
+				<p id="paginationLinks">
+					{{each pages}}
+						{{if $value == pages_current}}
+						&nbsp;<strong>${$value}</strong>
+						{{else}}
+						&nbsp;<a href="#" onclick="$.ee_filebrowser.setPage(${directory}, ${$index}); return false;">${$value}</a>
+						{{/if}}
+					{{/each}}&nbsp;
+				</p>
 			{{/if}}
 		</div>
 	</div>

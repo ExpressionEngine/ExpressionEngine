@@ -2827,7 +2827,7 @@ html.js .publish_hidden {
 	margin-right:5px;
 }
 
-#fileChooser #paginationCount,
+#fileChooser #pagination_meta,
 #mainContent #paginationCount {
 	margin: 0 0 10px;
 }
@@ -3317,7 +3317,7 @@ div.contentWrap {
 	border-bottom:		1px solid #ccc;
 	border-top:			1px solid #ccc;
 	display:			block;
-	height:				355px;
+	height:				335px;
 	padding-top:		5px;
 	overflow:			auto;
 	width:				100%;
@@ -3338,7 +3338,7 @@ div.contentWrap {
 	background: #fff;
 
 	-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-	-moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); 
+	-moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 	-o-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }

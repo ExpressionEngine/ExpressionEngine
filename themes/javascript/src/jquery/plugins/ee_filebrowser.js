@@ -350,9 +350,14 @@
 				
 		if (isNaN(directory)) {
 			all_dirs[directory.id] = directory;
-		}
-		else {
-			EE.dirs = all_dirs;
+		} else if (typeof all_dirs[directory] == "undefined") {
+			// In the event that all_dirs doesn't contain what we need, fire
+			// off a request to endpoint_request to get us what we need
+			return $.ee_filebrowser.endpoint_request('directory_contents', {'directory': directory}, function(data) {
+				all_dirs[directory] = data;
+				build_pages(directory, offset);
+			});
+		} else {
 			directory = all_dirs[directory];
 		}
 		
@@ -382,7 +387,7 @@
 			
 		table_view.find('tbody').empty();
 		$('#file_chooser_body').empty().append(table_view);
-		$("#file_chooser_footer").append(viewSelectors);
+		$("#file_chooser_footer").empty().append(viewSelectors);
 		
 		
 		var page_count = Math.ceil(total_files / per_page),
@@ -435,8 +440,13 @@
 			$.tmpl("fileRow", workon).appendTo("#tableView tbody");
 		}
 		
-		$.tmpl("pagination", pagination).appendTo("#file_chooser_footer");
-		
+		$.tmpl("pagination", pagination).appendTo("#file_chooser_footer")
+			// Create an event handler for changes to the dropdown
+			.find('#view_type').val(display_type).change(function() {
+				display_type = this.value;
+				build_pages($('#dir_choice').val());
+			});
+
 		//	$.template("noFilesRow", $('#noFilesRowTmpl').remove());	
 	}
 	
@@ -448,7 +458,6 @@
 	 * Dynamically loads files from a directory if it hasn't been loaded yet
 	 */
 	function loadFiles(directory) {
-		
 		if (dir_files_structure[directory] == "") {
 			$.ee_filebrowser.endpoint_request('directory_contents', {'directory': directory}, build_pages);
 		}
@@ -482,17 +491,11 @@
 		});
 		
 		display_type = 'list';
-		
+
 		$('#dir_choice').change(function() {
-			// @todo - not quite right, but works
 			loadFiles(this.value);
 			build_pages(this.value, 0);
-		});
-
-		$('#view_type').change(function() {
-			display_type = $(this).val();
-			build_pages($('#dir_choice').val(), 0);
-		});
+		})
 		
 		$.template("fileRow", $('<tbody />').append($('#rowTmpl').remove().attr('id', '')));
 		$.template("noFilesRow", $('#noFilesRowTmpl').remove());
