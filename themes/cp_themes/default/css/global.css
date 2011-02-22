@@ -3301,6 +3301,14 @@ div.contentWrap {
 	width: 				84%;
 }
 
+#fileChooser #upload_form input.submit {
+	margin-left: 10px;
+}
+
+#fileChooser #dir_choice {
+	height: 1.2em;
+}
+
 #file_chooser_body table {
 	margin-top: 5px
 }

@@ -68,8 +68,9 @@ $lang = array(
 'uploading_file'		=> 'Uploading File',
 'apply_changes'			=> 'Apply Changes',
 
-'pagination_count_text'	=> 'Showing %s to %s of %s files.',
-'total_dir_size'		=> 'Total Directory Size:',
+'pagination_count_text'     => 'Showing %s to %s of %s files.',
+'pagination_filter_text'    => 'Show %s files from %s as %s.',
+'total_dir_size'            => 'Total Directory Size:',
 'no_upload_dirs_create_new' => 'No upload locations exist.  <a href="%s">Create a new upload location</a>',
 
 'save_crop' 			=> 'Save Crop',

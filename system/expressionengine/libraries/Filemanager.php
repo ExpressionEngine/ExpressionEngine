@@ -230,11 +230,16 @@ class Filemanager {
 		{
 			$vars['filemanager_backend_url'] = $this->EE->cp->get_safe_refresh();
 		}
-		
+
 		unset($_GET['action']);	// current url == get_safe_refresh()
 		
 		$vars['filemanager_directories'] = $this->directories(FALSE);
-		
+
+		// Generate the filters
+		$vars['selected_filters'] = form_dropdown('selected', array('all' => 'all', 'selected' => 'selected', 'unselected' => 'unselected'), 'all');
+		$vars['category_filters'] = form_dropdown('category', array());
+		$vars['view_filters']     = form_dropdown('view_type', array('list' => 'a list', 'thumb' => 'thumbnails'), 'list', 'id="view_type"');
+
 		$filebrowser_html = $this->EE->load->view('_shared/filebrowser', $vars, TRUE);
 
 		die($this->EE->javascript->generate_json(array(
@@ -242,7 +247,7 @@ class Filemanager {
 			'directories'	=> $vars['filemanager_directories']
 		)));
 	}
-	
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -705,7 +710,7 @@ class Filemanager {
 	function _directory_contents($dir)
 	{
 		$this->EE->load->model('file_model');
-		$this->EE->load->helper('text');
+		$this->EE->load->helper(array('text', 'number'));
 		
 		$files = $this->EE->file_model->get_files($dir['id'], '', $dir['allowed_types']);
 		$files = $files['results']->result_array();
@@ -713,6 +718,7 @@ class Filemanager {
 		foreach ($files as &$file)
 		{
 			$file['short_name'] = ellipsize($file['title'], 10, 0.5);	
+			$file['file_size'] = byte_format($file['file_size']);
 		}
 
 		return array('url' => $dir['url'], 'files' => $files);

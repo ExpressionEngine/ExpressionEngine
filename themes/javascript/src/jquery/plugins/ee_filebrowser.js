@@ -51,26 +51,9 @@
 			}
 
 			createBrowser();
-			create_dir_info();
 		});
 	}
 
-	function create_dir_info () {
-		// TODO: Figure out a way to populate all_dirs to avoid js errors...
-		var directories = [];
-
-		$('#dir_choice option').each(function(index) {
-			directories.push($(this).val());
-		});
-		
-		$.ee_filebrowser.endpoint_request('directory_contents', {directory: directories}, function(data) {
-			//$.each(data, function(index, element) {
-				//directories.push(index);
-			//});
-			
-			//$.ee_filebrowser.endpoint_request(<D-/>
-		}); 
-	}
 	// --------------------------------------------------------------------
 
 	/*
@@ -192,7 +175,6 @@
 	 * inline click event - eat me.
 	 */
 	$.ee_filebrowser.placeImage = function(dir, img) {
-		console.log(dir_files_structure[dir][img]);
 		$.ee_filebrowser.clean_up(dir_files_structure[dir][img], '');
 		return false;
 	}	
@@ -400,7 +382,7 @@
 			
 		table_view.find('tbody').empty();
 		$('#file_chooser_body').empty().append(table_view);
-		$("#file_chooser_footer").empty().append(viewSelectors);
+		$("#file_chooser_footer").append(viewSelectors);
 		
 		
 		var page_count = Math.ceil(total_files / per_page),
@@ -500,16 +482,17 @@
 		});
 		
 		display_type = 'list';
-		$('input[name=view_type]').click(function() {
-			display_type = this.value;
-			build_pages($('#dir_choice').val(), 0);
-		});
 		
 		$('#dir_choice').change(function() {
 			// @todo - not quite right, but works
 			loadFiles(this.value);
 			build_pages(this.value, 0);
-		})
+		});
+
+		$('#view_type').change(function() {
+			display_type = $(this).val();
+			build_pages($('#dir_choice').val(), 0);
+		});
 		
 		$.template("fileRow", $('<tbody />').append($('#rowTmpl').remove().attr('id', '')));
 		$.template("noFilesRow", $('#noFilesRowTmpl').remove());
