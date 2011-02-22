@@ -928,14 +928,14 @@ $(document).ready(function() {
 		var container = $("input[name="+field+"]").closest(".publish_field");
 
 		if (file.is_image == false) {
-			container.find(".file_set").show().find(".filename").html("<img src=\""+EE.PATH_CP_GBL_IMG+"default.png\" alt=\""+EE.PATH_CP_GBL_IMG+"default.png\" /><br />"+file.name);
+			container.find(".file_set").show().find(".filename").html("<img src=\""+EE.PATH_CP_GBL_IMG+"default.png\" alt=\""+EE.PATH_CP_GBL_IMG+"default.png\" /><br />"+file.file_name);
 		}
 		else
 		{
-			container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" alt=\""+file.name+"\" /><br />"+file.name);
+			container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" alt=\""+file.file_name+"\" /><br />"+file.file_name);
 		}
 
-		$("input[name="+field+"_hidden]").val(file.name);
+		$("input[name="+field+"_hidden]").val(file.file_name);
 		$("select[name="+field+"_directory]").val(file.directory);
 	}
 

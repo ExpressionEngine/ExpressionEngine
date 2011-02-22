@@ -3330,7 +3330,6 @@ div.contentWrap {
 	background: #fff;
 
 	-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-	/*This is disabled for Firefox because their box-shadow causes overflow...*/
 	-moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); 
 	-o-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
