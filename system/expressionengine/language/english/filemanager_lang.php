@@ -313,6 +313,13 @@ $lang = array(
 "wm_y_transp" =>
 "Transparency Y Coordinate",
 
+'problem_downloading_files' => 
+'An error occurred when attempting to download the selected files.  Please verify the files exist on the server.',
+
+'problem_downloading_file' => 
+'An error occurred when attempting to download the selected file.  Please verify the file exists on the server.',
+
+
 ''=>''
 );
 

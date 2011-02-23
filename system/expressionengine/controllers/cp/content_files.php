@@ -360,7 +360,7 @@ class Content_files extends CI_Controller {
 				$r[] = $this->localize->set_human_time($file['upload_date'], TRUE);
 
 
-				$action_base = BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file='.$file['file_id'];
+				$action_base = BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'file='.$file['file_id'];
 				$actions = '<a href="'.$action_base.AMP.'action=download" title="'.lang('file_download').'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png"></a>';
 				$actions .= '&nbsp;&nbsp;';
 				$actions .= '<a href="'.$action_base.AMP.'action=delete" title="'.lang('delete_selected_files').'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png"></a>';
@@ -468,9 +468,6 @@ class Content_files extends CI_Controller {
 			$ret['perpage'] = $this->input->get_post('iDisplayLength');
 			$ret['offset'] = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
 			$ret['sEcho'] = $this->input->get_post('sEcho');
-
-
-
 		}
 
 		return $ret;
@@ -812,19 +809,16 @@ class Content_files extends CI_Controller {
 	 */
 	public function multi_edit_form()
 	{
-		$file_settings = $this->_get_file_settings();
-
-		$files    = $file_settings['files'];
-		$file_dir = $file_settings['file_dir'];
-
+		$files = $this->_get_file_settings();
+		
 		switch ($this->input->get_post('action'))
 		{
 			case 'download':
-				$this->_download_files($files, $file_dir);
+				$this->_download_files($files);
 				break;
 
 			case 'delete':
-				$this->_delete_files_confirm($files, $file_dir);
+				$this->_delete_files_confirm($files);
 				break;
 
 			default:
@@ -841,17 +835,16 @@ class Content_files extends CI_Controller {
 	 * @param array $files Array of file names to delete
 	 * @param integer $file_dir ID of the directory to delete from
 	 */
-	private function _delete_files_confirm($files, $file_dir)
+	private function _delete_files_confirm($files)
 	{
 		$data = array(
 			'files'			=> $files,
-			'file_dir'		=> $file_dir,
 			'del_notice'	=> (count($files) == 1) ? 'confirm_del_file' : 'confirm_del_files'
 		);
 
 		$this->cp->set_variable('cp_page_title', lang('delete_selected_files'));
 
-		$this->load->view('content/file_delete_confirm', $data);
+		$this->load->view('content/files/confirm_file_delete', $data);
 	}
 
 	// ------------------------------------------------------------------------
@@ -869,7 +862,7 @@ class Content_files extends CI_Controller {
 		if ( ! $files)
 		{
 			$this->session->set_flashdata('message_failure', lang('choose_file'));
-			$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);
+			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
 
 		$delete = $this->filemanager->delete($files, TRUE);
@@ -878,7 +871,7 @@ class Content_files extends CI_Controller {
 		$message = ($delete) ? lang('delete_success') : lang('message_failure');
 
 		$this->session->set_flashdata($message_type, $message);
-		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);
+		$this->functions->redirect(BASE.AMP.'C=content_files');
 	}
 
 	// ------------------------------------------------------------------------
@@ -887,23 +880,20 @@ class Content_files extends CI_Controller {
 	 * Download Files
 	 *
 	 * @param array $files Array of file names to download
-	 * @param integer $file_dir ID of the directory to download from
 	 */
-	private function _download_files($files, $file_dir)
+	private function _download_files($files)
 	{
-		$files_count = count($files);
-
-		if ( ! $files_count OR
-			 ! isset($this->_upload_dirs[$file_dir]['server_path']))
+		if (empty($files))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-		$file_path = $this->_upload_dirs[$file_dir]['server_path'];
-
-		if ( ! $this->filemanager->download_files($files, $file_path))
+		if ( ! $this->filemanager->download_files($files))
 		{
-			show_error(lang('unauthorized_access'));
+			$message = (count($files) > 1) ? lang('problem_downloading_file') : lang('problem_downloading_file');
+			
+			$this->session->set_flashdata('message_failure', $message);
+			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
 	}
 
@@ -917,33 +907,26 @@ class Content_files extends CI_Controller {
 	 */
 	private function _get_file_settings()
 	{
-		// Do some basic permissions checking
-		if ( ! ($file_dir = $this->input->get_post('upload_dir')))
+		if ($toggle = $this->input->post('toggle'))
 		{
-			show_error(lang('unauthorized_access'));
+			$files = $toggle;
 		}
 
-		// Bail if they dont' have access to this upload location.
-		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
+		if ( ! isset($files))
 		{
-			show_error(lang('unauthorized_access'));
+			// No file, why are we here?
+			if ( ! ($files = $this->input->get_post('file')))
+			{
+				show_error(lang('unauthorized_access'));
+			}			
 		}
-
-		// No file, why are we here?
-		if ( ! ($files = $this->input->get_post('file')))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
+		
 		if ( ! is_array($files))
 		{
 			$files = array($files);
 		}
 
-		return array(
-			'file_dir' 	=> $file_dir,
-			'files' 	=> $files
-		);
+		return $files;
 	}
 
 	// ------------------------------------------------------------------------

@@ -1364,36 +1364,50 @@ class Filemanager {
 	 * @param 	string	optional name of zip file to download
 	 * @return 	mixed 	nuttin' or boolean false if everything goes wrong.
 	 */
-	public function download_files($files, $file_path, $zip_name = 'downloaded_files.zip')
+	public function download_files($files, $zip_name='downloaded_files.zip')
 	{
 		if (count($files) === 1)
 		{
-			$file_name = $this->EE->db->select("file_name")
+			// Get the file Location:
+			$qry = $this->EE->db->select('path, file_name')
 								->where('file_id', $files[0])
-								->get('files')
-								->row('file_name');
+								->get('files');
 			
-			// no point in zipping for a single file... let's just send the file
-			
-			$this->EE->load->helper('download');
-			
-			$data = file_get_contents($file_path.$file_name);
-			force_download($files[0], $data);
-		}
-		else
-		{
-			// its an array of files, zip 'em all
-			$this->EE->load->library('zip');
-			
-			foreach ($files as $file)
+			if ( ! file_exists($qry->row('path')))
 			{
-				$this->EE->zip->read_file($file_path.urldecode($file));
+				return FALSE;
 			}
-			
-			$this->EE->zip->download($zip_name); 
+
+			$file = file_get_contents($qry->row('path'));
+			$file_name = $qry->row('file_name');
+
+			$this->EE->load->helper('download');
+			force_download($file_name, $file);
+
+			return TRUE;
 		}
 		
-		return FALSE;
+		// Zip up a bunch of files for download
+		$this->EE->load->library('zip');
+
+		$qry = $this->EE->db->select('path')
+							->where_in('file_id', $files)
+							->get('files');
+		
+		
+		if ($qry->num_rows() === 0)
+		{
+			return FALSE;
+		}
+
+		foreach ($qry->result() as $row)
+		{
+			$this->EE->zip->read_file($row->path);
+		}
+		
+		$this->EE->zip->download($zip_name);
+		
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------		
