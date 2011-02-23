@@ -53,6 +53,7 @@ $lang = array(
 'maintain_ratio'		=> 'Maintain Aspect Ratio',
 'width_needed'			=> 'A width or width/height must be selected, or a rotate/flip direction selected.',
 
+'resize_type'			=> 'Resize Type',
 'crop_mode'				=> 'Crop Mode',
 'resize_mode'			=> 'Resize Mode',
 'rotate_mode'			=> 'Rotate Mode',
@@ -155,6 +156,19 @@ $lang = array(
 'file_directory_id' =>
 'ID',
 
+'max_image_action' =>
+'Action to take if image size exceeded',
+
+'disallow_image' =>
+'Disallow Image',
+
+'image_sizes' =>
+'Image Manipulations',
+
+'image_sizes_subtext' =>
+'Additional images that will be automatically created for each image upload.',
+
+
 'restrict_to_group' =>
 'Restrict file uploading to select member groups',
 
@@ -219,6 +233,9 @@ $lang = array(
 
 "wm_type" =>
 "Enable Watermarking",
+
+'wm_watermark' =>
+'Watermark',
 
 "wm_text" =>
 "Text Version",

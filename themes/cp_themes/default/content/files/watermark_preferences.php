@@ -13,7 +13,7 @@ if ($EE_view_disable !== TRUE)
 	<div class="contents">
 
 		<div class="heading">
-				<h2><?=lang('file_upload_prefs')?></h2>
+				<h2><?=lang('watermark_prefs')?></h2>
 		</div>
 		<div class="pageContents">
 
@@ -23,7 +23,7 @@ if ($EE_view_disable !== TRUE)
 		<?php
 			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
-				lang('watermark_prefs'),
+				lang('watermark_name'),
 				array('data' => lang('type'), 'width' => '10%'),
 				array('data' => lang('edit'), 'width' => '5%'),
 				array('data' => lang('delete'), 'width' => '5%')
