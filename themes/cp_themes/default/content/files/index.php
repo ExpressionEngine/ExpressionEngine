@@ -70,16 +70,6 @@ if ( ! $EE_view_disable)
 			<?php endif; ?>
 			<div class="clear_left"></div>
 		</div> <!-- filterMenu -->
-
-
-
-
-
-
-
-
-
-
 			
 			<?=form_open('C=content_files'.AMP.'M=multi_edit_form', array('name'=>'file_form', 'id'=>'file_form'))?>
 				<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
@@ -106,27 +96,17 @@ if ( ! $EE_view_disable)
 					<?php else: ?>
 						<?php foreach ($files as $file):?>
 						<tr class="<?=alternator('even', 'odd')?>">
-							<td><?=$file['file_id']?></td>
-							<td><?=$file['title']?></td>
-							<?php if ($file['is_image']):?>
-								<td class="overlay" id="<?=$file['name']?>"><?=$file['link']?></td>
-							<?php else: ?>
-								<td><?=$file['name']?></td>
-							<?php endif; ?>
-							<td><?=$file['mime']?></td>
+							<td><?=$file[0]?></td>
+							<td><?=$file[1]?></td>
+							<td><?=$file[2]?></td>
+							<td><?=$file[3]?></td>
 							<?php if ($comments_enabled):?>
-							<td><?=$file['comments']?></td>							
+							<td>// Comment stuff here</td>							
 							<?php endif;?>							
-							<td><?=$file['dir_name']?></td>
-							<td><?=$this->localize->set_human_time($file['date'], TRUE)?></td>
-							<td>
-								<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$selected_dir.AMP.'file='.$file['file_id'].AMP?>action=download" title="<?=lang('file_download')?>"><img src="<?=$cp_theme_url?>images/icon-download-file.png"></a>
-								&nbsp;&nbsp;<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$selected_dir.AMP.'file='.$file['file_id'].AMP?>action=delete" title="<?=lang('delete_selected_files')?>"><img src="<?=$cp_theme_url?>images/icon-delete.png"></a>
-								<?php if ($file['is_image']):?>
-								&nbsp;&nbsp;<a href="<?=BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$selected_dir.AMP.'file='.$file['file_id']?>" title="<?=lang('edit_file')?>"><img src="<?=$cp_theme_url?>images/icon-edit.png" alt="<?=lang('delete')?>" /></a>
-								<?php endif; ?>
-							</td>
-							<td class="file_select"><?=form_checkbox('file[]', $file['file_id'], FALSE, 'class="toggle"')?></td>
+							<td><?=$file[4]?></td>
+							<td><?=$file[5]?></td>
+							<td><?=$file[6]?></td>								
+							<td class="file_select"><?=$file[7]?></td>
 						</tr>
 						<?php endforeach; ?>
 					<?php endif;?>

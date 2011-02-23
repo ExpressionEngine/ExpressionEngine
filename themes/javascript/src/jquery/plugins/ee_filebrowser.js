@@ -19,6 +19,7 @@
 		default_img_url = EE.PATH_CP_GBL_IMG+'default.png',
 		file_manager_obj,
 		spinner_url = EE.THEME_URL+'/images/publish_file_manager_loader.gif',
+		files_per_table,
 		thumbs_per_page,
 		trigger_callback,
 		all_dirs = {},
@@ -32,7 +33,8 @@
 	 */
 	$.ee_filebrowser = function() {
 
-		thumbs_per_page = 10;
+		files_per_table = 10;
+		thumbs_per_page = 21;
 
 		// Setup!
 		$.ee_filebrowser.endpoint_request('setup', function(data) {
@@ -146,7 +148,7 @@
 			url: EE.BASE+"&"+EE.filebrowser.endpoint_url+"&action=edit_image",
 			data: $("#image_edit_form").serialize(),
 			success: function(file_name) {
-				file.name = file_name;
+				file.file_name = file_name;
 				file.dimensions = 'width="'+file.width+'" height="'+file.height+'" ';
 				$.ee_filebrowser.clean_up(file, original_upload_html);
 			},
@@ -340,15 +342,22 @@
 	 * Only fills in thumbnails for the first page, all others are loaded when they come into view
 	 */
 	function build_pages(directory, offset) {
-		
+		var directory = directory;
+
 		if (isNaN(offset)) {
 			offset = 0;
 		}
 				
 		if (isNaN(directory)) {
 			all_dirs[directory.id] = directory;
-		}
-		else {
+		} else if (typeof all_dirs[directory] == "undefined") {
+			// In the event that all_dirs doesn't contain what we need, fire
+			// off a request to endpoint_request to get us what we need
+			return $.ee_filebrowser.endpoint_request('directory_contents', {'directory': directory}, function(data) {
+				all_dirs[directory] = data;
+				build_pages(directory, offset);
+			});
+		} else {
 			directory = all_dirs[directory];
 		}
 		
@@ -360,15 +369,15 @@
 		dir_files_structure[directory.id] = directory.files;
 		dir_paths[directory.id] = directory.url;
 		
-		var per_page = thumbs_per_page,
+		var per_page = (display_type == 'list') ? files_per_table : thumbs_per_page,
 			total_files = directory.files.length;
 				
 		$.each(directory.files, function(i, el) {
 			el['img_id'] = i+'';
 			el['directory'] = directory.id+'';
-			el['is_image'] = ! (el.mime.indexOf("image") < 0);
+			el['is_image'] = ! (el.mime_type.indexOf("image") < 0);
 			if (el['is_image']) {
-				el['thumb'] = directory.url + "/_thumbs/thumb_" + el.name;
+				el['thumb'] = directory.url + "/_thumbs/thumb_" + el.file_name;
 			}
 		});
 		
@@ -416,7 +425,12 @@
 			}
 			
 			$("#tableView").hide();
+
 			$.tmpl("thumb", thumbs).appendTo("#file_chooser_body");
+			
+			// Add a last class to the 7th thumbnail
+			$('a.file_chooser_thumbnail:nth-child(7n+2)').addClass('first');
+			$('a.file_chooser_thumbnail:nth-child(7n+1)').addClass('last');
 			
 			// @todo need to fix pagination here in case some didn't
 			// have thumbnails?
@@ -426,8 +440,13 @@
 			$.tmpl("fileRow", workon).appendTo("#tableView tbody");
 		}
 		
-		$.tmpl("pagination", pagination).appendTo("#file_chooser_footer");
-		
+		$.tmpl("pagination", pagination).appendTo("#file_chooser_footer")
+			// Create an event handler for changes to the dropdown
+			.find('#view_type').val(display_type).change(function() {
+				display_type = this.value;
+				build_pages($('#dir_choice').val());
+			});
+
 		//	$.template("noFilesRow", $('#noFilesRowTmpl').remove());	
 	}
 	
@@ -439,7 +458,6 @@
 	 * Dynamically loads files from a directory if it hasn't been loaded yet
 	 */
 	function loadFiles(directory) {
-		
 		if (dir_files_structure[directory] == "") {
 			$.ee_filebrowser.endpoint_request('directory_contents', {'directory': directory}, build_pages);
 		}
@@ -473,13 +491,8 @@
 		});
 		
 		display_type = 'list';
-		$('input[name=view_type]').click(function() {
-			display_type = this.value;
-			build_pages($('#dir_choice').val(), 0);
-		});
-		
+
 		$('#dir_choice').change(function() {
-			// @todo - not quite right, but works
 			loadFiles(this.value);
 			build_pages(this.value, 0);
 		})

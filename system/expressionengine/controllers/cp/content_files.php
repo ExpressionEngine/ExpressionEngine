@@ -10,7 +10,7 @@
  * @since		Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -24,25 +24,25 @@
  */
 
 class Content_files extends CI_Controller {
-	
-	private $_upload_dirs = array();
-	private $_base_url = '';
-	public $remove_spaces = TRUE;
-	public $temp_prefix = "temp_file_";
-	
-	private $nest_categories	= 'y';
-	private $pipe_length		= 3;
-	
-	
+
+	private $_upload_dirs    = array();
+	private $_base_url       = '';
+	private $remove_spaces    = TRUE;
+	private $temp_prefix      = "temp_file_";
+
+	private $nest_categories = 'y';
+	private $pipe_length     = 3;
+
+
 	/**
 	 * Constructor
 	 */
 	public function __construct()
 	{
 		parent::__construct();
-		
+
 		// Permissions
-		if ( ! $this->cp->allowed_group('can_access_content')  OR 
+		if ( ! $this->cp->allowed_group('can_access_content')  OR
 			 ! $this->cp->allowed_group('can_access_files'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -52,31 +52,35 @@ class Content_files extends CI_Controller {
 		$this->load->library(array('filemanager'));
 		$this->load->helper(array('form'));
 		$this->load->model('file_model');
-		
+
 		// Get upload dirs
 		$upload_dirs = $this->filemanager->fetch_upload_dirs();
-		
+
 		foreach ($upload_dirs as $row)
 		{
 			$this->_upload_dirs[$row['id']] = $row;
 		}
-		
+
 		if (AJAX_REQUEST)
         {
             $this->output->enable_profiler(FALSE);
         }
 
 		$this->cp->set_right_nav(array(
+<<<<<<< local
 			'directory_manager' => BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences', 
 			'watermark_preferences' => BASE.AMP.'C=content_files'.AMP.'M=watermark_preferences'
 		));	
+=======
+			'directory_manager' => BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+		));
+>>>>>>> other
 
 		$this->_base_url = BASE.AMP.'C=content_files';
-
 	}
 
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Index Page
 	 */
@@ -85,17 +89,38 @@ class Content_files extends CI_Controller {
 		$this->load->library(array('pagination'));
 		$this->load->helper(array('string', 'search'));
 		$this->api->instantiate('channel_categories');
-		
+
 		// Page Title
 		$this->cp->set_variable('cp_page_title', lang('content_files'));
-		
+
 		$this->cp->add_js_script(array(
-			'plugin'	=> array('overlay', 'overlay.apple', 'ee_upload', 'dataTables'),
+			'plugin'	=> array('overlay', 'overlay.apple',
+								'ee_upload', 'dataTables'),
 			'file'		=> 'cp/file_manager_home',
-			'ui' 		=> 'datepicker'
-			)
+			'ui' 		=> 'datepicker'));
+
+		$upload_dirs_options = array();
+		
+		// This is temporary for just a bit.
+		$comments_enabled = FALSE;
+		$table_columns = ($comments_enabled) ? 9: 8;
+
+		// Setup get/post vars in class vars
+		$get_post = $this->_fetch_get_post_vars();
+		
+		// Get array of allowed upload dirs, or error out.
+		$allowed_dirs = $this->_setup_allowed_dirs();
+		$total_dirs = count($allowed_dirs);
+
+		$this->javascript->set_global(array(
+			'file.pipe' 		=> $this->pipe_length,
+			'file.perPage'		=> $get_post['per_page'],
+			'file.themeUrl'		=> $this->cp->cp_theme_url,
+			'file.tableColumns'	=> $table_columns,
+			'lang.noEntries'	=> lang('no_entries_matching_that_criteria'))
 		);
 
+<<<<<<< local
 		$per_page = ($per_page = $this->input->get('per_page')) ? $per_page : 40;
 		$offset = ($offset = $this->input->get('offset')) ? $offset : 0;
 		$upload_dirs_options = array();
@@ -105,7 +130,11 @@ class Content_files extends CI_Controller {
 		$table_columns = ($comments_enabled) ? 9: 8;
 		
 		// We want the filter to work based on both get and post
+=======
+		// Create our various filter data
+>>>>>>> other
 
+<<<<<<< local
 		$dir_id = $this->input->get_post('dir_id');
 		$cat_id = $this->input->get_post('cat_id');
 
@@ -144,54 +173,71 @@ class Content_files extends CI_Controller {
 
 		// Create our various filter data
 		
+=======
+>>>>>>> other
 		foreach ($this->_upload_dirs as $k => $dir)
 		{
 			$upload_dirs_options[$dir['id']] = $dir['name'];
 			$allowed_dirs[] = $k;
 		}
-		
-		$upload_dirs_options['null'] = $this->lang->line('filter_by_directory');
+
+		$upload_dirs_options['null'] = lang('filter_by_directory');
 
 		if (count($upload_dirs_options) > 2)
 		{
-			$upload_dirs_options['all'] = $this->lang->line('all');
+			$upload_dirs_options['all'] = lang('all');
 		}
 
 		ksort($upload_dirs_options);
 
-		$selected_dir = ($selected_dir = $this->input->get_post('directory')) ? $selected_dir : 'null';
-		
+		$selected_dir = ($selected_dir = $this->input->get_post('directory')) ? $selected_dir : NULL;
+
 		// We need this for the filter, so grab it now
 		$cat_form_array = $this->api_channel_categories->category_form_tree($this->nest_categories);
-		
+
 		// If we have channels we'll write the JavaScript menu switching code
 		if (count($allowed_dirs) > 0)
 		{
 			$this->filtering_menus($cat_form_array);
 		}
 
-		
 		// Cat filter
-		$cat_group = ($selected_dir != 'null') ? $this->_upload_dirs[$selected_dir]['cat_group']: '';
+		$cat_group = ($selected_dir !== NULL) ? $this->_upload_dirs[$selected_dir]['cat_group']: '';
 		$category_options = $this->category_filter_options($cat_group, $cat_form_array, count($allowed_dirs));
 
 		// Date range pull-down menu
-		$date_selected = $date_range;
+		$date_selected = $get_post['date_range'];
 
-		$date_select_options[''] = $this->lang->line('date_range');
-		$date_select_options['1'] = $this->lang->line('past_day');
-		$date_select_options['7'] = $this->lang->line('past_week');
-		$date_select_options['31'] = $this->lang->line('past_month');
-		$date_select_options['182'] = $this->lang->line('past_six_months');
-		$date_select_options['365'] = $this->lang->line('past_year');
-		$date_select_options['custom_date'] = $this->lang->line('any_date');
+		$date_select_options = array(
+			''				=> lang('date_range'),
+			'1'				=> lang('past_day'),
+			'7'				=> lang('past_week'),
+			'31'			=> lang('past_month'),
+			'182'			=> lang('past_six_months'),
+			'365'			=> lang('past_year'),
+			'custom_date'	=> lang('any_date'));
 
+		$type_select_options = array(
+			'1'				=> lang('file_type'),
+			'all'			=> lang('all'),
+			'image'			=> lang('image'),
+			'non-image'		=> lang('non-image'));
 
+<<<<<<< local
 		$type_select_options[''] = $this->lang->line('file_type');
 		$type_select_options['all'] = $this->lang->line('all');
 		$type_select_options['image'] = $this->lang->line('image');
 		$type_select_options['non-image'] = $this->lang->line('non-image');
+=======
+		$search_select_options = array(
+			''				=> lang('search_in'),
+			'file_name'		=> lang('file_name'),
+			'file_title'	=> lang('file_title'),
+			'custom_field'	=> lang('custom_fields'),
+			'all'			=> lang('all'));
+>>>>>>> other
 
+<<<<<<< local
 		$search_select_options[''] = $this->lang->line('search_in');
 		$searcj_select_options['file_name'] = $this->lang->line('file_name');
 		$search_select_options['title'] = $this->lang->line('file_title');
@@ -199,178 +245,367 @@ class Content_files extends CI_Controller {
 		$search_select_options['all'] = $this->lang->line('all');
 
 
+=======
+>>>>>>> other
 		$no_upload_dirs = FALSE;
-		
+
 		if (empty($this->_upload_dirs))
 		{
 			$no_upload_dirs = TRUE;
 		}
 		else
 		{
+			$dirs = ($get_post['dir_id'] === FALSE) ? $this->_allowed_dirs : $get_post['dir_id'];
 			
-			$type = 'all';
-			$dirs = ($dir_id == FALSE) ? $allowed_dirs : $dir_id;
-		
-			$filtered_entries= $this->file_model->get_files($dirs, $cat_id, $type, $per_page, $offset, $keywords, $order);
+			$filtered_entries = $this->file_model->get_files($dirs, $get_post['cat_id'], $get_post['type'], $get_post['per_page'], 
+															 $get_post['offset'], $get_post['keywords'], $get_post['order']);
+
 			$files = $filtered_entries['results'];
 			$total_filtered = $filtered_entries['filter_count'];
-		
+
 			// No result?  Show the "no results" message
 			if ( ! $files)
 			{
 				// no results-- bail
 			}
-			
-			$total = $this->file_model->count_files($allowed_dirs);
-		
 
-			$file_list = array();
 			$dir_size = 0;
 
 			$total_rows = $this->file_model->count_files($allowed_dirs);
-
-
-			if ($total_filtered > 0)
-			{
-			// Setup file list
-			foreach ($files->result_array() as $k => $file)
-			{
-				$file_location = $this->functions->remove_double_slashes(
-						$this->_upload_dirs[$file['upload_location_id']]['url'].'/'.$file['file_name']
-					);
-
-				$file_path = $this->functions->remove_double_slashes(
-						$this->_upload_dirs[$file['upload_location_id']]['server_path'].'/'.$file['file_name']
-					);
-
-				$list = array(
-					'file_id'	=> $file['file_id'],
-					'title'		=> $file['title'],
-					'name'		=> $file['file_name'],
-					'link'		=> $file_location,
-					'mime'		=> $file['mime_type'],
-					'size'		=> $file['file_id'],
-					'date'		=> $file['upload_date'],
-					'path'		=> $file_path,
-					'is_image'	=> FALSE,
-					'dir_name'	=> $this->_upload_dirs[$file['upload_location_id']]['name']
-				);				
-
-				// Lightbox links
-				if (strncmp($file['mime_type'], 'image', 5) === 0)
-				{
-					$list['is_image'] = TRUE;
-					$list['link'] = '<a class="less_important_link overlay" id="img_'.str_replace(array(".", ' '), '', $file['file_name']).'" href="'.$file_location.'" title="'.$file['file_name'].'" rel="#overlay">'.$file['file_name'].'</a>';
-				}
-
-				$file_list[] = $list;
-			}
-
-			}
 			
-			$base_url = BASE.AMP.'C=content_files'.AMP.'directory='.$selected_dir.AMP.'per_page='.$per_page;
-
-			$link = "<img src=\"{$this->cp->cp_theme_url}images/pagination_%s_button.gif\" width=\"13\" height=\"13\" alt=\"%s\" />";
-
-			$p_config = array(
-				'base_url'				=> $base_url,
-				'total_rows'			=> $total_rows,
-	 			'per_page'				=> $per_page,
-				'page_query_string'		=> TRUE,
-				'query_string_segment'	=> 'offset',
-				'full_tag_open'			=> '<p id="paginationLinks">',
-				'full_tag_close'		=> '</p>',
-				'prev_link'				=> sprintf($link, 'prev', '&lt;'),
-				'next_link'				=> sprintf($link, 'next', '&gt;'),
-				'first_link'			=> sprintf($link, 'first', '&lt; &lt;'),
-				'last_link'				=> sprintf($link, 'last', '&gt; &gt;')
-			);
-
-			$this->pagination->initialize($p_config);
+			$file_list = $this->_fetch_file_list($files, $total_filtered);
+			
+			$base_url = $this->_base_url.AMP.'directory='.$selected_dir.AMP.'per_page='.$get_post['per_page'];
+			$qstr_seg = 'offset';
+			
+			$this->_setup_pagination($base_url, $total_rows, $get_post['per_page'], $qstr_seg);
 
 			$action_options = array(
 				'download'			=> lang('download_selected'),
 				'delete'			=> lang('delete_selected_files')
 			);
 
-			// Figure out where the count is starting 
+			// Figure out where the count is starting
 			// and ending for the dialog at the bottom of the page
-			$offset = ($this->input->get($p_config['query_string_segment'])) ? $this->input->get($p_config['query_string_segment']) : 0;
+			$offset = ($this->input->get($qstr_seg)) ? $this->input->get($qstr_seg) : 0;
 			$count_from = $offset + 1;
 			$count_to = $offset + count($file_list);
 
-
-			$pagination_count_text = sprintf(
-										lang('pagination_count_text'),
-										$count_from, $count_to, $total_rows);			
+			$pagination_count_text = sprintf(lang('pagination_count_text'),
+											$count_from, $count_to, $total_rows);
 		}
-		
+
 		$data = array(
-			'comments_enabled'		=> $comments_enabled,
-			'no_upload_dirs'		=> $no_upload_dirs,
-			'upload_dirs_options' 	=> $upload_dirs_options,
-			'selected_dir'			=> $selected_dir,
-			
+			'action_options' 		=> (isset($action_options)) ? $action_options : NULL,
 			'category_options' 		=> $category_options,
-			'selected_cat_id'		=> $cat_id,
-
+			'comments_enabled'		=> $comments_enabled,
 			'date_select_options'	=> $date_select_options,
-			'selected_date'			=> $date_range,
-
-			'type_select_options'	=> $type_select_options,
-			'selected_type'			=> $file_type,
-
-			'search_in_options'		=> $search_select_options,
-			'selected_search'		=> $search_type,
-			'keywords'				=> $keywords,
-			
-			'files'					=> (isset($file_list)) ? $file_list : array(),
 			'dir_size'				=> (isset($dir_size)) ? $dir_size : NULL,
-			'pagination_links'		=> $this->pagination->create_links(),
-			'action_options' 		=> (isset($action_options)) ? $action_options : NULL, 
+			'files'					=> (isset($file_list)) ? $file_list : array(),
+			'keywords'				=> $get_post['keywords'],
+			'no_upload_dirs'		=> $no_upload_dirs,
 			'pagination_count_text'	=> (isset($pagination_count_text)) ? $pagination_count_text : NULL,
+			'pagination_links'		=> $this->pagination->create_links(),
+			'search_in_options'		=> $search_select_options,
+			'selected_cat_id'		=> $get_post['cat_id'],
+			'selected_date'			=> $get_post['date_range'],
+			'selected_dir'			=> $selected_dir,
+			'selected_search'		=> $get_post['search_type'],
+			'selected_type'			=> $get_post['file_type'],
+			'type_select_options'	=> $type_select_options,
+			'upload_dirs_options' 	=> $upload_dirs_options
 		);
-		
-	
+			
 		$this->javascript->compile();
 		$this->load->view('content/files/index', $data);
 	}
 
+	// --------------------------------------------------------------------
 
-	function category_filter_options($cat_group, $cat_form_array, $total_dirs)
+	/**
+	 * File ajax filter
+	 */
+	public function file_ajax_filter()
 	{
-		$category_select_options[''] = $this->lang->line('filter_by_category');
+		if ( ! AJAX_REQUEST)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		// Setup get/post vars in class vars
+		$this->_fetch_get_post_vars();
+		
+		// Setup get/post vars in class vars
+		$get_post = $this->_fetch_get_post_vars();
+	
+		$allowed_dirs = $this->_setup_allowed_dirs();
+				
+		$dirs = ($get_post['dir_id'] === FALSE) ? $this->_allowed_dirs : $get_post['dir_id'];
+		
+		/* Ordering */
+		$order = array();
 
-		if ($total_dirs > 1)
-		{				
-			$category_select_options['all'] = $this->lang->line('all');
+		if ($this->input->get('iSortCol_0'))
+		{
+			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
+			{
+				if (isset($col_map[$this->input->get('iSortCol_'.$i)]))
+				{
+					$order[$col_map[$this->input->get('iSortCol_'.$i)]] = ($this->input->get('sSortDir_'.$i) == 'asc') ? 'asc' : 'desc';
+				}
+			}
+		}
+		
+		$filtered_entries = $this->file_model->get_files($dirs, $get_post['cat_id'], $get_post['type'], $get_post['per_page'], 
+														 $get_post['offset'], $get_post['keywords'], $order);
+
+		$files = $filtered_entries['results'];
+		$total_filtered = $filtered_entries['filter_count'];
+
+		// No result?  Show the "no results" message
+		if ( ! $files)
+		{
+			// no results-- bail
 		}
 
-		$category_select_options['none'] = $this->lang->line('none');
+		$dir_size = 0;
+		
+		$response = array(
+			'sEcho' 				=> $get_post['sEcho'],
+			'iTotalRecords' 		=> $this->file_model->count_files($allowed_dirs),
+			'iTotalDisplayRecords' 	=> $total_filtered,
+			'aaData'				=> $this->_fetch_file_list($files, $total_filtered)
+		);
+		
+		
+		$this->output->send_ajax_response($response);		
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 *
+	 *
+	 *
+	 *
+	 */
+	private function _fetch_file_list($files, $total_filtered)
+	{
+		$file_list = array();
+		
+		if ($total_filtered > 0)
+		{
+			// Date
+			$date_fmt = ($this->session->userdata('time_format') != '') ? 
+							$this->session->userdata('time_format') : $this->config->item('time_format');
+
+			$datestr = ($date_fmt == 'us') ? '%m/%d/%y %h:%i %a' : '%Y-%m-%d %H:%i';
+						
+			$i = 0;
+			
+			// Setup file list
+			foreach ($files->result_array() as $k => $file)
+			{
+				$is_image = FALSE;
+				
+				$file_location = $this->functions->remove_double_slashes(
+					$this->_upload_dirs[$file['upload_location_id']]['url'].'/'.$file['file_name']);
+
+				$file_path = $this->functions->remove_double_slashes(
+					$this->_upload_dirs[$file['upload_location_id']]['server_path'].'/'.$file['file_name']);
+
+				$r[] = $file['file_id'];
+				$r[] = $file['title'];
+				
+				// Lightbox links
+				if (strncmp($file['mime_type'], 'image', 5) === 0)
+				{
+					$is_image = TRUE;
+					$r[] = '<a class="less_important_link overlay" id="img_'.str_replace(array(".", ' '), '', $file['file_name']).'" href="'.$file_location.'" title="'.$file['file_name'].'" rel="#overlay">'.$file['file_name'].'</a>';
+				}
+				else
+				{
+					$r[] = $file['file_name'];
+				}
+				
+				$r[] = $file['mime_type'];
+				$r[] = $this->_upload_dirs[$file['upload_location_id']]['name'];
+				$r[] = $this->localize->set_human_time($file['upload_date'], TRUE);
+	           
+	
+				$action_base = BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file='.$file['file_id'];
+				$actions = '<a href="'.$action_base.AMP.'action=download" title="'.lang('file_download').'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png"></a>';
+				$actions .= '&nbsp;&nbsp;';
+				$actions .= '<a href="'.$action_base.AMP.'action=delete" title="'.lang('delete_selected_files').'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png"></a>';
+
+				if ($is_image)
+				{
+					$actions .= '&nbsp;&nbsp;';
+					$actions .= '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file='.$file['file_id'].'" title="'.lang('edit_file').'"><img src="'.$this->cp->cp_theme_url.'images/icon-edit.png" alt="'.lang('delete').'" /></a>';
+				}
+				
+				$r[] = $actions;
+				$r[] = form_checkbox('toggle[]', $file['file_id'], '', ' class="toggle" id="toggle_box_'.$file['file_id'].'"');
+
+				$file_list[$i] = $r;
+				unset($r);
+				$i++;
+			}
+		}
+	
+		return $file_list;
+	}
+
+	// --------------------------------------------------------------------
+	
+	private function _setup_pagination($base_url, $total_rows, $per_page, $qstr_seg)
+	{
+		$link = "<img src=\"{$this->cp->cp_theme_url}images/pagination_%s_button.gif\" width=\"13\" height=\"13\" alt=\"%s\" />";
+		
+		$p_config = array(
+			'base_url'				=> $base_url,
+			'total_rows'			=> $total_rows,
+			'per_page'				=> $per_page,
+			'page_query_string'		=> TRUE,
+			'query_string_segment'	=> $qstr_seg,
+			'full_tag_open'			=> '<p id="paginationLinks">',
+			'full_tag_close'		=> '</p>',
+			'prev_link'				=> sprintf($link, 'prev', '&lt;'),
+			'next_link'				=> sprintf($link, 'next', '&gt;'),
+			'first_link'			=> sprintf($link, 'first', '&lt; &lt;'),
+			'last_link'				=> sprintf($link, 'last', '&gt; &gt;'));
+
+		$this->pagination->initialize($p_config);
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Fetch Get/Post variables
+	 *
+	 * GET/POST variables are just a wee bit different when a jquery datatables
+	 * request is made.  In order to keep stupid IE from caching the ajax request,
+	 * we add a time= variable to the request.  So here, we can safely assume that
+	 * a request from datatables will have $_['GET']['time'] in it.
+	 * There are just a coupla differences, so we construct our array of get/post
+	 * vars and return 'er/
+	 *
+	 * @return 	array
+	 */
+	private function _fetch_get_post_vars()
+	{
+		$ret = array(
+			'author_id'		=> $this->input->get_post('author_id'),
+			'cat_id'		=> $this->input->get_post('cat_id'),
+			'dir_id'		=> ($this->input->get_post('dir_id') != 'all') ? $this->input->get_post('dir_id') : array(),
+			'date_range'	=> $this->input->get_post('date_range'),
+			'file_type'		=> $this->input->get_post('file_type'),
+			'keywords'		=> NULL, // Process this in a bit
+			'offset'		=> ($offset = $this->input->get('offset')) ? $offset : 0,
+			'order'			=> ($order = $this->input->get('offset')) ? $order : 0,
+			'per_page'		=> ($per_page = $this->input->get('per_page')) ? $per_page : 40,
+			'status'		=> ($this->input->get_post('status') != 'all') ? $this->input->get_post('status') : '',
+			'search_in'		=> ($this->input->get_post('search_in') != '') ? $this->input->get_post('search_in') : 'title',
+			'search_type'	=> $this->input->get_post('search_type'),
+			'type'			=> ($type = $this->input->get_post('type')) ? $type : 'all'
+		);
+
+		// If the request is coming from datatables, we add time= to the 
+		// query string.  So, it's safe to assume that we can test it that way
+		if ( ! $this->input->get('time'))
+		{
+			if ($this->input->post('keywords'))
+			{
+				$ret['keywords'] = sanitize_search_terms($this->input->post('keywords'));
+			}
+			elseif ($this->input->get('keywords'))
+			{
+				$ret['keywords'] = sanitize_search_terms(base64_decode($this->input->get('keywords')));
+			}		
+		}
+		else
+		{
+			$ret['keywords'] = ($this->input->get_post('keywords')) ? sanitize_search_terms($this->input->get_post('keywords')) : '';
+			$ret['perpage'] = $this->input->get_post('iDisplayLength');
+			$ret['offset'] = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
+			$ret['sEcho'] = $this->input->get_post('sEcho');
+		}
+
+		return $ret;
+	}
+		
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup Allowed Upload Directories
+	 *
+	 * Cycles through upload dirs, errors out if there aren't any upload dirs
+	 * available.
+	 *
+	 * @return array
+	 */
+	private function _setup_allowed_dirs()
+	{
+		if ( ! empty($this->_allowed_dirs))
+		{
+			return $this->_allowed_dirs;
+		}
+		
+		foreach ($this->_upload_dirs as $k => $v)
+		{
+			$this->_allowed_dirs[] = $k;
+		}
+
+		if (empty($this->_allowed_dirs))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		return $this->_allowed_dirs;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Category Filter Options
+	 *
+	 * @param
+	 */
+	function category_filter_options($cat_group, $cat_form_array, $total_dirs)
+	{
+		$category_select_options[''] = lang('filter_by_category');
+
+		if ($total_dirs > 1)
+		{
+			$category_select_options['all'] = lang('all');
+		}
+
+		$category_select_options['none'] = lang('none');
 
 		if ($cat_group != '')
 		{
 			foreach($cat_form_array as $key => $val)
 			{
-				if ( ! in_array($val['0'], explode('|',$cat_group)))
+				if ( ! in_array($val[0], explode('|',$cat_group)))
 				{
 					unset($cat_form_array[$key]);
 				}
 			}
 
-			$i=1;
+			$i = 1;
 			$new_array = array();
 
 			foreach ($cat_form_array as $ckey => $cat)
 			{
-		    	if ($ckey-1 < 0 OR ! isset($cat_form_array[$ckey-1]))
+		    	if ($ckey - 1 < 0 OR ! isset($cat_form_array[$ckey - 1]))
     		   	{
 					$category_select_options['NULL_'.$i] = '-------';
             	}
-            	
-				$category_select_options[$cat['1']] = (str_replace("!-!","&nbsp;", $cat['2']));
 
-            	if (isset($cat_form_array[$ckey+1]) && $cat_form_array[$ckey+1]['0'] != $cat['0'])
+				$category_select_options[$cat[1]] = (str_replace("!-!","&nbsp;", $cat[2]));
+
+            	if (isset($cat_form_array[$ckey + 1]) && $cat_form_array[$ckey + 1][0] != $cat[0])
 	        	{
 					$category_select_options['NULL_'.$i] = '-------';
        			}
@@ -378,11 +613,9 @@ class Content_files extends CI_Controller {
        			$i++;
 			}
 		}
-		
-		
+
 		return $category_select_options;
 	}
-
 
 	// --------------------------------------------------------------------
 
@@ -397,60 +630,56 @@ class Content_files extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
-		// In order to build our filtering options we need to gather 
+		// In order to build our filtering options we need to gather
 		// all the channels and categories
-		
 		$dir_array	= array();
-		
 
 		foreach ($this->_upload_dirs as $id => $row)
 		{
 			$dir_array[$id] = array(str_replace('"','',$this->_upload_dirs[$id]['name']), $this->_upload_dirs[$id]['cat_group']);
-		}		
-		
+		}
 
-		$default_cats[] = array('', $this->lang->line('filter_by_category'));
-		$default_cats[] = array('all', $this->lang->line('all'));
-		$default_cats[] = array('none', $this->lang->line('none'));		
-		
+		$default_cats[] = array('', lang('filter_by_category'));
+		$default_cats[] = array('all', lang('all'));
+		$default_cats[] = array('none', lang('none'));
 
-		$file_info['0']['categories'] = $default_cats;		
-	
+
+		$file_info[0]['categories'] = $default_cats;
 
 		foreach ($dir_array as $key => $val)
 		{
 			$any = 0;
 			$cats = $default_cats;
-	
+
 			if (count($cat_form_array) > 0)
 			{
 				$last_group = 0;
-		
+
 				foreach ($cat_form_array as $k => $v)
 				{
-					if (in_array($v['0'], explode('|', $val['1'])))
+					if (in_array($v[0], explode('|', $val[1])))
 					{
-						if ($last_group == 0 OR $last_group != $v['0'])
+						if ($last_group == 0 OR $last_group != $v[0])
 						{
 							$cats[] = array('', '-------');
-							$last_group = $v['0'];
+							$last_group = $v[0];
 						}
 
-						$cats[] = array($v['1'], $v['2']);
+						$cats[] = array($v[1], $v[2]);
 					}
 				}
 			}
 
 			$file_info[$key]['categories'] = $cats;
-			
 		}
 
 		$this->javascript->set_global('file.directoryInfo', $file_info);
 	}
 
+<<<<<<< local
 
 
 	// --------------------------------------------------------------------
@@ -617,6 +846,9 @@ class Content_files extends CI_Controller {
 
 
 	// ------------------------------------------------------------------------	
+=======
+	// ------------------------------------------------------------------------
+>>>>>>> other
 
 	/**
 	 * Upload File
@@ -627,25 +859,25 @@ class Content_files extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		// Do some basic permissions checking
 		if ( ! ($file_dir = $this->input->get_post('upload_dir')))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		// Bail if they dont' have access to this upload location.
 		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
-	
+
+
 		/*
-		
+
 		// All the directory information we need for the upload
 		// destination.
-		
+
 		array
 		  'id' => string '1' (length=1)
 		  'site_id' => string '1' (length=1)
@@ -663,10 +895,10 @@ class Content_files extends CI_Controller {
 		  'file_pre_format' => string '' (length=0)
 		  'file_post_format' => string '' (length=0)
 		*/
-		
+
 		$fm = $this->filemanager->save($this->_upload_dirs[$file_dir]);
-		
-		
+
+
 		if ($fm->upload_errors)
 		{
 			// Upload Failed
@@ -674,18 +906,18 @@ class Content_files extends CI_Controller {
 			{
 				$errors = $this->javascript->generate_json(
 							array('error' => $this->upload->display_errors()));
-				
+
 				echo sprintf("<script type=\"text/javascript\">
 								parent.EE_uploads.%s = %s;</script>",
 								$this->input->get('frame_id'),
 								$errors);
 				exit();
 			}
-			
+
 			$this->session->set_flashdata('message_failure', $fm->upload_errors);
 			$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);
 		}
-		
+
 
 		if ($fm->upload_data['file_name'] != $fm->upload_data['orig_name'])
 		{
@@ -695,7 +927,7 @@ class Content_files extends CI_Controller {
 
 			$vars = $fm->upload_data;
 			$vars['duped_name'] = $fm->upload_data['orig_name'];
-			
+
 			$vars['hidden'] = array(
 				'orig_name'		=> $fm->upload_data['orig_name'],
 				'rename_attempt' => '',
@@ -704,17 +936,16 @@ class Content_files extends CI_Controller {
 				'remove_spaces'	=> '1',
 				 'id' 			=> $file_dir
 				);
-				
+
 			return $this->load->view('content/files/rename', $vars);
 		}
 
 		// Make the thumbnail
-		
 		$thumb = $fm->create_thumb(
-			array('server_path' => $fm->upload_data['file_path']), 
+			array('server_path' => $fm->upload_data['file_path']),
 			array('name' => $fm->upload_data['file_name'])
 		);
-		
+
 		if ($this->input->is_ajax_request())
 		{
 			$resp = $this->javascript->generate_json(array(
@@ -726,13 +957,13 @@ class Content_files extends CI_Controller {
 			));
 
 			echo sprintf('<script type="text/javascript">
-							parent.EE_uploads.%s = %s;</script>', 
+							parent.EE_uploads.%s = %s;</script>',
 						$this->input->get('frame_id'), $resp);
 			exit();
 		}
-		
+
 		$this->session->set_flashdata('message_success', lang('upload_success'));
-		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);			
+		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);
 	}
 
 
@@ -741,19 +972,20 @@ class Content_files extends CI_Controller {
 	/**
 	 * Allows renaming and over writing of files
 	 *
-	 * 
+	 *
 	 */
 	public function rename_file()
 	{
-		$required = array('file_name', 'rename_attempt', 'orig_name', 'temp_file_name', 'is_image', 'temp_prefix', 'remove_spaces', 'id');
-		
+		$required = array('file_name', 'rename_attempt', 'orig_name', 'temp_file_name', 
+							'is_image', 'temp_prefix', 'remove_spaces', 'id');
+
 		foreach ($required as $val)
 		{
 			$data[$val] = $this->input->post($val);
 		}
 
 		// Sigh- did they rename it w/an existing name?  We give them the rename form again.
-        if (($data['rename_attempt'] != '' && $data['rename_attempt'] != $data['file_name']) 
+        if (($data['rename_attempt'] != '' && $data['rename_attempt'] != $data['file_name'])
 			OR ($data['rename_attempt'] == '' && $data['orig_name'] != $data['file_name']))
         {
 			if (file_exists($this->_upload_dirs[$data['id']]['server_path'].$data['file_name']))
@@ -774,28 +1006,28 @@ class Content_files extends CI_Controller {
 					'remove_spaces'	=> $this->remove_spaces,
 				 	'id' 			=> $data['id']
 					);
-				
-				return $this->load->view('content/files/rename', $vars);			
+
+				return $this->load->view('content/files/rename', $vars);
 			}
 		}
 
 		$fm = $this->filemanager->replace_file($data);
-		
+
 		// Errors?
 		if ($fm->upload_errors)
 		{
 			$this->session->set_flashdata('message_failure', $fm->upload_errors);
 			$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$data['id']);
-		}		
+		}
 
 		// Woot- Success!  Make a new thumb
 		$thumb = $fm->create_thumb(
-			array('server_path' => $this->_upload_dirs[$data['id']]['server_path']), 
+			array('server_path' => $this->_upload_dirs[$data['id']]['server_path']),
 			array('name' => $data['file_name'])
 		);
-		
+
 		$this->session->set_flashdata('message_success', lang('upload_success'));
-		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$data['id']);		
+		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$data['id']);
 	}
 
 	// ------------------------------------------------------------------------
@@ -803,31 +1035,38 @@ class Content_files extends CI_Controller {
 	/**
 	 * Controls the batch actions
 	 *
-	 * When submitted to, expects a GET/POST variable named action containing 
+	 * When submitted to, expects a GET/POST variable named action containing
 	 * either download or delete
 	 */
 	public function multi_edit_form()
 	{
 		$file_settings = $this->_get_file_settings();
+<<<<<<< local
 		
+=======
+
+		$files    = $file_settings['files'];
+		$file_dir = $file_settings['file_dir'];
+
+>>>>>>> other
 		switch ($this->input->get_post('action'))
 		{
 			case 'download':
 				$this->_download_files($file_settings);
 				break;
-			
+
 			case 'delete':
 				$this->_delete_files_confirm($file_settings);
 				break;
-			
+
 			default:
 				show_error(lang('unauthorized_access'));
 				break;
 		}
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Creates the confirmation page to delete a list of files
 	 *
@@ -846,9 +1085,9 @@ class Content_files extends CI_Controller {
 
 		$this->load->view('content/file_delete_confirm', $data);
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Delete a list of files (and their thumbnails) from a particular directory
 	 * Expects two GET/POST variables:
@@ -859,15 +1098,15 @@ class Content_files extends CI_Controller {
 	{
 		$files     = $this->input->get_post('file');
 		$file_dir  = $this->input->get_post('file_dir');
-		
+
 		// Bail if they dont' have access to this upload location.
 		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$file_path = $this->_upload_dirs[$file_dir]['server_path'];
-				
+
 		if ( ! $files OR ! $file_path OR $file_path === "")
 		{
 			$this->session->set_flashdata('message_failure', lang('choose_file'));
@@ -876,17 +1115,17 @@ class Content_files extends CI_Controller {
 
 		$file_data = $this->file_model->get_files_by_id($files);
 
-		$delete = $this->filemanager->delete($files, $file_path, TRUE);		
-		
+		$delete = $this->filemanager->delete($files, $file_path, TRUE);
+
 		$message_type = ($delete) ? 'message_success' : 'message_failure';
 		$message = ($delete) ? lang('delete_success') : lang('message_failure');
-		
+
 		$this->session->set_flashdata($message_type, $message);
 		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Download Files
 	 *
@@ -896,42 +1135,67 @@ class Content_files extends CI_Controller {
 	private function _download_files($files, $file_dir)
 	{
 		$files_count = count($files);
-		
-		if ( ! $files_count OR 
+
+		if ( ! $files_count OR
 			 ! isset($this->_upload_dirs[$file_dir]['server_path']))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$file_path = $this->_upload_dirs[$file_dir]['server_path'];
-		
+
 		if ( ! $this->filemanager->download_files($files, $file_path))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 	}
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	/**
 	 * Get the list of files and the directory ID for batch file actions
 	 *
+<<<<<<< local
 	 * @return array containing ['file_dir'] as the array keys 
 	 *    and [an array of the file ids to act upon.
+=======
+	 * @return array Associative array containing ['file_dir'] as the file directory
+	 *    and ['files'] an array of the files to act upon.
+>>>>>>> other
 	 */
 	private function _get_file_settings()
 	{
+<<<<<<< local
+=======
+		// Do some basic permissions checking
+		if ( ! ($file_dir = $this->input->get_post('upload_dir')))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		// Bail if they dont' have access to this upload location.
+		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+>>>>>>> other
 		// No file, why are we here?
 		if ( ! ($files = $this->input->get_post('file')))
 		{
 			show_error(lang('unauthorized_access'));
 		}
+<<<<<<< local
 		
 		// Get file data
 		$query = $this->file_model->get_files_by_id($files);
 		$file_data = array();
 		
 		foreach ($query->result_array() as $row)
+=======
+
+		if ( ! is_array($files))
+>>>>>>> other
 		{
 			$file_data[$row['upload_location_id']][] = $row['file_name'];
 		}
@@ -945,6 +1209,7 @@ class Content_files extends CI_Controller {
 				unset($file_data[$id]);
 			}
 		}
+<<<<<<< local
 		
 		if (empty($file_data))
 		{
@@ -952,10 +1217,17 @@ class Content_files extends CI_Controller {
 		}
 		
 		return $file_data;
+=======
+
+		return array(
+			'file_dir' => $file_dir,
+			'files' => $files
+		);
+>>>>>>> other
 	}
 
-	// ------------------------------------------------------------------------	
-	
+	// ------------------------------------------------------------------------
+
 	/**
 	 *
 	 *
@@ -969,23 +1241,23 @@ class Content_files extends CI_Controller {
 		{
 			return $this->_do_image_processing();
 		}
-		
+
 		// Page Title
 		$this->cp->set_variable('cp_page_title', lang('edit_image'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
-		
+
 		// Do some basic permissions checking
 		if ( ! ($file_dir = $this->input->get('upload_dir')))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		// Bail if they dont' have access to this upload location.
 		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate");
 		$this->output->set_header("Pragma: no-cache");
 
@@ -998,26 +1270,26 @@ class Content_files extends CI_Controller {
 
 		// It cleans itself
 		$file_name 	= $this->security->sanitize_filename($this->input->get('file'));
-		
+
 		// Some vars for later
 		$file_url 	= $this->_upload_dirs[$file_dir]['url'].urldecode($file_name);
-		$file_path 	= $this->_upload_dirs[$file_dir]['server_path'].urldecode($file_name); 
-		
+		$file_path 	= $this->_upload_dirs[$file_dir]['server_path'].urldecode($file_name);
+
 		// Does this file exist?
 		if ( ! file_exists($file_path))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$file_info = $this->filemanager->get_file_info($file_path);
-		
+
 		$this->javascript->set_global(array(
 			'filemanager'	=> array(
 				'image_width'	=> $file_info['width'],
 				'image_height'	=> $file_info['height'],
 			),
 		));
-		
+
 		$data = array(
 			'file_url'		=> $file_url,
 			'file_path'		=> $file_path,
@@ -1026,25 +1298,25 @@ class Content_files extends CI_Controller {
 			'file'			=> urlencode($file_name),
 			'filemtime'		=> ($filemtime = @filemtime($file_path)) ? $filemtime : 0,
 		);
-		
+
 		$this->cp->add_js_script('ui', 'accordion');
-		
+
 		$this->javascript->output('
 		        $("#file_manager_toolbar").accordion({autoHeight: false, header: "h3"});
 		');
-		
+
 		$this->javascript->compile();
-		
-		
+
+
 		$this->load->view('content/files/edit_image', $data);
 	}
 
-	// ------------------------------------------------------------------------		
-	
+	// ------------------------------------------------------------------------
+
 	/**
 	 * image processing
 	 *
-	 * Figures out the full path to the file, and sends it to the appropriate 
+	 * Figures out the full path to the file, and sends it to the appropriate
 	 * method to process the image.
 	 */
 	private function _do_image_processing()
@@ -1054,15 +1326,15 @@ class Content_files extends CI_Controller {
 		if ( ! $file)
 		{
 			$this->session->set_flashdata('message_failure', lang('choose_file'));
-			$this->functions->redirect(BASE.AMP.'C=content_files');		
+			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
-		
+
 		$upload_dir_id = $this->input->post('upload_dir');
-		
+
 		$file = $this->security->sanitize_filename(urldecode($file));
 		$file = $this->functions->remove_double_slashes(
-				$this->_upload_dirs[$upload_dir_id]['server_path'].DIRECTORY_SEPARATOR.$file);		
-		
+				$this->_upload_dirs[$upload_dir_id]['server_path'].DIRECTORY_SEPARATOR.$file);
+
 		switch ($this->input->post('action'))
 		{
 			case 'rotate':
@@ -1078,9 +1350,9 @@ class Content_files extends CI_Controller {
 				return ''; // todo, error
 		}
 	}
-	
-	// ------------------------------------------------------------------------		
-	
+
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Image crop
 	 */
@@ -1098,45 +1370,45 @@ class Content_files extends CI_Controller {
 			'source_image'		=> $file,
 			'new_image'			=> $file
 		);
-		
+
 		$this->load->library('image_lib', $config);
-		
+
 		if ( ! $this->image_lib->crop())
 		{
 	    	$errors = $this->image_lib->display_errors();
 		}
-		
+
 		if (isset($errors))
 		{
 			if (AJAX_REQUEST)
 			{
 				$this->output->send_ajax_response($errors, TRUE);
 			}
-			
+
 			show_error($errors);
 		}
-		
+
 		$this->image_lib->clear();
-		
+
 		if (AJAX_REQUEST)
 		{
 			$dimensions = $this->image_lib->get_image_properties('', TRUE);
 			$this->image_lib->clear();
-			
+
 			$this->output->send_ajax_response(array(
 				'width'		=> $dimensions['width'],
 				'height'	=> $dimensions['height']
 			));
 		}
-		
-		
+
+
 		$this->session->set_flashdata('message_success', lang('file_saved'));
 		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file='.$this->input->post('file');
 		$this->functions->redirect($url);
 	}
 
-	// ------------------------------------------------------------------------		
-	
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Do image rotation.
 	 */
@@ -1149,51 +1421,51 @@ class Content_files extends CI_Controller {
 			'source_image'		=> $file,
 			'new_image'			=> $file
 		);
-		
+
 		$this->load->library('image_lib', $config);
-		
+
 		if ( ! $this->image_lib->rotate())
 		{
 	    	$errors = $this->image_lib->display_errors();
 		}
-		
+
 		if (isset($errors))
 		{
 			if (AJAX_REQUEST)
 			{
 				$this->output->send_ajax_response($errors, TRUE);
 			}
-			
+
 			show_error($errors);
 		}
-		
+
 		$this->image_lib->clear();
-		
+
 		if (AJAX_REQUEST)
 		{
 			$dimensions = $this->image_lib->get_image_properties('', TRUE);
 			$this->image_lib->clear();
-			
+
 			$this->output->send_ajax_response(array(
 				'width'		=> $dimensions['width'],
 				'height'	=> $dimensions['height']
 			));
 		}
-		
+
 		$this->session->set_flashdata('message_success', lang('file_saved'));
 		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file='.$this->input->post('file');
 		$this->functions->redirect($url);
 	}
 
-	// ------------------------------------------------------------------------	
-	
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Do image rotation.
 	 */
 	private function _do_resize($file)
 	{
-		
-		
+
+
 		$config = array(
 			'width'				=> $this->input->get_post('resize_width'),
 			'maintain_ratio'	=> $this->input->get_post('constrain'),
@@ -1202,7 +1474,7 @@ class Content_files extends CI_Controller {
 			'source_image'		=> $file,
 			'new_image'			=> $file
 		);
-		
+
 		if ($this->input->get_post('resize_height') != '')
 		{
 			$config['height'] = $this->input->get_post('resize_height');
@@ -1210,50 +1482,57 @@ class Content_files extends CI_Controller {
 		else
 		{
 			$config['master_dim'] = 'width';
-		}		
-		
+		}
+
 		$this->load->library('image_lib', $config);
-		
+
 		if ( ! $this->image_lib->resize())
 		{
 	    	$errors = $this->image_lib->display_errors();
 		}
-		
+
 		if (isset($errors))
 		{
 			if (AJAX_REQUEST)
 			{
 				$this->output->send_ajax_response($errors, TRUE);
 			}
-			
+
 			show_error($errors);
 		}
-		
+
 		$this->image_lib->clear();
-		
+
 		if (AJAX_REQUEST)
 		{
 			$dimensions = $this->image_lib->get_image_properties('', TRUE);
 			$this->image_lib->clear();
-			
+
 			$this->output->send_ajax_response(array(
 				'width'		=> $dimensions['width'],
 				'height'	=> $dimensions['height']
 			));
 		}
-		
+
 		$this->session->set_flashdata('message_success', lang('file_saved'));
 		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file='.$this->input->post('file');
 		$this->functions->redirect($url);
 	}
 
+<<<<<<< local
+=======
+	// ------------------------------------------------------------------------
+>>>>>>> other
 
+<<<<<<< local
 	
 	// ------------------------------------------------------------------------	
 	
+=======
+>>>>>>> other
 	/**
 	 * Checks for images with no record in the database and adds them
-	 */	
+	 */
 	public function sync_directory()
 	{
 		$file_dir  = $this->input->get('id');
@@ -1277,18 +1556,18 @@ class Content_files extends CI_Controller {
 
 			$ids = array($file_dir);
 		}
-		
+
 		// Get the resize info for the directories
 		$this->db->where_in('upload_location_id', $ids);
 		$query = $this->db->get('file_dimensions');
-		
+
 		// Build skeleton of the size array with the upload directories loaded in
 		$js_size = array();
-		foreach ($ids as $upload_directory_id) 
+		foreach ($ids as $upload_directory_id)
 		{
 			$js_size[$upload_directory_id] = '';
 		}
-		
+
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result() as $row)
@@ -1297,30 +1576,30 @@ class Content_files extends CI_Controller {
 				$vars['sizes'][] = array('short_name' => $row->short_name, 'title' => $row->title, 'resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height);
 			}
 		}
-		
+
 		// If I move this will need to fetch upload dir data
 		foreach ($ids as $id)
 		{
 			$dir_data[$id] = $this->_upload_dirs[$id];
 			$vars['dirs'][$id] = $this->_upload_dirs[$id];
-			
+
 			$vars['dirs'][$id]['files'] = $this->filemanager->directory_files_map(
-				$dir_data[$id]['server_path'], 
-				1, 
-				FALSE, 
+				$dir_data[$id]['server_path'],
+				1,
+				FALSE,
 				$dir_data[$id]['allowed_types']
 			);
-			
+
 			$vars['dirs'][$id]['count'] = count($vars['dirs'][$id]['files']);
 		}
-		
+
 		$this->cp->add_js_script(array(
-				'plugin' => array('tmpl'), 
+				'plugin' => array('tmpl'),
 				'ui'     => array('progressbar'),
 				'file'   => array('underscore', 'cp/files/synchronize')
 			)
 		);
-		
+
 		$this->javascript->set_global(array(
 			'file_manager' => array(
 				'sync_files'      => $vars['dirs'][$id]['files'],
@@ -1328,7 +1607,7 @@ class Content_files extends CI_Controller {
 				'sync_sizes'      => $js_size
 			)
 		));
-		
+
 		// Sigh- this is stupid and will move to updater after initial testing
 		// Testing the updater is just a pain
 
@@ -1346,6 +1625,7 @@ class Content_files extends CI_Controller {
 			 KEY `upload_location_id` (`upload_location_id`)
 			)";
 
+<<<<<<< local
 			$Q[] = "CREATE TABLE exp_file_watermarks (
 					wm_id int(4) unsigned NOT NULL auto_increment,
 					wm_name varchar(80) NOT NULL,
@@ -1373,8 +1653,10 @@ class Content_files extends CI_Controller {
 
 
 		
+=======
+>>>>>>> other
 			// Note- change to cat_id cause it's what we use in category_posts and I just like the consistency
-			
+
 			$Q[] = "CREATE TABLE exp_file_categories (
 			 file_id int(10) unsigned NOT NULL,
 			 cat_id int(10) unsigned NOT NULL,
@@ -1386,7 +1668,7 @@ class Content_files extends CI_Controller {
 
 			//field_2_fmt TINYTEXT NOT NULL DEFAULT 'xhtml',
 			// errors BLOB/TEXT column 'field_1_fmt' can't have a default value
-			
+
 
 			$Q[] = "CREATE TABLE exp_files (
 			 file_id int(6) unsigned NOT NULL auto_increment,
@@ -1409,7 +1691,7 @@ class Content_files extends CI_Controller {
 			 field_5 text NULL,
 			 field_5_fmt TINYTEXT NOT NULL,
 			 field_6 text NULL,
-			 field_6_fmt TINYTEXT NOT NULL,			
+			 field_6_fmt TINYTEXT NOT NULL,
 			 metadata MEDIUMTEXT NULL,
 			 uploaded_by_member_id int(10) unsigned NOT NULL default 0,
 			 upload_date int(10) NOT NULL,
@@ -1419,13 +1701,13 @@ class Content_files extends CI_Controller {
 			 KEY `upload_location_id` (`upload_location_id`),
 			 KEY `site_id` (`site_id`)
 			)";
-			
+
 			//KEY `file_dimension_id` (`file_dimension_id`),
-			
+
 			// doesn't look like anything changed in upload prefs
-			
+
 			// Pascal will have a cow- but TEST DATA!
-			// Add a column to files to hold the size for the new name			
+			// Add a column to files to hold the size for the new name
 			// Seperate cause my go poof and couldn't normally hard code it
 			$Q[] = "ALTER TABLE `exp_files` ADD COLUMN `file_hw_original` VARCHAR(20) NOT NULL default ''";
 
@@ -1450,37 +1732,37 @@ class Content_files extends CI_Controller {
 
 
 	}
-	
+
 	function do_sync_files()
 	{
 		$type = 'insert';
 		$errors = array();
 		$file_data = array();
-		
+
 		// If file exists- make sure it exists in db - otherwise add it to db and generate all child sizes
 		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
-		
+
 		if (($sizes = $this->input->post('sizes')) === FALSE OR ($current_files = $this->input->post('files')) === FALSE)
 		{
 			return FALSE;
 		}
-		
+
 		$id = key($sizes);
-		
+
 		$dir_data = $this->_upload_dirs[$id];
-		
+
 		//$this->sync_database();
 
 
 		// @todo, bail if there are no files in the directory!  :D
 
 		$files = $this->filemanager->fetch_files($id, $current_files, TRUE);
-		
+
 		// Let's do a quick check of db to see if ANY file records for this directory
 		//$this->db->where('upload_location_id', $id);
 		//$this->db->from('files');
-		//$do_db_check = ($this->db->count_all_results() == 0) ? FALSE : TRUE;			
-			
+		//$do_db_check = ($this->db->count_all_results() == 0) ? FALSE : TRUE;
+
 		// Setup data for batch insert
 		foreach ($files->files[$id] as $file)
 		{
@@ -1490,29 +1772,29 @@ class Content_files extends CI_Controller {
 				$errors[$file['name']] = 'No mime type';
 				continue;
 			}
-				
+
 			// Does it exist in DB?
 			$query = $this->db->get_where('files', array('file_name' => $file['name']));
-			
+
 			if ($query->num_rows() > 0)
 			{
-				// It exists, but we need to check sizes 
+				// It exists, but we need to check sizes
 				if (is_array($sizes[$id]))
 				{
 					$this->filemanager->sync_resized(
-						array('server_path' => $this->_upload_dirs[$id]['server_path']), 
+						array('server_path' => $this->_upload_dirs[$id]['server_path']),
 						array('name' => $file['name']),
 						$sizes[$id]
 					);
 				}
-				
+
 				continue;
 			}
-			
+
 			$file_location = $this->functions->remove_double_slashes(
 					$dir_data['url'].'/'.$file['name']
 				);
-					
+
 			$file_path = $this->functions->remove_double_slashes(
 					$dir_data['server_path'].'/'.$file['name']
 				);
@@ -1531,8 +1813,8 @@ class Content_files extends CI_Controller {
 					'metadata'				=> '',
 					'uploaded_by_member_id'	=> 0,
 					'upload_date'			=> 0,
-					'modified_by_member_id' => 0, 
-					'modified_date' 		=> 0, 
+					'modified_by_member_id' => 0,
+					'modified_date' 		=> 0,
 					'field_1_fmt'			=> 'xhtml',
 					'field_2_fmt'			=> 'xhtml',
 					'field_3_fmt'			=> 'xhtml',
@@ -1540,41 +1822,41 @@ class Content_files extends CI_Controller {
 					'field_5_fmt'			=> 'xhtml',
 					'field_6_fmt'			=> 'xhtml',
 					'file_hw_original'		=> $file_dim
-			);				
+			);
 
 		// Insert into categories???
 
 
 			// Go ahead and create the thumb
 			// For syncing- will need to tap into dir prefs and make all image variations- so batch needs to be small
-			
+
 			// Woot- Success!  Make a new thumb
 			$thumb = $this->filemanager->create_thumb(
-				array('server_path' => $this->_upload_dirs[$id]['server_path']), 
+				array('server_path' => $this->_upload_dirs[$id]['server_path']),
 				array('name' => $file['name'])
-			);	
-			
+			);
+
 			if (is_array($sizes[$id]))
 			{
 				$this->filemanager->sync_resized(
-					array('server_path' => $this->_upload_dirs[$id]['server_path']), 
+					array('server_path' => $this->_upload_dirs[$id]['server_path']),
 					array('name' => $file['name']),
 					$sizes[$id]
 				);
 			}
 		}
-		
+
 		// var_dump($file_data);
 		// exit($this->output->send_ajax_response('failure before batch'));
-		
-		
+
+
 		if ( ! empty($file_data))
 		{
 			$this->db->insert_batch('files', $file_data);
 		}
-		
+
 		// exit($this->output->send_ajax_response('failure after batch'));
-		
+
 
 		if (AJAX_REQUEST)
 		{
@@ -1582,9 +1864,9 @@ class Content_files extends CI_Controller {
 			{
 				$this->output->send_ajax_response($errors, TRUE);
 			}
-			
+
 			$this->output->send_ajax_response('success');
-		}		
+		}
 	}
 
 	function sync_database()
@@ -1595,9 +1877,9 @@ class Content_files extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
-		
-		$this->filemanager->sync_database($id);		
+
+
+		$this->filemanager->sync_database($id);
 	}
 
 	// ------------------------------------------------------------------------	
@@ -2016,14 +2298,17 @@ class Content_files extends CI_Controller {
 		$this->javascript->compile();
 
 		$this->cp->set_right_nav(array('create_new_upload_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_upload_preferences'));
-		
+
 		$this->load->view('content/files/file_upload_preferences', $vars);
 	}
+<<<<<<< local
 	
 	function delete_dimension()
 	{
 		
 	}
+=======
+>>>>>>> other
 
 	// --------------------------------------------------------------------
 
@@ -2032,11 +2317,12 @@ class Content_files extends CI_Controller {
 	 *
 	 * @todo -- more refactoring of this mess
 	 * @return void
-	 */	
+	 */
 	public function edit_upload_preferences()
 	{
 		$this->load->library('table');
 		$id = $this->input->get_post('id');
+<<<<<<< local
 		
 		$this->cp->add_js_script(array('file' => 'cp/files/upload_pref_settings'));		
 		
@@ -2046,6 +2332,8 @@ class Content_files extends CI_Controller {
 											'size_not_deleted' => $this->lang->line('size_not_deleted')
 										)
 									));
+=======
+>>>>>>> other
 
 		$type = ($id) ? 'edit' : 'new';
 
@@ -2054,7 +2342,7 @@ class Content_files extends CI_Controller {
 			'url', 'allowed_types', 'max_size',
 			'max_height', 'max_width', 'properties',
 			'pre_format', 'post_format', 'file_properties',
-			'file_pre_format', 'file_post_format', 'batch_location', 
+			'file_pre_format', 'file_post_format', 'batch_location',
 			'cat_group'
 		);
 		
@@ -2064,7 +2352,7 @@ class Content_files extends CI_Controller {
 		{
 			$data['form_hidden'] = NULL;
 			$data['allowed_types'] = NULL;
-			
+
 			foreach ($fields as $field)
 			{
 				$data['field_'.$field] = $this->input->post($field);
@@ -2078,7 +2366,7 @@ class Content_files extends CI_Controller {
 				{
 					show_error(lang('unauthorized_access'));
 				}
-				
+
 				foreach ($this->_upload_dirs[$id] as $k => $v)
 				{
 					if ($k == 'allowed_types')
@@ -2087,9 +2375,9 @@ class Content_files extends CI_Controller {
 					}
 					else
 					{
-						$data['field_'.$k] = $v;						
+						$data['field_'.$k] = $v;
 					}
-					
+
 					if ($k == 'cat_group')
 					{
 						$data['selected_cat_groups'] = explode('|', $v);
@@ -2102,15 +2390,16 @@ class Content_files extends CI_Controller {
 				{
 					show_error(lang('unauthorized_access'));
 				}
-				
+
 				foreach ($fields as $f)
 				{
 					$data['field_'.$f] = '';
 				}
-				
+
 				$data['field_url'] = base_url();
 				$data['field_server_path'] = str_replace(SYSDIR.'/', '', FCPATH);
 			}
+<<<<<<< local
 			
 			// Get Image Versions
 			$sizes_query = $this->db->get_where('file_dimensions',
@@ -2122,13 +2411,15 @@ class Content_files extends CI_Controller {
 					$data['image_sizes'][$row['id']] = $row;
 				}
 			}
+=======
+>>>>>>> other
 
 			$data['form_hidden'] = array(
 				'id'		=> $data['field_id'],
 				'cur_name'	=> $data['field_name']
 			);
 		}
-		
+
 		$this->load->library('form_validation');
 
 		$data['upload_groups'] = $this->member_model->get_upload_groups();
@@ -2153,8 +2444,11 @@ class Content_files extends CI_Controller {
 				}
 			}
 		}
+<<<<<<< local
 		
 	
+=======
+>>>>>>> other
 
 		$title = ($type == 'edit') ? 'edit_file_upload_preferences' : 'new_file_upload_preferences';
 
@@ -2165,15 +2459,15 @@ class Content_files extends CI_Controller {
 								  lang('file_upload_preferences'));
 
 		$data['upload_pref_fields'] = array(
-							'max_size', 'max_height', 'max_width', 'properties', 
-							'pre_format', 'post_format', 'file_properties', 
+							'max_size', 'max_height', 'max_width', 'properties',
+							'pre_format', 'post_format', 'file_properties',
 							'file_pre_format', 'file_post_format', 'batch_location');
 
 		// Category Select List
 		$this->load->model('category_model');
 		$query = $this->category_model->get_category_groups('', FALSE, 1);
 
-		$data['cat_group_options'][] = $this->lang->line('none');
+		$data['cat_group_options'][] = lang('none');
 
 		if ($query->num_rows() > 0)
 		{
@@ -2184,7 +2478,7 @@ class Content_files extends CI_Controller {
 		}
 
 		$data['selected_cat_groups'] = (isset($data['selected_cat_groups'])) ? $data['selected_cat_groups'] : NULL;
-		
+
 		$config = array(
 					   array(
 							 'field'   => 'name',
@@ -2226,6 +2520,7 @@ class Content_files extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->form_validation->set_error_delimiters('<span class="notice">', '</span>')
 							  ->set_rules($config);
+<<<<<<< local
 							
 	
 		// Find next file size id
@@ -2242,6 +2537,9 @@ class Content_files extends CI_Controller {
 			$data['watermark_options'][$wm->wm_id] = $wm->wm_name;
 		}
 		
+=======
+
+>>>>>>> other
 		if ( ! $this->form_validation->run())
 		{
 			$this->javascript->compile();
@@ -2260,7 +2558,7 @@ class Content_files extends CI_Controller {
 	 *
 	 * @todo -- more refactoring of this mess
 	 * @return void
-	 */	
+	 */
 	private function _update_upload_preferences()
 	{
 		$this->load->model('admin_model');
@@ -2287,10 +2585,10 @@ class Content_files extends CI_Controller {
 
 		// Is the name taken?
 		if ($this->admin_model->unique_upload_name(
-								strtolower($this->input->post('name')), 
+								strtolower($this->input->post('name')),
 								strtolower($this->input->post('cur_name')), $edit))
 		{
-			show_error($this->lang->line('duplicate_dir_name'));
+			show_error(lang('duplicate_dir_name'));
 		}
 
 		$id = $this->input->get_post('id');
@@ -2359,7 +2657,7 @@ class Content_files extends CI_Controller {
 		{
 			$_POST['cat_group'] = '';
 		}
-		
+
 		foreach ($_POST as $key => $val)
 		{
 			if (substr($key, 0, 7) == 'access_')
@@ -2377,7 +2675,7 @@ class Content_files extends CI_Controller {
 					{
 						unset($_POST['cat_group'][0]);
 					}
-					
+
 					$data['cat_group'] = implode('|', $this->input->post('cat_group'));
 				}
 				else
@@ -2441,10 +2739,10 @@ class Content_files extends CI_Controller {
 		{
 			foreach($no_access as $member_group)
 			{
-				$this->db->insert('upload_no_access', 
+				$this->db->insert('upload_no_access',
 									array(
-										'upload_id'		=> $id, 
-										'upload_loc'	=> 'cp', 
+										'upload_id'		=> $id,
+										'upload_loc'	=> 'cp',
 										'member_group'	=> $member_group)
 								);
 			}
@@ -2453,7 +2751,7 @@ class Content_files extends CI_Controller {
 		$this->functions->clear_caching('db'); // Clear database cache
 
 		$this->session->set_flashdata('message_success', $cp_message);
-		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'M=edit_upload_preferences'.AMP.'id='.$id);		
+		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'M=edit_upload_preferences'.AMP.'id='.$id);
 	}
 
 	// --------------------------------------------------------------------
@@ -2476,7 +2774,7 @@ class Content_files extends CI_Controller {
 		$this->load->helper('form');
 
 		$this->cp->set_variable('cp_page_title', lang('delete_upload_preference'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences', 
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences',
 								lang('file_upload_preferences'));
 
 		$data = array(
@@ -2492,7 +2790,7 @@ class Content_files extends CI_Controller {
 		$this->db->where('id', $id);
 		$items = $this->db->get('upload_prefs');
 		$data['items'] = array();
-		
+
 		foreach($items->result() as $item)
 		{
 			$data['items'][] = $item->name;
@@ -2516,7 +2814,7 @@ class Content_files extends CI_Controller {
 
 		if ( ! $id)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('tools_model');
@@ -2546,39 +2844,32 @@ class Content_files extends CI_Controller {
 	{
 		if ( ! empty($_POST))
 		{
-			if ($this->input->post('manual_batch'))
-			{
-				$this->_process_batch_upload();
-			}
-			elseif ($this->input->post('auto_batch'))
-			{
-				$this->_do_auto_batch();
-			}
+			$this->_process_batch_upload();
 		}
-		
+
 		$this->cp->set_variable('cp_page_title', lang('batch_upload'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences', 
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=file_upload_preferences',
 								lang('file_upload_preferences'));
 
 		$this->cp->add_js_script(array('file' => 'cp/files/batch_upload'));
-		
+
 		// Get Upload dirs, cycle through and figure out how many files
 		// are in each batch upload location.
 		$upload_dirs = array(lang('please_select'));
-		
+
 		foreach ($this->_upload_dirs as $dir)
 		{
 			$files = ($dir['batch_location'] === NULL) ? array() : get_dir_file_info($dir['batch_location'], TRUE);
-			
+
 			$file_count = count($files);
-			
+
 			if ($file_count > 0)
 			{
 				$upload_dirs[$dir['id']] = sprintf(lang('upload_dir_dropdown'),
-													$dir['name'], count($files));				
+													$dir['name'], count($files));
 			}
 		}
-		
+
 		$data = array(
 			'no_sync_needed'=> (count($upload_dirs) === 1) ? TRUE : FALSE,
 			'upload_dirs'	=> $upload_dirs,
@@ -2588,8 +2879,8 @@ class Content_files extends CI_Controller {
 								'c'		=> lang('closed')
 			)
 		);
-		
-		$this->load->view('content/files/batch_upload_index', $data);	
+
+		$this->load->view('content/files/batch_upload_index', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -2605,34 +2896,34 @@ class Content_files extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$this->output->enable_profiler(FALSE);
-		
+
 		$id = $this->input->post('upload_directory_id');
-		
+
 		if (($id === 0) OR ! isset($this->_upload_dirs[$id]))
 		{
 			$this->output->send_ajax_response(array('error' => TRUE));
 		}
-		
+
 		$group_id = $this->_upload_dirs[$id]['cat_group'];
-		
+
 		// Load the channel API
 		$this->load->library('api');
 		$this->api->instantiate('channel_categories');
-		
+
 		$this->load->model('category_model');
 		$this->load->helper('form');
-		
+
 		$qry = $this->db->select('group_id, group_name, sort_order')
 						->where('group_id', $group_id)
 						->get('category_groups');
-		
+
 		if ($qry->num_rows() === 0)
 		{
 			$this->output->send_ajax_response(array('error' => TRUE));
 		}
-		
+
 		$this->api_channel_categories->category_tree($group_id, '', $qry->row('sort_order'));
 
 		$data = array(
@@ -2641,12 +2932,12 @@ class Content_files extends CI_Controller {
 		);
 
 		$ret = $this->load->view('content/_assets/categories', $data, TRUE);
-		
+
 		echo trim($ret); exit();
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Process Batch Upload
 	 *
@@ -2655,22 +2946,193 @@ class Content_files extends CI_Controller {
 	 */
 	private function _process_batch_upload()
 	{
-		
-		
-		
-		
-		
+		if ( ! ($upload_dir_id = $this->input->post('upload_dirs')))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$batch_location = (isset($this->_upload_dirs[$upload_dir_id]['batch_location'])) ?
+							$this->_upload_dirs[$upload_dir_id]['batch_location'] : FALSE;
+
+		if ( ! $batch_location)
+		{
+			// Batch Location isn't set, in the upload_dirs prop.  oops.
+			show_error(lang('unauthorized_access'));
+		}
+
+		$allow_comments = ($this->input->post('allow_comments')) ? TRUE : FALSE;
+		$status = ( ! $this->input->post('status')) ? 'c' : $this->input->post('status');
+		$categories = implode(',', $this->input->post('category'));
+
+
+		if ($this->input->post('manual_batch'))
+		{
+			$batch_type = 'manual';
+		}
+		elseif ($this->input->post('auto_batch'))
+		{
+			$batch_type = 'auto';
+		}
+
+		$url = BASE.AMP.'C=content_files'.AMP.'M=do_batch'.AMP."allow_comments={$allow_comments}".AMP."categories={$categories}".AMP."status={$status}".AMP.'loc='.base64_encode($batch_location).AMP."type={$batch_type}".AMP."upload_dir={$upload_dir_id}";
+		$this->functions->redirect($url);
+
+		show_error(lang('unauthorized_access'));
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Do manual batch processing
 	 *
 	 */
-	private function _do_manual_batch()
+	public function do_batch()
 	{
-		var_dump($_POST);
+		$allow_comments = $this->input->get('allow_comments');
+		$batch_dir_loc = base64_decode($this->input->get('loc'));
+		$batch_type = $this->input->get('type');
+		$categories = str_replace(',', '|', $this->input->get('categories'));
+		$status = $this->input->get('status');
+		$upload_dir = $this->input->get('upload_dir');
+
+		// Sanitize the upload dir location since it's coming from _GET
+		$batch_dir_loc = $this->security->sanitize_filename($batch_dir_loc, TRUE);
+
+		// If anyone is offended by this, feel free to make it one line
+		// My OCD with long lines of code got the best of me.
+		// Before you move it, ask yourself if this is more readable than this:
+		// 'C=content_files'.AMP.'M=do_batch'.AMP."allow_comments={$allow_comments}".AMP."categories={$categories}".AMP."status={$status}".AMP."status={$status}".AMP.'loc='.base64_encode($batch_location).AMP."type={$batch_type}".AMP."upload_dir={$upload_dir_id}";
+		// I'll make you cookies if you disagree with me  :) -ga
+		$form_action = 'C=content_files'.AMP.'M=do_batch'.AMP;
+		$form_action .= "allow_comments={$allow_comments}".AMP;
+		$form_action .= "categories=".$this->input->get('categories').AMP;
+		$form_action .= "status={$status}".AMP;
+		$form_action .= 'loc='.base64_encode($batch_dir_loc).AMP;
+		$form_action .= "type={$batch_type}".AMP."upload_dir={$upload_dir}";
+
+
+		if ( ! is_dir($batch_dir_loc))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		if ($batch_type == 'auto')
+		{
+			$this->_do_auto_batch($batch_dir_loc, $categories, $status,
+								$allow_comments, $upload_dir, $form_action);
+		}
+
+		$this->_do_manual_batch($batch_dir_loc, $categories, $status,
+								$allow_comments, $upload_dir, $form_action);
 	}
-			
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Do manual batch upload
+	 *
+	 * @param 	string		base64_encoded string of the batch location
+	 * @param 	string		categories in format of 1,3,5,78
+	 * @param 	string		status 'o' or 'c'
+	 * @param 	int 		allow comments -- 1 / 0
+	 * @param 	int			Upload directory id
+	 */
+	private function _do_manual_batch($batch_dir_loc, $categories, $status,
+									$allow_comments, $upload_dir, $form_action)
+	{
+		$files = get_dir_file_info($batch_dir_loc, TRUE);
+
+		if (empty($files))
+		{
+			// Show the success page
+			return;
+		}
+
+		$total_files_count = count($files);
+		$files = array_slice($files, 0, 5);
+		$current_processing_count = count($files);
+
+		foreach ($files as $k => $file)
+		{
+			$mime = get_mime_by_extension($file['name']);
+
+			if ($this->filemanager->is_image($mime))
+			{
+				$files[$k]['image'] = BASE.AMP.'C=content_files'.AMP.'M=batch_thumbs'.AMP."file=".base64_encode($file['server_path']);
+			}
+			else
+			{
+				$files[$k]['image'] = $this->config->item('theme_folder_url').'/cp_global_images/default.png"';
+			}
+		}
+
+		// var_dump($files);
+
+		$this->cp->set_variable('cp_page_title', lang('batch_upload'));
+
+		$data = array(
+			'count_lang'			=> sprintf(lang('files_count_lang'),
+											   $current_processing_count,
+											   $total_files_count),
+			'current_num_files'		=> $current_processing_count,
+			'files'					=> $files,
+			'files_count' 			=> $total_files_count,
+			'form_action'			=> $form_action,
+			'form_hidden'			=> array()
+
+		);
+
+		$this->load->view('content/files/manual_batch', $data);
+		// var_dump(, $files, $batch_dir_loc, $categories, $status, $allow_comments, $upload_dir);
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Automatic batch upload.
+	 *
+	 * @param 	string		base64_encoded string of the batch location
+	 * @param 	string		categories in format of 1,3,5,78
+	 * @param 	string		status 'o' or 'c'
+	 * @param 	int 		allow comments -- 1 / 0
+	 * @param 	int			Upload directory id
+	 */
+	private function _do_auto_batch($batch_dir_loc, $categories, $status,
+									$allow_comments, $upload_dir)
+	{
+
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * This function provides for dynamic thumbnail creation for display
+	 * in the file manager
+	 */
+	public function batch_thumbs()
+	{
+		$this->output->enable_profiler(FALSE);
+
+		$width = ($this->input->get('width')) ? $this->input->get('width') : 64;
+		$height = ($this->input->get('height')) ? $this->input->get('height') : 64;
+
+		$file_path = base64_decode($this->input->get('file'));
+		$file_path = $this->security->sanitize_filename($file_path, TRUE);
+
+		$config = array(
+			'master_dim'		=> 'width',
+			'library_path'		=> $this->config->item('image_library_path'),
+			'image_library'		=> $this->config->item('image_resize_protocol'),
+			'source_image'		=> $file_path,
+			'dynamic_output'	=> TRUE,
+			'height'			=> $height,
+			'width'				=> $width,
+			'create_thumb'		=> TRUE,
+			'maintain_ratio'	=> TRUE
+		);
+
+		$this->load->library('image_lib', $config);
+		$this->image_lib->resize();
+	}
 }

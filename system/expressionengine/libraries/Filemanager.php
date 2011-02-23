@@ -1,4 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -229,11 +230,16 @@ class Filemanager {
 		{
 			$vars['filemanager_backend_url'] = $this->EE->cp->get_safe_refresh();
 		}
-		
+
 		unset($_GET['action']);	// current url == get_safe_refresh()
 		
 		$vars['filemanager_directories'] = $this->directories(FALSE);
-		
+
+		// Generate the filters
+		$vars['selected_filters'] = form_dropdown('selected', array('all' => 'all', 'selected' => 'selected', 'unselected' => 'unselected'), 'all');
+		$vars['category_filters'] = form_dropdown('category', array());
+		$vars['view_filters']     = form_dropdown('view_type', array('list' => 'a list', 'thumb' => 'thumbnails'), 'list', 'id="view_type"');
+
 		$filebrowser_html = $this->EE->load->view('_shared/filebrowser', $vars, TRUE);
 
 		die($this->EE->javascript->generate_json(array(
@@ -241,7 +247,7 @@ class Filemanager {
 			'directories'	=> $vars['filemanager_directories']
 		)));
 	}
-	
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -516,15 +522,15 @@ class Filemanager {
 		foreach($files as $key => &$file)
 		{
 			// Hide the thumbs directory
-			if ($file['name'] == '_thumbs' OR ! $file['mime'] /* skips folders */)
+			if ($file['file_name'] == '_thumbs' OR ! $file['mime_type'] /* skips folders */)
 			{
 				unset($files[$key]);
 				continue;
 			}
 			
-			$file['date'] = $this->EE->localize->set_human_time($file['date'], TRUE);
-			$file['size'] = number_format($file['size']/1000, 1).' '.lang('file_size_unit');
-			$file['has_thumb'] = (in_array('thumb_'.$file['name'], $map));
+			$file['date'] = $this->EE->localize->set_human_time($file['modified_date'], TRUE);
+			//$file['size'] = number_format($file['file_size']/1000, 1).' '.lang('file_size_unit');
+			$file['has_thumb'] = (in_array('thumb_'.$file['file_name'], $map));
 		}
 
 		// if we unset a directory in the loop above our
@@ -680,9 +686,9 @@ class Filemanager {
 	{
 		$dirs = array();
 		
-		$this->EE->load->model('tools_model');
-		$query = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata('group_id'));
-
+		$this->EE->load->model('file_upload_preferences_model');
+		$query = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
+		
 		foreach($query->result_array() as $dir)
 		{
 			$dirs[$dir['id']] = $dir;
@@ -703,9 +709,18 @@ class Filemanager {
 	 */
 	function _directory_contents($dir)
 	{
-		$this->EE->load->model('tools_model');
-		$files = $this->EE->tools_model->get_files($dir['server_path'], $dir['allowed_types'], '', TRUE, TRUE);
+		$this->EE->load->model('file_model');
+		$this->EE->load->helper(array('text', 'number'));
 		
+		$files = $this->EE->file_model->get_files($dir['id'], '', $dir['allowed_types']);
+		$files = $files['results']->result_array();
+
+		foreach ($files as &$file)
+		{
+			$file['short_name'] = ellipsize($file['title'], 10, 0.5);	
+			$file['file_size'] = byte_format($file['file_size']);
+		}
+
 		return array('url' => $dir['url'], 'files' => $files);
 	}
 	
@@ -1351,6 +1366,42 @@ class Filemanager {
 	}
 
 	// --------------------------------------------------------------------		
+	
+	/**
+	 * Is Image
+	 *
+	 * This function has been lifted from the CI file upload class, and tweaked
+	 * just a bit.
+	 *
+	 * @param 	string 		path to file
+	 * @return 	boolean		TRUE if image, FALSE if not
+	 */
+	public function is_image($mime)
+	{
+		// IE will sometimes return odd mime-types during upload, 
+		// so here we just standardize all jpegs or pngs to the same file type.
+
+		$png_mimes  = array('image/x-png');
+		$jpeg_mimes = array('image/jpg', 'image/jpe', 'image/jpeg', 'image/pjpeg');
+
+		if (in_array($mime, $png_mimes))
+		{
+			$mime = 'image/png';
+		}
+
+		if (in_array($mime, $jpeg_mimes))
+		{
+			$mime = 'image/jpeg';
+		}
+
+		$img_mimes = array(
+							'image/gif',
+							'image/jpeg',
+							'image/png',
+						);
+
+		return (in_array($mime, $img_mimes, TRUE)) ? TRUE : FALSE;
+	}
 
 }
 
