@@ -52,7 +52,7 @@
 
 			createBrowser();
 		});
-	}
+	};
 
 	// --------------------------------------------------------------------
 
@@ -60,10 +60,11 @@
 	 * Generic function to make requests to the backend. Everything! is handled by the backend.
 	 *
 	 * Currently supported types:
-	 *		setup				- called automatically | returns manager html and all directories
-	 *		diretory			- returns directory name
-	 *		directories			- returns all directories
-	 *		directory_contents	- returns directory information and files ({url: '', id: '', files: {...}})
+	 *		setup				 - called automatically | returns manager html and all directories
+	 *		diretory			 - returns directory name
+	 *		directories			 - returns all directories
+	 *		directory_contents	 - returns directory information and files ({url: '', id: '', files: {...}})
+	 *		directory_categories - returns directory categories
 	 */
 	$.ee_filebrowser.endpoint_request = function(type, data, callback) {
 		if ( ! callback && $.isFunction(data)) {
@@ -74,7 +75,7 @@
 		data = $.extend(data, {'action': type});
 		
 		$.getJSON(EE.BASE+'&'+EE.filebrowser.endpoint_url+'&'+$.param(data), callback);
-	}
+	};
 
 	// --------------------------------------------------------------------
 
@@ -105,7 +106,7 @@
 			};
 			return false;
 		});
-	}
+	};
 
 	// --------------------------------------------------------------------
 
@@ -116,6 +117,7 @@
 	 * chooses to maintain aspect ratio when resizing an image
 	 */
 	$.ee_filebrowser.change_dim = function(image, el) {
+		var ratio;
 
 		// If the constrain box isn't checked, leave everything alone
 		if ($("#cloned #constrain:checked").length == 0)
@@ -125,15 +127,15 @@
 
 		if (el.attr('id') == 'resize_width')
 		{
-			var ratio = image.height/image.width;
+			ratio = image.height/image.width;
 			$("#resize_height").val(Math.floor(ratio * el.val()));
 		}
 		else
 		{
-			var ratio = image.width/image.height;
+			ratio = image.width/image.height;
 			$("#resize_width").val(Math.floor(ratio * el.val()));
 		}
-	}
+	};
 
 	// --------------------------------------------------------------------
 
@@ -165,7 +167,7 @@
 				}
 			}
 		});
-	}
+	};
 	
 	// --------------------------------------------------------------------
 	/*
@@ -177,7 +179,7 @@
 	$.ee_filebrowser.placeImage = function(dir, img) {
 		$.ee_filebrowser.clean_up(dir_files_structure[dir][img], '');
 		return false;
-	}	
+	};
 
 	// --------------------------------------------------------------------
 
@@ -191,7 +193,7 @@
 		$("#page_0 .items").html(original_upload_html); // Restore the upload form
 		file_manager_obj.dialog("close"); // close dialog
 		trigger_callback(file);
-	}
+	};
 
 	// --------------------------------------------------------------------
 
@@ -342,8 +344,6 @@
 	 * Only fills in thumbnails for the first page, all others are loaded when they come into view
 	 */
 	function build_pages(directory, offset) {
-		var directory = directory;
-
 		if (isNaN(offset)) {
 			offset = 0;
 		}
@@ -369,9 +369,6 @@
 		dir_files_structure[directory.id] = directory.files;
 		dir_paths[directory.id] = directory.url;
 		
-		var per_page = (display_type == 'list') ? files_per_table : thumbs_per_page,
-			total_files = directory.files.length;
-				
 		$.each(directory.files, function(i, el) {
 			el['img_id'] = i+'';
 			el['directory'] = directory.id+'';
@@ -389,70 +386,103 @@
 		$('#file_chooser_body').empty().append(table_view);
 		$("#file_chooser_footer").empty().append(viewSelectors);
 		
-		
-		var page_count = Math.ceil(total_files / per_page),
-			pages = [];
-		
-		for (var i = 0; i < page_count; i++) {
-			pages[i] = i + 1;
-		}
-		
+		var per_page = (display_type == 'list') ? files_per_table : thumbs_per_page,
+			pagination = {};
+
 		offset = offset * per_page;
-		
-		var pagination = {
-			'directory': directory.id,
-			'pages_from': offset + 1, // Bump up offset by one because of zero indexed arrays
-			'pages_to': (offset + per_page > total_files) ? total_files : offset + per_page,
-			'pages_total': total_files,
-			'pages_current': Math.floor(offset / per_page) + 1,
-			'pages': pages
-		};
-		
-		var workon = directory.files.slice(offset, offset+per_page);
 				
 		if (display_type != 'list') {
-			var thumbs = [],
-				total = workon.length,
-				added = 0;
-			
-			while(added < per_page && total) {
-				total--;
-				
-				if (workon[total].has_thumb) {
-					thumbs.push(workon[total]);
-					added++;
-				}
-			}
-			
+			var images = build_image_list(directory),
+				workon = directory.images.slice(offset, offset + per_page);
+
 			$("#tableView").hide();
 
-			$.tmpl("thumb", thumbs).appendTo("#file_chooser_body");
+			$.tmpl("thumb", workon).appendTo("#file_chooser_body");
 			
 			// Add a last class to the 7th thumbnail
 			$('a.file_chooser_thumbnail:nth-child(7n+2)').addClass('first');
 			$('a.file_chooser_thumbnail:nth-child(7n+1)').addClass('last');
 			
-			// @todo need to fix pagination here in case some didn't
-			// have thumbnails?
+			// Change pagination for thumbnails
+			pagination.pages_total = images.length;
 		}
 		else {
+			var workon = directory.files.slice(offset, offset+per_page);
+
 			$("#tableView").show();
 			$.tmpl("fileRow", workon).appendTo("#tableView tbody");
 		}
 		
-		$.tmpl("pagination", pagination).appendTo("#file_chooser_footer")
-			// Create an event handler for changes to the dropdown
-			.find('#view_type').val(display_type).change(function() {
-				display_type = this.value;
-				build_pages($('#dir_choice').val());
-			});
 
-		//	$.template("noFilesRow", $('#noFilesRowTmpl').remove());	
+		build_pagination(directory, offset, per_page, pagination);
 	}
 	
 	$.ee_filebrowser.setPage = build_pages;
 
+	// ------------------------------------------------------------------------ 
+	
+	/**
+	 * Build the pagination for the file chooser
+	 *
+	 * @param {Object} directory The directory object from build_pages
+	 * @param {Number} offset The offset of files from build_pages
+	 * @param {Number} per_page The number of files to show per page
+	 * @param {Object} pagination The pagination object (if declared) from build_pages
+	 */
+	function build_pagination(directory, offset, per_page, pagination) {
+		var	total_files = (pagination.pages_total) ? pagination.pages_total : directory.files.length,
+			pages = [];
+		
+		for (var i = 0, page_count = Math.ceil(total_files / per_page); i < page_count; i++) {
+			pages[i] = i + 1;
+		}
+
+		$.extend(pagination, {
+			'directory': directory.id,
+			'pages_total': total_files,
+			'pages_from': offset + 1, // Bump up offset by one because of zero indexed arrays
+			'pages_to': (offset + per_page > total_files) ? total_files : offset + per_page,
+			'pages_current': Math.floor(offset / per_page) + 1,
+			'pages': pages
+		});
+
+		$.tmpl("pagination", pagination).appendTo("#file_chooser_footer")
+			// Create an event handler for changes to the dropdown
+			.find('#view_type')
+				.val(display_type) // Make sure the dropdown is using the right value
+				.change(function() {
+					display_type = this.value;
+					build_pages($('#dir_choice').val());
+				});
+	}
+
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Build a list of images by looking through the directory files and seeing if thumbs exist
+	 *
+	 * @param {Object} directory The directory object from build_pages
+	 */
+	function build_image_list (directory) {
+		if (typeof directory.images == "undefined") { 
+			var images = [], 
+				count = 0;
+
+			for (var i = 0, max = directory.files.length; i < max; i++) {
+				if (directory.files[i].thumb) {
+					images.push(directory.files[i]);
+				}
+			}
+
+			// Set images for posterity's sake
+			directory.images = images;
+			all_dirs[directory.id].images = images;
+		};
+		
+		return directory.images;	
+	}
+
+	// ------------------------------------------------------------------------ 
 
 	/* 
 	 * Dynamically loads files from a directory if it hasn't been loaded yet
@@ -495,7 +525,7 @@
 		$('#dir_choice').change(function() {
 			loadFiles(this.value);
 			build_pages(this.value, 0);
-		})
+		});
 		
 		$.template("fileRow", $('<tbody />').append($('#rowTmpl').remove().attr('id', '')));
 		$.template("noFilesRow", $('#noFilesRowTmpl').remove());

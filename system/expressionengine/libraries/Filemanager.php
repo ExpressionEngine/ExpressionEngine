@@ -162,6 +162,8 @@ class Filemanager {
 				break;
 			case 'directory_contents':	$this->directory_contents();
 				break;
+			case 'directory_categories': $this->directory_categories();
+				break;
 			case 'upload':				$this->upload_file($this->EE->input->get_post('upload_dir'), FALSE, TRUE);
 				break;
 			case 'edit_image':			$this->edit_image();
@@ -185,7 +187,7 @@ class Filemanager {
 	function _initialize($config)
 	{
 		// Callbacks!
-		foreach(array('directories', 'directory_contents', 'upload_file') as $key)
+		foreach(array('directories', 'directory_contents', 'upload_file', 'directory_categories') as $key)
 		{
 			$this->config[$key.'_callback'] = isset($config[$key.'_callback']) ? $config[$key.'_callback'] : array($this, '_'.$key);
 		}
@@ -356,6 +358,34 @@ class Filemanager {
 		exit;
 	}
 	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Directory Categories
+	 *
+	 * Get all categories in a directory
+	 *
+	 * @access	public
+	 * @return	mixed	directory categories 
+	 */
+	function directory_categories()
+	{
+		$dir_id = $this->EE->input->get('directory');
+		$dir = $this->directory($dir_id, FALSE, TRUE);
+
+		$data = $dir ? call_user_func($this->config['directory_categories_callback'], $dir) : array();
+
+		if (count($data) == 0)
+		{
+			echo '{}';
+		}
+		else
+		{
+			$data['id'] = $dir_id;
+			echo $this->EE->javascript->generate_json($data, TRUE);
+		}
+		exit;
+	}
 	// --------------------------------------------------------------------
 	
 	/**
@@ -718,11 +748,37 @@ class Filemanager {
 
 		foreach ($files as &$file)
 		{
-			$file['short_name'] = ellipsize($file['title'], 10, 0.5);	
+			$file['short_name'] = ellipsize($file['title'], 10, 0.5);
 			$file['file_size'] = byte_format($file['file_size']);
 		}
 
 		return array('url' => $dir['url'], 'files' => $files);
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Directory Categories Callback
+	 *
+	 * This function retrieves the categories for a particular directory
+	 *
+	 * @access public
+	 * @return array category list
+	 */
+	private function _directory_categories($dir)
+	{
+		$this->EE->load->model(array('file_upload_preferences_model', 'category_model'));
+
+		$category_ids = $this->EE->file_upload_preferences_model->get_upload_preferences($dir['id']);
+		$category_ids = explode('|', $category_ids->row('cat_group'));
+
+		$categories = array();
+		foreach ($category_ids as $category_id)
+		{
+			$categories[$category_id] = $this->EE->category_model->get_category_groups($category_id);
+		}
+
+		return array('categories' => $categories);
 	}
 	
 	// --------------------------------------------------------------------
