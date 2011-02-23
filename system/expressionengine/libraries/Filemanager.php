@@ -1322,13 +1322,17 @@ class Filemanager {
 	{
 		if (count($files) === 1)
 		{
+			$file_name = $this->EE->db->select("file_name")
+								->where('file_id', $files[0])
+								->get('files')
+								->row('file_name');
+			
 			// no point in zipping for a single file... let's just send the file
 			
 			$this->EE->load->helper('download');
 			
-			$data = file_get_contents($file_path.urldecode($files[0]));
-			$name = urldecode($files[0]);
-			force_download($name, $data);
+			$data = file_get_contents($file_path.$file_name);
+			force_download($files[0], $data);
 		}
 		else
 		{

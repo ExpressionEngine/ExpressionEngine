@@ -24,6 +24,7 @@
  */
 class File_model extends CI_Model {
 	
+	private $_image_types = array('image/png', 'image/jpeg', 'image/gif');
 
 	/**
 	 * Get Files
@@ -37,7 +38,8 @@ class File_model extends CI_Model {
 	 * @param	string
 	 * @return	mixed
 	 */
-	function get_files($dir_id = array(), $cat_id = '', $type = 'all', $limit = '', $offset = '', $search_value = '', $order = array(), $do_count = TRUE)
+	function get_files($dir_id = array(), $cat_id = NULL, $type = NULL, $limit = NULL, 
+						$offset = NULL, $search_value = NULL, $order = array(), $do_count = TRUE)
 	{
 		$this->load->helper('text');
 		// If we add a dir col- will need a join
@@ -52,43 +54,47 @@ class File_model extends CI_Model {
 			$this->db->where_in("upload_location_id", $dir_id);
 		}
 
-		if ($type !== 'all')
+		$type = ( ! $type) ? 'all' : $type;
+
+		if ($type == 'image')
 		{
-			//$this->db->where("id", $dir_id);
+			$this->db->where_in('mime_type', $this->_image_types);
+		}
+		elseif ($type == 'non-image')
+		{
+			$this->db->where_not_in('mime_type', $this->_image_types);
 		}
 		
 		$this->db->where('site_id', $this->config->item('site_id'));
 		
-		if (($cat_id == 'none' OR $cat_id != "") && is_numeric($cat_id))					 
+		if (($cat_id == 'none' OR $cat_id) && is_numeric($cat_id))					 
 		{
 			$this->db->join('file_categories', 'exp_files.file_id = exp_file_categories.file_id', 'left');
 			$this->db->where('cat_id', $cat_id);				
 		}		
 
-		if ($search_value != '')
+		if ($search_value)
 		{
 			
 		}
-
 
 		$this->db->stop_cache();
 		
 		$return_data['filter_count'] = $this->db->count_all_results('files');
 		
-		if ($return_data['filter_count'] == 0)
+		if ($return_data['filter_count'] === 0)
 		{
 			$this->db->flush_cache();
 			$return_data['results'] = FALSE;
 			return $return_data;
 		}
 
-
-		if ($limit != '')
+		if ($limit)
 		{
 			$this->db->limit($limit);
 		}
 
-		if ($offset != '')
+		if ($offset)
 		{
 			$this->db->offset($offset);
 		}
@@ -108,10 +114,18 @@ class File_model extends CI_Model {
 		$return_data['results'] = $this->db->get('files');
 		
 		$this->db->flush_cache();
-
+		
+		echo $this->db->last_query(); exit;
 		return $return_data;
 	}
 
+	// ------------------------------------------------------------------------	
+
+	/**
+	 * Count Files
+	 *
+	 * @param 	array
+	 */
 	function count_files($dir_id = array())
 	{
 		if ( ! empty($dir_id))
@@ -122,6 +136,13 @@ class File_model extends CI_Model {
 		return $this->db->count_all_results('files');
 	}
 	
+	// ------------------------------------------------------------------------	
+	
+	/**
+	 * Get files by id
+	 * 
+	 * 
+	 */
 	function get_files_by_id($file_id = array(), $dir_id = array())
 	{
 		if ( ! empty($dir_id))
@@ -129,11 +150,17 @@ class File_model extends CI_Model {
 			$this->db->where_in('upload_location_id', $dir_id);
 		}
 
-		$this->db->where_in('file_id', $file_id);
-		
-		return $this->db->get('files');
+		return $this->db->where_in('file_id', $file_id)
+						->get('files');
 	}
 	
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Get watermark preference
+	 *
+	 * @param 	array
+	 */
 	function get_watermark_preferences($id = array())
 	{
 		if ( ! empty($id))
@@ -143,7 +170,14 @@ class File_model extends CI_Model {
 
 		return $this->db->get('file_watermarks');
 	}
+
+	// ------------------------------------------------------------------------
 	
+	/**
+	 * Delete Watermark Preference
+	 *
+	 * @param 	int		watermark ID
+	 */
 	function delete_watermark_preferences($id)
 	{
 		$this->db->where('wm_id', $id);
@@ -159,7 +193,6 @@ class File_model extends CI_Model {
 		$this->db->delete('file_watermarks');
 
 		return $deleting->row('wm_name');
-		
 	}
 	
 	// ------------------------------------------------------------------------
