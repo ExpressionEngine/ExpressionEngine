@@ -2054,7 +2054,7 @@ class Content_files extends CI_Controller {
 		$fields = array(
 			'id', 'site_id', 'name', 'server_path',
 			'url', 'allowed_types', 'max_size',
-			'max_height', 'max_width', 'properties',
+			'max_height', 'max_width', 'max_image_action', 'properties',
 			'pre_format', 'post_format', 'file_properties',
 			'file_pre_format', 'file_post_format', 'batch_location',
 			'cat_group'
@@ -2066,6 +2066,7 @@ class Content_files extends CI_Controller {
 		{
 			$data['form_hidden'] = NULL;
 			$data['allowed_types'] = NULL;
+			$data['allowed_types'] = 'disallow';
 
 			foreach ($fields as $field)
 			{
@@ -2086,6 +2087,10 @@ class Content_files extends CI_Controller {
 					if ($k == 'allowed_types')
 					{
 						$data['allowed_types'] = $v;
+					}
+					elseif ($k == 'max_image_action')
+					{
+						$data['max_image_action'] = $v;
 					}
 					else
 					{
@@ -2165,9 +2170,11 @@ class Content_files extends CI_Controller {
 		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=file_upload_preferences',
 								  lang('file_upload_preferences'));
 
-		$data['upload_pref_fields'] = array(
-							'max_size', 'max_height', 'max_width', 'properties',
-							'pre_format', 'post_format', 'file_properties',
+		$data['upload_pref_fields1'] = array(
+							'max_size', 'max_height', 'max_width');
+							
+		$data['upload_pref_fields2'] = array(
+							'properties', 'pre_format', 'post_format', 'file_properties',
 							'file_pre_format', 'file_post_format', 'batch_location');
 
 		// Category Select List
@@ -2221,7 +2228,13 @@ class Content_files extends CI_Controller {
 							 'field'   => 'max_width',
 							 'label'   => 'lang:max_width',
 							 'rules'   => 'numeric'
-						  )
+						  ),
+					   array(
+							 'field'   => 'max_image_action',
+							 'label'   => 'lang:max_image_handling',
+							 'rules'   => ''
+						  ),						
+						
 					);
 
 		$this->load->library('form_validation');
@@ -2305,8 +2318,6 @@ class Content_files extends CI_Controller {
 
 		$this->db->delete('upload_no_access', array('upload_id' => $id));
 
-
-
 		// Check for changes in image sizes
 		$query = $this->db->get_where('file_dimensions', array('upload_location_id' => $id));
 
@@ -2352,8 +2363,6 @@ class Content_files extends CI_Controller {
 				}
 			}
 		}
-
-
 
 		if ( ! isset($_POST['cat_group']))
 		{
