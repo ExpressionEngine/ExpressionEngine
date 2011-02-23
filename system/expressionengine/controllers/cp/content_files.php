@@ -268,6 +268,8 @@ class Content_files extends CI_Controller {
 		
 		/* Ordering */
 		$order = array();
+		$col_map = array('file_id', 'title', 'file_name', 'mime_type', 
+						'upload_location_id', 'upload_date', '', '');
 
 		if ($this->input->get('iSortCol_0'))
 		{
@@ -279,7 +281,7 @@ class Content_files extends CI_Controller {
 				}
 			}
 		}
-		
+
 		$filtered_entries = $this->file_model->get_files($dirs, $get_post['cat_id'], $get_post['type'], $get_post['per_page'], 
 														 $get_post['offset'], $get_post['keywords'], $order);
 
@@ -466,6 +468,9 @@ class Content_files extends CI_Controller {
 			$ret['perpage'] = $this->input->get_post('iDisplayLength');
 			$ret['offset'] = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
 			$ret['sEcho'] = $this->input->get_post('sEcho');
+			
+			
+			
 		}
 
 		return $ret;

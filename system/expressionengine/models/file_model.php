@@ -38,7 +38,7 @@ class File_model extends CI_Model {
 	 * @param	string
 	 * @return	mixed
 	 */
-	function get_files($dir_id = array(), $cat_id = NULL, $type = NULL, $limit = NULL, 
+	function get_files($dir_id = array(), $cat_id = NULL, $type = 'all', $limit = NULL, 
 						$offset = NULL, $search_value = NULL, $order = array(), $do_count = TRUE)
 	{
 		$this->load->helper('text');
@@ -53,8 +53,6 @@ class File_model extends CI_Model {
 		{
 			$this->db->where_in("upload_location_id", $dir_id);
 		}
-
-		$type = ( ! $type) ? 'all' : $type;
 
 		if ($type == 'image')
 		{
@@ -75,7 +73,8 @@ class File_model extends CI_Model {
 
 		if ($search_value)
 		{
-			
+			$this->db->like('title', $search_value)
+					 ->or_like('file_name', $search_value);
 		}
 
 		$this->db->stop_cache();
@@ -115,7 +114,6 @@ class File_model extends CI_Model {
 		
 		$this->db->flush_cache();
 		
-		echo $this->db->last_query(); exit;
 		return $return_data;
 	}
 
