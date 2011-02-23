@@ -864,26 +864,15 @@ class Content_files extends CI_Controller {
 	 */
 	public function delete_files()
 	{
-		$files     = $this->input->get_post('file');
-		$file_dir  = $this->input->get_post('file_dir');
+		$files = $this->input->get_post('file');
 
-		// Bail if they dont' have access to this upload location.
-		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$file_path = $this->_upload_dirs[$file_dir]['server_path'];
-
-		if ( ! $files OR ! $file_path OR $file_path === "")
+		if ( ! $files)
 		{
 			$this->session->set_flashdata('message_failure', lang('choose_file'));
 			$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);
 		}
 
-		$file_data = $this->file_model->get_files_by_id($files);
-
-		$delete = $this->filemanager->delete($files, $file_path, TRUE);
+		$delete = $this->filemanager->delete($files, TRUE);
 
 		$message_type = ($delete) ? 'message_success' : 'message_failure';
 		$message = ($delete) ? lang('delete_success') : lang('message_failure');

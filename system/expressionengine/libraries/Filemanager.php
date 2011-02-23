@@ -33,6 +33,8 @@ class Filemanager {
 	public $upload_warnings = FALSE;
 	public $upload_data = NULL;
 	public $dir_sizes = FALSE;
+	private $_upload_dirs = array();
+
 	private $EE;
 
 	/**
@@ -47,7 +49,6 @@ class Filemanager {
 		$this->EE->lang->loadfile('filemanager');
 		
 		$this->theme_url = $this->EE->config->item('theme_folder_url').'cp_themes/'.$this->EE->config->item('cp_theme').'/';
-		
 	}
 	
 	// --------------------------------------------------------------------
@@ -1081,8 +1082,21 @@ class Filemanager {
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Fetch Upload Directories
+	 *
+	 * self::_directories() caches upload dirs in _upload_dirs, so we don't
+	 * query twice if we don't need to.
+	 *
+	 * @return array
+	 */
 	public function fetch_upload_dirs()
 	{
+		if ( ! empty($this->_upload_dirs))
+		{
+			return $this->_upload_dirs;
+		}
+		
 		return $this->_directories();
 	}
 
@@ -1117,7 +1131,6 @@ class Filemanager {
 	
 		return $dirs;
 	}
-	
 	
 	// --------------------------------------------------------------------	
 
@@ -1269,41 +1282,74 @@ class Filemanager {
 	/**
 	 * Delete files.
 	 *
+	 * Delete files in the upload locations.  This file accepts FileIDs to delete.
+	 * If the user does not belong to the upload group, an error will be thrown.
+	 *
+	 * @param 	array 		array of files to delete
+	 * @param 	boolean		whether or not to delete thumbnails
+	 * @return 	boolean 	TRUE on success/FALSE on failure
 	 */
-	public function delete($files = array(), $file_path, $find_thumbs = True)
+	public function delete($files = array(), $find_thumbs = True)
 	{
 		if (empty($files))
 		{
 			return FALSE;
 		}
 		
-		$delete_problem = FALSE;
+		$this->EE->load->model('file_model');
 		
-		foreach($files as $file_name)
+		$delete_problem = FALSE;	
+		
+		$file_data = $this->EE->file_model->get_files_by_id($files);
+		
+		if ($file_data->num_rows() === 0)
 		{
-			$file_name = urldecode($file_name);
-			$file_name = $this->EE->security->sanitize_filename($file_name);
+			return FALSE;
+		}
+		
+		$file_dirs = $this->fetch_upload_dirs();
+		$dir_path = NULL;
+		
+		// I'm not sold on this approach, so it might need some refining.
+		// We'll see as things come together
+		foreach ($file_data->result() as $file)
+		{
+			// make sure the user has access to this upload dir
+			foreach ($file_dirs as $dir)
+			{
+				if ($file->upload_location_id === $dir['id'])
+				{
+					$dir_path = $dir['server_path'];
+					break;
+				}
+			}
+
+			// We didn't get the directory path.
+			if ( ! $dir_path)
+			{
+				return FALSE;
+			}
 			
-			$file      = $file_path.$file_name;
-			
-			if ( ! @unlink($file))
+			if ( ! @unlink($file->path))
 			{
 				$delete_problem = TRUE;
 			}
 			
 			if ($find_thumbs)
 			{
-				$thumb = $file_path.'_thumbs'.DIRECTORY_SEPARATOR.'thumb_'.$file_name;
+				$thumb = $dir_path.'_thumbs'.DIRECTORY_SEPARATOR.'thumb_'.$file->file_name;
 				
-				// Delete thumb also
 				if (file_exists($thumb))
 				{
 					@unlink($thumb);
-				}				
-			}			
+				}
+			}
+			
+			// Remove 'er from the database
+			$this->EE->db->where('file_id', $file->file_id)->delete('files');
 		}
 		
-		return ($delete_problem) ? FALSE : TRUE;		
+		return ($delete_problem) ? FALSE : TRUE;	
 	}
 
 	// --------------------------------------------------------------------	
