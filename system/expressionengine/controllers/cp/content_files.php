@@ -90,7 +90,7 @@ class Content_files extends CI_Controller {
 		$this->cp->add_js_script(array(
 			'plugin'	=> array('overlay', 'overlay.apple',
 								'ee_upload', 'dataTables'),
-			'file'		=> 'cp/file_manager_home',
+			'file'		=> 'cp/files/file_manager_home',
 			'ui' 		=> 'datepicker'));
 
 		$upload_dirs_options = array();
@@ -383,6 +383,18 @@ class Content_files extends CI_Controller {
 
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Setup Pagination
+	 *
+	 * This function is used to setup pagination for the index() method and
+	 * the datatables calls.
+	 *
+	 * @param 	int		base url to feed to the pagination class
+	 * @param 	int		total results to paginate
+	 * @param	int		total number of results to display per page
+	 * @param 	str		uri segment to paginate on.
+	 * @return 	void
+	 */
 	private function _setup_pagination($base_url, $total_rows, $per_page, $qstr_seg)
 	{
 		$link = "<img src=\"{$this->cp->cp_theme_url}images/pagination_%s_button.gif\" width=\"13\" height=\"13\" alt=\"%s\" />";
@@ -799,7 +811,7 @@ class Content_files extends CI_Controller {
 
 		$files    = $file_settings['files'];
 		$file_dir = $file_settings['file_dir'];
-
+		
 		switch ($this->input->get_post('action'))
 		{
 			case 'download':
@@ -865,7 +877,7 @@ class Content_files extends CI_Controller {
 		}
 
 		$file_data = $this->file_model->get_files_by_id($files);
-
+		
 		$delete = $this->filemanager->delete($files, $file_path, TRUE);
 
 		$message_type = ($delete) ? 'message_success' : 'message_failure';
@@ -935,8 +947,8 @@ class Content_files extends CI_Controller {
 		}
 
 		return array(
-			'file_dir' => $file_dir,
-			'files' => $files
+			'file_dir' 	=> $file_dir,
+			'files' 	=> $files
 		);
 	}
 
@@ -976,14 +988,16 @@ class Content_files extends CI_Controller {
 		$this->output->set_header("Pragma: no-cache");
 
 		$this->cp->add_js_script(array(
-			// 'plugin'	=> array(''),
-			'file'		=> 'cp/file_manager_edit',
+			'file'		=> 'cp/files/file_manager_edit',
 			'plugin'	=> 'jcrop',
 			)
 		);
 
-		// It cleans itself
-		$file_name 	= $this->security->sanitize_filename($this->input->get('file'));
+		$qry = $this->db->select('file_name')
+						->where('file_id', $this->input->get('file'))
+						->get('files');
+		
+		$file_name 	= $qry->row('file_name');
 
 		// Some vars for later
 		$file_url 	= $this->_upload_dirs[$file_dir]['url'].urldecode($file_name);
@@ -1463,7 +1477,9 @@ class Content_files extends CI_Controller {
 		//$this->db->where('upload_location_id', $id);
 		//$this->db->from('files');
 		//$do_db_check = ($this->db->count_all_results() == 0) ? FALSE : TRUE;
-
+		
+		$this->load->library('localize');
+		
 		// Setup data for batch insert
 		foreach ($files->files[$id] as $file)
 		{
@@ -1512,8 +1528,8 @@ class Content_files extends CI_Controller {
 					'file_name'				=> $file['name'],
 					'file_size'				=> $file['size'],
 					'metadata'				=> '',
-					'uploaded_by_member_id'	=> 0,
-					'upload_date'			=> 0,
+					'uploaded_by_member_id'	=> $this->session->userdata('member_id'),
+					'upload_date'			=> $this->localize->now,
 					'modified_by_member_id' => 0,
 					'modified_date' 		=> 0,
 					'field_1_fmt'			=> 'xhtml',
