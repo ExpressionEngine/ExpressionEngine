@@ -52,7 +52,7 @@
 
 			createBrowser();
 		});
-	}
+	};
 
 	// --------------------------------------------------------------------
 
@@ -60,10 +60,11 @@
 	 * Generic function to make requests to the backend. Everything! is handled by the backend.
 	 *
 	 * Currently supported types:
-	 *		setup				- called automatically | returns manager html and all directories
-	 *		diretory			- returns directory name
-	 *		directories			- returns all directories
-	 *		directory_contents	- returns directory information and files ({url: '', id: '', files: {...}})
+	 *		setup				 - called automatically | returns manager html and all directories
+	 *		diretory			 - returns directory name
+	 *		directories			 - returns all directories
+	 *		directory_contents	 - returns directory information and files ({url: '', id: '', files: {...}})
+	 *		directory_categories - returns directory categories
 	 */
 	$.ee_filebrowser.endpoint_request = function(type, data, callback) {
 		if ( ! callback && $.isFunction(data)) {
@@ -74,7 +75,7 @@
 		data = $.extend(data, {'action': type});
 		
 		$.getJSON(EE.BASE+'&'+EE.filebrowser.endpoint_url+'&'+$.param(data), callback);
-	}
+	};
 
 	// --------------------------------------------------------------------
 
@@ -105,7 +106,7 @@
 			};
 			return false;
 		});
-	}
+	};
 
 	// --------------------------------------------------------------------
 
@@ -116,6 +117,7 @@
 	 * chooses to maintain aspect ratio when resizing an image
 	 */
 	$.ee_filebrowser.change_dim = function(image, el) {
+		var ratio;
 
 		// If the constrain box isn't checked, leave everything alone
 		if ($("#cloned #constrain:checked").length == 0)
@@ -125,15 +127,15 @@
 
 		if (el.attr('id') == 'resize_width')
 		{
-			var ratio = image.height/image.width;
+			ratio = image.height/image.width;
 			$("#resize_height").val(Math.floor(ratio * el.val()));
 		}
 		else
 		{
-			var ratio = image.width/image.height;
+			ratio = image.width/image.height;
 			$("#resize_width").val(Math.floor(ratio * el.val()));
 		}
-	}
+	};
 
 	// --------------------------------------------------------------------
 
@@ -165,7 +167,7 @@
 				}
 			}
 		});
-	}
+	};
 	
 	// --------------------------------------------------------------------
 	/*
@@ -177,7 +179,7 @@
 	$.ee_filebrowser.placeImage = function(dir, img) {
 		$.ee_filebrowser.clean_up(dir_files_structure[dir][img], '');
 		return false;
-	}	
+	};
 
 	// --------------------------------------------------------------------
 
@@ -191,7 +193,7 @@
 		$("#page_0 .items").html(original_upload_html); // Restore the upload form
 		file_manager_obj.dialog("close"); // close dialog
 		trigger_callback(file);
-	}
+	};
 
 	// --------------------------------------------------------------------
 
