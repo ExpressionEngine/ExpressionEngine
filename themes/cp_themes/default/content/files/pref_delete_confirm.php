@@ -20,6 +20,7 @@ if ($EE_view_disable !== TRUE)
 			<p class="notice"><?=$message?></p>
 			
 			<p>
+
 			<?php foreach ($items as $item): ?>
 			<?=$item?><br />
 			<?php endforeach; ?>

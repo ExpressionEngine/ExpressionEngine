@@ -111,6 +111,54 @@ if ($EE_view_disable !== TRUE)
 					<?=form_dropdown('cat_group[]', $cat_group_options, $selected_cat_groups, 'multiple="multiple" style="min-width:200px; padding:3px"')?></p>
 				<?php endif; ?>
 
+				<h3 style="margin-top: 15px;"><?=lang('image_sizes')?></h3>
+				<p class="noback"><?=lang('image_sizes_subtext')?></p>
+
+				<h4><?=lang('image_sizes_list')?></h4>
+				<div class="clear_left"></div>
+
+				<?php
+				$this->table->set_template($cp_table_template);
+				$this->table->set_heading(
+					lang('size_short_name'),
+					lang('size_height'),
+					lang('size_width'),
+					lang('resize_type'),
+					lang('watermark'),
+					''
+					);
+
+				$resize_options = array('crop' => lang('crop'), 'constrain' => lang('constrain'));
+				
+				if (count($image_sizes) > 0)
+				{
+					foreach($image_sizes as $size)
+					{
+						$this->table->add_row(
+								form_input('size_short_name_'.$size['id'], $size['short_name']),
+								form_input('size_height_'.$size['id'], $size['height']),
+								form_input('size_width_'.$size['id'], $size['width']),
+								form_dropdown('size_resize_type_'.$size['id'], $resize_options, $size['resize_type']),
+								form_dropdown('size_watermark_id_'.$size['id'], $watermark_options, $size['watermark_id']),
+								form_submit(array('name' => 'add_size', 'value' => '+', 'class' => 'submit')).' '.form_submit(array('name' => 'remove_size_'.$size['id'], 'value' => '-', 'class' => 'submit remove_size'))
+								);
+					}
+				}
+
+				// blank row for new values
+				$this->table->add_row(
+							form_input('size_short_name_'.$next_size_id, ''),
+							form_input('size_height_'.$next_size_id, ''),
+							form_input('size_width_'.$next_size_id, ''),
+							form_dropdown('size_resize_type_'.$next_size_id, $resize_options, ''),
+							form_dropdown('size_watermark_id_'.$next_size_id, $watermark_options, ''),
+							form_submit(array('name' => 'add_image_size', 'value' => '+', 'class' => 'submit'))
+							);
+
+				echo $this->table->generate();
+				$this->table->clear();
+				?>
+				
 				<h3 style="margin-top: 15px;"><?=lang('restrict_to_group')?></h3>
 
 				<p class="noback">
@@ -119,8 +167,8 @@ if ($EE_view_disable !== TRUE)
 				</p>
 				
 				<div class="clear_left"></div>
-
 				<?php
+
 					$this->table->set_template($cp_pad_table_template);
 					$this->table->set_heading(
 												lang('member_group'),
@@ -174,9 +222,11 @@ if ($EE_view_disable !== TRUE)
 												);
 						}
 					}
-				?>
-				<?=$this->table->generate()?>
 
+					echo $this->table->generate();
+				?>
+
+				
 				<p class="notice">* <?=lang('required_fields')?></p>
 
 				<p><?=form_submit('submit', lang($lang_line), 'class="submit"')?></p>

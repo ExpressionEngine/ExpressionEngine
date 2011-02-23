@@ -133,6 +133,53 @@ class File_model extends CI_Model {
 		
 		return $this->db->get('files');
 	}
+	
+	function get_watermark_preferences($id = array())
+	{
+		if ( ! empty($id))
+		{
+			$this->db->where_in('wm_id', $id);
+		}
+
+		return $this->db->get('file_watermarks');
+	}
+	
+	function delete_watermark_preferences($id)
+	{
+		$this->db->where('wm_id', $id);
+		$this->db->delete('file_watermarks');
+
+		// get the name we're going to delete so that we can return it when we're done
+		$this->db->select('wm_name');
+		$this->db->where('wm_id', $id);
+		$deleting = $this->db->get('file_watermarks');
+
+		// ok, now remove the pref
+		$this->db->where('wm_id', $id);
+		$this->db->delete('file_watermarks');
+
+		return $deleting->row('wm_name');
+		
+	}
+	
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Select Max
+	 *
+	 * @param string	field to select
+	 * @param string	field alias eg:  SELECT MAX(field_id) as max
+	 * @param string	table to select from
+	 * @return object
+	 */
+	function select_max($field, $as = NULL, $table)
+	{
+		$this->db->select_max($field, $as);
+
+		return $this->db->get($table);
+	}
+	
+	
 }
 
 /* End of file file_model.php */

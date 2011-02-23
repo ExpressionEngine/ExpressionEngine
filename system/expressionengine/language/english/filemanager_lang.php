@@ -200,6 +200,104 @@ $lang = array(
 'manual_batch'				=> 'Manual Batch Upload',
 'auto_batch'				=> 'Automatic Batch Upload',
 
+////Watermark
+
+"wm_type" =>
+"Enable Watermarking",
+
+"wm_text" =>
+"Text Version",
+
+"wm_graphic" =>
+"Graphic Version",
+
+"watermark_prefs" =>
+"Watermarking Preferences",
+
+"wm_image_path" =>
+"Server Path to Watermark Image",
+
+"wm_test_image_path" =>
+"Server Path to Test Image",
+
+"wm_test_explain" =>
+"The button below allows you to test your watermark preferences without leaving this page.  In order to do so you must set the server path to a test image.",
+
+"wm_use_font" =>
+"Use True Type Font",
+
+"wm_font" =>
+"Font",
+
+"wm_font_size" =>
+"Font Size",
+
+"wm_text" =>
+"Watermark Text",
+
+"wm_alignment" =>
+"Watermark Alignment",
+
+"top" =>
+"Top",
+
+"mid" =>
+"Middle",
+
+"bot" =>
+"Bottom",
+
+"left" =>
+"Left",
+
+"center" =>
+"Center",
+
+"right" =>
+"Right",
+
+"wm_padding" =>
+"Padding",
+
+"wm_offset" =>
+"Watermark Offset",
+
+"wm_x_offset" =>
+"Horizontal Offset",
+
+"wm_y_offset" =>
+"Vertical Offset",
+
+"wm_text_color" =>
+"Text Color",
+
+"wm_use_drop_shadow" =>
+"Enable Dropshadow",
+
+"wm_shadow_color" =>
+"Dropshadow Color",
+
+"wm_shadow_distance" =>
+"Dropshadow Distance",
+
+"wm_opacity" =>
+"Watermark Opacity",
+
+"wm_test_now" =>
+"Test Your Watermark Settings",
+
+"color_picker" =>
+"Color Picker",
+
+"wm_missing_font" =>
+"Unable to locate the specified font.  Please check the path to your font.",
+
+"wm_x_transp" =>
+"Transparency X Coordinate",
+
+"wm_y_transp" =>
+"Transparency Y Coordinate",
+
 ''=>''
 );
 

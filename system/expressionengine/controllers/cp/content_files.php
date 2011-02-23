@@ -67,7 +67,8 @@ class Content_files extends CI_Controller {
         }
 
 		$this->cp->set_right_nav(array(
-			'directory_manager' => BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+			'directory_manager' => BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences', 
+			'watermark_preferences' => BASE.AMP.'C=content_files'.AMP.'M=watermark_preferences'
 		));	
 
 		$this->_base_url = BASE.AMP.'C=content_files';
@@ -103,8 +104,6 @@ class Content_files extends CI_Controller {
 		
 		$table_columns = ($comments_enabled) ? 9: 8;
 		
-
-
 		// We want the filter to work based on both get and post
 
 		$dir_id = $this->input->get_post('dir_id');
@@ -198,15 +197,6 @@ class Content_files extends CI_Controller {
 		$search_select_options['title'] = $this->lang->line('file_title');
 		$search_select_options['custom_field'] = $this->lang->line('custom_fields');
 		$search_select_options['all'] = $this->lang->line('all');
-
-
-
-
-
-
-
-
-
 
 
 		$no_upload_dirs = FALSE;
@@ -533,10 +523,6 @@ class Content_files extends CI_Controller {
 		$filtered_entries = $this->file_model->get_files($dirs, $cat_id, $type, $perpage, $offset, $keywords, $order);
 
 
-
-
-
-		
 		// No result?  Show the "no results" message
 		$total = $filtered_entries['filter_count'];
 		$query_results = $filtered_entries['results'];
@@ -824,17 +810,14 @@ class Content_files extends CI_Controller {
 	{
 		$file_settings = $this->_get_file_settings();
 		
-		$files    = $file_settings['files'];
-		$file_dir = $file_settings['file_dir'];
-		
 		switch ($this->input->get_post('action'))
 		{
 			case 'download':
-				$this->_download_files($files, $file_dir);
+				$this->_download_files($file_settings);
 				break;
 			
 			case 'delete':
-				$this->_delete_files_confirm($files, $file_dir);
+				$this->_delete_files_confirm($file_settings);
 				break;
 			
 			default:
@@ -933,38 +916,42 @@ class Content_files extends CI_Controller {
 	/**
 	 * Get the list of files and the directory ID for batch file actions
 	 *
-	 * @return array Associative array containing ['file_dir'] as the file directory 
-	 *    and ['files'] an array of the files to act upon.
+	 * @return array containing ['file_dir'] as the array keys 
+	 *    and [an array of the file ids to act upon.
 	 */
 	private function _get_file_settings()
 	{
-		// Do some basic permissions checking
-		if ( ! ($file_dir = $this->input->get_post('upload_dir')))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-		
-		// Bail if they dont' have access to this upload location.
-		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-		
 		// No file, why are we here?
 		if ( ! ($files = $this->input->get_post('file')))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 		
-		if ( ! is_array($files))
+		// Get file data
+		$query = $this->file_model->get_files_by_id($files);
+		$file_data = array();
+		
+		foreach ($query->result_array() as $row)
 		{
-			$files = array($files);
+			$file_data[$row['upload_location_id']][] = $row['file_name'];
+		}
+
+		// Check they have access to each file directory.
+		
+		foreach ($files as $id => $val)
+		{
+			if ( ! array_key_exists($id, $this->_upload_dirs))
+			{
+				unset($file_data[$id]);
+			}
 		}
 		
-		return array(
-			'file_dir' => $file_dir,
-			'files' => $files
-		);
+		if (empty($file_data))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		return $file_data;
 	}
 
 	// ------------------------------------------------------------------------	
@@ -1259,6 +1246,8 @@ class Content_files extends CI_Controller {
 		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file='.$this->input->post('file');
 		$this->functions->redirect($url);
 	}
+
+
 	
 	// ------------------------------------------------------------------------	
 	
@@ -1356,6 +1345,33 @@ class Content_files extends CI_Controller {
 			 PRIMARY KEY `id` (`id`),
 			 KEY `upload_location_id` (`upload_location_id`)
 			)";
+
+			$Q[] = "CREATE TABLE exp_file_watermarks (
+					wm_id int(4) unsigned NOT NULL auto_increment,
+					wm_name varchar(80) NOT NULL,
+					wm_type char(1) NOT NULL default 'n',
+					wm_image_path varchar(100) NOT NULL,
+					wm_test_image_path varchar(100) NOT NULL,
+					wm_use_font char(1) NOT NULL default 'y',
+					wm_font varchar(30) NOT NULL,
+					wm_font_size int(3) unsigned NOT NULL,
+					wm_text varchar(100) NOT NULL,
+					wm_vrt_alignment char(1) NOT NULL default 'T',
+					wm_hor_alignment char(1) NOT NULL default 'L',
+					wm_padding int(3) unsigned NOT NULL,
+					wm_opacity int(3) unsigned NOT NULL,
+					wm_x_offset int(4) unsigned NOT NULL,
+					wm_y_offset int(4) unsigned NOT NULL,
+					wm_x_transp int(4) NOT NULL,
+					wm_y_transp int(4) NOT NULL,
+					wm_text_color varchar(7) NOT NULL,
+					wm_use_drop_shadow char(1) NOT NULL default 'y',
+					wm_shadow_distance int(3) unsigned NOT NULL,
+					wm_shadow_color varchar(7) NOT NULL,
+					PRIMARY KEY (wm_id)
+				)";
+
+
 		
 			// Note- change to cat_id cause it's what we use in category_posts and I just like the consistency
 			
@@ -1584,6 +1600,395 @@ class Content_files extends CI_Controller {
 		$this->filemanager->sync_database($id);		
 	}
 
+	// ------------------------------------------------------------------------	
+	
+	/**
+	 * Checks for images with no record in the database and adds them
+	 */	
+	function watermark_preferences()
+	{
+		$this->load->library('table');
+		$this->load->model('file_model');
+
+		$this->cp->set_variable('cp_page_title', lang('file_watermark_prefs'));
+
+		$this->jquery->tablesorter('.mainTable', '{
+			headers: {1: {sorter: false}, 2: {sorter: false}},
+			widgets: ["zebra"]
+		}');
+
+		$vars['watermarks'] = $this->file_model->get_watermark_preferences();
+
+		$this->javascript->compile();
+
+		$this->cp->set_right_nav(array('create_new_wm_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_watermark_preferences'));
+		
+		$this->load->view('content/files/watermark_preferences', $vars);
+		
+		
+	}
+	
+	// ------------------------------------------------------------------------	
+	
+	/**
+	 * Checks for images with no record in the database and adds them
+	 */	
+	function edit_watermark_preferences()
+	{
+		//$this->fetch_fontlist($gallery_wm_font)
+		$this->load->library('table');
+		$this->load->model('file_model');
+
+		$id = $this->input->get_post('id');
+		
+		// Show/hide based on radio
+		
+		$this->javascript->output('
+			var type = $("input[name=wm_type]").val();
+			
+			if (type == "text") {
+				$(".image_type").hide();
+			}
+			else {
+				$(".text_type").hide();
+			}
+		
+			$("input[name=wm_type]").change(function() {
+				$(".text_type").toggle();
+				$(".image_type").toggle();
+    			}); 
+		');
+		
+		
+		$type = ($id) ? 'edit' : 'new';		
+		
+		if (FALSE)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$default_fields = array(
+						'wm_name'						=> '',
+						'wm_image_path'					=>	'',	
+						'wm_test_image_path'			=>	'',						
+						'wm_type'						=> 'text',
+						'type_image'					=>  0,
+						'type_text'						=>	1,
+						'wm_use_font'					=> 'y',
+						'font_yes'						=> 1,
+						'font_no'						=> 0,
+						'wm_font'						=> 'texb.ttf',
+						'wm_font_size'					=> 16,
+						'wm_text'						=> 'Copyright '.date('Y', $this->localize->now),
+						'wm_alignment'					=> '',
+						'wm_vrt_alignment'				=> 'T',
+						'wm_hor_alignment'				=> 'L',
+						'wm_padding'					=> 10,
+						'wm_x_offset'					=> 0,
+						'wm_y_offset'					=> 0,
+						'wm_x_transp'					=> 2,
+						'wm_y_transp'					=> 2,
+						'wm_text_color'					=> '#ffff00',	
+						'wm_use_drop_shadow'			=> 'y',
+						'use_drop_shadow_yes'			=> 1,
+						'use_drop_shadow_no'			=> 0,	
+						'wm_shadow_color'				=> '#999999',	
+						'wm_shadow_distance'			=> 1,
+						'wm_opacity'					=> 50,
+						'wm_apply_to_thumb'				=> 'n',
+						'wm_apply_to_medium'			=> 'n'
+
+				);
+		
+				
+
+		if ($type == 'new')
+		{
+			$vars = $default_fields;
+				
+			$vars['hidden'] = array();
+		
+		}
+		else
+		{
+			$wm_query = $this->file_model->get_watermark_preferences(array($id));
+
+   			$settings = $wm_query->row_array();
+
+ 			foreach ($settings as $k => $v)
+			{
+				$vars[$k] = ($this->input->post($k)) ? $this->input->post($k) : $settings[$k];
+			}
+
+			// Set our true/false radios
+			$vars['type_text'] = ($vars['wm_type'] == 'text') ? TRUE : FALSE;
+			$vars['type_image'] = ($vars['wm_type'] == 'text') ? FALSE : TRUE;
+			$vars['font_yes'] = ($vars['wm_use_font'] == 'y') ? TRUE : FALSE;
+			$vars['font_no'] = ($vars['wm_use_font'] == 'y') ? FALSE : TRUE;
+			$vars['use_drop_shadow_yes'] = ($vars['wm_use_drop_shadow'] == 'y') ? TRUE : FALSE;
+			$vars['use_drop_shadow_no'] = ($vars['wm_use_drop_shadow'] == 'y') ? FALSE : TRUE;			
+										
+			$vars['hidden'] = array('wm_id' => $id);
+
+		}
+		
+		
+		$i = 1;
+		
+		while ($i < 101)
+		{
+			$vars['opacity_options'][$i] = $i;
+			$i++; 
+		}
+		
+		$vars['font_options'] = array('texb.ttf' => 'texb.ttf');
+		
+
+		$this->load->library('form_validation');
+
+		$title = ($type == 'edit') ? 'edit_wm_preferences' : 'new_wm_preferences';
+
+		$this->cp->set_variable('cp_page_title', lang($title));
+		$vars['lang_line'] = ($type == 'edit') ? 'update' : 'submit';
+
+		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=file_upload_preferences',
+								  lang('file_upload_preferences'));
+
+
+		$config = array(
+					   array(
+							 'field'   => 'name',
+							 'label'   => 'lang:wm_name',
+							 'rules'   => 'required'
+						  ),
+					   array(
+							 'field'   => 'wm_type',
+							 'label'   => 'lang:wm_type',
+							 'rules'   => 'required'
+						  ),
+					   array(
+							 'field'   => 'wm_image_path',
+							 'label'   => 'lang:wm_image_path',
+							 'rules'   => ''
+						  ),						
+					   array(
+							 'field'   => 'wm_test_image_path',
+							 'label'   => 'lang:wm_test_image_path',
+							 'rules'   => ''
+						  ),
+					   array(
+							 'field'   => 'wm_font',
+							 'label'   => 'lang:wm_font',
+							 'rules'   => ''
+						  ),						
+					   array(
+							 'field'   => 'wm_font_size',
+							 'label'   => 'lang:wm_image_path',
+							 'rules'   => 'is_natural'
+						  ),						
+					   array(
+							 'field'   => 'wm_x_offset',
+							 'label'   => 'lang:wm_x_offset',
+							 'rules'   => 'is_natural'
+						  ),
+					   array(
+							 'field'   => 'wm_y_offset',
+							 'label'   => 'lang:wm_y_offset',
+							 'rules'   => 'is_natural'
+						  ),
+					   array(
+							 'field'   => 'wm_vrt_alignment',
+							 'label'   => 'lang:wm_vrt_alignment',
+							 'rules'   => 'is_natural'
+						  ),
+					   array(
+							 'field'   => 'wm_hor_alignment',
+							 'label'   => 'lang:wm_hor_alignment',
+							 'rules'   => 'is_natural'
+						  ),
+					   array(
+							 'field'   => 'wm_x_transp',
+							 'label'   => 'lang:wm_x_offset',
+							 'rules'   => 'is_natural'
+						  ),
+					   array(
+							 'field'   => 'wm_y_transp',
+							 'label'   => 'lang:wm_y_offset',
+							 'rules'   => 'is_natural'
+						  ),
+
+					   array(
+							 'field'   => 'wm_text_color',
+							 'label'   => 'lang:wm_text_color',
+							 'rules'   => ''
+						  ),												
+					   array(
+							 'field'   => 'wm_shadow_color',
+							 'label'   => 'lang:wm_shadow_color',
+							 'rules'   => ''
+						  )						
+					);
+
+		$this->load->library('form_validation');
+		$this->form_validation->set_error_delimiters('<span class="notice">', '</span>')
+							  ->set_rules($config);
+							
+		$this->javascript->compile();					
+		
+		if ( ! $this->form_validation->run())
+		{
+			$this->javascript->compile();
+			$this->load->view('content/files/watermark_settings', $vars);
+		}
+		else
+		{
+			$this->_update_watermark_preferences();
+		}		
+		
+		
+	}
+	
+	// ------------------------------------------------------------------------	
+	
+	function _update_watermark_preferences()
+	{
+		$id = $this->input->post('id');
+		
+		$type = ($id) ? 'edit' : 'new';	
+		$data['wm_name'] = $this->input->post('name');
+		
+		$defaults = array(
+						'wm_image_path'					=>	'',	
+						'wm_test_image_path'			=>	'',						
+						'wm_type'						=> 'n',
+						'wm_use_font'					=> 'y',
+						'wm_font'						=> 'texb.ttf',
+						'wm_font_size'					=> 16,
+						'wm_text'						=> 'Copyright '.date('Y', $this->localize->now),
+						'wm_vrt_alignment'				=> 'T',
+						'wm_hor_alignment'				=> 'L',
+						'wm_padding'					=> 10,
+						'wm_x_offset'					=> 0,
+						'wm_y_offset'					=> 0,
+						'wm_x_transp'					=> 2,
+						'wm_y_transp'					=> 2,
+						'wm_text_color'					=> '#ffff00',	
+						'wm_use_drop_shadow'			=> 'y',
+						'wm_shadow_color'				=> '#999999',	
+						'wm_shadow_distance'			=> 1,
+						'wm_opacity'					=> 50,
+				);	
+				
+		foreach ($defaults as $k => $v)
+		{
+			if ($this->input->post($k) == '')
+			{
+				$data[$k] = $defaults[$k];
+			}
+			else
+			{
+				$data[$k] = $this->input->post($k);
+			}
+		}			
+
+
+		// Construct the query based on whether we are updating or inserting
+		if ($type === 'edit')
+		{
+			$this->db->update('file_watermarks', $data, array('id' => $id));
+			$cp_message = lang('preferences_updated');
+		}
+		else
+		{
+			//$data['site_id'] = $this->config->item('site_id');
+
+			$this->db->insert('file_watermarks', $data);
+			$id = $this->db->insert_id();
+			$cp_message = lang('new_watermark_created');
+		}
+
+		$this->session->set_flashdata('message_success', $cp_message);
+		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'M=watermark_preferences');			
+		
+	}	
+	
+	
+	// ------------------------------------------------------------------------	
+	
+	/**
+	 * Checks for images with no record in the database and adds them
+	 */	
+	function delete_watermark_preferences_conf()
+	{
+		$id = $this->input->get_post('id');
+
+		if ( ! $id)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$this->load->helper('form');
+
+		$this->cp->set_variable('cp_page_title', lang('delete_wm_preference'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=watermark_preferences', 
+								lang('watermark_preferences'));
+
+		$data = array(
+			'form_action'	=> 'C=content_files'.AMP.'M=delete_watermark_preferences'.AMP.'id='.$id,
+			'form_extra'	=> '',
+			'form_hidden'	=> array(
+				'id'			=> $id
+			),
+			'message'		=> lang('delete_watermark_pref_confirmation')
+		);
+
+		// Grab all wm prefs with this id
+		$this->db->where('wm_id', $id);
+		$items = $this->db->get('file_watermarks');
+		$data['items'] = array();
+		
+		foreach($items->result() as $item)
+		{
+			$data['items'][] = $item->wm_name;
+		}
+
+		$this->javascript->compile();
+		$this->load->view('content/files/pref_delete_confirm', $data);
+		
+	}			
+
+	// --------------------------------------------------------------------
+
+	/**
+	 *  Delete Upload Preferences
+	 *
+	 * @access	public
+	 * @return	null
+	 */
+	function delete_watermark_preferences()
+	{
+		$id = $this->input->get_post('id');
+
+		if ( ! $id)
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}
+
+		$this->load->model('file_model');
+
+
+		$name = $this->file_model->delete_watermark_preferences($id);
+
+		$this->logger->log_action(lang('watermark_pref_deleted').NBS.NBS.$name);
+
+		// Clear database cache
+		$this->functions->clear_caching('db');
+
+		$this->session->set_flashdata('message_success', lang('watermark_pref_deleted').NBS.NBS.$name);
+		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'M=watermark_preferences');
+	}
+
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -1615,6 +2020,11 @@ class Content_files extends CI_Controller {
 		$this->load->view('content/files/file_upload_preferences', $vars);
 	}
 	
+	function delete_dimension()
+	{
+		
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -1628,6 +2038,15 @@ class Content_files extends CI_Controller {
 		$this->load->library('table');
 		$id = $this->input->get_post('id');
 		
+		$this->cp->add_js_script(array('file' => 'cp/files/upload_pref_settings'));		
+		
+		
+		$this->javascript->set_global(array('lang' => array(
+											'size_deleted'	=> $this->lang->line('size_deleted'),
+											'size_not_deleted' => $this->lang->line('size_not_deleted')
+										)
+									));
+
 		$type = ($id) ? 'edit' : 'new';
 
 		$fields = array(
@@ -1638,6 +2057,8 @@ class Content_files extends CI_Controller {
 			'file_pre_format', 'file_post_format', 'batch_location', 
 			'cat_group'
 		);
+		
+		$data['image_sizes'] = array();
 
 		if ($type == 'new')
 		{
@@ -1647,7 +2068,7 @@ class Content_files extends CI_Controller {
 			foreach ($fields as $field)
 			{
 				$data['field_'.$field] = $this->input->post($field);
-			}			
+			}
 		}
 		else
 		{
@@ -1691,6 +2112,17 @@ class Content_files extends CI_Controller {
 				$data['field_server_path'] = str_replace(SYSDIR.'/', '', FCPATH);
 			}
 			
+			// Get Image Versions
+			$sizes_query = $this->db->get_where('file_dimensions',
+														array('upload_location_id' => $id));
+			if ($sizes_query->num_rows() != 0)
+			{
+				foreach($sizes_query->result_array() as $row)
+				{
+					$data['image_sizes'][$row['id']] = $row;
+				}
+			}
+
 			$data['form_hidden'] = array(
 				'id'		=> $data['field_id'],
 				'cur_name'	=> $data['field_name']
@@ -1720,7 +2152,9 @@ class Content_files extends CI_Controller {
 					$data['banned_groups'][] = $row['member_group'];
 				}
 			}
-		}	
+		}
+		
+	
 
 		$title = ($type == 'edit') ? 'edit_file_upload_preferences' : 'new_file_upload_preferences';
 
@@ -1792,6 +2226,21 @@ class Content_files extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->form_validation->set_error_delimiters('<span class="notice">', '</span>')
 							  ->set_rules($config);
+							
+	
+		// Find next file size id
+		$size_query = $this->file_model->select_max('id', '', 'file_dimensions');
+		
+		$data['next_size_id'] = ($size_query->row('id') >= 1) ? $size_query->row('id') + 1 : 1;
+		
+		// Get watermark options
+		$wm_query = $this->file_model->get_watermark_preferences();
+		$data['watermark_options'] = array();
+		
+		foreach ($wm_query->result() as $wm)
+		{
+			$data['watermark_options'][$wm->wm_id] = $wm->wm_name;
+		}
 		
 		if ( ! $this->form_validation->run())
 		{
@@ -1849,11 +2298,62 @@ class Content_files extends CI_Controller {
 		unset($_POST['id']);
 		unset($_POST['cur_name']);
 		unset($_POST['submit']); // submit button
+		unset($_POST['add_image_size']);
 
 		$data = array();
 		$no_access = array();
 
 		$this->db->delete('upload_no_access', array('upload_id' => $id));
+
+
+
+		// Check for changes in image sizes
+		$query = $this->db->get_where('file_dimensions', array('upload_location_id' => $id));
+
+		$names  = array();
+
+		if ($query->num_rows() > 0)
+		{
+			foreach($query->result_array() as $row)
+			{
+				if (isset($_POST['short_name_'.$row['id']]))
+				{
+					if ((trim($_POST['short_name_'.$row['id']]) == '' OR 			
+						in_array($_POST['short_name_'.$row['id']], $names)) && ! isset($_POST['remove_size_'.$row['id']]))
+					{
+						return $this->output->show_user_error('submission', array($this->lang->line('invalid_shortname')));
+					}
+
+					$updatedata = array(
+						'short_name' => $_POST['size_short_name_'.$row['id']],
+						'title'	=> $_POST['size_short_name_'.$row['id']],
+						'resize_type' => $_POST['size_resize_type_'.$row['id']],
+						'height' => $_POST['size_height_'.$row['id']],
+						'width' => $_POST['size_width_'.$row['id']],
+						'watermark_id' => $_POST['size_watermark_id_'.$row['id']]
+						);
+
+					$this->db->where('id', $row['id']);
+					$this->db->update('file_dimensions', $updatedata);
+
+					$names[]  = $_POST['short_name_'.$row['id']];
+
+				}
+				else
+				{
+					if (isset($_POST['remove_size_'.$row['id']]))
+					{
+						unset($_POST['remove_size_'.$row['id']]);
+						unset($_POST['size_short_name_'.$row['id']]);
+					}
+					
+					$this->db->where('id', $row['id']);
+					$this->db->delete('file_dimensions');
+				}
+			}
+		}
+
+
 
 		if ( ! isset($_POST['cat_group']))
 		{
@@ -1885,11 +2385,42 @@ class Content_files extends CI_Controller {
 					$data['cat_group'] = '';
 				}
 			}
+			elseif(substr($key, 0, strlen('size_')) == 'size_')
+			{
+				if (substr($key, 0, strlen('size_short_name_')) == 'size_short_name_')
+				{
+					$number = substr($key, strlen('size_short_name_'));
+					$name = 'size_short_name_'.$number;
+
+					if (trim($val) == '') continue;
+
+					if ( ! isset($_POST[$name]) OR ! preg_match("/^\w+$/", $_POST[$name]) OR 
+						in_array($_POST[$name], $names))
+					{
+						return $this->output->show_user_error('submission', array($this->lang->line('invalid_short_name')));
+					}
+
+					$size_data = array(
+						'upload_location_id'		=> $id,
+						'short_name'		=> $_POST[$name],
+						'title'	=> $_POST['size_short_name_'.$number],
+						'resize_type' => $_POST['size_resize_type_'.$number],
+						'height' => $_POST['size_height_'.$number],
+						'width' => $_POST['size_width_'.$number],
+						'watermark_id' => $_POST['size_watermark_id_'.$number]
+						);
+
+					$this->db->insert('file_dimensions', $size_data);
+
+					$names[]  = $_POST[$name];
+				}
+			}
 			else
 			{
 				$data[$key] = $val;
 			}
 		}
+
 
 		// Construct the query based on whether we are updating or inserting
 		if ($edit === TRUE)
