@@ -357,57 +357,55 @@ $(document).ready(function () {
 // name, size, kind, date, actions, toggle
 // id, title, file name, kind, dir name, comments, date, actions, toggle
 
-		if (EE.file.tableColumns == 9) {
-			MyCols = [null, null, null, null, null, null, null, { "bSortable" : false }, { "bSortable" : false } ];
-			MySortCol = 6;
-		} else {
-			MyCols = [null, null, null, null, null, null, { "bSortable" : false }, { "bSortable" : false } ];
-			MySortCol = 5;
-		}
+	if (EE.file.tableColumns == 9) {
+		MyCols = [null, null, null, null, null, null, null, { "bSortable" : false }, { "bSortable" : false } ];
+		MySortCol = 6;
+	} else {
+		MyCols = [null, null, null, null, null, null, { "bSortable" : false }, { "bSortable" : false } ];
+		MySortCol = 5;
+	}
 
-		oTable = $("#file_form .mainTable").dataTable( {	
-				"sPaginationType": "full_numbers",
-				"bLengthChange": false,
-				"aaSorting": [[ MySortCol, "desc" ]],
-				"bFilter": false,
-				"sWrapper": false,
-				"sInfo": false,
-				"bAutoWidth": false,
-				"iDisplayLength": +EE.file.perPage,  
-				"aoColumns": MyCols,
-				"oLanguage": {
-					"sZeroRecords": EE.lang.noEntries,
-					"oPaginate": {
-						"sFirst": "<img src=\""+EE.file.themeUrl+"images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-						"sPrevious": "<img src=\""+EE.file.themeUrl+"images/pagination_prev_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-						"sNext": "<img src=\""+EE.file.themeUrl+"images/pagination_next_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />", 
-						"sLast": "<img src=\""+EE.file.themeUrl+"images/pagination_last_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />"
-					}
-				},
-				"bProcessing": true,
-				"bServerSide": true,
-				"sAjaxSource": EE.BASE+"&C=content_files&M=file_ajax_filter&time=" + time,
-				"fnServerData": fnDataTablesPipeline
-			});
+	oTable = $("#file_form .mainTable").dataTable( {	
+			"sPaginationType": "full_numbers",
+			"bLengthChange": false,
+			"aaSorting": [[ MySortCol, "desc" ]],
+			"bFilter": false,
+			"sWrapper": false,
+			"sInfo": false,
+			"bAutoWidth": false,
+			"iDisplayLength": +EE.file.perPage,  
+			"aoColumns": MyCols,
+			"oLanguage": {
+				"sZeroRecords": EE.lang.noEntries,
+				"oPaginate": {
+					"sFirst": "<img src=\""+EE.file.themeUrl+"images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
+					"sPrevious": "<img src=\""+EE.file.themeUrl+"images/pagination_prev_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
+					"sNext": "<img src=\""+EE.file.themeUrl+"images/pagination_next_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />", 
+					"sLast": "<img src=\""+EE.file.themeUrl+"images/pagination_last_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />"
+				}
+			},
+			"bProcessing": true,
+			"bServerSide": true,
+			"sAjaxSource": EE.BASE+"&C=content_files&M=file_ajax_filter&time=" + time,
+			"fnServerData": fnDataTablesPipeline
+		});
 
-			$("#keywords").keyup( function () {
-			/* Filter on the column (the index) of this element */
-				oTable.fnDraw();
-			});
+		$("#keywords").keyup( function () {
+		/* Filter on the column (the index) of this element */
+			oTable.fnDraw();
+		});
 
-			$("select#dir_id").change(function () {
-				oTable.fnDraw();
-			});	
-
-			$("select#cat_id").change(function () {
-				oTable.fnDraw();
-			});	
-			$("select#file_type").change(function () {
-				oTable.fnDraw();
-			});
-			$("select#date_range").change(function () {
-				oTable.fnDraw();
-			});
-			
-	
-});	
+		$("select#dir_id").change(function () {
+			oTable.fnDraw();
+		});	
+   
+		$("select#cat_id").change(function () {
+			oTable.fnDraw();
+		});	
+		$("select#file_type").change(function () {
+			oTable.fnDraw();
+		});
+		$("select#date_range").change(function () {
+			oTable.fnDraw();
+		});	
+});
