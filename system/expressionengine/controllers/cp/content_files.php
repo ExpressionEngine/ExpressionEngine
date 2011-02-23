@@ -94,14 +94,14 @@ class Content_files extends CI_Controller {
 			'ui' 		=> 'datepicker'));
 
 		$upload_dirs_options = array();
-		
+
 		// This is temporary for just a bit.
 		$comments_enabled = FALSE;
 		$table_columns = ($comments_enabled) ? 9: 8;
 
 		// Setup get/post vars in class vars
 		$get_post = $this->_fetch_get_post_vars();
-		
+
 		// Get array of allowed upload dirs, or error out.
 		$allowed_dirs = $this->_setup_allowed_dirs();
 		$total_dirs = count($allowed_dirs);
@@ -180,8 +180,8 @@ class Content_files extends CI_Controller {
 		else
 		{
 			$dirs = ($get_post['dir_id'] === FALSE) ? $this->_allowed_dirs : $get_post['dir_id'];
-			
-			$filtered_entries = $this->file_model->get_files($dirs, $get_post['cat_id'], $get_post['type'], $get_post['per_page'], 
+
+			$filtered_entries = $this->file_model->get_files($dirs, $get_post['cat_id'], $get_post['type'], $get_post['per_page'],
 															 $get_post['offset'], $get_post['keywords'], $get_post['order']);
 
 			$files = $filtered_entries['results'];
@@ -196,12 +196,12 @@ class Content_files extends CI_Controller {
 			$dir_size = 0;
 
 			$total_rows = $this->file_model->count_files($allowed_dirs);
-			
+
 			$file_list = $this->_fetch_file_list($files, $total_filtered);
-			
+
 			$base_url = $this->_base_url.AMP.'directory='.$selected_dir.AMP.'per_page='.$get_post['per_page'];
 			$qstr_seg = 'offset';
-			
+
 			$this->_setup_pagination($base_url, $total_rows, $get_post['per_page'], $qstr_seg);
 
 			$action_options = array(
@@ -239,7 +239,7 @@ class Content_files extends CI_Controller {
 			'type_select_options'	=> $type_select_options,
 			'upload_dirs_options' 	=> $upload_dirs_options
 		);
-			
+
 		$this->javascript->compile();
 		$this->load->view('content/files/index', $data);
 	}
@@ -255,20 +255,20 @@ class Content_files extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		// Setup get/post vars in class vars
 		$this->_fetch_get_post_vars();
-		
+
 		// Setup get/post vars in class vars
 		$get_post = $this->_fetch_get_post_vars();
-	
+
 		$allowed_dirs = $this->_setup_allowed_dirs();
-				
+
 		$dirs = ($get_post['dir_id'] === FALSE) ? $this->_allowed_dirs : $get_post['dir_id'];
-		
+
 		/* Ordering */
 		$order = array();
-		$col_map = array('file_id', 'title', 'file_name', 'mime_type', 
+		$col_map = array('file_id', 'title', 'file_name', 'mime_type',
 						'upload_location_id', 'upload_date', '', '');
 
 		if ($this->input->get('iSortCol_0'))
@@ -282,7 +282,7 @@ class Content_files extends CI_Controller {
 			}
 		}
 
-		$filtered_entries = $this->file_model->get_files($dirs, $get_post['cat_id'], $get_post['type'], $get_post['per_page'], 
+		$filtered_entries = $this->file_model->get_files($dirs, $get_post['cat_id'], $get_post['type'], $get_post['per_page'],
 														 $get_post['offset'], $get_post['keywords'], $order);
 
 		$files = $filtered_entries['results'];
@@ -295,16 +295,16 @@ class Content_files extends CI_Controller {
 		}
 
 		$dir_size = 0;
-		
+
 		$response = array(
 			'sEcho' 				=> $get_post['sEcho'],
 			'iTotalRecords' 		=> $this->file_model->count_files($allowed_dirs),
 			'iTotalDisplayRecords' 	=> $total_filtered,
 			'aaData'				=> $this->_fetch_file_list($files, $total_filtered)
 		);
-		
-		
-		$this->output->send_ajax_response($response);		
+
+
+		$this->output->send_ajax_response($response);
 	}
 
 
@@ -319,22 +319,22 @@ class Content_files extends CI_Controller {
 	private function _fetch_file_list($files, $total_filtered)
 	{
 		$file_list = array();
-		
+
 		if ($total_filtered > 0)
 		{
 			// Date
-			$date_fmt = ($this->session->userdata('time_format') != '') ? 
+			$date_fmt = ($this->session->userdata('time_format') != '') ?
 							$this->session->userdata('time_format') : $this->config->item('time_format');
 
 			$datestr = ($date_fmt == 'us') ? '%m/%d/%y %h:%i %a' : '%Y-%m-%d %H:%i';
-						
+
 			$i = 0;
-			
+
 			// Setup file list
 			foreach ($files->result_array() as $k => $file)
 			{
 				$is_image = FALSE;
-				
+
 				$file_location = $this->functions->remove_double_slashes(
 					$this->_upload_dirs[$file['upload_location_id']]['url'].'/'.$file['file_name']);
 
@@ -343,7 +343,7 @@ class Content_files extends CI_Controller {
 
 				$r[] = $file['file_id'];
 				$r[] = $file['title'];
-				
+
 				// Lightbox links
 				if (strncmp($file['mime_type'], 'image', 5) === 0)
 				{
@@ -354,12 +354,12 @@ class Content_files extends CI_Controller {
 				{
 					$r[] = $file['file_name'];
 				}
-				
+
 				$r[] = $file['mime_type'];
 				$r[] = $this->_upload_dirs[$file['upload_location_id']]['name'];
 				$r[] = $this->localize->set_human_time($file['upload_date'], TRUE);
-	           
-	
+
+
 				$action_base = BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file='.$file['file_id'];
 				$actions = '<a href="'.$action_base.AMP.'action=download" title="'.lang('file_download').'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png"></a>';
 				$actions .= '&nbsp;&nbsp;';
@@ -370,7 +370,7 @@ class Content_files extends CI_Controller {
 					$actions .= '&nbsp;&nbsp;';
 					$actions .= '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file='.$file['file_id'].'" title="'.lang('edit_file').'"><img src="'.$this->cp->cp_theme_url.'images/icon-edit.png" alt="'.lang('delete').'" /></a>';
 				}
-				
+
 				$r[] = $actions;
 				$r[] = form_checkbox('toggle[]', $file['file_id'], '', ' class="toggle" id="toggle_box_'.$file['file_id'].'"');
 
@@ -379,12 +379,12 @@ class Content_files extends CI_Controller {
 				$i++;
 			}
 		}
-	
+
 		return $file_list;
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Setup Pagination
 	 *
@@ -400,7 +400,7 @@ class Content_files extends CI_Controller {
 	private function _setup_pagination($base_url, $total_rows, $per_page, $qstr_seg)
 	{
 		$link = "<img src=\"{$this->cp->cp_theme_url}images/pagination_%s_button.gif\" width=\"13\" height=\"13\" alt=\"%s\" />";
-		
+
 		$p_config = array(
 			'base_url'				=> $base_url,
 			'total_rows'			=> $total_rows,
@@ -418,7 +418,7 @@ class Content_files extends CI_Controller {
 	}
 
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Fetch Get/Post variables
 	 *
@@ -449,7 +449,7 @@ class Content_files extends CI_Controller {
 			'type'			=> ($type = $this->input->get_post('type')) ? $type : 'all'
 		);
 
-		// If the request is coming from datatables, we add time= to the 
+		// If the request is coming from datatables, we add time= to the
 		// query string.  So, it's safe to assume that we can test it that way
 		if ( ! $this->input->get('time'))
 		{
@@ -460,7 +460,7 @@ class Content_files extends CI_Controller {
 			elseif ($this->input->get('keywords'))
 			{
 				$ret['keywords'] = sanitize_search_terms(base64_decode($this->input->get('keywords')));
-			}		
+			}
 		}
 		else
 		{
@@ -468,16 +468,16 @@ class Content_files extends CI_Controller {
 			$ret['perpage'] = $this->input->get_post('iDisplayLength');
 			$ret['offset'] = ($this->input->get_post('iDisplayStart')) ? $this->input->get_post('iDisplayStart') : 0; // Display start point
 			$ret['sEcho'] = $this->input->get_post('sEcho');
-			
-			
-			
+
+
+
 		}
 
 		return $ret;
 	}
-		
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	 * Setup Allowed Upload Directories
 	 *
@@ -492,7 +492,7 @@ class Content_files extends CI_Controller {
 		{
 			return $this->_allowed_dirs;
 		}
-		
+
 		foreach ($this->_upload_dirs as $k => $v)
 		{
 			$this->_allowed_dirs[] = $k;
@@ -502,7 +502,7 @@ class Content_files extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		return $this->_allowed_dirs;
 	}
 
@@ -748,7 +748,7 @@ class Content_files extends CI_Controller {
 	 */
 	public function rename_file()
 	{
-		$required = array('file_name', 'rename_attempt', 'orig_name', 'temp_file_name', 
+		$required = array('file_name', 'rename_attempt', 'orig_name', 'temp_file_name',
 							'is_image', 'temp_prefix', 'remove_spaces', 'id');
 
 		foreach ($required as $val)
@@ -816,7 +816,7 @@ class Content_files extends CI_Controller {
 
 		$files    = $file_settings['files'];
 		$file_dir = $file_settings['file_dir'];
-		
+
 		switch ($this->input->get_post('action'))
 		{
 			case 'download':
@@ -882,7 +882,7 @@ class Content_files extends CI_Controller {
 		}
 
 		$file_data = $this->file_model->get_files_by_id($files);
-		
+
 		$delete = $this->filemanager->delete($files, $file_path, TRUE);
 
 		$message_type = ($delete) ? 'message_success' : 'message_failure';
@@ -1001,7 +1001,7 @@ class Content_files extends CI_Controller {
 		$qry = $this->db->select('file_name')
 						->where('file_id', $this->input->get('file'))
 						->get('files');
-		
+
 		$file_name 	= $qry->row('file_name');
 
 		// Some vars for later
@@ -1448,12 +1448,18 @@ class Content_files extends CI_Controller {
 		$this->load->view('content/files/sync', $vars);
 
 
-// process file array - move to own method?
-
-
+		// process file array - move to own method?
 	}
 
-	function do_sync_files()
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Do sync files
+	 *
+	 *
+	 *
+	 */
+	public function do_sync_files()
 	{
 		$type = 'insert';
 		$errors = array();
@@ -1462,7 +1468,8 @@ class Content_files extends CI_Controller {
 		// If file exists- make sure it exists in db - otherwise add it to db and generate all child sizes
 		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
 
-		if (($sizes = $this->input->post('sizes')) === FALSE OR ($current_files = $this->input->post('files')) === FALSE)
+		if (($sizes = $this->input->post('sizes')) === FALSE OR
+			($current_files = $this->input->post('files')) === FALSE)
 		{
 			return FALSE;
 		}
@@ -1482,9 +1489,9 @@ class Content_files extends CI_Controller {
 		//$this->db->where('upload_location_id', $id);
 		//$this->db->from('files');
 		//$do_db_check = ($this->db->count_all_results() == 0) ? FALSE : TRUE;
-		
+
 		$this->load->library('localize');
-		
+
 		// Setup data for batch insert
 		foreach ($files->files[$id] as $file)
 		{
@@ -1546,8 +1553,7 @@ class Content_files extends CI_Controller {
 					'file_hw_original'		=> $file_dim
 			);
 
-		// Insert into categories???
-
+			// Insert into categories???
 
 			// Go ahead and create the thumb
 			// For syncing- will need to tap into dir prefs and make all image variations- so batch needs to be small
@@ -1591,6 +1597,8 @@ class Content_files extends CI_Controller {
 		}
 	}
 
+	// ------------------------------------------------------------------------
+
 	function sync_database()
 	{
 		$id = $this->input->post('dir_id');
@@ -1604,11 +1612,11 @@ class Content_files extends CI_Controller {
 		$this->filemanager->sync_database($id);
 	}
 
-	// ------------------------------------------------------------------------	
-	
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Checks for images with no record in the database and adds them
-	 */	
+	 */
 	function watermark_preferences()
 	{
 		$this->load->library('table');
@@ -1626,17 +1634,17 @@ class Content_files extends CI_Controller {
 		$this->javascript->compile();
 
 		$this->cp->set_right_nav(array('create_new_wm_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_watermark_preferences'));
-		
+
 		$this->load->view('content/files/watermark_preferences', $vars);
-		
-		
+
+
 	}
-	
-	// ------------------------------------------------------------------------	
-	
+
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Checks for images with no record in the database and adds them
-	 */	
+	 */
 	function edit_watermark_preferences()
 	{
 		//$this->fetch_fontlist($gallery_wm_font)
@@ -1644,37 +1652,37 @@ class Content_files extends CI_Controller {
 		$this->load->model('file_model');
 
 		$id = $this->input->get_post('id');
-		
+
 		// Show/hide based on radio
-		
+
 		$this->javascript->output('
 			var type = $("input[name=wm_type]").val();
-			
+
 			if (type == "text") {
 				$(".image_type").hide();
 			}
 			else {
 				$(".text_type").hide();
 			}
-		
+
 			$("input[name=wm_type]").change(function() {
 				$(".text_type").toggle();
 				$(".image_type").toggle();
-    			}); 
+    			});
 		');
-		
-		
-		$type = ($id) ? 'edit' : 'new';		
-		
+
+
+		$type = ($id) ? 'edit' : 'new';
+
 		if (FALSE)
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		
+
 		$default_fields = array(
 						'wm_name'						=> '',
-						'wm_image_path'					=>	'',	
-						'wm_test_image_path'			=>	'',						
+						'wm_image_path'					=>	'',
+						'wm_test_image_path'			=>	'',
 						'wm_type'						=> 'text',
 						'type_image'					=>  0,
 						'type_text'						=>	1,
@@ -1692,26 +1700,23 @@ class Content_files extends CI_Controller {
 						'wm_y_offset'					=> 0,
 						'wm_x_transp'					=> 2,
 						'wm_y_transp'					=> 2,
-						'wm_text_color'					=> '#ffff00',	
+						'wm_text_color'					=> '#ffff00',
 						'wm_use_drop_shadow'			=> 'y',
 						'use_drop_shadow_yes'			=> 1,
-						'use_drop_shadow_no'			=> 0,	
-						'wm_shadow_color'				=> '#999999',	
+						'use_drop_shadow_no'			=> 0,
+						'wm_shadow_color'				=> '#999999',
 						'wm_shadow_distance'			=> 1,
 						'wm_opacity'					=> 50,
 						'wm_apply_to_thumb'				=> 'n',
 						'wm_apply_to_medium'			=> 'n'
-
 				);
-		
-				
 
 		if ($type == 'new')
 		{
 			$vars = $default_fields;
-				
+
 			$vars['hidden'] = array();
-		
+
 		}
 		else
 		{
@@ -1730,23 +1735,21 @@ class Content_files extends CI_Controller {
 			$vars['font_yes'] = ($vars['wm_use_font'] == 'y') ? TRUE : FALSE;
 			$vars['font_no'] = ($vars['wm_use_font'] == 'y') ? FALSE : TRUE;
 			$vars['use_drop_shadow_yes'] = ($vars['wm_use_drop_shadow'] == 'y') ? TRUE : FALSE;
-			$vars['use_drop_shadow_no'] = ($vars['wm_use_drop_shadow'] == 'y') ? FALSE : TRUE;			
-										
+			$vars['use_drop_shadow_no'] = ($vars['wm_use_drop_shadow'] == 'y') ? FALSE : TRUE;
 			$vars['hidden'] = array('wm_id' => $id);
-
 		}
-		
-		
+
+
 		$i = 1;
-		
+
 		while ($i < 101)
 		{
 			$vars['opacity_options'][$i] = $i;
-			$i++; 
+			$i++;
 		}
-		
+
 		$vars['font_options'] = array('texb.ttf' => 'texb.ttf');
-		
+
 
 		$this->load->library('form_validation');
 
@@ -1774,7 +1777,7 @@ class Content_files extends CI_Controller {
 							 'field'   => 'wm_image_path',
 							 'label'   => 'lang:wm_image_path',
 							 'rules'   => ''
-						  ),						
+						  ),
 					   array(
 							 'field'   => 'wm_test_image_path',
 							 'label'   => 'lang:wm_test_image_path',
@@ -1784,12 +1787,12 @@ class Content_files extends CI_Controller {
 							 'field'   => 'wm_font',
 							 'label'   => 'lang:wm_font',
 							 'rules'   => ''
-						  ),						
+						  ),
 					   array(
 							 'field'   => 'wm_font_size',
 							 'label'   => 'lang:wm_image_path',
 							 'rules'   => 'is_natural'
-						  ),						
+						  ),
 					   array(
 							 'field'   => 'wm_x_offset',
 							 'label'   => 'lang:wm_x_offset',
@@ -1825,20 +1828,20 @@ class Content_files extends CI_Controller {
 							 'field'   => 'wm_text_color',
 							 'label'   => 'lang:wm_text_color',
 							 'rules'   => ''
-						  ),												
+						  ),
 					   array(
 							 'field'   => 'wm_shadow_color',
 							 'label'   => 'lang:wm_shadow_color',
 							 'rules'   => ''
-						  )						
+						  )
 					);
 
 		$this->load->library('form_validation');
 		$this->form_validation->set_error_delimiters('<span class="notice">', '</span>')
 							  ->set_rules($config);
-							
-		$this->javascript->compile();					
-		
+
+		$this->javascript->compile();
+
 		if ( ! $this->form_validation->run())
 		{
 			$this->javascript->compile();
@@ -1847,23 +1850,23 @@ class Content_files extends CI_Controller {
 		else
 		{
 			$this->_update_watermark_preferences();
-		}		
-		
-		
+		}
+
+
 	}
-	
-	// ------------------------------------------------------------------------	
-	
+
+	// ------------------------------------------------------------------------
+
 	function _update_watermark_preferences()
 	{
 		$id = $this->input->post('id');
-		
-		$type = ($id) ? 'edit' : 'new';	
+
+		$type = ($id) ? 'edit' : 'new';
 		$data['wm_name'] = $this->input->post('name');
-		
+
 		$defaults = array(
-						'wm_image_path'					=>	'',	
-						'wm_test_image_path'			=>	'',						
+						'wm_image_path'					=>	'',
+						'wm_test_image_path'			=>	'',
 						'wm_type'						=> 'n',
 						'wm_use_font'					=> 'y',
 						'wm_font'						=> 'texb.ttf',
@@ -1876,13 +1879,13 @@ class Content_files extends CI_Controller {
 						'wm_y_offset'					=> 0,
 						'wm_x_transp'					=> 2,
 						'wm_y_transp'					=> 2,
-						'wm_text_color'					=> '#ffff00',	
+						'wm_text_color'					=> '#ffff00',
 						'wm_use_drop_shadow'			=> 'y',
-						'wm_shadow_color'				=> '#999999',	
+						'wm_shadow_color'				=> '#999999',
 						'wm_shadow_distance'			=> 1,
 						'wm_opacity'					=> 50,
-				);	
-				
+				);
+
 		foreach ($defaults as $k => $v)
 		{
 			if ($this->input->post($k) == '')
@@ -1893,7 +1896,7 @@ class Content_files extends CI_Controller {
 			{
 				$data[$k] = $this->input->post($k);
 			}
-		}			
+		}
 
 
 		// Construct the query based on whether we are updating or inserting
@@ -1912,16 +1915,16 @@ class Content_files extends CI_Controller {
 		}
 
 		$this->session->set_flashdata('message_success', $cp_message);
-		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'M=watermark_preferences');			
-		
-	}	
-	
-	
-	// ------------------------------------------------------------------------	
-	
+		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'M=watermark_preferences');
+
+	}
+
+
+	// ------------------------------------------------------------------------
+
 	/**
 	 * Checks for images with no record in the database and adds them
-	 */	
+	 */
 	function delete_watermark_preferences_conf()
 	{
 		$id = $this->input->get_post('id');
@@ -1934,7 +1937,7 @@ class Content_files extends CI_Controller {
 		$this->load->helper('form');
 
 		$this->cp->set_variable('cp_page_title', lang('delete_wm_preference'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=watermark_preferences', 
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=watermark_preferences',
 								lang('watermark_preferences'));
 
 		$data = array(
@@ -1950,7 +1953,7 @@ class Content_files extends CI_Controller {
 		$this->db->where('wm_id', $id);
 		$items = $this->db->get('file_watermarks');
 		$data['items'] = array();
-		
+
 		foreach($items->result() as $item)
 		{
 			$data['items'][] = $item->wm_name;
@@ -1958,8 +1961,8 @@ class Content_files extends CI_Controller {
 
 		$this->javascript->compile();
 		$this->load->view('content/files/pref_delete_confirm', $data);
-		
-	}			
+
+	}
 
 	// --------------------------------------------------------------------
 
@@ -2024,10 +2027,10 @@ class Content_files extends CI_Controller {
 		$this->load->view('content/files/file_upload_preferences', $vars);
 	}
 
-	
+
 	function delete_dimension()
 	{
-		
+
 	}
 
 
@@ -2043,10 +2046,10 @@ class Content_files extends CI_Controller {
 	{
 		$this->load->library('table');
 		$id = $this->input->get_post('id');
-		
-		$this->cp->add_js_script(array('file' => 'cp/files/upload_pref_settings'));		
-		
-		
+
+		$this->cp->add_js_script(array('file' => 'cp/files/upload_pref_settings'));
+
+
 		$this->javascript->set_global(array('lang' => array(
 											'size_deleted'	=> $this->lang->line('size_deleted'),
 											'size_not_deleted' => $this->lang->line('size_not_deleted')
@@ -2064,7 +2067,7 @@ class Content_files extends CI_Controller {
 			'file_pre_format', 'file_post_format', 'batch_location',
 			'cat_group'
 		);
-		
+
 		$data['image_sizes'] = array();
 
 		if ($type == 'new')
@@ -2123,7 +2126,7 @@ class Content_files extends CI_Controller {
 				$data['field_url'] = base_url();
 				$data['field_server_path'] = str_replace(SYSDIR.'/', '', FCPATH);
 			}
-			
+
 			// Get Image Versions
 			$sizes_query = $this->db->get_where('file_dimensions',
 														array('upload_location_id' => $id));
@@ -2177,7 +2180,7 @@ class Content_files extends CI_Controller {
 
 		$data['upload_pref_fields1'] = array(
 							'max_size', 'max_height', 'max_width');
-							
+
 		$data['upload_pref_fields2'] = array(
 							'properties', 'pre_format', 'post_format', 'file_properties',
 							'file_pre_format', 'file_post_format', 'batch_location');
@@ -2238,23 +2241,23 @@ class Content_files extends CI_Controller {
 							 'field'   => 'max_image_action',
 							 'label'   => 'lang:max_image_handling',
 							 'rules'   => ''
-						  ),						
-						
+						  ),
+
 					);
 
 		$this->load->library('form_validation');
 		$this->form_validation->set_error_delimiters('<span class="notice">', '</span>')
 							  ->set_rules($config);
-	
+
 		// Find next file size id
 		$size_query = $this->file_model->select_max('id', '', 'file_dimensions');
-		
+
 		$data['next_size_id'] = ($size_query->row('id') >= 1) ? $size_query->row('id') + 1 : 1;
-		
+
 		// Get watermark options
 		$wm_query = $this->file_model->get_watermark_preferences();
 		$data['watermark_options'] = array();
-		
+
 		foreach ($wm_query->result() as $wm)
 		{
 			$data['watermark_options'][$wm->wm_id] = $wm->wm_name;
@@ -2334,7 +2337,7 @@ class Content_files extends CI_Controller {
 			{
 				if (isset($_POST['short_name_'.$row['id']]))
 				{
-					if ((trim($_POST['short_name_'.$row['id']]) == '' OR 			
+					if ((trim($_POST['short_name_'.$row['id']]) == '' OR
 						in_array($_POST['short_name_'.$row['id']], $names)) && ! isset($_POST['remove_size_'.$row['id']]))
 					{
 						return $this->output->show_user_error('submission', array($this->lang->line('invalid_shortname')));
@@ -2362,7 +2365,7 @@ class Content_files extends CI_Controller {
 						unset($_POST['remove_size_'.$row['id']]);
 						unset($_POST['size_short_name_'.$row['id']]);
 					}
-					
+
 					$this->db->where('id', $row['id']);
 					$this->db->delete('file_dimensions');
 				}
@@ -2408,7 +2411,7 @@ class Content_files extends CI_Controller {
 
 					if (trim($val) == '') continue;
 
-					if ( ! isset($_POST[$name]) OR ! preg_match("/^\w+$/", $_POST[$name]) OR 
+					if ( ! isset($_POST[$name]) OR ! preg_match("/^\w+$/", $_POST[$name]) OR
 						in_array($_POST[$name], $names))
 					{
 						return $this->output->show_user_error('submission', array($this->lang->line('invalid_short_name')));
