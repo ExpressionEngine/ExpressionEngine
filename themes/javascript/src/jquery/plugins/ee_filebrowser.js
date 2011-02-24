@@ -64,7 +64,6 @@
 	 *		diretory			 - returns directory name
 	 *		directories			 - returns all directories
 	 *		directory_contents	 - returns directory information and files ({url: '', id: '', files: {...}})
-	 *		directory_categories - returns directory categories
 	 */
 	$.ee_filebrowser.endpoint_request = function(type, data, callback) {
 		if ( ! callback && $.isFunction(data)) {
@@ -413,8 +412,7 @@
 			$.tmpl("fileRow", workon).appendTo("#tableView tbody");
 		}
 		
-
-		build_pagination(directory, offset, per_page, pagination);
+		build_footer(directory, offset, per_page, pagination);
 	}
 	
 	$.ee_filebrowser.setPage = build_pages;
@@ -422,14 +420,14 @@
 	// ------------------------------------------------------------------------ 
 	
 	/**
-	 * Build the pagination for the file chooser
+	 * Build the footer for the file chooser
 	 *
 	 * @param {Object} directory The directory object from build_pages
 	 * @param {Number} offset The offset of files from build_pages
 	 * @param {Number} per_page The number of files to show per page
 	 * @param {Object} pagination The pagination object (if declared) from build_pages
 	 */
-	function build_pagination(directory, offset, per_page, pagination) {
+	function build_footer(directory, offset, per_page, pagination) {
 		var	total_files = (pagination.pages_total) ? pagination.pages_total : directory.files.length,
 			pages = [];
 		
@@ -453,7 +451,10 @@
 				.change(function() {
 					display_type = this.value;
 					build_pages($('#dir_choice').val());
-				});
+				})
+			.end()
+			.find('select[name=category]')
+				.replaceWith(directory.categories);
 	}
 
 	// --------------------------------------------------------------------
