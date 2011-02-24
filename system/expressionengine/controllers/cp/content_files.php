@@ -181,8 +181,17 @@ class Content_files extends CI_Controller {
 		{
 			$dirs = ($get_post['dir_id'] === FALSE) ? $this->_allowed_dirs : $get_post['dir_id'];
 
-			$filtered_entries = $this->file_model->get_files($dirs, $get_post['cat_id'], $get_post['type'], $get_post['per_page'],
-															 $get_post['offset'], $get_post['keywords'], $get_post['order']);
+			$filtered_entries = $this->file_model->get_files(
+				$dirs, 
+				array(
+					'cat_id' => $get_post['cat_id'],
+					'type' => $get_post['type'],
+					'per_page' => $get_post['per_page'],
+					'offset' => $get_post['offset'],
+					'keywords' => $get_post['keywords'],
+					'order' => $get_post['order']
+				)
+			);
 
 			$files = $filtered_entries['results'];
 			$total_filtered = $filtered_entries['filter_count'];
@@ -282,8 +291,17 @@ class Content_files extends CI_Controller {
 			}
 		}
 
-		$filtered_entries = $this->file_model->get_files($dirs, $get_post['cat_id'], $get_post['type'], $get_post['per_page'],
-														 $get_post['offset'], $get_post['keywords'], $order);
+		$filtered_entries = $this->file_model->get_files(
+			$dirs, 
+			array(
+				'cat_id' => $get_post['cat_id'],
+				'type' => $get_post['type'],
+				'per_page' => $get_post['per_page'],
+				'offset' => $get_post['offset'],
+				'keywords' => $get_post['keywords'],
+				'order' => $order
+			)
+		);
 
 		$files = $filtered_entries['results'];
 		$total_filtered = $filtered_entries['filter_count'];

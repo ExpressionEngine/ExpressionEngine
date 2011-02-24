@@ -364,7 +364,6 @@
 			return;
 		}
 		
-		console.log(directory);
 		// Cache directory information
 		dir_files_structure[directory.id] = directory.files;
 		dir_paths[directory.id] = directory.url;

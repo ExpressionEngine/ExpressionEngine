@@ -732,7 +732,7 @@ class Filemanager {
 		$this->EE->load->model('file_model');
 		$this->EE->load->helper(array('text', 'number'));
 		
-		$files = $this->EE->file_model->get_files($dir['id'], '', $dir['allowed_types']);
+		$files = $this->EE->file_model->get_files($dir['id'], array('type' => $dir['allowed_types']));
 		$files = $files['results']->result_array();
 
 		foreach ($files as &$file)
@@ -762,10 +762,12 @@ class Filemanager {
 		$category_dropdown_array = array('all' => lang('all_categories'));
 
 		// Build the array of categories
-		foreach ($raw_categories as $category_group) {
+		foreach ($raw_categories as $category_group)
+		{
 			$categories = array();
 
-			foreach($category_group['categories'] as $category) {
+			foreach($category_group['categories'] as $category)
+			{
 				$categories[$category['cat_id']] = $category['cat_name'];		
 			}
 			
@@ -795,7 +797,8 @@ class Filemanager {
 		$category_group_ids = $this->EE->file_upload_preferences_model->get_upload_preferences($dir['id']);
 		$category_group_ids = explode('|', $category_group_ids->row('cat_group'));
 
-		if (count($category_group_ids) > 0 AND $category_group_ids[0] != '') {
+		if (count($category_group_ids) > 0 AND $category_group_ids[0] != '')
+		{
 			foreach ($category_group_ids as $category_group_id)
 			{
 				$category_group_info = $this->EE->category_model->get_category_groups($category_group_id);
