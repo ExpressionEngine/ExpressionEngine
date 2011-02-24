@@ -452,7 +452,10 @@
 				.change(function() {
 					display_type = this.value;
 					build_pages($('#dir_choice').val());
-				});
+				})
+			.end()
+			.find('select[name=category]')
+				.replaceWith(directory.categories);
 	}
 
 	// --------------------------------------------------------------------

@@ -713,7 +713,7 @@ class Filemanager {
 		return array(
 			'url' => $dir['url'], 
 			'files' => $this->_get_files($dir), 
-			'category_groups' => $this->_get_category_dropdown_array($dir)
+			'categories' => $this->_get_category_dropdown($dir)
 		);
 	}
 	
@@ -747,24 +747,19 @@ class Filemanager {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Build an array formatted for a dropdown of the categories for a directory
-	 *
-	 * array(
-	 *		'group_name' = array(
-	 *			'cat_id' => 'cat_name',
-	 *			...
-	 *		)
-	 *	)
+	 * Build a dropdown list of categories
 	 *
 	 * @access private
 	 * @param $dir Directory array, containing at least the id
 	 * @return array Array with the category group name as the key and the 
 	 *		categories as the values (see above)
 	 */
-	private function _get_category_dropdown_array($dir)
+	private function _get_category_dropdown($dir)
 	{
+		$this->EE->load->helper('form');
+
 		$raw_categories = $this->_get_categories($dir);
-		$category_dropdown_array = array();
+		$category_dropdown_array = array('all' => lang('all_categories'));
 
 		// Build the array of categories
 		foreach ($raw_categories as $category_group) {
@@ -777,7 +772,7 @@ class Filemanager {
 			$category_dropdown_array[$category_group['group_name']] = $categories;
 		}
 
-		return $category_dropdown_array;
+		return form_dropdown('category', $category_dropdown_array);
 	}
 
 	

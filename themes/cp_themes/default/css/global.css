@@ -2812,34 +2812,35 @@ html.js .publish_hidden {
 
 /* Show Entry */
 #view_content_entry_links {
-	margin-top:		15px;
+	margin-top:			15px;
 	width:				125px;
 	padding:			10px;
-	font-weight:	bold;
+	font-weight:		bold;
 }
 
 /* Plugins */
 #paginationLinks img {
-	vertical-align:top;
+	vertical-align:		top;
 }
 
-#paginationLinks a, #paginationLinks strong {
-	margin-right:5px;
+#paginationLinks a, 
+#paginationLinks strong {
+	margin-right:		5px;
 }
 
 #fileChooser #pagination_meta,
 #mainContent #paginationCount {
-	margin: 0 0 10px;
+	margin:				0 0 10px;
 }
 
 /* Addons */
 .addonsContentMenu {
-	margin: 0;
-	width: 100%;
+	margin:				0;
+	width:				100%;
 }
 
 .addonsContentMenu li a {
-	padding-left: 11px;
+	padding-left:		11px;
 }
 
 #accessoriesDiv {
@@ -3349,6 +3350,11 @@ div.contentWrap {
 
 .file_chooser_thumbnail.last {
 	margin-right:		0;
+}
+
+#fileChooser #pagination_meta {
+	line-height:		1.7;
+	margin-bottom:		5px;
 }
 
 /* Synchronize */

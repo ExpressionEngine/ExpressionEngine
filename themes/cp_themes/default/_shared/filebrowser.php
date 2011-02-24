@@ -44,7 +44,6 @@
 		
 		<script type="text/x-jquery-tmpl" id="thumbTmpl">
 			<a title="${file_name}" href="#" onclick="$.ee_filebrowser.placeImage(${directory}, ${img_id}); return false;" class="file_chooser_thumbnail">
-			
 				<img src="${thumb}" data-dimensions="${file_hw_original}" /><br>
 				<p>${short_name}</p>
 			</a>
@@ -56,7 +55,7 @@
 			<p id="pagination_meta">
 				<?=sprintf(lang('pagination_filter_text'), $selected_filters, $category_filters, $view_filters).NBS;?>
 				{{if pages.length}}
-					<?=sprintf(lang('pagination_count_text'), '${pages_from}', '${pages_to}', '${pages_total}');?>
+					<br /><?=sprintf(lang('pagination_count_text'), '${pages_from}', '${pages_to}', '${pages_total}');?>
 				{{/if}}
 			</p>
 
