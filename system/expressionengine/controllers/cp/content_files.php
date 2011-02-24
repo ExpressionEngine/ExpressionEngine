@@ -172,7 +172,7 @@ class Content_files extends CI_Controller {
 			'all'			=> lang('all'));
 
 		$no_upload_dirs = FALSE;
-
+//var_dump($get_post); exit;
 		if (empty($this->_upload_dirs))
 		{
 			$no_upload_dirs = TRUE;
@@ -181,8 +181,10 @@ class Content_files extends CI_Controller {
 		{
 			$dirs = ($get_post['dir_id'] === FALSE) ? $this->_allowed_dirs : $get_post['dir_id'];
 
-			$filtered_entries = $this->file_model->get_files($dirs, $get_post['cat_id'], $get_post['type'], $get_post['per_page'],
-															 $get_post['offset'], $get_post['keywords'], $get_post['order']);
+			$filtered_entries = $this->file_model->get_files($dirs, $get_post['cat_id'], $get_post['type'], 
+															$get_post['per_page'], $get_post['offset'], 
+															$get_post['keywords'], $get_post['order'],
+															TRUE, $get_post['search_in']);
 
 			$files = $filtered_entries['results'];
 			$total_filtered = $filtered_entries['filter_count'];
@@ -282,8 +284,10 @@ class Content_files extends CI_Controller {
 			}
 		}
 
-		$filtered_entries = $this->file_model->get_files($dirs, $get_post['cat_id'], $get_post['type'], $get_post['per_page'],
-														 $get_post['offset'], $get_post['keywords'], $order);
+		$filtered_entries = $this->file_model->get_files($dirs, $get_post['cat_id'], $get_post['type'], 
+														$get_post['per_page'], $get_post['offset'],		
+														$get_post['keywords'], $order, 
+														TRUE, $get_post['search_in']);
 
 		$files = $filtered_entries['results'];
 		$total_filtered = $filtered_entries['filter_count'];
@@ -433,6 +437,8 @@ class Content_files extends CI_Controller {
 	 */
 	private function _fetch_get_post_vars()
 	{
+		$this->load->helper('search');
+		
 		$ret = array(
 			'author_id'		=> $this->input->get_post('author_id'),
 			'cat_id'		=> $this->input->get_post('cat_id'),
@@ -444,7 +450,7 @@ class Content_files extends CI_Controller {
 			'order'			=> ($order = $this->input->get('offset')) ? $order : 0,
 			'per_page'		=> ($per_page = $this->input->get('per_page')) ? $per_page : 40,
 			'status'		=> ($this->input->get_post('status') != 'all') ? $this->input->get_post('status') : '',
-			'search_in'		=> ($this->input->get_post('search_in') != '') ? $this->input->get_post('search_in') : 'title',
+			'search_in'		=> ($this->input->get_post('search_in')),
 			'search_type'	=> $this->input->get_post('search_type'),
 			'type'			=> ($type = $this->input->get_post('type')) ? $type : 'all'
 		);
