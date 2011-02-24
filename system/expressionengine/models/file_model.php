@@ -39,7 +39,8 @@ class File_model extends CI_Model {
 	 * @return	mixed
 	 */
 	function get_files($dir_id = array(), $cat_id = NULL, $type = 'all', $limit = NULL, 
-						$offset = NULL, $search_value = NULL, $order = array(), $do_count = TRUE)
+						$offset = NULL, $search_value = NULL, $order = array(), 
+						$do_count = TRUE, $search_in=NULL)
 	{
 		$this->load->helper('text');
 		// If we add a dir col- will need a join
@@ -73,8 +74,28 @@ class File_model extends CI_Model {
 
 		if ($search_value)
 		{
-			$this->db->like('title', $search_value)
-					 ->or_like('file_name', $search_value);
+			switch ($search_in)
+			{
+				case ('file_name'):
+					$this->db->like('file_name', $search_value);
+					break;
+				case ('file_title'):
+					$this->db->like('file_title', $search_value);
+					break;
+				case ('custom_field'):
+					$this->db->like('field_1', $search_value);
+
+					// there are a total of 6 custom fields, so cycle through the rest of them
+					for ($i = 2; $i < 6; $i++)
+					{
+						$this->db->or_like(sprintf('field_%s', $i), $search_value);
+					}
+
+					break;
+				default:
+					$this->db->like('title', $search_value)
+							 ->or_like('file_name', $search_value);
+			}
 		}
 
 		$this->db->stop_cache();
@@ -113,7 +134,7 @@ class File_model extends CI_Model {
 		$return_data['results'] = $this->db->get('files');
 		
 		$this->db->flush_cache();
-		
+		//print $this->db->last_query();exit;
 		return $return_data;
 	}
 
