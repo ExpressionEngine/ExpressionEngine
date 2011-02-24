@@ -174,7 +174,7 @@ class Content_files extends CI_Controller {
 			'all'			=> lang('all'));
 
 		$no_upload_dirs = FALSE;
-//var_dump($get_post); exit;
+
 		if (empty($this->_upload_dirs))
 		{
 			$no_upload_dirs = TRUE;
@@ -317,10 +317,13 @@ class Content_files extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Fetch File List
 	 *
+	 * This function grabs the list of files for the index() function files table
 	 *
-	 *
-	 *
+	 * @param	array		array of files
+	 * @param	int			total number of filtered results
+	 * @return	string		the raw HTML string
 	 */
 	private function _fetch_file_list($files, $total_filtered)
 	{
@@ -649,11 +652,9 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-
 		/*
-
-		// All the directory information we need for the upload
-		// destination.
+		All the directory information we need for the upload
+		destination.
 
 		array
 		  'id' => string '1' (length=1)
@@ -694,7 +695,6 @@ class Content_files extends CI_Controller {
 			$this->session->set_flashdata('message_failure', $fm->upload_errors);
 			$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);
 		}
-
 
 		if ($fm->upload_data['file_name'] != $fm->upload_data['orig_name'])
 		{
@@ -743,13 +743,10 @@ class Content_files extends CI_Controller {
 		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);
 	}
 
-
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Allows renaming and over writing of files
-	 *
-	 *
 	 */
 	public function rename_file()
 	{
@@ -842,6 +839,7 @@ class Content_files extends CI_Controller {
 	 *
 	 * @param array $files Array of file names to delete
 	 * @param integer $file_dir ID of the directory to delete from
+	 * @return void
 	 */
 	private function _delete_files_confirm($files)
 	{
@@ -940,9 +938,11 @@ class Content_files extends CI_Controller {
 	// ------------------------------------------------------------------------
 
 	/**
+	 * Edit Image
 	 *
+	 * Main method for the image edit page.
 	 *
-	 *
+	 * @return void
 	 */
 	public function edit_image()
 	{
@@ -1019,7 +1019,6 @@ class Content_files extends CI_Controller {
 		');
 
 		$this->javascript->compile();
-
 
 		$this->load->view('content/files/edit_image', $data);
 	}
@@ -1113,7 +1112,6 @@ class Content_files extends CI_Controller {
 				'height'	=> $dimensions['height']
 			));
 		}
-
 
 		$this->session->set_flashdata('message_success', lang('file_saved'));
 		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file='.$this->input->post('file');
