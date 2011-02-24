@@ -2810,8 +2810,6 @@ class Content_files extends CI_Controller {
 			}
 		}
 
-		// var_dump($files);
-
 		$this->cp->set_variable('cp_page_title', lang('batch_upload'));
 
 		$data = array(
@@ -2827,9 +2825,7 @@ class Content_files extends CI_Controller {
 		);
 
 		$this->load->view('content/files/manual_batch', $data);
-		// var_dump(, $files, $batch_dir_loc, $categories, $status, $allow_comments, $upload_dir);
 	}
-
 
 	// --------------------------------------------------------------------
 
@@ -2880,3 +2876,6 @@ class Content_files extends CI_Controller {
 		$this->image_lib->resize();
 	}
 }
+/* End File: content_files.php */
+/* File Location: system/expressionengine/controllers/cp/content_files.php */
+
