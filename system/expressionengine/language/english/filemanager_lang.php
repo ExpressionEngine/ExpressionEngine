@@ -71,6 +71,7 @@ $lang = array(
 
 'pagination_count_text'     => 'Showing %s to %s of %s files.',
 'pagination_filter_text'    => 'Show %s files from %s as %s.',
+'all_categories'			=> 'all categories',
 'total_dir_size'            => 'Total Directory Size:',
 'no_upload_dirs_create_new' => 'No upload locations exist.  <a href="%s">Create a new upload location</a>',
 
