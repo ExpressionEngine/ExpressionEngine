@@ -713,7 +713,7 @@ class Filemanager {
 		return array(
 			'url' => $dir['url'], 
 			'files' => $this->_get_files($dir), 
-			'category_groups' => $this->_get_categories($dir)
+			'category_groups' => $this->_get_category_dropdown_array($dir)
 		);
 	}
 	
@@ -747,6 +747,43 @@ class Filemanager {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Build an array formatted for a dropdown of the categories for a directory
+	 *
+	 * array(
+	 *		'group_name' = array(
+	 *			'cat_id' => 'cat_name',
+	 *			...
+	 *		)
+	 *	)
+	 *
+	 * @access private
+	 * @param $dir Directory array, containing at least the id
+	 * @return array Array with the category group name as the key and the 
+	 *		categories as the values (see above)
+	 */
+	private function _get_category_dropdown_array($dir)
+	{
+		$raw_categories = $this->_get_categories($dir);
+		$category_dropdown_array = array();
+
+		// Build the array of categories
+		foreach ($raw_categories as $category_group) {
+			$categories = array();
+
+			foreach($category_group['categories'] as $category) {
+				$categories[$category['cat_id']] = $category['cat_name'];		
+			}
+			
+			$category_dropdown_array[$category_group['group_name']] = $categories;
+		}
+
+		return $category_dropdown_array;
+	}
+
+	
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Get the categories for the directory
 	 *
 	 * This function retrieves the categories for a particular directory
@@ -768,7 +805,8 @@ class Filemanager {
 			{
 				$category_group_info = $this->EE->category_model->get_category_groups($category_group_id);
 				$categories[$category_group_id] = $category_group_info->row_array();
-				$categories[$category_group_id]['categories'] = $this->EE->category_model->get_channel_categories($category_group_id);
+				$categories_for_group = $this->EE->category_model->get_channel_categories($category_group_id);
+				$categories[$category_group_id]['categories'] = $categories_for_group->result_array();
 			}
 		}
 
