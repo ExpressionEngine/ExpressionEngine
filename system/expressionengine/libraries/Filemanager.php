@@ -162,8 +162,6 @@ class Filemanager {
 				break;
 			case 'directory_contents':	$this->directory_contents();
 				break;
-			case 'directory_categories': $this->directory_categories();
-				break;
 			case 'upload':				$this->upload_file($this->EE->input->get_post('upload_dir'), FALSE, TRUE);
 				break;
 			case 'edit_image':			$this->edit_image();
@@ -187,7 +185,7 @@ class Filemanager {
 	function _initialize($config)
 	{
 		// Callbacks!
-		foreach(array('directories', 'directory_contents', 'upload_file', 'directory_categories') as $key)
+		foreach(array('directories', 'directory_contents', 'upload_file') as $key)
 		{
 			$this->config[$key.'_callback'] = isset($config[$key.'_callback']) ? $config[$key.'_callback'] : array($this, '_'.$key);
 		}
@@ -358,34 +356,6 @@ class Filemanager {
 		exit;
 	}
 	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Directory Categories
-	 *
-	 * Get all categories in a directory
-	 *
-	 * @access	public
-	 * @return	mixed	directory categories 
-	 */
-	function directory_categories()
-	{
-		$dir_id = $this->EE->input->get('directory');
-		$dir = $this->directory($dir_id, FALSE, TRUE);
-
-		$data = $dir ? call_user_func($this->config['directory_categories_callback'], $dir) : array();
-
-		if (count($data) == 0)
-		{
-			echo '{}';
-		}
-		else
-		{
-			$data['id'] = $dir_id;
-			echo $this->EE->javascript->generate_json($data, TRUE);
-		}
-		exit;
-	}
 	// --------------------------------------------------------------------
 	
 	/**
@@ -740,6 +710,25 @@ class Filemanager {
 	 */
 	function _directory_contents($dir)
 	{
+		return array(
+			'url' => $dir['url'], 
+			'files' => $this->_get_files($dir), 
+			'category_groups' => $this->_get_categories($dir)
+		);
+	}
+	
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Gets the files for a particular directory
+	 * Also, adds short name and file size
+	 *
+	 * @access private
+	 * @return array	List of files
+	 */
+	private function _get_files($dir)
+	{
 		$this->EE->load->model('file_model');
 		$this->EE->load->helper(array('text', 'number'));
 		
@@ -752,33 +741,38 @@ class Filemanager {
 			$file['file_size'] = byte_format($file['file_size']);
 		}
 
-		return array('url' => $dir['url'], 'files' => $files);
+		return $files;
 	}
-	
-	// --------------------------------------------------------------------
 
+	// --------------------------------------------------------------------
+	
 	/**
-	 * Directory Categories Callback
+	 * Get the categories for the directory
 	 *
 	 * This function retrieves the categories for a particular directory
 	 *
-	 * @access public
+	 * @access private
 	 * @return array category list
 	 */
-	private function _directory_categories($dir)
+	private function _get_categories($dir)
 	{
+		$categories = array();
+
 		$this->EE->load->model(array('file_upload_preferences_model', 'category_model'));
 
-		$category_ids = $this->EE->file_upload_preferences_model->get_upload_preferences($dir['id']);
-		$category_ids = explode('|', $category_ids->row('cat_group'));
+		$category_group_ids = $this->EE->file_upload_preferences_model->get_upload_preferences($dir['id']);
+		$category_group_ids = explode('|', $category_group_ids->row('cat_group'));
 
-		$categories = array();
-		foreach ($category_ids as $category_id)
-		{
-			$categories[$category_id] = $this->EE->category_model->get_category_groups($category_id);
+		if (count($category_group_ids) > 0 AND $category_group_ids[0] != '') {
+			foreach ($category_group_ids as $category_group_id)
+			{
+				$category_group_info = $this->EE->category_model->get_category_groups($category_group_id);
+				$categories[$category_group_id] = $category_group_info->row_array();
+				$categories[$category_group_id]['categories'] = $this->EE->category_model->get_channel_categories($category_group_id);
+			}
 		}
 
-		return array('categories' => $categories);
+		return $categories;
 	}
 	
 	// --------------------------------------------------------------------
