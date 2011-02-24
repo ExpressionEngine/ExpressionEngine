@@ -115,7 +115,7 @@ class File_model extends CI_Model {
 		
 		$this->db->flush_cache();
 		
-		echo $this->db->last_query(); exit;
+		//echo $this->db->last_query(); exit;
 		return $return_data;
 	}
 

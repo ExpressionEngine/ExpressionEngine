@@ -231,6 +231,21 @@ $lang = array(
 
 ////Watermark
 
+'wm_new' =>
+'Create Watermark',
+
+'wm_edit' =>
+'Edit Watermark',
+
+'text' =>
+'Text',
+
+'wm_name_taken' =>
+'Duplicate Name',
+
+'wm_test' =>
+'Test Watermark',
+
 "wm_type" =>
 "Enable Watermarking",
 
@@ -240,11 +255,19 @@ $lang = array(
 "wm_text" =>
 "Text Version",
 
+'wm_name' =>
+'Watermark Name',
+
 "wm_graphic" =>
 "Graphic Version",
 
 "watermark_prefs" =>
-"Watermarking Preferences",
+"Watermark Preferences",
+
+'create_new_wm_pref' => 'Create New Watermark',
+
+'wm_type' =>
+'Watermark Type',
 
 "wm_image_path" =>
 "Server Path to Watermark Image",
@@ -329,6 +352,16 @@ $lang = array(
 
 "wm_y_transp" =>
 "Transparency Y Coordinate",
+
+'delete_watermark_pref_confirmation' =>
+'Delete Watermark Preference Confirmation',
+
+'delete_wm_preference' =>
+'Delete Watermark Preference',
+
+'watermark_pref_deleted' =>
+'Watermark Preference Deleted',
+
 
 ''=>''
 );

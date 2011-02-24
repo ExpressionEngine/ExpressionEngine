@@ -1406,6 +1406,44 @@ class Filemanager {
 
 		return (in_array($mime, $img_mimes, TRUE)) ? TRUE : FALSE;
 	}
+	
+	// --------------------------------------------------------------------		
+	
+	/**
+	 * Fetch Fontlist
+	 *
+	 * Retrieves available font file names, returns associative array
+	 *
+	 * @return 	array
+	 */
+
+	function fetch_fontlist()
+	{
+		
+		$path = APPPATH.'/fonts/';
+		
+		$font_files = array();
+
+        if ($fp = @opendir($path))
+        { 
+            while (false !== ($file = readdir($fp)))
+            {
+				if (stripos(substr($file, -4), '.ttf') !== FALSE)
+                {
+					$name = substr($file, 0, -4);
+					$name = ucwords(str_replace("_", " ", $name));
+					
+					$font_files[$name] = $file;
+                }
+            }         
+ 
+			closedir($fp); 
+        } 
+
+		return $font_files;
+	}
+	
+	
 
 }
 
