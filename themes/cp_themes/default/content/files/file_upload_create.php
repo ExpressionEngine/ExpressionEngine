@@ -153,15 +153,15 @@ if ($EE_view_disable !== TRUE)
 				<?php
 				$this->table->set_template($cp_table_template);
 				$this->table->set_heading(
-					lang('size_short_name'),
-					lang('size_height'),
-					lang('size_width'),
+					lang('short_name'),
+					lang('height'),
+					lang('width'),
 					lang('resize_type'),
-					lang('watermark'),
+					lang('wm_watermark'),
 					''
 					);
 
-				$resize_options = array('crop' => lang('crop'), 'constrain' => lang('constrain'));
+				$resize_options = array('constrain' => lang('resize'), 'crop' => lang('crop'));
 				
 				if (count($image_sizes) > 0)
 				{

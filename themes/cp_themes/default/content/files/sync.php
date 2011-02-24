@@ -25,6 +25,7 @@ if ( ! $EE_view_disable)
 						<th><?=lang('directory')?></th>
 						<th><?=lang('file_count')?></th>
 						<th><?=lang('file_types')?></th>
+
 					</tr>
 				</thead>
 				<tbody>
@@ -46,6 +47,7 @@ if ( ! $EE_view_disable)
 						<th><?=lang('crop_or_constrain')?></th>
 						<th><?=lang('width')?></th>
 						<th><?=lang('height')?></th>
+						<th id="toggle_all"><?=form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -55,6 +57,7 @@ if ( ! $EE_view_disable)
 						<td><?=$data['resize_type']?></td>
 						<td><?=$data['width']?></td>
 						<td><?=$data['height']?></td>
+						<td class="file_select"><?='<input class="toggle" type="checkbox" name="toggle[]" value="'.$data['id'].'" />'?></td>						
 					</tr>
 				<?php endforeach; ?>
 				</tbody>

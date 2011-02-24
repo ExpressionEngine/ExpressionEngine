@@ -13,7 +13,7 @@ if ($EE_view_disable !== TRUE)
 	<div class="contents">
 
 		<div class="heading">
-				<h2><?=lang('file_upload_prefs')?></h2>
+				<h2><?=lang('watermark_prefs')?></h2>
 		</div>
 		<div class="pageContents">
 
@@ -23,8 +23,8 @@ if ($EE_view_disable !== TRUE)
 		<?php
 			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
-				lang('watermark_prefs'),
-				array('data' => lang('type'), 'width' => '10%'),
+				lang('wm_name'),
+				array('data' => lang('wm_type'), 'width' => '10%'),
 				array('data' => lang('edit'), 'width' => '5%'),
 				array('data' => lang('delete'), 'width' => '5%')
 			);
@@ -33,9 +33,10 @@ if ($EE_view_disable !== TRUE)
 			{
 				foreach ($watermarks->result() as $wm)
 				{
+					$type = ($wm->wm_type == 't') ? lang('text') : lang('image');
 					$this->table->add_row(
 						'<strong>'.$wm->wm_name.'</strong>',
-						$wm->wm_type,
+						$type,
 						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_watermark_preferences'.AMP.'id='.$wm->wm_id.'" title="'.lang('edit').'"><img src="'.$cp_theme_url.'images/icon-edit.png" alt="'.lang('edit').'"</a>',
 						'<a href="'.BASE.AMP.'C=content_files'.AMP.'M=delete_watermark_preferences_conf'.AMP.'id='.$wm->wm_id.'" title="'.lang('delete').'"><img src="'.$cp_theme_url.'images/icon-delete.png" alt="'.lang('delete').'" /></a>'
 					);

@@ -53,6 +53,7 @@ $lang = array(
 'maintain_ratio'		=> 'Maintain Aspect Ratio',
 'width_needed'			=> 'A width or width/height must be selected, or a rotate/flip direction selected.',
 
+'resize_type'			=> 'Resize Type',
 'crop_mode'				=> 'Crop Mode',
 'resize_mode'			=> 'Resize Mode',
 'rotate_mode'			=> 'Rotate Mode',
@@ -155,6 +156,19 @@ $lang = array(
 'file_directory_id' =>
 'ID',
 
+'max_image_action' =>
+'Action to take if image size exceeded',
+
+'disallow_image' =>
+'Disallow Image',
+
+'image_sizes' =>
+'Image Manipulations',
+
+'image_sizes_subtext' =>
+'Additional images that will be automatically created for each image upload.',
+
+
 'restrict_to_group' =>
 'Restrict file uploading to select member groups',
 
@@ -217,17 +231,43 @@ $lang = array(
 
 ////Watermark
 
+'wm_new' =>
+'Create Watermark',
+
+'wm_edit' =>
+'Edit Watermark',
+
+'text' =>
+'Text',
+
+'wm_name_taken' =>
+'Duplicate Name',
+
+'wm_test' =>
+'Test Watermark',
+
 "wm_type" =>
 "Enable Watermarking",
 
+'wm_watermark' =>
+'Watermark',
+
 "wm_text" =>
 "Text Version",
+
+'wm_name' =>
+'Watermark Name',
 
 "wm_graphic" =>
 "Graphic Version",
 
 "watermark_prefs" =>
-"Watermarking Preferences",
+"Watermark Preferences",
+
+'create_new_wm_pref' => 'Create New Watermark',
+
+'wm_type' =>
+'Watermark Type',
 
 "wm_image_path" =>
 "Server Path to Watermark Image",
@@ -313,12 +353,22 @@ $lang = array(
 "wm_y_transp" =>
 "Transparency Y Coordinate",
 
+
+'delete_watermark_pref_confirmation' =>
+'Delete Watermark Preference Confirmation',
+
 'problem_downloading_files' => 
 'An error occurred when attempting to download the selected files.  Please verify the files exist on the server.',
+
+
+'delete_wm_preference' =>
+'Delete Watermark Preference',
 
 'problem_downloading_file' => 
 'An error occurred when attempting to download the selected file.  Please verify the file exists on the server.',
 
+'watermark_pref_deleted' =>
+'Watermark Preference Deleted',
 
 ''=>''
 );

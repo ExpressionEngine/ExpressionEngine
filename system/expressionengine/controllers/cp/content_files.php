@@ -67,7 +67,9 @@ class Content_files extends CI_Controller {
         }
 
 		$this->cp->set_right_nav(array(
-			'directory_manager' => BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+			'directory_manager' => BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences',
+			'watermark_prefs'	=> BASE.AMP.'C=content_files'.AMP.'M=watermark_preferences',
+			'batch_upload'		=> BASE.AMP.'C=content_files'.AMP.'M=batch_upload'
 		));
 
 		$this->_base_url = BASE.AMP.'C=content_files';
@@ -1269,7 +1271,7 @@ class Content_files extends CI_Controller {
 			foreach ($query->result() as $row)
 			{
 				$js_size[$row->upload_location_id][$row->short_name] = array('resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height);
-				$vars['sizes'][] = array('short_name' => $row->short_name, 'title' => $row->title, 'resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height);
+				$vars['sizes'][] = array('short_name' => $row->short_name, 'title' => $row->title, 'resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height, 'id' => $row->id);
 			}
 		}
 
@@ -1594,7 +1596,9 @@ class Content_files extends CI_Controller {
 		$this->load->library('table');
 		$this->load->model('file_model');
 
-		$this->cp->set_variable('cp_page_title', lang('file_watermark_prefs'));
+		$this->cp->set_variable('cp_page_title', lang('watermark_prefs'));
+		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));		
+		
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}},
@@ -1619,9 +1623,27 @@ class Content_files extends CI_Controller {
 	 */
 	function edit_watermark_preferences()
 	{
-		//$this->fetch_fontlist($gallery_wm_font)
-		$this->load->library('table');
+		$this->load->library(array('table', 'filemanager'));
 		$this->load->model('file_model');
+		
+		$this->cp->add_js_script(array(
+				'plugin' => array('colorpicker'),
+				'file'   => array('cp/files/watermark_settings')
+			)
+		);
+		
+		// CSS link for colorpicker
+		//$css_folder = $this->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
+		
+		//$css_file = PATH_THEMES.'javascript/'.$css_folder.'/jquery/themes/default/colorpicker.css';
+
+		//$this->cp->add_to_head('<link rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=colorpicker'.'" type="text/css" media="screen" />');
+		
+		$style = $this->view->head_link('css/colorpicker.css');
+		
+		$this->cp->add_to_head($style);
+		
+	
 
 		$id = $this->input->get_post('id');
 
@@ -1642,9 +1664,14 @@ class Content_files extends CI_Controller {
 				$(".image_type").toggle();
     			});
 		');
-
+		$type = ($id) ? 'edit' : 'new';	
+		
+		$this->cp->set_variable('cp_page_title', lang('wm_'.$type));
+		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));
+		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=watermark_preferences', lang('watermark_prefs'));		
 
 		$type = ($id) ? 'edit' : 'new';
+
 
 		if (FALSE)
 		{
@@ -1720,25 +1747,23 @@ class Content_files extends CI_Controller {
 			$i++;
 		}
 
-		$vars['font_options'] = array('texb.ttf' => 'texb.ttf');
+		
+		$vars['font_options'] = $this->filemanager->fetch_fontlist();
 
 
 		$this->load->library('form_validation');
 
-		$title = ($type == 'edit') ? 'edit_wm_preferences' : 'new_wm_preferences';
+		$title = ($type == 'edit') ? 'wm_edit' : 'wm_create';
 
-		$this->cp->set_variable('cp_page_title', lang($title));
 		$vars['lang_line'] = ($type == 'edit') ? 'update' : 'submit';
 
-		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=file_upload_preferences',
-								  lang('file_upload_preferences'));
 
 
 		$config = array(
 					   array(
 							 'field'   => 'name',
 							 'label'   => 'lang:wm_name',
-							 'rules'   => 'required'
+							 'rules'   => 'trim|required|callback__name_check'
 						  ),
 					   array(
 							 'field'   => 'wm_type',
@@ -1762,38 +1787,38 @@ class Content_files extends CI_Controller {
 						  ),
 					   array(
 							 'field'   => 'wm_font_size',
-							 'label'   => 'lang:wm_image_path',
-							 'rules'   => 'is_natural'
-						  ),
+							 'label'   => 'lang:wm_font_size',
+							 'rules'   => 'integer'
+						  ),						
 					   array(
 							 'field'   => 'wm_x_offset',
 							 'label'   => 'lang:wm_x_offset',
-							 'rules'   => 'is_natural'
+							 'rules'   => 'integer'
 						  ),
 					   array(
 							 'field'   => 'wm_y_offset',
 							 'label'   => 'lang:wm_y_offset',
-							 'rules'   => 'is_natural'
+							 'rules'   => 'integer'
 						  ),
 					   array(
 							 'field'   => 'wm_vrt_alignment',
 							 'label'   => 'lang:wm_vrt_alignment',
-							 'rules'   => 'is_natural'
+							 'rules'   => ''
 						  ),
 					   array(
 							 'field'   => 'wm_hor_alignment',
 							 'label'   => 'lang:wm_hor_alignment',
-							 'rules'   => 'is_natural'
+							 'rules'   => ''
 						  ),
 					   array(
 							 'field'   => 'wm_x_transp',
-							 'label'   => 'lang:wm_x_offset',
-							 'rules'   => 'is_natural'
+							 'label'   => 'lang:wm_x_transp',
+							 'rules'   => 'integer'
 						  ),
 					   array(
 							 'field'   => 'wm_y_transp',
-							 'label'   => 'lang:wm_y_offset',
-							 'rules'   => 'is_natural'
+							 'label'   => 'lang:wm_y_transp',
+							 'rules'   => 'integer'
 						  ),
 
 					   array(
@@ -1805,7 +1830,7 @@ class Content_files extends CI_Controller {
 							 'field'   => 'wm_shadow_color',
 							 'label'   => 'lang:wm_shadow_color',
 							 'rules'   => ''
-						  )
+						  )	
 					);
 
 		$this->load->library('form_validation');
@@ -1817,17 +1842,38 @@ class Content_files extends CI_Controller {
 		if ( ! $this->form_validation->run())
 		{
 			$this->javascript->compile();
+			$this->form_validation->set_old_value('wm_id', $id);
 			$this->load->view('content/files/watermark_settings', $vars);
 		}
 		else
 		{
 			$this->_update_watermark_preferences();
+		}		
+	}
+	
+	function _name_check($str)
+	{
+		// Check for duplicates
+		//$this->db->where('site_id', $this->config->item('site_id'));
+		$this->db->where('wm_name', $str);
+		
+		if ($this->form_validation->old_value('wm_id'))
+		{
+			$this->db->where('wm_id != ', $this->form_validation->old_value('wm_id'));
 		}
 
-
+		if ($this->db->count_all_results('file_watermarks') > 0)
+		{
+			$this->form_validation->set_message('_name_check', $this->lang->line('wm_name_taken'));
+			return FALSE;
+		}
+		
+		return TRUE;
 	}
 
-	// ------------------------------------------------------------------------
+
+
+	// ------------------------------------------------------------------------	
 
 	function _update_watermark_preferences()
 	{
@@ -1909,8 +1955,11 @@ class Content_files extends CI_Controller {
 		$this->load->helper('form');
 
 		$this->cp->set_variable('cp_page_title', lang('delete_wm_preference'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=watermark_preferences',
-								lang('watermark_preferences'));
+
+
+		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));
+		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=watermark_preferences', 
+								lang('watermark_prefs'));
 
 		$data = array(
 			'form_action'	=> 'C=content_files'.AMP.'M=delete_watermark_preferences'.AMP.'id='.$id,

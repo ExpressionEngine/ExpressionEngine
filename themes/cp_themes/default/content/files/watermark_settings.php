@@ -17,6 +17,8 @@ if ($EE_view_disable !== TRUE)
 		<div class="heading"><h2><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
 
+<?php echo validation_errors(); ?>
+
 			<?=form_open('C=content_files'.AMP.'M=edit_watermark_preferences', $hidden)?>
 
 			<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
@@ -35,7 +37,7 @@ if ($EE_view_disable !== TRUE)
 							'value' => set_value('name', $wm_name)));  ?></td>
 				</tr>
 				<tr class="odd">
-					<td><?=lang('wm_type')?></td>
+					<td><?=lang('<span class="notice">*</span> '.lang('wm_type'), 'wm_type')?></td>
 					<td class="inline_labels"><?=lang('text', 'text').NBS.
 								form_radio('wm_type', 'text', $type_text, 'id="type_text"').NBS.NBS.NBS.
 										lang('image', 'image').NBS.
@@ -58,7 +60,7 @@ if ($EE_view_disable !== TRUE)
 							);
 							
 						?>
-					<td><?=form_label('<span class="notice">*</span> '.lang('wm_alignment'), 'wm_alignment'); ?></td>
+					<td><?=form_label(lang('wm_alignment'), 'wm_alignment'); ?></td>
 					<td><?=form_dropdown('wm_vrt_alignment', $options1, $wm_vrt_alignment).NBS.NBS.
 						form_dropdown('wm_hor_alignment', $options2, $wm_hor_alignment); ?></td>
 				</tr>
@@ -71,12 +73,12 @@ if ($EE_view_disable !== TRUE)
 				?>
 				
 				<tr class="odd">
-					<td><?=form_label('<span class="notice">*</span> '.lang('wm_padding'), 'wm_padding'); ?></td>
+					<td><?=form_label(lang('wm_padding'), 'wm_padding'); ?></td>
 					<td><?=form_dropdown('wm_padding', $options, $wm_padding); ?></td>
 				</tr>
 
 				<tr class="even">
-					<td><?=form_label('<span class="notice">*</span> '.lang('wm_x_offset'), 'wm_x_offset'); ?></td>
+					<td><?=form_label(lang('wm_x_offset'), 'wm_x_offset'); ?></td>
 					<td><?=form_error('wm_x_offset').
 						form_input(array(
 							'id'	=> 'wm_x_offset',
@@ -86,7 +88,7 @@ if ($EE_view_disable !== TRUE)
 				</tr>
 				
 				<tr class="odd">
-					<td><?=form_label('<span class="notice">*</span> '.lang('wm_y_offset'), 'wm_y_offset'); ?></td>
+					<td><?=form_label(lang('wm_y_offset'), 'wm_y_offset'); ?></td>
 					<td><?=form_error('wm_y_offset').
 						form_input(array(
 							'id'	=> 'wm_y_offset',
@@ -96,7 +98,7 @@ if ($EE_view_disable !== TRUE)
 				</tr>
 												
 				<tr class="even text_type">
-					<td><?=form_label('<span class="notice">*</span> '.lang('wm_text'), 'wm_text'); ?></td>
+					<td><?=form_label(lang('wm_text'), 'wm_text'); ?></td>
 					<td><?=form_error('wm_text').
 						form_input(array(
 							'id'	=> 'wm_text',
@@ -106,7 +108,7 @@ if ($EE_view_disable !== TRUE)
 				</tr>
 
 				<tr class="odd text_type">
-					<td><?=lang('wm_use_font'); ?></td>
+					<td><?=lang('wm_use_font', 'wm_use_font'); ?></td>
 					<td><?=lang('yes', 'wm_use_font_y').NBS.
 									form_radio('wm_use_font', 'y', $font_yes).NBS.NBS.NBS.
 									lang('no', 'wm_use_font_n').NBS.
@@ -114,12 +116,12 @@ if ($EE_view_disable !== TRUE)
 				</tr>
 				
 				<tr class="even text_type">
-					<td><?=form_label('<span class="notice">*</span> '.lang('wm_font'), 'wm_font'); ?></td>
+					<td><?=form_label(lang('wm_font'), 'wm_font'); ?></td>
 					<td><?=form_dropdown('wm_font', $font_options, $wm_font); ?></td>
 				</tr>
 
 				<tr class="odd text_type">
-					<td><?=form_label('<span class="notice">*</span> '.lang('wm_font_size'), 'wm_font_size'); ?></td>
+					<td><?=form_label(lang('wm_font_size'), 'wm_font_size'); ?></td>
 					<td><?=form_error('wm_font_size').
 						form_input(array(
 							'id'	=> 'wm_font_size',
@@ -129,7 +131,7 @@ if ($EE_view_disable !== TRUE)
 				</tr>
 
 				<tr class="even text_type">>
-					<td><?=form_label('<span class="notice">*</span> '.lang('wm_text_color'), 'wm_text_color'); ?></td>
+					<td><?=form_label(lang('wm_text_color'), 'wm_text_color'); ?></td>
 					<td><?=form_error('wm_text_color').
 						form_input(array(
 							'id'	=> 'wm_text_color',
@@ -140,7 +142,7 @@ if ($EE_view_disable !== TRUE)
 			
 				
 				<tr class="odd text_type">>
-					<td><?=lang('wm_use_drop_shadow'); ?></td>
+					<td><?=lang('wm_use_drop_shadow', 'wm_use_drop_shadow'); ?></td>
 					<td><?=lang('yes', 'wm_use_drop_shadow_y').NBS.
 									form_radio('wm_use_drop_shadow', 'y', $use_drop_shadow_yes).NBS.NBS.NBS.
 									lang('no', 'wm_use_drop_shadow_n').NBS.
@@ -156,13 +158,13 @@ if ($EE_view_disable !== TRUE)
 				?>
 
 				<tr class="even text_type">>
-					<td><?=form_label('<span class="notice">*</span> '.lang('wm_shadow_distance'), 'wm_shadow_distance'); ?></td>
+					<td><?=form_label(lang('wm_shadow_distance'), 'wm_shadow_distance'); ?></td>
 					<td><?=form_dropdown('wm_shadow_distanceg', $options, $wm_shadow_distance); ?></td>
 
 				</tr>
 
 				<tr class="odd text_type">>
-					<td><?=form_label('<span class="notice">*</span> '.lang('wm_shadow_color'), 'wm_shadow_color'); ?></td>
+					<td><?=form_label(lang('wm_shadow_color'), 'wm_shadow_color'); ?></td>
 					<td><?=form_error('wm_shadow_color').
 						form_input(array(
 							'id'	=> 'wm_shadow_color',
@@ -172,7 +174,7 @@ if ($EE_view_disable !== TRUE)
 				</tr>
 				
 				<tr class="even image_type">
-					<td><?=form_label('<span class="notice">*</span> '.lang('wm_image_path'), 'wm_image_path'); ?></td>
+					<td><?=form_label(lang('wm_image_path'), 'wm_image_path'); ?></td>
 					<td><?=form_error('wm_image_path').
 						form_input(array(
 							'id'	=> 'wm_image_path',
@@ -182,13 +184,13 @@ if ($EE_view_disable !== TRUE)
 				</tr>
 
 				<tr class="odd image_type">
-					<td><?=form_label('<span class="notice">*</span> '.lang('wm_opacity'), 'wm_opacity'); ?></td>
+					<td><?=form_label(lang('wm_opacity'), 'wm_opacity'); ?></td>
 					<td><?=form_dropdown('wm_opacity', $opacity_options, $wm_opacity); ?></td>
 				</tr>
 
 
 				<tr class="even image_type">
-					<td><?=form_label('<span class="notice">*</span> '.lang('wm_x_transp'), 'wm_x_transp'); ?></td>
+					<td><?=form_label(lang('wm_x_transp'), 'wm_x_transp'); ?></td>
 					<td><?=form_error('wm_x_transp').
 						form_input(array(
 							'id'	=> 'wm_x_transp',
@@ -199,7 +201,7 @@ if ($EE_view_disable !== TRUE)
 
 				
 				<tr class="odd image_type">
-					<td><?=form_label('<span class="notice">*</span> '.lang('wm_y_transp'), 'wm_y_transp'); ?></td>
+					<td><?=form_label(lang('wm_y_transp'), 'wm_y_transp'); ?></td>
 					<td><?=form_error('wm_y_transp').
 						form_input(array(
 							'id'	=> 'wm_y_transp',
@@ -210,7 +212,8 @@ if ($EE_view_disable !== TRUE)
 				
 				
 				<tr class="even">
-					<td><?=form_label('<span class="notice">*</span> '.lang('wm_test_image_path'),  'wm_test_image_path'); ?></td>
+					<td><?=form_label(lang('wm_test_image_path'),  'wm_test_image_path').BR.
+					lang('wm_test_explain'); ?></td>
 					<td><?=form_error('wm_test_image_path').
 						form_input(array(
 							'id'	=> 'wm_test_image_path',
@@ -223,7 +226,7 @@ if ($EE_view_disable !== TRUE)
 
 				<p class="notice">* <?=lang('required_fields')?></p>
 
-				<p><?=form_submit('submit', lang($lang_line), 'class="submit"')?></p>
+				<p><?=form_submit('submit', lang($lang_line), 'class="submit"')?>&nbsp; &nbsp; <?=form_submit('submit', lang('wm_test'), 'class="submit"')?></p>
 
     		<?=form_close()?>
 			
