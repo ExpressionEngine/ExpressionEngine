@@ -41,9 +41,6 @@ EE.file_manager.sync_listen = function() {
 		// Get upload directory
 		var upload_directory_id = _.keys(EE.file_manager.sync_sizes)[0];
 		
-		// Get the checked sizes
-		EE.file_manager.resize_ids = $('input:checkbox[name="toggle[]"]:checked').val() || [];
-
 		EE.file_manager.update_progress(0);
 
 		// Send first few ajax requests
@@ -53,6 +50,16 @@ EE.file_manager.sync_listen = function() {
 			}, 15);
 		};
 	});
+};
+
+EE.file_manager.resize_ids = function() {
+	var resize_ids = [];
+
+	$('input[name="toggle[]"]:checked').each(function() {
+		resize_ids.push($(this).val());
+	});
+
+	return resize_ids;
 };
 
 /**
@@ -78,7 +85,7 @@ EE.file_manager.sync = function(upload_directory_id) {
 			"upload_directory_id": upload_directory_id,
 			"sizes": EE.file_manager.sync_sizes,
 			"files": files_to_sync,
-			"resize_ids" : EE.file_manager.resize_ids
+			"resize_ids" : EE.file_manager.resize_id()
 		},
 		beforeSend: function(xhr, settings) {
 			// Increment the running count
