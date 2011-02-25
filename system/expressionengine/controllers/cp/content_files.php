@@ -1247,7 +1247,7 @@ class Content_files extends CI_Controller {
 		// No file directory- they want to sync them all
 		if ($file_dir === FALSE)
 		{
-
+			// return false
 		}
 		else
 		{
@@ -1259,12 +1259,16 @@ class Content_files extends CI_Controller {
 			$ids = array($file_dir);
 		}
 
-		// Get the resize info for the directories
+		// Get the resize info for the directory
+		$this->db->select('*');
+		$this->db->from('file_dimensions');
+		$this->db->join('file_watermarks', 'wm_id = watermark_id', 'left');	
 		$this->db->where_in('upload_location_id', $ids);
-		$query = $this->db->get('file_dimensions');
+		$query = $this->db->get();		
 
 		// Build skeleton of the size array with the upload directories loaded in
 		$js_size = array();
+
 		foreach ($ids as $upload_directory_id)
 		{
 			$js_size[$upload_directory_id] = '';
@@ -1274,10 +1278,39 @@ class Content_files extends CI_Controller {
 		{
 			foreach ($query->result() as $row)
 			{
-				$js_size[$row->upload_location_id][$row->short_name] = array('resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height);
+				$js_size[$row->upload_location_id][$row->id] = array('short_name' => $row->short_name, 'resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height, 'watermark_id' => $row->watermark_id);
+								
 				$vars['sizes'][] = array('short_name' => $row->short_name, 'title' => $row->title, 'resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height, 'id' => $row->id);
+				
+				if ($row->watermark_id != 0)
+				{
+					$js_size[$row->upload_location_id][$row->id]['wm_type'] = $row->wm_type;
+					$js_size[$row->upload_location_id][$row->id]['wm_image_path'] =	$row->wm_image_path;				
+					$js_size[$row->upload_location_id][$row->id]['wm_use_font'] = $row->wm_use_font;	
+					$js_size[$row->upload_location_id][$row->id]['wm_font'] = $row->wm_font;					
+					$js_size[$row->upload_location_id][$row->id]['wm_font_size'] = $row->wm_font_size;	
+					$js_size[$row->upload_location_id][$row->id]['wm_text'] = $row->wm_text;		
+					$js_size[$row->upload_location_id][$row->id]['wm_vrt_alignment'] = $row->wm_vrt_alignment;
+					$js_size[$row->upload_location_id][$row->id]['wm_hor_alignment'] = $row->wm_hor_alignment;	
+					$js_size[$row->upload_location_id][$row->id]['wm_padding'] = $row->wm_padding;
+					$js_size[$row->upload_location_id][$row->id]['wm_opacity'] = $row->wm_opacity;				
+					$js_size[$row->upload_location_id][$row->id]['wm_x_offset'] = $row->wm_x_offset;
+					$js_size[$row->upload_location_id][$row->id]['wm_y_offset'] = $row->wm_y_offset;
+					$js_size[$row->upload_location_id][$row->id]['wm_x_transp'] = $row->wm_x_transp;	
+					$js_size[$row->upload_location_id][$row->id]['wm_y_transp'] = $row->wm_y_transp;
+					$js_size[$row->upload_location_id][$row->id]['wm_text_color'] =	$row->wm_text_color;		
+					$js_size[$row->upload_location_id][$row->id]['wm_use_drop_shadow'] = $row->wm_use_drop_shadow;
+					$js_size[$row->upload_location_id][$row->id]['wm_shadow_distance'] = $row->wm_shadow_distance;
+					$js_size[$row->upload_location_id][$row->id]['wm_shadow_color'] = $row->wm_shadow_color;
+				}
 			}
 		}
+
+		// Let's do a quick check of db to see if ANY file records for this directory
+		//$this->db->where('upload_location_id', $id);
+		//$this->db->from('files');
+		//$do_db_check = ($this->db->count_all_results() == 0) ? FALSE : TRUE;
+
 
 		// If I move this will need to fetch upload dir data
 		foreach ($ids as $id)
@@ -1442,6 +1475,7 @@ class Content_files extends CI_Controller {
 		$type = 'insert';
 		$errors = array();
 		$file_data = array();
+		$replace_sizes = array();
 
 		// If file exists- make sure it exists in db - otherwise add it to db and generate all child sizes
 		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
@@ -1455,6 +1489,20 @@ class Content_files extends CI_Controller {
 		$id = key($sizes);
 
 		$dir_data = $this->_upload_dirs[$id];
+		
+		// Let's figure out if they want any sizes redone
+		if ( ! $this->input->post('toggle') OR ! is_array($_POST['toggle']))
+		{
+			
+		}
+		
+		foreach ($sizes[$id] as $k => $v)
+		{
+			if (isset($_POST['resize_ids'][$k]))
+			{
+				$replace_sizes[$k] = $v;
+			}
+		}
 
 		//$this->sync_database();
 
@@ -1462,11 +1510,6 @@ class Content_files extends CI_Controller {
 		// @todo, bail if there are no files in the directory!  :D
 
 		$files = $this->filemanager->fetch_files($id, $current_files, TRUE);
-
-		// Let's do a quick check of db to see if ANY file records for this directory
-		//$this->db->where('upload_location_id', $id);
-		//$this->db->from('files');
-		//$do_db_check = ($this->db->count_all_results() == 0) ? FALSE : TRUE;
 
 		$this->load->library('localize');
 
@@ -1485,13 +1528,13 @@ class Content_files extends CI_Controller {
 
 			if ($query->num_rows() > 0)
 			{
-				// It exists, but we need to check sizes
-				if (is_array($sizes[$id]))
+				// It exists, but do we need to change sizes?
+				if ( ! empty($replace_sizes))
 				{
 					$this->filemanager->sync_resized(
 						array('server_path' => $this->_upload_dirs[$id]['server_path']),
 						array('name' => $file['name']),
-						$sizes[$id]
+						$replace_sizes
 					);
 				}
 
@@ -1651,23 +1694,7 @@ class Content_files extends CI_Controller {
 
 		$id = $this->input->get_post('id');
 
-		// Show/hide based on radio
 
-		$this->javascript->output('
-			var type = $("input[name=wm_type]").val();
-
-			if (type == "text") {
-				$(".image_type").hide();
-			}
-			else {
-				$(".text_type").hide();
-			}
-
-			$("input[name=wm_type]").change(function() {
-				$(".text_type").toggle();
-				$(".image_type").toggle();
-    			});
-		');
 		$type = ($id) ? 'edit' : 'new';	
 		
 		$this->cp->set_variable('cp_page_title', lang('wm_'.$type));
@@ -1733,8 +1760,8 @@ class Content_files extends CI_Controller {
 			}
 
 			// Set our true/false radios
-			$vars['type_text'] = ($vars['wm_type'] == 'text') ? TRUE : FALSE;
-			$vars['type_image'] = ($vars['wm_type'] == 'text') ? FALSE : TRUE;
+			$vars['type_text'] = ($vars['wm_type'] == 't') ? TRUE : FALSE;
+			$vars['type_image'] = ($vars['wm_type'] == 't') ? FALSE : TRUE;
 			$vars['font_yes'] = ($vars['wm_use_font'] == 'y') ? TRUE : FALSE;
 			$vars['font_no'] = ($vars['wm_use_font'] == 'y') ? FALSE : TRUE;
 			$vars['use_drop_shadow_yes'] = ($vars['wm_use_drop_shadow'] == 'y') ? TRUE : FALSE;
@@ -2006,10 +2033,8 @@ class Content_files extends CI_Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		$this->load->model('file_model');
 
-
-		$name = $this->file_model->delete_watermark_preferences($id);
+		$name = $this->filemanager->delete_watermark_prefs($id);
 
 		$this->logger->log_action(lang('watermark_pref_deleted').NBS.NBS.$name);
 
@@ -2281,7 +2306,7 @@ class Content_files extends CI_Controller {
 
 		// Get watermark options
 		$wm_query = $this->file_model->get_watermark_preferences();
-		$data['watermark_options'] = array();
+		$data['watermark_options']['0'] = lang('add_watermark');
 
 		foreach ($wm_query->result() as $wm)
 		{
