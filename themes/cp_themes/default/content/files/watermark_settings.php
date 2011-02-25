@@ -17,9 +17,7 @@ if ($EE_view_disable !== TRUE)
 		<div class="heading"><h2><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
 
-<?php echo validation_errors(); ?>
-
-			<?=form_open('C=content_files'.AMP.'M=edit_watermark_preferences', $hidden)?>
+			<?=form_open('C=content_files'.AMP.'M=edit_watermark_preferences', '', $hidden)?>
 
 			<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
 				<thead>

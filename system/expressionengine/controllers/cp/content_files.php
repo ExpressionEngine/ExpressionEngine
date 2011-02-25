@@ -1743,7 +1743,7 @@ class Content_files extends CI_Controller {
 		{
 			$vars = $default_fields;
 
-			$vars['hidden'] = array();
+			$vars['hidden'] = array('id' => $id);
 
 		}
 		else
@@ -1764,7 +1764,7 @@ class Content_files extends CI_Controller {
 			$vars['font_no'] = ($vars['wm_use_font'] == 'y') ? FALSE : TRUE;
 			$vars['use_drop_shadow_yes'] = ($vars['wm_use_drop_shadow'] == 'y') ? TRUE : FALSE;
 			$vars['use_drop_shadow_no'] = ($vars['wm_use_drop_shadow'] == 'y') ? FALSE : TRUE;
-			$vars['hidden'] = array('wm_id' => $id);
+			$vars['hidden'] = array('id' => $id);
 		}
 
 
@@ -1882,8 +1882,6 @@ class Content_files extends CI_Controller {
 	
 	function _name_check($str)
 	{
-		return TRUE;
-		
 		// Check for duplicates
 		//$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->where('wm_name', $str);
@@ -1893,7 +1891,7 @@ class Content_files extends CI_Controller {
 			$this->db->where('wm_id != ', $this->form_validation->old_value('wm_id'));
 		}
 
-		if ($this->db->count_all_results('file_watermarkss') > 0)
+		if ($this->db->count_all_results('file_watermarks') > 0)
 		{
 			$this->form_validation->set_message('_name_check', $this->lang->line('wm_name_taken'));
 			return FALSE;
@@ -1951,7 +1949,7 @@ class Content_files extends CI_Controller {
 		// Construct the query based on whether we are updating or inserting
 		if ($type === 'edit')
 		{
-			$this->db->update('file_watermarks', $data, array('id' => $id));
+			$this->db->update('file_watermarks', $data, array('wm_id' => $id));
 			$cp_message = lang('preferences_updated');
 		}
 		else
