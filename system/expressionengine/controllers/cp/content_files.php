@@ -1701,8 +1701,6 @@ class Content_files extends CI_Controller {
 		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));
 		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=watermark_preferences', lang('watermark_prefs'));		
 
-		$type = ($id) ? 'edit' : 'new';
-
 
 		if (FALSE)
 		{
@@ -1760,8 +1758,8 @@ class Content_files extends CI_Controller {
 			}
 
 			// Set our true/false radios
-			$vars['type_text'] = ($vars['wm_type'] == 't') ? TRUE : FALSE;
-			$vars['type_image'] = ($vars['wm_type'] == 't') ? FALSE : TRUE;
+			$vars['type_text'] = ($vars['wm_type'] == 't' OR $vars['wm_type'] == 'text') ? TRUE : FALSE;
+			$vars['type_image'] = ($vars['wm_type'] == 't' OR $vars['wm_type'] == 'text') ? FALSE : TRUE;
 			$vars['font_yes'] = ($vars['wm_use_font'] == 'y') ? TRUE : FALSE;
 			$vars['font_no'] = ($vars['wm_use_font'] == 'y') ? FALSE : TRUE;
 			$vars['use_drop_shadow_yes'] = ($vars['wm_use_drop_shadow'] == 'y') ? TRUE : FALSE;
@@ -1796,11 +1794,11 @@ class Content_files extends CI_Controller {
 							 'label'   => 'lang:wm_name',
 							 'rules'   => 'trim|required|callback__name_check'
 						  ),
-					   array(
-							 'field'   => 'wm_type',
-							 'label'   => 'lang:wm_type',
-							 'rules'   => 'required'
-						  ),
+					   //array(
+					//		 'field'   => 'wm_type',
+					//		 'label'   => 'lang:wm_type',
+					//		 'rules'   => 'required'
+					//	  ),
 					   array(
 							 'field'   => 'wm_image_path',
 							 'label'   => 'lang:wm_image_path',
@@ -1867,13 +1865,13 @@ class Content_files extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->form_validation->set_error_delimiters('<span class="notice">', '</span>')
 							  ->set_rules($config);
+		$this->form_validation->set_old_value('wm_id', $id);
 
 		$this->javascript->compile();
 
 		if ( ! $this->form_validation->run())
 		{
 			$this->javascript->compile();
-			$this->form_validation->set_old_value('wm_id', $id);
 			$this->load->view('content/files/watermark_settings', $vars);
 		}
 		else
@@ -1884,6 +1882,8 @@ class Content_files extends CI_Controller {
 	
 	function _name_check($str)
 	{
+		return TRUE;
+		
 		// Check for duplicates
 		//$this->db->where('site_id', $this->config->item('site_id'));
 		$this->db->where('wm_name', $str);
@@ -1893,7 +1893,7 @@ class Content_files extends CI_Controller {
 			$this->db->where('wm_id != ', $this->form_validation->old_value('wm_id'));
 		}
 
-		if ($this->db->count_all_results('file_watermarks') > 0)
+		if ($this->db->count_all_results('file_watermarkss') > 0)
 		{
 			$this->form_validation->set_message('_name_check', $this->lang->line('wm_name_taken'));
 			return FALSE;

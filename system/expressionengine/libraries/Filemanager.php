@@ -697,6 +697,14 @@ class Filemanager {
 						$config[$name] = $data[$name];
 					}
 				}
+				
+				if (isset($data['wm_use_font']) && isset($data['wm_font']) && $data['wm_use_font'] == 'y')
+				{
+					$path = APPPATH.'/fonts/';
+					$config['wm_font_path'] = $path.$data['wm_font'];
+				}
+				
+				
 			}
 			else
 			{
@@ -1664,7 +1672,7 @@ class Filemanager {
 					$name = substr($file, 0, -4);
 					$name = ucwords(str_replace("_", " ", $name));
 					
-					$font_files[$name] = $file;
+					$font_files[$file] = $name;
                 }
             }         
  
