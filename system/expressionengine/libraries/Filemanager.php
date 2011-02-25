@@ -48,6 +48,7 @@ class Filemanager {
 		$this->EE->load->library('javascript');
 		$this->EE->lang->loadfile('filemanager');
 		
+		
 		$this->theme_url = $this->EE->config->item('theme_folder_url').'cp_themes/'.$this->EE->config->item('cp_theme').'/';
 	}
 	
@@ -545,7 +546,7 @@ class Filemanager {
 	/**
 	 * Synchronize Resized Images
 	 *
-	 * Checks and creates resized images per directory settings
+	 * Creates and replaces resized images per directory settings
 	 *
 	 * @access	public
 	 * @param	mixed	directory information
@@ -560,13 +561,15 @@ class Filemanager {
 		$img_path = rtrim($dir['server_path'], '/').'/';
 		
 		//$source_dir = rtrim(realpath($dir), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+		
+		$temp_marker	 = '58fdhCX9ZXd0guhh';
+		$tmp_copy = FALSE;
+		$old_wm_id = FALSE;
 
-		foreach ($dimensions as $name => $size)
+		foreach ($dimensions as $size_id => $size)
 		{
-			$create_new = FALSE;
-			$resized_path = $img_path.'_'.$name.'/';
+			$resized_path = $img_path.'_'.$size['short_name'].'/';
 			
-				
 			if ( ! is_dir($resized_path))
 			{
 				mkdir($resized_path);
@@ -585,60 +588,60 @@ class Filemanager {
 		
 			$resized_dir = rtrim(realpath($resized_path), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 			
-			// Does the image exist and is it the proper size?
-			if ( ! file_exists($resized_path.$data['name']))
+			// Does the resized image exist - nuke it!
+			if (file_exists($resized_path.$data['name']))
 			{
-				$create_new = TRUE;
-			}
-			else  // probably best to have a param for this check
-			{
-				$file = get_file_info($resized_path.$data['name']);
-			
-				$file['relative_path'] = (isset($file['relative_path'])) ?
-					 	reduce_double_slashes($file['relative_path']) :
-						reduce_double_slashes($resized_dir);
-						
-				if (function_exists('getimagesize')) 
-				{
-					if ($D = @getimagesize($file['relative_path'].$file['name']))
-					{
-						$file['width'] = $D[0];
-						$file['height'] = $D[1];
-					}
-				
-					// Check against image setting
-					if ($file['width'] > $size['width'])
-					{
-						$create_new = TRUE;
-					}
-					elseif ($file['height'] > $size['height'])
-					{
-						$create_new = TRUE;
-					}
-
-				}
-				else
-				{
-					// We can't give dimensions, so ???
-					$file['dimensions'] = FALSE;
-					exit('no dim'.$file['name']);
-				}
-				
-				// If size is wrong- nuke old resized image
-				if ($create_new == TRUE)
-				{
-					@unlink($file['relative_path'].$file['name']);
-				}	
+				@unlink($resized_path.$data['name']);
 			}		
 
-			if ($create_new == FALSE)
-			{
-				continue;
-			}
+			// Do the thumbs require watermark?
+
+			// If they do, we will create a temporary copy of the full-sized image with
+			// the watermark and create our thumbs from it.
+		
+
+			//$tmp_thumb_name  = $image_name;
+			//$tmp_medium_name = $image_name;
 			
+			$source = $img_path.$data['name'];
+			
+			if ($size['watermark_id'] != 0)
+			{
+				$source = $img_path.$temp_marker.$data['name'];
+				
+				if ($old_wm_id == FALSE OR $old_wm_id != $size['watermark_id'])
+				{
+					// Different sizes can have different watermarks- in which case, we need to nuke
+					// the existing temp and create a new one
+					
+					$old_wm_id = $size['watermark_id'];
+				
+					// Create temp copy w/watermark
+					@copy($img_path.$data['name'], $img_path.$temp_marker.$data['name']);
+				}
+				
+				$this->EE->image_lib->clear();
+				
+				//Apply Watermark to main image copy
+				$config = $this->set_image_config($size, 'watermark');
+				$config['source_image'] = $source;
+				
+				$this->EE->image_lib->initialize($config);
+			
+				// watermark it!
+			
+				if ( ! $this->EE->image_lib->watermark())
+				{
+					//return FALSE;
+					die($this->EE->image_lib->display_errors());
+				}
+			}
+
 			$this->EE->image_lib->clear();
 
-			$config['source_image']		= $img_path.$data['name'];
+			// Resize
+		
+			$config['source_image']		= $source;
 			$config['new_image']		= $resized_path.$data['name'];
 			$config['maintain_ratio']	= TRUE;
 			$config['image_library']	= $this->EE->config->item('image_resize_protocol');
@@ -648,7 +651,7 @@ class Filemanager {
 
 			$this->EE->image_lib->initialize($config);
 
-			// crop based on resize type
+			// crop based on resize type - does anyone really crop sight unseen????
 			
 			if ( ! $this->EE->image_lib->resize())
 			{
@@ -666,6 +669,96 @@ class Filemanager {
 	function sync_database()
 	{
 		
+	}
+	
+	
+	function set_image_config($data, $type = 'watermark')
+	{
+		$config = array();
+		
+		if ($type == 'watermark')
+		{
+			$wm_prefs = array('source_image', 'padding', 'wm_vrt_alignment', 'wm_hor_alignment', 
+			'wm_hor_offset', 'wm_vrt_offset');
+
+			$i_type_prefs = array('wm_overlay_path', 'wm_opacity', 'wm_x_transp', 'wm_y_transp');
+
+			$t_type_prefs = array('wm_text', 'wm_font_path', 'wm_font_size', 'wm_font_color', 
+			'wm_shadow_color', 'wm_shadow_distance');			
+			
+			$config['wm_type'] =  ($data['wm_type'] == 't' OR $data['wm_type'] == 'text') ? 'text' : 'overlay';
+			
+			if ($config['wm_type'] == 'text')
+			{
+				foreach ($t_type_prefs as $name)
+				{
+					if (isset($data[$name]) && $data[$name] != '')
+					{
+						$config[$name] = $data[$name];
+					}
+				}
+				
+				if (isset($data['wm_use_font']) && isset($data['wm_font']) && $data['wm_use_font'] == 'y')
+				{
+					$path = APPPATH.'/fonts/';
+					$config['wm_font_path'] = $path.$data['wm_font'];
+				}
+				
+				
+			}
+			else
+			{
+				foreach ($i_type_prefs as $name)
+				{
+					if (isset($data[$name]) && $data[$name] != '')
+					{
+						$config[$name] = $data[$name];
+					}
+				}				
+			}
+			
+			foreach ($wm_prefs as $name)
+			{
+				if (isset($data[$name]) && $data[$name] != '')
+				{
+					$config[$name] = $data[$name];
+				}
+			}
+			
+			if (isset($config['wm_vrt_alignment']))
+			{
+				if ($config['wm_vrt_alignment'] == 't')
+				{
+					$config['wm_vrt_alignment'] = 'top';
+				}
+				elseif ($config['wm_vrt_alignment'] == 'm')
+				{
+					$config['wm_vrt_alignment'] = 'middle';
+				}
+				else
+				{
+					$config['wm_vrt_alignment'] = 'bottom';
+				}
+			}
+			
+			if (isset($config['wm_hor_alignment']))
+			{
+				if ($config['wm_hor_alignment'] == 'l')
+				{
+					$config['wm_hor_alignment'] = 'left';
+				}
+				elseif ($config['wm_hor_alignment'] == 'c')
+				{
+					$config['wm_hor_alignment'] = 'center';
+				}
+				else
+				{
+					$config['wm_hor_alignment'] = 'right';
+				}
+			}				
+		}
+		
+		return $config;
 	}
 
 
@@ -1579,7 +1672,7 @@ class Filemanager {
 					$name = substr($file, 0, -4);
 					$name = ucwords(str_replace("_", " ", $name));
 					
-					$font_files[$name] = $file;
+					$font_files[$file] = $name;
                 }
             }         
  
@@ -1587,6 +1680,16 @@ class Filemanager {
         } 
 
 		return $font_files;
+	}
+	
+	function delete_watermark_prefs($id)
+	{
+		$name = $this->EE->file_model->delete_watermark_preferences($id);
+		
+		// And reset any dimensions using this watermark to 0
+		$this->EE->file_model->update_dimensions(array('watermark_id' => 0), array('watermark_id' => array($id)));
+		
+		return $name;
 	}
 	
 	

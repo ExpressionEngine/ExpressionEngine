@@ -232,6 +232,29 @@ class File_model extends CI_Model {
 	}
 	
 	
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Update Dimensions
+	 *
+	 * @param array	data array
+	 * @param array	field alias eg:  SELECT MAX(field_id) as max
+	 * @return null
+	 */
+	function update_dimensions($data, $where_in = array())
+	{
+		if ($where_in)
+		{
+			foreach ($where_in as $k => $v)
+			{
+				$this->db->where_in($k, $v);
+			}
+		}
+		
+		$this->db->update('file_dimensions', $data); 
+	}	
+	
+	
 }
 
 /* End of file file_model.php */

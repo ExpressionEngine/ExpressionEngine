@@ -48,4 +48,4 @@
 		}
 */
 
-$("#wm_text_color, #wm_shadow_color").ColorPicker({onSubmit:function(c,b,d,a){$(a).val(b);$(a).ColorPickerHide()},onBeforeShow:function(){$(this).ColorPickerSetColor(this.value)}}).bind("keyup",function(){$(this).ColorPickerSetColor(this.value)});
+$("#wm_text_color, #wm_shadow_color").ColorPicker({onSubmit:function(c,b,d,a){$(a).val(b);$(a).ColorPickerHide()},onBeforeShow:function(){$(this).ColorPickerSetColor(this.value)}}).bind("keyup",function(){$(this).ColorPickerSetColor(this.value)});var type=$('input[name="wm_type"]:checked').val();type=="text"?$(".image_type").hide():$(".text_type").hide();$("input[name=wm_type]").change(function(){$(".text_type").toggle();$(".image_type").toggle()});

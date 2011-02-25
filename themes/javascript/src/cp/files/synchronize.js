@@ -15,6 +15,8 @@ EE.file_manager.sync_files = EE.file_manager.sync_files || {};
 
 EE.file_manager.sync_running = 0;
 EE.file_manager.sync_errors = [];
+EE.file_manager.resize_ids = [];
+
 
 $(document).ready(function() {
 	$.template("sync_complete_template", $('<div />').append($('#sync_complete_template').remove()));
@@ -38,6 +40,9 @@ EE.file_manager.sync_listen = function() {
 
 		// Get upload directory
 		var upload_directory_id = _.keys(EE.file_manager.sync_sizes)[0];
+		
+		// Get the checked sizes
+		EE.file_manager.resize_ids = $('input:checkbox[name="toggle[]"]:checked').val() || [];
 
 		EE.file_manager.update_progress(0);
 
@@ -72,7 +77,8 @@ EE.file_manager.sync = function(upload_directory_id) {
 			"XID": EE.XID,
 			"upload_directory_id": upload_directory_id,
 			"sizes": EE.file_manager.sync_sizes,
-			"files": files_to_sync
+			"files": files_to_sync,
+			"resize_ids" : EE.file_manager.resize_ids
 		},
 		beforeSend: function(xhr, settings) {
 			// Increment the running count

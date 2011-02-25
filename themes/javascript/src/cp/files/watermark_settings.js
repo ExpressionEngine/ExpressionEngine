@@ -12,6 +12,20 @@ $('#wm_text_color, #wm_shadow_color').ColorPicker({
 });
 
 
+var type = $('input[name="wm_type"]:checked').val();
+
+if (type == "text") {
+	$(".image_type").hide();
+}
+else {
+	$(".text_type").hide();
+}
+
+$("input[name=wm_type]").change(function() {
+	$(".text_type").toggle();
+	$(".image_type").toggle();
+});
+
 /*
 		function watermark_test()
 		{
