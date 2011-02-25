@@ -1769,7 +1769,7 @@ class Comment {
 		$url = $this->EE->functions->fetch_site_index(0,0).'/'.$uri_string;
 
 		$data = array(
-						'action'		=> $url,
+						'action'		=> $this->EE->functions->remove_double_slashes($url),
 						'hidden_fields'	=> $hidden_fields,
 						'id'			=> ( ! isset($this->EE->TMPL->tagparams['id'])) ? 'comment_form' : $this->EE->TMPL->tagparams['id'],
 						'class'			=> ( ! isset($this->EE->TMPL->tagparams['class'])) ? NULL : $this->EE->TMPL->tagparams['class']
