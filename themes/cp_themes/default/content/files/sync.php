@@ -44,7 +44,7 @@ if ( ! $EE_view_disable)
 				<thead>
 					<tr>
 						<th><?=lang('size')?></th>
-						<th><?=lang('crop_or_constrain')?></th>
+						<th><?=lang('resize_type')?></th>
 						<th><?=lang('width')?></th>
 						<th><?=lang('height')?></th>
 						<th id="toggle_all"><?=form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')?></th>

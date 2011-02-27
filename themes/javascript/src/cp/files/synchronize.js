@@ -85,7 +85,7 @@ EE.file_manager.sync = function(upload_directory_id) {
 			"upload_directory_id": upload_directory_id,
 			"sizes": EE.file_manager.sync_sizes,
 			"files": files_to_sync,
-			"resize_ids" : EE.file_manager.resize_id()
+			"resize_ids" : EE.file_manager.resize_ids()
 		},
 		beforeSend: function(xhr, settings) {
 			// Increment the running count

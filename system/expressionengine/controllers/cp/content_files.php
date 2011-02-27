@@ -1496,11 +1496,21 @@ class Content_files extends CI_Controller {
 			
 		}
 		
+		/*
 		foreach ($sizes[$id] as $k => $v)
 		{
 			if (isset($_POST['resize_ids'][$k]))
 			{
 				$replace_sizes[$k] = $v;
+			}
+		}
+		*/
+		
+		if (isset($_POST['resize_ids']) && is_array($_POST['resize_ids']))
+		{
+			foreach ($_POST['resize_ids'] as $v)
+			{
+				$replace_sizes[$v] = $sizes[$id][$v];
 			}
 		}
 

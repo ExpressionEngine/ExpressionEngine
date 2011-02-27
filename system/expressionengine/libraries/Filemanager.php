@@ -566,6 +566,7 @@ class Filemanager {
 		$tmp_copy = FALSE;
 		$old_wm_id = FALSE;
 
+
 		foreach ($dimensions as $size_id => $size)
 		{
 			$resized_path = $img_path.'_'.$size['short_name'].'/';
@@ -604,13 +605,15 @@ class Filemanager {
 			//$tmp_medium_name = $image_name;
 			
 			$source = $img_path.$data['name'];
+			$nuke_source = FALSE;
 			
 			if ($size['watermark_id'] != 0)
 			{
 				$source = $img_path.$temp_marker.$data['name'];
+				$nuke_source = TRUE;
 				
-				if ($old_wm_id == FALSE OR $old_wm_id != $size['watermark_id'])
-				{
+				//if ($old_wm_id == FALSE OR $old_wm_id != $size['watermark_id'])
+				//{
 					// Different sizes can have different watermarks- in which case, we need to nuke
 					// the existing temp and create a new one
 					
@@ -618,7 +621,7 @@ class Filemanager {
 				
 					// Create temp copy w/watermark
 					@copy($img_path.$data['name'], $img_path.$temp_marker.$data['name']);
-				}
+				//}
 				
 				$this->EE->image_lib->clear();
 				
@@ -660,6 +663,11 @@ class Filemanager {
 			}
 	
 			@chmod($config['new_image'], DIR_WRITE_MODE);
+			
+			if ($nuke_source)
+			{
+				@unlink($source);
+			}
 
 		}
 		

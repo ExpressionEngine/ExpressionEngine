@@ -232,6 +232,9 @@ $lang = array(
 
 ////Watermark
 
+'add_watermark' =>
+'Add Watermark',
+
 'wm_new' =>
 'Create Watermark',
 
