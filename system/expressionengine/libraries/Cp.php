@@ -777,27 +777,32 @@ class Cp {
 	 * @param	string
 	 * @return	bool
 	 */	
-	function allowed_group($which = '')
+	function allowed_group()
 	{
-		if ($which == '')
+		$which = func_get_args();
+		
+		if ( ! count($which))
 		{
 			return FALSE;
 		}	
 		
 		// Super Admins always have access					
-		if ($this->EE->session->userdata['group_id'] == 1)
+		if ($this->EE->session->userdata('group_id') === 1)
 		{
 			return TRUE;
 		}
 		
-		if ( ! isset($this->EE->session->userdata[$which]) OR $this->EE->session->userdata[$which] !== 'y')
+		foreach ($which as $w)
 		{
-			return FALSE;			
+			$k = $this->EE->session->userdata($w);
+			
+			if ( ! $k OR $k !== 'y')
+			{
+				return FALSE;			
+			}
 		}
-		else
-		{
-			return TRUE;			
-		}
+		
+		return TRUE;
 	}
 	
 	// --------------------------------------------------------------------
