@@ -31,9 +31,9 @@ class Addons_extensions extends CI_Controller {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
+		if ( ! $this->cp->allowed_group('can_access_addons', 'can_access_extensions'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('addons');
@@ -50,11 +50,6 @@ class Addons_extensions extends CI_Controller {
 	 */
 	function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		$this->lang->loadfile('admin'); 
 		$this->load->library('extensions');
 		$this->load->library('table');
@@ -189,11 +184,6 @@ class Addons_extensions extends CI_Controller {
 	 */
 	function toggle_extension_confirm()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		$this->load->helper('form');
 		$this->lang->loadfile('admin');
 		
@@ -227,11 +217,6 @@ class Addons_extensions extends CI_Controller {
 	 */
 	function toggle_extension()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		if ($this->input->post('which') == 'all')
 		{
 			$new_val = ($this->config->item('allow_extensions') == 'y') ? 'n' : 'y';
@@ -283,11 +268,6 @@ class Addons_extensions extends CI_Controller {
 	 */
 	function extension_settings($message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
 		if ($this->config->item('allow_extensions') != 'y')
 		{
 			show_error($this->lang->line('unauthorized_access'));
@@ -517,11 +497,6 @@ class Addons_extensions extends CI_Controller {
 	 */
 	function save_extension_settings()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_extensions'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
 		if ($this->config->item('allow_extensions') != 'y')
 		{
 			show_error($this->lang->line('unauthorized_access'));
