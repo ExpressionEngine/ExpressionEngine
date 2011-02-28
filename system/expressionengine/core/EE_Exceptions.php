@@ -42,16 +42,14 @@ class EE_Exceptions extends CI_Exceptions {
 		// "safe" HTML typography in EE will strip paragraph tags, and needs newlines to indicate paragraphs
 		$message = '<p>'.implode("</p>\n\n<p>", ( ! is_array($message)) ? array($message) : $message).'</p>';
 	
-		if (class_exists('CI_Controller'))
-		{
-			$EE =& get_instance();
-		}
-		else
+		if ( ! class_exists('CI_Controller'))
 		{
 			// too early to do anything pretty
 			exit($message);
 		}
-		
+
+		$EE =& get_instance();
+
 		// let's be kind if it's a submission error, and offer a back link
 		if ( ! empty($_POST) && ! AJAX_REQUEST)
 		{
@@ -69,7 +67,7 @@ class EE_Exceptions extends CI_Exceptions {
 		// CP requests get no change in treatment
 		// nor do errors that occur in code prior to template parsing
 		// since the db, typography, etc. aren't available yet
-		if ( ! defined('REQ') OR REQ == 'CP' OR (! isset($EE->TMPL)))
+		if ( ! defined('REQ') OR REQ == 'CP' OR ( ! isset($EE->TMPL)))
 		{
 			if (ob_get_level() > $this->ob_level + 1)
 			{
