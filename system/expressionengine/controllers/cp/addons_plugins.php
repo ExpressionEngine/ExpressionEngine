@@ -35,9 +35,9 @@ class Addons_plugins extends CI_Controller {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_plugins'))
+		if ( ! $this->cp->allowed_group('can_access_addons', 'can_access_plugins'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('admin');
