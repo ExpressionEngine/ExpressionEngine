@@ -52,6 +52,85 @@ class Filemanager {
 		$this->theme_url = $this->EE->config->item('theme_folder_url').'cp_themes/'.$this->EE->config->item('cp_theme').'/';
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Save File
+	 *
+	 * @access	public
+	 */
+	function save_file($file_path, $dir_id, $prefs = array())
+	{
+		if ( ! $file_path OR ! $dir_id)
+		{
+			error();
+		}
+		
+		permissions();
+		form_validation_check();
+		
+		// fetch preferences & merge with passed in prefs
+		$dir_prefs = fetch_upload_dir_prefs($dir_id);
+
+		// use this!
+		$prefs = array_merge($dir_prefs, $prefs);
+
+		mime_type_check();	// can this type be uploaded?
+		xss_check();
+		
+		if (is_editable_image())
+		{
+			thumbs();
+			watermark();
+			
+			// @todo error checking
+		}
+		
+		insert_file();
+		// @todo error checking
+		categories();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+	
+	
+	
+	
+	
+	
 	// --------------------------------------------------------------------
 	
 	/**
@@ -978,24 +1057,22 @@ class Filemanager {
 		{
 			return array('error' => $this->EE->upload->display_errors());
 		}
-		else
-		{
-			$data = $this->EE->upload->data();
 
-			$this->EE->load->library('encrypt');
+		$data = $this->EE->upload->data();
 
-			return array(
-				'name'			=> $data['file_name'],
-				'orig_name'		=> $this->EE->upload->orig_name,
-				'is_image'		=> $data['is_image'],
-				'dimensions'	=> $data['image_size_str'],
-				'directory'		=> $dir['id'],
-				'width'			=> $data['image_width'],
-				'height'		=> $data['image_height'],
-				'thumb'			=> $dir['url'].'_thumbs/thumb_'.$data['file_name'],
-				'url_path'		=> rawurlencode($this->EE->encrypt->encode($data['full_path'], $this->EE->session->sess_crypt_key)) //needed for displaying image in edit mode
-			);
-		}
+		$this->EE->load->library('encrypt');
+
+		return array(
+			'name'			=> $data['file_name'],
+			'orig_name'		=> $this->EE->upload->orig_name,
+			'is_image'		=> $data['is_image'],
+			'dimensions'	=> $data['image_size_str'],
+			'directory'		=> $dir['id'],
+			'width'			=> $data['image_width'],
+			'height'		=> $data['image_height'],
+			'thumb'			=> $dir['url'].'_thumbs/thumb_'.$data['file_name'],
+			'url_path'		=> rawurlencode($this->EE->encrypt->encode($data['full_path'], $this->EE->session->sess_crypt_key)) //needed for displaying image in edit mode
+		);
 	}
 
 
