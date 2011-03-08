@@ -1793,7 +1793,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 						$preference_controls['id'] = $key;
 						$preference_controls['options'] = $options;
 						$preference_controls['default'] = $this->config->item($key);
-						}
+					}
 					elseif ($val['0'] == 'r')
 					{
 						/** -----------------------------
@@ -1920,6 +1920,13 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 		
 		$config_update = $this->config->update_site_prefs($_POST);
+		
+		// Member Avatars and Signatures are special little bunnies.  
+		// Deal with them now.
+		$this->db->update('members', array(
+			'display_signatures'	=> $this->input->post('allow_signatures'),
+			'display_avatars'		=> $this->input->post('enable_avatars')
+		));
 
  		$loc = BASE.AMP.'C=members'.AMP.'M=member_config';
 
