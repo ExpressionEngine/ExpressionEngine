@@ -100,6 +100,7 @@ class EE_Email extends CI_Email {
 		}
 				
 		$this->_body = stripslashes(rtrim(str_replace("\r", "", $body)));
+		return $this;
 	}
 	
 
