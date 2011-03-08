@@ -110,8 +110,25 @@ class Filemanager {
 	}
 	
 	
+	// ---------------------------------------------------------------------
 	
-	
+	/**
+	 * Takes file data and inserts it into the database
+	 *
+	 * @param array $data The data to insert into the database
+	 * @return bool|int Returns false if the insert failed and the ID if successful
+	 */
+	function insert_file($data = array())
+	{
+		$this->EE->load->model('file_model');
+
+		// List out valid items to insert
+		
+		// Build out the array to insert into exp_files	
+
+		// Create category records
+		return FALSE;
+	}	
 	
 	
 	
