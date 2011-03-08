@@ -24,16 +24,11 @@
  */
 class EE_Security extends CI_Security {
 
-
-	/**
-	 * Constructor
-	 */	
-	public function __construct()
-	{
-		parent::__construct();
-
-		$this->EE =& get_instance();
-	}	
+	// Small note, if you feel the urge to add a constructor,
+	// do not call get_instance(). The CI Security library
+	// is sometimes instantiated before the controller is loaded.
+	// i.e. when turning CI's csrf_protection on. Which you shouldn't
+	// do in EE anywho. -pk
 
 	// --------------------------------------------------------------------
 
@@ -67,7 +62,9 @@ class EE_Security extends CI_Security {
 	 */
 	function check_xid($xid)
 	{
-		if ($this->EE->config->item('secure_forms') != 'y')
+		$EE =& get_instance();
+		
+		if ($EE->config->item('secure_forms') != 'y')
 		{
 			return TRUE;
 		}
@@ -77,11 +74,11 @@ class EE_Security extends CI_Security {
 			return FALSE;
 		}		
 
-		$this->EE->db->where('hash', $xid);
-		$this->EE->db->where('ip_address', $this->EE->input->ip_address());
-		$this->EE->db->where('date > UNIX_TIMESTAMP()-7200');
-		$this->EE->db->from('security_hashes');
-		$total =  $this->EE->db->count_all_results();
+		$EE->db->where('hash', $xid);
+		$EE->db->where('ip_address', $EE->input->ip_address());
+		$EE->db->where('date > UNIX_TIMESTAMP()-7200');
+		$EE->db->from('security_hashes');
+		$total = $EE->db->count_all_results();
 		
 		if ($total  == 0)
 		{
@@ -103,14 +100,16 @@ class EE_Security extends CI_Security {
 	
 	function delete_xid($xid)
 	{
-		if ($this->EE->config->item('secure_forms') != 'y' OR $xid == FALSE)
+		$EE =& get_instance();
+		
+		if ($EE->config->item('secure_forms') != 'y' OR $xid == FALSE)
 		{
 			return;
 		}
 
-		$this->EE->db->where("(hash='".$this->EE->db->escape_str($xid)."' AND ip_address = '".$this->EE->input->ip_address()."')", NULL, FALSE);
-		$this->EE->db->or_where('date < UNIX_TIMESTAMP()-7200');
-		$this->EE->db->delete('security_hashes');
+		$EE->db->where("(hash='".$EE->db->escape_str($xid)."' AND ip_address = '".$EE->input->ip_address()."')", NULL, FALSE);
+		$EE->db->or_where('date < UNIX_TIMESTAMP()-7200');
+		$EE->db->delete('security_hashes');
 		
 		return;		
 	}
