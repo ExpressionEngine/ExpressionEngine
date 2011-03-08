@@ -122,11 +122,9 @@ class Filemanager {
 	{
 		$this->EE->load->model('file_model');
 
-		// List out valid items to insert
-		
-		// Build out the array to insert into exp_files	
+		// Send information to file_model
+		$this->EE->file_model->save_file($data);
 
-		// Create category records
 		return FALSE;
 	}	
 	

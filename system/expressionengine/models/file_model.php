@@ -151,6 +151,56 @@ class File_model extends CI_Model {
 	// ------------------------------------------------------------------------	
 
 	/**
+	 * Save a file
+	 *
+	 * @param array $data Associative array of data to save, if ID exists, the item
+	 *		will be updated, not added
+	 * @return bool|int Either FALSE if something went wrong or the ID of the item
+	 */
+	function save_file($data = array())
+	{
+		$successful = FALSE;
+
+		// Define valid array keys
+		$valid_keys = array(
+			'file_id' => '',
+			'site_id' => '',
+			'title' => '',
+			'upload_location_id' => '',
+			'path' => '',
+			'status' => '',
+			'mime_type' => '',
+			'file_name' => '',
+			'file_size' => '',
+			'metadata' => '',
+			'uploaded_by_member_id' => '',
+			'upload_date' => '',
+			'modified_by_member_id' => '',
+			'modified_date' => '',
+			'file_hw_original' => ''
+		);
+
+		for ($i = 1; $i <= 6; $i++)
+		{
+			$valid_keys["field_{$i}"] = '';
+			$valid_keys["field_{$i}_fmt"] = '';
+		}
+		
+		// Remove data that can't exist in the database
+		$data = array_intersect_key($data, $valid_keys);	
+
+		// Deal with categories
+		
+		// Insert the data
+		$this->EE->db->insert('files', $data);
+
+		// Return ID or FALSE
+		return $this->EE->db->insert_id();
+	}
+
+	// ------------------------------------------------------------------------	
+
+	/**
 	 * Count Files
 	 *
 	 * @param 	array
@@ -263,7 +313,6 @@ class File_model extends CI_Model {
 		
 		$this->db->update('file_dimensions', $data); 
 	}	
-	
 	
 }
 
