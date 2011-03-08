@@ -7104,6 +7104,8 @@ class Channel {
 		/**  Replace variables
 		/** ---------------------------------------*/
 
+		$this->EE->load->library('typography');
+
 		if (strpos($this->EE->TMPL->tagdata, LD.'path=') !== FALSE)
 		{
 			$path  = (preg_match("#".LD."path=(.+?)".RD."#", $this->EE->TMPL->tagdata, $match)) ? $this->EE->functions->create_url($match[1]) : $this->EE->functions->create_url("SITE_INDEX");
@@ -7131,12 +7133,14 @@ class Channel {
 
 		if (strpos($this->EE->TMPL->tagdata, LD.'title') !== FALSE)
 		{
-			$this->EE->TMPL->tagdata = str_replace(LD.'title'.RD, $query->row('title'), $this->EE->TMPL->tagdata);
+			$this->EE->TMPL->tagdata = str_replace(LD.'title'.RD, $this->EE->typography->format_characters($query->row('title')), $this->EE->TMPL->tagdata);
 		}
 
 		if (strpos($this->EE->TMPL->tagdata, '_entry->title') !== FALSE)
 		{
-			$this->EE->TMPL->tagdata = preg_replace('/'.LD.'(?:next|prev)_entry->title'.RD.'/', $query->row('title'), $this->EE->TMPL->tagdata);
+			$this->EE->TMPL->tagdata = preg_replace('/'.LD.'(?:next|prev)_entry->title'.RD.'/', 
+													$this->EE->typography->format_characters($query->row('title')),
+													$this->EE->TMPL->tagdata);
 		}
 
 		return $this->EE->functions->remove_double_slashes(stripslashes($this->EE->TMPL->tagdata));
