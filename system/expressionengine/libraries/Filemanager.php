@@ -104,9 +104,7 @@ class Filemanager {
 			// @todo error checking
 		}
 		
-		insert_file();
-		// @todo error checking
-		categories();
+		$this->_insert_file($prefs);
 	}
 	
 	
@@ -115,10 +113,11 @@ class Filemanager {
 	/**
 	 * Takes file data and inserts it into the database
 	 *
+	 * @access private
 	 * @param array $data The data to insert into the database
 	 * @return bool|int Returns false if the insert failed and the ID if successful
 	 */
-	function insert_file($data = array())
+	private function _insert_file($data = array())
 	{
 		$this->EE->load->model('file_model');
 
