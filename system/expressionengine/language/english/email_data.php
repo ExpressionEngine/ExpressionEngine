@@ -1,5 +1,10 @@
 <?php
-
+// To prevent the translation giving errors inlude empty lang array
+// Wrapped in a check incase lang is called before.
+if ( ! isset($lang))
+{
+	$lang = array();
+}
 //---------------------------------------------------
 //	Admin Notification of Mailinglist subscription
 //--------------------------------------------------

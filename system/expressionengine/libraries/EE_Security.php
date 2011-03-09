@@ -35,11 +35,10 @@ class EE_Security extends CI_Security {
 	/**
 	 * Secure Forms Check
 	 *
-	 * @access	public
 	 * @param 	string
 	 * @return	bool
 	 */
-	function secure_forms_check($xid)
+	public function secure_forms_check($xid)
 	{	
 		if ( ! $this->check_xid($xid))
 		{
@@ -56,11 +55,10 @@ class EE_Security extends CI_Security {
 	/**
 	 * Check for Valid Security Hash
 	 *
-	 * @access	public
 	 * @param 	string
 	 * @return	bool
 	 */
-	function check_xid($xid)
+	public function check_xid($xid)
 	{
 		$EE =& get_instance();
 		
@@ -74,13 +72,13 @@ class EE_Security extends CI_Security {
 			return FALSE;
 		}		
 
-		$EE->db->where('hash', $xid);
-		$EE->db->where('ip_address', $EE->input->ip_address());
-		$EE->db->where('date > UNIX_TIMESTAMP()-7200');
-		$EE->db->from('security_hashes');
-		$total = $EE->db->count_all_results();
+		$total = $EE->db->where('hash', $xid)
+						->where('ip_address', $EE->input->ip_address())
+						->where('date > UNIX_TIMESTAMP()-7200')
+						->from('security_hashes')
+						->count_all_results();
 		
-		if ($total  == 0)
+		if ($total === 0)
 		{
 			return FALSE;
 		}
@@ -93,23 +91,21 @@ class EE_Security extends CI_Security {
 	/**
 	 * Delete Security Hash
 	 *
-	 * @access	public
 	 * @param 	string
 	 * @return	void
 	 */
-	
-	function delete_xid($xid)
+	public function delete_xid($xid)
 	{
 		$EE =& get_instance();
 		
-		if ($EE->config->item('secure_forms') != 'y' OR $xid == FALSE)
+		if ($EE->config->item('secure_forms') != 'y' OR $xid === FALSE)
 		{
 			return;
 		}
 
-		$EE->db->where("(hash='".$EE->db->escape_str($xid)."' AND ip_address = '".$EE->input->ip_address()."')", NULL, FALSE);
-		$EE->db->or_where('date < UNIX_TIMESTAMP()-7200');
-		$EE->db->delete('security_hashes');
+		$EE->db->where("(hash='".$EE->db->escape_str($xid)."' AND ip_address = '".$EE->input->ip_address()."')", NULL, FALSE)
+			   ->or_where('date < UNIX_TIMESTAMP()-7200')
+			   ->delete('security_hashes');
 		
 		return;		
 	}
