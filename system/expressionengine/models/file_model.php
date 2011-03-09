@@ -161,7 +161,7 @@ class File_model extends CI_Model {
 	{
 		$successful = FALSE;
 
-		// Define valid array keys
+		// Define valid array keys as keys to use in array_intersect_key
 		$valid_keys = array(
 			'file_id' => '',
 			'site_id' => '',
@@ -180,6 +180,7 @@ class File_model extends CI_Model {
 			'file_hw_original' => ''
 		);
 
+		// Add 6 custom fields
 		for ($i = 1; $i <= 6; $i++)
 		{
 			$valid_keys["field_{$i}"] = '';
@@ -189,13 +190,18 @@ class File_model extends CI_Model {
 		// Remove data that can't exist in the database
 		$data = array_intersect_key($data, $valid_keys);	
 
-		// Deal with categories
-		
 		// Insert the data
 		$this->EE->db->insert('files', $data);
 
-		// Return ID or FALSE
-		return $this->EE->db->insert_id();
+		// Figure out the file_id
+		$file_id = (isset($data['file_id'])) ? $data['file_id'] : $this->EE->db->insert_id();
+
+		// Deal with categories
+		$this->EE->load->model('file_category_model');
+		foreach ($data['categories'] as $cat_id)
+		{
+			$this->EE->file_category_model->set_category($file_id, $cat_id);
+		}
 	}
 
 	// ------------------------------------------------------------------------	
