@@ -320,25 +320,24 @@ class Comment {
 		//  Set sorting and limiting
 		if ( ! $dynamic)
 		{
-			$limit = ( ! $this->EE->TMPL->fetch_param('limit')) ? 100 : $this->EE->TMPL->fetch_param('limit');
-			$sort  = ( ! $this->EE->TMPL->fetch_param('sort'))  ? 'desc' : $this->EE->TMPL->fetch_param('sort');
+			$limit = $this->EE->TMPL->fetch_param('limit', 100);
+			$sort = $this->EE->TMPL->fetch_param('sort', 'desc');
 		}
 		else
 		{
-			$limit = ( ! $this->EE->TMPL->fetch_param('limit')) ? $this->limit : $this->EE->TMPL->fetch_param('limit');
-			$sort  = ( ! $this->EE->TMPL->fetch_param('sort'))  ? 'asc' : $this->EE->TMPL->fetch_param('sort');
+			$limit = $this->EE->TMPL->fetch_param('limit', $this->limit);
+			$sort = $this->EE->TMPL->fetch_param('sort', 'asc');
 		}
 
 		$allowed_sorts = array('date', 'email', 'location', 'name', 'url');
 
-
 		// We can skip the count in non-dynamic if we already know this
-		if (preg_match("/".LD."paginate(.*?)".RD."(.+?)".LD.'\/'."paginate".RD."/s", $this->EE->TMPL->tagdata, $match))
+		if (preg_match("/".LD."paginate(.*?)".RD."(.+?)".LD.'\/'."paginate".RD."/s", 
+			$this->EE->TMPL->tagdata, $match))
 		{
 			$paginate = TRUE;
-			$paginate_data	= $match['2'];
+			$paginate_data	= $match[2];
 		}
-
 
 		/** ----------------------------------------
 		/**  Fetch comment ID numbers
@@ -366,6 +365,7 @@ class Comment {
 		$this->EE->db->start_cache();
 
 		$this->EE->db->select('comment_date, comment_id');
+		$this->EE->db->from('comments c');
 		
 		if ($status = $this->EE->TMPL->fetch_param('status'))
 		{
@@ -374,41 +374,53 @@ class Comment {
 			$status = str_replace('closed', 'c', $status);
 			$status = str_replace('pending', 'p', $status);
 
-			$this->EE->functions->ar_andor_string($status, 'status');
+			$this->EE->functions->ar_andor_string($status, 'c.status');
 
 			// No custom status for comments, so we can be leaner in check for 'c'
 			if (stristr($status, "'c'") === FALSE)
 			{
-				$this->EE->db->where('status !=', 'c');
+				$this->EE->db->where('c.status !=', 'c');
 			}
 		}
 		else
 		{
-			$this->EE->db->where('status', 'o');
+			$this->EE->db->where('c.status', 'o');
 		}
 		
 		// Note if it's not dynamic and the entry isn't forced?  We don't check on the entry criteria,
 		// so this point, dynamic and forced entry will have 'valid' entry ids, dynamic off may not
 
 		if ( ! $dynamic && ! $force_entry)
-		{
+		{			
 			//  Limit to/exclude specific channels
 			if (count($channel_ids) == 1)
 			{
-				$this->EE->db->where('channel_id', $channel_ids['0']);
+				$this->EE->db->where('c.channel_id', $channel_ids['0'], FALSE);
 			}
 			elseif (count($channel_ids) > 1)
 			{
-				$this->EE->db->where_in('channel_id', $channel_ids);
+				$this->EE->db->where_in('c.channel_id', $channel_ids);
 			}
 
 			// seems redundant given channels
-			$this->EE->db->where_in('site_id', $this->EE->TMPL->site_ids);
+			$this->EE->db->where_in('c.site_id', $this->EE->TMPL->site_ids, FALSE);
 
-			if ($paginate == TRUE)
+			if ($this->EE->TMPL->fetch_param('show_expired') !== 'yes')
 			{
-				// When we are only showing comments and it is not based on an entry id or url title
-				// in the URL, we can make the query much more efficient and save some work.
+				$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
+				
+				$this->EE->db->join('channel_titles ct', 'ct.entry_id = c.entry_id');
+				$date_where = "(".$this->EE->db->protect_identifiers('ct.expiration_date')." = 0 OR "
+				.$this->EE->db->protect_identifiers('ct.expiration_date')." > {$timestamp})";
+				$this->EE->db->where($date_where);
+			}
+
+			if ($paginate === TRUE)
+			{
+				// When we are only showing comments and it is 
+				// not based on an entry id or url title
+				// in the URL, we can make the query much 
+				// more efficient and save some work.
 				$total_rows = $this->EE->db->count_all_results('comments');
 			}
 			
@@ -423,11 +435,11 @@ class Comment {
 			// Force entry may result in multiple entry ids
 			if (isset($entry_ids) && count($entry_ids) > 0)
 			{
-				$this->EE->db->where_in('entry_id', $entry_ids);
+				$this->EE->db->where_in('c.entry_id', $entry_ids);
 			}
 			else
 			{
-				$this->EE->db->where('entry_id', $entry_id);
+				$this->EE->db->where('c.entry_id', $entry_id);
 			}
 			
 			if ($comment_id_param)
@@ -441,16 +453,16 @@ class Comment {
 		}
 
 		$this->EE->db->stop_cache();
-		$query = $this->EE->db->get('comments');
-		
+		$query = $this->EE->db->get();
+		// var_dump($this->EE->db->last_query()); exit;
 		$this->EE->db->flush_cache();
 		$result_ids = array();
 
 		if ($query->num_rows() > 0)
 		{
-			foreach ($query->result_array() as $row)
+			foreach ($query->result() as $row)
 			{
-				$result_ids[] = $row['comment_id'];
+				$result_ids[] = $row->comment_id;
 			}
 		}
 
