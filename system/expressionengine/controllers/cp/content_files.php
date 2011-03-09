@@ -1489,22 +1489,7 @@ class Content_files extends CI_Controller {
 		$id = key($sizes);
 
 		$dir_data = $this->_upload_dirs[$id];
-		
-		// Let's figure out if they want any sizes redone
-		if ( ! $this->input->post('toggle') OR ! is_array($_POST['toggle']))
-		{
-			
-		}
-		
-		/*
-		foreach ($sizes[$id] as $k => $v)
-		{
-			if (isset($_POST['resize_ids'][$k]))
-			{
-				$replace_sizes[$k] = $v;
-			}
-		}
-		*/
+
 		
 		if (isset($_POST['resize_ids']) && is_array($_POST['resize_ids']))
 		{
@@ -1514,6 +1499,7 @@ class Content_files extends CI_Controller {
 			}
 		}
 
+		
 		//$this->sync_database();
 
 
@@ -1541,11 +1527,23 @@ class Content_files extends CI_Controller {
 				// It exists, but do we need to change sizes?
 				if ( ! empty($replace_sizes))
 				{
+					/*
 					$this->filemanager->sync_resized(
 						array('server_path' => $this->_upload_dirs[$id]['server_path']),
 						array('name' => $file['name']),
 						$replace_sizes
 					);
+					*/
+					
+					// Note- really no need to create system thumb in this case
+				$this->filemanager->create_thumb(
+					$this->_upload_dirs[$id]['server_path'].$file['name'],
+					array('server_path' => $this->_upload_dirs[$id]['server_path'],
+					'name' => $file['name'],
+					'dimensions' => $sizes[$id])
+				);
+					
+					
 				}
 
 				continue;
@@ -1590,17 +1588,20 @@ class Content_files extends CI_Controller {
 			// For syncing- will need to tap into dir prefs and make all image variations- so batch needs to be small
 
 			// Woot- Success!  Make a new thumb
+			/*
 			$thumb = $this->filemanager->create_thumb(
 				array('server_path' => $this->_upload_dirs[$id]['server_path']),
 				array('name' => $file['name'])
 			);
+			*/
 
 			if (is_array($sizes[$id]))
 			{
-				$this->filemanager->sync_resized(
-					array('server_path' => $this->_upload_dirs[$id]['server_path']),
-					array('name' => $file['name']),
-					$sizes[$id]
+				$this->filemanager->create_thumb(
+					$this->_upload_dirs[$id]['server_path'].$file['name'],
+					array('server_path' => $this->_upload_dirs[$id]['server_path'],
+					'name' => $file['name'],
+					'dimensions' => $sizes[$id])
 				);
 			}
 		}

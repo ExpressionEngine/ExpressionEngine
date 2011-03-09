@@ -493,59 +493,138 @@ class Filemanager {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Create Thumbnail
+	 * Create Thumbnails
 	 *
-	 * Create a Thumbnail for a file
+	 * Create Thumbnails for a file
 	 *
 	 * @access	public
-	 * @param	mixed	directory information
-	 * @param	mixed	file information
+	 * @param	string	file path
+	 * @param	array	file and directory information
 	 * @return	bool	success / failure
 	 */
-	function create_thumb($dir, $data)
+	//function create_thumb($dir, $data)
+	function create_thumb($file_path, $prefs, $thumb = TRUE)
 	{
+		/*
+					dir_id =>
+					name =>
+					server_path =>
+	 				dimensions => array('short_name' =>,
+							'size_width' =>, 
+							'size_height' =>,
+							'watermark_id' =>
+							)
+
+		*/
+
 		$this->EE->load->library('image_lib');
 		
-		$img_path = rtrim($dir['server_path'], '/').'/';
-		$thumb_path = $img_path.'_thumbs/';
-				
-		if ( ! is_dir($thumb_path))
-		{
-			mkdir($thumb_path);
+		$img_path = rtrim($prefs['server_path'], '/').'/';
+		$source = $file_path; //$img_path.$data['name'];
+		
+		$dimensions = $prefs['dimensions'];
+		
+		$dimensions[0] = array(
+			'short_name'		=> 'thumb',
+			'width'		=> 73,
+			'height'		=> 60,
+			'watermark_id'		=> 0
+			);
 			
-			if ( ! file_exists($thumb_path.'index.html'))
-			{
-				$f = fopen($thumb_path.'index.html', FOPEN_READ_WRITE_CREATE_DESTRUCTIVE);
-				fwrite($f, 'Directory access is forbidden.');
-				fclose($f);
-			}
-		}
-		elseif ( ! is_really_writable($thumb_path))
+		$protocol = $this->EE->config->item('image_resize_protocol');
+		$lib_path = $this->EE->config->item('image_library_path');
+
+		foreach ($dimensions as $size_id => $size)
 		{
-			return FALSE;
+			$resized_path = $img_path.'_'.$size['short_name'].'/';
+			
+			if ( ! is_dir($resized_path))
+			{
+				mkdir($resized_path);
+			
+				if ( ! file_exists($resized_path.'index.html'))
+				{
+					$f = fopen($resized_path.'index.html', FOPEN_READ_WRITE_CREATE_DESTRUCTIVE);
+					fwrite($f, 'Directory access is forbidden.');
+					fclose($f);
+				}
+			}
+			elseif ( ! is_really_writable($resized_path))
+			{
+				$errors[] = 'path not writable';
+				
+				return FALSE;
+			}
+		
+			$resized_dir = rtrim(realpath($resized_path), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+			
+			// Does the thumb image exist - nuke it!
+			if (file_exists($resized_path.$prefs['name']))
+			{
+				@unlink($resized_path.$prefs['name']);
+			}		
+
+			// Resize
+		
+			$config['source_image']		= $source;
+			$config['new_image']		= $resized_path.$prefs['name'];
+			$config['maintain_ratio']	= TRUE;
+			$config['image_library']	= $protocol;
+			$config['library_path']		= $lib_path;
+			$config['width']			= $size['width'];
+			$config['height']			= $size['height'];
+
+			$this->EE->image_lib->initialize($config);
+
+			// crop based on resize type - does anyone really crop sight unseen????
+			
+			if ( ! $this->EE->image_lib->resize())
+			{
+				$errors[] = $this->EE->image_lib->display_errors();
+				return FALSE;
+			}
+			
+			@chmod($config['new_image'], DIR_WRITE_MODE);
+			
+			// Does the thumb require watermark?
+						
+			if ($size['watermark_id'] != 0)
+			{
+				if ( ! $this->create_watermark($resized_path.$prefs['name'], $size))
+				{
+					$error[] = 'failed wm';
+				}				
+			}			
+			
 		}
 		
+		return TRUE;
+
+	}	
+	
+
+
+	function create_watermark($image_path, $data)
+	{
+			
 		$this->EE->image_lib->clear();
-
-		$config['source_image']		= $img_path.$data['name'];
-		$config['new_image']		= $thumb_path.'thumb_'.$data['name'];
-		$config['maintain_ratio']	= TRUE;
-		$config['image_library']	= $this->EE->config->item('image_resize_protocol');
-		$config['library_path']		= $this->EE->config->item('image_library_path');
-		$config['width']			= 73;
-		$config['height']			= 60;
-
+		
+		$config = $this->set_image_config($data, 'watermark');
+		$config['source_image'] = $image_path;
+		
 		$this->EE->image_lib->initialize($config);
-
-		if ( ! $this->EE->image_lib->resize())
+			
+		// watermark it!
+			
+		if ( ! $this->EE->image_lib->watermark())
 		{
-			return FALSE;
+			//return FALSE;
 			die($this->EE->image_lib->display_errors());
 		}
-	
-		@chmod($config['new_image'], DIR_WRITE_MODE);
-		return TRUE;
+
+		$this->EE->image_lib->clear();
 	}
+
 
 	// --------------------------------------------------------------------
 
@@ -620,138 +699,6 @@ class Filemanager {
 		return array_values($files);
 	}
 	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Synchronize Resized Images
-	 *
-	 * Creates and replaces resized images per directory settings
-	 *
-	 * @access	public
-	 * @param	mixed	directory information
-	 * @param	array	file information
-	 * @param	array	array of sizes
-	 * @return	bool	success / failure
-	 */
-	function sync_resized($dir, $data, $dimensions)
-	{
-		$this->EE->load->library('image_lib');
-		
-		$img_path = rtrim($dir['server_path'], '/').'/';
-		
-		//$source_dir = rtrim(realpath($dir), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-		
-		$temp_marker	 = '58fdhCX9ZXd0guhh';
-		$tmp_copy = FALSE;
-		$old_wm_id = FALSE;
-
-
-		foreach ($dimensions as $size_id => $size)
-		{
-			$resized_path = $img_path.'_'.$size['short_name'].'/';
-			
-			if ( ! is_dir($resized_path))
-			{
-				mkdir($resized_path);
-			
-				if ( ! file_exists($resized_path.'index.html'))
-				{
-					$f = fopen($resized_path.'index.html', FOPEN_READ_WRITE_CREATE_DESTRUCTIVE);
-					fwrite($f, 'Directory access is forbidden.');
-					fclose($f);
-				}
-			}
-			elseif ( ! is_really_writable($resized_path))
-			{
-				return FALSE;
-			}
-		
-			$resized_dir = rtrim(realpath($resized_path), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-			
-			// Does the resized image exist - nuke it!
-			if (file_exists($resized_path.$data['name']))
-			{
-				@unlink($resized_path.$data['name']);
-			}		
-
-			// Do the thumbs require watermark?
-
-			// If they do, we will create a temporary copy of the full-sized image with
-			// the watermark and create our thumbs from it.
-		
-
-			//$tmp_thumb_name  = $image_name;
-			//$tmp_medium_name = $image_name;
-			
-			$source = $img_path.$data['name'];
-			$nuke_source = FALSE;
-			
-			if ($size['watermark_id'] != 0)
-			{
-				$source = $img_path.$temp_marker.$data['name'];
-				$nuke_source = TRUE;
-				
-				//if ($old_wm_id == FALSE OR $old_wm_id != $size['watermark_id'])
-				//{
-					// Different sizes can have different watermarks- in which case, we need to nuke
-					// the existing temp and create a new one
-					
-					$old_wm_id = $size['watermark_id'];
-				
-					// Create temp copy w/watermark
-					@copy($img_path.$data['name'], $img_path.$temp_marker.$data['name']);
-				//}
-				
-				$this->EE->image_lib->clear();
-				
-				//Apply Watermark to main image copy
-				$config = $this->set_image_config($size, 'watermark');
-				$config['source_image'] = $source;
-				
-				$this->EE->image_lib->initialize($config);
-			
-				// watermark it!
-			
-				if ( ! $this->EE->image_lib->watermark())
-				{
-					//return FALSE;
-					die($this->EE->image_lib->display_errors());
-				}
-			}
-
-			$this->EE->image_lib->clear();
-
-			// Resize
-		
-			$config['source_image']		= $source;
-			$config['new_image']		= $resized_path.$data['name'];
-			$config['maintain_ratio']	= TRUE;
-			$config['image_library']	= $this->EE->config->item('image_resize_protocol');
-			$config['library_path']		= $this->EE->config->item('image_library_path');
-			$config['width']			= $size['width'];
-			$config['height']			= $size['height'];
-
-			$this->EE->image_lib->initialize($config);
-
-			// crop based on resize type - does anyone really crop sight unseen????
-			
-			if ( ! $this->EE->image_lib->resize())
-			{
-				return FALSE;
-				die($this->EE->image_lib->display_errors());
-			}
-	
-			@chmod($config['new_image'], DIR_WRITE_MODE);
-			
-			if ($nuke_source)
-			{
-				@unlink($source);
-			}
-
-		}
-		
-		return TRUE;
-	}
 
 	function sync_database()
 	{
@@ -801,7 +748,9 @@ class Filemanager {
 					{
 						$config[$name] = $data[$name];
 					}
-				}				
+				}
+				
+				$config['wm_overlay_path'] = $data['wm_image_path'];				
 			}
 			
 			foreach ($wm_prefs as $name)
@@ -1263,6 +1212,8 @@ class Filemanager {
 		}
 		else
 		{
+			// Add to db using save- becomes a new entry
+			
 			$new_filename = '';
 			
 			$thumb_suffix = $this->EE->config->item('thumbnail_prefix');
