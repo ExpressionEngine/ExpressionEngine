@@ -31,17 +31,27 @@ class File_model extends CI_Model {
 	 *
 	 * Get a collection of files
 	 *
+	 * Parameter array takes an associative array with the following keys
+	 * - cat_id
+	 * - type
+	 * - limit
+	 * - offset
+	 * - search_value
+	 * - order
+	 * - do_count
+	 *
 	 * @access	public
 	 * @param	int
-	 * @param	int
-	 * @param	int
-	 * @param	string
 	 * @return	mixed
 	 */
-	function get_files($dir_id = array(), $cat_id = NULL, $type = 'all', $limit = NULL, 
-						$offset = NULL, $search_value = NULL, $order = array(), 
-						$do_count = TRUE, $search_in=NULL)
+	function get_files($dir_id = array(), $parameters)
 	{
+		// Setup default parameters
+		$parameters = array_merge(array(
+			'type' => 'all',
+			'do_count' => TRUE			
+		), $parameters);
+		
 		$this->load->helper('text');
 		// If we add a dir col- will need a join
 		
@@ -55,24 +65,24 @@ class File_model extends CI_Model {
 			$this->db->where_in("upload_location_id", $dir_id);
 		}
 
-		if ($type == 'image')
+		if ($parameters['type'] == 'image')
 		{
 			$this->db->where_in('mime_type', $this->_image_types);
 		}
-		elseif ($type == 'non-image')
+		elseif ($parameters['type'] == 'non-image')
 		{
 			$this->db->where_not_in('mime_type', $this->_image_types);
 		}
 		
 		$this->db->where('site_id', $this->config->item('site_id'));
 		
-		if (($cat_id == 'none' OR $cat_id) && is_numeric($cat_id))					 
+		if (isset($parameters['cat_id']) && ($parameters['cat_id'] == 'none' OR $parameters['cat_id']) && is_numeric($parameters['cat_id']))					 
 		{
 			$this->db->join('file_categories', 'exp_files.file_id = exp_file_categories.file_id', 'left');
-			$this->db->where('cat_id', $cat_id);				
+			$this->db->where('cat_id', $parameters['cat_id']);				
 		}		
 
-		if ($search_value)
+		if (isset($parameters['search_value']))
 		{
 			switch ($search_in)
 			{
@@ -109,19 +119,19 @@ class File_model extends CI_Model {
 			return $return_data;
 		}
 
-		if ($limit)
+		if (isset($parameters['limit']))
 		{
-			$this->db->limit($limit);
+			$this->db->limit($parameters['limit']);
 		}
 
-		if ($offset)
+		if (isset($parameters['offset']))
 		{
-			$this->db->offset($offset);
+			$this->db->offset($parameters['offset']);
 		}
 
-		if (is_array($order) && count($order) > 0)
+		if (isset($parameters['order']) && is_array($parameters['order']) && count($parameters['order']) > 0)
 		{
-			foreach ($order as $key => $val)
+			foreach ($parameters['order'] as $key => $val)
 			{
 				$this->db->order_by($key, $val);
 			}
@@ -134,8 +144,58 @@ class File_model extends CI_Model {
 		$return_data['results'] = $this->db->get('files');
 		
 		$this->db->flush_cache();
-		//print $this->db->last_query();exit;
+		
 		return $return_data;
+	}
+
+	// ------------------------------------------------------------------------	
+
+	/**
+	 * Save a file
+	 *
+	 * @param array $data Associative array of data to save, if ID exists, the item
+	 *		will be updated, not added
+	 * @return bool|int Either FALSE if something went wrong or the ID of the item
+	 */
+	function save_file($data = array())
+	{
+		$successful = FALSE;
+
+		// Define valid array keys
+		$valid_keys = array(
+			'file_id' => '',
+			'site_id' => '',
+			'title' => '',
+			'upload_location_id' => '',
+			'path' => '',
+			'status' => '',
+			'mime_type' => '',
+			'file_name' => '',
+			'file_size' => '',
+			'metadata' => '',
+			'uploaded_by_member_id' => '',
+			'upload_date' => '',
+			'modified_by_member_id' => '',
+			'modified_date' => '',
+			'file_hw_original' => ''
+		);
+
+		for ($i = 1; $i <= 6; $i++)
+		{
+			$valid_keys["field_{$i}"] = '';
+			$valid_keys["field_{$i}_fmt"] = '';
+		}
+		
+		// Remove data that can't exist in the database
+		$data = array_intersect_key($data, $valid_keys);	
+
+		// Deal with categories
+		
+		// Insert the data
+		$this->EE->db->insert('files', $data);
+
+		// Return ID or FALSE
+		return $this->EE->db->insert_id();
 	}
 
 	// ------------------------------------------------------------------------	
@@ -253,7 +313,6 @@ class File_model extends CI_Model {
 		
 		$this->db->update('file_dimensions', $data); 
 	}	
-	
 	
 }
 
