@@ -55,6 +55,11 @@ class Search {
 	{
 		$this->EE->lang->loadfile('search');
 
+		if ( ! $this->EE->security->secure_forms_check($this->EE->input->post('XID')))
+		{
+			return $this->EE->output->show_user_error('general', array(lang('invalid_action')));
+		}
+
 		// Get hidden meta vars 
 		if (isset($_POST['meta']))
 		{
