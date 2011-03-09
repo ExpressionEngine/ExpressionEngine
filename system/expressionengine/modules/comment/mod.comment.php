@@ -401,6 +401,31 @@ class Comment {
 			{
 				$this->EE->db->where_in('c.channel_id', $channel_ids);
 			}
+			
+			$this->EE->db->join('channel_titles ct', 'ct.entry_id = c.entry_id');
+
+			if ($e_status = $this->EE->TMPL->fetch_param('entry_status'))
+			{
+				$e_status = str_replace('Open',	'open',	$e_status);
+				$e_status = str_replace('Closed', 'closed', $e_status);
+
+				// If they don't specify closed, it defaults to it
+				if ( ! in_array('closed', explode('|', $e_status)))
+				{
+					$this->EE->db->where('ct.status !=', 'closed');
+				}
+
+				$this->EE->functions->ar_andor_string($e_status, 'ct.status');
+			}
+			else
+			{
+				$this->EE->db->where('ct.status !=', 'closed');
+			}
+			
+			if ($author_id = $this->EE->TMPL->fetch_param('author_id'))
+			{
+				$this->EE->db->where('c.author_id', $author_id);
+			}
 
 			// seems redundant given channels
 			$this->EE->db->where_in('c.site_id', $this->EE->TMPL->site_ids, FALSE);
@@ -408,8 +433,7 @@ class Comment {
 			if ($this->EE->TMPL->fetch_param('show_expired') !== 'yes')
 			{
 				$timestamp = ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
-				
-				$this->EE->db->join('channel_titles ct', 'ct.entry_id = c.entry_id');
+
 				$date_where = "(".$this->EE->db->protect_identifiers('ct.expiration_date')." = 0 OR "
 				.$this->EE->db->protect_identifiers('ct.expiration_date')." > {$timestamp})";
 				$this->EE->db->where($date_where);
