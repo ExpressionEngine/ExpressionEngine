@@ -159,7 +159,7 @@ class File_model extends CI_Model {
 	 */
 	function save_file($data = array())
 	{
-		$successful = FALSE;
+		$successful = TRUE;
 
 		// Define valid array keys as keys to use in array_intersect_key
 		$valid_keys = array(
@@ -190,18 +190,34 @@ class File_model extends CI_Model {
 		// Remove data that can't exist in the database
 		$data = array_intersect_key($data, $valid_keys);	
 
-		// Insert the data
-		$this->EE->db->insert('files', $data);
+		// Insert/update the data
+		if (isset($data['file_id']))
+		{
+			$this->EE->db->update('files', $data, array('id' => $data['file_id']));
+		}
+		else
+		{
+			$this->EE->db->insert('files', $data);
+		}
 
 		// Figure out the file_id
 		$file_id = (isset($data['file_id'])) ? $data['file_id'] : $this->EE->db->insert_id();
+
+		// Check to see if the file_id is valid
+		$sucessful = ( ! is_int($file_id) AND ! $file_id > 0) ? $file_id : FALSE;
 
 		// Deal with categories
 		$this->EE->load->model('file_category_model');
 		foreach ($data['categories'] as $cat_id)
 		{
-			$this->EE->file_category_model->set_category($file_id, $cat_id);
+			$result = $this->EE->file_category_model->set_category($file_id, $cat_id);
+
+			// If the result is a failure then set $successful to false, otherwise
+			// leave it alone
+			$successful = ($result) ? $successful : FALSE;
 		}
+
+		return $successful;
 	}
 
 	// ------------------------------------------------------------------------	

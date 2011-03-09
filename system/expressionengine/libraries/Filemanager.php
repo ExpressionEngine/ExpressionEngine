@@ -123,9 +123,7 @@ class Filemanager {
 		$this->EE->load->model('file_model');
 
 		// Send information to file_model
-		$this->EE->file_model->save_file($data);
-
-		return FALSE;
+		return $this->EE->file_model->save_file($data);
 	}	
 	
 	
