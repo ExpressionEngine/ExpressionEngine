@@ -751,12 +751,14 @@ class Filemanager {
 	}
 	
 
-	function sync_database()
+	function sync_database($dir_id)
 	{
+		
+		
 		
 	}
 	
-	
+
 	function set_image_config($data, $type = 'watermark')
 	{
 		$config = array();
@@ -788,8 +790,6 @@ class Filemanager {
 					$path = APPPATH.'/fonts/';
 					$config['wm_font_path'] = $path.$data['wm_font'];
 				}
-				
-				
 			}
 			else
 			{

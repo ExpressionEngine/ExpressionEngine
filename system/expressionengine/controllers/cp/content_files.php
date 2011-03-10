@@ -1512,6 +1512,7 @@ class Content_files extends CI_Controller {
 		// Setup data for batch insert
 		foreach ($files->files[$id] as $file)
 		{
+			
 			if ( ! $file['mime'])
 			{
 				// set error
@@ -1525,25 +1526,17 @@ class Content_files extends CI_Controller {
 			if ($query->num_rows() > 0)
 			{
 				// It exists, but do we need to change sizes?
+				
+				// Note 'Regular' batch needs to check if file exists- and then do something if so
 				if ( ! empty($replace_sizes))
 				{
-					/*
-					$this->filemanager->sync_resized(
-						array('server_path' => $this->_upload_dirs[$id]['server_path']),
-						array('name' => $file['name']),
-						$replace_sizes
-					);
-					*/
-					
 					// Note- really no need to create system thumb in this case
-				$this->filemanager->create_thumb(
+					$this->filemanager->create_thumb(
 					$this->_upload_dirs[$id]['server_path'].$file['name'],
 					array('server_path' => $this->_upload_dirs[$id]['server_path'],
 					'name' => $file['name'],
 					'dimensions' => $sizes[$id])
-				);
-					
-					
+					);
 				}
 
 				continue;
@@ -1583,22 +1576,10 @@ class Content_files extends CI_Controller {
 					'file_hw_original'		=> $file_dim
 			);
 
-			//print_r($file_data);
 			
-			$this->filemanager->insert_file($file_data);
-
-			// Insert into categories???
-
-			// Go ahead and create the thumb
-			// For syncing- will need to tap into dir prefs and make all image variations- so batch needs to be small
-
-			// Woot- Success!  Make a new thumb
-			/*
-			$thumb = $this->filemanager->create_thumb(
-				array('server_path' => $this->_upload_dirs[$id]['server_path']),
-				array('name' => $file['name'])
-			);
-			*/
+			//Watch Pascal have raving fit
+			
+			$this->filemanager->_insert_file($file_data);
 
 			if (is_array($sizes[$id]))
 			{
@@ -1610,18 +1591,6 @@ class Content_files extends CI_Controller {
 				);
 			}
 		}
-
-		// var_dump($file_data);
-		// exit($this->output->send_ajax_response('failure before batch'));
-
-		// Alas my beloved batch
-		//if ( ! empty($file_data))
-		//{
-		//	$this->db->insert_batch('files', $file_data);
-		//}
-
-		// exit($this->output->send_ajax_response('failure after batch'));
-
 
 		if (AJAX_REQUEST)
 		{
