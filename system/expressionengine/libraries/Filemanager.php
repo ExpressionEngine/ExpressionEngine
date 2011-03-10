@@ -119,23 +119,32 @@ class Filemanager {
 		}
 		
 		$prefs = $qry->row_array();
-		$this->EE->db->free_result();
+		$qry->free_result();
 		
 		
 		// Add dimensions
 		$prefs['dimensions'] = array();
 		
+		/*
 		$qry = $this->EE->db->from('file_dimensions')
 							->where('upload_location_id', $dir_id)
 							->join('file_watermarks', 'wm_id = watermark_id', 'left')
 							->get_where('file_dimensions');
+		*/
+
+		$qry = $this->EE->db->select('*')
+						->from('file_dimensions')
+						->join('file_watermarks', 'wm_id = watermark_id', 'left')
+						->where_in('upload_location_id', $dir_id)
+						->get();							
+							
 		
 		foreach ($qry->result_array() as $row)
 		{
 			$prefs['dimensions'][$row['id']] = array(
 				'short_name'	=> $row['short_name'],
-				'size_width'	=> $row['size_width'],
-				'size_height'	=> $row['size_height'],
+				'size_width'	=> $row['width'],
+				'size_height'	=> $row['height'],
 				'watermark_id'	=> $row['watermark_id']
 			);
 			
@@ -190,8 +199,8 @@ class Filemanager {
 			$is_image = TRUE;
 		}
 		
-		Apply XSS Filtering to uploaded files?
-		xss_clean_uploads
+		//Apply XSS Filtering to uploaded files?
+		//xss_clean_uploads
 		if ( ! $this->EE->security->xss_clean($file_path, $is_image))
 		{
 			return FALSE;

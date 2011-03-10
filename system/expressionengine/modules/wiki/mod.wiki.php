@@ -934,6 +934,8 @@ class Wiki {
 					$query = $this->EE->db->query("DELETE FROM exp_wiki_uploads
 										 WHERE file_name = '".$this->EE->db->escape_str($topic)."'");
 										
+					// Delete from file system??  Pretty much have to- nuked it
+										
 					// Clear wiki cache
 					$this->EE->functions->clear_caching('db');
 
@@ -5302,7 +5304,7 @@ class Wiki {
 						
 			$server_path = $query->row('server_path');
 
-/*
+
 
 			switch($query->row('allowed_types'))
 			{
@@ -5361,9 +5363,10 @@ class Wiki {
 			
 			$file_data = $this->EE->upload->data();
 			
-			*/
+
 			
 			// call filemanager??
+			$this->EE->load->library('filemanager');
 			
 			@chmod($file_data['full_path'], DIR_WRITE_MODE);
 			
@@ -5379,6 +5382,8 @@ class Wiki {
 							'file_hash'				=> $this->EE->functions->random('md5')
 						 );
 			
+			$this->EE->filemanager->save_file($server_path.$new_name, $this->upload_dir, $file_data, FALSE);
+
 			$this->EE->db->insert('wiki_uploads', $data);			
 			
 			if ($this->EE->config->item('secure_forms') == 'y')
