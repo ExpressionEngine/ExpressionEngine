@@ -191,16 +191,16 @@ class File_model extends CI_Model {
 		$data = array_intersect_key($data, $valid_keys);	
 
 		// Insert the data
-		$this->EE->db->insert('files', $data);
+		$this->db->insert('files', $data);
 
 		// Figure out the file_id
-		$file_id = (isset($data['file_id'])) ? $data['file_id'] : $this->EE->db->insert_id();
+		$file_id = (isset($data['file_id'])) ? $data['file_id'] : $this->db->insert_id();
 
 		// Deal with categories
-		$this->EE->load->model('file_category_model');
+		$this->load->model('file_category_model');
 		foreach ($data['categories'] as $cat_id)
 		{
-			$this->EE->file_category_model->set_category($file_id, $cat_id);
+			$this->file_category_model->set_category($file_id, $cat_id);
 		}
 	}
 

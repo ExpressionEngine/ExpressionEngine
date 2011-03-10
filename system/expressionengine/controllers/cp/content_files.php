@@ -1559,7 +1559,8 @@ class Content_files extends CI_Controller {
 
 			$file_dim = (isset($file['dimensions']) && $file['dimensions'] != '') ? str_replace(array('width="', 'height="', '"'), '', $file['dimensions']) : '';
 
-			$file_data[] = array(
+			//$file_data[] 
+			$file_data = array(
 					'upload_location_id'	=> $id,
 					'site_id'				=> $this->config->item('site_id'),
 					'title'					=> $file['name'],
@@ -1581,6 +1582,10 @@ class Content_files extends CI_Controller {
 					'field_6_fmt'			=> 'xhtml',
 					'file_hw_original'		=> $file_dim
 			);
+
+			//print_r($file_data);
+			
+			$this->filemanager->insert_file($file_data);
 
 			// Insert into categories???
 
@@ -1609,11 +1614,11 @@ class Content_files extends CI_Controller {
 		// var_dump($file_data);
 		// exit($this->output->send_ajax_response('failure before batch'));
 
-
-		if ( ! empty($file_data))
-		{
-			$this->db->insert_batch('files', $file_data);
-		}
+		// Alas my beloved batch
+		//if ( ! empty($file_data))
+		//{
+		//	$this->db->insert_batch('files', $file_data);
+		//}
 
 		// exit($this->output->send_ajax_response('failure after batch'));
 
