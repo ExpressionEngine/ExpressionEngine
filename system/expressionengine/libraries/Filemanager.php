@@ -741,9 +741,6 @@ class Filemanager {
 
 		*/
 
-//echo '<pre>';
-///print_r($prefs);
-//exit;
 
 		$this->EE->load->library('image_lib');
 		
@@ -795,7 +792,7 @@ class Filemanager {
 			// Resize
 		
 			$config['source_image']		= $source;
-			$config['new_image']		= $resized_path.$prefs['name'];
+			$config['new_image']		= $resized_path.$prefs['file_name'];
 			$config['maintain_ratio']	= TRUE;
 			$config['image_library']	= $protocol;
 			$config['library_path']		= $lib_path;
@@ -809,6 +806,10 @@ class Filemanager {
 			if ( ! $this->EE->image_lib->resize())
 			{
 				$this->_set_error($this->EE->image_lib->display_errors());
+				
+				print_r($config);
+				var_dump($this->EE->image_lib->display_errors());
+				exit;
 				return FALSE;
 			}
 			
@@ -818,9 +819,10 @@ class Filemanager {
 						
 			if ($size['watermark_id'] != 0)
 			{
-				if ( ! $this->create_watermark($resized_path.$prefs['name'], $size))
+				if ( ! $this->create_watermark($resized_path.$prefs['file_name'], $size))
 				{
 					$this->_set_error('wm_failed');
+					exit('borked wm');
 					return FALSE;
 				}				
 			}			
