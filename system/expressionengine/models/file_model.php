@@ -190,27 +190,29 @@ class File_model extends CI_Model {
 		// Remove data that can't exist in the database
 		$data = array_intersect_key($data, $valid_keys);	
 
+
 		// Insert/update the data
 		if (isset($data['file_id']))
 		{
-			$this->EE->db->update('files', $data, array('id' => $data['file_id']));
+			$this->db->update('files', $data, array('id' => $data['file_id']));
 		}
 		else
 		{
-			$this->EE->db->insert('files', $data);
+			$this->db->insert('files', $data);
 		}
 
 		// Figure out the file_id
-		$file_id = (isset($data['file_id'])) ? $data['file_id'] : $this->EE->db->insert_id();
+		$file_id = (isset($data['file_id'])) ? $data['file_id'] : $this->db->insert_id();
 
 		// Check to see if the file_id is valid
 		$sucessful = ( ! is_int($file_id) AND ! $file_id > 0) ? $file_id : FALSE;
 
 		// Deal with categories
-		$this->EE->load->model('file_category_model');
+		$this->load->model('file_category_model');
+		
 		foreach ($data['categories'] as $cat_id)
 		{
-			$result = $this->EE->file_category_model->set_category($file_id, $cat_id);
+			$result = $this->file_category_model->set_category($file_id, $cat_id);
 
 			// If the result is a failure then set $successful to false, otherwise
 			// leave it alone

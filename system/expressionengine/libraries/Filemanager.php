@@ -635,6 +635,8 @@ class Filemanager {
 		}
 
 		$this->EE->image_lib->clear();
+		
+		return TRUE;
 	}
 
 
