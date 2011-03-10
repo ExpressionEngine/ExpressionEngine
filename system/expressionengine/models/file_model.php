@@ -294,6 +294,10 @@ class File_model extends CI_Model {
 		// ok, now remove the pref
 		$this->db->where('wm_id', $id);
 		$this->db->delete('file_watermarks');
+		
+		// clean up resized
+		$this->db->where('watermark_id', $id);
+		$this->db->update('file_dimensions', array('watermark_id' => 0));		
 
 		return $deleting->row('wm_name');
 	}
@@ -337,7 +341,127 @@ class File_model extends CI_Model {
 		
 		$this->db->update('file_dimensions', $data); 
 	}	
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get Raw Files
+	 *
+	 * @access	public
+	 * @param	int
+	 * @return	mixed
+	 */
+	function get_raw_files($directories = array(), $allowed_types = array(), $full_server_path = '', $hide_sensitive_data = FALSE, $get_dimensions = FALSE, $files_array = array())
+	{
+		$files = array();
+
+		if ( ! is_array($directories))
+		{
+			$directories = array($directories);
+		}
+		
+		if ( ! is_array($allowed_types))
+		{
+			$allowed_types = array($allowed_types);
+		}
 	
+		$this->load->helper('file');
+		$this->load->helper('string');
+		$this->load->helper('text');
+		$this->load->helper('directory');
+		$this->load->library('encrypt');
+
+		if (count($directories) == 0)
+		{
+			return $files;
+		}
+		
+		foreach ($directories as $key => $directory)
+		{
+			if ( ! empty($files_array))
+			{
+				$source_dir = rtrim(realpath($directory), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+				
+				foreach($files_array as $file)
+				{
+					$directory_files[] = get_file_info($source_dir.$file);
+				}
+			}
+			else
+			{
+				$directory_files = get_dir_file_info($directory); //, array('name', 'server_path', 'size', 'date'));
+			}
+
+			if ($allowed_types[$key] == 'img')
+			{
+				$allowed_type = array('image/gif','image/jpeg','image/png');
+			}
+			elseif ($allowed_types[$key] == 'all')
+			{
+				$allowed_type = array();
+			}
+
+			$dir_name_length = strlen(reduce_double_slashes($directory)); // used to create relative paths below
+
+			if ($directory_files)
+			{
+				foreach ($directory_files as $file)
+				{
+					if ($full_server_path != '')
+					{
+						$file['relative_path'] = $full_server_path; // allow for paths to be passed into this function
+					}
+
+					$file['short_name'] = ellipsize($file['name'], 16, .5);
+
+					$file['relative_path'] = (isset($file['relative_path'])) ?
+					 	reduce_double_slashes($file['relative_path']) :
+						reduce_double_slashes($directory);
+
+					$file['encrypted_path'] = rawurlencode($this->encrypt->encode($file['relative_path'].$file['name'], $this->session->sess_crypt_key));
+
+					$file['mime'] = get_mime_by_extension($file['name']);
+
+					if ($get_dimensions)
+					{
+						if (function_exists('getimagesize')) 
+						{
+							if ($D = @getimagesize($file['relative_path'].$file['name']))
+							{
+								$file['dimensions'] = $D[3];
+							}
+						}
+						else
+						{
+							// We can't give dimensions, so return a blank string
+							$file['dimensions'] = '';
+						}
+					}
+
+					// Add relative directory path information to name
+					$file['name'] = substr($file['relative_path'], $dir_name_length).$file['name'];
+
+					// Don't include server paths - useful for ajax requests
+					if ($hide_sensitive_data)
+					{
+						unset($file['relative_path'], $file['server_path']);
+					}
+
+					if (count($allowed_type) == 0 OR in_array($file['mime'], $allowed_type))
+					{
+						$files[] = $file;
+					}
+				}
+			}
+		}
+
+		sort($files);
+
+		return $files;
+	}
+
+
 }
 
 /* End of file file_model.php */

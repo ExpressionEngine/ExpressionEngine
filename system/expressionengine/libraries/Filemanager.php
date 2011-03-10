@@ -153,7 +153,7 @@ class Filemanager {
 		return $this->set_upload_dir_prefs($dir_id, $qry->row_array());
 	}
 
-	function extension_check($file_path, $prefs)
+	function security_check($file_path, $prefs)
 	{
 		$this->EE->load->helper('file');
 		
@@ -190,6 +190,8 @@ class Filemanager {
 			$is_image = TRUE;
 		}
 		
+		Apply XSS Filtering to uploaded files?
+		xss_clean_uploads
 		if ( ! $this->EE->security->xss_clean($file_path, $is_image))
 		{
 			return FALSE;
@@ -296,7 +298,7 @@ class Filemanager {
 	 */
 	private function _check_permissions($dir_id)
 	{
-		$group_id = $this->ee->session->userdata('group_id');
+		$group_id = $this->EE->session->userdata('group_id');
 
 		// Non admins need to have their permissions checked
 		if ($group_id != 1)
@@ -724,15 +726,15 @@ class Filemanager {
 		$this->EE->load->library('image_lib');
 		
 		$img_path = rtrim($prefs['server_path'], '/').'/';
-		$source = $file_path; //$img_path.$data['name'];
+		$source = $file_path;
 		
 		$dimensions = $prefs['dimensions'];
 		
 		$dimensions[0] = array(
-			'short_name'		=> 'thumb',
-			'width'		=> 73,
+			'short_name'	=> 'thumb',
+			'width'			=> 73,
 			'height'		=> 60,
-			'watermark_id'		=> 0
+			'watermark_id'	=> 0
 			);
 			
 		$protocol = $this->EE->config->item('image_resize_protocol');
@@ -755,7 +757,7 @@ class Filemanager {
 			}
 			elseif ( ! is_really_writable($resized_path))
 			{
-				$errors[] = 'path not writable';
+				$this->_set_error('resize_path_not_writable');
 				
 				return FALSE;
 			}
@@ -784,7 +786,7 @@ class Filemanager {
 			
 			if ( ! $this->EE->image_lib->resize())
 			{
-				$errors[] = $this->EE->image_lib->display_errors();
+				$this->_set_error($this->EE->image_lib->display_errors());
 				return FALSE;
 			}
 			
@@ -796,14 +798,14 @@ class Filemanager {
 			{
 				if ( ! $this->create_watermark($resized_path.$prefs['name'], $size))
 				{
-					$error[] = 'failed wm';
+					$this->_set_error('wm_failed');
+					return FALSE;
 				}				
 			}			
 			
 		}
 		
 		return TRUE;
-
 	}	
 	
 
@@ -822,8 +824,7 @@ class Filemanager {
 			
 		if ( ! $this->EE->image_lib->watermark())
 		{
-			//return FALSE;
-			die($this->EE->image_lib->display_errors());
+			return FALSE;
 		}
 
 		$this->EE->image_lib->clear();
@@ -906,12 +907,14 @@ class Filemanager {
 	}
 	
 
-	function sync_database()
+	function sync_database($dir_id)
 	{
+		
+		
 		
 	}
 	
-	
+
 	function set_image_config($data, $type = 'watermark')
 	{
 		$config = array();
@@ -943,8 +946,6 @@ class Filemanager {
 					$path = APPPATH.'/fonts/';
 					$config['wm_font_path'] = $path.$data['wm_font'];
 				}
-				
-				
 			}
 			else
 			{
@@ -1258,8 +1259,7 @@ class Filemanager {
         }
 
 		// Check they have permission for this directory and get directory info
-		$this->EE->load->model('tools_model');
-		$query = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata('group_id'), $id);
+		$query = $this->EE->file_model->get_upload_preferences($this->EE->session->userdata('group_id'), $id);
 		
 		if ($query->num_rows() == 0)
 		{
@@ -1529,20 +1529,20 @@ class Filemanager {
 	 */
 	public function fetch_files($file_dir_id = NULL, $files = array(), $get_dimensions = FALSE)
 	{
-		$this->EE->load->model('tools_model');
-		
-		$upload_dirs = $this->EE->tools_model->get_upload_preferences(
-										$this->ee->session->userdata('group_id'),
+
+		$upload_dirs = $this->EE->file_model->get_upload_preferences(
+										$this->EE->session->userdata('group_id'),
 										$file_dir_id);
 		
 		$dirs = new stdclass();
 		$dirs->files = array();
+		$this->EE->load->model('tools_model');
 		
 		foreach ($upload_dirs->result() as $dir)
 		{
 			$dirs->files[$dir->id] = array();
 			
-			$files = $this->ee->tools_model->get_files($dir->server_path, $dir->allowed_types, '', false, $get_dimensions, $files);
+			$files = $this->EE->tools_model->get_files($dir->server_path, $dir->allowed_types, '', false, $get_dimensions, $files);
 			
 			foreach ($files as $file)
 			{
@@ -1557,7 +1557,7 @@ class Filemanager {
 
 	function directory_files_map($source_dir, $directory_depth = 0, $hidden = false, $allowed_types = 'all')
 	{
-		$this->ee->load->helper('file');
+		$this->EE->load->helper('file');
 
 		if ($allowed_types == 'img')
 		{
