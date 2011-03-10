@@ -29,13 +29,15 @@ class Filemanager {
 	var $config;
 	var $theme_url;
 	
-	public $upload_errors = FALSE;
-	public $upload_warnings = FALSE;
-	public $upload_data = NULL;
-	public $dir_sizes = FALSE;
-	private $_upload_dirs = array();
+	public $dir_sizes			= FALSE;
+	public $upload_errors		= FALSE;
+	public $upload_data			= NULL;
+	public $upload_warnings		= FALSE;
 
 	private $EE;
+	
+	private $_upload_dirs		= array();
+	private $_upload_dir_prefs	= array();
 
 	/**
 	 * Constructor
@@ -67,8 +69,146 @@ class Filemanager {
 
 
 
+	// ---------------------------------------------------------------------
+	
+	function set_upload_dir_prefs($dir_id, array $prefs)
+	{
+		$required = array_flip(
+			array('name', 'server_path', 'url', 'allowed_types')
+		);
+		
+		$defaults = array(
+			'dimensions' => array()
+		);
+		
+		// make sure all required keys are in there
+		if (count(array_diff_key($required, $prefs)))
+		{
+			return FALSE;
+		}
+		
+		// add defaults for optional fields
+		foreach ($defaults as $key => $val)
+		{
+			if ( ! isset($prefs[$key]))
+			{
+				$prefs[$key] = $val;
+			}
+		}
+		
+		$this->_upload_dir_prefs[$dir_id] = $prefs;
+		return $prefs;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	function fetch_upload_dir_prefs($dir_id)
+	{
+		if (isset($this->_upload_dir_prefs[$dir_id]))
+		{
+			return $this->_upload_dir_prefs[$dir_id];
+		}
+		
+		$qry = $this->EE->db->where('id', $dir_id)
+							->where('site_id', $this->EE->config->item('site_id'))
+							->get('upload_prefs');
+		
+		if ( ! $qry->num_rows())
+		{
+			return FALSE;
+		}
+		
+		$prefs = $qry->row_array();
+		$this->EE->db->free_result();
+		
+		
+		// Add dimensions
+		$prefs['dimensions'] = array();
+		
+		$qry = $this->EE->db->from('file_dimensions')
+							->where('upload_location_id', $dir_id)
+							->join('file_watermarks', 'wm_id = watermark_id', 'left')
+							->get_where('file_dimensions');
+		
+		foreach ($qry->result_array() as $row)
+		{
+			$prefs['dimensions'][$row['id']] = array(
+				'short_name'	=> $row['short_name'],
+				'size_width'	=> $row['size_width'],
+				'size_height'	=> $row['size_height'],
+				'watermark_id'	=> $row['watermark_id']
+			);
+			
+			// Add watermarking prefs
+			$prefs['dimensions'][$row['id']] += preg_filter('/wm_.*/', '$0', $row);
+		}
+		
+		// check keys and cache
+		return $this->set_upload_dir_prefs($dir_id, $qry->row_array());
+	}
 
+	function extension_check($file_path, $prefs)
+	{
+		$this->EE->load->helper('file');
+		
+		$is_image = FALSE;
+		$allowed = $prefs['allowed_types'];
+		$mime = get_mime_by_extension($file_path);
+		
+		if (is_array($mime))
+		{
+			$mime = $mime[0];
+		}
+		
+		if ($allowed == 'all' OR $allowed == '*')
+		{
+			return TRUE;
+		}
+		
+		if ($allowed == 'img')
+		{
+			$allowed = 'gif|jpg|jpeg|png|jpe';
+		}
+		
+		$extension = strtolower(substr(strrchr($file_path, '.'), 1));
 
+		if (strpos($allowed, $extension) === FALSE)
+		{
+			return FALSE;
+		}
+		
+		// Double check mime type for images so we can
+		// be sure that our xss check is run correctly
+		if (substr($mime, 0, 5) != 'image')
+		{
+			$is_image = TRUE;
+		}
+		
+		if ( ! $this->EE->security->xss_clean($file_path, $is_image))
+		{
+			return FALSE;
+		}
+		
+		return $mime;
+	}
+	
+	function is_editable_image($file_path, $mime)
+	{
+		if ( ! $this->is_image($mime))
+		{
+			return FALSE;
+		}
+		
+		if (function_exists('getimagesize'))
+		{
+			if (FALSE === @getimagesize($file_path))
+			{
+				return FALSE;
+			}
+		}
+		
+		return TRUE;
+	}
 	
 	// --------------------------------------------------------------------
 	
@@ -91,15 +231,24 @@ class Filemanager {
 		}
 		
 		// fetch preferences & merge with passed in prefs
-		$dir_prefs = fetch_upload_dir_prefs($dir_id);
+		$dir_prefs = $this->fetch_upload_dir_prefs($dir_id);
+		
+		if ( ! $dir_prefs)
+		{
+			// something went way wrong!
+		}
 
-		// use this!
+		// override anything =)
 		$prefs = array_merge($dir_prefs, $prefs);
 
-		mime_type_check();	// can this type be uploaded?
-		xss_check();
+		$mime = $this->security_check($file_path, $prefs);
 		
-		if (is_editable_image())
+		if ($mime === FALSE)
+		{
+			// security check failed
+		}
+		
+		if ($this->is_editable_image($file_path, $mime))
 		{
 			thumbs();
 			watermark();
