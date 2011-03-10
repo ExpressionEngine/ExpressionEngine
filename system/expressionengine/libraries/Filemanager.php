@@ -76,16 +76,19 @@ class Filemanager {
 	 * Save File
 	 *
 	 * @access	public
+	 * @param	boolean	$check_permissions	Whether to check permissions or not
 	 */
-	function save_file($file_path, $dir_id, $prefs = array())
+	function save_file($file_path, $dir_id, $prefs = array(), $check_permissions = TRUE)
 	{
 		if ( ! $file_path OR ! $dir_id)
 		{
 			error();
 		}
-		
-		permissions();
-		form_validation_check();
+
+		if ($check_permissions === TRUE AND ! $this->_check_permissions($dir_id))
+		{
+			// This person does not have access, error?		
+		}
 		
 		// fetch preferences & merge with passed in prefs
 		$dir_prefs = fetch_upload_dir_prefs($dir_id);
@@ -126,6 +129,40 @@ class Filemanager {
 	}	
 	
 	
+	// ---------------------------------------------------------------------
+
+	/**
+	 * Checks the permissions of the current user and directory
+	 * Returns TRUE if they have access FALSE otherwise
+	 *
+	 * @access	private
+	 * @param	int|string	$dir_id		Directory to check permissions on
+	 * @return	boolean		TRUE if current user has access, FALSE otherwise
+	 */
+	private function _check_permissions($dir_id)
+	{
+		$group_id = $this->ee->session->userdata('group_id');
+
+		// Non admins need to have their permissions checked
+		if ($group_id != 1)
+		{
+			// non admins need to first be checked for restrictions
+			// we'll add these into a where_not_in() check below
+			$this->EE->db->select('upload_id');
+			$this->EE->db->where(array(
+				'member_group' => $group_id,
+				'upload_id' => $dir_id
+			));
+
+			// If any record shows up, then they do not have access
+			if ($this->EE->db->count_all_results('upload_no_access') > 0)
+			{
+				return FALSE;
+			}
+		}
+
+		return TRUE;
+	}
 	
 	
 
@@ -1340,17 +1377,17 @@ class Filemanager {
 		$this->EE->load->model('tools_model');
 		
 		$upload_dirs = $this->EE->tools_model->get_upload_preferences(
-										$this->EE->session->userdata('group_id'),
+										$this->ee->session->userdata('group_id'),
 										$file_dir_id);
 		
-		$dirs = new StdClass();
+		$dirs = new stdclass();
 		$dirs->files = array();
 		
 		foreach ($upload_dirs->result() as $dir)
 		{
 			$dirs->files[$dir->id] = array();
 			
-			$files = $this->EE->tools_model->get_files($dir->server_path, $dir->allowed_types, '', FALSE, $get_dimensions, $files);
+			$files = $this->ee->tools_model->get_files($dir->server_path, $dir->allowed_types, '', false, $get_dimensions, $files);
 			
 			foreach ($files as $file)
 			{
@@ -1363,9 +1400,9 @@ class Filemanager {
 	
 	// --------------------------------------------------------------------	
 
-	function directory_files_map($source_dir, $directory_depth = 0, $hidden = FALSE, $allowed_types = 'all')
+	function directory_files_map($source_dir, $directory_depth = 0, $hidden = false, $allowed_types = 'all')
 	{
-		$this->EE->load->helper('file');
+		$this->ee->load->helper('file');
 
 		if ($allowed_types == 'img')
 		{
