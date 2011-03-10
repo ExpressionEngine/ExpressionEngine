@@ -2072,7 +2072,6 @@ class Content_files extends CI_Controller {
 	function file_upload_preferences($message = '')
 	{
 		$this->load->library('table');
-		$this->load->model('tools_model');
 
 		$this->cp->set_variable('cp_page_title', lang('file_upload_prefs'));
 
@@ -2082,7 +2081,7 @@ class Content_files extends CI_Controller {
 		}');
 
 		$vars['message'] = $message;
-		$vars['upload_locations'] = $this->tools_model->get_upload_preferences($this->session->userdata('member_group'));
+		$vars['upload_locations'] = $this->file_model->get_upload_preferences($this->session->userdata('member_group'));
 
 		$this->javascript->compile();
 
@@ -2600,10 +2599,9 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->model('tools_model');
 		$this->lang->loadfile('admin_content');
 
-		$name = $this->tools_model->delete_upload_preferences($id);
+		$name = $this->file_model->delete_upload_preferences($id);
 
 		$this->logger->log_action(lang('upload_pref_deleted').NBS.NBS.$name);
 

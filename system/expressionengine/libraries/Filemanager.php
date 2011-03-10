@@ -141,7 +141,7 @@ class Filemanager {
 	 */
 	private function _check_permissions($dir_id)
 	{
-		$group_id = $this->ee->session->userdata('group_id');
+		$group_id = $this->EE->session->userdata('group_id');
 
 		// Non admins need to have their permissions checked
 		if ($group_id != 1)
@@ -1103,8 +1103,7 @@ class Filemanager {
         }
 
 		// Check they have permission for this directory and get directory info
-		$this->EE->load->model('tools_model');
-		$query = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata('group_id'), $id);
+		$query = $this->EE->file_model->get_upload_preferences($this->EE->session->userdata('group_id'), $id);
 		
 		if ($query->num_rows() == 0)
 		{
@@ -1374,20 +1373,20 @@ class Filemanager {
 	 */
 	public function fetch_files($file_dir_id = NULL, $files = array(), $get_dimensions = FALSE)
 	{
-		$this->EE->load->model('tools_model');
-		
-		$upload_dirs = $this->EE->tools_model->get_upload_preferences(
-										$this->ee->session->userdata('group_id'),
+
+		$upload_dirs = $this->EE->file_model->get_upload_preferences(
+										$this->EE->session->userdata('group_id'),
 										$file_dir_id);
 		
 		$dirs = new stdclass();
 		$dirs->files = array();
+		$this->EE->load->model('tools_model');
 		
 		foreach ($upload_dirs->result() as $dir)
 		{
 			$dirs->files[$dir->id] = array();
 			
-			$files = $this->ee->tools_model->get_files($dir->server_path, $dir->allowed_types, '', false, $get_dimensions, $files);
+			$files = $this->EE->tools_model->get_files($dir->server_path, $dir->allowed_types, '', false, $get_dimensions, $files);
 			
 			foreach ($files as $file)
 			{
@@ -1402,7 +1401,7 @@ class Filemanager {
 
 	function directory_files_map($source_dir, $directory_depth = 0, $hidden = false, $allowed_types = 'all')
 	{
-		$this->ee->load->helper('file');
+		$this->EE->load->helper('file');
 
 		if ($allowed_types == 'img')
 		{
