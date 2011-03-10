@@ -2067,7 +2067,7 @@ class Content_files extends CI_Controller {
 		}');
 
 		$vars['message'] = $message;
-		$vars['upload_locations'] = $this->file_model->get_upload_preferences($this->session->userdata('member_group'));
+		$vars['upload_locations'] = $this->file_upload_preferences_model->get_upload_preferences($this->session->userdata('member_group'));
 
 		$this->javascript->compile();
 
@@ -2587,7 +2587,7 @@ class Content_files extends CI_Controller {
 
 		$this->lang->loadfile('admin_content');
 
-		$name = $this->file_model->delete_upload_preferences($id);
+		$name = $this->file_upload_preferences_model->delete_upload_preferences($id);
 
 		$this->logger->log_action(lang('upload_pref_deleted').NBS.NBS.$name);
 

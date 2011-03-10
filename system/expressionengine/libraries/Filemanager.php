@@ -64,6 +64,12 @@ class Filemanager {
 	
 	
 
+	// ---------------------------------------------------------------------
+	
+	function _set_error($error)
+	{
+		return;
+	}
 
 
 
@@ -143,8 +149,8 @@ class Filemanager {
 		{
 			$prefs['dimensions'][$row['id']] = array(
 				'short_name'	=> $row['short_name'],
-				'size_width'	=> $row['width'],
-				'size_height'	=> $row['height'],
+				'width'			=> $row['width'],
+				'height'		=> $row['height'],
 				'watermark_id'	=> $row['watermark_id']
 			);
 			
@@ -159,7 +165,8 @@ class Filemanager {
 		}
 		
 		// check keys and cache
-		return $this->set_upload_dir_prefs($dir_id, $qry->row_array());
+		//return $this->set_upload_dir_prefs($dir_id, $qry->row_array());
+		return $this->set_upload_dir_prefs($dir_id, $prefs);
 	}
 
 	function security_check($file_path, $prefs)
@@ -253,7 +260,10 @@ class Filemanager {
 		if ( ! $dir_prefs)
 		{
 			// something went way wrong!
+			var_dump($dir_prefs); exit;
 		}
+		
+		
 
 		// override anything =)
 		$prefs = array_merge($dir_prefs, $prefs);
@@ -267,9 +277,8 @@ class Filemanager {
 		
 		if ($this->is_editable_image($file_path, $mime))
 		{
-			thumbs();
-			watermark();
-			
+			$this->create_thumb($file_path, $prefs);
+	
 			// @todo error checking
 		}
 		
@@ -731,6 +740,10 @@ class Filemanager {
 							)
 
 		*/
+
+//echo '<pre>';
+///print_r($prefs);
+//exit;
 
 		$this->EE->load->library('image_lib');
 		
