@@ -398,9 +398,9 @@ class Tools_model extends CI_Model {
 	 */
 	function delete_upload_preferences($id = '')
 	{
-		$this->load->model('file_model');
+		$this->load->model('file_upload_preferences_model');
 
-		return $this->file_model->delete_upload_preferences($id);
+		return $this->file_upload_preferences_model->delete_upload_preferences($id);
 	}
 
 	// --------------------------------------------------------------------
@@ -415,9 +415,10 @@ class Tools_model extends CI_Model {
 	 */
 	function get_upload_preferences($group_id = NULL, $id = NULL)
 	{
-		$this->load->model('file_model');
+		$this->load->model('file_upload_preferences_model');
+
 		
-		return $this->file_model->get_upload_preferences($group_id, $id);
+		return $this->file_upload_preferences_model->get_upload_preferences($group_id, $id);
 	}
 	
 	// --------------------------------------------------------------------

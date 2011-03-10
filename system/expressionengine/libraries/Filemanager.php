@@ -1022,8 +1022,8 @@ class Filemanager {
 	function _directories()
 	{
 		$dirs = array();
-		
 		$this->EE->load->model('file_upload_preferences_model');
+		
 		$query = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
 		
 		foreach($query->result_array() as $dir)
@@ -1242,7 +1242,9 @@ class Filemanager {
 	 */	 
     function replace_file($data)
     {
-        $id          	= $data['id']; 
+		$this->EE->load->model('file_upload_preferences_model');  
+
+      	$id          	= $data['id']; 
         $file_name   	= $data['file_name'];
 		$orig_name   	= $data['orig_name'];   
         $temp_file_name	= $data['temp_file_name'];  
@@ -1259,7 +1261,7 @@ class Filemanager {
         }
 
 		// Check they have permission for this directory and get directory info
-		$query = $this->EE->file_model->get_upload_preferences($this->EE->session->userdata('group_id'), $id);
+		$query = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'), $id);
 		
 		if ($query->num_rows() == 0)
 		{
@@ -1529,20 +1531,20 @@ class Filemanager {
 	 */
 	public function fetch_files($file_dir_id = NULL, $files = array(), $get_dimensions = FALSE)
 	{
+		$this->EE->load->model('file_upload_preferences_model');
 
-		$upload_dirs = $this->EE->file_model->get_upload_preferences(
+		$upload_dirs = $this->EE->file_upload_preferences_model->get_upload_preferences(
 										$this->EE->session->userdata('group_id'),
 										$file_dir_id);
 		
 		$dirs = new stdclass();
 		$dirs->files = array();
-		$this->EE->load->model('tools_model');
 		
 		foreach ($upload_dirs->result() as $dir)
 		{
 			$dirs->files[$dir->id] = array();
 			
-			$files = $this->EE->tools_model->get_files($dir->server_path, $dir->allowed_types, '', false, $get_dimensions, $files);
+			$files = $this->EE->file_model->get_raw_files($dir->server_path, $dir->allowed_types, '', false, $get_dimensions, $files);
 			
 			foreach ($files as $file)
 			{
