@@ -210,13 +210,16 @@ class File_model extends CI_Model {
 		// Deal with categories
 		$this->load->model('file_category_model');
 		
-		foreach ($data['categories'] as $cat_id)
+		if (isset($data['categories']) AND is_array($data['categories']))
 		{
-			$result = $this->file_category_model->set_category($file_id, $cat_id);
+			foreach ($data['categories'] as $cat_id)
+			{
+				$result = $this->file_category_model->set_category($file_id, $cat_id);
 
-			// If the result is a failure then set $successful to false, otherwise
-			// leave it alone
-			$successful = ($result) ? $successful : FALSE;
+				// If the result is a failure then set $successful to false, otherwise
+				// leave it alone
+				$successful = ($result) ? $successful : FALSE;
+			}
 		}
 
 		return $successful;
