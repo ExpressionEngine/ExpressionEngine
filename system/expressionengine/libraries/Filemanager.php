@@ -140,7 +140,13 @@ class Filemanager {
 			);
 			
 			// Add watermarking prefs
-			$prefs['dimensions'][$row['id']] += preg_filter('/wm_.*/', '$0', $row);
+			foreach ($row as $key => $val)
+			{
+				if (substr($key, 0, 3) == 'wm_')
+				{
+					$prefs['dimensions'][$row['id']][$key] = $val;
+				}
+			}
 		}
 		
 		// check keys and cache
