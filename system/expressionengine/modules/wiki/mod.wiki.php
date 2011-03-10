@@ -5302,6 +5302,8 @@ class Wiki {
 						
 			$server_path = $query->row('server_path');
 
+/*
+
 			switch($query->row('allowed_types'))
 			{
 				case 'all' : $allowed_types = '*';
@@ -5356,8 +5358,12 @@ class Wiki {
 				return $this->EE->output->show_user_error('general', 
 							array($this->EE->lang->line($this->EE->upload->display_errors())));
 			}
-
+			
 			$file_data = $this->EE->upload->data();
+			
+			*/
+			
+			// call filemanager??
 			
 			@chmod($file_data['full_path'], DIR_WRITE_MODE);
 			
