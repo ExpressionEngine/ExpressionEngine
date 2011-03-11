@@ -52,7 +52,7 @@ class Content_files extends CI_Controller {
 		$this->load->library(array('filemanager'));
 		$this->load->helper(array('form'));
 		$this->load->model('file_model');
-		$this->EE->load->model('file_upload_preferences_model');
+		$this->load->model('file_upload_preferences_model');
 
 		// Get upload dirs
 		$upload_dirs = $this->filemanager->fetch_upload_dirs();
@@ -183,11 +183,19 @@ class Content_files extends CI_Controller {
 		else
 		{
 			$dirs = ($get_post['dir_id'] === FALSE) ? $this->_allowed_dirs : $get_post['dir_id'];
+			$order = array();
 
-			$filtered_entries = $this->file_model->get_files($dirs, $get_post['cat_id'], $get_post['type'], 
-															$get_post['per_page'], $get_post['offset'], 
-															$get_post['keywords'], $get_post['order'],
-															TRUE, $get_post['search_in']);
+			$params = array(
+				'category' => $get_post['cat_id'], 
+				'type' => $get_post['type'], 
+				'per_page' => $get_post['per_page'], 
+				'offset'	=> $get_post['offset'],
+				'keywords'	=> $get_post['keywords'], 
+				'order'		=> $order, 
+				'no_clue'	=> TRUE, 
+				'search_in'	=> $get_post['search_in']);							
+			
+			$filtered_entries = $this->file_model->get_files($dirs, $params);
 
 			$files = $filtered_entries['results'];
 			$total_filtered = $filtered_entries['filter_count'];
@@ -287,10 +295,17 @@ class Content_files extends CI_Controller {
 			}
 		}
 
-		$filtered_entries = $this->file_model->get_files($dirs, $get_post['cat_id'], $get_post['type'], 
-														$get_post['per_page'], $get_post['offset'],		
-														$get_post['keywords'], $order, 
-														TRUE, $get_post['search_in']);
+		$params = array(
+			'category' => $get_post['cat_id'], 
+			'type' => $get_post['type'], 
+			'per_page' => $get_post['per_page'], 
+			'offset'	=> $get_post['offset'],
+			'keywords'	=> $get_post['keywords'], 
+			'order'		=> $order, 
+			'no_clue'	=> TRUE, 
+			'search_in'	=> $get_post['search_in']);
+		
+		$filtered_entries = $this->file_model->get_files($dirs, $params);
 
 		$files = $filtered_entries['results'];
 		$total_filtered = $filtered_entries['filter_count'];
@@ -1537,7 +1552,7 @@ class Content_files extends CI_Controller {
 					$this->filemanager->create_thumb(
 					$this->_upload_dirs[$id]['server_path'].$file['name'],
 					array('server_path' => $this->_upload_dirs[$id]['server_path'],
-					'name' => $file['name'],
+					'file_name' => $file['name'],
 					'dimensions' => $sizes[$id])
 					);
 				}
@@ -1555,31 +1570,6 @@ class Content_files extends CI_Controller {
 
 			$file_dim = (isset($file['dimensions']) && $file['dimensions'] != '') ? str_replace(array('width="', 'height="', '"'), '', $file['dimensions']) : '';
 
-			//$file_data[] 
-			/*
-			$file_data = array(
-					'upload_location_id'	=> $id,
-					'site_id'				=> $this->config->item('site_id'),
-					'title'					=> $file['name'],
-					'path'					=> $file_path,
-					'status'				=> 'o',
-					'mime_type'				=> $file['mime'],
-					'file_name'				=> $file['name'],
-					'file_size'				=> $file['size'],
-					'metadata'				=> '',
-					'uploaded_by_member_id'	=> $this->session->userdata('member_id'),
-					'upload_date'			=> $this->localize->now,
-					'modified_by_member_id' => 0,
-					'modified_date' 		=> 0,
-					'field_1_fmt'			=> 'xhtml',
-					'field_2_fmt'			=> 'xhtml',
-					'field_3_fmt'			=> 'xhtml',
-					'field_4_fmt'			=> 'xhtml',
-					'field_5_fmt'			=> 'xhtml',
-					'field_6_fmt'			=> 'xhtml',
-					'file_hw_original'		=> $file_dim
-			);
-			*/
 			$file_data = array(
 					'upload_location_id'	=> $id,
 					'site_id'				=> $this->config->item('site_id'),
@@ -1592,10 +1582,14 @@ class Content_files extends CI_Controller {
 					'modified_by_member_id' => $this->session->userdata('member_id')		
 			);
 			
+			$file_data['dimensions'] = (is_array($sizes[$id])) ? $sizes[$id] : array();
 			//Watch Pascal have raving fit
 			
-			$this->filemanager->_insert_file($file_data);
+			//$this->filemanager->_insert_file($file_data);
+			$this->filemanager->save_file($this->_upload_dirs[$id]['server_path'].$file['name'], $id, $file_data, FALSE);
 
+			// Save file should do this bit
+			/*
 			if (is_array($sizes[$id]))
 			{
 				$this->filemanager->create_thumb(
@@ -1605,6 +1599,7 @@ class Content_files extends CI_Controller {
 					'dimensions' => $sizes[$id])
 				);
 			}
+			*/
 		}
 
 		if (AJAX_REQUEST)

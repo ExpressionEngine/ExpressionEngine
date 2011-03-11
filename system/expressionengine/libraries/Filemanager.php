@@ -301,6 +301,11 @@ class Filemanager {
 		
 		$prefs['mime_type'] = $mime;
 		
+		//echo '<pre>';
+		//print_r($prefs);
+	//	exit;
+		
+		
 		if ($this->is_editable_image($file_path, $mime))
 		{
 			$this->create_thumb($file_path, $prefs);
@@ -810,9 +815,9 @@ class Filemanager {
 			$resized_dir = rtrim(realpath($resized_path), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 			
 			// Does the thumb image exist - nuke it!
-			if (file_exists($resized_path.$prefs['name']))
+			if (file_exists($resized_path.$prefs['file_name']))
 			{
-				@unlink($resized_path.$prefs['name']);
+				@unlink($resized_path.$prefs['file_name']);
 			}		
 
 			// Resize
