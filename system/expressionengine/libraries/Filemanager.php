@@ -276,6 +276,7 @@ class Filemanager {
 		if ($check_permissions === TRUE AND ! $this->_check_permissions($dir_id))
 		{
 			// This person does not have access, error?		
+			return $this->_save_file_response(FALSE, "ERROR");
 		}
 		
 		// fetch preferences & merge with passed in prefs
@@ -285,6 +286,7 @@ class Filemanager {
 		{
 			// something went way wrong!
 			var_dump($dir_prefs); exit;
+			return $this->_save_file_response(FALSE, "ERROR");
 		}
 		
 		$prefs['upload_location_id'] = $dir_id;
@@ -297,6 +299,7 @@ class Filemanager {
 		if ($mime === FALSE)
 		{
 			// security check failed
+			return $this->_save_file_response(FALSE, "ERROR");
 		}
 		
 		$prefs['mime_type'] = $mime;
@@ -306,9 +309,12 @@ class Filemanager {
 			$this->create_thumb($file_path, $prefs);
 	
 			// @todo error checking
+			return $this->_save_file_response(FALSE, "ERROR");
 		}
 		
 		$this->_insert_file($prefs);
+
+		return $this->_save_file_response(TRUE);
 	}
 	
 	
@@ -366,6 +372,22 @@ class Filemanager {
 	}
 	
 	
+	// ---------------------------------------------------------------------
+
+	/**
+	 * Send save_file response
+	 *
+	 * @param	boolean		$status		TRUE if save_file passed, FALSE otherwise
+	 * @param	string		$message	Message to send
+	 * @return	array		Associative array containing the status and message
+	 */
+	private function _save_file_response($status, $message = '')
+	{
+		return array(
+			'status'  => $status,
+			'message' => $message
+		);
+	}
 
 
 
