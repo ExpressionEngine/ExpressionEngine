@@ -52,6 +52,7 @@ class Content_files extends CI_Controller {
 		$this->load->library(array('filemanager'));
 		$this->load->helper(array('form'));
 		$this->load->model('file_model');
+		$this->EE->load->model('file_upload_preferences_model');
 
 		// Get upload dirs
 		$upload_dirs = $this->filemanager->fetch_upload_dirs();
@@ -1489,6 +1490,8 @@ class Content_files extends CI_Controller {
 		$id = key($sizes);
 
 		$dir_data = $this->_upload_dirs[$id];
+		
+		$this->filemanager->set_upload_dir_prefs($id, $dir_data);
 
 		
 		if (isset($_POST['resize_ids']) && is_array($_POST['resize_ids']))
@@ -1512,6 +1515,7 @@ class Content_files extends CI_Controller {
 		// Setup data for batch insert
 		foreach ($files->files[$id] as $file)
 		{
+			
 			if ( ! $file['mime'])
 			{
 				// set error
@@ -1525,25 +1529,17 @@ class Content_files extends CI_Controller {
 			if ($query->num_rows() > 0)
 			{
 				// It exists, but do we need to change sizes?
+				
+				// Note 'Regular' batch needs to check if file exists- and then do something if so
 				if ( ! empty($replace_sizes))
 				{
-					/*
-					$this->filemanager->sync_resized(
-						array('server_path' => $this->_upload_dirs[$id]['server_path']),
-						array('name' => $file['name']),
-						$replace_sizes
-					);
-					*/
-					
 					// Note- really no need to create system thumb in this case
-				$this->filemanager->create_thumb(
+					$this->filemanager->create_thumb(
 					$this->_upload_dirs[$id]['server_path'].$file['name'],
 					array('server_path' => $this->_upload_dirs[$id]['server_path'],
 					'name' => $file['name'],
 					'dimensions' => $sizes[$id])
-				);
-					
-					
+					);
 				}
 
 				continue;
@@ -1560,6 +1556,7 @@ class Content_files extends CI_Controller {
 			$file_dim = (isset($file['dimensions']) && $file['dimensions'] != '') ? str_replace(array('width="', 'height="', '"'), '', $file['dimensions']) : '';
 
 			//$file_data[] 
+			/*
 			$file_data = array(
 					'upload_location_id'	=> $id,
 					'site_id'				=> $this->config->item('site_id'),
@@ -1582,23 +1579,22 @@ class Content_files extends CI_Controller {
 					'field_6_fmt'			=> 'xhtml',
 					'file_hw_original'		=> $file_dim
 			);
-
-			//print_r($file_data);
-			
-			$this->filemanager->insert_file($file_data);
-
-			// Insert into categories???
-
-			// Go ahead and create the thumb
-			// For syncing- will need to tap into dir prefs and make all image variations- so batch needs to be small
-
-			// Woot- Success!  Make a new thumb
-			/*
-			$thumb = $this->filemanager->create_thumb(
-				array('server_path' => $this->_upload_dirs[$id]['server_path']),
-				array('name' => $file['name'])
-			);
 			*/
+			$file_data = array(
+					'upload_location_id'	=> $id,
+					'site_id'				=> $this->config->item('site_id'),
+					'title'					=> $file['name'],
+					'path'					=> $file_path,
+					'mime_type'				=> $file['mime'],
+					'file_name'				=> $file['name'],
+					'file_size'				=> $file['size'],
+					'uploaded_by_member_id'	=> $this->session->userdata('member_id'),
+					'modified_by_member_id' => $this->session->userdata('member_id')		
+			);
+			
+			//Watch Pascal have raving fit
+			
+			$this->filemanager->_insert_file($file_data);
 
 			if (is_array($sizes[$id]))
 			{
@@ -1610,18 +1606,6 @@ class Content_files extends CI_Controller {
 				);
 			}
 		}
-
-		// var_dump($file_data);
-		// exit($this->output->send_ajax_response('failure before batch'));
-
-		// Alas my beloved batch
-		//if ( ! empty($file_data))
-		//{
-		//	$this->db->insert_batch('files', $file_data);
-		//}
-
-		// exit($this->output->send_ajax_response('failure after batch'));
-
 
 		if (AJAX_REQUEST)
 		{
@@ -2072,7 +2056,6 @@ class Content_files extends CI_Controller {
 	function file_upload_preferences($message = '')
 	{
 		$this->load->library('table');
-		$this->load->model('tools_model');
 
 		$this->cp->set_variable('cp_page_title', lang('file_upload_prefs'));
 
@@ -2082,7 +2065,7 @@ class Content_files extends CI_Controller {
 		}');
 
 		$vars['message'] = $message;
-		$vars['upload_locations'] = $this->tools_model->get_upload_preferences($this->session->userdata('member_group'));
+		$vars['upload_locations'] = $this->file_upload_preferences_model->get_upload_preferences($this->session->userdata('member_group'));
 
 		$this->javascript->compile();
 
@@ -2600,10 +2583,9 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->load->model('tools_model');
 		$this->lang->loadfile('admin_content');
 
-		$name = $this->tools_model->delete_upload_preferences($id);
+		$name = $this->file_upload_preferences_model->delete_upload_preferences($id);
 
 		$this->logger->log_action(lang('upload_pref_deleted').NBS.NBS.$name);
 
