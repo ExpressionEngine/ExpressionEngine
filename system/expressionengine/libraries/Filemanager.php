@@ -91,10 +91,8 @@ class Filemanager {
 			
 			// @todo prevent security issues with multiple extensions
 			// http://httpd.apache.org/docs/1.3/mod/mod_mime.html#multipleext
-			$filename	= implode('.', $filename);
+			$filename	= implode('.', $parts);
 		}
-		
-		
 		
 		return $prefs['server_path'].$filename.'.'.$ext;
 	}
@@ -314,7 +312,7 @@ class Filemanager {
 			$this->create_thumb($file_path, $prefs);
 	
 			// @todo error checking
-			return $this->_save_file_response(FALSE, "ERROR");
+			// return $this->_save_file_response(FALSE, "ERROR");
 		}
 		
 		$this->_insert_file($prefs);
