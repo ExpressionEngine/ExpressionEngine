@@ -48,6 +48,7 @@ class Filemanager {
 	{
 		$this->EE =& get_instance();
 		$this->EE->load->library('javascript');
+		$this->EE->load->library('security');
 		$this->EE->lang->loadfile('filemanager');
 		
 		
@@ -67,7 +68,30 @@ class Filemanager {
 
 
 
-
+	function clean_filename($filename, $dir_id)
+	{
+		$prefs = $this->fetch_upload_dir_prefs($dir_id);
+		
+		$ext = '';
+		
+		// clean up the filename
+		$filename = preg_replace("/\s+/", "_", $filename);
+		$filename = $this->EE->security->sanitize_filename($filename);
+		
+		if (strpos($filename, '.') !== FALSE)
+		{
+			$parts		= explode('.', $filename);
+			$ext		= array_pop($parts);
+			
+			// @todo prevent security issues with multiple extensions
+			// http://httpd.apache.org/docs/1.3/mod/mod_mime.html#multipleext
+			$filename	= implode('.', $filename);
+		}
+		
+		
+		
+		return $prefs['server_path'].$filename.'.'.$ext;
+	}
 
 	// ---------------------------------------------------------------------
 	
