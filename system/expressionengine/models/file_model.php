@@ -44,8 +44,9 @@ class File_model extends CI_Model {
 	 * @param	int
 	 * @return	mixed
 	 */
-	function get_files($dir_id = array(), $parameters)
+	function get_files($dir_id = array(), $parameters = array())
 	{
+		
 		// Setup default parameters
 		$parameters = array_merge(array(
 			'type' => 'all',
