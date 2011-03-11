@@ -48,6 +48,7 @@ class Filemanager {
 	{
 		$this->EE =& get_instance();
 		$this->EE->load->library('javascript');
+		$this->EE->load->library('security');
 		$this->EE->lang->loadfile('filemanager');
 		
 		
@@ -64,10 +65,39 @@ class Filemanager {
 	
 	
 
+	// ---------------------------------------------------------------------
+	
+	function _set_error($error)
+	{
+		return;
+	}
 
 
 
-
+	function clean_filename($filename, $dir_id)
+	{
+		$prefs = $this->fetch_upload_dir_prefs($dir_id);
+		
+		$ext = '';
+		
+		// clean up the filename
+		$filename = preg_replace("/\s+/", "_", $filename);
+		$filename = $this->EE->security->sanitize_filename($filename);
+		
+		if (strpos($filename, '.') !== FALSE)
+		{
+			$parts		= explode('.', $filename);
+			$ext		= array_pop($parts);
+			
+			// @todo prevent security issues with multiple extensions
+			// http://httpd.apache.org/docs/1.3/mod/mod_mime.html#multipleext
+			$filename	= implode('.', $filename);
+		}
+		
+		
+		
+		return $prefs['server_path'].$filename.'.'.$ext;
+	}
 
 	// ---------------------------------------------------------------------
 	
@@ -119,23 +149,32 @@ class Filemanager {
 		}
 		
 		$prefs = $qry->row_array();
-		$this->EE->db->free_result();
+		$qry->free_result();
 		
 		
 		// Add dimensions
 		$prefs['dimensions'] = array();
 		
+		/*
 		$qry = $this->EE->db->from('file_dimensions')
 							->where('upload_location_id', $dir_id)
 							->join('file_watermarks', 'wm_id = watermark_id', 'left')
 							->get_where('file_dimensions');
+		*/
+
+		$qry = $this->EE->db->select('*')
+						->from('file_dimensions')
+						->join('file_watermarks', 'wm_id = watermark_id', 'left')
+						->where_in('upload_location_id', $dir_id)
+						->get();							
+							
 		
 		foreach ($qry->result_array() as $row)
 		{
 			$prefs['dimensions'][$row['id']] = array(
 				'short_name'	=> $row['short_name'],
-				'size_width'	=> $row['size_width'],
-				'size_height'	=> $row['size_height'],
+				'width'			=> $row['width'],
+				'height'		=> $row['height'],
 				'watermark_id'	=> $row['watermark_id']
 			);
 			
@@ -150,7 +189,8 @@ class Filemanager {
 		}
 		
 		// check keys and cache
-		return $this->set_upload_dir_prefs($dir_id, $qry->row_array());
+		//return $this->set_upload_dir_prefs($dir_id, $qry->row_array());
+		return $this->set_upload_dir_prefs($dir_id, $prefs);
 	}
 
 	function security_check($file_path, $prefs)
@@ -168,7 +208,7 @@ class Filemanager {
 		
 		if ($allowed == 'all' OR $allowed == '*')
 		{
-			return TRUE;
+			return $mime;
 		}
 		
 		if ($allowed == 'img')
@@ -185,13 +225,13 @@ class Filemanager {
 		
 		// Double check mime type for images so we can
 		// be sure that our xss check is run correctly
-		if (substr($mime, 0, 5) != 'image')
+		if (substr($mime, 0, 5) == 'image')
 		{
 			$is_image = TRUE;
 		}
 		
-		Apply XSS Filtering to uploaded files?
-		xss_clean_uploads
+		//Apply XSS Filtering to uploaded files?
+		//xss_clean_uploads
 		if ( ! $this->EE->security->xss_clean($file_path, $is_image))
 		{
 			return FALSE;
@@ -244,7 +284,10 @@ class Filemanager {
 		if ( ! $dir_prefs)
 		{
 			// something went way wrong!
+			var_dump($dir_prefs); exit;
 		}
+		
+		$prefs['upload_location_id'] = $dir_id;
 
 		// override anything =)
 		$prefs = array_merge($dir_prefs, $prefs);
@@ -256,11 +299,12 @@ class Filemanager {
 			// security check failed
 		}
 		
+		$prefs['mime_type'] = $mime;
+		
 		if ($this->is_editable_image($file_path, $mime))
 		{
-			thumbs();
-			watermark();
-			
+			$this->create_thumb($file_path, $prefs);
+	
 			// @todo error checking
 		}
 		
@@ -723,6 +767,7 @@ class Filemanager {
 
 		*/
 
+
 		$this->EE->load->library('image_lib');
 		
 		$img_path = rtrim($prefs['server_path'], '/').'/';
@@ -773,7 +818,7 @@ class Filemanager {
 			// Resize
 		
 			$config['source_image']		= $source;
-			$config['new_image']		= $resized_path.$prefs['name'];
+			$config['new_image']		= $resized_path.$prefs['file_name'];
 			$config['maintain_ratio']	= TRUE;
 			$config['image_library']	= $protocol;
 			$config['library_path']		= $lib_path;
@@ -787,6 +832,10 @@ class Filemanager {
 			if ( ! $this->EE->image_lib->resize())
 			{
 				$this->_set_error($this->EE->image_lib->display_errors());
+				
+				print_r($config);
+				var_dump($this->EE->image_lib->display_errors());
+				exit;
 				return FALSE;
 			}
 			
@@ -796,9 +845,10 @@ class Filemanager {
 						
 			if ($size['watermark_id'] != 0)
 			{
-				if ( ! $this->create_watermark($resized_path.$prefs['name'], $size))
+				if ( ! $this->create_watermark($resized_path.$prefs['file_name'], $size))
 				{
 					$this->_set_error('wm_failed');
+					exit('borked wm');
 					return FALSE;
 				}				
 			}			
@@ -1699,6 +1749,32 @@ class Filemanager {
 		
 		return $this;
 	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Delete files by filename.
+	 *
+	 * Delete files in a single upload location.  This file accepts filenames to delete.
+	 * If the user does not belong to the upload group, an error will be thrown.
+	 *
+	 * @param 	array 		array of files to delete
+	 * @param 	boolean		whether or not to delete thumbnails
+	 * @return 	boolean 	TRUE on success/FALSE on failure
+	 */
+	public function delete_file_names($dir_id, $files = array())
+	{
+		$this->EE->load->model('file_model');
+		$file_ids = array();
+		$file_data = $this->EE->file_model->get_files_by_name($files, array($dir_id));
+
+		foreach ($file_data->result() as $file)
+		{
+			$file_ids[] = $file->file_id;
+		}
+
+		return $this->delete($file_ids);
+	}
 	
 	// --------------------------------------------------------------------
 	
@@ -1732,6 +1808,7 @@ class Filemanager {
 		
 		$file_dirs = $this->fetch_upload_dirs();
 		$dir_path = NULL;
+
 		
 		// I'm not sold on this approach, so it might need some refining.
 		// We'll see as things come together
@@ -1742,6 +1819,8 @@ class Filemanager {
 			{
 				if ($file->upload_location_id === $dir['id'])
 				{
+					$thumbs[$file->upload_location_id]['thumb'] = '';
+					$dir_data[$file->upload_location_id][$file->file_id] = array($dir['server_path'], $file->file_name);
 					$dir_path = $dir['server_path'];
 					break;
 				}
@@ -1758,19 +1837,39 @@ class Filemanager {
 				$delete_problem = TRUE;
 			}
 			
-			if ($find_thumbs)
-			{
-				$thumb = $dir_path.'_thumbs'.DIRECTORY_SEPARATOR.'thumb_'.$file->file_name;
-				
-				if (file_exists($thumb))
-				{
-					@unlink($thumb);
-				}
-			}
-			
 			// Remove 'er from the database
 			$this->EE->db->where('file_id', $file->file_id)->delete('files');
 		}
+		
+		// Nuke thumbs
+		if ($find_thumbs)
+		{
+			$dir_ids = array_keys($dir_data);
+			$thumb_data = $this->EE->file_model->get_dimensions_by_dir_id($dir_ids);
+			
+			foreach ($thumb_data->result() as $data)
+			{
+				$thumbs[$data->upload_location_id][$data->short_name] = '';
+			}
+			
+			foreach ($dir_data as $directory => $file)
+			{
+				foreach ($file as $file_data)
+				{
+					foreach ($thumbs[$directory] as $k => $v)
+					{
+						$thumb = $file_data[0].'_'.$k.DIRECTORY_SEPARATOR.$file_data[1];
+				
+						if (file_exists($thumb))
+						{
+							@unlink($thumb);
+						}
+					}
+				}
+			}
+		}
+	
+		// We REALLY need a hook in here- see Wiki issue!
 		
 		return ($delete_problem) ? FALSE : TRUE;	
 	}

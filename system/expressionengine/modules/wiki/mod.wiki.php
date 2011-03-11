@@ -919,10 +919,14 @@ class Wiki {
 							 		 
 				if ($query->row('count')  > 0)
 				{
+					/*
+					Filemanager will handle this bit
+					
 					$query = $this->EE->db->query("SELECT * FROM exp_upload_prefs 
 										 WHERE id = '".$this->EE->db->escape_str($this->upload_dir)."'");
 					
 					$server_path = $query->row('server_path');
+					$dir_id = $query->row('id');
 												
 					if (substr($server_path , -1) != '/')
 					{
@@ -930,7 +934,14 @@ class Wiki {
 					}
 					
 					@unlink($server_path.$topic);
+					*/
 								 
+					// Delete from file system??  Pretty much have to- nuked it
+					$this->EE->load->library('filemanager');
+					
+					$this->EE->filemanager->delete_file_names($this->upload_dir, $topic);
+					
+					// Hrm- hook?
 					$query = $this->EE->db->query("DELETE FROM exp_wiki_uploads
 										 WHERE file_name = '".$this->EE->db->escape_str($topic)."'");
 										
@@ -5302,7 +5313,7 @@ class Wiki {
 						
 			$server_path = $query->row('server_path');
 
-/*
+
 
 			switch($query->row('allowed_types'))
 			{
@@ -5361,9 +5372,10 @@ class Wiki {
 			
 			$file_data = $this->EE->upload->data();
 			
-			*/
+
 			
 			// call filemanager??
+			$this->EE->load->library('filemanager');
 			
 			@chmod($file_data['full_path'], DIR_WRITE_MODE);
 			
@@ -5379,6 +5391,11 @@ class Wiki {
 							'file_hash'				=> $this->EE->functions->random('md5')
 						 );
 			
+			$file_data['uploaded_by_member_id']	= $this->EE->session->userdata('member_id');
+			$file_data['modified_by_member_id'] = $this->EE->session->userdata('member_id');
+			
+			$this->EE->filemanager->save_file($server_path.$new_name, $this->upload_dir, $file_data, FALSE);
+
 			$this->EE->db->insert('wiki_uploads', $data);			
 			
 			if ($this->EE->config->item('secure_forms') == 'y')
