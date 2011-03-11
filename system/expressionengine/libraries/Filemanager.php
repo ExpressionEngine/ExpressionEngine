@@ -184,7 +184,7 @@ class Filemanager {
 		
 		if ($allowed == 'all' OR $allowed == '*')
 		{
-			return TRUE;
+			return $mime;
 		}
 		
 		if ($allowed == 'img')
@@ -201,7 +201,7 @@ class Filemanager {
 		
 		// Double check mime type for images so we can
 		// be sure that our xss check is run correctly
-		if (substr($mime, 0, 5) != 'image')
+		if (substr($mime, 0, 5) == 'image')
 		{
 			$is_image = TRUE;
 		}
@@ -263,7 +263,7 @@ class Filemanager {
 			var_dump($dir_prefs); exit;
 		}
 		
-		
+		$prefs['upload_location_id'] = $dir_id;
 
 		// override anything =)
 		$prefs = array_merge($dir_prefs, $prefs);
@@ -274,6 +274,8 @@ class Filemanager {
 		{
 			// security check failed
 		}
+		
+		$prefs['mime_type'] = $mime;
 		
 		if ($this->is_editable_image($file_path, $mime))
 		{

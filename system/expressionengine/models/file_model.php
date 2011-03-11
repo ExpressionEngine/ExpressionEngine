@@ -188,8 +188,13 @@ class File_model extends CI_Model {
 		}
 		
 		// Remove data that can't exist in the database
-		$data = array_intersect_key($data, $valid_keys);	
-
+		$data = array_intersect_key($data, $valid_keys);
+		
+		$data['upload_date'] = ( ! isset($data['upload_date'])) ? $this->localize->now : $data['upload_date'];
+		$data['modified_date'] = $this->localize->now;
+		$data['status'] = ( ! isset($data['status'])) ? 'o' : $data['status'];
+		
+		// We need hook somewhere to set title
 
 		// Insert/update the data
 		if (isset($data['file_id']))

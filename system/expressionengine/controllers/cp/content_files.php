@@ -1585,12 +1585,10 @@ class Content_files extends CI_Controller {
 					'site_id'				=> $this->config->item('site_id'),
 					'title'					=> $file['name'],
 					'path'					=> $file_path,
-					'status'				=> 'o',
 					'mime_type'				=> $file['mime'],
 					'file_name'				=> $file['name'],
 					'file_size'				=> $file['size'],
 					'uploaded_by_member_id'	=> $this->session->userdata('member_id'),
-					'upload_date'			=> $this->localize->now,
 					'modified_by_member_id' => $this->session->userdata('member_id')		
 			);
 			

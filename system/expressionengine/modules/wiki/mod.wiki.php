@@ -5382,6 +5382,9 @@ class Wiki {
 							'file_hash'				=> $this->EE->functions->random('md5')
 						 );
 			
+			$file_data['uploaded_by_member_id']	= $this->EE->session->userdata('member_id');
+			$file_data['modified_by_member_id'] = $this->EE->session->userdata('member_id');
+			
 			$this->EE->filemanager->save_file($server_path.$new_name, $this->upload_dir, $file_data, FALSE);
 
 			$this->EE->db->insert('wiki_uploads', $data);			
