@@ -93,6 +93,8 @@ class Filemanager {
 			// http://httpd.apache.org/docs/1.3/mod/mod_mime.html#multipleext
 			$filename	= implode('.', $parts);
 		}
+
+		// @todo: verify file doesn't already exist
 		
 		return $prefs['server_path'].$filename.'.'.$ext;
 	}
@@ -290,7 +292,16 @@ class Filemanager {
 		$prefs['upload_location_id'] = $dir_id;
 
 		// override anything =)
-		$prefs = array_merge($dir_prefs, $prefs);
+		$default_prefs = array(
+			'field_1_fmt' => 'xhtml',
+			'field_2_fmt' => 'xhtml',
+			'field_3_fmt' => 'xhtml',
+			'field_4_fmt' => 'xhtml',
+			'field_5_fmt' => 'xhtml',
+			'field_6_fmt' => 'xhtml'
+		);
+		$prefs = array_merge($dir_prefs, $prefs, $default_prefs);
+
 
 		$mime = $this->security_check($file_path, $prefs);
 		

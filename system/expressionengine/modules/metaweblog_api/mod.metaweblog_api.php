@@ -1655,13 +1655,7 @@ class Metaweblog_api {
 			array(
 				'title'     => $filename,
 				'path'      => dirname($file_path),
-				'file_name' => $filename,
-				'field_1_fmt' => 'xhtml',
-				'field_2_fmt' => 'xhtml',
-				'field_3_fmt' => 'xhtml',
-				'field_4_fmt' => 'xhtml',
-				'field_5_fmt' => 'xhtml',
-				'field_6_fmt' => 'xhtml',
+				'file_name' => $filename
 			)
 		);
 
