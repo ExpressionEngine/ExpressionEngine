@@ -923,6 +923,7 @@ class Wiki {
 										 WHERE id = '".$this->EE->db->escape_str($this->upload_dir)."'");
 					
 					$server_path = $query->row('server_path');
+					$dir_id = $query->row('id');
 												
 					if (substr($server_path , -1) != '/')
 					{
@@ -935,6 +936,9 @@ class Wiki {
 										 WHERE file_name = '".$this->EE->db->escape_str($topic)."'");
 										
 					// Delete from file system??  Pretty much have to- nuked it
+					$this->EE->load->library('filemanager');
+					
+					$this->EE->filemanager->delete_file_names($dir_id, $topic);
 										
 					// Clear wiki cache
 					$this->EE->functions->clear_caching('db');

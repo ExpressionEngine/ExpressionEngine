@@ -1725,6 +1725,32 @@ class Filemanager {
 		
 		return $this;
 	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Delete files by filename.
+	 *
+	 * Delete files in a single upload location.  This file accepts filenames to delete.
+	 * If the user does not belong to the upload group, an error will be thrown.
+	 *
+	 * @param 	array 		array of files to delete
+	 * @param 	boolean		whether or not to delete thumbnails
+	 * @return 	boolean 	TRUE on success/FALSE on failure
+	 */
+	public function delete_file_names($dir_id, $files = array())
+	{
+		$this->EE->load->model('file_model');
+		$file_ids = array();
+		$file_data = $this->EE->file_model->get_files_by_name($files, array($dir_id));
+
+		foreach ($file_data->result() as $file)
+		{
+			$file_ids[] = $file->file_id;
+		}
+
+		return $this->delete($file_ids);
+	}
 	
 	// --------------------------------------------------------------------
 	
@@ -1758,6 +1784,7 @@ class Filemanager {
 		
 		$file_dirs = $this->fetch_upload_dirs();
 		$dir_path = NULL;
+
 		
 		// I'm not sold on this approach, so it might need some refining.
 		// We'll see as things come together
@@ -1768,6 +1795,8 @@ class Filemanager {
 			{
 				if ($file->upload_location_id === $dir['id'])
 				{
+					$thumbs[$file->upload_location_id]['thumb'] = '';
+					$dir_data[$file->upload_location_id][$file->file_id] = array($dir['server_path'], $file->file_name);
 					$dir_path = $dir['server_path'];
 					break;
 				}
@@ -1784,19 +1813,39 @@ class Filemanager {
 				$delete_problem = TRUE;
 			}
 			
-			if ($find_thumbs)
-			{
-				$thumb = $dir_path.'_thumbs'.DIRECTORY_SEPARATOR.'thumb_'.$file->file_name;
-				
-				if (file_exists($thumb))
-				{
-					@unlink($thumb);
-				}
-			}
-			
 			// Remove 'er from the database
 			$this->EE->db->where('file_id', $file->file_id)->delete('files');
 		}
+		
+		// Nuke thumbs
+		if ($find_thumbs)
+		{
+			$dir_ids = array_keys($dir_data);
+			$thumb_data = $this->EE->file_model->get_dimensions_by_dir_id($dir_ids);
+			
+			foreach ($thumb_data->result() as $data)
+			{
+				$thumbs[$data->upload_location_id][$data->short_name] = '';
+			}
+			
+			foreach ($dir_data as $directory => $file)
+			{
+				foreach ($file as $file_data)
+				{
+					foreach ($thumbs[$directory] as $k => $v)
+					{
+						$thumb = $file_data[0].'_'.$k.DIRECTORY_SEPARATOR.$file_data[1];
+				
+						if (file_exists($thumb))
+						{
+							@unlink($thumb);
+						}
+					}
+				}
+			}
+		}
+	
+		// We REALLY need a hook in here- see Wiki issue!
 		
 		return ($delete_problem) ? FALSE : TRUE;	
 	}

@@ -194,7 +194,7 @@ class File_model extends CI_Model {
 		$data['modified_date'] = $this->localize->now;
 		$data['status'] = ( ! isset($data['status'])) ? 'o' : $data['status'];
 		
-		// We need hook somewhere to set title
+		// We need hook somewhere to set title!!!!
 
 		// Insert/update the data
 		if (isset($data['file_id']))
@@ -250,6 +250,27 @@ class File_model extends CI_Model {
 	// ------------------------------------------------------------------------	
 	
 	/**
+	 * Get files by name and directory
+	 * 
+	 * 
+	 */
+	function get_files_by_name($file_names = array(), $dir_id = array())
+	{
+		if (empty($dir_id))
+		{
+			return FALSE;
+			
+		}
+
+		return $this->db->where_in('upload_location_id', $dir_id)
+						->where_in('file_name', $file_names)
+						->get('files');
+	}
+
+
+	// ------------------------------------------------------------------------	
+	
+	/**
 	 * Get files by id
 	 * 
 	 * 
@@ -265,6 +286,24 @@ class File_model extends CI_Model {
 						->get('files');
 	}
 	
+	// ------------------------------------------------------------------------	
+	
+	/**
+	 * Get dimensions by dir_id
+	 * 
+	 * 
+	 */
+	function get_dimensions_by_dir_id($dir_id = array())
+	{
+		if ( ! empty($dir_id))
+		{
+			$this->db->where_in('upload_location_id', $dir_id);
+		}
+
+		return $this->db->get('file_dimensions');
+	}
+
+
 	// ------------------------------------------------------------------------
 
 	/**
