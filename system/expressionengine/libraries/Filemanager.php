@@ -91,10 +91,10 @@ class Filemanager {
 			
 			// @todo prevent security issues with multiple extensions
 			// http://httpd.apache.org/docs/1.3/mod/mod_mime.html#multipleext
-			$filename	= implode('.', $filename);
+			$filename	= implode('.', $parts);
 		}
-		
-		
+
+		// @todo: verify file doesn't already exist
 		
 		return $prefs['server_path'].$filename.'.'.$ext;
 	}
@@ -276,6 +276,7 @@ class Filemanager {
 		if ($check_permissions === TRUE AND ! $this->_check_permissions($dir_id))
 		{
 			// This person does not have access, error?		
+			return $this->_save_file_response(FALSE, "ERROR");
 		}
 		
 		// fetch preferences & merge with passed in prefs
@@ -285,18 +286,29 @@ class Filemanager {
 		{
 			// something went way wrong!
 			var_dump($dir_prefs); exit;
+			return $this->_save_file_response(FALSE, "ERROR");
 		}
 		
 		$prefs['upload_location_id'] = $dir_id;
 
 		// override anything =)
-		$prefs = array_merge($dir_prefs, $prefs);
+		$default_prefs = array(
+			'field_1_fmt' => 'xhtml',
+			'field_2_fmt' => 'xhtml',
+			'field_3_fmt' => 'xhtml',
+			'field_4_fmt' => 'xhtml',
+			'field_5_fmt' => 'xhtml',
+			'field_6_fmt' => 'xhtml'
+		);
+		$prefs = array_merge($dir_prefs, $prefs, $default_prefs);
+
 
 		$mime = $this->security_check($file_path, $prefs);
 		
 		if ($mime === FALSE)
 		{
 			// security check failed
+			return $this->_save_file_response(FALSE, "ERROR");
 		}
 		
 		$prefs['mime_type'] = $mime;
@@ -311,9 +323,12 @@ class Filemanager {
 			$this->create_thumb($file_path, $prefs);
 	
 			// @todo error checking
+			// return $this->_save_file_response(FALSE, "ERROR");
 		}
 		
 		$this->_insert_file($prefs);
+
+		return $this->_save_file_response(TRUE);
 	}
 	
 	
@@ -371,6 +386,22 @@ class Filemanager {
 	}
 	
 	
+	// ---------------------------------------------------------------------
+
+	/**
+	 * Send save_file response
+	 *
+	 * @param	boolean		$status		TRUE if save_file passed, FALSE otherwise
+	 * @param	string		$message	Message to send
+	 * @return	array		Associative array containing the status and message
+	 */
+	private function _save_file_response($status, $message = '')
+	{
+		return array(
+			'status'  => $status,
+			'message' => $message
+		);
+	}
 
 
 

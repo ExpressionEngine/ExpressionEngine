@@ -1619,45 +1619,65 @@ class Metaweblog_api {
 		}
 
 		/** -------------------------------------
-		/**  File name and security
-		/** -------------------------------------*/
-
-		$this->EE->load->library('security');
-		
-		$filename = preg_replace("/\s+/", "_", $parameters['3']['name']);
-
-		$filename = $this->EE->security->sanitize_filename($filename);
-
-		if ($this->EE->security->xss_clean($parameters['3']['bits'], TRUE) === FALSE)
-		{
-			return $this->EE->xmlrpc->send_error_message('810', $this->EE->lang->line('invalid_file_content'));
-		}
-
-		/** -------------------------------------
-		/**  Upload the image
+		/**  upload the image
 		/** -------------------------------------*/
 		
-		$this->EE->load->helper('path');
+		$this->EE->load->library('filemanager');
+		
+		// Figure out the FULL file path
+		$file_path = $this->EE->filemanager->clean_filename(
+			$parameters['3']['name'], 
+			$this->upload_dir
+		);
 
-		$upload_path = set_realpath($this->EE->functions->remove_double_slashes($query->row('server_path') .'/'));
+		$filename = basename($file_path);
 
-		$filename = $this->unique_filename($filename, $upload_path);
-
-		if ( ! $fp = @fopen($upload_path.$filename,FOPEN_WRITE_CREATE_DESTRUCTIVE))
+		// Check to see if we're dealing with relative paths
+		if (strncmp($file_path, '..', 2) == 0)
 		{
-			return $this->EE->xmlrpc->send_error_message('810', $this->EE->lang->line('unable_to_upload'));
+			$directory = dirname($file_path);
+			$file_path = realpath(substr($directory, 1)).'/'.$filename;
 		}
 		
-		@fwrite($fp, $parameters['3']['bits']);// Data base64 decoded by XML-RPC library
-		@fclose($fp);
+		// Upload the file and check for errors
+		if (file_put_contents($file_path, $parameters['3']['bits']) === FALSE)
+		{
+			return $this->EE->xmlrpc->send_error_message(
+				'810', 
+				$this->EE->lang->line('unable_to_upload')
+			);
+		}
+		
+		// Send the file
+		$result = $this->EE->filemanager->save_file(
+			$file_path, 
+			$this->upload_dir, 
+			array(
+				'title'     => $filename,
+				'path'      => dirname($file_path),
+				'file_name' => $filename
+			)
+		);
 
-		@chmod($upload_path.$filename, FILE_WRITE_MODE);
+		// Check to see the result
+		if ($result['status'] === FALSE)
+		{
+			$this->EE->xmlrpc->send_error_message(
+				'810', 
+				$result['message']
+			);
+		}
 
-		$response = array(array(
-								'url' =>
-								array($this->EE->functions->remove_double_slashes($query->row('url') .'/').$filename,'string'),
-								),
-								'struct');
+		// Build XMLRPC response
+		$response = array(
+			array(
+				'url' => array(
+					$query->row('url').$filename,
+					'string'
+				),
+			),
+			'struct'
+		);
 
 		return $this->EE->xmlrpc->send_response($response);
 	}
