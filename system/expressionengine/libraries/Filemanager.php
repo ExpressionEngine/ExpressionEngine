@@ -98,12 +98,13 @@ class Filemanager {
 			$filename	= implode('.', $parts);
 		}
 		
+		// Figure out a unique filename
 		$ext = '.'.$ext;
 		$basename = $filename;
 		
 		while (file_exists($path.$filename.$ext))
 		{
-			$filename = $basename.$i++;
+			$filename = $basename.'_'.$i++;
 		}
 		
 		return $path.$filename.$ext;
