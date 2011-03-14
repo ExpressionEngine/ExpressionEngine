@@ -91,10 +91,10 @@ class EE_Core {
 		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	$this->EE->input->is_ajax_request());
 
-		$this->native_modules = array('blacklist', 'blogger_api', 'channel', 'comment', 'commerce', 'email', 'emoticon',
-									'forum', 'gallery', 'ip_to_nation', 'jquery', 'mailinglist', 'member', 'metaweblog_api',
-									'moblog', 'pages', 'query', 'referrer', 'rss', 'search', 'simple_commerce', 'stats', 
-									'updated_sites', 'wiki');
+		$this->native_modules = array('blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon', 'forum',
+									  'ip_to_nation', 'jquery', 'mailinglist', 'member', 'metaweblog_api', 'moblog',
+									  'pages', 'query', 'referrer', 'rss', 'search', 'simple_commerce', 'stats',
+									  'updated_sites', 'wiki');
 									  
 		$this->native_plugins = array('magpie', 'xml_encode');
 
