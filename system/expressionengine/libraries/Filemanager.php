@@ -36,6 +36,7 @@ class Filemanager {
 
 	private $EE;
 	
+	private $_errors			= array();
 	private $_upload_dirs		= array();
 	private $_upload_dir_prefs	= array();
 
@@ -72,13 +73,16 @@ class Filemanager {
 		return;
 	}
 
+	// ---------------------------------------------------------------------
 
 
 	function clean_filename($filename, $dir_id)
 	{
 		$prefs = $this->fetch_upload_dir_prefs($dir_id);
 		
+		$i = 1;
 		$ext = '';
+		$path = $prefs['server_path'];
 		
 		// clean up the filename
 		$filename = preg_replace("/\s+/", "_", $filename);
@@ -93,10 +97,16 @@ class Filemanager {
 			// http://httpd.apache.org/docs/1.3/mod/mod_mime.html#multipleext
 			$filename	= implode('.', $parts);
 		}
-
-		// @todo: verify file doesn't already exist?
 		
-		return $prefs['server_path'].$filename.'.'.$ext;
+		$ext = '.'.$ext;
+		$basename = $filename;
+		
+		while (file_exists($path.$filename.$ext))
+		{
+			$filename = $basename.$i++;
+		}
+		
+		return $path.$filename.$ext;
 	}
 
 	// ---------------------------------------------------------------------
