@@ -343,10 +343,8 @@ class Filemanager {
 		{
 			return $this->_save_file_response(TRUE);
 		}
-		else
-		{
-			return $this->_save_file_response(FALSE, "ERROR");
-		}
+
+		return $this->_save_file_response(FALSE, "ERROR");
 	}
 	
 	// ---------------------------------------------------------------------
