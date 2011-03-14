@@ -204,11 +204,11 @@ class Email {
 			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
 			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
 
-			$recipients = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($this->EE->session->sess_crypt_key), $recipients, MCRYPT_MODE_ECB, $init_vect);
+			$recipients = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($this->EE->db->username.$this->EE->db->password), $recipients, MCRYPT_MODE_ECB, $init_vect);
 		}
 		else
 		{
-			$recipients = $recipients.md5($this->EE->session->sess_crypt_key.$recipients);
+			$recipients = $recipients.md5($this->EE->db->username.$this->EE->db->password.$recipients);
 		}
 		$data['id']	= ($this->EE->TMPL->form_id == '') ? 'contact_form' : $this->EE->TMPL->form_id;
 		$data['class'] = $this->EE->TMPL->form_class;
@@ -476,11 +476,11 @@ class Email {
 			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
 			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
 
-			$recipients = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($this->EE->session->sess_crypt_key), $recipients, MCRYPT_MODE_ECB, $init_vect);
+			$recipients = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($this->EE->db->username.$this->EE->db->password), $recipients, MCRYPT_MODE_ECB, $init_vect);
 		}
 		else
 		{
-			$recipients = $recipients.md5($this->EE->session->sess_crypt_key.$recipients);
+			$recipients = $recipients.md5($this->EE->db->username.$this->EE->db->password.$recipients);
 		}
 
 		$data['id'] = ($this->EE->TMPL->form_id == '') ? 'tellafriend_form' : $this->EE->TMPL->form_id;
@@ -560,7 +560,7 @@ class Email {
 						$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
 						$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
 
-						$decoded_recipients = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($this->EE->session->sess_crypt_key), base64_decode($_POST[$val]), MCRYPT_MODE_ECB, $init_vect), "\0");
+						$decoded_recipients = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($this->EE->db->username.$this->EE->db->password), base64_decode($_POST[$val]), MCRYPT_MODE_ECB, $init_vect), "\0");
 					}
 					else
 					{
@@ -569,7 +569,7 @@ class Email {
 						$hash = substr($raw, -32);
 						$decoded_recipients = substr($raw, 0, -32);
 
-						if ($hash != md5($this->EE->session->sess_crypt_key.$decoded_recipients))
+						if ($hash != md5($this->EE->db->username.$this->EE->db->password.$decoded_recipients))
 						{
 							$decoded_recipients = '';
 						}

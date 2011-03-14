@@ -345,11 +345,11 @@ class Search {
 			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
 			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
 
-			$meta = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($this->EE->session->sess_crypt_key), $meta, MCRYPT_MODE_ECB, $init_vect);
+			$meta = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($this->EE->db->username.$this->EE->db->password), $meta, MCRYPT_MODE_ECB, $init_vect);
 		}
 		else
 		{
-			$meta = $meta.md5($this->EE->session->sess_crypt_key.$meta);
+			$meta = $meta.md5($this->EE->db->username.$this->EE->db->password.$meta);
 		}
 		
 		
@@ -374,7 +374,7 @@ class Search {
 			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
 
 			$meta_array = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, 
-								md5($this->EE->session->sess_crypt_key), 
+								md5($this->EE->db->username.$this->EE->db->password), 
 								base64_decode($_POST['meta']), 
 								MCRYPT_MODE_ECB, 
 								$init_vect), 
@@ -387,7 +387,7 @@ class Search {
 			$hash = substr($raw, -32);
 			$meta_array = substr($raw, 0, -32);
 
-			if ($hash != md5($this->EE->session->sess_crypt_key.$meta_array))
+			if ($hash != md5($this->EE->db->username.$this->EE->db->password.$meta_array))
 			{
 				$meta_array = '';
 			}
