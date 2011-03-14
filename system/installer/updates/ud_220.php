@@ -11,7 +11,7 @@
  * @since       Version 2.0
  * @filesource
  */
- 
+
 // ------------------------------------------------------------------------
 
 /**
@@ -47,6 +47,79 @@ class Updater {
 		$this->EE->load->dbforge();
 		
 		// Kill blogger
+		if ($this->EE->db->table_exists('blogger'))
+		{
+			$this->_transfer_blogger();
+			$this->_drop_blogger();
+			// remove blogger
+		}
+		
+		// Add batch dir preference to exp_upload_prefs
+		$this->_do_upload_pref_update();
+		
+		// Update category group
+		$this->_do_cat_group_update();
+		
+		// Build file-related tables
+		$this->_do_build_file_tables();
+		
+		return TRUE;
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Transfer Blogger configurations to the metaweblog api
+	 *
+	 * @return void
+	 */
+	function _transfer_blogger()
+	{
+		if ( ! $this->EE->db->table_exists('metaweblog_api'))
+		{
+			require EE_APPPATH.'modules/metaweblog_api/upd.metaweblog_api.php';
+			$UPD = new Metaweblog_api_upd();
+			$UPD->install();
+		}
+		
+		$qry = $this->EE->db->get('blogger');
+		
+		foreach ($qry->result() as $row)
+		{
+			list($channel_id, $custom_field_id) = explode(':', $row->blogger_field_id);
+			
+			$qry = $this->EE->db->select('field_group')
+								->where('channel_id', $channel_id)
+								->get('channels');
+			
+			if ( ! $qry->num_rows())
+			{
+				// nothing we can do here, that config shouldn't work
+				continue;
+			}
+
+			$fg_id = $qry->row('field_group');
+			
+			$data = array(
+				'field_group_id' 		=> $fg_id,
+				'content_field_id' 		=> $custom_field_id,
+				'metaweblog_pref_name' 	=> $row->blogger_pref_name.'_blogger',
+				'metaweblog_parse_type'	=> $row->blogger_parse_type,
+			);
+			
+			$this->EE->db->insert('metaweblog_api', $data);
+		}
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Drop Blogger Data
+	 *
+	 * @return void
+	 */
+	function _drop_blogger()
+	{
 		$this->EE->db->select('module_id');
 		$query = $this->EE->db->get_where('modules', array('module_name' => 'Blogger_api'));
 		
@@ -60,17 +133,6 @@ class Updater {
 		$this->EE->db->delete('actions');
 		
 		$this->EE->dbforge->drop_table('blogger');
-		
-		// Add batch dir preference to exp_upload_prefs
-		$this->_do_upload_pref_update();
-		
-		// Update category group
-		$this->_do_cat_group_update();
-		
-		// Build file-related tables
-		$this->_do_build_file_tables();
-		
-		return TRUE;
 	}
 
 	// ------------------------------------------------------------------------
@@ -88,7 +150,7 @@ class Updater {
 					'batch_location' 	=> array(
 								'type'			=> 'VARCHAR',
 								'constraint'	=> 255,
-								)
+								),
 					'cat_group'			=> array(
 								'type'			=> 'VARCHAR',
 								'constraint'	=> 255
