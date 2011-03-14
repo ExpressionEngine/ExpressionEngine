@@ -281,13 +281,13 @@ class Filemanager {
 	{
 		if ( ! $file_path OR ! $dir_id)
 		{
-			error();
+			return $this->_save_file_response(FALSE, lang('no_path_or_dir'));
 		}
 
 		if ($check_permissions === TRUE AND ! $this->_check_permissions($dir_id))
 		{
 			// This person does not have access, error?		
-			return $this->_save_file_response(FALSE, "ERROR");
+			return $this->_save_file_response(FALSE, lang('no_permission'));
 		}
 		
 		// fetch preferences & merge with passed in prefs
@@ -296,13 +296,12 @@ class Filemanager {
 		if ( ! $dir_prefs)
 		{
 			// something went way wrong!
-			var_dump($dir_prefs); exit;
-			return $this->_save_file_response(FALSE, "ERROR");
+			return $this->_save_file_response(FALSE, lang('invalid_directory'));
 		}
 		
 		$prefs['upload_location_id'] = $dir_id;
 
-		// override anything =)
+		// Merge the preferences with directory preferences and the defaults
 		$default_prefs = array(
 			'field_1_fmt' => 'xhtml',
 			'field_2_fmt' => 'xhtml',
@@ -313,39 +312,31 @@ class Filemanager {
 		);
 		$prefs = array_merge($dir_prefs, $prefs, $default_prefs);
 
-
+		// Figure out the mime type
 		$mime = $this->security_check($file_path, $prefs);
-		
 		if ($mime === FALSE)
 		{
 			// security check failed
-			return $this->_save_file_response(FALSE, "ERROR");
+			return $this->_save_file_response(FALSE, lang('security_failure'));
 		}
 		
 		$prefs['mime_type'] = $mime;
 		
-		//echo '<pre>';
-		//print_r($prefs);
-	//	exit;
-		
-		
-		if ($this->is_editable_image($file_path, $mime))
+		// Check to see if its an editable image, if it is, try and create the thumbnail
+		if ($this->is_editable_image($file_path, $mime) AND 
+			! $this->create_thumb($file_path, $prefs))
 		{
-			$this->create_thumb($file_path, $prefs);
-	
-			// @todo error checking
-			// return $this->_save_file_response(FALSE, "ERROR");
+			return $this->_save_file_response(FALSE, lang('thumb_not_created'));
 		}
 		
-		
+		// Insert the file metadata into the database
 		$this->EE->load->model('file_model');
-
 		if ($this->EE->file_model->save_file($prefs))
 		{
 			return $this->_save_file_response(TRUE);
 		}
 
-		return $this->_save_file_response(FALSE, "ERROR");
+		return $this->_save_file_response(FALSE, lang('file_not_added_to_db'));
 	}
 	
 	// ---------------------------------------------------------------------
