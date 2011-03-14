@@ -94,7 +94,7 @@ class Filemanager {
 			$filename	= implode('.', $parts);
 		}
 
-		// @todo: verify file doesn't already exist
+		// @todo: verify file doesn't already exist?
 		
 		return $prefs['server_path'].$filename.'.'.$ext;
 	}
@@ -326,29 +326,18 @@ class Filemanager {
 			// return $this->_save_file_response(FALSE, "ERROR");
 		}
 		
-		$this->_insert_file($prefs);
-
-		return $this->_save_file_response(TRUE);
-	}
-	
-	
-	// ---------------------------------------------------------------------
-	
-	/**
-	 * Takes file data and inserts it into the database
-	 *
-	 * @access private
-	 * @param array $data The data to insert into the database
-	 * @return bool|int Returns false if the insert failed and the ID if successful
-	 */
-	private function _insert_file($data = array())
-	{
+		
 		$this->EE->load->model('file_model');
 
-		// Send information to file_model
-		return $this->EE->file_model->save_file($data);
-	}	
-	
+		if ($this->EE->file_model->save_file($prefs))
+		{
+			return $this->_save_file_response(TRUE);
+		}
+		else
+		{
+			return $this->_save_file_response(FALSE, "ERROR");
+		}
+	}
 	
 	// ---------------------------------------------------------------------
 
