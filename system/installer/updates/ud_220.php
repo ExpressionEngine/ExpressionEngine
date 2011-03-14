@@ -46,6 +46,21 @@ class Updater {
 	{
 		$this->EE->load->dbforge();
 		
+		// Kill blogger
+		$this->EE->db->select('module_id');
+		$query = $this->EE->db->get_where('modules', array('module_name' => 'Blogger_api'));
+		
+		$this->EE->db->where('module_id', $query->row('module_id'));
+		$this->EE->db->delete('module_member_groups');
+		
+		$this->EE->db->where('module_name', 'Blogger_api');
+		$this->EE->db->delete('modules');
+		
+		$this->EE->db->where('class', 'Blogger_api');
+		$this->EE->db->delete('actions');
+		
+		$this->EE->dbforge->drop_table('blogger');
+		
 		// Add batch dir preference to exp_upload_prefs
 		$this->_do_upload_pref_update();
 		
