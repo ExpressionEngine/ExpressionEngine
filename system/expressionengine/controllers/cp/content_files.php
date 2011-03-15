@@ -1534,7 +1534,7 @@ class Content_files extends CI_Controller {
 			if ( ! $file['mime'])
 			{
 				// set error
-				$errors[$file['name']] = 'No mime type';
+				$errors[] = $file['name'].'No mime type';
 				continue;
 			}
 
@@ -1549,12 +1549,15 @@ class Content_files extends CI_Controller {
 				if ( ! empty($replace_sizes))
 				{
 					// Note- really no need to create system thumb in this case
-					$this->filemanager->create_thumb(
-					$this->_upload_dirs[$id]['server_path'].$file['name'],
-					array('server_path' => $this->_upload_dirs[$id]['server_path'],
-					'file_name' => $file['name'],
-					'dimensions' => $sizes[$id])
-					);
+					if ( ! $this->filemanager->create_thumb(
+						$this->_upload_dirs[$id]['server_path'].$file['name'],
+						array('server_path' => $this->_upload_dirs[$id]['server_path'],
+							'file_name' => $file['name'],
+							'dimensions' => $sizes[$id])))
+					{
+						$errors[] = $file['name'].'unable to create image';
+					}
+							
 				}
 
 				continue;
@@ -1583,31 +1586,23 @@ class Content_files extends CI_Controller {
 			);
 			
 			$file_data['dimensions'] = (is_array($sizes[$id])) ? $sizes[$id] : array();
-			//Watch Pascal have raving fit
 			
-			//$this->filemanager->_insert_file($file_data);
-			$this->filemanager->save_file($this->_upload_dirs[$id]['server_path'].$file['name'], $id, $file_data, FALSE);
-
-			// Save file should do this bit
-			/*
-			if (is_array($sizes[$id]))
+			$saved =  $this->filemanager->save_file($this->_upload_dirs[$id]['server_path'].$file['name'], $id, $file_data, FALSE);
+			
+			if ( ! $saved)
 			{
-				$this->filemanager->create_thumb(
-					$this->_upload_dirs[$id]['server_path'].$file['name'],
-					array('server_path' => $this->_upload_dirs[$id]['server_path'],
-					'name' => $file['name'],
-					'dimensions' => $sizes[$id])
-				);
+				$errors[] = $file['name'].$saved;
 			}
-			*/
+
 		}
 
 		if (AJAX_REQUEST)
 		{
-			if ( ! empty($errors))
+			if (count($errors))
 			{
 				$this->output->send_ajax_response($errors, TRUE);
 			}
+
 
 			$this->output->send_ajax_response('success');
 		}
