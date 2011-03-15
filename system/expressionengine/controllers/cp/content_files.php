@@ -1574,7 +1574,6 @@ class Content_files extends CI_Controller {
 			$file_data = array(
 					'upload_location_id'	=> $id,
 					'site_id'				=> $this->config->item('site_id'),
-					'title'					=> $file['name'],
 					'rel_path'				=> $file['name'], // this will vary at some point
 					'mime_type'				=> $file['mime'],
 					'file_name'				=> $file['name'],
