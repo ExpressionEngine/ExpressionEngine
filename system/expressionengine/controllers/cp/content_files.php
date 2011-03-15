@@ -1530,6 +1530,7 @@ class Content_files extends CI_Controller {
 		// Setup data for batch insert
 		foreach ($files->files[$id] as $file)
 		{
+$errors[] = $file['name'].' _IS FILE_ ';
 			
 			if ( ! $file['mime'])
 			{
@@ -1549,6 +1550,8 @@ class Content_files extends CI_Controller {
 				if ( ! empty($replace_sizes))
 				{
 					// Note- really no need to create system thumb in this case
+					
+					/*
 					if ( ! $this->filemanager->create_thumb(
 						$this->_upload_dirs[$id]['server_path'].$file['name'],
 						array('server_path' => $this->_upload_dirs[$id]['server_path'],
@@ -1557,11 +1560,23 @@ class Content_files extends CI_Controller {
 					{
 						$errors[] = $file['name'].'unable to create image';
 					}
+					*/
+					
+					$m_image = $this->filemanager->create_thumb(
+						$this->_upload_dirs[$id]['server_path'].$file['name'],
+						array('server_path' => $this->_upload_dirs[$id]['server_path'],
+							'file_name' => $file['name'],
+							'dimensions' => $sizes[$id]));
+							
+				$errors[] = $file['name'].$m_image;
+
 							
 				}
 
 				continue;
 			}
+			
+			continue;
 
 			$file_location = $this->functions->remove_double_slashes(
 					$dir_data['url'].'/'.$file['name']
@@ -1593,7 +1608,6 @@ class Content_files extends CI_Controller {
 			{
 				$errors[] = $file['name'].$saved;
 			}
-
 		}
 
 		if (AJAX_REQUEST)
