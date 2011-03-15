@@ -1,7 +1,9 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
-  *  
+  * Checks to see if the current user needs to have XSS filtering or not
+  *
+  * @return	boolean	TRUE if they need XSS cleaning on, FALSE otherwise
   */
 function xss_check()
 {
