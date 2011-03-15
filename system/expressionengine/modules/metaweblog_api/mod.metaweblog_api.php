@@ -1576,6 +1576,8 @@ class Metaweblog_api {
 	/**
 	 * METAWEBLOG API: new media object
 	 *
+	 * XSS Cleaning is bypassed when uploading a file through MetaWeblog API
+	 *
 	 * @access	public
 	 * @param	parameter list
 	 * @return	void
@@ -1623,6 +1625,9 @@ class Metaweblog_api {
 		/** -------------------------------------*/
 		
 		$this->EE->load->library('filemanager');
+		
+		// Disable XSS Filtering
+		$this->EE->filemanager->xss_clean_off();
 		
 		// Figure out the FULL file path
 		$file_path = $this->EE->filemanager->clean_filename(
@@ -1900,44 +1905,6 @@ class Metaweblog_api {
 		return $filelist;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Guarantees Unique Filename
-	 *
-	 * @access	public
-	 * @param	filename
-	 * @return	void
-	 */
-	function unique_filename($filename, $upload_path)
-	{
-  		$i = 0;
-  		$subtype = '.jpg';
-  
-  		/** ------------------------------------
-  		/**  Strips out _ and - at end of name part of file name
-  		/** ------------------------------------*/
-  
-  		$x			= explode('.',$filename);
-		$name		=  ( ! isset($x['1'])) ? $filename : $x['0'];
-		$sfx		=  ( ! isset($x['1']) OR is_numeric($x[count($x) - 1])) ? $subtype : '.'.$x[count($x) - 1];
-		$name		=  (substr($name,-1) == '_' OR substr($name,-1) == '-') ? substr($name,0,-1) : $name;
-  		$filename	= $name.$sfx;
-  
-		while (file_exists($upload_path.$filename))
-		{
-			$i++;
-			$n			= - strlen($i);
-			$x			= explode('.',$filename);
-			$name		=  ( ! isset($x['1'])) ? $filename : $x['0'];
-			$sfx		=  ( ! isset($x['1'])) ? '' : '.'.$x[count($x) - 1];
-			$name		=  ($i==1) ? $name : substr($name,0,$n);
-			$name		=  (substr($name,-1) == '_' OR substr($name,-1) == '-') ? substr($name,0,-1) : $name;
-			$filename	=  $name."$i".$sfx;
-		}
-
-		return $filename;
-	}
 
 	// --------------------------------------------------------------------
 

@@ -374,6 +374,27 @@ $lang = array(
 'watermark_pref_deleted' =>
 'Watermark Preference Deleted',
 
+'no_path_or_dir' =>
+'You must specify both a file path and a directory ID to save a file',
+
+'no_permission' =>
+'You do not have permission to save a file',
+
+'invalid_directory' =>
+'You specified an invalid directory',
+
+'file_security_failure' =>
+'File could not be uploaded because of a security failure',
+
+'thumb_not_created' =>
+'Thumbnail could not be created for the image',
+
+'invalid_mime' =>
+'Invalid mime type, file could not be processed',
+
+'file_not_added_to_db' =>
+'File could not be recorded in the database',
+
 ''=>''
 );
 

@@ -105,16 +105,16 @@ EE.file_manager.sync = function(upload_directory_id) {
 			
 			EE.file_manager.update_progress(Math.round(already_processed / total_count * 100));
 			EE.file_manager.finish_sync(upload_directory_id);
+
+
 		},
-		error: function(xhr, textStatus, errorThrown){
-			// If the errorThrown is not an array, make it so
-			if ( ! $.isArray(errorThrown)) {
-				errorThrown = [errorThrown];
-			};
-			
-			for (var i = 0, max = errorThrown.length; i < max; i++) {
-				EE.file_manager.sync_errors.push(errorThrown[i]);
-			};
+		success: function(data, textStatus, xhr) {
+			if (data.message_type == "failure") {
+
+				for (var key in data.errors) {
+					EE.file_manager.sync_errors.push("<b>" + key + "</b>: " + data.errors[key]);
+				}
+			}
 		}
 	});
 };

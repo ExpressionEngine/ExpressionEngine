@@ -86,7 +86,7 @@ if ( ! $EE_view_disable)
 							<td>
 								<ul>
 									{{each errors}}
-										<li>${$value}</li>
+										<li>{{html $value}}</li>
 									{{/each}}
 								</ul>
 								<span><?=lang('no_errors')?></span>

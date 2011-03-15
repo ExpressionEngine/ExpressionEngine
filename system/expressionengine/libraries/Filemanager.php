@@ -39,6 +39,8 @@ class Filemanager {
 	private $_errors			= array();
 	private $_upload_dirs		= array();
 	private $_upload_dir_prefs	= array();
+	
+	private $_xss_on			= TRUE;
 
 	/**
 	 * Constructor
@@ -98,12 +100,13 @@ class Filemanager {
 			$filename	= implode('.', $parts);
 		}
 		
+		// Figure out a unique filename
 		$ext = '.'.$ext;
 		$basename = $filename;
 		
 		while (file_exists($path.$filename.$ext))
 		{
-			$filename = $basename.$i++;
+			$filename = $basename.'_'.$i++;
 		}
 		
 		return $path.$filename.$ext;
@@ -203,9 +206,11 @@ class Filemanager {
 		return $this->set_upload_dir_prefs($dir_id, $prefs);
 	}
 
+	// --------------------------------------------------------------------
+
 	function security_check($file_path, $prefs)
 	{
-		$this->EE->load->helper('file');
+		$this->EE->load->helper(array('file', 'xss'));
 		
 		$is_image = FALSE;
 		$allowed = $prefs['allowed_types'];
@@ -240,9 +245,12 @@ class Filemanager {
 			$is_image = TRUE;
 		}
 		
+		// We need to be able to turn this off!
+		
 		//Apply XSS Filtering to uploaded files?
-		//xss_clean_uploads
-		if ( ! $this->EE->security->xss_clean($file_path, $is_image))
+		if ($this->_xss_on AND 
+			xss_check() AND 
+			! $this->EE->security->xss_clean($file_path, $is_image))
 		{
 			return FALSE;
 		}
@@ -250,6 +258,32 @@ class Filemanager {
 		return $mime;
 	}
 	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Turn XSS cleaning on
+	 */
+	public function xss_clean_on()
+	{
+		$this->_xss_on = TRUE;
+	}
+
+	// --------------------------------------------------------------------
+	
+	public function xss_clean_off()
+	{
+		$this->_xss_on = FALSE;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Checks to see if the image is an editable/resizble image
+	 *
+	 * @param	string	$file_path	The full path to the file to check
+	 * @param	string	$mime		The file's mimetype
+	 * @return	boolean	TRUE if the image is editable, FALSE otherwise
+	 */
 	function is_editable_image($file_path, $mime)
 	{
 		if ( ! $this->is_image($mime))
@@ -280,13 +314,13 @@ class Filemanager {
 	{
 		if ( ! $file_path OR ! $dir_id)
 		{
-			error();
+			return $this->_save_file_response(FALSE, lang('no_path_or_dir'));
 		}
 
 		if ($check_permissions === TRUE AND ! $this->_check_permissions($dir_id))
 		{
 			// This person does not have access, error?		
-			return $this->_save_file_response(FALSE, "ERROR");
+			return $this->_save_file_response(FALSE, lang('no_permission'));
 		}
 		
 		// fetch preferences & merge with passed in prefs
@@ -295,56 +329,43 @@ class Filemanager {
 		if ( ! $dir_prefs)
 		{
 			// something went way wrong!
-			var_dump($dir_prefs); exit;
-			return $this->_save_file_response(FALSE, "ERROR");
+			return $this->_save_file_response(FALSE, lang('invalid_directory'));
 		}
 		
 		$prefs['upload_location_id'] = $dir_id;
 
-		// override anything =)
-		$default_prefs = array(
-			'field_1_fmt' => 'xhtml',
-			'field_2_fmt' => 'xhtml',
-			'field_3_fmt' => 'xhtml',
-			'field_4_fmt' => 'xhtml',
-			'field_5_fmt' => 'xhtml',
-			'field_6_fmt' => 'xhtml'
-		);
-		$prefs = array_merge($dir_prefs, $prefs, $default_prefs);
+		$prefs = array_merge($dir_prefs, $prefs);
 
-
+		// Figure out the mime type
 		$mime = $this->security_check($file_path, $prefs);
-		
 		if ($mime === FALSE)
 		{
 			// security check failed
-			return $this->_save_file_response(FALSE, "ERROR");
+			return $this->_save_file_response(FALSE, lang('security_failure'));
 		}
 		
 		$prefs['mime_type'] = $mime;
-		
-		//echo '<pre>';
-		//print_r($prefs);
-	//	exit;
-		
-		
-		if ($this->is_editable_image($file_path, $mime))
+		// Check to see if its an editable image, if it is, try and create the thumbnail
+		if ($this->is_editable_image($file_path, $mime) && 
+			! $this->create_thumb($file_path, $prefs))
 		{
-			$this->create_thumb($file_path, $prefs);
-	
-			// @todo error checking
-			// return $this->_save_file_response(FALSE, "ERROR");
+				return $this->_save_file_response(FALSE, lang('thumb_not_created'));
 		}
 		
-		
+		// Insert the file metadata into the database
 		$this->EE->load->model('file_model');
 
 		if ($this->EE->file_model->save_file($prefs))
 		{
-			return $this->_save_file_response(TRUE);
+			$response = $this->_save_file_response(TRUE);
+		}
+		else
+		{
+			$response = $this->_save_file_response(FALSE, lang('file_not_added_to_db'));
 		}
 
-		return $this->_save_file_response(FALSE, "ERROR");
+		$this->_xss_on = TRUE;
+		return $response;
 	}
 	
 	// ---------------------------------------------------------------------
@@ -369,7 +390,7 @@ class Filemanager {
 			$this->EE->db->select('upload_id');
 			$this->EE->db->where(array(
 				'member_group' => $group_id,
-				'upload_id' => $dir_id
+				'upload_id'    => $dir_id
 			));
 
 			// If any record shows up, then they do not have access
@@ -400,20 +421,6 @@ class Filemanager {
 		);
 	}
 
-
-
-
-
-
-
-
-
-	
-	
-	
-	
-	
-	
 	// --------------------------------------------------------------------
 	
 	/**
@@ -785,7 +792,6 @@ class Filemanager {
 	 * @param	array	file and directory information
 	 * @return	bool	success / failure
 	 */
-	//function create_thumb($dir, $data)
 	function create_thumb($file_path, $prefs, $thumb = TRUE)
 	{
 		/*
@@ -835,8 +841,6 @@ class Filemanager {
 			}
 			elseif ( ! is_really_writable($resized_path))
 			{
-				$this->_set_error('resize_path_not_writable');
-				
 				return FALSE;
 			}
 		
@@ -861,16 +865,24 @@ class Filemanager {
 			$this->EE->image_lib->initialize($config);
 
 			// crop based on resize type - does anyone really crop sight unseen????
+
 			
-			if ( ! $this->EE->image_lib->resize())
+			if ( ! @$this->EE->image_lib->resize())
 			{
-				$this->_set_error($this->EE->image_lib->display_errors());
-				
-				print_r($config);
-				var_dump($this->EE->image_lib->display_errors());
-				exit;
+				//exit('frak: '.$prefs['file_name']);
 				return FALSE;
 			}
+
+/*			
+			try
+			{
+    			$this->EE->image_lib->resize();
+			}
+			catch (Exception $e) 
+			{
+				//var_dump($e->getMessage());
+			}
+*/			
 			
 			@chmod($config['new_image'], DIR_WRITE_MODE);
 			
@@ -880,12 +892,9 @@ class Filemanager {
 			{
 				if ( ! $this->create_watermark($resized_path.$prefs['file_name'], $size))
 				{
-					$this->_set_error('wm_failed');
-					exit('borked wm');
 					return FALSE;
 				}				
 			}			
-			
 		}
 		
 		return TRUE;
@@ -1694,94 +1703,6 @@ class Filemanager {
 		return FALSE;
 	}
 	
-	// --------------------------------------------------------------------	
-	
-	/**
-	 * Save a file
-	 *
-	 * The purpose of this method is to make the upload process generally 
-	 * transparent to us and third party developers.  Pass in information on
-	 * the upload directory as per the array below, and you're off to the 
-	 * races.  
-	 *
-	 */
-	public function save($upload_dir_info)
-	{
-		/*
-		array
-		  'id' => string '1' (length=1)
-		  'site_id' => string '1' (length=1)
-		  'name' => string 'Main Upload Directory' (length=21)
-		  'server_path' => string '/Volumes/Development/ee/ee2/images/uploads/' (length=43)
-		  'url' => string 'http://10.0.0.5/ee/ee2/images/uploads/' (length=38)
-		  'allowed_types' => string 'all' (length=3)
-		  'max_size' => string '' (length=0)
-		  'max_height' => string '' (length=0)
-		  'max_width' => string '' (length=0)
-		  'properties' => string 'style="border: 0;" alt="image"' (length=30)
-		  'pre_format' => string '' (length=0)
-		  'post_format' => string '' (length=0)
-		  'file_properties' => string '' (length=0)
-		  'file_pre_format' => string '' (length=0)
-		  'file_post_format' => string '' (length=0)
-		*/
-		
-		// Allowed filetypes for this directory
-		switch($upload_dir_info['allowed_types'])
-		{
-			case 'all' : $allowed_types = '*';
-				break;
-			case 'img' : $allowed_types = 'jpg|jpeg|png|gif';
-				break;
-			default :
-				$allowed_types = $upload_dir_info['allowed_types'];
-		}
-		
-		// Convert the file size to kilobytes
-		$max_file_size	= ($upload_dir_info['max_size'] == '') ? 0 : round($upload_dir_info['max_size']/1024, 2);
-		$max_width		= ($upload_dir_info['max_width'] == '') ? 0 : $upload_dir_info['max_width'];
-		$max_height		= ($upload_dir_info['max_height'] == '') ? 0 : $upload_dir_info['max_height'];
-		
-		if ($this->EE->config->item('xss_clean_uploads') == 'n')
-		{
-			$xss_clean_upload = FALSE;
-		}
-		else
-		{
-			$xss_clean_upload = ($this->EE->session->userdata('group_id') === 1) ? FALSE : TRUE;
-		}
-		
-		
-		$config = array(
-			'upload_path'		=> $upload_dir_info['server_path'],
-			'allowed_types'		=> $allowed_types,
-			'max_height'		=> $max_height,
-			'max_width'			=> $max_width,
-			'max_size'			=> $max_file_size,
-			'xss_clean'			=> $xss_clean_upload,
-		);
-		
-		
-		$this->EE->load->library('upload', $config);
-		
-		if ( ! $this->EE->upload->do_upload())
-		{
-			$this->upload_errors = $this->EE->upload->display_errors();
-			
-			return $this;
-		}
-		
-		$this->upload_data = $this->EE->upload->data();		
-		
-		/* 	It makes me kind of cry a bit to do this, but some hosts have
-			stupid permissions, so unless you chmod the file like so, the
-			user won't be able to delete it with their ftp client.  :( */
-		
-		@chmod($this->upload_data['full_path'], DIR_WRITE_MODE);
-		
-		
-		return $this;
-	}
 
 	// --------------------------------------------------------------------
 	
