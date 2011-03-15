@@ -1534,7 +1534,7 @@ class Content_files extends CI_Controller {
 			if ( ! $file['mime'])
 			{
 				// set error
-				$errors[] = $file['name'].'No mime type';
+				$errors[$file['name']] = 'No mime type';
 				continue;
 			}
 
@@ -1555,7 +1555,7 @@ class Content_files extends CI_Controller {
 							'file_name' => $file['name'],
 							'dimensions' => $sizes[$id])))
 					{
-						$errors[] = $file['name'].'unable to create image';
+						$errors[$file['name']] = 'unable to create image';
 					}
 							
 				}
@@ -1591,7 +1591,7 @@ class Content_files extends CI_Controller {
 			
 			if ( ! $saved)
 			{
-				$errors[] = $file['name'].$saved;
+				$errors[$file['name']] = $saved;
 			}
 
 		}
@@ -1600,11 +1600,15 @@ class Content_files extends CI_Controller {
 		{
 			if (count($errors))
 			{
-				$this->output->send_ajax_response($errors, TRUE);
+				return $this->output->send_ajax_response(array(
+					'message_type'	=> 'failure',
+					'errors'		=> $errors
+				));
 			}
 
-
-			$this->output->send_ajax_response('success');
+			return $this->output->send_ajax_response(array(
+				'message_type'	=> 'success'
+			));
 		}
 	}
 
