@@ -186,16 +186,17 @@ class File_model extends CI_Model {
 		{
 			$valid_keys["field_{$i}"] = '';
 			$valid_keys["field_{$i}_fmt"] = '';
+			$data["field_{$i}_fmt"] = (isset($data["field_{$i}_fmt"]) && $data["field_{$i}_fmt"] != '') ? $data["field_{$i}_fmt"] : 'xhtml';
 		}
 		
 		// Remove data that can't exist in the database
 		$data = array_intersect_key($data, $valid_keys);
 		
+		// Set some defaults if missing
 		$data['upload_date'] = ( ! isset($data['upload_date'])) ? $this->localize->now : $data['upload_date'];
 		$data['modified_date'] = $this->localize->now;
 		$data['status'] = ( ! isset($data['status'])) ? 'o' : $data['status'];
-		
-		// We need hook somewhere to set title!!!!
+		$data['title'] = ( ! isset($data['title'])) ? $data['file_name'] : $data['title'];
 
 		// Insert/update the data
 		if (isset($data['file_id']))

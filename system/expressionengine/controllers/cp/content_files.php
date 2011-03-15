@@ -1524,18 +1524,15 @@ class Content_files extends CI_Controller {
 		// @todo, bail if there are no files in the directory!  :D
 
 		$files = $this->filemanager->fetch_files($id, $current_files, TRUE);
-
+		
 		$this->load->library('localize');
 
 		// Setup data for batch insert
 		foreach ($files->files[$id] as $file)
 		{
-$errors[] = $file['name'].' _IS FILE_ ';
-			
 			if ( ! $file['mime'])
 			{
-				// set error
-				$errors[$file['name']] = 'No mime type';
+				$errors[$file['name']] = lang('invalid_mime');
 				continue;
 			}
 
@@ -1551,33 +1548,19 @@ $errors[] = $file['name'].' _IS FILE_ ';
 				{
 					// Note- really no need to create system thumb in this case
 					
-					/*
 					if ( ! $this->filemanager->create_thumb(
 						$this->_upload_dirs[$id]['server_path'].$file['name'],
 						array('server_path' => $this->_upload_dirs[$id]['server_path'],
 							'file_name' => $file['name'],
 							'dimensions' => $sizes[$id])))
 					{
-						$errors[$file['name']] = 'unable to create image';
+						$errors[$file['name']] = lang('thumb_not_created');
 					}
-					*/
-					
-					$m_image = $this->filemanager->create_thumb(
-						$this->_upload_dirs[$id]['server_path'].$file['name'],
-						array('server_path' => $this->_upload_dirs[$id]['server_path'],
-							'file_name' => $file['name'],
-							'dimensions' => $sizes[$id]));
-							
-				$errors[] = $file['name'].$m_image;
-
-							
 				}
 
 				continue;
 			}
 			
-			continue;
-
 			$file_location = $this->functions->remove_double_slashes(
 					$dir_data['url'].'/'.$file['name']
 				);
@@ -1592,7 +1575,7 @@ $errors[] = $file['name'].' _IS FILE_ ';
 					'upload_location_id'	=> $id,
 					'site_id'				=> $this->config->item('site_id'),
 					'title'					=> $file['name'],
-					'path'					=> $file_path,
+					'rel_path'				=> $file['name'], // this will vary at some point
 					'mime_type'				=> $file['mime'],
 					'file_name'				=> $file['name'],
 					'file_size'				=> $file['size'],
@@ -1602,11 +1585,11 @@ $errors[] = $file['name'].' _IS FILE_ ';
 			
 			$file_data['dimensions'] = (is_array($sizes[$id])) ? $sizes[$id] : array();
 			
-			$saved =  $this->filemanager->save_file($this->_upload_dirs[$id]['server_path'].$file['name'], $id, $file_data, FALSE);
+			$saved = $this->filemanager->save_file($this->_upload_dirs[$id]['server_path'].$file['name'], $id, $file_data, FALSE);
 			
-			if ( ! $saved)
+			if ( ! $saved['status'])
 			{
-				$errors[$file['name']] = $saved;
+				$errors[$file['name']] = $saved['message'];
 			}
 		}
 

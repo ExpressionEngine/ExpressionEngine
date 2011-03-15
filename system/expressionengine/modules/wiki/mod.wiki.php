@@ -5364,8 +5364,6 @@ class Wiki {
 
 			if ($this->EE->upload->do_upload() === FALSE)
 			{
-				@unlink($this->EE->upload->file_name);
-				
 				return $this->EE->output->show_user_error('general', 
 							array($this->EE->lang->line($this->EE->upload->display_errors())));
 			}
@@ -5391,7 +5389,17 @@ class Wiki {
 			$file_data['uploaded_by_member_id']	= $this->EE->session->userdata('member_id');
 			$file_data['modified_by_member_id'] = $this->EE->session->userdata('member_id');
 			
-			$this->EE->filemanager->save_file($server_path.$new_name, $this->upload_dir, $file_data, FALSE);
+			$saved = $this->EE->filemanager->save_file($server_path.$new_name, $this->upload_dir, $file_data, FALSE);
+			
+			// If it can't save to filemanager, we need to error and nuke the file
+			if ( ! $saved['status'])
+			{
+				@unlink($file_data['full_path']);
+				
+				return $this->EE->output->show_user_error('general', 
+							array($this->EE->lang->line($saved['message'])));
+			}			
+			
 
 			$this->EE->db->insert('wiki_uploads', $data);			
 			

@@ -389,6 +389,9 @@ $lang = array(
 'thumb_not_created' =>
 'Thumbnail could not be created for the image',
 
+'invalid_mime' =>
+'Invalid mime type, file could not be processed',
+
 'file_not_added_to_db' =>
 'File could not be recorded in the database',
 
