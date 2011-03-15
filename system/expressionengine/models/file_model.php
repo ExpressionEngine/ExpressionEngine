@@ -238,11 +238,13 @@ class File_model extends CI_Model {
 	 *
 	 * @param 	array
 	 */
-	function count_files($dir_id = array())
+	function count_files($dir_id = FALSE)
 	{
+		$dir_func = $this->_where_function($dir_id);
+		
 		if ( ! empty($dir_id))
 		{
-			$this->db->where_in('upload_location_id', $dir_id);
+			$this->db->$dir_func('upload_location_id', $dir_id);
 		}
 		
 		return $this->db->count_all_results('files');
@@ -255,16 +257,18 @@ class File_model extends CI_Model {
 	 * 
 	 * 
 	 */
-	function get_files_by_name($file_names = array(), $dir_id = array())
+	function get_files_by_name($file_name, $dir_id)
 	{
-		if (empty($dir_id))
+		if (empty($file_name) OR empty($dir_id))
 		{
 			return FALSE;
-			
 		}
+		
+		$dir_func = $this->_where_function($dir_id);
+		$name_func = $this->_where_function($file_names);
 
-		return $this->db->where_in('upload_location_id', $dir_id)
-						->where_in('file_name', $file_names)
+		return $this->db->$dir_func('upload_location_id', $dir_id)
+						->$name_func('file_name', $file_names)
 						->get('files');
 	}
 
@@ -276,14 +280,18 @@ class File_model extends CI_Model {
 	 * 
 	 * 
 	 */
-	function get_files_by_id($file_id = array(), $dir_id = array())
+	function get_files_by_id($file_id, $dir_id = FALSE)
 	{
+		$dir_func = $this->_where_function($dir_id);
+		$file_func = $this->_where_function($file_id);
+		
 		if ( ! empty($dir_id))
 		{
-			$this->db->where_in('upload_location_id', $dir_id);
+			$this->db->$dir_func('upload_location_id', $dir_id);
 		}
 
-		return $this->db->where_in('file_id', $file_id)
+		
+		return $this->db->$file_func('file_id', $file_id)
 						->get('files');
 	}
 	
@@ -294,16 +302,36 @@ class File_model extends CI_Model {
 	 * 
 	 * 
 	 */
-	function get_dimensions_by_dir_id($dir_id = array())
+	function get_dimensions_by_dir_id($dir_id = FALSE)
 	{
+		$dir_func = $this->_where_function($dir_id);
+		
 		if ( ! empty($dir_id))
 		{
-			$this->db->where_in('upload_location_id', $dir_id);
+			$this->db->$dir_func('upload_location_id', $dir_id);
 		}
 
 		return $this->db->get('file_dimensions');
 	}
+	
+	// ------------------------------------------------------------------------
 
+	/**
+	 * Get the correct db where function depending
+	 * on what the datatype is.
+	 *
+	 * @param 	mixed
+	 * @return	string
+	 */
+	function _where_function($var)
+	{
+		if (is_array($var))
+		{
+			return 'where_in';
+		}
+		
+		return 'where';
+	}
 
 	// ------------------------------------------------------------------------
 
