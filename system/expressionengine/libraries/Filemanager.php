@@ -39,6 +39,8 @@ class Filemanager {
 	private $_errors			= array();
 	private $_upload_dirs		= array();
 	private $_upload_dir_prefs	= array();
+	
+	private $_xss_on			= TRUE;
 
 	/**
 	 * Constructor
@@ -204,9 +206,11 @@ class Filemanager {
 		return $this->set_upload_dir_prefs($dir_id, $prefs);
 	}
 
+	// --------------------------------------------------------------------
+
 	function security_check($file_path, $prefs)
 	{
-		$this->EE->load->helper('file');
+		$this->EE->load->helper(array('file', 'xss'));
 		
 		$is_image = FALSE;
 		$allowed = $prefs['allowed_types'];
@@ -244,8 +248,9 @@ class Filemanager {
 		// We need to be able to turn this off!
 		
 		//Apply XSS Filtering to uploaded files?
-		//xss_clean_uploads
-		if ( ! $this->EE->security->xss_clean($file_path, $is_image))
+		if ($this->_xss_on AND 
+			xss_check() AND 
+			! $this->EE->security->xss_clean($file_path, $is_image))
 		{
 			return FALSE;
 		}
@@ -253,6 +258,32 @@ class Filemanager {
 		return $mime;
 	}
 	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Turn XSS cleaning on
+	 */
+	public function xss_clean_on()
+	{
+		$this->_xss_on = TRUE;
+	}
+
+	// --------------------------------------------------------------------
+	
+	public function xss_clean_off()
+	{
+		$this->_xss_on = FALSE;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Checks to see if the image is an editable/resizble image
+	 *
+	 * @param	string	$file_path	The full path to the file to check
+	 * @param	string	$mime		The file's mimetype
+	 * @return	boolean	TRUE if the image is editable, FALSE otherwise
+	 */
 	function is_editable_image($file_path, $mime)
 	{
 		if ( ! $this->is_image($mime))
@@ -335,10 +366,15 @@ class Filemanager {
 		$this->EE->load->model('file_model');
 		if ($this->EE->file_model->save_file($prefs))
 		{
-			return $this->_save_file_response(TRUE);
+			$response = $this->_save_file_response(TRUE);
+		}
+		else
+		{
+			$response = $this->_save_file_response(FALSE, lang('file_not_added_to_db'));
 		}
 
-		return $this->_save_file_response(FALSE, lang('file_not_added_to_db'));
+		$this->_xss_on = TRUE;
+		return $response;
 	}
 	
 	// ---------------------------------------------------------------------
@@ -363,7 +399,7 @@ class Filemanager {
 			$this->EE->db->select('upload_id');
 			$this->EE->db->where(array(
 				'member_group' => $group_id,
-				'upload_id' => $dir_id
+				'upload_id'    => $dir_id
 			));
 
 			// If any record shows up, then they do not have access
@@ -394,11 +430,6 @@ class Filemanager {
 		);
 	}
 
-
-
-
-	
-	
 	// --------------------------------------------------------------------
 	
 	/**
