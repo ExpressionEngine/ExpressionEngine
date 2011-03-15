@@ -5372,9 +5372,6 @@ class Wiki {
 			
 			$file_data = $this->EE->upload->data();
 			
-
-			
-			// call filemanager??
 			$this->EE->load->library('filemanager');
 			
 			@chmod($file_data['full_path'], DIR_WRITE_MODE);

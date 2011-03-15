@@ -108,12 +108,14 @@ EE.file_manager.sync = function(upload_directory_id) {
 		},
 		error: function(xhr, textStatus, errorThrown){
 			// If the errorThrown is not an array, make it so
-			if ( ! $.isArray(errorThrown)) {
-				errorThrown = [errorThrown];
+			var EResponse = xhr.responseText;
+			
+			if ( ! $.isArray(EResponse)) {
+				EResponse = [EResponse];
 			};
 			
-			for (var i = 0, max = errorThrown.length; i < max; i++) {
-				EE.file_manager.sync_errors.push(errorThrown[i]);
+			for (var i = 0, max = EResponse.length; i < max; i++) {
+				EE.file_manager.sync_errors.push(EResponse[i]);
 			};
 		}
 	});

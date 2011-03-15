@@ -241,6 +241,8 @@ class Filemanager {
 			$is_image = TRUE;
 		}
 		
+		// We need to be able to turn this off!
+		
 		//Apply XSS Filtering to uploaded files?
 		//xss_clean_uploads
 		if ( ! $this->EE->security->xss_clean($file_path, $is_image))
@@ -310,6 +312,7 @@ class Filemanager {
 			'field_5_fmt' => 'xhtml',
 			'field_6_fmt' => 'xhtml'
 		);
+
 		$prefs = array_merge($dir_prefs, $prefs, $default_prefs);
 
 		// Figure out the mime type
@@ -321,12 +324,11 @@ class Filemanager {
 		}
 		
 		$prefs['mime_type'] = $mime;
-		
 		// Check to see if its an editable image, if it is, try and create the thumbnail
-		if ($this->is_editable_image($file_path, $mime) AND 
+		if ($this->is_editable_image($file_path, $mime) && 
 			! $this->create_thumb($file_path, $prefs))
 		{
-			return $this->_save_file_response(FALSE, lang('thumb_not_created'));
+				return $this->_save_file_response(FALSE, "ERROR");
 		}
 		
 		// Insert the file metadata into the database
@@ -395,15 +397,6 @@ class Filemanager {
 
 
 
-
-
-
-
-
-	
-	
-	
-	
 	
 	
 	// --------------------------------------------------------------------
@@ -777,7 +770,6 @@ class Filemanager {
 	 * @param	array	file and directory information
 	 * @return	bool	success / failure
 	 */
-	//function create_thumb($dir, $data)
 	function create_thumb($file_path, $prefs, $thumb = TRUE)
 	{
 		/*
@@ -827,8 +819,6 @@ class Filemanager {
 			}
 			elseif ( ! is_really_writable($resized_path))
 			{
-				$this->_set_error('resize_path_not_writable');
-				
 				return FALSE;
 			}
 		
@@ -853,16 +843,24 @@ class Filemanager {
 			$this->EE->image_lib->initialize($config);
 
 			// crop based on resize type - does anyone really crop sight unseen????
+
 			
-			if ( ! $this->EE->image_lib->resize())
+			if ( ! @$this->EE->image_lib->resize())
 			{
-				$this->_set_error($this->EE->image_lib->display_errors());
-				
-				print_r($config);
-				var_dump($this->EE->image_lib->display_errors());
-				exit;
+				exit('frak');
 				return FALSE;
 			}
+
+/*			
+			try
+			{
+    			$this->EE->image_lib->resize();
+			}
+			catch (Exception $e) 
+			{
+				//var_dump($e->getMessage());
+			}
+*/			
 			
 			@chmod($config['new_image'], DIR_WRITE_MODE);
 			
@@ -872,12 +870,9 @@ class Filemanager {
 			{
 				if ( ! $this->create_watermark($resized_path.$prefs['file_name'], $size))
 				{
-					$this->_set_error('wm_failed');
-					exit('borked wm');
 					return FALSE;
 				}				
 			}			
-			
 		}
 		
 		return TRUE;
