@@ -847,7 +847,7 @@ class Filemanager {
 			
 			if ( ! @$this->EE->image_lib->resize())
 			{
-				exit('frak');
+				//exit('frak: '.$prefs['file_name']);
 				return FALSE;
 			}
 
