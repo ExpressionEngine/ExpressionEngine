@@ -1576,6 +1576,8 @@ class Metaweblog_api {
 	/**
 	 * METAWEBLOG API: new media object
 	 *
+	 * XSS Cleaning is bypassed when uploading a file through MetaWeblog API
+	 *
 	 * @access	public
 	 * @param	parameter list
 	 * @return	void
@@ -1623,6 +1625,9 @@ class Metaweblog_api {
 		/** -------------------------------------*/
 		
 		$this->EE->load->library('filemanager');
+		
+		// Disable XSS Filtering
+		$this->EE->filemanager->xss_clean_off();
 		
 		// Figure out the FULL file path
 		$file_path = $this->EE->filemanager->clean_filename(
