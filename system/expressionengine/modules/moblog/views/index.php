@@ -22,7 +22,7 @@
 		}
 
 	?>
-			<?=$this->table->generate()?>
+	<?=$this->table->generate()?>
 
 	<p>
 		<?=form_submit(array('name' => 'submit', 'value' => lang('delete'), 'class' => 'submit'))?>
