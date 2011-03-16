@@ -1575,28 +1575,28 @@ class Design extends CI_Controller {
 		}
 
 		$template_data = '';
-
+		$tmp_tmpl_data = NULL;
 		$template_type = $this->input->post('template_type');
 		
 		if ($this->input->post('existing_template') != 0)
 		{
-			$qry = $this->db->select(
-								'tg.group_name, template_name, template_data, template_type, 
-						 		template_notes, cache, refresh, no_auth_bounce, 
-						 		allow_php, php_parse_location, save_template_file')
+			$qry = $this->db->select('tg.group_name, template_name, 
+									template_data, template_type, 
+						 			template_notes, cache, refresh, 
+									no_auth_bounce, allow_php, 
+									php_parse_location, save_template_file')
 							->from('templates t, template_groups tg')
-							->where('t.template_id', $this->input->post('existing_template'))
+							->where('t.template_id', 
+									$this->input->post('existing_template'))
 							->where('tg.group_id = t.group_id')
 							->get();
 
-			if ($this->config->item('save_tmpl_files') == 'y' && $this->config->item('tmpl_file_basepath') != '' && $qry->row('save_template_file')  == 'y')
+			if ($this->config->item('save_tmpl_files') == 'y' && 
+				$this->config->item('tmpl_file_basepath') != '' && 
+				$qry->row('save_template_file')  == 'y')
 			{
 				$basepath = $this->config->item('tmpl_file_basepath');
-
-				if (substr($basepath, -1) != '/')
-				{
-					$basepath .= '/';
-				}
+				$basepath .= (substr($basepath, -1) != '/') ? '/' : '';
 				
 				$this->load->library('api');
 				$this->api->instantiate('template_structure');
@@ -1609,8 +1609,9 @@ class Design extends CI_Controller {
 				
 				$tmp_tmpl_data = read_file($basepath);
 				
-				$template_data = ($tmp_tmpl_data) ? $tmp_tmpl_data : $qry->row('template_data');				
 			}
+
+			$template_data = ($tmp_tmpl_data) ? $tmp_tmpl_data : $qry->row('template_data');				
 
 			if ($template_type != $qry->row('template_type'))
 			{
@@ -1625,12 +1626,12 @@ class Design extends CI_Controller {
 							'refresh'				=> $qry->row('refresh') ,
 							'no_auth_bounce'		=> $qry->row('no_auth_bounce') ,
 							'php_parse_location'	=> $qry->row('php_parse_location') ,
-							'allow_php'				=> ($this->session->userdata['group_id'] == 1) ? $qry->row('allow_php')  : 'n',
+							'allow_php'				=> ($this->session->userdata('group_id') === 1) ? $qry->row('allow_php')  : 'n',
 							'template_type'			=> $template_type,
 							'template_data'			=> $template_data,
 							'edit_date'				=> $this->localize->now,
 							'site_id'				=> $this->config->item('site_id'),
-							'last_author_id'	=> 0
+							'last_author_id'		=> 0
 						 );
 
 				$template_id = $this->template_model->create_template($data);
