@@ -794,19 +794,6 @@ class Filemanager {
 	 */
 	function create_thumb($file_path, $prefs, $thumb = TRUE)
 	{
-		/*
-					dir_id =>
-					name =>
-					server_path =>
-	 				dimensions => array('short_name' =>,
-							'size_width' =>, 
-							'size_height' =>,
-							'watermark_id' =>
-							)
-
-		*/
-
-
 		$this->EE->load->library('image_lib');
 		
 		$img_path = rtrim($prefs['server_path'], '/').'/';
@@ -869,21 +856,9 @@ class Filemanager {
 			
 			if ( ! @$this->EE->image_lib->resize())
 			{
-				//exit('frak: '.$prefs['file_name']);
 				return FALSE;
 			}
 
-/*			
-			try
-			{
-    			$this->EE->image_lib->resize();
-			}
-			catch (Exception $e) 
-			{
-				//var_dump($e->getMessage());
-			}
-*/			
-			
 			@chmod($config['new_image'], DIR_WRITE_MODE);
 			
 			// Does the thumb require watermark?
@@ -900,8 +875,32 @@ class Filemanager {
 		return TRUE;
 	}	
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Thumbnail garbage collection
+	 *
+	 * Remove any stray thumbnail files based the directory and file name
+	 *
+	 * @access	public
+	 * @param	string	full path to image
+	 * @param	array	file information
+	 * @return	bool	success / failure
+	 */
 
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Create Watermark
+	 *
+	 * Create a Watermarked Image
+	 *
+	 * @access	public
+	 * @param	string	full path to image
+	 * @param	array	file information
+	 * @return	bool	success / failure
+	 */
 	function create_watermark($image_path, $data)
 	{
 			
