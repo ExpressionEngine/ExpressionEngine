@@ -1572,6 +1572,8 @@ class Moblog {
 	 */
 	function parse_email($email_data,$type='norm')
 	{
+		$this->EE->load->library('filemanager');
+		
 		$boundary = ($type != 'norm') ? $this->multi_boundary : $this->boundary;
 		$email_data = str_replace('boundary='.substr($boundary,2),'BOUNDARY_HERE',$email_data);
 
@@ -1590,59 +1592,15 @@ class Moblog {
 			unset($email_data);
 		}
 
-		if ($this->moblog_array['moblog_upload_directory'] != 0)
+		$upload_dir_id = $this->moblog_array['moblog_upload_directory'];
+
+		if ($upload_dir_id != 0)
 		{
-			//  Determine Upload Path
-
-			$query = $this->EE->db->query("SELECT server_path FROM exp_upload_prefs
-							  WHERE id = '".$this->EE->db->escape_str($this->moblog_array['moblog_upload_directory'])."'");
-							 
-			if ($query->num_rows() == 0)
-			{
-				$this->message_array[] = 'invalid_upload_directory';
-				return FALSE;
-			}
-
-			$this->upload_path = $query->row('server_path');
-
-			if ( ! is_really_writable($this->upload_path))
-			{
-				$system_absolute = str_replace('/modules/moblog/mod.moblog.php','',__FILE__);
-				$addon = (substr($this->upload_path,0,2) == './') ? substr($this->upload_path,2) : $this->upload_path;
-
-				while(substr($addon,0,3) == '../')
-				{
-					$addon = substr($addon,3);
-
-					$p1 = (strrpos($system_absolute,'/') !== FALSE) ? strrpos($system_absolute,'/') : strlen($system_absolute);
-					$system_absolute = substr($system_absolute,0,$p1);
-				}
-
-				if (substr($system_absolute,-1) != '/')
-				{
-					$system_absolute .= '/';
-				}
-
-				$this->upload_path = $system_absolute.$addon;
-
-				if ( ! is_really_writable($this->upload_path))
-				{
-					$this->message_array[] = 'upload_directory_unwriteable';
-					return FALSE;
-				}
-			}
-
-			if (substr($this->upload_path, -1) != '/')
-			{
-				$this->upload_path .= '/';
-			}
-
-			$this->upload_dir_code = '{filedir_'.$this->moblog_array['moblog_upload_directory'].'}';
-
+			$this->upload_dir_code = '{filedir_'.$upload_dir_id.'}';
 		}
 
 		//  Find Attachments
-		foreach($email_parts as $key => $value)
+		foreach ($email_parts as $key => $value)
 		{
 			// Skip headers and those with no content-type
 			if ($key == '0' OR stristr($value, 'Content-Type:') === FALSE)
@@ -1666,7 +1624,7 @@ class Moblog {
 			/** --------------------------*/
 			if ($type == 'multipart' && $subtype != 'appledouble')
 			{
-				if( ! stristr($value,'boundary='))
+				if ( ! stristr($value,'boundary='))
 				{
 					continue;
 				}
@@ -1724,7 +1682,7 @@ class Moblog {
 					/**  Check for Quoted-Printable encoding
 					/** ------------------------------------*/
 
-					if(stristr($encoding,"quoted-printable"))
+					if (stristr($encoding,"quoted-printable"))
 					{
 						$text = str_replace($this->newline,"\n",$text);
 						$text = quoted_printable_decode($text);
@@ -1737,7 +1695,7 @@ class Moblog {
 					/**  Check for Base 64 encoding:  MIME
 					/** ------------------------------------*/
 
-					elseif(stristr($encoding,"base64"))
+					elseif (stristr($encoding,"base64"))
 					{
 						$text = str_replace($this->newline,"\n", $text);
 						$text = base64_decode(trim($text));
@@ -1832,11 +1790,11 @@ class Moblog {
 				$this->body = ( ! isset($this->post_data[$type]['plain'])) ? $this->post_data[$type]['alt'] : $this->post_data[$type]['plain'];
 
 			}
-			elseif($type == 'image' OR $type == 'application' OR $type == 'audio' OR $type == 'video' OR $subtype == 'appledouble' OR $type == 'text') // image or application
+			elseif ($type == 'image' OR $type == 'application' OR $type == 'audio' OR $type == 'video' OR $subtype == 'appledouble' OR $type == 'text') // image or application
 			{
 //				// no upload directory?  skip
 				
-				if ($this->moblog_array['moblog_upload_directory'] == 0)
+				if ($upload_dir_id == 0)
 				{
 					continue;
 				}
@@ -1885,13 +1843,6 @@ class Moblog {
 					continue;
 				}
 
-
-				/** ------------------------------
-				/**  Check and adjust for multiple files with same file name
-				/** ------------------------------*/
-
-				$filename = $this->unique_filename($filename, $subtype);
-
 				/** --------------------------------
 				/**  File/Image Code and Cleanup
 				/** --------------------------------*/
@@ -1938,7 +1889,7 @@ class Moblog {
 				}
 
 				// Eudora and Mail.app use this by default
-				if(stristr($encoding,"quoted-printable"))
+				if (stristr($encoding,"quoted-printable"))
 				{
 					$file_code = quoted_printable_decode($file_code);
 				}
@@ -1948,37 +1899,47 @@ class Moblog {
 				$file_code = trim(str_replace($this->newline,$replace,$file_code));
 
 				// PHP function sometimes misses opening and closing equal signs
-				if(stristr($encoding,"quoted-printable"))
+				if (stristr($encoding,"quoted-printable"))
 				{
 					$file_code = (substr($file_code,0,1) != '=') ? $file_code : substr($file_code,1);
 					$file_code = (substr($file_code,-1) != '=') ? $file_code : substr($file_code,0,-1);
 				}
 
 				// Clean out 7bit and 8bit files.
-				if ( ! stristr($encoding,"base64"))
+				
+				// You cannot make this stuff up, how are base64 encoded
+				// files are inherintly safe if we decode them before
+				// writing them to disk?! -pk
+				if (stristr($encoding,"base64"))
 				{
-					$file_code = $this->EE->security->xss_clean($file_code);
+					$file_code = base64_decode($file_code);
 				}
+				
+				$file_code = $this->EE->security->xss_clean($file_code);
+				
 
 				/** ------------------------------
 				/**  Check and adjust for multiple files with same file name
 				/** ------------------------------*/
 
-				$filename = $this->unique_filename($filename, $subtype);
+				$file_path = $this->EE->filemanager->clean_filename($filename, $upload_dir_id);
+				$filename = basename($file_path);
 
 				/** ---------------------------
 				/**  Put Info in Post Data array
 				/** ---------------------------*/
 
-				if (in_array(substr($filename,-3),$this->movie) OR in_array(substr($filename,-5),$this->movie)) // Movies
+				$ext = rtrim(strrchr($filename, '.'), '.');
+
+				if (in_array($ext, $this->movie)) // Movies
 				{
 					$this->post_data['movie'][] = $filename;
 				}
-				elseif (in_array(substr($filename,-3),$this->audio) OR in_array(substr($filename,-4),$this->audio) OR in_array(substr($filename,-2),$this->audio)) // Audio
+				elseif (in_array($ext, $this->audio)) // Audio
 				{
 					$this->post_data['audio'][] = $filename;
 				}
-				elseif (in_array(substr($filename,-3),$this->image) OR in_array(substr($filename,-4),$this->image)) // Images
+				elseif (in_array($ext, $this->image)) // Images
 				{
 					$this->post_data['images'][] = array('filename' => $filename);
 
@@ -1986,13 +1947,12 @@ class Moblog {
 
 					$type = 'image'; // For those crazy application/octet-stream images
 				}
-				elseif (in_array(substr($filename,-2),$this->files) OR in_array(substr($filename,-3),$this->files) OR in_array(substr($filename,-4),$this->files)) // Files
+				elseif (in_array($ext, $this->files)) // Files
 				{
 					$this->post_data['files'][] = $filename;
 				}
 				else
 				{
-					// $this->post_data['files'][] = $filename;
 					continue;
 				}
 
@@ -2003,44 +1963,52 @@ class Moblog {
 
 				if ($this->attach_as_txt === TRUE && ! stristr($encoding,"base64"))
 				{
-					if(stristr($filename,'.txt') && preg_match("/Content-Disposition:\s*inline/i",$headers,$found))
+					if($ext == 'txt' && preg_match("/Content-Disposition:\s*inline/i",$headers,$found))
 					{
 						$this->attach_text = $file_code;
 						$this->attach_name = $filename;
 						continue; // No upload of file.
 					}
 				}
-
-				/** ------------------------------
-				/**  Write File to Upload Directory
-				/** ------------------------------*/
-
-				if ( ! $fp = @fopen($this->upload_path.$filename,FOPEN_WRITE_CREATE_DESTRUCTIVE))
+				
+				
+				// Check to see if we're dealing with relative paths
+				if (strncmp($file_path, '..', 2) == 0)
 				{
-					$this->message_array[] = 'error_writing_attachment'; //.$this->upload_path.$filename;
+					$directory = dirname($file_path);
+					$file_path = realpath(substr($directory, 1)).'/'.$filename;
+				}
+
+				// Upload the file and check for errors
+				if (file_put_contents($file_path, $file_code) === FALSE)
+				{
+					$this->message_array[] = 'error_writing_attachment';
 					return FALSE;
 				}
 
-				$attachment = ( ! stristr($encoding,"base64")) ? $file_code : base64_decode($file_code);
-				fwrite($fp,$attachment);
-				fclose($fp);
-
-				@chmod($this->upload_path.$filename, FILE_WRITE_MODE);
-
-				unset($attachment);
+				// Send the file
+				$result = $this->EE->filemanager->save_file(
+					$file_path, 
+					$this->upload_dir, 
+					array(
+						'title'     => $filename,
+						'path'      => dirname($file_path),
+						'file_name' => $filename
+					)
+				);
+				
 				unset($file_code);
-
-				$this->email_files[] = $filename;
-				$this->uploads++;
-
-
-				// Only images beyond this point.
-				if ($type != 'image')
+				
+				// Check to see the result
+				if ($result['status'] === FALSE)
 				{
-					continue;
+					// $result['message']
+					$this->message_array[] = 'error_writing_attachment';
+					return FALSE;
 				}
 				
-				$this->image_resize($filename, $key);
+				$this->email_files[] = $filename;
+				$this->uploads++;
 
 			} // End files/images section
 
@@ -2064,13 +2032,6 @@ class Moblog {
 		{
 			for($i = 0; $i < count($matches['0']); $i++)
 			{
-				/*
-				if (stristr($matches['1'][$i], 'jpeg') === FALSE && stristr($matches['1'][$i], 'jpg') === FALSE)
-				{
-					continue;
-				}
-				*/
-
 				/** ------------------------------
 				/**  Filename Creation
 				/** ------------------------------*/
