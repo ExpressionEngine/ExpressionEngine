@@ -720,8 +720,8 @@ class Wiki {
 		$str = preg_replace('/&#x([0-9a-f]{2,5});{0,1}|&#([0-9]{2,4});{0,1}/', '', $str);
 			
 		$trans = array();
-		
-		$trans["#[^a-z0-9\-\_@&\'\"!\.:\+\xA1-\xFF\s]#i"] = '';
+
+		$trans["#[^a-z0-9\-\_@&\'\"!\.:\+\x{A1}-\x{44F}\s]#iu"] = '';
 		
 		// Use dash or underscore as separator		
 		$replace = ($this->EE->config->item('word_separator') == 'dash') ? '-' : '_';
