@@ -1984,6 +1984,9 @@ class Moblog {
 					return FALSE;
 				}
 
+				// Disable xss cleaning in the filemanager
+				$this->EE->filemanager->xss_clean_off();
+
 				// Send the file
 				$result = $this->EE->filemanager->save_file(
 					$file_path, 
