@@ -1259,7 +1259,7 @@ class Content_files extends CI_Controller {
 		$this->load->library('javascript');
 
 		$resize_existing = FALSE;
-
+		
 		// No file directory- they want to sync them all
 		if ($file_dir === FALSE)
 		{
@@ -1274,7 +1274,7 @@ class Content_files extends CI_Controller {
 
 			$ids = array($file_dir);
 		}
-
+		
 		// Get the resize info for the directory
 		$this->db->select('*');
 		$this->db->from('file_dimensions');
@@ -1386,6 +1386,8 @@ class Content_files extends CI_Controller {
 		$errors = array();
 		$file_data = array();
 		$replace_sizes = array();
+		$db_sync = ($this->input->post('db_sync') == 'y') ? 'y' : 'n';
+		
 
 		// If file exists- make sure it exists in db - otherwise add it to db and generate all child sizes
 		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
@@ -1397,6 +1399,23 @@ class Content_files extends CI_Controller {
 		}
 
 		$id = key($sizes);
+		
+		// Final run through, it syncs the db, removing stray records and thumbs
+		if ($db_sync == 'y')
+		{
+			$this->filemanager->sync_database($id);
+			$errors[] = 'synced!';
+	
+			if (AJAX_REQUEST)
+			{
+				return $this->output->send_ajax_response(array(
+					'message_type'	=> 'success'
+					));
+			}
+			
+			return;
+		}		
+		
 
 		$dir_data = $this->_upload_dirs[$id];
 		
@@ -1411,10 +1430,6 @@ class Content_files extends CI_Controller {
 				$replace_sizes[$v] = $sizes[$id][$v];
 			}
 		}
-
-		
-		//$this->sync_database();
-
 
 		// @todo, bail if there are no files in the directory!  :D
 
@@ -1487,6 +1502,12 @@ class Content_files extends CI_Controller {
 			}
 		}
 
+		if ($db_sync == 'y')
+		{
+			$this->filemanager->sync_database($id);
+			$errors[] = 'synced!';
+		}
+		
 		if (AJAX_REQUEST)
 		{
 			if (count($errors))
@@ -1513,7 +1534,6 @@ class Content_files extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
 
 		$this->filemanager->sync_database($id);
 	}

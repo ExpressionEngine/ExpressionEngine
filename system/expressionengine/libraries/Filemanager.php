@@ -1004,14 +1004,19 @@ class Filemanager {
 		$db_files = array();
 		$server_files = array();
 		
-		$qry = $this->EE->file_model->get_files_by_dir($dir_id);
+		$query = $this->EE->file_model->get_files_by_dir($dir_id);
 
-		foreach ($qry->result_array() as $row)
+		if ($query->num_rows() == 0)
 		{
-			$db_files[] = $row['name'];
+			return FALSE;
+		}
+
+		foreach ($query->result_array() as $row)
+		{
+			$db_files[$row['file_id']] = $row['file_name'];
 		}
 		
-		$qry = get_upload_preferences(1, $dir_id);
+		$query = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $dir_id);
 		
 		if ($query->num_rows() == 0)
 		{
@@ -1020,14 +1025,15 @@ class Filemanager {
 		
    		$d_row = $query->row();
 		
-		$server_files = $this->filemanager->directory_files_map($d_row->server_path, 0, FALSE, $d_row->allowed_types);
+		$server_files = $this->directory_files_map($d_row->server_path, 0, FALSE, $d_row->allowed_types);
 		
 		// get file names in db that are not on server
 		$delete = array_diff($db_files, $server_files);
 		
-		
-
-	
+		if (count($delete))
+		{
+			$this->delete(array_keys($delete));
+		}
 	}
 	
 
@@ -1700,7 +1706,7 @@ class Filemanager {
 					continue;
 				}
 				
-				if ( ! @is_dir($source_dir.$file))
+				if ( ! is_dir($source_dir.$file))
 				{
 					if ( ! empty($allowed_type))
 					{
@@ -1715,6 +1721,10 @@ class Filemanager {
 					}
 					
 					$filedata[] = $file;
+				}
+				elseif (($directory_depth < 1 OR $new_depth > 0) && @is_dir($source_dir.$file))
+				{
+					$filedata[$file] = directory_map($source_dir.$file.DIRECTORY_SEPARATOR, $new_depth, $hidden);
 				}
 			}
 
