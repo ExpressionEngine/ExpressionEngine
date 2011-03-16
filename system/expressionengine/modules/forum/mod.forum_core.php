@@ -9462,7 +9462,10 @@ class Forum_Core extends Forum {
 		/** -------------------------------------
 		/**  Parse Non-date-based stats
 		/** -------------------------------------*/
-		foreach (array('total_members', 'total_logged_in', 'total_guests', 'total_anon', 'total_entries', 'total_forum_topics', 'total_forum_posts', 'total_forum_replies', 'total_comments', 'most_visitors', 'recent_member') as $stat )
+		foreach (array('total_members', 'total_logged_in', 'total_guests', 
+						'total_anon', 'total_entries', 'total_forum_topics', 
+						'total_forum_posts', 'total_forum_replies', 'total_comments', 
+						'most_visitors', 'recent_member') as $stat )
 		{
 			$str = str_replace('{'.$stat.'}', $this->EE->stats->statdata($stat), $str);
 		}
