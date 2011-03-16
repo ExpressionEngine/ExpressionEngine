@@ -389,6 +389,10 @@ class Rss {
 		// Find Edit Date
 		$query = $this->EE->db->query($sql." ORDER BY last_update desc LIMIT 1");
 
+		$last_update = '';
+		$edit_date = '';
+		$entry_date = '';
+
 		if ($query->num_rows() > 0)
 		{
 			$last_update = $query->row('last_update')  + ($this->EE->localize->set_server_time() - $this->EE->localize->now);
