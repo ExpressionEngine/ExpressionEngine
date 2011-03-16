@@ -13,6 +13,7 @@
 EE.file_manager = EE.file_manager || {};
 EE.file_manager.sync_files = EE.file_manager.sync_files || {};
 
+EE.file_manager.sync_db = 0;
 EE.file_manager.sync_running = 0;
 EE.file_manager.sync_errors = [];
 EE.file_manager.resize_ids = [];
@@ -68,9 +69,14 @@ EE.file_manager.resize_ids = function() {
  * @param {Number} upload_directory_id The id of the upload directory to pass to the controller method
  */
 EE.file_manager.sync = function(upload_directory_id) {
-	// If no files are left, get outta here
+
+	// If no files are left, check if db sync has run- if so, get outta here
 	if (EE.file_manager.sync_files.length <= 0) {
-		return;
+		if (EE.file_manager.db_sync == 'y') {
+			return;
+		}
+		
+		EE.file_manager.db_sync = 'y';
 	};
 	
 	// There should only be one place we're splicing the files array and THIS is it
@@ -85,7 +91,8 @@ EE.file_manager.sync = function(upload_directory_id) {
 			"upload_directory_id": upload_directory_id,
 			"sizes": EE.file_manager.sync_sizes,
 			"files": files_to_sync,
-			"resize_ids" : EE.file_manager.resize_ids()
+			"resize_ids" : EE.file_manager.resize_ids(),
+			"db_sync": EE.file_manager.db_sync
 		},
 		beforeSend: function(xhr, settings) {
 			// Increment the running count
