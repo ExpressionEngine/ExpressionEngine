@@ -1909,13 +1909,14 @@ class Moblog {
 				// You cannot make this stuff up, how are base64 encoded
 				// files are inherintly safe if we decode them before
 				// writing them to disk?! -pk
+				// XSS cleaning done below -wb
+				
 				if (stristr($encoding,"base64"))
 				{
 					$file_code = base64_decode($file_code);
+					$this->message_array[] = 'base64 decoded.';
 				}
 				
-				$file_code = $this->EE->security->xss_clean($file_code);
-
 				/** ------------------------------
 				/**  Check and adjust for multiple files with same file name
 				/** ------------------------------*/
@@ -1928,6 +1929,7 @@ class Moblog {
 				/** ---------------------------*/
 
 				$ext = trim(strrchr($filename, '.'), '.');
+				$is_image = FALSE; // This is needed for XSS cleaning
 				
 				if (in_array($ext, $this->movie)) // Movies
 				{
@@ -1944,6 +1946,8 @@ class Moblog {
 					$key = count($this->post_data['images']) - 1;
 
 					$type = 'image'; // For those crazy application/octet-stream images
+					
+					$is_image = TRUE;
 				}
 				elseif (in_array($ext, $this->files)) // Files
 				{
@@ -1952,6 +1956,21 @@ class Moblog {
 				else
 				{
 					continue;
+				}
+				
+				// Clean the file
+				$xss_result = $this->EE->security->xss_clean($file_code, $is_image);
+				
+				// XSS Clean Failed - bail out
+				if ($xss_result === FALSE)
+				{
+					$this->message_array[] = 'error_writing_attachment';
+					return FALSE;
+				}
+
+				if ( ! $is_image)
+				{
+					$file_code = $xss_result;
 				}
 
 
@@ -1984,13 +2003,16 @@ class Moblog {
 					return FALSE;
 				}
 
+				// Disable xss cleaning in the filemanager
+				$this->EE->filemanager->xss_clean_off();
+
 				// Send the file
 				$result = $this->EE->filemanager->save_file(
 					$file_path, 
-					$this->upload_dir, 
+					$upload_dir_id,
 					array(
 						'title'     => $filename,
-						'path'      => dirname($file_path),
+						'rel_path'  => dirname($file_path),
 						'file_name' => $filename
 					)
 				);
@@ -2002,6 +2024,7 @@ class Moblog {
 				{
 					// $result['message']
 					$this->message_array[] = 'error_writing_attachment';
+					$this->message_array[] = print_r($result, TRUE);
 					return FALSE;
 				}
 				
@@ -2227,6 +2250,8 @@ class Moblog {
 	 */
 	function external_image($fp, $filename)
 	{
+        $this->EE->load->library('filemanager');
+	
 		$data = '';
 		$headers = '';
 		$getting_headers = TRUE;
@@ -2254,34 +2279,47 @@ class Moblog {
 		/**  Save Image
 		/** -------------------------------*/
 
-		$filename = $this->safe_filename($filename);
-		$filename = $this->unique_filename($filename);
+		$upload_dir_id = $this->moblog_array['moblog_upload_directory'];
+
+        $filename = $this->EE->filemanager->clean_filename($filename, $upload_dir_id);
+        $file_path = $this->upload_path.$filename;
+        
+        // Check to see if we're dealing with relative paths
+		if (strncmp($file_path, '..', 2) == 0)
+		{
+			$directory = dirname($file_path);
+			$file_path = realpath(substr($directory, 1)).'/'.$filename;
+		}
 
 		$this->post_data['images'][] = array( 'filename' => $filename);
 		$key = count($this->post_data['images']) - 1;
 
-		if ( ! $fp = @fopen($this->upload_path.$filename,FOPEN_WRITE_CREATE_DESTRUCTIVE))
+		if (file_put_contents($file_path, $data) === FALSE)
 		{
-			$this->message_array[] = 'error_writing_attachment'; //.$this->upload_path.$filename;
+			$this->message_array[] = 'error_writing_attachment';
 			return FALSE;
 		}
 
-		@fwrite($fp,$data);
-		@fclose($fp);
+		@chmod($file_path, FILE_WRITE_MODE);
+		
+		// Disable xss cleaning in the filemanager
+        $this->EE->filemanager->xss_clean_off();
 
-		@chmod($this->upload_path.$filename, FILE_WRITE_MODE);
+        // Send the file
+        $result = $this->EE->filemanager->save_file(
+            $file_path, 
+            $upload_dir_id,
+            array(
+                'title'     => $filename,
+                'rel_path'  => dirname($file_path),
+                'file_name' => $filename
+            )
+        );
 
 		$this->email_files[] = $filename;
 		$this->uploads++;
 
-		/** -------------------------------
-		/**  Image Resizing
-		/** -------------------------------*/
-		
-		$this->image_resize($filename,$key);
-
 		return TRUE;
-
 	}
 	
 	// ------------------------------------------------------------------------
@@ -2579,277 +2617,6 @@ class Moblog {
 		$new = substr($str, $p1, ($p2-$p1));
 		return $new;
 	}
-
-
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * 	Image Properties
-	 *
-	 */
-	function image_properties($file)
-	{
-		if (function_exists('getimagesize'))
-		{
-			if ( ! $D = @getimagesize($file))
-			{
-				return FALSE;
-			}
-
-			$parray = array();
-
-			$parray['width']	= $D['0'];
-			$parray['height']  = $D['1'];
-			$parray['imgtype'] = $D['2'];
-
-			return $parray;
-		}
-
-		return FALSE;
-	}
-
-
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * 	Safe Filename
-	 *
-	 *	@param string
-	 *	@return string
-	 */
-	function safe_filename($str)
-	{
-		$str = strip_tags(strtolower($str));
-		$str = preg_replace('/\&#\d+\;/', "", $str);
-
-		// Use dash as separator
-
-		if ($this->EE->config->item('word_separator') == 'dash')
-		{
-			$trans = array(
-							"_"									=> '-',
-							"\&\#\d+?\;"						=> '',
-							"\&\S+?\;"						  => '',
-							"['\"\?\!*\$\#@%;:,\_=\(\)\[\]]"  	=> '',
-							"\s+"								=> '-',
-							"\/"								=> '-',
-							"[^a-z0-9-_\.]"						=> '',
-							"-+"								=> '-',
-							"\&"								=> '',
-							"-$"								=> '',
-							"^_"								=> ''
-							);
-		}
-		else // Use underscore as separator
-		{
-			$trans = array(
-							"-"									=> '_',
-							"\&\#\d+?\;"						=> '',
-							"\&\S+?\;"						  => '',
-							"['\"\?\!*\$\#@%;:,\-=\(\)\[\]]"  => '',
-							"\s+"								=> '_',
-							"\/"								=> '_',
-							"[^a-z0-9-_\.]"						=> '',
-							"_+"								=> '_',
-							"\&"								=> '',
-							"_$"								=> '',
-							"^_"								=> ''
-							);
-		}
-
-		foreach ($trans as $key => $val)
-		{
-			$str = preg_replace("#".$key."#", $val, $str);
-		}
-
-		$str = trim(stripslashes($str));
-
-		return $str;
-	}
-
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * 	Resize Images
-	 *
-	 *	@param string
-	 *	@param string
-	 *	@return string
-	 */
-	function image_resize($filename, $key)
-	{
-		/** --------------------------
-		/**  Set Properties for Image
-		/** --------------------------*/
-
-		if( ! $properties = $this->image_properties($this->upload_path.$filename))
-		{
-			$properties = array('width'	  => $this->moblog_array['moblog_image_width'],
-								'height'  => $this->moblog_array['moblog_image_height']);
-		}
-
-		$this->post_data['images'][$key]['width']  = $properties['width'];
-		$this->post_data['images'][$key]['height'] = $properties['height'];
-
-		$this->EE->load->library('image_lib');
-		$this->EE->image_lib->clear();
-
-		/** ------------------------------
-		/**  Resize Image
-		/** ------------------------------*/
-
-		if ($this->moblog_array['moblog_resize_image'] == 'y')
-		{
-			if ($this->moblog_array['moblog_resize_width'] != 0 OR $this->moblog_array['moblog_resize_height'] != 0)
-			{
-				// Temp vars
-				$resize_width	= $this->moblog_array['moblog_resize_width'];
-				$resize_height	= $this->moblog_array['moblog_resize_height'];
-
-				/** ----------------------------
-				/**  Calculations based on one side?
-				/** ----------------------------*/
-
-				if ($this->moblog_array['moblog_resize_width'] == 0 && $this->moblog_array['moblog_resize_height'] != 0)
-				{
-					// Resize based on height, calculate width
-					$resize_width = ceil(($this->moblog_array['moblog_resize_height']/$properties['height']) * $properties['width']);
-				}
-				elseif ($this->moblog_array['moblog_resize_width'] != 0 && $this->moblog_array['moblog_resize_height'] == 0)
-				{
-					// Resize based on width, calculate height
-					$resize_height = ceil(($this->moblog_array['moblog_resize_width']/$properties['width']) * $properties['height']);
-				}
-
-				$config = array(
-						'resize_protocol'	=> $this->EE->config->item('image_resize_protocol'),
-						'libpath'			=> $this->EE->config->item('image_library_path'),
-						'source_image'		=> $this->upload_path.$filename,
-						'quality'			=> '90',
-						'width'				=> $resize_width,
-						'height'			=> $resize_height
-				);
-
-				$this->EE->image_lib->initialize($config);
-
-				if ($this->EE->image_lib->resize() === FALSE)
-				{
-					$this->message_array[] = 'unable_to_resize';
-					$this->message_array = array_merge($this->message_array,$this->EE->image_lib->error_msg);
-					return FALSE;
-				}
-
-				$this->post_data['images'][$key]['width']  = $this->EE->image_lib->width;
-				$this->post_data['images'][$key]['height'] = $this->EE->image_lib->height;
-
-				if( ! $properties = $this->image_properties($this->upload_path.$filename))
-				{
-					$properties = array('width'	  => $this->EE->image_lib->width,
-										'height'  => $this->EE->image_lib->height);
-				}
-			}
-		}
-
-		/** ------------------------------
-		/**  Create Thumbnail
-		/** ------------------------------*/
-
-		if ($this->moblog_array['moblog_create_thumbnail'] == 'y')
-		{
-			if ($this->moblog_array['moblog_thumbnail_width'] != 0 OR $this->moblog_array['moblog_thumbnail_height'] != 0)
-			{
-				// Temp vars
-				$resize_width	= $this->moblog_array['moblog_thumbnail_width'];
-				$resize_height	= $this->moblog_array['moblog_thumbnail_height'];
-
-				/** ----------------------------
-				/**  Calculations based on one side?
-				/** ----------------------------*/
-
-				if ($this->moblog_array['moblog_thumbnail_width'] == 0 && $this->moblog_array['moblog_thumbnail_height'] != 0)
-				{
-					// Resize based on height, calculate width
-					$resize_width = ceil(($this->moblog_array['moblog_thumbnail_height']/$properties['height']) * $properties['width']);
-				}
-				elseif ($this->moblog_array['moblog_thumbnail_width'] != 0 && $this->moblog_array['moblog_thumbnail_height'] == 0)
-				{
-					// Resize based on width, calculate height
-					$resize_height = ceil(($this->moblog_array['moblog_thumbnail_width']/$properties['width']) * $properties['height']);
-				}
-				
-				$this->EE->image_lib->clear();
-
-				$config = array(
-					'resize_protocol'	=> $this->EE->config->item('image_resize_protocol'),
-					'libpath'			=> $this->EE->config->item('image_library_path'),
-					'source_image'		=> $this->upload_path.$filename,
-					'thumb_prefix'		=> 'thumb',
-					'quality'			=> '90',
-					'width'				=> $resize_width,
-					'height'			=> $resize_height					
-					);
-				
-				$this->EE->image_lib->initialize($config);
-
-				if ($this->EE->image_lib->resize() === FALSE)
-				{
-					$this->message_array[] = 'unable_to_resize';
-					$this->message_array = array_merge($this->message_array,$this->EE->image_lib->error_msg);
-					return FALSE;
-				}
-
-				$name = substr($filename, 0, strpos($filename, "."));
-				$ext  = substr($filename, strpos($filename, "."));
-
-				$this->post_data['images'][$key]['thumbnail']  = $name.'_thumb'.$ext;
-				$this->post_data['images'][$key]['thumb_width']  = $resize_width;
-				$this->post_data['images'][$key]['thumb_height'] = $resize_height;
-				$this->email_files[] = $name.'_thumb'.$ext;
-				$this->uploads++;
-
-			}	// End thumbnail resize conditional
-		}	// End thumbnail 
-  	} 
-
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * 	Unique Filename
-	 *
-	 *	@param string
-	 *	@param string
-	 *	@return string
-	 */
-  	function unique_filename($filename, $subtype='0')
-  	{
-  		$i = 0;
-  
-  		$subtype = ($subtype != '0') ? '.'.$subtype : '';
-  
-  		/** ----------------------------
-  		/**  Strips out _ and - at end of name part of file name
-  		/** ----------------------------*/
-  		$x			= explode('.',$filename);
-		$name		=  ( ! isset($x['1'])) ? $filename : $x['0'];
-		$sfx		=  ( ! isset($x['1']) OR is_numeric($x[count($x) - 1])) ? $subtype : '.'.$x[count($x) - 1];
-		$name		=  (substr($name,-1) == '_' OR substr($name,-1) == '-') ? substr($name,0,-1) : $name;
-  		$filename	= $name.$sfx;
-  
-		while (file_exists($this->upload_path.$filename))
-		{
-			$i++;
-			$n			= - strlen($i);
-			$x			= explode('.',$filename);
-			$name		=  ( ! isset($x['1'])) ? $filename : $x['0'];
-			$sfx		=  ( ! isset($x['1'])) ? '' : '.'.$x[count($x) - 1];
-			$name		=  ($i==1) ? $name : substr($name,0,$n);
-			$name		=  (substr($name,-1) == '_' OR substr($name,-1) == '-') ? substr($name,0,-1) : $name;
-			$filename	=  $name."$i".$sfx;
-		}
-
-		return $filename;
-	}
-
 }
 // END CLASS
 
