@@ -1750,7 +1750,6 @@ class Moblog {
 					}
 				}
 
-
 				/** ----------------------------------
 				/**  T-Mobile - In cyberspace, no one can hear you cream.
 				/** ----------------------------------*/
@@ -1792,7 +1791,7 @@ class Moblog {
 			}
 			elseif ($type == 'image' OR $type == 'application' OR $type == 'audio' OR $type == 'video' OR $subtype == 'appledouble' OR $type == 'text') // image or application
 			{
-//				// no upload directory?  skip
+				// no upload directory?  skip
 				
 				if ($upload_dir_id == 0)
 				{
@@ -1916,7 +1915,6 @@ class Moblog {
 				}
 				
 				$file_code = $this->EE->security->xss_clean($file_code);
-				
 
 				/** ------------------------------
 				/**  Check and adjust for multiple files with same file name
@@ -1929,8 +1927,8 @@ class Moblog {
 				/**  Put Info in Post Data array
 				/** ---------------------------*/
 
-				$ext = rtrim(strrchr($filename, '.'), '.');
-
+				$ext = trim(strrchr($filename, '.'), '.');
+				
 				if (in_array($ext, $this->movie)) // Movies
 				{
 					$this->post_data['movie'][] = $filename;
