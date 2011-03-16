@@ -82,11 +82,6 @@ class Filemanager {
 	{
 		$prefs = $this->fetch_upload_dir_prefs($dir_id);
 		
-		if ($prefs === FALSE)
-		{
-			return FALSE;
-		}
-		
 		$i = 1;
 		$ext = '';
 		$path = $prefs['server_path'];
@@ -1003,11 +998,36 @@ class Filemanager {
 	}
 	
 
+
 	function sync_database($dir_id)
 	{
+		$db_files = array();
+		$server_files = array();
+		
+		$qry = $this->EE->file_model->get_files_by_dir($dir_id);
+
+		foreach ($qry->result_array() as $row)
+		{
+			$db_files[] = $row['name'];
+		}
+		
+		$qry = get_upload_preferences(1, $dir_id);
+		
+		if ($query->num_rows() == 0)
+		{
+			return FALSE;
+		}
+		
+   		$d_row = $query->row();
+		
+		$server_files = $this->filemanager->directory_files_map($d_row->server_path, 0, FALSE, $d_row->allowed_types);
+		
+		// get file names in db that are not on server
+		$delete = array_diff($db_files, $server_files);
 		
 		
-		
+
+	
 	}
 	
 
@@ -1753,88 +1773,81 @@ class Filemanager {
 			return FALSE;
 		}
 		
-		$this->EE->load->model('file_model');		
+		$this->EE->load->model('file_model');
+		
+		$delete_problem = FALSE;	
+		
 		$file_data = $this->EE->file_model->get_files_by_id($files);
 		
 		if ($file_data->num_rows() === 0)
 		{
 			return FALSE;
 		}
-				
-		// store and set free
-		$files = $file_data->result();
-		$file_data->free_result();
-
-		$dir_paths = array();
-		$thumb_sizes = array();
+		
 		$file_dirs = $this->fetch_upload_dirs();
+		$dir_path = NULL;
+
 		
-		// We need to loop twice - first one is for permissions
-		foreach ($files as $file)
+		// I'm not sold on this approach, so it might need some refining.
+		// We'll see as things come together
+		foreach ($file_data->result() as $file)
 		{
-			$id = $file->upload_location_id;
-			
-			if ( ! isset($dir_paths[$id]))
+			// make sure the user has access to this upload dir
+			foreach ($file_dirs as $dir)
 			{
-				if ( ! isset($file_dirs[$id]) OR ! $file_dirs[$id])
+				if ($file->upload_location_id === $dir['id'])
 				{
-					return FALSE;
+					$thumbs[$file->upload_location_id]['thumb'] = '';
+					$dir_data[$file->upload_location_id][$file->file_id] = array($dir['server_path'], $file->file_name);
+					$dir_path = $dir['server_path'];
+					break;
 				}
-				
-				$thumb_sizes[$id] = array('thumb');
-				$dir_paths[$id] = $file_dirs[$id]['server_path'];
 			}
-		}
-		
-		// Figure out custom thumb sizes
-		$thumb_query = $this->EE->file_model->get_dimensions_by_dir_id(array_keys($dir_paths));
-		
-		foreach ($thumb_query->result() as $thumbs)
-		{
-			$thumb_sizes[$thumbs->upload_location_id][] = $thumbs->short_name;
-		}
-		
-		
-		// will contain only those that we could actually remove
-		$deleted = array();
-		$delete_problem	= FALSE;	
-		
-		// Second round, remove files
-		foreach ($files as $file)
-		{
-			$server_path = $dir_paths[$file->upload_location_id];
+
+			// We didn't get the directory path.
+			if ( ! $dir_path)
+			{
+				return FALSE;
+			}
 			
-			// Kill the file
-			if ( ! @unlink($server_path.$file->rel_path))
+			if ( ! @unlink($file->path))
 			{
 				$delete_problem = TRUE;
 			}
-			
-			// And now the thumbs
-			foreach ($thumb_sizes[$file->upload_location_id] as $name)
-			{
-				$thumb = $server_path.'_'.$name.'/'.$file->rel_path;
-				if (file_exists($thumb))
-				{
-					@unlink($thumb);
-				}				
-			}
-			
-			// Store for the hook
-			$deleted[] = $file;
 			
 			// Remove 'er from the database
 			$this->EE->db->where('file_id', $file->file_id)->delete('files');
 		}
 		
-		/* -------------------------------------------
-		/* 'files_after_delete' hook.
-		/*  - Add additional processing after file deletion
-		*/
-			$edata = $this->EE->extensions->call('files_after_delete', $deleted);
-			if ($this->EE->extensions->end_script === TRUE) return;
-		/*
-		/* -------------------------------------------*/
+		// Nuke thumbs
+		if ($find_thumbs)
+		{
+			$dir_ids = array_keys($dir_data);
+			$thumb_data = $this->EE->file_model->get_dimensions_by_dir_id($dir_ids);
+			
+			foreach ($thumb_data->result() as $data)
+			{
+				$thumbs[$data->upload_location_id][$data->short_name] = '';
+			}
+			
+			foreach ($dir_data as $directory => $file)
+			{
+				foreach ($file as $file_data)
+				{
+					foreach ($thumbs[$directory] as $k => $v)
+					{
+						$thumb = $file_data[0].'_'.$k.DIRECTORY_SEPARATOR.$file_data[1];
+				
+						if (file_exists($thumb))
+						{
+							@unlink($thumb);
+						}
+					}
+				}
+			}
+		}
+	
+		// We REALLY need a hook in here- see Wiki issue!
 		
 		return ($delete_problem) ? FALSE : TRUE;	
 	}

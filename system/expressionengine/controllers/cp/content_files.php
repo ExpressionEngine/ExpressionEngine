@@ -1359,112 +1359,6 @@ class Content_files extends CI_Controller {
 			)
 		));
 
-		// Sigh- this is stupid and will move to updater after initial testing
-		// Testing the updater is just a pain
-
-		if ( ! $this->db->table_exists('files'))
-		{
-			$Q[] = "CREATE TABLE exp_file_watermarks (
-					wm_id int(4) unsigned NOT NULL auto_increment,
-					wm_name varchar(80) NOT NULL,
-					wm_type char(1) NOT NULL default 'n',
-					wm_image_path varchar(100) NOT NULL,
-					wm_test_image_path varchar(100) NOT NULL,
-					wm_use_font char(1) NOT NULL default 'y',
-					wm_font varchar(30) NOT NULL,
-					wm_font_size int(3) unsigned NOT NULL,
-					wm_text varchar(100) NOT NULL,
-					wm_vrt_alignment char(1) NOT NULL default 'T',
-					wm_hor_alignment char(1) NOT NULL default 'L',
-					wm_padding int(3) unsigned NOT NULL,
-					wm_opacity int(3) unsigned NOT NULL,
-					wm_x_offset int(4) unsigned NOT NULL,
-					wm_y_offset int(4) unsigned NOT NULL,
-					wm_x_transp int(4) NOT NULL,
-					wm_y_transp int(4) NOT NULL,
-					wm_text_color varchar(7) NOT NULL,
-					wm_use_drop_shadow char(1) NOT NULL default 'y',
-					wm_shadow_distance int(3) unsigned NOT NULL,
-					wm_shadow_color varchar(7) NOT NULL,
-					PRIMARY KEY (wm_id)
-				)";
-
-
-			$Q[] = "CREATE TABLE exp_file_dimensions (
-			 id int(6) unsigned NOT NULL auto_increment,
-			 upload_location_id INT(4) UNSIGNED NOT NULL DEFAULT 0,
-			 title varchar(255) NOT NULL DEFAULT '',
-			 short_name varchar(255) NOT NULL DEFAULT '',
-			 resize_type varchar(50) NOT NULL DEFAULT '',
-			 width int(10) NOT NULL DEFAULT 0,
-			 height int(10) NOT NULL DEFAULT 0,
-			 PRIMARY KEY `id` (`id`),
-			 KEY `upload_location_id` (`upload_location_id`)
-			)";
-
-			// Note- change to cat_id cause it's what we use in category_posts and I just like the consistency
-
-			$Q[] = "CREATE TABLE exp_file_categories (
-			 file_id int(10) unsigned NOT NULL,
-			 cat_id int(10) unsigned NOT NULL,
-			 sort int(10) unsigned NOT NULL DEFAULT 0,
-			 is_cover char(1) NOT NULL default 'n',
-			 KEY `file_id` (`file_id`),
-			 KEY `cat_id` (`cat_id`)
-			)";
-
-			//field_2_fmt TINYTEXT NOT NULL DEFAULT 'xhtml',
-			// errors BLOB/TEXT column 'field_1_fmt' can't have a default value
-
-
-			$Q[] = "CREATE TABLE exp_files (
-			 file_id int(6) unsigned NOT NULL auto_increment,
-			 site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
-			 title varchar(255) NOT NULL,
-			 upload_location_id INT(4) UNSIGNED NOT NULL DEFAULT 0,
-			 path varchar(255) NOT NULL,
-		 	 status char(1) NOT NULL default 'o',
-			 mime_type varchar(255) NOT NULL,
-			 file_name varchar(255) NOT NULL,
-			 file_size INT(4) NOT NULL DEFAULT 0,
-			 field_1 text NULL,
-			 field_1_fmt TINYTEXT NOT NULL,
-			 field_2 text NULL,
-			 field_2_fmt TINYTEXT NOT NULL,
-			 field_3 text NULL,
-			 field_3_fmt TINYTEXT NOT NULL,
-			 field_4 text NULL,
-			 field_4_fmt TINYTEXT NOT NULL,
-			 field_5 text NULL,
-			 field_5_fmt TINYTEXT NOT NULL,
-			 field_6 text NULL,
-			 field_6_fmt TINYTEXT NOT NULL,
-			 metadata MEDIUMTEXT NULL,
-			 uploaded_by_member_id int(10) unsigned NOT NULL default 0,
-			 upload_date int(10) NOT NULL,
-			 modified_by_member_id int(10) unsigned NOT NULL default 0,
-			 modified_date int(10) NOT NULL,
-			 PRIMARY KEY `file_id` (`file_id`),
-			 KEY `upload_location_id` (`upload_location_id`),
-			 KEY `site_id` (`site_id`)
-			)";
-
-			//KEY `file_dimension_id` (`file_dimension_id`),
-
-			// doesn't look like anything changed in upload prefs
-
-			// Pascal will have a cow- but TEST DATA!
-			// Add a column to files to hold the size for the new name
-			// Seperate cause my go poof and couldn't normally hard code it
-			$Q[] = "ALTER TABLE `exp_files` ADD COLUMN `file_hw_original` VARCHAR(20) NOT NULL default ''";
-
-
-			foreach ($Q as $sql)
-			{
-				$this->db->query($sql);
-			}
-		} // End stupid - I hope
-
 		$this->cp->set_variable('cp_page_title', $this->_upload_dirs[$cid]['name']);
 		$this->cp->set_breadcrumb(
 			BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences',
@@ -1507,6 +1401,7 @@ class Content_files extends CI_Controller {
 		$dir_data = $this->_upload_dirs[$id];
 		
 		$this->filemanager->set_upload_dir_prefs($id, $dir_data);
+		$this->filemanager->xss_clean_off();
 
 		
 		if (isset($_POST['resize_ids']) && is_array($_POST['resize_ids']))
