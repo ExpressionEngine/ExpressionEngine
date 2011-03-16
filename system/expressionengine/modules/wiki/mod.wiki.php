@@ -5370,8 +5370,6 @@ class Wiki {
 			
 			$file_data = $this->EE->upload->data();
 			
-			$this->EE->load->library('filemanager');
-			
 			@chmod($file_data['full_path'], DIR_WRITE_MODE);
 			
 			$data = array(	'wiki_id'				=> $this->wiki_id,
@@ -5390,6 +5388,8 @@ class Wiki {
 			$file_data['modified_by_member_id'] = $this->EE->session->userdata('member_id');
 			$file_data['rel_path'] = $new_name;
 			
+			$this->EE->load->library('filemanager');
+			$this->EE->filemanager->xss_clean_off();
 			$saved = $this->EE->filemanager->save_file($server_path.$new_name, $this->upload_dir, $file_data, FALSE);
 			
 			// If it can't save to filemanager, we need to error and nuke the file
