@@ -1909,13 +1909,14 @@ class Moblog {
 				// You cannot make this stuff up, how are base64 encoded
 				// files are inherintly safe if we decode them before
 				// writing them to disk?! -pk
+				// XSS cleaning done below -wb
+				
 				if (stristr($encoding,"base64"))
 				{
 					$file_code = base64_decode($file_code);
+					$this->message_array[] = 'base64 decoded.';
 				}
 				
-				$file_code = $this->EE->security->xss_clean($file_code);
-
 				/** ------------------------------
 				/**  Check and adjust for multiple files with same file name
 				/** ------------------------------*/
@@ -1928,6 +1929,7 @@ class Moblog {
 				/** ---------------------------*/
 
 				$ext = trim(strrchr($filename, '.'), '.');
+				$is_image = FALSE; // This is needed for XSS cleaning
 				
 				if (in_array($ext, $this->movie)) // Movies
 				{
@@ -1944,6 +1946,8 @@ class Moblog {
 					$key = count($this->post_data['images']) - 1;
 
 					$type = 'image'; // For those crazy application/octet-stream images
+					
+					$is_image = TRUE;
 				}
 				elseif (in_array($ext, $this->files)) // Files
 				{
@@ -1952,6 +1956,21 @@ class Moblog {
 				else
 				{
 					continue;
+				}
+				
+				// Clean the file
+				$xss_result = $this->EE->security->xss_clean($file_code, $is_image);
+				
+				// XSS Clean Failed - bail out
+				if ($xss_result === FALSE)
+				{
+					$this->message_array[] = 'error_writing_attachment';
+					return FALSE;
+				}
+
+				if ( ! $is_image)
+				{
+					$file_code = $xss_result;
 				}
 
 
@@ -1990,10 +2009,10 @@ class Moblog {
 				// Send the file
 				$result = $this->EE->filemanager->save_file(
 					$file_path, 
-					$this->upload_dir, 
+					$upload_dir_id,
 					array(
 						'title'     => $filename,
-						'path'      => dirname($file_path),
+						'rel_path'  => dirname($file_path),
 						'file_name' => $filename
 					)
 				);
@@ -2005,6 +2024,7 @@ class Moblog {
 				{
 					// $result['message']
 					$this->message_array[] = 'error_writing_attachment';
+					$this->message_array[] = print_r($result, TRUE);
 					return FALSE;
 				}
 				
