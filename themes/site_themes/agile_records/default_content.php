@@ -40,7 +40,7 @@ $Q[] = "INSERT INTO `exp_category_groups` (`group_id`, `site_id`, `group_name`, 
 
 
 $Q[] = "INSERT INTO `exp_categories` (`cat_id`, `site_id`, `group_id`, `parent_id`, `cat_name`, `cat_url_title`, `cat_description`, `cat_image`, `cat_order`) VALUES 
-(1, 1, 1, 0, 'News', 'News', '', '', 2),
+(1, 1, 1, 0, 'News', 'news', '', '', 2),
 (2, 1, 1, 0, 'Bands', 'bands', '', '', 3),
 (3, 1, 2, 0, 'Staff Bios', 'staff_bios', '', '', 2),
 (4, 1, 2, 0, 'Site Info', 'site_info', '', '', 1)";

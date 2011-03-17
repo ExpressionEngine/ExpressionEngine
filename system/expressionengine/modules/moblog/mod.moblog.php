@@ -1147,14 +1147,7 @@ class Moblog {
 
 				$params['format']	= ( ! isset($params['format'])) ? '' : $params['format'];
 				$params['name'] 	= ( ! isset($params['name'])) 	? '' : $params['name'];
-				
-				// Was it overriden?
-				
-				if (isset($this->entry_data[$params['name']]['format']))
-				{
-					//$params['format'] = $this->entry_data[$params['name']]['format'];
-				}
-				
+
 				$this->parse_field($params,$matches['2'][$i], $query->row('field_group') ); 
 				$this->template = str_replace($matches['0'],'',$this->template);
 			}
@@ -1242,13 +1235,9 @@ class Moblog {
 
 		if ( ! $result)
 		{
-			// echo '<pre>';print_r($this->EE->api_channel_entries->errors);echo'</pre>';
-		}
-		else
-		{
 			$this->entries_added++;
 		}
-		
+
 		$this->EE->session->userdata['can_assign_post_authors'] = $orig_can_assign;
 		$this->EE->session->userdata['group_id'] = $orig_group_id;
 		$this->EE->session->userdata['can_edit_other_entries'] = $orig_can_edit;
@@ -1263,7 +1252,6 @@ class Moblog {
 	 * 	@param string	url
 	 * 
 	 */
-
 	function send_pings($title, $url)
 	{
 		$ping_servers = explode('|', $this->moblog_array['moblog_ping_servers']);
@@ -1423,6 +1411,31 @@ class Moblog {
 				$format		= $params['format'];
 			}
 		}
+		
+		
+		$this->EE->load->model('file_model');
+		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id($this->moblog_array['moblog_upload_directory']);
+		
+		// @pk get dir server path and calculate image size below (1513)
+		
+		// @todo if 0 skip!!
+		$thumb_data = array();
+		$image_data = array();
+		
+		foreach ($sizes_q->result() as $row)
+		{
+			foreach (array('thumb', 'image') as $which)
+			{
+				if ($row->id == $this->moblog_array['moblog_'.$which.'_size'])
+				{
+					${$which.'_data'} = array(
+						'dir'		=> '_'.$row->short_name.'/',
+						'height'	=> $row->height,
+						'width'		=> $row->width
+					);
+				}
+			}
+		}
 
 		/** -----------------------------
 		/**  Parse Content
@@ -1431,6 +1444,13 @@ class Moblog {
 		$pair_array = array('images','audio','movie','files'); 
 		$float_data = $this->post_data;
 		$params = array();
+		
+		
+		echo '<pre>';
+		print_r($float_data);
+		echo '</pre>';
+		exit;
+
 
 		foreach ($pair_array as $type)
 		{
@@ -1475,22 +1495,24 @@ class Moblog {
 						{
 							if (in_array($ftype,$pair_array) && ($params['match'] == 'all' OR stristr($params['match'],$ftype)))
 							{ 
-								foreach($float_data[$ftype] as $k => $file)
+								foreach ($float_data[$ftype] as $k => $file)
 								{
+									// probably not an image
 									if ( ! is_array($file))
 									{
 										$template_data .= str_replace('{file}',$this->upload_dir_code.$file,$matches['2'][$i]);
 									}
-									elseif(is_array($file) && $ftype == 'images')
+									// most definitely an image
+									elseif (is_array($file) && $ftype == 'images')
 									{
 										$temp_data = '';
 										$details = array();
-										$filename					= ( ! isset($file['filename'])) ? '' : $this->upload_dir_code.$file['filename'];
-										$details['width']			= ( ! isset($file['width'])) ? '' : $file['width'];
-										$details['height']			= ( ! isset($file['height'])) ? '' : $file['height'];
-										$details['thumbnail']		= ( ! isset($file['thumbnail'])) ? '' : $this->upload_dir_code.$file['thumbnail'];
-										$details['thumb_width']		= ( ! isset($file['thumb_width'])) ? '' : $file['thumb_width'];
-										$details['thumb_height']	= ( ! isset($file['thumb_height'])) ? '' : $file['thumb_height'];
+										$filename					= empty($image_data) ? $this->upload_dir_code.$file['filename'] : $this->upload_dir_code.$image_data['dir'].$file['filename'];
+										$details['width']			= empty($image_data) ? '' : $image_data['width'];
+										$details['height']			= empty($image_data) ? '' : $image_data['height'];
+										$details['thumbnail']		= empty($thumb_data) ? '' : $this->upload_dir_code.$thumb_data['dir'].$file['thumbnail'];
+										$details['thumb_width']		= empty($thumb_data) ? '' : $thumb_data['thumb_width'];
+										$details['thumb_height']	= empty($thumb_data) ? '' : $thumb_data['thumb_height'];
 
 										$temp_data = str_replace('{file}',$filename,$matches['2'][$i]);
 
@@ -1501,8 +1523,6 @@ class Moblog {
 
 										$template_data .= $temp_data;
 									}
-
-									//unset($float_data[$ftype][$k]);
 								}
 							}
 						}
@@ -1510,34 +1530,32 @@ class Moblog {
 				}
 				elseif(isset($float_data[$type]))
 				{
-					foreach($float_data[$type] as $k => $file)
+					foreach ($float_data[$type] as $k => $file)
 					{
 						if ( ! is_array($file))
 						{
 							$template_data .= str_replace('{file}',$this->upload_dir_code.$file,$matches['2'][$i]);
 						}
-						elseif(is_array($file) && $type == 'images')
+						elseif (is_array($file) && $type == 'images')
 						{
 							$temp_data = '';
 							$details = array();
-							$filename					= ( ! isset($file['filename'])) ? '' : $this->upload_dir_code.$file['filename'];
+							$filename					= ( ! isset($file['filename'])) ? '' : $this->upload_dir_code.$image_folder.'/'.$file['filename'];
 							$details['width']			= ( ! isset($file['width'])) ? '' : $file['width'];
 							$details['height']			= ( ! isset($file['height'])) ? '' : $file['height'];
-							$details['thumbnail']		= ( ! isset($file['thumbnail'])) ? '' : $this->upload_dir_code.$file['thumbnail'];
+							$details['thumbnail']		= ( ! isset($file['thumbnail'])) ? '' : $this->upload_dir_code.$thumb_folder.'/'.$file['thumbnail'];
 							$details['thumb_width']		= ( ! isset($file['thumb_width'])) ? '' : $file['thumb_width'];
 							$details['thumb_height']	= ( ! isset($file['thumb_height'])) ? '' : $file['thumb_height'];
 
 							$temp_data = str_replace('{file}',$filename,$matches['2'][$i]);
 
-							foreach($details as $d => $dv)
+							foreach ($details as $d => $dv)
 							{
 								$temp_data = str_replace('{'.$d.'}',$dv,$temp_data);
 							}
 
 							$template_data .= $temp_data;
 						}
-
-						//unset($float_data[$type][$k]);
 					}  
 				}
 
@@ -1789,7 +1807,6 @@ class Moblog {
 
 				$filename = trim(str_replace('"','',$filename));
 				$filename = str_replace($this->newline,'',$filename);
-				$filename = $this->safe_filename($filename);
 
 				if (stristr($filename, 'dottedline') OR stristr($filename, 'spacer.gif') OR stristr($filename, 'masthead.jpg'))
 				{

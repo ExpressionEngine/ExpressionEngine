@@ -29,7 +29,6 @@ class Filemanager {
 	var $config;
 	var $theme_url;
 	
-	public $dir_sizes			= FALSE;
 	public $upload_errors		= FALSE;
 	public $upload_data			= NULL;
 	public $upload_warnings		= FALSE;
