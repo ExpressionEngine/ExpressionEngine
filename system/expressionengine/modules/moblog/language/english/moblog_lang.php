@@ -85,8 +85,8 @@ $lang = array(
 'moblog_email_settings' =>
 'Email Settings',
 
-'moblog_image_settings' =>
-'Image Settings',
+'moblog_file_settings' =>
+'File Settings',
 
 
 'moblog_full_name'	=> 
@@ -137,32 +137,11 @@ $lang = array(
 'moblog_upload_directory' =>
 'Upload Directory for files',
 
-'moblog_image_width' => 
-'Image Width',
+'moblog_image_size' =>
+'Image Size',
 
-'moblog_image_height' => 
-'Image Height',
-
-'moblog_resize_image' =>
-'Resize Image on Import?',
-
-'moblog_resize_width' =>
-'Resize Width',
-
-'moblog_resize_height' =>
-'Resize Height',
-
-'moblog_create_thumbnail' =>
-'Create Thumbnail on Import?',
-
-'moblog_thumbnail_width' =>
-'Thumbnail Width',
-
-'moblog_thumbnail_height' =>
-'Thumbnail Height',
-
-'set_to_zero' => 
-'Program attempts to determine size automatically, so set to 0 if image size is unknown',
+'moblog_thumb_size' =>
+'Thumb Size',
 
 'moblog_email_type' => 
 'Email Account Type',

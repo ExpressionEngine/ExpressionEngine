@@ -115,13 +115,6 @@
 			</td>
 		</tr>
 		<tr>
-			<td><?=form_label(lang('moblog_upload_directory'), 'moblog_upload_directory')?></td>
-			<td>
-				<?=form_dropdown('moblog_upload_directory', $values['moblog_upload_directory'][0], set_value('moblog_upload_directory', $values['moblog_upload_directory'][1]))?>
-				<?=form_error('moblog_upload_directory')?>
-			</td>
-		</tr>
-		<tr>
 			<td><?=form_label(lang('moblog_template'), 'moblog_template')?></td>
 			<td style='width:50%;'>
 				<?=form_textarea('moblog_template', set_value('moblog_template', $values['moblog_template']), "style='width: 100%'")?>
@@ -221,10 +214,17 @@
 <table class="mainTable solo channel_fields" border="0" cellspacing="0" cellpadding="0">
 	<thead>
 		<tr>
-			<th colspan="2"><?=lang('moblog_image_settings')?></th>
+			<th colspan="2"><?=lang('moblog_file_settings')?></th>
 		</tr>
 	</thead>
 	<tbody>
+		<tr>
+			<td><?=form_label(lang('moblog_upload_directory'), 'moblog_upload_directory')?></td>
+			<td>
+				<?=form_dropdown('moblog_upload_directory', $values['moblog_upload_directory'][0], set_value('moblog_upload_directory', $values['moblog_upload_directory'][1]))?>
+				<?=form_error('moblog_upload_directory')?>
+			</td>
+		</tr>
 		<tr>
 			<td style="width: 50%;"><?=form_label(lang('moblog_image_size'), 'moblog_image_size')?></td>
 			<td>
@@ -239,70 +239,6 @@
 				<?=form_error('moblog_thumb_size')?>
 			</td>
 		</tr>
-		<?php /*
-		<tr>
-			<td style="width: 50%;"><?=form_label(lang('moblog_image_width'), 'moblog_image_width')?><br /> <?=lang('set_to_zero')?></td>
-			<td>
-				<?=form_input(array('id'=>'moblog_image_width','name'=>'moblog_image_width','class'=>'field','value'=>set_value('moblog_image_width', $values['moblog_image_width'])))?>
-				<?=form_error('moblog_image_width')?>
-			</td>
-		</tr>
-		<tr>
-			<td><?=form_label(lang('moblog_image_height'), 'moblog_image_height')?><br /> <?=lang('set_to_zero')?></td>
-			<td>
-				<?=form_input(array('id'=>'moblog_image_height','name'=>'moblog_image_height','class'=>'field','value'=>set_value('moblog_image_height', $values['moblog_image_height'])))?>
-				<?=form_error('moblog_image_height')?>
-			</td>
-		</tr>
-		<tr>
-			<td><?=form_label(lang('moblog_resize_image'), 'moblog_resize_image')?></td>
-			<td><?php
-			$controls = lang('yes', 'moblog_resize_image_y').NBS.form_radio(array('name'=>'moblog_resize_image', 'id'=>'moblog_resize_image_y', 'value'=>'y', 'checked'=>(set_value('moblog_resize_image', $values['moblog_resize_image']) == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-			$controls .= lang('no', 'moblog_resize_image_n').NBS.form_radio(array('name'=>'moblog_resize_image', 'id'=>'moblog_resize_image_n', 'value'=>'n', 'checked'=>(set_value('moblog_resize_image', $values['moblog_resize_image']) == 'n') ? TRUE : FALSE));
-			echo $controls;
-			?>
-			<?=form_error('moblog_resize_image')?>
-			</td>
-		</tr>
-		<tr>
-			<td><?=form_label(lang('moblog_resize_width'), 'moblog_resize_width')?></td>
-			<td>
-				<?=form_input(array('id'=>'moblog_resize_width','name'=>'moblog_resize_width','class'=>'field','value'=>set_value('moblog_resize_width', $values['moblog_resize_width'])))?>
-				<?=form_error('moblog_resize_width')?>
-			</td>
-		</tr>
-		<tr>
-			<td><?=form_label(lang('moblog_resize_height'), 'moblog_resize_height')?></td>
-			<td>
-				<?=form_input(array('id'=>'moblog_resize_height','name'=>'moblog_resize_height','class'=>'field','value'=>set_value('moblog_resize_height', $values['moblog_resize_height'])))?>
-				<?=form_error('moblog_resize_height')?>
-			</td>
-		</tr>
-		<tr>
-			<td><?=form_label(lang('moblog_create_thumbnail'), 'moblog_create_thumbnail')?></td>
-			<td><?php
-			$controls = lang('yes', 'moblog_create_thumbnail_y').NBS.form_radio(array('name'=>'moblog_create_thumbnail', 'id'=>'moblog_create_thumbnail_y', 'value'=>'y', 'checked'=>(set_value('moblog_create_thumbnail', $values['moblog_create_thumbnail']) == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-			$controls .= lang('no', 'moblog_create_thumbnail_n').NBS.form_radio(array('name'=>'moblog_create_thumbnail', 'id'=>'moblog_create_thumbnail_n', 'value'=>'n', 'checked'=>(set_value('moblog_create_thumbnail', $values['moblog_create_thumbnail']) == 'n') ? TRUE : FALSE));
-			echo $controls;
-			?>
-			<?=form_error('moblog_create_thumbnail')?>
-			</td>
-		</tr>
-		<tr>
-			<td><?=form_label(lang('moblog_thumbnail_width'), 'moblog_thumbnail_width')?></td>
-			<td>
-				<?=form_input(array('id'=>'moblog_thumbnail_width','name'=>'moblog_thumbnail_width','class'=>'field','value'=>set_value('moblog_thumbnail_width', $values['moblog_thumbnail_width'])))?>
-				<?=form_error('moblog_thumbnail_width')?>
-			</td>
-		</tr>
-		<tr>
-			<td><?=form_label(lang('moblog_thumbnail_height'), 'moblog_thumbnail_height')?></td>
-			<td>
-				<?=form_input(array('id'=>'moblog_thumbnail_height','name'=>'moblog_thumbnail_height','class'=>'field','value'=>set_value('moblog_thumbnail_height', $values['moblog_thumbnail_height'])))?>
-				<?=form_error('moblog_thumbnail_height')?>
-			</td>
-		</tr>
-		*/ ?>
 	</tbody>	
 </table>
 
