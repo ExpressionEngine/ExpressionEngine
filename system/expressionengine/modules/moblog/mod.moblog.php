@@ -1412,11 +1412,15 @@ class Moblog {
 			}
 		}
 		
+		$dir_id = $this->moblog_array['moblog_upload_directory'];
 		
 		$this->EE->load->model('file_model');
-		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id($this->moblog_array['moblog_upload_directory']);
+		$this->EE->load->model('file_upload_preferences_model');
 		
-		// @pk get dir server path and calculate image size below (1513)
+		$prefs_q = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $dir_id);
+		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id($dir_id);
+		
+		$dir_server_path = $prefs_q->row('server_path');
 		
 		// @todo if 0 skip!!
 		$thumb_data = array();
@@ -1444,13 +1448,6 @@ class Moblog {
 		$pair_array = array('images','audio','movie','files'); 
 		$float_data = $this->post_data;
 		$params = array();
-		
-		
-		echo '<pre>';
-		print_r($float_data);
-		echo '</pre>';
-		exit;
-
 
 		foreach ($pair_array as $type)
 		{
@@ -1489,73 +1486,105 @@ class Moblog {
 				// Files is a bit special.  It goes last and will clear out remaining files.  Has match parameter
 				if ($type == 'files' && $params['match'] != '')
 				{
-					if (count($float_data) > 0)
+					if ( ! count($float_data))
 					{
-						foreach ($float_data as $ftype => $value)
-						{
-							if (in_array($ftype,$pair_array) && ($params['match'] == 'all' OR stristr($params['match'],$ftype)))
-							{ 
-								foreach ($float_data[$ftype] as $k => $file)
-								{
-									// probably not an image
-									if ( ! is_array($file))
-									{
-										$template_data .= str_replace('{file}',$this->upload_dir_code.$file,$matches['2'][$i]);
-									}
-									// most definitely an image
-									elseif (is_array($file) && $ftype == 'images')
-									{
-										$temp_data = '';
-										$details = array();
-										$filename					= empty($image_data) ? $this->upload_dir_code.$file['filename'] : $this->upload_dir_code.$image_data['dir'].$file['filename'];
-										$details['width']			= empty($image_data) ? '' : $image_data['width'];
-										$details['height']			= empty($image_data) ? '' : $image_data['height'];
-										$details['thumbnail']		= empty($thumb_data) ? '' : $this->upload_dir_code.$thumb_data['dir'].$file['thumbnail'];
-										$details['thumb_width']		= empty($thumb_data) ? '' : $thumb_data['thumb_width'];
-										$details['thumb_height']	= empty($thumb_data) ? '' : $thumb_data['thumb_height'];
-
-										$temp_data = str_replace('{file}',$filename,$matches['2'][$i]);
-
-										foreach($details as $d => $dv)
-										{
-											$temp_data = str_replace('{'.$d.'}',$dv,$temp_data);
-										}
-
-										$template_data .= $temp_data;
-									}
-								}
-							}
-						}
+						break;
 					}
-				}
-				elseif(isset($float_data[$type]))
-				{
-					foreach ($float_data[$type] as $k => $file)
+
+					foreach ($float_data as $ftype => $value)
 					{
-						if ( ! is_array($file))
+						if ( ! in_array($ftype, $pair_array) OR ! ($params['match'] == 'all' OR stristr($params['match'], $ftype)))
 						{
-							$template_data .= str_replace('{file}',$this->upload_dir_code.$file,$matches['2'][$i]);
+							continue;
 						}
-						elseif (is_array($file) && $type == 'images')
+						
+						foreach ($float_data[$ftype] as $k => $file)
 						{
-							$temp_data = '';
-							$details = array();
-							$filename					= ( ! isset($file['filename'])) ? '' : $this->upload_dir_code.$image_folder.'/'.$file['filename'];
-							$details['width']			= ( ! isset($file['width'])) ? '' : $file['width'];
-							$details['height']			= ( ! isset($file['height'])) ? '' : $file['height'];
-							$details['thumbnail']		= ( ! isset($file['thumbnail'])) ? '' : $this->upload_dir_code.$thumb_folder.'/'.$file['thumbnail'];
-							$details['thumb_width']		= ( ! isset($file['thumb_width'])) ? '' : $file['thumb_width'];
-							$details['thumb_height']	= ( ! isset($file['thumb_height'])) ? '' : $file['thumb_height'];
+							// not an image
+							if ($ftype != 'images')
+							{
+								$template_data .= str_replace('{file}',$this->upload_dir_code.$file,$matches['2'][$i]);
+								continue;
+							}
+							// most definitely an image
+
+							// Figure out sizes
+							$file_rel_path		= empty($image_data) ? $file : $image_data['dir'].$file;
+							$file_dimensions	= @getimagesize($dir_server_path.$file_rel_path);
+							$filename			= $this->upload_dir_code.$file_rel_path;
+						
+							$thumb_replace		= '';	
+							$thumb_dimensions	= FALSE;
+							$thumb_rel_path		= $thumb_data['dir'].$file;
+							
+							if ( ! empty($thumb_data))
+							{
+								$thumb_replace		= $this->upload_dir_code.$thumb_rel_path;
+								$thumb_dimensions	= @getimagesize($dir_server_path.$thumb_rel_path);
+							}
+							
+							$details = array(
+								'width'			=> $file_dimensions ? $file_dimensions[0] : '',
+								'height'		=> $file_dimensions ? $file_dimensions[1] : '',
+								'thumbnail'		=> $thumb_replace,
+								'thumb_width'	=> $thumb_dimensions ? $thumb_dimensions[0] : '',
+								'thumb_height'	=> $thumb_dimensions ? $thumb_dimensions[1] : ''
+							);
 
 							$temp_data = str_replace('{file}',$filename,$matches['2'][$i]);
 
 							foreach ($details as $d => $dv)
 							{
-								$temp_data = str_replace('{'.$d.'}',$dv,$temp_data);
+								$temp_data = str_replace('{'.$d.'}', $dv, $temp_data);
 							}
+
 
 							$template_data .= $temp_data;
 						}
+					}
+				}
+				elseif (isset($float_data[$type]))
+				{
+					foreach ($float_data[$type] as $k => $file)
+					{
+						if ($type != 'images')
+						{
+							$template_data .= str_replace('{file}',$this->upload_dir_code.$file,$matches['2'][$i]);
+							continue;
+						}
+						
+						// It's an image, work out sizes
+						// Figure out sizes
+						$file_rel_path		= empty($image_data) ? $file : $image_data['dir'].$file;
+						$file_dimensions	= @getimagesize($dir_server_path.$file_rel_path);
+						$filename			= $this->upload_dir_code.$file_rel_path;
+					
+						$thumb_replace		= '';	
+						$thumb_dimensions	= FALSE;
+						$thumb_rel_path		= $thumb_data['dir'].$file;
+						
+						if ( ! empty($thumb_data))
+						{
+							$thumb_replace		= $this->upload_dir_code.$thumb_rel_path;
+							$thumb_dimensions	= @getimagesize($dir_server_path.$thumb_rel_path);
+						}
+						
+						$details = array(
+							'width'			=> $file_dimensions ? $file_dimensions[0] : '',
+							'height'		=> $file_dimensions ? $file_dimensions[1] : '',
+							'thumbnail'		=> $thumb_replace,
+							'thumb_width'	=> $thumb_dimensions ? $thumb_dimensions[0] : '',
+							'thumb_height'	=> $thumb_dimensions ? $thumb_dimensions[1] : ''
+						);
+						
+						$temp_data = str_replace('{file}',$filename,$matches['2'][$i]);
+
+						foreach ($details as $d => $dv)
+						{
+							$temp_data = str_replace('{'.$d.'}', $dv, $temp_data);
+						}
+
+						$template_data .= $temp_data;
 					}  
 				}
 
@@ -1908,7 +1937,7 @@ class Moblog {
 				}
 				elseif (in_array($ext, $this->image)) // Images
 				{
-					$this->post_data['images'][] = array('filename' => $filename);
+					$this->post_data['images'][] = $filename;
 
 					$key = count($this->post_data['images']) - 1;
 
@@ -1926,18 +1955,23 @@ class Moblog {
 				}
 				
 				// Clean the file
-				$xss_result = $this->EE->security->xss_clean($file_code, $is_image);
+				$this->EE->load->helper('xss');
 				
-				// XSS Clean Failed - bail out
-				if ($xss_result === FALSE)
+				if (xss_check())
 				{
-					$this->message_array[] = 'error_writing_attachment';
-					return FALSE;
-				}
+					$xss_result = $this->EE->security->xss_clean($file_code, $is_image);
 
-				if ( ! $is_image)
-				{
-					$file_code = $xss_result;
+					// XSS Clean Failed - bail out
+					if ($xss_result === FALSE)
+					{
+						$this->message_array[] = 'error_writing_attachment';
+						return FALSE;
+					}
+
+					if ( ! $is_image)
+					{
+						$file_code = $xss_result;
+					}
 				}
 
 
