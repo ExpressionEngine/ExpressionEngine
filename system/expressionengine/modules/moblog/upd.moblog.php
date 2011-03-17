@@ -47,56 +47,55 @@ class Moblog_upd {
 
 	function install()
 	{
-		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend) VALUES ('Moblog', '{$this->version}', 'y')";
-		$sql[] = "CREATE TABLE IF NOT EXISTS `exp_moblogs` (
-		`moblog_id` int(4) unsigned NOT NULL auto_increment,
-		`moblog_full_name` varchar(80) NOT NULL default '',
-		`moblog_short_name` varchar(20) NOT NULL default '',
-		`moblog_enabled` char(1) NOT NULL default 'y',
-		`moblog_file_archive` char(1) NOT NULL default 'n',
-		`moblog_time_interval` int(4) unsigned NOT NULL default '0',
-		`moblog_type` varchar(10) NOT NULL default '',
-		`moblog_gallery_id` int(6) unsigned NOT NULL default '0',
-		`moblog_gallery_category` int(10) unsigned NOT NULL default '0',
-		`moblog_gallery_status` varchar(50) NOT NULL default '',
-		`moblog_gallery_comments` varchar(10) NOT NULL default 'y',
-		`moblog_gallery_author` int(10) unsigned NOT NULL default '1',
-		`moblog_channel_id` int(4) unsigned NOT NULL default '1',
-		`moblog_categories` varchar(25) NOT NULL default '',
-		`moblog_field_id` varchar(5) NOT NULL default '',
-		`moblog_status` varchar(50) NOT NULL default '',
-		`moblog_author_id` int(10) unsigned NOT NULL default '1',
-		`moblog_sticky_entry` char(1) NOT NULL default 'n',
-		`moblog_allow_overrides` char(1) NOT NULL default 'y',
-		`moblog_auth_required` char(1) NOT NULL default 'n',
-		`moblog_auth_delete` char(1) NOT NULL default 'n',
-		`moblog_upload_directory` int(4) unsigned NOT NULL default '1',
-		`moblog_template` text NOT NULL,
-		`moblog_image_width` int(5) unsigned NOT NULL default '0',
-		`moblog_image_height` int(5) unsigned NOT NULL default '0',
-		`moblog_resize_image` char(1) NOT NULL default '',
-		`moblog_resize_width` int(5) unsigned NOT NULL default '0',
-		`moblog_resize_height` int(5) unsigned NOT NULL default '0',
-		`moblog_create_thumbnail` char(1) NOT NULL default 'n',
-		`moblog_thumbnail_width` int(5) NOT NULL default '0',
-		`moblog_thumbnail_height` int(5) NOT NULL default '0',
-		`moblog_email_type` varchar(10) NOT NULL default '',
-		`moblog_email_address` varchar(125) NOT NULL default '',
-		`moblog_email_server` varchar(100) NOT NULL default '',
-		`moblog_email_login` varchar(125) NOT NULL default '',
-		`moblog_email_password` varchar(125) NOT NULL default '',
-		`moblog_subject_prefix` varchar(50) NOT NULL default '',
-		`moblog_valid_from` text NOT NULL,
-		`moblog_ignore_text` text NOT NULL,
-		`moblog_ping_servers` varchar(50) NOT NULL default '',
-		PRIMARY KEY `moblog_id` (`moblog_id`))
-		DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
+		$this->EE->load->dbforge();
 
-		foreach ($sql as $query)
-		{
-			$this->EE->db->query($query);
-		}
+		$this->EE->db->insert('modules', array(
+			'module_name'		=> 'Moblog',
+			'module_version'	=> $this->version,
+			'has_cp_backend'	=> 'y'	
+		));
 
+		$fields = array(
+			'moblog_id'					=> array('type' => 'int', 'constraint' => 4, 'unsigned' => TRUE, 'auto_increment' => TRUE),
+			'moblog_full_name'			=> array('type' => 'varchar', 'constraint' => 80, 'default' => ''),
+			'moblog_short_name'			=> array('type' => 'varchar', 'constraint' => 20, 'default' => ''),
+			'moblog_enabled'			=> array('type' => 'char', 'constraint' => 1, 'default' => 'y'),
+			'moblog_file_archive'		=> array('type' => 'char', 'constraint' => 1, 'default' => 'n'),
+			'moblog_time_interval'		=> array('type' => 'int', 'constraint' => 4, 'unsigned' => TRUE, 'default' => '0'),
+			'moblog_type'				=> array('type' => 'varchar', 'constraint' => 10,	'default' => ''),
+			'moblog_gallery_id'			=> array('type' => 'int', 'constraint' => 6, 'default' => '0'),
+			'moblog_gallery_category'	=> array('type' => 'int', 'cosntraint' => 10, 'unsigned' => TRUE, 'default' => '0'),
+			'moblog_gallery_status'		=> array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
+			'moblog_gallery_comments'	=> array('type' => 'varchar', 'constraint' => 10, 'default' => 'y'),
+			'moblog_gallery_author'		=> array('type' => 'int', 'constraint' => 10, 'unsigned' => TRUE, 'default' => '1'),
+			'moblog_channel_id'			=> array('type' => 'int', 'constraint' => 4, 'unsigned' => TRUE, 'default' => '1'),
+			'moblog_categories'			=> array('type' => 'varchar', 'constraint' => 25, 'default' => ''),
+			'moblog_field_id'			=> array('type' => 'varchar', 'constraint' => 5, 'default' => ''),
+			'moblog_status'				=> array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
+			'moblog_author_id'			=> array('type' => 'int', 'constraint' => 10, 'unsigned' => TRUE, 'default' => '1'),
+			'moblog_sticky_entry'		=> array('type' => 'char', 'constraint' => 1, 'default' => 'n'),
+			'moblog_allow_overrides'	=> array('type' => 'char', 'constraint' => 1, 'default' => 'y'),
+			'moblog_auth_required'		=> array('type' => 'char', 'constraint' => 1, 'default' => 'n'),
+			'moblog_auth_delete'		=> array('type' => 'char', 'constraint' => 1, 'default' => 'n'),
+			'moblog_upload_directory'	=> array('type' => 'int', 'constraint' => 4, 'unsigned' => TRUE, 'default' => '1'),
+			'moblog_template'			=> array('type' => 'text'),
+			'moblog_image_size'			=> array('type' => 'int', 'constraint' => 10, 'default' => '0'),
+			'moblog_thumb_size'			=> array('type' => 'int', 'constraint' => 10, 'default' => '0'),
+			'moblog_email_type'			=> array('type' => 'varchar', 'constraint' => 10, 'default' => ''),
+			'moblog_email_address'		=> array('type' => 'varchar', 'constraint' => 125, 'default' => ''),
+			'moblog_email_server'		=> array('type' => 'varchar', 'constraint' => 100, 'default' => ''),
+			'moblog_email_login'		=> array('type' => 'varchar', 'constraint' => 125, 'default' => ''),
+			'moblog_email_password'		=> array('type' => 'varchar', 'constraint' => 125, 'default' => ''),
+			'moblog_subject_prefix'		=> array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
+			'moblog_valid_from'			=> array('type' => 'text'),
+			'moblog_ignore_text'		=> array('type' => 'text'),
+			'moblog_ping_servers'		=> array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
+		);
+		
+		$this->EE->dbforge->add_field($fields);
+		$this->EE->dbforge->add_key('moblog_id', TRUE);
+		$this->EE->dbforge->create_table('moblogs');
+		
 		return TRUE;
 	}
 
@@ -112,17 +111,19 @@ class Moblog_upd {
 	 */
 	function uninstall()
 	{
-		$query = $this->EE->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Moblog'");
-		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
-		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Moblog'";
-		$sql[] = "DELETE FROM exp_actions WHERE class = 'Moblog'";
-		$sql[] = "DELETE FROM exp_actions WHERE class = 'Moblog_mcp'";
-		$sql[] = "DROP TABLE IF EXISTS exp_moblogs";
+		// Get the module ID from modules
+		$qry = $this->EE->db->select('module_id')
+							->get_where('modules', array('module_name' => 'Moblog');
 
-		foreach ($sql as $query)
-		{
-			$this->EE->db->query($query);
-		}
+		// Delete all mentions of the moblog from other tables
+		$this->EE->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
+		$this->EE->db->delete('modules', array('module_name' => 'Moblog'));
+		$this->EE->db->delete('actions', array('class' => 'Moblog'));
+		$this->EE->db->delete('actions', array('class' => 'Moblog_mcp'));
+
+		// Drop the table
+		$this->EE->load->dbforge();
+		$this->EE->dbforge->drop_table('moblogs');
 
 		return TRUE;
 	}
@@ -147,32 +148,76 @@ class Moblog_upd {
 		/**  Update Fields
 		/** ----------------------------------*/
 
+		$this->EE->load->dbforge();
+
 		if ($this->EE->db->table_exists('exp_moblogs') && $current != $this->version)
 		{
-			$existing_fields = array();
+			$new_fields = array(
+				'moblog_type' => array(
+					'alter' => array('type' => 'varchar', 'constraint' => 10,	'default' => ''),
+					'after' => 'moblog_time_interval'
+				),
+				'moblog_gallery_id'	=> array(
+					'alter' => array('type' => 'int', 'constraint' => 6, 'default' => '0'),
+					'after' => 'moblog_type'
+				),
+				'moblog_gallery_category' => array(
+					'alter' => array('type' => 'int', 'cosntraint' => 10, 'unsigned' => TRUE, 'default' => '0'),
+					'after' => 'moblog_gallery_id'
+				),
+				'moblog_gallery_status' => array(
+					'alter' => array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
+					'after' => 'moblog_gallery_category'
+				),
+				'moblog_gallery_comments' => array(
+					'alter' => array('type' => 'varchar', 'constraint' => 10, 'default' => 'y'),
+					'after' => 'moblog_gallery_status'
+				),
+				'moblog_gallery_author' => array(
+					'alter' => array('type' => 'int', 'constraint' => 10, 'unsigned' => TRUE, 'default' => '1'),
+					'after' => 'moblog_gallery_comments'
+				),
+				'moblog_ping_servers' => array(
+					'alter' => array('type' => 'varchar', 'constraint' => 50, 'default' => '')
+				),
+				'moblog_allow_overrides' => array(
+					'alter' => array('type' => 'char', 'constraint' => 1, 'default' => 'y')
+				),
+				'moblog_sticky_entry' => array(
+					'alter' => array('type' => 'char', 'constraint' => 1, 'default' => 'n')
+				),
+				'moblog_image_size' => array(
+					'alter' => array('type' => 'int', 'constraint' => 10, 'default' => '0')
+				),
+				'moblog_thumb_size' => array(
+					'alter' => array('type' => 'int', 'constraint' => 10, 'default' => '0')
+				)
+			);
 
-			$new_fields = array('moblog_type'				=> "`moblog_type` varchar(10) NOT NULL default '' AFTER `moblog_time_interval`",
-								'moblog_gallery_id'			=> "`moblog_gallery_id` int(6) unsigned NOT NULL default '0' AFTER `moblog_type`",
-								'moblog_gallery_category'	=> "`moblog_gallery_category` int(10) unsigned NOT NULL default '0' AFTER `moblog_gallery_id`",
-								'moblog_gallery_status'		=> "`moblog_gallery_status` varchar(50) NOT NULL default '' AFTER `moblog_gallery_category`",
-								'moblog_gallery_comments'	=> "`moblog_gallery_comments` varchar(10) NOT NULL default 'y' AFTER `moblog_gallery_status`",
-								'moblog_gallery_author'		=> "`moblog_gallery_author` int(10) unsigned NOT NULL default '1' AFTER `moblog_gallery_comments`",
-								'moblog_ping_servers'		=> "`moblog_ping_servers` varchar(50) NOT NULL default ''",
-								'moblog_allow_overrides'	=> "`moblog_allow_overrides` char(1) NOT NULL default 'y'",
-								'moblog_sticky_entry'		=> "`moblog_sticky_entry` char(1) NOT NULL default 'n'");
+			// Array of deleted fields
+			$deleted_fields = array('moblog_image_width', 'moblog_image_height', 'moblog_resize_image', 'moblog_resize_width', 'moblog_resize_height', 'moblog_create_thumbnail', 'moblog_thumbnail_width', 'moblog_thumbnail_height');
+			
+			// Get a list of the current fields
+			$existing_fields = $this->EE->db->list_fields('moblogs');
 
-			$query = $this->EE->db->query("SHOW COLUMNS FROM exp_moblogs");
-
-			foreach($query->result_array() as $row)
+			// Add fields that don't exist
+			foreach($new_fields AS $new_field_name => $new_field_data)
 			{
-				$existing_fields[] = $row['Field'];
+				if ( ! array_key_exists($new_field_name, $existing_fields))		
+				{
+					$after = $new_field_data['after'] ? $new_field_data['after'] :  ''; 
+					$field = array( => $new_field_data['alter']);
+					
+					$this->EE->dbforge->add_column('moblogs', $field, $after);
+				}
 			}
 
-			foreach($new_fields as $field => $alter)
+			// Delete old fields
+			foreach($existing_fields AS $existing_field)
 			{
-				if ( ! in_array($field, $existing_fields))
+				if (array_key_exists($existing_field, $deleted_fields))
 				{
-					$this->EE->db->query("ALTER table exp_moblogs ADD COLUMN {$alter}");
+					$this->EE->dbforge->drop_column('moblogs', $existing_field);
 				}
 			}
 		}
@@ -180,9 +225,17 @@ class Moblog_upd {
 		if ($current < 3.0)
 		{
 			// @confrim- should be able to drop is_user_blog as well?
-			$this->EE->db->query("ALTER TABLE `exp_moblogs` DROP COLUMN `is_user_blog`");
-			$this->EE->db->query("ALTER TABLE `exp_moblogs` DROP COLUMN `user_blog_id`");
-			$this->EE->db->query("ALTER TABLE `exp_moblogs` CHANGE `moblog_weblog_id` `moblog_channel_id` INT(4) UNSIGNED NOT NULL DEFAULT 1");
+			$this->EE->dbforge->drop_column('moblogs', 'is_user_blog');
+			$this->EE->dbforge->drop_column('moblogs', 'user_blog_id');
+			$this->EE->dbforge->modify_column('moblogs', array(
+				'moblog_weblog_id' => array(
+					'name'			=> 'moblog_channel_id',
+					'type'			=> 'int',
+					'constraint'	=> 4,
+					'unsigned'		=> TRUE,
+					'default'		=> 1
+				)
+			));
 		}
 
 		return TRUE;
