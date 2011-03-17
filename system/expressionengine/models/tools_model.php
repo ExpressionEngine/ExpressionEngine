@@ -1,4 +1,4 @@
-<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -25,27 +25,13 @@
 class Tools_model extends CI_Model {
 
 	/**
-	 * Get Recount Batch Total
-	 *
-	 * @access	public
-	 * @return	string
-	 */
-	function get_recount_batch_total()
-	{
-		return $this->config->item('recount_batch_total');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Get Search and Replace Options
 	 *
 	 * This method populates the dropdown field on the search and replace form
 	 *
-	 * @access	public
-	 * @return	mixed
+	 * @return	array
 	 */
-	function get_search_replace_options()
+	public function get_search_replace_options()
 	{
 		$options = array();
 			
@@ -137,11 +123,9 @@ class Tools_model extends CI_Model {
 	/**
 	 * Get Control Panel Log
 	 *
-	 * @access	public
 	 * @return	mixed
 	 */
-
-	function get_cp_log($limit = 50, $offset = 0, $order = array())
+	public function get_cp_log($limit = 50, $offset = 0, $order = array())
 	{
 		$this->db->select('cp_log.*, sites.site_id, sites.site_label');
 		$this->db->from('cp_log');
@@ -169,10 +153,9 @@ class Tools_model extends CI_Model {
 	/**
 	 * Get Search Log
 	 *
-	 * @access	public
 	 * @return	mixed
 	 */
-	function get_search_log($limit = 50, $offset = 0, $order = array())
+	public function get_search_log($limit = 50, $offset = 0, $order = array())
 	{
 		$this->db->select('search_log.*, sites.site_id, sites.site_label');
 		$this->db->from('search_log');
@@ -191,6 +174,7 @@ class Tools_model extends CI_Model {
 		}
 
 		$this->db->limit($limit, $offset);
+		
 		return $this->db->get();
 	}
 
@@ -199,12 +183,11 @@ class Tools_model extends CI_Model {
 	/**
 	 * Get Throttle Log
 	 *
-	 * @access	public
 	 * @param	int		maximum page loads
 	 * @param	int		lockout time
 	 * @return	mixed
 	 */
-	function get_throttle_log($max_page_loads = 10, $lockout_time = 30, $limit = 50, $offset = 0, $order = array())
+	public function get_throttle_log($max_page_loads = 10, $lockout_time = 30, $limit = 50, $offset = 0, $order = array())
 	{
 		$this->db->select('ip_address, hits, locked_out, last_activity');
 		$this->db->from('throttle');
@@ -223,6 +206,7 @@ class Tools_model extends CI_Model {
 		}
 
 		$this->db->limit($limit, $offset);
+		
 		return $this->db->get();
 	}
 	
@@ -231,11 +215,10 @@ class Tools_model extends CI_Model {
 	/**
 	 * Blacklist IP addresses
 	 *
-	 * @access	public
 	 * @param	mixed	list of ips
 	 * @return	int		inserted count
 	 */
-	function blacklist_ips($naughty = array())
+	public function blacklist_ips($naughty = array())
 	{
 		// Get all previously blacklisted ips
 		$this->db->select('blacklisted_value');
@@ -265,11 +248,10 @@ class Tools_model extends CI_Model {
 	/**
 	 * Get Email Logs
 	 *
-	 * @access	public
 	 * @param	int
 	 * @return	mixed
 	 */
-	function get_email_logs($group_id = FALSE, $limit = 50, $offset = 0, $order = array())
+	public function get_email_logs($group_id = FALSE, $limit = 50, $offset = 0, $order = array())
 	{
 		$this->db->select('cache_id, member_id, member_name, recipient_name, cache_date, subject');
 		$this->db->from('email_console_cache');
@@ -297,10 +279,9 @@ class Tools_model extends CI_Model {
 	 *
 	 * Returns an array of language files
 	 *
-	 * @access	public
 	 * @return	array
 	 */
-	function get_language_filelist($language_directory = 'english')
+	public function get_language_filelist($language_directory = 'english')
 	{
 		$this->load->helper('file');
 		
@@ -316,6 +297,11 @@ class Tools_model extends CI_Model {
 
 		foreach ($language_files as $file)
 		{
+			if ($file == 'email_data.php')
+			{
+				continue; 
+			}
+			
 			if (substr($file, -$filename_end_len) && substr($file, -$ext_len) == EXT)
 			{
 				$languages[] = $file;
@@ -323,7 +309,7 @@ class Tools_model extends CI_Model {
 		}
 		
 		sort($languages);
-		
+
 		return $languages;
 	}
 
@@ -334,12 +320,11 @@ class Tools_model extends CI_Model {
 	 *
 	 * Returns an array of language variables in the file
 	 *
-	 * @access	public
 	 * @param	string	the language file to return
 	 * @param	string	the folder to save the new file to
 	 * @return	array
 	 */
-	function get_language_list($language_file = '', $dest_folder = 'translations')
+	public function get_language_list($language_file = '', $dest_folder = 'translations')
 	{
 		if ($language_file == '')
 		{
@@ -392,11 +377,10 @@ class Tools_model extends CI_Model {
 	 * Delete Upload Preferences
 	 *
 	 * @deprecated Deprecated since 2.2
-	 * @access	public
 	 * @param	int
 	 * @return	string
 	 */
-	function delete_upload_preferences($id = '')
+	public function delete_upload_preferences($id = '')
 	{
 		$this->load->model('file_upload_preferences_model');
 
@@ -409,14 +393,12 @@ class Tools_model extends CI_Model {
 	 * Get Upload Preferences
 	 *
 	 * @deprecated Deprecated since 2.2
-	 * @access	public
 	 * @param	int
 	 * @return	mixed
 	 */
-	function get_upload_preferences($group_id = NULL, $id = NULL)
+	public function get_upload_preferences($group_id = NULL, $id = NULL)
 	{
 		$this->load->model('file_upload_preferences_model');
-
 		
 		return $this->file_upload_preferences_model->get_upload_preferences($group_id, $id);
 	}
@@ -427,11 +409,10 @@ class Tools_model extends CI_Model {
 	 * Get Files
 	 *
 	 * @deprecated Deprecated since 2.2
-	 * @access	public
 	 * @param	int
 	 * @return	mixed
 	 */
-	function get_files($directories = array(), $allowed_types = array(), $full_server_path = '', $hide_sensitive_data = FALSE, $get_dimensions = FALSE, $files_array = array())
+	public function get_files($directories = array(), $allowed_types = array(), $full_server_path = '', $hide_sensitive_data = FALSE, $get_dimensions = FALSE, $files_array = array())
 	{
 		$this->load->model('file_model');
 		
@@ -445,10 +426,9 @@ class Tools_model extends CI_Model {
 	 *
 	 * Fetches image width, height, and type
 	 *
-	 * @access	public
 	 * @return	string	filepath
 	 */
-	function image_properties($file)
+	public function image_properties($file)
 	{
 		if (function_exists('getimagesize')) 
 		{
@@ -476,10 +456,9 @@ class Tools_model extends CI_Model {
 	 *
 	 * Fetches various stats for the database
 	 *
-	 * @access	public
 	 * @return	array
 	 */
-	function get_sql_info()
+	public function get_sql_info()
 	{
 		$this->load->helper('number');
 		
@@ -551,10 +530,9 @@ class Tools_model extends CI_Model {
 	 *
 	 * Runs a STATUS query on the database, returns query object
 	 *
-	 * @access	public
 	 * @return	object
 	 */
-	function get_table_status()
+	public function get_table_status()
 	{
 		$this->load->helper('number');
 		

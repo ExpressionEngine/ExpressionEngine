@@ -24,18 +24,18 @@
  */
 class Tools_utilities extends CI_Controller {
 
-	var $errors					= array();
-	var $members				= array();
-	var $members_custom			= array();
-	var $default_fields			= array();
-	var $default_custom_fields	= array();
-	var $taken					= array();
-	var $invalid_names			= array();
+	private $errors					= array();
+	private $members				= array();
+	private $members_custom			= array();
+	private $default_fields			= array();
+	private $default_custom_fields	= array();
+	private $taken					= array();
+	private $invalid_names			= array();
 
 	/**
 	 * Constructor
 	 */
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 
@@ -52,10 +52,9 @@ class Tools_utilities extends CI_Controller {
 	/**
 	 * Index function
 	 *
-	 * @access	public
 	 * @return	void
 	 */	
-	function index()
+	public function index()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -78,10 +77,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Creates the main page for the list of Import Utilities
 	 * 
-	 * @access	public
 	 * @return	mixed
 	 */	
-	function import_utilities()
+	public function import_utilities()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -102,10 +100,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Creates the initial page for the Member Import
 	 * 
-	 * @access	public
 	 * @return	mixed
 	 */	
-	function member_import()
+	public function member_import()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -130,10 +127,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Creates the initial page for the Import Member Data from XML page
 	 * 
-	 * @access	public
 	 * @return	mixed
 	 */	
-	function import_from_xml()
+	public function import_from_xml()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -154,11 +150,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Generates the starting form for the member import
 	 * 
-	 * @access	private
 	 * @return	void
 	 */	
-
-	function _import_xml_form()
+	private function _import_xml_form()
 	{
 		$this->load->helper(array('form', 'date'));
 		$this->lang->loadfile('member_import');
@@ -191,11 +185,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Validates main import settings
 	 * 
-	 * @access	private
 	 * @return	void
 	 */	
-
-	function _import_xml_validate()
+	private function _import_xml_validate()
 	{
 		$this->load->library('form_validation');
 		
@@ -242,7 +234,6 @@ class Tools_utilities extends CI_Controller {
 		$this->form_validation->set_error_delimiters('<span class="notice">', '</span>');
 	}
 
-
 	// --------------------------------------------------------------------
 
 	/**
@@ -250,10 +241,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Confirmation page for Member Data import
 	 * 
-	 * @access	public
 	 * @return	mixed
 	 */	
-	function confirm_xml_form()
+	public function confirm_xml_form()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -262,12 +252,10 @@ class Tools_utilities extends CI_Controller {
 
 		$this->lang->loadfile('member_import');
 
-		$this->load->library('table');
+		$this->load->library(array('table', 'javascript'));
 		$this->load->helper(array('form', 'date'));
 		$this->lang->loadfile('member_import');
 		$this->load->model('member_model');
-		$this->load->library('javascript');
-
 		
 		$this->db->select('group_title');
 		$this->db->where('group_id', $this->input->post('group_id'));
@@ -275,18 +263,13 @@ class Tools_utilities extends CI_Controller {
 		$query = $this->db->get('member_groups');
 		
 		$group_title = '';
+		$group_name = ' -- ';
 		
 		if ($query->num_rows() > 0)
 		{
 			$row = $query->row_array();
-			$group_name = $row['group_title'];
-			
+			$group_name = $row['group_title'];			
 		}
-		else
-		{
-			$group_name = ' -- ';
-		}
-				
 
 		$this->javascript->compile();
 					
@@ -294,7 +277,7 @@ class Tools_utilities extends CI_Controller {
 						'xml_file'   		=> $this->input->post('xml_file'),
 						'group_id' 			=> $this->input->post('group_id'),
 						'language' 			=> ($this->input->post('language') == $this->lang->line('none')) ? '' : $this->input->post('language'),
-						'timezones' 			=> $this->input->post('timezones'),
+						'timezones' 		=> $this->input->post('timezones'),
 						'time_format' 		=> $this->input->post('time_format'),
 						'daylight_savings' 	=> ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n',
 						'auto_custom_field' => ($this->input->post('auto_custom_field') == 'y') ? 'y' : 'n'
@@ -305,12 +288,11 @@ class Tools_utilities extends CI_Controller {
 						'xml_file'   		=> $data['xml_file'],
 						'default_group_id'	=> $group_name,
 						'language' 			=> ($data['language'] == '') ? $this->lang->line('none') : ucfirst($data['language']),
-						'timezones' 			=> $this->lang->line($data['timezones']),
+						'timezones' 		=> $this->lang->line($data['timezones']),
 						'time_format' 		=> ($data['time_format'] == 0) ? $this->lang->line('united_states') : $this->lang->line('european'),
 						'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? $this->lang->line('yes') : $this->lang->line('no'),
 						'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? $this->lang->line('yes') : $this->lang->line('no')
 					 );
-
 
 				
 		$vars['form_hidden'] = $data;
@@ -322,14 +304,12 @@ class Tools_utilities extends CI_Controller {
 
 			$new_custom_fields = $this->custom_field_check($data['xml_file']);
 			
-			if ($new_custom_fields != FALSE && count($new_custom_fields) > 0)
+			if ($new_custom_fields !== FALSE && count($new_custom_fields) > 0)
 			{
 				return $this->_new_custom_fields_form($data, $vars, $new_custom_fields);
 			}
-			else
-			{
-				$vars['message'] = $this->lang->line('unable_to_parse_custom_fields');
-			}
+
+			$vars['message'] = $this->lang->line('unable_to_parse_custom_fields');
 		}
 
 		$this->_confirm_custom_field_form($vars);
@@ -342,10 +322,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Confirmation screen after custom field validation
 	 * 
-	 * @access	private
 	 * @return	void
 	 */	
-	function _confirm_custom_field_form($vars)
+	private function _confirm_custom_field_form($vars)
 	{
 		$this->_import_xml_validate();
 		
@@ -373,10 +352,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Final Import Confirmation Form generated after custom field creation
 	 * 
-	 * @access	public
 	 * @return	void
 	 */	
-	function final_confirm_xml_form()
+	public function final_confirm_xml_form()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -464,10 +442,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Generates the form for new custom field settings
 	 * 
-	 * @access	private
 	 * @return	void
 	 */	
-	function _new_custom_fields_form($data, $vars, $new_custom_fields)
+	private function _new_custom_fields_form($data, $vars, $new_custom_fields)
 	{
 		$this->load->library('table');
 		
@@ -528,10 +505,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Imports the members from XML and redirects to the index page on successful completion
 	 * 
-	 * @access	public
 	 * @return	void
 	 */	
-	function process_xml()
+	public function process_xml()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -620,10 +596,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Finds the fields in the first XML record that do not already exist
 	 * 
-	 * @access	public
 	 * @return	array
 	 */	
-	function custom_field_check($xml_file)
+	public function custom_field_check($xml_file)
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -714,10 +689,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Validates both the format and content of Member Import XML
 	 * 
-	 * @access	public
 	 * @return	mixed
 	 */	
-	function validate_xml($xml)
+	public function validate_xml($xml)
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -967,10 +941,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Inserts new members into the database
 	 * 
-	 * @access	public
 	 * @return	number
 	 */	
-	function do_import()
+	public function do_import()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -1119,10 +1092,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Validates new custom field submission
 	 * 
-	 * @access	private
 	 * @return	mixed
 	 */	
-	function _create_custom_validation()
+	private function _create_custom_validation()
 	{
 		$this->load->library('form_validation');
 		
@@ -1155,7 +1127,6 @@ class Tools_utilities extends CI_Controller {
 		
 		$this->form_validation->set_message('required', $this->lang->line('s_required'));
 		$this->form_validation->set_error_delimiters('<span class="notice">', '</span>');
-		
 	}
 
 	// --------------------------------------------------------------------
@@ -1165,23 +1136,22 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Validates new custom field names
 	 * 
-	 * @access	private
 	 * @return	bool
 	 */	
-	function _valid_name($str)
+	private function _valid_name($str)
 	{
 		$error = array();
 		
 		// Does field name have invalid characters?
 		if (preg_match('/[^a-z0-9\_\-]/i', $str))
 		{
-				$error[] = $this->lang->line('invalid_characters');
+			$error[] = $this->lang->line('invalid_characters');
 		}				
 
 		// Is the field one of the reserved words?
 		if (in_array($str, $this->invalid_names))
 		{
-				$error[] = $this->lang->line('reserved_word');
+			$error[] = $this->lang->line('reserved_word');
 		}
 				
 		// Is the field name taken?
@@ -1194,7 +1164,6 @@ class Tools_utilities extends CI_Controller {
 		
 		if (count($error) > 0)
 		{
-
 			$out = implode(',', $error);	
 			$this->form_validation->set_message('_valid_name', $out);
 			return FALSE;				
@@ -1211,10 +1180,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Creates the custom field form
 	 * 
-	 * @access	public
 	 * @return	mixed
 	 */	
-	function create_custom_fields()
+	public function create_custom_fields()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -1286,10 +1254,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Creates initial page for the Convert from a Delimited File page
 	 * 
-	 * @access	public
 	 * @return	mixed
 	 */	
-	function convert_from_delimited()
+	public function convert_from_delimited()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -1308,10 +1275,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Validation for delimited XML conversion
 	 * 
-	 * @access	private
 	 * @return	void
 	 */	
-	function _convert_from_delimited_validation()
+	private function _convert_from_delimited_validation()
 	{
 		$this->load->library('form_validation');
 					
@@ -1330,10 +1296,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Main form for converted delimited data to XML
 	 * 
-	 * @access	private
 	 * @return	void
 	 */	
-	function _convert_from_delimited_form()
+	private function _convert_from_delimited_form()
 	{
 		$this->load->helper('form');
 		
@@ -1362,10 +1327,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * For mapping to existing custom fields
 	 * 
-	 * @access	private
 	 * @return	void
 	 */	
-	function _pair_fields_form()
+	private function _pair_fields_form()
 	{
 		$this->load->library('table');
 		
@@ -1461,10 +1425,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Pair delimited data with Member fields
 	 *
-	 * @access	private
 	 * @return	boolean
 	 */
-	function pair_fields()
+	private function pair_fields()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -1491,11 +1454,10 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Validation callback that makes sure that no alphanumeric chars are submitted
 	 *
-	 * @access	private
 	 * @param	string
 	 * @return	boolean
 	 */
-	function _not_alphanu($str = '')
+	private function _not_alphanu($str = '')
 	{
 		if ($this->input->post('delimiter') == 'other')
 		{
@@ -1524,11 +1486,10 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Validation callback that checks if a file exits
 	 *
-	 * @access	private
 	 * @param	string
 	 * @return	boolean
 	 */
-	function _file_exists($file)
+	private function _file_exists($file)
 	{
 		if ( ! file_exists($file))
 		{
@@ -1546,10 +1507,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Undo changes made by form prep
 	 * 
-	 * @access	private
 	 * @return	string
 	 */	
-	function _prep_enclosure($enclosure)
+	private function _prep_enclosure($enclosure)
 	{
 		// undo changes made by form prep as we need the literal characters
 		// and htmlspecialchars_decode() doesn't exist until PHP 5, so...
@@ -1563,7 +1523,6 @@ class Tools_utilities extends CI_Controller {
 		return $enclosure;
 	}
 
-	
 	// --------------------------------------------------------------------
 
 	/**
@@ -1571,10 +1530,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Validates paired fields
 	 * 
-	 * @access	private
 	 * @return	void
 	 */	
-	function _pair_fields_validation()
+	private function _pair_fields_validation()
 	{
 		$this->load->library('form_validation');
 		
@@ -1582,7 +1540,6 @@ class Tools_utilities extends CI_Controller {
 		$this->form_validation->set_rules('encrypt', '', '');
 		
 		$this->form_validation->set_error_delimiters('<p class="notice">', '</p>');
-
 	}
 	
 	// --------------------------------------------------------------------
@@ -1592,10 +1549,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Check for uniqueness and required values
 	 * 
-	 * @access	private
 	 * @return	void
 	 */	
-	function _unique_required ($selected_fields)
+	private function _unique_required ($selected_fields)
 	{
 		//  Get field pairings
 		$paired = array();
@@ -1647,10 +1603,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Generates confirmation page prior to delimited conversion
 	 * 
-	 * @access	public
 	 * @return	void
 	 */	
-	function confirm_data_form()
+	public function confirm_data_form()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -1743,10 +1698,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Creates and XML file from delimited data
 	 * 
-	 * @access	public
 	 * @return	mixed
 	 */	
-	function create_xml()
+	public function create_xml()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -1832,10 +1786,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * View XML in browser
 	 * 
-	 * @access	private
 	 * @return	void
 	 */	
-	function view_xml($xml)
+	public function view_xml($xml)
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -1863,10 +1816,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Displays XML Errors
 	 * 
-	 * @access	public
 	 * @return	void
 	 */	
-	function view_xml_errors($errors, $message = '')
+	public function view_xml_errors($errors, $message = '')
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -1901,7 +1853,6 @@ class Tools_utilities extends CI_Controller {
 		$vars['message'] = ($message == '') ? NULL : $message;
 
 		$this->load->view('tools/view_xml', $vars);
-
 	}	
 
 	// --------------------------------------------------------------------
@@ -1911,10 +1862,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Generates XML download
 	 * 
-	 * @access	public
 	 * @return	void
 	 */	
-	function download_xml($xml)
+	public function download_xml($xml)
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -1936,32 +1886,33 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Creates the Translation Tool page
 	 * 
-	 * @access	public
 	 * @return	mixed
 	 */	
-	function translation_tool($message = '')
+	public function translation_tool($message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools') OR 
+			 ! $this->cp->allowed_group('can_access_utilities'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
 		if ( ! is_really_writable(APPPATH.'translations/'))
 		{
-			$vars['not_writeable'] = lang('translation_dir_unwritable');
+			$not_writeable = lang('translation_dir_unwritable');
 		}
-		
-		$vars['message'] = $message;
 
+		$this->cp->set_variable('cp_page_title', lang('translation_tool'));
 		$this->load->model('tools_model');
-
-		$this->cp->set_variable('cp_page_title', $this->lang->line('translation_tool'));
-
-		$this->javascript->compile();
-
-		$vars['language_files'] = $this->tools_model->get_language_filelist();
 		
-		$this->load->view('tools/translation_tool', $vars);
+		$data = array(
+			'not_writeable' 	=> isset($not_writeable) ? $not_writeable : NULL,
+			'message'			=> $message,
+			'language_files'	=> $this->tools_model->get_language_filelist()
+		);
+		
+		$this->javascript->compile();
+		
+		$this->load->view('tools/translation_tool', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -1971,10 +1922,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Creates the Translation Tool form page
 	 * 
-	 * @access	public
 	 * @return	mixed
 	 */	
-	function translate()
+	public function translate()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -1996,22 +1946,16 @@ class Tools_utilities extends CI_Controller {
 
 		$this->javascript->compile();
 
-		// awkward name to prevent collision with potential language vars
-		$vars['form_hidden']['trans_ee_language_file'] = $language_file;
-
 		$lang_list = $this->tools_model->get_language_list($language_file);
+
+		$data = array(
+			'form_hidden' 	=> array(
+				'trans_ee_language_file'	=> $language_file
+			),
+			'language_list'	=> (count($lang_list) === 0) ? FALSE : $lang_list
+		);
 		
-		if (count($lang_list) == 0)
-		{
-			$vars['language_list'] = FALSE;
-		}
-		else
-		{
-			$vars['language_list'] = $lang_list;
-		}
-		
-		
-		$this->load->view('tools/translate', $vars);
+		$this->load->view('tools/translate', $data);
 	}
 
 	// --------------------------------------------------------------------
@@ -2021,10 +1965,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Saves a submitted translation
 	 * 
-	 * @access	public
 	 * @return	void
 	 */	
-	function translation_save()
+	public function translation_save()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -2087,10 +2030,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Read delimited data file into an array
 	 * 
-	 * @access	public
 	 * @return	array
 	 */	
-	function datafile_to_array($file)
+	public function datafile_to_array($file)
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -2128,10 +2070,9 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * Creates the PHP Info page
 	 *
-	 * @access	public
 	 * @return	mixed
 	 */
-	function php_info()
+	public function php_info()
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
 		{
@@ -2183,8 +2124,6 @@ class Tools_utilities extends CI_Controller {
 
 		$this->load->view('tools/php_info', $vars);
 	}
-
-	/* END */
 }
 
 /* End of file tools_utilities.php */
