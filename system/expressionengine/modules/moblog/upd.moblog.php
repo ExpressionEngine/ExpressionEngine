@@ -113,7 +113,7 @@ class Moblog_upd {
 	{
 		// Get the module ID from modules
 		$qry = $this->EE->db->select('module_id')
-							->get_where('modules', array('module_name' => 'Moblog');
+							->get_where('modules', array('module_name' => 'Moblog'));
 
 		// Delete all mentions of the moblog from other tables
 		$this->EE->db->delete('module_member_groups', array('module_id' => $query->row('module_id')));
@@ -191,6 +191,14 @@ class Moblog_upd {
 				),
 				'moblog_thumb_size' => array(
 					'alter' => array('type' => 'int', 'constraint' => 10, 'default' => '0')
+				),
+				'moblog_image_size' => array(
+					'alter' => array('type' => 'int', 'constraint' => 10, 'unsigned' => TRUE, 'default' => '0'),
+					'after' => 'moblog_template'
+				),
+				'moblog_thumb_size' => array(
+					'alter' => array('type' => 'int', 'constraint' => 10, 'unsigned' => TRUE, 'default' => '0'),
+					'after' => 'moblog_image_size'
 				)
 			);
 
@@ -205,8 +213,8 @@ class Moblog_upd {
 			{
 				if ( ! array_key_exists($new_field_name, $existing_fields))		
 				{
-					$after = $new_field_data['after'] ? $new_field_data['after'] :  ''; 
-					$field = array( => $new_field_data['alter']);
+					$after = $new_field_data['after'] ? $new_field_data['after'] : ''; 
+					$field = array($new_field_name => $new_field_data['alter']);
 					
 					$this->EE->dbforge->add_column('moblogs', $field, $after);
 				}
