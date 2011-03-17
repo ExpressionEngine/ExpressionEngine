@@ -1147,14 +1147,7 @@ class Moblog {
 
 				$params['format']	= ( ! isset($params['format'])) ? '' : $params['format'];
 				$params['name'] 	= ( ! isset($params['name'])) 	? '' : $params['name'];
-				
-				// Was it overriden?
-				
-				if (isset($this->entry_data[$params['name']]['format']))
-				{
-					//$params['format'] = $this->entry_data[$params['name']]['format'];
-				}
-				
+
 				$this->parse_field($params,$matches['2'][$i], $query->row('field_group') ); 
 				$this->template = str_replace($matches['0'],'',$this->template);
 			}
@@ -1242,13 +1235,9 @@ class Moblog {
 
 		if ( ! $result)
 		{
-			// echo '<pre>';print_r($this->EE->api_channel_entries->errors);echo'</pre>';
-		}
-		else
-		{
 			$this->entries_added++;
 		}
-		
+
 		$this->EE->session->userdata['can_assign_post_authors'] = $orig_can_assign;
 		$this->EE->session->userdata['group_id'] = $orig_group_id;
 		$this->EE->session->userdata['can_edit_other_entries'] = $orig_can_edit;
@@ -1263,7 +1252,6 @@ class Moblog {
 	 * 	@param string	url
 	 * 
 	 */
-
 	function send_pings($title, $url)
 	{
 		$ping_servers = explode('|', $this->moblog_array['moblog_ping_servers']);
@@ -1423,6 +1411,31 @@ class Moblog {
 				$format		= $params['format'];
 			}
 		}
+		
+		
+		$this->EE->load->model('file_model');
+		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id($this->moblog_array['moblog_upload_directory']);
+		
+		// @pk get dir server path and calculate image size below (1513)
+		
+		// @todo if 0 skip!!
+		$thumb_data = array();
+		$image_data = array();
+		
+		foreach ($sizes_q->result() as $row)
+		{
+			foreach (array('thumb', 'image') as $which)
+			{
+				if ($row->id == $this->moblog_array['moblog_'.$which.'_size'])
+				{
+					${$which.'_data'} = array(
+						'dir'		=> '_'.$row->short_name.'/',
+						'height'	=> $row->height,
+						'width'		=> $row->width
+					);
+				}
+			}
+		}
 
 		/** -----------------------------
 		/**  Parse Content
@@ -1431,6 +1444,13 @@ class Moblog {
 		$pair_array = array('images','audio','movie','files'); 
 		$float_data = $this->post_data;
 		$params = array();
+		
+		
+		echo '<pre>';
+		print_r($float_data);
+		echo '</pre>';
+		exit;
+
 
 		foreach ($pair_array as $type)
 		{
@@ -1475,22 +1495,24 @@ class Moblog {
 						{
 							if (in_array($ftype,$pair_array) && ($params['match'] == 'all' OR stristr($params['match'],$ftype)))
 							{ 
-								foreach($float_data[$ftype] as $k => $file)
+								foreach ($float_data[$ftype] as $k => $file)
 								{
+									// probably not an image
 									if ( ! is_array($file))
 									{
 										$template_data .= str_replace('{file}',$this->upload_dir_code.$file,$matches['2'][$i]);
 									}
-									elseif(is_array($file) && $ftype == 'images')
+									// most definitely an image
+									elseif (is_array($file) && $ftype == 'images')
 									{
 										$temp_data = '';
 										$details = array();
-										$filename					= ( ! isset($file['filename'])) ? '' : $this->upload_dir_code.$file['filename'];
-										$details['width']			= ( ! isset($file['width'])) ? '' : $file['width'];
-										$details['height']			= ( ! isset($file['height'])) ? '' : $file['height'];
-										$details['thumbnail']		= ( ! isset($file['thumbnail'])) ? '' : $this->upload_dir_code.$file['thumbnail'];
-										$details['thumb_width']		= ( ! isset($file['thumb_width'])) ? '' : $file['thumb_width'];
-										$details['thumb_height']	= ( ! isset($file['thumb_height'])) ? '' : $file['thumb_height'];
+										$filename					= empty($image_data) ? $this->upload_dir_code.$file['filename'] : $this->upload_dir_code.$image_data['dir'].$file['filename'];
+										$details['width']			= empty($image_data) ? '' : $image_data['width'];
+										$details['height']			= empty($image_data) ? '' : $image_data['height'];
+										$details['thumbnail']		= empty($thumb_data) ? '' : $this->upload_dir_code.$thumb_data['dir'].$file['thumbnail'];
+										$details['thumb_width']		= empty($thumb_data) ? '' : $thumb_data['thumb_width'];
+										$details['thumb_height']	= empty($thumb_data) ? '' : $thumb_data['thumb_height'];
 
 										$temp_data = str_replace('{file}',$filename,$matches['2'][$i]);
 
@@ -1501,8 +1523,6 @@ class Moblog {
 
 										$template_data .= $temp_data;
 									}
-
-									//unset($float_data[$ftype][$k]);
 								}
 							}
 						}
@@ -1510,34 +1530,32 @@ class Moblog {
 				}
 				elseif(isset($float_data[$type]))
 				{
-					foreach($float_data[$type] as $k => $file)
+					foreach ($float_data[$type] as $k => $file)
 					{
 						if ( ! is_array($file))
 						{
 							$template_data .= str_replace('{file}',$this->upload_dir_code.$file,$matches['2'][$i]);
 						}
-						elseif(is_array($file) && $type == 'images')
+						elseif (is_array($file) && $type == 'images')
 						{
 							$temp_data = '';
 							$details = array();
-							$filename					= ( ! isset($file['filename'])) ? '' : $this->upload_dir_code.$file['filename'];
+							$filename					= ( ! isset($file['filename'])) ? '' : $this->upload_dir_code.$image_folder.'/'.$file['filename'];
 							$details['width']			= ( ! isset($file['width'])) ? '' : $file['width'];
 							$details['height']			= ( ! isset($file['height'])) ? '' : $file['height'];
-							$details['thumbnail']		= ( ! isset($file['thumbnail'])) ? '' : $this->upload_dir_code.$file['thumbnail'];
+							$details['thumbnail']		= ( ! isset($file['thumbnail'])) ? '' : $this->upload_dir_code.$thumb_folder.'/'.$file['thumbnail'];
 							$details['thumb_width']		= ( ! isset($file['thumb_width'])) ? '' : $file['thumb_width'];
 							$details['thumb_height']	= ( ! isset($file['thumb_height'])) ? '' : $file['thumb_height'];
 
 							$temp_data = str_replace('{file}',$filename,$matches['2'][$i]);
 
-							foreach($details as $d => $dv)
+							foreach ($details as $d => $dv)
 							{
 								$temp_data = str_replace('{'.$d.'}',$dv,$temp_data);
 							}
 
 							$template_data .= $temp_data;
 						}
-
-						//unset($float_data[$type][$k]);
 					}  
 				}
 
@@ -1703,52 +1721,6 @@ class Moblog {
 					}
 
 				}
-				
-				/** ----------------------------------
-				/**  Spring PCS - Picture Share
-				/** ----------------------------------*/
-
-				// http://pictures.sprintpcs.com//shareImage/13413001858_235.jpg
-				// http://pictures.sprintpcs.com/mi/8516539_30809087_0.jpeg?inviteToken=sETr4TJ9m85YizVzoka0
-
-				if (trim($text) != '' && strpos($text, 'pictures.sprintpcs.com') !== FALSE)
-				{
-					// Find Message
-					$sprint_msg = $this->find_data($value, '<b>Message:</b>', '</font>');
-
-					// Find Image
-					if ($this->sprint_image($text) && $sprint_msg != '')
-					{
-						$text = $sprint_msg;
-					}
-					else
-					{
-						continue;
-					}
-				}
-
-				/** ----------------------------------
-				/**  Bell Canada - Episode Two, Attack of the Sprint Clones
-				/** ----------------------------------*/
-
-				// http://mypictures.bell.ca//i/99376001_240.jpg?invite=SELr4RJHhma1cknzLQoU
-
-				if (trim($text) != '' && strpos($text, 'mypictures.bell.ca') !== FALSE)
-				{
-					// Find Message
-					$bell_msg = $this->find_data($value, 'Vous avez re&ccedil;u une photo de <b>5147103855', '<img');
-					$bell_msg = $this->find_data($bell_msg, '<p>', '</p>');
-
-					// Find Image
-					if ($this->bell_image($text) && $bell_msg != '')
-					{
-						$text = trim($bell_msg);
-					}
-					else
-					{
-						continue;
-					}
-				}
 
 				/** ----------------------------------
 				/**  T-Mobile - In cyberspace, no one can hear you cream.
@@ -1835,7 +1807,6 @@ class Moblog {
 
 				$filename = trim(str_replace('"','',$filename));
 				$filename = str_replace($this->newline,'',$filename);
-				$filename = $this->safe_filename($filename);
 
 				if (stristr($filename, 'dottedline') OR stristr($filename, 'spacer.gif') OR stristr($filename, 'masthead.jpg'))
 				{
@@ -1904,12 +1875,8 @@ class Moblog {
 					$file_code = (substr($file_code,-1) != '=') ? $file_code : substr($file_code,0,-1);
 				}
 
-				// Clean out 7bit and 8bit files.
-				
-				// You cannot make this stuff up, how are base64 encoded
-				// files are inherintly safe if we decode them before
-				// writing them to disk?! -pk
-				// XSS cleaning done below -wb
+				// Decode so that we can run xss clean on the raw
+				// data once we've determined the file type
 				
 				if (stristr($encoding,"base64"))
 				{
@@ -2038,290 +2005,6 @@ class Moblog {
 		return TRUE;
 	}
 
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * 	Remove Images from Sprint.
-	 *
-	 * eg:  <img src="http://pictures.sprintpcs.com//shareImage/13413001858_235.jpg?border=1,255,255,255,1,0,0,0&amp;invite=OEKJJD5XYYhMZ5hY8amx" border="0" />
-	 *
-	 *	@param string
-	 */
-	function sprint_image($text)
-	{
-		if (preg_match_all("|(http://pictures.sprintpcs.com(.*?))\?inviteToken\=(.*?)&|i", str_replace($this->newline,"\n",$text), $matches))
-		{
-			for($i = 0; $i < count($matches['0']); $i++)
-			{
-				/** ------------------------------
-				/**  Filename Creation
-				/** ------------------------------*/
-
-				$x = explode('/', $matches['1'][$i]);
-
-				$filename = array_pop($x);
-
-				if (strlen($filename) < 4)
-				{
-					$filename .= array_pop($x);
-				}
-
-				if (stristr($filename, 'jpeg') === FALSE && stristr($filename, 'jpg') === FALSE)
-				{
-					$filename .= '.jpg';
-				}
-
-				/** -------------------------------
-				/**  Download Image
-				/** -------------------------------*/
-
-				$image_url	= $matches['1'][$i];
-				$invite		= $matches['3'][$i];
-
-				$r = "\r\n";
-				$bits = parse_url($image_url);
-
-				if ( ! isset($bits['path']))
-				{
-					return FALSE;
-				}
-
-				$host = $bits['host'];
-				$path = ( ! isset($bits['path'])) ? '/' : $bits['path'];
-				$path .= "inviteToken={$invite}";
-
-				if ( ! $fp = @fsockopen ($host, 80))
-				{
-					continue;
-				}
-
-				fputs ($fp, "GET " . $path . " HTTP/1.0\r\n" );
-				fputs ($fp, "Host: " . $bits['host'] . "\r\n" );
-				fputs ($fp, "Content-type: application/x-www-form-urlencoded\r\n" );
-				fputs ($fp, "User-Agent: EE/EllisLab PHP/" . phpversion() . "\r\n");
-				fputs ($fp, "Connection: close\r\n\r\n" );
-
-				$this->external_image($fp, $filename);
-			}
-		}
-
-		if(preg_match_all("#<img\s+src=\s*[\"']http://pictures.sprintpcs.com/+shareImage/(.+?)[\"'](.*?)\s*\>#si", $text, $matches))
-		{
-			for($i = 0; $i < count($matches['0']); $i++)
-			{
-				$parts = explode('jpg',$matches['1'][$i]);
-
-				if ( ! isset($parts['1']))
-				{
-					continue;
-				}
-
-				$filename = $parts['0'].'jpg';
-				$image_url = 'http://pictures.sprintpcs.com/shareImage/'.$filename;
-
-				$invite = $this->find_data($parts['1'], 'invite=','');
-
-				if ($invite == '')
-				{
-					$invite = $this->find_data($parts['1'], 'invite=','&');
-
-					if ($invite == '')
-					{
-						continue;
-					}
-				}
-
-				/** -------------------------------
-				/**  Download Image
-				/** -------------------------------*/
-
-				$r = "\r\n";
-				$bits = parse_url($image_url);
-
-				if ( ! isset($bits['path']))
-				{
-					return FALSE;
-				}
-
-				$host = $bits['host'];
-				$path = ( ! isset($bits['path'])) ? '/' : $bits['path'];
-				$data = "invite={$invite}";
-
-				if ( ! $fp = @fsockopen ($host, 80))
-				{
-					continue;
-				}
-
-				fputs ($fp, "GET " . $path . " HTTP/1.0\r\n" );
-				fputs ($fp, "Host: " . $bits['host'] . "\r\n" );
-				fputs ($fp, "Content-type: application/x-www-form-urlencoded\r\n" );
-				fputs ($fp, "User-Agent: EE/EllisLab PHP/" . phpversion() . "\r\n");
-				fputs ($fp, "Content-length: " . strlen($data) . "\r\n" );
-				fputs ($fp, "Connection: close\r\n\r\n" );
-				fputs ($fp, $data);
-
-				$this->external_image($fp, $filename);
-			}
-		}
-
-		return TRUE;
-
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * 	Bell Images
-	 *
-	 * eg:  <img src="http://mypictures.bell.ca//i/99376001_240.jpg?invite=SELr4RJHhma1cknzLQoU" alt="Retrieving picture..."/>
-	 *
-	 *	@param string
-	 */
-	function bell_image($text)
-	{
-		$text = trim(str_replace($this->newline,"\n",$text));
-
-		if(preg_match_all("#<img\s+src=\"http://mypictures.bell.ca(.*?)\"(.*?)alt=\"Retrieving picture\.\.\.\"(.*?)\/\>#i", $text, $matches))
-		{
-			for($i = 0; $i < count($matches['0']); $i++)
-			{
-				$parts = explode('jpg',$matches['1'][$i]);
-
-				if ( ! isset($parts['1']))
-				{
-					continue;
-				}
-				else
-				{
-					$pos = strrpos($parts['0'], '/');
-
-					if ($pos === FALSE)
- 					{
- 						continue;
- 					}
- 
- 					$parts['0'] = substr($parts['0'], $pos+1, strlen($parts['0'])-$pos-1);
-				}
-
-
-				$filename = $parts['0'].'jpg';
-				$image_url = 'http://mypictures.bell.ca'.$matches['1'][$i];
-
-				/** -------------------------------
-				/**  Download Image
-				/** -------------------------------*/
-
-				$r = "\r\n";
-				$bits = parse_url($image_url);
-
-				if ( ! isset($bits['path']))
-				{
-					return FALSE;
-				}
-
-				$host = $bits['host'];
-				$path = ( ! isset($bits['path'])) ? '/' : $bits['path'];
-
-				if ( ! $fp = @fsockopen ($host, 80))
-				{
-					continue;
-				}
-
-				fputs ($fp, "GET " . $path.'?'.$bits['query'] . " HTTP/1.0\r\n" );
-				fputs ($fp, "Host: " . $bits['host'] . "\r\n" );
-				fputs ($fp, "User-Agent: EE/EllisLab PHP/" . phpversion() . "\r\n");
-				fputs ($fp, "Connection: close\r\n\r\n" );
-
-				$this->external_image($fp, $filename);
-			}
-		}
-
-		return TRUE;
-
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * 	Get Images from External Server
-	 *
-	 *	@param string
-	 *	@param string
-	 */
-	function external_image($fp, $filename)
-	{
-        $this->EE->load->library('filemanager');
-	
-		$data = '';
-		$headers = '';
-		$getting_headers = TRUE;
-
-		while ( ! feof($fp))
-		{
-			$line = fgets($fp, 4096);
-
-			if ($getting_headers == FALSE)
-			{
-				$data .= $line;
-			}
-			elseif (trim($line) == '')
-			{
-				$getting_headers = FALSE;
-			}
-			else
-			{
-				$headers .= $line;
-			}
-		}
-
-
-		/** -------------------------------
-		/**  Save Image
-		/** -------------------------------*/
-
-		$upload_dir_id = $this->moblog_array['moblog_upload_directory'];
-
-        $filename = $this->EE->filemanager->clean_filename($filename, $upload_dir_id);
-        $file_path = $this->upload_path.$filename;
-        
-        // Check to see if we're dealing with relative paths
-		if (strncmp($file_path, '..', 2) == 0)
-		{
-			$directory = dirname($file_path);
-			$file_path = realpath(substr($directory, 1)).'/'.$filename;
-		}
-
-		$this->post_data['images'][] = array( 'filename' => $filename);
-		$key = count($this->post_data['images']) - 1;
-
-		if (file_put_contents($file_path, $data) === FALSE)
-		{
-			$this->message_array[] = 'error_writing_attachment';
-			return FALSE;
-		}
-
-		@chmod($file_path, FILE_WRITE_MODE);
-		
-		// Disable xss cleaning in the filemanager
-        $this->EE->filemanager->xss_clean_off();
-
-        // Send the file
-        $result = $this->EE->filemanager->save_file(
-            $file_path, 
-            $upload_dir_id,
-            array(
-                'title'     => $filename,
-                'rel_path'  => dirname($file_path),
-                'file_name' => $filename
-            )
-        );
-
-		$this->email_files[] = $filename;
-		$this->uploads++;
-
-		return TRUE;
-	}
-	
 	// ------------------------------------------------------------------------
 	
 	/**

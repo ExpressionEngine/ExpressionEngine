@@ -227,11 +227,21 @@ EOT;
 		$this->EE->load->model('tools_model');
 		$query = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata['group_id']);
 		
+		
+		$this->EE->load->model('file_model');
+		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id(1);
+		$sizes = array();
+		
 		foreach ($query->result_array() as $row)
 		{
+			$sizes[$row['id']] = array('0' => '----');
 			$upload_array[$row['id']] = $row['name'];
 		}
 		
+		foreach ($sizes_q->result() as $size)
+		{
+			$sizes[$size->upload_location_id][$size->id] = $size->title;
+		}
 
 		// Options Matrix - Whoa.
 
@@ -268,6 +278,7 @@ EOT;
 						'moblog_ignore_text'		=> '',	// textarea
 						
 						// moblog_image_settings
+						/*
 						'moblog_image_width'		=> '0',
 						'moblog_image_height'		=> '0',
 						'moblog_resize_image'		=> 'n',
@@ -276,6 +287,9 @@ EOT;
 						'moblog_create_thumbnail'	=> 'n',
 						'moblog_thumbnail_width'	=> '0',
 						'moblog_thumbnail_height'	=> '0'
+						*/
+						'moblog_image_size'			=> array($sizes[1], '0'),
+						'moblog_thumb_size'			=> array($sizes[1], '0')
 						);
 
 
@@ -310,18 +324,24 @@ EOT;
 		$this->EE->form_validation->set_rules('field_id',					'lang:field_id',				'');
 		$this->EE->form_validation->set_rules('status',						'lang:status',					'');
 		$this->EE->form_validation->set_rules('author_id',					'lang:author_id',				'');
-		$this->EE->form_validation->set_rules('moblog_image_width',			'lang:moblog_image_width',		'is_natural');
-		$this->EE->form_validation->set_rules('moblog_image_height',		'lang:moblog_image_height',		'is_natural');
-		$this->EE->form_validation->set_rules('moblog_resize_width',		'lang:moblog_resize_width',		'is_natural');
-		$this->EE->form_validation->set_rules('moblog_resize_height',		'lang:moblog_resize_height',	'is_natural');
-		$this->EE->form_validation->set_rules('moblog_thumbnail_width',		'lang:moblog_thumbnail_width',	'is_natural');
-		$this->EE->form_validation->set_rules('moblog_thumbnail_height',	'lang:moblog_thumbnail_height',	'is_natural');
+
 		$this->EE->form_validation->set_rules('moblog_subject_prefix',		'lang:moblog_subject_prefix',	'');
 		$this->EE->form_validation->set_rules('moblog_ignore_text',			'lang:moblog_ignore_text',		'');
 		$this->EE->form_validation->set_rules('moblog_template',			'lang:moblog_template',			'');
 		$this->EE->form_validation->set_rules('ping[]',						'lang:ping',					'');
 		$this->EE->form_validation->set_rules('moblog_allow_overrides',		'lang:moblog_allow_overrides',	'enum[y,n]');
 		$this->EE->form_validation->set_rules('moblog_sticky_entry',		'lang:moblog_sticky_entry',		'enum[y,n]');
+		/*
+		$this->EE->form_validation->set_rules('moblog_image_width',			'lang:moblog_image_width',		'is_natural');
+		$this->EE->form_validation->set_rules('moblog_image_height',		'lang:moblog_image_height',		'is_natural');
+		$this->EE->form_validation->set_rules('moblog_resize_width',		'lang:moblog_resize_width',		'is_natural');
+		$this->EE->form_validation->set_rules('moblog_resize_height',		'lang:moblog_resize_height',	'is_natural');
+		$this->EE->form_validation->set_rules('moblog_thumbnail_width',		'lang:moblog_thumbnail_width',	'is_natural');
+		$this->EE->form_validation->set_rules('moblog_thumbnail_height',	'lang:moblog_thumbnail_height',	'is_natural');
+		*/
+		
+		$this->EE->form_validation->set_rules('moblog_image_size',			'lang:moblog_image_size',		'is_natural');
+		$this->EE->form_validation->set_rules('moblog_thumb_size',			'lang:moblog_thumb_size',		'is_natural');
 		
 		$this->EE->form_validation->set_error_delimiters('<p class="notice">', '</p>');
 
@@ -374,6 +394,7 @@ EOT;
 						'moblog_auth_required'		=> $row['moblog_auth_required'] ,
 						'moblog_auth_delete'		=> $row['moblog_auth_delete'] ,
 						'moblog_upload_directory'	=> $row['moblog_upload_directory'] ,
+						/*
 						'moblog_image_width'		=> $row['moblog_image_width'] ,
 						'moblog_image_height'		=> $row['moblog_image_height'] ,
 						'moblog_resize_image'		=> $row['moblog_resize_image'] ,
@@ -382,6 +403,10 @@ EOT;
 						'moblog_create_thumbnail'	=> $row['moblog_create_thumbnail'] ,
 						'moblog_thumbnail_width'	=> $row['moblog_thumbnail_width'] ,
 						'moblog_thumbnail_height'	=> $row['moblog_thumbnail_height'] ,
+						*/
+						'moblog_image_size'			=> $row['moblog_image_size'],
+						'moblog_thumb_size'			=> $row['moblog_thumb_size'],
+						
 						'moblog_email_type'			=> $row['moblog_email_type'] ,
 						'moblog_email_address'		=> base64_decode($row['moblog_email_address'] ),
 						'moblog_email_server'		=> $row['moblog_email_server'] ,
@@ -406,6 +431,9 @@ EOT;
 			if ($row['moblog_channel_id'] != 0 && array_key_exists($row['moblog_channel_id'], $this->channel_array))
 			{
 				$form_data['channel_id'][1] = $row['moblog_channel_id'];
+
+				$form_data['moblog_image_size'][1] = $row['moblog_image_size'];				
+				$form_data['moblog_thumb_size'][1] = $row['moblog_thumb_size'];
 				
 				$new_array = array('none'=> $this->EE->lang->line('none'));
 				
@@ -937,6 +965,7 @@ MAGIC;
 						'moblog_auth_required'		=> $_POST['moblog_auth_required'],
 						'moblog_auth_delete'		=> $_POST['moblog_auth_delete'],
 						'moblog_upload_directory'	=> $_POST['moblog_upload_directory'],
+						/*
 						'moblog_image_width'		=> ( ! isset($_POST['moblog_image_width'])) ? '0' : $_POST['moblog_image_width'],
 						'moblog_image_height'		=> ( ! isset($_POST['moblog_image_height'])) ? '0' : $_POST['moblog_image_height'],
 						'moblog_resize_image'		=> $_POST['moblog_resize_image'],
@@ -945,6 +974,10 @@ MAGIC;
 						'moblog_create_thumbnail'	=> $_POST['moblog_create_thumbnail'],
 						'moblog_thumbnail_width'	=> ( ! isset($_POST['moblog_thumbnail_width'])) ? '0' : $_POST['moblog_thumbnail_width'],
 						'moblog_thumbnail_height'	=> ( ! isset($_POST['moblog_thumbnail_height'])) ? '0' : $_POST['moblog_thumbnail_height'],
+						*/
+						'moblog_image_size'			=> $_POST['moblog_image_size'],
+						'moblog_thumb_size'			=> $_POST['moblog_thumb_size'],
+						
 						'moblog_email_type'			=> $_POST['moblog_email_type'],
 						'moblog_email_address'		=> base64_encode($_POST['moblog_email_address']),
 						'moblog_email_server'		=> $_POST['moblog_email_server'],
