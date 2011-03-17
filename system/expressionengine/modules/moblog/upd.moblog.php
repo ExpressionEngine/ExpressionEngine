@@ -26,7 +26,7 @@ if ( ! defined('EXT'))
 
 class Moblog_upd {
 
-	var $version 			= '3.0';
+	var $version 			= '3.1';
 
 	function Moblog_upd()
 	{
@@ -148,13 +148,11 @@ class Moblog_upd {
 		/**  Update Fields
 		/** ----------------------------------*/
 
-		$this->EE->load->dbforge();
-
-		if ($this->EE->db->table_exists('exp_moblogs') && $current != $this->version)
+		if ($current < 2.0)
 		{
 			$new_fields = array(
 				'moblog_type' => array(
-					'alter' => array('type' => 'varchar', 'constraint' => 10,	'default' => ''),
+					'alter' => array('type' => 'varchar', 'constraint' => 10, 'default' => ''),
 					'after' => 'moblog_time_interval'
 				),
 				'moblog_gallery_id'	=> array(
@@ -186,52 +184,15 @@ class Moblog_upd {
 				'moblog_sticky_entry' => array(
 					'alter' => array('type' => 'char', 'constraint' => 1, 'default' => 'n')
 				),
-				'moblog_image_size' => array(
-					'alter' => array('type' => 'int', 'constraint' => 10, 'default' => '0')
-				),
-				'moblog_thumb_size' => array(
-					'alter' => array('type' => 'int', 'constraint' => 10, 'default' => '0')
-				),
-				'moblog_image_size' => array(
-					'alter' => array('type' => 'int', 'constraint' => 10, 'unsigned' => TRUE, 'default' => '0'),
-					'after' => 'moblog_template'
-				),
-				'moblog_thumb_size' => array(
-					'alter' => array('type' => 'int', 'constraint' => 10, 'unsigned' => TRUE, 'default' => '0'),
-					'after' => 'moblog_image_size'
-				)
 			);
-
-			// Array of deleted fields
-			$deleted_fields = array('moblog_image_width', 'moblog_image_height', 'moblog_resize_image', 'moblog_resize_width', 'moblog_resize_height', 'moblog_create_thumbnail', 'moblog_thumbnail_width', 'moblog_thumbnail_height');
 			
-			// Get a list of the current fields
-			$existing_fields = $this->EE->db->list_fields('moblogs');
-
-			// Add fields that don't exist
-			foreach($new_fields AS $new_field_name => $new_field_data)
-			{
-				if ( ! array_key_exists($new_field_name, $existing_fields))		
-				{
-					$after = $new_field_data['after'] ? $new_field_data['after'] : ''; 
-					$field = array($new_field_name => $new_field_data['alter']);
-					
-					$this->EE->dbforge->add_column('moblogs', $field, $after);
-				}
-			}
-
-			// Delete old fields
-			foreach($existing_fields AS $existing_field)
-			{
-				if (array_key_exists($existing_field, $deleted_fields))
-				{
-					$this->EE->dbforge->drop_column('moblogs', $existing_field);
-				}
-			}
+			$this->_add_fields($new_fields);
 		}
 
 		if ($current < 3.0)
 		{
+			$this->EE->load->dbforge();
+
 			// @confrim- should be able to drop is_user_blog as well?
 			$this->EE->dbforge->drop_column('moblogs', 'is_user_blog');
 			$this->EE->dbforge->drop_column('moblogs', 'user_blog_id');
@@ -246,9 +207,169 @@ class Moblog_upd {
 			));
 		}
 
+		if ($current < 3.1)
+		{
+			// Add new columns
+			$new_fields = array(
+				'moblog_image_size' => array(
+					'alter' => array('type' => 'int', 'constraint' => 10, 'unsigned' => TRUE, 'default' => '0'),
+					'after' => 'moblog_template'
+				),
+				'moblog_thumb_size' => array(
+					'alter' => array('type' => 'int', 'constraint' => 10, 'unsigned' => TRUE, 'default' => '0'),
+					'after' => 'moblog_image_size'
+				)
+			);
+			$this->_add_fields($new_fields);
+
+			// Use upload directory sizes instead of moblog specific sizes
+			$this->_convert_to_upload_pref_sizes();
+
+			// Drop unused columns
+			$this->_drop_columns(array('moblog_image_width', 'moblog_image_height', 'moblog_resize_image', 'moblog_resize_width', 'moblog_resize_height', 'moblog_create_thumbnail', 'moblog_thumbnail_width', 'moblog_thumbnail_height'));
+		}
+
 		return TRUE;
 	}
 	// END
+	
+
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Adds new columns to moblogs table
+	 *
+	 * @param	array	$new_fields	The associative array containing the new fields to add
+	 */	
+	function _add_fields($new_fields)
+	{
+		$this->EE->load->dbforge();
+		
+		// Get a list of the current fields
+		$existing_fields = $this->EE->db->list_fields('moblogs');
+
+		// Add fields that don't exist
+		foreach($new_fields AS $new_field_name => $new_field_data)
+		{
+			if ( ! array_key_exists($new_field_name, $existing_fields))		
+			{
+				$after = $new_field_data['after'] ? $new_field_data['after'] : ''; 
+				$field = array($new_field_name => $new_field_data['alter']);
+				
+				$this->EE->dbforge->add_column('moblogs', $field, $after);
+			}
+		}
+	}	
+		
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Drops columns from the moblogs table
+	 *
+	 * @param	array	$columns	Array of columns to drop
+	 */
+	function _drop_columns($columns)
+	{
+		$this->EE->load->dbforge();
+		
+		// Delete old fields
+		foreach($existing_fields AS $existing_field)
+		{
+			if (array_key_exists($existing_field, $deleted_fields))
+			{
+				$this->EE->dbforge->drop_column('moblogs', $existing_field);
+			}
+		}
+	}	
+
+
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Converts moblog image sizes to upload preference sizes
+	 */
+	function _convert_to_upload_pref_sizes()
+	{
+		$image_id = 0;
+		$thumb_id = 0;
+
+		// Figure out existing sizes and if they're valid or not (not equal to 0)
+		$qry = $this->EE->db->get('moblogs');
+
+		// If they are valid, figure uot the upload directory moblog_upload_directory
+		foreach ($qry->result() as $row)
+		{
+			if ($row->moblog_resize_image == 'y')
+			{
+				$image_id = $this->_create_new_upload_size(
+					$row->moblog_short_name.'_image', 
+					$row->moblog_image_width,
+					$row->moblog_image_height,
+					$row->moblog_upload_directory
+				);
+			}		
+			
+			if ($row->moblog_create_thumb == 'y')
+			{
+				$thumb_id = $this->_create_new_upload_size(
+					$row->moblog_short_name.'_thumb', 
+					$row->moblog_thumbnail_width, 
+					$row->moblog_thumbnail_height,
+					$row->moblog_upload_directory
+				);
+			}		
+
+			// Make those the image_size and thumb_size
+			$this->EE->db->update(
+				'moblogs', 
+				array(
+					'moblog_image_size' => $image_id,
+					'moblog_thumb_size' => $thumb_id
+				),
+				array('moblog_id' => $row->moblog_id)
+			);
+		}
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Creates a new image size given a size name and the moblog's settings as
+	 *	a row from the database
+	 *
+	 * @param	string	$size_name	The name for the size under upload preferences	
+	 * @param	integer	$width		Width of the new size
+	 * @param	integer	$height		Height of the new size
+	 * @return	
+	 */
+	private function _create_new_upload_size($size_name, $width, $height, $upload_id)
+	{
+		// Check to see if upload size already exists for upload_location, height and width
+		$this->EE->db->where(array(
+			'upload_location_id'	=> $upload_id,
+			'width'					=> $width,
+			'height'				=> $height
+		));
+
+		$qry = $this->EE->db->get('file_dimensions');
+
+		if ( ! $qry->num_rows())
+		{
+			$this->EE->db->insert('file_dimensions', array(
+				'upload_location_id'	=> $upload_id,
+				'title'					=> $size_name,
+				'short_name'			=> $size_name,
+				'resize_type'			=> 'constrain', // Default to constrain, not crop
+				'width'					=> $width,
+				'height'				=> $height,
+				'watermark_id'			=> 0
+			));
+
+			return $this->EE->db->insert_id();
+		}
+
+		return $qry->row('id');
+	}
 
 
 
