@@ -302,6 +302,35 @@ class Filemanager {
 		return TRUE;
 	}
 	
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Gets Image Height and Width
+	 *
+	 * @param	string	$file_path	The full path to the file to check
+	 * @return	mixed	False if function not available, associative array otherwise
+	 */
+	function get_image_dimensions($file_path)
+	{	
+		if (function_exists('getimagesize'))
+		{
+			$D = @getimagesize($this->file_temp);
+
+			$image_size = array(
+				'height'	=> $D['1'],
+				'width'	=> $D['0']
+				);
+
+			return $image_size;
+		}
+
+		return FALSE;
+	}
+	
+	
+	
+	
 	// --------------------------------------------------------------------
 	
 	/**
@@ -335,9 +364,10 @@ class Filemanager {
 		$prefs['upload_location_id'] = $dir_id;
 
 		$prefs = array_merge($dir_prefs, $prefs);
-
+		
 		// Figure out the mime type
 		$mime = $this->security_check($file_path, $prefs);
+
 		if ($mime === FALSE)
 		{
 			// security check failed
@@ -810,6 +840,21 @@ class Filemanager {
 			
 		$protocol = $this->EE->config->item('image_resize_protocol');
 		$lib_path = $this->EE->config->item('image_library_path');
+		
+		// For crop, we need h/w if we don't have it
+		if ($size['resize_type'] == 'crop' && ( ! isset($prefs['height']) OR ! isset($prefs['width'])))
+		{
+			$dim = $this->get_image_dimensions($file_path);
+			
+			if ($dim == FALSE)
+			{
+				return FALSE;
+			}
+			
+			$prefs['height'] = $dim['height'];
+			$prefs['width'] = $dim['width'];
+			
+		}
 
 		foreach ($dimensions as $size_id => $size)
 		{
@@ -853,10 +898,30 @@ class Filemanager {
 
 			// crop based on resize type - does anyone really crop sight unseen????
 
-			
-			if ( ! @$this->EE->image_lib->resize())
+			if ($size['resize_type'] == 'crop')
 			{
-				return FALSE;
+				// This may need to change if we let them manuall set crop
+				// For now, let's crop from center for Wes
+
+				$config['x_axis'] = (($prefs['width'] / 2) + ($config['width'] / 2));
+				$config['y_axis'] = (($prefs['height'] / 2) + ($config['height'] / 2));
+
+				
+				$this->EE->image_lib->initialize($config);
+
+				if ( ! @$this->EE->image_lib->crop())
+				{
+					return FALSE;
+				}
+			}
+			else
+			{
+				$this->EE->image_lib->initialize($config);
+				
+				if ( ! @$this->EE->image_lib->resize())
+				{
+					return FALSE;
+				}
 			}
 
 			@chmod($config['new_image'], DIR_WRITE_MODE);
@@ -875,20 +940,6 @@ class Filemanager {
 		return TRUE;
 	}	
 	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Thumbnail garbage collection
-	 *
-	 * Remove any stray thumbnail files based the directory and file name
-	 *
-	 * @access	public
-	 * @param	string	full path to image
-	 * @param	array	file information
-	 * @return	bool	success / failure
-	 */
-
-
 	// --------------------------------------------------------------------
 
 	/**

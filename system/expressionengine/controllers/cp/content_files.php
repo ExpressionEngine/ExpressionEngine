@@ -1296,7 +1296,7 @@ class Content_files extends CI_Controller {
 			{
 				$js_size[$row->upload_location_id][$row->id] = array('short_name' => $row->short_name, 'resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height, 'watermark_id' => $row->watermark_id);
 								
-				$vars['sizes'][] = array('short_name' => $row->short_name, 'title' => $row->title, 'resize_type' => $row->resize_type, 'width' => $row->width, 'height' => $row->height, 'id' => $row->id);
+				$vars['sizes'][] = array('short_name' => $row->short_name, 'title' => $row->title, 'resize_type' => lang($row->resize_type), 'width' => $row->width, 'height' => $row->height, 'id' => $row->id, 'wm_name' => ($row->wm_name) ? $row->wm_name : '--');
 				
 				if ($row->watermark_id != 0)
 				{

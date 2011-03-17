@@ -161,7 +161,7 @@ if ($EE_view_disable !== TRUE)
 					''
 					);
 
-				$resize_options = array('constrain' => lang('resize'), 'crop' => lang('crop'));
+				$resize_options = array('constrain' => lang('constrain'), 'crop' => lang('crop'));
 				
 				if (count($image_sizes) > 0)
 				{

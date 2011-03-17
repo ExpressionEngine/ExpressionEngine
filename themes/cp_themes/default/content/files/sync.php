@@ -47,6 +47,7 @@ if ( ! $EE_view_disable)
 						<th><?=lang('resize_type')?></th>
 						<th><?=lang('width')?></th>
 						<th><?=lang('height')?></th>
+						<th><?=lang('wm_watermark')?></th>
 						<th id="toggle_all"><?=form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')?></th>
 					</tr>
 				</thead>
@@ -57,6 +58,7 @@ if ( ! $EE_view_disable)
 						<td><?=$data['resize_type']?></td>
 						<td><?=$data['width']?></td>
 						<td><?=$data['height']?></td>
+						<td><?=$data['wm_name']?></td>
 						<td class="file_select"><?='<input class="toggle" type="checkbox" name="toggle[]" value="'.$data['id'].'" />'?></td>						
 					</tr>
 				<?php endforeach; ?>
