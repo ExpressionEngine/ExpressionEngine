@@ -1333,7 +1333,7 @@ class Content_publish extends CI_Controller {
 
 		$this->javascript->set_global(array(
 			'date.format'						=> $date_fmt,
-			'add_new_html_button'				=> lang('add_new_html_button'),
+			'lang.add_new_html_button'			=> lang('add_new_html_button'),
 			'lang.add_tab' 						=> lang('add_tab'),
 			'lang.close' 						=> lang('close'),
 			'lang.confirm_exit'					=> lang('confirm_exit'),
