@@ -512,7 +512,7 @@ $lang = array(
 "Can view site when it is online",
 
 "can_view_offline_system" =>
-"Can view site when it is offline",
+"Can view system when it is offline",
 
 "mbr_account_privs" =>
 "Member Account Privileges",
