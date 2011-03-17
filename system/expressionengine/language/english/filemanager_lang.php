@@ -38,6 +38,7 @@ $lang = array(
 'edit_modes'			=> 'Edit Modes',
 'resize'				=> 'Resize',
 'crop'					=> 'Crop',
+'constrain'				=> 'Constrain',
 'resize_width'			=> 'Width',
 'resize_height'			=> 'Height',
 'crop_width'			=> 'Width',
