@@ -3411,15 +3411,17 @@ class Design extends CI_Controller {
 			$vars['templates'][$row['group_id']][$row['template_id']]['view_path'] = $this->functions->fetch_site_index(0, 0).QUERY_MARKER.'URL='.$this->functions->fetch_site_index();
 			$vars['templates'][$row['group_id']][$row['template_id']]['view_path'] = rtrim($vars['templates'][$row['group_id']][$row['template_id']]['view_path'], '/').'/';
 
-			if ($vars['templates'][$row['group_id']][$row['template_id']]['template_type'] == 'css')
+			if (isset($vars['groups'][$row['group_id']]))
 			{
-				$vars['templates'][$row['group_id']][$row['template_id']]['view_path'] .= QUERY_MARKER.'css='.$vars['groups'][$row['group_id']].'/'.$vars['templates'][$row['group_id']][$row['template_id']]['template_name'];
-			}
-			else
-			{
-				$vars['templates'][$row['group_id']][$row['template_id']]['view_path'] .= $vars['groups'][$row['group_id']].(($vars['templates'][$row['group_id']][$row['template_id']]['template_name'] == 'index') ? '' : '/'.$vars['templates'][$row['group_id']][$row['template_id']]['template_name']);
-			}
-			
+				if ($vars['templates'][$row['group_id']][$row['template_id']]['template_type'] == 'css')
+				{
+					$vars['templates'][$row['group_id']][$row['template_id']]['view_path'] .= QUERY_MARKER.'css='.$vars['groups'][$row['group_id']].'/'.$vars['templates'][$row['group_id']][$row['template_id']]['template_name'];
+				}
+				else
+				{
+					$vars['templates'][$row['group_id']][$row['template_id']]['view_path'] .= $vars['groups'][$row['group_id']].(($vars['templates'][$row['group_id']][$row['template_id']]['template_name'] == 'index') ? '' : '/'.$vars['templates'][$row['group_id']][$row['template_id']]['template_name']);
+				}				
+			}			
 			
 			// Access
 			foreach($vars['member_groups'] as $group_id => $group)
