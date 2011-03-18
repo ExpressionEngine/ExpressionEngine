@@ -1,10 +1,12 @@
+<div class="shun"></div>
+
 <?php if (count($templates) < 1):?>
-	hrm...
+
 	<p class="notice"><?=lang($message)?></p>
 	<p class="notice"><?=lang(($theme_list ? 'unable_to_find_templates' : 'unable_to_find_template_file'))?></p>
 <?php else:?>
-
-	<ul class="menu_list">
+	
+	<ul class="menu_list shun">
 	<?php foreach($templates['folders'] as $path => $human_name): ?>
 		<li class="group<?=alternator(' odd', '')?>">
 			<a href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum'.AMP.'method=forum_templates'.AMP.'folder='.$path?>">
@@ -22,6 +24,8 @@
 	</ul>
 
 <?php endif;?>
+
+
 
 <?php
 
