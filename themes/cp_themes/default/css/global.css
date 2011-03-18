@@ -1623,6 +1623,8 @@ select#site_list_pulldown { margin-bottom:10px; }
 .menu_list, 
 .member_profile_themes, .wiki_themes {
 	list-style:			none;
+	overflow:			hidden;
+
 }
 
 .menu_list li a, 
