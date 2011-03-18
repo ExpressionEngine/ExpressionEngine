@@ -919,34 +919,12 @@ class Wiki {
 							 		 
 				if ($query->row('count')  > 0)
 				{
-					/*
-					Filemanager will handle this bit
-					
-					$query = $this->EE->db->query("SELECT * FROM exp_upload_prefs 
-										 WHERE id = '".$this->EE->db->escape_str($this->upload_dir)."'");
-					
-					$server_path = $query->row('server_path');
-					$dir_id = $query->row('id');
-												
-					if (substr($server_path , -1) != '/')
-					{
-						$server_path .= '/';
-					}
-					
-					@unlink($server_path.$topic);
-					*/
-								 
 					// Delete from file system??  Pretty much have to- nuked it
 					$this->EE->load->library('filemanager');
 					
 					$this->EE->filemanager->delete_file_names($this->upload_dir, $topic);
 					
-					// Hrm- hook?
-					$query = $this->EE->db->query("DELETE FROM exp_wiki_uploads
-										 WHERE file_name = '".$this->EE->db->escape_str($topic)."'");
-										
-					// Clear wiki cache
-					$this->EE->functions->clear_caching('db');
+					// The hook clears out wiki_uploads and the db cache
 
 					$this->redirect($this->special_ns, 'Files');
 				}

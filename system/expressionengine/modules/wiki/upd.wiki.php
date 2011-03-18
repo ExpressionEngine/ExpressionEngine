@@ -24,7 +24,7 @@
  */
 class Wiki_upd {
 
-	var $version = '2.2';
+	var $version = '2.3';
 	
 	function Wiki_upd()
 	{
@@ -134,11 +134,22 @@ class Wiki_upd {
 				PRIMARY KEY `namespace_id` (`namespace_id`),
 				KEY `wiki_id` (`wiki_id`))
 				DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
-				
+					
 		foreach ($sql as $query)
 		{
 			$this->EE->db->query($query);
 		}
+		
+		// Add Extension Hook
+		$this->EE->db->insert('extensions', array(
+			'class'    => 'Wiki_ext',
+			'hook'     => 'files_after_delete',
+			'method'   => 'files_after_delete',
+			'settings' => '',
+			'priority' => 5,
+			'version'  => $this->version,
+			'enabled'  => 'y'
+		));
 				
 		return TRUE;
 	}
@@ -172,6 +183,9 @@ class Wiki_upd {
 		{
 			$this->EE->db->query($query);
 		}
+		
+		// Disable extension
+		$this->EE->db->delete('extensions', array('class' => 'Wiki_ext'));
 
 		return TRUE;
 	}
@@ -208,6 +222,20 @@ class Wiki_upd {
 		if ($current < 2.2)
 		{
 			$this->EE->db->query("ALTER TABLE `exp_wiki_search` ADD COLUMN search_date int(10) NOT NULL AFTER wiki_search_id");
+		}
+		
+		if ($current < 2.3)
+		{
+			// Add Extension Hook
+			$this->EE->db->insert('extensions', array(
+				'class'    => 'Wiki_ext',
+				'hook'     => 'files_after_delete',
+				'method'   => 'files_after_delete',
+				'settings' => '',
+				'priority' => 5,
+				'version'  => $this->version,
+				'enabled'  => 'y'
+			));
 		}
 				
 		return TRUE;

@@ -288,10 +288,10 @@ class File_model extends CI_Model {
 		}
 		
 		$dir_func = $this->_where_function($dir_id);
-		$name_func = $this->_where_function($file_names);
+		$name_func = $this->_where_function($file_name);
 
 		return $this->db->$dir_func('upload_location_id', $dir_id)
-						->$name_func('file_name', $file_names)
+						->$name_func('file_name', $file_name)
 						->get('files');
 	}
 
@@ -337,6 +337,26 @@ class File_model extends CI_Model {
 		return $this->db->get('file_dimensions');
 	}
 	
+	
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Get watermark preference
+	 *
+	 * @param 	array
+	 */
+	function get_watermark_preferences($id = array())
+	{
+		$func = $this->_where_function($id);
+		
+		if ( ! empty($id))
+		{
+			$this->db->$func('wm_id', $id);
+		}
+
+		return $this->db->get('file_watermarks');
+	}
+	
 	// ------------------------------------------------------------------------
 
 	/**
@@ -354,23 +374,6 @@ class File_model extends CI_Model {
 		}
 		
 		return 'where';
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Get watermark preference
-	 *
-	 * @param 	array
-	 */
-	function get_watermark_preferences($id = array())
-	{
-		if ( ! empty($id))
-		{
-			$this->db->where_in('wm_id', $id);
-		}
-
-		return $this->db->get('file_watermarks');
 	}
 
 	// ------------------------------------------------------------------------
