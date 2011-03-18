@@ -309,7 +309,7 @@ class Moblog_upd {
 				);
 			}		
 			
-			if ($row->moblog_create_thumb == 'y')
+			if ($row->moblog_create_thumbnail == 'y')
 			{
 				$thumb_id = $this->_create_new_upload_size(
 					$row->moblog_short_name.'_thumb', 
@@ -370,10 +370,6 @@ class Moblog_upd {
 
 		return $qry->row('id');
 	}
-
-
-
-
 }
 // END CLASS
 

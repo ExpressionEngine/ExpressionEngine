@@ -168,18 +168,6 @@ class Updater {
 		
 		$this->EE->dbforge->modify_column('upload_prefs', $fields);
 	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 *
-	 *
-	 *
-	 */
-	private function _do_build_file_tables()
-	{
-		
-	}
 	
 	// ------------------------------------------------------------------------
 
@@ -204,9 +192,311 @@ class Updater {
 	}
 
 	// ------------------------------------------------------------------------	
-	
+
+	/**
+	 * Build the files tables:
+	 * 	- watermark
+	 * 	- dimensions
+	 * 	- categories
+	 * 	- files
+	 */
+	private function _do_build_file_tables()
+	{
+		$watermark_fields = array(
+			'wm_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 4,
+				'unsigned'			=> TRUE,
+				'auto_increment'	=> TRUE
+			),
+			'wm_name' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 80
+			),
+			'wm_type' => array(
+				'type'				=> 'char',
+				'constraint'		=> 1,
+				'default'			=> 'n'
+			),
+			'wm_image_path' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 100
+			),
+			'wm_test_image_path' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 100
+			),
+			'wm_use_font' => array(
+				'type'				=> 'char',
+				'constraint'		=> 1,
+				'default'			=> 'y'
+			),
+			'wm_font' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 30
+			),
+			'wm_font_size' => array(
+				'type'				=> 'int',
+				'constraint'		=> 3,
+				'unsigned'			=> TRUE
+			),
+			'wm_text' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 100
+			),
+			'wm_vrt_alignment' => array(
+				'type'				=> 'char',
+				'constraint'		=> 1,
+				'default'			=> 'T'
+			),
+			'wm_hor_alignment' => array(
+				'type'				=> 'char',
+				'constraint'		=> 1,
+				'default'			=> 'L'
+			),
+			'wm_padding' => array(
+				'type'				=> 'int',
+				'constraint'		=> 3,
+				'unsigned'			=> TRUE
+			),
+			'wm_opacity' => array(
+				'type'				=> 'int',
+				'constraint'		=> 3,
+				'unsigned'			=> TRUE
+			),
+			'wm_x_offset' => array(
+				'type'				=> 'int',
+				'constraint'		=> 4,
+				'unsigned'			=> TRUE
+			),
+			'wm_y_offset' => array(
+				'type'				=> 'int',
+				'constraint'		=> 4,
+				'unsigned'			=> TRUE
+			),
+			'wm_x_transp' => array(
+				'type'				=> 'int',
+				'constraint'		=> 4
+			),
+			'wm_y_transp' => array(
+				'type'				=> 'int',
+				'constraint'		=> 4
+			),
+			'wm_text_color' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 7
+			),
+			'wm_use_drop_shadow' => array(
+				'type'				=> 'char',
+				'constraint'		=> 1,
+				'default'			=> 'y'
+			),
+			'wm_shadow_distance' => array(
+				'type'				=> 'int',
+				'constraint'		=> 3,
+				'unsigned'			=> TRUE
+			),
+			'wm_shadow_color' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 7
+			)
+		);
+
+		$this->EE->dbforge->add_field($watermark_fields);
+		$this->EE->dbforge->add_key('wm_id', TRUE);
+		$this->EE->dbforge->create_table('file_watermarks');
+
+		$dimension_fields = array(
+			'id' => array(
+				'type' => 'int',
+				'constraint' => 10,
+				'unsigned' => TRUE,
+				'auto_increment' => TRUE
+			),
+			'upload_location_id' => array(
+				'type' => 'int',
+				'constraint' => 4,
+				'unsigned' => TRUE
+			),
+			'title' => array(
+				'type' => 'varchar',
+				'constraint' => 255,
+				'default' => ''
+			),
+			'short_name' => array(
+				'type' => 'varchar',
+				'constraint' => 255,
+				'default' => ''
+			),
+			'resize_type' => array(
+				'type' => 'varchar',
+				'constraint' => 50,
+				'default' => ''
+			),
+			'width' => array(
+				'type' => 'int',
+				'constraint' => 10,
+				'default' => 0
+			),
+			'height' => array(
+				'type' => 'int',
+				'constraint' => 10,
+				'default' => 0
+			),
+			'watermark_id' => array(
+				'type' => 'int',
+				'constraint' => 4,
+				'unsigned' => TRUE
+			)
+		);
+		
+		$this->EE->dbforge->add_field($dimension_fields);
+		$this->EE->dbforge->add_key('id', TRUE);
+		$this->EE->dbforge->add_key('upload_location_id');
+		$this->EE->dbforge->create_table('file_dimensions');
+
+		$categories_fields = array(
+			'file_id' => array(
+				'type'			=> 'int',
+				'constraint'	=> 10,
+				'unsigned'		=> TRUE
+			),
+			'cat_id' => array(
+				'type'			=> 'int',
+				'constraint'	=> 10,
+				'unsigned'		=> TRUE
+			),
+			'sort' => array(
+				'type'			=> 'int',
+				'constraint'	=> 10,
+				'unsigned'		=> TRUE,
+				'default'		=> 0
+			),
+			'is_cover' => array(
+				'type'			=> 'char',
+				'constraint'	=> 1,
+				'default'		=> 'n'
+			)
+		);
+		
+		$this->EE->dbforge->add_field($categories_fields);
+		$this->EE->dbforge->add_key(array('file_id', 'cat_id'));
+		$this->EE->dbforge->create_table('file_categories');
+		
+		$files_fields = array(
+			'file_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE,
+				'auto_increment'	=> TRUE
+			),
+			'site_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 4,
+				'unsigned'			=> TRUE,
+				'default'			=> 1
+			),
+			'title' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 255
+			),
+			'upload_location_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 4,
+				'unsigned'			=> TRUE,
+				'default'			=> 0
+			),
+			'rel_path' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 255
+			),
+			'status' => array(
+				'type'				=> 'char',
+				'constraint'		=> 1,
+				'default'			=> 'o'
+			),
+			'mime_type' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 255
+			),
+			'file_name' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 255
+			),
+			'file_size' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'default'			=> 0
+			),
+			'field_1' => array(
+				'type'				=> 'text'
+			),
+			'field_1_fmt' => array(
+				'type'				=> 'tinytext'
+			),
+			'field_2' => array(
+				'type'				=> 'text'
+			),
+			'field_2_fmt' => array(
+				'type'				=> 'tinytext'
+			),
+			'field_3' => array(
+				'type'				=> 'text'
+			),
+			'field_3_fmt' => array(
+				'type'				=> 'tinytext'
+			),
+			'field_4' => array(
+				'type'				=> 'text'
+			),
+			'field_4_fmt' => array(
+				'type'				=> 'tinytext'
+			),
+			'field_5' => array(
+				'type'				=> 'text'
+			),
+			'field_5_fmt' => array(
+				'type'				=> 'tinytext'
+			),
+			'field_6' => array(
+				'type'				=> 'text'
+			),
+			'field_6_fmt' => array(
+				'type'				=> 'tinytext'
+			),
+			'metadata' => array(
+				'type'				=> 'mediumtext',
+				'null'				=> TRUE
+			),
+			'uploaded_by_member_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE,
+				'default'			=> 0
+			),
+			'upload_date' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10
+			),
+			'modified_by_member_id' => array(
+				'type'				=> 'int',
+				'constraint'		=> 10,
+				'unsigned'			=> TRUE,
+				'default'			=> 0
+			),
+			'modified_date' => array(
+				'type' 				=> 'int',
+				'constraint'		=> 10
+			)
+		);
+		
+		$this->EE->dbforge->add_field($files_fields);
+		$this->EE->dbforge->add_key('file_id', TRUE);
+		$this->EE->dbforge->add_key(array('upload_location_id', 'site_id'));
+		$this->EE->dbforge->create_table('files');
+	}
 }
 /* END CLASS */
 
-/* End of file ud_220.php */
-/* Location: ./system/expressionengine/installer/updates/ud_220.php */
+/* End of file ud_215.php */
+/* Location: ./system/expressionengine/installer/updates/ud_215.php */
