@@ -1409,7 +1409,7 @@ class EE_Template {
 				
 				if ($package_path)
 				{
-					$this->EE->load->remove_package_path();
+					$this->EE->load->remove_package_path($package_path);
 				}
 
 				/** ----------------------------------

@@ -147,7 +147,6 @@ if ($EE_view_disable !== TRUE)
 				<h3 style="margin-top: 15px;"><?=lang('image_sizes')?></h3>
 				<p class="noback"><?=lang('image_sizes_subtext')?></p>
 
-				<h4><?=lang('image_sizes_list')?></h4>
 				<div class="clear_left"></div>
 
 				<?php

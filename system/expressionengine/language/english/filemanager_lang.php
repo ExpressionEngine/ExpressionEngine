@@ -214,6 +214,7 @@ $lang = array(
 								  <a href="%s" title="Assign Category Groups">Assign Category Groups</a>',
 'category_groups_text'		=> 'Assign one or more category group to the file upload location',
 
+'short_name'				=> 'Short Name',
 'manual_batch'				=> 'Manual Batch Upload',
 'auto_batch'				=> 'Automatic Batch Upload',
 'files_count_lang'			=> 'Currently showing %s out of %s total files.',
