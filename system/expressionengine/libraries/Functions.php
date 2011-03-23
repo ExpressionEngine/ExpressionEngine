@@ -367,11 +367,15 @@ class EE_Functions {
 		{			
 			// Ajax requests don't redirect - serve the flashdata
 			
-			if ($this->EE->input->server('HTTP_X_REQUESTED_WITH') && ($this->EE->input->server('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'))
+			if ($this->EE->input->is_ajax_request())
 			{
 				// We want the data that would be available for the next request
 				$this->EE->session->_age_flashdata();
-				die($this->EE->javascript->generate_json($this->EE->session->flashdata));
+
+				$this->EE->load->libarary('javascript');
+
+					die($this->EE->javascript->generate_json(
+								$this->EE->session->flashdata));
 			}
 		}
 
