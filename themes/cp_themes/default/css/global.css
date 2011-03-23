@@ -368,8 +368,8 @@ span.button .submit {
 
 #branding {
 	background: 		#27343c url('../images/backgrounds_sprite.png') repeat-x 0 0;
-	height:					17px;
-	margin-bottom:	5px;
+	height:				19px;
+	margin-bottom:		5px;
 }
 
 
@@ -403,7 +403,7 @@ span.button .submit {
 
 #navigationTabs > .parent:focus > a:after,
 #navigationTabs > .parent.active > a:after {
-	top:				12px;
+	top:				10px;
 	content:			' ';
 	position:			relative;
 	display:			block;
@@ -426,7 +426,7 @@ span.button .submit {
 	font-size:			12px;
 	height:				1.1em;
 	padding:			3px 8px 4px 8px;
-	margin:				0 4px 13px 4px;
+	margin:				0 4px 15px 4px;
 	border-bottom:		none;
 	text-decoration:	none;
 }
@@ -478,7 +478,8 @@ span.button .submit {
 	text-decoration:	none;
 }
 
-#navigationTabs li, #navigationTabs li li {
+#navigationTabs li, 
+#navigationTabs li li {
 	float:				left;
 }
 
@@ -496,16 +497,17 @@ span.button .submit {
 }
 
 #navigationTabs li ul {
+	background: 		#e6ecef;
 	border-left:		none !important;
-	z-index:			50;
-	position:			absolute;
-	width:				169px;
+	color:				#5f6c74;
 	display:			none;
 	font-size:			12px;
-	color:				#5f6c74;
-	background: 		#e6ecef;
 	margin-left:		-1px;
+	margin-top:			-4px;
 	padding:			8px 0 8px 0;
+	position:			absolute;
+	width:				169px;
+	z-index:			50;
 
 	-moz-border-radius:		10px;
 	-webkit-border-radius:	10px;
@@ -538,7 +540,8 @@ span.button .submit {
 	background:			#F81A53
 }
 
-#navigationTabs li li.parent:focus, #navigationTabs li li.parent.active {
+#navigationTabs li li.parent:focus, 
+#navigationTabs li li.parent.active {
 	color:				#fff;
 	background:			#F81A53;
 }
@@ -603,7 +606,8 @@ span.button .submit {
 	float: right;
 }
 
-#activeSite a:link, #activeSite a:visited {
+#activeSite a:link, 
+#activeSite a:visited {
 	color:				#fff;
 }
 
