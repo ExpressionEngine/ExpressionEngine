@@ -30,21 +30,21 @@ class Comment_model extends CI_Model {
 	 *
 	 * Fetches the comment ids that match the submitted filter data
 	 *
-	 * @access	public
 	 * @param	array
 	 * @param	mixed
 	 * @param	mixed
 	 * @return	obj
 	 */
-	function get_comment_ids($where, $entry_id = array(), $order = array())
+	public function get_comment_ids($where, $entry_id = array(), 
+									$order = array())
 	{
+		
 		if ( ! is_array($entry_id))
 		{
 			$entry_id = ( $entry_id == '' OR ! ctype_digit($entry_id)) ? array() : array($entry_id);
 		}
 		
 		$this->db->select('comments.comment_id');		
-
 
 		//  If we are sorting by the entry title or the channel name- we need to pull in more tables
 		//  Ditto for search in titles
@@ -53,7 +53,9 @@ class Comment_model extends CI_Model {
 		//  If the can ONLY edit their own comments- need to bring in title table to limit on author
 		$own_entries_only = FALSE;
 		
-		if (( ! $this->cp->allowed_group('can_moderate_comments') && ! $this->cp->allowed_group('can_edit_all_comments')) && $this->cp->allowed_group('can_edit_own_comments'))
+		if (( ! $this->cp->allowed_group('can_moderate_comments') && 
+			  ! $this->cp->allowed_group('can_edit_all_comments')) && 	
+				$this->cp->allowed_group('can_edit_own_comments'))
 		{
 			$own_entries_only = TRUE;
 		}
@@ -203,33 +205,38 @@ class Comment_model extends CI_Model {
 	 *
 	 * Fetches the full data for comments
 	 *
-	 * @access	public
 	 * @param	array
 	 * @param	array
 	 * @return	array
 	 */
-
-	function fetch_comment_data($comment_ids, $order = array())
+	public function fetch_comment_data($comment_ids, $order = array())
 	{
-		
 		if (count($comment_ids) == 0)
 		{
 			return FALSE;
 		}
 		
-				$this->db->select('comments.*,
-										members.location, members.occupation, members.interests, members.aol_im, members.yahoo_im, members.msn_im, members.icq, members.group_id, members.member_id, members.signature, members.sig_img_filename, members.sig_img_width, members.sig_img_height, members.avatar_filename, members.avatar_width, members.avatar_height, members.photo_filename, members.photo_width, members.photo_height,
-										channel_titles.title, channel_titles.url_title, channel_titles.author_id AS entry_author_id,
-										channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.channel_url, channels.comment_url, channels.channel_title'
-				);
-				
-				$this->db->join('channels',			'comments.channel_id = channels.channel_id',	'left');
-				$this->db->join('channel_titles',	'comments.entry_id = channel_titles.entry_id',	'left');
-				$this->db->join('members',			'members.member_id = comments.author_id',		'left');
-				
-				$this->db->where_in('comments.comment_id', $comment_ids);
-
-
+		$this->db->select('comments.*,
+					members.location, members.occupation, members.interests, 
+					members.aol_im, members.yahoo_im, members.msn_im, 
+					members.icq, members.group_id, members.member_id, 
+					members.signature, members.sig_img_filename, 
+					members.sig_img_width, members.sig_img_height, 
+					members.avatar_filename, members.avatar_width, 
+					members.avatar_height, members.photo_filename, 
+					members.photo_width, members.photo_height,
+					channel_titles.title, channel_titles.url_title, 
+					channel_titles.author_id AS entry_author_id,
+					channels.comment_text_formatting, 
+					channels.comment_html_formatting, 
+					channels.comment_allow_img_urls, 
+					channels.comment_auto_link_urls, channels.channel_url, 
+					channels.comment_url, channels.channel_title'
+		)
+		->join('channels',	'comments.channel_id = channels.channel_id',	'left')
+		->join('channel_titles', 'comments.entry_id = channel_titles.entry_id', 'left')
+		->join('members', 'members.member_id = comments.author_id', 'left')
+		->where_in('comments.comment_id', $comment_ids);
 
 		if (is_array($order) && count($order) > 0)
 		{
@@ -251,7 +258,6 @@ class Comment_model extends CI_Model {
 		$query = $this->db->get('comments');
 
 		return $query;
-
 	}
 	
 	// --------------------------------------------------------------------
@@ -261,12 +267,11 @@ class Comment_model extends CI_Model {
 	 *
 	 * Fetches the full data for comments
 	 *
-	 * @access	public
 	 * @param	array
 	 * @param	array
 	 * @return	array
 	 */	
-	function recount_entry_comments($entry_ids)
+	public function recount_entry_comments($entry_ids)
 	{
 		foreach(array_unique($entry_ids) as $entry_id)
 		{
@@ -278,7 +283,6 @@ class Comment_model extends CI_Model {
 
 			$this->db->query("UPDATE exp_channel_titles SET comment_total = '".($query->row('count') )."', recent_comment_date = '$comment_date' WHERE entry_id = '".$this->db->escape_str($entry_id)."'");
 		}
-
 	}
 	
 	// --------------------------------------------------------------------
@@ -286,12 +290,11 @@ class Comment_model extends CI_Model {
 	/**
 	 * Fetch Email Recipient Array
 	 *
-	 * @access	public
 	 * @param	array
 	 * @param	array
 	 * @return	array
 	 */
-	function fetch_email_recipients($entry_id, $subscriptions = array())
+	public function fetch_email_recipients($entry_id, $subscriptions = array())
 	{
 		$recipients = array();
 		
@@ -375,7 +378,6 @@ class Comment_model extends CI_Model {
 		
 		return $recipients;
 	}
-	
 }
 
 /* End of file comment_model.php */
