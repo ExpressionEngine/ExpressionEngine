@@ -2583,6 +2583,15 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			}
 		}
 		
+		// Clear out invalid values for strict mode
+		foreach (array('bday_y', 'bday_m', 'bday_d') as $val)
+		{
+			if ($data[$val] == '')
+			{
+				unset($data[$val]);
+			}
+		}
+		
 		if ($data['url'] == 'http://')
 		{
 			$data['url'] = '';
