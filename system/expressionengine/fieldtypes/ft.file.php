@@ -312,9 +312,20 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function display_settings($data)
 	{
-		$prefix = 'file';
-		$this->field_content_type_row($data, $prefix);
+		$this->EE->table->add_row(
+			lang('field_content_type', 'field_content_type'),
+			form_dropdown('field_content_type', $field_content_options, $data['field_content_type'], 'id="file_field_content_type"')
+		);
 	}
+	
+	// --------------------------------------------------------------------
+
+	function save_settings($data)
+	{		
+		return array(
+			'field_content_type'	=> $this->EE->input->post('field_content_type')
+		);
+	}	
 }
 
 // END File_ft class

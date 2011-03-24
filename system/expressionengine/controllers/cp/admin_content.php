@@ -3869,30 +3869,6 @@ class Admin_content extends CI_Controller {
 		$vars['group_name']			= $query->row('group_name');
 		$vars['submit_lang_key']	= ($type == 'new') ? 'submit' : 'update';
 
-		// Content types
-		$all_content_types = $this->field_model->get_field_content_types();
-		
-		foreach($all_content_types as $parent => $content_types)
-		{
-			$vars['field_content_options_'.$parent]['any'] = $this->lang->line('any');
-			
-			foreach($content_types as $content_type)
-			{
-				$vars['field_content_options_'.$parent][$content_type] = $this->lang->line('type_'.$content_type);
-
-				if ($content_type == $vars['field_content_type'])
-				{
-					$vars['field_content_'.$parent] = $content_type;
-				}
-			}
-			
-			// Default
-			if ( ! isset($vars['field_content_'.$parent]))
-			{
-				$vars['field_content_'.$parent] = 'any';
-			}
-		}
-
 		// Fetch the channel names
 
 		$this->db->select('channel_id, channel_title, field_group');
@@ -4016,6 +3992,7 @@ class Admin_content extends CI_Controller {
 		{
 			// Global settings
 			$settings = unserialize(base64_decode($fts[$key]['settings']));
+			
 			$settings['field_type'] = $key;
 			
 			$this->table->clear();
@@ -4195,7 +4172,7 @@ class Admin_content extends CI_Controller {
 			'field_related_id', 'field_related_orderby', 'field_related_sort', 'field_related_max',
 			'field_ta_rows', 'field_maxl', 'field_required',
 			'field_text_direction', 'field_search', 'field_is_hidden', 'field_fmt', 'field_show_fmt',
-			'field_order', 'field_content_type'
+			'field_order'
 		);
 				
 		$_posted = array();
@@ -4236,8 +4213,6 @@ class Admin_content extends CI_Controller {
 		$native_settings['field_text_direction']	= ($native_settings['field_text_direction'] !== FALSE) ? $native_settings['field_text_direction'] : 'ltr';
 		$native_settings['field_show_fmt']			= ($native_settings['field_show_fmt'] !== FALSE) ? $native_settings['field_show_fmt'] : 'n';
 		$native_settings['field_fmt']				= ($native_settings['field_fmt'] !== FALSE) ? $native_settings['field_fmt'] : 'xhtml';
-		
-		$native_settings['field_content_type']		= ($native_settings['field_content_type'] !== FALSE) ? $native_settings['field_content_type'] : 'any';
 		
 		if ($native_settings['field_list_items'] != '')
 		{

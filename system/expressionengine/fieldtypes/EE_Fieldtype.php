@@ -288,8 +288,11 @@ class EE_Fieldtype {
 	
 	// --------------------------------------------------------------------
 	
+/*
 	function field_content_type_row($data, $prefix = FALSE)
 	{
+		return;
+		
 		$suf = $prefix;
 		$prefix = ($prefix) ? $prefix.'_' : '';
 
@@ -303,6 +306,7 @@ class EE_Fieldtype {
 								$data['field_content_'.$suf]).'</p></div>';
 		}
 		
+
 		$this->EE->table->add_row(
 			lang('field_content_'.$suf, 'field_content_'.$suf),
 			form_dropdown($prefix.'field_content_type', $data['field_content_options_'.$suf], $data['field_content_'.$suf], 'id="'.$prefix.'field_content_type"').$extra
@@ -315,6 +319,8 @@ class EE_Fieldtype {
 		');
 					
 	}
+	
+*/
 
 	// --------------------------------------------------------------------
 	

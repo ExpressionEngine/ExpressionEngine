@@ -787,7 +787,7 @@ class Cp {
 		}	
 		
 		// Super Admins always have access					
-		if ($this->EE->session->userdata('group_id') === 1)
+		if ($this->EE->session->userdata('group_id') == 1)
 		{
 			return TRUE;
 		}
