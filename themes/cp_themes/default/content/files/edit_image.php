@@ -53,13 +53,15 @@ if ( ! $EE_view_disable)
 						<ul>
 							<li class="rotate_90">
 								<label>
-									<?=form_radio('rotate', '90', TRUE)?>
+									<?php // Rotate 90 degrees right is 270 because 
+										  // the image lib rotates counter-clockwise ?>
+									<?=form_radio('rotate', '270', TRUE)?>
 									<?=lang('rotate_90r')?>
 								</label>
 							</li>
 							<li class="rotate_270">
 								<label>
-									<?=form_radio('rotate', '270', TRUE)?>
+									<?=form_radio('rotate', '90', TRUE)?>
 									<?=lang('rotate_90l')?>
 								</label>
 							</li>
