@@ -3856,7 +3856,7 @@ class Channel {
 				//( ! isset($row['m_field_id_'.$value[0]])) ? '' : $row['m_field_id_'.$value[0]];
 			}
 
-			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
+			//$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
 
 
 			// Reset custom variable pair cache
@@ -4266,6 +4266,10 @@ class Channel {
 
 			}
 			// END VARIABLE PAIRS
+
+			// We swap out the conditionals after pairs are parsed so they don't interfere
+			// with the string replace
+			$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
 
 			//  Parse "single" variables
 			foreach ($this->EE->TMPL->var_single as $key => $val)
