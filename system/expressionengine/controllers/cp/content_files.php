@@ -393,7 +393,7 @@ class Content_files extends CI_Controller {
 				if ($is_image)
 				{
 					$actions .= '&nbsp;&nbsp;';
-					$actions .= '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file='.$file['file_id'].'" title="'.lang('edit_file').'"><img src="'.$this->cp->cp_theme_url.'images/icon-edit.png" alt="'.lang('delete').'" /></a>';
+					$actions .= '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file_id='.$file['file_id'].'" title="'.lang('edit_file').'"><img src="'.$this->cp->cp_theme_url.'images/icon-edit.png" alt="'.lang('delete').'" /></a>';
 				}
 
 				$r[] = $actions;
@@ -987,6 +987,8 @@ class Content_files extends CI_Controller {
 
 		$this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate");
 		$this->output->set_header("Pragma: no-cache");
+		
+		$file_id = $this->input->get('file_id');
 
 		$this->cp->add_js_script(array(
 			'file'		=> 'cp/files/file_manager_edit',
@@ -995,7 +997,7 @@ class Content_files extends CI_Controller {
 		);
 
 		$qry = $this->db->select('file_name')
-						->where('file_id', $this->input->get('file'))
+						->where('file_id', $file_id)
 						->get('files');
 
 		$file_name 	= $qry->row('file_name');
@@ -1025,6 +1027,7 @@ class Content_files extends CI_Controller {
 			'file_info'		=> $file_info,
 			'upload_dir'	=> $this->_upload_dirs[$file_dir]['id'],
 			'file'			=> urlencode($file_name),
+			'file_id'		=> $file_id,
 			'filemtime'		=> ($filemtime = @filemtime($file_path)) ? $filemtime : 0,
 		);
 
@@ -1130,7 +1133,7 @@ class Content_files extends CI_Controller {
 		}
 
 		$this->session->set_flashdata('message_success', lang('file_saved'));
-		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file='.$this->input->post('file');
+		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file_id='.$this->input->post('file_id');
 		$this->functions->redirect($url);
 	}
 
@@ -1180,7 +1183,7 @@ class Content_files extends CI_Controller {
 		}
 
 		$this->session->set_flashdata('message_success', lang('file_saved'));
-		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file='.$this->input->post('file');
+		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file_id='.$this->input->post('file_id');
 		$this->functions->redirect($url);
 	}
 
@@ -1242,7 +1245,7 @@ class Content_files extends CI_Controller {
 		}
 
 		$this->session->set_flashdata('message_success', lang('file_saved'));
-		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file='.$this->input->post('file');
+		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file_id='.$this->input->post('file_id');
 		$this->functions->redirect($url);
 	}
 

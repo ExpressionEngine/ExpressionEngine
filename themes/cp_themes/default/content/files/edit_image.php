@@ -18,7 +18,8 @@ if ( ! $EE_view_disable)
 		
 		<div class="pageContents group">
 			<div id="file_manager_toolbar">
-				<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_crop_form'), array('action'=> 'crop', 'upload_dir' => $upload_dir, 'file' => $file))?>
+				<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_crop_form'), 
+					array('action'=> 'crop', 'upload_dir' => $upload_dir, 'file' => $file, 'file_id' => $file_id))?>
 					<h3 class="accordion"><?=lang('crop')?></h3>
 					<div id="file_manager_crop">
 						<ul>
@@ -47,19 +48,21 @@ if ( ! $EE_view_disable)
 					</div>
 				<?=form_close()?>
 				<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_rotate_form'), 
-								array('action'=> 'rotate', 'upload_dir' => $upload_dir, 'file' => $file))?>
+					array('action'=> 'rotate', 'upload_dir' => $upload_dir, 'file' => $file, 'file_id' => $file_id))?>
 					<h3 class="accordion"><?=lang('rotate')?></h3>
 					<div id="rotate_fieldset">
 						<ul>
 							<li class="rotate_90">
 								<label>
-									<?=form_radio('rotate', '90', TRUE)?>
+									<?php // Rotate 90 degrees right is 270 because 
+										  // the image lib rotates counter-clockwise ?>
+									<?=form_radio('rotate', '270', TRUE)?>
 									<?=lang('rotate_90r')?>
 								</label>
 							</li>
 							<li class="rotate_270">
 								<label>
-									<?=form_radio('rotate', '270', TRUE)?>
+									<?=form_radio('rotate', '90', TRUE)?>
 									<?=lang('rotate_90l')?>
 								</label>
 							</li>
@@ -82,7 +85,8 @@ if ( ! $EE_view_disable)
 						</p>
 					</div>
 				<?=form_close()?>
-				<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_resize_form'), array('action'=> 'resize', 'upload_dir' => $upload_dir, 'file' => $file))?>
+				<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_resize_form'), 
+					array('action'=> 'resize', 'upload_dir' => $upload_dir, 'file' => $file, 'file_id' => $file_id))?>
 					<h3 class="accordion"><?=lang('resize')?></h3>
 					<div id="resize_fieldset">
 						<ul>
