@@ -115,7 +115,8 @@ if ($EE_view_disable !== TRUE)
 
 	<div id="holder">
 		
-		<?php foreach ($tabs as $tab => $fields):?>
+		<?php var_dump($tabs);
+		foreach ($tabs as $tab => $fields):?>
 		<div id="<?=$tab?>" class="main_tab">
 
 			<?php foreach ($fields as $field):?>

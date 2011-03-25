@@ -312,11 +312,15 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function display_settings($data)
 	{
+		$field_content_options = array('all' => lang('all'), 'image' => lang('image'));
+
 		$this->EE->table->add_row(
-			lang('field_content_type', 'field_content_type'),
-			form_dropdown('field_content_type', $field_content_options, $data['field_content_type'], 'id="file_field_content_type"')
+			lang('field_content_type_file', 'field_content_type_file'),
+			form_dropdown('field_content_type_file', $field_content_options, $data['field_content_type'], 'id="file_field_content_type"')
 		);
 	}
+	
+	
 	
 	// --------------------------------------------------------------------
 

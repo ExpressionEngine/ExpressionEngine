@@ -79,13 +79,15 @@ class Text_ft extends EE_Fieldtype {
 	
 	function display_field($data)
 	{
+		$type = (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
+		
 		return form_input(array(
 			'name'		=> $this->field_name,
 			'id'		=> $this->field_name,
 			'value'		=> $data,
 			'dir'		=> $this->settings['field_text_direction'],
 			'maxlength'	=> $this->settings['field_maxl'], 
-			'field_content_type' => $this->settings['field_content_type']
+			'field_content_type' => $type
 		));
 	}
 	
@@ -114,33 +116,15 @@ class Text_ft extends EE_Fieldtype {
 	function display_settings($data)
 	{
 		$prefix = 'text';
+
 		$field_maxl			= ($data['field_maxl'] == '') ? 128 : $data['field_maxl'];
 		//$field_content_text	= ($data['field_content_text'] == '') ? 'any' : $data['field_content_text'];
-		$field_content_options = array('all' => lang('all'), 'numeric' => lang('numeric'), 'integer' => lang('integer'));
-		
-		$extra = '';
 
-		if ($data['field_id'] != '')
-		{
-			$extra .= '<div class="notice update_content_type js_hide">';
-			$extra .= '<p>'.sprintf(
-								lang('content_type_changed'), 
-								$data['field_content_type']).'</p></div>';
-		}
-		
-		
-		$this->EE->table->add_row(
-			lang('field_max_length', 'field_max1'),
-			form_input(array('id'=>'field_maxl','name'=>'field_maxl', 'size'=>4,'value'=>$field_maxl))
-		);
 		
 		$this->field_formatting_row($data, $prefix);
 		$this->text_direction_row($data, $prefix);
 		
-		$this->EE->table->add_row(
-			lang('field_content_type', 'field_content_type'),
-			form_dropdown('field_content_type', $field_content_options, $data['field_content_type'], 'id="text_field_content_type"').$extra
-		);
+		$this->field_content_type_row($data, $prefix);
 
 		$this->field_show_smileys_row($data, $prefix);
 		$this->field_show_glossary_row($data, $prefix);
@@ -155,6 +139,38 @@ class Text_ft extends EE_Fieldtype {
 		
 		
 	}
+	
+	function field_content_type_row($data, $prefix = FALSE)
+	{
+		$field_content_options = array('all' => lang('all'), 'numeric' => lang('numeric'), 'integer' => lang('integer'));		
+		$suf = $prefix;
+		$prefix = ($prefix) ? $prefix.'_' : '';
+
+		$extra = '';
+
+		if ($data['field_id'] != '')
+		{
+			$extra .= '<div class="notice update_content_type js_hide">';
+			$extra .= '<p>'.sprintf(
+								lang('content_type_changed'), 
+								$data['field_content_type']).'</p></div>';
+		}
+		
+
+		$this->EE->table->add_row(
+			lang('field_content_type_'.$suf, 'field_content_type_'.$suf),
+			form_dropdown($prefix.'field_content_type', $field_content_options, $data['field_content_type'], 'id="'.$prefix.'field_content_type"').$extra
+		);	
+		
+		$this->EE->javascript->output('
+		$("#'.$prefix.'field_content_type").change(function() {
+			$(this).nextAll(".update_content_type").show();
+		});
+		');
+					
+	}
+	
+	
 
 	// --------------------------------------------------------------------
 

@@ -726,7 +726,7 @@ class Channel {
 					$this->EE->load->library('api');
 					$this->EE->api->instantiate('channel_fields');
 					$field_settings = $this->EE->api_channel_fields->get_settings(substr($order, 9));
-					if (in_array($field_settings['field_content_type'], array('number', 'integer')))
+					if (isset($field_settings['field_content_type']) && in_array($field_settings['field_content_type'], array('number', 'integer')))
 					{
 						$sort_flags = SORT_NUMERIC;
 					}
