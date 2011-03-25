@@ -1349,13 +1349,15 @@ class Filemanager {
 		{
 			$field_id = str_replace('field_id_', '', $field_name);
 
-			$this->EE->db->select('field_type, field_content_type');
+			$this->EE->db->select('field_type, settings');
 			$type_query = $this->EE->db->get_where('channel_fields', array('field_id' => $field_id));
 
 			if ($type_query->num_rows())
 			{
+				$settings = unserialize(base64_decode($type_query->row('field_settings')));
+				
 				// Permissions can only get more strict!
-				if ($type_query->row('field_content_type') == 'image')
+				if (isset($settings['field_content_type']) && $settings['field_content_type'] == 'image')
 				{
 					$allowed_types = 'gif|jpg|jpeg|png|jpe'; 				
 				}
