@@ -337,7 +337,14 @@ class Forum_Core extends Forum {
 			return $this->topic_metadata;
 		}
 		
-		$items = array('forum_id', 'forum_status', 'forum_name', 'forum_parent', 'forum_description', 'forum_permissions', 'forum_enable_rss', 'forum_is_cat', 'forum_notify_emails', 'forum_notify_emails_topics', 'forum_notify_moderators_topics', 'forum_notify_moderators_replies', 'forum_posts_perpage', 'forum_allow_img_urls', 'forum_max_post_chars', 'topic_id', 'author_id', 'status', 'sticky', 'announcement', 'title', 'body', 'topic_date', 'screen_name');
+		$items = array(
+				'forum_id', 'forum_status', 'forum_name', 'forum_parent', 
+				'forum_description', 'forum_permissions', 'forum_enable_rss', 
+				'forum_is_cat', 'forum_notify_emails', 'forum_notify_emails_topics', 
+				'forum_notify_moderators_topics', 'forum_notify_moderators_replies', 
+				'forum_posts_perpage', 'forum_allow_img_urls', 'forum_max_post_chars', 
+				'topic_id', 'author_id', 'status', 'sticky', 'announcement', 
+				'title', 'body', 'topic_date', 'screen_name');
 		
 		$this->EE->db->select('f.forum_id, f.forum_status, f.forum_name, f.forum_parent, 
 								f.forum_description, f.forum_permissions, f.forum_enable_rss, 
@@ -346,6 +353,7 @@ class Forum_Core extends Forum {
 								f.forum_allow_img_urls, f.forum_posts_perpage, f.forum_max_post_chars, 
 								t.author_id, t.status, t.sticky, t.announcement, t.title, t.body, 
 								t.topic_id, t.topic_date, m.screen_name');
+								
 		$this->EE->db->from(array('forums f', 'forum_topics t', 'members m'));
 		$this->EE->db->where('f.forum_id', 't.forum_id', FALSE);
 		$this->EE->db->where('t.author_id', 'm.member_id', FALSE);
@@ -1478,22 +1486,30 @@ class Forum_Core extends Forum {
 		/**  Fetch the topics
 		/** -------------------------------------*/
 		
-		$idx = implode(',', $ids);								
-		$query = $this->EE->db->query("SELECT t.topic_id, t.author_id, t.title, t.body, t.topic_date, t.thread_total, t.last_post_author_id,  t.last_post_date, t.topic_edit_date, t.parse_smileys,
-								f.forum_text_formatting, f.forum_html_formatting, f.forum_auto_link_urls, f.forum_allow_img_urls,
-								m.screen_name AS last_post_author,
-								a.screen_name AS author, a.email, a.url
-							FROM exp_forum_topics t, exp_forums f, exp_members m, exp_members a
-							WHERE t.last_post_author_id = m.member_id
-							AND f.forum_id = t.forum_id
-							AND a.member_id = t.author_id
-							AND t.announcement = 'n' 
-							AND (t.forum_id IN (".$idx.") OR t.moved_forum_id IN (".$idx."))
-							AND t.board_id = '".$this->fetch_pref('board_id')."'
-							ORDER BY last_post_date DESC, topic_date DESC
-							LIMIT 10");	
-
-		if ($query->num_rows() == 0)
+		$idx = implode(',', $ids);		
+		
+		$qry = $this->EE->db->select('t.topic_id, t.author_id, t.title, 
+									  t.body, t.topic_date, t.thread_total, 
+									  t.last_post_author_id,  t.last_post_date, 
+									  t.topic_edit_date, t.parse_smileys,
+									  f.forum_text_formatting, f.forum_html_formatting, 
+									  f.forum_auto_link_urls, f.forum_allow_img_urls,
+									  m.screen_name AS last_post_author,
+									  m.screen_name AS author, m.email, m.url')
+							->form('forum_topics t', 'forums f', 'members m')
+							->where('t.last_post_author_id = m.member_id')
+							->where('f.forum_id = t.forum_id')
+							->where('m.member_id = t.author_id')
+							->where('t.announcement', 'n')
+							->where_in('t.forum_id', $idx)
+							->or_where_in('t.moved_forum_id', $idx)
+							->where('t.board_id', $this->fetch_pref('board_id'))
+							->order_by('t.last_post_date', 'DESC')
+							->order_by('t.topic_date', "DESC")
+							->limit(10)
+							->get();
+								
+		if ($qry->num_rows() == 0)
 		{
 			return $this->trigger_error('no_feed_results');
 		}
@@ -1574,7 +1590,7 @@ class Forum_Core extends Forum {
 		{	
 			for ($j = 0; $j < count($matches['0']); $j++)
 			{				
-				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $query->row('last_post_date') ), $template, 1);				
+				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('last_post_date') ), $template, 1);				
 			}
 		}  		
 
@@ -1585,7 +1601,7 @@ class Forum_Core extends Forum {
 		{	
 			for ($j = 0; $j < count($matches['0']); $j++)
 			{				
-				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $query->row('topic_edit_date') ), $template, 1);				
+				$template = preg_replace("/".$matches['0'][$j]."/", $this->EE->localize->decode_date($matches['1'][$j], $qry->row('topic_edit_date') ), $template, 1);				
 			}
 		}
 		
@@ -1631,7 +1647,7 @@ class Forum_Core extends Forum {
 		$this->EE->typography->encode_type = 'noscript';
 
 		$res = '';
-		foreach ($query->result_array() as $row)
+		foreach ($qry->result_array() as $row)
 		{
 			$temp = $row_chunk;
 			
@@ -1733,14 +1749,16 @@ class Forum_Core extends Forum {
 	/**
 	 * View Posts Redirect
 	 */
-	function view_post_redirect()
+	public function view_post_redirect()
 	{
 		$topic_id = $this->post_metadata[$this->current_id]['topic_id'];
 		$post_limit = $this->post_metadata[$this->current_id]['forum_posts_perpage'];
 		$post_number = 0;
 		
 		// Find out where in the post order the post is
-		$query = $this->EE->db->query("SELECT post_id FROM exp_forum_posts WHERE topic_id = '{$topic_id}' ORDER BY post_date ASC");
+		$query = $this->EE->db->select('post_id')->where('topic_id', $topic_id)
+							  ->order_by('post_date', 'ASC')
+							  ->get('forum_posts');
 		
 		foreach($query->result_array() as $key => $val)
 		{
@@ -1766,7 +1784,7 @@ class Forum_Core extends Forum {
 	/**
 	 * Main Forum Display
 	 */
-	function main_forum_list()
+	public function main_forum_list()
 	{
 		$return 		= '';
 		$first_row		= FALSE;
@@ -1775,21 +1793,18 @@ class Forum_Core extends Forum {
 		/** --------------------------------
 		/**  Fetch the Forums
 		/** --------------------------------*/
-	
-		$sql = "SELECT * FROM exp_forums WHERE board_id = '".$this->fetch_pref('board_id')."' ";
-		
+
 		// Is the display being limited to a particular category?
-		
 		if (is_numeric($this->current_id))
 		{
-			$sql .= "AND (forum_id = '".$this->current_id."' OR forum_parent =  '".$this->current_id."') ";
+			$this->EE->db->where("(forum_id = '".$this->current_id."' OR forum_parent =  '".$this->current_id."') '");
 		}
+	
+		$qry = $this->EE->db->where('board_id', $this->fetch_pref('board_id'))
+							->order_by('forum_order')
+							->get('forums');
 		
-		$sql .= "ORDER BY forum_order";
-						
-		$query = $this->EE->db->query($sql);
-
-		if ($query->num_rows() == 0 OR $query->row('forum_is_cat') != 'y')
+		if ($qry->num_rows() == 0 OR $qry->row('forum_is_cat') != 'y')
 		{
 			return '';
 		}
@@ -1831,7 +1846,7 @@ class Forum_Core extends Forum {
 			}
 		}
 	
-		foreach ($query->result_array() as $row)
+		foreach ($qry->result_array() as $row)
 		{	
 			if (count($not_these) > 0 && in_array($row['forum_id'], $not_these)) continue;
 			if (count($these) > 0 &&  ! in_array($row['forum_id'], $these)) continue;
@@ -1910,13 +1925,12 @@ class Forum_Core extends Forum {
 		return $return;
 	}
 
-	
-	
-	/** -------------------------------------
-	/**  Forum Category Heading
-	/** -------------------------------------*/
-	
-	function main_forum_table_heading($row)
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Forum Category Heading
+	 */
+	public function main_forum_table_heading($row)
 	{
 		// Close the table of the previous cluster if it has not been done so already
 		
@@ -1937,12 +1951,12 @@ class Forum_Core extends Forum {
 		return $table_close.$table_head;
 	}
 
-	
-	
-	/** ----------------------------------------
-	/**  Forum Table Rows
-	/** ----------------------------------------*/
-	function main_forum_table_rows($row, $markers, $read_topics)
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Forum Table Rows
+	 */
+	public function main_forum_table_rows($row, $markers, $read_topics)
 	{
 		/** ----------------------------------------
 		/**  Fetch Template
@@ -1968,15 +1982,15 @@ class Forum_Core extends Forum {
 		$table_rows = str_replace('{forum_name}', 	$this->_convert_special_chars($row['forum_name'], TRUE), $table_rows);
 		$table_rows = str_replace('{total_topics}', $row['forum_total_topics'], $table_rows);
 		$table_rows = str_replace('{total_replies}',$row['forum_total_posts'], 	$table_rows);
-		
-
-		
 		$table_rows = str_replace('{path:viewforum}', $this->forum_path('viewforum/'.$row['forum_id']), 	$table_rows);
 		
 		// Do we have to add pagination to the "last post" link?
 		// This allows the link to point to the last page of the thread
 		
-		$pquery = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE topic_id = '{$row['forum_last_post_id']}'");
+		$pquery = $this->EE->db->select("COUNT(*) as count")
+							   ->where('topic_id', $row['forum_last_post_id'])
+							   ->get('forum_posts');
+
 		$pagination = '';
 
 		if ($pquery->row('count')  > $row['forum_posts_perpage'] AND $row['forum_posts_perpage'] > 0)
@@ -2024,7 +2038,10 @@ class Forum_Core extends Forum {
 		{
 			if ($this->EE->session->userdata('last_visit') > 0)
 			{
-				$tquery = $this->EE->db->query("SELECT topic_id, last_post_date FROM exp_forum_topics WHERE forum_id = '{$row['forum_id']}' AND last_post_date > '".$this->EE->session->userdata('last_visit')."'");
+				$tquery = $this->EE->db->select('topic_id, last_post_date')
+									   ->where('forum_id', $row['forum_id'])
+									   ->where('last_post_date >', $this->EE->session->userdata('last_visit'))
+									   ->get('forum_topics');
 						
 				if ($tquery->num_rows() > 0)
 				{
@@ -2154,11 +2171,12 @@ class Forum_Core extends Forum {
 
 		return $table_rows;
 	}
+	
+	// ----------------------------------------------------------------------
 
-
-	/** ----------------------------------------
-	/**  Forum Table Close
-	/** ----------------------------------------*/
+	/**
+	 * Forum Table Close
+	 */
 	function main_forum_table_close()
 	{		
 		$this->is_table_open = FALSE;
@@ -2166,12 +2184,11 @@ class Forum_Core extends Forum {
 		return $this->load_element('forum_table_footer');
 	}
 
-
-
-	/** -------------------------------------
-	/**  Show/hide Javascript
-	/** -------------------------------------*/
+	// ----------------------------------------------------------------------
 	
+	/**
+	 * Show/hide Javascript
+	 */
 	function show_hide_forums()
 	{
 		if (count($this->forum_ids) == 0)
@@ -2204,14 +2221,19 @@ class Forum_Core extends Forum {
 		$this->body_extra = $this->load_element('javascript_set_show_hide');
 	}
 
-	/** -------------------------------------
-	/**  Announcement Topics 
-	/** -------------------------------------*/
-	function announcement_topics()
-	{
-		$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE announcement = 'a' OR (announcement = 't' AND forum_id = '{$this->current_id}')");
+	// ----------------------------------------------------------------------
 
-		if ($query->row('count')  == 0)
+	/**
+	 * Announcement Topics 
+	 */
+	public function announcement_topics()
+	{
+		$query = $this->EE->db->select('COUNT(*) as count')
+							  ->where('announcement', 'a')
+							  ->or_where("(announcement = 't' AND forum_id = '{$this->current_id}')")
+							  ->get('forum_topics');
+
+		if ($query->row('count') == 0)
 		{
 			return '';
 		}
@@ -2301,18 +2323,14 @@ class Forum_Core extends Forum {
 		return str_replace('{include:announcement_rows}', $topics, $str);
 	}
 
+	// ----------------------------------------------------------------------
 
-
-	/** -------------------------------------
-	/**  View Announcement page
-	/** -------------------------------------*/
+	/**
+	 * View Announcements page
+	 */
 	function announcements()
 	{
-				
-		/** -------------------------------------
-		/**  Fetch The Announcement
-		/** -------------------------------------*/
-		
+
 		
 		$tquery = $this->EE->db->query("SELECT f.forum_text_formatting, f.forum_html_formatting, f.forum_auto_link_urls, f.forum_allow_img_urls, f.forum_hot_topic, f.forum_post_order, f.forum_posts_perpage, f.forum_display_edit_date,
 									 t.forum_id, t.topic_id as post_id, t.author_id, t.ip_address, t.title, t.body, t.status, t.announcement, t.thread_views, t.parse_smileys, t.topic_date AS date, t.topic_edit_date AS edit_date, t.topic_edit_author AS edit_author_id, em.screen_name AS edit_author,
@@ -5582,7 +5600,27 @@ class Forum_Core extends Forum {
 		return $template;
 	}
 
+	// ----------------------------------------------------------------------
 
+	/**
+	 * Fetch Superadmins
+	 */
+	public function fetch_superadmins()
+	{
+		$super_admins = array();
+
+		$this->EE->db->select('member_id');
+		$ad_query = $this->EE->db->get_where('members', array('group_id' => 1));
+
+		foreach ($ad_query->result_array() as $row)
+		{
+			$super_admins[] = $row['member_id'];
+		}
+		
+		return $super_admins;
+	}
+
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Submission Error Display
@@ -10733,16 +10771,12 @@ class Forum_Core extends Forum {
 		return $this->EE->output->show_message($data);	
 	}
 
+	// ----------------------------------------------------------------------
 
-
-
-
-
-	/** -------------------------------------
-	/**  Display Search Results
-	/** -------------------------------------*/
-	
-	function search_results_page()
+	/**
+	 * Search Results Page
+	 */
+	public function search_results_page()
 	{
 		/** ----------------------------------------
 		/**  Fetch language file
@@ -10788,7 +10822,7 @@ class Forum_Core extends Forum {
 		$this->EE->load->helper('xml');
 
 		$keywords	= xml_convert($query->row('keywords') );
-		$sort_order = $query->row('sort_order') ;
+		$sort_order = $query->row('sort_order');
 
 		/** -------------------------------------
 		/**  Load the template
@@ -10838,19 +10872,20 @@ class Forum_Core extends Forum {
 			$str = $this->allow_if('paginate', $str);
 		}
 		
-		/** -------------------------------------
-		/**  Fetch the topics
-		/** -------------------------------------*/
-														
-		$query = $this->EE->db->query("SELECT t.forum_id, t.topic_id, t.author_id, t.moved_forum_id, t.ip_address, t.title, t.status, t.sticky, t.thread_views, t.topic_date, t.thread_total, t.last_post_author_id,  t.last_post_date,
-									m.screen_name AS last_post_author,
-									a.screen_name AS author
-								FROM exp_forum_topics t, exp_members m, exp_members a
-								WHERE topic_id IN (".implode(',', array_unique($topic_ids)).")
-								AND t.last_post_author_id = m.member_id
-								AND a.member_id = t.author_id
-								AND t.announcement = 'n' ".$sort_order);
-								
+		// Fetch the topics
+		$qry = $this->EE->db->select('t.forum_id, t.topic_id, t.author_id, 
+									  t.moved_forum_id, t.ip_address, t.title, 
+									  t.status, t.sticky, t.thread_views, 
+									  t.topic_date, t.thread_total, 
+									  t.last_post_author_id,  t.last_post_date,
+									  m.screen_name AS last_post_author,
+									  m.screen_name AS author')										
+							->from(array('forum_topics t', 'members m'))									
+							->where_in('t.topic_id', array_unique($topic_ids))
+							->where('t.last_post_author_id = m.member_id')
+							->where('m.member_id = t.author_id')
+							->where('t.announcement', 'n')
+							->get();		
 	
 		/** -------------------------------------
 		/**  No results?  Something has gone terribly wrong!!
@@ -10884,9 +10919,11 @@ class Forum_Core extends Forum {
 
 			$POST_IDS = substr($POST_IDS, 0, -1).")";
 
-			$m_query = $this->EE->db->query("SELECT p.post_id, p.body, m.screen_name, m.member_id FROM exp_forum_posts AS p
-										LEFT JOIN exp_members AS m ON p.author_id = m.member_id
-									WHERE p.post_id IN {$POST_IDS}");
+			$m_query = $this->EE->db->select('p.post_id, p.body, m.screen_name, m.member_id')
+									->from('forum_posts p')
+									->join('members m', 'p.author_id = m.member_id', 'left')
+									->where_in('p.post_id', $POST_IDS)
+									->get();
 			
 			// again with the something has gone terribly wrong...
 			if ($m_query->num_rows() == 0)
@@ -10977,7 +11014,7 @@ class Forum_Core extends Forum {
 			}
 		}
 
-		foreach ($query->result_array() as $row)
+		foreach ($qry->result_array() as $row)
 		{
 			$temp = $template;
 			$count++;
@@ -11101,22 +11138,22 @@ class Forum_Core extends Forum {
 			}
 			
 			$temp = $this->var_swap($temp,
-							array(
-									'topic_marker'			=>	$topic_marker,
-									'topic_type'			=>  $topic_type,
-									'topic_title'			=>	$this->EE->typography->filter_censored_words($this->_convert_special_chars($row['title'])),
-									'forum_name'			=>  $tquery->row('forum_name') ,
-									'author'				=>	$row['author'],
-									'total_views'			=>	$row['thread_views'],
-									'total_posts'			=>	$row['thread_total'],
-									'reply_author'			=>	$row['last_post_author'],
-									'path:member_profile'	=>	$this->profile_path($row['author_id']),
-									'path:viewforum'		=>	$this->forum_path('/viewforum/'.$tquery->row('forum_id') .'/'),
-									'path:view_thread'		=>	$this->forum_path('/viewthread/'.$row['topic_id'].'/'),
-									'path:search_thread'	=>	$this->forum_path('/search_thread/'.$this->current_id.$row['topic_id'].'/'),
-									'path:reply_member_profile'	=> $this->profile_path($row['last_post_author_id'])
-								)
-							);
+					array(
+							'topic_marker'			=>	$topic_marker,
+							'topic_type'			=>  $topic_type,
+							'topic_title'			=>	$this->EE->typography->filter_censored_words($this->_convert_special_chars($row['title'])),
+							'forum_name'			=>  $tquery->row('forum_name') ,
+							'author'				=>	$row['author'],
+							'total_views'			=>	$row['thread_views'],
+							'total_posts'			=>	$row['thread_total'],
+							'reply_author'			=>	$row['last_post_author'],
+							'path:member_profile'	=>	$this->profile_path($row['author_id']),
+							'path:viewforum'		=>	$this->forum_path('/viewforum/'.$tquery->row('forum_id') .'/'),
+							'path:view_thread'		=>	$this->forum_path('/viewthread/'.$row['topic_id'].'/'),
+							'path:search_thread'	=>	$this->forum_path('/search_thread/'.$this->current_id.$row['topic_id'].'/'),
+							'path:reply_member_profile'	=> $this->profile_path($row['last_post_author_id'])
+						)
+					);
 
 			/** -------------------------------------
 			/**  Parse the "last_reply" date
@@ -11150,26 +11187,24 @@ class Forum_Core extends Forum {
 		/**  Parse the template
 		/** --------------------------------*/
 		return $this->var_swap($this->load_element('search_results_page'),
-							array(
-								'include:search_results'	=> $str,
-								'pagination_links'			=> $pagination,
-								'current_page'				=> $current_page,
-								'total_pages'				=> $total_pages,								
-								'keywords'					=> $this->EE->functions->encode_ee_tags($keywords),
-								'total_results'				=> $total_rows,								
-								'path:new_topic' 			=> $this->forum_path('/newtopic/'.$this->current_id.'/')
-								)
-							);		
+					array(
+						'include:search_results'	=> $str,
+						'pagination_links'			=> $pagination,
+						'current_page'				=> $current_page,
+						'total_pages'				=> $total_pages,								
+						'keywords'					=> $this->EE->functions->encode_ee_tags($keywords),
+						'total_results'				=> $total_rows,								
+						'path:new_topic' 			=> $this->forum_path('/newtopic/'.$this->current_id.'/')
+						)
+					);		
 	}
-
-
-
 	
-	/** ---------------------------------------
-	/**  Search Thread Page
-	/** ---------------------------------------*/
-	
-	function search_thread_page()
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Search Thread Page
+	 */
+	public function search_thread_page()
 	{
 		/** ----------------------------------------
 		/**  Fetch language file
@@ -11196,13 +11231,12 @@ class Forum_Core extends Forum {
 
 		$expire = time() - (2 * 3600);
 		
-		$this->EE->db->query("DELETE FROM exp_forum_search WHERE search_date < '$expire'");
+		$this->EE->db->where('search_date < ', $expire)->delete('forum_search');
 
 		/** ----------------------------------------
 		/**  Fetch the cached search query
 		/** ----------------------------------------*/
-					
-		$query = $this->EE->db->query("SELECT * FROM exp_forum_search WHERE search_id = '".$this->EE->db->escape_str($this->current_id)."'");
+		$query = $this->EE->db->where('search_id', $this->current_id)->get('forum_search');
 
 		if ($query->num_rows() == 0)
 		{
@@ -11242,14 +11276,14 @@ class Forum_Core extends Forum {
 		if ($total_rows > $post_limit)
 		{	
 			$pagination = $this->_create_pagination(
-										array(
-												'first_url'		=> $this->forum_path('/search_thread/'.$this->current_id.$topic_id.'/'),
-												'path'			=> $this->forum_path('/search_thread/'.$this->current_id.$topic_id.'/'),
-												'total_count'	=> $total_rows,
-												'per_page'		=> 20,
-												'cur_page'		=> $this->current_page
-											)
-										);
+					array(
+							'first_url'		=> $this->forum_path('/search_thread/'.$this->current_id.$topic_id.'/'),
+							'path'			=> $this->forum_path('/search_thread/'.$this->current_id.$topic_id.'/'),
+							'total_count'	=> $total_rows,
+							'per_page'		=> 20,
+							'cur_page'		=> $this->current_page
+						)
+					);
 			
 			// Slice our array so we can limit the query properly
 		
@@ -11275,7 +11309,7 @@ class Forum_Core extends Forum {
 		/**  Fetch the posts and topic title
 		/** -------------------------------------*/
 		
-		$query = $this->EE->db->query("SELECT title FROM exp_forum_topics WHERE topic_id = '{$topic_id}'");
+		$query = $this->EE->db->select('title')->where('topic_id', $topic_id)->get('forum_topics');
 		
 		if ($query->num_rows() == 0)
 		{
@@ -11284,19 +11318,21 @@ class Forum_Core extends Forum {
 		
 		$topic_title = $query->row('title') ;
 		
-		$query = $this->EE->db->query("SELECT p.forum_id, p.topic_id, p.post_id, p.author_id, p.body, p.post_date,
-									m.screen_name AS author
-								FROM exp_forum_posts AS p, exp_members AS m
-								WHERE p.topic_id = '{$topic_id}'
-								AND m.member_id = p.author_id
-								AND p.post_id IN (".implode(',', array_unique($post_ids)).")
-								ORDER BY post_date DESC");					
+		$qry = $this->EE->db->select('p.forum_id, p.topic_id, p.post_id, 
+									  p.author_id, p.body, p.post_date,
+									  m.screen_name AS author')
+							->from(array('forum_posts p', 'members m'))
+							->where('p.topic_id', $topic_id)
+							->where('m.member_id', 'p.author_id')
+							->where_in('p.post_id', array_unique($post_ids))
+							->order_by('post_date', 'DESC')
+							->get();
 	
 		/** -------------------------------------
 		/**  No results?  Something has gone terribly wrong!!
 		/** -------------------------------------*/
 		
-		if ($query->num_rows() == 0)
+		if ($qry->num_rows() == 0)
 		{
 			return $this->EE->output->show_user_error('off', array(lang('search_no_result')), lang('search_result_heading'));		
 		}
@@ -11337,7 +11373,7 @@ class Forum_Core extends Forum {
 			$switches = explode('|', $smatch['2']);
 		}
 						
-		foreach ($query->result_array() as $row)
+		foreach ($qry->result_array() as $row)
 		{
 			$temp = $template;
 			$count++;
@@ -11439,28 +11475,33 @@ class Forum_Core extends Forum {
 							);
 	}
 
+	// ----------------------------------------------------------------------
 	
-	
-	
-	/** -------------------------------------
-	/**  Most Recent Topics
-	/** -------------------------------------*/
-	function most_recent_topics()
+	/**
+	 * Most Recent Topics
+	 */
+	public function most_recent_topics()
 	{
-		
-		$query = $this->EE->db->query("SELECT t.title, t.body, t.topic_id, t.thread_total, t.thread_views, t.author_id, t.last_post_author_id, t.forum_id, f.forum_status, f.forum_permissions, f.forum_name 
-			FROM exp_forum_topics t LEFT JOIN exp_forums f ON t.forum_id = f.forum_id 
-			WHERE t.board_id = '".$this->fetch_pref('board_id')."'
-			ORDER BY topic_date DESC LIMIT 30");
+		$qry = $this->EE->db->select('t.title, t.body, t.topic_id, t.thread_total, 
+									  t.thread_views, t.author_id, 
+									  t.last_post_author_id, t.forum_id, 
+									  f.forum_status, f.forum_permissions, 
+									  f.forum_name')
+							->from('forum_topics t')
+							->join('forums f', 't.forum_id = f.forum_id', 'left')
+							->where('t.board_id', $this->fetch_pref('board_id'))
+							->order_by('topic_date', 'DESC')
+							->limit(30)
+							->get();		
 	
-		if ($query->num_rows() == 0)
+		if ($qry->num_rows() == 0)
 		{
 			return '';
 		}
 		
 		$ids = array();
 
-		foreach ($query->result_array() as $i => $row)
+		foreach ($qry->result_array() as $i => $row)
 		{
 			$member_ids[] = $row['author_id'];
 			$member_ids[] = $row['last_post_author_id'];
@@ -11469,12 +11510,10 @@ class Forum_Core extends Forum {
 			
 			$ids[] = $row['topic_id'];					
 		}
-		
 
-		$m_query = $this->EE->db->query("SELECT m.screen_name, m.member_id 
-							 FROM exp_members m
-							 WHERE m.member_id IN (".implode(',', $member_ids).")");
-	
+		$m_query = $this->EE->db->select('screen_name, member_id')
+								->where_in('member_id', $member_ids)
+								->get('members');
 
 		foreach($m_query->result_array() as $row)
 		{
@@ -11507,7 +11546,11 @@ class Forum_Core extends Forum {
 			
 			$ids = array_unique($ids);
 			
-			$results = $this->EE->db->query("SELECT body, topic_id FROM exp_forum_posts WHERE topic_id IN ('".implode("','", $ids)."') ORDER BY post_date DESC LIMIT 12");
+			$results = $this->EE->db->select('body, topic_id')
+									->where_in('topic_id', $ids)
+									->order_by('post_date', 'DESC')
+									->limit(12)
+									->get('forum_posts');
 			
 			foreach($results->result_array() as $row)
 			{
@@ -11555,7 +11598,11 @@ class Forum_Core extends Forum {
 			{
 				if ( ! isset($excerpts[$row['topic_id']]))
 				{
-					$results = $this->EE->db->query("SELECT body FROM exp_forum_posts WHERE topic_id = '".$row['topic_id']."' ORDER BY post_date DESC LIMIT 1");
+					$results = $this->EE->db->select('body')
+											->where('topic_id', $row['topic_id'])
+											->order_by('post_date', 'DESC')
+											->limit(1)
+											->get('forum_posts');
 					
 					if ($results->num_rows() == 0)
 					{
@@ -11580,27 +11627,32 @@ class Forum_Core extends Forum {
 		return $str;
 	}
 
+	// ----------------------------------------------------------------------
 
-
-
-	/** -------------------------------------
-	/**  Most Popular Posts
-	/** -------------------------------------*/
-	function most_popular_posts()
+	/**
+	 * Most Popular Posts
+	 */
+	public function most_popular_posts()
 	{
-		$query = $this->EE->db->query("SELECT t.title, t.body, t.topic_id, t.thread_total, t.thread_views, t.author_id, t.last_post_author_id, t.forum_id, f.forum_status, f.forum_permissions, f.forum_name 
-			FROM exp_forum_topics t LEFT JOIN exp_forums f ON t.forum_id = f.forum_id
-			WHERE t.board_id = '".$this->fetch_pref('board_id')."'
-			ORDER BY thread_total DESC LIMIT 30");
+		$qry = $this->EE->db->select('t.title, t.body, t.topic_id, t.thread_total, 
+									  t.thread_views, t.author_id, t.last_post_author_id, 
+									  t.forum_id, f.forum_status, f.forum_permissions, 
+									  f.forum_name')
+							->from('forum_topics t')
+							->join('forums f', 't.forum_id = f.forum_id', 'left')
+							->where('t.board_id', $this->fetch_pref('board_id'))
+							->order_by('thread_total', 'DESC')
+							->limit(30)
+							->get();		
 	
-		if ($query->num_rows() == 0)
+		if ($qry->num_rows() == 0)
 		{
 			return '';
 		}
 		
 		$ids = array();
 
-		foreach ($query->result_array() as $i => $row)
+		foreach ($qry->result_array() as $i => $row)
 		{
 			$member_ids[] = $row['author_id'];
 			$member_ids[] = $row['last_post_author_id'];
@@ -11610,11 +11662,9 @@ class Forum_Core extends Forum {
 			$ids[] = $row['topic_id'];					
 		}
 		
-
-		$m_query = $this->EE->db->query("SELECT m.screen_name, m.member_id 
-							 FROM exp_members m
-							 WHERE m.member_id IN (".implode(',', $member_ids).")");
-	
+		$m_query = $this->EE->db->select('screen_name, member_id')
+								->where_in('member_id', $member_ids)
+								->get('members');
 
 		foreach($m_query->result_array() as $row)
 		{
@@ -11725,12 +11775,12 @@ class Forum_Core extends Forum {
 		return $str;
 	}
 
-
-  
-	/** -----------------------------------------------------------
-	/**  Emoticons
-	/** -----------------------------------------------------------*/
-	function emoticon_page()
+	// ----------------------------------------------------------------------
+	
+	/**
+	 * Emoticons
+	 */
+	public function emoticon_page()
 	{
 		
 		if ($this->EE->session->userdata('member_id') == 0)
@@ -11831,17 +11881,15 @@ class Forum_Core extends Forum {
 		return str_replace('{include:smileys}', $r, $this->load_element('emoticon_page'));
 	}
 
+	// ----------------------------------------------------------------------
 
-
-
-	/** -------------------------------------
-	/**  Topic Titles Tag
-	/** -------------------------------------*/
-	
-	// This tag is intended to be used in a standard template
-	// so that forum topics can be shown outside the forum
-
-	function topic_titles()
+	/**
+	 * Topic Titles Tag
+	 *
+	 * This tag is intended to be used in a standard template
+	 * so that forum topics can be shown outside the forum
+	 */
+	public function topic_titles()
 	{
 		$this->EE->TMPL->disable_caching = FALSE;
 		
@@ -11933,33 +11981,23 @@ class Forum_Core extends Forum {
 			}		
 		}
 		
-		$m_query = $this->EE->db->query("SELECT m.screen_name, m.member_id 
-							 FROM exp_members m
-							 WHERE m.member_id IN (".implode(',', $member_ids).")");
-	
+		$m_query = $this->EE->db->select('screen_name, member_id')
+								->where_in('member_id', $member_ids)
+								->get('members');
 
 		foreach($m_query->result_array() as $row)
 		{
 			$member_name[$row['member_id']] = $row['screen_name'];
 		}
 		
-		
-		
-		/** ---------------------------------------
-		/**  Fetch reply information, if necessary
-		/** ---------------------------------------*/
-		
+		// Fetch reply information, if necessary
 		$replies = array();
 		
 		if ($fetch_replies)
 		{
-			$POSTS = " post_id IN ('".implode("', '", $post_ids)."') ";
-			
-			$sql = "SELECT topic_id, body AS last_reply, parse_smileys 
-					FROM exp_forum_posts
- 					WHERE {$POSTS}";
-			
-			$rquery = $this->EE->db->query($sql);
+			$rquery = $this->EE->select('topic_id, body as last_reply, parse_smileys')
+								->where_in('post_id', $post_ids)
+								->get('forum_posts');
 
 			if ($rquery->num_rows() > 0)
 			{
@@ -12273,13 +12311,12 @@ class Forum_Core extends Forum {
 		return $str;
 	}
 
+	// ----------------------------------------------------------------------
 
-
-	/** ----------------------------------
-	/**  HTTP Authentication - Basic
-	/** ----------------------------------*/
-	
-	function http_authentication_basic()
+	/**
+	 * HTTP Authentication - Basic
+	 */
+	public function http_authentication_basic()
 	{
 		@header('WWW-Authenticate: Basic realm="'.$this->realm.'"');
 		$this->EE->output->set_status_header(401);
@@ -12287,12 +12324,12 @@ class Forum_Core extends Forum {
 		exit("HTTP/1.0 401 Unauthorized");
 	}
 
+	// ----------------------------------------------------------------------
 	
-	/** ----------------------------------
-	/**  HTTP Authentication - Digest
-	/** ----------------------------------*/
-	
-	function http_authentication_digest()
+	/**
+	 * HTTP Authentication - Digest
+	 */
+	public function http_authentication_digest()
 	{
 		@header('WWW-Authenticate: Digest realm="'.$this->realm.'",gop="auth", nonce="'.uniqid('').'", opaque="'.md5($this->realm).'"');
 		$this->EE->output->set_status_header(401);
@@ -12300,13 +12337,12 @@ class Forum_Core extends Forum {
 		exit("HTTP/1.0 401 Unauthorized");
 	}
 
+	// ----------------------------------------------------------------------
 	
-	
-	/** ----------------------------------
-	/**  Check HTTP Authentication - Digest
-	/** ----------------------------------*/
-	
-	function http_authentication_check_digest($allowed_groups = array())
+	/**
+	 * Check HTTP Authentication - Digest
+	 */
+	public function http_authentication_check_digest($allowed_groups = array())
 	{
 		if (empty($_SERVER) OR ! isset($_SERVER['PHP_AUTH_DIGEST']))
 		{
@@ -12379,28 +12415,13 @@ class Forum_Core extends Forum {
 			return FALSE;
 		}
 	}
-
-	function fetch_superadmins()
-	{
-		$super_admins = array();
-
-		$this->EE->db->select('member_id');
-		$ad_query = $this->EE->db->get_where('members', array('group_id' => 1));
-
-		foreach ($ad_query->result_array() as $row)
-		{
-			$super_admins[] = $row['member_id'];
-		}
-		
-		return $super_admins;
-	}
 	
-	
-	/** ----------------------------------
-	/**  Check HTTP Authentication - Basic
-	/** ----------------------------------*/
-	
-	function http_authentication_check_basic($allowed_groups = array())
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Check HTTP Authentication - Basic
+	 */
+	public function http_authentication_check_basic($allowed_groups = array())
 	{
 		/** ----------------------------------
 		/**  Find Username, Please
@@ -12507,9 +12528,11 @@ class Forum_Core extends Forum {
 		/**  Validate Username and Password
 		/** ----------------------------------*/
 		
-		$query = $this->EE->db->query("SELECT password, group_id FROM exp_members WHERE username = '".$this->EE->db->escape_str($user)."'");
+		$qry = $this->EE->db->select('password, group_id')
+							->where('username', $user)
+							->get('members');
 		
-		if ($query->num_rows() == 0)
+		if ($qry->num_rows() == 0)
 		{
 			$this->EE->session->save_password_lockout($user);
 			return FALSE;
@@ -12527,13 +12550,13 @@ class Forum_Core extends Forum {
 		}
 		
 		$this->EE->load->helper('security');
-		if ($query->row('password')  == do_hash($pass))
+		if ($qry->row('password') == do_hash($pass))
 		{
 			return TRUE;
 		}
 
 		// just in case it's still in the db as MD5 from an old pMachine or EE 1.x install
-		if ($query->row('password')  == do_hash($pass, 'md5'))
+		if ($qry->row('password') == do_hash($pass, 'md5'))
 		{
 			return TRUE;
 		}
