@@ -20,4 +20,122 @@ class Text_helper_test extends PHPUnit_Framework_TestCase
 	}
 
 	// ------------------------------------------------------------------------	
+	
+	public function testCharacterLimiter()
+	{
+		$this->assertEquals('Once upon a time, a&#8230;', character_limiter($this->_long_string, 20));
+		$this->assertEquals('Once upon a time, a&hellip;', character_limiter($this->_long_string, 20, '&hellip;'));
+	}
+
+	// ------------------------------------------------------------------------	
+	
+	public function testAsciiToEntities()
+	{
+		$strs = array(
+			'“‘ “test”'			=> '&#8220;&#8216; &#8220;test&#8221;',
+			'†¥¨ˆøåß∂ƒ©˙∆˚¬'	=> '&#8224;&#165;&#168;&#710;&#248;&#229;&#223;&#8706;&#402;&#169;&#729;&#8710;&#730;&#172;'
+		);
+		
+		foreach ($strs as $str => $expect)
+		{
+			$this->assertEquals($expect, ascii_to_entities($str));
+		}
+	}
+
+	// ------------------------------------------------------------------------	
+
+	public function testEntitiesToAscii()
+	{
+		$strs = array(
+			'&#8220;&#8216; &#8220;test&#8221;' => '“‘ “test”',
+			'&#8224;&#165;&#168;&#710;&#248;&#229;&#223;&#8706;&#402;&#169;&#729;&#8710;&#730;&#172;' => '†¥¨ˆøåß∂ƒ©˙∆˚¬'
+		);
+		
+		foreach ($strs as $str => $expect)
+		{
+			$this->assertEquals($expect, entities_to_ascii($str));
+		}		
+	}
+
+	// ------------------------------------------------------------------------	
+	
+	public function testCensoredWords()
+	{
+		$censored = array('boob', 'nerd', 'ass', 'fart');
+		
+		$strs = array(
+			'Ted bobbled the ball' 			=> 'Ted bobbled the ball',
+			'Jake is a nerdo'				=> 'Jake is a nerdo',
+			'The borg will assimilate you'	=> 'The borg will assimilate you',
+			'Did Mary Fart?'				=> 'Did Mary $*#?',
+			'Jake is really a boob'			=> 'Jake is really a $*#'
+		);
+		
+		
+		foreach ($strs as $str => $expect)
+		{
+			$this->assertEquals($expect, word_censor($str, $censored, '$*#'));
+		}	
+	}
+
+	// ------------------------------------------------------------------------	
+
+	public function testHighlightCode()
+	{
+		$code = '<?php var_dump($this); ?>';
+		$expect = "<code><span style=\"color: #000000\">\n<span style=\"color: #0000BB\">&lt;?php&nbsp;var_dump</span><span style=\"color: #007700\">(</span><span style=\"color: #0000BB\">\$this</span><span style=\"color: #007700\">);&nbsp;</span><span style=\"color: #0000BB\">?&gt;&nbsp;</span>\n</span>\n</code>";
+
+		$this->assertEquals($expect, highlight_code($code));
+	}
+
+	// ------------------------------------------------------------------------	
+
+	public function testHighlightPhrase()
+	{
+		$strs = array(
+			'this is a phrase'			=> '<strong>this is</strong> a phrase',
+			'this is another'			=> '<strong>this is</strong> another',
+			'Gimme a test, Sally'		=> 'Gimme a test, Sally',
+			'Or tell me what this is'	=> 'Or tell me what <strong>this is</strong>'
+		);
+		
+		foreach ($strs as $str => $expect)
+		{
+			$this->assertEquals($expect, highlight_phrase($str, 'this is'));
+		}
+	}
+
+	// ------------------------------------------------------------------------	
+
+	public function testEllipsizing()
+	{
+		$strs = array(
+			'0'		=> array(
+				'this is my string'				=> '&hellip; my string',
+				"here's another one"			=> '&hellip;nother one',
+				'this one is just a bit longer'	=> '&hellip;bit longer',
+			),
+			'.5'	=> array(
+				'this is my string'				=> 'this &hellip;tring',
+				"here's another one"			=> "here'&hellip;r one",
+				'this one is just a bit longer'	=> 'this &hellip;onger',
+			),
+			'1'	=> array(
+				'this is my string'				=> 'this is my&hellip;',
+				"here's another one"			=> "here's ano&hellip;",
+				'this one is just a bit longer'	=> 'this one i&hellip;',
+			),
+		);
+		
+		foreach ($strs as $pos => $s)
+		{
+			foreach ($s as $str => $expect)
+			{
+				$this->assertEquals($expect, ellipsize($str, 10, $pos));				
+			}
+		}
+	}
+
+	// ------------------------------------------------------------------------	
+
 }
