@@ -24,6 +24,8 @@ class Typography_test extends PHPUnit_Framework_TestCase
 
 	/**
 	 * Tests the format_characters() function.
+	 *
+	 * this can and should grow.
 	 */
 	public function testFormatCharacters()
 	{
