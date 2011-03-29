@@ -25,10 +25,9 @@ class Security_test extends PHPUnit_Framework_TestCase {
 				
 		);
 
-		foreach ($vectors as $vector => $assertion)
+		foreach ($vectors as $vector => $expected)
 		{
-				$this->assertEquals($this->security->xss_clean($vector),
-														$assertion);					
+				$this->assertEquals($expected, $this->security->xss_clean($vector));					
 		}
 	}		
 	
@@ -43,10 +42,9 @@ class Security_test extends PHPUnit_Framework_TestCase {
 			'Webkit: <a href="javas%00&#x00;cript:'.$encoded.'">Google</a>' => "Webkit: <a location='http://www.google.com'>Google</a>"
 		);
 
-		foreach ($urls as $url => $assertion)
+		foreach ($urls as $url => $expected)
 		{
-			$this->assertEquals($this->security->xss_clean($url),
-					$assertion);					
+			$this->assertEquals($expected, $this->security->xss_clean($url));					
 		}						
 	}
 			
@@ -69,10 +67,9 @@ class Security_test extends PHPUnit_Framework_TestCase {
 						'<a href="[removed]moveTo(0,0);resizeTo(3000,3000);">webkit</a>'						
 		);
 
-		foreach ($vectors as $el => $assertion)
+		foreach ($vectors as $el => $expected)
 		{
-				$this->assertEquals($this->security->xss_clean($el),
-						$assertion);					
+				$this->assertEquals($expected, $this->security->xss_clean($el));					
 		}
 	}
 
@@ -97,10 +94,9 @@ class Security_test extends PHPUnit_Framework_TestCase {
 						'<a title="&lt;&lt;&gt;href=&gt;" rel="&gt;">utf7b<'
 		);
 			
-		foreach ($vectors as $test => $assertion)
+		foreach ($vectors as $test => $expected)
 		{
-				$this->assertEquals($this->security->xss_clean($test),
-														$assertion);
+				$this->assertEquals($expected, $this->security->xss_clean($test));
 		}
 	}
 
@@ -133,10 +129,9 @@ class Security_test extends PHPUnit_Framework_TestCase {
 						'<a >base64_utf7</a>'
 		);
 
-		foreach ($vectors as $attack => $assert)
+		foreach ($vectors as $attack => $expected)
 		{
-				$this->assertEquals($this->security->xss_clean($attack),
-														$assert);
+				$this->assertEquals($expected, $this->security->xss_clean($attack));
 		}
 	}
 
