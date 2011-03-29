@@ -2,10 +2,10 @@
 
 <phpunit 
 	backupGlobals="false"
-	bootstrap="system/tests/tests_bootstrap.php">
+	bootstrap="system/tests/codeigniter/tests_bootstrap.php">
 	<testsuites>
 		<testsuite name="CodeIgniterTests">
-			<directory suffix="test.php">system/tests/*/</directory>
+			<directory suffix="test.php">system/tests/codeigniter/*/</directory>
 		</testsuite>
 	</testsuites>
 </phpunit>
