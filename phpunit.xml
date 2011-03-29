@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit 
+	backupGlobals="false"
+	bootstrap="system/tests/codeigniter/tests_bootstrap.php">
+	<testsuites>
+		<testsuite name="CodeIgniterTests">
+			<directory suffix="test.php">system/tests/codeigniter/*/</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

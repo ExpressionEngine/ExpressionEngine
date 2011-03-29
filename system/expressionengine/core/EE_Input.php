@@ -104,11 +104,20 @@ class EE_Input extends CI_Input {
 				{
 					if (is_array($val))
 					{
-						exit('Invalid GET Data - Array');
+						$data = '';
+						
+						if ((int) config_item('debug') == 2)
+						{
+							$data = '<br>' . print_r($data, TRUE);
+						}
+						
+						exit(sprintf("Invalid GET Data - Array %s", $data));
 					}
 					elseif (preg_match("#(;|\?|exec\s*\(|system\s*\(|passthru\s*\(|cmd\s*\(|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i", $val))
 					{
-						exit('Invalid GET Data');
+						$data = ((int) config_item('debug') == 2) ? "<br>{$val}" : '';
+						
+						exit(sprintf("Invalid GET Data %s", $data));
 					}   
 				}
 			}	
