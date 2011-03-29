@@ -82,7 +82,7 @@ class String_helper_test extends PHPUnit_Framework_TestCase
 		foreach ($strs as $str => $expect)
 		{
 			$this->assertEquals($expect, reduce_multiples($str));
-		}		
+		}
 	}
 	
 	// --------------------------------------------------------------------	
@@ -99,7 +99,9 @@ class String_helper_test extends PHPUnit_Framework_TestCase
 		foreach ($strs as $str => $expect)
 		{
 			$this->assertEquals($expect, repeater($str, 10));
-		}		
-		
+		}
 	}	
+
+	// --------------------------------------------------------------------	
+
 }
