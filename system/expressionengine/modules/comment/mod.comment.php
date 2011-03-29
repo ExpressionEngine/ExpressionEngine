@@ -1433,7 +1433,8 @@ class Comment {
 			{
 				return FALSE;
 			}
-			elseif ($query->num_rows() == 1)
+			
+			if ($query->num_rows() == 1)
 			{
 				$this->EE->db->where('channel_titles.channel_id', $query->row('channel_id'));
 			}
@@ -1486,7 +1487,7 @@ class Comment {
 			return FALSE;
 		}
 
-		if ($query->row('allow_comments')  == 'n' OR $query->row('comment_system_enabled')  == 'n')
+		if ($query->row('allow_comments') == 'n' OR $query->row('comment_system_enabled') == 'n')
 		{
 			$halt_processing = 'disabled';
 		}
@@ -1896,11 +1897,9 @@ class Comment {
 			}
 		}
 
-		if ($query->num_rows() == '')
-		{
-			$formatting = 'none';
-		}
-		else
+		$formatting = 'none';
+
+		if ($query->num_rows())
 		{
 			$formatting = $query->row('comment_text_formatting') ;
 		}
@@ -1940,33 +1939,17 @@ class Comment {
         /**  Set defaults based on member data as needed
         /** ----------------------------------------*/		
 		
-		if (isset($_POST['name']) AND $_POST['name'] != '')
+		$name		= $this->EE->input->post('name', TRUE);
+		$email		= $this->EE->input->post('email', TRUE); // this is just for preview, actual submission will validate the email address
+	 	$url		= $this->EE->input->post('url', TRUE);
+	 	$location	= $this->EE->input->post('location', TRUE);
+		
+		if ($this->EE->session->userdata('member_id') != 0)
 		{
-			$name = stripslashes($this->EE->input->post('name'));
-		}
-		elseif ($this->EE->session->userdata['screen_name'] != '')
-		{
-			$name = $this->EE->session->userdata['screen_name'];
-		}
-		else
-		{
-			$name = '';
-		}
-
-		foreach (array('email', 'url', 'location') as $v)
-		{
-			if (isset($_POST[$v]) AND $_POST[$v] != '')
-			{
-				${$v} = stripslashes($this->EE->input->post($v));
-			}
-			elseif ($this->EE->session->userdata[$v] != '')
-			{
-				${$v} = $this->EE->session->userdata[$v];
-			}
-			else
-			{
-				${$v} = '';
-			}		
+			 $name		= $this->EE->session->userdata('screen_name') ? $this->EE->session->userdata('screen_name') : $this->EE->session->userdata('username');
+			 $email		= $this->EE->session->userdata('email');
+			 $url		= (string) $this->EE->session->userdata('url');
+			 $location	= (string) $this->EE->session->userdata('location');
 		}
 		
 		/** ----------------------------------------
@@ -1984,52 +1967,28 @@ class Comment {
 		$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
 
 
+		// Prep the URL
+
+		if ($url != '')
+		{
+			$this->EE->load->helper('url');
+			$url = prep_url($url);
+		}
+
 		/** ----------------------------------------
 		/**  Single Variables
 		/** ----------------------------------------*/
 
 		foreach ($this->EE->TMPL->var_single as $key => $val)
 		{
-
-			//  {name}
-			if ($key == 'name')
+			// Start with the simple ones
+			if (in_array($key, array('name', 'email', 'url', 'location')))
 			{
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $name, $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single($key, $$key, $tagdata);
 			}
-
-
-			//  {email}
-			if ($key == 'email')
-			{
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $email, $tagdata);
-			}
-
-
-			//  {url}
-			if ($key == 'url')
-			{
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $url, $tagdata);
-			}
-
-
-			//  {location}
-			if ($key == 'location')
-			{
-				$tagdata = $this->EE->TMPL->swap_var_single($key, $location, $tagdata);
-			}
-
-			// Prep the URL
-
-			if ($url != '')
-			{
-				$this->EE->load->helper('url');
-
-				$url = prep_url($url);
-			}
-
 
 			//  {url_or_email}
-			if ($key == "url_or_email")
+			elseif ($key == "url_or_email")
 			{
 				$temp = $url;
 
@@ -2043,7 +2002,7 @@ class Comment {
 
 
 			//  {url_or_email_as_author}
-			if ($key == "url_or_email_as_author")
+			elseif ($key == "url_or_email_as_author")
 			{
 				if ($url != '')
 				{
@@ -2063,8 +2022,7 @@ class Comment {
 			}
 
 			//  {url_or_email_as_link}
-
-			if ($key == "url_or_email_as_link")
+			elseif ($key == "url_or_email_as_link")
 			{
 				if ($url != '')
 				{
@@ -2085,7 +2043,7 @@ class Comment {
 
 			//  {url_as_author}
 
-            if ($key == 'url_as_author')
+            elseif ($key == 'url_as_author')
             {
                 if ($url != '')
                 {
@@ -2101,7 +2059,7 @@ class Comment {
 			/**  parse comment field
 			/** ----------------------------------------*/
 
-			if ($key == 'comment')
+			elseif ($key == 'comment')
 			{
 				// -------------------------------------------
 				// 'comment_preview_comment_format' hook.
@@ -2114,14 +2072,15 @@ class Comment {
 					}
 					else
 					{
-						$data = $this->EE->typography->parse_type( stripslashes($this->EE->input->post('comment')),
-												 array(
-														'text_format'	=> $query->row('comment_text_formatting') ,
-														'html_format'	=> $query->row('comment_html_formatting') ,
-														'auto_links'	=> $query->row('comment_auto_link_urls') ,
-														'allow_img_url' => $query->row('comment_allow_img_urls')
-														)
-												);
+						$data = $this->EE->typography->parse_type(
+							$this->EE->input->post('comment'),
+							array(
+								'text_format'	=> $query->row('comment_text_formatting') ,
+								'html_format'	=> $query->row('comment_html_formatting') ,
+								'auto_links'	=> $query->row('comment_auto_link_urls') ,
+								'allow_img_url' => $query->row('comment_allow_img_urls')
+							)
+						);
 					}
 
 				// -------------------------------------------
@@ -2133,7 +2092,7 @@ class Comment {
 			/**  parse comment date
 			/** ----------------------------------------*/
 
-			if (isset($comment_date[$key]))
+			elseif (isset($comment_date[$key]))
 			{
 				foreach ($comment_date[$key] as $dvar)
 				{
@@ -2419,9 +2378,9 @@ class Comment {
 		}
 		else
 		{
-			if ($query->row('comment_expiration')  > 0)
+			if ($query->row('comment_expiration') > 0)
 			{
-			 	$days = $query->row('entry_date')  + ($query->row('comment_expiration')  * 86400);
+			 	$days = $query->row('entry_date') + ($query->row('comment_expiration') * 86400);
 
 				if ($this->EE->localize->now > $days)
 				{
@@ -2441,7 +2400,7 @@ class Comment {
 		/** ----------------------------------------
 		/**  Is there a comment timelock?
 		/** ----------------------------------------*/
-		if ($query->row('comment_timelock')  != '' AND $query->row('comment_timelock')  > 0)
+		if ($query->row('comment_timelock') != '' AND $query->row('comment_timelock') > 0)
 		{
 			if ($this->EE->session->userdata['group_id'] != 1)
 			{
