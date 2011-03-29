@@ -6,9 +6,7 @@ class Security_test extends PHPUnit_Framework_TestCase {
 	
 	public function setUp()
 	{
-		$CI =& get_instance();
-		$CI->load->library('security');
-		$this->security = $CI->security;
+		$this->security = load_class('Security', 'core');
 	}
 
 	// --------------------------------------------------------------------
