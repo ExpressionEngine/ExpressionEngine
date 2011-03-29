@@ -7,7 +7,6 @@ define('BASEPATH', PROJECT_BASE.'codeigniter/system/');
 define('APPPATH', PROJECT_BASE.'codeigniter/application/');
 define('EXT', '.php');
 
-
 require(APPPATH.'config/constants.php');
 require(PROJECT_BASE.'tests/codeigniter/Common.php');
 

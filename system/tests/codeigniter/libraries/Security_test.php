@@ -6,14 +6,9 @@ class Security_test extends PHPUnit_Framework_TestCase {
 	
 	public function setUp()
 	{
-		$this->CI =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-	
-	public function testLoadLibrary()
-	{
-		$this->assertNull($this->CI->load->library('security'));				
+		$CI =& get_instance();
+		$CI->load->library('security');
+		$this->security = $CI->security;
 	}
 
 	// --------------------------------------------------------------------
@@ -34,7 +29,7 @@ class Security_test extends PHPUnit_Framework_TestCase {
 
 		foreach ($vectors as $vector => $assertion)
 		{
-				$this->assertEquals($this->CI->security->xss_clean($vector),
+				$this->assertEquals($this->security->xss_clean($vector),
 														$assertion);					
 		}
 	}		
@@ -52,7 +47,7 @@ class Security_test extends PHPUnit_Framework_TestCase {
 
 		foreach ($urls as $url => $assertion)
 		{
-			$this->assertEquals($this->CI->security->xss_clean($url),
+			$this->assertEquals($this->security->xss_clean($url),
 					$assertion);					
 		}						
 	}
@@ -78,7 +73,7 @@ class Security_test extends PHPUnit_Framework_TestCase {
 
 		foreach ($vectors as $el => $assertion)
 		{
-				$this->assertEquals($this->CI->security->xss_clean($el),
+				$this->assertEquals($this->security->xss_clean($el),
 						$assertion);					
 		}
 	}
@@ -106,7 +101,7 @@ class Security_test extends PHPUnit_Framework_TestCase {
 			
 		foreach ($vectors as $test => $assertion)
 		{
-				$this->assertEquals($this->CI->security->xss_clean($test),
+				$this->assertEquals($this->security->xss_clean($test),
 														$assertion);
 		}
 	}
@@ -142,7 +137,7 @@ class Security_test extends PHPUnit_Framework_TestCase {
 
 		foreach ($vectors as $attack => $assert)
 		{
-				$this->assertEquals($this->CI->security->xss_clean($attack),
+				$this->assertEquals($this->security->xss_clean($attack),
 														$assert);
 		}
 	}
