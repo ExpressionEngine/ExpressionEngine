@@ -2406,14 +2406,11 @@ class Forum_Core extends Forum {
 											),
 										TRUE
 									);
-									
-									
-									
+														
 		return str_replace('{topic_title}', $this->_convert_special_chars($tquery->row('title') ), $str);
 	}
 
-	
-
+	// ----------------------------------------------------------------------	
 
 	/** -------------------------------------
 	/**  Topic View Table
@@ -2973,7 +2970,7 @@ class Forum_Core extends Forum {
 		return $str;
 	}
 
-
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Thread Review for submission page
@@ -4632,7 +4629,7 @@ class Forum_Core extends Forum {
 		return $str;	
 	}
 
-	
+	// ----------------------------------------------------------------------	
 	
 	function display_attachment()
 	{
@@ -4725,7 +4722,8 @@ class Forum_Core extends Forum {
 		exit;
 		
 	}
-	
+
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  New Forum Submission Page
@@ -4734,6 +4732,8 @@ class Forum_Core extends Forum {
 	function edit_topic_page() { return $this->submission_page('edit_topic');}
 	function new_reply_page()  { return $this->submission_page('new_reply'); }
 	function edit_reply_page() { return $this->submission_page('edit_reply');}
+
+	// ----------------------------------------------------------------------
 
 	function submission_page($type = '')
 	{
@@ -5007,9 +5007,7 @@ class Forum_Core extends Forum {
 								);		
 	}
 
-
-
-	// -------------------------------------
+	// ----------------------------------------------------------------------
 
 	//  Forum Submission Form
 	// -------------------------------------	
@@ -5394,8 +5392,6 @@ class Forum_Core extends Forum {
 				}
 			}
 		}
-
-
 	
 		/** -------------------------------------
 		/**  Set the "parse smileys" checkbox
@@ -5520,7 +5516,7 @@ class Forum_Core extends Forum {
 								);		
 	}
 
-
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Attachemnt Rows
@@ -5564,7 +5560,7 @@ class Forum_Core extends Forum {
 								);		
 	}
 
-	
+	// ----------------------------------------------------------------------	
 
 	/** -------------------------------------
 	/**  Fast Reply Form
@@ -5644,7 +5640,7 @@ class Forum_Core extends Forum {
 								);		
 	}
 
-	
+	// ----------------------------------------------------------------------	
 
 	/** -------------------------------------
 	/**  Post Preview
@@ -5756,8 +5752,7 @@ class Forum_Core extends Forum {
 								);		
 	}
 
-
-
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Upload and Attach File
@@ -6055,8 +6050,7 @@ class Forum_Core extends Forum {
 		return TRUE;
 	}
 
-
-
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Remove post attachment
@@ -6116,6 +6110,8 @@ class Forum_Core extends Forum {
 		
 		$_POST['attach'] = $at;	
 	}
+
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Forum Submission Handler
@@ -7204,7 +7200,7 @@ class Forum_Core extends Forum {
 		return TRUE;
 	}
 
-
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Forum Delete Confirmation Page
@@ -7327,8 +7323,7 @@ class Forum_Core extends Forum {
 		return str_replace('{include:delete_post_warning}', $str, $this->load_element('delete_post_page'));
 	}
 
-
-
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Delete Post
@@ -7472,7 +7467,7 @@ class Forum_Core extends Forum {
 		exit;
 	}
 
-
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Change Post Status
@@ -7535,7 +7530,7 @@ class Forum_Core extends Forum {
 		exit;
 	}
 
-	
+	// ----------------------------------------------------------------------	
 	
 	
 	/** -------------------------------------
@@ -7609,7 +7604,7 @@ class Forum_Core extends Forum {
 	}
 
 	
-	
+	// ----------------------------------------------------------------------	
 	
 	/** -------------------------------------
 	/**  Move Topic 
@@ -7713,7 +7708,7 @@ class Forum_Core extends Forum {
 		exit;	
 	}
 
-	
+	// ----------------------------------------------------------------------	
 	
 	/** -------------------------------------
 	/**  Move Reply Confirmation
@@ -7783,7 +7778,7 @@ class Forum_Core extends Forum {
 								);
 	}
 
-	
+	// ----------------------------------------------------------------------	
 	
 	/** -------------------------------------
 	/**  Move a Reply!
@@ -7922,7 +7917,7 @@ class Forum_Core extends Forum {
 		exit;
 	}
 
-	
+	// ----------------------------------------------------------------------	
 
 	/** -------------------------------------
 	/**  Mark all posts as read
@@ -7935,7 +7930,7 @@ class Forum_Core extends Forum {
 	// all posts read.  I suspect we will need to do this a different
 	// way in the future but for now it works.
 	
-	function mark_all_read()
+	public function mark_all_read()
 	{
 		if ($this->EE->session->userdata('member_id') != 0)
 		{
@@ -7953,14 +7948,13 @@ class Forum_Core extends Forum {
 		return $this->EE->output->show_message($data);
 	}
 
-	
-	
-	
+	// ----------------------------------------------------------------------
+
 	/** -------------------------------------
 	/**  Subscribe to a post
 	/** -------------------------------------*/
 	
-	function subscribe()
+	public function subscribe()
 	{
 		// Do we have a valid topic ID?
 		$query = $this->EE->db->query("SELECT title FROM exp_forum_topics WHERE topic_id = '{$this->current_id}'");
@@ -7996,12 +7990,14 @@ class Forum_Core extends Forum {
 			
 		return $this->EE->output->show_message($data);
 	}
+	
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Un-subscribe to a post
 	/** -------------------------------------*/
 	
-	function unsubscribe()
+	public function unsubscribe()
 	{
 		// Do we have a valid topic ID?
 		$query = $this->EE->db->query("SELECT title FROM exp_forum_topics WHERE topic_id = '{$this->current_id}'");
@@ -8027,13 +8023,13 @@ class Forum_Core extends Forum {
 		return $this->EE->output->show_message($data);
 	}
 
-
-
+	// ----------------------------------------------------------------------
+	
 	/** -------------------------------------
 	/**  Remove notification for a posts via email
 	/** -------------------------------------*/
 	
-	function delete_subscription()
+	public function delete_subscription()
 	{
 		if ( ! ($hash = $this->EE->input->get('id')))
 		{
@@ -8084,10 +8080,8 @@ class Forum_Core extends Forum {
 			
 		return $this->EE->output->show_message($data);
 	}
-
 	
-	
-	
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Merge Page
@@ -8151,7 +8145,7 @@ class Forum_Core extends Forum {
 		return str_replace('{include:merge_interface}', $str, $this->load_element('merge_page'));
 	}
 
-
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Perform the merge
@@ -8388,7 +8382,7 @@ class Forum_Core extends Forum {
 		exit;
 	}
 
-	
+	// ----------------------------------------------------------------------	
 
 	/** -------------------------------------
 	/**  Split Page
@@ -8398,6 +8392,7 @@ class Forum_Core extends Forum {
 		return $this->threads(FALSE, FALSE, TRUE);
 	}
 
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Do the split!  Make sure and stretch first...
@@ -8609,6 +8604,7 @@ class Forum_Core extends Forum {
 		exit;	
 	}
 
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Report Page
@@ -8738,7 +8734,7 @@ class Forum_Core extends Forum {
 		return str_replace('{include:report_form}', $str, $this->load_element('report_page'));	
 	}
 
-	
+	// ----------------------------------------------------------------------	
 	
 	/** -------------------------------------
 	/**  Report a post
@@ -8916,8 +8912,7 @@ class Forum_Core extends Forum {
 		exit;
 	}
 
-	
-	
+	// ----------------------------------------------------------------------
 	
 	/** -------------------------------------
 	/**  Member banning form
@@ -9006,8 +9001,7 @@ class Forum_Core extends Forum {
 								);
 	}
 
-	
-
+	// ----------------------------------------------------------------------
 
 	/** -------------------------------------
 	/**  Ban Member
@@ -9337,13 +9331,13 @@ class Forum_Core extends Forum {
 								);
 	}
 
-
+	// ----------------------------------------------------------------------
 	
 	/** -------------------------------------
 	/**  Ignore Member Confirmation
 	/** -------------------------------------*/
 	
-	function ignore_member()
+	public function ignore_member()
 	{
 		if ($this->current_id == $this->EE->session->userdata('member_id'))
 		{
@@ -9401,13 +9395,13 @@ class Forum_Core extends Forum {
 								);
 	}
 
-	
+	// ----------------------------------------------------------------------
 	
 	/** -------------------------------------
 	/**  Do Ignore Member
 	/** -------------------------------------*/
 	
-	function do_ignore_member()
+	public function do_ignore_member()
 	{
 		if ($this->current_id == $this->EE->session->userdata('member_id'))
 		{
@@ -9458,12 +9452,12 @@ class Forum_Core extends Forum {
 		$this->EE->functions->redirect($this->forum_path());
 	}
 
-	
+	// ----------------------------------------------------------------------	
 	
 	/** -------------------------------------
 	/**  Parse Visitor Stats
 	/** -------------------------------------*/
-	function visitor_stats()
+	public function visitor_stats()
 	{
 		$statdata = $this->EE->stats->statdata();
 		
@@ -9612,30 +9606,33 @@ class Forum_Core extends Forum {
 		return $str;
 	}
 
+	// ----------------------------------------------------------------------
+
 	/** -------------------------------------
 	/**  Individual Member's Last Visit
 	/** -------------------------------------*/
-	function member_post_total()
+	public function member_post_total()
 	{
 		return str_replace('%x', $this->EE->session->userdata('total_forum_posts'), lang('your_post_total'));
 	}
 
+	// ----------------------------------------------------------------------
 	
 	/** -------------------------------------
 	/**  Simple Search Form
 	/** -------------------------------------*/	
-	function login_form_mini()
+	public function login_form_mini()
 	{
 		$this->form_actions['member:member_login']['anon'] = 1;
 		return $this->load_element('login_form_mini');
 	}
-	
+
+	// ----------------------------------------------------------------------	
 	
 	/** -------------------------------------
 	/**  Advanced Search Form
-	/** -------------------------------------*/
-	
-	function advanced_search_form()
+	/** -------------------------------------*/	
+	public function advanced_search_form()
 	{
 		$this->EE->lang->loadfile('search');
 		
@@ -9712,6 +9709,8 @@ class Forum_Core extends Forum {
 								)
 							);
 	}
+
+	// ----------------------------------------------------------------------
 		
 	/** --------------------------------------
 	/**  Fetch the forums that can be searched
@@ -9722,8 +9721,7 @@ class Forum_Core extends Forum {
 	// can_view_hidden
 	// can_view_topics
 	// can_search
-		
-	function _fetch_allowed_search_ids()
+	public function _fetch_allowed_search_ids()
 	{
 		$this->EE->db->select('forum_id, forum_name, forum_status, forum_is_cat, 
 								forum_parent, forum_permissions, forum_enable_rss');
@@ -9771,9 +9769,9 @@ class Forum_Core extends Forum {
 		return $forums;
 	}
 
+	// ----------------------------------------------------------------------
 
-
-	function _swap_date($replace)
+	public function _swap_date($replace)
 	{
 		if ($this->date_limit == '')
 		{
@@ -9783,12 +9781,12 @@ class Forum_Core extends Forum {
 		return str_replace('{dd}', $replace, $this->date_limit);
 	}
 
-	
+	// ----------------------------------------------------------------------	
 
 	/** ----------------------------------------
 	/**  Cache the search result
 	/** ----------------------------------------*/
-	function _cache_search_result($topic_ids, $post_ids, $keywords, $sort_order)
+	public function _cache_search_result($topic_ids, $post_ids, $keywords, $sort_order)
 	{
 		$hash = $this->EE->functions->random('md5');
 				
