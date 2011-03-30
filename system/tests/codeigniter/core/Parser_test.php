@@ -31,4 +31,18 @@ class Parser_test extends PHPUnit_Framework_TestCase
 	}
 	
 	// ------------------------------------------------------------------------
+	
+	public function test_parse_string_simple()
+	{
+		$data = array(
+			'title' => 'Page Title',
+			'body' => 'Lorem ipsum dolor sit amet.'
+		);
+		
+		$template = "{title}\n{body}";
+		
+		$result = implode("\n", $data);
+		
+		$this->assertEquals($result, $this->parser->parse_string($template, $data, TRUE));
+	}
 }
