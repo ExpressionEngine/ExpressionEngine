@@ -3848,7 +3848,7 @@ class EE_Template {
 	 * @return	string
 	 */
 	function parse_variables($tagdata, $variables)
-	{		
+	{	
 		if ($tagdata == '' OR ! is_array($variables) OR empty($variables) OR ! is_array($variables[0]))
 		{
 			return $tagdata;
@@ -3908,8 +3908,10 @@ class EE_Template {
 			
 			$str .= $this->parse_variables_row($tagdata, $row, FALSE);
 		}
-
-		if (($backspace = $this->fetch_param('backspace')) !== FALSE && is_numeric($backspace))
+		
+		$backspace = $this->fetch_param('backspace', FALSE);
+		
+		if (is_numeric($backspace))
 		{
 			$str = substr($str, 0, -$backspace);
 		}
@@ -3961,16 +3963,25 @@ class EE_Template {
 				$this->unfound_vars[0][$name] = TRUE;
 				continue;
 			}
-		
+			
 			// Pair variables are an array of arrays
-			if (is_array($value) AND is_array($value[0]))
+			if (is_array($value))
 			{
-				$tagdata = $this->_parse_var_pair($name, $value, $tagdata, 1);
+				if (empty($value))
+				{
+					// Weirdness. The most likely cause is an empty tag pair, we won't
+					// require developers to take care of this. This hack will blank them out.
+					$value = array(array());
+				}
+				
+				if (isset($value[0]) && is_array($value[0]))
+				{
+					$tagdata = $this->_parse_var_pair($name, $value, $tagdata, 1);
+					continue;
+				}
 			}
-			else
-			{
-				$tagdata = $this->_parse_var_single($name, $value, $tagdata);
-			}
+			
+			$tagdata = $this->_parse_var_single($name, $value, $tagdata);
 		}
 		
 		// Prep conditionals
@@ -4024,6 +4035,7 @@ class EE_Template {
 		// Complex Paths and Typography Variables
 		//
 		
+		/*
 		// If the variable's $value is an array where $value[0] is 'path' and $value[1] has either
 		// the key 'suffix' or 'url' set, then it is a path
 		if (is_array($value) && $value[0] == 'path' && isset($value[1]) && (isset($value[1]['suffix']) OR isset($value[1]['url'])))
@@ -4031,11 +4043,12 @@ class EE_Template {
 			// Um...not sure what to do here, quite yet.
 			return $string;
 		}
+		*/
 	
 		// If the single variable's value is an array, then
 		// $value[0] is the content and $value[1] is an array
 		// of parameters for the Typography class
-		elseif (is_array($value) && count($value) == 2 && is_array($value[1]))
+		/*else*/if (is_array($value) && count($value) == 2 && is_array($value[1]))
 		{			
 			$raw_content = $value[0];
 			
@@ -4082,55 +4095,72 @@ class EE_Template {
 	 */
 	function _parse_var_pair($name, $variables, $string, $depth = 0)
 	{		
-		if ( ! preg_match("|".LD.$name.'.*?'.RD.'(.*?)'.LD.'/'.$name.RD."|s", $string, $match))
+		if ( ! $match_count = preg_match_all("|".LD.$name.'.*?'.RD.'(.*?)'.LD.'/'.$name.RD."|s", $string, $matches))
 		{
 			return $string;
 		}
-
+		
 		if (empty($variables[0]))
 		{
-			return str_replace($match[0], '', $string);
+			return str_replace($matches[0], '', $string);
 		}
-		
+						
 		if ( ! isset($this->unfound_vars[$depth]))
 		{
+			// created a separate unfound vars for each matched pair (kind of a crazy array, need to investigate if it's hindering performance at this point)
 			$this->unfound_vars[$depth] = array();
 		}
 		
-		$str = '';
-
-		foreach ($variables as $set)
+		foreach ($matches[1] as $k => $match)
 		{
-			$temp = $match[1];
-
-			foreach ($set as $name => $value)
+			$str = '';
+			
+			foreach ($variables as $set)
 			{
-				if (isset($this->unfound_vars[$depth][$name])) continue;
-			
-				if (strpos($string, LD.$name) === FALSE)
+				$temp = $match;
+
+				foreach ($set as $name => $value)
 				{
-					$this->unfound_vars[$depth][$name] = TRUE;
-					continue;
-				}
-			
-				// Pair variables are an array of arrays.
-				if (is_array($value) && is_array($value[0]))
-				{
-					$temp = $this->_parse_var_pair($name, $value, $temp, $depth + 1);
-				}
-				else
-				{
+					if (isset($this->unfound_vars[$depth][$name]))
+					{
+						continue;
+					}
+
+					if (strpos($string, LD.$name) === FALSE)
+					{
+						$this->unfound_vars[$depth][$name] = TRUE;
+						continue;
+					}
+					
+					// Pair variables are an array of arrays.
+					if (is_array($value))
+					{
+						if (empty($value))
+						{
+							// Weirdness. The most likely cause is an empty tag pair, we won't
+							// require developers to take care of this. This hack will blank them out.
+							$value = array(array());
+						}
+
+						if (isset($value[0]) && is_array($value[0]))
+						{
+							$temp = $this->_parse_var_pair($name, $value, $temp, $depth + 1);
+							continue;
+						}
+					}
+
 					$temp = $this->_parse_var_single($name, $value, $temp);
 				}
-			}
 
-			// Prep conditionals
-			$temp = $this->EE->functions->prep_conditionals($temp, $set);
+				// Prep conditionals
+				$temp = $this->EE->functions->prep_conditionals($temp, $set);
+				$str .= $temp;
+			}
 			
-			$str .= $temp;
+			$string = str_replace($matches[0][$k], $str, $string);
 		}
-		
-		return str_replace($match[0], $str, $string);
+				
+		return $string;
 	}
 
 	// --------------------------------------------------------------------
@@ -4154,7 +4184,6 @@ class EE_Template {
 	 * @param	string
 	 * @return	void
 	 */
-	 
 	function _match_date_vars($str)
 	{
 		if (strpos($str, 'format=') === FALSE) return;
