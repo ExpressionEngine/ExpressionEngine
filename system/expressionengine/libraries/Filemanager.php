@@ -394,6 +394,7 @@ class Filemanager {
 		}
 
 		$this->_xss_on = TRUE;
+		var_dump($response);
 		return $response;
 	}
 	
@@ -840,19 +841,29 @@ class Filemanager {
 		$protocol = $this->EE->config->item('image_resize_protocol');
 		$lib_path = $this->EE->config->item('image_library_path');
 		
-		// For crop, we need h/w if we don't have it
-		if ($size['resize_type'] == 'crop' && ( ! isset($prefs['height']) OR ! isset($prefs['width'])))
+		// First make sure height and width don't exist
+		// Then check each of the dimensions to see if they have resize_type set to crop
+		// If it does, set the prefs height and width
+		
+		if ( ! isset($prefs['height']) OR ! isset($prefs['width'])) 
 		{
-			$dim = $this->get_image_dimensions($file_path);
-			
-			if ($dim == FALSE)
+			foreach ($dimensions as $size_id => $size) 
 			{
-				return FALSE;
+				if (isset($size['resize_type']) AND $size['resize_type'] == 'crop')
+				{
+					$dim = $this->get_image_dimensions($file_path);
+
+					if ($dim == FALSE)
+					{
+						return FALSE;
+					}
+
+					$prefs['height'] = $dim['height'];
+					$prefs['width'] = $dim['width'];
+				
+					break;
+				}
 			}
-			
-			$prefs['height'] = $dim['height'];
-			$prefs['width'] = $dim['width'];
-			
 		}
 
 		foreach ($dimensions as $size_id => $size)
