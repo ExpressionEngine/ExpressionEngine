@@ -33,7 +33,7 @@
 	 */
 	$.ee_filebrowser = function() {
 
-		files_per_table = 10;
+		files_per_table = 14;
 		thumbs_per_page = 21;
 
 		// Setup!
@@ -399,8 +399,8 @@
 			$.tmpl("thumb", workon).appendTo("#file_chooser_body");
 			
 			// Add a last class to the 7th thumbnail
-			$('a.file_chooser_thumbnail:nth-child(7n+2)').addClass('first');
-			$('a.file_chooser_thumbnail:nth-child(7n+1)').addClass('last');
+			$('a.file_chooser_thumbnail:nth-child(9n+2)').addClass('first');
+			$('a.file_chooser_thumbnail:nth-child(9n+1)').addClass('last');
 			
 			// Change pagination for thumbnails
 			pagination.pages_total = images.length;
@@ -503,8 +503,8 @@
 		
 		// Set up modal dialog
 		file_manager_obj.dialog({
-			width: 730,
-			height: 495,
+			width: 931,
+			height: 600,
 			resizable: false,
 			position: ["center","center"],
 			modal: true,
