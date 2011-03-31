@@ -841,33 +841,14 @@ class Filemanager {
 		$protocol = $this->EE->config->item('image_resize_protocol');
 		$lib_path = $this->EE->config->item('image_library_path');
 		
-		// First make sure height and width don't exist
-		// Then check each of the dimensions to see if they have resize_type set to crop
-		// If it does, set the prefs height and width
-		
-		if ( ! isset($prefs['height']) OR ! isset($prefs['width'])) 
-		{
-			foreach ($dimensions as $size_id => $size) 
-			{
-				if (isset($size['resize_type']) AND $size['resize_type'] == 'crop')
-				{
-					$dim = $this->get_image_dimensions($file_path);
-
-					if ($dim == FALSE)
-					{
-						return FALSE;
-					}
-
-					$prefs['height'] = $dim['height'];
-					$prefs['width'] = $dim['width'];
-				
-					break;
-				}
-			}
-		}
-
 		foreach ($dimensions as $size_id => $size)
 		{
+			// In the event that the size doesn't have a valid height or width, move on
+			if ($size['width'] <= 0 OR $size['height'] <= 0)
+			{
+				continue;
+			}
+			
 			$resized_path = $img_path.'_'.$size['short_name'].'/';
 			
 			if ( ! is_dir($resized_path))
@@ -907,9 +888,22 @@ class Filemanager {
 			$this->EE->image_lib->initialize($config);
 
 			// crop based on resize type - does anyone really crop sight unseen????
-
-			if ($size['resize_type'] == 'crop')
+			if (isset($size['resize_type']) AND $size['resize_type'] == 'crop')
 			{
+				// Make sure height and width are set
+				if ( ! isset($prefs['height']) OR ! isset($prefs['width']))
+				{
+					$dim = $this->get_image_dimensions($file_path);
+
+					if ($dim == FALSE)
+					{
+						return FALSE;
+					}
+
+					$prefs['height'] = $dim['height'];
+					$prefs['width'] = $dim['width'];
+				}
+				
 				// This may need to change if we let them manuall set crop
 				// For now, let's crop from center for Wes
 

@@ -1413,24 +1413,24 @@ class Content_files extends CI_Controller {
 			{
 				return $this->output->send_ajax_response(array(
 					'message_type'	=> 'success'
-					));
+				));
 			}
 			
 			return;
 		}		
 		
-
 		$dir_data = $this->_upload_dirs[$id];
 		
 		$this->filemanager->set_upload_dir_prefs($id, $dir_data);
 		$this->filemanager->xss_clean_off();
 
-		
-		if (isset($_POST['resize_ids']) && is_array($_POST['resize_ids']))
+		// Check for resize_ids
+		$resize_ids = $this->input->post('resize_ids');
+		if (is_array($resize_ids))
 		{
-			foreach ($_POST['resize_ids'] as $v)
+			foreach ($resize_ids as $resize_id)
 			{
-				$replace_sizes[$v] = $sizes[$id][$v];
+				$replace_sizes[$resize_id] = $sizes[$id][$resize_id];
 			}
 		}
 
@@ -1440,6 +1440,10 @@ class Content_files extends CI_Controller {
 		
 		$this->load->library('localize');
 
+		/*
+			TODO Ajax error is somewhere in here.
+				This is stopping the propper data from showing up in the Javascript
+		*/
 		// Setup data for batch insert
 		foreach ($files->files[$id] as $file)
 		{
@@ -1461,11 +1465,16 @@ class Content_files extends CI_Controller {
 				{
 					// Note- really no need to create system thumb in this case
 					
-					if ( ! $this->filemanager->create_thumb(
+					$thumb_created = $this->filemanager->create_thumb(
 						$this->_upload_dirs[$id]['server_path'].$file['name'],
-						array('server_path' => $this->_upload_dirs[$id]['server_path'],
-							'file_name' => $file['name'],
-							'dimensions' => $sizes[$id])))
+						array(
+							'server_path'	=> $this->_upload_dirs[$id]['server_path'],
+							'file_name'		=> $file['name'],
+							'dimensions'	=> $sizes[$id]
+						)
+					);
+					
+					if ( ! $thumb_created)
 					{
 						$errors[$file['name']] = lang('thumb_not_created');
 					}
@@ -1475,24 +1484,24 @@ class Content_files extends CI_Controller {
 			}
 			
 			$file_location = $this->functions->remove_double_slashes(
-					$dir_data['url'].'/'.$file['name']
-				);
+				$dir_data['url'].'/'.$file['name']
+			);
 
 			$file_path = $this->functions->remove_double_slashes(
-					$dir_data['server_path'].'/'.$file['name']
-				);
+				$dir_data['server_path'].'/'.$file['name']
+			);
 
 			$file_dim = (isset($file['dimensions']) && $file['dimensions'] != '') ? str_replace(array('width="', 'height="', '"'), '', $file['dimensions']) : '';
 
 			$file_data = array(
-					'upload_location_id'	=> $id,
-					'site_id'				=> $this->config->item('site_id'),
-					'rel_path'				=> $file['name'], // this will vary at some point
-					'mime_type'				=> $file['mime'],
-					'file_name'				=> $file['name'],
-					'file_size'				=> $file['size'],
-					'uploaded_by_member_id'	=> $this->session->userdata('member_id'),
-					'modified_by_member_id' => $this->session->userdata('member_id')		
+				'upload_location_id'	=> $id,
+				'site_id'				=> $this->config->item('site_id'),
+				'rel_path'				=> $file['name'], // this will vary at some point
+				'mime_type'				=> $file['mime'],
+				'file_name'				=> $file['name'],
+				'file_size'				=> $file['size'],
+				'uploaded_by_member_id'	=> $this->session->userdata('member_id'),
+				'modified_by_member_id' => $this->session->userdata('member_id')
 			);
 			
 			$file_data['dimensions'] = (is_array($sizes[$id])) ? $sizes[$id] : array();
