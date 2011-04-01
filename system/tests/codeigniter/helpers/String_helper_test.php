@@ -83,6 +83,16 @@ class String_helper_test extends PHPUnit_Framework_TestCase
 		{
 			$this->assertEquals($expect, reduce_multiples($str));
 		}
+		
+		$strs = array(
+			'Fred, Bill,, Joe, Jimmy'	=> 'Fred, Bill, Joe, Jimmy',
+			'Ringo, John, Paul,,'		=> 'Ringo, John, Paul'
+		);		
+
+		foreach ($strs as $str => $expect)
+		{
+			$this->assertEquals($expect, reduce_multiples($str, ',', TRUE));
+		}		
 	}
 	
 	// --------------------------------------------------------------------	

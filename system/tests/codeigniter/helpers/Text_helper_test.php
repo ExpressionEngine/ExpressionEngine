@@ -17,6 +17,7 @@ class Text_helper_test extends PHPUnit_Framework_TestCase
 	{
 		$this->assertEquals('Once upon a time,&#8230;', word_limiter($this->_long_string, 4));
 		$this->assertEquals('Once upon a time,&hellip;', word_limiter($this->_long_string, 4, '&hellip;'));
+		$this->assertEquals('', word_limiter('', 4));
 	}
 
 	// ------------------------------------------------------------------------	
@@ -25,6 +26,8 @@ class Text_helper_test extends PHPUnit_Framework_TestCase
 	{
 		$this->assertEquals('Once upon a time, a&#8230;', character_limiter($this->_long_string, 20));
 		$this->assertEquals('Once upon a time, a&hellip;', character_limiter($this->_long_string, 20, '&hellip;'));
+		$this->assertEquals('Short', character_limiter('Short', 20));
+		$this->assertEquals('Short', character_limiter('Short', 5));
 	}
 
 	// ------------------------------------------------------------------------	
@@ -75,7 +78,10 @@ class Text_helper_test extends PHPUnit_Framework_TestCase
 		foreach ($strs as $str => $expect)
 		{
 			$this->assertEquals($expect, word_censor($str, $censored, '$*#'));
-		}	
+		}
+		
+		// test censored words being sent as a string
+		$this->assertEquals('test', word_censor('test', 'test'));
 	}
 
 	// ------------------------------------------------------------------------	
@@ -96,7 +102,8 @@ class Text_helper_test extends PHPUnit_Framework_TestCase
 			'this is a phrase'			=> '<strong>this is</strong> a phrase',
 			'this is another'			=> '<strong>this is</strong> another',
 			'Gimme a test, Sally'		=> 'Gimme a test, Sally',
-			'Or tell me what this is'	=> 'Or tell me what <strong>this is</strong>'
+			'Or tell me what this is'	=> 'Or tell me what <strong>this is</strong>',
+			''							=> ''
 		);
 		
 		foreach ($strs as $str => $expect)
@@ -114,16 +121,19 @@ class Text_helper_test extends PHPUnit_Framework_TestCase
 				'this is my string'				=> '&hellip; my string',
 				"here's another one"			=> '&hellip;nother one',
 				'this one is just a bit longer'	=> '&hellip;bit longer',
+				'short'							=> 'short'
 			),
 			'.5'	=> array(
 				'this is my string'				=> 'this &hellip;tring',
 				"here's another one"			=> "here'&hellip;r one",
 				'this one is just a bit longer'	=> 'this &hellip;onger',
+				'short'							=> 'short'
 			),
 			'1'	=> array(
 				'this is my string'				=> 'this is my&hellip;',
 				"here's another one"			=> "here's ano&hellip;",
 				'this one is just a bit longer'	=> 'this one i&hellip;',
+				'short'							=> 'short'
 			),
 		);
 		
