@@ -10,6 +10,7 @@ members_1k.xml
 themes/solspace_themes/*
 themes/third_party/*
 *.swp
+code_coverage/*
 
 syntax: regexp
 system/expressionengine/cache/(?!index\.html|\.htaccess)
