@@ -7,9 +7,9 @@ class Parser_test extends PHPUnit_Framework_TestCase
 		$this->parser = load_class('Parser', 'libraries');
 	}
 	
-	// ------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 	
-	public function test_set_delimiters()
+	public function testSetDelimiters()
 	{
 		// Make sure default delimiters are there
 		$this->assertEquals('{', $this->parser->l_delim);
@@ -30,9 +30,9 @@ class Parser_test extends PHPUnit_Framework_TestCase
 		$this->assertEquals('}', $this->parser->r_delim);
 	}
 	
-	// ------------------------------------------------------------------------
+	// --------------------------------------------------------------------
 	
-	public function test_parse_string_simple()
+	public function testParseSimpleString()
 	{
 		$data = array(
 			'title' => 'Page Title',
@@ -45,4 +45,8 @@ class Parser_test extends PHPUnit_Framework_TestCase
 		
 		$this->assertEquals($result, $this->parser->parse_string($template, $data, TRUE));
 	}
+	
+	// --------------------------------------------------------------------
+
+	
 }
