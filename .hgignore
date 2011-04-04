@@ -7,6 +7,9 @@ system/expressionengine/config/database.php
 system/expressionengine/config/config1x.php
 system/expressionengine/config/config_1x.php
 members_1k.xml
+media/*
+themes/cp_themes/brilliant_retail/*
+themes/site_themes/brilliant_retail/*
 themes/solspace_themes/*
 themes/third_party/*
 *.swp
