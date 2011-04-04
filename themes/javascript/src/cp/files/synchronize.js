@@ -128,7 +128,7 @@ EE.file_manager.sync = function(upload_directory_id) {
 
 EE.file_manager.get_directory_name = function(upload_directory_id) {
 	return $('#sync table:first tr[data-id=' + upload_directory_id + '] td:first').text();	
-}
+};
 
 /**
  * Show the sync complete summary

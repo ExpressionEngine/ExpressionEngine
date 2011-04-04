@@ -34,7 +34,7 @@
 	$.ee_filebrowser = function() {
 
 		files_per_table = 14;
-		thumbs_per_page = 21;
+		thumbs_per_page = 36;
 
 		// Setup!
 		$.ee_filebrowser.endpoint_request('setup', function(data) {
