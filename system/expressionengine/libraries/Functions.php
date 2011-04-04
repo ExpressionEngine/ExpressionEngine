@@ -472,7 +472,7 @@ class EE_Functions {
 		// Add the CSRF Protection Hash
 		if ($this->EE->config->item('csrf_protection') == TRUE )
 		{
-			$data['hidden_fields'][$this->EE->security->csrf_token_name] = $this->EE->security->csrf_hash;		
+			$data['hidden_fields'][$this->EE->security->get_csrf_token_name()] = $this->EE->security->get_csrf_hash();
 		}
 
 		// 'form_declaration_modify_data' hook.
