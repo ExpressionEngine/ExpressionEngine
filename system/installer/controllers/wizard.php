@@ -1790,8 +1790,6 @@ PAPAYA;
 		// not that these aren't good ideas, but - simplify, simplify, simplify
 		// always better to do simple and solid first so you don't paint a feature
 		// into a corner until after it's been used and tested by the masses - D'Jones
-
-		$this->load->library('Security');
 		
 		// Sanitized for your protection
 		$this->userdata['theme'] = $this->security->sanitize_filename($this->userdata['theme']);
