@@ -486,8 +486,6 @@ class Wiki_mcp {
 		{
 			return $this->EE->load->view('theme_templates', $vars, TRUE);
 		}
-		
-		$this->EE->load->library('security');
 
 		$vars['theme'] = strtolower($this->EE->security->sanitize_filename($vars['theme']));
 		$vars['theme_name'] = strtolower(str_replace('_', ' ', $vars['theme']));
@@ -548,8 +546,6 @@ class Wiki_mcp {
 		{
 			return $this->EE->load->view('theme_templates', $vars, TRUE);
 		}
-		
-		$this->EE->load->library('security');
 
 		$vars['theme'] = $this->EE->security->sanitize_filename($vars['theme']);
 		$vars['template'] = $this->EE->security->sanitize_filename($vars['template']);
@@ -626,8 +622,6 @@ class Wiki_mcp {
 		{
 			show_error($this->EE->lang->line('invalid_template'));
 		}
-		
-		$this->EE->load->library('security');
 
 		$theme = $this->EE->security->sanitize_filename($theme);
 		$template = $this->EE->security->sanitize_filename($template);

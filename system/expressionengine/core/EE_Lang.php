@@ -43,7 +43,6 @@ class EE_Lang extends CI_Lang {
 		}
 	
 		$EE =& get_instance();
-		$EE->load->library('security');
 		
 		if (isset($EE->session->userdata['language']) && $EE->session->userdata['language'] != '')
 		{

@@ -1394,7 +1394,6 @@ class MyAccount extends CI_Controller {
 		}
 
 		$this->load->model('site_model');
-		$this->load->library('security');
 
 		$data['language']	= $this->security->sanitize_filename($this->input->post('language'));
 		$data['timezone']	= $this->input->post('timezones');
@@ -1692,7 +1691,6 @@ class MyAccount extends CI_Controller {
 		$this->load->helper('form');
 		$this->load->library('table');
 		$this->load->library('pagination');
-		$this->load->library('security');
 
 		$vars['cp_page_title'] = $this->lang->line('browse_avatars');
 
@@ -1783,8 +1781,6 @@ class MyAccount extends CI_Controller {
 		{
 			return $this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=browse_avatars'.AMP.'folder='.$this->input->get_post('folder'));
 		}
-
-		$this->load->library('security');
 		
 		$folder = $this->security->sanitize_filename($this->input->get_post('folder'));
 		$file	= $this->security->sanitize_filename($this->input->get_post('avatar'));

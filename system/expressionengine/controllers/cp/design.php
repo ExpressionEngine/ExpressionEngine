@@ -3038,7 +3038,6 @@ class Design extends CI_Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 
-		$this->load->library('security');
 		$path = PATH_MBR_THEMES.$this->security->sanitize_filename($this->input->get_post('name'));
 		
 		if ( ! is_dir($path))
@@ -3086,8 +3085,6 @@ class Design extends CI_Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-		
-		$this->load->library('security');
 		
 		$update = ($theme != '' AND $name != '') ? TRUE : FALSE;
 		
@@ -3161,7 +3158,6 @@ class Design extends CI_Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
-		$this->load->library('security');
 		$theme = $this->input->get_post('theme');
 		$name = $this->input->get_post('name');
 		$template_data	= $this->input->get_post('template_data');

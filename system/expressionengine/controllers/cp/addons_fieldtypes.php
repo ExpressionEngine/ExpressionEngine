@@ -130,8 +130,6 @@ class Addons_fieldtypes extends CI_Controller {
 			show_error($this->lang->line('unauthorized_access'));
 		}
 		
-		$this->load->library('security');
-		
 		$ft = $this->security->sanitize_filename(strtolower($ft));
 
 		$this->load->library('addons/addons_installer');
@@ -163,8 +161,6 @@ class Addons_fieldtypes extends CI_Controller {
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
-		
-		$this->load->library('security');
 		
 		$ft = $this->security->sanitize_filename(strtolower($ft));
 		

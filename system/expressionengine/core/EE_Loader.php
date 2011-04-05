@@ -10,6 +10,7 @@
  * @since		Version 2.0
  * @filesource
  */
+
 // ------------------------------------------------------------------------
 
 /**
@@ -61,6 +62,41 @@ class EE_Loader extends CI_Loader {
 		$this->_ci_view_path = $paths;
 		return $ret;
 	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * $this->load->library('security') is deprecated as the CI_Security
+	 * class has been moved to Core, so it is always loaded.  In order to ease
+	 * the transition for third-party developers, we are extending the CI
+	 * loader function to return NULL in the event a load function to Security
+	 * is called.  
+	 *
+	 * $this->load->library('security') is @deprecated, and this temporary 
+	 * workaround will be removed in a future version
+	 */
+	public function library($library = '', $params = NULL, $object_name = NULL)
+	{
+		if (is_array($library))
+		{
+			foreach($library as $read)
+			{
+				$this->library($read);	
+			}
+			
+			return;
+		}
+		
+		if (strtolower($library) == 'security')
+		{
+			return NULL;
+		}
+		
+		return parent::library($library, $params, $object_name);
+	}
+
+	// ------------------------------------------------------------------------	
+	
 }
 
 /* End of file EE_Loader.php */

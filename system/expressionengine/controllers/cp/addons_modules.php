@@ -245,7 +245,6 @@ class Addons_modules extends CI_Controller {
 	 */
 	function show_module_cp()
 	{
-		$this->load->library('security');
 		$this->load->library('addons');
 		
 		// These can be overriden by individual modules
@@ -447,7 +446,6 @@ class Addons_modules extends CI_Controller {
 			return $this->delete_module_confirm();
 		}
 		
-		$this->load->library('security');
 		$module = $this->security->sanitize_filename(strtolower($module));
 
 		$this->load->library('addons/addons_installer');
