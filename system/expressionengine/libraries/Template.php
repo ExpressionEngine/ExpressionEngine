@@ -3286,9 +3286,11 @@ class EE_Template {
 		/**  Protect Already Existing Unparsed PHP
 		/** ------------------------------------*/
 		
-		$opener = '90Parse89Me34Not18Open';
-		$closer = '90Parse89Me34Not18Close';
+		$this->EE->load->helper('string');
 		
+		$opener = unique_marker('tmpl_php_open');
+		$closer = unique_marker('tmpl_php_close');
+				
 		$str = str_replace(array('<?', '?'.'>'), 
 							array($opener.'?', '?'.$closer), 
 							$str);
@@ -3298,8 +3300,8 @@ class EE_Template {
 		/** ------------------------------------*/
 
 		$protected = array();
-		$front_protect = '89Protect17';
-		$back_protect  = '21Me01Please47';
+		$front_protect = unique_marker('tmpl_script_open');
+		$back_protect  = unique_marker('tmpl_script_close');
 		
 		if ($this->protect_javascript !== FALSE && 
 			stristr($str, '<script') && 
