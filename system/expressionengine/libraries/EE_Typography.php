@@ -51,7 +51,7 @@ class EE_Typography extends CI_Typography {
 	var $yes_no_syntax				= array('y', 'n');
 	var $code_chunks				= array();
 	var $code_counter				= 0;
-	var $http_hidden 				= 'ed9f01a60cc1ac21bf6f1684e5a3be23f38a51b9'; // hash to protect URLs in [url] BBCode
+	var $http_hidden 				= NULL; // hash to protect URLs in [url] BBCode
 	
 	// Allowed tags  Note: Specified in initialize()
 	var $safe_encode = array();
@@ -108,7 +108,10 @@ class EE_Typography extends CI_Typography {
 		$this->yes_no_syntax		= array('y', 'n');
 		$this->code_chunks			= array();
 		$this->code_counter			= 0;
-		$this->http_hidden 			= 'ed9f01a60cc1ac21bf6f1684e5a3be23f38a51b9'; // hash to protect URLs in [url] BBCode
+		
+		$this->EE->load->helper('string');
+		
+		$this->http_hidden 			= unique_marker('typography_url_protect'); // hash to protect URLs in [url] BBCode
 
 		foreach ($config as $key => $val)
 		{
