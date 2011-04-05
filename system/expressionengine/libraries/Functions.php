@@ -2627,7 +2627,7 @@ class EE_Functions {
 						')','(',
 						'TRUE', 'FALSE');
 		
-		$str = str_replace(LD.'if:else'.RD, 'c831adif9wel5ed9e', $str);
+		$str = str_replace(LD.'if:else'.RD, unique_marker('if_else_safety'), $str);
 		
 		// The ((else)*if) is actually faster than (elseif|if) in PHP 5.0.4, 
 		// but only by a half a thousandth of a second.  However, why not be
@@ -2846,7 +2846,7 @@ class EE_Functions {
 		unset($matches);
 		unset($protect);
 		
-		$str = str_replace('c831adif9wel5ed9e',LD.'if:else'.RD, $str);
+		$str = str_replace(unique_marker('if_else_safety'),LD.'if:else'.RD, $str);
 		
 		return $str;
 	}
