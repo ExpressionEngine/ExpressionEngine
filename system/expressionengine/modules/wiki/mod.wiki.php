@@ -5607,8 +5607,10 @@ class Wiki {
 		/** ------------------------------------*/
 		
 		$protected = array();
-		$front_protect = '89Protect17';
-		$back_protect  = '21Me01Please47';
+		$this->EE->load->helper('string');
+		
+		$front_protect = unique_marker('wiki_front_protect');
+		$back_protect  = unique_marker('wiki_back_protect');
 		
 		if (stristr($str, '<script') && preg_match_all("/<script.*?".">.*?<\/script>/is", $str, $matches))
 		{

@@ -4857,7 +4857,8 @@ class Channel {
 					// prevent accidental parsing of other channel variables in custom field data
 					if (strpos($entry, '{') !== FALSE)
 					{
-	                    $tagdata = $this->EE->TMPL->swap_var_single($replace, str_replace(array('{', '}'), array('60ba4b2daa4ed4', 'c2b7df6201fdd3'), $entry), $tagdata);
+						$this->EE->load->helper('string');
+	                    $tagdata = $this->EE->TMPL->swap_var_single($replace, str_replace(array('{', '}'), array(unique_marker('channel_bracket_open'), unique_marker('channel_bracket_close')), $entry), $tagdata);
 					}
 					else
 					{
@@ -4893,9 +4894,9 @@ class Channel {
 			// END SINGLE VARIABLES
 
 			// do we need to replace any curly braces that we protected in custom fields?
-			if (strpos($tagdata, '60ba4b2daa4ed4') !== FALSE)
+			if (strpos($tagdata, unique_marker('channel_bracket_open')) !== FALSE)
 			{
-				$tagdata = str_replace(array('60ba4b2daa4ed4', 'c2b7df6201fdd3'), array('{', '}'), $tagdata);
+				$tagdata = str_replace(array(unique_marker('channel_bracket_open'), unique_marker('channel_bracket_close')), array('{', '}'), $tagdata);
 			}
 
 			// -------------------------------------------
