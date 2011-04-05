@@ -6,14 +6,9 @@
 				<?=form_label('Upload Directory:', 'dir_choice').NBS?>
 				<?=form_dropdown('dir_choice', $filemanager_directories, key($filemanager_directories), 'id="dir_choice"').NBS?>
 			<?=form_close()?>
-			<iframe id='target_upload' name='target_upload' src='about:blank' style='width:200px;height:50px;border:1;display:none;'></iframe>
-			<?=form_open_multipart($filemanager_backend_url.'&action=upload', array('target'=>'target_upload','id'=>'upload_form', 'class'=>'tableSubmit'))?>
-				<input type="hidden" name="frame_id" value="target_upload" id="frame_id" />
-				<?=form_label(lang('upload_file'), 'upload_file', array('class' => 'visualEscapism'))?>
-				<?=form_hidden('upload_dir', key($filemanager_directories))?>
-				<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>15,'class'=>'field')).NBS.NBS?>
+			<div class="tableSubmit" id="upload_form">
 				<input type="submit" class="submit" value="<?=lang('upload_file')?>">
-			<?=form_close()?>
+			</div> <!-- .tableSubmit -->
 		<?php endif; ?>
 		<div class="clear_left"></div>
 	</div>
@@ -76,4 +71,4 @@
 
 <?php
 /* End of file filebrowser.php */
-/* Location: ./themes/cp_themes/default/_shared/filebrowser.php */
+/* Location: ./themes/cp_themes/default/_shared/file/browser.php */

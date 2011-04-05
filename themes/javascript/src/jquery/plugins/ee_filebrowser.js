@@ -51,6 +51,9 @@
 			}
 
 			createBrowser();
+			
+			// Load the file uploader
+			$.ee_fileuploader();
 		});
 	};
 

@@ -466,24 +466,21 @@ class Filemanager {
 	{
 		// Include dependencies
 		$this->EE->cp->add_js_script(array(
-											'plugin'    => array('scrollable', 'scrollable.navigator', 'ee_filebrowser')
-										)
-									);
+			'plugin'    => array('scrollable', 'scrollable.navigator', 'ee_filebrowser', 'ee_fileuploader')
+		));
 
 		$this->EE->cp->add_to_head('<link rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=file_browser" type="text/css" media="screen" />');
 		
 		$this->EE->javascript->set_global('lang', array(
-									'resize_image'		=> $this->EE->lang->line('resize_image'),
-									'or'				=> $this->EE->lang->line('or'),
-									'return_to_publish'	=> $this->EE->lang->line('return_to_publish')
-													)
-										);
+			'resize_image'		=> $this->EE->lang->line('resize_image'),
+			'or'				=> $this->EE->lang->line('or'),
+			'return_to_publish'	=> $this->EE->lang->line('return_to_publish')
+		));
 		
 		$this->EE->javascript->set_global('filebrowser', array(
-									'endpoint_url'	=> $endpoint_url,
-									'window_title'	=> $this->EE->lang->line('file_manager')
-														)
-										);
+			'endpoint_url'	=> $endpoint_url,
+			'window_title'	=> $this->EE->lang->line('file_manager')
+		));
 	}
 	
 	// --------------------------------------------------------------------
@@ -555,6 +552,8 @@ class Filemanager {
 		switch($type)
 		{
 			case 'setup':				$this->setup();
+				break;
+			case 'setup_upload':		$this->setup_upload();
 				break;
 			case 'directory':			$this->directory($this->EE->input->get('directory'), TRUE);
 				break;
@@ -641,7 +640,7 @@ class Filemanager {
 		$vars['category_filters'] = form_dropdown('category', array());
 		$vars['view_filters']     = form_dropdown('view_type', array('list' => 'a list', 'thumb' => 'thumbnails'), 'list', 'id="view_type"');
 
-		$filebrowser_html = $this->EE->load->view('_shared/filebrowser', $vars, TRUE);
+		$filebrowser_html = $this->EE->load->view('_shared/file/browser', $vars, TRUE);
 
 		die($this->EE->javascript->generate_json(array(
 			'manager'		=> str_replace(array("\n", "\t"), '', $filebrowser_html),	// reduces transfer size
@@ -649,6 +648,17 @@ class Filemanager {
 		)));
 	}
 
+	// --------------------------------------------------------------------
+	
+	public function setup_upload()
+	{
+		$upload_directory = $this->EE->input->post('upload_dir_id');
+		
+		$this->EE->output->send_ajax_response(array(
+			'uploader'	=> $this->EE->load->view('_shared/file/upload_modal', array(), TRUE)
+		));
+	}
+	
 	// --------------------------------------------------------------------
 	
 	/**
