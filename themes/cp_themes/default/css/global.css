@@ -3384,7 +3384,6 @@ div.contentWrap {
 #file_uploader iframe {
 	border: 0 none;
 	height: 277px;
-	margin-top: 15px;
 	width: 572px;
 }
 
@@ -3396,6 +3395,15 @@ html#file_upload_iframe body {
 
 html#file_upload_iframe body {
 	min-width: 0;
+}
+
+html#file_upload_iframe #upload_dir {
+	display: block;
+	width: auto;
+}
+
+html#file_upload_iframe p {
+	margin: 11px 0;
 }
 
 /* @end */

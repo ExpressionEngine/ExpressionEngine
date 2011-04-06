@@ -28,19 +28,14 @@
 	$.ee_fileuploader.build_dialog = function() {
 		file_uploader.dialog({
 			width: 600,
-			height: 200,
+			height: 300,
 			resizable: false,
 			position: ["center","center"],
 			modal: true,
 			draggable: true,
 			title: "Upload File",
 			autoOpen: false,
-			zIndex: 99999,
-			open: function(event, ui) {
-				var selected_directory = $('#dir_choice :selected').text();
-				
-				$(file_uploader).find('span.location').text(selected);
-			}
+			zIndex: 99999
 		});
 		
 		$('#fileChooser #upload_form input').live('click', function(event) {

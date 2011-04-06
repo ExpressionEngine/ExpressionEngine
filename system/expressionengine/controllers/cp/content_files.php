@@ -690,7 +690,7 @@ class Content_files extends CI_Controller {
 		  'file_post_format' => string '' (length=0)
 		*/
 
-		$fm = $this->filemanager->save($this->_upload_dirs[$file_dir]);
+		$fm = $this->filemanager->save_file($this->_upload_dirs[$file_dir]);
 
 
 		if ($fm->upload_errors)
@@ -763,7 +763,13 @@ class Content_files extends CI_Controller {
 	
 	public function upload_inner()
 	{
-		$this->load->view('_shared/file/upload_inner');
+		$this->load->model('file_upload_preferences_model');
+		
+		$vars = array(
+			'upload_directories' => $this->file_upload_preferences_model->get_dropdown_array($this->session->userdata('group_id'))
+		);
+		
+		$this->load->view('_shared/file/upload_inner', $vars);
 	}
 	
 	// ------------------------------------------------------------------------

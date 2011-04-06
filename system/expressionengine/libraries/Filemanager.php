@@ -803,11 +803,6 @@ class Filemanager {
 				$data = call_user_func($this->config['upload_file_callback'], $dir, $field);
 			}
 		}
-		
-		if ( ! array_key_exists('error', $data))
-		{
-			$this->create_thumb($dir, $data);
-		}
 
 		if ( ! $ajax)
 		{
@@ -1351,6 +1346,9 @@ class Filemanager {
 	{
 		$this->EE->load->helper('url');
 		
+		// --------------------------------------------------------------------
+		// Make sure the file is allowed
+		
 		// Restricted upload directory?
 		switch($dir['allowed_types'])
 		{
@@ -1376,18 +1374,21 @@ class Filemanager {
 				// Permissions can only get more strict!
 				if (isset($settings['field_content_type']) && $settings['field_content_type'] == 'image')
 				{
-					$allowed_types = 'gif|jpg|jpeg|png|jpe'; 				
+					$allowed_types = 'gif|jpg|jpeg|png|jpe';
 				}
 			}
 		}
-
+		
+		// --------------------------------------------------------------------
+		// Upload the file
+		
 		$config = array(
-				'upload_path'	=> $dir['server_path'],
-				'allowed_types'	=> $allowed_types,
-				'max_size'		=> round($dir['max_size']/1024, 2),
-				'max_width'		=> $dir['max_width'],
-				'max_height'	=> $dir['max_height']
-			);
+			'upload_path'	=> $dir['server_path'],
+			'allowed_types'	=> $allowed_types,
+			'max_size'		=> round($dir['max_size']/1024, 2),
+			'max_width'		=> $dir['max_width'],
+			'max_height'	=> $dir['max_height']
+		);
 
 		if ($this->EE->config->item('xss_clean_uploads') == 'n')
 		{
@@ -1405,21 +1406,62 @@ class Filemanager {
 			return array('error' => $this->EE->upload->display_errors());
 		}
 
-		$data = $this->EE->upload->data();
+		$file = $this->EE->upload->data();
 
 		$this->EE->load->library('encrypt');
-
-		return array(
-			'name'			=> $data['file_name'],
-			'orig_name'		=> $this->EE->upload->orig_name,
-			'is_image'		=> $data['is_image'],
-			'dimensions'	=> $data['image_size_str'],
-			'directory'		=> $dir['id'],
-			'width'			=> $data['image_width'],
-			'height'		=> $data['image_height'],
-			'thumb'			=> $dir['url'].'_thumbs/thumb_'.$data['file_name'],
-			'url_path'		=> rawurlencode($this->EE->encrypt->encode($data['full_path'], $this->EE->session->sess_crypt_key)) //needed for displaying image in edit mode
+		
+		// --------------------------------------------------------------------
+		// Add file the database
+		
+		if ( ! $file['file_type'])
+		{
+			/*
+				TODO Return with error?
+			*/
+			$errors[$file['file_name']] = lang('invalid_mime');
+		}
+		
+		$this->EE->load->model('file_model');
+		$file_dimensions = $this->EE->file_dimensions->get_dimensions_by_dir_id($dir['id']);
+		
+		// Build list of information to save and return
+		$file_data = array(
+			'upload_location_id'	=> $dir['id'],
+			'site_id'				=> $this->EE->config->item('site_id'),
+			
+			'file_name'				=> $file['file_name'],
+			'orig_name'				=> $file['orig_name'],
+			
+			'is_image'				=> $file['is_image'],
+			'mime_type'				=> $file['file_type'],
+			
+			'rel_path'				=> $file['full_path'],
+			'file_thumb'			=> $dir['url'].'_thumbs/thumb_'.$file['file_name'],
+		
+			'modified_by_member_id' => $this->session->userdata('member_id'),
+			'uploaded_by_member_id'	=> $this->session->userdata('member_id'),
+			
+			'file_size'				=> $file['file_size'],
+			'file_height'			=> $file['image_height'],
+			'file_width'			=> $file['image_width'],
+			'file_hw_original'		=> $file['image_height'].' '.$file['image_width'],
+			
+			'dimensions'			=> $file_dimensions->result_array()
 		);
+		
+		// Save file to database
+		$saved = $this->filemanager->save_file(
+			$file['full_path'],
+			$dir['id'], 
+			$file_data
+		);
+		
+		if ( ! $saved['status'])
+		{
+			$errors[$file['name']] = $saved['message'];
+		}
+		
+		return $file_data;
 	}
 
 
