@@ -18,8 +18,11 @@
 		$.ee_filebrowser.endpoint_request('setup_upload', function(data) {
 			file_uploader = $(data.uploader).appendTo(document.body);
 			
-			$.ee_fileuploader.build_dialog();
+			$(document).ready(function() {
+				$.ee_fileuploader.build_dialog();
+			});
 		});
+		
 	};
 	
 	$.ee_fileuploader.build_dialog = function() {
@@ -34,7 +37,9 @@
 			autoOpen: false,
 			zIndex: 99999,
 			open: function(event, ui) {
-				var current_directory = $('#dir_choice').val();
+				var selected_directory = $('#dir_choice :selected').text();
+				
+				$(file_uploader).find('span.location').text(selected);
 			}
 		});
 		

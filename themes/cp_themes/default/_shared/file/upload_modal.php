@@ -5,6 +5,7 @@
 ?>
 
 <div id="file_uploader" class="pageContents">
+	<h2>Uploading files to <span class="location"></span></h2>
 	<iframe src="<?= $base_url ?>"></iframe>
 	<div class="button_bar ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
 		<input type="submit" class="submit" name="choose_file" value="Choose File" id="choose_file" />
