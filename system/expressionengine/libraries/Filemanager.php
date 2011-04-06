@@ -652,10 +652,12 @@ class Filemanager {
 	
 	public function setup_upload()
 	{
-		$upload_directory = $this->EE->input->post('upload_dir_id');
+		$vars = array(
+			'base_url'	=> BASE.AMP.'C=content_files'.AMP.'M=upload_inner'
+		);
 		
 		$this->EE->output->send_ajax_response(array(
-			'uploader'	=> $this->EE->load->view('_shared/file/upload_modal', array(), TRUE)
+			'uploader'	=> $this->EE->load->view('_shared/file/upload_modal', $vars, TRUE)
 		));
 	}
 	

@@ -15,7 +15,7 @@
 	var file_uploader;
 
 	$.ee_fileuploader = function() {
-		$.ee_filebrowser.endpoint_request('setup_upload', {'upload_dir_id': $('#dir_choice').val()}, function(data) {
+		$.ee_filebrowser.endpoint_request('setup_upload', function(data) {
 			file_uploader = $(data.uploader).appendTo(document.body);
 			
 			$.ee_fileuploader.build_dialog();

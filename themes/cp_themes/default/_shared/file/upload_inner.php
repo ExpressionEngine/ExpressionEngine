@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-<?php
-/**
- * This view is the inner part of the upload modal: the upload form
- */
-?>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
 
-<div id="file_uploader" class="pageContents">
-	
-	
-</div>
-
-<?php
-/* End of file upload_inner.php */
-/* Location: ./themes/cp_themes/default/_shared/file/upload_inner.php */
+	<?=$this->view->head_title($cp_page_title)?>
+</head>
+<body>
+	<div id="file_uploader" class="pageContents">
+		<input type="file" name="some_file" value="" id="some_file" placeholder="File Name?" />
+	</div>
+</body>
+</html>

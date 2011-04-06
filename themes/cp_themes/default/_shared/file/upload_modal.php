@@ -5,8 +5,10 @@
 ?>
 
 <div id="file_uploader" class="pageContents">
-	
-	<input type="submit" name="choose_file" value="Choose File" id="choose_file" />
+	<iframe src="<?= $base_url ?>"></iframe>
+	<div class="button_bar ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">
+		<input type="submit" class="submit" name="choose_file" value="Choose File" id="choose_file" />
+	</div>
 </div>
 
 <?php

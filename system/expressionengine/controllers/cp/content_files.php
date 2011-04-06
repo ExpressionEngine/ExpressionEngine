@@ -760,6 +760,13 @@ class Content_files extends CI_Controller {
 	}
 
 	// ------------------------------------------------------------------------
+	
+	public function upload_inner()
+	{
+		$this->load->view('_shared/file/upload_inner', array());
+	}
+	
+	// ------------------------------------------------------------------------
 
 	/**
 	 * Allows renaming and over writing of files

@@ -3207,6 +3207,7 @@ div.contentWrap {
 }
 
 /*  File Manager / Chooser */
+
 #mainContent #dir_choice_form,
 #mainContent #upload_form {
 	padding: 			0 0 4px;
@@ -3362,6 +3363,30 @@ div.contentWrap {
 	line-height:		1.7;
 	margin-bottom:		5px;
 }
+
+/* @group File Uploader */
+
+#file_uploader {
+	position: relative;
+	overflow: hidden;
+}
+
+#file_uploader .button_bar {
+	position: absolute;
+	bottom: 0px;
+	left: 0;
+	width: 97.8%;
+	text-align: right;
+	padding: 6px;
+}
+
+#file_uploader iframe {
+	border: 0 none;
+	height: 335px;
+	width: 600px;
+}
+
+/* @end */
 
 /* Synchronize */
 #sync #progress {
