@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="file_upload_iframe">
 <head>
 	<meta charset="utf-8">
 
@@ -37,7 +37,7 @@
 	}
 	?>
 </head>
-<body id="file_upload_iframe">
+<body>
 	<input type="file" name="some_file" value="" id="some_file" />
 </body>
 </html>

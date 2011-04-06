@@ -3367,23 +3367,35 @@ div.contentWrap {
 /* @group File Uploader */
 
 #file_uploader {
+	padding: 14px 14px 50px;
 	position: relative;
 	overflow: hidden;
 }
 
 #file_uploader .button_bar {
-	position: absolute;
 	bottom: 0px;
 	left: 0;
-	width: 97.8%;
-	text-align: right;
 	padding: 6px;
+	position: absolute;
+	text-align: right;
+	width: 586px;
 }
 
 #file_uploader iframe {
 	border: 0 none;
-	height: 335px;
-	width: 600px;
+	height: 277px;
+	margin-top: 15px;
+	width: 572px;
+}
+
+#file_uploader iframe,
+html#file_upload_iframe,
+html#file_upload_iframe body {
+	background: #ecf1f4;
+}
+
+html#file_upload_iframe body {
+	min-width: 0;
 }
 
 /* @end */
