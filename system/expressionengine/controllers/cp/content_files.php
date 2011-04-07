@@ -651,6 +651,7 @@ class Content_files extends CI_Controller {
 	 */
 	public function upload_file()
 	{
+		// Make sure this is a valid form submit
 		if (empty($_POST))
 		{
 			show_error(lang('unauthorized_access'));
@@ -668,101 +669,45 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		/*
-		All the directory information we need for the upload
-		destination.
+		// Both uploads the file and adds it to the database
+		$upload_response = $this->filemanager->upload_file($file_dir);
 
-		array
-		  'id' => string '1' (length=1)
-		  'site_id' => string '1' (length=1)
-		  'name' => string 'Main Upload Directory' (length=21)
-		  'server_path' => string '/Volumes/Development/ee/ee2/images/uploads/' (length=43)
-		  'url' => string 'http://10.0.0.5/ee/ee2/images/uploads/' (length=38)
-		  'allowed_types' => string 'all' (length=3)
-		  'max_size' => string '' (length=0)
-		  'max_height' => string '' (length=0)
-		  'max_width' => string '' (length=0)
-		  'properties' => string 'style="border: 0;" alt="image"' (length=30)
-		  'pre_format' => string '' (length=0)
-		  'post_format' => string '' (length=0)
-		  'file_properties' => string '' (length=0)
-		  'file_pre_format' => string '' (length=0)
-		  'file_post_format' => string '' (length=0)
-		*/
-
-		$fm = $this->filemanager->save_file($this->_upload_dirs[$file_dir]);
-
-
-		if ($fm->upload_errors)
+		// Any errors from the Filemanager?
+		if (isset($upload_response['error']))
 		{
-			// Upload Failed
-			if ($this->input->is_ajax_request())
-			{
-				$errors = $this->javascript->generate_json(
-							array('error' => $this->upload->display_errors()));
-
-				echo sprintf("<script type=\"text/javascript\">
-								parent.EE_uploads.%s = %s;</script>",
-								$this->input->get('frame_id'),
-								$errors);
-				exit();
-			}
-
-			$this->session->set_flashdata('message_failure', $fm->upload_errors);
-			$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);
+			$vars = array(
+				'error'	=> $upload_response['error']
+			);
+			
+			return $this->load->view('_shared/file/failure', $vars);
+		}
+		
+		// Check to see if the file needs to be renamed
+		if ($upload_response['file_name'] != $upload_response['orig_name'])
+		{
+			/*
+				TODO What do we do in the case that there's a similarly named file?
+			*/
+			
+			// $vars = $upload_response;
+			// 
+			// return $this->load->view('_shared/file/rename', $vars);
 		}
 
-		if ($fm->upload_data['file_name'] != $fm->upload_data['orig_name'])
-		{
-			// Page Title
-			$this->cp->set_variable('cp_page_title', lang('file_exists_warning'));
-			$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
-
-			$vars = $fm->upload_data;
-			$vars['duped_name'] = $fm->upload_data['orig_name'];
-
-			$vars['hidden'] = array(
-				'orig_name'		=> $fm->upload_data['orig_name'],
-				'rename_attempt' => '',
-				'is_image' 		=> $fm->upload_data['is_image'],
-				'temp_file_name'=> $fm->upload_data['file_name'],
-				'remove_spaces'	=> '1',
-				 'id' 			=> $file_dir
-				);
-
-			return $this->load->view('content/files/rename', $vars);
-		}
-
-		// Make the thumbnail
-		$thumb = $fm->create_thumb(
-			array('server_path' => $fm->upload_data['file_path']),
-			array('name' => $fm->upload_data['file_name'])
+		$vars = array(
+			'success'	=> lang('upload_success'),
+			'file_data'	=> $upload_response,
+			'date'		=> date('M d Y - H:ia')
 		);
-
-		if ($this->input->is_ajax_request())
-		{
-			$resp = $this->javascript->generate_json(array(
-				'success'		=> lang('upload_success'),
-				'filename'		=> $fm->upload_data['file_name'],
-				'filesize'		=> $fm->upload_data['file_size'],
-				'filetype'		=> $fm->upload_data['file_type'],
-				'date'			=> date('M d Y - H:ia')
-			));
-
-			echo sprintf('<script type="text/javascript">
-							parent.EE_uploads.%s = %s;</script>',
-						$this->input->get('frame_id'), $resp);
-			exit();
-		}
-
-		$this->session->set_flashdata('message_success', lang('upload_success'));
-		$this->functions->redirect(BASE.AMP.'C=content_files'.AMP.'directory='.$file_dir);
+	
+		return $this->load->view('_shared/file/success', $vars);
 	}
 
 	// ------------------------------------------------------------------------
 	
 	public function upload_inner()
 	{
+		
 		$this->load->model('file_upload_preferences_model');
 		
 		$vars = array(

@@ -394,7 +394,7 @@ class Filemanager {
 		}
 
 		$this->_xss_on = TRUE;
-		var_dump($response);
+
 		return $response;
 	}
 	
@@ -706,6 +706,11 @@ class Filemanager {
 	{
 		static $dirs;
 		$return = array();
+		
+		if ($ajax === FALSE)
+		{
+			$this->_initialize($this->config);
+		}
 		
 		if ( ! is_array($dirs))
 		{
@@ -1352,11 +1357,16 @@ class Filemanager {
 		// Restricted upload directory?
 		switch($dir['allowed_types'])
 		{
-			case 'all'	: $allowed_types = '*';
+			case 'all': 
+				$allowed_types = '*';
 				break;
-			case 'img'	: $allowed_types = 'gif|jpg|jpeg|png|jpe';
+				
+			case 'img': 
+				$allowed_types = 'gif|jpg|jpeg|png|jpe';
 				break;
-			default		: $allowed_types = '';
+				
+			default: 
+				$allowed_types = '';
 		}
 
 		// Is this a custom field?
@@ -1382,6 +1392,9 @@ class Filemanager {
 		// --------------------------------------------------------------------
 		// Upload the file
 		
+		/*
+			TODO Figure out why you can't use relative paths
+		*/
 		$config = array(
 			'upload_path'	=> $dir['server_path'],
 			'allowed_types'	=> $allowed_types,
@@ -1390,39 +1403,38 @@ class Filemanager {
 			'max_height'	=> $dir['max_height']
 		);
 
-		if ($this->EE->config->item('xss_clean_uploads') == 'n')
+		// Check to see if the file needs to be XSS Cleaned
+		if ($this->EE->config->item('xss_clean_uploads') == 'n' OR $this->EE->session->userdata('group_id') === 1)
 		{
 			$config['xss_clean'] = FALSE;
+			$this->xss_clean_off();
 		}
 		else
 		{
-			$config['xss_clean'] = ($this->EE->session->userdata('group_id') === 1) ? FALSE : TRUE;
+			$config['xss_clean'] = TRUE;
 		}
 
+		// Upload the file
 		$this->EE->load->library('upload', $config);
-
 		if ( ! $this->EE->upload->do_upload($field_name))
 		{
 			return array('error' => $this->EE->upload->display_errors());
 		}
 
 		$file = $this->EE->upload->data();
-
-		$this->EE->load->library('encrypt');
 		
 		// --------------------------------------------------------------------
 		// Add file the database
 		
+		// Make sure the file has a valid MIME Type
 		if ( ! $file['file_type'])
 		{
-			/*
-				TODO Return with error?
-			*/
-			$errors[$file['file_name']] = lang('invalid_mime');
+			return array('error' => lang('invalid_mime'));
 		}
 		
+		// Figure out what dimensions we need to worry about
 		$this->EE->load->model('file_model');
-		$file_dimensions = $this->EE->file_dimensions->get_dimensions_by_dir_id($dir['id']);
+		$file_dimensions = $this->EE->file_model->get_dimensions_by_dir_id($dir['id']);
 		
 		// Build list of information to save and return
 		$file_data = array(
@@ -1438,8 +1450,8 @@ class Filemanager {
 			'rel_path'				=> $file['full_path'],
 			'file_thumb'			=> $dir['url'].'_thumbs/thumb_'.$file['file_name'],
 		
-			'modified_by_member_id' => $this->session->userdata('member_id'),
-			'uploaded_by_member_id'	=> $this->session->userdata('member_id'),
+			'modified_by_member_id' => $this->EE->session->userdata('member_id'),
+			'uploaded_by_member_id'	=> $this->EE->session->userdata('member_id'),
 			
 			'file_size'				=> $file['file_size'],
 			'file_height'			=> $file['image_height'],
@@ -1450,15 +1462,12 @@ class Filemanager {
 		);
 		
 		// Save file to database
-		$saved = $this->filemanager->save_file(
-			$file['full_path'],
-			$dir['id'], 
-			$file_data
-		);
+		$saved = $this->save_file($file['full_path'], $dir['id'], $file_data);
 		
+		// Return errors from the filemanager
 		if ( ! $saved['status'])
 		{
-			$errors[$file['name']] = $saved['message'];
+			return array('error' => $saved['message']);
 		}
 		
 		return $file_data;
