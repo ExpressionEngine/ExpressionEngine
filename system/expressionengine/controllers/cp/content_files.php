@@ -647,7 +647,23 @@ class Content_files extends CI_Controller {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Upload File
+	 * Upload file
+	 * 
+	 * This method does a few things, but it's main goal is to facilitate working
+	 * with Filemanager to both upload and add the file to exp_files.
+	 *
+	 * 	1. Verifies that you have access to upload
+	 *		- Is this being accessed through a form?
+	 *		- Was a upload directory specified?
+	 *		- Does the user have access to the directory?
+	 *	2. Next, it calls Filemanager's upload_file
+	 *		- That uploads the file and adds it to the database
+	 *	3. Then it generates a response based upon Filemanager's response:
+	 *		- If there's an error, that's shown
+	 *		- If there's an existing file with the same name, they have the option to rename
+	 *		- If everything went according to plan, a success message is shown
+	 *
+	 * @return mixed View file based upon Filemanager's response: success, failure or rename
 	 */
 	public function upload_file()
 	{
