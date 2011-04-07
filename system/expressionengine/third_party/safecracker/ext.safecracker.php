@@ -13,7 +13,6 @@ class Safecracker_ext
 	/**
 	 * Safecracker_ext
 	 * 
-	 * @access	public
 	 * @param	mixed $settings = ''
 	 * @return	void
 	 */
@@ -28,11 +27,12 @@ class Safecracker_ext
 		
 		$this->settings = $settings;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * activate_extension
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function activate_extension()
@@ -55,11 +55,12 @@ class Safecracker_ext
 			$this->EE->db->insert('extensions', array_merge($hook_defaults, $hook));
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * update_extension
 	 * 
-	 * @access	public
 	 * @param	mixed $current = ''
 	 * @return	void
 	 */
@@ -72,22 +73,24 @@ class Safecracker_ext
 		
 		$this->EE->db->update('extensions', array('version' => $this->version), array('class' => $this->classname));
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * disable_extension
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function disable_extension()
 	{
 		$this->EE->db->delete('extensions', array('class' => $this->classname));
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * settings
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function settings()
@@ -96,11 +99,12 @@ class Safecracker_ext
 		
 		return $settings;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * settings_form
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function settings_form()
@@ -190,11 +194,12 @@ class Safecracker_ext
 		
 		return $this->EE->load->view('index', $vars, TRUE);
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * save_settings
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function save_settings()
@@ -228,11 +233,12 @@ class Safecracker_ext
 		
 		$this->EE->functions->redirect(BASE.AMP.'C=addons_extensions'.AMP.'M=extension_settings'.AMP.'file=safecracker');
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * fetch_settings
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function fetch_settings()
@@ -250,11 +256,12 @@ class Safecracker_ext
 		
 		$this->settings = ($query->row('settings')) ? $this->unserialize($query->row('settings')) : array();
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * fetch_channels
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function fetch_channels()
@@ -272,11 +279,12 @@ class Safecracker_ext
 			
 		unset($query);
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * fetch_fieldtypes
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function fetch_fieldtypes()
@@ -292,11 +300,12 @@ class Safecracker_ext
 		
 		$this->fieldtypes = $this->EE->api_channel_fields->fetch_installed_fieldtypes();
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * fetch_members
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function fetch_members()
@@ -342,11 +351,12 @@ class Safecracker_ext
 		
 		unset($query);
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * fetch_member_groups
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function fetch_member_groups()
@@ -370,11 +380,12 @@ class Safecracker_ext
 			}
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * fetch_statuses
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function fetch_statuses()
@@ -410,11 +421,12 @@ class Safecracker_ext
 			}
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * unserialize
 	 * 
-	 * @access	public
 	 * @param	mixed $data
 	 * @param	mixed $base64_decode = FALSE
 	 * @return	void
@@ -430,11 +442,12 @@ class Safecracker_ext
 		
 		return (is_array($data)) ? $data : array();
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * form_declaration_modify_data
 	 * 
-	 * @access	public
 	 * @param	mixed $data
 	 * @return	void
 	 */

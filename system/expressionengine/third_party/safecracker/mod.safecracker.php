@@ -7,7 +7,6 @@ class Safecracker
 	/**
 	 * Safecracker
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function Safecracker()
@@ -22,11 +21,12 @@ class Safecracker
 			$this->return_data = $this->EE->safecracker->entry_form();
 		}
 	}
+
+	// --------------------------------------------------------------------
     
 	/**
 	 * submit_entry
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function submit_entry()
@@ -39,12 +39,12 @@ class Safecracker
 		
 		$this->EE->safecracker->submit_entry();
 	}
-	
+
+	// --------------------------------------------------------------------	
     
 	/**
 	 * combo_loader
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function combo_loader()

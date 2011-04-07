@@ -15,7 +15,7 @@ class SC_Session extends EE_Session
 	 */
 	public function __construct($config)
 	{
-		$this->EE = get_instance();
+		$this->EE =& get_instance();
 		
 		$this->session_object = (isset($config['session_object'])) ? $config['session_object'] : NULL;
 		
@@ -60,11 +60,12 @@ class SC_Session extends EE_Session
 			$this->userdata['assigned_channels'][$row->channel_id] = $row->channel_title;
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * userdata
 	 * 
-	 * @access	public
 	 * @param	mixed $str
 	 * @return	void
 	 */

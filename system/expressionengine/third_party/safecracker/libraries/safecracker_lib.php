@@ -51,21 +51,21 @@ class Safecracker_lib
 	/**
 	 * constructor
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function __construct()
 	{
-		$this->EE = get_instance();
+		$this->EE =& get_instance();
 		
 		//set a global object
 		$this->EE->safecracker = $this;
 	}
+	
+	// --------------------------------------------------------------------
 
 	/**
 	 * Creates the entry form
 	 * 
-	 * @access	public
 	 * @return	string
 	 */
 	public function entry_form()
@@ -946,11 +946,12 @@ class Safecracker_lib
 		
 		return $return;
 	}
+
+	// --------------------------------------------------------------------
     
 	/**
 	 * Creates or edits an entry
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function submit_entry()
@@ -1395,7 +1396,7 @@ class Safecracker_lib
 			);
 		}
 		
-		if ($this->errors || $this->field_errors)
+		if ($this->errors OR $this->field_errors)
 		{
 			return $this->EE->output->show_user_error(FALSE, array_merge($this->errors, $this->field_errors));
 		}
@@ -1429,16 +1430,17 @@ class Safecracker_lib
 		
 		$this->EE->functions->redirect($return);
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Converts text-based template parameter to boolean
 	 * 
-	 * @access	public
 	 * @param	string $string
 	 * @param	bool $default = FALSE
 	 * @return	bool
 	 */
-	function bool_string($string, $default = FALSE)
+	public function bool_string($string, $default = FALSE)
 	{
 		if (preg_match('/true|t|yes|y|on|1/i', $string))
 		{
@@ -1452,15 +1454,16 @@ class Safecracker_lib
 		
 		return $default;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Filters and sorts the categories
 	 * 
-	 * @access	public
 	 * @param	array $params
 	 * @return	array
 	 */
-	function categories($params)
+	public function categories($params)
 	{
 		$this->fetch_categories();
 		
@@ -1489,38 +1492,41 @@ class Safecracker_lib
 		//reset array indices
 		return array_merge($categories);
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Retrieves current channel data
 	 * 
-	 * @access	public
 	 * @param	mixed $key
 	 * @return	mixed
 	 */
-	function channel($key)
+	public function channel($key)
 	{
 		return (isset($this->channel[$key])) ? $this->channel[$key] : FALSE;
 	}
-	
+
+	// --------------------------------------------------------------------
+		
 	/**
 	 * Clears the library's entry
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
-	function clear_entry()
+	public function clear_entry()
 	{
 		$this->entry = FALSE;
 	}
 	
+	// --------------------------------------------------------------------
+	
 	/**
 	 * Decrypts a form input
 	 * 
-	 * @access	public
 	 * @param	mixed $input
 	 * @return	void
 	 */
-	function decrypt_input($input, $xss_clean = TRUE)
+	public function decrypt_input($input, $xss_clean = TRUE)
 	{
 		//$this->EE->load->library('encrypt');
 		//return $this->EE->encrypt->decode($input, $this->EE->session->sess_crypt_key);
@@ -1552,15 +1558,16 @@ class Safecracker_lib
 		
 		return ($xss_clean) ? $this->EE->security->xss_clean($decoded) : $decoded;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Display a custom field
 	 * 
-	 * @access	public
 	 * @param	mixed $field_name
 	 * @return	void
 	 */
-	function display_field($field_name)
+	public function display_field($field_name)
 	{
 		$this->EE->load->library('api');
 		
@@ -1595,15 +1602,16 @@ class Safecracker_lib
 		
 		return $this->EE->api_channel_fields->apply('display_field', array('data' => $this->entry($field_name)));
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Encrypts a form input
 	 * 
-	 * @access	public
 	 * @param	mixed $input
 	 * @return	void
 	 */
-	function encrypt_input($input)
+	public function encrypt_input($input)
 	{
 		//$this->EE->load->library('encrypt');
 		//return $this->EE->encrypt->encode($input, $this->EE->session->sess_crypt_key);
@@ -1621,15 +1629,16 @@ class Safecracker_lib
 			mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)
 		));
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Retrieves current entry data
 	 * 
-	 * @access	public
 	 * @param	mixed $key
 	 * @return	void
 	 */
-	function entry($key, $force_string = FALSE)
+	public function entry($key, $force_string = FALSE)
 	{
 		if (isset($this->entry[$key]))
 		{
@@ -1638,14 +1647,15 @@ class Safecracker_lib
 		
 		return ($force_string) ? '' : FALSE;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Load categories
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
-	function fetch_categories()
+	public function fetch_categories()
 	{
 		//exit if already loaded, or if there is no category group
 		if ($this->categories || ! $this->channel('cat_group'))
@@ -1678,18 +1688,19 @@ class Safecracker_lib
 			$this->categories[] = $category;
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Load channel
 	 * 
-	 * @access	public
 	 * @param	int $channel_id
 	 * @param	mixed $channel_name
 	 * @param	mixed $entry_id
 	 * @param	mixed $url_title = FALSE
 	 * @return	void
 	 */
-	function fetch_channel($channel_id, $channel_name = FALSE, $entry_id = FALSE, $url_title = FALSE)
+	public function fetch_channel($channel_id, $channel_name = FALSE, $entry_id = FALSE, $url_title = FALSE)
 	{
 		//exit if already loaded
 		if ($this->channel('channel_id'))
@@ -1740,14 +1751,15 @@ class Safecracker_lib
 		
 		$this->fetch_custom_fields();
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Load custom fields
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
-	function fetch_custom_fields()
+	public function fetch_custom_fields()
 	{
 		//exit if already loaded, or if there is no field group
 		if ($this->custom_fields || ! $this->channel('field_group'))
@@ -1797,16 +1809,17 @@ class Safecracker_lib
 			$this->EE->api_channel_fields->setup_handler($field['field_id']);
 		}
 	}
+
+	// --------------------------------------------------------------------	
 	
 	/**
 	 * Load entry
 	 * 
-	 * @access	public
 	 * @param	mixed $entry_id
 	 * @param	mixed $url_title
 	 * @return	void
 	 */
-	function fetch_entry($entry_id, $url_title = FALSE)
+	public function fetch_entry($entry_id, $url_title = FALSE)
 	{
 		//exit if already loaded, or no entry_id/url_title
 		if ($this->entry || ( ! $entry_id && ! $url_title))
@@ -1859,15 +1872,16 @@ class Safecracker_lib
 		
 		unset($query);
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Load logged out member data
 	 * 
-	 * @access	public
 	 * @param	mixed $logged_out_member_id
 	 * @return	void
 	 */
-	function fetch_logged_out_member($logged_out_member_id)
+	public function fetch_logged_out_member($logged_out_member_id)
 	{
 		if ($this->EE->session->userdata('member_id') || $this->logged_out_member_id)
 		{
@@ -1893,14 +1907,15 @@ class Safecracker_lib
 			$this->logged_out_group_id = $query->row('group_id');
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Load settings
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
-	function fetch_settings()
+	public function fetch_settings()
 	{
 		if (empty($this->settings))
 		{
@@ -1916,14 +1931,15 @@ class Safecracker_lib
 			}
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Load site
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
-	function fetch_site($site_name = FALSE, $site_id = FALSE)
+	public function fetch_site($site_name = FALSE, $site_id = FALSE)
 	{
 		if ($site_name)
 		{
@@ -1936,14 +1952,15 @@ class Safecracker_lib
 			$this->site_id = ($site_id) ? $site_id : $this->EE->config->item('site_id');
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Load statuses
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
-	function fetch_statuses()
+	public function fetch_statuses()
 	{
 		//exit if already loaded, or if there is no status group
 		if ($this->statuses || ! $this->channel('status_group'))
@@ -1966,16 +1983,17 @@ class Safecracker_lib
 			$this->statuses[$index]['checked'] = ($status['status'] == $this->entry('status')) ? ' checked="checked"' : '';
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Add a form attribute to entry form
 	 * 
-	 * @access	public
 	 * @param	mixed $name
 	 * @param	mixed $value
 	 * @return	void
 	 */
-	function form_attribute($name, $value = '')
+	public function form_attribute($name, $value = '')
 	{
 		if (is_array($name))
 		{
@@ -1994,16 +2012,17 @@ class Safecracker_lib
 		
 		$this->EE->session->cache['safecracker']['form_declaration_data'][$name] = $value;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Add a hidden field to entry form
 	 * 
-	 * @access	public
 	 * @param	mixed $name
 	 * @param	mixed $value
 	 * @return	void
 	 */
-	function form_hidden($name, $value = '')
+	public function form_hidden($name, $value = '')
 	{
 		if (is_array($name))
 		{
@@ -2022,17 +2041,18 @@ class Safecracker_lib
 		
 		$this->EE->session->cache['safecracker']['form_declaration_hidden_fields'][$name] = $value;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Retrieve field data
 	 * Returns array of all field data if no key specified
 	 * 
-	 * @access	public
 	 * @param	mixed $field_name
 	 * @param	mixed $key
 	 * @return	void
 	 */
-	function get_field_data($field_name, $key = FALSE)
+	public function get_field_data($field_name, $key = FALSE)
 	{
 		if (in_array($field_name, $this->title_fields))
 		{
@@ -2053,40 +2073,43 @@ class Safecracker_lib
 		
 		return array();
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Gets the field id of a field
 	 * 
-	 * @access	public
 	 * @param	mixed $field_name
 	 * @return	void
 	 */
-	function get_field_id($field_name)
+	public function get_field_id($field_name)
 	{
 		return $this->get_field_data($field_name, 'field_id');
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Gets the field name of a field
 	 * 
-	 * @access	public
 	 * @param	mixed $field_id
 	 * @return	void
 	 */
-	function get_field_name($field_id)
+	public function get_field_name($field_id)
 	{
 		return (isset($this->custom_field_names[$field_id])) ? $this->custom_field_names[$field_id] : FALSE;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Gets a field's options
 	 * 
-	 * @access	public
 	 * @param	mixed $field_name
 	 * @param	mixed $add_blank = FALSE
 	 * @return	void
 	 */
-	function get_field_options($field_name, $add_blank = FALSE)
+	public function get_field_options($field_name, $add_blank = FALSE)
 	{
 		$field = $this->get_field_data($field_name);
 		
@@ -2222,16 +2245,17 @@ class Safecracker_lib
 		
 		return $options;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Gets a field's settings
 	 * 
-	 * @access	public
 	 * @param	mixed $field_name
 	 * @param	mixed $unserialize = TRUE
 	 * @return	void
 	 */
-	function get_field_settings($field_name, $unserialize = TRUE)
+	public function get_field_settings($field_name, $unserialize = TRUE)
 	{
 		if ( ! $field_settings = $this->get_field_data($field_name, 'field_settings'))
 		{
@@ -2240,27 +2264,28 @@ class Safecracker_lib
 		
 		return ($unserialize) ? $this->unserialize($field_settings, TRUE) : $field_settings;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Gets the type of a field
 	 * 
-	 * @access	public
 	 * @param	mixed $field_name
 	 * @return	void
 	 */
-	function get_field_type($field_name)
+	public function get_field_type($field_name)
 	{
 		return $this->get_field_data($field_name, 'field_type');
 	}
-	
+
+	// --------------------------------------------------------------------	
 	
 	/**
 	 * Initialize the library properties
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
-	function initialize($reinitialize = FALSE)
+	public function initialize($reinitialize = FALSE)
 	{
 		if ($this->initialized && ! $reinitialize)
 		{
@@ -2439,14 +2464,15 @@ class Safecracker_lib
 			$this->extra_js = $this->EE->config->item('safecracker_field_extra_js');
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Loads the channel standalone module
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
-	function load_channel_standalone()
+	public function load_channel_standalone()
 	{
 		require_once(PATH_MOD.'channel/mod.channel'.EXT);
 		
@@ -2454,14 +2480,15 @@ class Safecracker_lib
 		
 		$this->channel_standalone = new Channel_standalone();
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Loads the session override library
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
-	function load_session_override()
+	public function load_session_override()
 	{
 		if (empty($this->logged_out_member_id))
 		{
@@ -2489,18 +2516,19 @@ class Safecracker_lib
 			'session'
 		);
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Replaces a tag
 	 * 
-	 * @access	public
 	 * @param	mixed $field_name
 	 * @param	mixed $data
 	 * @param	mixed $params = array()
 	 * @param	mixed $tagdata = FALSE
 	 * @return	void
 	 */
-	function replace_tag($field_name, $data, $params = array(), $tagdata = FALSE)
+	public function replace_tag($field_name, $data, $params = array(), $tagdata = FALSE)
 	{
 		if ( ! $params)
 		{
@@ -2530,15 +2558,16 @@ class Safecracker_lib
 		
 		return $this->EE->api_channel_fields->apply('replace_tag', array('data' => $data, 'params' => $params, 'tagdata' => $tagdata));
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Clean an ID
 	 * 
-	 * @access	public
 	 * @param	mixed $id
 	 * @return	mixed
 	 */
-	function sanitize_int($data)
+	public function sanitize_int($data)
 	{
 		if (is_int($data + 0))
 		{
@@ -2549,9 +2578,10 @@ class Safecracker_lib
 		
 		return ($data) ? $data : FALSE;
 	}
+
+	// --------------------------------------------------------------------	
 	
-	
-	function send_ajax_response($msg, $error = FALSE)
+	public function send_ajax_response($msg, $error = FALSE)
 	{
 		if ($this->EE->config->item('send_headers') == 'y')
 		{
@@ -2575,16 +2605,17 @@ class Safecracker_lib
 		
 		$this->EE->output->send_ajax_response($msg, $error);
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * swap_conditionals
 	 * 
-	 * @access	public
 	 * @param	mixed $tagdata
 	 * @param	mixed $conditionals
 	 * @return	void
 	 */
-	function swap_conditionals($tagdata, $conditionals)
+	public function swap_conditionals($tagdata, $conditionals)
 	{
 		$tagdata = $this->EE->functions->prep_conditionals($tagdata, $conditionals);
 		
@@ -2594,11 +2625,12 @@ class Safecracker_lib
 			
 		return $tagdata;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * swap_var_pair
 	 * 
-	 * @access	public
 	 * @param	mixed $key
 	 * @param	mixed $rows
 	 * @param	mixed $tagdata
@@ -2606,7 +2638,7 @@ class Safecracker_lib
 	 * @param	mixed $backspace = FALSE
 	 * @return	void
 	 */
-	function swap_var_pair($key, $rows, $tagdata, $close_key = '', $backspace = FALSE)
+	public function swap_var_pair($key, $rows, $tagdata, $close_key = '', $backspace = FALSE)
 	{
 		$close_key = ($close_key) ? $close_key : $key;
 		
@@ -2639,14 +2671,15 @@ class Safecracker_lib
 		
 		return $tagdata;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * unload_session_override
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
-	function unload_session_override()
+	public function unload_session_override()
 	{
 		if (empty($this->logged_out_member_id))
 		{
@@ -2655,20 +2688,19 @@ class Safecracker_lib
 		
 		$this->EE->session = $this->temp_session;
 		
-		//$this->EE->session = $this->EE->functions->clone_object($this->temp_session);
-		
 		unset($this->temp_session);
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * unserialize
 	 * 
-	 * @access	public
 	 * @param	mixed $data
 	 * @param	mixed $base64_decode = FALSE
 	 * @return	void
 	 */
-	function unserialize($data, $base64_decode = FALSE)
+	public function unserialize($data, $base64_decode = FALSE)
 	{
 		if ($base64_decode)
 		{
@@ -2679,10 +2711,12 @@ class Safecracker_lib
 		
 		return (is_array($data)) ? $data : array();
 	}
+
+	// --------------------------------------------------------------------
 	
 	/* form validation methods */
 	
-	function valid_ee_date($data)
+	public function valid_ee_date($data)
 	{
 		return (is_numeric($this->EE->localize->convert_human_date_to_gmt($data)));
 	}

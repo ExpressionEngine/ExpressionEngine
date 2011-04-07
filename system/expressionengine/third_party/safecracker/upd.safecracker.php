@@ -12,18 +12,19 @@ class Safecracker_upd
 	 */
 	public function __construct()
 	{
-		$this->EE = get_instance();
+		$this->EE =& get_instance();
 		
 		//grab version number from NSM addon updater config
 		include PATH_THIRD.'safecracker/config'.EXT;
 		
 		$this->version = $config['version'];
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * install
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function install()
@@ -58,11 +59,12 @@ class Safecracker_upd
 		
 		return TRUE;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * validate
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function validate()
@@ -79,11 +81,12 @@ class Safecracker_upd
 			$this->EE->output->show_user_error('general', $this->EE->lang->line('safecracker_ee_version'));
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * uninstall
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function uninstall()
@@ -104,11 +107,12 @@ class Safecracker_upd
 
 		return TRUE;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * update
 	 * 
-	 * @access	public
 	 * @param	mixed $current = ''
 	 * @return	void
 	 */

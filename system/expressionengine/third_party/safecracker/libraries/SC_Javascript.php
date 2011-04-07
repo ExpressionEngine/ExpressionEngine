@@ -6,6 +6,9 @@ class SC_Javascript extends Javascript
 {
 	private $js_path;
 	
+	/**
+	 * Constructor
+	 */
 	public function __construct($params = array())
 	{
 		if (isset($params['instance']))
@@ -37,7 +40,12 @@ class SC_Javascript extends Javascript
 
 		$this->lang->loadfile('jquery');
 	}
+
+	// --------------------------------------------------------------------
 	
+	/**
+	 * Combo Load
+	 */
 	public function combo_load()
 	{
 		parent::combo_load();

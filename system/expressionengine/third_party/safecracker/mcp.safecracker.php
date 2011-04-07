@@ -5,18 +5,18 @@ class Safecracker_mcp
 	/**
 	 * Safecracker_mcp
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function __construct() 
 	{
-		$this->EE = get_instance();
+		$this->EE =& get_instance();
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * index
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function index()
@@ -28,11 +28,12 @@ class Safecracker_mcp
 		
 		$this->EE->functions->redirect(BASE.AMP.'C=addons_extensions'.AMP.'M=extension_settings'.AMP.'file=safecracker');
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * member_list
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function member_list()

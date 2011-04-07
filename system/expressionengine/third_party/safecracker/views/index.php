@@ -1,11 +1,6 @@
 <?php if (count($channels) > 0): ?>
 <?=form_open($action_url)?>
 
-<div style="margin-bottom:10px;">
-<label for="license_number">License Number</label>
-<?=form_input('license_number', @$settings['license_number'])?>
-</div>
-
 <?php foreach ($channels as $channel) : ?>
 <table class="mainTable" border="0" cellspacing="0" cellpadding="0">
 	<thead>
