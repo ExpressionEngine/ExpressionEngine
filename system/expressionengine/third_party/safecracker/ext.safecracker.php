@@ -1,4 +1,29 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team, 
+ * 		- Original Development by Barrett Newton -- http://barrettnewton.com
+ * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine SafeCracker Extension
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Extensions
+ * @category	Extensions
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
 
 class Safecracker_ext
 {
@@ -7,7 +32,7 @@ class Safecracker_ext
 	public $version;
 	public $description = 'A replacement and enchancement of the Stand-Alone Entry Form';
 	public $settings_exist = 'y';
-	public $docs_url = 'http://barrettnewton.com';
+	public $docs_url = 'http://expressionengine.com/downloads/details/safecracker/';
 	public $classname = 'Safecracker_ext';
 	
 	/**

@@ -1,8 +1,33 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team, 
+ * 		- Original Development by Barrett Newton -- http://barrettnewton.com
+ * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine SafeCracker Module Update File 
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Modules
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
 
 class Safecracker_upd
 {
-	public $version;
+	public $version = '2.0';
 	
 	/**
 	 * Safecracker_upd
@@ -13,11 +38,6 @@ class Safecracker_upd
 	public function __construct()
 	{
 		$this->EE =& get_instance();
-		
-		//grab version number from NSM addon updater config
-		include PATH_THIRD.'safecracker/config'.EXT;
-		
-		$this->version = $config['version'];
 	}
 
 	// --------------------------------------------------------------------
