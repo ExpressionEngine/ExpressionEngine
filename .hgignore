@@ -19,5 +19,5 @@ syntax: regexp
 system/expressionengine/cache/(?!index\.html|\.htaccess)
 images/(captchas|avatars/uploads|forum_attachments|member_photos|signature_attachments|pm_attachments|uploads)/(?!index\.html)
 system/expressionengine/templates/(?!index\.html|\.htaccess)
-system/expressionengine/third_party/(?!index\.html|download*|google_maps*|js_tool*|testage*)
+system/expressionengine/third_party/(?!index\.html|download*|google_maps*|js_tool*|testage*|safecracker*)
 system/expressionengine/language/deutsch/*
