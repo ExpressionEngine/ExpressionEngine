@@ -29,7 +29,7 @@ class Safecracker_ext
 {
 	public $settings = array();
 	public $name = 'SafeCracker';
-	public $version;
+	public $version = '2.0';
 	public $description = 'A replacement and enchancement of the Stand-Alone Entry Form';
 	public $settings_exist = 'y';
 	public $docs_url = 'http://expressionengine.com/downloads/details/safecracker/';
@@ -43,12 +43,7 @@ class Safecracker_ext
 	 */
 	public function __construct($settings = '')
 	{
-		$this->EE = get_instance();
-		
-		//grab version number from NSM addon updater config
-		include PATH_THIRD.'safecracker/config'.EXT;
-		
-		$this->version = $config['version'];
+		$this->EE =& get_instance();
 		
 		$this->settings = $settings;
 	}

@@ -2004,6 +2004,28 @@ class Safecracker_lib
 			$this->statuses[$index]['selected'] = ($status['status'] == $this->entry('status')) ? ' selected="selected"' : '';
 			$this->statuses[$index]['checked'] = ($status['status'] == $this->entry('status')) ? ' checked="checked"' : '';
 		}
+
+		// Remove statuses the member does not have access to.
+		// hat tip to @litzinger for the fix.
+		$member_group_id = $this->EE->session->userdata('group_id');
+		$no_access = $this->EE->db->where('member_group', $member_group_id)
+								  ->get('status_no_access')
+								  ->result_array();
+        
+		$remove = array();
+
+		foreach ($no_access as $no)
+		{
+			$remove[] = $no['status_id'];
+		}
+
+		foreach ($this->statuses as $idx => $status)
+		{
+			if (in_array($status['status_id'], $remove))
+			{
+				unset($this->statuses[$idx]);
+			}
+		}
 	}
 
 	// --------------------------------------------------------------------

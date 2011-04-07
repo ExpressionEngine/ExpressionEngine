@@ -15,6 +15,11 @@ class Api_sc_channel_entries extends Api_channel_entries
 		$this->_post_prepare_data($data);
 	}
 	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Pre Prepare Data
+	 */
 	public function _pre_prepare_data(&$data)
 	{
 		if ( ! $this->EE->safecracker->edit)
@@ -33,7 +38,12 @@ class Api_sc_channel_entries extends Api_channel_entries
 			}
 		}
 	}
-	
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Post Prepare Data
+	 */
 	public function _post_prepare_data(&$data)
 	{
 		//remove unwanted keys
