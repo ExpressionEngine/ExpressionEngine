@@ -1668,7 +1668,7 @@ class Api_channel_entries extends Api {
 				}
 			}
 
-			if (is_numeric($data['field_id_'.$field_id]) AND $rel_exists == FALSE)
+			if (is_numeric($data['field_id_'.$field_id]) && $data['field_id_'.$field_id] != '0' && $rel_exists == FALSE)
 			{
 				$reldata = array(
 					'type'			=> $row['field_related_to'],
