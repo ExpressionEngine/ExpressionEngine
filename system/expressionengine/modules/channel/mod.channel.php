@@ -1201,7 +1201,7 @@ class Channel {
 			/**  Do we have a pure ID number?
 			/** --------------------------------------*/
 
-			if (is_numeric($qstring) AND $dynamic)
+			if ($dynamic && is_numeric($qstring))
 			{
 				$entry_id = $qstring;
 			}
@@ -1214,7 +1214,7 @@ class Channel {
 				/**  Parse day
 				/** --------------------------------------*/
 
-				if (preg_match("#(^|\/)(\d{4}/\d{2}/\d{2})#", $qstring, $match) AND $dynamic)
+				if ($dynamic && preg_match("#(^|\/)(\d{4}/\d{2}/\d{2})#", $qstring, $match))
 				{
 					$ex = explode('/', $match[2]);
 
@@ -1230,7 +1230,7 @@ class Channel {
 				/** --------------------------------------*/
 
 				// added (^|\/) to make sure this doesn't trigger with url titles like big_party_2006
-				if (preg_match("#(^|\/)(\d{4}/\d{2})(\/|$)#", $qstring, $match) AND $dynamic)
+				if ($dynamic && preg_match("#(^|\/)(\d{4}/\d{2})(\/|$)#", $qstring, $match))
 				{
 					$ex = explode('/', $match[2]);
 
@@ -1246,7 +1246,7 @@ class Channel {
 				/** --------------------------------------
 				/**  Parse ID indicator
 				/** --------------------------------------*/
-				if (preg_match("#^(\d+)(.*)#", $qstring, $match) AND $dynamic)
+				if ($dynamic && preg_match("#^(\d+)(.*)#", $qstring, $match))
 				{
 					$seg = ( ! isset($match[2])) ? '' : $match[2];
 
@@ -1261,7 +1261,7 @@ class Channel {
 				/**  Parse page number
 				/** --------------------------------------*/
 
-				if (preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match) AND ($dynamic OR $this->EE->TMPL->fetch_param('paginate'))) 
+				if (($dynamic OR $this->EE->TMPL->fetch_param('paginate') && preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match))) 
 				{
 					$this->p_page = (isset($match[2])) ? $match[2] : $match[1];
 
@@ -1364,7 +1364,7 @@ class Channel {
 
 				// Numeric version of the category
 
-				if (preg_match("#(^|\/)C(\d+)#", $qstring, $match) AND $dynamic)
+				if ($dynamic && preg_match("#(^|\/)C(\d+)#", $qstring, $match))
 				{
 					$this->cat_request = TRUE;
 
