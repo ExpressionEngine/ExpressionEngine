@@ -207,6 +207,18 @@ class Filemanager {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Checks the uploaded file to make sure it's both allowed and passes 
+	 *	XSS filtering
+	 *
+	 * TODO: Is this method used redundantly? Save_file calls this, but files
+	 *	need to have the same checks before being uploaded anyways. So the
+	 *	work gets done at least twice.
+	 *
+	 * @param	string	$file_path	The path to the file
+	 * @param	array	$prefs		File preferences containing allowed_types
+	 * @return	mixed	Returns the mime type if everything passes, FALSE otherwise
+	 */
 	function security_check($file_path, $prefs)
 	{
 		$this->EE->load->helper(array('file', 'xss'));
@@ -1343,14 +1355,21 @@ class Filemanager {
 	 *
 	 * The function that handles the file upload logic (allowed upload? etc.)
 	 *
+	 *	1. Establish the allowed types for the directory
+	 *		- If the field is a custom field, make sure it's permissions aren't stricter
+	 *	2. Upload the file
+	 *		- Checks to see if XSS cleaning needs to be on
+	 *		- Returns errors
+	 *	3. Send file to save_file, which does more security, creates thumbs
+	 *		and adds it to the database.
+	 *
 	 * @access	private
-	 * @param	mixed	upload directory information
-	 * @return	string	upload field name
+	 * @param	array 	$dir 		Directory information from the database in array form
+	 * @param	string	$field_name	Provide the field name in case it's a custom field
+	 * @return 	array 	Array of file_data sent to Filemanager->save_file
 	 */
 	function _upload_file($dir, $field_name)
 	{
-		$this->EE->load->helper('url');
-		
 		// --------------------------------------------------------------------
 		// Make sure the file is allowed
 		
@@ -1393,7 +1412,7 @@ class Filemanager {
 		// Upload the file
 		
 		/*
-			TODO Figure out why you can't use relative paths
+			TODO Figure out why relative paths don't work
 		*/
 		$config = array(
 			'upload_path'	=> $dir['server_path'],
@@ -1402,9 +1421,11 @@ class Filemanager {
 			'max_width'		=> $dir['max_width'],
 			'max_height'	=> $dir['max_height']
 		);
-
+		
+		$this->EE->load->helper('xss');
+		
 		// Check to see if the file needs to be XSS Cleaned
-		if ($this->EE->config->item('xss_clean_uploads') == 'n' OR $this->EE->session->userdata('group_id') === 1)
+		if (xss_check())
 		{
 			$config['xss_clean'] = FALSE;
 			$this->xss_clean_off();
@@ -1413,6 +1434,7 @@ class Filemanager {
 		{
 			$config['xss_clean'] = TRUE;
 		}
+
 
 		// Upload the file
 		$this->EE->load->library('upload', $config);
