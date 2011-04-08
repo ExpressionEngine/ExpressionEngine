@@ -700,19 +700,19 @@ class Content_files extends CI_Controller {
 		
 		// Check to see if the file needs to be renamed
 		// TODO: Allow for the user to rename the file
-		if ($upload_response['file_name'] != $upload_response['orig_name'])
-		{
-			$replace_response = $this->filemanager->replace_file($upload_response);
-			
-			if (isset($replace_response['error']))
-			{
-				$vars = array(
-					'error' => $replace_response['error']
-				);
-				
-				return $this->load->view('_shared/file/failure', $vars);
-			}
-		}
+		// if ($upload_response['file_name'] != $upload_response['orig_name'])
+		// {
+		// 	$replace_response = $this->filemanager->replace_file($upload_response);
+		// 	
+		// 	if (isset($replace_response['error']))
+		// 	{
+		// 		$vars = array(
+		// 			'error' => $replace_response['error']
+		// 		);
+		// 		
+		// 		return $this->load->view('_shared/file/failure', $vars);
+		// 	}
+		// }
 		
 		$vars = array(
 			'success'	=> lang('upload_success'),

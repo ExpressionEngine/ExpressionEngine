@@ -1424,7 +1424,11 @@ class Filemanager {
 		
 		// TODO: Figure out why relative paths don't work
 		
+		$field = ($field_name) ? $field_name : 'userfile';
+		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id']));
+		
 		$config = array(
+			'file_name'		=> $clean_filename,
 			'upload_path'	=> $dir['server_path'],
 			'allowed_types'	=> $allowed_types,
 			'max_size'		=> round($dir['max_size']/1024, 2),
@@ -1525,6 +1529,7 @@ class Filemanager {
 		
 		$this->EE->load->model('file_upload_preferences_model');
 		
+		// TODO: Remove permissions checks?
 		// Permissions checks were left in here (although redundant with
 		// Filemanager::upload_file) because this will later change to allow
 		// people to choose the name of the file
@@ -1563,9 +1568,9 @@ class Filemanager {
 		$previous_data = $previous_data->row();
 		
 		$updated_data = array(
-			'file_id' => $data['file_id'],
-			'file_name' => $new_file_name,
-			'rel_path' => str_replace($old_file_name, $new_file_name, $previous_data->rel_path)
+			'file_id'	=> $data['file_id'],
+			'file_name'	=> $new_file_name,
+			'rel_path'	=> str_replace($old_file_name, $new_file_name, $previous_data->rel_path)
 		);
 		
 		// Change title in the event if it's automatic
