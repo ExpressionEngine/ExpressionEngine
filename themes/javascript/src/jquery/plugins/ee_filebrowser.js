@@ -80,6 +80,28 @@
 	};
 
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Refreshes the file browser with the newly upload files
+	 *
+	 * @param {Number} directory_id The directory ID to refresh
+	 */
+	$.ee_filebrowser.reload_directory = function(directory_id) {
+		$.ee_filebrowser.endpoint_request(
+			'directory_contents',
+			{"directory": directory_id},
+			function(data) {
+				all_dirs[directory_id] = data;
+				
+				// If you're looking at the same directory, rebuild the page
+				if ($('#dir_choice').val() == directory_id) {
+					build_pages(directory_id);
+				};
+			}
+		);
+	};
+	
+	// --------------------------------------------------------------------
 
 	/*
 	 * Allows you to bind elements that will open the file browser

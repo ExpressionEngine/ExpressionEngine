@@ -211,10 +211,6 @@ class Filemanager {
 	 * Checks the uploaded file to make sure it's both allowed and passes 
 	 *	XSS filtering
 	 *
-	 * TODO: Is this method used redundantly? Save_file calls this, but files
-	 *	need to have the same checks before being uploaded anyways. So the
-	 *	work gets done at least twice.
-	 *
 	 * @param	string	$file_path	The path to the file
 	 * @param	array	$prefs		File preferences containing allowed_types
 	 * @return	mixed	Returns the mime type if everything passes, FALSE otherwise
