@@ -2608,12 +2608,15 @@ class EE_Functions {
 	 * @return	array
 	 */
 	function prep_conditionals($str, $vars, $safety='n', $prefix='')
-	{	
-		// If this is being called from a module tag, embedded variables
-		// aren't going to be available yet.  So this is a quick workaround
-		// to ensure advanced conditionals using embedded variables can do
-		// their thing in mod tags.
-		$vars = array_merge($vars, $this->EE->TMPL->embed_vars);
+	{
+		if (isset($this->EE->TMPL->embed_vars))
+		{
+			// If this is being called from a module tag, embedded variables
+			// aren't going to be available yet.  So this is a quick workaround
+			// to ensure advanced conditionals using embedded variables can do
+			// their thing in mod tags.
+			$vars = array_merge($vars, $this->EE->TMPL->embed_vars);			
+		}
 					
 		if (count($vars) == 0) return $str;
 
