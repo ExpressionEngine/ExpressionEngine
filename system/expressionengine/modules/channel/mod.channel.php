@@ -1261,7 +1261,7 @@ class Channel {
 				/**  Parse page number
 				/** --------------------------------------*/
 
-				if (($dynamic OR $this->EE->TMPL->fetch_param('paginate') && preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match))) 
+				if (($dynamic OR $this->EE->TMPL->fetch_param('paginate')) && preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match)) 
 				{
 					$this->p_page = (isset($match[2])) ? $match[2] : $match[1];
 
