@@ -50,7 +50,7 @@ class File_model extends CI_Model {
 		// Setup default parameters
 		$parameters = array_merge(array(
 			'type' => 'all',
-			'do_count' => TRUE			
+			'do_count' => TRUE
 		), $parameters);
 		
 		$this->load->helper('text');
@@ -77,10 +77,10 @@ class File_model extends CI_Model {
 		
 		$this->db->where('site_id', $this->config->item('site_id'));
 		
-		if (isset($parameters['cat_id']) && ($parameters['cat_id'] == 'none' OR $parameters['cat_id']) && is_numeric($parameters['cat_id']))					 
+		if (isset($parameters['cat_id']) && ($parameters['cat_id'] == 'none' OR $parameters['cat_id']) && is_numeric($parameters['cat_id']))
 		{
 			$this->db->join('file_categories', 'exp_files.file_id = exp_file_categories.file_id', 'left');
-			$this->db->where('cat_id', $parameters['cat_id']);				
+			$this->db->where('cat_id', $parameters['cat_id']);
 		}		
 
 		if (isset($parameters['search_value']))
@@ -201,7 +201,7 @@ class File_model extends CI_Model {
 		// Insert/update the data
 		if (isset($data['file_id']))
 		{
-			$this->db->update('files', $data, array('id' => $data['file_id']));
+			$this->db->update('files', $data, array('file_id' => $data['file_id']));
 		}
 		else
 		{
@@ -212,7 +212,7 @@ class File_model extends CI_Model {
 		$file_id = (isset($data['file_id'])) ? $data['file_id'] : $this->db->insert_id();
 
 		// Check to see if the file_id is valid
-		$sucessful = ( ! is_int($file_id) AND ! $file_id > 0) ? $file_id : FALSE;
+		$sucessful = (is_int($file_id) AND $file_id > 0) ? $file_id : FALSE;
 
 		// Deal with categories
 		$this->load->model('file_category_model');
@@ -225,7 +225,11 @@ class File_model extends CI_Model {
 
 				// If the result is a failure then set $successful to false, otherwise
 				// leave it alone
-				$successful = ($result) ? $successful : FALSE;
+				if ($result === FALSE)
+				{
+					$successful = FALSE;
+					break;
+				}
 			}
 		}
 
