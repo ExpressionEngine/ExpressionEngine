@@ -1489,7 +1489,7 @@ class Filemanager {
 			'modified_by_member_id' => $this->EE->session->userdata('member_id'),
 			'uploaded_by_member_id'	=> $this->EE->session->userdata('member_id'),
 			
-			'file_size'				=> $file['file_size'],
+			'file_size'				=> $file['file_size'] * 1024, // Bring it back to Bytes from KB
 			'file_height'			=> $file['image_height'],
 			'file_width'			=> $file['image_width'],
 			'file_hw_original'		=> $file['image_height'].' '.$file['image_width'],
