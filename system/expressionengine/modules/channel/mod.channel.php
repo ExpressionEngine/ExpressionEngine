@@ -443,11 +443,15 @@ class Channel {
 						}
 
 						$this->query = $reldata['query'];
-						$this->categories = array($this->query->row('entry_id')  => $reldata['categories']);
-
-						if (isset($reldata['category_fields']))
+						
+						if ($this->query->num_rows() != 0)
 						{
-							$this->catfields = array($this->query->row('entry_id') => $reldata['category_fields']);
+							$this->categories = array($this->query->row('entry_id')  => $reldata['categories']);
+
+							if (isset($reldata['category_fields']))
+							{
+								$this->catfields = array($this->query->row('entry_id') => $reldata['category_fields']);
+							}							
 						}
 
 						$this->parse_channel_entries();
@@ -1261,7 +1265,7 @@ class Channel {
 				/**  Parse page number
 				/** --------------------------------------*/
 
-				if (($dynamic OR $this->EE->TMPL->fetch_param('paginate') && preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match))) 
+				if (($dynamic OR $this->EE->TMPL->fetch_param('paginate')) && preg_match("#^P(\d+)|/P(\d+)#", $qstring, $match)) 
 				{
 					$this->p_page = (isset($match[2])) ? $match[2] : $match[1];
 

@@ -871,7 +871,7 @@ class EE_Menu {
 															'member_validation'				=> 'cp/members/activate_pending_members.html',
 															'member_group_manager'			=> 'cp/members/member_groups.html',
 															'edit_member_group'				=> 'cp/members/member_groups_edit.html',
-															'custom_profile_fields'			=> 'cp/members/custom_profile_fields.html',
+															'custom_profile_fields'			=> 'cp/members/custom_member_fields.html',
 															'edit_profile_field'			=> 'cp/members/custom_profile_fields_edit.html',
 															'member_config'					=> 'cp/members/membership_preferences.html',
 															'view_all_members'				=> 'cp/members/view_members.html',
