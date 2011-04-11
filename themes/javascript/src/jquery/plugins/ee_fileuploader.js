@@ -22,7 +22,6 @@
 				$.ee_fileuploader.build_dialog();
 			});
 		});
-		
 	};
 	
 	$.ee_fileuploader.build_dialog = function() {
@@ -35,7 +34,10 @@
 			draggable: true,
 			title: "Upload File",
 			autoOpen: false,
-			zIndex: 99999
+			zIndex: 99999,
+			close: function() {
+				$.ee_filebrowser.reload_directory($('#dir_choice').val());
+			}
 		});
 		
 		$('#fileChooser #upload_form input').live('click', function(event) {
