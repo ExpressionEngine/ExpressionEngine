@@ -35,6 +35,12 @@
 			title: "Upload File",
 			autoOpen: false,
 			zIndex: 99999,
+			open: function() {
+				var dir_id = $('#dir_choice').val(),
+					source = file_uploader.find('iframe').attr('src');
+				
+				file_uploader.find('iframe').attr('src', source + '&directory_id=' + dir_id);
+			},
 			close: function() {
 				$.ee_filebrowser.reload_directory($('#dir_choice').val());
 			}
