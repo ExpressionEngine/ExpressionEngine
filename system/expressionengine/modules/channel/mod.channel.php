@@ -443,11 +443,15 @@ class Channel {
 						}
 
 						$this->query = $reldata['query'];
-						$this->categories = array($this->query->row('entry_id')  => $reldata['categories']);
-
-						if (isset($reldata['category_fields']))
+						
+						if ($this->query->num_rows() != 0)
 						{
-							$this->catfields = array($this->query->row('entry_id') => $reldata['category_fields']);
+							$this->categories = array($this->query->row('entry_id')  => $reldata['categories']);
+
+							if (isset($reldata['category_fields']))
+							{
+								$this->catfields = array($this->query->row('entry_id') => $reldata['category_fields']);
+							}							
 						}
 
 						$this->parse_channel_entries();
