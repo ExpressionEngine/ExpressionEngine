@@ -397,9 +397,6 @@
 			el['img_id'] = i+'';
 			el['directory'] = directory.id+'';
 			el['is_image'] = ! (el.mime_type.indexOf("image") < 0);
-			if (el['is_image']) {
-				el['thumb'] = directory.url + "/_thumbs/thumb_" + el.file_name;
-			}
 		});
 		
 		// Clear everything

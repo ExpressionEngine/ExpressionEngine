@@ -1284,6 +1284,10 @@ class Filemanager {
 			$file['short_name'] = ellipsize($file['title'], 10, 0.5);
 			$file['file_size'] = byte_format($file['file_size']);
 			$file['date'] = date('F j, Y g:i a', $file['modified_date']);
+			
+			$site_url = str_replace('index.php', '', $this->EE->config->site_url());
+			$file['thumb'] = (strncmp($dir['url'], '/', 1) === 0) ? $site_url : '';
+			$file['thumb'] .= $dir['url'].'_thumb/'.$file['file_name'];
 		}
 
 		return $files;
