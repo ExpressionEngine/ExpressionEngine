@@ -3321,29 +3321,27 @@ div.contentWrap {
 
 #file_chooser_body {
 	border:				1px solid #ccc;
+	border-width: 		0 0 1px;
 	display:			block;
-	height: 435px;
+	height: 			444px;
+	padding-bottom: 	10px;
 	overflow:			auto;
 	width:				100%;
 }
 
-#file_chooser_body.list {
-	border-width: 		0 0 1px;
-	padding-top: 		1px;
-}
-
 a.file_chooser_thumbnail:link,
 a.file_chooser_thumbnail:visited {
-	border:				1px solid #ccc;
-	border-width:		0 1px 1px 0;
+	border:				1px solid #ddd;
+	border-width:		1px 1px 1px;
 	color: 				#fff;
 	float:				left;
 	height:				70px;
 	overflow:			hidden;
-	padding: 			13px 10px 25px;
+	padding: 10px 8px 24px 10px;
 	position: 			relative;
 	text-align:			center;
 	width: 				80px;
+	margin: 3px;
 }
 
 a.file_chooser_thumbnail img {
@@ -3370,11 +3368,11 @@ a.file_chooser_thumbnail:hover {
 }
 
 a.file_chooser_thumbnail.first {
-	border-left: 		0 none;
+	margin-left: 0;
 }
 
 a.file_chooser_thumbnail.last {
-	border-right: 		0 none;
+	margin-right: 0;
 }
 
 a.file_chooser_thumbnail.last_row {

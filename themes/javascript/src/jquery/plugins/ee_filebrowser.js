@@ -327,8 +327,8 @@
 		
 		// Set up modal dialog
 		file_manager_obj.dialog({
-			width: 928,
-			height: 600,
+			width: 968,
+			height: 610,
 			resizable: false,
 			position: ["center","center"],
 			modal: true,
