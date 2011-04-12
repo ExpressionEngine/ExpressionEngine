@@ -67,11 +67,9 @@ class Status_model extends CI_Model {
 	 */
 	function get_status($status_id = '')
 	{
-		$this->db->where('status_id', $status_id);
-		$this->db->from('statuses');
-		$this->db->where('site_id', $this->config->item('site_id'));
-
-		return $this->db->get();
+		return $this->db->where('status_id', $status_id)
+						->where('site_id', $this->config->item('site_id'))
+						->get('statuses');
 	}
 
 	// --------------------------------------------------------------------
@@ -90,14 +88,7 @@ class Status_model extends CI_Model {
 
 		$status_order = $this->db->get('statuses');
 		
-		if ($status_order->num_rows() == 0)
-		{
-			return 1;
-		}
-		else
-		{
-			return $status_order->row('status_order')+1;
-		}
+		return ($status_order->num_rows() == 0) ? 1 : $status_order->row('status_order') + 1;		
 	}
 
 	// --------------------------------------------------------------------
@@ -228,16 +219,7 @@ class Status_model extends CI_Model {
 
 		$count = $this->db->count_all_results();
 
-		if ($count > 0)
-		{
-			// its a duplicate
-			return TRUE;
-		}
-		else
-		{
-			// not a duplicate
-			return FALSE;
-		}
+		return ($count > 0) ? TRUE : FALSE;
 	}
 
 	// --------------------------------------------------------------------

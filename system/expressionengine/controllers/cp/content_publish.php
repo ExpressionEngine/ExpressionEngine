@@ -2242,16 +2242,21 @@ class Content_publish extends CI_Controller {
 				{
 					$no_status_access[] = $row['status_id'];
 				}
-			}
-			
-			// if there is no status group assigned, 
-			// only Super Admins can create 'open' entries
-			$menu_status_options['open'] = lang('open');		
+			}	
 		}
 		
 		$menu_status_options['closed'] = lang('closed');
 		
-		if (isset($this->_channel_data['status_group']))
+		if ( ! isset($this->_channel_data['status_group']))
+		{
+			if ($this->session->userdata('group_id') == 1)
+			{
+				// if there is no status group assigned, 
+				// only Super Admins can create 'open' entries
+				$menu_status_options['open'] = lang('open');
+			}	
+		}
+		else
 		{
 			$query = $this->status_model->get_statuses($this->_channel_data['status_group']);
 			
