@@ -631,15 +631,19 @@ class EE_Config Extends CI_Config {
 				
 				if ( ! @is_dir($fp))
 				{
-					$this->_config_path_errors[$this->EE->lang->line('invalid_path')][$val] = $this->EE->lang->line($val) .': ' .$new_values[$val];
+					$this->_config_path_errors[lang('invalid_path')][$val] = lang($val).': '.$fp;
 				}
 
-				if ( (! is_really_writable($fp)) && ($val != 'theme_folder_path'))
+				if (( ! is_really_writable($fp)) && ($val != 'theme_folder_path'))
 				{
-					if ( ! isset($this->_config_path_errors[$this->EE->lang->line('invalid_path')][$val]))
+					if ( ! isset($this->_config_path_errors[lang('invalid_path')][$val]))
 					{
-						$this->_config_path_errors[$this->EE->lang->line('not_writable_path')][$val] = $this->EE->lang->line($val) .': ' .$new_values[$val];
+						if ($val == 'avatar_path')
+						{
+							$new_values[$val] = $new_values[$val].'uploads/';
+						}
 						
+						$this->_config_path_errors[lang('not_writable_path')][$val] = lang($val) .': ' .$new_values[$val];
 					}
 				}
 			}
