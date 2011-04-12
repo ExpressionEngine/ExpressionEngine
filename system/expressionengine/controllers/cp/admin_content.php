@@ -636,7 +636,7 @@ class Admin_content extends CI_Controller {
 
 			// Assign field group if there is only one
 
-			if ( ! isset($_POST['field_group']) OR (isset($_POST['field_group']) && ! is_numeric($_POST['field_group'])))
+			if ($dupe_id != '' && ( ! isset($_POST['field_group']) OR (isset($_POST['field_group']) && ! is_numeric($_POST['field_group']))))
 			{
 				$this->db->select('group_id');
 				$this->db->where('site_id', $this->config->item('site_id'));
