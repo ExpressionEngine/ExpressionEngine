@@ -37,8 +37,15 @@
 			zIndex: 99999,
 			open: function() {
 				var dir_id = $('#dir_choice').val(),
-					source = file_uploader.find('iframe').attr('src');
+					source = file_uploader.find('iframe').attr('src'),
+					source_position = source.search('&directory_id=');
+					
+				// Check to see if the source already has directory_id and remove it
+				if (source_position > 0) {
+					source = source.substring(0, source_position);
+				};
 				
+				// Set a GET variable on the iframe to automatically select the correct directory
 				file_uploader.find('iframe').attr('src', source + '&directory_id=' + dir_id);
 			},
 			close: function() {
