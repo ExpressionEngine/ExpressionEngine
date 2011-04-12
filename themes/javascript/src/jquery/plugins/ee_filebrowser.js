@@ -221,6 +221,7 @@
 			// Add a last class to the 7th thumbnail
 			$('a.file_chooser_thumbnail:nth-child(9n+2)').addClass('first');
 			$('a.file_chooser_thumbnail:nth-child(9n+1)').addClass('last');
+			$('a.file_chooser_thumbnail:gt(26)').addClass('last_row');
 			
 			// Change pagination for thumbnails
 			pagination.pages_total = images.length;
@@ -269,6 +270,9 @@
 			.find('#view_type')
 				.val(display_type) // Make sure the dropdown is using the right value
 				.change(function() {
+					// Add class to file chooser body
+					$('#file_chooser_body').removeClass('list thumb').addClass(this.value);
+					
 					display_type = this.value;
 					build_pages($('#dir_choice').val());
 				})
@@ -323,8 +327,8 @@
 		
 		// Set up modal dialog
 		file_manager_obj.dialog({
-			width: 931,
-			height: 600,
+			width: 968,
+			height: 610,
 			resizable: false,
 			position: ["center","center"],
 			modal: true,
@@ -357,6 +361,9 @@
 		
 		// Bind the upload submit event
 		$("#upload_form", file_manager_obj).submit($.ee_filebrowser.upload_start);
+		
+		// Add the display type as a class to file_chooser_body
+		$('#file_chooser_body', file_manager_obj).addClass(display_type);
 	}
 
 })(jQuery);
