@@ -3339,6 +3339,7 @@ div.contentWrap {
 	margin:				8px;
 	overflow:			hidden;
 	padding:			6px 6px 9px;
+	text-align:			center;
 	width:				73px;
 }
 
@@ -3367,43 +3368,52 @@ div.contentWrap {
 /* @group File Uploader */
 
 #file_uploader {
-	padding: 14px 14px 50px;
-	position: relative;
-	overflow: hidden;
+	padding: 			14px 14px 50px;
+	position: 			relative;
+	overflow: 			hidden;
 }
 
 #file_uploader .button_bar {
-	bottom: 0px;
-	left: 0;
-	padding: 6px;
-	position: absolute;
-	text-align: right;
-	width: 586px;
+	bottom:				0px;
+	left:				0;
+	min-height:			22px;
+	padding:			6px;
+	position:			absolute;
+	text-align:			right;
+	width:				586px;
+}
+
+#file_uploader.upload_step_1 #choose_file {
+	display: 			none;
+}
+
+#file_uploader.upload_step_2 #upload_file {
+	display: 			none;
 }
 
 #file_uploader iframe {
-	border: 0 none;
-	height: 277px;
-	width: 572px;
+	border:				0 none;
+	height:				277px;
+	width:				572px;
 }
 
 #file_uploader iframe,
 html#file_upload_iframe,
 html#file_upload_iframe body {
-	background: #ecf1f4;
+	background:			#ecf1f4;
 }
 
 html#file_upload_iframe body {
-	min-width: 0;
+	min-width:			0;
 }
 
 html#file_upload_iframe #upload_dir {
-	display: block;
-	width: auto;
+	display:			block;
+	width:				auto;
 }
 
 html#file_upload_iframe p {
-	margin: 11px 0;
+	margin:				11px 0;
 }
 
 /* @end */

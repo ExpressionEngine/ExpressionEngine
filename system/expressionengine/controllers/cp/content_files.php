@@ -714,10 +714,10 @@ class Content_files extends CI_Controller {
 		// 	}
 		// }
 
-		$upload_response['thumb'] = $this->filemanager->get_thumb($upload_response['file_name'], $file_dir);
+		$upload_response['thumb'] = $this->filemanager->get_thumb($upload_response, $file_dir);
 		
 		$vars = array(
-			'file'		=> json_encode($upload_response),
+			'file'		=> $this->javascript->generate_json($upload_response, TRUE),
 			'success'	=> lang('upload_success'),
 			'file_data'	=> $upload_response,
 			'date'		=> date('M d Y - H:ia')

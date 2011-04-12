@@ -490,15 +490,19 @@ class Filemanager {
 
 		$this->EE->cp->add_to_head('<link rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=file_browser" type="text/css" media="screen" />');
 		
-		$this->EE->javascript->set_global('lang', array(
-			'resize_image'		=> $this->EE->lang->line('resize_image'),
-			'or'				=> $this->EE->lang->line('or'),
-			'return_to_publish'	=> $this->EE->lang->line('return_to_publish')
-		));
-		
-		$this->EE->javascript->set_global('filebrowser', array(
-			'endpoint_url'	=> $endpoint_url,
-			'window_title'	=> $this->EE->lang->line('file_manager')
+		$this->EE->javascript->set_global(array(
+			'lang' => array(
+				'resize_image'		=> $this->EE->lang->line('resize_image'),
+				'or'				=> $this->EE->lang->line('or'),
+				'return_to_publish'	=> $this->EE->lang->line('return_to_publish')
+			),
+			'filebrowser' => array(
+				'endpoint_url'		=> $endpoint_url,
+				'window_title'		=> lang('file_manager')
+			),
+			'fileuploader' => array(
+				'window_title'		=> lang('file_upload')
+			)
 		));
 	}
 	
@@ -528,14 +532,18 @@ class Filemanager {
 			'PATH_CP_GBL_IMG'	=> $this->EE->config->item('theme_folder_url').'cp_global_images/',
 			'filebrowser' => array(
 				'endpoint_url'	=> $endpoint_url,
-				'window_title'	=> $this->EE->lang->line('file_manager'),
-				'theme_url'		=> $this->theme_url),
+				'window_title'	=> lang('file_manager'),
+				'theme_url'		=> $this->theme_url
+			),
+			'fileuploader' => array(
+				'window_title'		=> lang('file_upload')
+			),
 			'lang' => array(
-						'or'				=> $this->EE->lang->line('or'), 
-						'resize_image' 		=> $this->EE->lang->line('resize_image'), 
-						'return_to_publish' => $this->EE->lang->line('return_to_publish')
-						)
-			);
+				'or'				=> $this->EE->lang->line('or'), 
+				'resize_image' 		=> $this->EE->lang->line('resize_image'), 
+				'return_to_publish' => $this->EE->lang->line('return_to_publish')
+			)
+		);
 
 		$script_base = $this->EE->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT=jquery';
 		
@@ -1042,19 +1050,34 @@ class Filemanager {
 	// --------------------------------------------------------------------
 
 	/**
-	 * TODO Document
+	 * Get's the thumbnail for a particular image in a directory
+	 * This assumes the thumbnail has already been created
+	 * 
+	 * @param array $file Response from save_file, should be an associative array
+	 * 	and minimally needs to contain the file_name and the mime_type/file_type
+	 * @param integer $directory_id The ID of the upload directory the file is in
+	 * @return string URL to the thumbnail
 	 */
-	public function get_thumb($file_name, $directory_id)
+	public function get_thumb($file, $directory_id)
 	{
 		$directory = $this->fetch_upload_dir_prefs($directory_id);
 		
-		$site_url = str_replace('index.php', '', $this->EE->config->site_url());
-		
-		$thumb  = (strncmp($directory['url'], '/', 1) === 0) ? $site_url : '';
-		$thumb .= $directory['url'].'_thumb/'.$file_name;
+		if ($this->is_image($file['mime_type']))
+		{
+			$site_url = str_replace('index.php', '', $this->EE->config->site_url());
+
+			$thumb  = (strncmp($directory['url'], '/', 1) === 0) ? $site_url : '';
+			$thumb .= $directory['url'].'_thumb/'.$file['file_name'];
+		}
+		else
+		{
+			$thumb = PATH_CP_GBL_IMG.'default.png';
+		}
 		
 		return $thumb;
 	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Finds Thumbnails
@@ -1300,7 +1323,7 @@ class Filemanager {
 			$file['file_size'] = byte_format($file['file_size']);
 			$file['date'] = date('F j, Y g:i a', $file['modified_date']);
 			
-			$file['thumb'] = $this->get_thumb($file['file_name'], $dir['id']);
+			$file['thumb'] = $this->get_thumb($file, $dir['id']);
 		}
 
 		return $files;
