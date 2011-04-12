@@ -713,8 +713,11 @@ class Content_files extends CI_Controller {
 		// 		return $this->load->view('_shared/file/failure', $vars);
 		// 	}
 		// }
-
-		$upload_response['thumb'] = $this->filemanager->get_thumb($upload_response, $file_dir);
+		
+		
+		$thumb_info = $this->filemanager->get_thumb($upload_response, $file_dir);
+		$upload_response['thumb'] = $thumb_info['thumb'];
+		$upload_response['thumb_class'] = $thumb_info['thumb_class'];
 		
 		$vars = array(
 			'file'		=> $this->javascript->generate_json($upload_response, TRUE),

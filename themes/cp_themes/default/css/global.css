@@ -1,3 +1,5 @@
+/* @override http://expressionengine2/themes/cp_themes/default/css/global.css */
+
 /**
  * ExpressionEngine Default Theme 
  */
@@ -3314,50 +3316,68 @@ div.contentWrap {
 }
 
 #fileChooser #dir_choice {
-	height: 1.2em;
+	height: 			1.2em;
 }
 
-#file_chooser_body table {
-	margin-top: 5px
-}
+/*#file_chooser_body table {
+	margin-top: 		5px
+}*/
 
 #file_chooser_body {
-	border-bottom:		1px solid #ccc;
-	border-top:			1px solid #ccc;
+	border:				1px solid #ccc;
 	display:			block;
-	height:				435px;
-	padding-top:		5px;
+	height: 			436px;
 	overflow:			auto;
 	width:				100%;
 }
 
-.file_chooser_thumbnail:link,
-.file_chooser_thumbnail:visited {
+a.file_chooser_thumbnail:link,
+a.file_chooser_thumbnail:visited {
 	border:				1px solid #ccc;
+	border-width:		0 1px 1px 0;
+	color: 				#fff;
 	float:				left;
 	height:				70px;
-	margin:				8px;
 	overflow:			hidden;
-	padding:			6px 6px 9px;
+	padding: 			13px 10px 25px;
+	position: 			relative;
 	text-align:			center;
-	width:				73px;
+	width: 				80px;
 }
 
-.file_chooser_thumbnail:hover {
-	background: #fff;
-
-	-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-	-moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-	-o-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-	box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+a.file_chooser_thumbnail img {
+	border: 			1px solid #fff;
 }
 
-.file_chooser_thumbnail.first {
-	margin-left:		0;
+a.file_chooser_thumbnail img.no_image {
+	border: 			0 none;
 }
 
-.file_chooser_thumbnail.last {
-	margin-right:		0;
+a.file_chooser_thumbnail p {
+	background:			#2a3940 url('../images/backgrounds_sprite.png') repeat-x 0 -540px;
+	position: 			absolute;
+	bottom: 			0;
+	font-size: 			11px;
+	left: 				0;
+	line-height: 		1.8;
+	height: 			1.8em;
+	width: 				100%;
+}
+
+a.file_chooser_thumbnail:hover {
+	background: 		#fff;
+}
+
+a.file_chooser_thumbnail.first {
+	border-left: 		0 none;
+}
+
+a.file_chooser_thumbnail.last {
+	border-right: 		0 none;
+}
+
+a.file_chooser_thumbnail.last_row {
+	border-bottom: 0 none;
 }
 
 #fileChooser #pagination_meta {

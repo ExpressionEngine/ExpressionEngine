@@ -221,6 +221,7 @@
 			// Add a last class to the 7th thumbnail
 			$('a.file_chooser_thumbnail:nth-child(9n+2)').addClass('first');
 			$('a.file_chooser_thumbnail:nth-child(9n+1)').addClass('last');
+			$('a.file_chooser_thumbnail:gt(26)').addClass('last_row');
 			
 			// Change pagination for thumbnails
 			pagination.pages_total = images.length;
@@ -323,7 +324,7 @@
 		
 		// Set up modal dialog
 		file_manager_obj.dialog({
-			width: 931,
+			width: 928,
 			height: 600,
 			resizable: false,
 			position: ["center","center"],

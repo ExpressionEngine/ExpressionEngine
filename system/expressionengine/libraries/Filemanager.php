@@ -1061,20 +1061,24 @@ class Filemanager {
 	public function get_thumb($file, $directory_id)
 	{
 		$directory = $this->fetch_upload_dir_prefs($directory_id);
+		$thumb_info = array();
 		
 		if ($this->is_image($file['mime_type']))
 		{
 			$site_url = str_replace('index.php', '', $this->EE->config->site_url());
 
-			$thumb  = (strncmp($directory['url'], '/', 1) === 0) ? $site_url : '';
-			$thumb .= $directory['url'].'_thumb/'.$file['file_name'];
+			$thumb_info['thumb']  = (strncmp($directory['url'], '/', 1) === 0) ? $site_url : '';
+			$thumb_info['thumb'] .= $directory['url'].'_thumb/'.$file['file_name'];
+			
+			$thumb_info['thumb_class'] = 'image';
 		}
 		else
 		{
-			$thumb = PATH_CP_GBL_IMG.'default.png';
+			$thumb_info['thumb'] = PATH_CP_GBL_IMG.'default.png';
+			$thumb_info['thumb_class'] = 'no_image';
 		}
 		
-		return $thumb;
+		return $thumb_info;
 	}
 
 	// --------------------------------------------------------------------
@@ -1319,11 +1323,13 @@ class Filemanager {
 
 		foreach ($files as &$file)
 		{
-			$file['short_name'] = ellipsize($file['title'], 10, 0.5);
+			$file['short_name'] = ellipsize($file['title'], 13, 0.5);
 			$file['file_size'] = byte_format($file['file_size']);
 			$file['date'] = date('F j, Y g:i a', $file['modified_date']);
 			
-			$file['thumb'] = $this->get_thumb($file, $dir['id']);
+			$thumb_info = $this->get_thumb($file, $dir['id']);
+			$file['thumb'] = $thumb_info['thumb'];
+			$file['thumb_class'] = $thumb_info['thumb_class'];
 		}
 
 		return $files;
