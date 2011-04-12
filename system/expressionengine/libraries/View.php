@@ -128,8 +128,7 @@ class View  {
 			return NULL;
 		}
 
-		// return '<link rel="stylesheet" href="'.$file_url.'?v='.$filemtime.'" type="text/css" media="'.$media.'" />'.PHP_EOL;
-		return '<link rel="stylesheet" href="'.$file_url.'" type="text/css" media="'.$media.'" />'.PHP_EOL;
+		return '<link rel="stylesheet" href="'.$file_url.'?v='.$filemtime.'" type="text/css" media="'.$media.'" />'.PHP_EOL;
 	}
 
 	// --------------------------------------------------------------------------
