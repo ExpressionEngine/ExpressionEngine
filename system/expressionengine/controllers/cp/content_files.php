@@ -713,8 +713,11 @@ class Content_files extends CI_Controller {
 		// 		return $this->load->view('_shared/file/failure', $vars);
 		// 	}
 		// }
+
+		$upload_response['thumb'] = $this->filemanager->get_thumb($upload_response['file_name'], $file_dir);
 		
 		$vars = array(
+			'file'		=> json_encode($upload_response),
 			'success'	=> lang('upload_success'),
 			'file_data'	=> $upload_response,
 			'date'		=> date('M d Y - H:ia')

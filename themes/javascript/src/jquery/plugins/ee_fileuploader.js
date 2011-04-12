@@ -57,5 +57,17 @@
 			file_uploader.dialog('open');
 		});
 	};
+	
+	// On close, return the data representing the uploaded file
+	// Chiefly:
+	// 	- Thumbnail path
+	// 	- File name
+	// 	- File id
+	$.ee_fileuploader.clean_up = function(file) {
+		file_uploader.dialog('close');
+
+		// Close filebrowser
+		$.ee_filebrowser.clean_up(file, '');
+	};
 
 })(jQuery);

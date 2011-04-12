@@ -932,7 +932,7 @@ $(document).ready(function() {
 		}
 		else
 		{
-			container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" alt=\""+file.file_name+"\" /><br />"+file.file_name);
+			container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" /><br />"+file.file_name);
 		}
 
 		$("input[name="+field+"_hidden]").val(file.file_name);

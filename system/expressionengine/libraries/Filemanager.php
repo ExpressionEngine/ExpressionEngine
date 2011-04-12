@@ -1042,6 +1042,21 @@ class Filemanager {
 	// --------------------------------------------------------------------
 
 	/**
+	 * TODO Document
+	 */
+	public function get_thumb($file_name, $directory_id)
+	{
+		$directory = $this->fetch_upload_dir_prefs($directory_id);
+		
+		$site_url = str_replace('index.php', '', $this->EE->config->site_url());
+		
+		$thumb  = (strncmp($directory['url'], '/', 1) === 0) ? $site_url : '';
+		$thumb .= $directory['url'].'_thumb/'.$file_name;
+		
+		return $thumb;
+	}
+
+	/**
 	 * Finds Thumbnails
 	 *
 	 * Creates a list of available thumbnails based on the supplied information
@@ -1285,9 +1300,7 @@ class Filemanager {
 			$file['file_size'] = byte_format($file['file_size']);
 			$file['date'] = date('F j, Y g:i a', $file['modified_date']);
 			
-			$site_url = str_replace('index.php', '', $this->EE->config->site_url());
-			$file['thumb'] = (strncmp($dir['url'], '/', 1) === 0) ? $site_url : '';
-			$file['thumb'] .= $dir['url'].'_thumb/'.$file['file_name'];
+			$file['thumb'] = $this->get_thumb($file['file_name'], $dir['id']);
 		}
 
 		return $files;
