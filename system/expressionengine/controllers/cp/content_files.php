@@ -713,8 +713,11 @@ class Content_files extends CI_Controller {
 		// 		return $this->load->view('_shared/file/failure', $vars);
 		// 	}
 		// }
+
+		$upload_response['thumb'] = $this->filemanager->get_thumb($upload_response, $file_dir);
 		
 		$vars = array(
+			'file'		=> $this->javascript->generate_json($upload_response, TRUE),
 			'success'	=> lang('upload_success'),
 			'file_data'	=> $upload_response,
 			'date'		=> date('M d Y - H:ia')
@@ -727,11 +730,13 @@ class Content_files extends CI_Controller {
 	
 	public function upload_inner()
 	{
+		$selected_directory_id = ($this->input->get('directory_id')) ? $this->input->get('directory_id') : '';
 		
 		$this->load->model('file_upload_preferences_model');
 		
 		$vars = array(
-			'upload_directories' => $this->file_upload_preferences_model->get_dropdown_array($this->session->userdata('group_id'))
+			'upload_directories' => $this->file_upload_preferences_model->get_dropdown_array($this->session->userdata('group_id')),
+			'selected_directory_id' => $selected_directory_id
 		);
 		
 		$this->load->view('_shared/file/upload_inner', $vars);

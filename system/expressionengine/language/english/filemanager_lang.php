@@ -10,6 +10,7 @@ $lang = array(
 'file_information'		=> 'File Information',
 'upload' 				=> 'Upload',
 'upload_file' 			=> 'Upload File',
+'select_file'			=> 'Select File',
 'file_upload' 			=> 'File Upload',
 'file_download' 		=> 'Download',
 'file_tools'			=> 'File Tools',
