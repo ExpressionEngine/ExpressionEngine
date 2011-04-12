@@ -866,7 +866,7 @@ class EE_Menu {
 							'login'					=> 'cp/',
 							'members'				=> array(
 															'index'							=> 'cp/members/index.html',
-															'new_member_form'				=> 'cp/members/new_member_registraion.html',
+															'new_member_form'				=> 'cp/members/new_member_registration.html',
 															'member_banning'				=> 'cp/members/user_banning.html',
 															'member_validation'				=> 'cp/members/activate_pending_members.html',
 															'member_group_manager'			=> 'cp/members/member_groups.html',
