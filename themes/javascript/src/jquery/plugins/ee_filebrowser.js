@@ -270,6 +270,9 @@
 			.find('#view_type')
 				.val(display_type) // Make sure the dropdown is using the right value
 				.change(function() {
+					// Add class to file chooser body
+					$('#file_chooser_body').removeClass('list thumb').addClass(this.value);
+					
 					display_type = this.value;
 					build_pages($('#dir_choice').val());
 				})
@@ -358,6 +361,9 @@
 		
 		// Bind the upload submit event
 		$("#upload_form", file_manager_obj).submit($.ee_filebrowser.upload_start);
+		
+		// Add the display type as a class to file_chooser_body
+		$('#file_chooser_body', file_manager_obj).addClass(display_type);
 	}
 
 })(jQuery);

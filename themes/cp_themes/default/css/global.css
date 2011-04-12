@@ -3208,7 +3208,7 @@ div.contentWrap {
 	width:				50%;
 }
 
-/*  File Manager / Chooser */
+/* @group File Manager / Chooser */
 
 #mainContent #dir_choice_form,
 #mainContent #upload_form {
@@ -3319,16 +3319,17 @@ div.contentWrap {
 	height: 			1.2em;
 }
 
-/*#file_chooser_body table {
-	margin-top: 		5px
-}*/
-
 #file_chooser_body {
 	border:				1px solid #ccc;
 	display:			block;
-	height: 			436px;
+	height: 435px;
 	overflow:			auto;
 	width:				100%;
+}
+
+#file_chooser_body.list {
+	border-width: 		0 0 1px;
+	padding-top: 		1px;
 }
 
 a.file_chooser_thumbnail:link,
@@ -3384,6 +3385,8 @@ a.file_chooser_thumbnail.last_row {
 	line-height:		1.7;
 	margin-bottom:		5px;
 }
+
+/* @end */
 
 /* @group File Uploader */
 
