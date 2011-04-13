@@ -4683,7 +4683,7 @@ class Admin_content extends CI_Controller {
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
 
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {1: {sorter: false}, 2: {sorter: false}, 3: {sorter: false}},
+			headers: {3: {sorter: false}, 4: {sorter: false}},
 			widgets: ["zebra"]
 		}');
 
