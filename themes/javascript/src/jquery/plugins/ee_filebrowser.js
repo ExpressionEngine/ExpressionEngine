@@ -131,69 +131,9 @@
 			return false;
 		});
 	};
-
-	// --------------------------------------------------------------------
-
-	/*
-	 * Change Dimensions
-	 *
-	 * This function is responsible for auto-adding pixel values if the user
-	 * chooses to maintain aspect ratio when resizing an image
-	 */
-	$.ee_filebrowser.change_dim = function(image, el) {
-		var ratio;
-
-		// If the constrain box isn't checked, leave everything alone
-		if ($("#cloned #constrain:checked").length == 0)
-		{
-			return;
-		}
-
-		if (el.attr('id') == 'resize_width')
-		{
-			ratio = image.height/image.width;
-			$("#resize_height").val(Math.floor(ratio * el.val()));
-		}
-		else
-		{
-			ratio = image.width/image.height;
-			$("#resize_width").val(Math.floor(ratio * el.val()));
-		}
-	};
-
-	// --------------------------------------------------------------------
-
-	/*
-	 * Submit Image Edit
-	 *
-	 * Submits the image edit form via AJAX and then runs cleanup on resulting information
-	 */
-	$.ee_filebrowser.submit_image_edit = function(file, original_upload_html) {
-		$.ajax({
-			type: "POST",
-			url: EE.BASE+"&"+EE.filebrowser.endpoint_url+"&action=edit_image",
-			data: $("#image_edit_form").serialize(),
-			success: function(file_name) {
-				file.file_name = file_name;
-				file.dimensions = 'width="'+file.width+'" height="'+file.height+'" ';
-				$.ee_filebrowser.clean_up(file, original_upload_html);
-			},
-			error: function(msg) {
-				if ($.ee_notice)
-				{
-					$.ee_notice(msg.responseText, {"type" : "error"});
-				}
-				else
-				{
-					// strip html from error
-					msg.responseText = msg.responseText.replace(/<p>/, "");
-					alert(msg.responseText.replace(/<\/p>/, ""));
-				}
-			}
-		});
-	};
 	
 	// --------------------------------------------------------------------
+	
 	/*
 	 * Place Image
 	 *
@@ -218,148 +158,6 @@
 		file_manager_obj.dialog("close"); // close dialog
 		trigger_callback(file);
 	};
-
-	// --------------------------------------------------------------------
-
-	/*
-	 * Callback actions
-	 */
-	var callbacks = {
-		upload_start: function() {
-			$('input[name=upload_dir]').val($('#dir_choice').val());
-			// $("#progress", file_manager_obj).show();
-		},
-
-		upload_success: function(file) {
-			
-			$.ee_filebrowser.clean_up(file, '');
-			return;
-			
-			// change the contents of dir_files_structure to a blank string so that
-			// next time that directory is viewed it will be re-polled for contents
-			dir_files_structure[file.directory] = "";
-			$("#page_"+file.directory+" .items", file_manager_obj).empty();
-
-			// Hide!
-			$("#progress", file_manager_obj).hide();
-
-			// page_0 is the upload form. Save the original HTML so we can restore it for the next use
-			var original_upload_html = $("#page_0 .items").html();
-
-			// if this is an image, we need to offer editing options
-			if (file.is_image)
-			{
-				// Here we over write it to offer options for the user to edit the image or return to publish
-				$("#page_0 .items").html("<button id=\"resize_image\"><span>"+EE.lang.resize_image+"</span></button> "+EE.lang.or+" <button class=\"place_image\"><span>"+EE.lang.return_to_publish+"</span></button>").fadeIn("fast");
-
-				// Place Image is essentially the same as "cancel", it'll just insert the file reference
-				$(".place_image").click(function() {
-					$.ee_filebrowser.clean_up(file, original_upload_html);
-				});
-
-				$("#resize_image").click(function() {
-					// Let's draw the resize options into a form
-					$("#page_0 .items").html($(".image_edit_form_options").clone().css("display", "block").attr('id', 'cloned'));
-
-					$("#resize_width").val(file.width);
-					$("#resize_height").val(file.height);
-
-					$("#file").val(file.url_path);
-
-					$("#resize_width, #resize_height").keyup(function() {
-						$.ee_filebrowser.change_dim(file, $(this));
-					});
-
-					// Place Image is essentially the same as "cancel", it'll just insert the file reference
-					$(".place_image").click(function(){
-						$.ee_filebrowser.clean_up(file, original_upload_html);
-					});
-
-					// Rotation calculation
-					$(".icons li").click(function() {
-						var rotate_operation = $(this).attr("class");
-
-						switch(rotate_operation)
-						{
-							case 'rotate_90r':
-								rotate = 90;
-								break;
-							case 'rotate_90l':
-								rotate = 270;
-								break;
-							case 'rotate_180':
-								rotate = 180;
-								break;
-							case 'rotate_flip_vert':
-								rotate = "vrt";
-								break;
-							case 'rotate_flip_hor':
-								rotate = "hor";
-								break;
-							default:
-							  rotate = "none";
-						}
-
-						// Clear all user entered values. If they are clicking a button, we don't
-						// want those to take precedence
-						$("#image_edit_form input:text").val("");
-
-						// Stick the rotational code into the form so we can serialize and send
-						$("#image_edit_form").prepend('<input type="hidden" name="rotate" value="'+rotate+'"/>');
-
-						// @todo: make rotate icons appear "highlighted" to indicate choice
-
-						$.ee_filebrowser.submit_image_edit(file, original_upload_html);
-					});
-
-					$("#image_edit_form").submit(function(){
-						// if no options are filled out, then this is the equivalent of choosing not to edit the image
-						if ($("#crop_width").val() == "" && $("#crop_height").val() == "" && $("#crop_x").val() == "" && 
-							$("#crop_y").val() == "" && $("#resize_width").val() == "" && $("#resize_height").val() == "")
-						{
-							$.ee_filebrowser.clean_up(file, original_upload_html);
-						}
-						else
-						{
-							// This might be a clone, so pass the new height/width just to be sure
-							file.width = $('#resize_width').val();
-							file.height = $('#resize_height').val();
-							// submit form data in background
-							$.ee_filebrowser.submit_image_edit(file, original_upload_html);
-						}
-
-						return false; // kill form from leaving page
-					});
-
-				});
-			}
-			else
-			{
-				// Not an image file, close up the dialog and insert the file reference into the field
-				$.ee_filebrowser.clean_up(file, original_upload_html);
-			}
-		},
-		
-		upload_error: function(error) {
-			$("#progress", file_manager_obj).hide();
-			if ($.ee_notice)
-			{
-				$.ee_notice(error.error, {"type": "error"});
-			}
-			else
-			{
-				// strip html from error
-				error.error = error.error.replace(/<p>/, "");
-				alert(error.error.replace(/<\/p>/, ""));
-			}
-			console.log(error);
-		}
-	};
-
-	// --------------------------------------------------------------------
-
-	// Add callbacks to filebrowser object
-	$.ee_filebrowser = $.extend($.ee_filebrowser, callbacks);
 
 	// --------------------------------------------------------------------
 
@@ -397,9 +195,6 @@
 			el['img_id'] = i+'';
 			el['directory'] = directory.id+'';
 			el['is_image'] = ! (el.mime_type.indexOf("image") < 0);
-			if (el['is_image']) {
-				el['thumb'] = directory.url + "/_thumbs/thumb_" + el.file_name;
-			}
 		});
 		
 		// Clear everything
@@ -426,6 +221,7 @@
 			// Add a last class to the 7th thumbnail
 			$('a.file_chooser_thumbnail:nth-child(9n+2)').addClass('first');
 			$('a.file_chooser_thumbnail:nth-child(9n+1)').addClass('last');
+			$('a.file_chooser_thumbnail:gt(26)').addClass('last_row');
 			
 			// Change pagination for thumbnails
 			pagination.pages_total = images.length;
@@ -474,6 +270,9 @@
 			.find('#view_type')
 				.val(display_type) // Make sure the dropdown is using the right value
 				.change(function() {
+					// Add class to file chooser body
+					$('#file_chooser_body').removeClass('list thumb').addClass(this.value);
+					
 					display_type = this.value;
 					build_pages($('#dir_choice').val());
 				})
@@ -505,7 +304,7 @@
 			all_dirs[directory.id].images = images;
 		};
 		
-		return directory.images;	
+		return directory.images;
 	}
 
 	// ------------------------------------------------------------------------ 
@@ -528,8 +327,8 @@
 		
 		// Set up modal dialog
 		file_manager_obj.dialog({
-			width: 931,
-			height: 600,
+			width: 968,
+			height: 610,
 			resizable: false,
 			position: ["center","center"],
 			modal: true,
@@ -562,6 +361,9 @@
 		
 		// Bind the upload submit event
 		$("#upload_form", file_manager_obj).submit($.ee_filebrowser.upload_start);
+		
+		// Add the display type as a class to file_chooser_body
+		$('#file_chooser_body', file_manager_obj).addClass(display_type);
 	}
 
 })(jQuery);

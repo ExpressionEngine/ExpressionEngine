@@ -1,3 +1,5 @@
+/* @override http://expressionengine2/themes/cp_themes/default/css/global.css */
+
 /**
  * ExpressionEngine Default Theme 
  */
@@ -3206,7 +3208,7 @@ div.contentWrap {
 	width:				50%;
 }
 
-/*  File Manager / Chooser */
+/* @group File Manager / Chooser */
 
 #mainContent #dir_choice_form,
 #mainContent #upload_form {
@@ -3314,49 +3316,67 @@ div.contentWrap {
 }
 
 #fileChooser #dir_choice {
-	height: 1.2em;
-}
-
-#file_chooser_body table {
-	margin-top: 5px
+	height: 			1.2em;
 }
 
 #file_chooser_body {
-	border-bottom:		1px solid #ccc;
-	border-top:			1px solid #ccc;
+	border:				1px solid #ccc;
+	border-width: 		0 0 1px;
 	display:			block;
-	height:				435px;
-	padding-top:		5px;
+	height: 			444px;
+	padding-bottom: 	10px;
 	overflow:			auto;
 	width:				100%;
 }
 
-.file_chooser_thumbnail:link,
-.file_chooser_thumbnail:visited {
-	border:				1px solid #ccc;
+a.file_chooser_thumbnail:link,
+a.file_chooser_thumbnail:visited {
+	border:				1px solid #ddd;
+	border-width:		1px 1px 1px;
+	color: 				#fff;
 	float:				left;
 	height:				70px;
-	margin:				8px;
 	overflow:			hidden;
-	padding:			6px 6px 9px;
-	width:				73px;
+	padding: 10px 8px 24px 10px;
+	position: 			relative;
+	text-align:			center;
+	width: 				80px;
+	margin: 3px;
 }
 
-.file_chooser_thumbnail:hover {
-	background: #fff;
-
-	-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-	-moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-	-o-box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-	box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+a.file_chooser_thumbnail img {
+	border: 			1px solid #fff;
 }
 
-.file_chooser_thumbnail.first {
-	margin-left:		0;
+a.file_chooser_thumbnail img.no_image {
+	border: 			0 none;
 }
 
-.file_chooser_thumbnail.last {
-	margin-right:		0;
+a.file_chooser_thumbnail p {
+	background:			#2a3940 url('../images/backgrounds_sprite.png') repeat-x 0 -540px;
+	position: 			absolute;
+	bottom: 			0;
+	font-size: 			11px;
+	left: 				0;
+	line-height: 		1.8;
+	height: 			1.8em;
+	width: 				100%;
+}
+
+a.file_chooser_thumbnail:hover {
+	background: 		#fff;
+}
+
+a.file_chooser_thumbnail.first {
+	margin-left: 0;
+}
+
+a.file_chooser_thumbnail.last {
+	margin-right: 0;
+}
+
+a.file_chooser_thumbnail.last_row {
+	border-bottom: 0 none;
 }
 
 #fileChooser #pagination_meta {
@@ -3364,46 +3384,57 @@ div.contentWrap {
 	margin-bottom:		5px;
 }
 
+/* @end */
+
 /* @group File Uploader */
 
 #file_uploader {
-	padding: 14px 14px 50px;
-	position: relative;
-	overflow: hidden;
+	padding: 			14px 14px 50px;
+	position: 			relative;
+	overflow: 			hidden;
 }
 
 #file_uploader .button_bar {
-	bottom: 0px;
-	left: 0;
-	padding: 6px;
-	position: absolute;
-	text-align: right;
-	width: 586px;
+	bottom:				0px;
+	left:				0;
+	min-height:			22px;
+	padding:			6px;
+	position:			absolute;
+	text-align:			right;
+	width:				586px;
+}
+
+#file_uploader.upload_step_1 #choose_file {
+	display: 			none;
+}
+
+#file_uploader.upload_step_2 #upload_file {
+	display: 			none;
 }
 
 #file_uploader iframe {
-	border: 0 none;
-	height: 277px;
-	width: 572px;
+	border:				0 none;
+	height:				277px;
+	width:				572px;
 }
 
 #file_uploader iframe,
 html#file_upload_iframe,
 html#file_upload_iframe body {
-	background: #ecf1f4;
+	background:			#ecf1f4;
 }
 
 html#file_upload_iframe body {
-	min-width: 0;
+	min-width:			0;
 }
 
 html#file_upload_iframe #upload_dir {
-	display: block;
-	width: auto;
+	display:			block;
+	width:				auto;
 }
 
 html#file_upload_iframe p {
-	margin: 11px 0;
+	margin:				11px 0;
 }
 
 /* @end */

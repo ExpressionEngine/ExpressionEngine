@@ -714,7 +714,16 @@ class Content_files extends CI_Controller {
 		// 	}
 		// }
 		
+		
+		$thumb_info = $this->filemanager->get_thumb($upload_response, $file_dir);
+		$upload_response['thumb'] = $thumb_info['thumb'];
+		$upload_response['thumb_class'] = $thumb_info['thumb_class'];
+		
+		// Copying file_name to name for addons
+		$upload_response['name'] = $upload_response['file_name'];
+		
 		$vars = array(
+			'file'		=> $this->javascript->generate_json($upload_response, TRUE),
 			'success'	=> lang('upload_success'),
 			'file_data'	=> $upload_response,
 			'date'		=> date('M d Y - H:ia')
@@ -727,11 +736,13 @@ class Content_files extends CI_Controller {
 	
 	public function upload_inner()
 	{
+		$selected_directory_id = ($this->input->get('directory_id')) ? $this->input->get('directory_id') : '';
 		
 		$this->load->model('file_upload_preferences_model');
 		
 		$vars = array(
-			'upload_directories' => $this->file_upload_preferences_model->get_dropdown_array($this->session->userdata('group_id'))
+			'upload_directories' => $this->file_upload_preferences_model->get_dropdown_array($this->session->userdata('group_id')),
+			'selected_directory_id' => $selected_directory_id
 		);
 		
 		$this->load->view('_shared/file/upload_inner', $vars);

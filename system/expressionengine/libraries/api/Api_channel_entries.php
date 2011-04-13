@@ -619,7 +619,7 @@ class Api_channel_entries extends Api {
 		$this->EE->api_channel_fields->get_module_methods($methods, $params);
 		
 		// Clear caches
-		$this->EE->functions->clear_caching('all');
+		$this->EE->functions->clear_caching('all', '', TRUE);
 
 		// -------------------------------------------
 		// 'delete_entries_end' hook.
