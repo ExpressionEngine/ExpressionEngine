@@ -719,6 +719,9 @@ class Content_files extends CI_Controller {
 		$upload_response['thumb'] = $thumb_info['thumb'];
 		$upload_response['thumb_class'] = $thumb_info['thumb_class'];
 		
+		// Copying file_name to name for addons
+		$upload_response['name'] = $upload_response['file_name'];
+		
 		$vars = array(
 			'file'		=> $this->javascript->generate_json($upload_response, TRUE),
 			'success'	=> lang('upload_success'),

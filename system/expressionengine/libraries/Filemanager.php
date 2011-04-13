@@ -1327,6 +1327,9 @@ class Filemanager {
 			$file['file_size'] = byte_format($file['file_size']);
 			$file['date'] = date('F j, Y g:i a', $file['modified_date']);
 			
+			// Copying file_name to name for addons
+			$file['name'] = $file['file_name'];
+			
 			$thumb_info = $this->get_thumb($file, $dir['id']);
 			$file['thumb'] = $thumb_info['thumb'];
 			$file['thumb_class'] = $thumb_info['thumb_class'];
