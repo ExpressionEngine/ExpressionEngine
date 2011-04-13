@@ -1403,13 +1403,20 @@ class Content_files extends CI_Controller {
 		$this->filemanager->set_upload_dir_prefs($id, $dir_data);
 		$this->filemanager->xss_clean_off();
 
+		
+		// Now for everything NOT forcably replaced
+		
+		$missing_only_sizes = (is_array($sizes[$id])) ? $sizes[$id] : array();
+
 		// Check for resize_ids
 		$resize_ids = $this->input->post('resize_ids');
+
 		if (is_array($resize_ids))
 		{
 			foreach ($resize_ids as $resize_id)
 			{
 				$replace_sizes[$resize_id] = $sizes[$id][$resize_id];
+				unset($missing_only_sizes[$id][$resize_id]);
 			}
 		}
 
@@ -1437,7 +1444,12 @@ class Content_files extends CI_Controller {
 
 			if ($query->num_rows() > 0)
 			{
-				// It exists, but do we need to change sizes?
+				// It exists, but do we need to change sizes or add a missing thumb?
+				
+				if ( ! $this->filemanager->is_editable_image($this->_upload_dirs[$id]['server_path'].$file['name'], $file['mime']))
+				{
+					continue;
+				}	
 				
 				// Note 'Regular' batch needs to check if file exists- and then do something if so
 				if ( ! empty($replace_sizes))
@@ -1449,8 +1461,10 @@ class Content_files extends CI_Controller {
 						array(
 							'server_path'	=> $this->_upload_dirs[$id]['server_path'],
 							'file_name'		=> $file['name'],
-							'dimensions'	=> $sizes[$id]
-						)
+							'dimensions'	=> $replace_sizes,
+							'mime_type'		=> $file['mime']
+						),
+						FALSE
 					);
 					
 					if ( ! $thumb_created)
@@ -1459,6 +1473,22 @@ class Content_files extends CI_Controller {
 					}
 				}
 
+				// Now for anything that wasn't forcably replaced- we make sure an image exists
+				$thumb_created = $this->filemanager->create_thumb(
+						$this->_upload_dirs[$id]['server_path'].$file['name'],
+						array(
+							'server_path'	=> $this->_upload_dirs[$id]['server_path'],
+							'file_name'		=> $file['name'],
+							'dimensions'	=> $missing_only_sizes,
+							'mime_type'		=> $file['mime']
+						),
+						TRUE,
+						TRUE
+				);					
+									
+				
+				
+				
 				continue;
 			}
 			
@@ -1496,7 +1526,6 @@ class Content_files extends CI_Controller {
 		if ($db_sync == 'y')
 		{
 			$this->filemanager->sync_database($id);
-			$errors[] = 'synced!';
 		}
 		
 		if (AJAX_REQUEST)

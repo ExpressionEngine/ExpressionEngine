@@ -103,13 +103,6 @@ if ($EE_view_disable !== TRUE)
 								'resize'	=> lang('resize_image')
 							);
 				
-				$this->table->add_row(array(
-						form_label(lang('max_image_action'), 'max_image_action'),
-						form_dropdown('max_image_action', $options, $max_image_action)
-					)
-				);
-
-
 				
 				foreach ($upload_pref_fields2 as $field)
 				{

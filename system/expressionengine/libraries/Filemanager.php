@@ -322,7 +322,7 @@ class Filemanager {
 	{	
 		if (function_exists('getimagesize'))
 		{
-			$D = @getimagesize($this->file_temp);
+			$D = @getimagesize($file_path);
 
 			$image_size = array(
 				'height'	=> $D['1'],
@@ -853,29 +853,60 @@ class Filemanager {
 	 * @param	array	file and directory information
 	 * @return	bool	success / failure
 	 */
-	function create_thumb($file_path, $prefs, $thumb = TRUE)
+	function create_thumb($file_path, $prefs, $thumb = TRUE, $missing_only = FALSE)
 	{
 		$this->EE->load->library('image_lib');
 		
 		$img_path = rtrim($prefs['server_path'], '/').'/';
 		$source = $file_path;
 		
+		if ( ! isset($prefs['mime_type']))
+		{
+			// Figure out the mime type
+			$prefs['mime_type'] = get_mime_by_extension($file_path);	
+		
+		}
+		
+		if ( ! $this->is_editable_image($file_path, $prefs['mime_type']))
+		{
+			return FALSE;
+		}		
+		
 		$dimensions = $prefs['dimensions'];
 		
-		$dimensions[0] = array(
-			'short_name'	=> 'thumb',
-			'width'			=> 73,
-			'height'		=> 60,
-			'watermark_id'	=> 0
-			);
+		if ($thumb)
+		{
+			$dimensions[0] = array(
+				'short_name'	=> 'thumb',
+				'width'			=> 73,
+				'height'		=> 60,
+				'watermark_id'	=> 0
+				);
+		}
 			
 		$protocol = $this->EE->config->item('image_resize_protocol');
 		$lib_path = $this->EE->config->item('image_library_path');
 		
+		// Make sure height and width are set
+		if ( ! isset($prefs['height']) OR ! isset($prefs['width']))
+		{
+			$dim = $this->get_image_dimensions($file_path);
+
+			if ($dim == FALSE)
+			{
+				return FALSE;
+			}
+
+			$prefs['height'] = $dim['height'];
+			$prefs['width'] = $dim['width'];
+		}
+		
 		foreach ($dimensions as $size_id => $size)
 		{
+			$this->EE->image_lib->clear();
+			
 			// In the event that the size doesn't have a valid height or width, move on
-			if ($size['width'] <= 0 OR $size['height'] <= 0)
+			if ($size['width'] <= 0 && $size['height'] <= 0)
 			{
 				continue;
 			}
@@ -903,6 +934,11 @@ class Filemanager {
 			// Does the thumb image exist - nuke it!
 			if (file_exists($resized_path.$prefs['file_name']))
 			{
+				if ($missing_only)
+				{
+					continue;
+				}
+				
 				@unlink($resized_path.$prefs['file_name']);
 			}		
 
@@ -916,32 +952,15 @@ class Filemanager {
 			$config['width']			= $size['width'];
 			$config['height']			= $size['height'];
 
-			$this->EE->image_lib->initialize($config);
-
 			// crop based on resize type - does anyone really crop sight unseen????
 			if (isset($size['resize_type']) AND $size['resize_type'] == 'crop')
 			{
-				// Make sure height and width are set
-				if ( ! isset($prefs['height']) OR ! isset($prefs['width']))
-				{
-					$dim = $this->get_image_dimensions($file_path);
-
-					if ($dim == FALSE)
-					{
-						return FALSE;
-					}
-
-					$prefs['height'] = $dim['height'];
-					$prefs['width'] = $dim['width'];
-				}
-				
 				// This may need to change if we let them manuall set crop
 				// For now, let's crop from center for Wes
 
 				$config['x_axis'] = (($prefs['width'] / 2) + ($config['width'] / 2));
 				$config['y_axis'] = (($prefs['height'] / 2) + ($config['height'] / 2));
 
-				
 				$this->EE->image_lib->initialize($config);
 
 				if ( ! @$this->EE->image_lib->crop())
@@ -951,9 +970,24 @@ class Filemanager {
 			}
 			else
 			{
+				if ($config['width'] == '' OR $config['width'] == 0)
+				{
+					$config['width'] = ($prefs['width']/$prefs['height'])*$config['height'];
+					
+					
+					$config['master_dim'] = 'height';
+				}
+				elseif ($config['height'] == '' OR $config['height'] == 0)
+				{
+					// Old h/old w * new width
+					$config['height'] = ($prefs['height']/$prefs['width'])*$config['width'];
+					$config['master_dim'] = 'width';
+					
+				}
+
 				$this->EE->image_lib->initialize($config);
 				
-				if ( ! @$this->EE->image_lib->resize())
+				if ( ! $this->EE->image_lib->resize())
 				{
 					return FALSE;
 				}
