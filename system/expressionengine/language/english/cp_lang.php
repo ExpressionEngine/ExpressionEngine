@@ -96,8 +96,8 @@ $lang = array(
 	'nav_category_management_short_desc'	=> 'Create, edit, and delete Categories',
 	'nav_field_group_management'			=> 'Custom Fields',
 	'nav_field_group_management_short_desc'	=> 'Create, edit, and delete Custom Fields',
-	'nav_status_group_management'		=> 'Custom Status Groups',
-	'nav_status_group_management_short_desc'	=> 'Create, edit, and delete  Custom Status Groups',
+	'nav_status_group_management'		=> 'Statuses',
+	'nav_status_group_management_short_desc'	=> 'Create, edit, and delete Statuses',
 	'nav_global_channel_preferences'	=> 'Global Preferences',
 	'nav_global_channel_preferences_short_desc'	=> 'Manage Global Channel Preferences',
 

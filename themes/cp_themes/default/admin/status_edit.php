@@ -21,14 +21,9 @@ if ($EE_view_disable !== TRUE)
 			<?=form_label(lang('status_name'), 'status')?>
 			<?php
 				// open and closed names not editable
-				if ($status == 'open' OR $status == 'closed'):
-					echo lang($status);
-				else:
+				$disabled = ($status == 'open' OR $status == 'closed') ? 'disabled' : '';
 			?>
-					<?=form_input(array('id'=>'status','name'=>'status','class'=>'field','value'=>$status))?>
-			<?php
-				endif;
-			?>
+			<?=form_input(array('id'=>'status','name'=>'status','class'=>'field','value'=>$status), '', $disabled)?>
 		</p>
 
 		<p>

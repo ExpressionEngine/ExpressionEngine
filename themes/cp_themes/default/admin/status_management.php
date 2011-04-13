@@ -21,9 +21,9 @@ if ($EE_view_disable !== TRUE)
 		<?php
 			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
-										lang('status_group'),
-										'',
-										''
+										lang('status'),
+										lang('edit_status'),
+										lang('delete_status')
 									);
 									
 			if ($statuses->num_rows() > 0)
