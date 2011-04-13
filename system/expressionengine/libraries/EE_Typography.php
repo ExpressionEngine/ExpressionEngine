@@ -625,6 +625,8 @@ class EE_Typography extends CI_Typography {
 		if (strpos($str, '[url') !== FALSE)
 		{
 			$str = preg_replace("/(\[url[^\]]*?\])http/is", '${1}'.$this->http_hidden, str_replace('[url=http', '[url='.$this->http_hidden, $str));
+			
+			$str = preg_replace("/(\[url[^\]]*?\])http/is", '${1}'.$this->http_hidden, str_replace('[url=http', '[url='.$this->http_hidden, $str));
 		}
 		
 		// New version.  Blame Paul if it doesn't work
@@ -632,7 +634,7 @@ class EE_Typography extends CI_Typography {
 		// This way we can make sure it is not [url=http://site.com]http://site.com[/url]
 		if (strpos($str, 'http') !== FALSE)
 		{
-			$str = preg_replace_callback("#(^|\s|\(|..\])((http(s?)://)|(www\.))(\w+[^\s\)\<\[]+)#im", array(&$this, 'auto_linker_callback'), $str);
+			$str = preg_replace_callback("#(^|\s|\(|..\])((http(s?)://)|(www\.))(\w+[^\s\)\<\[]+)(.{0,6})#im", array(&$this, 'auto_linker_callback'), $str);
 		}
 		
 		// Auto link email
@@ -668,9 +670,9 @@ class EE_Typography extends CI_Typography {
 	public function auto_linker_callback($matches)
 	{
 		//  If it is in BBCode, then we do not auto link
-		if (strtolower($matches['1']) == 'mg]' OR 
-			strtolower($matches['1']) == 'rl]' OR
-			strtolower(substr(trim($matches[6]), 0, 6)) == '[/url]'
+		if (strtolower($matches[1]) == 'mg]' OR 
+			strtolower($matches[1]) == 'rl]' OR
+			strtolower($matches[7]) == '[/url]'
 			)
 		{
 			return $matches['0'];
