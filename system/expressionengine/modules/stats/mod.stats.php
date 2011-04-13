@@ -144,7 +144,7 @@ class Stats {
 
 		$names = '';
 
-		if ($this->EE->stats->statdata('current_names') AND count($this->EE->stats->statdata('current_names') > 0))
+		if ($this->EE->stats->statdata('current_names'))
 		{
 			$chunk = $this->EE->TMPL->fetch_data_between_var_pairs($this->EE->TMPL->tagdata, 
 																	'member_names');	  
