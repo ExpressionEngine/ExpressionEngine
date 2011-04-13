@@ -610,9 +610,9 @@ class EE_Typography extends CI_Typography {
 		$str .= ' ';
 		
 		// We don't want any links that appear in the control panel 
-		// (in channel entries, comments, etc.)  to point directly at URLs.  
-		// Why?  Becuase the control panel URL will end up in people's referrer 
-		// logs, This would be a bad thing.  So, we'll point all links to the 
+		// (in channel entries, comments, etc.) to point directly at URLs.
+		// Why? Becuase the control panel URL will end up in people's referrer 
+		// logs, this would be a bad thing. So, we'll point all links to the 
 		// "bounce server"
 		
 		if ((REQ == 'CP' && $this->EE->input->get('M') != 'send_email') OR
@@ -629,9 +629,14 @@ class EE_Typography extends CI_Typography {
 			$str = preg_replace("/(\[url[^\]]*?\])http/is", '${1}'.$this->http_hidden, str_replace('[url=http', '[url='.$this->http_hidden, $str));
 		}
 		
-		// New version.  Blame Paul if it doesn't work
-		// The parentheses on the end attempt to call any content after the URL. 
+		// New version. Blame Paul if it doesn't work
+		// The parentheses on the end attempt to call any content after the URL.
 		// This way we can make sure it is not [url=http://site.com]http://site.com[/url]
+		
+		// Edit: Added a check for the trailing 6 characters for an edgecase
+		// where the inner url was valid, but did not exactly match the other:
+		// [url=http://www.iblamepaul.com]www.iblamepaul.com[/url] ;) -pk
+		
 		if (strpos($str, 'http') !== FALSE)
 		{
 			$str = preg_replace_callback("#(^|\s|\(|..\])((http(s?)://)|(www\.))(\w+[^\s\)\<\[]+)(.{0,6})#im", array(&$this, 'auto_linker_callback'), $str);
