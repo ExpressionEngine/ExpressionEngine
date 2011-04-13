@@ -59,7 +59,7 @@ class File_ft extends EE_Fieldtype {
 			{
 			     return '{filedir_'.$directory.'}'.$data;
 			}
-			return $data;					
+			return $data;
 		}
 	}
 	

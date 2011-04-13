@@ -1055,6 +1055,8 @@ class Filemanager {
 	 * 
 	 * @param array $file Response from save_file, should be an associative array
 	 * 	and minimally needs to contain the file_name and the mime_type/file_type
+	 * 	Optionally, you can use the file name in the event you don't have the
+	 * 	full response from save_file
 	 * @param integer $directory_id The ID of the upload directory the file is in
 	 * @return string URL to the thumbnail
 	 */
@@ -1063,6 +1065,16 @@ class Filemanager {
 		$directory = $this->fetch_upload_dir_prefs($directory_id);
 		$thumb_info = array();
 		
+		// If the raw file name was passed in, figure out the mime_type
+		if ( ! is_array($file) OR ! isset($file['mime_type']))
+		{
+			$file = array_merge(
+				array('file_name' => $file),
+				$this->get_file_info($directory['server_path'].$file)
+			);
+		}
+		
+		// If it's an image, use it's thumbnail, otherwise use the default
 		if ($this->is_image($file['mime_type']))
 		{
 			$site_url = str_replace('index.php', '', $this->EE->config->site_url());
@@ -1450,7 +1462,7 @@ class Filemanager {
 		{
 			$field_id = str_replace('field_id_', '', $field_name);
 
-			$this->EE->db->select('field_type, settings');
+			$this->EE->db->select('field_type, field_settings');
 			$type_query = $this->EE->db->get_where('channel_fields', array('field_id' => $field_id));
 
 			if ($type_query->num_rows())
