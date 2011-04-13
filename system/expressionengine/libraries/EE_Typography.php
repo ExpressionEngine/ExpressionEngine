@@ -697,6 +697,7 @@ class EE_Typography extends CI_Typography {
 				$matches['4'].'://'.
 				$matches['5'].
 				$matches['6'].'[/url]'.
+				$matches['7'].
 				$end;
 	}
 
