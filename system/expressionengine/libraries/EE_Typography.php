@@ -638,6 +638,13 @@ class EE_Typography extends CI_Typography {
 		// Auto link email
 		if (strpos($str, '@') !== FALSE)
 		{
+			// special treatment if it's in a mailto link
+			if (strpos($str, 'mailto:') !== FALSE)
+			{
+				$email_no_captures = '[a-zA-Z0-9_\.\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-\.]*';
+				$str = preg_replace('/<a\s+[^<>]*?href=(\042|\047)mailto:('.$email_no_captures.')\\1[^<>]*?>([^<]*)<\/a>/i', '[email=\\2]\\3[/email]', $str);
+			}
+
 			$str = preg_replace("/(^|\s|\(|\>)([a-zA-Z0-9_\.\-]+)@([a-zA-Z0-9\-]+)\.([a-zA-Z0-9\-\.]*)/i", "\\1[email]\\2@\\3.\\4[/email]", $str);
 		}
 		
