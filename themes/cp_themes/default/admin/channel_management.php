@@ -21,12 +21,12 @@ if ($EE_view_disable !== TRUE)
 			<?php
 				$this->table->set_template($cp_pad_table_template);
 				$this->table->set_heading(
-											array('data' => lang('channel_id'), 'width' => '4%'),
+											array('data' => lang('id'), 'width' => '4%'),
 											lang('channel_name'),
 											lang('channel_short_name'),
-											lang('edit_preferences'),
-											lang('edit_groups'),
-											lang('delete')
+											'',
+											'',
+											''
 										);
 										
 				foreach ($channel_data->result() as $channel)
@@ -37,7 +37,7 @@ if ($EE_view_disable !== TRUE)
 											$channel->channel_name,
 											'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=channel_edit'.AMP.'channel_id='.$channel->channel_id.'">'.lang('edit_preferences').'</a>',
 											'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=channel_edit_group_assignments'.AMP.'channel_id='.$channel->channel_id.'">'.lang('edit_groups').'</a>',
-											'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=channel_delete_confirm'.AMP.'channel_id='.$channel->channel_id.'" title="'.lang('delete').'"><img src="'.$cp_theme_url.'images/icon-delete.png" alt="'.lang('delete').'" width="10" height="13" /></a>'
+											'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=channel_delete_confirm'.AMP.'channel_id='.$channel->channel_id.'">'.lang('delete').'</a>'
 										);
 				}
 
