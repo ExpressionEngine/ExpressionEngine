@@ -301,10 +301,11 @@ class Safecracker_file_ft extends File_ft
 	public function save_settings()
 	{
 		return array(
-			'file_field_content_type' => $this->EE->input->post('safecracker_file_field_content_type'),
-			'safecracker_upload_dir' => $this->EE->input->post('safecracker_upload_dir'),
+			'field_fmt'                 => 'none',
+			'file_field_content_type'   => $this->EE->input->post('safecracker_file_field_content_type'),
+			'safecracker_upload_dir'    => $this->EE->input->post('safecracker_upload_dir'),
 			'safecracker_show_existing' => $this->EE->input->post('safecracker_show_existing'),
-			'safecracker_num_existing' => $this->EE->input->post('safecracker_num_existing'),
+			'safecracker_num_existing'  => $this->EE->input->post('safecracker_num_existing'),
 		);
 	}
 	

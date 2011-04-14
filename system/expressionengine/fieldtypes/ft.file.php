@@ -327,7 +327,8 @@ class File_ft extends EE_Fieldtype {
 	function save_settings($data)
 	{		
 		return array(
-			'field_content_type'	=> $this->EE->input->post('field_content_type')
+			'field_content_type'	=> $this->EE->input->post('field_content_type'),
+			'field_fmt' 			=> 'none'
 		);
 	}	
 }
