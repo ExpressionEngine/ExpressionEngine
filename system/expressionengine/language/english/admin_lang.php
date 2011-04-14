@@ -1311,8 +1311,8 @@ $lang = array(
 "channel_administration" => 
 "Channel Administration",
 
-"channel_management" => 
-"Channel Management",
+"channels" => 
+"Channels",
 
 "field_management" => 
 "Custom Channel Fields",

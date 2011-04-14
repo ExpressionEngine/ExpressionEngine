@@ -152,6 +152,9 @@ $lang = array(
 'alpha' =>
 'Alphabetical',
 
+'id' =>
+'ID',
+
 'channel_id' =>
 'ID',
 

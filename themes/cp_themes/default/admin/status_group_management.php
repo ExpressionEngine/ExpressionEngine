@@ -23,9 +23,9 @@ if ($EE_view_disable !== TRUE)
 			$this->table->set_heading(
 										lang('ID'),
 										lang('status_group'),
-										lang('add_edit_statuses'),
-										lang('edit_status_group'),
-										lang('delete_status_group')
+										'',
+										'',
+										''
 									);
 									
 			if ($status_groups->num_rows() > 0)
@@ -37,7 +37,7 @@ if ($EE_view_disable !== TRUE)
 						'<strong>'.$status->group_name.'</strong>',
 						'('.$status->count.') <a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_management'.AMP.'group_id='.$status->group_id.'">'. lang('add_edit_statuses').'</a>', // $todo, replace 'X' with count
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_group_edit'.AMP.'group_id='.$status->group_id.'">'.lang('edit_status_group_name').'</a>',
-						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_group_delete_confirm'.AMP.'group_id='.$status->group_id.'">'.lang('delete_status_group').'</a>'
+						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_group_delete_confirm'.AMP.'group_id='.$status->group_id.'">'.lang('delete').'</a>'
 					);
 				}
 			}
