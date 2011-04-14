@@ -714,7 +714,7 @@ class EE_Schema {
 			 field_fmt varchar(40) NOT NULL default 'xhtml',
 			 field_show_fmt char(1) NOT NULL default 'y',
 			 field_order int(3) unsigned NOT NULL,
--			 field_content_type varchar(20) NOT NULL default 'any',			
+			 field_content_type varchar(20) NOT NULL default 'any',
 			 field_settings text NULL,
 			 PRIMARY KEY `field_id` (`field_id`),
 			 KEY `group_id` (`group_id`),
