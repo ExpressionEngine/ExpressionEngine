@@ -24,9 +24,9 @@ if ($EE_view_disable !== TRUE)
 			$this->table->set_heading(
 										lang('ID'),
 										lang('category_group'),
-										lang('add_edit_categories'),
-										lang('edit_category_group'),
-										lang('manage_custom_fields'),
+										'',
+										'',
+										'',
 										''
 									);
 									
@@ -40,7 +40,7 @@ if ($EE_view_disable !== TRUE)
 						'('.$group['category_count'].') <a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$group['group_id'].'">'. lang('add_edit_categories').'</a>',
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=edit_category_group'.AMP.'group_id='.$group['group_id'].'">'.lang('edit_category_group').'</a>',
 						'('.$group['custom_field_count'].') <a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_custom_field_group_manager'.AMP.'group_id='.$group['group_id'].'">'. lang('manage_custom_fields').'</a>',
-						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_group_delete_conf'.AMP.'group_id='.$group['group_id'].'">'.lang('delete_group').'</a>'
+						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_group_delete_conf'.AMP.'group_id='.$group['group_id'].'">'.lang('delete').'</a>'
 					);
 				}
 			}

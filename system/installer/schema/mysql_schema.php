@@ -714,6 +714,7 @@ class EE_Schema {
 			 field_fmt varchar(40) NOT NULL default 'xhtml',
 			 field_show_fmt char(1) NOT NULL default 'y',
 			 field_order int(3) unsigned NOT NULL,
+-			 field_content_type varchar(20) NOT NULL default 'any',			
 			 field_settings text NULL,
 			 PRIMARY KEY `field_id` (`field_id`),
 			 KEY `group_id` (`group_id`),
@@ -805,6 +806,7 @@ class EE_Schema {
 			 site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			 group_name varchar(50) NOT NULL,
 			 sort_order char(1) NOT NULL default 'a',
+			 exclude_group TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 			 `field_html_formatting` char(4) NOT NULL default 'all',
 			 `can_edit_categories` TEXT NULL,
 			 `can_delete_categories` TEXT NULL,
@@ -1075,6 +1077,7 @@ class EE_Schema {
 			 file_properties varchar(120) NULL DEFAULT NULL,
 			 file_pre_format varchar(120) NULL DEFAULT NULL,
 			 file_post_format varchar(120) NULL DEFAULT NULL,
+			 cat_group varchar(255) NULL DEFAULT NULL,
 			 batch_location varchar(255) NULL DEFAULT NULL,
 			 PRIMARY KEY `id` (`id`),
 			 KEY `site_id` (`site_id`)
