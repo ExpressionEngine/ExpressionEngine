@@ -1,3 +1,51 @@
+/*
+ * jQuery Cryptography Plug-in
+ * version: 1.0.0 (24 Sep 2008)
+ * copyright 2008 Scott Thompson http://www.itsyndicate.ca - scott@itsyndicate.ca
+ * http://www.opensource.org/licenses/mit-license.php
+ *
+ * A set of functions to do some basic cryptography encoding/decoding
+ * I compiled from some javascripts I found into a jQuery plug-in. 
+ * Thanks go out to the original authors.
+ *
+ * Changelog: 1.1.0
+ * - rewrote plugin to use only one item in the namespace 
+ * 
+ * --- Base64 Encoding and Decoding code was written by 
+ *   
+ * Base64 code from Tyler Akins -- http://rumkin.com
+ * and is placed in the public domain
+ *
+ *
+ * --- MD5 and SHA1 Functions based upon Paul Johnston's javascript libraries.
+ * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
+ * Digest Algorithm, as defined in RFC 1321.
+ * Version 2.1 Copyright (C) Paul Johnston 1999 - 2002.
+ * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+ * Distributed under the BSD License
+ * See http://pajhome.org.uk/crypt/md5 for more info.
+ *
+ * xTea Encrypt and Decrypt 
+ * copyright 2000-2005 Chris Veness
+ * http://www.movable-type.co.uk
+ *
+ *
+ * Examples:
+ *
+        var md5 = $().crypt({method:"md5",source:$("#phrase").val()});
+        var sha1 = $().crypt({method:"sha1",source:$("#phrase").val()});
+        var b64 = $().crypt({method:"b64enc",source:$("#phrase").val()});
+        var b64dec = $().crypt({method:"b64dec",source:b64});
+        var xtea = $().crypt({method:"xteaenc",source:$("#phrase").val(),keyPass:$("#passPhrase").val()});
+        var xteadec = $().crypt({method:"xteadec",source:xtea,keyPass:$("#passPhrase").val()});
+        var xteab64 = $().crypt({method:"xteab64enc",source:$("#phrase").val(),keyPass:$("#passPhrase").val()});
+        var xteab64dec = $().crypt({method:"xteab64dec",source:xteab64,keyPass:$("#passPhrase").val()});
+
+	You can also pass source this way.
+	var md5 = $("#idOfSource").crypt({method:"md5"});
+ * 
+ */
+
 (function(s){s.fn.crypt=function(m){function w(g){var i="",h,l,j,a,k,c,b=0;do{h=g.source.charCodeAt(b++);l=g.source.charCodeAt(b++);j=g.source.charCodeAt(b++);a=h>>2;h=(h&3)<<4|l>>4;k=(l&15)<<2|j>>6;c=j&63;if(isNaN(l))k=c=64;else if(isNaN(j))c=64;i+=g.b64Str.charAt(a)+g.b64Str.charAt(h)+g.b64Str.charAt(k)+g.b64Str.charAt(c)}while(b<g.source.length);return i}function x(g){var i="",h,l,j,a,k,c=0;g.source=g.source.replace(/[^A-Za-z0-9!_-]/g,"");do{h=g.b64Str.indexOf(g.source.charAt(c++));l=g.b64Str.indexOf(g.source.charAt(c++));
 a=g.b64Str.indexOf(g.source.charAt(c++));k=g.b64Str.indexOf(g.source.charAt(c++));h=h<<2|l>>4;l=(l&15)<<4|a>>2;j=(a&3)<<6|k;i+=String.fromCharCode(h);if(a!=64)i+=String.fromCharCode(l);if(k!=64)i+=String.fromCharCode(j)}while(c<g.source.length);return i}function A(g){function i(a,k,c,b,d,e){a=o(o(k,a),o(b,e));return o(a<<d|a>>>32-d,c)}function h(a,k,c,b,d,e,f){return i(k&c|~k&b,a,k,d,e,f)}function l(a,k,c,b,d,e,f){return i(k&b|c&~b,a,k,d,e,f)}function j(a,k,c,b,d,e,f){return i(c^(k|~b),a,k,d,e,f)}
 return function(a){for(var k=g.hexcase?"0123456789ABCDEF":"0123456789abcdef",c="",b=0;b<a.length*4;b++)c+=k.charAt(a[b>>2]>>b%4*8+4&15)+k.charAt(a[b>>2]>>b%4*8&15);return c}(function(a,k){a[k>>5]|=128<<k%32;a[(k+64>>>9<<4)+14]=k;for(var c=1732584193,b=-271733879,d=-1732584194,e=271733878,f=0;f<a.length;f+=16){var t=c,u=b,v=d,n=e;c=h(c,b,d,e,a[f+0],7,-680876936);e=h(e,c,b,d,a[f+1],12,-389564586);d=h(d,e,c,b,a[f+2],17,606105819);b=h(b,d,e,c,a[f+3],22,-1044525330);c=h(c,b,d,e,a[f+4],7,-176418897);e=
