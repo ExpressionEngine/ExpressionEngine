@@ -1102,9 +1102,11 @@ class Filemanager {
 		// If the raw file name was passed in, figure out the mime_type
 		if ( ! is_array($file) OR ! isset($file['mime_type']))
 		{
-			$file = array_merge(
-				array('file_name' => $file),
-				$this->get_file_info($directory['server_path'].$file)
+			$this->EE->load->helper('file');
+			
+			$file = array(
+				'file_name' => $file,
+				'mime_type' => get_mime_by_extension($file)
 			);
 		}
 		
