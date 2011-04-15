@@ -15,8 +15,6 @@ if ($EE_view_disable !== TRUE)
 		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
 		<div class="pageContents">
 
-			<h3><?=lang('field_group').': '.$group_name?></h3>
-
 		<?php $this->load->view('_shared/message');?>
 
 		<?php

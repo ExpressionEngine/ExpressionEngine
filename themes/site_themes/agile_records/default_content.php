@@ -102,6 +102,21 @@ $Q[] = "INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, 
 
 chmod($this->theme_path."agile_records/images/uploads/", DIR_WRITE_MODE);
 
+// Add files
+
+$Q[] = "INSERT INTO `exp_files` VALUES
+(1, 1, 'staff_chloe.png', 2, 'staff_chloe.png', 'o', 'image/png', 'staff_chloe.png', 50262, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302718235, 1, 1302718235), 
+(2, 1, 'ee_banner_120_240.gif', 2, 'ee_banner_120_240.gif', 'o', 'image/gif', 'ee_banner_120_240.gif', 9257, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302718235, 1, 1302718235), 
+(3, 1, 'staff_howard.png', 2, 'staff_howard.png', 'o', 'image/png', 'staff_howard.png', 51488, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302718235, 1, 1302718235), 
+(4, 1, 'map.jpg', 2, 'map.jpg', 'o', 'image/jpeg', 'map.jpg', 71299, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302718235, 1, 1302718235), 
+(5, 1, 'staff_jane.png', 2, 'staff_jane.png', 'o', 'image/png', 'staff_jane.png', 51612, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302718235, 1, 1302718235), 
+(6, 1, 'map2.jpg', 2, 'map2.jpg', 'o', 'image/jpeg', 'map2.jpg', 49175, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302718235, 1, 1302718235), 
+(7, 1, 'staff_jason.png', 2, 'staff_jason.png', 'o', 'image/png', 'staff_jason.png', 51430, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302718235, 1, 1302718235), 
+(8, 1, 'staff_josh.png', 2, 'staff_josh.png', 'o', 'image/png', 'staff_josh.png', 50638, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302718235, 1, 1302718235), 
+(9, 1, 'staff_randell.png', 2, 'staff_randell.png', 'o', 'image/png', 'staff_randell.png', 51681, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302718235, 1, 1302718235), 
+(10, 1, 'testband300.jpg', 2, 'testband300.jpg', 'o', 'image/jpeg', 'testband300.jpg', 23986, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302718235, 1, 1302718235)";
+
+
 foreach ($Q as $sql)
 {
 	$this->db->query($sql);

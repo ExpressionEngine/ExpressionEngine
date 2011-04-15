@@ -714,6 +714,7 @@ class EE_Schema {
 			 field_fmt varchar(40) NOT NULL default 'xhtml',
 			 field_show_fmt char(1) NOT NULL default 'y',
 			 field_order int(3) unsigned NOT NULL,
+			 field_content_type varchar(20) NOT NULL default 'any',
 			 field_settings text NULL,
 			 PRIMARY KEY `field_id` (`field_id`),
 			 KEY `group_id` (`group_id`),
@@ -805,6 +806,7 @@ class EE_Schema {
 			 site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			 group_name varchar(50) NOT NULL,
 			 sort_order char(1) NOT NULL default 'a',
+			 exclude_group TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 			 `field_html_formatting` char(4) NOT NULL default 'all',
 			 `can_edit_categories` TEXT NULL,
 			 `can_delete_categories` TEXT NULL,
@@ -1075,6 +1077,7 @@ class EE_Schema {
 			 file_properties varchar(120) NULL DEFAULT NULL,
 			 file_pre_format varchar(120) NULL DEFAULT NULL,
 			 file_post_format varchar(120) NULL DEFAULT NULL,
+			 cat_group varchar(255) NULL DEFAULT NULL,
 			 batch_location varchar(255) NULL DEFAULT NULL,
 			 PRIMARY KEY `id` (`id`),
 			 KEY `site_id` (`site_id`)
@@ -1217,6 +1220,89 @@ class EE_Schema {
         		PRIMARY KEY `fieldtype_id` (`fieldtype_id`)
 		)";
 
+
+		// Files table
+		$Q[] = "CREATE TABLE `exp_files` (
+  				`file_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				`site_id` int(4) unsigned DEFAULT '1',
+				`title` varchar(255) DEFAULT NULL,
+				`upload_location_id` int(4) unsigned DEFAULT '0',
+				`rel_path` varchar(255) DEFAULT NULL,
+				`status` char(1) DEFAULT 'o',
+				`mime_type` varchar(255) DEFAULT NULL,
+				`file_name` varchar(255) DEFAULT NULL,
+				`file_size` int(10) DEFAULT '0',
+				`field_1` text,
+  				`field_1_fmt` tinytext,
+				`field_2` text,
+				`field_2_fmt` tinytext,
+				`field_3` text,
+				`field_3_fmt` tinytext,
+				`field_4` text,
+				`field_4_fmt` tinytext,
+				`field_5` text,
+				`field_5_fmt` tinytext,
+				`field_6` text,
+				`field_6_fmt` tinytext,
+				`metadata` mediumtext,
+				`uploaded_by_member_id` int(10) unsigned DEFAULT '0',
+				`upload_date` int(10) DEFAULT NULL,
+				`modified_by_member_id` int(10) unsigned DEFAULT '0',
+				`modified_date` int(10) DEFAULT NULL,
+				PRIMARY KEY (`file_id`),
+				KEY `upload_location_id` (`upload_location_id`),
+				KEY `site_id` (`site_id`)
+		)";
+
+
+		$Q[] = "CREATE TABLE `exp_file_categories` (
+				`file_id` int(10) unsigned DEFAULT NULL,
+				`cat_id` int(10) unsigned DEFAULT NULL,
+				`sort` int(10) unsigned DEFAULT '0',
+				`is_cover` char(1) DEFAULT 'n',
+				KEY `file_id` (`file_id`),
+				KEY `cat_id` (`cat_id`)
+		)";
+		
+		$Q[] = "CREATE TABLE `exp_file_dimensions` (
+				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				`upload_location_id` int(4) unsigned DEFAULT NULL,
+  				`title` varchar(255) DEFAULT '',
+				`short_name` varchar(255) DEFAULT '',
+				`resize_type` varchar(50) DEFAULT '',
+				`width` int(10) DEFAULT '0',
+				`height` int(10) DEFAULT '0',
+				`watermark_id` int(4) unsigned DEFAULT NULL,
+				PRIMARY KEY (`id`),
+				KEY `upload_location_id` (`upload_location_id`)
+		)";
+
+
+		$Q[] = "CREATE TABLE `exp_file_watermarks` (
+				`wm_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
+				`wm_name` varchar(80) DEFAULT NULL,
+				`wm_type` char(1) DEFAULT 'n',
+				`wm_image_path` varchar(100) DEFAULT NULL,
+				`wm_test_image_path` varchar(100) DEFAULT NULL,
+				`wm_use_font` char(1) DEFAULT 'y',
+				`wm_font` varchar(30) DEFAULT NULL,
+				`wm_font_size` int(3) unsigned DEFAULT NULL,
+				`wm_text` varchar(100) DEFAULT NULL,
+				`wm_vrt_alignment` char(1) DEFAULT 'T',
+				`wm_hor_alignment` char(1) DEFAULT 'L',
+				`wm_padding` int(3) unsigned DEFAULT NULL,
+				`wm_opacity` int(3) unsigned DEFAULT NULL,
+				`wm_x_offset` int(4) unsigned DEFAULT NULL,
+				`wm_y_offset` int(4) unsigned DEFAULT NULL,
+				`wm_x_transp` int(4) DEFAULT NULL,
+				`wm_y_transp` int(4) DEFAULT NULL,
+				`wm_text_color` varchar(7) DEFAULT NULL,
+				`wm_use_drop_shadow` char(1) DEFAULT 'y',
+				`wm_shadow_distance` int(3) unsigned DEFAULT NULL,
+				`wm_shadow_color` varchar(7) DEFAULT NULL,
+				PRIMARY KEY (`wm_id`)
+		)";	
+		
 		// --------------------------------------------------------------------
 		// --------------------------------------------------------------------
 		//  Specialty Templates

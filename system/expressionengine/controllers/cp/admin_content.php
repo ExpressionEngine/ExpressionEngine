@@ -97,12 +97,19 @@ class Admin_content extends CI_Controller {
 
         $this->cp->set_right_nav(array('create_new_channel' => BASE.AMP.'C=admin_content'.AMP.'M=channel_add'));
 
+		$this->load->library('table');
 		$this->lang->loadfile('admin_content');
 		$this->load->model('channel_model');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('channel_management'));
+		$this->cp->set_variable('cp_page_title', $this->lang->line('channels'));
+
+		$this->jquery->tablesorter('.mainTable', '{
+			headers: {3: {sorter: false}, 4: {sorter: false}, 5: {sorter: false}},
+			widgets: ["zebra"]
+		}');
+
+		$this->javascript->compile();
 		
-		$this->load->library('table');
 
 		$vars['channel_data'] = $this->channel_model->get_channels();
 
@@ -400,8 +407,8 @@ class Admin_content extends CI_Controller {
 
 		$this->javascript->compile();
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('channel_prefs').' - '.$vars['channel_title']);
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', $this->lang->line('channel_management'));
+		$this->cp->set_variable('cp_page_title', $this->lang->line('channel_prefs').': '.$vars['channel_title']);
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', $this->lang->line('channels'));
 
 
 		$this->load->view('admin/channel_edit', $vars);
@@ -1100,7 +1107,7 @@ class Admin_content extends CI_Controller {
 		$this->load->model('field_model');
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('edit_group_assignments'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', $this->lang->line('channel_management'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', $this->lang->line('channels'));
 
 		$query = $this->channel_model->get_channel_info($channel_id);
 
@@ -1199,7 +1206,7 @@ class Admin_content extends CI_Controller {
 		$this->load->model('channel_model');
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('delete_channel'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', $this->lang->line('channel_management'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', $this->lang->line('channels'));
 
 		$vars['form_action'] = 'C=admin_content'.AMP.'M=channel_delete';
 		$vars['form_extra'] = '';
@@ -1314,7 +1321,7 @@ class Admin_content extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', $this->lang->line('categories'));
 
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {1: {sorter: false}, 2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}},
+			headers: {2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}, 5: {sorter: false}},
 			widgets: ["zebra"]
 		}');
 
@@ -3403,7 +3410,7 @@ class Admin_content extends CI_Controller {
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
 
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {1: {sorter: false}, 2: {sorter: false}, 3: {sorter: false}},
+			headers: {2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}},
 			widgets: ["zebra"]
 		}');
 
@@ -3716,12 +3723,12 @@ class Admin_content extends CI_Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->model('field_model');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('add_edit_fields'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=field_group_management', $this->lang->line('field_management'));
-
 		// Fetch the name of the category group
 		$query = $this->field_model->get_field_group($vars['group_id']);
 		$vars['group_name'] = $query->row('group_name');
+
+		$this->cp->set_variable('cp_page_title', lang('field_group').': '.$vars['group_name']);
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=field_group_management', $this->lang->line('field_management'));
 
 		$custom_fields = $this->field_model->get_fields($vars['group_id']);
 
@@ -3744,7 +3751,7 @@ class Admin_content extends CI_Controller {
 		}
 
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {3: {sorter: false}},
+			headers: {4: {sorter: false}},
 			widgets: ["zebra"]
 		}');
 
@@ -4679,11 +4686,11 @@ class Admin_content extends CI_Controller {
 		$this->load->model('status_model');
 		$this->lang->loadfile('admin_content');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('status_groups'));
+		$this->cp->set_variable('cp_page_title', $this->lang->line('statuses'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
 
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {1: {sorter: false}, 2: {sorter: false}, 3: {sorter: false}},
+			headers: {2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}},
 			widgets: ["zebra"]
 		}');
 
@@ -4719,7 +4726,7 @@ class Admin_content extends CI_Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->model('status_model');
 
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_group_management', $this->lang->line('status_management'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_group_management', $this->lang->line('statuses'));
 
 		// Set default values
 		$vars['group_id'] = '';
@@ -4788,7 +4795,7 @@ class Admin_content extends CI_Controller {
 		$this->load->model('status_model');
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('delete_group'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_management'.AMP.'group_id='.$group_id, $this->lang->line('status_management'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_management'.AMP.'group_id='.$group_id, $this->lang->line('statuses'));
 
 		$vars['form_action'] = 'C=admin_content'.AMP.'M=status_group_delete';
 		$vars['form_extra'] = '';
@@ -4972,7 +4979,7 @@ class Admin_content extends CI_Controller {
 		$group_name = $this->status_model->get_status_group($group_id);
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('status_group').':'.NBS.$group_name->row('group_name'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_group_management', $this->lang->line('status_management'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_group_management', $this->lang->line('statuses'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}},
@@ -5022,7 +5029,7 @@ class Admin_content extends CI_Controller {
 
 		$query = $this->status_model->get_status($status_id);
 
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_group_management', $this->lang->line('status_management'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_group_management', $this->lang->line('statuses'));
 
 		// Set default values
 		$vars['group_name'] = '';
@@ -5053,13 +5060,13 @@ class Admin_content extends CI_Controller {
 		{
 			$vars['submit_lang_key'] = 'submit';
 			$vars['form_hidden']['group_id'] = $this->input->get_post('group_id');
-			$this->cp->set_variable('cp_page_title', $this->lang->line('status_group'));
+			$this->cp->set_variable('cp_page_title', $this->lang->line('status'));
 		}
 		else
 		{
 			$vars['form_hidden']['group_id'] = $query->row('group_id');
 			$vars['submit_lang_key'] = 'update';
-			$this->cp->set_variable('cp_page_title', $this->lang->line('status_group').':'.NBS.$vars['status']);
+			$this->cp->set_variable('cp_page_title', $this->lang->line('status').':'.NBS.$vars['status']);
 		}
 
 		if ($this->session->userdata['group_id'] == 1)
@@ -5244,7 +5251,7 @@ class Admin_content extends CI_Controller {
 		$this->load->model('status_model');
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('delete_status'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_management', $this->lang->line('status_management'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_management', $this->lang->line('statuses'));
 
 		$vars['form_action'] = 'C=admin_content'.AMP.'M=status_delete';
 		$vars['form_extra'] = '';

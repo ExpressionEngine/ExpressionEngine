@@ -1091,7 +1091,7 @@ class Safecracker_lib
 		foreach ($this->custom_fields as $i => $field)
 		{
 			$isset = (isset($_POST['field_id_'.$field['field_id']]) || isset($_POST[$field['field_name']]) || (((isset($_FILES['field_id_'.$field['field_id']]) && $_FILES['field_id_'.$field['field_id']]['error'] != 4) || (isset($_FILES[$field['field_name']]) && $_FILES[$field['field_name']]['error'] != 4)) && in_array($field['field_type'], $this->file_fields)));
-
+			
 			$this->custom_fields[$i]['isset'] = $isset;
 			
 			if ( ! $this->edit || $isset)
@@ -1179,6 +1179,9 @@ class Safecracker_lib
 					{
 						$_FILES['field_id_'.$field['field_id'].'_'.$match[1]] = $value;
 					}
+					
+					// Remove the old item in the $_FILES array
+					unset($_FILES[$key]);
 				}
 			}
 		}

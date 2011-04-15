@@ -1311,8 +1311,8 @@ $lang = array(
 "channel_administration" => 
 "Channel Administration",
 
-"channel_management" => 
-"Channel Management",
+"channels" => 
+"Channels",
 
 "field_management" => 
 "Custom Channel Fields",
@@ -1321,7 +1321,7 @@ $lang = array(
 "File Upload Preferences",
 
 "categories" => 
-"Category Management",
+"Categories",
 
 'missing_required_fields' =>
 'You Are Missing Required Field(s):',
@@ -1329,17 +1329,17 @@ $lang = array(
 "default_ping_servers" => 
 "Default Ping Servers",
 
-"status_management" => 
-"Custom Entry Statuses",
+"statuses" => 
+"Statuses",
 
 "status_created" =>
-"Status has been Created",
+"Status created",
 
 "status_updated" =>
-"Status has been updated",
+"Status updated",
 
 "status_deleted" =>
-"Status has been deleted",
+"Status deleted",
 
 
 "taken_status_group_name" => 

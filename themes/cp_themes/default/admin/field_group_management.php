@@ -21,6 +21,7 @@ if ($EE_view_disable !== TRUE)
 		<?php
 			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
+										lang('id'),
 										lang('field_group'),
 										'',
 										'',
@@ -32,16 +33,17 @@ if ($EE_view_disable !== TRUE)
 				foreach ($field_groups->result() as $field)
 				{
 					$this->table->add_row(
-						'<strong>'.$field->group_id.' '.$field->group_name.'</strong>',
+						$field->group_id,
+						'<strong>'.$field->group_name.'</strong>',
 						'('.$field->count.') <a href="'.BASE.AMP.'C=admin_content'.AMP.'M=field_management'.AMP.'group_id='.$field->group_id.'">'. lang('add_edit_fields').'</a>', // $todo, replace 'X' with count
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=field_group_edit'.AMP.'group_id='.$field->group_id.'">'.lang('edit_field_group_name').'</a>',
-						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=field_group_delete_confirm'.AMP.'group_id='.$field->group_id.'">'.lang('delete_field_group').'</a>'
+						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=field_group_delete_confirm'.AMP.'group_id='.$field->group_id.'">'.lang('delete').'</a>'
 					);
 				}
 			}
 			else
 			{
-				$this->table->add_row(array('data' => lang('no_field_group_message'), 'colspan' => 4));
+				$this->table->add_row(array('data' => lang('no_field_group_message'), 'colspan' => 5));
 			}
 			
 			echo $this->table->generate();

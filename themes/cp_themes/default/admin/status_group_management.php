@@ -12,7 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2 class="edit"><?=lang('status_management')?></h2></div>
+		<div class="heading"><h2 class="edit"><?=lang('statuses')?></h2></div>
 		<div class="pageContents">
 
 		<?php $this->load->view('_shared/message');?>
@@ -21,6 +21,7 @@ if ($EE_view_disable !== TRUE)
 		<?php
 			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
+										lang('ID'),
 										lang('status_group'),
 										'',
 										'',
@@ -32,16 +33,17 @@ if ($EE_view_disable !== TRUE)
 				foreach ($status_groups->result() as $status)
 				{
 					$this->table->add_row(
-						'<strong>'.$status->group_id.' '.$status->group_name.'</strong>',
+						$status->group_id,
+						'<strong>'.$status->group_name.'</strong>',
 						'('.$status->count.') <a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_management'.AMP.'group_id='.$status->group_id.'">'. lang('add_edit_statuses').'</a>', // $todo, replace 'X' with count
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_group_edit'.AMP.'group_id='.$status->group_id.'">'.lang('edit_status_group_name').'</a>',
-						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_group_delete_confirm'.AMP.'group_id='.$status->group_id.'">'.lang('delete_status_group').'</a>'
+						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_group_delete_confirm'.AMP.'group_id='.$status->group_id.'">'.lang('delete').'</a>'
 					);
 				}
 			}
 			else
 			{
-				$this->table->add_row(array('data' => lang('no_status_group_message'), 'colspan' => 4));
+				$this->table->add_row(array('data' => lang('no_status_group_message'), 'colspan' => 5));
 			}
 			
 			echo $this->table->generate();

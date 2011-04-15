@@ -152,6 +152,9 @@ $lang = array(
 'alpha' =>
 'Alphabetical',
 
+'id' =>
+'ID',
+
 'channel_id' =>
 'ID',
 
@@ -240,10 +243,10 @@ $lang = array(
 'There are no Member Groups available that permit publishing',
 
 'status_updated' =>
-'Status has been updated',
+'Status updated',
 
 'status_deleted' =>
-'Status has been deleted',
+'Status deleted',
 
 'can_edit_status' =>
 'Can access status',
@@ -671,6 +674,9 @@ $lang = array(
 'no_member_groups_available' =>
 'There are no member groups allowed to %x categories.  You may assign these privileges using the member group editor: ',
 
+'member_group' => 
+'Member Group',
+
 'member_groups' => 
 'Member Groups',
 
@@ -920,7 +926,7 @@ $lang = array(
 'Edit Status Group',
 
 'name_of_status_group' =>
-'Name of Status Group',
+'Status Group Name',
 
 'taken_status_group_name' => 
 'This status group name is already taken.',

@@ -32,7 +32,6 @@
 	 * @todo make callbacks overridable ($.extend)
 	 */
 	$.ee_filebrowser = function() {
-
 		files_per_table = 14;
 		thumbs_per_page = 36;
 
@@ -53,7 +52,9 @@
 			createBrowser();
 			
 			// Load the file uploader
-			$.ee_fileuploader();
+			if (typeof $.ee_fileuploader != "undefined") {
+				$.ee_fileuploader();
+			};
 		});
 	};
 
