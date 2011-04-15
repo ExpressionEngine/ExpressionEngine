@@ -736,6 +736,8 @@ class Content_files extends CI_Controller {
 	
 	public function upload_inner()
 	{
+		$this->output->enable_profiler(false);
+		
 		$selected_directory_id = ($this->input->get('directory_id')) ? $this->input->get('directory_id') : '';
 		
 		$this->load->model('file_upload_preferences_model');
