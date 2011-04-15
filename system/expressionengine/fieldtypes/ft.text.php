@@ -125,7 +125,7 @@ class Text_ft extends EE_Fieldtype {
 		$this->text_direction_row($data, $prefix);
 		
 		$this->EE->table->add_row(
-			lang('field_content_type_text', 'field_content_type_text'),
+			lang('field_content_text', 'field_content_text'),
 			form_dropdown('field_content_type_text', $field_content_options, $data['field_content_type_text'], 'id="text_field_content_type"')
 		);		
 
