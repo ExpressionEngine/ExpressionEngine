@@ -116,7 +116,7 @@ class Filemanager {
 	function set_upload_dir_prefs($dir_id, array $prefs)
 	{
 		$required = array_flip(
-			array('name', 'server_path', 'url', 'allowed_types')
+			array('name', 'server_path', 'url', 'allowed_types', 'max_height', 'max_width')
 		);
 		
 		$defaults = array(
@@ -137,6 +137,9 @@ class Filemanager {
 				$prefs[$key] = $val;
 			}
 		}
+		
+		$prefs['max_height'] = ($prefs['max_height'] == '') ? 0 : $prefs['max_height'];
+		$prefs['max_width'] = ($prefs['max_width'] == '') ? 0 : $prefs['max_width'];
 		
 		$this->_upload_dir_prefs[$dir_id] = $prefs;
 		return $prefs;
@@ -382,11 +385,21 @@ class Filemanager {
 		}
 		
 		$prefs['mime_type'] = $mime;
+		
 		// Check to see if its an editable image, if it is, try and create the thumbnail
-		if ($this->is_editable_image($file_path, $mime) && 
-			! $this->create_thumb($file_path, $prefs))
+		if ($this->is_editable_image($file_path, $mime))
 		{
+		 	$prefs = $this->max_hw_check($file_path, $prefs);
+		
+			if ( ! $prefs)
+			{
+				return $this->_save_file_response(FALSE, lang('image_exceeds_max_size'));
+			}
+		
+		 	if ( ! $this->create_thumb($file_path, $prefs))
+			{
 				return $this->_save_file_response(FALSE, lang('thumb_not_created'));
+			}
 		}
 		
 		// Insert the file metadata into the database
@@ -406,6 +419,83 @@ class Filemanager {
 		return $response;
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Resizes main image if it exceeds max heightxwidth- adds metadata to file_data array
+	 *
+	 * @access	public
+	 * @return	void
+	 */	 
+	function max_hw_check($file_path, $prefs)
+	{
+		//if ( ! $prefs['is_image'])
+		//{
+		//	return $prefs;
+		//}
+
+		// Make sure height and width are set
+		if ( ! isset($prefs['height']) OR ! isset($prefs['width']))
+		{
+			$dim = $this->get_image_dimensions($file_path);
+
+			if ($dim == FALSE)
+			{
+				return FALSE;
+			}
+
+			$prefs['height'] = $dim['height'];
+			$prefs['width'] = $dim['width'];
+		}
+
+		
+		
+		$config['width']			= $prefs['width'];
+		$config['height']			= $prefs['height'];
+
+		// If is image and exceeds max size- resize!
+		if (($prefs['max_width'] > 0 && $prefs['width'] > $prefs['max_width']) OR ($prefs['max_height'] > 0 && $prefs['height'] > $prefs['max_height']))
+		{
+			$this->EE->load->library('image_lib');
+
+			$this->EE->image_lib->clear();
+
+			if ($prefs['max_width'] == 0)
+			{
+				$config['width'] = ($prefs['width']/$prefs['height'])*$prefs['max_height'];
+				$config['master_dim'] = 'height';
+			}
+			elseif ($prefs['max_height'] == 0)
+			{
+				// Old h/old w * new width
+				$config['height'] = ($prefs['height']/$prefs['width'])*$prefs['max_width'];
+				$config['master_dim'] = 'width';
+					
+			}
+			
+			unset($prefs['width']);
+			unset($prefs['height']);
+
+			// Resize
+		
+			$config['source_image']		= $file_path;
+			$config['maintain_ratio']	= TRUE;
+			$config['image_library']	= $this->EE->config->item('image_resize_protocol');
+			$config['library_path']		= $this->EE->config->item('image_library_path');
+
+			$this->EE->image_lib->initialize($config);
+				
+			if ( ! $this->EE->image_lib->resize())
+			{
+				return FALSE;
+			}
+			
+		}
+		
+		return $prefs;
+	}
+
+
 	// ---------------------------------------------------------------------
 
 	/**
@@ -1521,13 +1611,22 @@ class Filemanager {
 		$field = ($field_name) ? $field_name : 'userfile';
 		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id']));
 		
+		/* -------------------------------------------
+		/*	Hidden Configuration Variable
+		/*	- max_image_height => Sets max image height
+		/* -------------------------------------------*/
+		
+		if ($this->config->item('max_image_height')) 
+		{
+			
+		}
+
+
 		$config = array(
 			'file_name'		=> $clean_filename,
 			'upload_path'	=> $dir['server_path'],
 			'allowed_types'	=> $allowed_types,
-			'max_size'		=> round($dir['max_size']/1024, 2),
-			'max_width'		=> $dir['max_width'],
-			'max_height'	=> $dir['max_height']
+			'max_size'		=> round($dir['max_size']/1024, 2)
 		);
 		
 		$this->EE->load->helper('xss');
@@ -1605,7 +1704,6 @@ class Filemanager {
 		
 		return $file_data;
 	}
-
 
 	// --------------------------------------------------------------------
 
