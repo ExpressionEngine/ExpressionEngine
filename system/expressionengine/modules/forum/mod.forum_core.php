@@ -1797,7 +1797,7 @@ class Forum_Core extends Forum {
 		// Is the display being limited to a particular category?
 		if (is_numeric($this->current_id))
 		{
-			$this->EE->db->where("(forum_id = '".$this->current_id."' OR forum_parent =  '".$this->current_id."') '");
+			$this->EE->db->where("(forum_id = '".$this->current_id."' OR forum_parent =  '".$this->current_id."')");
 		}
 	
 		$qry = $this->EE->db->where('board_id', $this->fetch_pref('board_id'))
