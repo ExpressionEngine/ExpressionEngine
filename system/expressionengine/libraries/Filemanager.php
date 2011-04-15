@@ -964,7 +964,7 @@ class Filemanager {
 		
 		if ($thumb)
 		{
-			$dimensions[0] = array(
+			$dimensions[] = array(
 				'short_name'	=> 'thumb',
 				'width'			=> 73,
 				'height'		=> 60,
@@ -1672,7 +1672,7 @@ class Filemanager {
 		);
 		
 		// Free up the dimensions query after using it
-		$file_dimensions->free_result();
+		//$file_dimensions->free_result();
 		
 		// Save file to database
 		$saved = $this->save_file($file['full_path'], $dir['id'], $file_data);
