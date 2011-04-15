@@ -883,8 +883,11 @@ $(document).ready(function() {
 			replace = EE.filebrowser.image_tag.replace(/src="(.*)\[!\[Link:!:http:\/\/\]!\](.*)"/, 'src="$1{filedir_'+file.directory+'}'+file.name+'$2"');
 			
 			// Figure out dimensions
-			dimensions = file.file_hw_original.split(' ');
-			dimensions = 'height="'+dimensions[0]+'" width="'+dimensions[1]+'"';
+			dimensions = '';
+			if (typeof file.file_hw_original != "undefined") {
+				dimensions = file.file_hw_original.split(' ');
+				dimensions = 'height="'+dimensions[0]+'" width="'+dimensions[1]+'"';
+			};
 			
 			replace = replace.replace(/\/?>$/, dimensions+' '+props+' />');
 			
