@@ -884,7 +884,7 @@ $(document).ready(function() {
 			
 			// Figure out dimensions
 			dimensions = '';
-			if (typeof file.file_hw_original != "undefined") {
+			if (typeof file.file_hw_original != "undefined" && file.file_hw_original != '') {
 				dimensions = file.file_hw_original.split(' ');
 				dimensions = 'height="'+dimensions[0]+'" width="'+dimensions[1]+'"';
 			};
