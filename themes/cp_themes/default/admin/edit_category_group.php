@@ -77,8 +77,8 @@ if ($EE_view_disable !== TRUE)
 		
 		$options = array(
 			0 => lang('none'),
-			1 => lang('publish'),
-			2 => lang('files')
+			1 => lang('exclude_from_publish'),
+			2 => lang('exclude_from_files')
 		);
 		
 		$this->table->add_row(array(

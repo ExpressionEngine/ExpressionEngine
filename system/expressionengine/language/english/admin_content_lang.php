@@ -668,8 +668,8 @@ $lang = array(
 
 'exclude_from_channels_or_publish' =>
 'Exclude from Channel or Field Category Assignment?',
-'publish' 	=> 'Channel Assignment',
-'files'		=> 'File Assignment',
+'exclude_from_publish' 		=> 'Channel Assignment',
+'exclude_from_files'		=> 'File Assignment',
 
 'no_member_groups_available' =>
 'There are no member groups allowed to %x categories.  You may assign these privileges using the member group editor: ',
