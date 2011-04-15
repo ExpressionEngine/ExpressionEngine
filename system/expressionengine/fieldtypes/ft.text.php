@@ -121,10 +121,19 @@ class Text_ft extends EE_Fieldtype {
 		//$field_content_text	= ($data['field_content_text'] == '') ? 'any' : $data['field_content_text'];
 
 		
+		$field_content_options = array('all' => lang('all'), 'numeric' => lang('numeric'), 'decimal' => lang('decimal'));
+
+
+
 		$this->field_formatting_row($data, $prefix);
 		$this->text_direction_row($data, $prefix);
 		
-		$this->field_content_type_row($data, $prefix);
+		//$this->field_content_type_row($data, $prefix);
+		
+		$this->EE->table->add_row(
+			lang('field_content_type_text', 'field_content_type_text'),
+			form_dropdown('field_content_type_text', $field_content_options, $data['field_content_type'], 'id="text_field_content_type"')
+		);		
 
 		$this->field_show_smileys_row($data, $prefix);
 		$this->field_show_glossary_row($data, $prefix);

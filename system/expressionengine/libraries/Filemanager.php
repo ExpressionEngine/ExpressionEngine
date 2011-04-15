@@ -1603,16 +1603,6 @@ class Filemanager {
 		$field = ($field_name) ? $field_name : 'userfile';
 		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id']));
 		
-		/* -------------------------------------------
-		/*	Hidden Configuration Variable
-		/*	- max_image_height => Sets max image height
-		/* -------------------------------------------*/
-		
-		if ($this->config->item('max_image_height')) 
-		{
-			
-		}
-
 
 		$config = array(
 			'file_name'		=> $clean_filename,
