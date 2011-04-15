@@ -147,6 +147,11 @@ class Filemanager {
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Get the upload directory preferences for an individual directory
+	 * 
+	 * @param integer $dir_id ID of the directory to get preferences for
+	 */
 	function fetch_upload_dir_prefs($dir_id)
 	{
 		if (isset($this->_upload_dir_prefs[$dir_id]))
@@ -154,6 +159,7 @@ class Filemanager {
 			return $this->_upload_dir_prefs[$dir_id];
 		}
 		
+		// Figure out if the directory actually exists
 		$qry = $this->EE->db->where('id', $dir_id)
 							->where('site_id', $this->EE->config->item('site_id'))
 							->get('upload_prefs');
@@ -166,22 +172,14 @@ class Filemanager {
 		$prefs = $qry->row_array();
 		$qry->free_result();
 		
-		
-		// Add dimensions
+		// Add dimensions to prefs
 		$prefs['dimensions'] = array();
 		
-		/*
-		$qry = $this->EE->db->from('file_dimensions')
-							->where('upload_location_id', $dir_id)
-							->join('file_watermarks', 'wm_id = watermark_id', 'left')
-							->get_where('file_dimensions');
-		*/
-
 		$qry = $this->EE->db->select('*')
-						->from('file_dimensions')
-						->join('file_watermarks', 'wm_id = watermark_id', 'left')
-						->where_in('upload_location_id', $dir_id)
-						->get();							
+							->from('file_dimensions')
+							->join('file_watermarks', 'wm_id = watermark_id', 'left')
+							->where_in('upload_location_id', $dir_id)
+							->get();
 							
 		
 		foreach ($qry->result_array() as $row)
@@ -202,6 +200,8 @@ class Filemanager {
 				}
 			}
 		}
+		
+		$qry->free_result();
 		
 		// check keys and cache
 		//return $this->set_upload_dir_prefs($dir_id, $qry->row_array());
@@ -524,6 +524,7 @@ class Filemanager {
 			// If any record shows up, then they do not have access
 			if ($this->EE->db->count_all_results('upload_no_access') > 0)
 			{
+				
 				return FALSE;
 			}
 		}
@@ -926,17 +927,7 @@ class Filemanager {
 			}
 		}
 
-		if ( ! $ajax)
-		{
-			return $data;
-		}
-		
-		if (array_key_exists('error', $data))
-		{
-			exit('<script>parent.jQuery.ee_filebrowser.upload_error('.$this->EE->javascript->generate_json($data).');</script>');
-		}
-
-		exit('<script>parent.jQuery.ee_filebrowser.upload_success('.$this->EE->javascript->generate_json($data).');</script>');
+		return $data;
 	}
 	
 	// --------------------------------------------------------------------
@@ -961,14 +952,13 @@ class Filemanager {
 		if ( ! isset($prefs['mime_type']))
 		{
 			// Figure out the mime type
-			$prefs['mime_type'] = get_mime_by_extension($file_path);	
-		
+			$prefs['mime_type'] = get_mime_by_extension($file_path);
 		}
 		
 		if ( ! $this->is_editable_image($file_path, $prefs['mime_type']))
 		{
 			return FALSE;
-		}		
+		}
 		
 		$dimensions = $prefs['dimensions'];
 		
@@ -1582,15 +1572,15 @@ class Filemanager {
 			default: 
 				$allowed_types = '';
 		}
-
+		
 		// Is this a custom field?
 		if (strpos($field_name, 'field_id_') === 0)
 		{
 			$field_id = str_replace('field_id_', '', $field_name);
-
+		
 			$this->EE->db->select('field_type, field_settings');
 			$type_query = $this->EE->db->get_where('channel_fields', array('field_id' => $field_id));
-
+		
 			if ($type_query->num_rows())
 			{
 				$settings = unserialize(base64_decode($type_query->row('field_settings')));
@@ -1601,6 +1591,8 @@ class Filemanager {
 					$allowed_types = 'gif|jpg|jpeg|png|jpe';
 				}
 			}
+			
+			$type_query->free_result();
 		}
 		
 		// --------------------------------------------------------------------
@@ -1634,15 +1626,14 @@ class Filemanager {
 		// Check to see if the file needs to be XSS Cleaned
 		if (xss_check())
 		{
-			$config['xss_clean'] = FALSE;
-			$this->xss_clean_off();
+			$config['xss_clean'] = TRUE;
 		}
 		else
 		{
-			$config['xss_clean'] = TRUE;
+			$config['xss_clean'] = FALSE;
+			$this->xss_clean_off();
 		}
-
-
+		
 		// Upload the file
 		$this->EE->load->library('upload', $config);
 		if ( ! $this->EE->upload->do_upload($field_name))
@@ -1689,6 +1680,9 @@ class Filemanager {
 			
 			'dimensions'			=> $file_dimensions->result_array()
 		);
+		
+		// Free up the dimensions query after using it
+		$file_dimensions->free_result();
 		
 		// Save file to database
 		$saved = $this->save_file($file['full_path'], $dir['id'], $file_data);

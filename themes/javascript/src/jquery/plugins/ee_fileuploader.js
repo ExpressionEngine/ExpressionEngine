@@ -63,6 +63,10 @@
 				upload_listen();
 			},
 			close: function() {
+				// Make sure the button bar is showing the correct items
+				$('#file_uploader').removeClass('upload_step_2').addClass('upload_step_1');
+				
+				// Reload the contents for the current directory
 				$.ee_filebrowser.reload_directory($('#dir_choice').val());
 			}
 		});
@@ -75,6 +79,9 @@
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Listen for clicks on the button_bar's upload file button
+	 */
 	var upload_listen = function() {
 		$('#file_uploader .button_bar #upload_file').click(function(event) {
 			event.preventDefault();
@@ -92,9 +99,6 @@
 	 * @param {Object} file File object passed from 
 	 */
 	var clean_up = function(file) {
-		// Mark the step in the button bar
-		$('#file_uploader').removeClass('upload_step_2').addClass('upload_step_1');
-		
 		// Hide the dialog
 		file_uploader.dialog('close');
 
