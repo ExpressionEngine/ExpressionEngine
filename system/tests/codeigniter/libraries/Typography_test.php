@@ -52,7 +52,7 @@ class Typography_test extends PHPUnit_Framework_TestCase
 	// --------------------------------------------------------------------
 
 	public function testNl2brExceptPre()
-	{
+	{	
 		$str = <<<EOH
 Hello, I'm a happy string with some new lines.  
 
@@ -92,8 +92,105 @@ That's my story and I'm sticking to it.<br />
 <br />
 The End.
 EOH;
-	
-		$this->assertEquals($expected, $this->type->nl2br_except_pre($str));
+
+		$this->assertEquals($expected, 
+							$this->type->nl2br_except_pre($str));
 	}
 
+	// --------------------------------------------------------------------
+	
+	public function testAutoTypography()
+	{
+		$this->_blank_string();
+		$this->_standardize_new_lines();
+		$this->_reduce_linebreaks();
+		$this->_remove_comments();
+		$this->_protect_pre();
+		$this->_no_opening_block();
+		$this->_protect_braced_quotes();
+	}
+
+	// --------------------------------------------------------------------
+	
+	private function _blank_string()
+	{
+		// Test blank string
+		$this->assertEquals('', $this->type->auto_typography(''));
+	}
+
+	// --------------------------------------------------------------------
+
+	private function _standardize_new_lines()
+	{
+		$strs = array(
+			"My string\rhas return characters"	=> "<p>My string<br />\nhas return characters</p>",
+			'This one does not!' 				=> '<p>This one does not!</p>'
+		);
+
+		foreach ($strs as $str => $expect)
+		{
+			$this->assertEquals($expect, $this->type->auto_typography($str));
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	private function _reduce_linebreaks()
+	{
+		$str = "This has way too many linebreaks.\n\n\n\nSee?";
+		$expect = "<p>This has way too many linebreaks.</p>\n\n<p>See?</p>";
+		
+		$this->assertEquals($expect, $this->type->auto_typography($str, TRUE));
+	}
+
+	// --------------------------------------------------------------------
+
+	private function _remove_comments()
+	{
+		$str = '<!-- I can haz comments? -->  But no!';
+		$expect = '<p><!-- I can haz comments? -->&nbsp; But no!</p>';
+		
+		$this->assertEquals($expect, $this->type->auto_typography($str));
+	}
+
+	// --------------------------------------------------------------------
+
+	private function _protect_pre()
+	{
+		$str = '<p>My Sentence</p><pre>var_dump($this);</pre>';
+		$expect = '<p>My Sentence</p><pre>var_dump($this);</pre>';
+		
+		$this->assertEquals($expect, $this->type->auto_typography($str));
+	}
+
+	// --------------------------------------------------------------------
+
+	private function _no_opening_block()
+	{
+		$str = 'My Sentence<pre>var_dump($this);</pre>';
+		$expect = '<p>My Sentence</p><pre>var_dump($this);</pre>';
+		
+		$this->assertEquals($expect, $this->type->auto_typography($str));
+	}
+
+	// --------------------------------------------------------------------
+
+	public function _protect_braced_quotes()
+	{
+		$this->type->protect_braced_quotes = TRUE;
+		
+		$str = 'Test {parse="foobar"}';
+		$expect = '<p>Test {parse="foobar"}</p>';
+		
+		$this->assertEquals($expect, $this->type->auto_typography($str));
+
+		$this->type->protect_braced_quotes = FALSE;
+		
+		$str = 'Test {parse="foobar"}';
+		$expect = '<p>Test {parse=&#8220;foobar&#8221;}</p>';
+		
+		$this->assertEquals($expect, $this->type->auto_typography($str));
+
+
+	}
 }
