@@ -889,10 +889,10 @@ $lang = array(
 'All channel entries contained in the above field(s) will be permanently deleted.',
 
 'field_content_text' =>
-'Field Content:',
+'Field Content',
 
 'field_content_file' =>
-'File Type:',
+'File Type',
 
 'type_numeric' =>
 'Number',

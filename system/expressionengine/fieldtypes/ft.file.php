@@ -191,15 +191,14 @@ class File_ft extends EE_Fieldtype {
 		$upload_directory_url = $upload_directory_info->row('url');
 
 		// let's look for a thumb
-		if (file_exists($upload_directory_server_path.'_thumbs/thumb_'.$filename))
-		{
-			$thumb = '<img src="'.$upload_directory_url.'_thumbs/thumb_'.$filename.'" />';
-		}
-		else
-		{
-			$thumb = '<img src="'.PATH_CP_GBL_IMG.'default.png" alt="default thumbnail" />';
-		}
-
+		$this->EE->load->library('filemanager');
+		$this->EE->load->helper('html');
+		$thumb_info = $this->EE->filemanager->get_thumb($filename, $filedir);
+		$thumb = img(array(
+			'src' => $thumb_info['thumb'],
+			'alt' => $filename
+		));
+		
 		$hidden	  = form_hidden($this->field_name.'_hidden', $filename);
 		$hidden	  .= form_hidden($this->field_name.'_hidden_dir', $filedir);
 		$upload   = form_upload($this->field_name, $filename);
@@ -315,7 +314,7 @@ class File_ft extends EE_Fieldtype {
 		$field_content_options = array('all' => lang('all'), 'image' => lang('image'));
 
 		$this->EE->table->add_row(
-			lang('field_content_type_file', 'field_content_type_file'),
+			lang('field_content_file', 'field_content_file'),
 			form_dropdown('field_content_type_file', $field_content_options, $data['field_content_type'], 'id="file_field_content_type"')
 		);
 	}

@@ -116,7 +116,7 @@ class Filemanager {
 	function set_upload_dir_prefs($dir_id, array $prefs)
 	{
 		$required = array_flip(
-			array('name', 'server_path', 'url', 'allowed_types')
+			array('name', 'server_path', 'url', 'allowed_types', 'max_height', 'max_width')
 		);
 		
 		$defaults = array(
@@ -138,12 +138,20 @@ class Filemanager {
 			}
 		}
 		
+		$prefs['max_height'] = ($prefs['max_height'] == '') ? 0 : $prefs['max_height'];
+		$prefs['max_width'] = ($prefs['max_width'] == '') ? 0 : $prefs['max_width'];
+		
 		$this->_upload_dir_prefs[$dir_id] = $prefs;
 		return $prefs;
 	}
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Get the upload directory preferences for an individual directory
+	 * 
+	 * @param integer $dir_id ID of the directory to get preferences for
+	 */
 	function fetch_upload_dir_prefs($dir_id)
 	{
 		if (isset($this->_upload_dir_prefs[$dir_id]))
@@ -151,6 +159,7 @@ class Filemanager {
 			return $this->_upload_dir_prefs[$dir_id];
 		}
 		
+		// Figure out if the directory actually exists
 		$qry = $this->EE->db->where('id', $dir_id)
 							->where('site_id', $this->EE->config->item('site_id'))
 							->get('upload_prefs');
@@ -163,22 +172,14 @@ class Filemanager {
 		$prefs = $qry->row_array();
 		$qry->free_result();
 		
-		
-		// Add dimensions
+		// Add dimensions to prefs
 		$prefs['dimensions'] = array();
 		
-		/*
-		$qry = $this->EE->db->from('file_dimensions')
-							->where('upload_location_id', $dir_id)
-							->join('file_watermarks', 'wm_id = watermark_id', 'left')
-							->get_where('file_dimensions');
-		*/
-
 		$qry = $this->EE->db->select('*')
-						->from('file_dimensions')
-						->join('file_watermarks', 'wm_id = watermark_id', 'left')
-						->where_in('upload_location_id', $dir_id)
-						->get();							
+							->from('file_dimensions')
+							->join('file_watermarks', 'wm_id = watermark_id', 'left')
+							->where_in('upload_location_id', $dir_id)
+							->get();
 							
 		
 		foreach ($qry->result_array() as $row)
@@ -199,6 +200,8 @@ class Filemanager {
 				}
 			}
 		}
+		
+		$qry->free_result();
 		
 		// check keys and cache
 		//return $this->set_upload_dir_prefs($dir_id, $qry->row_array());
@@ -382,11 +385,21 @@ class Filemanager {
 		}
 		
 		$prefs['mime_type'] = $mime;
+		
 		// Check to see if its an editable image, if it is, try and create the thumbnail
-		if ($this->is_editable_image($file_path, $mime) && 
-			! $this->create_thumb($file_path, $prefs))
+		if ($this->is_editable_image($file_path, $mime))
 		{
+		 	$prefs = $this->max_hw_check($file_path, $prefs);
+		
+			if ( ! $prefs)
+			{
+				return $this->_save_file_response(FALSE, lang('image_exceeds_max_size'));
+			}
+		
+		 	if ( ! $this->create_thumb($file_path, $prefs))
+			{
 				return $this->_save_file_response(FALSE, lang('thumb_not_created'));
+			}
 		}
 		
 		// Insert the file metadata into the database
@@ -406,6 +419,83 @@ class Filemanager {
 		return $response;
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Resizes main image if it exceeds max heightxwidth- adds metadata to file_data array
+	 *
+	 * @access	public
+	 * @return	void
+	 */	 
+	function max_hw_check($file_path, $prefs)
+	{
+		//if ( ! $prefs['is_image'])
+		//{
+		//	return $prefs;
+		//}
+
+		// Make sure height and width are set
+		if ( ! isset($prefs['height']) OR ! isset($prefs['width']))
+		{
+			$dim = $this->get_image_dimensions($file_path);
+
+			if ($dim == FALSE)
+			{
+				return FALSE;
+			}
+
+			$prefs['height'] = $dim['height'];
+			$prefs['width'] = $dim['width'];
+		}
+
+		
+		
+		$config['width']			= $prefs['width'];
+		$config['height']			= $prefs['height'];
+
+		// If is image and exceeds max size- resize!
+		if (($prefs['max_width'] > 0 && $prefs['width'] > $prefs['max_width']) OR ($prefs['max_height'] > 0 && $prefs['height'] > $prefs['max_height']))
+		{
+			$this->EE->load->library('image_lib');
+
+			$this->EE->image_lib->clear();
+
+			if ($prefs['max_width'] == 0)
+			{
+				$config['width'] = ($prefs['width']/$prefs['height'])*$prefs['max_height'];
+				$config['master_dim'] = 'height';
+			}
+			elseif ($prefs['max_height'] == 0)
+			{
+				// Old h/old w * new width
+				$config['height'] = ($prefs['height']/$prefs['width'])*$prefs['max_width'];
+				$config['master_dim'] = 'width';
+					
+			}
+			
+			unset($prefs['width']);
+			unset($prefs['height']);
+
+			// Resize
+		
+			$config['source_image']		= $file_path;
+			$config['maintain_ratio']	= TRUE;
+			$config['image_library']	= $this->EE->config->item('image_resize_protocol');
+			$config['library_path']		= $this->EE->config->item('image_library_path');
+
+			$this->EE->image_lib->initialize($config);
+				
+			if ( ! $this->EE->image_lib->resize())
+			{
+				return FALSE;
+			}
+			
+		}
+		
+		return $prefs;
+	}
+
+
 	// ---------------------------------------------------------------------
 
 	/**
@@ -434,6 +524,7 @@ class Filemanager {
 			// If any record shows up, then they do not have access
 			if ($this->EE->db->count_all_results('upload_no_access') > 0)
 			{
+				
 				return FALSE;
 			}
 		}
@@ -836,17 +927,7 @@ class Filemanager {
 			}
 		}
 
-		if ( ! $ajax)
-		{
-			return $data;
-		}
-		
-		if (array_key_exists('error', $data))
-		{
-			exit('<script>parent.jQuery.ee_filebrowser.upload_error('.$this->EE->javascript->generate_json($data).');</script>');
-		}
-
-		exit('<script>parent.jQuery.ee_filebrowser.upload_success('.$this->EE->javascript->generate_json($data).');</script>');
+		return $data;
 	}
 	
 	// --------------------------------------------------------------------
@@ -871,20 +952,19 @@ class Filemanager {
 		if ( ! isset($prefs['mime_type']))
 		{
 			// Figure out the mime type
-			$prefs['mime_type'] = get_mime_by_extension($file_path);	
-		
+			$prefs['mime_type'] = get_mime_by_extension($file_path);
 		}
 		
 		if ( ! $this->is_editable_image($file_path, $prefs['mime_type']))
 		{
 			return FALSE;
-		}		
+		}
 		
 		$dimensions = $prefs['dimensions'];
 		
 		if ($thumb)
 		{
-			$dimensions[0] = array(
+			$dimensions[] = array(
 				'short_name'	=> 'thumb',
 				'width'			=> 73,
 				'height'		=> 60,
@@ -1492,15 +1572,15 @@ class Filemanager {
 			default: 
 				$allowed_types = '';
 		}
-
+		
 		// Is this a custom field?
 		if (strpos($field_name, 'field_id_') === 0)
 		{
 			$field_id = str_replace('field_id_', '', $field_name);
-
+		
 			$this->EE->db->select('field_type, field_settings');
 			$type_query = $this->EE->db->get_where('channel_fields', array('field_id' => $field_id));
-
+		
 			if ($type_query->num_rows())
 			{
 				$settings = unserialize(base64_decode($type_query->row('field_settings')));
@@ -1511,6 +1591,8 @@ class Filemanager {
 					$allowed_types = 'gif|jpg|jpeg|png|jpe';
 				}
 			}
+			
+			$type_query->free_result();
 		}
 		
 		// --------------------------------------------------------------------
@@ -1521,13 +1603,12 @@ class Filemanager {
 		$field = ($field_name) ? $field_name : 'userfile';
 		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id']));
 		
+
 		$config = array(
 			'file_name'		=> $clean_filename,
 			'upload_path'	=> $dir['server_path'],
 			'allowed_types'	=> $allowed_types,
-			'max_size'		=> round($dir['max_size']/1024, 2),
-			'max_width'		=> $dir['max_width'],
-			'max_height'	=> $dir['max_height']
+			'max_size'		=> round($dir['max_size']/1024, 2)
 		);
 		
 		$this->EE->load->helper('xss');
@@ -1535,15 +1616,14 @@ class Filemanager {
 		// Check to see if the file needs to be XSS Cleaned
 		if (xss_check())
 		{
-			$config['xss_clean'] = FALSE;
-			$this->xss_clean_off();
+			$config['xss_clean'] = TRUE;
 		}
 		else
 		{
-			$config['xss_clean'] = TRUE;
+			$config['xss_clean'] = FALSE;
+			$this->xss_clean_off();
 		}
-
-
+		
 		// Upload the file
 		$this->EE->load->library('upload', $config);
 		if ( ! $this->EE->upload->do_upload($field_name))
@@ -1591,6 +1671,9 @@ class Filemanager {
 			'dimensions'			=> $file_dimensions->result_array()
 		);
 		
+		// Free up the dimensions query after using it
+		//$file_dimensions->free_result();
+		
 		// Save file to database
 		$saved = $this->save_file($file['full_path'], $dir['id'], $file_data);
 		
@@ -1605,7 +1688,6 @@ class Filemanager {
 		
 		return $file_data;
 	}
-
 
 	// --------------------------------------------------------------------
 

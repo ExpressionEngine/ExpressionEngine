@@ -881,7 +881,15 @@ $(document).ready(function() {
 
 			// Include any user additions before or after the image link
 			replace = EE.filebrowser.image_tag.replace(/src="(.*)\[!\[Link:!:http:\/\/\]!\](.*)"/, 'src="$1{filedir_'+file.directory+'}'+file.name+'$2"');
-			replace = replace.replace(/\/?>$/, file.dimensions+' '+props+' />');
+			
+			// Figure out dimensions
+			dimensions = '';
+			if (typeof file.file_hw_original != "undefined" && file.file_hw_original != '') {
+				dimensions = file.file_hw_original.split(' ');
+				dimensions = 'height="'+dimensions[0]+'" width="'+dimensions[1]+'"';
+			};
+			
+			replace = replace.replace(/\/?>$/, dimensions+' '+props+' />');
 			
 			replace = open + replace + close;
 		}
