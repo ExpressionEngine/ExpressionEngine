@@ -235,6 +235,9 @@ $lang = array(
 
 ////Watermark
 
+'no_watermarks' =>
+'No watermarks exist',
+
 'add_watermark' =>
 'Add Watermark',
 

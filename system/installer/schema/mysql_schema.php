@@ -415,6 +415,7 @@ class EE_Schema {
 			  can_access_data char(1) NOT NULL default 'n',
 			  can_access_logs char(1) NOT NULL default 'n',
 			  can_admin_channels char(1) NOT NULL default 'n',
+			  can_admin_upload_prefs char(1) NOT NULL default 'n',
 			  can_admin_design char(1) NOT NULL default 'n',
 			  can_admin_members char(1) NOT NULL default 'n',
 			  can_delete_members char(1) NOT NULL default 'n',

@@ -495,6 +495,31 @@ class Updater {
 		$this->EE->dbforge->add_key(array('upload_location_id', 'site_id'));
 		$this->EE->dbforge->create_table('files');
 	}
+	
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Update exp_category_groups
+	 *
+	 * Add a column for excluding a group from files or channel group assignment
+	 *
+	 * @return void
+	 */
+	private function _do_permissions_update()
+	{
+		$fields = array(
+					'can_admin_upload_prefs' 	=> array(
+								'type'			=> 'CHAR',
+								'constraint'	=> 1,
+								'null'			=> FALSE,
+								'default'		=> 'n'
+								));
+
+		$this->EE->dbforge->add_column('category_groups', $fields, 'can_admin_channels');		
+	}
+	
+	
+	
 }
 /* END CLASS */
 

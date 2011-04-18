@@ -1253,6 +1253,11 @@ class Content_files extends CI_Controller {
 	 */
 	public function sync_directory()
 	{
+		if ( ! $this->cp->allowed_group('can_admin_upload_prefs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$file_dir  = $this->input->get('id');
 		$cid = $file_dir;
 		$var['sizes'] = array();
@@ -1382,6 +1387,11 @@ class Content_files extends CI_Controller {
 	 */
 	public function do_sync_files()
 	{
+		if ( ! $this->cp->allowed_group('can_admin_upload_prefs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$type = 'insert';
 		$errors = array();
 		$file_data = array();
@@ -1566,6 +1576,11 @@ class Content_files extends CI_Controller {
 
 	function sync_database()
 	{
+		if ( ! $this->cp->allowed_group('can_admin_upload_prefs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$id = $this->input->post('dir_id');
 
 		if ( ! array_key_exists($id, $this->_upload_dirs))
@@ -1583,6 +1598,11 @@ class Content_files extends CI_Controller {
 	 */
 	function watermark_preferences()
 	{
+		if ( ! $this->cp->allowed_group('can_admin_upload_prefs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->load->library('table');
 		$this->load->model('file_model');
 
@@ -1613,6 +1633,11 @@ class Content_files extends CI_Controller {
 	 */
 	function edit_watermark_preferences()
 	{
+		if ( ! $this->cp->allowed_group('can_admin_upload_prefs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->load->library(array('table', 'filemanager'));
 		$this->load->model('file_model');
 		
@@ -1917,6 +1942,11 @@ class Content_files extends CI_Controller {
 	 */
 	function delete_watermark_preferences_conf()
 	{
+		if ( ! $this->cp->allowed_group('can_admin_upload_prefs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$id = $this->input->get_post('id');
 
 		if ( ! $id)
@@ -1967,6 +1997,11 @@ class Content_files extends CI_Controller {
 	 */
 	function delete_watermark_preferences()
 	{
+		if ( ! $this->cp->allowed_group('can_admin_upload_prefs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$id = $this->input->get_post('id');
 
 		if ( ! $id)
@@ -1998,6 +2033,11 @@ class Content_files extends CI_Controller {
 	 */
 	function file_upload_preferences($message = '')
 	{
+		if ( ! $this->cp->allowed_group('can_admin_upload_prefs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->load->library('table');
 
 		$this->cp->set_variable('cp_page_title', lang('file_upload_prefs'));
@@ -2034,6 +2074,11 @@ class Content_files extends CI_Controller {
 	 */
 	public function edit_upload_preferences()
 	{
+		if ( ! $this->cp->allowed_group('can_admin_upload_prefs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$this->load->library('table');
 		$id = $this->input->get_post('id');
 
@@ -2274,6 +2319,11 @@ class Content_files extends CI_Controller {
 	 */
 	private function _update_upload_preferences()
 	{
+		if ( ! $this->cp->allowed_group('can_admin_upload_prefs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
 		$this->load->model('admin_model');
 
 		// If the $id variable is present we are editing an
@@ -2473,6 +2523,11 @@ class Content_files extends CI_Controller {
 	 */
 	function delete_upload_preferences_conf()
 	{
+		if ( ! $this->cp->allowed_group('can_admin_upload_prefs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
 		$id = $this->input->get_post('id');
 
 		if ( ! $id)
@@ -2519,6 +2574,11 @@ class Content_files extends CI_Controller {
 	 */
 	function delete_upload_preferences()
 	{
+		if ( ! $this->cp->allowed_group('can_admin_upload_prefs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
 		$id = $this->input->get_post('id');
 
 		if ( ! $id)

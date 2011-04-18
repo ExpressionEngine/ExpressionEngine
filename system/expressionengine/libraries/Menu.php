@@ -58,10 +58,9 @@ class EE_Menu {
 			'edit'		=> BASE.AMP.'C=content_edit',
 			'files'		=> array(
 				'file_manager'					=> BASE.AMP.'C=content_files',
-				'batch_upload'					=> BASE.AMP.'C=content_files'.AMP.'M=batch_upload',
-				'sync_files'					=> BASE.AMP.'C=content_files'.AMP.'M=sync_files',
 				'----',
 				'file_upload_preferences'		=> BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences',
+				'file_watermark_preferences'	=> BASE.AMP.'C=content_files'.AMP.'M=watermark_preferences',
 			)
 		);
 		
@@ -433,7 +432,14 @@ class EE_Menu {
 			if ( ! $this->EE->cp->allowed_group('can_access_files'))
 			{
 				unset($menu['content']['files']);
-			}			
+			}
+			else
+			{
+				if ( ! $this->EE->cp->allowed_group('can_admin_upload_prefs'))
+				{
+					unset($menu['content']['files']);
+				}				
+			}
 		}
 
 		if ( ! $this->EE->cp->allowed_group('can_access_design'))

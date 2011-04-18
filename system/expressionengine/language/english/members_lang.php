@@ -607,6 +607,9 @@ $lang = array(
 "can_admin_channels" =>
 "Can administrate channels and channel preferences",
 
+"can_admin_upload_prefs" =>
+"Can administrate file upload preferences",
+
 "can_admin_members" =>
 "Can administrate members accounts",
 
