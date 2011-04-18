@@ -78,6 +78,12 @@ class Content_files extends CI_Controller {
 		}		
 
 		$this->cp->set_right_nav($nav);
+		
+		$this->cp->set_action_nav(array(
+			'upload_file' => '',
+			'batch_upload' => ''
+		));
+		
 
 		$this->_base_url = BASE.AMP.'C=content_files';
 	}

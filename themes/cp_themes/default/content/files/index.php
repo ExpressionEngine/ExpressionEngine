@@ -13,9 +13,9 @@ if ( ! $EE_view_disable)
 	<div class="contents">
 		<div class="heading">
 			<h2 class="edit">
-				<span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>
 				<?=lang('content_files')?>
 				<?php $this->load->view('_shared/action_nav') ?>
+				<span id="filter_ajax_indicator" style="visibility:hidden; float:right;"><img src="<?=$cp_theme_url?>images/indicator2.gif" style="padding-right:20px;" /></span>
 			</h2>
 		</div>
 		
