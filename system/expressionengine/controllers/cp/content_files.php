@@ -68,7 +68,7 @@ class Content_files extends CI_Controller {
         }
 
 
-		$nav['file_manager']	= BASE.AMP.'C=content_files'.AMP.'M=file_manager';
+		$nav['file_manager']	= BASE.AMP.'C=content_files'.AMP.'M=index';
 
 		if ($this->cp->allowed_group('can_admin_upload_prefs'))
 		{
@@ -2053,7 +2053,7 @@ class Content_files extends CI_Controller {
 
 		$this->javascript->compile();
 
-		$this->cp->set_actio_nav(array('create_new_upload_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_upload_preferences'));
+		$this->cp->set_action_nav(array('create_new_upload_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_upload_preferences'));
 
 		$this->load->view('content/files/file_upload_preferences', $vars);
 	}
