@@ -67,6 +67,7 @@ class Content_files extends CI_Controller {
             $this->output->enable_profiler(FALSE);
         }
 
+
 		$nav['file_manager']	= BASE.AMP.'C=content_files'.AMP.'M=file_manager';
 
 		if ($this->cp->allowed_group('can_admin_upload_prefs'))
@@ -75,7 +76,7 @@ class Content_files extends CI_Controller {
 			$nav['watermark_prefs']	= BASE.AMP.'C=content_files'.AMP.'M=watermark_preferences';
 			//$nav['batch_upload']	= BASE.AMP.'C=content_files'.AMP.'M=batch_upload';
 		}		
-		
+
 		$this->cp->set_right_nav($nav);
 
 		$this->_base_url = BASE.AMP.'C=content_files';

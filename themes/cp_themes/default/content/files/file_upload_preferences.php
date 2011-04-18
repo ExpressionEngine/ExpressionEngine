@@ -13,7 +13,9 @@ if ($EE_view_disable !== TRUE)
 	<div class="contents">
 
 		<div class="heading">
-				<h2><?=lang('file_upload_prefs')?></h2>
+				<h2><?=lang('file_upload_prefs')?>
+					<?php $this->load->view('_shared/action_nav') ?>
+				</h2>
 		</div>
 		<div class="pageContents">
 

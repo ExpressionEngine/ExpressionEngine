@@ -10,10 +10,13 @@ if ($EE_view_disable !== TRUE)
 
 <div id="mainContent"<?=$maincontent_state?>>
 	<?php $this->load->view('_shared/right_nav')?>
+	
 	<div class="contents">
 
 		<div class="heading">
-				<h2><?=lang('watermark_prefs')?></h2>
+				<h2><?=lang('watermark_prefs')?>
+					<?php $this->load->view('_shared/action_nav') ?>
+				</h2>
 		</div>
 		<div class="pageContents">
 

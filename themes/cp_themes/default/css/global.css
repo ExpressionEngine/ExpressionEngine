@@ -1055,7 +1055,41 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 	font-size:			19px;
 	line-height:		1;
 	padding:			7px 17px 7px 17px;
+	position:			relative;
 	text-shadow:		#666 0 1px 0;
+}
+
+.heading #action_nav {
+	float: 				right;
+	margin: 			-1px -37px 0 0;
+}
+
+#action_nav li {
+	float: 				left;
+	margin: 			0 0 0 6px;
+	font-size: 			12px;
+}
+
+#action_nav li a:link,
+#action_nav li a:visited {
+	background: 		#546875;
+	color: 				#fff;
+	
+	-webkit-transition: all .2s linear;
+	
+	-webkit-box-shadow: 0px 1px 1px rgba(255, 255, 255, 0.2);
+	-moz-box-shadow: 0px 1px 1px rgba(255, 255, 255, 0.2);
+	-o-box-shadow: 0px 1px 1px rgba(255, 255, 255, 0.2);
+	box-shadow: 0px 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+#action_nav li a:hover {
+	background: 		#3b4f5b;
+	
+	-webkit-box-shadow: 0px 1px 1px rgba(255, 255, 255, 0.8);
+	-moz-box-shadow: 0px 1px 1px rgba(255, 255, 255, 0.8);
+	-o-box-shadow: 0px 1px 1px rgba(255, 255, 255, 0.8);
+	box-shadow: 0px 1px 1px rgba(255, 255, 255, 0.8);
 }
 
 /* These are only used on the communicate page.  Find suitable replacements */
