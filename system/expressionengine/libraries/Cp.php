@@ -457,6 +457,21 @@ class Cp {
 	{
 		$this->EE->load->vars('cp_right_nav', array_reverse($nav));
 	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Set the right navigation
+	 *
+	 * @access	public
+	 * @param	array
+	 * @param	string
+	 * @return	int
+	 */
+	function set_action_nav($nav = array())
+	{
+		$this->EE->load->vars('cp_action_nav', array_reverse($nav));
+	}
 
 	// --------------------------------------------------------------------
 

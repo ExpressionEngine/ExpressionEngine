@@ -70,7 +70,12 @@ class Content_files extends CI_Controller {
 		$this->cp->set_right_nav(array(
 			'directory_manager' => BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences',
 			'watermark_prefs'	=> BASE.AMP.'C=content_files'.AMP.'M=watermark_preferences',
-			'batch_upload'		=> BASE.AMP.'C=content_files'.AMP.'M=batch_upload'
+			'batch_upload'		=> BASE.AMP.'C=content_files'.AMP.'M=batch_upload',
+		));
+		
+		$this->cp->set_action_nav(array(
+			'upload_file' => '',
+			'batch_upload' => ''
 		));
 
 		$this->_base_url = BASE.AMP.'C=content_files';
