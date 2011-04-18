@@ -63,6 +63,9 @@ class Updater {
 		// Build file-related tables
 		$this->_do_build_file_tables();
 		
+		// Permission changes
+		$this->_do_permissions_update();
+		
 		return TRUE;
 	}
 	

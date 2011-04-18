@@ -67,11 +67,16 @@ class Content_files extends CI_Controller {
             $this->output->enable_profiler(FALSE);
         }
 
-		$this->cp->set_right_nav(array(
-			'directory_manager' => BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences',
-			'watermark_prefs'	=> BASE.AMP.'C=content_files'.AMP.'M=watermark_preferences',
-			'batch_upload'		=> BASE.AMP.'C=content_files'.AMP.'M=batch_upload'
-		));
+		$nav['file_manager']	= BASE.AMP.'C=content_files'.AMP.'M=file_manager';
+
+		if ($this->cp->allowed_group('can_admin_upload_prefs'))
+		{
+			$nav['file_upload_preferences']	= BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences';
+			$nav['watermark_prefs']	= BASE.AMP.'C=content_files'.AMP.'M=watermark_preferences';
+			//$nav['batch_upload']	= BASE.AMP.'C=content_files'.AMP.'M=batch_upload';
+		}		
+		
+		$this->cp->set_right_nav($nav);
 
 		$this->_base_url = BASE.AMP.'C=content_files';
 	}
@@ -1614,7 +1619,7 @@ class Content_files extends CI_Controller {
 
 		$this->javascript->compile();
 
-		$this->cp->set_right_nav(array('create_new_wm_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_watermark_preferences'));
+		$this->cp->set_action_nav(array('create_new_wm_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_watermark_preferences'));
 
 		$this->load->view('content/files/watermark_preferences', $vars);
 
@@ -2047,7 +2052,7 @@ class Content_files extends CI_Controller {
 
 		$this->javascript->compile();
 
-		$this->cp->set_right_nav(array('create_new_upload_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_upload_preferences'));
+		$this->cp->set_actio_nav(array('create_new_upload_pref' => BASE.AMP.'C=content_files'.AMP.'M=edit_upload_preferences'));
 
 		$this->load->view('content/files/file_upload_preferences', $vars);
 	}
