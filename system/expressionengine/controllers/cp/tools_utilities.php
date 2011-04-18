@@ -1489,7 +1489,7 @@ class Tools_utilities extends CI_Controller {
 	 * @param	string
 	 * @return	boolean
 	 */
-	private function _file_exists($file)
+	public function _file_exists($file)
 	{
 		if ( ! file_exists($file))
 		{

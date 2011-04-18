@@ -87,11 +87,9 @@ class UserAgent_test extends PHPUnit_Framework_TestCase
 		
 		unset($_SERVER['HTTP_ACCEPT_CHARSET']);
 		
-		$this->assertTrue($this->agent->accept_charset());		
+		$this->assertFalse($this->agent->accept_charset());
 	}
 
 	// --------------------------------------------------------------------
-	
-		
 
 }

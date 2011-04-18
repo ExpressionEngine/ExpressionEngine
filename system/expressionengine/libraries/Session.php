@@ -806,6 +806,19 @@ class EE_Session {
 			}
 		}
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fetch all session data
+	 *
+	 * @access	public
+	 * @return	array
+	 */
+	function all_userdata()
+	{
+		return $this->userdata;
+	}
 	
 	// --------------------------------------------------------------------
 	
