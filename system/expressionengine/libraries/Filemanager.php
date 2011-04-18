@@ -1039,6 +1039,9 @@ class Filemanager {
 			$config['library_path']		= $lib_path;
 			$config['width']			= $size['width'];
 			$config['height']			= $size['height'];
+			
+			// If the original is smaller than the thumb hxw, we'll make a copy rather than upsize
+			
 
 			// crop based on resize type - does anyone really crop sight unseen????
 			if (isset($size['resize_type']) AND $size['resize_type'] == 'crop')

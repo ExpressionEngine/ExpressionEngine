@@ -1515,6 +1515,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 				'cp_admin_privs'	=> array (
 												'can_admin_channels'	 	=> 'n',
+												'can_admin_upload_prefs' 	=> 'n',
 												'can_admin_templates'		=> 'n',
 												'can_admin_design' 			=> 'n',												
 												'can_admin_members'	 		=> 'n',
@@ -1570,6 +1571,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 						'can_view_offline_system',
 						'can_access_cp',
 						'can_admin_channels',
+						'can_admin_upload_prefs',
 						'can_admin_templates',
 						'can_delete_members',
 						'can_admin_mbr_groups',
