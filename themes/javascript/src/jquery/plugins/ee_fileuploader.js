@@ -12,12 +12,16 @@
 
 (function($) {
 	
-	var file_uploader;
+	var file_uploader,
+		settings;
 
 	/**
 	 * Loads in the html needed and fires off the function to build the dialog
 	 */
-	$.ee_fileuploader = function() {
+	$.ee_fileuploader = function(options) {
+		var default_options = {};
+		settings = $.extend({}, default_options, options);
+		
 		$.ee_filebrowser.endpoint_request('setup_upload', function(data) {
 			file_uploader = $(data.uploader).appendTo(document.body);
 			
@@ -27,6 +31,10 @@
 			$(document).ready(function() {
 				$.ee_fileuploader.build_dialog();
 			});
+			
+			if (typeof settings.load == 'function') {
+				settings.load.call(this, file_uploader);
+			};
 		});
 	};
 	
@@ -48,31 +56,23 @@
 			autoOpen: false,
 			zIndex: 99999,
 			open: function() {
-				var dir_id = $('#dir_choice').val(),
-					source = file_uploader.find('iframe').attr('src'),
-					source_position = source.search('&directory_id=');
-					
-				// Check to see if the source already has directory_id and remove it
-				if (source_position > 0) {
-					source = source.substring(0, source_position);
-				};
-				
-				// Set a GET variable on the iframe to automatically select the correct directory
-				file_uploader.find('iframe').attr('src', source + '&directory_id=' + dir_id);
+				if (typeof settings.open == 'function') {
+					settings.open.call(this, file_uploader);
+				}
 				
 				upload_listen();
 			},
 			close: function() {
-				// Make sure the button bar is showing the correct items
-				$('#file_uploader').removeClass('upload_step_2').addClass('upload_step_1');
-				
-				// Reload the contents for the current directory
-				$.ee_filebrowser.reload_directory($('#dir_choice').val());
+				if (typeof settings.close == 'function') {
+					var file = window.upload_iframe.file;
+					settings.close.call(this, file_uploader, file);
+				};
 			}
 		});
 		
-		// Listen for clicks on the filebrowser
-		$('#fileChooser #upload_form input').live('click', function(event) {
+		// Bind the open event to the specified trigger
+		$(settings.trigger).live('click', function(event) {
+			event.preventDefault();
 			file_uploader.dialog('open');
 		});
 	};
@@ -123,6 +123,34 @@
 			
 			clean_up(file);
 		});
+	};
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Sets the directory ID of the iframe
+	 *
+	 * @param {Number} directory_id The directory ID
+	 * @returns Directory ID if it's a valid directory ID, false otherwise
+	 * @type Number|Boolean
+	 */
+	$.ee_fileuploader.set_directory_id = function(directory_id) {
+		// Is this a number?
+		if ( ! isNaN(parseInt(directory_id, 10))) {
+			var source = file_uploader.find('iframe').attr('src'),
+				source_position = source.search('&directory_id=');
+
+			// Check to see if the source already has directory_id and remove it
+			if (source_position > 0) {
+				source = source.substring(0, source_position);
+			};
+
+			file_uploader.find('iframe').attr('src', source + '&directory_id=' + directory_id);
+			
+			return directory_id;
+		};
+		
+		return false;
 	};
 	
 })(jQuery);

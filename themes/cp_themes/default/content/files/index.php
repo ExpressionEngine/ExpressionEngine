@@ -115,6 +115,21 @@ if ( ! $EE_view_disable)
 					<?php endif;?>
 				</div>
 				
+				<script type="text/x-jquery-tmpl" id="filemanager_row">
+					<tr class="new">
+						<td>${file_id}</td>
+						<td>${file_name}</td>
+						<td>{{html link}}</td>
+						<td>${mime_type}</td>
+						<?php if ($comments_enabled):?>
+							<td><!-- Comment stuff here --></td>
+						<?php endif;?>
+						<td>${upload_directory_prefs.name}</td>
+						<td>${modified_date}</td>
+						<td>{{html actions}}</td>
+						<td class="file_select"><input type="checkbox" name="toggle[]" value="${file_id}" class="toggle" id="toggle_box_${file_id}" /></td>
+					</tr>
+				</script>
 				
 				<span class="js_hide"><?=$pagination_links?></span>
 				<span class="pagination" id="filter_pagination"></span>

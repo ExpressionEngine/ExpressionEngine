@@ -103,10 +103,10 @@ class Content_files extends CI_Controller {
 		// both filebrowser and fileuploader need to be loaded because 
 		// fileuploader depends on filebrowser's methods
 		$this->cp->add_js_script(array(
-			'plugin'	=> array('overlay', 'overlay.apple',
-								'ee_upload', 'dataTables'),
+			'plugin'	=> array('overlay', 'overlay.apple', 'ee_filebrowser', 'ee_fileuploader', 'dataTables', 'tmpl'),
 			'file'		=> 'cp/files/file_manager_home',
-			'ui' 		=> 'datepicker'));
+			'ui' 		=> array('datepicker', 'dialog')
+		));
 
 		$upload_dirs_options = array();
 
@@ -122,12 +122,23 @@ class Content_files extends CI_Controller {
 		$total_dirs = count($allowed_dirs);
 
 		$this->javascript->set_global(array(
-			'file.pipe' 		=> $this->pipe_length,
-			'file.perPage'		=> $get_post['per_page'],
-			'file.themeUrl'		=> $this->cp->cp_theme_url,
-			'file.tableColumns'	=> $table_columns,
-			'lang.noEntries'	=> lang('no_entries_matching_that_criteria'))
-		);
+			'file' => array(
+				'pipe' 			=> $this->pipe_length,
+				'perPage'		=> $get_post['per_page'],
+				'themeUrl'		=> $this->cp->cp_theme_url,
+				'tableColumns'	=> $table_columns
+			),
+			'lang' => array(
+				'noEntries'		=> lang('no_entries_matching_that_criteria')
+			),
+			'filebrowser' => array(
+				'endpoint_url'	=> 'C=content_publish&M=filemanager_actions',
+				'window_title'	=> lang('file_manager')
+			),
+			'fileuploader' => array(
+				'window_title'	=> lang('file_upload')
+			)
+		));
 
 		// Create our various filter data
 

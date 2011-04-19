@@ -53,7 +53,21 @@
 			
 			// Load the file uploader
 			if (typeof $.ee_fileuploader != "undefined") {
-				$.ee_fileuploader();
+				$.ee_fileuploader({
+					open: function(file_uploader) {
+						$.ee_fileuploader.set_directory_id($('#dir_choice').val());
+					},
+					close: function(file_uploader) {
+						// Make sure the button bar is showing the correct items
+						$('#file_uploader').removeClass('upload_step_2').addClass('upload_step_1');
+
+						if ($('#fileChooser').size()) {
+							// Reload the contents for the current directory
+							$.ee_filebrowser.reload_directory($('#dir_choice').val());	
+						}
+					},
+					trigger: '#fileChooser #upload_form input'
+				});
 			};
 		});
 	};

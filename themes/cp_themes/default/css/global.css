@@ -1269,7 +1269,6 @@ table.mainTable th {
 	padding: 0 7px 0 9px !important;
 }
 
-
 table.mainTable thead {
 	background:			#C60047 url('../images/table_column_heading_active_bg.jpg') bottom left repeat-x;
 }
@@ -1297,6 +1296,7 @@ table.mainTable td {
 	border-bottom:		1px solid #d0d7df;
 	border-left:		1px solid #d0d7df;
 }
+
 table.mainTable td.title {
 	text-align:			left;
 	font-weight:		bold;
@@ -1304,6 +1304,11 @@ table.mainTable td.title {
 
 table.mainTable tr.odd td {
 	background-color:	#f4f6f6;
+}
+
+table.mainTable tr.new td {
+	background-color: #fcfcdc;
+	font-weight: bold;
 }
 
 table.mainTable td.id {

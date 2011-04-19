@@ -17,24 +17,113 @@
 
 //"use strict";
 
-$(document).ready(function () {
+$.ee_filemanager = $.filemanager || {};
 
+$(document).ready(function () {
+	// Load the functionality needed for this page
+	$.ee_filemanager.file_uploader();
+	$.ee_filemanager.datatables();
+	$.ee_filemanager.image_overlay();
+	$.ee_filemanager.date_range();
+	$.ee_filemanager.toggle_all();
+	$.ee_filemanager.directory_change();
+
+	// Hide first and previous pagination
 	$(".paginationLinks .first").hide();
 	$(".paginationLinks .previous").hide();
+});
+
+$.ee_filemanager.file_uploader = function() {
+	$.ee_fileuploader({
+		load: function() {
+			$.template("filemanager_row", $('#filemanager_row').remove());
+		},
+		open: function(file_uploader) {
+			$.ee_fileuploader.set_directory_id($('#dir_id').val());
+		},
+		close: function(file_uploader, file){
+			// Clone the first valid row
+			var $first_row = $('.mainTable tbody tr:first').clone();
+			
+			// Build link
+			var $link = $first_row.find('td:eq(2) a').clone().attr({
+				'id': '', 
+				'href': file.upload_directory_prefs.url + file.file_name,
+				'title': file.file_name
+			});
+			
+			if (file.title) {
+				$link.text(file.title);
+			} else {
+				$link.text(file.name);
+			};
+			
+			// I realize how foolish this looks, but in order to pass the html
+			// to jQuery templates, we need the html and jQuery in it's infinite
+			// wisodom has no method to get the full html of an object, it only
+			// has a method to get the inner html, completely missing the actual
+			// anchor link, seems worthless to me too.
+			
+			file.link = $link.wrap('<div>').parent().html();
+			
+			// Build actions
+			var previous_id = $first_row.find('td:eq(0)').text();
+			var $actions = $first_row.find('td:has(img)').clone().find('a').each(function(index) {
+				$(this).attr('href', $(this).attr('href').replace(previous_id, file.file_id));
+			}).end();
+			
+			file.actions = $actions.html();
+			
+			// Send it all to the jQuery Template
+			$('.mainTable tbody').prepend($.tmpl('filemanager_row', file));
+		},
+		trigger: '#action_nav a:contains(Upload File)'
+	});
+};
 	
-	$(".toggle_all").toggle(
-		function(){		
-			$("input.toggle").each(function() {
-				this.checked = true;
+$.ee_filemanager.directory_change = function() {
+	var file_oracle		= EE.file.directoryInfo,
+		spaceString		= new RegExp('!-!', "g");
+
+	// We prep our magic arrays as soons as we can, basically
+	// converting everything into option elements
+	$.each(file_oracle, function(key, details) {
+
+		// Go through each of the individual settings and build a proper dom element
+		$.each(details, function(group, values) {
+			var html = new String();
+
+			// Add the new option fields
+			$.each(values, function(a, b) {
+				html += '<option value="' + b[0] + '">' + b[1].replace(spaceString, String.fromCharCode(160)) + "</option>";
 			});
-		}, function (){
-			var checked_status = this.checked;
-			$("input.toggle").each(function() {
-				this.checked = false;
-			});
+
+			// Set the new values
+			file_oracle[key][group] = html;
+		});
+	});
+
+	// Change the submenus
+	// Gets passed the directory id
+	function changemenu(index) {
+		var dirs = 'null';
+
+		if (file_oracle[index] === undefined) {
+			index = 0;
 		}
-	);
-	
+
+		jQuery.each(file_oracle[index], function(key, val) {
+			$('select#cat_id').empty().append(val);
+
+		});
+	}
+
+	$("#dir_id").change(function() {
+		changemenu(this.value);
+	});
+};
+
+$.ee_filemanager.date_range = function() {
 	$("#custom_date_start_span").datepicker({
 		dateFormat: "yy-mm-dd",
 		prevText: "<<",
@@ -43,7 +132,8 @@ $(document).ready(function () {
 			$("#custom_date_start").val(date);
 			dates_picked();
 		} 
-	}); 
+	});
+
 	$("#custom_date_end_span").datepicker({ 
 		dateFormat: "yy-mm-dd",
 		prevText: "<<",
@@ -66,72 +156,21 @@ $(document).ready(function () {
 		}
 	});
 
-
-
-	// The oracle knows everything.  
-
-	var file_oracle 	= EE.file.directoryInfo,
-		spaceString 	= new RegExp('!-!', "g"),
-		time			= new Date().getTime();
-		
-
-	// We prep our magic arrays as soons as we can, basically
-	// converting everything into option elements
-	(function() {
-		jQuery.each(file_oracle, function(key, details) {
-
-			// Go through each of the individual settings and build a proper dom element
-			jQuery.each(details, function(group, values) {
-				var html = new String();
-
-				// Add the new option fields
-				jQuery.each(values, function(a, b) {
-					html += '<option value="' + b[0] + '">' + b[1].replace(spaceString, String.fromCharCode(160)) + "</option>";
-				});
-
-				// Set the new values
-				file_oracle[key][group] = html;
-			});
-		});
-
-	})();
-
-	// Change the submenus
-	// Gets passed the directory id
-	function changemenu(index) {
-		var dirs = 'null';
-
-		if (file_oracle[index] === undefined) {
-			index = 0;
-		}
-				
-		jQuery.each(file_oracle[index], function(key, val) { 					
-			$('select#cat_id').empty().append(val);
-
-		});
-	}
-
-	$("#dir_id").change(function() {
-		changemenu(this.value);
-	});	
-
-
 	function dates_picked() {
 		if ($("#custom_date_start").val() != "yyyy-mm-dd" && $("#custom_date_end").val() != "yyyy-mm-dd") {
 			// populate dropdown box
 			focus_number = $("#date_range").children().length;
 			$("#date_range").append("<option id=\"custom_date_option\">" + $("#custom_date_start").val() + " to " + $("#custom_date_end").val() + "</option>");
 			document.getElementById("date_range").options[focus_number].selected=true;
-			
+
 			// hide custom date picker again
 			$("#custom_date_picker").slideUp("fast");
-			
+
 			// redraw table
 			oTable.fnDraw();
 		}
 	}
-	
-	
+
 	$("#date_range").change(function() {
 		if ($('#date_range').val() == 'custom_date') {
 			// clear any current dates, remove any custom options
@@ -144,93 +183,80 @@ $(document).ready(function () {
 		} else {
 			$('#custom_date_picker').hide();
 		}
-	});	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	});
+};
 
+$.ee_filemanager.toggle_all = function() {
+	$(".toggle_all").toggle(
+		function(){		
+			$("input.toggle").each(function() {
+				this.checked = true;
+			});
+		}, function (){
+			var checked_status = this.checked;
+			$("input.toggle").each(function() {
+				this.checked = false;
+			});
+		}
+	);
+};
+
+$.ee_filemanager.image_overlay = function() {
 	function show_image() {
 		// Destroy any existing overlay
 		$('#overlay').hide().removeData('overlay');
 		$('#overlay .contentWrap img').remove();
-		
+
 		// Launch overlay once image finishes loading
 		$('<img />').appendTo('#overlay .contentWrap').load(function() {
-			
+
 			// We need to scale very large images down just a bit. To do that we
 			// need a reference element that we can set to visible very briefly
 			// or we won't get a proper width / height
 			var ref = $(this).clone().appendTo(document.body).show(),
-			
+
 				w = ref.width(),
 				h = ref.height(),
-				
+
 				max_w = $(window).width() * 0.8,			// 10% margin
 				max_h = $(window).height() * 0.8,
-				
+
 				rat_w = max_w / w,							// ratios
 				rat_h = max_h / h,
-				
+
 				ratio = (rat_w > rat_h) ? rat_h : rat_w;	// use the smaller
-			
+
 			ref.remove();
-			
+
 			// We only scale down - up would be silly
 			if (ratio < 1) {
 				h = h * ratio;
 				w = w * ratio;
-				
+
 				$(this).height(h).width(w);
 			}
-								
+
 			$('#overlay').overlay({
 				load: true,
 				speed: 100,
 				top: 'center'
 			});
 		})
-		
+
 		.attr('src', $(this).attr('href')); // start loading
 
 		// Prevent default click event
 		return false;
 	}
-	
 
-	//setup_events();
-	
 	// Set up image viewer (overlay)
 	$('a.overlay').live('click', show_image);
 	$('#overlay').css('cursor', 'pointer').click(function() {
 		$(this).fadeOut(100);
 	});
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-///////////////datatables
+};
 
+$.ee_filemanager.datatables = function() {
 	var oCache = {
 		iCacheLower: -1
 	};
@@ -243,28 +269,28 @@ $(document).ready(function () {
 		}
 	}
 
-	
+
 	function fnGetKey( aoData, sKey ) {
 		for ( var i=0, iLen=aoData.length; i < iLen ; i++ ) {
 			if ( aoData[i].name == sKey ) {
-				return aoData[i].value
+				return aoData[i].value;
 			}
 		}
 		return null;
 	}
 
 	function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
-		var iPipe 			= +EE.file.pipe,  /* Ajust the pipe size */
-			bNeedServer 	= false,
-			sEcho 			= fnGetKey(aoData, "sEcho"),
-			iRequestStart 	= fnGetKey(aoData, "iDisplayStart"),
-			iRequestLength 	= fnGetKey(aoData, "iDisplayLength"),
-			iRequestEnd 	= iRequestStart + iRequestLength,
+		var iPipe			= +EE.file.pipe,  /* Ajust the pipe size */
+			bNeedServer		= false,
+			sEcho			= fnGetKey(aoData, "sEcho"),
+			iRequestStart	= fnGetKey(aoData, "iDisplayStart"),
+			iRequestLength	= fnGetKey(aoData, "iDisplayLength"),
+			iRequestEnd		= iRequestStart + iRequestLength,
 			keywords		= document.getElementById("keywords"),
-	    	type			= document.getElementById("file_type"),
+			type			= document.getElementById("file_type"),
 			dir_id			= document.getElementById("dir_id"),
-	    	cat_id			= document.getElementById("cat_id"),
-	    	date_range		= document.getElementById("date_range");
+			cat_id			= document.getElementById("cat_id"),
+			date_range		= document.getElementById("date_range");
 
 		// for browsers that don't support the placeholder
 		// attribute. See global.js :: insert_placeholders()
@@ -273,19 +299,19 @@ $(document).ready(function () {
 			if ($(keywords).data('user_data') == 'n') {
 				return '';
 			}
-			
+
 			return keywords.value;
 		}
-		
-		
+
+
 
 		aoData.push( 
 			 { "name": "keywords", "value": keywords_value() },
-	         { "name": "type", "value": type.value },
+			 { "name": "type", "value": type.value },
 			 { "name": "dir_id", "value": dir_id.value },
-	         { "name": "cat_id", "value": cat_id.value },
-	         { "name": "date_range", "value": date_range.value }
-	
+			 { "name": "cat_id", "value": cat_id.value },
+			 { "name": "date_range", "value": date_range.value }
+
 		 );
 
 		oCache.iDisplayStart = iRequestStart;
@@ -325,13 +351,13 @@ $(document).ready(function () {
 			fnSetKey( aoData, "iDisplayLength", iRequestLength * iPipe );
 
 					aoData.push(  
-			 			{ "name": "keywords", "value": keywords_value() },
-	         			{ "name": "type", "value": type.value },
-			 			{ "name": "dir_id", "value": dir_id.value },
-	         			{ "name": "cat_id", "value": cat_id.value },
-	         			{ "name": "date_range", "value": date_range.value }
+						{ "name": "keywords", "value": keywords_value() },
+						{ "name": "type", "value": type.value },
+						{ "name": "dir_id", "value": dir_id.value },
+						{ "name": "cat_id", "value": cat_id.value },
+						{ "name": "date_range", "value": date_range.value }
 
-		 			);
+					);
 
 			$.getJSON( sSource, aoData, function (json) { 
 				/* Callback processing */
@@ -342,7 +368,7 @@ $(document).ready(function () {
 				}
 				json.aaData.splice( oCache.iDisplayLength, json.aaData.length );
 
-				fnCallback(json)
+				fnCallback(json);
 			});
 		} else {
 			json = jQuery.extend(true, {}, oCache.lastJson);
@@ -365,47 +391,37 @@ $(document).ready(function () {
 		MySortCol = 5;
 	}
 
-	oTable = $("#file_form .mainTable").dataTable( {	
-			"sPaginationType": "full_numbers",
-			"bLengthChange": false,
-			"aaSorting": [[ MySortCol, "desc" ]],
-			"bFilter": false,
-			"sWrapper": false,
-			"sInfo": false,
-			"bAutoWidth": false,
-			"iDisplayLength": +EE.file.perPage,  
-			"aoColumns": MyCols,
-			"oLanguage": {
-				"sZeroRecords": EE.lang.noEntries,
-				"oPaginate": {
-					"sFirst": "<img src=\""+EE.file.themeUrl+"images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-					"sPrevious": "<img src=\""+EE.file.themeUrl+"images/pagination_prev_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
-					"sNext": "<img src=\""+EE.file.themeUrl+"images/pagination_next_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />", 
-					"sLast": "<img src=\""+EE.file.themeUrl+"images/pagination_last_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />"
-				}
-			},
-			"bProcessing": true,
-			"bServerSide": true,
-			"sAjaxSource": EE.BASE+"&C=content_files&M=file_ajax_filter&time=" + time,
-			"fnServerData": fnDataTablesPipeline
-		});
+	oTable = $("#file_form .mainTable").dataTable({ 
+		"sPaginationType": "full_numbers",
+		"bLengthChange": false,
+		"aaSorting": [[ MySortCol, "desc" ]],
+		"bFilter": false,
+		"sWrapper": false,
+		"sInfo": false,
+		"bAutoWidth": false,
+		"iDisplayLength": +EE.file.perPage,	 
+		"aoColumns": MyCols,
+		"oLanguage": {
+			"sZeroRecords": EE.lang.noEntries,
+			"oPaginate": {
+				"sFirst": "<img src=\""+EE.file.themeUrl+"images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
+				"sPrevious": "<img src=\""+EE.file.themeUrl+"images/pagination_prev_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
+				"sNext": "<img src=\""+EE.file.themeUrl+"images/pagination_next_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />", 
+				"sLast": "<img src=\""+EE.file.themeUrl+"images/pagination_last_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />"
+			}
+		},
+		"bProcessing": true,
+		"bServerSide": true,
+		"sAjaxSource": EE.BASE+"&C=content_files&M=file_ajax_filter&time=" + new Date().getTime(),
+		"fnServerData": fnDataTablesPipeline
+	});
 
-		$("#keywords").keyup( function () {
+	$("#keywords").keyup(function () {
 		/* Filter on the column (the index) of this element */
-			oTable.fnDraw();
-		});
+		oTable.fnDraw();
+	});
 
-		$("select#dir_id").change(function () {
-			oTable.fnDraw();
-		});	
-   
-		$("select#cat_id").change(function () {
-			oTable.fnDraw();
-		});	
-		$("select#file_type").change(function () {
-			oTable.fnDraw();
-		});
-		$("select#date_range").change(function () {
-			oTable.fnDraw();
-		});	
-});
+	$("select#dir_id, select#cat_id, select#file_type, select#date_range").change(function () {
+		oTable.fnDraw();
+	});
+};
