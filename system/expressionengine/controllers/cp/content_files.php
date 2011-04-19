@@ -408,7 +408,7 @@ class Content_files extends CI_Controller {
 				$r[] = $this->localize->set_human_time($file['upload_date'], TRUE);
 
 
-				$action_base = BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'file='.$file['file_id'];
+				$action_base = BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'file_id='.$file['file_id'];
 				$actions = '<a href="'.$action_base.AMP.'action=download" title="'.lang('file_download').'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png"></a>';
 				$actions .= '&nbsp;&nbsp;';
 				$actions .= '<a href="'.$action_base.AMP.'action=delete" title="'.lang('delete_selected_files').'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png"></a>';
@@ -952,7 +952,7 @@ class Content_files extends CI_Controller {
 		if ( ! isset($files))
 		{
 			// No file, why are we here?
-			if ( ! ($files = $this->input->get_post('file')))
+			if ( ! ($files = $this->input->get_post('file_id')))
 			{
 				show_error(lang('unauthorized_access'));
 			}			
