@@ -1682,6 +1682,8 @@ class Filemanager {
 		
 		// Set file id in return data
 		$file_data['file_id'] = $saved['file_id'];
+		$file_data['upload_directory_prefs'] = $dir;
+		$file_data['modified_date'] = $this->EE->localize->set_human_time();
 		
 		// Return errors from the filemanager
 		if ( ! $saved['status'])
