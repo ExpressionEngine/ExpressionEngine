@@ -2048,6 +2048,7 @@ class Content_files extends CI_Controller {
 		$this->load->library('table');
 
 		$this->cp->set_variable('cp_page_title', lang('file_upload_prefs'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}},
@@ -2089,6 +2090,8 @@ class Content_files extends CI_Controller {
 		$this->load->library('table');
 		$id = $this->input->get_post('id');
 
+		$type = ($id) ? 'edit' : 'new';		$type = ($id) ? 'edit' : 'new';
+
 		$this->cp->add_js_script(array('file' => 'cp/files/upload_pref_settings'));
 
 
@@ -2099,7 +2102,7 @@ class Content_files extends CI_Controller {
 									));
 
 
-		$type = ($id) ? 'edit' : 'new';
+
 
 		$fields = array(
 			'id', 'site_id', 'name', 'server_path',
@@ -2111,6 +2114,8 @@ class Content_files extends CI_Controller {
 		);
 
 		$data['image_sizes'] = array();
+		
+
 
 		if ($type == 'new')
 		{
@@ -2211,6 +2216,9 @@ class Content_files extends CI_Controller {
 				}
 			}
 		}
+
+		// Page Title
+		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
 
 		$title = ($type == 'edit') ? 'edit_file_upload_preferences' : 'new_file_upload_preferences';
 
