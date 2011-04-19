@@ -79,12 +79,6 @@ class Content_files extends CI_Controller {
 
 		$this->cp->set_right_nav($nav);
 		
-		$this->cp->set_action_nav(array(
-			'upload_file' => '',
-			'batch_upload' => ''
-		));
-		
-
 		$this->_base_url = BASE.AMP.'C=content_files';
 	}
 
@@ -101,7 +95,13 @@ class Content_files extends CI_Controller {
 
 		// Page Title
 		$this->cp->set_variable('cp_page_title', lang('content_files'));
-
+		
+		$this->cp->set_action_nav(array(
+			'upload_file' => ''
+		));
+		
+		// both filebrowser and fileuploader need to be loaded because 
+		// fileuploader depends on filebrowser's methods
 		$this->cp->add_js_script(array(
 			'plugin'	=> array('overlay', 'overlay.apple',
 								'ee_upload', 'dataTables'),
