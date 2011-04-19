@@ -212,7 +212,7 @@ class File_model extends CI_Model {
 		$file_id = (isset($data['file_id'])) ? $data['file_id'] : $this->db->insert_id();
 
 		// Check to see if the file_id is valid
-		$sucessful = (is_int($file_id) AND $file_id > 0) ? $file_id : FALSE;
+		$successful = (is_numeric($file_id) AND $file_id > 0) ? $file_id : FALSE;
 
 		// Deal with categories
 		$this->load->model('file_category_model');
