@@ -737,16 +737,13 @@ class Content_files extends CI_Controller {
 		// 	}
 		// }
 		
-		
-		$thumb_info = $this->filemanager->get_thumb($upload_response, $file_dir);
-		$upload_response['thumb'] = $thumb_info['thumb'];
-		$upload_response['thumb_class'] = $thumb_info['thumb_class'];
-		
-		// Copying file_name to name for addons
+		// Copying file_name to name and file_thumb to thumb for addons
 		$upload_response['name'] = $upload_response['file_name'];
+		$upload_response['thumb'] = $upload_response['file_thumb'];
 		
 		$vars = array(
-			'file'		=> $this->javascript->generate_json($upload_response, TRUE),
+			'file_json'	=> $this->javascript->generate_json($upload_response, TRUE),
+			'file'		=> $upload_response,
 			'success'	=> lang('upload_success'),
 			'file_data'	=> $upload_response,
 			'date'		=> date('M d Y - H:ia')

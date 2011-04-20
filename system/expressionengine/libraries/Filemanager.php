@@ -1649,6 +1649,8 @@ class Filemanager {
 		$this->EE->load->model('file_model');
 		$file_dimensions = $this->EE->file_model->get_dimensions_by_dir_id($dir['id']);
 		
+		$thumb_info = $this->get_thumb($file['file_name'], $dir['id']);
+		
 		// Build list of information to save and return
 		$file_data = array(
 			'upload_location_id'	=> $dir['id'],
@@ -1661,7 +1663,8 @@ class Filemanager {
 			'mime_type'				=> $file['file_type'],
 			
 			'rel_path'				=> $file['full_path'],
-			'file_thumb'			=> $dir['url'].'_thumbs/thumb_'.$file['file_name'],
+			'file_thumb'			=> $thumb_info['thumb'],
+			'thumb_class' 			=> $thumb_info['thumb_class'],
 		
 			'modified_by_member_id' => $this->EE->session->userdata('member_id'),
 			'uploaded_by_member_id'	=> $this->EE->session->userdata('member_id'),
@@ -1682,8 +1685,16 @@ class Filemanager {
 		
 		// Set file id in return data
 		$file_data['file_id'] = $saved['file_id'];
+		
+		// Stash upload directory prefs in case
 		$file_data['upload_directory_prefs'] = $dir;
+		
+		// Manually create a modified date
 		$file_data['modified_date'] = $this->EE->localize->set_human_time();
+		
+		// Change file size to human readable
+		$this->EE->load->helper('number');
+		$file_data['file_size'] = byte_format($file_data['file_size']);
 		
 		// Return errors from the filemanager
 		if ( ! $saved['status'])
