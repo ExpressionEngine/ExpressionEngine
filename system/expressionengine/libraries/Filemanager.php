@@ -1636,12 +1636,18 @@ class Filemanager {
 
 		$file = $this->EE->upload->data();
 		
+		// (try to) Set proper permissions
+		@chmod($file['full_path'], DIR_WRITE_MODE);
+
+
 		// --------------------------------------------------------------------
 		// Add file the database
 		
 		// Make sure the file has a valid MIME Type
 		if ( ! $file['file_type'])
 		{
+			// @todo Clean up (unlink, etc)
+			
 			return array('error' => lang('invalid_mime'));
 		}
 		
