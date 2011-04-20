@@ -17,6 +17,15 @@
 
 	/**
 	 * Loads in the html needed and fires off the function to build the dialog
+	 *
+	 * Options you can pass in:
+	 *	- type: 		string		either 'filebrowser' or 'filemanager', this is 
+	 *								used to determine what buttons to show
+	 *	- trigger: 		string		the jQuery selector to bind the upload dialog to
+	 *	- load: 		function	callback called when the modal is loaded
+	 *	- open: 		function	callback called when opening the modal
+	 *	- after_upload: function	callback called after the upload is complete
+	 *	- close: 		function	callback called when closing the modal
 	 */
 	$.ee_fileuploader = function(options) {
 		var default_options = {};
@@ -153,7 +162,14 @@
 	
 	// --------------------------------------------------------------------
 	
-	
+	/**
+	 * This method is called after the upload
+	 *
+	 * Responsibilities
+	 *	1. Call after_upload callback
+	 *	2. Change the class to after_upload
+	 *	3. Establish listeners for the buttons
+	 */
 	$.ee_fileuploader.after_upload = function() {
 		var file = window.upload_iframe.file;
 		
