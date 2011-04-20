@@ -54,6 +54,7 @@
 			// Load the file uploader
 			if (typeof $.ee_fileuploader != "undefined") {
 				$.ee_fileuploader({
+					type: 'fileuploader',
 					open: function(file_uploader) {
 						$.ee_fileuploader.set_directory_id($('#dir_choice').val());
 					},

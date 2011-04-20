@@ -10,7 +10,6 @@ $lang = array(
 'file_information'		=> 'File Information',
 'upload' 				=> 'Upload',
 'upload_file' 			=> 'Upload File',
-'select_file'			=> 'Select File',
 'file_upload' 			=> 'File Upload',
 'file_download' 		=> 'Download',
 'file_tools'			=> 'File Tools',
@@ -35,6 +34,10 @@ $lang = array(
 'email_files'			=> 'Email Selected Files',
 'delete_selected_files'	=> 'Delete Selected Files',
 'edit_file'				=> 'Edit File',
+
+// Upload modal
+'use_file'				=> 'Use Uploaded File',
+'browse_files'			=> 'Browse Files',
 
 'edit_modes'			=> 'Edit Modes',
 'resize'				=> 'Resize',

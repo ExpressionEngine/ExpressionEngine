@@ -284,6 +284,11 @@ ul.bulleted {
 	border:				0;
 }
 
+.cancel {
+	font-weight: 		normal;
+	padding: 			0 10px;
+}
+
 .less_important_bttn,
 .rightNav .submit {
 	font-weight:	normal;
@@ -3443,17 +3448,33 @@ a.file_chooser_thumbnail.last_row {
 	width:				586px;
 }
 
-#file_uploader.upload_step_1 #choose_file {
+.button_bar a.submit {
+	display: inline-block;
+	font-weight: normal;
+	margin: 0 0 0 4px;
+}
+
+#file_uploader.before_upload .after_upload {
 	display: 			none;
 }
 
-#file_uploader.upload_step_2 #upload_file {
+#file_uploader.after_upload .before_upload {
 	display: 			none;
+}
+
+#file_uploader .cancel:link,
+#file_uploader .cancel:visited {
+	color: 				#e0e5e6;
+	color: 				rgba(255, 255, 255, 0.7);
+}
+
+#file_uploader .cancel:hover {
+	color: 				#fff;
 }
 
 #file_uploader iframe {
 	border:				0 none;
-	height:				277px;
+	height:				208px;
 	width:				572px;
 }
 
@@ -3475,6 +3496,39 @@ html#file_upload_iframe #upload_dir {
 html#file_upload_iframe p {
 	margin:				11px 0;
 }
+
+#file_upload_iframe .upload_success img {
+	border: 			1px solid #cdd7e0;
+	margin: 			0 15px 0 0;
+	padding: 			5px;
+	float: 				left;
+}
+
+#file_upload_iframe .upload_success h2 {
+	margin-bottom: 		10px;
+}
+
+#file_upload_iframe .upload_success table {
+	border-collapse: 	collapse;
+	width: 				470px;
+}
+
+#file_upload_iframe .upload_success th,
+#file_upload_iframe .upload_success td {
+	border-bottom: 		1px solid #cdd7e0;
+	padding: 			4px;
+}
+
+#file_upload_iframe .upload_success tr:last-child th,
+#file_upload_iframe .upload_success tr:last-child td {
+	border-bottom: 		0 none;
+}
+
+#file_upload_iframe .upload_success th {
+	padding-right: 		25px;
+	text-align: 		left;
+}
+
 
 /* @end */
 

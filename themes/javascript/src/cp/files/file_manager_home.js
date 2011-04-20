@@ -35,13 +35,14 @@ $(document).ready(function () {
 
 $.ee_filemanager.file_uploader = function() {
 	$.ee_fileuploader({
+		type: 'filemanager',
 		load: function() {
 			$.template("filemanager_row", $('#filemanager_row').remove());
 		},
 		open: function(file_uploader) {
 			$.ee_fileuploader.set_directory_id($('#dir_id').val());
 		},
-		close: function(file_uploader, file){
+		after_upload: function(file_uploader, file){
 			// Clone the first valid row
 			var $first_row = $('.mainTable tbody tr:first').clone();
 			
