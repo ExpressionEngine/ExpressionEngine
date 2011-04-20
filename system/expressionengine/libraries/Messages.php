@@ -2743,8 +2743,9 @@ DOH;
  		/** ---------------------------------*/
  		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->highlight_code = TRUE;
+		$this->EE->typography->initialize(array(
+				'highlight_code'	=> TRUE)
+				);
 
 		$this->single_parts['include']['parsed_message'] = $this->EE->typography->parse_type(stripslashes($data['body']), 
 									 		 								  array(

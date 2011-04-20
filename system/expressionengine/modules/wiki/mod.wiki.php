@@ -1005,9 +1005,10 @@ class Wiki {
 		/** ----------------------------------------*/
 		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->parse_images = FALSE;
-		$this->EE->typography->parse_smileys = FALSE;
+		$this->EE->typography->initialize(array(
+				'parse_images'	=> FALSE,
+				'parse_smileys'	=> FALSE)
+				);
 		
 		$summary = $this->convert_curly_brackets($this->EE->typography->parse_type( $this->wiki_syntax($query->row('upload_summary') ), 
 												  array(
@@ -1343,9 +1344,10 @@ class Wiki {
 		$parse_article = stristr($template, '{article}');
 		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->parse_images = FALSE;
-		$this->EE->typography->parse_smileys = FALSE;
+		$this->EE->typography->initialize(array(
+				'parse_images'	=> FALSE,
+				'parse_smileys'	=> FALSE)
+				);
 		
 		$titles = $row_start;
 		$i = 0;
@@ -1584,14 +1586,11 @@ class Wiki {
 		/** ----------------------------------------*/
 		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->parse_images = FALSE;
-		$this->EE->typography->parse_smileys = FALSE;
-		
-		if ($type == 'rss' OR $type == 'atom')
-		{
-			$this->EE->typography->encode_email = FALSE;
-		}	
+		$this->EE->typography->initialize(array(
+				'parse_images'	=> FALSE,
+				'parse_smileys'	=> FALSE,
+				'encode_email'	=> ($type == 'rss' OR $type == 'atom') ? FALSE : TRUE)
+				);
 		
 		$changes = '';
 		$count = 0;
@@ -2381,9 +2380,10 @@ class Wiki {
 			$this->return_data = $this->_allow_if('preview', $this->return_data);
 			
 			$this->EE->load->library('typography');
-			$this->EE->typography->initialize();
-			$this->EE->typography->parse_images = FALSE;
-			$this->EE->typography->parse_smileys = FALSE;
+			$this->EE->typography->initialize(array(
+						'parse_images'	=> FALSE,
+						'parse_smileys'	=> FALSE)
+						);
 			
 			$preview = $this->convert_curly_brackets($this->EE->typography->parse_type($this->wiki_syntax($_POST['article_content']), 
 													  array(
@@ -2974,9 +2974,10 @@ class Wiki {
 		}
 		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->parse_images = FALSE;
-		$this->EE->typography->parse_smileys = FALSE;
+		$this->EE->typography->initialize(array(
+				'parse_images'	=> FALSE,
+				'parse_smileys'	=> FALSE)
+				);
 		
 		$article = $this->convert_curly_brackets($this->EE->typography->parse_type( $this->wiki_syntax($results->row('page_content') ), 
 												  array(
@@ -3617,9 +3618,10 @@ class Wiki {
 		}
 								
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->parse_images = FALSE;
-		$this->EE->typography->parse_smileys = FALSE;
+		$this->EE->typography->initialize(array(
+				'parse_images'	=> FALSE,
+				'parse_smileys'	=> FALSE)
+				);
 		
 		$article = $this->convert_curly_brackets($this->EE->typography->parse_type( $this->wiki_syntax($results->row('page_content') ), 
 												  array(
@@ -4029,9 +4031,10 @@ class Wiki {
 			$revision['path:close_revision'] = $link.'/revision/'.$revision['revision_id'].'/close';
 			
 			$this->EE->load->library('typography');
-			$this->EE->typography->initialize();
-			$this->EE->typography->parse_images = FALSE;
-			$this->EE->typography->parse_smileys = FALSE;
+			$this->EE->typography->initialize(array(
+						'parse_images'	=> FALSE,
+						'parse_smileys'	=> FALSE)
+						);
 			
 			$revision['article'] = $this->convert_curly_brackets($this->EE->typography->parse_type( $this->wiki_syntax($this->EE->security->xss_clean($content)), 
 																  array(
@@ -4744,9 +4747,10 @@ class Wiki {
 		}
 
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->parse_images = FALSE;
-		$this->EE->typography->parse_smileys = FALSE;
+		$this->EE->typography->initialize(array(
+				'parse_images'	=> FALSE,
+				'parse_smileys'	=> FALSE)
+				);
 		
 		$results = '';
 		$i = 0;
@@ -5071,9 +5075,10 @@ class Wiki {
 		/** ----------------------------------------*/
 		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->parse_images = FALSE;
-		$this->EE->typography->parse_smileys = FALSE;
+		$this->EE->typography->initialize(array(
+				'parse_images'	=> FALSE,
+				'parse_smileys'	=> FALSE)
+				);
 		
 		$files = '';
 		$count = 0;

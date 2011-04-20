@@ -379,9 +379,10 @@ class Email {
 				}
 
 				$this->EE->load->library('typography');
-				$this->EE->typography->initialize();
-				$this->EE->typography->encode_email = FALSE;
-				$this->EE->typography->convert_curly = FALSE;
+				$this->EE->typography->initialize(array(
+								'encode_email'	=> FALSE,
+								'convert_curly'	=> FALSE)
+								);
 
 				$channel->fetch_categories();
 				$channel->parse_channel_entries();

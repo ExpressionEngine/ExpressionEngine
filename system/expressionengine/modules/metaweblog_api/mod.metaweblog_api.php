@@ -781,8 +781,9 @@ class Metaweblog_api {
 	  	if ($this->parse_type === TRUE)
 	  	{
 			$this->EE->load->library('typography');
-			$this->EE->typography->initialize();
-			$this->EE->typography->encode_email = FALSE;
+			$this->EE->typography->initialize(array(
+						'encode_email'	=> FALSE)
+						);
 			$this->EE->config->set_item('enable_emoticons', 'n');
 		}
 

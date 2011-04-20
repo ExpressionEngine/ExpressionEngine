@@ -1303,9 +1303,10 @@ class Search {
 		}
 		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->convert_curly = FALSE;
-		$this->EE->typography->encode_email = FALSE;
+		$this->EE->typography->initialize(array(
+				'convert_curly'	=> FALSE,
+				'encode_email'	=> FALSE)
+				);
 		
 		$channel->fetch_categories();
 		$channel->parse_channel_entries();

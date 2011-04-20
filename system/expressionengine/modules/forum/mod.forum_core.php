@@ -1642,9 +1642,10 @@ class Forum_Core extends Forum {
 		/** --------------------------------------------------*/
 		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->highlight_code = TRUE;
-		$this->EE->typography->encode_type = 'noscript';
+		$this->EE->typography->initialize(array(
+				'highlight_code'	=> TRUE,
+				'encode_type'		=> 'noscript')
+				);
 
 		$res = '';
 		foreach ($qry->result_array() as $row)
@@ -3877,8 +3878,9 @@ class Forum_Core extends Forum {
 				
 		// Load the typography class
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->highlight_code = TRUE;
+		$this->EE->typography->initialize(array(
+				'highlight_code'	=> TRUE)
+				);
 		
 		// Loop through the result
 		$thread_rows  = '';
@@ -5653,7 +5655,10 @@ class Forum_Core extends Forum {
 		}
 				
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
+		$this->EE->typography->initialize(array(
+				'highlight_code'	=> TRUE,
+				'parse_smileys'		=> (isset($_POST['smileys'])) ? TRUE : FALSE)
+				);
 		
 		$forum_text_formatting  = 'xhtml';
 		$forum_html_formatting 	= 'safe';
@@ -5719,11 +5724,6 @@ class Forum_Core extends Forum {
 									}
 				break;
 		}
-		
-		
-		
-		$this->EE->typography->highlight_code = TRUE;
-		$this->EE->typography->parse_smileys = (isset($_POST['smileys'])) ? TRUE : FALSE;
 
 		$body = str_replace('{include:', '&#123;include:', $this->EE->input->get_post('body'));
 		$body = str_replace('{path:', '&#123;path:', $body);
@@ -6969,9 +6969,10 @@ class Forum_Core extends Forum {
 		/** ----------------------------------------*/
 	  
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->parse_images = FALSE;
-		$this->EE->typography->highlight_code = FALSE;
+		$this->EE->typography->initialize(array(
+				'parse_images'		=> FALSE,
+				'highlight_code'	=> FALSE)
+				);
 		
 		$query = $this->EE->db->query("SELECT title FROM exp_forum_topics WHERE topic_id = '".$data['topic_id']."'");
 
@@ -7740,9 +7741,10 @@ class Forum_Core extends Forum {
 		}
 		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->highlight_code = TRUE;
-		$this->EE->typography->parse_smileys = ($query->row('parse_smileys')  == 'y') ? TRUE : FALSE;
+		$this->EE->typography->initialize(array(
+				'highlight_code'	=> TRUE,
+				'parse_smileys'		=> ($query->row('parse_smileys')  == 'y') ? TRUE : FALSE)
+				);
 
 		$body = $this->EE->typography->parse_type($query->row('body') ,
  								  array(
@@ -8709,9 +8711,10 @@ class Forum_Core extends Forum {
 		$query = $this->EE->db->query("SELECT forum_text_formatting, forum_html_formatting, forum_auto_link_urls, forum_allow_img_urls FROM exp_forums WHERE forum_id = '{$forum_id}'");
 		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->highlight_code = TRUE;
-		$this->EE->typography->parse_smileys = ($parse_smileys == 'y') ? TRUE : FALSE;
+		$this->EE->typography->initialize(array(
+				'highlight_code'	=> TRUE,
+				'parse_smileys'		=> ($parse_smileys == 'y') ? TRUE : FALSE)
+				);
 		
 		$str = $this->var_swap($str,
 								array(
