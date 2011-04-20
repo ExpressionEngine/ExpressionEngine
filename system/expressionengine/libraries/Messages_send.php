@@ -873,10 +873,11 @@ class EE_Messages_send extends EE_Messages {
 			if ($query->num_rows() > 0)
 			{
 				$this->EE->load->library('typography');
-				$this->EE->typography->initialize();
-				$this->EE->typography->parse_images = FALSE;
- 				$this->EE->typography->smileys = FALSE;
-				$this->EE->typography->highlight_code = TRUE;
+				$this->EE->typography->initialize(array(
+ 				 				'parse_images'		=> FALSE,
+ 				 				'smileys'			=> FALSE,
+ 				 				'highlight_code'	=> TRUE)
+ 				 				);
 
 				if ($this->EE->config->item('enable_censoring') == 'y' AND $this->EE->config->item('censored_words') != '')
         		{

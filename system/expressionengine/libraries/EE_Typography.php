@@ -69,6 +69,25 @@ class EE_Typography extends CI_Typography {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * __set magic method
+	 *
+	 * Handles writing directly to the class properties
+	 *
+	 * @param	string
+	 * @param	mixed
+	 * @return	void
+	 */
+	public function __set($var, $val)
+	{
+		if (property_exists($this, $var))
+		{
+			$this->$var = $val;
+		}
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Initialize
 	 *
 	 * Reset all class properties - call after loading and before use

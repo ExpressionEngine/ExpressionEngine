@@ -266,13 +266,12 @@ class Comment_mcp {
 		
 		if ($comment_results != FALSE)
 		{
-			$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
-		
 			$this->EE->load->library('typography');
-			$this->EE->typography->initialize($config);
-			
-			$this->EE->typography->parse_images = FALSE;
-			$this->EE->typography->allow_headings = FALSE;
+			$this->EE->typography->initialize(array(
+						'parse_images'		=> FALSE,
+						'allow_headings'	=> FALSE,
+						'word_censor'		=> ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
+						);
 			
 			foreach ($comment_results->result_array() as $row)
 			{
@@ -714,14 +713,12 @@ function fnOpenClose ( oSettings )
 		// Note- empty string added because otherwise it will throw a js error
 		if ($comment_results != FALSE)
 		{
-
-			$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
-		
 			$this->EE->load->library('typography');
-			$this->EE->typography->initialize($config);
-		
-			$this->EE->typography->parse_images = FALSE;
-			$this->EE->typography->allow_headings = FALSE;
+			$this->EE->typography->initialize(array(
+						'parse_images'		=> FALSE,
+						'allow_headings'	=> FALSE,
+						'word_censor'		=> ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
+						);
 		
 			foreach ($comment_results->result_array() as $comment)
 			{
@@ -1156,8 +1153,9 @@ function fnOpenClose ( oSettings )
 		$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
 		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize($config);
-		$this->EE->typography->parse_images = FALSE;
+		$this->EE->typography->initialize(array(
+				'parse_images'	=> FALSE)
+				);
 
 		$vars['display_comment'] = $this->EE->typography->parse_type($vars['comment'],
 										array(
@@ -1904,11 +1902,11 @@ function fnOpenClose ( oSettings )
 		$this->EE->load->library('subscription');
 			
 		// Instantiate Typography class
-		$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
-	
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize($config);
-		$this->EE->typography->parse_images = FALSE;
+		$this->EE->typography->initialize(array(
+				'parse_images'		=> FALSE,
+				'word_censor'		=> ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
+				);
 
 
 		// Grab the required comments

@@ -1417,9 +1417,10 @@ class Channel_standalone extends Channel {
 		/** ----------------------------------------*/
 
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
+		$this->EE->typography->initialize(array(
+				'convert_curly'	=> FALSE)
+				);
 
-		$this->EE->typography->convert_curly = FALSE;
 		$file_dirs = $this->EE->functions->fetch_file_paths();
 
 		$match['1'] = str_replace(LD.'title'.RD, stripslashes($this->EE->input->post('title')), $match['1']);

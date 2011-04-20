@@ -427,8 +427,9 @@ class Channel_calendar extends Channel {
 				// We'll need this later
 
 				$this->EE->load->library('typography');
-				$this->EE->typography->initialize();
-			 	$this->EE->typography->convert_curly = FALSE;
+			 	$this->EE->typography->initialize(array(
+			 				 	'convert_curly'	=> FALSE)
+			 				 	);
 
 				/** ----------------------------------------
 				/**  Fetch query results and build data array

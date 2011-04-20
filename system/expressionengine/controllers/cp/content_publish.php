@@ -586,8 +586,7 @@ class Content_publish extends CI_Controller {
 		
 		$this->load->library('typography');
 		
-		$this->typography->initialize();
-		$this->typography->convert_curly = FALSE;
+		$this->typography->initialize(array('convert_curly' => FALSE));
 		
 		$show_edit_link = TRUE;
 		$show_comments_link = TRUE;

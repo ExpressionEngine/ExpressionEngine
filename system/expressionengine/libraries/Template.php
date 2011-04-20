@@ -4066,9 +4066,9 @@ class EE_Template {
 			
 			// Instantiate Typography only if necessary
 			$this->EE->load->library('typography');
-			$this->EE->typography->initialize();
-			
-			$this->EE->typography->convert_curly = (isset($prefs['convert_curly']) && $prefs['convert_curly'] == 'n') ? FALSE : TRUE;
+			$this->EE->typography->initialize(array(
+				'convert_curly'	=> (isset($prefs['convert_curly']) && $prefs['convert_curly'] == 'n') ? FALSE : TRUE)
+				);
 			
 			$value = $this->EE->typography->parse_type($raw_content, $prefs);
 		}

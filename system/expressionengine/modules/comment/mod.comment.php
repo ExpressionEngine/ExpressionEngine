@@ -680,13 +680,12 @@ class Comment {
 		/**  Instantiate Typography class
 		/** ----------------------------------------*/
 
-		$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
-		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize($config);
-		
-		$this->EE->typography->parse_images = FALSE;
-		$this->EE->typography->allow_headings = FALSE;
+		$this->EE->typography->initialize(array(
+				'parse_images'		=> FALSE,
+				'allow_headings'	=> FALSE,
+				'word_censor'		=> ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
+				);
 
 		/** ----------------------------------------
 		/**  Fetch all the date-related variables
@@ -1860,14 +1859,13 @@ class Comment {
 		/**  Instantiate Typography class
 		/** ----------------------------------------*/
 
-		$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
-		
-		$this->EE->load->library('typography');
-		$this->EE->typography->initialize($config);
-		
-		$this->EE->typography->parse_images = FALSE;
-		$this->EE->typography->allow_headings = FALSE;
-		$this->EE->typography->encode_email = FALSE;
+		$this->EE->load->library('typography');		
+		$this->EE->typography->initialize(array(
+				'parse_images'		=> FALSE,
+				'allow_headings'	=> FALSE,
+				'encode_email'		=> FALSE,
+				'word_censor'		=> ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
+				);
 
 		$this->EE->db->select('channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.comment_max_chars');
 		$this->EE->db->where('channel_titles.channel_id = '.$this->EE->db->dbprefix('channels').'.channel_id');
@@ -2746,14 +2744,13 @@ class Comment {
 		/**  Instantiate Typography class
 		/** ----------------------------------------*/
 
-		$config = ($this->EE->config->item('comment_word_censoring') == 'y') ? array('word_censor' => TRUE) : array();
-		
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize($config);
-		
-		$this->EE->typography->parse_images = FALSE;
-		$this->EE->typography->allow_headings = FALSE;
- 		$this->EE->typography->smileys = FALSE;
+		$this->EE->typography->initialize(array(
+				'parse_images'		=> FALSE,
+				'allow_headings'	=> FALSE,
+				'smileys'			=> FALSE,
+				'word_censor'		=> ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
+				);
 
 		$comment = $this->EE->security->xss_clean($_POST['comment']);
 		$comment = $this->EE->typography->parse_type( $comment,

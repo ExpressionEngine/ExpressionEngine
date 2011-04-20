@@ -322,8 +322,9 @@ class Channel {
 		$this->track_views();
 
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->convert_curly = FALSE;
+		$this->EE->typography->initialize(array(
+				'convert_curly'	=> FALSE)
+				);
 
 		if ($this->enable['categories'] == TRUE)
 		{
@@ -5437,9 +5438,9 @@ class Channel {
 			unset($this->temp_array);
 
 			$this->EE->load->library('typography');
-			$this->EE->typography->initialize();
-
-			$this->EE->typography->convert_curly = FALSE;
+			$this->EE->typography->initialize(array(
+						'convert_curly'	=> FALSE)
+						);
 
 			$this->category_count = 0;
 			$total_results = count($this->cat_array);
@@ -5864,9 +5865,9 @@ class Channel {
 			if ($query->num_rows() > 0)
 			{
 				$this->EE->load->library('typography');
-				$this->EE->typography->initialize();
-
-				$this->EE->typography->convert_curly = FALSE;
+				$this->EE->typography->initialize(array(
+								'convert_curly'	=> FALSE)
+								);
 
 				$used = array();
 
@@ -6249,8 +6250,9 @@ class Channel {
 		$open = 0;
 
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->convert_curly = FALSE;
+		$this->EE->typography->initialize(array(
+				'convert_curly'	=> FALSE)
+				);
 
 		$this->category_count = 0;
 		$total_results = count($this->cat_array);
@@ -6820,8 +6822,9 @@ class Channel {
 		// parse custom fields
 
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-		$this->EE->typography->convert_curly = FALSE;
+		$this->EE->typography->initialize(array(
+				'convert_curly'	=> FALSE)
+				);
 
 		// parse custom fields
 		foreach($this->catfields as $ccv)
@@ -7570,9 +7573,9 @@ class Channel {
 		}
 
 		$this->EE->load->library('typography');
-		$this->EE->typography->initialize();
-
-		$this->EE->typography->convert_curly = FALSE;
+		$this->EE->typography->initialize(array(
+				'convert_curly'	=> FALSE)
+				);
 
 		if ($this->EE->TMPL->fetch_param('member_data') !== FALSE && $this->EE->TMPL->fetch_param('member_data') == 'yes')
 		{

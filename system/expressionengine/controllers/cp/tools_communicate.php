@@ -424,8 +424,10 @@ class Tools_communicate extends CI_Controller {
 			$this->load->library('typography');
 			$this->typography->initialize();
 
-			$this->typography->parse_images = FALSE;
-			$this->typography->parse_smileys = FALSE;
+			$this->typography->initialize(array(
+						'parse_images'	=> FALSE,
+						'parse_smileys'	=> FALSE)
+						);
 
 			if ($this->config->item('enable_censoring') == 'y' && $this->config->item('censored_words') != '')
         	{
@@ -835,8 +837,10 @@ class Tools_communicate extends CI_Controller {
 			$this->load->library('typography');
 			$this->typography->initialize();
 
-			$this->typography->parse_images = FALSE;
-			$this->typography->parse_smileys = FALSE;
+			$this->typography->initialize(array(
+						'parse_images'	=> FALSE,
+						'parse_smileys'	=> FALSE)
+						);
 
 			$message = $this->typography->parse_type($message, 
 											  array(
