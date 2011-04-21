@@ -3499,7 +3499,6 @@ html#file_upload_iframe p {
 
 #file_upload_iframe .upload_success img {
 	border: 			1px solid #cdd7e0;
-	margin: 			0 15px 0 0;
 	padding: 			5px;
 	float: 				left;
 }
@@ -3509,8 +3508,9 @@ html#file_upload_iframe p {
 }
 
 #file_upload_iframe .upload_success table {
-	border-collapse: 	collapse;
-	width: 				470px;
+	border-collapse: collapse;
+	float: right;
+	width: 470px;
 }
 
 #file_upload_iframe .upload_success th,
