@@ -36,7 +36,7 @@ if ($EE_view_disable !== TRUE)
 				{
 					foreach ($watermarks->result() as $wm)
 					{
-						$type = ($wm->wm_type == 't') ? lang('text') : lang('image');
+						$type = ($wm->wm_type == 'text') ? lang('text') : lang('image');
 						$this->table->add_row(
 							'<strong>'.$wm->wm_name.'</strong>',
 							$type,

@@ -217,9 +217,9 @@ class Updater {
 				'constraint'		=> 80
 			),
 			'wm_type' => array(
-				'type'				=> 'char',
-				'constraint'		=> 1,
-				'default'			=> 'n'
+				'type'				=> 'varchar',
+				'constraint'		=> 10,
+				'default'			=> 'text'
 			),
 			'wm_image_path' => array(
 				'type'				=> 'varchar',
@@ -248,14 +248,14 @@ class Updater {
 				'constraint'		=> 100
 			),
 			'wm_vrt_alignment' => array(
-				'type'				=> 'char',
-				'constraint'		=> 1,
-				'default'			=> 'T'
+				'type'				=> 'varchar',
+				'constraint'		=> 10,
+				'default'			=> 'top'
 			),
 			'wm_hor_alignment' => array(
-				'type'				=> 'char',
-				'constraint'		=> 1,
-				'default'			=> 'L'
+				'type'				=> 'varchar',
+				'constraint'		=> 10,
+				'default'			=> 'left'
 			),
 			'wm_padding' => array(
 				'type'				=> 'int',
