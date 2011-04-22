@@ -21,7 +21,7 @@ if ($EE_view_disable !== TRUE)
 		<?php
 			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
-										lang('id'),
+										array('data' => lang('id'), 'width' => '4%'),
 										lang('field_group'),
 										'',
 										'',
