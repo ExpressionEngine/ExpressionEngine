@@ -152,6 +152,8 @@ class EE_Extensions {
 		
 		$this->in_progress = $which;
 		$this->EE->load->library('security');
+		$this->EE->load->library('addons');
+		$this->EE->addons->is_package('');
 		
 		// Retrieve arguments for function
 		if (is_object($parameter_one) && is_php('5.0.0') == TRUE)
@@ -173,6 +175,7 @@ class EE_Extensions {
 			}
 		}
 		
+		
 		// Go through all the calls for this hook
 		foreach($this->extensions[$which] as $priority => $calls)
 		{
@@ -182,22 +185,17 @@ class EE_Extensions {
 				$class_name = ucfirst($class);
 				$name = $this->EE->security->sanitize_filename(strtolower(substr($class, 0, -4))); // remove '_ext' suffix
 				
-				$path = PATH_EXT.'ext.'.$name.EXT;
-				$third_party = FALSE;
-				
-				if ( ! file_exists($path))
+				$path = $this->EE->addons->_packages[$name]['extension']['path'].'/ext.'.$name.EXT;
+
+				if (file_exists($path))
 				{
-					// Third Party?
-					$path = PATH_THIRD.$name.'/ext.'.$name.EXT;
+					$this->EE->load->add_package_path($path);
+				}
 				
-					if ( ! file_exists($path))
-					{
-						$error = 'Unable to load the following extension file:<br /><br />'.'ext.'.$name.EXT;
-						return $this->EE->output->fatal_error($error);
-					}
-					
-					$third_party = TRUE;
-					$this->EE->load->add_package_path(PATH_THIRD.$name.'/');
+				else
+				{
+					$error = 'Unable to load the following extension file:<br /><br />'.'ext.'.$name.EXT;
+					return $this->EE->output->fatal_error($error);
 				}
 				
 				// Include File
@@ -267,10 +265,9 @@ class EE_Extensions {
 				
 				$this->in_progress = '';
 				
-				if ($third_party === TRUE)
-				{
-					$this->EE->load->remove_package_path(PATH_THIRD.$name.'/');
-				}
+
+				$this->EE->load->remove_package_path($path);
+
 				//  A $this->EE->extensions->end_script value of TRUE means that the called 
 				//	method wishes us to stop the calling of the main script.
 				//  In this case, even if there are methods after this one for

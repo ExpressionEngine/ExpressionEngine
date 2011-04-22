@@ -56,7 +56,7 @@ class EE_Addons {
 			'plugins'		=> 'pi',
 			'fieldtypes'	=> 'ft'
 		);
-		
+				
 		if ( ! is_array($this->_map))
 		{
 			$this->EE->load->helper('directory');
@@ -71,59 +71,21 @@ class EE_Addons {
 				'plugins'		=> array(),
 				'fieldtypes'	=> array()
 			);
-			
-			// First party is plural, third party is singular
-			// so we need some inflection references
-			
-			$_plural_map = array(
-					'modules'		=> 'module',
-					'extensions'	=> 'extension',
-					'plugins'		=> 'plugin',
-					'accessories'	=> 'accessory',
-					'fieldtypes'	=> 'fieldtype'
-			);
-
 
 			if (($map = directory_map(PATH_THIRD, 2)) !== FALSE)
 			{
-    			foreach ($map as $pkg_name => $files)
-    			{
-    				if ( ! is_array($files))
-    				{
-    					$files = array($files);
-    				}
+				$this->package_list($map);
 
-    				foreach ($files as $file)
-    				{
-    					if (is_array($file))
-    					{
-    						// we're only interested in the top level files for the addon
-    						continue;
-    					}
+			}
+			
+			// Run through extensions, modules and fieldtypes
+			foreach (array('extensions', 'modules', 'fieldtypes') as $val)
+			{
+				if (($map = directory_map(APPPATH.$val.'/', 2)) !== FALSE)
+				{
+					$this->package_list($map, $val, TRUE);
 
-    					foreach($type_ident as $addon_type => $ident)
-    					{
-    						if ($file == $ident.'.'.$pkg_name.EXT)
-    						{
-    							// Plugin classes don't have a suffix
-    							$class = ($ident == 'pi') ? ucfirst($pkg_name) : ucfirst($pkg_name).'_'.$ident;
-
-    							$this->_map[$addon_type][$pkg_name] = array(
-																	'path'	=> PATH_THIRD.$pkg_name.'/',
-																	'file'	=> $file,
-																	'name'	=> ucwords(str_replace('_', ' ', $pkg_name)),
-																	'class'	=> $class,
-																	'package' => $pkg_name
-    																	);
-
-    							// Add cross-reference for package lookups - singular keys
-    							$this->_packages[$pkg_name][$_plural_map[$addon_type]] =& $this->_map[$addon_type][$pkg_name];
-
-    							break;
-    						}
-    					}
-    				}
-    			}			    
+				}				
 			}
 			
 			ksort($this->_map[$type]);
@@ -133,7 +95,7 @@ class EE_Addons {
 		// And now first party addons - will override any third party packages of the same name.
 		// We can be a little more efficient here and only check the directory they asked for
 		
-		static $_fp_read = array();
+		static $_fp_read = array('extensions', 'modules', 'fieldtypes');
 		
 		// is_package calls this function with a blank key to skip
 		// first party - we'll do that right here instead of checking
@@ -182,7 +144,86 @@ class EE_Addons {
 
 		return $this->_map[$type];
 	}
+
+
+	// --------------------------------------------------------------------
 	
+	/**
+	 * Create package array
+	 *
+	 * @access	private
+	 * @param	array
+	 * @param	string
+	 * @param	bool
+	 * @return	void
+	 */
+	function package_list($map, $type = '', $native = FALSE)
+	{
+		$type_ident = array(
+			'modules'		=> 'mcp',
+			'extensions'	=> 'ext',
+			'accessories'	=> 'acc',
+			'plugins'		=> 'pi',
+			'fieldtypes'	=> 'ft'
+		);
+		
+		// First party is plural, third party is singular
+		// so we need some inflection references
+			
+		$_plural_map = array(
+					'modules'		=> 'module',
+					'extensions'	=> 'extension',
+					'plugins'		=> 'plugin',
+					'accessories'	=> 'accessory',
+					'fieldtypes'	=> 'fieldtype'
+		); 
+
+   		$type = ($type == '') ? '' : $type.'/';
+
+		foreach ($map as $pkg_name => $files)
+    	{
+    		if ( ! is_array($files))
+    		{
+    			$files = array($files);
+    		}
+
+			foreach ($files as $file)
+			{
+				if (is_array($file))
+				{
+					// we're only interested in the top level files for the addon
+					continue;
+				}
+
+				foreach($type_ident as $addon_type => $ident)
+				{
+					if ($file == $ident.'.'.$pkg_name.EXT)
+					{
+						// Plugin classes don't have a suffix
+						$class = ($ident == 'pi') ? ucfirst($pkg_name) : ucfirst($pkg_name).'_'.$ident;
+						$path = ($native) ? APPPATH.$type.$pkg_name.'/' : PATH_THIRD.$pkg_name.'/';
+						$author = ($native) ? 'native' : 'third_party';
+
+						$this->_map[$addon_type][$pkg_name] = array(
+														'path'	=> $path,
+														'file'	=> $file,
+														'name'	=> ucwords(str_replace('_', ' ', $pkg_name)),
+														'class'	=> $class,
+														'package' => $pkg_name,
+														'type' => $author
+														);
+
+						// Add cross-reference for package lookups - singular keys
+						$this->_packages[$pkg_name][$_plural_map[$addon_type]] =& $this->_map[$addon_type][$pkg_name];
+
+    					break;
+    				}
+    			}
+    		}
+    	}			    
+	}
+
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -297,6 +338,29 @@ class EE_Addons {
 		$this->get_files('');	// blank key lets us skip first party
 		return array_key_exists($name, $this->_packages);
 	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Package
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	mixed - FALSE if not a package, native or third_party otherwise
+	 */
+	function package_type($name, $type)
+	{
+		$this->get_files($type);	// blank key lets us skip first party
+
+		if ( ! array_key_exists($name, $this->_packages))
+		{
+			return FALSE;
+		}
+
+		return $this->_map[$type][$name]['type'];
+	}	
+	
+	
 }
 // END Addons class
 

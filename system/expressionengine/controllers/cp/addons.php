@@ -90,6 +90,7 @@ class Addons extends CI_Controller {
 		
 		$return = $this->input->get_post('return');
 		$package = $this->input->get_post('package');
+		$required = array();
 		
 		if ( ! $package OR ! $this->addons->is_package($package))
 		{
@@ -139,17 +140,32 @@ class Addons extends CI_Controller {
 			$this->functions->redirect(BASE.AMP.'C='.$_GET['return']);
 		}
 
+
 		$vars = array();
 		
 		foreach($components as $type => $info)
 		{
 			$inst_func = $type.'_installed';
 			$components[$type]['installed'] = $this->addons_model->$inst_func($package);
+
+			if ($type == 'extension')
+			{
+				include_once($info['path'].$info['file']);
+				$class = $info['class'];
+				
+				$out = new $class;
+				
+				if (isset($out->required_by) && is_array($out->required_by))
+				{			
+					$required[$type] = $out->required_by;
+				}
+			}
 		}
 		
 		$vars['form_action'] = 'C=addons'.AMP.'M=package_settings'.AMP.'package='.$package.AMP.'return='.$return;
 		$vars['package'] = ucfirst(str_replace('_', ' ', $package));
 		$vars['components'] = $components;
+		$vars['required'] = $required;
 		
 		$this->javascript->compile();
 		

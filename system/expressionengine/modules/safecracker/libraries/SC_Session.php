@@ -84,4 +84,4 @@ class SC_Session extends EE_Session
 }
 
 /* End of file SC_Session.php */
-/* Location: ./system/expressionengine/third_party/safecracker/library/SC_Session.php */
+/* Location: ./system/expressionengine/modules/safecracker/library/SC_Session.php */

@@ -114,4 +114,4 @@ class Safecracker_mcp
 }
 
 /* End of file mcp.safecracker.php */
-/* Location: ./system/expressionengine/third_party/modules/safecracker/mcp.safecracker.php */
+/* Location: ./system/expressionengine/modules/modules/safecracker/mcp.safecracker.php */
