@@ -373,7 +373,7 @@ class Filemanager {
 		
 		$prefs['upload_location_id'] = $dir_id;
 
-		$prefs = array_merge($dir_prefs, $prefs);
+		$prefs = array_merge($prefs, $dir_prefs);
 		
 		// Figure out the mime type
 		$mime = $this->security_check($file_path, $prefs);
