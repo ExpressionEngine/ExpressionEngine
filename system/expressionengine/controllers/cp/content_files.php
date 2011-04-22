@@ -2383,6 +2383,8 @@ class Content_files extends CI_Controller {
 		unset($_POST['cur_name']);
 		unset($_POST['submit']); // submit button
 		unset($_POST['add_image_size']);
+		unset($_POST['add_size']);
+		
 
 		$data = array();
 		$no_access = array();
