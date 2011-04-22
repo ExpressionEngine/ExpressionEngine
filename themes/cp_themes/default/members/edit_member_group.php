@@ -40,22 +40,22 @@ if ($EE_view_disable !== TRUE)
 						
 			<div>
 				<h3 class="accordion"><?=lang('group_name')?></h3>
-				<div style="padding: 5px 1px;">
-						<?php
-							$this->table->set_heading(lang('preference'), lang('setting'));
+				<div>
+					<?php
+						$this->table->set_heading(lang('preference'), lang('setting'));
 
-							$preference = lang('group_name', 'group_title');
-							$controls = form_input(array('id'=>'group_title','name'=>'group_title','class'=>'field', 'value'=>$group_title));
-							$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+						$preference = lang('group_name', 'group_title');
+						$controls = form_input(array('id'=>'group_title','name'=>'group_title','class'=>'field', 'value'=>$group_title));
+						$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
-							$preference = lang('group_description', 'group_description');
-							$controls = form_textarea(array('id'=>'group_description','name'=>'group_description','cols'=>70,'rows'=>10,'class'=>'field', 'value'=>$group_description));
-							$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-							
-							echo $this->table->generate();
-							// Clear out of the next one
-							$this->table->clear();
-						?>
+						$preference = lang('group_description', 'group_description');
+						$controls = form_textarea(array('id'=>'group_description','name'=>'group_description','cols'=>70,'rows'=>10,'class'=>'field', 'value'=>$group_description));
+						$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+						
+						echo $this->table->generate();
+						// Clear out of the next one
+						$this->table->clear();
+					?>
 				</div>
 
 				<?php if ($group_id != 1):?>

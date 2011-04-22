@@ -61,7 +61,7 @@
 .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited { color: #ffffff; text-decoration: none; outline: none; }
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus { border: 1px solid #96A7B2; background: #8ea1ad url(../images/ui-bg_highlight-soft_40_8ea1ad_1x100.png) 50% 50% repeat-x; font-weight: normal; color: #ffffff; outline: none; }
 .ui-state-hover a, .ui-state-hover a:hover { color: #ffffff; text-decoration: none; outline: none; }
-.ui-state-active, .ui-widget-content .ui-state-active, .ui-state-default.ui-state-highlight.ui-state-active {border: 1px solid #DFD67A; background: #FFF8AA url(../images/ui-bg_highlight-soft_25_FFF8AA_1x100.png) 50% top repeat-x; color: #40381A;}
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-state-default.ui-state-highlight.ui-state-active {border: 1px solid #37444D; background: #2a3940 url('../images/backgrounds_sprite.png') repeat-x 0 -540px; color: #fff;}
 .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { color: #ffffff; outline: none; text-decoration: none; }
 
 /* Interaction Cues
@@ -282,12 +282,12 @@
 .ui-widget-overlay { background: #262626 url(../images/ui-bg_flat_0_262626_40x100.png) 50% 50% repeat-x; opacity: .85;filter:Alpha(Opacity=85); }
 .ui-widget-shadow { margin: 0 0 0 0; padding: 0; background: #262626 url(../images/ui-bg_flat_0_262626_40x100.png) 50% 50% repeat-x; opacity: 0;filter:Alpha(Opacity=0); -moz-border-radius: 0; -webkit-border-radius: 0; }/* Accordion
 ----------------------------------*/
-.ui-accordion .ui-accordion-header { cursor: pointer; position: relative; margin-top: 1px; zoom: 1; }
+.ui-accordion .ui-accordion-header { cursor: pointer; position: relative; margin-top: 10px; zoom: 1; }
 .ui-accordion .ui-accordion-li-fix { display: inline; }
 .ui-accordion .ui-accordion-header-active { border-bottom: 0 !important; }
 .ui-accordion .ui-accordion-header a { display: block; font-size: 1em; padding: .5em .5em .5em 2.2em; }
 .ui-accordion .ui-accordion-header .ui-icon { position: absolute; left: .5em; top: 50%; margin-top: -8px; }
-.ui-accordion .ui-accordion-content { padding: 1em 2.2em; border-top: 0; margin-top: -2px; position: relative; top: 1px; margin-bottom: 2px; overflow: auto; display: none; }
+.ui-accordion .ui-accordion-content { border-top: 0; overflow: auto; display: none; margin: 0; border: 0 none; }
 .ui-accordion .ui-accordion-content-active { display: block; }/* Datepicker
 ----------------------------------*/
 .ui-datepicker { width: 17em; padding: .2em .2em 0; }

@@ -3104,13 +3104,13 @@ input#ip_address {
 }
 
 #mainContent h3.accordion {
-	border-bottom:		1px solid #d2d7db;
-	padding:			3px 4px 3px 28px;
+	clear: 				left;
 	color:				#FFF!important;
+	cursor:				pointer;
 	font-size:			14px;
 	font-weight:		bold;
-	cursor:				pointer;
-	clear: 				left;
+	margin-bottom: 0;
+	padding:			3px 4px 3px 28px;
 	text-shadow:		#666 0px 1px 0px;
 }
 
@@ -3299,8 +3299,7 @@ div.contentWrap {
 #file_manager_toolbar .ui-accordion-content {
 	border: 			1px solid #D0D7DF;
 	border-width: 		0 1px 1px;
-	margin: 			-1px 0 10px;
-	overflow: 			hidden;
+	margin: 			0 0 10px;
 	padding: 			5px 8px 8px;
 }
 
