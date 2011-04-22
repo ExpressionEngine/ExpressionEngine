@@ -49,8 +49,6 @@ class Safecracker_upd
 	 */
 	public function install()
 	{
-		$this->validate();
-		
 		$this->EE->db->insert(
 			'exp_modules',
 			array(

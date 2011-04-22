@@ -41,6 +41,7 @@ $lang = array(
 'package_settings'				=>		'Package Settings',
 'component'						=>		'Component',
 'current_status'				=>		'Current Status',
+'required_by'					=>		'Required by:',
 
 'available_to_member_groups'	=>		'Available to Member Groups',
 'specific_page'					=>		'Specific Page?',

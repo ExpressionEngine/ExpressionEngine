@@ -65,10 +65,10 @@ class Wizard extends CI_Controller {
 	var $default_installed_modules = array('comment', 'email', 'emoticon', 'jquery', 'member', 'query', 'rss', 'search', 'stats', 'channel', 'mailinglist');
 	
 	// Native First Party ExpressionEngine Modules (everything else is in third party folder)
-	var $native_modules = array('blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon', 'forum',
+	var $native_modules = array('blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon', 'file', 'forum',
 								'gallery', 'ip_to_nation', 'jquery', 'mailinglist', 'member', 'metaweblog_api',
-								'moblog', 'pages', 'query', 'referrer', 'rss', 'search', 'simple_commerce', 'stats', 
-								'updated_sites', 'wiki');
+								'moblog', 'pages', 'query', 'referrer', 'rss', 'safecracker', 'search', 
+								 'simple_commerce', 'stats', 'updated_sites', 'wiki');
 
 	// Third Party Modules may send error messages if something goes wrong.
 	var $module_install_errors = array(); // array that collects all error messages
