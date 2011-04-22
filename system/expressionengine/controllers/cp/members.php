@@ -1375,7 +1375,10 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
         {
 			foreach($query->result_array() as $row)
 			{
-				$module_names['module_id_'.$row['module_id']] = $module_name;
+				$name = lang(strtolower($row['module_name'] . '_module_name'));
+				$name = ucwords(str_replace('_', ' ', $name));
+				
+				$module_names['module_id_'.$row['module_id']] = $name;
 				$module_perms['module_id_'.$row['module_id']] = 'y';
 			}
 		}
