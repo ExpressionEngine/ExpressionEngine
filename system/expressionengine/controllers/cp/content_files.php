@@ -1657,10 +1657,9 @@ class Content_files extends CI_Controller {
 		$this->load->model('file_model');
 		
 		$this->cp->add_js_script(array(
-				'plugin' => array('colorpicker'),
-				'file'   => array('cp/files/watermark_settings')
-			)
-		);
+			'plugin' => array('colorpicker'),
+			'file'   => array('cp/files/watermark_settings')
+		));
 		
 		// CSS link for colorpicker
 		//$css_folder = $this->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
@@ -1670,57 +1669,51 @@ class Content_files extends CI_Controller {
 		//$this->cp->add_to_head('<link rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=colorpicker'.'" type="text/css" media="screen" />');
 		
 		$style = $this->view->head_link('css/colorpicker.css');
-		
 		$this->cp->add_to_head($style);
 		
-	
-
 		$id = $this->input->get_post('id');
-
-
 		$type = ($id) ? 'edit' : 'new';	
 		
 		$this->cp->set_variable('cp_page_title', lang('wm_'.$type));
 		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));
-		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=watermark_preferences', lang('watermark_prefs'));		
+		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=watermark_preferences', lang('watermark_prefs'));
 
-
-		if (FALSE)
-		{
-			show_error(lang('unauthorized_access'));
-		}
+		// if (FALSE)
+		// {
+		// 	show_error(lang('unauthorized_access'));
+		// }
 
 		$default_fields = array(
-						'wm_name'						=> '',
-						'wm_image_path'					=>	'',
-						'wm_test_image_path'			=>	'',
-						'wm_type'						=> 'text',
-						'type_image'					=>  0,
-						'type_text'						=>	1,
-						'wm_use_font'					=> 'y',
-						'font_yes'						=> 1,
-						'font_no'						=> 0,
-						'wm_font'						=> 'texb.ttf',
-						'wm_font_size'					=> 16,
-						'wm_text'						=> 'Copyright '.date('Y', $this->localize->now),
-						'wm_alignment'					=> '',
-						'wm_vrt_alignment'				=> 'T',
-						'wm_hor_alignment'				=> 'L',
-						'wm_padding'					=> 10,
-						'wm_x_offset'					=> 0,
-						'wm_y_offset'					=> 0,
-						'wm_x_transp'					=> 2,
-						'wm_y_transp'					=> 2,
-						'wm_text_color'					=> '#ffff00',
-						'wm_use_drop_shadow'			=> 'y',
-						'use_drop_shadow_yes'			=> 1,
-						'use_drop_shadow_no'			=> 0,
-						'wm_shadow_color'				=> '#999999',
-						'wm_shadow_distance'			=> 1,
-						'wm_opacity'					=> 50,
-						'wm_apply_to_thumb'				=> 'n',
-						'wm_apply_to_medium'			=> 'n'
-				);
+			'wm_name'				=> '',
+			'wm_image_path'			=>	'',
+			'wm_test_image_path'	=>	'',
+			'wm_type'				=> 'text',
+			'type_image'			=>  0,
+			'type_text'				=>	1,
+			'wm_use_font'			=> 'y',
+			'font_yes'				=> 1,
+			'font_no'				=> 0,
+			'wm_font'				=> 'texb.ttf',
+			'wm_font_size'			=> 16,
+			'wm_text'				=> 'Copyright '.date('Y', $this->localize->now),
+			'wm_alignment'			=> '',
+			'wm_vrt_alignment'		=> 'T',
+			'wm_hor_alignment'		=> 'L',
+			'wm_padding'			=> 10,
+			'wm_x_offset'			=> 0,
+			'wm_y_offset'			=> 0,
+			'wm_x_transp'			=> 2,
+			'wm_y_transp'			=> 2,
+			'wm_text_color'			=> 'ffff00',
+			'wm_use_drop_shadow'	=> 'y',
+			'use_drop_shadow_yes'	=> 1,
+			'use_drop_shadow_no'	=> 0,
+			'wm_shadow_color'		=> '999999',
+			'wm_shadow_distance'	=> 1,
+			'wm_opacity'			=> 50,
+			'wm_apply_to_thumb'		=> 'n',
+			'wm_apply_to_medium'	=> 'n'
+		);
 
 		if ($type == 'new')
 		{
@@ -1741,109 +1734,99 @@ class Content_files extends CI_Controller {
 			}
 
 			// Set our true/false radios
-			$vars['type_text'] = ($vars['wm_type'] == 't' OR $vars['wm_type'] == 'text') ? TRUE : FALSE;
-			$vars['type_image'] = ($vars['wm_type'] == 't' OR $vars['wm_type'] == 'text') ? FALSE : TRUE;
-			$vars['font_yes'] = ($vars['wm_use_font'] == 'y') ? TRUE : FALSE;
-			$vars['font_no'] = ($vars['wm_use_font'] == 'y') ? FALSE : TRUE;
+			$vars['type_text']           = ($vars['wm_type'] == 't' OR $vars['wm_type'] == 'text') ? TRUE : FALSE;
+			$vars['type_image']          = ($vars['wm_type'] == 't' OR $vars['wm_type'] == 'text') ? FALSE : TRUE;
+			$vars['font_yes']            = ($vars['wm_use_font'] == 'y') ? TRUE : FALSE;
+			$vars['font_no']             = ($vars['wm_use_font'] == 'y') ? FALSE : TRUE;
 			$vars['use_drop_shadow_yes'] = ($vars['wm_use_drop_shadow'] == 'y') ? TRUE : FALSE;
-			$vars['use_drop_shadow_no'] = ($vars['wm_use_drop_shadow'] == 'y') ? FALSE : TRUE;
-			$vars['hidden'] = array('id' => $id);
+			$vars['use_drop_shadow_no']  = ($vars['wm_use_drop_shadow'] == 'y') ? FALSE : TRUE;
+			$vars['hidden']              = array('id' => $id);
 		}
 
-
-		$i = 1;
-
-		while ($i < 101)
-		{
+		for ($i = 1; $i <= 100; $i++)
+		{ 
 			$vars['opacity_options'][$i] = $i;
-			$i++;
 		}
-
-		
-		$vars['font_options'] = $this->filemanager->fetch_fontlist();
-
 
 		$this->load->library('form_validation');
 
 		$title = ($type == 'edit') ? 'wm_edit' : 'wm_create';
 
+		$vars['font_options'] = $this->filemanager->fetch_fontlist();
 		$vars['lang_line'] = ($type == 'edit') ? 'update' : 'submit';
 
-
-
 		$config = array(
-					   array(
-							 'field'   => 'name',
-							 'label'   => 'lang:wm_name',
-							 'rules'   => 'trim|required|callback__name_check'
-						  ),
-					   //array(
-					//		 'field'   => 'wm_type',
-					//		 'label'   => 'lang:wm_type',
-					//		 'rules'   => 'required'
-					//	  ),
-					   array(
-							 'field'   => 'wm_image_path',
-							 'label'   => 'lang:wm_image_path',
-							 'rules'   => ''
-						  ),
-					   array(
-							 'field'   => 'wm_test_image_path',
-							 'label'   => 'lang:wm_test_image_path',
-							 'rules'   => ''
-						  ),
-					   array(
-							 'field'   => 'wm_font',
-							 'label'   => 'lang:wm_font',
-							 'rules'   => ''
-						  ),
-					   array(
-							 'field'   => 'wm_font_size',
-							 'label'   => 'lang:wm_font_size',
-							 'rules'   => 'integer'
-						  ),						
-					   array(
-							 'field'   => 'wm_x_offset',
-							 'label'   => 'lang:wm_x_offset',
-							 'rules'   => 'integer'
-						  ),
-					   array(
-							 'field'   => 'wm_y_offset',
-							 'label'   => 'lang:wm_y_offset',
-							 'rules'   => 'integer'
-						  ),
-					   array(
-							 'field'   => 'wm_vrt_alignment',
-							 'label'   => 'lang:wm_vrt_alignment',
-							 'rules'   => ''
-						  ),
-					   array(
-							 'field'   => 'wm_hor_alignment',
-							 'label'   => 'lang:wm_hor_alignment',
-							 'rules'   => ''
-						  ),
-					   array(
-							 'field'   => 'wm_x_transp',
-							 'label'   => 'lang:wm_x_transp',
-							 'rules'   => 'integer'
-						  ),
-					   array(
-							 'field'   => 'wm_y_transp',
-							 'label'   => 'lang:wm_y_transp',
-							 'rules'   => 'integer'
-						  ),
-
-					   array(
-							 'field'   => 'wm_text_color',
-							 'label'   => 'lang:wm_text_color',
-							 'rules'   => ''
-						  ),
-					   array(
-							 'field'   => 'wm_shadow_color',
-							 'label'   => 'lang:wm_shadow_color',
-							 'rules'   => ''
-						  )	
-					);
+			array(
+				'field' => 'name',
+				'label' => 'lang:wm_name',
+				'rules' => 'trim|required|callback__name_check'
+			),
+			array(
+				'field' => 'wm_type',
+				'label' => 'lang:wm_type',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'wm_image_path',
+				'label' => 'lang:wm_image_path',
+				'rules' => ''
+			),
+			array(
+				'field' => 'wm_test_image_path',
+				'label' => 'lang:wm_test_image_path',
+				'rules' => ''
+			),
+			array(
+				'field' => 'wm_font',
+				'label' => 'lang:wm_font',
+				'rules' => ''
+			),
+			array(
+				'field' => 'wm_font_size',
+				'label' => 'lang:wm_font_size',
+				'rules' => 'integer'
+			),
+			array(
+				'field' => 'wm_x_offset',
+				'label' => 'lang:wm_x_offset',
+				'rules' => 'integer'
+			),
+			array(
+				'field' => 'wm_y_offset',
+				'label' => 'lang:wm_y_offset',
+				'rules' => 'integer'
+			),
+			array(
+				'field' => 'wm_vrt_alignment',
+				'label' => 'lang:wm_vrt_alignment',
+				'rules' => ''
+			),
+			array(
+				'field' => 'wm_hor_alignment',
+				'label' => 'lang:wm_hor_alignment',
+				'rules' => ''
+			),
+			array(
+				'field' => 'wm_x_transp',
+				'label' => 'lang:wm_x_transp',
+				'rules' => 'integer'
+			),
+			array(
+				'field' => 'wm_y_transp',
+				'label' => 'lang:wm_y_transp',
+				'rules' => 'integer'
+			),
+			array(
+				'field' => 'wm_text_color',
+				'label' => 'lang:wm_text_color',
+				'rules' => ''
+			),
+			array(
+				'field' => 'wm_shadow_color',
+				'label' => 'lang:wm_shadow_color',
+				'rules' => ''
+			)
+		);
 
 		$this->load->library('form_validation');
 		$this->form_validation->set_error_delimiters('<span class="notice">', '</span>')
@@ -1854,13 +1837,12 @@ class Content_files extends CI_Controller {
 
 		if ( ! $this->form_validation->run())
 		{
-			$this->javascript->compile();
 			$this->load->view('content/files/watermark_settings', $vars);
 		}
 		else
 		{
 			$this->_update_watermark_preferences();
-		}		
+		}
 	}
 	
 	function _name_check($str)
