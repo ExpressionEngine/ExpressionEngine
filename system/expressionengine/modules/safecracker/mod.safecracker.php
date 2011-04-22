@@ -80,4 +80,4 @@ class Safecracker
 }
 
 /* End of file mod.safecracker.php */
-/* Location: ./system/expressionengine/third_party/modules/safecracker/mod.safecracker.php */
+/* Location: ./system/expressionengine/modules/modules/safecracker/mod.safecracker.php */

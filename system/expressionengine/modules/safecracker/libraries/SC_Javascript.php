@@ -73,4 +73,4 @@ class SC_Javascript extends Javascript
 }
 
 /* End of file SC_Javascript.php */
-/* Location: ./system/expressionengine/third_party/safecracker/libraries/SC_Javascript.php */
+/* Location: ./system/expressionengine/modules/safecracker/libraries/SC_Javascript.php */

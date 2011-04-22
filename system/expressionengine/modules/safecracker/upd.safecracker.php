@@ -27,7 +27,7 @@
 
 class Safecracker_upd
 {
-	public $version = '2.0';
+	public $version = '2.1';
 	
 	/**
 	 * Safecracker_upd
@@ -77,6 +77,19 @@ class Safecracker_upd
 			)
 		);
 		
+
+		// Add Extension Hook
+		$this->EE->db->insert('extensions', array(
+			'class'    => 'Safecracker_ext',
+			'hook'     => 'form_declaration_modify_data',
+			'method'   => 'form_declaration_modify_data',
+			'settings' => '',
+			'priority' => 10,
+			'version'  => $this->version,
+			'enabled'  => 'y'
+		));
+
+
 		return TRUE;
 	}
 
@@ -93,13 +106,11 @@ class Safecracker_upd
 		
 		if ($this->EE->config->item('allow_extensions') != 'y')
 		{
-			$this->EE->output->show_user_error('general', $this->EE->lang->line('safecracker_extensions_disabled'));
+			//$this->EE->output->show_user_error('general', $this->EE->lang->line('safecracker_extensions_disabled'));
 		}
 		
-		if (APP_VER < '2.1.2')// || APP_BUILD < '20100805')
-		{
-			$this->EE->output->show_user_error('general', $this->EE->lang->line('safecracker_ee_version'));
-		}
+		//  Added to core with 2.1.5
+
 	}
 
 	// --------------------------------------------------------------------
@@ -124,6 +135,9 @@ class Safecracker_upd
 
 		$this->EE->db->where('class', 'Safecracker');
 		$this->EE->db->delete('actions');
+		
+		// Disable extension
+		$this->EE->db->delete('extensions', array('class' => 'Safecracker_ext'));
 
 		return TRUE;
 	}
@@ -154,9 +168,15 @@ class Safecracker_upd
 			);
 		}
 		
+		if ($current < '2.1')
+		{
+			// Update extension version number
+			$this->EE->db->update('extensions', array('version' => $this->version), array('class' => 'Safecracker_ext'));
+		}
+		
 		return TRUE;
 	}
 }
 
 /* End of file upd.safecracker.php */
-/* Location: ./system/expressionengine/third_party/modules/safecracker/upd.safecracker.php */
+/* Location: ./system/expressionengine/modules/safecracker/upd.safecracker.php */

@@ -29,12 +29,18 @@ if ($EE_view_disable !== TRUE)
 
 				foreach ($components as $comp => $info)
 				{
+					$fields  = form_radio('install_'.$comp, 'install', $info['installed']).NBS.lang('install').
+											NBS.NBS.NBS.NBS.NBS.
+											form_radio('install_'.$comp, 'uninstall', ! $info['installed']).NBS.lang('uninstall');
+					
+					if (isset($required[$comp]) && count($required[$comp]))
+					{
+						$fields = lang('required_by').NBS.implode(',', $required[$comp]);
+					}
 					
 					$this->table->add_row(
 											lang($comp),
-											form_radio('install_'.$comp, 'install', $info['installed']).NBS.lang('install').
-											NBS.NBS.NBS.NBS.NBS.
-											form_radio('install_'.$comp, 'uninstall', ! $info['installed']).NBS.lang('uninstall'),
+											$fields,
 											$info['installed'] ? lang('installed') : lang('not_installed')
 										);
 				}

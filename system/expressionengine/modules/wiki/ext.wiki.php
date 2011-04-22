@@ -6,6 +6,7 @@ class Wiki_ext {
 	var $version = '2.3';
 	var $settings_exist = 'n';
 	var $docs_url = 'http://expressionengine.com/user_guide';
+	var $required_by = array('module');
 
 	private $EE;
 	
@@ -65,6 +66,16 @@ class Wiki_ext {
 	 * Disable Extension
 	 */
 	function disable_extension()
+	{
+		show_error('This extension is automatically deleted with the wiki module');
+	}
+	
+		// --------------------------------------------------------------------
+
+	/**
+	 * Disable Extension
+	 */
+	function uninstall_extension()
 	{
 		show_error('This extension is automatically deleted with the wiki module');
 	}

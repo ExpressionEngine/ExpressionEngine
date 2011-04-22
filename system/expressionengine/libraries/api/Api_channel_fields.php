@@ -208,7 +208,9 @@ class Api_channel_fields extends Api {
 		if ( ! isset($this->field_types[$field_type]))
 		{
 			$file = 'ft.'.$field_type.EXT;
-			$path = PATH_FT;
+			$path = PATH_FT.$field_type.'/';
+			
+
 			
 			if ( ! file_exists($path.$file))
 			{
@@ -268,6 +270,7 @@ class Api_channel_fields extends Api {
 		if ( ! is_object($this->field_types[$field_type]))
 		{
 			$this->include_handler($field_type);
+
 			$this->field_types[$field_type] =& $this->_instantiate_handler($field_type);
 		}
 
@@ -318,7 +321,9 @@ class Api_channel_fields extends Api {
 		$_ft_path	= $this->ft_paths[$field_type];
 		
 		$this->EE->load->add_package_path($_ft_path);
+		
 		$obj = new $class();
+		
 		$this->EE->load->remove_package_path($_ft_path);
 		
 		return $obj;

@@ -17,4 +17,4 @@ $config['safecracker_post_error_callbacks']['nsm_tiny_mce'] = 'html_entity_decod
 $config['safecracker_field_extra_js']['file'] = '$(".choose_file").click(function(){$(".ui-dialog").css({position:"absolute",top:($(window).height()-$(".ui-dialog").height())/2,left:($(window).width()-$(".ui-dialog").width())/2});$(window).scrollTop(0);});';
 
 /* End of file config.php */
-/* Location: ./system/expressionengine/third_party/safecracker/config/config.php */
+/* Location: ./system/expressionengine/config/safecracker/config.php */

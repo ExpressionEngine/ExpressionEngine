@@ -47,8 +47,6 @@ class Safecracker_file_ft extends File_ft
 			return $this->EE->lang->line('no_upload_dir');
 		}
 		
-		$this->EE->load->library('filemanager');
-		
 		$this->add_js();
 		
 		$data = preg_replace('/{filedir_([0-9]+)}/', '', $data);
@@ -68,8 +66,21 @@ class Safecracker_file_ft extends File_ft
 		
 		$placeholder_data = set_value($this->field_name, '');
 		
-		$thumb_info = $this->EE->filemanager->get_thumb($data, $this->settings['safecracker_upload_dir']);
-		$thumb_src = $thumb_info['thumb'];
+		$upload_dir = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata('group_id'), $this->settings['safecracker_upload_dir']);
+		
+		$thumb_src = PATH_CP_GBL_IMG.'default.png';
+		
+		$server_path = $upload_dir->row('server_path');
+		
+		if ( ! preg_match('#^(/|\w+:[/\\\])#', $server_path))
+		{
+			$server_path = realpath(APPPATH.'../'.$server_path).'/';
+		}
+		
+		if ($data && file_exists($server_path.'_thumbs/thumb_'.$data))
+		{
+			$thumb_src = $upload_dir->row('url').'_thumbs/thumb_'.$data;
+		}
 		
 		$this->add_css();
 		
@@ -87,7 +98,7 @@ class Safecracker_file_ft extends File_ft
 			'placeholder_input' => form_hidden($this->field_name, 'NULL'),
 			'remove' => form_label(form_checkbox($this->field_name.'_remove', 1).' '.$this->EE->lang->line('remove_file')),
 			'existing_input_name' => $this->field_name.'_existing',
-			'existing_files' => $this->existing_files($this->settings['safecracker_upload_dir']),
+			'existing_files' => $this->existing_files($server_path),
 			'settings' => $this->settings,
 			'default' => FALSE,
 			'thumb_src' => $thumb_src
@@ -143,8 +154,14 @@ class Safecracker_file_ft extends File_ft
 			
 			unset($this->EE->upload, $this->EE->load->_ci_loaded_files[array_search(BASEPATH.'libraries/Upload'.EXT, $this->EE->load->_ci_loaded_files)]);
 			
-			$this->EE->load->library('Filemanager');
-			$data = $this->EE->filemanager->upload_file($this->settings['safecracker_upload_dir'], $field_name);
+			$this->EE->load->library('SC_Filemanager', array(), 'sc_filemanager');
+		
+			$this->EE->sc_filemanager->_initialize(array(
+				//'overwrite' => $this->settings['safecracker_overwrite'],
+				'field_id' => $this->field_id
+			));
+			
+			$data = $this->EE->sc_filemanager->upload_file($this->settings['safecracker_upload_dir'], $field_name);
 			
 			if (array_key_exists('error', $data))
 			{
@@ -159,7 +176,7 @@ class Safecracker_file_ft extends File_ft
 			}
 			else
 			{
-				$this->EE->session->cache['safecracker_file']['field_data'][$this->field_id] = $this->data = $_POST[$field_name] = $data['file_name'];
+				$this->EE->session->cache['safecracker_file']['field_data'][$this->field_id] = $this->data = $_POST[$field_name] = $data['name'];
 			}
 		}
 		elseif ($this->EE->input->post($field_name.'_existing'))
@@ -237,7 +254,7 @@ class Safecracker_file_ft extends File_ft
 	{
 		$this->EE->lang->loadfile('safecracker_file');
 		
-		$this->EE->load->model(array('file_upload_preferences_model', 'field_model'));
+		$this->EE->load->model(array('tools_model', 'field_model'));
 		
 		$upload_paths = array();
 		
@@ -301,11 +318,10 @@ class Safecracker_file_ft extends File_ft
 	public function save_settings()
 	{
 		return array(
-			'field_fmt'                 => 'none',
-			'file_field_content_type'   => $this->EE->input->post('safecracker_file_field_content_type'),
-			'safecracker_upload_dir'    => $this->EE->input->post('safecracker_upload_dir'),
+			'file_field_content_type' => $this->EE->input->post('safecracker_file_field_content_type'),
+			'safecracker_upload_dir' => $this->EE->input->post('safecracker_upload_dir'),
 			'safecracker_show_existing' => $this->EE->input->post('safecracker_show_existing'),
-			'safecracker_num_existing'  => $this->EE->input->post('safecracker_num_existing'),
+			'safecracker_num_existing' => $this->EE->input->post('safecracker_num_existing'),
 		);
 	}
 	
@@ -480,7 +496,6 @@ class Safecracker_file_ft extends File_ft
 	 */
 	public function display_cell($data)
 	{
-		$this->EE->load->library('filemanager');
 		$this->parse_cell_name();
 		
 		if ($data)
@@ -552,8 +567,21 @@ class Safecracker_file_ft extends File_ft
 			$data = '';
 		}
 		
-		$thumb_info = $this->EE->filemanager->get_thumb($data, $this->settings['safecracker_upload_dir']);
-		$thumb_src = $thumb_info['thumb'];
+		$upload_dir = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata('group_id'), $this->settings['safecracker_upload_dir']);
+		
+		$server_path = $upload_dir->row('server_path');
+		
+		if ( ! preg_match('#^(/|\w+:[/\\\])#', $server_path))
+		{
+			$server_path = realpath(APPPATH.'../'.$server_path).'/';
+		}
+		
+		$thumb_src = PATH_CP_GBL_IMG.'default.png';
+
+		if ($data && file_exists($server_path.'_thumbs/thumb_'.$data))
+		{
+			$thumb_src = $upload_dir->row('url').'_thumbs/thumb_'.$data;
+		}
 		
 		$form_upload = array('name' => $this->cell_name);
 		
@@ -584,7 +612,7 @@ class Safecracker_file_ft extends File_ft
 			'placeholder_input' => form_hidden($this->cell_name, $this->cell_name),
 			'remove' => form_label(form_checkbox(preg_replace('/\]$/', '_remove]', $this->cell_name), 1).' '.$this->EE->lang->line('remove_file')),
 			'existing_input_name' => preg_replace('/\]$/', '_existing]', $this->cell_name),
-			'existing_files' => $this->existing_files($this->settings['safecracker_upload_dir']),
+			'existing_files' => $this->existing_files($server_path),
 			'settings' => $this->settings,
 			'thumb_src' => $thumb_src,
 			'default' => ($this->cell_name == '{DEFAULT}'),
@@ -601,46 +629,39 @@ class Safecracker_file_ft extends File_ft
 		return $view;
 	}
 	
-	/**
-	 * Loads existing files from the database given an directory ID
-	 * 
-	 * @param integer $directory_id ID of the directory to get files from
-	 * @return array Array of files in the database
-	 */
-	public function existing_files($directory_id)
+	public function existing_files($path)
 	{
-		$this->EE->load->model('file_model');
-		
 		if ( ! $this->settings('safecracker_show_existing'))
 		{
 			return array();
 		}
 		
-		// Check to see if there's an imposed limit
+		$files = array(
+			'' => $this->EE->lang->line('choose_existing'),
+		);
+		
 		if ( ! is_numeric($this->settings('safecracker_num_existing')))
 		{
 			$this->settings['safecracker_num_existing'] = '50';
 		}
 		
-		$files = array(
-			'' => $this->EE->lang->line('choose_existing')
-		);
-		
-		// Load files in from database
-		$files_from_db = $this->EE->file_model->get_files(
-			$directory_id, 
-			array(
-				'limit' => $this->settings['safecracker_num_existing'],
-				'order' => array(
-					'file_name' => 'asc'
-				)
-			)
-		);
-		
-		// Put database files into list
-		foreach ($files_from_db['results']->result() as $file) 
+		if (is_dir($path) && FALSE !== ($opendir = opendir($path)))
 		{
-			$files[$file->file_name] = $file->file_name;
+			$count = 0;
+			
+			while (FALSE !== ($filename = readdir($opendir)) && $count < $this->settings('safecracker_num_existing'))
+			{
+				if ($filename[0] == '.' || is_dir($path.$filename))
+				{
+					continue;
+				}
+				
+				$files[$filename] = $filename;
+				
+				$count++;
+			}
+		
+			closedir($opendir);
 		}
 		
 		return $files;
@@ -694,23 +715,27 @@ class Safecracker_file_ft extends File_ft
 			$this->EE->load->add_package_path(PATH_THIRD.'safecracker_file/');
 			
 			//do file upload
-			var_dump($_FILES, $this->settings['field_name']);
-			$this->EE->load->library('Filemanager');
-			$data = $this->EE->filemanager->upload_file($this->settings['safecracker_upload_dir'], $this->settings['field_name']);
+			$this->EE->load->library('SC_Filemanager', array(), 'sc_filemanager');
+		
+			$this->EE->sc_filemanager->_initialize(array(
+				//'overwrite' => $this->settings['safecracker_overwrite'],
+				'field_id' => $this->field_id
+			));
+			
+			$data = $this->EE->sc_filemanager->upload_file($this->settings['safecracker_upload_dir'], $this->settings['field_name']);
 			
 			//restore
 			$_FILES = $_files;
 			
 			if (array_key_exists('error', $data))
 			{
-				die(var_dump($data));
 				return '';//$data['error'];
 			}
 			else
 			{
-				$this->EE->session->cache['safecracker_file']['cells'][$this->field_id][$cell_name] = '{filedir_'.$this->settings['safecracker_upload_dir'].'}'.$data['file_name'];
+				$this->EE->session->cache['safecracker_file']['cells'][$this->field_id][$cell_name] = '{filedir_'.$this->settings['safecracker_upload_dir'].'}'.$data['name'];
 				
-				return '{filedir_'.$this->settings['safecracker_upload_dir'].'}'.$data['file_name'];
+				return '{filedir_'.$this->settings['safecracker_upload_dir'].'}'.$data['name'];
 			}
 		}
 		else
@@ -730,6 +755,52 @@ class Safecracker_file_ft extends File_ft
 			}
 		}
 	}
+
+	/*
+	function display_var_tag($file_info, $params = array(), $tagdata = FALSE)
+	{
+		if (is_string($file_info) && preg_match('/^{filedir_[\d]+}(.+)/', $file_info, $match))
+		{
+			$file_info = '/images/upload/'.$match[1];
+		}
+		
+		return $this->replace_tag($file_info, $params, $tagdata);
+	}
+	
+	function save_var_settings()
+	{
+		return $this->save_settings();
+	}
+	
+	function display_var_settings($data)
+	{
+		return $this->_display_settings($data);
+	}
+	
+	function save_var_field($data)
+	{
+		$this->_fix_field_name();
+		
+		$this->validate($data);
+		
+		return $this->save($data);
+	}
+	
+	function display_var_field($data)
+	{
+		$this->_fix_field_name();
+		
+		return $this->display_field($data);
+	}
+	
+	function _fix_field_name()
+	{
+		if (preg_match('/^var\[(\d+)\]$/', $this->field_name, $match))
+		{
+			$this->field_name = 'var_'.$match[1];
+		}
+	}
+	*/
 }
 
 /* End of file ft.safecracker_file.php */

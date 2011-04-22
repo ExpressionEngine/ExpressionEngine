@@ -2482,7 +2482,7 @@ class Safecracker_lib
 		
 		$this->option_fields = $this->native_option_fields;
 		
-		$this->EE->config->load('../third_party/safecracker/config/config');
+		$this->EE->config->load('config');
 		
 		if (is_array($this->EE->config->item('safecracker_option_fields')))
 		{
@@ -2546,7 +2546,7 @@ class Safecracker_lib
 
 		//$this->temp_session = $this->EE->functions->clone_object($this->EE->session);
 		
-		$path = '../third_party/safecracker/libraries/SC_Session';
+		$path = PATH_MOD.'safecracker/libraries/SC_Session';
 		
 		if (in_array(APPPATH.'libraries/'.$path.EXT, $this->EE->load->_ci_loaded_files))
 		{
@@ -2770,4 +2770,4 @@ class Safecracker_lib
 }
 
 /* End of file safecracker_lib.php */
-/* Location: ./system/expressionengine/third_party/safecracker/libraries/safecracker_lib.php */
+/* Location: ./system/expressionengine/modules/safecracker/libraries/safecracker_lib.php */

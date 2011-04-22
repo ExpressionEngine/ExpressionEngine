@@ -29,11 +29,12 @@ class Safecracker_ext
 {
 	public $settings = array();
 	public $name = 'SafeCracker';
-	public $version = '2.0';
+	public $version = '2.1';
 	public $description = 'A replacement and enchancement of the Stand-Alone Entry Form';
 	public $settings_exist = 'y';
 	public $docs_url = 'http://expressionengine.com/downloads/details/safecracker/';
 	public $classname = 'Safecracker_ext';
+	public $required_by = array('module');
 	
 	/**
 	 * Safecracker_ext
@@ -57,6 +58,10 @@ class Safecracker_ext
 	 */
 	public function activate_extension()
 	{
+		show_error('This extension is automatically installed with the Safecracker module');
+		
+		
+		/*
 		$hook_defaults = array(
 			'class' => $this->classname,
 			'settings' => '',
@@ -74,6 +79,9 @@ class Safecracker_ext
 		{
 			$this->EE->db->insert('extensions', array_merge($hook_defaults, $hook));
 		}
+		
+		*/
+
 	}
 
 	// --------------------------------------------------------------------
@@ -86,12 +94,18 @@ class Safecracker_ext
 	 */
 	public function update_extension($current = '')
 	{
+
+		show_error('This extension is automatically updated with the Safecracker module');
+
+		/*
 		if ($current == '' OR $current == $this->version)
 		{
 			return FALSE;
 		}
 		
 		$this->EE->db->update('extensions', array('version' => $this->version), array('class' => $this->classname));
+		*/
+
 	}
 
 	// --------------------------------------------------------------------
@@ -103,7 +117,11 @@ class Safecracker_ext
 	 */
 	public function disable_extension()
 	{
+		show_error('This extension is automatically deleted with the Safecracker module');
+		
+		/*
 		$this->EE->db->delete('extensions', array('class' => $this->classname));
+		*/
 	}
 
 	// --------------------------------------------------------------------

@@ -311,21 +311,20 @@ class Addons_extensions extends CI_Controller {
 			$current = strip_slashes(unserialize($query->row('settings') ));
 		}
 		
+		$name = strtolower($vars['file']);
+		$ext_path = $this->addons->_packages[$name]['extension']['path'];
+
 		/** -----------------------------
 		/**  Call Extension File
 		/** -----------------------------*/
-		
+
 		if ( ! class_exists($class_name))
 		{
-			if (file_exists(APPPATH.'extensions/ext.'.strtolower($vars['file']).EXT))
+			if (file_exists($ext_path.'ext.'.$name.EXT))
 			{
-				@include_once(APPPATH.'extensions/ext.'.strtolower($vars['file']).EXT);				
+				@include_once($ext_path.'ext.'.$name.EXT);				
 			}
-			elseif (file_exists(PATH_THIRD.strtolower($vars['file']).'/ext.'.strtolower($vars['file']).EXT))
-			{
-				@include_once(PATH_THIRD.strtolower($vars['file']).'/ext.'.strtolower($vars['file']).EXT);
-			}
-				
+	
 			if ( ! class_exists($class_name))
 			{
 				show_error(lang('not_authorized'));
@@ -359,29 +358,33 @@ class Addons_extensions extends CI_Controller {
 
 		$this->lang->loadfile(strtolower($vars['file']));
 		
+		
 		/** ---------------------------------------
 		/**  Creating Their Own Settings Form?
 		/** ---------------------------------------*/
+
 
 		if (method_exists($OBJ, 'settings_form') === TRUE)
 		{
 			// we're going to wipe the view vars here in a sec
 			$file = $vars['file'];
-			
+
 			// add the package and view paths
-			$this->load->add_package_path(PATH_THIRD.strtolower($file).'/');
+			$this->load->add_package_path($ext_path);
 			$orig_view_path = $this->load->_ci_view_path;
-			$this->load->_ci_view_path = PATH_THIRD.strtolower($file).'/views/';
+			$this->load->_ci_view_path = $ext_path.'/views/';				
 			
 			// reset view variables
 			$vars  = array('_extension_name' => $name);
 			
+
 			// fetch the content
 			$vars['_extension_settings_body'] = $OBJ->settings_form($current);
-			
+
 			// restore our package and view paths
 			$this->load->_ci_view_path = $orig_view_path;
-			$this->load->remove_package_path(PATH_THIRD.strtolower($file).'/');
+			$this->load->remove_package_path($ext_path);
+
 
 			// load it up, kapowpow!
 			$this->javascript->compile();
@@ -506,7 +509,7 @@ class Addons_extensions extends CI_Controller {
 		{
 			return FALSE;
 		}
-		
+
 		$this->lang->loadfile('admin');
 		
 		$this->cp->set_variable('cp_page_title', $this->lang->line('extension_settings'));
@@ -518,17 +521,23 @@ class Addons_extensions extends CI_Controller {
 		/**  Call Extension File
 		/** -----------------------------*/
 		
+		$name = strtolower($vars['file']);
+		$ext_path = $this->addons->_packages[$name]['extension']['path'];
+		
+
+		/** -----------------------------
+		/**  Call Extension File
+		/** -----------------------------*/
+
 		if ( ! class_exists($class_name))
 		{
-			if (file_exists(APPPATH.'extensions/ext.'.strtolower($vars['file']).EXT))
+		
+			if (file_exists($ext_path.'ext.'.$name.EXT))
 			{
-				@include_once(APPPATH.'extensions/ext.'.strtolower($vars['file']).EXT);				
+
+				@include_once($ext_path.'ext.'.$name.EXT);				
 			}
-			elseif (file_exists(PATH_THIRD.strtolower($vars['file']).'/ext.'.strtolower($vars['file']).EXT))
-			{
-				@include_once(PATH_THIRD.strtolower($vars['file']).'/ext.'.strtolower($vars['file']).EXT);
-			}
-			
+
 			if ( ! class_exists($class_name)) return FALSE;
 		}
 
