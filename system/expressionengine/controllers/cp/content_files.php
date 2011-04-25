@@ -2133,10 +2133,6 @@ class Content_files extends CI_Controller {
 					{
 						$data['allowed_types'] = $v;
 					}
-					elseif ($k == 'max_image_action')
-					{
-						$data['max_image_action'] = $v;
-					}
 					else
 					{
 						$data['field_'.$k] = $v;
@@ -2394,8 +2390,8 @@ class Content_files extends CI_Controller {
 						'short_name' => $_POST['size_short_name_'.$row['id']],
 						'title'	=> $_POST['size_short_name_'.$row['id']],
 						'resize_type' => $_POST['size_resize_type_'.$row['id']],
-						'height' => $_POST['size_height_'.$row['id']],
-						'width' => $_POST['size_width_'.$row['id']],
+						'height' => ($_POST['size_height_'.$row['id']] == '') ? 0 : $_POST['size_height_'.$row['id']],
+						'width' => ($_POST['size_width_'.$row['id']] == '') ? 0 : $_POST['size_width_'.$row['id']],
 						'watermark_id' => $_POST['size_watermark_id_'.$row['id']]
 						);
 
@@ -2469,8 +2465,8 @@ class Content_files extends CI_Controller {
 						'short_name'		=> $_POST[$name],
 						'title'	=> $_POST['size_short_name_'.$number],
 						'resize_type' => $_POST['size_resize_type_'.$number],
-						'height' => $_POST['size_height_'.$number],
-						'width' => $_POST['size_width_'.$number],
+						'height' => ($_POST['size_height_'.$number] == '') ? 0 : $_POST['size_height_'.$number],
+						'width' => ($_POST['size_width_'.$number] == '') ? 0 : $_POST['size_width_'.$number],
 						'watermark_id' => $_POST['size_watermark_id_'.$number]
 						);
 
