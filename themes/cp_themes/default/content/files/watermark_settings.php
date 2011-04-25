@@ -287,7 +287,10 @@ if ($EE_view_disable !== TRUE)
 
 				<p class="notice">* <?=lang('required_fields')?></p>
 
-				<p><?=form_submit('submit', lang($lang_line), 'class="submit"')?>&nbsp; &nbsp; <?=form_submit('submit', lang('wm_test'), 'class="submit"')?></p>
+				<p>
+					<?=form_submit('submit', lang($lang_line), 'class="submit"')?>
+					<?php // &nbsp; &nbsp; <?=form_submit('submit', lang('wm_test'), 'class="submit"') ?>
+				</p>
 
     		<?=form_close()?>
 			
