@@ -14,30 +14,12 @@ $.ee_watermark = function() {
 	}
 	
 	$.ee_watermark.type_toggle();
-	// $.ee_watermark.color_picker();
 };
 
 $.ee_watermark.type_toggle = function() {
 	$("input[name=wm_type]").change(function() {
 		$(".text_type").toggle();
 		$(".image_type").toggle();
-	});
-};
-
-$.ee_watermark.color_picker = function() {
-	$('#wm_text_color, #wm_shadow_color').ColorPicker({
-		onSubmit: function(hsb, hex, rgb, el) {
-			$(el).val('#' + hex);
-			$(el).ColorPickerHide();
-		},
-		onBeforeShow: function () {
-			$(this).ColorPickerSetColor(this.value);
-		},
-		onChange: function(hsb, hex, rgb, el) {
-			$(el).val('#' + hex);
-		}
-	}).bind('keyup', function(){
-		$(this).ColorPickerSetColor(this.value);
 	});
 };
 
