@@ -14,7 +14,7 @@ $.ee_watermark = function() {
 	}
 	
 	$.ee_watermark.type_toggle();
-	$.ee_watermark.color_picker();
+	// $.ee_watermark.color_picker();
 };
 
 $.ee_watermark.type_toggle = function() {

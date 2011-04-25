@@ -1657,7 +1657,7 @@ class Content_files extends CI_Controller {
 		$this->load->model('file_model');
 		
 		$this->cp->add_js_script(array(
-			'plugin' => array('colorpicker'),
+			'plugin' => array('colorpicker', 'jscolor'),
 			'file'   => array('cp/files/watermark_settings')
 		));
 		
