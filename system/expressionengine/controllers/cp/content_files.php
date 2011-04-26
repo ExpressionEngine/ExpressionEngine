@@ -1657,19 +1657,9 @@ class Content_files extends CI_Controller {
 		$this->load->model('file_model');
 		
 		$this->cp->add_js_script(array(
-			'plugin' => array('colorpicker', 'jscolor'),
+			'plugin' => array('jscolor'),
 			'file'   => array('cp/files/watermark_settings')
 		));
-		
-		// CSS link for colorpicker
-		//$css_folder = $this->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed';
-		
-		//$css_file = PATH_THEMES.'javascript/'.$css_folder.'/jquery/themes/default/colorpicker.css';
-
-		//$this->cp->add_to_head('<link rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=colorpicker'.'" type="text/css" media="screen" />');
-		
-		$style = $this->view->head_link('css/colorpicker.css');
-		$this->cp->add_to_head($style);
 		
 		$id = $this->input->get_post('id');
 		$type = ($id) ? 'edit' : 'new';	
