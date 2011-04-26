@@ -324,7 +324,6 @@ var jscolor = {
 
 	color : function(target, prop) {
 
-
 		this.required = true; // refuse empty values?
 		this.adjust = true; // adjust value to uniform notation?
 		this.hash = false; // prefix color with # symbol?
@@ -338,11 +337,11 @@ var jscolor = {
 		this.pickerMode = 'HSV'; // HSV | HVS
 		this.pickerPosition = 'bottom'; // left | right | top | bottom
 		this.pickerFace = 10; // px
-		this.pickerFaceColor = 'ThreeDFace'; // CSS color
+		this.pickerFaceColor = '#f4f6f6'; // CSS color
 		this.pickerBorder = 1; // px
-		this.pickerBorderColor = 'ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight'; // CSS color
+		this.pickerBorderColor = '#d0d7df'; // CSS color
 		this.pickerInset = 1; // px
-		this.pickerInsetColor = 'ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow'; // CSS color
+		this.pickerInsetColor = '#d0d7df'; // CSS color
 		this.pickerZIndex = 10000;
 
 

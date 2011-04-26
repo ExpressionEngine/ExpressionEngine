@@ -1101,13 +1101,12 @@ class Admin_content extends CI_Controller {
 
 		$this->lang->loadfile('admin_content');
 		$this->load->helper('form');
-		$this->load->model('channel_model');
-		$this->load->model('category_model');
-		$this->load->model('status_model');
-		$this->load->model('field_model');
+		$this->load->model(array(
+ 			'channel_model', 'category_model', 'status_model', 'field_model'
+		));
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('edit_group_assignments'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', $this->lang->line('channels'));
+		$this->cp->set_variable('cp_page_title', lang('edit_group_assignments'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', lang('channels'));
 
 		$query = $this->channel_model->get_channel_info($channel_id);
 
@@ -1120,11 +1119,13 @@ class Admin_content extends CI_Controller {
 			
 			$vars[$key] = $val;  
 		}
-
-		$vars['form_hidden']['channel_id'] = $channel_id;
-		$vars['form_hidden']['channel_name'] = $vars['channel_name'];
-		$vars['form_hidden']['channel_title'] = $vars['channel_title'];
-		$vars['form_hidden']['return'] = 1;
+		
+		$vars['form_hidden'] = array(
+			'channel_id'	=> $channel_id,
+			'channel_name'	=> $vars['channel_name'],
+			'channel_title'	=> $vars['channel_title'],
+			'return'		=> 1
+		);
 
 
 		// Category Select List
@@ -1879,7 +1880,7 @@ class Admin_content extends CI_Controller {
 				show_error($this->lang->line('unauthorized_access'));
 			}
 		}
-
+		
 		$vars['cat_id'] = $this->input->get_post('cat_id');
 
 		$default = array('cat_name', 'cat_url_title', 'cat_description', 'cat_image', 'cat_id', 'parent_id');
@@ -5021,6 +5022,10 @@ class Admin_content extends CI_Controller {
 		{
 			show_error(lang('not_authorized'));
 		}
+		
+		$this->cp->add_js_script(array(
+			'plugin' => array('jscolor')
+		));
 
 		$this->load->library('table');
 		$this->load->helper('form');
