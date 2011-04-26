@@ -1448,9 +1448,9 @@ class Content_files extends CI_Controller {
 		
 		$dir_data = $this->_upload_dirs[$id];
 		
-		$this->filemanager->set_upload_dir_prefs($id, $dir_data);
 		$this->filemanager->xss_clean_off();
-
+		$dir_data['dimensions'] = (is_array($sizes[$id])) ? $sizes[$id] : array();
+		$this->filemanager->set_upload_dir_prefs($id, $dir_data);		
 		
 		// Now for everything NOT forcably replaced
 		
@@ -1533,10 +1533,6 @@ class Content_files extends CI_Controller {
 						TRUE,
 						TRUE
 				);					
-									
-				
-				
-				
 				continue;
 			}
 			
@@ -1561,7 +1557,6 @@ class Content_files extends CI_Controller {
 				'modified_by_member_id' => $this->session->userdata('member_id')
 			);
 			
-			$file_data['dimensions'] = (is_array($sizes[$id])) ? $sizes[$id] : array();
 			
 			$saved = $this->filemanager->save_file($this->_upload_dirs[$id]['server_path'].$file['name'], $id, $file_data, FALSE);
 			
