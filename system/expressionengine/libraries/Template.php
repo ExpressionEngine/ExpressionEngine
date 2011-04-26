@@ -2800,7 +2800,13 @@ class EE_Template {
 	{
 		$charset 	= '';
 		$lang		= '';
-		$user_vars	= array('member_id', 'group_id', 'group_description', 'group_title', 'member_group', 'username', 'screen_name', 'email', 'ip_address', 'location', 'total_entries', 'total_comments', 'private_messages', 'total_forum_posts', 'total_forum_topics', 'total_forum_replies');			
+		$user_vars	= array(
+					'member_id', 'group_id', 'group_description', 
+					'group_title', 'member_group', 'username', 'screen_name', 
+					'email', 'ip_address', 'location', 'total_entries', 
+					'total_comments', 'private_messages', 'total_forum_posts', 
+					'total_forum_topics', 'total_forum_replies'
+				);
 
         /** --------------------------------------------------
         /**  Redirect - if we have one of these, no need to go further
@@ -3036,6 +3042,13 @@ class EE_Template {
 		/** --------------------------------------------------*/
 
 		$str = str_replace(LD.'doc_url'.RD, $this->EE->config->item('doc_url'), $str);
+
+		/** --------------------------------------------------
+		/**  {theme_folder_url}
+		/** --------------------------------------------------*/
+		
+		$str = str_replace(LD.'theme_folder_url'.RD, 
+			$this->EE->config->item('theme_folder_url'), $str);
 		
 		/** --------------------------------------------------
 		/**  {member_profile_link}
