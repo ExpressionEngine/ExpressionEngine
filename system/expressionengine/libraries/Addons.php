@@ -88,7 +88,10 @@ class EE_Addons {
 				}				
 			}
 			
-			ksort($this->_map[$type]);
+			if ($type != '')
+			{
+				ksort($this->_map[$type]);
+			}
 			ksort($this->_packages);
 		}
 		

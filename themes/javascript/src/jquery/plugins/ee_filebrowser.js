@@ -230,8 +230,6 @@
 			var images = build_image_list(directory),
 				workon = directory.images.slice(offset, offset + per_page);
 			
-			console.log(images);
-
 			$("#tableView").hide();
 
 			$.tmpl("thumb", workon).appendTo("#file_chooser_body");
