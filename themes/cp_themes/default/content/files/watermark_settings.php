@@ -164,7 +164,7 @@ if ($EE_view_disable !== TRUE)
 							form_input(array(
 								'id'	=> 'wm_text_color',
 								'name'	=> 'wm_text_color',
-								'class'	=> 'field color {hash:true, pickerFaceColor:\'#f4f6f6\', pickerInsetColor:\'#d0d7df\', pickerBorderColor:\'#d0d7df\'}',
+								'class'	=> 'field color {hash:true}',
 								'value' => set_value('wm_text_color', $wm_text_color)
 							));
 							?>
@@ -203,7 +203,7 @@ if ($EE_view_disable !== TRUE)
 							form_input(array(
 								'id'	=> 'wm_shadow_color',
 								'name'	=> 'wm_shadow_color',
-								'class'	=> 'field color {hash:true, pickerFaceColor:\'#f4f6f6\', pickerInsetColor:\'#d0d7df\', pickerBorderColor:\'#d0d7df\'}',
+								'class'	=> 'field color {hash:true}',
 								'value' => set_value('wm_shadow_color', $wm_shadow_color)
 							));
 							?>
