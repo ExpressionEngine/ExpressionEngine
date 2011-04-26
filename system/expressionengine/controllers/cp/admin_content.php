@@ -1880,7 +1880,7 @@ class Admin_content extends CI_Controller {
 				show_error($this->lang->line('unauthorized_access'));
 			}
 		}
-
+		
 		$vars['cat_id'] = $this->input->get_post('cat_id');
 
 		$default = array('cat_name', 'cat_url_title', 'cat_description', 'cat_image', 'cat_id', 'parent_id');
@@ -5022,6 +5022,10 @@ class Admin_content extends CI_Controller {
 		{
 			show_error(lang('not_authorized'));
 		}
+		
+		$this->cp->add_js_script(array(
+			'plugin' => array('jscolor')
+		));
 
 		$this->load->library('table');
 		$this->load->helper('form');

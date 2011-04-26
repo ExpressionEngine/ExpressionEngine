@@ -33,7 +33,7 @@ if ($EE_view_disable !== TRUE)
 
 		<p>
 			<?=form_label(lang('highlight'), 'highlight')?>
-			<?=form_input(array('id'=>'highlight','name'=>'highlight','class'=>'field','value'=>$highlight))?>
+			<?=form_input(array('id'=>'highlight','name'=>'highlight','class'=>'field color {pickerFaceColor:\'#f4f6f6\', pickerInsetColor:\'#d0d7df\', pickerBorderColor:\'#d0d7df\'}','value'=>$highlight))?>
 		</p>
 
 		<?php if ($this->session->userdata('group_id') == 1):?>
