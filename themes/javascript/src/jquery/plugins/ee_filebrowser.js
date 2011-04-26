@@ -229,6 +229,8 @@
 		if (display_type != 'list') {
 			var images = build_image_list(directory),
 				workon = directory.images.slice(offset, offset + per_page);
+			
+			console.log(images);
 
 			$("#tableView").hide();
 
@@ -310,7 +312,7 @@
 				count = 0;
 
 			for (var i = 0, max = directory.files.length; i < max; i++) {
-				if (directory.files[i].thumb) {
+				if (directory.files[i].is_image) {
 					images.push(directory.files[i]);
 				}
 			}

@@ -46,37 +46,49 @@ $.ee_filemanager.file_uploader = function() {
 			// Clone the first valid row
 			var $first_row = $('.mainTable tbody tr:first').clone();
 			
-			// Build link
-			var $link = $first_row.find('td:eq(2) a').clone().attr({
-				'id': '', 
-				'href': file.upload_directory_prefs.url + file.file_name,
-				'title': file.file_name
+			// Build actions
+			file.actions = '';
+			$.each(EE.fileuploader.actions, function(index, val) {
+				var current_action = val.replace('[file_id]', file.file_id).replace('[upload_dir]', file.upload_directory_prefs.id);
+				
+				// Add the edit action only if it's an image
+				if (index != "edit" || file.is_image) {
+					file.actions += current_action + '&nbsp;&nbsp;';
+				};
 			});
 			
-			if (file.title) {
-				$link.text(file.title);
-			} else {
-				$link.text(file.name);
+			if (typeof file.title == "undefined") {
+				file.title = file.name;
 			};
 			
-			// I realize how foolish this looks, but in order to pass the html
-			// to jQuery templates, we need the html and jQuery in it's infinite
-			// wisodom has no method to get the full html of an object, it only
-			// has a method to get the inner html, completely missing the actual
-			// anchor link, seems worthless to me too.
-			
-			file.link = $link.wrap('<div>').parent().html();
-			
-			// Build actions
-			var previous_id = $first_row.find('td:eq(0)').text();
-			var $actions = $first_row.find('td:has(img)').clone().find('a').each(function(index) {
-				$(this).attr('href', $(this).attr('href').replace(previous_id, file.file_id));
-			}).end();
-			
-			file.actions = $actions.html();
+			if (file.is_image) {
+				// Build link
+				var $link = $('<a>', {
+					'id': 		'', 
+					'href': 	file.upload_directory_prefs.url + file.file_name,
+					'title': 	file.file_name,
+					'text': 	file.title,
+					'rel': 		'#overlay',
+					'class': 	'less_important_link overlay'
+				});
+				
+				// I realize how foolish this looks, but in order to pass the html
+				// to jQuery templates, we need the html and jQuery in it's infinite
+				// wisodom has no method to get the full html of an object, it only
+				// has a method to get the inner html, completely missing the actual
+				// anchor link, seems worthless to me too.
+
+				file.link = $link.wrap('<div>').parent().html();
+			} else {
+				file.link = file.title;
+			};
 			
 			// Send it all to the jQuery Template
 			$('.mainTable tbody').prepend($.tmpl('filemanager_row', file));
+			
+			// Change modal's top
+			var height_difference = $('.mainTable tbody tr:first').height() + 2; // 2 is added for borders
+			$('.ui-dialog').css('top', parseInt($('.ui-dialog').css('top'), 10) - height_difference);
 		},
 		trigger: '#action_nav a:contains(Upload File)'
 	});

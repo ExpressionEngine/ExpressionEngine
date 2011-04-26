@@ -3465,6 +3465,7 @@ a.file_chooser_thumbnail.last_row {
 #file_uploader .cancel:visited {
 	color: 				#e0e5e6;
 	color: 				rgba(255, 255, 255, 0.7);
+	line-height: 1.9;
 }
 
 #file_uploader .cancel:hover {
