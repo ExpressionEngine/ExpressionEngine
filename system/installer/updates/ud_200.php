@@ -1342,7 +1342,7 @@ class Updater {
 
             if ($row->group_id == 1)
             {
-                $new_privs .= "`can_access_accessories` = 'y', `can_access_files` = 'y', ";             
+                $new_privs .= "`can_access_accessories` = 'y', `can_access_files` = 'y', `can_edit_categories` = 'y', `can_delete_categories` = 'y', ";             
             }           
 
             
