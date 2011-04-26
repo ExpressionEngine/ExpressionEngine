@@ -1084,22 +1084,65 @@ class Content_files extends CI_Controller {
 
 		$file = $this->security->sanitize_filename(urldecode($file));
 		$file = $this->functions->remove_double_slashes(
-				$this->_upload_dirs[$upload_dir_id]['server_path'].DIRECTORY_SEPARATOR.$file);
+			$this->_upload_dirs[$upload_dir_id]['server_path'].DIRECTORY_SEPARATOR.$file
+		);
 
 		switch ($this->input->post('action'))
 		{
 			case 'rotate':
-				$this->_do_rotate($file);
+				$response = $this->_do_rotate($file);
 				break;
 			case 'crop':
-				$this->_do_crop($file);
+				$response = $this->_do_crop($file);
 				break;
 			case 'resize':
-				$this->_do_resize($file);
+				$response = $this->_do_resize($file);
 				break;
 			default:
 				return ''; // todo, error
 		}
+		
+		if (isset($response['errors']))
+		{
+			if (AJAX_REQUEST)
+			{
+				$this->output->send_ajax_response($response['errors'], TRUE);
+			}
+
+			show_error($response['errors']);
+		}
+		
+		// Get dimensions for thumbnail
+		$this->load->model('file_model');
+		$dimensions = $this->file_model->get_dimensions_by_dir_id($upload_dir_id);
+		$dimensions = $dimensions->result_array();
+		
+		// Regenerate thumbnails
+		$this->filemanager->create_thumb(
+			$file,
+			array(
+				'server_path' => $this->_upload_dirs[$upload_dir_id]['server_path'],
+				'file_name'  => basename($file),
+				'dimensions' => $dimensions
+			)
+		);
+		
+		if (AJAX_REQUEST)
+		{
+			$this->output->send_ajax_response(array(
+				'width'		=> $response['dimensions']['width'],
+				'height'	=> $response['dimensions']['height']
+			));
+		}
+		
+		$this->session->set_flashdata('message_success', lang('file_saved'));
+		$this->functions->redirect(
+			BASE.AMP.
+			'C=content_files'.AMP.
+			'M=edit_image'.AMP.
+			'upload_dir='.$this->input->post('upload_dir').AMP.
+			'file_id='.$this->input->post('file_id')
+		);
 	}
 
 	// ------------------------------------------------------------------------
@@ -1128,33 +1171,21 @@ class Content_files extends CI_Controller {
 		{
 	    	$errors = $this->image_lib->display_errors();
 		}
-
+		
+		$reponse = array();
+		
 		if (isset($errors))
 		{
-			if (AJAX_REQUEST)
-			{
-				$this->output->send_ajax_response($errors, TRUE);
-			}
-
-			show_error($errors);
+			$response['errors'] = $errors;
 		}
-
-		$this->image_lib->clear();
-
-		if (AJAX_REQUEST)
+		else
 		{
-			$dimensions = $this->image_lib->get_image_properties('', TRUE);
-			$this->image_lib->clear();
-
-			$this->output->send_ajax_response(array(
-				'width'		=> $dimensions['width'],
-				'height'	=> $dimensions['height']
-			));
+			$response['dimensions'] = $this->image_lib->get_image_properties('', TRUE);
 		}
-
-		$this->session->set_flashdata('message_success', lang('file_saved'));
-		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file_id='.$this->input->post('file_id');
-		$this->functions->redirect($url);
+		
+		$this->image_lib->clear();
+		
+		return $response;
 	}
 
 	// ------------------------------------------------------------------------
@@ -1179,32 +1210,20 @@ class Content_files extends CI_Controller {
 	    	$errors = $this->image_lib->display_errors();
 		}
 
+		$reponse = array();
+		
 		if (isset($errors))
 		{
-			if (AJAX_REQUEST)
-			{
-				$this->output->send_ajax_response($errors, TRUE);
-			}
-
-			show_error($errors);
+			$response['errors'] = $errors;
 		}
-
-		$this->image_lib->clear();
-
-		if (AJAX_REQUEST)
+		else
 		{
-			$dimensions = $this->image_lib->get_image_properties('', TRUE);
-			$this->image_lib->clear();
-
-			$this->output->send_ajax_response(array(
-				'width'		=> $dimensions['width'],
-				'height'	=> $dimensions['height']
-			));
+			$response['dimensions'] = $this->image_lib->get_image_properties('', TRUE);
 		}
-
-		$this->session->set_flashdata('message_success', lang('file_saved'));
-		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file_id='.$this->input->post('file_id');
-		$this->functions->redirect($url);
+		
+		$this->image_lib->clear();
+		
+		return $response;
 	}
 
 	// ------------------------------------------------------------------------
@@ -1214,8 +1233,6 @@ class Content_files extends CI_Controller {
 	 */
 	private function _do_resize($file)
 	{
-
-
 		$config = array(
 			'width'				=> $this->input->get_post('resize_width'),
 			'maintain_ratio'	=> $this->input->get_post('constrain'),
@@ -1241,32 +1258,20 @@ class Content_files extends CI_Controller {
 	    	$errors = $this->image_lib->display_errors();
 		}
 
+		$reponse = array();
+		
 		if (isset($errors))
 		{
-			if (AJAX_REQUEST)
-			{
-				$this->output->send_ajax_response($errors, TRUE);
-			}
-
-			show_error($errors);
+			$response['errors'] = $errors;
 		}
-
-		$this->image_lib->clear();
-
-		if (AJAX_REQUEST)
+		else
 		{
-			$dimensions = $this->image_lib->get_image_properties('', TRUE);
-			$this->image_lib->clear();
-
-			$this->output->send_ajax_response(array(
-				'width'		=> $dimensions['width'],
-				'height'	=> $dimensions['height']
-			));
+			$response['dimensions'] = $this->image_lib->get_image_properties('', TRUE);
 		}
-
-		$this->session->set_flashdata('message_success', lang('file_saved'));
-		$url = BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$this->input->post('upload_dir').AMP.'file_id='.$this->input->post('file_id');
-		$this->functions->redirect($url);
+		
+		$this->image_lib->clear();
+		
+		return $response;
 	}
 
 	// ------------------------------------------------------------------------
