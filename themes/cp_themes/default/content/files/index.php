@@ -22,14 +22,7 @@ if ( ! $EE_view_disable)
 		<div id="file_manager" class="pageContents group">
 			
 			<?php if ($no_upload_dirs):?>
-				<?php if ($this->cp->allowed_group('can_access_content_prefs')): ?>
-				<?php echo sprintf(
-								lang('no_upload_dirs_create_new'),
-								BASE.AMP.'C=admin_content'.AMP.'M=edit_upload_preferences')?>
-								
-				<?php else: ?>
-					<?=lang('no_upload_dirs')?>
-				<?php endif; ?>
+					<?=lang('no_upload_dirs_available')?>
 			<?php else: ?>
 			<div id="filterMenu">
 				<?php if ( ! empty($upload_dirs_options)):?>

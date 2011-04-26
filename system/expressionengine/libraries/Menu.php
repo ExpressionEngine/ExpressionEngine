@@ -437,7 +437,10 @@ class EE_Menu {
 			{
 				if ( ! $this->EE->cp->allowed_group('can_admin_upload_prefs'))
 				{
-					unset($menu['content']['files']);
+					unset($menu['content']['files'][0]);
+					unset($menu['content']['files']['file_upload_preferences']);
+					unset($menu['content']['files']['file_watermark_preferences']);
+					
 				}				
 			}
 		}

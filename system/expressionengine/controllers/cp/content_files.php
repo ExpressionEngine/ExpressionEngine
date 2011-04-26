@@ -93,13 +93,6 @@ class Content_files extends CI_Controller {
 		$this->load->helper(array('string', 'search'));
 		$this->api->instantiate('channel_categories');
 
-		// Page Title
-		$this->cp->set_variable('cp_page_title', lang('content_files'));
-		
-		$this->cp->set_action_nav(array(
-			'upload_file' => ''
-		));
-		
 		// both filebrowser and fileuploader need to be loaded because 
 		// fileuploader depends on filebrowser's methods
 		$this->cp->add_js_script(array(
@@ -117,9 +110,19 @@ class Content_files extends CI_Controller {
 		// Setup get/post vars in class vars
 		$get_post = $this->_fetch_get_post_vars();
 
-		// Get array of allowed upload dirs, or error out.
+		// Get array of allowed upload dirs.
 		$allowed_dirs = $this->_setup_allowed_dirs();
 		$total_dirs = count($allowed_dirs);
+		
+		// Page Title
+		$this->cp->set_variable('cp_page_title', lang('content_files'));
+		
+		if ($allowed_dirs != FALSE)
+		{
+			$this->cp->set_action_nav(array(
+			'upload_file' => ''
+			));
+		}		
 
 		$this->javascript->set_global(array(
 			'file' => array(
@@ -533,7 +536,7 @@ class Content_files extends CI_Controller {
 	/**
 	 * Setup Allowed Upload Directories
 	 *
-	 * Cycles through upload dirs, errors out if there aren't any upload dirs
+	 * Cycles through upload dirs, returns false if there aren't any upload dirs
 	 * available.
 	 *
 	 * @return array
@@ -552,7 +555,7 @@ class Content_files extends CI_Controller {
 
 		if (empty($this->_allowed_dirs))
 		{
-			show_error(lang('unauthorized_access'));
+			return FALSE;
 		}
 
 		return $this->_allowed_dirs;
@@ -2036,7 +2039,7 @@ class Content_files extends CI_Controller {
 		}');
 
 		$vars['message'] = $message;
-		$vars['upload_locations'] = $this->file_upload_preferences_model->get_upload_preferences($this->session->userdata('member_group'));
+		$vars['upload_locations'] = $this->file_upload_preferences_model->get_upload_preferences($this->session->userdata('group_id'));
 
 		$this->javascript->compile();
 
