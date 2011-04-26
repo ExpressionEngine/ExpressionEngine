@@ -372,8 +372,13 @@ class Filemanager {
 		}
 		
 		$prefs['upload_location_id'] = $dir_id;
-
+		
 		$prefs = array_merge($prefs, $dir_prefs);
+		
+		if ( ! isset($prefs['dimensions']))
+		{
+			$prefs['dimensions'] = array();
+		}
 		
 		// Figure out the mime type
 		$mime = $this->security_check($file_path, $prefs);
@@ -1651,10 +1656,7 @@ class Filemanager {
 			return array('error' => lang('invalid_mime'));
 		}
 		
-		// Figure out what dimensions we need to worry about
-		$this->EE->load->model('file_model');
-		$file_dimensions = $this->EE->file_model->get_dimensions_by_dir_id($dir['id']);
-		
+	
 		$thumb_info = $this->get_thumb($file['file_name'], $dir['id']);
 		
 		// Build list of information to save and return
@@ -1678,13 +1680,10 @@ class Filemanager {
 			'file_size'				=> $file['file_size'] * 1024, // Bring it back to Bytes from KB
 			'file_height'			=> $file['image_height'],
 			'file_width'			=> $file['image_width'],
-			'file_hw_original'		=> $file['image_height'].' '.$file['image_width'],
-			
-			'dimensions'			=> $file_dimensions->result_array()
+			'file_hw_original'		=> $file['image_height'].' '.$file['image_width']
 		);
 		
-		// Free up the dimensions query after using it
-		//$file_dimensions->free_result();
+
 		
 		// Save file to database
 		$saved = $this->save_file($file['full_path'], $dir['id'], $file_data);
