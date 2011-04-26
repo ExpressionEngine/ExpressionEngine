@@ -13,7 +13,7 @@ if ( ! $EE_view_disable)
 	<div class="contents">
 
 		<div class="heading">
-			<h2 class="edit"><?=lang('image_editor')?>: <small><?= $file ?></small></h2>
+			<h2 class="edit"><?=lang('image_editor')?>: <?= $file ?></h2>
 		</div>
 		
 		<div class="pageContents group">
