@@ -183,11 +183,16 @@
 		
 		// Create listener for the place file button
 		if (settings.type == "filemanager") {
-			$('#file_uploader .button_bar #edit_file').click(function(event) {
-				// Get edit action
-				var edit_url = $('.mainTable tr.new:first td:has(img) a[href*=edit_image]').attr('href');
-				$(this).attr('href', edit_url);
-			});
+			if (file.is_image) {
+				$('#file_uploader .button_bar #edit_file').show().click(function(event) {
+					// Get edit action
+					var edit_url = $('.mainTable tr.new:first td:has(img) a[href*=edit_image]').attr('href');
+					$(this).attr('href', edit_url);
+				});
+			} else {
+				// Hide the edit file button if it's not an image.
+				$('#file_uploader .button_bar #edit_file').hide();
+			};
 		} else if (settings.type == "filebrowser") {
 			$('#file_uploader .button_bar #choose_file').click(function(event) {
 				event.preventDefault();

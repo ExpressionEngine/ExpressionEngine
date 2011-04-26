@@ -46,26 +46,30 @@ $.ee_filemanager.file_uploader = function() {
 			// Clone the first valid row
 			var $first_row = $('.mainTable tbody tr:first').clone();
 			
-			// Build link
-			var $link = $first_row.find('td:eq(2) a').clone().attr({
-				'id': '', 
-				'href': file.upload_directory_prefs.url + file.file_name,
-				'title': file.file_name
-			});
-			
-			if (file.title) {
-				$link.text(file.title);
-			} else {
-				$link.text(file.name);
+			if (typeof file.title == "undefined") {
+				file.title = file.name;
 			};
 			
-			// I realize how foolish this looks, but in order to pass the html
-			// to jQuery templates, we need the html and jQuery in it's infinite
-			// wisodom has no method to get the full html of an object, it only
-			// has a method to get the inner html, completely missing the actual
-			// anchor link, seems worthless to me too.
+			if (file.is_image) {
+				// Build link
+				var $link = $first_row.find('td:eq(2) a').clone().attr({
+					'id': 		'', 
+					'href': 	file.upload_directory_prefs.url + file.file_name,
+					'title': 	file.file_name,
+					'text': 	file.title
+				});
+				
+				// I realize how foolish this looks, but in order to pass the html
+				// to jQuery templates, we need the html and jQuery in it's infinite
+				// wisodom has no method to get the full html of an object, it only
+				// has a method to get the inner html, completely missing the actual
+				// anchor link, seems worthless to me too.
+
+				file.link = $link.wrap('<div>').parent().html();
+			} else {
+				file.link = file.title;
+			};
 			
-			file.link = $link.wrap('<div>').parent().html();
 			
 			// Build actions
 			var previous_id = $first_row.find('td:eq(0)').text();
@@ -77,6 +81,10 @@ $.ee_filemanager.file_uploader = function() {
 			
 			// Send it all to the jQuery Template
 			$('.mainTable tbody').prepend($.tmpl('filemanager_row', file));
+			
+			// Change modal's top
+			var height_difference = $('.mainTable tbody tr:first').height() + 2; // 2 is added for borders
+			$('.ui-dialog').css('top', parseInt($('.ui-dialog').css('top'), 10) - height_difference);
 		},
 		trigger: '#action_nav a:contains(Upload File)'
 	});
