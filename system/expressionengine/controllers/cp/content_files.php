@@ -136,7 +136,12 @@ class Content_files extends CI_Controller {
 				'window_title'	=> lang('file_manager')
 			),
 			'fileuploader' => array(
-				'window_title'	=> lang('file_upload')
+				'window_title'	=> lang('file_upload'),
+				'actions' => array(
+					'download' 	=> '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'file_id=[file_id]'.AMP.'action=download" title="'.lang('file_download').'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png"></a>',
+					'delete'	=> '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'file_id=[file_id]'.AMP.'action=delete" title="'.lang('delete_selected_files').'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png"></a>',
+					'edit'		=> '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir=[upload_dir]'.AMP.'file_id=[file_id]" title="'.lang('edit_file').'"><img src="'.$this->cp->cp_theme_url.'images/icon-edit.png" alt="'.lang('delete').'" /></a>'
+				)
 			)
 		));
 
