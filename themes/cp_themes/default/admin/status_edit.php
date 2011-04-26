@@ -33,7 +33,7 @@ if ($EE_view_disable !== TRUE)
 
 		<p>
 			<?=form_label(lang('highlight'), 'highlight')?>
-			<?=form_input(array('id'=>'highlight','name'=>'highlight','class'=>'field color','value'=>$highlight))?>
+			<?=form_input(array('id'=>'highlight','name'=>'highlight','class'=>'field color {required: false}','value'=>$highlight))?>
 		</p>
 
 		<?php if ($this->session->userdata('group_id') == 1):?>
