@@ -997,12 +997,7 @@ class Filemanager {
 		foreach ($dimensions as $size_id => $size)
 		{
 			$this->EE->image_lib->clear();
-			
-			// In the event that the size doesn't have a valid height or width, move on
-			if ($size['width'] <= 0 && $size['height'] <= 0)
-			{
-				continue;
-			}
+			$force_master_dim = FALSE;
 			
 			$resized_path = $img_path.'_'.$size['short_name'].'/';
 			
@@ -1035,8 +1030,27 @@ class Filemanager {
 				@unlink($resized_path.$prefs['file_name']);
 			}		
 
+			// In the event that the size doesn't have a valid height and width, move on
+			if ($size['width'] <= 0 && $size['height'] <= 0)
+			{
+				continue;
+			}
+			
+			// If either h/w unspecified, calculate the other here
+			if ($size['width'] == '' OR $size['width'] == 0)
+			{
+				$size['width'] = ($prefs['width']/$prefs['height'])*$size['height'];
+				$force_master_dim = 'height';
+			}
+			elseif ($size['height'] == '' OR $size['height'] == 0)
+			{
+				// Old h/old w * new width
+				$size['height'] = ($prefs['height']/$prefs['width'])*$size['width'];
+				$force_master_dim = 'width';
+			}
+
+
 			// Resize
-		
 			$config['source_image']		= $source;
 			$config['new_image']		= $resized_path.$prefs['file_name'];
 			$config['maintain_ratio']	= TRUE;
@@ -1046,12 +1060,16 @@ class Filemanager {
 			$config['height']			= $size['height'];
 			
 			// If the original is smaller than the thumb hxw, we'll make a copy rather than upsize
-			
-
-			// crop based on resize type - does anyone really crop sight unseen????
-			if (isset($size['resize_type']) AND $size['resize_type'] == 'crop')
+			if (($force_master_dim == 'height' && $prefs['height'] < $size['height']) OR 
+				($force_master_dim == 'width' && $prefs['width'] < $size['width']) OR
+				($force_master_dim == FALSE && $prefs['width'] < $size['width']) OR 
+				($force_master_dim == FALSE && $prefs['width'] < $size['width']))
 			{
-				// This may need to change if we let them manuall set crop
+				copy($config['source_image'],$config['new_image']);
+			}
+			elseif (isset($size['resize_type']) AND $size['resize_type'] == 'crop')
+			{
+				// This may need to change if we let them manually set crop
 				// For now, let's crop from center for Wes
 
 				$config['x_axis'] = (($prefs['width'] / 2) + ($config['width'] / 2));
@@ -1066,21 +1084,6 @@ class Filemanager {
 			}
 			else
 			{
-				if ($config['width'] == '' OR $config['width'] == 0)
-				{
-					$config['width'] = ($prefs['width']/$prefs['height'])*$config['height'];
-					
-					
-					$config['master_dim'] = 'height';
-				}
-				elseif ($config['height'] == '' OR $config['height'] == 0)
-				{
-					// Old h/old w * new width
-					$config['height'] = ($prefs['height']/$prefs['width'])*$config['width'];
-					$config['master_dim'] = 'width';
-					
-				}
-
 				$this->EE->image_lib->initialize($config);
 				
 				if ( ! $this->EE->image_lib->resize())
@@ -1092,7 +1095,6 @@ class Filemanager {
 			@chmod($config['new_image'], DIR_WRITE_MODE);
 			
 			// Does the thumb require watermark?
-						
 			if ($size['watermark_id'] != 0)
 			{
 				if ( ! $this->create_watermark($resized_path.$prefs['file_name'], $size))
@@ -1101,7 +1103,7 @@ class Filemanager {
 				}				
 			}			
 		}
-		
+
 		return TRUE;
 	}	
 	
