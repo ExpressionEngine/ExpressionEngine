@@ -47,7 +47,7 @@ if ($EE_view_disable !== TRUE)
 			}
 			else
 			{
-				$this->table->add_row(array('data' => lang('no_upload_prefs'), 'colspan' => 3));
+				$this->table->add_row(array('data' => lang('no_upload_dirs_available'), 'colspan' => 5));
 			}
 			
 			echo $this->table->generate();

@@ -78,7 +78,8 @@ $lang = array(
 'pagination_filter_text'    => 'Show %s files from %s as %s.',
 'all_categories'			=> 'all categories',
 'total_dir_size'            => 'Total Directory Size:',
-'no_upload_dirs_create_new' => 'No upload locations exist.  <a href="%s">Create a new upload location</a>',
+'no_upload_dirs_available' => 'No upload locations available',
+
 
 'save_crop' 			=> 'Save Crop',
 'cancel_crop'			=> 'Cancel Crop',
