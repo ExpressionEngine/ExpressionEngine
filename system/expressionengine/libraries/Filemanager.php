@@ -1309,6 +1309,15 @@ class Filemanager {
 		
 		if ($type == 'watermark')
 		{
+			// Verify the watermark settings actually exist
+			if ( ! isset($data['wm_type']) AND isset($data['watermark_id']))
+			{
+				$this->EE->load->model('file_model');
+				$qry = $this->EE->file_model->get_watermark_preferences($data['watermark_id']);
+				$qry = $qry->row_array();
+				$data = array_merge($data, $qry);
+			}
+			
 			$wm_prefs = array('source_image', 'padding', 'wm_vrt_alignment', 'wm_hor_alignment', 
 			'wm_hor_offset', 'wm_vrt_offset');
 
