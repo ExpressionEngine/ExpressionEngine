@@ -61,7 +61,7 @@ if ($EE_view_disable !== TRUE)
 				<?php if ($group_id != 1):?>
 	
 					<h3 class="accordion"><?=lang('security_lock')?></h3>
-					<div style="padding: 5px 1px;">
+					<div>
 						<?php
 							$preference = '<p><strong class="notice">'.lang('enable_lock').'</strong><br />'.lang('lock_description').'</p>';
 							$controls = lang('locked', 'is_locked_y').NBS.form_radio(array('name'=>'is_locked', 'id'=>'is_locked_y', 'value'=>'y', 'checked'=>($is_locked == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
@@ -91,7 +91,7 @@ if ($EE_view_disable !== TRUE)
 					?>
 
 						<h3 class="accordion"><?=lang($prefname)?></h3>
-						<div style="padding: 5px 1px;">
+						<div>
 							<?php
 
 								foreach ($prefs as $k=>$pref)
@@ -162,7 +162,7 @@ if ($EE_view_disable !== TRUE)
 			
 				<div id="modules">
 							<h3 class="accordion"><?=lang('cp_module_access_privs')?></h3>
-							<div style="padding: 5px 1px;">
+							<div>
 							<?php					
 								if ( ! empty($module_perms))
 								{
