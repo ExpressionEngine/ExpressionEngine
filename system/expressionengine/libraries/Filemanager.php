@@ -974,7 +974,7 @@ class Filemanager {
 				'width'			=> 73,
 				'height'		=> 60,
 				'watermark_id'	=> 0
-				);
+			);
 		}
 			
 		$protocol = $this->EE->config->item('image_resize_protocol');

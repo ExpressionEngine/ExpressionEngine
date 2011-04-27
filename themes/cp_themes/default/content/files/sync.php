@@ -40,7 +40,7 @@ if ( ! $EE_view_disable)
 			</table>
 
 			<?php if ( ! empty($sizes)):?>
-			<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
+			<table id="dimensions" class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
 				<thead>
 					<tr>
 						<th><?=lang('size')?></th>
