@@ -285,7 +285,7 @@ class Updater {
 				'type'				=> 'int',
 				'constraint'		=> 4
 			),
-			'wm_text_color' => array(
+			'wm_font_color' => array(
 				'type'				=> 'varchar',
 				'constraint'		=> 7
 			),

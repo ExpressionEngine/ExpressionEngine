@@ -29,7 +29,7 @@ $.ee_watermark.watermark_test = function() {
 		wm_type = '',
 		wm_font = (item.gallery_wm_use_font[0].checked) ? 'y' : 'n',
 		wm_drop = (item.gallery_wm_use_drop_shadow[0].checked) ? 'y' : 'n',
-		text_color = item.gallery_wm_text_color.value,
+		text_color = item.gallery_wm_font_color.value,
 		shad_color = item.gallery_wm_shadow_color.value;
 	
 	if (item.gallery_wm_type[1].checked)
@@ -59,7 +59,7 @@ $.ee_watermark.watermark_test = function() {
 	'&gallery_wm_y_offset=' + item.gallery_wm_y_offset.value +
 	'&gallery_wm_x_transp=' + item.gallery_wm_x_transp.value +
 	'&gallery_wm_y_transp=' + item.gallery_wm_y_transp.value +
-	'&gallery_wm_text_color=' + text_color.substring(1) +
+	'&gallery_wm_font_color=' + text_color.substring(1) +
 	'&gallery_wm_use_drop_shadow=' + wm_drop +
 	'&gallery_wm_shadow_color=' + shad_color.substring(1) +
 	'&gallery_wm_shadow_distance=' + item.gallery_wm_shadow_distance.value +

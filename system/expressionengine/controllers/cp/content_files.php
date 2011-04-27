@@ -1073,21 +1073,22 @@ class Content_files extends CI_Controller {
 	 */
 	private function _do_image_processing()
 	{
-		$file = $this->input->post('file');
-
-		if ( ! $file)
+		// Check to see if a file was actually sent...
+		if ( ! ($file = $this->input->post('file')))
 		{
 			$this->session->set_flashdata('message_failure', lang('choose_file'));
 			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
-
+		
 		$upload_dir_id = $this->input->post('upload_dir');
 
+		// Clean up the filename and add add the full path
 		$file = $this->security->sanitize_filename(urldecode($file));
 		$file = $this->functions->remove_double_slashes(
 			$this->_upload_dirs[$upload_dir_id]['server_path'].DIRECTORY_SEPARATOR.$file
 		);
 
+		// Where are we going with this?
 		switch ($this->input->post('action'))
 		{
 			case 'rotate':
@@ -1103,6 +1104,7 @@ class Content_files extends CI_Controller {
 				return ''; // todo, error
 		}
 		
+		// Alright, what did we break?
 		if (isset($response['errors']))
 		{
 			if (AJAX_REQUEST)
@@ -1128,6 +1130,7 @@ class Content_files extends CI_Controller {
 			)
 		);
 		
+		// Send the dimensions back for Ajax requests
 		if (AJAX_REQUEST)
 		{
 			$this->output->send_ajax_response(array(
@@ -1136,6 +1139,7 @@ class Content_files extends CI_Controller {
 			));
 		}
 		
+		// Otherwise redirect
 		$this->session->set_flashdata('message_success', lang('file_saved'));
 		$this->functions->redirect(
 			BASE.AMP.
@@ -1335,20 +1339,20 @@ class Content_files extends CI_Controller {
 				if ($row->watermark_id != 0)
 				{
 					$js_size[$row->upload_location_id][$row->id]['wm_type'] = $row->wm_type;
-					$js_size[$row->upload_location_id][$row->id]['wm_image_path'] =	$row->wm_image_path;				
-					$js_size[$row->upload_location_id][$row->id]['wm_use_font'] = $row->wm_use_font;	
-					$js_size[$row->upload_location_id][$row->id]['wm_font'] = $row->wm_font;					
-					$js_size[$row->upload_location_id][$row->id]['wm_font_size'] = $row->wm_font_size;	
-					$js_size[$row->upload_location_id][$row->id]['wm_text'] = $row->wm_text;		
+					$js_size[$row->upload_location_id][$row->id]['wm_image_path'] =	$row->wm_image_path;
+					$js_size[$row->upload_location_id][$row->id]['wm_use_font'] = $row->wm_use_font;
+					$js_size[$row->upload_location_id][$row->id]['wm_font'] = $row->wm_font;
+					$js_size[$row->upload_location_id][$row->id]['wm_font_size'] = $row->wm_font_size;
+					$js_size[$row->upload_location_id][$row->id]['wm_text'] = $row->wm_text;
 					$js_size[$row->upload_location_id][$row->id]['wm_vrt_alignment'] = $row->wm_vrt_alignment;
-					$js_size[$row->upload_location_id][$row->id]['wm_hor_alignment'] = $row->wm_hor_alignment;	
+					$js_size[$row->upload_location_id][$row->id]['wm_hor_alignment'] = $row->wm_hor_alignment;
 					$js_size[$row->upload_location_id][$row->id]['wm_padding'] = $row->wm_padding;
-					$js_size[$row->upload_location_id][$row->id]['wm_opacity'] = $row->wm_opacity;				
+					$js_size[$row->upload_location_id][$row->id]['wm_opacity'] = $row->wm_opacity;
 					$js_size[$row->upload_location_id][$row->id]['wm_x_offset'] = $row->wm_x_offset;
 					$js_size[$row->upload_location_id][$row->id]['wm_y_offset'] = $row->wm_y_offset;
-					$js_size[$row->upload_location_id][$row->id]['wm_x_transp'] = $row->wm_x_transp;	
+					$js_size[$row->upload_location_id][$row->id]['wm_x_transp'] = $row->wm_x_transp;
 					$js_size[$row->upload_location_id][$row->id]['wm_y_transp'] = $row->wm_y_transp;
-					$js_size[$row->upload_location_id][$row->id]['wm_text_color'] =	$row->wm_text_color;		
+					$js_size[$row->upload_location_id][$row->id]['wm_font_color'] =	$row->wm_font_color;
 					$js_size[$row->upload_location_id][$row->id]['wm_use_drop_shadow'] = $row->wm_use_drop_shadow;
 					$js_size[$row->upload_location_id][$row->id]['wm_shadow_distance'] = $row->wm_shadow_distance;
 					$js_size[$row->upload_location_id][$row->id]['wm_shadow_color'] = $row->wm_shadow_color;
@@ -1705,7 +1709,7 @@ class Content_files extends CI_Controller {
 			'wm_y_offset'			=> 0,
 			'wm_x_transp'			=> 2,
 			'wm_y_transp'			=> 2,
-			'wm_text_color'			=> '#ffff00',
+			'wm_font_color'			=> '#ffff00',
 			'wm_use_drop_shadow'	=> 'y',
 			'use_drop_shadow_yes'	=> 1,
 			'use_drop_shadow_no'	=> 0,
@@ -1818,8 +1822,8 @@ class Content_files extends CI_Controller {
 				'rules' => 'integer'
 			),
 			array(
-				'field' => 'wm_text_color',
-				'label' => 'lang:wm_text_color',
+				'field' => 'wm_font_color',
+				'label' => 'lang:wm_font_color',
 				'rules' => ''
 			),
 			array(
@@ -1892,7 +1896,7 @@ class Content_files extends CI_Controller {
 						'wm_y_offset'					=> 0,
 						'wm_x_transp'					=> 2,
 						'wm_y_transp'					=> 2,
-						'wm_text_color'					=> '#ffff00',
+						'wm_font_color'					=> '#ffff00',
 						'wm_use_drop_shadow'			=> 'y',
 						'wm_shadow_color'				=> '#999999',
 						'wm_shadow_distance'			=> 1,

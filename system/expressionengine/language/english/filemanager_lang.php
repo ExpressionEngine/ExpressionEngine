@@ -339,7 +339,7 @@ $lang = array(
 "wm_y_offset" =>
 "Vertical Offset",
 
-"wm_text_color" =>
+"wm_font_color" =>
 "Text Color",
 
 "wm_use_drop_shadow" =>
