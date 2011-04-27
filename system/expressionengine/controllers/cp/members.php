@@ -2014,7 +2014,12 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			}
 		}
 		
-		$query = $this->db->query("SELECT site_id FROM exp_sites");
+		if ($this->config->item('multiple_sites_enabled') == 'n')
+		{
+			$this->db->where('site_id', 1);
+		}
+		
+		$query = $this->db->select('site_id')->get('sites');
 		
 		$module_ids = array();
 		$channel_ids = array();

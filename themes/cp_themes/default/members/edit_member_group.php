@@ -161,33 +161,33 @@ if ($EE_view_disable !== TRUE)
 			?>				
 			
 				<div id="modules">
-							<h3 class="accordion"><?=lang('cp_module_access_privs')?></h3>
-							<div>
-							<?php					
-								if ( ! empty($module_perms))
-								{
-									foreach($module_perms as $key => $pref)
-									{
-										$line = lang('can_access_mod').NBS.NBS.'<span class="notice">'.$module_names[$key].'</span>';
+					<h3 class="accordion"><?=lang('cp_module_access_privs')?></h3>
+					<div>
+					<?php
+						if ( ! empty($module_perms))
+						{
+							foreach($module_perms as $key => $pref)
+							{
+								$line = lang('can_access_mod').NBS.NBS.'<span class="notice">'.$module_names[$key].'</span>';
 
-										$controls = lang('yes', $key.'_y').NBS.form_radio(array('name'=>$key, 'id'=>$key.'_y', 'value'=>'y', 'checked'=>($pref['options'] == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-										$controls .= lang('no', $key.'_n').NBS.form_radio(array('name'=>$key, 'id'=>$key.'_n', 'value'=>'n', 'checked'=>($pref['options'] == 'n') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
+								$controls = lang('yes', $key.'_y').NBS.form_radio(array('name'=>$key, 'id'=>$key.'_y', 'value'=>'y', 'checked'=>($pref['options'] == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
+								$controls .= lang('no', $key.'_n').NBS.form_radio(array('name'=>$key, 'id'=>$key.'_n', 'value'=>'n', 'checked'=>($pref['options'] == 'n') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
 
-										$this->table->set_heading(lang('preference'), lang('setting'));
-										$this->table->add_row($line, array('style'=> 'width:50%;', 'data'=>$controls));
-									}									
-								}
-								else
-								{
-									$this->table->add_row(lang('no_cp_modules_installed'));
-								}
+								$this->table->set_heading(lang('preference'), lang('setting'));
+								$this->table->add_row($line, array('style'=> 'width:50%;', 'data'=>$controls));
+							}
+						}
+						else
+						{
+							$this->table->add_row(lang('no_cp_modules_installed'));
+						}
 
-								echo $this->table->generate();
-								// Clear out of the next one
-								$this->table->clear();
+						echo $this->table->generate();
+						// Clear out of the next one
+						$this->table->clear();
 
-							?>
-							</div>
+					?>
+					</div>
 				</div>
 
 			<?php 
@@ -204,11 +204,7 @@ if ($EE_view_disable !== TRUE)
 			<div class="shun"></div>
 			<?=form_close()?>
 			</div>
-
-
-
 		</div>
-
 	</div> <!-- contents -->
 </div> <!-- mainContent -->
 
