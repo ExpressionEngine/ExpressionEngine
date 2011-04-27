@@ -22,9 +22,9 @@ EE.file_manager.resize_ids = [];
 $(document).ready(function() {
 	$.template("sync_complete_template", $('<div />').append($('#sync_complete_template').remove()));
 	
+	$('table#dimensions').toggle_all();
 	EE.file_manager.sync_listen();
 });
-
 
 EE.file_manager.sync_listen = function() {
 	$('.tableSubmit input').click(function(event) {
