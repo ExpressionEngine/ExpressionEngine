@@ -116,18 +116,28 @@ class Text_ft extends EE_Fieldtype {
 	function display_settings($data)
 	{
 		$prefix = 'text';
+		$extra = '';
 		
+		if ($data['field_id'] != '')
+		{
+			$extra .= '<div class="notice update_content_type js_hide">';
+			$extra .= '<p>'.sprintf(
+								lang('content_type_changed'), 
+								$data['field_content_type']).'</p></div>';
+		}
+		
+
 		$field_maxl = ($data['field_maxl'] == '') ? 128 : $data['field_maxl'];
 		
 		$field_content_options = array('all' => lang('all'), 'numeric' => lang('numeric'), 'decimal' => lang('decimal'));
 		
 		$this->field_formatting_row($data, $prefix);
 		$this->text_direction_row($data, $prefix);
-		
+
 		$this->EE->table->add_row(
 			lang('field_content_text', 'field_content_text'),
-			form_dropdown('field_content_type_text', $field_content_options, $data['field_content_type_text'], 'id="text_field_content_type"')
-		);		
+			form_dropdown('text_field_content_type', $field_content_options, $data['field_content_type'], 'id="text_field_content_type"').$extra
+		);
 
 		$this->field_show_smileys_row($data, $prefix);
 		$this->field_show_glossary_row($data, $prefix);
@@ -149,8 +159,7 @@ class Text_ft extends EE_Fieldtype {
 	{		
 		return array(
 			'field_maxl'			=> $this->EE->input->post('field_maxl'),
-			'field_content_text'	=> $this->EE->input->post('field_content_text'),
-			'field_content_type_text'	=> $this->EE->input->post('field_content_type_text')
+			'field_content_type'	=> $this->EE->input->post('text_field_content_type')
 		);
 	}
 	
@@ -162,7 +171,7 @@ class Text_ft extends EE_Fieldtype {
 
 		$settings = unserialize(base64_decode($data['field_settings']));
 
-		switch($settings['field_content_type_text'])
+		switch($settings['field_content_type'])
 		{
 			case 'numeric':
 				$fields['field_id_'.$data['field_id']]['type'] = 'FLOAT';
