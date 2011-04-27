@@ -58,7 +58,7 @@ $lang = array(
 'maintain_ratio'		=> 'Maintain Aspect Ratio',
 'width_needed'			=> 'A width or width/height must be selected, or a rotate/flip direction selected.',
 
-'resize_over_confirmation' => 'Resizing this image will result in a lower quality image since you\'re resizing to larger then the source image\'s dimensions. Are you sure you want to do that?',
+'resize_over_confirmation' => 'Resizing this image to a larger size than the source will result in a lower quality image. Are you sure you want to do that?',
 
 'resize_type'			=> 'Resize Type',
 'crop_mode'				=> 'Crop Mode',
