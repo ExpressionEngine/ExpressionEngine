@@ -21,5 +21,5 @@
  Since: September 2009
  Date:    Wed May 19 06:53:17 2010 +0000 
 */
-(function(c){var g=c.tools.scrollable;g.autoscroll={conf:{autoplay:true,interval:3E3,autopause:true}};c.fn.autoscroll=function(d){if(typeof d=="number")d={interval:d};var b=c.extend({},g.autoscroll.conf,d),h;this.each(function(){var a=c(this).data("scrollable");if(a)h=a;var e,i,f=true;a.play=function(){if(!e){f=false;e=setInterval(function(){a.next()},b.interval);a.next()}};a.pause=function(){e=clearInterval(e)};a.stop=function(){a.pause();f=true};b.autopause&&a.getRoot().add(a.getNaviButtons()).hover(function(){a.pause();
-clearInterval(i)},function(){f||(i=setTimeout(a.play,b.interval))});b.autoplay&&setTimeout(a.play,b.interval)});return b.api?h:this}})(jQuery);
+(function(e){var d=e.tools.scrollable;d.autoscroll={conf:{autoplay:!0,interval:3E3,autopause:!0}};e.fn.autoscroll=function(b){typeof b=="number"&&(b={interval:b});var c=e.extend({},d.autoscroll.conf,b),g;this.each(function(){var a=e(this).data("scrollable");a&&(g=a);var b,d,f=!0;a.play=function(){b||(f=!1,b=setInterval(function(){a.next()},c.interval),a.next())};a.pause=function(){b=clearInterval(b)};a.stop=function(){a.pause();f=!0};c.autopause&&a.getRoot().add(a.getNaviButtons()).hover(function(){a.pause();
+clearInterval(d)},function(){f||(d=setTimeout(a.play,c.interval))});c.autoplay&&setTimeout(a.play,c.interval)});return c.api?g:this}})(jQuery);
