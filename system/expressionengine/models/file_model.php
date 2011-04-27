@@ -46,7 +46,7 @@ class File_model extends CI_Model {
 	 */
 	function get_files($dir_id = array(), $parameters = array())
 	{
-		
+	
 		// Setup default parameters
 		$parameters = array_merge(array(
 			'type' => 'all',
@@ -139,7 +139,7 @@ class File_model extends CI_Model {
 		}
 		else
 		{
-			$this->db->order_by('upload_date');
+			$this->db->order_by('upload_date', 'DESC');
 		}
 		
 		$return_data['results'] = $this->db->get('files');
