@@ -1957,7 +1957,7 @@ function fnOpenClose ( oSettings )
 				
 				// Create an array of comments to add to the email
 				
-				$comment_swap = array();
+				$comments_swap = array();
 				
 				foreach ($comments as $c)
 				{

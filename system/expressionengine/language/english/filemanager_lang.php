@@ -58,6 +58,8 @@ $lang = array(
 'maintain_ratio'		=> 'Maintain Aspect Ratio',
 'width_needed'			=> 'A width or width/height must be selected, or a rotate/flip direction selected.',
 
+'resize_over_confirmation' => 'Resizing this image to a larger size than the source will result in a lower quality image. Are you sure you want to do that?',
+
 'resize_type'			=> 'Resize Type',
 'crop_mode'				=> 'Crop Mode',
 'resize_mode'			=> 'Resize Mode',
@@ -232,7 +234,7 @@ $lang = array(
 'dir_name'					=> 'Upload Directory Name',
 
 
-# Batch Page:
+// Batch Page:
 'thumbnail'					=> 'Thumbnail',
 'caption'					=> 'Caption',
 'include'					=> 'Include?',
@@ -337,7 +339,7 @@ $lang = array(
 "wm_y_offset" =>
 "Vertical Offset",
 
-"wm_text_color" =>
+"wm_font_color" =>
 "Text Color",
 
 "wm_use_drop_shadow" =>

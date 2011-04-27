@@ -24,7 +24,7 @@
  */
 class Wiki {
 
-	var $version				= '1.2';
+	var $version				= '2.3';
 	
 	var $base_path				= '';
 	var $profile_path			= '';

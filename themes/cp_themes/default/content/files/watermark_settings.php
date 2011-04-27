@@ -157,15 +157,15 @@ if ($EE_view_disable !== TRUE)
 					</tr>
 
 					<tr class="even text_type">
-						<td><?=form_label(lang('wm_text_color'), 'wm_text_color'); ?></td>
+						<td><?=form_label(lang('wm_font_color'), 'wm_font_color'); ?></td>
 						<td>
 							<?=
-							form_error('wm_text_color').
+							form_error('wm_font_color').
 							form_input(array(
-								'id'	=> 'wm_text_color',
-								'name'	=> 'wm_text_color',
+								'id'	=> 'wm_font_color',
+								'name'	=> 'wm_font_color',
 								'class'	=> 'field color {hash:true}',
-								'value' => set_value('wm_text_color', $wm_text_color)
+								'value' => set_value('wm_font_color', $wm_font_color)
 							));
 							?>
 						</td>
@@ -260,7 +260,7 @@ if ($EE_view_disable !== TRUE)
 						</td>
 					</tr>
 				
-					<tr class="even">
+					<!-- <tr class="even">
 						<td>
 							<?=
 							form_label(
@@ -281,7 +281,7 @@ if ($EE_view_disable !== TRUE)
 							));
 							?>
 						</td>
-					</tr>
+					</tr> -->
 				</tbody>
 			</table>
 

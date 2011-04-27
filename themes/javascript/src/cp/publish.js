@@ -94,7 +94,7 @@ EE.publish.category_editor = function() {
 			$category_url_title = container_form.find('#cat_url_title');
 			
 			$category_name.keyup(function(event) {
-				EE.cp.live_url_title($category_name, $category_url_title);
+				$category_name.ee_url_title($category_url_title);
 			});
 			
 			var handle_submit = function(form) {
@@ -1039,7 +1039,7 @@ $(document).ready(function() {
 	
 	if (EE.publish.which == 'new') { 
 		$("#title").bind("keyup blur", function() {
-			EE.cp.live_url_title($('#title'), $('#url_title'));
+			$('#title').ee_url_title($('#url_title'));
 		});	
 	}
 	

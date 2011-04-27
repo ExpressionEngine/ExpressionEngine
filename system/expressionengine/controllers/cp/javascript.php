@@ -347,9 +347,9 @@ class Javascript extends CI_Controller {
 			// All we need is content type - we're done
 			return;
 		}
-		
+
 		$max_age		= 5184000;
-		$modified		= ($mtime !== FALSE) ? $mtime : filemtime($file);
+		$modified		= ($mtime !== FALSE) ? $mtime : @filemtime($file);
 		$modified_since	= $this->input->server('HTTP_IF_MODIFIED_SINCE');
 
 		// Remove anything after the semicolon

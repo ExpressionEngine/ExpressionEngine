@@ -1298,7 +1298,7 @@ class EE_Schema {
 				`wm_y_offset` int(4) unsigned DEFAULT NULL,
 				`wm_x_transp` int(4) DEFAULT NULL,
 				`wm_y_transp` int(4) DEFAULT NULL,
-				`wm_text_color` varchar(7) DEFAULT NULL,
+				`wm_font_color` varchar(7) DEFAULT NULL,
 				`wm_use_drop_shadow` char(1) DEFAULT 'y',
 				`wm_shadow_distance` int(3) unsigned DEFAULT NULL,
 				`wm_shadow_color` varchar(7) DEFAULT NULL,

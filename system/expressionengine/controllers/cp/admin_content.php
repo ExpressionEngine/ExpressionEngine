@@ -1924,21 +1924,38 @@ class Admin_content extends CI_Controller {
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=category_management', $this->lang->line('categories'));
 		$this->cp->set_variable('cp_page_title', ($vars['cat_id'] == '') ? $this->lang->line('new_category') : $this->lang->line('edit_category'));
 		
+		//	Create Foreign Character Conversion JS
+		include(APPPATH.'config/foreign_chars.php');
+		
+		/* -------------------------------------
+		/*  'foreign_character_conversion_array' hook.
+		/*  - Allows you to use your own foreign character conversion array
+		/*  - Added 1.6.0
+		* 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
+		*/  
+			if (isset($this->extensions->extensions['foreign_character_conversion_array']))
+			{
+				$foreign_characters = $this->extensions->call('foreign_character_conversion_array');
+			}
+		/*
+		/* -------------------------------------*/
+		
 		// New entry gets URL title js
 		if ($vars['submit_lang_key'] == 'submit')
 		{	
 			// Pipe in necessary globals
 			$this->javascript->set_global(array(
 				'publish.word_separator'   => $this->config->item('word_separator') != "dash" ? '_' : '-',
+				'publish.foreignChars'				=> $foreign_characters,
 			));
 			
 			// Load in necessary js files
 			$this->cp->add_js_script(array(
-				'file' => array('cp/global')
+				'file' => array('cp/global'),
+				'plugin' => array('ee_url_title'),
 			));
 			
-			// Bind keyup to live_url_title function
-			$this->javascript->keyup('#cat_name', 'EE.cp.live_url_title($("#cat_name"), $("#cat_url_title"))');
+			$this->javascript->keyup('#cat_name', '$("#cat_name").ee_url_title($("#cat_url_title"));');
 		}
 
 		$vars['form_hidden']['group_id'] = $group_id;

@@ -1121,7 +1121,6 @@ class Filemanager {
 	 */
 	function create_watermark($image_path, $data)
 	{
-			
 		$this->EE->image_lib->clear();
 		
 		$config = $this->set_image_config($data, 'watermark');
@@ -1309,13 +1308,22 @@ class Filemanager {
 		
 		if ($type == 'watermark')
 		{
+			// Verify the watermark settings actually exist
+			if ( ! isset($data['wm_type']) AND isset($data['watermark_id']))
+			{
+				$this->EE->load->model('file_model');
+				$qry = $this->EE->file_model->get_watermark_preferences($data['watermark_id']);
+				$qry = $qry->row_array();
+				$data = array_merge($data, $qry);
+			}
+			
 			$wm_prefs = array('source_image', 'padding', 'wm_vrt_alignment', 'wm_hor_alignment', 
-			'wm_hor_offset', 'wm_vrt_offset');
+				'wm_hor_offset', 'wm_vrt_offset');
 
 			$i_type_prefs = array('wm_overlay_path', 'wm_opacity', 'wm_x_transp', 'wm_y_transp');
 
 			$t_type_prefs = array('wm_text', 'wm_font_path', 'wm_font_size', 'wm_font_color', 
-			'wm_shadow_color', 'wm_shadow_distance');			
+				'wm_shadow_color', 'wm_shadow_distance');
 			
 			$config['wm_type'] =  ($data['wm_type'] == 't' OR $data['wm_type'] == 'text') ? 'text' : 'overlay';
 			
@@ -1345,7 +1353,7 @@ class Filemanager {
 					}
 				}
 				
-				$config['wm_overlay_path'] = $data['wm_image_path'];				
+				$config['wm_overlay_path'] = $data['wm_image_path'];
 			}
 			
 			foreach ($wm_prefs as $name)
@@ -1386,7 +1394,7 @@ class Filemanager {
 				{
 					$config['wm_hor_alignment'] = 'right';
 				}
-			}				
+			}
 		}
 		
 		return $config;
