@@ -64,7 +64,7 @@
 			newText = newText.replace(multiReg, separator);
 			newText = newText.replace(/^[\-\_]|[\-\_]$/g, '');
 			newText = newText.replace(/\.+$/g, '');
-			console.log(newText);
+			
 			if (url_title) {
 				url_title.val(newText.substring(0, 75));
 			}
