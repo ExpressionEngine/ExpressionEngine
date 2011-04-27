@@ -3114,6 +3114,10 @@ input#ip_address {
 	text-shadow:		#666 0px 1px 0px;
 }
 
+#mainContent h3.accordion[aria-expanded=false] {
+	margin-bottom: 10px;
+}
+
 /* Add ons */
 #mainContent .prefSettings input {
 	width:				300px;
