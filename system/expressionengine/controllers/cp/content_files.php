@@ -325,7 +325,7 @@ class Content_files extends CI_Controller {
 				}
 			}
 		}
-
+		
 		$params = array(
 			'category' => $get_post['cat_id'], 
 			'type' => $get_post['type'], 
@@ -494,7 +494,7 @@ class Content_files extends CI_Controller {
 		$ret = array(
 			'author_id'		=> $this->input->get_post('author_id'),
 			'cat_id'		=> $this->input->get_post('cat_id'),
-			'dir_id'		=> ($this->input->get_post('dir_id') != 'all') ? $this->input->get_post('dir_id') : array(),
+			'dir_id'		=> ($this->input->get_post('dir_id') != 'all' && $this->input->get_post('dir_id') != 'null') ? $this->input->get_post('dir_id') : FALSE,
 			'date_range'	=> $this->input->get_post('date_range'),
 			'file_type'		=> $this->input->get_post('file_type'),
 			'keywords'		=> NULL, // Process this in a bit
@@ -1036,8 +1036,9 @@ class Content_files extends CI_Controller {
 
 		$this->javascript->set_global(array(
 			'filemanager'	=> array(
-				'image_width'	=> $file_info['width'],
-				'image_height'	=> $file_info['height'],
+				'image_width'				=> $file_info['width'],
+				'image_height'				=> $file_info['height'],
+				'resize_over_confirmation' 	=> lang('resize_over_confirmation')
 			),
 		));
 
@@ -1378,7 +1379,7 @@ class Content_files extends CI_Controller {
 		}
 
 		$this->cp->add_js_script(array(
-				'plugin' => array('tmpl'),
+				'plugin' => array('tmpl', 'toggle_all'),
 				'ui'     => array('progressbar'),
 				'file'   => array('underscore', 'cp/files/synchronize')
 			)
@@ -1393,11 +1394,13 @@ class Content_files extends CI_Controller {
 		));
 
 		$this->cp->set_variable('cp_page_title', $this->_upload_dirs[$cid]['name']);
+
+		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));			
 		$this->cp->set_breadcrumb(
 			BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences',
 			lang('file_upload_prefs')
 		);
-
+		
 		$this->javascript->compile();
 		$this->load->view('content/files/sync', $vars);
 
@@ -1557,7 +1560,7 @@ class Content_files extends CI_Controller {
 			$file_data = array(
 				'upload_location_id'	=> $id,
 				'site_id'				=> $this->config->item('site_id'),
-				'rel_path'				=> $file['name'], // this will vary at some point
+				'rel_path'				=> $file_path, // this will vary at some point
 				'mime_type'				=> $file['mime'],
 				'file_name'				=> $file['name'],
 				'file_size'				=> $file['size'],

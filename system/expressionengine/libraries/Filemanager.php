@@ -974,7 +974,7 @@ class Filemanager {
 				'width'			=> 73,
 				'height'		=> 60,
 				'watermark_id'	=> 0
-				);
+			);
 		}
 			
 		$protocol = $this->EE->config->item('image_resize_protocol');
@@ -2174,7 +2174,7 @@ class Filemanager {
 			$server_path = $dir_paths[$file->upload_location_id];
 			
 			// Kill the file
-			if ( ! @unlink($server_path.$file->rel_path))
+			if ( ! @unlink($server_path.$file->file_name))
 			{
 				$delete_problem = TRUE;
 			}
@@ -2182,7 +2182,7 @@ class Filemanager {
 			// And now the thumbs
 			foreach ($thumb_sizes[$file->upload_location_id] as $name)
 			{
-				$thumb = $server_path.'_'.$name.'/'.$file->rel_path;
+				$thumb = $server_path.'_'.$name.'/'.$file->file_name;
 				if (file_exists($thumb))
 				{
 					@unlink($thumb);

@@ -98,6 +98,7 @@ $(document).ready(function () {
 EE.filemanager.resize_listener = function() {
 	var $resize_width = $('#resize_width'),
 		$resize_height = $('#resize_height'),
+		$submit_button = $('#submit_resize'),
 		$cancel_button = $('#cancel_resize');
 	
 	$resize_width.add($resize_height).keyup(function(event) {
@@ -148,6 +149,14 @@ EE.filemanager.resize_listener = function() {
 			'width': $resize_width.val(),
 			'height': $resize_height.val()
 		});
+	});
+	
+	$submit_button.click(function(event) {
+		if ($('.'+oversized_class).size()) {
+			if (confirm(EE.filemanager.resize_over_confirmation) == false) {
+				event.preventDefault();
+			};
+		};
 	});
 	
 	$cancel_button.click(function(event) {
