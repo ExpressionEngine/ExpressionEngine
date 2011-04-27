@@ -66,6 +66,9 @@ class Updater {
 		// Permission changes
 		$this->_do_permissions_update();
 		
+		// Move field_content_type to the channel_fields settings array
+		$this->_do_custom_field_update();		
+		
 		return TRUE;
 	}
 	
@@ -502,9 +505,9 @@ class Updater {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Update exp_category_groups
+	 * Update exp_member_groups
 	 *
-	 * Add a column for excluding a group from files or channel group assignment
+	 * Add a column for can_admin_upload_prefs permission
 	 *
 	 * @return void
 	 */
@@ -518,10 +521,36 @@ class Updater {
 								'default'		=> 'n'
 								));
 
-		$this->EE->dbforge->add_column('category_groups', $fields, 'can_admin_channels');		
+		$this->EE->dbforge->add_column('member_groups', $fields, 'can_admin_channels');		
 	}
 	
-	
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Update exp_channel_fields
+	 *
+	 * Move field_content_type into the field_settings array
+	 *
+	 * @return void
+	 */
+	private function _do_custom_field_update()
+	{
+		$this->EE->db->select('field_id, field_content_type, field_settings');
+		$this->EE->db->where_in('field_type', array('file', 'text'));
+		$qry = $this->EE->db->get('channel_fields');
+		
+		foreach ($qry->result() as $row)
+		{
+			$settings = unserialize(base64_decode($row->field_settings));
+			$settings['field_content_type'] = $row->field_content_type;
+			
+			$settings = base64_encode(serialize($settings));
+			
+
+			$this->EE->db->where('field_id', $row->field_id);
+			$this->EE->db->update('channel_fields', array('field_settings' => $settings)); 
+		}
+	}	
 	
 }
 /* END CLASS */
