@@ -100,7 +100,7 @@ if ( ! $EE_view_disable)
 							</li>
 						</ul>
 						<p class="submit_button">
-							<?=form_submit('save_image', lang('save_image'), 'class="submit"')?><br />
+							<?=form_submit('save_image', lang('save_image'), 'id="submit_resize" class="submit"')?><br />
 							<?=anchor('#', lang('cancel_changes'), 'id="cancel_resize" style="display: none"')?>
 						</p>
 					</div>

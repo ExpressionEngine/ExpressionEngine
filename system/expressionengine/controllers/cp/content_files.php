@@ -1036,8 +1036,9 @@ class Content_files extends CI_Controller {
 
 		$this->javascript->set_global(array(
 			'filemanager'	=> array(
-				'image_width'	=> $file_info['width'],
-				'image_height'	=> $file_info['height'],
+				'image_width'				=> $file_info['width'],
+				'image_height'				=> $file_info['height'],
+				'resize_over_confirmation' 	=> lang('resize_over_confirmation')
 			),
 		));
 
