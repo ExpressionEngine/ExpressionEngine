@@ -3370,10 +3370,19 @@ div.contentWrap {
 	border:				1px solid #ccc;
 	border-width: 		0 0 1px;
 	display:			block;
-	height: 			444px;
+	height: 			450px;
 	padding-bottom: 	10px;
 	overflow:			auto;
 	width:				100%;
+}
+
+#fileChooser #filterMenu,
+#fileChooser #upload_form {
+	margin-bottom: 7px;
+}
+
+#file_chooser_body #tableView {
+	margin-top: 3px;
 }
 
 a.file_chooser_thumbnail:link,
@@ -3384,11 +3393,11 @@ a.file_chooser_thumbnail:visited {
 	float:				left;
 	height:				70px;
 	overflow:			hidden;
-	padding: 10px 8px 24px 10px;
+	padding: 10px 9px 24px;
 	position: 			relative;
 	text-align:			center;
 	width: 				80px;
-	margin: 3px;
+	margin: 6px 3px 0;
 }
 
 a.file_chooser_thumbnail img {
