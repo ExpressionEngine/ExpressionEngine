@@ -47,7 +47,8 @@ class Wiki_ext {
 	 */
 	function activate_extension()
 	{
-		show_error('This extension is automatically installed with the wiki module');
+		return TRUE;
+		//show_error('This extension is automatically installed with the wiki module');
 	}
 
 	// --------------------------------------------------------------------
@@ -57,7 +58,8 @@ class Wiki_ext {
 	 */
 	function update_extension($current = FALSE)
 	{
-		show_error('This extension is automatically updated with the wiki module');
+		return TRUE;
+		//show_error('This extension is automatically updated with the wiki module');
 	}
 
 	// --------------------------------------------------------------------
@@ -77,7 +79,8 @@ class Wiki_ext {
 	 */
 	function uninstall_extension()
 	{
-		show_error('This extension is automatically deleted with the wiki module');
+		return TRUE;
+		//show_error('This extension is automatically deleted with the wiki module');
 	}
 	
 }
