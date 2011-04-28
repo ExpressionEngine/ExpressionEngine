@@ -2355,9 +2355,13 @@ class Content_files extends CI_Controller {
 		$error = array();
 
 		// Is the name taken?
-		if ($this->admin_model->unique_upload_name(
-								strtolower($this->input->post('name')),
-								strtolower($this->input->post('cur_name')), $edit))
+		if (
+			$this->admin_model->unique_upload_name(
+				strtolower($this->input->post('name')),
+				strtolower($this->input->post('cur_name')), 
+				$edit
+			)
+		)
 		{
 			show_error(lang('duplicate_dir_name'));
 		}
@@ -2400,7 +2404,7 @@ class Content_files extends CI_Controller {
 						'height' => ($_POST['size_height_'.$row['id']] == '') ? 0 : $_POST['size_height_'.$row['id']],
 						'width' => ($_POST['size_width_'.$row['id']] == '') ? 0 : $_POST['size_width_'.$row['id']],
 						'watermark_id' => $_POST['size_watermark_id_'.$row['id']]
-						);
+					);
 
 					$this->db->where('id', $row['id']);
 					$this->db->update('file_dimensions', $updatedata);
@@ -2426,7 +2430,7 @@ class Content_files extends CI_Controller {
 		{
 			$_POST['cat_group'] = '';
 		}
-
+		
 		foreach ($_POST as $key => $val)
 		{
 			if (substr($key, 0, 7) == 'access_')
@@ -2458,27 +2462,25 @@ class Content_files extends CI_Controller {
 				{
 					$number = substr($key, strlen('size_short_name_'));
 					$name = 'size_short_name_'.$number;
-
+					
 					if (trim($val) == '') continue;
-
+					
 					if ( ! isset($_POST[$name]) OR ! preg_match("/^\w+$/", $_POST[$name]) OR
 						in_array($_POST[$name], $names))
 					{
 						return $this->output->show_user_error('submission', array($this->lang->line('invalid_short_name')));
 					}
-
+					
 					$size_data = array(
-						'upload_location_id'		=> $id,
-						'short_name'		=> $_POST[$name],
-						'title'	=> $_POST['size_short_name_'.$number],
+						'upload_location_id' => $id,
+						'short_name' => $_POST[$name],
+						'title' => $_POST['size_short_name_'.$number],
 						'resize_type' => $_POST['size_resize_type_'.$number],
 						'height' => ($_POST['size_height_'.$number] == '') ? 0 : $_POST['size_height_'.$number],
 						'width' => ($_POST['size_width_'.$number] == '') ? 0 : $_POST['size_width_'.$number],
 						'watermark_id' => $_POST['size_watermark_id_'.$number]
-						);
-
-					$this->db->insert('file_dimensions', $size_data);
-
+					);
+					
 					$names[]  = $_POST[$name];
 				}
 			}
@@ -2487,8 +2489,7 @@ class Content_files extends CI_Controller {
 				$data[$key] = $val;
 			}
 		}
-
-
+		
 		// Construct the query based on whether we are updating or inserting
 		if ($edit === TRUE)
 		{
@@ -2503,17 +2504,26 @@ class Content_files extends CI_Controller {
 			$id = $this->db->insert_id();
 			$cp_message = lang('new_file_upload_created');
 		}
+		
+		if (isset($size_data))
+		{
+			// Set upload location id in size data 
+			$size_data['upload_location_id'] = $id;
+			$this->db->insert('file_dimensions', $size_data);
+		}
 
 		if (count($no_access) > 0)
 		{
 			foreach($no_access as $member_group)
 			{
-				$this->db->insert('upload_no_access',
-									array(
-										'upload_id'		=> $id,
-										'upload_loc'	=> 'cp',
-										'member_group'	=> $member_group)
-								);
+				$this->db->insert(
+					'upload_no_access',
+					array(
+						'upload_id'		=> $id,
+						'upload_loc'	=> 'cp',
+						'member_group'	=> $member_group
+					)
+				);
 			}
 		}
 
