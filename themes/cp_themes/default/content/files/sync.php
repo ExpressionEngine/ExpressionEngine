@@ -38,7 +38,9 @@ if ( ! $EE_view_disable)
 				<?php endforeach; ?>
 				</tbody>
 			</table>
-
+			<br />
+			<h3><?=lang('image_sizes')?></h3>
+			<p><?=lang('image_sizes_rebuild')?></p>
 			<?php if ( ! empty($sizes)):?>
 			<table id="dimensions" class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
 				<thead>
@@ -68,7 +70,10 @@ if ( ! $EE_view_disable)
 			
 			<div class="tableSubmit">
 				<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
-				<div id="progress"></div>
+				<div id="progress">
+					<h4><?=lang('sync_progress')?>:</h4>
+					<div id="progress_bar"></div>
+				</div>
 			</div>
 			
 			<div id="sync_complete_template">	

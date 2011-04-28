@@ -174,6 +174,9 @@ $lang = array(
 'image_sizes' =>
 'Image Manipulations',
 
+'image_sizes_rebuild' =>
+'New images will have all image manipulations automatically created for them. However, if you want to recreate image manipulations for existing images, check off the manipulations you want to recreate.',
+
 'image_sizes_subtext' =>
 'Additional images that will be automatically created for each image upload.',
 
@@ -209,6 +212,7 @@ $lang = array(
 'file_types'				=> 'Types of Files',
 'files_processed'			=> 'Number of Files Processed',
 'error_count'				=> 'Number of Errors',
+'sync_progress'				=> 'Progress',
 'sync_complete'				=> 'The file synchronization is complete.', 
 'errors'					=> 'Errors Encountered',
 'no_errors'					=> 'No errors',

@@ -163,13 +163,14 @@ EE.file_manager.finish_sync = function(upload_directory_id) {
  * @param {Number} progress_percentage The percentage of progress, represented as an integer (e.g. 56 = 56%)
  */
 EE.file_manager.update_progress = function(progress_percentage) {
-	var $progress = $('#progress');
+	var $progress = $('#progress'),
+		$progress_bar = $('#progress_bar');
 	
 	if ($progress.is(':not(:visible)')) {
 		$progress.show();
 	};
 	
-	$progress.progressbar({
+	$progress_bar.progressbar({
 		value: progress_percentage
 	});
 };
