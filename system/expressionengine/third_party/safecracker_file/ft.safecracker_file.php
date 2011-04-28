@@ -6,7 +6,7 @@ class Safecracker_file_ft extends File_ft
 {
 	public $info = array(
 		'name' => 'SafeCracker File',
-		'version' => '1.0.3'
+		'version' => '2.1'
 	);
 	
 	public $has_array_data = TRUE;
