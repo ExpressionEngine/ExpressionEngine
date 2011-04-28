@@ -58,7 +58,9 @@ class Safecracker_ext
 	 */
 	public function activate_extension()
 	{
-		show_error('This extension is automatically installed with the Safecracker module');
+		return TRUE;
+		
+		//show_error('This extension is automatically installed with the Safecracker module');
 		
 		
 		/*
@@ -94,8 +96,9 @@ class Safecracker_ext
 	 */
 	public function update_extension($current = '')
 	{
-
-		show_error('This extension is automatically updated with the Safecracker module');
+		return TRUE;
+		
+		//show_error('This extension is automatically updated with the Safecracker module');
 
 		/*
 		if ($current == '' OR $current == $this->version)
@@ -117,7 +120,9 @@ class Safecracker_ext
 	 */
 	public function disable_extension()
 	{
-		show_error('This extension is automatically deleted with the Safecracker module');
+		return TRUE;
+		
+		//show_error('This extension is automatically deleted with the Safecracker module');
 		
 		/*
 		$this->EE->db->delete('extensions', array('class' => $this->classname));
