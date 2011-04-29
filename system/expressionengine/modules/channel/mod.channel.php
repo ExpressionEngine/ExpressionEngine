@@ -4178,7 +4178,7 @@ class Channel {
 					//  Default (daily) header
 					else
 					{
-			 			$heading_date_daily = gmdate('Ymd', $this->EE->localize->set_localized_time($row['entry_date'], $row['dst_enabled'], FALSE));
+			 			$heading_date_daily = gmdate('Ymd', $this->EE->localize->set_localized_time($row['entry_date']));
 			
 						if ($heading_date_daily == $heading_flag_daily)
 						{
