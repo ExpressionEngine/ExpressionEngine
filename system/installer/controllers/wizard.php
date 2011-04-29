@@ -1304,6 +1304,33 @@ PAPAYA;
 				return FALSE;
 			}
 		}
+
+		// is there a survey for this version?
+		if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.EXT) && method_exists($UD, 'process_survey'))
+		{
+			// if we have data, send it on to the updater, otherwise, ask permission and show the survey
+			if ( ! $this->input->get_post('participate_in_survey'))
+			{
+				$this->load->helper('language');
+				$data = array(
+								'action_url'			=> $this->set_qstr('do_update&agree=yes'),
+								'participate_in_survey'	=> array(
+																	'name'		=> 'participate_in_survey',
+																	'id'		=> 'participate_in_survey',
+																	'value'		=> 'y',
+																	'checked'	=> TRUE
+																),
+								'anonymous_server_data'	=> $this->_fetch_anon_server_data()
+							);
+				
+				$this->_set_output('surveys/survey_'.$this->next_update, $data);
+				return FALSE;
+			}
+			elseif ($this->input->get_post('participate_in_survey') == 'y')
+			{
+				$UD->process_survey();
+			}
+		}
 		
 		if (($status = $UD->{$method}()) === FALSE)
 		{
@@ -1373,6 +1400,28 @@ PAPAYA;
 	
 	// --------------------------------------------------------------------
 
+	/**
+	 * Fetch Anonymous Server Data
+	 *
+	 * @access	public
+	 * @return	array
+	 */
+	function _fetch_anon_server_data()
+	{
+		return array(
+							'anon_id'			=> md5($this->config->item('site_url')),
+							'ee_version'		=> $this->next_update,
+							'os'				=> preg_replace("/.*?\((.*?)\).*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
+							'server_software'	=> preg_replace("/(.*?)\(.*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
+							'php_version'		=> phpversion(),
+							'php_extensions'	=> serialize(get_loaded_extensions()),
+							'mysql_version'		=> preg_replace("/(.*?)\-.*/", "\\1", mysql_get_server_info()),
+							'path_info_support'	=> ($this->config->item('force_query_string') == 'n') ? 'y' : 'n'
+					);
+	}
+
+	// --------------------------------------------------------------------
+	
 	/**
 	 * Determine which update should be performed
 	 *

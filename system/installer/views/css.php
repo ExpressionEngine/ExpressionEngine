@@ -143,3 +143,17 @@ checkbox {
   border: 0;
 }
  
+label {
+  font-weight: bold;
+}
+
+dl {
+	padding: 0 25px;
+}
+dt {
+  font-weight: bold;
+}
+
+dd {
+  overflow: auto;
+}
