@@ -13,7 +13,7 @@ if ( ! $EE_view_disable)
 	<div class="contents">
 
 		<div class="heading">
-			<h2 class="edit"><?= $file ?></h2>
+			<h2 class="edit"><?= $title ?></h2>
 		</div>
 		
 		<div class="pageContents group">

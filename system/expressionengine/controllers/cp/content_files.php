@@ -1016,11 +1016,12 @@ class Content_files extends CI_Controller {
 			)
 		);
 
-		$qry = $this->db->select('file_name')
+		$qry = $this->db->select('file_name, title')
 						->where('file_id', $file_id)
 						->get('files');
 
 		$file_name 	= $qry->row('file_name');
+		$title = $qry->row('title');
 
 		// Some vars for later
 		$file_url 	= $this->_upload_dirs[$file_dir]['url'].urldecode($file_name);
@@ -1048,6 +1049,7 @@ class Content_files extends CI_Controller {
 			'file_info'		=> $file_info,
 			'upload_dir'	=> $this->_upload_dirs[$file_dir]['id'],
 			'file'			=> urlencode($file_name),
+			'title'			=> $title,
 			'file_id'		=> $file_id,
 			'filemtime'		=> ($filemtime = @filemtime($file_path)) ? $filemtime : 0,
 		);
