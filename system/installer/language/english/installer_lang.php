@@ -73,6 +73,7 @@ $lang['browse_templates'] = 'Browse the templates';
 $lang['install_ee'] = 'Install ExpressionEngine!';
 $lang['back'] = 'Back';
 $lang['error'] = 'ERROR';
+$lang['submit'] = 'Submit';
 $lang['error_occurred'] = 'The following error occurred:';
 $lang['module_errors_occurred'] = 'The following error(s) were reported during module installation:';
 $lang['support_resource_info'] = 'If you have questions regarding the above errors please visit our  <a href="http://expressionengine.com/support/">Support Resources</a> page or contact ExpressionEngine technical support.';
@@ -134,6 +135,28 @@ $lang['trackback_zip_path'] = 'Path to the directory where the archive will be s
 $lang['path_must_be_writable'] = 'The path must be writable and must not contain a file called trackback.zip';
 $lang['trackback_not_writable'] = 'The trackback path is not writable or already contains a file called trackback.zip';
 $lang['update_ee'] = 'Update ExpressionEngine!';
+
+// surveys
+$lang['opt_in_survey'] = 'Opt-in Survey';
+$lang['help_with_survey'] = "Please consider helping us make ExpressionEngine better by completing the optional survey for this update.";
+$lang['participate_in_survey'] = 'Participate in Survey?';
+$lang['send_anonymous_server_data'] = 'Send Anonymous Server Data?';
+$lang['what_server_data_is_sent'] = '<p>What data is sent?  Answering yes to this survey question will transmit the following:</p>
+									<ul>
+										<li>A one-way hash of your site URL to prevent duplicate submissions (this cannot be used to identify you)</li>
+										<li>PHP version and available extensions</li>
+										<li>MySQL version, server operating system</li>
+										<li>Server software name</li>
+										<li>ExpressionEngine Version</li>
+										<li>...and whether or not you are using forced query strings on your server</li>
+									</ul>
+									<p>All data is transmitted anonymously and cannot be associated with your local machine, ExpressionEngine user
+									account, your site, or your host.</p>';
+$lang['show_hide_to_see_server_data'] = 'Show/hide the server data that will be sent';
+$lang['would_you_recommend'] = 'How likely is it that you will recommend ExpressionEngine to a colleague or friend?';
+$lang['unlikely'] = 'Unlikely';
+$lang['highly_likely'] = 'Highly Likely';
+$lang['additional_comments'] = 'If you like, please briefly explain any of your survey answers in a few sentences';
 
 // Template Updater Lang
 $lang['updating_template_as_files'] = 'Updating templates saved as files.';
