@@ -272,6 +272,19 @@ class EE_Menu {
 
 		$menu = $this->_remove_blocked_menu_items($menu);
 		$menu = $this->_add_overviews($menu);
+		
+ 		/* -------------------------------------------
+		/* 'cp_menu_array' hook.
+		/*  - Modify menu array
+		/*  - Added: 2.1.5
+		*/
+			if ($this->extensions->active_hook('cp_menu_array') === TRUE)
+			{
+				$menu = $this->extensions->call('cp_menu_array', $menu);
+			}
+		/*
+		/* -------------------------------------------*/
+		
 
 		// Only get the views once
 		$this->menu_parent	= $this->EE->load->view('_shared/menu/item_parent', '', TRUE);
@@ -440,7 +453,6 @@ class EE_Menu {
 					unset($menu['content']['files'][0]);
 					unset($menu['content']['files']['file_upload_preferences']);
 					unset($menu['content']['files']['file_watermark_preferences']);
-					
 				}				
 			}
 		}
