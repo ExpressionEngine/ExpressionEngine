@@ -26,6 +26,7 @@
 class Updater {
 
 	private $EE;
+	var $version_suffix = '';
 
 	/**
 	 * Constructor
