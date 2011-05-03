@@ -278,9 +278,9 @@ class EE_Menu {
 		/*  - Modify menu array
 		/*  - Added: 2.1.5
 		*/
-			if ($this->extensions->active_hook('cp_menu_array') === TRUE)
+			if ($this->EE->extensions->active_hook('cp_menu_array') === TRUE)
 			{
-				$menu = $this->extensions->call('cp_menu_array', $menu);
+				$menu = $this->EE->extensions->call('cp_menu_array', $menu);
 			}
 		/*
 		/* -------------------------------------------*/
