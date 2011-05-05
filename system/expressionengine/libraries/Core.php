@@ -343,10 +343,28 @@ class EE_Core {
 						$snippets[$var->snippet_name] = $var->snippet_contents;
 					}
 
+
+					// Thanks to @litzinger for the code suggestion to parse 
+					// global vars in snippets...here we go.
+
+					$var_keys = array();
+
+					foreach ($this->EE->config->_global_vars as $k => $v)
+					{
+						$var_keys[] = LD.$k.RD;
+					}
+
+					foreach ($snippets as $name => $content)
+					{
+						$snippets[$name] = str_replace($var_keys, 
+									array_values($this->EE->config->_global_vars), $content);
+					}
+
 					$this->EE->config->_global_vars = $this->EE->config->_global_vars + $snippets; 
 
 					unset($snippets);
 					unset($fresh);
+					unset($var_keys);
 				}				
 			}
 			
