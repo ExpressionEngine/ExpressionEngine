@@ -31,18 +31,7 @@ class Select_ft extends EE_Fieldtype {
 
 	var $has_array_data = TRUE;
 
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function Select_ft()
-	{
-		parent::EE_Fieldtype();
-	}
-	
-	// --------------------------------------------------------------------
-	
+
 	function validate($data)
 	{
 		$valid			= FALSE;

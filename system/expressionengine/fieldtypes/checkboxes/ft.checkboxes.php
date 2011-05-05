@@ -46,9 +46,9 @@ class Checkboxes_ft extends EE_Fieldtype {
 	 *
 	 * @access	public
 	 */
-	function Checkboxes_ft()
+	function __construct()
 	{
-		parent::EE_Fieldtype();
+		parent::__construct();
 		$this->EE->load->helper('custom_field');
 	}
 	
