@@ -110,7 +110,7 @@ class Comment {
 		
 		$force_entry = FALSE;
 		
-		if ($this->EE->TMPL->fetch_param('entry_id') !== FALSE OR $this->EE->TMPL->fetch_param('url_title') !== FALSE OR $this->EE->TMPL->fetch_param('comment_id') !== FALSE)
+		if ($this->EE->TMPL->fetch_param('author_id') !== FALSE OR $this->EE->TMPL->fetch_param('entry_id') !== FALSE OR $this->EE->TMPL->fetch_param('url_title') !== FALSE OR $this->EE->TMPL->fetch_param('comment_id') !== FALSE)
 		{
 			$force_entry = TRUE;
 		}			
@@ -260,11 +260,6 @@ class Comment {
 				.$this->EE->db->protect_identifiers('expiration_date')." > {$timestamp})";
 				$this->EE->db->where($date_where);
 			}
-
-			if ($author_id = $this->EE->TMPL->fetch_param('author_id'))
-			{
-				$this->EE->db->where('author_id', $author_id);
-			}
 			
 			if ($e_status = $this->EE->TMPL->fetch_param('entry_status'))
 			{
@@ -386,6 +381,11 @@ class Comment {
 		{
 			$this->EE->db->where('c.status', 'o');
 		}
+
+		if ($author_id = $this->EE->TMPL->fetch_param('author_id'))
+		{
+			$this->EE->db->where('c.author_id', $author_id);
+		}
 		
 		// Note if it's not dynamic and the entry isn't forced?  We don't check on the entry criteria,
 		// so this point, dynamic and forced entry will have 'valid' entry ids, dynamic off may not
@@ -422,11 +422,6 @@ class Comment {
 				$this->EE->db->where('ct.status !=', 'closed');
 			}
 			
-			if ($author_id = $this->EE->TMPL->fetch_param('author_id'))
-			{
-				$this->EE->db->where('c.author_id', $author_id);
-			}
-
 			// seems redundant given channels
 			$this->EE->db->where_in('c.site_id', $this->EE->TMPL->site_ids, FALSE);
 
@@ -650,7 +645,7 @@ class Comment {
 		$this->EE->db->order_by($order_by, $this_sort);
 				
 		$query = $this->EE->db->get('comments');
-				
+		
 		$total_results = $query->num_rows();
 		
 		if ($query->num_rows() > 0)
@@ -660,6 +655,7 @@ class Comment {
 			// Potentially a lot of information
 			$query->free_result();
 		}
+
 
 		/** ----------------------------------------
 		/**  Fetch custom member field IDs
