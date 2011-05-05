@@ -40,6 +40,7 @@ class Filemanager {
 	private $_upload_dir_prefs	= array();
 	
 	private $_xss_on			= TRUE;
+	private $_memory_tweak_factor = 1.8;
 
 	/**
 	 * Constructor
@@ -938,6 +939,66 @@ class Filemanager {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Set Memory for Image Resizing
+	 *
+	 * Sets memory limit for image manipulation
+	 *  See // http://php.net/manual/en/function.imagecreatefromjpeg.php#64155
+	 *
+	 * @access	public
+	 * @param	string	file path
+	 * @return	bool	success / failure
+	 */
+	function setMemoryForImage($filename)
+	{
+		$MB = 1048576;  // number of bytes in 1M
+		$K64 = 65536;    // number of bytes in 64K
+
+  		$imageInfo = @getimagesize($filename);
+
+
+		$memory_needed = round(($imageInfo[0] * $imageInfo[1]
+											* $imageInfo['bits']
+											* $imageInfo['channels'] / 8
+											+ $K64
+								) * $this->_memory_tweak_factor
+                         );
+
+		$current = ini_get('memory_limit');
+		$current = ($current == '') ? 8 : $current;
+		$current = $current*1024*1024;
+
+		if (function_exists('memory_get_usage'))
+		{
+			if ((memory_get_usage() + $memory_needed) > $current && ini_get('memory_limit') != '')
+			{
+				// There was a bug/behavioural change in PHP 5.2, where numbers over one million get output
+				// into scientific notation.  number_format() ensures this number is an integer
+				// http://bugs.php.net/bug.php?id=43053
+			
+				$new_memory = number_format(ceil(memory_get_usage() + $memory_needed + $current), 0, '.', '');
+			
+				if ( ! ini_set('memory_limit', $new_memory))
+				{
+					return FALSE;
+				}
+			
+				return TRUE;
+			}
+			elseif ($memory_needed < $current)
+			{
+				// Note- this is not tremendously accurate
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
+
+
+
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Create Thumbnails
 	 *
 	 * Create Thumbnails for a file
@@ -965,6 +1026,13 @@ class Filemanager {
 			return FALSE;
 		}
 		
+		// Make sure we have enough memory to process
+		if ( ! $this->setMemoryForImage($file_path))
+		{
+			log_message('error', 'Insufficient Memory for Thumbnail Creation: '.$file_path);
+			return FALSE;
+		}
+
 		$dimensions = $prefs['dimensions'];
 		
 		if ($thumb)
@@ -1099,6 +1167,7 @@ class Filemanager {
 			{
 				if ( ! $this->create_watermark($resized_path.$prefs['file_name'], $size))
 				{
+					log_message('error', 'Image Watermarking Failed: '.$prefs['file_name']);
 					return FALSE;
 				}				
 			}			
