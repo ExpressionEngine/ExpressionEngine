@@ -410,14 +410,14 @@ class EE_Core {
 		// always add default as a fallback.
 		if ($cp_theme == 'default' OR ! is_dir(PATH_CP_THEME.$cp_theme))
 		{
-			$this->EE->load->_ci_view_path = PATH_CP_THEME.'default/';
+			// $this->EE->load->_ci_view_path = PATH_CP_THEME.'default/';
 			$cp_theme = 'default';
 		}
 		else
 		{
 			$this->EE->load->_ci_view_path = array(
 				PATH_CP_THEME.$cp_theme.'/',
-				PATH_CP_THEME.'default/'
+				APPPATH
 			);
 		}
 		
