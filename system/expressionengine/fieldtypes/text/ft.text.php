@@ -131,6 +131,11 @@ class Text_ft extends EE_Fieldtype {
 		
 		$field_content_options = array('all' => lang('all'), 'numeric' => lang('numeric'), 'decimal' => lang('decimal'));
 		
+		$this->EE->table->add_row(
+			lang('field_max_length', 'field_max1'),
+			form_input(array('id'=>'field_maxl','name'=>'field_maxl', 'size'=>4,'value'=>$field_maxl))
+		);
+
 		$this->field_formatting_row($data, $prefix);
 		$this->text_direction_row($data, $prefix);
 
