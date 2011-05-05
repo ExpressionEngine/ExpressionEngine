@@ -1643,11 +1643,19 @@ class Member {
 			$data['name'] = $this->EE->TMPL->fetch_param('name');
 		}
 
-		if ($this->EE->TMPL->fetch_param('id') !== FALSE &&
-			preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('id'), $match))
+		if ($this->EE->TMPL->fetch_param('id') !== FALSE && 
+			preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('id')))
 		{
 			$data['id'] = $this->EE->TMPL->fetch_param('id');
+			$this->EE->TMPL->log_item('Member Login Form:  The \'id\' parameter has been deprecated.  Please use form_id');
 		}
+		else
+		{
+			$data['id'] = $this->EE->TMPL->form_id;
+		}
+		
+		$data['class'] = $this->EE->TMPL->form_class;
+
 
 		$res  = $this->EE->functions->form_declaration($data);
 
