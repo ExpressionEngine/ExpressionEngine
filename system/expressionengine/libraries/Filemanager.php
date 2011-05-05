@@ -435,11 +435,6 @@ class Filemanager {
 	 */	 
 	function max_hw_check($file_path, $prefs)
 	{
-		//if ( ! $prefs['is_image'])
-		//{
-		//	return $prefs;
-		//}
-
 		// Make sure height and width are set
 		if ( ! isset($prefs['height']) OR ! isset($prefs['width']))
 		{
@@ -454,8 +449,7 @@ class Filemanager {
 			$prefs['width'] = $dim['width'];
 		}
 
-		
-		
+
 		$config['width']			= $prefs['width'];
 		$config['height']			= $prefs['height'];
 
@@ -939,7 +933,7 @@ class Filemanager {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Set Memory for Image Resizing
+	 * Set Image Memory for Image Resizing
 	 *
 	 * Sets memory limit for image manipulation
 	 *  See // http://php.net/manual/en/function.imagecreatefromjpeg.php#64155
@@ -948,28 +942,24 @@ class Filemanager {
 	 * @param	string	file path
 	 * @return	bool	success / failure
 	 */
-	function setMemoryForImage($filename)
+	function set_image_memory($filename)
 	{
-		$MB = 1048576;  // number of bytes in 1M
-		$K64 = 65536;    // number of bytes in 64K
+		$k64 = 65536;    // number of bytes in 64K
 
-  		$imageInfo = @getimagesize($filename);
+  		$image_info = @getimagesize($filename);
 
-
-		$memory_needed = round(($imageInfo[0] * $imageInfo[1]
-											* $imageInfo['bits']
-											* $imageInfo['channels'] / 8
-											+ $K64
+		$memory_needed = round(($image_info[0] * $image_info[1]
+											* $image_info['bits']
+											* $image_info['channels'] / 8
+											+ $k64
 								) * $this->_memory_tweak_factor
                          );
 
-		$current = ini_get('memory_limit');
-		$current = ($current == '') ? 8 : $current;
-		$current = $current*1024*1024;
+		$current = 8*1024*1024;
 
 		if (function_exists('memory_get_usage'))
 		{
-			if ((memory_get_usage() + $memory_needed) > $current && ini_get('memory_limit') != '')
+			if ((memory_get_usage() + $memory_needed) > $current)
 			{
 				// There was a bug/behavioural change in PHP 5.2, where numbers over one million get output
 				// into scientific notation.  number_format() ensures this number is an integer
@@ -984,11 +974,13 @@ class Filemanager {
 			
 				return TRUE;
 			}
-			elseif ($memory_needed < $current)
-			{
-				// Note- this is not tremendously accurate
-				return TRUE;
-			}
+			
+			return TRUE;
+		}
+		elseif ($memory_needed < $current)
+		{
+			// Note- this is not tremendously accurate
+			return TRUE;
 		}
 
 		return FALSE;
@@ -1027,7 +1019,7 @@ class Filemanager {
 		}
 		
 		// Make sure we have enough memory to process
-		if ( ! $this->setMemoryForImage($file_path))
+		if ( ! $this->set_image_memory($file_path))
 		{
 			log_message('error', 'Insufficient Memory for Thumbnail Creation: '.$file_path);
 			return FALSE;
