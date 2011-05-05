@@ -158,20 +158,20 @@ class Javascript extends CI_Controller {
 		{
 			$contents = 'css';
 			
-			if ( ! is_array($this->load->_ci_view_path))
+			$css_paths = array(PATH_CP_THEME.'default/');
+
+			if ($this->session->userdata('cp_theme') !== 'default')
 			{
-				$file = $this->load->_ci_view_path.'css/advanced.css';
+				$css_paths[] = PATH_CP_THEME.$this->session->userdata('cp_theme').'/';
 			}
-			else
+			
+			foreach ($css_paths as $a_path)
 			{
-				foreach ($this->load->_ci_view_path as $a_path)
+				$file = $a_path.'css/advanced.css';
+				
+				if (file_exists($file))
 				{
-					$file = $a_path.'css/advanced.css';
-					
-					if (file_exists($file))
-					{
-						break;
-					}
+					break;
 				}
 			}
 		}
@@ -210,7 +210,7 @@ class Javascript extends CI_Controller {
 		if ($contents == 'css')
 		{
 			// File exists and not in client cache - reparse
-			$contents = $this->_css_javascript();
+			$contents = $this->_css_javascript($file);
 		}
 		else
 		{
@@ -395,10 +395,10 @@ class Javascript extends CI_Controller {
 	 * @access	private
 	 * @return	string
 	 */
-	function _css_javascript()
+	function _css_javascript($file)
 	{
 		$js = '(function($, doc) {
-			var adv_css = '.$this->_advanced_css().', selector,
+			var adv_css = '.$this->_advanced_css($file).', selector,
 		 		compat_el = doc.createElement("ee_compat"),
 
 				supported = false,
@@ -514,26 +514,8 @@ class Javascript extends CI_Controller {
 	 * @access	private
 	 * @return	mixed
 	 */	
-	function _advanced_css()
-	{
-		$paths = $this->load->_ci_view_path;
-		
-		if ( ! is_array($this->load->_ci_view_path))
-		{
-			$paths = array($this->load->_ci_view_path);
-		}
-		
-		$file = FALSE;
-		
-		foreach ($paths as $path)
-		{
-			if (file_exists($path.'css/advanced.css'))
-			{
-				$file = $path.'css/advanced.css';
-				break;
-			}
-		}
-		
+	function _advanced_css($file)
+	{		
 		if ( ! $file)
 		{
 			return array();

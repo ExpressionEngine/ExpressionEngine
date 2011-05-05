@@ -28,9 +28,7 @@ class View  {
 	protected $_theme		= 'default';
 	
 	protected $_view_path 	= NULL;
-	
 	protected $_theme_url	= NULL;
-
 	protected $_head_link	= NULL;
 	
 	public function __construct($conf)
@@ -70,7 +68,7 @@ class View  {
 	{
 		$src_dir = ($this->EE->config->item('use_compressed_js') == 'n') ? 'src/' : 'compressed/';
 		
-		$path = PATH_THEMES . 'javascript/' . $src_dir . $file;
+		$path = PATH_THEMES.'javascript/'.$src_dir.$file;
 		
 		if ( ! file_exists($path))
 		{
@@ -101,25 +99,20 @@ class View  {
 		$filemtime = NULL;
 		$file_url  = NULL;
 		
-		if (is_array($this->_view_path))
+		$css_paths = array(PATH_CP_THEME.'default/');
+		
+		if ($this->_theme !== 'default')
 		{
-			foreach($this->_view_path as $path)
-			{
-				if (file_exists($path.$file))
-				{
-					$filemtime = filemtime($path.$file);
-					$file_url = $this->_get_theme_from_path($path) . $file;
-					
-					break 1;
-				}
-			}
+			$css_paths[] = PATH_CP_THEME.$this->_theme.'/';
 		}
-		else
+		
+		foreach($css_paths as $path)
 		{
-			if (file_exists($this->_view_path.$file))
+			if (file_exists($path.$file))
 			{
-				$filemtime = filemtime($this->_view_path.$file);
-				$file_url = $this->_get_theme_from_path($this->_view_path) . $file;
+				$filemtime = filemtime($path.$file);
+				$file_url = $this->_get_theme_from_path($path) . $file;
+				break;
 			}
 		}
 

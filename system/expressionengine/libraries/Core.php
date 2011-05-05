@@ -424,7 +424,7 @@ class EE_Core {
 		$this->EE->load->library('view', array(
 											$cp_theme, 
 											$this->EE->load->_ci_view_path,
-											$this->EE->config->item('theme_folder_url')
+											$this->EE->config->slash_item('theme_folder_url')
 										)
 									);
 		

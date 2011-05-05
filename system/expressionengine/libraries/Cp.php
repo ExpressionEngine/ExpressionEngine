@@ -155,21 +155,20 @@ class Cp {
 					'maincontent_state'		=> '',
 		);
 
-
-		if ( ! is_array($this->EE->load->_ci_view_path))
+		$css_paths = array(PATH_CP_THEME.'default/');
+	
+		if ($this->cp_theme !== 'default')
 		{
-			$file = $this->EE->load->_ci_view_path.'css/advanced.css';
+			$css_paths[] = PATH_CP_THEME.$this->cp_theme.'/';
 		}
-		else
+
+		foreach ($css_paths as $a_path)
 		{
-			foreach ($this->EE->load->_ci_view_path as $a_path)
+			$file = $a_path.'css/advanced.css';
+			
+			if (file_exists($file))
 			{
-				$file = $a_path.'css/advanced.css';
-				
-				if (file_exists($file))
-				{
-					break;
-				}
+				break;
 			}
 		}
 		
