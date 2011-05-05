@@ -41,18 +41,6 @@ class Radio_ft extends EE_Fieldtype {
 		'field_pre_channel_id'	=> ''
 	);
 
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function Radio_ft()
-	{
-		parent::EE_Fieldtype();
-	}
-	
-	// --------------------------------------------------------------------
-	
 	function validate($data)
 	{
 		$valid			= FALSE;

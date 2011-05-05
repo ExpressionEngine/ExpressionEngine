@@ -31,12 +31,25 @@ class EE_Fieldtype {
 
 	/**
 	 * Constructor
+	 */
+	 public function __construct()
+	 {
+	 	$this->EE =& get_instance();
+	 }
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Constructor
 	 *
 	 * @access	public
+	 * @deprecated This is only here to maintain backwards compatibility
+	 * for people using parent::EE_Fieldtype() and will be removed in a 
+	 * later version.
 	 */
 	function EE_Fieldtype()
 	{
-		$this->EE =& get_instance();
+		$this->__construct();
 	}
 	
 	// --------------------------------------------------------------------

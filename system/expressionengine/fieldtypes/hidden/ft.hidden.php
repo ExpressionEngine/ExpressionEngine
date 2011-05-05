@@ -32,17 +32,6 @@ class Hidden_ft extends EE_Fieldtype {
 	// Parser Flag (preparse pairs?)
 	var $has_array_data = FALSE;
 
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function __construct()
-	{
-		parent::EE_Fieldtype();
-	}
-	
-	// --------------------------------------------------------------------
 	
 	function display_field($data)
 	{
