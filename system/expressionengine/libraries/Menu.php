@@ -272,7 +272,7 @@ class EE_Menu {
 
 		$menu = $this->_remove_blocked_menu_items($menu);
 		$menu = $this->_add_overviews($menu);
-		
+	
  		/* -------------------------------------------
 		/* 'cp_menu_array' hook.
 		/*  - Modify menu array

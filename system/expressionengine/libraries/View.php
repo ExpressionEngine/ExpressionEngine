@@ -99,13 +99,16 @@ class View  {
 		$filemtime = NULL;
 		$file_url  = NULL;
 		
-		$css_paths = array(PATH_CP_THEME.'default/');
+		$css_paths = array(
+			PATH_CP_THEME.$this->_theme.'/',
+			PATH_CP_THEME.'default/'
+		);
 		
-		if ($this->_theme !== 'default')
+		if ($this->_theme == 'default')
 		{
-			$css_paths[] = PATH_CP_THEME.$this->_theme.'/';
+			array_shift($css_paths);
 		}
-		
+				
 		foreach($css_paths as $path)
 		{
 			if (file_exists($path.$file))

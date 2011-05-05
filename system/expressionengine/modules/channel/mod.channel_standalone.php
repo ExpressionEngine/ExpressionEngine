@@ -2371,7 +2371,7 @@ class Channel_standalone extends Channel {
 		if (isset($settings['field_show_glossary']))
 		{
 			$tmp = $this->EE->load->_ci_view_path;
-			$this->EE->load->_ci_view_path = APPPATH.'views';
+			$this->EE->load->_ci_view_path = $this->EE->load->reset_view_path();
 
 			$output .= $this->EE->load->view('content/_assets/glossary_items', '', TRUE);
 			

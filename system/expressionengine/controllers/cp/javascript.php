@@ -158,11 +158,14 @@ class Javascript extends CI_Controller {
 		{
 			$contents = 'css';
 			
-			$css_paths = array(PATH_CP_THEME.'default/');
+			$css_paths = array(
+				PATH_CP_THEME.$this->session->userdata('cp_theme').'/',
+				PATH_CP_THEME.'default/'
+			);
 
-			if ($this->session->userdata('cp_theme') !== 'default')
+			if ($this->session->userdata('cp_theme') == 'default')
 			{
-				$css_paths[] = PATH_CP_THEME.$this->session->userdata('cp_theme').'/';
+				array_shift($css_paths);
 			}
 			
 			foreach ($css_paths as $a_path)

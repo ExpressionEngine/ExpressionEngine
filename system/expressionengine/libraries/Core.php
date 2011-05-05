@@ -423,28 +423,27 @@ class EE_Core {
 		{
 			$cp_theme = ( ! $this->EE->session->userdata('cp_theme')) ? $this->EE->config->item('cp_theme') : $this->EE->session->userdata('cp_theme');	
 		}
-
+		
 		// make sure the theme exists, and shunt to default if it does not
 		// always add default as a fallback.
 		if ($cp_theme == 'default' OR ! is_dir(PATH_CP_THEME.$cp_theme))
 		{
-			// $this->EE->load->_ci_view_path = PATH_CP_THEME.'default/';
+			$this->EE->load->init_orig_views();
 			$cp_theme = 'default';
 		}
 		else
 		{
-			$this->EE->load->_ci_view_path = array(
-				PATH_CP_THEME.$cp_theme.'/',
-				APPPATH
+			$this->EE->load->init_orig_views(
+				PATH_CP_THEME.$cp_theme.'/'
 			);
 		}
 		
 		$this->EE->load->library('view', array(
-											$cp_theme, 
-											$this->EE->load->_ci_view_path,
-											$this->EE->config->slash_item('theme_folder_url')
-										)
-									);
+				$cp_theme, 
+				$this->EE->load->_ci_view_path,
+				$this->EE->config->slash_item('theme_folder_url')
+			)
+		);
 		
 		// go ahead and set this so we can use it from here on out
 		$this->EE->session->userdata['cp_theme'] = $cp_theme;

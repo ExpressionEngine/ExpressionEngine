@@ -155,11 +155,14 @@ class Cp {
 					'maincontent_state'		=> '',
 		);
 
-		$css_paths = array(PATH_CP_THEME.'default/');
+		$css_paths = array(
+			PATH_CP_THEME.$this->cp_theme.'/',
+			PATH_CP_THEME.'default/'
+		);
 	
 		if ($this->cp_theme !== 'default')
 		{
-			$css_paths[] = PATH_CP_THEME.$this->cp_theme.'/';
+			array_shift($css_paths);
 		}
 
 		foreach ($css_paths as $a_path)
