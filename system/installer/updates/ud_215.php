@@ -38,19 +38,6 @@ class Updater {
 	// --------------------------------------------------------------------
 	
 	/**
-	 * Process Survey
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function process_survey()
-	{
-//		echo '<pre>';print_r($_POST);echo'</pre>';exit;
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
 	 * Do Update
 	 *
 	 * @return TRUE

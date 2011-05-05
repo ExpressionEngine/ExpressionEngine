@@ -147,7 +147,6 @@ $lang['what_server_data_is_sent'] = '<p>What data is sent?  Answering yes to thi
 										<li>PHP version and available extensions</li>
 										<li>MySQL version, server operating system</li>
 										<li>Server software name</li>
-										<li>ExpressionEngine Version</li>
 										<li>...and whether or not you are using forced query strings on your server</li>
 									</ul>
 									<p>All data is transmitted anonymously and cannot be associated with your local machine, ExpressionEngine user
@@ -156,7 +155,7 @@ $lang['show_hide_to_see_server_data'] = 'Show/hide the server data that will be 
 $lang['would_you_recommend'] = 'How likely is it that you will recommend ExpressionEngine to a colleague or friend?';
 $lang['unlikely'] = 'Unlikely';
 $lang['highly_likely'] = 'Highly Likely';
-$lang['additional_comments'] = 'If you like, please briefly explain any of your survey answers in a few sentences';
+$lang['additional_comments'] = 'What could ExpressionEngine or EllisLab do to delight you?';
 
 // Template Updater Lang
 $lang['updating_template_as_files'] = 'Updating templates saved as files.';
