@@ -31,12 +31,25 @@ class EE_Fieldtype {
 
 	/**
 	 * Constructor
+	 */
+	 public function __construct()
+	 {
+	 	$this->EE =& get_instance();
+	 }
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Constructor
 	 *
 	 * @access	public
+	 * @deprecated This is only here to maintain backwards compatibility
+	 * for people using parent::EE_Fieldtype() and will be removed in a 
+	 * later version.
 	 */
 	function EE_Fieldtype()
 	{
-		$this->EE =& get_instance();
+		$this->__construct();
 	}
 	
 	// --------------------------------------------------------------------
@@ -224,10 +237,10 @@ class EE_Fieldtype {
 	function display_publish_field($data)
 	{
 		$tmp = $this->EE->load->_ci_view_path;
-		$this->EE->load->_ci_view_path = PATH_THEMES.'cp_themes/default/';
+		$this->EE->load->_ci_view_path = $this->EE->load->reset_view_path();
 
 		$vars['glossary_items'] = $this->EE->load->view('content/_assets/glossary_items', '', TRUE);
-		
+
 		$this->EE->load->_ci_view_path = $tmp;
 		
 		$this->EE->load->vars($vars);

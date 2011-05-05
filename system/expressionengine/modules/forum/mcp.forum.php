@@ -2572,7 +2572,7 @@ class Forum_mcp {
 				}
 			});
 			
-			$("#toggle_all").toggle(function() {
+			$("#toggle_accordion").toggle(function() {
 				$(".editAccordion h3").removeClass("collapsed").parent().removeClass("collapsed");
 				$(".editAccordion > div").show();
 			}, function() {

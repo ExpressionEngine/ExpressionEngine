@@ -4734,7 +4734,8 @@ class Admin_content extends CI_Controller {
 	 */
 	function status_group_edit()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		if ( ! $this->cp->allowed_group('can_access_admin') OR 
+			 ! $this->cp->allowed_group('can_access_content_prefs'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -4744,23 +4745,25 @@ class Admin_content extends CI_Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->model('status_model');
 
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_group_management', $this->lang->line('statuses'));
-
-		// Set default values
-		$vars['group_id'] = '';
-		$vars['group_name'] = '';
-		$vars['form_hidden'] = array();
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_group_management', lang('statuses'));
 
 		// If we have the group_id variable it's an edit request, so fetch the status data
 		$group_id = $this->input->get_post('group_id');
 
+		// Set default values
+		$vars = array(
+			'group_id'			=> '',
+			'group_name'		=> '',
+			'form_hidden'		=> array(),
+			'submit_lang_key'	=> ($group_id != '') ? 'update' : 'submit',
+			'group_name'		=> ''
+		);
+
 		if ($group_id != '')
 		{
-			$this->cp->set_variable('cp_page_title', $this->lang->line('edit_status_group'));
+			$this->cp->set_variable('cp_page_title', lang('edit_status_group'));
 
 			$vars['form_hidden']['group_id'] = $group_id;
-
-			$vars['submit_lang_key'] = 'update';
 
 			if ( ! is_numeric($group_id))
 			{
@@ -4776,10 +4779,9 @@ class Admin_content extends CI_Controller {
 		}
 		else
 		{
-			$this->cp->set_variable('cp_page_title', $this->lang->line('create_new_status_group'));
-			$vars['submit_lang_key'] = 'submit';
+			$this->cp->set_variable('cp_page_title', lang('create_new_status_group'));
 		}
-
+		
 		$this->javascript->compile();
 		$this->load->view('admin/status_group_edit', $vars);
 	}
@@ -5957,7 +5959,8 @@ class Admin_content extends CI_Controller {
 	 */
 	function update_config()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		if ( ! $this->cp->allowed_group('can_access_admin') OR 
+			 ! $this->cp->allowed_group('can_access_content_prefs'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -5973,7 +5976,7 @@ class Admin_content extends CI_Controller {
 
 		if ($loc !== FALSE)
 		{
-			$this->session->set_flashdata('message_success', $this->lang->line('preferences_updated'));
+			$this->session->set_flashdata('message_success', lang('preferences_updated'));
 			$this->functions->redirect($loc);
 		}
 	}

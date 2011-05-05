@@ -272,6 +272,19 @@ class EE_Menu {
 
 		$menu = $this->_remove_blocked_menu_items($menu);
 		$menu = $this->_add_overviews($menu);
+	
+ 		/* -------------------------------------------
+		/* 'cp_menu_array' hook.
+		/*  - Modify menu array
+		/*  - Added: 2.1.5
+		*/
+			if ($this->EE->extensions->active_hook('cp_menu_array') === TRUE)
+			{
+				$menu = $this->EE->extensions->call('cp_menu_array', $menu);
+			}
+		/*
+		/* -------------------------------------------*/
+		
 
 		// Only get the views once
 		$this->menu_parent	= $this->EE->load->view('_shared/menu/item_parent', '', TRUE);
@@ -281,7 +294,7 @@ class EE_Menu {
 		// Main menu, custom tabs, help link - in that order
 		$menu_string  = $this->_process_menu($menu);
 		$menu_string .= $this->_process_menu($this->_fetch_quick_tabs(), 0, FALSE);
-		$menu_string .= $this->_process_menu(array('help' => $this->generate_help_link()));
+		$menu_string .= $this->_process_menu(array('help' => $this->generate_help_link()), 0, TRUE, '', 'external');
 		
 		// Visit Site / MSM Switcher gets an extra class
 		$menu_string .= $this->_process_menu($this->_fetch_site_list(), 0, FALSE, 'msm_sites');
@@ -289,7 +302,6 @@ class EE_Menu {
 		$this->EE->load->vars('menu_string', $menu_string);
 		
 		return $menu;
-		
 	}
 	
 	// --------------------------------------------------------------------
@@ -303,7 +315,7 @@ class EE_Menu {
 	 * @param	array	menu definition
 	 * @return	array
 	 */
-	function _process_menu($m, $depth = 0, $use_lang_keys = TRUE, $li_class = '')
+	function _process_menu($m, $depth = 0, $use_lang_keys = TRUE, $li_class = '', $rel = '')
 	{
 		$menu = '';
 
@@ -321,14 +333,16 @@ class EE_Menu {
 						'{link_class}',
 						'{li_class}',
 						'{subnav}',
-						'{ul_class}'
+						'{ul_class}',
+						'{rel}'
 					),
 					array(
 						$label,
 						$link_class,
 						$li_class,
-						$this->_process_menu($data, $depth + 1, $sub_use_lang),
-						''
+						$this->_process_menu($data, $depth + 1, $sub_use_lang, $li_class, $rel),
+						'',
+						($rel == '') ? '' : ' rel="'.$rel.'"',
 					),
 					$this->menu_parent
 				);
@@ -347,14 +361,16 @@ class EE_Menu {
 							'{link_class}',
 							'{li_class}',
 							'{url}',
-							'{ul_class}'
+							'{ul_class}',
+							'{rel}'
 						),
 						array(
 							$label,
 							$link_class,
 							$li_class,
 							$data,
-							''
+							'',
+							($rel == '') ? '' : ' rel="'.$rel.'"',
 						),
 						$this->menu_item
 					);
@@ -440,7 +456,6 @@ class EE_Menu {
 					unset($menu['content']['files'][0]);
 					unset($menu['content']['files']['file_upload_preferences']);
 					unset($menu['content']['files']['file_watermark_preferences']);
-					
 				}				
 			}
 		}

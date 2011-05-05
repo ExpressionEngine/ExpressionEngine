@@ -26,6 +26,7 @@
 class Updater {
 
 	private $EE;
+	var $version_suffix = '';
 
 	/**
 	 * Constructor
@@ -69,6 +70,9 @@ class Updater {
 		// Move field_content_type to the channel_fields settings array
 		$this->_do_custom_field_update();		
 		
+		// Add a MySQL index or three to help performance
+		$this->_do_add_indexes();
+
 		return TRUE;
 	}
 	
@@ -551,7 +555,25 @@ class Updater {
 			$this->EE->db->update('channel_fields', array('field_settings' => $settings)); 
 		}
 	}	
-	
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Add a MySQL index or two
+	 */
+	private function _do_add_indexes()
+	{
+		// We do a ton of template lookups based off the template name.  How about indexing on it?
+		$this->EE->db->query("CREATE INDEX template_name on exp_templates(template_name)");
+
+		// Same with the channel_name in exp_channels
+		$this->EE->db->query("CREATE INDEX channel_name on exp_channels(channel_name)");
+
+		// and the same for field_type on exp_channel_fields
+		$this->EE->db->query("CREATE INDEX field_type on exp_channel_fields(field_type)");
+	}
+
+	// --------------------------------------------------------------------	
 }
 /* END CLASS */
 

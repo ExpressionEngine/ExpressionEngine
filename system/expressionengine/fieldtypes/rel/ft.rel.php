@@ -28,22 +28,9 @@ class Rel_ft extends EE_Fieldtype {
 		'name'		=> 'Relationship',
 		'version'	=> '1.0'
 	);
-
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function Rel_ft()
-	{
-		parent::EE_Fieldtype();
-	}
 	
-	// --------------------------------------------------------------------
 
-	function validate($data)
-	{
-	}
+	function validate($data) { }
 	
 	// --------------------------------------------------------------------
 	
