@@ -26,6 +26,8 @@
  */
 class EE_Loader extends CI_Loader {
 	
+	private $_ee_view_paths = array();
+	
 	/**
 	 * Load View
 	 *
@@ -40,14 +42,32 @@ class EE_Loader extends CI_Loader {
 	 */
 	public function view($view, $vars = array(), $return = FALSE)
 	{
-		$paths = $this->_ci_view_path;
-
-		if (is_array($this->_ci_view_path))
+		// The only way to get a string view_path is to
+		// either set directly or to call a nested view.
+		// If the path isn't in the originals we'll can
+		// assume that it was set on purpose.
+		
+		// This means that modules can't set the view path
+		// to an array, which is fine for now. Once we merge
+		// reactor's view changes we can fix that.
+		
+		if (is_string($this->_ci_view_path) &&
+			! in_array($this->_ci_view_path, $this->_ee_view_paths))
+		{
+			return parent::view($view, $vars, $return);
+		}
+		
+		// Non-module load call? Reset the paths so that themes
+		// can cascade in nested views.
+		
+		$paths = $this->_ee_view_paths;
+		
+		if (count($paths) > 1)
 		{
 			$ext = pathinfo($view, PATHINFO_EXTENSION);
 			$ext = $ext ? '' : EXT;
 			
-			foreach ($this->_ci_view_path as $path)
+			foreach ($paths as $path)
 			{
 				if (file_exists($path.$view.$ext))
 				{
@@ -56,11 +76,12 @@ class EE_Loader extends CI_Loader {
 				}
 			}
 		}
+		else
+		{
+			$this->_ci_view_path = $paths[0];
+		}
 
-		$ret = parent::view($view, $vars, $return);
-		
-		$this->_ci_view_path = $paths;
-		return $ret;
+		return parent::view($view, $vars, $return);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -94,8 +115,47 @@ class EE_Loader extends CI_Loader {
 		
 		return parent::library($library, $params, $object_name);
 	}
+	
+	// ------------------------------------------------------------------------	
+	
+	/**
+	 * Reset Views to the original
+	 *
+	 * Utility function that resets and returns the original
+	 * view path array. Currently only used for glossary views.
+	 */
+	public function reset_view_path()
+	{
+		return $this->_ci_view_path = $this->_ee_view_paths;
+	}
 
 	// ------------------------------------------------------------------------	
+	
+	/**
+	 * DO NOT CALL THIS
+	 *
+	 * It's used once - in core.php to setup the initial
+	 * view array. After that you should consider it sealed.
+	 * If you need to change a view path set it directly or
+	 * make your own method! This one is sacred.
+	 */
+	public function init_orig_views($theme_path = NULL)
+	{
+		if ( ! empty($this->_ee_view_paths))
+		{
+			return FALSE;
+		}
+		
+		$this->_ci_view_path = array(APPPATH.'views/');
+		
+		if ($theme_path)
+		{
+			array_unshift($this->_ci_view_path, $theme_path);
+		}
+		
+		// store the original
+		$this->_ee_view_paths = $this->_ci_view_path;
+	}
 	
 }
 

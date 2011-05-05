@@ -17,8 +17,8 @@
  * ExpressionEngine Subscription Class
  *
  * @package		ExpressionEngine
- * @subpackage	Libraries
- * @category	Subscription
+* @subpackage	Libraries
+* @category	Subscription
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */

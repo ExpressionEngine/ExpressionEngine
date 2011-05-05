@@ -343,10 +343,28 @@ class EE_Core {
 						$snippets[$var->snippet_name] = $var->snippet_contents;
 					}
 
+
+					// Thanks to @litzinger for the code suggestion to parse 
+					// global vars in snippets...here we go.
+
+					$var_keys = array();
+
+					foreach ($this->EE->config->_global_vars as $k => $v)
+					{
+						$var_keys[] = LD.$k.RD;
+					}
+
+					foreach ($snippets as $name => $content)
+					{
+						$snippets[$name] = str_replace($var_keys, 
+									array_values($this->EE->config->_global_vars), $content);
+					}
+
 					$this->EE->config->_global_vars = $this->EE->config->_global_vars + $snippets; 
 
 					unset($snippets);
 					unset($fresh);
+					unset($var_keys);
 				}				
 			}
 			
@@ -405,28 +423,27 @@ class EE_Core {
 		{
 			$cp_theme = ( ! $this->EE->session->userdata('cp_theme')) ? $this->EE->config->item('cp_theme') : $this->EE->session->userdata('cp_theme');	
 		}
-
+		
 		// make sure the theme exists, and shunt to default if it does not
 		// always add default as a fallback.
 		if ($cp_theme == 'default' OR ! is_dir(PATH_CP_THEME.$cp_theme))
 		{
-			$this->EE->load->_ci_view_path = PATH_CP_THEME.'default/';
+			$this->EE->load->init_orig_views();
 			$cp_theme = 'default';
 		}
 		else
 		{
-			$this->EE->load->_ci_view_path = array(
-				PATH_CP_THEME.$cp_theme.'/',
-				PATH_CP_THEME.'default/'
+			$this->EE->load->init_orig_views(
+				PATH_CP_THEME.$cp_theme.'/'
 			);
 		}
 		
 		$this->EE->load->library('view', array(
-											$cp_theme, 
-											$this->EE->load->_ci_view_path,
-											$this->EE->config->item('theme_folder_url')
-										)
-									);
+				$cp_theme, 
+				$this->EE->load->_ci_view_path,
+				$this->EE->config->slash_item('theme_folder_url')
+			)
+		);
 		
 		// go ahead and set this so we can use it from here on out
 		$this->EE->session->userdata['cp_theme'] = $cp_theme;

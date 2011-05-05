@@ -12,7 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 	<div class="contents">
 
-		<div class="heading"><h2 class="edit"><?=$cp_page_title?></h2></div>
+		<div class="heading"><h2 class="edit"><?=$cp_page_title?><?php if ($group_name != ''): echo ' : '.$group_name; endif;?></h2></div>
 		<div class="pageContents">
 
 			<?=form_open('C=admin_content'.AMP.'M=status_group_update', '', $form_hidden)?>
