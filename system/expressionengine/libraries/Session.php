@@ -825,9 +825,9 @@ class EE_Session {
 	/**
 	 * Fetch a session item
 	 */	
-	function userdata($which)
+	function userdata($which, $default = FALSE)
 	{  
-		return ( ! isset($this->userdata[$which])) ? FALSE : $this->userdata[$which];
+		return ( ! isset($this->userdata[$which])) ? $default : $this->userdata[$which];
 	}
 
 	// --------------------------------------------------------------------		 
