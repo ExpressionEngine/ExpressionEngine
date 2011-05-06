@@ -267,7 +267,7 @@ class Safecracker_file_ft extends File_ft
 			
 			foreach($content_types as $content_type)
 			{
-				$vars['field_content_options_file'][$content_type] = $this->EE->lang->line('type_'.$content_type);
+				$data['field_content_options_file'][$content_type] = $this->EE->lang->line('type_'.$content_type);
 			}
 		}
 		
