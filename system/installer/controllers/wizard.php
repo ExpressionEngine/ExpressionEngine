@@ -490,9 +490,25 @@ class Wizard extends CI_Controller {
 		if ($this->next_update === FALSE)
 		{
 			$vars['installer_path'] = '/'.SYSDIR.'/installer';
+
+			// Set the path to the site and CP
+			$host = 'http://';
+			if (isset($_SERVER['HTTP_HOST']) AND $_SERVER['HTTP_HOST'] != '')
+			{
+				$host .= $_SERVER['HTTP_HOST'].'/';
+			}
+
+			$self = ( ! isset($_SERVER['PHP_SELF']) OR $_SERVER['PHP_SELF'] == '') ? '' : substr($_SERVER['PHP_SELF'], 1);
+
+			// Since the CP access file can be inside or outside of the "system" folder
+			// we will do a little test to help us set the site_url item
+			$_selfloc = (is_dir('./installer/')) ? SELF.'/'.SYSDIR : SELF;
+
+			$this->userdata['site_url'] = $host.substr($self, 0, - strlen($_selfloc)); 
+
 			$vars['site_url'] = rtrim($this->userdata['site_url'], '/').'/'.$this->userdata['site_index'];
 			$vars['cp_url'] = $this->userdata['cp_url'];
-			
+
 			$this->_set_output('uptodate', $vars);
 			return FALSE;
 		}
