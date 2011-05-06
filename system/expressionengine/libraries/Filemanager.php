@@ -1704,7 +1704,9 @@ class Filemanager {
 		}
 		
 		// Upload the file
-		$this->EE->load->library('upload', $config);
+		$this->EE->load->library('upload');
+		$this->EE->upload->initialize($config);
+		
 		if ( ! $this->EE->upload->do_upload($field_name))
 		{
 			return array('error' => $this->EE->upload->display_errors());

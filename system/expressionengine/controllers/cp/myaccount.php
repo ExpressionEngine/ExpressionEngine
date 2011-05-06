@@ -1529,11 +1529,7 @@ class MyAccount extends CI_Controller {
 		$this->load->language('number');
 
 		$vars['cp_page_title'] = $this->lang->line('edit_avatar');
-
-		$this->javascript->output('');
-
-		$this->javascript->compile();
-
+		
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['form_hidden']['id'] = $this->id;
@@ -1543,16 +1539,17 @@ class MyAccount extends CI_Controller {
 		{
 			$member_avatar = $this->member_model->get_member_data($this->id, array('avatar_filename', 'avatar_width', 'avatar_height', 'screen_name'));
 			
+			$cur_avatar_url = '';
+			$avatar_width	= '';
+			$avatar_height	= '';
+			
 			if ($member_avatar->row('avatar_filename') == '')
 			{
 				// there ain't no avatar
-				$cur_avatar_url = '';
-				$avatar_width	= '';
-				$avatar_height	= '';
 				$vars['avatar'] = sprintf(
-							$this->lang->line('no_user_avatar'),
-							$member_avatar->row('screen_name')
-					);				
+					$this->lang->line('no_user_avatar'),
+					$member_avatar->row('screen_name')
+				);
 				
 			}
 			else
@@ -1567,18 +1564,18 @@ class MyAccount extends CI_Controller {
 		else
 		{
 			// We already grab this data for the sidebar, so we'll use those values
-			if ( ! $this->load->_ci_cached_vars['cp_avatar_path'])
+			// var_dump($this->session);
+			
+			$cur_avatar_url = $this->session->cache['cp_sidebar']['cp_avatar_path'];
+			$avatar_width	= $this->session->cache['cp_sidebar']['cp_avatar_width'];
+			$avatar_height	= $this->session->cache['cp_sidebar']['cp_avatar_height'];
+			
+			if ( ! $cur_avatar_url)
 			{
-				$cur_avatar_url = '';
-				$avatar_width	= '';
-				$avatar_height	= '';
 				$vars['avatar'] = $this->lang->line('no_avatar');
 			}
 			else
 			{
-				$cur_avatar_url = $this->load->_ci_cached_vars['cp_avatar_path'];
-				$avatar_width	= $this->load->_ci_cached_vars['cp_avatar_width'];
-				$avatar_height	= $this->load->_ci_cached_vars['cp_avatar_height'];
 				$vars['avatar'] = '<img src="'.$cur_avatar_url.'" border="0" width="'.$avatar_width.'" height="'.$avatar_height.'" alt="'.$this->lang->line('my_avatar').'" title="'.$this->lang->line('my_avatar').'" />';
 			}			
 		}
@@ -1613,6 +1610,7 @@ class MyAccount extends CI_Controller {
 
 		$vars['avatar_image_remove'] = ($this->config->item('allow_avatar_uploads') == 'y' AND $cur_avatar_url != '') ? TRUE : FALSE;
 
+		$this->javascript->compile();
 		$this->load->view('account/edit_avatar', $vars);
 	}
 

@@ -93,13 +93,16 @@ class Safecracker_file_ft extends File_ft
 			'thumb_src' => $thumb_src
 		);
 		
-		$old_view_path = $this->EE->load->_ci_view_path;
+		$this->EE->load->add_package_path(PATH_THIRD.'safecracker_file');
+		// $old_view_path = $this->EE->load->_ci_view_path;
 		
-		$this->EE->load->_ci_view_path = PATH_THIRD.'safecracker_file/views/';
+		// $this->EE->load->_ci_view_path = PATH_THIRD.'safecracker_file/views/';
 
 		$display_field = $this->EE->load->view('display_field', $vars, TRUE);
 		
-		$this->EE->load->_ci_view_path = $old_view_path;
+		$this->EE->load->add_package_path(PATH_THIRD.'safecracker_file');
+		
+		// $this->EE->load->_ci_view_path = $old_view_path;
 		
 		return $display_field;
 	}
@@ -139,11 +142,9 @@ class Safecracker_file_ft extends File_ft
 		
 		if (isset($_FILES[$field_name]) && $_FILES[$field_name]['size'] > 0)
 		{
-			$this->EE->load->add_package_path(PATH_THIRD.'safecracker_file/');
-			
-			unset($this->EE->upload, $this->EE->load->_ci_loaded_files[array_search(BASEPATH.'libraries/Upload'.EXT, $this->EE->load->_ci_loaded_files)]);
-			
+			$this->EE->load->add_package_path(PATH_THIRD.'safecracker_file/');			
 			$this->EE->load->library('Filemanager');
+			
 			$data = $this->EE->filemanager->upload_file($this->settings['safecracker_upload_dir'], $field_name);
 			
 			if (array_key_exists('error', $data))

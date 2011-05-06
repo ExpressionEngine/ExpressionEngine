@@ -919,14 +919,14 @@ class Safecracker_lib
 		//add loaded JS
 		$this->EE->javascript->compile();
 		
-		if (isset($this->EE->load->_ci_cached_vars['script_foot']))
-		{
-			$script = $this->EE->load->_ci_cached_vars['script_foot'];
+		//if (isset($this->EE->load->_ci_cached_vars['script_foot']))
+		//{
+			//$script = $this->EE->load->_ci_cached_vars['script_foot'];
 			
-			$script = preg_replace('/\s*eeSpell\.init\(\);\s*/', '', $script);
+			//$script = preg_replace('/\s*eeSpell\.init\(\);\s*/', '', $script);
 			
-			$this->head .= $script;
-		}
+			//$this->head .= $script;
+		//}
 		
 		//add datepicker class
 		if ($this->datepicker)
@@ -2546,22 +2546,16 @@ class Safecracker_lib
 
 		//$this->temp_session = $this->EE->functions->clone_object($this->EE->session);
 		
-		$path = PATH_MOD.'safecracker/libraries/SC_Session';
-		
-		if (in_array(APPPATH.'libraries/'.$path.EXT, $this->EE->load->_ci_loaded_files))
+		if ( ! class_exists('SC_Session'))
 		{
-			unset($this->EE->load->_ci_loaded_files[array_search(APPPATH.'libraries/'.$path.EXT, $this->EE->load->_ci_loaded_files)]);
+			require_once PATH_MOD.'safecracker/libraries/SC_Session.php';
 		}
 		
-		$this->EE->load->library(
-			$path,
-			array(
-				'session_object' => $this->temp_session,
-				'logged_out_member_id' => $this->logged_out_member_id,
-				'logged_out_group_id' => $this->logged_out_group_id
-			),
-			'session'
-		);
+		$this->EE->session = new SC_Session(array(
+			'session_object' => $this->temp_session,
+			'logged_out_member_id' => $this->logged_out_member_id,
+			'logged_out_group_id' => $this->logged_out_group_id
+		));
 	}
 
 	// --------------------------------------------------------------------
