@@ -312,7 +312,7 @@ class File_ft extends EE_Fieldtype {
 	function display_settings($data)
 	{
 		
-		$field_content_options = array('all' => lang('all'), 'image' => lang('image'));
+		$field_content_options = array('all' => lang('all'), 'image' => lang('type_image'));
 
 		$this->EE->table->add_row(
 			lang('field_content_file', 'field_content_file'),
