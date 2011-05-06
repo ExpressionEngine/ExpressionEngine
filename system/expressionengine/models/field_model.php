@@ -286,7 +286,7 @@ class Field_model extends CI_Model {
 	function get_field_content_types($parent = FALSE)
 	{
 		$field_types['file'] = array('image');
-		$field_types['text'] = array('integer', 'numeric');
+		$field_types['text'] = array('integer', 'numeric', 'decimal');
 		
 		if ($parent)
 		{

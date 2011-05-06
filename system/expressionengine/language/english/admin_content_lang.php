@@ -900,6 +900,9 @@ $lang = array(
 'type_integer' =>
 'Integer',
 
+'type_decimal' =>
+'Decimal',
+
 'type_file' =>
 'File',
 
