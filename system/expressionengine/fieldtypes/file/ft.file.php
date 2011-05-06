@@ -36,9 +36,9 @@ class File_ft extends EE_Fieldtype {
 	 *
 	 * @access	public
 	 */
-	function File_ft()
+	function __construct()
 	{
-		parent::EE_Fieldtype();
+		parent::__construct();
 		$this->EE->load->model('tools_model');
 	}
 	
@@ -312,7 +312,7 @@ class File_ft extends EE_Fieldtype {
 	function display_settings($data)
 	{
 		
-		$field_content_options = array('all' => lang('all'), 'image' => lang('image'));
+		$field_content_options = array('all' => lang('all'), 'image' => lang('type_image'));
 
 		$this->EE->table->add_row(
 			lang('field_content_file', 'field_content_file'),

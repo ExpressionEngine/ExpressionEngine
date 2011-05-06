@@ -40,6 +40,7 @@ class Filemanager {
 	private $_upload_dir_prefs	= array();
 	
 	private $_xss_on			= TRUE;
+	private $_memory_tweak_factor = 1.8;
 
 	/**
 	 * Constructor
@@ -434,11 +435,6 @@ class Filemanager {
 	 */	 
 	function max_hw_check($file_path, $prefs)
 	{
-		//if ( ! $prefs['is_image'])
-		//{
-		//	return $prefs;
-		//}
-
 		// Make sure height and width are set
 		if ( ! isset($prefs['height']) OR ! isset($prefs['width']))
 		{
@@ -453,8 +449,7 @@ class Filemanager {
 			$prefs['width'] = $dim['width'];
 		}
 
-		
-		
+
 		$config['width']			= $prefs['width'];
 		$config['height']			= $prefs['height'];
 
@@ -938,6 +933,64 @@ class Filemanager {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Set Image Memory for Image Resizing
+	 *
+	 * Sets memory limit for image manipulation
+	 *  See // http://php.net/manual/en/function.imagecreatefromjpeg.php#64155
+	 *
+	 * @access	public
+	 * @param	string	file path
+	 * @return	bool	success / failure
+	 */
+	function set_image_memory($filename)
+	{
+		$k64 = 65536;    // number of bytes in 64K
+
+  		$image_info = @getimagesize($filename);
+
+		$memory_needed = round(($image_info[0] * $image_info[1]
+											* $image_info['bits']
+											* $image_info['channels'] / 8
+											+ $k64
+								) * $this->_memory_tweak_factor
+                         );
+
+		$current = 8*1024*1024;
+
+		if (function_exists('memory_get_usage'))
+		{
+			if ((memory_get_usage() + $memory_needed) > $current)
+			{
+				// There was a bug/behavioural change in PHP 5.2, where numbers over one million get output
+				// into scientific notation.  number_format() ensures this number is an integer
+				// http://bugs.php.net/bug.php?id=43053
+			
+				$new_memory = number_format(ceil(memory_get_usage() + $memory_needed + $current), 0, '.', '');
+			
+				if ( ! ini_set('memory_limit', $new_memory))
+				{
+					return FALSE;
+				}
+			
+				return TRUE;
+			}
+			
+			return TRUE;
+		}
+		elseif ($memory_needed < $current)
+		{
+			// Note- this is not tremendously accurate
+			return TRUE;
+		}
+
+		return FALSE;
+	}
+
+
+
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Create Thumbnails
 	 *
 	 * Create Thumbnails for a file
@@ -965,6 +1018,13 @@ class Filemanager {
 			return FALSE;
 		}
 		
+		// Make sure we have enough memory to process
+		if ( ! $this->set_image_memory($file_path))
+		{
+			log_message('error', 'Insufficient Memory for Thumbnail Creation: '.$file_path);
+			return FALSE;
+		}
+
 		$dimensions = $prefs['dimensions'];
 		
 		if ($thumb)
@@ -1099,6 +1159,7 @@ class Filemanager {
 			{
 				if ( ! $this->create_watermark($resized_path.$prefs['file_name'], $size))
 				{
+					log_message('error', 'Image Watermarking Failed: '.$prefs['file_name']);
 					return FALSE;
 				}				
 			}			

@@ -403,7 +403,9 @@ class Content_files extends CI_Controller {
 				// Lightbox links
 				if (strncmp($file['mime_type'], 'image', 5) === 0)
 				{
-					$is_image = TRUE;
+					//$is_image = TRUE;
+					$is_image = $this->filemanager->is_editable_image($file_path, $file['mime_type']);
+					
 					$r[] = '<a class="less_important_link overlay" id="img_'.str_replace(array(".", ' '), '', $file['file_name']).'" href="'.$file_location.'" title="'.$file['file_name'].'" rel="#overlay">'.$file['file_name'].'</a>';
 				}
 				else
@@ -2391,14 +2393,27 @@ class Content_files extends CI_Controller {
 		{
 			foreach($query->result_array() as $row)
 			{
-				if (isset($_POST['short_name_'.$row['id']]))
+				if (isset($_POST['size_short_name_'.$row['id']]))
 				{
-					if ((trim($_POST['short_name_'.$row['id']]) == '' OR
-						in_array($_POST['short_name_'.$row['id']], $names)) && ! isset($_POST['remove_size_'.$row['id']]))
+					if ((trim($_POST['size_short_name_'.$row['id']]) == '' OR
+						in_array($_POST['size_short_name_'.$row['id']], $names)) && ! isset($_POST['remove_size_'.$row['id']]))
 					{
 						return $this->output->show_user_error('submission', array($this->lang->line('invalid_shortname')));
 					}
+					
+					
+					// Do we need to delete?
+					if (isset($_POST['remove_size_'.$row['id']]))
+					{
+						unset($_POST['remove_size_'.$row['id']]);
+						unset($_POST['size_short_name_'.$row['id']]);
 
+						$this->db->where('id', $row['id']);
+						$this->db->delete('file_dimensions');
+						
+						continue;
+					}
+					
 					$updatedata = array(
 						'short_name' => $_POST['size_short_name_'.$row['id']],
 						'title'	=> $_POST['size_short_name_'.$row['id']],
@@ -2411,22 +2426,13 @@ class Content_files extends CI_Controller {
 					$this->db->where('id', $row['id']);
 					$this->db->update('file_dimensions', $updatedata);
 
-					$names[]  = $_POST['short_name_'.$row['id']];
-
-				}
-				else
-				{
-					if (isset($_POST['remove_size_'.$row['id']]))
-					{
-						unset($_POST['remove_size_'.$row['id']]);
-						unset($_POST['size_short_name_'.$row['id']]);
-					}
-
-					$this->db->where('id', $row['id']);
-					$this->db->delete('file_dimensions');
+					$names[]  = $_POST['size_short_name_'.$row['id']];
+					unset($_POST['size_short_name_'.$row['id']]);
+					
 				}
 			}
 		}
+
 
 		if ( ! isset($_POST['cat_group']))
 		{

@@ -74,7 +74,7 @@ p {
 }
 
 .pad {
-  margin: 14px 0 16px 0;
+  margin: 16px 0 18px 0;
 }
  
 .important {

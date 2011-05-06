@@ -32,15 +32,6 @@ class Text_ft extends EE_Fieldtype {
 	// Parser Flag (preparse pairs?)
 	var $has_array_data = FALSE;
 
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function Text_ft()
-	{
-		parent::EE_Fieldtype();
-	}
 	
 	// --------------------------------------------------------------------
 	
@@ -57,19 +48,42 @@ class Text_ft extends EE_Fieldtype {
 			$this->field_content_types = $this->EE->field_model->get_field_content_types();
 		}
 
-		if ( ! isset($this->settings['field_content_type_text']))
+		if ( ! isset($this->settings['field_content_type']))
 		{
 			return TRUE;
 		}
 
-		$content_type = $this->settings['field_content_type_text'];
+		$content_type = $this->settings['field_content_type'];
 		
 		if (in_array($content_type, $this->field_content_types['text']) && $content_type != 'any')
 		{
+			
+			if ($content_type == 'decimal')
+			{
+				if ( ! $this->EE->form_validation->numeric($data))
+				{
+					return $this->EE->lang->line($content_type);
+				}
+				
+				// Check if number exceeds mysql limits	
+				return TRUE;
+								
+			}
+
 			if ( ! $this->EE->form_validation->$content_type($data))
 			{
 				return $this->EE->lang->line($content_type);
 			}
+			
+			// Check if number exceeds mysql limits			
+			if ($content_type == 'integer')
+			{
+				if (($data  < -2147483648) OR ($data > 2147483647))
+				{
+					return $this->EE->lang->line('number_exceeds_limit');
+				}
+			}
+			
 		}
 		
 		return TRUE;
@@ -95,9 +109,9 @@ class Text_ft extends EE_Fieldtype {
 	
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
-		if ($data !== '' && isset($params['number_format']) && ctype_digit(str_replace('.', '', $data)) === TRUE)
+		if ($data !== '' && isset($params['decimal_place']) && ctype_digit(str_replace('.', '', $data)) === TRUE)
 		{
-			$data = number_format($data, $params['number_format']);
+			$data = number_format($data, $params['decimal_place']);
 		}
 
 		return $this->EE->typography->parse_type(
@@ -129,8 +143,13 @@ class Text_ft extends EE_Fieldtype {
 
 		$field_maxl = ($data['field_maxl'] == '') ? 128 : $data['field_maxl'];
 		
-		$field_content_options = array('all' => lang('all'), 'numeric' => lang('numeric'), 'decimal' => lang('decimal'));
+		$field_content_options = array('all' => lang('all'), 'numeric' => lang('type_numeric'), 'integer' => lang('type_integer'), 'decimal' => lang('type_decimal'));
 		
+		$this->EE->table->add_row(
+			lang('field_max_length', 'field_max1'),
+			form_input(array('id'=>'field_maxl','name'=>'field_maxl', 'size'=>4,'value'=>$field_maxl))
+		);
+
 		$this->field_formatting_row($data, $prefix);
 		$this->text_direction_row($data, $prefix);
 
@@ -179,6 +198,10 @@ class Text_ft extends EE_Fieldtype {
 				break;
 			case 'integer':
 				$fields['field_id_'.$data['field_id']]['type'] = 'INT';
+				$fields['field_id_'.$data['field_id']]['default'] = 0;
+				break;
+			case 'decimal':
+				$fields['field_id_'.$data['field_id']]['type'] = 'DECIMAL(10,4)';
 				$fields['field_id_'.$data['field_id']]['default'] = 0;
 				break;
 			default:
