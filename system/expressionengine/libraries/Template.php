@@ -1311,7 +1311,7 @@ class EE_Template {
 					$package_path = in_array($this->tag_data[$i]['class'], $this->EE->core->native_modules) ? PATH_MOD : PATH_THIRD;
 					$package_path .= strtolower($this->tag_data[$i]['class'].'/');
 					
-					$this->EE->load->add_package_path($package_path);
+					$this->EE->load->add_package_path($package_path, FALSE);
 				}
 				
 				// Dynamically instantiate the class.

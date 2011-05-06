@@ -2363,19 +2363,9 @@ class Channel_standalone extends Channel {
 			$this->EE->table->clear(); // clear out tables for the next smiley
 		}
 		
-		if (isset($row['field_show_fmt']) && $row['field_show_fmt'] == 'y')
-		{
-			
-		}
-		
 		if (isset($settings['field_show_glossary']))
 		{
-			$tmp = $this->EE->load->_ci_view_path;
-			$this->EE->load->_ci_view_path = $this->EE->load->reset_view_path();
-
-			$output .= $this->EE->load->view('content/_assets/glossary_items', '', TRUE);
-			
-			$this->EE->load->_ci_view_path = $tmp;
+			$output .= $this->EE->load->ee_view('content/_assets/glossary_items', '', TRUE);
 		}
 		
 		$output .= '</div>';

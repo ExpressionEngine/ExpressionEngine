@@ -150,17 +150,15 @@ class EE_Actions {
 		}
 		
 		// Assign the path
-		$orig_view_path	= $EE->load->_ci_view_path;
-		$package_path	= PATH_MOD.$base_class.'/';
+		$package_path = PATH_MOD.$base_class.'/';
 		
 		// Third parties have a different package and view path
 		if ( ! in_array($base_class, $EE->core->native_modules))
 		{
 			$package_path = PATH_THIRD.$base_class.'/';
-			$EE->load->_ci_view_path = $package_path.'views/';
 		}
 				
-		$EE->load->add_package_path($package_path);
+		$EE->load->add_package_path($package_path, FALSE);
 		
 		$path = $package_path.$type.'.'.$base_class.EXT;
 
@@ -204,8 +202,7 @@ class EE_Actions {
 		}
 		
 		// remove the temporarily added path for local libraries, models, etc.
-		$EE->load->_ci_view_path = $orig_view_path;
-		$EE->load->remove_package_path();
+		$EE->load->remove_package_path($package_path);
 	}
 
 }

@@ -189,7 +189,7 @@ class EE_Extensions {
 
 				if (file_exists($path))
 				{
-					$this->EE->load->add_package_path($path);
+					$this->EE->load->add_package_path($path, FALSE);
 				}
 				
 				else

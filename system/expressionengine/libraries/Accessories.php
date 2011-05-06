@@ -101,10 +101,6 @@ class EE_Accessories {
 						if (array_key_exists('package', $info))
 						{
 							$third_party = TRUE;
-
-							// switch the view and package path temporarily to the packages's folder
-							$orig_view_path = $this->EE->load->_ci_view_path;
-							$this->EE->load->_ci_view_path = PATH_THIRD.strtolower($name).'/views/';
 							$this->EE->load->add_package_path(PATH_THIRD.strtolower($name).'/');
 						}
 						
@@ -127,8 +123,6 @@ class EE_Accessories {
 						
 						if ($third_party === TRUE)
 						{
-							// switch the view path back to the original, remove package path
-							$this->EE->load->_ci_view_path = $orig_view_path;
 							$this->EE->load->remove_package_path(PATH_THIRD.strtolower($name).'/');
 						}
 					}
@@ -260,7 +254,7 @@ class EE_Accessories {
 		
 		if (strncmp($path, PATH_THIRD, strlen(PATH_THIRD)) == 0)
 		{
-			$this->EE->load->add_package_path(PATH_THIRD.strtolower($name).'/');
+			$this->EE->load->add_package_path(PATH_THIRD.strtolower($name).'/', FALSE);
 		}
 		
 		return $class;

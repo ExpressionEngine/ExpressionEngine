@@ -26,62 +26,49 @@
  */
 class EE_Loader extends CI_Loader {
 	
+	private $_ci_view_path; // deprecated, in here to force access errors
 	private $_ee_view_paths = array();
 	
 	/**
-	 * Load View
+	 * Load EE View
 	 *
-	 * This extended function exists to provide overloading of themes.  It's silly and
-	 * difficult trying to maintain multiple themes that are just tweaks to CSS and images.
-	 * Brandon is a smart cookie for thinking this idea up.  -ga
+	 * This is for limited use inside packages. It loads from EE's main cp
+	 * theme folder and ignores the package's view folder. The main reason
+	 * for doing this are layout things, like the glossary. Most developers
+	 * will not need this. -pk
 	 *
 	 * @param	string		
 	 * @param	array 	variables to be loaded into the view
 	 * @param	bool 	return or not
 	 * @return	void
 	 */
-	public function view($view, $vars = array(), $return = FALSE)
+	public function ee_view($view, $vars = array(), $return = FALSE)
 	{
-		// The only way to get a string view_path is to
-		// either set directly or to call a nested view.
-		// If the path isn't in the originals we'll can
-		// assume that it was set on purpose.
+		$ee_only = array();
+		$orig_paths = $this->_ci_view_paths;
 		
-		// This means that modules can't set the view path
-		// to an array, which is fine for now. Once we merge
-		// reactor's view changes we can fix that.
+		// Regular themes cascade down to the first
+		// path (APPPATH.'views'), so we copy them over
+		// until we hit a third party or non_cascading path.
 		
-		if (is_string($this->_ci_view_path) &&
-			! in_array($this->_ci_view_path, $this->_ee_view_paths))
+		foreach (array_reverse($orig_paths, TRUE) as $path => $cascade)
 		{
-			return parent::view($view, $vars, $return);
-		}
-		
-		// Non-module load call? Reset the paths so that themes
-		// can cascade in nested views.
-		
-		$paths = $this->_ee_view_paths;
-		
-		if (count($paths) > 1)
-		{
-			$ext = pathinfo($view, PATHINFO_EXTENSION);
-			$ext = $ext ? '' : EXT;
-			
-			foreach ($paths as $path)
+			if (strpos($path, PATH_THIRD) !== FALSE OR $cascade === FALSE)
 			{
-				if (file_exists($path.$view.$ext))
-				{
-					$this->_ci_view_path = $path;
-					break;
-				}
+				break;
 			}
+			
+			$ee_only[$path] = TRUE;
 		}
-		else
-		{
-			$this->_ci_view_path = $paths[0];
-		}
-
-		return parent::view($view, $vars, $return);
+		
+		// Temporarily replace them, load the view, and back again
+		$this->_ci_view_paths = array_reverse($ee_only, TRUE);
+		
+		$ret = $this->view($view, $vars, $return);
+		
+		$this->_ci_view_paths = $orig_paths;
+		
+		return $ret;
 	}
 	
 	// ------------------------------------------------------------------------
@@ -119,42 +106,14 @@ class EE_Loader extends CI_Loader {
 	// ------------------------------------------------------------------------	
 	
 	/**
-	 * Reset Views to the original
+	 * Add to the theme cascading
 	 *
-	 * Utility function that resets and returns the original
-	 * view path array. Currently only used for glossary views.
+	 * Adds a theme to cascade down to. You probably don't
+	 * need to call this. No really, don't.
 	 */
-	public function reset_view_path()
+	public function add_theme_cascade($theme_path)
 	{
-		return $this->_ci_view_path = $this->_ee_view_paths;
-	}
-
-	// ------------------------------------------------------------------------	
-	
-	/**
-	 * DO NOT CALL THIS
-	 *
-	 * It's used once - in core.php to setup the initial
-	 * view array. After that you should consider it sealed.
-	 * If you need to change a view path set it directly or
-	 * make your own method! This one is sacred.
-	 */
-	public function init_orig_views($theme_path = NULL)
-	{
-		if ( ! empty($this->_ee_view_paths))
-		{
-			return FALSE;
-		}
-		
-		$this->_ci_view_path = array(APPPATH.'views/');
-		
-		if ($theme_path)
-		{
-			array_unshift($this->_ci_view_path, $theme_path);
-		}
-		
-		// store the original
-		$this->_ee_view_paths = $this->_ci_view_path;
+		$this->_ci_view_paths = array($theme_path => TRUE) + $this->_ci_view_paths;
 	}
 	
 }
