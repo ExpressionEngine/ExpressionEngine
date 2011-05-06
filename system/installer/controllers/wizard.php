@@ -1306,8 +1306,10 @@ PAPAYA;
 		}
 
 		// is there a survey for this version?
-		if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.EXT) && method_exists($UD, 'process_survey'))
+		if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.EXT))
 		{
+			$this->load->library('survey');
+
 			// if we have data, send it on to the updater, otherwise, ask permission and show the survey
 			if ( ! $this->input->get_post('participate_in_survey'))
 			{
@@ -1320,15 +1322,31 @@ PAPAYA;
 																	'value'		=> 'y',
 																	'checked'	=> TRUE
 																),
-								'anonymous_server_data'	=> $this->_fetch_anon_server_data()
+								'ee_version'			=> $this->next_update
 							);
-				
+		
+				foreach ($this->survey->fetch_anon_server_data() as $key => $val)
+				{
+					if ($key == 'php_extensions')
+					{
+						$val = implode(', ', unserialize($val));
+					}
+
+					$data['anonymous_server_data'][$key] = $val;
+				}
+
 				$this->_set_output('surveys/survey_'.$this->next_update, $data);
 				return FALSE;
 			}
 			elseif ($this->input->get_post('participate_in_survey') == 'y')
 			{
-				$UD->process_survey();
+				// if any preprocessing needs to be done on the POST data, we do it here
+				if (method_exists($UD, 'pre_process_survey'))
+				{
+					$UD->pre_process_survey();					
+				}
+
+				$this->survey->send_survey($this->next_update);
 			}
 		}
 		
@@ -1398,28 +1416,6 @@ PAPAYA;
 		));
 	}
 	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Fetch Anonymous Server Data
-	 *
-	 * @access	public
-	 * @return	array
-	 */
-	function _fetch_anon_server_data()
-	{
-		return array(
-							'anon_id'			=> md5($this->config->item('site_url')),
-							'ee_version'		=> $this->next_update,
-							'os'				=> preg_replace("/.*?\((.*?)\).*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
-							'server_software'	=> preg_replace("/(.*?)\(.*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
-							'php_version'		=> phpversion(),
-							'php_extensions'	=> serialize(get_loaded_extensions()),
-							'mysql_version'		=> preg_replace("/(.*?)\-.*/", "\\1", mysql_get_server_info()),
-							'path_info_support'	=> ($this->config->item('force_query_string') == 'n') ? 'y' : 'n'
-					);
-	}
-
 	// --------------------------------------------------------------------
 	
 	/**

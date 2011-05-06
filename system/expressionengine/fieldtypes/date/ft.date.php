@@ -30,18 +30,7 @@ class Date_ft extends EE_Fieldtype {
 	);
 
 	var $has_array_data = FALSE;
-	
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function Date_ft()
-	{
-		parent::EE_Fieldtype();
-	}
-	
-	// --------------------------------------------------------------------
+
 	
 	function save($data)
 	{
@@ -50,9 +39,7 @@ class Date_ft extends EE_Fieldtype {
 	
 	// --------------------------------------------------------------------
 
-	function validate($data)
-	{
-	}
+	function validate($data) { }
 	
 	// --------------------------------------------------------------------
 	

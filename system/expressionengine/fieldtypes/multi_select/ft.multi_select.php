@@ -31,19 +31,6 @@ class Multi_select_ft extends EE_Fieldtype {
 	
 	var $has_array_data = TRUE;
 
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function Multi_select_ft()
-	{
-		parent::EE_Fieldtype();
-	}
-	
-	
-	// --------------------------------------------------------------------
-	
 	function display_field($data)
 	{
 		$this->EE->load->helper('custom_field');

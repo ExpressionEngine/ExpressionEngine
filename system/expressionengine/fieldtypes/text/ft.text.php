@@ -32,15 +32,6 @@ class Text_ft extends EE_Fieldtype {
 	// Parser Flag (preparse pairs?)
 	var $has_array_data = FALSE;
 
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function Text_ft()
-	{
-		parent::EE_Fieldtype();
-	}
 	
 	// --------------------------------------------------------------------
 	

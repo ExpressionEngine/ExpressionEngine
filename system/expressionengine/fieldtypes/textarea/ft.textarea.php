@@ -31,16 +31,6 @@ class Textarea_ft extends EE_Fieldtype {
 	
 	var $has_array_data = FALSE;
 
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function Textarea_ft()
-	{
-		parent::EE_Fieldtype();
-	}
-	
 	// --------------------------------------------------------------------
 
 	function validate($data)
