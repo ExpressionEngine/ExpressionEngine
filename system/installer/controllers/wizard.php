@@ -193,6 +193,7 @@ class Wizard extends CI_Controller {
 		// page along with some radio buttons for each installed language pack.
 		// Based on the users's choice we build the language into our URL string
 		// and use that info to load the desired language file on each page
+		
 		$this->load->add_package_path(EE_APPPATH);
 		$this->_load_langauge();
 
@@ -2144,11 +2145,7 @@ PAPAYA;
 				if (file_exists($path.'upd.'.$module.EXT))
 				{
 					// Add the helper/library load path and temporarily
-					// switch the view path to the module's view folder
-					$this->load->add_package_path($path);
-
-					$orig_view_path = $this->load->_ci_view_path;
-					$this->load->_ci_view_path = $path.'views/';
+					$this->load->add_package_path($path, FALSE);
 
 					require $path.'upd.'.$module.EXT;
 
@@ -2168,9 +2165,8 @@ PAPAYA;
 						}
 					}
 					
-					// switch the view path back to the original, remove package path
-					$this->load->_ci_view_path = $orig_view_path;
-					$this->load->remove_package_path($path.'views/');
+					// remove package path
+					$this->load->remove_package_path($path);
 				}
 			}
 		}

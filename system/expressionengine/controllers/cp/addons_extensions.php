@@ -370,9 +370,7 @@ class Addons_extensions extends CI_Controller {
 			$file = $vars['file'];
 
 			// add the package and view paths
-			$this->load->add_package_path($ext_path);
-			$orig_view_path = $this->load->_ci_view_path;
-			$this->load->_ci_view_path = $ext_path.'/views/';				
+			$this->load->add_package_path($ext_path, FALSE);				
 			
 			// reset view variables
 			$vars  = array('_extension_name' => $name);
@@ -381,8 +379,7 @@ class Addons_extensions extends CI_Controller {
 			// fetch the content
 			$vars['_extension_settings_body'] = $OBJ->settings_form($current);
 
-			// restore our package and view paths
-			$this->load->_ci_view_path = $orig_view_path;
+			// restore our package paths
 			$this->load->remove_package_path($ext_path);
 
 

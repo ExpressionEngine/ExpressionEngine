@@ -96,13 +96,10 @@ class Addons_accessories extends CI_Controller {
 			// add the package and view paths
 			$path = PATH_THIRD.strtolower($name).'/';
 
-			$this->load->add_package_path($path);
-			$orig_view_path = $this->load->_ci_view_path;
-			$this->load->_ci_view_path = $path.'views/';
+			$this->load->add_package_path($path, FALSE);
 			
 			$ACC = new $accessories[$name]['class']();
 
-			$this->load->_ci_view_path = $orig_view_path;
 			$this->load->remove_package_path($path);
 
 			$accessories[$name]['name'] = $ACC->name;
@@ -220,10 +217,7 @@ class Addons_accessories extends CI_Controller {
 		// add the package and view paths
 		$path = PATH_THIRD.strtolower($name).'/';
 		
-		$this->load->add_package_path($path);
-		$orig_view_path = $this->load->_ci_view_path;
-		$this->load->_ci_view_path = $path.'views/';
-		
+		$this->load->add_package_path($path, FALSE);
 		$this->load->library('accessories');
 		
 		$ACC = new $class();
@@ -236,8 +230,7 @@ class Addons_accessories extends CI_Controller {
 		
 		$return = $ACC->$method();
 
-		// switch the view path back to the original, remove package path
-		$this->load->_ci_view_path = $orig_view_path;
+		// remove package path
 		$this->load->remove_package_path($path);
 
 		return $return;

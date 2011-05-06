@@ -389,16 +389,20 @@ class EE_Core {
 	 */	
 	function _initialize_cp()
 	{
-		// set the CP Theme
-		define('PATH_CP_THEME', PATH_THEMES.'cp_themes/');
+		$s = 0;
 		
-		// Define the BASE constant containing the CP URL with the session ID
-		$s = ($this->EE->config->item('admin_session_type') != 'c') ? $this->EE->session->userdata('session_id') : 0;
+		if ($this->EE->config->item('admin_session_type') != 'c')
+		{
+			$s = $this->EE->session->userdata('session_id', 0);
+		}
 		
-		define('BASE', SELF.'?S='.$s.'&amp;D=cp');
+		define('BASE', SELF.'?S='.$s.'&amp;D=cp');			// cp url
+		define('PATH_CP_THEME', PATH_THEMES.'cp_themes/');	// theme path
 		
-		// Show the control panel home page in the event that a controller class isn't found in the URL
-		if ($this->EE->router->fetch_class() == 'ee' OR $this->EE->router->fetch_class() == '')
+		// Show the control panel home page in the event that a
+		// controller class isn't found in the URL
+		if ($this->EE->router->fetch_class() == 'ee' OR
+			$this->EE->router->fetch_class() == '')
 		{
 			$this->EE->functions->redirect(BASE.'&C=homepage');
 		}
@@ -411,43 +415,38 @@ class EE_Core {
 		/*	- use_mobile_control_panel => Automatically use mobile cp theme when accessed with a mobile device? (y/n)
 		/* -------------------------------------------*/
 		
+		$cp_theme		= 'default';
+		$theme_options	= array();
+		
 		if ($this->EE->agent->is_mobile() && $this->EE->config->item('use_mobile_control_panel') != 'n')
 		{
 			// iphone, ipod, blackberry, palm, etc.
 			$agent = array_search($this->EE->agent->mobile(), $this->EE->agent->mobiles);
 			$agent = $this->EE->security->sanitize_filename($agent);
-
-			$cp_theme = (is_dir(PATH_CP_THEME.'mobile_'.$agent)) ? 'mobile_'.$agent : 'mobile';
+			
+			$theme_options = array('mobile_'.$agent, 'mobile');
 		}
 		else
 		{
-			$cp_theme = ( ! $this->EE->session->userdata('cp_theme')) ? $this->EE->config->item('cp_theme') : $this->EE->session->userdata('cp_theme');	
-		}
-		
-		// make sure the theme exists, and shunt to default if it does not
-		// always add default as a fallback.
-		if ($cp_theme == 'default' OR ! is_dir(PATH_CP_THEME.$cp_theme))
-		{
-			$this->EE->load->init_orig_views();
-			$cp_theme = 'default';
-		}
-		else
-		{
-			$this->EE->load->init_orig_views(
-				PATH_CP_THEME.$cp_theme.'/'
+			$theme_options = array(
+				$this->EE->session->userdata('cp_theme'),
+				$this->EE->config->item('cp_theme')
 			);
 		}
 		
-		$this->EE->load->library('view', array(
-				$cp_theme, 
-				$this->EE->load->_ci_view_path,
-				$this->EE->config->slash_item('theme_folder_url')
-			)
-		);
+		// Try them all, if none work it'll use default
+		foreach ($theme_options as $_theme_name)
+		{
+			if (is_dir(PATH_CP_THEME.$_theme_name))
+			{
+				$cp_theme = $_theme_name;
+				break;
+			}
+		}
 		
-		// go ahead and set this so we can use it from here on out
-		$this->EE->session->userdata['cp_theme'] = $cp_theme;
-
+		// Load our view library
+		$this->EE->load->library('view');
+		$this->EE->view->set_cp_theme($cp_theme);
 		
 		// Fetch control panel language file	
 		$this->EE->lang->loadfile('cp');
@@ -460,8 +459,6 @@ class EE_Core {
 		/** ------------------------------------*/
 
 		$this->EE->load->library('logger');
-
-		// Load the NEW control panel display class
 		$this->EE->load->library('cp');
 
 		// Does an admin session exist?
@@ -472,8 +469,7 @@ class EE_Core {
 			// Grab the URL, base64_encode it and send them to the login screen.
 			
 			$safe_refresh = $this->EE->cp->get_safe_refresh();
-			
-			$return_url = ($this->EE->cp->get_safe_refresh() == 'C=homepage') ? '' : AMP.'return='.base64_encode($this->EE->cp->get_safe_refresh());
+			$return_url = ($safe_refresh == 'C=homepage') ? '' : AMP.'return='.base64_encode($safe_refresh);
 			
 			$this->EE->functions->redirect(BASE.AMP.'C=login'.AMP.'M=login_form'.$return_url);
 		}
@@ -483,8 +479,8 @@ class EE_Core {
 		// But only if they are not a Super Admin, as they can not be banned
 		if ($this->EE->session->userdata('group_id') != 1 AND $this->EE->session->ban_check('ip'))
 		{
-			return $this->EE->output->fatal_error($this->EE->lang->line('not_authorized'));
-		}	
+			return $this->EE->output->fatal_error(lang('not_authorized'));
+		}
 		
 		// Request to our css controller don't need any
 		// of the expensive prep work below
@@ -578,8 +574,10 @@ class EE_Core {
 		{
 			require PATH_MOD.'forum/mod.forum.php';
 			$FRM = new Forum();
+			return;
 		}			
-		elseif ( ! IS_FREELANCER && $profile_trigger && $profile_trigger == $this->EE->uri->segment(1))
+		
+		if ( ! IS_FREELANCER && $profile_trigger && $profile_trigger == $this->EE->uri->segment(1))
 		{
 			// We do the same thing with the member profile area.  
 		
@@ -587,65 +585,70 @@ class EE_Core {
 			{
 				exit();
 			}
-			else
-			{
-				require PATH_MOD.'member/mod.member.php';
-				
-				$member = new Member();
-				$member->_set_properties(array('trigger' => $profile_trigger));
-				
-				$this->EE->output->set_output($member->manager());
-			}
+			
+			require PATH_MOD.'member/mod.member.php';
+			
+			$member = new Member();
+			$member->_set_properties(array('trigger' => $profile_trigger));
+			
+			$this->EE->output->set_output($member->manager());
+			return;
 		}
-		else
+
+		// Look for a page in the pages module
+		if ($template_group == '' && $template == '')
 		{
-			// Instantiate the template parsing class and parse the requested template/page
-			if ($template_group == '' && $template == '')
+			$pages		= $this->EE->config->item('site_pages');
+			$site_id	= $this->EE->config->item('site_id');
+			$entry_id	= FALSE;
+			
+			// If we have pages, we'll look for an entry id
+			if ($pages && isset($pages[$site_id]['uris']))
 			{
-				$pages = $this->EE->config->item('site_pages');
-
-				$match_uri = ($this->EE->uri->uri_string == '') ? '/' : '/'.trim($this->EE->uri->uri_string, '/');
-
-				if ($pages !== FALSE && 
-					isset($pages[$this->EE->config->item('site_id')]['uris']) && 
-					(($entry_id = array_search($match_uri, $pages[$this->EE->config->item('site_id')]['uris'])) !== FALSE OR 
-					($entry_id = array_search($match_uri.'/', $pages[$this->EE->config->item('site_id')]['uris'])) !== FALSE))
+				$match_uri = '/'.trim($this->EE->uri->uri_string, '/');	// will result in '/' if uri_string is blank
+				$page_uris = $pages[$site_id]['uris'];
+				
+				$entry_id = array_search($match_uri, $page_uris);
+				
+				if ( ! $entry_id AND $match_uri != '/')
 				{
-
-					$qry = $this->EE->db->select('t.template_name, tg.group_name')
-										->from(array('templates t', 'template_groups tg'))
-										->where('t.group_id', 'tg.group_id', FALSE)
-										->where('t.template_id',
-											$pages[$this->EE->config->item('site_id')]['templates'][$entry_id])
-										->get();
-
-
-					if ($qry->num_rows() > 0)
-					{
-						/* 
-							We do it this way so that we are not messing with 
-							any of the segment variables, which should reflect 
-							the actual URL and not our Pages redirect. We also
-							set a new QSTR variable so that we are not 
-							interfering with other module's besides the Channel 
-							module (which will use the new Pages_QSTR when available).
-						*/
-						$template_group = $qry->row('group_name');
-						$template = $qry->row('template_name');
-						$this->EE->uri->page_query_string = $entry_id;
-					}
+					$entry_id = array_search($match_uri.'/', $page_uris);
 				}
 			}
-
-			require APPPATH.'libraries/Template.php';
-
-			$this->EE->TMPL = new EE_Template();
-
-			// Parse the template
-			$this->EE->TMPL->run_template_engine($template_group, $template);
 			
+			// Found an entry - grab related template
+			if ($entry_id)
+			{
+				$qry = $this->EE->db->select('t.template_name, tg.group_name')
+									->from(array('templates t', 'template_groups tg'))
+									->where('t.group_id', 'tg.group_id', FALSE)
+									->where('t.template_id',
+										$pages[$site_id]['templates'][$entry_id])
+									->get();
+
+				if ($qry->num_rows() > 0)
+				{
+					/* 
+						We do it this way so that we are not messing with 
+						any of the segment variables, which should reflect 
+						the actual URL and not our Pages redirect. We also
+						set a new QSTR variable so that we are not 
+						interfering with other module's besides the Channel 
+						module (which will use the new Pages_QSTR when available).
+					*/
+					$template = $qry->row('template_name');
+					$template_group = $qry->row('group_name');
+					$this->EE->uri->page_query_string = $entry_id;
+				}
+			}
 		}
-		
+
+		require APPPATH.'libraries/Template.php';
+
+		$this->EE->TMPL = new EE_Template();
+
+		// Parse the template
+		$this->EE->TMPL->run_template_engine($template_group, $template);
 	}
 	
 	// ------------------------------------------------------------------------

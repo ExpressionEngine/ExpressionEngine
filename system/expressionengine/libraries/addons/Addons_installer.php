@@ -75,7 +75,7 @@ class Addons_installer {
 			{
 				if ($is_package)
 				{
-					$this->EE->load->add_package_path($this->EE->addons->_packages[$addon][$type]['path']);
+					$this->EE->load->add_package_path($this->EE->addons->_packages[$addon][$type]['path'], FALSE);
 				}
 				
 				$this->$method($addon);
@@ -131,7 +131,7 @@ class Addons_installer {
 			{
 				if ($is_package)
 				{
-					$this->EE->load->add_package_path($this->EE->addons->_packages[$addon][$type]['path']);
+					$this->EE->load->add_package_path($this->EE->addons->_packages[$addon][$type]['path'], FALSE);
 				}
 
 				$this->$method($addon);

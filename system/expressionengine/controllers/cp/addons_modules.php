@@ -309,10 +309,7 @@ class Addons_modules extends CI_Controller {
 		
 		// Add the helper/library load path and temporarily
 		// switch the view path to the module's view folder
-		$this->load->add_package_path($installed[$module]['path']);
-		
-		$orig_view_path = $this->load->_ci_view_path;
-		$this->load->_ci_view_path = MODULE_VIEWS;
+		$this->load->add_package_path($installed[$module]['path'], FALSE);
 
 		// Update Module
 		// Send version to update class and let it do any required work
@@ -358,8 +355,7 @@ class Addons_modules extends CI_Controller {
 		// unset reference
 		unset($this->_mcp_reference);
 
-		// switch the view path back to the original, remove package path
-		$this->load->_ci_view_path = $orig_view_path;
+		// remove package paths
 		$this->load->remove_package_path($installed[$module]['path']);
 
 		$this->javascript->compile();

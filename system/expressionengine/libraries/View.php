@@ -23,21 +23,31 @@
  * @link		http://expressionengine.com
  */
 
-class View  {
+class View {
 
-	protected $_theme		= 'default';
+	protected $_theme = 'default';
 	
-	protected $_view_path 	= NULL;
-	protected $_theme_url	= NULL;
-	protected $_head_link	= NULL;
-	
-	public function __construct($conf)
+	public function __construct()
 	{
 		$this->EE =& get_instance();
+	}
+	
+	// --------------------------------------------------------------------------
+	
+	/**
+	 * Set Theme
+	 */
+	public function set_cp_theme($cp_theme)
+	{
+		if ($cp_theme == 'default')
+		{
+			return;
+		}
 		
-		$this->_theme = $conf[0];
-		$this->_view_path = $conf[1];
-		$this->_theme_url = $conf[2];
+		$this->_theme = $cp_theme;
+		
+		$this->EE->session->userdata['cp_theme'] = $cp_theme;
+		$this->EE->load->add_theme_cascade(PATH_CP_THEME.$cp_theme.'/');
 	}
 	
 	// --------------------------------------------------------------------------

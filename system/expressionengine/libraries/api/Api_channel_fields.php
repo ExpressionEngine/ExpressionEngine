@@ -320,7 +320,7 @@ class Api_channel_fields extends Api {
 		$class		= $this->field_types[$field_type];
 		$_ft_path	= $this->ft_paths[$field_type];
 		
-		$this->EE->load->add_package_path($_ft_path);
+		$this->EE->load->add_package_path($_ft_path, FALSE);
 		
 		$obj = new $class();
 		
@@ -343,16 +343,13 @@ class Api_channel_fields extends Api {
 	 */
 	function apply($method, $parameters = array())
 	{
-		$_old_view_path = $this->EE->load->_ci_view_path;
 		$_ft_path = $this->ft_paths[$this->field_type];
 		
-		$this->EE->load->_ci_view_path = $_ft_path.'views/';
-		$this->EE->load->add_package_path($_ft_path);
+		$this->EE->load->add_package_path($_ft_path, FALSE);
 		
 		$res = call_user_func_array(array(&$this->field_types[$this->field_type], $method), $parameters);
 
 		$this->EE->load->remove_package_path($_ft_path);
-		$this->EE->load->_ci_view_path = $_old_view_path;
 		
 		return $res;
 	}
@@ -665,7 +662,7 @@ class Api_channel_fields extends Api {
 			
 			$mod_base_path = $this->_include_tab_file($directory);
 
-			$this->EE->load->add_package_path($mod_base_path);
+			$this->EE->load->add_package_path($mod_base_path, FALSE);
 
 			$OBJ = new $class_name();
 
@@ -731,7 +728,7 @@ class Api_channel_fields extends Api {
 			
 			$mod_base_path = $this->_include_tab_file($directory);
 
-			$this->EE->load->add_package_path($mod_base_path);
+			$this->EE->load->add_package_path($mod_base_path, FALSE);
 
 			$OBJ = new $class_name();
 
@@ -755,10 +752,6 @@ class Api_channel_fields extends Api {
 						$params[$method] = '';
 					}
 
-					// add the view paths
-					$orig_view_path = $this->EE->load->_ci_view_path;
-					$this->EE->load->_ci_view_path = $mod_base_path.'views/';
-
 					// fetch the content
 					if ($method == 'publish_tabs')
 					{
@@ -774,15 +767,11 @@ class Api_channel_fields extends Api {
 					{
 						$set[$name][$method] = $OBJ->$method($params[$method]);
 					}
-					
-					// restore our package and view paths
-					$this->EE->load->_ci_view_path = $orig_view_path;
-
 				}
 			}
 		
-		// restore our package and view paths
-		$this->EE->load->remove_package_path($mod_base_path);
+			// restore our package and view paths
+			$this->EE->load->remove_package_path($mod_base_path);
 		
 		}
 
