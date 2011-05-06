@@ -946,7 +946,10 @@ class Filemanager {
 	{
 		$k64 = 65536;    // number of bytes in 64K
 
-  		$image_info = @getimagesize($filename);
+  		$image_info = getimagesize($filename);
+
+		// Channel may not be set for pngs - so we default to highest
+		$image_info['channels'] = ( ! isset($image_info['channels'])) ? 4 : $image_info['channels'];
 
 		$memory_needed = round(($image_info[0] * $image_info[1]
 											* $image_info['bits']
