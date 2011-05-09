@@ -103,24 +103,6 @@ class Content_edit extends CI_Controller {
 
 		$cp_theme  = ( ! $this->session->userdata('cp_theme')) ? $this->config->item('cp_theme') : $this->session->userdata('cp_theme');
 
-		if ($this->config->item('kill_all_humans') !== 'disable' && ((mt_rand(0, 5000) == 42 && $this->session->userdata['group_id'] == 1) OR $this->config->item('kill_all_humans')))
-		{
-			$this->load->helper('html');
-			$image_properties = array(
-				'src'		=> base_url()."themes/cp_themes/default/images/".strrev('tobor_rellik').".png",
-				'alt'		=> '',
-				'id'		=> 'extra',
-				'width'		=> '228',
-				'height'	=> '157',
-				'style'		=> 'z-index: 1000; position: absolute; top: 49px; left: 790px'
-			);
-
-			$this->javascript->output(array(
-				'$("#mainMenu").append(\''.img($image_properties).'\')',
-				$this->javascript->animate("#extra", array("left"=>0), 4000, 'function(){$(\'#extra\').fadeOut(3000)}')
-			));
-		}
-
 		// Fetch channel ID numbers assigned to the current user
 		$allowed_channels = $this->functions->fetch_assigned_channels();
 
