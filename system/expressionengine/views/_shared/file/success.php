@@ -35,7 +35,7 @@
 </div> <!-- .success -->
 
 <script>
-	var file = $.parseJSON('<?= $file_json ?>');
+	var file = <?= $file_json ?>;
 	parent.$.ee_fileuploader.after_upload();
 </script>
 

@@ -700,6 +700,9 @@ class Content_files extends CI_Controller {
 	 */
 	public function upload_file()
 	{
+
+		$this->output->enable_profiler(FALSE);
+
 		// Make sure this is a valid form submit
 		if (empty($_POST))
 		{
@@ -766,7 +769,7 @@ class Content_files extends CI_Controller {
 	
 	public function upload_inner()
 	{
-		$this->output->enable_profiler(false);
+		$this->output->enable_profiler(FALSE);
 		
 		$selected_directory_id = ($this->input->get('directory_id')) ? $this->input->get('directory_id') : '';
 		
