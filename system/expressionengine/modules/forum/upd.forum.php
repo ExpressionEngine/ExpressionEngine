@@ -914,6 +914,14 @@ class Forum_upd {
 		{
 			$this->_do_312_update();
 		}
+
+		if ($current < '3.1.3')
+		{
+			// Nothing to see here!
+		}
+		
+		return TRUE;		
+		
 	}
 
 	// --------------------------------------------------------------------
