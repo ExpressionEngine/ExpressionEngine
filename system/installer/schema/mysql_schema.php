@@ -580,6 +580,7 @@ class EE_Schema {
 			 KEY `cat_group` (`cat_group`),
 			 KEY `status_group` (`status_group`),
 			 KEY `field_group` (`field_group`),
+			 KEY `channel_name` (`channel_name`),
 			 KEY `site_id` (`site_id`)
 			)";
 		
@@ -719,6 +720,7 @@ class EE_Schema {
 			 field_settings text NULL,
 			 PRIMARY KEY `field_id` (`field_id`),
 			 KEY `group_id` (`group_id`),
+			 KEY `field_type` (`field_type`),
 			 KEY `site_id` (`site_id`)
 			)";
 		
@@ -984,7 +986,8 @@ class EE_Schema {
 			 hits int(10) unsigned NOT NULL default 0,
 			 PRIMARY KEY `template_id` (`template_id`),
 			 KEY `group_id` (`group_id`),
-			 KEY `site_id` (`site_id`)
+			 KEY `template_name` (`template_name`),
+			 KEY `site_id` (`site_id`)			
 			)"; 
 		
 		// Template "no access"
