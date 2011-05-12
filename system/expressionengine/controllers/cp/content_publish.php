@@ -301,7 +301,7 @@ class Content_publish extends CI_Controller {
 			'current_url'		=> $current_url,
 			'file_list'			=> $this->_file_manager['file_list'],
 			
-			'show_revision_cluster' => FALSE,
+			'show_revision_cluster' => $this->_channel_data['enable_versioning'],
 			'member_groups_laylist'	=> $member_groups_laylist,
 			
 			'hidden_fields'		=> array(
