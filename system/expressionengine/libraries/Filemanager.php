@@ -1769,6 +1769,7 @@ class Filemanager {
 		
 		// Stash upload directory prefs in case
 		$file_data['upload_directory_prefs'] = $dir;
+		$file_data['directory'] = $dir['id'];
 		
 		// Manually create a modified date
 		$file_data['modified_date'] = $this->EE->localize->set_human_time();
