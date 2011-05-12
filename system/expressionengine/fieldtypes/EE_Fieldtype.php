@@ -32,10 +32,10 @@ class EE_Fieldtype {
 	/**
 	 * Constructor
 	 */
-	 // public function __construct()
-	 // {
-	 // 	$this->EE =& get_instance();
-	 // }
+	public function __construct()
+	{
+		$this->EE_Fieldtype();
+	}
 
 	// --------------------------------------------------------------------
 
@@ -49,7 +49,6 @@ class EE_Fieldtype {
 	 */
 	function EE_Fieldtype()
 	{
-		// $this->__construct();
 		$this->EE =& get_instance();
 	}
 	
