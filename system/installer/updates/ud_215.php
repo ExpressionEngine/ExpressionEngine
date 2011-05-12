@@ -497,7 +497,11 @@ class Updater {
 			'modified_date' => array(
 				'type' 				=> 'int',
 				'constraint'		=> 10
-			)
+			),
+			'file_hw_original' => array(
+				'type'				=> 'varchar',
+				'constraint'		=> 20
+			),			
 		);
 		
 		$this->EE->dbforge->add_field($files_fields);
