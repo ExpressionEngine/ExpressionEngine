@@ -185,9 +185,10 @@ class EE_Extensions {
 				$class_name = ucfirst($class);
 				$name = $this->EE->security->sanitize_filename(strtolower(substr($class, 0, -4))); // remove '_ext' suffix
 				
-				$path = $this->EE->addons->_packages[$name]['extension']['path'].'/ext.'.$name.EXT;
+				$path = $this->EE->addons->_packages[$name]['extension']['path'];
+				$extension_path = $path.'/ext.'.$name.'.php';
 
-				if (file_exists($path))
+				if (file_exists($extension_path))
 				{
 					$this->EE->load->add_package_path($path, FALSE);
 				}
@@ -201,7 +202,7 @@ class EE_Extensions {
 				// Include File
 				if ( ! class_exists($class_name))
 				{
-					require $path;
+					require $extension_path;
 				}
 
 				// A Bit of Meta
@@ -294,11 +295,7 @@ class EE_Extensions {
 	 */
 	function active_hook($which)
 	{
-		if (isset($this->extensions[$which])) 
-		{
-			return TRUE;
-		}
-		return FALSE;
+		return (isset($this->extensions[$which])) ? TRUE : FALSE;
 	}
 
 }

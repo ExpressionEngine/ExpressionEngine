@@ -81,9 +81,12 @@ class Addons_extensions extends CI_Controller {
 		$installed_ext_q->free_result();
 		$names = array();
 		$extcount = 1;
-
+		// var_dump($extension_files); exit;
 		foreach($extension_files as $ext_name => $ext)
 		{
+			// Add the package path so things don't hork in the constructor
+			$this->load->add_package_path($ext['path']);
+
 			// Include the file so we can grab its meta data
 			$class_name = $ext['class'];
 			
@@ -148,6 +151,8 @@ class Addons_extensions extends CI_Controller {
 			{
 				$extension_files[$ext_name]['status'] = 'extension_disabled';
 			}
+
+			$this->load->remove_package_path($ext['path']);
 		}
 
 		$vars['extensions_enabled'] = ($this->config->item('allow_extensions') == 'y');
