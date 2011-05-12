@@ -723,11 +723,10 @@ class Filemanager {
 	 */
 	function setup()
 	{
+		$vars = array();
+		
 		if (REQ != 'CP')
 		{
-			$this->EE->load->_ci_view_path = PATH_THEMES.'cp_themes/default/';
-			$vars['cp_theme_url'] = $this->EE->config->slash_item('theme_folder_url').'cp_themes/default/';
-			
 			$this->EE->load->helper('form');
 			$action_id = '';
 			
