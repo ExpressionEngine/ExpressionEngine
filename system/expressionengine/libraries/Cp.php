@@ -737,7 +737,8 @@ class Cp {
 	 */
 	function load_package_js($file)
 	{
-		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $this->EE->load->_ci_view_path), '/');
+		$current_top_path = $this->EE->load->first_package_path();
+		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
 		$this->EE->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'package='.$package.AMP.'file='.$file, TRUE);
 	}
 	
@@ -754,7 +755,8 @@ class Cp {
 	 */
 	function load_package_css($file)
 	{
-		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $this->EE->load->_ci_view_path), '/');
+		$current_top_path = $this->EE->load->first_package_path();
+		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
 		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'file='.$file;
 		
 		$this->add_to_head('<link type="text/css" rel="stylesheet" href="'.$url.'" />');

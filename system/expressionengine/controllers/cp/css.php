@@ -39,33 +39,45 @@ class Css extends CI_Controller {
 		}
 		
 		$file = 'global';
-		$path = $this->load->_ci_view_path;
+		$path = '';
 		
 		if ($this->input->get_post('M') == 'third_party' && $package = $this->input->get_post('package'))
 		{
+			$package = strtolower($package);
+			
 			$file = $this->input->get_post('file');
 			$path = PATH_THIRD.$package.'/';
+			
+			// There's a good chance we don't need ci_view_path
+			// So try this first
+			if (file_exists($path.'css/'.$file.'.css'))
+			{
+				return $this->_load_css_file($path, $file);
+			}
 		}
 		elseif ($this->input->get_post('M') !== FALSE)
 		{
 			$file = $this->input->get_post('M');
 		}
 		
-		// If this is a package request, there's a good chance we don't need 
-		// ci_view_path.  So try this first
-		if (file_exists($path.'css/'.$file.'.css'))
+		
+		$css_paths = array(
+			PATH_CP_THEME.$this->session->userdata('cp_theme').'/',
+			PATH_CP_THEME.'default/'
+		);
+
+		if ($this->session->userdata('cp_theme') == 'default')
 		{
-			return $this->_load_css_file($path, $file);
+			array_shift($css_paths);
 		}
 		
-		if (is_array($this->load->_ci_view_path))
+		foreach ($css_paths as $a_path)
 		{
-			foreach($this->load->_ci_view_path as $path)
+			$path = $a_path.'css/'.$file.'.css';
+			
+			if (file_exists($path))
 			{
-				if (file_exists($path.'css/'.$file.'.css'))
-				{
-					break;
-				}
+				break;
 			}
 		}
 		
@@ -89,8 +101,6 @@ class Css extends CI_Controller {
 			return FALSE;
 		}
 		
-		$this->load->_ci_view_path = $path;
-		
 		$this->output->out_type = 'cp_asset';
 		$this->output->enable_profiler(FALSE);
 
@@ -98,7 +108,7 @@ class Css extends CI_Controller {
 
 		@header('Content-type: text/css');
 
-		$this->load->view('css/'.$file.'.css', '');
+		$this->output->set_output(file_get_contents($path.'css/'.$file.'.css'));
 
 		if ($this->config->item('send_headers') == 'y')
 		{

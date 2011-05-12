@@ -540,9 +540,10 @@ class Safecracker_file_ft extends File_ft
 			}
 		}
 		
-		$temp_view_path = $this->EE->load->_ci_view_path;
 		
-		$this->EE->load->_ci_view_path = PATH_THIRD.'safecracker_file/views/';
+		$_pkg_path = PATH_THIRD.'safecracker_file/views/';
+		
+		$this->EE->load->add_package_path($_pkg_path, FALSE);
 		
 		$this->add_js($this->cell_name == '{DEFAULT}');
 		
@@ -597,8 +598,8 @@ class Safecracker_file_ft extends File_ft
 
 		$view = $this->EE->load->view('display_field', $vars, TRUE);
 		
-		$this->EE->load->_ci_view_path = $temp_view_path;
-		
+		$this->EE->load->remove_package_path($_pkg_path);
+				
 		return $view;
 	}
 	

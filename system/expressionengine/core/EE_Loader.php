@@ -116,6 +116,19 @@ class EE_Loader extends CI_Loader {
 		$this->_ci_view_paths = array($theme_path => TRUE) + $this->_ci_view_paths;
 	}
 	
+	// ------------------------------------------------------------------------	
+	
+	/**
+	 * Get top of package path
+	 *
+	 * We use this to allow package js/css loading, where we need to figure out
+	 * a theme name. May be renamed in the future, don't use it.
+	 */
+	public function first_package_path()
+	{
+		reset($this->_ci_view_paths);
+		return key($this->_ci_view_paths);
+	}
 }
 
 /* End of file EE_Loader.php */
