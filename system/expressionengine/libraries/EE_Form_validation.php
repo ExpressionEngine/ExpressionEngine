@@ -41,6 +41,8 @@ class EE_Form_validation extends CI_Form_validation {
 		)
 		{
 			$this->CI->_mcp_reference->lang =& $this->CI->lang;
+			$this->CI->_mcp_reference->input =& $this->CI->input;
+			$this->CI->_mcp_reference->security =& $this->CI->security;
 			$this->CI =& $this->CI->_mcp_reference;
 		}
 	}
