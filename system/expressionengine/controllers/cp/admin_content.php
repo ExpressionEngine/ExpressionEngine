@@ -4116,27 +4116,24 @@ class Admin_content extends CI_Controller {
 			$error[] = $this->lang->line('site_id_mismatch');
 		}
 
+		// Was a field name supplied?
 		if ($_POST['field_name'] == '')
 		{
 			$error[] = $this->lang->line('no_field_name');
 		}
-		else
+		// Is the field one of the reserved words?
+		else if (in_array($_POST['field_name'], $this->cp->invalid_custom_field_names()))
 		{
-			// Is the field one of the reserved words?
-
-			if (in_array($_POST['field_name'], $this->cp->invalid_custom_field_names()))
-			{
-				$error[] = $this->lang->line('reserved_word');
-			}
+			$error[] = $this->lang->line('reserved_word');
 		}
 
+		// Was a field label supplied?
 		if ($_POST['field_label'] == '')
 		{
 			$error[] = $this->lang->line('no_field_label');
 		}
 
 		// Does field name contain invalid characters?
-
 		if (preg_match('/[^a-z0-9\_\-]/i', $_POST['field_name']))
 		{
 			$error[] = $this->lang->line('invalid_characters').': '.$_POST['field_name'];
@@ -4198,7 +4195,7 @@ class Admin_content extends CI_Controller {
 			'field_text_direction', 'field_search', 'field_is_hidden', 'field_fmt', 'field_show_fmt',
 			'field_order'
 		);
-				
+		
 		$_posted = array();
 		$_field_posted = preg_grep('/^'.$field_type.'_.*/', array_keys($_POST));
 		$_keys = array_merge($native,  $_field_posted);
@@ -4379,15 +4376,12 @@ class Admin_content extends CI_Controller {
 			$insert_id = $this->db->insert_id();
 			$native_settings['field_id'] = $insert_id;
 
-			
 			$this->api_channel_fields->add_datatype(
-									$insert_id, 
-									$native_settings
-				);
-
+				$insert_id, 
+				$native_settings
+			);
 
 			$this->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt'])); 
-
 
 			foreach (array('none', 'br', 'xhtml') as $val)
 			{
@@ -4406,7 +4400,6 @@ class Admin_content extends CI_Controller {
 			);
 			
 			// Add to any custom layouts
-
 			$query = $this->field_model->get_assigned_channels($group_id);
 			
 			if ($query->num_rows() > 0)
