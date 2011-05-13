@@ -101,34 +101,10 @@ class EE_Session {
 	{
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
-		
-		// Is the user banned?
-		// We only look for banned IPs if it's not a control panel request.
-		// We test for banned admins separately in the front controller
-		$ban_status = FALSE;
-		
-		if (REQ != 'CP')
-		{
-			if ($this->ban_check('ip'))
-			{
-				switch ($this->EE->config->item('ban_action'))
-				{
-					case 'message' : return $this->EE->output->fatal_error($this->EE->config->item('ban_message'), 0);
-						break;
-					case 'bounce'  : $this->EE->functions->redirect($this->EE->config->item('ban_destination')); exit;
-						break;
-					default		: $ban_status = TRUE;
-						break;		
-				}
-			}
-		}
 
-		
-		/** --------------------------------------
-		/**  Set session length.
-		/** --------------------------------------*/
-		
-		$this->session_length = (REQ == 'CP') ? $this->cpan_session_len : $this->user_session_len;
+		$ban_status = $this->_do_ban_check();
+
+		$this->session_length = $this->_setup_session_length();
  
 		/** --------------------------------------
 		/**  Set Default Session Values
@@ -561,7 +537,7 @@ class EE_Session {
 			$this->EE->db->update('members', array('last_visit' 	=> $last_act,
 													'last_activity' => $this->EE->localize->now));
 		
-			$this->userdata['last_visit'] = $qry->row('last_activity') ;
+			$this->userdata['last_visit'] = $member_query->row('last_activity') ;
 		}		
 						
 		// Update member 'last activity' date field for this member.
@@ -979,7 +955,8 @@ class EE_Session {
   
 		if ((rand() % 100) < $this->gc_probability) 
 		{
-			$this->EE->db->query("DELETE FROM exp_sessions WHERE last_activity < $expire");			 
+			$this->EE->db->where('last_activity < ', $expire)
+						 ->delete('sessions');
 		}	
 	}
 
@@ -1051,9 +1028,43 @@ class EE_Session {
 		srand(time());
   
 		if ((rand() % 100) < $this->gc_probability) 
-		{				 
-			$this->EE->db->query("DELETE FROM exp_password_lockout WHERE login_date < $expire");			 
+		{
+			$this->EE->db->where('login_date <', $expire)
+						 ->delete('password_lockout');
 		}	
+	}
+
+	// --------------------------------------------------------------------	
+
+	/**
+	 * Do ban Check
+	 *
+	 * @return 	boolean	
+	 */
+	protected function _do_ban_check()
+	{
+		// Is the user banned?
+		// We only look for banned IPs if it's not a control panel request.
+		// We test for banned admins separately in the front controller
+		$ban_status = FALSE;
+		
+		if (REQ != 'CP')
+		{
+			if ($this->ban_check('ip'))
+			{
+				switch ($this->EE->config->item('ban_action'))
+				{
+					case 'message' : return $this->EE->output->fatal_error($this->EE->config->item('ban_message'), 0);
+						break;
+					case 'bounce'  : $this->EE->functions->redirect($this->EE->config->item('ban_destination')); exit;
+						break;
+					default		: $ban_status = TRUE;
+						break;		
+				}
+			}
+		}
+
+		return $ban_status;
 	}
 
 	// --------------------------------------------------------------------	
@@ -1067,6 +1078,27 @@ class EE_Session {
 		$this->sdata['admin_sess'] = 0;
 		$this->sdata['member_id']  = 0;
 	}
+
+	// -------------------------------------------------------------------- 
+
+	/**
+	 * Setup Session Lengths
+	 *
+	 * This method allows the user to specify session TTLs in the config
+	 * file so no 'hacking' of the class properties are needed.
+	 *
+	 * @return 	void
+	 */
+	protected function _setup_session_length()
+	{
+		$u_item = $this->EE->config->item('user_session_ttl');
+		$cp_item = $this->EE->config->item('cp_session_ttl');
+
+		$this->cpan_session_len = ($cp_item) ? $cp_item : $this->cpan_session_len;
+		$this->user_session_len = ($u_item) ? $u_item : $this->user_session_len;
+		
+		$this->session_length = (REQ == 'CP') ? $this->cpan_session_len : $this->user_session_len;
+	}
 	
 	// -------------------------------------------------------------------- 
 
@@ -1079,12 +1111,16 @@ class EE_Session {
 	{
 		// Query DB for member data.  Depending on the validation type we'll
 		// either use the cookie data or the member ID gathered with the session query.
-		$select = 'm.username, m.screen_name, m.member_id, m.email, m.url, m.location, m.join_date, m.last_visit,
-		 			m.last_activity, m.total_entries, m.total_comments, m.total_forum_posts, m.total_forum_topics, 
-					m.last_forum_post_date, m.language, m.timezone, m.daylight_savings, m.time_format, 
-					m.profile_theme, m.forum_theme, m.private_messages, m.accept_messages, m.last_view_bulletins, 
-					m.last_bulletin_date, m.display_signatures, m.display_avatars, m.parse_smileys, 
-					m.last_email_date, m.notify_by_default, m.ignore_list, m.crypt_key';
+		$select = 'm.username, m.screen_name, m.member_id, m.email, m.url, 
+					m.location, m.join_date, m.last_visit, m.last_activity, 
+					m.total_entries, m.total_comments, m.total_forum_posts, 
+					m.total_forum_topics, m.last_forum_post_date, m.language, 
+					m.timezone, m.daylight_savings, m.time_format, 
+					m.profile_theme, m.forum_theme, m.private_messages, 
+					m.accept_messages, m.last_view_bulletins, 
+					m.last_bulletin_date, m.display_signatures, m.display_avatars, 
+					m.parse_smileys, m.last_email_date, m.notify_by_default, 
+					m.ignore_list, m.crypt_key';
 		
 		if (REQ == 'CP')
 		{			
