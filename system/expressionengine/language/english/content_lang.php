@@ -382,7 +382,7 @@ $lang = array(
 
 'publish_layout'	=> 'Publish Layout',
 'save_layout' 		=> 'Save Layout',
-'remove_layout' 	=> 'Remove Layout',
+'remove_layout' 	=> 'Reset Layout',
 'preview_layout' 	=> 'Preview Layout',
 'refresh_layout'	=> 'Refresh Layout',
 
