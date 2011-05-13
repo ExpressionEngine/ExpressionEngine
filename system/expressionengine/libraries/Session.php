@@ -596,6 +596,10 @@ class EE_Session {
 	
 	/**
 	 * Create New Session
+	 *
+	 * @param 	int 		member_id 
+	 * @param 	boolean		admin session or not
+	 * @return 	string 		Session ID
 	 */
 	public function create_new_session($member_id, $admin_session = FALSE)
 	{
@@ -655,10 +659,9 @@ class EE_Session {
 	/**
 	 * Fetch all session data
 	 *
-	 * @access	public
 	 * @return	array
 	 */
-	function all_userdata()
+	public function all_userdata()
 	{
 		return $this->userdata;
 	}
@@ -667,8 +670,12 @@ class EE_Session {
 	
 	/**
 	 * Fetch a session item
+	 *
+	 * @param 	string 		Userdata item to return
+	 * @param 	default 	value returned if the key isn't set
+	 * @return 	mixed 		$default on failure, item on success
 	 */	
-	function userdata($which, $default = FALSE)
+	public function userdata($which, $default = FALSE)
 	{  
 		return ( ! isset($this->userdata[$which])) ? $default : $this->userdata[$which];
 	}
@@ -688,7 +695,9 @@ class EE_Session {
 
 		if ($tracker != FALSE)
 		{
-			if (preg_match("#(http:\/\/|https:\/\/|www\.|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i", $tracker))
+			$regex = "#(http:\/\/|https:\/\/|www\.|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i";
+
+			if (preg_match($regex, $tracker))
 			{
 				return array();
 			}
@@ -711,13 +720,13 @@ class EE_Session {
 			$tracker = array();
 		}
 				
-		$URI = ($this->EE->uri->uri_string == '') ? 'index' : $this->EE->uri->uri_string;
+		$uri = ($this->EE->uri->uri_string == '') ? 'index' : $this->EE->uri->uri_string;
 		
-		$URI = str_replace("\\", "/", $URI); 
+		$uri = str_replace("\\", "/", $uri); 
 		
 		// If someone is messing with the URI we won't set the cookie
 	
-		if ( ! isset($_GET['ACT']) && preg_match('/[^a-z0-9\%\_\/\-]/i', $URI))
+		if ( ! isset($_GET['ACT']) && preg_match('/[^a-z0-9\%\_\/\-]/i', $uri))
 		{
 			return array();
 		}
@@ -726,7 +735,7 @@ class EE_Session {
 		{
 			if ( ! isset($tracker['0']))
 			{
-				$tracker[] = $URI;
+				$tracker[] = $uri;
 			}
 			else
 			{
@@ -735,9 +744,9 @@ class EE_Session {
 					array_pop($tracker);
 				}
 
-				if ($tracker['0'] != $URI)
+				if ($tracker['0'] != $uri)
 				{
-					array_unshift($tracker, $URI);
+					array_unshift($tracker, $uri);
 				}
 			}
 		}
@@ -755,11 +764,10 @@ class EE_Session {
 	/**
 	 * Get flashdata by key
 	 *
-	 * @access	private
 	 * @param	string
 	 * @return	mixed
 	 */
-	function flashdata($key = '')
+	public function flashdata($key = '')
 	{
 		return isset($this->flashdata[$key]) ? $this->flashdata[$key] : FALSE;
 	}
@@ -769,11 +777,10 @@ class EE_Session {
 	/**
 	 * Set flashdata
 	 *
-	 * @access	private
 	 * @param	mixed
 	 * @return	mixed
 	 */
-	function set_flashdata($key, $val = '')
+	public function set_flashdata($key, $val = '')
 	{
 		if ( ! is_array($key))
 		{
@@ -795,10 +802,9 @@ class EE_Session {
 	 *
 	 * Grabs the cookie and validates the signature
 	 *
-	 * @access	private
 	 * @return	void
 	 */
-	function _prep_flashdata()
+	protected function _prep_flashdata()
 	{		
 		if ($cookie = $this->EE->input->cookie('flash'))
 		{
@@ -827,10 +833,9 @@ class EE_Session {
 	 * 
 	 * Removes old, marks current as old, etc
 	 *
-	 * @access	private
 	 * @return	void
 	 */
-	function _age_flashdata()
+	protected function _age_flashdata()
 	{
 		foreach($this->flashdata as $key => $val)
 		{
@@ -924,9 +929,12 @@ class EE_Session {
 				
 		if ($query->num_rows() == 1)
 		{
-			$result = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_ip2nation_countries WHERE code = '".$query->row('country') ."' AND banned = 'y'");
+			$res = $this->EE->db->select("COUNT(*) as count")
+								->where('code', $query->row('country'))
+								->where('banned', 'y')
+								->get('ip2nation_countries');
 			
-			if ($result->row('count')  > 0)
+			if ($res->row('count')  > 0)
 			{
 				if ($show_error == TRUE)
 				{
