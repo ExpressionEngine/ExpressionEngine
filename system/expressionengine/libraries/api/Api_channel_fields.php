@@ -529,7 +529,7 @@ class Api_channel_fields extends Api {
 		// merge in a few variables to the data array
 		$data['field_id'] = $field_id;
 		$data['ee_action'] = 'add';
-						
+		
 		// We have to get the new fields regardless to check whether they were modified
 		$fields = $this->apply('settings_modify_column', array($data));
 		
@@ -555,13 +555,12 @@ class Api_channel_fields extends Api {
 		
 			if ( ! empty($diff1) OR ! empty($diff2))
 			{
-				$modify = TRUE;	
+				$modify = TRUE;
 			}
 		}
 
-
 		// Add any new fields
-		if ($type_change == TRUE or $new == TRUE)
+		if ($type_change == TRUE OR $new == TRUE)
 		{
 			foreach ($fields as $field => $prefs)
 			{
@@ -572,19 +571,26 @@ class Api_channel_fields extends Api {
 						continue;
 					}
 				}
-					
-				$this->EE->dbforge->add_column('channel_data', array($field => $prefs));	
+				
+				$this->EE->dbforge->add_column('channel_data', array($field => $prefs));
+				
+				// Make sure the value is an empty string
+				$this->EE->db->update(
+					'channel_data',
+					array(
+						$field => ''
+					)
+				);
 			}
 		}
-	
 		
 		// And modify any necessary fields
 		if ($modify == TRUE)
 		{
 			$mod['field_id_'.$field_id] = $fields['field_id_'.$field_id];
-			$mod['field_id_'.$field_id]['name'] = 'field_id_'.$field_id;			
+			$mod['field_id_'.$field_id]['name'] = 'field_id_'.$field_id;
 			
-			$this->EE->dbforge->modify_column('channel_data', $mod);	
+			$this->EE->dbforge->modify_column('channel_data', $mod);
 		}
 	}
 
