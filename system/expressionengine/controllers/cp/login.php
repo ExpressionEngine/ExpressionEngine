@@ -661,7 +661,7 @@ class Login extends CI_Controller {
 		$this->db->where('session_id', $this->session->userdata['session_id']);
 		$this->db->delete('sessions');
 		
-		// $this->functions->set_cookie($this->session->c_uniqueid);		
+		$this->functions->set_cookie($this->session->c_uniqueid);		
 		// $this->functions->set_cookie($this->session->c_password);	
 		$this->functions->set_cookie($this->session->c_session);	
 		$this->functions->set_cookie($this->session->c_expire);	
