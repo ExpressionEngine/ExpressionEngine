@@ -260,13 +260,7 @@ class Login extends CI_Controller {
 			}
 		}
 		
-		
-		/** ----------------------------------------
-		/**  Is the user banned?
-		/** ----------------------------------------*/
-		
 		// Super Admins can't be banned
-		
 		if ($query->row('group_id') != 1)
 		{
 			if ($this->session->ban_check())
@@ -275,24 +269,17 @@ class Login extends CI_Controller {
 			}
 		}
 		
-		/** ----------------------------------------
-		/**  Is user allowed to access the CP?
-		/** ----------------------------------------*/
-		
+		// Is user allowed to access the CP?		
 		if ($query->row('can_access_cp') != 'y')
 		{
 			$this->session->set_flashdata('message', lang('not_authorized'));
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
 		
-		/** --------------------------------------------------
-		/**  Do we allow multiple logins on the same account?
-		/** --------------------------------------------------*/
-		
+		// Do we allow multiple logins on the same account?		
 		if ($this->config->item('allow_multi_logins') == 'n')
 		{
 			// Kill old sessions first
-		
 			$this->session->gc_probability = 100;
 			
 			$this->session->delete_old_sessions();
@@ -300,14 +287,12 @@ class Login extends CI_Controller {
 			$expire = time() - $this->session->session_length;
 			
 			// See if there is a current session
-
 			$this->db->select('ip_address, user_agent');
 			$this->db->where('member_id', $query->row('member_id'));
 			$this->db->where('last_activity >', $expire);
 			$result = $this->db->get('sessions');
 
 			// If a session exists, trigger the error message
-								
 			if ($result->num_rows() == 1)
 			{
 				if ($this->session->userdata['ip_address'] != $result->row('ip_address')  OR 
@@ -319,9 +304,7 @@ class Login extends CI_Controller {
 			} 
 		}  
 		
-		/** ----------------------------------------
-		/**  Is the UN/PW the correct length?
-		/** ----------------------------------------*/
+		// Is the UN/PW the correct length?
 		
 		// If the admin has specfified a minimum username or password length that
 		// is longer than the current users's data we'll have them update their info.
@@ -338,10 +321,6 @@ class Login extends CI_Controller {
 		{
 			return $this->_un_pw_update_form();
 		}
-		
-		/** ----------------------------------------
-		/**  Set cookies
-		/** ----------------------------------------*/
 		
 		// Set cookie expiration to one year if the "remember me" button is clicked
 		$expire = ( ! isset($_POST['remember_me'])) ? '0' : 60*60*24*365;
@@ -362,9 +341,7 @@ class Login extends CI_Controller {
 			$this->functions->set_cookie('cp_last_site_id', $this->input->post('site_id'), 0);
 		}
 		
-		/** ----------------------------------------
-		/**  Create a new session
-		/** ----------------------------------------*/
+		// Create a new session
 		$session_id = $this->session->create_new_session($query->row('member_id') , TRUE);
 
 		/* -------------------------------------------
@@ -376,26 +353,19 @@ class Login extends CI_Controller {
 		/*
 		/* -------------------------------------------*/
 			
-		/** ----------------------------------------
-		/**  Log the login
-		/** ----------------------------------------*/
-		
+
+		// Log the login
+				
 		// We'll manually add the username to the Session array so
 		// the LOG class can use it.
 		$this->session->userdata['username'] = $this->input->post('username');
 		
 		$this->logger->log_action(lang('member_logged_in'));
 		
-		/** ----------------------------------------
-		/**  Delete old password lockouts
-		/** ----------------------------------------*/
-		
+		// Delete old password lockouts		
 		$this->session->delete_password_lockout();
 
-		/** ----------------------------------------
-		/**  Redirect the user to the CP home page
-		/** ----------------------------------------*/
-		
+		// Redirect the user to the CP home page		
 		$sess_id = $this->session->sdata['session_id'];
 		
 		if ($this->config->item('admin_session_type') != 'c')
@@ -516,10 +486,7 @@ class Login extends CI_Controller {
 			return $this->_un_pw_update_form(lang('all_fields_required'));
 		}
 		
-		/** ----------------------------------------
-		/**  Check password lockout status
-		/** ----------------------------------------*/
-		
+		// Check password lockout status		
 		if ($this->session->check_password_lockout($this->input->post('username')) === TRUE)
 		{		
 			$line = str_replace("%x", $this->config->item('password_lockout_interval'), lang('password_lockout_in_effect'));	
@@ -527,10 +494,7 @@ class Login extends CI_Controller {
 			return $this->_un_pw_update_form($line);
 		}
 						
-		/** ----------------------------------------
-		/**  Fetch member data
-		/** ----------------------------------------*/
-		
+		// Fetch member data		
 		$this->db->select('member_id, group_id');
 		$this->db->where('username', $this->input->post('username'));
 		$this->db->where('password', do_hash(base64_decode($this->input->post('password'))));
@@ -538,21 +502,15 @@ class Login extends CI_Controller {
 			
 		$member_id = $query->row('member_id') ;
 			
-		/** ----------------------------------------
-		/**  Invalid Username or Password
-		/** ----------------------------------------*/
+		// Invalid Username or Password
 		if ($query->num_rows() == 0)
 		{
 			$this->session->save_password_lockout($this->input->post('username'));
 			return $this->_un_pw_update_form(lang('invalid_existing_un_pw'));
 		}
 		
-		/** ----------------------------------------
-		/**  Is the user banned?
-		/** ----------------------------------------*/
-		
+		// Is the user banned?
 		// Super Admins can't be banned
-		
 		if ($query->row('group_id')  != 1)
 		{
 			if ($this->session->ban_check())
@@ -561,10 +519,7 @@ class Login extends CI_Controller {
 			}
 		}
 				
-		/** -------------------------------------
-		/**  Instantiate validation class
-		/** -------------------------------------*/
-
+		// Instantiate validation class
 		if ( ! class_exists('EE_Validate'))
 		{
 			require APPPATH.'libraries/Validate'.EXT;
@@ -604,20 +559,18 @@ class Login extends CI_Controller {
 			$VAL->validate_password();			
 		}
 		
-		/** -------------------------------------
-		/**  Display error is there are any
-		/** -------------------------------------*/
-		 if (count($VAL->errors) > 0)
-		 {
-		 	$er = '';
-		 	
-		 	foreach ($VAL->errors as $val)
-		 	{
-		 		$er .= $val.BR;
-		 	}
-		
+		// Display error is there are any
+		if (count($VAL->errors) > 0)
+		{
+			$er = '';
+
+			foreach ($VAL->errors as $val)
+			{
+				$er .= $val.BR;
+			}
+
 			return $this->_un_pw_update_form($er);
-		 }
+		}
 		 
 		 
 		if ($un_exists)

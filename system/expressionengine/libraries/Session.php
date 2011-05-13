@@ -105,7 +105,7 @@ class EE_Session {
 		$ban_status = $this->_do_ban_check();
 
 		$this->session_length = $this->_setup_session_length();
- 
+
 		/** --------------------------------------
 		/**  Set Default Session Values
 		/** --------------------------------------*/
@@ -573,7 +573,7 @@ class EE_Session {
 
 		// Update session ID cookie
 		
-		if ($this->validation == 'cs')
+		if ($this->validation != 's')
 		{
 			$this->EE->functions->set_cookie($this->c_session , $this->sdata['session_id'],  $this->session_length);	
 		}
@@ -622,10 +622,9 @@ class EE_Session {
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['site_id']		= $this->EE->config->item('site_id');
 		
-		if ($this->validation != 's')
-		{
-			$this->EE->functions->set_cookie($this->c_session , $this->sdata['session_id'], $this->session_length);	
-		}
+		$this->EE->functions->set_cookie($this->c_session , $this->sdata['session_id'], $this->session_length);	
+
+		// var_dump($this->c_session , $this->sdata['session_id'], $this->session_length, $_COOKIE); exit;
 					
 		$this->EE->db->query($this->EE->db->insert_string('exp_sessions', $this->sdata));	
 		
@@ -1105,7 +1104,7 @@ class EE_Session {
 		$this->cpan_session_len = ($cp_item) ? $cp_item : $this->cpan_session_len;
 		$this->user_session_len = ($u_item) ? $u_item : $this->user_session_len;
 		
-		$this->session_length = (REQ == 'CP') ? $this->cpan_session_len : $this->user_session_len;
+		return (REQ == 'CP') ? $this->cpan_session_len : $this->user_session_len;
 	}
 	
 	// -------------------------------------------------------------------- 
@@ -1119,42 +1118,12 @@ class EE_Session {
 	{
 		// Query DB for member data.  Depending on the validation type we'll
 		// either use the cookie data or the member ID gathered with the session query.
-		$select = 'm.username, m.screen_name, m.member_id, m.email, m.url, 
-					m.location, m.join_date, m.last_visit, m.last_activity, 
-					m.total_entries, m.total_comments, m.total_forum_posts, 
-					m.total_forum_topics, m.last_forum_post_date, m.language, 
-					m.timezone, m.daylight_savings, m.time_format, 
-					m.profile_theme, m.forum_theme, m.private_messages, 
-					m.accept_messages, m.last_view_bulletins, 
-					m.last_bulletin_date, m.display_signatures, m.display_avatars, 
-					m.parse_smileys, m.last_email_date, m.notify_by_default, 
-					m.ignore_list, m.crypt_key';
 		
-		if (REQ == 'CP')
-		{			
-			$select .= ', m.cp_theme, m.quick_links, m.quick_tabs, m.template_size, show_sidebar';
-		}
-		
-		$select .= ', g.*';
-		
-		$this->EE->db->select($select);
-		$this->EE->db->from(array('members m', 'member_groups g'));
-		
-		if ($this->validation == 'c' OR $this->validation == 'cs')
-		{
-			$this->EE->db->where('g.site_id', $this->EE->config->item('site_id'));
-			$this->EE->db->where('unique_id', (string) $this->EE->input->cookie($this->c_uniqueid));
-			// $this->EE->db->where('password', (string) $this->EE->input->cookie($this->c_password));
-			$this->EE->db->where('m.group_id', ' g.group_id', FALSE);
-		}
-		else
-		{
-			$this->EE->db->where('g.site_id', $this->EE->config->item('site_id'));
-			$this->EE->db->where('member_id', $this->sdata['member_id']);
-			$this->EE->db->where('m.group_id', ' g.group_id', FALSE);
-		}
-
-		return $this->EE->db->get();
+		return $this->EE->db->from(array('members m', 'member_groups g'))
+							->where('g.site_id', (int) $this->EE->config->item('site_id'))
+							->where('member_id', (int) $this->sdata['member_id'])
+							->where('m.group_id', ' g.group_id', FALSE)
+							->get();
 	}
 
 	// --------------------------------------------------------------------	
