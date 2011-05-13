@@ -169,10 +169,10 @@
 	 *	1. Call after_upload callback
 	 *	2. Change the class to after_upload
 	 *	3. Establish listeners for the buttons
+	 *
+	 * @param {Object} file Object representing the just uploaded file
 	 */
-	$.ee_fileuploader.after_upload = function() {
-		var file = window.upload_iframe.file;
-		
+	$.ee_fileuploader.after_upload = function(file) {
 		// Call after upload callback
 		if (typeof settings.after_upload == "function") {
 			settings.after_upload.call(this, file_uploader, file);
