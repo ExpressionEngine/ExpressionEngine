@@ -61,7 +61,8 @@ class Login extends CI_Controller {
 	function login_form()
 	{
 		// If an ajax request ends up here the user is probably logged out
-		if ($this->input->server('HTTP_X_REQUESTED_WITH') && ($this->input->server('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'))
+		if ($this->input->server('HTTP_X_REQUESTED_WITH') && 
+			($this->input->server('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'))
 		{
 			$this->output->set_status_header(401);
 			die('C=login');
@@ -158,7 +159,8 @@ class Login extends CI_Controller {
 	
 		if ($this->config->item('require_ip_for_login') == 'y')
 		{
-			if ($this->session->userdata['ip_address'] == '' OR $this->session->userdata['user_agent'] == '')
+			if ($this->session->userdata['ip_address'] == '' OR 
+				$this->session->userdata['user_agent'] == '')
 			{
 				$this->session->set_flashdata('message', lang('unauthorized_request'));
 				$this->functions->redirect(BASE.AMP.'C=login');
