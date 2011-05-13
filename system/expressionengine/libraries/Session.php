@@ -68,7 +68,7 @@ class EE_Session {
 
 	var $c_session			= 'sessionid';
 	var $c_uniqueid			= 'uniqueid';
-	var $c_password			= 'userhash';
+	// var $c_password			= 'userhash';
 	var $c_expire			= 'expiration';
 	var $c_anon				= 'anon';
 	var $c_prefix			= '';
@@ -183,8 +183,8 @@ class EE_Session {
 		/**  Fetch password and unique_id cookies
 		/** --------------------------------------*/
 				
-		if ($this->EE->input->cookie($this->c_uniqueid) && 
-			$this->EE->input->cookie($this->c_password))
+		if ($this->EE->input->cookie($this->c_uniqueid))// && 
+			// $this->EE->input->cookie($this->c_password))
 		{
 			$this->cookies_exist = TRUE;
 		}
@@ -438,7 +438,7 @@ class EE_Session {
 		}
 
 		$member_query = $this->_do_member_query();
-		
+		// var_dump($this->EE->db->last_query()); exit;
 		if ($member_query->num_rows() == 0)
 		{
 			$this->_initialize_session();
@@ -644,7 +644,7 @@ class EE_Session {
 			{ 
 				$this->EE->functions->set_cookie($this->c_expire , time()+$expire, $expire);
 				$this->EE->functions->set_cookie($this->c_uniqueid , $this->EE->input->cookie($this->c_uniqueid), $expire);		
-				$this->EE->functions->set_cookie($this->c_password , $this->EE->input->cookie($this->c_password), $expire); 		
+				// $this->EE->functions->set_cookie($this->c_password , $this->EE->input->cookie($this->c_password), $expire); 		
 
 			}
 		}
@@ -1105,7 +1105,7 @@ class EE_Session {
 	/**
 	 * Perform the big query to grab member data
 	 *
-	 * @return @object 	database result.
+	 * @return 	object 	database result.
 	 */
 	protected function _do_member_query()
 	{
@@ -1131,12 +1131,12 @@ class EE_Session {
 		
 		$this->EE->db->select($select);
 		$this->EE->db->from(array('members m', 'member_groups g'));
-
+		
 		if ($this->validation == 'c' OR $this->validation == 'cs')
 		{
 			$this->EE->db->where('g.site_id', $this->EE->config->item('site_id'));
 			$this->EE->db->where('unique_id', (string) $this->EE->input->cookie($this->c_uniqueid));
-			$this->EE->db->where('password', (string) $this->EE->input->cookie($this->c_password));
+			// $this->EE->db->where('password', (string) $this->EE->input->cookie($this->c_password));
 			$this->EE->db->where('m.group_id', ' g.group_id', FALSE);
 		}
 		else
@@ -1224,9 +1224,9 @@ class EE_Session {
 		
 		if ($res->num_rows() > 0)
 		{
-			foreach ($res->result_array() as $row)
+			foreach ($res->result() as $row)
 			{
-				$assigned_channels[$row['channel_id']] = $row['channel_title'];
+				$assigned_channels[$row->channel_id] = $row->channel_title;
 			}
 		}
 		

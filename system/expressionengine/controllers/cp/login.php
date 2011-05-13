@@ -104,12 +104,9 @@ class Login extends CI_Controller {
 	 */	
 	function authenticate()
 	{	
-		$is_ajax = ($this->input->get_post('is_ajax')) ? TRUE : FALSE;
+		$is_ajax = $this->input->is_ajax_request();
 			
-		/** ----------------------------------------
-		/**  No username/password?  Bounce them...
-		/** ----------------------------------------*/
-	
+		// No username/password?  Bounce them...	
 		if ( ! $this->input->post('username'))
 		{
 			$this->session->set_flashdata('message', lang('no_username'));
@@ -191,7 +188,8 @@ class Login extends CI_Controller {
 		}
 				
 		//  Fetch member data
-		$this->db->select('members.password, members.unique_id, members.member_id, members.group_id, member_groups.can_access_cp');
+		$this->db->select('members.password, members.unique_id, members.member_id, 
+						   members.group_id, member_groups.can_access_cp');
 		$this->db->where('username', $this->input->post('username'));
 		$this->db->where('member_groups.site_id', $this->config->item('site_id'));
 		$this->db->where('members.group_id = '.$this->db->dbprefix('member_groups.group_id'));
@@ -352,7 +350,7 @@ class Login extends CI_Controller {
 		{
 			$this->functions->set_cookie($this->session->c_expire , time()+$expire, $expire);
 			$this->functions->set_cookie($this->session->c_uniqueid , $query->row('unique_id') , $expire);		
-			$this->functions->set_cookie($this->session->c_password , $password,  $expire);	
+			// $this->functions->set_cookie($this->session->c_password , $password,  $expire);	
 			$this->functions->set_cookie($this->session->c_anon , 1,  $expire);
 		}
 		
@@ -384,7 +382,7 @@ class Login extends CI_Controller {
 		
 		// We'll manually add the username to the Session array so
 		// the LOG class can use it.
-		$this->session->userdata['username']  = $this->input->post('username');
+		$this->session->userdata['username'] = $this->input->post('username');
 		
 		$this->logger->log_action(lang('member_logged_in'));
 		
@@ -398,7 +396,6 @@ class Login extends CI_Controller {
 		/**  Redirect the user to the CP home page
 		/** ----------------------------------------*/
 		
-		$base = BASE;
 		$sess_id = $this->session->sdata['session_id'];
 		
 		if ($this->config->item('admin_session_type') != 'c')
@@ -408,11 +405,11 @@ class Login extends CI_Controller {
 		
 		if ($this->input->post('return_path'))
 		{
-			$return_path = $base.AMP.base64_decode($this->input->post('return_path'));
+			$return_path = BASE.AMP.base64_decode($this->input->post('return_path'));
 		}
 		else
 		{
-			$return_path = $base.AMP.'C=homepage';
+			$return_path = BASE.AMP.'C=homepage';
 		}
 		
 		if ($is_ajax)
@@ -448,47 +445,49 @@ class Login extends CI_Controller {
 	{
 		$this->lang->loadfile('member');
 		$this->load->helper('security');
-				
-		$vars['cp_page_title'] = lang('login');
-		
+
 		$uml = $this->config->item('un_min_len');
 		$pml = $this->config->item('pw_min_len');
 		
 		$ulen = strlen($this->input->post('username'));
 		$plen = strlen($this->input->post('password'));
-	
-		$vars['message'] = array();
 		
-		$vars['message'][] = $message;
-		
-		$vars['message'][] = lang('access_notice');
-		$vars['username'] = $this->input->post('username');
-		$vars['new_username_required'] = FALSE;
-		$vars['new_username'] = ($this->input->get_post('new_username') !== FALSE) ? $this->input->get_post('new_username') : '';
-		$vars['password'] = $this->input->post('password');
-		$vars['new_password_required'] = FALSE;
-		$vars['new_password'] = ($this->input->get_post('new_password') !== FALSE) ? $this->input->get_post('new_password') : '';	
-		
-		$vars['hidden'] = array(
-			'username'	=> $this->input->post('username'),
-			'password'	=> base64_encode($this->input->post('password'))
-		);
-		
+		$new_un = ($this->input->get_post('new_username') !== FALSE) ? $this->input->get_post('new_username') : '';
+		$new_pw = ($this->input->get_post('new_password') !== FALSE) ? $this->input->get_post('new_password') : '';
+
+		$data = array(
+			'cp_page_title'	=> lang('login'),
+			'message'		=> array(
+				$message,
+				lang('access_notice')
+			),
+			'username'		=> $this->input->post('username'),
+			'new_username_required'	=> FALSE,
+			'new_username'	=> $new_un,
+			'password'		=> $this->input->post('password'),
+			'new_password_required'	=> FALSE,
+			'new_password'	=> $new_pw,
+			'hidden'		=> array(
+				'username'	=> $this->input->post('username'),
+				'password'	=> base64_encode($this->input->post('password'))
+			)
+		);	
+					
 		if ($ulen < $uml)
 		{
-			$vars['new_username_required'] = TRUE;
-			$vars['notices']['un_len'] = sprintf(lang('un_len'), $uml);
-			$vars['notices']['yun_len'] = sprintf(lang('yun_len'), $ulen);
+			$data['new_username_required'] = TRUE;
+			$data['notices']['un_len'] = sprintf(lang('un_len'), $uml);
+			$data['notices']['yun_len'] = sprintf(lang('yun_len'), $ulen);
 		}
 		
 		if ($plen < $pml)
 		{
-			$vars['new_password_required'] = TRUE;
-			$vars['notices']['pw_len'] = sprintf(lang('pw_len'), $pml);
-			$vars['notices']['ypw_len'] = sprintf(lang('ypw_len'), $plen);
+			$data['new_password_required'] = TRUE;
+			$data['notices']['pw_len'] = sprintf(lang('pw_len'), $pml);
+			$data['notices']['ypw_len'] = sprintf(lang('ypw_len'), $plen);
 		}
 		
-		$this->load->view('account/update_un_pw', $vars);
+		$this->load->view('account/update_un_pw', $data);
 	}
 	
 	// --------------------------------------------------------------------
@@ -590,14 +589,7 @@ class Login extends CI_Controller {
 		
 		if ($this->input->post('new_username') && $this->input->post('new_username') != '')
 		{
-			if ($this->input->post('username') == $new_un)
-			{
-				$un_exists = FALSE;
-			}
-			else
-			{
-				$un_exists = TRUE;
-			}			
+			$un_exists = ($this->input->post('username') == $new_un) ? FALSE : TRUE;
 		}
 		
 		$pw_exists = (isset($_POST['new_password']) AND $_POST['new_password'] != '') ? TRUE : FALSE;
@@ -606,6 +598,7 @@ class Login extends CI_Controller {
 		{
 			$VAL->validate_username();			
 		}
+
 		if ($pw_exists)
 		{
 			$VAL->validate_password();			
@@ -668,8 +661,8 @@ class Login extends CI_Controller {
 		$this->db->where('session_id', $this->session->userdata['session_id']);
 		$this->db->delete('sessions');
 		
-		$this->functions->set_cookie($this->session->c_uniqueid);		
-		$this->functions->set_cookie($this->session->c_password);	
+		// $this->functions->set_cookie($this->session->c_uniqueid);		
+		// $this->functions->set_cookie($this->session->c_password);	
 		$this->functions->set_cookie($this->session->c_session);	
 		$this->functions->set_cookie($this->session->c_expire);	
 		$this->functions->set_cookie($this->session->c_anon);
@@ -890,7 +883,7 @@ class Login extends CI_Controller {
 		// Instantiate the email class
 			 
 		$this->load->library('email');
-		$this->email->wordwrap = true;
+		$this->email->wordwrap = TRUE;
 		$this->email->from($this->config->item('webmaster_email'), $this->config->item('webmaster_name'));
 		$this->email->to($address); 
 		$this->email->subject($message_title);	
