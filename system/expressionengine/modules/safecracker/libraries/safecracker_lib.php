@@ -2010,11 +2010,22 @@ class Safecracker_lib
 
 		// Remove statuses the member does not have access to.
 		// hat tip to @litzinger for the fix.
-		$member_group_id = $this->EE->session->userdata('group_id');
+		if ($this->EE->session->userdata('member_id') != 0)
+		{
+			$member_group_id = $this->EE->session->userdata('group_id');
+		}
+		// In the event the person isn't logged in, figure out what group_id 
+		// we're supposed to be using
+		else
+		{
+			$this->fetch_logged_out_member();
+			$member_group_id = $this->logged_out_group_id;
+		}
+		
 		$no_access = $this->EE->db->where('member_group', $member_group_id)
 								  ->get('status_no_access')
 								  ->result_array();
-        
+
 		$remove = array();
 
 		foreach ($no_access as $no)
