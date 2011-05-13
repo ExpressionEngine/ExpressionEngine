@@ -54,11 +54,10 @@ class Login extends CI_Controller {
 	/**
 	 * Login Form
 	 *
-	 * @access	public
 	 * @param	string
 	 * @return	null
 	 */	
-	function login_form()
+	public function login_form()
 	{
 		// If an ajax request ends up here the user is probably logged out
 		if ($this->input->server('HTTP_X_REQUESTED_WITH') && 
@@ -66,6 +65,13 @@ class Login extends CI_Controller {
 		{
 			$this->output->set_status_header(401);
 			die('C=login');
+		}
+
+		// If the user is already authenticated and has access to the CP,
+		// Let's just shove them to the homepage controller.
+		if ($this->session->userdata('can_access_cp') === 'y')
+		{
+			$this->functions->redirect(BASE.AMP.'C=homepage');
 		}
 		
 		$this->load->helper('form');
@@ -88,8 +94,8 @@ class Login extends CI_Controller {
 			$vars['return_path'] = $this->input->get('return');
 		}
 		
-		$this->cp->set_variable('return_path',		SELF);
-		$this->cp->set_variable('cp_page_title',	lang('login'));
+		$this->cp->set_variable('return_path', SELF);
+		$this->cp->set_variable('cp_page_title', lang('login'));
 
 		$this->load->view('account/login', $vars);
 	}  
@@ -99,10 +105,9 @@ class Login extends CI_Controller {
 	/**
 	 * Authenticate user
 	 *
-	 * @access	public
 	 * @return	mixed
 	 */	
-	function authenticate()
+	public function authenticate()
 	{	
 		$is_ajax = $this->input->is_ajax_request();
 			
@@ -150,10 +155,7 @@ class Login extends CI_Controller {
 		/*
 		/* -------------------------------------------*/
 		
-		/** ----------------------------------------
-		/**  Is IP and User Agent required for login?
-		/** ----------------------------------------*/
-	
+		// Is IP and User Agent required for login?	
 		if ($this->config->item('require_ip_for_login') == 'y')
 		{
 			if ($this->session->userdata['ip_address'] == '' OR 
@@ -164,10 +166,7 @@ class Login extends CI_Controller {
 			}
 		}
 		
-		/** ----------------------------------------
-		/**  Check password lockout status
-		/** ----------------------------------------*/
-		
+		// Check password lockout status
 		if ($this->session->check_password_lockout($username) === TRUE)
 		{
 			$line = lang('password_lockout_in_effect');
@@ -240,10 +239,7 @@ class Login extends CI_Controller {
 			}
 			else
 			{
-				/** ----------------------------------------
-				/**  Invalid password
-				/** ----------------------------------------*/
-					
+				// Invalid password					
 				$this->session->save_password_lockout($username);
 
 				$this->session->set_flashdata('message', lang('credential_missmatch'));
