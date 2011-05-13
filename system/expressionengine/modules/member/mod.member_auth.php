@@ -556,7 +556,7 @@ class Member_auth extends Member {
 
 
 		$this->EE->functions->set_cookie($this->EE->session->c_uniqueid);
-		$this->EE->functions->set_cookie($this->EE->session->c_password);
+		// $this->EE->functions->set_cookie($this->EE->session->c_password);
 		$this->EE->functions->set_cookie($this->EE->session->c_session);
 		$this->EE->functions->set_cookie($this->EE->session->c_expire);
 		$this->EE->functions->set_cookie($this->EE->session->c_anon);
