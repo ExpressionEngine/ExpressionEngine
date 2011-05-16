@@ -1269,12 +1269,13 @@ class Filemanager {
 
 			$thumb_info['thumb']  = (strncmp($directory['url'], '/', 1) === 0) ? $site_url : '';
 			$thumb_info['thumb'] .= $directory['url'].'_thumb/'.$file['file_name'];
-			
+			$thumb_info['thumb_path'] = $directory['server_path'] . '_thumb/' . $file['file_name'];
 			$thumb_info['thumb_class'] = 'image';
 		}
 		else
 		{
 			$thumb_info['thumb'] = PATH_CP_GBL_IMG.'default.png';
+			$thumb_info['thumb_path'] = $directory['server_path'] . $file['file_name'];
 			$thumb_info['thumb_class'] = 'no_image';
 		}
 		
@@ -1360,7 +1361,7 @@ class Filemanager {
 		
 		if (count($delete))
 		{
-			$this->delete(array_keys($delete));
+			$this->file_model->delete_files(array_keys($delete));
 		}
 	}
 	
@@ -1679,12 +1680,9 @@ class Filemanager {
 		// --------------------------------------------------------------------
 		// Upload the file
 		
-		// TODO: Figure out why relative paths don't work
-		
 		$field = ($field_name) ? $field_name : 'userfile';
 		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id']));
 		
-
 		$config = array(
 			'file_name'		=> $clean_filename,
 			'upload_path'	=> $dir['server_path'],
@@ -1711,7 +1709,9 @@ class Filemanager {
 		
 		if ( ! $this->EE->upload->do_upload($field_name))
 		{
-			return array('error' => $this->EE->upload->display_errors());
+			return $this->_upload_error(
+				$this->EE->upload->display_errors()
+			);
 		}
 
 		$file = $this->EE->upload->data();
@@ -1726,9 +1726,13 @@ class Filemanager {
 		// Make sure the file has a valid MIME Type
 		if ( ! $file['file_type'])
 		{
-			// @todo Clean up (unlink, etc)
-			
-			return array('error' => lang('invalid_mime'));
+			return $this->_upload_error(
+				lang('invalid_mime'),
+				array(
+					'file_name'		=> $file['file_name'],
+					'directory_id'	=> $dir['id']
+				)
+			);
 		}
 		
 	
@@ -1758,8 +1762,6 @@ class Filemanager {
 			'file_hw_original'		=> $file['image_height'].' '.$file['image_width']
 		);
 		
-
-		
 		// Save file to database
 		$saved = $this->save_file($file['full_path'], $dir['id'], $file_data);
 		
@@ -1780,12 +1782,43 @@ class Filemanager {
 		// Return errors from the filemanager
 		if ( ! $saved['status'])
 		{
-			return array('error' => $saved['message']);
+			return $this->_upload_error(
+				$saved['message'],
+				array(
+					'file_id' => $file_data['file_id']
+				)
+			);
 		}
 		
 		return $file_data;
 	}
 
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Sends an upload error and delete's the file based upon 
+	 * available information
+	 * 
+	 * @param string $error_message The error message to send
+	 * @param array $file_info Array containing file_id or file_name and directory_id
+	 * @return array Associative array with error message in it
+	 */
+	function _upload_error($error_message, $file_info = array())
+	{
+		if (isset($file_info['file_id']))
+		{
+			$this->EE->load->model('file_model');
+			$this->EE->file_model->delete_files($file_info['file_id']);
+		}
+		else if (isset($file_info['file_name']) AND isset($file_info['directory_id']))
+		{
+			$this->EE->load->model('file_model');
+			$this->EE->file_model->delete_raw_file($file_info['file_name'], $file_info['directory_id']);
+		}
+		
+		return array('error' => $error_message);
+	}
+	
 	// --------------------------------------------------------------------
 
 	/**
@@ -2150,139 +2183,7 @@ class Filemanager {
 		return FALSE;
 	}
 	
-
 	// --------------------------------------------------------------------
-	
-	/**
-	 * Delete files by filename.
-	 *
-	 * Delete files in a single upload location.  This file accepts filenames to delete.
-	 * If the user does not belong to the upload group, an error will be thrown.
-	 *
-	 * @param 	array 		array of files to delete
-	 * @param 	boolean		whether or not to delete thumbnails
-	 * @return 	boolean 	TRUE on success/FALSE on failure
-	 */
-	public function delete_file_names($dir_id, $files = array())
-	{
-		$this->EE->load->model('file_model');
-		$file_ids = array();
-		$file_data = $this->EE->file_model->get_files_by_name($files, array($dir_id));
-
-		foreach ($file_data->result() as $file)
-		{
-			$file_ids[] = $file->file_id;
-		}
-
-		return $this->delete($file_ids);
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Delete files.
-	 *
-	 * Delete files in the upload locations.  This file accepts FileIDs to delete.
-	 * If the user does not belong to the upload group, an error will be thrown.
-	 *
-	 * @param 	array 		array of files to delete
-	 * @param 	boolean		whether or not to delete thumbnails
-	 * @return 	boolean 	TRUE on success/FALSE on failure
-	 */
-	public function delete($files = array(), $find_thumbs = True)
-	{
-		if (empty($files))
-		{
-			return FALSE;
-		}
-		
-		$this->EE->load->model('file_model');		
-		$file_data = $this->EE->file_model->get_files_by_id($files);
-		
-		if ($file_data->num_rows() === 0)
-		{
-			return FALSE;
-		}
-				
-		// store and set free
-		$files = $file_data->result();
-		$file_data->free_result();
-
-		$dir_paths = array();
-		$thumb_sizes = array();
-		$file_dirs = $this->fetch_upload_dirs();
-		
-		// We need to loop twice - first one is for permissions
-		foreach ($files as $file)
-		{
-			$id = $file->upload_location_id;
-			
-			if ( ! isset($dir_paths[$id]))
-			{
-				if ( ! isset($file_dirs[$id]) OR ! $file_dirs[$id])
-				{
-					return FALSE;
-				}
-				
-				$thumb_sizes[$id] = array('thumb');
-				$dir_paths[$id] = $file_dirs[$id]['server_path'];
-			}
-		}
-		
-		// Figure out custom thumb sizes
-		$thumb_query = $this->EE->file_model->get_dimensions_by_dir_id(array_keys($dir_paths));
-		
-		foreach ($thumb_query->result() as $thumbs)
-		{
-			$thumb_sizes[$thumbs->upload_location_id][] = $thumbs->short_name;
-		}
-		
-		
-		// will contain only those that we could actually remove
-		$deleted = array();
-		$delete_problem	= FALSE;	
-		
-		// Second round, remove files
-		foreach ($files as $file)
-		{
-			$server_path = $dir_paths[$file->upload_location_id];
-			
-			// Kill the file
-			if ( ! @unlink($server_path.$file->file_name))
-			{
-				$delete_problem = TRUE;
-			}
-			
-			// And now the thumbs
-			foreach ($thumb_sizes[$file->upload_location_id] as $name)
-			{
-				$thumb = $server_path.'_'.$name.'/'.$file->file_name;
-				if (file_exists($thumb))
-				{
-					@unlink($thumb);
-				}				
-			}
-			
-			// Store for the hook
-			$deleted[] = $file;
-			
-			// Remove 'er from the database
-			$this->EE->db->where('file_id', $file->file_id)->delete('files');
-		}
-		
-		/* -------------------------------------------
-		/* 'files_after_delete' hook.
-		/*  - Add additional processing after file deletion
-		*/
-			$edata = $this->EE->extensions->call('files_after_delete', $deleted);
-			if ($this->EE->extensions->end_script === TRUE) return;
-		/*
-		/* -------------------------------------------*/
-		
-		return ($delete_problem) ? FALSE : TRUE;	
-	}
-
-	// --------------------------------------------------------------------	
 	
 	/**
 	 * Download Files.
@@ -2441,19 +2342,6 @@ class Filemanager {
 
 		return $font_files;
 	}
-	
-	function delete_watermark_prefs($id)
-	{
-		$name = $this->EE->file_model->delete_watermark_preferences($id);
-		
-		// And reset any dimensions using this watermark to 0
-		$this->EE->file_model->update_dimensions(array('watermark_id' => 0), array('watermark_id' => array($id)));
-		
-		return $name;
-	}
-	
-	
-
 }
 
 // END Filemanager class

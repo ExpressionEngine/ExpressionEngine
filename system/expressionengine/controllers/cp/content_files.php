@@ -911,8 +911,9 @@ class Content_files extends CI_Controller {
 			$this->session->set_flashdata('message_failure', lang('choose_file'));
 			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
-
-		$delete = $this->filemanager->delete($files, TRUE);
+		
+		$this->load->model('file_model');
+		$delete = $this->file_model->delete_files($files);
 
 		$message_type = ($delete) ? 'message_success' : 'message_failure';
 		$message = ($delete) ? lang('delete_success') : lang('message_failure');
@@ -2019,7 +2020,7 @@ class Content_files extends CI_Controller {
 		}
 
 
-		$name = $this->filemanager->delete_watermark_prefs($id);
+		$name = $this->file_model->delete_watermark_prefs($id);
 
 		$this->logger->log_action(lang('watermark_pref_deleted').NBS.NBS.$name);
 

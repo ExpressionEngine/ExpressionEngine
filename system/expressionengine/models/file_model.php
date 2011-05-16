@@ -403,7 +403,10 @@ class File_model extends CI_Model {
 		
 		// clean up resized
 		$this->db->where('watermark_id', $id);
-		$this->db->update('file_dimensions', array('watermark_id' => 0));		
+		$this->db->update('file_dimensions', array('watermark_id' => 0));
+		
+		// And reset any dimensions using this watermark to 0
+		$this->update_dimensions(array('watermark_id' => 0), array('watermark_id' => array($id)));
 
 		return $deleting->row('wm_name');
 	}
@@ -567,7 +570,127 @@ class File_model extends CI_Model {
 		return $files;
 	}
 
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Deletes a file that's been stored on the database. Completely removes
+	 * database records and the file itself.
+	 * 
+	 * @param array $file_ids An array of file IDs from exp_files
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function delete_files($file_ids = array())
+	{
+		$return = TRUE;
+		$deleted = array();
+		
+		if ( ! is_array($file_ids))
+		{
+			$file_ids = array($file_ids);
+		}
+		
+		$file_information = $this->get_files_by_id($file_ids);
+		
+		foreach ($file_information->result() as $file) 
+		{			
+			// Store deleted file information for hook
+			$deleted[] = $file;
 
+			// Then delete the raw file
+			$this->delete_raw_file(
+				$file->file_name, 
+				$file->upload_location_id
+			);
+
+			// Remove any related category records
+			$this->load->model('file_category_model');
+			$this->file_category_model->delete_file($file->file_id);
+
+			// Now, we can delete the DB record
+			$this->db->delete('files', array(
+				'file_id' => $file->file_id
+			));
+		}
+		
+		/* -------------------------------------------
+		/* 'files_after_delete' hook.
+		/*  - Add additional processing after file deletion
+		*/
+			$edata = $this->extensions->call('files_after_delete', $deleted);
+			if ($this->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+		
+		return $return;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Delete files by filename.
+	 *
+	 * Delete files in a single upload location.  This file accepts filenames to delete.
+	 * If the user does not belong to the upload group, an error will be thrown.
+	 *
+	 * @param 	array 		array of files to delete
+	 * @param 	boolean		whether or not to delete thumbnails
+	 * @return 	boolean 	TRUE on success/FALSE on failure
+	 */
+	public function delete_files_by_name($dir_id, $files = array())
+	{
+		$file_ids = array();
+		$file_data = $this->get_files_by_name($files, $dir_id);
+
+		foreach ($file_data->result() as $file)
+		{
+			$file_ids[] = $file->file_id;
+		}
+
+		return $this->delete_files($file_ids);
+	}
+	
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Deletes all files associated with a file (source, thumb, and dimensions)
+	 * 
+	 * @param string $file_name The name of the file to delete
+	 * @param integer $directory_id The directory ID where the file is located
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function delete_raw_file($file_name, $directory_id)
+	{
+		$this->load->model('file_upload_preferences_model');
+		$this->load->library('filemanager');
+		
+		// Get the directory's information
+		$upload_dir = $this->file_upload_preferences_model->get_upload_preferences(
+			$this->session->userdata('group_id'),
+			$directory_id
+		);
+		$upload_dir = $upload_dir->row();
+		
+		// Delete the thumb
+		$thumb_information = $this->filemanager->get_thumb($file_name, $directory_id);
+		@unlink($thumb_information['thumb_path']);
+		
+		// Then, delete the dimensions
+		$file_dimensions = $this->get_dimensions_by_dir_id($directory_id);
+		
+		foreach ($file_dimensions->result() as $file_dimension)
+		{
+			@unlink($upload_dir->server_path . '_' . $file_dimension->short_name . '/' . $file_name);
+		}
+		
+		// Finally, delete the original
+		if ( ! @unlink($upload_dir->server_path . $file_name))
+		{
+			return FALSE;
+		}
+		
+		return TRUE;
+	}
 }
 
 /* End of file file_model.php */

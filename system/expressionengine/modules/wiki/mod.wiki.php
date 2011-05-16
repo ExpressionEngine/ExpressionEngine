@@ -920,9 +920,8 @@ class Wiki {
 				if ($query->row('count')  > 0)
 				{
 					// Delete from file system??  Pretty much have to- nuked it
-					$this->EE->load->library('filemanager');
-					
-					$this->EE->filemanager->delete_file_names($this->upload_dir, $topic);
+					$this->EE->load->model('file_model');
+					$this->EE->file_model->delete_files_by_name($this->upload_dir, $topic);
 					
 					// The hook clears out wiki_uploads and the db cache
 
