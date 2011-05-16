@@ -25,9 +25,12 @@
 class Members {
 	
 	
-	var $EE;
+	protected $EE;
 	
-	function __construct()
+	/**
+	 * Constructor
+	 */
+	public function __construct()
 	{
 		$this->EE =& get_instance();
 	}
