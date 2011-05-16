@@ -324,8 +324,6 @@ class Login extends CI_Controller {
 		if ($this->config->item('admin_session_type') != 's')
 		{
 			$this->functions->set_cookie($this->session->c_expire , time()+$expire, $expire);
-			$this->functions->set_cookie($this->session->c_uniqueid , $query->row('unique_id') , $expire);		
-			// $this->functions->set_cookie($this->session->c_password , $password,  $expire);	
 			$this->functions->set_cookie($this->session->c_anon , 1,  $expire);
 		}
 		
@@ -610,7 +608,7 @@ class Login extends CI_Controller {
 		$this->db->where('session_id', $this->session->userdata['session_id']);
 		$this->db->delete('sessions');
 		
-		$this->functions->set_cookie($this->session->c_uniqueid);		
+		// $this->functions->set_cookie($this->session->c_uniqueid);		
 		// $this->functions->set_cookie($this->session->c_password);	
 		$this->functions->set_cookie($this->session->c_session);	
 		$this->functions->set_cookie($this->session->c_expire);	

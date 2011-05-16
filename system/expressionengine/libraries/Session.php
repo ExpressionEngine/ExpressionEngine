@@ -172,9 +172,8 @@ class EE_Session {
 			$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);
 		}
 		
-		// Fetch password and unique_id cookies		
-		if ($this->EE->input->cookie($this->c_uniqueid))// && 
-			// $this->EE->input->cookie($this->c_password))
+		// Does the session id cookie exist?
+		if ($this->EE->input->cookie($this->c_session))
 		{
 			$this->cookies_exist = TRUE;
 		}
@@ -1151,7 +1150,7 @@ class EE_Session {
 		}
 		else
 		{
-			$res = $this->EE->db->select('ew.channel_id, ew.channel_title')
+			$res = $this->EE->db->select('ec.channel_id, ec.channel_title')
 								->from(array('channel_member_groups ecmg', 'channels ec'))
 								->where('ec.channel_id', 'ecmg.channel_id')
 								->where('ecmg.group_id', $this->userdata['group_id'])

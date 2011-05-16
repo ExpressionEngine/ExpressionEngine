@@ -196,12 +196,12 @@ class Member_auth extends Member {
 			$expire = ( ! isset($_POST['auto_login'])) ? '0' : 60*60*24*365;
 
 			// Check Session ID
-
-			$query = $this->EE->db->query("SELECT exp_members.member_id, exp_members.password, exp_members.unique_id
-							FROM		exp_sessions, exp_members
-							WHERE  	exp_sessions.session_id  = '".$this->EE->db->escape_str($this->EE->input->get('multi'))."'
-							AND		exp_sessions.member_id = exp_members.member_id
-							AND		exp_sessions.last_activity > $expire");
+			$query = $this->EE->db->select('m.member_id, m.password, m.unique_id')
+								->from(array('sessions s, members m'))
+								->where('s.session_id', $this->EE->input->get('multi'))
+								->where('s.member_id', 'm.member_id', FALSE)
+								->where('s.last_activity >', $expire)
+								->get();
 
 			if ($query->num_rows() == 0)
 			{
@@ -212,13 +212,7 @@ class Member_auth extends Member {
 
 			$this->EE->functions->set_cookie($this->EE->session->c_anon);
 			$this->EE->functions->set_cookie($this->EE->session->c_expire , time()+$expire, $expire);
-			$this->EE->functions->set_cookie($this->EE->session->c_uniqueid , $query->row('unique_id') , $expire);
-			$this->EE->functions->set_cookie($this->EE->session->c_password , $query->row('password') ,  $expire);
-
-			if ($this->EE->config->item('user_session_type') == 'cs' OR $this->EE->config->item('user_session_type') == 's')
-			{
-				$this->EE->functions->set_cookie($this->EE->session->c_session , $this->EE->input->get('multi'), $this->EE->session->session_length);
-			}
+			$this->EE->functions->set_cookie($this->EE->session->c_session , $this->EE->input->get('multi'), $this->EE->session->session_length);
 
 			// -------------------------------------------
 			// 'member_member_login_multi' hook.
@@ -248,7 +242,9 @@ class Member_auth extends Member {
 
 				if (is_numeric($this->EE->input->get('orig_site_id')))
 				{
-					$query = $this->EE->db->query("SELECT site_name, site_id FROM exp_sites WHERE site_id = '".$this->EE->db->escape_str($this->EE->input->get('orig_site_id'))."'");
+					$query = $this->EE->db->select('site_name, site_id')
+										  ->get_where('sites', 
+										  		array('site_id' => (int) $this->EE->input->get('orig_site_id')));
 
 					if ($query->num_rows() == 1)
 					{
@@ -414,8 +410,8 @@ class Member_auth extends Member {
 		$expire = ( ! isset($_POST['auto_login'])) ? '0' : 60*60*24*365;
 
 		$this->EE->functions->set_cookie($this->EE->session->c_expire , time()+$expire, $expire);
-		$this->EE->functions->set_cookie($this->EE->session->c_uniqueid , $query->row('unique_id') , $expire);
-		$this->EE->functions->set_cookie($this->EE->session->c_password , $password,  $expire);
+		// $this->EE->functions->set_cookie($this->EE->session->c_uniqueid , $query->row('unique_id') , $expire);
+		// $this->EE->functions->set_cookie($this->EE->session->c_password , $password,  $expire);
 
 		// Does the user want to remain anonymous?
 
@@ -555,7 +551,7 @@ class Member_auth extends Member {
 		$this->EE->db->delete('sessions');		
 
 
-		$this->EE->functions->set_cookie($this->EE->session->c_uniqueid);
+		// $this->EE->functions->set_cookie($this->EE->session->c_uniqueid);
 		// $this->EE->functions->set_cookie($this->EE->session->c_password);
 		$this->EE->functions->set_cookie($this->EE->session->c_session);
 		$this->EE->functions->set_cookie($this->EE->session->c_expire);

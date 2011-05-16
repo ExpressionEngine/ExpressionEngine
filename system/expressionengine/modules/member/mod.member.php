@@ -1567,8 +1567,8 @@ class Member {
 
 		$this->EE->db->query("DELETE FROM exp_sessions WHERE session_id = '".$this->EE->session->userdata['session_id']."'");
 
-		$this->EE->functions->set_cookie($this->EE->session->c_uniqueid);
-		$this->EE->functions->set_cookie($this->EE->session->c_password);
+		// $this->EE->functions->set_cookie($this->EE->session->c_uniqueid);
+		// $this->EE->functions->set_cookie($this->EE->session->c_password);
 		$this->EE->functions->set_cookie($this->EE->session->c_session);
 		$this->EE->functions->set_cookie($this->EE->session->c_expire);
 		$this->EE->functions->set_cookie($this->EE->session->c_anon);
@@ -1576,7 +1576,8 @@ class Member {
 		$this->EE->functions->set_cookie('tracker');
 
 		/** -------------------------------------
-		/**  Update		/** -------------------------------------*/
+		/**  Update		
+		/** -------------------------------------*/
 
 		$this->EE->stats->update_member_stats();
 
