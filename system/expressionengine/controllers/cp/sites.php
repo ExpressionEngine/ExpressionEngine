@@ -1829,6 +1829,9 @@ class Sites extends CI_Controller {
 		/**  Delete Channel Custom Field Columns for Site
 		/** -----------------------------------------*/
 		
+		// Save the field ids in an array so we can delete the associated field formats
+		$nuked_field_ids = array();
+		
 		$query = $this->db->query("SELECT field_id, field_type FROM exp_channel_fields 
 							 WHERE site_id = '".$this->db->escape_str($site_id)."'");
 		
@@ -1837,12 +1840,22 @@ class Sites extends CI_Controller {
 			foreach($query->result_array() as $row)
 			{
 				$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_id_".$row['field_id']);
+				$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_ft_".$row['field_id']);
+
+				$nuked_field_ids[] = $row['field_id'];
                 
 				if ($row['field_type'] == 'date')
 				{
 					$this->db->query("ALTER TABLE exp_channel_data DROP COLUMN field_dt_".$row['field_id']);
 				}
 			}
+		}
+		
+		// Delete any related field formatting options
+		if ( ! empty($nuked_field_ids))
+		{
+			$this->db->where_in('field_id', $nuked_field_ids);
+			$this->db->delete('field_formatting');			
 		}
 		
 		/** -----------------------------------------
