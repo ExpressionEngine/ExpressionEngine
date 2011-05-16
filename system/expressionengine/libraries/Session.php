@@ -93,7 +93,8 @@ class EE_Session {
 	var $cache				= array();
 		// Store data for just this page load.  
 		// Multi-dimensional array with module/class name, 
-		//		e.g. $this->EE->session->cache['module']['var_name']
+		//		e.g. $this->cache['module']['var_name']
+		// Use set_cache() and cache() methods.
 
 	var $SID 				= '';
 
@@ -156,7 +157,7 @@ class EE_Session {
 			if ( ! $this->EE->input->get('S'))
 			{
 				// If session IDs are being used in public pages the session will be found here
-			
+				
 				if ($this->SID != '')
 				{
 					$this->sdata['session_id'] = $this->SID;				
@@ -755,6 +756,7 @@ class EE_Session {
 	 * Set Session Cache
 	 *
 	 * This method is a setter for the $cache class variable.
+	 * Note, this is not persistent across requests
 	 *
 	 * @param 	string 	Super Class/Unique Identifier
 	 * @param 	string 	Key for cached item
