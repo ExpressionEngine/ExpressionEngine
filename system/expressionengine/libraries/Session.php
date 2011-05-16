@@ -134,7 +134,7 @@ class EE_Session {
 								'member_id'  	=>  0,
 								'admin_sess' 	=>  0,
 								'ip_address' 	=>  $this->EE->input->ip_address(),
-								'user_agent' 	=>  substr($this->EE->input->user_agent(), 0, 50),
+								'user_agent' 	=>  substr($this->EE->input->user_agent(), 0, 120),
 								'last_activity'	=>  0
 							);
 							
@@ -572,7 +572,7 @@ class EE_Session {
 				
 		$this->sdata['session_id'] 		= $this->EE->functions->random();  
 		$this->sdata['last_activity']	= $this->EE->localize->now;  
-		$this->sdata['user_agent']		= substr($this->EE->input->user_agent(), 0, 50);
+		$this->sdata['user_agent']		= substr($this->EE->input->user_agent(), 0, 120);
 		$this->sdata['ip_address']  	= $this->EE->input->ip_address();  
 		$this->sdata['member_id']  		= $member_id; 
 		$this->sdata['site_id']  		= $this->EE->config->item('site_id'); 
