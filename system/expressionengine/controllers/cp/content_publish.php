@@ -270,7 +270,15 @@ class Content_publish extends CI_Controller {
 		unset($parts['S'], $parts['D']);
 		$current_url = http_build_query($parts, '', '&amp;');
 		
-		$autosave_id = isset($entry_data['autosave_entry_id']) ? $entry_data['autosave_entry_id'] : 0;
+		if ($autosave)
+		{
+			$entry_id = $this->input->post('entry_id');
+			$autosave_id = $this->input->get('entry_id');
+		}
+		else
+		{
+			$autosave_id = isset($entry_data['autosave_entry_id']) ? $entry_data['autosave_entry_id'] : 0;
+		}
 		
 		// Remove 'layout_preview' from the URL, stripping anything after it
 		if (strpos($current_url, 'layout_preview') !== FALSE) 
@@ -307,7 +315,7 @@ class Content_publish extends CI_Controller {
 			// it's the ID in the autosave table
 			
 			'hidden_fields'		=> array(
-				'entry_id'			=> ($autosave) ? $this->input->get('entry_id') : $entry_id,
+				'entry_id'			=> $entry_id,
 				'channel_id'		=> $channel_id,
 				'autosave_entry_id'	=> $autosave_id,
 				'filter'			=> $this->input->get_post('filter')
