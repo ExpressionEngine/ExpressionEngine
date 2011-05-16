@@ -19,7 +19,7 @@ if ($EE_view_disable !== TRUE)
 		
 		<?php $this->load->view('_shared/message');?>
 
-		<div class="publishPageContents">			
+		<div class="publishPageContents">
 
 			<?php if (isset($submission_error)):?>
 				<fieldset class="previewBox" id="previewBox"><legend class="previewItemTitle">&nbsp;<span class='alert'><?=lang('error')?></span>&nbsp;</legend>

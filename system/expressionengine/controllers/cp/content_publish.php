@@ -250,11 +250,10 @@ class Content_publish extends CI_Controller {
 		$this->filemanager->filebrowser('C=content_publish&M=filemanager_actions');
 		
 		$this->cp->add_js_script(array(
-		        'ui'        => array('datepicker', 'resizable', 'draggable', 'droppable'),
-		        'plugin'    => array('markitup', 'toolbox.expose', 'overlay', 'tmpl', 'ee_url_title'),
-				'file'		=> array('json2', 'cp/publish', 'cp/global')
-		    )
-		);
+			'ui'		=> array('datepicker', 'resizable', 'draggable', 'droppable'),
+			'plugin'	=> array('markitup', 'toolbox.expose', 'overlay', 'tmpl', 'ee_url_title'),
+			'file'		=> array('json2', 'cp/publish', 'cp/global')
+		));
 		
 		if ($this->session->userdata('group_id') == 1)
 		{
@@ -304,8 +303,11 @@ class Content_publish extends CI_Controller {
 			'show_revision_cluster' => $this->_channel_data['enable_versioning'],
 			'member_groups_laylist'	=> $member_groups_laylist,
 			
+			// For the autosaves, we're using the GET version of entry_id because
+			// it's the ID in the autosave table
+			
 			'hidden_fields'		=> array(
-				'entry_id'			=> $entry_id,
+				'entry_id'			=> ($autosave) ? $this->input->get('entry_id') : $entry_id,
 				'channel_id'		=> $channel_id,
 				'autosave_entry_id'	=> $autosave_id,
 				'filter'			=> $this->input->get_post('filter')
