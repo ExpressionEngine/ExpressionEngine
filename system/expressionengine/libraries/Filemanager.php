@@ -1764,6 +1764,18 @@ class Filemanager {
 		
 		// Save file to database
 		$saved = $this->save_file($file['full_path'], $dir['id'], $file_data);
+
+		// Return errors from the filemanager
+		if ( ! $saved['status'])
+		{
+			return $this->_upload_error(
+				$saved['message'],
+				array(
+					'file_name'		=> $file['file_name'],
+					'directory_id'	=> $dir['id']
+				)
+			);
+		}
 		
 		// Set file id in return data
 		$file_data['file_id'] = $saved['file_id'];
@@ -1778,17 +1790,6 @@ class Filemanager {
 		// Change file size to human readable
 		$this->EE->load->helper('number');
 		$file_data['file_size'] = byte_format($file_data['file_size']);
-		
-		// Return errors from the filemanager
-		if ( ! $saved['status'])
-		{
-			return $this->_upload_error(
-				$saved['message'],
-				array(
-					'file_id' => $file_data['file_id']
-				)
-			);
-		}
 		
 		return $file_data;
 	}

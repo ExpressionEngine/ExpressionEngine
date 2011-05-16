@@ -2773,8 +2773,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		foreach($query->result() AS $row)
 		{
 			$prefs = array_merge(unserialize(base64_decode($row->site_system_preferences)), $data);
-			
-			$this->site_model->update_site_system_preferences($prefs);
+			$this->site_model->update_site_system_preferences($prefs, $row->site_id);
 		}
 		
 		$this->session->set_flashdata('message_success', $this->lang->line('ban_preferences_updated'));		

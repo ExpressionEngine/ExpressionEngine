@@ -639,7 +639,7 @@ class EE_Menu {
 			{
 				if ( ! $this->EE->cp->allowed_group('can_admin_channels'))
 				{
-					unset($menu['admin']['channel_management']['global_channel_preferences']);
+					unset($menu['admin']['channel_management']);
 					unset($menu['admin']['admin_content']);
 					unset($menu['admin'][0]);	
 				}				
