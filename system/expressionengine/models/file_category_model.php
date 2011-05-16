@@ -66,7 +66,21 @@ class File_category_model extends CI_Model
 		));
 
 		return TRUE;
-	}	
+	}
+	
+	// -----------------------------------------------------------------------
+	
+	/**
+	 * Deletes category records for a specific file_id
+	 *
+	 * @param integer $file_id The ID of the file from exp_files
+	 */
+	public function delete_file($file_id)
+	{
+		$this->db->delete(self::TABLE_NAME, array(
+			'file_id' => $file_id
+		));
+	}
 
 	// -----------------------------------------------------------------------
 
