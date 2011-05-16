@@ -67,7 +67,7 @@ class EE_Session {
 	var $cpan_session_len = 3600;  // Admin sessions expire in one hour
 
 	var $c_session			= 'sessionid';
-	var $c_uniqueid			= 'uniqueid';
+	// var $c_uniqueid			= 'uniqueid';
 	// var $c_password			= 'userhash';
 	var $c_expire			= 'expiration';
 	var $c_anon				= 'anon';
@@ -87,9 +87,13 @@ class EE_Session {
 	var $session_exists		= FALSE;
 	var $access_cp			= FALSE;
 	
-	var $gc_probability		= 5;  // Garbage collection probability.  Used to kill expired sessions.
+	var $gc_probability		= 5;  
+		// Garbage collection probability.  Used to kill expired sessions.
 	
-	var $cache				= array();  // Store data for just this page load.  Multi-dimensional array with module/class name, e.g. $SESS->cache['module']['var_name']
+	var $cache				= array();
+		// Store data for just this page load.  
+		// Multi-dimensional array with module/class name, 
+		//		e.g. $SESS->cache['module']['var_name']
 
 	var $SID 				= '';
 
@@ -99,39 +103,32 @@ class EE_Session {
 	 */
 	public function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
 		$ban_status = $this->_do_ban_check();
 
 		$this->session_length = $this->_setup_session_length();
 
-		/** --------------------------------------
-		/**  Set Default Session Values
-		/** --------------------------------------*/
- 
+		// Set Default Session Values 
 		// Set USER-DATA as GUEST until proven otherwise	
-			 
 		$this->userdata = array(
-								'username'			=> $this->EE->input->cookie('my_name'),
-								'screen_name'		=> '',
-								'email'				=> $this->EE->input->cookie('my_email'),
-								'url'				=> $this->EE->input->cookie('my_url'),
-								'location'			=> $this->EE->input->cookie('my_location'),
-								'language'			=> '',
-								'timezone'			=> ($this->EE->config->item('default_site_timezone') && $this->EE->config->item('default_site_timezone') != '') ? $this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone'),
-								'daylight_savings'  => ($this->EE->config->item('default_site_dst') && $this->EE->config->item('default_site_dst') != '') ? $this->EE->config->item('default_site_dst') : $this->EE->config->item('daylight_savings'),
-								'time_format'		=> ($this->EE->config->item('time_format') && $this->EE->config->item('time_format') != '') ? $this->EE->config->item('time_format') : 'us',
-								'group_id'			=> '3',
-								'access_cp'			=>  0,
-								'last_visit'		=>  0,
-								'is_banned'			=>  $ban_status,
-								'ignore_list'		=>  array()
-								);
-		
+			'username'			=> $this->EE->input->cookie('my_name'),
+			'screen_name'		=> '',
+			'email'				=> $this->EE->input->cookie('my_email'),
+			'url'				=> $this->EE->input->cookie('my_url'),
+			'location'			=> $this->EE->input->cookie('my_location'),
+			'language'			=> '',
+			'timezone'			=> ($this->EE->config->item('default_site_timezone') && $this->EE->config->item('default_site_timezone') != '') ? $this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone'),
+			'daylight_savings'  => ($this->EE->config->item('default_site_dst') && $this->EE->config->item('default_site_dst') != '') ? $this->EE->config->item('default_site_dst') : $this->EE->config->item('daylight_savings'),
+			'time_format'		=> ($this->EE->config->item('time_format') && $this->EE->config->item('time_format') != '') ? $this->EE->config->item('time_format') : 'us',
+			'group_id'			=> '3',
+			'access_cp'			=>  0,
+			'last_visit'		=>  0,
+			'is_banned'			=>  $ban_status,
+			'ignore_list'		=>  array()
+		);
 
 		// Set SESSION data as GUEST until proven otherwise
-				
 		$this->sdata = array(
 								'session_id' 	=>  0,
 								'member_id'  	=>  0,
@@ -152,12 +149,8 @@ class EE_Session {
 		//
 		// -------------------------------------------
 							
-		/** --------------------------------------
-		/**  Fetch the Session ID
-		/** --------------------------------------*/
-		
+		// Fetch the Session ID		
 		// A session ID can either come from a cookie or GET data
-		
 		if ( ! $this->EE->input->cookie($this->c_session))
 		{ 
 			if ( ! $this->EE->input->get('S'))
@@ -179,19 +172,14 @@ class EE_Session {
 			$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);
 		}
 		
-		/** --------------------------------------
-		/**  Fetch password and unique_id cookies
-		/** --------------------------------------*/
-				
+		// Fetch password and unique_id cookies		
 		if ($this->EE->input->cookie($this->c_uniqueid))// && 
 			// $this->EE->input->cookie($this->c_password))
 		{
 			$this->cookies_exist = TRUE;
 		}
 		
-		/** --------------------------------------
-		/**  Set the Validation Type
-		/** --------------------------------------*/
+		// Set the Validation Type
 		if (REQ == 'CP')
 		{
 			$this->validation = ( ! in_array($this->EE->config->item('admin_session_type'), array('cs', 'c', 's'))) ? 'cs' : $this->EE->config->item('admin_session_type');
@@ -201,10 +189,7 @@ class EE_Session {
 			$this->validation = ( ! in_array($this->EE->config->item('user_session_type'), array('cs', 'c', 's'))) ? 'cs' : $this->EE->config->item('user_session_type');
 		}
 				
-		/** --------------------------------------
-		/**  Do session IDs exist?
-		/** --------------------------------------*/
-		
+		// Do session IDs exist?
 		switch ($this->validation)
 		{
 			case 'cs'	: $session_id = ($this->sdata['session_id'] != '0' AND $this->cookies_exist == TRUE) ? TRUE : FALSE;
@@ -215,12 +200,8 @@ class EE_Session {
 				break;
 		}
 		
-		/** --------------------------------------
-		/**  Fetch Session Data
-		/** --------------------------------------*/
-		
+		// Fetch Session Data		
 		// IMPORTANT: The session data must be fetched before the member data so don't move this.
-
 		if ($session_id  === TRUE)
 		{
 			if ($this->fetch_session_data() === TRUE) 
@@ -229,15 +210,10 @@ class EE_Session {
 			}
 		}
 
-		/** --------------------------------------
-		/**  Fetch Member Data
-		/** --------------------------------------*/
+		// Fetch Member Data
 		$member_data_exists = ($this->fetch_member_data() === TRUE) ? TRUE : FALSE;
 
-		/** --------------------------------------
-		/**  Update/Create Session
-		/** --------------------------------------*/
-						
+		// Update/Create Session						
 		if ($session_id === FALSE OR $member_data_exists === FALSE)
 		{ 
 			$this->fetch_guest_data();
@@ -261,31 +237,21 @@ class EE_Session {
 			}
 		}
 		
-		/** --------------------------------------
-		/**  Update cookies
-		/** --------------------------------------*/
-		
+		// Update cookies
 		$this->update_cookies();
 		$this->_prep_flashdata();
 		
 		// Fetch "tracker" cookie
-		
 		if (REQ != 'CP')
 		{					 
 			$this->tracker = $this->tracker();
 		}
 		
-		/** --------------------------------------
-		/**  Kill old sessions
-		/** --------------------------------------*/
+		// Kill old sessions
 		$this->delete_old_sessions(); 
 		
-		/** --------------------------------------
-		/**  Merge Session and User Data Arrays
-		/** --------------------------------------*/
-		
+		// Merge Session and User Data Arrays		
 		// We merge these into into one array for portability
-	
 		$this->userdata = array_merge($this->userdata, $this->sdata);
 		
 		// -------------------------------------------
@@ -398,10 +364,11 @@ class EE_Session {
 		// Has the user been active before? If not we set the "last_activity" to the current time.
 		$this->sdata['last_activity'] = ( ! $this->EE->input->cookie('last_activity')) ? $this->EE->localize->now : $this->EE->input->cookie('last_activity');
 		
-		// Is the "last_visit" cookie set?  If not, we set the last visit date to ten years ago. 
-		// This is a kind of funky thing to do but it enables the forum to show all topics as unread.
-		// Since the last_visit stats are only available for logged-in members it doesn't hurt anything to set it this way for guests.
-		
+		// Is the "last_visit" cookie set?  If not, we set the last visit 
+		// date to ten years ago. This is a kind of funky thing to do but 
+		// it enables the forum to show all topics as unread. Since the 
+		// last_visit stats are only available for logged-in members it 
+		// doesn't hurt anything to set it this way for guests.
 		if ( ! $this->EE->input->cookie('last_visit'))
 		{
 			$this->userdata['last_visit'] = $this->EE->localize->now-($expire*10);
@@ -438,7 +405,7 @@ class EE_Session {
 		}
 
 		$member_query = $this->_do_member_query();
-		// var_dump($this->EE->db->last_query()); exit;
+
 		if ($member_query->num_rows() == 0)
 		{
 			$this->_initialize_session();
@@ -446,7 +413,6 @@ class EE_Session {
 		}
 		
 		// Turn the query rows into array values
-
 		foreach ($member_query->row_array() as $key => $val)
 		{
 			if ($key != 'crypt_key')
@@ -479,10 +445,7 @@ class EE_Session {
 		
 		$this->userdata['display_photos'] = $this->userdata['display_avatars'];
 		
-		/** -----------------------------------------------------
-		/**  Are users allowed to localize?
-		/** -----------------------------------------------------*/
-		
+		//  Are users allowed to localize?
 		if ($this->EE->config->item('allow_member_localization') == 'n')
 		{
 			$this->userdata['timezone'] = ($this->EE->config->item('default_site_timezone') && $this->EE->config->item('default_site_timezone') != '') ? $this->EE->config->item('default_site_timezone') : $this->EE->config->item('server_timezone');
@@ -490,10 +453,7 @@ class EE_Session {
 			$this->userdata['time_format'] = ($this->EE->config->item('time_format') && $this->EE->config->item('time_format') != '') ? $this->EE->config->item('time_format') : 'us';
  		}
 						
-		/** -----------------------------------------------------
-		/**  Assign Sites, Channel, Template, and Module Access Privs
-		/** -----------------------------------------------------*/
-							
+		// Assign Sites, Channel, Template, and Module Access Privs	
 		if (REQ == 'CP')
 		{
 			$this->_setup_channel_privs();
@@ -585,10 +545,9 @@ class EE_Session {
 			$this->sdata['admin_sess'] = 1;
 		}	
 		
-			// We'll unset the "last activity" item from the session data array.
-			// We do this to avoid a conflict with the "last_activity" item in the
-			// userdata array since we'll be merging the two arrays in a later step
-		
+		// We'll unset the "last activity" item from the session data array.
+		// We do this to avoid a conflict with the "last_activity" item in the
+		// userdata array since we'll be merging the two arrays in a later step
 		unset($this->sdata['last_activity']);
 	}  
 
@@ -623,8 +582,6 @@ class EE_Session {
 		$this->userdata['site_id']		= $this->EE->config->item('site_id');
 		
 		$this->EE->functions->set_cookie($this->c_session , $this->sdata['session_id'], $this->session_length);	
-
-		// var_dump($this->c_session , $this->sdata['session_id'], $this->session_length, $_COOKIE); exit;
 					
 		$this->EE->db->query($this->EE->db->insert_string('exp_sessions', $this->sdata));	
 		
@@ -646,9 +603,8 @@ class EE_Session {
 			if ($this->EE->input->cookie($this->c_expire) > $now)
 			{ 
 				$this->EE->functions->set_cookie($this->c_expire , time()+$expire, $expire);
-				$this->EE->functions->set_cookie($this->c_uniqueid , $this->EE->input->cookie($this->c_uniqueid), $expire);		
-				// $this->EE->functions->set_cookie($this->c_password , $this->EE->input->cookie($this->c_password), $expire); 		
-
+				// $this->EE->functions->set_cookie($this->c_uniqueid , $this->EE->input->cookie($this->c_uniqueid), $expire);		
+				// $this->EE->functions->set_cookie($this->c_password , $this->EE->input->cookie($this->c_password), $expire);
 			}
 		}
 	}
@@ -688,7 +644,7 @@ class EE_Session {
 	 * in a cookie.  We use this to facilitate redirection after logging-in,
 	 * or other form submissions
 	 */
-	function tracker()
+	public function tracker()
 	{	
 		$tracker = $this->EE->input->cookie('tracker');
 
@@ -1061,11 +1017,14 @@ class EE_Session {
 			{
 				switch ($this->EE->config->item('ban_action'))
 				{
-					case 'message' : return $this->EE->output->fatal_error($this->EE->config->item('ban_message'), 0);
+					case 'message' : 
+						return $this->EE->output->fatal_error($this->EE->config->item('ban_message'), 0);
 						break;
-					case 'bounce'  : $this->EE->functions->redirect($this->EE->config->item('ban_destination')); exit;
+					case 'bounce'  : 
+						$this->EE->functions->redirect($this->EE->config->item('ban_destination')); exit;
 						break;
-					default		: $ban_status = TRUE;
+					default		: 
+						$ban_status = TRUE;
 						break;		
 				}
 			}
@@ -1078,6 +1037,8 @@ class EE_Session {
 
 	/**
 	 * Reset session data as GUEST
+	 *
+	 * @return 	void
 	 */
 	protected function _initialize_session()
 	{  
