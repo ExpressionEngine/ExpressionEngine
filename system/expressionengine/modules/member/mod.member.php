@@ -423,7 +423,9 @@ class Member {
 	/** ----------------------------------------*/
 	function messages()
 	{
-		if (($this->EE->session->userdata['can_send_private_messages'] != 'y' && $this->EE->session->userdata['group_id'] != '1') OR $this->EE->session->userdata['accept_messages'] != 'y')
+		if (($this->EE->session->userdata('can_send_private_messages') != 'y' && 
+			$this->EE->session->userdata('group_id') != '1') OR 
+			$this->EE->session->userdata('accept_messages') != 'y')
 		{
 			return $this->profile_main();
 		}
@@ -473,7 +475,9 @@ class Member {
 	/** ----------------------------------------*/
 	function pm_menu()
 	{
-		if (($this->EE->session->userdata['can_send_private_messages'] != 'y' && $this->EE->session->userdata['group_id'] != '1') OR $this->EE->session->userdata['accept_messages'] != 'y')
+		if (($this->EE->session->userdata('can_send_private_messages') != 'y' && 
+			$this->EE->session->userdata('group_id') != '1') OR 
+			$this->EE->session->userdata('accept_messages') != 'y')
 		{
 			return;
 		}
@@ -1235,7 +1239,7 @@ class Member {
 
 	function confirm_delete_form()
 	{
-		if ($this->EE->session->userdata['can_delete_self'] !== 'y')
+		if ($this->EE->session->userdata('can_delete_self') !== 'y')
 		{
 			return $this->EE->output->show_user_error('general', $this->EE->lang->line('cannot_delete_self'));
 		}
@@ -1281,7 +1285,7 @@ class Member {
 		/*  after logging out.
 		/* -------------------------------------*/
 
-		if ($this->EE->session->userdata['member_id'] == 0 OR $this->EE->session->userdata['can_delete_self'] !== 'y')
+		if ($this->EE->session->userdata('member_id') == 0 OR $this->EE->session->userdata('can_delete_self') !== 'y')
 		{
 			return $this->EE->output->show_user_error('general', $this->EE->lang->line('not_authorized'));
 		}
@@ -1290,7 +1294,7 @@ class Member {
 		/**  If the user is a SuperAdmin, then no deletion
 		/** -------------------------------------*/
 
-		if ($this->EE->session->userdata['group_id'] == 1)
+		if ($this->EE->session->userdata('group_id') == 1)
 		{
 			return $this->EE->output->show_user_error('general', $this->EE->lang->line('cannot_delete_super_admin'));
 		}
@@ -1301,7 +1305,7 @@ class Member {
 
 		if ($this->EE->config->item('require_ip_for_login') == 'y')
 		{
-			if ($this->EE->session->userdata['ip_address'] == '' OR $this->EE->session->userdata['user_agent'] == '')
+			if ($this->EE->session->userdata('ip_address') == '' OR $this->EE->session->userdata('user_agent') == '')
 			{
 				return $this->EE->output->show_user_error('general', $this->EE->lang->line('unauthorized_request'));
 				}
@@ -1311,7 +1315,7 @@ class Member {
 		/**  Check password lockout status
 		/** ----------------------------------------*/
 
-		if ($this->EE->session->check_password_lockout($this->EE->session->userdata['username']) === TRUE)
+		if ($this->EE->session->check_password_lockout($this->EE->session->userdata('username')) === TRUE)
 		{
 			return $this->EE->output->show_user_error('general', str_replace("%x", $this->EE->config->item('password_lockout_interval'), $this->EE->lang->line('password_lockout_in_effect')));
 		}
@@ -1320,12 +1324,15 @@ class Member {
 		/*  Are you who you say you are, or someone sitting at someone
 		/*  else's computer being mean?!
 		/* -------------------------------------*/
-		$query = $this->EE->db->query("SELECT password FROM exp_members WHERE member_id = '".$this->EE->session->userdata['member_id']."'");
+		$query = $this->EE->db->select('password')
+							  ->where('member_id', $this->EE->session->userdata('member_id'))
+							  ->get('members');
+
 		$password = $this->EE->functions->hash(stripslashes($this->EE->input->post('password')));
 
 		if ($query->row('password')  != $password)
 		{
-			$this->EE->session->save_password_lockout($this->EE->session->userdata['username']);
+			$this->EE->session->save_password_lockout($this->EE->session->userdata('username'));
 
 			return $this->EE->output->show_user_error('general', $this->EE->lang->line('invalid_pw'));
 		}
@@ -1334,17 +1341,17 @@ class Member {
 		/**  No turning back, get to deletin'!
 		/** -------------------------------------*/
 
-		$id = $this->EE->session->userdata['member_id'];
+		$id = $this->EE->session->userdata('member_id');
 
-		$this->EE->db->query("DELETE FROM exp_members WHERE member_id = '{$id}'");
-		$this->EE->db->query("DELETE FROM exp_member_data WHERE member_id = '{$id}'");
-		$this->EE->db->query("DELETE FROM exp_member_homepage WHERE member_id = '{$id}'");
+		$this->EE->db->where('member_id', (int) $id)->delete('members');
+		$this->EE->db->where('member_id', (int) $id)->delete('member_data');
+		$this->EE->db->where('member_id', (int) $id)->delete('member_homepage');
+		$this->EE->db->where('sender_id', (int) $id)->delete('message_copies');
+		$this->EE->db->where('sender_id', (int) $id)->delete('message_data');
+		$this->EE->db->where('sender_id', (int) $id)->delete('message_folders');
+		$this->EE->db->where('sender_id', (int) $id)->delete('message_listed');
 
 		$message_query = $this->EE->db->query("SELECT DISTINCT recipient_id FROM exp_message_copies WHERE sender_id = '{$id}' AND message_read = 'n'");
-		$this->EE->db->query("DELETE FROM exp_message_copies WHERE sender_id = '{$id}'");
-		$this->EE->db->query("DELETE FROM exp_message_data WHERE sender_id = '{$id}'");
-		$this->EE->db->query("DELETE FROM exp_message_folders WHERE member_id = '{$id}'");
-		$this->EE->db->query("DELETE FROM exp_message_listed WHERE member_id = '{$id}'");
 
 		if ($message_query->num_rows() > 0)
 		{
@@ -1361,12 +1368,11 @@ class Member {
 
 		if ($this->EE->config->item('forum_is_installed') == "y")
 		{
-			$this->EE->db->query("DELETE FROM exp_forum_subscriptions  WHERE member_id = '{$id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_pollvotes  WHERE member_id = '{$id}'");
-
-			$this->EE->db->query("DELETE FROM exp_forum_topics WHERE author_id = '{$id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_administrators WHERE admin_member_id = '{$id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_moderators WHERE mod_member_id = '{$id}'");
+			$this->EE->db->where('member_id', (int) $id)->delete('forum_subscriptions');
+			$this->EE->db->where('member_id', (int) $id)->delete('forum_pollvotes');
+			$this->EE->db->where('author_id', (int) $id)->delete('forum_topics');
+			$this->EE->db->where('admin_member_id', (int) $id)->delete('forum_administrators');
+			$this->EE->db->where('mod_member_id', (int) $id)->delete('forum_moderators');
 
 			// Snag the affected topic id's before deleting the member for the update afterwards
 			$query = $this->EE->db->query("SELECT topic_id FROM exp_forum_posts WHERE author_id = '{$id}'");
@@ -1383,9 +1389,8 @@ class Member {
 				$topic_ids = array_unique($topic_ids);
 			}
 
-			$this->EE->db->query("DELETE FROM exp_forum_posts  WHERE author_id = '{$id}'");
-			$this->EE->db->query("DELETE FROM exp_forum_polls  WHERE author_id = '{$id}'");
-
+			$this->EE->db->where('author_id', (int) $id)->delete('forum_posts');
+			$this->EE->db->where('author_id', (int) $id)->delete('forum_polls');
 
 			// Kill any attachments
 			$query = $this->EE->db->query("SELECT attachment_id, filehash, extension, board_id FROM exp_forum_attachments WHERE member_id = '{$id}'");
@@ -1414,7 +1419,8 @@ class Member {
 					@unlink($file);
 					@unlink($thumb);
 
-					$this->EE->db->query("DELETE FROM exp_forum_attachments WHERE attachment_id = '{$row['attachment_id']}'");
+					$this->EE->db->where('attachment_id', (int) $row['attachment_id'])
+								 ->delete('forum_attachments');
 				}
 			}
 
@@ -1512,13 +1518,13 @@ class Member {
 		/** -------------------------------------
 		/**  Email notification recipients
 		/** -------------------------------------*/
-		if ($this->EE->session->userdata['mbr_delete_notify_emails'] != '')
+		if ($this->EE->session->userdata('mbr_delete_notify_emails') != '')
 		{
-			$notify_address = $this->EE->session->userdata['mbr_delete_notify_emails'];
+			$notify_address = $this->EE->session->userdata('mbr_delete_notify_emails');
 
 			$swap = array(
-							'name'				=> $this->EE->session->userdata['screen_name'],
-							'email'				=> $this->EE->session->userdata['email'],
+							'name'				=> $this->EE->session->userdata('screen_name'),
+							'email'				=> $this->EE->session->userdata('email'),
 							'site_name'			=> stripslashes($this->EE->config->item('site_name'))
 						 );
 
@@ -1528,7 +1534,7 @@ class Member {
 			// No notification for the user themselves, if they're in the list
 			if (strpos($notify_address, $this->EE->session->userdata('email')) !== FALSE)
 			{
-				$notify_address = str_replace($this->EE->session->userdata['email'], "", $notify_address);
+				$notify_address = str_replace($this->EE->session->userdata('email'), "", $notify_address);
 			}
 
 			$this->EE->load->helper('string');
@@ -1563,12 +1569,14 @@ class Member {
 		/** -------------------------------------
 		/**  Trash the Session and cookies
 		/** -------------------------------------*/
-		$this->EE->db->query("DELETE FROM exp_online_users WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND ip_address = '".$this->EE->input->ip_address()."' AND member_id = '{$id}'");
+		$this->EE->db->where('site_id', $this->EE->config->item('site_id'))
+					 ->where('ip_address', $this->EE->input->ip_address())
+					 ->where('member_id', (int) $id)
+					 ->delete('online_users');
 
-		$this->EE->db->query("DELETE FROM exp_sessions WHERE session_id = '".$this->EE->session->userdata['session_id']."'");
+		$this->EE->db->where('session_id', $this->EE->session->userdata('session_id'))
+					 ->delete('sessions');
 
-		// $this->EE->functions->set_cookie($this->EE->session->c_uniqueid);
-		// $this->EE->functions->set_cookie($this->EE->session->c_password);
 		$this->EE->functions->set_cookie($this->EE->session->c_session);
 		$this->EE->functions->set_cookie($this->EE->session->c_expire);
 		$this->EE->functions->set_cookie($this->EE->session->c_anon);
@@ -1608,9 +1616,6 @@ class Member {
 	{
 		return $this->profile_login_form();
 	}
-
-
-
 
 	/** ----------------------------------------
 	/**  Manual Login Form
@@ -2358,7 +2363,8 @@ class Member {
 		/**  Parse the self deletion conditional
 		/** -------------------------------------*/
 
-		if ($this->EE->session->userdata['can_delete_self'] == 'y' && $this->EE->session->userdata['group_id'] != 1)
+		if ($this->EE->session->userdata('can_delete_self') == 'y' && 
+			$this->EE->session->userdata('group_id') != 1)
 		{
 			$str = $this->_allow_if('can_delete', $str);
 		}
@@ -2426,7 +2432,7 @@ class Member {
 			$i = 0;
 			foreach ($matches['1'] as $val)
 			{
-				$path = $this->EE->functions->create_url($this->EE->functions->extract_path($val).'/'.$this->EE->session->userdata['member_id']);
+				$path = $this->EE->functions->create_url($this->EE->functions->extract_path($val).'/'.$this->EE->session->userdata('member_id'));
 				$str = preg_replace("#".$matches['0'][$i++]."#", $path, $str, 1);
 			}
 		}
@@ -2644,7 +2650,7 @@ class Member {
 	function custom_profile_data()
 	{
 
-		$member_id = ( ! $this->EE->TMPL->fetch_param('member_id')) ? $this->EE->session->userdata['member_id'] : $this->EE->TMPL->fetch_param('member_id');
+		$member_id = ( ! $this->EE->TMPL->fetch_param('member_id')) ? $this->EE->session->userdata('member_id') : $this->EE->TMPL->fetch_param('member_id');
 
 		/** ----------------------------------------
         /**  Default Member Data
@@ -3044,7 +3050,7 @@ class Member {
 		}
 		else
 		{
-			$ignored = $this->EE->session->userdata['ignore_list'];
+			$ignored = $this->EE->session->userdata('ignore_list');
 		}
 
 		$query = $this->EE->db->query("SELECT m.member_id, m.group_id, m.username, m.screen_name, m.email, m.ip_address, m.location, m.total_entries, m.total_comments, m.private_messages, m.total_forum_topics, m.total_forum_posts AS total_forum_replies, m.total_forum_topics + m.total_forum_posts AS total_forum_posts,
