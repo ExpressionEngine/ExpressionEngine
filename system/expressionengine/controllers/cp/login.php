@@ -60,20 +60,12 @@ class Login extends CI_Controller {
 	public function login_form()
 	{
 		// If an ajax request ends up here the user is probably logged out
-		if ($this->input->server('HTTP_X_REQUESTED_WITH') && 
-			($this->input->server('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'))
+		if ($this->input->is_ajax_request())
 		{
 			$this->output->set_status_header(401);
 			die('C=login');
 		}
 
-		// If the user is already authenticated and has access to the CP,
-		// Let's just shove them to the homepage controller.
-		if ($this->session->userdata('can_access_cp') === 'y')
-		{
-			$this->functions->redirect(BASE.AMP.'C=homepage');
-		}
-		
 		$this->load->helper('form');
 		
 		$username = $this->session->flashdata('username');
