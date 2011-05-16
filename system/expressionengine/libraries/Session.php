@@ -756,7 +756,8 @@ class EE_Session {
 	 *
 	 * This method is a setter for the $cache class variable.
 	 *
-	 * @param 	string 	
+	 * @param 	string 	Super Class/Unique Identifier
+	 * @param 	string 	Key for cached item
 	 * @param 	mixed 	item to put in the cache
 	 * @return 	object
 	 */
@@ -778,8 +779,8 @@ class EE_Session {
 	 *
 	 * This method extracts a value from the session cache.
 	 *
-	 * @param 	string 	Super Class
-	 * @param 	string 	Key to exteract
+	 * @param 	string 	Super Class/Unique Identifier
+	 * @param 	string 	Key to extract from the cache.
 	 * @param 	mixed 	Default value to return if key doesn't exist
 	 * @return 	mixed
 	 */
