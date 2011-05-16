@@ -93,7 +93,7 @@ class EE_Session {
 	var $cache				= array();
 		// Store data for just this page load.  
 		// Multi-dimensional array with module/class name, 
-		//		e.g. $SESS->cache['module']['var_name']
+		//		e.g. $this->EE->session->cache['module']['var_name']
 
 	var $SID 				= '';
 
@@ -749,6 +749,45 @@ class EE_Session {
 		$this->_set_flash_cookie();
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set Session Cache
+	 *
+	 * This method is a setter for the $cache class variable.
+	 *
+	 * @param 	string 	
+	 * @param 	mixed 	item to put in the cache
+	 * @return 	object
+	 */
+	public function set_cache($class, $key, $val)
+	{
+		if ( ! isset($this->cache[$class]))
+		{
+			$this->cache[$class] = array();
+		}
+
+		$this->cache[$class][$key] = $val;
+		return $this;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get Session Cache 
+	 *
+	 * This method extracts a value from the session cache.
+	 *
+	 * @param 	string 	Super Class
+	 * @param 	string 	Key to exteract
+	 * @param 	mixed 	Default value to return if key doesn't exist
+	 * @return 	mixed
+	 */
+	public function cache($class, $key, $default = FALSE)
+	{
+		return (isset($this->cache[$class][$key])) ? $this->cache[$class][$key] : $default; 
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
