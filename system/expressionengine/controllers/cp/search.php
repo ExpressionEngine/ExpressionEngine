@@ -48,7 +48,7 @@ class Search extends CI_Controller {
 		$this->load->helper('html');
 		$this->load->helper('search');
 		
-		$vars['cp_page_title'] = $this->lang->line('search_results');
+		$vars['cp_page_title'] = lang('search_results');
 		$this->cp->set_variable('cp_page_title', $vars['cp_page_title']);
 		
 		// Saved search

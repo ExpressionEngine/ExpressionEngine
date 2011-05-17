@@ -35,7 +35,7 @@ class Tools extends CI_Controller {
 		
 		if ( ! $this->cp->allowed_group('can_access_tools'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('tools');
@@ -51,7 +51,7 @@ class Tools extends CI_Controller {
 	 */	
 	function index()
 	{
-		$this->cp->set_variable('cp_page_title', $this->lang->line('tools'));
+		$this->cp->set_variable('cp_page_title', lang('tools'));
 
 		$this->javascript->compile();
 

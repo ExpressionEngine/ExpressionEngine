@@ -37,7 +37,7 @@ class MyAccount extends CI_Controller {
 
 		if (FALSE === ($this->id = $this->auth_id()))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// Load the language files
@@ -50,7 +50,7 @@ class MyAccount extends CI_Controller {
 
 		if ($query->num_rows() == 0)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if ($this->cp->allowed_group('can_edit_html_buttons'))
@@ -77,7 +77,7 @@ class MyAccount extends CI_Controller {
 	 */
 	function index()
 	{
-		$vars['cp_page_title'] = $this->lang->line('my_account');
+		$vars['cp_page_title'] = lang('my_account');
 
 		$this->javascript->output('');
 
@@ -227,7 +227,7 @@ class MyAccount extends CI_Controller {
 		$this->load->helper('form');
 		$this->load->language('calendar');
 
-		$vars['cp_page_title'] = $this->lang->line('edit_profile');
+		$vars['cp_page_title'] = lang('edit_profile');
 
 		$this->javascript->output('');
 
@@ -253,7 +253,7 @@ class MyAccount extends CI_Controller {
 		// Birthday Options
 		$vars['bday_d_options'] = array();
 
-		$vars['bday_y_options'][''] = $this->lang->line('year');
+		$vars['bday_y_options'][''] = lang('year');
 		
 		for ($i = date('Y', $this->localize->now); $i > 1904; $i--)
 		{
@@ -261,22 +261,22 @@ class MyAccount extends CI_Controller {
 		}
 
 		$vars['bday_m_options'] = array(
-							''	 => $this->lang->line('month'),
-							'01' => $this->lang->line('cal_january'),
-							'02' => $this->lang->line('cal_february'),
-							'03' => $this->lang->line('cal_march'),
-							'04' => $this->lang->line('cal_april'),
-							'05' => $this->lang->line('cal_mayl'),
-							'06' => $this->lang->line('cal_june'),
-							'07' => $this->lang->line('cal_july'),
-							'08' => $this->lang->line('cal_august'),
-							'09' => $this->lang->line('cal_september'),
-							'10' => $this->lang->line('cal_october'),
-							'11' => $this->lang->line('cal_november'),
-							'12' => $this->lang->line('cal_december')
+							''	 => lang('month'),
+							'01' => lang('cal_january'),
+							'02' => lang('cal_february'),
+							'03' => lang('cal_march'),
+							'04' => lang('cal_april'),
+							'05' => lang('cal_mayl'),
+							'06' => lang('cal_june'),
+							'07' => lang('cal_july'),
+							'08' => lang('cal_august'),
+							'09' => lang('cal_september'),
+							'10' => lang('cal_october'),
+							'11' => lang('cal_november'),
+							'12' => lang('cal_december')
 						);
 
-		$vars['bday_d_options'][''] = $this->lang->line('day');
+		$vars['bday_d_options'][''] = lang('day');
 		
 		for ($i = 1; $i <= 31; $i++)
 		{
@@ -354,7 +354,7 @@ class MyAccount extends CI_Controller {
 	{
 		// validate for unallowed blank values
 		if (empty($_POST)) {
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$id = $_POST['id'];
@@ -427,7 +427,7 @@ class MyAccount extends CI_Controller {
 		
 		$id = ($id == '') ? '' : AMP.'id='.$id;
 
-		$this->session->set_flashdata('message_success', $this->lang->line('profile_updated'));
+		$this->session->set_flashdata('message_success', lang('profile_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_profile'.$id);			
 	}
 
@@ -440,7 +440,7 @@ class MyAccount extends CI_Controller {
 	{
 		$this->load->helper(array('form', 'snippets'));
 
-		$vars['cp_page_title'] = $this->lang->line('email_settings');
+		$vars['cp_page_title'] = lang('email_settings');
 
 		$this->javascript->output('');
 
@@ -473,7 +473,7 @@ class MyAccount extends CI_Controller {
 		// validate for unallowed blank values
 		if (empty($_POST)) 
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// if this is a super admin changing stuff, don't worry
@@ -540,7 +540,7 @@ class MyAccount extends CI_Controller {
 
 		$id = ($this->id != $this->session->userdata('member_id')) ? AMP.'id='.$this->id : '';
 
-		$this->session->set_flashdata('message_success', $this->lang->line('settings_updated'));
+		$this->session->set_flashdata('message_success', lang('settings_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=email_settings'.$id);
 	}
 
@@ -553,7 +553,7 @@ class MyAccount extends CI_Controller {
 	{
 		$this->load->helper(array('form', 'snippets'));
 
-		$vars['cp_page_title'] = $this->lang->line('edit_preferences');
+		$vars['cp_page_title'] = lang('edit_preferences');
 
 		$this->javascript->output('');
 
@@ -585,7 +585,7 @@ class MyAccount extends CI_Controller {
 	{
 		// validate for unallowed blank values
 		if (empty($_POST)) {
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$data = array(
@@ -597,7 +597,7 @@ class MyAccount extends CI_Controller {
 
 		$this->member_model->update_member($this->id, $data);
 
-		$this->session->set_flashdata('message_success', $this->lang->line('settings_updated'));
+		$this->session->set_flashdata('message_success', lang('settings_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_preferences'.AMP.'id='.$this->id);
 	}
 
@@ -610,7 +610,7 @@ class MyAccount extends CI_Controller {
 	{
 		$this->load->helper('form');
 
-		$vars['cp_page_title'] = $this->lang->line('username_and_password');
+		$vars['cp_page_title'] = lang('username_and_password');
 		$vars['cp_messages'] = array($message);
 
 		$this->javascript->output('');
@@ -652,7 +652,7 @@ class MyAccount extends CI_Controller {
 		// validate for unallowed blank values
 		if (empty($_POST)) 
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// If the screen name field is empty, we'll assign is from the username field.
@@ -768,11 +768,11 @@ class MyAccount extends CI_Controller {
 		// Write log file
 		$this->logger->log_action($this->VAL->log_msg);
 
-		$message = $this->lang->line('settings_updated');
+		$message = lang('settings_updated');
 
 		if ($pw_change)
 		{
-			$message .= BR.$this->lang->line('password_change_warning');
+			$message .= BR.lang('password_change_warning');
 
 			$this->session->set_flashdata('message_success', $message);
 			$this->functions->redirect(BASE.AMP.'C=login');
@@ -793,7 +793,7 @@ class MyAccount extends CI_Controller {
 		// at least one channel assigned? If not, show the no access message
 		if ( ! $this->cp->allowed_group('can_access_publish') OR ! count($this->functions->fetch_assigned_channels()) > 0)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->helper('form');
@@ -801,7 +801,7 @@ class MyAccount extends CI_Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->model('admin_model');
 
-		$vars['cp_page_title'] = $this->lang->line('ping_servers');
+		$vars['cp_page_title'] = lang('ping_servers');
 		$vars['form_hidden'] = array();
 
 		$ping_servers = $this->admin_model->get_ping_servers($this->id);
@@ -815,7 +815,7 @@ class MyAccount extends CI_Controller {
 		// ping protocols supported (currently only xmlrpc)
 		$vars['protocols'] = array('xmlrpc'=>'xmlrpc');
 
-		$vars['is_default_options'] = array('y'=>$this->lang->line('yes'), 'n'=>$this->lang->line('no'));
+		$vars['is_default_options'] = array('y'=>lang('yes'), 'n'=>lang('no'));
 
 		$i = 1;
 
@@ -886,7 +886,7 @@ class MyAccount extends CI_Controller {
 							$("#ping_server_form").replaceWith($(res).find("#ping_server_form"));
 							setup_js_page();
 
-							$.ee_notice("'.$this->lang->line('preferences_updated').'");
+							$.ee_notice("'.lang('preferences_updated').'");
 						}
 						else {
 							res = eval(\'(\' + res + \')\');
@@ -917,7 +917,7 @@ class MyAccount extends CI_Controller {
 	{
 		// validate for unallowed blank values
 		if (empty($_POST)) {
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('admin_model');
@@ -956,7 +956,7 @@ class MyAccount extends CI_Controller {
 		}
 		else
 		{
-			$this->session->set_flashdata('message_success', $this->lang->line('preferences_updated'));
+			$this->session->set_flashdata('message_success', lang('preferences_updated'));
 			$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=ping_servers');
 		}
 	}
@@ -973,7 +973,7 @@ class MyAccount extends CI_Controller {
 		if ( ! $this->cp->allowed_group('can_access_publish') OR
 			 ! $this->cp->allowed_group('can_edit_html_buttons'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->helper(array('form', 'url'));
@@ -983,7 +983,7 @@ class MyAccount extends CI_Controller {
 
 		$this->load->model('admin_model');
 
-		$vars['cp_page_title'] = $this->lang->line('html_buttons');
+		$vars['cp_page_title'] = lang('html_buttons');
 		$vars['form_hidden'] = array(
 								'button_submit'	=>	TRUE,
 								'id'			=>	$this->id);
@@ -1044,7 +1044,7 @@ class MyAccount extends CI_Controller {
 			
 			// Redirect to remove the button name from the query string.  Reloading the page can lead to
 			// adding buttons you don't want, and that's just ugliness.  
-			$this->session->set_flashdata('message_success', $this->lang->line('html_buttons_updated'));
+			$this->session->set_flashdata('message_success', lang('html_buttons_updated'));
 			$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=html_buttons'.$id);
 		}
 		elseif (is_numeric($this->id) AND $this->id != 0 AND $this->input->post('button_submit') != '')
@@ -1101,7 +1101,7 @@ class MyAccount extends CI_Controller {
 		if ( ! $this->input->get_post('button_id') OR 
 			 ! $this->cp->allowed_group('can_edit_html_buttons')) 
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('admin_model');
@@ -1121,7 +1121,7 @@ class MyAccount extends CI_Controller {
 		// validate for unallowed blank values
 		if (empty($_POST) OR ! $this->cp->allowed_group('can_edit_html_buttons'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		foreach($this->input->post('ajax_tag_order') as $order=>$tag_id)
@@ -1131,7 +1131,7 @@ class MyAccount extends CI_Controller {
 			$this->db->update('html_buttons');
 		}
 
-		$this->output->send_ajax_response($this->lang->line('preferences_updated'));
+		$this->output->send_ajax_response(lang('preferences_updated'));
 	}
 
 	// --------------------------------------------------------------------
@@ -1147,7 +1147,7 @@ class MyAccount extends CI_Controller {
 		$this->load->helper(array('form', 'date'));
 		$this->load->model('admin_model');
 
-		$vars['cp_page_title'] = $this->lang->line('cp_theme');
+		$vars['cp_page_title'] = lang('cp_theme');
 		$this->cp->add_to_head('<meta http-equiv="pragma" content="no-cache">');
 
 		$this->javascript->output('');
@@ -1175,12 +1175,12 @@ class MyAccount extends CI_Controller {
 		// validate for unallowed blank values
 		if (empty($_POST)) 
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->member_model->update_member($this->id, array('cp_theme'=> $this->input->post('cp_theme')));
 
-		$this->session->set_flashdata('message_success', $this->lang->line('preferences_updated'));
+		$this->session->set_flashdata('message_success', lang('preferences_updated'));
 
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=cp_theme'.AMP.'id='.$this->id);
 	}
@@ -1198,7 +1198,7 @@ class MyAccount extends CI_Controller {
 		$this->load->library('members');
 		$this->cp->get_installed_modules();
 
-		$vars['cp_page_title'] = $this->lang->line('subscriptions');
+		$vars['cp_page_title'] = lang('subscriptions');
 		$vars['cp_messages'] = array($message);
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -1238,7 +1238,7 @@ class MyAccount extends CI_Controller {
 
 		if ($query->num_rows() != 1)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$email = $query->row('email') ;
@@ -1281,12 +1281,12 @@ class MyAccount extends CI_Controller {
 
 		if ($query->num_rows() != 1)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// validate for unallowed blank values
 		if (empty($_POST)) {
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$email = $query->row('email');
@@ -1305,7 +1305,7 @@ class MyAccount extends CI_Controller {
 			}
 		}
 
-		$this->subscriptions($this->lang->line('subscriptions_removed'));
+		$this->subscriptions(lang('subscriptions_removed'));
 	}
 
 	// --------------------------------------------------------------------
@@ -1317,17 +1317,17 @@ class MyAccount extends CI_Controller {
 	{
 		if ($this->config->item('allow_member_localization') == 'n' AND $this->session->userdata('group_id') != 1)
 		{
-			show_error($this->lang->line('localization_disallowed'));
+			show_error(lang('localization_disallowed'));
 		}
 
 		$this->load->helper(array('form', 'date'));
 		$this->load->model('language_model');
 
-		$vars['cp_page_title'] = $this->lang->line('localization_settings');
+		$vars['cp_page_title'] = lang('localization_settings');
 
 		if ($this->input->get_post('U'))
 		{
-			$vars['message'] = $this->lang->line('localization_updated');
+			$vars['message'] = lang('localization_updated');
 		}
 
 		$this->javascript->output('');
@@ -1360,8 +1360,8 @@ class MyAccount extends CI_Controller {
 			$vars['time_format'] = ($this->config->item('time_format') && $this->config->item('time_format') != '') ? $this->config->item('time_format') : 'us';
 		}		
 
-		$vars['time_format_options']['us'] = $this->lang->line('united_states');
-		$vars['time_format_options']['eu'] = $this->lang->line('european');
+		$vars['time_format_options']['us'] = lang('united_states');
+		$vars['time_format_options']['eu'] = lang('european');
 		
 		$vars['daylight_savings_y'] = ($vars['daylight_savings'] == 'y') ? TRUE : FALSE;
 		$vars['daylight_savings_n'] = ($vars['daylight_savings'] == 'y') ? FALSE : TRUE;
@@ -1385,12 +1385,12 @@ class MyAccount extends CI_Controller {
 	{
 		if ($this->config->item('allow_member_localization') == 'n' AND $this->session->userdata('group_id') != 1)
 		{
-			show_error($this->lang->line('localization_disallowed'));
+			show_error(lang('localization_disallowed'));
 		}
 
 		// validate for unallowed blank values
 		if (empty($_POST)) {
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('site_model');
@@ -1402,7 +1402,7 @@ class MyAccount extends CI_Controller {
 
 		if ( ! is_dir(APPPATH.'language/'.$data['language']))
 		{
-			show_error($this->lang->line('localization_disallowed'));
+			show_error(lang('localization_disallowed'));
 		}
 
 		$this->member_model->update_member($this->id, $data);
@@ -1425,7 +1425,7 @@ class MyAccount extends CI_Controller {
 			$this->site_model->update_site_system_preferences($prefs, $this->config->item('site_id'));
 		}
 
-		$this->session->set_flashdata('message_success', $this->lang->line('settings_updated'));
+		$this->session->set_flashdata('message_success', lang('settings_updated'));
 
 
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=localization'.AMP.'id='.$this->id.AMP.'U=1');
@@ -1440,7 +1440,7 @@ class MyAccount extends CI_Controller {
 	{
 		$this->load->helper('form');
 
-		$vars['cp_page_title'] = $this->lang->line('edit_signature');
+		$vars['cp_page_title'] = lang('edit_signature');
 
 		$this->javascript->output('');
 
@@ -1462,7 +1462,7 @@ class MyAccount extends CI_Controller {
 			$max_kb = ($this->config->item('sig_img_max_kb') == '' OR $this->config->item('sig_img_max_kb') == 0) ? 50 : $this->config->item('sig_img_max_kb');
 			$max_w	= ($this->config->item('sig_img_max_width') == '' OR $this->config->item('sig_img_max_width') == 0) ? 100 : $this->config->item('sig_img_max_width');
 			$max_h	= ($this->config->item('sig_img_max_height') == '' OR $this->config->item('sig_img_max_height') == 0) ? 100 : $this->config->item('sig_img_max_height');
-			$vars['max_size'] = str_replace('%x', $max_w, $this->lang->line('max_image_size'));
+			$vars['max_size'] = str_replace('%x', $max_w, lang('max_image_size'));
 			$vars['max_size'] = str_replace('%y', $max_h, $vars['max_size']);
 			$vars['max_size'] .= ' - '.$max_kb.'KB';
 
@@ -1470,12 +1470,12 @@ class MyAccount extends CI_Controller {
 
 			if ($query->row('sig_img_filename')	 == '')
 			{
-				$vars['sig_img_filename'] = $this->lang->line('no_image_exists');
+				$vars['sig_img_filename'] = lang('no_image_exists');
 			}
 			else
 			{
 				$vars['sig_image_remove'] = TRUE;
-				$vars['sig_img_filename'] = '<img src="'.$this->config->slash_item('sig_img_url').$query->row('sig_img_filename') .'" border="0" width="'.$query->row('sig_img_width') .'" height="'.$query->row('sig_img_height') .'" title="'.$this->lang->line('signature_image').'"	 alt="'.$this->lang->line('signature_image').'" />';
+				$vars['sig_img_filename'] = '<img src="'.$this->config->slash_item('sig_img_url').$query->row('sig_img_filename') .'" border="0" width="'.$query->row('sig_img_width') .'" height="'.$query->row('sig_img_height') .'" title="'.lang('signature_image').'"	 alt="'.lang('signature_image').'" />';
 			}
 		}
 
@@ -1495,7 +1495,7 @@ class MyAccount extends CI_Controller {
 
 		if (strlen($signature) > $maxlength)
 		{
-			show_error(str_replace('%x', $maxlength, $this->lang->line('sig_too_big')));
+			show_error(str_replace('%x', $maxlength, lang('sig_too_big')));
 		}
 
 		$this->member_model->update_member($this->id, array('signature' => $signature));
@@ -1508,7 +1508,7 @@ class MyAccount extends CI_Controller {
 		
 		$id = ($this->input->get_post('id')) ? AMP.'id='.$this->input->get_post('id') : '';
 
-		$this->session->set_flashdata('message_success', $this->lang->line('signature_updated'));
+		$this->session->set_flashdata('message_success', lang('signature_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature'.$id);
 	}
 
@@ -1522,13 +1522,13 @@ class MyAccount extends CI_Controller {
 		// Are avatars enabled?
 		if ($this->config->item('enable_avatars') == 'n')
 		{
-			show_error($this->lang->line('avatars_not_enabled'));
+			show_error(lang('avatars_not_enabled'));
 		}
 
 		$this->load->helper('form');
 		$this->load->language('number');
 
-		$vars['cp_page_title'] = $this->lang->line('edit_avatar');
+		$vars['cp_page_title'] = lang('edit_avatar');
 		
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -1547,7 +1547,7 @@ class MyAccount extends CI_Controller {
 			{
 				// there ain't no avatar
 				$vars['avatar'] = sprintf(
-					$this->lang->line('no_user_avatar'),
+					lang('no_user_avatar'),
 					$member_avatar->row('screen_name')
 				);
 				
@@ -1558,7 +1558,7 @@ class MyAccount extends CI_Controller {
 				$cur_avatar_url = ($member_avatar->row('avatar_filename') != '') ? $this->config->slash_item('avatar_url').$member_avatar->row('avatar_filename') : '';
 				$avatar_width   = $member_avatar->row('avatar_filename') ? $member_avatar->row('avatar_width') : '';
 				$avatar_height  = $member_avatar->row('avatar_filename') ? $member_avatar->row('avatar_height') : '';
-				$vars['avatar'] = '<img src="'.$cur_avatar_url.'" border="0" width="'.$avatar_width.'" height="'.$avatar_height.'" alt="'.$this->lang->line('my_avatar').'" title="'.$this->lang->line('my_avatar').'" />';
+				$vars['avatar'] = '<img src="'.$cur_avatar_url.'" border="0" width="'.$avatar_width.'" height="'.$avatar_height.'" alt="'.lang('my_avatar').'" title="'.lang('my_avatar').'" />';
 			}
 		}
 		else
@@ -1572,11 +1572,11 @@ class MyAccount extends CI_Controller {
 			
 			if ( ! $cur_avatar_url)
 			{
-				$vars['avatar'] = $this->lang->line('no_avatar');
+				$vars['avatar'] = lang('no_avatar');
 			}
 			else
 			{
-				$vars['avatar'] = '<img src="'.$cur_avatar_url.'" border="0" width="'.$avatar_width.'" height="'.$avatar_height.'" alt="'.$this->lang->line('my_avatar').'" title="'.$this->lang->line('my_avatar').'" />';
+				$vars['avatar'] = '<img src="'.$cur_avatar_url.'" border="0" width="'.$avatar_width.'" height="'.$avatar_height.'" alt="'.lang('my_avatar').'" title="'.lang('my_avatar').'" />';
 			}			
 		}
 
@@ -1604,9 +1604,9 @@ class MyAccount extends CI_Controller {
 		$max_kb = ($this->config->item('avatar_max_kb') == '' OR $this->config->item('avatar_max_kb') == 0) ? 50 : $this->config->item('avatar_max_kb');
 		$max_w	= ($this->config->item('avatar_max_width') == '' OR $this->config->item('avatar_max_width') == 0) ? 100 : $this->config->item('avatar_max_width');
 		$max_h	= ($this->config->item('avatar_max_height') == '' OR $this->config->item('avatar_max_height') == 0) ? 100 : $this->config->item('avatar_max_height');
-		$vars['max_size'] = str_replace('%x', $max_w, $this->lang->line('max_image_size'));
+		$vars['max_size'] = str_replace('%x', $max_w, lang('max_image_size'));
 		$vars['max_size'] = str_replace('%y', $max_h, $vars['max_size']);
-		$vars['max_size'] .= ' - '.$max_kb.$this->lang->line('kilobyte_abbr');
+		$vars['max_size'] .= ' - '.$max_kb.lang('kilobyte_abbr');
 
 		$vars['avatar_image_remove'] = ($this->config->item('allow_avatar_uploads') == 'y' AND $cur_avatar_url != '') ? TRUE : FALSE;
 
@@ -1624,13 +1624,13 @@ class MyAccount extends CI_Controller {
 		// Are avatars enabled?
 		if ($this->config->item('enable_photos') == 'n')
 		{
-			show_error($this->lang->line('photos_not_enabled'));
+			show_error(lang('photos_not_enabled'));
 		}
 
 		$this->load->helper('form');
 		$this->load->language('number');
 
-		$vars['cp_page_title'] = $this->lang->line('edit_photo');
+		$vars['cp_page_title'] = lang('edit_photo');
 		$vars['cp_messages'] = array($message);
 
 		$this->javascript->output('');
@@ -1649,14 +1649,14 @@ class MyAccount extends CI_Controller {
 			$cur_photo_url = '';
 			$photo_width	= '';
 			$photo_height	= '';
-			$vars['photo'] = $this->lang->line('no_photo_exists');
+			$vars['photo'] = lang('no_photo_exists');
 		}
 		else
 		{
 			$cur_photo_url = $this->config->slash_item('photo_url').$query->row('photo_filename') ;
 			$photo_width	= $query->row('photo_width') ;
 			$photo_height	= $query->row('photo_height') ;
-			$vars['photo'] = '<img src="'.$cur_photo_url.'" border="0" width="'.$photo_width.'" height="'.$photo_height.'" alt="'.$this->lang->line('my_photo').'" title="'.$this->lang->line('my_photo').'" />';
+			$vars['photo'] = '<img src="'.$cur_photo_url.'" border="0" width="'.$photo_width.'" height="'.$photo_height.'" alt="'.lang('my_photo').'" title="'.lang('my_photo').'" />';
 		}
 
 		// Set the default image meta values
@@ -1664,9 +1664,9 @@ class MyAccount extends CI_Controller {
 		$max_kb = ($this->config->item('photo_max_kb') == '' OR $this->config->item('photo_max_kb') == 0) ? 50 : $this->config->item('photo_max_kb');
 		$max_w	= ($this->config->item('photo_max_width') == '' OR $this->config->item('photo_max_width') == 0) ? 100 : $this->config->item('photo_max_width');
 		$max_h	= ($this->config->item('photo_max_height') == '' OR $this->config->item('photo_max_height') == 0) ? 100 : $this->config->item('photo_max_height');
-		$vars['max_size'] = str_replace('%x', $max_w, $this->lang->line('max_image_size'));
+		$vars['max_size'] = str_replace('%x', $max_w, lang('max_image_size'));
 		$vars['max_size'] = str_replace('%y', $max_h, $vars['max_size']);
-		$vars['max_size'] .= ' - '.$max_kb.$this->lang->line('kilobyte_abbr');;
+		$vars['max_size'] .= ' - '.$max_kb.lang('kilobyte_abbr');;
 
 		$vars['remove_photo'] = ($cur_photo_url != '') ? TRUE : FALSE;
 
@@ -1683,14 +1683,14 @@ class MyAccount extends CI_Controller {
 		// Are avatars enabled?
 		if ($this->config->item('enable_avatars') == 'n')
 		{
-			show_error($this->lang->line('avatars_not_enabled'));
+			show_error(lang('avatars_not_enabled'));
 		}
 
 		$this->load->helper('form');
 		$this->load->library('table');
 		$this->load->library('pagination');
 
-		$vars['cp_page_title'] = $this->lang->line('browse_avatars');
+		$vars['cp_page_title'] = lang('browse_avatars');
 
 		$vars['form_hidden']['id'] = $this->id;
 		$vars['form_hidden']['folder'] = $this->input->get_post('folder');
@@ -1727,7 +1727,7 @@ class MyAccount extends CI_Controller {
 
 		if (count($avatars) == 0)
 		{
-			show_error($this->lang->line('avatars_not_found'));
+			show_error(lang('avatars_not_found'));
 		}
 
 		// Pagination stuff
@@ -1772,7 +1772,7 @@ class MyAccount extends CI_Controller {
 		// Are avatars enabled?
 		if ($this->config->item('enable_avatars') == 'n')
 		{
-			show_error($this->lang->line('avatars_not_enabled'));
+			show_error(lang('avatars_not_enabled'));
 		}
 
 		if ($this->input->get_post('avatar') === FALSE OR $this->input->get_post('folder') === FALSE)
@@ -1790,14 +1790,14 @@ class MyAccount extends CI_Controller {
 
 		if ( ! in_array($file, $allowed) OR $folder == 'upload')
 		{
-			show_error($this->lang->line('avatars_not_found'));
+			show_error(lang('avatars_not_found'));
 		}
 
 		// Fetch the avatar meta-data
 
 		if ( ! function_exists('getimagesize'))
 		{
-			show_error($this->lang->line('image_assignment_error'));
+			show_error(lang('image_assignment_error'));
 		}
 
 		$vals = @getimagesize($basepath.$avatar);
@@ -1808,7 +1808,7 @@ class MyAccount extends CI_Controller {
 
 		$id = ($this->input->get_post('id')) ? AMP.'id='.$this->input->get_post('id') : '';
 
-		$this->session->set_flashdata('message_success', $this->lang->line('avatar_updated'));
+		$this->session->set_flashdata('message_success', lang('avatar_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_avatar'.$id);
 	}
 
@@ -1907,7 +1907,7 @@ class MyAccount extends CI_Controller {
 		}
 
 		// Success message
-		$this->session->set_flashdata('message_success', $this->lang->line($updated));
+		$this->session->set_flashdata('message_success', lang($updated));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M='.$edit_image.AMP.'id='.$this->id);
 	}
 
@@ -1921,12 +1921,12 @@ class MyAccount extends CI_Controller {
 		// validate for unallowed blank values
 		if (empty($_POST)) 
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->member_model->update_member($this->session->userdata('member_id'), array('notepad'=>$this->input->get_post('notepad')));
 		
-		$this->session->set_flashdata('notepad_message', $this->lang->line('mbr_notepad_updated'));
+		$this->session->set_flashdata('notepad_message', lang('mbr_notepad_updated'));
 		$this->functions->redirect(BASE.AMP.$this->input->post('redirect_to'));
 	}
 
@@ -1939,11 +1939,11 @@ class MyAccount extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_admin_members'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->helper('form');
-		$vars['cp_page_title'] = $this->lang->line('administrative_options');
+		$vars['cp_page_title'] = lang('administrative_options');
 
 		$this->javascript->output('');
 
@@ -2007,12 +2007,12 @@ class MyAccount extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_admin_members'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// validate for unallowed blank values
 		if (empty($_POST)) {
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('site_model');
@@ -2024,7 +2024,7 @@ class MyAccount extends CI_Controller {
 		{
 			if ( ! $this->cp->allowed_group('can_admin_mbr_groups'))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 
 			$data['group_id'] = $this->input->post('group_id');
@@ -2033,14 +2033,14 @@ class MyAccount extends CI_Controller {
 			{
 				if ($this->session->userdata['group_id'] != '1')
 				{
-					show_error($this->lang->line('unauthorized_access'));
+					show_error(lang('unauthorized_access'));
 				}
 			}
 			else
 			{
 				if ($this->session->userdata('member_id') == $this->id)
 				{
-					show_error($this->lang->line('super_admin_demotion_alert'));
+					show_error(lang('super_admin_demotion_alert'));
 				}
 			}
 		}
@@ -2069,7 +2069,7 @@ class MyAccount extends CI_Controller {
 
 		$this->site_model->update_site_system_preferences($prefs, $this->config->item('site_id'));
 
-		$this->session->set_flashdata('message_success', $this->lang->line('administrative_options_updated'));
+		$this->session->set_flashdata('message_success', lang('administrative_options_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=member_preferences'.AMP.'id='.$this->id);
 	}
 
@@ -2082,13 +2082,13 @@ class MyAccount extends CI_Controller {
 	{
 		if ($this->session->userdata['group_id'] != 1 AND ($this->id != $this->session->userdata('member_id')))
 		{
-			show_error($this->lang->line('only_self_qucklink_access'));
+			show_error(lang('only_self_qucklink_access'));
 		}
 
 		$this->load->library('table');
 		$this->load->helper('form');
 
-		$vars['cp_page_title'] = $this->lang->line('quicklinks_manager');
+		$vars['cp_page_title'] = lang('quicklinks_manager');
 		$vars['cp_messages'] = array($message);
 		$vars['form_hidden']['id'] = $this->id;
 
@@ -2102,7 +2102,7 @@ class MyAccount extends CI_Controller {
 
 		if ($this->input->get('U'))
 		{
-			$vars['message'] = $this->lang->line('quicklinks_updated');
+			$vars['message'] = lang('quicklinks_updated');
 		}
 
 		$vars['quicklinks'] = $this->member_model->get_member_quicklinks($this->id);
@@ -2121,12 +2121,12 @@ class MyAccount extends CI_Controller {
 	{
 		if ($this->session->userdata['group_id'] != 1 AND ($this->id != $this->session->userdata('member_id')))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// validate for unallowed blank values
 		if (empty($_POST)) {
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		unset($_POST['quicklinks_update']); // submit button
@@ -2211,7 +2211,7 @@ class MyAccount extends CI_Controller {
 		$this->load->library('table');
 		$this->load->helper(array('form'));
 
-		$vars['cp_page_title'] = $this->lang->line('main_menu_manager');
+		$vars['cp_page_title'] = lang('main_menu_manager');
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -2220,7 +2220,7 @@ class MyAccount extends CI_Controller {
 		if ($this->session->userdata('group_id') != 1 && 
 			$this->id != $this->session->userdata('member_id'))
 		{
-			show_error($this->lang->line('only_self_main_menu_manager_access'));
+			show_error(lang('only_self_main_menu_manager_access'));
 		}
 
 		// Build the rows of previously saved links
@@ -2272,7 +2272,7 @@ class MyAccount extends CI_Controller {
 		if ($this->session->userdata('group_id') != 1 && 
 			$this->id != $this->session->userdata('member_id'))
 		{
-			show_error($this->lang->line('only_self_main_menu_manager_access'));
+			show_error(lang('only_self_main_menu_manager_access'));
 		}
 
 		$this->load->library('table');
@@ -2317,7 +2317,7 @@ class MyAccount extends CI_Controller {
 		$this->member_model->update_member($this->id, array('quick_tabs' => trim($str)));
 
 		$this->session->set_flashdata('message_success',
-									  $this->lang->line('main_menu_manager_updated'));
+									  lang('main_menu_manager_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=main_menu_manager'.AMP.'id='.$this->id);
 	}
 
@@ -2331,13 +2331,13 @@ class MyAccount extends CI_Controller {
 		if ($this->session->userdata['group_id'] != 1 && 
 		   ($this->id != $this->session->userdata('member_id')))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// validate for unallowed blank values
 		if (empty($_POST)) 
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		unset($_POST['quicktabs_submit']); // submit button
@@ -2409,7 +2409,7 @@ class MyAccount extends CI_Controller {
 		$this->member_model->update_member($this->id, array('quick_tabs' => trim($str)));
 
 		$this->session->set_flashdata('message_success', 
-										$this->lang->line('main_menu_manager_updated'));
+										lang('main_menu_manager_updated'));
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=main_menu_manager'.AMP.'id='.$this->id);
 	}
 
@@ -2424,24 +2424,24 @@ class MyAccount extends CI_Controller {
 		// have at least one channel assigned? If not, show the no access message
 		if ( ! $this->cp->allowed_group('can_access_publish'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if (count($this->functions->fetch_assigned_channels()) == 0)
 		{
-			show_error($this->lang->line('no_channels_assigned_to_user'));
+			show_error(lang('no_channels_assigned_to_user'));
 		}
 
 		if (count($this->session->userdata['assigned_channels']) == 0)
 		{
-			show_error($this->lang->line('no_channels_assigned_to_user'));
+			show_error(lang('no_channels_assigned_to_user'));
 		}
 
 		$this->load->library('table');
 		$this->load->helper(array('form'));
 		$this->load->model('channel_model');
 
-		$vars['cp_page_title'] = $this->lang->line('bookmarklet');
+		$vars['cp_page_title'] = lang('bookmarklet');
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -2462,14 +2462,14 @@ class MyAccount extends CI_Controller {
 
 			if ($query->num_rows() == 0)
 			{
-				show_error($this->lang->line('no_fields_assigned_to_channel'));
+				show_error(lang('no_fields_assigned_to_channel'));
 			}
 
 			$query = $this->channel_model->get_channel_fields($query->row('field_group'));
 
 			if ($query->num_rows() == 0)
 			{
-				show_error($this->lang->line('no_channels_assigned_to_user'));
+				show_error(lang('no_channels_assigned_to_user'));
 			}
 
 			// setup the fields
@@ -2541,7 +2541,7 @@ class MyAccount extends CI_Controller {
 		$this->load->helper(array('form', 'snippets', 'url', 'string'));
 		$this->load->library('table');
 
-		$vars['cp_page_title'] = $this->lang->line('ignore_list');
+		$vars['cp_page_title'] = lang('ignore_list');
 		$vars['message'] = '';
 
 		$this->jquery->tablesorter('.mainTable', '{
@@ -2579,7 +2579,7 @@ class MyAccount extends CI_Controller {
 		// Save any incoming data
 		if (isset($_POST['id']))
 		{
-			$vars['message'] = $this->lang->line('ignore_list_updated');
+			$vars['message'] = lang('ignore_list_updated');
 
 			$query = $this->member_model->get_member_data($this->id, array('ignore_list'));
 
@@ -2589,7 +2589,7 @@ class MyAccount extends CI_Controller {
 			{
 				if ( ! ($member_ids = $this->input->post('toggle')))
 				{
-					show_error($this->lang->line('unauthorized_access'));
+					show_error(lang('unauthorized_access'));
 				}
 
 				foreach ($member_ids as $member_id)
@@ -2603,19 +2603,19 @@ class MyAccount extends CI_Controller {
 
 				if ($screen_name == '')
 				{
-					show_error($this->lang->line('unauthorized_access'));
+					show_error(lang('unauthorized_access'));
 				}
 
 				$query = $this->member_model->get_member_by_screen_name($screen_name);
 
 				if ($query->num_rows() == 0)
 				{
-					show_error($this->lang->line('invalid_screen_name_message'));
+					show_error(lang('invalid_screen_name_message'));
 				}
 
 				if ($this->session->userdata('member_id') == $query->row('member_id'))
 				{
-					show_error($this->lang->line('can_not_ignore_self'));
+					show_error(lang('can_not_ignore_self'));
 				}
 
 				if ( ! isset($ignored[$query->row('member_id')]))
@@ -2656,7 +2656,7 @@ class MyAccount extends CI_Controller {
 	{
 		if ( ! AJAX_REQUEST)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 	
 		$this->output->enable_profiler(FALSE);
@@ -2667,7 +2667,7 @@ class MyAccount extends CI_Controller {
 		$this->db->update('members', $show); 
 		
 		$resp['messageType'] = 'success';
-		$resp['message'] = $this->lang->line('sidebar_updated');
+		$resp['message'] = lang('sidebar_updated');
 		$this->output->send_ajax_response($resp); 
 
 	}

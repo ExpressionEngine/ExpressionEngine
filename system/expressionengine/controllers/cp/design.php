@@ -52,7 +52,7 @@ class Design extends CI_Controller {
 
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('template_model');
@@ -87,10 +87,10 @@ class Design extends CI_Controller {
 	{		
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('design'));
+		$this->cp->set_variable('cp_page_title', lang('design'));
 		
 		$this->javascript->output($this->javascript->slidedown("#adminTemplatesSubmenu"));
 
@@ -115,7 +115,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$group_id = $this->input->get_post('id');
@@ -128,7 +128,7 @@ class Design extends CI_Controller {
 		$this->load->model('template_model');
 		$this->lang->loadfile('admin_content');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('new_template_form'));
+		$this->cp->set_variable('cp_page_title', lang('new_template_form'));
 
 		$this->javascript->compile();
 
@@ -166,7 +166,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$group_id = $this->input->get_post('id');
@@ -179,7 +179,7 @@ class Design extends CI_Controller {
 		$this->load->model('template_model');
 		$this->lang->loadfile('admin_content');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('new_template_form'));
+		$this->cp->set_variable('cp_page_title', lang('new_template_form'));
 
 		$template_groups_query = $this->template_model->get_template_groups();
 		$vars['template_groups'] = $template_groups_query->result_array();
@@ -210,7 +210,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$group_id = $this->input->get_post('group_id');
@@ -237,7 +237,7 @@ class Design extends CI_Controller {
 		{
 			if ( ! $this->_template_access_privs(array('group_id' => $group_id)))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
 		
@@ -254,8 +254,8 @@ class Design extends CI_Controller {
 
 		$vars['damned'] = array($group_id);
 
-		$vars['cp_page_title'] = $this->lang->line('delete_template_group');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, $this->lang->line('template_manager'));
+		$vars['cp_page_title'] = lang('delete_template_group');
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));
 
 		$vars['form_hidden']['group_id'] = $group_id;
 
@@ -272,20 +272,20 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		// if the hidden group_id field is not set, they might be here by accident.
 		if ( ! $this->input->post('group_id'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$group_id = $this->input->get_post('group_id');
 
 		if ($group_id == '' OR  ! is_numeric($group_id))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// Delete the group folder if it exists
@@ -325,7 +325,7 @@ class Design extends CI_Controller {
 
 		$this->db->query("DELETE FROM exp_template_groups WHERE group_id = '$group_id'");
 
-		$this->session->set_flashdata('message_success', $this->lang->line('template_group_deleted'));
+		$this->session->set_flashdata('message_success', lang('template_group_deleted'));
 		$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=manager');
 	}
 
@@ -343,7 +343,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if ($group_id == '')
@@ -359,12 +359,12 @@ class Design extends CI_Controller {
 		
 		if ( ! $this->_template_access_privs(array('group_id' => $group_id)))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}		
 
 		if ( ! $this->_template_access_privs(array('group_id' => $group_id)))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('template_model');
@@ -373,7 +373,7 @@ class Design extends CI_Controller {
 
 		$templates = $this->template_model->get_templates($this->config->item('site_id'));
 
-		$vars['templates'][0] = $this->lang->line('blank_template');
+		$vars['templates'][0] = lang('blank_template');
 		
 		foreach($templates->result() as $template)
 		{
@@ -384,8 +384,8 @@ class Design extends CI_Controller {
 
 		//create_new_template
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('new_template_form'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, $this->lang->line('template_manager'));		
+		$this->cp->set_variable('cp_page_title', lang('new_template_form'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));		
 
 
 		$this->javascript->compile();
@@ -406,13 +406,13 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->helper('form');
 		
-		$this->cp->set_variable('cp_page_title', $this->lang->line('create_new_template_group'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', $this->lang->line('template_manager'));
+		$this->cp->set_variable('cp_page_title', lang('create_new_template_group'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 
 		$this->load->model('template_model');
 		$this->lang->loadfile('admin_content');
@@ -443,7 +443,7 @@ class Design extends CI_Controller {
 
 		// now that the groups are filtered, built the group output
 
-		$vars['template_groups'] = array('false'=>$this->lang->line('do_not_duplicate_group'));
+		$vars['template_groups'] = array('false'=>lang('do_not_duplicate_group'));
 		foreach($template_groups as $group)
 		{
 			$vars['template_groups'][$group['group_id']] = $group['group_name'];
@@ -472,7 +472,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->model('template_model');
@@ -485,8 +485,8 @@ class Design extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 		
-		$this->cp->set_variable('cp_page_title', $this->lang->line('global_template_preferences'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', $this->lang->line('template_manager'));
+		$this->cp->set_variable('cp_page_title', lang('global_template_preferences'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 		
         $vars['template_data'] = array('' => lang('none'));	
 	
@@ -546,7 +546,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		//Just to be careful, let's strip out everything not a template conf
@@ -563,7 +563,7 @@ class Design extends CI_Controller {
 
 		$this->config->update_site_prefs($_POST);
         
-		$this->session->set_flashdata('message_success', $this->lang->line('preferences_updated'));
+		$this->session->set_flashdata('message_success', lang('preferences_updated'));
 		$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=global_template_preferences');
 	}
 
@@ -582,7 +582,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('template_model');
@@ -594,8 +594,8 @@ class Design extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', $this->lang->line('template_manager'));
-		$this->cp->set_variable('cp_page_title', $this->lang->line('snippets'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+		$this->cp->set_variable('cp_page_title', lang('snippets'));
 
 		$vars['snippets'] = $this->template_model->get_snippets();
 		$vars['snippets_count'] = $vars['snippets']->num_rows();
@@ -625,7 +625,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->model('template_model');
@@ -640,7 +640,7 @@ class Design extends CI_Controller {
 						'snippet_id'			=> NULL,
 						'snippet_name'			=> '',
 						'snippet_contents'		=> '',
-						'create_edit'			=> $this->lang->line('snippet_create')
+						'create_edit'			=> lang('snippet_create')
 					);
 
 		if ($this->config->item('multiple_sites_enabled') == 'y')
@@ -657,14 +657,14 @@ class Design extends CI_Controller {
 				
 				$vars = array_merge($vars, $snippet);
 				$vars['orig_name'] = $vars['snippet_name'];
-				$vars['create_edit'] = sprintf($this->lang->line('snippet_edit'), $vars['snippet_name']);
+				$vars['create_edit'] = sprintf(lang('snippet_edit'), $vars['snippet_name']);
 				$vars['all_sites'] = ($snippet['snippet_site_id'] == 0) ? TRUE : FALSE;
 			}			
 		}
 
 		$this->cp->set_variable('cp_page_title', $vars['create_edit']);
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', $this->lang->line('template_manager'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=snippets', $this->lang->line('snippets'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=snippets', lang('snippets'));
 		
 		$this->javascript->compile();
 		$this->load->view('design/snippets_edit', $vars);
@@ -684,7 +684,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('template_model');
@@ -706,15 +706,15 @@ class Design extends CI_Controller {
 		// validate name and contents
 		if ($snippet_name == '' OR $snippet_contents == '' OR $site_id === FALSE)
 		{
-			show_error($this->lang->line('all_fields_required'));
+			show_error(lang('all_fields_required'));
 		}
 		elseif ($this->api->is_url_safe($snippet_name) === FALSE)
 		{
-			show_error($this->lang->line('illegal_characters'));
+			show_error(lang('illegal_characters'));
 		}
 		elseif (in_array($snippet_name, $this->cp->invalid_custom_field_names()))
 		{
-			show_error($this->lang->line('reserved_name'));
+			show_error(lang('reserved_name'));
 		}
 		
 
@@ -736,11 +736,11 @@ class Design extends CI_Controller {
 			// if the var name is changing, make sure it's unique
 			if ($snippet['snippet_name'] != $data['snippet_name'] && $this->template_model->unique_snippet_name($data['snippet_name']) !== TRUE)
 			{
-				show_error($this->lang->line('duplicate_snippet_name'));				
+				show_error(lang('duplicate_snippet_name'));				
 			}
 			
 			$this->db->update('snippets', $data, array('snippet_id' => $snippet_id));
-			$cp_message = $this->lang->line('snippet_updated');
+			$cp_message = lang('snippet_updated');
 		}
 		else
 		{
@@ -748,11 +748,11 @@ class Design extends CI_Controller {
 			// one site to all sites at any time, we have to have strict uniqueness for all variables at all times.
 			if ($this->template_model->unique_snippet_name($data['snippet_name']) !== TRUE)
 			{
-				show_error($this->lang->line('duplicate_snippet_name'));
+				show_error(lang('duplicate_snippet_name'));
 			}
 
 			$this->db->insert('snippets', $data);
-			$cp_message = $this->lang->line('snippet_created');
+			$cp_message = lang('snippet_created');
 		}
 		
 		// Clear caches- db and template cache my result in update not being reflected
@@ -784,7 +784,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('template_model');
@@ -792,27 +792,27 @@ class Design extends CI_Controller {
 	
 		if (($snippet_id = $this->input->get_post('snippet_id')) === FALSE)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if (($snippet = $this->template_model->get_snippet($snippet_id)) === FALSE)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// offer up confirmation first
 		if ($this->input->get_post('delete_confirm') == TRUE)
 		{
 			$this->template_model->delete_snippet($snippet_id);
-			$this->session->set_flashdata('message_success', $this->lang->line('snippet_deleted'));
+			$this->session->set_flashdata('message_success', lang('snippet_deleted'));
 			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=snippets'.AMP.'delete=1');
 		}
 		else
 		{
-			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', $this->lang->line('template_manager'));
-			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=snippets', $this->lang->line('snippets'));
+			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=snippets', lang('snippets'));
 			
-			$this->cp->set_variable('cp_page_title', $this->lang->line('delete_snippet'));				
+			$this->cp->set_variable('cp_page_title', lang('delete_snippet'));				
 			$this->load->view('design/snippets_delete', $snippet);
 		}
 	}
@@ -830,15 +830,15 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('template_model');
 		$this->load->helper('form');
 		$this->load->library('table');
 	
-		$this->cp->set_variable('cp_page_title', $this->lang->line('global_variables'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', $this->lang->line('template_manager'));
+		$this->cp->set_variable('cp_page_title', lang('global_variables'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 		
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {2: {sorter: false}},
@@ -871,7 +871,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->model('template_model');
@@ -880,24 +880,24 @@ class Design extends CI_Controller {
 		$variable_id = $this->input->get_post('variable_id');
 		$variable_name = $this->input->get_post('variable_name');
 		$variable_data = $this->input->get_post('variable_data');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', $this->lang->line('template_manager'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=global_variables', $this->lang->line('global_variables'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=global_variables', lang('global_variables'));
 				
 		if ($variable_name != '')
 		{
 			if ($variable_name == '' OR $variable_data == '')
 			{
-				show_error($this->lang->line('all_fields_required'));
+				show_error(lang('all_fields_required'));
 			}
 	
 			if ( ! preg_match("#^[a-zA-Z0-9_\-/]+$#i",$variable_name))
 			{
-				show_error($this->lang->line('illegal_characters'));
+				show_error(lang('illegal_characters'));
 			}
 			
 			if (in_array($_POST['variable_name'], $this->reserved_vars))
 			{
-				show_error($this->lang->line('reserved_name'));
+				show_error(lang('reserved_name'));
 			}
 
 			$this->template_model->update_global_variable($variable_id, $variable_name, $variable_data);
@@ -906,7 +906,7 @@ class Design extends CI_Controller {
 			$this->functions->clear_caching('all');
 
 			// Send success message and move user back to global vars page
-			$this->session->set_flashdata('message_success', $this->lang->line('global_var_updated'));
+			$this->session->set_flashdata('message_success', lang('global_var_updated'));
 			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=global_variables');
 		}
 		else
@@ -927,7 +927,7 @@ class Design extends CI_Controller {
 			$vars['variable_name'] = $global_variable_info->variable_name;		
 			$vars['variable_data'] = $global_variable_info->variable_data;		
 
-			$this->cp->set_variable('cp_page_title', $this->lang->line('global_var_update'));
+			$this->cp->set_variable('cp_page_title', lang('global_var_update'));
 
 			$this->javascript->compile();
 			$this->load->view('design/global_variables_update', $vars);
@@ -948,7 +948,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->library('table');
@@ -956,30 +956,30 @@ class Design extends CI_Controller {
 		$variable_name = $this->input->get_post('variable_name');
 		$variable_data = $this->input->get_post('variable_data');
 		
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', $this->lang->line('template_manager'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=global_variables', $this->lang->line('global_variables'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=global_variables', lang('global_variables'));
 				
 		// Existing variables, will have an id
 		if ($variable_name != '')
 		{
 			if ($variable_name == '' OR $variable_data == '')
 			{
-				show_error($this->lang->line('all_fields_required'));
+				show_error(lang('all_fields_required'));
 			}
 	
 			if ( ! preg_match("#^[a-zA-Z0-9_\-/]+$#i",$variable_name))
 			{
-				show_error($this->lang->line('illegal_characters'));
+				show_error(lang('illegal_characters'));
 			}
 			
 			if (in_array($variable_name, $this->reserved_vars))
 			{
-				show_error($this->lang->line('reserved_name'));
+				show_error(lang('reserved_name'));
 			}
 	
 			if ($this->template_model->check_duplicate_global_variable_name($variable_name) === FALSE)
 			{
-				show_error($this->lang->line('duplicate_var_name'));		
+				show_error(lang('duplicate_var_name'));		
 			}
 
 			$this->template_model->create_global_variable($variable_name, $variable_data);
@@ -988,13 +988,13 @@ class Design extends CI_Controller {
 			$this->functions->clear_caching('all');
 			
 			// Send success message and move user back to global vars page
-			$this->global_variables($this->lang->line('global_var_created'));
+			$this->global_variables(lang('global_var_created'));
 		}
 		else
 		{		
 			$this->load->helper('form');
 	
-			$this->cp->set_variable('cp_page_title', $this->lang->line('create_new_global_variable'));
+			$this->cp->set_variable('cp_page_title', lang('create_new_global_variable'));
 
 			$this->javascript->compile();
 			$this->load->view('design/global_variables_create');
@@ -1013,11 +1013,11 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', $this->lang->line('template_manager'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=global_variables', $this->lang->line('global_variables'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=global_variables', lang('global_variables'));
 		
 		$this->load->helper('form');
 	
@@ -1026,7 +1026,7 @@ class Design extends CI_Controller {
 		if ($variable_id == '')
 		{
 			// They shouldn't be this far
-			show_error($this->lang->line('variable_does_not_exist'));
+			show_error(lang('variable_does_not_exist'));
 		}
 
 		$global_variable = $this->template_model->get_global_variable($variable_id);
@@ -1044,11 +1044,11 @@ class Design extends CI_Controller {
 			$this->template_model->delete_global_variable($variable_id);
 	
 			// Send success message and move user back to global vars page
-			$this->global_variables($this->lang->line('variable_deleted'));
+			$this->global_variables(lang('variable_deleted'));
 		}
 		else
 		{
-			$this->cp->set_variable('cp_page_title', $this->lang->line('delete_global_variable'));
+			$this->cp->set_variable('cp_page_title', lang('delete_global_variable'));
 
 			$global_variable_info = $global_variable->row(); // PHP 5 can do this in one step...
 			
@@ -1072,7 +1072,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if ($this->input->get_post('id') !== '')
@@ -1085,7 +1085,7 @@ class Design extends CI_Controller {
 
 		if ($this->session->userdata['group_id'] != 1 && (count($this->session->userdata['assigned_template_groups']) == 0 OR $this->cp->allowed_group('can_admin_templates') == FALSE))
 		{
-			$vars['message'] = $this->lang->line('no_templates_assigned');
+			$vars['message'] = lang('no_templates_assigned');
 			$vars['show_template_manager'] = FALSE;
 			return $this->load->view('design/template_preferences_manager', $vars);
 		}
@@ -1137,7 +1137,7 @@ class Design extends CI_Controller {
 
 		if ($query->num_rows() == 0)
 		{
-			$vars['message'] = $this->lang->line('no_templates_available');
+			$vars['message'] = lang('no_templates_available');
 			$vars['show_template_manager'] = FALSE;
 			return $this->load->view('design/template_preferences_manager', $vars);
 		}
@@ -1178,28 +1178,28 @@ class Design extends CI_Controller {
 
 		if ($this->input->get_post('U'))
 		{
-			$vars['message'] = $this->lang->line('preferences_updated');
+			$vars['message'] = lang('preferences_updated');
 		}
 
 		// Template Preference Headings
 		$headings = array(
-						array('template_type', $this->lang->line('type')),
-						array('cache', $this->lang->line('cache_enable')),
-						array('refresh', $this->lang->line('refresh_interval').' <small>('.$this->lang->line('refresh_in_minutes').')</small>')
+						array('template_type', lang('type')),
+						array('cache', lang('cache_enable')),
+						array('refresh', lang('refresh_interval').' <small>('.lang('refresh_in_minutes').')</small>')
 		);
 
 		if ($this->session->userdata['group_id'] == 1)
 		{
-			$headings[] = array('allow_php', $this->lang->line('enable_php').' <span class="notice">*</span>');
-			$headings[] = array('php_parse_location', $this->lang->line('parse_stage'));
+			$headings[] = array('allow_php', lang('enable_php').' <span class="notice">*</span>');
+			$headings[] = array('php_parse_location', lang('parse_stage'));
 		}
 
 		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
 		{
-			$headings[] = array('save_template_file', $this->lang->line('save_template_file'));
+			$headings[] = array('save_template_file', lang('save_template_file'));
 		}
 
-		$headings[] = array('hits', $this->lang->line('hit_counter'));	
+		$headings[] = array('hits', lang('hit_counter'));	
 
 		$vars['headings'] = $headings;
 
@@ -1208,21 +1208,21 @@ class Design extends CI_Controller {
 		$vars['template_prefs'] = array();
 
 		$template_type_options = array(
-			'null'		=> $this->lang->line('do_not_change'),
-			'css'		=> $this->lang->line('css_stylesheet'),
-			'js'		=> $this->lang->line('js'),
-			'feed'		=> $this->lang->line('rss'),
-			'static'	=> $this->lang->line('static'),
-			'webpage'	=> $this->lang->line('webpage'),
-			'xml'		=> $this->lang->line('xml')
+			'null'		=> lang('do_not_change'),
+			'css'		=> lang('css_stylesheet'),
+			'js'		=> lang('js'),
+			'feed'		=> lang('rss'),
+			'static'	=> lang('static'),
+			'webpage'	=> lang('webpage'),
+			'xml'		=> lang('xml')
 		);
 
 		$vars['template_prefs']['template_type'] = form_dropdown('template_type', $template_type_options, 'null', 'id="template_type"');
 
 		$yes_no_options = array(
-			'null'	=> $this->lang->line('do_not_change'),
-			'y'		=> $this->lang->line('yes'),
-			'n'		=> $this->lang->line('no')
+			'null'	=> lang('do_not_change'),
+			'y'		=> lang('yes'),
+			'n'		=> lang('no')
 		);
 
 		$vars['template_prefs']['cache'] = form_dropdown('cache', $yes_no_options, 'null', 'id="cache"');
@@ -1231,9 +1231,9 @@ class Design extends CI_Controller {
 		if ($this->session->userdata['group_id'] == 1)
 		{
 			$php_i_o_options = array(
-				'null'	=> $this->lang->line('do_not_change'),
-				'i'		=> $this->lang->line('input'),
-				'o'		=> $this->lang->line('output')
+				'null'	=> lang('do_not_change'),
+				'i'		=> lang('input'),
+				'o'		=> lang('output')
 			);
 
 			$vars['template_prefs']['allow_php'] = form_dropdown('allow_php', $yes_no_options, 'null', 'id="allow_php"');
@@ -1269,11 +1269,11 @@ class Design extends CI_Controller {
 			$vars['template_access'][$row->group_id][] = $radio_options;
 		}
 
-		$vars['template_access']['select_all'][] = $this->lang->line('select_all');
+		$vars['template_access']['select_all'][] = lang('select_all');
 
-		$select_all_radios = '<label>'.form_radio('select_all', 'access_null', '', 'class="select_all"').NBS.$this->lang->line('do_not_change').'</label>'.NBS.NBS.NBS.NBS.NBS.NBS.NBS;
-		$select_all_radios .= '<label>'.form_radio('select_all', 'access_y', '', 'class="select_all"').NBS.$this->lang->line('yes').'</label>'.NBS.NBS.NBS.NBS.NBS.NBS.NBS;
-		$select_all_radios .= '<label>'.form_radio('select_all', 'access_n', '', 'class="select_all"').NBS.$this->lang->line('no').'</label>';
+		$select_all_radios = '<label>'.form_radio('select_all', 'access_null', '', 'class="select_all"').NBS.lang('do_not_change').'</label>'.NBS.NBS.NBS.NBS.NBS.NBS.NBS;
+		$select_all_radios .= '<label>'.form_radio('select_all', 'access_y', '', 'class="select_all"').NBS.lang('yes').'</label>'.NBS.NBS.NBS.NBS.NBS.NBS.NBS;
+		$select_all_radios .= '<label>'.form_radio('select_all', 'access_n', '', 'class="select_all"').NBS.lang('no').'</label>';
 
 		$vars['template_access']['select_all'][] = $select_all_radios;
 
@@ -1284,7 +1284,7 @@ class Design extends CI_Controller {
 		
 		$query = $this->db->get(array('template_groups', 'templates'));
 
-		$vars['no_auth_bounce_options']['null'] = $this->lang->line('do_not_change');
+		$vars['no_auth_bounce_options']['null'] = lang('do_not_change');
 
 		foreach ($query->result() as $row)
 		{
@@ -1293,8 +1293,8 @@ class Design extends CI_Controller {
 
 		$vars['enable_http_auth_options'] = $yes_no_options;
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('template_preferences_manager'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', $this->lang->line('template_manager'));
+		$this->cp->set_variable('cp_page_title', lang('template_preferences_manager'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 		
 		$this->javascript->compile();
 		$this->load->view('design/template_preferences_manager', $vars);
@@ -1312,14 +1312,14 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// Determine Valid Template Groups and Templates
 
 		if ($this->session->userdata['group_id'] != 1 && (count($this->session->userdata['assigned_template_groups']) == 0 OR $this->cp->allowed_group('can_admin_templates') == FALSE))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->db->from('template_groups tg, templates t');
@@ -1336,7 +1336,7 @@ class Design extends CI_Controller {
 
 		if ($query->num_rows() == 0)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$delete = array();
@@ -1362,7 +1362,7 @@ class Design extends CI_Controller {
 
 		if (count($templates) == 0)
 		{
-			show_error($this->lang->line('no_templates_selected'));
+			show_error(lang('no_templates_selected'));
 		}
 
 		// Template Preferences
@@ -1558,17 +1558,17 @@ class Design extends CI_Controller {
 
 		if ( ! $this->_template_access_privs(array('group_id' => $group_id)))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if ( ! preg_match("#^[a-zA-Z0-9_\.-]+$#i", $template_name))
 		{
-			show_error($this->lang->line('illegal_characters'));
+			show_error(lang('illegal_characters'));
 		}
 		
 		if (in_array($template_name, $this->reserved_names))
 		{
-			show_error($this->lang->line('reserved_name'));
+			show_error(lang('reserved_name'));
 		}
 		
 		$this->db->where('group_id', $group_id)
@@ -1576,7 +1576,7 @@ class Design extends CI_Controller {
 
 		if ($this->db->count_all_results('templates'))
 		{
-			show_error($this->lang->line('template_name_taken'));
+			show_error(lang('template_name_taken'));
 		}
 
 		$template_data = '';
@@ -1680,7 +1680,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		if ($template_id == '')
@@ -1688,13 +1688,13 @@ class Design extends CI_Controller {
 			$template_id = $this->input->get_post('id');
 			if ($template_id == '')
 			{
-				show_error($this->lang->line('id_not_found'));
+				show_error(lang('id_not_found'));
 			}
 		}
 		
 		if ( ! is_numeric($template_id))
 		{
-			show_error($this->lang->line('id_not_found'));
+			show_error(lang('id_not_found'));
 		}
 
 		$this->load->library('api');
@@ -1710,7 +1710,7 @@ class Design extends CI_Controller {
 		
 		if ($query->num_rows() == 0)
 		{
-			show_error($this->lang->line('id_not_found'));
+			show_error(lang('id_not_found'));
 		}
 
 		$group_id = $query->row('group_id');
@@ -1723,7 +1723,7 @@ class Design extends CI_Controller {
 
 		if ( ! $this->_template_access_privs(array('group_id' => $group_id)))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$vars['last_file_edit'] 	= '';
@@ -1747,8 +1747,8 @@ class Design extends CI_Controller {
 
 		
 		// now that we have the info, we can set the breadcrumb and page titles
-		$this->cp->set_variable('cp_page_title', $this->lang->line('edit_template').' ('.$vars['template_group'].' / '.$vars['template_name'].')');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, $this->lang->line('template_manager'));
+		$this->cp->set_variable('cp_page_title', lang('edit_template').' ('.$vars['template_group'].' / '.$vars['template_name'].')');
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));
 
 		$date_fmt = ($this->session->userdata('time_format') != '') ? $this->session->userdata('time_format') : $this->config->item('time_format');
 
@@ -1851,7 +1851,7 @@ class Design extends CI_Controller {
 
 		$vars['revisions_js'] = ''; //"class='select' onchange='flipButtonText(this.options[this.selectedIndex].value);'>";
 
-		$vars['revision_options'][] = $this->lang->line('revision_history');
+		$vars['revision_options'][] = lang('revision_history');
 
 		$query = $this->db->query("SELECT tracker_id, item_date, screen_name FROM exp_revision_tracker LEFT JOIN exp_members ON exp_members.member_id = exp_revision_tracker.item_author_id WHERE item_table = 'exp_templates' AND item_field = 'template_data' AND item_id = '".$this->db->escape_str($template_id)."' ORDER BY tracker_id DESC");
 
@@ -1862,7 +1862,7 @@ class Design extends CI_Controller {
 				$vars['revision_options'][$row['tracker_id']] = $this->localize->set_human_time($row['item_date']).' ('.$row['screen_name'].')';
 			}  
 
-			$vars['revision_options']['clear'] = $this->lang->line('clear_revision_history');  
+			$vars['revision_options']['clear'] = lang('clear_revision_history');  
 		}
 
 		$vars['message'] = $message;
@@ -1962,7 +1962,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		if ( ! $template_id = $this->input->post('template_id'))
@@ -1977,7 +1977,7 @@ class Design extends CI_Controller {
 		
 		if ( ! $this->_template_access_privs(array('template_id' => $template_id)))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$save_result = FALSE;
@@ -2062,18 +2062,18 @@ class Design extends CI_Controller {
 		// Clear cache files
 		$this->functions->clear_caching('all');
 	
-		$message = $this->lang->line('template_updated');
-		$cp_message['message_success'] = $this->lang->line('template_updated');
+		$message = lang('template_updated');
+		$cp_message['message_success'] = lang('template_updated');
 		
 		if ($save_template_file == 'y' AND $save_result == FALSE)
 		{
-			$cp_message['message_failure'] = $this->lang->line('template_not_saved');
-			$message .= BR.$this->lang->line('template_not_saved');
+			$cp_message['message_failure'] = lang('template_not_saved');
+			$message .= BR.lang('template_not_saved');
 		}
 		elseif ($delete_template_file == TRUE && $template_file_result == FALSE)
 		{
-			$cp_message['message_failure'] = $this->lang->line('template_file_not_deleted');
-			$message .= BR.$this->lang->line('template_file_not_deleted');
+			$cp_message['message_failure'] = lang('template_file_not_deleted');
+			$message .= BR.lang('template_file_not_deleted');
 		}
 
 		/* -------------------------------------
@@ -2279,7 +2279,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		if ( ! isset($data['template_id']) OR ! $this->_template_access_privs(array('template_id' => $data['template_id'])))
@@ -2383,17 +2383,17 @@ class Design extends CI_Controller {
 			// Revisions are off, but they are here anyway
 			// It's confusing to simply show a white screen, so 
 			// give some feedback.
-			show_error($this->lang->line('tmpl_revisions_not_enabled'));
+			show_error(lang('tmpl_revisions_not_enabled'));
 		}
 	
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		 
 		if ( ! $id = $this->input->get_post('revision_id'))
         {
-            show_error($this->lang->line('unauthorized_access'));
+            show_error(lang('unauthorized_access'));
         }
 
 		
@@ -2412,8 +2412,8 @@ class Design extends CI_Controller {
 
 		if ($id != 'clear')
 		{
-			$vars['cp_page_title'] = $this->lang->line('revision_history');
-			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', $this->lang->line('template_manager'));
+			$vars['cp_page_title'] = lang('revision_history');
+			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
        		        
 			$this->db->select('item_id, item_data, item_date');
 			$this->db->where('tracker_id', $id);
@@ -2445,7 +2445,7 @@ class Design extends CI_Controller {
 		}
 		else
 		{
-			$vars['cp_page_title'] = $this->lang->line('clear_revision_history');
+			$vars['cp_page_title'] = lang('clear_revision_history');
 			$vars['revision_data'] = '';
 			$vars['type'] = 'clear';
 			$vars['form_hidden'] = array('template_id' => $item_id);
@@ -2455,14 +2455,14 @@ class Design extends CI_Controller {
                                 
         if ( ! $this->_template_access_privs(array('template_id' => $item_id)))
         {
-        	show_error($this->lang->line('unauthorized_access'));
+        	show_error(lang('unauthorized_access'));
         }
 
 		$query = $this->template_model->get_template_info($item_id);
 		
 		if ($query->num_rows() == 0)
 		{
-			show_error($this->lang->line('id_not_found'));
+			show_error(lang('id_not_found'));
 		}
 
 		$group_id = $query->row('group_id');
@@ -2491,7 +2491,7 @@ class Design extends CI_Controller {
     {    
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
         
         if ( ! $id = $this->input->post('template_id'))
@@ -2504,7 +2504,7 @@ class Design extends CI_Controller {
 		$this->db->where('item_field', 'template_data');
 		$this->db->delete('revision_tracker');
 		
-		$vars['cp_page_title'] = $this->lang->line('history_cleared');
+		$vars['cp_page_title'] = lang('history_cleared');
 		$vars['revision_data'] = '';
 		$vars['type'] = 'cleared';
 		$vars['form_hidden'] = array();
@@ -2525,7 +2525,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$template_id = $this->input->get_post('template_id');
@@ -2537,7 +2537,7 @@ class Design extends CI_Controller {
 
 		if ( ! is_numeric($template_id))
 		{
-			show_error($this->lang->line('template_id_not_found'));
+			show_error(lang('template_id_not_found'));
 		}
 
 		$this->load->helper('form');
@@ -2549,7 +2549,7 @@ class Design extends CI_Controller {
 		// You can't delete the index template
 		if ($query->row('template_name') == 'index')
 		{
-			show_error($this->lang->line('index_delete_disallowed'));
+			show_error(lang('index_delete_disallowed'));
 		}
 
 		$group_id	= $query->row('group_id') ;
@@ -2557,11 +2557,11 @@ class Design extends CI_Controller {
 
 		if ( ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 			
 			if ( ! $this->_template_access_privs(array('group_id' => $group_id)))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
 		
@@ -2586,8 +2586,8 @@ class Design extends CI_Controller {
 		$vars['damned'] = array($template_id);
 		$vars['group_id'] = $group_id;
 
-		$vars['cp_page_title'] = $this->lang->line('template_del_conf');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, $this->lang->line('template_manager'));
+		$vars['cp_page_title'] = lang('template_del_conf');
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));
 
 		$vars['form_hidden']['template_id'] = $template_id;
 
@@ -2604,7 +2604,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$template_id = $this->input->get_post('template_id');
@@ -2629,7 +2629,7 @@ class Design extends CI_Controller {
 		{
 			if ( ! $this->_template_access_privs(array('group_id' => $group_id)))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
 
@@ -2652,7 +2652,7 @@ class Design extends CI_Controller {
 		}
 
 		$out = $this->template_model->delete_template($template_id, $path);
-		$message = ($out === TRUE) ? $this->lang->line('template_deleted') : $this->lang->line('error_deleting_template');
+		$message = ($out === TRUE) ? lang('template_deleted') : lang('error_deleting_template');
 
 		$this->manager($message);
 	}
@@ -2743,7 +2743,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$template_id = $this->input->get_post('template_id');
@@ -2776,7 +2776,7 @@ class Design extends CI_Controller {
 		{
 			$this->template_model->update_specialty_template($template_id, $template_data);
  
-			$this->session->set_flashdata('message_success', $this->lang->line('template_updated'));
+			$this->session->set_flashdata('message_success', lang('template_updated'));
 			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=user_message');
 		}
 		else
@@ -2784,7 +2784,7 @@ class Design extends CI_Controller {
 			$this->load->helper('form');
 			$this->lang->loadfile('specialty_tmp');
 				
-			$this->cp->set_variable('cp_page_title', $this->lang->line('user_message'));
+			$this->cp->set_variable('cp_page_title', lang('user_message'));
 	
 			$template = $this->template_model->get_specialty_template('message_template');
 			$template_data = $template->row();
@@ -2815,7 +2815,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->javascript->compile();
@@ -2848,7 +2848,7 @@ class Design extends CI_Controller {
 		{
 			$this->template_model->update_specialty_template($template_id, $template_data);
 	
-			$this->session->set_flashdata('message_success', $this->lang->line('template_updated'));
+			$this->session->set_flashdata('message_success', lang('template_updated'));
 			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=system_offline');
 		}
 		else
@@ -2856,7 +2856,7 @@ class Design extends CI_Controller {
 			$this->load->helper('form');
 			$this->lang->loadfile('specialty_tmp');
 	
-			$this->cp->set_variable('cp_page_title', $this->lang->line('offline_template'));
+			$this->cp->set_variable('cp_page_title', lang('offline_template'));
 	
 			$template = $this->template_model->get_specialty_template('offline_template');
 			$template_data = $template->row();
@@ -2883,12 +2883,12 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('specialty_tmp');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('email_notification_template'));
+		$this->cp->set_variable('cp_page_title', lang('email_notification_template'));
 
 		$vars['specialty_email_templates_summary'] = $this->template_model->get_specialty_email_templates_summary();
 		
@@ -2908,7 +2908,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('specialty_tmp');
@@ -2919,11 +2919,11 @@ class Design extends CI_Controller {
 		
 		if ($template_query->num_rows() == 0)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('edit_template'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=email_notification', $this->lang->line('email_notification_template'));
+		$this->cp->set_variable('cp_page_title', lang('edit_template'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=email_notification', lang('email_notification_template'));
 		
 		$this->load->helper('form');
 		
@@ -2955,7 +2955,7 @@ class Design extends CI_Controller {
 			'template_data'		=> $template_query->row('template_data'),
 			'template_title'	=> $template_query->row('data_title'),
 			'template_id'		=> $template_query->row('template_id'),
-			'template_name'		=> ($this->lang->line($template) == FALSE) ? $template : $this->lang->line($template),
+			'template_name'		=> (lang($template) == FALSE) ? $template : lang($template),
 			'enable_template'	=> $template_query->row('enable_template')
 		);
 
@@ -2975,7 +2975,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$template_name = $this->input->post('template');
@@ -2988,7 +2988,7 @@ class Design extends CI_Controller {
 		
 		if ($query->num_rows() != 1 OR $query->row('template_id') != $template_id)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->template_model->update_specialty_template($template_id, $template_data, 
@@ -2998,7 +2998,7 @@ class Design extends CI_Controller {
 		
 		$this->functions->clear_caching('all');
 		
-		$this->session->set_flashdata('message_success', $this->lang->line('template_updated'));
+		$this->session->set_flashdata('message_success', lang('template_updated'));
 
 		if ($this->input->get_post('update_and_return') !== FALSE)
 		{
@@ -3018,7 +3018,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_mbr_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('member_model');
@@ -3026,7 +3026,7 @@ class Design extends CI_Controller {
 							
 		$vars['profiles'] = $this->member_model->get_profile_templates();			
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('member_profile_templates'));
+		$this->cp->set_variable('cp_page_title', lang('member_profile_templates'));
 
 		$this->javascript->compile();
 		$this->load->view('design/member_profile_templates', $vars);
@@ -3042,14 +3042,14 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_mbr_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$path = PATH_MBR_THEMES.$this->security->sanitize_filename($this->input->get_post('name'));
 		
 		if ( ! is_dir($path))
 		{
-			show_error($this->lang->line('unable_to_find_templates'));
+			show_error(lang('unable_to_find_templates'));
 		}
 		
 		$this->load->helper('directory');
@@ -3068,12 +3068,12 @@ class Design extends CI_Controller {
 			}
 			
 			$human = substr($val, 0, -strlen(strrchr($val, '.')));
-			$vars['templates'][$val] = ($this->lang->line($human) == FALSE) ? $human : $this->lang->line($human); 
+			$vars['templates'][$val] = (lang($human) == FALSE) ? $human : lang($human); 
 		}
 
 		asort($vars['templates']);
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('member_profile_templates'));
+		$this->cp->set_variable('cp_page_title', lang('member_profile_templates'));
 
 		$this->javascript->compile();
 		$this->load->view('design/member_profile_templates_list', $vars);							
@@ -3090,7 +3090,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_mbr_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$update = ($theme != '' AND $name != '') ? TRUE : FALSE;
@@ -3109,23 +3109,23 @@ class Design extends CI_Controller {
 		
 		if ( ! file_exists($path))
 		{
-			show_error($this->lang->line('unable_to_find_template_file'));
+			show_error(lang('unable_to_find_template_file'));
 		}
 		
 		$human = substr($name, 0, -strlen(strrchr($name, '.')));
 		
-		$vars['template_name']		= ($this->lang->line($human) == FALSE) ? $human : $this->lang->line($human);		
+		$vars['template_name']		= (lang($human) == FALSE) ? $human : lang($human);		
 		$vars['theme']				= $theme;
 		$vars['theme_display_name']	= ucfirst(str_replace("_", " ", $vars['theme']));
 		$vars['template_data']		= ($update === FALSE) ? file_get_contents($path) : $template_data;
 		$vars['name']				= $name;
 		$vars['not_writable']		= ! is_really_writable($path);
-		$vars['message']			= ($update === TRUE) ? $this->lang->line('template_updated') : '';
+		$vars['message']			= ($update === TRUE) ? lang('template_updated') : '';
 		$vars['type']				= 'profile';
 		
 		$this->load->helper('form');
 		
-		$this->cp->set_variable('cp_page_title', $this->lang->line('member_profile_templates'));
+		$this->cp->set_variable('cp_page_title', lang('member_profile_templates'));
 		
 		$this->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'plugin=markitup', TRUE);
 
@@ -3162,7 +3162,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_mbr_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$theme = $this->input->get_post('theme');
@@ -3178,21 +3178,21 @@ class Design extends CI_Controller {
 		
 		if ( ! file_exists($path))
 		{
-			show_error($this->lang->line('unable_to_find_template_file'));
+			show_error(lang('unable_to_find_template_file'));
 		}
 		
 		$this->load->helper('file');
 		
 		if ( ! write_file($path, $template_data))
 		{
-			show_error($this->lang->line('error_opening_template'));
+			show_error(lang('error_opening_template'));
 		}
 		
 		// Clear cache files
 		
 		$this->functions->clear_caching('all');
 		
-		$this->session->set_flashdata('message_success',$this->lang->line('template_updated'));
+		$this->session->set_flashdata('message_success',lang('template_updated'));
 		if ($this->input->get_post('update_and_return') !== FALSE)
 		{
 			$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=list_'.$type.'_templates'.AMP.'name='.$theme);
@@ -3216,12 +3216,12 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('design_model');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('template_manager'));
+		$this->cp->set_variable('cp_page_title', lang('template_manager'));
 
 		$this->load->library('table');
 		$vars['can_admin_templates'] = $this->cp->allowed_group('can_admin_templates');
@@ -3266,7 +3266,7 @@ class Design extends CI_Controller {
 		}
 		
 		$this->javascript->set_global(array(
-			'lang' => array('search_template' => $this->lang->line('search_template')))
+			'lang' => array('search_template' => lang('search_template')))
 		);
 		
 		$vars['message'] = $message;
@@ -3370,7 +3370,7 @@ class Design extends CI_Controller {
 
 		if ($query->num_rows() == 0)
 		{
-			$vars['no_results'] = $this->lang->line('no_templates_available');
+			$vars['no_results'] = lang('no_templates_available');
 			$vars['result_count'] = 0;
 		}
 		else
@@ -3472,7 +3472,7 @@ class Design extends CI_Controller {
 		if ($vars['result_count'] !== NULL) 
 		{
 			$vars['result_count_lang'] = sprintf(
-											$this->lang->line('tmpl_search_result'),
+											lang('tmpl_search_result'),
 											$vars['result_count'],
 											count($displayed_groups)
 									);
@@ -3500,7 +3500,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') && ! $this->cp->allowed_group('can_admin_templates') )
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// Load the design model
@@ -3566,7 +3566,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
+			$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 		}
 
 		$template_id = $this->input->get_post('template_id');
@@ -3574,7 +3574,7 @@ class Design extends CI_Controller {
 		// check access privs
 		if ( ! $this->_template_access_privs(array('template_id' => $template_id)))
 		{
-			$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
+			$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 		}
 		
 		// Do we just have alpha num + . ?
@@ -3582,7 +3582,7 @@ class Design extends CI_Controller {
 		{
 			if ( ! preg_match("#^[a-zA-Z0-9_\.-]+$#i", $this->input->get_post('template_name')))
 			{
-				$this->output->send_ajax_response($this->lang->line('illegal_characters'), TRUE);
+				$this->output->send_ajax_response(lang('illegal_characters'), TRUE);
 			}			
 		}
 
@@ -3609,7 +3609,7 @@ class Design extends CI_Controller {
 		// safety
 		if (count($template_info) == 0)
 		{
-			$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
+			$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 		}
 
 		$rename_file = FALSE;
@@ -3618,7 +3618,7 @@ class Design extends CI_Controller {
 		{
 			if ($template_info['template_name'] == 'index')
 			{
-				$this->output->send_ajax_response($this->lang->line('index_delete_disallowed'), TRUE);
+				$this->output->send_ajax_response(lang('index_delete_disallowed'), TRUE);
 			}
 			
 			$this->db->where('group_id', $template_info['group_id']);
@@ -3627,13 +3627,13 @@ class Design extends CI_Controller {
 			// unique?
 			if ($this->db->count_all_results('templates'))
 			{
-				$this->output->send_ajax_response($this->lang->line('template_name_taken'), TRUE);
+				$this->output->send_ajax_response(lang('template_name_taken'), TRUE);
 			}
 
 			// reserved?
 			if (in_array($data['template_name'], $this->reserved_names))
 			{
-				$this->output->send_ajax_response($this->lang->line('reserved_name'), TRUE);
+				$this->output->send_ajax_response(lang('reserved_name'), TRUE);
 			}
 			
 			if ($template_info['save_template_file'] == 'y')
@@ -3662,11 +3662,11 @@ class Design extends CI_Controller {
 			{
 				if ($this->template_model->rename_template_file($template_info['group_name'], $template_info['template_type'], $template_info['template_name'], $data['template_name']) == FALSE)
 				{
-					$this->output->send_ajax_response($this->lang->line('template_file_not_renamed'), TRUE);
+					$this->output->send_ajax_response(lang('template_file_not_renamed'), TRUE);
 				}
 			}
 			
-			$this->output->send_ajax_response($this->lang->line('preferences_updated'));
+			$this->output->send_ajax_response(lang('preferences_updated'));
 		}
 	}
 	
@@ -3684,14 +3684,14 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
+			$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 		}	
 
 		$template_id = $this->input->get_post("template_id");
 		
 		if ( ! $this->_template_access_privs(array('template_id' => $template_id)))
 		{
-			$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
+			$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 		}
 
 		$this->output->enable_profiler(FALSE);
@@ -3703,7 +3703,7 @@ class Design extends CI_Controller {
 			
 			if (($new_status != 'y' && $new_status != 'n') OR ! ctype_digit($no_auth_bounce))
 			{
-				$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
+				$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 			}
 
 			$this->template_model->update_access_ajax($template_id, $member_group, $new_status);
@@ -3713,7 +3713,7 @@ class Design extends CI_Controller {
 		{
 			if ($enable_http_auth != 'y' && $enable_http_auth != 'n')
 			{
-				$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
+				$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 			}
 			
 			$this->template_model->update_template_ajax($template_id, array('enable_http_auth' => $enable_http_auth));
@@ -3722,17 +3722,17 @@ class Design extends CI_Controller {
 		{
 			if ( ! ctype_digit($no_auth_bounce))
 			{
-				$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
+				$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 			}
 			
 			$this->template_model->update_template_ajax($template_id, array('no_auth_bounce' => $no_auth_bounce));
 		}
 		else
 		{
-			$this->output->send_ajax_response($this->lang->line('unauthorized_access'), TRUE);
+			$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 		}
 
-		$this->output->send_ajax_response($this->lang->line('preferences_updated'));
+		$this->output->send_ajax_response(lang('preferences_updated'));
 	}
 
 	// --------------------------------------------------------------------
@@ -3749,7 +3749,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$group_id = $this->input->get_post("group_id");
@@ -3774,8 +3774,8 @@ class Design extends CI_Controller {
 
 		if ($this->form_validation->run() === FALSE)
 		{
-			$this->cp->set_variable('cp_page_title', $this->lang->line('edit_template_group_form'));
-			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, $this->lang->line('template_manager'));
+			$this->cp->set_variable('cp_page_title', lang('edit_template_group_form'));
+			$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager'.AMP.'tgpref='.$group_id, lang('template_manager'));
 
 			$vars['form_hidden'] = array(
 				'group_id'		=> $group_id,
@@ -3801,13 +3801,13 @@ class Design extends CI_Controller {
 	{
 		if ( ! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $str))
 		{
-			$this->form_validation->set_message('_group_name_checks', $this->lang->line('illegal_characters'));
+			$this->form_validation->set_message('_group_name_checks', lang('illegal_characters'));
 			return FALSE;			
 		}
 		
 		if (in_array($str, $this->reserved_names))
 		{
-			$this->form_validation->set_message('_group_name_checks', $this->lang->line('reserved_name'));
+			$this->form_validation->set_message('_group_name_checks', lang('reserved_name'));
 			return FALSE;	
 		}
 
@@ -3818,12 +3818,12 @@ class Design extends CI_Controller {
 
 		if ((strtolower($this->input->post('old_name')) != strtolower($str)) AND $query->row('count')  > 0)
 		{
-			$this->form_validation->set_message('_group_name_checks', $this->lang->line('template_group_taken'));
+			$this->form_validation->set_message('_group_name_checks', lang('template_group_taken'));
 			return FALSE;			
 		}
 		elseif ($query->row('count')  > 1)
 		{
-			$this->form_validation->set_message('_group_name_checks', $this->lang->line('template_group_taken'));
+			$this->form_validation->set_message('_group_name_checks', lang('template_group_taken'));
 			return FALSE;	
 		}
 		
@@ -3837,7 +3837,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('template_model');
@@ -3915,7 +3915,7 @@ class Design extends CI_Controller {
 				}
 			}
 
-			$this->session->set_flashdata('message_success', $this->lang->line('template_group_created'));
+			$this->session->set_flashdata('message_success', lang('template_group_created'));
 		}
 		else
 		{
@@ -3943,7 +3943,7 @@ class Design extends CI_Controller {
 					
 			$this->template_model->update_template_group($group_id, $fields);
 		
-			$this->session->set_flashdata('message_success', $this->lang->line('template_group_updated'));
+			$this->session->set_flashdata('message_success', lang('template_group_updated'));
 
 		}
 
@@ -3964,12 +3964,12 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->helper('form');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('edit_template_group_order'));
+		$this->cp->set_variable('cp_page_title', lang('edit_template_group_order'));
 
 		$this->javascript->output('
 			$("form label").css("cursor", "move");
@@ -4010,7 +4010,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$template_groups = $this->input->post('template_group');
@@ -4055,7 +4055,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->helper('form');
@@ -4063,8 +4063,8 @@ class Design extends CI_Controller {
 		
 		if ($this->config->item('save_tmpl_files') != 'y' OR $this->config->item('tmpl_file_basepath') == '')
 		{
-			$message = $this->lang->line('sync_not_allowed_1');
-			$message .= '<a href="'.str_replace('&amp;', '&', BASE).'&C=design&M=global_template_preferences">'.$this->lang->line('sync_not_allowed_2').'</a>';
+			$message = lang('sync_not_allowed_1');
+			$message .= '<a href="'.str_replace('&amp;', '&', BASE).'&C=design&M=global_template_preferences">'.lang('sync_not_allowed_2').'</a>';
 		}
 						
 		$vars['table_template'] = array('table_open' => '<table id="entries" class="templateTable" border="0" cellspacing="0" cellpadding="0">',
@@ -4083,14 +4083,14 @@ class Design extends CI_Controller {
 		
 		if ( ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		// Add in new files
 		$this->_sync_from_files();
 
-		$vars['cp_page_title'] = $this->lang->line('sync_templates');
-		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', $this->lang->line('template_manager'));
+		$vars['cp_page_title'] = lang('sync_templates');
+		$this->cp->set_breadcrumb(BASE.AMP.'C=design'.AMP.'M=manager', lang('template_manager'));
 
 		$this->javascript->output(array(
 				'$(".toggle_all").toggle(
@@ -4203,7 +4203,7 @@ class Design extends CI_Controller {
 
 		if ($message == '' && count($existing) == 0)
 		{
-			$message = $this->lang->line('no_valid_templates_sync');
+			$message = lang('no_valid_templates_sync');
 		}
 		
 		$vars['message'] = $message;
@@ -4225,7 +4225,7 @@ class Design extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$message = '';
@@ -4237,7 +4237,7 @@ class Design extends CI_Controller {
 		
 		if ( ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if ( ! $confirmed = $this->input->get_post('confirm') OR $confirmed != 'confirm')
@@ -4298,7 +4298,7 @@ class Design extends CI_Controller {
 							
 					if ($save_result == FALSE)
 					{
-						show_error($this->lang->line('template_not_saved'));
+						show_error(lang('template_not_saved'));
 					}
 				}
 			}
@@ -4458,7 +4458,7 @@ class Design extends CI_Controller {
 		}
 			
 		$this->functions->clear_caching('all');	
-		$message = $this->lang->line('sync_completed');
+		$message = lang('sync_completed');
 		
 		$this->session->set_flashdata('message_success', $message); 
 		$this->functions->redirect(BASE.AMP.'C=design'.AMP.'M=sync_templates');
@@ -4525,12 +4525,12 @@ class Design extends CI_Controller {
 				{
 					if ( ! $this->api->is_url_safe($group_name))
 					{
-						show_error($this->lang->line('illegal_characters').NBS.NBS.'a'.htmlentities($group_name));
+						show_error(lang('illegal_characters').NBS.NBS.'a'.htmlentities($group_name));
 					}
 
 					if (in_array($group_name, $this->reserved_names))
 					{
-						show_error($this->lang->line('reserved_name').NBS.NBS.htmlentities($group_name));
+						show_error(lang('reserved_name').NBS.NBS.htmlentities($group_name));
 					}
 				
 					$data = array(
@@ -4587,7 +4587,7 @@ class Design extends CI_Controller {
 
 					if ( ! $this->api->is_url_safe($template_name))
 					{
-						show_error($this->lang->line('illegal_characters').NBS.NBS.htmlentities($template_name));
+						show_error(lang('illegal_characters').NBS.NBS.htmlentities($template_name));
 					}
 								
 

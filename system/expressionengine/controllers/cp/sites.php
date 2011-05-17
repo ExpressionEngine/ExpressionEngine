@@ -43,7 +43,7 @@ class Sites extends CI_Controller {
 		
 		if ($this->config->item('multiple_sites_enabled') !== 'y')
         {
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
         }
 
 		/** --------------------------------
@@ -78,7 +78,7 @@ class Sites extends CI_Controller {
 	{
 		if ( count($this->session->userdata('assigned_sites')) == 0 )
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->library('sites');
@@ -89,8 +89,8 @@ class Sites extends CI_Controller {
 		
 		$vars['sites'] = $this->session->userdata('assigned_sites');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('switch_site'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=sites', $this->lang->line('site_management'));
+		$this->cp->set_variable('cp_page_title', lang('switch_site'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=sites', lang('site_management'));
 				
 		$vars['can_admin_sites'] = $this->cp->allowed_group('can_admin_sites');
 
@@ -176,13 +176,13 @@ class Sites extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_admin_sites'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->library('table');
 		$this->load->model('site_model');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('site_management'));
+		$this->cp->set_variable('cp_page_title', lang('site_management'));
 
 		$vars['msm_version'] = $this->version;
 		$vars['msm_build_number'] = $this->build_number;
@@ -199,7 +199,7 @@ class Sites extends CI_Controller {
 			$this->db->where('site_id', $created_id);
 			
 			$query = $this->db->get('sites');
-			$message = $this->lang->line('site_created').': &nbsp;'.$query->row('site_label');
+			$message = lang('site_created').': &nbsp;'.$query->row('site_label');
 		}
 		elseif ($updated_id = $this->input->get('updated_id'))
 		{
@@ -207,7 +207,7 @@ class Sites extends CI_Controller {
 			$this->db->where('site_id', $updated_id);
 			
 			$query = $this->db->get('sites');
-			$message = $this->lang->line('site_updated').': &nbsp;'.$query->row('site_label');
+			$message = lang('site_updated').': &nbsp;'.$query->row('site_label');
 		}
 		
 		$vars['site_data'] = $this->site_model->get_site();
@@ -234,12 +234,12 @@ class Sites extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_admin_sites'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$site_id = $this->input->get('site_id');
 		
-		$title = ($site_id) ? $this->lang->line('edit_site') : $this->lang->line('create_new_site');
+		$title = ($site_id) ? lang('edit_site') : lang('create_new_site');
 		$this->cp->set_variable('cp_page_title', $title);
 		
 		$this->load->model('site_model');
@@ -272,10 +272,10 @@ class Sites extends CI_Controller {
 									 				ORDER by site_label, channel_title");
 									
 				$vars['channel_options'] = array(
-												'nothing'		=> $this->lang->line('do_nothing'),
-												'move'			=> $this->lang->line('move_channel_move_data'),
-												'duplicate'		=> $this->lang->line('duplicate_channel_no_data'),
-												'duplicate_all'	=> $this->lang->line('duplicate_channel_all_data')
+												'nothing'		=> lang('do_nothing'),
+												'move'			=> lang('move_channel_move_data'),
+												'duplicate'		=> lang('duplicate_channel_no_data'),
+												'duplicate_all'	=> lang('duplicate_channel_all_data')
 												);
 
 
@@ -284,9 +284,9 @@ class Sites extends CI_Controller {
 										 						ORDER by site_label, exp_upload_prefs.name");
 
 				$vars['upload_directory_options'] = array(
-												'nothing'		=> $this->lang->line('do_nothing'),
-												'move'			=> $this->lang->line('move_upload_destination'),
-												'duplicate'		=> $this->lang->line('duplicate_upload_destination')
+												'nothing'		=> lang('do_nothing'),
+												'move'			=> lang('move_upload_destination'),
+												'duplicate'		=> lang('duplicate_upload_destination')
 												);
 
 
@@ -295,18 +295,18 @@ class Sites extends CI_Controller {
 									 						ORDER by site_label, group_name");
 
 				$vars['template_group_options'] = array(
-												'nothing'		=> $this->lang->line('do_nothing'),
-												'move'			=> $this->lang->line('move_template_group'),
-												'duplicate'		=> $this->lang->line('duplicate_template_group')
+												'nothing'		=> lang('do_nothing'),
+												'move'			=> lang('move_template_group'),
+												'duplicate'		=> lang('duplicate_template_group')
 												);
 
 				$vars['global_variables'] = $this->db->query("SELECT site_id, site_label FROM exp_sites ORDER by site_label");
 				
 				
 				$vars['global_variable_options'] = array(
-												'nothing'		=> $this->lang->line('do_nothing'),
-												'move'			=> $this->lang->line('move_global_variables'),
-												'duplicate'		=> $this->lang->line('duplicate_global_variables')
+												'nothing'		=> lang('do_nothing'),
+												'move'			=> lang('move_global_variables'),
+												'duplicate'		=> lang('duplicate_global_variables')
 												);
 		}
 		
@@ -359,7 +359,7 @@ class Sites extends CI_Controller {
 	{
 		if (preg_match('/[^a-z0-9\-\_]/i', $str))
 		{
-			$this->form_validation->set_message('_valid_shortname', $this->lang->line('invalid_short_name'));
+			$this->form_validation->set_message('_valid_shortname', lang('invalid_short_name'));
 			return FALSE;
 		}
 		
@@ -381,7 +381,7 @@ class Sites extends CI_Controller {
 		
 		if ($query->row('count')  > 0)
 		{
-			$this->form_validation->set_message('_duplicate_shortname', $this->lang->line('site_name_taken'));
+			$this->form_validation->set_message('_duplicate_shortname', lang('site_name_taken'));
 			return FALSE;			
 		}
 		
@@ -392,7 +392,7 @@ class Sites extends CI_Controller {
 	{
 		if ( ! file_exists(APPPATH.'language/'.$this->config->item('deft_lang').'/email_data'.EXT))
 		{
-			$this->form_validation->set_message('_general_error', $this->lang->line('unable_to_locate_specialty'));
+			$this->form_validation->set_message('_general_error', lang('unable_to_locate_specialty'));
 			return FALSE;
 		}
 			
@@ -413,7 +413,7 @@ class Sites extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_admin_sites'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->_add_edit_validation();
@@ -433,7 +433,7 @@ class Sites extends CI_Controller {
 		{
 			if ( ! file_exists(APPPATH.'language/'.$this->config->item('deft_lang').'/email_data'.EXT))
 			{
-				$error[] = $this->lang->line('unable_to_locate_specialty');
+				$error[] = lang('unable_to_locate_specialty');
 			}
 			else
 			{
@@ -475,7 +475,7 @@ class Sites extends CI_Controller {
 			$insert_id = $this->db->insert_id();
 			$site_id = $insert_id;
 			
-			$success_msg = $this->lang->line('site_created');		 
+			$success_msg = lang('site_created');		 
 		}
 		else
 		{			
@@ -503,7 +503,7 @@ class Sites extends CI_Controller {
 			
 			$site_id = $_POST['site_id'];
 
-			$success_msg = $this->lang->line('site_updated');
+			$success_msg = lang('site_updated');
 		}
 		
 		$this->logger->log_action($success_msg.NBS.NBS.$_POST['site_label']);
@@ -1694,7 +1694,7 @@ class Sites extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_admin_sites'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		if ( ! $site_id = $this->input->get_post('site_id'))
@@ -1717,10 +1717,10 @@ class Sites extends CI_Controller {
 			return FALSE;
 		}
 		
-		$this->cp->set_variable('cp_page_title', $this->lang->line('delete_site'));
+		$this->cp->set_variable('cp_page_title', lang('delete_site'));
 		
 		$vars['site_id'] = $site_id;
-		$vars['message'] = $this->lang->line('delete_site_confirmation');
+		$vars['message'] = lang('delete_site_confirmation');
 		
 		$this->javascript->compile();
 		$this->load->view('sites/delete_confirm', $vars);
@@ -1739,7 +1739,7 @@ class Sites extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_admin_sites'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 	
 		if ( ! $site_id = $this->input->post('site_id'))
@@ -1764,7 +1764,7 @@ class Sites extends CI_Controller {
 			return FALSE;
 		}
 		
-		$this->logger->log_action($this->lang->line('site_deleted').':'.NBS.NBS.$query->row('site_label') );
+		$this->logger->log_action(lang('site_deleted').':'.NBS.NBS.$query->row('site_label') );
 
 		$this->db->select('entry_id');
 		$this->db->where('site_id', $site_id);
