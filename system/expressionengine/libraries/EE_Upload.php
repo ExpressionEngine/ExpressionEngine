@@ -107,36 +107,36 @@ class EE_Upload extends CI_Upload {
  
 
    function file_overwrite($original_file = '', $new = '', $type_match = TRUE)
-    {        
-        $this->file_name = $new;
-        
-        // If renaming a file, it should have same file type suffix as the original
-        
-        if ($type_match === TRUE)
-        {
-        	if (sizeof(explode('.', $this->file_name)) == 1 OR (array_pop(explode('.', $this->file_name)) != array_pop(explode('.', $original_file))))
-        	{
-        		$this->set_error('invalid_filetype');
+	{
+		$this->file_name = $new;
+		
+		// If renaming a file, it should have same file type suffix as the original
+		
+		if ($type_match === TRUE)
+		{
+			if (sizeof(explode('.', $this->file_name)) == 1 OR (array_pop(explode('.', $this->file_name)) != array_pop(explode('.', $original_file))))
+			{
+				$this->set_error('invalid_filetype');
 				return FALSE;
-        	}
+			}
 		}
 		
 		if ($this->remove_spaces == 1)
-        {
-            $this->file_name = preg_replace("/\s+/", "_", $this->file_name);
-            $original_file = preg_replace("/\s+/", "_", $original_file);
-        }
+		{
+			$this->file_name = preg_replace("/\s+/", "_", $this->file_name);
+			$original_file = preg_replace("/\s+/", "_", $original_file);
+		}
  
-        if ( ! @copy($this->upload_path.$this->temp_prefix.$original_file, $this->upload_path.$this->file_name))
+		if ( ! @copy($this->upload_path.$original_file, $this->upload_path.$this->file_name))
 		{
 			$this->set_error('copy_error');
 			return FALSE;
-        }			
-        
-		unlink ($this->upload_path.$this->temp_prefix.$original_file);
+		}
+		
+		unlink ($this->upload_path.$original_file);
 
-		return TRUE;    		
-    }
+		return TRUE;
+	}
     /* END */
 
 

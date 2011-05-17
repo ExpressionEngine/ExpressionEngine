@@ -817,7 +817,7 @@ $lang = array(
 "Clear all caches when new entries are posted?",
 
 "require_ip_for_posting" =>
-"Require IP Address and User Agent when receiving comments?",
+"Require IP Address and User Agent for posting?",
 
 "redirect_submitted_links" =>
 "Apply Rank Denial to User-submitted Links?",

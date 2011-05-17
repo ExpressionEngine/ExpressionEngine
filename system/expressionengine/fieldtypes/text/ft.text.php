@@ -65,9 +65,13 @@ class Text_ft extends EE_Fieldtype {
 					return $this->EE->lang->line($content_type);
 				}
 				
-				// Check if number exceeds mysql limits	
+				// Check if number exceeds mysql limits
+				if ($data >= 999999.9999)
+				{
+					return $this->EE->lang->line('number_exceeds_limit');
+				}
+				
 				return TRUE;
-								
 			}
 
 			if ( ! $this->EE->form_validation->$content_type($data))
@@ -78,12 +82,11 @@ class Text_ft extends EE_Fieldtype {
 			// Check if number exceeds mysql limits			
 			if ($content_type == 'integer')
 			{
-				if (($data  < -2147483648) OR ($data > 2147483647))
+				if (($data < -2147483648) OR ($data > 2147483647))
 				{
 					return $this->EE->lang->line('number_exceeds_limit');
 				}
 			}
-			
 		}
 		
 		return TRUE;
@@ -94,6 +97,8 @@ class Text_ft extends EE_Fieldtype {
 	function display_field($data)
 	{
 		$type = (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
+		
+		$data = $this->_format_number($data, $type);
 		
 		return form_input(array(
 			'name'		=> $this->field_name,
@@ -109,10 +114,10 @@ class Text_ft extends EE_Fieldtype {
 	
 	function replace_tag($data, $params = '', $tagdata = '')
 	{
-		if ($data !== '' && isset($params['decimal_place']) && ctype_digit(str_replace('.', '', $data)) === TRUE)
-		{
-			$data = number_format($data, $params['decimal_place']);
-		}
+		$type		= isset($this->settings['field_content_type']) ? $this->settings['field_content_type'] : 'all';
+		$decimals	= isset($params['decimal_place']) ? (int) $params['decimal_place'] : FALSE;
+		
+		$data = $this->_format_number($data, $type, $decimals);
 
 		return $this->EE->typography->parse_type(
 			$this->EE->functions->encode_ee_tags($data),
@@ -210,6 +215,32 @@ class Text_ft extends EE_Fieldtype {
 		}
 		
 		return $fields;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	function _format_number($data, $type = 'all', $decimals = FALSE)
+	{
+		switch($type)
+		{
+			case 'numeric':	$data = rtrim(rtrim(sprintf('%F', $data), '0'), '.'); // remove trailing zeros up to decimal point and kill decimal point if no trailing zeros
+				break;
+			case 'integer': $data = sprintf('%d', $data);
+				break;
+			case 'decimal':
+				$parts = explode('.', sprintf('%F', $data));
+				$parts[1] = isset($parts[1]) ? rtrim($parts[1], '0') : '';
+				
+				$decimals = ($decimals === FALSE) ? 2 : $decimals;
+				$data = $parts[0].'.'.str_pad($parts[1], $decimals, '0');
+				break;
+			default:
+				if ($decimals && ctype_digit(str_replace('.', '', $data))) {
+					$data = number_format($data, $decimals);
+				}
+		}
+		
+		return $data;
 	}
 }
 

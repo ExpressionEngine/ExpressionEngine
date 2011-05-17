@@ -6155,9 +6155,12 @@ class Forum_Core extends Forum {
 		/** ----------------------------------------
 		/**  Is the IP or User Agent unavalable?
 		/** ----------------------------------------*/
-		if ($this->EE->input->ip_address() == '0.0.0.0' OR $this->EE->session->userdata['user_agent'] == "")
-		{			
-			return $this->trigger_error();
+		if ($this->EE->config->item('require_ip_for_posting') == 'y')
+		{
+			if ($this->EE->input->ip_address() == '0.0.0.0' OR $this->EE->session->userdata['user_agent'] == "")
+			{			
+				return $this->trigger_error();
+			}
 		}
 		
 		if ($type == 'topic' AND $this->EE->input->get_post('title') == '')	

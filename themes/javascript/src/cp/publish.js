@@ -84,7 +84,7 @@ EE.publish.category_editor = function() {
 			form = res.find("form"),
 			submit_button,
 			container_form;
-		
+				
 		if (form.length) {
 			cat_modal_container.html(res);
 			
@@ -115,22 +115,25 @@ EE.publish.category_editor = function() {
 						cat_modal.dialog("close");
 						
 						if (res[0] == '<') {
-							var response = $(res).find(".pageContents table"),
+							var response = $(res).find(".pageContents"),
 								form = response.find("form");
 
 							if (form.length == 0) {
 								container.html(response);
 							}
-
-							setup_page.call(container, response, true);
+							
+							response = response.wrap('<div />').parent(); // outer html hack
+							setup_page.call(container, response.html(), true);
 						}
 						else {
 							setup_page.call(container, res, true);
 						}
 					},
 					error: function(res) {
-						cat_modal.dialog("close");
-						setup_page.call(container, res.error, true);
+						res = $.parseJSON(res.responseText);
+						// cat_modal.dialog("close");
+						cat_modal.html(res.error);
+						// setup_page.call(container, res.error, true);
 					}
 				});
 				
@@ -193,8 +196,7 @@ EE.publish.category_editor = function() {
 				setup_page.call(cat_groups_containers[gid], filtered_res, true);
 			},
 			error: function(response) {
-				// Juck @todo flip to JSON parser in jQuery 1.4
-				response = eval('(' + response.responseText + ')');
+				response = $.parseJSON(response.responseText);
 				cat_groups_containers[gid].html(response.error);
 				setup_page.call(cat_groups_containers[gid], response.error, true);
 			}
@@ -660,7 +662,7 @@ $(document).ready(function() {
 		});
 	}
 
-	if (EE.publish.autosave) {
+	if (EE.publish.autosave && EE.publish.autosave.interval) {
 		
 		var autosaving = false;
 		

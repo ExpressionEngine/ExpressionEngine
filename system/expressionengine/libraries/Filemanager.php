@@ -78,7 +78,7 @@ class Filemanager {
 	// ---------------------------------------------------------------------
 
 
-	function clean_filename($filename, $dir_id)
+	function clean_filename($filename, $dir_id, $dupe_check = FALSE)
 	{
 		$prefs = $this->fetch_upload_dir_prefs($dir_id);
 		
@@ -104,9 +104,12 @@ class Filemanager {
 		$ext = '.'.$ext;
 		$basename = $filename;
 		
-		while (file_exists($path.$filename.$ext))
+		if ($dupe_check == TRUE)
 		{
-			$filename = $basename.'_'.$i++;
+			while (file_exists($path.$filename.$ext))
+			{
+				$filename = $basename.'_'.$i++;
+			}
 		}
 		
 		return $path.$filename.$ext;
@@ -1679,6 +1682,7 @@ class Filemanager {
 		// Upload the file
 		
 		$field = ($field_name) ? $field_name : 'userfile';
+		$original_filename = $_FILES[$field]['name'];
 		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id']));
 		
 		$config = array(
@@ -1742,7 +1746,7 @@ class Filemanager {
 			'site_id'				=> $this->EE->config->item('site_id'),
 			
 			'file_name'				=> $file['file_name'],
-			'orig_name'				=> $file['orig_name'],
+			'orig_name'				=> $original_filename,
 			
 			'is_image'				=> $file['is_image'],
 			'mime_type'				=> $file['file_type'],
@@ -1826,38 +1830,76 @@ class Filemanager {
 	 * @access	public
 	 * @return	void
 	 */	 
-	function replace_file($data)
+	function replace_file($file_id, $new_file_name)
 	{
-		$directory_id  = $data['upload_location_id'];
-		$old_file_name = str_replace('temp_file_', '', $data['file_name']);
-		$new_file_name = basename($this->clean_filename($old_file_name, $directory_id));
+		$this->EE->load->model(array('file_upload_preferences_model', 'file_model'));
 		
-		$this->EE->load->model('file_upload_preferences_model');
+		// Get the file data form the database
+		$previous_data = $this->EE->db->get_where('files', array('file_id' => $file_id));
+		$previous_data = $previous_data->row();
 		
-		// TODO: Remove permissions checks?
-		// Permissions checks were left in here (although redundant with
-		// Filemanager::upload_file) because this will later change to allow
-		// people to choose the name of the file
+		$directory_id  = $previous_data->upload_location_id;
+		$old_file_name = $previous_data->file_name;
 		
+		// Rename the actual file
+		$file_path = $this->_rename_file($old_file_name, $new_file_name, $directory_id);
+
+		// If renaming the file sparked an error return it
+		if (is_array($file_path))
+		{
+			var_dump($file_path);
+			return $file_path;
+		}
+		
+		// TODO: Rename thumbnails
+		
+		// Update the file record
+		$updated_data = array(
+			'file_id'	=> $file_id,
+			'file_name'	=> $new_file_name,
+			'rel_path'	=> str_replace($old_file_name, $new_file_name, $previous_data->rel_path)
+		);
+		
+		// Change title if it was automatically set
+		if ($previous_data->title == $previous_data->file_name)
+		{
+			$updated_data['title'] = $new_file_name;
+		}
+		
+		$this->save_file(
+			$file_path,
+			$previous_data->upload_location_id,
+			$updated_data
+		);
+		
+		return TRUE;
+    }
+
+    public function _rename_file($old_file_name, $new_file_name, $directory_id)
+    {
+		// Make sure the filename is clean
+		$new_file_name = basename($this->clean_filename($new_file_name, $directory_id));
+	
 		// Check they have permission for this directory and get directory info
-		$query = $this->EE->file_upload_preferences_model->get_upload_preferences(
-			$this->EE->session->userdata('group_id'), 
+		$upload_directory = $this->EE->file_upload_preferences_model->get_upload_preferences(
+			$this->EE->session->userdata('group_id'),
 			$directory_id
 		);
 		
-		if ($query->num_rows() <= 0)
+		// If this directory doesn't exist then we can't do anything
+		if ($upload_directory->num_rows() <= 0)
 		{
-			return;
+			return array('error' => lang('no_known_file'));
 		}
 		
-		$dir_row = $query->row();
-		
+		$upload_directory = $upload_directory->row();
+	
 		$config = array(
-			'upload_path'	=> $dir_row->server_path,
-			'allowed_types'	=> ($this->EE->session->userdata('group_id') == 1) ? 'all' : $dir_row->allowed_types,
-			'max_size'		=> round($dir_row->max_size/1024, 2),
-			'max_width'		=> $dir_row->max_width,
-			'max_height'	=> $dir_row->max_height
+			'upload_path'	=> $upload_directory->server_path,
+			'allowed_types'	=> ($this->EE->session->userdata('group_id') == 1) ? 'all' : $upload_directory->allowed_types,
+			'max_size'		=> round($upload_directory->max_size/1024, 2),
+			'max_width'		=> $upload_directory->max_width,
+			'max_height'	=> $upload_directory->max_height
 		);
 		
 		$this->EE->load->library('upload', $config);
@@ -1865,33 +1907,10 @@ class Filemanager {
 		if ( ! $this->EE->upload->file_overwrite($old_file_name, $new_file_name))
 		{
 			return array('error' => $this->EE->upload->display_errors());
-		} 
-		
-		// Update the file record
-		$this->EE->load->model('file_model');
-		$previous_data = $this->EE->db->get_where('files', array('file_id' => $data['file_id']));
-		$previous_data = $previous_data->row();
-		
-		$updated_data = array(
-			'file_id'	=> $data['file_id'],
-			'file_name'	=> $new_file_name,
-			'rel_path'	=> str_replace($old_file_name, $new_file_name, $previous_data->rel_path)
-		);
-		
-		// Change title in the event if it's automatic
-		if ($previous_data->title == $previous_data->file_name)
-		{
-			$updated_data['title'] = $new_file_name;
 		}
 		
-		$this->EE->file_model->save_file($updated_data);
-		
-		// TODO: Rebuild thumbnails
-		
-		return TRUE;
+		return $upload_directory->server_path . $new_file_name;
     }
-
-    /* END */
  
 
 	// --------------------------------------------------------------------
