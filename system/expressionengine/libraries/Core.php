@@ -23,7 +23,7 @@
  * @link		http://expressionengine.com
  */
 class EE_Core {
-
+	
 	var $native_modules		= array();		// List of native modules with EE
 	var $native_plugins		= array();		// List of native plugins with EE
 
@@ -33,18 +33,6 @@ class EE_Core {
 	 */	
 	function __construct()
 	{
-		/*
-		 * -----------------------------------------------------------------
-		 *  Define the request type
-		 * -----------------------------------------------------------------
-		 */
-		 // Note: The admin.php file defines REQ='CP'
-		if ( ! defined('REQ'))
-		{
-			$CI =& get_instance();
-			define('REQ', (($CI->input->get_post('ACT') !== FALSE) ? 'ACTION' : 'PAGE')); 
-		}
-		
 		// Call initialize to do the heavy lifting
 		$this->_initialize_core();
 	}
@@ -63,10 +51,17 @@ class EE_Core {
 		$this->EE =& get_instance();
 		
 		// Yes, this is silly. No it won't work without it.
-		// For some reason PHP is won't bind the reference
+		// For some reason PHP won't bind the reference
 		// for core to the super object quickly enough.
 		// Breaks access to core in the menu lib.
 		$this->EE->core = $this;
+		
+		// Define the request type
+		// Note: admin.php defines REQ=CP
+		if ( ! defined('REQ'))
+		{
+			define('REQ', (($this->EE->input->get_post('ACT') !== FALSE) ? 'ACTION' : 'PAGE')); 
+		}
 		
 		// some path constants to simplify things
 		define('PATH_MOD',		APPPATH.'modules/');
@@ -78,7 +73,7 @@ class EE_Core {
 		
 		// application constants
 		define('IS_FREELANCER',	FALSE);
-		define('APP_NAME',		'ExpressionEngine'.((IS_FREELANCER) ? ' Freelancer' : ''));
+		define('APP_NAME',		'ExpressionEngine'.(IS_FREELANCER ? ' Freelancer' : ''));
 		define('APP_BUILD',		'20110406');
 		define('APP_VER',		substr($this->EE->config->item('app_version'), 0, 1).'.'.substr($this->EE->config->item('app_version'), 1, 1).'.'.substr($this->EE->config->item('app_version'), 2));
 		define('SLASH',			'&#47;');
@@ -91,13 +86,16 @@ class EE_Core {
 		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	$this->EE->input->is_ajax_request());
 
-		$this->native_modules = array('blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon', 'file', 			
-									'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member', 'metaweblog_api',
-									 'moblog', 'pages', 'query', 'referrer', 'rss', 'safecracker', 'search',
-									 'simple_commerce', 'stats', 'updated_sites', 'wiki');
-									  
-		$this->native_plugins = array('magpie', 'xml_encode');
 
+		$this->native_plugins = array('magpie', 'xml_encode');
+		$this->native_modules = array(
+			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon', 'file', 			
+			'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member', 'metaweblog_api',
+			'moblog', 'pages', 'query', 'referrer', 'rss', 'safecracker', 'search',
+			'simple_commerce', 'stats', 'updated_sites', 'wiki'
+		);
+		
+		
 		// Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
 		if (function_exists("set_time_limit") == TRUE AND @ini_get("safe_mode") == 0)
 		{
@@ -158,10 +156,7 @@ class EE_Core {
 		// make sure the DB cache folder exists if we're caching!
 		if ($this->EE->db->cache_on === TRUE && ! @is_dir(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id')))
 		{
-			if ( ! @mkdir(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id'), DIR_WRITE_MODE))
-			{
-				//continue;
-			}
+			@mkdir(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id'), DIR_WRITE_MODE);
 
 			if ($fp = @fopen(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id').'/index.html', FOPEN_WRITE_CREATE_DESTRUCTIVE))
 			{
