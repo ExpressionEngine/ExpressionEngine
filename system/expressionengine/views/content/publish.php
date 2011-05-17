@@ -172,7 +172,7 @@ if ($EE_view_disable !== TRUE)
 											<p class="spellcheck markitup">
 
 												<?php if ($field_list[$_n]['field_show_writemode'] == 'y'):?>
-													<a href="#" class="write_mode_trigger" rel="#write_mode_container" id="id_<?=$field_list[$_n]['field_id']?>" title="<?=lang('write_mode')?>"><img alt="<?=lang('write_mode')?>" width="22" height="21" src="<?=$cp_theme_url?>images/publish_write_mode.png" /></a> 
+													<a href="#" class="write_mode_trigger" id="id_<?=$field_list[$_n]['field_id']?>" title="<?=lang('write_mode')?>"><img alt="<?=lang('write_mode')?>" width="22" height="21" src="<?=$cp_theme_url?>images/publish_write_mode.png" /></a> 
 												<?php endif;?>
 
 												<?php if ($field_list[$_n]['field_show_file_selector'] == 'y' && count($file_list) > 0):?>
@@ -245,13 +245,19 @@ if ($EE_view_disable !== TRUE)
 
 <!-- Modals -->
 	<div id="write_mode_container">
-		<div id="write_mode_close_container"><a href="#" class="closeWindowButton"><img alt="<?=lang('close')?>" width="13" height="13" src="<?=$cp_theme_url?>images/write_mode_close.png" /></a><a href="#" class="publish_to_field close"><img alt="Publish to Field" width="103" height="18" src="<?=$cp_theme_url?>images/write_mode_publish_to_field.png" /></a>&nbsp;</div>
+		<div id="write_mode_close_container">
+			<a href="#" class="publish_to_field close"><?=lang('wm_publish_to_field')?></a>&nbsp;
+			<a href="#" class="discard_changes close"><?=lang('wm_discard_changes')?></a>
+		</div>
 
 		<div id="write_mode_writer">
 			<div id="write_mode_header"><a href="#" class="reveal_formatting_buttons"><img class="show_tools" alt="<?=lang('show_tools')?>" width="109" height="18" src="<?=$cp_theme_url?>images/write_mode_show_tools.png" /></a></div>
 			<textarea id="write_mode_textarea"></textarea>
 		</div>
-		<div id="write_mode_footer"><a href="#" class="publish_to_field close"><img alt="<?=lang('publish_to_field')?>" width="103" height="18" src="<?=$cp_theme_url?>images/write_mode_publish_to_field.png" /></a></div>
+		<div id="write_mode_footer">
+			<a href="#" class="publish_to_field close"><?=lang('wm_publish_to_field')?></a>&nbsp;
+			<a href="#" class="discard_changes close"><?=lang('wm_discard_changes')?></a>
+		</div>
 	</div>
 	
 	<?php if ($this->session->userdata('group_id') == 1):?>
