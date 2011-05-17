@@ -34,7 +34,7 @@ class Addons_modules extends CI_Controller {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
+		if ( ! $this->cp->allowed_group('can_access_addons', 'can_access_modules'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -102,19 +102,19 @@ class Addons_modules extends CI_Controller {
 		}
 
 		$vars['table_headings'] = array(
-										'',
-										lang('module_name'),
-										lang('module_description'),
-										lang('module_version'),
-										lang('module_status'),
-										lang('module_action')
-										);
+			'',
+			lang('module_name'),
+			lang('module_description'),
+			lang('module_version'),
+			lang('module_status'),
+			lang('module_action')
+		);
 
 		$modcount = 1;
 
 		$vars['modules'] = array();
-		$names = array();
-		$data = array();
+		$names	 = array();
+		$data	 = array();
 		$updated = array();
 		
 		foreach ($modules as $module => $module_info)
@@ -165,7 +165,6 @@ class Addons_modules extends CI_Controller {
 			elseif ($status == 'not_installed')
 			{
 				$show_action = '<a class="less_important_link" href="'.BASE.AMP.'C=addons_modules'.AMP.'M=module_installer'.AMP.'module='.$module.'" title="'.lang('install').'">'.lang('install').'</a>';
-
 			}
 			else
 			{
