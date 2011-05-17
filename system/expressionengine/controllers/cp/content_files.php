@@ -42,8 +42,7 @@ class Content_files extends CI_Controller {
 		parent::__construct();
 
 		// Permissions
-		if ( ! $this->cp->allowed_group('can_access_content')  OR
-			 ! $this->cp->allowed_group('can_access_files'))
+		if ( ! $this->cp->allowed_group('can_access_content', 'can_access_files'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1510,6 +1509,31 @@ class Content_files extends CI_Controller {
 				continue;
 			}
 
+			// Clean filename
+			$clean_filename = basename($this->filemanager->clean_filename($file['name'], $id));
+
+			if ($file['name'] != $clean_filename)
+			{
+				// It is just remotely possible the new clean filename already exists
+				// So we check for that and increment if such is the case
+				if (file_exists($this->_upload_dirs[$id]['server_path'].$clean_filename))
+				{
+					$clean_filename = basename($this->filemanager->clean_filename($clean_filename, $id, TRUE));
+				}
+				
+				// Rename the file
+        		if ( ! @copy($this->_upload_dirs[$id]['server_path'].$file['name'],
+	 						$this->_upload_dirs[$id]['server_path'].$clean_filename))
+				{
+					$errors[$file['name']] = lang('invalid_filename');
+					continue;
+				}
+
+				unlink($this->_upload_dirs[$id]['server_path'].$file['name']);	
+				$file['name'] = $clean_filename;			
+			}
+
+
 			// Does it exist in DB?
 			$query = $this->db->get_where('files', array('file_name' => $file['name']));
 
@@ -1556,6 +1580,7 @@ class Content_files extends CI_Controller {
 						TRUE,
 						TRUE
 				);					
+
 				continue;
 			}
 			
