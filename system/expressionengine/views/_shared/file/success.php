@@ -1,7 +1,7 @@
 <?php $this->load->view('_shared/file/iframe_header'); ?>
 
 <div class="upload_success">
-	<h2><?= $success ?></h2>
+	<h2><?= lang('upload_success') ?></h2>
 
 	<img src="<?= $file['thumb'] ?>" alt="<?= $file['file_name'] ?>" />
 	<table>
