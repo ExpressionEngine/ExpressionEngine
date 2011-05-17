@@ -595,7 +595,7 @@ span.button .submit {
 	display:			block;
 }
 
-#navigationTabs .msm_sites {
+#navigationTabs > .msm_sites {
 	float:				right;
 	margin-right:		20px;
 }
