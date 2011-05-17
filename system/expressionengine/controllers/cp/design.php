@@ -3291,19 +3291,12 @@ class Design extends CI_Controller {
 
 			$(".groupList ul li a").each(function(){
 				var id = $(this).parent("li").attr("id");
-	//			var group_id = id.replace(/template_group_/, ""); // different then id, used for just the number
-
-				// add edit group link into the list item
-	//			$(this).parent("li").append("<a class=\"editTemplateGroup\" href=\"'.BASE.AMP.'C=design'.AMP.'M=edit_template_group'.AMP.'group_id="+group_id+" \">'.$this->lang->line('edit_template_group').'</a>");
 
 				// enable group switching
 				$(this).click(function() {
 					// change appearance in side bar
 					$(this).parent("li").addClass("selected").siblings("li").removeClass("selected");
 					$("#" + id + "_templates").show().siblings(":not(.linkBar)").hide();
-
-					// re-jig (yes, rejig is a word) the create new template link for the new selected group
-	//				$("#new_template_create").attr("href", EE.BASE + "&C=design&M=new_template&group_id=" + group_id);
 
 					$("table").show().trigger("applyWidgets");
 

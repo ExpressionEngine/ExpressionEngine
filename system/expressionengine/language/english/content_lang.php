@@ -920,6 +920,11 @@ $lang = array(
 'write_mode' => 'Write Mode',
 'show_tools' => 'Show Tools',
 
+// writemode
+'wm_discard_changes'	=> 'Discard Changes',
+'wm_publish_to_field'	=> 'Publish to Field',
+
+
 'edit_modes'			=> 'Edit Modes',
 'resize'				=> 'Resize',
 'crop'					=> 'Crop',

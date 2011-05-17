@@ -738,14 +738,6 @@ $(document).ready(function() {
 		});		
 	}
 
-
-	$.ee_filebrowser();
-	
-	var field_for_writemode_publish = "";
-
-	if (EE.publish.show_write_mode === true) { 
-		$("#write_mode_textarea").markItUp(myWritemodeSettings);		
-	}
 	
 	if (EE.publish.markitup.fields !== undefined)
 	{
@@ -754,50 +746,84 @@ $(document).ready(function() {
 		});	
 	}
 	
-	
-	// the height of this window depends on the height of the viewport.	 Percentages dont work
-	// as the header and footer are absolutely sized.  This is a great compromise.
-	write_mode_height = $(window).height() - (33 + 59 + 25); // the height of header + footer + 25px just to be safe
-	$("#write_mode_writer").css("height", write_mode_height+"px");
-	$("#write_mode_writer textarea").css("height", (write_mode_height - 67 - 17) + "px"); // for formatting buttons + 17px for appearance
-	
-
-	var triggers = $(".write_mode_trigger").overlay({
-
-		// Mask to create modal look
-		mask: {
-			color: '#262626',
-			loadSpeed: 200,
-			opacity: 0.85
-		},
+	EE.publish.setup_writemode = function() {
+		var wm_inner = $('#write_mode_writer'),
+			wm_txt = $('#write_mode_textarea'),
+			source_sel, wm_sel,
+			source_txt, triggers;
 		
-		onBeforeLoad: function(evt) {
-			var trigger = this.getTrigger()[0],
-				textarea = $("#write_mode_textarea");
-
-									
-			if (trigger.id.match(/^id_\d+$/)) {
-				field_for_writemode_publish = "field_"+trigger.id;
-			} else {
-				field_for_writemode_publish = trigger.id.replace(/id_/, '');
-			}
+		wm_txt.markItUp(myWritemodeSettings);
+		
+		// the height of this modal depends on the height of the viewport
+		// we'll dynamically resize as a user may want proper fullscreen
+		// by changing their browser window once it's open.
+		
+		$(window).resize(function() {
+			var wm_height = $(this).height() - (33 + 59 + 25);	// header + footer + 25px just to be safe
 			
-			// put contents from other page into here
-			textarea.val( $("#"+field_for_writemode_publish).val() );
-			textarea.focus();
-		},
+			wm_inner
+				.css("height", wm_height + "px")
+				.find("textarea").css("height", (wm_height - 67 - 17) + "px");	// for formatting buttons + 17px for appearance
+			
+		}).triggerHandler('resize');
 		
-		onClose: function(event) {
-			var currentID = "#" + field_for_writemode_publish.replace(/field_/, ''),
-				i =  $('.write_mode_trigger').index(currentID);
+		$(".write_mode_trigger").overlay({
 
-			$("#"+field_for_writemode_publish).val($("#write_mode_textarea").val());
-			triggers.eq(i).overlay().close();
-		},
-		
-		top: 'center',
-		closeOnClick: false
-	});
+			// only exit by clicking an action
+			closeOnEsc: false,
+			closeOnClick: false,
+			
+			top: 'center',
+			target: '#write_mode_container',
+
+			// Mask to create modal look
+			mask: {
+				color: '#262626',
+				loadSpeed: 200,
+				opacity: 0.85
+			},
+
+			// Event handlers
+			onBeforeLoad: function(evt) {
+				var trigger_id = this.getTrigger()[0].id;
+
+				// regular field (id_#) or named field (id_forum_content_blah)
+				if (trigger_id.match(/^id_\d+$/)) {
+					source_txt = $("#field_" + trigger_id);
+				} else {
+					source_txt = $('#' + trigger_id.replace(/id_/, ''));
+				}
+				
+				source_sel = source_txt.getSelectedRange();
+				wm_txt.val( source_txt.val() );
+			},
+			
+			onLoad: function(evt) {
+				// recreate the old cursor position
+				wm_txt.focus();
+				wm_txt.createSelection(source_sel.start, source_sel.end);
+			},
+			
+			onClose: function(evt) {
+				var closer = $(evt.srcElement).closest('.close'),	// evt.target is overriden by the custom event trigger =(
+					isSave = closer.hasClass('publish_to_field');
+
+				if (closer.hasClass('publish_to_field')) {
+					wm_sel = wm_txt.getSelectedRange();
+					source_txt.val( wm_txt.val() );
+					source_txt.createSelection(wm_sel.start, wm_sel.end);
+				}
+
+				source_txt.focus();
+			}
+		});
+	}
+	
+	
+	if (EE.publish.show_write_mode === true) { 
+		EE.publish.setup_writemode();
+	}
+
 	
 	// @todo rewrite dependencies and remove
 	
@@ -835,6 +861,9 @@ $(document).ready(function() {
 		return "";
 	}
 
+
+	$.ee_filebrowser();
+	
 	// Bind the image html buttons
 	$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
 				
