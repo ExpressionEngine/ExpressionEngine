@@ -738,9 +738,12 @@ class Content_files extends CI_Controller {
 		$upload_response['name'] = $upload_response['file_name'];
 		$upload_response['thumb'] = $upload_response['file_thumb'];
 		
+		$file_name = explode('.' , $upload_response['file_name']);
 		$vars = array(
 			'file'		=> $upload_response,
 			'file_json'	=> $this->javascript->generate_json($upload_response, TRUE),
+			'file_ext'	=> array_pop($file_name),
+			'file_name'	=> implode('.', $file_name),
 			'date'		=> date('M d Y - H:ia')
 		);
 		
@@ -763,7 +766,10 @@ class Content_files extends CI_Controller {
 	 */
 	public function update_file()
 	{
-		$new_file_name = $this->input->post('new_file_name');
+		$new_file_name = basename($this->filemanager->clean_filename(
+			$this->input->post('new_file_name') . '.' . $this->input->post('file_ext'),
+			$this->input->post('directory_id')
+		));
 		
 		// Attempt to replace the file
 		$replace_file = $this->filemanager->replace_file(
