@@ -5836,7 +5836,15 @@ class Admin_content extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
-	function _restrict_prefs_access()
+	/**
+	 * Restrict Access
+	 *
+	 * Helper function for the most common access level in this class
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _restrict_prefs_access()
 	{
 		if ( ! $this->cp->allowed_group(
 			'can_access_admin',
