@@ -1633,7 +1633,8 @@ class Metaweblog_api {
 		// Figure out the FULL file path
 		$file_path = $this->EE->filemanager->clean_filename(
 			$parameters['3']['name'], 
-			$this->upload_dir
+			$this->upload_dir,
+			TRUE
 		);
 
 		$filename = basename($file_path);

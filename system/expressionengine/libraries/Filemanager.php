@@ -78,7 +78,7 @@ class Filemanager {
 	// ---------------------------------------------------------------------
 
 
-	function clean_filename($filename, $dir_id)
+	function clean_filename($filename, $dir_id, $dupe_check = FALSE)
 	{
 		$prefs = $this->fetch_upload_dir_prefs($dir_id);
 		
@@ -104,9 +104,12 @@ class Filemanager {
 		$ext = '.'.$ext;
 		$basename = $filename;
 		
-		while (file_exists($path.$filename.$ext))
+		if ($dupe_check == TRUE)
 		{
-			$filename = $basename.'_'.$i++;
+			while (file_exists($path.$filename.$ext))
+			{
+				$filename = $basename.'_'.$i++;
+			}
 		}
 		
 		return $path.$filename.$ext;
@@ -1679,7 +1682,7 @@ class Filemanager {
 		// Upload the file
 		
 		$field = ($field_name) ? $field_name : 'userfile';
-		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id']));
+		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id'], TRUE));
 		
 		$config = array(
 			'file_name'		=> $clean_filename,
@@ -1830,7 +1833,7 @@ class Filemanager {
 	{
 		$directory_id  = $data['upload_location_id'];
 		$old_file_name = str_replace('temp_file_', '', $data['file_name']);
-		$new_file_name = basename($this->clean_filename($old_file_name, $directory_id));
+		$new_file_name = basename($this->clean_filename($old_file_name, $directory_id, TRUE));
 		
 		$this->EE->load->model('file_upload_preferences_model');
 		
