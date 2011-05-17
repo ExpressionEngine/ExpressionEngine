@@ -341,7 +341,7 @@ class Design extends CI_Controller {
 	 */
 	function new_template($message = '', $group_id = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design'))
 		{
 			show_error($this->lang->line('unauthorized_access'));
 		}
@@ -356,6 +356,11 @@ class Design extends CI_Controller {
 		{
 			return $this->template_group_pick();
 		}
+		
+		if ( ! $this->_template_access_privs(array('group_id' => $group_id)))
+		{
+			show_error($this->lang->line('unauthorized_access'));
+		}		
 
 		if ( ! $this->_template_access_privs(array('group_id' => $group_id)))
 		{
@@ -2552,6 +2557,8 @@ class Design extends CI_Controller {
 
 		if ( ! $this->cp->allowed_group('can_admin_templates'))
 		{
+			show_error($this->lang->line('unauthorized_access'));
+			
 			if ( ! $this->_template_access_privs(array('group_id' => $group_id)))
 			{
 				show_error($this->lang->line('unauthorized_access'));
@@ -2620,7 +2627,7 @@ class Design extends CI_Controller {
 		
 		if ( ! $this->cp->allowed_group('can_admin_templates'))
 		{
-			if ( ! $this->template_access_privs(array('group_id' => $group_id)))
+			if ( ! $this->_template_access_privs(array('group_id' => $group_id)))
 			{
 				show_error($this->lang->line('unauthorized_access'));
 			}

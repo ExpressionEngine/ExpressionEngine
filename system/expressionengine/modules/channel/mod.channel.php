@@ -445,7 +445,7 @@ class Channel {
 
 						$this->query = $reldata['query'];
 						
-						if ($this->query->num_rows() != 0)
+						if ($this->query->num_rows != 0)
 						{
 							$this->categories = array($this->query->row('entry_id')  => $reldata['categories']);
 
