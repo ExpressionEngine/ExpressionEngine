@@ -36,7 +36,7 @@ class Tools_logs extends CI_Controller {
 
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('tools_model');
@@ -57,11 +57,11 @@ class Tools_logs extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('tools_logs'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=tools', $this->lang->line('tools'));
+		$this->cp->set_variable('cp_page_title', lang('tools_logs'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=tools', lang('tools'));
 
 		$this->javascript->compile();
 
@@ -82,17 +82,17 @@ class Tools_logs extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->library('table');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('view_cp_log'));
+		$this->cp->set_variable('cp_page_title', lang('view_cp_log'));
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_logs'=> $this->lang->line('tools_logs')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
 		));
 
 		$this->cp->add_js_script(array('plugin' => 'dataTables'));
@@ -114,8 +114,8 @@ class Tools_logs extends CI_Controller {
 			$config['total_rows'] = $total;
 			$config['per_page'] = $this->perpage;
 			$config['page_query_string'] = TRUE;
-			$config['first_link'] = $this->lang->line('pag_first_link');
-			$config['last_link'] = $this->lang->line('pag_last_link');
+			$config['first_link'] = lang('pag_first_link');
+			$config['last_link'] = lang('pag_last_link');
 						
 			$this->pagination->initialize($config);	
 			$vars['pagination'] = $this->pagination->create_links();
@@ -140,7 +140,7 @@ class Tools_logs extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->output->enable_profiler(FALSE);
@@ -213,17 +213,17 @@ class Tools_logs extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->library('table');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('view_search_log'));
+		$this->cp->set_variable('cp_page_title', lang('view_search_log'));
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_logs'=> $this->lang->line('tools_logs')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
 		));
 
 		$this->cp->add_js_script(array('plugin' => 'dataTables'));
@@ -245,8 +245,8 @@ class Tools_logs extends CI_Controller {
 			$config['total_rows'] = $total;
 			$config['per_page'] = $this->perpage;
 			$config['page_query_string'] = TRUE;
-			$config['first_link'] = $this->lang->line('pag_first_link');
-			$config['last_link'] = $this->lang->line('pag_last_link');
+			$config['first_link'] = lang('pag_first_link');
+			$config['last_link'] = lang('pag_last_link');
 			
 			$this->pagination->initialize($config);	
 			$vars['pagination'] = $this->pagination->create_links();
@@ -271,7 +271,7 @@ class Tools_logs extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->output->enable_profiler(FALSE);
@@ -345,7 +345,7 @@ class Tools_logs extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$max_page_loads = 10;
@@ -363,12 +363,12 @@ class Tools_logs extends CI_Controller {
 				
 		$this->load->library('table');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('view_throttle_log'));
+		$this->cp->set_variable('cp_page_title', lang('view_throttle_log'));
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_logs'=> $this->lang->line('tools_logs')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
 		));
 
 		$this->cp->add_js_script(array('plugin' => 'dataTables'));
@@ -392,8 +392,8 @@ class Tools_logs extends CI_Controller {
 			$config['total_rows'] = $total;
 			$config['per_page'] = $this->perpage;
 			$config['page_query_string'] = TRUE;
-			$config['first_link'] = $this->lang->line('pag_first_link');
-			$config['last_link'] = $this->lang->line('pag_last_link');
+			$config['first_link'] = lang('pag_first_link');
+			$config['last_link'] = lang('pag_last_link');
 						
 			$this->pagination->initialize($config);	
 			$vars['pagination'] = $this->pagination->create_links();
@@ -424,7 +424,7 @@ class Tools_logs extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->output->enable_profiler(FALSE);
@@ -509,19 +509,19 @@ class Tools_logs extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->library('table');
 		$this->load->helper('form');
 		$this->lang->loadfile('members');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('view_email_logs'));
+		$this->cp->set_variable('cp_page_title', lang('view_email_logs'));
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_logs'=> $this->lang->line('tools_logs')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
 		));
 
 		$this->cp->add_js_script(array('plugin' => 'dataTables'));
@@ -557,8 +557,8 @@ class Tools_logs extends CI_Controller {
 			$config['total_rows'] = $total;
 			$config['per_page'] = $this->perpage;
 			$config['page_query_string'] = TRUE;
-			$config['first_link'] = $this->lang->line('pag_first_link');
-			$config['last_link'] = $this->lang->line('pag_last_link');
+			$config['first_link'] = lang('pag_first_link');
+			$config['last_link'] = lang('pag_last_link');
 			
 			$this->pagination->initialize($config);	
 			$vars['pagination'] = $this->pagination->create_links();
@@ -591,7 +591,7 @@ class Tools_logs extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->output->enable_profiler(FALSE);
@@ -660,7 +660,7 @@ class Tools_logs extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$type = $this->input->get_post('type');
@@ -688,7 +688,7 @@ class Tools_logs extends CI_Controller {
 			// Redirect to where we came from
 			$view_page = 'view_'.$type.'_log';
 			
-			$this->session->set_flashdata('message_success', $this->lang->line('cleared_logs'));
+			$this->session->set_flashdata('message_success', lang('cleared_logs'));
 			$this->functions->redirect(BASE.AMP.'C=tools_logs'.AMP.'M='.$view_page);
 		}
 
@@ -708,7 +708,7 @@ class Tools_logs extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$id = $this->input->get_post('id');
@@ -717,7 +717,7 @@ class Tools_logs extends CI_Controller {
 		
 		if ($query->num_rows() == 0)
 		{
-			$this->session->set_flashdata('message_failure', $this->lang->line('no_cached_email'));
+			$this->session->set_flashdata('message_failure', lang('no_cached_email'));
 			$this->functions->redirect(BASE.AMP.'C=tools_logs'.AMP.'M=view_email_log');
 		}
 		
@@ -736,7 +736,7 @@ class Tools_logs extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		if ( ! $this->input->post('toggle'))
@@ -755,7 +755,7 @@ class Tools_logs extends CI_Controller {
 		
 		$this->db->query("DELETE FROM exp_email_console_cache WHERE ".$IDS);
 	
-		$this->session->set_flashdata('message_success', $this->lang->line('email_deleted'));
+		$this->session->set_flashdata('message_success', lang('email_deleted'));
 		$this->functions->redirect(BASE.AMP.'C=tools_logs'.AMP.'M=view_email_log');
 	}
 	
@@ -771,12 +771,12 @@ class Tools_logs extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		if ($this->config->item('enable_throttling') == 'n')
 		{
-			show_error($this->lang->line('throttling_disabled'));
+			show_error(lang('throttling_disabled'));
 		}
 
         $max_page_loads = 10;
@@ -819,7 +819,7 @@ class Tools_logs extends CI_Controller {
  			$MOD->write_htaccess(FALSE);
  		}
 		
-		$this->session->set_flashdata('message_success', $this->lang->line('blacklist_updated'));
+		$this->session->set_flashdata('message_success', lang('blacklist_updated'));
 		$this->functions->redirect(BASE.AMP.'C=tools_logs'.AMP.'M=view_throttle_log');
 	}
 	
@@ -973,7 +973,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			'.$col_defs.'
 					
 		"oLanguage": {
-			"sZeroRecords": "'.$this->lang->line('invalid_entries').'",
+			"sZeroRecords": "'.lang('invalid_entries').'",
 			
 			"oPaginate": {
 				"sFirst": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",

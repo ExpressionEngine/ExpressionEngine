@@ -37,7 +37,7 @@ class Tools_data extends CI_Controller {
 
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('tools_model');
@@ -64,11 +64,11 @@ class Tools_data extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('tools_data'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=tools', $this->lang->line('tools'));
+		$this->cp->set_variable('cp_page_title', lang('tools_data'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=tools', lang('tools'));
 
 		$this->javascript->compile();
 
@@ -91,7 +91,7 @@ class Tools_data extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->helper('form');
@@ -101,16 +101,16 @@ class Tools_data extends CI_Controller {
 		if (isset($_POST['type']))
 		{
 			$this->functions->clear_caching($_POST['type'], '', TRUE);
-			$this->session->set_flashdata('message_success', $this->lang->line('cache_deleted'));
+			$this->session->set_flashdata('message_success', lang('cache_deleted'));
 			$this->functions->redirect(BASE.AMP.'C=tools_data'.AMP.'M=clear_caching');
 		}
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('clear_caching'));
+		$this->cp->set_variable('cp_page_title', lang('clear_caching'));
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_data'=> $this->lang->line('tools_data')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_data'=> lang('tools_data')
 		));
 
 		$this->javascript->compile();
@@ -132,19 +132,19 @@ class Tools_data extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$sql_info = $this->tools_model->get_sql_info();
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('sql_manager'));
+		$this->cp->set_variable('cp_page_title', lang('sql_manager'));
 		
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_data'=> $this->lang->line('tools_data')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_data'=> lang('tools_data')
 		));
 
 		$this->load->library('table');
@@ -173,24 +173,24 @@ class Tools_data extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		// Super Admins only, please
 		if ($this->session->userdata['group_id'] != '1')
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('sql_query_form'));
+		$this->cp->set_variable('cp_page_title', lang('sql_query_form'));
 
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_data'=> $this->lang->line('tools_data'),
-			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager' => $this->lang->line('sql_manager')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_data'=> lang('tools_data'),
+			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager' => lang('sql_manager')
 		));
 
 		$this->load->helper('form');
@@ -212,7 +212,7 @@ class Tools_data extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->library('table');
@@ -228,15 +228,15 @@ class Tools_data extends CI_Controller {
 
 		$details = $this->tools_model->get_table_status();
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('sql_view_database'));
+		$this->cp->set_variable('cp_page_title', lang('sql_view_database'));
 
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_data'=> $this->lang->line('tools_data'),
-			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager' => $this->lang->line('sql_manager')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_data'=> lang('tools_data'),
+			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager' => lang('sql_manager')
 		));
 
 		$this->javascript->output('
@@ -273,17 +273,17 @@ class Tools_data extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if (($action = $this->input->post('table_action')) === FALSE OR ! in_array($action, array('OPTIMIZE', 'REPAIR')))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if ( ! isset($_POST['table']))
 		{
-			show_error($this->lang->line('no_buttons_selected'));
+			show_error(lang('no_buttons_selected'));
 		}
 
 		$this->load->library('table');
@@ -313,15 +313,15 @@ class Tools_data extends CI_Controller {
 
 		$vars['action'] = strtolower($action);
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line($vars['action']));
+		$this->cp->set_variable('cp_page_title', lang($vars['action']));
 
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_data'=> $this->lang->line('tools_data'),
-			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager'=> $this->lang->line('sql_manager')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_data'=> lang('tools_data'),
+			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager'=> lang('sql_manager')
 		));
 
 		$this->javascript->compile();
@@ -361,7 +361,7 @@ class Tools_data extends CI_Controller {
 		// this is for hosted demos to prevent users from using the SQL Manager
 		if ($this->config->item('demo_date') != FALSE)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->library('pagination');
@@ -374,7 +374,7 @@ class Tools_data extends CI_Controller {
 		// defaults in the house!
 		$run_query	= FALSE;
 		$row_limit	= 100;
-		$title		= $this->lang->line('sql_manager');
+		$title		= lang('sql_manager');
 
 		$this->cp->set_right_nav($this->sub_breadcrumbs);
 
@@ -386,22 +386,22 @@ class Tools_data extends CI_Controller {
 			case 'processlist' :
 				$sql 	= "SHOW PROCESSLIST";
 				$query  = $this->db->query($sql);
-				$title  = $this->lang->line('sql_processlist');
+				$title  = lang('sql_processlist');
 				break;
 			case 'system_vars' :
 				$sql 	= "SHOW VARIABLES";
 				$query	= $this->db->query($sql);
-				$title	= $this->lang->line('sql_system_vars');
+				$title	= lang('sql_system_vars');
 				break;
 			case 'status' :
 				$sql 	= "SHOW STATUS";
 				$query 	= $this->db->query($sql);
-				$title 	= $this->lang->line('sql_status');
+				$title 	= lang('sql_status');
 				break;
 			case 'run_query' :
 				$this->db->db_debug = ($this->input->post('debug') !== FALSE) ? TRUE : FALSE;;
 				$run_query = TRUE;
-				$title	= $this->lang->line('query_result');
+				$title	= lang('query_result');
 				break;
 			default :
 				return;
@@ -410,9 +410,9 @@ class Tools_data extends CI_Controller {
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_data'=> $this->lang->line('tools_data'),
-			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager' => $this->lang->line('sql_manager')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_data'=> lang('tools_data'),
+			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager' => lang('sql_manager')
 		));
 
 		$this->cp->set_variable('cp_page_title', $title);
@@ -446,7 +446,7 @@ class Tools_data extends CI_Controller {
 
 			if (preg_match("/(^|\s)(".implode('|', $qtypes).")\s/si", $sql))
 			{
-				show_error($this->lang->line('sql_not_allowed'));
+				show_error(lang('sql_not_allowed'));
 			}
 
 			// If it's a DELETE query, require that a Super Admin be the one submitting it
@@ -454,7 +454,7 @@ class Tools_data extends CI_Controller {
 			{
 				if (strpos(strtoupper($sql), 'DELETE') !== FALSE OR strpos(strtoupper($sql), 'ALTER') !== FALSE OR strpos(strtoupper($sql), 'TRUNCATE') !== FALSE OR strpos(strtoupper($sql), 'DROP') !== FALSE)
 				{
-					show_error($this->lang->line('unauthorized_access'));
+					show_error(lang('unauthorized_access'));
 				}
 			}
 
@@ -474,7 +474,7 @@ class Tools_data extends CI_Controller {
 
 					if ( ! $query = $this->db->query($new_sql))
 					{
-						$vars['no_results'] = $this->lang->line('sql_no_result');
+						$vars['no_results'] = lang('sql_no_result');
 						$this->load->view('tools/sql_results', $vars);
 						return;
 					}
@@ -489,8 +489,8 @@ class Tools_data extends CI_Controller {
 						$config['total_rows'] = $total_results;
 						$config['per_page'] = $row_limit;
 						$config['page_query_string'] = TRUE;
-						$config['first_link'] = $this->lang->line('pag_first_link');
-						$config['last_link'] = $this->lang->line('pag_last_link');
+						$config['first_link'] = lang('pag_first_link');
+						$config['last_link'] = lang('pag_last_link');
 						
 						$this->pagination->initialize($config);
 					}
@@ -503,7 +503,7 @@ class Tools_data extends CI_Controller {
 			{
 				if ( ! $query = $this->db->query($sql))
 				{
-					$vars['no_results'] = $this->lang->line('sql_no_result');
+					$vars['no_results'] = lang('sql_no_result');
 					$this->load->view('tools/sql_results', $vars);
 					return;
 				}
@@ -515,7 +515,7 @@ class Tools_data extends CI_Controller {
 			{
 				if (strncasecmp($sql, $type, strlen($type)) == 0)
 				{
-					$vars['affected'] = ($this->db->affected_rows() > 0) ? $this->lang->line('total_affected_rows').NBS.$this->db->affected_rows() : $this->lang->line('sql_good_query');
+					$vars['affected'] = ($this->db->affected_rows() > 0) ? lang('total_affected_rows').NBS.$this->db->affected_rows() : lang('sql_good_query');
 					$vars['thequery'] = $this->security->xss_clean($sql);
 					$vars['write'] = TRUE;
 
@@ -528,13 +528,13 @@ class Tools_data extends CI_Controller {
 		// no results?  Wasted efforts!
 		if ($query->num_rows() == 0)
 		{
-			$vars['no_results'] = $this->lang->line('sql_no_result');
+			$vars['no_results'] = lang('sql_no_result');
 			$this->load->view('tools/sql_results', $vars);
 			return;
 		}
 
 		$vars['thequery'] = $this->security->xss_clean($sql);
-		$vars['total_results'] = str_replace('%x', (isset($total_results)) ? $total_results : $query->num_rows(), $this->lang->line('total_results'));
+		$vars['total_results'] = str_replace('%x', (isset($total_results)) ? $total_results : $query->num_rows(), lang('total_results'));
 		$vars['query'] = $query;
 
 		$this->javascript->compile();
@@ -556,7 +556,7 @@ class Tools_data extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->helper('form');
@@ -572,19 +572,19 @@ class Tools_data extends CI_Controller {
 			$replaced = $this->_do_search_and_replace($search, $replace, $where);
 		}
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('search_and_replace'));
+		$this->cp->set_variable('cp_page_title', lang('search_and_replace'));
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_data'=> $this->lang->line('tools_data')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_data'=> lang('tools_data')
 		));
 
 		$this->javascript->compile();
 
 		$vars['save_tmpl_files'] = ($this->config->item('save_tmpl_files') == 'y') ? TRUE : FALSE;
 		$vars['replace_options'] = $this->tools_model->get_search_replace_options();
-		$vars['replaced'] = ($replaced !== FALSE) ? $this->lang->line('rows_replaced').' '.$replaced : FALSE;
+		$vars['replaced'] = ($replaced !== FALSE) ? lang('rows_replaced').' '.$replaced : FALSE;
 
 		$this->load->view('tools/search_and_replace', $vars);
 	}
@@ -749,7 +749,7 @@ class Tools_data extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->library('table');
@@ -759,7 +759,7 @@ class Tools_data extends CI_Controller {
 			widgets: ["zebra"]
 		}');
 		
-		$this->cp->set_right_nav(array($this->lang->line('recount_prefs') => BASE.AMP.'C=admin_system'.AMP.'M=recount_preferences'));
+		$this->cp->set_right_nav(array(lang('recount_prefs') => BASE.AMP.'C=admin_system'.AMP.'M=recount_preferences'));
 
 		// Do the forums exist?
 		$forum_exists = FALSE;
@@ -797,16 +797,16 @@ class Tools_data extends CI_Controller {
 		if ($which !== FALSE)
 		{
 			$recount = $this->_do_recount_stats($which, $forum_exists);
-			$this->session->set_flashdata('message_success', $this->lang->line('recount_completed') );
+			$this->session->set_flashdata('message_success', lang('recount_completed') );
 			$this->functions->redirect(BASE.AMP.'C=tools_data'.AMP.'M=recount_stats');			
 		}
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('recount_stats'));
+		$this->cp->set_variable('cp_page_title', lang('recount_stats'));
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_data'=> $this->lang->line('tools_data')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_data'=> lang('tools_data')
 		));
 
 		$this->javascript->compile();
