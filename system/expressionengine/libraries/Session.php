@@ -64,31 +64,31 @@ There are three validation types, set in the config file:
 
 class EE_Session {
 	
-	protected $user_session_len = 7200;  // User sessions expire in two hours
-	protected $cpan_session_len = 3600;  // Admin sessions expire in one hour
+	public $user_session_len	 = 7200;  // User sessions expire in two hours
+	public $cpan_session_len	 = 3600;  // Admin sessions expire in one hour
 
-	protected $c_session			= 'sessionid';
+	public $c_session		= 'sessionid';
 	// var $c_uniqueid			= 'uniqueid';
 	// var $c_password			= 'userhash';
-	protected $c_expire			= 'expiration';
-	protected $c_anon				= 'anon';
-	protected $c_prefix			= '';
+	public $c_expire			= 'expiration';
+	public $c_anon				= 'anon';
+	public $c_prefix			= '';
 	
-	var $sdata				= array();
-	var $userdata		 	= array();
-	var $tracker			= array();
-	var $flashdata			= array();
+	public $sdata				= array();
+	public $userdata		 	= array();
+	public $tracker				= array();
+	public $flashdata			= array();
 	
-	var $sess_crypt_key		= '';
+	public $sess_crypt_key		= '';
 	
-	var $validation_type  	= '';
-	var $session_length		= '';
+	public $validation_type  	= '';
+	public $session_length		= '';
 	
-	var $cookies_exist		= FALSE;
-	var $session_exists		= FALSE;
-	var $access_cp			= FALSE;
+	public $cookies_exist		= FALSE;
+	public $session_exists		= FALSE;
+	public $access_cp			= FALSE;
 	
-	var $gc_probability		= 5;  
+	public $gc_probability		= 5;  
 		// Garbage collection probability.  Used to kill expired sessions.
 	
 	public $cache			= array();
@@ -97,7 +97,7 @@ class EE_Session {
 		//		e.g. $this->cache['module']['var_name']
 		// Use set_cache() and cache() methods.
 
-	var $SID 				= '';
+	protected $SID 			= '';
 
 	protected $EE;
 
