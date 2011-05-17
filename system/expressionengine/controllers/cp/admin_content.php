@@ -1768,11 +1768,9 @@ class Admin_content extends CI_Controller {
 		// Fetch the category tree
 		$this->api_channel_categories->category_tree($group_id, '', $sort_order);
 
-		if (count($this->api_channel_categories->categories) == 0)
-		{
-			$vars['categories'] = array();
-		}
-		else
+		$vars['categories'] = array();
+		
+		if (count($this->api_channel_categories->categories) > 0)
 		{
 			$vars['categories'] = $this->api_channel_categories->categories;
 
@@ -1789,9 +1787,9 @@ class Admin_content extends CI_Controller {
 		$vars['can_delete'] = ($this->session->userdata('can_delete_categories') == 'y') ? TRUE : FALSE;
 		$vars['group_id'] = $group_id;
 
-        $this->cp->set_right_nav(array(
-                'new_category'  => BASE.AMP.'C=admin_content'.AMP.'M=category_edit'.AMP.'group_id='.$group_id
-            ));
+		$this->cp->set_right_nav(array(
+			'new_category'  => BASE.AMP.'C=admin_content'.AMP.'M=category_edit'.AMP.'group_id='.$group_id
+		));
 
 		$this->load->view('admin/category_editor', $vars);
 	}
@@ -1940,8 +1938,6 @@ class Admin_content extends CI_Controller {
 		$this->api_channel_categories->category_tree($group_id, $vars['parent_id']);
 
 		$vars['parent_id_options'] = $this->api_channel_categories->categories;
-
-		//$vars['parent_id_options'][0] = $this->lang->line('none');
 
 		// Display custom fields
 		
