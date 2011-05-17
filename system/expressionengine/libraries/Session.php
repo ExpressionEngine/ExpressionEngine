@@ -205,6 +205,7 @@ class EE_Session {
 
 
 
+
 		
 		// Does the session id cookie exist?
 		if ($this->EE->input->cookie($this->c_session))
@@ -306,66 +307,208 @@ class EE_Session {
 	}
 
 	// --------------------------------------------------------------------				
-		 
-	/**
-	 * Fetch session data
-	 *
-	 * @return 	boolean
-	 */
-	public function fetch_session_data()
-	{
-		// Look for session.  Match the user's IP address and browser for added security.
-		$this->EE->db->select('member_id, admin_sess, last_activity')
-					 ->where('session_id', $this->sdata['session_id'])
-					 ->where('ip_address', $this->sdata['ip_address'])
-					 ->where('user_agent', $this->sdata['user_agent']);
 
-		if (REQ != 'CP') // Each 'Site' has own Sessions
-		{
-			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
-		}
-		
-		$query = $this->EE->db->get('sessions');
-		
-		if ($query->num_rows() == 0 OR $query->row('member_id') == 0)
-		{
-			$this->_initialize_session();
-		
-			return FALSE;				
-		}
-		
-		// Assign member ID to session array
-		$this->sdata['member_id'] = $query->row('member_id') ;
-		
-		// Is this an admin session?		
-		$this->sdata['admin_sess'] = ($query->row('admin_sess') == 1) ? 1 : 0;
-		
-		// Log last activity
-		$this->sdata['last_activity'] = $query->row('last_activity') ;
-		
-		// If session has expired, delete it and set session data to GUEST
-		if ($this->validation != 'c')
-		{
-			if ($query->row('last_activity')  < ($this->EE->localize->now - $this->session_length))
-			{
-				$this->EE->db->delete('sessions', array(
-							'session_id' => $this->sdata['session_id']));
-				
-				$this->_initialize_session();
-				
-				return FALSE;
-			}
-		}
-			
-		return TRUE;		
+	/**
+	 * Fetch all session data
+	 *
+	 * @return	array
+	 */
+	public function all_userdata()
+	{
+		return $this->userdata;
 	}
 
-	// --------------------------------------------------------------------	
+	// --------------------------------------------------------------------
 	
+	/**
+	 * Check for banned data
+	 */  
+	public function ban_check($type = 'ip', $match = '')
+	{
+		switch ($type)
+		{
+			case 'ip'			: $ban = $this->EE->config->item('banned_ips');
+								  $match = $this->EE->input->ip_address();
+				break;
+			case 'email'		: $ban = $this->EE->config->item('banned_emails');
+				break;
+			case 'username'		: $ban = $this->EE->config->item('banned_usernames');
+				break;
+			case 'screen_name'	: $ban = $this->EE->config->item('banned_screen_names');
+				break;
+		}
+		
+		if ($ban == '')
+		{
+			return FALSE;
+		}
+		
+		foreach (explode('|', $ban) as $val)
+		{
+			if ($val == '*') continue;
+			
+			if (substr($val, -1) == '*')
+			{
+				$val = str_replace('*', '', $val);
+				
+				if (strncmp($match, $val, strlen($val)) == 0)
+				{
+					return TRUE;
+				}
+			}
+			elseif (strncmp($val, '*', 1) == 0)
+			{
+				$val = str_replace('*', '', $val);
+			
+				if (substr($match, - strlen($val)) == $val)
+				{
+					return TRUE;
+				}
+			}
+			elseif ($val == $match)
+			{
+				return TRUE;
+			}
+		}
+		
+		return FALSE;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get Session Cache 
+	 *
+	 * This method extracts a value from the session cache.
+	 *
+	 * @param 	string 	Super Class/Unique Identifier
+	 * @param 	string 	Key to extract from the cache.
+	 * @param 	mixed 	Default value to return if key doesn't exist
+	 * @return 	mixed
+	 */
+	public function cache($class, $key, $default = FALSE)
+	{
+		return (isset($this->cache[$class][$key])) ? $this->cache[$class][$key] : $default; 
+	}
+
+
+	// --------------------------------------------------------------------		
+
+	/**
+	 * Check password lockout
+	 */
+	function check_password_lockout($username = '')
+	{
+		if ($this->EE->config->item('password_lockout') == 'n' OR 
+			$this->EE->config->item('password_lockout_interval') == '')
+		{
+		 	return FALSE; 
+		} 
+		
+		$interval = $this->EE->config->item('password_lockout_interval') * 60;
+		
+		$expire = time() - $interval;
+
+		$lockout = $this->EE->db->select("COUNT(*) as count")
+								->where('login_date > ', $expire)
+								->where('ip_address', $this->EE->input->ip_address())
+								->where('user_agent', $this->userdata['user_agent'])
+								->or_where('username', $username)
+								->get('password_lockout');
+		
+		return ($lockout->row('count') >= 4) ? TRUE : FALSE;
+	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Create New Session
+	 *
+	 * @param 	int 		member_id 
+	 * @param 	boolean		admin session or not
+	 * @return 	string 		Session ID
+	 */
+	public function create_new_session($member_id, $admin_session = FALSE)
+	{
+		if ($this->validation == 'c' AND $this->access_cp == TRUE)
+		{
+			$this->sdata['admin_sess'] = 1;
+		}
+		else
+		{
+			$this->sdata['admin_sess'] 	= ($admin_session == FALSE) ? 0 : 1;  
+		}
+				
+		$this->sdata['session_id'] 		= $this->EE->functions->random();  
+		$this->sdata['last_activity']	= $this->EE->localize->now;  
+		$this->sdata['user_agent']		= substr($this->EE->input->user_agent(), 0, 120);
+		$this->sdata['ip_address']  	= $this->EE->input->ip_address();  
+		$this->sdata['member_id']  		= $member_id; 
+		$this->sdata['site_id']  		= $this->EE->config->item('site_id'); 
+		$this->userdata['member_id']	= $member_id;  
+		$this->userdata['session_id']	= $this->sdata['session_id'];
+		$this->userdata['site_id']		= $this->EE->config->item('site_id');
+		
+		$this->EE->functions->set_cookie($this->c_session , $this->sdata['session_id'], $this->session_length);	
+					
+		$this->EE->db->query($this->EE->db->insert_string('exp_sessions', $this->sdata));	
+		
+		return $this->sdata['session_id'];
+	}
+
+	// --------------------------------------------------------------------
+	 
+	/**
+	 * Delete old sessions if probability is met
+	 *
+	 * By default, the probablility is set to 10 percent.
+	 * That means sessions will only be deleted one
+	 * out of ten times a page is loaded.
+	 */
+	public function delete_old_sessions()
+	{
+		$expire = $this->EE->localize->now - $this->session_length;
+  
+		srand(time());
+  
+		if ((rand() % 100) < $this->gc_probability) 
+		{
+			$this->EE->db->where('last_activity < ', $expire)
+						 ->delete('sessions');
+		}	
+	}
+
+	// --------------------------------------------------------------------		
+	
+	/**
+	 * Delete old password lockout data
+	 */		
+	public function delete_password_lockout()
+	{
+		if ($this->EE->config->item('password_lockout') == 'n')
+		{
+		 	return FALSE; 
+		} 
+				
+		$interval = $this->EE->config->item('password_lockout_interval') * 60;
+		
+		$expire = time() - $interval;
+  
+		srand(time());
+  
+		if ((rand() % 100) < $this->gc_probability) 
+		{
+			$this->EE->db->where('login_date <', $expire)
+						 ->delete('password_lockout');
+		}	
+	}
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * Fetch guest data
 	 */
-	function fetch_guest_data()
+	public function fetch_guest_data()
 	{
 		$qry = $this->EE->db->where('site_id', $this->EE->config->item('site_id'))
 							->where('group_id', (int) 3)
@@ -556,116 +699,171 @@ class EE_Session {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Update Member session
+	 * Fetch session data
+	 *
+	 * @return 	boolean
 	 */
-	public function update_session()
+	public function fetch_session_data()
 	{
-		$this->sdata['last_activity'] = $this->EE->localize->now;
-		
-		$this->EE->db->query($this->EE->db->update_string('exp_sessions', $this->sdata, "session_id ='".$this->EE->db->escape_str($this->sdata['session_id'])."'")); 
+		// Look for session.  Match the user's IP address and browser for added security.
+		$this->EE->db->select('member_id, admin_sess, last_activity')
+					 ->where('session_id', $this->sdata['session_id'])
+					 ->where('ip_address', $this->sdata['ip_address'])
+					 ->where('user_agent', $this->sdata['user_agent']);
 
-		// Update session ID cookie
-		
-		if ($this->validation != 's')
+		if (REQ != 'CP') // Each 'Site' has own Sessions
 		{
-			$this->EE->functions->set_cookie($this->c_session , $this->sdata['session_id'],  $this->session_length);	
+			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+		}
+		
+		$query = $this->EE->db->get('sessions');
+		
+		if ($query->num_rows() == 0 OR $query->row('member_id') == 0)
+		{
+			$this->_initialize_session();
+		
+			return FALSE;				
+		}
+		
+		// Assign member ID to session array
+		$this->sdata['member_id'] = $query->row('member_id') ;
+		
+		// Is this an admin session?		
+		$this->sdata['admin_sess'] = ($query->row('admin_sess') == 1) ? 1 : 0;
+		
+		// Log last activity
+		$this->sdata['last_activity'] = $query->row('last_activity') ;
+		
+		// If session has expired, delete it and set session data to GUEST
+		if ($this->validation != 'c')
+		{
+			if ($query->row('last_activity')  < ($this->EE->localize->now - $this->session_length))
+			{
+				$this->EE->db->delete('sessions', array(
+							'session_id' => $this->sdata['session_id']));
+				
+				$this->_initialize_session();
+				
+				return FALSE;
+			}
 		}
 			
-		// If we only require cookies for validation, set admin session.	
-			
-		if ($this->validation == 'c'  AND  $this->access_cp == TRUE)
-		{			
-			$this->sdata['admin_sess'] = 1;
-		}	
-		
-		// We'll unset the "last activity" item from the session data array.
-		// We do this to avoid a conflict with the "last_activity" item in the
-		// userdata array since we'll be merging the two arrays in a later step
-		unset($this->sdata['last_activity']);
-	}  
+		return TRUE;		
+	}
 
 	// --------------------------------------------------------------------
-	
-	/**
-	 * Create New Session
-	 *
-	 * @param 	int 		member_id 
-	 * @param 	boolean		admin session or not
-	 * @return 	string 		Session ID
-	 */
-	public function create_new_session($member_id, $admin_session = FALSE)
-	{
-		if ($this->validation == 'c' AND $this->access_cp == TRUE)
-		{
-			$this->sdata['admin_sess'] = 1;
-		}
-		else
-		{
-			$this->sdata['admin_sess'] 	= ($admin_session == FALSE) ? 0 : 1;  
-		}
-				
-		$this->sdata['session_id'] 		= $this->EE->functions->random();  
-		$this->sdata['last_activity']	= $this->EE->localize->now;  
-		$this->sdata['user_agent']		= substr($this->EE->input->user_agent(), 0, 120);
-		$this->sdata['ip_address']  	= $this->EE->input->ip_address();  
-		$this->sdata['member_id']  		= $member_id; 
-		$this->sdata['site_id']  		= $this->EE->config->item('site_id'); 
-		$this->userdata['member_id']	= $member_id;  
-		$this->userdata['session_id']	= $this->sdata['session_id'];
-		$this->userdata['site_id']		= $this->EE->config->item('site_id');
-		
-		$this->EE->functions->set_cookie($this->c_session , $this->sdata['session_id'], $this->session_length);	
-					
-		$this->EE->db->query($this->EE->db->insert_string('exp_sessions', $this->sdata));	
-		
-		return $this->sdata['session_id'];
-	}  
 
-	// -------------------------------------------------------------------- 
-	
 	/**
-	 * Update Cookies
-	 */  
-	function update_cookies()
+	 * Get flashdata by key
+	 *
+	 * @param	string
+	 * @return	mixed
+	 */
+	public function flashdata($key = '')
 	{
-		if ($this->cookies_exist == TRUE AND $this->EE->input->cookie($this->c_expire))
+		return isset($this->flashdata[$key]) ? $this->flashdata[$key] : FALSE;
+	}
+
+	// --------------------------------------------------------------------	
+	
+	/** 
+	 * Is the nation banned?
+	 */
+	public function nation_ban_check($show_error = TRUE)
+	{
+		if ($this->EE->config->item('require_ip_for_posting') != 'y' OR $this->EE->config->item('ip2nation') != 'y')
 		{
-			$now 	= time() + 300;
-			$expire = 60*60*24*365;
+			return FALSE;
+		}
+
+		$query = $this->EE->db->query("SELECT country FROM exp_ip2nation WHERE ip < INET_ATON('".$this->EE->db->escape_str($this->EE->input->ip_address())."') ORDER BY ip DESC LIMIT 0,1");
+				
+		if ($query->num_rows() == 1)
+		{
+			$res = $this->EE->db->select("COUNT(*) as count")
+								->where('code', $query->row('country'))
+								->where('banned', 'y')
+								->get('ip2nation_countries');
 			
-			if ($this->EE->input->cookie($this->c_expire) > $now)
-			{ 
-				$this->EE->functions->set_cookie($this->c_expire , time()+$expire, $expire);
-				// $this->EE->functions->set_cookie($this->c_uniqueid , $this->EE->input->cookie($this->c_uniqueid), $expire);		
-				// $this->EE->functions->set_cookie($this->c_password , $this->EE->input->cookie($this->c_password), $expire);
+			if ($res->row('count')  > 0)
+			{
+				if ($show_error == TRUE)
+				{
+					return $this->EE->output->fatal_error($this->EE->config->item('ban_message'), 0);					
+				}
+
+				return FALSE;
 			}
 		}
 	}
 
+	// --------------------------------------------------------------------	
+	
+	/**
+	 * Save password lockout
+	 */
+	function save_password_lockout($username = '')
+	{
+		if ($this->EE->config->item('password_lockout') == 'n')
+		{
+		 	return FALSE; 
+		} 
+
+		$data = array(
+						'login_date'	=> time(),
+						'ip_address'	=> $this->EE->input->ip_address(),
+						'user_agent'	=> $this->userdata['user_agent'],
+						'username'		=> $username
+					);
+					
+		$this->EE->db->insert('password_lockout', $data);
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
-	 * Fetch all session data
+	 * Set Session Cache
 	 *
-	 * @return	array
+	 * This method is a setter for the $cache class variable.
+	 * Note, this is not persistent across requests
+	 *
+	 * @param 	string 	Super Class/Unique Identifier
+	 * @param 	string 	Key for cached item
+	 * @param 	mixed 	item to put in the cache
+	 * @return 	object
 	 */
-	public function all_userdata()
+	public function set_cache($class, $key, $val)
 	{
-		return $this->userdata;
+		if ( ! isset($this->cache[$class]))
+		{
+			$this->cache[$class] = array();
+		}
+
+		$this->cache[$class][$key] = $val;
+		return $this;
 	}
 	
 	// --------------------------------------------------------------------
-	
+
 	/**
-	 * Fetch a session item
+	 * Set flashdata
 	 *
-	 * @param 	string 		Userdata item to return
-	 * @param 	default 	value returned if the key isn't set
-	 * @return 	mixed 		$default on failure, item on success
-	 */	
-	public function userdata($which, $default = FALSE)
-	{  
-		return ( ! isset($this->userdata[$which])) ? $default : $this->userdata[$which];
+	 * @param	mixed
+	 * @return	mixed
+	 */
+	public function set_flashdata($key, $val = '')
+	{
+		if ( ! is_array($key))
+		{
+			$key = array($key => $val);
+		}
+		
+		foreach($key as $k => $v)
+		{
+			$this->flashdata[':new:'.$k] = $v;
+		}
+
+		$this->_set_flash_cookie();
 	}
 
 	// --------------------------------------------------------------------		 
@@ -747,114 +945,72 @@ class EE_Session {
 		return $tracker;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get flashdata by key
-	 *
-	 * @param	string
-	 * @return	mixed
-	 */
-	public function flashdata($key = '')
-	{
-		return isset($this->flashdata[$key]) ? $this->flashdata[$key] : FALSE;
-	}
+	// -------------------------------------------------------------------- 
 	
-	// --------------------------------------------------------------------
-
 	/**
-	 * Set flashdata
-	 *
-	 * @param	mixed
-	 * @return	mixed
-	 */
-	public function set_flashdata($key, $val = '')
+	 * Update Cookies
+	 */  
+	function update_cookies()
 	{
-		if ( ! is_array($key))
+		if ($this->cookies_exist == TRUE AND $this->EE->input->cookie($this->c_expire))
 		{
-			$key = array($key => $val);
-		}
-		
-		foreach($key as $k => $v)
-		{
-			$this->flashdata[':new:'.$k] = $v;
-		}
-
-		$this->_set_flash_cookie();
-	}
-	
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set Session Cache
-	 *
-	 * This method is a setter for the $cache class variable.
-	 * Note, this is not persistent across requests
-	 *
-	 * @param 	string 	Super Class/Unique Identifier
-	 * @param 	string 	Key for cached item
-	 * @param 	mixed 	item to put in the cache
-	 * @return 	object
-	 */
-	public function set_cache($class, $key, $val)
-	{
-		if ( ! isset($this->cache[$class]))
-		{
-			$this->cache[$class] = array();
-		}
-
-		$this->cache[$class][$key] = $val;
-		return $this;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get Session Cache 
-	 *
-	 * This method extracts a value from the session cache.
-	 *
-	 * @param 	string 	Super Class/Unique Identifier
-	 * @param 	string 	Key to extract from the cache.
-	 * @param 	mixed 	Default value to return if key doesn't exist
-	 * @return 	mixed
-	 */
-	public function cache($class, $key, $default = FALSE)
-	{
-		return (isset($this->cache[$class][$key])) ? $this->cache[$class][$key] : $default; 
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Prep flashdata
-	 *
-	 * Grabs the cookie and validates the signature
-	 *
-	 * @return	void
-	 */
-	protected function _prep_flashdata()
-	{		
-		if ($cookie = $this->EE->input->cookie('flash'))
-		{
-			if (strlen($cookie) > 32)
-			{
-				$signature = substr($cookie, -32);
-				$payload = substr($cookie, 0, -32);
-
-				if (md5($payload.$this->sess_crypt_key) == $signature)
-				{
-					$this->flashdata = unserialize(stripslashes($payload));
-					$this->_age_flashdata();
-					
-					return;
-				}
+			$now 	= time() + 300;
+			$expire = 60*60*24*365;
+			
+			if ($this->EE->input->cookie($this->c_expire) > $now)
+			{ 
+				$this->EE->functions->set_cookie($this->c_expire , time()+$expire, $expire);
+				// $this->EE->functions->set_cookie($this->c_uniqueid , $this->EE->input->cookie($this->c_uniqueid), $expire);		
+				// $this->EE->functions->set_cookie($this->c_password , $this->EE->input->cookie($this->c_password), $expire);
 			}
 		}
-		
-		$this->flashdata = array();
 	}
+
+	// --------------------------------------------------------------------	
+
+	/**
+	 * Update Member session
+	 */
+	public function update_session()
+	{
+		$this->sdata['last_activity'] = $this->EE->localize->now;
+		
+		$this->EE->db->query($this->EE->db->update_string('exp_sessions', $this->sdata, "session_id ='".$this->EE->db->escape_str($this->sdata['session_id'])."'")); 
+
+		// Update session ID cookie
+		
+		if ($this->validation != 's')
+		{
+			$this->EE->functions->set_cookie($this->c_session , $this->sdata['session_id'],  $this->session_length);	
+		}
+			
+		// If we only require cookies for validation, set admin session.	
+			
+		if ($this->validation == 'c'  AND  $this->access_cp == TRUE)
+		{			
+			$this->sdata['admin_sess'] = 1;
+		}	
+		
+		// We'll unset the "last activity" item from the session data array.
+		// We do this to avoid a conflict with the "last_activity" item in the
+		// userdata array since we'll be merging the two arrays in a later step
+		unset($this->sdata['last_activity']);
+	}  
+
+	// --------------------------------------------------------------------
 	
+	/**
+	 * Fetch a session item
+	 *
+	 * @param 	string 		Userdata item to return
+	 * @param 	default 	value returned if the key isn't set
+	 * @return 	mixed 		$default on failure, item on success
+	 */	
+	public function userdata($which, $default = FALSE)
+	{  
+		return ( ! isset($this->userdata[$which])) ? $default : $this->userdata[$which];
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -884,191 +1040,6 @@ class EE_Session {
 		}
 		
 		$this->_set_flash_cookie();
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Check for banned data
-	 */  
-	public function ban_check($type = 'ip', $match = '')
-	{
-		switch ($type)
-		{
-			case 'ip'			: $ban = $this->EE->config->item('banned_ips');
-								  $match = $this->EE->input->ip_address();
-				break;
-			case 'email'		: $ban = $this->EE->config->item('banned_emails');
-				break;
-			case 'username'		: $ban = $this->EE->config->item('banned_usernames');
-				break;
-			case 'screen_name'	: $ban = $this->EE->config->item('banned_screen_names');
-				break;
-		}
-		
-		if ($ban == '')
-		{
-			return FALSE;
-		}
-		
-		foreach (explode('|', $ban) as $val)
-		{
-			if ($val == '*') continue;
-			
-			if (substr($val, -1) == '*')
-			{
-				$val = str_replace('*', '', $val);
-				
-				if (strncmp($match, $val, strlen($val)) == 0)
-				{
-					return TRUE;
-				}
-			}
-			elseif (strncmp($val, '*', 1) == 0)
-			{
-				$val = str_replace('*', '', $val);
-			
-				if (substr($match, - strlen($val)) == $val)
-				{
-					return TRUE;
-				}
-			}
-			elseif ($val == $match)
-			{
-				return TRUE;
-			}
-		}
-		
-		return FALSE;
-	}
-
-	// --------------------------------------------------------------------	
-	
-	/** 
-	 * Is the nation banned?
-	 */
-	public function nation_ban_check($show_error = TRUE)
-	{
-		if ($this->EE->config->item('require_ip_for_posting') != 'y' OR $this->EE->config->item('ip2nation') != 'y')
-		{
-			return FALSE;
-		}
-
-		$query = $this->EE->db->query("SELECT country FROM exp_ip2nation WHERE ip < INET_ATON('".$this->EE->db->escape_str($this->EE->input->ip_address())."') ORDER BY ip DESC LIMIT 0,1");
-				
-		if ($query->num_rows() == 1)
-		{
-			$res = $this->EE->db->select("COUNT(*) as count")
-								->where('code', $query->row('country'))
-								->where('banned', 'y')
-								->get('ip2nation_countries');
-			
-			if ($res->row('count')  > 0)
-			{
-				if ($show_error == TRUE)
-				{
-					return $this->EE->output->fatal_error($this->EE->config->item('ban_message'), 0);					
-				}
-
-				return FALSE;
-			}
-		}
-	}
-
-	// --------------------------------------------------------------------
-	 
-	/**
-	 * Delete old sessions if probability is met
-	 *
-	 * By default, the probablility is set to 10 percent.
-	 * That means sessions will only be deleted one
-	 * out of ten times a page is loaded.
-	 */
-	public function delete_old_sessions()
-	{
-		$expire = $this->EE->localize->now - $this->session_length;
-  
-		srand(time());
-  
-		if ((rand() % 100) < $this->gc_probability) 
-		{
-			$this->EE->db->where('last_activity < ', $expire)
-						 ->delete('sessions');
-		}	
-	}
-
-	// --------------------------------------------------------------------	
-	
-	/**
-	 * Save password lockout
-	 */
-	function save_password_lockout($username = '')
-	{
-		if ($this->EE->config->item('password_lockout') == 'n')
-		{
-		 	return FALSE; 
-		} 
-
-		$data = array(
-						'login_date'	=> time(),
-						'ip_address'	=> $this->EE->input->ip_address(),
-						'user_agent'	=> $this->userdata['user_agent'],
-						'username'		=> $username
-					);
-					
-		$this->EE->db->insert('password_lockout', $data);
-	}
-
-	// --------------------------------------------------------------------		
-
-	/**
-	 * Check password lockout
-	 */
-	function check_password_lockout($username = '')
-	{
-		if ($this->EE->config->item('password_lockout') == 'n' OR 
-			$this->EE->config->item('password_lockout_interval') == '')
-		{
-		 	return FALSE; 
-		} 
-		
-		$interval = $this->EE->config->item('password_lockout_interval') * 60;
-		
-		$expire = time() - $interval;
-
-		$lockout = $this->EE->db->select("COUNT(*) as count")
-								->where('login_date > ', $expire)
-								->where('ip_address', $this->EE->input->ip_address())
-								->where('user_agent', $this->userdata['user_agent'])
-								->or_where('username', $username)
-								->get('password_lockout');
-		
-		return ($lockout->row('count') >= 4) ? TRUE : FALSE;
-	}
-
-	// --------------------------------------------------------------------		
-	
-	/**
-	 * Delete old password lockout data
-	 */		
-	public function delete_password_lockout()
-	{
-		if ($this->EE->config->item('password_lockout') == 'n')
-		{
-		 	return FALSE; 
-		} 
-				
-		$interval = $this->EE->config->item('password_lockout_interval') * 60;
-		
-		$expire = time() - $interval;
-  
-		srand(time());
-  
-		if ((rand() % 100) < $this->gc_probability) 
-		{
-			$this->EE->db->where('login_date <', $expire)
-						 ->delete('password_lockout');
-		}	
 	}
 
 	// --------------------------------------------------------------------	
@@ -1107,41 +1078,6 @@ class EE_Session {
 		return $ban_status;
 	}
 
-	// --------------------------------------------------------------------	
-
-	/**
-	 * Reset session data as GUEST
-	 *
-	 * @return 	void
-	 */
-	protected function _initialize_session()
-	{  
-		$this->sdata['session_id'] = 0;	
-		$this->sdata['admin_sess'] = 0;
-		$this->sdata['member_id']  = 0;
-	}
-
-	// -------------------------------------------------------------------- 
-
-	/**
-	 * Setup Session Lengths
-	 *
-	 * This method allows the user to specify session TTLs in the config
-	 * file so no 'hacking' of the class properties are needed.
-	 *
-	 * @return 	void
-	 */
-	protected function _setup_session_length()
-	{
-		$u_item = $this->EE->config->item('user_session_ttl');
-		$cp_item = $this->EE->config->item('cp_session_ttl');
-
-		$this->cpan_session_len = ($cp_item) ? $cp_item : $this->cpan_session_len;
-		$this->user_session_len = ($u_item) ? $u_item : $this->user_session_len;
-		
-		return (REQ == 'CP') ? $this->cpan_session_len : $this->user_session_len;
-	}
-	
 	// -------------------------------------------------------------------- 
 
 	/**
@@ -1159,6 +1095,72 @@ class EE_Session {
 							->where('member_id', (int) $this->sdata['member_id'])
 							->where('m.group_id', ' g.group_id', FALSE)
 							->get();
+	}
+
+	// --------------------------------------------------------------------	
+
+	/**
+	 * Reset session data as GUEST
+	 *
+	 * @return 	void
+	 */
+	protected function _initialize_session()
+	{  
+		$this->sdata['session_id'] = 0;	
+		$this->sdata['admin_sess'] = 0;
+		$this->sdata['member_id']  = 0;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Prep flashdata
+	 *
+	 * Grabs the cookie and validates the signature
+	 *
+	 * @return	void
+	 */
+	protected function _prep_flashdata()
+	{		
+		if ($cookie = $this->EE->input->cookie('flash'))
+		{
+			if (strlen($cookie) > 32)
+			{
+				$signature = substr($cookie, -32);
+				$payload = substr($cookie, 0, -32);
+
+				if (md5($payload.$this->sess_crypt_key) == $signature)
+				{
+					$this->flashdata = unserialize(stripslashes($payload));
+					$this->_age_flashdata();
+					
+					return;
+				}
+			}
+		}
+		
+		$this->flashdata = array();
+	}
+
+	// --------------------------------------------------------------------	
+
+	/**
+	 * Set signed flashdata cookie
+	 *
+	 * @return	void
+	 */
+	protected function _set_flash_cookie()
+	{
+		// Don't want to hash the crypt key by itself
+		$payload = '';
+
+		if (count($this->flashdata) > 0)
+		{
+			$payload = serialize($this->flashdata);
+			$payload = $payload.md5($payload.$this->sess_crypt_key);
+		}
+
+		$this->EE->functions->set_cookie('flash' , $payload, 86500);
 	}
 
 	// --------------------------------------------------------------------	
@@ -1275,6 +1277,27 @@ class EE_Session {
 		$qry->free_result();		
 	}
 
+	// -------------------------------------------------------------------- 
+
+	/**
+	 * Setup Session Lengths
+	 *
+	 * This method allows the user to specify session TTLs in the config
+	 * file so no 'hacking' of the class properties are needed.
+	 *
+	 * @return 	void
+	 */
+	protected function _setup_session_length()
+	{
+		$u_item = $this->EE->config->item('user_session_ttl');
+		$cp_item = $this->EE->config->item('cp_session_ttl');
+
+		$this->cpan_session_len = ($cp_item) ? $cp_item : $this->cpan_session_len;
+		$this->user_session_len = ($u_item) ? $u_item : $this->user_session_len;
+		
+		return (REQ == 'CP') ? $this->cpan_session_len : $this->user_session_len;
+	}
+
 	// --------------------------------------------------------------------	
 
 	/**
@@ -1302,27 +1325,6 @@ class EE_Session {
 		$this->userdata['assigned_template_groups'] = $assigned_template_groups;
 		
 		$qry->free_result();	
-	}
-
-	// --------------------------------------------------------------------	
-
-	/**
-	 * Set signed flashdata cookie
-	 *
-	 * @return	void
-	 */
-	protected function _set_flash_cookie()
-	{
-		// Don't want to hash the crypt key by itself
-		$payload = '';
-
-		if (count($this->flashdata) > 0)
-		{
-			$payload = serialize($this->flashdata);
-			$payload = $payload.md5($payload.$this->sess_crypt_key);
-		}
-
-		$this->EE->functions->set_cookie('flash' , $payload, 86500);
 	}
 
 	// --------------------------------------------------------------------	
