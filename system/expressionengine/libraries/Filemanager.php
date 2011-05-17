@@ -78,7 +78,7 @@ class Filemanager {
 	// ---------------------------------------------------------------------
 
 
-	function clean_filename($filename, $dir_id)
+	function clean_filename($filename, $dir_id, $dupe_check = FALSE)
 	{
 		$prefs = $this->fetch_upload_dir_prefs($dir_id);
 		
@@ -104,9 +104,12 @@ class Filemanager {
 		$ext = '.'.$ext;
 		$basename = $filename;
 		
-		while (file_exists($path.$filename.$ext))
+		if ($dupe_check == TRUE)
 		{
-			$filename = $basename.'_'.$i++;
+			while (file_exists($path.$filename.$ext))
+			{
+				$filename = $basename.'_'.$i++;
+			}
 		}
 		
 		return $path.$filename.$ext;
