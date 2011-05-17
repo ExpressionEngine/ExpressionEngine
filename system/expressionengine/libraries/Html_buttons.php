@@ -4,20 +4,22 @@ class EE_Html_buttons {
 
 	var $allow_img	= FALSE;
 	var $buttons 	= array();
-
-
 	
-	/** ----------------------------------------
-	/**  HTML Formatting Buttons
-	/** ----------------------------------------*/
-	
-	function __construct()
+	public function __construct()
 	{	
-		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}
 
-	function create_buttons()
+	/**
+	 * Resets the class vars.
+	 */
+	public function reset()
+	{
+		$this->buttons = array();
+		$this->allow_img = FALSE;
+	}
+
+	public function create_buttons()
 	{
 		$this->buttons[] = array("<b>",	"[strong]",	"[/strong]", "Bold Text");
 		$this->buttons[] = array("<i>",	"[em]", 	"[/em]", "Italic Text");
