@@ -4118,11 +4118,12 @@ class Admin_content extends CI_Controller {
 		{
 			$this->load->model('tools_model');
 			$upload_dir_prefs = $this->tools_model->get_upload_preferences();
-
+			
 			// count upload dirs
 			if ($upload_dir_prefs->num_rows() == 0)
 			{
-				$error[] = $this->lang->line('please_add_upload');
+				$this->lang->loadfile('filemanager');
+				$error[] = lang('please_add_upload');
 			}
 		}
 
