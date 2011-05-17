@@ -62,9 +62,9 @@ class Admin_content extends CI_Controller {
 	 */
 	function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_content_prefs'))
+		if ( ! $this->cp->allowed_group('can_access_admin', 'can_access_content_prefs'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('admin'));
@@ -90,13 +90,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function channel_management()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
         $this->cp->set_right_nav(array('create_new_channel' => BASE.AMP.'C=admin_content'.AMP.'M=channel_add'));
 
@@ -131,13 +125,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function channel_add()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 		
 		$this->_channel_validation_rules();
 
@@ -270,13 +258,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function channel_edit()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 		
 		// Get modules that are installed
 		$this->cp->get_installed_modules();
@@ -495,13 +477,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function channel_update()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$this->lang->loadfile('admin_content');
 
@@ -565,7 +541,7 @@ class Admin_content extends CI_Controller {
 
 				if ( ! $this->cp->allowed_group('can_admin_templates'))
 				{
-					show_error($this->lang->line('unauthorized_access'));
+					show_error(lang('unauthorized_access'));
 				}
 
 				if ( ! $group_name)
@@ -990,13 +966,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function channel_update_group_assignments()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$update_fields = FALSE;
 		$channel_id = $this->input->post('channel_id');
@@ -1101,13 +1071,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function channel_edit_group_assignments()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		// If we don't have the $channel_id variable, bail out.
 		$channel_id = $this->input->get_post('channel_id');
@@ -1208,13 +1172,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function channel_delete_confirm()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$channel_id = $this->input->get_post('channel_id');
 
@@ -1261,13 +1219,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function channel_delete()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$channel_id = $this->input->get_post('channel_id');
 
@@ -1334,15 +1286,12 @@ class Admin_content extends CI_Controller {
 		{
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
-				show_error($this->lang->line('unauthorized_access2'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( ! $this->cp->allowed_group('can_access_admin') OR
-			 	 ! $this->cp->allowed_group('can_access_content_prefs') OR
-			 	 ! $this->cp->allowed_group('can_admin_channels')
-				)
-		{		
-			show_error($this->lang->line('unauthorized_access'));
+		else
+		{
+			$this->_restrict_prefs_access();
 		}		
 
 		$this->load->library('table');
@@ -1409,13 +1358,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function edit_category_group()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR
-		 	 ! $this->cp->allowed_group('can_access_content_prefs') OR
-		 	 ! $this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$this->load->model('admin_model');
 		$this->load->model('category_model');
@@ -1529,13 +1472,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function update_category_group()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR
-		 	 ! $this->cp->allowed_group('can_access_content_prefs') OR
-		 	 ! $this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		// If the $group_id variable is present we are editing an
 		// existing group, otherwise we are creating a new one
@@ -1652,13 +1589,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function category_group_delete_conf()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR
-		 	 ! $this->cp->allowed_group('can_access_content_prefs') OR
-		 	 ! $this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$group_id = $this->input->get_post('group_id');
 
@@ -1705,13 +1636,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function category_group_delete()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR
-		 	 ! $this->cp->allowed_group('can_access_content_prefs') OR
-		 	 ! $this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$group_id = $this->input->get_post('group_id');
 
@@ -1762,16 +1687,13 @@ class Admin_content extends CI_Controller {
 			
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
-				show_error($this->lang->line('unauthorized_access2'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( ! $this->cp->allowed_group('can_access_admin') OR
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)		
+		else
 		{
-			show_error($this->lang->line('unauthorized_access2'));
-		}		
+			$this->_restrict_prefs_access();
+		}	
 
 		$this->lang->loadfile('admin_content');
 		$this->load->model('category_model');
@@ -1798,7 +1720,7 @@ class Admin_content extends CI_Controller {
 		{
 			if (($group_id = $this->input->get_post('group_id')) === FALSE OR ! is_numeric($group_id))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
 
@@ -1811,7 +1733,7 @@ class Admin_content extends CI_Controller {
 			
 			if ($query->num_rows() == 0)
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 
 			$can_edit = explode('|', rtrim($query->row('can_edit_categories') , '|'));
@@ -1890,15 +1812,12 @@ class Admin_content extends CI_Controller {
 		{
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( !	$this->cp->allowed_group('can_access_admin') OR
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)		
+		else
 		{
-			show_error($this->lang->line('unauthorized_access2'));
+			$this->_restrict_prefs_access();
 		}
 
 		$this->load->model('category_model');
@@ -1913,7 +1832,7 @@ class Admin_content extends CI_Controller {
 		{
 			if ( ! is_numeric($group_id))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
 
@@ -1926,14 +1845,14 @@ class Admin_content extends CI_Controller {
 
 			if ($query->num_rows() == 0)
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 
 			$can_edit = explode('|', rtrim($query->row('can_edit_categories') , '|'));
 
 			if ($this->session->userdata['group_id'] != 1 AND ! in_array($this->session->userdata['group_id'], $can_edit))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
 		
@@ -1948,7 +1867,7 @@ class Admin_content extends CI_Controller {
 
 			if ($query->num_rows() == 0)
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 
 			$row = $query->row_array();
@@ -2057,9 +1976,7 @@ class Admin_content extends CI_Controller {
 				$vars['cat_custom_fields'][$row['field_id']]['field_required'] = $row['field_required'];					
 
 				$vars['cat_custom_fields'][$row['field_id']]['field_name'] = $row['field_name'];
-	
 				$vars['cat_custom_fields'][$row['field_id']]['field_input'] = $row['field_label'];
-
 
 				$vars['cat_custom_fields'][$row['field_id']]['field_type'] = $row['field_type'];
 				$vars['cat_custom_fields'][$row['field_id']]['field_text_direction'] = ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr';
@@ -2130,15 +2047,12 @@ class Admin_content extends CI_Controller {
 		{
 			if ( ! $this->cp->allowed_group('can_delete_categories'))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( !	$this->cp->allowed_group('can_access_admin') OR
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)		
+		else
 		{
-			show_error($this->lang->line('unauthorized_access2'));
+			$this->_restrict_prefs_access();
 		}		
 		
 
@@ -2200,16 +2114,13 @@ class Admin_content extends CI_Controller {
 		{
 			if ( ! $this->cp->allowed_group('can_delete_categories'))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( !	$this->cp->allowed_group('can_access_admin') OR
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)		
+		else
 		{
-			show_error($this->lang->line('unauthorized_access'));
-		}		
+			$this->_restrict_prefs_access();
+		}	
 
 
 		$cat_id = $this->input->get_post('cat_id');
@@ -2244,22 +2155,19 @@ class Admin_content extends CI_Controller {
 		{
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( !	$this->cp->allowed_group('can_access_admin') OR
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)		
+		else
 		{
-			show_error($this->lang->line('unauthorized_access2'));
+			$this->_restrict_prefs_access();
 		}		
 
 		$group_id = $this->input->get_post('group_id');
 
 		if ($group_id == '' OR ! is_numeric($group_id))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$edit = ($this->input->post('cat_id') == '') ? FALSE : TRUE;
@@ -2348,14 +2256,7 @@ class Admin_content extends CI_Controller {
 		if ($this->form_validation->run() === FALSE)
 		{
 			return $this->category_edit();
-		}		
-	
-		/*
-		foreach ($fields as $id => $val)
-		{
-			unset($_POST[$id]);
 		}
-		*/
 
 		$_POST['site_id'] = $this->config->item('site_id');
 
@@ -2604,18 +2505,12 @@ class Admin_content extends CI_Controller {
 		{
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
 		else
 		{
-			if ( ! $this->cp->allowed_group('can_access_admin') OR
-			 	!	$this->cp->allowed_group('can_access_content_prefs') OR
-			 	!	$this->cp->allowed_group('can_admin_channels')
-				)
-			{
-				show_error($this->lang->line('unauthorized_access'));
-			}		
+			$this->_restrict_prefs_access();
 		}
 
 		if (($group_id = $this->input->get_post('group_id')) === FALSE OR ! is_numeric($group_id))
@@ -2669,15 +2564,12 @@ class Admin_content extends CI_Controller {
 		{
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( ! $this->cp->allowed_group('can_access_admin') OR
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)		
+		else
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			$this->_restrict_prefs_access();
 		}
 
 		if (($group_id = $this->input->get_post('group_id')) === FALSE OR ! is_numeric($group_id))
@@ -2711,15 +2603,12 @@ class Admin_content extends CI_Controller {
 		{
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( ! $this->cp->allowed_group('can_access_admin') OR
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)		
+		else
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			$this->_restrict_prefs_access();
 		}
 
 		if (($group_id = $this->input->get_post('group_id')) === FALSE OR ! is_numeric($group_id))
@@ -2754,15 +2643,12 @@ class Admin_content extends CI_Controller {
 		{
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( ! $this->cp->allowed_group('can_access_admin') OR
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)		
+		else
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			$this->_restrict_prefs_access();
 		}
 
 		$sql = "SELECT cat_name, cat_id, parent_id FROM exp_categories WHERE group_id ='$group_id' ORDER BY parent_id, cat_name";
@@ -2807,15 +2693,12 @@ class Admin_content extends CI_Controller {
 		{
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( ! $this->cp->allowed_group('can_access_admin') OR
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)		
+		else
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			$this->_restrict_prefs_access();
 		}
 		
 		$order = 0;
@@ -2845,12 +2728,9 @@ class Admin_content extends CI_Controller {
 				show_error(lang('unauthorized_access'));
 			}
 		}
-		elseif ( ! $this->cp->allowed_group('can_access_admin') OR
-			 	 ! $this->cp->allowed_group('can_access_content_prefs') OR
-			 	 ! $this->cp->allowed_group('can_admin_channels')
-				)
+		else
 		{
-			show_error(lang('unauthorized_access'));
+			$this->_restrict_prefs_access();
 		}
 
 		// Fetch required globals
@@ -2968,13 +2848,7 @@ class Admin_content extends CI_Controller {
 	*/
 	function category_custom_field_group_manager($message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$vars['message'] = $message; //$this->lang->line('preferences_updated')
 
@@ -3048,13 +2922,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function edit_custom_category_field()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 		
 		$vars['group_id'] = $this->input->get_post('group_id');
 		$group_id = $vars['group_id'];
@@ -3112,7 +2980,7 @@ class Admin_content extends CI_Controller {
 
 				if ($gquery->row('count')  != 1)
 				{
-					show_error($this->lang->line('unauthorized_access'));
+					show_error(lang('unauthorized_access'));
 				}
 			}
 		}
@@ -3273,13 +3141,7 @@ class Admin_content extends CI_Controller {
 	//-----------------------------------------------------------
 	function update_custom_category_fields()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		// Are we editing or creating?
 
@@ -3289,7 +3151,7 @@ class Admin_content extends CI_Controller {
 
 		if ($group_id == '' OR ! is_numeric($group_id))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('admin_content');
@@ -3432,13 +3294,7 @@ class Admin_content extends CI_Controller {
 	  */
 	function delete_custom_category_field_confirm()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$group_id = $this->input->get_post('group_id');
 
@@ -3490,13 +3346,7 @@ class Admin_content extends CI_Controller {
 	  */
 	function delete_custom_category_field()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$group_id = $this->input->get_post('group_id');
 
@@ -3519,7 +3369,7 @@ class Admin_content extends CI_Controller {
 
 		if ($query->num_rows() == 0)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->category_model->delete_category_field($group_id, $field_id);
@@ -3545,13 +3395,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function field_group_management($message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$this->load->library('table');
 		$this->load->model('field_model');
@@ -3587,13 +3431,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function field_group_edit()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$this->load->helper('form');
 		$this->load->model('status_model');
@@ -3652,13 +3490,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function field_group_delete_confirm()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$group_id = $this->input->get_post('group_id');
 
@@ -3705,13 +3537,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function field_group_delete()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$group_id = $this->input->get_post('group_id');
 		$tabs = array();
@@ -3768,13 +3594,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function field_group_update()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error(lang('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$group_id = $this->input->get_post('group_id');
 
@@ -3863,13 +3683,7 @@ class Admin_content extends CI_Controller {
 	  */
 	function field_management($group_id = '', $message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$vars['group_id'] = ($group_id != '') ? $group_id : $this->input->get_post('group_id');
 
@@ -3937,15 +3751,9 @@ class Admin_content extends CI_Controller {
 	 */
 	function field_edit()
 	{
-		$this->load->library('table');
+		$this->_restrict_prefs_access();
 		
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->load->library('table');
 
 		$this->load->library('api');
 		$this->load->helper(array('snippets_helper', 'form'));
@@ -4011,7 +3819,7 @@ class Admin_content extends CI_Controller {
 
 				if ($this->db->count_all_results('field_groups') != 1)
 				{
-					show_error($this->lang->line('unauthorized_access'));
+					show_error(lang('unauthorized_access'));
 				}
 			}
 		}
@@ -4235,13 +4043,11 @@ class Admin_content extends CI_Controller {
 	  */
 	function field_update()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels') OR
-			 ! isset($_POST['group_id'])
-			)
+		$this->_restrict_prefs_access();
+		
+		if ( ! isset($_POST['group_id']))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->lang->loadfile('admin_content');
@@ -4620,13 +4426,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function field_delete_confirm()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$field_id = $this->input->get_post('field_id');
 
@@ -4672,13 +4472,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function field_delete()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$field_id = $this->input->get_post('field_id');
 
@@ -4728,13 +4522,7 @@ class Admin_content extends CI_Controller {
 
 	function edit_formatting_options()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		if ( ! $id = $this->input->get_post('id'))
 		{
@@ -4806,13 +4594,7 @@ class Admin_content extends CI_Controller {
 	/** ---------------------------------------*/
 	function update_formatting_options()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		if ( ! $id = $this->input->post('field_id'))
 		{
@@ -4852,13 +4634,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function status_group_management($message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$this->load->library('table');
 		$this->load->model('status_model');
@@ -4894,13 +4670,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function status_group_edit()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$this->load->helper('form');
 		$this->load->model('status_model');
@@ -4960,13 +4730,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function status_group_delete_confirm()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$group_id = $this->input->get_post('group_id');
 
@@ -5013,13 +4777,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function status_group_delete()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$group_id = $this->input->get_post('group_id');
 
@@ -5035,7 +4793,7 @@ class Admin_content extends CI_Controller {
 
 		if ($query->num_rows() == 0)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->status_model->delete_status_group($group_id);
@@ -5063,13 +4821,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function status_group_update()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$group_id = $this->input->get_post('group_id');
 
@@ -5151,13 +4903,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function status_management($message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$group_id = $this->input->get_post('group_id');
 
@@ -5204,13 +4950,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function status_edit()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$status_id = $this->input->get_post('status_id');
 
@@ -5324,13 +5064,7 @@ class Admin_content extends CI_Controller {
 	  */
 	function status_update()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$edit = ( ! $this->input->post('status_id')) ? FALSE : TRUE;
 
@@ -5438,13 +5172,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function status_delete_confirm()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$status_id = $this->input->get_post('status_id');
 
@@ -5489,13 +5217,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function status_delete()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$status_id = $this->input->get_post('status_id');
 
@@ -5560,17 +5282,11 @@ class Admin_content extends CI_Controller {
 	 */
 	function default_ping_servers($message = '', $id = '0')
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
-		if ($id == 0 AND ! $this->cp->allowed_group('can_admin_channels'))
+		if ($id == 0)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->helper(array('form', 'url'));
@@ -5695,18 +5411,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function save_ping_servers()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
-		if ( ! $this->cp->allowed_group('can_admin_channels'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$this->load->model('admin_model');
 
@@ -5752,18 +5457,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function default_html_buttons()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->cp->allowed_group('can_admin_channels'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$this->load->helper(array('form', 'url'));
 		$this->load->library('table');
@@ -5772,9 +5466,9 @@ class Admin_content extends CI_Controller {
 
 		$member_id = (int) $this->input->get_post('member_id');
 
-		if ($member_id == 0 AND ! $this->cp->allowed_group('can_admin_channels'))
+		if ($member_id == 0)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->cp->set_variable('cp_page_title', $this->lang->line('default_html_buttons'));
@@ -5853,18 +5547,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function delete_html_button()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->cp->allowed_group('can_admin_channels'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$this->load->model('admin_model');
 
@@ -5881,18 +5564,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function reorder_html_buttons()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->cp->allowed_group('can_admin_channels'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		foreach($this->input->post('ajax_tag_order') as $order=>$tag_id)
 		{
@@ -5914,18 +5586,7 @@ class Admin_content extends CI_Controller {
 	 */
 	function global_channel_preferences()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 !	$this->cp->allowed_group('can_access_content_prefs') OR
-			 !	$this->cp->allowed_group('can_admin_channels')
-			)
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->cp->allowed_group('can_admin_channels'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 		
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
 
@@ -5991,7 +5652,7 @@ class Admin_content extends CI_Controller {
 						)
 		)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		$vars['type'] = $type;
 
@@ -6163,17 +5824,8 @@ class Admin_content extends CI_Controller {
 	 */
 	function update_config()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR 
-			 ! $this->cp->allowed_group('can_access_content_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		if ( ! $this->cp->allowed_group('can_admin_channels'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
+		
 		$loc = $this->input->get_post('return_location');
 
 		$this->config->update_site_prefs($_POST);
@@ -6186,6 +5838,18 @@ class Admin_content extends CI_Controller {
 	}
 
 	// --------------------------------------------------------------------
+
+	function _restrict_prefs_access()
+	{
+		if ( ! $this->cp->allowed_group(
+			'can_access_admin',
+			'can_admin_channels',
+			'can_access_content_prefs'
+		))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
 
 }
 // END CLASS
