@@ -576,10 +576,8 @@ class Filemanager {
 	{
 		// Include dependencies
 		$this->EE->cp->add_js_script(array(
-			'plugin'    => array('scrollable', 'scrollable.navigator', 'ee_filebrowser', 'ee_fileuploader')
+			'plugin'    => array('scrollable', 'scrollable.navigator', 'ee_filebrowser', 'ee_fileuploader', 'tmpl')
 		));
-
-		$this->EE->cp->add_to_head('<link rel="stylesheet" href="'.BASE.AMP.'C=css'.AMP.'M=file_browser" type="text/css" media="screen" />');
 		
 		$this->EE->javascript->set_global(array(
 			'lang' => array(

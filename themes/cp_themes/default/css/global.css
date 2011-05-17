@@ -1776,24 +1776,6 @@ div#templates {
 	line-height:		25px;
 }
 
-#templateGroups .groupList li:hover a.editTemplateGroup {
-	visibility: visible;
-}
-
-.editTemplateGroup {
-	position:			absolute;
-	margin:				-36px 0 0 17%;
-	width:				108px;
-	line-height:		46px;
-	height:				46px;
-	background:			url('../images/template_group_edit_balloon.png') left center no-repeat;
-	color:				#FFF;
-	font-size:			14px;
-	text-align:			center;
-	visibility:			hidden;
-	padding-left:		4px;
-}
-
 #templateGroups .groupList li a.templateGroupName:link, 
 #templateGroups .groupList li a.templateGroupName:visited {
 	display:			block;

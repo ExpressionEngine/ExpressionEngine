@@ -251,7 +251,6 @@ if ($EE_view_disable !== TRUE)
 		</div>
 
 		<div id="write_mode_writer">
-			<div id="write_mode_header"><a href="#" class="reveal_formatting_buttons"><img class="show_tools" alt="<?=lang('show_tools')?>" width="109" height="18" src="<?=$cp_theme_url?>images/write_mode_show_tools.png" /></a></div>
 			<textarea id="write_mode_textarea"></textarea>
 		</div>
 		<div id="write_mode_footer">
