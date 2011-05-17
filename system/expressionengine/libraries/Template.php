@@ -137,7 +137,8 @@ class EE_Template {
 	/**
 	 * Run Template Engine
 	 *
-	 * Upon a Page or a Preview, it Runs the Processing of a Template baed on URI request or method arguments
+	 * Upon a Page or a Preview, it Runs the Processing of a Template 
+	 * based on URI request or method arguments
 	 *
 	 * @access	public
 	 * @param	string
@@ -208,8 +209,6 @@ class EE_Template {
 		$this->EE->output->out_type = $this->template_type;
 		$this->EE->output->set_output($this->final_template); 
 	}
-	
-	
 	
 	// --------------------------------------------------------------------
 	
@@ -1865,7 +1864,8 @@ class EE_Template {
 			return $this->fetch_template('', 'index', TRUE);
         }
         // Is only the pagination showing in the URI?
-        elseif(count($this->EE->uri->segments) == 1 && preg_match("#^(P\d+)$#", $this->EE->uri->segment(1), $match))
+        elseif(count($this->EE->uri->segments) == 1 && 
+        		preg_match("#^(P\d+)$#", $this->EE->uri->segment(1), $match))
         {
         	$this->EE->uri->query_string = $match['1'];
         	return $this->fetch_template('', 'index', TRUE);
