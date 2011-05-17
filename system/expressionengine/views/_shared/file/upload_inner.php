@@ -19,6 +19,8 @@
 
 <p id="progress"><img src="<?=$cp_theme_url?>images/indicator.gif" alt="<?=lang('loading')?>..." /><br /><?=lang('loading')?>...</p>
 
+<input type="submit" name="submit" value="Submit" />
+
 <?=form_close()?>
 	
 <?php $this->load->view('_shared/file/iframe_footer') ?>
