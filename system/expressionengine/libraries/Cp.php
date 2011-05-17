@@ -158,11 +158,9 @@ class Cp {
 		// we need these paths again in my account, so we'll keep track of them
 		// kind of hacky, but before it was accessing _ci_cache_vars, which is worse
 		
-		$this->EE->session->cache['cp_sidebar'] = array(
-			'cp_avatar_path'	=> $vars['cp_avatar_path'],
-			'cp_avatar_width'	=> $vars['cp_avatar_width'],
-			'cp_avatar_height'	=> $vars['cp_avatar_height']
-		);
+		$this->EE->session->set_cache('cp_sidebar', 'cp_avatar_path', $vars['cp_avatar_path'])
+						  ->set_cache('cp_sidebar', 'cp_avatar_width', $vars['cp_avatar_width'])
+						  ->set_cache('cp_sidebar', 'cp_avatar_height', $vars['cp_avatar_height']);
 
 		$css_paths = array(
 			PATH_CP_THEME.$this->cp_theme.'/',

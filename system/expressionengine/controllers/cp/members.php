@@ -815,8 +815,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		if ($type != 's')
 		{
 			$this->functions->set_cookie($this->session->c_expire , time()+$expire, $expire);
-			$this->functions->set_cookie($this->session->c_uniqueid , $query->row('unique_id') , $expire);
-			$this->functions->set_cookie($this->session->c_password , $query->row('password') ,  $expire);
+			// $this->functions->set_cookie($this->session->c_uniqueid , $query->row('unique_id') , $expire);
+			// $this->functions->set_cookie($this->session->c_password , $query->row('password') ,  $expire);
 			$this->functions->set_cookie($this->session->c_anon , 1,  $expire);
 		}
 
