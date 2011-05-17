@@ -56,8 +56,8 @@ class Addons_plugins extends CI_Controller {
 		$this->load->library('table');
 		$this->load->helper('form');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('plugins'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', $this->lang->line('addons'));
+		$this->cp->set_variable('cp_page_title', lang('plugins'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {2: {sorter: false}},
@@ -188,7 +188,7 @@ class Addons_plugins extends CI_Controller {
 		// Basic security check
 		if ( ! $name OR ! preg_match("/^[a-z0-9][\w.-]*$/i", $name))
 		{
-			$this->session->set_flashdata('message_failure', $this->lang->line('no_additional_info'));
+			$this->session->set_flashdata('message_failure', lang('no_additional_info'));
 			$this->functions->redirect(BASE.AMP.'C=addons_plugins');
 		}
 
@@ -207,8 +207,8 @@ class Addons_plugins extends CI_Controller {
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=addons' => $this->lang->line('addons'),
-			BASE.AMP.'C=addons_plugins'=> $this->lang->line('addons_plugins')
+			BASE.AMP.'C=addons' => lang('addons'),
+			BASE.AMP.'C=addons_plugins'=> lang('addons_plugins')
 		));
 
 		$this->load->view('addons/plugin_info', array('plugin' => $plugin));
@@ -229,13 +229,13 @@ class Addons_plugins extends CI_Controller {
 	{
 		if ($this->config->item('demo_date') != FALSE)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->helper(array('file', 'form'));
 
 		$this->cp->set_variable('cp_page_title', lang('plugin_delete_confirm'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', $this->lang->line('addons'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 
 		$hidden = $this->input->post('toggle');
 
@@ -264,7 +264,7 @@ class Addons_plugins extends CI_Controller {
 	{
 		if ($this->config->item('demo_date') != FALSE)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$plugins = $this->input->post('deleted');
@@ -343,20 +343,20 @@ class Addons_plugins extends CI_Controller {
 	{
 		if ($this->config->item('demo_date') != FALSE)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		@include_once(APPPATH.'libraries/Pclzip'.EXT);
 
 		if ( ! is_really_writable(PATH_THIRD))
 		{
-			$this->session->set_flashdata('message_failure', $this->lang->line('plugin_folder_not_writable'));
+			$this->session->set_flashdata('message_failure', lang('plugin_folder_not_writable'));
 			$this->functions->redirect(BASE.AMP.'C=addons_plugins');
 		}
 
 		if ( ! extension_loaded('curl') OR ! function_exists('curl_init'))
 		{
-			$this->session->set_flashdata('message_failure', $this->lang->line('plugin_no_curl_support'));
+			$this->session->set_flashdata('message_failure', lang('plugin_no_curl_support'));
 			$this->functions->redirect(BASE.AMP.'C=addons_plugins');
 		}
 
@@ -387,7 +387,7 @@ class Addons_plugins extends CI_Controller {
 
 		if ( ! $fp = fopen($local_file, FOPEN_WRITE_CREATE_DESTRUCTIVE))
 		{
-			$this->session->set_flashdata('message_failure', $this->lang->line('plugin_problem_creating_file'));
+			$this->session->set_flashdata('message_failure', lang('plugin_problem_creating_file'));
 			$this->functions->redirect(BASE.AMP.'C=addons_plugins');
 		}
 

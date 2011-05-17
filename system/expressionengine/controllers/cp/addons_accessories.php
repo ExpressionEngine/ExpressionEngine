@@ -61,15 +61,15 @@ class Addons_accessories extends CI_Controller {
 		if ( ! $this->cp->allowed_group('can_access_addons') 
 			OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}		
 		
 		$this->load->library('table');
 		$this->load->helper('html');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('accessories'));
+		$this->cp->set_variable('cp_page_title', lang('accessories'));
 
-		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', $this->lang->line('addons'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 		
 		$this->jquery->tablesorter('.mainTable', '{
         	textExtraction: "complex",			
@@ -111,7 +111,7 @@ class Addons_accessories extends CI_Controller {
 				$accessories[$name]['acc_pref_url'] = BASE.AMP.'C=addons_accessories'.AMP.'M=edit_prefs'.AMP.'accessory='.$name;
 				$accessories[$name]['acc_install'] = array(
 														'href' => BASE.AMP.'C=addons_accessories'.AMP.'M=uninstall'.AMP.'accessory='.$name,
-														'title' => $this->lang->line('uninstall')
+														'title' => lang('uninstall')
 														);
 
 				// Work out the human names (if needed)
@@ -121,12 +121,12 @@ class Addons_accessories extends CI_Controller {
 				if ($num_member_groups == 0)
 				{
 					// no member groups selected
-					$accessories[$name]['acc_member_groups'] = $this->lang->line('none');
+					$accessories[$name]['acc_member_groups'] = lang('none');
 				}
 				elseif ($num_member_groups == $num_all_member_groups)
 				{
 					// every member group selected, shorten the list to simply say "all"
-					$accessories[$name]['acc_member_groups'] = $this->lang->line('all');
+					$accessories[$name]['acc_member_groups'] = lang('all');
 				}
 				elseif ($num_member_groups < 4)
 				{
@@ -139,7 +139,7 @@ class Addons_accessories extends CI_Controller {
 					// many others there are, and offer the option of looking at them
 					$member_groups = array_map(array($this, '_get_human_name'), $installed[$name]['member_groups']);
 					$member_groups = array_slice($member_groups, 0, 3);
-					$member_groups[] = '<a href="'.$accessories[$name]['acc_pref_url'].'">'.str_replace("%x", ($num_member_groups-3), $this->lang->line('and_more')).'</a>';
+					$member_groups[] = '<a href="'.$accessories[$name]['acc_pref_url'].'">'.str_replace("%x", ($num_member_groups-3), lang('and_more')).'</a>';
 
 					$accessories[$name]['acc_member_groups'] = $member_groups;
 				}
@@ -151,12 +151,12 @@ class Addons_accessories extends CI_Controller {
 				if ($num_controllers == 0)
 				{
 					// no controllers
-					$accessories[$name]['acc_controller'] = $this->lang->line('none');
+					$accessories[$name]['acc_controller'] = lang('none');
 				}
 				elseif ($num_controllers == $num_all_controllers)
 				{
 					// all controllers selected, let's just say "all"
-					$accessories[$name]['acc_controller'] = $this->lang->line('all');
+					$accessories[$name]['acc_controller'] = lang('all');
 				}
 				elseif ($num_controllers < 4)
 				{
@@ -169,7 +169,7 @@ class Addons_accessories extends CI_Controller {
 					// many others there are, and offer the option of looking at them
 					$controllers = array_map(array($this, '_get_human_name'), $installed[$name]['controllers']);
 					$controllers = array_slice($controllers, 0, 3);
-					$controllers[] = '<a href="'.$accessories[$name]['acc_pref_url'].'">'.str_replace("%x", ($num_controllers-3), $this->lang->line('and_more')).'</a>';
+					$controllers[] = '<a href="'.$accessories[$name]['acc_pref_url'].'">'.str_replace("%x", ($num_controllers-3), lang('and_more')).'</a>';
 
 					$accessories[$name]['acc_controller'] = $controllers;
 				}
@@ -179,7 +179,7 @@ class Addons_accessories extends CI_Controller {
 				$accessories[$name]['acc_pref_url'] = '';
 				$accessories[$name]['acc_install'] = array(
 														'href' => BASE.AMP.'C=addons_accessories'.AMP.'M=install'.AMP.'accessory='.$name,
-														'title' => $this->lang->line('install')
+														'title' => lang('install')
 														);
 				$accessories[$name]['acc_member_groups'] = '--';
 				$accessories[$name]['acc_controller'] = '--';
@@ -248,7 +248,7 @@ class Addons_accessories extends CI_Controller {
 		if ( ! $this->cp->allowed_group('can_access_addons') 
 			OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->library('addons/addons_installer');
@@ -257,7 +257,7 @@ class Addons_accessories extends CI_Controller {
 
 		if ($this->addons_installer->install($accessory, 'accessory'))
 		{
-			$this->session->set_flashdata('message_success', $this->lang->line('installed'));
+			$this->session->set_flashdata('message_success', lang('installed'));
 			$this->functions->redirect(BASE.AMP.'C=addons_accessories');
 		}
 	}
@@ -274,7 +274,7 @@ class Addons_accessories extends CI_Controller {
 		if ( ! $this->cp->allowed_group('can_access_addons') 
 			OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->library('addons/addons_installer');
@@ -283,7 +283,7 @@ class Addons_accessories extends CI_Controller {
 		
 		if ($this->addons_installer->uninstall($accessory, 'accessory'))
 		{
-			$this->session->set_flashdata('message_success', $this->lang->line('uninstalled'));
+			$this->session->set_flashdata('message_success', lang('uninstalled'));
 			$this->functions->redirect(BASE.AMP.'C=addons_accessories');
 		}
 	}
@@ -300,7 +300,7 @@ class Addons_accessories extends CI_Controller {
 		if ( ! $this->cp->allowed_group('can_access_addons') 
 			OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if ( ! $name = $this->input->get_post('accessory'))
@@ -327,8 +327,8 @@ class Addons_accessories extends CI_Controller {
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=addons' => $this->lang->line('addons'),
-			BASE.AMP.'C=addons_accessories'=> $this->lang->line('addons_accessories')
+			BASE.AMP.'C=addons' => lang('addons'),
+			BASE.AMP.'C=addons_accessories'=> lang('addons_accessories')
 		));
 
 		$this->load->library('table');
@@ -461,7 +461,7 @@ class Addons_accessories extends CI_Controller {
 		if ( ! $this->cp->allowed_group('can_access_addons') 
 			OR ! $this->cp->allowed_group('can_access_accessories'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		if ( ! $name = $this->input->get_post('accessory'))
@@ -483,7 +483,7 @@ class Addons_accessories extends CI_Controller {
 
 		$this->accessories->update_placement($class, $member_groups, $controllers);
 
-		$this->session->set_flashdata('message_success', $this->lang->line('preferences_updated'));
+		$this->session->set_flashdata('message_success', lang('preferences_updated'));
 		$this->functions->redirect(BASE.AMP.'C=addons_accessories');
 	}
 
