@@ -660,7 +660,7 @@ $(document).ready(function() {
 		});
 	}
 
-	if (EE.publish.autosave) {
+	if (EE.publish.autosave && EE.publish.autosave.interval) {
 		
 		var autosaving = false;
 		
