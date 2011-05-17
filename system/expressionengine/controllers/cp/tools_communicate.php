@@ -148,6 +148,10 @@ class Tools_communicate extends CI_Controller {
 
 			if ($query->num_rows() > 0)
 			{
+				// aliases
+				$default['from_email'] =& $default['from'];
+				$default['from_name'] =& $default['name'];
+				
 				foreach ($query->row_array() as $key => $val)
 				{
 					if (isset($default[$key]))
