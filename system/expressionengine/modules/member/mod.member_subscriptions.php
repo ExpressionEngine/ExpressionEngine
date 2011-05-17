@@ -25,22 +25,12 @@
  */
 
 class Member_subscriptions extends Member {
-
-
-	/** ----------------------------------
-	/**  Member_settings Profile Constructor
-	/** ----------------------------------*/
-	function Member_subscriptions()
-	{
-	}
-
 	
 	
-	/** ----------------------------------------
-	/**  Subscriptions Edit Form
-	/** ----------------------------------------*/
-	
-	function edit_subscriptions()
+	/**
+	 * Subscriptions Edit Form
+	 */
+	public function edit_subscriptions()
 	{
 		$this->EE->load->library('members');
 		
@@ -53,27 +43,16 @@ class Member_subscriptions extends Member {
 		$page_links				= '';
 		$total_count			= 0;
 		
-		if ($rownum != '') 
-		{
- 			$rownum = substr($rownum, 1);
-		}
-		else
-		{
-			$rownum = 0;
-		}
+		$rownum = ($rownum != '') ? substr($rownum, 1) : 0;
 		
 		$rownum = ($rownum == '' OR ($perpage > 1 AND $rownum == 1)) ? 0 : $rownum;
 		
-		/** ----------------------------------------
-		/**  Set update path
-		/** ----------------------------------------*/
+		// Set update path
 		$swap['path:update_subscriptions'] = $this->_member_path('update_subscriptions');
 		
 		$subscription_data = $this->EE->members->get_member_subscriptions($this->EE->session->userdata('member_id'), $rownum, $perpage);		
 
-		/** ------------------------------------
-		/**  No results?  Bah, how boring...
-		/** ------------------------------------*/
+		// No results?  Bah, how boring...
 		$total_rows = $subscription_data['total_results'];	
 		$result_data = $subscription_data['result_array'];	
 
@@ -84,11 +63,7 @@ class Member_subscriptions extends Member {
 			return $this->_var_swap($this->_load_element('subscriptions_form'), $swap);
 		}
 		
-				
-		/** ---------------------------------
-		/**  Do we need pagination?
-		/** ---------------------------------*/
-		
+		// Do we need pagination?
 		if ($rownum > $total_rows)
 		{
 			$rownum = 0;
@@ -98,7 +73,9 @@ class Member_subscriptions extends Member {
 		$total_pages	= intval(floor($total_rows / $perpage));
 		
 		if ($total_rows % $perpage)
-			$total_pages++;
+		{
+			$total_pages++;			
+		}
 		
 		if ($total_rows > $perpage)
 		{
@@ -119,10 +96,7 @@ class Member_subscriptions extends Member {
 			$page_links = $this->EE->pagination->create_links();			
 		}
 
-
-	
 		// Build the result table...
-
 		$out = $this->_var_swap($this->_load_element('subscription_result_heading'),
 								array(
 										'lang:title'		=>	$this->EE->lang->line('title'),
@@ -160,13 +134,11 @@ class Member_subscriptions extends Member {
 								);
 	}
 
+	// --------------------------------------------------------------------
 	
-	
-	
-	/** ----------------------------------------
-	/**  Update Subscriptions
-	/** ----------------------------------------*/
-	
+	/**
+	 * Update Subscriptions
+	 */
 	function update_subscriptions()
 	{
 		if ( ! $this->EE->input->post('toggle'))
@@ -182,17 +154,14 @@ class Member_subscriptions extends Member {
 			switch (substr($val, 0, 1))
 			{
 				case "b"	: $this->EE->subscription->init('comment', array('entry_id' => substr($val, 1)), TRUE);
-								$this->EE->subscription->unsubscribe($this->EE->session->userdata['member_id']);
+								$this->EE->subscription->unsubscribe($this->EE->session->userdata('member_id'));
 					break;
 				case "f"	: $this->EE->db->query("DELETE FROM exp_forum_subscriptions WHERE topic_id = '".substr($val, 1)."' AND member_id = '{$this->EE->session->userdata['member_id']}'");
 					break;
 			}
 		}
-				
-		/** -------------------------------------
-		/**  Success message
-		/** -------------------------------------*/
-	
+
+		// Success message	
 		return $this->_var_swap($this->_load_element('success'),
 								array(
 										'lang:heading'		=>	$this->EE->lang->line('subscriptions'),
@@ -200,8 +169,6 @@ class Member_subscriptions extends Member {
 									 )
 								);
 	}
-
-	
 }
 // END CLASS
 
