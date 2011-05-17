@@ -100,12 +100,13 @@ class Filemanager {
 			$filename	= implode('.', $parts);
 		}
 		
-		// Figure out a unique filename
 		$ext = '.'.$ext;
-		$basename = $filename;
 		
+		// Figure out a unique filename
 		if ($dupe_check == TRUE)
 		{
+			$basename = $filename;
+			
 			while (file_exists($path.$filename.$ext))
 			{
 				$filename = $basename.'_'.$i++;
@@ -155,6 +156,7 @@ class Filemanager {
 	 * Get the upload directory preferences for an individual directory
 	 * 
 	 * @param integer $dir_id ID of the directory to get preferences for
+	 * TODO: Rewrite using current models
 	 */
 	function fetch_upload_dir_prefs($dir_id)
 	{
@@ -1683,7 +1685,7 @@ class Filemanager {
 		
 		$field = ($field_name) ? $field_name : 'userfile';
 		$original_filename = $_FILES[$field]['name'];
-		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id']));
+		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id'], TRUE));
 		
 		$config = array(
 			'file_name'		=> $clean_filename,
@@ -1737,7 +1739,6 @@ class Filemanager {
 			);
 		}
 		
-	
 		$thumb_info = $this->get_thumb($file['file_name'], $dir['id']);
 		
 		// Build list of information to save and return
@@ -1828,7 +1829,9 @@ class Filemanager {
 	 * Overwrite OR Rename Files Manually
 	 *
 	 * @access	public
-	 * @return	void
+	 * @param integer $file_id The ID of the file in exp_files
+	 * @param string $new_file_name The new file name for the file
+	 * @return mixed TRUE if successful, otherwise it returns the error
 	 */	 
 	function replace_file($file_id, $new_file_name)
 	{
@@ -1838,20 +1841,36 @@ class Filemanager {
 		$previous_data = $this->EE->db->get_where('files', array('file_id' => $file_id));
 		$previous_data = $previous_data->row();
 		
+		if ($previous_data->file_name == $new_file_name)
+		{
+			return TRUE;
+		}
+		
 		$directory_id  = $previous_data->upload_location_id;
 		$old_file_name = $previous_data->file_name;
 		
+		// Figure out names of the dimensions to delete
+		// (Filemanager::save_file deletes them later)
+		$upload_directory = $this->fetch_upload_dir_prefs($directory_id);
+		$dimension_query = $this->EE->file_model->get_dimensions_by_dir_id($directory_id);
+		foreach ($dimension_query->result_array() as $dimension) 
+		{
+			@unlink($upload_directory['server_path'] . '_' . $dimension['short_name'] . '/' . $old_file_name);
+		}
+		@unlink($upload_directory['server_path'] . '_thumb/' . $old_file_name);
+		
 		// Rename the actual file
-		$file_path = $this->_rename_file($old_file_name, $new_file_name, $directory_id);
+		$file_path = $this->_rename_file(
+			$old_file_name,
+			$new_file_name,
+			$directory_id
+		);
 
 		// If renaming the file sparked an error return it
 		if (is_array($file_path))
 		{
-			var_dump($file_path);
 			return $file_path;
 		}
-		
-		// TODO: Rename thumbnails
 		
 		// Update the file record
 		$updated_data = array(
@@ -1875,31 +1894,37 @@ class Filemanager {
 		return TRUE;
     }
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Renames a raw file, doesn't touch the database
+	 * 
+	 * @param string $old_file_name The old file name
+	 * @param string $new_file_name The new file name
+	 * @param integer $directory_id The ID of the directory the file is in
+	 * @return string The path of the newly renamed file
+	 */
     public function _rename_file($old_file_name, $new_file_name, $directory_id)
     {
 		// Make sure the filename is clean
 		$new_file_name = basename($this->clean_filename($new_file_name, $directory_id));
 	
 		// Check they have permission for this directory and get directory info
-		$upload_directory = $this->EE->file_upload_preferences_model->get_upload_preferences(
-			$this->EE->session->userdata('group_id'),
-			$directory_id
-		);
+		$upload_directory = $this->fetch_upload_dir_prefs($directory_id);
 		
 		// If this directory doesn't exist then we can't do anything
-		if ($upload_directory->num_rows() <= 0)
+		if ( ! $upload_directory)
 		{
 			return array('error' => lang('no_known_file'));
 		}
-		
-		$upload_directory = $upload_directory->row();
 	
+		// Rename the file
 		$config = array(
-			'upload_path'	=> $upload_directory->server_path,
-			'allowed_types'	=> ($this->EE->session->userdata('group_id') == 1) ? 'all' : $upload_directory->allowed_types,
-			'max_size'		=> round($upload_directory->max_size/1024, 2),
-			'max_width'		=> $upload_directory->max_width,
-			'max_height'	=> $upload_directory->max_height
+			'upload_path'	=> $upload_directory['server_path'],
+			'allowed_types'	=> ($this->EE->session->userdata('group_id') == 1) ? 'all' : $upload_directory['allowed_types'],
+			'max_size'		=> round($upload_directory['max_size']/1024, 2),
+			'max_width'		=> $upload_directory['max_width'],
+			'max_height'	=> $upload_directory['max_height']
 		);
 		
 		$this->EE->load->library('upload', $config);
@@ -1909,9 +1934,8 @@ class Filemanager {
 			return array('error' => $this->EE->upload->display_errors());
 		}
 		
-		return $upload_directory->server_path . $new_file_name;
+		return $upload_directory['server_path'] . $new_file_name;
     }
- 
 
 	// --------------------------------------------------------------------
 
