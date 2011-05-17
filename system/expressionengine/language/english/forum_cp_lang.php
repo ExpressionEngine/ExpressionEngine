@@ -1238,6 +1238,19 @@ $lang = array(
 'no_forums_for_forum_board' =>
 'There are no forums for this Forum Board',
 
+// Used by the tabs
+
+'empty_title_field' =>
+'Your post must have a title',
+
+'empty_body_field' =>
+'Your message field is empty',
+
+'invalid_forum_id' =>
+'Invalid Forum ID',
+
+'invalid_topic_id' =>
+'Invalid Topic ID',
 
 
 ''=>''
