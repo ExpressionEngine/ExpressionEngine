@@ -734,38 +734,85 @@ class Content_files extends CI_Controller {
 			return $this->load->view('_shared/file/failure', $vars);
 		}
 		
-		// Check to see if the file needs to be renamed
-		// TODO: Allow for the user to rename the file
-		if ($upload_response['file_name'] != $upload_response['orig_name'])
-		{
-			$vars['file'] = $upload_response;
-			return $this->load->view('_shared/file/rename', $vars);
- 		}
-		
 		// Copying file_name to name and file_thumb to thumb for addons
 		$upload_response['name'] = $upload_response['file_name'];
 		$upload_response['thumb'] = $upload_response['file_thumb'];
 		
 		$vars = array(
-			'file_json'	=> $this->javascript->generate_json($upload_response, TRUE),
 			'file'		=> $upload_response,
-			'file_data'	=> $upload_response,
+			'file_json'	=> $this->javascript->generate_json($upload_response, TRUE),
 			'date'		=> date('M d Y - H:ia')
 		);
-	
+		
+		// Check to see if the file needs to be renamed
+		if ($upload_response['file_name'] != $upload_response['orig_name'])
+		{
+			return $this->load->view('_shared/file/rename', $vars);
+ 		}
+		
 		return $this->load->view('_shared/file/success', $vars);
 	}
 	
 	// ------------------------------------------------------------------------
 	
+	/**
+	 * Attempts to rename the file, goes back to rename if it couldn't, sends
+	 * the user to succes if everything went to plan.
+	 * 
+	 * Called via content_files::upload_file if the file already exists
+	 */
 	public function update_file()
 	{
-		$file_id = $this->input->post('file_id');
 		$new_file_name = $this->input->post('new_file_name');
 		
-		$this->filemanager->replace_file($file_id, $new_file_name);
+		// Attempt to replace the file
+		$replace_file = $this->filemanager->replace_file(
+			$this->input->post('file_id'),
+			$new_file_name
+		);
+		
+		if ( ! function_exists('json_decode'))
+		{
+			$this->load->library('Services_json');
+		}
+		
+		// Get the JSON and decode it
+		$file_json = $this->input->post('file_json');
+		$file = get_object_vars(json_decode($file_json));
+		$file['upload_directory_prefs'] = get_object_vars($file['upload_directory_prefs']);
+		
+		// Replace the filename and thumb (everything else should have stayed the same)
+		$thumb_info = $this->filemanager->get_thumb($new_file_name, $file['upload_location_id']);
+		$file['file_name'] = $new_file_name;
+		$file['thumb'] = $thumb_info['thumb'];
+		
+		// Prep the vars for the success and rename views
+		$vars = array(
+			'file'		=> $file,
+			'file_json'	=> $this->javascript->generate_json($file, TRUE),
+			'date'		=> date('M d Y - H:ia')
+		);
+		
+		// If the file was successfully replaced send them to the success page
+		if (
+			( ! is_array($replace_file) AND $replace_file === TRUE) OR
+			(strpos($replace_file['error'], lang('file_exists')) > 0 AND $new_file_name === $file['file_name'])
+		)
+		{
+			return $this->load->view('_shared/file/success', $vars);
+		}
+		// If it's a file exists error, rename it
+		else if (strpos($replace_file['error'], lang('file_exists')) > 0)
+		{
+			return $this->load->view('_shared/file/rename', $vars);
+		}
+		// If it's a different type of error, show it
+		else
+		{
+			return $this->load->view('_shared/file/failure', $replace_file);
+		}
 	}
-
+	
 	// ------------------------------------------------------------------------
 	
 	/**
