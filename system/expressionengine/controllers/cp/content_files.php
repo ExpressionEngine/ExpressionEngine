@@ -1866,7 +1866,7 @@ class Content_files extends CI_Controller {
 
 		if ($this->db->count_all_results('file_watermarks') > 0)
 		{
-			$this->form_validation->set_message('_name_check', $this->lang->line('wm_name_taken'));
+			$this->form_validation->set_message('_name_check', lang('wm_name_taken'));
 			return FALSE;
 		}
 		
@@ -2011,7 +2011,7 @@ class Content_files extends CI_Controller {
 
 		if ( ! $id)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 
@@ -2094,8 +2094,8 @@ class Content_files extends CI_Controller {
 
 
 		$this->javascript->set_global(array('lang' => array(
-											'size_deleted'	=> $this->lang->line('size_deleted'),
-											'size_not_deleted' => $this->lang->line('size_not_deleted')
+											'size_deleted'	=> lang('size_deleted'),
+											'size_not_deleted' => lang('size_not_deleted')
 										)
 									));
 
@@ -2397,7 +2397,7 @@ class Content_files extends CI_Controller {
 					if ((trim($_POST['size_short_name_'.$row['id']]) == '' OR
 						in_array($_POST['size_short_name_'.$row['id']], $names)) && ! isset($_POST['remove_size_'.$row['id']]))
 					{
-						return $this->output->show_user_error('submission', array($this->lang->line('invalid_shortname')));
+						return $this->output->show_user_error('submission', array(lang('invalid_shortname')));
 					}
 					
 					
@@ -2475,7 +2475,7 @@ class Content_files extends CI_Controller {
 					if ( ! isset($_POST[$name]) OR ! preg_match("/^\w+$/", $_POST[$name]) OR
 						in_array($_POST[$name], $names))
 					{
-						return $this->output->show_user_error('submission', array($this->lang->line('invalid_short_name')));
+						return $this->output->show_user_error('submission', array(lang('invalid_short_name')));
 					}
 					
 					$size_data = array(
