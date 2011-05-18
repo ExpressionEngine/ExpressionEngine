@@ -3532,7 +3532,7 @@ class Design extends CI_Controller {
 					$tmpl_ext = '.html';
 			}
 			
-			$template_name = $site_name.'/'.$template['group_name'].'/'.$template['template_name'].$tmpl_ext;
+			$template_name = $site_name.'/'.$template['group_name'].'.group'.'/'.$template['template_name'].$tmpl_ext;
 			
 			$this->zip->add_data($template_name, $template['template_data']);
 		}
