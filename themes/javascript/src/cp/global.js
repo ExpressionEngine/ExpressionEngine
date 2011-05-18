@@ -106,6 +106,8 @@ jQuery(document).ready(function () {
 
 							logOutWarning.slideUp('fast');
 							$.ee_notice(result.message, {type : "custom", open: true});
+							
+							setTimeout($.ee_notice.destroy, 1600);
 						
 							EE.XID = result.xid;
 
