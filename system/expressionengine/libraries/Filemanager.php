@@ -595,7 +595,8 @@ class Filemanager {
 				'window_title'		=> lang('file_manager')
 			),
 			'fileuploader' => array(
-				'window_title'		=> lang('file_upload')
+				'window_title'		=> lang('file_upload'),
+				'delete_url'		=> 'C=content_files&M=delete_files'
 			)
 		));
 	}
@@ -630,7 +631,8 @@ class Filemanager {
 				'theme_url'		=> $this->theme_url
 			),
 			'fileuploader' => array(
-				'window_title'		=> lang('file_upload')
+				'window_title'		=> lang('file_upload'),
+				'delete_url'		=> 'C=content_files&M=delete_files'
 			),
 			'lang' => array(
 				'or'				=> $this->EE->lang->line('or'), 

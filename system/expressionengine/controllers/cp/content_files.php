@@ -139,6 +139,7 @@ class Content_files extends CI_Controller {
 			),
 			'fileuploader' => array(
 				'window_title'	=> lang('file_upload'),
+				'delete_url'	=> 'C=content_files&M=delete_files',
 				'actions' => array(
 					'download' 	=> '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'file_id=[file_id]'.AMP.'action=download" title="'.lang('file_download').'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png"></a>',
 					'delete'	=> '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'file_id=[file_id]'.AMP.'action=delete" title="'.lang('delete_selected_files').'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png"></a>',
@@ -896,15 +897,28 @@ class Content_files extends CI_Controller {
 	 * Delete a list of files (and their thumbnails) from a particular directory
 	 * Expects two GET/POST variables:
 	 *  - file: an array of file ids to delete
-	 *  - file_dir: the ID of the file directory to delete from
 	 */
 	public function delete_files()
 	{
 		$files = $this->input->get_post('file');
 
+		// If no files were found, error out
 		if ( ! $files)
 		{
-			$this->session->set_flashdata('message_failure', lang('choose_file'));
+			$message_type = 'message_failure';
+			$message = lang('choose_file');
+			
+			if (AJAX_REQUEST)
+			{
+				$this->output->send_ajax_response(array(
+					'type'    => $message_type,
+					'message' => $message
+				), TRUE);
+				
+				return;
+			}
+			
+			$this->session->set_flashdata($message_type, $message);
 			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
 		
@@ -914,6 +928,14 @@ class Content_files extends CI_Controller {
 		$message_type = ($delete) ? 'message_success' : 'message_failure';
 		$message = ($delete) ? lang('delete_success') : lang('message_failure');
 
+		if (AJAX_REQUEST)
+		{
+			$this->output->send_ajax_response(array(
+				'type'    => $message_type,
+				'message' => $message
+			));
+		}
+		
 		$this->session->set_flashdata($message_type, $message);
 		$this->functions->redirect(BASE.AMP.'C=content_files');
 	}

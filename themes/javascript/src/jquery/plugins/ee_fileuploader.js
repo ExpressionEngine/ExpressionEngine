@@ -13,7 +13,8 @@
 (function($) {
 	
 	var file_uploader,
-		settings;
+		settings,
+		delete_file = true;
 
 	/**
 	 * Loads in the html needed and fires off the function to build the dialog
@@ -85,10 +86,29 @@
 				upload_listen();
 			},
 			close: function() {
-				// Call close callback, passing the file info
-				if (typeof settings.close == 'function') {
+				if (typeof window.upload_iframe.file != "undefined") {
 					var file = window.upload_iframe.file;
-					settings.close.call(this, file_uploader, file);
+					
+					if (delete_file) {
+						// Delete the file
+						$.ajax({
+							url: EE.BASE+'&'+EE.fileuploader.delete_url,
+							type: 'POST',
+							dataType: 'json',
+							data: {
+								"file": file.file_id,
+								"XID": EE.XID
+							},
+							error: function(xhr, textStatus, errorThrown){
+								console.log(textStatus);
+							}
+						});
+					};
+					
+					// Call close callback, passing the file info
+					if (typeof settings.close == 'function') {
+						settings.close.call(this, file_uploader, file);
+					};
 				};
 			}
 		});
@@ -185,6 +205,9 @@
 	 * @param {Object} file Object representing the just uploaded file
 	 */
 	$.ee_fileuploader.after_upload = function(file) {
+		// Make sure the file doesn't get deleted if the window is closed
+		delete_file = false;
+		
 		// Call after upload callback
 		if (typeof settings.after_upload == "function") {
 			settings.after_upload.call(this, file_uploader, file);
