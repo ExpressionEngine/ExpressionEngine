@@ -156,7 +156,9 @@ class EE_Core {
 
 		$last_site_id = $this->EE->input->cookie('cp_last_site_id');
 
-		if (REQ == 'CP' && ! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != $this->EE->config->item('site_id'))
+		if (REQ == 'CP' && ! empty($last_site_id) && 
+			is_numeric($last_site_id) && 
+			$last_site_id != $this->EE->config->item('site_id'))
 		{
 			$this->EE->config->site_prefs('', $last_site_id);
 		}
@@ -173,7 +175,8 @@ class EE_Core {
 		}
 			
 		// Set the path to the "themes" folder
-		if ($this->EE->config->item('theme_folder_path') !== FALSE && $this->EE->config->item('theme_folder_path') != '')
+		if ($this->EE->config->item('theme_folder_path') !== FALSE && 
+			$this->EE->config->item('theme_folder_path') != '')
 		{
 			$theme_path = preg_replace("#/+#", "/", $this->EE->config->item('theme_folder_path').'/');
 		}
