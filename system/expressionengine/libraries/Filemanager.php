@@ -1839,6 +1839,8 @@ class Filemanager {
 	{
 		$this->EE->load->model(array('file_upload_preferences_model', 'file_model'));
 		
+		$replace = FALSE;
+		
 		// Get the file data form the database
 		$previous_data = $this->EE->file_model->get_files_by_id($file_id);
 		$previous_data = $previous_data->row();
@@ -1853,6 +1855,7 @@ class Filemanager {
 			// If it does, delete the old files and remove the new file
 			// record in the database
 			
+			$replace = TRUE;
 			$previous_data = $this->_replace_file($previous_data, $new_file_name, $directory_id);
 			$file_id = $previous_data->file_id;
 		}
@@ -1870,7 +1873,10 @@ class Filemanager {
 		// If renaming the file sparked an error return it
 		if (is_array($file_path))
 		{
-			return $file_path;
+			return array(
+				'success'	=> FALSE,
+				'error'		=> $file_path['error']
+			);
 		}
 		
 		// Update the file record
@@ -1886,13 +1892,17 @@ class Filemanager {
 			$updated_data['title'] = $new_file_name;
 		}
 		
-		$this->save_file(
+		$file = $this->save_file(
 			$file_path,
 			$previous_data->upload_location_id,
 			$updated_data
 		);
 		
-		return TRUE;
+		return array(
+			'success'	=> TRUE,
+			'replace'	=> $replace,
+			'file_id'	=> ($replace) ? $file['file_id'] : $file_id
+		);
     }
 
 	// --------------------------------------------------------------------

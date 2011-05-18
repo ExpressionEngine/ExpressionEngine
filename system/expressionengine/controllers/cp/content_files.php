@@ -769,9 +769,9 @@ class Content_files extends CI_Controller {
 			$this->input->post('new_file_name') . '.' . $this->input->post('file_ext'),
 			$this->input->post('directory_id')
 		));
-				
+		
 		// Attempt to replace the file
-		$replace_file = $this->filemanager->rename_file(
+		$rename_file = $this->filemanager->rename_file(
 			$this->input->post('file_id'),
 			$new_file_name
 		);
@@ -789,9 +789,11 @@ class Content_files extends CI_Controller {
 		// Replace the filename and thumb (everything else should have stayed the same)
 		$thumb_info = $this->filemanager->get_thumb($new_file_name, $file['upload_location_id']);
 		
+		$file['file_id']	= $rename_file['file_id'];
 		$file['file_name'] 	= $new_file_name;
 		$file['name'] 		= $new_file_name;
 		$file['thumb'] 		= $thumb_info['thumb'];
+		$file['replace']	= $rename_file['replace'];
 		
 		// Prep the vars for the success and rename pages
 		$vars = array(
@@ -801,22 +803,14 @@ class Content_files extends CI_Controller {
 		);
 		
 		// If the file was successfully replaced send them to the success page
-		if (
-			( ! is_array($replace_file) AND $replace_file === TRUE) OR
-			(strpos($replace_file['error'], lang('file_exists')) > 0 AND $new_file_name === $file['file_name'])
-		)
+		if ($rename_file['success'] === TRUE)
 		{
 			return $this->load->view('_shared/file/success', $vars);
-		}
-		// If it's a file exists error, rename it
-		else if (strpos($replace_file['error'], lang('file_exists')) > 0)
-		{
-			return $this->load->view('_shared/file/rename', $vars);
 		}
 		// If it's a different type of error, show it
 		else
 		{
-			return $this->load->view('_shared/file/failure', $replace_file);
+			return $this->load->view('_shared/file/failure', $rename_file['error']);
 		}
 	}
 	
