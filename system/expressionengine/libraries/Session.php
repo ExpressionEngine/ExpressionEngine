@@ -67,9 +67,7 @@ class EE_Session {
 	public $user_session_len	 = 7200;  // User sessions expire in two hours
 	public $cpan_session_len	 = 3600;  // Admin sessions expire in one hour
 
-	public $c_session		= 'sessionid';
-	// var $c_uniqueid			= 'uniqueid';
-	// var $c_password			= 'userhash';
+	public $c_session			= 'sessionid';
 	public $c_expire			= 'expiration';
 	public $c_anon				= 'anon';
 	public $c_prefix			= '';
@@ -81,23 +79,21 @@ class EE_Session {
 	
 	public $sess_crypt_key		= '';
 	
-	public $validation_type  	= '';
 	public $session_length		= '';
+	public $validation_type  	= '';
 	
+	public $access_cp			= FALSE;
 	public $cookies_exist		= FALSE;
 	public $session_exists		= FALSE;
-	public $access_cp			= FALSE;
 	
-	public $gc_probability		= 5;  
-		// Garbage collection probability.  Used to kill expired sessions.
+	// Garbage collection probability. Used to kill expired sessions.
+	public $gc_probability		= 5;
 	
-	public $cache			= array();
-		// Store data for just this page load.  
-		// Multi-dimensional array with module/class name, 
-		//		e.g. $this->cache['module']['var_name']
-		// Use set_cache() and cache() methods.
-
-	protected $SID 			= '';
+	// Store data for just this page load.  
+	// Multi-dimensional array with module/class name, 
+	// e.g. $this->cache['module']['var_name']
+	// Use set_cache() and cache() methods.
+	public $cache				= array();
 
 	protected $EE;
 
@@ -133,13 +129,13 @@ class EE_Session {
 
 		// Set SESSION data as GUEST until proven otherwise
 		$this->sdata = array(
-								'session_id' 	=>  0,
-								'member_id'  	=>  0,
-								'admin_sess' 	=>  0,
-								'ip_address' 	=>  $this->EE->input->ip_address(),
-								'user_agent' 	=>  substr($this->EE->input->user_agent(), 0, 120),
-								'last_activity'	=>  0
-							);
+			'session_id' 		=>  0,
+			'member_id'  		=>  0,
+			'admin_sess' 		=>  0,
+			'ip_address' 		=>  $this->EE->input->ip_address(),
+			'user_agent' 		=>  substr($this->EE->input->user_agent(), 0, 120),
+			'last_activity'		=>  0
+		);
 							
 		// -------------------------------------------
 		// 'sessions_start' hook.
@@ -154,6 +150,8 @@ class EE_Session {
 
 		if ($this->EE->input->cookie($this->c_session))
 		{
+			$this->cookies_exist = TRUE;
+			
 			if ($this->EE->input->get('S'))
 			{
 				$this->sdata['session_id'] = $this->EE->input->get('S');
@@ -162,12 +160,6 @@ class EE_Session {
 			{
 				$this->sdata['session_id'] = $this->EE->uri->session_id;
 			}			
-		}
-		
-		// Does the session id cookie exist?
-		if ($this->EE->input->cookie($this->c_session))
-		{
-			$this->cookies_exist = TRUE;
 		}
 		
 		// Set the Validation Type
@@ -397,11 +389,11 @@ class EE_Session {
 		}
 				
 		$this->sdata['session_id'] 		= $this->EE->functions->random();  
-		$this->sdata['last_activity']	= $this->EE->localize->now;  
-		$this->sdata['user_agent']		= substr($this->EE->input->user_agent(), 0, 120);
 		$this->sdata['ip_address']  	= $this->EE->input->ip_address();  
 		$this->sdata['member_id']  		= $member_id; 
+		$this->sdata['last_activity']	= $this->EE->localize->now;  
 		$this->sdata['site_id']  		= $this->EE->config->item('site_id'); 
+		$this->sdata['user_agent']		= substr($this->EE->input->user_agent(), 0, 120);
 		$this->userdata['member_id']	= $member_id;  
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['site_id']		= $this->EE->config->item('site_id');
