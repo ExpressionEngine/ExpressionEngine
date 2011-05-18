@@ -654,18 +654,6 @@ $lang = array(
 "profile_buttons_exp" =>
 "This is the path to the directory containing the images used in the member profile pages.",
 
-"remap_pm_urls" =>
-"Remap pMachine Pro URLs to EE",
-
-"remap_pm_urls_desc" =>
-"If you have migrated to EE from pM Pro, enabling this option will redirect visitors who come to your site using old pM URLs to the correct page in EE.",
-
-"remap_pm_dest" =>
-"Destination of Remapped URLs",
-
-"remap_pm_dest_exp" =>
-"If pM Pro URLs are encountered, where should they be directed to?  Use a full URL and include the template_group/template:  http://www.yoursite.com/index.php/template_group/template/",
-
 "captcha_rand" =>
 "Add Random Number to CAPTCHA Word",
 

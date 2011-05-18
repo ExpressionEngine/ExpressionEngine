@@ -307,7 +307,9 @@ class EE_Typography extends CI_Typography {
 					}
 					else
 					{
-						if (isset($this->text_fmt_plugins[$prefs['text_format']]) AND (file_exists(PATH_PI.'pi.'.$prefs['text_format'].EXT) OR file_exists(PATH_THIRD.$prefs['text_format'].'/pi.'.$prefs['text_format'].EXT)))
+						if (isset($this->text_fmt_plugins[$prefs['text_format']]) && 
+							(file_exists(PATH_PI.'pi.'.$prefs['text_format'].'.php') OR 
+							file_exists(PATH_THIRD.$prefs['text_format'].'/pi.'.$prefs['text_format'].'.php')))
 						{
 							$this->text_format = $prefs['text_format'];
 						}
@@ -412,7 +414,7 @@ class EE_Typography extends CI_Typography {
 			
 			if ( ! class_exists('EE_Template'))
 			{
-				require APPPATH.'libraries/Template'.EXT;
+				require APPPATH.'libraries/Template.php';
 				$this->EE->TMPL = new EE_Template();
 			}			
 			
@@ -422,11 +424,11 @@ class EE_Typography extends CI_Typography {
 			{	
 				if (in_array($prefs['text_format'], $this->EE->core->native_plugins))
 				{
-					require_once PATH_PI.'pi.'.$prefs['text_format'].EXT;
+					require_once PATH_PI.'pi.'.$prefs['text_format'].'.php';
 				}
 				else
 				{
-					require_once PATH_THIRD.$prefs['text_format'].'/pi.'.$prefs['text_format'].EXT;
+					require_once PATH_THIRD.$prefs['text_format'].'/pi.'.$prefs['text_format'].'.php';
 				}
 			}
 			
@@ -1373,9 +1375,9 @@ document.getElementById('<?php echo $span_id; ?>').innerHTML = output;
 	 */
 	private function _fetch_emotions_prefs()
 	{
-		if (is_file(PATH_MOD.'emoticon/emoticons'.EXT))
+		if (is_file(PATH_MOD.'emoticon/emoticons.php'))
 		{
-			require PATH_MOD.'emoticon/emoticons'.EXT;
+			require PATH_MOD.'emoticon/emoticons.php';
 				
 			if (is_array($smileys))
 			{

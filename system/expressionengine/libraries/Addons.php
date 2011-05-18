@@ -112,7 +112,7 @@ class EE_Addons {
 		{
 			$this->EE->load->helper('file');
 
-			$ext_len = strlen(EXT);
+			$ext_len = strlen('.php');
 			
 			$abbr = $type_ident[$type];
 
@@ -124,7 +124,9 @@ class EE_Addons {
 			{
 				foreach ($list as $file)
 				{
-					if (strncasecmp($file, $abbr.'.', strlen($abbr.'.')) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen($abbr.'.'.EXT))
+					if (strncasecmp($file, $abbr.'.', strlen($abbr.'.')) == 0 && 
+						substr($file, -$ext_len) == '.php' && 
+						strlen($file) > strlen($abbr.'.'.'.php'))
 					{
 						$name	= substr($file, strlen($abbr.'.'), - $ext_len);
 						$class	= ($abbr == 'pi') ? ucfirst($name) : ucfirst($name).'_'.$abbr;
@@ -200,7 +202,7 @@ class EE_Addons {
 
 				foreach($type_ident as $addon_type => $ident)
 				{
-					if ($file == $ident.'.'.$pkg_name.EXT)
+					if ($file == $ident.'.'.$pkg_name.'.php')
 					{
 						// Plugin classes don't have a suffix
 						$class = ($ident == 'pi') ? ucfirst($pkg_name) : ucfirst($pkg_name).'_'.$ident;

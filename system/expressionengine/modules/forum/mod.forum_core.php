@@ -5043,7 +5043,7 @@ class Forum_Core extends Forum {
 		
 		if ( ! class_exists('EE_Spellcheck'))
 		{
-			require APPPATH.'libraries/Spellcheck'.EXT;
+			require APPPATH.'libraries/Spellcheck.php';
 		}
 		
 		if ($this->SPELL === FALSE)
@@ -5228,7 +5228,7 @@ class Forum_Core extends Forum {
 		$buttons = '';
 		if ( ! class_exists('Html_buttons'))
 		{
-			if (include_once(APPPATH.'libraries/Html_buttons'.EXT))
+			if (include_once(APPPATH.'libraries/Html_buttons.php'))
 			{
 				$BUTT = new EE_Html_buttons();
 				$BUTT->allow_img = ($data['forum_allow_img_urls'] == 'y') ? TRUE : FALSE;				
@@ -6460,7 +6460,7 @@ class Forum_Core extends Forum {
 			
 			unset($_POST['ACT']);
 		
-			require APPPATH.'libraries/Template'.EXT;
+			require APPPATH.'libraries/Template.php';
 
 			$this->EE->TMPL = new EE_Template();
 			
@@ -10049,7 +10049,9 @@ class Forum_Core extends Forum {
 			/**  Remove "ignored" words
 			/** ----------------------------------------*/
 			
-			if (isset($_POST['search_criteria']) && $_POST['search_criteria'] != 'exact' && @include_once(APPPATH.'config/stopwords'.EXT))
+			if (isset($_POST['search_criteria']) && 
+				$_POST['search_criteria'] != 'exact' && 
+				@include_once(APPPATH.'config/stopwords.php'))
 			{
 				foreach ($ignore as $badword)
 				{		
@@ -11792,7 +11794,7 @@ class Forum_Core extends Forum {
 			return $this->EE->output->fatal_error(lang('must_be_logged_in'));
 		}
 		
-		$class_path = PATH_MOD.'emoticon/emoticons'.EXT;
+		$class_path = PATH_MOD.'emoticon/emoticons.php';
 		
 		if ( ! is_file($class_path) OR ! @include_once($class_path))
 		{

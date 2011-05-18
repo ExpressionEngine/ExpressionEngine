@@ -29,7 +29,7 @@ $lang = array(
 'whitelist' =>
 'Whitelist',
 
-'pmachine_whitelist' =>
+'ee_whitelist' =>
 'Download ExpressionEngine.com Whitelist',
 
 'whitelist_updated' =>
@@ -56,7 +56,7 @@ $lang = array(
 'blacklist' =>
 'Blacklist',
 
-'pmachine_blacklist' =>
+'ee_blacklist' =>
 'Download ExpressionEngine.com Blacklist',
 
 'requires_license_number' =>

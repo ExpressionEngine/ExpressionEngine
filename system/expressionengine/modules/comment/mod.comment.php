@@ -2134,7 +2134,7 @@ class Comment {
 		$this->EE->functions->clear_caching('all', $_POST['PRV']);
 		$this->EE->functions->clear_caching('all', $clean_return);
 
-		require APPPATH.'libraries/Template'.EXT;
+		require APPPATH.'libraries/Template.php';
 
 		$this->EE->TMPL = new EE_Template();
 

@@ -810,7 +810,7 @@ class Tools_logs extends CI_Controller {
  		{
 			if ( ! class_exists('Blacklist'))
 	 		{
-	 			require PATH_MOD.'blacklist/mcp.blacklist'.EXT;
+	 			require PATH_MOD.'blacklist/mcp.blacklist.php';
 	 		}
 
 	 		$MOD = new Blacklist_mcp();

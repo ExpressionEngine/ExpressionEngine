@@ -1865,13 +1865,13 @@ class Metaweblog_api {
 		$exclude = array('auto_xhtml');
 
 		$filelist = array('none', 'br', 'xhtml');
-		$ext_len = strlen(EXT);
+		$ext_len = strlen('.php');
 
 		if ($fp = @opendir(PATH_PI))
 		{
 			while (FALSE !== ($file = readdir($fp)))
 			{
-				if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen('pi.'.EXT))
+				if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == '.php' && strlen($file) > strlen('pi..php'))
 				{
 					$file = substr($file, 3, -$ext_len);
 
@@ -1889,7 +1889,7 @@ class Metaweblog_api {
 		{
 			while (FALSE !== ($file = readdir($fp)))
 			{
-				if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen('pi.'.EXT))
+				if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == '.php' && strlen($file) > strlen('pi..php'))
 				{
 					$file = substr($file, 3, -$ext_len);
 

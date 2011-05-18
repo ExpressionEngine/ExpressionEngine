@@ -112,9 +112,9 @@ class Content_edit extends CI_Controller {
 		}
 
 		//  Fetch Color Library - We use this to assist with our status colors
-		if (file_exists(APPPATH.'config/colors'.EXT))
+		if (file_exists(APPPATH.'config/colors.php'))
 		{
-			include (APPPATH.'config/colors'.EXT);
+			include (APPPATH.'config/colors.php');
 		}
 		else
 		{	
@@ -847,9 +847,9 @@ class Content_edit extends CI_Controller {
 		}
 
 		//  Fetch Color Library - We use this to assist with our status colors
-		if (file_exists(APPPATH.'config/colors'.EXT))
+		if (file_exists(APPPATH.'config/colors.php'))
 		{
-			include (APPPATH.'config/colors'.EXT);
+			include (APPPATH.'config/colors.php');
 		}
 		else
 		{	
@@ -2280,115 +2280,6 @@ class Content_edit extends CI_Controller {
 		
 		$this->javascript->compile();
 		$this->load->view('content/recent_list', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Show a Single Comment - Deprecated
-	 *
-	 * Used by quicklinks to link to most recent comment
-	 *
-	 * @return	void
-	 */
-	public function view_comment()
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$url =  BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'comment_id='.$this->input->get('comment_id');
-			
-		$this->functions->redirect($url);
-	}
-
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * View Comments - Deprecated
-	 *
-	 * @return	void
-	 */
-	public function view_comments($channel_id = '', $entry_id = '', $message = '', $id_array = '', $total_rows = '', $pag_base_url = '')
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$url =  BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index';
-
-		if ($this->input->get_post('entry_id'))
-		{
-			$url =  BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'entry_id='.$this->input->get_post('entry_id');
-		}
-		elseif ($this->input->get_post('channel_id'))
-		{
-			$url =  BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'channel_id='.$this->input->get_post('channel_id');
-		}
-		
-		$this->functions->redirect($url);		
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete Comments Confirmation - Deprecated
-	 *
-	 * @return	void
-	 */
-	public function delete_comment_confirm()
-	{
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		// delete can come in pure get from email notification templates so redirect it
-		
-		if ($this->input->get_post('comment_id'))
-		{
-			$url =  BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=delete_comment_confirm'.AMP.'comment_id='.$this->input->get_post('comment_id');
-			
-			$this->functions->redirect($url);
-		}
-
-		show_error(lang('unauthorized_access'));
-
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Change Comment Status - Deprecated
-	 *
-	 * @param	string	new status
-	 * @return	void
-	 */
-	public function change_comment_status($status='')
-	{
-		//  Flipped back and forth between two statuses.
-		//  COULD be accessed via get for email notification approve
-		//  so we redirect
-
-		if ( ! $this->cp->allowed_group('can_access_content'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$comment_id	= $this->input->get_post('comment_id');
-		$status = $this->input->get_post('status');
-
-		if ($status && $comment_id)
-		{
-			$url =  BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=change_comment_status'.AMP.'comment_id='.$comment_id.AMP.'status='.$status;
-			
-			$this->functions->redirect($url);
-		}
-
-		show_error(lang('unauthorized_access'));
 	}
 }
 // END CLASS

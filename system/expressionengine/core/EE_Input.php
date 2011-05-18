@@ -76,12 +76,12 @@ class EE_Input extends CI_Input {
 
 		if (isset($_GET['URL'])) 
 		{ 
-			if ( ! file_exists(APPPATH.'libraries/Redirect'.EXT))
+			if ( ! file_exists(APPPATH.'libraries/Redirect.php'))
 			{
 				exit('Some components appear to be missing from your ExpressionEngine installation.');	
 			}
 			
-			require(APPPATH.'libraries/Redirect'.EXT);
+			require(APPPATH.'libraries/Redirect.php');
 
 			exit();  // We halt system execution since we're done
 		}		

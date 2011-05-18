@@ -1,6 +1,6 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-require_once APPPATH.'controllers/cp/javascript'.EXT;
+require_once APPPATH.'controllers/cp/javascript.php';
 
 class SC_Javascript extends Javascript
 {

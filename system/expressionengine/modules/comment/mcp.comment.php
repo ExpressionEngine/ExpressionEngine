@@ -1855,7 +1855,7 @@ function fnOpenClose ( oSettings )
 		// If blacklist was checked- blacklist!
 		if ($blacklist_installed && $this->EE->input->post('add_to_blacklist') == 'y')
 		{
-			include_once PATH_MOD.'blacklist/mcp.blacklist'.EXT;
+			include_once PATH_MOD.'blacklist/mcp.blacklist.php';
 
 			$bl = new Blacklist_mcp();
 			

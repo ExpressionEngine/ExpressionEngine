@@ -830,7 +830,7 @@ class Content_publish extends CI_Controller {
 			
 			if ( ! class_exists('EE_Spellcheck'))
 			{
-				require APPPATH.'libraries/Spellcheck'.EXT;
+				require APPPATH.'libraries/Spellcheck.php';
 			}
 			
 			if ($act == 'iframe' OR $act == 'check')

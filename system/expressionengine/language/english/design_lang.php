@@ -457,9 +457,6 @@ $lang = array(
 'is_site_default' =>
 'Make the index template in this group your site\'s home page?',
 
-'consult_manual' =>
-'Please consult manual',
-
 'preferences_updated' =>
 'Preferences Updated',
 

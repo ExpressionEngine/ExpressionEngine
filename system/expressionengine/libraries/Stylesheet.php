@@ -170,7 +170,7 @@ class EE_Stylesheet {
 	{
 		if ($this->EE->config->item('send_headers') == 'y')
 		{
-			$max_age		= 172800;
+			$max_age		= 604800;
 			$modified_since	= $this->EE->input->server('HTTP_IF_MODIFIED_SINCE');
 
 			// Remove anything after the semicolon

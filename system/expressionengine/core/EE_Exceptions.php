@@ -80,18 +80,18 @@ class EE_Exceptions extends CI_Exceptions {
 			{
 				$cp_theme = ( ! $EE->session->userdata('cp_theme')) ? $EE->config->item('cp_theme') : $EE->session->userdata('cp_theme');			
 
-				if (defined('PATH_THEMES') && (file_exists(PATH_THEMES.'cp_themes/'.$cp_theme.'/errors/'.$template.EXT)))
+				if (defined('PATH_THEMES') && (file_exists(PATH_THEMES.'cp_themes/'.$cp_theme.'/errors/'.$template.'.php')))
 				{
-					include(PATH_THEMES.'cp_themes/'.$cp_theme.'/errors/'.$template.EXT);
+					include(PATH_THEMES.'cp_themes/'.$cp_theme.'/errors/'.$template.'.php');
 				}
 				else
 				{
-					include(APPPATH.'errors/'.$template.EXT);
+					include(APPPATH.'errors/'.$template.'.php');
 				}
 			}
 			else
 			{
-				include(APPPATH.'errors/'.$template.EXT);
+				include(APPPATH.'errors/'.$template.'.php');
 			}
 
 			$buffer = ob_get_contents();

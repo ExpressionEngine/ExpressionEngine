@@ -982,9 +982,9 @@ class EE_Menu {
 				
 				$module = $this->EE->security->sanitize_filename($module);
 
-				if (file_exists(PATH_THIRD.$module.'/config/help_menu'.EXT))
+				if (file_exists(PATH_THIRD.$module.'/config/help_menu.php'))
 				{
-					require_once PATH_THIRD.$module.'/config/help_menu'.EXT;
+					require_once PATH_THIRD.$module.'/config/help_menu.php';
 					$method = ($this->EE->input->get('method') !== FALSE) ? $this->EE->input->get('method') : 'index';
 					$page = (isset($help_menu[$method])) ? $help_menu[$method] : $help_map['addons_modules'];
 				}
