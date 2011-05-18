@@ -34,9 +34,9 @@ class Addons_modules extends CI_Controller {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_modules'))
+		if ( ! $this->cp->allowed_group('can_access_addons', 'can_access_modules'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->model('addons_model');
@@ -93,7 +93,7 @@ class Addons_modules extends CI_Controller {
 
 		if ($query->num_rows() == 0 AND ! $can_admin)
 		{
-			show_error($this->lang->line('module_no_access'));
+			show_error(lang('module_no_access'));
 		}
 
 		foreach ($query->result_array() as $row)
@@ -102,19 +102,19 @@ class Addons_modules extends CI_Controller {
 		}
 
 		$vars['table_headings'] = array(
-										'',
-										$this->lang->line('module_name'),
-										$this->lang->line('module_description'),
-										$this->lang->line('module_version'),
-										$this->lang->line('module_status'),
-										$this->lang->line('module_action')
-										);
+			'',
+			lang('module_name'),
+			lang('module_description'),
+			lang('module_version'),
+			lang('module_status'),
+			lang('module_action')
+		);
 
 		$modcount = 1;
 
 		$vars['modules'] = array();
-		$names = array();
-		$data = array();
+		$names	 = array();
+		$data	 = array();
 		$updated = array();
 		
 		foreach ($modules as $module => $module_info)
@@ -130,7 +130,7 @@ class Addons_modules extends CI_Controller {
 			$data[$modcount][] = $modcount;
 
 			// Module Name
-			$name = ($this->lang->line(strtolower($module).'_module_name') != FALSE) ? $this->lang->line(strtolower($module).'_module_name') : $module_info['name'];
+			$name = (lang(strtolower($module).'_module_name') != FALSE) ? lang(strtolower($module).'_module_name') : $module_info['name'];
 
 			$names[$modcount] = strtolower($name);
 			
@@ -144,7 +144,7 @@ class Addons_modules extends CI_Controller {
 			
 
 			// Module Description
-			$data[$modcount][] = $this->lang->line(strtolower($module).'_module_description');
+			$data[$modcount][] = lang(strtolower($module).'_module_description');
 
 			// Module Version
 			$version = ( ! isset($this->installed_modules[$module])) ?  '--' : $this->installed_modules[$module]['module_version'];
@@ -152,7 +152,7 @@ class Addons_modules extends CI_Controller {
 
 			// Module Status
 			$status = ( ! isset($this->installed_modules[$module]) ) ? 'not_installed' : 'installed';
-			$in_status = str_replace(" ", "&nbsp;", $this->lang->line($status));
+			$in_status = str_replace(" ", "&nbsp;", lang($status));
 			$show_status = ($status == 'not_installed') ? '<span class="notice">'.$in_status.'</span>' : '<span class="go_notice">'.$in_status.'</span>';
 			$data[$modcount][] = $show_status;
 
@@ -164,12 +164,11 @@ class Addons_modules extends CI_Controller {
 			}
 			elseif ($status == 'not_installed')
 			{
-				$show_action = '<a class="less_important_link" href="'.BASE.AMP.'C=addons_modules'.AMP.'M=module_installer'.AMP.'module='.$module.'" title="'.$this->lang->line('install').'">'.$this->lang->line('install').'</a>';
-
+				$show_action = '<a class="less_important_link" href="'.BASE.AMP.'C=addons_modules'.AMP.'M=module_installer'.AMP.'module='.$module.'" title="'.lang('install').'">'.lang('install').'</a>';
 			}
 			else
 			{
-				$show_action = '<a class="less_important_link" href="'.BASE.AMP.'C=addons_modules'.AMP.'M=module_uninstaller'.AMP.'module='.$module.'" title="'.$this->lang->line('deinstall').'">'.$this->lang->line('deinstall').'</a>';
+				$show_action = '<a class="less_important_link" href="'.BASE.AMP.'C=addons_modules'.AMP.'M=module_uninstaller'.AMP.'module='.$module.'" title="'.lang('deinstall').'">'.lang('deinstall').'</a>';
 			}
 
 			$data[$modcount][] = $show_action;
@@ -191,7 +190,7 @@ class Addons_modules extends CI_Controller {
 				if ($UPD->version > $version && method_exists($UPD, 'update') && $UPD->update($version) !== FALSE)
 				{
 					$this->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));
-					$updated[] = $name.': '.$this->lang->line('updated_to_version').' '.$UPD->version;
+					$updated[] = $name.': '.lang('updated_to_version').' '.$UPD->version;
 				}
 			}
 		}
@@ -201,11 +200,11 @@ class Addons_modules extends CI_Controller {
 		{
 			if (count($updated) > 0)
 			{
-				$flashmsg = '<strong>'.$this->lang->line('updated').'</strong>:<br />'.implode('<br />', $updated);
+				$flashmsg = '<strong>'.lang('updated').'</strong>:<br />'.implode('<br />', $updated);
 			}
 			else
 			{
-				$flashmsg = $this->lang->line('all_modules_up_to_date');
+				$flashmsg = lang('all_modules_up_to_date');
 			}
 			
 			$this->session->set_flashdata('message_success', $flashmsg);
@@ -225,8 +224,8 @@ class Addons_modules extends CI_Controller {
 		}
 
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('modules'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', $this->lang->line('addons'));
+		$this->cp->set_variable('cp_page_title', lang('modules'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 
 		$this->javascript->compile();
 		$this->load->view('addons/modules', $vars);
@@ -248,13 +247,13 @@ class Addons_modules extends CI_Controller {
 		$this->load->library('addons');
 		
 		// These can be overriden by individual modules
-		$this->cp->set_variable('cp_page_title', $this->lang->line('modules'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=addons_modules', $this->lang->line('modules'));
+		$this->cp->set_variable('cp_page_title', lang('modules'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=addons_modules', lang('modules'));
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumb', array(
-			BASE.AMP.'C=addons' => $this->lang->line('addons'),
-			BASE.AMP.'C=addons_modules'=> $this->lang->line('addons_modules')
+			BASE.AMP.'C=addons' => lang('addons'),
+			BASE.AMP.'C=addons_modules'=> lang('addons_modules')
 		));
 
 		$module = $this->input->get_post('module');
@@ -267,14 +266,14 @@ class Addons_modules extends CI_Controller {
 			// Do they have access to this module?
 			if ( ! isset($installed[$module]) OR ! isset($this->session->userdata['assigned_modules'][$installed[$module]['module_id']]) OR  $this->session->userdata['assigned_modules'][$installed[$module]['module_id']] !== TRUE)
 			{
-				show_error($this->lang->line('unauthorized_access'));
+				show_error(lang('unauthorized_access'));
 			}
 		}
 		else
 		{
 			if ( ! isset($installed[$module]))
 			{
-				show_error($this->lang->line('requested_module_not_installed'));
+				show_error(lang('requested_module_not_installed'));
 			}
 		}
 
@@ -349,7 +348,7 @@ class Addons_modules extends CI_Controller {
 		}
 		else
 		{
-			$vars['_module_cp_body'] = $this->lang->line('requested_page_not_found');
+			$vars['_module_cp_body'] = lang('requested_page_not_found');
 		}
 		
 		// unset reference
@@ -381,8 +380,8 @@ class Addons_modules extends CI_Controller {
 
 		if ($this->addons_installer->install($module, 'module'))
 		{
-			$name = ($this->lang->line($module.'_module_name') == FALSE) ? ucfirst($module) : $this->lang->line($module.'_module_name');
-			$cp_message = $this->lang->line('module_has_been_installed').NBS.$name;
+			$name = (lang($module.'_module_name') == FALSE) ? ucfirst($module) : lang($module.'_module_name');
+			$cp_message = lang('module_has_been_installed').NBS.$name;
 			
 			$this->session->set_flashdata('message_success', $cp_message);
 			$this->functions->redirect(BASE.AMP.'C=addons_modules');
@@ -403,7 +402,7 @@ class Addons_modules extends CI_Controller {
 
 		if ( ! $this->cp->allowed_group('can_admin_modules') OR $module === FALSE)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile($module);
@@ -411,13 +410,13 @@ class Addons_modules extends CI_Controller {
 		
 		$vars['form_action'] = 'C=addons_modules'.AMP.'M=module_uninstaller';
 		$vars['form_hidden'] = array('module' => $module, 'confirm' => 'delete');
-		$vars['module_name'] = ($this->lang->line($module.'_module_name') == FALSE) ? ucwords(str_replace('_', ' ', $module)) : $this->lang->line($module.'_module_name');
+		$vars['module_name'] = (lang($module.'_module_name') == FALSE) ? ucwords(str_replace('_', ' ', $module)) : lang($module.'_module_name');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('delete_module'));
+		$this->cp->set_variable('cp_page_title', lang('delete_module'));
 		
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=addons' => $this->lang->line('addons'),
-			BASE.AMP.'C=addons_modules'=> $this->lang->line('modules')
+			BASE.AMP.'C=addons' => lang('addons'),
+			BASE.AMP.'C=addons_modules'=> lang('modules')
 		));
 		
 		$this->javascript->compile();
@@ -449,9 +448,9 @@ class Addons_modules extends CI_Controller {
 
 		if ($this->addons_installer->uninstall($module, 'module'))
 		{
-			$name = ($this->lang->line($module.'_module_name') == FALSE) ? ucfirst($module) : $this->lang->line($module.'_module_name');
+			$name = (lang($module.'_module_name') == FALSE) ? ucfirst($module) : lang($module.'_module_name');
 			
-			$this->session->set_flashdata('message_success', $this->lang->line('module_has_been_removed').NBS.$name);
+			$this->session->set_flashdata('message_success', lang('module_has_been_removed').NBS.$name);
 			$this->functions->redirect(BASE.AMP.'C=addons_modules');
 		}
 	}

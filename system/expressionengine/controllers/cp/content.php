@@ -35,7 +35,7 @@ class Content extends CI_Controller {
 
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 	}
 	
@@ -51,12 +51,12 @@ class Content extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('content');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('content'));
+		$this->cp->set_variable('cp_page_title', lang('content'));
 		
 		$this->javascript->output($this->javascript->slidedown("#adminTemplatesSubmenu"));
 

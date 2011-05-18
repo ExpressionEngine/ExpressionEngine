@@ -42,8 +42,7 @@ class Content_files extends CI_Controller {
 		parent::__construct();
 
 		// Permissions
-		if ( ! $this->cp->allowed_group('can_access_content')  OR
-			 ! $this->cp->allowed_group('can_access_files'))
+		if ( ! $this->cp->allowed_group('can_access_content', 'can_access_files'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -734,38 +733,91 @@ class Content_files extends CI_Controller {
 			return $this->load->view('_shared/file/failure', $vars);
 		}
 		
-		// Check to see if the file needs to be renamed
-		// TODO: Allow for the user to rename the file
-		if ($upload_response['file_name'] != $upload_response['orig_name'])
-		{
-			$vars['file'] = $upload_response;
-			return $this->load->view('_shared/file/rename', $vars);
- 		}
-		
 		// Copying file_name to name and file_thumb to thumb for addons
 		$upload_response['name'] = $upload_response['file_name'];
 		$upload_response['thumb'] = $upload_response['file_thumb'];
 		
+		$file_name = explode('.' , $upload_response['file_name']);
 		$vars = array(
-			'file_json'	=> $this->javascript->generate_json($upload_response, TRUE),
 			'file'		=> $upload_response,
-			'file_data'	=> $upload_response,
+			'file_json'	=> $this->javascript->generate_json($upload_response, TRUE),
+			'file_ext'	=> array_pop($file_name),
+			'file_name'	=> implode('.', $file_name),
 			'date'		=> date('M d Y - H:ia')
 		);
-	
+		
+		// Check to see if the file needs to be renamed
+		if ($upload_response['file_name'] != $upload_response['orig_name'])
+		{
+			return $this->load->view('_shared/file/rename', $vars);
+ 		}
+		
 		return $this->load->view('_shared/file/success', $vars);
 	}
 	
 	// ------------------------------------------------------------------------
 	
+	/**
+	 * Attempts to rename the file, goes back to rename if it couldn't, sends
+	 * the user to succes if everything went to plan.
+	 * 
+	 * Called via content_files::upload_file if the file already exists
+	 */
 	public function update_file()
 	{
-		$file_id = $this->input->post('file_id');
-		$new_file_name = $this->input->post('new_file_name');
+		$new_file_name = basename($this->filemanager->clean_filename(
+			$this->input->post('new_file_name') . '.' . $this->input->post('file_ext'),
+			$this->input->post('directory_id')
+		));
 		
-		$this->filemanager->replace_file($file_id, $new_file_name);
+		// Attempt to replace the file
+		$replace_file = $this->filemanager->replace_file(
+			$this->input->post('file_id'),
+			$new_file_name
+		);
+		
+		if ( ! function_exists('json_decode'))
+		{
+			$this->load->library('Services_json');
+		}
+		
+		// Get the JSON and decode it
+		$file_json = $this->input->post('file_json');
+		$file = get_object_vars(json_decode($file_json));
+		$file['upload_directory_prefs'] = get_object_vars($file['upload_directory_prefs']);
+		
+		// Replace the filename and thumb (everything else should have stayed the same)
+		$thumb_info = $this->filemanager->get_thumb($new_file_name, $file['upload_location_id']);
+		$file['file_name'] = $new_file_name;
+		$file['thumb'] = $thumb_info['thumb'];
+		
+		// Prep the vars for the success and rename views
+		$vars = array(
+			'file'		=> $file,
+			'file_json'	=> $this->javascript->generate_json($file, TRUE),
+			'date'		=> date('M d Y - H:ia')
+		);
+		
+		// If the file was successfully replaced send them to the success page
+		if (
+			( ! is_array($replace_file) AND $replace_file === TRUE) OR
+			(strpos($replace_file['error'], lang('file_exists')) > 0 AND $new_file_name === $file['file_name'])
+		)
+		{
+			return $this->load->view('_shared/file/success', $vars);
+		}
+		// If it's a file exists error, rename it
+		else if (strpos($replace_file['error'], lang('file_exists')) > 0)
+		{
+			return $this->load->view('_shared/file/rename', $vars);
+		}
+		// If it's a different type of error, show it
+		else
+		{
+			return $this->load->view('_shared/file/failure', $replace_file);
+		}
 	}
-
+	
 	// ------------------------------------------------------------------------
 	
 	/**
@@ -1813,7 +1865,7 @@ class Content_files extends CI_Controller {
 
 		if ($this->db->count_all_results('file_watermarks') > 0)
 		{
-			$this->form_validation->set_message('_name_check', $this->lang->line('wm_name_taken'));
+			$this->form_validation->set_message('_name_check', lang('wm_name_taken'));
 			return FALSE;
 		}
 		
@@ -1958,7 +2010,7 @@ class Content_files extends CI_Controller {
 
 		if ( ! $id)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 
@@ -2041,8 +2093,8 @@ class Content_files extends CI_Controller {
 
 
 		$this->javascript->set_global(array('lang' => array(
-											'size_deleted'	=> $this->lang->line('size_deleted'),
-											'size_not_deleted' => $this->lang->line('size_not_deleted')
+											'size_deleted'	=> lang('size_deleted'),
+											'size_not_deleted' => lang('size_not_deleted')
 										)
 									));
 
@@ -2344,7 +2396,7 @@ class Content_files extends CI_Controller {
 					if ((trim($_POST['size_short_name_'.$row['id']]) == '' OR
 						in_array($_POST['size_short_name_'.$row['id']], $names)) && ! isset($_POST['remove_size_'.$row['id']]))
 					{
-						return $this->output->show_user_error('submission', array($this->lang->line('invalid_shortname')));
+						return $this->output->show_user_error('submission', array(lang('invalid_shortname')));
 					}
 					
 					
@@ -2422,7 +2474,7 @@ class Content_files extends CI_Controller {
 					if ( ! isset($_POST[$name]) OR ! preg_match("/^\w+$/", $_POST[$name]) OR
 						in_array($_POST[$name], $names))
 					{
-						return $this->output->show_user_error('submission', array($this->lang->line('invalid_short_name')));
+						return $this->output->show_user_error('submission', array(lang('invalid_short_name')));
 					}
 					
 					$size_data = array(

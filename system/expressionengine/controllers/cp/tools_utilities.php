@@ -39,9 +39,9 @@ class Tools_utilities extends CI_Controller {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('tools');
@@ -56,12 +56,12 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('tools_utilities'));
+		$this->cp->set_variable('cp_page_title', lang('tools_utilities'));
 
 		$this->javascript->compile();
 
@@ -81,12 +81,12 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function import_utilities()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('import_utilities'));
+		$this->cp->set_variable('cp_page_title', lang('import_utilities'));
 
 		$this->javascript->compile();
 
@@ -104,16 +104,16 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function member_import()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->library('table');
 
 		$this->lang->loadfile('member_import');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('member_import'));
+		$this->cp->set_variable('cp_page_title', lang('member_import'));
 
 		$this->javascript->compile();
 
@@ -131,9 +131,9 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function import_from_xml()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->library('table');
@@ -158,7 +158,7 @@ class Tools_utilities extends CI_Controller {
 		$this->lang->loadfile('member_import');
 		$this->load->model('member_model');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('import_from_xml'));
+		$this->cp->set_variable('cp_page_title', lang('import_from_xml'));
 
 		$this->javascript->compile();
 		
@@ -245,9 +245,9 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function confirm_xml_form()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('member_import');
@@ -276,7 +276,7 @@ class Tools_utilities extends CI_Controller {
 		$data = array(
 						'xml_file'   		=> $this->input->post('xml_file'),
 						'group_id' 			=> $this->input->post('group_id'),
-						'language' 			=> ($this->input->post('language') == $this->lang->line('none')) ? '' : $this->input->post('language'),
+						'language' 			=> ($this->input->post('language') == lang('none')) ? '' : $this->input->post('language'),
 						'timezones' 		=> $this->input->post('timezones'),
 						'time_format' 		=> $this->input->post('time_format'),
 						'daylight_savings' 	=> ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n',
@@ -287,11 +287,11 @@ class Tools_utilities extends CI_Controller {
 		$vars['data_display'] = array(
 						'xml_file'   		=> $data['xml_file'],
 						'default_group_id'	=> $group_name,
-						'language' 			=> ($data['language'] == '') ? $this->lang->line('none') : ucfirst($data['language']),
-						'timezones' 		=> $this->lang->line($data['timezones']),
-						'time_format' 		=> ($data['time_format'] == 0) ? $this->lang->line('united_states') : $this->lang->line('european'),
-						'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? $this->lang->line('yes') : $this->lang->line('no'),
-						'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? $this->lang->line('yes') : $this->lang->line('no')
+						'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
+						'timezones' 		=> lang($data['timezones']),
+						'time_format' 		=> ($data['time_format'] == 0) ? lang('united_states') : lang('european'),
+						'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? lang('yes') : lang('no'),
+						'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? lang('yes') : lang('no')
 					 );
 
 				
@@ -309,7 +309,7 @@ class Tools_utilities extends CI_Controller {
 				return $this->_new_custom_fields_form($data, $vars, $new_custom_fields);
 			}
 
-			$vars['message'] = $this->lang->line('unable_to_parse_custom_fields');
+			$vars['message'] = lang('unable_to_parse_custom_fields');
 		}
 
 		$this->_confirm_custom_field_form($vars);
@@ -336,9 +336,9 @@ class Tools_utilities extends CI_Controller {
 		$this->load->library('table');
 		$this->load->helper(array('form', 'date'));
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('confirm_details'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', $this->lang->line('member_import_utility'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=import_from_xml', $this->lang->line('import_from_xml'));
+		$this->cp->set_variable('cp_page_title', lang('confirm_details'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=import_from_xml', lang('import_from_xml'));
 	
 		$vars['post_url'] = 'C=tools_utilities'.AMP.'M=process_xml';
 
@@ -356,9 +356,9 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function final_confirm_xml_form()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$map = FALSE;
@@ -397,7 +397,7 @@ class Tools_utilities extends CI_Controller {
 		$data = array(
 						'xml_file'   		=> $this->input->post('xml_file'),
 						'group_id' 			=> $this->input->post('group_id'),
-						'language' 			=> ($this->input->post('language') == $this->lang->line('none')) ? '' : $this->input->post('language'),
+						'language' 			=> ($this->input->post('language') == lang('none')) ? '' : $this->input->post('language'),
 						'timezones' 			=> $this->input->post('timezones'),
 						'time_format' 		=> $this->input->post('time_format'),
 						'daylight_savings' 	=> ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n',
@@ -408,11 +408,11 @@ class Tools_utilities extends CI_Controller {
 		$vars['data_display'] = array(
 						'xml_file'   		=> $data['xml_file'],
 						'default_group_id'	=> $group_name,
-						'language' 			=> ($data['language'] == '') ? $this->lang->line('none') : ucfirst($data['language']),
-						'timezones' 			=> $this->lang->line($data['timezones']),
-						'time_format' 		=> ($data['time_format'] == 'us') ? $this->lang->line('united_states') : $this->lang->line('european'),
-						'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? $this->lang->line('yes') : $this->lang->line('no'),
-						'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? $this->lang->line('yes') : $this->lang->line('no')
+						'language' 			=> ($data['language'] == '') ? lang('none') : ucfirst($data['language']),
+						'timezones' 			=> lang($data['timezones']),
+						'time_format' 		=> ($data['time_format'] == 'us') ? lang('united_states') : lang('european'),
+						'daylight_savings' 	=> ($data['daylight_savings'] == 'y') ? lang('yes') : lang('no'),
+						'auto_custom_field' => ($data['auto_custom_field'] == 'y') ? lang('yes') : lang('no')
 					 );
 
 			
@@ -422,9 +422,9 @@ class Tools_utilities extends CI_Controller {
 		$this->load->library('table');
 		$this->load->helper(array('form', 'date'));
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('confirm_details'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', $this->lang->line('member_import_utility'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=import_from_xml', $this->lang->line('import_from_xml'));
+		$this->cp->set_variable('cp_page_title', lang('confirm_details'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=import_from_xml', lang('import_from_xml'));
 	
 		$vars['post_url'] = 'C=tools_utilities'.AMP.'M=process_xml';
 		
@@ -480,17 +480,17 @@ class Tools_utilities extends CI_Controller {
 		/**  Create the pull-down menu **/
 		
 		$vars['m_field_type_options'] = array(
-									'text'=>$this->lang->line('text_input'),
-									'textarea'=>$this->lang->line('textarea')
+									'text'=>lang('text_input'),
+									'textarea'=>lang('textarea')
 									);
 		$vars['m_field_type'] = '';
 
 		/**  Field formatting **/
 		
 		$vars['m_field_fmt_options'] = array(
-									'none'=>$this->lang->line('none'),
-									'br'=>$this->lang->line('auto_br'),
-									'xhtml'=>$this->lang->line('xhtml')
+									'none'=>lang('none'),
+									'br'=>lang('auto_br'),
+									'xhtml'=>lang('xhtml')
 									);											
 		$vars['m_field_fmt'] = '';
 
@@ -509,9 +509,9 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function process_xml()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('member_import');
@@ -523,7 +523,7 @@ class Tools_utilities extends CI_Controller {
 		
 		if ($contents === FALSE)
 		{
-			return $this->view_xml_errors($this->lang->line('unable_to_read_file'));
+			return $this->view_xml_errors(lang('unable_to_read_file'));
 		}		
 		
 		$this->load->library('xmlparser');
@@ -533,7 +533,7 @@ class Tools_utilities extends CI_Controller {
 
 		if ($xml === FALSE)
 		{
-			return $this->view_xml_errors($this->lang->line('unable_to_parse_xml'));
+			return $this->view_xml_errors(lang('unable_to_parse_xml'));
 		}
 		
 		// Any custom fields exist
@@ -582,7 +582,7 @@ class Tools_utilities extends CI_Controller {
 		
 		$imports = $this->do_import();
 		
-		$msg = $this->lang->line('import_success_blurb').'<br>'.str_replace('%x', $imports, $this->lang->line('total_members_imported'));
+		$msg = lang('import_success_blurb').'<br>'.str_replace('%x', $imports, lang('total_members_imported'));
 		$this->session->set_flashdata('message_success', $msg);
 
 		$this->functions->redirect(BASE.AMP.'C=tools_utilities'.AMP.'M=import_from_xml');
@@ -600,9 +600,9 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function custom_field_check($xml_file)
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		//  Read XML file contents
@@ -693,9 +693,9 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function validate_xml($xml)
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 			
 		$this->lang->loadfile('member_import');
@@ -772,7 +772,7 @@ class Tools_utilities extends CI_Controller {
 											$this->members[$i]['bday_y'] = $birthday->value;
 											break;
 										default:
-											$this->errors[] = array($this->lang->line('invalid_tag')." '&lt;".$birthday->tag."&gt;'");
+											$this->errors[] = array(lang('invalid_tag')." '&lt;".$birthday->tag."&gt;'");
 											break;
 									}
 							}
@@ -780,7 +780,7 @@ class Tools_utilities extends CI_Controller {
 								
 							if ( ! isset($this->members[$i]['bday_d']) || ! isset($this->members[$i]['bday_m']) || ! isset($this->members[$i]['bday_y']))
 							{
-								$this->errors[] = array($this->lang->line('missing_birthday_child'));
+								$this->errors[] = array(lang('missing_birthday_child'));
 							}
 								
 							$this->members[$i][$tag->tag] = $tag->value;
@@ -792,7 +792,7 @@ class Tools_utilities extends CI_Controller {
 						else
 						{
 							// not a database field and not a <birthday> so club it like a baby seal!
-							//$this->errors[] = array($this->lang->line('invalid_tag')." '&lt;".$tag->tag."&gt;'");							
+							//$this->errors[] = array(lang('invalid_tag')." '&lt;".$tag->tag."&gt;'");							
 						}
 				
 						/* -------------------------------------
@@ -810,7 +810,7 @@ class Tools_utilities extends CI_Controller {
 								}
 								else
 								{
-									$this->errors[] = array($this->lang->line('duplicate_username').$tag->value);
+									$this->errors[] = array(lang('duplicate_username').$tag->value);
 								}
 								break;
 							case 'screen_name':
@@ -821,7 +821,7 @@ class Tools_utilities extends CI_Controller {
 								}
 								else
 								{
-									$this->errors[] = array($this->lang->line('duplicate_screen_name').$tag->value);
+									$this->errors[] = array(lang('duplicate_screen_name').$tag->value);
 								}
 								break;
 							case 'email':
@@ -831,7 +831,7 @@ class Tools_utilities extends CI_Controller {
 								}
 								else
 								{
-									$this->errors[] = array($this->lang->line('duplicate_email').$tag->value);
+									$this->errors[] = array(lang('duplicate_email').$tag->value);
 								}
 								$this->validate->email = $tag->value;
 								break;
@@ -842,7 +842,7 @@ class Tools_utilities extends CI_Controller {
 								}
 								else
 								{
-									$this->errors[] = array(str_replace("%x", $tag->value, $this->lang->line('duplicate_member_id')));
+									$this->errors[] = array(str_replace("%x", $tag->value, lang('duplicate_member_id')));
 								}
 								break;
 							case 'password':
@@ -850,7 +850,7 @@ class Tools_utilities extends CI_Controller {
 								// This is a quick error check to ensure its present.
 								if ( ! @$tag->attributes['type'])
 								{
-									show_error(str_replace('%x', $this->validate->username, $this->lang->line('missing_password_type')));
+									show_error(str_replace('%x', $this->validate->username, lang('missing_password_type')));
 								}
 
 								// encode password if it is type="text"
@@ -874,7 +874,7 @@ class Tools_utilities extends CI_Controller {
 					{
 						foreach($this->validate->errors as $key => $val)
 						{
-							$this->validate->errors[$key] = $val." (Username: '".$username."' - ".$this->lang->line('within_user_record')." '".$username."')";
+							$this->validate->errors[$key] = $val." (Username: '".$username."' - ".lang('within_user_record')." '".$username."')";
 						}
 						$this->errors[] = $this->validate->errors;
 						unset($this->validate->errors);
@@ -886,7 +886,7 @@ class Tools_utilities extends CI_Controller {
 					{
 						foreach($this->validate->errors as $key => $val)
 						{
-							$this->validate->errors[$key] = $val." (Screen Name: '".$screen_name."' - ".$this->lang->line('within_user_record')." '".$username."')";
+							$this->validate->errors[$key] = $val." (Screen Name: '".$screen_name."' - ".lang('within_user_record')." '".$username."')";
 						}
 						$this->errors[] = $this->validate->errors;
 						unset($this->validate->errors);
@@ -898,7 +898,7 @@ class Tools_utilities extends CI_Controller {
 					{
 						foreach($this->validate->errors as $key => $val)
 						{
-							$this->validate->errors[$key] = $val." (Email: '".$email."' - ".$this->lang->line('within_user_record')." '".$username."')";
+							$this->validate->errors[$key] = $val." (Email: '".$email."' - ".lang('within_user_record')." '".$username."')";
 						}
 						$this->errors[] = $this->validate->errors;
 						unset($this->validate->errors);
@@ -920,7 +920,7 @@ class Tools_utilities extends CI_Controller {
 					/**  Element isn't <member>
 					/** -------------------------------------*/
 					
-					$this->errors[] = array($this->lang->line('invalid_element'));
+					$this->errors[] = array(lang('invalid_element'));
 				}
 			}
 		}
@@ -930,7 +930,7 @@ class Tools_utilities extends CI_Controller {
 			/**  No children of the root element
 			/** -------------------------------------*/
 			
-			$this->errors[] = array($this->lang->line('invalid_xml'));
+			$this->errors[] = array(lang('invalid_xml'));
 		}
 	}
 	
@@ -945,14 +945,14 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function do_import()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}		
 		
 		//  Set our optional default values
 		$this->default_fields['group_id']			= $this->input->post('group_id');
-		$this->default_fields['language']			= ($this->input->post('language') == $this->lang->line('none') OR $this->input->post('language') == '') ? 'english' : strtolower($this->input->post('language'));
+		$this->default_fields['language']			= ($this->input->post('language') == lang('none') OR $this->input->post('language') == '') ? 'english' : strtolower($this->input->post('language'));
 		$this->default_fields['timezone']			= ($this->input->post('timezones') && $this->input->post('timezones') != '') ? $this->input->post('timezones') : $this->config->item('server_timezone');
 		$this->default_fields['time_format']		= $this->input->post('time_format');
 		$this->default_fields['daylight_savings']	= ($this->input->post('daylight_savings') == 'y') ? 'y' : 'n';
@@ -1125,7 +1125,7 @@ class Tools_utilities extends CI_Controller {
 			}
 		}
 		
-		$this->form_validation->set_message('required', $this->lang->line('s_required'));
+		$this->form_validation->set_message('required', lang('s_required'));
 		$this->form_validation->set_error_delimiters('<span class="notice">', '</span>');
 	}
 
@@ -1145,19 +1145,19 @@ class Tools_utilities extends CI_Controller {
 		// Does field name have invalid characters?
 		if (preg_match('/[^a-z0-9\_\-]/i', $str))
 		{
-			$error[] = $this->lang->line('invalid_characters');
+			$error[] = lang('invalid_characters');
 		}				
 
 		// Is the field one of the reserved words?
 		if (in_array($str, $this->invalid_names))
 		{
-			$error[] = $this->lang->line('reserved_word');
+			$error[] = lang('reserved_word');
 		}
 				
 		// Is the field name taken?
 		if (in_array($str, $this->taken))
 		{
-			$error[] = $this->lang->line('duplicate_field_name');
+			$error[] = lang('duplicate_field_name');
 		}
 				
 		$this->taken[] = $str;
@@ -1184,9 +1184,9 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function create_custom_fields()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}		
 		
 		$this->load->helper('form');
@@ -1258,9 +1258,9 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function convert_from_delimited()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('member_import');
@@ -1302,8 +1302,8 @@ class Tools_utilities extends CI_Controller {
 	{
 		$this->load->helper('form');
 		
-		$this->cp->set_variable('cp_page_title', $this->lang->line('convert_from_delimited'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', $this->lang->line('member_import_utility'));
+		$this->cp->set_variable('cp_page_title', lang('convert_from_delimited'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 
 		$this->javascript->output('
 		$("#delimiter_special").focus(function() {
@@ -1355,8 +1355,8 @@ class Tools_utilities extends CI_Controller {
 		if ( ! isset($fields[0]) OR count($fields[0]) < 3)
 		{
 			// No point going further if there aren't even the minimum required
-			//show_error($this->lang->line('not_enough_fields'));
-			return $this->view_xml_errors($this->lang->line('not_enough_fields'));
+			//show_error(lang('not_enough_fields'));
+			return $this->view_xml_errors(lang('not_enough_fields'));
 		}
 		
 		//  Retreive Valid fields from database
@@ -1376,7 +1376,7 @@ class Tools_utilities extends CI_Controller {
 		$query = $this->db->get();
 		
 
-		$vars['custom_select_options'][''] = $this->lang->line('select');
+		$vars['custom_select_options'][''] = lang('select');
 		
 		if ($query->num_rows() > 0)
 		{
@@ -1392,7 +1392,7 @@ class Tools_utilities extends CI_Controller {
 		
 		ksort($this->default_fields);
 
-		$vars['select_options'][''] = $this->lang->line('select');
+		$vars['select_options'][''] = lang('select');
 		
 		foreach ($this->default_fields as $key => $val)
 		{
@@ -1410,8 +1410,8 @@ class Tools_utilities extends CI_Controller {
 				
 		$vars['encrypt'] = '';
 		
-		$this->cp->set_variable('cp_page_title', $this->lang->line('assign_fields'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', $this->lang->line('member_import_utility'));
+		$this->cp->set_variable('cp_page_title', lang('assign_fields'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 
 		
 		$this->load->view('tools/convert_xml_pairs', $vars);
@@ -1429,9 +1429,9 @@ class Tools_utilities extends CI_Controller {
 	 */
 	private function pair_fields()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('member_import');
@@ -1463,7 +1463,7 @@ class Tools_utilities extends CI_Controller {
 		{
 			if ($str == '')
 			{
-				$this->form_validation->set_message('_not_alphanu', str_replace('%x', $this->lang->line('other'), $this->lang->line('no_delimiter')));
+				$this->form_validation->set_message('_not_alphanu', str_replace('%x', lang('other'), lang('no_delimiter')));
 				return FALSE;
 			}
 			
@@ -1471,7 +1471,7 @@ class Tools_utilities extends CI_Controller {
 
 			if ($matches[0] != '')
 			{		
-				$this->form_validation->set_message('_not_alphanu', $this->lang->line('alphanumeric_not_allowed'));
+				$this->form_validation->set_message('_not_alphanu', lang('alphanumeric_not_allowed'));
 				return FALSE;
 			}
 		}
@@ -1493,7 +1493,7 @@ class Tools_utilities extends CI_Controller {
 	{
 		if ( ! file_exists($file))
 		{
-			$this->form_validation->set_message('_file_exists', $this->lang->line('invalid_path').$file);
+			$this->form_validation->set_message('_file_exists', lang('invalid_path').$file);
 			return FALSE;
 		}
 		
@@ -1564,7 +1564,7 @@ class Tools_utilities extends CI_Controller {
 
 				if ($val != '' && in_array($val, $paired))
 				{
-					$mssg[] = str_replace("%x", $val, $this->lang->line('duplicate_field_assignment'));
+					$mssg[] = str_replace("%x", $val, lang('duplicate_field_assignment'));
 				}
 
 				$paired[] = $val;	 			
@@ -1573,17 +1573,17 @@ class Tools_utilities extends CI_Controller {
 		
 		if ( ! in_array('username', $paired))
 		{
-			$mssg[] = $this->lang->line('missing_username_field');
+			$mssg[] = lang('missing_username_field');
 		}
 		
 		if ( ! in_array('screen_name', $paired))
 		{
-			$mssg[] = $this->lang->line('missing_screen_name_field');
+			$mssg[] = lang('missing_screen_name_field');
 		}
 		
 		if ( ! in_array('email', $paired))
 		{
-			$mssg[] = $this->lang->line('missing_email_field');
+			$mssg[] = lang('missing_email_field');
 		}
 
 		if (count($mssg) > 0)
@@ -1607,9 +1607,9 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function confirm_data_form()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('member_import');
@@ -1685,8 +1685,8 @@ class Tools_utilities extends CI_Controller {
 		$vars['type_view'] = FALSE;
 		$vars['type_download'] = TRUE;		
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('confirm_field_assignment'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', $this->lang->line('member_import_utility'));
+		$this->cp->set_variable('cp_page_title', lang('confirm_field_assignment'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 		
 		$this->load->view('tools/confirm_convert_xml', $vars);
 	}	
@@ -1702,9 +1702,9 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function create_xml()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('member_import');
@@ -1790,21 +1790,21 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function view_xml($xml)
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->helper('string');
 		
-		$this->cp->set_variable('cp_page_title', $this->lang->line('view_xml'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', $this->lang->line('member_import_utility'));
+		$this->cp->set_variable('cp_page_title', lang('view_xml'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 
 		
 		$xml = str_replace("\n", BR, htmlentities($xml));
 		$xml = str_replace("\t", repeater(NBS, 4), $xml);
 		$vars['output'] = $xml;
-		$vars['heading'] = $this->lang->line('view_xml');
+		$vars['heading'] = lang('view_xml');
 
 		$this->load->view('tools/view_xml', $vars);
 	}
@@ -1820,15 +1820,15 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function view_xml_errors($errors, $message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->helper('string');
 			
-		$this->cp->set_variable('cp_page_title', $this->lang->line('parse_error'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', $this->lang->line('member_import_utility'));
+		$this->cp->set_variable('cp_page_title', lang('parse_error'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=member_import', lang('member_import_utility'));
 
 		$out = '<ul>';
 		
@@ -1848,7 +1848,7 @@ class Tools_utilities extends CI_Controller {
 		$out .= '</ul>';
 	
 		$vars['output'] = $out;
-		$vars['heading'] = $this->lang->line('parse_error');
+		$vars['heading'] = lang('parse_error');
 
 		$vars['message'] = ($message == '') ? NULL : $message;
 
@@ -1866,9 +1866,9 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function download_xml($xml)
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->helper('download');
@@ -1890,10 +1890,9 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function translation_tool($message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR 
-			 ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		if ( ! is_really_writable(APPPATH.'translations/'))
@@ -1926,9 +1925,9 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function translate()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->helper('form');
@@ -1937,7 +1936,7 @@ class Tools_utilities extends CI_Controller {
 		$language_file = $this->input->get_post('language_file');
 		
 		$this->cp->set_variable('cp_page_title', $language_file);
-		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=translation_tool', $this->lang->line('translation_tool'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_utilities'.AMP.'M=translation_tool', lang('translation_tool'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}},
@@ -1969,9 +1968,9 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function translation_save()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->helper('security');
@@ -2003,7 +2002,7 @@ class Tools_utilities extends CI_Controller {
 			if ( ! is_really_writable($dest_loc))
 			{
 				exit($dest_loc);
-				$this->session->set_flashdata('message_failure', $this->lang->line('trans_file_not_writable'));
+				$this->session->set_flashdata('message_failure', lang('trans_file_not_writable'));
 				$this->functions->redirect(
 					BASE.AMP.'C=tools_utilities'.AMP.'M=translate'.AMP.'language_file='.$filename
 					);			
@@ -2014,12 +2013,12 @@ class Tools_utilities extends CI_Controller {
 
 		if (write_file($dest_loc, $str))
 		{
-			$this->session->set_flashdata('message_success', $this->lang->line('file_saved').$filename);
+			$this->session->set_flashdata('message_success', lang('file_saved').$filename);
 			$this->functions->redirect(BASE.AMP.'C=tools_utilities'.AMP.'M=translate'.AMP.'language_file='.$filename);
 		}
 		else
 		{
-			$this->translation_tool($this->lang->line('invalid_path'));
+			$this->translation_tool(lang('invalid_path'));
 		}
 	}
 
@@ -2034,9 +2033,9 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function datafile_to_array($file)
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$contents = file($file);
@@ -2074,23 +2073,23 @@ class Tools_utilities extends CI_Controller {
 	 */
 	public function php_info()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// the second conditional is for hosted demos to prevent users from viewing the PHP environment details
 		if ($this->config->item('demo_date') != FALSE)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
-		$this->cp->set_variable('cp_page_title', $this->lang->line('php_info'));
+		$this->cp->set_variable('cp_page_title', lang('php_info'));
 		$this->javascript->compile();
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_utilities'=> $this->lang->line('tools_utilities')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_utilities'=> lang('tools_utilities')
 		));
 
 		ob_start();

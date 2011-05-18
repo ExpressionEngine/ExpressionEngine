@@ -61,7 +61,7 @@ class Content_edit extends CI_Controller {
 	{		
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$channel_id = '';
@@ -79,7 +79,7 @@ class Content_edit extends CI_Controller {
 		// Load the search helper so we can filter the keywords
 		$this->load->helper('search');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('edit'));
+		$this->cp->set_variable('cp_page_title', lang('edit'));
 
 		$this->cp->add_js_script(array('plugin' => 'dataTables',
 										'ui' => 'datepicker'));
@@ -99,7 +99,7 @@ class Content_edit extends CI_Controller {
 
 		$this->cp->add_js_script(array('file' => 'cp/content_edit'));
 
-		$this->javascript->set_global('lang.selection_required', $this->lang->line('selection_required'));
+		$this->javascript->set_global('lang.selection_required', lang('selection_required'));
 
 		$cp_theme  = ( ! $this->session->userdata('cp_theme')) ? $this->config->item('cp_theme') : $this->session->userdata('cp_theme');
 
@@ -108,7 +108,7 @@ class Content_edit extends CI_Controller {
 
 		if (empty($allowed_channels))
 		{
-			show_error($this->lang->line('no_channels'));
+			show_error(lang('no_channels'));
 		}
 
 		//  Fetch Color Library - We use this to assist with our status colors
@@ -200,7 +200,7 @@ class Content_edit extends CI_Controller {
 						'edit.perPage'		=> $perpage,
 						'edit.themeUrl'		=> $this->cp->cp_theme_url,
 						'edit.tableColumns'	=> $table_columns,
-						'lang.noEntries'	=> $this->lang->line('no_entries_matching_that_criteria')
+						'lang.noEntries'	=> lang('no_entries_matching_that_criteria')
 					)
 		);
 	
@@ -209,7 +209,7 @@ class Content_edit extends CI_Controller {
 
 		if ($this->input->get_post("U") == 'mu')
 		{
-			$vars['message'] = $this->lang->line('multi_entries_updated');
+			$vars['message'] = lang('multi_entries_updated');
 		}
 
 		// Declare the "filtering" form
@@ -250,11 +250,11 @@ class Content_edit extends CI_Controller {
 
 		$vars['channel_selected'] = $this->input->get_post('channel_id');
 
-		$vars['channel_select_options'] = array('null' => $this->lang->line('filter_by_channel'));
+		$vars['channel_select_options'] = array('null' => lang('filter_by_channel'));
 
 		if ($query->num_rows() > 1)
 		{
-			$vars['channel_select_options']['all'] = $this->lang->line('all');
+			$vars['channel_select_options']['all'] = lang('all');
 		}
 
 		foreach ($query->result_array() as $row)
@@ -265,14 +265,14 @@ class Content_edit extends CI_Controller {
 		// Category pull-down menu
 		$vars['category_selected'] = $filter_data['cat_id'];
 
-		$vars['category_select_options'][''] = $this->lang->line('filter_by_category');
+		$vars['category_select_options'][''] = lang('filter_by_category');
 
 		if ($total_channels > 1)
 		{				
-			$vars['category_select_options']['all'] = $this->lang->line('all');
+			$vars['category_select_options']['all'] = lang('all');
 		}
 
-		$vars['category_select_options']['none'] = $this->lang->line('none');
+		$vars['category_select_options']['none'] = lang('none');
 
 		if ($cat_group != '')
 		{
@@ -308,8 +308,8 @@ class Content_edit extends CI_Controller {
 		// Status pull-down menu
 		$vars['status_selected'] = $filter_data['status'];
 
-		$vars['status_select_options'][''] = $this->lang->line('filter_by_status');
-		$vars['status_select_options']['all'] = $this->lang->line('all');
+		$vars['status_select_options'][''] = lang('filter_by_status');
+		$vars['status_select_options']['all'] = lang('all');
 		
 		$sel_1 = '';
 		$sel_2 = '';
@@ -330,35 +330,35 @@ class Content_edit extends CI_Controller {
 			{
 				foreach ($query->result_array() as $row)
 				{
-					$status_name = ($row['status'] == 'closed' OR $row['status'] == 'open') ?  $this->lang->line($row['status']) : $row['status'];
+					$status_name = ($row['status'] == 'closed' OR $row['status'] == 'open') ?  lang($row['status']) : $row['status'];
 					$vars['status_select_options'][$row['status']] = $status_name;
 				}
 			}
 		} 
 		else
 		{
-			 $vars['status_select_options']['open'] = $this->lang->line('open');
-			 $vars['status_select_options']['closed'] = $this->lang->line('closed');
+			 $vars['status_select_options']['open'] = lang('open');
+			 $vars['status_select_options']['closed'] = lang('closed');
 		}
 
 		// Date range pull-down menu
 		$vars['date_selected'] = $filter_data['date_range'];
 
-		$vars['date_select_options'][''] = $this->lang->line('date_range');
-		$vars['date_select_options']['1'] = $this->lang->line('past_day');
-		$vars['date_select_options']['7'] = $this->lang->line('past_week');
-		$vars['date_select_options']['31'] = $this->lang->line('past_month');
-		$vars['date_select_options']['182'] = $this->lang->line('past_six_months');
-		$vars['date_select_options']['365'] = $this->lang->line('past_year');
-		$vars['date_select_options']['custom_date'] = $this->lang->line('any_date');
+		$vars['date_select_options'][''] = lang('date_range');
+		$vars['date_select_options']['1'] = lang('past_day');
+		$vars['date_select_options']['7'] = lang('past_week');
+		$vars['date_select_options']['31'] = lang('past_month');
+		$vars['date_select_options']['182'] = lang('past_six_months');
+		$vars['date_select_options']['365'] = lang('past_year');
+		$vars['date_select_options']['custom_date'] = lang('any_date');
 
 		// Display order pull-down menu
 		$vars['order_selected'] = $filter_data['order'];
 
-		$vars['order_select_options'][''] = $this->lang->line('order');
-		$vars['order_select_options']['asc'] = $this->lang->line('ascending');
-		$vars['order_select_options']['desc'] = $this->lang->line('descending');
-		$vars['order_select_options']['alpha'] = $this->lang->line('alpha');
+		$vars['order_select_options'][''] = lang('order');
+		$vars['order_select_options']['asc'] = lang('ascending');
+		$vars['order_select_options']['desc'] = lang('descending');
+		$vars['order_select_options']['alpha'] = lang('alpha');
 
 		
 		$filter_data['perpage'] = $perpage;
@@ -367,12 +367,12 @@ class Content_edit extends CI_Controller {
 
 		$vars['perpage_selected'] = $perpage;
 
-		$vars['perpage_select_options']['10'] = '10 '.$this->lang->line('results');
-		$vars['perpage_select_options']['25'] = '25 '.$this->lang->line('results');
-		$vars['perpage_select_options']['50'] = '50 '.$this->lang->line('results');
-		$vars['perpage_select_options']['75'] = '75 '.$this->lang->line('results');
-		$vars['perpage_select_options']['100'] = '100 '.$this->lang->line('results');
-		$vars['perpage_select_options']['150'] = '150 '.$this->lang->line('results');
+		$vars['perpage_select_options']['10'] = '10 '.lang('results');
+		$vars['perpage_select_options']['25'] = '25 '.lang('results');
+		$vars['perpage_select_options']['50'] = '50 '.lang('results');
+		$vars['perpage_select_options']['75'] = '75 '.lang('results');
+		$vars['perpage_select_options']['100'] = '100 '.lang('results');
+		$vars['perpage_select_options']['150'] = '150 '.lang('results');
 
 
 		// Because of the auto convert we prepare a specific variable with the converted ascii
@@ -395,12 +395,12 @@ class Content_edit extends CI_Controller {
 
 		$vars['search_in_selected'] = $filter_data['search_in'];
 
-		$vars['search_in_options']['title'] =  $this->lang->line('title_only');
-		$vars['search_in_options']['body'] =  $this->lang->line('title_and_body');
+		$vars['search_in_options']['title'] =  lang('title_only');
+		$vars['search_in_options']['body'] =  lang('title_and_body');
 
 		if (isset($this->installed_modules['comment']))
 		{
-			$vars['search_in_options']['everywhere'] =  $this->lang->line('title_body_comments');
+			$vars['search_in_options']['everywhere'] =  lang('title_body_comments');
 		}
 
 		
@@ -517,7 +517,7 @@ class Content_edit extends CI_Controller {
 
 		// comments module installed?  If so, add it to the list of headings.
 		if (isset($this->installed_modules['comment'])){
-			$table_headings[] .= $this->lang->line('comments');
+			$table_headings[] .= lang('comments');
 		}
 
 		$table_headings = array_merge($table_headings, array(lang('author'), lang('date'), lang('channel'), lang('status'), form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')));
@@ -595,7 +595,7 @@ class Content_edit extends CI_Controller {
 				$url = $this->functions->create_url($templates[$row['live_look_template']].'/'.$id_column);
 
 				$view_link = anchor($this->functions->fetch_site_index().QUERY_MARKER.'URL='.$url,
-									$this->lang->line('view'));
+									lang('view'));
 			}
 			else
 			{
@@ -610,6 +610,7 @@ class Content_edit extends CI_Controller {
 
 			if ($row['author_id'] == $this->session->userdata('member_id'))
 			{
+				// do not move these to the new allowed_group style - they are ANDs not ORs
 				if ( ! $this->cp->allowed_group('can_edit_own_comments') AND 
 					 ! $this->cp->allowed_group('can_delete_own_comments') AND 
 					 ! $this->cp->allowed_group('can_moderate_comments'))
@@ -632,7 +633,7 @@ class Content_edit extends CI_Controller {
 				$view_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment	'.AMP.'method=index'.AMP.'entry_id='.$id_column;
 				
 				$view_link = ($show_link === FALSE) ? '<div class="lightLinks">--</div>' : 
-					'<div class="lightLinks">(0)'.NBS.anchor($view_url, $this->lang->line('view')).'</div>';
+					'<div class="lightLinks">(0)'.NBS.anchor($view_url, lang('view')).'</div>';
 				
 				$vars['entries'][$id_column][] = $view_link;
 
@@ -665,7 +666,7 @@ class Content_edit extends CI_Controller {
 			$vars['entries'][$id_column][] = (isset($w_array[$row['channel_id']])) ? '<div class="smallNoWrap">'. $w_array[$row['channel_id']].'</div>' : '';
 
 			// Status
-			$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? $this->lang->line($row['status']) : $row['status'];
+			$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? lang($row['status']) : $row['status'];
 
 			$color_info = '';
 
@@ -701,7 +702,7 @@ class Content_edit extends CI_Controller {
 				}
 					
 				$view_link = ($show_link === FALSE) ? '<div class="lightLinks">--</div>' : 
-				'<div class="lightLinks">('.$row->count.')'.NBS.anchor($view_url, $this->lang->line('view')).'</div>';
+				'<div class="lightLinks">('.$row->count.')'.NBS.anchor($view_url, lang('view')).'</div>';
 				
 				$vars['entries'][$row->entry_id][3] = $view_link;
  			}
@@ -734,11 +735,11 @@ class Content_edit extends CI_Controller {
 		elseif ($action == '' OR  ! $this->input->post('toggle'))
 		{
 			$vars['action_options'] = array(
-												'edit'				=> $this->lang->line('edit_selected'),
-												'delete'			=> $this->lang->line('delete_selected'),
+												'edit'				=> lang('edit_selected'),
+												'delete'			=> lang('delete_selected'),
 												'------'			=> '------',
-												'add_categories'	=> $this->lang->line('add_categories'),
-												'remove_categories'	=> $this->lang->line('remove_categories')
+												'add_categories'	=> lang('add_categories'),
+												'remove_categories'	=> lang('remove_categories')
 											);
 		}
 
@@ -757,7 +758,7 @@ class Content_edit extends CI_Controller {
 	{
 		if ( ! AJAX_REQUEST)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->output->enable_profiler(FALSE);
@@ -842,7 +843,7 @@ class Content_edit extends CI_Controller {
 
 		if (empty($allowed_channels))
 		{
-			show_error($this->lang->line('no_channels'));
+			show_error(lang('no_channels'));
 		}
 
 		//  Fetch Color Library - We use this to assist with our status colors
@@ -951,7 +952,7 @@ class Content_edit extends CI_Controller {
 
 				$url = $this->functions->create_url($templates[$row['live_look_template']].'/'.$row['entry_id']);
 				$view_link = anchor($this->functions->fetch_site_index().$qm.'URL='.$url,
-									$this->lang->line('view'));
+									lang('view'));
 			}
 			else
 			{
@@ -965,6 +966,7 @@ class Content_edit extends CI_Controller {
 
 			if ($row['author_id'] == $this->session->userdata('member_id'))
 			{
+				// do not move these to the new allowed_group style - they are ANDs not ORs
 				if ( ! $this->cp->allowed_group('can_edit_own_comments') AND 
 					 ! $this->cp->allowed_group('can_delete_own_comments') AND 
 					 ! $this->cp->allowed_group('can_moderate_comments'))
@@ -991,7 +993,7 @@ class Content_edit extends CI_Controller {
 					$view_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'entry_id='.$row['entry_id'];
 				}
 
-				$view_link = ($show_link == FALSE) ? '<div class="lightLinks">--</div>' : '<div class="lightLinks">('.$res->row('count').')'.NBS.anchor($view_url, $this->lang->line('view')).'</div>';
+				$view_link = ($show_link == FALSE) ? '<div class="lightLinks">--</div>' : '<div class="lightLinks">('.$res->row('count').')'.NBS.anchor($view_url, lang('view')).'</div>';
 
 				$m[] = $view_link;
 			}
@@ -1018,7 +1020,7 @@ class Content_edit extends CI_Controller {
 			$m[] = (isset($w_array[$row['channel_id']])) ? '<div class="smallNoWrap">'.$w_array[$row['channel_id']].'</div>' : '';
 
 			// Status
-			$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? $this->lang->line($row['status']) : $row['status'];
+			$status_name = ($row['status'] == 'open' OR $row['status'] == 'closed') ? lang($row['status']) : $row['status'];
 
 			$color_info = '';
 
@@ -1097,12 +1099,12 @@ class Content_edit extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if ( ! in_array($this->input->post('action'), array('edit', 'delete', 'add_categories', 'remove_categories')))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->library('table');
@@ -1131,7 +1133,7 @@ class Content_edit extends CI_Controller {
 
 		if (count($entry_ids) == 0)
 		{
-			show_error($this->lang->line('unauthorized_to_edit'));
+			show_error(lang('unauthorized_to_edit'));
 		}
 
 		// -----------------------------
@@ -1185,7 +1187,7 @@ class Content_edit extends CI_Controller {
 			// After removing the disallowed entry IDs are there any left?
 			if (count($new_ids) == 0)
 			{
-				show_error($this->lang->line('unauthorized_to_edit'));
+				show_error(lang('unauthorized_to_edit'));
 			}
 
 			unset($query);
@@ -1301,10 +1303,10 @@ class Content_edit extends CI_Controller {
 					// if there is no status group assigned, only Super Admins can create 'open' entries
 					if ($this->session->userdata['group_id'] == 1)
 					{
-						$vars['entries_status'][$entry_id]['open'] = $this->lang->line('open');
+						$vars['entries_status'][$entry_id]['open'] = lang('open');
 					}
 					
-					$vars['entries_status'][$entry_id]['closed'] = $this->lang->line('closed');
+					$vars['entries_status'][$entry_id]['closed'] = lang('closed');
 				}
 				else
 				{
@@ -1318,7 +1320,7 @@ class Content_edit extends CI_Controller {
 						}
 
 						$no_status_flag = FALSE;
-						$status_name = ($status_row['status'] == 'open' OR $status_row['status'] == 'closed') ? $this->lang->line($status_row['status']) : form_prep($status_row['status']);
+						$status_name = ($status_row['status'] == 'open' OR $status_row['status'] == 'closed') ? lang($status_row['status']) : form_prep($status_row['status']);
 						$vars['entries_status'][$entry_id][form_prep($status_row['status'])] = $status_name;
 					}
 
@@ -1326,7 +1328,7 @@ class Content_edit extends CI_Controller {
 					// to submit any statuses we'll set the default to closed
 					if ($no_status_flag == TRUE)
 					{
-						$vars['entries_status'][$entry_id]['closed'] = $this->lang->line('closed');
+						$vars['entries_status'][$entry_id]['closed'] = lang('closed');
 					}
 				}
 			}
@@ -1363,11 +1365,11 @@ class Content_edit extends CI_Controller {
 
 		$this->javascript->compile();
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('multi_entry_editor'));
+		$this->cp->set_variable('cp_page_title', lang('multi_entry_editor'));
 		// A bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=content' => $this->lang->line('content'),
-			BASE.AMP.'C=content_edit'=> $this->lang->line('edit')
+			BASE.AMP.'C=content' => lang('content'),
+			BASE.AMP.'C=content_edit'=> lang('edit')
 		));
 
 		$this->load->view('content/multi_edit', $vars);
@@ -1517,12 +1519,12 @@ class Content_edit extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 	
 		if ( ! is_array($_POST['entry_id']))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		/* -------------------------------------------
@@ -1557,7 +1559,7 @@ class Content_edit extends CI_Controller {
 			// No entry title? Assign error.
 			if ($data['title'] == "")
 			{
-				$error[] = $this->lang->line('missing_title');
+				$error[] = lang('missing_title');
 			}
 
 			// Is the title unique?
@@ -1580,7 +1582,7 @@ class Content_edit extends CI_Controller {
 				// Is the url_title a pure number?	If so we show an error.
 				if (is_numeric($data['url_title']))
 				{
-					$error[] = $this->lang->line('url_title_is_numeric');
+					$error[] = lang('url_title_is_numeric');
 				}
 
 				// Is URL title unique?
@@ -1609,7 +1611,7 @@ class Content_edit extends CI_Controller {
 					 // Safety
 					 if ($i >= 50)
 					 {
-						$error[] = $this->lang->line('url_title_not_unique');
+						$error[] = lang('url_title_not_unique');
 						break;
 					 }
 				}
@@ -1620,7 +1622,7 @@ class Content_edit extends CI_Controller {
 			// No date? Assign error.
 			if ($data['entry_date'] == '')
 			{
-				$error[] = $this->lang->line('missing_date');
+				$error[] = lang('missing_date');
 			}
 
 			// Convert the date to a Unix timestamp
@@ -1635,7 +1637,7 @@ class Content_edit extends CI_Controller {
 				}
 				else
 				{
-					$error[] = $this->lang->line('invalid_date_formatting');
+					$error[] = lang('invalid_date_formatting');
 				}
 			}
 
@@ -1705,7 +1707,7 @@ class Content_edit extends CI_Controller {
 		}
 
 
-		$this->session->set_flashdata('message_success', $this->lang->line('multi_entries_updated'));
+		$this->session->set_flashdata('message_success', lang('multi_entries_updated'));
 
 		if (isset($_POST['redirect']) && ($redirect = base64_decode($this->security->xss_clean($_POST['redirect']))) !== FALSE)
 		{
@@ -1726,12 +1728,12 @@ class Content_edit extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
         
        	if ($query->num_rows() == 0)
         {
-            show_error($this->lang->line('unauthorized_to_edit'));
+            show_error(lang('unauthorized_to_edit'));
         }
 
 		$this->load->helper('form');
@@ -1781,7 +1783,7 @@ class Content_edit extends CI_Controller {
 		
 		if ($valid == 'n')
 		{
-			show_error($this->lang->line('no_category_group_match'));
+			show_error(lang('no_category_group_match'));
 		}
 		
 		$this->api->instantiate('channel_categories');
@@ -1792,7 +1794,7 @@ class Content_edit extends CI_Controller {
 		
 		if (count($this->api_channel_categories->categories) == 0)
 		{  
-			$vars['message'] = $this->lang->line('no_categories');
+			$vars['message'] = lang('no_categories');
 		}
 		else
 		{
@@ -1819,7 +1821,7 @@ class Content_edit extends CI_Controller {
 
 		$vars['edit_categories_link'] = $links;
 
-		$this->cp->set_breadcrumb(BASE.AMP.'C=content_edit', $this->lang->line('edit'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=content_edit', lang('edit'));
 
 		$vars['form_hidden'] = array();
 		$vars['form_hidden']['entry_ids'] = implode('|', $entry_ids);
@@ -1827,7 +1829,7 @@ class Content_edit extends CI_Controller {
 
 		$vars['type'] = $type;
 	
-		$this->cp->set_variable('cp_page_title', $this->lang->line('multi_entry_category_editor'));
+		$this->cp->set_variable('cp_page_title', lang('multi_entry_category_editor'));
 
 		$this->javascript->compile();
 		$this->load->view('content/multi_cat_edit', $vars);
@@ -1842,17 +1844,17 @@ class Content_edit extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if ($this->input->get_post('entry_ids') === FALSE OR $this->input->get_post('type') === FALSE)
 		{
-			show_error($this->lang->line('unauthorized_to_edit'));
+			show_error(lang('unauthorized_to_edit'));
 		}
 
 		if ($this->input->get_post('category') === FALSE OR ! is_array($_POST['category']) OR count($_POST['category']) == 0)
 		{
-			return $this->output->show_user_error('submission', $this->lang->line('no_categories_selected'));
+			return $this->output->show_user_error('submission', lang('no_categories_selected'));
 		}
 
 		/** ---------------------------------
@@ -1919,7 +1921,7 @@ class Content_edit extends CI_Controller {
 
 		if ($valid == 'n')
 		{
-			return $this->output->show_user_error('submission', $this->lang->line('no_category_group_match'));
+			return $this->output->show_user_error('submission', lang('no_category_group_match'));
 		}
 
 		/** -----------------------------
@@ -1967,7 +1969,7 @@ class Content_edit extends CI_Controller {
 			$this->functions->clear_caching('sql');
 		}
 		
-		$this->session->set_flashdata('message_success', $this->lang->line('multi_entries_updated'));
+		$this->session->set_flashdata('message_success', lang('multi_entries_updated'));
 		$this->functions->redirect(BASE.AMP.'C=content_edit');
 	}
 
@@ -1980,13 +1982,13 @@ class Content_edit extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if ( ! $this->cp->allowed_group('can_delete_self_entries') AND
 			 ! $this->cp->allowed_group('can_delete_all_entries'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 				
 		if ( ! $this->input->post('toggle'))
@@ -2011,11 +2013,11 @@ class Content_edit extends CI_Controller {
 
 		if (count($damned) == 1)
 		{
-			$vars['message'] = $this->lang->line('delete_entry_confirm');
+			$vars['message'] = lang('delete_entry_confirm');
 		}
 		else
 		{
-			$vars['message'] = $this->lang->line('delete_entries_confirm');
+			$vars['message'] = lang('delete_entries_confirm');
 		}
 
 		$vars['title_deleted_entry'] = '';
@@ -2027,11 +2029,11 @@ class Content_edit extends CI_Controller {
 
 			if ($query->num_rows() == 1)
 			{
-				$vars['title_deleted_entry'] = str_replace('%title', $query->row('title') , $this->lang->line('entry_title_with_title'));
+				$vars['title_deleted_entry'] = str_replace('%title', $query->row('title') , lang('entry_title_with_title'));
 			}
 		}
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('delete_confirm'));
+		$this->cp->set_variable('cp_page_title', lang('delete_confirm'));
 
 		$this->javascript->compile();
 		$this->load->view('content/delete_confirm', $vars);
@@ -2046,18 +2048,18 @@ class Content_edit extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		if ( ! $this->cp->allowed_group('can_delete_self_entries') AND
 			 ! $this->cp->allowed_group('can_delete_all_entries'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 				
 		if ( ! $this->input->post('delete'))
 		{
-			$this->session->set_flashdata('message_failure', $this->lang->line('no_valid_selections'));
+			$this->session->set_flashdata('message_failure', lang('no_valid_selections'));
 			$this->functions->redirect(BASE.AMP.'C=content_edit'.AMP.'M=index');
 		}
 
@@ -2075,12 +2077,12 @@ class Content_edit extends CI_Controller {
 		
 		if ($res === FALSE)
 		{
-			$this->session->set_flashdata('message_failure', $this->lang->line('no_valid_selections'));
+			$this->session->set_flashdata('message_failure', lang('no_valid_selections'));
 			$this->functions->redirect(BASE.AMP.'C=content_edit'.AMP.'M=index');
 		}
 		
 		// Return success message
-		$this->session->set_flashdata('message_success', $this->lang->line('entries_deleted'));
+		$this->session->set_flashdata('message_success', lang('entries_deleted'));
 		$this->functions->redirect(BASE.AMP.'C=content_edit');
 	}
 
@@ -2097,7 +2099,7 @@ class Content_edit extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// In order to build our filtering options we need to gather 
@@ -2143,13 +2145,13 @@ class Content_edit extends CI_Controller {
 			}
 		}
 
-		$default_cats[] = array('', $this->lang->line('filter_by_category'));
-		$default_cats[] = array('all', $this->lang->line('all'));
-		$default_cats[] = array('none', $this->lang->line('none'));		
+		$default_cats[] = array('', lang('filter_by_category'));
+		$default_cats[] = array('all', lang('all'));
+		$default_cats[] = array('none', lang('none'));		
 		
-		$dstatuses[] = array('', $this->lang->line('filter_by_status'));
-		$dstatuses[] = array('open', $this->lang->line('open'));
-		$dstatuses[] = array('closed', $this->lang->line('closed'));
+		$dstatuses[] = array('', lang('filter_by_status'));
+		$dstatuses[] = array('open', lang('open'));
+		$dstatuses[] = array('closed', lang('closed'));
 
 		$channel_info['0']['categories'] = $default_cats;		
 		$channel_info['0']['statuses'] = $dstatuses;
@@ -2181,7 +2183,7 @@ class Content_edit extends CI_Controller {
 			$channel_info[$key]['categories'] = $cats;
 			
 			$statuses = array();
-			$statuses[] = array('', $this->lang->line('filter_by_status'));
+			$statuses[] = array('', lang('filter_by_status'));
 
 			if (count($status_array) > 0)
 			{
@@ -2189,15 +2191,15 @@ class Content_edit extends CI_Controller {
 				{
 					if ($v['0'] == $val['2'])
 					{
-						$status_name = ($v['1'] == 'closed' OR $v['1'] == 'open') ?  $this->lang->line($v['1']) : $v['1'];
+						$status_name = ($v['1'] == 'closed' OR $v['1'] == 'open') ?  lang($v['1']) : $v['1'];
 						$statuses[] = array($v['1'], $status_name);
 					}
 				}
 			}
 			else
 			{
-				$statuses[] = array('open', $this->lang->line('open'));
-				$statuses[] = array('closed', $this->lang->line('closed'));
+				$statuses[] = array('open', lang('open'));
+				$statuses[] = array('closed', lang('closed'));
 			}
 
 			$channel_info[$key]['statuses'] = $statuses;
@@ -2215,7 +2217,7 @@ class Content_edit extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->output->enable_profiler(FALSE);
@@ -2237,14 +2239,14 @@ class Content_edit extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->library('table');
 		$this->load->model('channel_entries_model');
 		$this->lang->loadfile('homepage');
 		
-		$this->cp->set_variable('cp_page_title', $this->lang->line('most_recent_entries'));
+		$this->cp->set_variable('cp_page_title', lang('most_recent_entries'));
 		
 		$count = $this->input->get('count');
 		$vars = array('entries' => array());
@@ -2272,9 +2274,9 @@ class Content_edit extends CI_Controller {
 			}
 		}
 		
-		$vars['no_result'] = $this->lang->line('no_entries');
-		$vars['left_column'] = $this->lang->line('most_recent_entries');
-		$vars['right_column'] = $this->lang->line('comments');
+		$vars['no_result'] = lang('no_entries');
+		$vars['left_column'] = lang('most_recent_entries');
+		$vars['right_column'] = lang('comments');
 		
 		$this->javascript->compile();
 		$this->load->view('content/recent_list', $vars);
@@ -2293,7 +2295,7 @@ class Content_edit extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$url =  BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'comment_id='.$this->input->get('comment_id');
@@ -2313,7 +2315,7 @@ class Content_edit extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$url =  BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index';
@@ -2341,7 +2343,7 @@ class Content_edit extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// delete can come in pure get from email notification templates so redirect it
@@ -2353,7 +2355,7 @@ class Content_edit extends CI_Controller {
 			$this->functions->redirect($url);
 		}
 
-		show_error($this->lang->line('unauthorized_access'));
+		show_error(lang('unauthorized_access'));
 
 	}
 
@@ -2373,7 +2375,7 @@ class Content_edit extends CI_Controller {
 
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$comment_id	= $this->input->get_post('comment_id');
@@ -2386,7 +2388,7 @@ class Content_edit extends CI_Controller {
 			$this->functions->redirect($url);
 		}
 
-		show_error($this->lang->line('unauthorized_access'));
+		show_error(lang('unauthorized_access'));
 	}
 }
 // END CLASS

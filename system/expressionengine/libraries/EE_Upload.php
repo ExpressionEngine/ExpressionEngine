@@ -22,16 +22,14 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-class EE_Upload extends CI_Upload {
-
-
+class EE_Upload extends CI_Upload 
+{
 	/**
 	 * Constructor
-	 */	
+	 */ 
 	function __construct($props = array())
 	{
 		parent::__construct();
-
 
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
@@ -44,7 +42,6 @@ class EE_Upload extends CI_Upload {
 
 		log_message('debug', "Upload Class Initialized");
 	}	
-
 
 	// --------------------------------------------------------------------
 
@@ -59,8 +56,6 @@ class EE_Upload extends CI_Upload {
 	 * @param	string
 	 * @return	string
 	 */
-
-
 	public function set_filename($path, $filename)
 	{
 		if ($this->encrypt_name == TRUE)
@@ -95,23 +90,22 @@ class EE_Upload extends CI_Upload {
 		return $new_filename;
 	}
 
-
 	// --------------------------------------------------------------------
 
 	/**
 	 * Overwrite OR Rename Files Manually
 	 *
 	 * @access	public
-	 * @return	void
-	 */	 
- 
-
+	 * @param string $original_files Path to the original file
+	 * @param string $new The new file name
+	 * @param boolean $type_match Should we make sure the extensions match?
+	 * @return boolean TRUE if it was renamed properly, FALSE otherwise
+	 */
    function file_overwrite($original_file = '', $new = '', $type_match = TRUE)
 	{
 		$this->file_name = $new;
 		
 		// If renaming a file, it should have same file type suffix as the original
-		
 		if ($type_match === TRUE)
 		{
 			if (sizeof(explode('.', $this->file_name)) == 1 OR (array_pop(explode('.', $this->file_name)) != array_pop(explode('.', $original_file))))
@@ -126,6 +120,13 @@ class EE_Upload extends CI_Upload {
 			$this->file_name = preg_replace("/\s+/", "_", $this->file_name);
 			$original_file = preg_replace("/\s+/", "_", $original_file);
 		}
+		
+		// Check to make sure the file doesn't already exist
+		if (file_exists($this->upload_path . $this->file_name))
+		{
+			$this->set_error('file_exists');
+			return FALSE;
+		}
  
 		if ( ! @copy($this->upload_path.$original_file, $this->upload_path.$this->file_name))
 		{
@@ -137,10 +138,6 @@ class EE_Upload extends CI_Upload {
 
 		return TRUE;
 	}
-    /* END */
-
-
-
 }
 // END CLASS
 
