@@ -208,7 +208,7 @@ class Design extends CI_Controller {
 	  */
 	function template_group_delete_confirm()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -270,7 +270,7 @@ class Design extends CI_Controller {
 	/** -------------------------------*/
 	function template_group_delete()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -404,7 +404,7 @@ class Design extends CI_Controller {
 	 */
 	function new_template_group()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -470,7 +470,7 @@ class Design extends CI_Controller {
 	 */
 	function global_template_preferences()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -544,7 +544,7 @@ class Design extends CI_Controller {
 	
 	function update_global_template_prefs()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -580,7 +580,7 @@ class Design extends CI_Controller {
 	 */
 	function snippets()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -623,7 +623,7 @@ class Design extends CI_Controller {
 	 */
 	function snippets_edit()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -682,7 +682,7 @@ class Design extends CI_Controller {
 	 */
 	function snippets_update()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -782,7 +782,7 @@ class Design extends CI_Controller {
 	 */
 	function snippets_delete()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -828,7 +828,7 @@ class Design extends CI_Controller {
 	 */
 	function global_variables()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -869,7 +869,7 @@ class Design extends CI_Controller {
 	 */
 	function global_variables_update()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -946,7 +946,7 @@ class Design extends CI_Controller {
 	 */
 	function global_variables_create()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1011,7 +1011,7 @@ class Design extends CI_Controller {
 	 */
 	function global_variables_delete()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1070,7 +1070,7 @@ class Design extends CI_Controller {
 	 */
 	function template_preferences_manager($message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1310,7 +1310,7 @@ class Design extends CI_Controller {
 	 */
 	function update_manager_prefs()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -2489,7 +2489,7 @@ class Design extends CI_Controller {
 
     function clear_revision_history()
     {    
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -2741,7 +2741,7 @@ class Design extends CI_Controller {
 	 */
 	function user_message($message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_design'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -2813,7 +2813,7 @@ class Design extends CI_Controller {
 	 */
 	function system_offline()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_design'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -2881,7 +2881,7 @@ class Design extends CI_Controller {
 	 */
 	function email_notification()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_design'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -2906,7 +2906,7 @@ class Design extends CI_Controller {
 	 */
 	function edit_email_notification()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_design'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -2973,7 +2973,7 @@ class Design extends CI_Controller {
 	 */
 	function update_email_notification()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_design'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_design'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -3016,7 +3016,7 @@ class Design extends CI_Controller {
 	  */
 	function member_profile_templates()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_mbr_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_mbr_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -3040,7 +3040,7 @@ class Design extends CI_Controller {
 	
 	function list_profile_templates()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_mbr_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_mbr_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -3088,7 +3088,7 @@ class Design extends CI_Controller {
 	
 	function edit_profile_template($theme = '', $name = '', $template_data = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_mbr_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_mbr_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -3160,7 +3160,7 @@ class Design extends CI_Controller {
 	
 	function update_theme_template()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_mbr_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_mbr_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -3498,7 +3498,7 @@ class Design extends CI_Controller {
 	 */
 	function export_templates()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') && ! $this->cp->allowed_group('can_admin_templates') )
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -3564,7 +3564,7 @@ class Design extends CI_Controller {
 	 */
 	function template_edit_ajax()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 		}
@@ -3682,7 +3682,7 @@ class Design extends CI_Controller {
 	 */
 	function access_edit_ajax()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			$this->output->send_ajax_response(lang('unauthorized_access'), TRUE);
 		}	
@@ -3747,7 +3747,7 @@ class Design extends CI_Controller {
 	 */
 	function edit_template_group()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -3835,7 +3835,7 @@ class Design extends CI_Controller {
 	  */
 	function update_template_group()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -3962,7 +3962,7 @@ class Design extends CI_Controller {
 	 */
 	function edit_template_group_order($message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -4008,7 +4008,7 @@ class Design extends CI_Controller {
 	 */
 	function reorder_template_groups()
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -4053,7 +4053,7 @@ class Design extends CI_Controller {
 	 */
 	function sync_templates($message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_design') OR ! $this->cp->allowed_group('can_admin_templates'))
+		if ( ! $this->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
