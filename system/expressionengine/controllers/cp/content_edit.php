@@ -610,6 +610,7 @@ class Content_edit extends CI_Controller {
 
 			if ($row['author_id'] == $this->session->userdata('member_id'))
 			{
+				// do not move these to the new allowed_group style - they are ANDs not ORs
 				if ( ! $this->cp->allowed_group('can_edit_own_comments') AND 
 					 ! $this->cp->allowed_group('can_delete_own_comments') AND 
 					 ! $this->cp->allowed_group('can_moderate_comments'))
@@ -965,6 +966,7 @@ class Content_edit extends CI_Controller {
 
 			if ($row['author_id'] == $this->session->userdata('member_id'))
 			{
+				// do not move these to the new allowed_group style - they are ANDs not ORs
 				if ( ! $this->cp->allowed_group('can_edit_own_comments') AND 
 					 ! $this->cp->allowed_group('can_delete_own_comments') AND 
 					 ! $this->cp->allowed_group('can_moderate_comments'))
