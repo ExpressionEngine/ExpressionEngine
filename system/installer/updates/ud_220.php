@@ -86,23 +86,33 @@ class Updater {
 
 	/**
 	 * Update members table
-	 *
-	 * So this is fun, this update will alter the password field on the members
-	 * table to be VARCHAR(64) so we can use hash('sha256', 'val') for the
-	 * password hashing scheme.
 	 */
-	// private function _update_members_table()
-	// {
-	// 	$field = array(
-	// 		'password'		=> array(
-	// 			'name'			=> 'password',
-	// 			'type'			=> 'VARCHAR',
-	// 			'constraint'	=> 64
-	// 		)
-	// 	);
+	private function _update_members_table()
+	{
+		// Update password column to VARCHAR(128)
+		$field = array(
+			'password'		=> array(
+				'name'			=> 'password',
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 128
+			)
+		);
 
-	// 	$this->EE->dbforge->modify_column('members', $field);
-	// }
+		$this->EE->dbforge->modify_column('members', $field);
+
+
+		// Add a salt column VARCHAR(128)
+		$field = array(
+			'salt'			=> array(
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 128,
+				'default'		=> '',
+				'null'			=> FALSE
+			)
+		);
+
+		$this->EE->dbforge->add_column('members', $field);
+	}
 
 	// --------------------------------------------------------------------
 }
