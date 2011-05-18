@@ -49,7 +49,7 @@ class Updater {
 		
 		$this->_update_session_table();
 
-		// $this->_update_members_table();
+		$this->_update_members_table();
 
 		return TRUE;
 	}
@@ -86,6 +86,12 @@ class Updater {
 
 	/**
 	 * Update members table
+	 *
+	 * Oh this is fun!  So since we're implementing a better password hashing
+	 * scheme, we'll bump up the `password` field in exp_members to 
+	 * be able to handle hashing algorithims such as sha256/sha512.
+	 * Additionally, we're adding a salt column to use for salting the 
+	 * users passwords.
 	 */
 	private function _update_members_table()
 	{
