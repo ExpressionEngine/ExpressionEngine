@@ -39,7 +39,7 @@ class Tools_utilities extends CI_Controller {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -56,7 +56,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -81,7 +81,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function import_utilities()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -104,7 +104,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function member_import()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -131,7 +131,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function import_from_xml()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -245,7 +245,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function confirm_xml_form()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -356,7 +356,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function final_confirm_xml_form()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -509,7 +509,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function process_xml()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -600,7 +600,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function custom_field_check($xml_file)
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -693,7 +693,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function validate_xml($xml)
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -945,7 +945,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function do_import()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}		
@@ -1184,7 +1184,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function create_custom_fields()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}		
@@ -1258,7 +1258,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function convert_from_delimited()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1429,7 +1429,7 @@ class Tools_utilities extends CI_Controller {
 	 */
 	private function pair_fields()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1607,7 +1607,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function confirm_data_form()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1702,7 +1702,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function create_xml()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1790,7 +1790,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function view_xml($xml)
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1820,7 +1820,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function view_xml_errors($errors, $message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1866,7 +1866,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function download_xml($xml)
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1890,8 +1890,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function translation_tool($message = '')
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR 
-			 ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1926,7 +1925,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function translate()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1969,7 +1968,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function translation_save()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -2034,7 +2033,7 @@ class Tools_utilities extends CI_Controller {
 	 */	
 	public function datafile_to_array($file)
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -2074,7 +2073,7 @@ class Tools_utilities extends CI_Controller {
 	 */
 	public function php_info()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_utilities'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

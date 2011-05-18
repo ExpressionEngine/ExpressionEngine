@@ -34,7 +34,7 @@ class Tools_logs extends CI_Controller {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -55,7 +55,7 @@ class Tools_logs extends CI_Controller {
 	 */	
 	function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -80,7 +80,7 @@ class Tools_logs extends CI_Controller {
 	 */	
 	function view_cp_log()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -138,7 +138,7 @@ class Tools_logs extends CI_Controller {
 	 */
 	function view_cp_ajax_filter()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -211,7 +211,7 @@ class Tools_logs extends CI_Controller {
 	 */	
 	function view_search_log()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -269,7 +269,7 @@ class Tools_logs extends CI_Controller {
 	 */
 	function view_search_ajax_filter()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -343,7 +343,7 @@ class Tools_logs extends CI_Controller {
 	 */	
 	function view_throttle_log()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -422,7 +422,7 @@ class Tools_logs extends CI_Controller {
 	 */
 	function view_throttle_ajax_filter()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -507,7 +507,7 @@ class Tools_logs extends CI_Controller {
 	 */	
 	function view_email_log()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -589,7 +589,7 @@ class Tools_logs extends CI_Controller {
 	 */
 	function view_email_ajax_filter()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -658,7 +658,7 @@ class Tools_logs extends CI_Controller {
 	 */	
 	function clear_log_files()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -706,7 +706,7 @@ class Tools_logs extends CI_Controller {
 	 */
 	function view_email()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -734,7 +734,7 @@ class Tools_logs extends CI_Controller {
 	 */
 	function delete_email()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -769,7 +769,7 @@ class Tools_logs extends CI_Controller {
 	 */
 	function blacklist_throttled_ips()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_logs'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

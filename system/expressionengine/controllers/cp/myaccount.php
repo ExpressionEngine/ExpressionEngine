@@ -970,8 +970,7 @@ class MyAccount extends CI_Controller {
 	{
 		// Is the user authorized to access the publish page? And does the user have
 		// at least one channel assigned? If not, show the no access message
-		if ( ! $this->cp->allowed_group('can_access_publish') OR
-			 ! $this->cp->allowed_group('can_edit_html_buttons'))
+		if ( ! $this->cp->allowed_group('can_access_publish', 'can_edit_html_buttons'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

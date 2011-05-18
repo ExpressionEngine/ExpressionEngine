@@ -35,7 +35,7 @@ class Tools_data extends CI_Controller {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_data'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -62,7 +62,7 @@ class Tools_data extends CI_Controller {
 	 */
 	function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_data'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -89,7 +89,7 @@ class Tools_data extends CI_Controller {
 	 */
 	function clear_caching()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_data'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -130,7 +130,7 @@ class Tools_data extends CI_Controller {
 	 */
 	function sql_manager()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_data'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -171,7 +171,7 @@ class Tools_data extends CI_Controller {
 	 */
 	function sql_query_form()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_data'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -210,7 +210,7 @@ class Tools_data extends CI_Controller {
 	 */
 	function sql_view_database()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_data'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -271,7 +271,7 @@ class Tools_data extends CI_Controller {
 	 */
 	function sql_run_table_action()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_data'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -554,7 +554,7 @@ class Tools_data extends CI_Controller {
 	 */
 	function search_and_replace()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_data'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -747,7 +747,7 @@ class Tools_data extends CI_Controller {
 	 */
 	function recount_stats()
 	{
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_data'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_data'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

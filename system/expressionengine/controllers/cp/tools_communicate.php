@@ -36,7 +36,7 @@ class Tools_communicate extends CI_Controller {
 	{
 		parent::__construct();
 		
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_comm'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_comm'))
 		{
 			show_error(lang('unauthorized_access'));
 		}		
