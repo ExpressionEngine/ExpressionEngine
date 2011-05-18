@@ -154,10 +154,6 @@ class EE_Session {
 
 		if ($this->EE->input->cookie($this->c_session))
 		{
-			$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);
-		}
-		else
-		{
 			if ($this->EE->input->get('S'))
 			{
 				$this->sdata['session_id'] = $this->EE->input->get('S');
