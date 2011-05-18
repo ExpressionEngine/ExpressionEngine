@@ -151,62 +151,22 @@ class EE_Session {
 			if ($this->EE->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
-				
 
-		/*
-			Okay, this is a load of irritation.  In 1.x we use parse_uri() to
-			set a class var on $IN if the session ID is in the URL.
-
-			But guess what?!  That went away when the 1.x core directory was
-			removed from this project.
-
-			So, this has not worked since some point in 2007.
-
-			Saving my place for now and will come back with a fresh look tomorrow.
-		*/
-
-		// Fetch the Session ID		
-		// A session ID can either come from a cookie or GET data
-		// if ($this->EE->input->cookie($this->c_session))
-		// {
-		// 	$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);
-		// }
-		// else
-		// {var_dump($this->EE->input->get('S'), $_GET); exit;
-		// 	if ($this->EE->input->get('S'))
-		// 	{
-		// 		var_dump($this->EE->input->get('S')); exit;
-
-		// 		// $this->sdata['session_id'] = '';
-		// 	}
-		// }
-
-
-
-		if ( ! $this->EE->input->cookie($this->c_session))
-		{
-			if ( ! $this->EE->input->get('S'))
-			{
-				// If session IDs are being used in public pages the session will be found here
-				
-				if ($this->SID != '')
-				{
-					$this->sdata['session_id'] = $this->SID;				
-				}
-			}
-			else
-			{
-				$this->sdata['session_id'] = $this->EE->input->get('S');
-			}
-		}
-		else
+		if ($this->EE->input->cookie($this->c_session))
 		{
 			$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);
 		}
-
-
-
-
+		else
+		{
+			if ($this->EE->input->get('S'))
+			{
+				$this->sdata['session_id'] = $this->EE->input->get('S');
+			}
+			elseif ($this->EE->uri->session_id != '')
+			{
+				$this->sdata['session_id'] = $this->EE->uri->session_id;
+			}			
+		}
 		
 		// Does the session id cookie exist?
 		if ($this->EE->input->cookie($this->c_session))
