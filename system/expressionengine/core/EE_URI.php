@@ -31,6 +31,54 @@ class EE_URI extends CI_URI {
 	// These are reserved words that have special meaning when they are the first
 	// segment of a URI string.  Template groups can not be named any of these words
 	var $reserved  = array('css');
+	
+	/**
+	 * Fetch uri string extension
+	 *
+	 * We hook into fetch_uri_string to look for a session id in the $_GET
+	 * array, before passing it on to CI to figure out a url. Doing it after
+	 * CI did not work with query strings and auto since key($_GET) comes out
+	 * as /S, which is not a good path
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	function _fetch_uri_string()
+	{
+		$key = FALSE;
+		
+		if (is_array($_GET))
+		{
+			if (isset($_GET['S']))
+			{
+				$key = 'S';
+			}
+			elseif (trim(key($_GET), '/') == 'S')
+			{
+				$key = key($_GET);
+			}
+		}
+		
+		if ($key)
+		{
+			$val = $_GET[$key];
+			unset($_GET[$key]);
+			
+			$x = explode('/', $val);
+
+			// Set the session ID
+			$this->session_id = array_shift($x);
+			
+			$leftovers = implode('/', $x);
+			
+			if ($leftovers)
+			{
+				$_GET = array($leftovers => '1') + $_GET;
+			}
+		}
+		
+		return parent::_fetch_uri_string();
+	}
 
 	// --------------------------------------------------------------------
 	
@@ -72,32 +120,6 @@ class EE_URI extends CI_URI {
 			
 			// Since we no longer have a zero index we change it to 1
 			$zero_index = 1;
-		}
-		else
-		{
-			// If there is a question mark in the URL the session ID might not have 
-			// been identified via the above code.  To be safe we will check $_GET['S']
-		
-			if (isset($_GET['S']))
-			{
-				$x = explode('/', $_GET['S']);
-				
-				// Set the session ID
-				$this->session_id = $x[0];
-
-				// Remove the session ID from the full URI string
-				$this->uri_string = trim(str_replace($segs[0], '', $this->uri_string), '/');
-
-				// Kill the session ID from the exploded segments if it contains the ID				
-				if ($this->session_id  == $segs[0])
-				{
-					unset($segs[0]);
-					
-					// Since we no longer have a zero index we change it to 1
-					$zero_index = 1;
-				}
-			}
-		
 		}
 		
 		// Is there a reason to continue?
