@@ -2957,10 +2957,17 @@ class EE_Template {
         		}
         	}
         	
-        	for($ci=0, $cs=count($css_matches[0]); $ci < $cs; ++$ci)
-        	{
-        		$str = str_replace($css_matches[0][$ci], $this->EE->functions->fetch_site_index().QUERY_MARKER.'css='.$css_matches[1][$ci].(isset($css_versions[$css_matches[1][$ci]]) ? '.v.'.$css_versions[$css_matches[1][$ci]] : ''), $str);
-        	}
+			$s_index = $this->EE->functions->fetch_site_index();
+			
+			if ( ! QUERY_MARKER && substr($s_index, -1) != '?')
+			{
+				$s_index .= '&';
+			}
+
+			for($ci=0, $cs=count($css_matches[0]); $ci < $cs; ++$ci)
+			{
+				$str = str_replace($css_matches[0][$ci], $s_index.QUERY_MARKER.'css='.$css_matches[1][$ci].(isset($css_versions[$css_matches[1][$ci]]) ? '.v.'.$css_versions[$css_matches[1][$ci]] : ''), $str);
+			}
         
         	unset($css_matches);
         	unset($css_versions);
