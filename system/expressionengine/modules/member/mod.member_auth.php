@@ -143,7 +143,7 @@ class Member_auth extends Member {
 		// Fetch member data
 		if ( ! $this->EE->input->get('multi'))
 		{
-			$query = $this->EE->db->select('m.password, m.unique_id, m.member_id')
+			$query = $this->EE->db->select('m.password, m.unique_id, m.member_id, m.group_id')
 								  ->from(array('members m', 'member_groups mg'))
 								  ->where('username', $this->EE->input->post('username'))
 								  ->where('m.group_id', 'mg.group_id', FALSE)
@@ -177,7 +177,7 @@ class Member_auth extends Member {
 			$expire = ( ! isset($_POST['auto_login'])) ? '0' : 60*60*24*365;
 
 			// Check Session ID
-			$query = $this->EE->db->select('m.member_id, m.password, m.unique_id')
+			$query = $this->EE->db->select('m.member_id, m.password, m.unique_id, m.group_id')
 								->from(array('sessions s, members m'))
 								->where('s.session_id', $this->EE->input->get('multi'))
 								->where('s.member_id', 'm.member_id', FALSE)
@@ -258,7 +258,7 @@ class Member_auth extends Member {
 		}
 
 		// Is the member account pending?
-		if ($query->row('group_id')  == 4)
+		if ($query->row('group_id') == 4)
 		{
 			$this->EE->output->show_user_error('general', array(lang('mbr_account_not_active')));
 		}
