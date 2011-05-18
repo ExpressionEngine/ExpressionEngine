@@ -2762,7 +2762,7 @@ class Forum_mcp {
 
 		if ($count == 0)
 		{
-			require_once APPPATH.'language/'.$this->EE->config->item('deft_lang').'/email_data'.EXT;
+			require_once APPPATH.'language/'.$this->EE->config->item('deft_lang').'/email_data.php';
 			
 			$d = array(
 					'site_id'			=> $this->EE->input->post('board_site_id'),

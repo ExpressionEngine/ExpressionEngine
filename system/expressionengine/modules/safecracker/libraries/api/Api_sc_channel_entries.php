@@ -1,6 +1,6 @@
 <?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-require_once APPPATH.'libraries/api/Api_channel_entries'.EXT;
+require_once APPPATH.'libraries/api/Api_channel_entries.php';
 
 class Api_sc_channel_entries extends Api_channel_entries
 {

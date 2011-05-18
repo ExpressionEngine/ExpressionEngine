@@ -2480,9 +2480,9 @@ MAGIC;
 		}
 
 		//  Fetch Color Library - We use this to assist with our status colors
-		if (file_exists(APPPATH.'config/colors'.EXT))
+		if (file_exists(APPPATH.'config/colors.php'))
 		{
-			include (APPPATH.'config/colors'.EXT);
+			include (APPPATH.'config/colors.php');
 		}
 		else
 		{

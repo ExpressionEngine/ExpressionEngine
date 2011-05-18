@@ -432,7 +432,7 @@ class Member {
 
 		if ( ! class_exists('EE_Messages'))
 		{
-			require APPPATH.'libraries/Messages'.EXT;
+			require APPPATH.'libraries/Messages.php';
 		}
 
 		$MESS = new EE_Messages;
@@ -484,7 +484,7 @@ class Member {
 
 		if ( ! class_exists('EE_Messages'))
 		{
-			require APPPATH.'libraries/Messages'.EXT;
+			require APPPATH.'libraries/Messages.php';
 		}
 
 		$MESS = new EE_Messages;
@@ -1429,8 +1429,8 @@ class Member {
 
 			if ( ! class_exists('Forum'))
 			{
-				require PATH_MOD.'forum/mod.forum'.EXT;
-				require PATH_MOD.'forum/mod.forum_core'.EXT;
+				require PATH_MOD.'forum/mod.forum.php';
+				require PATH_MOD.'forum/mod.forum_core.php';
 			}
 
 			$FRM = new Forum_Core;
@@ -1883,7 +1883,7 @@ class Member {
 			return $this->EE->output->fatal_error($this->EE->lang->line('must_be_logged_in'));
 		}
 
-		$class_path = PATH_MOD.'emoticon/emoticons'.EXT;
+		$class_path = PATH_MOD.'emoticon/emoticons.php';
 
 		if ( ! is_file($class_path) OR ! @include_once($class_path))
 		{

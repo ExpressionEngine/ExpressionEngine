@@ -39,12 +39,12 @@ if ( ! function_exists('convert_accented_characters'))
 {
 	function convert_accented_characters($match)
 	{
-		if ( ! file_exists(APPPATH.'config/foreign_chars'.EXT))
+		if ( ! file_exists(APPPATH.'config/foreign_chars.php'))
 		{
 			return $match;
 		}
 	
-		include APPPATH.'config/foreign_chars'.EXT;
+		include APPPATH.'config/foreign_chars.php';
 		
 		$CI =& get_instance();
 		

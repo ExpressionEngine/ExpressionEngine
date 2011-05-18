@@ -41,8 +41,8 @@ class EE_Config Extends CI_Config {
 		parent::__construct();
 		
 		// Change this path before release.  
-		$this->config_path		= APPPATH.'config/config'.EXT;
-		$this->database_path	= APPPATH.'config/database'.EXT;
+		$this->config_path		= APPPATH.'config/config.php';
+		$this->database_path	= APPPATH.'config/database.php';
 
 		$this->_initialize();
 	}
@@ -65,14 +65,7 @@ class EE_Config Extends CI_Config {
 		
 		// Is the config file blank?  If so it means that ExpressionEngine has not been installed yet
 		if ( ! isset($config) OR count($config) == 0)
-		{
-			// If the admin file is found we send them there
-			if (file_exists('admin'.EXT))
-			{
-				header("Location: admin".EXT);
-				exit;
-			}
-			
+		{			
 			// If the admin file is not found we show an error
 			show_error('ExpressionEngine does not appear to be installed.  If you are accessing this page for the first time, please consult the user guide for installation instructions.');
 		}
@@ -94,7 +87,7 @@ class EE_Config Extends CI_Config {
 		$this->_set_overrides($assign_to_config);
 		
 		// Freelancer version?
-		$this->_global_vars['freelancer_version'] = ( ! file_exists(APPPATH.'modules/member/mod.member'.EXT)) ? 'TRUE' : 'FALSE';
+		$this->_global_vars['freelancer_version'] = ( ! file_exists(APPPATH.'modules/member/mod.member.php')) ? 'TRUE' : 'FALSE';
 		
 		// Set the default_ini data, used by the sites feature
 		$this->default_ini = $this->config;
@@ -434,7 +427,6 @@ class EE_Config Extends CI_Config {
 								'daylight_savings',
 								'default_site_timezone',
 								'default_site_dst',
-				// deprecated	'honor_entry_dst',
 								'mail_protocol',
 								'smtp_server',
 								'smtp_username',
@@ -467,8 +459,6 @@ class EE_Config Extends CI_Config {
 								'emoticon_path',
 								'recount_batch_total',
 								'new_version_check',
-				// deprecated	'publish_tab_behavior',
-				// deprecated	'sites_tab_behavior',
 								'enable_throttling',
 								'banish_masked_ips',
 								'max_page_loads',
@@ -536,7 +526,6 @@ class EE_Config Extends CI_Config {
 								);
 								  
 		$channel_default = array('image_resize_protocol',
-				// deprecated	'enable_image_resizing', 
 								'image_library_path',
 								'thumbnail_prefix',
 								'word_separator',
@@ -780,7 +769,7 @@ class EE_Config Extends CI_Config {
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config_path))
 		{
-			show_error('Your config'.EXT.' file does not appear to have the proper file permissions.  Please set the file permissions to 666 on the following file: expressionengine/config/config.php');
+			show_error('Your config.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 on the following file: expressionengine/config/config.php');
 		}
 		
 		// Read the config file as PHP
@@ -935,7 +924,7 @@ class EE_Config Extends CI_Config {
 		// Is the database file writable?
 		if ( ! is_really_writable($this->database_path))
 		{
-			show_error('Your database'.EXT.' file does not appear to have the proper file permissions.  Please set the file permissions to 666 on the following file: expressionengine/config/database.php');
+			show_error('Your database.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 on the following file: expressionengine/config/database.php');
 		}
 
 		$prototype = array(

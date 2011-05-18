@@ -35,9 +35,9 @@ class Emoticon {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-		if (is_file(PATH_MOD.'emoticon/emoticons'.EXT))
+		if (is_file(PATH_MOD.'emoticon/emoticons.php'))
 		{
-			require PATH_MOD.'emoticon/emoticons'.EXT;
+			require PATH_MOD.'emoticon/emoticons.php';
 
 			if (is_array($smileys))
 			{

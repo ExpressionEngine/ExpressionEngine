@@ -177,9 +177,9 @@ class Addons_modules extends CI_Controller {
 
 			// Check for updates to module
 			// Send version to update class and let it do any required work
-			if ($this->input->get('check_updates') && $status == 'installed' && file_exists($this->installed_modules[$module]['path'].'upd.'.$module.EXT))
+			if ($this->input->get('check_updates') && $status == 'installed' && file_exists($this->installed_modules[$module]['path'].'upd.'.$module.'.php'))
 			{
-				require $this->installed_modules[$module]['path'].'upd.'.$module.EXT;
+				require $this->installed_modules[$module]['path'].'upd.'.$module.'.php';
 
 				$class = ucfirst($module).'_upd';
 				$version = $this->installed_modules[$module]['module_version'];
@@ -312,9 +312,9 @@ class Addons_modules extends CI_Controller {
 
 		// Update Module
 		// Send version to update class and let it do any required work
-		if (file_exists($installed[$module]['path'].'upd.'.$module.EXT))
+		if (file_exists($installed[$module]['path'].'upd.'.$module.'.php'))
 		{
-			require $installed[$module]['path'].'upd.'.$module.EXT;
+			require $installed[$module]['path'].'upd.'.$module.'.php';
 
 			$class = ucfirst($module).'_upd';
 			$version = $installed[$module]['module_version'];

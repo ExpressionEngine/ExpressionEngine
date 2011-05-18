@@ -160,7 +160,7 @@ class EE_Actions {
 				
 		$EE->load->add_package_path($package_path, FALSE);
 		
-		$path = $package_path.$type.'.'.$base_class.EXT;
+		$path = $package_path.$type.'.'.$base_class.'.php';
 
 		// Does the path exist?		
 		if ( ! file_exists($path))

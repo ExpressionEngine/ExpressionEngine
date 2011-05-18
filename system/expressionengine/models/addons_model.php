@@ -50,16 +50,18 @@ class Addons_model extends CI_Model {
 		
 		if ( ! count($filelist))
 		{
-			$ext_len = strlen(EXT);
+			$ext_len = strlen('.php');
 
 			// first party plugins
 			if (($map = directory_map(PATH_PI, TRUE)) !== FALSE)
 			{
 				foreach ($map as $file)
 				{
-					if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen('pi.'.EXT))
+					if (strncasecmp($file, 'pi.', 3) == 0 && 
+						substr($file, -$ext_len) == '.php' && 
+						strlen($file) > strlen('pi..php'))
 					{
-						$file = substr($file, 3, -strlen(EXT));						
+						$file = substr($file, 3, -strlen('.php'));						
 						$filelist[$file] = ucwords(str_replace('_', ' ', $file));
 					}				
 				}
@@ -86,7 +88,9 @@ class Addons_model extends CI_Model {
 						}
 
 						// how abouts a plugin?
-						elseif (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen('pi.'.EXT))
+						elseif (strncasecmp($file, 'pi.', 3) == 0 && 
+								substr($file, -$ext_len) == '.php' && 
+								strlen($file) > strlen('pi..php'))
 						{							
 							$file = substr($file, 3, -$ext_len);
 
@@ -125,14 +129,14 @@ class Addons_model extends CI_Model {
 
 		$plugins = array();
 		$info 	= array();
-		$ext_len = strlen(EXT);
+		$ext_len = strlen('.php');
 
 		// first party plugins
 		if (($map = directory_map(PATH_PI, TRUE)) !== FALSE)
 		{
 			foreach ($map as $file)
 			{
-				if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen('pi.'.EXT))
+				if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == '.php' && strlen($file) > strlen('pi..php'))
 				{
 					if ( ! @include_once(PATH_PI.$file))
 					{
@@ -167,7 +171,9 @@ class Addons_model extends CI_Model {
 						continue;
 					}
 					
-					elseif (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen('pi.'.EXT))
+					elseif (strncasecmp($file, 'pi.', 3) == 0 && 
+							substr($file, -$ext_len) == '.php' && 
+							strlen($file) > strlen('pi..php'))
 					{							
 						if ( ! @include_once(PATH_THIRD.$pkg_name.'/'.$file))
 						{

@@ -258,7 +258,7 @@ class Channel_standalone extends Channel {
 
 		$this->EE->functions->clear_caching('all', $_POST['PRV']);
 
-		require APPPATH.'libraries/Template'.EXT;
+		require APPPATH.'libraries/Template.php';
 
 		$this->EE->TMPL = new EE_Template();
 

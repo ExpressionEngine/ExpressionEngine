@@ -508,7 +508,7 @@ class Login extends CI_Controller {
 		// Instantiate validation class
 		if ( ! class_exists('EE_Validate'))
 		{
-			require APPPATH.'libraries/Validate'.EXT;
+			require APPPATH.'libraries/Validate.php';
 		}
 		
 		$new_un  = ($this->input->post('new_username')) ? $this->input->post('new_username') : '';
