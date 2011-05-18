@@ -788,8 +788,10 @@ class Content_files extends CI_Controller {
 		
 		// Replace the filename and thumb (everything else should have stayed the same)
 		$thumb_info = $this->filemanager->get_thumb($new_file_name, $file['upload_location_id']);
-		$file['file_name'] = $new_file_name;
-		$file['thumb'] = $thumb_info['thumb'];
+		
+		$file['file_name'] 	= $new_file_name;
+		$file['name'] 		= $new_file_name;
+		$file['thumb'] 		= $thumb_info['thumb'];
 		
 		// Prep the vars for the success and rename views
 		$vars = array(
