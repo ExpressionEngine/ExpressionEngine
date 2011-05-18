@@ -700,7 +700,6 @@ class Content_files extends CI_Controller {
 	 */
 	public function upload_file()
 	{
-
 		$this->output->enable_profiler(FALSE);
 
 		// Make sure this is a valid form submit
@@ -738,12 +737,12 @@ class Content_files extends CI_Controller {
 		$upload_response['name'] = $upload_response['file_name'];
 		$upload_response['thumb'] = $upload_response['file_thumb'];
 		
-		$file_name = explode('.' , $upload_response['file_name']);
+		$orig_name = explode('.' , $upload_response['orig_name']);
 		$vars = array(
 			'file'		=> $upload_response,
 			'file_json'	=> $this->javascript->generate_json($upload_response, TRUE),
-			'file_ext'	=> array_pop($file_name),
-			'file_name'	=> implode('.', $file_name),
+			'file_ext'	=> array_pop($orig_name),
+			'orig_name'	=> implode('.', $orig_name),
 			'date'		=> date('M d Y - H:ia')
 		);
 		
@@ -770,9 +769,9 @@ class Content_files extends CI_Controller {
 			$this->input->post('new_file_name') . '.' . $this->input->post('file_ext'),
 			$this->input->post('directory_id')
 		));
-		
+				
 		// Attempt to replace the file
-		$replace_file = $this->filemanager->replace_file(
+		$replace_file = $this->filemanager->rename_file(
 			$this->input->post('file_id'),
 			$new_file_name
 		);
@@ -794,7 +793,7 @@ class Content_files extends CI_Controller {
 		$file['name'] 		= $new_file_name;
 		$file['thumb'] 		= $thumb_info['thumb'];
 		
-		// Prep the vars for the success and rename views
+		// Prep the vars for the success and rename pages
 		$vars = array(
 			'file'		=> $file,
 			'file_json'	=> $this->javascript->generate_json($file, TRUE),
@@ -922,7 +921,6 @@ class Content_files extends CI_Controller {
 			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
 		
-		$this->load->model('file_model');
 		$delete = $this->file_model->delete_files($files);
 
 		$message_type = ($delete) ? 'message_success' : 'message_failure';

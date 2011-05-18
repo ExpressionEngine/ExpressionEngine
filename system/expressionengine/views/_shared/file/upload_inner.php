@@ -19,7 +19,7 @@
 		<img src="<?=$cp_theme_url?>images/indicator.gif" alt="<?=lang('loading')?>..." /><br />
 		<?=lang('loading')?>...
 	</p>
-
+	
 <?=form_close()?>
 	
 <?php $this->load->view('_shared/file/iframe_footer') ?>

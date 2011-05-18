@@ -1687,7 +1687,7 @@ class Filemanager {
 		
 		$field = ($field_name) ? $field_name : 'userfile';
 		$original_filename = $_FILES[$field]['name'];
-		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id'], TRUE));
+		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id']));
 		
 		$config = array(
 			'file_name'		=> $clean_filename,
@@ -1835,34 +1835,33 @@ class Filemanager {
 	 * @param string $new_file_name The new file name for the file
 	 * @return mixed TRUE if successful, otherwise it returns the error
 	 */	 
-	function replace_file($file_id, $new_file_name)
+	function rename_file($file_id, $new_file_name)
 	{
 		$this->EE->load->model(array('file_upload_preferences_model', 'file_model'));
 		
 		// Get the file data form the database
-		$previous_data = $this->EE->db->get_where('files', array('file_id' => $file_id));
+		$previous_data = $this->EE->file_model->get_files_by_id($file_id);
 		$previous_data = $previous_data->row();
 		
-		if ($previous_data->file_name == $new_file_name)
+		$directory_id		= $previous_data->upload_location_id;
+		$old_file_name		= $previous_data->file_name;
+		$upload_directory	= $this->fetch_upload_dir_prefs($directory_id);
+		
+		// Check to see if a file with that name already exists
+		if (file_exists($upload_directory['server_path'] . $new_file_name))
 		{
-			return TRUE;
+			// If it does, delete the old files and remove the new file
+			// record in the database
+			
+			$previous_data = $this->_replace_file($previous_data, $new_file_name, $directory_id);
+			$file_id = $previous_data->file_id;
 		}
 		
-		$directory_id  = $previous_data->upload_location_id;
-		$old_file_name = $previous_data->file_name;
-		
-		// Figure out names of the dimensions to delete
-		// (Filemanager::save_file deletes them later)
-		$upload_directory = $this->fetch_upload_dir_prefs($directory_id);
-		$dimension_query = $this->EE->file_model->get_dimensions_by_dir_id($directory_id);
-		foreach ($dimension_query->result_array() as $dimension) 
-		{
-			@unlink($upload_directory['server_path'] . '_' . $dimension['short_name'] . '/' . $old_file_name);
-		}
-		@unlink($upload_directory['server_path'] . '_thumb/' . $old_file_name);
+		// Delete the thumbnails
+		$this->EE->file_model->delete_raw_file($old_file_name, $directory_id, TRUE);
 		
 		// Rename the actual file
-		$file_path = $this->_rename_file(
+		$file_path = $this->_rename_raw_file(
 			$old_file_name,
 			$new_file_name,
 			$directory_id
@@ -1899,6 +1898,39 @@ class Filemanager {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Deletes the old raw files, and the new file's database records
+	 *
+	 * @param object $new_file The data coming from the database for the deleted file
+	 * @param string $file_name The file name, the existing files are deleted
+	 * 	and the new files are renamed within Filemanager::rename_file
+	 * @param integer $directory_id The directory ID where the file is located
+	 * @return object Object from database representing the data of the old item
+	 */
+	public function _replace_file($new_file, $file_name, $directory_id)
+	{
+		// Get the ID of the existing file
+		$existing_file = $this->EE->file_model->get_files_by_name($file_name, $directory_id);
+		$existing_file = $existing_file->row();
+		
+		// Delete the existing file's raw files, but leave the database record
+		$this->EE->file_model->delete_raw_file($file_name, $directory_id);
+		
+		// Delete the new file's database record, but leave the files
+		$this->EE->file_model->delete_files($new_file->file_id, FALSE);
+				
+		// Update file_hw_original
+		$this->EE->file_model->save_file(array(
+			'file_id' => $existing_file->file_id,
+			'file_hw_original' => $new_file->file_hw_original
+		));
+		$existing_file->file_hw_original = $new_file->file_hw_original;
+		
+		return $existing_file;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Renames a raw file, doesn't touch the database
 	 * 
 	 * @param string $old_file_name The old file name
@@ -1906,7 +1938,7 @@ class Filemanager {
 	 * @param integer $directory_id The ID of the directory the file is in
 	 * @return string The path of the newly renamed file
 	 */
-    public function _rename_file($old_file_name, $new_file_name, $directory_id)
+    public function _rename_raw_file($old_file_name, $new_file_name, $directory_id)
     {
 		// Make sure the filename is clean
 		$new_file_name = basename($this->clean_filename($new_file_name, $directory_id));

@@ -196,7 +196,11 @@ class File_model extends CI_Model {
 		$data['upload_date'] = ( ! isset($data['upload_date'])) ? $this->localize->now : $data['upload_date'];
 		$data['modified_date'] = $this->localize->now;
 		$data['status'] = ( ! isset($data['status'])) ? 'o' : $data['status'];
-		$data['title'] = ( ! isset($data['title'])) ? $data['file_name'] : $data['title'];
+		
+		if (isset($data['file_name']) OR isset($data['title']))
+		{
+			$data['title'] = ( ! isset($data['title'])) ? $data['file_name'] : $data['title'];
+		}
 
 		// Insert/update the data
 		if (isset($data['file_id']))
@@ -577,9 +581,10 @@ class File_model extends CI_Model {
 	 * database records and the file itself.
 	 * 
 	 * @param array $file_ids An array of file IDs from exp_files
+	 * @param boolean $delete_raw_files Set this to FALSE to not delete the files
 	 * @return boolean TRUE if successful, FALSE otherwise
 	 */
-	public function delete_files($file_ids = array())
+	public function delete_files($file_ids = array(), $delete_raw_files = TRUE)
 	{
 		$return = TRUE;
 		$deleted = array();
@@ -592,15 +597,18 @@ class File_model extends CI_Model {
 		$file_information = $this->get_files_by_id($file_ids);
 		
 		foreach ($file_information->result() as $file) 
-		{			
+		{
 			// Store deleted file information for hook
 			$deleted[] = $file;
 
-			// Then delete the raw file
-			$this->delete_raw_file(
-				$file->file_name, 
-				$file->upload_location_id
-			);
+			if ($delete_raw_files)
+			{
+				// Then delete the raw file
+				$this->delete_raw_file(
+					$file->file_name, 
+					$file->upload_location_id
+				);
+			}
 
 			// Remove any related category records
 			$this->load->model('file_category_model');
@@ -657,9 +665,10 @@ class File_model extends CI_Model {
 	 * 
 	 * @param string $file_name The name of the file to delete
 	 * @param integer $directory_id The directory ID where the file is located
+	 * @param boolean $only_thumbs Set this to TRUE if you only want to delete thumbnails
 	 * @return boolean TRUE if successful, FALSE otherwise
 	 */
-	public function delete_raw_file($file_name, $directory_id)
+	public function delete_raw_file($file_name, $directory_id, $only_thumbs = FALSE)
 	{
 		$this->load->model('file_upload_preferences_model');
 		$this->load->library('filemanager');
@@ -683,10 +692,13 @@ class File_model extends CI_Model {
 			@unlink($upload_dir->server_path . '_' . $file_dimension->short_name . '/' . $file_name);
 		}
 		
-		// Finally, delete the original
-		if ( ! @unlink($upload_dir->server_path . $file_name))
+		if ( ! $only_thumbs)
 		{
-			return FALSE;
+			// Finally, delete the original
+			if ( ! @unlink($upload_dir->server_path . $file_name))
+			{
+				return FALSE;
+			}
 		}
 		
 		return TRUE;
