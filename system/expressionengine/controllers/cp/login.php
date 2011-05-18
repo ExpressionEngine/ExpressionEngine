@@ -356,7 +356,7 @@ class Login extends CI_Controller {
 		
 		if ($this->config->item('admin_session_type') != 'c')
 		{
-			$base = preg_replace('/S=\d+/', 'S='.$sess_id, $base);
+			$base = preg_replace('/S=\d+/', 'S='.$sess_id, BASE);
 		}
 		
 		if ($this->input->post('return_path'))
