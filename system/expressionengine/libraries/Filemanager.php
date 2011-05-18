@@ -156,7 +156,6 @@ class Filemanager {
 	 * Get the upload directory preferences for an individual directory
 	 * 
 	 * @param integer $dir_id ID of the directory to get preferences for
-	 * TODO: Rewrite using current models
 	 */
 	function fetch_upload_dir_prefs($dir_id)
 	{
@@ -165,10 +164,13 @@ class Filemanager {
 			return $this->_upload_dir_prefs[$dir_id];
 		}
 		
+		$this->EE->load->model(array('file_model', 'file_upload_preferences_model'));
+
 		// Figure out if the directory actually exists
-		$qry = $this->EE->db->where('id', $dir_id)
-							->where('site_id', $this->EE->config->item('site_id'))
-							->get('upload_prefs');
+		$qry = $this->EE->file_upload_preferences_model->get_upload_preferences(
+			'1', // Overriding the group ID to get all IDs
+			$dir_id
+		);
 		
 		if ( ! $qry->num_rows())
 		{
@@ -181,12 +183,7 @@ class Filemanager {
 		// Add dimensions to prefs
 		$prefs['dimensions'] = array();
 		
-		$qry = $this->EE->db->select('*')
-							->from('file_dimensions')
-							->join('file_watermarks', 'wm_id = watermark_id', 'left')
-							->where_in('upload_location_id', $dir_id)
-							->get();
-							
+		$qry = $this->EE->file_model->get_dimensions_by_dir_id($dir_id, TRUE);
 		
 		foreach ($qry->result_array() as $row)
 		{

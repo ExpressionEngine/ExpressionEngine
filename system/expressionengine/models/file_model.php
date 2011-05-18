@@ -333,9 +333,14 @@ class File_model extends CI_Model {
 	 * 
 	 * 
 	 */
-	function get_dimensions_by_dir_id($dir_id = FALSE)
+	function get_dimensions_by_dir_id($dir_id = FALSE, $with_watermarks = FALSE)
 	{
 		$dir_func = $this->_where_function($dir_id);
+		
+		if ($with_watermarks)
+		{
+			$this->db->join('file_watermarks', 'wm_id = watermark_id', 'left');
+		}
 		
 		if ( ! empty($dir_id))
 		{
