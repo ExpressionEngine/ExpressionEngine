@@ -282,15 +282,15 @@ class Addons_plugins extends CI_Controller {
 			// We now have more than one path, so we try them all
 			$success = FALSE;
 
-			if (@unlink(PATH_PI.'pi.'.$name.EXT))
+			if (@unlink(PATH_PI.'pi.'.$name.'.php'))
 			{
 				$success = TRUE;
 			}
 			else
 			{
 				// first thing's first, let's make sure this isn't part of a package
-				$files = glob(PATH_THIRD.$name.'/*'.EXT);
-				$pi_key = array_search(PATH_THIRD.$name.'/pi.'.$name.EXT, $files);
+				$files = glob(PATH_THIRD.$name.'/*.php');
+				$pi_key = array_search(PATH_THIRD.$name.'/pi.'.$name.'.php', $files);
 				
 				// remove this file from the list
 				unset($files[$pi_key]);
@@ -346,7 +346,7 @@ class Addons_plugins extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		@include_once(APPPATH.'libraries/Pclzip'.EXT);
+		@include_once(APPPATH.'libraries/Pclzip.php');
 
 		if ( ! is_really_writable(PATH_THIRD))
 		{
@@ -436,7 +436,7 @@ class Addons_plugins extends CI_Controller {
 				if ($ok)
 				{
 					// check if the file is sitting right here
-					$pi_files = glob($temp_dir.'/pi.*'.EXT);
+					$pi_files = glob($temp_dir.'/pi.*.php');
 					
 					if (empty($pi_files))
 					{
@@ -444,7 +444,7 @@ class Addons_plugins extends CI_Controller {
 						// stop at first plugin file found to keep things sane
 						foreach (glob($temp_dir.'/*', GLOB_ONLYDIR) as $dir)
 						{
-							$pi_files = glob($dir.'/pi.*'.EXT);
+							$pi_files = glob($dir.'/pi.*.php');
 							
 							if ( ! empty($pi_files))
 							{
@@ -533,7 +533,7 @@ class Addons_plugins extends CI_Controller {
 	{
 		$this->load->helper('file');
 
-		$ext_len = strlen(EXT);
+		$ext_len = strlen('.php');
 
 		$plugin_files = array();
 		$plugins = array();
@@ -544,8 +544,10 @@ class Addons_plugins extends CI_Controller {
 		{
 			foreach ($list as $file)
 			{
-				if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen('pi.'.EXT)
-					&& in_array(substr($file, 3, -$ext_len), $this->core->native_plugins))
+				if (strncasecmp($file, 'pi.', 3) == 0 && 
+					substr($file, -$ext_len) == '.php' && 
+					strlen($file) > 7 && 
+					in_array(substr($file, 3, -$ext_len), $this->core->native_plugins))
 				{
 					$plugin_files[$file] = PATH_PI.$file;
 				}
@@ -572,7 +574,9 @@ class Addons_plugins extends CI_Controller {
 					}
 
 					// we gots a plugin?
-					if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen('pi.'.EXT))
+					if (strncasecmp($file, 'pi.', 3) == 0 && 
+						substr($file, -$ext_len) == '.php' && 
+						strlen($file) > strlen('pi.'.'.php'))
 					{
 						if (substr($file, 3, -$ext_len) == $pkg_name)
 						{
@@ -594,7 +598,9 @@ class Addons_plugins extends CI_Controller {
 			// Magpie maight already be in use for an accessory or other function
 			// If so, we still need the $plugin_info, so we'll open it up and
 			// harvest what we need. This is a special exception for Magpie.
-			if ($file == 'pi.magpie'.EXT AND in_array($path, get_included_files()) AND class_exists('Magpie'))
+			if ($file == 'pi.magpie.php' && 
+				in_array($path, get_included_files()) && 
+				class_exists('Magpie'))
 			{
 				$contents = file_get_contents($path);
 				$start = strpos($contents, '$plugin_info');
@@ -650,11 +656,11 @@ class Addons_plugins extends CI_Controller {
 			return FALSE;
 		}
 
-		$path = PATH_PI.'pi.'.$filename.EXT;
+		$path = PATH_PI.'pi.'.$filename.'.php';
 
 		if ( ! file_exists($path))
 		{
-			$path = PATH_THIRD.$filename.'/pi.'.$filename.EXT;
+			$path = PATH_THIRD.$filename.'/pi.'.$filename.'.php';
 
 			if ( ! file_exists($path))
 			{

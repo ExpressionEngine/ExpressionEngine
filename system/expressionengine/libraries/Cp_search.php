@@ -276,7 +276,7 @@ class Cp_search {
 		$map = array();
 		$lang_files = array();
 
-		if ( ! file_exists(APPPATH.'controllers/cp/'.$controller.EXT))
+		if ( ! file_exists(APPPATH.'controllers/cp/'.$controller.'.php'))
 		{
 			return array();
 		}
@@ -285,7 +285,7 @@ class Cp_search {
 		if ( ! isset($this->_c_cache['name']) OR $this->_c_cache['name'] != $controller)
 		{
 			// Grab the file contents
-			$this->_c_cache['source'] = file_get_contents(APPPATH.'controllers/cp/'.$controller.EXT);
+			$this->_c_cache['source'] = file_get_contents(APPPATH.'controllers/cp/'.$controller.'.php');
 			
 			// Initialize arrays
 			$this->_c_cache['methods'] = array();
@@ -375,7 +375,7 @@ class Cp_search {
 
 		foreach($lang_files as $langfile)
 		{
-			include(APPPATH.'language/'.$language.'/'.$langfile.'_lang'.EXT);
+			include(APPPATH.'language/'.$language.'/'.$langfile.'_lang.php');
 
 			if (isset($lang))
 			{
@@ -408,14 +408,14 @@ class Cp_search {
 		$nonsense = array('unauthorized_access', 'none', 'all', 'open', 'closed', 'and_more', 'install', 'uninstall', 'add', 'edit', 'delete');
 		
 		$langs = array();
-		$path = PATH_CP_THEME.$this->EE->config->item('cp_theme').'/'.$view.EXT;
+		$path = PATH_CP_THEME.$this->EE->config->item('cp_theme').'/'.$view.'.php';
 		
 		if ( ! file_exists($path))
 		{
 			return $langs;
 		}
 		
-		$view = str_replace(EXT, '', $view);
+		$view = str_replace('.php', '', $view);
 		$view = file_get_contents($path);
 		
 		if (preg_match_all('#'.preg_quote('lang(').'(\042|\047)([^\\1]*?)\\1#', $view, $matches))

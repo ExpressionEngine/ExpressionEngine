@@ -7710,7 +7710,7 @@ class Channel {
 			return $this->EE->output->fatal_error($this->EE->lang->line('must_be_logged_in'));
 		}
 		
-		$class_path = PATH_MOD.'emoticon/emoticons'.EXT;
+		$class_path = PATH_MOD.'emoticon/emoticons.php';
 		
 		if ( ! is_file($class_path) OR ! @include_once($class_path))
 		{

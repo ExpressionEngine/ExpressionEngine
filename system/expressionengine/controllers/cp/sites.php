@@ -390,7 +390,7 @@ class Sites extends CI_Controller {
 	
 	function _general_error($str)
 	{
-		if ( ! file_exists(APPPATH.'language/'.$this->config->item('deft_lang').'/email_data'.EXT))
+		if ( ! file_exists(APPPATH.'language/'.$this->config->item('deft_lang').'/email_data.php'))
 		{
 			$this->form_validation->set_message('_general_error', lang('unable_to_locate_specialty'));
 			return FALSE;
@@ -431,13 +431,13 @@ class Sites extends CI_Controller {
 		$error = array();
 		if ($edit == FALSE)
 		{
-			if ( ! file_exists(APPPATH.'language/'.$this->config->item('deft_lang').'/email_data'.EXT))
+			if ( ! file_exists(APPPATH.'language/'.$this->config->item('deft_lang').'/email_data.php'))
 			{
 				$error[] = lang('unable_to_locate_specialty');
 			}
 			else
 			{
-				require(APPPATH.'language/'.$this->config->item('deft_lang').'/email_data'.EXT);
+				require(APPPATH.'language/'.$this->config->item('deft_lang').'/email_data.php');
 			}
 		}
   

@@ -2485,7 +2485,7 @@ DOH;
 		
 		if ( ! class_exists('Html_buttons'))
 		{
-			if (include_once(APPPATH.'libraries/Html_buttons'.EXT))
+			if (include_once(APPPATH.'libraries/Html_buttons.php'))
 			{
 				$BUTT = new EE_Html_buttons();
 				$button_include = $BUTT->create_buttons();
@@ -2854,7 +2854,7 @@ DOH;
 	{
 		if ( ! class_exists('EE_Messages_send'))
 		{
-			require APPPATH.'libraries/Messages_send'.EXT;
+			require APPPATH.'libraries/Messages_send.php';
 		}
 		
 		$MS = new EE_Messages_send();
@@ -4560,13 +4560,13 @@ EOT;
 	{
 		$r = '';
 		
-		if ( ! is_file(PATH_MOD.'emoticon/emoticons'.EXT))
+		if ( ! is_file(PATH_MOD.'emoticon/emoticons.php'))
 		{
 			return $r;		
 		}
 		else
 		{
-			require PATH_MOD.'emoticon/emoticons'.EXT;
+			require PATH_MOD.'emoticon/emoticons.php';
 		}
 		
 		if ( ! is_array($smileys))
@@ -4628,7 +4628,7 @@ EOT;
 	{
 		if ( ! class_exists('EE_Spellcheck'))
 		{
-			require APPPATH.'libraries/Spellcheck'.EXT; 
+			require APPPATH.'libraries/Spellcheck.php'; 
 		}
 		
 		return EE_Spellcheck::iframe();
@@ -4643,7 +4643,7 @@ EOT;
 	{
 		if ( ! class_exists('EE_Spellcheck'))
 		{
-			require APPPATH.'libraries/Spellcheck'.EXT; 
+			require APPPATH.'libraries/Spellcheck.php'; 
 		}
 		
 		return EE_Spellcheck::check();
@@ -4658,7 +4658,7 @@ EOT;
 	{
 		if ( ! class_exists('EE_Spellcheck'))
 		{
-			require APPPATH.'libraries/Spellcheck'.EXT;
+			require APPPATH.'libraries/Spellcheck.php';
 		}
 		
 		$SPELL = new EE_Spellcheck();

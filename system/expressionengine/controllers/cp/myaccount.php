@@ -137,7 +137,7 @@ class MyAccount extends CI_Controller {
 		{
 			if ( ! class_exists('EE_Messages'))
 			{
-				require APPPATH.'libraries/Messages'.EXT;
+				require APPPATH.'libraries/Messages.php';
 			}
 
 			$MESS = new EE_Messages;
@@ -489,7 +489,7 @@ class MyAccount extends CI_Controller {
 		//	Validate submitted data
 		if ( ! class_exists('EE_Validate'))
 		{
-			require APPPATH.'libraries/Validate'.EXT;
+			require APPPATH.'libraries/Validate.php';
 		}
 
 		$this->VAL = new EE_Validate(
@@ -665,7 +665,7 @@ class MyAccount extends CI_Controller {
 
 		if ( ! class_exists('EE_Validate'))
 		{
-			require APPPATH.'libraries/Validate'.EXT;
+			require APPPATH.'libraries/Validate.php';
 		}
 
 		// Fetch member data
@@ -1563,11 +1563,9 @@ class MyAccount extends CI_Controller {
 		else
 		{
 			// We already grab this data for the sidebar, so we'll use those values
-			// var_dump($this->session);
-			
-			$cur_avatar_url = $this->session->cache['cp_sidebar']['cp_avatar_path'];
-			$avatar_width	= $this->session->cache['cp_sidebar']['cp_avatar_width'];
-			$avatar_height	= $this->session->cache['cp_sidebar']['cp_avatar_height'];
+			$cur_avatar_url = $this->session->cache('cp_sidebar', 'cp_avatar_path');
+			$avatar_width	= $this->session->cache('cp_sidebar', 'cp_avatar_width');
+			$avatar_height	= $this->session->cache('cp_sidebar', 'cp_avatar_height');
 			
 			if ( ! $cur_avatar_url)
 			{
@@ -2514,7 +2512,7 @@ class MyAccount extends CI_Controller {
 
 		if ( ! class_exists('EE_Messages'))
 		{
-			require APPPATH.'libraries/Messages'.EXT;
+			require APPPATH.'libraries/Messages.php';
 		}
 
 		$MESS = new EE_Messages;

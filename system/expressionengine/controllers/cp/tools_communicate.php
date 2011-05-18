@@ -41,7 +41,7 @@ class Tools_communicate extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}		
 		
-		if (file_exists(PATH_MOD.'mailinglist/mod.mailinglist'.EXT) && $this->db->table_exists($this->db->dbprefix.'mailing_lists') === TRUE)
+		if (file_exists(PATH_MOD.'mailinglist/mod.mailinglist.php') && $this->db->table_exists($this->db->dbprefix.'mailing_lists') === TRUE)
 		{
 			$this->mailinglist_exists = TRUE;
 		}

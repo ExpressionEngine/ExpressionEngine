@@ -67,7 +67,7 @@ class EE_Lang extends CI_Lang {
 		$deft_lang = ( ! isset($config['language'])) ? 'english' : $config['language'];
 		
 		// Sec.ur.ity code.  ::sigh::
-		$package = ($package == '') ? $EE->security->sanitize_filename(str_replace(array('lang.', EXT), '', $which)) : $EE->security->sanitize_filename($package);
+		$package = ($package == '') ? $EE->security->sanitize_filename(str_replace(array('lang.', '.php'), '', $which)) : $EE->security->sanitize_filename($package);
 		$which = str_replace('lang.', '', $which);
 		$this->user_lang = $EE->security->sanitize_filename($this->user_lang);
 	
@@ -110,14 +110,14 @@ class EE_Lang extends CI_Lang {
 	{
 		static $deft_lang;
 		
-		$langfile = str_replace(EXT, '', $langfile);
+		$langfile = str_replace('.php', '', $langfile);
 
 		if ($add_suffix == TRUE)
 		{
 			$langfile = str_replace('_lang.', '', $langfile).'_lang';
 		}
 
-		$langfile .= EXT;
+		$langfile .= '.php';
 
 		if (in_array($langfile, $this->is_loaded, TRUE))
 		{
@@ -212,20 +212,6 @@ class EE_Lang extends CI_Lang {
 			$EE =& get_instance();
 		
 			$line = ( ! isset($this->language[$which])) ? $which : $this->language[$which];					
-			
-			/* Deprecated
-			$word_sub = ($EE->config->item('channel_nomenclature') != '' AND $EE->config->item('channel_nomenclature') != "channel") ? $EE->config->item('channel_nomenclature') : '';
-			
-			if ($word_sub != '')
-			{
-				$line = preg_replace("/metaweblog/i", "Tr8Vc345s0lmsO", $line);
-				$line = str_replace('"channel"', 'Ghr77deCdje012', $line);
-				$line = str_replace('channel', strtolower($word_sub), $line);
-				$line = str_replace('Channel', ucfirst($word_sub),	$line);
-				$line = str_replace("Tr8Vc345s0lmsO", 'Metaweblog', $line);
-				$line = str_replace("Ghr77deCdje012", '"channel"', $line);
-			}
-			*/
 			
 			if ($label != '')
 			{

@@ -304,9 +304,6 @@ $lang = array(
 'required_fields' =>
 'Indicates required fields',
 
-'please_consult_manual' => 
-'Please consult the user guide.',
-
 'login' => 
 'Login',
 

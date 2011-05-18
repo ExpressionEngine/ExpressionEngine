@@ -37,12 +37,6 @@ class Addons_accessories extends CI_Controller {
 	{
 		parent::__construct();
 		
-		// make sure the files have the right extension for matching
-		for ($i = 0, $tot = count($this->accessories->ignored_controllers); $i < $tot; $i++)
-		{
-			$this->accessories->ignored_controllers[$i] = str_replace('.php', EXT, $this->accessories->ignored_controllers[$i]);
-		}
-		
 		$this->human_names = $this->_fetch_human_names();
 		
 		$this->load->library('addons');
@@ -511,7 +505,7 @@ class Addons_accessories extends CI_Controller {
 				continue;
 			}
 
-			$file = str_replace(EXT, '', $file);
+			$file = str_replace('.php', '', $file);
 			$name = str_replace('_', ' - ', $file);
 			$data['controllers'][$file] = ucwords($name);
 		}

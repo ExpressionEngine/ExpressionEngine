@@ -29,7 +29,6 @@ class EE_Core {
 
 	/**
 	 * Constructor
-	 *
 	 */	
 	function __construct()
 	{
@@ -109,39 +108,22 @@ class EE_Core {
 			}
 		}
 		
-		/*
-		 * -----------------------------------------------------------------
-		 *  Load Security Library
-		 * -----------------------------------------------------------------
-		 */		
+		// Load Security Library	
 		$this->EE->load->library('security');
 
-		/*
-		 * -----------------------------------------------------------------
-		 *  Load DB and set DB preferences
-		 * -----------------------------------------------------------------
-		 */
+		// Load DB and set DB preferences
 		$this->EE->load->database();
 		$this->EE->db->swap_pre 	= 'exp_';
 		$this->EE->db->db_debug 	= FALSE;
 	
-		//  Note enable_db_caching is a per site setting specified in EE_Config.php
-				
-		/*
-		 * -----------------------------------------------------------------
-		 *  If debug is on we enable the profiler and DB debug
-		 * -----------------------------------------------------------------
-		 */
+		// Note enable_db_caching is a per site setting specified in EE_Config.php
+		// If debug is on we enable the profiler and DB debug
 		if (DEBUG == 1 OR $this->EE->config->item('debug') == 2)
 		{
 			$this->_enable_debugging();
 		}
 		
-		/*
-		 * -----------------------------------------------------------------
-		 *  Assign Site prefs now that the DB is fully loaded
-		 * -----------------------------------------------------------------
-		 */
+		// Assign Site prefs now that the DB is fully loaded
 		if ($this->EE->config->item('site_name') != '')
 		{
 			$this->EE->config->set_item('site_name', preg_replace('/[^a-z0-9\-\_]/i', '', $this->EE->config->item('site_name')));
@@ -167,131 +149,110 @@ class EE_Core {
 		}
 		
 
-		// this look backwards, but QUERY_MARKER is only used where we MUST have a ?, and do not want to double up
+		// this look backwards, but QUERY_MARKER is only used where we MUST 
+		// have a ?, and do not want to double up
 		// question marks on sites who are forcing query strings
 		define('QUERY_MARKER', ($this->EE->config->item('force_query_string') == 'y') ? '' : '?');
 
 		$last_site_id = $this->EE->input->cookie('cp_last_site_id');
 
-		if (REQ == 'CP' && ! empty($last_site_id) && is_numeric($last_site_id) && $last_site_id != $this->EE->config->item('site_id'))
+		if (REQ == 'CP' && ! empty($last_site_id) && 
+			is_numeric($last_site_id) && 
+			$last_site_id != $this->EE->config->item('site_id'))
 		{
 			$this->EE->config->site_prefs('', $last_site_id);
 		}
 		
-		/*
-		 * -------------------------------------------------------------------
-		 *  This allows CI compatibility
-		 * -------------------------------------------------------------------
-		 */
-		 
-		 if ($this->EE->config->item('base_url') == FALSE)
-		 {
-		 	$this->EE->config->set_item('base_url', $this->EE->config->item('site_url'));
-		 }
-		 
-		 if ($this->EE->config->item('index_page') == FALSE)
-		 {
-		 	$this->EE->config->set_item('index_page', $this->EE->config->item('site_index'));
-		 }
+		// This allows CI compatibility		 
+		if ($this->EE->config->item('base_url') == FALSE)
+		{
+			$this->EE->config->set_item('base_url', $this->EE->config->item('site_url'));
+		}
+
+		if ($this->EE->config->item('index_page') == FALSE)
+		{
+			$this->EE->config->set_item('index_page', $this->EE->config->item('site_index'));
+		}
 			
-		/*
-		 * -------------------------------------------------------------------
-		 *  Set the path to the "themes" folder
-		 * -------------------------------------------------------------------
-		 */
-			if ($this->EE->config->item('theme_folder_path') !== FALSE && $this->EE->config->item('theme_folder_path') != '')
+		// Set the path to the "themes" folder
+		if ($this->EE->config->item('theme_folder_path') !== FALSE && 
+			$this->EE->config->item('theme_folder_path') != '')
+		{
+			$theme_path = preg_replace("#/+#", "/", $this->EE->config->item('theme_folder_path').'/');
+		}
+		else
+		{
+			$theme_path = substr(APPPATH, 0, - strlen(SYSDIR.'/expressionengine/')).'themes/';
+			$theme_path = preg_replace("#/+#", "/", $theme_path);
+		}
+
+		// Maybe the site has been moved.  
+		// Let's try some basic autodiscovery if config items are set
+		// But the directory does not exist.  
+		if ( ! is_dir($theme_path))
+		{
+			if (is_dir(FCPATH.'../themes/')) // We're in the system directory
 			{
-				$theme_path = preg_replace("#/+#", "/", $this->EE->config->item('theme_folder_path').'/');
+				$theme_path = FCPATH.'../themes/';
 			}
-			else
+			elseif (is_dir(FCPATH.'themes/')) // Front end.
 			{
-				$theme_path = substr(APPPATH, 0, - strlen(SYSDIR.'/expressionengine/')).'themes/';
-				$theme_path = preg_replace("#/+#", "/", $theme_path);
+				$theme_path = FCPATH.'themes/';
 			}
+		}
+		
+		define('PATH_THEMES', 		$theme_path);	
+		define('PATH_MBR_THEMES',	PATH_THEMES.'profile_themes/'); 
+		define('PATH_CP_GBL_IMG', 	$this->EE->config->slash_item('theme_folder_url').'cp_global_images/');
+		unset($theme_path);
 
-			// Maybe the site has been moved.  
-			// Let's try some basic autodiscovery if config items are set
-			// But the directory does not exist.  
-			if ( ! is_dir($theme_path))
-			{
-				if (is_dir(FCPATH.'../themes/')) // We're in the system directory
-				{
-					$theme_path = FCPATH.'../themes/';
-				}
-				elseif (is_dir(FCPATH.'themes/')) // Front end.
-				{
-					$theme_path = FCPATH.'themes/';
-				}
-			}
-			
-			define('PATH_THEMES', 		$theme_path);	
-			define('PATH_MBR_THEMES',	PATH_THEMES.'profile_themes/'); 
-			define('PATH_CP_GBL_IMG', 	$this->EE->config->slash_item('theme_folder_url').'cp_global_images/');
-			unset($theme_path);
+		// Is this a stylesheet request?  If so, we're done.
+		if (isset($_GET['css']) OR (isset($_GET['ACT']) && $_GET['ACT'] == 'css')) 
+		{
+			$this->EE->load->library('stylesheet');
+			$this->EE->stylesheet->request_css_template();
+			exit;
+		}
 
-			/*
-			 * -----------------------------------------------------------------
-			 *  Is this a stylesheet request?  If so, we're done.
-			 * -----------------------------------------------------------------
-			 */
-			if (isset($_GET['css']) OR (isset($_GET['ACT']) && $_GET['ACT'] == 'css')) 
-			{
-				$this->EE->load->library('stylesheet');
-				$this->EE->stylesheet->request_css_template();
-				exit;
-			}
+		// Throttle and Blacklist Check
+		if (REQ != 'CP')
+		{
+			$this->EE->load->library('throttling');
+			$this->EE->throttling->run();
 
-			/*
-			 * -------------------------------------------------------------------
-			 *  Throttle and Blacklist Check
-			 * -------------------------------------------------------------------
-			 */
+			$this->EE->load->library('blacklist');
+			$this->EE->blacklist->_check_blacklist();
 
-			if (REQ != 'CP')
-			{
-				$this->EE->load->library('throttling');
-				$this->EE->throttling->run();
+			$this->EE->load->library('file_integrity');
+			$this->EE->file_integrity->create_bootstrap_checksum();
+		}
 
-				$this->EE->load->library('blacklist');
-				$this->EE->blacklist->_check_blacklist();
+		// Load the remaining base classes
+		$this->EE->load->library('functions');
+		$this->EE->load->library('extensions');
+		
+		if (function_exists('date_default_timezone_set'))
+		{
+			date_default_timezone_set(date_default_timezone_get());
+		}
+		
+		$this->EE->load->library('localize');
+		$this->EE->load->library('session');
 
-				$this->EE->load->library('file_integrity');
-				$this->EE->file_integrity->create_bootstrap_checksum();
-			}
 
-		/*
-		 * -----------------------------------------------------------------
-		 *  Load the remaining base classes
-		 * -----------------------------------------------------------------
-		 */
-			$this->EE->load->library('functions');
-			$this->EE->load->library('extensions');
-			
-			if (function_exists('date_default_timezone_set'))
-			{
-				date_default_timezone_set(date_default_timezone_get());
-			}
-			
-			$this->EE->load->library('localize');
-			$this->EE->load->library('session');
+		// Load the "core" language file - must happen after the session is loaded
+		$this->EE->lang->loadfile('core');
 
-			// Load the "core" language file - must happen after the session is loaded
-			$this->EE->lang->loadfile('core');
-
-			// Remap pMachine Pro URLs if needed
-			// deprecated
-			// $this->EE->functions->remap_pm_urls();
-	
-			// Now that we have a session we'll enable debugging if the user is a super admin
-			if ($this->EE->config->item('debug') == 1 AND $this->EE->session->userdata('group_id') == 1)
-			{
-				$this->_enable_debugging();
-			}
-			
-			if ($this->EE->session->userdata('group_id') == 1 && $this->EE->config->item('show_profiler') == 'y')
-			{
-				$this->EE->output->enable_profiler(TRUE);
-			}
+		// Now that we have a session we'll enable debugging if the user is a super admin
+		if ($this->EE->config->item('debug') == 1 AND $this->EE->session->userdata('group_id') == 1)
+		{
+			$this->_enable_debugging();
+		}
+		
+		if ($this->EE->session->userdata('group_id') == 1 && $this->EE->config->item('show_profiler') == 'y')
+		{
+			$this->EE->output->enable_profiler(TRUE);
+		}
 	
 		/*
 		 * -----------------------------------------------------------------
@@ -302,72 +263,59 @@ class EE_Core {
 		 * -----------------------------------------------------------------
 		 */
 
-			$this->EE->input->filter_get_data(REQ);
+		$this->EE->input->filter_get_data(REQ);
 			
-		/*
-		 * -----------------------------------------------------------------
-		 *  Update system stats
-		 * -----------------------------------------------------------------
-		 */
-
-			$this->EE->load->library('stats');
-		 		
-			if (REQ == 'PAGE' && $this->EE->config->item('enable_online_user_tracking') != 'n')
-			{
-				$this->EE->stats->update_stats();
-			}
+		// Update system stats
+		$this->EE->load->library('stats');
+	 		
+		if (REQ == 'PAGE' && $this->EE->config->item('enable_online_user_tracking') != 'n')
+		{
+			$this->EE->stats->update_stats();
+		}
 		
-		/*
-		 * -----------------------------------------------------------------
-		 *  Load up any Snippets
-		 * -----------------------------------------------------------------
-		 */
-			if (REQ == 'ACTION' OR REQ == 'PAGE')
+		// Load up any Snippets
+		if (REQ == 'ACTION' OR REQ == 'PAGE')
+		{
+			// load up any Snippets
+			$this->EE->db->select('snippet_name, snippet_contents');
+			$this->EE->db->where('(site_id = '.$this->EE->db->escape_str($this->EE->config->item('site_id')).' OR site_id = 0)');
+			$fresh = $this->EE->db->get('snippets');
+
+			if ($fresh->num_rows() > 0)
 			{
-				// load up any Snippets
-				$this->EE->db->select('snippet_name, snippet_contents');
-				$this->EE->db->where('(site_id = '.$this->EE->db->escape_str($this->EE->config->item('site_id')).' OR site_id = 0)');
-				$fresh = $this->EE->db->get('snippets');
+				$snippets = array();
 
-				if ($fresh->num_rows() > 0)
+				foreach ($fresh->result() as $var)
 				{
-					$snippets = array();
-
-					foreach ($fresh->result() as $var)
-					{
-						$snippets[$var->snippet_name] = $var->snippet_contents;
-					}
+					$snippets[$var->snippet_name] = $var->snippet_contents;
+				}
 
 
-					// Thanks to @litzinger for the code suggestion to parse 
-					// global vars in snippets...here we go.
+				// Thanks to @litzinger for the code suggestion to parse 
+				// global vars in snippets...here we go.
 
-					$var_keys = array();
+				$var_keys = array();
 
-					foreach ($this->EE->config->_global_vars as $k => $v)
-					{
-						$var_keys[] = LD.$k.RD;
-					}
+				foreach ($this->EE->config->_global_vars as $k => $v)
+				{
+					$var_keys[] = LD.$k.RD;
+				}
 
-					foreach ($snippets as $name => $content)
-					{
-						$snippets[$name] = str_replace($var_keys, 
-									array_values($this->EE->config->_global_vars), $content);
-					}
+				foreach ($snippets as $name => $content)
+				{
+					$snippets[$name] = str_replace($var_keys, 
+								array_values($this->EE->config->_global_vars), $content);
+				}
 
-					$this->EE->config->_global_vars = $this->EE->config->_global_vars + $snippets; 
+				$this->EE->config->_global_vars = $this->EE->config->_global_vars + $snippets; 
 
-					unset($snippets);
-					unset($fresh);
-					unset($var_keys);
-				}				
-			}
+				unset($snippets);
+				unset($fresh);
+				unset($var_keys);
+			}				
+		}
 			
-		/*
-		 * -----------------------------------------------------------------
-		 *  If it's a CP request we will initialize it
-		 * -----------------------------------------------------------------
-		 */
+		// If it's a CP request we will initialize it
 		if (REQ == 'CP')
 		{
 			$this->_initialize_cp();
@@ -458,7 +406,9 @@ class EE_Core {
 
 		// Does an admin session exist?
 		// Only the "login" class can be accessed when there isn't an admin session		
-		if ($this->EE->session->userdata('admin_sess') == 0 && $this->EE->router->fetch_class() != 'login' && $this->EE->router->fetch_class() != 'css')
+		if ($this->EE->session->userdata('admin_sess') == 0 && 
+			$this->EE->router->fetch_class() != 'login' && 
+			$this->EE->router->fetch_class() != 'css')
 		{
 			// has their session Timed out and they are requesting a page?
 			// Grab the URL, base64_encode it and send them to the login screen.
@@ -530,7 +480,7 @@ class EE_Core {
 	 */	
 	final public function generate_action($can_view_system = FALSE)
 	{
-		require APPPATH.'libraries/Actions'.EXT;    
+		require APPPATH.'libraries/Actions.php';    
 		$ACT = new EE_Actions($can_view_system);
 	}	
 	
@@ -565,7 +515,8 @@ class EE_Core {
 		$profile_trigger = $this->EE->config->item('profile_trigger');
 		
 		
-		if ( ! IS_FREELANCER && $forum_trigger && in_array($this->EE->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY)))
+		if ( ! IS_FREELANCER && $forum_trigger && 
+			in_array($this->EE->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY)))
 		{
 			require PATH_MOD.'forum/mod.forum.php';
 			$FRM = new Forum();
@@ -698,10 +649,7 @@ class EE_Core {
 			$this->EE->functions->clear_spam_hashes();
 			$this->EE->functions->clear_caching('all');
 		}
-		
 	}	
-	
-	
 }
 
 /* End of file Core.php */

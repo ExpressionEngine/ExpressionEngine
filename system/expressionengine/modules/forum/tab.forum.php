@@ -321,8 +321,8 @@ class Forum_tab {
 				// Update the forum stats
 				if ( ! class_exists('Forum'))
 				{
-					require PATH_MOD.'forum/mod.forum'.EXT;
-					require PATH_MOD.'forum/mod.forum_core'.EXT;
+					require PATH_MOD.'forum/mod.forum.php';
+					require PATH_MOD.'forum/mod.forum_core.php';
 				}
 				
 				Forum_Core::_update_post_stats($params['mod_data']['forum_id']);
