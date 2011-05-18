@@ -49,7 +49,7 @@ class Updater {
 		
 		$this->_update_session_table();
 
-		$this->_update_members_table();
+		// $this->_update_members_table();
 
 		return TRUE;
 	}
@@ -91,18 +91,18 @@ class Updater {
 	 * table to be VARCHAR(64) so we can use hash('sha256', 'val') for the
 	 * password hashing scheme.
 	 */
-	private function _update_members_table()
-	{
-		$field = array(
-			'password'		=> array(
-				'name'			=> 'password',
-				'type'			=> 'VARCHAR',
-				'constraint'	=> 64
-			)
-		);
+	// private function _update_members_table()
+	// {
+	// 	$field = array(
+	// 		'password'		=> array(
+	// 			'name'			=> 'password',
+	// 			'type'			=> 'VARCHAR',
+	// 			'constraint'	=> 64
+	// 		)
+	// 	);
 
-		$this->EE->dbforge->modify_column('members', $field);
-	}
+	// 	$this->EE->dbforge->modify_column('members', $field);
+	// }
 
 	// --------------------------------------------------------------------
 }
