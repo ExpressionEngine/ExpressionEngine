@@ -480,7 +480,7 @@ class EE_Core {
 	 */	
 	final public function generate_action($can_view_system = FALSE)
 	{
-		require APPPATH.'libraries/Actions'.EXT;    
+		require APPPATH.'libraries/Actions.php';    
 		$ACT = new EE_Actions($can_view_system);
 	}	
 	
@@ -515,7 +515,8 @@ class EE_Core {
 		$profile_trigger = $this->EE->config->item('profile_trigger');
 		
 		
-		if ( ! IS_FREELANCER && $forum_trigger && in_array($this->EE->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY)))
+		if ( ! IS_FREELANCER && $forum_trigger && 
+			in_array($this->EE->uri->segment(1), preg_split('/\|/', $forum_trigger, -1, PREG_SPLIT_NO_EMPTY)))
 		{
 			require PATH_MOD.'forum/mod.forum.php';
 			$FRM = new Forum();

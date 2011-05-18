@@ -904,7 +904,7 @@ class EE_Functions {
 		}
 		else
 		{
-			if ( ! @include(APPPATH.'language/'.$user_lang.'/email_data'.EXT))
+			if ( ! @include(APPPATH.'language/'.$user_lang.'/email_data.php'))
 			{
 				return array('title' => $query->row('data_title') , 'data' => $query->row('template_data') );
 			}
@@ -937,7 +937,7 @@ class EE_Functions {
 	 */
 	function encoding_menu($name, $selected = '')
 	{
-		$file = APPPATH.'config/languages'.EXT;	
+		$file = APPPATH.'config/languages.php';	
 
 		if ( ! file_exists($file)) 
 		{
@@ -1731,7 +1731,7 @@ class EE_Functions {
 			return FALSE;
 		}
 		
-		if ( ! file_exists(APPPATH.'config/captcha'.EXT))
+		if ( ! file_exists(APPPATH.'config/captcha.php'))
 		{
 			return FALSE;
 		}	
@@ -1784,7 +1784,7 @@ class EE_Functions {
 		// Fetch and insert word	
 		if ($old_word == '')
 		{
-			require APPPATH.'config/captcha'.EXT;
+			require APPPATH.'config/captcha.php';
 			$word = $words[array_rand($words)];
 			
 			if ($this->EE->config->item('captcha_rand') == 'y')

@@ -137,7 +137,7 @@ class MyAccount extends CI_Controller {
 		{
 			if ( ! class_exists('EE_Messages'))
 			{
-				require APPPATH.'libraries/Messages'.EXT;
+				require APPPATH.'libraries/Messages.php';
 			}
 
 			$MESS = new EE_Messages;
@@ -489,7 +489,7 @@ class MyAccount extends CI_Controller {
 		//	Validate submitted data
 		if ( ! class_exists('EE_Validate'))
 		{
-			require APPPATH.'libraries/Validate'.EXT;
+			require APPPATH.'libraries/Validate.php';
 		}
 
 		$this->VAL = new EE_Validate(
@@ -665,7 +665,7 @@ class MyAccount extends CI_Controller {
 
 		if ( ! class_exists('EE_Validate'))
 		{
-			require APPPATH.'libraries/Validate'.EXT;
+			require APPPATH.'libraries/Validate.php';
 		}
 
 		// Fetch member data
@@ -2512,7 +2512,7 @@ class MyAccount extends CI_Controller {
 
 		if ( ! class_exists('EE_Messages'))
 		{
-			require APPPATH.'libraries/Messages'.EXT;
+			require APPPATH.'libraries/Messages.php';
 		}
 
 		$MESS = new EE_Messages;

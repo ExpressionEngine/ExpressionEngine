@@ -286,9 +286,9 @@ class Tools_model extends CI_Model {
 		$this->load->helper('file');
 		
 		$path = APPPATH.'language/'.$language_directory;
-		$ext_len = strlen(EXT);
+		$ext_len = strlen('.php');
 
-		$filename_end = '_lang'.EXT;
+		$filename_end = '_lang.php';
 		$filename_end_len = strlen($filename_end);
 
 		$languages = array();
@@ -302,7 +302,7 @@ class Tools_model extends CI_Model {
 				continue; 
 			}
 			
-			if (substr($file, -$filename_end_len) && substr($file, -$ext_len) == EXT)
+			if (substr($file, -$filename_end_len) && substr($file, -$ext_len) == '.php')
 			{
 				$languages[] = $file;
 			}

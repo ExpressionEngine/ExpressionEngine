@@ -140,7 +140,7 @@ class Forum {
 		}
 		else
 		{
-			require_once PATH_MOD.'forum/mod.forum_core'.EXT;
+			require_once PATH_MOD.'forum/mod.forum_core.php';
 
 			$this->EE->FRM_CORE = new Forum_Core();
 			
@@ -782,7 +782,7 @@ class Forum {
 		$template = $this->load_element('member_page');
 		
 		$this->mbr_class_loaded = TRUE;
-		include_once PATH_MOD.'member/mod.member'.EXT;	
+		include_once PATH_MOD.'member/mod.member.php';	
 		
 		$this->EE->MBR = new Member();
 
@@ -2144,7 +2144,7 @@ class Forum {
 		
 		if ( ! class_exists('EE_Spellcheck'))
 		{
-			require APPPATH.'libraries/Spellcheck'.EXT; 
+			require APPPATH.'libraries/Spellcheck.php'; 
 		}
 
 		return EE_Spellcheck::iframe();
@@ -2159,7 +2159,7 @@ class Forum {
 	{
 		if ( ! class_exists('EE_Spellcheck'))
 		{
-			require APPPATH.'libraries/Spellcheck'.EXT; 
+			require APPPATH.'libraries/Spellcheck.php'; 
 		}
 		
 		return EE_Spellcheck::check();
@@ -2176,7 +2176,7 @@ class Forum {
 		
 		if ( ! class_exists('EE_Spellcheck'))
 		{
-			require APPPATH.'libraries/Spellcheck'.EXT;
+			require APPPATH.'libraries/Spellcheck.php';
 		}
 		
 		if ($this->SPELL === FALSE)

@@ -23,12 +23,6 @@
  * @link		http://expressionengine.com
  */
 
-if ( ! defined('EXT'))
-{
-	exit('Invalid file request');
-}
-
-
 class Simple_commerce {
 
 	var $return_data		= '';

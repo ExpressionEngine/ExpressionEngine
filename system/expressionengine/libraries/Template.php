@@ -1079,11 +1079,11 @@ class EE_Template {
 			{
 				if (in_array($plugin ,$this->EE->core->native_plugins))
 				{
-					require_once PATH_PI."pi.{$plugin}".EXT;
+					require_once PATH_PI."pi.{$plugin}.php";
 				}
 				else
 				{
-					require_once PATH_THIRD."{$plugin}/pi.{$plugin}".EXT;
+					require_once PATH_THIRD."{$plugin}/pi.{$plugin}.php";
 				}
 			}
 		}
@@ -1095,11 +1095,11 @@ class EE_Template {
 			{
 				if (in_array($module, $this->EE->core->native_modules))
 				{
-					require_once PATH_MOD."{$module}/mod.{$module}".EXT;
+					require_once PATH_MOD."{$module}/mod.{$module}.php";
 				}
 				else
 				{
-					require_once PATH_THIRD."{$module}/mod.{$module}".EXT;
+					require_once PATH_THIRD."{$module}/mod.{$module}.php";
 				}
 			}			
 		}
@@ -2702,7 +2702,7 @@ class EE_Template {
 	{
 		$this->EE->load->helper('file');
 		$this->EE->load->helper('directory');
-		$ext_len = strlen(EXT);
+		$ext_len = strlen('.php');
 		$pattern = 'bas'.'e'.'6'.'4_d'.'ecode';
 		
 		// first get first party modules
@@ -2727,8 +2727,10 @@ class EE_Template {
 		{
 			foreach ($map as $file)
 			{
-				if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen('pi.'.EXT)
-					&& in_array(substr($file, 3, -$ext_len), $this->EE->core->native_plugins))
+				if (strncasecmp($file, 'pi.', 3) == 0 && 
+					substr($file, -$ext_len) == '.php' && 
+					strlen($file) > strlen('pi..php') && 
+					in_array(substr($file, 3, -$ext_len), $this->EE->core->native_plugins))
 				{							
 					$this->plugins[] = substr($file, 3, -$ext_len);
 				}				
@@ -2756,7 +2758,9 @@ class EE_Template {
 					}
 					
 					// we gots a module?
-					if (strncasecmp($file, 'mod.', 4) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen('mod.'.EXT))
+					if (strncasecmp($file, 'mod.', 4) == 0 && 
+						substr($file, -$ext_len) == '.php' && 
+						strlen($file) > strlen('mod..php'))
 					{
 						$file = substr($file, 4, -$ext_len);
 
@@ -2766,7 +2770,9 @@ class EE_Template {
 						}
 					}
 					// how abouts a plugin?
-					elseif (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen('pi.'.EXT))
+					elseif (strncasecmp($file, 'pi.', 3) == 0 && 
+							substr($file, -$ext_len) == '.php' && 
+							strlen($file) > strlen('pi..php'))
 					{							
 						$file = substr($file, 3, -$ext_len);
 
@@ -3155,7 +3161,7 @@ class EE_Template {
 		
 				if ( ! class_exists($class))
 				{
-					require PATH_MOD.$class.'/mod.'.$class.EXT;
+					require PATH_MOD.$class.'/mod.'.$class.'.php';
 				}
 						
 				$this->tagdata = $match[3][$i];
@@ -3195,7 +3201,7 @@ class EE_Template {
 			{
 				if ( ! class_exists('Channel'))
 				{
-					require PATH_MOD.'channel/mod.channel'.EXT;
+					require PATH_MOD.'channel/mod.channel.php';
 				}
 				
 				$this->tagdata = $match[2][$i];

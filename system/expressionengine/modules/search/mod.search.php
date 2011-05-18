@@ -196,7 +196,7 @@ class Search {
 			/**  Remove "ignored" words
 			/** ----------------------------------------*/
 		
-			if (( ! isset($_POST['exact_keyword']) OR $_POST['exact_keyword'] != 'y') && @include_once(APPPATH.'config/stopwords'.EXT))
+			if (( ! isset($_POST['exact_keyword']) OR $_POST['exact_keyword'] != 'y') && @include_once(APPPATH.'config/stopwords.php'))
 			{
 				$parts = explode('"', $this->keywords);
 				
@@ -1271,7 +1271,7 @@ class Search {
 		
 		if ( ! class_exists('Channel'))
 		{
-			require PATH_MOD.'channel/mod.channel'.EXT;
+			require PATH_MOD.'channel/mod.channel.php';
 		}
 		
 		unset($this->EE->TMPL->var_single['auto_path']);

@@ -325,9 +325,9 @@ class Addons_extensions extends CI_Controller {
 
 		if ( ! class_exists($class_name))
 		{
-			if (file_exists($ext_path.'ext.'.$name.EXT))
+			if (file_exists($ext_path.'ext.'.$name.'.php'))
 			{
-				@include_once($ext_path.'ext.'.$name.EXT);				
+				@include_once($ext_path.'ext.'.$name.'.php');				
 			}
 	
 			if ( ! class_exists($class_name))
@@ -534,10 +534,10 @@ class Addons_extensions extends CI_Controller {
 		if ( ! class_exists($class_name))
 		{
 		
-			if (file_exists($ext_path.'ext.'.$name.EXT))
+			if (file_exists($ext_path.'ext.'.$name.'.php'))
 			{
 
-				@include_once($ext_path.'ext.'.$name.EXT);				
+				@include_once($ext_path.'ext.'.$name.'.php');				
 			}
 
 			if ( ! class_exists($class_name)) return FALSE;

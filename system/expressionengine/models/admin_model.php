@@ -322,7 +322,7 @@ class Admin_model extends CI_Model {
 
 		if ( ! isset($encodings))
 		{
-			$file = APPPATH.'config/languages'.EXT; 
+			$file = APPPATH.'config/languages.php'; 
 
 			if ( ! file_exists($file)) 
 			{

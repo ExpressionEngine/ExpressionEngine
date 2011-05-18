@@ -294,7 +294,7 @@ class Member_register extends Member {
 		// Instantiate validation class
 		if ( ! class_exists('EE_Validate'))
 		{
-			require APPPATH.'libraries/Validate'.EXT;
+			require APPPATH.'libraries/Validate.php';
 		}
 
 		$VAL = new EE_Validate(
