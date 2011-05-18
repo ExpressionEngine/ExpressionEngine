@@ -958,6 +958,8 @@ class EE_Functions {
 	/**
 	 * Create Directory Map
 	 *
+	 * DEPRECATED IN 2.2
+	 *
 	 * @access	public
 	 * @param	string
 	 * @param	bool
@@ -1633,50 +1635,6 @@ class EE_Functions {
 		return $str;	
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Remap pMachine Pro URLs
-	 *
-	 *  Since pM URLs are different than EE URLs,
-	 *  for those who have migrated from pM we will
-	 *  check the URL formatting.  If the request is
-	 *  for a pMachine URL, we'll remap it to the new EE location
-	 *
-	 *  DEPRECATED in 2.0
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function remap_pm_urls()
-	{
-		if ($this->EE->config->item('remap_pm_urls') == 'y' AND $this->EE->config->item('remap_pm_dest') !== FALSE AND $this->EE->uri->uri_string != '')
-		{
-			$p_uri = ( ! isset($_GET['id'])) ? $this->EE->uri->uri_string : '/'.$_GET['id'].'/';
-			
-			if (preg_match('/^\/[0-9]{1,6}(?:\_[0-9]{1,4}){3}/', $p_uri))
-			{
-				$pentry_id = substr($p_uri, 1, (strpos($p_uri, '_')-1));
-			}
-			elseif (preg_match('/^\/P[0-9]{1,6}/', $p_uri))
-			{	
-				$p_uri = str_replace("/", "", $p_uri);
-				$pentry_id = substr($p_uri, 1);
-			}
-				
-			if (isset($pentry_id) AND $pentry_id != '')
-			{
-				$query = $this->EE->db->query("SELECT url_title FROM exp_channel_titles WHERE pentry_id = '".$this->EE->db->escape_str($pentry_id)."'");
-				
-				if ($query->num_rows() == 1)
-				{
-					$this->redirect($this->EE->config->slash_item('remap_pm_dest').$query->row('url_title') .'/');
-					exit;
-				}
-			}
-		}		
-	}
-	
 	// --------------------------------------------------------------------
 
 	/**

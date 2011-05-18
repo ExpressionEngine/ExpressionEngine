@@ -466,8 +466,6 @@ class EE_Config Extends CI_Config {
 								'enable_emoticons',
 								'emoticon_path',
 								'recount_batch_total',
-				// deprecated	'remap_pm_urls',
-				// deprecated	'remap_pm_dest',
 								'new_version_check',
 				// deprecated	'publish_tab_behavior',
 				// deprecated	'sites_tab_behavior',

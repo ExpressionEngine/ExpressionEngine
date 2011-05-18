@@ -66,11 +66,6 @@ class EE_Xmlrpc extends CI_Xmlrpc {
 	 */	 
     function weblogs_com_ping($server, $port=80, $name, $blog_url, $rss_url = '')
     {
-		if (stristr($server, 'ping.pmachine.com') !== FALSE)
-		{
-			$server = str_replace('ping.pmachine.com', 'ping.expressionengine.com', $server);
-		}
-		
 		$this->server($server, $port);
 		$this->timeout(5);
 		
