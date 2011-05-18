@@ -668,8 +668,6 @@ class Member_register extends Member {
 			$expire = 60*60*24*182;
 
 			$this->EE->functions->set_cookie($this->EE->session->c_expire , time()+$expire, $expire);
-			// $this->EE->functions->set_cookie($this->EE->session->c_uniqueid , $data['unique_id'], $expire);
-			// $this->EE->functions->set_cookie($this->EE->session->c_password , $data['password'],  $expire);
 
 			// Create a new session
 			if ($this->EE->config->item('user_session_type') == 'cs' OR 

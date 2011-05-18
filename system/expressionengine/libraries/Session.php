@@ -909,8 +909,6 @@ class EE_Session {
 			if ($this->EE->input->cookie($this->c_expire) > $now)
 			{ 
 				$this->EE->functions->set_cookie($this->c_expire , time()+$expire, $expire);
-				// $this->EE->functions->set_cookie($this->c_uniqueid , $this->EE->input->cookie($this->c_uniqueid), $expire);		
-				// $this->EE->functions->set_cookie($this->c_password , $this->EE->input->cookie($this->c_password), $expire);
 			}
 		}
 	}

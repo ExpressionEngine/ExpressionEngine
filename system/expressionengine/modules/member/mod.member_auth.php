@@ -364,11 +364,8 @@ class Member_auth extends Member {
 		$expire = ( ! isset($_POST['auto_login'])) ? '0' : 60*60*24*365;
 
 		$this->EE->functions->set_cookie($this->EE->session->c_expire , time()+$expire, $expire);
-		// $this->EE->functions->set_cookie($this->EE->session->c_uniqueid , $query->row('unique_id') , $expire);
-		// $this->EE->functions->set_cookie($this->EE->session->c_password , $password,  $expire);
 
 		// Does the user want to remain anonymous?
-
 		if ( ! $this->EE->input->post('anon'))
 		{
 			$this->EE->functions->set_cookie($this->EE->session->c_anon , 1,  $expire);
@@ -490,8 +487,6 @@ class Member_auth extends Member {
 		$this->EE->db->where('session_id', $this->EE->session->userdata('session_id'));
 		$this->EE->db->delete('sessions');
 
-		// $this->EE->functions->set_cookie($this->EE->session->c_uniqueid);
-		// $this->EE->functions->set_cookie($this->EE->session->c_password);
 		$this->EE->functions->set_cookie($this->EE->session->c_session);
 		$this->EE->functions->set_cookie($this->EE->session->c_expire);
 		$this->EE->functions->set_cookie($this->EE->session->c_anon);
