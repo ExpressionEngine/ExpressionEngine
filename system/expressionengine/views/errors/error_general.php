@@ -1,66 +1,105 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>Error</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<?php if (defined('BASE')):?>
-<link rel="stylesheet" href="<?php echo BASE.AMP.'C=css';?>" type="text/css" media="screen" title="Global Styles" charset="utf-8" />
-<!--[if lte IE 7]>
-<link rel="stylesheet" href="<?php echo BASE.AMP.'C=css'.AMP.'M=iefix';?>" type="text/css" media="screen" charset="utf-8" />
-<![endif]-->
-<?php endif;?>
+	<meta charset="utf-8">
+	<title>Error</title>
+	
+	<style type="text/css" media="screen">
+		html, body, h1, div {
+			margin:				0;
+			padding:			0;
+		}
 
-<style type="text/css">
+		body {
+			background-color:	#27343C;
+			font-family:		"Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+			text-align:			center;
+			font-size:			12px;
+		}
+		
+		#branding {
+			background:			#27343c url('../images/branding_bg.gif') top left repeat-x;
+			text-align:			right;
+			padding-right:		125px;
+		}
 
-body {
-    padding:0;
-    margin:0 auto;
+		#branding img {
+			border:				0;
+		}
 
-}
+		#error {
+			margin:				100px auto 0 auto;
+			overflow:			hidden;
+			text-align:			left;
+			width:				600px;
 
-#error_content  {
-    border:				#999 1px solid;
-    background:			#FFF;
-    padding:			20px 20px 12px 20px;
-    margin:				50px auto;
-    width:				80%;
-}
+			-webkit-border-radius: 3px;
+			-moz-border-radius:	3px;
+			border-radius:		3px;
 
-h1 {
-font-weight:		normal;
-font-size:			14px;
-color:				#990000;
-margin: 			0 0 4px 0;
-}
+			-webkit-box-shadow: 0 1px 3px #171E23;
+			-moz-box-shadow:	0 1px 3px #171E23;
+			box-shadow:			0 1px 3px #171E23;
+		}
 
-body, html {
-	background:		#27343C!important;
-}
+		#message {
+			background:			#e8e8e8;
+			color:				#444;
+			padding:			10px;
+			text-shadow:		0 1px 0 #fff;
+		}
 
-p {
-	margin:			15px 0;
-}
-<?php if (defined('BASE')):?>
-div#branding {
-    background:#27343C url(../themes/cp_themes/default/images/backgrounds_sprite.png) repeat-x scroll 0 0;
-    height:17px;
-    margin-bottom:5px;
-}
+		h1 {
+			color:				#ecf1f3;
+			padding:			10px;
+			font-size:			14px;
+			font-weight:		normal;
+			text-shadow:		0 1px 0 #000;
 
-div#branding a img {
-    outline:none;
-    border:none;
-    float:right;
-    margin-right:10%;
-}
-<?php endif; ?>
-</style>
+			border-top:			1px solid #DB2C38;
+			border-bottom:		1px solid #fff;
+
+			background:			#AE232C;
+			background:			-webkit-gradient(linear, 0 0, 0 100%, from(#C22731), to(#991F27));
+			background:			-moz-linear-gradient(#C22731, #991F27);
+		}
+
+		a:link, a:visited {
+			color:				#f62958;
+			text-decoration:	none;
+		}
+
+		a:hover {
+			color:				#ff5479;
+			text-decoration:	underline;
+		}
+
+		h1 a:link,
+		h1 a:visited {
+			font-size:			12px;
+			float:				right;
+			color:				inherit;
+			padding-top:		1px;
+			text-decoration:	underline;
+		}
+	</style>
+
 </head>
 <body>
-<?php if (defined('BASE')):?><div id="branding"></div><?php endif; ?>
 
-	<div id="error_content">
-		<h1><?php echo $heading; ?></h1>
-		<?php echo $message; ?>
+<div id="branding"><a href="http://expressionengine.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
+
+<div id="content">
+	<div id="error">	
+		<h1><?=$heading?><?=$homepage?></h1>
+
+		<div id="message">
+			<?=$message?>
+		</div>
+
 	</div>
+</div>
+
 </body>
 </html>
+
