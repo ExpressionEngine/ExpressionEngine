@@ -185,10 +185,13 @@ class Login extends CI_Controller {
 		{
 			$this->session->save_password_lockout($username);
 			
-			$this->output->send_ajax_response(array(
-				'messageType'	=> 'failure',
-				'message'		=> lang('credential_missmatch')
-			));
+			if (AJAX_REQUEST)
+			{
+				$this->output->send_ajax_response(array(
+					'messageType'	=> 'failure',
+					'message'		=> lang('credential_missmatch')
+				));
+			}
 			
 			$this->session->set_flashdata('message', lang('credential_missmatch'));
 			$this->functions->redirect(BASE.AMP.'C=login');
@@ -268,7 +271,7 @@ class Login extends CI_Controller {
 		}
 		
 		// Create a new session
-		$session_id = $this->session->create_new_session($request->member('member_id') , TRUE);
+		$session_id = $this->session->create_new_session($request->member('member_id'), TRUE);
 
 		/* -------------------------------------------
 		/* 'cp_member_login' hook.
@@ -284,7 +287,7 @@ class Login extends CI_Controller {
 				
 		// We'll manually add the username to the Session array so
 		// the LOG class can use it.
-		$this->session->userdata['username'] = $this->input->post('username');
+		$this->session->userdata['username'] = $username;
 		
 		$this->logger->log_action(lang('member_logged_in'));
 		
@@ -317,7 +320,7 @@ class Login extends CI_Controller {
 				'message'		=> lang('logged_back_in')
 			);
 			
-			$this->output->send_ajax_response($resp); exit;
+			$this->output->send_ajax_response($resp);
 		}
 
 		$this->functions->redirect($return_path);
