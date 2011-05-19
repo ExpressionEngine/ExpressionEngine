@@ -43,10 +43,9 @@ $.ee_filemanager.file_uploader = function() {
 			$.ee_fileuploader.set_directory_id($('#dir_id').val());
 		},
 		after_upload: function(file_uploader, file){
-			console.log(file);
 			// if we're replacing remove any visible files with the same ID
 			if (file.replace == true) {
-				$('.mainTable tbody tr:has(td:contains(' + file.file_id + '))').remove();
+				$('.mainTable tbody tr:has(td:contains(' + file.file_id + ')):has(td:contains(' + file.file_name + '))').remove();
 			};
 			
 			// Clone the first valid row
