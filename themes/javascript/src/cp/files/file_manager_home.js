@@ -90,10 +90,12 @@ $.ee_filemanager.file_uploader = function() {
 			
 			// Send it all to the jQuery Template
 			$('.mainTable tbody').prepend($.tmpl('filemanager_row', file));
-			
-			// Change modal's top
-			var height_difference = $('.mainTable tbody tr:first').height() + 2; // 2 is added for borders
-			$('.ui-dialog').css('top', parseInt($('.ui-dialog').css('top'), 10) - height_difference);
+
+			if (file.replace == false) {
+				// Change modal's top
+				var height_difference = $('.mainTable tbody tr:first').height() + 2; // 2 is added for borders
+				$('.ui-dialog').css('top', parseInt($('.ui-dialog').css('top'), 10) - height_difference);
+			};
 		},
 		trigger: '#action_nav a:contains(Upload File)'
 	});

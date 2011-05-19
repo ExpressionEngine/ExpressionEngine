@@ -310,7 +310,8 @@ ul.bulleted {
 input.submit,
 button.submit,
 .submit_alt,
-.button a.submit {
+.button a.submit,
+.button_bar a.submit {
 	font: 12px/12px Arial, 'Hevlvetica Neue', sans-serif;
 	
 	-moz-border-radius: 3px;
@@ -3464,9 +3465,10 @@ a.file_chooser_thumbnail.last_row {
 }
 
 .button_bar a.submit {
-	display: inline-block;
+	color: #fff;
 	font-weight: normal;
 	margin: 0 0 0 4px;
+	text-decoration: none;
 }
 
 #file_uploader.before_upload .after_upload,
