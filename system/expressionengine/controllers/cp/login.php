@@ -33,6 +33,7 @@ class Login extends CI_Controller {
 	{
 		parent::__construct();	
 
+		$this->load->library('auth');
 		$this->lang->loadfile('login');
 	}
 	
@@ -60,7 +61,7 @@ class Login extends CI_Controller {
 	public function login_form()
 	{
 		// If an ajax request ends up here the user is probably logged out
-		if ($this->input->is_ajax_request())
+		if (AJAX_REQUEST)
 		{
 			$this->output->set_status_header(401);
 			die('C=login');
@@ -101,39 +102,36 @@ class Login extends CI_Controller {
 	 */	
 	public function authenticate()
 	{	
-		$is_ajax = $this->input->is_ajax_request();
-			
+		$username = $this->input->post('username');
+		
 		// No username/password?  Bounce them...	
-		if ( ! $this->input->post('username'))
+		if ( ! $username)
 		{
-			$this->session->set_flashdata('message', lang('no_username'));
-
-			if ($is_ajax)
+			if (AJAX_REQUEST)
 			{
-				$resp['messageType'] = 'failure';
-				$resp['message'] = lang('no_username');
-
-				$this->output->send_ajax_response($resp); exit;				
+				$this->output->send_ajax_response(array(
+					'messageType'	=> 'failure',
+					'message'		=> lang('no_username')
+				));
 			}
 			
+			$this->session->set_flashdata('message', lang('no_username'));
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
 				
-		$username = $this->input->post('username');
 		$this->session->set_flashdata('username', $username);
 		
 		if ( ! $this->input->get_post('password'))
 		{
-			$this->session->set_flashdata('message', lang('no_password'));
-
-			if ($is_ajax)
+			if (AJAX_REQUEST)
 			{
-				$resp['messageType'] = 'failure';
-				$resp['message'] = lang('no_password');
-
-				$this->output->send_ajax_response($resp);
+				$this->output->send_ajax_response(array(
+					'messageType'	=> 'failure',
+					'message'		=> lang('no_password')
+				));
 			}
 			
+			$this->session->set_flashdata('message', lang('no_password'));
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
 
@@ -162,114 +160,56 @@ class Login extends CI_Controller {
 		if ($this->session->check_password_lockout($username) === TRUE)
 		{
 			$line = lang('password_lockout_in_effect');
-		
 			$line = str_replace("%x", $this->config->item('password_lockout_interval'), $line);
 		
-			if ($is_ajax)
+			if (AJAX_REQUEST)
 			{
-				$resp = array(
+				$this->output->send_ajax_response(array(
 					'messageType'	=> 'logout'
-				);
-
-				$this->output->send_ajax_response($resp);
+				));
 			}
 		
 			$this->session->set_flashdata('message', $line);
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
-				
-		//  Fetch member data
-		$this->db->select('members.password, members.unique_id, members.member_id, 
-						   members.group_id, member_groups.can_access_cp');
-		$this->db->where('username', $this->input->post('username'));
-		$this->db->where('member_groups.site_id', $this->config->item('site_id'));
-		$this->db->where('members.group_id = '.$this->db->dbprefix('member_groups.group_id'));
-		
-		$query = $this->db->get(array('members', 'member_groups'));
-		
 
-		//  Invalid Username
-		if ($query->num_rows() == 0)
+		/** ----------------------------------------
+		/**  Check credentials
+		/** ----------------------------------------*/
+		
+		$password = $this->input->post('password');
+		
+		$request = $this->auth->authenticate_username($username, $password);
+		
+		if ( ! $request)
 		{
 			$this->session->save_password_lockout($username);
 			
+			$this->output->send_ajax_response(array(
+				'messageType'	=> 'failure',
+				'message'		=> lang('credential_missmatch')
+			));
+			
 			$this->session->set_flashdata('message', lang('credential_missmatch'));
-			
-			if ($is_ajax)
-			{
-				$resp['messageType'] = 'failure';
-				$resp['message'] = lang('credential_missmatch');
-
-				$this->output->send_ajax_response($resp);			
-			}
-			
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
 		
-		/** ----------------------------------------
-		/**  Check password
-		/** ----------------------------------------*/
-		$this->load->helper('security');
-
-		$password = do_hash($this->input->post('password'));
-		
-		if ($query->row('password') != $password)
+		if ($request->is_banned())
 		{
-			// To enable backward compatibility with pMachine we'll test to see 
-			// if the password was encrypted with MD5.  If so, we will encrypt the
-			// password using SHA1 and update the member's info.
-			
-			$password = do_hash($this->input->post('password'), 'md5');
-
-			if ($query->row('password') == $password)
-			{
-				$password = do_hash($this->input->post('password'));
-				
-				$this->db->set('password', $password);
-				$this->db->where('member_id', $query->row('member_id'));
-				$this->db->update('members');
-			}
-			else
-			{
-				// Invalid password					
-				$this->session->save_password_lockout($username);
-
-				$this->session->set_flashdata('message', lang('credential_missmatch'));
-				
-				if ($is_ajax)
-				{
-					$resp['messageType'] = 'failure';
-					$resp['message'] = lang('credential_missmatch');
-
-					$this->output->send_ajax_response($resp);			
-				}
-				
-				$this->functions->redirect(BASE.AMP.'C=login');
-			}
+			return $this->output->fatal_error(lang('not_authorized'));
 		}
 		
-		// Super Admins can't be banned
-		if ($query->row('group_id') != 1)
-		{
-			if ($this->session->ban_check())
-			{
-				return $this->output->fatal_error(lang('not_authorized'));
-			}
-		}
-		
-		// Is user allowed to access the CP?		
-		if ($query->row('can_access_cp') != 'y')
+		if ( ! $request->has_permission('can_access_cp'))
 		{
 			$this->session->set_flashdata('message', lang('not_authorized'));
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
-		
+				
 		// Do we allow multiple logins on the same account?		
 		if ($this->config->item('allow_multi_logins') == 'n')
 		{
 			// Kill old sessions first
 			$this->session->gc_probability = 100;
-			
 			$this->session->delete_old_sessions();
 		
 			$expire = time() - $this->session->session_length;
@@ -302,8 +242,8 @@ class Login extends CI_Controller {
 		$uml = $this->config->item('un_min_len');
 		$pml = $this->config->item('pw_min_len');
 		
-		$ulen = strlen($this->input->post('username'));
-		$plen = strlen($this->input->post('password'));
+		$ulen = strlen($username);
+		$plen = strlen($password);
 		
 		if ($ulen < $uml OR $plen < $pml)
 		{
@@ -322,19 +262,22 @@ class Login extends CI_Controller {
 		// Kill existing flash cookie
 		$this->functions->set_cookie('flash');
 		
-		if ( isset($_POST['site_id']) && is_numeric($_POST['site_id']))
+		if (is_numeric($this->input->post('site_id')))
 		{
 			$this->functions->set_cookie('cp_last_site_id', $this->input->post('site_id'), 0);
 		}
 		
+		var_dump($request);
+		exit;
+		
 		// Create a new session
-		$session_id = $this->session->create_new_session($query->row('member_id') , TRUE);
+		$session_id = $this->session->create_new_session($request->member('member_id') , TRUE);
 
 		/* -------------------------------------------
 		/* 'cp_member_login' hook.
 		/*  - Additional processing when a member is logging into CP
 		*/
-			$edata = $this->extensions->call('cp_member_login', $query->row());
+			$edata = $this->extensions->call('cp_member_login', $request->hook_data());
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
@@ -368,7 +311,7 @@ class Login extends CI_Controller {
 			$return_path = BASE.AMP.'C=homepage';
 		}
 		
-		if ($is_ajax)
+		if (AJAX_REQUEST)
 		{
 			$resp = array(
 				'xid'			=> XID_SECURE_HASH,
@@ -516,17 +459,17 @@ class Login extends CI_Controller {
 		$new_pwc = ($this->input->post('new_password_confirm')) ? $this->input->post('new_password_confirm') : '';
 			
 		$VAL = new EE_Validate(
-								array( 
-										'val_type'			=> 'new',
-										'fetch_lang' 		=> TRUE, 
-										'require_cpw' 		=> FALSE,
-									 	'enable_log'		=> FALSE,
-										'username'			=> $new_un,
-										'password'			=> $new_pw,
-									 	'password_confirm'	=> $new_pwc,
-									 	'cur_password'		=> $this->input->post('password')
-									 )
-							);
+			array( 
+				'val_type'			=> 'new',
+				'fetch_lang' 		=> TRUE, 
+				'require_cpw' 		=> FALSE,
+				'enable_log'		=> FALSE,
+				'username'			=> $new_un,
+				'password'			=> $new_pw,
+				'password_confirm'	=> $new_pwc,
+				'cur_password'		=> $this->input->post('password')
+			)
+		);
 		
 		if ($this->input->post('new_username') && $this->input->post('new_username') != '')
 		{
@@ -597,14 +540,9 @@ class Login extends CI_Controller {
 		$this->db->where('member_id', $this->session->userdata('member_id'));
 		$this->db->delete('online_users');
 
-		$this->db->where('session_id', $this->session->userdata['session_id']);
-		$this->db->delete('sessions');
+		$this->session->destroy();
 		
-		$this->functions->set_cookie($this->session->c_session);	
-		$this->functions->set_cookie($this->session->c_expire);	
-		$this->functions->set_cookie($this->session->c_anon);
 		$this->functions->set_cookie('read_topics');  
-		$this->functions->set_cookie('tracker');  
 
 		$this->logger->log_action(lang('member_logged_out'));
 
@@ -773,7 +711,7 @@ class Login extends CI_Controller {
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
 		
-		$member_id = $query->row('member_id') ;
+		$member_id = $query->row('member_id');
 				
 		// Fetch the user data
 		
@@ -786,19 +724,16 @@ class Login extends CI_Controller {
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
 		
-		$address	= $query->row('email') ;
-		$username  = $query->row('username') ;
+		$address  = $query->row('email');
+		$username = $query->row('username');
 				
 		$rand = $this->functions->random('alnum', 8);
 		
 		// Update member's password
-		$this->load->helper('security');
-		$this->db->set('password', do_hash($rand));
-		$this->db->where('member_id', $member_id);
-		$this->db->update('members');
+		$this->authentication->update_password($member_id, $rand);
+		
 		
 		// Kill old data from the reset_password field
-		
 		$this->db->where('date <', $time);
 		$this->db->or_where('member_id', $member_id);
 		$this->db->delete('reset_password');
@@ -876,22 +811,14 @@ class Login extends CI_Controller {
 	{
 		// the only way we will be hitting this is through an ajax request.
 		// Any other way is monkeying with URLs.  I have no patience for URL monkiers.
-		if ( ! AJAX_REQUEST)
+		if ( ! AJAX_REQUEST OR ! $this->cp->allowed_group('can_access_cp'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 		
-		// No CP access?  No reason to be here.  buh bye
-		if ( ! isset($this->session->userdata['can_access_cp']) OR $this->session->userdata['can_access_cp'] != 'y')
-		{
-			show_error(lang('unauthorized_access'));
-		}
-		
-		$resp = array(
+		$this->output->send_ajax_response(array(
 			'xid'	=> XID_SECURE_HASH
-		);
-		
-		$this->output->send_ajax_response($resp);
+		));
 	}
 }
 // END CLASS
