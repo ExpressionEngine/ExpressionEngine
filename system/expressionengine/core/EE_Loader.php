@@ -26,8 +26,43 @@
  */
 class EE_Loader extends CI_Loader {
 	
-	private $_ci_view_path; // deprecated, in here to force access errors
-	private $_ee_view_paths = array();
+	public $_ci_view_path = ''; // deprecated, do not change, was private in 2.1.5 and will be private again in the near future
+	private $ee_view_depth = 0;
+	
+	
+	/**
+	 * Load CI View
+	 *
+	 * This is extended to keep some backward compatibility for people
+	 * changing _ci_view_path. I tried doing a getter/setter, but since all
+	 * of CI's object references are stuck onto the loader when loading views
+	 * I get access errors left and right. -pk
+	 *
+	 * @deprecated
+	 * @access	public
+	 */
+	public function view($view, $vars = array(), $return = FALSE)
+	{
+		if ($this->ee_view_depth === 0 && $this->_ci_view_path != '')
+		{
+			$this->_ci_view_paths = array($this->_ci_view_path => FALSE) + $this->_ci_view_paths;
+		}
+		
+		$this->ee_view_depth++;
+		
+		$ret = parent::view($view, $vars, $return);
+		
+		$this->ee_view_depth--;		
+		
+		if ($this->ee_view_depth === 0 && $this->_ci_view_path != '')
+		{
+			array_shift($this->_ci_view_paths);
+		}
+		
+		return $ret;
+	}
+	
+	// ------------------------------------------------------------------------
 	
 	/**
 	 * Load EE View
