@@ -267,9 +267,6 @@ class Login extends CI_Controller {
 			$this->functions->set_cookie('cp_last_site_id', $this->input->post('site_id'), 0);
 		}
 		
-		var_dump($request);
-		exit;
-		
 		// Create a new session
 		$session_id = $this->session->create_new_session($request->member('member_id') , TRUE);
 
