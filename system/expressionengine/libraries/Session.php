@@ -151,8 +151,12 @@ class EE_Session {
 		if ($this->EE->input->cookie($this->c_session))
 		{
 			$this->cookies_exist = TRUE;
-			
-			if ($this->EE->input->get('S'))
+
+			$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);			
+		}
+		else
+		{
+			if ($this->EE->input->get('S') && $this->EE->input->get('S') != 0)
 			{
 				$this->sdata['session_id'] = $this->EE->input->get('S');
 			}
@@ -160,8 +164,8 @@ class EE_Session {
 			{
 				$this->sdata['session_id'] = $this->EE->uri->session_id;
 			}			
-		}
-		
+		}		
+
 		// Set the Validation Type
 		if (REQ == 'CP')
 		{
