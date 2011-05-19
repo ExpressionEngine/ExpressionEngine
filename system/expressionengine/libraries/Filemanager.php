@@ -1684,7 +1684,7 @@ class Filemanager {
 		
 		$field = ($field_name) ? $field_name : 'userfile';
 		$original_filename = $_FILES[$field]['name'];
-		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id']));
+		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id'], TRUE));
 		
 		$config = array(
 			'file_name'		=> $clean_filename,
@@ -1841,6 +1841,16 @@ class Filemanager {
 		// Get the file data form the database
 		$previous_data = $this->EE->file_model->get_files_by_id($file_id);
 		$previous_data = $previous_data->row();
+		
+		// If the new name is the same as the previous, get out of here
+		if ($new_file_name == $previous_data->file_name)
+		{
+			return array(
+				'success'	=> TRUE,
+				'replace'	=> $replace,
+				'file_id'	=> $file_id
+			);
+		}
 		
 		$directory_id		= $previous_data->upload_location_id;
 		$old_file_name		= $previous_data->file_name;
