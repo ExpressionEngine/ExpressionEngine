@@ -1935,12 +1935,18 @@ class Filemanager {
 		// Delete the new file's database record, but leave the files
 		$this->EE->file_model->delete_files($new_file->file_id, FALSE);
 				
-		// Update file_hw_original
+		// Update file_hw_original, filesize, modified date and modified user
 		$this->EE->file_model->save_file(array(
-			'file_id' => $existing_file->file_id,
-			'file_hw_original' => $new_file->file_hw_original
+			'file_id'				=> $existing_file->file_id, // Use the old file_id
+			'file_size'				=> $new_file->file_size,
+			'file_hw_original'		=> $new_file->file_hw_original,
+			'modified_date'			=> $new_file->modified_date,
+			'modified_by_member_id'	=> $this->EE->session->userdata('member_id')
 		));
-		$existing_file->file_hw_original = $new_file->file_hw_original;
+		$existing_file->file_size				= $new_file->file_size;
+		$existing_file->file_hw_original		= $new_file->file_hw_original;
+		$existing_file->modified_date			= $new_file->modified_date;
+		$existing_file->modified_by_member_id 	= $this->EE->session->userdata('member_id');
 		
 		return $existing_file;
 	}
