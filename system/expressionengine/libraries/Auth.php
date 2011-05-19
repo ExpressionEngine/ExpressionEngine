@@ -18,40 +18,56 @@
  *
  * @package		ExpressionEngine
  * @subpackage	Core
- * @category	Library
+ * @category	Core
  * @author		ExpressionEngine Dev Team
  * @link		http://expressionengine.com
  */
-/**
- * Dealing with users has three parts:
- *
- * 1. Session
- *		- Ties a request to a unique user
- *		- Handles persistent information about that user
- *
- * 2. Authentication
- *		- Handles logging in and out
- *		- Passes user off to sessions on success
- *
- * 3. Permissions (todo: library)
- *		- Deals with group-ing users
- *		- Handles more granular user access
- *		- Currently handled mostly by userdata (can_* and group_id)
- *
- */
+
+// ------------------------------------------------------------------------
+
+/*
+ExpressionEngine User Classes (* = current):
+
+  1. Session
+  2. Authentication*
+  3. Permissions
+
+Doing authentication securely relies heavily on handling user
+passwords responsibly. Thanks to steadily increasing computing
+power, cryptographic hashing algorithms evolve continuously.
+
+To deal with this we continually try to upgrade the user. The
+general authentication flow therefore becomes:
+
+  1. Grab user info using a unique identifier.
+
+  2. Determine the function used for their stored password.
+	 We do this by looking at the length of the hash. This
+	 also means that we can never support two algorithms of
+	 the same length. Not a big problem.
+
+  3. Determine if their old password hash was salted.
+	 This is easy; we store the salt with their userdata.
+
+  4. Hash the input password with the old salt and hash function.
+	 If this fails we're done, the password was incorrect.
+
+  5. Check if we can improve security of their password.
+	 If it wasn't salted, we salt it. If we support a newer
+	 hash function, we create a new salt and rehash the password.
+
+EE Dev Note: In EE's db the password and salt column
+should always be as long as the best available hash.
+
+*/
 class Auth {
 
 	private $EE;
 
 	// Hashing algorithms to try with their respective
-	// byte sizes. Previous versions of PHP and EE used
-	// weaker hashing, so the code tries to update users
-	// to the best that is available in their environment.
-	// The byte sizes are used to identify the has, so they
-	// must be unique!
+	// byte sizes. The byte sizes are used to identify
+	// the hash function, so they must be unique!
 	
-	// Dev Note: In EE's db the password and salt column
-	// should always be as long as the best available algo.
 	private $hash_algos = array(
 		128		=> 'sha512',
 		64		=> 'sha256',
@@ -155,10 +171,10 @@ class Auth {
 		{
 			$salt = '';
 
+			// The salt should never be displayed, so any
+			// visible ascii character is fair game.
 			for ($i = 0; $i < $h_byte_size; $i++)
 			{
-				// The salt should never be displayed, so any
-				// visible ascii character is fair game.
 				$salt .= chr(mt_rand(33, 126));
 			}
 		}
@@ -244,30 +260,27 @@ class Auth_result {
 	private $EE;
 	private $group;
 	private $member;
+	private $session_id = 0;
+	private $remember_me = 0;
 	
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
 	function __construct(stdClass $member)
 	{
 		$this->EE =& get_instance();
-		
 		$this->member = $member;
 	}
 	
 	// --------------------------------------------------------------------
 	
-	public function has_permission($perm)
-	{
-		return ($this->group($perm) === 'y');
-	}
-	
-	// --------------------------------------------------------------------
-	
-	public function member($key, $default = FALSE)
-	{
-		return isset($this->member->$key) ? $this->member->$key : $default;
-	}
-	
-	// --------------------------------------------------------------------
-	
+	/**
+	 * Group data getter
+	 *
+	 * @access	public
+	 */
 	public function group($key, $default = FALSE)
 	{
 		if ( ! is_object($this->group))
@@ -286,6 +299,62 @@ class Auth_result {
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Multi-login check
+	 *
+	 * @access	public
+	 */
+	public function has_other_session()
+	{
+		// Kill old sessions first
+		$this->EE->session->gc_probability = 100;
+		$this->EE->session->delete_old_sessions();
+	
+		$expire = time() - $this->EE->session->session_length;
+		
+		// See if there is a current session
+		$this->EE->db->select('ip_address, user_agent');
+		$this->EE->db->where('member_id', $this->member('member_id'));
+		$this->EE->db->where('last_activity >', $expire);
+		$result = $this->EE->db->get('sessions');
+		
+		// If a session exists, trigger the error message
+		if ($result->num_rows() == 1)
+		{
+			$ip = $this->EE->session->userdata['ip_address'];
+			$ua = $this->EE->session->userdata['user_agent'];
+			
+			if ($ip != $result->row('ip_address') OR 
+				$ua != $result->row('user_agent'))
+			{
+				$result->free_result();
+				return TRUE;
+			}
+		}
+		
+		$result->free_result();
+		return FALSE;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Simplified permission checks
+	 *
+	 * @access	public
+	 */
+	public function has_permission($perm)
+	{
+		return ($this->group($perm) === 'y');
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Ban check
+	 *
+	 * @access	public
+	 */
 	public function is_banned()
 	{
 		if ($this->member('group_id') != 1)
@@ -298,15 +367,108 @@ class Auth_result {
 	
 	// --------------------------------------------------------------------
 	
-	public function hook_data()
+	/**
+	 * Member data getter
+	 *
+	 * @access	public
+	 */
+	public function member($key, $default = FALSE)
+	{
+		return isset($this->member->$key) ? $this->member->$key : $default;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Remember me expiration setter
+	 *
+	 * @access	public
+	 */
+	function remember_me($expire)
+	{
+		$this->remember_me = $expire;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Start session
+	 *
+	 * Handles all of the checks and cookie stuff
+	 *
+	 * @access	public
+	 */
+	public function start_session($cp_sess = FALSE)
+	{
+		$sess_type = $cp_sess ? 'admin_session_type' : 'user_session_type';
+		
+		if ($this->EE->config->item($sess_type) != 's')
+		{
+			$expire = $this->remember_me;
+			
+			$this->EE->functions->set_cookie(
+				$this->EE->session->c_anon, 1, $expire
+			);
+			$this->EE->functions->set_cookie(
+				$this->EE->session->c_expire, time()+$expire, $expire
+			);
+		}
+		
+		// Create a new session
+		$this->session_id = $this->EE->session->create_new_session(
+			$this->member('member_id'), $cp_sess
+		);
+		
+		if ($cp_sess === TRUE)
+		{
+			// -------------------------------------------
+			// 'cp_member_login' hook.
+			//  - Additional processing when a member is logging into CP
+			//
+				$edata = $this->EE->extensions->call('cp_member_login', $this->_hook_data());
+				if ($this->EE->extensions->end_script === TRUE) return;
+			//
+			// -------------------------------------------
+			
+			// Log the login
+
+			// We'll manually add the username to the Session array so
+			// the logger class can use it.
+			$this->EE->session->userdata['username'] = $this->member('username');
+			$this->EE->logger->log_action(lang('member_logged_in'));
+		}
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Session id getter session
+	 *
+	 * Only works after the session has been started
+	 *
+	 * @access	public
+	 */
+	public function session_id()
+	{
+		return $this->session_id;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Hook data utility method
+	 *
+	 * We cannot change the hook parameter without lots of warning, so
+	 * this is a silly workaround. Doing a clone aslo isolates the hook
+	 * from the rest of the code, which I like.
+	 *
+	 * @access	private
+	 */
+	private function _hook_data()
 	{
 		$obj = clone $this->member;
 		$obj->can_access_cp = $this->has_permission('can_access_cp');
-	}
-	
-	public function create_session()
-	{
-		
+		return $obj;
 	}
 }
 // END Auth_member class

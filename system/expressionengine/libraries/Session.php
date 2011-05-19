@@ -26,6 +26,12 @@
 // ------------------------------------------------------------------------
 
 /*
+ExpressionEngine User Classes (* = current):
+
+  1. Session*
+  2. Authentication
+  3. Permissions
+
 There are three validation types, set in the config file: 
  
   1. User cookies AND session ID (cs)
@@ -136,7 +142,7 @@ class EE_Session {
 			'user_agent' 		=>  substr($this->EE->input->user_agent(), 0, 120),
 			'last_activity'		=>  0
 		);
-							
+		
 		// -------------------------------------------
 		// 'sessions_start' hook.
 		//  - Reset any session class variable
@@ -151,7 +157,6 @@ class EE_Session {
 		if ($this->EE->input->cookie($this->c_session))
 		{
 			$this->cookies_exist = TRUE;
-
 			$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);			
 		}
 		else
@@ -199,7 +204,7 @@ class EE_Session {
 
 		// Fetch Member Data
 		$member_data_exists = ($this->fetch_member_data() === TRUE) ? TRUE : FALSE;
-
+		
 		// Update/Create Session						
 		if ($session_id === FALSE OR $member_data_exists === FALSE)
 		{ 
@@ -403,9 +408,9 @@ class EE_Session {
 		$this->userdata['site_id']		= $this->EE->config->item('site_id');
 		
 		$this->EE->functions->set_cookie($this->c_session , $this->sdata['session_id'], $this->session_length);	
-					
-		$this->EE->db->query($this->EE->db->insert_string('exp_sessions', $this->sdata));	
 		
+		$this->EE->db->query($this->EE->db->insert_string('exp_sessions', $this->sdata));	
+
 		return $this->sdata['session_id'];
 	}
 
