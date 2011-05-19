@@ -1,5 +1,27 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
 
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Authentication Library
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Library
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
 /**
  * Dealing with users has three parts:
  *
@@ -17,12 +39,16 @@
  *		- Currently handled mostly by userdata (can_* and group_id)
  *
  */
-class Authentication {
+class Auth {
+
+	private $EE;
 
 	// Hashing algorithms to try with their respective
 	// byte sizes. Previous versions of PHP and EE used
 	// weaker hashing, so the code tries to update users
 	// to the best that is available in their environment.
+	// The byte sizes are used to identify the has, so they
+	// must be unique!
 	
 	// Dev Note: In EE's db the password and salt column
 	// should always be as long as the best available algo.
@@ -85,6 +111,85 @@ class Authentication {
 		$member = $this->EE->db->get('members', array('username' => $username));
 		return $this->_authenticate($member, $password);
 	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Hash Password
+	 *
+	 * Call it with just a password to generate a new hash/salt pair.
+	 * Call with an existing salt and hash_size if you need to compare
+	 * to an old password. The latter is mostly internal, you probably
+	 * want one of the authenticate_* methods instead.
+	 *
+	 * @access	public
+	 */
+	public function hash_password($password, $salt = FALSE, $h_byte_size = FALSE)
+	{
+		// Even for md5, collisions usually happen above 1024 bits, so
+		// we artifically limit their password to reasonable size.
+		if ( ! $password OR strlen($password) > 250)
+		{
+			return FALSE;
+		}
+		
+		// No hash function specified? Use the best one
+		// we have access to in this environment.
+		if ($h_byte_size === FALSE)
+		{
+			reset($this->hash_algos);
+			$h_byte_size = key($this->hash_algos);
+		}
+		elseif ( ! isset($this->hash_algos[$h_byte_size]))
+		{
+			// What are they feeding us? This can happen if
+			// they move servers and the new environment is
+			// less secure. Nothing we can do but fail. Hard.
+			
+			die('Fatal Error: No matching hash algorithm.');
+		}		
+
+		// No hash function specified? Use the best one
+		// we have access to in this environment.
+		if ($salt === FALSE)
+		{
+			$salt = '';
+
+			for ($i = 0; $i < $h_byte_size; $i++)
+			{
+				// The salt should never be displayed, so any
+				// visible ascii character is fair game.
+				$salt .= chr(mt_rand(33, 126));
+			}
+		}
+		
+		return array(
+			'salt'		=> $salt,
+			'password'	=> hash($salt.$password, $this->hash_algos[$h_byte_size])
+		);
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update Password
+	 *
+	 * @access	public
+	 */
+	public function update_password($member_id, $password)
+	{
+		$hashed_pair = $this->hash_password($password);
+		
+		if ($hashed_pair === FALSE)
+		{
+			return FALSE;
+		}
+		
+		$this->EE->db->where('member_id', (int) $member_id);
+		$this->EE->db->update('members', $hashed_pair);
+		
+		return (bool) $this->EE->db->affected_rows();
+	}
 
 	// --------------------------------------------------------------------
 
@@ -100,35 +205,14 @@ class Authentication {
 			return FALSE;
 		}
 		
-		// Even for md5 collisions usually happen above 1024 bits, so
-		// we artifically limit their password to reasonable size.
-		if ( ! $password OR strlen($password) > 250)
-		{
-			return FALSE;
-		}
-		
-		
 		$m_salt = $member->row('salt');
 		$m_pass = $member->row('password');
 		
-		// the algo used for the stored pass
-		$m_byte_size = strlen($m_pass);
-
+		// hash using the algo used for this password
+		$h_byte_size = strlen($m_pass);
+		$hashed_pair = $this->hash_password($m_pass, $m_salt, $h_byte_size);
 		
-		if ( ! array_key_exists($m_byte_size, $this->hash_algos))
-		{
-			// this is either a corrupt db or they moved to an
-			// environment with less sophisticated hash support
-			// @todo figure out how to error
-			die('Fatal Error: No matching hash algorithm.');
-		}
-		
-		
-		// compare using the original algo
-		$h_algo = $this->hash_algos[$m_byte_size];
-		$h_pass = hash($m_salt.$password, $h_algo);
-		
-		if ($m_pass != $h_pass)
+		if ($hashed_pair === FALSE OR $m_pass !== $hashed_pair['password'])
 		{
 			return FALSE;
 		}
@@ -139,41 +223,93 @@ class Authentication {
 				
 		reset($this->hash_algos);
 		
-		// Better algo available?
-		if ($m_byte_size != key($this->hash_algos))
-		{
-			$m_salt = '';
-			$h_algo = current($this->hash_algos);
-			$m_byte_size = key($this->hash_algos);
-		}
-		
-		// Not salted or changing algo?
-		if ($m_salt == '')
+		// Not hashed or better algo available?
+		if ( ! $m_salt OR $h_byte_size != key($this->hash_algos))
 		{
 			$m_id = $member->row('member_id');
-			
-			// The salt should never be displayed, so any
-			// visible ascii character is fair game.
-			for ($i = 0; $i < $m_byte_size; $i++)
-			{
-				$m_salt .= chr(mt_rand(33, 126));
-			}
-			
-			// We have everything, update them
-			$h_pass = hash($m_salt.$password, $h_algo);
-			
-			$this->EE->db->where('member_id', $m_id);
-			$this->EE->db->update('members', array(
-				'salt'		=> $m_salt,
-				'password'	=> $h_pass
-			));
+			$this->update_password($m_id, $password);
 		}
 		
-		return TRUE;
+		$authed = new Auth_result($member->row());
+		$member->free_result();
+		
+		return $authed;
 	}
 }
+// END Auth class
 
-// END Authentication class
+
+class Auth_result {
+
+	private $EE;
+	private $group;
+	private $member;
+	
+	function __construct(array $member)
+	{
+		$this->EE =& get_instance();
+		
+		$this->member = $member;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	public function has_permission($perm)
+	{
+		return ($this->group($perm) === 'y');
+	}
+	
+	// --------------------------------------------------------------------
+	
+	public function member($key, $default = FALSE)
+	{
+		return isset($this->member->$key) ? $this->member->$key : $default;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	public function group($key, $default = FALSE)
+	{
+		if ( ! is_object($this->group))
+		{
+			$group_q = $this->EE->db->get_where('member_groups', array(
+				'group_id' => $this->member('group_id')
+			));
+			
+			$this->group = $group_q->row();
+			
+			$group_q->free_result();
+		}
+		
+		return isset($this->group->$key) ? $this->group->$key : $default;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	public function is_banned()
+	{
+		if ($this->member('group_id') != 1)
+		{
+			return $this->EE->session->ban_check();
+		}
+		
+		return FALSE;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	public function hook_data()
+	{
+		$obj = clone $this->member;
+		$obj->can_access_cp = $this->group->has_permission('can_access_cp');
+	}
+	
+	public function create_session()
+	{
+		
+	}
+}
+// END Auth_member class
 
 
 /* End of file Authentication.php */
