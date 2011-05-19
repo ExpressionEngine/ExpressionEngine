@@ -451,6 +451,27 @@ class EE_Session {
 						 ->delete('password_lockout');
 		}	
 	}
+	
+	
+	// --------------------------------------------------------------------
+	 
+	/**
+	 * Destroy session. Essentially logging a user off.
+	 */
+	public function destroy()
+	{
+		$this->EE->db->where('session_id', $this->userdata['session_id']);
+		$this->EE->db->delete('sessions');
+		
+		// Really should redirect after calling this
+		// method, but if someone doesn't - we're safe
+		$this->fetch_guest_data();
+		
+		$this->EE->functions->set_cookie($this->c_session);	
+		$this->EE->functions->set_cookie($this->c_expire);	
+		$this->EE->functions->set_cookie($this->c_anon);
+		$this->EE->functions->set_cookie('tracker'); 
+	}
 
 	// --------------------------------------------------------------------
 
