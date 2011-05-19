@@ -70,7 +70,7 @@ class Auth {
 		
 		// Remove any hash algos that we don't have
 		// access to in this environment
-		$this->hash_algos = array($this->hash_algos, hash_algos());
+		$this->hash_algos = array_intersect($this->hash_algos, hash_algos());
 	}
 	
 	// --------------------------------------------------------------------
@@ -165,7 +165,7 @@ class Auth {
 		
 		return array(
 			'salt'		=> $salt,
-			'password'	=> hash($salt.$password, $this->hash_algos[$h_byte_size])
+			'password'	=> hash($this->hash_algos[$h_byte_size], $salt.$password)
 		);
 	}
 	
@@ -210,7 +210,7 @@ class Auth {
 		
 		// hash using the algo used for this password
 		$h_byte_size = strlen($m_pass);
-		$hashed_pair = $this->hash_password($m_pass, $m_salt, $h_byte_size);
+		$hashed_pair = $this->hash_password($password, $m_salt, $h_byte_size);
 		
 		if ($hashed_pair === FALSE OR $m_pass !== $hashed_pair['password'])
 		{
@@ -245,7 +245,7 @@ class Auth_result {
 	private $group;
 	private $member;
 	
-	function __construct(array $member)
+	function __construct(stdClass $member)
 	{
 		$this->EE =& get_instance();
 		
@@ -301,7 +301,7 @@ class Auth_result {
 	public function hook_data()
 	{
 		$obj = clone $this->member;
-		$obj->can_access_cp = $this->group->has_permission('can_access_cp');
+		$obj->can_access_cp = $this->has_permission('can_access_cp');
 	}
 	
 	public function create_session()
