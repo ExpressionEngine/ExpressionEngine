@@ -98,7 +98,7 @@ class Auth {
 	 */
 	public function authenticate_id($id, $password)
 	{
-		$member = $this->EE->db->get('members', array('member_id' => $id));
+		$member = $this->EE->db->get_where('members', array('member_id' => $id));
 		return $this->_authenticate($member, $password);
 	}
 	
@@ -111,7 +111,7 @@ class Auth {
 	 */
 	public function authenticate_email($email, $password)
 	{
-		$member = $this->EE->db->get('members', array('email' => $email));
+		$member = $this->EE->db->get_where('members', array('email' => $email));
 		return $this->_authenticate($member, $password);
 	}
 
@@ -124,7 +124,7 @@ class Auth {
 	 */
 	public function authenticate_username($username, $password)
 	{
-		$member = $this->EE->db->get('members', array('username' => $username));
+		$member = $this->EE->db->get_where('members', array('username' => $username));
 		return $this->_authenticate($member, $password);
 	}
 	

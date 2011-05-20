@@ -264,7 +264,7 @@ class EE_Core {
 		 */
 
 		$this->EE->input->filter_get_data(REQ);
-			
+		
 		// Update system stats
 		$this->EE->load->library('stats');
 	 		

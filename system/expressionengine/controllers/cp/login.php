@@ -443,7 +443,7 @@ class Login extends CI_Controller {
 			$this->db->set('username', $this->input->post('new_username'));
 			$this->db->where('member_id', $member_id);
 			$this->db->update('members');
-		}	
+		}
 						
 		if ($pw_exists)
 		{
