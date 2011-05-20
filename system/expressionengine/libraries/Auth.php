@@ -130,6 +130,33 @@ class Auth {
 	
 	// --------------------------------------------------------------------
 
+	public function check_require_ip()
+	{
+		if ($this->EE->config->item('require_ip_for_login') == 'y')
+		{
+			if ($this->EE->session->userdata('ip_address') == '' OR 
+				$this->EE->session->userdata('user_agent') == '')
+			{
+				return FALSE;
+			}
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	public function check_passwd_lockout($username)
+	{
+		if (TRUE === $this->EE->session->check_password_lockout($username))
+		{
+			return FALSE;
+		}
+
+		return TRUE;		
+	}
+
+
 	/**
 	 * Hash Password
 	 *
@@ -257,11 +284,11 @@ class Auth {
 
 class Auth_result {
 
-	private $EE;
 	private $group;
 	private $member;
 	private $session_id = 0;
 	private $remember_me = 0;
+	private $EE;
 	
 	/**
 	 * Constructor
