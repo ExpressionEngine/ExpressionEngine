@@ -491,6 +491,28 @@ class Auth_result {
 		$obj->can_access_cp = $this->has_permission('can_access_cp');
 		return $obj;
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get Magic Method
+	 *
+	 * Used to give extension hooks like member_member_login_single access
+	 * to the member class property.
+	 *
+	 * I'm not convinced this is the proper solution, but dropping it in so
+	 * things will work for the time being.
+	 */
+	public function __get($prop)
+	{
+		if (isset($this->$prop))
+		{
+			return $this->$prop;
+		}
+
+		return FALSE;
+	}
+
 }
 // END Auth_member class
 
