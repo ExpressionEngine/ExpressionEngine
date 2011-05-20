@@ -129,13 +129,9 @@ class Login extends CI_Controller {
 		/* -------------------------------------------*/
 		
 		// Is IP and User Agent required for login?	
-		if ($this->config->item('require_ip_for_login') == 'y')
+		if ($this->auth->check_require_ip())
 		{
-			if ($this->session->userdata['ip_address'] == '' OR 
-				$this->session->userdata['user_agent'] == '')
-			{
-				$this->_return_to_login('unauthorized_request');
-			}
+			$this->_return_to_login('unauthorized_request');
 		}
 		
 		// Check password lockout status

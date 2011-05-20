@@ -130,6 +130,11 @@ class Auth {
 	
 	// --------------------------------------------------------------------
 
+	/**
+	 * Check Required IP
+	 *
+	 * @return 	boolean 	
+	 */
 	public function check_require_ip()
 	{
 		if ($this->EE->config->item('require_ip_for_login') == 'y')
@@ -145,17 +150,6 @@ class Auth {
 	}
 
 	// --------------------------------------------------------------------
-
-	public function check_passwd_lockout($username)
-	{
-		if (TRUE === $this->EE->session->check_password_lockout($username))
-		{
-			return FALSE;
-		}
-
-		return TRUE;		
-	}
-
 
 	/**
 	 * Hash Password
