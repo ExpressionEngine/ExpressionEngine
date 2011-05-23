@@ -56,7 +56,7 @@ class Updater {
 
     function do_update()
     {
-        $ignore = FALSE;
+		$ignore = FALSE;
 		$manual_move = FALSE;
 		
  		if ($this->EE->input->get('language') != FALSE && $this->EE->input->get('language') != '')
@@ -398,7 +398,7 @@ class Updater {
         
         foreach ($tables as $table)
         {
-            $progress   = "Converting Database Table {$table}: %s";
+           $progress   = "Converting Database Table {$table}: %s";
             $count      = $this->EE->db->count_all($table);
             $offset     = 0;
             
@@ -462,6 +462,7 @@ class Updater {
     
     function standardize_datetime()
     {
+		@set_time_limit(0);
         $this->EE->progress->update_state("Standardizing Timestamps");      
         
         // @todo - doesn't work for entries made in the DST period opposite of that of
@@ -640,28 +641,73 @@ class Updater {
                  */
                 
                 if (isset($table_keys[$table]))
-                {
-                    $dst_dates = array();
+                {	
+					$count = $this->EE->db->count_all($table);
+					
+					if ($count > 50000)
+					{
+						for($i = 0; $i <=$count; $i=$i+50000)
+						{
+							$this->EE->progress->update_state("Searching `{$table}` for DST discrepancies ({$i} / {$count})");
+								
+						    $query = $this->EE->db->query("SELECT `{$field}`, `".$this->EE->db->escape_str($table_keys[$table])."`
+		                                                    FROM `{$table}` LIMIT {$i}, 50000");
 
-                    $query = $this->EE->db->query("SELECT `{$field}`, `".$this->EE->db->escape_str($table_keys[$table])."`
-                                                    FROM `{$table}`");
-                    
-                    if ($query->num_rows() > 0)
-                    {
-                        foreach ($query->result_array() as $row)
-                        {
-                            if (date('I', $row[$field]) == 1)
-                            {
-                                $dst_dates[] = $row[$table_keys[$table]];
-                            }
-                        }
-                        
-                        if ( ! empty($dst_dates))
-                        {
-                            $this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + 3600
-                                                    WHERE `".$this->EE->db->escape_str($table_keys[$table])."` IN ('".implode("','", $dst_dates)."')");
-                        }
-                    }
+		                    if ($query->num_rows() > 0)
+		                    {
+								$dst_dates = array();
+								
+		                        foreach ($query->result_array() as $row)
+		                        {
+		                            if (date('I', $row[$field]) == 1)
+		                            {
+		                                $dst_dates[] = $row[$table_keys[$table]];
+		                            }
+		                        }
+								
+								$query->free_result();
+															
+		                        if ( ! empty($dst_dates))
+		                        {
+									$tot = count($dst_dates);
+									$this->EE->progress->update_state("Updating `{$table}` to compensate for DST discrepancies ({$tot} records)");
+									
+		                            $this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + 3600
+		                                                    WHERE `".$this->EE->db->escape_str($table_keys[$table])."` IN ('".implode("','", $dst_dates)."')");
+		                        }
+		                    }
+						}
+					}
+					else
+					{
+						$this->EE->progress->update_state("Searching `{$table}` for DST discrepancies");
+
+						$query = $this->EE->db->query("SELECT `{$field}`, `".$this->EE->db->escape_str($table_keys[$table])."`
+	                                                    FROM `{$table}`");
+	                    if ($query->num_rows() > 0)
+	                    {
+		                    $dst_dates = array();
+	                        
+							foreach ($query->result_array() as $row)
+	                        {
+	                            if (date('I', $row[$field]) == 1)
+	                            {
+	                                $dst_dates[] = $row[$table_keys[$table]];
+	                            }
+	                        }
+
+	                        if ( ! empty($dst_dates))
+	                        {
+								$tot = count($dst_dates);
+								$this->EE->progress->update_state("Updating `{$table}` to compensate for DST discrepancies ({$tot} records)");
+								
+	                            $this->EE->db->query("UPDATE `{$table}` SET `{$field}` = `{$field}` + 3600
+	                                                    WHERE `".$this->EE->db->escape_str($table_keys[$table])."` IN ('".implode("','", $dst_dates)."')");
+	                        }
+	                    }
+
+						$query->free_result();
+					}
                 }
                 
                 // add the offset, which may be a negative number
