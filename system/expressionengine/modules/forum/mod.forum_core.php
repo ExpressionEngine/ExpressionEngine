@@ -47,20 +47,19 @@ class Forum_Core extends Forum {
 		// The function is based on the 2nd segment of the URI
 		if ($function == '')
 		{
-			if ( ! $this->EE->uri->segment(2+$this->seg_addition))
+			if ( ! $this->EE->uri->segment(2 + $this->seg_addition))
 			{
 				$function = 'forum_homepage';
 			}
 			else
 			{
-				$function = $this->EE->uri->segment(2+$this->seg_addition);
+				$function = $this->EE->uri->segment(2 + $this->seg_addition);
 			}
 		}
 		
 		// Remap function if needed
 		// In certain cases we may want different URI function names
 		// to share common methods
-		
 		$remap = array(
 						'viewpost'				=> 'view_post_redirect',
 						'viewreply'				=> 'view_post_redirect',
@@ -243,11 +242,11 @@ class Forum_Core extends Forum {
 		foreach ($m_query->result_array() as $row)
 		{	
 			$this->moderators[$row['mod_forum_id']][] = array(
-																'mod_member_id' 	=> $row['mod_member_id'], 
-																'mod_member_name'	=> $row['mod_member_name'],
-																'mod_group_id' 		=> $row['mod_group_id'], 
-																'mod_group_name' 	=> (isset($groups[$row['mod_group_id']])) ? $groups[$row['mod_group_id']] : ''
-															);
+							'mod_member_id' 	=> $row['mod_member_id'], 
+							'mod_member_name'	=> $row['mod_member_name'],
+							'mod_group_id' 		=> $row['mod_group_id'], 
+							'mod_group_name' 	=> (isset($groups[$row['mod_group_id']])) ? $groups[$row['mod_group_id']] : ''
+						);
 		}
 	}
 
@@ -463,8 +462,8 @@ class Forum_Core extends Forum {
 				
 				if (count($read_topics) > 0)
 				{
-				$this->read_topics_exist = TRUE;
-				$this->EE->db->query("INSERT INTO exp_forum_read_topics (member_id, board_id, topics, last_visit) 
+					$this->read_topics_exist = TRUE;
+					$this->EE->db->query("INSERT INTO exp_forum_read_topics (member_id, board_id, topics, last_visit) 
 							VALUES ('".$this->EE->db->escape_str($this->EE->session->userdata('member_id'))."', '".$this->fetch_pref('board_id')."', '".serialize($read_topics)."', '".$this->EE->localize->now."')");
 				}
 				
@@ -482,19 +481,12 @@ class Forum_Core extends Forum {
 		
 		if ($new_id === FALSE)
 		{
-			if (count($topics) == 0)
-			{
-				return array();
-			}
-			else
-			{
-				return $topics;
-			}
+			return (count($topics) === 0) ? array() : $topics;
 		}
 	
-			// We don't want the array to get too big
-			// so we'll bump off the oldest couple items
-			// if they exceed the alloted size.
+		// We don't want the array to get too big
+		// so we'll bump off the oldest couple items
+		// if they exceed the alloted size.
 		// Note: Since the various array functions like array_shift 
 		// reset the array keys, we'll instead have to loop through 
 		// to preserve them since they contain the topic ID
@@ -539,19 +531,12 @@ class Forum_Core extends Forum {
 		
 		if ($new_id === FALSE)
 		{
-			if (count($topics) == 0)
-			{
-				return array();
-			}
-			else
-			{
-				return $topics;
-			}
+			return (count($topics) === 0) ? array() : $topics;
 		}
 		
-			// We don't want the array to get too big
-			// so we'll bump off the oldest couple items
-			// if they exceed the alloted size (4K of data per the cookie spec). 
+		// We don't want the array to get too big
+		// so we'll bump off the oldest couple items
+		// if they exceed the alloted size (4K of data per the cookie spec). 
 		// Note: Since the various array functions like array_shift 
 		// reset the array keys, we'll instead have to loop through 
 		// to preserve them since they contain the topic ID
@@ -596,7 +581,7 @@ class Forum_Core extends Forum {
 				$date = TRUE;
 			}
 
-			for($i=0, $s = count($matches['0']); $i < $s; ++$i)
+			for ($i=0, $s = count($matches['0']); $i < $s; ++$i)
 			{
 				// author, date parameters
 				// We do the str_replace because of the XHTML Typography that converts quotes
@@ -630,11 +615,8 @@ class Forum_Core extends Forum {
 		{
 			return TRUE;
 		}
-								
-		/** --------------------------------
-		/**  These are exceptions to the normal permissions checks
-		/** --------------------------------*/
-			
+		
+		// These are exceptions to the normal permissions checks
 		$exceptions = array('member', 'smileys', 'search', 'member_search', 'new_topic_search', 'active_topic_search', 'view_pending_topics', 'search_results', 'search_thread', 'ban_member', 'do_ban_member', 'spellcheck', 'spellcheck_iframe', 'rss', 'atom', 'ignore_member', 'do_ignore_member');
 
 		// Is the member area trigger changed?
@@ -650,10 +632,7 @@ class Forum_Core extends Forum {
 			return TRUE;
 		}
 		
-		/** --------------------------------
-		/**  Is this a subscription request?
-		/** --------------------------------*/
-		
+		// Is this a subscription request?
 		if ($this->current_request == 'subscribe' OR $this->current_request == 'unsubscribe')
 		{
 			if ($this->EE->session->userdata('member_id') == 0)
@@ -664,10 +643,7 @@ class Forum_Core extends Forum {
 			return TRUE;
 		}
 
-		/** --------------------------------
-		/**  Fetch the Forums Prefs
-		/** --------------------------------*/
-		
+		// Fetch the Forums Prefs		
 		// Depending on what the "current_request" variable contains we'll run the query a little differnt.
 				
 		if (in_array($this->current_request, array('editreply', 'deletereply', 'quotereply', 'viewpost', 'viewreply', 'reportreply', 'movereply')))
@@ -691,42 +667,31 @@ class Forum_Core extends Forum {
 				return $this->trigger_error();
 			}
 		}
-		/** --------------------------------
-		/**  Unserialize the permissions
-		/** --------------------------------*/
+
+		// Unserialize the permissions
 		$perms = unserialize(stripslashes($meta[$this->current_id]['forum_permissions']));
 				
-		/** --------------------------------
-		/**  Can the forum be viewed?
-		/** --------------------------------*/
+		// Can the forum be viewed?
 		if ( ! $this->_permission('can_view_forum', $perms))			
 		{
 			return $this->trigger_error('can_not_view_forum');
 		}
 
-		/** --------------------------------
-		/**  Can hidden forum be viewed?
-		/** --------------------------------*/
+		// Can hidden forum be viewed?
 		// c = hidden
-
 		if ( ! $this->_permission('can_view_hidden', $perms) AND $meta[$this->current_id]['forum_status'] == 'c')				
 		{
 			return $this->trigger_error('can_not_view_forum');
 		}
 		
-		/** --------------------------------
-		/**  Is user trying to post in a read-only forum?
-		/** --------------------------------*/
+		// Is user trying to post in a read-only forum?
 		// a = read only
-		
 		if ($meta[$this->current_id]['forum_status'] == 'a' AND in_array($this->current_request, array('newtopic', 'newreply', 'edittopic', 'editreply', 'quotetopic', 'quotereply')))				
 		{ 
 			return $this->trigger_error('can_not_post_in_forum');
 		}
 
-		/** --------------------------------
-		/**  Can posts be viewed?
-		/** --------------------------------*/
+		// Can posts be viewed?
 		$pages = array('viewthread', 'newreply', 'edittopic', 'editreply');
 
 		if ( ! $this->_permission('can_view_topics', $perms) AND in_array($this->current_request, $pages))
@@ -734,9 +699,7 @@ class Forum_Core extends Forum {
 			return $this->trigger_error('can_not_view_posts');
 		}
 
-		/** --------------------------------
-		/**  Can the user post messages?
-		/** --------------------------------*/
+		// Can the user post messages?
 		if ( ! $this->_permission('can_post_topics', $perms) AND in_array($this->current_request, array('newtopic', 'edittopic')))
 		{		
 			return $this->trigger_error('can_not_post_in_forum');
@@ -747,10 +710,7 @@ class Forum_Core extends Forum {
 			return $this->trigger_error('can_not_post_in_forum');
 		}
 
-		/** --------------------------------
-		/**  User is Authorized!!
-		/** --------------------------------*/
-		return TRUE;	
+		return TRUE;	// User is Authorized!!
 	}
 
 	// --------------------------------------------------------------------
@@ -946,9 +906,7 @@ class Forum_Core extends Forum {
 			return FALSE;
 		}
 		
-		/** -------------------------------------
-		/**  Check the cache for the permission
-		/** -------------------------------------*/
+		// Check the cache for the permission
 		$group_id = $this->EE->session->userdata('group_id');
 		$member_id = $this->EE->session->userdata('member_id');		
 		
@@ -961,10 +919,7 @@ class Forum_Core extends Forum {
 			return ($this->current_moderator[$forum_id][$member_id][$item] == 'y') ? TRUE : FALSE;
 		}
 		
-		/** -------------------------------------
-		/**  Fetch the permissions from the DB
-		/** -------------------------------------*/
-		
+		// Fetch the permissions from the DB
 		$query = $this->EE->db->query("SELECT * FROM exp_forum_moderators WHERE mod_forum_id = '{$forum_id}' AND (mod_member_id = '{$member_id}' OR mod_group_id = '{$group_id}')");
 
 		if ($query->num_rows() == 0)
@@ -1350,10 +1305,13 @@ class Forum_Core extends Forum {
 	function _feed_builder()
 	{
 		// Grab them prefs
-		$sql = "SELECT forum_id, forum_is_cat, forum_status, forum_permissions, forum_enable_rss, forum_use_http_auth FROM exp_forums WHERE board_id = '".$this->fetch_pref('board_id')."' ";
+		$this->EE->db->select('forum_id, forum_is_cat, forum_status, 
+							   forum_permissions, forum_enable_rss, 
+							   forum_use_http_auth')
+					 ->where('board_id', $this->fetch_pref('board_id'));
 
 		// Are there specific forums being requested?
-		$feed_id = $this->EE->uri->segment(3+$this->seg_addition);
+		$feed_id = $this->EE->uri->segment(3 + $this->seg_addition);
 
 		if ($feed_id !== FALSE)
 		{
@@ -1364,11 +1322,14 @@ class Forum_Core extends Forum {
 			{
 				return $this->trigger_error('no_feed_specified');
 			}
-							
-			$sql .= "AND forum_id IN (".implode(',', explode('_', $feed_id)).") ";
+
+			$ids = explode('_', $feed_id);
+			$ids = array_map('intval', $ids);
+
+			$this->EE->db->where_in('forum_id', $ids);
 		}
-		
-		$query = $this->EE->db->query($sql);
+
+		$query = $this->EE->db->get('forums');
 		
 		if ($query->num_rows() == 0)
 		{
@@ -1377,6 +1338,7 @@ class Forum_Core extends Forum {
 
 		$enable_cluster = TRUE;
 		$ids = array();	
+
 		foreach ($query->result_array() as $row)
 		{
 			// Are feeds enabled for this forum?
@@ -1409,6 +1371,8 @@ class Forum_Core extends Forum {
 			{	
 				if ($row['forum_use_http_auth'] == 'y')
 				{
+					
+
 					$auth = $this->http_authentication_check_basic($can_view_forum);
 
 					if ($this->auth_attempt === FALSE)
@@ -11311,149 +11275,13 @@ class Forum_Core extends Forum {
 	 */
 	public function http_authentication_check_basic($allowed_groups = array())
 	{
-		/** ----------------------------------
-		/**  Find Username, Please
-		/** ----------------------------------*/
-		if ( ! empty($_SERVER) && isset($_SERVER['PHP_AUTH_USER']))
-		{
-			$user = $_SERVER['PHP_AUTH_USER'];
-		}
-		elseif ( ! empty($_ENV) && isset($_ENV['REMOTE_USER']))
-		{
-			$user = $_ENV['REMOTE_USER'];
-		}
-		elseif ( @getenv('REMOTE_USER'))
-		{
-			$user = getenv('REMOTE_USER');
-		}
-		elseif ( ! empty($_ENV) && isset($_ENV['AUTH_USER']))
-		{
-			$user = $_ENV['AUTH_USER'];
-		}
-		elseif ( @getenv('AUTH_USER'))
-		{
-			$user = getenv('AUTH_USER');
-		}
-		
-		/** ----------------------------------
-		/**  Find Password, Please
-		/** ----------------------------------*/
-		
-		if ( ! empty($_SERVER) && isset($_SERVER['PHP_AUTH_PW']))
-		{
-			$pass = $_SERVER['PHP_AUTH_PW'];
-		}
-		elseif ( ! empty($_ENV) && isset($_ENV['REMOTE_PASSWORD']))
-		{
-			$pass = $_ENV['REMOTE_PASSWORD'];
-		}
-		elseif ( @getenv('REMOTE_PASSWORD'))
-		{
-			$pass = getenv('REMOTE_PASSWORD');
-		}
-		elseif ( ! empty($_ENV) && isset($_ENV['AUTH_PASSWORD']))
-		{
-			$pass = $_ENV['AUTH_PASSWORD'];
-		}
-		elseif ( @getenv('AUTH_PASSWORD'))
-		{
-			$pass = getenv('AUTH_PASSWORD');
-		}
-		
-		/** ----------------------------------
-		/**  Authentication for IIS
-		/** ----------------------------------*/
-		
-		if ( ! isset ($user) OR ! isset($pass) OR (empty($user) && empty($pass)))
-		{
-			if ( isset($_SERVER['HTTP_AUTHORIZATION']) && substr($_SERVER['HTTP_AUTHORIZATION'], 0, 6) == 'Basic ')
-			{
-				list($user, $pass) = explode(':', base64_decode(substr($HTTP_AUTHORIZATION, 6)));
-			}
-			elseif ( ! empty($_ENV) && isset($_ENV['HTTP_AUTHORIZATION']) && substr($_ENV['HTTP_AUTHORIZATION'], 0, 6) == 'Basic ')
-			{
-				list($user, $pass) = explode(':', base64_decode(substr($_ENV['HTTP_AUTHORIZATION'], 6)));
-			}
-			elseif (@getenv('HTTP_AUTHORIZATION') && substr(getenv('HTTP_AUTHORIZATION'), 0, 6) == 'Basic ')
-			{
-				list($user, $pass) = explode(':', base64_decode(substr(getenv('HTTP_AUTHORIZATION'), 6)));
-			}
-		}
-		
-		/** ----------------------------------
-		/**  Authentication for FastCGI
-		/** ----------------------------------*/
-		
-		if ( ! isset ($user) OR ! isset($pass) OR (empty($user) && empty($pass)))
-		{	
-			if ( ! empty($_ENV) && isset($_ENV['Authorization']) && substr($_ENV['Authorization'], 0, 6) == 'Basic ')
-			{
-				list($user, $pass) = explode(':', base64_decode(substr($_ENV['Authorization'], 6)));
-			}
-			elseif (@getenv('Authorization') && substr(getenv('Authorization'), 0, 6) == 'Basic ')
-			{
-				list($user, $pass) = explode(':', base64_decode(substr(getenv('Authorization'), 6)));
-			}
-		}
-		
-		if ( ! isset ($user) OR ! isset($pass) OR (empty($user) && empty($pass)))
-		{
-			return FALSE;
-		}
-		
-		$this->auth_attempt = TRUE;
-		
-		/** ----------------------------------------
-		/**  Check password lockout status
-		/** ----------------------------------------*/
-		
-		if ($this->EE->session->check_password_lockout($user) === TRUE)
-		{
-			return FALSE;	
-		}
-		
-		/** ----------------------------------
-		/**  Validate Username and Password
-		/** ----------------------------------*/
-		
-		$qry = $this->EE->db->select('password, group_id')
-							->where('username', $user)
-							->get('members');
-		
-		if ($qry->num_rows() == 0)
-		{
-			$this->EE->session->save_password_lockout($user);
-			return FALSE;
-		}
-		
-		// make sure Super Admins are always allowed
-		if ( ! in_array($allowed_groups, 1))
-		{
-			$allowed_groups[] = 1;
-		}
-		
-		if ( ! in_array($query->row('group_id') , $allowed_groups))
-		{
-			return FALSE;
-		}
-		
-		$this->EE->load->helper('security');
-		if ($qry->row('password') == do_hash($pass))
-		{
-			return TRUE;
-		}
+		$this->EE->load->library('auth');
+		$auth = $this->EE->auth->authenticate_http_basic($allowed_groups,
+														 $this->realm);
 
-		// just in case it's still in the db as MD5 from an old pMachine or EE 1.x install
-		if ($qry->row('password') == do_hash($pass, 'md5'))
-		{
-			return TRUE;
-		}
-		else
-		{
-			$this->EE->session->save_password_lockout($user);
-			
-			return FALSE;
-		}
+		$this->auth_attempt = TRUE;
+
+		return $auth;
 	}
 }
 // END CLASS

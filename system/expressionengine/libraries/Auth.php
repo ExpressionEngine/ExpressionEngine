@@ -149,6 +149,8 @@ class Auth {
 			@header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
 			exit("HTTP/1.0 401 Unauthorized");
 		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
