@@ -26,9 +26,6 @@
 
 class Member_auth extends Member {
 
-
-	private $_member_obj = NULL;
-
 	/**
 	 * Login Page
 	 *
