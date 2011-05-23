@@ -225,10 +225,6 @@ class Login extends CI_Controller {
 		}
 		
 		$incoming->start_session(TRUE);
-		
-		// Delete old password lockouts		
-		$this->session->delete_password_lockout();
-
 
 		// Redirect the user to the CP home page
 		// ----------------------------------------------------------------

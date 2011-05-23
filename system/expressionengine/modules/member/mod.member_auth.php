@@ -76,7 +76,7 @@ class Member_auth extends Member {
 		}
 		else
 		{
-			$data['hidden_fields']['RET']	= ($return == 'self') ? $this->_member_path($this->request.'/'.$this->cur_id) : $return;
+			$data['hidden_fields']['RET'] = ($return == 'self') ? $this->_member_path($this->request.'/'.$this->cur_id) : $return;
 		}
 
 		$data['hidden_fields']['FROM'] = ($this->in_forum === TRUE) ? 'forum' : '';
@@ -84,7 +84,8 @@ class Member_auth extends Member {
 
 		$this->_set_page_title(lang('member_login'));
 
-		return $this->_var_swap($login_form, array($match['1'] => $this->EE->functions->form_declaration($data)));
+		return $this->_var_swap($login_form, array(
+					$match['1'] => $this->EE->functions->form_declaration($data)));
 	}
 
 	// --------------------------------------------------------------------
@@ -283,9 +284,6 @@ class Member_auth extends Member {
 		}
 
 		$sess->start_session();
-
-		// Delete old password lockouts		
-		$this->EE->session->delete_password_lockout();
 
 		// -------------------------------------------
 		// 'member_member_login_single' hook.

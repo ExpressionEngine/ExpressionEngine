@@ -458,6 +458,9 @@ class Auth_result {
 			$this->EE->session->userdata['username'] = $this->member('username');
 			$this->EE->logger->log_action(lang('member_logged_in'));
 		}
+
+		// Delete old password lockouts		
+		$this->EE->session->delete_password_lockout();
 	}
 	
 	// --------------------------------------------------------------------
