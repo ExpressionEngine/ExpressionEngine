@@ -129,7 +129,7 @@ class Login extends CI_Controller {
 		/* -------------------------------------------*/
 		
 		// Is IP and User Agent required for login?	
-		if ($this->auth->check_require_ip())
+		if ( ! $this->auth->check_require_ip())
 		{
 			$this->_return_to_login('unauthorized_request');
 		}
