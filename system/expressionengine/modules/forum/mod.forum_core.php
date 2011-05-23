@@ -1496,11 +1496,11 @@ class Forum_Core extends Forum {
 									  f.forum_auto_link_urls, f.forum_allow_img_urls,
 									  m.screen_name AS last_post_author,
 									  m.screen_name AS author, m.email, m.url')
-							->form('forum_topics t', 'forums f', 'members m')
-							->where('t.last_post_author_id = m.member_id')
-							->where('f.forum_id = t.forum_id')
-							->where('m.member_id = t.author_id')
-							->where('t.announcement', 'n')
+							->from(array('forum_topics t', 'forums f', 'members m'))
+							->where('t.last_post_author_id = m.member_id', '', FALSE)
+							->where('f.forum_id = t.forum_id', '', FALSE)
+							->where('m.member_id = t.author_id', '', FALSE)
+							->where('t.announcement', 'n', '', FALSE)
 							->where_in('t.forum_id', $idx)
 							->or_where_in('t.moved_forum_id', $idx)
 							->where('t.board_id', $this->fetch_pref('board_id'))
