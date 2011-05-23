@@ -1378,7 +1378,7 @@ class Forum_Core extends Forum {
 		$enable_cluster = TRUE;
 		$ids = array();	
 		foreach ($query->result_array() as $row)
-		{var_dump($row);exit;
+		{
 			// Are feeds enabled for this forum?
 			if ($row['forum_enable_rss'] == 'n')
 			{
