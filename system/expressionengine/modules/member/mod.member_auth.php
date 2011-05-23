@@ -360,7 +360,7 @@ class Member_auth extends Member {
 
 		// Update stats
 		$cutoff = $this->EE->localize->now - (15 * 60);
-		$anon = ($this->EE->input->post('anon') == 1) ? 'y' : 'n';
+		$anon = ($this->EE->input->post('anon') == 1) ? 'n' : 'y';
 
 		$in_forum = ($this->EE->input->get_post('FROM') == 'forum') ? 'y' : 'n';
 
