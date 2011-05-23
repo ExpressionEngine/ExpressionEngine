@@ -271,7 +271,7 @@ class Member_auth extends Member {
 	// --------------------------------------------------------------------
 
 	/**
-	 * 
+	 * Update online user stats
 	 */
 	private function _update_online_user_stats()
 	{
