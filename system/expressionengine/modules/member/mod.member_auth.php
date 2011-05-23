@@ -248,6 +248,12 @@ class Member_auth extends Member {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Do Single site Authentication
+	 *
+	 * @param 	string 	username
+	 * @param 	string 	password
+	 */
 	private function _do_auth($username, $password)
 	{
 		$sess = $this->EE->auth->authenticate_username($username, $password);
@@ -299,6 +305,11 @@ class Member_auth extends Member {
 		$this->_build_success_message();
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Build Success Message
+	 */
 	private function _build_success_message()
 	{
 		// Build success message
@@ -336,7 +347,6 @@ class Member_auth extends Member {
 
 		$this->EE->output->show_message($data);
 	}
-
 
 	// --------------------------------------------------------------------
 
