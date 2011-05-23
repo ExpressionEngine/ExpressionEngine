@@ -737,7 +737,10 @@ class Content_files extends CI_Controller {
 		$upload_response['name'] = $upload_response['file_name'];
 		$upload_response['thumb'] = $upload_response['file_thumb'];
 		
-		$orig_name = explode('.' , $upload_response['orig_name']);
+		// Check to see if they want to increment or replace
+		$file_name_source =  ($this->config->item('filename_increment') == 'y') ? 'file_name' : 'orig_name';
+		
+		$orig_name = explode('.' , $upload_response[$file_name_source]);
 		$vars = array(
 			'file'		=> $upload_response,
 			'file_json'	=> $this->javascript->generate_json($upload_response, TRUE),
@@ -788,7 +791,7 @@ class Content_files extends CI_Controller {
 		
 		// Replace the filename and thumb (everything else should have stayed the same)
 		$thumb_info = $this->filemanager->get_thumb($new_file_name, $file['upload_location_id']);
-		
+
 		$file['file_id']	= $rename_file['file_id'];
 		$file['file_name'] 	= $new_file_name;
 		$file['name'] 		= $new_file_name;

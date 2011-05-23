@@ -3061,7 +3061,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 * @param	string
 	 * @param	string
 	 */
-	private function _valid_fieldname($str, $edit)
+	public function _valid_fieldname($str, $edit)
 	{
 		$this->lang->loadfile('admin_content');
 

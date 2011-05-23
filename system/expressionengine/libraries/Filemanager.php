@@ -1684,7 +1684,7 @@ class Filemanager {
 		
 		$field = ($field_name) ? $field_name : 'userfile';
 		$original_filename = $_FILES[$field]['name'];
-		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id']));
+		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id'], TRUE));
 		
 		$config = array(
 			'file_name'		=> $clean_filename,
@@ -1842,6 +1842,16 @@ class Filemanager {
 		$previous_data = $this->EE->file_model->get_files_by_id($file_id);
 		$previous_data = $previous_data->row();
 		
+		// If the new name is the same as the previous, get out of here
+		if ($new_file_name == $previous_data->file_name)
+		{
+			return array(
+				'success'	=> TRUE,
+				'replace'	=> $replace,
+				'file_id'	=> $file_id
+			);
+		}
+		
 		$directory_id		= $previous_data->upload_location_id;
 		$old_file_name		= $previous_data->file_name;
 		$upload_directory	= $this->fetch_upload_dir_prefs($directory_id);
@@ -1925,12 +1935,18 @@ class Filemanager {
 		// Delete the new file's database record, but leave the files
 		$this->EE->file_model->delete_files($new_file->file_id, FALSE);
 				
-		// Update file_hw_original
+		// Update file_hw_original, filesize, modified date and modified user
 		$this->EE->file_model->save_file(array(
-			'file_id' => $existing_file->file_id,
-			'file_hw_original' => $new_file->file_hw_original
+			'file_id'				=> $existing_file->file_id, // Use the old file_id
+			'file_size'				=> $new_file->file_size,
+			'file_hw_original'		=> $new_file->file_hw_original,
+			'modified_date'			=> $new_file->modified_date,
+			'modified_by_member_id'	=> $this->EE->session->userdata('member_id')
 		));
-		$existing_file->file_hw_original = $new_file->file_hw_original;
+		$existing_file->file_size				= $new_file->file_size;
+		$existing_file->file_hw_original		= $new_file->file_hw_original;
+		$existing_file->modified_date			= $new_file->modified_date;
+		$existing_file->modified_by_member_id 	= $this->EE->session->userdata('member_id');
 		
 		return $existing_file;
 	}
