@@ -129,11 +129,38 @@ class Auth {
 	}
 	
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Authenticate from basic http auth
+	 *
+	 * @access	public
+	 */
+	public function authenticate_http_basic()
+	{
+		die('@todo');
+		list($username, $password) = $this->_retrieve_http_basic();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Authenticate from digest http auth
+	 *
+	 * @access	public
+	 */
+	public function authenticate_http_digest()
+	{
+		die('@todo');
+	}
+	
+	
+	// --------------------------------------------------------------------
 
 	/**
 	 * Check Required IP
 	 *
-	 * @return 	boolean 	
+	 * @access	public
+	 * @return 	boolean
 	 */
 	public function check_require_ip()
 	{
@@ -148,7 +175,7 @@ class Auth {
 
 		return TRUE;
 	}
-
+	
 	// --------------------------------------------------------------------
 
 	/**
@@ -271,6 +298,104 @@ class Auth {
 		$member->free_result();
 		
 		return $authed;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Retrieve Basic HTTP Credentials
+	 *
+	 * @access	private
+	 */
+	private function _retrieve_http_basic()
+	{
+		//  Find Username, Please
+		// ----------------------------------------------------------------
+		
+		if (isset($_SERVER['PHP_AUTH_USER']))
+		{
+			$user = $_SERVER['PHP_AUTH_USER'];
+		}
+		elseif (isset($_ENV['REMOTE_USER']))
+		{
+			$user = $_ENV['REMOTE_USER'];
+		}
+		elseif ( @getenv('REMOTE_USER'))
+		{
+			$user = getenv('REMOTE_USER');
+		}
+		elseif (isset($_ENV['AUTH_USER']))
+		{
+			$user = $_ENV['AUTH_USER'];
+		}
+		elseif ( @getenv('AUTH_USER'))
+		{
+			$user = getenv('AUTH_USER');
+		}
+		
+		
+		//  Find Password, Please
+		// ----------------------------------------------------------------
+		
+		if (isset($_SERVER['PHP_AUTH_PW']))
+		{
+			$pass = $_SERVER['PHP_AUTH_PW'];
+		}
+		elseif (isset($_ENV['REMOTE_PASSWORD']))
+		{
+			$pass = $_ENV['REMOTE_PASSWORD'];
+		}
+		elseif ( @getenv('REMOTE_PASSWORD'))
+		{
+			$pass = getenv('REMOTE_PASSWORD');
+		}
+		elseif (isset($_ENV['AUTH_PASSWORD']))
+		{
+			$pass = $_ENV['AUTH_PASSWORD'];
+		}
+		elseif ( @getenv('AUTH_PASSWORD'))
+		{
+			$pass = getenv('AUTH_PASSWORD');
+		}
+		
+		// Authentication for IIS
+		// ----------------------------------------------------------------
+		
+		if ( ! isset ($user) OR ! isset($pass) OR (empty($user) && empty($pass)))
+		{
+			if ( isset($_SERVER['HTTP_AUTHORIZATION']) && substr($_SERVER['HTTP_AUTHORIZATION'], 0, 6) == 'Basic ')
+			{
+				list($user, $pass) = explode(':', base64_decode(substr($HTTP_AUTHORIZATION, 6)));
+			}
+			elseif ( ! empty($_ENV) && isset($_ENV['HTTP_AUTHORIZATION']) && substr($_ENV['HTTP_AUTHORIZATION'], 0, 6) == 'Basic ')
+			{
+				list($user, $pass) = explode(':', base64_decode(substr($_ENV['HTTP_AUTHORIZATION'], 6)));
+			}
+			elseif (@getenv('HTTP_AUTHORIZATION') && substr(getenv('HTTP_AUTHORIZATION'), 0, 6) == 'Basic ')
+			{
+				list($user, $pass) = explode(':', base64_decode(substr(getenv('HTTP_AUTHORIZATION'), 6)));
+			}
+		}
+		
+		//  Authentication for FastCGI
+		// ----------------------------------------------------------------
+		
+		if ( ! isset ($user) OR ! isset($pass) OR (empty($user) && empty($pass)))
+		{	
+			if ( ! empty($_ENV) && isset($_ENV['Authorization']) && substr($_ENV['Authorization'], 0, 6) == 'Basic ')
+			{
+				list($user, $pass) = explode(':', base64_decode(substr($_ENV['Authorization'], 6)));
+			}
+			elseif (@getenv('Authorization') && substr(getenv('Authorization'), 0, 6) == 'Basic ')
+			{
+				list($user, $pass) = explode(':', base64_decode(substr(getenv('Authorization'), 6)));
+			}
+		}
+		
+		if ( ! isset ($user) OR ! isset($pass) OR (empty($user) && empty($pass)))
+		{
+			return FALSE;
+		}
 	}
 }
 // END Auth class

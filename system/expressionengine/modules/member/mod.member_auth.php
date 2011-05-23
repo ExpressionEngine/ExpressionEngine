@@ -104,27 +104,17 @@ class Member_auth extends Member {
 		/*
 		/* -------------------------------------------*/
 
-		// Error trapping
-		$errors = array();
-
 		// No username/password?  Bounce them...
-		if ( ! $this->EE->input->get('multi') && 
-			( ! $this->EE->input->get_post('username') OR 
-				! $this->EE->input->get_post('password')))
+		$multi	  = $this->EE->input->get('multi');
+		$username = $this->EE->input->post('username');
+		$password = $this->EE->input->post('password');
+		
+		if ( ! $multi && ! ($username && $password))
 		{
-			$this->EE->output->show_user_error('submission', 
-									array(lang('mbr_form_empty')));
+			return $this->EE->output->show_user_error('submission', array(
+				lang('mbr_form_empty')
+			));
 		}
-
-		// No username/password?  Bounce them...
-		// Multi should be abstracted into the auth lib.
-		if ( ! $this->EE->input->get('multi') && 
-			( ! $this->EE->input->get_post('username') OR ! $this->EE->input->get_post('password')))
-		{
-			$this->EE->output->show_user_error('submission', array(lang('mbr_form_empty')));
-		}
-
-		list($username, $password) = $this->_check_userpwd_post();
 
 		// This should go in the auth lib.
 		if ( ! $this->EE->auth->check_require_ip())
@@ -217,40 +207,6 @@ class Member_auth extends Member {
 
 	// --------------------------------------------------------------------
 
-	/**
-	 * Check username and password in the POST array
-	 *
-	 * Throw a fatal error if either one hasn't been supplied by the user
-	 *
-	 * @return 	mixed 	array on success/fatal error on failure
-	 */
-	private function _check_userpwd_post()
-	{
-		// username
-		if ( ! ($username = $this->EE->input->post('username')))
-		{
-			return $this->EE->output->show_user_error('submission', 
-												array(lang('mbr_form_empty')));
-		}
-
-		// password
-		if ( ! ($password = $this->EE->input->post('password')))
-		{
-			return $this->EE->output->show_user_error('submission', 
-												array(lang('mbr_form_empty')));
-		}
-
-		return array($username, $password);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Do Single site Authentication
-	 *
-	 * @param 	string 	username
-	 * @param 	string 	password
-	 */
 	private function _do_auth($username, $password)
 	{
 		$sess = $this->EE->auth->authenticate_username($username, $password);
