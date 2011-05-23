@@ -111,30 +111,26 @@ class Member_auth extends Member {
 		
 		if ( ! $multi && ! ($username && $password))
 		{
-			return $this->EE->output->show_user_error('submission', array(
-				lang('mbr_form_empty')
-			));
+			return $this->EE->output->show_user_error('general', lang('mbr_form_empty'));
 		}
 
 		// This should go in the auth lib.
 		if ( ! $this->EE->auth->check_require_ip())
 		{
-			$this->EE->output->show_user_error('general', 
-										array(lang('unauthorized_request')));
+			return $this->EE->output->show_user_error('general', lang('unauthorized_request'));
 		}
 
 		// Check password lockout status
 		if (TRUE === $this->EE->session->check_password_lockout($username))
 		{
 			$line = lang('password_lockout_in_effect');
-
 			$line = str_replace("%x", $this->EE->config->item('password_lockout_interval'), $line);
 
-			$this->EE->output->show_user_error('general', array($line));
+			$this->EE->output->show_user_error('general', $line);
 		}
 
 		// Log me in.
-		if ($this->EE->input->get('multi'))
+		if ($multi)
 		{	
 			// Multiple Site Login
 			$sess = $this->_do_multi_auth();
@@ -186,27 +182,6 @@ class Member_auth extends Member {
 
 	// --------------------------------------------------------------------
 
-	/**
-	 * Check multiple logins
-	 *
-	 * 
-	 */
-	private function _check_multiple_logins($auth_obj)
-	{
-		// Do we allow multiple logins on the same account?		
-		if ($this->EE->config->item('allow_multi_logins') == 'n')
-		{
-			if ($auth_obj->has_other_session())
-			{
-				return FALSE;
-			}
-		} 
-
-		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
 	private function _do_auth($username, $password)
 	{
 		$sess = $this->EE->auth->authenticate_username($username, $password);
@@ -214,22 +189,23 @@ class Member_auth extends Member {
 		if ( ! $sess)
 		{
 			$this->EE->session->save_password_lockout($username);
-			return $this->EE->output->show_user_error('general', 
-											array(lang('not_authorized')));
+			return $this->EE->output->show_user_error('general', lang('not_authorized'));
 		}
 
 		// Banned
 		if ($sess->is_banned())
 		{
-			return $this->EE->output->show_user_error('general', 
-											array(lang('not_authorized')));
+			return $this->EE->output->show_user_error('general', lang('not_authorized'));
 		}
 
 		// Allow multiple logins?
-		if ( ! $this->_check_multiple_logins($sess))
+		// Do we allow multiple logins on the same account?		
+		if ($this->EE->config->item('allow_multi_logins') == 'n')
 		{
-			return $this->EE->output->show_user_error('general', 
-											array(lang('not_authorized')));
+			if ($sess->has_other_session())
+			{
+				return $this->EE->output->show_user_error('general', lang('not_authorized'));
+			}
 		}
 
 		// Check user/pass minimum length
