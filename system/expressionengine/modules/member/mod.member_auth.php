@@ -204,7 +204,7 @@ class Member_auth extends Member {
 	 *
 	 * 
 	 */
-	private function _check_multiple_logins(&$auth_obj)
+	private function _check_multiple_logins($auth_obj)
 	{
 		// Do we allow multiple logins on the same account?		
 		if ($this->EE->config->item('allow_multi_logins') == 'n')
