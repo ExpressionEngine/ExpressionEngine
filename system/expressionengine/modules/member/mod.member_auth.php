@@ -270,7 +270,7 @@ class Member_auth extends Member {
 		}
 
 		// Allow multiple logins?
-		if ( ! $this->_check_multiple_logins($incoming))
+		if ( ! $this->_check_multiple_logins($sess))
 		{
 			return $this->EE->output->show_user_error('general', 
 											array(lang('not_authorized')));
@@ -297,7 +297,7 @@ class Member_auth extends Member {
 		//
 		// -------------------------------------------
 
-		$this->_update_online_user_stats($sess);
+		$this->_update_online_user_stats();
 
 		$this->_build_success_message();
 	}
@@ -348,16 +348,10 @@ class Member_auth extends Member {
 	// --------------------------------------------------------------------
 
 	/**
-	 * @todo, finish this method
-	 *
-	 * That includes config->item('dynamic_tracking_disabling') checks
-	 *
+	 * 
 	 */
-	private function _update_online_user_stats(&$sess)
+	private function _update_online_user_stats()
 	{
-
-		return; // This is temporary
-
 		if ($this->EE->config->item('enable_online_user_tracking') == 'n' OR
 			$this->EE->config->item('disable_all_tracking') == 'y')
 		{
@@ -365,7 +359,11 @@ class Member_auth extends Member {
 		}
 
 		// Update stats
-		$cutoff		= $this->EE->localize->now - (15 * 60);
+		$cutoff = $this->EE->localize->now - (15 * 60);
+		$anon = ($this->EE->input->post('anon') == 1) ? 'y' : 'n';
+
+		$in_forum = ($this->EE->input->get_post('FROM') == 'forum') ? 'y' : 'n';
+
 
 		$this->EE->db->query("DELETE FROM exp_online_users WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND ((ip_address = '".$this->EE->input->ip_address()."' AND member_id = '0') OR date < $cutoff)");
 
@@ -373,17 +371,15 @@ class Member_auth extends Member {
 						'member_id'		=> $this->EE->session->userdata('member_id'),
 						'name'			=> ($this->EE->session->userdata('screen_name') == '') ? $this->EE->session->userdata('username') : $this->EE->session->userdata('screen_name'),
 						'ip_address'	=> $this->EE->input->ip_address(),
+						'in_forum'		=> $in_forum,
 						'date'			=> $this->EE->localize->now,
 						'anon'			=> $anon,
 						'site_id'		=> $this->EE->config->item('site_id')
 					);
 
-		$this->EE->db->query($this->EE->db->update_string('exp_online_users', $data, 
-							array(
-								"ip_address" => $this->EE->input->ip_address(), 
-								"member_id" => $data['member_id']))
-							);
-		
+		$this->EE->db->where('ip_address', $this->EE->input->ip_address())
+					 ->where('member_id', $data['member_id'])
+					 ->update('online_users', $data);		
 	}
 
 	// --------------------------------------------------------------------
