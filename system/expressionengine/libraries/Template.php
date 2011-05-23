@@ -119,15 +119,7 @@ class EE_Template {
 		{
 			$this->debugging = TRUE;
 			
-			if (phpversion() < 5)
-			{
-				list($usec, $sec) = explode(" ", microtime());
-				$this->start_microtime = ((float)$usec + (float)$sec);
-			}
-			else
-			{
-				$this->start_microtime = microtime(TRUE);
-			}
+			$this->start_microtime = microtime(TRUE);
 		}
 	}
 	
@@ -3589,15 +3581,7 @@ class EE_Template {
 			$str = str_repeat('&nbsp;', $this->depth * 5).$str;
 		}
 		
-		if (phpversion() < 5)
-		{
-			list($usec, $sec) = explode(" ", microtime());
-			$time = ((float)$usec + (float)$sec) - $this->start_microtime;
-		}
-		else
-		{
-			$time = microtime(TRUE)-$this->start_microtime;
-		}
+		$time = microtime(TRUE)-$this->start_microtime;
 		
 		$this->log[] = '('.number_format($time, 6).') '.$str;
 	}
