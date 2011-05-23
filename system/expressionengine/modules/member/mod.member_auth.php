@@ -288,15 +288,6 @@ class Member_auth extends Member {
 
 		$sess->start_session();
 
-		// -------------------------------------------
-		// 'member_member_login_single' hook.
-		//  - Additional processing when a member is logging into single site
-		//
-			$edata = $this->EE->extensions->call('member_member_login_single', $sess->member);
-			if ($this->EE->extensions->end_script === TRUE) return;
-		//
-		// -------------------------------------------
-
 		$this->_update_online_user_stats();
 
 		$this->_build_success_message();

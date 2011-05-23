@@ -458,6 +458,17 @@ class Auth_result {
 			$this->EE->session->userdata['username'] = $this->member('username');
 			$this->EE->logger->log_action(lang('member_logged_in'));
 		}
+		else
+		{
+			// -------------------------------------------
+			// 'member_member_login_single' hook.
+			//  - Additional processing when a member is logging into single site
+			//
+				$edata = $this->EE->extensions->call('member_member_login_single', $this->_hook_data());
+				if ($this->EE->extensions->end_script === TRUE) return;
+			//
+			// -------------------------------------------
+		}
 
 		// Delete old password lockouts		
 		$this->EE->session->delete_password_lockout();
@@ -494,28 +505,6 @@ class Auth_result {
 		$obj->can_access_cp = $this->has_permission('can_access_cp');
 		return $obj;
 	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get Magic Method
-	 *
-	 * Used to give extension hooks like member_member_login_single access
-	 * to the member class property.
-	 *
-	 * I'm not convinced this is the proper solution, but dropping it in so
-	 * things will work for the time being.
-	 */
-	public function __get($prop)
-	{
-		if (isset($this->$prop))
-		{
-			return $this->$prop;
-		}
-
-		return FALSE;
-	}
-
 }
 // END Auth_member class
 
