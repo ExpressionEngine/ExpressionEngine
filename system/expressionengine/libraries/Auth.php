@@ -135,10 +135,20 @@ class Auth {
 	 *
 	 * @access	public
 	 */
-	public function authenticate_http_basic()
+	public function authenticate_http_basic($not_allowed_groups = array(),
+											$realm='Authentication Required')
 	{
-		die('@todo');
-		list($username, $password) = $this->_retrieve_http_basic();
+		$always_disallowed = array(2, 3, 4);
+
+		$not_allowed_groups = array_merge($not_allowed_groups, $always_disallowed);
+
+		if ( ! $this->_retrieve_http_basic())
+		{
+			@header('WWW-Authenticate: Basic realm="'.$realm.'"');
+			$this->EE->output->set_status_header(401);
+			@header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
+			exit("HTTP/1.0 401 Unauthorized");
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -396,6 +406,14 @@ class Auth {
 		{
 			return FALSE;
 		}
+
+		// Check password Lockout
+		if ($this->EE->session->check_password_lockout($user) === TRUE)
+		{
+			return FALSE;	
+		}
+
+		return ($this->authenticate_username($user, $pass)) ? TRUE : FALSE;
 	}
 }
 // END Auth class
