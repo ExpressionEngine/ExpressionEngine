@@ -1367,31 +1367,20 @@ class Forum_Core extends Forum {
 			}
 
 			// Can the user view the current forum?
-			if ($row['forum_status'] != 'c' AND ! $this->_permission('can_view_forum', $row['forum_permissions']))				
+			if ($row['forum_status'] != 'c' && 
+				! $this->_permission('can_view_forum', $row['forum_permissions']))				
 			{	
 				if ($row['forum_use_http_auth'] == 'y')
 				{
-					
-
-					$auth = $this->http_authentication_check_basic($can_view_forum);
-
-					if ($this->auth_attempt === FALSE)
-					{
-						$this->http_authentication_basic();
-					}
-					elseif($auth === FALSE)
-					{
-						continue;
-					}					
-				}
-				else
-				{
-					continue;
+					$this->EE->load->library('auth');
+					$this->EE->auth->authenticate_http_basic($can_view_forum,
+															 $this->realm);
 				}
 			}
 			
 			// Can the user view the current hidden forum?
-			if ($row['forum_status'] == 'c' AND  ! $this->_permission('can_view_hidden', $row['forum_permissions']))
+			if ($row['forum_status'] == 'c' && 
+				! $this->_permission('can_view_hidden', $row['forum_permissions']))
 			{ 
 				if ($row['forum_is_cat'] == 'y')
 				{
@@ -1400,16 +1389,9 @@ class Forum_Core extends Forum {
 				
 				if ($row['forum_use_http_auth'] == 'y')
 				{
-					$auth = $this->http_authentication_check_basic($can_view_hidden);
-
-					if ($this->auth_attempt === FALSE)
-					{
-						$this->http_authentication_basic();
-					}
-					elseif($auth === FALSE)
-					{
-						continue;
-					}					
+					$this->EE->load->library('auth');
+					$this->EE->auth->authenticate_http_basic($can_view_forum,
+															 $this->realm);				
 				}
 				else
 				{

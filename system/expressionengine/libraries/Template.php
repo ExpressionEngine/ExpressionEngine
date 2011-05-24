@@ -2115,6 +2115,7 @@ class EE_Template {
 					$not_allowed_groups[] = $row['member_group'];
 				}
 			}		  
+
 			$this->EE->load->library('auth');
 			$this->EE->auth->authenticate_http_basic($not_allowed_groups,
 													 $this->realm);
