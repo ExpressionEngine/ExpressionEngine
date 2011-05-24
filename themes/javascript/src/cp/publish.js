@@ -29,7 +29,8 @@ EE.publish.category_editor = function() {
 		cat_groups_containers = {},
 		cat_groups_buttons = {},
 		cat_list_url = EE.BASE+'&C=admin_content&M=category_editor&group_id=',
-		refresh_cats, setup_page, reload, i;
+		refresh_cats, setup_page, reload, i,
+		selected_cats = {};
 
 	// IE caches $.load requests, so we need a unique number
 	function now() {
@@ -82,8 +83,8 @@ EE.publish.category_editor = function() {
 		
 		var res = $(response),
 			form = res.find("form"),
-			submit_button,
-			container_form;
+			submit_button, container_form,
+			$category_name, $category_url_title;
 				
 		if (form.length) {
 			cat_modal_container.html(res);
@@ -175,6 +176,11 @@ EE.publish.category_editor = function() {
 			gid = $(this).closest(".cat_group_container").data("gid");
 		}
 		
+		// grab selection
+		selected_cats[gid] = cat_groups_containers[gid].find('input:checked').map(function() {
+			return this.value;
+		}).toArray();
+		
 		cat_groups_containers[gid].text(EE.lang.loading);
 		
 		$.ajax({
@@ -215,15 +221,18 @@ EE.publish.category_editor = function() {
 		var that = $(this).closest(".cat_group_container"),
 			gid = that.data("gid");
 
-		 $(".edit_categories_link").each(function(el, i) {
-		            if ($(this).data("gid") == gid) {
-		                $(this).show();
-		            }
-		        });
-
+		$(".edit_categories_link").each(function(el, i) {
+			if ($(this).data("gid") == gid) {
+				$(this).show();
+			}
+		});
+		
 		that.text("loading...").load(EE.BASE+"&C=content_publish&M=category_actions&group_id="+that.data("gid")+"&timestamp="+now(), function(response) {
 			that.html( $(response).html() );
-
+			
+			$.each(selected_cats[gid], function(k, v) {
+				that.find('input[value='+v+']').attr('checked', 'checked');
+			});
 		});
 				
 		return false;
