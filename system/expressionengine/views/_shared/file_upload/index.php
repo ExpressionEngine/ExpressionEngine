@@ -1,6 +1,6 @@
-<?php $this->load->view('_shared/file/iframe_header'); ?>
+<?php $this->load->view('_shared/file_upload/iframe_header'); ?>
 
-<?=form_open_multipart('C=content_files'.AMP.'M=upload_file', array('id'=>'upload_form'))?>
+<?=form_open_multipart('C=content_files_modal'.AMP.'M=upload_file', array('id'=>'upload_form'))?>
 	<p>
 	<?php if (count($upload_directories) > 1):?>
 		<?=form_label(lang('upload_dir_choose'), 'upload_dir')?>
@@ -20,6 +20,8 @@
 		<?=lang('loading')?>...
 	</p>
 	
+	<input type="submit" name="submit" value="Submit" />
+	
 <?=form_close()?>
 	
-<?php $this->load->view('_shared/file/iframe_footer') ?>
+<?php $this->load->view('_shared/file_upload/iframe_footer') ?>
