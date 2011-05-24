@@ -68,14 +68,9 @@
  * --------------------------------------------------------------------
  *  CUSTOM CONFIG VALUES
  * --------------------------------------------------------------------
- *
- * 'cp_url' is typically the only config override variable
- *  that would need to be managed in the control panel index.php file
- *
- * Un-comment the $assign_to_config array below to use this feature
- *
  */
 //	$assign_to_config['cp_url'] = ''; // masked CP access only 
+//	$assign_to_config['site_name']  = ''; // MSM only
 	
 /*
  * --------------------------------------------------------------------
