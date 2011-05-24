@@ -71,4 +71,4 @@
 
 <?php
 /* End of file filebrowser.php */
-/* Location: ./themes/cp_themes/default/_shared/file/browser.php */
+/* Location: ./themes/cp_themes/default/_shared/file_upload/browser.php */

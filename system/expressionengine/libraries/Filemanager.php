@@ -772,11 +772,11 @@ class Filemanager {
 	public function setup_upload()
 	{
 		$vars = array(
-			'base_url'	=> BASE.AMP.'C=content_files'.AMP.'M=upload_inner'
+			'base_url'	=> BASE.AMP.'C=content_files_modal'
 		);
 		
 		$this->EE->output->send_ajax_response(array(
-			'uploader'	=> $this->EE->load->view('_shared/file/upload_modal', $vars, TRUE)
+			'uploader'	=> $this->EE->load->view('_shared/file_upload/upload_modal', $vars, TRUE)
 		));
 	}
 	
