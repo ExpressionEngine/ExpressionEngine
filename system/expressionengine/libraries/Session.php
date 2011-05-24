@@ -419,7 +419,7 @@ class EE_Session {
 	/**
 	 * Delete old sessions if probability is met
 	 *
-	 * By default, the probablility is set to 10 percent.
+	 * By default, the probability is set to 10 percent.
 	 * That means sessions will only be deleted one
 	 * out of ten times a page is loaded.
 	 */

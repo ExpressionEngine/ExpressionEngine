@@ -405,7 +405,7 @@ class Auth_result {
 
 	private $group;
 	private $member;
-	private $session_id = 0;
+	private $session_id;
 	private $remember_me = 0;
 	private $EE;
 	
@@ -413,6 +413,8 @@ class Auth_result {
 	 * Constructor
 	 *
 	 * @access	public
+	 * @param	object	member query row
+	 * @param	int		session id if using multi login
 	 */
 	function __construct(stdClass $member)
 	{
@@ -546,6 +548,7 @@ class Auth_result {
 	 */
 	public function start_session($cp_sess = FALSE)
 	{
+		$multi = $this->session_id ? TRUE : FALSE;
 		$sess_type = $cp_sess ? 'admin_session_type' : 'user_session_type';
 		
 		if ($this->EE->config->item($sess_type) != 's')
@@ -560,10 +563,22 @@ class Auth_result {
 			);
 		}
 		
-		// Create a new session
-		$this->session_id = $this->EE->session->create_new_session(
-			$this->member('member_id'), $cp_sess
-		);
+		if ($multi)
+		{
+			// multi login - we have a session
+			$this->EE->functions->set_cookie(
+				$this->EE->session->c_session,
+				$this->session_id,
+				$this->EE->session->session_length
+			);
+		}
+		else
+		{
+			// Create a new session
+			$this->session_id = $this->EE->session->create_new_session(
+				$this->member('member_id'), $cp_sess
+			);
+		}
 		
 		if ($cp_sess === TRUE)
 		{
@@ -582,6 +597,17 @@ class Auth_result {
 			// the logger class can use it.
 			$this->EE->session->userdata['username'] = $this->member('username');
 			$this->EE->logger->log_action(lang('member_logged_in'));
+		}
+		elseif ($multi)
+		{
+			// -------------------------------------------
+			// 'member_member_login_multi' hook.
+			//  - Additional processing when a member is logging into multiple sites
+			//
+				$edata = $this->EE->extensions->call('member_member_login_multi', $this->_hook_data());
+				if ($this->EE->extensions->end_script === TRUE) return;
+			//
+			// -------------------------------------------
 		}
 		else
 		{
@@ -616,6 +642,21 @@ class Auth_result {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Session id setter
+	 *
+	 * Tells start_session to latch onto an existing session for
+	 * the multi site login
+	 *
+	 * @access	public
+	 */
+	public function use_session_id($session_id)
+	{
+		$this->session_id = $session_id;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Hook data utility method
 	 *
 	 * We cannot change the hook parameter without lots of warning, so
@@ -627,7 +668,9 @@ class Auth_result {
 	private function _hook_data()
 	{
 		$obj = clone $this->member;
+		$obj->session_id = $this->session_id;
 		$obj->can_access_cp = $this->has_permission('can_access_cp');
+		
 		return $obj;
 	}
 }

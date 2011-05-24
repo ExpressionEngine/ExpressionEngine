@@ -129,17 +129,38 @@ class Member_auth extends Member {
 			$this->EE->output->show_user_error('general', $line);
 		}
 
+
+		$success = '';
+		$sites	 = $this->EE->config->item('multi_login_sites');
+		
 		// Log me in.
 		if ($multi)
-		{	
+		{
 			// Multiple Site Login
-			$sess = $this->_do_multi_auth();
+			$incoming = $this->_do_multi_auth($sites);
+			$success = '_build_multi_success_message';
+			
+			$current = $this->EE->input->get('cur') + 1;
+			$orig	 = $this->EE->input->get_post('orig');
 		}
 		else
 		{
 			// Regular Login
-			$sess = $this->_do_auth($username, $password);
+			$incoming = $this->_do_auth($username, $password);
+			$success = '_build_success_message';
+			
+			$current = $this->EE->functions->fetch_site_index();
+			$orig	 = array_search($current, explode('|', $sites));
+			$current = $orig;
 		}
+		
+		// More sites?
+		if ($sites && ! $this->EE->config->item('allow_multi_logins') == 'n')
+		{
+			$this->_redirect_next_site($sites, $orig, $current);
+		}
+		
+		$this->$success();
 	}
 
 	// --------------------------------------------------------------------
@@ -166,7 +187,7 @@ class Member_auth extends Member {
 			if ($this->EE->input->get_post('FROM') == 'forum')
 			{
 				$this->basepath = $this->EE->input->get_post('mbase');
-				$trigger =  $this->EE->input->get_post('trigger');
+				$trigger = $this->EE->input->get_post('trigger');
 			}
 
 			$path = 'unpw_update/'.$member_obj->member_id .'_'.$ulen.'_'.$plen;
@@ -219,13 +240,136 @@ class Member_auth extends Member {
 		}
 
 		$sess->start_session();
-
 		$this->_update_online_user_stats();
+		
+		return $sess;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	private function _do_multi_auth($sites)
+	{
+		$multi = $this->EE->input->get('multi');
+		
+		if ( ! $sites OR $this->EE->config->item('allow_multi_logins') == 'n')
+		{
+			return $this->EE->output->show_user_error('general', lang('not_authorized'));
+		}
+		
+		$cur	 = $this->EE->input->get('cur');
+		$orig	 = $this->EE->input->get_post('orig');
+		$orig_id = $this->EE->input->get('orig_site_id');
 
-		$this->_build_success_message();
+		// Current site in list.  Original login site.
+		if ($cur === FALSE OR $orig === FALSE OR $orig_id === FALSE)
+		{
+			return $this->EE->output->show_user_error('general', lang('not_authorized'));
+		}
+		
+		// Kill old sessions first
+		$this->EE->session->gc_probability = 100;
+		$this->EE->session->delete_old_sessions();
+		
+		// Grab session
+		$sess_q = $this->EE->db->get_where('sessions', array(
+			'session_id' => $multi
+		));
+		
+		if ( ! $sess_q->num_rows())
+		{
+			return FALSE;
+		}
+		
+		// Grab member
+		$mem_q = $this->EE->db->get_where('members', array(
+			'member_id' = $sess_q->row('member_id')
+		));
+		
+		if ( ! $mem_q->num_rows())
+		{
+			return FALSE;
+		}
+		
+		$incoming = new Auth_result($mem_q->row());
+		
+		// this is silly - only works for the first site
+		if (isset($_POST['auto_login']))
+		{
+			$incoming->remember_me(60*60*24*365);
+		}
+		
+		// hook onto an existing session
+		$incoming->use_session_id($multi);
+		$incoming->start_session();
+		
+		return $incoming;
+	}
+	
+	public function _redirect_next_site($sites, $orig, $current)
+	{
+		$sites = explode('|', $sites);
+		$orig_id = $this->EE->input->get('orig_site_id');
+		
+		$current = $this->EE->functions->fetch_site_index();
+		$orig = array_search($current, $sites);
+		
+		if ($cur == $orig)
+		{
+			$next++;
+		}
+		
+		// Do we have another?
+		if (isset($sites[$next]))
+		{
+			// next site
+			$next_qs = array(
+				'ACT'	=> $this->EE->functions->fetch_action_id('Member', 'member_login'),
+				'cur'	=> $next,
+				'orig'	=> $orig,
+				'multi'	=> $multi,
+				'orig_site_id' => $orig_id
+			);
+			
+			$next_url = $sites[$next].'?'.http_build_query($next_qs);
+
+			return $this->EE->functions->redirect($next_url);
+		}
+		
 	}
 
 	// --------------------------------------------------------------------
+
+	private function _build_multi_success_message()
+	{
+		// That was our last site, show the success message
+		
+		$data = array(
+			'title' 	=> lang('mbr_login'),
+			'heading'	=> lang('thank_you'),
+			'content'	=> lang('mbr_you_are_logged_in'),
+			'redirect'	=> $sites[$orig],
+			'link'		=> array($sites[$orig], lang('back'))
+		);
+		
+		// Pull preferences for the original site
+		if (is_numeric($orig_id))
+		{
+			$this->EE->db->select('site_name, site_id');
+			$query = $this->EE->db->get_where('sites', array(
+				'site_id' => (int) $orig_id
+			));
+			
+			if ($query->num_rows() == 1)
+			{
+				$final_site_id = $query->row('site_id');
+				$final_site_name = $query->row('site_name');
+
+				$this->EE->config->site_prefs($final_site_name, $final_site_id);
+			}
+		}
+		
+		$this->EE->output->show_message($data);
+	}
 
 	/**
 	 * Build Success Message
