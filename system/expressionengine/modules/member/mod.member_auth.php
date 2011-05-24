@@ -415,7 +415,7 @@ class Member_auth extends Member {
 	// --------------------------------------------------------------------
 
 	/**
-	 * 
+	 * Update online user stats
 	 */
 	private function _update_online_user_stats()
 	{
@@ -431,8 +431,12 @@ class Member_auth extends Member {
 
 		$in_forum = ($this->EE->input->get_post('FROM') == 'forum') ? 'y' : 'n';
 
+		$escaped_ip = $this->EE->db->escape_str($this->EE->input->ip_address());
 
-		$this->EE->db->query("DELETE FROM exp_online_users WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND ((ip_address = '".$this->EE->input->ip_address()."' AND member_id = '0') OR date < $cutoff)");
+		$this->EE->db->where('site_id', $this->EE->config->item('site_id'))
+					 ->where("(ip_address = '".$escaped_ip."' AND member_id = '0')", '', FALSE)
+					 ->or_where('date < ', $cutoff)
+					 ->delete('online_users');
 
 		$data = array(
 						'member_id'		=> $this->EE->session->userdata('member_id'),
