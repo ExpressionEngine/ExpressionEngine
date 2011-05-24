@@ -282,7 +282,7 @@ class Member_auth extends Member {
 		
 		// Grab member
 		$mem_q = $this->EE->db->get_where('members', array(
-			'member_id' = $sess_q->row('member_id')
+			'member_id' => $sess_q->row('member_id')
 		));
 		
 		if ( ! $mem_q->num_rows())
