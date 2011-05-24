@@ -6,7 +6,7 @@
 	<div class="image">
 		<img src="<?= $file['thumb'] ?>" alt="<?= $file['file_name'] ?>" />
 		<?php if ($file['is_image']): ?>
-			<?= form_open('C=content_files_modal'.AMP.'M=edit_image_modal', '', array($file_json => $file_json)) ?>
+			<?= form_open('C=content_files_modal'.AMP.'M=edit_image', '', array('file_json' => $file_json)) ?>
 			<input type="submit" name="submit" value="Resize &amp; Rotate" />
 			<?= form_close() ?>
 		<?php endif ?>
