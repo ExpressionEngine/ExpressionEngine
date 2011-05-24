@@ -6032,23 +6032,11 @@ class Forum_Core extends Forum {
 
 		// Secure forms?	  	
 	  	// If the hash is not found we'll simply reload the page.
-	  
-		if ($this->EE->config->item('secure_forms') == 'y')
-		{
-			$this->EE->db->where('hash', $this->EE->input->post('XID'));
-			$this->EE->db->where('ip_address', $this->EE->input->ip_address());
-			$this->EE->db->where('date > UNIX_TIMESTAMP()-7200');
-			$this->EE->db->select('COUNT(*) as count');
-			$query = $this->EE->db->get('security_hashes');
-
-			if ($query->row('count')  == 0)
-			{
-				$this->EE->functions->redirect($this->EE->functions->fetch_current_uri());
-				exit;
-			}
-						
-			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
-		}
+	  	if ( ! $this->EE->security->secure_forms_check($this->EE->input->post('XID')))
+	  	{
+			$this->EE->functions->redirect($this->EE->functions->fetch_current_uri());
+			exit;
+	  	}
 		
 		$announcement = 'n';
 		
@@ -9023,24 +9011,14 @@ class Forum_Core extends Forum {
 		
 		// Secure forms?
 	  	// If the hash is not found we'll simply reload the page.
-	  
-		if ($this->EE->config->item('secure_forms') == 'y' && $member_id == '' && 
-			$new_topic_search == FALSE && $view_pending_topics == FALSE)
-		{
-			if ( ! isset($_POST['XID']))
-			{
+	  	if ($member_id == '' && $new_topic_search === FALSE && $view_pending_topics === FALSE)
+	  	{
+		  	if ( ! $this->EE->security->secure_forms_check($this->EE->input->post('XID')))
+		  	{
 				$this->EE->functions->redirect($this->forum_path('search'));
 				exit;
-			}
-		
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_security_hashes WHERE hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."' AND date > UNIX_TIMESTAMP()-7200");
-		
-			if ($query->row('count')  == 0)
-			{
-				$this->EE->functions->redirect($this->forum_path('search'));
-				exit;
-			}
-		}
+		  	}  		
+	  	}
 
 		$terms = array();
 
