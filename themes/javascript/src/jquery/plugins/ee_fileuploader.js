@@ -65,7 +65,7 @@
 	$.ee_fileuploader.build_dialog = function() {
 		file_uploader.dialog({
 			width: 600,
-			height: 300,
+			height: 370,
 			resizable: false,
 			position: ["center","center"],
 			modal: true,
@@ -232,6 +232,12 @@
 			$('#file_uploader .button_bar #choose_file').click(function(event) {
 				event.preventDefault();
 				clean_up(file);
+			});
+			
+			$('#file_uploader .button_bar #edit_file_modal').show().click(function(event) {
+				event.preventDefault();
+				$('#file_uploader iframe').contents().find('form#resize_rotate').submit();
+				$(this).hide();
 			});
 		};
 	};

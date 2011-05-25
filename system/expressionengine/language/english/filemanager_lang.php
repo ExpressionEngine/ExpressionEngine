@@ -27,6 +27,7 @@ $lang = array(
 'where'					=> 'Where',
 'permissions'			=> 'Permissions',
 'upload_success'		=> 'Upload Successful',
+'upload_edit'			=> 'Resize &amp; Rotate',
 'upload_rename'			=> 'File Already Exists',
 'upload_rename_message'	=> 'A file with that filename already exists. You can either choose a new name and the file will be renamed, or you can the same name and the existing file will be overwritten.',
 'no_upload_dirs'		=> 'You have no upload directories defined',
@@ -36,7 +37,7 @@ $lang = array(
 'email_files'			=> 'Email Selected Files',
 'delete_selected_files'	=> 'Delete Selected Files',
 'rename_file'			=> 'Rename File',
-'edit_file'				=> 'Edit File',
+'edit_file'				=> 'Edit Image',
 
 // Upload modal
 'use_file'				=> 'Use Uploaded File',

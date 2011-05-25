@@ -20,8 +20,6 @@
 		<?=lang('loading')?>...
 	</p>
 	
-	<input type="submit" name="submit" value="Submit" />
-	
 <?=form_close()?>
 	
 <?php $this->load->view('_shared/file_upload/iframe_footer') ?>
