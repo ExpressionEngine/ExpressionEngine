@@ -2441,6 +2441,244 @@ class Filemanager {
 
 		return $font_files;
 	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * image processing
+	 *
+	 * Figures out the full path to the file, and sends it to the appropriate
+	 * method to process the image.
+	 */
+	public function _do_image_processing($redirect = TRUE)
+	{
+		$file_id = $this->EE->input->post('file_id');
+		
+		// Check to see if a file was actually sent...
+		if ( ! ($file = $this->EE->input->post('file')))
+		{
+			$this->EE->session->set_flashdata('message_failure', lang('choose_file'));
+			$this->EE->functions->redirect(BASE.AMP.'C=content_files');
+		}
+		
+		// Get the upload directory preferences
+		$upload_dir_id = $this->EE->input->post('upload_dir');
+		$upload_prefs = $this->fetch_upload_dir_prefs($upload_dir_id);
+
+		// Clean up the filename and add the full path
+		$file = $this->EE->security->sanitize_filename(urldecode($file));
+		$file = $this->EE->functions->remove_double_slashes(
+			$upload_prefs['server_path'].DIRECTORY_SEPARATOR.$file
+		);
+
+		// Where are we going with this?
+		switch ($this->EE->input->post('action'))
+		{
+			case 'rotate':
+				$response = $this->_do_rotate($file);
+				break;
+			case 'crop':
+				$response = $this->_do_crop($file);
+				break;
+			case 'resize':
+				$response = $this->_do_resize($file);
+				break;
+			default:
+				return ''; // todo, error
+		}
+		
+		// Alright, what did we break?
+		if (isset($response['errors']))
+		{
+			if (AJAX_REQUEST)
+			{
+				$this->EE->output->send_ajax_response($response['errors'], TRUE);
+			}
+
+			show_error($response['errors']);
+		}
+		
+		$this->EE->load->model('file_model');
+		
+		// Update database
+		$this->EE->file_model->save_file(array(
+			'file_id' => $file_id,
+			'file_hw_original' => $response['dimensions']['height'] . ' ' . $response['dimensions']['width']
+		));
+		
+		// Get dimensions for thumbnail
+		$dimensions = $this->EE->file_model->get_dimensions_by_dir_id($upload_dir_id);
+		$dimensions = $dimensions->result_array();
+		
+		// Regenerate thumbnails
+		$this->create_thumb(
+			$file,
+			array(
+				'server_path' => $upload_prefs['server_path'],
+				'file_name'  => basename($file),
+				'dimensions' => $dimensions
+			)
+		);
+		
+		// If we're redirecting send em on
+		if ($redirect)
+		{
+			// Send the dimensions back for Ajax requests
+			if (AJAX_REQUEST)
+			{
+				$this->EE->output->send_ajax_response(array(
+					'width'		=> $response['dimensions']['width'],
+					'height'	=> $response['dimensions']['height']
+				));
+			}
+
+			// Otherwise redirect
+			$this->EE->session->set_flashdata('message_success', lang('file_saved'));
+			$this->EE->functions->redirect(
+				BASE.AMP.
+				'C=content_files'.AMP.
+				'M=edit_image'.AMP.
+				'upload_dir='.$this->EE->input->post('upload_dir').AMP.
+				'file_id='.$this->EE->input->post('file_id')
+			);
+		}
+		// Otherwise return the response from the called method
+		else
+		{
+			return $response;
+		}
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Image crop
+	 */
+	private function _do_crop($file)
+	{
+		$config = array(
+			'width'				=> $this->EE->input->post('crop_width'),
+			'maintain_ratio'	=> FALSE,
+			'x_axis'			=> $this->EE->input->post('crop_x'),
+			'y_axis'			=> $this->EE->input->post('crop_y'),
+			'height'			=> ($this->EE->input->post('crop_height')) ? $this->EE->input->post('crop_height') : NULL,
+			'master_dim'		=> 'width',
+			'library_path'		=> $this->EE->config->item('image_library_path'),
+			'image_library'		=> $this->EE->config->item('image_resize_protocol'),
+			'source_image'		=> $file,
+			'new_image'			=> $file
+		);
+
+		$this->EE->load->library('image_lib', $config);
+
+		if ( ! $this->EE->image_lib->crop())
+		{
+	    	$errors = $this->EE->image_lib->display_errors();
+		}
+		
+		$reponse = array();
+		
+		if (isset($errors))
+		{
+			$response['errors'] = $errors;
+		}
+		else
+		{
+			$response['dimensions'] = $this->EE->image_lib->get_image_properties('', TRUE);
+		}
+		
+		$this->EE->image_lib->clear();
+		
+		return $response;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Do image rotation.
+	 */
+	private function _do_rotate($file)
+	{
+		$config = array(
+			'rotation_angle'	=> $this->EE->input->post('rotate'),
+			'library_path'		=> $this->EE->config->item('image_library_path'),
+			'image_library'		=> $this->EE->config->item('image_resize_protocol'),
+			'source_image'		=> $file,
+			'new_image'			=> $file
+		);
+
+		$this->EE->load->library('image_lib', $config);
+
+		if ( ! $this->EE->image_lib->rotate())
+		{
+	    	$errors = $this->EE->image_lib->display_errors();
+		}
+
+		$reponse = array();
+		
+		if (isset($errors))
+		{
+			$response['errors'] = $errors;
+		}
+		else
+		{
+			$response['dimensions'] = $this->EE->image_lib->get_image_properties('', TRUE);
+		}
+		
+		$this->EE->image_lib->clear();
+		
+		return $response;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Do image rotation.
+	 */
+	private function _do_resize($file)
+	{
+		$config = array(
+			'width'				=> $this->EE->input->get_post('resize_width'),
+			'maintain_ratio'	=> $this->EE->input->get_post('constrain'),
+			'library_path'		=> $this->EE->config->item('image_library_path'),
+			'image_library'		=> $this->EE->config->item('image_resize_protocol'),
+			'source_image'		=> $file,
+			'new_image'			=> $file
+		);
+
+		if ($this->EE->input->get_post('resize_height') != '')
+		{
+			$config['height'] = $this->EE->input->get_post('resize_height');
+		}
+		else
+		{
+			$config['master_dim'] = 'width';
+		}
+
+		$this->EE->load->library('image_lib', $config);
+
+		if ( ! $this->EE->image_lib->resize())
+		{
+	    	$errors = $this->EE->image_lib->display_errors();
+		}
+
+		$reponse = array();
+		
+		if (isset($errors))
+		{
+			$response['errors'] = $errors;
+		}
+		else
+		{
+			$response['dimensions'] = $this->EE->image_lib->get_image_properties('', TRUE);
+		}
+		
+		$this->EE->image_lib->clear();
+		
+		return $response;
+	}
+
+	// ------------------------------------------------------------------------
 }
 
 // END Filemanager class

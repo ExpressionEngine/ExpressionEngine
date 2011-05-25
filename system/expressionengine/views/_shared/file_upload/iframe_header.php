@@ -37,4 +37,4 @@
 	}
 	?>
 </head>
-<body>
+<body id="mainContent" class="pageContents">
