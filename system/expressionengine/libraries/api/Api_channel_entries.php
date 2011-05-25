@@ -1574,10 +1574,21 @@ class Api_channel_entries extends Api {
 					if (isset($data[$field_name]))
 					{
 						$data[$field_name] = $this->EE->api_channel_fields->apply('save', array($data[$field_name]));
+						
+						if (isset($data['revision_post'][$field_name]))
+						{
+							$data['revision_post'][$field_name] = $data[$field_name];
+						}
+						
 					}
 					elseif (isset($mod_data[$field_name]))
 					{
 						$mod_data[$field_name] = $this->EE->api_channel_fields->apply('save', array($mod_data[$field_name]));
+
+						if (isset($data['revision_post'][$field_name]))
+						{
+							$data['revision_post'][$field_name] = $mod_data[$field_name];
+						}
 					}
 				}				
 			}
