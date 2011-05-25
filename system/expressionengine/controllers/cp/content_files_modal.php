@@ -294,6 +294,7 @@ class Content_files_modal extends CI_Controller {
 		{
 			$file['file_height'] = $parameters['dimensions']['height'];
 			$file['file_width'] = $parameters['dimensions']['width'];
+			$file['file_hw_original'] = $parameters['dimensions']['height'] . ' ' . $parameters['dimensions']['width'];
 		}
 		
 		// Prep the vars for the success and failure pages

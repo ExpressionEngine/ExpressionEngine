@@ -72,7 +72,7 @@
 
 <script>
 	var file = <?= $file_json ?>;
-	// parent.$.ee_fileuploader.after_upload(file);
+	parent.$.ee_fileuploader.update_file(file);
 </script>
 
 <?php $this->load->view('_shared/file_upload/iframe_footer') ?>
