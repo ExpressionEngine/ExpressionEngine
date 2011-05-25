@@ -7,8 +7,9 @@
 		<img src="<?= $file['thumb'] ?>" alt="<?= $file['file_name'] ?>" />
 	</div> <!-- .image -->
 	<div class="edit_controls">
-		<?=form_open('C=content_files_modal'.AMP.'M=edit_image', array('id'=>'image_resize_form'), 
-			array('action'=> 'resize', 'upload_dir' => $file['upload_location_id'], 'file' => $file['file_name'], 'file_id' => $file['file_id']))?>
+		<?=form_open('C=content_files_modal'.AMP.'M=edit_image', array('id' => 'image_resize_form'), $file_data)?>
+			<?= $file_json_input ?>
+			<?= form_hidden('action', 'resize')?>
 			<h3 class="accordion"><?=lang('resize')?></h3>
 			<div id="resize_fieldset">
 				<ul>
@@ -28,8 +29,9 @@
 			</div>
 			<div class="clear_left"></div>
 		<?=form_close()?>
-		<?=form_open('C=content_files_modal'.AMP.'M=edit_image', array('id'=>'image_rotate_form'), 
-			array('action'=> 'rotate', 'upload_dir' => $file['upload_location_id'], 'file' => $file['file_name'], 'file_id' => $file['file_id']))?>
+		<?=form_open('C=content_files_modal'.AMP.'M=edit_image', array('id' => 'image_rotate_form'), $file_data)?>
+			<?= $file_json_input ?>
+			<?= form_hidden('action', 'rotate')?>
 			<h3 class="accordion"><?=lang('rotate')?></h3>
 			<div id="rotate_fieldset">
 				<ul>

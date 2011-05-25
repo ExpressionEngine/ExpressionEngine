@@ -180,8 +180,10 @@ class Content_files_modal extends CI_Controller {
 		);
 		
 		// Get file data from JSON
-		$file_json = $this->input->post('file_json');
-		$vars = $this->_get_file_from_json($file_json, $new_file_name, $rename_file);
+		$vars = $this->_get_file_from_json(array(
+			'new_file_name' => $new_file_name,
+			'rename_file_response' => $rename_file
+		));
 		
 		// If the file was successfully replaced send them to the success page
 		if ($rename_file['success'] === TRUE)
@@ -199,7 +201,29 @@ class Content_files_modal extends CI_Controller {
 	
 	public function edit_image()
 	{
-		$vars = $this->_get_file_from_json($this->input->post('file_json'));
+		$parameters = array();
+		
+		// The form posts to this method, so if POST data is present
+		// send to _do_image_processing to, well, do the image processing
+		if ( ! empty($_POST['action']))
+		{
+			$response = $this->filemanager->_do_image_processing(FALSE);
+			$parameters['dimensions'] = $response['dimensions'];
+		}
+		
+		$vars = $this->_get_file_from_json($parameters);
+		
+		$vars['file_data'] = array(
+			'upload_dir'	=> $vars['file']['upload_location_id'], 
+			'file'			=> $vars['file']['file_name'], 
+			'file_id'		=> $vars['file']['file_id']
+		);
+		
+		// This isn't in the file_data variable because of a bug that
+		// wouldn't properly encode the smae json object paseed twice
+		// to form_open()
+		
+		$vars['file_json_input'] = form_hidden('file_json', $vars['file_json']);
 		
 		$this->javascript->set_global(array(
 			'filemanager'	=> array(
@@ -215,16 +239,27 @@ class Content_files_modal extends CI_Controller {
 			'ui'		=> array('core', 'widget', 'accordion')
 		));	
 
+		// Yup, more accordions
 		$this->javascript->output('$(".edit_controls").accordion({autoHeight: false, header: "h3"});');
 		
 		$this->javascript->compile();
-		
 		$this->load->view('_shared/file_upload/edit', $vars);
 	}
 	
 	// ------------------------------------------------------------------------
 	
-	private function _get_file_from_json($file_json, $new_file_name = '', $rename_file_response = array())
+	/**
+	 * Get's file information based on the file json object
+	 * 
+	 * @param array $parameters Associative array containing three optional parameters:
+	 * 	- new_file_name: if the file is being renamed, we need to get the
+	 * 		thumbnail, so we need the new file name
+	 * 	- rename_file_response: if the file is being renamed, we also need the
+	 * 		response from the file_rename method
+	 * 	- dimensions: an associative array from Filemanager::_do_image_processing
+	 * 		for when you are resizing an image
+	 */
+	private function _get_file_from_json($parameters = array())
 	{
 		if ( ! function_exists('json_decode'))
 		{
@@ -232,21 +267,32 @@ class Content_files_modal extends CI_Controller {
 		}
 		
 		// Get the JSON and decode it
+		$file_json = $this->input->post('file_json');
 		$file = get_object_vars(json_decode($file_json));
 		$file['upload_directory_prefs'] = get_object_vars($file['upload_directory_prefs']);
 		
-		// If the file is being replaced, use the new file name and responze
+		// If the file is being renamed, use the new file name and responze
 		// from rename_file to update the data
-		if ($new_file_name != '' AND count($rename_file_response) > 0)
+		if (isset($parameters['new_file_name']) AND isset($parameters['rename_file_response']))
 		{
 			// Replace the filename and thumb (everything else should have stayed the same)
-			$thumb_info = $this->filemanager->get_thumb($new_file_name, $file['upload_location_id']);
+			$thumb_info = $this->filemanager->get_thumb(
+				$parameters['new_file_name'], 
+				$file['upload_location_id']
+			);
 
-			$file['file_id']	= $rename_file_response['file_id'];
-			$file['file_name'] 	= $new_file_name;
-			$file['name'] 		= $new_file_name;
+			$file['file_id']	= $parameters['rename_file_response']['file_id'];
+			$file['file_name'] 	= $parameters['new_file_name'];
+			$file['name'] 		= $parameters['new_file_name'];
 			$file['thumb'] 		= $thumb_info['thumb'];
-			$file['replace']	= $rename_file_response['replace'];
+			$file['replace']	= $parameters['rename_file_response']['replace'];
+		}
+		
+		// If dimensions are passed in, update the height and width
+		if (isset($parameters['dimensions']))
+		{
+			$file['file_height'] = $parameters['dimensions']['height'];
+			$file['file_width'] = $parameters['dimensions']['width'];
 		}
 		
 		// Prep the vars for the success and failure pages

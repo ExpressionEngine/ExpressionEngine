@@ -2452,6 +2452,8 @@ class Filemanager {
 	 */
 	public function _do_image_processing($redirect = TRUE)
 	{
+		$file_id = $this->EE->input->post('file_id');
+		
 		// Check to see if a file was actually sent...
 		if ( ! ($file = $this->EE->input->post('file')))
 		{
@@ -2496,8 +2498,15 @@ class Filemanager {
 			show_error($response['errors']);
 		}
 		
-		// Get dimensions for thumbnail
 		$this->EE->load->model('file_model');
+		
+		// Update database
+		$this->EE->file_model->save_file(array(
+			'file_id' => $file_id,
+			'file_hw_original' => $response['dimensions']['height'] . ' ' . $response['dimensions']['width']
+		));
+		
+		// Get dimensions for thumbnail
 		$dimensions = $this->EE->file_model->get_dimensions_by_dir_id($upload_dir_id);
 		$dimensions = $dimensions->result_array();
 		
@@ -2505,12 +2514,13 @@ class Filemanager {
 		$this->create_thumb(
 			$file,
 			array(
-				'server_path' => $this->_upload_dirs[$upload_dir_id]['server_path'],
+				'server_path' => $upload_prefs['server_path'],
 				'file_name'  => basename($file),
 				'dimensions' => $dimensions
 			)
 		);
 		
+		// If we're redirecting send em on
 		if ($redirect)
 		{
 			// Send the dimensions back for Ajax requests
@@ -2531,6 +2541,11 @@ class Filemanager {
 				'upload_dir='.$this->EE->input->post('upload_dir').AMP.
 				'file_id='.$this->EE->input->post('file_id')
 			);
+		}
+		// Otherwise return the response from the called method
+		else
+		{
+			return $response;
 		}
 	}
 
