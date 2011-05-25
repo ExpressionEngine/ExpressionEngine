@@ -54,6 +54,10 @@ class Content_files_modal extends CI_Controller {
 		$this->output->enable_profiler(FALSE);
 
 		$this->_base_url = BASE.AMP.'C=content_files_modal';
+
+		// Clear out the preloaded core javacript files
+		$this->cp->requests = array();
+		$this->cp->loaded = array();
 	}
 	
 	// ------------------------------------------------------------------------
@@ -197,22 +201,6 @@ class Content_files_modal extends CI_Controller {
 	{
 		$vars = $this->_get_file_from_json($this->input->post('file_json'));
 		
-		// Clear out the preloaded core javacript files
-		$this->cp->requests = array();
-		$this->cp->loaded = array();
-		
-		// Load a few back in
-		
-		// 'effect'	=> 'core',
-		// 'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog'),
-		// 'plugin'	=> array('ee_focus', 'ee_notice', 'ee_txtarea', 'tablesorter'),
-		// 'file'		=> 'cp/global'
-		
-		$this->cp->add_js_script(array(
-			'file'		=> 'cp/files/file_manager_edit',
-			'ui'		=> array('core', 'widget', 'accordion')
-		));
-		
 		$this->javascript->set_global(array(
 			'filemanager'	=> array(
 				'image_width'				=> $vars['file']['file_width'],
@@ -220,6 +208,12 @@ class Content_files_modal extends CI_Controller {
 				'resize_over_confirmation' 	=> lang('resize_over_confirmation')
 			),
 		));
+		
+		// Load javascript libraries
+		$this->cp->add_js_script(array(
+			'file'		=> 'cp/files/file_manager_edit',
+			'ui'		=> array('core', 'widget', 'accordion')
+		));	
 
 		$this->javascript->output('$(".edit_controls").accordion({autoHeight: false, header: "h3"});');
 		
