@@ -64,7 +64,6 @@
 				</ul>
 				<p class="submit_button">
 					<?=form_submit('save_image', lang('save_image'), 'class="submit"')?><br />
-					<?=anchor('#', lang('cancel_changes'), 'class="disabled"')?>
 				</p>
 			</div>
 		<?=form_close()?>
