@@ -13,7 +13,8 @@
 (function($) {
 	
 	var file_uploader,
-		settings;
+		settings,
+		delete_file = true;
 
 	/**
 	 * Loads in the html needed and fires off the function to build the dialog
@@ -35,7 +36,7 @@
 			file_uploader = $(data.uploader).appendTo(document.body);
 			
 			// Hide the Choose File button
-			file_uploader.removeClass('after_upload').addClass('before_upload');
+			file_uploader.removeClass().addClass('before_upload');
 			
 			// Remove unneeded buttons
 			if (settings.type == "filemanager") {
@@ -74,7 +75,8 @@
 			zIndex: 99999,
 			open: function() {
 				// Make sure we're on before_upload
-				file_uploader.removeClass('after_upload').addClass('before_upload');
+				change_class('before_upload');
+
 				
 				// Call open callback
 				if (typeof settings.open == 'function') {
@@ -84,10 +86,29 @@
 				upload_listen();
 			},
 			close: function() {
-				// Call close callback, passing the file info
-				if (typeof settings.close == 'function') {
+				if (typeof window.upload_iframe.file != "undefined") {
 					var file = window.upload_iframe.file;
-					settings.close.call(this, file_uploader, file);
+					
+					if (delete_file) {
+						// Delete the file
+						$.ajax({
+							url: EE.BASE+'&'+EE.fileuploader.delete_url,
+							type: 'POST',
+							dataType: 'json',
+							data: {
+								"file": file.file_id,
+								"XID": EE.XID
+							},
+							error: function(xhr, textStatus, errorThrown){
+								console.log(textStatus);
+							}
+						});
+					};
+					
+					// Call close callback, passing the file info
+					if (typeof settings.close == 'function') {
+						settings.close.call(this, file_uploader, file);
+					};
 				};
 			}
 		});
@@ -105,7 +126,7 @@
 	 * Listen for clicks on the button_bar's upload file button
 	 */
 	var upload_listen = function() {
-		$('#file_uploader .button_bar #upload_file').click(function(event) {
+		$('#upload_file, #rename_file', '#file_uploader .button_bar').click(function(event) {
 			event.preventDefault();
 			$('#file_uploader iframe').contents().find('form').submit();
 		});
@@ -163,6 +184,17 @@
 	// --------------------------------------------------------------------
 	
 	/**
+	 * This method is called if the file already exists, comes before upload
+	 *
+	 * @param {Object} file Object representing the just uploaded file
+	 */
+	$.ee_fileuploader.file_exists = function(file) {
+		change_class('file_exists');
+	};
+	
+	// --------------------------------------------------------------------
+	
+	/**
 	 * This method is called after the upload
 	 *
 	 * Responsibilities
@@ -173,13 +205,16 @@
 	 * @param {Object} file Object representing the just uploaded file
 	 */
 	$.ee_fileuploader.after_upload = function(file) {
+		// Make sure the file doesn't get deleted if the window is closed
+		delete_file = false;
+		
 		// Call after upload callback
 		if (typeof settings.after_upload == "function") {
 			settings.after_upload.call(this, file_uploader, file);
 		};
 		
 		// Change the step to step 2
-		$('#file_uploader').removeClass('before_upload').addClass('after_upload');
+		change_class('after_upload');
 		
 		// Create listener for the place file button
 		if (settings.type == "filemanager") {
@@ -199,5 +234,19 @@
 				clean_up(file);
 			});
 		};
+	};
+	
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Helper method to change the class of the modal
+	 *
+	 * @param {String} class_name Name of the class that should be on the modal
+	 */	
+	var change_class = function (class_name) {
+		$('#file_uploader')
+			.removeClass('before_upload after_upload file_exists')
+			.addClass(class_name);
 	};
 })(jQuery);

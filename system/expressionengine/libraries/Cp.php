@@ -32,6 +32,8 @@ class Cp {
 
 	var $its_all_in_your_head	= array();
 	var $footer_item			= array();
+	var $requests				= array();
+	var $loaded					= array();
 		
 	var $js_files = array(
 			'ui'				=> array(),
@@ -158,11 +160,9 @@ class Cp {
 		// we need these paths again in my account, so we'll keep track of them
 		// kind of hacky, but before it was accessing _ci_cache_vars, which is worse
 		
-		$this->EE->session->cache['cp_sidebar'] = array(
-			'cp_avatar_path'	=> $vars['cp_avatar_path'],
-			'cp_avatar_width'	=> $vars['cp_avatar_width'],
-			'cp_avatar_height'	=> $vars['cp_avatar_height']
-		);
+		$this->EE->session->set_cache('cp_sidebar', 'cp_avatar_path', $vars['cp_avatar_path'])
+						  ->set_cache('cp_sidebar', 'cp_avatar_width', $vars['cp_avatar_width'])
+						  ->set_cache('cp_sidebar', 'cp_avatar_height', $vars['cp_avatar_height']);
 
 		$css_paths = array(
 			PATH_CP_THEME.$this->cp_theme.'/',
@@ -318,7 +318,7 @@ class Cp {
 			{
 				$file = array($file);
 			}
-
+			
 			if (array_key_exists($type, $this->js_files))
 			{
 				$this->js_files[$type] = array_merge($this->js_files[$type], $file);
@@ -368,9 +368,6 @@ class Cp {
 	 */
 	function _seal_combo_loader()
 	{
-		static $requests = array();
-		static $loaded = array();
-		
 		$str = '';
 		$mtimes = array();
 		
@@ -378,9 +375,9 @@ class Cp {
 		
 		foreach($this->js_files as $type => $files)
 		{
-			if (isset($loaded[$type]))
+			if (isset($this->loaded[$type]))
 			{
-				$files = array_diff($files, $loaded[$type]);
+				$files = array_diff($files, $this->loaded[$type]);
 			}
 			
 			if (count($files))
@@ -392,7 +389,7 @@ class Cp {
 				
 		if ($str)
 		{
-			$loaded = array_merge_recursive($loaded, $this->js_files);
+			$this->loaded = array_merge_recursive($this->loaded, $this->js_files);
 
 			$this->js_files = array(
 					'ui'				=> array(),
@@ -402,10 +399,10 @@ class Cp {
 					'fp_module'			=> array()
 			);
 
-			$requests[] = $str.AMP.'v='.max($mtimes);
+			$this->requests[] = $str.AMP.'v='.max($mtimes);
 		}
 		
-		return $requests;
+		return $this->requests;
 	}
 	
 	// --------------------------------------------------------------------

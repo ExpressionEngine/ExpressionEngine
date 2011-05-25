@@ -1,30 +1,27 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://expressionengine.com/
------------------------------------------------------
- Copyright (c) 2003 - 2011, EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/user_guide/license.html
-=====================================================
- File: mod.updated_sites.php
------------------------------------------------------
- Purpose: Updated Sites Functionality
-=====================================================
-
-*/
-
-if ( ! defined('EXT'))
-{
-	exit('Invalid file request');
-}
-
-
+/**
+ * ExpressionEngine Updates Sites Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Update File
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
 class Updated_sites {
 
 	var $return_data	= ''; 		// Bah!
@@ -60,12 +57,12 @@ class Updated_sites {
 
 		if ( ! class_exists('XML_RPC'))
 		{
-			require APPPATH.'libraries/Xmlrpc'.EXT;
+			require APPPATH.'libraries/Xmlrpc.php';
 		}
 		
 		if ( ! class_exists('XML_RPC_Server'))
 		{
-			require APPPATH.'libraries/Xmlrpcs'.EXT;
+			require APPPATH.'libraries/Xmlrpcs.php';
 		}
 
 		//  Specify Functions

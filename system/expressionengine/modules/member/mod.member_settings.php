@@ -1275,7 +1275,7 @@ class Member_settings extends Member {
 		/** -------------------------------------*/
 		if ( ! class_exists('EE_Validate'))
 		{
-			require APPPATH.'libraries/Validate'.EXT;
+			require APPPATH.'libraries/Validate.php';
 		}
 
 
@@ -1414,7 +1414,7 @@ class Member_settings extends Member {
 		/** -------------------------------------*/
 		if ( ! class_exists('EE_Validate'))
 		{
-			require APPPATH.'libraries/Validate'.EXT;
+			require APPPATH.'libraries/Validate.php';
 		}
 
 		$VAL = new EE_Validate(
@@ -2211,7 +2211,7 @@ UNGA;
 		/** -------------------------------------*/
 		if ( ! class_exists('EE_Validate'))
 		{
-			require APPPATH.'libraries/Validate'.EXT;
+			require APPPATH.'libraries/Validate.php';
 		}
 
 		$new_un  = (isset($_POST['new_username'])) ? $_POST['new_username'] : '';

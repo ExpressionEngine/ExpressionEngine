@@ -36,12 +36,12 @@ class Tools_communicate extends CI_Controller {
 	{
 		parent::__construct();
 		
-		if ( ! $this->cp->allowed_group('can_access_tools') OR ! $this->cp->allowed_group('can_access_comm'))
+		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_comm'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}		
 		
-		if (file_exists(PATH_MOD.'mailinglist/mod.mailinglist'.EXT) && $this->db->table_exists($this->db->dbprefix.'mailing_lists') === TRUE)
+		if (file_exists(PATH_MOD.'mailinglist/mod.mailinglist.php') && $this->db->table_exists($this->db->dbprefix.'mailing_lists') === TRUE)
 		{
 			$this->mailinglist_exists = TRUE;
 		}
@@ -70,7 +70,7 @@ class Tools_communicate extends CI_Controller {
 		$this->lang->loadfile('tools');
 		$this->lang->loadfile('communicate');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('communicate'));
+		$this->cp->set_variable('cp_page_title', lang('communicate'));
 
 		$this->javascript->output('$("#plaintext_alt_cont").hide();');
 		
@@ -126,7 +126,7 @@ class Tools_communicate extends CI_Controller {
 			}
 		}
 
-		$this->cp->set_breadcrumb(BASE.AMP.'C=tools', $this->lang->line('tools'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=tools', lang('tools'));
 
 		/** -----------------------------
 		/**  Fetch form data from cache
@@ -136,10 +136,10 @@ class Tools_communicate extends CI_Controller {
 		{	 
 			if ( ! $this->cp->allowed_group('can_send_cached_email'))
 			{	 
-				show_error($this->lang->line('not_allowed_to_email_mailinglist'));
+				show_error(lang('not_allowed_to_email_mailinglist'));
 			}
 			
-			$this->cp->set_variable('cp_page_title', $this->lang->line('view_email_cache'));
+			$this->cp->set_variable('cp_page_title', lang('view_email_cache'));
 			$vars['view_email_cache'] = TRUE;
 			
 			// Fetch cached data
@@ -148,6 +148,10 @@ class Tools_communicate extends CI_Controller {
 
 			if ($query->num_rows() > 0)
 			{
+				// aliases
+				$default['from_email'] =& $default['from'];
+				$default['from_name'] =& $default['name'];
+				
 				foreach ($query->row_array() as $key => $val)
 				{
 					if (isset($default[$key]))
@@ -191,25 +195,25 @@ class Tools_communicate extends CI_Controller {
 		}
 		
 		$vars['mailtype_options'] = array(
-					'text'  => $this->lang->line('plain_text'),
-					'html'  => $this->lang->line('html')
+					'text'  => lang('plain_text'),
+					'html'  => lang('html')
 				);
 
 		$vars['text_formatting'] = 'none';
 		$vars['text_formatting_options'] = $this->addons_model->get_plugin_formatting(TRUE);
 
 		$vars['word_wrap_options'] = array(
-					'y'  => $this->lang->line('on'),
-					'n'  => $this->lang->line('off')
+					'y'  => lang('on'),
+					'n'  => lang('off')
 				);
 			
 
 		$vars['priority_options'] = array(
-					'1'  => $this->lang->line('highest'),
-					'2'  => $this->lang->line('high'),
-					'3'  => $this->lang->line('normal'),
-					'4'  => $this->lang->line('low'),
-					'5'  => $this->lang->line('lowest')
+					'1'  => lang('highest'),
+					'2'  => lang('high'),
+					'3'  => lang('normal'),
+					'4'  => lang('low'),
+					'5'  => lang('lowest')
 				);
 
 		// will be used to determine if attachments are available
@@ -273,7 +277,7 @@ class Tools_communicate extends CI_Controller {
 	{
 		if ( ! $str && $this->input->post('total_gl_recipients') < 1)
 		{
-			$this->form_validation->set_message('_check_for_recipients', $this->lang->line('empty_form_fields'));
+			$this->form_validation->set_message('_check_for_recipients', lang('empty_form_fields'));
 			return FALSE;
 		}
 
@@ -317,7 +321,7 @@ class Tools_communicate extends CI_Controller {
 			}
 			else
 			{
-				$this->form_validation->set_message('_attachment_handler', $this->lang->line('attachment_problem'));
+				$this->form_validation->set_message('_attachment_handler', lang('attachment_problem'));
 				return FALSE;
 			}
 		}
@@ -336,7 +340,7 @@ class Tools_communicate extends CI_Controller {
 	function send_email()
 	{
 		$this->load->library('email');
-		$this->cp->set_variable('cp_page_title', $this->lang->line('email_success'));
+		$this->cp->set_variable('cp_page_title', lang('email_success'));
 
 		// Fetch $_POST data
 		// We'll turn the $_POST data into variables for simplicity
@@ -364,12 +368,12 @@ class Tools_communicate extends CI_Controller {
 		//  Verify privileges
 		if (count($groups) > 0 && ! $this->cp->allowed_group('can_email_member_groups'))
 		{
-			show_error($this->lang->line('not_allowed_to_email_member_groups'));
+			show_error(lang('not_allowed_to_email_member_groups'));
 		}
 
 		if (count($list_ids) > 0 && ! $this->cp->allowed_group('can_email_mailinglist') && $this->mailinglist_exists == TRUE)
 		{
-			show_error($this->lang->line('not_allowed_to_email_mailinglist'));
+			show_error(lang('not_allowed_to_email_mailinglist'));
 		}
 
 		// Set to allow a check for at least one recipient
@@ -394,8 +398,8 @@ class Tools_communicate extends CI_Controller {
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_communicate'=> $this->lang->line('communicate')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_communicate'=> lang('communicate')
 		));
 
 		// Assign data for caching
@@ -471,7 +475,7 @@ class Tools_communicate extends CI_Controller {
 
 			if ($error == TRUE)
 			{
-				show_error($this->lang->line('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
+				show_error(lang('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
 			}
 
 			// Save cache data
@@ -542,7 +546,7 @@ class Tools_communicate extends CI_Controller {
 
 			if ($query->num_rows() == 0 && count($emails) == 0)
 			{
-				show_error($this->lang->line('no_email_matching_criteria'));
+				show_error(lang('no_email_matching_criteria'));
 			}
 
 			if ($query->num_rows() > 0)
@@ -570,7 +574,7 @@ class Tools_communicate extends CI_Controller {
 
 		if (count($emails) == 0 AND $recipient == '')
 		{
-			show_error($this->lang->line('no_email_matching_criteria'));
+			show_error(lang('no_email_matching_criteria'));
 		}
 		
 		/** ----------------------------------------
@@ -608,7 +612,7 @@ class Tools_communicate extends CI_Controller {
 
 			if ($error == TRUE)
 			{
-				show_error($this->lang->line('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
+				show_error(lang('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
 			}
 
 			$total_sent = $this->_fetch_total($to, $cc, $bcc);
@@ -704,7 +708,7 @@ class Tools_communicate extends CI_Controller {
 					$recipient_array = array_slice($recipient_array, $total_sent);
 					$this->communicate_model->update_email_cache($total_sent, $recipient_array, $id);
 
-					show_error($this->lang->line('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
+					show_error(lang('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
 				}
 
 				$total_sent++;
@@ -725,11 +729,11 @@ class Tools_communicate extends CI_Controller {
 
 		$vars['redirect_url'] =  BASE.AMP.'C=tools_communicate'.AMP.'M=batch_send'.AMP.'id='.$id;
 		$vars['refresh_rate'] = 6;
-		$vars['refresh_message'] = $this->lang->line('batchmode_ready_to_begin');
-		$vars['refresh_notice'] = $this->lang->line('batchmode_warning');
-		$vars['refresh_heading'] = $this->lang->line('sending_email');
+		$vars['refresh_message'] = lang('batchmode_ready_to_begin');
+		$vars['refresh_notice'] = lang('batchmode_warning');
+		$vars['refresh_heading'] = lang('sending_email');
 		
-		$this->cp->set_variable('cp_page_title', $this->lang->line('sending_email'));
+		$this->cp->set_variable('cp_page_title', lang('sending_email'));
 		
 		$this->load->view('_shared/refresh_message', $vars);
 		return;
@@ -749,7 +753,7 @@ class Tools_communicate extends CI_Controller {
 	{
 		if ( ! $id = $this->input->get_post('id') OR ! ctype_digit($id))
 		{
-			show_error($this->lang->line('problem_with_id'));
+			show_error(lang('problem_with_id'));
 		}
 		
 		/** -----------------------------
@@ -795,7 +799,7 @@ class Tools_communicate extends CI_Controller {
 	
 		if ($query->num_rows() == 0)
 		{
-			show_error($this->lang->line('cache_data_missing'));
+			show_error(lang('cache_data_missing'));
 		}
 
 		// Turn the result fields into variables
@@ -932,7 +936,7 @@ class Tools_communicate extends CI_Controller {
 				$n = $total_sent + $i;
 				$this->communicate_model->update_email_cache($n, $recipient_array, $id);
 
-				show_error($this->lang->line('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
+				show_error(lang('error_sending_email').BR.BR.implode(BR, $this->email->_debug_msg));
 			}
 
 			$i++;
@@ -952,16 +956,16 @@ class Tools_communicate extends CI_Controller {
 			
 			$this->communicate_model->update_email_cache($n, $recipient_array, $id);
 
-			$stats = str_replace("%x", ($total_sent + 1), $this->lang->line('currently_sending_batch'));
+			$stats = str_replace("%x", ($total_sent + 1), lang('currently_sending_batch'));
 			$stats = str_replace("%y", $n, $stats);
 
 			$remaining = $total - $batch;
 
 			$vars['redirect_url'] =  BASE.AMP.'C=tools_communicate'.AMP.'M=batch_send'.AMP.'id='.$id;
 			$vars['refresh_rate'] = 6;
-			$vars['refresh_notice'] = $this->lang->line('batchmode_warning');
-			$vars['refresh_message'] = $stats.BR.BR.$this->lang->line('emails_remaining').NBS.NBS.$remaining;
-			$vars['refresh_heading'] = $this->lang->line('sending_email');
+			$vars['refresh_notice'] = lang('batchmode_warning');
+			$vars['refresh_message'] = $stats.BR.BR.lang('emails_remaining').NBS.NBS.$remaining;
+			$vars['refresh_heading'] = lang('sending_email');
 
 			$this->load->view('_shared/refresh_message', $vars);
 			return;
@@ -976,7 +980,7 @@ class Tools_communicate extends CI_Controller {
 
 			$total = $total_sent + $batch;
 
-			$this->cp->set_variable('cp_page_title', $this->lang->line('email_success'));
+			$this->cp->set_variable('cp_page_title', lang('email_success'));
 		
 			$this->load->view('tools/email_sent', array('debug' => $this->email->_debug_msg, 'total_sent' => $total));
 		}
@@ -996,7 +1000,7 @@ class Tools_communicate extends CI_Controller {
 	{
 		if ( ! $this->cp->allowed_group('can_send_cached_email'))
 		{	 
-			show_error($this->lang->line('not_allowed_to_email_cache'));
+			show_error(lang('not_allowed_to_email_cache'));
 		}
 
 		$this->lang->loadfile('tools');
@@ -1126,7 +1130,7 @@ var time = new Date().getTime();
 		"aoColumns": [null, null, null, null, { "bSortable" : false }, { "bSortable" : false } ],
 			
 		"oLanguage": {
-			"sZeroRecords": "'.$this->lang->line('ml_no_results').'",
+			"sZeroRecords": "'.lang('ml_no_results').'",
 			
 			"oPaginate": {
 				"sFirst": "<img src=\"'.$this->cp->cp_theme_url.'images/pagination_first_button.gif\" width=\"13\" height=\"13\" alt=\"&lt; &lt;\" />",
@@ -1162,12 +1166,12 @@ var time = new Date().getTime();
 
 		$this->load->library('table');
 		$this->load->helper('form');
-		$this->cp->set_variable('cp_page_title', $this->lang->line('view_email_cache'));
+		$this->cp->set_variable('cp_page_title', lang('view_email_cache'));
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_communicate'=> $this->lang->line('communicate')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_communicate'=> lang('communicate')
 		));
 
 		// some defaults
@@ -1192,8 +1196,8 @@ var time = new Date().getTime();
 			$config['total_rows'] = $total;
 			$config['per_page'] = $this->perpage;
 			$config['page_query_string'] = TRUE;
-			$config['first_link'] = $this->lang->line('pag_first_link');
-			$config['last_link'] = $this->lang->line('pag_last_link');
+			$config['first_link'] = lang('pag_first_link');
+			$config['last_link'] = lang('pag_last_link');
 			
 			$this->pagination->initialize($config);	
 			$vars['pagination'] = $this->pagination->create_links();
@@ -1304,19 +1308,19 @@ var time = new Date().getTime();
 	{
 		if ( ! $this->cp->allowed_group('can_send_cached_email'))
 		{	 
-			show_error($this->lang->line('not_allowed_to_email_mailinglist'));
+			show_error(lang('not_allowed_to_email_mailinglist'));
 		}
 		
 		if ( ! $this->input->post('email'))
 		{
-			show_error($this->lang->line('bad_cache_ids'));
+			show_error(lang('bad_cache_ids'));
 		}
 		
 		$query = $this->communicate_model->get_cached_email($this->input->post('email'), FALSE);
 		
 		if ($query->num_rows() == 0)
 		{
-			show_error($this->lang->line('bad_cache_ids'));
+			show_error(lang('bad_cache_ids'));
 		}
 		
 		$i = 0;
@@ -1329,8 +1333,8 @@ var time = new Date().getTime();
 		
 		$this->load->helper('form');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('delete_emails'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_communicate'.AMP.'M=view_cache', $this->lang->line('view_email_cache'));
+		$this->cp->set_variable('cp_page_title', lang('delete_emails'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=tools_communicate'.AMP.'M=view_cache', lang('view_email_cache'));
 		
 		$this->load->view('tools/email_delete_confirm', $vars);
 	}
@@ -1349,17 +1353,17 @@ var time = new Date().getTime();
 	{
 		if ( ! $this->cp->allowed_group('can_send_cached_email'))
 		{	 
-			show_error($this->lang->line('not_allowed_to_email_mailinglist'));
+			show_error(lang('not_allowed_to_email_mailinglist'));
 		}
 		
 		if ( ! $this->input->post('email'))
 		{
-			show_error($this->lang->line('bad_cache_ids'));
+			show_error(lang('bad_cache_ids'));
 		}
 		
 		$this->communicate_model->delete_emails($this->input->post('email'));
 		
-		$this->session->set_flashdata('message_success', $this->lang->line('email_deleted'));
+		$this->session->set_flashdata('message_success', lang('email_deleted'));
 		$this->functions->redirect(BASE.AMP.'C=tools_communicate'.AMP.'M=view_cache');
 	}
 
@@ -1377,14 +1381,14 @@ var time = new Date().getTime();
 	{
 		if ( ! $this->cp->allowed_group('can_send_cached_email'))
 		{	 
-			show_error($this->lang->line('not_allowed_to_email_mailinglist'));
+			show_error(lang('not_allowed_to_email_mailinglist'));
 		}
 		
 		$query = $this->communicate_model->get_cached_email($this->input->get_post('id'));
 		
 		if ($query->num_rows() == 0)
 		{
-			show_error($this->lang->line('no_cached_email'));
+			show_error(lang('no_cached_email'));
 		}
 		
 		/** -----------------------------
@@ -1427,8 +1431,8 @@ var time = new Date().getTime();
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=tools' => $this->lang->line('tools'),
-			BASE.AMP.'C=tools_communicate'=> $this->lang->line('communicate')
+			BASE.AMP.'C=tools' => lang('tools'),
+			BASE.AMP.'C=tools_communicate'=> lang('communicate')
 		));
 
 		$this->load->view('tools/view_email', $vars);

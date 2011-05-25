@@ -207,7 +207,7 @@ class Api_channel_fields extends Api {
 
 		if ( ! isset($this->field_types[$field_type]))
 		{
-			$file = 'ft.'.$field_type.EXT;
+			$file = 'ft.'.$field_type.'.php';
 			$path = PATH_FT.$field_type.'/';
 			
 
@@ -806,7 +806,7 @@ class Api_channel_fields extends Api {
 			// First or third party?
 			foreach(array(APPPATH.'modules/', PATH_THIRD) as $tmp_path)
 			{
-				if (file_exists($tmp_path.$name.'/tab.'.$name.EXT))
+				if (file_exists($tmp_path.$name.'/tab.'.$name.'.php'))
 				{
 					$paths[$name] = $tmp_path.$name.'/';
 					break;
@@ -818,10 +818,10 @@ class Api_channel_fields extends Api {
 			{
 				if ( ! isset($paths[$name]))
 				{
-					show_error(sprintf($this->EE->lang->line('unable_to_load_tab'), 'tab.'.$name.EXT));
+					show_error(sprintf($this->EE->lang->line('unable_to_load_tab'), 'tab.'.$name.'.php'));
 				}
 				
-				include_once($paths[$name].'tab.'.$name.EXT);
+				include_once($paths[$name].'tab.'.$name.'.php');
 			}
 		}
 		

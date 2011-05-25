@@ -10,16 +10,16 @@ class Addons_fieldtypes extends CI_Controller {
 	 */
 	function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_fieldtypes'))
+		if ( ! $this->cp->allowed_group('can_access_addons', 'can_access_fieldtypes'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->library('api');
 		$this->load->library('table');
 		$this->api->instantiate('channel_fields');
 		
-		$this->cp->set_variable('cp_page_title', $this->lang->line('addons_fieldtypes'));
+		$this->cp->set_variable('cp_page_title', lang('addons_fieldtypes'));
 		
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {0: {sorter: false}},
@@ -41,10 +41,10 @@ class Addons_fieldtypes extends CI_Controller {
 
 		$vars['table_headings'] = array(
 										'',
-										$this->lang->line('fieldtype_name'),
-										$this->lang->line('version'),
-										$this->lang->line('status'),
-										$this->lang->line('action')
+										lang('fieldtype_name'),
+										lang('version'),
+										lang('status'),
+										lang('action')
 										);
 		
 		$vars['fieldtypes'] = array();
@@ -74,13 +74,13 @@ class Addons_fieldtypes extends CI_Controller {
 
 			// Show installation status
 			$status = $installed ? 'installed' : 'not_installed';
-			$in_status = str_replace(" ", "&nbsp;", $this->lang->line($status));
+			$in_status = str_replace(" ", "&nbsp;", lang($status));
 			$show_status = $installed ? '<span class="go_notice">'.$in_status.'</span>' : '<span class="notice">'.$in_status.'</span>';
 
 
 			// Proper link to install or uninstall
 			$show_action = $installed ? 'uninstall' : 'install';
-			$show_action = '<a class="less_important_link" href="'.BASE.AMP.'C=addons_fieldtypes'.AMP.'M='.$show_action.AMP.'ft='.$fieldtype.'" title="'.$this->lang->line($show_action).'">'.$this->lang->line($show_action).'</a>';
+			$show_action = '<a class="less_important_link" href="'.BASE.AMP.'C=addons_fieldtypes'.AMP.'M='.$show_action.AMP.'ft='.$fieldtype.'" title="'.lang($show_action).'">'.lang($show_action).'</a>';
 
 			// Add to the view array
 			$data[$ftcount] = array(
@@ -106,7 +106,7 @@ class Addons_fieldtypes extends CI_Controller {
 		}
 
 		$this->javascript->compile();
-		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', $this->lang->line('addons'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 		
 		$this->load->view('addons/fieldtypes', $vars);
 	}
@@ -120,14 +120,14 @@ class Addons_fieldtypes extends CI_Controller {
 	 */
 	function install()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_fieldtypes'))
+		if ( ! $this->cp->allowed_group('can_access_addons', 'can_access_fieldtypes'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		if ( ! $ft = $this->input->get('ft'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$ft = $this->security->sanitize_filename(strtolower($ft));
@@ -152,14 +152,14 @@ class Addons_fieldtypes extends CI_Controller {
 	 */
 	function uninstall()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_fieldtypes'))
+		if ( ! $this->cp->allowed_group('can_access_addons', 'can_access_fieldtypes'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		if ( ! $ft = $this->input->get('ft'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$ft = $this->security->sanitize_filename(strtolower($ft));
@@ -177,7 +177,7 @@ class Addons_fieldtypes extends CI_Controller {
 			}
 		}
 		
-		$this->cp->set_variable('cp_page_title', $this->lang->line('delete_fieldtype'));
+		$this->cp->set_variable('cp_page_title', lang('delete_fieldtype'));
 		
 		return $this->load->view('addons/fieldtype_delete_confirm', array('form_action' => 'C=addons_fieldtypes'.AMP.'M=uninstall'.AMP.'ft='.$ft));
 	}
@@ -191,14 +191,14 @@ class Addons_fieldtypes extends CI_Controller {
 	 */
 	function global_settings()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons') OR ! $this->cp->allowed_group('can_access_fieldtypes'))
+		if ( ! $this->cp->allowed_group('can_access_addons', 'can_access_fieldtypes'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		if ( ! $ft = $this->input->get('ft'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->library('api');
@@ -210,7 +210,7 @@ class Addons_fieldtypes extends CI_Controller {
 		
 		if ( ! isset($installed[$ft]) OR ! $this->api_channel_fields->include_handler($ft))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		// Grab existing settings if we have any
@@ -241,7 +241,7 @@ class Addons_fieldtypes extends CI_Controller {
 			$settings = base64_encode(serialize($settings));
 			$this->db->update('fieldtypes', array('settings' => $settings), array('name' => $ft));
 			
-			$this->session->set_flashdata('message_success', $this->lang->line('global_settings_saved'));
+			$this->session->set_flashdata('message_success', lang('global_settings_saved'));
 			$this->functions->redirect(BASE.AMP.'C=addons_fieldtypes');
 		}
 		

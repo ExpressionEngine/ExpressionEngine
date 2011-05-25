@@ -75,7 +75,7 @@ class Javascript extends CI_Controller {
 		
 		if ( ! class_exists('EE_Spellcheck'))
 		{
-			require APPPATH.'libraries/Spellcheck'.EXT; 
+			require APPPATH.'libraries/Spellcheck.php'; 
 		}
 
 		return EE_Spellcheck::iframe();
@@ -97,7 +97,7 @@ class Javascript extends CI_Controller {
 
 		if ( ! class_exists('EE_Spellcheck'))
 		{
-			require APPPATH.'libraries/Spellcheck'.EXT; 
+			require APPPATH.'libraries/Spellcheck.php'; 
 		}
 
 		return EE_Spellcheck::check();
@@ -194,7 +194,7 @@ class Javascript extends CI_Controller {
 		{
 			if ($this->config->item('debug') >= 1)
 			{
-				$this->output->fatal_error($this->lang->line('missing_jquery_file'));
+				$this->output->fatal_error(lang('missing_jquery_file'));
 			}
 			else
 			{

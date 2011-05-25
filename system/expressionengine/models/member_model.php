@@ -1142,29 +1142,6 @@ class Member_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Update Layouts
-	 *
-	 * Adds a new tab and all associated fields to all existing layouts
-	 * Deprecated and I can't spot it being called anywhere
-	 *
-	 * @access	public
-	 * @param	array	Altered tabs and/or fields
-	 * @param	string	Action to take
-	 * @param	int		The channel id
-	 * @return	bool
-	 */
-	function update_layouts($layout_info, $action, $channel_id = array())
-	{
-		$this->load->model('layout_model');
-		
-		$response = $this->layout_model->update_layouts($layout_info, $action, $channel_id);
-		return $response;
-	}
-
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Insert Group Layout
 	 *
 	 * Inserts layout information for member groups for the publish page, saved as

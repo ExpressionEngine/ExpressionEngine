@@ -25,15 +25,17 @@
 class Members {
 	
 	
-	var $EE;
+	protected $EE;
 	
-	function __construct()
+	/**
+	 * Constructor
+	 */
+	public function __construct()
 	{
 		$this->EE =& get_instance();
 	}
 	
 	// ------------------------------------------------------------------------	
-
 
 	/**
 	 *	Upload Member Images
@@ -45,19 +47,18 @@ class Members {
 	 *	@param 	int		member id being updated
 	 *	@return mixed
 	 */
-	
-	function upload_member_images($type = 'avatar', $id)
+	public function upload_member_images($type = 'avatar', $id)
 	{
 		// validate for unallowed blank values
 		if (empty($_POST)) 
 		{
 			if (REQ == 'CP')
 			{
-				show_error($this->EE->lang->line('not_authorized'));				
+				show_error(lang('not_authorized'));				
 			}
 			else
 			{
-				$this->EE->output->show_user_error('submission', $this->EE->lang->line('not_authorized'));
+				$this->EE->output->show_user_error('submission', lang('not_authorized'));
 			}
 		}
 		
@@ -101,12 +102,10 @@ class Members {
 			{
 				if (REQ == 'CP')
 				{
-					show_error($this->EE->lang->line($not_enabled));					
+					show_error(lang($not_enabled));					
 				}
-				else
-				{
-					return array('error', array($not_enabled, $not_enabled));
-				}
+
+				return array('error', array($not_enabled, $not_enabled));
 			}
 		}
 		else
@@ -124,10 +123,8 @@ class Members {
 						// Returning type, method to call.
 						return array('page', 'edit_avatar');
 					}
-					else
-					{
-						return array('redirect', array($edit_image));
-					}
+
+					return array('redirect', array($edit_image));
 				}
 
 				$this->EE->db->where('member_id', $id);
@@ -141,8 +138,8 @@ class Members {
 
 				if (REQ == 'CP')
 				{
-					$this->EE->session->set_flashdata('message_success', $this->EE->lang->line($removed));
-					$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_avatar'.AMP.'id='.$id);					
+					$this->EE->session->set_flashdata('message_success', lang($removed));
+					$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_avatar'.AMP.'id='.$id);
 				}
 			}
 			elseif ($type == 'photo')
@@ -155,12 +152,10 @@ class Members {
 				{
 					if (REQ == 'CP')
 					{
-						$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_photo'.AMP.'id='.$id);						
+						$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_photo'.AMP.'id='.$id);
 					}
-					else
-					{
-						return array('redirect', array($edit_image));
-					}
+
+					return array('redirect', array($edit_image));
 				}
 				
 				$this->EE->db->set('photo_filename', '');
@@ -172,7 +167,7 @@ class Members {
 				if (REQ == 'CP')
 				{
 					// Returning type, method to call + args.
-					return array('page', 'edit_avatar', array($this->EE->lang->line($removed)));
+					return array('page', 'edit_avatar', array(lang($removed)));
 				}
 			}
 			else
@@ -185,12 +180,10 @@ class Members {
 				{
 					if (REQ == 'CP')
 					{
-						return $this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature'.AMP.'id='.$id);						
+						return $this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature'.AMP.'id='.$id);
 					}
-					else
-					{
-						return array('redirect', array($edit_image));
-					}
+
+					return array('redirect', array($edit_image));
 				}
 				
 				$this->EE->db->set('sig_img_filename', '');
@@ -201,8 +194,8 @@ class Members {
 
 				if (REQ == 'CP')
 				{
-					$this->EE->session->set_flashdata('message_success', $this->EE->lang->line($removed));
-					$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature'.AMP.'id='.$id);					
+					$this->EE->session->set_flashdata('message_success', lang($removed));
+					$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_signature'.AMP.'id='.$id);
 				}
 			}
 			
@@ -211,8 +204,8 @@ class Members {
 				return array('var_swap',
 							array('success',
 								array(
-									'lang:heading'	=>	$this->EE->lang->line($remove),
-									'lang:message'	=>	$this->EE->lang->line($removed)								
+									'lang:heading'	=>	lang($remove),
+									'lang:message'	=>	lang($removed)								
 								)
 							)
 						);				
@@ -226,24 +219,19 @@ class Members {
 			{
 				show_error('gd_required');				
 			}
-			else
-			{
-				return array('error', array($edit_image, 'gd_required'));
-			}
+
+			return array('error', array($edit_image, 'gd_required'));
 		}
 
 		// Is there $_FILES data?
-
 		if ( ! isset($_FILES['userfile']))
 		{
 			if (REQ == 'CP')
 			{
-				$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_'.$type.AMP.'id='.$id);				
+				$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=edit_'.$type.AMP.'id='.$id);
 			}
-			else
-			{
-				return array('redirect', $edit_image);
-			}
+
+			return array('redirect', $edit_image);
 		}
 
 		// Check the image size
@@ -268,16 +256,14 @@ class Members {
 		{
 			if (REQ == 'CP')
 			{
-				show_error(sprintf($this->EE->lang->line('image_max_size_exceeded'), $max_size));				
+				show_error(sprintf(lang('image_max_size_exceeded'), $max_size));				
 			}
-			else
-			{
-				$this->EE->output->show_user_error('submission',
-												sprintf(
-													$this->EE->lang->line('image_max_size_exceeded'), 
-													$max_size)
-										);
-			}
+
+			$this->EE->output->show_user_error('submission',
+											sprintf(
+												lang('image_max_size_exceeded'), 
+												$max_size)
+									);
 		}
 
 		// Is the upload path valid and writable?
@@ -301,10 +287,8 @@ class Members {
 			{
 				show_error('image_assignment_error');				
 			}
-			else
-			{
-				return array('error', array($edit_image, 'image_assignment_error'));
-			}
+
+			return array('error', array($edit_image, 'image_assignment_error'));
 		}
 
 		// Set some defaults
@@ -334,12 +318,10 @@ class Members {
 		{
 			if (REQ == 'CP')
 			{
-				show_error($this->EE->lang->line('invalid_image_type'));				
+				show_error(lang('invalid_image_type'));				
 			}
-			else
-			{
-				$this->EE->output->show_user_error('submission', $this->EE->lang->line('invalid_image_type'));
-			}
+
+			$this->EE->output->show_user_error('submission', lang('invalid_image_type'));
 		}
 
 		// Is it an allowed image type?
@@ -356,12 +338,10 @@ class Members {
 		{
 			if (REQ == 'CP')
 			{
-				show_error($this->EE->lang->line('invalid_image_type'));				
+				show_error(lang('invalid_image_type'));
 			}
-			else
-			{
-				return $this->EE->output->show_user_error('submission', $this->EE->lang->line('invalid_image_type'));
-			}
+
+			return $this->EE->output->show_user_error('submission', lang('invalid_image_type'));
 		}
 
 		// Assign the name of the image
@@ -415,15 +395,13 @@ class Members {
 			if (REQ == 'CP')
 			{
 				$this->EE->session->set_flashdata('message_failure', $this->EE->upload->display_errors());
-				$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M='.$edit_image.AMP.'id='.$id);				
+				$this->EE->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M='.$edit_image.AMP.'id='.$id);
 			}
-			else
-			{
-				return $this->EE->output->show_user_error(
+
+			return $this->EE->output->show_user_error(
 											'submission',
-				 							$this->EE->lang->line($this->EE->upload->display_errors())
+				 							lang($this->EE->upload->display_errors())
 										);
-			}
 		}
 
 		$file_info = $this->EE->upload->data();
@@ -483,8 +461,7 @@ class Members {
 	 *	@param 	string
 	 *	@return bool
 	 */
-	
-	function image_resize($filename, $type = 'avatar', $axis = 'width')
+	public function image_resize($filename, $type = 'avatar', $axis = 'width')
 	{
 		$this->EE->load->library('image_lib');
 
@@ -516,12 +493,7 @@ class Members {
 		
 		$this->EE->image_lib->initialize($config);
 
-		if ($this->EE->image_lib->resize() === FALSE)
-		{
-			return FALSE;
-		}
-
-		return TRUE;
+		return ( ! $this->EE->image_lib->resize()) ? FALSE : TRUE;
 	}
 
 	// ------------------------------------------------------------------------
@@ -535,14 +507,12 @@ class Members {
 	 *	@param 	int
 	 *	@return array
 	 */
-
-
-	function get_member_subscriptions($member_id, $rownum = 0, $perpage = 50)
+	public function get_member_subscriptions($member_id, $rownum = 0, $perpage = 50)
 	{
 		$this->EE->load->helper(array('url', 'string'));
 		
 		// Set some base values
-		$channel_subscriptions		= FALSE;
+		$channel_subscriptions	= FALSE;
 		$forum_subscriptions	= FALSE;
 		$result_ids				= array();
 		$total_count			= 0;
@@ -651,7 +621,7 @@ class Members {
 												'url_title' => url_title($row['title']),
 												'path' => $this->EE->functions->fetch_site_index().$qm.'URL='.$path,
 												'id'	=> 'b'.$row['entry_id'],
-												'type'	=> $this->EE->lang->line('comment')
+												'type'	=> lang('comment')
 												);
 					}
 				}
@@ -697,7 +667,7 @@ class Members {
 												'url_title' => url_title($row['title']),
 												'path' => $this->EE->functions->fetch_site_index().$qm.'URL='.$path,
 												'id'	=> 'f'.$row['topic_id'],
-												'type'	=> $this->EE->lang->line('forum_post')
+												'type'	=> lang('forum_post')
 												);
 					}
 				}

@@ -830,7 +830,7 @@ class Content_publish extends CI_Controller {
 			
 			if ( ! class_exists('EE_Spellcheck'))
 			{
-				require APPPATH.'libraries/Spellcheck'.EXT;
+				require APPPATH.'libraries/Spellcheck.php';
 			}
 			
 			if ($act == 'iframe' OR $act == 'check')
@@ -1536,11 +1536,11 @@ class Content_publish extends CI_Controller {
 			
 					if ($name == 'Br')
 					{
-						$name = $this->lang->line('auto_br');
+						$name = lang('auto_br');
 					}
 					elseif ($name == 'Xhtml')
 					{
-						$name = $this->lang->line('xhtml');
+						$name = lang('xhtml');
 					}
 					
 					$field_list['field_id_'.$format['field_id']]['field_fmt_options'][$format['field_fmt']] = $name;

@@ -43,6 +43,11 @@ $.ee_filemanager.file_uploader = function() {
 			$.ee_fileuploader.set_directory_id($('#dir_id').val());
 		},
 		after_upload: function(file_uploader, file){
+			// if we're replacing remove any visible files with the same ID
+			if (file.replace == true) {
+				$('.mainTable tbody tr:has(td:contains(' + file.file_id + ')):has(td:contains(' + file.file_name + '))').remove();
+			};
+			
 			// Clone the first valid row
 			var $first_row = $('.mainTable tbody tr:first').clone();
 			
@@ -85,10 +90,12 @@ $.ee_filemanager.file_uploader = function() {
 			
 			// Send it all to the jQuery Template
 			$('.mainTable tbody').prepend($.tmpl('filemanager_row', file));
-			
-			// Change modal's top
-			var height_difference = $('.mainTable tbody tr:first').height() + 2; // 2 is added for borders
-			$('.ui-dialog').css('top', parseInt($('.ui-dialog').css('top'), 10) - height_difference);
+
+			if (file.replace != true) {
+				// Change modal's top
+				var height_difference = $('.mainTable tbody tr:first').height(); // 2 is added for borders
+				$('.ui-dialog').css('top', parseInt($('.ui-dialog').css('top'), 10) - height_difference);
+			};
 		},
 		trigger: '#action_nav a:contains(Upload File)'
 	});

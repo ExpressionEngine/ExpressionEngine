@@ -26,11 +26,10 @@
 
 class Member_upd {
 
-	var $version = '2.0';
+	var $version = '2.1';
 
-	function Member_upd()
+	public function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 	}
 
@@ -39,10 +38,9 @@ class Member_upd {
 	/**
 	 * Module Installer
 	 *
-	 * @access	public
 	 * @return	bool
 	 */
-	function install()
+	public function install()
 	{
 		$sql[] = "INSERT INTO exp_modules (module_name, module_version, has_cp_backend) VALUES ('Member', '$this->version', 'n')";
 		$sql[] = "INSERT INTO exp_actions (class, method) VALUES ('Member', 'registration_form')";
@@ -73,7 +71,7 @@ class Member_upd {
 	 * @access	public
 	 * @return	bool
 	 */
-	function uninstall()
+	public function uninstall()
 	{
 		$query = $this->EE->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Member'");
 

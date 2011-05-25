@@ -1,28 +1,27 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		ExpressionEngine Dev Team
+ * @copyright	Copyright (c) 2003 - 2011, EllisLab, Inc.
+ * @license		http://expressionengine.com/user_guide/license.html
+ * @link		http://expressionengine.com
+ * @since		Version 2.0
+ * @filesource
+ */
+ 
+// ------------------------------------------------------------------------
 
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://expressionengine.com/
------------------------------------------------------
- Copyright (c) 2003 - 2011, EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://expressionengine.com/user_guide/license.html
-=====================================================
- File: mcp.mailinglist.php
------------------------------------------------------
- Purpose: Basic Mailint List class - CP
-=====================================================
-*/
-
-if ( ! defined('EXT'))
-{
-	exit('Invalid file request');
-}
-
+/**
+ * ExpressionEngine Mailinglist Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Update File
+ * @author		ExpressionEngine Dev Team
+ * @link		http://expressionengine.com
+ */
 
 class Mailinglist_upd {
 
@@ -30,7 +29,6 @@ class Mailinglist_upd {
 
 	function Mailinglist_upd()
 	{
-		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 		$this->EE->load->dbforge();
 	}
@@ -149,12 +147,12 @@ class Mailinglist_upd {
 
 		if ( ! function_exists('mailinglist_template'))
 		{
-			if ( ! file_exists(APPPATH.'language/'.$this->EE->config->item('deft_lang').'/email_data'.EXT))
+			if ( ! file_exists(APPPATH.'language/'.$this->EE->config->item('deft_lang').'/email_data.php'))
 			{
 				return FALSE;
 			}
 
-			require APPPATH.'language/'.$this->EE->config->item('deft_lang').'/email_data'.EXT;
+			require APPPATH.'language/'.$this->EE->config->item('deft_lang').'/email_data.php';
 		}
 
 		$data = array(

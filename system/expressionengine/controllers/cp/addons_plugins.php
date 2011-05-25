@@ -56,8 +56,8 @@ class Addons_plugins extends CI_Controller {
 		$this->load->library('table');
 		$this->load->helper('form');
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('plugins'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', $this->lang->line('addons'));
+		$this->cp->set_variable('cp_page_title', lang('plugins'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {2: {sorter: false}},
@@ -188,7 +188,7 @@ class Addons_plugins extends CI_Controller {
 		// Basic security check
 		if ( ! $name OR ! preg_match("/^[a-z0-9][\w.-]*$/i", $name))
 		{
-			$this->session->set_flashdata('message_failure', $this->lang->line('no_additional_info'));
+			$this->session->set_flashdata('message_failure', lang('no_additional_info'));
 			$this->functions->redirect(BASE.AMP.'C=addons_plugins');
 		}
 
@@ -207,8 +207,8 @@ class Addons_plugins extends CI_Controller {
 
 		// a bit of a breadcrumb override is needed
 		$this->cp->set_variable('cp_breadcrumbs', array(
-			BASE.AMP.'C=addons' => $this->lang->line('addons'),
-			BASE.AMP.'C=addons_plugins'=> $this->lang->line('addons_plugins')
+			BASE.AMP.'C=addons' => lang('addons'),
+			BASE.AMP.'C=addons_plugins'=> lang('addons_plugins')
 		));
 
 		$this->load->view('addons/plugin_info', array('plugin' => $plugin));
@@ -229,13 +229,13 @@ class Addons_plugins extends CI_Controller {
 	{
 		if ($this->config->item('demo_date') != FALSE)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->load->helper(array('file', 'form'));
 
 		$this->cp->set_variable('cp_page_title', lang('plugin_delete_confirm'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', $this->lang->line('addons'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=addons', lang('addons'));
 
 		$hidden = $this->input->post('toggle');
 
@@ -264,7 +264,7 @@ class Addons_plugins extends CI_Controller {
 	{
 		if ($this->config->item('demo_date') != FALSE)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$plugins = $this->input->post('deleted');
@@ -282,15 +282,15 @@ class Addons_plugins extends CI_Controller {
 			// We now have more than one path, so we try them all
 			$success = FALSE;
 
-			if (@unlink(PATH_PI.'pi.'.$name.EXT))
+			if (@unlink(PATH_PI.'pi.'.$name.'.php'))
 			{
 				$success = TRUE;
 			}
 			else
 			{
 				// first thing's first, let's make sure this isn't part of a package
-				$files = glob(PATH_THIRD.$name.'/*'.EXT);
-				$pi_key = array_search(PATH_THIRD.$name.'/pi.'.$name.EXT, $files);
+				$files = glob(PATH_THIRD.$name.'/*.php');
+				$pi_key = array_search(PATH_THIRD.$name.'/pi.'.$name.'.php', $files);
 				
 				// remove this file from the list
 				unset($files[$pi_key]);
@@ -343,20 +343,20 @@ class Addons_plugins extends CI_Controller {
 	{
 		if ($this->config->item('demo_date') != FALSE)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
-		@include_once(APPPATH.'libraries/Pclzip'.EXT);
+		@include_once(APPPATH.'libraries/Pclzip.php');
 
 		if ( ! is_really_writable(PATH_THIRD))
 		{
-			$this->session->set_flashdata('message_failure', $this->lang->line('plugin_folder_not_writable'));
+			$this->session->set_flashdata('message_failure', lang('plugin_folder_not_writable'));
 			$this->functions->redirect(BASE.AMP.'C=addons_plugins');
 		}
 
 		if ( ! extension_loaded('curl') OR ! function_exists('curl_init'))
 		{
-			$this->session->set_flashdata('message_failure', $this->lang->line('plugin_no_curl_support'));
+			$this->session->set_flashdata('message_failure', lang('plugin_no_curl_support'));
 			$this->functions->redirect(BASE.AMP.'C=addons_plugins');
 		}
 
@@ -387,7 +387,7 @@ class Addons_plugins extends CI_Controller {
 
 		if ( ! $fp = fopen($local_file, FOPEN_WRITE_CREATE_DESTRUCTIVE))
 		{
-			$this->session->set_flashdata('message_failure', $this->lang->line('plugin_problem_creating_file'));
+			$this->session->set_flashdata('message_failure', lang('plugin_problem_creating_file'));
 			$this->functions->redirect(BASE.AMP.'C=addons_plugins');
 		}
 
@@ -436,7 +436,7 @@ class Addons_plugins extends CI_Controller {
 				if ($ok)
 				{
 					// check if the file is sitting right here
-					$pi_files = glob($temp_dir.'/pi.*'.EXT);
+					$pi_files = glob($temp_dir.'/pi.*.php');
 					
 					if (empty($pi_files))
 					{
@@ -444,7 +444,7 @@ class Addons_plugins extends CI_Controller {
 						// stop at first plugin file found to keep things sane
 						foreach (glob($temp_dir.'/*', GLOB_ONLYDIR) as $dir)
 						{
-							$pi_files = glob($dir.'/pi.*'.EXT);
+							$pi_files = glob($dir.'/pi.*.php');
 							
 							if ( ! empty($pi_files))
 							{
@@ -533,7 +533,7 @@ class Addons_plugins extends CI_Controller {
 	{
 		$this->load->helper('file');
 
-		$ext_len = strlen(EXT);
+		$ext_len = strlen('.php');
 
 		$plugin_files = array();
 		$plugins = array();
@@ -544,8 +544,10 @@ class Addons_plugins extends CI_Controller {
 		{
 			foreach ($list as $file)
 			{
-				if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen('pi.'.EXT)
-					&& in_array(substr($file, 3, -$ext_len), $this->core->native_plugins))
+				if (strncasecmp($file, 'pi.', 3) == 0 && 
+					substr($file, -$ext_len) == '.php' && 
+					strlen($file) > 7 && 
+					in_array(substr($file, 3, -$ext_len), $this->core->native_plugins))
 				{
 					$plugin_files[$file] = PATH_PI.$file;
 				}
@@ -572,7 +574,9 @@ class Addons_plugins extends CI_Controller {
 					}
 
 					// we gots a plugin?
-					if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen('pi.'.EXT))
+					if (strncasecmp($file, 'pi.', 3) == 0 && 
+						substr($file, -$ext_len) == '.php' && 
+						strlen($file) > strlen('pi.'.'.php'))
 					{
 						if (substr($file, 3, -$ext_len) == $pkg_name)
 						{
@@ -594,7 +598,9 @@ class Addons_plugins extends CI_Controller {
 			// Magpie maight already be in use for an accessory or other function
 			// If so, we still need the $plugin_info, so we'll open it up and
 			// harvest what we need. This is a special exception for Magpie.
-			if ($file == 'pi.magpie'.EXT AND in_array($path, get_included_files()) AND class_exists('Magpie'))
+			if ($file == 'pi.magpie.php' && 
+				in_array($path, get_included_files()) && 
+				class_exists('Magpie'))
 			{
 				$contents = file_get_contents($path);
 				$start = strpos($contents, '$plugin_info');
@@ -650,11 +656,11 @@ class Addons_plugins extends CI_Controller {
 			return FALSE;
 		}
 
-		$path = PATH_PI.'pi.'.$filename.EXT;
+		$path = PATH_PI.'pi.'.$filename.'.php';
 
 		if ( ! file_exists($path))
 		{
-			$path = PATH_THIRD.$filename.'/pi.'.$filename.EXT;
+			$path = PATH_THIRD.$filename.'/pi.'.$filename.'.php';
 
 			if ( ! file_exists($path))
 			{

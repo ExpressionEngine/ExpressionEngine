@@ -66,11 +66,12 @@ class EE_Schema {
 			  member_id int(10) default '0' NOT NULL,
 			  admin_sess tinyint(1) default '0' NOT NULL,
 			  ip_address varchar(16) default '0' NOT NULL,
-			  user_agent varchar(50) NOT NULL,
+			  user_agent varchar(120) NOT NULL,
 			  last_activity int(10) unsigned DEFAULT '0' NOT NULL,
 			  PRIMARY KEY `session_id` (`session_id`),
 			  KEY `member_id` (`member_id`),
-			  KEY `site_id` (`site_id`)
+			  KEY `site_id` (`site_id`),
+			  KEY `last_activity_idx` (`last_activity`)
 			)";
 		
 		// Throttle
@@ -283,7 +284,7 @@ class EE_Schema {
 			  group_id smallint(4) NOT NULL default '0',
 			  username varchar(50) NOT NULL,
 			  screen_name varchar(50) NOT NULL,
-			  password varchar(40) NOT NULL,
+			  password varchar(64) NOT NULL,
 			  unique_id varchar(40) NOT NULL,
 			  crypt_key varchar(40) NULL DEFAULT NULL,
 			  authcode varchar(10) NULL DEFAULT NULL,

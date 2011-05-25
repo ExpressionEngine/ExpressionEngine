@@ -33,7 +33,7 @@ class Homepage extends CI_Controller {
 	function index($message = '')
 	{	
 		$this->cp->get_installed_modules();
-		$this->cp->set_variable('cp_page_title', $this->lang->line('main_menu'));
+		$this->cp->set_variable('cp_page_title', lang('main_menu'));
 
 		$version			= FALSE;
 		$show_notice		= $this->_checksum_bootstrap_files();
@@ -49,10 +49,10 @@ class Homepage extends CI_Controller {
 		$vars = array(
 			'version'			=> $version,
 			'message'			=> $message,
-			'instructions'		=> $this->lang->line('select_channel_to_post_in'),
+			'instructions'		=> lang('select_channel_to_post_in'),
 			'show_page_option'	=> (isset($this->cp->installed_modules['pages'])) ? TRUE : FALSE,
 			'info_message_open'	=> ($this->input->cookie('home_msg_state') != 'closed' && $show_notice) ? TRUE : FALSE,
-			'no_templates'		=> sprintf($this->lang->line('no_templates_available'), BASE.AMP.'C=design'.AMP.'M=new_template_group'),
+			'no_templates'		=> sprintf(lang('no_templates_available'), BASE.AMP.'C=design'.AMP.'M=new_template_group'),
 			
 			'can_access_modify'		=> TRUE,
 			'can_access_content'	=> TRUE,
@@ -103,7 +103,7 @@ class Homepage extends CI_Controller {
 
 		// Prep js
 		
-		$this->javascript->set_global('lang.close', $this->lang->line('close'));
+		$this->javascript->set_global('lang.close', lang('close'));
 		
 		if ($show_notice)
 		{
@@ -192,7 +192,7 @@ class Homepage extends CI_Controller {
 	{
 		if ($this->session->userdata('group_id') != 1)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
 		$this->load->library('file_integrity');
@@ -266,7 +266,7 @@ class Homepage extends CI_Controller {
 		
 		if ( ! $version_file)
 		{
-			return sprintf($this->lang->line('new_version_error'),
+			return sprintf(lang('new_version_error'),
 							$download_url);			
 		}
 
@@ -324,7 +324,7 @@ class Homepage extends CI_Controller {
 		
 		if ($high_priority)
 		{
-			return sprintf($this->lang->line('new_version_notice_high_priority'),
+			return sprintf(lang('new_version_notice_high_priority'),
 						   $high_priority_release['version'],	
 						   $high_priority_release['build'],
 						   $cur_ver[0],
@@ -334,7 +334,7 @@ class Homepage extends CI_Controller {
 		}
 		else
 		{
-			return sprintf($this->lang->line('new_version_notice'),
+			return sprintf(lang('new_version_notice'),
 						   $details['version'],
 						   $download_url,
 						   $this->cp->masked_url($this->config->item('doc_url').'installation/update.html'));					

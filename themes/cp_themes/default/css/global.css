@@ -310,7 +310,8 @@ ul.bulleted {
 input.submit,
 button.submit,
 .submit_alt,
-.button a.submit {
+.button a.submit,
+.button_bar a.submit {
 	font: 12px/12px Arial, 'Hevlvetica Neue', sans-serif;
 	
 	-moz-border-radius: 3px;
@@ -595,7 +596,7 @@ span.button .submit {
 	display:			block;
 }
 
-#navigationTabs .msm_sites {
+#navigationTabs > .msm_sites {
 	float:				right;
 	margin-right:		20px;
 }
@@ -3464,17 +3465,25 @@ a.file_chooser_thumbnail.last_row {
 }
 
 .button_bar a.submit {
-	display: inline-block;
+	color: #fff;
 	font-weight: normal;
 	margin: 0 0 0 4px;
+	text-decoration: none;
 }
 
-#file_uploader.before_upload .after_upload {
-	display: 			none;
+#file_uploader.before_upload .after_upload,
+#file_uploader.before_upload .file_exists {
+	display: none;
 }
 
-#file_uploader.after_upload .before_upload {
-	display: 			none;
+#file_uploader.file_exists .after_upload,
+#file_uploader.file_exists .before_upload {
+	display: none;
+}
+
+#file_uploader.after_upload .before_upload,
+#file_uploader.after_upload .file_exists {
+	display: none;
 }
 
 #file_uploader .cancel:link,
@@ -3513,6 +3522,17 @@ html#file_upload_iframe p {
 	margin:				11px 0;
 }
 
+#file_upload_iframe .upload_rename input.text {
+	margin-right: 5px;
+	padding-right: 30px;
+	width: 400px;
+}
+
+#file_upload_iframe .upload_rename span.extension {
+	color: #999;
+	margin-left: -32px;
+}
+
 #file_upload_iframe .upload_success img {
 	border: 			1px solid #cdd7e0;
 	padding: 			5px;
@@ -3544,7 +3564,6 @@ html#file_upload_iframe p {
 	padding-right: 		25px;
 	text-align: 		left;
 }
-
 
 /* @end */
 

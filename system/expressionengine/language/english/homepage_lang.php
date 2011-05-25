@@ -158,9 +158,6 @@ Please download <a href="%s" title="Download Here">here</a> and follow the <a hr
 'exact_match' =>
 'Exact Match',
 
-'pmachine_news_feed' =>
-'EllisLab News Feed',
-
 'no_news' =>
 'No News Available',
 

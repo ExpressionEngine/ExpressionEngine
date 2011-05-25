@@ -3,17 +3,17 @@
 	<li style="width:25%; float: left;"><a href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist'.AMP.'method=view_blacklist'?>"><?=lang('ref_view_blacklist')?></a></li>
 	<li>
 	<?php if ($license_number != ''):?>
-		<a href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist'.AMP.'method=ee_blacklist'?>"><?=lang('pmachine_blacklist')?></a>
+		<a href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist'.AMP.'method=ee_blacklist'?>"><?=lang('ee_blacklist')?></a>
 	<?php else:?>
-		<span class="notice"><?=lang('pmachine_blacklist')?> (<?=lang('requires_license_number')?>)</span>
+		<span class="notice"><?=lang('ee_blacklist')?> (<?=lang('requires_license_number')?>)</span>
 	<?php endif;?>
 	</li>
 	<li style="width:25%; float: left;"><a href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist'.AMP.'method=view_whitelist'?>"><?=lang('ref_view_whitelist')?></a></li>
 	<li>
 	<?php if ($license_number != ''):?>
-		<a href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist'.AMP.'method=ee_whitelist'?>"><?=lang('pmachine_whitelist')?></a>
+		<a href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist'.AMP.'method=ee_whitelist'?>"><?=lang('ee_whitelist')?></a>
 	<?php else:?>
-		<span class="notice"><?=lang('pmachine_whitelist')?> (<?=lang('requires_license_number')?>)</span>
+		<span class="notice"><?=lang('ee_whitelist')?> (<?=lang('requires_license_number')?>)</span>
 	<?php endif;?>
 	</li>
 </ul>

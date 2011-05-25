@@ -30,11 +30,7 @@ class Admin_system extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
-
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 	}
 
 	// --------------------------------------------------------------------
@@ -47,16 +43,11 @@ class Admin_system extends CI_Controller {
 	 */
 	function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line('admin_system'));
-
-		$this->load->vars(array('controller'=>'admin'));
-
-		$this->load->view('_shared/overview');
+		$this->cp->set_variable('cp_page_title', lang('admin_system'));
+		
+		$this->load->view('_shared/overview', array('controller' => 'admin'));
 	}
 
 	// --------------------------------------------------------------------
@@ -69,11 +60,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function email_configuration()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
 		$this->_config_manager('email_cfg', __FUNCTION__);
 	}
 
@@ -87,11 +74,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function general_configuration()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
 		$this->_config_manager('general_cfg', __FUNCTION__);
 	}
 
@@ -107,10 +90,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function _config_manager($type, $return_loc)
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$this->jquery->tablesorter('.mainTable', '{
 			widgets: ["zebra"],
@@ -160,7 +140,7 @@ class Admin_system extends CI_Controller {
 						)
 		)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		$vars['type'] = $type;
 
@@ -206,7 +186,7 @@ class Admin_system extends CI_Controller {
 			{
 				foreach ($subtext[$name] as $txt)
 				{
-					$sub .= $this->lang->line($txt);
+					$sub .= lang($txt);
 				}
 			}
 
@@ -216,7 +196,7 @@ class Admin_system extends CI_Controller {
 					// Select fields
 					foreach ($options[1] as $k => $v)
 					{
-						$details[$k] = $this->lang->line($v);
+						$details[$k] = lang($v);
 					}
 					$selected = $value;
 					break;
@@ -296,7 +276,7 @@ class Admin_system extends CI_Controller {
 							$options[0] = 's';
 							foreach ($this->localize->zones as $k => $v)
 							{
-								$details[$k] = $this->lang->line($k);
+								$details[$k] = lang($k);
 							}
 							$selected = $value;
 							break;
@@ -314,7 +294,7 @@ class Admin_system extends CI_Controller {
 		// if this is an update, show the success message
 		$vars['return_loc'] = BASE.AMP.'C=admin_system'.AMP.'M='.$return_loc.AMP.'U=1';
 
-		$this->cp->set_variable('cp_page_title', $this->lang->line($type));
+		$this->cp->set_variable('cp_page_title', lang($type));
 
 		$this->javascript->compile();
 
@@ -333,10 +313,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function update_config()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$loc = $this->input->get_post('return_location');
 
@@ -349,7 +326,7 @@ class Admin_system extends CI_Controller {
 		}
 		else
 		{
-			$this->session->set_flashdata('message_success', $this->lang->line('preferences_updated'));
+			$this->session->set_flashdata('message_success', lang('preferences_updated'));
 		}
 		
 		if ($loc !== FALSE)
@@ -368,11 +345,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function control_panel_settings()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
 		$this->_config_manager('cp_cfg', __FUNCTION__);
 	}
 
@@ -386,11 +359,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function security_session_preferences()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
 		$this->_config_manager('security_cfg', __FUNCTION__);
 	}
 
@@ -404,11 +373,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function output_debugging_preferences()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
 		$this->_config_manager('output_cfg', __FUNCTION__);
 	}
 
@@ -422,11 +387,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function localization_settings()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
 		$this->_config_manager('localization_cfg', __FUNCTION__);
 	}
 
@@ -440,11 +401,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function database_settings()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
 		$this->_config_manager('db_cfg', __FUNCTION__);
 	}
 	
@@ -458,11 +415,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function recount_preferences()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_system_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-		
+		$this->_restrict_prefs_access();
 		$this->_config_manager('recount_prefs', __FUNCTION__);
 	}
 
@@ -476,11 +429,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function mailing_list_preferences()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
 		$this->_config_manager('mailinglist_cfg', __FUNCTION__);
 	}
 
@@ -494,11 +443,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function image_resizing_preferences()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
 		$this->_config_manager('image_cfg', __FUNCTION__);
 	}
 
@@ -512,11 +457,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function captcha_preferences()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
 		$this->_config_manager('captcha_cfg', __FUNCTION__);
 	}
 
@@ -530,11 +471,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function tracking_preferences()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
 		$this->_config_manager('tracking_cfg', __FUNCTION__);
 	}
 
@@ -548,11 +485,8 @@ class Admin_system extends CI_Controller {
 	 */
 	function cookie_settings()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
+		
 		$this->lang->loadfile('email');
 		$this->_config_manager('cookie_cfg', __FUNCTION__);
 	}
@@ -567,11 +501,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function search_log_configuration()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
 		$this->_config_manager('search_log_cfg', __FUNCTION__);
 	}
 
@@ -585,11 +515,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function throttling_configuration()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
 		$this->_config_manager('throttling_cfg', __FUNCTION__);
 	}
 
@@ -603,11 +529,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function word_censoring()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
 		$this->_config_manager('censoring_cfg', __FUNCTION__);
 	}
 
@@ -621,11 +543,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function emoticon_preferences()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
+		$this->_restrict_prefs_access();
 		$this->_config_manager('emoticon_cfg', __FUNCTION__);
 	}
 	
@@ -642,13 +560,10 @@ class Admin_system extends CI_Controller {
 	 */
 	function config_editor()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$this->load->helper(array('form', 'string'));
-		$this->cp->set_variable('cp_page_title', $this->lang->line('config_editor'));
+		$this->cp->set_variable('cp_page_title', lang('config_editor'));
 
 		$vars['config_items'] = $this->config->default_ini;
 		ksort($vars['config_items']);
@@ -697,10 +612,7 @@ class Admin_system extends CI_Controller {
 	 */
 	function config_editor_process()
 	{
-		if ( ! $this->cp->allowed_group('can_access_admin') OR ! $this->cp->allowed_group('can_access_sys_prefs'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
+		$this->_restrict_prefs_access();
 
 		$this->load->helper('security');
 
@@ -716,11 +628,27 @@ class Admin_system extends CI_Controller {
 
 		$this->config->_update_config($config);
 
-		$this->session->set_flashdata('message_success', $this->lang->line('preferences_updated'));
+		$this->session->set_flashdata('message_success', lang('preferences_updated'));
 		$this->functions->redirect(BASE.AMP.'C=admin_system'.AMP.'M=config_editor');
 	}
 
-	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Restrict Access
+	 *
+	 * Helper function for the most common access level in this class
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	private function _restrict_prefs_access()
+	{
+		if ( ! $this->cp->allowed_group('can_access_admin', 'can_access_sys_prefs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
 	
 
 }

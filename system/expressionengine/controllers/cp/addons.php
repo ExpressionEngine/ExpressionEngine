@@ -34,7 +34,7 @@ class Addons extends CI_Controller {
 		// Can't access addons? Can't see this page!
 		if ( ! $this->cp->allowed_group('can_access_addons'))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 		$this->lang->loadfile('addons');
@@ -51,12 +51,7 @@ class Addons extends CI_Controller {
 	 */	
 	function index()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$this->cp->set_variable('cp_page_title', $this->lang->line('addons'));
+		$this->cp->set_variable('cp_page_title', lang('addons'));
 
 		$this->load->vars(array('controller' => 'addons'));
 
@@ -76,11 +71,6 @@ class Addons extends CI_Controller {
 	 */	
 	function package_settings()
 	{
-		if ( ! $this->cp->allowed_group('can_access_addons'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
 		$this->load->library('addons');
 		$this->load->library('table');
 		$this->load->helper('form');
@@ -94,10 +84,10 @@ class Addons extends CI_Controller {
 		
 		if ( ! $package OR ! $this->addons->is_package($package))
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 		
-		$this->cp->set_variable('cp_page_title', $this->lang->line('package_settings'));
+		$this->cp->set_variable('cp_page_title', lang('package_settings'));
 		
 		$components = $this->addons->_packages[$package];
 		

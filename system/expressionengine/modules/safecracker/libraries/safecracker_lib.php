@@ -2532,9 +2532,9 @@ class Safecracker_lib
 	 */
 	public function load_channel_standalone()
 	{
-		require_once(PATH_MOD.'channel/mod.channel'.EXT);
+		require_once(PATH_MOD.'channel/mod.channel.php');
 		
-		require_once(PATH_MOD.'channel/mod.channel_standalone'.EXT);
+		require_once(PATH_MOD.'channel/mod.channel_standalone.php');
 		
 		$this->channel_standalone = new Channel_standalone();
 	}

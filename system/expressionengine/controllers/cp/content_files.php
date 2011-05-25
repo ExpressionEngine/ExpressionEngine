@@ -139,6 +139,7 @@ class Content_files extends CI_Controller {
 			),
 			'fileuploader' => array(
 				'window_title'	=> lang('file_upload'),
+				'delete_url'	=> 'C=content_files&M=delete_files',
 				'actions' => array(
 					'download' 	=> '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'file_id=[file_id]'.AMP.'action=download" title="'.lang('file_download').'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png"></a>',
 					'delete'	=> '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'file_id=[file_id]'.AMP.'action=delete" title="'.lang('delete_selected_files').'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png"></a>',
@@ -675,118 +676,6 @@ class Content_files extends CI_Controller {
 
 		$this->javascript->set_global('file.directoryInfo', $file_info);
 	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Upload file
-	 * 
-	 * This method does a few things, but it's main goal is to facilitate working
-	 * with Filemanager to both upload and add the file to exp_files.
-	 *
-	 * 	1. Verifies that you have access to upload
-	 *		- Is this being accessed through a form?
-	 *		- Was a upload directory specified?
-	 *		- Does the user have access to the directory?
-	 *	2. Next, it calls Filemanager's upload_file
-	 *		- That uploads the file and adds it to the database
-	 *	3. Then it generates a response based upon Filemanager's response:
-	 *		- If there's an error, that's shown
-	 *		- If there's an existing file with the same name, they have the option to rename
-	 *		- If everything went according to plan, a success message is shown
-	 *
-	 * @return mixed View file based upon Filemanager's response: success, failure or rename
-	 */
-	public function upload_file()
-	{
-
-		$this->output->enable_profiler(FALSE);
-
-		// Make sure this is a valid form submit
-		if (empty($_POST))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		// Do some basic permissions checking
-		if ( ! ($file_dir = $this->input->get_post('upload_dir')))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		// Bail if they dont' have access to this upload location.
-		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		// Both uploads the file and adds it to the database
-		$upload_response = $this->filemanager->upload_file($file_dir);
-		
-		// Any errors from the Filemanager?
-		if (isset($upload_response['error']))
-		{
-			$vars = array(
-				'error'	=> $upload_response['error']
-			);
-			
-			return $this->load->view('_shared/file/failure', $vars);
-		}
-		
-		// Check to see if the file needs to be renamed
-		// TODO: Allow for the user to rename the file
-		if ($upload_response['file_name'] != $upload_response['orig_name'])
-		{
-			$vars['file'] = $upload_response;
-			return $this->load->view('_shared/file/rename', $vars);
- 		}
-		
-		// Copying file_name to name and file_thumb to thumb for addons
-		$upload_response['name'] = $upload_response['file_name'];
-		$upload_response['thumb'] = $upload_response['file_thumb'];
-		
-		$vars = array(
-			'file_json'	=> $this->javascript->generate_json($upload_response, TRUE),
-			'file'		=> $upload_response,
-			'file_data'	=> $upload_response,
-			'date'		=> date('M d Y - H:ia')
-		);
-	
-		return $this->load->view('_shared/file/success', $vars);
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	public function update_file()
-	{
-		$file_id = $this->input->post('file_id');
-		$new_file_name = $this->input->post('new_file_name');
-		
-		$this->filemanager->replace_file($file_id, $new_file_name);
-	}
-
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * Shows the inner upload iframe, handles getting that view the data it needs
-	 */
-	public function upload_inner()
-	{
-		$this->output->enable_profiler(FALSE);
-		
-		$selected_directory_id = ($this->input->get('directory_id')) ? $this->input->get('directory_id') : '';
-		
-		$dir_override = ($this->input->get('dir_override')) ? $this->input->get('dir_override') : '';
-		
-		$this->load->model('file_upload_preferences_model');
-		
-		$vars = array(
-			'upload_directories' => $this->file_upload_preferences_model->get_dropdown_array($this->session->userdata('group_id'), $dir_override),
-			'selected_directory_id' => $selected_directory_id
-		);
-		
-		$this->load->view('_shared/file/upload_inner', $vars);
-	}
 	
 	// ------------------------------------------------------------------------
 
@@ -843,24 +732,44 @@ class Content_files extends CI_Controller {
 	 * Delete a list of files (and their thumbnails) from a particular directory
 	 * Expects two GET/POST variables:
 	 *  - file: an array of file ids to delete
-	 *  - file_dir: the ID of the file directory to delete from
 	 */
 	public function delete_files()
 	{
 		$files = $this->input->get_post('file');
 
+		// If no files were found, error out
 		if ( ! $files)
 		{
-			$this->session->set_flashdata('message_failure', lang('choose_file'));
+			$message_type = 'message_failure';
+			$message = lang('choose_file');
+			
+			if (AJAX_REQUEST)
+			{
+				$this->output->send_ajax_response(array(
+					'type'    => $message_type,
+					'message' => $message
+				), TRUE);
+				
+				return;
+			}
+			
+			$this->session->set_flashdata($message_type, $message);
 			$this->functions->redirect(BASE.AMP.'C=content_files');
 		}
 		
-		$this->load->model('file_model');
 		$delete = $this->file_model->delete_files($files);
 
 		$message_type = ($delete) ? 'message_success' : 'message_failure';
 		$message = ($delete) ? lang('delete_success') : lang('message_failure');
 
+		if (AJAX_REQUEST)
+		{
+			$this->output->send_ajax_response(array(
+				'type'    => $message_type,
+				'message' => $message
+			));
+		}
+		
 		$this->session->set_flashdata($message_type, $message);
 		$this->functions->redirect(BASE.AMP.'C=content_files');
 	}
@@ -1033,7 +942,7 @@ class Content_files extends CI_Controller {
 		
 		$upload_dir_id = $this->input->post('upload_dir');
 
-		// Clean up the filename and add add the full path
+		// Clean up the filename and add the full path
 		$file = $this->security->sanitize_filename(urldecode($file));
 		$file = $this->functions->remove_double_slashes(
 			$this->_upload_dirs[$upload_dir_id]['server_path'].DIRECTORY_SEPARATOR.$file
@@ -1840,7 +1749,7 @@ class Content_files extends CI_Controller {
 
 		if ($this->db->count_all_results('file_watermarks') > 0)
 		{
-			$this->form_validation->set_message('_name_check', $this->lang->line('wm_name_taken'));
+			$this->form_validation->set_message('_name_check', lang('wm_name_taken'));
 			return FALSE;
 		}
 		
@@ -1985,7 +1894,7 @@ class Content_files extends CI_Controller {
 
 		if ( ! $id)
 		{
-			show_error($this->lang->line('unauthorized_access'));
+			show_error(lang('unauthorized_access'));
 		}
 
 
@@ -2068,8 +1977,8 @@ class Content_files extends CI_Controller {
 
 
 		$this->javascript->set_global(array('lang' => array(
-											'size_deleted'	=> $this->lang->line('size_deleted'),
-											'size_not_deleted' => $this->lang->line('size_not_deleted')
+											'size_deleted'	=> lang('size_deleted'),
+											'size_not_deleted' => lang('size_not_deleted')
 										)
 									));
 
@@ -2371,7 +2280,7 @@ class Content_files extends CI_Controller {
 					if ((trim($_POST['size_short_name_'.$row['id']]) == '' OR
 						in_array($_POST['size_short_name_'.$row['id']], $names)) && ! isset($_POST['remove_size_'.$row['id']]))
 					{
-						return $this->output->show_user_error('submission', array($this->lang->line('invalid_shortname')));
+						return $this->output->show_user_error('submission', array(lang('invalid_shortname')));
 					}
 					
 					
@@ -2449,7 +2358,7 @@ class Content_files extends CI_Controller {
 					if ( ! isset($_POST[$name]) OR ! preg_match("/^\w+$/", $_POST[$name]) OR
 						in_array($_POST[$name], $names))
 					{
-						return $this->output->show_user_error('submission', array($this->lang->line('invalid_short_name')));
+						return $this->output->show_user_error('submission', array(lang('invalid_short_name')));
 					}
 					
 					$size_data = array(

@@ -410,11 +410,11 @@ class Addons_installer {
 
 		if (in_array($module, $this->EE->core->native_modules))
 		{
-			$path = PATH_MOD.$module.'/upd.'.$module.EXT;
+			$path = PATH_MOD.$module.'/upd.'.$module.'.php';
 		}
 		else
 		{
-			$path = PATH_THIRD.$module.'/upd.'.$module.EXT;
+			$path = PATH_THIRD.$module.'/upd.'.$module.'.php';
 		}
 
 		if ( ! is_file($path))
@@ -499,7 +499,7 @@ class Addons_installer {
 
 		if ( ! class_exists($class))
 		{
-			include($this->EE->addons->_packages[$extension]['extension']['path'].'ext.'.$extension.EXT);
+			include($this->EE->addons->_packages[$extension]['extension']['path'].'ext.'.$extension.'.php');
 
 		}
 		return new $class();

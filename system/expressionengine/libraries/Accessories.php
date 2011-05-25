@@ -50,7 +50,7 @@ class EE_Accessories {
 	function generate_accessories($permissions = '')
 	{
 		$accessories = array();
-		$ext_len = strlen(EXT);
+		$ext_len = strlen('.php');
 		
 		$controller	= $this->EE->router->fetch_class();
 		$member_group = $this->EE->session->userdata('group_id');
@@ -201,8 +201,8 @@ class EE_Accessories {
 					continue;
 				}
 
-				$file = str_replace(EXT, '', $file);
-				$controllers[] = str_replace(EXT, '', $file);
+				$file = str_replace('.php', '', $file);
+				$controllers[] = str_replace('.php', '', $file);
 			}
 		}
 		

@@ -195,7 +195,7 @@ class EE_Extensions {
 				
 				else
 				{
-					$error = 'Unable to load the following extension file:<br /><br />'.'ext.'.$name.EXT;
+					$error = 'Unable to load the following extension file:<br /><br />'.'ext.'.$name.'.php';
 					return $this->EE->output->fatal_error($error);
 				}
 				
