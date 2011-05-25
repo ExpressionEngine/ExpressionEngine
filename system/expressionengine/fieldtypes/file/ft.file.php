@@ -39,7 +39,7 @@ class File_ft extends EE_Fieldtype {
 	function __construct()
 	{
 		parent::__construct();
-		$this->EE->load->model('tools_model');
+		$this->EE->load->model('file_upload_preferences_model');
 	}
 	
 	// --------------------------------------------------------------------
@@ -55,6 +55,7 @@ class File_ft extends EE_Fieldtype {
 		{
 			$directory = 'field_id_'.$this->field_id.'_directory';
 			$directory = $this->EE->input->post($directory);	
+
 			if( ! empty($directory))
 			{
 			     return '{filedir_'.$directory.'}'.$data;
@@ -81,7 +82,7 @@ class File_ft extends EE_Fieldtype {
 		$_POST[$this->field_name] = '';
 		
 		// Default directory
-		$upload_directories = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata('group_id'));
+		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'));
 		
 		// Directory selected - switch
 		$filedir = ($this->EE->input->post($dir_field)) ? $this->EE->input->post($dir_field) : '';
@@ -167,8 +168,41 @@ class File_ft extends EE_Fieldtype {
 		$filedir = (isset($_POST[$this->field_name.'_directory'])) ? $_POST[$this->field_name.'_directory'] : '';
 		$filename = (isset($_POST[$this->field_name])) ? $_POST[$this->field_name] : '';
 		$upload_dirs = array();
+		$allowed_file_dirs = (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
+		$specified_directory = $this->settings['allowed_directories'];
 				
-		$upload_directories = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata('group_id'));
+// Onclick js - why did this hate me? $.ee_fileuploader.set_directory_id($('#dir_choice').val()); $("#dir_choice").val(dir); $.ee_filebrowser.reload_directory(dir); - does jack 
+
+
+
+		$this->EE->javascript->output('
+		$(".choose_file").click(function() {
+			dir = $(this).data("directory");
+			if (dir !== "all") {
+				
+				$.ee_filebrowser.reload_directory(dir);
+				$("#dir_choice").val(dir);
+				$("#dir_choice_form").show();
+
+				var source = $("#file_uploader").find("iframe").attr("src"),
+					source_position = source.search("&directory_id=");
+
+				// Check to see if the source already has directory_id and remove it
+				if (source_position > 0) {
+					source = source.substring(0, source_position);
+				};
+
+				$("#file_uploader").find("iframe").attr("src", source + "&dir_override=" + dir);
+				
+			}
+			else {
+				$("#dir_choice_form").show();
+			}
+		});
+		');	
+		
+		
+		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'), $allowed_file_dirs);
 
 		$upload_dirs[''] = $this->EE->lang->line('directory');
 		
@@ -186,9 +220,11 @@ class File_ft extends EE_Fieldtype {
 		// Get dir info
 		// Note- if editing, the upload directory may be one the user does not have access to
 		
-		$upload_directory_info = $this->EE->tools_model->get_upload_preferences(1, $filedir);
+		$upload_directory_info = $this->EE->file_upload_preferences_model->get_upload_preferences(1, $filedir);
 		$upload_directory_server_path = $upload_directory_info->row('server_path');
 		$upload_directory_url = $upload_directory_info->row('url');
+		
+		
 
 		// let's look for a thumb
 		$this->EE->load->library('filemanager');
@@ -204,7 +240,9 @@ class File_ft extends EE_Fieldtype {
 		$upload   = form_upload($this->field_name, $filename);
 		$dropdown = form_dropdown($this->field_name.'_directory', $upload_dirs, $filedir);
 
-		$newf = '<a href="#" class="choose_file">'.$this->EE->lang->line('add_file').'</a>';
+		$upload_link = (count($upload_dirs) > 1) ? '<a href="#" class="choose_file" data-directory="'.$specified_directory.'">'.$this->EE->lang->line('add_file').'</a>' : $this->EE->lang->line('directory_no_access');
+		
+		$newf = $upload_link;
 		$remf = '<a href="#" class="remove_file">'.$this->EE->lang->line('remove_file').'</a>';
 
 		$set_class = $filename ? '' : 'js_hide';		
@@ -311,6 +349,7 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function display_settings($data)
 	{
+		$this->EE->load->model('file_upload_preferences_model');
 		
 		$field_content_options = array('all' => lang('all'), 'image' => lang('type_image'));
 
@@ -318,6 +357,23 @@ class File_ft extends EE_Fieldtype {
 			lang('field_content_file', 'field_content_file'),
 			form_dropdown('file_field_content_type', $field_content_options, $data['field_content_type'], 'id="file_field_content_type"')
 		);
+		
+		$directory_options['all'] = lang('all');
+		
+		$dirs = $this->EE->file_upload_preferences_model->get_upload_preferences(1);
+
+		foreach($dirs->result_array() as $dir)
+		{
+			$directory_options[$dir['id']] = $dir['name'];
+		}
+		
+		$allowed_directories = ( ! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
+
+		$this->EE->table->add_row(
+			lang('allowed_dirs_file', 'allowed_dirs_file'),
+			form_dropdown('file_allowed_directories', $directory_options, $allowed_directories, 'id="file_allowed_directories"')
+		);		
+		
 	}
 	
 	
@@ -328,6 +384,7 @@ class File_ft extends EE_Fieldtype {
 	{		
 		return array(
 			'field_content_type'	=> $this->EE->input->post('file_field_content_type'),
+			'allowed_directories'	=> $this->EE->input->post('file_allowed_directories'),
 			'field_fmt' 			=> 'none'
 		);
 	}	

@@ -989,6 +989,8 @@ Confirm the fieldtype file is located in the expressionengine/third_party/ direc
 
 'add_file' => 'Add File',
 'remove_file' => 'Remove File',
+'directory_no_access' =>
+'You do not have access to the directory specified for this field',
 
 'invalid_selection' => 'Invalid Selection',
 
