@@ -30,6 +30,7 @@ class File_ft extends EE_Fieldtype {
 	);
 
 	var $has_array_data = TRUE;
+	var $_js_loaded = FALSE;
 	
 	/**
 	 * Constructor
@@ -170,36 +171,48 @@ class File_ft extends EE_Fieldtype {
 		$upload_dirs = array();
 		$allowed_file_dirs = (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
 		$specified_directory = $this->settings['allowed_directories'];
+
+		if ( ! $this->_js_loaded)
+		{				
+			$this->_js_loaded = TRUE;
+			
+			$this->EE->javascript->output('
+			$(".choose_file").click(function() {
+				dir = $(this).data("directory");
+				if (dir !== "all") {
 				
-// Onclick js - why did this hate me? $.ee_fileuploader.set_directory_id($('#dir_choice').val()); $("#dir_choice").val(dir); $.ee_filebrowser.reload_directory(dir); - does jack 
+					$("#dir_choice").val(dir);
+					$.ee_filebrowser.reload_directory(dir);
+					$("#dir_choice_form").hide();
+					
+					var source = $("#file_uploader").find("iframe").attr("src"),
+						source_position = source.search("&dir_override=");
 
+						// Check to see if the source already has directory_id and remove it
+						if (source_position > 0) {
+							source = source.substring(0, source_position);
+						};
 
-
-		$this->EE->javascript->output('
-		$(".choose_file").click(function() {
-			dir = $(this).data("directory");
-			if (dir !== "all") {
+						$("#file_uploader").find("iframe").attr("src", source + "&dir_override=" + dir);
 				
-				$.ee_filebrowser.reload_directory(dir);
-				$("#dir_choice").val(dir);
-				$("#dir_choice_form").show();
+					}
+					else {
+						$("#dir_choice_form").show();
+						
+					var source = $("#file_uploader").find("iframe").attr("src"),
+						source_position = source.search("&dir_override=");
 
-				var source = $("#file_uploader").find("iframe").attr("src"),
-					source_position = source.search("&directory_id=");
+						// Check to see if the source already has directory_id and remove it
+						if (source_position > 0) {
+							source = source.substring(0, source_position);
+						};
 
-				// Check to see if the source already has directory_id and remove it
-				if (source_position > 0) {
-					source = source.substring(0, source_position);
-				};
-
-				$("#file_uploader").find("iframe").attr("src", source + "&dir_override=" + dir);
-				
-			}
-			else {
-				$("#dir_choice_form").show();
-			}
-		});
-		');	
+						$("#file_uploader").find("iframe").attr("src", source);						
+						
+					}
+				});
+			');
+		}	
 		
 		
 		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'), $allowed_file_dirs);
