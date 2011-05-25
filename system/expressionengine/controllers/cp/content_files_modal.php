@@ -64,9 +64,10 @@ class Content_files_modal extends CI_Controller {
 	public function index()
 	{
 		$selected_directory_id = ($this->input->get('directory_id')) ? $this->input->get('directory_id') : '';
+		$dir_override = ($this->input->get('dir_override')) ? $this->input->get('dir_override') : '';
 		
 		$vars = array(
-			'upload_directories' => $this->file_upload_preferences_model->get_dropdown_array($this->session->userdata('group_id')),
+			'upload_directories' => $this->file_upload_preferences_model->get_dropdown_array($this->session->userdata('group_id'), $dir_override),
 			'selected_directory_id' => $selected_directory_id
 		);
 		
