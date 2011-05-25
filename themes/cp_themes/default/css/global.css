@@ -3503,7 +3503,7 @@ a.file_chooser_thumbnail.last_row {
 
 #file_uploader iframe {
 	border:				0 none;
-	height:				208px;
+	height:				290px;
 	width:				572px;
 }
 
@@ -3539,17 +3539,23 @@ html#file_upload_iframe p {
 	margin-left: -32px;
 }
 
-#file_upload_iframe .upload_success img {
-	border: 			1px solid #cdd7e0;
-	padding: 			5px;
-	float: 				left;
+#file_upload_iframe .image {
+	float: left;
 }
 
-#file_upload_iframe .upload_success h2 {
+#file_upload_iframe .image img {
+	border: 1px solid #cdd7e0;
+	display: block;
+	margin: 0 auto 5px;
+	padding: 5px;
+}
+
+#file_upload_iframe h2 {
 	margin-bottom: 		10px;
 }
 
-#file_upload_iframe .upload_success table {
+#file_upload_iframe .upload_success table,
+#file_upload_iframe .edit_controls {
 	border-collapse: collapse;
 	float: right;
 	width: 470px;
@@ -3569,6 +3575,11 @@ html#file_upload_iframe p {
 #file_upload_iframe .upload_success th {
 	padding-right: 		25px;
 	text-align: 		left;
+}
+
+#file_upload_iframe .edit_controls {
+	overflow: hidden;
+	height: 265px;
 }
 
 /* @end */
