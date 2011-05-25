@@ -170,7 +170,7 @@ class File_ft extends EE_Fieldtype {
 		$filename = (isset($_POST[$this->field_name])) ? $_POST[$this->field_name] : '';
 		$upload_dirs = array();
 		$allowed_file_dirs = (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
-		$specified_directory = $this->settings['allowed_directories'];
+		$specified_directory = ($allowed_file_dirs == '') ? 'all' : $allowed_file_dirs;
 
 		if ( ! $this->_js_loaded)
 		{				
