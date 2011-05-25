@@ -3292,7 +3292,9 @@ div.contentWrap {
 	margin-top: 		0;
 }
 
-#file_manager_toolbar {
+/* @group Edit Controls */
+
+.edit_controls {
 	color:				#5f6c74;
 	float:				left;
 	font-size:			11px;
@@ -3300,46 +3302,46 @@ div.contentWrap {
 	width:				14.5%;
 }
 
-#file_manager_toolbar h3 {
+.edit_controls h3 {
 	margin: 			7px 0 0;
 }
 
-#file_manager_toolbar .ui-accordion-content {
+.edit_controls .ui-accordion-content {
 	border: 			1px solid #D0D7DF;
 	border-width: 		0 1px 1px;
 	margin: 			0 0 10px;
 	padding: 			5px 8px 8px;
 }
 
-#file_manager_toolbar label {
+.edit_controls label {
 	margin: 			0 0 0;
 }
 
-#file_manager_toolbar .ui-accordion-content input {
+.edit_controls .ui-accordion-content input {
 	margin: 			0 0 5px;
 	width: 				92%;
 }
 
-#file_manager_toolbar ul {
+.edit_controls ul {
 	margin: 			0;
 }
 
-#file_manager_toolbar legend {
+.edit_controls legend {
 	font-size: 			14px;
 }
 
-#file_manager_toolbar  p.submit_button {
+.edit_controls  p.submit_button {
 	margin:				10px 0 0;
 	text-align:			right;
 }
 
-#file_manager_toolbar  p.submit_button a {
+.edit_controls  p.submit_button a {
 	font-size: 1.1em;
 	display: inline-block;
 	margin: 0 0 5px;
 }
 
-#file_manager_toolbar  p.submit_button input {
+.edit_controls  p.submit_button input {
 	margin-bottom: 		5px;
 	width: 				auto;
 }
@@ -3352,9 +3354,11 @@ div.contentWrap {
 	width: 				auto;
 }
 
-#file_manager_toolbar .oversized {
+.edit_controls .oversized {
 	border:				2px solid #c6220a;
 }
+
+/* @end */
 
 #file_manager_edit_file {
 	float: 				right;
@@ -3510,7 +3514,9 @@ html#file_upload_iframe body {
 }
 
 html#file_upload_iframe body {
-	min-width:			0;
+	min-width: 0;
+	padding: 0;
+	width: auto;
 }
 
 html#file_upload_iframe #upload_dir {

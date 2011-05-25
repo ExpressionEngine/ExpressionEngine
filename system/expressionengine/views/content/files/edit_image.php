@@ -17,7 +17,7 @@ if ( ! $EE_view_disable)
 		</div>
 		
 		<div class="pageContents group">
-			<div id="file_manager_toolbar">
+			<div id="file_manager_toolbar" class="edit_controls">
 				<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_crop_form'), 
 					array('action'=> 'crop', 'upload_dir' => $upload_dir, 'file' => $file, 'file_id' => $file_id))?>
 					<h3 class="accordion"><?=lang('crop')?></h3>

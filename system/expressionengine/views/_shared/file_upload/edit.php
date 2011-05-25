@@ -7,7 +7,28 @@
 		<img src="<?= $file['thumb'] ?>" alt="<?= $file['file_name'] ?>" />
 	</div> <!-- .image -->
 	<div class="edit_controls">
-		<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_rotate_form'), 
+		<?=form_open('C=content_files_modal'.AMP.'M=edit_image', array('id'=>'image_resize_form'), 
+			array('action'=> 'resize', 'upload_dir' => $file['upload_location_id'], 'file' => $file['file_name'], 'file_id' => $file['file_id']))?>
+			<h3 class="accordion"><?=lang('resize')?></h3>
+			<div id="resize_fieldset">
+				<ul>
+					<li>
+						<?=lang('resize_width', 'resize_width')?>
+						<?=form_input('resize_width', $file['file_width'], 'id="resize_width"')?>
+					</li>
+					<li>
+						<?=lang('resize_height', 'resize_height')?>
+						<?=form_input('resize_height', $file['file_height'], 'id="resize_height"')?>
+					</li>
+				</ul>
+				<p class="submit_button">
+					<?=form_submit('save_image', lang('save_image'), 'id="submit_resize" class="submit"')?><br />
+					<?=anchor('#', lang('cancel_changes'), 'id="cancel_resize" style="display: none"')?>
+				</p>
+			</div>
+			<div class="clear_left"></div>
+		<?=form_close()?>
+		<?=form_open('C=content_files_modal'.AMP.'M=edit_image', array('id'=>'image_rotate_form'), 
 			array('action'=> 'rotate', 'upload_dir' => $file['upload_location_id'], 'file' => $file['file_name'], 'file_id' => $file['file_id']))?>
 			<h3 class="accordion"><?=lang('rotate')?></h3>
 			<div id="rotate_fieldset">
@@ -44,27 +65,6 @@
 					<?=anchor('#', lang('cancel_changes'), 'class="disabled"')?>
 				</p>
 			</div>
-		<?=form_close()?>
-		<?=form_open('C=content_files'.AMP.'M=edit_image', array('id'=>'image_resize_form'), 
-			array('action'=> 'resize', 'upload_dir' => $file['upload_location_id'], 'file' => $file['file_name'], 'file_id' => $file['file_id']))?>
-			<h3 class="accordion"><?=lang('resize')?></h3>
-			<div id="resize_fieldset">
-				<ul>
-					<li>
-						<?=lang('resize_width', 'resize_width')?>
-						<?=form_input('resize_width', $file['file_width'], 'id="resize_width"')?>
-					</li>
-					<li>
-						<?=lang('resize_height', 'resize_height')?>
-						<?=form_input('resize_height', $file['file_height'], 'id="resize_height"')?>
-					</li>
-				</ul>
-				<p class="submit_button">
-					<?=form_submit('save_image', lang('save_image'), 'id="submit_resize" class="submit"')?><br />
-					<?=anchor('#', lang('cancel_changes'), 'id="cancel_resize" style="display: none"')?>
-				</p>
-			</div>
-			<div class="clear_left"></div>
 		<?=form_close()?>
 	</div> <!-- .edit_controls -->
 </div> <!-- .upload_edit -->
