@@ -14,6 +14,7 @@
 	
 	var file_uploader,
 		settings,
+		current_file,
 		delete_file = true;
 
 	/**
@@ -65,7 +66,7 @@
 	$.ee_fileuploader.build_dialog = function() {
 		file_uploader.dialog({
 			width: 600,
-			height: 300,
+			height: 370,
 			resizable: false,
 			position: ["center","center"],
 			modal: true,
@@ -76,7 +77,9 @@
 			open: function() {
 				// Make sure we're on before_upload
 				change_class('before_upload');
-
+		
+				// Reset current_file
+				current_file = {};
 				
 				// Call open callback
 				if (typeof settings.open == 'function') {
@@ -87,8 +90,6 @@
 			},
 			close: function() {
 				if (typeof window.upload_iframe.file != "undefined") {
-					var file = window.upload_iframe.file;
-					
 					if (delete_file) {
 						// Delete the file
 						$.ajax({
@@ -96,7 +97,7 @@
 							type: 'POST',
 							dataType: 'json',
 							data: {
-								"file": file.file_id,
+								"file": current_file.file_id,
 								"XID": EE.XID
 							},
 							error: function(xhr, textStatus, errorThrown){
@@ -107,7 +108,7 @@
 					
 					// Call close callback, passing the file info
 					if (typeof settings.close == 'function') {
-						settings.close.call(this, file_uploader, file);
+						settings.close.call(this, file_uploader, current_file);
 					};
 				};
 			}
@@ -145,12 +146,12 @@
 	 *
 	 * @param {Object} file File object passed from 
 	 */
-	var clean_up = function(file) {
+	var clean_up = function() {
 		// Hide the dialog
 		file_uploader.dialog('close');
 
 		// Close filebrowser
-		$.ee_filebrowser.clean_up(file, '');
+		$.ee_filebrowser.clean_up(current_file, '');
 	};
 	
 	// --------------------------------------------------------------------
@@ -189,6 +190,8 @@
 	 * @param {Object} file Object representing the just uploaded file
 	 */
 	$.ee_fileuploader.file_exists = function(file) {
+		$.ee_fileuploader.update_file(file);
+		
 		change_class('file_exists');
 	};
 	
@@ -205,12 +208,14 @@
 	 * @param {Object} file Object representing the just uploaded file
 	 */
 	$.ee_fileuploader.after_upload = function(file) {
+		$.ee_fileuploader.update_file(file);
+		
 		// Make sure the file doesn't get deleted if the window is closed
 		delete_file = false;
 		
 		// Call after upload callback
 		if (typeof settings.after_upload == "function") {
-			settings.after_upload.call(this, file_uploader, file);
+			settings.after_upload.call(this, file_uploader, current_file);
 		};
 		
 		// Change the step to step 2
@@ -219,7 +224,7 @@
 		// Create listener for the place file button
 		if (settings.type == "filemanager") {
 			if (file.is_image) {
-				$('#file_uploader .button_bar #edit_file').show().click(function(event) {
+				$('#file_uploader .button_bar #edit_file').unbind().show().click(function(event) {
 					// Get edit action
 					var edit_url = $('.mainTable tr.new:first td:has(img) a[href*=edit_image]').attr('href');
 					$(this).attr('href', edit_url);
@@ -229,13 +234,30 @@
 				$('#file_uploader .button_bar #edit_file').hide();
 			};
 		} else if (settings.type == "filebrowser") {
-			$('#file_uploader .button_bar #choose_file').click(function(event) {
+			$('#file_uploader .button_bar #choose_file').unbind().one('click', function(event) {
 				event.preventDefault();
-				clean_up(file);
+				clean_up();
+			});
+			
+			$('#file_uploader .button_bar #edit_file_modal').unbind().show().one('click', function(event) {
+				event.preventDefault();
+				$('#file_uploader iframe').contents().find('form#resize_rotate').submit();
+				$(this).hide();
 			});
 		};
 	};
 	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Helper method to change the current file since we can't rely on 
+	 * window.iframe.variable to always get the latest variable...
+	 *
+	 * @param {Object} file Object representing the just uploaded file
+	 */	
+	$.ee_fileuploader.update_file = function(file) {
+		current_file = file;
+	};
 	
 	// --------------------------------------------------------------------
 	

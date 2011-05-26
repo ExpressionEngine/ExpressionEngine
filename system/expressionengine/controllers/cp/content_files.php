@@ -676,167 +676,6 @@ class Content_files extends CI_Controller {
 
 		$this->javascript->set_global('file.directoryInfo', $file_info);
 	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Upload file
-	 * 
-	 * This method does a few things, but it's main goal is to facilitate working
-	 * with Filemanager to both upload and add the file to exp_files.
-	 *
-	 * 	1. Verifies that you have access to upload
-	 *		- Is this being accessed through a form?
-	 *		- Was a upload directory specified?
-	 *		- Does the user have access to the directory?
-	 *	2. Next, it calls Filemanager's upload_file
-	 *		- That uploads the file and adds it to the database
-	 *	3. Then it generates a response based upon Filemanager's response:
-	 *		- If there's an error, that's shown
-	 *		- If there's an existing file with the same name, they have the option to rename
-	 *		- If everything went according to plan, a success message is shown
-	 *
-	 * @return mixed View file based upon Filemanager's response: success, failure or rename
-	 */
-	public function upload_file()
-	{
-		$this->output->enable_profiler(FALSE);
-
-		// Make sure this is a valid form submit
-		if (empty($_POST))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		// Do some basic permissions checking
-		if ( ! ($file_dir = $this->input->get_post('upload_dir')))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		// Bail if they dont' have access to this upload location.
-		if ( ! array_key_exists($file_dir, $this->_upload_dirs))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		// Both uploads the file and adds it to the database
-		$upload_response = $this->filemanager->upload_file($file_dir);
-		
-		// Any errors from the Filemanager?
-		if (isset($upload_response['error']))
-		{
-			$vars = array(
-				'error'	=> $upload_response['error']
-			);
-			
-			return $this->load->view('_shared/file/failure', $vars);
-		}
-		
-		// Copying file_name to name and file_thumb to thumb for addons
-		$upload_response['name'] = $upload_response['file_name'];
-		$upload_response['thumb'] = $upload_response['file_thumb'];
-		
-		// Check to see if they want to increment or replace
-		$file_name_source =  ($this->config->item('filename_increment') == 'y') ? 'file_name' : 'orig_name';
-		
-		$orig_name = explode('.' , $upload_response[$file_name_source]);
-		$vars = array(
-			'file'		=> $upload_response,
-			'file_json'	=> $this->javascript->generate_json($upload_response, TRUE),
-			'file_ext'	=> array_pop($orig_name),
-			'orig_name'	=> implode('.', $orig_name),
-			'date'		=> date('M d Y - H:ia')
-		);
-		
-		// Check to see if the file needs to be renamed
-		if ($upload_response['file_name'] != $upload_response['orig_name'])
-		{
-			return $this->load->view('_shared/file/rename', $vars);
- 		}
-		
-		return $this->load->view('_shared/file/success', $vars);
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * Attempts to rename the file, goes back to rename if it couldn't, sends
-	 * the user to succes if everything went to plan.
-	 * 
-	 * Called via content_files::upload_file if the file already exists
-	 */
-	public function update_file()
-	{
-		$new_file_name = basename($this->filemanager->clean_filename(
-			$this->input->post('new_file_name') . '.' . $this->input->post('file_ext'),
-			$this->input->post('directory_id')
-		));
-		
-		// Attempt to replace the file
-		$rename_file = $this->filemanager->rename_file(
-			$this->input->post('file_id'),
-			$new_file_name
-		);
-		
-		if ( ! function_exists('json_decode'))
-		{
-			$this->load->library('Services_json');
-		}
-		
-		// Get the JSON and decode it
-		$file_json = $this->input->post('file_json');
-		$file = get_object_vars(json_decode($file_json));
-		$file['upload_directory_prefs'] = get_object_vars($file['upload_directory_prefs']);
-		
-		// Replace the filename and thumb (everything else should have stayed the same)
-		$thumb_info = $this->filemanager->get_thumb($new_file_name, $file['upload_location_id']);
-
-		$file['file_id']	= $rename_file['file_id'];
-		$file['file_name'] 	= $new_file_name;
-		$file['name'] 		= $new_file_name;
-		$file['thumb'] 		= $thumb_info['thumb'];
-		$file['replace']	= $rename_file['replace'];
-		
-		// Prep the vars for the success and rename pages
-		$vars = array(
-			'file'		=> $file,
-			'file_json'	=> $this->javascript->generate_json($file, TRUE),
-			'date'		=> date('M d Y - H:ia')
-		);
-		
-		// If the file was successfully replaced send them to the success page
-		if ($rename_file['success'] === TRUE)
-		{
-			return $this->load->view('_shared/file/success', $vars);
-		}
-		// If it's a different type of error, show it
-		else
-		{
-			return $this->load->view('_shared/file/failure', $rename_file['error']);
-		}
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * Shows the inner upload iframe, handles getting that view the data it needs
-	 */
-	public function upload_inner()
-	{
-		$this->output->enable_profiler(FALSE);
-		
-		$selected_directory_id = ($this->input->get('directory_id')) ? $this->input->get('directory_id') : '';
-		
-		$this->load->model('file_upload_preferences_model');
-		
-		$vars = array(
-			'upload_directories' => $this->file_upload_preferences_model->get_dropdown_array($this->session->userdata('group_id')),
-			'selected_directory_id' => $selected_directory_id
-		);
-		
-		$this->load->view('_shared/file/upload_inner', $vars);
-	}
 	
 	// ------------------------------------------------------------------------
 
@@ -1005,7 +844,7 @@ class Content_files extends CI_Controller {
 		// send to _do_image_processing to, well, do the image processing
 		if ( ! empty($_POST))
 		{
-			return $this->_do_image_processing();
+			return $this->filemanager->_do_image_processing();
 		}
 
 		// Page Title
@@ -1082,222 +921,6 @@ class Content_files extends CI_Controller {
 		$this->javascript->compile();
 
 		$this->load->view('content/files/edit_image', $data);
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * image processing
-	 *
-	 * Figures out the full path to the file, and sends it to the appropriate
-	 * method to process the image.
-	 */
-	private function _do_image_processing()
-	{
-		// Check to see if a file was actually sent...
-		if ( ! ($file = $this->input->post('file')))
-		{
-			$this->session->set_flashdata('message_failure', lang('choose_file'));
-			$this->functions->redirect(BASE.AMP.'C=content_files');
-		}
-		
-		$upload_dir_id = $this->input->post('upload_dir');
-
-		// Clean up the filename and add add the full path
-		$file = $this->security->sanitize_filename(urldecode($file));
-		$file = $this->functions->remove_double_slashes(
-			$this->_upload_dirs[$upload_dir_id]['server_path'].DIRECTORY_SEPARATOR.$file
-		);
-
-		// Where are we going with this?
-		switch ($this->input->post('action'))
-		{
-			case 'rotate':
-				$response = $this->_do_rotate($file);
-				break;
-			case 'crop':
-				$response = $this->_do_crop($file);
-				break;
-			case 'resize':
-				$response = $this->_do_resize($file);
-				break;
-			default:
-				return ''; // todo, error
-		}
-		
-		// Alright, what did we break?
-		if (isset($response['errors']))
-		{
-			if (AJAX_REQUEST)
-			{
-				$this->output->send_ajax_response($response['errors'], TRUE);
-			}
-
-			show_error($response['errors']);
-		}
-		
-		// Get dimensions for thumbnail
-		$this->load->model('file_model');
-		$dimensions = $this->file_model->get_dimensions_by_dir_id($upload_dir_id);
-		$dimensions = $dimensions->result_array();
-		
-		// Regenerate thumbnails
-		$this->filemanager->create_thumb(
-			$file,
-			array(
-				'server_path' => $this->_upload_dirs[$upload_dir_id]['server_path'],
-				'file_name'  => basename($file),
-				'dimensions' => $dimensions
-			)
-		);
-		
-		// Send the dimensions back for Ajax requests
-		if (AJAX_REQUEST)
-		{
-			$this->output->send_ajax_response(array(
-				'width'		=> $response['dimensions']['width'],
-				'height'	=> $response['dimensions']['height']
-			));
-		}
-		
-		// Otherwise redirect
-		$this->session->set_flashdata('message_success', lang('file_saved'));
-		$this->functions->redirect(
-			BASE.AMP.
-			'C=content_files'.AMP.
-			'M=edit_image'.AMP.
-			'upload_dir='.$this->input->post('upload_dir').AMP.
-			'file_id='.$this->input->post('file_id')
-		);
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Image crop
-	 */
-	private function _do_crop($file)
-	{
-		$config = array(
-			'width'				=> $this->input->post('crop_width'),
-			'maintain_ratio'	=> FALSE,
-			'x_axis'			=> $this->input->post('crop_x'),
-			'y_axis'			=> $this->input->post('crop_y'),
-			'height'			=> ($this->input->post('crop_height')) ? $this->input->post('crop_height') : NULL,
-			'master_dim'		=> 'width',
-			'library_path'		=> $this->config->item('image_library_path'),
-			'image_library'		=> $this->config->item('image_resize_protocol'),
-			'source_image'		=> $file,
-			'new_image'			=> $file
-		);
-
-		$this->load->library('image_lib', $config);
-
-		if ( ! $this->image_lib->crop())
-		{
-	    	$errors = $this->image_lib->display_errors();
-		}
-		
-		$reponse = array();
-		
-		if (isset($errors))
-		{
-			$response['errors'] = $errors;
-		}
-		else
-		{
-			$response['dimensions'] = $this->image_lib->get_image_properties('', TRUE);
-		}
-		
-		$this->image_lib->clear();
-		
-		return $response;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Do image rotation.
-	 */
-	private function _do_rotate($file)
-	{
-		$config = array(
-			'rotation_angle'	=> $this->input->post('rotate'),
-			'library_path'		=> $this->config->item('image_library_path'),
-			'image_library'		=> $this->config->item('image_resize_protocol'),
-			'source_image'		=> $file,
-			'new_image'			=> $file
-		);
-
-		$this->load->library('image_lib', $config);
-
-		if ( ! $this->image_lib->rotate())
-		{
-	    	$errors = $this->image_lib->display_errors();
-		}
-
-		$reponse = array();
-		
-		if (isset($errors))
-		{
-			$response['errors'] = $errors;
-		}
-		else
-		{
-			$response['dimensions'] = $this->image_lib->get_image_properties('', TRUE);
-		}
-		
-		$this->image_lib->clear();
-		
-		return $response;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Do image rotation.
-	 */
-	private function _do_resize($file)
-	{
-		$config = array(
-			'width'				=> $this->input->get_post('resize_width'),
-			'maintain_ratio'	=> $this->input->get_post('constrain'),
-			'library_path'		=> $this->config->item('image_library_path'),
-			'image_library'		=> $this->config->item('image_resize_protocol'),
-			'source_image'		=> $file,
-			'new_image'			=> $file
-		);
-
-		if ($this->input->get_post('resize_height') != '')
-		{
-			$config['height'] = $this->input->get_post('resize_height');
-		}
-		else
-		{
-			$config['master_dim'] = 'width';
-		}
-
-		$this->load->library('image_lib', $config);
-
-		if ( ! $this->image_lib->resize())
-		{
-	    	$errors = $this->image_lib->display_errors();
-		}
-
-		$reponse = array();
-		
-		if (isset($errors))
-		{
-			$response['errors'] = $errors;
-		}
-		else
-		{
-			$response['dimensions'] = $this->image_lib->get_image_properties('', TRUE);
-		}
-		
-		$this->image_lib->clear();
-		
-		return $response;
 	}
 
 	// ------------------------------------------------------------------------
@@ -1523,6 +1146,31 @@ class Content_files extends CI_Controller {
 				continue;
 			}
 
+			// Clean filename
+			$clean_filename = basename($this->filemanager->clean_filename($file['name'], $id));
+
+			if ($file['name'] != $clean_filename)
+			{
+				// It is just remotely possible the new clean filename already exists
+				// So we check for that and increment if such is the case
+				if (file_exists($this->_upload_dirs[$id]['server_path'].$clean_filename))
+				{
+					$clean_filename = basename($this->filemanager->clean_filename($clean_filename, $id, TRUE));
+				}
+				
+				// Rename the file
+        		if ( ! @copy($this->_upload_dirs[$id]['server_path'].$file['name'],
+	 						$this->_upload_dirs[$id]['server_path'].$clean_filename))
+				{
+					$errors[$file['name']] = lang('invalid_filename');
+					continue;
+				}
+
+				unlink($this->_upload_dirs[$id]['server_path'].$file['name']);	
+				$file['name'] = $clean_filename;			
+			}
+
+
 			// Does it exist in DB?
 			$query = $this->db->get_where('files', array('file_name' => $file['name']));
 
@@ -1569,6 +1217,7 @@ class Content_files extends CI_Controller {
 						TRUE,
 						TRUE
 				);					
+
 				continue;
 			}
 			

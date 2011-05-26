@@ -194,6 +194,7 @@ class File_model extends CI_Model {
 		
 		// Set some defaults if missing
 		$data['upload_date'] = ( ! isset($data['upload_date'])) ? $this->localize->now : $data['upload_date'];
+		$data['modified_by_member_id'] = $this->session->userdata('member_id');
 		$data['modified_date'] = $this->localize->now;
 		$data['status'] = ( ! isset($data['status'])) ? 'o' : $data['status'];
 		

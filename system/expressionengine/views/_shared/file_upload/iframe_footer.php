@@ -1,9 +1,5 @@
-	<?php
-
-	/*
-		TODO Remove some scripts from footer js
-	*/
-	// echo $this->cp->render_footer_js();
+<?php
+	echo $this->cp->render_footer_js();
 
 	if (isset($library_src))
 	{
