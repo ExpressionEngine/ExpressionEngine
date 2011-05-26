@@ -378,18 +378,20 @@ EE.cp.control_panel_search = function() {
 	submit_handler = function () {
 		var url = $(this).attr('action'),
 			data = {
-				'cp_search_keywords': $('#cp_search_keywords').attr('value')
+				'cp_search_keywords': $('#cp_search_keywords').val(),
+				'XID': EE.XID
 			};
 
 		$.ajax({
-			url: url + '&ajax=y',
+			url: url,
 			data: data,
+			type: 'POST',
+			dataType: 'html',
 			beforeSend: function () {
 				buttonImgs.toggle();
 			},
 			success: function (ret) {
 				buttonImgs.toggle();
-
 				search = search.replaceWith(result);
 				result.html(ret);
 
@@ -400,8 +402,7 @@ EE.cp.control_panel_search = function() {
 					$('#cp_search_keywords').select();
 					return false;
 				});
-			},
-			dataType: 'html'
+			}
 		});
 
 		return false;

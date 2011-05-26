@@ -119,12 +119,7 @@ class Addons_model extends CI_Model {
 	 * @return	array
 	 */
 	function get_plugins()
-	{
-		if ( ! @include_once(APPPATH.'libraries/Pclzip.php'))
-		{
-			show_error('PclZip Library does not appear to be installed.  It is required.');
-		}
-		
+	{		
 		$this->load->helper('directory');
 
 		$plugins = array();

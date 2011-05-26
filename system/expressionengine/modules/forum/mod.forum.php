@@ -105,36 +105,26 @@ class Forum {
 
 		$this->EE->db->cache_off();
 	
-		/** -------------------------------------
-		/**  Load Base Forum Variables
-		/** -------------------------------------*/
-		
+		// Load Base Forum Variables	
 		$this->_load_base();
-
-		/** ---------------------------------------
-		/**  Running Sessions?
-		/** ---------------------------------------*/
 		
 		// We use this in some special URLs to determine whether the Session ID
 		// needs to be used in $this->EE->functions->fetch_site_index() or not
 		
 		$this->use_sess_id = ($this->EE->config->item('user_session_type') != 'c') ? 1 : 0;
-		
-		/** -------------------------------------
-		/**  Is the forum enabled?
-		/** -------------------------------------*/
-		
+
+		// Is the forum enabled?		
 		// If not, only super admins can view it
-		
 		if ($this->preferences['board_enabled'] == 'n' 
 			&& $this->EE->session->userdata('group_id') != 1)
 		{
 			return $this->display_forum('offline_page');
 		}
 		
-		// first part of this conditional protects when someone happens to set their profile trigger word to nothing...
-		if ($this->current_request != '' 
-		&& $this->current_request == $this->EE->config->item('profile_trigger'))
+		// first part of this conditional protects when someone happens 
+		// to set their profile trigger word to nothing...
+		if ($this->current_request != '' && 
+			$this->current_request == $this->EE->config->item('profile_trigger'))
 		{
 			$this->display_forum($this->EE->config->item('profile_trigger'));
 		}
@@ -151,10 +141,7 @@ class Forum {
 				$this->EE->FRM_CORE->{$key} = $value;
 			}
 				
-			/** -------------------------------------
-			/**  Verify Permissions
-			/** -------------------------------------*/
-		
+			// Verify Permissions
 			// Before serving the page we'll see if the user is authorized
 		
 			if ( ! $this->EE->FRM_CORE->_is_authorized())
@@ -172,9 +159,7 @@ class Forum {
 				}
 			}
 
-			/** -------------------------------------
-			/**  Display Requested Page
-			/** -------------------------------------*/
+			// Display Requested Page
 			// If the ACT variable is set we know that we are 
 			// dealing with an action request.  
 			// Thus, we'll supress the normal course of events.
@@ -184,10 +169,7 @@ class Forum {
 				$this->EE->FRM_CORE->display_forum();
 			}
 			
-			/** ---------------------------------
-			/**  If Template Parser Request
-			/** ---------------------------------*/
-			
+			// If Template Parser Request
 			$this->return_data = $this->EE->FRM_CORE->return_data;
 		}
 	}
@@ -200,8 +182,8 @@ class Forum {
 	protected function _load_base()
 	{
 		// Is the member area trigger changed?
-		if ($this->EE->config->item('profile_trigger') != 'member' 
-			&& in_array('member', $this->uri_segments))
+		if ($this->EE->config->item('profile_trigger') != 'member' && 
+			in_array('member', $this->uri_segments))
 		{
 			unset($this->uri_segments[array_search('member', $this->uri_segments)]);
 			$this->uri_segments[] = $this->EE->config->item('profile_trigger');
@@ -213,9 +195,9 @@ class Forum {
 		if ($this->use_trigger() === FALSE)
 		{
 			
-			if (isset($this->EE->uri->segments['1']) 
-				&& stristr($this->EE->uri->segments['1'], "ACT=") 
-				&& $this->EE->config->item('forum_trigger') != '')
+			if (isset($this->EE->uri->segments['1']) && 
+				stristr($this->EE->uri->segments['1'], "ACT=") && 
+				$this->EE->config->item('forum_trigger') != '')
 			{
 				$this->EE->uri->segments['1'] = $this->EE->config->item('forum_trigger');
 			}
@@ -254,13 +236,10 @@ class Forum {
 			}
 		}
 		
-		/** -------------------------------------
-		/**  Disallow Private Methods
-		/** -------------------------------------*/
+		// Disallow Private Methods
 		// Functions are called automatically based on the 
 		// second segment of the URL. However, we don't want
 		// to allow any of the private function to be called directly.
-
 		if (substr($this->EE->uri->segment(2+$this->seg_addition), 0, 1) == '_')
 		{
 			exit;
@@ -417,9 +396,9 @@ class Forum {
 		// inadvertenly mess up our forum URL trigger so
 		// we'll test for it and reassign the first segment
 		
-		if (isset($this->EE->uri->segments[1]) 
-			&& stristr($this->EE->uri->segments[1], "ACT=") 
-			&& $this->EE->config->item('forum_trigger') != '')
+		if (isset($this->EE->uri->segments[1]) && 
+			stristr($this->EE->uri->segments[1], "ACT=") && 
+			$this->EE->config->item('forum_trigger') != '')
 		{
 			$this->EE->uri->segments['1'] = $this->forum_trigger;
 		}
@@ -683,8 +662,8 @@ class Forum {
 		{
 			$this->EE->db->where('board_id', $board_id);
 		}
-		elseif ($this->EE->input->get_post('ACT') !== FALSE 
-			&& $this->EE->input->get_post('board_id') !== FALSE)
+		elseif ($this->EE->input->get_post('ACT') !== FALSE && 
+				$this->EE->input->get_post('board_id') !== FALSE)
 		{
 			$this->EE->db->where('board_id', 
 								 $this->EE->input->get_post('board_id'));
@@ -700,8 +679,8 @@ class Forum {
 			// Means we are in a Template
 			// If no board="" parameter, then we automatically
 			// use the default board_id of 1
-			if (isset($this->EE->TMPL) && is_object($this->EE->TMPL) 
-			&& ($board_name = $this->EE->TMPL->fetch_param('board')) !== FALSE)
+			if (isset($this->EE->TMPL) && is_object($this->EE->TMPL) && 
+				($board_name = $this->EE->TMPL->fetch_param('board')) !== FALSE)
 			{
 				$this->EE->db->where('board_name', $board_name);
 			}
@@ -863,8 +842,8 @@ class Forum {
 				}
 				
 				// If the user is logged in we'll update their forum selection
-				if ($forum_theme != '' 
-					&& $this->EE->session->userdata('member_id') != 0)
+				if ($forum_theme != '' && 
+					$this->EE->session->userdata('member_id') != 0)
 				{
 					$this->EE->db->where('member_id', 
 								$this->EE->session->userdata('member_id'));
@@ -875,8 +854,8 @@ class Forum {
 		}
 
 		// Check path to folder containing the requested theme		
-		$this->theme = ($forum_theme != '' 
-		&& @is_dir($this->fetch_pref('board_theme_path').$forum_theme)) ? $forum_theme : $this->fetch_pref('board_default_theme');
+		$this->theme = ($forum_theme != '' && 
+		@is_dir($this->fetch_pref('board_theme_path').$forum_theme)) ? $forum_theme : $this->fetch_pref('board_default_theme');
 		
 		if ( ! @is_dir($this->fetch_pref('board_theme_path').$this->theme))
 		{
@@ -1084,7 +1063,10 @@ class Forum {
 			$str = str_replace('&', '&amp;', $str);
 		}
 		
-		return str_replace(array('<', '>', '{', '}', '\'', '"', '?'), array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), $str);
+		return str_replace(
+				array('<', '>', '{', '}', '\'', '"', '?'), 
+				array('&lt;', '&gt;', '&#123;', '&#125;', '&#146;', '&quot;', '&#63;'), 
+				$str);
 	}
 
 	// --------------------------------------------------------------------	
@@ -1184,10 +1166,7 @@ class Forum {
 			$str = $this->allow_if('feeds_enabled', $str);
 		}	
 
-		/** ----------------------------------------
-		/**  Parse the forum segments and board prefs
-		/** ----------------------------------------*/
-
+		// Parse the forum segments and board prefs
 		$conds = array(
 			'current_request'	=> $this->current_request,
 			'current_id'		=> $this->current_id,
@@ -1244,10 +1223,7 @@ class Forum {
 				)
 			); 
 
-		/** ------------------------------------
-		/**  Evaluate the segment conditionals
-		/** ------------------------------------*/
-
+		// Evaluate the segment conditionals
 		if (preg_match("/".LD."if (".implode('|', array_keys($conds)).").*?".RD.".*?".LD."\/if".RD."/s", $str))
 		{
 			$str = $this->EE->functions->prep_conditionals($str, $conds, 'y');
@@ -1531,7 +1507,7 @@ class Forum {
 				return FALSE;
 			}
 			
-			if ($query->row('group_id')  == 1)
+			if ($query->row('group_id') == 1)
 			{
 				return TRUE;
 			}			

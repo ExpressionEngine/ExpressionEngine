@@ -1427,8 +1427,10 @@ class Tools_utilities extends CI_Controller {
 	 *
 	 * @return	boolean
 	 */
-	private function pair_fields()
+	public function pair_fields()
 	{
+		
+		
 		if ( ! $this->cp->allowed_group('can_access_tools', 'can_access_utilities'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -1457,7 +1459,7 @@ class Tools_utilities extends CI_Controller {
 	 * @param	string
 	 * @return	boolean
 	 */
-	private function _not_alphanu($str = '')
+	public function _not_alphanu($str = '')
 	{
 		if ($this->input->post('delimiter') == 'other')
 		{
@@ -1509,7 +1511,7 @@ class Tools_utilities extends CI_Controller {
 	 * 
 	 * @return	string
 	 */	
-	private function _prep_enclosure($enclosure)
+	public function _prep_enclosure($enclosure)
 	{
 		// undo changes made by form prep as we need the literal characters
 		// and htmlspecialchars_decode() doesn't exist until PHP 5, so...
@@ -1532,7 +1534,7 @@ class Tools_utilities extends CI_Controller {
 	 * 
 	 * @return	void
 	 */	
-	private function _pair_fields_validation()
+	public function _pair_fields_validation()
 	{
 		$this->load->library('form_validation');
 		
@@ -1551,7 +1553,7 @@ class Tools_utilities extends CI_Controller {
 	 * 
 	 * @return	void
 	 */	
-	private function _unique_required ($selected_fields)
+	public function _unique_required ($selected_fields)
 	{
 		//  Get field pairings
 		$paired = array();

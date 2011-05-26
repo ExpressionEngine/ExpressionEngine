@@ -521,7 +521,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	public function resend_activation_emails()
 	{
-		if ( ! $this->cp->allowed_group('can_access_members') OR $this->config->item('req_mbr_activation') !== 'email')
+		if ( ! $this->cp->allowed_group('can_access_members') OR 
+			$this->config->item('req_mbr_activation') !== 'email')
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1593,7 +1594,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 					  );
 
 		$s = 0;
-//echo '<pre>'; print_r($G); exit;
+
 		foreach($sites_query->result_array() as $sites)
 		{
 
@@ -2411,7 +2412,10 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 						)
 		            );
 
-		$stock_member_fields = array('url', 'location', 'occupation', 'interests', 'aol_im', 'yahoo_im', 'msn_im', 'icq', 'bio', 'bday_y', 'bday_m', 'bday_d');
+		$stock_member_fields = array(
+				'url', 'location', 'occupation', 'interests', 'aol_im', 
+				'yahoo_im', 'msn_im', 'icq', 'bio', 'bday_y', 'bday_m', 'bday_d'
+			);
 		
 		foreach ($stock_member_fields as $fname)
 		{

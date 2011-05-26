@@ -49,7 +49,7 @@ class Updater {
 		
 		$this->_update_session_table();
 
-		// $this->_update_members_table();
+		$this->_update_members_table();
 
 		return TRUE;
 	}
@@ -87,22 +87,38 @@ class Updater {
 	/**
 	 * Update members table
 	 *
-	 * So this is fun, this update will alter the password field on the members
-	 * table to be VARCHAR(64) so we can use hash('sha256', 'val') for the
-	 * password hashing scheme.
+	 * Oh this is fun!  So since we're implementing a better password hashing
+	 * scheme, we'll bump up the `password` field in exp_members to 
+	 * be able to handle hashing algorithims such as sha256/sha512.
+	 * Additionally, we're adding a salt column to use for salting the 
+	 * users passwords.
 	 */
-	// private function _update_members_table()
-	// {
-	// 	$field = array(
-	// 		'password'		=> array(
-	// 			'name'			=> 'password',
-	// 			'type'			=> 'VARCHAR',
-	// 			'constraint'	=> 64
-	// 		)
-	// 	);
+	private function _update_members_table()
+	{
+		// Update password column to VARCHAR(128)
+		$field = array(
+			'password'		=> array(
+				'name'			=> 'password',
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 128
+			)
+		);
 
-	// 	$this->EE->dbforge->modify_column('members', $field);
-	// }
+		$this->EE->dbforge->modify_column('members', $field);
+
+
+		// Add a salt column VARCHAR(128)
+		$field = array(
+			'salt'			=> array(
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 128,
+				'default'		=> '',
+				'null'			=> FALSE
+			)
+		);
+
+		$this->EE->dbforge->add_column('members', $field);
+	}
 
 	// --------------------------------------------------------------------
 }

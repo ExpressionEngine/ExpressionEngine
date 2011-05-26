@@ -363,7 +363,7 @@ class Simple_commerce {
 			print_r($_POST);
 			$msg = ob_get_contents();
 			ob_end_clean();
-			
+
 			$this->EE->load->library('email');
 			$debug_to = ($this->debug_email_address == '') ? $this->EE->config->item('webmaster_email') : $this->debug_email_address;
 			
@@ -374,6 +374,7 @@ class Simple_commerce {
 			$this->EE->email->message($msg);
 			$this->EE->email->send();
 			$this->EE->email->EE_initialize();			
+
 		}
 
 		if (empty($_POST))
@@ -428,6 +429,7 @@ class Simple_commerce {
 			$result = $this->fsockopen_process($url);
 		}
 		
+		
 		/** ----------------------------------------
 		/**  Evaluate PayPal's Response
 		/** ----------------------------------------*/
@@ -446,12 +448,20 @@ class Simple_commerce {
 		/*
 		/* -------------------------------------*/
 		
+		
 		if (stristr($result, 'VERIFIED'))
 		{
 
+			// 'subscr_eot' type should be used to cancel the subscription. This is sent when the user's subscription period has expired.
+			// subscr_eot is confusing: https://www.x.com/thread/43174
+			// http://stackoverflow.com/questions/1061683/subscriptions-with-paypal-ipn
+						
+			// 'subscr_signup' - subscription bought payment pending
 			// Subscription start and end pings have no payment status, so that check not included
 
-			// Not our paypal account receiving money, so invalid - and we key off txn_type for our conditional handling
+			// Not our paypal account receiving money, so invalid - 
+			// and we key off txn_type for our conditional handling
+
 			if (strtolower($paypal_account) != trim($this->post['receiver_email']) OR ! isset($this->post['txn_type']))
 			{
 				return FALSE;
@@ -471,7 +481,7 @@ class Simple_commerce {
 			/**  - According to numerous posts around the internet, these are the only two we should really care about
 			/** --------------------------------------------*/
 
-			if (in_array($this->post['txn_type'], array('subscr_signup', 'subscr_eot', 'subscr_cancel'))) 
+			if (in_array($this->post['txn_type'], array('subscr_signup', 'subscr_eot', 'subscr_payment'))) 
 			{
 				if ( ! isset($this->post['subscr_id']))
 				{
@@ -479,7 +489,7 @@ class Simple_commerce {
 				}
 
 	    		//  Successful Subscription Data- send it on!
-    			if(isset($this->post['item_number']) && $this->post['item_number'] != '' && is_numeric($this->post['mc_amount3']) && $this->post['mc_amount3'] > 0)
+    			if (isset($this->post['item_number']) && $this->post['item_number'] != '')
     			{
     				$this->perform_actions($this->post['item_number'], '', '', '', $this->post['txn_type']);
     			}
@@ -691,12 +701,32 @@ class Simple_commerce {
 		}
 		elseif ($type == 'subscr_signup')
 		{
+			if ( ! is_numeric($this->post['mc_amount3']) OR $this->post['mc_amount3'] <= 0)
+			{
+				return FALSE;			
+			}
+
 			if ($this->start_subscription($row) === FALSE)
 			{
 				return FALSE;
 			}
+			
+			// Until payment goes through?  We do not complete and just put it in as pending 
+			return;
+			
 		}
-		
+		elseif ($type == 'subscr_payment')
+		{
+			//if ( ! is_numeric($this->post['mc_amount3']) OR $this->post['mc_amount3'] <= 0)
+			//{
+			//	return FALSE;			
+			//}
+
+			if ($this->subscription_payment($row) === FALSE)
+			{
+				return FALSE;
+			}
+		}		
 			
 		/* -------------------------------------
 		/*  'simple_commerce_perform_actions_start' hook.
@@ -871,9 +901,12 @@ class Simple_commerce {
 // what if multiple subscriptions?  item_number viable??? -rob1
 // http://articles.techrepublic.com.com/5100-10878_11-5331883.html
 // k- 0 is still subscribed.  If it has a date?  They were unsubscribed then.  So- null if not subscription type.
-        					 
+     
+
+     
         if ($query->num_rows() == 0)
         {
+
         	return FALSE;
         }
  	
@@ -930,7 +963,7 @@ class Simple_commerce {
 
         //  Insert Subscription
 
-		$data = array('txn_id' 					=> $this->post['txn_id'],
+		$data = array('txn_id' 					=> 'pending',
 					  'member_id' 				=> $this->post['custom'],
 					  'item_id'					=> $row->item_id,
 					  'purchase_date'			=> $this->EE->localize->now,
@@ -940,15 +973,51 @@ class Simple_commerce {
 		
 		$this->EE->db->insert('exp_simple_commerce_purchases', $data);
 		
-		$this->EE->db->where('item_id', $row->item_id);
-		$this->EE->db->set('item_purchases', "item_purchases + 1", FALSE);
-		$this->EE->db->set('current_subscriptions', "current_subscriptions + 1", FALSE);		
-		$this->EE->db->update('exp_simple_commerce_items');		
+		// Don't update count until it's paid
+		
+		//$this->EE->db->where('item_id', $row->item_id);
+		//$this->EE->db->set('item_purchases', "item_purchases + 1", FALSE);
+		//$this->EE->db->set('current_subscriptions', "current_subscriptions + 1", FALSE);		
+		//$this->EE->db->update('exp_simple_commerce_items');		
     
     	return TRUE;
     } 
 	/* END start_subscription() */
 
+
+	function subscription_payment($row)
+	{
+
+        //  Check for Subscription Sign-up
+		$this->EE->db->select('purchase_id, item_id');
+		$this->EE->db->where('member_id', $this->post['custom']);
+		$this->EE->db->where('paypal_subscriber_id', $this->post['subscr_id']);
+		$query = $this->EE->db->get('exp_simple_commerce_purchases');
+
+// what if multiple subscriptions?  item_number viable??? -rob1
+// http://articles.techrepublic.com.com/5100-10878_11-5331883.html
+// k- 0 is still subscribed.  If it has a date?  They were unsubscribed then.  So- null if not subscription type.
+        					 
+        if ($query->num_rows() == 0)
+        {
+        	return FALSE;
+        }
+
+		$data = array('txn_id' => $this->post['txn_id']);
+		
+
+		$this->EE->db->where('paypal_subscriber_id', $this->post['subscr_id']);
+		$this->EE->db->update('exp_simple_commerce_purchases', $data);
+
+		$this->EE->db->where('item_id', $row->item_id);
+		$this->EE->db->set('item_purchases', "item_purchases + 1", FALSE);
+		$this->EE->db->set('current_subscriptions', "current_subscriptions + 1", FALSE);		
+		$this->EE->db->update('exp_simple_commerce_items');	
+		
+		return TRUE;
+		
+			
+	}
 
 
 	/** ----------------------------------------
