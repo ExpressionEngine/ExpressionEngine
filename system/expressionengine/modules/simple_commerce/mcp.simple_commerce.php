@@ -1647,13 +1647,18 @@ class Simple_commerce_mcp {
    				$vars['purchases'][$row['purchase_id']]['item_cost'] = $row['item_cost'];
    				$vars['purchases'][$row['purchase_id']]['purchaser_screen_name'] = $row['screen_name'];
    				$vars['purchases'][$row['purchase_id']]['date_purchased'] = $this->EE->localize->set_human_time($row['purchase_date']);
-   				if ($row['recurring'] == 'y')
+
+				if ($row['subscription_end_date'] != 0)
+				{
+$vars['purchases'][$row['purchase_id']]['subscription_end_date'] = $this->EE->localize->set_human_time($row['subscription_end_date']);				
+				}
+   				elseif ($row['recurring'] == 'y')
 				{
 					$vars['purchases'][$row['purchase_id']]['subscription_end_date'] = $recurring;
 				}
 				else
 				{
-					$vars['purchases'][$row['purchase_id']]['subscription_end_date'] = ($row['subscription_end_date'] == 0) ? ' -- ' : $this->EE->localize->set_human_time($row['subscription_end_date']);
+					$vars['purchases'][$row['purchase_id']]['subscription_end_date'] =  ' -- ';
 				}
 
 				// Toggle checkbox
@@ -1747,13 +1752,17 @@ class Simple_commerce_mcp {
 
 		foreach ($query->result_array() as $purchase)
 		{
-			if ($purchase['recurring'] == 'y')
+			if ($purchase['subscription_end_date'] != 0)
+			{
+				$subscription_end_date = $this->EE->localize->set_human_time($purchase['subscription_end_date']);
+			}
+			elseif ($purchase['recurring'] == 'y')
 			{
 				$subscription_end_date = $recurring;
 			}
 			else
 			{
-				$subscription_end_date = ($purchase['subscription_end_date'] == 0) ? ' -- ' : $this->EE->localize->set_human_time($purchase['subscription_end_date']);
+				$subscription_end_date =  ' -- ';
 			}
 
 			$m[] = '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.
