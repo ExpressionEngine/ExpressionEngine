@@ -43,7 +43,7 @@ class Search extends CI_Controller {
 	 * @access	public
 	 * @return	void
 	 */	
-	function index($message = '')
+	function index()
 	{
 		$this->load->helper('html');
 		$this->load->helper('search');
@@ -66,7 +66,7 @@ class Search extends CI_Controller {
 			// Save the search
 			$search = rawurlencode(base64_encode($search));
 			
-			if ($this->input->get('ajax'))
+			if (AJAX_REQUEST)
 			{
 				// Force a js redirect
 				$url = str_replace('&amp;', '&', BASE).'&C=search&M=build_index&saved='.$search;
@@ -84,7 +84,7 @@ class Search extends CI_Controller {
 		$vars['search_data'] = $this->cp_search->generate_results($search);
 		$vars['num_rows'] = count($vars['search_data']);
 
-		if ($this->input->get('ajax'))
+		if (AJAX_REQUEST)
 		{
 			echo $this->load->view('search/sidebar', $vars, TRUE);
 			exit;

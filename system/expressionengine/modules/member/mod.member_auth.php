@@ -73,7 +73,7 @@ class Member_auth extends Member {
 		}
 		else
 		{
-			$data['hidden_fields']['RET']	= ($return == 'self') ? $this->_member_path($this->request.'/'.$this->cur_id) : $return;
+			$data['hidden_fields']['RET'] = ($return == 'self') ? $this->_member_path($this->request.'/'.$this->cur_id) : $return;
 		}
 
 		$data['hidden_fields']['FROM'] = ($this->in_forum === TRUE) ? 'forum' : '';
@@ -81,7 +81,8 @@ class Member_auth extends Member {
 
 		$this->_set_page_title(lang('member_login'));
 
-		return $this->_var_swap($login_form, array($match['1'] => $this->EE->functions->form_declaration($data)));
+		return $this->_var_swap($login_form, array(
+					$match['1'] => $this->EE->functions->form_declaration($data)));
 	}
 
 	// --------------------------------------------------------------------
@@ -91,13 +92,7 @@ class Member_auth extends Member {
 	 */
 	public function member_login()
 	{
-		// Is user banned?
-		if ($this->EE->session->userdata('is_banned') === TRUE)
-		{
-			return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
-		}
-
-		$this->EE->lang->loadfile('login');
+		$this->EE->load->library('auth');
 
 		/* -------------------------------------------
 		/* 'member_member_login_start' hook.
@@ -109,236 +104,82 @@ class Member_auth extends Member {
 		/*
 		/* -------------------------------------------*/
 
-		// Error trapping
-		$errors = array();
-
 		// No username/password?  Bounce them...
-		if ( ! $this->EE->input->get('multi') && 
-			( ! $this->EE->input->get_post('username') OR ! $this->EE->input->get_post('password')))
+		$multi	  = $this->EE->input->get('multi');
+		$username = $this->EE->input->post('username');
+		$password = $this->EE->input->post('password');
+		
+		if ( ! $multi && ! ($username && $password))
 		{
-			$this->EE->output->show_user_error('submission', array(lang('mbr_form_empty')));
+			return $this->EE->output->show_user_error('general', lang('mbr_form_empty'));
 		}
 
-		// Is IP and User Agent required for login?
-		if ($this->EE->config->item('require_ip_for_login') == 'y')
+		// This should go in the auth lib.
+		if ( ! $this->EE->auth->check_require_ip())
 		{
-			if ($this->EE->session->userdata('ip_address') == '' OR 
-				$this->EE->session->userdata('user_agent') == '')
-			{
-				$this->EE->output->show_user_error('general', 
-					array(lang('unauthorized_request')));
-			}
+			return $this->EE->output->show_user_error('general', lang('unauthorized_request'));
 		}
 
 		// Check password lockout status
-		if ($this->EE->session->check_password_lockout($this->EE->input->get_post('username')) === TRUE)
+		if (TRUE === $this->EE->session->check_password_lockout($username))
 		{
 			$line = lang('password_lockout_in_effect');
-
 			$line = str_replace("%x", $this->EE->config->item('password_lockout_interval'), $line);
 
-			$this->EE->output->show_user_error('general', array($line));
+			$this->EE->output->show_user_error('general', $line);
 		}
 
-		// Fetch member data
-		if ( ! $this->EE->input->get('multi'))
+
+		$success = '';
+		$sites	 = $this->EE->config->item('multi_login_sites');
+		
+		// Log me in.
+		if ($multi)
 		{
-			$query = $this->EE->db->select('m.password, m.unique_id, m.member_id, m.group_id')
-								  ->from(array('members m', 'member_groups mg'))
-								  ->where('username', $this->EE->input->post('username'))
-								  ->where('m.group_id', 'mg.group_id', FALSE)
-								  ->where('mg.site_id', (int) $this->EE->config->item('site_id'))
-								  ->get();
+			// Multiple Site Login
+			$incoming = $this->_do_multi_auth($sites);
+			$success = '_build_multi_success_message';
+			
+			$current = $this->EE->input->get('cur') + 1;
+			$orig	 = $this->EE->input->get_post('orig');
 		}
 		else
 		{
-			if ($this->EE->config->item('allow_multi_logins') == 'n' OR 
-				! $this->EE->config->item('multi_login_sites') OR 
-				$this->EE->config->item('multi_login_sites') == '')
-			{
-				return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
-			}
-
-			// Current site in list.  Original login site.
-			if ($this->EE->input->get('cur') === FALSE OR 
-				$this->EE->input->get_post('orig') === FALSE OR 
-				$this->EE->input->get('orig_site_id') === FALSE)
-			{
-				return $this->EE->output->show_user_error('general', array(lang('not_authorized')));
-			}
-
-			// Kill old sessions first
-
-			$this->EE->session->gc_probability = 100;
-
-			$this->EE->session->delete_old_sessions();
-
-			// Set cookie expiration to one year if the "remember me" button is clicked
-			$expire = ( ! isset($_POST['auto_login'])) ? '0' : 60*60*24*365;
-
-			// Check Session ID
-			$query = $this->EE->db->select('m.member_id, m.password, m.unique_id, m.group_id')
-								->from(array('sessions s, members m'))
-								->where('s.session_id', $this->EE->input->get('multi'))
-								->where('s.member_id', 'm.member_id', FALSE)
-								->where('s.last_activity >', $expire)
-								->get();
-
-			if ($query->num_rows() == 0)
-			{
-				return;
-			}
-
-			// Set Various Cookies
-
-			$this->EE->functions->set_cookie($this->EE->session->c_anon);
-			$this->EE->functions->set_cookie($this->EE->session->c_expire , time()+$expire, $expire);
-			$this->EE->functions->set_cookie($this->EE->session->c_session , $this->EE->input->get('multi'), $this->EE->session->session_length);
-
-			// -------------------------------------------
-			// 'member_member_login_multi' hook.
-			//  - Additional processing when a member is logging into multiple sites
-			//
-				$edata = $this->EE->extensions->call('member_member_login_multi', $query->row());
-				if ($this->EE->extensions->end_script === TRUE) return;
-			//
-			// -------------------------------------------
-
-			// Check if there are any more sites to log into
-
-			$sites	= explode('|',$this->EE->config->item('multi_login_sites'));
-			$next	= ($this->EE->input->get('cur') + 1 != $this->EE->input->get('orig')) ? $this->EE->input->get('cur') + 1 : $this->EE->input->get_post('cur') + 2;
-
-			if ( ! isset($sites[$next]))
-			{
-				// We're done.
-				$data = array(	'title' 	=> lang('mbr_login'),
-								'heading'	=> lang('thank_you'),
-								'content'	=> lang('mbr_you_are_logged_in'),
-								'redirect'	=> $sites[$this->EE->input->get('orig')],
-								'link'		=> array($sites[$this->EE->input->get('orig')], lang('back'))
-								 );
-
-				// Pull preferences for the original site
-
-				if (is_numeric($this->EE->input->get('orig_site_id')))
-				{
-					$query = $this->EE->db->select('site_name, site_id')
-										  ->get_where('sites', 
-										  		array('site_id' => (int) $this->EE->input->get('orig_site_id')));
-
-					if ($query->num_rows() == 1)
-					{
-						$final_site_name = $query->row('site_name');
-						$final_site_id = $query->row('site_id');
-
-						$this->EE->config->site_prefs($final_site_name, $final_site_id);
-					}
-				}
-
-				$this->EE->output->show_message($data);
-			}
-			else
-			{
-				// Next Site
-
-				$next_url = $sites[$next].'?ACT='.$this->EE->functions->fetch_action_id('Member', 'member_login').
-							'&multi='.$this->EE->input->get('multi').'&cur='.$next.'&orig='.$this->EE->input->get_post('orig').'&orig_site_id='.$this->EE->input->get('orig_site_id');
-
-				return $this->EE->functions->redirect($next_url);
-			}
+			// Regular Login
+			$incoming = $this->_do_auth($username, $password);
+			$success = '_build_success_message';
+			
+			$current = $this->EE->functions->fetch_site_index();
+			$orig	 = array_search($current, explode('|', $sites));
+			$current = $orig;
 		}
-
-		// Invalid Username
-		if ($query->num_rows() == 0)
+		
+		// More sites?
+		if ($sites && ! $this->EE->config->item('allow_multi_logins') == 'n')
 		{
-			$this->EE->session->save_password_lockout($this->EE->input->get_post('username'));
-
-			$this->EE->output->show_user_error('submission', array(lang('credential_missmatch')));
+			$this->_redirect_next_site($sites, $orig, $current);
 		}
+		
+		$this->$success();
+	}
 
-		// Is the member account pending?
-		if ($query->row('group_id') == 4)
-		{
-			$this->EE->output->show_user_error('general', array(lang('mbr_account_not_active')));
-		}
+	// --------------------------------------------------------------------
 
-		// Check password
-		$this->EE->load->helper('security');
-		$password = do_hash($this->EE->input->post('password'));
-
-		if ($query->row('password') != $password)
-		{
-			// To enable backward compatibility with pMachine we'll test to see
-			// if the password was encrypted with MD5.  If so, we will encrypt the
-			// password using SHA1 and update the member's info.
-
-			$password = do_hash($this->EE->input->post('password'), 'md5');
-
-			if ($query->row('password')  == $password)
-			{
-				$password = do_hash($this->EE->input->post('password'));
-
-				$this->EE->db->set('password', $password)
-							 ->where('member_id', (int) $query->row('member_id'))
-							 ->update('members');
-			}
-			else
-			{
-				// Invalid password
-				$this->EE->session->save_password_lockout($this->EE->input->get_post('username'));
-
-				$errors[] = lang('credential_missmatch');
-			}
-		}
-
-		// Do we allow multiple logins on the same account?
-		if ($this->EE->config->item('allow_multi_logins') == 'n')
-		{
-			// Kill old sessions first
-			$this->EE->session->gc_probability = 100;
-
-			$this->EE->session->delete_old_sessions();
-
-			$expire = time() - $this->EE->session->session_length;
-
-			// See if there is a current session
-
-			$result = $this->EE->db->select('ip_address, user_agent')
-								   ->where('member_id', (int) $query->row('member_id'))
-								   ->where('last_activity >', $expire)
-								   ->where('site_id', $this->EE->config->item('site_id'))
-								   ->get('sessions');
-
-			// If a session exists, trigger the error message
-			if ($result->num_rows() == 1)
-			{
-				if ($this->EE->session->userdata('ip_address') != $result->row('ip_address')  OR
-					$this->EE->session->userdata('user_agent') != $result->row('user_agent')  )
-				{
-					$errors[] = lang('multi_login_warning');
-				}
-			}
-		}
-
-		// Are there errors to display?
-		if (count($errors) > 0)
-		{
-			return $this->EE->output->show_user_error('submission', $errors);
-		}
-
-		// Is the UN/PW the correct length?
-
-		// If the admin has specfified a minimum username or password length that
-		// is longer than the current users's data we'll have them update their info.
-		// This will only be an issue if the admin has changed the un/password requiremements
-		// after member accounts already exist.
-
+	/**
+	 * Check against minimum username/password length
+	 *
+	 * @param 	object 	member auth object
+	 * @param 	string 	username
+	 * @param 	string 	password
+	 * @return 	void 	a redirect on failure, or nothing
+	 */
+	private function _check_min_unpwd($member_obj, $username, $password)
+	{
 		$uml = $this->EE->config->item('un_min_len');
 		$pml = $this->EE->config->item('pw_min_len');
 
-		$ulen = strlen($this->EE->input->post('username'));
-		$plen = strlen($this->EE->input->post('password'));
+		$ulen = strlen($username);
+		$plen = strlen($password);
 
 		if ($ulen < $uml OR $plen < $pml)
 		{
@@ -346,10 +187,10 @@ class Member_auth extends Member {
 			if ($this->EE->input->get_post('FROM') == 'forum')
 			{
 				$this->basepath = $this->EE->input->get_post('mbase');
-				$trigger =  $this->EE->input->get_post('trigger');
+				$trigger = $this->EE->input->get_post('trigger');
 			}
 
-			$path = 'unpw_update/'.$query->row('member_id') .'_'.$ulen.'_'.$plen;
+			$path = 'unpw_update/'.$member_obj->member_id .'_'.$ulen.'_'.$plen;
 
 			if ($trigger != '')
 			{
@@ -357,84 +198,184 @@ class Member_auth extends Member {
 			}
 
 			return $this->EE->functions->redirect($this->_member_path($path));
+		}		
+	}
+
+	// --------------------------------------------------------------------
+
+	private function _do_auth($username, $password)
+	{
+		$sess = $this->EE->auth->authenticate_username($username, $password);
+
+		if ( ! $sess)
+		{
+			$this->EE->session->save_password_lockout($username);
+			return $this->EE->output->show_user_error('general', lang('not_authorized'));
 		}
 
-		// Set cookie expiration to one year if the "remember me" button is clicked
-
-		$expire = ( ! isset($_POST['auto_login'])) ? '0' : 60*60*24*365;
-
-		$this->EE->functions->set_cookie($this->EE->session->c_expire , time()+$expire, $expire);
-
-		// Does the user want to remain anonymous?
-		if ( ! $this->EE->input->post('anon'))
+		// Banned
+		if ($sess->is_banned())
 		{
-			$this->EE->functions->set_cookie($this->EE->session->c_anon , 1,  $expire);
-
-			$anon = 'y';
-		}
-		else
-		{
-			$this->EE->functions->set_cookie($this->EE->session->c_anon);
-
-			$anon = '';
+			return $this->EE->output->show_user_error('general', lang('not_authorized'));
 		}
 
-		// Create a new session
-		$this->EE->session->create_new_session($query->row('member_id') );
-		$this->EE->session->userdata['username'] = $this->EE->input->get_post('username');
-
-		// -------------------------------------------
-		// 'member_member_login_single' hook.
-		//  - Additional processing when a member is logging into single site
-		//
-			$edata = $this->EE->extensions->call('member_member_login_single', $query->row());
-			if ($this->EE->extensions->end_script === TRUE) return;
-		//
-		// -------------------------------------------
-
-		// Update stats
-		$cutoff		= $this->EE->localize->now - (15 * 60);
-
-		$this->EE->db->query("DELETE FROM exp_online_users WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND ((ip_address = '".$this->EE->input->ip_address()."' AND member_id = '0') OR date < $cutoff)");
-
-		$data = array(
-						'member_id'		=> $this->EE->session->userdata('member_id'),
-						'name'			=> ($this->EE->session->userdata('screen_name') == '') ? $this->EE->session->userdata('username') : $this->EE->session->userdata('screen_name'),
-						'ip_address'	=> $this->EE->input->ip_address(),
-						'date'			=> $this->EE->localize->now,
-						'anon'			=> $anon,
-						'site_id'		=> $this->EE->config->item('site_id')
-					);
-
-		$this->EE->db->query($this->EE->db->update_string('exp_online_users', $data, 
-							array(
-								"ip_address" => $this->EE->input->ip_address(), 
-								"member_id" => $data['member_id']))
-							);
-
-		// Delete old password lockouts
-		$this->EE->session->delete_password_lockout();
-
-		// Multiple Site Logins
-		if ($this->EE->config->item('allow_multi_logins') == 'y' && 
-			$this->EE->config->item('multi_login_sites') != '')
+		// Allow multiple logins?
+		// Do we allow multiple logins on the same account?		
+		if ($this->EE->config->item('allow_multi_logins') == 'n')
 		{
-			// Next Site
-			$sites		=  explode('|',$this->EE->config->item('multi_login_sites'));
-			$current	= $this->EE->functions->fetch_site_index();
-
-			if (count($sites) > 1 && in_array($current, $sites))
+			if ($sess->has_other_session())
 			{
-				$orig = array_search($current, $sites);
-				$next = ($orig == '0') ? '1' : '0';
-
-				$next_url = $sites[$next].'?ACT='.$this->EE->functions->fetch_action_id('Member', 'member_login').
-							'&multi='.$this->EE->session->userdata('session_id').'&cur='.$next.'&orig='.$orig.'&orig_site_id='.$this->EE->input->get('orig_site_id');
-
-				return $this->EE->functions->redirect($next_url);
+				return $this->EE->output->show_user_error('general', lang('not_authorized'));
 			}
 		}
 
+		// Check user/pass minimum length
+		$this->_check_min_unpwd($sess, $username, $password);
+
+		// Start Session
+		// "Remember Me" is one year
+		if (isset($_POST['auto_login']))
+		{
+			$sess->remember_me(60*60*24*365);
+		}
+
+		$sess->start_session();
+		$this->_update_online_user_stats();
+		
+		return $sess;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	private function _do_multi_auth($sites)
+	{
+		$multi = $this->EE->input->get('multi');
+		
+		if ( ! $sites OR $this->EE->config->item('allow_multi_logins') == 'n')
+		{
+			return $this->EE->output->show_user_error('general', lang('not_authorized'));
+		}
+		
+		$cur	 = $this->EE->input->get('cur');
+		$orig	 = $this->EE->input->get_post('orig');
+		$orig_id = $this->EE->input->get('orig_site_id');
+
+		// Current site in list.  Original login site.
+		if ($cur === FALSE OR $orig === FALSE OR $orig_id === FALSE)
+		{
+			return $this->EE->output->show_user_error('general', lang('not_authorized'));
+		}
+		
+		// Kill old sessions first
+		$this->EE->session->gc_probability = 100;
+		$this->EE->session->delete_old_sessions();
+		
+		// Grab session
+		$sess_q = $this->EE->db->get_where('sessions', array(
+			'session_id' => $multi
+		));
+		
+		if ( ! $sess_q->num_rows())
+		{
+			return FALSE;
+		}
+		
+		// Grab member
+		$mem_q = $this->EE->db->get_where('members', array(
+			'member_id' => $sess_q->row('member_id')
+		));
+		
+		if ( ! $mem_q->num_rows())
+		{
+			return FALSE;
+		}
+		
+		$incoming = new Auth_result($mem_q->row());
+		
+		// this is silly - only works for the first site
+		if (isset($_POST['auto_login']))
+		{
+			$incoming->remember_me(60*60*24*365);
+		}
+		
+		// hook onto an existing session
+		$incoming->use_session_id($multi);
+		$incoming->start_session();
+		
+		return $incoming;
+	}
+	
+	public function _redirect_next_site($sites, $orig, $current)
+	{
+		$sites = explode('|', $sites);
+		$orig_id = $this->EE->input->get('orig_site_id');
+		
+		$current = $this->EE->functions->fetch_site_index();
+		$orig = array_search($current, $sites);
+		
+		if ($cur == $orig)
+		{
+			$next++;
+		}
+		
+		// Do we have another?
+		if (isset($sites[$next]))
+		{
+			// next site
+			$next_qs = array(
+				'ACT'	=> $this->EE->functions->fetch_action_id('Member', 'member_login'),
+				'cur'	=> $next,
+				'orig'	=> $orig,
+				'multi'	=> $multi,
+				'orig_site_id' => $orig_id
+			);
+			
+			$next_url = $sites[$next].'?'.http_build_query($next_qs);
+
+			return $this->EE->functions->redirect($next_url);
+		}
+		
+	}
+
+	// --------------------------------------------------------------------
+
+	private function _build_multi_success_message()
+	{
+		// That was our last site, show the success message
+		
+		$data = array(
+			'title' 	=> lang('mbr_login'),
+			'heading'	=> lang('thank_you'),
+			'content'	=> lang('mbr_you_are_logged_in'),
+			'redirect'	=> $sites[$orig],
+			'link'		=> array($sites[$orig], lang('back'))
+		);
+		
+		// Pull preferences for the original site
+		if (is_numeric($orig_id))
+		{
+			$this->EE->db->select('site_name, site_id');
+			$query = $this->EE->db->get_where('sites', array(
+				'site_id' => (int) $orig_id
+			));
+			
+			if ($query->num_rows() == 1)
+			{
+				$final_site_id = $query->row('site_id');
+				$final_site_name = $query->row('site_name');
+
+				$this->EE->config->site_prefs($final_site_name, $final_site_id);
+			}
+		}
+		
+		$this->EE->output->show_message($data);
+	}
+
+	/**
+	 * Build Success Message
+	 */
+	private function _build_success_message()
+	{
 		// Build success message
 		$site_name = ($this->EE->config->item('site_name') == '') ? lang('back') : stripslashes($this->EE->config->item('site_name'));
 
@@ -474,6 +415,47 @@ class Member_auth extends Member {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Update online user stats
+	 */
+	private function _update_online_user_stats()
+	{
+		if ($this->EE->config->item('enable_online_user_tracking') == 'n' OR
+			$this->EE->config->item('disable_all_tracking') == 'y')
+		{
+			return;
+		}
+
+		// Update stats
+		$cutoff = $this->EE->localize->now - (15 * 60);
+		$anon = ($this->EE->input->post('anon') == 1) ? 'n' : 'y';
+
+		$in_forum = ($this->EE->input->get_post('FROM') == 'forum') ? 'y' : 'n';
+
+		$escaped_ip = $this->EE->db->escape_str($this->EE->input->ip_address());
+
+		$this->EE->db->where('site_id', $this->EE->config->item('site_id'))
+					 ->where("(ip_address = '".$escaped_ip."' AND member_id = '0')", '', FALSE)
+					 ->or_where('date < ', $cutoff)
+					 ->delete('online_users');
+
+		$data = array(
+						'member_id'		=> $this->EE->session->userdata('member_id'),
+						'name'			=> ($this->EE->session->userdata('screen_name') == '') ? $this->EE->session->userdata('username') : $this->EE->session->userdata('screen_name'),
+						'ip_address'	=> $this->EE->input->ip_address(),
+						'in_forum'		=> $in_forum,
+						'date'			=> $this->EE->localize->now,
+						'anon'			=> $anon,
+						'site_id'		=> $this->EE->config->item('site_id')
+					);
+
+		$this->EE->db->where('ip_address', $this->EE->input->ip_address())
+					 ->where('member_id', $data['member_id'])
+					 ->update('online_users', $data);		
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Member Logout
 	 */
 	public function member_logout()
@@ -484,14 +466,9 @@ class Member_auth extends Member {
 		$this->EE->db->where('member_id', $this->EE->session->userdata('member_id'));
 		$this->EE->db->delete('online_users');		
 		
-		$this->EE->db->where('session_id', $this->EE->session->userdata('session_id'));
-		$this->EE->db->delete('sessions');
+		$this->EE->session->destroy();
 
-		$this->EE->functions->set_cookie($this->EE->session->c_session);
-		$this->EE->functions->set_cookie($this->EE->session->c_expire);
-		$this->EE->functions->set_cookie($this->EE->session->c_anon);
 		$this->EE->functions->set_cookie('read_topics');
-		$this->EE->functions->set_cookie('tracker');
 
 		/* -------------------------------------------
 		/* 'member_member_logout' hook.

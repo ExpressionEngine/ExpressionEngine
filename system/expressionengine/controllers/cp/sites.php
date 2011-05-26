@@ -424,16 +424,16 @@ class Sites extends CI_Controller {
 		}
 
 		// If the $site_id variable is present we are editing
-		
 		$edit = ($this->input->post('site_id') && is_numeric($_POST['site_id'])) ? TRUE : FALSE;
 		$do_comments = $this->db->table_exists('comments');
 		
 		$error = array();
+
 		if ($edit == FALSE)
 		{
 			if ( ! file_exists(APPPATH.'language/'.$this->config->item('deft_lang').'/email_data.php'))
 			{
-				$error[] = lang('unable_to_locate_specialty');
+				show_error(lang('unable_to_locate_specialty'));
 			}
 			else
 			{
@@ -441,11 +441,7 @@ class Sites extends CI_Controller {
 			}
 		}
   
-		
-		/** -----------------------------------------
-		/**  Create/Update Site
-		/** -----------------------------------------*/
-		
+		// Create/Update Site	
 		$data = array('site_name'			=> $_POST['site_name'],
 					  'site_label'			=> $_POST['site_label'],
 					  'site_description'	=> $_POST['site_description'],
@@ -508,10 +504,7 @@ class Sites extends CI_Controller {
 		
 		$this->logger->log_action($success_msg.NBS.NBS.$_POST['site_label']);
 		
-		/** -----------------------------------------
-		/**  Site Specific Stats Created
-		/** -----------------------------------------*/
-		
+		// Site Specific Stats Created
 		if ($edit === FALSE)
 		{
 			$query = $this->db->get_where('stats', array('site_id' => '1'));
@@ -529,10 +522,7 @@ class Sites extends CI_Controller {
 			}
 		}
 		
-		/** -----------------------------------------
-		/**  New Prefs Creation
-		/** -----------------------------------------*/
-		
+		// New Prefs Creation		
 		if ($edit === FALSE)
 		{
 			foreach(array('system', 'channel', 'template', 'mailinglist', 'member') as $type)
@@ -551,9 +541,7 @@ class Sites extends CI_Controller {
 			}
 		}
 		
-		/** -----------------------------------------
-		/**  Create HTML Buttons for New Site
-		/** -----------------------------------------*/
+		// Create HTML Buttons for New Site
 		if ($edit == FALSE)
 		{
 			$query = $this->db->get_where('html_buttons', array('site_id' => $this->config->item('site_id'), 'member_id' => 0));
@@ -569,9 +557,7 @@ class Sites extends CI_Controller {
 			}
 		}
 		
-		/** -----------------------------------------
-		/**  Create Specialty Templates for New Site
-		/** -----------------------------------------*/
+		// Create Specialty Templates for New Site
 		if ($edit == FALSE)
 		{
 			$Q = array();
@@ -598,9 +584,7 @@ class Sites extends CI_Controller {
 			}
 		}
 		
-		/** -----------------------------------------
-		/**  New Member Groups
-		/** -----------------------------------------*/
+		// New Member Groups
 		if ($edit == FALSE)
 		{
 			$query = $this->db->get_where('member_groups', array('site_id' => $this->config->item('site_id')));
@@ -614,10 +598,7 @@ class Sites extends CI_Controller {
 			}
 		}
 		
-		/** -----------------------------------------
-		/**  Moving of Data?
-		/** -----------------------------------------*/
-		
+		// Moving of Data?
 		if ($edit == FALSE)
 		{
 			$channel_ids = array();
@@ -627,11 +608,9 @@ class Sites extends CI_Controller {
 		
 			foreach($_POST as $key => $value)
 			{
-				/** -----------------------------------------
-				/**  Channels Moving
-				/** -----------------------------------------*/
-			
-				if (substr($key, 0, strlen('channel_')) == 'channel_' && $value != 'nothing' && is_numeric(substr($key, strlen('channel_'))))
+				// Channels Moving			
+				if (substr($key, 0, strlen('channel_')) == 'channel_' && 
+					$value != 'nothing' && is_numeric(substr($key, strlen('channel_'))))
 				{
 					$old_channel_id = substr($key, strlen('channel_'));
 					
@@ -788,11 +767,9 @@ class Sites extends CI_Controller {
 					}
 				}
 				
-				/** -----------------------------------------
-				/**  Upload Directory Moving
-				/** -----------------------------------------*/
-				
-				if (substr($key, 0, strlen('upload_')) == 'upload_' && $value != 'nothing' && is_numeric(substr($key, strlen('upload_'))))
+				// Upload Directory Moving				
+				if (substr($key, 0, strlen('upload_')) == 'upload_' && 
+					$value != 'nothing' && is_numeric(substr($key, strlen('upload_'))))
 				{
 					$upload_id = substr($key, strlen('upload_'));
 					
@@ -848,11 +825,9 @@ class Sites extends CI_Controller {
 					}
 				}
 				
-				/** -----------------------------------------
-				/**  Global Template Variables
-				/** -----------------------------------------*/
-				
-				if (substr($key, 0, strlen('global_variables_')) == 'global_variables_' && $value != 'nothing' && is_numeric(substr($key, strlen('global_variables_'))))
+				// Global Template Variables
+				if (substr($key, 0, strlen('global_variables_')) == 'global_variables_' && 
+					$value != 'nothing' && is_numeric(substr($key, strlen('global_variables_'))))
 				{
 					$move_site_id = substr($key, strlen('global_variables_'));
 					
@@ -897,11 +872,9 @@ class Sites extends CI_Controller {
 					}
 				}
 				
-				/** -----------------------------------------
-				/**  Template Group and Template Moving
-				/** -----------------------------------------*/
-				
-				if (substr($key, 0, strlen('template_group_')) == 'template_group_' && $value != 'nothing' && is_numeric(substr($key, strlen('template_group_'))))
+				// Template Group and Template Moving				
+				if (substr($key, 0, strlen('template_group_')) == 'template_group_' && 
+					$value != 'nothing' && is_numeric(substr($key, strlen('template_group_'))))
 				{
 					$group_id = substr($key, strlen('template_group_'));
 					
@@ -942,18 +915,14 @@ class Sites extends CI_Controller {
 						}
 						
 						// Create New Group
-						
-						$row['site_id'] 		= $site_id;
+						$row['site_id'] = $site_id;
 						unset($row['group_id']);
 					
 						$this->db->query($this->db->insert_string('exp_template_groups', $row, TRUE));
 						
 						$new_group_id = $this->db->insert_id();
 						
-						/** -----------------------------------------
-						/**  Member Group Access to Template Groups
-						/** -----------------------------------------*/
-						
+						// Member Group Access to Template Groups
 						$query = $this->db->query("SELECT * FROM exp_template_member_groups WHERE template_group_id = '".$this->db->escape_str($query->row('group_id') )."'");
 						
 						if ($query->num_rows() > 0)
@@ -966,12 +935,8 @@ class Sites extends CI_Controller {
 															  TRUE));
 							}
 						}
-						
-						
-						/** -----------------------------------------
-						/**  Create Templates for New Template Group
-						/** -----------------------------------------*/
-						
+
+						// Create Templates for New Template Group
 						$query = $this->db->query("SELECT * FROM exp_templates WHERE group_id = '".$this->db->escape_str($group_id)."'");
 						
 						if ($query->num_rows() == 0)
@@ -990,10 +955,7 @@ class Sites extends CI_Controller {
 							
 							$new_template_id = $this->db->insert_id();
 							
-							/** -----------------------------------------
-							/**  Template/Page Access
-							/** -----------------------------------------*/
-							
+							// Template/Page Access							
 							$access_query = $this->db->query("SELECT * FROM exp_template_no_access WHERE template_id = '".$this->db->escape_str($original_id)."'");
 							
 							if ($query->num_rows() > 0)
@@ -1011,10 +973,7 @@ class Sites extends CI_Controller {
 				}
 			}
 			
-			/** -----------------------------------------
-			/**  Additional Channel Moving Work - Stats/Groups
-			/** -----------------------------------------*/
-			
+			// Additional Channel Moving Work - Stats/Groups			
 			if (count($channel_ids) > 0)
 			{
 				$status			 = array();
@@ -1031,10 +990,7 @@ class Sites extends CI_Controller {
 
 					$row = $query->row_array();
 					
-					/** -----------------------------------------
-					/**  Duplicate Status Group
-					/** -----------------------------------------*/
-					
+					// Duplicate Status Group
 					$status_group = $query->row('status_group');
 					
 					if ( ! empty($status_group))
@@ -1047,7 +1003,6 @@ class Sites extends CI_Controller {
 							$row = $squery->row_array();
 							
 							// Uniqueness checks
-						
 							foreach(array('group_name') AS $check)
 							{
 								$count_query = $this->db->query("SELECT COUNT(*) AS count FROM exp_status_groups 
@@ -1085,20 +1040,13 @@ class Sites extends CI_Controller {
 							}
 						}
 						
-						/** -----------------------------------------
-						/**  Update Channel With New Group ID
-						/** -----------------------------------------*/
-						
+						// Update Channel With New Group ID						
 						$this->db->query($this->db->update_string(	'exp_channels', 
 														array('status_group' => $status[$query->row('status_group') ]), 
 														"channel_id = '".$this->db->escape_str($new_channel)."'"));
 					}
 					
-					
-					/** -----------------------------------------
-					/**  Duplicate Field Group
-					/** -----------------------------------------*/
-					
+					// Duplicate Field Group
 					$field_group = $query->row('field_group');
 					
 					if ( ! empty($field_group))
@@ -1110,7 +1058,6 @@ class Sites extends CI_Controller {
 							$fq_group_name = $fquery->row('group_name');
 							
 							// Uniqueness checks
-						
 							foreach(array('group_name') AS $check)
 							{
 								$count_query = $this->db->query("SELECT COUNT(*) AS count FROM exp_field_groups 
@@ -1130,10 +1077,7 @@ class Sites extends CI_Controller {
 							
 							$fields[$query->row('field_group') ] = $this->db->insert_id();
 							
-							/** -----------------------------------------
-							/**  New Fields Created for New Field Group
-							/** -----------------------------------------*/
-							
+							// New Fields Created for New Field Group
 							$fquery = $this->db->query("SELECT * FROM exp_channel_fields WHERE group_id = '".$this->db->escape_str($query->row('field_group') )."'");
 							
 							if ($fquery->num_rows() > 0)
@@ -1169,11 +1113,7 @@ class Sites extends CI_Controller {
 									
 									$field_match[$old_field_id] = $field_id;
 									
-									/** -----------------------------------------
-									/**  Channel Data Field Creation, Whee!
-									/** -----------------------------------------*/
-									
-									
+									// Channel Data Field Creation, Whee!									
 									if ($row['field_type'] == 'date' OR $row['field_type'] == 'rel')
 									{
 										$this->db->query("ALTER TABLE exp_channel_data ADD COLUMN field_id_".$this->db->escape_str($field_id)." int(10) NOT NULL DEFAULT 0");
@@ -1208,12 +1148,8 @@ class Sites extends CI_Controller {
 											$this->db->query("UPDATE exp_channel_data SET field_id_".$this->db->escape_str($field_id)." = ''");
 										}
 									}
-
 									
-									/** -----------------------------------------
-									/**  Duplicate Each Fields Formatting Options Too
-									/** -----------------------------------------*/
-									
+									// Duplicate Each Fields Formatting Options Too
 									if ($format_query->result_array() > 0)
 									{
 										foreach($format_query->result_array() as $format_row)
@@ -1228,10 +1164,7 @@ class Sites extends CI_Controller {
 							}
 						}
 						
-						/** -----------------------------------------
-						/**  Update Channel With New Group ID
-						/** -----------------------------------------*/
-						
+						// Update Channel With New Group ID						
 						//  Synce up a few new fields in the channel table
 						$channel_results = $this->db->query("SELECT search_excerpt FROM exp_channels WHERE channel_id = '". $this->db->escape_str($old_channel)."'");
 
@@ -1252,21 +1185,14 @@ class Sites extends CI_Controller {
 														 'search_excerpt' => (int) $channel_data['search_excerpt']), 
 														"channel_id = '".$this->db->escape_str($new_channel)."'"));
 														
-						/** -----------------------------------------
-						/**  Moveed Channel?  Need Old Field Group
-						/** -----------------------------------------*/
-
+						// Moved Channel?  Need Old Field Group
 						if (isset($moved[$old_channel]))
 						{
 							$moved[$old_channel] = $query->row('field_group') ;
 						}
 					}
 					
-					
-					/** -----------------------------------------
-					/**  Duplicate Category Group(s)
-					/** -----------------------------------------*/
-					
+					// Duplicate Category Group(s)
 					$cat_group = $query->row('cat_group');
 					
 					if ( ! empty($cat_group))
@@ -1314,10 +1240,7 @@ class Sites extends CI_Controller {
 							
 							$new_insert_group[] = $category_groups[$cat_group];
 							
-							/** -----------------------------------------
-							/**  Custom Category Fields
-							/** -----------------------------------------*/
-							
+							// Custom Category Fields							
 							$fquery = $this->db->query("SELECT * FROM exp_category_fields WHERE group_id = '".$this->db->escape_str($cat_group)."'");
 							
 							if ($fquery->num_rows() > 0)
@@ -1350,19 +1273,14 @@ class Sites extends CI_Controller {
 
 									$cat_field_match[$old_field_id] = $field_id;
 
-									/** ---------------------------------------------
-									/**  Custom Catagory Field Data Creation, Whee!
-									/** ---------------------------------------------*/
+									// Custom Catagory Field Data Creation, Whee!
 									$this->db->query("ALTER TABLE `exp_category_field_data` ADD COLUMN `field_id_{$field_id}` text NOT NULL");
 									$this->db->query("ALTER TABLE `exp_category_field_data` ADD COLUMN `field_ft_{$field_id}` varchar(40) NOT NULL default 'none'");
 									$this->db->query("UPDATE `exp_category_field_data` SET `field_ft_{$field_id}` = '".$this->db->escape_str($row['field_default_fmt'])."'");
 								}
 							}
 							
-							/** -----------------------------------------
-							/**  New Categories Created for New Category Group
-							/** -----------------------------------------*/
-							
+							// New Categories Created for New Category Group							
 							$cquery = $this->db->query("SELECT * FROM exp_categories WHERE group_id = '".$this->db->escape_str($cat_group)."' ORDER BY parent_id");
 							
 							if ($cquery->num_rows() > 0)
@@ -1399,10 +1317,7 @@ class Sites extends CI_Controller {
 									
 									$categories[$old_cat_id] = $cat_id;
 									
-									/** -----------------------------------------
-									/**  Duplicate Field Data Too
-									/** -----------------------------------------*/
-
+									// Duplicate Field Data Too
 									if ($fields_query->num_rows() > 0)
 									{
 										$fields_query_row = $fields_query->row_array();
@@ -1433,10 +1348,7 @@ class Sites extends CI_Controller {
 						$new_insert_group = '';
 					}
 						
-					/** -----------------------------------------
-					/**  Update Channel With New Group ID
-					/** -----------------------------------------*/
-				
+					// Update Channel With New Group ID				
 					$this->db->query($this->db->update_string( 'exp_channels', array('cat_group' => $new_insert_group), "channel_id = '".$this->db->escape_str($new_channel)."'"));
 				}
 				
@@ -1451,10 +1363,7 @@ class Sites extends CI_Controller {
 				{
 					$moved_relationships = array();
 					
-					/** -----------------------------------------
-					/**  Relationship Field Checking? - For 'duplicate_all' for channels, NOT enabled
-					/** -----------------------------------------*/
-					
+					// Relationship Field Checking? - For 'duplicate_all' for channels, NOT enabled
 					if (count($entries) > 0)
 					{
 						$complete_entries = array();
@@ -1488,10 +1397,7 @@ class Sites extends CI_Controller {
 						}
 					}
 				
-					/** -----------------------------------------
-					/**  Moving Field Data for Moved Entries
-					/** -----------------------------------------*/
-					
+					// Moving Field Data for Moved Entries	
 					// We need to change the directory for any moved fields - if the directory was duplicated
 					// Create the string here- then replace the placeholder with the correct field id
 					
@@ -1563,10 +1469,7 @@ class Sites extends CI_Controller {
 								}
 							}
 							
-							/** -----------------------------------------
-							/**  Modifying Field Data for Related Entries
-							/** -----------------------------------------*/
-							
+							// Modifying Field Data for Related Entries
 							if (count($related_fields) > 0 && count($moved_relationships) > 0)
 							{
 								$query = $this->db->query('SELECT '.implode(',', $related_fields).' FROM exp_channel_data
@@ -1590,10 +1493,7 @@ class Sites extends CI_Controller {
 							}
 						}
 						
-						/** -----------------------------------------
-						/**  Category Reassignment
-						/** -----------------------------------------*/
-						
+						// Category Reassignment
 						$query = $this->db->query("SELECT cp.entry_id FROM exp_category_posts cp, exp_channel_titles wt 
 											 WHERE wt.channel_id = '".$this->db->escape_str($channel_id)."' 
 											 AND wt.entry_id = cp.entry_id");
@@ -1620,12 +1520,7 @@ class Sites extends CI_Controller {
 			
 		}
 		
-		
-		
-		/** -----------------------------------------
-		/**  Refresh Sites List
-		/** -----------------------------------------*/
-			
+		// Refresh Sites List	
 		$assigned_sites = array();
 		
 		if ($this->session->userdata['group_id'] == 1)
@@ -1667,10 +1562,7 @@ class Sites extends CI_Controller {
         
 		$this->config->set_item('site_id', $original_site_id);
 
-		/** -----------------------------------------
-		/**  View Sites List
-		/** -----------------------------------------*/
-		
+		// View Sites List		
 		if ($edit === TRUE)
 		{
 			$this->functions->redirect(BASE.AMP.'C=sites'.AMP.'M=manage_sites&updated_id='.$site_id);
@@ -1824,11 +1716,7 @@ class Sites extends CI_Controller {
 			$this->db->delete('relationships');
 		}
 
-
-		/** -----------------------------------------
-		/**  Delete Channel Custom Field Columns for Site
-		/** -----------------------------------------*/
-		
+		// Delete Channel Custom Field Columns for Site		
 		// Save the field ids in an array so we can delete the associated field formats
 		$nuked_field_ids = array();
 		
@@ -1858,10 +1746,7 @@ class Sites extends CI_Controller {
 			$this->db->delete('field_formatting');			
 		}
 		
-		/** -----------------------------------------
-		/**  Delete Category Custom Field Columns for Site
-		/** -----------------------------------------*/
-		
+		// Delete Category Custom Field Columns for Site		
 		$query = $this->db->query("SELECT field_id FROM exp_category_fields 
 							 WHERE site_id = '".$this->db->escape_str($site_id)."'");
 		
@@ -1875,11 +1760,7 @@ class Sites extends CI_Controller {
 			}
 		}
 		
-
-		/** -----------------------------------------
-		/**  Delete Upload Permissions for Site
-		/** -----------------------------------------*/
-		
+		// Delete Upload Permissions for Site
 		$query = $this->db->query("SELECT id FROM `exp_upload_prefs` WHERE site_id = '".$this->db->escape_str($site_id)."'");
 		$upload_ids = array();
 
@@ -1893,10 +1774,7 @@ class Sites extends CI_Controller {
 			$this->db->query("DELETE FROM `exp_upload_no_access` WHERE upload_id IN (".implode(',', $upload_ids).")");
 		}
 		
-		/** -----------------------------------------
-		/**  Delete Everything Having to Do with the Site
-		/** -----------------------------------------*/
-		
+		// Delete Everything Having to Do with the Site
 		$tables = array('exp_categories',
 						'exp_category_fields',
 						'exp_category_field_data',
@@ -1935,10 +1813,7 @@ class Sites extends CI_Controller {
 			$this->db->query("DELETE FROM `$table` WHERE site_id = {$site_id}");
 		}
 
-		/** -----------------------------------------
-		/**  Refresh Sites List
-		/** -----------------------------------------*/
-			
+		// Refresh Sites List
 		$assigned_sites = array();
 		
 		if ($this->session->userdata['group_id'] == 1)
@@ -1959,11 +1834,6 @@ class Sites extends CI_Controller {
 		}
 		
 		$this->session->userdata['assigned_sites'] = $assigned_sites;
-		
-		/** -----------------------------------------
-		/**  Reload to Site Admin
-		/** -----------------------------------------*/
-		
 		$this->functions->redirect(BASE.AMP.'C=sites'.AMP.'M=manage_sites');
 	}
 }

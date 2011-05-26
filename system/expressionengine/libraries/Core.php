@@ -264,7 +264,7 @@ class EE_Core {
 		 */
 
 		$this->EE->input->filter_get_data(REQ);
-			
+		
 		// Update system stats
 		$this->EE->load->library('stats');
 	 		
@@ -416,7 +416,7 @@ class EE_Core {
 			$safe_refresh = $this->EE->cp->get_safe_refresh();
 			$return_url = ($safe_refresh == 'C=homepage') ? '' : AMP.'return='.base64_encode($safe_refresh);
 			
-			$this->EE->functions->redirect(BASE.AMP.'C=login'.AMP.'M=login_form'.$return_url);
+			$this->EE->functions->redirect(BASE.AMP.'C=login'.$return_url);
 		}
 		
 		// Is the user banned?

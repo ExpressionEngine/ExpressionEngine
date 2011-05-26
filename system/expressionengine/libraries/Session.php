@@ -26,6 +26,12 @@
 // ------------------------------------------------------------------------
 
 /*
+ExpressionEngine User Classes (* = current):
+
+  1. Session*
+  2. Authentication
+  3. Permissions
+
 There are three validation types, set in the config file: 
  
   1. User cookies AND session ID (cs)
@@ -136,7 +142,7 @@ class EE_Session {
 			'user_agent' 		=>  substr($this->EE->input->user_agent(), 0, 120),
 			'last_activity'		=>  0
 		);
-							
+		
 		// -------------------------------------------
 		// 'sessions_start' hook.
 		//  - Reset any session class variable
@@ -151,7 +157,6 @@ class EE_Session {
 		if ($this->EE->input->cookie($this->c_session))
 		{
 			$this->cookies_exist = TRUE;
-
 			$this->sdata['session_id'] = $this->EE->input->cookie($this->c_session);			
 		}
 		else
@@ -199,7 +204,7 @@ class EE_Session {
 
 		// Fetch Member Data
 		$member_data_exists = ($this->fetch_member_data() === TRUE) ? TRUE : FALSE;
-
+		
 		// Update/Create Session						
 		if ($session_id === FALSE OR $member_data_exists === FALSE)
 		{ 
@@ -403,9 +408,9 @@ class EE_Session {
 		$this->userdata['site_id']		= $this->EE->config->item('site_id');
 		
 		$this->EE->functions->set_cookie($this->c_session , $this->sdata['session_id'], $this->session_length);	
-					
-		$this->EE->db->query($this->EE->db->insert_string('exp_sessions', $this->sdata));	
 		
+		$this->EE->db->query($this->EE->db->insert_string('exp_sessions', $this->sdata));	
+
 		return $this->sdata['session_id'];
 	}
 
@@ -414,7 +419,7 @@ class EE_Session {
 	/**
 	 * Delete old sessions if probability is met
 	 *
-	 * By default, the probablility is set to 10 percent.
+	 * By default, the probability is set to 10 percent.
 	 * That means sessions will only be deleted one
 	 * out of ten times a page is loaded.
 	 */
@@ -454,6 +459,27 @@ class EE_Session {
 			$this->EE->db->where('login_date <', $expire)
 						 ->delete('password_lockout');
 		}	
+	}
+	
+	
+	// --------------------------------------------------------------------
+	 
+	/**
+	 * Destroy session. Essentially logging a user off.
+	 */
+	public function destroy()
+	{
+		$this->EE->db->where('session_id', $this->userdata['session_id']);
+		$this->EE->db->delete('sessions');
+		
+		// Really should redirect after calling this
+		// method, but if someone doesn't - we're safe
+		$this->fetch_guest_data();
+		
+		$this->EE->functions->set_cookie($this->c_session);	
+		$this->EE->functions->set_cookie($this->c_expire);	
+		$this->EE->functions->set_cookie($this->c_anon);
+		$this->EE->functions->set_cookie('tracker'); 
 	}
 
 	// --------------------------------------------------------------------
