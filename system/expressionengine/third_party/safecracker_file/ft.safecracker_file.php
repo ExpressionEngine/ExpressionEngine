@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-require_once PATH_FT.'file/file/ft.file.php';
+require_once PATH_FT.'file/ft.file.php';
 
 class Safecracker_file_ft extends File_ft
 {
