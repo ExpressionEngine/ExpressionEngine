@@ -1146,6 +1146,11 @@ class Api_channel_entries extends Api {
 					$this->_set_error('invalid_date_formatting', $date);
 				}
 			}
+
+			if (isset($data['revision_post'][$date]))
+			{
+				$data['revision_post'][$date] = $data[$date];
+			}
 		}
 		
 		// Required and custom fields
