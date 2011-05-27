@@ -32,15 +32,13 @@
  *
  * Uncomment the following variables if you are using the Multiple
  * Site Manager: http://expressionengine.com/user_guide/cp/sites
- *
- * Set the Short Name of the site this file will display, the URL of
- * this site's admin.php file, and the main URL of the site (without
- * index.php) 
+
+  The variables set the Short Name of the site this admin.php file
+  will log into, and its URL.
  *
  */
 //	$assign_to_config['site_name']  = 'domain2_short_name';
 //	$assign_to_config['cp_url'] = 'http://domain2.com/admin.php';
-//	$assign_to_config['site_url'] = 'http://domain2.com';
 
 
 /*
@@ -63,34 +61,7 @@
  * Enable it only if you have a good reason to.
  * 
  */
-	$debug = 0;
-
-
-/*
- * --------------------------------------------------------------------
- *  CUSTOM CONFIG VALUES
- * --------------------------------------------------------------------
- *
- * The $assign_to_config array below will be passed dynamically to the
- * config class. This allows you to set custom config items or override
- * any default config values found in the config.php file.  This can
- * be handy as it permits you to share one application between more then
- * one front controller file, with each file containing different 
- * config values.
- *
- * Un-comment the $assign_to_config array below to use this feature
- *
- * NOTE: This feature can be used to run multiple EE "sites" using
- * the old style method.  Instead of individual variables you'll
- * set array indexes corresponding to them.
- *
- */
-//	$assign_to_config['template_group'] = '';
-//	$assign_to_config['template'] = '';
-//	$assign_to_config['site_index'] = '';
-//	$assign_to_config['site_404'] = '';
-//	$assign_to_config['global_vars'] = array(); // This array must be associative
-
+	$debug = 1;
 
 /*
  * --------------------------------------------------------------------
@@ -99,14 +70,7 @@
  */
 
 
-/*
- * ---------------------------------------------------------------
- *  Disable all routing, send everything to the frontend
- * ---------------------------------------------------------------
- */
-	$routing['directory'] = '';
-	$routing['controller'] = 'ee';
-	$routing['function'] = 'index';
+	define('MASKED_CP', TRUE);
 
 /*
  * --------------------------------------------------------------------
@@ -115,43 +79,41 @@
  */
 	$assign_to_config['enable_query_strings'] = TRUE;
 	$assign_to_config['subclass_prefix'] = 'EE_';
+	$assign_to_config['directory_trigger'] = 'D';	
+	$assign_to_config['controller_trigger'] = 'C';	
+	$assign_to_config['function_trigger'] = 'M';
 
 /*
  * --------------------------------------------------------------------
  *  Resolve the system path for increased reliability
  * --------------------------------------------------------------------
  */
+	if ($system_path == '')
+	{
+		$system_path = pathinfo(__FILE__, PATHINFO_DIRNAME);
+	}
 
 	if (realpath($system_path) !== FALSE)
 	{
 		$system_path = realpath($system_path).'/';
 	}
-
+	
 	// ensure there's a trailing slash
 	$system_path = rtrim($system_path, '/').'/';
-
-	// Is the sytsem path correct?
-	if ( ! is_dir($system_path))
-	{
-		exit("Your system folder path does not appear to be set correctly. Please open the following file and correct this: ".pathinfo(__FILE__, PATHINFO_BASENAME));
-	}
 
 /*
  * --------------------------------------------------------------------
  *  Now that we know the path, set the main constants
  * --------------------------------------------------------------------
  */	
+	// The PHP file extension
+	define('EXT', '.php');
+	
 	// The name of THIS file
 	define('SELF', pathinfo(__FILE__, PATHINFO_BASENAME));
 
-	// The PHP file extension
-	define('EXT', '.php');
-
  	// Path to the system folder
 	define('BASEPATH', str_replace("\\", "/", $system_path.'codeigniter/system/'));
-	
-	// Path to the "application" folder
-	define('APPPATH', $system_path.'expressionengine/');
 	
 	// Path to the front controller (this file)
 	define('FCPATH', str_replace(SELF, '', __FILE__));
@@ -161,6 +123,37 @@
 
 	// The $debug value as a constant for global access
 	define('DEBUG', $debug);  unset($debug);
+
+/*
+* --------------------------------------------------------------------
+ *  EE Control Panel Constants
+ * -------------------------------------------------------------------
+ *
+ * If the "installer" folder exists the $config['install_lock'] is off
+ * we will load the installation wizard.  Otherwise we load the CP
+ *
+ */ 
+ 	// Is the installation folder present?
+	if (FALSE && is_dir($system_path.'installer/'))
+	{
+		// We need a different subclass prefix when we run the installer.
+		// The reason is because the installer has it's on Config class extension
+		// containing some specific functions needed by the installer.  By 
+		// setting a unique prefix we can also load the main Config class extension
+		// without a naming conflict
+		$assign_to_config['subclass_prefix']	= 'Installer_';
+		
+		// This allows the installer application to be inside our normal EE application directory
+		define('APPPATH', $system_path.'installer/');
+		define('EE_APPPATH', $system_path.'expressionengine/');
+	}
+	else
+	{
+		define('APPPATH', $system_path.'expressionengine/');
+	}
+
+ 	// The control panel access constant.  Without this, the CP will not be invoked
+	define('REQ', 'CP');
 
 /*
  * --------------------------------------------------------------------
@@ -177,6 +170,7 @@
 		error_reporting(0);	
 	}
 
+
 /*
  *---------------------------------------------------------------
  * LOAD THE BOOTSTRAP FILE
@@ -185,7 +179,14 @@
  * And away we go...
  *
  */
+	// Is the system path correct?
+	if ( ! file_exists(BASEPATH.'core/CodeIgniter'.EXT))
+	{
+		exit("Your system folder path does not appear to be set correctly. Please open the following file and correct this: ".pathinfo(__FILE__, PATHINFO_BASENAME));	
+	}
+
 	require_once BASEPATH.'core/CodeIgniter'.EXT;
 
+
 /* End of file index.php */
-/* Location: ./index.php */
+/* Location: ./system/index.php */

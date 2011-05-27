@@ -1017,7 +1017,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 			if ( ! class_exists('Forum'))
 			{
-				require PATH_MOD.'forum/mod.forum.phg';
+				require PATH_MOD.'forum/mod.forum.php';
 				require PATH_MOD.'forum/mod.forum_core.php';
 			}
 			
