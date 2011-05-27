@@ -5281,7 +5281,7 @@ class Admin_content extends CI_Controller {
 	{
 		$this->_restrict_prefs_access();
 
-		if ($id == 0)
+		if ($id == 0 && ! $this->cp->allowed_group('can_admin_channels'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -5465,7 +5465,7 @@ class Admin_content extends CI_Controller {
 
 		if ($member_id == 0)
 		{
-			show_error(lang('unauthorized_access'));
+			//show_error(lang('unauthorized_access'));
 		}
 
 		$this->cp->set_variable('cp_page_title', lang('default_html_buttons'));

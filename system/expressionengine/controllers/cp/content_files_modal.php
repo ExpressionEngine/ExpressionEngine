@@ -270,6 +270,7 @@ class Content_files_modal extends CI_Controller {
 		// Get the JSON and decode it
 		$file_json = $this->input->post('file_json');
 		$file = (array) json_decode($file_json);
+		$file['upload_directory_prefs'] = (array) $file['upload_directory_prefs'];
 		
 		// If the file is being renamed, use the new file name and responze
 		// from rename_file to update the data
