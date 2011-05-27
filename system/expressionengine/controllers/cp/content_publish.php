@@ -132,6 +132,19 @@ class Content_publish extends CI_Controller {
 		$channel_id	= (int) $this->input->get_post('channel_id');
 		
 		$autosave	= ($this->input->get_post('use_autosave') == 'y');
+		
+		// If we're autosaving and this isn't a submitted form
+		if ($autosave AND empty($_POST))
+		{
+			$autosave_entry_id = $entry_id;
+			
+			$autosave_data = $this->db->get_where('channel_entries_autosave', array(
+				'entry_id' => $entry_id
+			));
+			$autosave_data = $autosave_data->row();
+			
+			$entry_id = $autosave_data->original_entry_id;
+		}
 
 		$this->_smileys_enabled = (isset($this->cp->installed_modules['emoticon']) ? TRUE : FALSE);
 
@@ -270,15 +283,7 @@ class Content_publish extends CI_Controller {
 		unset($parts['S'], $parts['D']);
 		$current_url = http_build_query($parts, '', '&amp;');
 		
-		if ($autosave)
-		{
-			$entry_id = $this->input->post('entry_id');
-			$autosave_id = $this->input->get('entry_id');
-		}
-		else
-		{
-			$autosave_id = isset($entry_data['autosave_entry_id']) ? $entry_data['autosave_entry_id'] : 0;
-		}
+		$autosave_id = ($autosave) ? $autosave_entry_id : 0;
 		
 		// Remove 'layout_preview' from the URL, stripping anything after it
 		if (strpos($current_url, 'layout_preview') !== FALSE) 
@@ -1222,7 +1227,6 @@ class Content_publish extends CI_Controller {
 		unset($data['author']);
 		unset($data['filter']);
 		unset($data['return_url']);
-		
 		
 		// New entry or saving an existing one?
 		if ($entry_id)
