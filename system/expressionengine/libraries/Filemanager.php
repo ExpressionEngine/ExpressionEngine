@@ -1269,8 +1269,7 @@ class Filemanager {
 		{
 			$site_url = str_replace('index.php', '', $this->EE->config->site_url());
 
-			$thumb_info['thumb']  = (strncmp($directory['url'], '/', 1) === 0) ? $site_url : '';
-			$thumb_info['thumb'] .= $directory['url'].'_thumb/'.$file['file_name'];
+			$thumb_info['thumb'] = $directory['url'].'_thumb/'.$file['file_name'];
 			$thumb_info['thumb_path'] = $directory['server_path'] . '_thumb/' . $file['file_name'];
 			$thumb_info['thumb_class'] = 'image';
 		}
