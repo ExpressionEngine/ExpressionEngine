@@ -48,11 +48,6 @@ if ($EE_view_disable !== TRUE)
 			
 			echo $this->table->generate();
 			
-			$options = array(
-                  'activate'  => lang('validate_selected'),
-                  'delete'    => lang('delete_selected')
-                );
-
 			echo '<p>'.form_dropdown('action', $options, 'activate').'</p>';
 			
 			echo '<p><label>'.form_checkbox(array('id'=>'send_notification','name'=>'send_notification','value'=>'y', 'checked'=>TRUE)). ' ' .lang('send_email_notification').'</label></p>';

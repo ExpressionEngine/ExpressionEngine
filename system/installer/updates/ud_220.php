@@ -49,6 +49,8 @@ class Updater {
 		
 		$this->_update_session_table();
 
+		$this->_update_password_lockout_table();
+		
 		$this->_update_members_table();
 
 		return TRUE;
@@ -82,6 +84,29 @@ class Updater {
 		$this->EE->dbforge->modify_column('sessions', $field);
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update Password lockout Table
+	 *
+	 * This method updates the password_lockout table, updating `user_agent` 
+	 * to VARCHAR(120) to more closely match what's going on in CodeIgniter's session class.
+	 *
+	 * @return 	void
+	 */
+	private function _update_password_lockout_table()
+	{
+
+		$field = array(
+			'user_agent'	=> array(
+				'name'			=> 'user_agent',
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 120
+			)
+		);
+
+		$this->EE->dbforge->modify_column('password_lockout', $field);
+	}
 	// --------------------------------------------------------------------
 
 	/**
@@ -124,5 +149,5 @@ class Updater {
 }
 /* END CLASS */
 
-/* End of file ud_215.php */
-/* Location: ./system/expressionengine/installer/updates/ud_215.php */
+/* End of file ud_220.php */
+/* Location: ./system/expressionengine/installer/updates/ud_220.php */
