@@ -464,9 +464,6 @@ $lang = array(
 'email_changed' =>
 'Email was changed to:',
 
-'password_change_requires_login' =>
-'Note:  If you change your password you will have to log back in',
-
 'settings_updated' =>
 'Settings Have Been Updated',
 

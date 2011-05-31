@@ -624,6 +624,8 @@ class Login extends CI_Controller {
 		{
 			$this->functions->redirect(BASE.AMP.'C=login');
 		}
+
+		$this->load->library('auth');
 		
 		$time = time() - (60*60*24);
 					
@@ -658,8 +660,12 @@ class Login extends CI_Controller {
 		$rand = $this->functions->random('alnum', 8);
 		
 		// Update member's password
-		$this->authentication->update_password($member_id, $rand);
+		$update = $this->auth->update_password($member_id, $rand);
 		
+		if (FALSE === $update)
+		{
+			show_error(lang('unauthorized_access'));
+		}
 		
 		// Kill old data from the reset_password field
 		$this->db->where('date <', $time);
@@ -674,7 +680,6 @@ class Login extends CI_Controller {
 			'site_name'	=> stripslashes($this->config->item('site_name')),
 			'site_url'	=> $this->config->item('site_url')
 		 );
-
 
 		$template = $this->functions->fetch_email_template('reset_password_notification');
 		$message_title = $this->_var_swap($template['title'], $swap);
