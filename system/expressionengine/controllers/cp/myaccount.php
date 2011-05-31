@@ -584,7 +584,8 @@ class MyAccount extends CI_Controller {
 	function update_preferences()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) {
+		if (empty($_POST)) 
+		{
 			show_error(lang('unauthorized_access'));
 		}
 
@@ -639,7 +640,8 @@ class MyAccount extends CI_Controller {
 	  */
 	function update_username_password()
 	{
-		if ($this->config->item('allow_username_change') != 'y' AND $this->session->userdata('group_id') != 1)
+		if ($this->config->item('allow_username_change') != 'y' && 
+			$this->session->userdata('group_id') != 1)
 		{
 			if ($_POST['current_password'] == '')
 			{
@@ -690,7 +692,8 @@ class MyAccount extends CI_Controller {
 
 		$this->VAL->validate_screen_name();
 
-		if ($this->config->item('allow_username_change') == 'y' OR $this->session->userdata('group_id') == 1)
+		if ($this->config->item('allow_username_change') == 'y' OR 
+			$this->session->userdata('group_id') == 1)
 		{
 			$this->VAL->validate_username();
 		}
@@ -709,7 +712,8 @@ class MyAccount extends CI_Controller {
 
 		// Update "last post" forum info if needed
 
-		if ($query->row('screen_name') != $_POST['screen_name'] AND $this->config->item('forum_is_installed') == "y")
+		if ($query->row('screen_name') != $_POST['screen_name'] && 
+			$this->config->item('forum_is_installed') == "y")
 		{
 			$this->db->where('forum_last_post_author_id', $this->id);
 			$this->db->update('forums', array('forum_last_post_author' => 
@@ -721,7 +725,6 @@ class MyAccount extends CI_Controller {
 		}
 
 		// Assign the query data
-
 		$data['screen_name'] = $_POST['screen_name'];
 
 		if ($this->config->item('allow_username_change') == 'y' OR $this->session->userdata('group_id') == 1)
@@ -735,8 +738,9 @@ class MyAccount extends CI_Controller {
 
 		if ($_POST['password'] != '')
 		{
-			$this->load->helper('security');
-			$data['password'] = do_hash($_POST['password']);
+			$this->load->library('auth');
+
+			$this->auth->update_password($this->id, $this->input->post('password'));
 
 			if ($this->id == $this->session->userdata('member_id'))
 			{
@@ -757,7 +761,6 @@ class MyAccount extends CI_Controller {
 				$screen_name = ($query->row('screen_name')	!= '') ? $query->row('screen_name')	 : '';
 
 				// Update comments with current member data
-
 				$data = array('name' => ($screen_name != '') ? $screen_name : $_POST['username']);
 
 				$this->db->where('author_id', $this->id);
@@ -769,14 +772,6 @@ class MyAccount extends CI_Controller {
 		$this->logger->log_action($this->VAL->log_msg);
 
 		$message = lang('settings_updated');
-
-		if ($pw_change)
-		{
-			$message .= BR.lang('password_change_warning');
-
-			$this->session->set_flashdata('message_success', $message);
-			$this->functions->redirect(BASE.AMP.'C=login');
-		}
 		
 		$this->session->set_flashdata('message_success', $message);
 		$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=username_password'.AMP.'id='.$this->id);
@@ -785,8 +780,8 @@ class MyAccount extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	  *	 Ping servers
-	  */
+	 * Ping servers
+	 */
 	function ping_servers()
 	{
 		// Is the user authorized to access the publish page? And does the user have
