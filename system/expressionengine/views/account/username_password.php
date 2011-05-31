@@ -21,7 +21,6 @@
 			<legend><?=lang('password_change')?></legend>
 
 			<div class="notice"><?=lang('password_change_exp')?></div>
-			<div class="notice"><?=lang('password_change_requires_login')?></div>
 
 			<p>
 				<?=lang('new_password', 'password')?>

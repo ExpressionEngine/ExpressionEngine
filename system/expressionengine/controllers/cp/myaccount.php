@@ -353,7 +353,8 @@ class MyAccount extends CI_Controller {
 	function update_profile()
 	{
 		// validate for unallowed blank values
-		if (empty($_POST)) {
+		if (empty($_POST)) 
+		{
 			show_error(lang('unauthorized_access'));
 		}
 		
