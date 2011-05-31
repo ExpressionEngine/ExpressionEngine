@@ -1404,10 +1404,14 @@ class Member_settings extends Member {
 		// from the username field.
 
 		if ($_POST['screen_name'] == '')
-			$_POST['screen_name'] = $_POST['username'];
+		{
+			$_POST['screen_name'] = $_POST['username'];			
+		}
 
 		if ( ! isset($_POST['username']))
-			$_POST['username'] = '';
+		{
+			$_POST['username'] = '';			
+		}
 
 		/** -------------------------------------
 		/**  Validate submitted data
@@ -1481,7 +1485,9 @@ class Member_settings extends Member {
 
 		if ($_POST['password'] != '')
 		{
-			$data['password'] = $this->EE->functions->hash(stripslashes($_POST['password']));
+			$this->EE->load->library('auth');
+			$this->EE->auth->update_password($this->EE->session->userdata('member_id'),
+											 $this->EE->input->post('password'));
 
 			$pw_change = $this->_var_swap($this->_load_element('password_change_warning'),
 											array('lang:password_change_warning' => $this->EE->lang->line('password_change_warning'))
