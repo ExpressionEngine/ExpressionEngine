@@ -583,6 +583,11 @@ class Api_channel_entries extends Api {
 			// Delete entries in the channel_entries_autosave table
 			$this->EE->db->where('original_entry_id', $val)
 						 ->delete('channel_entries_autosave');
+			
+			// Delete entries from the versions table
+			$this->EE->db->where('entry_id', $val)
+						 ->delete('entry_versioning');
+
 
 			// -------------------------------------------
 			// 'delete_entries_loop' hook.
