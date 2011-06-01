@@ -123,7 +123,7 @@ class Sites extends CI_Controller {
 
 			if ($query->num_rows() == 0 OR $query->row('can_access_cp') !== 'y')
 			{
-				return $this->index('unauthorized_access');
+				show_error(lang('unauthorized_access'));
 			}
 		}
 		

@@ -741,14 +741,15 @@ class EE_Menu {
 		// Add MSM Site Switcher
 		$this->EE->load->model('site_model');
 		
-		$site_list = $this->EE->site_model->get_site();
-		$site_list = ($this->EE->config->item('multiple_sites_enabled') === 'y' && ! IS_FREELANCER) ? $site_list->result() : FALSE;
+		$site_list = $this->EE->session->userdata('assigned_sites'); 
+		$site_list = ($this->EE->config->item('multiple_sites_enabled') === 'y' && ! IS_FREELANCER) ? $site_list : FALSE;
 
 		$menu = array();
 
 		if ($site_list)
 		{
 			$site_backlink = $this->EE->cp->get_safe_refresh();
+
 			if ($site_backlink)
 			{
 				$site_backlink = implode('|', explode(AMP, $site_backlink));
@@ -764,9 +765,9 @@ class EE_Menu {
 			
 			$menu[$this->EE->config->item('site_name')][] = '----';
 			
-			foreach($site_list as $row)
+			foreach($site_list as $site_id => $site_name)
 			{
-				$menu[$this->EE->config->item('site_name')][$row->site_label] = BASE.AMP.'C=sites'.AMP.'site_id='.$row->site_id.$site_backlink;
+				$menu[$this->EE->config->item('site_name')][$site_name] = BASE.AMP.'C=sites'.AMP.'site_id='.$site_id.$site_backlink;
 			}
 		}
 		else
