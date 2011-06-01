@@ -580,7 +580,10 @@ class Api_channel_entries extends Api {
 				$this->EE->db->delete('comment_subscriptions', array('entry_id' => $val));
 			}
 			
-			
+			// Delete entries in the channel_entries_autosave table
+			$this->EE->db->where('original_entry_id', $val)
+						 ->delete('channel_entries_autosave');
+
 			// -------------------------------------------
 			// 'delete_entries_loop' hook.
 			//  - Add additional processing for entry deletion in loop
