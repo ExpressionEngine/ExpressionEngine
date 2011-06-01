@@ -759,8 +759,8 @@ class Filemanager {
 		$vars['category_filters'] = form_dropdown('category', array());
 		$vars['view_filters']     = form_dropdown('view_type', array('list' => 'a list', 'thumb' => 'thumbnails'), 'list', 'id="view_type"');
 
-		$filebrowser_html = $this->EE->load->view('_shared/file/browser', $vars, TRUE);
-
+		$filebrowser_html = $this->EE->load->ee_view('_shared/file/browser', $vars, TRUE);
+		
 		die($this->EE->javascript->generate_json(array(
 			'manager'		=> str_replace(array("\n", "\t"), '', $filebrowser_html),	// reduces transfer size
 			'directories'	=> $vars['filemanager_directories']
