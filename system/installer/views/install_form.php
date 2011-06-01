@@ -153,6 +153,8 @@ else
 <div class="shade">
 <h2><?php echo $this->lang->line('deft_template'); ?></h2>
 
+<p><?php echo $this->lang->line('site_theme_info')?></p>
+
 <p>
 <select name='theme' class='select' id="theme_select">
 	<option value=''>None - Empty Installation</option>

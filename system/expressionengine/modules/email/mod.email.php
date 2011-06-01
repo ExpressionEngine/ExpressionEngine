@@ -30,16 +30,17 @@ class Email {
 
 	var $use_captchas = 'n';
 
-	/** ----------------------------------------
-	/**  Constructor
-	/** ----------------------------------------*/
+	private $_user_recipients = '';
 
-	function Email()
+	/**
+	 * Constructor
+	 */
+	public function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-		if ($this->EE->config->item('email_module_captchas') === FALSE OR $this->EE->config->item('email_module_captchas') == 'n')
+		if ($this->EE->config->item('email_module_captchas') === FALSE OR 
+			$this->EE->config->item('email_module_captchas') == 'n')
 		{
 			$this->use_captchas = 'n';
 		}
@@ -50,25 +51,22 @@ class Email {
 		}
 	}
 
+	// --------------------------------------------------------------------
 
-	/** ----------------------------------------
-	/**  Contact Form
-	/** ----------------------------------------*/
-	function contact_form()
+	/**
+	 * Contact Form
+	 */
+	public function contact_form()
 	{
 		$tagdata = $this->EE->TMPL->tagdata;
 
-		/** ----------------------------------------
-		/**  Recipient Email Checking
-		/** ----------------------------------------*/
-
-		$recipients			= ( ! $this->EE->TMPL->fetch_param('recipients'))  ? '' : $this->EE->TMPL->fetch_param('recipients');
-		$user_recipients	= ( ! $this->EE->TMPL->fetch_param('user_recipients'))  ? 'false' : $this->EE->TMPL->fetch_param('user_recipients');
-		$charset			= ( ! $this->EE->TMPL->fetch_param('charset'))  ? '' : $this->EE->TMPL->fetch_param('charset');
-		$channel				= ( ! $this->EE->TMPL->fetch_param('channel'))  ? '' : $this->EE->TMPL->fetch_param('channel');
+		// Recipient Email Checking
+		$this->_user_recipients = $this->EE->TMPL->fetch_param('user_recipients', 'false');
+		$recipients = $this->EE->TMPL->fetch_param('recipients', '');
+		$channel = $this->EE->TMPL->fetch_param('channel', '');
 
 		// No email left behind act
-		if ($user_recipients == 'false' && $recipients == '')
+		if ( ! $user_recipients && $recipients == '')
 		{
 			$recipients = $this->EE->config->item('webmaster_email');
 		}
@@ -82,86 +80,61 @@ class Email {
 			$recipients = implode(',',$array['approved']);
 		}
 
-		/** ----------------------------------------
-		/**  Conditionals
-		/** ----------------------------------------*/
-
+		// Conditionals
 		$cond = array();
-		$cond['logged_in']			= ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-		$cond['logged_out']			= ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
-		$cond['captcha']			= ($this->use_captchas == 'y') ? 'TRUE' : 'FALSE';
+		$cond['logged_in']	= ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
+		$cond['logged_out']	= ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+		$cond['captcha']	= ($this->use_captchas == 'y') ? 'TRUE' : 'FALSE';
 
 		$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
 
 		// Load the form helper
 		$this->EE->load->helper('form');
 
-		/** ----------------------------------------
-		/**  Parse "single" variables
-		/** ----------------------------------------*/
+		// Parse "single" variables
 		foreach ($this->EE->TMPL->var_single as $key => $val)
 		{
-			/** ----------------------------------------
-			/**  parse {member_name}
-			/** ----------------------------------------*/
+			// parse {member_name}
+			if ($key == 'member_name')
+			{
+				$name = ($this->EE->session->userdata['screen_name'] != '') ? $this->EE->session->userdata['screen_name'] : $this->EE->session->userdata['username'];
+				$tagdata = $this->EE->TMPL->swap_var_single($key, form_prep($name), $tagdata);
+			}
 
-				if ($key == 'member_name')
+			// {member_email}
+			if ($key == 'member_email')
+			{
+				$email = ($this->EE->session->userdata['email'] == '') ? '' : $this->EE->session->userdata['email'];
+				$tagdata = $this->EE->TMPL->swap_var_single($key, form_prep($email), $tagdata);
+			}
+
+			// {current_time}
+
+			if (strncmp($key, 'current_time', 12) == 0)
+			{
+				$now = $this->EE->localize->set_localized_time();
+				$tagdata = $this->EE->TMPL->swap_var_single($key, $this->EE->localize->decode_date($val,$now), $tagdata);
+			}
+
+			if (($key == 'author_email' OR $key == 'author_name') && ! isset($$key))
+			{
+				if ($this->EE->uri->query_string != '')
 				{
-					$name = ($this->EE->session->userdata['screen_name'] != '') ? $this->EE->session->userdata['screen_name'] : $this->EE->session->userdata['username'];
-					$tagdata = $this->EE->TMPL->swap_var_single($key, form_prep($name), $tagdata);
-				}
-
-				/** ----------------------------------------
-				/**  parse {member_email}
-				/** ----------------------------------------*/
-
-				if ($key == 'member_email')
-				{
-					$email = ($this->EE->session->userdata['email'] == '') ? '' : $this->EE->session->userdata['email'];
-					$tagdata = $this->EE->TMPL->swap_var_single($key, form_prep($email), $tagdata);
-				}
-
-				/** ----------------------------------------
-				/**  parse {current_time}
-				/** ----------------------------------------*/
-
-				if (strncmp($key, 'current_time', 12) == 0)
-				{
-					$now = $this->EE->localize->set_localized_time();
-					$tagdata = $this->EE->TMPL->swap_var_single($key, $this->EE->localize->decode_date($val,$now), $tagdata);
-				}
-
-				if (($key == 'author_email' OR $key == 'author_name') && ! isset($$key))
-				{
-					if ($this->EE->uri->query_string != '')
-					{
 					$entry_id = $this->EE->uri->query_string;
-
-						$sql = "SELECT exp_members.username, exp_members.email, exp_members.screen_name
-					  		FROM exp_channel_titles, exp_members ";
-
-					if($channel != '')
-					{
-						$sql .= "LEFT JOIN exp_channels ON exp_channels.channel_id = exp_channel_titles.channel_id ";
-					}
-					  
-					$sql .= "WHERE exp_members.member_id = exp_channel_titles.author_id  ";
 
 					if ($channel != '')
 					{
-					 	$sql .= $this->EE->functions->sql_andor_string($channel, 'exp_channels.channel_name')." ";
-					} 
-
-					if ( ! is_numeric($entry_id))
-					{
-						$sql .= "AND exp_channel_titles.url_title = '".$entry_id."' ";
-					}
-					else
-					{
-						$sql .= "AND exp_channel_titles.entry_id = '$entry_id' ";
+						$this->EE->db->join('channels c', 'c.channel_id = ct.channel_id', 'left');
+						$this->EE->functions->ar_andor_string($channel, 'c.channel_name');
 					}
 
-					$query = $this->EE->db->query($sql);
+					$table = ( ! is_numeric($entry_id)) ? 'ct.url_title' : 'ct.entry_id';
+
+					$query = $this->EE->db->select('m.username, m.email, m.screen_name')
+										  ->from(array('channel_titles ct', 'members m'))
+										  ->where('m.member_id = ct.author_id', '', FALSE)
+										  ->where($table, $entry_id)
+										  ->get();
 
 					if ($query->num_rows() == 0)
 					{
@@ -182,79 +155,36 @@ class Email {
 
 				// Do them both now and save ourselves a query
 				$tagdata = $this->EE->TMPL->swap_var_single('author_email', $author_email, $tagdata);
-					$tagdata = $this->EE->TMPL->swap_var_single('author_name', $author_name, $tagdata);
-				}
-
-				// Clear out any unused variables.
-				// This interferes with				// $tagdata = $this->EE->TMPL->swap_var_single($key, '', $tagdata);
+				$tagdata = $this->EE->TMPL->swap_var_single('author_name', $author_name, $tagdata);
 			}
-
-			/** ----------------------------------------
-			/**  Create form
-			/** ----------------------------------------*/
- 
- 		if ($this->EE->TMPL->fetch_param('name') !== FALSE &&
-			preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('name'), $match))
-		{
-			$data['name'] = $this->EE->TMPL->fetch_param('name');
 		}
 
-		if ( function_exists('mcrypt_encrypt') )
-		{
-			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
-
-			$recipients = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($this->EE->db->username.$this->EE->db->password), $recipients, MCRYPT_MODE_ECB, $init_vect);
-		}
-		else
-		{
-			$recipients = $recipients.md5($this->EE->db->username.$this->EE->db->password.$recipients);
-		}
-		$data['id']	= ($this->EE->TMPL->form_id == '') ? 'contact_form' : $this->EE->TMPL->form_id;
-		$data['class'] = $this->EE->TMPL->form_class;
-
-		$data['hidden_fields']	= array(
-									'ACT'	  			=> $this->EE->functions->fetch_action_id('Email', 'send_email'),
-									'RET'	  			=> ( ! $this->EE->TMPL->fetch_param('return'))  ? '' : $this->EE->TMPL->fetch_param('return'),
-									'URI'	  			=> ($this->EE->uri->uri_string == '') ? 'index' : $this->EE->uri->uri_string,
-									'recipients' 		=> base64_encode($recipients),
-									'user_recipients' 	=> ($user_recipients == 'true') ? md5($this->EE->db->username.$this->EE->db->password.'y') : md5($this->EE->db->username.$this->EE->db->password.'n'),
-									'charset'			=> $charset,
-									'redirect'			=> ( ! $this->EE->TMPL->fetch_param('redirect'))  ? '' : $this->EE->TMPL->fetch_param('redirect'),
-									'replyto'			=> ( ! $this->EE->TMPL->fetch_param('replyto'))  ? '' : $this->EE->TMPL->fetch_param('replyto')
-									);
-
-		$res  = $this->EE->functions->form_declaration($data);
-		$res .= stripslashes($tagdata);
-		$res .= "</form>";
-		return $res;
+		// Create form
+		return $this->_setup_form($tagdata, $recipients, 'contact_form', FALSE);
 	}
 
+	// --------------------------------------------------------------------
 
-
-	/** ----------------------------------------
-	/**  Tell A Friend Form
-	/** ----------------------------------------*/
-	// {exp:email:tell_a_friend charset="utf-8" allow_html='n'}
-	// {exp:email:tell_a_friend charset="utf-8" allow_html='<p>,<a>' recipients='sales@expressionengine.com'}
-	// {member_email}, {member_name}, {current_time format="%Y %d %m"}
-
-	function tell_a_friend()
+	/**
+	 * Tell a friend form
+	 *
+	 * {exp:email:tell_a_friend charset="utf-8" allow_html='n'}
+	 *{exp:email:tell_a_friend charset="utf-8" allow_html='<p>,<a>' recipients='sales@expressionengine.com'}
+	 * {member_email}, {member_name}, {current_time format="%Y %d %m"}
+	 */
+	public function tell_a_friend()
 	{
 		if ($this->EE->uri->query_string == '')
 		{
 			return FALSE;
 		}
 
-		/** ----------------------------------------
-		/**  Recipient Email Checking
-		/** ----------------------------------------*/
+		// Recipient Email Checking
+		$this->_user_recipients = 'true';  // By default
 
-		$user_recipients = true;  // By default
-
-		$recipients	= ( ! $this->EE->TMPL->fetch_param('recipients'))	? ''  : $this->EE->TMPL->fetch_param('recipients');
-		$charset	= ( ! $this->EE->TMPL->fetch_param('charset'))	? ''  : $this->EE->TMPL->fetch_param('charset');
-		$allow_html	= ( ! $this->EE->TMPL->fetch_param('allow_html'))	? 'n' : $this->EE->TMPL->fetch_param('allow_html');
+		$recipients	= $this->EE->TMPL->fetch_param('recipients', '');
+		$charset	= $this->EE->TMPL->fetch_param('charset', '');
+		$allow_html	= $this->EE->TMPL->fetch_param('allow_html', 'n');
 
 		if ( ! $this->EE->TMPL->fetch_param('status'))
 		{
@@ -270,10 +200,7 @@ class Email {
 			$recipients = implode(',',$array['approved']);
 		}
 
-		/** --------------------------------------
-		/**  Parse page number
-		/** --------------------------------------*/
-
+		// Parse page number
 		// We need to strip the page number from the URL for two reasons:
 		// 1. So we can create pagination links
 		// 2. So it won't confuse the query with an improper proper ID
@@ -284,21 +211,16 @@ class Email {
 		{
 			$current_page = $match['1'];
 
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $qstring));
+			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
 		}
 
-		/** --------------------------------------
-		/**  Remove "N"
-		/** --------------------------------------*/
-
+		// Remove "N"
 		// The recent comments feature uses "N" as the URL indicator
 		// It needs to be removed if presenst
-
 		if (preg_match("#/N(\d+)#", $qstring, $match))
 		{
-			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match['0'], '', $qstring));
+			$qstring = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $qstring));
 		}
-
 
 		/* -------------------------------------
 		/*  'email_module_tellafriend_override' hook.
@@ -310,51 +232,41 @@ class Email {
 				$tagdata = $this->EE->extensions->call('email_module_tellafriend_override', $qstring, $this);
 				if ($this->EE->extensions->end_script === TRUE) return $tagdata;
 			}
-
-			/** --------------------------------------
-			/**  Else Do the Default Channel Processing
-			/** -------------------------------------*/
-
-			else
+			else // Else Do the Default Channel Processing
 			{
 				$entry_id = trim($qstring);
 
 				// If there is a slash in the entry ID we'll kill everything after it.
-
 				$entry_id = preg_replace("#/.+#", "", $entry_id);
 
-				/** ----------------------------------------
-				/**  Do we have a vaild channel and ID number?
-				/** ----------------------------------------*/
-
+				//  Do we have a vaild channel and ID number?
 				$timestamp	= ($this->EE->TMPL->cache_timestamp != '') ? $this->EE->localize->set_gmt($this->EE->TMPL->cache_timestamp) : $this->EE->localize->now;
-				$channel		= ( ! $this->EE->TMPL->fetch_param('channel')) ? '' : $this->EE->TMPL->fetch_param('channel');
+				$channel = $this->EE->TMPL->fetch_param('channel', '');
 
-				$sql = "SELECT entry_id FROM exp_channel_titles, exp_channels
-						WHERE exp_channel_titles.channel_id = exp_channels.channel_id
-						AND (expiration_date = 0 OR expiration_date > ".$timestamp.")
-						AND status != 'closed' AND ";
+				$this->EE->db->select('entry_id')
+							 ->from(array('channel_titles ct', 'channels c'))
+							 ->where('ct.channel_id = c.channel_id', '', FALSE)
+							 ->where('(ct.expiration_date = 0 OR expiration_date > '.$timestamp.')', '', FALSE)
+							 ->where('ct.status !=', 'closed');
+				
+				$table = ( ! is_numeric($entry_id)) ? 'ct.url_title' : 'ct.entry_id';
 
-				$sql .= ( ! is_numeric($entry_id)) ? " url_title = '".$entry_id."' " : " entry_id = '$entry_id' ";
+				$this->EE->db->where($table, $entry_id);
 
 				if ($channel != '')
 				{
-					$sql .= $this->EE->functions->sql_andor_string($channel, 'exp_channels.channel_name')." ";
+					$this->EE->db->ar_andor_string($channel, 'c.channel_name');
 				}
 
-				$query = $this->EE->db->query($sql);
+				$query = $this->EE->db->get();
 
 				// Bad ID?  See ya!
-
-				if ($query->num_rows() == 0)
+				if ($query->num_rows() === 0)
 				{
 					return FALSE;
 				}
 
-				/** ----------------------------------------
-				/**  Fetch the channel entry
-				/** ----------------------------------------*/
-
+				// Fetch the channel entry
 				if ( ! class_exists('Channel'))
 				{
 					require PATH_MOD.'channel/mod.channel.php';
@@ -373,7 +285,7 @@ class Email {
 
 				$channel->query = $this->EE->db->query($channel->sql);
 
-				if ($channel->query->num_rows() == 0)
+				if ($channel->query->num_rows() === 0)
 				{
 					return FALSE;
 				}
@@ -392,148 +304,98 @@ class Email {
 		/*
 		/* -------------------------------------*/
 
-		/** ----------------------------------------
-		/**  Parse conditionals
-		/** ----------------------------------------*/
-
+		// Parse conditionals
 		$cond = array();
-		$cond['captcha']			= ($this->use_captchas == 'y') ? 'TRUE' : 'FALSE';
+		$cond['captcha'] = ($this->use_captchas == 'y') ? 'TRUE' : 'FALSE';
 
 		$tagdata = $this->EE->functions->prep_conditionals($tagdata, $cond);
 
-			/** ----------------------------------------
-			/**  Parse tell-a-friend variables
-			/** ----------------------------------------*/
+		// Parse tell-a-friend variables
 
-			// {member_name}
-
+		// {member_name}
 		$tagdata = $this->EE->TMPL->swap_var_single('member_name', $this->EE->session->userdata['screen_name'], $tagdata);
 
-			// {member_email}
-
+		// {member_email}
 		$tagdata = $this->EE->TMPL->swap_var_single('member_email', $this->EE->session->userdata['email'], $tagdata);
 
-			/** ----------------------------------------
-			/**  A little work on the form field's values
-			/** ----------------------------------------*/
+		// A little work on the form field's values
 
-			// Match values in input fields
-			preg_match_all("/<input(.*?)value=\"(.*?)\"/", $tagdata, $matches);
-			if(count($matches) > 0 && $allow_html != 'y')
-			{
-				 foreach($matches['2'] as $value)
-				 {
-				 	if ($allow_html == 'n')
-				 	{
-				 		$new = strip_tags($value);
-				 	}
-				 	else
-				 	{
-				 		$new = strip_tags($value,$allow_html);
-				 	}
-				 
-				 	$tagdata = str_replace($value,$new, $tagdata);
-				 }
-			}
-
-			// Remove line breaks
-			$LB = 'snookums9loves4wookie';
-			$tagdata = str_replace(array("\r\n", "\r", "\n"), $LB, $tagdata);
-
-			// Match textarea content
-			preg_match_all("/<textarea(.*?)>(.*?)<\/textarea>/", $tagdata, $matches);
-			if (count($matches) > 0 && $allow_html != 'y')
-			{
-				foreach($matches['2'] as $value)
-				{
-					if ($allow_html == 'n')
-				 	{
-				 		$new = strip_tags($value);
-				 	}
-				 	else
-				 	{
-				 		$new = strip_tags($value, $allow_html);
-				 	}
-				 
-				 	$tagdata = str_replace($value, $new, $tagdata);
-				}
-			}
-
-			$tagdata = str_replace($LB, "\n", $tagdata);
-
-
-			/** ----------------------------------------
-			/**  Create form
-			/** ----------------------------------------*/
-
-			if ($this->EE->TMPL->fetch_param('name') !== FALSE &&
-			preg_match("#^[a-zA-Z0-9_\-]+$#i", $this->EE->TMPL->fetch_param('name'), $match))
-		{
-			$data['name'] = $this->EE->TMPL->fetch_param('name');
-		}
-
-		if ( function_exists('mcrypt_encrypt') )
-		{
-			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
-
-			$recipients = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($this->EE->db->username.$this->EE->db->password), $recipients, MCRYPT_MODE_ECB, $init_vect);
-		}
-		else
-		{
-			$recipients = $recipients.md5($this->EE->db->username.$this->EE->db->password.$recipients);
-		}
-
-		$data['id'] = ($this->EE->TMPL->form_id == '') ? 'tellafriend_form' : $this->EE->TMPL->form_id;
-		$data['class'] = $this->EE->TMPL->form_class;
+		// Match values in input fields
+		preg_match_all("/<input(.*?)value=\"(.*?)\"/", $tagdata, $matches);
 		
-		$data['hidden_fields'] = array(
-									'ACT'	  			=> $this->EE->functions->fetch_action_id('Email', 'send_email'),
-									'RET'	  			=> ( ! $this->EE->TMPL->fetch_param('return'))  ? '' : $this->EE->TMPL->fetch_param('return'),
-									'URI'	  			=> ($this->EE->uri->uri_string == '') ? 'index' : $this->EE->uri->uri_string,
-									'recipients' 		=> base64_encode($recipients),
-									'user_recipients' 	=> ($user_recipients == 'true') ? md5($this->EE->db->username.$this->EE->db->password.'y') : md5($this->EE->db->username.$this->EE->db->password.'n'),
-									'charset'			=> $charset,
-									'allow_html'		=> $allow_html,
-									'redirect'			=> ( ! $this->EE->TMPL->fetch_param('redirect'))  ? '' : $this->EE->TMPL->fetch_param('redirect'),
-									'replyto'			=> ( ! $this->EE->TMPL->fetch_param('replyto'))  ? '' : $this->EE->TMPL->fetch_param('replyto')
-									);
+		if (count($matches) > 0 && $allow_html != 'y')
+		{
+			 foreach($matches['2'] as $value)
+			 {
+			 	if ($allow_html == 'n')
+			 	{
+			 		$new = strip_tags($value);
+			 	}
+			 	else
+			 	{
+			 		$new = strip_tags($value, $allow_html);
+			 	}
+			 
+			 	$tagdata = str_replace($value,$new, $tagdata);
+			 }
+		}
 
-		$res  = $this->EE->functions->form_declaration($data);
-		$res .= stripslashes($tagdata);
-		$res .= "</form>";
-		return $res;
+		// Remove line breaks
+		$LB = 'snookums9loves4wookie';
+		$tagdata = str_replace(array("\r\n", "\r", "\n"), $LB, $tagdata);
+
+		// Match textarea content
+		preg_match_all("/<textarea(.*?)>(.*?)<\/textarea>/", $tagdata, $matches);
+
+		if (count($matches) > 0 && $allow_html != 'y')
+		{
+			foreach($matches['2'] as $value)
+			{
+				if ($allow_html == 'n')
+			 	{
+			 		$new = strip_tags($value);
+			 	}
+			 	else
+			 	{
+			 		$new = strip_tags($value, $allow_html);
+			 	}
+			 
+			 	$tagdata = str_replace($value, $new, $tagdata);
+			}
+		}
+
+		$tagdata = str_replace($LB, "\n", $tagdata);
+
+		$recipients = $this->_encrypt_recipients($recipients);
+
+		$allow = ($allow_html == 'y') ? TRUE : FALSE;
+
+		return $this->_setup_form($tagdata, $recipients, 'tellafriend_form', $allow);
 	}
 
+	// --------------------------------------------------------------------
 
-
-
-	/** ----------------------------------------
-	/**  Send Email
-	/** ----------------------------------------*/
-	function send_email()
+	/**
+	 * Send Email
+	 */
+	public function send_email()
 	{
 		$error = array();
 
-		/** ----------------------------------------
-		/**  Blacklist/Whitelist Check
-		/** ----------------------------------------*/
-
+		// Blacklist/Whitelist Check
 		if ($this->EE->blacklist->blacklisted == 'y' && $this->EE->blacklist->whitelisted == 'n')
 		{
 			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('not_authorized')));
 		}
 
-		/** ----------------------------------------
-		/**  Is the nation of the user banend?
-		/** ----------------------------------------*/
+		// Is the nation of the user banend?
 		$this->EE->session->nation_ban_check();
 		  
-		/** ----------------------------------------
-		/**  Check and Set
-		/** ----------------------------------------*/
-
-		$default = array('subject', 'message', 'from', 'user_recipients', 'to', 'recipients', 'name', 'required');
+		// Check and Set
+		$default = array(
+				'subject', 'message', 'from', 'user_recipients', 'to', 
+				'recipients', 'name', 'required'
+			);
 
 		foreach ($default as $val)
 		{
@@ -583,11 +445,7 @@ class Email {
 			}
 		}
 
-
-		/** ----------------------------------------
-		/**  Clean incoming
-		/** ----------------------------------------*/
-
+		// Clean incoming
 		$clean = array('subject', 'from', 'user_recipients', 'to', 'recipients', 'name');
 
 		foreach ($clean as $val)
@@ -595,27 +453,16 @@ class Email {
 			$_POST[$val] = strip_tags($_POST[$val]);
 		}
 
-		/** ----------------------------------------
-		/**  Fetch the email module language pack
-		/** ----------------------------------------*/
-
 		$this->EE->lang->loadfile('email');
 
-
-		/** ----------------------------------------
-		/**  Basic Security Check
-		/** ----------------------------------------*/
-
-		if ($this->EE->session->userdata['ip_address'] == '' OR $this->EE->session->userdata['user_agent'] == '')
+		// Basic Security Check
+		if ($this->EE->session->userdata('ip_address') == '' OR 
+			$this->EE->session->userdata('user_agent') == '')
 		{
 			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('em_unauthorized_request')));
 		}
 
-
-		/** ----------------------------------------
-		/**  Return Variables
-		/** ----------------------------------------*/
-
+		// Return Variables
 		$x = explode('|',$_POST['RET']);
 		unset($_POST['RET']);
 
@@ -625,20 +472,20 @@ class Email {
 		}
 		else
 		{
-			$return_link = ($x['0'] == '' OR ! stristr($x['0'],'http://')) ? $this->EE->functions->form_backtrack(2) : $x['0'];
+			$return_link = $x[0];
+
+			if ($x[0] == '' OR ! preg_match('{^http(s)?:\/\/}i', $x[0]))
+			{
+				$return_link = $this->EE->functions->form_backtrack(2);
+			}
 		}
 
 		$site_name = ($this->EE->config->item('site_name') == '') ? $this->EE->lang->line('back') : stripslashes($this->EE->config->item('site_name'));
 
 		$return_name = ( ! isset($x['1']) OR $x['1'] == '') ? $site_name : $x['1'];
 
-
-		/** ----------------------------------------
-		/**  ERROR Checking
-		/** ----------------------------------------*/
-
+		// ERROR Checking
 		// If the message is empty, bounce them back
-
 		if ($_POST['message'] == '')
 		{
 			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('message_required')));
@@ -659,35 +506,19 @@ class Email {
 			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('em_no_valid_recipients')));
 		}
 
-
-		/** ----------------------------------------
-		/**  Is the user banned?
-		/** ----------------------------------------*/
-
+		// Is the user banned?
 		if ($this->EE->session->userdata['is_banned'] == TRUE)
 		{
 			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('not_authorized')));
 		}
 
-
-		/** ----------------------------------------
-		/**  Check Form Hash
-		/** ----------------------------------------*/
-
-		if ($this->EE->config->item('secure_forms') == 'y')
+		// Check Form Hash
+		if ( ! $this->EE->security->check_xid($this->EE->input->post('XID')))
 		{
-			$query = $this->EE->db->query("SELECT COUNT(*) AS count FROM exp_security_hashes WHERE hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."' AND date > UNIX_TIMESTAMP()-7200");
-
-			if ($query->row('count')  == 0)
-			{
-				return $this->EE->output->show_user_error('general', array($this->EE->lang->line('not_authorized')));
-			}
+			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('not_authorized')));
 		}
 
-		/** ----------------------------
-		/**  Check Tracking Class
-		/** ----------------------------*/
-
+		// Check Tracking Class
 		$day_ago = $this->EE->localize->now - 60*60*24;
 		$query = $this->EE->db->query("DELETE FROM exp_email_tracker WHERE email_date < '{$day_ago}'");
 
@@ -717,6 +548,7 @@ class Email {
 
 			// Max Emails - Indepth check
 			$total_sent = 0;
+
 			foreach($query->result_array() as $row)
 			{
 				$total_sent = $total_sent + $row['number_recipients'];
@@ -735,11 +567,7 @@ class Email {
 			}
 		}
 
-
-		/** ----------------------------------------
-		/**  Review Recipients
-		/** ----------------------------------------*/
-
+		// Review Recipients
 		$_POST['user_recipients'] = ($_POST['user_recipients'] == md5($this->EE->db->username.$this->EE->db->password.'y')) ? 'y' : 'n';
 
 		if ($_POST['user_recipients'] == 'y' && trim($_POST['to']) != '')
@@ -764,10 +592,7 @@ class Email {
 			$approved_recipients = array();
 		}
 
-		/** ----------------------------------------------------
-		/**  If we have no valid emails to send, back they go.
-		/** ----------------------------------------------------*/
-
+		// If we have no valid emails to send, back they go.
 		if ($_POST['user_recipients'] == 'y' && count($approved_tos) == 0)
 		{
 			$error[] = $this->EE->lang->line('em_no_valid_recipients');
@@ -777,29 +602,19 @@ class Email {
 			$error[] = $this->EE->lang->line('em_no_valid_recipients');
 		}
 
-
-		/** -------------------------------------
-		/**  Is from email banned?
-		/** -------------------------------------*/
-
+		// Is from email banned?
 		if ($this->EE->session->ban_check('email', $_POST['from']))
 		{
 			$error[] = $this->EE->lang->line('em_banned_from_email');
 		}
 
-		/** ----------------------------------------
-		/**  Do we have errors to display?
-		/** ----------------------------------------*/
-
+		// Do we have errors to display?
 		if (count($error) > 0)
 		{
 			return $this->EE->output->show_user_error('submission', $error);
 		}
 
-		/** ----------------------------------------
-		/**  Check CAPTCHA
-		/** ----------------------------------------*/
-
+		// Check CAPTCHA
 		if ($this->use_captchas == 'y')
 		{
 			if ( ! isset($_POST['captcha']) OR $_POST['captcha'] == '')
@@ -823,13 +638,7 @@ class Email {
 						OR date < UNIX_TIMESTAMP()-7200");
 		}
 
-
-
-
-		/** ----------------------------------------
-		/**  Censored Word Checking
-		/** ----------------------------------------*/
-
+		// Censored Word Checking
 		$this->EE->load->library('typography');
 		$this->EE->typography->initialize();
 
@@ -842,7 +651,8 @@ class Email {
 		$message = ($_POST['required'] != '') ? $_POST['required']."\n".$_POST['message'] : $_POST['message'];
 		$message = $this->EE->security->xss_clean($message);
 
-		if (isset($_POST['allow_html']) && $_POST['allow_html'] == 'y' && strlen(strip_tags($message)) != strlen($message))
+		if (isset($_POST['allow_html']) && $_POST['allow_html'] == 'y' && 
+			strlen(strip_tags($message)) != strlen($message))
 		{
 			$mail_type = 'html';
 		}
@@ -854,10 +664,7 @@ class Email {
 		$message = entities_to_ascii($message);
 		$message = $this->EE->typography->filter_censored_words($message);
 
-		/** ----------------------------
-		/**  Send email
-		/** ----------------------------*/
-
+		// Send email
 		$this->EE->load->library('email');
 		$this->EE->email->wordwrap = true;
 		$this->EE->email->mailtype = $mail_type;
@@ -937,10 +744,7 @@ class Email {
 		}
 
 
-		/** ----------------------------
-		/**  Store in tracking class
-		/** ----------------------------*/
-
+		// Store in tracking class
 		$data = array(	'email_date'		=> $this->EE->localize->now,
 						'sender_ip'			=> $this->EE->input->ip_address(),
 						'sender_email'		=> $_POST['from'],
@@ -950,9 +754,7 @@ class Email {
 
 		$this->EE->db->query($this->EE->db->insert_string('exp_email_tracker', $data));
 
-		/** -------------------------------------------
-		/**  Delete spam hashes
-		/** -------------------------------------------*/
+		// Delete spam hashes
 		if (isset($_POST['XID']))
 		{
 			$this->EE->db->query("DELETE FROM exp_security_hashes WHERE (hash='".$this->EE->db->escape_str($_POST['XID'])."' AND ip_address = '".$this->EE->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
@@ -971,10 +773,7 @@ class Email {
 		/*
 		/* -------------------------------------*/
 
-		/** -------------------------------------------
-		/**  Thank you message
-		/** -------------------------------------------*/
-
+		// Thank you message
 		$data = array(	'title' 	=> $this->EE->lang->line('email_module_name'),
 						'heading'	=> $this->EE->lang->line('thank_you'),
 						'content'	=> $this->EE->lang->line('em_email_sent'),
@@ -997,12 +796,11 @@ class Email {
 		$this->EE->output->show_message($data);
 	}
 
+	// --------------------------------------------------------------------
 
-
-	/** -----------------------------------
-	/**  Validate List of Emails
-	/** -----------------------------------*/
-
+	/**
+	 * Validate List of Emails
+	 */
 	function validate_recipients($str)
 	{
 		// Remove white space and replace with comma
@@ -1052,7 +850,75 @@ class Email {
 		return array('approved' => $approved_emails, 'error' => $error);
 	}
 
+	// --------------------------------------------------------------------
 
+	/**
+	 * Setup forms
+	 *
+	 * @param 	string 	$tagdata
+	 * @param 	string 	$recipients
+	 * @param 	string 	$form_id
+	 * @param 	boolean
+	 * @return 	string
+	 */
+	private function _setup_form($tagdata, $recipients, $form_id = NULL, $allow_html = FALSE)
+	{
+		$charset = $this->EE->TMPL->fetch_param('charset', '');
+
+		$recipients = $this->_encrypt_recipients($recipients);
+
+		$data = array(
+			'id'	=> ($this->EE->TMPL->form_id == '') ? 'contact_form' : $this->EE->TMPL->form_id,
+			'class'	=> $this->EE->TMPL->form_class,
+			'hidden_fields'	=> array(
+				'ACT'	=> $this->EE->functions->fetch_action_id('Email', 'send_email'),
+				'RET'	=> $this->EE->TMPL->fetch_param('return', ''),
+				'URI'	=> ($this->EE->uri->uri_string == '') ? 'index' : $this->EE->uri->uri_string,
+				'recipients'		=> base64_encode($recipients),
+				'user_recipients'	=> ($this->_user_recipients == 'true') ? md5($this->EE->db->username.$this->EE->db->password.'y') : md5($this->EE->db->username.$this->EE->db->password.'n'),
+				'charset'			=> $charset,
+				'redirect'			=> $this->EE->TMPL->fetch_param('redirect', ''),
+				'replyto'			=> $this->EE->TMPL->fetch_param('replyto', '')
+			)
+		);
+
+		if ($allow_html)
+		{
+			$data['hidden_fields']['allow_html'] = $allow_html;
+		}
+
+		$name = $this->EE->TMPL->fetch_param('name', FALSE);
+
+ 		if ($name && preg_match("#^[a-zA-Z0-9_\-]+$#i", $name, $match))
+		{
+			$data['name'] = $name;
+		}
+
+		$res  = $this->EE->functions->form_declaration($data);
+		$res .= stripslashes($tagdata);
+		$res .= "</form>";//echo $res; exit;
+		return $res;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Encrypt Recipients list
+	 */
+	private function _encrypt_recipients($recipients)
+	{
+		if (function_exists('mcrypt_encrypt'))
+		{
+			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+		$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
+
+		return mcrypt_encrypt(MCRYPT_RIJNDAEL_256, 
+								md5($this->EE->db->username.$this->EE->db->password), 
+									$recipients, MCRYPT_MODE_ECB, $init_vect);
+		}
+
+		return $recipients.md5($this->EE->db->username.$this->EE->db->password.$recipients);
+	}	
 }
 // END CLASS
 

@@ -14,29 +14,20 @@ class Safecracker_file_ft extends File_ft
 	public $upload_dir = FALSE;
 	
 	/**
-	 * Safecracker_file_ft
-	 * 
-	 * @access	public
-	 * @return	void
+	 * Safecracker_file_ft Constructor
 	 */
 	public function __construct()
 	{
-		if (method_exists('File_ft', 'File_ft'))
-		{
-			parent::File_ft();
-		}
-		else
-		{
-			parent::__construct();
-		}
+		parent::__construct();
 		
 		$this->EE->lang->loadfile('safecracker_file');
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * display_field
 	 * 
-	 * @access	public
 	 * @param	mixed $data
 	 * @return	void
 	 */
@@ -94,23 +85,19 @@ class Safecracker_file_ft extends File_ft
 		);
 		
 		$this->EE->load->add_package_path(PATH_THIRD.'safecracker_file');
-		// $old_view_path = $this->EE->load->_ci_view_path;
-		
-		// $this->EE->load->_ci_view_path = PATH_THIRD.'safecracker_file/views/';
 
 		$display_field = $this->EE->load->view('display_field', $vars, TRUE);
 		
-		$this->EE->load->add_package_path(PATH_THIRD.'safecracker_file');
-		
-		// $this->EE->load->_ci_view_path = $old_view_path;
-		
+		$this->EE->load->remove_package_path(PATH_THIRD.'safecracker_file');
+
 		return $display_field;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * validate
 	 * 
-	 * @access	public
 	 * @param	mixed $data
 	 * @return	void
 	 */
@@ -189,11 +176,12 @@ class Safecracker_file_ft extends File_ft
 		
 		return $valid;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * save
 	 * 
-	 * @access	public
 	 * @param	mixed $data
 	 * @return	void
 	 */
@@ -218,11 +206,12 @@ class Safecracker_file_ft extends File_ft
 		
 		return $output;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * display_settings
 	 * 
-	 * @access	public
 	 * @param	mixed $data
 	 * @return	void
 	 */
@@ -233,7 +222,15 @@ class Safecracker_file_ft extends File_ft
 			$this->EE->table->add_row($row[0], $row[1]);
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
+	/**
+	 * _display_settings 
+	 *
+	 * @param 	mixed 	$data
+	 * @return 	array
+	 */
 	public function _display_settings($data)
 	{
 		$this->EE->lang->loadfile('safecracker_file');
@@ -273,18 +270,29 @@ class Safecracker_file_ft extends File_ft
 		}
 		
 		return array(
-			array(lang('file_type', 'field_content_file'), form_dropdown('safecracker_file_field_content_type', $data['field_content_options_file'], (isset($data['file_field_content_type'])) ? $data['file_field_content_type'] : '', 'id="safecracker_file_field_content_type"')),
-			array(( ! empty($this->cell_name))?lang('choose_upload_dir'):form_label(lang('choose_upload_dir'),'safecracker_upload_dir'), form_dropdown('safecracker_upload_dir', $upload_paths, (isset($data['safecracker_upload_dir'])) ? $data['safecracker_upload_dir'] : '')),
-			array(form_label(lang('show_existing')), form_checkbox('safecracker_show_existing', '1', $data['safecracker_show_existing'])),
-			array(form_label(lang('num_existing')), form_input(array('name' => 'safecracker_num_existing', 'value' => $data['safecracker_num_existing'], 'style' => 'width:30px;'))),
+			array(
+				lang('file_type', 'field_content_file'), 
+				form_dropdown('safecracker_file_field_content_type', $data['field_content_options_file'], (isset($data['file_field_content_type'])) ? $data['file_field_content_type'] : '', 'id="safecracker_file_field_content_type"')
+			),
+			array(
+				( ! empty($this->cell_name))?lang('choose_upload_dir'):form_label(lang('choose_upload_dir'),'safecracker_upload_dir'), form_dropdown('safecracker_upload_dir', $upload_paths, (isset($data['safecracker_upload_dir'])) ? $data['safecracker_upload_dir'] : '')
+			),
+			array(
+				form_label(lang('show_existing')), form_checkbox('safecracker_show_existing', '1', $data['safecracker_show_existing'])
+			),
+			array(
+				form_label(lang('num_existing')), 
+				form_input(array('name' => 'safecracker_num_existing', 'value' => $data['safecracker_num_existing'], 'style' => 'width:30px;'))
+			),
 			//array(form_label(lang('overwrite')), form_checkbox('safecracker_overwrite', '1', $data['safecracker_show_existing'])),
 		);
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * settings
 	 * 
-	 * @access	public
 	 * @param	mixed $key
 	 * @return	void
 	 */
@@ -292,22 +300,25 @@ class Safecracker_file_ft extends File_ft
 	{
 		return (isset($this->settings[$key])) ? $this->settings[$key] : FALSE;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * save_settings
 	 * 
-	 * @access	public
 	 * @return	void
 	 */
 	public function save_settings()
 	{
 		return array(
-			'file_field_content_type' => $this->EE->input->post('safecracker_file_field_content_type'),
-			'safecracker_upload_dir' => $this->EE->input->post('safecracker_upload_dir'),
-			'safecracker_show_existing' => $this->EE->input->post('safecracker_show_existing'),
-			'safecracker_num_existing' => $this->EE->input->post('safecracker_num_existing'),
+			'file_field_content_type' 	=> $this->EE->input->post('safecracker_file_field_content_type'),
+			'safecracker_upload_dir' 	=> $this->EE->input->post('safecracker_upload_dir'),
+			'safecracker_show_existing'	=> $this->EE->input->post('safecracker_show_existing'),
+			'safecracker_num_existing' 	=> $this->EE->input->post('safecracker_num_existing'),
 		);
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * display_cell_settings
@@ -320,6 +331,8 @@ class Safecracker_file_ft extends File_ft
 	{
 		return $this->_display_settings($data);
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * save_cell_settings
@@ -337,6 +350,8 @@ class Safecracker_file_ft extends File_ft
 			'safecracker_num_existing' => $data['safecracker_num_existing']
 		);
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * add_js
@@ -393,6 +408,8 @@ class Safecracker_file_ft extends File_ft
 			*/
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * add_css
@@ -450,6 +467,8 @@ class Safecracker_file_ft extends File_ft
 			*/
 		}
 	}
+
+	// --------------------------------------------------------------------
 	
 	public function replace_tag($file_info, $params = array(), $tagdata = FALSE)
 	{
@@ -470,11 +489,12 @@ class Safecracker_file_ft extends File_ft
 		
 		return '';
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * display_cell
 	 * 
-	 * @access	public
 	 * @param	mixed $data
 	 * @return	void
 	 */
@@ -540,10 +560,7 @@ class Safecracker_file_ft extends File_ft
 			}
 		}
 		
-		
-		$_pkg_path = PATH_THIRD.'safecracker_file/views/';
-		
-		$this->EE->load->add_package_path($_pkg_path, FALSE);
+		$this->EE->load->add_package_path(PATH_THIRD.'safecracker_file/');
 		
 		$this->add_js($this->cell_name == '{DEFAULT}');
 		
@@ -598,10 +615,12 @@ class Safecracker_file_ft extends File_ft
 
 		$view = $this->EE->load->view('display_field', $vars, TRUE);
 		
-		$this->EE->load->remove_package_path($_pkg_path);
+		$this->EE->load->remove_package_path(PATH_THIRD.'safecracker_file/');
 				
 		return $view;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * Loads existing files from the database given an directory ID
@@ -647,6 +666,8 @@ class Safecracker_file_ft extends File_ft
 		
 		return $files;
 	}
+
+	// --------------------------------------------------------------------
 	
 	/**
 	 * save_cell
@@ -718,6 +739,8 @@ class Safecracker_file_ft extends File_ft
 			return '';
 		}
 	}
+
+	// --------------------------------------------------------------------
 
 	private function parse_cell_name()
 	{
