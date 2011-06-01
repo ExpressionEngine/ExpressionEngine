@@ -394,6 +394,13 @@ class Search {
 		}
 		
 		$this->_meta = unserialize($meta_array);
+		
+		// search_in may be set via $_POST in the Advanced Search
+		// if the parameter is not specified, we'll override here
+		if (isset($_POST['search_in']) && (isset($this->_meta['search_in']) && $this->_meta['search_in'] == ''))
+		{
+			$this->_meta['search_in'] = $_POST['search_in']; 
+		}
 	}
 	
 	// ------------------------------------------------------------------------
