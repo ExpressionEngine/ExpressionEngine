@@ -69,7 +69,7 @@ class Admin_model extends CI_Model {
 											'gzip_output'				=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'force_query_string'		=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'redirect_method'			=> array('s', array('redirect' => 'location_method', 'refresh' => 'refresh_method')),
-											'debug'						=> array('s', array('0' => 'debug_zero', '1' => 'debug_one', '2' => 'debug_two')),
+											'debug'						=> array('s', array('debug_one', '2' => 'debug_two')),
 											'show_profiler'				=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'template_debugging'		=> array('r', array('y' => 'yes', 'n' => 'no'))
 											),

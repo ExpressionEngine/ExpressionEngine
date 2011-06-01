@@ -3639,7 +3639,14 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 
 		$vars['member_list'] = $group_members;
+		
+		$vars['options']['activate'] = lang('validate_selected');
 
+		if ($this->cp->allowed_group('can_delete_members'))
+		{
+			$vars['options']['delete'] = lang('delete_selected');
+		}
+		
 		$this->load->view('members/activate', $vars);
 	}
 
@@ -3654,11 +3661,16 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	public function validate_members()
 	{
-		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members') OR ! $this->cp->allowed_group('can_delete_members'))
+		if ( ! $this->cp->allowed_group('can_access_members') OR ! $this->cp->allowed_group('can_admin_members'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
+		
+		if ( ! $this->cp->allowed_group('can_delete_members') && $this->input->post('action') != 'activate')
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
 		if ( ! $this->input->post('toggle'))
 		{
 			return $this->member_validation();
