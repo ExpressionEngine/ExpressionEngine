@@ -555,7 +555,7 @@ class EE_Typography extends CI_Typography {
 				$str = preg_replace("/<img src\s*=(.+?)".$val."\s*\=.+?\>/i", "<img src=\\1 />", $str);
 				$str = preg_replace("/<a href\s*=(.+?)".$val."\s*\=.+?\>/i", "<a href=\\1>", $str);
 			}
-		}		
+		}
 		
 		// Turn <br /> tags into newlines
 		
@@ -905,9 +905,9 @@ class EE_Typography extends CI_Typography {
 			$bad_things	 = array("'",'"', ';', '[', '(', ')', '!', '*', '>', '<', "\t", "\r", "\n", 'document.cookie');
 
 			if ($this->allow_img_url == 'y')
-			{	
+			{
 				$str = preg_replace_callback("/\[img\](.*?)\[\/img\]/i", array($this, "image_sanitize"), $str); 
-				//$str = preg_replace("/\[img\](.*?)\[\/img\]/i", "<img src=\\1 />", $str);
+				// $str = preg_replace("/\[img\](.*?)\[\/img\]/i", "<img src=\\1 />", $str);
 			}
 			elseif($this->auto_links == 'y' && $this->html_format != 'none')
 			{
@@ -917,7 +917,7 @@ class EE_Typography extends CI_Typography {
 					{
 						$str = str_replace($matches['0'][$i], '<a href="'.str_replace($bad_things, '', $matches['1'][$i]).'">'.str_replace($bad_things, '', $matches['1'][$i])."</a>", $str);
 					}
-				}					
+				}
 			}
 			else
 			{
@@ -966,7 +966,7 @@ class EE_Typography extends CI_Typography {
 	 * can't be invoked. 
 	 */
 	public function image_sanitize($matches)
-	{		
+	{
 		$url = str_replace(array('(', ')'), '', $matches['1']);
 
 		$width = '';
@@ -984,11 +984,24 @@ class EE_Typography extends CI_Typography {
 			$height = $height_match[0];
 		}
 
-
-		if (preg_match("/\s+alt=(\"|\')([^\\1]*?)\\1/", $matches[1], $alt_match))
+		if (preg_match_all("/\s+alt=(\"|\')([^\\1]*?)\\1/", $matches[1], $alt_match))
 		{
-			$url = trim(str_replace($alt_match['0'], '', $url));
-			$alt = str_replace(array('"', "'"), '', $alt_match[2]);
+			// If there's more than one match for alt, use the first and remove the second
+			if (is_array($alt_match[0]))
+			{
+				$alt_tag = $alt_match[0][0];
+				$alt_value = $alt_match[2][0];
+				
+				$url = trim(str_replace($alt_match[0][1], '', $url));
+			}
+			else
+			{
+				$alt_tag = $alt_match[0];
+				$alt_value = $alt_match[2];
+			}
+
+			$url = trim(str_replace($alt_tag, '', $url));
+			$alt = str_replace(array('"', "'"), '', $alt_value);
 		}
 		else
 		{
@@ -1002,7 +1015,7 @@ class EE_Typography extends CI_Typography {
 			$alt = substr($alt, strrpos($alt, '/')+1);
 		}
 		
-		return "<img src=\"{$url}\" alt=\"{$alt}\"}{$width}{$height} />";
+		return "<img src=\"{$url}\" alt=\"{$alt}\"{$width}{$height} />";
 	}
 
 	// --------------------------------------------------------------------	
