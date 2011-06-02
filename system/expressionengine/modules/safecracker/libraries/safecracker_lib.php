@@ -940,7 +940,11 @@ class Safecracker_lib
 		{
 			$return = $this->EE->TMPL->swap_var_single('safecracker_head', $this->head, $return);
 		}
-		else if ($this->bool_string($this->EE->TMPL->fetch_param('safecracker_head'), TRUE))
+		// Head should only be there if the param is there and there is a valid member_id
+		else if (
+			$this->bool_string($this->EE->TMPL->fetch_param('safecracker_head'), TRUE) AND
+			($this->logged_out_member_id OR $this->EE->session->userdata('member_id'))
+		)
 		{
 			$return .= $this->head;
 		}
