@@ -327,6 +327,8 @@ class EE_Output extends CI_Output {
 	{
 		$EE =& get_instance();
 		
+		$this->set_header("Content-Type: text/html; charset=".$EE->config->item('charset'));
+		
 		if ($type != 'off')
 		{	  
 			switch($type)
