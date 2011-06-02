@@ -113,12 +113,17 @@ class Date_ft extends EE_Fieldtype {
 			$date = $this->EE->localize->set_localized_time($field_data);
 		}
 		
-		// We give it a formatted date rather than 'time from now' to prevent JS localizing again
+		// 1 second = 1000 milliseconds
 		$cal_date = $date * 1000;
-		$date_object = gmdate("Y, m, d", $date);
 
+		// Note- the JS will automatically localize the default date- but not necessarily in a way we want
+		// Hence we adjust default date to compensate for the coming localization
 		$this->EE->javascript->output('
-			$("#'.$this->field_name.'").datepicker({dateFormat: $.datepicker.W3C + EE.date_obj_time, defaultDate: ('.$cal_date.' == 0) ? new Date() : new Date('.$date_object.')});
+			var d = new Date();
+			var jsCurrentUTC = d.getTimezoneOffset()*60;
+			var adjustedDefault = 1000*('.$date.'+jsCurrentUTC);
+		
+			$("#'.$this->field_name.'").datepicker({dateFormat: $.datepicker.W3C + EE.date_obj_time, defaultDate: ('.$cal_date.' == 0) ? new Date() : new Date(adjustedDefault)});
 		');
 
 		$r = form_input(array(
