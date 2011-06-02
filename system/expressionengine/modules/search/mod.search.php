@@ -63,7 +63,7 @@ class Search {
 		// Get hidden meta vars 
 		if (isset($_POST['meta']))
 		{
-			$this->_get_meta_vars();			
+			$this->_get_meta_vars();
 		}
 		
 		/** ----------------------------------------
@@ -330,6 +330,7 @@ class Search {
 		$meta = array(
 			'status'				=> $this->EE->TMPL->fetch_param('status', ''),
 			'channel'				=> $this->EE->TMPL->fetch_param('channel', ''),
+			'category'				=> $this->EE->TMPL->fetch_param('category', ''),
 			'search_in'				=> $this->EE->TMPL->fetch_param('search_in', ''),
 			'where'					=> $this->EE->TMPL->fetch_param('where', 'all'),
 			'show_expired'			=> $this->EE->TMPL->fetch_param('show_expired', ''),
@@ -373,12 +374,16 @@ class Search {
 			$init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
 			$init_vect = mcrypt_create_iv($init_size, MCRYPT_RAND);
 
-			$meta_array = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, 
-								md5($this->EE->db->username.$this->EE->db->password), 
-								base64_decode($_POST['meta']), 
-								MCRYPT_MODE_ECB, 
-								$init_vect), 
-						"\0");
+			$meta_array = rtrim(
+				mcrypt_decrypt(
+					MCRYPT_RIJNDAEL_256, 
+					md5($this->EE->db->username.$this->EE->db->password), 
+					base64_decode($_POST['meta']), 
+					MCRYPT_MODE_ECB, 
+					$init_vect
+				), 
+				"\0"
+			);
 		}
 		else
 		{
@@ -394,6 +399,19 @@ class Search {
 		}
 		
 		$this->_meta = unserialize($meta_array);
+		
+		// Check for Advanced Form Inputs
+		$valid_inputs = array('search_in', 'where');
+		foreach ($valid_inputs as $current_input) 
+		{
+			if (
+				( ! isset($this->_meta[$current_input]) OR $this->_meta[$current_input] === '') AND
+				$this->EE->input->post($current_input)
+			)
+			{
+				$this->_meta[$current_input] = $this->EE->input->post($current_input);
+			}
+		}
 	}
 	
 	// ------------------------------------------------------------------------
@@ -989,12 +1007,30 @@ class Search {
 		/** ----------------------------------------------
 		/**  Limit query to a specific category
 		/** ----------------------------------------------*/
-				
-		if (isset($_POST['cat_id']) AND is_array($_POST['cat_id']))
+		
+		// Check for different sets of category IDs, checking the parameters
+		// first, then the $_POST
+		if (isset($this->_meta['category']) AND $this->_meta['category'] != '' AND ! is_array($this->_meta['category']))
+		{
+			$this->_meta['category'] = explode('|', $this->_meta['category']);
+		}
+		else if (
+			( ! isset($this->_meta['category']) OR $this->_meta['category'] == '') AND
+			(isset($_POST['cat_id']) AND is_array($_POST['cat_id']))
+		)
+		{
+			$this->_meta['category'] = $_POST['cat_id'];
+		}
+		else
+		{
+			$this->_meta['category'] = '';
+		}
+		
+		if (is_array($this->_meta['category']))
 		{		
 			$temp = '';
 		
-			foreach ($_POST['cat_id'] as $val)
+			foreach ($this->_meta['category'] as $val)
 			{
 				if ($val != 'all' AND $val != '')
 				{
