@@ -510,7 +510,9 @@ class Search {
 		
         if (isset($_GET['mbr']) AND is_numeric($_GET['mbr']))
         {
-			$query = $this->EE->db->query("SELECT member_id FROM exp_members WHERE member_id = '".$this->EE->db->escape_str($_GET['mbr'])."'");
+			$query = $this->EE->db->select('member_id')->get_where('members', array(
+				'member_id' => $_GET['mbr']
+			));
 			
 			if ($query->num_rows() != 1)
 			{
@@ -525,18 +527,18 @@ class Search {
         {
 			if ($this->EE->input->post('member_name') != '')
 			{
-				$sql = "SELECT member_id FROM exp_members WHERE screen_name ";
+				$this->EE->db->select('member_id');
 				
 				if ($this->EE->input->post('exact_match') == 'y')
 				{
-					$sql .= " = '".$this->EE->db->escape_str($this->EE->input->post('member_name'))."' ";
+					$this->EE->db->where('screen_name', $this->EE->input->post('member_name'));
 				}
 				else
 				{
-					$sql .= " LIKE '%".$this->EE->db->escape_like_str($this->EE->input->post('member_name'))."%' ";
+					$this->EE->db->like('screen_name', $this->EE->input->post('member_name'));
 				}
 				
-				$query = $this->EE->db->query($sql);
+				$query = $this->EE->db->get('members');
 			
 				if ($query->num_rows() == 0)
 				{
@@ -582,20 +584,25 @@ class Search {
 
 			if ($query->num_rows() > 0)
 			{
-				$fql = "SELECT field_id, field_name, field_search FROM exp_channel_fields WHERE (";
-
+				$this->EE->db->select('field_id, field_name, field_search');
+			
+				// Build array of field groups
+				$field_groups = array();
 				foreach ($query->result_array() as $row)
 				{
-					$fql .= " group_id = '".$row['field_group']."' OR";	
+					$field_groups[] = $row['field_group'];
+				}
+				
+				if (count($field_groups) > 0)
+				{
+					$this->EE->db->where_in('group_id', $field_groups);
 				}
 
-				$fql = substr($fql, 0, -2).')';  
+				$field_query = $this->EE->db->get('channel_fields');
 
-				$query = $this->EE->db->query($fql);
-
-				if ($query->num_rows() > 0)
+				if ($field_query->num_rows() > 0)
 				{
-					foreach ($query->result_array() as $row)
+					foreach ($field_query->result_array() as $row)
 					{
 						if ($row['field_search'] == 'y')
 						{
