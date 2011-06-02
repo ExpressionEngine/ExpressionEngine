@@ -27,7 +27,7 @@
 		{
 			$details['timestamp'] = time();
 			
-			$dl_page_url = 'http://expressionengine.com/version.txt';
+			$dl_page_url = 'http://versions.ellislab.com/versions_ee2.txt';
 
 			$target = parse_url($dl_page_url);
 
