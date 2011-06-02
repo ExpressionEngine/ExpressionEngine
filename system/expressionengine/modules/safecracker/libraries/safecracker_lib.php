@@ -666,7 +666,7 @@ class Safecracker_lib
 				}
 			}
 		}
-		
+
 		foreach ($this->title_fields as $field)
 		{
 			if (isset($this->EE->TMPL->var_single['error:'.$field]))
@@ -675,6 +675,7 @@ class Safecracker_lib
 			}
 		}
 		
+		// Add global errors
 		if (count($this->errors) === 0)
 		{
 			$this->parse_variables['global_errors'] = array(array());
@@ -691,6 +692,7 @@ class Safecracker_lib
 		
 		$this->parse_variables['global_errors:count'] = count($this->errors);
 		
+		// Add field errors
 		if (count($this->field_errors) === 0)
 		{
 			$this->parse_variables['field_errors'] = array(array());
@@ -707,6 +709,26 @@ class Safecracker_lib
 		
 		$this->parse_variables['field_errors:count'] = count($this->field_errors);
 		
+		// Add field errors to conditional parsing
+		$conditional_errors = $this->parse_variables;
+		if ( ! empty($conditional_errors['field_errors'][0]))
+		{
+			foreach ($conditional_errors['field_errors'] as $error)
+			{
+				$conditional_errors['error:' . $error['field']] = $error['error'];
+			}
+			
+			unset($conditional_errors['field_errors']);
+		}
+		
+		// Parse conditionals
+		// $this->parse_variables['error:title'] = TRUE;
+		$this->EE->TMPL->tagdata = $this->EE->functions->prep_conditionals(
+			$this->EE->TMPL->tagdata, 
+			$conditional_errors
+		);
+
+		// Parse the variables
 		if ($this->parse_variables)
 		{
 			$this->EE->TMPL->tagdata = $this->EE->TMPL->parse_variables($this->EE->TMPL->tagdata, array($this->parse_variables));
