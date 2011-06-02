@@ -20,6 +20,8 @@
  * "system" but it can be renamed or moved for increased security.
  * Indicate the new name and/or path here. The path can be relative
  * or it can be a full server path.
+ *
+ * http://expressionengine.com/user_guide/installation/best_practices.html
  * 
  */
 	$system_path = './system';
