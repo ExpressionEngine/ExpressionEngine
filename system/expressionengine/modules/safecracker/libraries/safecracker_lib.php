@@ -136,6 +136,14 @@ class Safecracker_lib
 		
 		$this->EE->javascript->output('if (typeof SafeCracker == "undefined" || ! SafeCracker) { var SafeCracker = {markItUpFields:{}};}');
 		
+		// Figure out what channel we're working with
+		$this->fetch_channel($this->EE->TMPL->fetch_param('channel_id'), $this->EE->TMPL->fetch_param('channel'));
+		
+		if ( ! $this->channel)
+		{
+			return $this->EE->output->show_user_error('submission', $this->EE->lang->line('safecracker_no_channel'));
+		}
+		
 		//get the entry data, if an entry was specified
 		$this->fetch_entry($this->EE->TMPL->fetch_param('entry_id'), $this->EE->TMPL->fetch_param('url_title'));
 		
@@ -148,13 +156,6 @@ class Safecracker_lib
 			}
 			
 			return $this->EE->output->show_user_error(FALSE, $this->EE->lang->line('safecracker_require_entry'));
-		}
-		
-		$this->fetch_channel($this->EE->TMPL->fetch_param('channel_id'), $this->EE->TMPL->fetch_param('channel'));
-		
-		if ( ! $this->channel)
-		{
-			return $this->EE->output->show_user_error('submission', $this->EE->lang->line('safecracker_no_channel'));
 		}
 		
 		if ($this->entry('entry_id') && ! $this->form_error)
@@ -1897,6 +1898,7 @@ class Safecracker_lib
 		$this->EE->db->join('exp_channel_data', 'exp_channel_titles.entry_id = exp_channel_data.entry_id');
 		$this->EE->db->where('exp_channel_titles.site_id', $this->site_id);
 		$this->EE->db->where('exp_channel_titles.'.(($entry_id) ? 'entry_id' : 'url_title'), $this->EE->security->xss_clean(($entry_id) ? $entry_id : $url_title));
+		$this->EE->db->where('exp_channel_data.channel_id', $this->channel('channel_id'));
 		$this->EE->db->limit(1);
 		
 		$query = $this->EE->db->get();
