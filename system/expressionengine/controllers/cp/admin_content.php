@@ -3773,11 +3773,6 @@ class Admin_content extends CI_Controller {
 		
 		$field_query = $this->db->get();
 
-		$field_query = $this->db->query("SELECT f.* FROM exp_channel_fields AS f, exp_field_groups AS g
-						WHERE f.group_id = g.group_id
-						AND g.site_id = '".$this->db->escape_str($this->config->item('site_id'))."'
-						AND f.field_id = '{$vars['field_id']}'");
-
 		if ($vars['field_id'] == '')
 		{
 			$type = 'new';
