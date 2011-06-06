@@ -127,8 +127,8 @@ class Admin_model extends CI_Model {
 										  ),
 
 			'email_cfg'			=>	array(
-											'webmaster_email'			=> array('i', ''),
-											'webmaster_name'			=> array('i', ''),
+											'webmaster_email'			=> array('i', '', 'required|valid_email'),
+											'webmaster_name'			=> array('i', '', 'required'),
 											'email_charset'				=> array('i', ''),
 											'email_debug'				=> array('r', array('y' => 'yes', 'n' => 'no')),
 											'mail_protocol'				=> array('s', array('mail' => 'php_mail', 'sendmail' => 'sendmail', 'smtp' => 'smtp')),
@@ -219,7 +219,7 @@ class Admin_model extends CI_Model {
 		{
 			unset($f_data['general_cfg']['is_site_on']);
 		}
-		
+
 		return $f_data[$type];
 	}
 

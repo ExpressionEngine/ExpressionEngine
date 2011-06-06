@@ -109,8 +109,13 @@ class Admin_system extends CI_Controller {
 			}
 		}');
 
+		$this->javascript->compile();
+
+		$this->cp->set_variable('cp_page_title', lang($type));
+
 		$this->load->helper('form');
 		$this->load->library('table');
+		$this->load->library('form_validation');
 		$this->load->model('admin_model');
 
 		if ( ! in_array($type, array(
@@ -142,10 +147,80 @@ class Admin_system extends CI_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-		$vars['type'] = $type;
 
-		$vars['form_action'] = 'C=admin_system'.AMP.'M=update_config';
 
+		if (count($_POST))
+		{
+			$this->load->helper('html');
+	
+			// Grab the field definitions for the settings of this type
+			$field_defs = $this->admin_model->get_config_fields($type);
+	
+			// Set validation rules
+			$rules = array();
+	
+			foreach($_POST as $key => $val)
+			{
+				$rules[] = array(
+					'field' => $key,
+					'label' => '<strong>'.lang($key).'</strong>',
+					'rules' => (isset($field_defs[$key][2])) ? $field_defs[$key][2] : ''
+				);
+			}
+
+			// Validate
+			$this->form_validation->set_rules($rules);
+			$validated = $this->form_validation->run();
+
+			$vars = $this->_prep_view_vars($type);
+			$vars['form_action'] = 'C=admin_system'.AMP.'M='.$return_loc;
+
+			if ($validated)
+			{
+				$config_update = $this->config->update_site_prefs($_POST);
+		
+				if ( ! empty($config_update))
+				{
+					$this->session->set_flashdata('message_failure', ul($config_update, array('class' => 'bad_path_error_list')));
+				}
+				else
+				{
+					$this->session->set_flashdata('message_success', lang('preferences_updated'));
+				}
+
+				$this->functions->redirect(BASE.AMP.'C=admin_system'.AMP.'M='.$return_loc);
+			}
+			else
+			{
+				$vars['cp_messages']['error'] = $this->form_validation->error_string('', '');
+	
+				$this->load->view('admin/config_pages', $vars);
+	
+				return;
+			}
+		}
+
+
+		// First view
+		$vars = $this->_prep_view_vars($type);
+		$vars['form_action'] = 'C=admin_system'.AMP.'M='.$return_loc;
+
+		$this->load->view('admin/config_pages', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Prep View Vars
+	 *
+	 * Populates form elements with the initial value, or the submitted
+	 * value in case of a form validation error
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	function _prep_view_vars($type)
+	{
 		$f_data = $this->admin_model->get_config_fields($type);
 		$subtext = $this->admin_model->get_config_field_subtext();
 
@@ -174,6 +249,7 @@ class Admin_system extends CI_Controller {
 			}
 		}
 
+
 		foreach ($f_data as $name => $options)
 		{
 			$value = $this->config->item($name);
@@ -197,8 +273,13 @@ class Admin_system extends CI_Controller {
 					foreach ($options[1] as $k => $v)
 					{
 						$details[$k] = lang($v);
+
+						if ($this->form_validation->set_select($name, $k, ($k == $value)) != '')
+						{
+							$selected = $k;
+						}
 					}
-					$selected = $value;
+
 					break;
 				case 'r':
 					// Radio buttons
@@ -226,7 +307,7 @@ class Admin_system extends CI_Controller {
 							$checked = ($k == $value) ? TRUE : FALSE;
 						}
 
-						$details[] = array('name' => $name, 'value' => $k, 'id' => $name.'_'.$k, 'label' => $v, 'checked' => $checked);
+						$details[] = array('name' => $name, 'value' => $k, 'id' => $name.'_'.$k, 'label' => $v, 'checked' => $this->form_validation->set_radio($name, $k, $checked));
 					}
 					break;
 				case 't':
@@ -246,7 +327,7 @@ class Admin_system extends CI_Controller {
 
 					$text = str_replace("\\'", "'", $text);
 
-					$details = array('name' => $name, 'class' => 'module_textarea', 'value' => $text, 'rows' => $rows, 'id' => $name);
+					$details = array('name' => $name, 'class' => 'module_textarea', 'value' => $this->form_validation->set_value($name, $text), 'rows' => $rows, 'id' => $name);
 					break;
 				case 'f':
 					// Function calls
@@ -284,56 +365,20 @@ class Admin_system extends CI_Controller {
 					break;
 				case 'i':
 					// Input fields
-					$details = array('name' => $name, 'value' => str_replace("\\'", "'", $value), 'id' => $name);
+					$details = array('name' => $name, 'value' => $this->form_validation->set_value($name, $value), 'id' => $name);
+
 					break;
 			}
 
 			$vars['fields'][$name] = array('type' => $options[0], 'value' => $details, 'subtext' => $sub, 'selected' => $selected);
 		}
 
-		// if this is an update, show the success message
-		$vars['return_loc'] = BASE.AMP.'C=admin_system'.AMP.'M='.$return_loc.AMP.'U=1';
+		$vars['type'] = $type;
 
-		$this->cp->set_variable('cp_page_title', lang($type));
-
-		$this->javascript->compile();
-
-		$this->load->view('admin/config_pages', $vars);
+		return $vars;	
 	}
 
-	// --------------------------------------------------------------------
 
-	/**
-	 * Update Config
-	 *
-	 * Handles system and site pref form submissions
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function update_config()
-	{
-		$this->_restrict_prefs_access();
-
-		$loc = $this->input->get_post('return_location');
-
-		$config_update = $this->config->update_site_prefs($_POST);
-
-		if ( ! empty($config_update))
-		{
-			$this->load->helper('html');
-			$this->session->set_flashdata('message_failure', ul($config_update, array('class' => 'bad_path_error_list')));
-		}
-		else
-		{
-			$this->session->set_flashdata('message_success', lang('preferences_updated'));
-		}
-		
-		if ($loc !== FALSE)
-		{
-			$this->functions->redirect($loc);
-		}
-	}
 
 	// --------------------------------------------------------------------
 
