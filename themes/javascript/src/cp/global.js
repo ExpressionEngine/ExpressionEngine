@@ -351,7 +351,7 @@ EE.cp.accessory_toggle = function() {
 			$accessory = $("#" + this.className);
 
 		if ($parent.hasClass("current")) {
-			$accessory.hide();
+			$accessory.slideUp('fast');
 			$parent.removeClass("current");
 		}
 		else 
@@ -361,7 +361,7 @@ EE.cp.accessory_toggle = function() {
 				$parent.siblings().removeClass("current");
 			}
 			else {
-				$accessory.slideDown();
+				$accessory.slideDown('fast');
 			}
 			$parent.addClass("current");
 		}
