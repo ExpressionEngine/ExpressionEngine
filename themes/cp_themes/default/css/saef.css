@@ -43,7 +43,7 @@
 	display:block;
 }
 .markItUpHeader ul .markItUpDropMenu {
-	background:transparent url(images/menu.png) no-repeat 115% 50%;
+	background:transparent url(<?=$cp_theme_url?>images/menu.png) no-repeat 115% 50%;
 	margin-right:5px;
 }
 .markItUpHeader ul .markItUpDropMenu li {
@@ -75,7 +75,7 @@
 	border-bottom:1px solid #3C769D;
 }
 .markItUpHeader ul ul .markItUpDropMenu {
-	background:#F5F5F5 url(images/submenu.png) no-repeat 100% 50%;
+	background:#F5F5F5 url(<?=$cp_theme_url?>images/submenu.png) no-repeat 100% 50%;
 }
 /* next rows of buttons */
 .markItUpHeader ul ul ul {
