@@ -104,11 +104,11 @@ class Cp {
 		
 		$cp_messages = array();
 		
-		foreach(array('message_failure', 'message_success') as $flash_key)
+		foreach(array('message_success', 'message_notice', 'message_error', 'message_failure') as $flash_key)
 		{
 			if ($message = $this->EE->session->flashdata($flash_key))
 			{
-				$flash_key = substr($flash_key, 8);
+				$flash_key = ($flash_key == 'message_failure') ? 'error' : substr($flash_key, 8);
 				$cp_messages[$flash_key] = $message;
 			}
 		}
@@ -239,7 +239,7 @@ class Cp {
 			'XID'				=> XID_SECURE_HASH,
 			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
 			'CP_SIDEBAR_STATE'	=> $this->EE->session->userdata('show_sidebar'),
-			'flashdata'			=> $this->EE->session->flashdata,
+			//'flashdata'			=> $this->EE->session->flashdata,
 			'username'			=> $this->EE->session->userdata('username'),
 			'router_class'		=> $this->EE->router->class,				// advanced css
 			'lang'				=> $js_lang_keys,

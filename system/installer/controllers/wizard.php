@@ -839,7 +839,7 @@ PAPAYA;
 		$errors = array();
 		
 		// Blank fields?
-		foreach (array('db_hostname', 'db_username', 'db_name', 'site_label', 'username', 'password', 'email_address') as $val)
+		foreach (array('db_hostname', 'db_username', 'db_name', 'site_label', 'webmaster_email', 'username', 'password', 'email_address') as $val)
 		{
 			if ($this->userdata[$val] == '')
 			{

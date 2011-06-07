@@ -400,7 +400,8 @@ class Content_publish extends CI_Controller {
 		
 		$this->output->send_ajax_response(array(
 			'success' => $msg.$time,
-			'autosave_entry_id' => $id
+			'autosave_entry_id' => $id,
+			'original_entry_id'	=> $entry_id
 		));
 	}
 	

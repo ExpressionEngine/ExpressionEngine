@@ -72,11 +72,9 @@ class Expressionengine_info_acc {
 	{
 		return '
 		<ul>
-			<li><a href="'.$this->EE->cp->masked_url('http://expressionengine.com').'" title="ExpressionEngine.com">ExpressionEngine.com</a></li>
 			<li><a href="'.$this->EE->cp->masked_url('http://expressionengine.com/user_guide').'">'.$this->EE->lang->line('documentation').'</a></li>
-			<li><a href="'.$this->EE->cp->masked_url('http://expressionengine.com/forums').'">'.$this->EE->lang->line('support_forums').'</a></li>
+			<li><a href="'.$this->EE->cp->masked_url('http://expressionengine.com/support/support_policy/').'">'.$this->EE->lang->line('support_resources').'</a></li>
 			<li><a href="'.$this->EE->cp->masked_url('https://secure.expressionengine.com/download.php').'">'.$this->EE->lang->line('downloads').'</a></li>
-			<li><a href="'.$this->EE->cp->masked_url('http://expressionengine.com/support').'">'.$this->EE->lang->line('support_resources').'</a></li>
 		</ul>
 		';
 	}
@@ -117,6 +115,7 @@ class Expressionengine_info_acc {
 			
 			return $str;
 		}
+/*
 		elseif($latest_version[1] > APP_BUILD)
 		{
 			$instruct_url = $this->EE->cp->masked_url($this->EE->config->item('doc_url').'installation/update_build.html');
@@ -130,6 +129,7 @@ class Expressionengine_info_acc {
 
 			return $str;
 		}
+*/
 		
 		return str_replace(array('%v', '%b'), array(APP_VER, APP_BUILD), $this->EE->lang->line('running_current'));
 	}

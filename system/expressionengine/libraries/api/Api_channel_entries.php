@@ -1908,6 +1908,8 @@ class Api_channel_entries extends Api {
 			$this->EE->db->delete('channel_entries_autosave', array('original_entry_id' => $this->entry_id)); // remove all entries for this
 			$meta['original_entry_id'] = $this->entry_id;
 			$this->EE->db->insert('channel_entries_autosave', $meta); // reinsert
+			
+			$autosave_entry_id = $this->EE->db->insert_id();
 		}
 		else
 		{
@@ -2007,7 +2009,7 @@ class Api_channel_entries extends Api {
 
 		if ($this->autosave)
 		{
-			return $this->entry_id;
+			return $autosave_entry_id;
 		}
 
 		// Remove any autosaved data
