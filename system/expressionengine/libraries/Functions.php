@@ -2899,6 +2899,24 @@ class EE_Functions {
 		return $str;
 	}		
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Remove session ID from string
+	 *
+	 * This function is used mainly by the Input class to strip
+	 * session IDs if they are used in public pages.
+	 *
+	 * @param	string
+	 * @return	string
+	 */	
+	public function remove_session_id($str)
+	{
+		return preg_replace("#S=.+?/#", "", $str);
+	}
+
+	// --------------------------------------------------------------------
+	
 }
 // END CLASS
 

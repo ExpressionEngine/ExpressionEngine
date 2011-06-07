@@ -967,31 +967,31 @@ class Forum_Core extends Forum {
 	function _create_pagination($data)
 	{
 		$this->EE->load->library('pagination');
-		
-		$config['first_page']	= lang('first');	
-		$config['last_page']	= lang('last');	
-		$config['next_link']	= lang('next');
-		$config['prev_link']	= lang('previous');
-		$config['first_tag_open']	= '<td><div class="paginate">';
-		$config['first_tag_close']	= '</div></td>';
-		$config['next_tag_open']	= '<td><div class="paginate">';
-		$config['next_tag_close']	= '</div></td>';
-		$config['prev_tag_open']	= '<td><div class="paginate">';
-		$config['prev_tag_close']	= '</div></td>';
-		$config['num_tag_open']	= '<td><div class="paginate">';
-		$config['num_tag_close']	= '</div></td>';
-		$config['cur_tag_open']	= '<td><div class="paginateCur">';
-		$config['cur_tag_close']	= '</div></td>';
-		$config['last_tag_open']	= '<td><div class="paginate">';
-		$config['last_tag_close']	= '</div></td>';
-		
-		//$config['first_url'] 	= $data['first_url'];
-		$config['uri_segment']	= 0;	// pretty hacky, but lets us override CI's cur_page
-		$config['base_url']		= $data['path'];
-		$config['prefix']		= 'P';
-		$config['total_rows'] 	= $data['total_count'];
-		$config['per_page']		= $data['per_page'];
-		$config['cur_page']		= $data['cur_page'];
+
+		$config = array(
+			'first_page'		=> lang('first'),
+			'last_page'			=> lang('last'),
+			'next_link'			=> lang('next'),
+			'prev_link'			=> lang('previous'),
+			'first_tag_open'	=> '<td><div class="paginate">',
+			'first_tag_close'	=> '</div></td>',
+			'next_tag_open'		=> '<td><div class="paginate">',
+			'next_tag_close'	=> '</div></td>',
+			'prev_tag_open'		=> '<td><div class="paginate">',
+			'prev_tag_close'	=> '</div></td>',
+			'num_tag_open'		=> '<td><div class="paginate">',
+			'num_tag_close'		=> '</div></td>',
+			'cur_tag_open'		=> '<td><div class="paginateCur">',
+			'cur_tag_close'		=> '</div></td>',
+			'last_tag_open'		=> '<td><div class="paginate">',
+			'last_tag_close'	=> '</div></td>',
+			'uri_segment'		=> 0,
+			'base_url'			=> $data['path'],
+			'prefix'			=> 'P',
+			'total_rows'		=> $data['total_count'],
+			'per_page' 			=> $data['per_page'],
+			'cur_page'			=> $data['cur_page']
+		);
 
 		$this->EE->pagination->initialize($config);
 		return $this->EE->pagination->create_links();
@@ -1625,22 +1625,6 @@ class Forum_Core extends Forum {
 		}
 				
 		return $template;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Remove session ID from string
-	 *
-	 * This function is used mainly by the Input class to strip
-	 * session IDs if they are used in public pages.
-	 *
-	 * @param	string
-	 * @return	string
-	 */	
-	public function remove_session_id($str)
-	{
-		return preg_replace("#S=.+?/#", "", $str);
 	} 
 
 	// --------------------------------------------------------------------
@@ -6464,8 +6448,8 @@ class Forum_Core extends Forum {
 							'title'				=> $title,
 							'body'				=> $body,
 							'topic_id'			=> $data['topic_id'],
-							'thread_url'		=> $this->remove_session_id($redirect),
-							'post_url'			=> (isset($data['post_id'])) ? $this->forum_path()."viewreply/{$data['post_id']}/" : $this->remove_session_id($redirect)
+							'thread_url'		=> $this->EE->functions->remove_session_id($redirect),
+							'post_url'			=> (isset($data['post_id'])) ? $this->forum_path()."viewreply/{$data['post_id']}/" : $this->EE->functions->remove_session_id($redirect)
 						 );
 			
 			$template = $this->EE->functions->fetch_email_template('admin_notify_forum_post');
@@ -6534,8 +6518,8 @@ class Forum_Core extends Forum {
 						'title'				=> $title,
 						'body'				=> $body,
 						'topic_id'			=> $data['topic_id'],
-						'thread_url'		=> $this->remove_session_id($redirect),
-						'post_url'			=> (isset($data['post_id'])) ? $this->forum_path()."viewreply/{$data['post_id']}/" : $this->remove_session_id($redirect)
+						'thread_url'		=> $this->EE->functions->remove_session_id($redirect),
+						'post_url'			=> (isset($data['post_id'])) ? $this->forum_path()."viewreply/{$data['post_id']}/" : $this->EE->functions->remove_session_id($redirect)
 					 );
 		
 		$template = $this->EE->functions->fetch_email_template('forum_post_notification');
@@ -7056,7 +7040,7 @@ class Forum_Core extends Forum {
 							'title'				=> $title,
 							'name_of_recipient'	=> $query2->row('screen_name') ,
 							'moderation_action' => lang('moved_action'),
-							'thread_url'		=> $this->remove_session_id($this->EE->input->post('RET'))
+							'thread_url'		=> $this->EE->functions->remove_session_id($this->EE->input->post('RET'))
 						 );
 
 			$template = $this->EE->functions->fetch_email_template('forum_moderation_notification');

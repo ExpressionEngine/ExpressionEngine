@@ -2782,7 +2782,7 @@ class Comment {
 							'entry_title'		=> $entry_title,
 							'comment_id'		=> $comment_id,
 							'comment'			=> $comment,
-							'comment_url'		=> $this->EE->functions->remove_double_slashes($this->remove_session_id($this->EE->functions->fetch_site_index().'/'.$_POST['URI'])),
+							'comment_url'		=> $this->EE->functions->remove_double_slashes($this->EE->functions->remove_session_id($this->EE->functions->fetch_site_index().'/'.$_POST['URI'])),
 							'delete_link'		=> $cp_url.'&method=delete_comment_confirm&comment_id='.$comment_id, 
 							'approve_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=o', 
 							'close_link'		=> $cp_url.'&method=change_comment_status&comment_id='.$comment_id.'&status=c', 
@@ -2864,7 +2864,7 @@ class Comment {
 								'entry_title'		=> $entry_title,
 								'site_name'			=> stripslashes($this->EE->config->item('site_name')),
 								'site_url'			=> $this->EE->config->item('site_url'),
-								'comment_url'		=> $this->EE->functions->remove_double_slashes($this->remove_session_id($this->EE->functions->fetch_site_index().'/'.$_POST['URI'])),
+								'comment_url'		=> $this->EE->functions->remove_double_slashes($this->EE->functions->remove_session_id($this->EE->functions->fetch_site_index().'/'.$_POST['URI'])),
 								'comment_id'		=> $comment_id,
 								'comment'			=> $comment,
 								'channel_id'		=> $channel_id,
@@ -3159,25 +3159,7 @@ class Comment {
 
 			$this->EE->output->show_message($data);
 		
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Remove session ID from string
-	 *
-	 * This function is used mainly by the Input class to strip
-	 * session IDs if they are used in public pages.
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	string
-	 */
-	function remove_session_id($str)
-	{
-		return preg_replace("#S=.+?/#", "", $str);
-	}
-	
+	}	
 	
 	// --------------------------------------------------------------------
 
