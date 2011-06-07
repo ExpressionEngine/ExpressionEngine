@@ -57,16 +57,6 @@ class Filemanager {
 		
 		$this->theme_url = $this->EE->config->item('theme_folder_url').'cp_themes/'.$this->EE->config->item('cp_theme').'/';
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 	// ---------------------------------------------------------------------
 	
@@ -76,7 +66,6 @@ class Filemanager {
 	}
 
 	// ---------------------------------------------------------------------
-
 
 	function clean_filename($filename, $dir_id, $dupe_check = FALSE)
 	{
@@ -2454,7 +2443,7 @@ class Filemanager {
 		$file_id = $this->EE->input->post('file_id');
 		
 		// Check to see if a file was actually sent...
-		if ( ! ($file = $this->EE->input->post('file')))
+		if ( ! ($file_name = $this->EE->input->post('file_name')))
 		{
 			$this->EE->session->set_flashdata('message_failure', lang('choose_file'));
 			$this->EE->functions->redirect(BASE.AMP.'C=content_files');
@@ -2465,22 +2454,22 @@ class Filemanager {
 		$upload_prefs = $this->fetch_upload_dir_prefs($upload_dir_id);
 
 		// Clean up the filename and add the full path
-		$file = $this->EE->security->sanitize_filename(urldecode($file));
-		$file = $this->EE->functions->remove_double_slashes(
-			$upload_prefs['server_path'].DIRECTORY_SEPARATOR.$file
+		$file_name = $this->EE->security->sanitize_filename(urldecode($file_name));
+		$file_path = $this->EE->functions->remove_double_slashes(
+			$upload_prefs['server_path'].DIRECTORY_SEPARATOR.$file_path
 		);
 
 		// Where are we going with this?
 		switch ($this->EE->input->post('action'))
 		{
 			case 'rotate':
-				$response = $this->_do_rotate($file);
+				$response = $this->_do_rotate($file_path);
 				break;
 			case 'crop':
-				$response = $this->_do_crop($file);
+				$response = $this->_do_crop($file_path);
 				break;
 			case 'resize':
-				$response = $this->_do_resize($file);
+				$response = $this->_do_resize($file_path);
 				break;
 			default:
 				return ''; // todo, error
@@ -2511,10 +2500,10 @@ class Filemanager {
 		
 		// Regenerate thumbnails
 		$this->create_thumb(
-			$file,
+			$file_path,
 			array(
 				'server_path' => $upload_prefs['server_path'],
-				'file_name'  => basename($file),
+				'file_name'  => basename($file_name),
 				'dimensions' => $dimensions
 			)
 		);
@@ -2553,7 +2542,7 @@ class Filemanager {
 	/**
 	 * Image crop
 	 */
-	private function _do_crop($file)
+	private function _do_crop($file_path)
 	{
 		$config = array(
 			'width'				=> $this->EE->input->post('crop_width'),
@@ -2564,8 +2553,8 @@ class Filemanager {
 			'master_dim'		=> 'width',
 			'library_path'		=> $this->EE->config->item('image_library_path'),
 			'image_library'		=> $this->EE->config->item('image_resize_protocol'),
-			'source_image'		=> $file,
-			'new_image'			=> $file
+			'source_image'		=> $file_path,
+			'new_image'			=> $file_path
 		);
 
 		$this->EE->load->library('image_lib', $config);
@@ -2596,14 +2585,14 @@ class Filemanager {
 	/**
 	 * Do image rotation.
 	 */
-	private function _do_rotate($file)
+	private function _do_rotate($file_path)
 	{
 		$config = array(
 			'rotation_angle'	=> $this->EE->input->post('rotate'),
 			'library_path'		=> $this->EE->config->item('image_library_path'),
 			'image_library'		=> $this->EE->config->item('image_resize_protocol'),
-			'source_image'		=> $file,
-			'new_image'			=> $file
+			'source_image'		=> $file_path,
+			'new_image'			=> $file_path
 		);
 
 		$this->EE->load->library('image_lib', $config);
@@ -2634,15 +2623,15 @@ class Filemanager {
 	/**
 	 * Do image rotation.
 	 */
-	private function _do_resize($file)
+	private function _do_resize($file_path)
 	{
 		$config = array(
 			'width'				=> $this->EE->input->get_post('resize_width'),
 			'maintain_ratio'	=> $this->EE->input->get_post('constrain'),
 			'library_path'		=> $this->EE->config->item('image_library_path'),
 			'image_library'		=> $this->EE->config->item('image_resize_protocol'),
-			'source_image'		=> $file,
-			'new_image'			=> $file
+			'source_image'		=> $file_path,
+			'new_image'			=> $file_path
 		);
 
 		if ($this->EE->input->get_post('resize_height') != '')
