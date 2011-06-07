@@ -763,7 +763,8 @@ class Forum_Core extends Forum {
 			return TRUE;
 		}
 		
-		$query = $this->EE->db->query("SELECT member_id FROM exp_members WHERE group_id = '1'");
+		$query = $this->EE->db->select('member_id')->get_where('members',
+													array('group_id' => (int) 1));
 	
 		if ($query->num_rows() > 0)
 		{
@@ -772,10 +773,14 @@ class Forum_Core extends Forum {
 				$this->admin_members[] = $row['member_id'];
 			}
 		}
+
+		$query = $this->EE->db->select('admin_group_id, admin_member_id')
+							  ->get_where('forum_administrators',
+							  			  array(
+							  			  	'board_id' => (int) $this->fetch_pref('board_id')
+								  		));
 		
-		$query = $this->EE->db->query("SELECT admin_group_id, admin_member_id FROM exp_forum_administrators WHERE board_id = '".$this->fetch_pref('board_id')."'");
-		
-		if ($query->num_rows() == 0 AND count($this->admin_members) == 0)
+		if ($query->num_rows() === 0 AND count($this->admin_members) == 0)
 		{
 			$this->admin_members = FALSE;
 			$this->admin_groups  = FALSE;
@@ -825,7 +830,6 @@ class Forum_Core extends Forum {
 			}			
 		}
 		
-		
 		if ( ! $this->_fetch_administrators())
 		{
 			return FALSE;
@@ -846,8 +850,10 @@ class Forum_Core extends Forum {
 		
 		if ($member_id != 0 AND $group_id == 0)
 		{
-			$query = $this->EE->db->query("SELECT group_id FROM exp_members WHERE member_id = '{$member_id}'");
-		
+			$query = $this->EE->db->select('group_id')
+								  ->get_where('members', 
+								  		array('member_id' => (int) $member_id));
+
 			if ($query->num_rows() == 0)
 			{
 				return FALSE;
@@ -5844,7 +5850,7 @@ class Forum_Core extends Forum {
 
 					if (in_array($meta[$this->current_id]['author_id'], $super_admins) && $this->EE->session->userdata('group_id') != 1)
 					{
-						return $this->trigger_error('not_authorized');
+						//return $this->trigger_error('not_authorized');
 					}
 				}
 			}
