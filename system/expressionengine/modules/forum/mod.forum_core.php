@@ -3846,7 +3846,8 @@ class Forum_Core extends Forum {
 
 			// Parse the "Delete" Button		
 			if (($this->EE->session->userdata('group_id') == 1) OR 
-						$this->_mod_permission('can_delete', $row['forum_id']))
+					$this->_mod_permission('can_delete', $row['forum_id']) && 
+				! in_array($row['author_id'], $super_admins))
 			{
 				$temp = $this->allow_if('can_delete', $temp);
 			}
@@ -3873,7 +3874,7 @@ class Forum_Core extends Forum {
 			{
 				$can_edit = TRUE;
 			}
-					//var_dump($can_edit, $temp);				
+								
 			if ($can_edit)
 			{
 				$temp = $this->allow_if('can_edit', $temp);
