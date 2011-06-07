@@ -3861,7 +3861,7 @@ class Forum_Core extends Forum {
 			{
 				$can_edit = TRUE;
 			}
-									
+					var_dump($can_edit);				
 			if ($can_edit)
 			{
 				$temp = $this->allow_if('can_edit', $temp);
@@ -6448,8 +6448,8 @@ class Forum_Core extends Forum {
 							'title'				=> $title,
 							'body'				=> $body,
 							'topic_id'			=> $data['topic_id'],
-							'thread_url'		=> $this->EE->functions->remove_session_id($redirect),
-							'post_url'			=> (isset($data['post_id'])) ? $this->forum_path()."viewreply/{$data['post_id']}/" : $this->EE->functions->remove_session_id($redirect)
+							'thread_url'		=> $this->EE->input->remove_session_id($redirect),
+							'post_url'			=> (isset($data['post_id'])) ? $this->forum_path()."viewreply/{$data['post_id']}/" : $this->EE->input->remove_session_id($redirect)
 						 );
 			
 			$template = $this->EE->functions->fetch_email_template('admin_notify_forum_post');
@@ -6518,8 +6518,8 @@ class Forum_Core extends Forum {
 						'title'				=> $title,
 						'body'				=> $body,
 						'topic_id'			=> $data['topic_id'],
-						'thread_url'		=> $this->EE->functions->remove_session_id($redirect),
-						'post_url'			=> (isset($data['post_id'])) ? $this->forum_path()."viewreply/{$data['post_id']}/" : $this->EE->functions->remove_session_id($redirect)
+						'thread_url'		=> $this->EE->input->remove_session_id($redirect),
+						'post_url'			=> (isset($data['post_id'])) ? $this->forum_path()."viewreply/{$data['post_id']}/" : $this->EE->input->remove_session_id($redirect)
 					 );
 		
 		$template = $this->EE->functions->fetch_email_template('forum_post_notification');
@@ -7040,7 +7040,7 @@ class Forum_Core extends Forum {
 							'title'				=> $title,
 							'name_of_recipient'	=> $query2->row('screen_name') ,
 							'moderation_action' => lang('moved_action'),
-							'thread_url'		=> $this->EE->functions->remove_session_id($this->EE->input->post('RET'))
+							'thread_url'		=> $this->EE->input->remove_session_id($this->EE->input->post('RET'))
 						 );
 
 			$template = $this->EE->functions->fetch_email_template('forum_moderation_notification');
