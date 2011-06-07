@@ -3861,7 +3861,7 @@ class Forum_Core extends Forum {
 			{
 				$can_edit = TRUE;
 			}
-					var_dump($can_edit);				
+					// var_dump($can_edit);				
 			if ($can_edit)
 			{
 				$temp = $this->allow_if('can_edit', $temp);
