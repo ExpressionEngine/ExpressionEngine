@@ -190,20 +190,23 @@ class Content_files extends CI_Controller {
 			'31'			=> lang('past_month'),
 			'182'			=> lang('past_six_months'),
 			'365'			=> lang('past_year'),
-			'custom_date'	=> lang('any_date'));
+			'custom_date'	=> lang('any_date')
+		);
 
 		$type_select_options = array(
 			'1'				=> lang('file_type'),
 			'all'			=> lang('all'),
 			'image'			=> lang('image'),
-			'non-image'		=> lang('non-image'));
+			'non-image'		=> lang('non-image')
+		);
 
 		$search_select_options = array(
 			''				=> lang('search_in'),
 			'file_name'		=> lang('file_name'),
 			'file_title'	=> lang('file_title'),
 			'custom_field'	=> lang('custom_fields'),
-			'all'			=> lang('all'));
+			'all'			=> lang('all')
+		);
 
 		$no_upload_dirs = FALSE;
 
@@ -224,7 +227,8 @@ class Content_files extends CI_Controller {
 				'keywords'	=> $get_post['keywords'], 
 				'order'		=> $order, 
 				'no_clue'	=> TRUE, 
-				'search_in'	=> $get_post['search_in']);							
+				'search_in'	=> $get_post['search_in']
+			);
 			
 			$filtered_entries = $this->file_model->get_files($dirs, $params);
 
@@ -419,14 +423,18 @@ class Content_files extends CI_Controller {
 
 
 				$action_base = BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'file_id='.$file['file_id'];
+				
 				$actions = '<a href="'.$action_base.AMP.'action=download" title="'.lang('file_download').'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png"></a>';
-				$actions .= '&nbsp;&nbsp;';
+				$actions .= NBS.NBS;
 				$actions .= '<a href="'.$action_base.AMP.'action=delete" title="'.lang('delete_selected_files').'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png"></a>';
+				$actions .= NBS.NBS;
+				$actions .= '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_file'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file_id='.$file['file_id'].'" title="'.lang('edit_file').'"><img src="'.$this->cp->cp_theme_url.'images/icon-edit.png" alt="'.lang('edit_file').'" /></a>';
+				
 
 				if ($is_image)
 				{
 					$actions .= '&nbsp;&nbsp;';
-					$actions .= '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file_id='.$file['file_id'].'" title="'.lang('edit_file').'"><img src="'.$this->cp->cp_theme_url.'images/icon-edit.png" alt="'.lang('delete').'" /></a>';
+					$actions .= '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file_id='.$file['file_id'].'" title="'.lang('edit_image').'"><img src="'.$this->cp->cp_theme_url.'images/icon-image.png" alt="'.lang('edit_image').'" /></a>';
 				}
 
 				$r[] = $actions;
@@ -687,7 +695,7 @@ class Content_files extends CI_Controller {
 	 */
 	public function multi_edit_form()
 	{
-		$files = $this->_get_file_settings();
+		$files = $this->_get_file_ids();
 		
 		switch ($this->input->get_post('action'))
 		{
@@ -703,6 +711,38 @@ class Content_files extends CI_Controller {
 				show_error(lang('unauthorized_access'));
 				break;
 		}
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Get the list of files and the directory ID for batch file actions
+	 *
+	 * @return array Associative array containing ['file_dir'] as the file directory
+	 *    and ['files'] an array of the files to act upon.
+	 */
+	private function _get_file_ids()
+	{
+		if ($toggle = $this->input->post('toggle'))
+		{
+			$files = $toggle;
+		}
+
+		if ( ! isset($files))
+		{
+			// No file, why are we here?
+			if ( ! ($files = $this->input->get_post('file_id')))
+			{
+				show_error(lang('unauthorized_access'));
+			}			
+		}
+		
+		if ( ! is_array($files))
+		{
+			$files = array($files);
+		}
+
+		return $files;
 	}
 
 	// ------------------------------------------------------------------------
@@ -798,37 +838,16 @@ class Content_files extends CI_Controller {
 	}
 
 	// ------------------------------------------------------------------------
-
+	
 	/**
-	 * Get the list of files and the directory ID for batch file actions
-	 *
-	 * @return array Associative array containing ['file_dir'] as the file directory
-	 *    and ['files'] an array of the files to act upon.
+	 * Edit's a file's metadata
 	 */
-	private function _get_file_settings()
+	public function edit_file()
 	{
-		if ($toggle = $this->input->post('toggle'))
-		{
-			$files = $toggle;
-		}
-
-		if ( ! isset($files))
-		{
-			// No file, why are we here?
-			if ( ! ($files = $this->input->get_post('file_id')))
-			{
-				show_error(lang('unauthorized_access'));
-			}			
-		}
-		
-		if ( ! is_array($files))
-		{
-			$files = array($files);
-		}
-
-		return $files;
+		$data = $this->_edit_setup('edit_file');
+		$this->load->view('content/files/edit_file', $data);
 	}
-
+	
 	// ------------------------------------------------------------------------
 
 	/**
@@ -846,9 +865,54 @@ class Content_files extends CI_Controller {
 		{
 			return $this->filemanager->_do_image_processing();
 		}
+		
+		$data = $this->_edit_setup('edit_image');
+		
+		$data['form_hiddens'] = array(
+			'upload_dir'	=> $data['upload_location_id'], 
+			'file_name'		=> $data['file_name'], 
+			'file_id'		=> $data['file_id']
+		);
+		
+		// Prep javascript with globals, libraries and accordion call
+		$this->javascript->set_global(array(
+			'filemanager'	=> array(
+				'image_width'				=> $data['file_info']['width'],
+				'image_height'				=> $data['file_info']['height'],
+				'resize_over_confirmation' 	=> lang('resize_over_confirmation')
+			),
+		));
+		
+		$this->cp->add_js_script(array(
+			'file'		=> 'cp/files/file_manager_edit',
+			'plugin'	=> 'jcrop',
+			'ui'		=> 'accordion'
+		));
+		
+		$this->javascript->output('
+	        $("#file_manager_toolbar").accordion({autoHeight: false, header: "h3"});
+		');
+		
+		$this->javascript->compile();
 
+		$this->load->view('content/files/edit_image', $data);
+	}
+
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Setup for an edit page (edit file and edit image)
+	 * Gets the data to pass to the views which includes:
+	 * 	- file path
+	 * 	- file info
+	 * 	- file url
+	 * 	- file name
+	 * 	-
+	 */
+	public function _edit_setup($page_title_lang_key)
+	{
 		// Page Title
-		$this->cp->set_variable('cp_page_title', lang('edit_image'));
+		$this->cp->set_variable('cp_page_title', lang($page_title_lang_key));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
 
 		// Do some basic permissions checking
@@ -863,27 +927,24 @@ class Content_files extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		// Set header to not cache anything
 		$this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate");
 		$this->output->set_header("Pragma: no-cache");
-		
+
+		// Figure out the file_id now
 		$file_id = $this->input->get('file_id');
 
-		$this->cp->add_js_script(array(
-			'file'		=> 'cp/files/file_manager_edit',
-			'plugin'	=> 'jcrop',
-			)
-		);
-
-		$qry = $this->db->select('file_name, title')
-						->where('file_id', $file_id)
-						->get('files');
-
-		$file_name 	= $qry->row('file_name');
-		$title = $qry->row('title');
-
+		// Get the information from the database
+		$file_query = $this->db->get_where('files', array(
+			'file_id' => $file_id
+		));
+			
+		$file = $file_query->row_array();
+		
 		// Some vars for later
-		$file_url 	= $this->_upload_dirs[$file_dir]['url'].urldecode($file_name);
-		$file_path 	= $this->_upload_dirs[$file_dir]['server_path'].urldecode($file_name);
+		$file_name	= $file['file_name'];
+		$file_url	= $this->_upload_dirs[$file_dir]['url'].urldecode($file_name);
+		$file_path	= $this->_upload_dirs[$file_dir]['server_path'].urldecode($file_name);
 
 		// Does this file exist?
 		if ( ! file_exists($file_path))
@@ -892,37 +953,20 @@ class Content_files extends CI_Controller {
 		}
 
 		$file_info = $this->filemanager->get_file_info($file_path);
-
-		$this->javascript->set_global(array(
-			'filemanager'	=> array(
-				'image_width'				=> $file_info['width'],
-				'image_height'				=> $file_info['height'],
-				'resize_over_confirmation' 	=> lang('resize_over_confirmation')
-			),
-		));
-
+		
 		$data = array(
-			'file_url'		=> $file_url,
-			'file_path'		=> $file_path,
-			'file_info'		=> $file_info,
-			'upload_dir'	=> $this->_upload_dirs[$file_dir]['id'],
-			'file'			=> urlencode($file_name),
-			'title'			=> $title,
-			'file_id'		=> $file_id,
 			'filemtime'		=> ($filemtime = @filemtime($file_path)) ? $filemtime : 0,
+			'file_info'		=> $file_info,
+			'file_name'		=> urlencode($file_name),
+			'file_path'		=> $file_path,
+			'file_url'		=> $file_url,
 		);
-
-		$this->cp->add_js_script('ui', 'accordion');
-
-		$this->javascript->output('
-		        $("#file_manager_toolbar").accordion({autoHeight: false, header: "h3"});
-		');
-
-		$this->javascript->compile();
-
-		$this->load->view('content/files/edit_image', $data);
+		
+		$data = array_merge($file, $data);
+		
+		return $data;
 	}
-
+	
 	// ------------------------------------------------------------------------
 
 	/**
