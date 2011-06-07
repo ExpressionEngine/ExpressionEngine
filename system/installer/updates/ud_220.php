@@ -52,6 +52,8 @@ class Updater {
 		$this->_update_password_lockout_table();
 		
 		$this->_update_members_table();
+		
+		$this->_update_files_table();
 
 		return TRUE;
 	}
@@ -145,6 +147,22 @@ class Updater {
 		$this->EE->dbforge->add_column('members', $field);
 	}
 
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Add caption field to files
+	 */
+	private function _update_files_table()
+	{
+		$field = array(
+			'caption'	=> array(
+				'type'		=> 'text'
+			)
+		);
+
+		$this->EE->dbforge->add_column('files', $field);
+	}
+	
 	// --------------------------------------------------------------------
 }
 /* END CLASS */

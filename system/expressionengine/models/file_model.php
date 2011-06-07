@@ -173,6 +173,7 @@ class File_model extends CI_Model {
 			'mime_type' => '',
 			'file_name' => '',
 			'file_size' => '',
+			'caption' => '',
 			'metadata' => '',
 			'uploaded_by_member_id' => '',
 			'upload_date' => '',
