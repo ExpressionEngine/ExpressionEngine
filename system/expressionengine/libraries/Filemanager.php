@@ -959,7 +959,8 @@ class Filemanager {
 								) * $this->_memory_tweak_factor
                          );
 
-		$current = 8*1024*1024;
+		$memory_setting = (ini_get('memory_limit') != '') ? intval(ini_get('memory_limit')) : 8;
+		$current = $memory_setting*1024*1024;
 
 		if (function_exists('memory_get_usage'))
 		{
