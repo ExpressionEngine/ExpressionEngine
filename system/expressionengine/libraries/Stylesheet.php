@@ -151,7 +151,11 @@ class EE_Stylesheet {
 		$cp_theme  = $this->EE->config->item('cp_theme'); 
 		$cp_theme_url = $this->EE->config->slash_item('theme_folder_url').'cp_themes/'.$cp_theme.'/';
 
-		$this->_send_css(str_replace('<?=$cp_theme_url?>', $cp_theme_url, $out), time());
+		$out = str_replace('../images', $cp_theme_url.'images', $out);
+		$out = str_replace('<?=$cp_theme_url?>', $cp_theme_url, $out);
+
+
+		$this->_send_css($out, time());
 	}
 
 	// --------------------------------------------------------------------
