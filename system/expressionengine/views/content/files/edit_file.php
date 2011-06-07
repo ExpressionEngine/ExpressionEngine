@@ -18,6 +18,10 @@ if ( ! $EE_view_disable)
 		<div class="pageContents group">
 			<?=form_open('C=content_files'.AMP.'M=edit_file', '', $form_hiddens)?>
 				<p>
+					<?=lang('file_name', 'file_name')?>
+					<span class="fake_input"><?=$file_name?></span>
+				</p>
+				<p>
 					<?=lang('file_title', 'file_title')?>
 					<?=form_input('file_title', $title, 'id="file_title"')?>
 				</p>

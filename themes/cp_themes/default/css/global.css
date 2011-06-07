@@ -53,6 +53,12 @@ input[type="password"] {
   	-webkit-border-radius:	3px;
 }
 
+span.fake_input {
+	color: #5f6c74;
+	display: block;
+	padding: 4px;
+}
+
 textarea {
 	resize:					vertical;
 	-moz-box-sizing:		border-box; /* firefox never does 100% textareas without this */
