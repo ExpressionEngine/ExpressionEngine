@@ -407,13 +407,13 @@ class Forum_Core extends Forum {
 								t.status, p.author_id, p.topic_id, p.post_id, p.body, 
 								p.post_date, m.screen_name');
 		$this->EE->db->from(array('forums f', 'forum_topics t', 'forum_posts p', 'members m'));
-		$this->EE->db->where('f.forum_id', 'p.forum_id');
-		$this->EE->db->where('p.topic_id', 't.topic_id');
-		$this->EE->db->where('p.author_id', 'm.member_id');
-		$this->EE->db->where('p.post_id', $id);
+		$this->EE->db->where('f.forum_id = p.forum_id', '', FALSE);
+		$this->EE->db->where('p.topic_id = t.topic_id', '', FALSE);
+		$this->EE->db->where('p.author_id = m.member_id', '', FALSE);
+		$this->EE->db->where('p.post_id', (int) $id);
 		$this->EE->db->where('p.board_id', $this->fetch_pref('board_id'));
 		$query = $this->EE->db->get();
-		
+
 		if ($query->num_rows() == 0)
 		{
 			return FALSE;
@@ -617,7 +617,12 @@ class Forum_Core extends Forum {
 		}
 		
 		// These are exceptions to the normal permissions checks
-		$exceptions = array('member', 'smileys', 'search', 'member_search', 'new_topic_search', 'active_topic_search', 'view_pending_topics', 'search_results', 'search_thread', 'ban_member', 'do_ban_member', 'spellcheck', 'spellcheck_iframe', 'rss', 'atom', 'ignore_member', 'do_ignore_member');
+		$exceptions = array(
+				'member', 'smileys', 'search', 'member_search', 'new_topic_search', 
+				'active_topic_search', 'view_pending_topics', 'search_results', 
+				'search_thread', 'ban_member', 'do_ban_member', 'spellcheck', 
+				'spellcheck_iframe', 'rss', 'atom', 'ignore_member', 'do_ignore_member'
+			);
 
 		// Is the member area trigger changed?
 		
@@ -646,7 +651,12 @@ class Forum_Core extends Forum {
 		// Fetch the Forums Prefs		
 		// Depending on what the "current_request" variable contains we'll run the query a little differnt.
 				
-		if (in_array($this->current_request, array('editreply', 'deletereply', 'quotereply', 'viewpost', 'viewreply', 'reportreply', 'movereply')))
+		$allowed = array(
+				'editreply', 'deletereply', 'quotereply', 'viewpost', 
+				'viewreply', 'reportreply', 'movereply'
+		);
+
+		if (in_array($this->current_request, $allowed))
 		{
 			if (FALSE === ($meta = $this->_fetch_post_metadata($this->current_id)))
 			{
@@ -3849,19 +3859,21 @@ class Forum_Core extends Forum {
 			
 			// Users can edit their own entries, and moderators (with edit privs) can edit other entires.
 			// However, no one but super admins can edit their own entries
-			
+
 			$can_edit = FALSE;
 			
-			if ($this->EE->session->userdata('group_id') == 1 OR ($this->EE->session->userdata('member_id') == $row['author_id'])) 
+			if ($this->EE->session->userdata('group_id') == 1 OR 
+				($this->EE->session->userdata('member_id') == $row['author_id'])) 
 			{
 				$can_edit = TRUE;
 			}
 			
-			if ($this->_mod_permission('can_edit', $row['forum_id']) AND ! in_array($row['author_id'], $super_admins) )
+			if ($this->_mod_permission('can_edit', $row['forum_id']) && 
+				! in_array($row['author_id'], $super_admins) )
 			{
 				$can_edit = TRUE;
 			}
-					// var_dump($can_edit);				
+					//var_dump($can_edit, $temp);				
 			if ($can_edit)
 			{
 				$temp = $this->allow_if('can_edit', $temp);
@@ -3872,7 +3884,9 @@ class Forum_Core extends Forum {
 			}
 			
 			// Parse the avatar
-			if ($this->EE->config->item('enable_avatars') == 'y' AND $row['avatar_filename'] != '' AND $this->EE->session->userdata('display_avatars') == 'y' )
+			if ($this->EE->config->item('enable_avatars') == 'y' && 
+				$row['avatar_filename'] != '' && 
+				$this->EE->session->userdata('display_avatars') == 'y' )
 			{
 				$avatar_path	= $this->EE->config->slash_item('avatar_url').$row['avatar_filename'];
 				$avatar_width	= $row['avatar_width'];
