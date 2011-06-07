@@ -15,9 +15,20 @@ if ( ! $EE_view_disable)
 		<div class="heading">
 			<h2 class="edit"><?= $title ?></h2>
 		</div>
-		
 		<div class="pageContents group">
-			<div class="clear"></div>
+			<?=form_open('C=content_files'.AMP.'M=edit_file', '', $form_hiddens)?>
+				<p>
+					<?=lang('file_title', 'file_title')?>
+					<?=form_input('file_title', $title, 'id="file_title"')?>
+				</p>
+				<p>
+					<?=lang('caption', 'caption')?>
+					<?=form_textarea('caption', $caption, 'id="caption"')?>
+				</p>
+				<p class="submit_button">
+					<?=form_submit('save_file', lang('save_file'), 'id="save_file" class="submit"')?><br />
+				</p>
+			<?=form_close()?>
 		</div>
 	</div>
 </div>

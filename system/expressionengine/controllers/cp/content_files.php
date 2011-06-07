@@ -844,8 +844,50 @@ class Content_files extends CI_Controller {
 	 */
 	public function edit_file()
 	{
+		// Check to see if POST data is present, if it is, send it to 
+		// _save_file to update the data
+		if ( ! empty($_POST))
+		{
+			return $this->_save_file();
+		}
+		
+		// Get the file data
 		$data = $this->_edit_setup('edit_file');
+
 		$this->load->view('content/files/edit_file', $data);
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Save the file's data to the database
+	 */
+	private function _save_file()
+	{
+		if ( ! ($file_id = $this->input->post('file_id')))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+		
+		$updated_title   = $this->input->post('file_title');
+		$updated_caption = $this->input->post('caption');
+		
+		// Update the file
+		$this->file_model->save_file(array(
+			'file_id'	=> $file_id,
+			'title'		=> $updated_title,
+			'caption'	=> $updated_caption
+		));
+		
+		// Move em on out
+		$this->session->set_flashdata('message_success', lang('file_saved'));
+		$this->functions->redirect(
+			BASE.AMP.
+			'C=content_files'// .AMP.
+			// 			'M=edit_file'.AMP.
+			// 			'upload_dir='.$this->input->post('upload_dir').AMP.
+			// 			'file_id='.$this->input->post('file_id')
+		);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -867,12 +909,6 @@ class Content_files extends CI_Controller {
 		}
 		
 		$data = $this->_edit_setup('edit_image');
-		
-		$data['form_hiddens'] = array(
-			'upload_dir'	=> $data['upload_location_id'], 
-			'file_name'		=> $data['file_name'], 
-			'file_id'		=> $data['file_id']
-		);
 		
 		// Prep javascript with globals, libraries and accordion call
 		$this->javascript->set_global(array(
@@ -907,9 +943,13 @@ class Content_files extends CI_Controller {
 	 * 	- file info
 	 * 	- file url
 	 * 	- file name
-	 * 	-
+	 * 
+	 * @param string $page_title_lang_key The lang key for the page title
+	 * @return array Array containing the file's info from the database, as
+	 * 		well as some formatted information for the edit file and 
+	 * 		edit image pages
 	 */
-	public function _edit_setup($page_title_lang_key)
+	private function _edit_setup($page_title_lang_key)
 	{
 		// Page Title
 		$this->cp->set_variable('cp_page_title', lang($page_title_lang_key));
@@ -960,6 +1000,11 @@ class Content_files extends CI_Controller {
 			'file_name'		=> urlencode($file_name),
 			'file_path'		=> $file_path,
 			'file_url'		=> $file_url,
+			'form_hiddens'	=> array(
+				'upload_dir'	=> $file['upload_location_id'], 
+				'file_name'		=> $file_name, 
+				'file_id'		=> $file_id
+			)
 		);
 		
 		$data = array_merge($file, $data);

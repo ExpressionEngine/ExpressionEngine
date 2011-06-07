@@ -38,6 +38,7 @@ $lang = array(
 'delete_selected_files'	=> 'Delete Selected Files',
 'rename_file'			=> 'Rename File',
 'edit_file'				=> 'Edit File',
+'save_file'				=> 'Save File',
 
 // Upload modal
 'use_file'				=> 'Use Uploaded File',
