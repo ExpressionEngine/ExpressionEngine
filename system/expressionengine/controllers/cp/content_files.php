@@ -863,22 +863,32 @@ class Content_files extends CI_Controller {
 		$data['categories'] = $categories;
 		
 		$data['tabs'] = array(
-			'publish',
+			'file_metadata',
 			'categories'
 		);
 		
 		$data['fields'] = array(
-			'file_title' => form_input(array(
-				'name' 	=> 'file_title',
-				'id' 	=> 'file_title',
-				'value' => $data['title'],
-				'size' 	=> 255
-			)),
-			'caption' => form_textarea(array(
-				'name'	=> 'caption',
-				'id'	=> 'caption',
-				'value'	=> $data['caption']
-			))
+			'file_title' => array(
+				'field' => form_input(array(
+					'name' 	=> 'file_title',
+					'id' 	=> 'file_title',
+					'value' => $data['title'],
+					'size' 	=> 255
+				)),
+				'type' => 'text'
+			),
+			'file_name' => array(
+				'field' => '<span class="fake_input">' . $data['file_name'] . '</span>',
+				'type' => 'text'
+			),
+			'caption' => array(
+				'field' => form_textarea(array(
+					'name'	=> 'caption',
+					'id'	=> 'caption',
+					'value'	=> $data['caption']
+				)),
+				'type' => 'textarea'
+			)
 		);
 		
 		$this->cp->add_js_script(array(

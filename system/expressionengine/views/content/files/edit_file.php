@@ -13,7 +13,7 @@ if ( ! $EE_view_disable)
 	<div class="contents">
 
 		<div class="heading">
-			<h2 class="edit"><?= $title ?></h2>
+			<h2 class="edit"><?= lang('edit_file') ?></h2>
 		</div>
 		<div class="publishPageContents group">
 			<?=form_open('C=content_files'.AMP.'M=edit_file', 'id="publishForm"', $form_hiddens)?>
@@ -26,24 +26,14 @@ if ( ! $EE_view_disable)
 				</ul>
 				<div id="holder">
 					<div id="publish" class="main_tab group">
-						<div class="publish_field publish_text" style="width: 100%; ">
-							<label class="hide_field">
-								<span><?=lang('file_name', 'file_name')?></span>
-							</label>
-							<div id="sub_hold_field_title">
-								<fieldset class="holder">
-									<span class="fake_input"><?=$file_name?></span>
-								</fieldset>
-							</div> <!-- /sub_hold_field -->
-						</div>
 						<?php foreach ($fields as $field_name => $field): ?>
-							<div class="publish_field publish_text" style="width: 100%; ">
+							<div class="publish_field publish_<?=$field['type']?>" style="width: 100%; ">
 								<label class="hide_field">
 									<span><?=lang($field_name)?></span>
 								</label>
 								<div id="sub_hold_field_title">
 									<fieldset class="holder">
-										<?=$field?>
+										<?=$field['field']?>
 									</fieldset>
 								</div> <!-- /sub_hold_field -->
 							</div>

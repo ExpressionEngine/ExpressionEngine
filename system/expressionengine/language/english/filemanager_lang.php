@@ -39,6 +39,7 @@ $lang = array(
 'rename_file'			=> 'Rename File',
 'edit_file'				=> 'Edit File',
 'save_file'				=> 'Save File',
+'file_metadata'			=> 'File Metadata',
 
 // Upload modal
 'use_file'				=> 'Use Uploaded File',
