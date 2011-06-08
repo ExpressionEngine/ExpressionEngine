@@ -15,27 +15,57 @@ if ( ! $EE_view_disable)
 		<div class="heading">
 			<h2 class="edit"><?= $title ?></h2>
 		</div>
-		<div class="pageContents group">
-			<?=form_open('C=content_files'.AMP.'M=edit_file', '', $form_hiddens)?>
-				<p>
-					<?=lang('file_name', 'file_name')?>
-					<span class="fake_input"><?=$file_name?></span>
-				</p>
-				<p>
-					<?=lang('file_title', 'file_title')?>
-					<?=form_input('file_title', $title, 'id="file_title"')?>
-				</p>
-				<p>
-					<?=lang('caption', 'caption')?>
-					<?=form_textarea('caption', $caption, 'id="caption"')?>
-				</p>
-				
-				<p><?=lang('categories', 'categories')?></p>
-				<?= $categories['category']['string_override'] ?>
-				
-				<p class="submit_button">
-					<?=form_submit('save_file', lang('save_file'), 'id="save_file" class="submit"')?><br />
-				</p>
+		<div class="publishPageContents group">
+			<?=form_open('C=content_files'.AMP.'M=edit_file', 'id="publishForm"', $form_hiddens)?>
+				<ul class="tab_menu" id="tab_menu_tabs">
+					<?php foreach ($tabs as $index => $tab): ?>
+						<li id="menu_<?=$tab?>" title="<?=$tab?>" class="content_tab <?=($index == 0) ? 'current' : ''?>">
+							<a href="#" title="menu_<?=$tab?>" class="menu_<?=$tab?>"><?=lang($tab)?></a>&nbsp;
+						</li>
+					<?php endforeach ?>
+				</ul>
+				<div id="holder">
+					<div id="publish" class="main_tab group">
+						<div class="publish_field publish_text" style="width: 100%; ">
+							<label class="hide_field">
+								<span><?=lang('file_name', 'file_name')?></span>
+							</label>
+							<div id="sub_hold_field_title">
+								<fieldset class="holder">
+									<span class="fake_input"><?=$file_name?></span>
+								</fieldset>
+							</div> <!-- /sub_hold_field -->
+						</div>
+						<?php foreach ($fields as $field_name => $field): ?>
+							<div class="publish_field publish_text" style="width: 100%; ">
+								<label class="hide_field">
+									<span><?=lang($field_name)?></span>
+								</label>
+								<div id="sub_hold_field_title">
+									<fieldset class="holder">
+										<?=$field?>
+									</fieldset>
+								</div> <!-- /sub_hold_field -->
+							</div>
+						<?php endforeach ?>
+					</div> <!-- #publish -->
+					<div id="categories" class="main_tab js_hide group">
+						<div class="publish_field publish_multiselect" id="hold_field_category" style="width: 100%; ">
+							<label class="hide_field">
+								<span>Categories</span>
+							</label>
+							<div id="sub_hold_field_category">
+								<fieldset class="holder">
+									<?= $categories['category']['string_override'] ?>
+								</fieldset>
+							</div> <!-- /sub_hold_field -->
+						</div> <!-- /publish_field -->
+						
+					</div> <!-- #categories -->
+				</div> <!-- #holder -->
+				<ul id="publish_submit_buttons">
+					<li><input type="submit" class="submit" name="save_file" id="save_file" value="<?=lang('save_file')?>" /></li>
+				</ul>
 			<?=form_close()?>
 		</div>
 	</div>

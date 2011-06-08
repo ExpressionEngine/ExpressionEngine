@@ -858,12 +858,35 @@ class Content_files extends CI_Controller {
 		// Get the categories
 		$this->load->library('publish');
 		$this->load->model(array('file_upload_preferences_model'));
-		$category_group_ids = $this->file_upload_preferences_model->get_category_groups($data['upload_location_id']);
-		
-		// TODO: Get existing categories for file
-		
+		$category_group_ids = $this->file_upload_preferences_model->get_category_groups($data['upload_location_id']);		
 		$categories = $this->publish->build_categories_block($category_group_ids, $data['file_id'], NULL, '', TRUE);
 		$data['categories'] = $categories;
+		
+		$data['tabs'] = array(
+			'publish',
+			'categories'
+		);
+		
+		$data['fields'] = array(
+			'file_title' => form_input(array(
+				'name' 	=> 'file_title',
+				'id' 	=> 'file_title',
+				'value' => $data['title'],
+				'size' 	=> 255
+			)),
+			'caption' => form_textarea(array(
+				'name'	=> 'caption',
+				'id'	=> 'caption',
+				'value'	=> $data['caption']
+			))
+		);
+		
+		$this->cp->add_js_script(array(
+			'ui'		=> array('droppable'),
+			'file'		=> array('cp/publish_tabs')
+		));
+		
+		$this->javascript->compile();
 		
 		$this->load->view('content/files/edit_file', $data);
 	}
