@@ -1752,12 +1752,10 @@ class Content_publish extends CI_Controller {
 	{
 		$this->load->library('publish');
 		
-		$selected_categories = (isset($entry_data['category'])) ? $entry_data['category'] : NULL;
-		
 		return $this->publish->build_categories_block(
 			$this->_channel_data['cat_group'], 
 			$entry_data['entry_id'], 
-			$selected_categories, 
+			(isset($entry_data['category'])) ? $entry_data['category'] : NULL, 
 			$this->_channel_data['deft_category']
 		);
 	}
