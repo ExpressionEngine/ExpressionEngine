@@ -851,9 +851,20 @@ class Content_files extends CI_Controller {
 			return $this->_save_file();
 		}
 		
+		
 		// Get the file data
 		$data = $this->_edit_setup('edit_file');
-
+		
+		// Get the categories
+		$this->load->library('publish');
+		$this->load->model(array('file_upload_preferences_model'));
+		$category_group_ids = $this->file_upload_preferences_model->get_category_groups($data['upload_location_id']);
+		
+		// TODO: Get existing categories for file
+		
+		$categories = $this->publish->build_categories_block($category_group_ids, $data['file_id'], NULL, '', TRUE);
+		$data['categories'] = $categories;
+		
 		$this->load->view('content/files/edit_file', $data);
 	}
 	
@@ -879,14 +890,19 @@ class Content_files extends CI_Controller {
 			'caption'	=> $updated_caption
 		));
 		
+		$this->load->model('file_category_model');
+		$categories = $this->input->post('category');
+		
+		foreach ($categories as $category_id) 
+		{
+			$this->file_category_model->set_category($file_id, $category_id);
+		}
+		
 		// Move em on out
 		$this->session->set_flashdata('message_success', lang('file_saved'));
 		$this->functions->redirect(
 			BASE.AMP.
-			'C=content_files'// .AMP.
-			// 			'M=edit_file'.AMP.
-			// 			'upload_dir='.$this->input->post('upload_dir').AMP.
-			// 			'file_id='.$this->input->post('file_id')
+			'C=content_files'
 		);
 	}
 	

@@ -128,13 +128,42 @@ class File_upload_preferences_model extends CI_Model {
 		// Delete the files associated with this preference
 		// Note we aren't doing anything to the files/folders yet
 		$this->db->where('upload_location_id', $id);
-		$this->db->delete('files');		
+		$this->db->delete('files');
 
 		// ok, now remove the pref
 		$this->db->where('id', $id);
 		$this->db->delete('upload_prefs');
 		
 		return $deleting->row('name');
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get the category groups for one or more upload directories
+	 * 
+	 * @param array $id Either an array of upload directory IDs or just one
+	 * @return array Array of category group IDs
+	 */
+	public function get_category_groups($id = array())
+	{
+		if ( ! is_array($id))
+		{
+			$id = array($id);
+		}
+		
+		$cat_groups = array();
+		
+		$this->db->select('cat_group');
+		$this->db->where_in('id', $id);
+		$upload_pref_query = $this->db->get('upload_prefs');
+		
+		foreach ($upload_pref_query->result() as $upload_pref) 
+		{
+			$cat_groups = array_merge($cat_groups, explode('|', $upload_pref->cat_group));
+		}
+		
+		return $cat_groups;
 	}
 }
 

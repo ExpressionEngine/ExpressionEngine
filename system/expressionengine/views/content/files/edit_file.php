@@ -29,6 +29,10 @@ if ( ! $EE_view_disable)
 					<?=lang('caption', 'caption')?>
 					<?=form_textarea('caption', $caption, 'id="caption"')?>
 				</p>
+				
+				<p><?=lang('categories', 'categories')?></p>
+				<?= $categories['category']['string_override'] ?>
+				
 				<p class="submit_button">
 					<?=form_submit('save_file', lang('save_file'), 'id="save_file" class="submit"')?><br />
 				</p>
