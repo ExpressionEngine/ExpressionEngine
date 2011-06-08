@@ -2457,7 +2457,7 @@ class Filemanager {
 		// Clean up the filename and add the full path
 		$file_name = $this->EE->security->sanitize_filename(urldecode($file_name));
 		$file_path = $this->EE->functions->remove_double_slashes(
-			$upload_prefs['server_path'].DIRECTORY_SEPARATOR.$file_path
+			$upload_prefs['server_path'].DIRECTORY_SEPARATOR.$file_name
 		);
 
 		// Where are we going with this?
