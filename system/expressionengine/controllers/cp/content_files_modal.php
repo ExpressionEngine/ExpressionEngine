@@ -151,7 +151,15 @@ class Content_files_modal extends CI_Controller {
 		);
 		
 		// Check to see if the file needs to be renamed
-		if ($upload_response['file_name'] != $upload_response['orig_name'])
+		// It needs to be renamed if the file names are different and the 
+		// length of the names are different too because clean_filename
+		// replaces spaces with underscores
+		// For example "file name.jpg" changes to "file_name.jpg" they're 
+		// different strings, but the same length
+		if (
+			$upload_response['file_name'] != $upload_response['orig_name'] AND
+			count($upload_response['file_name']) != count($upload_response['orig_name'])
+		)
 		{
 			return $this->load->view('_shared/file_upload/rename', $vars);
  		}
