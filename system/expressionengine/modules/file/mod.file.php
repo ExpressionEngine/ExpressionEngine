@@ -29,6 +29,9 @@ class File {
 	var $limit	= '100';	// Default maximum query results if not specified.
 	var $reserved_cat_segment 	= '';
 	var $use_category_names		= FALSE;
+	var $categories				= array();
+	var $catfields				= array();
+
 	var $sql					= '';
 	var $return_data			= '';	 	// Final data	
 
@@ -771,7 +774,13 @@ $this->EE->db->stop_cache();
 			{
 				if ($val == $row['file_id'])
 				{
-					$this->temp_array[$row['cat_id']] = array($row['cat_id'], $row['parent_id'], $row['cat_name'], $row['cat_image'], $row['cat_description'], $row['group_id'], $row['cat_url_title']);
+					$this->temp_array[$row['cat_id']] = array('category_id' => $row['cat_id'], 'parent_id' => $row['parent_id'], 'category_name' => $row['cat_name'], 'category_image' => $row['cat_image'], 'category_description' => $row['cat_description'], 'category_group_id' => $row['group_id'], 'category_url_title' => $row['cat_url_title']);
+					
+				
+					// Add in the path variable
+					$this->temp_array[$row['cat_id']]['path'] = ($this->use_category_names == TRUE)
+							? array($this->reserved_cat_segment.'/'.$row['cat_url_title'], array('path_variable' => TRUE)) :
+								array('/C'.$row['cat_id'], array('path_variable' => TRUE));
 
 					foreach ($row as $k => $v)
 					{
@@ -794,9 +803,9 @@ $this->EE->db->stop_cache();
 			{
 				foreach($this->temp_array as $k => $v)
 				{
-					if (isset($parents[$v[1]])) $v[1] = 0;
+					if (isset($parents[$v['parent_id']])) $v['parent_id'] = 0;
 
-					if (0 == $v[1])
+					if (0 == $v['parent_id'])
 					{
 						$this->cat_array[] = $v;
 						$this->process_subcategories($k);
@@ -820,7 +829,7 @@ $this->EE->db->stop_cache();
 	{
 		foreach($this->temp_array as $key => $val)
 		{
-			if ($parent_id == $val[1])
+			if ($parent_id == $val['parent_id'])
 			{
 				$this->cat_array[] = $val;
 				$this->process_subcategories($key);
@@ -852,7 +861,7 @@ $this->EE->db->stop_cache();
 	  		}
 		}
 
-		print_r($cat_chunk);
+		
 		
 		//  Fetch all the date-related variables
 
@@ -867,8 +876,6 @@ $this->EE->db->stop_cache();
 
 		foreach ($this->query->result_array() as $count => $row)
 		{
-			
-			
 			$row['absolute_count']	= $this->p_page + $count + 1;
 
 			//  More Variables, Mostly for Conditionals
@@ -878,6 +885,17 @@ $this->EE->db->stop_cache();
 			$row['entry_date']				= $row['upload_date'];
 			//$row['channel']				= $row['channel_title'];
 			
+			// Category variables
+			$row['categories'] = $this->categories[$row['file_id']];
+			
+			//if (isset($this->categories[$row['file_id']]))
+			//{
+			//	foreach ($this->categories[$row['file_id']]
+			//}
+				
+			
+			
+
 			// Default variables
 			
 			// 6 custom fields
