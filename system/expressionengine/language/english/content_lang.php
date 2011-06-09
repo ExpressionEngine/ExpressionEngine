@@ -539,6 +539,7 @@ $lang = array(
 'File Upload',
 
 'upload_dir_choose'		=> 'Choose an upload directory',
+'upload_to'				=> 'Upload to %s',
 
 'emoticons' =>
 'Smileys',

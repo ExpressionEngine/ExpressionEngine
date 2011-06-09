@@ -173,8 +173,14 @@
 			if (source_position > 0) {
 				source = source.substring(0, source_position);
 			};
-
-			file_uploader.find('iframe').attr('src', source + '&directory_id=' + directory_id);
+			
+			source = source + '&directory_id=' + directory_id;
+			
+			if ($('#dir_choice_form:visible').size() <= 0) {
+				source = source + '&restrict=true';
+			}
+			
+			file_uploader.find('iframe').attr('src', source);
 			
 			return directory_id;
 		};

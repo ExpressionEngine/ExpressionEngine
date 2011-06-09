@@ -851,7 +851,6 @@ class Content_files extends CI_Controller {
 			return $this->_save_file();
 		}
 		
-		
 		// Get the file data
 		$data = $this->_edit_setup('edit_file');
 		
@@ -862,11 +861,13 @@ class Content_files extends CI_Controller {
 		$categories = $this->publish->build_categories_block($category_group_ids, $data['file_id'], NULL, '', TRUE);
 		$data['categories'] = $categories;
 		
+		// List out the tabs we'll need
 		$data['tabs'] = array(
 			'file_metadata',
 			'categories'
 		);
 		
+		// Create fields for the view
 		$data['fields'] = array(
 			'file_title' => array(
 				'field' => form_input(array(
@@ -891,6 +892,7 @@ class Content_files extends CI_Controller {
 			)
 		);
 		
+		// Droppable is in here because of publish_tabs
 		$this->cp->add_js_script(array(
 			'ui'		=> array('droppable'),
 			'file'		=> array('cp/publish_tabs')

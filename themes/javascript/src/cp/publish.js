@@ -868,9 +868,15 @@ $(document).ready(function() {
 
 	$("input[type=file]", "#publishForm").each(function() {
 		var container = $(this).closest(".publish_field"),
-			trigger = container.find(".choose_file");
+			trigger = container.find(".choose_file"),
+			content_type = $(this).data('content-type'),
+			directory = $(this).data('directory'),
+			settings = {
+				"content_type": content_type,
+				"directory": directory
+			};
 
-		$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), file_field_changed);
+		$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), settings, file_field_changed);
 
 		container.find(".remove_file").click(function() {
 			container.find("input[type=hidden]").val("");

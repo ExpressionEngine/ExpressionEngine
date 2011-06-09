@@ -23,7 +23,8 @@
 		thumbs_per_page,
 		trigger_callback,
 		all_dirs = {},
-		
+		settings = {},
+		current_field = '',
 		display_type;
 
 	/*
@@ -127,17 +128,32 @@
 	 * @todo consider changing this to something event
 	 *		 based so it doesn't force a click event.
 	 */
-	$.ee_filebrowser.add_trigger = function(el, field_name, callback) {
-		if ( ! callback && $.isFunction(field_name)) {
-			callback = field_name;
-			field_name = 'userfile';
+	$.ee_filebrowser.add_trigger = function(el, field_name, new_settings, callback) {
+		if (! callback) {
+			if ($.isFunction(field_name)) {
+				callback = field_name;
+				field_name = 'userfile';
+				settings[field_name] = {content_type: 'any', directory: 'all'};
+			}
+			else if ($.isFunction(new_settings)) {
+				callback = new_settings;
+				settings[field_name] = {content_type: 'any', directory: 'all'};
+			}
+		} else {
+			settings[field_name] = new_settings;
 		}
 		
 		$(el).click(function() {
 			var that = this;
-			
+
 			// Change the upload field to their preferred name
-			$("#upload_file", file_manager_obj).attr('name', field_name);
+			current_field = field_name;
+
+			// Restrict the upload directory options to the specified directory
+			hide_directories();
+			
+			// Rebuild pages since each upload directory can have different settings
+			build_pages($('#dir_choice').val());
 
 			file_manager_obj.dialog("open");
 			
@@ -243,7 +259,12 @@
 			pagination.pages_total = images.length;
 		}
 		else {
-			var workon = directory.files.slice(offset, offset+per_page);
+			if (settings[current_field].content_type == "image") {
+				var images = build_image_list(directory),
+					workon = directory.images.slice(offset, offset + per_page);
+			} else {
+				var workon = directory.files.slice(offset, offset + per_page);
+			};
 
 			$("#tableView").show();
 			$.tmpl("fileRow", workon).appendTo("#tableView tbody");
@@ -373,13 +394,27 @@
 		$.template("pagination", $('#paginationTmpl').remove());
 		
 		$.template("thumb", $('#thumbTmpl').remove());
-		// $.template("NoFilesThumb", $('#rowTmpl'));
 		
 		// Bind the upload submit event
 		$("#upload_form", file_manager_obj).submit($.ee_filebrowser.upload_start);
 		
 		// Add the display type as a class to file_chooser_body
 		$('#file_chooser_body', file_manager_obj).addClass(display_type);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Hides the directory switcher based on settings passed to add_trigger
+	 */
+	function hide_directories() {
+		if (settings[current_field].directory != 'all') {
+			$('#dir_choice', file_manager_obj).val(settings[current_field].directory);
+			$('#dir_choice_form', file_manager_obj).hide();
+		} else {
+			$('#dir_choice', file_manager_obj).val();
+			$('#dir_choice_form', file_manager_obj).show();
+		};
 	}
 
 })(jQuery);
