@@ -30,7 +30,6 @@ class File_ft extends EE_Fieldtype {
 	);
 
 	var $has_array_data = TRUE;
-	var $_js_loaded = FALSE;
 	
 	/**
 	 * Constructor
@@ -166,58 +165,17 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function display_field($data)
 	{
-		$filedir = (isset($_POST[$this->field_name.'_directory'])) ? $_POST[$this->field_name.'_directory'] : '';
-		$filename = (isset($_POST[$this->field_name])) ? $_POST[$this->field_name] : '';
-		$upload_dirs = array();
-		$allowed_file_dirs = (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
+		$filedir             = (isset($_POST[$this->field_name.'_directory'])) ? $_POST[$this->field_name.'_directory'] : '';
+		$filename            = (isset($_POST[$this->field_name])) ? $_POST[$this->field_name] : '';
+		$upload_dirs         = array();
+		$allowed_file_dirs   = (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') ? $this->settings['allowed_directories'] : '';
 		$specified_directory = ($allowed_file_dirs == '') ? 'all' : $allowed_file_dirs;
-
-		if ( ! $this->_js_loaded)
-		{				
-			$this->_js_loaded = TRUE;
-			
-			$this->EE->javascript->output('
-			$(".choose_file").click(function() {
-				dir = $(this).data("directory");
-				if (dir !== "all") {
-				
-					$("#dir_choice").val(dir);
-					$.ee_filebrowser.reload_directory(dir);
-					$("#dir_choice_form").hide();
-					
-					var source = $("#file_uploader").find("iframe").attr("src"),
-						source_position = source.search("&dir_override=");
-
-						// Check to see if the source already has directory_id and remove it
-						if (source_position > 0) {
-							source = source.substring(0, source_position);
-						};
-
-						$("#file_uploader").find("iframe").attr("src", source + "&dir_override=" + dir);
-				
-					}
-					else {
-						$("#dir_choice_form").show();
-						
-					var source = $("#file_uploader").find("iframe").attr("src"),
-						source_position = source.search("&dir_override=");
-
-						// Check to see if the source already has directory_id and remove it
-						if (source_position > 0) {
-							source = source.substring(0, source_position);
-						};
-
-						$("#file_uploader").find("iframe").attr("src", source);						
-						
-					}
-				});
-			');
-		}	
+		$content_type		 = (isset($this->settings['field_content_type'])) ? $this->settings['field_content_type'] : 'all';
 		
 		
 		$upload_directories = $this->EE->file_upload_preferences_model->get_upload_preferences($this->EE->session->userdata('group_id'), $allowed_file_dirs);
 
-		$upload_dirs[''] = $this->EE->lang->line('directory');
+		$upload_dirs[''] = lang('directory');
 		
 		foreach($upload_directories->result() as $row)
 		{
@@ -237,8 +195,6 @@ class File_ft extends EE_Fieldtype {
 		$upload_directory_server_path = $upload_directory_info->row('server_path');
 		$upload_directory_url = $upload_directory_info->row('url');
 		
-		
-
 		// let's look for a thumb
 		$this->EE->load->library('filemanager');
 		$this->EE->load->helper('html');
@@ -249,8 +205,13 @@ class File_ft extends EE_Fieldtype {
 		));
 		
 		$hidden	  = form_hidden($this->field_name.'_hidden', $filename);
-		$hidden	  .= form_hidden($this->field_name.'_hidden_dir', $filedir);
-		$upload   = form_upload($this->field_name, $filename);
+		$hidden	 .= form_hidden($this->field_name.'_hidden_dir', $filedir);
+		$upload   = form_upload(array(
+			'name'				=> $this->field_name,
+			'value'				=> $filename,
+			'data-content-type'	=> $content_type,
+			'data-directory'	=> $specified_directory
+		));
 		$dropdown = form_dropdown($this->field_name.'_directory', $upload_dirs, $filedir);
 
 		$upload_link = (count($upload_dirs) > 1) ? '<a href="#" class="choose_file" data-directory="'.$specified_directory.'">'.$this->EE->lang->line('add_file').'</a>' : $this->EE->lang->line('directory_no_access');
@@ -258,7 +219,7 @@ class File_ft extends EE_Fieldtype {
 		$newf = $upload_link;
 		$remf = '<a href="#" class="remove_file">'.$this->EE->lang->line('remove_file').'</a>';
 
-		$set_class = $filename ? '' : 'js_hide';		
+		$set_class = $filename ? '' : 'js_hide';
 
 		$r = '<div class="file_set '.$set_class.'">';
 		$r .= "<p class='filename'>$thumb<br />$filename</p>";

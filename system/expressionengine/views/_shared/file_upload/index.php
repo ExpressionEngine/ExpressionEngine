@@ -6,13 +6,14 @@
 		<?=form_label(lang('upload_dir_choose'), 'upload_dir')?>
 		<?=form_dropdown('upload_dir', $upload_directories, $selected_directory_id, 'id="upload_dir"')?>
 	<?php else:?>
+		<?=form_label(sprintf(lang('upload_to'), current($upload_directories)), 'upload_dir')?>
 		<input type="hidden" name="upload_dir" value="<?=key($upload_directories)?>" id="upload_dir" />
 	<?php endif;?>
 	</p>
 
 	<p>
-		<?=form_label(lang('upload_file'), 'upload_file', array('class' => 'visualEscapism'))?>
-		<?=form_upload(array('id'=>'upload_file','name'=>'userfile','size'=>15,'class'=>'field'))?>
+		<?=form_label(lang('upload_file'), 'file_upload', array('class' => 'visualEscapism'))?>
+		<?=form_upload(array('id'=>'file_upload','name'=>'userfile','size'=>15,'class'=>'field'))?>
 	</p>
 
 	<p id="progress">
