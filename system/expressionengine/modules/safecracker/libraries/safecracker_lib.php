@@ -147,6 +147,24 @@ class Safecracker_lib
 		//get the entry data, if an entry was specified
 		$this->fetch_entry($this->EE->TMPL->fetch_param('entry_id'), $this->EE->TMPL->fetch_param('url_title'));
 		
+		// Whoa there big conditional, what's going on here?
+		// We want to make sure no one's being tricky here and supplying
+		// an invalid entry_id or url_title via a segment, so we need to
+		// check to see if either exists and if it does make sure that the
+		// passed in version is the same as what we find in the database.
+		// If they are different (most likely it wasn't found in the 
+		// database) then don't show them the form
+		
+		if (
+			($this->EE->TMPL->fetch_param('entry_id') != '' AND
+			$this->entry('entry_id') != $this->EE->TMPL->fetch_param('entry_id')) OR
+			($this->EE->TMPL->fetch_param('url_title') != '' AND
+			$this->entry('url_title') != $this->EE->TMPL->fetch_param('url_title'))
+		)
+		{
+			return $this->EE->TMPL->no_results();
+		}
+		
 		// @added rev 57
 		if ( ! $this->entry('entry_id') && $this->bool_string($this->EE->TMPL->fetch_param('require_entry')))
 		{
@@ -1921,6 +1939,8 @@ class Safecracker_lib
 			}
 			
 			$this->entry = $row;
+		} else {
+			
 		}
 		
 		unset($query);
