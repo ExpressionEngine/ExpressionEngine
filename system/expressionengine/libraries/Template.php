@@ -3584,6 +3584,14 @@ class EE_Template {
 		return $tagdata;
 	}
 
+	function create_url_check($matches)
+	{
+		
+		print_r($matches);
+
+	}
+
+
 	// --------------------------------------------------------------------
 	
 	/**
@@ -3630,21 +3638,38 @@ class EE_Template {
 		//
 		
 		/*
+
 		// If the variable's $value is an array where $value[0] is 'path' and $value[1] has either
 		// the key 'suffix' or 'url' set, then it is a path
 		if (is_array($value) && $value[0] == 'path' && isset($value[1]) && (isset($value[1]['suffix']) OR isset($value[1]['url'])))
 		{
 			// Um...not sure what to do here, quite yet.
-			return $string;
+			exit($string);
 		}
+		
 		*/
+
+
 	
 		// If the single variable's value is an array, then
 		// $value[0] is the content and $value[1] is an array
-		// of parameters for the Typography class
-		/*else*/if (is_array($value) && count($value) == 2 && is_array($value[1]))
+		// of parameters for the Typography class OR an indicator of a path variable
+		if (is_array($value) && count($value) == 2 && is_array($value[1]))
 		{			
 			$raw_content = $value[0];
+
+			// Make our path switches
+			if (isset($value[1]['path_variable']) && $value[1]['path_variable'] == TRUE)
+			{
+				if (preg_match("#".LD."\s*".$name."=(.*?)".RD."#", $string, $matches))
+				{
+					$link = $this->EE->functions->create_url($matches['1'].'/'.$value[0]);
+					$string = str_replace($matches['0'], $link, $string);
+				}
+				
+				return $string;
+			}
+
 			
 			$prefs = array();
 			
@@ -3663,6 +3688,8 @@ class EE_Template {
 				);
 			
 			$value = $this->EE->typography->parse_type($raw_content, $prefs);
+
+
 		}
 		
 		if (isset($raw_content))
