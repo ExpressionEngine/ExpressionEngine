@@ -6,7 +6,7 @@
 		<?=form_label(lang('upload_dir_choose'), 'upload_dir')?>
 		<?=form_dropdown('upload_dir', $upload_directories, $selected_directory_id, 'id="upload_dir"')?>
 	<?php else:?>
-		<?=form_label(sprintf(lang('upload_to'), current($upload_directories)), 'upload_dir')?>
+		<?=form_label(sprintf(lang('upload_to'), current($upload_directories)), 'file_upload')?>
 		<input type="hidden" name="upload_dir" value="<?=key($upload_directories)?>" id="upload_dir" />
 	<?php endif;?>
 	</p>
