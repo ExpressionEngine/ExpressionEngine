@@ -39,6 +39,7 @@ class Wizard extends CI_Controller {
 	var $refresh_url		= '';		// The URL where the refresh should go to.  Set dynamically
 	var $theme_path			= '';
 	var $root_theme_path	= '';		
+	var $active_group		= 'expressionengine';
 	
 	// Default page content - these are in English since we don't know the user's language choice when we first load the installer
 	var $content			= '';
@@ -410,10 +411,12 @@ class Wizard extends CI_Controller {
 		// Before we assume this is an update, let's see if we can connect to the DB.
 		// If they are running EE prior to 2.0 the database settings are found in the main
 		// config file, if they are running 2.0 or newer, the settings are found in the db file
+		$this->active_group = $active_group;
+
 		$move_db_data = FALSE;
 		if ( ! isset($db) AND isset($config['db_hostname']))
 		{
-			$db['expressionengine'] = array(
+			$db[$this->$active_group] = array(
 											'hostname'	=> $config['db_hostname'],
 											'username'	=> $config['db_username'],
 											'password'	=> $config['db_password'],
@@ -907,7 +910,7 @@ PAPAYA;
 		// Connect to the database.  We pass a multi-dimensional array since
 		// that's what is normally found in the database config file
 				
-		$db['expressionengine'] = array(
+		$db[$this->active_group] = array(
 										'hostname'	=> $this->userdata['db_hostname'],
 										'username'	=> $this->userdata['db_username'],
 										'password'	=> $this->userdata['db_password'],
@@ -1502,12 +1505,12 @@ PAPAYA;
 		}
 				
 		// Does the DB connection data exist?
-		if ( ! isset($db['expressionengine']))
+		if ( ! isset($db[$this->active_group]))
 		{
 			return FALSE;
 		}
 				
-		$this->load->database($db['expressionengine'], FALSE, TRUE);
+		$this->load->database($db[$this->active_group], FALSE, TRUE);
 
 		$this->db->save_queries	= TRUE;
 	
