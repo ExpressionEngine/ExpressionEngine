@@ -1181,7 +1181,7 @@ class Api_channel_entries extends Api {
 						continue;
 					}
 
-					if (isset($data['field_id_'.$row['field_id']]) AND $data['field_id_'.$row['field_id']] == '')
+					if (isset($data['field_id_'.$row['field_id']]) AND $data['field_id_'.$row['field_id']] === '')
 					{
 						$this->_set_error('custom_field_empty', $row['field_label']);
 						continue;
