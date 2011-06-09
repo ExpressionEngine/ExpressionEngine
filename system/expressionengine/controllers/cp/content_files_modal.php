@@ -158,8 +158,8 @@ class Content_files_modal extends CI_Controller {
 		// different strings, but the same length
 		
 		if (
-			$upload_response['file_name'] != $upload_response['orig_name'] AND
-			count($upload_response['file_name']) != count($upload_response['orig_name'])
+			strlen($upload_response['file_name']) != strlen($upload_response['orig_name']) AND
+			$upload_response['file_name'] != $upload_response['orig_name']
 		)
 		{
 			return $this->load->view('_shared/file_upload/rename', $vars);
