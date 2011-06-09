@@ -156,6 +156,7 @@ class Content_files_modal extends CI_Controller {
 		// replaces spaces with underscores
 		// For example "file name.jpg" changes to "file_name.jpg" they're 
 		// different strings, but the same length
+		
 		if (
 			$upload_response['file_name'] != $upload_response['orig_name'] AND
 			count($upload_response['file_name']) != count($upload_response['orig_name'])
