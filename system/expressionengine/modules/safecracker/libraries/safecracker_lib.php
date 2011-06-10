@@ -162,7 +162,12 @@ class Safecracker_lib
 			$this->entry('url_title') != $this->EE->TMPL->fetch_param('url_title'))
 		)
 		{
-			return $this->EE->TMPL->no_results();
+			if ($this->EE->TMPL->no_results())
+			{
+				return $this->EE->TMPL->no_results();
+			}
+			
+			return $this->EE->output->show_user_error(FALSE, $this->EE->lang->line('safecracker_require_entry'));
 		}
 		
 		// @added rev 57
