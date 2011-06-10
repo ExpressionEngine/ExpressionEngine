@@ -127,7 +127,7 @@
 	 * Listen for clicks on the button_bar's upload file button
 	 */
 	var upload_listen = function() {
-		$('#upload_file, #rename_file', '#file_uploader .button_bar').click(function(event) {
+		$('#file_uploader .button_bar #rename_file').click(function(event) {
 			event.preventDefault();
 			$('#file_uploader iframe').contents().find('form').submit();
 		});
@@ -136,6 +136,22 @@
 			event.preventDefault();
 			file_uploader.dialog('close');
 		});
+	};
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Fired by the index of the upload after the file field has been 
+	 * filled out
+	 */
+	$.ee_fileuploader.enable_upload = function() {
+		$('#file_uploader .button_bar #upload_file')
+			.addClass('submit')
+			.removeClass('disabled-btn')
+			.click(function(event) {
+				event.preventDefault();
+				$('#file_uploader iframe').contents().find('form').submit();
+			});
 	};
 	
 	// --------------------------------------------------------------------
