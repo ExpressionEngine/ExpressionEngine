@@ -27,59 +27,59 @@
 class Forum {
 
 
-	public $version					= '3.1.4';
-	public $build					= '20100128';
-	protected $use_site_profile		= FALSE;
-	protected $search_limit			= 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)
-	protected $return_data 			= '';
-	protected $body_extra			= '';
-	protected $theme				= '';
-	protected $image_url			= '';
-	protected $forum_trigger		= '';
-	protected $trigger				= '';
-	protected $current_page			= 0;
-	protected $current_id			= '';
-	protected $return_override		= '';
-	protected $seg_addition			= 0;
-	protected $announce_id			= '';
-	protected $current_request		= '';
-	protected $current_page_name	= '';
-	protected $javascript			= '';
-	protected $head_extra			= '';
-	protected $submission_error		= '';
-	protected $error_message		= '';
-	protected $mimes				= '';
-	protected $basepath				= '';
-	protected $keywords				= '';
-	protected	$min_length			= 3;	// Minimum length of search keywords
-	protected	$cache_expire		= 24;	// How many hours should we keep search caches?
-	protected $max_chars			= 6000;
-	protected	$cur_thread_row		= 0;
-	protected $thread_post_total	= 0;	// Used for new entry submission to determine redirect page number
-	protected $trigger_error_page	= FALSE;
-	protected $is_table_open		= FALSE;
-	protected $preview_override		= FALSE;
-	protected $mbr_class_loaded		= FALSE;
-	protected $read_topics_exist	= FALSE;
-	protected $SPELL				= FALSE;
-	protected $spellcheck_enabled 	= FALSE;
-	protected $feeds_enabled		= NULL;
-	protected $feed_ids				= '';
-	protected $realm				= "ExpressionEngine Forums";
-	protected	$auth_attempt		= FALSE;
-	protected $use_sess_id			= 0;	// Used in calls to $this->EE->functions->fetch_site_index() in certain URLs, like attachments
-	protected $forum_ids			= array();
-	protected $attachments			= array();
-	protected $forum_metadata		= array();
-	protected $topic_metadata		= array();
-	protected $post_metadata		= array();
-	protected $admin_members		= array();
-	protected $admin_groups			= array();
-	protected $moderators			= array();
-	protected $current_moderator	= array();
-	protected $preferences			= array();
-	protected $form_actions			= array();
-	protected $uri_segments 		= array(
+	public $version				= '3.1.4';
+	public $build				= '20100128';
+	public $use_site_profile	= FALSE;
+	public $search_limit		= 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)
+	public $return_data 		= '';
+	public $body_extra			= '';
+	public $theme				= '';
+	public $image_url			= '';
+	public $forum_trigger		= '';
+	public $trigger				= '';
+	public $current_page		= 0;
+	public $current_id			= '';
+	public $return_override		= '';
+	public $seg_addition		= 0;
+	public $announce_id			= '';
+	public $current_request		= '';
+	public $current_page_name	= '';
+	public $javascript			= '';
+	public $head_extra			= '';
+	public $submission_error	= '';
+	public $error_message		= '';
+	public $mimes				= '';
+	public $basepath			= '';
+	public $keywords			= '';
+	public $min_length			= 3;	// Minimum length of search keywords
+	public $cache_expire		= 24;	// How many hours should we keep search caches?
+	public $max_chars			= 6000;
+	public $cur_thread_row		= 0;
+	public $thread_post_total	= 0;	// Used for new entry submission to determine redirect page number
+	public $trigger_error_page	= FALSE;
+	public $is_table_open		= FALSE;
+	public $preview_override	= FALSE;
+	public $mbr_class_loaded	= FALSE;
+	public $read_topics_exist	= FALSE;
+	public $SPELL				= FALSE;
+	public $spellcheck_enabled 	= FALSE;
+	public $feeds_enabled		= NULL;
+	public $feed_ids			= '';
+	public $realm				= "ExpressionEngine Forums";
+	public $auth_attempt		= FALSE;
+	public $use_sess_id			= 0;	// Used in calls to $this->EE->functions->fetch_site_index() in certain URLs, like attachments
+	public $forum_ids			= array();
+	public $attachments			= array();
+	public $forum_metadata		= array();
+	public $topic_metadata		= array();
+	public $post_metadata		= array();
+	public $admin_members		= array();
+	public $admin_groups		= array();
+	public $moderators			= array();
+	public $current_moderator	= array();
+	public $preferences			= array();
+	public $form_actions		= array();
+	public $uri_segments 		= array(
 			'viewcategory', 'viewpost', 'viewreply', 'viewforum', 'viewthread', 
 			'viewannounce', 'newtopic', 'quotetopic', 'quotereply', 
 			'reporttopic', 'reportreply', 'do_report', 'newreply', 'edittopic', 
@@ -92,7 +92,7 @@ class Forum {
 			'rss', 'atom', 'ignore_member', 'do_ignore_member'
 		);
 	
-	protected $include_exceptions	= array(
+	public $include_exceptions	= array(
 			'head_extra', 'spellcheck_js', 'body_extra');
 
 	/**
