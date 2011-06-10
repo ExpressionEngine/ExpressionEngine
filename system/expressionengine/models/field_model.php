@@ -49,7 +49,6 @@ class Field_model extends CI_Model {
 	 */
 	function get_fields($group_id = '', $additional_where = array())
 	{
-		$this->db->select('field_id, field_name, field_label, field_type, field_order');
 		$this->db->from('channel_fields');
 
 		if ($group_id != '')

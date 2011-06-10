@@ -3555,7 +3555,7 @@ class Admin_content extends CI_Controller {
 		// Drop from custom layouts
 		$query = $this->field_model->get_assigned_channels($group_id);
 			
-		if ($query->num_rows() > 0 && count($deleted['field_ids']) > 0)
+		if ($query->num_rows() > 0 && isset($deleted['field_ids']) && count($deleted['field_ids']) > 0)
 		{
 			foreach ($query->result() as $row)
 			{
