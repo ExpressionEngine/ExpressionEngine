@@ -2,7 +2,7 @@
 <?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment')?>
 	<?php // The inline style is here so as to not add extra muck to the globa.css for now.  -ga ?>
 	<fieldset style="margin-bottom:15px">
-		<legend><?=lang('search_comments')?></legend>
+		<legend><?=lang('filter_comments')?></legend>
 		<div class="group">
 			<?=form_dropdown('channel_id', $channel_select_opts, $channel_selected, 'id="f_channel_id"').NBS.NBS?>
 			<?=form_dropdown('status', $status_select_opts, $status_selected, 'id="f_status"').NBS.NBS?>

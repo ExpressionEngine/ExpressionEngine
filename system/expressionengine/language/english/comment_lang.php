@@ -21,8 +21,8 @@ $lang = array(
 'comments_moved' =>
 'Comments moved',
 
-'search_comments' =>
-'Search Comments',
+'filter_comments' =>
+'Filter Comments',
 
 'comment' =>
 'Comment',
