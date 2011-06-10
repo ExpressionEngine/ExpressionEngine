@@ -271,7 +271,13 @@ class Comment_mcp {
 			// Alter the email var
 			$comments[$k]->email = mailto($comments[$k]->email);
 
-			// 
+			// Create comment_edit_link
+			$comments[$k]->comment_edit_link = sprintf(
+					"<a class=\"less_important_link\" href=\"%s\" title=\"%s\">%s</a>",
+					$this->base_url.AMP.'method=edit_comment_form'.AMP.'comment_id='.$comments[$k]->comment_id,
+					'edit',
+					ellipsize($comments[$k]->comment, 100)
+				);
 		}
 
 		// flip the array
@@ -367,7 +373,7 @@ class Comment_mcp {
 			$url .= AMP.'channel_id='.$this->_channel;
 		}
 
-		if ($this->_status)
+		if ($this->_status && $this->_status != 'all')
 		{
 			$url .= AMP.'status='.$this->_status;
 		}

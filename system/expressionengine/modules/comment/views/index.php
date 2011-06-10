@@ -17,6 +17,7 @@
 <table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
 	<thead>	
 		<tr>
+			<th><a id="expand_contract" style="text-decoration: none" href="#">+/-</a></th>
 			<th><?=lang('comment')?></th>
 			<th><?=lang('entry_title')?></th>
 			<th><?=lang('name')?></th>
@@ -35,7 +36,8 @@
 	<?php else: ?>
 		<?php foreach ($comments as $comment): ?>
 		<tr>
-			<td><?=$comment->comment?></td>
+			<td>--</td>
+			<td><?=$comment->comment_edit_link?></td>
 			<td><?=$comment->entry_title?></td>
 			<td><?=$comment->name?></td>
 			<td><?=$comment->email?></td>
