@@ -13,7 +13,7 @@
 		<div class="clear_left"></div>
 	</div>
 	
-	<div id="file_chooser_body" class="shun">
+	<div id="file_chooser_body" class="">
 	
 		<table class="mainTable padTable" id="tableView" border="0" cellspacing="0" cellpadding="0">
 			<thead>
@@ -48,21 +48,21 @@
 	<div id="file_chooser_footer">
 		<div id="paginationTmpl">
 			<p id="pagination_meta">
-				<?=sprintf(lang('pagination_filter_text'), $selected_filters, $category_filters, $view_filters).NBS;?>
-				{{if pages.length}}
+				<?=sprintf(lang('pagination_filter_text'), $view_filters).NBS;?>
+				{{if pagination_needed}}
 					<br /><?=sprintf(lang('pagination_count_text'), '${pages_from}', '${pages_to}', '${pages_total}');?>
 				{{/if}}
 			</p>
 
-			{{if pages.length}}
+			{{if pagination_needed}}
 				<p id="paginationLinks">
-					{{each pages}}
-						{{if $value == pages_current}}
-						&nbsp;<strong>${$value}</strong>
-						{{else}}
-						&nbsp;<a href="#" onclick="$.ee_filebrowser.setPage(${directory}, ${$index}); return false;">${$value}</a>
-						{{/if}}
-					{{/each}}&nbsp;
+					<a href="#" class="previous visualEscapism">
+						<img src="<?=$this->cp->cp_theme_url?>images/pagination_prev_button.gif" width="13" height="13" alt="<?=lang('previous')?>" />
+					</a>
+					{{html dropdown}}
+					<a href="#" class="next">
+						<img src="<?=$this->cp->cp_theme_url?>images/pagination_next_button.gif" width="13" height="13" alt="<?=lang('next')?>" />
+					</a>
 				</p>
 			{{/if}}
 		</div>

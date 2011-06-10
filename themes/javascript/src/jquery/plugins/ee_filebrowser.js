@@ -277,6 +277,7 @@
 			if (settings[current_field].content_type == "image") {
 				images = build_image_list(directory);
 				workon = directory.images.slice(offset, offset + per_page);
+				pagination.pages_total = images.length;
 			} else {
 				workon = directory.files.slice(offset, offset + per_page);
 			};
@@ -307,16 +308,30 @@
 		for (var i = 0, page_count = Math.ceil(total_files / per_page); i < page_count; i++) {
 			pages[i] = i + 1;
 		}
-
+		
+		var $pagination_dropdown = $('<select />', {
+			"id": "current_page",
+			"name": "current_page"
+		});
+		
+		for (var i = 0, max = pages.length; i < max; i++) {
+			$pagination_dropdown.append($('<option />', {
+				"value": i,
+				"text": "Page " + (i + 1)
+			}));
+		};
+		
 		$.extend(pagination, {
 			'directory': directory.id,
 			'pages_total': total_files,
 			'pages_from': offset + 1, // Bump up offset by one because of zero indexed arrays
 			'pages_to': (offset + per_page > total_files) ? total_files : offset + per_page,
 			'pages_current': Math.floor(offset / per_page) + 1,
-			'pages': pages
+			'pages': pages,
+			'dropdown': $pagination_dropdown.wrap('<div />').parent().html(),
+			'pagination_needed': (pages.length > 1) ? true : false
 		});
-
+		
 		$.tmpl("pagination", pagination).appendTo("#file_chooser_footer")
 			// Create an event handler for changes to the dropdown
 			.find('#view_type')
@@ -330,7 +345,72 @@
 				})
 			.end()
 			.find('select[name=category]')
-				.replaceWith(directory.categories);
+				.replaceWith(directory.categories)
+			.end()
+			// Create a listener for the pagination dropdown
+			.find('select[name=current_page]')
+				.val(pagination.pages_current - 1)
+				.change(function() {
+					build_pages($('#dir_choice').val(), $(this).val());
+					show_next_previous(pagination.pages.length);
+				})
+			.end()
+			// Create a listener for the previous link
+			.find('a.previous')
+				.click(function(event) {
+					event.preventDefault();
+					change_page(-1);
+					show_next_previous(pagination.pages.length);
+				})
+			.end()
+			// Create a listener for the next link
+			.find('a.next')
+				.click(function(event) {
+					event.preventDefault();
+					change_page(1);
+					show_next_previous(pagination.pages.length);
+				})
+			.end();
+	}
+	
+	// ------------------------------------------------------------------------ 
+	
+	/**
+	 * Change the page for the next/previous pagination, takes a modifier (either
+	 * 1 or -1) depending if we're going forward or backward, changes the dropdown
+	 * and rebuilds the pages
+	 *
+	 * @param {Number} modifier Either +1 if going to the next page or -1 if 
+	 *		going to the previous page
+	 */
+	function change_page (modifier) {
+		if (typeof modifier == "undefined") {
+			modifier = 0;
+		};
+		
+		var current_page = $('#current_page').val(),
+			new_page = parseInt(current_page, 10) + modifier;
+		
+		$('#current_page').val(new_page);
+		build_pages($('#dir_choice').val(), new_page);
+	}
+	
+	// ------------------------------------------------------------------------ 
+	
+	/**
+	 * Shows the next or previous links depending on what page we're looking at
+	 * and how many pages there are
+	 *
+	 * @param {Number} total_pages The total number of pages
+	 */
+	function show_next_previous (total_pages) {
+		$('#file_chooser_footer #paginationLinks a').removeClass('visualEscapism');
+		
+		if ($('#current_page').val() == 0) {
+			$('#file_chooser_footer #paginationLinks .previous').addClass('visualEscapism');
+		} else if ($('#current_page').val() == (total_pages - 1)) {
+			$('#file_chooser_footer #paginationLinks .next').addClass('visualEscapism');
+		};
 	}
 
 	// --------------------------------------------------------------------

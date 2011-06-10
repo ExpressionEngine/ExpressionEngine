@@ -3396,6 +3396,7 @@ div.contentWrap {
 	border-width: 		0 0 1px;
 	display:			block;
 	height: 			450px;
+	margin-bottom: 		10px;
 	padding-bottom: 	10px;
 	overflow:			auto;
 	width:				100%;
@@ -3461,8 +3462,17 @@ a.file_chooser_thumbnail.last_row {
 }
 
 #fileChooser #pagination_meta {
-	line-height:		1.7;
-	margin-bottom:		5px;
+	line-height:		1.9;
+	margin-bottom:		4px;
+}
+
+#file_chooser_footer #paginationLinks a {
+	display: inline-block;
+	margin-top: 2px;
+}
+
+#file_chooser_footer #paginationLinks select {
+	margin: 0 5px 0 0;
 }
 
 /* @end */

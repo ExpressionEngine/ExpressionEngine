@@ -83,7 +83,8 @@ $lang = array(
 'apply_changes'			=> 'Apply Changes',
 
 'pagination_count_text'     => 'Showing %s to %s of %s files.',
-'pagination_filter_text'    => 'Show %s files from %s as %s.',
+'pagination_filter_text'    => 'Show files as %s.',
+'pagination_page'			=> 'Page',
 'all_categories'			=> 'all categories',
 'total_dir_size'            => 'Total Directory Size:',
 'no_upload_dirs_available' => 'No upload locations available',
