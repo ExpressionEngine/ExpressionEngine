@@ -166,6 +166,12 @@
 	
 	// --------------------------------------------------------------------
 	
+	$.ee_filebrowser.get_current_settings = function() {
+		return settings[current_field];
+	};
+	
+	// --------------------------------------------------------------------
+	
 	/*
 	 * Place Image
 	 *
@@ -241,10 +247,13 @@
 			pagination = {};
 
 		offset = offset * per_page;
-				
+		
+		var images,
+			workon;
+			
 		if (display_type != 'list') {
-			var images = build_image_list(directory),
-				workon = directory.images.slice(offset, offset + per_page);
+			images = build_image_list(directory);
+			workon = directory.images.slice(offset, offset + per_page);
 			
 			$("#tableView").hide();
 
@@ -260,10 +269,10 @@
 		}
 		else {
 			if (settings[current_field].content_type == "image") {
-				var images = build_image_list(directory),
-					workon = directory.images.slice(offset, offset + per_page);
+				images = build_image_list(directory);
+				workon = directory.images.slice(offset, offset + per_page);
 			} else {
-				var workon = directory.files.slice(offset, offset + per_page);
+				workon = directory.files.slice(offset, offset + per_page);
 			};
 
 			$("#tableView").show();

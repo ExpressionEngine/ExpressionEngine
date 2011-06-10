@@ -167,7 +167,8 @@
 		// Is this a number?
 		if ( ! isNaN(parseInt(directory_id, 10))) {
 			var source = file_uploader.find('iframe').attr('src'),
-				source_position = source.search('&directory_id=');
+				source_position = source.search('&directory_id='),
+				field_settings = $.ee_filebrowser.get_current_settings();
 
 			// Check to see if the source already has directory_id and remove it
 			if (source_position > 0) {
@@ -176,8 +177,14 @@
 			
 			source = source + '&directory_id=' + directory_id;
 			
+			// Add restrict_directory get variable if we need to restrict to a directory
 			if ($('#dir_choice_form:visible').size() <= 0) {
-				source = source + '&restrict=true';
+				source = source + '&restrict_directory=true';
+			}
+			
+			// Add restrict_image get variable if we need to restrict to images
+			if (field_settings.content_type == "image") {
+				source = source + '&restrict_image=true';
 			}
 			
 			file_uploader.find('iframe').attr('src', source);

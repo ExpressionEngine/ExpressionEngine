@@ -889,15 +889,21 @@ class Filemanager {
 	 * Upload a files
 	 *
 	 * @access	public
-	 * @param	int		upload directory id
-	 * @param	string	upload field name (optional - defaults to first upload field)
-	 * @param	bool	ajax request? (optional)
+	 * @param	int		$dir_id		Upload Directory ID
+	 * @param	string	$field		Upload Field Name (optional - defaults to first upload field)
+	 * @param 	boolean $image_only	Override to restrict uploads to images
 	 * @return	mixed	uploaded file info
 	 */
-	function upload_file($dir_id = '', $field = FALSE, $ajax = FALSE)
+	function upload_file($dir_id = '', $field = FALSE, $image_only = FALSE)
 	{
 		$dir = $this->directory($dir_id, FALSE, TRUE);
-
+		
+		// Override the allowed types of the dir if we're restricting to images
+		if ($image_only)
+		{
+			$dir['allowed_types'] = 'img';
+		}
+		
 		$data = array('error' => 'No File');
 		
 		if ( ! $dir)
@@ -906,11 +912,14 @@ class Filemanager {
 		}
 		else if (count($_FILES) > 0)
 		{
+			// If the field isn't set, default to first upload field
 			if ( ! $field && is_array(current($_FILES)))
 			{
 				$field = key($_FILES);
 			}
 			
+			// If we actually found the image, go ahead and send it to the 
+			// callback, most likely _upload_file
 			if (isset($_FILES[$field]))
 			{
 				$data = call_user_func($this->config['upload_file_callback'], $dir, $field);
@@ -1266,7 +1275,7 @@ class Filemanager {
 		else
 		{
 			$thumb_info['thumb'] = PATH_CP_GBL_IMG.'default.png';
-			$thumb_info['thumb_path'] = $directory['server_path'] . $file['file_name'];
+			$thumb_info['thumb_path'] = '';
 			$thumb_info['thumb_class'] = 'no_image';
 		}
 		

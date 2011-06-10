@@ -144,8 +144,10 @@ class Content_files_modal extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$restrict_image = ($this->input->post('restrict_image')) ? TRUE : FALSE;
+
 		// Both uploads the file and adds it to the database
-		$upload_response = $this->filemanager->upload_file($file_dir);
+		$upload_response = $this->filemanager->upload_file($file_dir, FALSE, $restrict_image);
 		
 		// Any errors from the Filemanager?
 		if (isset($upload_response['error']))
