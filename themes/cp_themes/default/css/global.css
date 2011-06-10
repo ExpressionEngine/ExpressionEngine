@@ -3395,9 +3395,9 @@ div.contentWrap {
 	border:				1px solid #ccc;
 	border-width: 		0 0 1px;
 	display:			block;
-	height: 			450px;
+	height: 			455px;
 	margin-bottom: 		10px;
-	padding-bottom: 	10px;
+	padding-bottom: 	0px;
 	overflow:			auto;
 	width:				100%;
 }

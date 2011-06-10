@@ -33,7 +33,7 @@
 	 * @todo make callbacks overridable ($.extend)
 	 */
 	$.ee_filebrowser = function() {
-		files_per_table = 14;
+		files_per_table = 15;
 		thumbs_per_page = 36;
 
 		// Setup!
