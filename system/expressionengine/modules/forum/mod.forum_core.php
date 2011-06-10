@@ -9884,14 +9884,16 @@ class Forum_Core extends Forum {
 
 		if ( ! empty($post_ids))
 		{
-			$POST_IDS = "(";
-
+			$POST_IDS = array();
+			
+			// flatten the array for use by Active Record
 			foreach ($post_ids as $post_array)
 			{
-				$POST_IDS .= implode(',', $post_array).',';
+				foreach ($post_array as $pid)
+				{
+					$POST_IDS[] = $pid;
+				}
 			}
-
-			$POST_IDS = substr($POST_IDS, 0, -1).")";
 
 			$m_query = $this->EE->db->select('p.post_id, p.body, m.screen_name, m.member_id')
 									->from('forum_posts p')
