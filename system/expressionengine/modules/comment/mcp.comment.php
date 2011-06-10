@@ -87,6 +87,8 @@ class Comment_mcp {
 		$this->EE->load->helper(array('text', 'form'));
 		$this->EE->load->library('javascript');
 
+		$this->EE->javascript->set_global('lang.selection_required', lang('selection_required'));
+
 		$this->EE->cp->set_variable('cp_page_title', lang('comments'));
 
 		$this->_setup_query_filters();
@@ -118,7 +120,14 @@ class Comment_mcp {
 			'status_select_opts'	=> $this->_status_select_opts(),
 			'status_selected'		=> $this->_status,
 			'date_select_opts'		=> $this->_date_select_opts(),
-			'date_selected'			=> $this->_date_range
+			'date_selected'			=> $this->_date_range,
+			'form_options'			=> array(
+							'close' 	=> lang('close_selected'),
+							'open' 		=> lang('open_selected'),
+							'pending' 	=> lang('pending_selected'),
+							'null'		=> '------',
+							'delete'	=> lang('delete_selected')
+			)
 		);
 
 		return $this->EE->load->view('index', $data, TRUE);
@@ -224,6 +233,16 @@ class Comment_mcp {
 	 */
 	protected function _merge_comment_data($comments, $channels, $authors)
 	{
+		$this->EE->load->library('typography');
+
+		$config = array(
+			'parse_images'	=> FALSE,
+			'allow_headings'=> FALSE,	
+			'word_censor' 	=> ($this->EE->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE
+		);
+
+		$this->EE->typography->initialize($config);
+
 		// There a result for authors here, or are they all anon?
 		$authors = ( ! $authors->num_rows()) ? array() : $authors->result();
 
@@ -276,8 +295,10 @@ class Comment_mcp {
 					"<a class=\"less_important_link\" href=\"%s\" title=\"%s\">%s</a>",
 					$this->base_url.AMP.'method=edit_comment_form'.AMP.'comment_id='.$comments[$k]->comment_id,
 					'edit',
-					ellipsize($comments[$k]->comment, 100)
+					ellipsize($comments[$k]->comment, 50)
 				);
+			
+			$comments[$k]->comment = $this->EE->typography->parse_type($comments[$k]->comment);
 		}
 
 		// flip the array

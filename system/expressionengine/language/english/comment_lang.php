@@ -305,7 +305,9 @@ $lang = array(
 'end_date' =>
 'End Date',
 
-''=>''
+'expand' =>
+'Expand',
+
 );
 
 /* End of file comment_lang.php */

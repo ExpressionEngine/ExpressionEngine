@@ -13,7 +13,7 @@
 <?=form_close()?>
 
 
-
+<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=modify_comments', array('name' => 'target', 'id' => 'target'))?>
 <table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
 	<thead>	
 		<tr>
@@ -36,8 +36,11 @@
 	<?php else: ?>
 		<?php foreach ($comments as $comment): ?>
 		<tr>
-			<td>--</td>
-			<td><?=$comment->comment_edit_link?></td>
+			<td class="expand"><img src="<?=$this->cp->cp_theme_url?>images/field_collapse.png" alt="<?=lang('expand')?>" /></td>
+			<td>
+				<?=$comment->comment_edit_link?>
+				<div class="full_comment" style="display:none"><?=$comment->comment?></div>
+			</td>
 			<td><?=$comment->entry_title?></td>
 			<td><?=$comment->name?></td>
 			<td><?=$comment->email?></td>
@@ -53,3 +56,47 @@
 
 
 <?=$pagination?>
+
+<div class="tableSubmit">
+	<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
+	<?=form_dropdown('action', $form_options, '', 'id="comment_action"').NBS.NBS?>
+</div>
+
+<script type="text/javascript">
+
+$(document).ready(function () {
+	$(".toggle_comments").toggle(
+		function () {
+			$("input[class=comment_toggle]").each(function () {
+				this.checked = true;
+			});
+		}, function () {
+			$("input[class=comment_toggle]").each(function () {
+				this.checked = false;
+			});
+		}
+	);
+
+	$("#target").submit(function () {
+		if ( ! $("input[class=comment_toggle]", this).is(":checked")) {
+			$.ee_notice(EE.lang.selection_required, {"type" : "error"});
+			return false;
+		}
+	});
+
+	$("td.expand img").each(function () {
+		$(this).click(function () {
+			if (this.src == "<?=$this->cp->cp_theme_url?>images/field_collapse.png") {
+				this.src = "<?=$this->cp->cp_theme_url?>images/field_expand.png";
+
+				$(this).parents('tr').find("div.full_comment").show();
+			} else {
+				this.src = "<?=$this->cp->cp_theme_url?>images/field_collapse.png";
+				$(this).parents('tr').find("div.full_comment").hide();
+			}
+		});
+	});
+
+});
+</script>
+
