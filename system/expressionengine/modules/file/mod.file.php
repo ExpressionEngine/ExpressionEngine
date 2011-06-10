@@ -73,63 +73,10 @@ class File {
 
 	// ------------------------------------------------------------------------
 
-/*
-1x params
-
-    * category="2"
-    * columns="4" rows="2"
-    * dynamic="off"
-    * file_id="147"
-    * file_id_from="20"
-    * file_id_to="40"
-    * gallery="vacations"
-    * limit="10"
-    * log_views="off"
-    * orderby="date" - caption, date, edit_date, file_id, most_comments, most_recent_comment, most_views, random, screen_name, title, username
-    * paginate="top"
-    * show_future_entries="yes"
-    * sort="asc"
-    * status="open"
-
-*/
-
-/*
-1x sing vars
-    * {caption}
-    * {category}
-    * {category_id}
-    * {category_path='gallery/category'}
-    * {count}
-    * {custom_field_one}... {custom_field_six}
-    * {entry_date format="%Y %m %d"}
-    * {file_id}
-    * {filename}
-    * {height}
-    * {id_path='gallery/comments'}
-    * {image_url}
-    * {medium_height}
-    * {medium_url}
-    * {medium_width}
-    * {recent_comment_date format="%Y %m %d"}
-    * {switch="option_one|option_two|option_three"}
-    * {thumb_height}
-    * {thumb_url}
-    * {thumb_width}
-    * {title}
-    * {total_results}
-    * {total_comments}
-    * {views}
-    * {width}
-
-*/
-
-
-	// ------------------------------------------------------------------------
-
 	/**
 	  *  Files tag
 	  */
-	function files()
+	function entries()
 	{
 		$this->uri = ($this->query_string != '') ? $this->query_string : 'index.php';
 		
