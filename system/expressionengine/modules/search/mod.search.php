@@ -405,7 +405,7 @@ class Search {
 		foreach ($valid_inputs as $current_input) 
 		{
 			if (
-				( ! isset($this->_meta[$current_input]) OR $this->_meta[$current_input] === '') AND
+				( ! isset($this->_meta[$current_input]) OR $this->_meta[$current_input] === '') &&
 				$this->EE->input->post($current_input)
 			)
 			{
@@ -628,7 +628,7 @@ class Search {
 				LEFT JOIN exp_channel_data ON exp_channel_titles.entry_id = exp_channel_data.entry_id ";
 
 		// is the comment module installed?
-		if ($this->EE->addons_model->module_installed('comments'))
+		if ($this->EE->addons_model->module_installed('comment'))
 		{
 			$sql .= "LEFT JOIN exp_comments ON exp_channel_titles.entry_id = exp_comments.entry_id";
 		}
@@ -914,7 +914,7 @@ class Search {
 			/**  Search in Comments
 			/** ----------------------------------*/
 
-			if (isset($this->_meta['search_in']) AND $this->_meta['search_in'] == 'everywhere' AND $this->EE->addons_model->module_installed('comments'))
+			if (isset($this->_meta['search_in']) AND $this->_meta['search_in'] == 'everywhere' AND $this->EE->addons_model->module_installed('comment'))
 			{
 				if (count($terms) == 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'word')
 				{
@@ -992,7 +992,7 @@ class Search {
 				$sql .= "AND (exp_channel_titles.author_id {$member_ids} ";
 
 				// searching comments too?
-				if (isset($this->_meta['search_in']) AND $this->_meta['search_in'] == 'everywhere' AND $this->EE->addons_model->module_installed('comments'))
+				if (isset($this->_meta['search_in']) AND $this->_meta['search_in'] == 'everywhere' AND $this->EE->addons_model->module_installed('comment'))
 				{
 					$sql .= " OR exp_comments.author_id {$member_ids}";
 				}

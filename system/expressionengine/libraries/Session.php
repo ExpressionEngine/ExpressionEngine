@@ -1206,11 +1206,13 @@ class EE_Session {
 		{
 			$res = $this->EE->db->select('ec.channel_id, ec.channel_title')
 								->from(array('channel_member_groups ecmg', 'channels ec'))
-								->where('ec.channel_id', 'ecmg.channel_id')
+								->where('ecmg.channel_id', 'ec.channel_id',  FALSE)
 								->where('ecmg.group_id', $this->userdata['group_id'])
 								->where('site_id', $this->EE->config->item('site_id'))
 								->order_by('ec.channel_title')
 								->get();
+
+
 		}
 		
 		if ($res->num_rows() > 0)
