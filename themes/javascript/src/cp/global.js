@@ -214,9 +214,9 @@ jQuery(document).ready(function () {
 	EE.cp.show_hide_sidebar();
 
 
-	if (EE.flashdata !== undefined) {
+//	if (EE.flashdata !== undefined) {
 		EE.cp.display_notices();
-	}
+//	}
 
 	// Setup Notepad
 	EE.notepad = (function () {
@@ -351,7 +351,7 @@ EE.cp.accessory_toggle = function() {
 			$accessory = $("#" + this.className);
 
 		if ($parent.hasClass("current")) {
-			$accessory.hide();
+			$accessory.slideUp('fast');
 			$parent.removeClass("current");
 		}
 		else 
@@ -361,7 +361,7 @@ EE.cp.accessory_toggle = function() {
 				$parent.siblings().removeClass("current");
 			}
 			else {
-				$accessory.slideDown();
+				$accessory.slideDown('fast');
 			}
 			$parent.addClass("current");
 		}
@@ -484,33 +484,16 @@ EE.cp.show_hide_sidebar = function() {
 
 // Move notices to notification bar for consistency
 EE.cp.display_notices = function() {
-	var notices = $(".notice").filter('p.js_hide'),	// make sure we only grab notices that are meant for our js
-		types = {success: "message_success", notice: "message", error: "message_failure"},
-		show_notices = [], i = 0,
-		type, notice;
 
-	for (type in types) {
-		if (EE.flashdata.hasOwnProperty(types[type])) {
+	var types = ["success", "notice", "error"]; 
 
-			if (type === "error") {
-				notice = notices.filter(".failure").slice(0, 1);
+	$(".message.js_hide").each(function() {
+		for (i in types) {
+			if ($(this).hasClass(types[i])) {
+				$.ee_notice($(this).html(), {type: types[i]});
 			}
-			else if (type === "success") {
-				notice = notices.filter(".success").slice(0, 1);
-			}
-			else {
-				notice = notices.slice(0, 1);
-			}
-
-			// i++  is faster than show_notices.push();
-			show_notices[i++ ] = {message: EE.flashdata[types[type]], type: type};
-			notice.remove();
 		}
-	}
-
-	if (show_notices.length) {
-		$.ee_notice(show_notices);
-	}
+	});
 };
 
 // Fallback for browsers without placeholder= support

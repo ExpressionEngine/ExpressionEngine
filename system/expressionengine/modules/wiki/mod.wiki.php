@@ -4211,6 +4211,7 @@ class Wiki {
 				$query = $this->EE->db->query("SELECT cat_id
 									 FROM exp_wiki_categories
 									 WHERE cat_name = '".$this->EE->db->escape_str($this->valid_title($cats['0']))."'
+									 AND parent_id = '0' 
 									 AND wiki_id = '".$this->EE->db->escape_str($this->wiki_id)."' 
 									 LIMIT 1");
 									 

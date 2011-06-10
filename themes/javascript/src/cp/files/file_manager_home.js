@@ -93,8 +93,7 @@ $.ee_filemanager.file_uploader = function() {
 
 			if (file.replace != true) {
 				// Change modal's top
-				var height_difference = $('.mainTable tbody tr:first').height(); // 2 is added for borders
-				$('.ui-dialog').css('top', parseInt($('.ui-dialog').css('top'), 10) - height_difference);
+				$('#file_uploader').dialog('option', 'position', 'center');
 			};
 		},
 		trigger: '#action_nav a:contains(Upload File)'

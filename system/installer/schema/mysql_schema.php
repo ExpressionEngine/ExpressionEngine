@@ -1238,6 +1238,7 @@ class EE_Schema {
 				`mime_type` varchar(255) DEFAULT NULL,
 				`file_name` varchar(255) DEFAULT NULL,
 				`file_size` int(10) DEFAULT '0',
+				`caption` text,
 				`field_1` text,
   				`field_1_fmt` tinytext,
 				`field_2` text,

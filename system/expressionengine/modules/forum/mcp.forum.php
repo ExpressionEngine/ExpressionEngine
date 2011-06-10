@@ -2317,16 +2317,16 @@ class Forum_mcp {
 				
 		$query = $this->EE->db->query($sql);
 		
-		if ($query->num_rows() == 0)
+		if ($query->num_rows() === 0)
 		{
 			$this->EE->output->send_ajax_response(
-				array('error' => $this->EE->lang->line('forum_no_results')), TRUE
+				array('error' => lang('forum_no_results'))
 			);
 		}
 		elseif ($query->num_rows() > 99)
 		{
 			$this->EE->output->send_ajax_response(
-				array('error' => $this->EE->lang->line('forum_toomany_results')), TRUE
+				array('error' => lang('forum_toomany_results'))
 			);
 		}
 

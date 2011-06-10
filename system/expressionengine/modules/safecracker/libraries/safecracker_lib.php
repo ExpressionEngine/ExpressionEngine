@@ -136,8 +136,39 @@ class Safecracker_lib
 		
 		$this->EE->javascript->output('if (typeof SafeCracker == "undefined" || ! SafeCracker) { var SafeCracker = {markItUpFields:{}};}');
 		
+		// Figure out what channel we're working with
+		$this->fetch_channel($this->EE->TMPL->fetch_param('channel_id'), $this->EE->TMPL->fetch_param('channel'));
+		
+		if ( ! $this->channel)
+		{
+			return $this->EE->output->show_user_error('submission', $this->EE->lang->line('safecracker_no_channel'));
+		}
+		
 		//get the entry data, if an entry was specified
 		$this->fetch_entry($this->EE->TMPL->fetch_param('entry_id'), $this->EE->TMPL->fetch_param('url_title'));
+		
+		// Whoa there big conditional, what's going on here?
+		// We want to make sure no one's being tricky here and supplying
+		// an invalid entry_id or url_title via a segment, so we need to
+		// check to see if either exists and if it does make sure that the
+		// passed in version is the same as what we find in the database.
+		// If they are different (most likely it wasn't found in the 
+		// database) then don't show them the form
+		
+		if (
+			($this->EE->TMPL->fetch_param('entry_id') != '' AND
+			$this->entry('entry_id') != $this->EE->TMPL->fetch_param('entry_id')) OR
+			($this->EE->TMPL->fetch_param('url_title') != '' AND
+			$this->entry('url_title') != $this->EE->TMPL->fetch_param('url_title'))
+		)
+		{
+			if ($this->EE->TMPL->no_results())
+			{
+				return $this->EE->TMPL->no_results();
+			}
+			
+			return $this->EE->output->show_user_error(FALSE, $this->EE->lang->line('safecracker_require_entry'));
+		}
 		
 		// @added rev 57
 		if ( ! $this->entry('entry_id') && $this->bool_string($this->EE->TMPL->fetch_param('require_entry')))
@@ -148,13 +179,6 @@ class Safecracker_lib
 			}
 			
 			return $this->EE->output->show_user_error(FALSE, $this->EE->lang->line('safecracker_require_entry'));
-		}
-		
-		$this->fetch_channel($this->EE->TMPL->fetch_param('channel_id'), $this->EE->TMPL->fetch_param('channel'));
-		
-		if ( ! $this->channel)
-		{
-			return $this->EE->output->show_user_error('submission', $this->EE->lang->line('safecracker_no_channel'));
 		}
 		
 		if ($this->entry('entry_id') && ! $this->form_error)
@@ -666,7 +690,7 @@ class Safecracker_lib
 				}
 			}
 		}
-		
+
 		foreach ($this->title_fields as $field)
 		{
 			if (isset($this->EE->TMPL->var_single['error:'.$field]))
@@ -675,6 +699,7 @@ class Safecracker_lib
 			}
 		}
 		
+		// Add global errors
 		if (count($this->errors) === 0)
 		{
 			$this->parse_variables['global_errors'] = array(array());
@@ -691,6 +716,7 @@ class Safecracker_lib
 		
 		$this->parse_variables['global_errors:count'] = count($this->errors);
 		
+		// Add field errors
 		if (count($this->field_errors) === 0)
 		{
 			$this->parse_variables['field_errors'] = array(array());
@@ -707,6 +733,26 @@ class Safecracker_lib
 		
 		$this->parse_variables['field_errors:count'] = count($this->field_errors);
 		
+		// Add field errors to conditional parsing
+		$conditional_errors = $this->parse_variables;
+		if ( ! empty($conditional_errors['field_errors'][0]))
+		{
+			foreach ($conditional_errors['field_errors'] as $error)
+			{
+				$conditional_errors['error:' . $error['field']] = $error['error'];
+			}
+			
+			unset($conditional_errors['field_errors']);
+		}
+		
+		// Parse conditionals
+		// $this->parse_variables['error:title'] = TRUE;
+		$this->EE->TMPL->tagdata = $this->EE->functions->prep_conditionals(
+			$this->EE->TMPL->tagdata, 
+			$conditional_errors
+		);
+
+		// Parse the variables
 		if ($this->parse_variables)
 		{
 			$this->EE->TMPL->tagdata = $this->EE->TMPL->parse_variables($this->EE->TMPL->tagdata, array($this->parse_variables));
@@ -1875,6 +1921,7 @@ class Safecracker_lib
 		$this->EE->db->join('exp_channel_data', 'exp_channel_titles.entry_id = exp_channel_data.entry_id');
 		$this->EE->db->where('exp_channel_titles.site_id', $this->site_id);
 		$this->EE->db->where('exp_channel_titles.'.(($entry_id) ? 'entry_id' : 'url_title'), $this->EE->security->xss_clean(($entry_id) ? $entry_id : $url_title));
+		$this->EE->db->where('exp_channel_data.channel_id', $this->channel('channel_id'));
 		$this->EE->db->limit(1);
 		
 		$query = $this->EE->db->get();
@@ -1897,6 +1944,8 @@ class Safecracker_lib
 			}
 			
 			$this->entry = $row;
+		} else {
+			
 		}
 		
 		unset($query);

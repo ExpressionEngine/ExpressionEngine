@@ -407,13 +407,13 @@ class Forum_Core extends Forum {
 								t.status, p.author_id, p.topic_id, p.post_id, p.body, 
 								p.post_date, m.screen_name');
 		$this->EE->db->from(array('forums f', 'forum_topics t', 'forum_posts p', 'members m'));
-		$this->EE->db->where('f.forum_id', 'p.forum_id');
-		$this->EE->db->where('p.topic_id', 't.topic_id');
-		$this->EE->db->where('p.author_id', 'm.member_id');
-		$this->EE->db->where('p.post_id', $id);
+		$this->EE->db->where('f.forum_id = p.forum_id', '', FALSE);
+		$this->EE->db->where('p.topic_id = t.topic_id', '', FALSE);
+		$this->EE->db->where('p.author_id = m.member_id', '', FALSE);
+		$this->EE->db->where('p.post_id', (int) $id);
 		$this->EE->db->where('p.board_id', $this->fetch_pref('board_id'));
 		$query = $this->EE->db->get();
-		
+
 		if ($query->num_rows() == 0)
 		{
 			return FALSE;
@@ -617,7 +617,12 @@ class Forum_Core extends Forum {
 		}
 		
 		// These are exceptions to the normal permissions checks
-		$exceptions = array('member', 'smileys', 'search', 'member_search', 'new_topic_search', 'active_topic_search', 'view_pending_topics', 'search_results', 'search_thread', 'ban_member', 'do_ban_member', 'spellcheck', 'spellcheck_iframe', 'rss', 'atom', 'ignore_member', 'do_ignore_member');
+		$exceptions = array(
+				'member', 'smileys', 'search', 'member_search', 'new_topic_search', 
+				'active_topic_search', 'view_pending_topics', 'search_results', 
+				'search_thread', 'ban_member', 'do_ban_member', 'spellcheck', 
+				'spellcheck_iframe', 'rss', 'atom', 'ignore_member', 'do_ignore_member'
+			);
 
 		// Is the member area trigger changed?
 		
@@ -646,7 +651,12 @@ class Forum_Core extends Forum {
 		// Fetch the Forums Prefs		
 		// Depending on what the "current_request" variable contains we'll run the query a little differnt.
 				
-		if (in_array($this->current_request, array('editreply', 'deletereply', 'quotereply', 'viewpost', 'viewreply', 'reportreply', 'movereply')))
+		$allowed = array(
+				'editreply', 'deletereply', 'quotereply', 'viewpost', 
+				'viewreply', 'reportreply', 'movereply'
+		);
+
+		if (in_array($this->current_request, $allowed))
 		{
 			if (FALSE === ($meta = $this->_fetch_post_metadata($this->current_id)))
 			{
@@ -763,7 +773,8 @@ class Forum_Core extends Forum {
 			return TRUE;
 		}
 		
-		$query = $this->EE->db->query("SELECT member_id FROM exp_members WHERE group_id = '1'");
+		$query = $this->EE->db->select('member_id')->get_where('members',
+													array('group_id' => (int) 1));
 	
 		if ($query->num_rows() > 0)
 		{
@@ -772,10 +783,14 @@ class Forum_Core extends Forum {
 				$this->admin_members[] = $row['member_id'];
 			}
 		}
+
+		$query = $this->EE->db->select('admin_group_id, admin_member_id')
+							  ->get_where('forum_administrators',
+							  			  array(
+							  			  	'board_id' => (int) $this->fetch_pref('board_id')
+								  		));
 		
-		$query = $this->EE->db->query("SELECT admin_group_id, admin_member_id FROM exp_forum_administrators WHERE board_id = '".$this->fetch_pref('board_id')."'");
-		
-		if ($query->num_rows() == 0 AND count($this->admin_members) == 0)
+		if ($query->num_rows() === 0 AND count($this->admin_members) == 0)
 		{
 			$this->admin_members = FALSE;
 			$this->admin_groups  = FALSE;
@@ -825,7 +840,6 @@ class Forum_Core extends Forum {
 			}			
 		}
 		
-		
 		if ( ! $this->_fetch_administrators())
 		{
 			return FALSE;
@@ -846,8 +860,10 @@ class Forum_Core extends Forum {
 		
 		if ($member_id != 0 AND $group_id == 0)
 		{
-			$query = $this->EE->db->query("SELECT group_id FROM exp_members WHERE member_id = '{$member_id}'");
-		
+			$query = $this->EE->db->select('group_id')
+								  ->get_where('members', 
+								  		array('member_id' => (int) $member_id));
+
 			if ($query->num_rows() == 0)
 			{
 				return FALSE;
@@ -961,31 +977,31 @@ class Forum_Core extends Forum {
 	function _create_pagination($data)
 	{
 		$this->EE->load->library('pagination');
-		
-		$config['first_page']	= lang('first');	
-		$config['last_page']	= lang('last');	
-		$config['next_link']	= lang('next');
-		$config['prev_link']	= lang('previous');
-		$config['first_tag_open']	= '<td><div class="paginate">';
-		$config['first_tag_close']	= '</div></td>';
-		$config['next_tag_open']	= '<td><div class="paginate">';
-		$config['next_tag_close']	= '</div></td>';
-		$config['prev_tag_open']	= '<td><div class="paginate">';
-		$config['prev_tag_close']	= '</div></td>';
-		$config['num_tag_open']	= '<td><div class="paginate">';
-		$config['num_tag_close']	= '</div></td>';
-		$config['cur_tag_open']	= '<td><div class="paginateCur">';
-		$config['cur_tag_close']	= '</div></td>';
-		$config['last_tag_open']	= '<td><div class="paginate">';
-		$config['last_tag_close']	= '</div></td>';
-		
-		//$config['first_url'] 	= $data['first_url'];
-		$config['uri_segment']	= 0;	// pretty hacky, but lets us override CI's cur_page
-		$config['base_url']		= $data['path'];
-		$config['prefix']		= 'P';
-		$config['total_rows'] 	= $data['total_count'];
-		$config['per_page']		= $data['per_page'];
-		$config['cur_page']		= $data['cur_page'];
+
+		$config = array(
+			'first_page'		=> lang('first'),
+			'last_page'			=> lang('last'),
+			'next_link'			=> lang('next'),
+			'prev_link'			=> lang('previous'),
+			'first_tag_open'	=> '<td><div class="paginate">',
+			'first_tag_close'	=> '</div></td>',
+			'next_tag_open'		=> '<td><div class="paginate">',
+			'next_tag_close'	=> '</div></td>',
+			'prev_tag_open'		=> '<td><div class="paginate">',
+			'prev_tag_close'	=> '</div></td>',
+			'num_tag_open'		=> '<td><div class="paginate">',
+			'num_tag_close'		=> '</div></td>',
+			'cur_tag_open'		=> '<td><div class="paginateCur">',
+			'cur_tag_close'		=> '</div></td>',
+			'last_tag_open'		=> '<td><div class="paginate">',
+			'last_tag_close'	=> '</div></td>',
+			'uri_segment'		=> 0,
+			'base_url'			=> $data['path'],
+			'prefix'			=> 'P',
+			'total_rows'		=> $data['total_count'],
+			'per_page' 			=> $data['per_page'],
+			'cur_page'			=> $data['cur_page']
+		);
 
 		$this->EE->pagination->initialize($config);
 		return $this->EE->pagination->create_links();
@@ -1619,22 +1635,6 @@ class Forum_Core extends Forum {
 		}
 				
 		return $template;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Remove session ID from string
-	 *
-	 * This function is used mainly by the Input class to strip
-	 * session IDs if they are used in public pages.
-	 *
-	 * @param	string
-	 * @return	string
-	 */	
-	public function remove_session_id($str)
-	{
-		return preg_replace("#S=.+?/#", "", $str);
 	} 
 
 	// --------------------------------------------------------------------
@@ -3846,7 +3846,8 @@ class Forum_Core extends Forum {
 
 			// Parse the "Delete" Button		
 			if (($this->EE->session->userdata('group_id') == 1) OR 
-						$this->_mod_permission('can_delete', $row['forum_id']))
+					$this->_mod_permission('can_delete', $row['forum_id']) && 
+				! in_array($row['author_id'], $super_admins))
 			{
 				$temp = $this->allow_if('can_delete', $temp);
 			}
@@ -3859,19 +3860,21 @@ class Forum_Core extends Forum {
 			
 			// Users can edit their own entries, and moderators (with edit privs) can edit other entires.
 			// However, no one but super admins can edit their own entries
-			
+
 			$can_edit = FALSE;
 			
-			if ($this->EE->session->userdata('group_id') == 1 OR ($this->EE->session->userdata('member_id') == $row['author_id'])) 
+			if ($this->EE->session->userdata('group_id') == 1 OR 
+				($this->EE->session->userdata('member_id') == $row['author_id'])) 
 			{
 				$can_edit = TRUE;
 			}
 			
-			if ($this->_mod_permission('can_edit', $row['forum_id']) AND ! in_array($row['author_id'], $super_admins) )
+			if ($this->_mod_permission('can_edit', $row['forum_id']) && 
+				! in_array($row['author_id'], $super_admins) )
 			{
 				$can_edit = TRUE;
 			}
-									
+								
 			if ($can_edit)
 			{
 				$temp = $this->allow_if('can_edit', $temp);
@@ -3882,7 +3885,9 @@ class Forum_Core extends Forum {
 			}
 			
 			// Parse the avatar
-			if ($this->EE->config->item('enable_avatars') == 'y' AND $row['avatar_filename'] != '' AND $this->EE->session->userdata('display_avatars') == 'y' )
+			if ($this->EE->config->item('enable_avatars') == 'y' && 
+				$row['avatar_filename'] != '' && 
+				$this->EE->session->userdata('display_avatars') == 'y' )
 			{
 				$avatar_path	= $this->EE->config->slash_item('avatar_url').$row['avatar_filename'];
 				$avatar_width	= $row['avatar_width'];
@@ -5844,7 +5849,7 @@ class Forum_Core extends Forum {
 
 					if (in_array($meta[$this->current_id]['author_id'], $super_admins) && $this->EE->session->userdata('group_id') != 1)
 					{
-						return $this->trigger_error('not_authorized');
+						//return $this->trigger_error('not_authorized');
 					}
 				}
 			}
@@ -6458,8 +6463,8 @@ class Forum_Core extends Forum {
 							'title'				=> $title,
 							'body'				=> $body,
 							'topic_id'			=> $data['topic_id'],
-							'thread_url'		=> $this->remove_session_id($redirect),
-							'post_url'			=> (isset($data['post_id'])) ? $this->forum_path()."viewreply/{$data['post_id']}/" : $this->remove_session_id($redirect)
+							'thread_url'		=> $this->EE->input->remove_session_id($redirect),
+							'post_url'			=> (isset($data['post_id'])) ? $this->forum_path()."viewreply/{$data['post_id']}/" : $this->EE->input->remove_session_id($redirect)
 						 );
 			
 			$template = $this->EE->functions->fetch_email_template('admin_notify_forum_post');
@@ -6528,8 +6533,8 @@ class Forum_Core extends Forum {
 						'title'				=> $title,
 						'body'				=> $body,
 						'topic_id'			=> $data['topic_id'],
-						'thread_url'		=> $this->remove_session_id($redirect),
-						'post_url'			=> (isset($data['post_id'])) ? $this->forum_path()."viewreply/{$data['post_id']}/" : $this->remove_session_id($redirect)
+						'thread_url'		=> $this->EE->input->remove_session_id($redirect),
+						'post_url'			=> (isset($data['post_id'])) ? $this->forum_path()."viewreply/{$data['post_id']}/" : $this->EE->input->remove_session_id($redirect)
 					 );
 		
 		$template = $this->EE->functions->fetch_email_template('forum_post_notification');
@@ -7050,7 +7055,7 @@ class Forum_Core extends Forum {
 							'title'				=> $title,
 							'name_of_recipient'	=> $query2->row('screen_name') ,
 							'moderation_action' => lang('moved_action'),
-							'thread_url'		=> $this->remove_session_id($this->EE->input->post('RET'))
+							'thread_url'		=> $this->EE->input->remove_session_id($this->EE->input->post('RET'))
 						 );
 
 			$template = $this->EE->functions->fetch_email_template('forum_moderation_notification');

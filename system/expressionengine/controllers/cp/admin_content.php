@@ -3555,7 +3555,7 @@ class Admin_content extends CI_Controller {
 		// Drop from custom layouts
 		$query = $this->field_model->get_assigned_channels($group_id);
 			
-		if ($query->num_rows() > 0 && count($deleted['field_ids']) > 0)
+		if ($query->num_rows() > 0 && isset($deleted['field_ids']) && count($deleted['field_ids']) > 0)
 		{
 			foreach ($query->result() as $row)
 			{
@@ -3772,16 +3772,6 @@ class Admin_content extends CI_Controller {
 		$this->db->where('f.field_id', $vars['field_id']);
 		
 		$field_query = $this->db->get();
-
-		$this->jquery->tablesorter('.mainTable', '{
-			headers: {0: {sorter: false}, 1: {sorter: false}},
-			widgets: ["zebra"]
-		}');
-
-		$field_query = $this->db->query("SELECT f.* FROM exp_channel_fields AS f, exp_field_groups AS g
-						WHERE f.group_id = g.group_id
-						AND g.site_id = '".$this->db->escape_str($this->config->item('site_id'))."'
-						AND f.field_id = '{$vars['field_id']}'");
 
 		if ($vars['field_id'] == '')
 		{

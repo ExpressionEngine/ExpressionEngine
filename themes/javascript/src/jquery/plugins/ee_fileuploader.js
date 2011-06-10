@@ -127,7 +127,7 @@
 	 * Listen for clicks on the button_bar's upload file button
 	 */
 	var upload_listen = function() {
-		$('#upload_file, #rename_file', '#file_uploader .button_bar').click(function(event) {
+		$('#file_uploader .button_bar #rename_file').click(function(event) {
 			event.preventDefault();
 			$('#file_uploader iframe').contents().find('form').submit();
 		});
@@ -136,6 +136,22 @@
 			event.preventDefault();
 			file_uploader.dialog('close');
 		});
+	};
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Fired by the index of the upload after the file field has been 
+	 * filled out
+	 */
+	$.ee_fileuploader.enable_upload = function() {
+		$('#file_uploader .button_bar #upload_file')
+			.addClass('submit')
+			.removeClass('disabled-btn')
+			.click(function(event) {
+				event.preventDefault();
+				$('#file_uploader iframe').contents().find('form').submit();
+			});
 	};
 	
 	// --------------------------------------------------------------------
@@ -167,14 +183,27 @@
 		// Is this a number?
 		if ( ! isNaN(parseInt(directory_id, 10))) {
 			var source = file_uploader.find('iframe').attr('src'),
-				source_position = source.search('&directory_id=');
+				source_position = source.search('&directory_id='),
+				field_settings = $.ee_filebrowser.get_current_settings();
 
 			// Check to see if the source already has directory_id and remove it
 			if (source_position > 0) {
 				source = source.substring(0, source_position);
 			};
-
-			file_uploader.find('iframe').attr('src', source + '&directory_id=' + directory_id);
+			
+			source = source + '&directory_id=' + directory_id;
+			
+			// Add restrict_directory get variable if we need to restrict to a directory
+			if ($('#dir_choice_form:visible').size() <= 0) {
+				source = source + '&restrict_directory=true';
+			}
+			
+			// Add restrict_image get variable if we need to restrict to images
+			if (field_settings.content_type == "image") {
+				source = source + '&restrict_image=true';
+			}
+			
+			file_uploader.find('iframe').attr('src', source);
 			
 			return directory_id;
 		};

@@ -70,7 +70,12 @@ class Category_model extends CI_Model {
 	{
 		if ($group_id != '')
 		{
-			$this->db->where('group_id', $group_id);
+			if ( ! is_array($group_id))
+			{
+				$group_id = array($group_id);
+			}
+
+			$this->db->where_in('group_id', $group_id);
 		}
 
 		if ($site_id !== TRUE)

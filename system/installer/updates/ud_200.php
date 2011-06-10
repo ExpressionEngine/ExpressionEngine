@@ -941,7 +941,7 @@ class Updater {
 		if (in_array('upload_no_access', $has_duplicates))
 		{
 
-			$Q[] = "CREATE TABLE exp_tmp_upload_no_access SELECT DISTINCT upload_id, member_group FROM exp_upload_no_access";
+			$Q[] = "CREATE TABLE exp_tmp_upload_no_access SELECT DISTINCT upload_id, upload_loc, member_group FROM exp_upload_no_access";
 			$Q[] = "DROP TABLE exp_upload_no_access";
 			$Q[] = "ALTER TABLE exp_tmp_upload_no_access RENAME TO exp_upload_no_access";
 		}

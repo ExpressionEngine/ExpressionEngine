@@ -37,7 +37,9 @@ $lang = array(
 'email_files'			=> 'Email Selected Files',
 'delete_selected_files'	=> 'Delete Selected Files',
 'rename_file'			=> 'Rename File',
-'edit_file'				=> 'Edit Image',
+'edit_file'				=> 'Edit File',
+'save_file'				=> 'Save File',
+'file_metadata'			=> 'File Metadata',
 
 // Upload modal
 'use_file'				=> 'Use Uploaded File',

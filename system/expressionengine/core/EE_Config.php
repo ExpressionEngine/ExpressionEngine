@@ -293,7 +293,14 @@ class EE_Config Extends CI_Config {
 					{
 						$host_parts = explode('.', $parts['host']);
 						
-						if (count($host_parts) > 1)
+						// The preg_match accounts for TLDs like .uk.com, .us.com,
+						// .us.net and so on. However, .jpn.com would pass right 
+						// through
+						
+						if (
+							count($host_parts) > 1 && 
+							! preg_match('/\.[a-z]{2}\.('.implode('|', $this->special_tlds).')$/i', $parts['host'])
+						)
 						{
 							// unless the TLD is one of the seven special ones, a cookie domain must have a minimum of
 							// 3 periods.  ".example.com" is allowed but ".example.us" for instance, is not.

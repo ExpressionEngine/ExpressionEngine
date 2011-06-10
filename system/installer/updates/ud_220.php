@@ -52,6 +52,10 @@ class Updater {
 		$this->_update_password_lockout_table();
 		
 		$this->_update_members_table();
+		
+		$this->_update_files_table();
+
+		$this->_update_comments_table();
 
 		return TRUE;
 	}
@@ -146,6 +150,28 @@ class Updater {
 	}
 
 	// --------------------------------------------------------------------
+	
+	/**
+	 * Add caption field to files
+	 */
+	private function _update_files_table()
+	{
+		$field = array(
+			'caption'	=> array(
+				'type'		=> 'text'
+			)
+		);
+
+		$this->EE->dbforge->add_column('files', $field);
+	}
+	
+	// --------------------------------------------------------------------
+
+	private function _update_comments_table()
+	{
+		// Add an index on comment_date
+		$this->EE->db->query("CREATE INDEX comment_date_idx on exp_comments(comment_date)");		
+	}
 }
 /* END CLASS */
 

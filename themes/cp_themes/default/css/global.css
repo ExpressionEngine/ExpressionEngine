@@ -53,6 +53,12 @@ input[type="password"] {
   	-webkit-border-radius:	3px;
 }
 
+span.fake_input {
+	color: #5f6c74;
+	display: block;
+	padding: 4px;
+}
+
 textarea {
 	resize:					vertical;
 	-moz-box-sizing:		border-box; /* firefox never does 100% textareas without this */
@@ -311,11 +317,22 @@ input.submit,
 button.submit,
 .submit_alt,
 .button a.submit,
-.button_bar a.submit {
+.button_bar a.submit,
+.disabled-btn,
+input.disabled-btn {
 	font: 12px/12px Arial, 'Hevlvetica Neue', sans-serif;
 	
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
+}
+
+.disabled-btn,
+input.disabled-btn{
+	background: #CED8DF;
+	border: 0;
+	color: #B0BEC7;
+	cursor: not-allowed;
+	padding: 5px 9px;
 }
 
 /* Removes extra padding from FF */

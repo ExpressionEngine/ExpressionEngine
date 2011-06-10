@@ -145,6 +145,10 @@ class Content_publish extends CI_Controller {
 			
 			$entry_id = $autosave_data->original_entry_id;
 		}
+		else
+		{
+			$autosave_entry_id = FALSE;
+		}
 
 		$this->_smileys_enabled = (isset($this->cp->installed_modules['emoticon']) ? TRUE : FALSE);
 
@@ -156,8 +160,7 @@ class Content_publish extends CI_Controller {
 
 		// Grab the channel_id associated with this entry if
 		// required and make sure the current member has access.
-		$channel_id = $this->_member_can_publish($channel_id, $entry_id, $autosave);
-		
+		$channel_id = $this->_member_can_publish($channel_id, $entry_id, $autosave_entry_id);
 		
 		// If they're loading a revision, we stop here
 		$this->_check_revisions($entry_id);
@@ -167,7 +170,7 @@ class Content_publish extends CI_Controller {
 		$this->_channel_data = $this->_load_channel_data($channel_id);
 		
 		// Grab, fields and entry data
-		$entry_data		= $this->_load_entry_data($channel_id, $entry_id, $autosave);
+		$entry_data		= $this->_load_entry_data($channel_id, $entry_id, $autosave_entry_id);
 		$field_data		= $this->_set_field_settings($entry_id, $entry_data);
 		$entry_id		= $entry_data['entry_id'];
 		
@@ -265,7 +268,7 @@ class Content_publish extends CI_Controller {
 		$this->cp->add_js_script(array(
 			'ui'		=> array('datepicker', 'resizable', 'draggable', 'droppable'),
 			'plugin'	=> array('markitup', 'toolbox.expose', 'overlay', 'tmpl', 'ee_url_title'),
-			'file'		=> array('json2', 'cp/publish', 'cp/global')
+			'file'		=> array('json2', 'cp/publish', 'cp/publish_tabs', 'cp/global')
 		));
 		
 		if ($this->session->userdata('group_id') == 1)
@@ -400,7 +403,8 @@ class Content_publish extends CI_Controller {
 		
 		$this->output->send_ajax_response(array(
 			'success' => $msg.$time,
-			'autosave_entry_id' => $id
+			'autosave_entry_id' => $id,
+			'original_entry_id'	=> $entry_id
 		));
 	}
 	
@@ -1014,7 +1018,7 @@ class Content_publish extends CI_Controller {
 	 *
 	 * @return	void
 	 */
-	private function _member_can_publish($channel_id, $entry_id, $autosave)
+	private function _member_can_publish($channel_id, $entry_id, $autosave_entry_id)
 	{
 		$this->load->model('channel_entries_model');
 		
@@ -1023,7 +1027,7 @@ class Content_publish extends CI_Controller {
 		
 		if ($entry_id)
 		{
-			$query = $this->channel_entries_model->get_entry($entry_id, '', $autosave);
+			$query = $this->channel_entries_model->get_entry($entry_id, '', $autosave_entry_id);
 			
 			if ( ! $query->num_rows())
 			{
@@ -1096,7 +1100,7 @@ class Content_publish extends CI_Controller {
 	 *
 	 * @return	void
 	 */
-	function _load_entry_data($channel_id, $entry_id = FALSE, $autosave = FALSE)
+	function _load_entry_data($channel_id, $entry_id = FALSE, $autosave_entry_id = FALSE)
 	{
 		$result = array(
 			'title'		=> $this->_channel_data['default_entry_title'],
@@ -1104,11 +1108,11 @@ class Content_publish extends CI_Controller {
 			'entry_id'	=> 0
 		);
 		
-		if ($entry_id)
+		if ($entry_id OR $autosave_entry_id)
 		{
 			$this->load->model('channel_entries_model');
 			
-			$query = $this->channel_entries_model->get_entry($entry_id, $channel_id, $autosave);
+			$query = $this->channel_entries_model->get_entry($entry_id, $channel_id, $autosave_entry_id);
 			
 			if ( ! $query->num_rows())
 			{
@@ -1117,7 +1121,7 @@ class Content_publish extends CI_Controller {
 
 			$result = $query->row_array();
 			
-			if ($autosave)
+			if ($autosave_entry_id)
 			{
 				$res_entry_data = unserialize($result['entry_data']);
 
@@ -1733,130 +1737,30 @@ class Content_publish extends CI_Controller {
 		$third_party  	= $this->_build_third_party_blocks($entry_data);
 
 		return array_merge(
-							$field_data, $categories, $pings, 
-							$options, $revisions, $third_party);
+			$field_data,
+			$categories,
+			$pings,
+			$options,
+			$revisions,
+			$third_party
+		);
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
 	 * Categories Block
-	 *
-	 *
 	 */
 	private function _build_categories_block($entry_data)
 	{
-		$default	= array(
-			'string_override'		=> lang('no_categories'),
-			'field_id'				=> 'category',
-			'field_name'			=> 'category',
-			'field_label'			=> lang('categories'),
-			'field_required'		=> 'n',
-			'field_type'			=> 'multiselect',
-			'field_text_direction'	=> 'ltr',
-			'field_data'			=> '',
-			'field_fmt'				=> 'text',
-			'field_instructions'	=> '',
-			'field_show_fmt'		=> 'n',
-			'selected'				=> 'n',
-			'options'				=> array()
+		$this->load->library('publish');
+		
+		return $this->publish->build_categories_block(
+			$this->_channel_data['cat_group'], 
+			$entry_data['entry_id'], 
+			(isset($entry_data['category'])) ? $entry_data['category'] : NULL, 
+			$this->_channel_data['deft_category']
 		);
-		
-		// No categories? Easy peasy
-		if ( ! $this->_channel_data['cat_group'])
-		{
-			return array('category' => $default);
-		}
-		
-		$this->api->instantiate('channel_categories');
-				
-		$catlist	= array();
-		$categories	= array();
-
-		// Figure out selected categories
-		if ( ! count($_POST) && ! $entry_data['entry_id'] && $this->_channel_data['deft_category'])
-		{
-			// new entry and a default exists
-			$catlist = $this->_channel_data['deft_category'];
-		}
-		elseif (count($_POST) > 0)
-		{
-			$catlist = array();
-			
-			if (isset($_POST['category']) && is_array($_POST['category']))
-			{
-				foreach ($_POST['category'] as $val)
-				{
-					$catlist[$val] = $val;
-				}
-			}			
-		}
-		elseif ( ! isset($entry_data['category']))
-		{
-			$qry = $this->db->select('c.cat_name, p.*')
-							->from('categories AS c, category_posts AS p')
-							->where_in('c.group_id', explode('|', $this->_channel_data['cat_group']))
-							->where('p.entry_id', $entry_data['entry_id'])
-							->where('c.cat_id = p.cat_id', NULL, FALSE)
-							->get();
-
-			foreach ($qry->result() as $row)
-			{
-				$catlist[$row->cat_id] = $row->cat_id;
-			}			
-		}
-		elseif (is_array($entry_data['category']))
-		{
-			foreach ($entry_data['category'] as $val)
-			{
-				$catlist[$val] = $val;
-			}
-		}
-		
-		
-		// Figure out valid category options		
-		$this->api_channel_categories->category_tree($this->_channel_data['cat_group'], $catlist);
-
-		if (count($this->api_channel_categories->categories) > 0)
-		{  
-			// add categories in again, over-ride setting above
-			foreach ($this->api_channel_categories->categories as $val)
-			{
-				$categories[$val['3']][] = $val;
-			}
-		}
-		
-		
-		// If the user can edit categories, we'll go ahead and
-		// show the links to make that work
-		$edit_links = FALSE;
-		
-		if ($this->session->userdata('can_edit_categories') == 'y')
-		{
-			$link_info = $this->api_channel_categories->fetch_allowed_category_groups($this->_channel_data['cat_group']);
-
-			if (is_array($link_info) && count($link_info))
-			{
-				$edit_links = array();
-				
-				foreach ($link_info as $val)
-				{
-					$edit_links[] = array(
-						'url' => BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$val['group_id'],
-						'group_name' => $val['group_name']
-					);
-				}
-			}
-		}
-
-
-		// Build the mess
-		$data = compact('categories', 'edit_links');
-
-		$default['options']			= $categories;		
-		$default['string_override'] = $this->load->view('content/_assets/categories', $data, TRUE);
-		
-		return array('category' => $default);
 	}
 
 	// --------------------------------------------------------------------

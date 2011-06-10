@@ -67,15 +67,38 @@ class Content_files_modal extends CI_Controller {
 	 */
 	public function index()
 	{
-		$selected_directory_id = ($this->input->get('directory_id')) ? $this->input->get('directory_id') : '';
-		$dir_override = ($this->input->get('dir_override')) ? $this->input->get('dir_override') : '';
+		$vars = $this->_get_index_vars();
+		$this->load->view('_shared/file_upload/index', $vars);
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Retrieves variables used on the index page of the modal since they are
+	 * used on failure as well as initial load
+	 * 
+	 * @return array Associative array containing the upload directory dropdown
+	 * 		array, hidden variables for the form, and the ID of the selected
+	 * 		directory
+	 */
+	private function _get_index_vars()
+	{
+		$selected_directory_id = ($this->input->get_post('directory_id')) ? $this->input->get_post('directory_id') : '';
+		$directory_override = ($this->input->get_post('restrict_directory') == 'true') ? $selected_directory_id : '';
+		$restrict_image = ($this->input->get_post('restrict_image') == 'true') ? TRUE : FALSE;
 		
-		$vars = array(
-			'upload_directories' => $this->file_upload_preferences_model->get_dropdown_array($this->session->userdata('group_id'), $dir_override),
+		return array(
+			'upload_directories' => $this->file_upload_preferences_model->get_dropdown_array(
+				$this->session->userdata('group_id'), 
+				$directory_override
+			),
+			'hidden_vars' => array(
+				'restrict_image' => $restrict_image,
+				'directory_id' => $this->input->get_post('directory_id'),
+				'restrict_directory' => $this->input->get_post('restrict_directory')
+			),
 			'selected_directory_id' => $selected_directory_id
 		);
-		
-		$this->load->view('_shared/file_upload/index', $vars);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -121,17 +144,18 @@ class Content_files_modal extends CI_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$restrict_image = ($this->input->post('restrict_image')) ? TRUE : FALSE;
+
 		// Both uploads the file and adds it to the database
-		$upload_response = $this->filemanager->upload_file($file_dir);
+		$upload_response = $this->filemanager->upload_file($file_dir, FALSE, $restrict_image);
 		
 		// Any errors from the Filemanager?
 		if (isset($upload_response['error']))
 		{
-			$vars = array(
-				'error'	=> $upload_response['error']
-			);
+			$vars = $this->_get_index_vars();
+			$vars['error'] = $upload_response['error'];
 			
-			return $this->load->view('_shared/file_upload/failure', $vars);
+			return $this->load->view('_shared/file_upload/index', $vars);
 		}
 		
 		// Copying file_name to name and file_thumb to thumb for addons
@@ -151,7 +175,16 @@ class Content_files_modal extends CI_Controller {
 		);
 		
 		// Check to see if the file needs to be renamed
-		if ($upload_response['file_name'] != $upload_response['orig_name'])
+		// It needs to be renamed if the file names are different and the 
+		// length of the names are different too because clean_filename
+		// replaces spaces with underscores
+		// For example "file name.jpg" changes to "file_name.jpg" they're 
+		// different strings, but the same length
+		
+		if (
+			strlen($upload_response['file_name']) != strlen($upload_response['orig_name']) AND
+			$upload_response['file_name'] != $upload_response['orig_name']
+		)
 		{
 			return $this->load->view('_shared/file_upload/rename', $vars);
  		}
@@ -194,7 +227,7 @@ class Content_files_modal extends CI_Controller {
 		// If it's a different type of error, show it
 		else
 		{
-			return $this->load->view('_shared/file_upload/failure', $rename_file['error']);
+			return $this->load->view('_shared/file_upload/rename', $rename_file['error']);
 		}
 	}
 	

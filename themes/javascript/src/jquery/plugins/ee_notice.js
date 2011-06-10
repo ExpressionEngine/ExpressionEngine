@@ -63,10 +63,12 @@
 		if ( ! drawer) {
 			_init();
 		}
+		
+		params = params || {};
 				
 		if ($.isArray(message)) {
 			$.each(message ,function(k, v) {
-				$.ee_notice(v.message, v);
+				$.ee_notice(v.message, $.extend(params, v));
 			});
 			return;
 		}

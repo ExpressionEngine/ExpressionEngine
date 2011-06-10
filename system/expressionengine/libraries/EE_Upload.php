@@ -127,7 +127,7 @@ class EE_Upload extends CI_Upload
 			$this->set_error('file_exists');
 			return FALSE;
 		}
- 
+ 		
 		if ( ! @copy($this->upload_path.$original_file, $this->upload_path.$this->file_name))
 		{
 			$this->set_error('copy_error');
