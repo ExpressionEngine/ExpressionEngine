@@ -27,5 +27,13 @@
 	</p>
 	
 <?=form_close()?>
+
+<script>
+	$('#file_upload').change(function() {
+		if ($(this).val() != '') {
+			parent.$.ee_fileuploader.enable_upload();
+		};
+	});
+</script>
 	
 <?php $this->load->view('_shared/file_upload/iframe_footer') ?>
