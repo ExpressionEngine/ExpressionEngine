@@ -145,6 +145,10 @@ class Content_publish extends CI_Controller {
 			
 			$entry_id = $autosave_data->original_entry_id;
 		}
+		else
+		{
+			$autosave_entry_id = FALSE;
+		}
 
 		$this->_smileys_enabled = (isset($this->cp->installed_modules['emoticon']) ? TRUE : FALSE);
 
@@ -156,8 +160,7 @@ class Content_publish extends CI_Controller {
 
 		// Grab the channel_id associated with this entry if
 		// required and make sure the current member has access.
-		$channel_id = $this->_member_can_publish($channel_id, $entry_id, $autosave);
-		
+		$channel_id = $this->_member_can_publish($channel_id, $entry_id, $autosave_entry_id);
 		
 		// If they're loading a revision, we stop here
 		$this->_check_revisions($entry_id);
@@ -167,7 +170,7 @@ class Content_publish extends CI_Controller {
 		$this->_channel_data = $this->_load_channel_data($channel_id);
 		
 		// Grab, fields and entry data
-		$entry_data		= $this->_load_entry_data($channel_id, $entry_id, $autosave);
+		$entry_data		= $this->_load_entry_data($channel_id, $entry_id, $autosave_entry_id);
 		$field_data		= $this->_set_field_settings($entry_id, $entry_data);
 		$entry_id		= $entry_data['entry_id'];
 		
@@ -1015,7 +1018,7 @@ class Content_publish extends CI_Controller {
 	 *
 	 * @return	void
 	 */
-	private function _member_can_publish($channel_id, $entry_id, $autosave)
+	private function _member_can_publish($channel_id, $entry_id, $autosave_entry_id)
 	{
 		$this->load->model('channel_entries_model');
 		
@@ -1024,7 +1027,7 @@ class Content_publish extends CI_Controller {
 		
 		if ($entry_id)
 		{
-			$query = $this->channel_entries_model->get_entry($entry_id, '', $autosave);
+			$query = $this->channel_entries_model->get_entry($entry_id, '', $autosave_entry_id);
 			
 			if ( ! $query->num_rows())
 			{
@@ -1097,7 +1100,7 @@ class Content_publish extends CI_Controller {
 	 *
 	 * @return	void
 	 */
-	function _load_entry_data($channel_id, $entry_id = FALSE, $autosave = FALSE)
+	function _load_entry_data($channel_id, $entry_id = FALSE, $autosave_entry_id = FALSE)
 	{
 		$result = array(
 			'title'		=> $this->_channel_data['default_entry_title'],
@@ -1105,11 +1108,11 @@ class Content_publish extends CI_Controller {
 			'entry_id'	=> 0
 		);
 		
-		if ($entry_id)
+		if ($entry_id OR $autosave_entry_id)
 		{
 			$this->load->model('channel_entries_model');
 			
-			$query = $this->channel_entries_model->get_entry($entry_id, $channel_id, $autosave);
+			$query = $this->channel_entries_model->get_entry($entry_id, $channel_id, $autosave_entry_id);
 			
 			if ( ! $query->num_rows())
 			{
@@ -1118,7 +1121,7 @@ class Content_publish extends CI_Controller {
 
 			$result = $query->row_array();
 			
-			if ($autosave)
+			if ($autosave_entry_id)
 			{
 				$res_entry_data = unserialize($result['entry_data']);
 
