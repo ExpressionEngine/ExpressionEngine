@@ -166,6 +166,12 @@
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Gets the settings of the currently selected field
+	 *
+	 * @returns An object containing the settings passed in for the current field
+	 * @type Object
+	 */
 	$.ee_filebrowser.get_current_settings = function() {
 		return settings[current_field];
 	};
