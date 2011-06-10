@@ -1,106 +1,102 @@
-		<div id="filterMenu">
-			<fieldset>
-				<legend><?=lang('search_comments')?></legend>
 
-			<?=form_open($search_form, array('name'=>'filterform', 'id'=>'filterform'), $search_form_hidden)?>
-
-				<div class="group">
-					<?=form_dropdown('channel_id', $channel_select_options, $channel_selected, 'id="f_channel_id"').NBS.NBS?>
-					<?=form_dropdown('status', $status_select_options, $status_selected, 'id="f_status"').NBS.NBS?>
-					<?=form_dropdown('date_range', $date_select_options, $date_selected, 'id="date_range"').NBS.NBS?>
-				</div>
-
-        		<div id="custom_date_picker" style="display: none; margin: 0 auto 50px auto;width: 500px; height: 235px; padding: 5px 15px 5px 15px;border: 1px solid black;  background: #FFF;">
-					<div id="cal1" style="width:250px; float:left; text-align:center;">
-						<p style="text-align:left; margin-bottom:5px"><?=lang('start_date', 'custom_date_start')?>:&nbsp; <input type="text" name="custom_date_start" id="custom_date_start" value="yyyy-mm-dd" size="12" tabindex="1" /></p>
-						<span id="custom_date_start_span"></span>
-					</div>
-	                <div id="cal2" style="width:250px; float:left; text-align:center;">
-						<p style="text-align:left; margin-bottom:5px"><?=lang('end_date', 'custom_date_end')?>:&nbsp; <input type="text" name="custom_date_end" id="custom_date_end" value="yyyy-mm-dd" size="12" tabindex="2" /></p>
-						<span id="custom_date_end_span"></span>          
-					</div>
-                </div>
-
-				<div>
-					<label for="keywords" class="js_hide"><?=lang('keywords')?> </label><?=form_input('keywords', $keywords, 'class="field shun" id="keywords" placeholder="'.lang('keywords').'"')?><br />
-					<?=form_dropdown('search_in', $search_in_options, $search_in_selected, 'id="f_search_in"').NBS.NBS?>
-					<?=form_submit('submit', lang('search'), 'class="submit" id="search_button"')?>
-				</div>
-
-			<?=form_close()?>
-			</fieldset>
-			</div> <!-- filterMenu -->
+<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment')?>
+	<?php // The inline style is here so as to not add extra muck to the globa.css for now.  -ga ?>
+	<fieldset style="margin-bottom:15px">
+		<legend><?=lang('filter_comments')?></legend>
+		<div class="group">
+			<?=form_dropdown('channel_id', $channel_select_opts, $channel_selected, 'id="f_channel_id"').NBS.NBS?>
+			<?=form_dropdown('status', $status_select_opts, $status_selected, 'id="f_status"').NBS.NBS?>
+			<?=form_dropdown('date_range', $date_select_opts, $date_selected, 'id="date_range"').NBS.NBS?>
+			<?=form_submit('submit', lang('search'), 'class="submit" id="search_button"')?>
+		</div>
+	</fieldset>
+<?=form_close()?>
 
 
+<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=modify_comments', array('name' => 'target', 'id' => 'target'))?>
+<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
+	<thead>	
+		<tr>
+			<th><a id="expand_contract" style="text-decoration: none" href="#">+/-</a></th>
+			<th><?=lang('comment')?></th>
+			<th><?=lang('entry_title')?></th>
+			<th><?=lang('name')?></th>
+			<th><?=lang('email')?></th>
+			<th><?=lang('date')?></th>
+			<th><?=lang('ip_address')?></th>
+			<th><?=lang('status')?></th>
+			<th><?=form_checkbox('toggle_comments', 'true', FALSE, 'class="toggle_comments"')?></th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php if ( ! $comments): ?>
+		<tr>
+			<td colspan="8"><?=lang('no_results')?></td>
+		</tr>
+	<?php else: ?>
+		<?php foreach ($comments as $comment): ?>
+		<tr>
+			<td class="expand"><img src="<?=$this->cp->cp_theme_url?>images/field_collapse.png" alt="<?=lang('expand')?>" /></td>
+			<td>
+				<?=$comment->comment_edit_link?>
+				<div class="full_comment" style="display:none"><?=$comment->comment?></div>
+			</td>
+			<td><?=$comment->entry_title?></td>
+			<td><?=$comment->name?></td>
+			<td><?=$comment->email?></td>
+			<td><?=$this->localize->set_human_time($comment->comment_date)?></td>
+			<td><?=$comment->ip_address?></td>
+			<td><?=$comment->status?></td>
+			<td><?=form_checkbox('toggle[]', $comment->comment_id, FALSE, 'class="comment_toggle"')?></td>
+		</tr>
+		<?php endforeach; ?>
+	<?php endif; ?>
+	</tbody>
+</table>
 
-<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=modify_comments', array('name' => 'target', 'id' => 'target'), $hidden)?>
-		<?php
-			$this->table->set_template($cp_pad_table_template);
 
-			$heading = array(
-				'<a id="expand_contract" style="text-decoration: none" href="#">+/-</a>',
-				lang('comment'),
-				lang('entry_title'),
-				lang('channel'),
-				lang('name'),
-				lang('email'),
-				lang('date'),
-				lang('ip_address'),
-				lang('status'),
-				array('data' => '', 'class' => 'hidden_col'),
-				array('data' => form_checkbox('toggle_comments', 'true', FALSE, 'class="toggle_comments"'), 'style' => 'width: 5%;')
-			);
+<?=$pagination?>
 
-			
-			$this->table->set_heading($heading);
-			
-			if (count($comments) > 0)
-			{
-				foreach ($comments as $comment)
-				{
-					$row = array(
-					'--',	
-						
-					"<a class='less_important_link' href='{$comment['edit_url']}'>{$comment['comment']}</a>",
+<div class="tableSubmit">
+	<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
+	<?=form_dropdown('action', $form_options, '', 'id="comment_action"').NBS.NBS?>
+</div>
 
-					"<a class='less_important_link' href='{$comment['entry_search_url']}'>{$comment['entry_title']}</a>",
-						
-					array('data' => '', 'class' => 'hidden_col'),
-	
-					"<a class='less_important_link'  href='{$comment['name_search_url']}'>{$comment['name']}</a>",
-					
-					"<a class='less_important_link'  href='{$comment['email_search_url']}'>{$comment['email']}</a>",					
-					
+<script type="text/javascript">
 
-						$comment['date'],
-						
-						"<a class='less_important_link' href='{$comment['ip_search_url']}'>{$comment['ip_address']}</a>",
-						
-						"<a class='less_important_link' href='{$comment['status_search_url']}'>{$comment['status_label']}</a>",	
-						
-						array('data' => '', 'class' => 'hidden_col'),
-																	
-						form_checkbox('toggle[]', $comment['comment_id'], FALSE, 'class="comment_toggle"')
-					);
+$(document).ready(function () {
+	$(".toggle_comments").toggle(
+		function () {
+			$("input[class=comment_toggle]").each(function () {
+				this.checked = true;
+			});
+		}, function () {
+			$("input[class=comment_toggle]").each(function () {
+				this.checked = false;
+			});
+		}
+	);
 
-					$this->table->add_row($row);
-				}
+	$("#target").submit(function () {
+		if ( ! $("input[class=comment_toggle]", this).is(":checked")) {
+			$.ee_notice(EE.lang.selection_required, {"type" : "error"});
+			return false;
+		}
+	});
+
+	$("td.expand img").each(function () {
+		$(this).click(function () {
+			if (this.src == "<?=$this->cp->cp_theme_url?>images/field_collapse.png") {
+				this.src = "<?=$this->cp->cp_theme_url?>images/field_expand.png";
+
+				$(this).parents('tr').find("div.full_comment").show();
+			} else {
+				this.src = "<?=$this->cp->cp_theme_url?>images/field_collapse.png";
+				$(this).parents('tr').find("div.full_comment").hide();
 			}
-			
-			echo $this->table->generate();
-			?>
+		});
+	});
 
-
-
-<div class="tableFooter">
-	<div class="tableSubmit">
-				<?=form_submit('submit', lang('submit'), 'class="submit"').NBS.NBS?>
-				<?=form_dropdown('action', $form_options, '', 'id="comment_action"').NBS.NBS?>
-	</div>
-
-	<span class="js_hide"><?=$pagination?></span>	
-	<span class="pagination" id="filter_pagination"></span>
-</div>	
-		
-		<?=form_close()?>
+});
+</script>
 

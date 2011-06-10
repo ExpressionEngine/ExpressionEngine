@@ -21,8 +21,8 @@ $lang = array(
 'comments_moved' =>
 'Comments moved',
 
-'search_comments' =>
-'Search Comments',
+'filter_comments' =>
+'Filter Comments',
 
 'comment' =>
 'Comment',
@@ -305,7 +305,9 @@ $lang = array(
 'end_date' =>
 'End Date',
 
-''=>''
+'expand' =>
+'Expand',
+
 );
 
 /* End of file comment_lang.php */
