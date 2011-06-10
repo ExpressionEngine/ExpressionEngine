@@ -104,6 +104,10 @@ class Comment_mcp {
 			$author = $this->_get_author_info($comment->result());
 
 			$comments = $this->_merge_comment_data($comment->result(), $channel, $author);
+
+			$comment->free_result();
+			$channel->free_result();
+			$author->free_result();
 		}
 
 		$data = array(
