@@ -107,11 +107,98 @@ class Comment_mcp {
 		}
 
 		$data = array(
-			'comments'		=> $comments,
-			'pagination'	=> $this->_setup_pagination($total_count)
+			'comments'				=> $comments,
+			'pagination'			=> $this->_setup_pagination($total_count),
+			'channel_select_opts' 	=> $this->_channel_select_opts(),
+			'channel_selected'		=> $this->_channel,
+			'status_select_opts'	=> $this->_status_select_opts(),
+			'status_selected'		=> $this->_status,
+			'date_select_opts'		=> $this->_date_select_opts(),
+			'date_selected'			=> $this->_date_range
 		);
 
 		return $this->EE->load->view('index', $data, TRUE);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Date Select Options
+	 *
+	 * @return 	array
+	 */
+	 protected function _date_select_opts()
+	 {
+	 	return array(
+	 		''	=> lang('date_range'),
+	 		1 	=> lang('past_day'),
+	 		7	=> lang('past_week'),
+	 		31	=> lang('past_month'),
+	 		182	=> lang('past_six_months'),
+	 		365	=> lang('past_year')
+		);
+	 }
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Status Select Options
+	 *
+	 * @return array
+	 */
+	protected function _status_select_opts()
+	{
+		return array(
+			''		=> lang('filter_by_status'),
+			'all'	=> lang('all'),
+			'p'		=> lang('pending'),
+			'o'		=> lang('open'),
+			'c'		=> lang('closed')
+		);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Channel filter select options
+	 *
+	 * @return array
+	 */
+	protected function _channel_select_opts()
+	{
+		// We only limit to channels they are assigned to if they can't 
+		// moderate and can't edit all
+		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && 
+			 ! $this->EE->cp->allowed_group('can_edit_all_comments'))
+		{
+			$query = $this->EE->channel_model->get_channels(
+									(int) $this->EE->config->item('site_id'), 
+									array('channel_title', 'channel_id', 'cat_group'));
+		}
+		else
+		{
+			$this->EE->db->select('channel_title, channel_id, cat_group');
+			$this->EE->db->where('site_id', (int) $this->EE->config->item('site_id'));
+			$this->EE->db->order_by('channel_title');
+		
+			$query = $this->EE->db->get('channels'); 
+		}
+
+		$opts = array(
+			''	=> lang('filter_by_channel')
+		);
+				
+		if ($query->num_rows() > 1)
+		{
+			$opts['all'] = lang('all');
+		}
+
+		foreach ($query->result() as $row)
+		{
+			$opts[$row->channel_id] = $row->channel_title;
+		}
+
+		return $opts;
 	}
 
 	// --------------------------------------------------------------------
@@ -179,6 +266,8 @@ class Comment_mcp {
 
 			// Alter the email var
 			$comments[$k]->email = mailto($comments[$k]->email);
+
+			// 
 		}
 
 		// flip the array
@@ -269,6 +358,22 @@ class Comment_mcp {
 
 		$url = $this->base_url.AMP.'method=index';
 
+		if ($this->_channel)
+		{
+			$url .= AMP.'channel_id='.$this->_channel;
+		}
+
+		if ($this->_status)
+		{
+			$url .= AMP.'status='.$this->_status;
+		}
+
+		if ($this->_date_range)
+		{
+			$url .= AMP.'status='.$this->_date_range;
+		}
+
+
 		$p_button = "<img src=\"{$this->EE->cp->cp_theme_url}images/pagination_%s_button.gif\" width=\"13\" height=\"13\" alt=\"%s\" />";
 
 		$config = array(
@@ -304,10 +409,30 @@ class Comment_mcp {
 	 */
 	protected function _setup_index_query()
 	{
-		// I'm not overly pleased with the code duplication here, so perhaps
-		// it should be revisited with a clear head.  WET code makes 
-		// garden gnomes strike back.  It's ugly, trust me.  -ga
+		// get filters
+		$this->_query_filters();
 
+		// get total number of comments
+		$count = (int) $this->EE->db->select('COUNT(*) as count')
+									->get_where('comments', array(
+							  		'site_id' => (int) $this->EE->config->item('site_id')
+								   ))->row('count');
+
+		// get filters
+		$this->_query_filters();
+
+		$qry = $this->EE->db->select('comment_id')
+							->where('site_id', (int) $this->EE->config->item('site_id'))
+							->order_by('comment_date', $this->_dir)
+							->get('comments', $this->_limit, $this->_offset);
+
+		return array($count, $qry);
+	}
+
+	// --------------------------------------------------------------------	
+
+	protected function _query_filters()
+	{
 		// If the can ONLY edit their own comments- need to 
 		// bring in title table to limit on author		
 		if (( ! $this->EE->cp->allowed_group('can_moderate_comments') && 
@@ -317,25 +442,22 @@ class Comment_mcp {
 			$this->EE->db->where('author_id', (int) $this->EE->session->userdata('member_id'));
 		}
 
-		// get total number of comments
-		$count = (int) $this->EE->db->select('COUNT(*) as count')
-									->get_where('comments', array(
-							  		'site_id' => (int) $this->EE->config->item('site_id')
-								   ))->row('count');
-
-		if (( ! $this->EE->cp->allowed_group('can_moderate_comments') && 
-			  ! $this->EE->cp->allowed_group('can_edit_all_comments')) && 	
-				$this->EE->cp->allowed_group('can_edit_own_comments'))
+		if ($this->_channel)
 		{
-			$this->EE->db->where('author_id', (int) $this->EE->session->userdata('member_id'));
+			$this->EE->db->where('channel_id', (int) $this->_channel);
 		}
 
-		$qry = $this->EE->db->select('comment_id')
-							->where('site_id', (int) $this->EE->config->item('site_id'))
-							->order_by('comment_date', $this->_dir)
-							->get('comments', $this->_limit, $this->_offset);
+		if ($this->_status && $this->_status != 'all')
+		{
+			$this->EE->db->where('status', $this->_status);
+		}
 
-		return array($count, $qry);
+		if ($this->_date_range)
+		{
+			$date_range = time() - ($this->_date_range * 60 * 60 * 24);
+			
+			$this->EE->db->where('comment_date >', (int) $date_range);			
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -374,6 +496,10 @@ class Comment_mcp {
 	 */
 	protected function _setup_query_filters()
 	{
+		$this->_channel = $this->EE->input->get_post('channel_id');
+		$this->_status = $this->EE->input->get_post('status');
+		$this->_date_range = $this->EE->input->get_post('date_range');
+
 		$this->_limit = ($per_page = $this->EE->input->get('per_page')) ? $per_page : 50;
 		$this->_offset = ($offset = $this->EE->input->get('offset')) ? $offset : 0;
 		$this->_dir = ($dir = $this->EE->input->get('dir')) ? $dir : 'desc'; 
