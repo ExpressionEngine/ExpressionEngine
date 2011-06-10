@@ -233,12 +233,12 @@ class Login extends CI_Controller {
 		{
 			$base = preg_replace('/S=\d+/', 'S='.$incoming->session_id(), BASE);
 		}
-		
-		$return_path = BASE.AMP.'C=homepage';
+
+		$return_path = $base.AMP.'C=homepage';
 		
 		if ($this->input->post('return_path'))
 		{
-			$return_path = BASE.AMP.base64_decode($this->input->post('return_path'));
+			$return_path = $base.AMP.base64_decode($this->input->post('return_path'));
 		}
 		
 		if (AJAX_REQUEST)
