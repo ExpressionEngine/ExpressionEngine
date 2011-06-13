@@ -3309,6 +3309,10 @@ div.contentWrap {
 	margin-top: 		0;
 }
 
+#file_manager a.overlay {
+	text-decoration: underline;
+}
+
 /* @group Edit Controls */
 
 .edit_controls {
