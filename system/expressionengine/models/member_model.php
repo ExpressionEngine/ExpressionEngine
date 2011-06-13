@@ -284,7 +284,7 @@ class Member_model extends CI_Model {
 			$this->db->select($fields);
 		}
 
-		$this->db->where('member_id', (int)$member_id);
+		$this->db->where('member_id', (int) $member_id);
 		return $this->db->get('members');
 	}
 

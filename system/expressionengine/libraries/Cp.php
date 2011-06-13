@@ -126,7 +126,7 @@ class Cp {
 							$this->EE->session->userdata('member_id'), 
 							array(
 								'avatar_filename', 'avatar_width', 
-								'avatar_height', 'screen_name', 'notepad'));
+								'avatar_height', 'screen_name', 'notepad', 'quick_links'));
 
 		$notepad_content = ($user_q->row('notepad')) ? '' : $user_q->row('notepad');
 		
@@ -150,7 +150,7 @@ class Cp {
 					'cp_avatar_path'		=> $user_q->row('avatar_filename') ? $this->EE->config->slash_item('avatar_url').$user_q->row('avatar_filename') : '',
 					'cp_avatar_width'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_width') : '',
 					'cp_avatar_height'		=> $user_q->row('avatar_filename') ? $user_q->row('avatar_height') : '',
-					'cp_quicklinks'			=> $this->_get_quicklinks(),
+					'cp_quicklinks'			=> $this->_get_quicklinks($user_q->row('quick_links')),
 					
 					'EE_view_disable'		=> FALSE,
 					'is_super_admin'		=> ($this->EE->session->userdata['group_id'] == 1) ? TRUE : FALSE,	// for conditional use in view files
@@ -599,10 +599,28 @@ class Cp {
 	 * 	@access private
 	 * 	@return array
 	 */
-	function _get_quicklinks()
+	function _get_quicklinks($quick_links)
 	{
-		$quick_links = $this->EE->member_model->get_member_quicklinks($this->EE->session->userdata('member_id'));
-		
+		$i = 1;
+
+		$quicklinks = array();
+
+		if (count($quick_links) != 0 AND $quick_links != '')
+		{
+			foreach (explode("\n", $quick_links ) as $row)
+			{
+				$x = explode('|', $row);
+
+				$quicklinks[$i]['title'] = (isset($x['0'])) ? $x['0'] : '';
+				$quicklinks[$i]['link'] = (isset($x['1'])) ? $x['1'] : '';
+				$quicklinks[$i]['order'] = (isset($x['2'])) ? $x['2'] : '';
+
+				$i++;
+			}
+		}
+
+		$quick_links = $quicklinks;
+
 		$len = strlen($this->EE->config->item('cp_url'));
 		
 		$link = array();
