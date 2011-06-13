@@ -228,7 +228,9 @@ class Login extends CI_Controller {
 
 		// Redirect the user to the CP home page
 		// ----------------------------------------------------------------
-				
+		
+		$base = BASE;
+
 		if ($this->config->item('admin_session_type') != 'c')
 		{
 			$base = preg_replace('/S=\d+/', 'S='.$incoming->session_id(), BASE);
