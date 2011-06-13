@@ -125,8 +125,12 @@
 	 * The callback is called with the file information when a file
 	 * is chosen.
 	 *
-	 * @todo consider changing this to something event
-	 *		 based so it doesn't force a click event.
+	 * @param {String} el The jQuery Object or selector
+	 * @param {String} field_name The name of the field you're adding a trigger to
+	 * @param {Object} new_settings The settings for this specific field,
+	 *		the only settings used are content_type and directory. content_type
+	 *		can be set to 'any' or 'image'. Directory can be set to 'all' or
+	 *		a specific directory ID
 	 */
 	$.ee_filebrowser.add_trigger = function(el, field_name, new_settings, callback) {
 		if (! callback) {
