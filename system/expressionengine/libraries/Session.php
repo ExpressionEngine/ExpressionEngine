@@ -399,11 +399,11 @@ class EE_Session {
 				
 		$this->sdata['session_id'] 		= $this->EE->functions->random();  
 		$this->sdata['ip_address']  	= $this->EE->input->ip_address();  
-		$this->sdata['member_id']  		= $member_id; 
+		$this->sdata['member_id']  		= (int) $member_id; 
 		$this->sdata['last_activity']	= $this->EE->localize->now;  
-		$this->sdata['site_id']  		= $this->EE->config->item('site_id'); 
+		$this->sdata['site_id']  		= (int) $this->EE->config->item('site_id'); 
 		$this->sdata['user_agent']		= substr($this->EE->input->user_agent(), 0, 120);
-		$this->userdata['member_id']	= $member_id;  
+		$this->userdata['member_id']	= (int) $member_id;  
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['site_id']		= $this->EE->config->item('site_id');
 		
@@ -636,7 +636,7 @@ class EE_Session {
 		
 		if ($this->validation == 'c')
 		{
-			$this->sdata['member_id'] = $member_query->row('member_id');  
+			$this->sdata['member_id'] = (int) $member_query->row('member_id');  
 		}
 			 
 		// If the user has been inactive for longer than the session length
@@ -692,7 +692,7 @@ class EE_Session {
 
 		if (REQ != 'CP') // Each 'Site' has own Sessions
 		{
-			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+			$this->EE->db->where('site_id', (int) $this->EE->config->item('site_id'));
 		}
 		
 		$query = $this->EE->db->get('sessions');
@@ -705,7 +705,7 @@ class EE_Session {
 		}
 		
 		// Assign member ID to session array
-		$this->sdata['member_id'] = $query->row('member_id') ;
+		$this->sdata['member_id'] = (int) $query->row('member_id');
 		
 		// Is this an admin session?		
 		$this->sdata['admin_sess'] = ($query->row('admin_sess') == 1) ? 1 : 0;
