@@ -25,7 +25,7 @@ if ( ! $EE_view_disable)
 					<?php endforeach ?>
 				</ul>
 				<div id="holder">
-					<div id="publish" class="main_tab group">
+					<div id="file_metadata" class="main_tab group">
 						<?php foreach ($fields as $field_name => $field): ?>
 							<div class="publish_field publish_<?=$field['type']?>" style="width: 100%; ">
 								<label class="hide_field">
