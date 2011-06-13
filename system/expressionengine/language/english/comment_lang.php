@@ -308,6 +308,9 @@ $lang = array(
 'expand' =>
 'Expand',
 
+'no_results' =>
+'No Results',
+
 );
 
 /* End of file comment_lang.php */
