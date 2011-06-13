@@ -130,12 +130,11 @@ class Homepage extends CI_Controller {
 	function _total_validating_comments()
 	{  
 		$this->db->where('status', 'p');
-		$this->db->where('site_id', $this->config->item('site_id'));
+		$this->db->where('site_id', (int) $this->config->item('site_id'));
 		$this->db->from('comments');
 
 		return $this->db->count_all_results();
   	}
-  	/* END */
 
 
 	// --------------------------------------------------------------------

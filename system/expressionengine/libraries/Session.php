@@ -399,11 +399,11 @@ class EE_Session {
 				
 		$this->sdata['session_id'] 		= $this->EE->functions->random();  
 		$this->sdata['ip_address']  	= $this->EE->input->ip_address();  
-		$this->sdata['member_id']  		= $member_id; 
+		$this->sdata['member_id']  		= (int) $member_id; 
 		$this->sdata['last_activity']	= $this->EE->localize->now;  
-		$this->sdata['site_id']  		= $this->EE->config->item('site_id'); 
+		$this->sdata['site_id']  		= (int) $this->EE->config->item('site_id'); 
 		$this->sdata['user_agent']		= substr($this->EE->input->user_agent(), 0, 120);
-		$this->userdata['member_id']	= $member_id;  
+		$this->userdata['member_id']	= (int) $member_id;  
 		$this->userdata['session_id']	= $this->sdata['session_id'];
 		$this->userdata['site_id']		= $this->EE->config->item('site_id');
 		
@@ -582,7 +582,7 @@ class EE_Session {
 					// not set yet, so let's create one and udpate it for this user
 					$this->sess_crypt_key = $this->EE->functions->random('encrypt', 16);
 					$this->EE->db->update('members', array('crypt_key' => $this->sess_crypt_key), 
-													 array('member_id' => $member_query->row('member_id')));
+													 array('member_id' => (int) $member_query->row('member_id')));
 				}
 				else
 				{
@@ -636,7 +636,7 @@ class EE_Session {
 		
 		if ($this->validation == 'c')
 		{
-			$this->sdata['member_id'] = $member_query->row('member_id');  
+			$this->sdata['member_id'] = (int) $member_query->row('member_id');  
 		}
 			 
 		// If the user has been inactive for longer than the session length
@@ -646,9 +646,9 @@ class EE_Session {
 		if (($this->userdata['last_visit'] == 0) OR
 			(($member_query->row('last_activity')  + $this->session_length) < $this->EE->localize->now))
 		{	
-			$last_act = ($member_query->row('last_activity')  > 0) ? $member_query->row('last_activity')  : $this->EE->localize->now;
+			$last_act = ($member_query->row('last_activity') > 0) ? $member_query->row('last_activity')  : $this->EE->localize->now;
 		
-			$this->EE->db->where('member_id', $this->sdata['member_id']);
+			$this->EE->db->where('member_id', (int) $this->sdata['member_id']);
 			$this->EE->db->update('members', array('last_visit' 	=> $last_act,
 													'last_activity' => $this->EE->localize->now));
 		
@@ -661,7 +661,7 @@ class EE_Session {
 		
 		if (($member_query->row('last_activity')  + 300) < $this->EE->localize->now)	 
 		{
-			$this->EE->db->where('member_id', $this->sdata['member_id']);
+			$this->EE->db->where('member_id', (int) $this->sdata['member_id']);
 			$this->EE->db->update('members', array('last_activity' => $this->EE->localize->now));
 		}
 
@@ -692,7 +692,7 @@ class EE_Session {
 
 		if (REQ != 'CP') // Each 'Site' has own Sessions
 		{
-			$this->EE->db->where('site_id', $this->EE->config->item('site_id'));
+			$this->EE->db->where('site_id', (int) $this->EE->config->item('site_id'));
 		}
 		
 		$query = $this->EE->db->get('sessions');
@@ -705,7 +705,7 @@ class EE_Session {
 		}
 		
 		// Assign member ID to session array
-		$this->sdata['member_id'] = $query->row('member_id') ;
+		$this->sdata['member_id'] = (int) $query->row('member_id');
 		
 		// Is this an admin session?		
 		$this->sdata['admin_sess'] = ($query->row('admin_sess') == 1) ? 1 : 0;
@@ -997,7 +997,7 @@ class EE_Session {
 	 *
 	 * @return	void
 	 */
-	protected function _age_flashdata()
+	public function _age_flashdata()
 	{
 		foreach($this->flashdata as $key => $val)
 		{

@@ -372,7 +372,7 @@ class EE_Functions {
 				// We want the data that would be available for the next request
 				$this->EE->session->_age_flashdata();
 
-				$this->EE->load->libarary('javascript');
+				$this->EE->load->library('javascript');
 
 					die($this->EE->javascript->generate_json(
 								$this->EE->session->flashdata));

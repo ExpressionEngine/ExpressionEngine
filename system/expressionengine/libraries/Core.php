@@ -98,19 +98,9 @@ class EE_Core {
 		// Set a liberal script execution time limit, making it shorter for front-end requests than CI's default
 		if (function_exists("set_time_limit") == TRUE AND @ini_get("safe_mode") == 0)
 		{
-			if (REQ == 'CP')
-			{
-				@set_time_limit(300);
-			}
-			else
-			{
-				@set_time_limit(90);
-			}
+			@set_time_limit((REQ == 'CP') ? 300 : 90);
 		}
 		
-		// Load Security Library	
-		$this->EE->load->library('security');
-
 		// Load DB and set DB preferences
 		$this->EE->load->database();
 		$this->EE->db->swap_pre 	= 'exp_';
@@ -136,7 +126,8 @@ class EE_Core {
 		$this->EE->db->cache_set_path(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id'));
 
 		// make sure the DB cache folder exists if we're caching!
-		if ($this->EE->db->cache_on === TRUE && ! @is_dir(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id')))
+		if ($this->EE->db->cache_on === TRUE && 
+			! @is_dir(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id')))
 		{
 			@mkdir(APPPATH.'cache/db_cache_'.$this->EE->config->item('site_id'), DIR_WRITE_MODE);
 
@@ -375,8 +366,16 @@ class EE_Core {
 				$this->EE->session->userdata('cp_theme'),
 				$this->EE->config->item('cp_theme')
 			);
+
+			if (count($theme_options) >= 2)
+			{
+				if ( ! $theme_options[0])
+				{	
+					unset($theme_options[0]);
+				}
+			}
 		}
-		
+
 		// Try them all, if none work it'll use default
 		foreach ($theme_options as $_theme_name)
 		{
