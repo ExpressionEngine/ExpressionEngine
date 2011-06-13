@@ -73,6 +73,7 @@ if ( ! $EE_view_disable)
 							<th><?=lang('dir_name')?></th>
 							<th><?=lang('date')?></th>
 							<th><?=lang('actions')?></th>
+							<th><?=lang('action_delete')?></th>
 							<th id="toggle_all"><?=form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"')?></th>
 						</tr>
 					</thead>
@@ -94,7 +95,8 @@ if ( ! $EE_view_disable)
 							<td><?=$file[4]?></td>
 							<td><?=$file[5]?></td>
 							<td><?=$file[6]?></td>								
-							<td class="file_select"><?=$file[7]?></td>
+							<td><?=$file[7]?></td>								
+							<td class="file_select"><?=$file[8]?></td>
 						</tr>
 						<?php endforeach; ?>
 					<?php endif;?>
@@ -120,6 +122,7 @@ if ( ! $EE_view_disable)
 						<td>${upload_directory_prefs.name}</td>
 						<td>${modified_date}</td>
 						<td>{{html actions}}</td>
+						<td>{{html action_delete}}</td>
 						<td class="file_select"><input type="checkbox" name="toggle[]" value="${file_id}" class="toggle" id="toggle_box_${file_id}" /></td>
 					</tr>
 				</script>

@@ -57,7 +57,9 @@ $.ee_filemanager.file_uploader = function() {
 				var current_action = val.replace('[file_id]', file.file_id).replace('[upload_dir]', file.upload_directory_prefs.id);
 				
 				// Add the edit action only if it's an image
-				if (index != "edit" || file.is_image) {
+				if (index == "delete") {
+					file.action_delete = current_action;
+				} else if (index != "image" || file.is_image) {
 					file.actions += current_action + '&nbsp;&nbsp;';
 				};
 			});
@@ -403,10 +405,10 @@ $.ee_filemanager.datatables = function() {
 // id, title, file name, kind, dir name, comments, date, actions, toggle
 
 	if (EE.file.tableColumns == 9) {
-		MyCols = [null, null, null, null, null, null, null, { "bSortable" : false }, { "bSortable" : false } ];
+		MyCols = [null, null, null, null, null, null, null, { "bSortable" : false }, { "bSortable" : false }, { "bSortable" : false } ];
 		MySortCol = 6;
 	} else {
-		MyCols = [null, null, null, null, null, null, { "bSortable" : false }, { "bSortable" : false } ];
+		MyCols = [null, null, null, null, null, null, { "bSortable" : false }, { "bSortable" : false }, { "bSortable" : false } ];
 		MySortCol = 5;
 	}
 

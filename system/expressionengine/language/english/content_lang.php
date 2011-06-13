@@ -691,6 +691,9 @@ $lang = array(
 'actions' =>
 'Actions',
 
+'action_delete' =>
+'Delete',
+
 'overwrite_instructions' =>
 'You can either choose a new name and the file will be renamed, or you can submit this form with the same name and the file will be overwritten.',
 

@@ -143,7 +143,8 @@ class Content_files extends CI_Controller {
 				'actions' => array(
 					'download' 	=> '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'file_id=[file_id]'.AMP.'action=download" title="'.lang('file_download').'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png"></a>',
 					'delete'	=> '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=multi_edit_form'.AMP.'file_id=[file_id]'.AMP.'action=delete" title="'.lang('delete_selected_files').'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png"></a>',
-					'edit'		=> '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir=[upload_dir]'.AMP.'file_id=[file_id]" title="'.lang('edit_file').'"><img src="'.$this->cp->cp_theme_url.'images/icon-edit.png" alt="'.lang('delete').'" /></a>'
+					'edit'		=> '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_file'.AMP.'upload_dir=[upload_dir]'.AMP.'file_id=[file_id]" title="'.lang('edit_file').'"><img src="'.$this->cp->cp_theme_url.'images/icon-edit.png" alt="'.lang('edit_file').'" /></a>',
+					'image'		=> '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_image'.AMP.'upload_dir=[upload_dir]'.AMP.'file_id=[file_id]" title="'.lang('edit_file').'"><img src="'.$this->cp->cp_theme_url.'images/icon-image.png" alt="'.lang('edit_image').'" /></a>'
 				)
 			)
 		));
@@ -426,10 +427,9 @@ class Content_files extends CI_Controller {
 				
 				$actions = '<a href="'.$action_base.AMP.'action=download" title="'.lang('file_download').'"><img src="'.$this->cp->cp_theme_url.'images/icon-download-file.png"></a>';
 				$actions .= NBS.NBS;
-				$actions .= '<a href="'.$action_base.AMP.'action=delete" title="'.lang('delete_selected_files').'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png"></a>';
-				$actions .= NBS.NBS;
 				$actions .= '<a href="'.BASE.AMP.'C=content_files'.AMP.'M=edit_file'.AMP.'upload_dir='.$file['upload_location_id'].AMP.'file_id='.$file['file_id'].'" title="'.lang('edit_file').'"><img src="'.$this->cp->cp_theme_url.'images/icon-edit.png" alt="'.lang('edit_file').'" /></a>';
 				
+				$delete_action = '<a href="'.$action_base.AMP.'action=delete" title="'.lang('delete_selected_files').'"><img src="'.$this->cp->cp_theme_url.'images/icon-delete.png"></a>';				
 
 				if ($is_image)
 				{
@@ -438,6 +438,7 @@ class Content_files extends CI_Controller {
 				}
 
 				$r[] = $actions;
+				$r[] = $delete_action;
 				$r[] = form_checkbox('toggle[]', $file['file_id'], '', ' class="toggle" id="toggle_box_'.$file['file_id'].'"');
 
 				$file_list[$i] = $r;
