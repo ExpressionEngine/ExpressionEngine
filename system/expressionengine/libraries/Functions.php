@@ -1982,11 +1982,11 @@ class EE_Functions {
 					if (strncasecmp($parts[0], 'not ', 4) == 0)
 					{
 						$parts[0] = substr($parts[0], 4);
-						$sql = "AND ({$prefix}{$field} NOT IN ('".implode("','", $parts)."') OR {$prefix}{$field} IS NULL)";
+						$sql = "({$prefix}{$field} NOT IN ('".implode("','", $parts)."') OR {$prefix}{$field} IS NULL)";
 					}
 					else
 					{
-						$sql = "AND ({$prefix}{$field} IN ('".implode("','", $parts)."') OR {$prefix}{$field} IS NULL)";
+						$sql = "({$prefix}{$field} IN ('".implode("','", $parts)."') OR {$prefix}{$field} IS NULL)";
 					}
 					
 					$this->EE->db->where($sql);
@@ -2014,11 +2014,11 @@ class EE_Functions {
 				if (strncasecmp($str, 'not ', 4) == 0)
 				{
 					$str = trim(substr($str, 3));
-					$sql = "AND ({$prefix}{$field} != '".$this->EE->db->escape_str($str)."' OR {$prefix}{$field} IS NULL)";
+					$sql = "({$prefix}{$field} != '".$this->EE->db->escape_str($str)."' OR {$prefix}{$field} IS NULL)";
 				}
 				else
 				{
-					$sql = "AND ({$prefix}{$field} = '".$this->EE->db->escape_str($str)."' OR {$prefix}{$field} IS NULL)";
+					$sql = "({$prefix}{$field} = '".$this->EE->db->escape_str($str)."' OR {$prefix}{$field} IS NULL)";
 				}
 				
 				$this->EE->db->where($sql);
