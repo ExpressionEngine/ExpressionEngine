@@ -110,20 +110,21 @@ class File {
 
 		$this->parse_file_entries();
 
-		//if ($this->enable['pagination'] == TRUE)
-		//{
+		if ($this->enable['pagination'] == TRUE)
+		{
 			$this->add_pagination_data();
-		//}
+		}
 
 
 		return $this->return_data;
 
-
-// vs separate table for each file
-
-
 	}
 	
+	// ------------------------------------------------------------------------
+
+	/**
+	  *  Build SQL Query
+	  */
 	function build_sql_query($qstring = '')
 	{
 		$file_id		= '';
@@ -195,7 +196,7 @@ class File {
 					$this->EE->db->distinct();
 					$this->EE->db->select('cat_group');
 					$this->EE->db->where_in('site_id', $this->EE->TMPL->site_ids);
-					$this->EE->functions->ar_andor_string($this->EE->TMPL->fetch_param('dir'), 'id');
+					$this->EE->functions->ar_andor_string($this->EE->TMPL->fetch_param('directory_id'), 'id');
 					$query = $this->EE->db->get('upload_prefs');
 
 					if ($query->num_rows() > 0)
@@ -279,25 +280,18 @@ class File {
 					$qstring = trim_slashes(str_replace($match[0], '', $qstring));
 				}
 
-				/** --------------------------------------
-				/**  Remove "N"
-				/** --------------------------------------*/
 
+				//  Remove "N"
 				// The recent comments feature uses "N" as the URL indicator
-				// It needs to be removed if presenst
-
-				if (preg_match("#^N(\d+)|/N(\d+)#", $qstring, $match))
+				// It needs to be removed if present
+				if ($dynamic)
 				{
-					$this->uristr  = $this->EE->functions->remove_double_slashes(str_replace($match[0], '', $this->uristr));
-
-					$qstring = trim_slashes(str_replace($match[0], '', $qstring));
-				}
+					$seg = parse_n($qstring, $this->uristr);
+					$qstring = $seg['qstring'];
+					$this->uristr = $seg['uristr'];
+				}				
 			}	
 		}
-				
-				
-				
-// end of really horribly redundant
 
 
 		// If the "File ID" was hard-coded, use it instead of
@@ -308,8 +302,15 @@ class File {
 			$file_id = $this->EE->TMPL->fetch_param('file_id');
 		}
 
+		// Setup Orderby
+		$allowed_sorts = array('date', 'upload_date', 'random');
+		$order_by = $this->EE->TMPL->fetch_param('orderby', 'upload_date');
+		$sort = $this->EE->TMPL->fetch_param('sort', 'desc');
+		
+		$random = ($order_by == 'random') ? TRUE : FALSE;
+		$order_by  = ($order_by == 'date' OR ! in_array($order_by, $allowed_sorts))  ? 'upload_date' : $order_by;
+		
 		// Need to add a short_name to the file upload prefs to be consistent with gallery
-		// Are we limiting it to a specific upload directory?
 
 		//$dir_ids = array();
 
@@ -350,25 +351,27 @@ class File {
 
 		if (($directory_ids = $this->EE->TMPL->fetch_param('directory_id')) != FALSE)
 		{		
-			$this->EE->functions->ar_andor_string($directory_ids, 'id').' ';
+			$this->EE->functions->ar_andor_string($directory_ids, 'upload_location_id').' ';
 		}
 		
-		
-
-
 		//  Limit query by category
-
 		if ($this->EE->TMPL->fetch_param('category'))
 		{
-			// Doing a simplified version for now- no & allowed
-			
-			if (substr($this->EE->TMPL->fetch_param('category'), 0, 3) == 'not' && $this->EE->TMPL->fetch_param('uncategorized_entries') !== 'n')
+			// Doing a simplified version for now- no & allowed ??
+			if (stristr($this->EE->TMPL->fetch_param('category'), '&'))
 			{
-				$this->EE->functions->ar_andor_string($this->EE->TMPL->fetch_param('category'), 'exp_categories.cat_id', '', TRUE);
 			}
 			else
 			{
-				$this->EE->functions->ar_andor_string($this->EE->TMPL->fetch_param('category'), 'exp_categories.cat_id');
+				if (substr($this->EE->TMPL->fetch_param('category'), 0, 3) == 'not' && $this->EE->TMPL->fetch_param('uncategorized_entries') !== 'n')
+				{
+					// $str, $field, $prefix = '', $null=FALSE
+					$this->EE->functions->ar_andor_string($this->EE->TMPL->fetch_param('category'), 'exp_categories.cat_id', '', TRUE);
+				}
+				else
+				{
+					$this->EE->functions->ar_andor_string($this->EE->TMPL->fetch_param('category'), 'exp_categories.cat_id');
+				}
 			}
 		}
 
@@ -393,33 +396,35 @@ class File {
 			}
 		}
 
-
-
 		$this->EE->db->stop_cache();
 
 		if ($this->paginate == TRUE)
 		{
-
+			//$this->EE->db->select('exp_files.file_id');
 			$total = $this->EE->db->count_all_results();
 			$this->absolute_results = $total;
 
 			$this->create_pagination($total);
 		}
 		
-		// Need to add the select back into the query
+		// We do the select down here as it could have been lost from cache anyway
 		if ($this->paginate == TRUE)
 		{
 			$this->EE->db->select('exp_files.file_id');
-		}		
+		}
+
+		// Add sorting
+		$this_sort = ($random) ? 'random' : strtolower($sort);
+
+		$this->EE->db->order_by($order_by, $this_sort);		
 
 		// Add the limit
 		$this_page = ($this->current_page == '' OR ($this->limit > 1 AND $this->current_page == 1)) ? 0 : $this->current_page;
 		$this->EE->db->limit($this->limit, $this_page);
 		
+		
 		//Fetch the file_id numbers
 		$query = $this->EE->db->get();
-		
-		
 		
 		$this->EE->db->flush_cache();
 		
@@ -434,25 +439,14 @@ class File {
 			$file_ids[] = $row->file_id;
 		}
 			
-
-		
 		//  Build the full SQL query
-		
 		$this->EE->db->select('*');
 		$this->EE->db->from('files');
 		$this->EE->db->join('upload_prefs', 'upload_prefs.id = files.upload_location_id', 'LEFT');
 		$this->EE->db->where_in('file_id', $file_ids);
+		$this->EE->db->order_by($order_by, $this_sort);	
 		
 		$this->sql = $this->EE->db->get();
-		
-
-		/*
-		$sqlc = "	FROM exp_gallery_entries			AS e
-					LEFT JOIN exp_galleries				AS p ON p.gallery_id = e.gallery_id
-					LEFT JOIN exp_gallery_categories	AS c ON c.cat_id = e.cat_id
-					LEFT JOIN exp_members				AS m ON e.author_id = m.member_id 
-					WHERE ";	
-		*/
 		
 	}
 
@@ -805,7 +799,7 @@ class File {
 		
 		if (($directory_ids = $this->EE->TMPL->fetch_param('directory_id')) != FALSE)
 		{		
-			$this->EE->functions->ar_andor_string($directory_ids, 'id');
+			$this->EE->functions->ar_andor_string($directory_ids, 'upload_location_id');
 		}
 		
 		$sql = $this->EE->db->get();
