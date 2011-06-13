@@ -1334,7 +1334,7 @@ class Member_model extends CI_Model {
 		
 		$this->db->select('notepad');
 		$this->db->from('members');
-		$this->db->where('member_id', $id);
+		$this->db->where('member_id', (int) $id);
 		$notepad_query = $this->db->get();
 
 		if ($notepad_query->num_rows() > 0)
@@ -1342,10 +1342,8 @@ class Member_model extends CI_Model {
 			$notepad_result = $notepad_query->row();
 			return $notepad_result->notepad;
 		}
-		else
-		{
-			return '';
-		}
+
+		return '';
 	}
 
 	// --------------------------------------------------------------------
@@ -1359,14 +1357,14 @@ class Member_model extends CI_Model {
 	function can_access_module($module, $group_id = '')
 	{	
 		// Superadmin sees all		
-		if ($this->session->userdata['group_id'] == 1)
+		if ($this->session->userdata('group_id') === 1)
 		{
 			return TRUE;
 		}
 		
 		if ( ! $group_id)
 		{
-			$group_id = $this->session->userdata['group_id'];
+			$group_id = $this->session->userdata('group_id');
 		}
 
 		$this->db->select('modules.module_id, module_member_groups.group_id');
@@ -1376,15 +1374,7 @@ class Member_model extends CI_Model {
 		
 		$query = $this->db->get('modules');
 
-		if ($query->num_rows() == 0)
-		{
-			return FALSE;
-		}
-		else
-		{
-			return TRUE;
-		}
-
+		return ($query->num_rows() === 0) ? FALSE : TRUE;
 	}
 	
 }

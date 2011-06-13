@@ -122,8 +122,15 @@ class Cp {
 		$cp_pad_table_template = $cp_table_template;
 		$cp_pad_table_template['table_open'] = '<table class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">';
 
-		$user_q = $this->EE->member_model->get_member_data($this->EE->session->userdata('member_id'), array('avatar_filename', 'avatar_width', 'avatar_height', 'screen_name'));
-		$notepad_content = $this->EE->member_model->get_notepad_content();
+		$user_q = $this->EE->member_model->get_member_data(
+							$this->EE->session->userdata('member_id'), 
+							array(
+								'avatar_filename', 'avatar_width', 
+								'avatar_height', 'screen_name', 'notepad'));
+
+		$notepad_content = ($user_q->row('notepad')) ? '' : $user_q->row('notepad');
+		
+		// $notepad_content = $this->EE->member_model->get_notepad_content();
 
 
 		// Global view variables
