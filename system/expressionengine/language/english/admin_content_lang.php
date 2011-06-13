@@ -894,6 +894,9 @@ $lang = array(
 'field_content_file' =>
 'File Type',
 
+'allowed_dirs_file' =>
+'Allowed Directory',
+
 'type_numeric' =>
 'Number',
 
