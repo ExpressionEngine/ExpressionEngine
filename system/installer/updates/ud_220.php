@@ -57,6 +57,8 @@ class Updater {
 
 		$this->_update_comments_table();
 
+		$this->_update_template_groups();
+
 		return TRUE;
 	}
 	
@@ -167,11 +169,27 @@ class Updater {
 	
 	// --------------------------------------------------------------------
 
+	/**
+	 * Adds an index on exp_comments(comment_date)
+	 */
 	private function _update_comments_table()
 	{
 		// Add an index on comment_date
 		$this->EE->db->query("CREATE INDEX comment_date_idx on exp_comments(comment_date)");		
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Adds an index on template_groups(group_name) & template_groups(group_order)
+	 */
+	private function _update_template_groups()
+	{
+		$this->EE->db->query("CREATE INDEX group_name_idx on exp_template_groups(group_name)");
+		$this->EE->db->query("CREATE INDEX group_order_idx on exp_template_groups(group_order)");
+	}
+
+	// --------------------------------------------------------------------	
 }
 /* END CLASS */
 
