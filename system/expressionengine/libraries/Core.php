@@ -375,8 +375,16 @@ class EE_Core {
 				$this->EE->session->userdata('cp_theme'),
 				$this->EE->config->item('cp_theme')
 			);
+
+			if (count($theme_options) >= 2)
+			{
+				if ( ! $theme_options[0])
+				{	
+					unset($theme_options[0]);
+				}
+			}
 		}
-		
+
 		// Try them all, if none work it'll use default
 		foreach ($theme_options as $_theme_name)
 		{
