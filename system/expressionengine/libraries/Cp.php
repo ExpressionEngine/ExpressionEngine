@@ -129,9 +129,6 @@ class Cp {
 								'avatar_height', 'screen_name', 'notepad', 'quick_links'));
 
 		$notepad_content = ($user_q->row('notepad')) ? '' : $user_q->row('notepad');
-		
-		// $notepad_content = $this->EE->member_model->get_notepad_content();
-
 
 		// Global view variables
 
@@ -216,10 +213,10 @@ class Cp {
 		// Good: EE.unique_foo = "bar"; EE.unique = { foo : "bar"};
 		
 		$js_lang_keys = array(
-			'logout_confirm'	=> $this->EE->lang->line('logout_confirm'),
-			'logout'			=> $this->EE->lang->line('logout'),
-			'search'			=> $this->EE->lang->line('search'),
-			'session_timeout'	=> $this->EE->lang->line('session_timeout')
+			'logout_confirm'	=> lang('logout_confirm'),
+			'logout'			=> lang('logout'),
+			'search'			=> lang('search'),
+			'session_timeout'	=> lang('session_timeout')
 		);
 		
 		/* -------------------------------------------
@@ -229,10 +226,10 @@ class Cp {
 		
 		if ($this->EE->config->item('login_reminder') != 'n')
 		{
-			$js_lang_keys['session_expiring'] = $this->EE->lang->line('session_expiring');
-			$js_lang_keys['username'] = $this->EE->lang->line('username');
-			$js_lang_keys['password'] = $this->EE->lang->line('password');
-			$js_lang_keys['login'] = $this->EE->lang->line('login');
+			$js_lang_keys['session_expiring'] = lang('session_expiring');
+			$js_lang_keys['username'] = lang('username');
+			$js_lang_keys['password'] = lang('password');
+			$js_lang_keys['login'] = lang('login');
 			
 			$this->EE->javascript->set_global(array(
 				'SESS_TIMEOUT'		=> $this->EE->session->cpan_session_len * 1000,
@@ -248,7 +245,7 @@ class Cp {
 			'CP_SIDEBAR_STATE'	=> $this->EE->session->userdata('show_sidebar'),
 			//'flashdata'			=> $this->EE->session->flashdata,
 			'username'			=> $this->EE->session->userdata('username'),
-			'router_class'		=> $this->EE->router->class,				// advanced css
+			'router_class'		=> $this->EE->router->class, // advanced css
 			'lang'				=> $js_lang_keys,
 			'THEME_URL'			=> $this->cp_theme_url
 		));
@@ -605,15 +602,15 @@ class Cp {
 
 		$quicklinks = array();
 
-		if (count($quick_links) != 0 AND $quick_links != '')
+		if (count($quick_links) != 0 && $quick_links != '')
 		{
-			foreach (explode("\n", $quick_links ) as $row)
+			foreach (explode("\n", $quick_links) as $row)
 			{
 				$x = explode('|', $row);
 
-				$quicklinks[$i]['title'] = (isset($x['0'])) ? $x['0'] : '';
-				$quicklinks[$i]['link'] = (isset($x['1'])) ? $x['1'] : '';
-				$quicklinks[$i]['order'] = (isset($x['2'])) ? $x['2'] : '';
+				$quicklinks[$i]['title'] = (isset($x[0])) ? $x[0] : '';
+				$quicklinks[$i]['link'] = (isset($x[1])) ? $x[1] : '';
+				$quicklinks[$i]['order'] = (isset($x[2])) ? $x[2] : '';
 
 				$i++;
 			}
@@ -631,17 +628,22 @@ class Cp {
 		{
 			if (strncmp($ql['link'], $this->EE->config->item('cp_url'), $len) == 0)
 			{
-				$link[$count]['link'] = str_replace($this->EE->config->item('cp_url'), '', $ql['link']);
-				$link[$count]['link'] = preg_replace('/\?S=[a-zA-Z0-9]+&D=cp&/', '', $link[$count]['link']);
-				$link[$count]['link'] = BASE.AMP.$link[$count]['link'];
-				$link[$count]['title'] = $ql['title'];
-				$link[$count]['external'] = FALSE;
+				$l = str_replace($this->EE->config->item('cp_url'), '', $ql['link']);
+				$l = preg_replace('/\?S=[a-zA-Z0-9]+&D=cp&/', '', $l);
+
+				$link[$count] = array(
+					'link'		=> BASE.AMP.$l,
+					'title'		=> $ql['title'],
+					'external'	=> FALSE
+				);
 			}
 			else
 			{
-				$link[$count]['link'] = $ql['link'];
-				$link[$count]['title'] = $ql['title'];
-				$link[$count]['external'] = TRUE;
+				$link[$count] = array(
+					'link'		=> $ql['link'],
+					'title'		=> $ql['title'],
+					'external'	=> TRUE
+				);
 			}
 						
 			$count++;
