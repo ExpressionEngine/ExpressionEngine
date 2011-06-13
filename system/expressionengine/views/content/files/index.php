@@ -90,12 +90,12 @@ if ( ! $EE_view_disable)
 							<td><?=$file[2]?></td>
 							<td><?=$file[3]?></td>
 							<?php if ($comments_enabled):?>
-							<td>// Comment stuff here</td>							
-							<?php endif;?>							
+							<td>// Comment stuff here</td>
+							<?php endif;?>
 							<td><?=$file[4]?></td>
 							<td><?=$file[5]?></td>
-							<td><?=$file[6]?></td>								
-							<td><?=$file[7]?></td>								
+							<td><?=$file[6]?></td>
+							<td><?=$file[7]?></td>
 							<td class="file_select"><?=$file[8]?></td>
 						</tr>
 						<?php endforeach; ?>

@@ -3506,6 +3506,16 @@ a.file_chooser_thumbnail.last_row {
 	text-decoration: none;
 }
 
+.button_bar .loading {
+	position: relative;
+	right: 2px;
+	top: 3px;
+}
+
+.button_bar .loading.visualEscapism {
+	right: -9999px;
+}
+
 #file_uploader.before_upload .after_upload,
 #file_uploader.before_upload .file_exists {
 	display: none;

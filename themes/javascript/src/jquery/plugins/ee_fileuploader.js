@@ -81,6 +81,15 @@
 				// Reset current_file
 				current_file = {};
 				
+				// Hide loading animation
+				$('#file_uploader .button_bar .loading').addClass('visualEscapism');
+				
+				// Disable upload file button
+				$('#file_uploader .button_bar #upload_file')
+					.unbind()
+					.addClass('disabled-btn')
+					.removeClass('submit');
+				
 				// Call open callback
 				if (typeof settings.open == 'function') {
 					settings.open.call(this, file_uploader);
@@ -117,9 +126,6 @@
 		// Bind the open event to the specified trigger
 		$(settings.trigger).live('click', function(event) {
 			event.preventDefault();
-			$('#file_uploader .button_bar #upload_file')
-				.addClass('disabled-btn')
-				.removeClass('submit');
 			file_uploader.dialog('open');
 		});
 	};
@@ -153,6 +159,7 @@
 			.removeClass('disabled-btn')
 			.click(function(event) {
 				event.preventDefault();
+				$('#file_uploader .button_bar .loading').removeClass('visualEscapism');
 				$('#file_uploader iframe').contents().find('form').submit();
 			});
 	};

@@ -15,17 +15,10 @@
 		<input type="hidden" name="upload_dir" value="<?=key($upload_directories)?>" id="upload_dir" />
 	<?php endif;?>
 	</p>
-
 	<p>
 		<?=form_label(lang('upload_file'), 'file_upload', array('class' => 'visualEscapism'))?>
 		<?=form_upload(array('id'=>'file_upload','name'=>'userfile','size'=>15,'class'=>'field'))?>
 	</p>
-
-	<p id="progress">
-		<img src="<?=$cp_theme_url?>images/indicator.gif" alt="<?=lang('loading')?>..." /><br />
-		<?=lang('loading')?>...
-	</p>
-	
 <?=form_close()?>
 
 <script>
