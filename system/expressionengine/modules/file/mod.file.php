@@ -196,7 +196,7 @@ class File {
 					$this->EE->db->distinct();
 					$this->EE->db->select('cat_group');
 					$this->EE->db->where_in('site_id', $this->EE->TMPL->site_ids);
-					$this->EE->functions->ar_andor_string($this->EE->TMPL->fetch_param('dir'), 'id');
+					$this->EE->functions->ar_andor_string($this->EE->TMPL->fetch_param('directory_id'), 'id');
 					$query = $this->EE->db->get('upload_prefs');
 
 					if ($query->num_rows() > 0)
@@ -286,7 +286,7 @@ class File {
 				// It needs to be removed if present
 				if ($dynamic)
 				{
-					$seg = remove_n($qstring, $this->uristr);
+					$seg = parse_n($qstring, $this->uristr);
 					$qstring = $seg['qstring'];
 					$this->uristr = $seg['uristr'];
 				}				

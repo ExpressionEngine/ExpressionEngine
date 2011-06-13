@@ -111,7 +111,7 @@
 	/**
 	  *  Parse N Indicator
 	  */
-	function remove_n($qstring, $uristr, $dynamic = TRUE)
+	function parse_n($qstring, $uristr, $dynamic = TRUE)
 	{
 		$uristr = FALSE;
 		
