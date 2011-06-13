@@ -117,6 +117,9 @@
 		// Bind the open event to the specified trigger
 		$(settings.trigger).live('click', function(event) {
 			event.preventDefault();
+			$('#file_uploader .button_bar #upload_file')
+				.addClass('disabled-btn')
+				.removeClass('submit');
 			file_uploader.dialog('open');
 		});
 	};
