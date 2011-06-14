@@ -110,9 +110,9 @@ class EE_Menu {
 		$menu['admin'] = array(
 			'channel_management' => array(
 				'channels'						=> BASE.AMP.'C=admin_content'.AMP.'M=channel_management',
-				'category_management'			=> BASE.AMP.'C=admin_content'.AMP.'M=category_management',
 				'field_group_management'			=> BASE.AMP.'C=admin_content'.AMP.'M=field_group_management',
 				'status_group_management'		=> BASE.AMP.'C=admin_content'.AMP.'M=status_group_management',
+				'category_management'			=> BASE.AMP.'C=admin_content'.AMP.'M=category_management',
 				'----',
 				'global_channel_preferences'	=> BASE.AMP.'C=admin_content'.AMP.'M=global_channel_preferences'
 			),

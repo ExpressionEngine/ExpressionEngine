@@ -101,7 +101,7 @@ class Admin_content extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', lang('channels'));
 
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {3: {sorter: false}, 4: {sorter: false}, 5: {sorter: false}},
+			headers: {2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}},
 			widgets: ["zebra"]
 		}');
 
@@ -1087,9 +1087,6 @@ class Admin_content extends CI_Controller {
  			'channel_model', 'category_model', 'status_model', 'field_model'
 		));
 
-		$this->cp->set_variable('cp_page_title', lang('edit_group_assignments'));
-		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', lang('channels'));
-
 		$query = $this->channel_model->get_channel_info($channel_id);
 
 		foreach ($query->row_array() as $key => $val)
@@ -1158,6 +1155,9 @@ class Admin_content extends CI_Controller {
 		}
 
 		$this->javascript->compile();
+
+		$this->cp->set_variable('cp_page_title', lang('edit_group_assignments'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', lang('channels'));
 
 		$this->load->view('admin/channel_edit_group_assignments', $vars);
 	}
@@ -3401,7 +3401,7 @@ class Admin_content extends CI_Controller {
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
 
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}},
+			headers: {1: {sorter: false}, 2: {sorter: false}},
 			widgets: ["zebra"]
 		}');
 
@@ -3445,7 +3445,7 @@ class Admin_content extends CI_Controller {
 
 		if ($group_id != '')
 		{
-			$this->cp->set_variable('cp_page_title', lang('edit_field_group_name'));
+			$this->cp->set_variable('cp_page_title', lang('rename_group'));
 
 			$vars['form_hidden']['group_id'] = $group_id;
 
@@ -3499,7 +3499,7 @@ class Admin_content extends CI_Controller {
 		$this->lang->loadfile('admin_content');
 		$this->load->model('field_model');
 
-		$this->cp->set_variable('cp_page_title', lang('delete_field_group'));
+		$this->cp->set_variable('cp_page_title', lang('delete_group'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=field_group_management', lang('field_management'));
 
 		$vars['form_action'] = 'C=admin_content'.AMP.'M=field_group_delete';
@@ -3703,7 +3703,7 @@ class Admin_content extends CI_Controller {
 		$query = $this->field_model->get_field_group($vars['group_id']);
 		$vars['group_name'] = $query->row('group_name');
 
-		$this->cp->set_variable('cp_page_title', lang('field_group').': '.$vars['group_name']);
+		$this->cp->set_variable('cp_page_title', lang('group').':'.NBS.$vars['group_name']);
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=field_group_management', lang('field_management'));
 
 		$custom_fields = $this->field_model->get_fields($vars['group_id']);
@@ -4631,7 +4631,7 @@ class Admin_content extends CI_Controller {
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content', lang('admin_content'));
 
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}},
+			headers: {1: {sorter: false}, 2: {sorter: false}},
 			widgets: ["zebra"]
 		}');
 
@@ -4680,7 +4680,7 @@ class Admin_content extends CI_Controller {
 
 		if ($group_id != '')
 		{
-			$this->cp->set_variable('cp_page_title', lang('edit_status_group'));
+			$this->cp->set_variable('cp_page_title', lang('rename_group'));
 
 			$vars['form_hidden']['group_id'] = $group_id;
 
@@ -4905,11 +4905,11 @@ class Admin_content extends CI_Controller {
 
 		$group_name = $this->status_model->get_status_group($group_id);
 
-		$this->cp->set_variable('cp_page_title', lang('status_group').':'.NBS.$group_name->row('group_name'));
+		$this->cp->set_variable('cp_page_title', lang('group').':'.NBS.$group_name->row('group_name'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=status_group_management', lang('statuses'));
 
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {1: {sorter: false}, 2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}},
+			headers: {1: {sorter: false}},
 			widgets: ["zebra"]
 		}');
 
@@ -4994,7 +4994,7 @@ class Admin_content extends CI_Controller {
 		{
 			$vars['form_hidden']['group_id'] = $query->row('group_id');
 			$vars['submit_lang_key'] = 'update';
-			$this->cp->set_variable('cp_page_title', lang('status').':'.NBS.$vars['status']);
+			$this->cp->set_variable('cp_page_title', ucfirst($vars['status']));
 		}
 
 		if ($this->session->userdata['group_id'] == 1)

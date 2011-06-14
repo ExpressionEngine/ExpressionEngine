@@ -21,8 +21,8 @@ if ($EE_view_disable !== TRUE)
 			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 										lang('field_label'),
-										lang('order'),
 										lang('field_name'),
+										lang('order'),
 										lang('field_type'),
 										''
 									);
@@ -33,8 +33,8 @@ if ($EE_view_disable !== TRUE)
 				{
 					$this->table->add_row(
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=field_edit'.AMP.'field_id='.$field['field_id'].AMP.'group_id='.$group_id.'">'.$field['field_label'].'</a>',
-						$field['field_order'],
 						$field['field_name'],
+						$field['field_order'],
 						$field['field_type'],
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=field_delete_confirm'.AMP.'field_id='.$field['field_id'].AMP.'group_id='.$group_id.'">'.lang('delete').'</a>'
 					);

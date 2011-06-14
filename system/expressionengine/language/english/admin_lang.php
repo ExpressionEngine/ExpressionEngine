@@ -1303,7 +1303,7 @@ $lang = array(
 "Channels",
 
 "field_management" => 
-"Custom Channel Fields",
+"Channel Fields",
 
 "file_upload_prefs" => 
 "File Upload Preferences",

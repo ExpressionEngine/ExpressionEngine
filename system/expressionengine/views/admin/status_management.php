@@ -21,9 +21,8 @@ if ($EE_view_disable !== TRUE)
 		<?php
 			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
-										lang('status'),
-										lang('edit_status'),
-										lang('delete_status')
+										lang('status_name'),
+										''
 									);
 									
 			if ($statuses->num_rows() > 0)
@@ -35,8 +34,7 @@ if ($EE_view_disable !== TRUE)
 					$status_name = ($status->status == 'open' OR $status->status == 'closed') ? lang($status->status) : $status->status;
 
 					$this->table->add_row(
-						$status_name,
-						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_edit'.AMP.'status_id='.$status->status_id.'">'. lang('edit').'</a>',
+						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_edit'.AMP.'status_id='.$status->status_id.'">'.$status_name.'</a>',
 						$delete
 					);
 				}

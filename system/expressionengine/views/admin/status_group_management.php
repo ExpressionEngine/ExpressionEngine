@@ -21,9 +21,7 @@ if ($EE_view_disable !== TRUE)
 		<?php
 			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
-										array('data' => lang('id'), 'width' => '4%'),
-										lang('status_group'),
-										'',
+										lang('group_name'),
 										'',
 										''
 									);
@@ -33,10 +31,8 @@ if ($EE_view_disable !== TRUE)
 				foreach ($status_groups->result() as $status)
 				{
 					$this->table->add_row(
-						$status->group_id,
-						'<strong>'.$status->group_name.'</strong>',
-						'('.$status->count.') <a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_management'.AMP.'group_id='.$status->group_id.'">'. lang('add_edit_statuses').'</a>', // $todo, replace 'X' with count
-						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_group_edit'.AMP.'group_id='.$status->group_id.'">'.lang('edit_status_group_name').'</a>',
+						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_management'.AMP.'group_id='.$status->group_id.'">'.$status->group_name.'</a> ('.$status->count.')',
+						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_group_edit'.AMP.'group_id='.$status->group_id.'">'.lang('rename').'</a>',
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=status_group_delete_confirm'.AMP.'group_id='.$status->group_id.'">'.lang('delete').'</a>'
 					);
 				}

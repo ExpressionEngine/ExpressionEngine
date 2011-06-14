@@ -21,8 +21,7 @@ if ($EE_view_disable !== TRUE)
 			<?php
 				$this->table->set_template($cp_pad_table_template);
 				$this->table->set_heading(
-											array('data' => lang('id'), 'width' => '4%'),
-											lang('channel_name'),
+											lang('channel_full_name'),
 											lang('channel_short_name'),
 											'',
 											'',
@@ -32,7 +31,6 @@ if ($EE_view_disable !== TRUE)
 				foreach ($channel_data->result() as $channel)
 				{
 					$this->table->add_row(
-											$channel->channel_id,
 											"<strong>{$channel->channel_title}</strong>",
 											$channel->channel_name,
 											'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=channel_edit'.AMP.'channel_id='.$channel->channel_id.'">'.lang('edit_preferences').'</a>',

@@ -18,7 +18,7 @@ if ($EE_view_disable !== TRUE)
 			<?=form_open('C=admin_content'.AMP.'M=field_group_update', '', $form_hidden)?>
 
 			<p>
-			<?=form_label(lang('field_group_name'), 'group_name')?>
+			<?=form_label(lang('new_group_name'), 'group_name')?>
 			<?=form_input(array('id'=>'group_name','name'=>'group_name','class'=>'field','value'=>$group_name))?>
 			</p>
 
