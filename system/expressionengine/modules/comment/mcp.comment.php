@@ -638,7 +638,7 @@ class Comment_mcp {
 		$this->EE->db->where('comments.comment_id', $comment_id);
 
 		$query = $this->EE->db->get();
-			
+		
 		if ($query->num_rows() === 0)
 		{
 			return FALSE;

@@ -30,16 +30,15 @@
 	</thead>
 	<tbody>
 	<?php if ( ! $comments): ?>
-		<tr>
-			<td colspan="8"><?=lang('no_results')?></td>
+		<tr class="empty">
+			<td colspan="9"><?=lang('no_results')?></td>
 		</tr>
 	<?php else: ?>
 		<?php foreach ($comments as $comment): ?>
-		<tr>
+		<tr class="comment-row-main">
 			<td class="expand"><img src="<?=$this->cp->cp_theme_url?>images/field_collapse.png" alt="<?=lang('expand')?>" /></td>
 			<td>
 				<?=$comment->comment_edit_link?>
-				<div class="full_comment" style="display:none"><?=$comment->comment?></div>
 			</td>
 			<td><?=$comment->entry_title?></td>
 			<td><?=$comment->name?></td>
@@ -48,6 +47,14 @@
 			<td><?=$comment->ip_address?></td>
 			<td><?=$comment->status?></td>
 			<td><?=form_checkbox('toggle[]', $comment->comment_id, FALSE, 'class="comment_toggle"')?></td>
+		</tr>
+		<tr class="comment-row-expanded full_comment" style="display:none">
+		<td colspan="7">
+		<div><?=$comment->comment?></div>
+		</td>
+		<td colspan="2">
+		<a class="submit" href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=edit_comment_form'.AMP.'comment_id='.$comment->comment_id;?>">EDIT</a>
+		</td>
 		</tr>
 		<?php endforeach; ?>
 	<?php endif; ?>
@@ -88,11 +95,12 @@ $(document).ready(function () {
 		$(this).click(function () {
 			if (this.src == "<?=$this->cp->cp_theme_url?>images/field_collapse.png") {
 				this.src = "<?=$this->cp->cp_theme_url?>images/field_expand.png";
+				
 
-				$(this).parents('tr').find("div.full_comment").show();
+				$(this).parents('tr').next('tr').show();
 			} else {
 				this.src = "<?=$this->cp->cp_theme_url?>images/field_collapse.png";
-				$(this).parents('tr').find("div.full_comment").hide();
+				$(this).parents('tr').next('tr').hide();
 			}
 		});
 	});

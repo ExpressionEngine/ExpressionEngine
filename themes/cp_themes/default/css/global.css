@@ -1338,6 +1338,7 @@ table.mainTable td.id {
 	border-left:		0;
 }
 
+
 table.mainTable th:last-child {
 	border-right: 1px solid #45555f!important;
 }
@@ -1364,12 +1365,13 @@ th.hidden_col { display: none; } td.hidden_col { display: none; }
 
 #fileChooser .tableSubmit,
 #mainContent .tableSubmit {
-	float:				right;
-	margin-top:   -20px;
+	float:	right; 
+	margin-top:  -20px;
 }
 
+
 #mainContent .paginationLinks {
-	color:				#5f6c74;
+	color:	#5f6c74;
 }
 
 #mainContent .paginationLinks img {
@@ -3624,6 +3626,26 @@ html#file_upload_iframe p {
 }
 
 /* @end */
+
+
+/* Comments Index */
+
+table.mainTable tr.comment-row-expanded td {
+	background: #fff;
+	border-top: none;
+	padding: 10px 10px 10px 40px;
+
+}
+
+table.mainTable tr.comment-row-expanded td:last-child
+ {
+border-left: 0px; 
+}
+
+table.mainTable tr.comment-row-main a:link {
+color: #5f6c74;
+	text-decoration: underline;
+}
 
 /* Synchronize */
 #sync #progress h4 {
