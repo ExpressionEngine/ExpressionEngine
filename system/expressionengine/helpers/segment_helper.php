@@ -10,6 +10,11 @@
 	}
 
 
+	// ------------------------------------------------------------------------
+
+	/**
+	  *  Parse Day
+	  */
 	function parse_day($qstring, $dynamic = TRUE)
 	{
 		if ($dynamic && preg_match("#(^|\/)(\d{4}/\d{2}/\d{2})#", $qstring, $match))
@@ -27,6 +32,11 @@
 		return array('year' => $year, 'month' => $month, 'day' => $day, 'qstring' => $qstring);	
 	}
 	
+	// ------------------------------------------------------------------------
+
+	/**
+	  *  Parse Year and Month
+	  */
 	function parse_year_month($qstring, $dynamic = TRUE)
 	{
 		// added (^|\/) to make sure this doesn't trigger with url titles like big_party_2006
@@ -43,6 +53,11 @@
 		return array('year' => $year, 'month' => $month, 'qstring' => $qstring);
 	}
 
+	// ------------------------------------------------------------------------
+
+	/**
+	  *  Parse ID
+	  */
 	function parse_id($qstring, $dynamic = TRUE)
 	{
 		$entry_id = FALSE;
@@ -61,6 +76,11 @@
 		return array('entry_id' => $entry_id, 'qstring' => $qstring);		
 	}
 	
+	// ------------------------------------------------------------------------
+
+	/**
+	  *  Parse Page Number
+	  */
 	function parse_page_number($qstring, $basepath, $uristr, $dynamic = TRUE)
 	{
 		$EE =& get_instance();
@@ -86,7 +106,12 @@
 	}
 	
 		
-	function remove_n($qstring, $uristr, $dynamic = TRUE)
+	// ------------------------------------------------------------------------
+
+	/**
+	  *  Parse N Indicator
+	  */
+	function parse_n($qstring, $uristr, $dynamic = TRUE)
 	{
 		$uristr = FALSE;
 		
