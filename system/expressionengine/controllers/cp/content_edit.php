@@ -42,11 +42,10 @@ class Content_edit extends CI_Controller {
 		
 		$this->load->library('api');
 
-		$this->load->model('channel_model');
-		$this->load->model('channel_entries_model');
-		$this->load->model('category_model');
-		$this->load->model('status_model');
-		$this->load->model('search_model');
+		$this->load->model(array(
+			'channel_model', 'channel_entries_model', 'category_model',
+			'status_model', 'search_model'
+		));
 	}
 
 	// --------------------------------------------------------------------
@@ -58,7 +57,7 @@ class Content_edit extends CI_Controller {
 	 */	
 	public function index($channel_id = '', $message = '', $extra_sql = '', $search_url = '', 
 						  $form_url = '', $action = '', $extra_fields_search='', $extra_fields_entries='', $heading='')
-	{		
+	{
 		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -71,13 +70,9 @@ class Content_edit extends CI_Controller {
 		$vars['message'] = $message;
 		$action = ($action != '') ? $action : $this->input->get_post('action');
 
-		$this->load->library('pagination');
-		$this->load->library('table');
-		$this->load->helper(array('form', 'text', 'url', 'snippets'));
+		$this->load->library(array('pagination', 'table'));
+		$this->load->helper(array('form', 'text', 'url', 'snippets', 'search'));
 		$this->api->instantiate('channel_categories');
-
-		// Load the search helper so we can filter the keywords
-		$this->load->helper('search');
 
 		$this->cp->set_variable('cp_page_title', lang('edit'));
 
@@ -99,9 +94,6 @@ class Content_edit extends CI_Controller {
 
 		$this->cp->add_js_script(array('file' => 'cp/content_edit'));
 
-		$this->javascript->set_global('lang.selection_required', lang('selection_required'));
-
-		$cp_theme  = ( ! $this->session->userdata('cp_theme')) ? $this->config->item('cp_theme') : $this->session->userdata('cp_theme');
 
 		// Fetch channel ID numbers assigned to the current user
 		$allowed_channels = $this->functions->fetch_assigned_channels();
@@ -111,14 +103,12 @@ class Content_edit extends CI_Controller {
 			show_error(lang('no_channels'));
 		}
 
+		$colors = '';
+
 		//  Fetch Color Library - We use this to assist with our status colors
 		if (file_exists(APPPATH.'config/colors.php'))
 		{
 			include (APPPATH.'config/colors.php');
-		}
-		else
-		{	
-			$colors = '';
 		}
 
 		// We need to determine which channel to show entries from
@@ -136,28 +126,27 @@ class Content_edit extends CI_Controller {
 		$cat_group = '';
 		
 		// We want the filter to work based on both get and post
+		$filter_data = array(
+			'channel_id'	=> $channel_id,
+			'cat_id'		=> $this->input->get_post('cat_id'),
+			'status'		=> $this->input->get_post('status'),
+			'order'			=> $this->input->get_post('order'),
+			'date_range'	=> $this->input->get_post('date_range')
+		);
 
-		$filter_data['channel_id'] = $channel_id;
-		$filter_data['cat_id'] = $this->input->get_post('cat_id');
-
-		$filter_data['status'] = $this->input->get_post('status');
-		$filter_data['order']	= $this->input->get_post('order');
-		$filter_data['date_range'] = $this->input->get_post('date_range');
 		$total_channels = count($allowed_channels);
 
 		$vars['status'] = $filter_data['status'];
 		
-		if (isset($_POST['keywords'])) 
+		$keywords = '';
+
+		if ($this->input->post('keywords')) 
 		{
-			$keywords = sanitize_search_terms($_POST['keywords']);
+			$keywords = sanitize_search_terms($this->input->post('keywords'));
 		}
-		elseif (isset($_GET['keywords'])) 
+		elseif ($this->input->get('keywords')) 
 		{
-			$keywords = sanitize_search_terms(base64_decode($_GET['keywords']));
-		}
-		else
-		{
-			$keywords = '';
+			$keywords = sanitize_search_terms(base64_decode($this->input->get('keywords')));
 		}
 
 		if (substr(strtolower($keywords), 0, 3) == 'ip:')
@@ -186,24 +175,18 @@ class Content_edit extends CI_Controller {
 			$comment_url .= ($filter_data['keywords'] != '') ? '&keywords='.base64_encode($filter_data['keywords']) : '';
 		}
 
-		if (isset($this->installed_modules['comment']))
-		{
-			$table_columns = 9;
-		}
-		else
-		{
-			$table_columns = 8;
-		}
+		$table_columns = (isset($this->installed_modules['comment'])) ? 9 : 8;
 
 		$this->javascript->set_global(array(
 						'edit.pipe' 		=> $this->pipe_length,
 						'edit.perPage'		=> $perpage,
 						'edit.themeUrl'		=> $this->cp->cp_theme_url,
 						'edit.tableColumns'	=> $table_columns,
-						'lang.noEntries'	=> lang('no_entries_matching_that_criteria')
+						'lang.noEntries'	=> lang('no_entries_matching_that_criteria'),
+						'lang.selection_required' => lang('selection_required')
 					)
 		);
-	
+
 		// Do we have a message to show?
 		// Note: a message is displayed on this page after editing or submitting a new entry
 
@@ -284,24 +267,24 @@ class Content_edit extends CI_Controller {
 				}
 			}
 
-			$i=1;
+			$i = 1;
 			$new_array = array();
 
 			foreach ($cat_form_array as $ckey => $cat)
 			{
 		    	if ($ckey-1 < 0 OR ! isset($cat_form_array[$ckey-1]))
-    		   	{
+			   	{
 					$vars['category_select_options']['NULL_'.$i] = '-------';
-            	}
-            	
+	        	}
+	        	
 				$vars['category_select_options'][$cat['1']] = (str_replace("!-!","&nbsp;", $cat['2']));
 
-            	if (isset($cat_form_array[$ckey+1]) && $cat_form_array[$ckey+1]['0'] != $cat['0'])
+	        	if (isset($cat_form_array[$ckey+1]) && $cat_form_array[$ckey+1]['0'] != $cat['0'])
 	        	{
 					$vars['category_select_options']['NULL_'.$i] = '-------';
-       			}
+	   			}
 
-       			$i++;
+	   			$i++;
 			}
 		}
 
@@ -321,7 +304,7 @@ class Content_edit extends CI_Controller {
 		}
 
 		if ($cat_group != '')
-		{	 
+		{
 			$rez = $this->db->query("SELECT status_group FROM exp_channels WHERE channel_id = '$channel_id'");									
 
 			$query = $this->db->query("SELECT status FROM exp_statuses WHERE group_id = '".$this->db->escape_str($rez->row('status_group') )."' ORDER BY status_order");							
@@ -406,14 +389,7 @@ class Content_edit extends CI_Controller {
 		
 		$filter = $this->create_return_filter($filter_data);
 
-		if ($search_url != '')
-		{
-			$pageurl = BASE.AMP.$search_url;
-		}
-		else
-		{
-			$pageurl = BASE.AMP.'C=content_edit';
-		}
+		$pageurl = BASE.AMP.($search_url != '') ? $search_url : 'C=content_edit';
 
 		// Get the current row number and add the LIMIT clause to the SQL query
 
@@ -695,7 +671,7 @@ class Content_edit extends CI_Controller {
 			$comment_query = $this->db->get('comments');
 
 			foreach ($comment_query->result() as $row)
- 			{
+			{
 				if ($show_link !== FALSE)
 				{
 					$view_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=index'.AMP.'entry_id='.$row->entry_id;
@@ -705,7 +681,7 @@ class Content_edit extends CI_Controller {
 				'<div class="lightLinks">('.$row->count.')'.NBS.anchor($view_url, lang('view')).'</div>';
 				
 				$vars['entries'][$row->entry_id][3] = $view_link;
- 			}
+			}
 		}
 
 		// Pass the relevant data to the paginate class
@@ -727,7 +703,7 @@ class Content_edit extends CI_Controller {
 		$vars['heading'] = $heading ? $heading : 'edit_channel_entries';
 		
 		$vars['action_options'] = array();
-	
+
 		if (is_array($action))
 		{
 			$vars['action_options'] = $action;
