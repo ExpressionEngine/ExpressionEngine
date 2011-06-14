@@ -497,6 +497,7 @@ span.button .submit {
 #navigationTabs li li a {
 	display:			block;
 	line-height:		1;
+	word-wrap:			break-word;
 }
 
 #navigationTabs li li a:hover {
