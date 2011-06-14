@@ -1833,19 +1833,20 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 							case 'member_groups' :	
 								$groups = $this->member_model->get_member_groups('', array('group_id !='=>'1'));
 								
-								$selected = ($this->config->item('default_member_group') != '') ? $this->config->item('default_member_group') : '4';
-								
 								$options = array();
 
 								foreach ($groups->result() as $group)
 								{
 									$options[$group->group_id] = $group->group_title;
 								}
+
+								// Remove the Pending group as it makes no sense for members to go from Pending to Pending
+								unset($options[4]);
 		
 								$preference_controls['type'] = "dropdown";
 								$preference_controls['id'] = 'default_member_group';
 								$preference_controls['options'] = $options;
-								$preference_controls['default'] = $selected;
+								$preference_controls['default'] = ($this->config->item('default_member_group') != '') ? $this->config->item('default_member_group') : '5';
 								
 								break;
 							case 'member_theme_menu' : 	
