@@ -1,5 +1,4 @@
 <div id="fileChooser" class="pageContents" style="padding: 0 10px">
-	<div class="shun"></div>
 	<div id="filterMenu">
 		<?php if ( ! empty($filemanager_directories)):?>
 			<?=form_open('', array('id' => 'dir_choice_form'))?>
