@@ -1289,7 +1289,7 @@ class Content_files extends CI_Controller {
 
 			// Clean filename
 			$clean_filename = basename($this->filemanager->clean_filename($file['name'], $id));
-
+			
 			if ($file['name'] != $clean_filename)
 			{
 				// It is just remotely possible the new clean filename already exists
@@ -1311,9 +1311,11 @@ class Content_files extends CI_Controller {
 				$file['name'] = $clean_filename;			
 			}
 
-
 			// Does it exist in DB?
-			$query = $this->db->get_where('files', array('file_name' => $file['name']));
+			$query = $this->db->get_where('files', array(
+				'file_name' => $file['name'],
+				'upload_location_id' => $id
+			));
 
 			if ($query->num_rows() > 0)
 			{
