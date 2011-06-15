@@ -571,6 +571,8 @@ class Filemanager {
 			'plugin'    => array('scrollable', 'scrollable.navigator', 'ee_filebrowser', 'ee_fileuploader', 'tmpl')
 		));
 		
+		$this->EE->load->helper('html');
+		
 		$this->EE->javascript->set_global(array(
 			'lang' => array(
 				'resize_image'		=> $this->EE->lang->line('resize_image'),
