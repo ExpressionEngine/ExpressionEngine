@@ -18,8 +18,8 @@ $.fn.toggle_all = function() {
 			var $table_header = $(this),
 				column = $table_header.index(),
 				$header_checkbox = $table_header.find('input[type=checkbox]'),
-				$table_data = $table.find('td:eq('+column+') input[type=checkbox]');
-			
+				$table_data = $table.find('td:nth-child(' + (column + 1) + ') input[type=checkbox]');
+			console.log($table_data.size());
 			// Listen for clicks to the header checkbox
 			$header_checkbox.click(function(event) {
 				var checked = $(this).is(':checked');
@@ -29,9 +29,9 @@ $.fn.toggle_all = function() {
 			// Also listen to checks on the normal checkboxes, to see if all of
 			// them have been (un)checked
 			$table_data.click(function(event) {
-				if ($table_data.size() == $table.find('td:eq('+column+') input[type=checkbox]:checked').size()) {
+				if ($table_data.size() == $table.find('td:nth-child('+ (column + 1) +') input[type=checkbox]:checked').size()) {
 					$header_checkbox.attr('checked', true);
-				} else if ($table.find('td:eq('+column+') input[type=checkbox]:checked').size() == 0) {
+				} else if ($table.find('td:nth-child('+ (column + 1) +') input[type=checkbox]:checked').size() == 0) {
 					$header_checkbox.attr('checked', false);
 				};
 			});
