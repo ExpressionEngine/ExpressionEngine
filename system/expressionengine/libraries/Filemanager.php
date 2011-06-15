@@ -446,7 +446,10 @@ class Filemanager {
 		$config['height']			= $prefs['height'];
 
 		// If is image and exceeds max size- resize!
-		if (($prefs['max_width'] > 0 && $prefs['width'] > $prefs['max_width']) OR ($prefs['max_height'] > 0 && $prefs['height'] > $prefs['max_height']))
+		if (
+			($prefs['max_width'] > 0 && $prefs['width'] > $prefs['max_width']) OR 
+			($prefs['max_height'] > 0 && $prefs['height'] > $prefs['max_height'])
+		)
 		{
 			$this->EE->load->library('image_lib');
 
