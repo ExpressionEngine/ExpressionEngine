@@ -151,21 +151,19 @@ class Content_files extends CI_Controller {
 
 		// Create our various filter data
 
+		$upload_dirs_options['null'] = lang('filter_by_directory');
+		
+		if (count($this->_upload_dirs) > 2)
+		{
+			$upload_dirs_options['all'] = lang('all');
+		}
+
 		foreach ($this->_upload_dirs as $k => $dir)
 		{
 			$upload_dirs_options[$dir['id']] = $dir['name'];
 			$allowed_dirs[] = $k;
 		}
-
-		$upload_dirs_options['null'] = lang('filter_by_directory');
-
-		if (count($upload_dirs_options) > 2)
-		{
-			$upload_dirs_options['all'] = lang('all');
-		}
-
-		ksort($upload_dirs_options);
-
+		
 		$selected_dir = ($selected_dir = $this->input->get_post('directory')) ? $selected_dir : NULL;
 
 		// We need this for the filter, so grab it now
