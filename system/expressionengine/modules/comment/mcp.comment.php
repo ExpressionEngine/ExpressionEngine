@@ -77,12 +77,7 @@ class Comment_mcp {
 	 */
 	public function index()
 	{
-		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && 
-			 ! $this->EE->cp->allowed_group('can_edit_all_comments') && 
-			 ! $this->EE->cp->allowed_group('can_edit_own_comments'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
+		$this->_permissions_check();
 
 		$this->EE->load->helper(array('text', 'form'));
 		$this->EE->load->library('javascript');
@@ -588,12 +583,7 @@ class Comment_mcp {
 	 */
 	public function edit_comment_form($comment_id = FALSE)
 	{
-		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') 
-		  && ! $this->EE->cp->allowed_group('can_edit_all_comments') 
-		  && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
+		$this->_permissions_check();
 
 		$can_edit = FALSE;
 
@@ -718,18 +708,28 @@ class Comment_mcp {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Update Comment
-	 *
-	 * @return	void
+	 * This permissions check is used in several places.
 	 */
-	public function update_comment()
+	private function _permissions_check()
 	{
 		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') 
 		  && ! $this->EE->cp->allowed_group('can_edit_all_comments') 
 		  && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
 		{
 			show_error(lang('unauthorized_access'));
-		}
+		}		
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Update Comment
+	 *
+	 * @return	void
+	 */
+	public function update_comment()
+	{
+		$this->_permissions_check();
 
 		$comment_id = $this->EE->input->get_post('comment_id');
 
@@ -1176,12 +1176,7 @@ class Comment_mcp {
 	 */
 	public function change_comment_status($status = '')
 	{
-		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') 
-		  && ! $this->EE->cp->allowed_group('can_edit_all_comments') 
-		  && ! $this->EE->cp->allowed_group('can_edit_own_comments'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
+		$this->_permissions_check();
 
 		$comments	= array();
 		
@@ -1633,17 +1628,11 @@ class Comment_mcp {
 	 */
 	public function settings()
 	{
-		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && 
-			 ! $this->EE->cp->allowed_group('can_edit_all_comments') && 
-			 ! $this->EE->cp->allowed_group('can_delete_all_comments'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
+		$this->_permissions_check();
 
 		$this->EE->load->library('table');
 		$this->EE->load->library('javascript');
 		$this->EE->load->helper('form');
-
 
 		$vars = array('action_url' => 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment'.AMP.'method=save_settings'
 		);
@@ -1669,13 +1658,8 @@ class Comment_mcp {
 	 */	
 	public function save_settings()
 	{
-		if ( ! $this->EE->cp->allowed_group('can_moderate_comments') && 
-			 ! $this->EE->cp->allowed_group('can_edit_all_comments') && 
-			 ! $this->EE->cp->allowed_group('can_delete_all_comments'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-		
+		$this->_permissions_check();
+
 		$timelimit = $this->EE->input->post('comment_edit_time_limit');
 		
 		$insert['comment_word_censoring'] = ($this->EE->input->post('comment_word_censoring')) ? 'y' : 'n';
