@@ -3363,14 +3363,20 @@ div.contentWrap {
 }
 
 .edit_controls  p.submit_button a {
-	font-size: 1.1em;
+	clear: right;
 	display: inline-block;
+	float: right;
+	font-size: 12px;
+	line-height: 12px;
 	margin: 0 0 5px;
 }
 
 .edit_controls  p.submit_button input {
-	margin-bottom: 		5px;
-	width: 				auto;
+	clear: right;
+	display: block;
+	float: right;
+	margin-bottom: 5px;
+	width: auto;
 }
 
 #rotate_fieldset li {
