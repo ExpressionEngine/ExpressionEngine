@@ -3397,10 +3397,6 @@ div.contentWrap {
 	margin-left: 10px;
 }
 
-#fileChooser #dir_choice {
-	height: 			1.2em;
-}
-
 #file_chooser_body {
 	border:				1px solid #ccc;
 	border-width: 		0 0 1px;
@@ -3412,9 +3408,8 @@ div.contentWrap {
 	width:				100%;
 }
 
-#fileChooser #filterMenu,
-#fileChooser #upload_form {
-	margin-bottom: 7px;
+#fileChooser #filterMenu {
+	margin: 12px 0 7px;
 }
 
 #file_chooser_body #tableView {
@@ -3588,6 +3583,7 @@ html#file_upload_iframe p {
 
 #file_upload_iframe .image {
 	float: left;
+	width: 85px;
 }
 
 #file_upload_iframe .image img {
