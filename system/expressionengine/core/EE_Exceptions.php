@@ -78,41 +78,11 @@ class EE_Exceptions extends CI_Exceptions {
 			
 			if (isset($EE->session->userdata))
 			{
-				if (class_exists('Cp') && file_exists(APPPATH.'views/errors/'.$template.'.php'))
-				{
-					// sessions is loaded, so we definitely have functions as well
-					$homepage = '';
-					$link_text = 'homepage';
-					$link_url = $EE->functions->fetch_site_index();
+				$cp_theme = ( ! $EE->session->userdata('cp_theme')) ? $EE->config->item('cp_theme') : $EE->session->userdata('cp_theme');			
 
-					if (defined('REQ') && REQ == 'CP')
-					{
-						$link_url = '';
-						
-						if (defined('BASE'))
-						{
-							$link_url = BASE.AMP.'C=homepage';
-							
-							if ( ! $EE->session->userdata('admin_sess'))
-							{
-								$link_text = 'login';
-								$link_url = BASE.AMP.'C=login';
-							}
-						}
-					}
-										
-					if ($link_url)
-					{
-						$homepage = '<a href="'.$link_url.'">'.$EE->lang->line($link_text).'</a>';
-					}
-					
-					$data = array(
-						'heading'	=> $heading,
-						'message'	=> $message,
-						'homepage'	=> $homepage
-					);
-					
-					echo $EE->load->view('errors/'.$template, $data, TRUE);
+				if (defined('PATH_THEMES') && (file_exists(PATH_THEMES.'cp_themes/'.$cp_theme.'/errors/'.$template.'.php')))
+				{
+					include(PATH_THEMES.'cp_themes/'.$cp_theme.'/errors/'.$template.'.php');
 				}
 				else
 				{
