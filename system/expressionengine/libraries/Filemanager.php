@@ -1747,12 +1747,6 @@ class Filemanager {
 		}
 
 		$file = $this->EE->upload->data();
-		die(var_dump($dir));
-		// Check to see if the file isn't too big
-		if ($file['file_size'] * 1024)
-		{
-			
-		}
 		
 		// (try to) Set proper permissions
 		@chmod($file['full_path'], DIR_WRITE_MODE);
