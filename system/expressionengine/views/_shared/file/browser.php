@@ -53,18 +53,14 @@
 					<br /><?=sprintf(lang('pagination_count_text'), '${pages_from}', '${pages_to}', '${pages_total}');?>
 				{{/if}}
 			</p>
-
-			{{if pagination_needed}}
-				<p id="paginationLinks">
-					<a href="#" class="previous visualEscapism">
-						<img src="<?=$this->cp->cp_theme_url?>images/pagination_prev_button.gif" width="13" height="13" alt="<?=lang('previous')?>" />
-					</a>
+			<p id="paginationLinks">
+				{{if pagination_needed}}
+					{{html previous}}
 					{{html dropdown}}
-					<a href="#" class="next">
-						<img src="<?=$this->cp->cp_theme_url?>images/pagination_next_button.gif" width="13" height="13" alt="<?=lang('next')?>" />
-					</a>
-				</p>
-			{{/if}}
+					{{html next}}
+				{{/if}}
+			</p>
+			
 		</div>
 	</div>
 </div>

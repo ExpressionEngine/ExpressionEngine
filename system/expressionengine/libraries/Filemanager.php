@@ -579,7 +579,35 @@ class Filemanager {
 			),
 			'filebrowser' => array(
 				'endpoint_url'		=> $endpoint_url,
-				'window_title'		=> lang('file_manager')
+				'window_title'		=> lang('file_manager'),
+				'next'				=> anchor(
+					'#', 
+					img(
+						$this->EE->cp->cp_theme_url . 'images/pagination_next_button.gif',
+						array(
+							'alt' => lang('next'),
+							'width' => 13,
+							'height' => 13
+						)
+					),
+					array(
+						'class' => 'next'
+					)
+				),
+				'previous'			=> anchor(
+					'#', 
+					img(
+						$this->EE->cp->cp_theme_url . 'images/pagination_prev_button.gif',
+						array(
+							'alt' => lang('previous'),
+							'width' => 13,
+							'height' => 13
+						)
+					),
+					array(
+						'class' => 'previous visualEscapism'
+					)
+				)
 			),
 			'fileuploader' => array(
 				'window_title'		=> lang('file_upload'),
@@ -766,7 +794,7 @@ class Filemanager {
 		);
 		
 		$this->EE->output->send_ajax_response(array(
-			'uploader'	=> $this->EE->load->view('_shared/file_upload/upload_modal', $vars, TRUE)
+			'uploader'	=> $this->EE->load->ee_view('_shared/file_upload/upload_modal', $vars, TRUE)
 		));
 	}
 	
@@ -1719,6 +1747,12 @@ class Filemanager {
 		}
 
 		$file = $this->EE->upload->data();
+		die(var_dump($dir));
+		// Check to see if the file isn't too big
+		if ($file['file_size'] * 1024)
+		{
+			
+		}
 		
 		// (try to) Set proper permissions
 		@chmod($file['full_path'], DIR_WRITE_MODE);

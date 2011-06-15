@@ -33,7 +33,7 @@
 	 * @todo make callbacks overridable ($.extend)
 	 */
 	$.ee_filebrowser = function() {
-		files_per_table = 15;
+		files_per_table = 5;
 		thumbs_per_page = 36;
 
 		// Setup!
@@ -333,6 +333,8 @@
 			'pages_current': Math.floor(offset / per_page) + 1,
 			'pages': pages,
 			'dropdown': $pagination_dropdown.wrap('<div />').parent().html(),
+			'previous': EE.filebrowser.previous,
+			'next': EE.filebrowser.next,
 			'pagination_needed': (pages.length > 1) ? true : false
 		});
 		

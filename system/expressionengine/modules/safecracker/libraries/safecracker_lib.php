@@ -831,7 +831,7 @@ class Safecracker_lib
 			}
 
 			$this->head .= "\n".' // ]]>'."\n".'</script>';
-			
+
 			//this is no longer necessary since adding the combo loader
 			/*
 			if ($this->bool_string($this->EE->TMPL->fetch_param('saef_javascript'), TRUE))
@@ -843,7 +843,7 @@ class Safecracker_lib
 		
 		$js_defaults = array(
 			'ui' => array('core', 'widget', 'button', 'dialog'),
-			'plugin' => array('scrollable', 'scrollable.navigator', 'ee_filebrowser', 'markitup', 'thickbox'),
+			'plugin' => array('scrollable', 'scrollable.navigator', 'ee_filebrowser', 'ee_fileuploader', 'markitup', 'thickbox'),
 		);
 		
 		if (version_compare(APP_VER, '2.1.3', '>'))
@@ -942,11 +942,11 @@ class Safecracker_lib
 			$mtime = array($this->EE->localize->now);
 		}
 		
-		$use_live_url = ($this->bool_string($this->EE->TMPL->fetch_param('use_live_url'), TRUE)) ? AMP.'use_live_url=y' : '';
+		$use_live_url = ($this->bool_string($this->EE->TMPL->fetch_param('use_live_url'), TRUE)) ? '&use_live_url=y' : '';
 		
-		$include_jquery = ($this->bool_string($include_jquery, TRUE)) ? AMP.'include_jquery=y' : '';
+		$include_jquery = ($this->bool_string($include_jquery, TRUE)) ? '&include_jquery=y' : '';
 	
-		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.$this->EE->functions->fetch_site_index().QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Safecracker', 'combo_loader').AMP.str_replace('%2C', ',', http_build_query($this->EE->cp->js_files)).AMP.'v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
+		$this->head .= '<script type="text/javascript" charset="utf-8" src="'.$this->EE->functions->fetch_site_index().QUERY_MARKER.'ACT='.$this->EE->functions->fetch_action_id('Safecracker', 'combo_loader').'&'.str_replace('%2C', ',', http_build_query($this->EE->cp->js_files)).'&v='.max($mtime).$use_live_url.$include_jquery.'"></script>'."\n";
 		
 		//add fieldtype styles
 		foreach ($this->EE->cp->its_all_in_your_head as $item)
