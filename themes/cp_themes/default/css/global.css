@@ -308,6 +308,8 @@ ul.bulleted {
 	text-decoration:none;
 }
 
+.rightNav a.submit:hover{ color: #FFFFFF; }
+
 .submit_alt {
 	background:			#FFF url('../images/submit_alt_button_bg.jpg') bottom left repeat-x!important;
 	color:				#465660!important;
@@ -359,8 +361,8 @@ select.select {
 }
 
 .pageContents span.button .submit,
-span.button .submit {
-	color:#fff;
+span.button .submit{
+	color: #546875;
 }
 
 /* for those elements that just don't like to be next to each other */
@@ -877,6 +879,7 @@ a#revealSidebarLink:link, a#revealSidebarLink:visited  {
 #mainContent .pageContents {
 	background-color:	#ECF1F4;
 	border-top:			1px solid #fff;
+	overflow: hidden;
 	padding: 14px;
 }
 
@@ -1367,9 +1370,8 @@ th.hidden_col { display: none; } td.hidden_col { display: none; }
 #fileChooser .tableSubmit,
 #mainContent .tableSubmit {
 	float:	right; 
-	margin-top:  -20px;
+	margin-top: 0;
 }
-
 
 #mainContent .paginationLinks {
 	color:	#5f6c74;
