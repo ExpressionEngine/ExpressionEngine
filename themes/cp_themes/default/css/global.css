@@ -1369,9 +1369,17 @@ th.hidden_col { display: none; } td.hidden_col { display: none; }
 
 #fileChooser .tableSubmit,
 #mainContent .tableSubmit {
+<<<<<<< local
+	float: right; 
+=======
 	float:	right; 
+>>>>>>> other
 	margin-top: 0;
 }
+<<<<<<< local
+
+=======
+>>>>>>> other
 
 #mainContent .paginationLinks {
 	color:	#5f6c74;

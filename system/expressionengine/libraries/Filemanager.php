@@ -180,7 +180,8 @@ class Filemanager {
 				'short_name'	=> $row['short_name'],
 				'width'			=> $row['width'],
 				'height'		=> $row['height'],
-				'watermark_id'	=> $row['watermark_id']
+				'watermark_id'	=> $row['watermark_id'], 
+				'resize_type'	=> $row['resize_type']
 			);
 			
 			// Add watermarking prefs
@@ -393,7 +394,7 @@ class Filemanager {
 				return $this->_save_file_response(FALSE, lang('image_exceeds_max_size'));
 			}
 		
-		 	if ( ! $this->create_thumb($file_path, $prefs))
+			if ( ! $this->create_thumb($file_path, $prefs))
 			{
 				return $this->_save_file_response(FALSE, lang('thumb_not_created'));
 			}
@@ -1132,11 +1133,13 @@ class Filemanager {
 			}
 			elseif (isset($size['resize_type']) AND $size['resize_type'] == 'crop')
 			{
+				
 				// This may need to change if we let them manually set crop
 				// For now, let's crop from center for Wes
 
-				$config['x_axis'] = (($prefs['width'] / 2) + ($config['width'] / 2));
-				$config['y_axis'] = (($prefs['height'] / 2) + ($config['height'] / 2));
+				$config['x_axis'] = (($prefs['width'] / 2) - ($config['width'] / 2));
+				$config['y_axis'] = (($prefs['height'] / 2) - ($config['height'] / 2));
+				$config['maintain_ratio'] = FALSE;
 
 				$this->EE->image_lib->initialize($config);
 
@@ -2416,7 +2419,6 @@ class Filemanager {
 
 	function fetch_fontlist()
 	{
-		
 		$path = APPPATH.'/fonts/';
 		
 		$font_files = array();
