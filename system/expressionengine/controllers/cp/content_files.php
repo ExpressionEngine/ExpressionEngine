@@ -1223,8 +1223,11 @@ class Content_files extends CI_Controller {
 		// If file exists- make sure it exists in db - otherwise add it to db and generate all child sizes
 		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
 
-		if (($sizes = $this->input->post('sizes')) === FALSE OR
-			($current_files = $this->input->post('files')) === FALSE)
+		if (
+			(($sizes = $this->input->post('sizes')) === FALSE OR
+			($current_files = $this->input->post('files')) === FALSE) AND
+			$db_sync != 'y'
+		)
 		{
 			return FALSE;
 		}
@@ -1275,10 +1278,6 @@ class Content_files extends CI_Controller {
 		
 		$this->load->library('localize');
 
-		/*
-			TODO Ajax error is somewhere in here.
-				This is stopping the propper data from showing up in the Javascript
-		*/
 		// Setup data for batch insert
 		foreach ($files->files[$id] as $file)
 		{
