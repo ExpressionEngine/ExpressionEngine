@@ -3319,6 +3319,10 @@ div.contentWrap {
 	text-decoration: underline;
 }
 
+#fileChooser table.mainTable th {
+	cursor: default;
+}
+
 /* @group Edit Controls */
 
 .edit_controls {
