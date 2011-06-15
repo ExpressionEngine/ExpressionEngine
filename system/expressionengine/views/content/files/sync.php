@@ -39,9 +39,9 @@ if ( ! $EE_view_disable)
 				</tbody>
 			</table>
 			<br />
-			<h3><?=lang('image_sizes')?></h3>
-			<p><?=lang('image_sizes_rebuild')?></p>
 			<?php if ( ! empty($sizes)):?>
+			<h3><?=lang('image_sizes')?></h3>
+			<p><?=lang('image_sizes_rebuild')?></p>	
 			<table id="dimensions" class="mainTable padTable" border="0" cellspacing="0" cellpadding="0">
 				<thead>
 					<tr>
