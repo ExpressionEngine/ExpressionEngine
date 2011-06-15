@@ -200,7 +200,12 @@ class Comment_mcp {
 		$opts = array(
 			''	=> lang('filter_by_channel')
 		);
-				
+		
+		if ( ! $query)
+		{
+			return array();
+		}
+
 		if ($query->num_rows() > 1)
 		{
 			$opts['all'] = lang('all');
@@ -644,23 +649,23 @@ class Comment_mcp {
 			return FALSE;
 		}
 			
-		if ( ! $this->EE->cp->allowed_group('can_edit_all_comments'))
+		if ($this->EE->cp->allowed_group('can_edit_all_comments'))
 		{
-			if ($query->row('entry_author') != $this->EE->session->userdata('member_id'))
+			$can_edit = TRUE;
+		}
+		else
+		{
+			if ($query->row('entry_author') == $this->EE->session->userdata('member_id'))
+			{
+				$can_edit = TRUE;
+			}
+			else
 			{
 				if ( ! $this->EE->cp->allowed_group('can_moderate_comments'))
 				{
 					show_error(lang('unauthorized_access'));
-				}
+				}							
 			}
-			else
-			{
-				$can_edit = TRUE;			
-			}
-		}
-		else
-		{
-			$can_edit = TRUE;
 		}
 
 		$vars = $query->row_array();
