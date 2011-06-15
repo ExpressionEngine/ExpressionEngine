@@ -571,6 +571,8 @@ class Filemanager {
 			'plugin'    => array('scrollable', 'scrollable.navigator', 'ee_filebrowser', 'ee_fileuploader', 'tmpl')
 		));
 		
+		$this->EE->load->helper('html');
+		
 		$this->EE->javascript->set_global(array(
 			'lang' => array(
 				'resize_image'		=> $this->EE->lang->line('resize_image'),
@@ -579,7 +581,35 @@ class Filemanager {
 			),
 			'filebrowser' => array(
 				'endpoint_url'		=> $endpoint_url,
-				'window_title'		=> lang('file_manager')
+				'window_title'		=> lang('file_manager'),
+				'next'				=> anchor(
+					'#', 
+					img(
+						$this->EE->cp->cp_theme_url . 'images/pagination_next_button.gif',
+						array(
+							'alt' => lang('next'),
+							'width' => 13,
+							'height' => 13
+						)
+					),
+					array(
+						'class' => 'next'
+					)
+				),
+				'previous'			=> anchor(
+					'#', 
+					img(
+						$this->EE->cp->cp_theme_url . 'images/pagination_prev_button.gif',
+						array(
+							'alt' => lang('previous'),
+							'width' => 13,
+							'height' => 13
+						)
+					),
+					array(
+						'class' => 'previous visualEscapism'
+					)
+				)
 			),
 			'fileuploader' => array(
 				'window_title'		=> lang('file_upload'),
@@ -766,7 +796,7 @@ class Filemanager {
 		);
 		
 		$this->EE->output->send_ajax_response(array(
-			'uploader'	=> $this->EE->load->view('_shared/file_upload/upload_modal', $vars, TRUE)
+			'uploader'	=> $this->EE->load->ee_view('_shared/file_upload/upload_modal', $vars, TRUE)
 		));
 	}
 	

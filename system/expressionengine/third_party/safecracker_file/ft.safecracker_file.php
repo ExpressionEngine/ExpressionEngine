@@ -129,7 +129,7 @@ class Safecracker_file_ft extends File_ft
 		
 		if (isset($_FILES[$field_name]) && $_FILES[$field_name]['size'] > 0)
 		{
-			$this->EE->load->add_package_path(PATH_THIRD.'safecracker_file/');			
+			$this->EE->load->add_package_path(PATH_THIRD.'safecracker_file/');
 			$this->EE->load->library('Filemanager');
 			
 			$data = $this->EE->filemanager->upload_file($this->settings['safecracker_upload_dir'], $field_name);
