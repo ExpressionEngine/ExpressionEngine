@@ -75,7 +75,7 @@ class File_model extends CI_Model {
 			$this->db->where_not_in('mime_type', $this->_image_types);
 		}
 		
-		$this->db->where('site_id', $this->config->item('site_id'));
+		$this->db->where('files.site_id', $this->config->item('site_id'));
 		
 		if (isset($parameters['cat_id']) && ($parameters['cat_id'] == 'none' OR $parameters['cat_id']) && is_numeric($parameters['cat_id']))
 		{
@@ -138,6 +138,15 @@ class File_model extends CI_Model {
 		{
 			foreach ($parameters['order'] as $key => $val)
 			{
+				// If the key is set to upload location name, then we need to 
+				// join upload_prefs and sort on the name there
+				if ($key == 'upload_location_name')
+				{
+					$this->db->join('upload_prefs', 'upload_prefs.id = files.upload_location_id');
+					$this->db->order_by('upload_prefs.name', $val);
+					continue;
+				}
+				
 				$this->db->order_by($key, $val);
 			}
 		}
