@@ -856,18 +856,22 @@ class Content_files extends CI_Controller {
 		// Get the file data
 		$data = $this->_edit_setup('edit_file');
 		
+		// List out the tabs we'll need
+		$data['tabs'] = array(
+			'file_metadata'
+		);
+		
 		// Get the categories
 		$this->load->library('publish');
 		$this->load->model(array('file_upload_preferences_model'));
 		$category_group_ids = $this->file_upload_preferences_model->get_category_groups($data['upload_location_id']);		
-		$categories = $this->publish->build_categories_block($category_group_ids, $data['file_id'], NULL, '', TRUE);
-		$data['categories'] = $categories;
 		
-		// List out the tabs we'll need
-		$data['tabs'] = array(
-			'file_metadata',
-			'categories'
-		);
+		if (count($category_group_ids) != 1 OR current($category_group_ids) != '')
+		{
+			$data['tabs'][] = 'categories';
+			$categories = $this->publish->build_categories_block($category_group_ids, $data['file_id'], NULL, '', TRUE);
+			$data['categories'] = $categories;
+		}
 		
 		// Create fields for the view
 		$data['fields'] = array(
