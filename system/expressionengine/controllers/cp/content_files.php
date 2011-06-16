@@ -31,8 +31,8 @@ class Content_files extends CI_Controller {
 	private $temp_prefix      = "temp_file_";
 
 	private $nest_categories = 'y';
-	private $per_page		 = 100;
-	private $pipe_length     = 3;
+	private $per_page		 = 40;
+	private $pipe_length     = 1;
 
 
 	/**
@@ -129,7 +129,7 @@ class Content_files extends CI_Controller {
 		$this->javascript->set_global(array(
 			'file' => array(
 				'pipe' 			=> $this->pipe_length,
-				'perPage'		=> $this->per_page,
+				'perPage'		=> $get_post['per_page'],
 				'themeUrl'		=> $this->cp->cp_theme_url,
 				'tableColumns'	=> $table_columns
 			),
@@ -224,7 +224,7 @@ class Content_files extends CI_Controller {
 			$params = array(
 				'category' => $get_post['cat_id'], 
 				'type' => $get_post['type'], 
-				'per_page' => $this->per_page, 
+				'per_page' => $get_post['per_page'], 
 				'offset'	=> $get_post['offset'],
 				'keywords'	=> $get_post['keywords'], 
 				'order'		=> $order, 
@@ -252,7 +252,7 @@ class Content_files extends CI_Controller {
 			$base_url = $this->_base_url.AMP.'directory='.$selected_dir;
 			$qstr_seg = 'offset';
 
-			$this->_setup_pagination($base_url, $total_rows, $this->per_page, $qstr_seg);
+			$this->_setup_pagination($base_url, $total_rows, $get_post['per_page'], $qstr_seg);
 
 			$action_options = array(
 				'download'			=> lang('download_selected'),
@@ -336,7 +336,7 @@ class Content_files extends CI_Controller {
 		$params = array(
 			'category' => $get_post['cat_id'], 
 			'type' => $get_post['type'], 
-			'per_page' => $this->per_page, 
+			'per_page' => $get_post['per_page'], 
 			'offset'	=> $get_post['offset'],
 			'keywords'	=> $get_post['keywords'], 
 			'order'		=> $order, 
