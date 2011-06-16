@@ -1959,7 +1959,7 @@ class Safecracker_lib
 	 * @param	mixed $logged_out_member_id
 	 * @return	void
 	 */
-	public function fetch_logged_out_member($logged_out_member_id)
+	public function fetch_logged_out_member($logged_out_member_id = FALSE)
 	{
 		if ($this->EE->session->userdata('member_id') || $this->logged_out_member_id)
 		{
