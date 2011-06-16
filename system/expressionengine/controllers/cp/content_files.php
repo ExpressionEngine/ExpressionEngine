@@ -119,9 +119,11 @@ class Content_files extends CI_Controller {
 		if ($allowed_dirs != FALSE)
 		{
 			$this->cp->set_action_nav(array(
-			'upload_file' => ''
+				'upload_file' => ''
 			));
-		}		
+		}
+		
+		$no_files_message = sprintf(lang('no_uploaded_files'), BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences');
 
 		$this->javascript->set_global(array(
 			'file' => array(
@@ -131,7 +133,7 @@ class Content_files extends CI_Controller {
 				'tableColumns'	=> $table_columns
 			),
 			'lang' => array(
-				'noEntries'		=> lang('no_entries_matching_that_criteria')
+				'noEntries'		=> $no_files_message
 			),
 			'filebrowser' => array(
 				'endpoint_url'	=> 'C=content_publish&M=filemanager_actions',
@@ -275,6 +277,7 @@ class Content_files extends CI_Controller {
 			'files'					=> (isset($file_list)) ? $file_list : array(),
 			'keywords'				=> $get_post['keywords'],
 			'no_upload_dirs'		=> $no_upload_dirs,
+			'no_files_message'		=> $no_files_message,
 			'pagination_count_text'	=> (isset($pagination_count_text)) ? $pagination_count_text : NULL,
 			'pagination_links'		=> $this->pagination->create_links(),
 			'search_in_options'		=> $search_select_options,

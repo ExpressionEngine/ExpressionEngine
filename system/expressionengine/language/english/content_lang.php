@@ -327,7 +327,7 @@ $lang = array(
 'You have tried to access a channel that does not exist.',
 
 'no_entries_matching_that_criteria' => 
-'There are no entries matching the criteria you selected',
+'There are no entries matching the criteria you selected.',
 
 'no_entries_exist' => 
 'There are no entries in this channel',

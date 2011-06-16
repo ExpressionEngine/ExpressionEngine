@@ -31,7 +31,7 @@ $lang = array(
 'upload_rename'			=> 'File Already Exists',
 'upload_rename_message'	=> 'A file with that filename already exists. You can either choose a new name and the file will be renamed, or you can use the same name and the existing file will be overwritten.',
 'no_upload_dirs'		=> 'You have no upload directories defined',
-'no_uploaded_files'		=> 'You have no files uploaded to this directory',
+'no_uploaded_files'		=> 'You have no files uploaded to this directory. Please <a href="%s">sync your directories</a>.',
 'image_editor'			=> 'Image Editor',
 'download_selected'		=> 'Download Selected Files',
 'email_files'			=> 'Email Selected Files',

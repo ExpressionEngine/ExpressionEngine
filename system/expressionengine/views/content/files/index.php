@@ -80,7 +80,7 @@ if ( ! $EE_view_disable)
 					<tbody>
 					<?php if ( ! isset($files) OR empty($files)):?>
 						<tr>
-							<td colspan="8"><?=lang('no_uploaded_files')?></td>
+							<td colspan="8"><?=$no_files_message?></td>
 						</tr>
 					<?php else: ?>
 						<?php foreach ($files as $file):?>
