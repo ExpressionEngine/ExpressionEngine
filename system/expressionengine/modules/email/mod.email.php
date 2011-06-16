@@ -66,7 +66,7 @@ class Email {
 		$channel = $this->EE->TMPL->fetch_param('channel', '');
 
 		// No email left behind act
-		if ( ! $user_recipients && $recipients == '')
+		if ( ! $this->_user_recipients && $recipients == '')
 		{
 			$recipients = $this->EE->config->item('webmaster_email');
 		}
