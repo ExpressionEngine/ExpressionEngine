@@ -490,6 +490,8 @@ function disable_fields(state) {
 		$("#holder div.markItUp, #holder p.spellcheck").each(function() {
 			$(this).before("<div class=\"cover\" style=\"position:absolute;width:100%;height:50px;z-index:9999;\"></div>").css({});
 		});
+
+		$('.contents, .publish_field, input, textarea').css('-webkit-user-select', 'none');
 	}
 	else {
 		fields.removeAttr("disabled");
@@ -497,6 +499,8 @@ function disable_fields(state) {
 		admin_link.removeClass("admin_mode");
 		$(".cover").remove();
 		disabled_fields.attr("disabled", true);
+
+		$('.contents, .publish_field, input, textarea').css('-webkit-user-select', 'auto');
 	}
 }
 
