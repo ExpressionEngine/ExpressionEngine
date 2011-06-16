@@ -410,7 +410,7 @@ $lang = array(
 'File could not be uploaded because of a security failure',
 
 'thumb_not_created' =>
-'Thumbnail could not be created for the image',
+'Thumbnail could not be created for the image. Please make sure the thumbnail directory is writable.',
 
 'invalid_mime' =>
 'Invalid mime type, file could not be processed',
