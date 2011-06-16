@@ -1893,7 +1893,7 @@ class Filemanager {
 		
 		
 		// If they renamed, we need to be sure the NEW name doesn't conflict
-		if (if $replace_file_name != '' && $new_file_name != $replace_file_name)
+		if ($replace_file_name != '' && $new_file_name != $replace_file_name)
         {
 			if (file_exists($upload_directory['server_path'].$new_file_name))
 			{
