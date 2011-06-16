@@ -849,26 +849,34 @@ class Content_files extends CI_Controller {
 	{
 		// Check to see if POST data is present, if it is, send it to 
 		// _save_file to update the data
-		if ( ! empty($_POST))
+		$this->load->library('form_validation');
+		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
+		$this->form_validation->set_rules('file_title', 'lang:file_title', 'trim|required');
+
+		if ($this->form_validation->run())
 		{
 			return $this->_save_file();
 		}
 		
 		// Get the file data
 		$data = $this->_edit_setup('edit_file');
+
+		// List out the tabs we'll need
+		$data['tabs'] = array(
+			'file_metadata'
+		);
 		
 		// Get the categories
 		$this->load->library('publish');
 		$this->load->model(array('file_upload_preferences_model'));
 		$category_group_ids = $this->file_upload_preferences_model->get_category_groups($data['upload_location_id']);		
-		$categories = $this->publish->build_categories_block($category_group_ids, $data['file_id'], NULL, '', TRUE);
-		$data['categories'] = $categories;
 		
-		// List out the tabs we'll need
-		$data['tabs'] = array(
-			'file_metadata',
-			'categories'
-		);
+		if (count($category_group_ids) != 1 OR current($category_group_ids) != '')
+		{
+			$data['tabs'][] = 'categories';
+			$categories = $this->publish->build_categories_block($category_group_ids, $data['file_id'], NULL, '', TRUE);
+			$data['categories'] = $categories;
+		}
 		
 		// Create fields for the view
 		$data['fields'] = array(
@@ -879,7 +887,8 @@ class Content_files extends CI_Controller {
 					'value' => $data['title'],
 					'size' 	=> 255
 				)),
-				'type' => 'text'
+				'type' => 'text',
+				'required' => TRUE
 			),
 			'file_name' => array(
 				'field' => '<span class="fake_input">' . $data['file_name'] . '</span>',
@@ -962,9 +971,31 @@ class Content_files extends CI_Controller {
 	 */
 	public function edit_image()
 	{
-		// The form posts to this method, so if POST data is present
-		// send to _do_image_processing to, well, do the image processing
-		if ( ! empty($_POST))
+		$accordion_position = 0;
+		
+		// Setup and run validation first
+		$this->load->library('form_validation');
+		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
+		
+		if (isset($_POST['save_image_crop']))
+		{
+			$this->form_validation->set_rules('crop_width', 'lang:crop_width', 'trim|numeric|greater_than[0]|required');
+			$this->form_validation->set_rules('crop_height', 'lang:crop_height', 'trim|numeric|greater_than[0]|required');
+			$this->form_validation->set_rules('crop_x', 'lang:crop_x', 'trim|numeric|required');
+			$this->form_validation->set_rules('crop_y', 'lang:crop_y', 'trim|numeric|required');
+		}
+		else if (isset($_POST['save_image_rotate']))
+		{
+			$accordion_position = 1;
+		}
+		else if (isset($_POST['save_image_resize']))
+		{
+			$this->form_validation->set_rules('resize_width', 'lang:resize_width', 'trim|numeric|greater_than[0]|required');
+			$this->form_validation->set_rules('resize_height', 'lang:resize_height', 'trim|numeric|greater_than[0]|required');
+			$accordion_position = 2;
+		}
+
+		if ($this->form_validation->run())
 		{
 			return $this->filemanager->_do_image_processing();
 		}
@@ -987,7 +1018,11 @@ class Content_files extends CI_Controller {
 		));
 		
 		$this->javascript->output('
-	        $("#file_manager_toolbar").accordion({autoHeight: false, header: "h3"});
+	        $("#file_manager_toolbar").accordion({
+				autoHeight: false, 
+				header: "h3",
+				active: ' . $accordion_position . '
+			});
 		');
 		
 		$this->javascript->compile();
@@ -1017,7 +1052,7 @@ class Content_files extends CI_Controller {
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
 
 		// Do some basic permissions checking
-		if ( ! ($file_dir = $this->input->get('upload_dir')))
+		if ( ! ($file_dir = $this->input->get_post('upload_dir')))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1033,7 +1068,7 @@ class Content_files extends CI_Controller {
 		$this->output->set_header("Pragma: no-cache");
 
 		// Figure out the file_id now
-		$file_id = $this->input->get('file_id');
+		$file_id = $this->input->get_post('file_id');
 
 		// Get the information from the database
 		$file_query = $this->db->get_where('files', array(

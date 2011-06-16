@@ -85,10 +85,7 @@
 				$('#file_uploader .button_bar .loading').addClass('visualEscapism');
 				
 				// Disable upload file button
-				$('#file_uploader .button_bar #upload_file')
-					.unbind()
-					.addClass('disabled-btn')
-					.removeClass('submit');
+				$.ee_fileuploader.reset_upload();
 				
 				// Call open callback
 				if (typeof settings.open == 'function') {
@@ -145,6 +142,30 @@
 			event.preventDefault();
 			file_uploader.dialog('close');
 		});
+	};
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Disable the upload by changing the button bar
+	 *
+	 * @param {Boolean} disable Whether or not to disable the button/upload
+	 */
+	$.ee_fileuploader.reset_upload = function(disable) {
+		if (typeof disable == "undefined") {
+			disable = true;
+		};
+
+		// Hide loading indicator
+		$('#file_uploader .button_bar .loading').addClass('visualEscapism');
+
+		// Disable the upload file button
+		if (disable == true) {
+			$('#file_uploader .button_bar #upload_file')
+				.addClass('disabled-btn')
+				.removeClass('submit')
+				.unbind();
+		};
 	};
 	
 	// --------------------------------------------------------------------

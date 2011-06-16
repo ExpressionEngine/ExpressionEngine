@@ -32,7 +32,7 @@ class Safecracker_ext
 	public $version = '2.1';
 	public $description = 'A replacement and enchancement of the Stand-Alone Entry Form';
 	public $settings_exist = 'y';
-	public $docs_url = 'http://expressionengine.com/downloads/details/safecracker/';
+	public $docs_url = 'http://expressionengine.com/user_guide/modules/safecracker/index.html';
 	public $classname = 'Safecracker_ext';
 	public $required_by = array('module');
 	

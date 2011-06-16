@@ -5,6 +5,9 @@
 		<div class="notice">
 			<?=$error?>
 		</div>
+		<script>
+			parent.$.ee_fileuploader.reset_upload();
+		</script>
 	<?php endif ?>
 	<p>
 	<?php if (count($upload_directories) > 1):?>

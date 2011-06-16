@@ -29,29 +29,36 @@ if ( ! $EE_view_disable)
 						<?php foreach ($fields as $field_name => $field): ?>
 							<div class="publish_field publish_<?=$field['type']?>" style="width: 100%; ">
 								<label class="hide_field">
-									<span><?=lang($field_name)?></span>
+									<span>
+										<?php if (isset($field['required']) AND $field['required']): ?>
+											<em class="required">* </em>
+										<?php endif ?>
+										<?=lang($field_name)?>
+									</span>
 								</label>
 								<div id="sub_hold_field_title">
 									<fieldset class="holder">
 										<?=$field['field']?>
+										<?=form_error($field_name)?>
 									</fieldset>
 								</div> <!-- /sub_hold_field -->
 							</div>
 						<?php endforeach ?>
-					</div> <!-- #publish -->
-					<div id="categories" class="main_tab js_hide group">
-						<div class="publish_field publish_multiselect" id="hold_field_category" style="width: 100%; ">
-							<label class="hide_field">
-								<span>Categories</span>
-							</label>
-							<div id="sub_hold_field_category">
-								<fieldset class="holder">
-									<?= $categories['category']['string_override'] ?>
-								</fieldset>
-							</div> <!-- /sub_hold_field -->
-						</div> <!-- /publish_field -->
-						
-					</div> <!-- #categories -->
+					</div> <!-- #file_metadata -->
+					<?php if (isset($categories)): ?>
+						<div id="categories" class="main_tab js_hide group">
+							<div class="publish_field publish_multiselect" id="hold_field_category" style="width: 100%; ">
+								<label class="hide_field">
+									<span>Categories</span>
+								</label>
+								<div id="sub_hold_field_category">
+									<fieldset class="holder">
+										<?= $categories['category']['string_override'] ?>
+									</fieldset>
+								</div> <!-- /sub_hold_field -->
+							</div> <!-- /publish_field -->
+						</div> <!-- #categories -->
+					<?php endif ?>
 				</div> <!-- #holder -->
 				<ul id="publish_submit_buttons">
 					<li><input type="submit" class="submit" name="save_file" id="save_file" value="<?=lang('save_file')?>" /></li>
