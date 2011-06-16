@@ -35,7 +35,7 @@ class File_category_model extends CI_Model
 	 * @param string $is_cover Either 'n' or 'y'
 	 * @return boolean TRUE if setting the category was successful, FALSE otherwise
 	 */
-	function set_category($file_id, $cat_id, $sort = NULL, $is_cover = NULL)
+	function set($file_id, $cat_id, $sort = NULL, $is_cover = NULL)
 	{
 		// Make sure sort is numeric and is not negative
 		if (isset($sort) AND $this->_is_valid_int($sort))
@@ -57,7 +57,19 @@ class File_category_model extends CI_Model
 			! $this->_file_exists($file_id) OR ! $this->_category_exists($cat_id)
 		)
 		{
-			return FALSE;	
+			return FALSE;
+		}
+		
+		// Check to see if parents need to be set and if this category has a parent
+		if ($this->config->item('auto_assign_cat_parents') == 'y')
+		{
+			$this->load->model('category_model');
+			$parent_id = $this->category_model->get_category_parent_id($cat_id);
+			
+			if ($parent_id != 0)
+			{
+				$this->set($file_id, $parent_id, $sort, $is_cover);
+			}
 		}
 
 		$this->db->insert(self::TABLE_NAME, array(
@@ -71,15 +83,53 @@ class File_category_model extends CI_Model
 	// -----------------------------------------------------------------------
 	
 	/**
-	 * Deletes category records for a specific file_id
+	 * Get the categories from the database
+	 *
+	 * @param array $data Associative array of data to get
+	 *
+	 * @return DB Object Database object containing the query
+	 */
+	public function get($data)
+	{
+		// Define valid array keys as keys to use in array_intersect_key
+		$valid_keys = array(
+			'file_id' => '',
+			'cat_id' => '',
+			'sort' => '',
+			'is_cover' => ''
+		);
+		
+		// Remove data that can't exist in the database
+		$data = array_intersect_key($data, $valid_keys);
+		
+		return $this->db->get_where('file_categories', $data);
+	}
+	
+	// -----------------------------------------------------------------------
+	
+	/**
+	 * Deletes category records for a specific file_id and optionally a cat_id as well
 	 *
 	 * @param integer $file_id The ID of the file from exp_files
+	 * @param integer $cat_id (Optional) The ID of the category to delete as well
+	 * 
+	 * @return boolean TRUE if successful, FALSE otherwise
 	 */
-	public function delete_file($file_id)
+	public function delete($file_id, $cat_id = NULL)
 	{
-		$this->db->delete(self::TABLE_NAME, array(
-			'file_id' => $file_id
-		));
+		if ($file_id == NULL OR $file_id == 0 OR $file_id == FALSE)
+		{
+			return FALSE;
+		}
+
+		if ($cat_id != NULL)
+		{
+			$this->db->where('cat_id', $cat_id);
+		}
+
+		$this->db->delete(self::TABLE_NAME, array('file_id' => $file_id));
+
+		return TRUE;
 	}
 
 	// -----------------------------------------------------------------------

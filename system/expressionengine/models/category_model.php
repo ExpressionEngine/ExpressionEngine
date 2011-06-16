@@ -208,6 +208,24 @@ class Category_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Get Category Parent ID
+	 *
+	 * @access	public
+	 * @param integer $cat_id The category ID you need the parent ID for
+	 * @return integer The parent_id of the supplied category, 0 if no 
+	 * 		parent exists
+	 */
+	function get_category_parent_id($cat_id)
+	{
+		$this->db->select('parent_id');
+		$this->db->where('cat_id', $cat_id);
+		$query = $this->db->get('categories');
+		return $query->row('parent_id');
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
 	 * Get Category Label Name
 	 *
 	 * @access	public

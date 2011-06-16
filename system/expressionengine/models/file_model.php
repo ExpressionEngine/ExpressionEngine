@@ -229,7 +229,7 @@ class File_model extends CI_Model {
 		{
 			foreach ($data['categories'] as $cat_id)
 			{
-				$result = $this->file_category_model->set_category($file_id, $cat_id);
+				$result = $this->file_category_model->set($file_id, $cat_id);
 
 				// If the result is a failure then set $successful to false, otherwise
 				// leave it alone
@@ -621,7 +621,7 @@ class File_model extends CI_Model {
 
 			// Remove any related category records
 			$this->load->model('file_category_model');
-			$this->file_category_model->delete_file($file->file_id);
+			$this->file_category_model->delete($file->file_id);
 
 			// Now, we can delete the DB record
 			$this->db->delete('files', array(

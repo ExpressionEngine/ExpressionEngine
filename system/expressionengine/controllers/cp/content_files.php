@@ -925,13 +925,17 @@ class Content_files extends CI_Controller {
 		));
 		
 		$this->load->model('file_category_model');
-		$categories = $this->input->post('category');
 		
+		// Delete existing categories
+		$this->file_category_model->delete($file_id);
+		
+		// Add new categories
+		$categories = $this->input->post('category');
 		if ($categories)
 		{
 			foreach ($categories as $category_id) 
 			{
-				$this->file_category_model->set_category($file_id, $category_id);
+				$this->file_category_model->set($file_id, $category_id);
 			}
 		}
 		

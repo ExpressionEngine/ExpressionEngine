@@ -2016,7 +2016,7 @@ class Api_channel_entries extends Api {
 		$this->EE->db->delete('channel_entries_autosave', array('original_entry_id' => $this->entry_id));
 
 		// Delete Categories - resubmitted in the next step
-		$this->EE->db->delete('category_posts', array('entry_id' => $this->entry_id));		
+		$this->EE->db->delete('category_posts', array('entry_id' => $this->entry_id));
 	}
 
 	// --------------------------------------------------------------------
