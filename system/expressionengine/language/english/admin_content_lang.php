@@ -770,7 +770,7 @@ $lang = array(
 'Field Order',
 
 'create_new_custom_field' =>
-'Create a New Category Field',
+'Create a New Channel Field',
 
 'field_id' =>
 'Field ID',
