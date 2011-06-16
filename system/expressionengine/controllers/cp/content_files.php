@@ -848,14 +848,19 @@ class Content_files extends CI_Controller {
 	{
 		// Check to see if POST data is present, if it is, send it to 
 		// _save_file to update the data
-		if ( ! empty($_POST))
+		
+		$this->load->library('form_validation');
+		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
+		$this->form_validation->set_rules('file_title', 'lang:file_title', 'trim|required');
+
+		if ($this->form_validation->run())
 		{
 			return $this->_save_file();
 		}
 		
 		// Get the file data
 		$data = $this->_edit_setup('edit_file');
-		
+
 		// List out the tabs we'll need
 		$data['tabs'] = array(
 			'file_metadata'
@@ -882,7 +887,8 @@ class Content_files extends CI_Controller {
 					'value' => $data['title'],
 					'size' 	=> 255
 				)),
-				'type' => 'text'
+				'type' => 'text',
+				'required' => TRUE
 			),
 			'file_name' => array(
 				'field' => '<span class="fake_input">' . $data['file_name'] . '</span>',
@@ -1020,7 +1026,7 @@ class Content_files extends CI_Controller {
 		$this->cp->set_breadcrumb(BASE.AMP.'C=content_files', lang('file_manager'));
 
 		// Do some basic permissions checking
-		if ( ! ($file_dir = $this->input->get('upload_dir')))
+		if ( ! ($file_dir = $this->input->get_post('upload_dir')))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1036,7 +1042,7 @@ class Content_files extends CI_Controller {
 		$this->output->set_header("Pragma: no-cache");
 
 		// Figure out the file_id now
-		$file_id = $this->input->get('file_id');
+		$file_id = $this->input->get_post('file_id');
 
 		// Get the information from the database
 		$file_query = $this->db->get_where('files', array(
