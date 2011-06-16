@@ -26,23 +26,27 @@ if ( ! $EE_view_disable)
 							<li>
 								<?=lang('crop_width', 'crop_width')?>
 								<?=form_input('crop_width', $file_info['width'], 'id="crop_width" class="crop_dim"')?>
+								<?=form_error('crop_width')?>
 							</li>
 							<li>
 								<?=lang('crop_height', 'crop_height')?>
 								<?=form_input('crop_height', $file_info['height'], 'id="crop_height" class="crop_dim"')?>
+								<?=form_error('crop_height')?>
 							</li>
 							<li>
 								<?=lang('crop_x', 'crop_x')?>
 								<?=form_input('crop_x', 0, 'id="crop_x" class="crop_dim"')?>
+								<?=form_error('crop_x')?>
 							</li>
 							<li>
 								<?=lang('crop_y', 'crop_y')?>
 								<?=form_input('crop_y', 0, 'id="crop_y"  class="crop_dim"')?>
+								<?=form_error('crop_y')?>
 							</li>
 						</ul>
 						<p class="submit_button">
 							<a href="#" id="toggle_crop" class="submit js_show"><?=lang('crop_mode')?></a>
-							<?=form_submit('save_image', lang('save_image'), 'class="submit"')?><br />
+							<?=form_submit('save_image_crop', lang('save_image'), 'class="submit"')?><br />
 							<a href="#" id="cancel_crop" style="display: none"><?=lang('cancel_changes')?></a>
 						</p>
 					</div>
@@ -80,7 +84,7 @@ if ( ! $EE_view_disable)
 							</li>
 						</ul>
 						<p class="submit_button">
-							<?=form_submit('save_image', lang('save_image'), 'class="submit"')?><br />
+							<?=form_submit('save_image_rotate', lang('save_image'), 'class="submit"')?><br />
 							<?=anchor('#', lang('cancel_changes'), 'class="disabled"')?>
 						</p>
 					</div>
@@ -93,14 +97,16 @@ if ( ! $EE_view_disable)
 							<li>
 								<?=lang('resize_width', 'resize_width')?>
 								<?=form_input('resize_width', $file_info['width'], 'id="resize_width"')?>
+								<?=form_error('resize_width')?>
 							</li>
 							<li>
 								<?=lang('resize_height', 'resize_height')?>
 								<?=form_input('resize_height', $file_info['height'], 'id="resize_height"')?>
+								<?=form_error('resize_height')?>
 							</li>
 						</ul>
 						<p class="submit_button">
-							<?=form_submit('save_image', lang('save_image'), 'id="submit_resize" class="submit"')?><br />
+							<?=form_submit('save_image_resize', lang('save_image'), 'id="submit_resize" class="submit"')?><br />
 							<?=anchor('#', lang('cancel_changes'), 'id="cancel_resize" style="display: none"')?>
 						</p>
 					</div>

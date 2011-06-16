@@ -3383,6 +3383,10 @@ div.contentWrap {
 	width: auto;
 }
 
+.edit_controls .notice {
+	margin: 0 0 10px;
+}
+
 #rotate_fieldset li {
 	margin:				4px 0;
 }
