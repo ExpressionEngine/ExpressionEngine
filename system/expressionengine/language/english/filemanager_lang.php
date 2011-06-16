@@ -63,6 +63,7 @@ $lang = array(
 'rotate_flip_hor'		=> 'Flip Horizontal',
 'maintain_ratio'		=> 'Maintain Aspect Ratio',
 'width_needed'			=> 'A width or width/height must be selected, or a rotate/flip direction selected.',
+'file_exists_replacement_error' => 'A file with this name exists but is not available in the database for overwriting.',
 
 'resize_over_confirmation' => 'Resizing this image to a larger size than the source will result in a lower quality image. Are you sure you want to do that?',
 
