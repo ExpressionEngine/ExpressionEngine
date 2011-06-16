@@ -1364,7 +1364,7 @@ class Filemanager {
 		
 		if (count($delete))
 		{
-			$this->file_model->delete_files(array_keys($delete));
+			$this->EE->file_model->delete_files(array_keys($delete));
 		}
 	}
 	
@@ -1831,9 +1831,10 @@ class Filemanager {
 	 * @access	public
 	 * @param integer $file_id The ID of the file in exp_files
 	 * @param string $new_file_name The new file name for the file
+	 * @param string $replace_file_name The temporary replacement name for the file
 	 * @return mixed TRUE if successful, otherwise it returns the error
 	 */	 
-	function rename_file($file_id, $new_file_name)
+	function rename_file($file_id, $new_file_name, $replace_file_name = '')
 	{
 		$this->EE->load->model(array('file_upload_preferences_model', 'file_model'));
 		
@@ -1852,11 +1853,39 @@ class Filemanager {
 				'file_id'	=> $file_id
 			);
 		}
-		
+
 		$directory_id		= $previous_data->upload_location_id;
 		$old_file_name		= $previous_data->file_name;
 		$upload_directory	= $this->fetch_upload_dir_prefs($directory_id);
 		
+		
+		// If they renamed, we need to be sure the NEW name doesn't conflict
+		if (if $replace_file_name != '' && $new_file_name != $replace_file_name)
+        {
+			if (file_exists($upload_directory['server_path'].$new_file_name))
+			{
+				$replace_data = $this->EE->file_model->get_files_by_name($new_file_name, $directory_id);
+				
+				if ($replace_data->num_rows() > 0)
+				{				
+					$replace_data = $replace_data->row();
+
+					return array(
+						'success'	=> FALSE,
+						'error'	=> 'retry',
+						'replace_filename' => $replace_data->file_name,
+						'file_id'	=> $file_id
+						);
+				}
+				
+				return array(
+					'success'	=> FALSE,
+					'error'	=> lang('file_exists_replacement_error'),
+					'file_id'	=> $file_id
+					);
+        	}
+        }
+
 		// Check to see if a file with that name already exists
 		if (file_exists($upload_directory['server_path'] . $new_file_name))
 		{

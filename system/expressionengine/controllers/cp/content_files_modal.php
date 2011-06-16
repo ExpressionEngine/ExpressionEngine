@@ -186,6 +186,7 @@ class Content_files_modal extends CI_Controller {
 			$upload_response['file_name'] != $upload_response['orig_name']
 		)
 		{
+			$vars['temp_filename'] = $upload_response['orig_name'];
 			return $this->load->view('_shared/file_upload/rename', $vars);
  		}
 		
@@ -203,16 +204,39 @@ class Content_files_modal extends CI_Controller {
 	public function update_file()
 	{
 		$new_file_name = basename($this->filemanager->clean_filename(
-			$this->input->post('new_file_name') . '.' . $this->input->post('file_ext'),
+			$this->input->post('new_file_name').'.'.$this->input->post('file_ext'),
+			$this->input->post('directory_id')
+		));
+		
+		$new_file_base = substr($new_file_name, 0, -strlen('.'.$this->input->post('file_ext')));
+		
+		$temp_filename = basename($this->filemanager->clean_filename(
+			$this->input->post('temp_filename'),
 			$this->input->post('directory_id')
 		));
 		
 		// Attempt to replace the file
 		$rename_file = $this->filemanager->rename_file(
 			$this->input->post('file_id'),
-			$new_file_name
+			$new_file_name,
+			$temp_filename
 		);
 		
+		if ($rename_file['success'] === FALSE && $rename_file['error'] == 'retry')
+		{
+			$file['file_id'] = $rename_file['file_id'];
+			$file['upload_location_id'] = $this->input->post('directory_id');
+				
+			$vars = array('file_json' => $this->input->post('file_json'),
+						'file_ext' => $this->input->post('file_ext'),
+						'temp_filename' => $rename_file['replace_filename'],
+						'orig_name' => $new_file_base,
+						'file' => array('file_id' => $rename_file['file_id'], 'upload_location_id' => $this->input->post('directory_id'))
+						);
+
+			return $this->load->view('_shared/file_upload/rename', $vars);
+		}
+
 		// Get file data from JSON
 		$vars = $this->_get_file_from_json(array(
 			'new_file_name' => $new_file_name,
@@ -227,6 +251,7 @@ class Content_files_modal extends CI_Controller {
 		// If it's a different type of error, show it
 		else
 		{
+			
 			return $this->load->view('_shared/file_upload/rename', $rename_file['error']);
 		}
 	}
