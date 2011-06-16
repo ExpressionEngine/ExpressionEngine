@@ -333,6 +333,12 @@ class Content_files extends CI_Controller {
 			}
 		}
 		
+		if (isset($order['upload_location_id']))
+		{
+			$order['upload_location_name'] = $order['upload_location_id'];
+			unset($order['upload_location_id']);
+		}
+		
 		$params = array(
 			'category' => $get_post['cat_id'], 
 			'type' => $get_post['type'], 
@@ -341,7 +347,8 @@ class Content_files extends CI_Controller {
 			'keywords'	=> $get_post['keywords'], 
 			'order'		=> $order, 
 			'no_clue'	=> TRUE, 
-			'search_in'	=> $get_post['search_in']);
+			'search_in'	=> $get_post['search_in']
+		);
 		
 		$filtered_entries = $this->file_model->get_files($dirs, $params);
 
