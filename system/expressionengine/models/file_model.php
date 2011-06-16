@@ -124,6 +124,10 @@ class File_model extends CI_Model {
 		{
 			$this->db->limit($parameters['limit']);
 		}
+		else
+		{
+			$this->db->limit(100);
+		}
 
 		if (isset($parameters['offset']))
 		{
@@ -139,7 +143,7 @@ class File_model extends CI_Model {
 		}
 		else
 		{
-			$this->db->order_by('upload_date', 'DESC');
+			$this->db->order_by('upload_date DESC, file_id DESC');
 		}
 		
 		$return_data['results'] = $this->db->get('files');

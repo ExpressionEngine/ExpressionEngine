@@ -31,6 +31,7 @@ class Content_files extends CI_Controller {
 	private $temp_prefix      = "temp_file_";
 
 	private $nest_categories = 'y';
+	private $per_page		 = 100;
 	private $pipe_length     = 3;
 
 
@@ -128,7 +129,7 @@ class Content_files extends CI_Controller {
 		$this->javascript->set_global(array(
 			'file' => array(
 				'pipe' 			=> $this->pipe_length,
-				'perPage'		=> $get_post['per_page'],
+				'perPage'		=> $this->per_page,
 				'themeUrl'		=> $this->cp->cp_theme_url,
 				'tableColumns'	=> $table_columns
 			),
@@ -171,7 +172,7 @@ class Content_files extends CI_Controller {
 		// We need this for the filter, so grab it now
 		$cat_form_array = $this->api_channel_categories->category_form_tree($this->nest_categories);
 
-		// If we have channels we'll write the JavaScript menu switching code
+		// If we have directories we'll write the JavaScript menu switching code
 		if (count($allowed_dirs) > 0)
 		{
 			$this->filtering_menus($cat_form_array);
@@ -223,7 +224,7 @@ class Content_files extends CI_Controller {
 			$params = array(
 				'category' => $get_post['cat_id'], 
 				'type' => $get_post['type'], 
-				'per_page' => $get_post['per_page'], 
+				'per_page' => $this->per_page, 
 				'offset'	=> $get_post['offset'],
 				'keywords'	=> $get_post['keywords'], 
 				'order'		=> $order, 
@@ -248,10 +249,10 @@ class Content_files extends CI_Controller {
 
 			$file_list = $this->_fetch_file_list($files, $total_filtered);
 
-			$base_url = $this->_base_url.AMP.'directory='.$selected_dir.AMP.'per_page='.$get_post['per_page'];
+			$base_url = $this->_base_url.AMP.'directory='.$selected_dir;
 			$qstr_seg = 'offset';
 
-			$this->_setup_pagination($base_url, $total_rows, $get_post['per_page'], $qstr_seg);
+			$this->_setup_pagination($base_url, $total_rows, $this->per_page, $qstr_seg);
 
 			$action_options = array(
 				'download'			=> lang('download_selected'),
@@ -321,7 +322,7 @@ class Content_files extends CI_Controller {
 		$col_map = array('file_id', 'title', 'file_name', 'mime_type',
 						'upload_location_id', 'upload_date', '', '');
 
-		if ($this->input->get('iSortCol_0'))
+		if ($this->input->get('iSortCol_0') !== FALSE)
 		{
 			for ( $i=0; $i < $this->input->get('iSortingCols'); $i++ )
 			{
@@ -335,7 +336,7 @@ class Content_files extends CI_Controller {
 		$params = array(
 			'category' => $get_post['cat_id'], 
 			'type' => $get_post['type'], 
-			'per_page' => $get_post['per_page'], 
+			'per_page' => $this->per_page, 
 			'offset'	=> $get_post['offset'],
 			'keywords'	=> $get_post['keywords'], 
 			'order'		=> $order, 
@@ -512,7 +513,7 @@ class Content_files extends CI_Controller {
 			'keywords'		=> NULL, // Process this in a bit
 			'offset'		=> ($offset = $this->input->get('offset')) ? $offset : 0,
 			'order'			=> ($order = $this->input->get('offset')) ? $order : 0,
-			'per_page'		=> ($per_page = $this->input->get('per_page')) ? $per_page : 40,
+			'per_page'		=> ($per_page = $this->input->get('per_page')) ? $per_page : $this->per_page,
 			'status'		=> ($this->input->get_post('status') != 'all') ? $this->input->get_post('status') : '',
 			'search_in'		=> ($this->input->get_post('search_in')),
 			'search_type'	=> $this->input->get_post('search_type'),
