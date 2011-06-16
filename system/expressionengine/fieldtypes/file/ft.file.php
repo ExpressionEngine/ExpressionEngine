@@ -294,7 +294,7 @@ class File_ft extends EE_Fieldtype {
 		
 			return $tagdata;
 		}
-		else
+		else if ($file_info['path'] != '' AND $file_info['filename'] != '' AND $file_info['extension'] !== FALSE)
 		{
 			$full_path = $file_info['path'].$file_info['filename'].'.'.$file_info['extension'];
 
