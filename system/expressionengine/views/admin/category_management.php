@@ -23,7 +23,7 @@ if ($EE_view_disable !== TRUE)
 			$this->table->set_template($cp_table_template);
 			$this->table->set_heading(
 										array('data' => lang('id'), 'width' => '4%'),
-										lang('category_group'),
+										lang('group_name'),
 										'',
 										'',
 										'',
@@ -37,9 +37,9 @@ if ($EE_view_disable !== TRUE)
 					$this->table->add_row(
 						'<strong>'.$group['group_id'].'</strong>',
 						'<strong>'.$group['group_name'].'</strong>',
-						'('.$group['category_count'].') <a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$group['group_id'].'">'. lang('add_edit_categories').'</a>',
+						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_editor'.AMP.'group_id='.$group['group_id'].'">'. lang('add_edit_categories').'</a> ('.$group['category_count'].')',
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=edit_category_group'.AMP.'group_id='.$group['group_id'].'">'.lang('edit_category_group').'</a>',
-						'('.$group['custom_field_count'].') <a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_custom_field_group_manager'.AMP.'group_id='.$group['group_id'].'">'. lang('manage_custom_fields').'</a>',
+						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_custom_field_group_manager'.AMP.'group_id='.$group['group_id'].'">'. lang('manage_custom_fields').'</a> ('.$group['custom_field_count'].')',
 						'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=category_group_delete_conf'.AMP.'group_id='.$group['group_id'].'">'.lang('delete').'</a>'
 					);
 				}

@@ -1980,8 +1980,13 @@ class Safecracker_lib
 			
 			$query = $this->EE->db->get('members');
 			
+			if ($query->num_rows() == 0)
+			{
+				// Invalid guest member id was specified
+				return $this->EE->output->show_user_error('general', $this->EE->lang->line('safecracker_invalid_guest_member_id'));
+			}
+
 			$this->logged_out_member_id = $query->row('member_id');
-			
 			$this->logged_out_group_id = $query->row('group_id');
 		}
 	}
@@ -2074,11 +2079,9 @@ class Safecracker_lib
 			$this->fetch_logged_out_member();
 			$member_group_id = $this->logged_out_group_id;
 		}
-		
 		$no_access = $this->EE->db->where('member_group', $member_group_id)
 								  ->get('status_no_access')
 								  ->result_array();
-
 		$remove = array();
 
 		foreach ($no_access as $no)

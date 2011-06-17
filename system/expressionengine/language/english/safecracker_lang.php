@@ -26,6 +26,7 @@ $lang = array(
 	'safecracker_fieldtype_short_name' => 'Short Name',
 	'safecracker_no_channel' => 'No channel was specified.',
 	'safecracker_invalid_channel' => 'The specified channel is invalid.',
+	'safecracker_invalid_guest_member_id' => 'The provided member id to use for guest submissions is invalid.',
 	'safecracker_require_entry' => 'You must specify a valid entry to edit.',
 	'safecracker_author_only' => 'You are not the author of this entry.',
 	'yes' => 'Yes',
