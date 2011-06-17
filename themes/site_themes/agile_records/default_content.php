@@ -103,7 +103,7 @@ $Q[] = "INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, 
 (1, 1, 'Main Upload Directory', '".$upload_path."', '".$this->userdata['site_url'].'images/'.$this->userdata['upload_folder']."', 'all', '', '', '', 'style=\"border: 0;\" alt=\"image\"', '', '', '', '', ''),
 (2, 1, 'About', '{$agile_upload_path}', '".$this->userdata['site_url']."themes/site_themes/agile_records/images/uploads/', 'img', '', '', '', '', '', '', '', '', '')";
 
-chmod($this->theme_path."agile_records/images/uploads/", DIR_WRITE_MODE);
+@chmod($agile_upload_path, DIR_WRITE_MODE);
 
 // Add files
 
