@@ -61,6 +61,7 @@ $mimes = array(
 				'dxr'	=>	'application/x-director',
 				'eml'	=>	'message/rfc822',
 				'eps'	=>	'application/postscript',
+				'epub'	=>	'application/epub+zip',
 				'exe'	=>	'application/octet-stream',
 				'gif'	=>	'image/gif',
 				'gtar'	=>	'application/x-gtar',
