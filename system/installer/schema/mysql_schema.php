@@ -352,7 +352,7 @@ class EE_Schema {
 			  notepad_size varchar(2) NOT NULL default '18',
 			  quick_links text NULL,
 			  quick_tabs text NULL,
-			  show_sidebar char(1) NOT NULL default 'y',			
+			  show_sidebar char(1) NOT NULL default 'n',			
 			  pmember_id int(10) NOT NULL default '0',
 			  PRIMARY KEY `member_id` (`member_id`),
 			  KEY `group_id` (`group_id`),

@@ -59,6 +59,8 @@ class Updater {
 
 		$this->_update_template_groups();
 
+		$this->_alter_sidebar_deft();
+
 		return TRUE;
 	}
 	
@@ -175,7 +177,7 @@ class Updater {
 	private function _update_comments_table()
 	{
 		// Add an index on comment_date
-		$this->EE->db->query("CREATE INDEX comment_date_idx on exp_comments(comment_date)");		
+		$this->EE->db->query("CREATE INDEX comment_date_idx on exp_comments(comment_date)");
 	}
 
 	// --------------------------------------------------------------------
@@ -190,6 +192,17 @@ class Updater {
 	}
 
 	// --------------------------------------------------------------------	
+
+	/**
+	 * Alter Sidebar state default
+	 */
+	private function _alter_sidebar_deft()
+	{
+		$this->EE->db->query("ALTER TABLE exp_members ALTER COLUMN show_sidebar SET DEFAULT 'n'");
+	}
+
+	// --------------------------------------------------------------------	
+
 }
 /* END CLASS */
 
