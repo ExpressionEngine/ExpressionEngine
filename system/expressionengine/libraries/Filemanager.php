@@ -1463,38 +1463,6 @@ class Filemanager {
 					$config[$name] = $data[$name];
 				}
 			}
-			
-			if (isset($config['wm_vrt_alignment']))
-			{
-				if ($config['wm_vrt_alignment'] == 't')
-				{
-					$config['wm_vrt_alignment'] = 'top';
-				}
-				elseif ($config['wm_vrt_alignment'] == 'm')
-				{
-					$config['wm_vrt_alignment'] = 'middle';
-				}
-				else
-				{
-					$config['wm_vrt_alignment'] = 'bottom';
-				}
-			}
-			
-			if (isset($config['wm_hor_alignment']))
-			{
-				if ($config['wm_hor_alignment'] == 'l')
-				{
-					$config['wm_hor_alignment'] = 'left';
-				}
-				elseif ($config['wm_hor_alignment'] == 'c')
-				{
-					$config['wm_hor_alignment'] = 'center';
-				}
-				else
-				{
-					$config['wm_hor_alignment'] = 'right';
-				}
-			}
 		}
 		
 		return $config;
