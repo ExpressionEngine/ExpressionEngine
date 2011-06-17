@@ -415,7 +415,7 @@ $.ee_filemanager.datatables = function() {
 	oTable = $("#file_form .mainTable").dataTable({ 
 		"sPaginationType": "full_numbers",
 		"bLengthChange": false,
-		"aaSorting": [[ MySortCol, "desc" ]],
+		"aaSorting": [[ MySortCol, "desc" ], [0, "desc"]],
 		"bFilter": false,
 		"sWrapper": false,
 		"sInfo": false,
