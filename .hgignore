@@ -23,3 +23,4 @@ syntax: regexp
 ^system/expressionengine/templates/(?!index\.html|\.htaccess)
 ^system/expressionengine/third_party/(?!index\.html|download*|google_maps*|js_tool*|testage*|safecracker*)
 ^system/expressionengine/language/deutsch/*
+^images/test1/*
