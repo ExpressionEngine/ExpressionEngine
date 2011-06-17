@@ -1224,14 +1224,13 @@ class Safecracker_lib
 					if ($key == $field['field_name'])
 					{
 						$_FILES['field_id_'.$field['field_id']] = $value;
+						unset($_FILES[$key]);
 					}
 					else if (preg_match('/^'.$field['field_name'].'_(.+)/', $key, $match))
 					{
 						$_FILES['field_id_'.$field['field_id'].'_'.$match[1]] = $value;
+						unset($_FILES[$key]);
 					}
-					
-					// Remove the old item in the $_FILES array
-					unset($_FILES[$key]);
 				}
 			}
 		}
@@ -2472,7 +2471,8 @@ class Safecracker_lib
 		$this->field_errors = array();
 		$this->file = FALSE;
 		$this->file_fields = array(
-			'file',
+			// @todo: As of EE 2.2 (or earlier), SafeCracker doesn't fully work with standard file fields, only SafeCracker File
+			//'file',
 			'safecracker_file'
 		);
 		$this->form_validation_methods = array(
