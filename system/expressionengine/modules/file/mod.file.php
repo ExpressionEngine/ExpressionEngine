@@ -847,6 +847,7 @@ class File {
 		$default_variables = array('caption', 'title');
 		$custom_fields = array('1' => 'one', '2' => 'two', '3' => 'three', '4' => 'four', '5' => 'five', '6' => 'six');
 
+
 		foreach ($this->query->result_array() as $count => $row)
 		{
 			$row['absolute_count']	= $this->p_page + $count + 1;
@@ -881,6 +882,7 @@ class File {
 			
 			// Get File Size/H/W data
 			$size_data = $this->get_file_sizes(reduce_double_slashes($row['server_path'].'/'.$row['filename']));
+
 			
 			foreach($size_data as $k => $v)
 			{
@@ -889,6 +891,7 @@ class File {
 			
 			// Thumbnail data
 			
+
 			foreach ($this->valid_thumbs as $data)
 			{
 				
@@ -944,8 +947,9 @@ class File {
 	{
 		$viewable_image = array('bmp','gif','jpeg','jpg','jpe','png');
 		
-		$ext = substr(strrchr($file, '.'), 1);
+		$ext = strtolower(substr(strrchr($file, '.'), 1));
 		
+
 		$viewable = (in_array($ext, $viewable_image)) ? TRUE : FALSE;
 		return 	$viewable;	
 	}
