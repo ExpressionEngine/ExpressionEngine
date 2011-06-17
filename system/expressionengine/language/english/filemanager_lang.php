@@ -202,6 +202,7 @@ $lang = array(
 
 'member_group' 				=> 'Member Group',
 'can_upload_files' 			=> 'Can upload files',
+'no_results'				=> 'No available member groups.',
 'images_only' 				=> 'Images only',
 'all_filetypes' 			=> 'All file types',
 'file_properties' 			=> 'File Properties',
