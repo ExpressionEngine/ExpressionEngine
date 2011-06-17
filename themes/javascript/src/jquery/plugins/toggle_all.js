@@ -19,7 +19,7 @@ $.fn.toggle_all = function() {
 				column = $table_header.index(),
 				$header_checkbox = $table_header.find('input[type=checkbox]'),
 				$table_data = $table.find('td:nth-child(' + (column + 1) + ') input[type=checkbox]');
-			console.log($table_data.size());
+
 			// Listen for clicks to the header checkbox
 			$header_checkbox.click(function(event) {
 				var checked = $(this).is(':checked');
