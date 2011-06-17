@@ -938,7 +938,7 @@ $lang = array(
 // Status Administration
 //----------------------------
 
-'status_groups' =>
+'status_group' =>
 'Status Groups',
 
 'no_status_group_message' =>
