@@ -91,7 +91,7 @@ class File_model extends CI_Model {
 					$this->db->like('file_name', $parameters['search_value']);
 					break;
 				case ('file_title'):
-					$this->db->like('file_title', $parameters['search_value']);
+					$this->db->like('title', $parameters['search_value']);
 					break;
 				case ('custom_field'):
 					$this->db->like('field_1', $parameters['search_value']);
@@ -156,7 +156,7 @@ class File_model extends CI_Model {
 		}
 		
 		$return_data['results'] = $this->db->get('files');
-		
+
 		$this->db->flush_cache();
 		
 		return $return_data;

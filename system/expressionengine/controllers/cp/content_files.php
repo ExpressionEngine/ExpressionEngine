@@ -370,7 +370,6 @@ class Content_files extends CI_Controller {
 			'aaData'				=> $this->_fetch_file_list($files, $total_filtered)
 		);
 
-
 		$this->output->send_ajax_response($response);
 	}
 
@@ -526,7 +525,7 @@ class Content_files extends CI_Controller {
 			'search_type'	=> $this->input->get_post('search_type'),
 			'type'			=> ($type = $this->input->get_post('type')) ? $type : 'all'
 		);
-
+		
 		// If the request is coming from datatables, we add time= to the
 		// query string.  So, it's safe to assume that we can test it that way
 		if ( ! $this->input->get('time'))
