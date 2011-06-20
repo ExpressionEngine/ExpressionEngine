@@ -18,7 +18,9 @@ if ($EE_view_disable !== TRUE)
 				<?php $this->load->view('_shared/message');?>
 				
 				<?=form_open($form_action)?>
-					
+				<?php if (isset($return_loc)):
+					echo form_hidden(array('return_location' => $return_loc));
+				endif; ?>
 				<?php
 				$this->table->set_template($cp_pad_table_template);
 				$this->table->set_heading(
