@@ -222,14 +222,14 @@ class Content_files extends CI_Controller {
 			$order = array();
 
 			$params = array(
-				'category' => $get_post['cat_id'], 
-				'type' => $get_post['type'], 
-				'per_page' => $get_post['per_page'], 
-				'offset'	=> $get_post['offset'],
-				'keywords'	=> $get_post['keywords'], 
-				'order'		=> $order, 
-				'no_clue'	=> TRUE, 
-				'search_in'	=> $get_post['search_in']
+				'category' 		=> $get_post['cat_id'], 
+				'type' 			=> $get_post['type'], 
+				'per_page' 		=> $get_post['per_page'], 
+				'offset'		=> $get_post['offset'],
+				'search_value'	=> $get_post['keywords'], 
+				'order'			=> $order, 
+				'no_clue'		=> TRUE, 
+				'search_in'		=> ($get_post['search_in'] != '') ? $get_post['search_in'] : 'file_name'
 			);
 			
 			$filtered_entries = $this->file_model->get_files($dirs, $params);
@@ -340,14 +340,14 @@ class Content_files extends CI_Controller {
 		}
 		
 		$params = array(
-			'category' => $get_post['cat_id'], 
-			'type' => $get_post['type'], 
-			'per_page' => $get_post['per_page'], 
-			'offset'	=> $get_post['offset'],
-			'keywords'	=> $get_post['keywords'], 
-			'order'		=> $order, 
-			'no_clue'	=> TRUE, 
-			'search_in'	=> $get_post['search_in']
+			'category' 		=> $get_post['cat_id'], 
+			'type'			=> $get_post['type'], 
+			'per_page'		=> $get_post['per_page'], 
+			'offset'		=> $get_post['offset'],
+			'search_value'	=> $get_post['keywords'], 
+			'order'			=> $order, 
+			'no_clue'		=> TRUE, 
+			'search_in'		=> ($get_post['search_in'] != '') ? $get_post['search_in'] : 'file_name'
 		);
 		
 		$filtered_entries = $this->file_model->get_files($dirs, $params);
@@ -369,7 +369,6 @@ class Content_files extends CI_Controller {
 			'iTotalDisplayRecords' 	=> $total_filtered,
 			'aaData'				=> $this->_fetch_file_list($files, $total_filtered)
 		);
-
 
 		$this->output->send_ajax_response($response);
 	}
@@ -526,7 +525,7 @@ class Content_files extends CI_Controller {
 			'search_type'	=> $this->input->get_post('search_type'),
 			'type'			=> ($type = $this->input->get_post('type')) ? $type : 'all'
 		);
-
+		
 		// If the request is coming from datatables, we add time= to the
 		// query string.  So, it's safe to assume that we can test it that way
 		if ( ! $this->input->get('time'))

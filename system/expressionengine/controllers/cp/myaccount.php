@@ -780,9 +780,8 @@ class MyAccount extends CI_Controller {
 	 */
 	function ping_servers()
 	{
-		// Is the user authorized to access the publish page? And does the user have
-		// at least one channel assigned? If not, show the no access message
-		if ( ! $this->cp->allowed_group('can_access_publish') OR ! count($this->functions->fetch_assigned_channels()) > 0)
+		// Is the user authorized to access the publish page? If not, show the no access message
+		if ( ! $this->cp->allowed_group('can_access_publish'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -1685,13 +1684,13 @@ class MyAccount extends CI_Controller {
 		$vars['pagination'] = '';
 
 		$this->javascript->output('
-			$(".browseAvatar img").css("cursor", "pointer");
+			$("#browse_avatar_form img").css("cursor", "pointer");
 
 			$("input:radio").css("visibility", "hidden");
 
 			$("input.submit").hide();
 
-			$(".browseAvatar img").click(function() {
+			$("#browse_avatar_form img").click(function() {
 				var checkid = $(this).attr("alt");
 				document.getElementById(checkid).checked = true;
 				$("#browse_avatar_form").submit();
@@ -1982,6 +1981,9 @@ class MyAccount extends CI_Controller {
 				}
 			}
 		}
+		
+		// Put the current my account member_id into vars
+		$vars['member_id'] = $this->id;
 
 		$this->load->view('account/member_preferences', $vars);
 	}

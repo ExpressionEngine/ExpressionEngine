@@ -92,6 +92,10 @@ $.ee_filemanager.file_uploader = function() {
 			
 			// Send it all to the jQuery Template
 			$('.mainTable tbody').prepend($.tmpl('filemanager_row', file));
+			
+			if ($('td.dataTables_empty').size()) {
+				$('td.dataTables_empty').parent().remove();
+			};
 
 			if (file.replace != true) {
 				// Change modal's top
@@ -311,7 +315,9 @@ $.ee_filemanager.datatables = function() {
 			type			= document.getElementById("file_type"),
 			dir_id			= document.getElementById("dir_id"),
 			cat_id			= document.getElementById("cat_id"),
-			date_range		= document.getElementById("date_range");
+			date_range		= document.getElementById("date_range"),
+			search_in		= document.getElementById("search_in"),
+			file_type		= document.getElementById("file_type");
 
 		// for browsers that don't support the placeholder
 		// attribute. See global.js :: insert_placeholders()
@@ -327,12 +333,13 @@ $.ee_filemanager.datatables = function() {
 
 
 		aoData.push( 
-			 { "name": "keywords", "value": keywords_value() },
-			 { "name": "type", "value": type.value },
-			 { "name": "dir_id", "value": dir_id.value },
-			 { "name": "cat_id", "value": cat_id.value },
-			 { "name": "date_range", "value": date_range.value }
-
+			{ "name": "keywords", "value": keywords_value() },
+			{ "name": "type", "value": type.value },
+			{ "name": "dir_id", "value": dir_id.value },
+			{ "name": "cat_id", "value": cat_id.value },
+			{ "name": "date_range", "value": date_range.value },
+			{ "name": "search_in", "value": search_in.value },
+			{ "name": "file_type", "value": file_type.value }
 		 );
 
 		oCache.iDisplayStart = iRequestStart;
@@ -376,8 +383,9 @@ $.ee_filemanager.datatables = function() {
 						{ "name": "type", "value": type.value },
 						{ "name": "dir_id", "value": dir_id.value },
 						{ "name": "cat_id", "value": cat_id.value },
-						{ "name": "date_range", "value": date_range.value }
-
+						{ "name": "date_range", "value": date_range.value },
+						{ "name": "search_in", "value": search_in.value },
+						{ "name": "file_type", "value": file_type.value }
 					);
 
 			$.getJSON( sSource, aoData, function (json) { 

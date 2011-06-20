@@ -5790,7 +5790,6 @@ class Admin_content extends CI_Controller {
 
 		// if this is an update, show the success message
 		//$vars['alert'] = ($this->input->get_post('U')) ? lang('preferences_updated') : FALSE;
-		//$vars['return_loc'] = BASE.AMP.'C=admin_content'.AMP.'M='.$return_loc.AMP.'U=1';
 		$vars['return_loc'] = BASE.AMP.'C=admin_content'.AMP.'M='.$return_loc;
 
 		$this->cp->set_variable('cp_page_title', lang($type));
