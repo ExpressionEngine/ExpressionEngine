@@ -1068,7 +1068,7 @@ class Filemanager {
 		if ($thumb)
 		{
 			$dimensions[] = array(
-				'short_name'	=> 'thumb',
+				'short_name'	=> 'thumbs',
 				'width'			=> 73,
 				'height'		=> 60,
 				'watermark_id'	=> 0
@@ -1305,8 +1305,8 @@ class Filemanager {
 		{
 			$site_url = str_replace('index.php', '', $this->EE->config->site_url());
 
-			$thumb_info['thumb'] = $directory['url'].'_thumb/'.$file['file_name'];
-			$thumb_info['thumb_path'] = $directory['server_path'] . '_thumb/' . $file['file_name'];
+			$thumb_info['thumb'] = $directory['url'].'_thumbs/'.$file['file_name'];
+			$thumb_info['thumb_path'] = $directory['server_path'] . '_thumbs/' . $file['file_name'];
 			$thumb_info['thumb_class'] = 'image';
 		}
 		else
