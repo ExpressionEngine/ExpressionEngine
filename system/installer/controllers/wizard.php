@@ -2370,6 +2370,7 @@ PAPAYA;
 						'log_referrers'         		=>  'n',
 						'max_referrers'					=>	'500',
 						'is_system_on'          		=>  'y',
+						'allow_extensions'				=>  'y',
 						'time_format'           		=>  'us',
 						'server_timezone'       		=>  $this->userdata['server_timezone'],
 						'server_offset'         		=>  '',
