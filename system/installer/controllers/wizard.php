@@ -416,7 +416,7 @@ class Wizard extends CI_Controller {
 		$move_db_data = FALSE;
 		if ( ! isset($db) AND isset($config['db_hostname']))
 		{
-			$db[$this->$active_group] = array(
+			$db[$this->active_group] = array(
 											'hostname'	=> $config['db_hostname'],
 											'username'	=> $config['db_username'],
 											'password'	=> $config['db_password'],
