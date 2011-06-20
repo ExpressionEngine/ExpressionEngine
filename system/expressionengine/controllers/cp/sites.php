@@ -113,7 +113,7 @@ class Sites extends CI_Controller {
 	 */	
 	function _switch_site($site_id)
 	{
-		if ($this->session->userdata['group_id'] != 1)
+		if ($this->session->userdata('group_id') != 1)
 		{
 			$this->db->select('can_access_cp');
 			$this->db->where('site_id', $site_id);
@@ -127,26 +127,36 @@ class Sites extends CI_Controller {
 			}
 		}
 		
-		if ($this->input->get_post('page') !== FALSE && preg_match('/^[a-z0-9\_]+$/iD', $this->input->get_post('page')))
-		{
-			$parts = explode('|', base64_decode(str_replace('_', '=', $this->input->get_post('page'))));
+		// Commenting this out for the time being, as I'm not pleased with how it's working
+		// Depending on the page you're on, you can be hit with PHP errors.  So rather than
+		// keeping this as is, we'll redirect to the CP homepage of the site switched to.
+		// We should examine this in the future to see if a better experience for the end users
+		// can be had.
+
+		// This var might be temporary.
+		$page = BASE.AMP.'C=homepage';
+
+		// if ($this->input->get_post('page') !== FALSE && 
+		//		preg_match('/^[a-z0-9\_]+$/iD', $this->input->get_post('page')))
+		// {
+		// 	$parts = explode('|', base64_decode(str_replace('_', '=', $this->input->get_post('page'))));
 			
-			$page = BASE;
+		// 	$page = BASE;
 			
-			foreach($parts as $part)
-			{
-				if ($part == '' OR ! preg_match('/^[a-z0-9\_\=]+$/iD', $part))
-				{
-					continue;
-				}
+		// 	foreach($parts as $part)
+		// 	{
+		// 		if ($part == '' OR ! preg_match('/^[a-z0-9\_\=]+$/iD', $part))
+		// 		{
+		// 			continue;
+		// 		}
 				
-				$page .= AMP.$part;
-			}
-		}
-		else
-		{
-			$page = BASE;
-		}
+		// 		$page .= AMP.$part;
+		// 	}
+		// }
+		// else
+		// {
+		// 	$page = BASE;
+		// }
 		
 		// This is just way too simple.
 		
