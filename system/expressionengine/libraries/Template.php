@@ -3303,8 +3303,15 @@ class EE_Template {
 		}
 		
 		$time = microtime(TRUE)-$this->start_microtime;
+
+		$memory_usage = '';
+
+		if (function_exists('memory_get_usage'))
+		{
+			$memory_usage = ' / '.number_format(round(memory_get_usage()/1024/1024, 2),2).'MB';
+		}
 		
-		$this->log[] = '('.number_format($time, 6).') '.$str;
+		$this->log[] = '('.number_format($time, 6). $memory_usage . ') '.$str;
 	}
 	
 	// --------------------------------------------------------------------
