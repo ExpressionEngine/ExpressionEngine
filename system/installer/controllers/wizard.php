@@ -63,7 +63,7 @@ class Wizard extends CI_Controller {
 	var $theme_required_modules = array();
 		
 	// Our default installed modules, if there is no "override"
-	var $default_installed_modules = array('comment', 'email', 'emoticon', 'jquery', 'member', 'query', 'rss', 'search', 'stats', 'channel', 'mailinglist');
+	var $default_installed_modules = array('comment', 'email', 'emoticon', 'jquery', 'member', 'query', 'rss', 'search', 'stats', 'channel', 'mailinglist', 'safecracker');
 	
 	// Native First Party ExpressionEngine Modules (everything else is in third party folder)
 	var $native_modules = array('blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon', 'file', 'forum',
@@ -751,7 +751,7 @@ class Wizard extends CI_Controller {
 						function onSelectChange(){
 							var selected = $("#theme_select").val();
 							var theme_modules_jason = {$theme_modules_jason}
-							var base_modules = new Array("comment", "email", "emoticon", "jquery", "rss", "search");
+							var base_modules = new Array("comment", "email", "emoticon", "jquery", "rss", "search", "safecracker");
 
 						   $("input[name='modules[]']").setChecks(base_modules, theme_modules_jason[selected]);
 						}
