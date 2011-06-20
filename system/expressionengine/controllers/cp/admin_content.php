@@ -3706,7 +3706,7 @@ class Admin_content extends CI_Controller {
 		$this->cp->set_variable('cp_page_title', lang('group').':'.NBS.$vars['group_name']);
 		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=field_group_management', lang('field_management'));
 
-		$custom_fields = $this->field_model->get_fields($vars['group_id']);
+		$custom_fields = $this->field_model->get_fields($vars['group_id'], array('site_id' => $this->config->item('site_id')));
 
 		$vars['custom_fields'] = array();
 
@@ -3814,6 +3814,12 @@ class Admin_content extends CI_Controller {
 			$type = 'edit';
 			$this->cp->set_variable('cp_page_title', lang('edit_field'));
 			
+			// No valid edit id?  No access
+			if ($field_query->num_rows() == 0)
+			{
+				show_error(lang('unauthorized_access'));
+			}
+
 			foreach ($field_query->row_array() as $key => $val)
 			{
 				if ($key == 'field_settings' && $val)
