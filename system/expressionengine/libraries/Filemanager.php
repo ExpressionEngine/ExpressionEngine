@@ -1040,6 +1040,7 @@ class Filemanager {
 	function create_thumb($file_path, $prefs, $thumb = TRUE, $missing_only = FALSE)
 	{
 		$this->EE->load->library('image_lib');
+		$this->EE->load->helper('file');
 		
 		$img_path = rtrim($prefs['server_path'], '/').'/';
 		$source = $file_path;
