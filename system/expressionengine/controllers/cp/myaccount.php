@@ -1689,13 +1689,13 @@ class MyAccount extends CI_Controller {
 		$vars['pagination'] = '';
 
 		$this->javascript->output('
-			$(".browseAvatar img").css("cursor", "pointer");
+			$("#browse_avatar_form img").css("cursor", "pointer");
 
 			$("input:radio").css("visibility", "hidden");
 
 			$("input.submit").hide();
 
-			$(".browseAvatar img").click(function() {
+			$("#browse_avatar_form img").click(function() {
 				var checkid = $(this).attr("alt");
 				document.getElementById(checkid).checked = true;
 				$("#browse_avatar_form").submit();
