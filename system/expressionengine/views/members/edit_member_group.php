@@ -93,7 +93,6 @@ if ($EE_view_disable !== TRUE)
 						<h3 class="accordion"><?=lang($prefname)?></h3>
 						<div>
 							<?php
-
 								foreach ($prefs as $k=>$pref)
 								{
 									// channels, modules and templates need their names translated
@@ -127,7 +126,7 @@ if ($EE_view_disable !== TRUE)
 									{
 										$preference = '<strong>'.lang($k, $k).'</strong>';
 									}
-
+									
 									if (in_array($k, $textbox))
 									{
 										$controls = form_input($key, $pref, 'class="field"');

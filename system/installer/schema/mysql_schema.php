@@ -401,6 +401,7 @@ class EE_Schema {
 			  can_access_publish char(1) NOT NULL default 'n',
 			  can_access_edit char(1) NOT NULL default 'n',
 			  can_access_files char(1) NOT NULL default 'n',
+			  can_access_fieldtypes char(1) NOT NULL DEFAULT 'n',
 			  can_access_design char(1) NOT NULL default 'n',
 			  can_access_addons char(1) NOT NULL default 'n',
 			  can_access_modules char(1) NOT NULL default 'n',

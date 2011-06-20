@@ -872,7 +872,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$ids = array();
 		$mids = array();
-				
+		
 		foreach ($this->input->post('delete') as $key => $val)
 		{		
 			if ($val != '')
@@ -896,7 +896,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		{
 			if ($query->row('group_id')  == 1)
 			{
-				$super_admins++;			
+				$super_admins++;
 			}
 		}		
 		
@@ -919,7 +919,65 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 		
 		// If we got this far we're clear to delete the members
+		
+		/** ----------------------------------
+		/**  Email notification recipients
+		/** ----------------------------------*/
+		$this->db->select('DISTINCT(member_id), screen_name, email, mbr_delete_notify_emails');
+		$this->db->join('member_groups', 'members.group_id = member_groups.group_id', 'left');
+		$this->db->where('mbr_delete_notify_emails !=', '');
+		$this->db->where_in('member_id', $mids);
+		$group_query = $this->db->get('members');
+		
+		foreach ($group_query->result() as $member) 
+		{
+			$notify_address = $member->mbr_delete_notify_emails;
+
+			$swap = array(
+				'name'		=> $member->screen_name,
+				'email'		=> $member->email,
+				'site_name'	=> stripslashes($this->config->item('site_name'))
+			);
+
+			$this->lang->loadfile('member');
+			$email_tit = $this->functions->var_swap(lang('mbr_delete_notify_title'), $swap);
+			$email_msg = $this->functions->var_swap(lang('mbr_delete_notify_message'), $swap);
+
+			// No notification for the user themselves, if they're in the list
+			if (strpos($notify_address, $member->email) !== FALSE)
+			{
+				$notify_address = str_replace($member->email, "", $notify_address);
+			}
+
+			$this->load->helper('string');
+			// Remove multiple commas
+			$notify_address = reduce_multiples($notify_address, ',', TRUE);
+
+			if ($notify_address != '')
+			{
+				// Send email
+				$this->load->library('email');
+
+				// Load the text helper
+				$this->load->helper('text');
+
+				foreach (explode(',', $notify_address) as $addy)
+				{
+					$this->email->EE_initialize();
+					$this->email->wordwrap = FALSE;
+					$this->email->from($this->config->item('webmaster_email'), $this->config->item('webmaster_name'));
+					$this->email->to($addy);
+					$this->email->reply_to($this->config->item('webmaster_email'));
+					$this->email->subject($email_tit);
+					$this->email->message(entities_to_ascii($email_msg));
+					$this->email->send();
+				}
+			}
+		}
 	
+		/** ----------------------------------
+		/**  Delete Member information
+		/** ----------------------------------*/
 		$this->db->query("DELETE FROM exp_members WHERE ".$IDS);
 		$this->db->query("DELETE FROM exp_member_data WHERE ".$IDS);
 		$this->db->query("DELETE FROM exp_member_homepage WHERE ".$IDS);
@@ -1110,8 +1168,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			if ($this->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
-				
-		// Update		
+		
+		// Update
 		$this->stats->update_member_stats();
 			
 		$cp_message = (count($ids) == 1) ? lang('member_deleted') :
@@ -1632,13 +1690,13 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 					{
 						foreach($val as $p => $a)
 						{
-						$vars['group_data'][$sites['site_id']][$g_key][$add.$p] = $a;							
+						$vars['group_data'][$sites['site_id']][$g_key][$add.$p] = $a;
 						}
 					}
-					else  // probably redundant
+					else
 					{
-						//$vars['group_data'][$sites['site_id']][$g_key][$add.$key] = $val;
-					}					
+						$vars['group_data'][$sites['site_id']][$g_key][$add.$key] = $val;
+					}
 				}
 			}
 			
