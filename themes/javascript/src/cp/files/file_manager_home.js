@@ -92,6 +92,10 @@ $.ee_filemanager.file_uploader = function() {
 			
 			// Send it all to the jQuery Template
 			$('.mainTable tbody').prepend($.tmpl('filemanager_row', file));
+			
+			if ($('td.dataTables_empty').size()) {
+				$('td.dataTables_empty').parent().remove();
+			};
 
 			if (file.replace != true) {
 				// Change modal's top
