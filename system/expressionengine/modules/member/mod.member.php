@@ -1537,10 +1537,11 @@ class Member {
 				$this->EE->stats->update_comment_stats($channel_id);
 			}
 		}
-
+		
 		// Email notification recipients
 		if ($this->EE->session->userdata('mbr_delete_notify_emails') != '')
 		{
+			
 			$notify_address = $this->EE->session->userdata('mbr_delete_notify_emails');
 
 			$swap = array(
