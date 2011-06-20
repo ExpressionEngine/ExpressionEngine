@@ -169,10 +169,13 @@ class Addons_model extends CI_Model {
 					elseif (strncasecmp($file, 'pi.', 3) == 0 && 
 							substr($file, -$ext_len) == '.php' && 
 							strlen($file) > strlen('pi..php'))
-					{							
-						if ( ! @include_once(PATH_THIRD.$pkg_name.'/'.$file))
+					{
+						if ( ! class_exists(ucfirst($pkg_name)))
 						{
-							continue;
+							if ( ! @include_once(PATH_THIRD.$pkg_name.'/'.$file))
+							{
+								continue;
+							}
 						}
 
 						$plugins[] = $pkg_name;
