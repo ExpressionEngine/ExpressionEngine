@@ -119,6 +119,8 @@ VALUES(1, 1, 'staff_jane.png', 2, 'staff_jane.png', 'o', 'image/png', 'staff_jan
 (9, 1, 'staff_chloe.png', 2, 'staff_chloe.png', 'o', 'image/png', 'staff_chloe.png', 50262, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302889304, 1, 1302889304, ''),
 (10, 1, 'staff_howard.png', 2, 'staff_howard.png', 'o', 'image/png', 'staff_howard.png', 51488, NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 'xhtml', NULL, 1, 1302889304, 1, 1302889304, '')";
 
+$Q[] = "UPDATE exp_members SET total_entries = '10', last_entry_date = '$this->now'";
+
 
 foreach ($Q as $sql)
 {

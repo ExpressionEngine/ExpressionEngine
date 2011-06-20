@@ -198,16 +198,8 @@ class Member_model extends CI_Model {
 
 		$members = $this->db->get();
 
-		if ($members->num_rows() == 0)
-		{
-			return FALSE;
-		}
-		else
-		{
-			return $members->row('count');
-		}
+		return ($members->num_rows() == 0) ? FALSE : $members->row('count');
 	}
-
 
 	// --------------------------------------------------------------------
 
