@@ -9392,10 +9392,7 @@ class Forum_Core extends Forum {
 
 				if (count($ignore_ids) > 0)
 				{
-					foreach ($ignore_ids as $ignore)
-					{
-						$sql .= " AND topic_id != '".$ignore."' ";
-					}
+					$sql .= " AND topic_id NOT IN('" . implode("','",$ignore_ids) . "')";
 				}
 			}
 		}
@@ -9549,7 +9546,8 @@ class Forum_Core extends Forum {
 				}		
 			}
 			
-		} // end if $keywords		
+		} // end if $keywords	
+			
 		$sql .= " LIMIT ".$this->search_limit;
 
 		// Run the query and compile the topic IDs
