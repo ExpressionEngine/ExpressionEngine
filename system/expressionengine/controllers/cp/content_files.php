@@ -222,14 +222,14 @@ class Content_files extends CI_Controller {
 			$order = array();
 
 			$params = array(
-				'category' => $get_post['cat_id'], 
-				'type' => $get_post['type'], 
-				'per_page' => $get_post['per_page'], 
-				'offset'	=> $get_post['offset'],
-				'keywords'	=> $get_post['keywords'], 
-				'order'		=> $order, 
-				'no_clue'	=> TRUE, 
-				'search_in'	=> $get_post['search_in']
+				'category' 		=> $get_post['cat_id'], 
+				'type' 			=> $get_post['type'], 
+				'per_page' 		=> $get_post['per_page'], 
+				'offset'		=> $get_post['offset'],
+				'search_value'	=> $get_post['keywords'], 
+				'order'			=> $order, 
+				'no_clue'		=> TRUE, 
+				'search_in'		=> ($get_post['search_in'] != '') ? $get_post['search_in'] : 'file_name'
 			);
 			
 			$filtered_entries = $this->file_model->get_files($dirs, $params);
@@ -340,14 +340,14 @@ class Content_files extends CI_Controller {
 		}
 		
 		$params = array(
-			'category' => $get_post['cat_id'], 
-			'type' => $get_post['type'], 
-			'per_page' => $get_post['per_page'], 
-			'offset'	=> $get_post['offset'],
-			'keywords'	=> $get_post['keywords'], 
-			'order'		=> $order, 
-			'no_clue'	=> TRUE, 
-			'search_in'	=> $get_post['search_in']
+			'category' 		=> $get_post['cat_id'], 
+			'type'			=> $get_post['type'], 
+			'per_page'		=> $get_post['per_page'], 
+			'offset'		=> $get_post['offset'],
+			'search_value'	=> $get_post['keywords'], 
+			'order'			=> $order, 
+			'no_clue'		=> TRUE, 
+			'search_in'		=> ($get_post['search_in'] != '') ? $get_post['search_in'] : 'file_name'
 		);
 		
 		$filtered_entries = $this->file_model->get_files($dirs, $params);
