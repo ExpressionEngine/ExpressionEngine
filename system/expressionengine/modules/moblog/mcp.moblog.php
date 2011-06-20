@@ -226,7 +226,7 @@ EOT;
 		// @pk marker - remove
 		
 		$this->upload_loc_array = array('0' => $this->EE->lang->line('none'));
-		$this->image_dim_array =
+		$this->image_dim_array = array('0' => $this->EE->lang->line('none'));
 		
 		$upload_array = array('0' => $this->EE->lang->line('none'));
 		
@@ -339,6 +339,8 @@ EOT;
 		// Data
 		
 		$data = array('author_id' => $this->EE->session->userdata['member_id']);
+		
+		$form_data['moblog_upload_directory'] = array($upload_array, '');
 		
 		if (($basis != '' && $basis != 'none') OR ($id != '' && is_numeric($id)))
 		{
@@ -867,7 +869,6 @@ $('select[name=channel_id]').change(function() {
 
 MAGIC;
 		
-		
 		// And same idea for file upload dirs and dimensions
 		$this->upload_loc_array = array('0' => $this->EE->lang->line('none'));
 		$this->image_dim_array = array('0' => $this->upload_loc_array);
@@ -877,18 +878,29 @@ MAGIC;
 		$this->EE->load->model('tools_model');
 		$this->EE->load->model('file_model');
 		
-		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id(1);
+		$sizes_q = $this->EE->file_model->get_dimensions_by_dir_id();
+		$sizes_array = array();
+		
+		foreach ($sizes_q->result_array() as $row)
+		{
+			$sizes_array[$row['upload_location_id']][$row['id']] = $row['title'];
+		}
+		
 		$upload_q = $this->EE->tools_model->get_upload_preferences($this->EE->session->userdata['group_id']);
 		
 		foreach ($upload_q->result_array() as $row)
 		{
 			$this->image_dim_array[$row['id']] = array('0' => $this->lang->line('none'));
 			$this->upload_loc_array[$row['id']] = $row['name'];
-		}
-		
-		foreach ($sizes_q->result() as $size)
-		{
-			$this->image_dim_array[$size->upload_location_id][$size->id] = $size->title;
+			
+			// Get sizes
+			if (isset($sizes_array[$row['id']]))
+			{
+				foreach ($sizes_array[$row['id']] as $id => $title)
+				{
+					$this->image_dim_array[$row['id']][$id] = $title;
+				}
+			}
 		}
 		
 		$upload_info = $this->EE->javascript->generate_json($this->image_dim_array, TRUE);
@@ -910,6 +922,7 @@ var spaceString = new RegExp('!-!', "g");
 
 		// add option fields
 		jQuery.each(options, function(k, v) {
+			
 			html += '<option value="' + k + '">' + v.replace(spaceString, String.fromCharCode(160)) + "</option>";
 		});
 		
