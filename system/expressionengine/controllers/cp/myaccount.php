@@ -1986,6 +1986,9 @@ class MyAccount extends CI_Controller {
 				}
 			}
 		}
+		
+		// Put the current my account member_id into vars
+		$vars['member_id'] = $this->id;
 
 		$this->load->view('account/member_preferences', $vars);
 	}

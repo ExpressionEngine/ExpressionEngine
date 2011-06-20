@@ -4,11 +4,13 @@
 		<h3><?=lang('administrative_options')?></h3>
 
 		<?=form_open('C=myaccount'.AMP.'M=member_preferences_update', '', $form_hidden)?>
-
-		<p>
-			<?=form_label(lang('member_group_assignment'), 'group_id')?>
-			<?=form_dropdown('group_id', $group_id_options, $group_id, 'id="group_id"')?>
-		</p>
+		
+		<?php if ($group_id != 1 AND $member_id != $this->session->userdata('member_id')): ?>
+			<p>
+				<?=form_label(lang('member_group_assignment'), 'group_id')?>
+				<?=form_dropdown('group_id', $group_id_options, $group_id, 'id="group_id"')?>
+			</p>
+		<?php endif ?>
 
 		<p>
 			<?=form_checkbox(array('id'=>'in_authorlist','name'=>'in_authorlist','value'=>'y', 'checked'=>($in_authorlist=='y') ? TRUE : FALSE))?>
