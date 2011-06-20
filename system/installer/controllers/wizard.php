@@ -411,9 +411,13 @@ class Wizard extends CI_Controller {
 		// Before we assume this is an update, let's see if we can connect to the DB.
 		// If they are running EE prior to 2.0 the database settings are found in the main
 		// config file, if they are running 2.0 or newer, the settings are found in the db file
-		$this->active_group = $active_group;
+		if (isset($active_group))
+		{
+			$this->active_group = $active_group;			
+		}
 
 		$move_db_data = FALSE;
+		
 		if ( ! isset($db) AND isset($config['db_hostname']))
 		{
 			$db[$this->active_group] = array(
