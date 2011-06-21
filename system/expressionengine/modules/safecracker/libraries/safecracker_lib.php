@@ -745,13 +745,24 @@ class Safecracker_lib
 			unset($conditional_errors['field_errors']);
 		}
 		
+		// Parse captcha conditional
+		$captcha_conditional = array(
+			'captcha' => ($this->channel('channel_id') && $this->logged_out_member_id && ! empty($this->settings['require_captcha'][$this->EE->config->item('site_id')][$this->channel('channel_id')]))
+		);
+
 		// Parse conditionals
 		// $this->parse_variables['error:title'] = TRUE;
 		$this->EE->TMPL->tagdata = $this->EE->functions->prep_conditionals(
 			$this->EE->TMPL->tagdata, 
-			$conditional_errors
+			array_merge($conditional_errors, $captcha_conditional)
 		);
-
+		
+		// Make sure {captcha_word} is blank
+		$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single('captcha_word', '', $this->EE->TMPL->tagdata);
+		
+		// Replace {captcha} with actual captcha
+		$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single('captcha', $this->EE->functions->create_captcha(), $this->EE->TMPL->tagdata);
+		
 		// Parse the variables
 		if ($this->parse_variables)
 		{
@@ -777,11 +788,6 @@ class Safecracker_lib
 		{
 			$this->EE->TMPL->tagparams['form_class'] = $this->EE->TMPL->fetch_param('class');
 		}
-		
-		//parse captcha conditional
-		$this->EE->TMPL->tagdata = $this->EE->functions->prep_conditionals($this->EE->TMPL->tagdata, array('captcha' => ($this->channel('channel_id') && $this->logged_out_member_id && ! empty($this->settings['require_captcha'][$this->EE->config->item('site_id')][$this->channel('channel_id')]))));
-		
-		$this->EE->TMPL->tagdata = $this->EE->TMPL->swap_var_single('captcha_word', '', $this->EE->TMPL->tagdata);
 		
 		$this->load_session_override();
 		
