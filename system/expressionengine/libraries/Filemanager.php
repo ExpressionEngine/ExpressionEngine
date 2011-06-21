@@ -2552,7 +2552,7 @@ class Filemanager {
 		);
 		
 		// If we're redirecting send em on
-		if ($redirect)
+		if ($redirect === TRUE)
 		{
 			// Send the dimensions back for Ajax requests
 			if (AJAX_REQUEST)
