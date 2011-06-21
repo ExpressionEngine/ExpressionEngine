@@ -3644,19 +3644,6 @@ class EE_Template {
 		// Complex Paths and Typography Variables
 		//
 		
-		/*
-
-		// If the variable's $value is an array where $value[0] is 'path' and $value[1] has either
-		// the key 'suffix' or 'url' set, then it is a path
-		if (is_array($value) && $value[0] == 'path' && isset($value[1]) && (isset($value[1]['suffix']) OR isset($value[1]['url'])))
-		{
-			// Um...not sure what to do here, quite yet.
-			exit($string);
-		}
-		
-		*/
-
-
 	
 		// If the single variable's value is an array, then
 		// $value[0] is the content and $value[1] is an array
