@@ -232,6 +232,42 @@ $(document).ready(function() {
 		window.file_manager_context = ($(this).parent().attr("class").indexOf("markItUpButton") == -1) ? 	$(this).closest("div").find("input").attr("id") : "textarea_a8LogxV4eFdcbC";
 	});
 	
+	function file_field_changed(file, field) {
+		var container = $("input[name="+field+"]").closest(".publish_field");
+
+		if (file.is_image == false) {
+			container.find(".file_set").show().find(".filename").html("<img src=\""+EE.PATH_CP_GBL_IMG+"default.png\" alt=\""+EE.PATH_CP_GBL_IMG+"default.png\" /><br />"+file.name);
+		}
+		else
+		{
+			container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" alt=\""+file.name+"\" /><br />"+file.name);
+		}
+
+		$("input[name="+field+"_hidden]").val(file.name);
+		$("select[name="+field+"_directory]").val(file.directory);
+
+		$.ee_filebrowser.reset(); // restores everything to "default" state - also needed above for textareas
+	}
+	
+	// $("#publishForm input[type=file]").each(function() {
+	// 	var container = $(this).closest(".publish_field"),
+	// 		trigger = container.find(".choose_file"),
+	// 		content_type = $(this).data('content-type'),
+	// 		directory = $(this).data('directory'),
+	// 		settings = {
+	// 			"content_type": content_type,
+	// 			"directory": directory
+	// 		};
+	// 
+	// 	$.ee_filebrowser.add_trigger(trigger, $(this).attr("name"), settings, file_field_changed);
+	// 
+	// 	container.find(".remove_file").click(function() {
+	// 		container.find("input[type=hidden]").val("");
+	// 		container.find(".file_set").hide();
+	// 		return false;
+	// 	});
+	// });
+	
 	// Bind the image html buttons
 	$.ee_filebrowser.add_trigger(".btn_img a, .file_manipulate", function(file) {
 		// We also need to allow file insertion into text inputs (vs textareas) but markitup
@@ -247,24 +283,7 @@ $(document).ready(function() {
 				$("#"+window.file_manager_context).val("{filedir_"+file.directory+"}"+file.name);
 			}
 		});
-	
-		function file_field_changed(file, field) {
-			var container = $("input[name="+field+"]").closest(".publish_field");
-
-			if (file.is_image == false) {
-				container.find(".file_set").show().find(".filename").html("<img src=\""+EE.PATH_CP_GBL_IMG+"default.png\" alt=\""+EE.PATH_CP_GBL_IMG+"default.png\" /><br />"+file.name);
-			}
-			else
-			{
-				container.find(".file_set").show().find(".filename").html("<img src=\""+file.thumb+"\" alt=\""+file.name+"\" /><br />"+file.name);
-			}
-
-			$("input[name="+field+"_hidden]").val(file.name);
-			$("select[name="+field+"_directory]").val(file.directory);
-
-			$.ee_filebrowser.reset(); // restores everything to "default" state - also needed above for textareas
-		}
-	
+		
 		$("input[type=file]", "#publishForm").each(function() {
 			var container = $(this).closest(".publish_field"),
 				trigger = container.find(".choose_file");
