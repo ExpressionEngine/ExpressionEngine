@@ -293,7 +293,7 @@ class EE_Functions {
 	 */
 	function extract_path($str)
 	{
-		if (preg_match("#=(.*)#", $str, $match))
+		if (preg_match("#=(.*)".RD."#", $str, $match))
 		{		
 			if (isset($this->cached_path[$match[1]]))
 			{
@@ -316,7 +316,7 @@ class EE_Functions {
 			}
 			
 			$this->cached_path[$match[1]] = $path;
-		
+
 			return $path;
 		}
 		else
