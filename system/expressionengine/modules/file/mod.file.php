@@ -856,6 +856,7 @@ class File {
 			$row['logged_in'] 		= ($this->EE->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
 			$row['logged_out'] 		= ($this->EE->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
 			$row['entry_date']		= $row['upload_date'];
+			$row['edit_date']		= $row['modified_date'];
 			$row['directory_id']	= $row['id'];
 			$row['directory_title']	= $row['name'];
 			$row['entry_id']		= $row['file_id'];
