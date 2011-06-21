@@ -223,10 +223,9 @@ class Auth {
 			// less secure. Nothing we can do but fail. Hard.
 			
 			die('Fatal Error: No matching hash algorithm.');
-		}		
+		}
 
-		// No hash function specified? Use the best one
-		// we have access to in this environment.
+		// No salt? (not even blank), we'll regenerate
 		if ($salt === FALSE)
 		{
 			$salt = '';
@@ -237,6 +236,13 @@ class Auth {
 			{
 				$salt .= chr(mt_rand(33, 126));
 			}
+		}
+		elseif (strlen($salt) !== $h_byte_size)
+		{
+			// they passed us a salt that isn't the right length,
+			// this can happen if old code resets a new password
+			// ignore it
+			$salt = '';
 		}
 		
 		return array(
@@ -296,7 +302,7 @@ class Auth {
 		
 		// Officially a valid user, but are they as secure as possible?
 		// ----------------------------------------------------------------
-				
+		
 		reset($this->hash_algos);
 		
 		// Not hashed or better algo available?
@@ -568,6 +574,7 @@ class Auth_result {
 	 */
 	public function start_session($cp_sess = FALSE)
 	{
+		$remember = '';
 		$multi = $this->session_id ? TRUE : FALSE;
 		$sess_type = $cp_sess ? 'admin_session_type' : 'user_session_type';
 		
@@ -581,7 +588,27 @@ class Auth_result {
 			$this->EE->functions->set_cookie(
 				$this->EE->session->c_expire, time()+$expire, $expire
 			);
-		}
+			
+			// (un)set remember me
+			if ($expire)
+			{
+				$remember = $this->EE->functions->random('unique', 32);
+				
+				$this->EE->functions->set_cookie(
+					$this->EE->session->c_remember, $remember, $expire
+				);
+			}
+			else
+			{
+				$this->EE->functions->set_cookie($this->EE->session->c_remember);
+			}
+		}		
+		
+		// update the remember me column
+		$this->EE->db->where('member_id', $this->member('member_id'));
+		$this->EE->db->update('members', array(
+			'remember_me' => $remember
+		));
 		
 		if ($multi)
 		{

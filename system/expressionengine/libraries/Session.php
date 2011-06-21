@@ -75,6 +75,7 @@ class EE_Session {
 
 	public $c_session			= 'sessionid';
 	public $c_expire			= 'expiration';
+	public $c_remember			= 'remember';
 	public $c_anon				= 'anon';
 	public $c_prefix			= '';
 	
@@ -169,7 +170,13 @@ class EE_Session {
 			{
 				$this->sdata['session_id'] = $this->EE->uri->session_id;
 			}			
-		}		
+		}
+		
+		// Fetch remember me cookie
+		if ($this->EE->input->cookie($this->c_remember))
+		{
+			$this->cookies_exist = TRUE;
+		}
 
 		// Set the Validation Type
 		if (REQ == 'CP')
@@ -396,7 +403,7 @@ class EE_Session {
 		{
 			$this->sdata['admin_sess'] 	= ($admin_session == FALSE) ? 0 : 1;  
 		}
-				
+		
 		$this->sdata['session_id'] 		= $this->EE->functions->random();  
 		$this->sdata['ip_address']  	= $this->EE->input->ip_address();  
 		$this->sdata['member_id']  		= (int) $member_id; 
@@ -476,7 +483,8 @@ class EE_Session {
 		// method, but if someone doesn't - we're safe
 		$this->fetch_guest_data();
 		
-		$this->EE->functions->set_cookie($this->c_session);	
+		$this->EE->functions->set_cookie($this->c_session);
+		$this->EE->functions->set_cookie($this->c_remember);
 		$this->EE->functions->set_cookie($this->c_expire);	
 		$this->EE->functions->set_cookie($this->c_anon);
 		$this->EE->functions->set_cookie('tracker'); 
@@ -686,7 +694,7 @@ class EE_Session {
 	{
 		// Look for session.  Match the user's IP address and browser for added security.
 		$this->EE->db->select('member_id, admin_sess, last_activity')
-					 ->where('session_id', $this->sdata['session_id'])
+					 ->where('session_id', (string) $this->sdata['session_id'])
 					 ->where('ip_address', $this->sdata['ip_address'])
 					 ->where('user_agent', $this->sdata['user_agent']);
 
@@ -1067,11 +1075,23 @@ class EE_Session {
 		// Query DB for member data.  Depending on the validation type we'll
 		// either use the cookie data or the member ID gathered with the session query.
 		
-		return $this->EE->db->from(array('members m', 'member_groups g'))
-							->where('g.site_id', (int) $this->EE->config->item('site_id'))
-							->where('member_id', (int) $this->sdata['member_id'])
-							->where('m.group_id', ' g.group_id', FALSE)
-							->get();
+		$this->EE->db->from(array('members m', 'member_groups g'))
+					 ->where('g.site_id', (int) $this->EE->config->item('site_id'))
+					 ->where('m.group_id', ' g.group_id', FALSE);
+		
+		// remember me
+		if ($this->sdata['member_id'] == 0 &&
+			$this->validation == 'c' &&
+			$this->EE->input->cookie($this->c_remember))
+		{
+			$this->EE->db->where('remember_me', $this->EE->input->cookie($this->c_remember));
+		}
+		else
+		{
+			$this->EE->db->where('member_id', (int) $this->sdata['member_id']);
+		}
+				
+		return $this->EE->db->get();
 	}
 
 	// --------------------------------------------------------------------	
