@@ -992,6 +992,7 @@ class Content_files extends CI_Controller {
 		}
 		else if (isset($_POST['save_image_rotate']))
 		{
+			$this->form_validation->set_rules('rotate', 'lang:rotate', 'required');
 			$accordion_position = 1;
 		}
 		else if (isset($_POST['save_image_resize']))

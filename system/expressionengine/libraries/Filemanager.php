@@ -2501,7 +2501,7 @@ class Filemanager {
 		$file_path = $this->EE->functions->remove_double_slashes(
 			$upload_prefs['server_path'].DIRECTORY_SEPARATOR.$file_name
 		);
-
+		
 		// Where are we going with this?
 		switch ($this->EE->input->post('action'))
 		{
