@@ -3644,19 +3644,6 @@ class EE_Template {
 		// Complex Paths and Typography Variables
 		//
 		
-		/*
-
-		// If the variable's $value is an array where $value[0] is 'path' and $value[1] has either
-		// the key 'suffix' or 'url' set, then it is a path
-		if (is_array($value) && $value[0] == 'path' && isset($value[1]) && (isset($value[1]['suffix']) OR isset($value[1]['url'])))
-		{
-			// Um...not sure what to do here, quite yet.
-			exit($string);
-		}
-		
-		*/
-
-
 	
 		// If the single variable's value is an array, then
 		// $value[0] is the content and $value[1] is an array
@@ -3668,10 +3655,40 @@ class EE_Template {
 			// Make our path switches
 			if (isset($value[1]['path_variable']) && $value[1]['path_variable'] === TRUE)
 			{
-				if (preg_match("#".LD."\s*".$name."=(.*?)".RD."#", $string, $matches))
+				if (preg_match_all("#".LD."\s*".$name."=(.*?)".RD."#", $string, $matches))
 				{
-					$link = $this->EE->functions->create_url($this->EE->functions->extract_path($matches['0']).'/'.$value[0]);
-					$string = str_replace($matches['0'], $link, $string);
+					$done = array();
+					
+					foreach ($matches[0] as $full)
+					{
+						if (in_array($full, $done))
+						{
+							continue;
+						}
+						
+						$link = $this->EE->functions->create_url($this->EE->functions->extract_path($full).'/'.$value[0]);
+					
+					//$single_quote = str_replace("'", '"', $matches['0']);
+					//$double_quote = str_replace("'", '"', $matches['0']);
+					
+	//[0] => {id_path="about/test"}
+    //[1] => "about/test"
+					
+					// Switch to double quotes
+					
+						$single = str_replace(array('"', "'"), "'", $full);
+						$double = str_replace(array('"', "'"), '"', $full);
+					
+					//echo $single.' - '.$double.'<br>';
+						$string = str_replace($single, $double, $string);
+					//echo $string;
+					//echo '<br>-----------------------<br>';
+					
+						$string = str_replace($double, $link, $string);
+					
+						$done[] = $full;
+					
+					}
 				}
 				
 				return $string;
