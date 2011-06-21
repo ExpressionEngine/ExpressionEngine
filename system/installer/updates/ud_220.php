@@ -151,6 +151,19 @@ class Updater {
 		);
 
 		$this->EE->dbforge->add_column('members', $field);
+		
+		
+		// Add a remember_me column VARCHAR(32)
+		$field = array(
+			'remember_me'	=> array(
+				'type'			=> 'VARCHAR',
+				'constraint'	=> 32,
+				'default'		=> '',
+				'null'			=> FALSE
+			)
+		);
+
+		$this->EE->dbforge->add_column('members', $field);
 	}
 
 	// --------------------------------------------------------------------
