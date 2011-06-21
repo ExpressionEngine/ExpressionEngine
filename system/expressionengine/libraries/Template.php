@@ -2334,7 +2334,7 @@ class EE_Template {
 
 		foreach ($this->EE->api_template_structure->file_extensions as $type => $temp_ext)
 		{
-			if (file_exists($basepath.'/'.$template.$temp_ext))
+			if (file_exists($basepath.'/'.$template.$temp_ext) &&is_really_writable($basepath.'/'.$template.$temp_ext))
 			{
 				// found it with an extension
 				$filename = $template.$temp_ext;
@@ -3666,11 +3666,11 @@ class EE_Template {
 			$raw_content = $value[0];
 
 			// Make our path switches
-			if (isset($value[1]['path_variable']) && $value[1]['path_variable'] == TRUE)
+			if (isset($value[1]['path_variable']) && $value[1]['path_variable'] === TRUE)
 			{
 				if (preg_match("#".LD."\s*".$name."=(.*?)".RD."#", $string, $matches))
 				{
-					$link = $this->EE->functions->create_url($matches['1'].'/'.$value[0]);
+					$link = $this->EE->functions->create_url($this->EE->functions->extract_path($matches['0']).'/'.$value[0]);
 					$string = str_replace($matches['0'], $link, $string);
 				}
 				
