@@ -24,7 +24,7 @@
  */
 class Sites extends CI_Controller {
 
-	var $version 			= '2.1';
+	var $version 			= '2.1.0';
 	var $build_number		= '20110621';
 	var $allow_new_sites 	= FALSE;
 
