@@ -274,7 +274,8 @@ class Content_files_modal extends CI_Controller {
 		
 		$vars['file_data'] = array(
 			'upload_dir'	=> $vars['file']['upload_location_id'], 
-			'file'			=> $vars['file']['file_name'], 
+			'file'			=> $vars['file']['file_name'],
+			'file_name'		=> $vars['file']['file_name'],
 			'file_id'		=> $vars['file']['file_id']
 		);
 		

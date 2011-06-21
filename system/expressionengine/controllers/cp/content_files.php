@@ -992,6 +992,7 @@ class Content_files extends CI_Controller {
 		}
 		else if (isset($_POST['save_image_rotate']))
 		{
+			$this->form_validation->set_rules('rotate', 'lang:rotate', 'required');
 			$accordion_position = 1;
 		}
 		else if (isset($_POST['save_image_resize']))
@@ -1408,8 +1409,17 @@ class Content_files extends CI_Controller {
 						),
 						TRUE,
 						TRUE
-				);					
-
+				);
+				
+				// Update dimensions
+				$image_dimensions = $this->filemanager->get_image_dimensions($this->_upload_dirs[$id]['server_path'].$file['name']);
+				
+				$file_data = array(
+					'file_id'				=> $query->row('file_id'),
+					'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width']
+				);
+				$this->file_model->save_file($file_data);
+				
 				continue;
 			}
 			
@@ -1422,6 +1432,8 @@ class Content_files extends CI_Controller {
 			);
 
 			$file_dim = (isset($file['dimensions']) && $file['dimensions'] != '') ? str_replace(array('width="', 'height="', '"'), '', $file['dimensions']) : '';
+			
+			$image_dimensions = $this->filemanager->get_image_dimensions($file_path);
 
 			$file_data = array(
 				'upload_location_id'	=> $id,
@@ -1431,7 +1443,8 @@ class Content_files extends CI_Controller {
 				'file_name'				=> $file['name'],
 				'file_size'				=> $file['size'],
 				'uploaded_by_member_id'	=> $this->session->userdata('member_id'),
-				'modified_by_member_id' => $this->session->userdata('member_id')
+				'modified_by_member_id' => $this->session->userdata('member_id'),
+				'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width']
 			);
 			
 			

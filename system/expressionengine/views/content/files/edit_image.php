@@ -84,6 +84,7 @@ if ( ! $EE_view_disable)
 							</li>
 						</ul>
 						<p class="submit_button">
+							<?=form_error('rotate')?>
 							<?=form_submit('save_image_rotate', lang('save_image'), 'class="submit"')?><br />
 							<?=anchor('#', lang('cancel_changes'), 'class="disabled"')?>
 						</p>

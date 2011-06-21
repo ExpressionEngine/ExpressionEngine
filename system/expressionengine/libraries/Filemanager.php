@@ -2501,7 +2501,7 @@ class Filemanager {
 		$file_path = $this->EE->functions->remove_double_slashes(
 			$upload_prefs['server_path'].DIRECTORY_SEPARATOR.$file_name
 		);
-
+		
 		// Where are we going with this?
 		switch ($this->EE->input->post('action'))
 		{
@@ -2552,7 +2552,7 @@ class Filemanager {
 		);
 		
 		// If we're redirecting send em on
-		if ($redirect)
+		if ($redirect === TRUE)
 		{
 			// Send the dimensions back for Ajax requests
 			if (AJAX_REQUEST)
