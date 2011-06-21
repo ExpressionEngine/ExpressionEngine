@@ -21,7 +21,7 @@ $lang = array(
 "User Banning",
 
 "custom_profile_fields" => 
-"Custom Member Fields",
+"Member Fields",
 
 "member_cfg" =>
 "Membership Preferences",
@@ -752,7 +752,7 @@ $lang = array(
 "Will be displayed in the member profile page",
 
 "custom_member_fields" =>
-"Custom Member Fields",
+"Member Fields",
 
 "current_fields" =>
 "Member Fields",
@@ -761,7 +761,7 @@ $lang = array(
 "Edit Field",
 
 "create_member_field" =>
-"Create Field",
+"Create Member Field",
 
 "field_updated" =>
 "Field Updated",
@@ -830,7 +830,7 @@ $lang = array(
 "Member Field Deleted:",
 
 "no_custom_profile_fields" =>
-"There are currently no custom member fields",
+"There are currently no member fields.",
 
 "member_search" =>
 "Member Search",

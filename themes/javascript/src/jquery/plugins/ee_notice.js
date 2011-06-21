@@ -118,10 +118,10 @@
 		if (options.type == 'error' || options.open) {
 			open_notice_drawer(options.type);
 		}
-		
-		//testing
-		$("#notice_flag").css("background", "#67bb25");
-		$('#notice_flag').stop().animate({ backgroundColor: "#1F2B33" }, 1000);
+		else if (options.type == 'success') {
+			// feedback bandaid
+			$("#notice_flag").css("background-color", "#67bb25").animate({backgroundColor: "#1F2B33"}, 1000);
+		}
 
 		return $.ee_notice;
 	}
