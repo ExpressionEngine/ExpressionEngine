@@ -1146,8 +1146,17 @@ class MyAccount extends CI_Controller {
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		$vars['form_hidden']['id'] = $this->id;
-
-		$vars['cp_theme'] = ($this->session->userdata['cp_theme'] == '') ? $this->config->item('cp_theme') : $this->session->userdata['cp_theme'];
+		
+		if ($this->id != $this->session->userdata('member_id'))
+		{
+			$member_data = $this->member_model->get_member_data($this->id);
+			$member_data = $member_data->row();
+			$vars['cp_theme'] = ($member_data->cp_theme == '') ? $this->config->item('cp_theme') : $member_data->cp_theme;
+		}
+		else
+		{
+			$vars['cp_theme'] = ($this->session->userdata['cp_theme'] == '') ? $this->config->item('cp_theme') : $this->session->userdata['cp_theme'];
+		}
 
 		$vars['cp_theme_options'] =	 $this->admin_model->get_cp_theme_list();
 
