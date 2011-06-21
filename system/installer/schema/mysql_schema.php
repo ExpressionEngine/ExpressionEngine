@@ -287,6 +287,7 @@ class EE_Schema {
 			  password varchar(128) NOT NULL,
 			  salt varchar(128) NOT NULL DEFAULT '',
 			  unique_id varchar(40) NOT NULL,
+			  remember_me varchar(32) NOT NULL DEFAULT '',
 			  crypt_key varchar(40) NULL DEFAULT NULL,
 			  authcode varchar(10) NULL DEFAULT NULL,
 			  email varchar(72) NOT NULL,
