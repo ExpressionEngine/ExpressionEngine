@@ -919,6 +919,11 @@ class Forum_upd {
 		{
 			// Nothing to see here!
 		}
+
+		if ($current < '3.1.4')
+		{
+			// Nothing to see here!
+		}
 		
 		return TRUE;		
 		
