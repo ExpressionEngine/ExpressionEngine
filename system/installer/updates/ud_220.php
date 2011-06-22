@@ -189,8 +189,11 @@ class Updater {
 	 */
 	private function _update_comments_table()
 	{
-		// Add an index on comment_date
-		$this->EE->db->query("CREATE INDEX comment_date_idx on exp_comments(comment_date)");
+		if ($this->EE->db->table_exists('exp_comments'))
+		{
+			// Add an index on comment_date
+			$this->EE->db->query("CREATE INDEX comment_date_idx on exp_comments(comment_date)");
+		}
 	}
 
 	// --------------------------------------------------------------------
