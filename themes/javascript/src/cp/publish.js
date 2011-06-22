@@ -491,7 +491,7 @@ function disable_fields(state) {
 			$(this).before("<div class=\"cover\" style=\"position:absolute;width:100%;height:50px;z-index:9999;\"></div>").css({});
 		});
 
-		$('.contents, .publish_field, input, textarea').css('-webkit-user-select', 'none');
+		$('.contents, .publish_field input, .publish_field textarea').css('-webkit-user-select', 'none');
 	}
 	else {
 		fields.removeAttr("disabled");
@@ -500,7 +500,7 @@ function disable_fields(state) {
 		$(".cover").remove();
 		disabled_fields.attr("disabled", true);
 
-		$('.contents, .publish_field, input, textarea').css('-webkit-user-select', 'auto');
+		$('.contents, .publish_field input, .publish_field textarea').css('-webkit-user-select', 'auto');
 	}
 }
 

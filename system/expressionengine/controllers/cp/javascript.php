@@ -474,7 +474,7 @@ class Javascript extends CI_Controller {
 						jQel = $(key).css(value);
 
 						if (apply_radius) {
-							jQel.uncorner().corner(apply_radius);
+							/* jQel.uncorner().corner(apply_radius); */
 						}
 					}
 				}
