@@ -255,7 +255,7 @@ class Email {
 
 				if ($channel != '')
 				{
-					$this->EE->db->ar_andor_string($channel, 'c.channel_name');
+					$this->EE->functions->ar_andor_string($channel, 'c.channel_name');
 				}
 
 				$query = $this->EE->db->get();
