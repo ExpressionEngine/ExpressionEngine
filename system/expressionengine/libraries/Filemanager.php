@@ -1430,6 +1430,13 @@ class Filemanager {
 			
 			if ($config['wm_type'] == 'text')
 			{
+				// If dropshadow not enabled, let's blank the related values
+				if (isset($data['wm_use_drop_shadow']) && $data['wm_use_drop_shadow'] == 'n')
+				{
+					$data['wm_shadow_color'] = '';
+					$data['wm_shadow_distance'] = '';
+				}
+
 				foreach ($t_type_prefs as $name)
 				{
 					if (isset($data[$name]) && $data[$name] != '')
