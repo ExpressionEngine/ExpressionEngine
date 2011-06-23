@@ -737,7 +737,7 @@ class Member_auth extends Member {
 			if ($this->EE->input->get_post('board_id') !== FALSE && 
 				is_numeric($this->EE->input->get_post('board_id')))
 			{
-				$query = $this->EE->db->select('board_forum_url, board_labe')
+				$query = $this->EE->db->select('board_forum_url, board_label')
 									  ->where('board_id', (int) $this->EE->input->get_post('board_id'))
 									  ->get('forum_boards');
 			}
