@@ -1887,7 +1887,7 @@ class Content_files extends CI_Controller {
 		}
 
 
-		$name = $this->file_model->delete_watermark_prefs($id);
+		$name = $this->file_model->delete_watermark_preferences($id);
 
 		$this->logger->log_action(lang('watermark_pref_deleted').NBS.NBS.$name);
 
