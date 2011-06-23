@@ -7,7 +7,7 @@
 |
 | The following items are for use with ExpressionEngine.  The rest of
 | the config items are for use with CodeIgniter, some of which are not
-| observed by ExpressionEngine, e.g. 'permitted_uri_chars'.
+| observed by ExpressionEngine, e.g. 'permitted_uri_chars'
 |
 */
 
