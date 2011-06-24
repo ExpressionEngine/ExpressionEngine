@@ -778,9 +778,9 @@ class Filemanager {
 		$vars['filemanager_directories'] = $this->directories(FALSE);
 
 		// Generate the filters
-		$vars['selected_filters'] = form_dropdown('selected', array('all' => 'all', 'selected' => 'selected', 'unselected' => 'unselected'), 'all');
-		$vars['category_filters'] = form_dropdown('category', array());
-		$vars['view_filters']     = form_dropdown('view_type', array('list' => 'a list', 'thumb' => 'thumbnails'), 'list', 'id="view_type"');
+		// $vars['selected_filters'] = form_dropdown('selected', array('all' => lang('all'), 'selected' => lang('selected'), 'unselected' => lang('unselected')), 'all');
+		// $vars['category_filters'] = form_dropdown('category', array());
+		$vars['view_filters']     = form_dropdown('view_type', array('list' => lang('list'), 'thumb' => lang('thumbnails')), 'list', 'id="view_type"');
 
 		$filebrowser_html = $this->EE->load->ee_view('_shared/file/browser', $vars, TRUE);
 		
@@ -1430,6 +1430,13 @@ class Filemanager {
 			
 			if ($config['wm_type'] == 'text')
 			{
+				// If dropshadow not enabled, let's blank the related values
+				if (isset($data['wm_use_drop_shadow']) && $data['wm_use_drop_shadow'] == 'n')
+				{
+					$data['wm_shadow_color'] = '';
+					$data['wm_shadow_distance'] = '';
+				}
+
 				foreach ($t_type_prefs as $name)
 				{
 					if (isset($data[$name]) && $data[$name] != '')
