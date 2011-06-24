@@ -1361,7 +1361,7 @@ class Content_publish extends CI_Controller {
 			'lang.tab_name'						=> lang('tab_name'),
 			'lang.show_toolbar' 				=> lang('show_toolbar'),
 			'lang.tab_name_required' 			=> lang('tab_name_required'),
-			'publish.autosave.interval'			=> $autosave_interval_seconds,
+			'publish.autosave.interval'			=> (int) $autosave_interval_seconds,
 			'publish.channel_id'				=> $this->_channel_data['channel_id'],
 			'publish.default_entry_title'		=> $this->_channel_data['default_entry_title'],
 			'publish.field_group'				=> $this->_channel_data['field_group'],
