@@ -578,7 +578,7 @@ class Api_channel_fields extends Api {
 				$this->EE->db->update(
 					'channel_data',
 					array(
-						$field => ''
+						$field => (isset($prefs['default'])) ? $prefs['default'] : ''
 					)
 				);
 			}
