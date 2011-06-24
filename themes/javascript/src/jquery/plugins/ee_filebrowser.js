@@ -23,6 +23,7 @@
 		thumbs_per_page,
 		trigger_callback,
 		all_dirs = {},
+		file_count = {},
 		settings = {},
 		current_field = '',
 		display_type;
@@ -86,14 +87,24 @@
 	 *		directory_contents	 - returns directory information and files ({url: '', id: '', files: {...}})
 	 */
 	$.ee_filebrowser.endpoint_request = function(type, data, callback) {
-		if ( ! callback && $.isFunction(data)) {
+		if ( typeof callback == 'undefined' && $.isFunction(data)) {
 			callback = data;
 			data = {};
 		}
 		
 		data = $.extend(data, {'action': type});
 		
-		$.getJSON(EE.BASE+'&'+EE.filebrowser.endpoint_url+'&'+$.param(data), callback);
+		$.ajax({
+			url: EE.BASE + '&' + EE.filebrowser.endpoint_url,
+			type: 'GET',
+			dataType: 'json',
+			data: data,
+			success: function(data, textStatus, xhr) {
+				if (typeof callback == 'function') {
+					callback.call(this, data);
+				};
+			}
+		});
 	};
 
 	// --------------------------------------------------------------------
@@ -103,7 +114,7 @@
 	 *
 	 * @param {Number} directory_id The directory ID to refresh
 	 */
-	$.ee_filebrowser.reload_directory = function(directory_id) {
+	$.ee_filebrowser.reload_directory = function(directory_id, limit, offset) {
 		$.ee_filebrowser.endpoint_request(
 			'directory_contents',
 			{"directory": directory_id},
@@ -217,7 +228,7 @@
 		if (isNaN(offset)) {
 			offset = 0;
 		}
-				
+		
 		if (isNaN(directory)) {
 			all_dirs[directory.id] = directory;
 		} else if (typeof all_dirs[directory] == "undefined") {
@@ -298,6 +309,32 @@
 	// ------------------------------------------------------------------------ 
 	
 	/**
+	 * Get's the directory count for a particular directory
+	 *
+	 * @param {Number} directory_id ID of the directory you want a count for
+	 * @param {Boolean} refresh Override to get the latest info from the db
+	 */
+	$.ee_filebrowser.directory_count = function(directory_id, refresh) {
+		if (typeof refresh == 'undefined') {
+			refresh = false;
+		};
+		
+		if (typeof file_count[directory_id] == 'undefined' || refresh == true) {
+			$.ee_filebrowser.endpoint_request(
+				'directory_count',
+				{"directory_id": directory_id},
+				function(data) {
+					file_count[directory_id] = data;
+				}
+			);
+		} else {
+			return file_count[directory_id];
+		};
+	};
+	
+	// ------------------------------------------------------------------------ 
+	
+	/**
 	 * Build the footer for the file chooser
 	 *
 	 * @param {Object} directory The directory object from build_pages
@@ -306,7 +343,8 @@
 	 * @param {Object} pagination The pagination object (if declared) from build_pages
 	 */
 	function build_footer(directory, offset, per_page, pagination) {
-		var	total_files = (pagination.pages_total) ? pagination.pages_total : directory.files.length,
+		var file_count = $.ee_filebrowser.directory_count(directory),
+			total_files = file_count.file_count,
 			pages = [];
 		
 		for (var i = 0, page_count = Math.ceil(total_files / per_page); i < page_count; i++) {

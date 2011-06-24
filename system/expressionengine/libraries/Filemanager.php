@@ -694,21 +694,32 @@ class Filemanager {
 		
 		switch($type)
 		{
-			case 'setup':				$this->setup();
+			case 'setup':
+				$this->setup();
 				break;
-			case 'setup_upload':		$this->setup_upload();
+			case 'setup_upload':
+				$this->setup_upload();
 				break;
-			case 'directory':			$this->directory($this->EE->input->get('directory'), TRUE);
+			case 'directory':
+				$this->directory($this->EE->input->get('directory'), TRUE);
 				break;
-			case 'directories':			$this->directories(TRUE);
+			case 'directories':
+				$this->directories(TRUE);
 				break;
-			case 'directory_contents':	$this->directory_contents();
+			case 'directory_contents':	
+				$this->directory_contents();
 				break;
-			case 'upload':				$this->upload_file($this->EE->input->get_post('upload_dir'), FALSE, TRUE);
+			case 'directory_count':
+				$this->directory_count();
 				break;
-			case 'edit_image':			$this->edit_image();
+			case 'upload':
+				$this->upload_file($this->EE->input->get_post('upload_dir'), FALSE, TRUE);
 				break;
-			case 'ajax_create_thumb':	$this->ajax_create_thumb();
+			case 'edit_image':
+				$this->edit_image();
+				break;
+			case 'ajax_create_thumb':
+				$this->ajax_create_thumb();
 				break;
 			default:
 				exit('Invalid Request');
@@ -727,7 +738,7 @@ class Filemanager {
 	function _initialize($config)
 	{
 		// Callbacks!
-		foreach(array('directories', 'directory_contents', 'upload_file') as $key)
+		foreach(array('directories', 'directory_contents', 'directory_count', 'upload_file') as $key)
 		{
 			$this->config[$key.'_callback'] = isset($config[$key.'_callback']) ? $config[$key.'_callback'] : array($this, '_'.$key);
 		}
@@ -909,6 +920,30 @@ class Filemanager {
 				unset($file['encrypted_path']);
 			}
 			
+			$data['id'] = $dir_id;
+			echo $this->EE->javascript->generate_json($data, TRUE);
+		}
+		exit;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get the quantities for both files and images within a directory
+	 */	
+	function directory_count()
+	{
+		$dir_id = $this->EE->input->get('directory_id');
+		$dir = $this->directory($dir_id, FALSE, TRUE);
+
+		$data = $dir ? call_user_func($this->config['directory_count_callback'], $dir) : array();
+		
+		if (count($data) == 0)
+		{
+			echo '{"test": "no"}';
+		}
+		else
+		{
 			$data['id'] = $dir_id;
 			echo $this->EE->javascript->generate_json($data, TRUE);
 		}
@@ -1540,7 +1575,15 @@ class Filemanager {
 		$this->EE->load->model('file_model');
 		$this->EE->load->helper(array('text', 'number'));
 		
-		$files = $this->EE->file_model->get_files($dir['id'], array('type' => $dir['allowed_types']));
+		$files = $this->EE->file_model->get_files(
+			$dir['id'], 
+			array(
+				'type' => $dir['allowed_types'],
+				'order' => array(
+					'file_name' => 'asc'
+				)
+			)
+		);
 		$files = $files['results']->result_array();
 
 		foreach ($files as &$file)
@@ -1629,6 +1672,19 @@ class Filemanager {
 	
 	// --------------------------------------------------------------------
 	
+	
+	private function _directory_count($dir)
+	{
+		$this->EE->load->model('file_model');
+		
+		return array(
+			'file_count'	=> $this->EE->file_model->count_files($dir['id']),
+			'image_count'	=> $this->EE->file_model->count_images($dir['id'])
+		);
+	}
+	
+	// --------------------------------------------------------------------
+	
 	/**
 	 * Upload File Callback
 	 *
@@ -1647,7 +1703,7 @@ class Filemanager {
 	 * @param	string	$field_name	Provide the field name in case it's a custom field
 	 * @return 	array 	Array of file_data sent to Filemanager->save_file
 	 */
-	function _upload_file($dir, $field_name)
+	private function _upload_file($dir, $field_name)
 	{
 		// --------------------------------------------------------------------
 		// Make sure the file is allowed
