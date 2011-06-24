@@ -1371,26 +1371,27 @@ class Member_settings extends Member {
 								);
 	}
 
+	// --------------------------------------------------------------------
 
-
-
-
-	/** ----------------------------------------
-	/**  Username/Password Update
-	/** ----------------------------------------*/
+	/**
+	 * Username/Password Update
+	 */
 	function update_userpass()
 	{
 	  	// Safety.  Prevents accessing this function unless
 	  	// the requrest came from the form submission
 
-		if ( ! isset($_POST['current_password']))
+		if ( ! $this->EE->input->post('current_password'))
 		{
 			return $this->EE->output->show_user_error('general', array($this->EE->lang->line('invalid_action')));
 		}
+		
+		$query = $this->EE->db->select('username, screen_name, password')
+							  ->get_where('members', array(
+							  	'member_id'	=> (int) $this->EE->session->userdata('member_id')							
+							  ));
 
-		$query = $this->EE->db->query("SELECT username, screen_name FROM exp_members WHERE member_id = '".$this->EE->db->escape_str($this->EE->session->userdata('member_id'))."'");
-
-		if ($query->num_rows() == 0)
+		if ( ! $query->num_rows())
 		{
 			return FALSE;
 		}
@@ -1413,9 +1414,7 @@ class Member_settings extends Member {
 			$_POST['username'] = '';			
 		}
 
-		/** -------------------------------------
-		/**  Validate submitted data
-		/** -------------------------------------*/
+		// Validate submitted data
 		if ( ! class_exists('EE_Validate'))
 		{
 			require APPPATH.'libraries/Validate.php';
@@ -2146,6 +2145,8 @@ UNGA;
 	function update_un_pw()
 	{
 		$missing = FALSE;
+		
+		
 
 		if ( ! isset($_POST['new_username']) AND  ! isset($_POST['new_password']))
 		{
