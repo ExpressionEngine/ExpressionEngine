@@ -48,7 +48,11 @@ class EE_Validate {
 		// Make a local reference to the ExpressionEngine super object
 		$this->EE =& get_instance();
 
-		$vars = array('member_id', 'username', 'cur_username', 'screen_name', 'cur_screen_name', 'password', 'password_confirm', 'cur_password', 'email', 'cur_email');
+		$vars = array(
+				'member_id', 'username', 'cur_username', 'screen_name', 
+				'cur_screen_name', 'password', 'password_confirm', 
+				'cur_password', 'email', 'cur_email'
+			);
 		
 		if (is_array($data))
 		{
@@ -74,7 +78,7 @@ class EE_Validate {
 	 */
 	function password_safety_check()
 	{
-		if ($this->EE->session->userdata['group_id'] == 1)
+		if ($this->EE->session->userdata('group_id') == 1)
 		{
 			return;
 		}
@@ -84,11 +88,24 @@ class EE_Validate {
 			return $this->errors[] = $this->EE->lang->line('missing_current_password');
 		}
 
-		$query = $this->EE->db->query("SELECT COUNT(*) as count FROM exp_members WHERE member_id = '".$this->EE->db->escape_str($this->member_id)."' AND password = '".$this->EE->functions->hash(stripslashes($this->cur_password))."'");
-					
-		if ($query->row('count')  != 1)
+		$this->EE->load->library('auth');
+		
+		// Get the users current password
+		$pq = $this->EE->db->select('password, salt')
+							->get_where('members', array(
+								'member_id' => (int) $this->EE->session->userdata('member_id'))
+							);
+		
+		if ( ! $pq->num_rows())
 		{
 			$this->errors[] = $this->EE->lang->line('invalid_password');
+		}
+		
+		$passwd = $this->EE->auth->hash_password($this->cur_password, $pq->row('salt'));
+		
+		if ( ! isset($passwd['salt']) OR ($passwd['password'] != $pq->row('password')))
+		{
+			$this->errors[] = $this->EE->lang->line('invalid_password');			
 		}
 	}
 
@@ -101,30 +118,20 @@ class EE_Validate {
 	{
 		$type = $this->val_type;
 
-		/** ----------------------------------
-		/**  Is username missing?
-		/** ----------------------------------*/
-				
+		// Is username missing?
 		if ($this->username == '')
 		{
 			return $this->errors[] = $this->EE->lang->line('missing_username');
 		}
 		
-		/** ----------------------------------
-		/**  Is username formatting correct?
-		/** ----------------------------------*/
-		
+		// Is username formatting correct?
 		// Reserved characters:  |  "  '  !
-	
 		if (preg_match("/[\|'\"!<>\{\}]/", $this->username))
 		{
 			$this->errors[] = $this->EE->lang->line('invalid_characters_in_username');
 		}					
 		
-		/** ----------------------------------
-		/**  Is username min length correct?
-		/** ----------------------------------*/
-		
+		// Is username min length correct?
 		$len = $this->EE->config->item('un_min_len');
 	
 		if (strlen($this->username) < $len)
@@ -132,18 +139,13 @@ class EE_Validate {
 			$this->errors[] = str_replace('%x', $len, $this->EE->lang->line('username_too_short'));
 		}					
 
-		/** ----------------------------------
-		/**  Is username max length correct?
-		/** ----------------------------------*/
+		// Is username max length correct?
 		if (strlen($this->username) > 50)
 		{
 			$this->errors[] = $this->EE->lang->line('username_password_too_long');
 		}
 				
-		/** ----------------------------------
-		/**  Set validation type
-		/** ----------------------------------*/
-		
+		// Set validation type
 		if ($this->cur_username != '')
 		{
 			if ($this->cur_username != $this->username)	
@@ -160,18 +162,13 @@ class EE_Validate {
 	
 		if ($type == 'new')
 		{
-			/** ----------------------------------
-			/**  Is username banned?
-			/** ----------------------------------*/
-				
+			// Is username banned?
 			if ($this->EE->session->ban_check('username', $this->username))
 			{
 				$this->errors[] = $this->EE->lang->line('username_taken');
 			}
 		
-			/** ----------------------------------
-			/**  Is username taken?
-			/** ----------------------------------*/
+			// Is username taken?
 			$query = $this->EE->db->query("SELECT COUNT(*) as count FROM exp_members WHERE username = '".$this->EE->db->escape_str($this->username)."'");
 							  
 			if ($query->row('count')  > 0)
@@ -345,7 +342,7 @@ class EE_Validate {
 				}
 			}
 		}
-		
+
 		
 		/** -------------------------------------
 		/**  Does password exist in dictionary?
