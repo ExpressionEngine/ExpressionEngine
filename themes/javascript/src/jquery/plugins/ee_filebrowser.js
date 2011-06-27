@@ -10,6 +10,14 @@
  * @filesource
  */
 
+Array.max = function(array) {
+    return Math.max.apply(Math, array);
+};
+
+Array.min = function(array) {
+    return Math.min.apply(Math, array);
+};
+
 (function($) {
 
 	var file_manager_obj,
@@ -141,7 +149,7 @@
 			hide_directories();
 			
 			// Rebuild pages since each upload directory can have different settings
-			build_pages($('#dir_choice').val());
+			build_page($('#dir_choice').val());
 
 			file_manager_obj.dialog("open");
 			
@@ -172,8 +180,15 @@
 	 * Convenience method that gets bound as an inline click event. Yes,
 	 * inline click event - eat me.
 	 */
-	$.ee_filebrowser.placeImage = function(dir, img) {
-		$.ee_filebrowser.clean_up(dir_files_structure[dir][img], '');
+	$.ee_filebrowser.placeImage = function(file_id) {
+		$.ee_filebrowser.endpoint_request(
+			'file_info',
+			{"file_id": file_id},
+			function(file) {
+				$.ee_filebrowser.clean_up(file, '');
+			}
+		);
+		
 		return false;
 	};
 
@@ -189,6 +204,10 @@
 		$("#page_0 .items").html(original_upload_html); // Restore the upload form
 		file_manager_obj.dialog("close"); // close dialog
 		trigger_callback(file);
+		
+		// Clear caches
+		dir_info = {};
+		dir_files = {};
 	};
 
 	// --------------------------------------------------------------------
@@ -198,28 +217,16 @@
 	 *
 	 * @param {Number} directory_id The directory ID to refresh
 	 */
-	$.ee_filebrowser.reload_directory = function(directory_id, offset) {
-		$.ee_filebrowser.endpoint_request(
-			'directory_contents',
-			{"directory": directory_id},
-			function(data) {
-				all_dirs[directory_id] = data;
-				
-				// If you're looking at the same directory, rebuild the page
-				if ($('#dir_choice').val() == directory_id) {
-					build_pages(directory_id);
-				};
-			}
-		);
+	$.ee_filebrowser.reload_directory = function(directory_id) {
+		// Force a refresh on the directory info and also rebuild the pages
+		$.ee_filebrowser.directory_info(directory_id, true, function(data) {
+			build_page(directory_id, 0);
+		});
 	};
 	
-	// --------------------------------------------------------------------
-
-	/*
-	 * Builds the horizontal navigation.
-	 * Only fills in thumbnails for the first page, all others are loaded when they come into view
-	 */
-	function build_pages(directory_id, page_offset) {
+	// ------------------------------------------------------------------------ 
+	
+	function build_page(directory_id, page_offset) {
 		// Check if offset exists
 		if (isNaN(page_offset)) {
 			page_offset = 0;
@@ -234,53 +241,95 @@
 			dir_files[directory_id] = {};
 		};
 		
-		// Call for the files
-		$.ee_filebrowser.endpoint_request(
-			'directory_contents',
-			{
-				'directory_id': directory_id,
-				'images_only': 	images_only,
-				'limit': 		per_page,
-				'offset': 		offset
-			},
-			function(data) {
-				var files = data.files,
-					table_view = $("#tableView").detach(),
-					viewSelectors = $("#viewSelectors").detach();
-				
-				// Cache the file information
-				$.each(files, function(index, val) {
-					if (typeof dir_files[directory_id][index + offset] == 'undefined') {
-						dir_files[directory_id][index + offset] = val;
-					};
-				});
-				
-				// Clear everything
-				table_view.find('tbody').empty();
-				$('#file_chooser_body').empty().append(table_view);
-				$("#file_chooser_footer").empty().append(viewSelectors);
-				
-				// Display the data
-				if (display_type != 'list') {
-					$("#tableView").hide();
-					$.tmpl("thumb", files).appendTo("#file_chooser_body");
+		if (typeof dir_files[directory_id][page_offset] == 'undefined') {
+			$.ee_filebrowser.endpoint_request(
+				'directory_contents',
+				{
+					'directory_id': directory_id,
+					'images_only': 	images_only,
+					'limit': 		per_page,
+					'offset': 		offset
+				},
+				function(data) {
+					var files = data.files,
+						cache_pages = 0,
+						page_indexes = [];
 					
-					// Add a last class to the 7th thumbnail
-					$('a.file_chooser_thumbnail:nth-child(9n+2)').addClass('first');
-					$('a.file_chooser_thumbnail:nth-child(9n+1)').addClass('last');
-					$('a.file_chooser_thumbnail:gt(26)').addClass('last_row');
-				}
-				else {
-					$("#tableView").show();
-					$.tmpl("fileRow", files).appendTo("#tableView tbody");
-				}
+					// Count the number of pages
+					$.each(dir_files[directory_id], function(index, val) {
+						page_indexes[cache_pages] = index;
+						cache_pages = cache_pages + 1;
+					});
 
-				// Build the pagination
-				$.ee_filebrowser.directory_info(directory_id, false, function(data) {
-					build_footer(directory_id, offset, per_page, images_only);
-				});
-			}
-		);
+					// Keep cache small-ish
+					if (cache_pages > 3) {
+						if (page_offset < Array.min(page_indexes)) {
+							delete dir_files[directory_id][Array.max(page_indexes)];
+						} else if (page_offset > Array.max(page_indexes)) {
+							delete dir_files[directory_id][Array.min(page_indexes)];
+						};
+					};
+					
+					// Cache the file information
+					if (typeof dir_files[directory_id][page_offset] == 'undefined') {
+						dir_files[directory_id][page_offset] = files;
+					};
+					
+					// Build pages
+					build_page_from_template(
+						dir_files[directory_id][page_offset],
+						directory_id,
+						offset,
+						per_page,
+						images_only
+					);
+				}
+			);
+		} else {
+			build_page_from_template(
+				dir_files[directory_id][page_offset],
+				directory_id,
+				offset,
+				per_page,
+				images_only
+			);
+		};
+	}
+	
+	// --------------------------------------------------------------------
+
+	/*
+	 * Builds the horizontal navigation.
+	 * Only fills in thumbnails for the first page, all others are loaded when they come into view
+	 */
+	function build_page_from_template(files, directory_id, offset, per_page, images_only) {
+		var table_view = $("#tableView").detach(),
+			viewSelectors = $("#viewSelectors").detach();
+		
+		// Clear everything
+		table_view.find('tbody').empty();
+		$('#file_chooser_body').empty().append(table_view);
+		$("#file_chooser_footer").empty().append(viewSelectors);
+		
+		// Display the data
+		if (display_type != 'list') {
+			$("#tableView").hide();
+			$.tmpl("thumb", files).appendTo("#file_chooser_body");
+			
+			// Add a last class to the 7th thumbnail
+			$('a.file_chooser_thumbnail:nth-child(9n+2)').addClass('first');
+			$('a.file_chooser_thumbnail:nth-child(9n+1)').addClass('last');
+			$('a.file_chooser_thumbnail:gt(26)').addClass('last_row');
+		}
+		else {
+			$("#tableView").show();
+			$.tmpl("fileRow", files).appendTo("#tableView tbody");
+		}
+
+		// Build the pagination
+		$.ee_filebrowser.directory_info(directory_id, false, function(data) {
+			build_footer(directory_id, offset, per_page, images_only);
+		});
 	}
 	
 	// ------------------------------------------------------------------------ 
@@ -372,8 +421,14 @@
 					// Add class to file chooser body
 					$('#file_chooser_body').removeClass('list thumb').addClass(this.value);
 					
+					// Reset dir_files cache
+					dir_files = {};
+					
+					// Change display type
 					display_type = this.value;
-					build_pages($('#dir_choice').val());
+					
+					// Rebuild pages
+					build_page($('#dir_choice').val());
 				})
 			.end()
 			// Populate the categories dropdown
@@ -384,8 +439,7 @@
 			.find('select[name=current_page]')
 				.val(pagination.pages_current - 1)
 				.change(function() {
-					build_pages($('#dir_choice').val(), $(this).val());
-					show_next_previous(page_count);
+					build_page($('#dir_choice').val(), $(this).val());
 				})
 			.end()
 			// Create a listener for the previous link
@@ -393,7 +447,6 @@
 				.click(function(event) {
 					event.preventDefault();
 					change_page(-1);
-					show_next_previous(page_count);
 				})
 			.end()
 			// Create a listener for the next link
@@ -401,9 +454,10 @@
 				.click(function(event) {
 					event.preventDefault();
 					change_page(1);
-					show_next_previous(page_count);
 				})
 			.end();
+			
+		show_next_previous(page_count);
 	}
 	
 	// ------------------------------------------------------------------------ 
@@ -425,7 +479,7 @@
 			new_page = parseInt(current_page, 10) + modifier;
 		
 		$('#current_page').val(new_page);
-		build_pages($('#dir_choice').val(), new_page);
+		build_page($('#dir_choice').val(), new_page);
 	}
 	
 	// ------------------------------------------------------------------------ 
@@ -471,7 +525,7 @@
 
 		// Create listener for the dir choice
 		$('#dir_choice').change(function() {
-			build_pages(this.value, 0);
+			build_page(this.value, 0);
 		});
 		
 		// Get templates and remove code from view

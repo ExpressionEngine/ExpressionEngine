@@ -610,7 +610,7 @@ class Filemanager {
 						)
 					),
 					array(
-						'class' => 'previous visualEscapism'
+						'class' => 'previous'
 					)
 				)
 			),
@@ -712,6 +712,9 @@ class Filemanager {
 			case 'directory_info':
 				$this->directory_info();
 				break;
+			case 'file_info':
+				$this->file_info();
+				break;
 			case 'upload':
 				$this->upload_file($this->EE->input->get_post('upload_dir'), FALSE, TRUE);
 				break;
@@ -738,7 +741,7 @@ class Filemanager {
 	function _initialize($config)
 	{
 		// Callbacks!
-		foreach(array('directories', 'directory_contents', 'directory_info', 'upload_file') as $key)
+		foreach(array('directories', 'directory_contents', 'directory_info', 'file_info', 'upload_file') as $key)
 		{
 			$this->config[$key.'_callback'] = isset($config[$key.'_callback']) ? $config[$key.'_callback'] : array($this, '_'.$key);
 		}
@@ -943,11 +946,33 @@ class Filemanager {
 		
 		if (count($data) == 0)
 		{
-			echo '{"test": "no"}';
+			echo '{}';
 		}
 		else
 		{
 			$data['id'] = $dir_id;
+			echo $this->EE->javascript->generate_json($data, TRUE);
+		}
+		exit;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get the file information for an individual file (by ID)
+	 */
+	function file_info()
+	{
+		$file_id = $this->EE->input->get('file_id');
+		
+		$data = $file_id ? call_user_func($this->config['file_info_callback'], $file_id) : array();
+		
+		if (count($data) == 0)
+		{
+			echo '{}';
+		}
+		else
+		{
 			echo $this->EE->javascript->generate_json($data, TRUE);
 		}
 		exit;
@@ -1679,7 +1704,13 @@ class Filemanager {
 	
 	// --------------------------------------------------------------------
 	
-	
+	/**
+	 * Directory Info Callback
+	 * 
+	 * Returns the file count, image count and url of the directory
+	 * 
+	 * @param array $dir Directory info associative array
+	 */
 	private function _directory_info($dir)
 	{
 		$this->EE->load->model('file_model');
@@ -1689,6 +1720,30 @@ class Filemanager {
 			'file_count'	=> $this->EE->file_model->count_files($dir['id']),
 			'image_count'	=> $this->EE->file_model->count_images($dir['id'])
 		);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * File Info Callback
+	 * 
+	 * Returns the file information for use when placing a file
+	 * 
+	 * @param integer $file_id The File's ID
+	 */
+	private function _file_info($file_id)
+	{
+		$this->EE->load->model('file_model');
+		
+		$file_info = $this->EE->file_model->get_files_by_id($file_id);
+		$file_info = $file_info->row_array();
+		
+		$file_info['is_image'] = (strncmp('image', $file_info['mime_type'], '5') == 0) ? TRUE : FALSE;
+		
+		$thumb_info = $this->get_thumb($file_info['file_name'], $file_info['upload_location_id']);
+		$file_info['thumb'] = $thumb_info['thumb'];
+		
+		return $file_info;
 	}
 	
 	// --------------------------------------------------------------------
