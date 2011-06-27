@@ -20,6 +20,11 @@ if ($EE_view_disable !== TRUE)
 					<li>{<?=$var?>}</li>
 				<?php endforeach;?>
 				</ul>
+				
+				<?php if ($template == 'forum_post_notification'):?>
+					<br />
+					<p><?=lang('notification_has_char_limit')?></p>
+				<?php endif;?>
 			</div>
 		</div>
 		

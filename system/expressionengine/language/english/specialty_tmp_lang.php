@@ -107,6 +107,9 @@ $lang = array(
 'available_variables' =>
 'The following variables can be used:',
 
+'notification_has_char_limit' =>
+'Most of the above variables accept a char_limit parameter: {title char_limit="40"}',
+
 'pm_inbox_full' =>
 'Private Message InBox Full Notification',
 
