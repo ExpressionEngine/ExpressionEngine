@@ -709,8 +709,8 @@ class Filemanager {
 			case 'directory_contents':	
 				$this->directory_contents();
 				break;
-			case 'directory_count':
-				$this->directory_count();
+			case 'directory_info':
+				$this->directory_info();
 				break;
 			case 'upload':
 				$this->upload_file($this->EE->input->get_post('upload_dir'), FALSE, TRUE);
@@ -738,7 +738,7 @@ class Filemanager {
 	function _initialize($config)
 	{
 		// Callbacks!
-		foreach(array('directories', 'directory_contents', 'directory_count', 'upload_file') as $key)
+		foreach(array('directories', 'directory_contents', 'directory_info', 'upload_file') as $key)
 		{
 			$this->config[$key.'_callback'] = isset($config[$key.'_callback']) ? $config[$key.'_callback'] : array($this, '_'.$key);
 		}
@@ -902,10 +902,13 @@ class Filemanager {
 	 */
 	function directory_contents()
 	{
-		$dir_id = $this->EE->input->get('directory');
+		$dir_id = $this->EE->input->get('directory_id');
 		$dir = $this->directory($dir_id, FALSE, TRUE);
+		
+		$offset	= $this->EE->input->get('offset');
+		$limit	= $this->EE->input->get('limit');
 
-		$data = $dir ? call_user_func($this->config['directory_contents_callback'], $dir) : array();
+		$data = $dir ? call_user_func($this->config['directory_contents_callback'], $dir, $limit, $offset) : array();
 
 		if (count($data) == 0)
 		{
@@ -931,12 +934,12 @@ class Filemanager {
 	/**
 	 * Get the quantities for both files and images within a directory
 	 */	
-	function directory_count()
+	function directory_info()
 	{
 		$dir_id = $this->EE->input->get('directory_id');
 		$dir = $this->directory($dir_id, FALSE, TRUE);
 
-		$data = $dir ? call_user_func($this->config['directory_count_callback'], $dir) : array();
+		$data = $dir ? call_user_func($this->config['directory_info_callback'], $dir) : array();
 		
 		if (count($data) == 0)
 		{
@@ -1551,12 +1554,10 @@ class Filemanager {
 	 * @access	private
 	 * @return	mixed	directory list
 	 */
-	function _directory_contents($dir)
+	function _directory_contents($dir, $limit, $offset)
 	{
 		return array(
-			'url' => $dir['url'], 
-			'files' => $this->_get_files($dir), 
-			'categories' => $this->_get_category_dropdown($dir)
+			'files' => $this->_get_files($dir, $limit, $offset)
 		);
 	}
 	
@@ -1566,11 +1567,15 @@ class Filemanager {
 	/**
 	 * Gets the files for a particular directory
 	 * Also, adds short name and file size
+	 * 
+	 * @param array $dir Associative array containg directory information
+	 * @param integer $limit Number of files to retrieve
+	 * @param integer $offset Where to start
 	 *
 	 * @access private
 	 * @return array	List of files
 	 */
-	private function _get_files($dir)
+	private function _get_files($dir, $limit = 15, $offset = 0)
 	{
 		$this->EE->load->model('file_model');
 		$this->EE->load->helper(array('text', 'number'));
@@ -1581,7 +1586,9 @@ class Filemanager {
 				'type' => $dir['allowed_types'],
 				'order' => array(
 					'file_name' => 'asc'
-				)
+				),
+				'limit' => $limit,
+				'offset' => $offset
 			)
 		);
 		$files = $files['results']->result_array();
@@ -1673,11 +1680,12 @@ class Filemanager {
 	// --------------------------------------------------------------------
 	
 	
-	private function _directory_count($dir)
+	private function _directory_info($dir)
 	{
 		$this->EE->load->model('file_model');
 		
 		return array(
+			'url' 			=> $dir['url'],
 			'file_count'	=> $this->EE->file_model->count_files($dir['id']),
 			'image_count'	=> $this->EE->file_model->count_images($dir['id'])
 		);
