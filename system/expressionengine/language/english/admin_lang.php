@@ -862,7 +862,7 @@ $lang = array(
 "Is system on?",
 
 "is_system_on_explanation" =>
-"If system is off, only Super Admins will be able to see your site(s)",
+"If system is off, only Super Admins will be able to see your site(s) by default",
 
 "system_off_msg" => 
 "System Off Message",
