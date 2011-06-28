@@ -106,22 +106,6 @@ class EE_Output extends CI_Output {
 			case 'feed':	$this->_send_feed($output);
 				break;
 		}
-
-
-		// Parse elapsed time and query count
-			
-		if (REQ != 'CP')
-		{
-			$output = str_replace(LD.'total_queries'.RD, $EE->db->query_count, $output);		
-
-
-			// If 'debug' is turned off, we will remove any variables that didn't get parsed due to syntax errors.
-	
-			if ($EE->config->item('debug') == 0 AND $this->remove_unparsed_variables == TRUE)
-			{
-				$output = preg_replace("/".LD."[^;\n]+?".RD."/", '', $output);
-			}
-		}
 		
 		// Compress the output
 		// We simply set the ci config value to true
@@ -130,6 +114,10 @@ class EE_Output extends CI_Output {
 		{
 			$EE->config->set_item('compress_output', TRUE);
 		}
+
+
+		// Parse query count
+		$output = str_replace(LD.'total_queries'.RD, $EE->db->query_count, $output);
 
 
 		// Send it to the CI method for final processing
