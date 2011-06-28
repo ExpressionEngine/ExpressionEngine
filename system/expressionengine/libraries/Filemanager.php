@@ -610,7 +610,7 @@ class Filemanager {
 						)
 					),
 					array(
-						'class' => 'previous visualEscapism'
+						'class' => 'previous'
 					)
 				)
 			),
@@ -694,21 +694,35 @@ class Filemanager {
 		
 		switch($type)
 		{
-			case 'setup':				$this->setup();
+			case 'setup':
+				$this->setup();
 				break;
-			case 'setup_upload':		$this->setup_upload();
+			case 'setup_upload':
+				$this->setup_upload();
 				break;
-			case 'directory':			$this->directory($this->EE->input->get('directory'), TRUE);
+			case 'directory':
+				$this->directory($this->EE->input->get('directory'), TRUE);
 				break;
-			case 'directories':			$this->directories(TRUE);
+			case 'directories':
+				$this->directories(TRUE);
 				break;
-			case 'directory_contents':	$this->directory_contents();
+			case 'directory_contents':	
+				$this->directory_contents();
 				break;
-			case 'upload':				$this->upload_file($this->EE->input->get_post('upload_dir'), FALSE, TRUE);
+			case 'directory_info':
+				$this->directory_info();
 				break;
-			case 'edit_image':			$this->edit_image();
+			case 'file_info':
+				$this->file_info();
 				break;
-			case 'ajax_create_thumb':	$this->ajax_create_thumb();
+			case 'upload':
+				$this->upload_file($this->EE->input->get_post('upload_dir'), FALSE, TRUE);
+				break;
+			case 'edit_image':
+				$this->edit_image();
+				break;
+			case 'ajax_create_thumb':
+				$this->ajax_create_thumb();
 				break;
 			default:
 				exit('Invalid Request');
@@ -727,7 +741,7 @@ class Filemanager {
 	function _initialize($config)
 	{
 		// Callbacks!
-		foreach(array('directories', 'directory_contents', 'upload_file') as $key)
+		foreach(array('directories', 'directory_contents', 'directory_info', 'file_info', 'upload_file') as $key)
 		{
 			$this->config[$key.'_callback'] = isset($config[$key.'_callback']) ? $config[$key.'_callback'] : array($this, '_'.$key);
 		}
@@ -891,10 +905,13 @@ class Filemanager {
 	 */
 	function directory_contents()
 	{
-		$dir_id = $this->EE->input->get('directory');
+		$dir_id = $this->EE->input->get('directory_id');
 		$dir = $this->directory($dir_id, FALSE, TRUE);
+		
+		$offset	= $this->EE->input->get('offset');
+		$limit	= $this->EE->input->get('limit');
 
-		$data = $dir ? call_user_func($this->config['directory_contents_callback'], $dir) : array();
+		$data = $dir ? call_user_func($this->config['directory_contents_callback'], $dir, $limit, $offset) : array();
 
 		if (count($data) == 0)
 		{
@@ -910,6 +927,52 @@ class Filemanager {
 			}
 			
 			$data['id'] = $dir_id;
+			echo $this->EE->javascript->generate_json($data, TRUE);
+		}
+		exit;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get the quantities for both files and images within a directory
+	 */	
+	function directory_info()
+	{
+		$dir_id = $this->EE->input->get('directory_id');
+		$dir = $this->directory($dir_id, FALSE, TRUE);
+
+		$data = $dir ? call_user_func($this->config['directory_info_callback'], $dir) : array();
+		
+		if (count($data) == 0)
+		{
+			echo '{}';
+		}
+		else
+		{
+			$data['id'] = $dir_id;
+			echo $this->EE->javascript->generate_json($data, TRUE);
+		}
+		exit;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get the file information for an individual file (by ID)
+	 */
+	function file_info()
+	{
+		$file_id = $this->EE->input->get('file_id');
+		
+		$data = $file_id ? call_user_func($this->config['file_info_callback'], $file_id) : array();
+		
+		if (count($data) == 0)
+		{
+			echo '{}';
+		}
+		else
+		{
 			echo $this->EE->javascript->generate_json($data, TRUE);
 		}
 		exit;
@@ -1516,12 +1579,10 @@ class Filemanager {
 	 * @access	private
 	 * @return	mixed	directory list
 	 */
-	function _directory_contents($dir)
+	function _directory_contents($dir, $limit, $offset)
 	{
 		return array(
-			'url' => $dir['url'], 
-			'files' => $this->_get_files($dir), 
-			'categories' => $this->_get_category_dropdown($dir)
+			'files' => $this->_get_files($dir, $limit, $offset)
 		);
 	}
 	
@@ -1531,16 +1592,30 @@ class Filemanager {
 	/**
 	 * Gets the files for a particular directory
 	 * Also, adds short name and file size
+	 * 
+	 * @param array $dir Associative array containg directory information
+	 * @param integer $limit Number of files to retrieve
+	 * @param integer $offset Where to start
 	 *
 	 * @access private
 	 * @return array	List of files
 	 */
-	private function _get_files($dir)
+	private function _get_files($dir, $limit = 15, $offset = 0)
 	{
 		$this->EE->load->model('file_model');
 		$this->EE->load->helper(array('text', 'number'));
 		
-		$files = $this->EE->file_model->get_files($dir['id'], array('type' => $dir['allowed_types']));
+		$files = $this->EE->file_model->get_files(
+			$dir['id'], 
+			array(
+				'type' => $dir['allowed_types'],
+				'order' => array(
+					'file_name' => 'asc'
+				),
+				'limit' => $limit,
+				'offset' => $offset
+			)
+		);
 		$files = $files['results']->result_array();
 
 		foreach ($files as &$file)
@@ -1630,6 +1705,50 @@ class Filemanager {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Directory Info Callback
+	 * 
+	 * Returns the file count, image count and url of the directory
+	 * 
+	 * @param array $dir Directory info associative array
+	 */
+	private function _directory_info($dir)
+	{
+		$this->EE->load->model('file_model');
+		
+		return array(
+			'url' 			=> $dir['url'],
+			'file_count'	=> $this->EE->file_model->count_files($dir['id']),
+			'image_count'	=> $this->EE->file_model->count_images($dir['id'])
+		);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * File Info Callback
+	 * 
+	 * Returns the file information for use when placing a file
+	 * 
+	 * @param integer $file_id The File's ID
+	 */
+	private function _file_info($file_id)
+	{
+		$this->EE->load->model('file_model');
+		
+		$file_info = $this->EE->file_model->get_files_by_id($file_id);
+		$file_info = $file_info->row_array();
+		
+		$file_info['is_image'] = (strncmp('image', $file_info['mime_type'], '5') == 0) ? TRUE : FALSE;
+		
+		$thumb_info = $this->get_thumb($file_info['file_name'], $file_info['upload_location_id']);
+		$file_info['thumb'] = $thumb_info['thumb'];
+		
+		return $file_info;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Upload File Callback
 	 *
 	 * The function that handles the file upload logic (allowed upload? etc.)
@@ -1647,7 +1766,7 @@ class Filemanager {
 	 * @param	string	$field_name	Provide the field name in case it's a custom field
 	 * @return 	array 	Array of file_data sent to Filemanager->save_file
 	 */
-	function _upload_file($dir, $field_name)
+	private function _upload_file($dir, $field_name)
 	{
 		// --------------------------------------------------------------------
 		// Make sure the file is allowed

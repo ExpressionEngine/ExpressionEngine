@@ -83,6 +83,15 @@ class EE extends CI_Controller {
 	 */
 	function _output($output)
 	{
+		// If 'debug' is turned off, we will remove any variables that didn't get parsed due to syntax errors.
+		// this needs to happen here as the CI output library does the elapsed_time and memory_usage replacements.
+
+		if ($this->config->item('debug') == 0 AND $this->output->remove_unparsed_variables == TRUE)
+		{
+			$output = preg_replace("/".LD."[^;\n]+?".RD."/", '', $output);
+		}
+		
+		
 		// Add the template debugger to the output
 		
 		if (isset($this->TMPL) && is_object($this->TMPL) && isset($this->TMPL->debugging) && $this->TMPL->debugging === TRUE && $this->TMPL->template_type != 'js')

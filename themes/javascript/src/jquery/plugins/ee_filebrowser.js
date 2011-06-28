@@ -10,22 +10,29 @@
  * @filesource
  */
 
+Array.max = function(array) {
+    return Math.max.apply(Math, array);
+};
+
+Array.min = function(array) {
+    return Math.min.apply(Math, array);
+};
+
 (function($) {
 
-	var backend_url,
-		current_directory = 0,
-		dir_files_structure,
-		dir_paths,
-		default_img_url = EE.PATH_CP_GBL_IMG+'default.png',
-		file_manager_obj,
-		spinner_url = EE.THEME_URL+'/images/publish_file_manager_loader.gif',
-		files_per_table,
-		thumbs_per_page,
-		trigger_callback,
-		all_dirs = {},
-		settings = {},
+	var file_manager_obj,
 		current_field = '',
-		display_type;
+		display_type = 'list',
+		files_per_table = 15,
+		thumbs_per_page = 36,
+		backend_url,
+		
+		current_directory = 0,
+		dir_info = {},
+		dir_files = {},
+		settings = {},
+		
+		trigger_callback;
 
 	/*
 	 * Sets up the filebrowser - call this before anything else
@@ -33,9 +40,6 @@
 	 * @todo make callbacks overridable ($.extend)
 	 */
 	$.ee_filebrowser = function() {
-		files_per_table = 15;
-		thumbs_per_page = 36;
-
 		// Setup!
 		$.ee_filebrowser.endpoint_request('setup', function(data) {
 			dir_files_structure	= {};
@@ -65,7 +69,7 @@
 
 						if ($('#fileChooser').size()) {
 							// Reload the contents for the current directory
-							$.ee_filebrowser.reload_directory($('#dir_choice').val());	
+							$.ee_filebrowser.reload_directory($('#dir_choice').val());
 						}
 					},
 					trigger: '#fileChooser #upload_form input'
@@ -86,40 +90,28 @@
 	 *		directory_contents	 - returns directory information and files ({url: '', id: '', files: {...}})
 	 */
 	$.ee_filebrowser.endpoint_request = function(type, data, callback) {
-		if ( ! callback && $.isFunction(data)) {
+		if ( typeof callback == 'undefined' && $.isFunction(data)) {
 			callback = data;
 			data = {};
 		}
 		
 		data = $.extend(data, {'action': type});
 		
-		$.getJSON(EE.BASE+'&'+EE.filebrowser.endpoint_url+'&'+$.param(data), callback);
-	};
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Refreshes the file browser with the newly upload files
-	 *
-	 * @param {Number} directory_id The directory ID to refresh
-	 */
-	$.ee_filebrowser.reload_directory = function(directory_id) {
-		$.ee_filebrowser.endpoint_request(
-			'directory_contents',
-			{"directory": directory_id},
-			function(data) {
-				all_dirs[directory_id] = data;
-				
-				// If you're looking at the same directory, rebuild the page
-				if ($('#dir_choice').val() == directory_id) {
-					build_pages(directory_id);
+		$.ajax({
+			url: EE.BASE + '&' + EE.filebrowser.endpoint_url,
+			type: 'GET',
+			dataType: 'json',
+			data: data,
+			success: function(data, textStatus, xhr) {
+				if (typeof callback == 'function') {
+					callback.call(this, data);
 				};
 			}
-		);
+		});
 	};
-	
-	// --------------------------------------------------------------------
 
+	// --------------------------------------------------------------------
+	
 	/*
 	 * Allows you to bind elements that will open the file browser
 	 * The callback is called with the file information when a file
@@ -157,7 +149,7 @@
 			hide_directories();
 			
 			// Rebuild pages since each upload directory can have different settings
-			build_pages($('#dir_choice').val());
+			build_page($('#dir_choice').val());
 
 			file_manager_obj.dialog("open");
 			
@@ -188,8 +180,15 @@
 	 * Convenience method that gets bound as an inline click event. Yes,
 	 * inline click event - eat me.
 	 */
-	$.ee_filebrowser.placeImage = function(dir, img) {
-		$.ee_filebrowser.clean_up(dir_files_structure[dir][img], '');
+	$.ee_filebrowser.placeImage = function(file_id) {
+		$.ee_filebrowser.endpoint_request(
+			'file_info',
+			{"file_id": file_id},
+			function(file) {
+				$.ee_filebrowser.clean_up(file, '');
+			}
+		);
+		
 		return false;
 	};
 
@@ -205,96 +204,163 @@
 		$("#page_0 .items").html(original_upload_html); // Restore the upload form
 		file_manager_obj.dialog("close"); // close dialog
 		trigger_callback(file);
+		
+		// Clear caches
+		dir_info = {};
+		dir_files = {};
 	};
 
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Refreshes the file browser with the newly upload files
+	 *
+	 * @param {Number} directory_id The directory ID to refresh
+	 */
+	$.ee_filebrowser.reload_directory = function(directory_id) {
+		// Force a refresh on the directory info and also rebuild the pages
+		$.ee_filebrowser.directory_info(directory_id, true, function(data) {
+			build_page(directory_id, 0);
+		});
+	};
+	
+	// ------------------------------------------------------------------------ 
+	
+	function build_page(directory_id, page_offset) {
+		// Check if offset exists
+		if (isNaN(page_offset)) {
+			page_offset = 0;
+		}
+		
+		var per_page	= (display_type == 'list') ? files_per_table : thumbs_per_page,
+			offset		= page_offset * per_page,
+			images_only	= (display_type == 'list' && settings[current_field].content_type != 'image') ? false : true;
+		
+		// Setup dir_files
+		if (typeof dir_files[directory_id] == 'undefined') {
+			dir_files[directory_id] = {};
+		};
+		
+		if (typeof dir_files[directory_id][page_offset] == 'undefined') {
+			$.ee_filebrowser.endpoint_request(
+				'directory_contents',
+				{
+					'directory_id': directory_id,
+					'limit': 		per_page,
+					'offset': 		offset
+				},
+				function(data) {
+					var files = data.files,
+						cache_pages = 0,
+						page_indexes = [];
+					
+					// Count the number of pages
+					$.each(dir_files[directory_id], function(index, val) {
+						page_indexes[cache_pages] = index;
+						cache_pages = cache_pages + 1;
+					});
+
+					// Keep cache small-ish
+					if (cache_pages > 3) {
+						if (page_offset < Array.min(page_indexes)) {
+							delete dir_files[directory_id][Array.max(page_indexes)];
+						} else if (page_offset > Array.max(page_indexes)) {
+							delete dir_files[directory_id][Array.min(page_indexes)];
+						};
+					};
+					
+					// Cache the file information
+					if (typeof dir_files[directory_id][page_offset] == 'undefined') {
+						dir_files[directory_id][page_offset] = files;
+					};
+					
+					// Build pages
+					build_page_from_template(
+						dir_files[directory_id][page_offset],
+						directory_id,
+						offset,
+						per_page,
+						images_only
+					);
+				}
+			);
+		} else {
+			build_page_from_template(
+				dir_files[directory_id][page_offset],
+				directory_id,
+				offset,
+				per_page,
+				images_only
+			);
+		};
+	}
+	
 	// --------------------------------------------------------------------
 
 	/*
 	 * Builds the horizontal navigation.
 	 * Only fills in thumbnails for the first page, all others are loaded when they come into view
 	 */
-	function build_pages(directory, offset) {
-		if (isNaN(offset)) {
-			offset = 0;
-		}
-				
-		if (isNaN(directory)) {
-			all_dirs[directory.id] = directory;
-		} else if (typeof all_dirs[directory] == "undefined") {
-			// In the event that all_dirs doesn't contain what we need, fire
-			// off a request to endpoint_request to get us what we need
-			return $.ee_filebrowser.endpoint_request('directory_contents', {'directory': directory}, function(data) {
-				all_dirs[directory] = data;
-				build_pages(directory, offset);
-			});
-		} else {
-			directory = all_dirs[directory];
-		}
-		
-		if ( ! directory in dir_files_structure) {
-			return;
-		}
-		
-		// Cache directory information
-		dir_files_structure[directory.id] = directory.files;
-		dir_paths[directory.id] = directory.url;
-		
-		$.each(directory.files, function(i, el) {
-			el['img_id'] = i+'';
-			el['directory'] = directory.id+'';
-			el['is_image'] = ! (el.mime_type.indexOf("image") < 0);
-		});
-		
-		// Clear everything
+	function build_page_from_template(files, directory_id, offset, per_page, images_only) {
 		var table_view = $("#tableView").detach(),
 			viewSelectors = $("#viewSelectors").detach();
-			
+		
+		// Clear everything
 		table_view.find('tbody').empty();
 		$('#file_chooser_body').empty().append(table_view);
 		$("#file_chooser_footer").empty().append(viewSelectors);
 		
-		var per_page = (display_type == 'list') ? files_per_table : thumbs_per_page,
-			pagination = {};
-
-		offset = offset * per_page;
-		
-		var images,
-			workon;
-			
+		// Display the data
 		if (display_type != 'list') {
-			images = build_image_list(directory);
-			workon = directory.images.slice(offset, offset + per_page);
-			
 			$("#tableView").hide();
-
-			$.tmpl("thumb", workon).appendTo("#file_chooser_body");
+			$.tmpl("thumb", files).appendTo("#file_chooser_body");
 			
 			// Add a last class to the 7th thumbnail
 			$('a.file_chooser_thumbnail:nth-child(9n+2)').addClass('first');
 			$('a.file_chooser_thumbnail:nth-child(9n+1)').addClass('last');
 			$('a.file_chooser_thumbnail:gt(26)').addClass('last_row');
-			
-			// Change pagination for thumbnails
-			pagination.pages_total = images.length;
 		}
 		else {
-			if (settings[current_field].content_type == "image") {
-				images = build_image_list(directory);
-				workon = directory.images.slice(offset, offset + per_page);
-				pagination.pages_total = images.length;
-			} else {
-				workon = directory.files.slice(offset, offset + per_page);
-			};
-
 			$("#tableView").show();
-			$.tmpl("fileRow", workon).appendTo("#tableView tbody");
+			$.tmpl("fileRow", files).appendTo("#tableView tbody");
 		}
-		
-		build_footer(directory, offset, per_page, pagination);
+
+		// Build the pagination
+		$.ee_filebrowser.directory_info(directory_id, false, function(data) {
+			build_footer(directory_id, offset, per_page, images_only);
+		});
 	}
 	
-	$.ee_filebrowser.setPage = build_pages;
-
+	// ------------------------------------------------------------------------ 
+	
+	/**
+	 * Get's the directory's info for a particular directory
+	 *
+	 * @param {Number} directory_id ID of the directory you want a count for
+	 * @param {Boolean} refresh Override to get the latest info from the db
+	 */
+	$.ee_filebrowser.directory_info = function(directory_id, refresh, callback) {
+		if (typeof refresh == 'undefined') {
+			refresh = false;
+		};
+		
+		if (typeof dir_info[directory_id] == 'undefined' || refresh == true) {
+			$.ee_filebrowser.endpoint_request(
+				'directory_info',
+				{"directory_id": directory_id},
+				function(data) {
+					dir_info[directory_id] = data;
+					
+					if (typeof callback == "function") {
+						callback.call(this, data);
+					};
+				}
+			);
+		} else if (typeof callback == "function") {
+			callback.call(this, dir_info[directory_id]);
+		};
+	};
+	
 	// ------------------------------------------------------------------------ 
 	
 	/**
@@ -303,40 +369,48 @@
 	 * @param {Object} directory The directory object from build_pages
 	 * @param {Number} offset The offset of files from build_pages
 	 * @param {Number} per_page The number of files to show per page
-	 * @param {Object} pagination The pagination object (if declared) from build_pages
+	 * @param {Boolean} images_only TRUE if only images, FALSE otherwise
 	 */
-	function build_footer(directory, offset, per_page, pagination) {
-		var	total_files = (pagination.pages_total) ? pagination.pages_total : directory.files.length,
-			pages = [];
+	function build_footer(directory_id, offset, per_page, images_only) {
+		// Set a default for images_only
+		if (typeof images_only == "undefined") {
+			images_only = false;
+		};
 		
-		for (var i = 0, page_count = Math.ceil(total_files / per_page); i < page_count; i++) {
-			pages[i] = i + 1;
-		}
+		var total_files = dir_info[directory_id].file_count,
+			page_count = Math.ceil(total_files / per_page);
 		
+		// Create the dropdown pagination
 		var $pagination_dropdown = $('<select />', {
 			"id": "current_page",
 			"name": "current_page"
 		});
 		
-		for (var i = 0, max = pages.length; i < max; i++) {
+		// Fill the pagination dropdown with page options
+		for (var i = 0, max = page_count; i < max; i++) {
 			$pagination_dropdown.append($('<option />', {
 				"value": i,
 				"text": "Page " + (i + 1)
 			}));
 		};
 		
-		$.extend(pagination, {
-			'directory': directory.id,
+		// Figure out the information for the pagination block
+		var pagination = {
 			'pages_total': total_files,
 			'pages_from': offset + 1, // Bump up offset by one because of zero indexed arrays
 			'pages_to': (offset + per_page > total_files) ? total_files : offset + per_page,
+			
 			'pages_current': Math.floor(offset / per_page) + 1,
-			'pages': pages,
+			
+			'pagination_needed': (page_count > 1) ? true : false,
 			'dropdown': $pagination_dropdown.wrap('<div />').parent().html(),
+			
 			'previous': EE.filebrowser.previous,
-			'next': EE.filebrowser.next,
-			'pagination_needed': (pages.length > 1) ? true : false
-		});
+			'next': EE.filebrowser.next
+		};
+		
+		// Remove existing pagination
+		$('#paginationLinks, #pagination_meta').remove();
 		
 		$.tmpl("pagination", pagination).appendTo("#file_chooser_footer")
 			// Create an event handler for changes to the dropdown
@@ -346,19 +420,25 @@
 					// Add class to file chooser body
 					$('#file_chooser_body').removeClass('list thumb').addClass(this.value);
 					
+					// Reset dir_files cache
+					dir_files = {};
+					
+					// Change display type
 					display_type = this.value;
-					build_pages($('#dir_choice').val());
+					
+					// Rebuild pages
+					build_page($('#dir_choice').val());
 				})
 			.end()
-			.find('select[name=category]')
-				.replaceWith(directory.categories)
-			.end()
+			// Populate the categories dropdown
+			// .find('select[name=category]')
+			// 	.replaceWith(directory.categories)
+			// .end()
 			// Create a listener for the pagination dropdown
 			.find('select[name=current_page]')
 				.val(pagination.pages_current - 1)
 				.change(function() {
-					build_pages($('#dir_choice').val(), $(this).val());
-					show_next_previous(pagination.pages.length);
+					build_page($('#dir_choice').val(), $(this).val());
 				})
 			.end()
 			// Create a listener for the previous link
@@ -366,7 +446,6 @@
 				.click(function(event) {
 					event.preventDefault();
 					change_page(-1);
-					show_next_previous(pagination.pages.length);
 				})
 			.end()
 			// Create a listener for the next link
@@ -374,9 +453,10 @@
 				.click(function(event) {
 					event.preventDefault();
 					change_page(1);
-					show_next_previous(pagination.pages.length);
 				})
 			.end();
+			
+		show_next_previous(page_count);
 	}
 	
 	// ------------------------------------------------------------------------ 
@@ -398,7 +478,7 @@
 			new_page = parseInt(current_page, 10) + modifier;
 		
 		$('#current_page').val(new_page);
-		build_pages($('#dir_choice').val(), new_page);
+		build_page($('#dir_choice').val(), new_page);
 	}
 	
 	// ------------------------------------------------------------------------ 
@@ -417,43 +497,6 @@
 		} else if ($('#current_page').val() == (total_pages - 1)) {
 			$('#file_chooser_footer #paginationLinks .next').addClass('visualEscapism');
 		};
-	}
-
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Build a list of images by looking through the directory files and seeing if thumbs exist
-	 *
-	 * @param {Object} directory The directory object from build_pages
-	 */
-	function build_image_list (directory) {
-		if (typeof directory.images == "undefined") { 
-			var images = [], 
-				count = 0;
-
-			for (var i = 0, max = directory.files.length; i < max; i++) {
-				if (directory.files[i].is_image) {
-					images.push(directory.files[i]);
-				}
-			}
-
-			// Set images for posterity's sake
-			directory.images = images;
-			all_dirs[directory.id].images = images;
-		};
-		
-		return directory.images;
-	}
-
-	// ------------------------------------------------------------------------ 
-
-	/* 
-	 * Dynamically loads files from a directory if it hasn't been loaded yet
-	 */
-	function loadFiles(directory) {
-		if (dir_files_structure[directory] == "") {
-			$.ee_filebrowser.endpoint_request('directory_contents', {'directory': directory}, build_pages);
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -476,24 +519,18 @@
 			zIndex: 99999,
 			open: function(event, ui) {
 				var current_directory = $('#dir_choice').val();
-				
-				// Are there files that need to be retrieved for this dir?
-				// loadFiles will intelligently take care of minimizing HTTP requests
-				loadFiles(current_directory);
 			}
 		});
-		
-		display_type = 'list';
 
+		// Create listener for the dir choice
 		$('#dir_choice').change(function() {
-			loadFiles(this.value);
-			build_pages(this.value, 0);
+			build_page(this.value, 0);
 		});
 		
+		// Get templates and remove code from view
 		$.template("fileRow", $('<tbody />').append($('#rowTmpl').remove().attr('id', '')));
 		$.template("noFilesRow", $('#noFilesRowTmpl').remove());
 		$.template("pagination", $('#paginationTmpl').remove());
-		
 		$.template("thumb", $('#thumbTmpl').remove());
 		
 		// Bind the upload submit event

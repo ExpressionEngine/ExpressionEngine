@@ -787,23 +787,23 @@ $(document).ready(function() {
 
 		if ( ! file.is_image)
 		{
-			props = EE.upload_directories[file.directory].file_properties;
+			props = EE.upload_directories[file.upload_location_id].file_properties;
 			
-			open = EE.upload_directories[file.directory].file_pre_format;
-			open += "<a href=\"{filedir_"+file.directory+"}"+file.name+'" '+props+" >";
+			open = EE.upload_directories[file.upload_location_id].file_pre_format;
+			open += "<a href=\"{filedir_"+file.upload_location_id+"}"+file.file_name+'" '+props+" >";
 			
 			close = "</a>";
-			close += EE.upload_directories[file.directory].file_post_format;
+			close += EE.upload_directories[file.upload_location_id].file_post_format;
 		}
 		else
 		{
-			props = EE.upload_directories[file.directory].properties;
+			props = EE.upload_directories[file.upload_location_id].properties;
 			
-			open = EE.upload_directories[file.directory].pre_format;
-			close = EE.upload_directories[file.directory].post_format;
+			open = EE.upload_directories[file.upload_location_id].pre_format;
+			close = EE.upload_directories[file.upload_location_id].post_format;
 
 			// Include any user additions before or after the image link
-			replace = EE.filebrowser.image_tag.replace(/src="(.*)\[!\[Link:!:http:\/\/\]!\](.*)"/, 'src="$1{filedir_'+file.directory+'}'+file.name+'$2"');
+			replace = EE.filebrowser.image_tag.replace(/src="(.*)\[!\[Link:!:http:\/\/\]!\](.*)"/, 'src="$1{filedir_'+file.upload_location_id+'}'+file.file_name+'$2"');
 			
 			// Figure out dimensions
 			dimensions = '';
@@ -834,7 +834,7 @@ $(document).ready(function() {
 					name:"Link",
 					openWith: open,
 					closeWith: close,
-					placeHolder:file.name
+					placeHolder:file.file_name
 				});
 			}
 			else
@@ -867,7 +867,7 @@ $(document).ready(function() {
 		}
 
 		$("input[name="+field+"_hidden]").val(file.file_name);
-		$("select[name="+field+"_directory]").val(file.directory);
+		$("select[name="+field+"_directory]").val(file.upload_location_id);
 	}
 
 	$("input[type=file]", "#publishForm").each(function() {
