@@ -2,12 +2,10 @@ This license is a legal agreement between you and EllisLab, Inc. for the use of 
 
 Revised on: 28 June, 2011
 
-PERMITTED USE
-
+Software Installations
 All ExpressionEngine license purchases allow a single "live" installation in a production environment and two "development use only" installations that support the live installation (such as a development and a staging server). Additional installations require additional license purchases. If you have specific installation needs not covered by this license, please Contact Us.
-Permitted Use
 
-    ExpressionEngine 2.x Licenses:
+Permitted Use
         Freelancer License: Users of the Freelancer License may use the Software only for their own professional web presence. The Freelancer license may not be used for client work. The Freelancer License may only be purchased by individuals or businesses with three employees or less. Only one Freelancer license is allowed per business entity. Only one Freelancer license is allowed per ExpressionEngine.com account.
         Non-Commercial License: Users of the Non-Commercial License may use the Software only on a website engaging in personal, non-commercial, or non-profit activities.
         Commercial License: Users of the Commercial License may use the Software on a website engaging a commercial, or for-profit activities. Websites engaging in direct, or indirect commercial activities must purchase a Commercial License.
