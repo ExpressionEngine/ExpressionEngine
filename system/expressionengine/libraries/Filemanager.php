@@ -441,6 +441,12 @@ class Filemanager {
 			$prefs['file_width'] = $prefs['width'];			
 		}
 		
+		if ( ! isset($prefs['max_width']))
+		{
+			
+			
+		}
+		
 		if ($prefs['max_width'] == 0 && $prefs['max_height'] == 0)
 		{
 			return $prefs;
@@ -1875,9 +1881,6 @@ class Filemanager {
 		// (try to) Set proper permissions
 		@chmod($file['full_path'], DIR_WRITE_MODE);
 		
-		// Resize if needed
-		
-
 
 		// --------------------------------------------------------------------
 		// Add file the database
@@ -1894,6 +1897,7 @@ class Filemanager {
 			);
 		}
 		
+
 		$thumb_info = $this->get_thumb($file['file_name'], $dir['id']);
 		
 		// Build list of information to save and return
@@ -1917,8 +1921,30 @@ class Filemanager {
 			'file_size'				=> $file['file_size'] * 1024, // Bring it back to Bytes from KB
 			'file_height'			=> $file['image_height'],
 			'file_width'			=> $file['image_width'],
-			'file_hw_original'		=> $file['image_height'].' '.$file['image_width']
+			'file_hw_original'		=> $file['image_height'].' '.$file['image_width'],
+			'max_width'				=> $dir['max_width'],
+			'max_height'			=> $dir['max_height']
 		);
+		
+		
+		// Check to see if its an editable image, if it is, check max h/w
+		if ($this->is_editable_image($file['full_path'], $file['file_type']))
+		{
+		 	$file_data = $this->max_hw_check($file['full_path'], $file_data);
+		
+			if ( ! $file_data)
+			{
+				return $this->_upload_error(
+					lang('exceeds_max_dimensions'),
+					array(
+						'file_name'		=> $file['file_name'],
+						'directory_id'	=> $dir['id']
+						)
+					);
+			}
+		}		
+		
+		
 		
 		// Save file to database
 		$saved = $this->save_file($file['full_path'], $dir['id'], $file_data);

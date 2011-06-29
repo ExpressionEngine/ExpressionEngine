@@ -418,6 +418,9 @@ $lang = array(
 'invalid_mime' =>
 'Invalid mime type, file could not be processed',
 
+'exceeds_max_dimensions' =>
+'File exceeds maximum dimensions and is not resizable.',
+
 'file_not_added_to_db' =>
 'File could not be recorded in the database',
 
