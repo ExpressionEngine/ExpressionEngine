@@ -332,8 +332,6 @@ class Filemanager {
 	}
 	
 	
-	
-	
 	// --------------------------------------------------------------------
 	
 	/**
@@ -439,54 +437,80 @@ class Filemanager {
 
 			$prefs['height'] = $dim['height'];
 			$prefs['width'] = $dim['width'];
+			$prefs['file_height'] = $prefs['height'];
+			$prefs['file_width'] = $prefs['width'];			
 		}
-
-
-		$config['width']			= $prefs['width'];
-		$config['height']			= $prefs['height'];
-
-		// If is image and exceeds max size- resize!
-		if (
-			($prefs['max_width'] > 0 && $prefs['width'] > $prefs['max_width']) OR 
-			($prefs['max_height'] > 0 && $prefs['height'] > $prefs['max_height'])
-		)
+		
+		if ($prefs['max_width'] == 0 && $prefs['max_height'] == 0)
 		{
-			$this->EE->load->library('image_lib');
-
-			$this->EE->image_lib->clear();
-
-			if ($prefs['max_width'] == 0)
-			{
-				$config['width'] = ($prefs['width']/$prefs['height'])*$prefs['max_height'];
-				$config['master_dim'] = 'height';
-			}
-			elseif ($prefs['max_height'] == 0)
-			{
-				// Old h/old w * new width
-				$config['height'] = ($prefs['height']/$prefs['width'])*$prefs['max_width'];
-				$config['master_dim'] = 'width';
-					
-			}
-			
-			unset($prefs['width']);
-			unset($prefs['height']);
-
-			// Resize
-		
-			$config['source_image']		= $file_path;
-			$config['maintain_ratio']	= TRUE;
-			$config['image_library']	= $this->EE->config->item('image_resize_protocol');
-			$config['library_path']		= $this->EE->config->item('image_library_path');
-
-			$this->EE->image_lib->initialize($config);
-				
-			if ( ! $this->EE->image_lib->resize())
-			{
-				return FALSE;
-			}
-			
+			return $prefs;
 		}
 		
+		if ($prefs['width'] <= $prefs['max_width'] && $prefs['height'] <= $prefs['max_height'])
+		{
+			return $prefs;
+		}
+
+
+		$config['width']			= $prefs['max_width'];
+		$config['height']			= $prefs['max_height'];
+
+		$this->EE->load->library('image_lib');
+
+		$this->EE->image_lib->clear();
+
+		// If either h/w unspecified, calculate the other here
+		if ($prefs['max_width'] ==  0)
+		{
+			$config['width'] = ($prefs['width']/$prefs['height'])*$prefs['max_height'];
+		}
+		elseif ($prefs['max_height'] ==  0)
+		{
+			// Old h/old w * new width
+			$config['height'] = ($prefs['height']/$prefs['width'])*$prefs['max_width'];
+		}
+
+		unset($prefs['width']);
+		unset($prefs['height']);
+
+		// Set required memory
+		if ( ! $this->set_image_memory($file_path))
+		{
+			log_message('error', 'Insufficient Memory for Thumbnail Creation: '.$file_path);
+			return FALSE;
+		}
+			
+		// Resize
+		
+		$config['source_image']		= $file_path;
+		$config['maintain_ratio']	= TRUE;
+		$config['image_library']	= $this->EE->config->item('image_resize_protocol');
+		$config['library_path']		= $this->EE->config->item('image_library_path');
+
+		$this->EE->image_lib->initialize($config);
+				
+		if ( ! $this->EE->image_lib->resize())
+		{
+			return FALSE;
+		}
+		
+		$new_image = $this->EE->image_lib->get_image_properties('', TRUE);
+
+		// We need to reset some prefs
+		if ($new_image)
+		{
+			$this->EE->load->helper('number');
+			$f_size =  get_file_info($file_path);
+			
+			$prefs['file_size'] = ($f_size) ? $f_size['size'] : 0;
+
+			$prefs['file_height'] = $new_image['height'];	
+			$prefs['file_width'] = $new_image['width'];	
+			$prefs['file_hw_original'] = $new_image['height'].' '.$new_image['width'];		
+			$prefs['height'] = $new_image['height'];
+			$prefs['width'] = $new_image['width'];
+		}
+
 		return $prefs;
 	}
 
@@ -1850,6 +1874,9 @@ class Filemanager {
 		
 		// (try to) Set proper permissions
 		@chmod($file['full_path'], DIR_WRITE_MODE);
+		
+		// Resize if needed
+		
 
 
 		// --------------------------------------------------------------------
