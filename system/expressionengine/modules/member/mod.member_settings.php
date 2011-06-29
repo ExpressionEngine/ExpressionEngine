@@ -1289,7 +1289,8 @@ class Member_settings extends Member {
 										'require_cpw' 	=> FALSE,
 										'enable_log'	=> FALSE,
 										'email'			=> $_POST['email'],
-										'cur_email'		=> $query->row('email')
+										'cur_email'		=> $query->row('email'),
+										'cur_password'	=> $_POST['password']
 									 )
 							);
 
@@ -1297,17 +1298,7 @@ class Member_settings extends Member {
 
 		if ($_POST['email'] != $query->row('email') )
 		{
-			if ($this->EE->session->userdata['group_id'] != 1)
-			{
-				if ($_POST['password'] == '')
-				{
-					$VAL->errors[] = $this->EE->lang->line('missing_current_password');
-				}
-				elseif ($this->EE->functions->hash(stripslashes($_POST['password'])) != $query->row('password') )
-				{
-					$VAL->errors[] = $this->EE->lang->line('invalid_password');
-				}
-			}
+			$VAL->password_safety_check();
 		}
 
 		if (count($VAL->errors) > 0)
