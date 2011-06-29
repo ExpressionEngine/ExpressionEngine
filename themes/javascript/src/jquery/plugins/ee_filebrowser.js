@@ -246,7 +246,6 @@ Array.min = function(array) {
 				'directory_contents',
 				{
 					'directory_id': directory_id,
-					'images_only': 	images_only,
 					'limit': 		per_page,
 					'offset': 		offset
 				},
@@ -378,7 +377,7 @@ Array.min = function(array) {
 			images_only = false;
 		};
 		
-		var total_files = (images_only === true) ? dir_info[directory_id].image_count : dir_info[directory_id].file_count,
+		var total_files = dir_info[directory_id].file_count,
 			page_count = Math.ceil(total_files / per_page);
 		
 		// Create the dropdown pagination
