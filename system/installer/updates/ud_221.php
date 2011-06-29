@@ -51,6 +51,8 @@ class Updater {
 			$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_fieldtypes` char(1) NOT NULL DEFAULT 'n' AFTER `can_access_files`";            
 		}
 
+		$Q[] = "UPDATE `exp_member_groups` SET `can_access_fieldtypes` = 'y' WHERE `group_id` = 1";
+
 		foreach ($Q as $num => $sql)
 		{
 			$this->EE->progress->update_state("Running Query $num of $count");
