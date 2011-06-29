@@ -5,7 +5,7 @@
 
 		<?=form_open('C=myaccount'.AMP.'M=member_preferences_update', '', $form_hidden)?>
 		
-		<?php if ($group_id != 1 AND $member_id != $this->session->userdata('member_id')): ?>
+		<?php if (isset($group_id_options)): ?>
 			<p>
 				<?=form_label(lang('member_group_assignment'), 'group_id')?>
 				<?=form_dropdown('group_id', $group_id_options, $group_id, 'id="group_id"')?>
