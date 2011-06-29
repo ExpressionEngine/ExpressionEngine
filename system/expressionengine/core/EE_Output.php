@@ -117,8 +117,10 @@ class EE_Output extends CI_Output {
 
 
 		// Parse query count
-		$output = str_replace(LD.'total_queries'.RD, $EE->db->query_count, $output);
-
+		if (REQ != 'CP')
+		{
+			$output = str_replace(LD.'total_queries'.RD, $EE->db->query_count, $output);
+		}
 
 		// Send it to the CI method for final processing
 		parent::_display($output);
