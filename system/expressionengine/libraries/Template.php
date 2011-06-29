@@ -2797,12 +2797,6 @@ class EE_Template {
 			}
 		}
 		
-		// Path variable: {path=group/template}		
-		if (strpos($str, 'path=') !== FALSE)
-		{
-			$str = preg_replace_callback("/".LD."\s*path=(.*?)".RD."/", array(&$this->EE->functions, 'create_url'), $str);
-		}
-		
 		// Debug mode: {debug_mode}		
 		$str = str_replace(LD.'debug_mode'.RD, ($this->EE->config->item('debug') > 0) ? $this->EE->lang->line('on') : $this->EE->lang->line('off'), $str);
 				
@@ -2858,7 +2852,7 @@ class EE_Template {
 		
 		// Parse non-cachable variables		
 		$this->EE->session->userdata['member_group'] = $this->EE->session->userdata['group_id'];
-	
+
 		foreach ($user_vars as $val)
 		{
 			if (isset($this->EE->session->userdata[$val]) AND ($val == 'group_description' OR strval($this->EE->session->userdata[$val]) != ''))
@@ -2868,6 +2862,12 @@ class EE_Template {
 				$str = str_replace('{global->'.$val.'}', $this->EE->session->userdata[$val], $str);
 				$str = str_replace('{logged_in_'.$val.'}', $this->EE->session->userdata[$val], $str);
 			}
+		}
+		
+		// Path variable: {path=group/template}		
+		if (strpos($str, 'path=') !== FALSE)
+		{
+			$str = preg_replace_callback("/".LD."\s*path=(.*?)".RD."/", array(&$this->EE->functions, 'create_url'), $str);
 		}
 		
 		// and once again just in case global vars introduce EE comments
