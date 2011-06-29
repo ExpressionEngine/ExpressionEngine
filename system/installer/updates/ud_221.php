@@ -25,13 +25,39 @@
  */
 class Updater {
 
+	private $EE;
 	var $version_suffix = '';
 
-    function do_update()
-    {
-		// What's this database you speak of?
-        return TRUE;
+	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		$this->EE =& get_instance();
+	}
 
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Do Update
+	 *
+	 * @return TRUE
+	 */
+	public function do_update()
+    {
+		// 2.1.3 was missing this from its schema
+		if ( ! $this->EE->db->field_exists('can_access_fieldtypes', 'member_groups'))
+		{
+			$Q[] = "ALTER TABLE `exp_member_groups` ADD `can_access_fieldtypes` char(1) NOT NULL DEFAULT 'n' AFTER `can_access_files`";            
+		}
+
+		foreach ($Q as $num => $sql)
+		{
+			$this->EE->progress->update_state("Running Query $num of $count");
+	        $this->EE->db->query($sql);
+		}
+		
+		return TRUE;
     }
 }   
 /* END CLASS */
