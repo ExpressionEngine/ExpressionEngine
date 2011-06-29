@@ -662,44 +662,13 @@ class Member_register extends Member {
 		}
 		else
 		{
-			// Log user in
-			$expire = 60*60*24*182;
-
-			$this->EE->functions->set_cookie($this->EE->session->c_expire , time()+$expire, $expire);
-
-			// Create a new session
-			if ($this->EE->config->item('user_session_type') == 'cs' OR 
-				$this->EE->config->item('user_session_type') == 's')
-			{
-				$this->EE->session->sdata['session_id'] = $this->EE->functions->random();
-				$this->EE->session->sdata['member_id']  = $member_id;
-				$this->EE->session->sdata['last_activity'] = $this->EE->localize->now;
-				$this->EE->session->sdata['site_id']	= $this->EE->config->item('site_id');
-
-				$this->EE->functions->set_cookie($this->EE->session->c_session , $this->EE->session->sdata['session_id'], $this->EE->session->session_length);
-
-				$this->EE->db->query($this->EE->db->insert_string('exp_sessions', $this->EE->session->sdata));
-			}
-
-			// Update existing session variables
-			$this->EE->session->userdata['username']  = $data['username'];
-			$this->EE->session->userdata['member_id'] = $member_id;
-
-			// Update stats
-			$cutoff		= $this->EE->localize->now - (15 * 60);
-
-			$this->EE->db->query("DELETE FROM exp_online_users WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND ((ip_address = '".$this->EE->input->ip_address()."' AND member_id = '0') OR date < $cutoff)");
-
-			$data = array(
-							'member_id'		=> $this->EE->session->userdata('member_id'),
-							'name'			=> ($this->EE->session->userdata('screen_name') == '') ? $this->EE->session->userdata('username') : $this->EE->session->userdata('screen_name'),
-							'ip_address'	=> $this->EE->input->ip_address(),
-							'date'			=> $this->EE->localize->now,
-							'anon'			=> 'y',
-							'site_id'		=> $this->EE->config->item('site_id')
-						);
-
-			$this->EE->db->query($this->EE->db->update_string('exp_online_users', $data, array("ip_address" => $this->EE->input->ip_address(), "member_id" => $data['member_id'])));
+			// Log user in (the extra query is a little annoying)
+			$this->EE->load->library('auth');
+			$member_data_q = $this->EE->db->get_where('members', array('member_id' => $member_id));
+			
+			$incoming = new Auth_result($member_data_q->row());
+			$incoming->remember_me(60*60*24*182);
+			$incoming->start_session();
 
 			$message = lang('mbr_your_are_logged_in');
 		}
