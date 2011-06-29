@@ -4003,6 +4003,17 @@ class Admin_content extends CI_Controller {
 
 		$ft_selector = "#ft_".implode(", #ft_", array_keys($fts));
 
+		if ($type == 'new') {
+			$this->cp->add_js_script('plugin', 'ee_url_title');
+
+			$this->javascript->output('
+				$("#edit_group_prefs").hide();
+				$("#field_label").bind("keyup keydown", function() {
+					$(this).ee_url_title("#field_name");
+				});
+			');
+		}
+
 		$this->javascript->output('
 			var ft_divs = $("'.$ft_selector.'"),
 				ft_dropdown = $("#field_type");
