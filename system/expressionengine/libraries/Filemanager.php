@@ -332,8 +332,6 @@ class Filemanager {
 	}
 	
 	
-	
-	
 	// --------------------------------------------------------------------
 	
 	/**
@@ -439,6 +437,8 @@ class Filemanager {
 
 			$prefs['height'] = $dim['height'];
 			$prefs['width'] = $dim['width'];
+			$prefs['file_height'] = $prefs['height'];
+			$prefs['file_width'] = $prefs['width'];			
 		}
 		
 		if ($prefs['max_width'] == 0 && $prefs['max_height'] == 0)
@@ -492,6 +492,23 @@ class Filemanager {
 		if ( ! $this->EE->image_lib->resize())
 		{
 			return FALSE;
+		}
+		
+		$new_image = $this->EE->image_lib->get_image_properties('', TRUE);
+
+		// We need to reset some prefs
+		if ($new_image)
+		{
+			$this->EE->load->helper('number');
+			$f_size =  get_file_info($file_path);
+			
+			$prefs['file_size'] = ($f_size) ? $f_size['size'] : 0;
+
+			$prefs['file_height'] = $new_image['height'];	
+			$prefs['file_width'] = $new_image['width'];	
+			$prefs['file_hw_original'] = $new_image['height'].' '.$new_image['width'];		
+			$prefs['height'] = $new_image['height'];
+			$prefs['width'] = $new_image['width'];
 		}
 
 		return $prefs;
@@ -1857,6 +1874,9 @@ class Filemanager {
 		
 		// (try to) Set proper permissions
 		@chmod($file['full_path'], DIR_WRITE_MODE);
+		
+		// Resize if needed
+		
 
 
 		// --------------------------------------------------------------------
