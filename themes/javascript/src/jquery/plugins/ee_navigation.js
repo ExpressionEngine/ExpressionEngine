@@ -51,8 +51,11 @@ jQuery(document).ready(function() {
 			el.parent().find('.'+ACTIVE+', .'+HOVER).removeClass(ACTIVE).removeClass(HOVER);
 			el.addClass(ACTIVE).addClass(HOVER);
 		
-			EE.navigation.truncate_menus(el.children('ul'));
-		
+			// do not truncate channels
+			if ( ! el.closest('#navigationTabs > li').is( top_level.first() )) {
+				EE.navigation.truncate_menus(el.children('ul'));
+			}
+			
 			moving = false;
 		}, 60);	// remember, IE timeouts step in 15ms
 	};
