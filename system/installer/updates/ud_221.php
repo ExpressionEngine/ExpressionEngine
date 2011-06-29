@@ -52,6 +52,8 @@ class Updater {
 		}
 
 		$Q[] = "UPDATE `exp_member_groups` SET `can_access_fieldtypes` = 'y' WHERE `group_id` = 1";
+		$Q[] = "UPDATE `exp_members` SET `group_id` = 4 WHERE `group_id` = 0";
+		
 
 		foreach ($Q as $num => $sql)
 		{
