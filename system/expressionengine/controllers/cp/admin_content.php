@@ -139,8 +139,13 @@ class Admin_content extends CI_Controller {
 		$this->load->model('channel_model');
 		$this->load->model('category_model');
 
+		$this->cp->add_js_script('plugin', 'ee_url_title');
+
 		$this->javascript->output('
 			$("#edit_group_prefs").hide();
+			$("#channel_title").bind("keyup keydown", function() {
+				$(this).ee_url_title("#channel_name");
+			});
 		');
 
 		$this->javascript->click("#edit_group_prefs_y", '$("#edit_group_prefs").show();', FALSE);
@@ -241,6 +246,8 @@ class Admin_content extends CI_Controller {
 		{
 			$vars['old_group_id'][$row['group_id']] = ($this->config->item('multiple_sites_enabled') == 'y') ? $row['site_label'].NBS.'-'.NBS.$row['group_name'] : $row['group_name'];
 		}
+
+		$this->cp->set_breadcrumb(BASE.AMP.'C=admin_content'.AMP.'M=channel_management', lang('channels'));
 
 		$this->javascript->compile();
 		$this->load->view('admin/channel_add', $vars);
@@ -3995,6 +4002,17 @@ class Admin_content extends CI_Controller {
 		);
 
 		$ft_selector = "#ft_".implode(", #ft_", array_keys($fts));
+
+		if ($type == 'new') {
+			$this->cp->add_js_script('plugin', 'ee_url_title');
+
+			$this->javascript->output('
+				$("#edit_group_prefs").hide();
+				$("#field_label").bind("keyup keydown", function() {
+					$(this).ee_url_title("#field_name");
+				});
+			');
+		}
 
 		$this->javascript->output('
 			var ft_divs = $("'.$ft_selector.'"),

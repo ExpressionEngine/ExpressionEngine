@@ -36,7 +36,7 @@ if ($EE_view_disable !== TRUE)
 						$this->table->set_template($cp_pad_table_template);
 						$this->table->function = 'htmlspecialchars';
 					?>
-					<div class="shun"><?=$this->table->generate($query)?></div>
+					<div class="shun wide_content"><?=$this->table->generate($query)?></div>
 					
 					<?php if ($pagination): ?>
 						<p><?=$pagination?></p>

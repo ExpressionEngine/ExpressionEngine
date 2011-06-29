@@ -431,6 +431,11 @@ select.select {
 	margin-bottom:		16px!important;
 }
 
+/* for extremely wide content (i.e. sql manager: member table) */
+.wide_content {
+	overflow-x: auto;
+}
+
 .subtext {
 	color:				#636b75;	
 	line-height:		18px;
