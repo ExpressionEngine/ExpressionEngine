@@ -4115,7 +4115,7 @@ class Admin_content extends CI_Controller {
 
 		if ($edit == TRUE)
 		{
-			$this->db->where('group_id !=', $group_id);
+			$this->db->where('field_id !=', $this->input->post('field_id'));
 		}
 
 		$query = $this->db->get('channel_fields');
