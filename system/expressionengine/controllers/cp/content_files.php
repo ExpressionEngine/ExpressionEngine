@@ -1997,6 +1997,9 @@ class Content_files extends CI_Controller {
 			{
 				$data['field_'.$field] = $this->input->post($field);
 			}
+			
+			$data['field_url'] = base_url();
+			$data['field_server_path'] = str_replace(SYSDIR.'/', '', FCPATH);
 		}
 		else
 		{
@@ -2035,9 +2038,6 @@ class Content_files extends CI_Controller {
 				{
 					$data['field_'.$f] = '';
 				}
-
-				$data['field_url'] = base_url();
-				$data['field_server_path'] = str_replace(SYSDIR.'/', '', FCPATH);
 			}
 
 			// Get Image Versions
