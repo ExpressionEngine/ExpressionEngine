@@ -55,10 +55,14 @@ class Updater {
 		$Q[] = "UPDATE `exp_members` SET `group_id` = 4 WHERE `group_id` = 0";
 		
 
-		foreach ($Q as $num => $sql)
+		$count = count($Q);
+		$num = 1;
+		
+		foreach ($Q as $sql)
 		{
 			$this->EE->progress->update_state("Running Query $num of $count");
 	        $this->EE->db->query($sql);
+			$num++;
 		}
 		
 		return TRUE;
