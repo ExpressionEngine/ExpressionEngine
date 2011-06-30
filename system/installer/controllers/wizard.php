@@ -1330,6 +1330,7 @@ PAPAYA;
 		}
 
 		// is there a survey for this version?
+		/*
 		if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.EXT))
 		{
 			$this->load->library('survey');
@@ -1373,6 +1374,7 @@ PAPAYA;
 				$this->survey->send_survey($this->next_update);
 			}
 		}
+		*/
 		
 		if (($status = $UD->{$method}()) === FALSE)
 		{
