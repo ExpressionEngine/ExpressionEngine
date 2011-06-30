@@ -2847,9 +2847,6 @@ class EE_Template {
 		
 		$str = $this->EE->functions->add_form_security_hash($str);
 		
-		// Add Action IDs form forms and links		
-		$str = $this->EE->functions->insert_action_ids($str);
-		
 		// Parse non-cachable variables		
 		$this->EE->session->userdata['member_group'] = $this->EE->session->userdata['group_id'];
 
@@ -2869,6 +2866,9 @@ class EE_Template {
 		{
 			$str = preg_replace_callback("/".LD."\s*path=(.*?)".RD."/", array(&$this->EE->functions, 'create_url'), $str);
 		}
+		
+		// Add Action IDs form forms and links
+		$str = $this->EE->functions->insert_action_ids($str);
 		
 		// and once again just in case global vars introduce EE comments
 		return $this->remove_ee_comments($str);

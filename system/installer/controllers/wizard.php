@@ -2325,9 +2325,10 @@ PAPAYA;
 
 		foreach (array('avatar_path', 'photo_path', 'signature_img_path', 'pm_path', 'captcha_path', 'theme_folder_path') as $path)
 		{
-			$this->userdata[$path] = rtrim(realpath($this->userdata[$path]), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+			$prefix = ($path != 'theme_folder_path') ? $this->root_theme_path : '';
+			$this->userdata[$path] = rtrim(realpath($prefix.$this->userdata[$path]), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 		}
-	
+			
 		$config = array(
 						'app_version'					=>	$this->userdata['app_version'],
 						'license_number'				=>	trim($this->userdata['license_number']),
