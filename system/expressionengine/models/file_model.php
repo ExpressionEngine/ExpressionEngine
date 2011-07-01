@@ -275,6 +275,19 @@ class File_model extends CI_Model {
 		
 		return $this->db->count_all_results('files');
 	}
+	
+	// ------------------------------------------------------------------------	
+	
+	/**
+	 * Count Images
+	 *
+	 * @param 	array
+	 */
+	function count_images($dir_id = FALSE)
+	{
+		$this->db->like('mime_type', 'image/', 'after');
+		return $this->count_files($dir_id);
+	}
 
 	// ------------------------------------------------------------------------	
 	

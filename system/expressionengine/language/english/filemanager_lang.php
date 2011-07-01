@@ -83,13 +83,14 @@ $lang = array(
 'uploading_file'		=> 'Uploading File',
 'apply_changes'			=> 'Apply Changes',
 
+'list'						=> 'a list',
+'thumbnails'				=> 'thumbnails',
 'pagination_count_text'     => 'Showing %s to %s of %s files.',
 'pagination_filter_text'    => 'Show files as %s.',
 'pagination_page'			=> 'Page',
 'all_categories'			=> 'all categories',
 'total_dir_size'            => 'Total Directory Size:',
-'no_upload_dirs_available' => 'No upload locations available',
-
+'no_upload_dirs_available'	=> 'No upload locations available',
 
 'save_crop' 			=> 'Save Crop',
 'cancel_crop'			=> 'Cancel Crop',
@@ -416,6 +417,9 @@ $lang = array(
 
 'invalid_mime' =>
 'Invalid mime type, file could not be processed',
+
+'exceeds_max_dimensions' =>
+'File exceeds maximum dimensions and is not resizable.',
 
 'file_not_added_to_db' =>
 'File could not be recorded in the database',

@@ -381,6 +381,11 @@ span.button .submit{
 	margin-bottom: 14px!important;
 }
 
+/* for extremely wide content (i.e. sql manager: member table) */
+.wide_content {
+	overflow-x: auto;
+}
+
 .subtext {
 	font-size:			11px;
 }

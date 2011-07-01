@@ -192,7 +192,7 @@ if ($EE_view_disable !== TRUE)
 						'16' => 16, '17' => 17, '18' => 18, '19' => 19, '20');
 						?>
 						<td><?=form_label(lang('wm_shadow_distance'), 'wm_shadow_distance'); ?></td>
-						<td><?=form_dropdown('wm_shadow_distanceg', $options, $wm_shadow_distance); ?></td>
+						<td><?=form_dropdown('wm_shadow_distance', $options, $wm_shadow_distance); ?></td>
 					</tr>
 
 					<tr class="odd text_type">

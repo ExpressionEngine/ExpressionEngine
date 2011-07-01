@@ -6529,18 +6529,43 @@ class Forum_Core extends Forum {
 		$action_id  = $this->EE->functions->fetch_action_id('Forum', 'delete_subscription');
 
 		$swap = array(
-						'forum_name'		=> $this->fetch_pref('board_label'),
-						'title'				=> $title,
-						'body'				=> $body,
-						'topic_id'			=> $data['topic_id'],
-						'thread_url'		=> $this->EE->input->remove_session_id($redirect),
-						'post_url'			=> (isset($data['post_id'])) ? $this->forum_path()."viewreply/{$data['post_id']}/" : $this->EE->input->remove_session_id($redirect)
-					 );
+			'name_of_poster'	=> $this->_convert_special_chars($this->EE->session->userdata('screen_name')),
+			'forum_name'		=> $this->fetch_pref('board_label'),
+			'title'				=> $title,
+			'body'				=> $body,
+			'topic_id'			=> $data['topic_id'],
+			'thread_url'		=> $this->EE->input->remove_session_id($redirect),
+			'post_url'			=> (isset($data['post_id'])) ? $this->forum_path()."viewreply/{$data['post_id']}/" : $this->EE->input->remove_session_id($redirect)
+		 );
 		
 		$template = $this->EE->functions->fetch_email_template('forum_post_notification');
-		$email_tit = $this->EE->functions->var_swap($template['title'], $swap);
-		$email_msg = $this->EE->functions->var_swap($template['data'], $swap);
-
+		$email_tit = $template['title'];
+		$email_msg = $template['data'];
+		
+		foreach(array('email_tit', 'email_msg') as $var)
+		{
+			if (preg_match_all('/'.LD.'(('.implode('|', array_keys($swap)).')(\s+?)(.*?))'.RD.'/is', $$var, $matches))
+			{
+				foreach ($matches[1] as $k => $full_tag_inner)
+				{
+					if (isset($swap[$full_tag_inner]))
+					{
+						continue;
+					}
+					
+					$params = $this->EE->functions->assign_parameters($full_tag_inner);
+					
+					if (isset($params['char_limit']) && is_numeric($params['char_limit']))
+					{
+						$swap[$full_tag_inner] = $this->EE->functions->char_limiter($swap[$matches[2][$k]], $params['char_limit']);
+					}
+				}
+			}
+		}
+		
+		$email_tit = $this->EE->functions->var_swap($email_tit, $swap);
+		$email_msg = $this->EE->functions->var_swap($email_msg, $swap);
+		
 		// Send emails		
 		$this->EE->load->library('email');
 
@@ -6568,14 +6593,15 @@ class Forum_Core extends Forum {
 			{
 				continue;
 			}
-							
-			$title	 = $email_tit;
-			$message = $email_msg;
-			$title	 = str_replace('{name_of_recipient}', $row['screen_name'], $title);
-			$message = str_replace('{name_of_recipient}', $row['screen_name'], $message);
-			$title	 = str_replace('{notification_removal_url}', $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$row['hash'].'&board_id='.$this->preferences['board_id'], $title);
-			$message = str_replace('{notification_removal_url}', $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$row['hash'].'&board_id='.$this->preferences['board_id'], $message);
-
+			
+			$personalized_swap = array(
+				'name_of_recipient'			=> $row['screen_name'],
+				'notification_removal_url'	=> $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$row['hash'].'&board_id='.$this->preferences['board_id']
+			);
+			
+			$title	 = $this->EE->functions->var_swap($email_tit, $personalized_swap);
+			$message = $this->EE->functions->var_swap($email_msg, $personalized_swap);
+			
 			// Load the text helper
 			$this->EE->load->helper('text');
 						
@@ -6588,7 +6614,12 @@ class Forum_Core extends Forum {
 			$this->EE->email->send();		
 			
 			// Flip notification flag
-			$this->EE->db->query("UPDATE exp_forum_subscriptions SET notification_sent = 'y' WHERE topic_id = '{$data['topic_id']}' AND member_id = '{$row['member_id']}'");
+			$this->EE->db->set('notification_sent', 'y');
+			$this->EE->db->where(array(
+				'topic_id'	=> $data['topic_id'],
+				'member_id'	=> $row['member_id']
+			));
+			$this->EE->db->update('forum_subscriptions');
 		}			
 
 		$this->EE->functions->redirect($redirect);

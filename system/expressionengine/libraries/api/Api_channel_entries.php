@@ -1738,6 +1738,12 @@ class Api_channel_entries extends Api {
 			}
 			else
 			{
+				// In the event there's no original_entry_id assign it to 0
+				if ( ! isset($meta['original_entry_id']))
+				{
+					$meta['original_entry_id'] = 0;
+				}
+				
 				$this->EE->db->insert('channel_entries_autosave', $meta);
 				$this->entry_id = $this->EE->db->insert_id();
 			}

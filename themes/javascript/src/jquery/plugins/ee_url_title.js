@@ -19,11 +19,13 @@
 
 (function ($) {
 	
+	EE.namespace('EE.publish');
 	$.fn.ee_url_title = function (url_title) {
 		
 		return this.each(function () {
 			var defaultTitle  = (EE.publish.default_entry_title) ? EE.publish.default_entry_title : '',
 				separator     = (EE.publish.word_separator) ? EE.publish.word_separator : '_',
+				foreignChars  = (EE.publish.foreignChars) ? EE.publish.foreignChars : {},
 				newText       = $(this).val() || '',
 				multiReg      = new RegExp(separator + '{2,}', 'g'),
 				separatorReg  = (separator !== '_') ? (/\_/g) : (/\-/g),
@@ -49,8 +51,8 @@
 				if (c >= 32 && c < 128) {
 					newTextTemp += newText.charAt(pos);
 				}
-				else if (c in EE.publish.foreignChars) {
-					newTextTemp += EE.publish.foreignChars[c];
+				else if (c in foreignChars) {
+					newTextTemp += foreignChars[c];
 				}
 			}
 		
@@ -66,7 +68,7 @@
 			newText = newText.replace(/\.+$/g, '');
 			
 			if (url_title) {
-				url_title.val(newText.substring(0, 75));
+				$(url_title).val(newText.substring(0, 75));
 			}
 		});
 	};	

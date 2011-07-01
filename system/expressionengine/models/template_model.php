@@ -638,7 +638,7 @@ class Template_model extends CI_Model {
 						
 						'comments_opened_notification'					=> array('name_of_recipient', 'channel_name', 'entry_title', 'entry_id', 'url_title', 'channel_id', 'comment_url_title_auto_path', 'comment_url', 'notification_removal_url', 'site_name', 'site_url', 'total_comments_added', 'comments', 'name_of_commenter', 'comment_id', 'comment', '/comments'),
 
-						'forum_post_notification'				=> array('name_of_recipient', 'forum_name', 'title', 'thread_url', 'body', 'post_url'),
+						'forum_post_notification'				=> array('name_of_recipient', 'name_of_poster', 'forum_name', 'title', 'thread_url', 'body', 'post_url'),
 						'private_message_notification'			=> array('sender_name', 'recipient_name','message_subject', 'message_content', 'site_url', 'site_name'),
 						'pm_inbox_full'							=> array('sender_name', 'recipient_name', 'pm_storage_limit','site_url', 'site_name'),
 						'forum_moderation_notification'			=> array('name_of_recipient', 'forum_name', 'moderation_action', 'title', 'thread_url'),

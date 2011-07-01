@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.2.0';	// The version being installed
+	var $version			= '2.2.1';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.1.6';	// Minimum version required to run EE
 	var $full_install		= FALSE;	// Set dynamically.  Determines which version is being installed  (full or core)
@@ -1330,6 +1330,7 @@ PAPAYA;
 		}
 
 		// is there a survey for this version?
+		/*
 		if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.EXT))
 		{
 			$this->load->library('survey');
@@ -1373,6 +1374,7 @@ PAPAYA;
 				$this->survey->send_survey($this->next_update);
 			}
 		}
+		*/
 		
 		if (($status = $UD->{$method}()) === FALSE)
 		{
@@ -2323,9 +2325,10 @@ PAPAYA;
 
 		foreach (array('avatar_path', 'photo_path', 'signature_img_path', 'pm_path', 'captcha_path', 'theme_folder_path') as $path)
 		{
-			$this->userdata[$path] = rtrim(realpath($this->userdata[$path]), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+			$prefix = ($path != 'theme_folder_path') ? $this->root_theme_path : '';
+			$this->userdata[$path] = rtrim(realpath($prefix.$this->userdata[$path]), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 		}
-	
+			
 		$config = array(
 						'app_version'					=>	$this->userdata['app_version'],
 						'license_number'				=>	trim($this->userdata['license_number']),
@@ -2348,8 +2351,8 @@ PAPAYA;
 						'enable_db_caching'				=>  'n',
 						'enable_sql_caching'			=>  'n',
 						'force_query_string'     		=>  'n',
-						'show_profiler'           		=>  'y',
-						'template_debugging'			=>	'y',
+						'show_profiler'           		=>  'n',
+						'template_debugging'			=>	'n',
 						'include_seconds'				=>	'n',
 						'cookie_domain'         		=>  '',
 						'cookie_path'           		=>  '',

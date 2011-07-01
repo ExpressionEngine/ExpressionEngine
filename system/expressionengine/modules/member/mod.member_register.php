@@ -277,9 +277,9 @@ class Member_register extends Member {
 
 		// Set the default globals
 		$default = array(
-					'username', 'password', 'password_confirm', 'email', 
-					'screen_name', 'url', 'location'
-				);
+			'username', 'password', 'password_confirm', 'email', 
+			'screen_name', 'url', 'location'
+		);
 
 		foreach ($default as $val)
 		{
@@ -297,24 +297,22 @@ class Member_register extends Member {
 			require APPPATH.'libraries/Validate.php';
 		}
 
-		$VAL = new EE_Validate(
-								array(
-										'member_id'			=> '',
-										'val_type'			=> 'new', // new or update
-										'fetch_lang' 		=> TRUE,
-										'require_cpw' 		=> FALSE,
-									 	'enable_log'		=> FALSE,
-										'username'			=> $_POST['username'],
-										'cur_username'		=> '',
-										'screen_name'		=> $_POST['screen_name'],
-										'cur_screen_name'	=> '',
-										'password'			=> $_POST['password'],
-									 	'password_confirm'	=> $_POST['password_confirm'],
-									 	'cur_password'		=> '',
-									 	'email'				=> $_POST['email'],
-									 	'cur_email'			=> ''
-									 )
-							);
+		$VAL = new EE_Validate(array(
+			'member_id'			=> '',
+			'val_type'			=> 'new', // new or update
+			'fetch_lang' 		=> TRUE,
+			'require_cpw' 		=> FALSE,
+		 	'enable_log'		=> FALSE,
+			'username'			=> $_POST['username'],
+			'cur_username'		=> '',
+			'screen_name'		=> $_POST['screen_name'],
+			'cur_screen_name'	=> '',
+			'password'			=> $_POST['password'],
+		 	'password_confirm'	=> $_POST['password_confirm'],
+		 	'cur_password'		=> '',
+		 	'email'				=> $_POST['email'],
+		 	'cur_email'			=> ''
+		 ));
 
 		$VAL->validate_username();
 		$VAL->validate_screen_name();
@@ -402,25 +400,6 @@ class Member_register extends Member {
 		}
 
 		// Assign the base query data
-		// Set member group
-
-		if ($this->EE->config->item('req_mbr_activation') == 'manual' OR 
-			$this->EE->config->item('req_mbr_activation') == 'email')
-		{
-			$data['group_id'] = 4;  // Pending
-		}
-		else
-		{
-			if ($this->EE->config->item('default_member_group') == '')
-			{
-				$data['group_id'] = 4;  // Pending
-			}
-			else
-			{
-				$data['group_id'] = $this->EE->config->item('default_member_group');
-			}
-		}
-
 		$data = array(
 			'username'		=> $this->EE->input->post('username'),
 			'password'		=> $this->EE->functions->hash($_POST['password']),
@@ -445,14 +424,33 @@ class Member_register extends Member {
 										$this->EE->config->item('default_site_dst') : $this->EE->config->item('daylight_savings')	
 		);
 		
+		// Set member group
+
+		if ($this->EE->config->item('req_mbr_activation') == 'manual' OR 
+			$this->EE->config->item('req_mbr_activation') == 'email')
+		{
+			$data['group_id'] = 4;  // Pending
+		}
+		else
+		{
+			if ($this->EE->config->item('default_member_group') == '')
+			{
+				$data['group_id'] = 4;  // Pending
+			}
+			else
+			{
+				$data['group_id'] = $this->EE->config->item('default_member_group');
+			}
+		}
+		
 		// Optional Fields
 
 		$optional = array(
-						'bio'			=> 'bio',
-						'language'		=> 'deft_lang',
-						'timezone'		=> 'server_timezone',
-						'time_format'	=> 'time_format'
-					);
+			'bio'			=> 'bio',
+			'language'		=> 'deft_lang',
+			'timezone'		=> 'server_timezone',
+			'time_format'	=> 'time_format'
+		);
 
 		foreach($optional as $key => $value)
 		{
@@ -633,13 +631,13 @@ class Member_register extends Member {
 			$add = ($mailinglist_subscribe !== TRUE) ? '' : '&mailinglist='.$_POST['mailinglist_subscribe'];
 
 			$swap = array(
-							'name'				=> $name,
-							'activation_url'	=> $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$data['authcode'].$forum_id.$add,
-							'site_name'			=> stripslashes($this->EE->config->item('site_name')),
-							'site_url'			=> $this->EE->config->item('site_url'),
-							'username'			=> $data['username'],
-							'email'				=> $data['email']
-						 );
+				'name'				=> $name,
+				'activation_url'	=> $this->EE->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$data['authcode'].$forum_id.$add,
+				'site_name'			=> stripslashes($this->EE->config->item('site_name')),
+				'site_url'			=> $this->EE->config->item('site_url'),
+				'username'			=> $data['username'],
+				'email'				=> $data['email']
+			 );
 
 			$template = $this->EE->functions->fetch_email_template('mbr_activation_instructions');
 			$email_tit = $this->_var_swap($template['title'], $swap);
@@ -664,44 +662,13 @@ class Member_register extends Member {
 		}
 		else
 		{
-			// Log user in
-			$expire = 60*60*24*182;
-
-			$this->EE->functions->set_cookie($this->EE->session->c_expire , time()+$expire, $expire);
-
-			// Create a new session
-			if ($this->EE->config->item('user_session_type') == 'cs' OR 
-				$this->EE->config->item('user_session_type') == 's')
-			{
-				$this->EE->session->sdata['session_id'] = $this->EE->functions->random();
-				$this->EE->session->sdata['member_id']  = $member_id;
-				$this->EE->session->sdata['last_activity'] = $this->EE->localize->now;
-				$this->EE->session->sdata['site_id']	= $this->EE->config->item('site_id');
-
-				$this->EE->functions->set_cookie($this->EE->session->c_session , $this->EE->session->sdata['session_id'], $this->EE->session->session_length);
-
-				$this->EE->db->query($this->EE->db->insert_string('exp_sessions', $this->EE->session->sdata));
-			}
-
-			// Update existing session variables
-			$this->EE->session->userdata['username']  = $data['username'];
-			$this->EE->session->userdata['member_id'] = $member_id;
-
-			// Update stats
-			$cutoff		= $this->EE->localize->now - (15 * 60);
-
-			$this->EE->db->query("DELETE FROM exp_online_users WHERE site_id = '".$this->EE->db->escape_str($this->EE->config->item('site_id'))."' AND ((ip_address = '".$this->EE->input->ip_address()."' AND member_id = '0') OR date < $cutoff)");
-
-			$data = array(
-							'member_id'		=> $this->EE->session->userdata('member_id'),
-							'name'			=> ($this->EE->session->userdata('screen_name') == '') ? $this->EE->session->userdata('username') : $this->EE->session->userdata('screen_name'),
-							'ip_address'	=> $this->EE->input->ip_address(),
-							'date'			=> $this->EE->localize->now,
-							'anon'			=> 'y',
-							'site_id'		=> $this->EE->config->item('site_id')
-						);
-
-			$this->EE->db->query($this->EE->db->update_string('exp_online_users', $data, array("ip_address" => $this->EE->input->ip_address(), "member_id" => $data['member_id'])));
+			// Log user in (the extra query is a little annoying)
+			$this->EE->load->library('auth');
+			$member_data_q = $this->EE->db->get_where('members', array('member_id' => $member_id));
+			
+			$incoming = new Auth_result($member_data_q->row());
+			$incoming->remember_me(60*60*24*182);
+			$incoming->start_session();
 
 			$message = lang('mbr_your_are_logged_in');
 		}
@@ -720,12 +687,13 @@ class Member_register extends Member {
 			$return = $this->EE->config->item('site_url');
 		}
 
-		$data = array(	'title' 	=> lang('mbr_registration_complete'),
-						'heading'	=> lang('thank_you'),
-						'content'	=> lang('mbr_registration_completed')."\n\n".$message,
-						'redirect'	=> '',
-						'link'		=> array($return, $site_name)
-					 );
+		$data = array(
+			'title' 	=> lang('mbr_registration_complete'),
+			'heading'	=> lang('thank_you'),
+			'content'	=> lang('mbr_registration_completed')."\n\n".$message,
+			'redirect'	=> '',
+			'link'		=> array($return, $site_name)
+		);
 
 		$this->EE->output->show_message($data);
 	}

@@ -332,8 +332,6 @@ class Filemanager {
 	}
 	
 	
-	
-	
 	// --------------------------------------------------------------------
 	
 	/**
@@ -439,54 +437,86 @@ class Filemanager {
 
 			$prefs['height'] = $dim['height'];
 			$prefs['width'] = $dim['width'];
+			$prefs['file_height'] = $prefs['height'];
+			$prefs['file_width'] = $prefs['width'];			
 		}
-
-
-		$config['width']			= $prefs['width'];
-		$config['height']			= $prefs['height'];
-
-		// If is image and exceeds max size- resize!
-		if (
-			($prefs['max_width'] > 0 && $prefs['width'] > $prefs['max_width']) OR 
-			($prefs['max_height'] > 0 && $prefs['height'] > $prefs['max_height'])
-		)
+		
+		if ( ! isset($prefs['max_width']))
 		{
-			$this->EE->load->library('image_lib');
-
-			$this->EE->image_lib->clear();
-
-			if ($prefs['max_width'] == 0)
-			{
-				$config['width'] = ($prefs['width']/$prefs['height'])*$prefs['max_height'];
-				$config['master_dim'] = 'height';
-			}
-			elseif ($prefs['max_height'] == 0)
-			{
-				// Old h/old w * new width
-				$config['height'] = ($prefs['height']/$prefs['width'])*$prefs['max_width'];
-				$config['master_dim'] = 'width';
-					
-			}
 			
-			unset($prefs['width']);
-			unset($prefs['height']);
-
-			// Resize
-		
-			$config['source_image']		= $file_path;
-			$config['maintain_ratio']	= TRUE;
-			$config['image_library']	= $this->EE->config->item('image_resize_protocol');
-			$config['library_path']		= $this->EE->config->item('image_library_path');
-
-			$this->EE->image_lib->initialize($config);
-				
-			if ( ! $this->EE->image_lib->resize())
-			{
-				return FALSE;
-			}
 			
 		}
 		
+		if ($prefs['max_width'] == 0 && $prefs['max_height'] == 0)
+		{
+			return $prefs;
+		}
+		
+		if ($prefs['width'] <= $prefs['max_width'] && $prefs['height'] <= $prefs['max_height'])
+		{
+			return $prefs;
+		}
+
+
+		$config['width']			= $prefs['max_width'];
+		$config['height']			= $prefs['max_height'];
+
+		$this->EE->load->library('image_lib');
+
+		$this->EE->image_lib->clear();
+
+		// If either h/w unspecified, calculate the other here
+		if ($prefs['max_width'] ==  0)
+		{
+			$config['width'] = ($prefs['width']/$prefs['height'])*$prefs['max_height'];
+		}
+		elseif ($prefs['max_height'] ==  0)
+		{
+			// Old h/old w * new width
+			$config['height'] = ($prefs['height']/$prefs['width'])*$prefs['max_width'];
+		}
+
+		unset($prefs['width']);
+		unset($prefs['height']);
+
+		// Set required memory
+		if ( ! $this->set_image_memory($file_path))
+		{
+			log_message('error', 'Insufficient Memory for Thumbnail Creation: '.$file_path);
+			return FALSE;
+		}
+			
+		// Resize
+		
+		$config['source_image']		= $file_path;
+		$config['maintain_ratio']	= TRUE;
+		$config['image_library']	= $this->EE->config->item('image_resize_protocol');
+		$config['library_path']		= $this->EE->config->item('image_library_path');
+
+		$this->EE->image_lib->initialize($config);
+				
+		if ( ! $this->EE->image_lib->resize())
+		{
+			return FALSE;
+		}
+		
+		$new_image = $this->EE->image_lib->get_image_properties('', TRUE);
+
+		// We need to reset some prefs
+		if ($new_image)
+		{
+			$this->EE->load->helper('number');
+			$f_size =  get_file_info($file_path);
+			
+			$prefs['file_size'] = ($f_size) ? $f_size['size'] : 0;
+
+			$prefs['file_height'] = $new_image['height'];	
+			$prefs['file_width'] = $new_image['width'];	
+			$prefs['file_hw_original'] = $new_image['height'].' '.$new_image['width'];		
+			$prefs['height'] = $new_image['height'];
+			$prefs['width'] = $new_image['width'];
+		}
+
 		return $prefs;
 	}
 
@@ -610,7 +640,7 @@ class Filemanager {
 						)
 					),
 					array(
-						'class' => 'previous visualEscapism'
+						'class' => 'previous'
 					)
 				)
 			),
@@ -694,21 +724,35 @@ class Filemanager {
 		
 		switch($type)
 		{
-			case 'setup':				$this->setup();
+			case 'setup':
+				$this->setup();
 				break;
-			case 'setup_upload':		$this->setup_upload();
+			case 'setup_upload':
+				$this->setup_upload();
 				break;
-			case 'directory':			$this->directory($this->EE->input->get('directory'), TRUE);
+			case 'directory':
+				$this->directory($this->EE->input->get('directory'), TRUE);
 				break;
-			case 'directories':			$this->directories(TRUE);
+			case 'directories':
+				$this->directories(TRUE);
 				break;
-			case 'directory_contents':	$this->directory_contents();
+			case 'directory_contents':	
+				$this->directory_contents();
 				break;
-			case 'upload':				$this->upload_file($this->EE->input->get_post('upload_dir'), FALSE, TRUE);
+			case 'directory_info':
+				$this->directory_info();
 				break;
-			case 'edit_image':			$this->edit_image();
+			case 'file_info':
+				$this->file_info();
 				break;
-			case 'ajax_create_thumb':	$this->ajax_create_thumb();
+			case 'upload':
+				$this->upload_file($this->EE->input->get_post('upload_dir'), FALSE, TRUE);
+				break;
+			case 'edit_image':
+				$this->edit_image();
+				break;
+			case 'ajax_create_thumb':
+				$this->ajax_create_thumb();
 				break;
 			default:
 				exit('Invalid Request');
@@ -727,7 +771,7 @@ class Filemanager {
 	function _initialize($config)
 	{
 		// Callbacks!
-		foreach(array('directories', 'directory_contents', 'upload_file') as $key)
+		foreach(array('directories', 'directory_contents', 'directory_info', 'file_info', 'upload_file') as $key)
 		{
 			$this->config[$key.'_callback'] = isset($config[$key.'_callback']) ? $config[$key.'_callback'] : array($this, '_'.$key);
 		}
@@ -778,9 +822,9 @@ class Filemanager {
 		$vars['filemanager_directories'] = $this->directories(FALSE);
 
 		// Generate the filters
-		$vars['selected_filters'] = form_dropdown('selected', array('all' => 'all', 'selected' => 'selected', 'unselected' => 'unselected'), 'all');
-		$vars['category_filters'] = form_dropdown('category', array());
-		$vars['view_filters']     = form_dropdown('view_type', array('list' => 'a list', 'thumb' => 'thumbnails'), 'list', 'id="view_type"');
+		// $vars['selected_filters'] = form_dropdown('selected', array('all' => lang('all'), 'selected' => lang('selected'), 'unselected' => lang('unselected')), 'all');
+		// $vars['category_filters'] = form_dropdown('category', array());
+		$vars['view_filters']     = form_dropdown('view_type', array('list' => lang('list'), 'thumb' => lang('thumbnails')), 'list', 'id="view_type"');
 
 		$filebrowser_html = $this->EE->load->ee_view('_shared/file/browser', $vars, TRUE);
 		
@@ -891,10 +935,13 @@ class Filemanager {
 	 */
 	function directory_contents()
 	{
-		$dir_id = $this->EE->input->get('directory');
+		$dir_id = $this->EE->input->get('directory_id');
 		$dir = $this->directory($dir_id, FALSE, TRUE);
+		
+		$offset	= $this->EE->input->get('offset');
+		$limit	= $this->EE->input->get('limit');
 
-		$data = $dir ? call_user_func($this->config['directory_contents_callback'], $dir) : array();
+		$data = $dir ? call_user_func($this->config['directory_contents_callback'], $dir, $limit, $offset) : array();
 
 		if (count($data) == 0)
 		{
@@ -910,6 +957,52 @@ class Filemanager {
 			}
 			
 			$data['id'] = $dir_id;
+			echo $this->EE->javascript->generate_json($data, TRUE);
+		}
+		exit;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get the quantities for both files and images within a directory
+	 */	
+	function directory_info()
+	{
+		$dir_id = $this->EE->input->get('directory_id');
+		$dir = $this->directory($dir_id, FALSE, TRUE);
+
+		$data = $dir ? call_user_func($this->config['directory_info_callback'], $dir) : array();
+		
+		if (count($data) == 0)
+		{
+			echo '{}';
+		}
+		else
+		{
+			$data['id'] = $dir_id;
+			echo $this->EE->javascript->generate_json($data, TRUE);
+		}
+		exit;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get the file information for an individual file (by ID)
+	 */
+	function file_info()
+	{
+		$file_id = $this->EE->input->get('file_id');
+		
+		$data = $file_id ? call_user_func($this->config['file_info_callback'], $file_id) : array();
+		
+		if (count($data) == 0)
+		{
+			echo '{}';
+		}
+		else
+		{
 			echo $this->EE->javascript->generate_json($data, TRUE);
 		}
 		exit;
@@ -1430,6 +1523,13 @@ class Filemanager {
 			
 			if ($config['wm_type'] == 'text')
 			{
+				// If dropshadow not enabled, let's blank the related values
+				if (isset($data['wm_use_drop_shadow']) && $data['wm_use_drop_shadow'] == 'n')
+				{
+					$data['wm_shadow_color'] = '';
+					$data['wm_shadow_distance'] = '';
+				}
+
 				foreach ($t_type_prefs as $name)
 				{
 					if (isset($data[$name]) && $data[$name] != '')
@@ -1509,12 +1609,10 @@ class Filemanager {
 	 * @access	private
 	 * @return	mixed	directory list
 	 */
-	function _directory_contents($dir)
+	function _directory_contents($dir, $limit, $offset)
 	{
 		return array(
-			'url' => $dir['url'], 
-			'files' => $this->_get_files($dir), 
-			'categories' => $this->_get_category_dropdown($dir)
+			'files' => $this->_get_files($dir, $limit, $offset)
 		);
 	}
 	
@@ -1524,16 +1622,30 @@ class Filemanager {
 	/**
 	 * Gets the files for a particular directory
 	 * Also, adds short name and file size
+	 * 
+	 * @param array $dir Associative array containg directory information
+	 * @param integer $limit Number of files to retrieve
+	 * @param integer $offset Where to start
 	 *
 	 * @access private
 	 * @return array	List of files
 	 */
-	private function _get_files($dir)
+	private function _get_files($dir, $limit = 15, $offset = 0)
 	{
 		$this->EE->load->model('file_model');
 		$this->EE->load->helper(array('text', 'number'));
 		
-		$files = $this->EE->file_model->get_files($dir['id'], array('type' => $dir['allowed_types']));
+		$files = $this->EE->file_model->get_files(
+			$dir['id'], 
+			array(
+				'type' => $dir['allowed_types'],
+				'order' => array(
+					'file_name' => 'asc'
+				),
+				'limit' => $limit,
+				'offset' => $offset
+			)
+		);
 		$files = $files['results']->result_array();
 
 		foreach ($files as &$file)
@@ -1623,6 +1735,50 @@ class Filemanager {
 	// --------------------------------------------------------------------
 	
 	/**
+	 * Directory Info Callback
+	 * 
+	 * Returns the file count, image count and url of the directory
+	 * 
+	 * @param array $dir Directory info associative array
+	 */
+	private function _directory_info($dir)
+	{
+		$this->EE->load->model('file_model');
+		
+		return array(
+			'url' 			=> $dir['url'],
+			'file_count'	=> $this->EE->file_model->count_files($dir['id']),
+			'image_count'	=> $this->EE->file_model->count_images($dir['id'])
+		);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * File Info Callback
+	 * 
+	 * Returns the file information for use when placing a file
+	 * 
+	 * @param integer $file_id The File's ID
+	 */
+	private function _file_info($file_id)
+	{
+		$this->EE->load->model('file_model');
+		
+		$file_info = $this->EE->file_model->get_files_by_id($file_id);
+		$file_info = $file_info->row_array();
+		
+		$file_info['is_image'] = (strncmp('image', $file_info['mime_type'], '5') == 0) ? TRUE : FALSE;
+		
+		$thumb_info = $this->get_thumb($file_info['file_name'], $file_info['upload_location_id']);
+		$file_info['thumb'] = $thumb_info['thumb'];
+		
+		return $file_info;
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
 	 * Upload File Callback
 	 *
 	 * The function that handles the file upload logic (allowed upload? etc.)
@@ -1640,7 +1796,7 @@ class Filemanager {
 	 * @param	string	$field_name	Provide the field name in case it's a custom field
 	 * @return 	array 	Array of file_data sent to Filemanager->save_file
 	 */
-	function _upload_file($dir, $field_name)
+	private function _upload_file($dir, $field_name)
 	{
 		// --------------------------------------------------------------------
 		// Make sure the file is allowed
@@ -1724,7 +1880,7 @@ class Filemanager {
 		
 		// (try to) Set proper permissions
 		@chmod($file['full_path'], DIR_WRITE_MODE);
-
+		
 
 		// --------------------------------------------------------------------
 		// Add file the database
@@ -1741,6 +1897,7 @@ class Filemanager {
 			);
 		}
 		
+
 		$thumb_info = $this->get_thumb($file['file_name'], $dir['id']);
 		
 		// Build list of information to save and return
@@ -1764,8 +1921,30 @@ class Filemanager {
 			'file_size'				=> $file['file_size'] * 1024, // Bring it back to Bytes from KB
 			'file_height'			=> $file['image_height'],
 			'file_width'			=> $file['image_width'],
-			'file_hw_original'		=> $file['image_height'].' '.$file['image_width']
+			'file_hw_original'		=> $file['image_height'].' '.$file['image_width'],
+			'max_width'				=> $dir['max_width'],
+			'max_height'			=> $dir['max_height']
 		);
+		
+		
+		// Check to see if its an editable image, if it is, check max h/w
+		if ($this->is_editable_image($file['full_path'], $file['file_type']))
+		{
+		 	$file_data = $this->max_hw_check($file['full_path'], $file_data);
+		
+			if ( ! $file_data)
+			{
+				return $this->_upload_error(
+					lang('exceeds_max_dimensions'),
+					array(
+						'file_name'		=> $file['file_name'],
+						'directory_id'	=> $dir['id']
+						)
+					);
+			}
+		}		
+		
+		
 		
 		// Save file to database
 		$saved = $this->save_file($file['full_path'], $dir['id'], $file_data);
