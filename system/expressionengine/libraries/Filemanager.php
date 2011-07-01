@@ -1257,7 +1257,7 @@ class Filemanager {
 			if (($force_master_dim == 'height' && $prefs['height'] < $size['height']) OR 
 				($force_master_dim == 'width' && $prefs['width'] < $size['width']) OR
 				($force_master_dim == FALSE && $prefs['width'] < $size['width']) OR 
-				($force_master_dim == FALSE && $prefs['width'] < $size['width']))
+				($force_master_dim == FALSE && $prefs['height'] < $size['height']))
 			{
 				copy($config['source_image'],$config['new_image']);
 			}
