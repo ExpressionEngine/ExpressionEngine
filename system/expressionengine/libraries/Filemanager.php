@@ -425,6 +425,8 @@ class Filemanager {
 	 */	 
 	function max_hw_check($file_path, $prefs)
 	{
+		$force_master_dim = FALSE;
+		
 		// Make sure height and width are set
 		if ( ! isset($prefs['height']) OR ! isset($prefs['width']))
 		{
@@ -441,22 +443,11 @@ class Filemanager {
 			$prefs['file_width'] = $prefs['width'];			
 		}
 		
-		if ( ! isset($prefs['max_width']))
-		{
-			
-			
-		}
-		
 		if ($prefs['max_width'] == 0 && $prefs['max_height'] == 0)
 		{
 			return $prefs;
 		}
 		
-		if ($prefs['width'] <= $prefs['max_width'] && $prefs['height'] <= $prefs['max_height'])
-		{
-			return $prefs;
-		}
-
 
 		$config['width']			= $prefs['max_width'];
 		$config['height']			= $prefs['max_height'];
@@ -469,12 +460,24 @@ class Filemanager {
 		if ($prefs['max_width'] ==  0)
 		{
 			$config['width'] = ($prefs['width']/$prefs['height'])*$prefs['max_height'];
+			$force_master_dim = 'height';
 		}
 		elseif ($prefs['max_height'] ==  0)
 		{
 			// Old h/old w * new width
 			$config['height'] = ($prefs['height']/$prefs['width'])*$prefs['max_width'];
+			$force_master_dim = 'width';
 		}
+
+		// If the original is smaller than the thumb hxw, we'll make a copy rather than upsize
+		if (($force_master_dim == 'height' && $prefs['height'] < $prefs['max_height']) OR 
+				($force_master_dim == 'width' && $prefs['width'] < $prefs['max_width']) OR
+				($force_master_dim == FALSE && $prefs['width'] < $prefs['max_width']) OR 
+				($force_master_dim == FALSE && $prefs['height'] < $prefs['max_height']))
+		{
+			return $prefs;
+		}
+
 
 		unset($prefs['width']);
 		unset($prefs['height']);
@@ -1254,7 +1257,7 @@ class Filemanager {
 			if (($force_master_dim == 'height' && $prefs['height'] < $size['height']) OR 
 				($force_master_dim == 'width' && $prefs['width'] < $size['width']) OR
 				($force_master_dim == FALSE && $prefs['width'] < $size['width']) OR 
-				($force_master_dim == FALSE && $prefs['width'] < $size['width']))
+				($force_master_dim == FALSE && $prefs['height'] < $size['height']))
 			{
 				copy($config['source_image'],$config['new_image']);
 			}
