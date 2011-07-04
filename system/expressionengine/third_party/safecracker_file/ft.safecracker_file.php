@@ -367,7 +367,7 @@ class Safecracker_file_ft extends File_ft
 		{
 			$this->EE->session->cache['safecracker']['add_js'] = TRUE;
 			
-			$this->EE->javascript->output('$(".safecracker_file_remove_button").live("click",function(){fs=$(this).parents(".safecracker_file_set");fs.find(".safecracker_file_thumb, .safecracker_file_input, .safecracker_file_existing").toggle();fs.find(".safecracker_file_input input").attr("disabled","");fs.find(".safecracker_file_remove input").click();h=fs.find(".safecracker_file_hidden input").val();p=(h&&$(this).is(":checked"))?h:"NULL";fs.find(".safecracker_file_placeholder_input input").val(p);return false;});');
+			$this->EE->javascript->output('$(".safecracker_file_remove_button").live("click",function(){fs=$(this).parents(".safecracker_file_set");fs.find(".safecracker_file_thumb, .safecracker_file_input, .safecracker_file_existing").toggle();fs.find(".safecracker_file_input input").attr("disabled", false);fs.find(".safecracker_file_remove input").click();h=fs.find(".safecracker_file_hidden input").val();p=(h&&$(this).is(":checked"))?h:"NULL";fs.find(".safecracker_file_placeholder_input input").val(p);return false;});');
 			$this->EE->javascript->output('$(".safecracker_file_undo_button").live("click",function(){fs=$(this).parents(".safecracker_file_set");fs.find(".safecracker_file_thumb, .safecracker_file_input, .safecracker_file_existing").toggle();fs.find(".safecracker_file_input input").attr("disabled","disabled");fs.find(".safecracker_file_remove input").click();return false;});');
 			/*
 				$(".safecracker_file_remove_button").click(function(){
