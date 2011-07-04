@@ -970,7 +970,18 @@ class Safecracker_lib
 		
 		//add loaded JS
 		$this->EE->javascript->compile();
-		
+
+		if ( ! empty($this->EE->jquery->jquery_code_for_compile))
+		{
+			$script = '$(document).ready(function() {' . "\n";
+			$script .= implode('', $this->EE->jquery->jquery_code_for_compile);
+			$script .= '});';
+			$script = preg_replace('/\s*eeSpell\.init\(\);\s*/', '', $script);
+
+			$this->head .= $this->EE->javascript->inline($script);
+			
+			$this->EE->jquery->jquery_code_for_compile = array();
+		}
 		//if (isset($this->EE->load->_ci_cached_vars['script_foot']))
 		//{
 			//$script = $this->EE->load->_ci_cached_vars['script_foot'];
