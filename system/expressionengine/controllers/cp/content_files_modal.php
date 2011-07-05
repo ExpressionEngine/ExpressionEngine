@@ -33,7 +33,7 @@ class Content_files_modal extends CI_Controller {
 		parent::__construct();
 
 		// Permissions
-		if ( ! $this->cp->allowed_group('can_access_content', 'can_access_files'))
+		if ( ! $this->cp->allowed_group('can_access_content'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
