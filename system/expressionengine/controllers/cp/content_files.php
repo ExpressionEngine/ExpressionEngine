@@ -134,7 +134,8 @@ class Content_files extends CI_Controller {
 				'tableColumns'	=> $table_columns
 			),
 			'lang' => array(
-				'noEntries'		=> $no_files_message
+				'noEntries'		=> $no_files_message,
+				'upload_file'	=> lang('upload_file')
 			),
 			'filebrowser' => array(
 				'endpoint_url'	=> 'C=content_publish&M=filemanager_actions',

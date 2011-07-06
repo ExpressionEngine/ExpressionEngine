@@ -102,7 +102,7 @@ $.ee_filemanager.file_uploader = function() {
 				$('#file_uploader').dialog('option', 'position', 'center');
 			};
 		},
-		trigger: '#action_nav a:contains(Upload File)'
+		trigger: '#action_nav a:contains(' + EE.lang.upload_file + ')'
 	});
 };
 	
