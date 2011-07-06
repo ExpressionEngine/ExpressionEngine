@@ -310,9 +310,6 @@ class Content_files extends CI_Controller {
 		}
 
 		// Setup get/post vars in class vars
-		$this->_fetch_get_post_vars();
-
-		// Setup get/post vars in class vars
 		$get_post = $this->_fetch_get_post_vars();
 
 		$allowed_dirs = $this->_setup_allowed_dirs();
@@ -351,12 +348,9 @@ class Content_files extends CI_Controller {
 			'no_clue'		=> TRUE, 
 			'search_in'		=> ($get_post['search_in'] != '') ? $get_post['search_in'] : 'file_name'
 		);
-		print_r($_POST);
-		print_r($_GET);
-		print_r($params);
-		print_r($get_post);
+
 		$filtered_entries = $this->file_model->get_files($dirs, $params);
-		echo $this->db->last_query(); exit;
+
 		$files = $filtered_entries['results'];
 		$total_filtered = $filtered_entries['filter_count'];
 

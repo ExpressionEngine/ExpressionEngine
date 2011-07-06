@@ -147,7 +147,7 @@ class File_model extends CI_Model {
 					continue;
 				}
 				
-				$this->db->order_by($key, $val);
+				$this->db->order_by('files.'.$key, $val);
 			}
 		}
 		else
