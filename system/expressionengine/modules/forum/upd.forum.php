@@ -26,7 +26,7 @@
 
 class Forum_upd {
 
-	var $version			= '3.1.4';
+	var $version			= '3.1.5';
 	
 	function Forum_upd()
 	{
@@ -915,15 +915,11 @@ class Forum_upd {
 			$this->_do_312_update();
 		}
 
-		if ($current < '3.1.3')
-		{
-			// Nothing to see here!
-		}
+		if ($current < '3.1.3') { }
 
-		if ($current < '3.1.4')
-		{
-			// Nothing to see here!
-		}
+		if ($current < '3.1.4') { }
+
+		if ($current < '3.1.5') { }
 		
 		return TRUE;		
 		
