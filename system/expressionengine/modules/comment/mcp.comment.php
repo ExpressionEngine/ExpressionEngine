@@ -35,6 +35,7 @@ class Comment_mcp {
 	protected $_limit;
 	protected $_offset;
 	protected $_order_by;
+	protected $_entry_id;
 
 	/**
 	 * Constructor
@@ -489,6 +490,11 @@ class Comment_mcp {
 			
 			$this->EE->db->where('comment_date >', (int) $date_range);			
 		}
+
+		if ($this->_entry_id)
+		{
+			$this->EE->db->where('entry_id', (int) $this->_entry_id);		
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -535,6 +541,7 @@ class Comment_mcp {
 		$this->_offset = ($offset = $this->EE->input->get('offset')) ? $offset : 0;
 		$this->_dir = ($dir = $this->EE->input->get('dir')) ? $dir : 'desc'; 
 		$this->_order_by = ($ob = $this->EE->input->get('order_by')) ? $ob : 'comment_date';
+		$this->_entry_id = $this->EE->input->get('entry_id');
 	}
 
 	// --------------------------------------------------------------------
