@@ -128,7 +128,7 @@ class Cp {
 								'avatar_filename', 'avatar_width', 
 								'avatar_height', 'screen_name', 'notepad', 'quick_links'));
 
-		$notepad_content = ($user_q->row('notepad')) ? '' : $user_q->row('notepad');
+		$notepad_content = ($user_q->row('notepad')) ? $user_q->row('notepad') : '';
 
 		// Global view variables
 
