@@ -46,7 +46,7 @@ class File_model extends CI_Model {
 	 */
 	function get_files($dir_id = array(), $parameters = array())
 	{
-	
+		
 		// Setup default parameters
 		$parameters = array_merge(array(
 			'type' => 'all',
@@ -77,7 +77,7 @@ class File_model extends CI_Model {
 		
 		$this->db->where('files.site_id', $this->config->item('site_id'));
 		
-		if (isset($parameters['cat_id']) && ($parameters['cat_id'] == 'none' OR $parameters['cat_id']) && is_numeric($parameters['cat_id']))
+		if (isset($parameters['cat_id']) && $parameters['cat_id'] != 'none' && is_numeric($parameters['cat_id']))
 		{
 			$this->db->join('file_categories', 'exp_files.file_id = exp_file_categories.file_id', 'left');
 			$this->db->where('cat_id', $parameters['cat_id']);
@@ -152,7 +152,7 @@ class File_model extends CI_Model {
 		}
 		else
 		{
-			$this->db->order_by('upload_date DESC, file_id DESC');
+			$this->db->order_by('upload_date DESC, files.file_id DESC');
 		}
 		
 		$return_data['results'] = $this->db->get('files');

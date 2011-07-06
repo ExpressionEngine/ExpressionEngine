@@ -96,7 +96,8 @@ class Content_files extends CI_Controller {
 		// both filebrowser and fileuploader need to be loaded because 
 		// fileuploader depends on filebrowser's methods
 		$this->cp->add_js_script(array(
-			'plugin'	=> array('overlay', 'overlay.apple', 'ee_filebrowser', 'ee_fileuploader', 'dataTables', 'tmpl'),
+			'plugin'	=> array('overlay', 'overlay.apple', 'ee_filebrowser', 
+								 'ee_fileuploader', 'dataTables', 'tmpl'),
 			'file'		=> 'cp/files/file_manager_home',
 			'ui' 		=> array('datepicker', 'dialog')
 		));
@@ -168,7 +169,7 @@ class Content_files extends CI_Controller {
 			$allowed_dirs[] = $k;
 		}
 		
-		$selected_dir = ($selected_dir = $this->input->get_post('directory')) ? $selected_dir : NULL;
+		$selected_dir = ($selected_dir = $this->input->get_post('dir_id')) ? $selected_dir : NULL;
 
 		// We need this for the filter, so grab it now
 		$cat_form_array = $this->api_channel_categories->category_form_tree($this->nest_categories);
@@ -180,7 +181,7 @@ class Content_files extends CI_Controller {
 		}
 
 		// Cat filter
-		$cat_group = ($selected_dir !== NULL) ? $this->_upload_dirs[$selected_dir]['cat_group']: '';
+		$cat_group = isset($get_post['cat_id']) ? $get_post['cat_id'] : NULL;
 		$category_options = $this->category_filter_options($cat_group, $cat_form_array, count($allowed_dirs));
 
 		// Date range pull-down menu
@@ -223,7 +224,7 @@ class Content_files extends CI_Controller {
 			$order = array();
 
 			$params = array(
-				'category' 		=> $get_post['cat_id'], 
+				'cat_id' 		=> $get_post['cat_id'], 
 				'type' 			=> $get_post['type'], 
 				'per_page' 		=> $get_post['per_page'], 
 				'offset'		=> $get_post['offset'],
@@ -341,7 +342,7 @@ class Content_files extends CI_Controller {
 		}
 		
 		$params = array(
-			'category' 		=> $get_post['cat_id'], 
+			'cat_id' 		=> $get_post['cat_id'], 
 			'type'			=> $get_post['type'], 
 			'per_page'		=> $get_post['per_page'], 
 			'offset'		=> $get_post['offset'],
@@ -350,9 +351,12 @@ class Content_files extends CI_Controller {
 			'no_clue'		=> TRUE, 
 			'search_in'		=> ($get_post['search_in'] != '') ? $get_post['search_in'] : 'file_name'
 		);
-		
+		print_r($_POST);
+		print_r($_GET);
+		print_r($params);
+		print_r($get_post);
 		$filtered_entries = $this->file_model->get_files($dirs, $params);
-
+		echo $this->db->last_query(); exit;
 		$files = $filtered_entries['results'];
 		$total_filtered = $filtered_entries['filter_count'];
 
