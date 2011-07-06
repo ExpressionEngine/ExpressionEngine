@@ -979,8 +979,8 @@ class Forum_Core extends Forum {
 		$this->EE->load->library('pagination');
 
 		$config = array(
-			'first_page'		=> lang('first'),
-			'last_page'			=> lang('last'),
+			'first_link'		=> lang('first'),
+			'last_link'			=> lang('last'),
 			'next_link'			=> lang('next'),
 			'prev_link'			=> lang('previous'),
 			'first_tag_open'	=> '<td><div class="paginate">',
@@ -2381,7 +2381,7 @@ class Forum_Core extends Forum {
 			}
 		}
 
-		$str = ($pagination = '') ? $this->deny_if('paginate', $str, '&nbsp;') :
+		$str = ($pagination == '') ? $this->deny_if('paginate', $str, '&nbsp;') :
 										$this->allow_if('paginate', $str);		
 		
 		// Fetch the topics														
