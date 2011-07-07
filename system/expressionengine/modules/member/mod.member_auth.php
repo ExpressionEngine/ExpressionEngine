@@ -113,7 +113,7 @@ class Member_auth extends Member {
 						$this->EE->session->userdata('session_id') : 0;
 		$username = $this->EE->input->post('username');
 		$password = $this->EE->input->post('password');
-		var_dump($multi, $sites_array); exit;
+
 		if ( ! $multi && ! ($username && $password))
 		{
 			return $this->EE->output->show_user_error('general', lang('mbr_form_empty'));
@@ -160,7 +160,7 @@ class Member_auth extends Member {
 		}
 		
 		// More sites?
-		if ($sites && ! $this->EE->config->item('allow_multi_logins') == 'n')
+		if ($sites && $this->EE->config->item('allow_multi_logins') == 'y')
 		{
 			$this->_redirect_next_site($sites, $orig, $current);
 		}
@@ -306,7 +306,9 @@ class Member_auth extends Member {
 		$current = $this->EE->functions->fetch_site_index();
 		$orig = array_search($current, $sites);
 		
-		if ($cur == $orig)
+		$next = 1;
+		
+		if ($current == $orig)
 		{
 			$next++;
 		}
@@ -314,9 +316,14 @@ class Member_auth extends Member {
 		// Do we have another?
 		if (isset($sites[$next]))
 		{
+			$action_id = $this->EE->db->select('action_id')
+									  ->where('class', 'Member')
+									  ->where('method', 'member_login')
+									  ->get('actions');
+
 			// next site
 			$next_qs = array(
-				'ACT'	=> $this->EE->functions->fetch_action_id('Member', 'member_login'),
+				'ACT'	=> $action_id->row('action_id'),
 				'cur'	=> $next,
 				'orig'	=> $orig,
 				'multi'	=> $this->EE->session->userdata('session_id'),
