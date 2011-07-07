@@ -109,10 +109,11 @@ class Member_auth extends Member {
 		$sites_array = explode('|', $sites);
 
 		// No username/password?  Bounce them...
-		$multi	  = ($this->EE->session->userdata('session_id') && count($sites) > 0) ? $this->EE->session->userdata('session_id') : 0;
+		$multi	  = ($this->EE->session->userdata('session_id') && count($sites_array) > 0) ? 
+						$this->EE->session->userdata('session_id') : 0;
 		$username = $this->EE->input->post('username');
 		$password = $this->EE->input->post('password');
-		
+		var_dump($multi, $sites_array); exit;
 		if ( ! $multi && ! ($username && $password))
 		{
 			return $this->EE->output->show_user_error('general', lang('mbr_form_empty'));
@@ -143,10 +144,9 @@ class Member_auth extends Member {
 			// Multiple Site Login
 			$incoming = $this->_do_multi_auth($sites);
 			$success = '_build_multi_success_message';
-			
+			// var_dump($incoming); exit;
 			$current = $this->EE->functions->fetch_site_index();
-			$orig = array_search($current, $sites);
-			var_dump('yes');
+			$orig = array_search($current, $sites_array);
 		}
 		else
 		{
@@ -155,7 +155,7 @@ class Member_auth extends Member {
 			$success = '_build_success_message';
 			
 			$current = $this->EE->functions->fetch_site_index();
-			$orig	 = array_search($current, explode('|', $sites));
+			$orig	 = array_search($current, $sites_array);
 			$current = $orig;
 		}
 		
@@ -165,7 +165,7 @@ class Member_auth extends Member {
 			$this->_redirect_next_site($sites, $orig, $current);
 		}
 		
-		$this->$success();
+		$this->$success($sites_array, $orig);
 	}
 
 	// --------------------------------------------------------------------
@@ -292,7 +292,7 @@ class Member_auth extends Member {
 		}
 		
 		// hook onto an existing session
-		$incoming->use_session_id($multi);
+		$incoming->use_session_id($this->EE->session->userdata('session_id'));
 		$incoming->start_session();
 		
 		return $incoming;
@@ -332,7 +332,7 @@ class Member_auth extends Member {
 
 	// --------------------------------------------------------------------
 
-	private function _build_multi_success_message()
+	private function _build_multi_success_message($sites, $orig)
 	{
 		// That was our last site, show the success message
 		
@@ -343,6 +343,8 @@ class Member_auth extends Member {
 			'redirect'	=> $sites[$orig],
 			'link'		=> array($sites[$orig], lang('back'))
 		);
+
+		var_dump($sites); exit;
 		
 		// Pull preferences for the original site
 		if (is_numeric($orig_id))
@@ -367,7 +369,7 @@ class Member_auth extends Member {
 	/**
 	 * Build Success Message
 	 */
-	private function _build_success_message()
+	private function _build_success_message($sites, $orig)
 	{
 		// Build success message
 		$site_name = ($this->EE->config->item('site_name') == '') ? lang('back') : stripslashes($this->EE->config->item('site_name'));
