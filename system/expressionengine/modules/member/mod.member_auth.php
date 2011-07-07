@@ -103,9 +103,13 @@ class Member_auth extends Member {
 			if ($this->EE->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------------*/
+		
+		// Figure out how many sites we're dealing with here
+		$sites = $this->EE->config->item('multi_login_sites');
+		$sites_array = explode('|', $sites);
 
 		// No username/password?  Bounce them...
-		$multi	  = $this->EE->input->get('multi');
+		$multi	  = ($this->EE->session->userdata('session_id') && count($sites) > 0) ? $this->EE->session->userdata('session_id') : 0;
 		$username = $this->EE->input->post('username');
 		$password = $this->EE->input->post('password');
 		
@@ -140,8 +144,9 @@ class Member_auth extends Member {
 			$incoming = $this->_do_multi_auth($sites);
 			$success = '_build_multi_success_message';
 			
-			$current = $this->EE->input->get('cur') + 1;
-			$orig	 = $this->EE->input->get_post('orig');
+			$current = $this->EE->functions->fetch_site_index();
+			$orig = array_search($current, $sites);
+			var_dump('yes');
 		}
 		else
 		{
@@ -249,19 +254,7 @@ class Member_auth extends Member {
 	
 	private function _do_multi_auth($sites)
 	{
-		$multi = $this->EE->input->get('multi');
-		
 		if ( ! $sites OR $this->EE->config->item('allow_multi_logins') == 'n')
-		{
-			return $this->EE->output->show_user_error('general', lang('not_authorized'));
-		}
-		
-		$cur	 = $this->EE->input->get('cur');
-		$orig	 = $this->EE->input->get_post('orig');
-		$orig_id = $this->EE->input->get('orig_site_id');
-
-		// Current site in list.  Original login site.
-		if ($cur === FALSE OR $orig === FALSE OR $orig_id === FALSE)
 		{
 			return $this->EE->output->show_user_error('general', lang('not_authorized'));
 		}
@@ -272,7 +265,7 @@ class Member_auth extends Member {
 		
 		// Grab session
 		$sess_q = $this->EE->db->get_where('sessions', array(
-			'session_id' => $multi
+			'session_id' => $this->EE->session->userdata('session_id')
 		));
 		
 		if ( ! $sess_q->num_rows())
@@ -326,7 +319,7 @@ class Member_auth extends Member {
 				'ACT'	=> $this->EE->functions->fetch_action_id('Member', 'member_login'),
 				'cur'	=> $next,
 				'orig'	=> $orig,
-				'multi'	=> $multi,
+				'multi'	=> $this->EE->session->userdata('session_id'),
 				'orig_site_id' => $orig_id
 			);
 			
