@@ -75,56 +75,21 @@ if ($EE_view_disable !== TRUE)
 			?>
 			<div id="site_options_<?=$key?>" class="site_prefs">
 				<?php
-				foreach ($site as $prefname=>$prefs):
+				foreach ($site as $prefname => $prefs):
 				?>
 					<?php
 						$this->table->set_caption(lang($prefname));
-						foreach ($prefs as $k=>$pref)
+						$this->table->set_heading(lang('preference'), lang('setting'));
+
+						foreach ($prefs as $pref)
 						{
-							// channels, modules and templates need their names translated
-								
-							$key = $k;
-							$k = substr($k, strpos($key, '_') + 1);
-									
-							$line = '';
-
-							if (substr($k, 0, 11) == 'channel_id_')
-							{
-								$line = lang('can_post_in').NBS.NBS.'<span class="notice">'.$channel_names[$k].'</span>';
-							}
-					
-							if (substr($k, 0, 12) == 'template_id_')
-							{
-								$line = lang('can_access_tg').NBS.NBS.'<span class="notice">'.$template_names[$k].'</span>';
-							}
-
-							if ($line != '')
-							{
-								$preference = '<strong>'.$line.'</strong>';
-							}
-							elseif (in_array($k, $alert))
-							{
-								// Some preferences have serious implications if set to the affirmative.
-								// This marks these as such.
-								$preference = '<span class="notice">* <strong>'.lang($k, $k).'</strong></span>';
-							}
-							else
-							{
-								$preference = '<strong>'.lang($k, $k).'</strong>';
-							}
-									
-							if (in_array($k, $textbox))
-							{
-								$controls = form_input($key, $pref, 'class="field"');
-							}
-							else
-							{
-								$controls = lang('yes', $k.'_y').NBS.form_radio(array('name'=>$key, 'id'=>$k.'_y', 'value'=>'y', 'checked'=>($pref['options'] == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-								$controls .= lang('no', $k.'_n').NBS.form_radio(array('name'=>$key, 'id'=>$k.'_n', 'value'=>'n', 'checked'=>($pref['options'] == 'n') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-							}
-								
-							$this->table->set_heading(lang('preference'), lang('setting'));
-							$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+							$this->table->add_row(
+								$pref['label'], 
+								array(
+									'style' => 'width:50%',
+									'data' => $pref['controls']
+								)
+							);
 						}
 		
 						echo $this->table->generate();

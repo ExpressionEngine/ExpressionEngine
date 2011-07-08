@@ -1300,17 +1300,11 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$default_id = $this->config->item('site_id');
 		
 		list($group_title, $group_description) = $this->_setup_title_desc($group_id, $group_data);
-		list($channel_names, $channel_perms) = $this->_setup_channel_names($id);
-		list($module_names, $module_perms) = $this->_setup_module_names($id);
-		list($template_names, $template_perms) = $this->_setup_template_names($id);
 	
-		$group_cluster = $this->_member_group_cluster($channel_perms, $template_perms, $id);
-		
-		$group_data = $this->_setup_final_group_data($sites, $group_data, $group_cluster);
+		$group_data = $this->_setup_final_group_data($sites, $group_data, $id);
 		
 		$data = array(
 			'action'			=> ( ! $group_id) ? 'submit' : 'update',
-			'channel_names'		=> $channel_names,
 			'form_hidden'		=> array(
 				'clone_id'			=> ( ! $clone_id) ? '' : $clone_id,
 				'group_id'			=> $group_id
@@ -1320,22 +1314,24 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			'group_id'			=> $group_id,
 			'group_title'		=> $group_title,
 			'is_locked'			=> ($group_data[$default_id]['is_locked'] == 'y') ? 'y' : 'n',
-			'module_names'		=> $module_names,
-			'module_perms'		=> $module_perms,
 			'sites_dropdown'	=> $sites_dropdown,
-			'template_names'	=> $template_names,
-			'template_perms'	=> $template_perms
 		);
 
-		var_dump($data);
-		
 		$this->load->view('members/edit_member_group', $data);
 	}
 	
 	// --------------------------------------------------------------------
 	
-	private function _setup_final_group_data($sites, $group_data, $group_cluster)
-	{//var_dump($group_cluster); exit;
+	private function _setup_final_group_data($sites, $group_data, $group_id)
+	{
+		// Get the channel, module and template names and preferences
+		list($channel_names, $channel_perms) = $this->_setup_channel_names($group_id);
+		list($module_names, $module_perms) = $this->_setup_module_names($group_id);
+		list($template_names, $template_perms) = $this->_setup_template_names($group_id);
+
+		// Build the structural array
+		$group_cluster = $this->_member_group_cluster($channel_perms, $template_perms, $group_id);
+
 		// Assign items to highlight
 		$alert = array(
 			'can_view_offline_system',
@@ -1354,7 +1350,78 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			'can_delete_categories',
 			'can_delete_self'
 		);
-var_dump($group_data); exit;
+
+		$form = array();
+
+		// Building this array for each site
+		foreach ($sites->result() as $site)
+		{
+			foreach ($group_cluster as $group_name => $preferences)
+			{
+				// If we're dealing with channel post privileges
+				if ($group_name == 'cp_channel_post_privs' AND isset($preferences[$site->site_id]))
+				{
+					foreach ($channel_perms[$site->site_id] as $channel_id => $preference_value) 
+					{
+						$form[$site->site_id][$group_name][] = array(
+							'label' => $channel_names[$channel_id],
+							'controls' => $this->_build_group_data_input(
+								$channel_names[$channel_id],
+								$preference_value,
+								$site->site_id
+							)
+						);
+					}
+					continue;
+				}
+				// If we're dealing with template access privileges
+				else if ($group_name == 'cp_template_access_privs' AND isset($preferences[$site->site_id]))
+				{
+					foreach ($preferences[$site->site_id] as $template_id => $preference_value) 
+					{
+						$form[$site->site_id][$group_name][] = array(
+							'label' => $template_names[$template_id],
+							'controls' => $this->_build_group_data_input(
+								$template_names[$template_id],
+								$preference_value,
+								$site->site_id
+							)
+						);
+					}
+					continue;
+				}
+
+				// Otherwise, loop through the keyed preferences
+				foreach ($preferences as $preference_name => $preference_value) 
+				{
+					$form[$site->site_id][$group_name][$preference_name] = array(
+						'label' => lang($preference_name, $preference_name),
+						'controls' => $this->_build_group_data_input(
+							$preference_name,
+							$preference_value,
+							$site->site_id
+						)
+					);
+				}
+			}
+		}
+
+		return $form;
+	}
+
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Builds the input item for the member group data
+	 * 
+	 * @param string $preference_name The preference's name, no site_id appended
+	 * @param string $preference_value The preference's value
+	 * @param integer $site_id The ID of the site we're dealing with
+	 * 
+	 * @return string The fully built input item for the form
+	 */
+	private function _build_group_data_input($preference_name, $preference_value, $site_id)
+	{
 		// Items that should be in an input box
 		$text_inputs = array( 
 			'search_flood_control',
@@ -1362,17 +1429,35 @@ var_dump($group_data); exit;
 			'prv_msg_storage_limit',
 			'mbr_delete_notify_emails'
 		);		
+		
+		$input = '';
+		$input_name = $site_id . '_' . $preference_name;
 
-		$form = array();
-
-		foreach ($sites->result() as $site)
+		if (in_array($preference_name, $text_inputs)) 
 		{
-			foreach ($group_cluster as $pref => $val)
-			{
-				
-			}
+			$input = form_input($input_name, $preference_value, 'class="field"');
 		}
-		// exit;
+		else
+		{
+			$input  = lang('yes', $input_name . '_y').NBS;
+			$input .= form_radio(array(
+				'name' => $input_name, 
+				'id' => $input_name.'_y', 
+				'value' => 'y',
+				'checked' => ($preference_value == 'y') ? TRUE : FALSE
+			));
+			$input .= NBS.NBS.NBS.NBS.NBS;
+			$input .= lang('no', $input_name . '_n').NBS;
+			$input .= form_radio(array(
+				'name' => $input_name,
+				'id' => $input_name . '_n',
+				'value' => 'n',
+				'checked' => ($preference_value == 'n') ? TRUE : FALSE
+			));
+			$input .= NBS.NBS.NBS.NBS.NBS;
+		}
+
+		return $input;
 	}
 
 	// --------------------------------------------------------------------
