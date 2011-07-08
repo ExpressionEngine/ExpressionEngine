@@ -1342,7 +1342,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			'sites_dropdown'	=> $sites_dropdown,
 			'template_names'	=> $template_names,
 			'template_perms'	=> $template_perms,
-			'textbox'		=> array( // Items that should be in an input box
+			'textbox'			=> array( // Items that should be in an input box
 				'search_flood_control',
 				'prv_msg_send_limit',
 				'prv_msg_storage_limit',
