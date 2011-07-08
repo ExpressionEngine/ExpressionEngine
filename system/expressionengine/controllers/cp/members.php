@@ -1310,13 +1310,13 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 								($group_id != '') ? lang('edit_member_group') : lang('create_member_group'));
 		
 		$group_data = $this->_setup_group_data($id);
-		
+
 		$default_id = $this->config->item('site_id');
 		
 		list($group_title, $group_description) = $this->_setup_title_desc($group_id, $group_data);
 	
 		$group_data = $this->_setup_final_group_data($sites, $group_data, $id);
-		
+
 		$data = array(
 			'action'			=> ( ! $group_id) ? 'submit' : 'update',
 			'form_hidden'		=> array(
@@ -1327,7 +1327,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			'group_description'	=> $group_description,
 			'group_id'			=> $group_id,
 			'group_title'		=> $group_title,
-			'is_locked'			=> ($group_data[$default_id]['is_locked'] == 'y') ? 'y' : 'n',
 			'sites_dropdown'	=> $sites_dropdown,
 		);
 
@@ -1336,6 +1335,18 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Setup Final Group Data
+	 *
+	 * This function sets up the final group data array that's passed to the
+	 * view file in order to construct the preferences tables.
+	 *
+	 * @param 	object 		DB object from the sites query
+	 * @param 	array 		Array of data on the member group for each site
+	 * @param 	int 		group id
+	 *
+	 * @return 	array 		
+	 */
 	private function _setup_final_group_data($sites, $group_data, $group_id)
 	{
 		// Get the channel, module and template names and preferences
@@ -1476,54 +1487,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 	// --------------------------------------------------------------------
 
-	private function _setup_template_names($id)
-	{
-		$template_names = array();
-		$template_perms = array();
-		$template_ids   = array();
-		
-		$templates = $this->db->select('group_id, group_name, site_id')
-							  ->order_by('group_name')
-							  ->get('template_groups');
-		
-		if ($id === 1)
-		{
-			foreach ($templates->result() as $row)
-			{
-				$template_names['template_id_'.$row->group_id] = $row->group_name;
-				$template_perms[$row->site_id]['template_id_'.$row->group_id] = 'y';
-			}
-
-			$templates->free_result();
-			
-			return array($template_names, $template_perms);
-		}
-
-		$qry = $this->db->select('template_group_id')
-						->get_where('template_member_groups', array(
-							'group_id' => $id
-						));
-
-		foreach ($qry->result() as $row)
-		{
-			$template_ids[$row->template_group_id] = TRUE;
-		}
-
-		$qry->free_result();
-
-		foreach ($templates->result() as $row)
-		{
-			$template_names['template_id_'.$row->group_id] = $row->group_name;
-			$template_perms[$row->site_id]['template_id_'.$row->group_id] = isset($template_ids[$row->group_id]) ? 'y' : 'n';
-		}
-
-		$templates->free_result();
-
-		return array($template_names, $template_perms);
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Assign clusters of member groups
 	 *
@@ -1537,7 +1500,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 									'can_view_online_system'	=> 'n',
 									'can_view_offline_system'	=> 'n'
 								),
-
+			
 			'mbr_account_privs' => array (
 									'can_view_profiles'			=> 'n',
 									'can_email_from_profile'	=> 'n',
@@ -1648,7 +1611,71 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	}
 	
 	// --------------------------------------------------------------------
-	
+
+	/**
+	 * Setup template names
+	 *
+	 * Assembles template names from the database for use in the group_data array
+	 *
+	 * @param 	int 	member group id used for permissions checking
+	 * @return 	array 	array of template namesa and associated permissions
+	 */
+	private function _setup_template_names($id)
+	{
+		$template_names = array();
+		$template_perms = array();
+		$template_ids   = array();
+		
+		$templates = $this->db->select('group_id, group_name, site_id')
+							  ->order_by('group_name')
+							  ->get('template_groups');
+		
+		if ($id === 1)
+		{
+			foreach ($templates->result() as $row)
+			{
+				$template_names['template_id_'.$row->group_id] = $row->group_name;
+				$template_perms[$row->site_id]['template_id_'.$row->group_id] = 'y';
+			}
+
+			$templates->free_result();
+			
+			return array($template_names, $template_perms);
+		}
+
+		$qry = $this->db->select('template_group_id')
+						->get_where('template_member_groups', array(
+							'group_id' => $id
+						));
+
+		foreach ($qry->result() as $row)
+		{
+			$template_ids[$row->template_group_id] = TRUE;
+		}
+
+		$qry->free_result();
+
+		foreach ($templates->result() as $row)
+		{
+			$template_names['template_id_'.$row->group_id] = $row->group_name;
+			$template_perms[$row->site_id]['template_id_'.$row->group_id] = isset($template_ids[$row->group_id]) ? 'y' : 'n';
+		}
+
+		$templates->free_result();
+
+		return array($template_names, $template_perms);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup Module Names 
+	 *
+	 * Sets up module names for use in the edit_member_group data array.
+	 *
+	 * @param 	int 	member group id
+	 * @return 	array 	array of module names and associated permissions.
+	 */
 	private function _setup_module_names($id)
 	{
 		// Load Module Language Files.
@@ -1710,10 +1737,18 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		return array($module_names, $module_perms);
 	}
-		
 	
 	// --------------------------------------------------------------------
 
+	/**
+	 * Setup channel names
+	 *
+	 * Gets channel names from the database and processes permissions, 
+	 * based on member group id
+	 *
+	 * @param 	int 	member group id
+	 * @return 	array 	array of channel names and associated permissions.
+	 */
 	private function _setup_channel_names($id)
 	{
 		$channel_names = array();
@@ -1762,6 +1797,14 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	
 	// --------------------------------------------------------------------
 
+	/**
+	 * Setup Group Data
+	 *
+	 * Sets up the initial array of member group data for use in edit_member_groups
+	 *
+	 * @param 	int 	member group id
+	 * @return 	array 
+	 */
 	private function _setup_group_data($id)
 	{
 		$member_group_q = $this->db->get_where('member_groups',
@@ -1781,6 +1824,15 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	
 	// --------------------------------------------------------------------
 
+	/**
+	 * Get Sites
+	 *
+	 * Retrieves site_id and site_label for use in the edit_member_groups fn.
+	 * Ideally I'd like to see the sites query coming from the session cache 
+	 * in the future, but I do suppose this works for the time being.
+	 *
+	 * @return 	array 	$sites_q => DB Object, $sites_dropdown => array
+	 */
 	private function _get_sites()
 	{
 		$site_id = $this->config->item('multiple_sites_enabled') == 'y' ? '' : 1;
@@ -1807,6 +1859,14 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	
 	// --------------------------------------------------------------------
 
+	/**
+	 * Setup title description
+	 *
+	 * @param 	int 	member group id
+	 * @param 	array 	group data
+	 *
+	 * @return 	array
+	 */
 	private function _setup_title_desc($group_id, $group_data)
 	{
 		$site_id = $this->config->item('site_id');
