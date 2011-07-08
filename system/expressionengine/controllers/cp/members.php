@@ -1414,6 +1414,11 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 					);
 					continue;
 				}
+				else if ($group_name == 'cp_template_access_privs' OR $group_name == 'cp_channel_post_privs')
+				{
+					// In the event there are no templates or channels, skip
+					continue;
+				}
 
 				// Otherwise, loop through the keyed preferences
 				foreach ($preferences as $preference_name => $preference_value) 
