@@ -1277,6 +1277,20 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			'channel_model', 'template_model', 'addons_model'
 		));
 
+		$this->javascript->output('
+			$(".site_prefs").hide();
+			$(".site_prefs:first").show();
+			
+			$("#site_list_pulldown").change(function() {
+				id = $("#site_list_pulldown").val();
+				$(".site_prefs").fadeOut("500", function(){
+					$("#site_options_"+id).fadeIn("500");
+				});
+			});
+		');
+	
+		$this->javascript->compile();
+		
 		$this->lang->loadfile('admin');
 
 		list($sites, $sites_dropdown) = $this->_get_sites();
