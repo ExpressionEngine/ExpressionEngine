@@ -1542,7 +1542,7 @@ class Channel {
 		else
 		{
 			$order_array = array($order);
-		}
+		}		
 
 		if ($sort !== FALSE && stristr($sort, '|'))
 		{
@@ -1557,7 +1557,7 @@ class Channel {
 		/**  Validate Results for Later Processing
 		/** -------------------------------------*/
 
-		$base_orders = array('random', 'entry_id', 'date', 'title', 'url_title', 'edit_date', 'comment_total', 'username', 'screen_name', 'most_recent_comment', 'expiration_date',
+		$base_orders = array('random', 'entry_id', 'date', 'entry_date', 'title', 'url_title', 'edit_date', 'comment_total', 'username', 'screen_name', 'most_recent_comment', 'expiration_date',
 							 'view_count_one', 'view_count_two', 'view_count_three', 'view_count_four');
 
 		foreach($order_array as $key => $order)
@@ -2530,7 +2530,7 @@ class Channel {
 		{
 			// Used to eliminate sort issues with duplicated fields below
 			$entry_id_sort = $sort_array[0];
-
+			
 			if (FALSE === $order_array[0])
 			{
 				if ($sticky == 'no')
