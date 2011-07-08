@@ -1313,7 +1313,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			'group_description'	=> $group_description,
 			'group_id'			=> $group_id,
 			'group_title'		=> $group_title,
-			'is_locked'			=> ($group_data[$default_id]['is_locked'] == 'y') ? 'y' : 'n',
 			'sites_dropdown'	=> $sites_dropdown,
 		);
 
@@ -1332,6 +1331,95 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		// Build the structural array
 		$group_cluster = $this->_member_group_cluster($channel_perms, $template_perms, $group_id);
 
+		$form = array();
+
+		// Building this array for each site
+		foreach ($sites->result() as $site)
+		{
+			foreach ($group_cluster as $group_name => $preferences)
+			{
+				// If we're dealing with channel post privileges
+				if ($group_name == 'cp_channel_post_privs' AND isset($preferences[$site->site_id]))
+				{
+					foreach ($channel_perms[$site->site_id] as $channel_id => $preference_value) 
+					{
+						$form[$site->site_id][$group_name][] = array(
+							'label' => lang('can_post_in') . NBS . NBS . $this->_build_group_data_label(
+								$channel_names[$channel_id],
+								TRUE
+							),
+							'controls' => $this->_build_group_data_input(
+								$channel_names[$channel_id],
+								$preference_value,
+								$site->site_id
+							)
+						);
+					}
+					continue;
+				}
+				// If we're dealing with template access privileges
+				else if ($group_name == 'cp_template_access_privs' AND isset($preferences[$site->site_id]))
+				{
+					foreach ($preferences[$site->site_id] as $template_id => $preference_value) 
+					{
+						$form[$site->site_id][$group_name][] = array(
+							'label' => lang('can_access_tg') . NBS . NBS . $this->_build_group_data_label(
+								$template_names[$template_id], 
+								TRUE
+							),
+							'controls' => $this->_build_group_data_input(
+								$template_names[$template_id],
+								$preference_value,
+								$site->site_id
+							)
+						);
+					}
+					continue;
+				}
+				else if ($group_name == 'security_lock')
+				{
+					$form[$site->site_id][$group_name][] = array(
+						'label' => '<p><strong class="notice">'.lang('enable_lock').'</strong><br />'.lang('lock_description').'</p>',
+						'controls' => $this->_build_group_data_input(
+							'is_locked',
+							$group_data[$site->site_id]['is_locked'],
+							$site->site_id
+						)
+					);
+					continue;
+				}
+
+				// Otherwise, loop through the keyed preferences
+				foreach ($preferences as $preference_name => $preference_value) 
+				{
+					$form[$site->site_id][$group_name][$preference_name] = array(
+						'label' => $this->_build_group_data_label($preference_name),
+						'controls' => $this->_build_group_data_input(
+							$preference_name,
+							$preference_value,
+							$site->site_id
+						)
+					);
+				}
+			}
+		}
+
+		return $form;
+	}
+
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Builds the label for group data
+	 * 
+	 * @param string $lang_key Either the lang key or the language itself
+	 * @param boolean $alert_override Pass in true if you want it to have the 
+	 * 		notice class regardless
+	 * 
+	 * @return string The label for the item
+	 */
+	private function _build_group_data_label($lang_key, $alert_override = FALSE)
+	{
 		// Assign items to highlight
 		$alert = array(
 			'can_view_offline_system',
@@ -1348,65 +1436,18 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			'can_admin_modules',
 			'can_edit_categories',
 			'can_delete_categories',
-			'can_delete_self'
+			'can_delete_self',
+			'enable_lock'
 		);
 
-		$form = array();
+		$label = lang($lang_key, $lang_key);
 
-		// Building this array for each site
-		foreach ($sites->result() as $site)
+		if (in_array($lang_key, $alert) OR $alert_override)
 		{
-			foreach ($group_cluster as $group_name => $preferences)
-			{
-				// If we're dealing with channel post privileges
-				if ($group_name == 'cp_channel_post_privs' AND isset($preferences[$site->site_id]))
-				{
-					foreach ($channel_perms[$site->site_id] as $channel_id => $preference_value) 
-					{
-						$form[$site->site_id][$group_name][] = array(
-							'label' => $channel_names[$channel_id],
-							'controls' => $this->_build_group_data_input(
-								$channel_names[$channel_id],
-								$preference_value,
-								$site->site_id
-							)
-						);
-					}
-					continue;
-				}
-				// If we're dealing with template access privileges
-				else if ($group_name == 'cp_template_access_privs' AND isset($preferences[$site->site_id]))
-				{
-					foreach ($preferences[$site->site_id] as $template_id => $preference_value) 
-					{
-						$form[$site->site_id][$group_name][] = array(
-							'label' => $template_names[$template_id],
-							'controls' => $this->_build_group_data_input(
-								$template_names[$template_id],
-								$preference_value,
-								$site->site_id
-							)
-						);
-					}
-					continue;
-				}
-
-				// Otherwise, loop through the keyed preferences
-				foreach ($preferences as $preference_name => $preference_value) 
-				{
-					$form[$site->site_id][$group_name][$preference_name] = array(
-						'label' => lang($preference_name, $preference_name),
-						'controls' => $this->_build_group_data_input(
-							$preference_name,
-							$preference_value,
-							$site->site_id
-						)
-					);
-				}
-			}
+			$label = '<strong class="notice">' . $label . '</strong>';	
 		}
 
-		return $form;
+		return $label;
 	}
 
 	// ----------------------------------------------------------------------
@@ -1439,18 +1480,33 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 		else
 		{
-			$input  = lang('yes', $input_name . '_y').NBS;
+			// If we're dealing with is_locked, use the correct lang keys
+			if ($preference_name == 'is_locked') 
+			{
+				$yes_lang_key = 'locked';
+				$no_lang_key = 'unlocked';
+			}
+			else
+			{
+				$yes_lang_key = 'yes';
+				$no_lang_key = 'no';
+			}
+
+			$yes_id = $input_name . '_y';
+			$no_id = $input_name . '_n';
+
+			$input  = lang($yes_lang_key, $yes_id).NBS;
 			$input .= form_radio(array(
 				'name' => $input_name, 
-				'id' => $input_name.'_y', 
+				'id' => $yes_id, 
 				'value' => 'y',
 				'checked' => ($preference_value == 'y') ? TRUE : FALSE
 			));
 			$input .= NBS.NBS.NBS.NBS.NBS;
-			$input .= lang('no', $input_name . '_n').NBS;
+			$input .= lang($no_lang_key, $no_id).NBS;
 			$input .= form_radio(array(
 				'name' => $input_name,
-				'id' => $input_name . '_n',
+				'id' => $no_id,
 				'value' => 'n',
 				'checked' => ($preference_value == 'n') ? TRUE : FALSE
 			));
@@ -1519,104 +1575,107 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	private function _member_group_cluster($channel_perms, $template_perms, $group_id)
 	{
 		$G = array(
+			'security_lock'		=> array(
+				'is_locked' 				=> 'n',
+			),
 			'site_access'	 	=> array (
-									'can_view_online_system'	=> 'n',
-									'can_view_offline_system'	=> 'n'
-								),
+				'can_view_online_system'	=> 'n',
+				'can_view_offline_system'	=> 'n'
+			),
 
 			'mbr_account_privs' => array (
-									'can_view_profiles'			=> 'n',
-									'can_email_from_profile'	=> 'n',
-									'can_edit_html_buttons'		=> 'n',
-									'include_in_authorlist'		=> 'n',
-									'include_in_memberlist'		=> 'n',
-									'include_in_mailinglists'	=> 'y',
-									'can_delete_self'			=> 'n',
-									'mbr_delete_notify_emails'	=> $this->config->item('webmaster_email')
-								),
+				'can_view_profiles'			=> 'n',
+				'can_email_from_profile'	=> 'n',
+				'can_edit_html_buttons'		=> 'n',
+				'include_in_authorlist'		=> 'n',
+				'include_in_memberlist'		=> 'n',
+				'include_in_mailinglists'	=> 'y',
+				'can_delete_self'			=> 'n',
+				'mbr_delete_notify_emails'	=> $this->config->item('webmaster_email')
+			),
 
 			'commenting_privs' => array (
-									'can_post_comments'			=> 'n',
-									'exclude_from_moderation'	=> 'n'
-								),
+				'can_post_comments'			=> 'n',
+				'exclude_from_moderation'	=> 'n'
+			),
 
 			'search_privs'		=> array (
-									'can_search'				=> 'n',
-									'search_flood_control'		=> '30'
-								),
+				'can_search'				=> 'n',
+				'search_flood_control'		=> '30'
+			),
 
 			'priv_msg_privs'	=> array (
-									'can_send_private_messages'			=> 'n',
-									'prv_msg_send_limit'				=> '20',
-									'prv_msg_storage_limit'				=> '60',
-									'can_attach_in_private_messages'	=> 'n',
-									'can_send_bulletins'				=> 'n'
-								),
+				'can_send_private_messages'			=> 'n',
+				'prv_msg_send_limit'				=> '20',
+				'prv_msg_storage_limit'				=> '60',
+				'can_attach_in_private_messages'	=> 'n',
+				'can_send_bulletins'				=> 'n'
+			),
 
 			'global_cp_access' => array (
-									'can_access_cp'		 		=> 'n',
-									'can_access_content'		=> 'n',
-									'can_access_publish'		=> 'n',
-									'can_access_edit'			=> 'n',												
-									'can_access_files'	 		=> 'n',
-									'can_access_design'	 		=> 'n',
-									'can_access_addons'			=> 'n',
-									'can_access_modules'		=> 'n',
-									'can_access_extensions'		=> 'n',
-									'can_access_accessories'	=> 'n',
-									'can_access_plugins'		=> 'n',												
-									'can_access_fieldtypes'		=> 'n',
-									'can_access_members'		=> 'n',
-									'can_access_admin'	  		=> 'n',
-									'can_access_sys_prefs'	 	=> 'n',
-									'can_access_content_prefs'	=> 'n',
-									'can_access_tools'			=> 'n',
-									'can_access_comm'	 		=> 'n',
-									'can_access_utilities'		=> 'n',
-									'can_access_data'			=> 'n',
-									'can_access_logs'	 		=> 'n'												
-									),
+				'can_access_cp'		 		=> 'n',
+				'can_access_content'		=> 'n',
+				'can_access_publish'		=> 'n',
+				'can_access_edit'			=> 'n',												
+				'can_access_files'	 		=> 'n',
+				'can_access_design'	 		=> 'n',
+				'can_access_addons'			=> 'n',
+				'can_access_modules'		=> 'n',
+				'can_access_extensions'		=> 'n',
+				'can_access_accessories'	=> 'n',
+				'can_access_plugins'		=> 'n',												
+				'can_access_fieldtypes'		=> 'n',
+				'can_access_members'		=> 'n',
+				'can_access_admin'	  		=> 'n',
+				'can_access_sys_prefs'	 	=> 'n',
+				'can_access_content_prefs'	=> 'n',
+				'can_access_tools'			=> 'n',
+				'can_access_comm'	 		=> 'n',
+				'can_access_utilities'		=> 'n',
+				'can_access_data'			=> 'n',
+				'can_access_logs'	 		=> 'n'												
+			),
 
 			'cp_admin_privs'	=> array (
-									'can_admin_channels'	 	=> 'n',
-									'can_admin_upload_prefs' 	=> 'n',
-									'can_admin_templates'		=> 'n',
-									'can_admin_design' 			=> 'n',												
-									'can_admin_members'	 		=> 'n',
-									'can_admin_mbr_groups'  	=> 'n',
-									'can_admin_mbr_templates'  	=> 'n',
-									'can_delete_members'		=> 'n',
-									'can_ban_users'		 		=> 'n',
-									'can_admin_modules'	 		=> 'n'
-									),
+				'can_admin_channels'	 	=> 'n',
+				'can_admin_upload_prefs' 	=> 'n',
+				'can_admin_templates'		=> 'n',
+				'can_admin_design' 			=> 'n',												
+				'can_admin_members'	 		=> 'n',
+				'can_admin_mbr_groups'  	=> 'n',
+				'can_admin_mbr_templates'  	=> 'n',
+				'can_delete_members'		=> 'n',
+				'can_ban_users'		 		=> 'n',
+				'can_admin_modules'	 		=> 'n'
+			),
 
 			'cp_email_privs' => array (
-									'can_send_email'			=> 'n',
-									'can_email_member_groups'	=> 'n',
-									'can_email_mailinglist'		=> 'n',
-									'can_send_cached_email'		=> 'n',
-									),
+				'can_send_email'			=> 'n',
+				'can_email_member_groups'	=> 'n',
+				'can_email_mailinglist'		=> 'n',
+				'can_send_cached_email'		=> 'n',
+			),
 
 			'cp_channel_privs'	=>  array(
-									'can_view_other_entries'	=> 'n',
-									'can_delete_self_entries'  	=> 'n',
-									'can_edit_other_entries'	=> 'n',
-									'can_delete_all_entries'	=> 'n',
-									'can_assign_post_authors' 	=> 'n',
-									'can_edit_categories'		=> 'n',
-									'can_delete_categories'		=> 'n',
-									),
+				'can_view_other_entries'	=> 'n',
+				'can_delete_self_entries'  	=> 'n',
+				'can_edit_other_entries'	=> 'n',
+				'can_delete_all_entries'	=> 'n',
+				'can_assign_post_authors' 	=> 'n',
+				'can_edit_categories'		=> 'n',
+				'can_delete_categories'		=> 'n',
+			),
 
 			'cp_channel_post_privs'	=>  $channel_perms,
 
 			'cp_comment_privs' => array (
-									'can_moderate_comments'		=> 'n',
-									'can_view_other_comments'	=> 'n',
-									'can_edit_own_comments'	 	=> 'n',
-									'can_delete_own_comments'	=> 'n',
-									'can_edit_all_comments'	 	=> 'n',
-									'can_delete_all_comments'	=> 'n'
-									),
+				'can_moderate_comments'		=> 'n',
+				'can_view_other_comments'	=> 'n',
+				'can_edit_own_comments'	 	=> 'n',
+				'can_delete_own_comments'	=> 'n',
+				'can_edit_all_comments'	 	=> 'n',
+				'can_delete_all_comments'	=> 'n'
+			),
 										
 			'cp_template_access_privs' =>  $template_perms,
 		);
