@@ -54,26 +54,27 @@ if ($EE_view_disable !== TRUE)
 				$this->table->clear();
 			?>
 
-			<?php if ($group_id != 1):?>
-				<?php
-					$this->table->set_caption(lang('security_lock'));
-					$preference = '<p><strong class="notice">'.lang('enable_lock').'</strong><br />'.lang('lock_description').'</p>';
-					$controls = lang('locked', 'is_locked_y').NBS.form_radio(array('name'=>'is_locked', 'id'=>'is_locked_y', 'value'=>'y', 'checked'=>($is_locked == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-					$controls .= lang('unlocked', 'is_locked_n').NBS.form_radio(array('name'=>'is_locked', 'id'=>'is_locked_n', 'value'=>'n', 'checked'=>($is_locked == 'n') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-				
-					$this->table->set_heading(lang('preference'), lang('setting'));
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-					echo $this->table->generate();
-					// Clear out of the next one
-					$this->table->clear();
-				?>
-			<?php endif;?>
 			
 			<?php
 			// each site
 			foreach($group_data as $key => $site):
 			?>
 			<div id="site_options_<?=$key?>" class="site_prefs">
+				<?php if ($group_id != 1):?>
+					<?php
+						// $this->table->set_caption(lang('security_lock'));
+												// $preference = '<p><strong class="notice">'.lang('enable_lock').'</strong><br />'.lang('lock_description').'</p>';
+												// $controls = lang('locked', 'is_locked_y').NBS.form_radio(array('name'=>'is_locked', 'id'=>'is_locked_y', 'value'=>'y', 'checked'=>($is_locked == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
+												// $controls .= lang('unlocked', 'is_locked_n').NBS.form_radio(array('name'=>'is_locked', 'id'=>'is_locked_n', 'value'=>'n', 'checked'=>($is_locked == 'n') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
+												// 				
+												// $this->table->set_heading(lang('preference'), lang('setting'));
+												// $this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+												// echo $this->table->generate();
+												// // Clear out of the next one
+												// $this->table->clear();
+											?>
+				<?php endif;?>
+
 				<?php
 				foreach ($site as $prefname => $prefs):
 				?>
