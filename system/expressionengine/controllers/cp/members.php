@@ -1279,8 +1279,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$this->load->model(array('channel_model', 'template_model', 'addons_model', 'site_model'));
 		$this->lang->loadfile('admin');
 
-		$this->cp->add_js_script('ui', 'accordion');
-
 		$this->jquery->tablesorter('#edit_member_group table', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}},
 			widgets: ["zebra"]
@@ -1289,7 +1287,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$this->javascript->output('
 			$(".site_prefs").hide();
 			$(".site_prefs:first").show();
-			$("#edit_member_group").accordion({autoHeight: false,header: "h3"});
 
 			$("#site_list_pulldown").change(function() {
 				id = $("#site_list_pulldown").val();
