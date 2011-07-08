@@ -1305,8 +1305,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		list($template_names, $template_perms) = $this->_setup_template_names($id);
 	
 		$G = $this->_member_group_cluster($channel_perms, $template_perms, $id);
-
-		$group_data = array();
 		
 		$data = array(
 			'action'			=> ( ! $group_id) ? 'submit' : 'update',
