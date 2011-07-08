@@ -3246,7 +3246,7 @@ DOH;
 			$row_count = 0;
 		}
 		
-		$this->per_page = 5;
+		$this->per_page = 25;
 		
 		$current_page = ($row_count / $this->per_page) + 1;
 			
