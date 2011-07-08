@@ -1304,27 +1304,12 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		list($module_names, $module_perms) = $this->_setup_module_names($id);
 		list($template_names, $template_perms) = $this->_setup_template_names($id);
 	
-		$G = $this->_member_group_cluster($channel_perms, $template_perms, $id);
+		$group_cluster = $this->_member_group_cluster($channel_perms, $template_perms, $id);
+		
+		$group_data = $this->_setup_final_group_data($sites, $group_data, $group_cluster);
 		
 		$data = array(
 			'action'			=> ( ! $group_id) ? 'submit' : 'update',
-			'alert'				=> array( // Assign items to highlight
-				'can_view_offline_system',
-				'can_access_cp',
-				'can_admin_channels',
-				'can_admin_upload_prefs',
-				'can_admin_templates',
-				'can_delete_members',
-				'can_admin_mbr_groups',
-				'can_admin_mbr_templates',
-				'can_ban_users',
-				'can_admin_members',
-				'can_admin_design',
-				'can_admin_modules',
-				'can_edit_categories',
-				'can_delete_categories',
-				'can_delete_self'
-			),
 			'channel_names'		=> $channel_names,
 			'form_hidden'		=> array(
 				'clone_id'			=> ( ! $clone_id) ? '' : $clone_id,
@@ -1339,18 +1324,55 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			'module_perms'		=> $module_perms,
 			'sites_dropdown'	=> $sites_dropdown,
 			'template_names'	=> $template_names,
-			'template_perms'	=> $template_perms,
-			'textbox'			=> array( // Items that should be in an input box
-				'search_flood_control',
-				'prv_msg_send_limit',
-				'prv_msg_storage_limit',
-				'mbr_delete_notify_emails'
-			),
+			'template_perms'	=> $template_perms
 		);
 
 		var_dump($data);
 		
 		$this->load->view('members/edit_member_group', $data);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	private function _setup_final_group_data($sites, $group_data, $group_cluster)
+	{//var_dump($group_cluster); exit;
+		// Assign items to highlight
+		$alert = array(
+			'can_view_offline_system',
+			'can_access_cp',
+			'can_admin_channels',
+			'can_admin_upload_prefs',
+			'can_admin_templates',
+			'can_delete_members',
+			'can_admin_mbr_groups',
+			'can_admin_mbr_templates',
+			'can_ban_users',
+			'can_admin_members',
+			'can_admin_design',
+			'can_admin_modules',
+			'can_edit_categories',
+			'can_delete_categories',
+			'can_delete_self'
+		);
+var_dump($group_data); exit;
+		// Items that should be in an input box
+		$text_inputs = array( 
+			'search_flood_control',
+			'prv_msg_send_limit',
+			'prv_msg_storage_limit',
+			'mbr_delete_notify_emails'
+		);		
+
+		$form = array();
+
+		foreach ($sites->result() as $site)
+		{
+			foreach ($group_cluster as $pref => $val)
+			{
+				
+			}
+		}
+		// exit;
 	}
 
 	// --------------------------------------------------------------------
