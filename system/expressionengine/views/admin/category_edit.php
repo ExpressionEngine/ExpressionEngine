@@ -31,7 +31,7 @@ if ($EE_view_disable !== TRUE)
 
 		<p>
 			<?=form_label(lang('category_description'), 'cat_description')?>
-			<?=form_textarea(array('id'=>'cat_description','name'=>'cat_description','class'=>'fullfield','value'=>set_value('cat_description', $cat_description)))?>
+			<?=form_textarea(array('id'=>'cat_description','name'=>'cat_description','class'=>'fullfield','rows'=>'10','value'=>set_value('cat_description', $cat_description)))?>
 		</p>
 
 		<p>

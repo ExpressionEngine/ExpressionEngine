@@ -39,9 +39,15 @@ EE.publish.category_editor = function() {
 	
 	cat_modal.dialog({
 		autoOpen: false,
-		height: 450,
+		height: 475,
 		width: 600,
-		modal: true
+		modal: true,
+		resizable: false,
+		open: function(event, ui) {
+			$('.ui-dialog-content').css('overflow', 'hidden');
+			$('.ui-dialog-titlebar').focus(); // doing this first to fix IE7 scrolling past the dialog's close button
+			$('#cat_name').focus();				
+		}
 	});
 
 	// Grab all group ids
@@ -65,7 +71,6 @@ EE.publish.category_editor = function() {
 
 	// A function to setup new page events
 	setup_page = function(response, require_valid_response) {
-		
 		var container = $(this),
 			gid = container.data("gid");
 		
@@ -74,8 +79,8 @@ EE.publish.category_editor = function() {
 		if (container.hasClass('edit_categories_link')) {
 			container = $("#cat_group_container_"+gid);
 		}
-		
-		if (response[0] !== '<' && require_valid_response) {
+
+		if (response.charAt(0) !== '<' && require_valid_response) {
 			return refresh_cats(gid);
 		}
 		
@@ -163,7 +168,9 @@ EE.publish.category_editor = function() {
 	};
 
 	// And a function to do the work
-	reload = function() {
+	reload = function(event) {
+		event.preventDefault();
+
 		var link = $(this).hide(),
 			gid = $(this).data("gid"),
 			resp_filter = ".pageContents";
@@ -182,18 +189,19 @@ EE.publish.category_editor = function() {
 		}).toArray();
 		
 		cat_groups_containers[gid].text(EE.lang.loading);
-		
+
 		$.ajax({
-			url: this.href+"&timestamp="+now()+resp_filter,
+			url: $(this).attr('href') + "&timestamp="+now() + resp_filter,
+			dataType: "html",
 			success: function(response) {
 				var res, filtered_res = '';
 			
 				response = $.trim(response);
-			
-				if (response[0] == '<') {
+
+				if (response.charAt(0) == '<') {
 					res = $(response).find(resp_filter);
 					filtered_res = $('<div />').append(res).html();
-								
+
 					if (res.find('form').length == 0) {
 						cat_groups_containers[gid].html(filtered_res);
 					}
@@ -207,7 +215,6 @@ EE.publish.category_editor = function() {
 				setup_page.call(cat_groups_containers[gid], response.error, true);
 			}
 		});
-		return false;
 	};
 
 	// Hijack edit category links to get it off the ground
