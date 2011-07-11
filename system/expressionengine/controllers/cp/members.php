@@ -1592,10 +1592,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				'can_view_online_system'	=> 'n',
 				'can_view_offline_system'	=> 'n'
 			),
-<<<<<<< HEAD
-
-=======
->>>>>>> 8bbfd0d... Refactored some code for the member group page. Moved module logic into controller.
 			'mbr_account_privs' => array (
 				'can_view_profiles'			=> 'n',
 				'can_email_from_profile'	=> 'n',
@@ -1606,10 +1602,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				'can_delete_self'			=> 'n',
 				'mbr_delete_notify_emails'	=> $this->config->item('webmaster_email')
 			),
-<<<<<<< HEAD
-
-=======
->>>>>>> 8bbfd0d... Refactored some code for the member group page. Moved module logic into controller.
 			'commenting_privs' => array (
 				'can_post_comments'			=> 'n',
 				'exclude_from_moderation'	=> 'n'
