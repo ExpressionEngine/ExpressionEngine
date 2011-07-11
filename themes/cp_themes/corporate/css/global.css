@@ -3159,7 +3159,8 @@ div#view_content_entry_links {
 	border: 			0;
 }
 
-h3.accordion {
+h3.accordion,
+table caption {
 	background:			#6c8296;
 	padding:			7px 4px 6px 28px;
 	color:				#FFF!important;
@@ -3170,6 +3171,11 @@ h3.accordion {
 	text-transform:		none;
 	border-bottom:		none!important;
 	text-shadow:		none;
+}
+
+#mainContent table caption {
+	cursor: default;
+	padding: 5px 10px;
 }
 
 div.accordionContent{
