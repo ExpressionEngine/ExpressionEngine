@@ -1263,453 +1263,718 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 * Edit Member Group
 	 *
 	 * Edit/Create a member group form
-	 *
-	 * @return	mixed
 	 */		
 	public function edit_member_group()
-	{	
-		// Only super admins can administrate member groups
-		if ($this->session->userdata['group_id'] != 1)
+	{
+		if ($this->session->userdata('group_id') != 1)
 		{
 			show_error(lang('only_superadmins_can_admin_groups'));
 		}
 
-		$this->load->library(array('table', 'addons'));
+		$this->load->library(array('addons', 'table'));
 		$this->load->helper('form');
-		$this->load->model(array('channel_model', 'template_model', 'addons_model', 'site_model'));
-		$this->lang->loadfile('admin');
-
-		$this->jquery->tablesorter('#edit_member_group table', '{
-			headers: {1: {sorter: false}, 2: {sorter: false}},
-			widgets: ["zebra"]
-		}');
+		$this->load->model(array(
+			'channel_model', 'template_model', 'addons_model'
+		));
 
 		$this->javascript->output('
 			$(".site_prefs").hide();
 			$(".site_prefs:first").show();
-
+			
 			$("#site_list_pulldown").change(function() {
 				id = $("#site_list_pulldown").val();
 				$(".site_prefs").fadeOut("500", function(){
 					$("#site_options_"+id).fadeIn("500");
 				});
 			});
-
 		');
-			
+	
 		$this->javascript->compile();
 		
-		$group_id = $this->input->get_post('group_id');
-		$clone_id = $this->input->get_post('clone_id');
+		$this->lang->loadfile('admin');
+
+		list($sites, $sites_dropdown) = $this->_get_sites();
 		
-		$id = ($group_id == '') ? '3' : $group_id;
+		$group_id = (int) $this->input->get_post('group_id');
+		$clone_id = (int) $this->input->get_post('clone_id');
 
-		// Assign the page title
-		$title = ($group_id != '') ? lang('edit_member_group') : lang('create_member_group');
+		$id = ( ! $group_id) ? 3 : $group_id;
 
-		// Fetch the Sites
-
-		if ($this->config->item('multiple_sites_enabled') == 'y')
-		{
-			$sites_query = $this->site_model->get_site();
-		}
-		else
-		{
-			$sites_query = $this->site_model->get_site('1');
-		}
-
-		// Fetch the member group data
-
-		if ($clone_id != '')
+		// If we're cloning, set $id to the member group id that we clone
+		if ($clone_id)
 		{
 			$id = $clone_id;
 		}
 
-		$query = $this->db->get_where('member_groups', array('group_id' => $id));
+		$this->cp->set_variable('cp_page_title', 
+								($group_id != '') ? lang('edit_member_group') : lang('create_member_group'));
+		
+		$group_data = $this->_setup_group_data($id);
 
-		$result = ($query->num_rows() == 0) ? FALSE : TRUE;
+		$default_id = $this->config->item('site_id');
 		
-		$group_data = array();
-		
-		foreach($query->result_array() as $row)
+		list($group_title, $group_description) = $this->_setup_title_desc($group_id, $group_data);
+	
+		$data = array(
+			'action'			=> ( ! $group_id) ? 'submit' : 'update',
+			'form_hidden'		=> array(
+				'clone_id'			=> ( ! $clone_id) ? '' : $clone_id,
+				'group_id'			=> $group_id
+			),
+			'group_data'		=> $this->_setup_final_group_data($sites, $group_data, $id),
+			'group_description'	=> $group_description,
+			'group_id'			=> $group_id,
+			'group_title'		=> $group_title,
+			'sites_dropdown'	=> $sites_dropdown,
+			'module_data'		=> $this->_setup_module_data($group_id)
+		);
+
+		$this->load->view('members/edit_member_group', $data);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Setup Final Group Data
+	 *
+	 * This function sets up the final group data array that's passed to the
+	 * view file in order to construct the preferences tables.
+	 *
+	 * @param 	object 		DB object from the sites query
+	 * @param 	array 		Array of data on the member group for each site
+	 * @param 	int 		group id
+	 *
+	 * @return 	array 		
+	 */
+	private function _setup_final_group_data($sites, $group_data, $group_id)
+	{
+		// Get the channel, module and template names and preferences
+		list($channel_names, $channel_perms) = $this->_setup_channel_names($group_id);
+		list($template_names, $template_perms) = $this->_setup_template_names($group_id);
+
+		// Build the structural array
+		$group_cluster = $this->_member_group_cluster($channel_perms, $template_perms, $group_id);
+
+		$form = array();
+
+		// Building this array for each site
+		foreach ($sites->result() as $site)
 		{
-			$group_data[$row['site_id']] = $row;
+			foreach ($group_cluster as $group_name => $preferences)
+			{
+				// var_dump($group_name, $preferences[$site->site_id]);
+				// If we're dealing with channel post privileges
+				if (
+					($group_name == 'cp_channel_post_privs' OR $group_name == "cp_template_access_privs") AND 
+					isset($preferences[$site->site_id])
+				)
+				{
+					switch ($group_name)
+					{
+						case 'cp_channel_post_privs':
+							$current_permissions = $channel_perms[$site->site_id];
+							$current_names = $channel_names;
+							break;
+						case 'cp_template_access_privs':
+							$current_permissions = $preferences[$site->site_id];
+							$current_names = $template_names;
+							break;
+						default:
+							continue;
+							break;
+					}
+
+					foreach ($current_permissions as $current_id => $preference_value) 
+					{
+						$form[$site->site_id][$group_name][] = array(
+							'label' => lang('can_post_in') . NBS . NBS . $this->_build_group_data_label(
+								$current_names[$current_id],
+								TRUE
+							),
+							'controls' => $this->_build_group_data_input(
+								$current_id,
+								$preference_value,
+								$site->site_id
+							)
+						);
+					}
+				}
+				// If we're building the security lock
+				else if ($group_name == 'security_lock')
+				{
+					$form[$site->site_id][$group_name][] = array(
+						'label' => '<p><strong class="notice">'.lang('enable_lock').'</strong><br />'.lang('lock_description').'</p>',
+						'controls' => $this->_build_group_data_input(
+							'is_locked',
+							$group_data[$site->site_id]['is_locked'],
+							$site->site_id
+						)
+					);
+					continue;
+				}
+				// Otherwise, loop through the keyed preferences
+				else if ($group_name != 'cp_template_access_privs' AND $group_name != 'cp_channel_post_privs')
+				{
+					foreach ($preferences as $preference_name => $preference_value) 
+					{
+						$form[$site->site_id][$group_name][$preference_name] = array(
+							'label' => $this->_build_group_data_label($preference_name),
+							'controls' => $this->_build_group_data_input(
+								$preference_name,
+								$group_data[$site->site_id][$preference_name],
+								$site->site_id
+							)
+						);
+					}
+				}
+			}
 		}
 
-		$default_id = $query->row('site_id');
+		return $form;
+	}
+
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Build the module block's items
+	 *
+	 * @param integer $group_id The id of the group being edited
+	 * 
+	 * @return Array of module items, labels and form controls
+	 */
+	private function _setup_module_data($group_id)
+	{
+		list($module_names, $module_perms) = $this->_setup_module_names($group_id);
+
+		$module_data = array();
+
+		foreach ($module_perms as $module_id => $module_value)
+		{
+			$module_data[] = array(
+				'label' => lang('can_access_mod') . NBS . NBS . $this->_build_group_data_label(
+					$module_names[$module_id],
+					TRUE
+				),
+				'controls' => $this->_build_group_data_input(
+					$module_id,
+					$module_value,
+					FALSE
+				)
+			);
+		}
+
+		return $module_data;
+	}
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Builds the label for group data
+	 * 
+	 * @param string $lang_key Either the lang key or the language itself
+	 * @param boolean $alert_override Pass in true if you want it to have the 
+	 * 		notice class regardless
+	 * 
+	 * @return string The label for the item
+	 */
+	private function _build_group_data_label($lang_key, $alert_override = FALSE)
+	{
+		// Assign items to highlight
+		$alert = array(
+			'can_view_offline_system',
+			'can_access_cp',
+			'can_admin_channels',
+			'can_admin_upload_prefs',
+			'can_admin_templates',
+			'can_delete_members',
+			'can_admin_mbr_groups',
+			'can_admin_mbr_templates',
+			'can_ban_users',
+			'can_admin_members',
+			'can_admin_design',
+			'can_admin_modules',
+			'can_edit_categories',
+			'can_delete_categories',
+			'can_delete_self',
+			'enable_lock'
+		);
+
+		$label = lang($lang_key, $lang_key);
+
+		if (in_array($lang_key, $alert) OR $alert_override)
+		{
+			$label = '<strong class="notice">' . $label . '</strong>';	
+		}
+
+		return $label;
+	}
+
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Builds the input item for the member group data
+	 * 
+	 * @param string $preference_name The preference's name, no site_id appended
+	 * @param string $preference_value The preference's value
+	 * @param integer $site_id The ID of the site we're dealing with
+	 * 
+	 * @return string The fully built input item for the form
+	 */
+	private function _build_group_data_input($preference_name, $preference_value, $site_id)
+	{
+		// Items that should be in an input box
+		$text_inputs = array( 
+			'search_flood_control',
+			'prv_msg_send_limit',
+			'prv_msg_storage_limit',
+			'mbr_delete_notify_emails'
+		);		
 		
-		// Translate the group title 	
-		// We only translate this if it has not been edited
+		$input = '';
+		$input_name = ($site_id) ? $site_id . '_' . $preference_name : $preference_name;
+
+		if (in_array($preference_name, $text_inputs)) 
+		{
+			$input = form_input($input_name, $preference_value, 'class="field"');
+		}
+		else
+		{
+			// If we're dealing with is_locked, use the correct lang keys
+			if ($preference_name == 'is_locked') 
+			{
+				$yes_lang_key = 'locked';
+				$no_lang_key = 'unlocked';
+			}
+			else
+			{
+				$yes_lang_key = 'yes';
+				$no_lang_key = 'no';
+			}
+
+			$yes_id = $input_name . '_y';
+			$no_id = $input_name . '_n';
+
+			$input  = lang($yes_lang_key, $yes_id).NBS;
+			$input .= form_radio(array(
+				'name' => $input_name, 
+				'id' => $yes_id, 
+				'value' => 'y',
+				'checked' => ($preference_value == 'y') ? TRUE : FALSE
+			));
+			$input .= NBS.NBS.NBS.NBS.NBS;
+			$input .= lang($no_lang_key, $no_id).NBS;
+			$input .= form_radio(array(
+				'name' => $input_name,
+				'id' => $no_id,
+				'value' => 'n',
+				'checked' => ($preference_value == 'n') ? TRUE : FALSE
+			));
+			$input .= NBS.NBS.NBS.NBS.NBS;
+		}
+
+		return $input;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Assign clusters of member groups
+	 *
+	 * NOTE: the associative value (y/n) is the default setting used
+	 * only when we are showing the "create new group" form
+	 */
+	private function _member_group_cluster($channel_perms, $template_perms, $group_id)
+	{
+		$G = array(
+			'security_lock'		=> array(
+				'is_locked' 				=> 'n',
+			),
+			'site_access'	 	=> array (
+				'can_view_online_system'	=> 'n',
+				'can_view_offline_system'	=> 'n'
+			),
+			'mbr_account_privs' => array (
+				'can_view_profiles'			=> 'n',
+				'can_email_from_profile'	=> 'n',
+				'can_edit_html_buttons'		=> 'n',
+				'include_in_authorlist'		=> 'n',
+				'include_in_memberlist'		=> 'n',
+				'include_in_mailinglists'	=> 'y',
+				'can_delete_self'			=> 'n',
+				'mbr_delete_notify_emails'	=> $this->config->item('webmaster_email')
+			),
+			'commenting_privs' => array (
+				'can_post_comments'			=> 'n',
+				'exclude_from_moderation'	=> 'n'
+			),
+
+			'search_privs'		=> array (
+				'can_search'				=> 'n',
+				'search_flood_control'		=> '30'
+			),
+
+			'priv_msg_privs'	=> array (
+				'can_send_private_messages'			=> 'n',
+				'prv_msg_send_limit'				=> '20',
+				'prv_msg_storage_limit'				=> '60',
+				'can_attach_in_private_messages'	=> 'n',
+				'can_send_bulletins'				=> 'n'
+			),
+
+			'global_cp_access' => array (
+				'can_access_cp'		 		=> 'n',
+				'can_access_content'		=> 'n',
+				'can_access_publish'		=> 'n',
+				'can_access_edit'			=> 'n',												
+				'can_access_files'	 		=> 'n',
+				'can_access_design'	 		=> 'n',
+				'can_access_addons'			=> 'n',
+				'can_access_modules'		=> 'n',
+				'can_access_extensions'		=> 'n',
+				'can_access_accessories'	=> 'n',
+				'can_access_plugins'		=> 'n',												
+				'can_access_fieldtypes'		=> 'n',
+				'can_access_members'		=> 'n',
+				'can_access_admin'	  		=> 'n',
+				'can_access_sys_prefs'	 	=> 'n',
+				'can_access_content_prefs'	=> 'n',
+				'can_access_tools'			=> 'n',
+				'can_access_comm'	 		=> 'n',
+				'can_access_utilities'		=> 'n',
+				'can_access_data'			=> 'n',
+				'can_access_logs'	 		=> 'n'												
+			),
+
+			'cp_admin_privs'	=> array (
+				'can_admin_channels'	 	=> 'n',
+				'can_admin_upload_prefs' 	=> 'n',
+				'can_admin_templates'		=> 'n',
+				'can_admin_design' 			=> 'n',												
+				'can_admin_members'	 		=> 'n',
+				'can_admin_mbr_groups'  	=> 'n',
+				'can_admin_mbr_templates'  	=> 'n',
+				'can_delete_members'		=> 'n',
+				'can_ban_users'		 		=> 'n',
+				'can_admin_modules'	 		=> 'n'
+			),
+
+			'cp_email_privs' => array (
+				'can_send_email'			=> 'n',
+				'can_email_member_groups'	=> 'n',
+				'can_email_mailinglist'		=> 'n',
+				'can_send_cached_email'		=> 'n',
+			),
+
+			'cp_channel_privs'	=>  array(
+				'can_view_other_entries'	=> 'n',
+				'can_delete_self_entries'  	=> 'n',
+				'can_edit_other_entries'	=> 'n',
+				'can_delete_all_entries'	=> 'n',
+				'can_assign_post_authors' 	=> 'n',
+				'can_edit_categories'		=> 'n',
+				'can_delete_categories'		=> 'n',
+			),
+
+			'cp_channel_post_privs'	=>  $channel_perms,
+
+			'cp_comment_privs' => array (
+				'can_moderate_comments'		=> 'n',
+				'can_view_other_comments'	=> 'n',
+				'can_edit_own_comments'	 	=> 'n',
+				'can_delete_own_comments'	=> 'n',
+				'can_edit_all_comments'	 	=> 'n',
+				'can_delete_all_comments'	=> 'n'
+			),
+										
+			'cp_template_access_privs' =>  $template_perms
+		);
+
+		// Super Admin Group can not be edited
+		// If the form being viewed is the Super Admin one we only allow the name to be changed.
+		if ($group_id === 1)
+		{
+			$G = array('mbr_account_privs' => array (
+				'include_in_authorlist' => 'n', 'include_in_memberlist' => 'n'
+			));
+		}
+
+		return $G;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup template names
+	 *
+	 * Assembles template names from the database for use in the group_data array
+	 *
+	 * @param 	int 	member group id used for permissions checking
+	 * @return 	array 	array of template namesa and associated permissions
+	 */
+	private function _setup_template_names($id)
+	{
+		$template_names = array();
+		$template_perms = array();
+		$template_ids   = array();
 		
-		$group_title = ($group_id == '') ? '' : $group_data[$default_id]['group_title'];
-		$group_description = ($group_id == '') ? '' : $group_data[$default_id]['group_description'];
+		$templates = $this->db->select('group_id, group_name, site_id')
+							  ->order_by('group_name')
+							  ->get('template_groups');
+		
+		if ($id === 1)
+		{
+			foreach ($templates->result() as $row)
+			{
+				$template_names['template_id_'.$row->group_id] = $row->group_name;
+				$template_perms[$row->site_id]['template_id_'.$row->group_id] = 'y';
+			}
+
+			$templates->free_result();
 			
-		if (isset($this->english[$group_title]))
-		{
-			$group_title = lang(strtolower(str_replace(" ", "_", $group_title)));
+			return array($template_names, $template_perms);
 		}
 
-		if ($clone_id != '')
+		$qry = $this->db->select('template_group_id')
+						->get_where('template_member_groups', array(
+							'group_id' => $id
+						));
+
+		foreach ($qry->result() as $row)
 		{
-			$group_title = '';
-			$group_description = '';
-			$vars['form_hidden']['clone_id'] = $clone_id;
+			$template_ids[$row->template_group_id] = TRUE;
 		}
 
-		$vars['form_hidden']['group_id'] = $group_id;
-		
-		//  Group name and description form fields
-		$vars['group_title'] = $group_title;
-		$vars['group_description'] = $group_description;
-		$vars['group_id'] = $group_id;
-			
-		//  Group lock
-	 	$vars['is_locked'] = ($group_data[$default_id]['is_locked'] == 'y') ? 'y' : 'n';
+		$qry->free_result();
 
-		//  Fetch the names and IDs of all channels
-		$this->db->select('channel_id, site_id, channel_title');
- 		$this->db->order_by('channel_title');
-		$query 	= $this->db->get('channels');
+		foreach ($templates->result() as $row)
+		{
+			$template_names['template_id_'.$row->group_id] = $row->group_name;
+			$template_perms[$row->site_id]['template_id_'.$row->group_id] = isset($template_ids[$row->group_id]) ? 'y' : 'n';
+		}
 
-		$channel_names = array();
-		$channel_perms = array();
-		$channel_ids	= array();
+		$templates->free_result();
 
+		return array($template_names, $template_perms);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup Module Names 
+	 *
+	 * Sets up module names for use in the edit_member_group data array.
+	 *
+	 * @param 	int 	member group id
+	 * @return 	array 	array of module names and associated permissions.
+	 */
+	private function _setup_module_names($id)
+	{
+		// Load Module Language Files.
 		$mod_lang_files = $this->addons->get_files('modules');
 
 		foreach ($mod_lang_files as $m => $i)
 		{
 			$this->lang->loadfile($m);
 		}
-
-        if ($id == 1)
-        {
-			foreach($query->result_array() as $row)
-			{
-				$channel_names['channel_id_'.$row['channel_id']] = $row['channel_title'];
-				$channel_perms[$row['site_id']]['channel_id_'.$row['channel_id']] = 'y';
-			}
-		}
-		else
-		{
-			$this->db->select('channel_id');
- 			$this->db->where('group_id', $id);		
-			$res = $this->db->get('channel_member_groups');				
-			
-			if ($res->num_rows() > 0)
-			{
-				foreach ($res->result_array() as $row)
-				{
-					$channel_ids[$row['channel_id']] = TRUE;
-				}
-			}
-									
-			foreach($query->result_array() as $row)
-			{
-				$channel_names['channel_id_'.$row['channel_id']] = $row['channel_title'];
-				$channel_perms[$row['site_id']]['channel_id_'.$row['channel_id']] = (isset($channel_ids[$row['channel_id']])) ? 'y' : 'n';
-			}
-		}
-	
-		$vars['channel_names'] = $channel_names;
 		
-		//  Fetch the names and IDs of all modules	
-		$this->db->select('module_id, module_name');
- 		$this->db->where('has_cp_backend', 'y');		
- 		$this->db->order_by('module_name');
-		$query = $this->db->get('modules');		
-
 		$module_names = array();
 		$module_perms = array();
-		$module_ids	= array();
+		$module_ids   = array();
 
-        if ($id == 1)
-        {
-			foreach($query->result_array() as $row)
-			{
-				$name = lang(strtolower($row['module_name'] . '_module_name'));
-				$name = ucwords(str_replace('_', ' ', $name));
-				
-				$module_names['module_id_'.$row['module_id']] = $name;
-				$module_perms['module_id_'.$row['module_id']] = 'y';
-			}
-		}
-		else
+		$modules = $this->db->select('module_id, module_name')
+							->where('has_cp_backend', 'y')
+							->order_by('module_name')
+							->get('modules');
+
+		if ($id === 1)
 		{
-			$this->db->select('module_id');
- 			$this->db->where('group_id', $id);		
-			$res = $this->db->get('module_member_groups');	
-			
-			if ($res->num_rows() > 0)
+			// Super admins get it all
+			foreach ($modules->result() as $row)
 			{
-				foreach ($res->result_array() as $row)
-				{
-					$module_ids[$row['module_id']] = TRUE;
-				}
-			}
-
-			foreach($query->result_array() as $row)
-			{
-				$name = lang(strtolower($row['module_name'] . '_module_name'));
+				$name = lang(strtolower($row->module_name . '_module_name'));
 				$name = ucwords(str_replace('_', ' ', $name));
 
-				$module_names['module_id_'.$row['module_id']] = $name;
-				$module_perms['module_id_'.$row['module_id']] = (isset($module_ids[$row['module_id']])) ? 'y' : 'n';
+				$module_names['module_id_'.$row->module_id] = $name;
+				$module_perms['module_id_'.$row->module_id] = 'y';
 			}
+
+			$modules->free_result();
+
+			return array($module_names, $module_perms);
 		}
-		//var_dump($module_names);
-		$vars['module_names'] = $module_names;
-		$vars['module_perms'] = $module_perms;
+
+		$qry = $this->db->select('module_id')
+						->get_where('module_member_groups', array(
+							'group_id' => $id
+						));
+
+		foreach ($qry->result() as $row)
+		{
+			$module_ids[$row->module_id] = TRUE;
+		}
+
+		$qry->free_result();
+
+		foreach ($modules->result() as $row)
+		{
+			$name = lang(strtolower($row->module_name . '_module_name'));
+			$name = ucwords(str_replace('_', ' ', $name));
+
+			$module_names['module_id_'.$row->module_id] = $name;
+			$module_perms['module_id_'.$row->module_id] = isset($module_ids[$row->module_id]) ? 'y' : 'n';	
+		}
+
+		$modules->free_result();
+
+		return array($module_names, $module_perms);
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup channel names
+	 *
+	 * Gets channel names from the database and processes permissions, 
+	 * based on member group id
+	 *
+	 * @param 	int 	member group id
+	 * @return 	array 	array of channel names and associated permissions.
+	 */
+	private function _setup_channel_names($id)
+	{
+		$channel_names = array();
+		$channel_perms = array();
+		$channel_ids   = array();
 		
-		//  Fetch the names and IDs of all template groups
-		$this->db->select('group_id, group_name, site_id');
- 		$this->db->order_by('group_name');
-		$query = $this->db->get('template_groups');			
+		$channels = $this->db->select('channel_id, site_id, channel_title')
+							 ->order_by('channel_title')
+							 ->get('channels');
 
-		$template_names = array();
-		$template_perms = array();
-		
-		if ($id == 1)
+		// Super Admins get everything
+		if ($id === 1)
 		{
-			foreach ($query->result_array() as $row)
+			foreach ($channels->result() as $row)
 			{
-				$template_names['template_id_'.$row['group_id']] = $row['group_name'];
-				$template_perms[$row['site_id']]['template_id_'.$row['group_id']] = 'y';				
-			}
-		}
-		else
-		{
-			$this->db->select('template_group_id');
- 			$this->db->where('group_id', $id);		
-			$res = $this->db->get('template_member_groups');	
-
-			$template_ids = array();
-
-			if ($res->num_rows() > 0)
-			{
-				foreach ($res->result_array() as $row)
-				{
-					$template_ids[$row['template_group_id']] = TRUE;
-				}
+				$channel_names['channel_id_'.$row->channel_id] = $row->channel_title;
+				$channel_perms[$row->site_id]['channel_id_'.$row->channel_id] = 'y';
 			}
 
-			foreach($query->result_array() as $row)
-			{
-				$template_names['template_id_'.$row['group_id']] = $row['group_name'];
-				$template_perms[$row['site_id']]['template_id_'.$row['group_id']] = (isset($template_ids[$row['group_id']])) ? 'y' : 'n';
-			}
+			return array($channel_names, $channel_perms);
 		}
 
-		$vars['template_names'] = $template_names;
-
-		/** ----------------------------------------------------
-		/**  Assign clusters of member groups
-		/** ----------------------------------------------------*/
-				
-		// NOTE: the associative value (y/n) is the default setting used
-		// only when we are showing the "create new group" form
-
-		$G = array(
-				'site_access'	 	=> array (
-												'can_view_online_system'	=> 'n',
-												'can_view_offline_system'	=> 'n'
-											 ),
-
-				'mbr_account_privs' => array (
-												'can_view_profiles'			=> 'n',
-												'can_email_from_profile'	=> 'n',
-												'can_edit_html_buttons'		=> 'n',
-												'include_in_authorlist'		=> 'n',
-												'include_in_memberlist'		=> 'n',
-												'include_in_mailinglists'	=> 'y',
-												'can_delete_self'			=> 'n',
-												'mbr_delete_notify_emails'	=> $this->config->item('webmaster_email')
-											 ),
-
-				'commenting_privs' => array (
-												'can_post_comments'			=> 'n',
-												'exclude_from_moderation'	=> 'n'
-											 ),
-
-				'search_privs'		=> array (
-												'can_search'				=> 'n',
-												'search_flood_control'		=> '30'
-											 ),
-
-				'priv_msg_privs'	=> array (
-												'can_send_private_messages'			=> 'n',
-												'prv_msg_send_limit'				=> '20',
-												'prv_msg_storage_limit'				=> '60',
-												'can_attach_in_private_messages'	=> 'n',
-												'can_send_bulletins'				=> 'n'
-											 ),
-
-				'global_cp_access' => array (
-												'can_access_cp'		 		=> 'n',
-												'can_access_content'		=> 'n',
-												'can_access_publish'		=> 'n',
-												'can_access_edit'			=> 'n',												
-												'can_access_files'	 		=> 'n',
-												'can_access_design'	 		=> 'n',
-												'can_access_addons'			=> 'n',
-												'can_access_modules'		=> 'n',
-												'can_access_extensions'		=> 'n',
-												'can_access_accessories'	=> 'n',
-												'can_access_plugins'		=> 'n',												
-												'can_access_fieldtypes'		=> 'n',
-												'can_access_members'		=> 'n',
-												'can_access_admin'	  		=> 'n',
-												'can_access_sys_prefs'	 	=> 'n',
-												'can_access_content_prefs'	=> 'n',
-												'can_access_tools'			=> 'n',
-												'can_access_comm'	 		=> 'n',
-												'can_access_utilities'		=> 'n',
-												'can_access_data'			=> 'n',
-												'can_access_logs'	 		=> 'n'												
-											 ),
-
-				'cp_admin_privs'	=> array (
-												'can_admin_channels'	 	=> 'n',
-												'can_admin_upload_prefs' 	=> 'n',
-												'can_admin_templates'		=> 'n',
-												'can_admin_design' 			=> 'n',												
-												'can_admin_members'	 		=> 'n',
-												'can_admin_mbr_groups'  	=> 'n',
-												'can_admin_mbr_templates'  	=> 'n',
-												'can_delete_members'		=> 'n',
-												'can_ban_users'		 		=> 'n',
-												'can_admin_modules'	 		=> 'n'
-											 ),
-
-				'cp_email_privs' => array (
-												'can_send_email'			=> 'n',
-												'can_email_member_groups'	=> 'n',
-												'can_email_mailinglist'		=> 'n',
-												'can_send_cached_email'		=> 'n',
-											 ),
-
-				'cp_channel_privs'	=>  array(
-												'can_view_other_entries'	=> 'n',
-												'can_delete_self_entries'  => 'n',
-												'can_edit_other_entries'	=> 'n',
-												'can_delete_all_entries'	=> 'n',
-												'can_assign_post_authors'  => 'n',
-												'can_edit_categories'		=> 'n',
-												'can_delete_categories'		=> 'n',
-											 ),
-
-				'cp_channel_post_privs'	=>  $channel_perms,
-
-				'cp_comment_privs' => array (
-												'can_moderate_comments'		=> 'n',
-												'can_view_other_comments'	=> 'n',
-												'can_edit_own_comments'	 => 'n',
-												'can_delete_own_comments'	=> 'n',
-												'can_edit_all_comments'	 => 'n',
-												'can_delete_all_comments'	=> 'n'
-											 ),
-											
-				'cp_template_access_privs' =>  $template_perms,
-
-//				'cp_module_access_privs'	=>  $module_perms, // handled via $vars['module_names'] and $vars['module_perms']
-					);
-
-		// Super Admin Group can not be edited
-		// If the form being viewed is the Super Admin one we only allow the name to be changed.
-		if ($group_id == 1)
-		{
-			$G = array('mbr_account_privs' => array ('include_in_authorlist' => 'n', 'include_in_memberlist' => 'n'));
-		}
-
-		//  Assign items we want to highlight
-		$vars['alert'] = array(
-						'can_view_offline_system',
-						'can_access_cp',
-						'can_admin_channels',
-						'can_admin_upload_prefs',
-						'can_admin_templates',
-						'can_delete_members',
-						'can_admin_mbr_groups',
-						'can_admin_mbr_templates',
-						'can_ban_users',
-						'can_admin_members',
-						'can_admin_design',
-						'can_admin_modules',
-						'can_edit_categories',
-						'can_delete_categories',
-						'can_delete_self'
-					  );
-
-		// Items that should be shown in an input box
-		$vars['textbox'] = array(
-						'search_flood_control',
-						'prv_msg_send_limit',
-						'prv_msg_storage_limit',
-						'mbr_delete_notify_emails'
-					  );
-
-		$s = 0;
-
-		foreach($sites_query->result_array() as $sites)
-		{
-
-			$vars['sites_dropdown'][$sites['site_id']] = $sites['site_label'];
-
-			foreach ($G as $g_key => $g_val)
-			{
-				if ($g_key == 'cp_module_access_privs')
-				{
-					if ($s == 0)
-					{
-						$add = '';
-					}
-					else
-					{
-						continue;
-					}
-				}
-				else
-				{
-					$add = $sites['site_id'].'_';
-				}
-
-				foreach($g_val as $key => $val)
-				{
-					if ($g_key == 'cp_module_access_privs')
-					{
-						$vars['group_data'][$sites['site_id']][$add.$key] = $group_data[$key];
-					}
-					elseif (isset($group_data[$sites['site_id']][$key]) && $group_data[$sites['site_id']][$key] != '')
-					{
-						$vars['group_data'][$sites['site_id']][$g_key][$add.$key] = $group_data[$sites['site_id']][$key];
-					}
-					elseif ($key == $sites['site_id'])
-					{
-						foreach($val as $p => $a)
-						{
-						$vars['group_data'][$sites['site_id']][$g_key][$add.$p] = $a;
-						}
-					}
-					else
-					{
-						$vars['group_data'][$sites['site_id']][$g_key][$add.$key] = $val;
-					}
-				}
-			}
+		$qry = $this->db->select('channel_id')
+						->get_where('channel_member_groups', array(
+							'group_id'	=> $id
+						));
 			
-			++$s;
+		// Let's see what the members have access to.
+		foreach ($qry->result() as $row)
+		{
+			$channel_ids[$row->channel_id] = TRUE;
 		}
 
-		//  Submit button lang key
-		$vars['action'] = ($group_id == '') ? 'submit' : 'update';
+		$qry->free_result();
 
-		$this->cp->set_variable('cp_page_title', $title);
+		foreach ($channels->result() as $row)
+		{
+			$channel_names['channel_id_'.$row->channel_id] = $row->channel_title;
+			$channel_perms[$row->site_id]['channel_id_'.$row->channel_id] = (isset($channel_ids[$row->channel_id])) ? 'y' : 'n';
+		}
 
-		$this->load->view('members/edit_member_group', $vars);
+		$channels->free_result();
+
+		return array($channel_names, $channel_perms);
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup Group Data
+	 *
+	 * Sets up the initial array of member group data for use in edit_member_groups
+	 *
+	 * @param 	int 	member group id
+	 * @return 	array 
+	 */
+	private function _setup_group_data($id)
+	{
+		$member_group_q = $this->db->get_where('member_groups',
+										array('group_id' => $id));
+		
+		$group_data = array();
+		
+		foreach ($member_group_q->result_array() as $row)
+		{
+			$group_data[$row['site_id']] = $row;
+		}
+		
+		$member_group_q->free_result();
+
+		return $group_data;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get Sites
+	 *
+	 * Retrieves site_id and site_label for use in the edit_member_groups fn.
+	 * Ideally I'd like to see the sites query coming from the session cache 
+	 * in the future, but I do suppose this works for the time being.
+	 *
+	 * @return 	array 	$sites_q => DB Object, $sites_dropdown => array
+	 */
+	private function _get_sites()
+	{
+		$site_id = $this->config->item('multiple_sites_enabled') == 'y' ? '' : 1;
+
+		if ($site_id != '')
+		{
+			$this->db->where('site_id', $site_id);
+		}
+
+		$sites_q = $this->db->select('site_id, site_label')
+							->order_by('site_label')
+							->get('sites');
+		
+		$sites_dropdown = array();
+		
+		// Setup Sites dropdown
+		foreach ($sites_q->result() as $row)
+		{
+			$sites_dropdown[$row->site_id] = $row->site_label;
+		}
+
+		return array($sites_q, $sites_dropdown);
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup title description
+	 *
+	 * @param 	int 	member group id
+	 * @param 	array 	group data
+	 *
+	 * @return 	array
+	 */
+	private function _setup_title_desc($group_id, $group_data)
+	{
+		$site_id = $this->config->item('site_id');
+		
+		$group_title = ( ! $group_id) ? '' : $group_data[$site_id]['group_title'];
+		$group_description = ( ! $group_id) ? '' : $group_data[$site_id]['group_description'];
+
+		// Can this be translated?
+		if (isset($this->english[$group_title]))
+		{
+			$group_title = lang(strtolower(str_replace(' ', '_', $group_title)));
+		}
+
+		return array($group_title, $group_description);
 	}
 
 	// --------------------------------------------------------------------
-
+	
 	/**
 	 * Member Config
 	 *
@@ -1945,17 +2210,11 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->cp->set_variable('cp_page_title', lang('member_cfg'));
 
-		$this->cp->add_js_script('ui', 'accordion');
-
 		$this->jquery->tablesorter('table', '{
 			headers: {},
 			widgets: ["zebra"]
 		}');
 
-		$this->javascript->output('
-			$("#member_group_details").accordion({autoHeight: false,header: "h3"});
-		');
-			
 		$this->javascript->compile();
 		
 		$this->load->view('members/member_config', $vars);
