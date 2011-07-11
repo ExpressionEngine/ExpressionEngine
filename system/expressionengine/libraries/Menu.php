@@ -942,7 +942,13 @@ class EE_Menu {
 			
 			'cp/tools/data/',
 			
-			'content_files'			=> 'cp/content/file_manager/index.html',
+			'content_files'			=> array(
+				'index'							=> 'cp/content/files/file_manager.html',
+				'file_manager'					=> 'cp/content/files/file_manager.html',
+				'edit_upload_preferences'		=> 'cp/content/files/file_upload_preferences.html',
+				'file_upload_preferences'		=> 'cp/content/files/file_upload_preferences.html',					
+				'watermark_preferences'			=> 'cp/content/files/watermark_preferences.html'
+				),
 			
 			'tools_logs'			=> array(
 				'index'				=> 'cp/tools/index.html',
