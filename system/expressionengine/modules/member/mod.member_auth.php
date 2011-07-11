@@ -106,8 +106,8 @@ class Member_auth extends Member {
 		
 		// Figure out how many sites we're dealing with here
 		$sites = $this->EE->config->item('multi_login_sites');
-		$sites_array = explode('|', $sites);
-
+		$sites_array = $this->_normalize_sites($sites); // explode('|', $sites);
+		
 		// No username/password?  Bounce them...
 		$multi	  = ($this->EE->input->get('multi') && count($sites_array) > 0) ? 
 						$this->EE->input->get('multi') : 0;
@@ -133,7 +133,6 @@ class Member_auth extends Member {
 
 			$this->EE->output->show_user_error('general', $line);
 		}
-
 
 		$success = '';
 		$sites	 = $this->EE->config->item('multi_login_sites');
@@ -167,6 +166,35 @@ class Member_auth extends Member {
 		$this->$success($sites_array);
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * This function normalizes the URL list coming from config.php
+	 *
+	 * Accidentally having a trailing slash or white space could cause the 
+	 * comparison to the functions->site_url() to fail.
+	 *
+	 * @param 	string 		string of sites from config.php
+	 * @return 	array 		cleaned array.
+	 */
+	private function _normalize_sites($sites)
+	{
+		$sites = explode('|', $sites);
+
+		if ( ! $sites)
+		{
+			return array();
+		}
+
+		foreach ($sites as $key => $site)
+		{
+			// Remove a trailing slash if there is one
+			$sites[$key] = trim(rtrim($site, '/'));
+		}
+
+		return $sites;
+	}
+	
 	// --------------------------------------------------------------------
 
 	/**
@@ -207,6 +235,13 @@ class Member_auth extends Member {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Do member auth
+	 *
+	 * @param 	string 	POSTed username
+	 * @param 	string 	POSTed password
+	 * @return 	object 	session data.
+	 */
 	private function _do_auth($username, $password)
 	{
 		$sess = $this->EE->auth->authenticate_username($username, $password);
@@ -251,6 +286,12 @@ class Member_auth extends Member {
 	
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Do Multi-site authentication
+	 *
+	 * @param 	array 	array of sites
+	 * @return 	object 	member auth object
+	 */
 	private function _do_multi_auth($sites)
 	{
 		if ( ! $sites OR $this->EE->config->item('allow_multi_logins') == 'n')
@@ -297,9 +338,20 @@ class Member_auth extends Member {
 		return $incoming;
 	}
 	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Redirect next site
+	 *
+	 * This function redirects to the next site for multi-site login based on
+	 * the array setup in config.php
+	 *
+	 *
+	 */
 	public function _redirect_next_site($sites, $current_idx, $current_url)
 	{
 		$sites = explode('|', $sites);
+		$num_sites = count($sites);
 		$orig_id = $this->EE->input->get('orig_site_id');
 		$orig_idx = $this->EE->input->get('orig');
 		
@@ -331,7 +383,7 @@ class Member_auth extends Member {
 				'cur'	=> $next_idx,
 				'orig'	=> $orig_idx,
 				'multi'	=> $this->EE->session->userdata('session_id'),
-				'orig_site_id' => $orig_id
+				'orig_site_id' => $orig_id,
 			);
 			
 			$next_url = $sites[$next_idx].'?'.http_build_query($next_qs);
