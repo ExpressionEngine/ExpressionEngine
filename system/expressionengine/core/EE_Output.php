@@ -458,6 +458,13 @@ class EE_Output extends CI_Output {
 
 	// --------------------------------------------------------------------
 	
+	/**
+	 * Setter for the remove_unparsed_variables class var
+	 *
+	 * used in the ee.php controller.
+	 *
+	 * @param 	boolean 	
+	 */
 	public function remove_unparsed_variables($remove_unparsed_vars)
 	{
 		$this->remove_unparsed_variables = $remove_unparsed_vars;
