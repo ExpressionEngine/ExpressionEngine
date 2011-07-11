@@ -24,7 +24,7 @@ $lang = array(
 "Member Fields",
 
 "member_cfg" =>
-"Membership Preferences",
+"Member Group \"%s\" Settings",
 
 "preferences_updated" =>
 'Preferences Updated',
