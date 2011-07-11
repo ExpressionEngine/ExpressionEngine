@@ -23,39 +23,34 @@ if ($EE_view_disable !== TRUE)
 				$this->table->template['thead_open'] = '<thead class="visualEscapism">';
 			?>
 
-			<h3 class="accordion"><?=lang('channel_base_setup')?></h3>
-			<div style="padding: 5px 1px;">
-
-				<?php
-					$this->table->set_heading(lang('preference'), lang('setting'));
-
-					$preference = required().lang('channel_title', 'channel_title').form_error('channel_title');
-					$controls = form_input(array('id'=>'channel_title','name'=>'channel_title','class'=>'fullfield', 'value'=>set_value('channel_title', $channel_title)));
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					$preference = required().lang('channel_name', 'channel_name').form_error('channel_name');
-					$controls = form_input(array('id'=>'channel_name','name'=>'channel_name','class'=>'fullfield', 'value'=>set_value('channel_name', $channel_name)));
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					$preference = lang('channel_description', 'channel_description');
-					$controls = form_input(array('id'=>'channel_description','name'=>'channel_description','class'=>'fullfield', 'value'=>$channel_description));
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					$preference = lang('channel_lang', 'channel_lang');
-					$controls = $this->functions->encoding_menu('channel_lang', $channel_lang);
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-
-					echo $this->table->generate();
-					$this->table->clear(); // Clear out for the next one
-				?>
-
-			</div>
-
-			<h3 class="accordion"><?=lang('paths')?></h3>
-			<div style="padding: 5px 1px;">
 
 			<?php
+				// Create the Channel Base Setup
+				$this->table->set_caption(lang('channel_base_setup'));
+				$this->table->set_heading(lang('preference'), lang('setting'));
+
+				$preference = required().lang('channel_title', 'channel_title').form_error('channel_title');
+				$controls = form_input(array('id'=>'channel_title','name'=>'channel_title','class'=>'fullfield', 'value'=>set_value('channel_title', $channel_title)));
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+
+				$preference = required().lang('channel_name', 'channel_name').form_error('channel_name');
+				$controls = form_input(array('id'=>'channel_name','name'=>'channel_name','class'=>'fullfield', 'value'=>set_value('channel_name', $channel_name)));
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+
+				$preference = lang('channel_description', 'channel_description');
+				$controls = form_input(array('id'=>'channel_description','name'=>'channel_description','class'=>'fullfield', 'value'=>$channel_description));
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+
+				$preference = lang('channel_lang', 'channel_lang');
+				$controls = $this->functions->encoding_menu('channel_lang', $channel_lang);
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+
+				echo $this->table->generate();
+				$this->table->clear(); // Clear out for the next one
+
+				// -------------------------------------------------------------
+				// Create the Paths table
+				$this->table->set_caption(lang('paths'));
 				$this->table->set_heading(lang('preference'), lang('setting'));
 
 				$preference = lang('channel_url', 'channel_url').'<br />'.lang('channel_url_exp');
@@ -84,130 +79,111 @@ if ($EE_view_disable !== TRUE)
 
 				echo $this->table->generate();
 				$this->table->clear(); // Clear out for the next one
-			?>
 
-			</div>
+				// -------------------------------------------------------------
+				// Create the default settings / Administrative Preferences table
+				$this->table->set_caption(lang('default_settings'));
+				$this->table->set_heading(lang('preference'), lang('setting'));
 
-			<h3 class="accordion"><?=lang('default_settings')?></h3>
-			<div style="padding: 5px 1px;">
+				$preference = lang('deft_status', 'deft_status');
+				$controls = form_dropdown('deft_status', $deft_status_options, $deft_status, 'id="deft_status"');
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
-				<?php
-					$this->table->set_heading(lang('preference'), lang('setting'));
+				$preference = lang('deft_category', 'deft_category');
+				$controls = form_dropdown('deft_category', $deft_category_options, $deft_category, 'id="deft_category"');
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
-					$preference = lang('deft_status', 'deft_status');
-					$controls = form_dropdown('deft_status', $deft_status_options, $deft_status, 'id="deft_status"');
+				$preference = lang('deft_comments', 'deft_comments');
+				$controls = form_radio(array('name'=>'deft_comments', 'id'=>'deft_comments_y', 'value'=>'y', 'checked'=>($deft_comments == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'deft_comments_y').NBS.NBS.NBS.NBS.NBS;
+				$controls .= form_radio(array('name'=>'deft_comments', 'id'=>'deft_comments_n', 'value'=>'n', 'checked'=>($deft_comments == 'n') ? TRUE : FALSE)).NBS.lang('no', 'deft_comments_n');
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+
+				$preference = lang('search_excerpt', 'search_excerpt');
+				$controls = form_dropdown('search_excerpt', $search_excerpt_options, $search_excerpt, 'id="search_excerpt"');
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+
+				echo $this->table->generate();
+				$this->table->clear(); // Clear out for the next one
+
+				// -------------------------------------------------------------
+				// Create the Channel Posting Preferences table
+				$this->table->set_caption(lang('channel_settings'));
+				$this->table->set_heading(lang('preference'), lang('setting'));
+
+				$preference = lang('channel_html_formatting', 'channel_html_formatting');
+				$controls = form_dropdown('channel_html_formatting', $channel_html_formatting_options, $channel_html_formatting, 'id="channel_html_formatting"');
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+
+				$preference = lang('channel_allow_img_urls', 'channel_allow_img_urls');
+				$controls = form_radio(array('name'=>'channel_allow_img_urls', 'id'=>'channel_allow_img_urls_y', 'value'=>'y', 'checked'=>($channel_allow_img_urls == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'channel_allow_img_urls_y').NBS.NBS.NBS.NBS.NBS;
+				$controls .= form_radio(array('name'=>'channel_allow_img_urls', 'id'=>'channel_allow_img_urls_n', 'value'=>'n', 'checked'=>($channel_allow_img_urls == 'n') ? TRUE : FALSE)).NBS.lang('no', 'channel_allow_img_urls_n');
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+
+				$preference = lang('auto_link_urls', 'channel_auto_link_urls');
+				$controls = form_radio(array('name'=>'channel_auto_link_urls', 'id'=>'channel_auto_link_urls_y', 'value'=>'y', 'checked'=>($channel_auto_link_urls == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'channel_auto_link_urls_y').NBS.NBS.NBS.NBS.NBS;
+				$controls .= form_radio(array('name'=>'channel_auto_link_urls', 'id'=>'channel_auto_link_urls_n', 'value'=>'n', 'checked'=>($channel_auto_link_urls == 'n') ? TRUE : FALSE)).NBS.lang('no', 'channel_auto_link_urls_n');
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+
+				echo $this->table->generate();
+				$this->table->clear(); // Clear out for the next one
+
+				// -------------------------------------------------------------
+				// Create the Versioning Preferences table
+				$this->table->set_caption(lang('versioning'));
+				$this->table->set_heading(lang('preference'), lang('setting'));
+
+				$preference = lang('enable_versioning', 'enable_versioning');
+				$controls = form_radio(array('name'=>'enable_versioning', 'id'=>'enable_versioning_y', 'value'=>'y', 'checked'=>($enable_versioning == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'enable_versioning_y').NBS.NBS.NBS.NBS.NBS;
+				$controls .= form_radio(array('name'=>'enable_versioning', 'id'=>'enable_versioning_n', 'value'=>'n', 'checked'=>($enable_versioning == 'n') ? TRUE : FALSE)).NBS.lang('no', 'enable_versioning_n');
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+
+				$preference = lang('max_revisions', 'max_revisions');
+				$controls = form_input(array('id'=>'max_revisions','name'=>'max_revisions','class'=>'fullfield', 'value'=>$max_revisions));
+				$controls .= '<br/>'.form_checkbox(array('name'=>'clear_versioning_data', 'id'=>'clear_versioning_data', 'value'=>'y', 'checked'=>FALSE)).NBS.'<span class="notice">'.lang('clear_versioning_data', 'clear_versioning_data').'</span>';
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+
+				echo $this->table->generate();
+				$this->table->clear(); // Clear out for the next one
+
+				// -------------------------------------------------------------
+				// Create the Notification Settings table
+				$this->table->set_caption(lang('notification_settings'));
+				$this->table->set_heading(lang('preference'), lang('setting'));
+
+				$preference = lang('channel_notify', 'channel_notify');
+				$controls = form_radio(array('name'=>'channel_notify', 'id'=>'channel_notify_y', 'value'=>'y', 'checked'=>($channel_notify == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'channel_notify_y').NBS.NBS.NBS.NBS.NBS;
+				$controls .= form_radio(array('name'=>'channel_notify', 'id'=>'channel_notify_n', 'value'=>'n', 'checked'=>($channel_notify == 'n') ? TRUE : FALSE)).NBS.lang('no', 'channel_notify_n');
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+
+				$preference = lang('comment_notify_emails', 'channel_notify_emails');
+				$controls = form_input(array('id'=>'channel_notify_emails','name'=>'channel_notify_emails','class'=>'fullfield', 'value'=>$channel_notify_emails));
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+
+				if (isset($this->cp->installed_modules['comment'])) 
+				{
+					$preference = lang('comment_notify', 'comment_notify');
+					$controls = form_radio(array('name'=>'comment_notify', 'id'=>'comment_notify_y', 'value'=>'y', 'checked'=>($comment_notify == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_notify_y').NBS.NBS.NBS.NBS.NBS;
+					$controls .= form_radio(array('name'=>'comment_notify', 'id'=>'comment_notify_n', 'value'=>'n', 'checked'=>($comment_notify == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_notify_n');
 					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					$preference = lang('deft_category', 'deft_category');
-					$controls = form_dropdown('deft_category', $deft_category_options, $deft_category, 'id="deft_category"');
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					$preference = lang('deft_comments', 'deft_comments');
-					$controls = form_radio(array('name'=>'deft_comments', 'id'=>'deft_comments_y', 'value'=>'y', 'checked'=>($deft_comments == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'deft_comments_y').NBS.NBS.NBS.NBS.NBS;
-					$controls .= form_radio(array('name'=>'deft_comments', 'id'=>'deft_comments_n', 'value'=>'n', 'checked'=>($deft_comments == 'n') ? TRUE : FALSE)).NBS.lang('no', 'deft_comments_n');
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					$preference = lang('search_excerpt', 'search_excerpt');
-					$controls = form_dropdown('search_excerpt', $search_excerpt_options, $search_excerpt, 'id="search_excerpt"');
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					echo $this->table->generate();
-					$this->table->clear(); // Clear out for the next one
-				?>
-
-			</div>
-
-			<h3 class="accordion"><?=lang('channel_settings')?></h3>
-			<div style="padding: 5px 1px;">
-
-				<?php
-					$this->table->set_heading(lang('preference'), lang('setting'));
-
-					$preference = lang('channel_html_formatting', 'channel_html_formatting');
-					$controls = form_dropdown('channel_html_formatting', $channel_html_formatting_options, $channel_html_formatting, 'id="channel_html_formatting"');
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					$preference = lang('channel_allow_img_urls', 'channel_allow_img_urls');
-					$controls = form_radio(array('name'=>'channel_allow_img_urls', 'id'=>'channel_allow_img_urls_y', 'value'=>'y', 'checked'=>($channel_allow_img_urls == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'channel_allow_img_urls_y').NBS.NBS.NBS.NBS.NBS;
-					$controls .= form_radio(array('name'=>'channel_allow_img_urls', 'id'=>'channel_allow_img_urls_n', 'value'=>'n', 'checked'=>($channel_allow_img_urls == 'n') ? TRUE : FALSE)).NBS.lang('no', 'channel_allow_img_urls_n');
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					$preference = lang('auto_link_urls', 'channel_auto_link_urls');
-					$controls = form_radio(array('name'=>'channel_auto_link_urls', 'id'=>'channel_auto_link_urls_y', 'value'=>'y', 'checked'=>($channel_auto_link_urls == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'channel_auto_link_urls_y').NBS.NBS.NBS.NBS.NBS;
-					$controls .= form_radio(array('name'=>'channel_auto_link_urls', 'id'=>'channel_auto_link_urls_n', 'value'=>'n', 'checked'=>($channel_auto_link_urls == 'n') ? TRUE : FALSE)).NBS.lang('no', 'channel_auto_link_urls_n');
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					echo $this->table->generate();
-					$this->table->clear(); // Clear out for the next one
-				?>
-
-			</div>
-
-			<h3 class="accordion"><?=lang('versioning')?></h3>
-			<div style="padding: 5px 1px;">
-
-				<?php
-					$this->table->set_heading(lang('preference'), lang('setting'));
-
-					$preference = lang('enable_versioning', 'enable_versioning');
-					$controls = form_radio(array('name'=>'enable_versioning', 'id'=>'enable_versioning_y', 'value'=>'y', 'checked'=>($enable_versioning == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'enable_versioning_y').NBS.NBS.NBS.NBS.NBS;
-					$controls .= form_radio(array('name'=>'enable_versioning', 'id'=>'enable_versioning_n', 'value'=>'n', 'checked'=>($enable_versioning == 'n') ? TRUE : FALSE)).NBS.lang('no', 'enable_versioning_n');
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					$preference = lang('max_revisions', 'max_revisions');
-					$controls = form_input(array('id'=>'max_revisions','name'=>'max_revisions','class'=>'fullfield', 'value'=>$max_revisions));
-					$controls .= '<br/>'.form_checkbox(array('name'=>'clear_versioning_data', 'id'=>'clear_versioning_data', 'value'=>'y', 'checked'=>FALSE)).NBS.'<span class="notice">'.lang('clear_versioning_data', 'clear_versioning_data').'</span>';
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					echo $this->table->generate();
-					$this->table->clear(); // Clear out for the next one
-				?>
-
-			</div>
-
-			<h3 class="accordion"><?=lang('notification_settings')?></h3>
-			<div style="padding: 5px 1px;">
-
-				<?php
-					$this->table->set_heading(lang('preference'), lang('setting'));
-
-					$preference = lang('channel_notify', 'channel_notify');
-					$controls = form_radio(array('name'=>'channel_notify', 'id'=>'channel_notify_y', 'value'=>'y', 'checked'=>($channel_notify == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'channel_notify_y').NBS.NBS.NBS.NBS.NBS;
-					$controls .= form_radio(array('name'=>'channel_notify', 'id'=>'channel_notify_n', 'value'=>'n', 'checked'=>($channel_notify == 'n') ? TRUE : FALSE)).NBS.lang('no', 'channel_notify_n');
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					$preference = lang('comment_notify_emails', 'channel_notify_emails');
-					$controls = form_input(array('id'=>'channel_notify_emails','name'=>'channel_notify_emails','class'=>'fullfield', 'value'=>$channel_notify_emails));
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					if (isset($this->cp->installed_modules['comment'])) 
-					{
-						$preference = lang('comment_notify', 'comment_notify');
-						$controls = form_radio(array('name'=>'comment_notify', 'id'=>'comment_notify_y', 'value'=>'y', 'checked'=>($comment_notify == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_notify_y').NBS.NBS.NBS.NBS.NBS;
-						$controls .= form_radio(array('name'=>'comment_notify', 'id'=>'comment_notify_n', 'value'=>'n', 'checked'=>($comment_notify == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_notify_n');
-						$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 					
-						$preference = lang('comment_notify_emails', 'comment_notify_emails');
-						$controls = form_input(array('id'=>'comment_notify_emails','name'=>'comment_notify_emails','class'=>'fullfield', 'value'=>$comment_notify_emails));
-						$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+					$preference = lang('comment_notify_emails', 'comment_notify_emails');
+					$controls = form_input(array('id'=>'comment_notify_emails','name'=>'comment_notify_emails','class'=>'fullfield', 'value'=>$comment_notify_emails));
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 						
-						$preference = lang('comment_notify_authors', 'comment_notify_authors');
-						$controls = form_radio(array('name'=>'comment_notify_authors', 'id'=>'comment_notify_authors_y', 'value'=>'y', 'checked'=>($comment_notify_authors == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_notify_authors_y').NBS.NBS.NBS.NBS.NBS;
-						$controls .= form_radio(array('name'=>'comment_notify_authors', 'id'=>'comment_notify_authors_n', 'value'=>'n', 'checked'=>($comment_notify_authors == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_notify_authors_n');
-						$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));						
-					}
+					$preference = lang('comment_notify_authors', 'comment_notify_authors');
+					$controls = form_radio(array('name'=>'comment_notify_authors', 'id'=>'comment_notify_authors_y', 'value'=>'y', 'checked'=>($comment_notify_authors == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_notify_authors_y').NBS.NBS.NBS.NBS.NBS;
+					$controls .= form_radio(array('name'=>'comment_notify_authors', 'id'=>'comment_notify_authors_n', 'value'=>'n', 'checked'=>($comment_notify_authors == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_notify_authors_n');
+					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));						
+				}
 					
-					echo $this->table->generate();
-					$this->table->clear(); // Clear out for the next one
-				?>
+				echo $this->table->generate();
+				$this->table->clear(); // Clear out for the next one
 
-			</div>
-			
-			<?php if (isset($this->cp->installed_modules['comment'])):?>
-			<h3 class="accordion"><?=lang('comment_prefs')?></h3>
-			<div style="padding: 5px 1px;" class="reg">
-
-				<?php
+				// -------------------------------------------------------------
+				// Create the comment preferences table
+				if (isset($this->cp->installed_modules['comment']))
+				{
+					$this->table->set_caption(lang('comment_prefs'));
 					$this->table->set_heading(lang('preference'), lang('setting'));
 
 					$preference = lang('comment_system_enabled', 'comment_system_enabled');
@@ -269,35 +245,29 @@ if ($EE_view_disable !== TRUE)
 
 					echo $this->table->generate();
 					$this->table->clear(); // Clear out for the next one
-				?>
+				}
 
-			</div>
-			<?php endif;?>
+				// -------------------------------------------------------------
+				// Create the Publish Page Customization table
+				$this->table->set_caption(lang('publish_page_customization'));
+				$this->table->set_heading(lang('preference'), lang('setting'));
 
-			<h3 class="accordion"><?=lang('publish_page_customization')?></h3>
-			<div style="padding: 5px 1px;">
+				$preference = lang('show_button_cluster', 'show_button_cluster');
+				$controls = form_radio(array('name'=>'show_button_cluster', 'id'=>'show_button_cluster_y', 'value'=>'y', 'checked'=>($show_button_cluster == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'show_button_cluster_y').NBS.NBS.NBS.NBS.NBS;
+				$controls .= form_radio(array('name'=>'show_button_cluster', 'id'=>'show_button_cluster_n', 'value'=>'n', 'checked'=>($show_button_cluster == 'n') ? TRUE : FALSE)).NBS.lang('no', 'show_button_cluster_n');
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
-				<?php
-					$this->table->set_heading(lang('preference'), lang('setting'));
+				$preference = lang('default_entry_title', 'default_entry_title');
+				$controls = form_input(array('id'=>'default_entry_title','name'=>'default_entry_title','class'=>'fullfield', 'value'=>$default_entry_title));
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
-					$preference = lang('show_button_cluster', 'show_button_cluster');
-					$controls = form_radio(array('name'=>'show_button_cluster', 'id'=>'show_button_cluster_y', 'value'=>'y', 'checked'=>($show_button_cluster == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'show_button_cluster_y').NBS.NBS.NBS.NBS.NBS;
-					$controls .= form_radio(array('name'=>'show_button_cluster', 'id'=>'show_button_cluster_n', 'value'=>'n', 'checked'=>($show_button_cluster == 'n') ? TRUE : FALSE)).NBS.lang('no', 'show_button_cluster_n');
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
+				$preference = lang('url_title_prefix', 'url_title_prefix').'<br />'.lang('single_word_no_spaces').form_error('url_title_prefix');
+				$controls = form_input(array('id'=>'url_title_prefix','name'=>'url_title_prefix','class'=>'fullfield', 'value'=>set_value('url_title_prefix', $url_title_prefix)));
+				$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
-					$preference = lang('default_entry_title', 'default_entry_title');
-					$controls = form_input(array('id'=>'default_entry_title','name'=>'default_entry_title','class'=>'fullfield', 'value'=>$default_entry_title));
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					$preference = lang('url_title_prefix', 'url_title_prefix').'<br />'.lang('single_word_no_spaces').form_error('url_title_prefix');
-					$controls = form_input(array('id'=>'url_title_prefix','name'=>'url_title_prefix','class'=>'fullfield', 'value'=>set_value('url_title_prefix', $url_title_prefix)));
-					$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-
-					echo $this->table->generate();
-					$this->table->clear(); // Clear out for the next one
-				?>
-
-			</div>
+				echo $this->table->generate();
+				$this->table->clear(); // Clear out for the next one
+			?>
 
 			<p style="margin-top: 15px;">
 				<?=form_submit(array('name' => 'channel_prefs_submit', 'value' => lang('update'), 'class' => 'submit'))?> 

@@ -2218,17 +2218,11 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->cp->set_variable('cp_page_title', lang('member_cfg'));
 
-		$this->cp->add_js_script('ui', 'accordion');
-
 		$this->jquery->tablesorter('table', '{
 			headers: {},
 			widgets: ["zebra"]
 		}');
 
-		$this->javascript->output('
-			$("#member_group_details").accordion({autoHeight: false,header: "h3"});
-		');
-			
 		$this->javascript->compile();
 		
 		$this->load->view('members/member_config', $vars);
