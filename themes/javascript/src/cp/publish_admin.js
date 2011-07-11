@@ -193,7 +193,7 @@ $('.delete_field').click(function(event) {
 		$field.slideDown();
 		
 		// remove percent width
-		$field.attr('data-width', '');
+		$field.attr('data-width', false);
 		
 		$link.attr('data-visible', 'y')
 			.children().attr("src", EE.THEME_URL+"images/open_eye.png");

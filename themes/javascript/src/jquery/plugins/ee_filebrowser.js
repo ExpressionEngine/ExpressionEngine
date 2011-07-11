@@ -528,7 +528,7 @@ Array.min = function(array) {
 		});
 		
 		// Get templates and remove code from view
-		$.template("fileRow", $('<tbody />').append($('#rowTmpl').remove().attr('id', '')));
+		$.template("fileRow", $('<tbody />').append($('#rowTmpl').remove().attr('id', false)));
 		$.template("noFilesRow", $('#noFilesRowTmpl').remove());
 		$.template("pagination", $('#paginationTmpl').remove());
 		$.template("thumb", $('#thumbTmpl').remove());

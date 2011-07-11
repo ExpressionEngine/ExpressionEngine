@@ -254,7 +254,7 @@ jQuery(document).ready(function () {
 
 				$.post(notepad_form.attr('action'), {'notepad': current_content, 'XID': EE.XID }, function (ret) {
 					notepad_text.html(newval || notepad_empty).show();
-					notepad_txtarea.attr('readonly', '').css('opacity', 1).hide();
+					notepad_txtarea.attr('readonly', false).css('opacity', 1).hide();
 					notepad_controls.hide().find('#notePadSaveIndicator').hide();
 				}, 'json');
 				return false;

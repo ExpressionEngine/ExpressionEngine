@@ -270,7 +270,7 @@ function bind_prefs_events() {
 					parent.find(selector_base + 'n]').filter(':not(.ignore_radio)').trigger('click');
 				}
 
-				$(this).attr('checked', '');
+				$(this).attr('checked', false);
 				return false;
 			});
 		}
@@ -304,10 +304,10 @@ function bind_prefs_events() {
 
 				if (data.access === true) {
 					radio_y.attr('checked', 'checked');
-					radio_n.attr('checked', '');
+					radio_n.attr('checked', false);
 				} else {
 					radio_n.attr('checked', 'checked');
-					radio_y.attr('checked', '');
+					radio_y.attr('checked', false);
 				}
 			});
 
@@ -466,7 +466,7 @@ function bind_prefs_events() {
 
 			$('#fr_find').val(find);
 			$('#fr_replace').val(replace);
-			$('#fr_replace_closing_tags').attr('checked', '');
+			$('#fr_replace_closing_tags').attr('checked', false);
 			
 			if (select !== '') {
 				$('#fr_options').append($(dropdown));
