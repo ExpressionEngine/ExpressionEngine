@@ -278,12 +278,6 @@ class Admin_content extends CI_Controller {
 		$this->load->model('status_model');
 		$this->load->model('field_model');
 
-		$this->jquery->ui(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'ui=accordion', TRUE);
-
-		$this->javascript->output('
-			$("#channel_prefs").accordion({autoHeight: false,header: "h3"});
-		');
-
 		$channel_id = $this->input->get_post('channel_id');
 
 		// If we don't have the $channel_id variable, bail out.
