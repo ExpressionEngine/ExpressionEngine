@@ -458,6 +458,12 @@ class EE_Output extends CI_Output {
 
 	// --------------------------------------------------------------------
 	
+	public function remove_unparsed_variables($remove_unparsed_vars)
+	{
+		$this->remove_unparsed_variables = $remove_unparsed_vars;
+	}
+
+	// --------------------------------------------------------------------
 }
 // END CLASS
 

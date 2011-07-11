@@ -35,7 +35,8 @@ class EE extends CI_Controller {
 		
 		$can_view_system =  FALSE;
 		
-		if ($this->config->item('is_system_on') == 'y' && ($this->config->item('multiple_sites_enabled') != 'y' OR $this->config->item('is_site_on') == 'y'))
+		if ($this->config->item('is_system_on') == 'y' && 
+			($this->config->item('multiple_sites_enabled') != 'y' OR $this->config->item('is_site_on') == 'y'))
 		{
 			if ($this->session->userdata('can_view_online_system') == 'y')
 			{
@@ -86,15 +87,28 @@ class EE extends CI_Controller {
 		// If 'debug' is turned off, we will remove any variables that didn't get parsed due to syntax errors.
 		// this needs to happen here as the CI output library does the elapsed_time and memory_usage replacements.
 
-		if ($this->config->item('debug') == 0 AND $this->output->remove_unparsed_variables == TRUE)
+		/* -------------------------------------------
+		/*	Hidden Configuration Variables
+		/*	- remove_unparsed_vars => Whether or not to remove unparsed EE variables
+		/*  This is most helpful if you wish for debug to be set to 0, as EE will not
+		/*  strip out javascript.
+		/* -------------------------------------------*/		
+		$remove_vars = ($this->config->item('remove_unparsed_vars') == 'n') ? FALSE : TRUE;
+		$this->output->remove_unparsed_variables($remove_vars);
+
+		if ($this->config->item('debug') == 0 && 
+			$this->output->remove_unparsed_variables === TRUE)
 		{
 			$output = preg_replace("/".LD."[^;\n]+?".RD."/", '', $output);
 		}
 		
-		
 		// Add the template debugger to the output
 		
-		if (isset($this->TMPL) && is_object($this->TMPL) && isset($this->TMPL->debugging) && $this->TMPL->debugging === TRUE && $this->TMPL->template_type != 'js')
+		if (isset($this->TMPL) && 
+			is_object($this->TMPL) && 
+			isset($this->TMPL->debugging) && 
+			$this->TMPL->debugging === TRUE && 
+			$this->TMPL->template_type != 'js')
 		{
 			if ($this->session->userdata['group_id'] == 1)
 			{		
