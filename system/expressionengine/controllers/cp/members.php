@@ -1315,19 +1315,18 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		
 		list($group_title, $group_description) = $this->_setup_title_desc($group_id, $group_data);
 	
-		$group_data = $this->_setup_final_group_data($sites, $group_data, $id);
-
 		$data = array(
 			'action'			=> ( ! $group_id) ? 'submit' : 'update',
 			'form_hidden'		=> array(
 				'clone_id'			=> ( ! $clone_id) ? '' : $clone_id,
 				'group_id'			=> $group_id
 			),
-			'group_data'		=> $group_data,
+			'group_data'		=> $this->_setup_final_group_data($sites, $group_data, $id),
 			'group_description'	=> $group_description,
 			'group_id'			=> $group_id,
 			'group_title'		=> $group_title,
 			'sites_dropdown'	=> $sites_dropdown,
+			'module_data'		=> $this->_setup_module_data($group_id)
 		);
 
 		$this->load->view('members/edit_member_group', $data);
@@ -1351,7 +1350,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	{
 		// Get the channel, module and template names and preferences
 		list($channel_names, $channel_perms) = $this->_setup_channel_names($group_id);
-		list($module_names, $module_perms) = $this->_setup_module_names($group_id);
 		list($template_names, $template_perms) = $this->_setup_template_names($group_id);
 
 		// Build the structural array
@@ -1364,44 +1362,44 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		{
 			foreach ($group_cluster as $group_name => $preferences)
 			{
+				// var_dump($group_name, $preferences[$site->site_id]);
 				// If we're dealing with channel post privileges
-				if ($group_name == 'cp_channel_post_privs' AND isset($preferences[$site->site_id]))
+				if (
+					($group_name == 'cp_channel_post_privs' OR $group_name == "cp_template_access_privs") AND 
+					isset($preferences[$site->site_id])
+				)
 				{
-					foreach ($channel_perms[$site->site_id] as $channel_id => $preference_value) 
+					switch ($group_name)
+					{
+						case 'cp_channel_post_privs':
+							$current_permissions = $channel_perms[$site->site_id];
+							$current_names = $channel_names;
+							break;
+						case 'cp_template_access_privs':
+							$current_permissions = $preferences[$site->site_id];
+							$current_names = $template_names;
+							break;
+						default:
+							continue;
+							break;
+					}
+
+					foreach ($current_permissions as $current_id => $preference_value) 
 					{
 						$form[$site->site_id][$group_name][] = array(
 							'label' => lang('can_post_in') . NBS . NBS . $this->_build_group_data_label(
-								$channel_names[$channel_id],
+								$current_names[$current_id],
 								TRUE
 							),
 							'controls' => $this->_build_group_data_input(
-								$channel_names[$channel_id],
+								$current_id,
 								$preference_value,
 								$site->site_id
 							)
 						);
 					}
-					continue;
 				}
-				// If we're dealing with template access privileges
-				else if ($group_name == 'cp_template_access_privs' AND isset($preferences[$site->site_id]))
-				{
-					foreach ($preferences[$site->site_id] as $template_id => $preference_value) 
-					{
-						$form[$site->site_id][$group_name][] = array(
-							'label' => lang('can_access_tg') . NBS . NBS . $this->_build_group_data_label(
-								$template_names[$template_id], 
-								TRUE
-							),
-							'controls' => $this->_build_group_data_input(
-								$template_names[$template_id],
-								$preference_value,
-								$site->site_id
-							)
-						);
-					}
-					continue;
-				}
+				// If we're building the security lock
 				else if ($group_name == 'security_lock')
 				{
 					$form[$site->site_id][$group_name][] = array(
@@ -1414,23 +1412,20 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 					);
 					continue;
 				}
-				else if ($group_name == 'cp_template_access_privs' OR $group_name == 'cp_channel_post_privs')
-				{
-					// In the event there are no templates or channels, skip
-					continue;
-				}
-
 				// Otherwise, loop through the keyed preferences
-				foreach ($preferences as $preference_name => $preference_value) 
+				else if ($group_name != 'cp_template_access_privs' AND $group_name != 'cp_channel_post_privs')
 				{
-					$form[$site->site_id][$group_name][$preference_name] = array(
-						'label' => $this->_build_group_data_label($preference_name),
-						'controls' => $this->_build_group_data_input(
-							$preference_name,
-							$preference_value,
-							$site->site_id
-						)
-					);
+					foreach ($preferences as $preference_name => $preference_value) 
+					{
+						$form[$site->site_id][$group_name][$preference_name] = array(
+							'label' => $this->_build_group_data_label($preference_name),
+							'controls' => $this->_build_group_data_input(
+								$preference_name,
+								$group_data[$site->site_id][$preference_name],
+								$site->site_id
+							)
+						);
+					}
 				}
 			}
 		}
@@ -1438,6 +1433,38 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		return $form;
 	}
 
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Build the module block's items
+	 *
+	 * @param integer $group_id The id of the group being edited
+	 * 
+	 * @return Array of module items, labels and form controls
+	 */
+	private function _setup_module_data($group_id)
+	{
+		list($module_names, $module_perms) = $this->_setup_module_names($group_id);
+
+		$module_data = array();
+
+		foreach ($module_perms as $module_id => $module_value)
+		{
+			$module_data[] = array(
+				'label' => lang('can_access_mod') . NBS . NBS . $this->_build_group_data_label(
+					$module_names[$module_id],
+					TRUE
+				),
+				'controls' => $this->_build_group_data_input(
+					$module_id,
+					$module_value,
+					FALSE
+				)
+			);
+		}
+
+		return $module_data;
+	}
 	// ----------------------------------------------------------------------
 
 	/**
@@ -1503,7 +1530,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		);		
 		
 		$input = '';
-		$input_name = $site_id . '_' . $preference_name;
+		$input_name = ($site_id) ? $site_id . '_' . $preference_name : $preference_name;
 
 		if (in_array($preference_name, $text_inputs)) 
 		{
@@ -1565,7 +1592,10 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				'can_view_online_system'	=> 'n',
 				'can_view_offline_system'	=> 'n'
 			),
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8bbfd0d... Refactored some code for the member group page. Moved module logic into controller.
 			'mbr_account_privs' => array (
 				'can_view_profiles'			=> 'n',
 				'can_email_from_profile'	=> 'n',
@@ -1576,7 +1606,10 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				'can_delete_self'			=> 'n',
 				'mbr_delete_notify_emails'	=> $this->config->item('webmaster_email')
 			),
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8bbfd0d... Refactored some code for the member group page. Moved module logic into controller.
 			'commenting_privs' => array (
 				'can_post_comments'			=> 'n',
 				'exclude_from_moderation'	=> 'n'
@@ -1660,7 +1693,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				'can_delete_all_comments'	=> 'n'
 			),
 										
-			'cp_template_access_privs' =>  $template_perms,
+			'cp_template_access_privs' =>  $template_perms
 		);
 
 		// Super Admin Group can not be edited
@@ -1668,8 +1701,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		if ($group_id === 1)
 		{
 			$G = array('mbr_account_privs' => array (
-						'include_in_authorlist' => 'n', 'include_in_memberlist' => 'n')
-					  );
+				'include_in_authorlist' => 'n', 'include_in_memberlist' => 'n'
+			));
 		}
 
 		return $G;
