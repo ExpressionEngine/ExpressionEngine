@@ -1306,8 +1306,11 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			$id = $clone_id;
 		}
 
+		
+		
 		$this->cp->set_variable('cp_page_title', 
 								($group_id != '') ? lang('edit_member_group') : lang('create_member_group'));
+		$this->cp->set_breadcrumb(BASE.AMP.'C=members'.AMP.'M=member_group_manager', lang('member_groups'));
 		
 		$group_data = $this->_setup_group_data($id);
 

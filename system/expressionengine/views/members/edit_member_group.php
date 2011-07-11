@@ -12,7 +12,11 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-		<div class="heading"><h2 class="edit"><?=lang('member_cfg')?> <?=lang('general_cfg')?></h2></div>
+		<div class="heading"><h2 class="edit">
+			<?php if ($this->config->item('multiple_sites_enabled') == 'y'):?>
+				<?=form_dropdown('sites_list_pulldown', $sites_dropdown, '', 'id="site_list_pulldown"')?>
+			<?php endif; ?>
+			<?=sprintf(lang('member_cfg'), $group_title);?></h2></div>
 		<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
@@ -33,7 +37,6 @@ if ($EE_view_disable !== TRUE)
 			?>
 
 			<?php if ($this->config->item('multiple_sites_enabled') == 'y'):?>
-					<?=form_dropdown('site_list_pulldown', $sites_dropdown, '', 'id="site_list_pulldown"')?>
 					<span id="site_loader" style="display:none;"><img src="<?=PATH_CP_GBL_IMG?>loader.gif" width="16" height="16" style="vertical-align:sub;" /></span>
 			<?php endif;?>
 
