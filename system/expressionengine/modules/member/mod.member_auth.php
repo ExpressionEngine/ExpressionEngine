@@ -106,7 +106,7 @@ class Member_auth extends Member {
 		
 		// Figure out how many sites we're dealing with here
 		$sites = $this->EE->config->item('multi_login_sites');
-		$sites_array = $this->_normalize_sites($sites); // explode('|', $sites);
+		$sites_array = explode('|', $sites);
 		
 		// No username/password?  Bounce them...
 		$multi	  = ($this->EE->input->get('multi') && count($sites_array) > 0) ? 
@@ -166,35 +166,6 @@ class Member_auth extends Member {
 		$this->$success($sites_array);
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * This function normalizes the URL list coming from config.php
-	 *
-	 * Accidentally having a trailing slash or white space could cause the 
-	 * comparison to the functions->site_url() to fail.
-	 *
-	 * @param 	string 		string of sites from config.php
-	 * @return 	array 		cleaned array.
-	 */
-	private function _normalize_sites($sites)
-	{
-		$sites = explode('|', $sites);
-
-		if ( ! $sites)
-		{
-			return array();
-		}
-
-		foreach ($sites as $key => $site)
-		{
-			// Remove a trailing slash if there is one
-			$sites[$key] = trim(rtrim($site, '/'));
-		}
-
-		return $sites;
-	}
-	
 	// --------------------------------------------------------------------
 
 	/**
