@@ -60,24 +60,7 @@ if ($EE_view_disable !== TRUE)
 			foreach($group_data as $key => $site):
 			?>
 			<div id="site_options_<?=$key?>" class="site_prefs">
-				<?php if ($group_id != 1):?>
-					<?php
-						// $this->table->set_caption(lang('security_lock'));
-												// $preference = '<p><strong class="notice">'.lang('enable_lock').'</strong><br />'.lang('lock_description').'</p>';
-												// $controls = lang('locked', 'is_locked_y').NBS.form_radio(array('name'=>'is_locked', 'id'=>'is_locked_y', 'value'=>'y', 'checked'=>($is_locked == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-												// $controls .= lang('unlocked', 'is_locked_n').NBS.form_radio(array('name'=>'is_locked', 'id'=>'is_locked_n', 'value'=>'n', 'checked'=>($is_locked == 'n') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-												// 				
-												// $this->table->set_heading(lang('preference'), lang('setting'));
-												// $this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-												// echo $this->table->generate();
-												// // Clear out of the next one
-												// $this->table->clear();
-											?>
-				<?php endif;?>
-
-				<?php
-				foreach ($site as $prefname => $prefs):
-				?>
+				<?php foreach ($site as $prefname => $prefs): ?>
 					<?php
 						$this->table->set_caption(lang($prefname));
 						$this->table->set_heading(lang('preference'), lang('setting'));
@@ -109,17 +92,20 @@ if ($EE_view_disable !== TRUE)
 				<div id="modules">
 					<?php
 						$this->table->set_caption(lang('cp_module_access_privs'));
-						if ( ! empty($module_perms))
+						$this->table->set_heading(lang('preference'), lang('setting'));
+
+						if ( ! empty($module_data))
 						{
-							foreach($module_perms as $key => $pref)
+							foreach($module_data as $module)
 							{
-								$line = lang('can_access_mod').NBS.NBS.'<span class="notice">'.$module_names[$key].'</span>';
 
-								$controls = lang('yes', $key.'_y').NBS.form_radio(array('name'=>$key, 'id'=>$key.'_y', 'value'=>'y', 'checked'=>($pref['options'] == 'y') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-								$controls .= lang('no', $key.'_n').NBS.form_radio(array('name'=>$key, 'id'=>$key.'_n', 'value'=>'n', 'checked'=>($pref['options'] == 'n') ? TRUE : FALSE)).NBS.NBS.NBS.NBS.NBS;
-
-								$this->table->set_heading(lang('preference'), lang('setting'));
-								$this->table->add_row($line, array('style'=> 'width:50%;', 'data'=>$controls));
+								$this->table->add_row(
+									$module['label'],
+									array(
+										'style' => 'width:50%;',
+										'data' => $module['controls']
+									)
+								);
 							}
 						}
 						else
@@ -130,7 +116,6 @@ if ($EE_view_disable !== TRUE)
 						echo $this->table->generate();
 						// Clear out of the next one
 						$this->table->clear();
-
 					?>
 				</div>
 			<?php 
