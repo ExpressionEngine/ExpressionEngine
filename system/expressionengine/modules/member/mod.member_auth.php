@@ -109,11 +109,11 @@ class Member_auth extends Member {
 		$sites_array = explode('|', $sites);
 
 		// No username/password?  Bounce them...
-		$multi	  = ($this->EE->session->userdata('session_id') && count($sites_array) > 0) ? 
-						$this->EE->session->userdata('session_id') : 0;
+		$multi	  = ($this->EE->input->get('multi') && count($sites_array) > 0) ? 
+						$this->EE->input->get('multi') : 0;
 		$username = $this->EE->input->post('username');
 		$password = $this->EE->input->post('password');
-
+		
 		if ( ! $multi && ! ($username && $password))
 		{
 			return $this->EE->output->show_user_error('general', lang('mbr_form_empty'));
@@ -144,9 +144,9 @@ class Member_auth extends Member {
 			// Multiple Site Login
 			$incoming = $this->_do_multi_auth($sites);
 			$success = '_build_multi_success_message';
-			// var_dump($incoming); exit;
-			$current = $this->EE->functions->fetch_site_index();
-			$orig = array_search($current, $sites_array);
+
+			$current_url = $this->EE->functions->fetch_site_index();
+			$current_idx = array_search($current_url, $sites_array);
 		}
 		else
 		{
@@ -154,18 +154,17 @@ class Member_auth extends Member {
 			$incoming = $this->_do_auth($username, $password);
 			$success = '_build_success_message';
 			
-			$current = $this->EE->functions->fetch_site_index();
-			$orig	 = array_search($current, $sites_array);
-			$current = $orig;
+			$current_url = $this->EE->functions->fetch_site_index();
+			$current_idx = array_search($current_url, $sites_array);
 		}
 		
 		// More sites?
 		if ($sites && $this->EE->config->item('allow_multi_logins') == 'y')
 		{
-			$this->_redirect_next_site($sites, $orig, $current);
+			$this->_redirect_next_site($sites, $current_idx, $current_url);
 		}
 		
-		$this->$success($sites_array, $orig);
+		$this->$success($sites_array);
 	}
 
 	// --------------------------------------------------------------------
@@ -298,23 +297,28 @@ class Member_auth extends Member {
 		return $incoming;
 	}
 	
-	public function _redirect_next_site($sites, $orig, $current)
+	public function _redirect_next_site($sites, $current_idx, $current_url)
 	{
 		$sites = explode('|', $sites);
 		$orig_id = $this->EE->input->get('orig_site_id');
+		$orig_idx = $this->EE->input->get('orig');
 		
-		$current = $this->EE->functions->fetch_site_index();
-		$orig = array_search($current, $sites);
+		$next_idx = $current_idx + 1;
 		
-		$next = 1;
-		
-		if ($current == $orig)
+		// first site, no qs yet
+		if ($orig_id === FALSE)
 		{
-			$next++;
+			$orig_id = $this->EE->config->item('site_id');
+			$orig_idx = $current_idx;
+			$next_idx = ($current_idx == '0') ? '1' : '0';
+		}
+		elseif ($next_idx == $orig_idx)
+		{
+			$next_idx++;
 		}
 		
 		// Do we have another?
-		if (isset($sites[$next]))
+		if (isset($sites[$next_idx]))
 		{
 			$action_id = $this->EE->db->select('action_id')
 									  ->where('class', 'Member')
@@ -324,13 +328,13 @@ class Member_auth extends Member {
 			// next site
 			$next_qs = array(
 				'ACT'	=> $action_id->row('action_id'),
-				'cur'	=> $next,
-				'orig'	=> $orig,
+				'cur'	=> $next_idx,
+				'orig'	=> $orig_idx,
 				'multi'	=> $this->EE->session->userdata('session_id'),
 				'orig_site_id' => $orig_id
 			);
 			
-			$next_url = $sites[$next].'?'.http_build_query($next_qs);
+			$next_url = $sites[$next_idx].'?'.http_build_query($next_qs);
 
 			return $this->EE->functions->redirect($next_url);
 		}
@@ -339,21 +343,38 @@ class Member_auth extends Member {
 
 	// --------------------------------------------------------------------
 
-	private function _build_multi_success_message($sites, $orig)
+	private function _build_multi_success_message($sites)
 	{
+		// Figure out return
+		if  ( ! $ret = $this->EE->input->get('ret'))
+		{
+			$ret = $sites[$this->EE->input->get('orig')];
+		}
+		else
+		{
+			if (strncmp($ret, 's-', 2) == 0) 
+			{
+				$ret = substr_replace($ret, 'https:', 0, 2);
+			}
+			elseif (strncmp($ret, 'n-', 2) == 0) 
+			{
+				$ret = substr_replace($ret, 'http:', 0, 2);
+			}
+		}
+				
 		// That was our last site, show the success message
 		
 		$data = array(
 			'title' 	=> lang('mbr_login'),
 			'heading'	=> lang('thank_you'),
 			'content'	=> lang('mbr_you_are_logged_in'),
-			'redirect'	=> $sites[$orig],
-			'link'		=> array($sites[$orig], lang('back'))
+			'redirect'	=> $ret,
+			'link'		=> array($ret, lang('back'))
 		);
-
-		var_dump($sites); exit;
 		
 		// Pull preferences for the original site
+		$orig_id = $this->EE->input->get('orig_site_id');
+		
 		if (is_numeric($orig_id))
 		{
 			$this->EE->db->select('site_name, site_id');
@@ -376,7 +397,7 @@ class Member_auth extends Member {
 	/**
 	 * Build Success Message
 	 */
-	private function _build_success_message($sites, $orig)
+	private function _build_success_message($sites)
 	{
 		// Build success message
 		$site_name = ($this->EE->config->item('site_name') == '') ? lang('back') : stripslashes($this->EE->config->item('site_name'));

@@ -33,7 +33,7 @@
 	domains.  In order to use this feature this array index must be
 	added to the config file:
 
-	$conf['multi_login_sites'] = "http://www.siteone.com/|http://www.sitetwo.com";
+	$config['multi_login_sites'] = "http://www.siteone.com/|http://www.sitetwo.com";
 
 	Separate each domain with a pipe.
  */
