@@ -3179,6 +3179,11 @@ table caption {
 	padding: 7px 11px 6px;
 }
 
+#mainContent table caption {
+	cursor: default;
+	padding: 5px 10px;
+}
+
 div.accordionContent{
 	padding: 0;
 }
