@@ -3675,7 +3675,7 @@ class Wiki {
 			return $str;
 		}
 		
-		if (count($this->EE->stats->statdata('current_names')) == 0) 		
+		if (count($this->EE->stats->statdata()) == 0 OR count($this->EE->stats->statdata('current_names')) == 0) 		
 		{
 			return str_replace($match['0'], '', $str);
 		}
