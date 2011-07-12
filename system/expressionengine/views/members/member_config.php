@@ -12,7 +12,7 @@ if ($EE_view_disable !== TRUE)
 	<?php $this->load->view('_shared/right_nav')?>
 		<div class="contents">
 
-		<div class="heading"><h2 class="edit"><?=lang('member_cfg')?> <?=lang('general_cfg')?></h2></div>
+		<div class="heading"><h2 class="edit"><?=lang('member_prefs')?> <?=lang('general_cfg')?></h2></div>
 		<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
