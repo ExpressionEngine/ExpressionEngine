@@ -303,14 +303,14 @@ class Member_register extends Member {
 			'fetch_lang' 		=> TRUE,
 			'require_cpw' 		=> FALSE,
 		 	'enable_log'		=> FALSE,
-			'username'			=> $_POST['username'],
+			'username'			=> trim($_POST['username']),
 			'cur_username'		=> '',
-			'screen_name'		=> $_POST['screen_name'],
+			'screen_name'		=> trim($_POST['screen_name']),
 			'cur_screen_name'	=> '',
 			'password'			=> $_POST['password'],
 		 	'password_confirm'	=> $_POST['password_confirm'],
 		 	'cur_password'		=> '',
-		 	'email'				=> $_POST['email'],
+		 	'email'				=> trim($_POST['email']),
 		 	'cur_email'			=> ''
 		 ));
 
@@ -401,13 +401,13 @@ class Member_register extends Member {
 
 		// Assign the base query data
 		$data = array(
-			'username'		=> $this->EE->input->post('username'),
+			'username'		=> trim($this->EE->input->post('username')),
 			'password'		=> $this->EE->functions->hash($_POST['password']),
 			'ip_address'	=> $this->EE->input->ip_address(),
 			'unique_id'		=> $this->EE->functions->random('encrypt'),
 			'join_date'		=> $this->EE->localize->now,
-			'email'			=> $this->EE->input->post('email'),
-			'screen_name'	=> $this->EE->input->post('screen_name'),
+			'email'			=> trim($this->EE->input->post('email')),
+			'screen_name'	=> trim($this->EE->input->post('screen_name')),
 			'url'			=> prep_url($this->EE->input->post('url')),
 			'location'		=> $this->EE->input->post('location'),
 
