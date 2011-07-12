@@ -2211,7 +2211,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			}
 		}
 
-		$this->cp->set_variable('cp_page_title', lang('member_cfg'));
+		$this->cp->set_variable('cp_page_title', lang('member_prefs'));
 
 		$this->jquery->tablesorter('table', '{
 			headers: {},
@@ -2701,12 +2701,12 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 						array(
 							'field'  => 'username', 
 							'label'  => 'lang:username', 
-							'rules'  => 'required|valid_username[new]'
+							'rules'  => 'required|trim|valid_username[new]'
 						),
 						array(
 							'field'  => 'screen_name',
 							'label'  => 'lang:screen_name',
-							'rules'  => 'valid_screen_name[new]'
+							'rules'  => 'trim|valid_screen_name[new]'
 						),
 						array(
 							'field'  => 'password', 
