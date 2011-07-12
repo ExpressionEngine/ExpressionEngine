@@ -1406,7 +1406,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				else if ($group_name == 'security_lock')
 				{
 					$form[$site->site_id][$group_name][] = array(
-						'label' => '<p><strong class="notice">'.lang('enable_lock').'</strong><br />'.lang('lock_description').'</p>',
+						'label' => '<strong class="notice">'.lang('enable_lock').'</strong><br />'.lang('lock_description'),
 						'controls' => $this->_build_group_data_input(
 							'is_locked',
 							$group_data[$site->site_id]['is_locked'],
