@@ -5971,12 +5971,12 @@ class Channel {
 							$str .= $chunk;
 						}
 					}
-				}
-			}
 
-			if ($this->EE->TMPL->fetch_param('backspace'))
-			{
-				$str = substr($str, 0, - $this->EE->TMPL->fetch_param('backspace'));
+					if ($this->EE->TMPL->fetch_param('backspace'))
+					{
+						$str = substr($str, 0, - $this->EE->TMPL->fetch_param('backspace'));
+					}
+				}
 			}
 		}
 
