@@ -4225,6 +4225,15 @@ class Admin_content extends CI_Controller {
 				$native_settings[$key] = $val;
 			}
 		}
+
+		if ($_POST['field_order'] == 0 OR $_POST['field_order'] == '')
+		{
+			$query = $this->db->select('MAX(field_order) as max')
+							  ->where('site_id', $this->config->item('site_id'))
+							  ->get_where('channel_fields', array('group_id' => (int) $group_id));
+				
+			$native_settings['field_order'] = (int) $query->row('max') + 1;
+		}
 		
 		$native_settings['field_settings'] = base64_encode(serialize($ft_settings));
 		
@@ -4317,15 +4326,6 @@ class Admin_content extends CI_Controller {
 		else
 		{
 			$cp_message = lang('custom_field_created');
-
-			if ($_POST['field_order'] == 0 OR $_POST['field_order'] == '')
-			{
-				$query = $this->db->select('COUNT(*) as COUNT')
-								  ->get_where('group_id', (int) $group_id)
-								  ->get('channel_fields');
-				
-				$_POST['field_order'] = $query->row('count') + 1;
-			}
 			
 			if ( ! $native_settings['field_ta_rows'])
 			{
@@ -4334,7 +4334,7 @@ class Admin_content extends CI_Controller {
 
 			// as its new, there will be no field id, unset it to prevent an empty string from attempting to pass
 			unset($native_settings['field_id']);
-			
+
 			$this->db->insert('channel_fields', $native_settings);
 
 			$insert_id = $this->db->insert_id();
