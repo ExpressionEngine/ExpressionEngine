@@ -2713,10 +2713,12 @@ class Filemanager {
 		
 		$this->EE->load->model('file_model');
 		
+		// die(var_dump($response));
 		// Update database
 		$this->EE->file_model->save_file(array(
 			'file_id' => $file_id,
-			'file_hw_original' => $response['dimensions']['height'] . ' ' . $response['dimensions']['width']
+			'file_hw_original' => $response['dimensions']['height'] . ' ' . $response['dimensions']['width'],
+			'file_size' => $response['file_info']['size']
 		));
 		
 		// Get dimensions for thumbnail
@@ -2797,7 +2799,11 @@ class Filemanager {
 		}
 		else
 		{
-			$response['dimensions'] = $this->EE->image_lib->get_image_properties('', TRUE);
+			$this->EE->load->helper('file');
+			$response = array(
+				'dimensions' => $this->EE->image_lib->get_image_properties('', TRUE),
+				'file_info'  => get_file_info($file_path)
+			);
 		}
 		
 		$this->EE->image_lib->clear();
@@ -2835,7 +2841,11 @@ class Filemanager {
 		}
 		else
 		{
-			$response['dimensions'] = $this->EE->image_lib->get_image_properties('', TRUE);
+			$this->EE->load->helper('file');
+			$response = array(
+				'dimensions' => $this->EE->image_lib->get_image_properties('', TRUE),
+				'file_info'  => get_file_info($file_path)
+			);
 		}
 		
 		$this->EE->image_lib->clear();
@@ -2883,7 +2893,11 @@ class Filemanager {
 		}
 		else
 		{
-			$response['dimensions'] = $this->EE->image_lib->get_image_properties('', TRUE);
+			$this->EE->load->helper('file');
+			$response = array(
+				'dimensions' => $this->EE->image_lib->get_image_properties('', TRUE),
+				'file_info'  => get_file_info($file_path)
+			);
 		}
 		
 		$this->EE->image_lib->clear();
