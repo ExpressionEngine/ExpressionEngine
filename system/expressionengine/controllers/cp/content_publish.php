@@ -2162,8 +2162,6 @@ class Content_publish extends CI_Controller {
 			}	
 		}
 		
-		$menu_status_options['closed'] = lang('closed');
-		
 		if ( ! isset($this->_channel_data['status_group']))
 		{
 			if ($this->session->userdata('group_id') == 1)
@@ -2205,6 +2203,7 @@ class Content_publish extends CI_Controller {
 
 				if ($no_status_flag === TRUE)
 				{
+					$menu_status_options['closed'] = lang('closed');
 					$menu_status_selected = 'closed';
 				}
 			}
