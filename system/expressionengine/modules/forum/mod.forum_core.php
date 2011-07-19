@@ -10626,7 +10626,7 @@ class Forum_Core extends Forum {
 		$str = '';
 		
 		$i = 0;
-		foreach ($query->result_array() as $row)
+		foreach ($qry->result_array() as $row)
 		{
 			$row['forum_permissions'] = unserialize(stripslashes($row['forum_permissions']));
 
