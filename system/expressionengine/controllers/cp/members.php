@@ -1331,7 +1331,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			'group_data'		=> $this->_setup_final_group_data($sites, $group_data, $id, $is_clone),
 			'group_description'	=> $group_description,
 			'group_id'			=> $group_id,
-			'group_title'		=> $group_title,
+			'group_title'		=> ($is_clone) ? '' : $group_title,
 			'sites_dropdown'	=> $sites_dropdown,
 			'module_data'		=> $this->_setup_module_data($id)
 		);
