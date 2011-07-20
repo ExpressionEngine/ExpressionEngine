@@ -359,7 +359,6 @@ class Admin_content extends CI_Controller {
 		
 		// Default field for search excerpt		
 		$this->db->select('field_id, field_label');
-		$this->db->where('field_search', 'y');
 		$this->db->where('group_id', $vars['field_group']);
 		$query = $this->db->get('channel_fields');
 
