@@ -41,15 +41,7 @@ class Api_channel_fields extends Api {
 	 */
 	function get_settings($field_id)
 	{
-		$settings = isset($this->settings[$field_id]) ? $this->settings[$field_id] : array();
-
-		// Make the field_id 
-		if (isset($settings['field_id']) AND is_numeric($settings['field_id']))
-		{
-			$settings['field_id'] = 'field_id_' . $settings['field_id'];
-		}
-				
-		return $settings;
+		return isset($this->settings[$field_id]) ? $this->settings[$field_id] : array();
 	}
 	
 	// --------------------------------------------------------------------
