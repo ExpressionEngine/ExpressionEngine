@@ -1338,17 +1338,13 @@ class Content_files extends CI_Controller {
 			}
 
 			// Clean filename
-			$clean_filename = basename($this->filemanager->clean_filename($file['name'], $id));
+			// Only using sanitize filename so we don't change the filename unless
+			// it's essential
+
+			$clean_filename = $this->security->sanitize_filename($file['name']);
 			
 			if ($file['name'] != $clean_filename)
 			{
-				// It is just remotely possible the new clean filename already exists
-				// So we check for that and increment if such is the case
-				if (file_exists($this->_upload_dirs[$id]['server_path'].$clean_filename))
-				{
-					$clean_filename = basename($this->filemanager->clean_filename($clean_filename, $id, TRUE));
-				}
-				
 				// Rename the file
         		if ( ! @copy($this->_upload_dirs[$id]['server_path'].$file['name'],
 	 						$this->_upload_dirs[$id]['server_path'].$clean_filename))
