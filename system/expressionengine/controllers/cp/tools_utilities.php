@@ -1138,7 +1138,7 @@ class Tools_utilities extends CI_Controller {
 	 * 
 	 * @return	bool
 	 */	
-	private function _valid_name($str)
+	public function _valid_name($str)
 	{
 		$error = array();
 		
