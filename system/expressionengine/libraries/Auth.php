@@ -282,11 +282,18 @@ class Auth {
 	 */
 	private function _authenticate(CI_DB_result $member, $password)
 	{
+		$always_disallowed = array(3, 4);
+
 		if ($member->num_rows() !== 1)
 		{
 			return FALSE;
 		}
-		
+
+		if (in_array($member->row('group_id'), $always_disallowed))
+		{
+			return $this->EE->output->show_user_error('general', lang('mbr_account_not_active'));
+		}
+
 		$m_salt = $member->row('salt');
 		$m_pass = $member->row('password');
 		
