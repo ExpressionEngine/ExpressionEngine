@@ -467,7 +467,8 @@ class Auth_result {
 		if ( ! is_object($this->group))
 		{
 			$group_q = $this->EE->db->get_where('member_groups', array(
-				'group_id' => $this->member('group_id')
+				'group_id' => $this->member('group_id'),
+				'site_id' => $this->EE->config->item('site_id'),
 			));
 			
 			$this->group = $group_q->row();
