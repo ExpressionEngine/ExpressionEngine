@@ -210,7 +210,7 @@ class Member_auth extends Member {
 		if ( ! $sess)
 		{
 			$this->EE->session->save_password_lockout($username);
-			return $this->EE->output->show_user_error('general', lang('not_authorized'));
+			return $this->EE->output->show_user_error('general', lang('mbr_form_empty'));
 		}
 
 		// Banned
