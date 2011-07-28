@@ -67,7 +67,20 @@ class Filemanager {
 
 	// ---------------------------------------------------------------------
 
-	function clean_filename($filename, $dir_id, $dupe_check = FALSE)
+	/**
+	 * Cleans the filename to prep it for the system, mostly removing spaces
+	 * sanitizing the file name and checking for duplicates.
+	 *
+	 * @param string $filename The filename to clean the name of
+	 * @param integer $dir_id The ID of the directory in which we'll check for duplicates
+	 * @param array $parameters Associative array containing optional parameters
+	 * 		'leave_spaces' (Default: FALSE) Setting this to TRUE will not remove spaces
+	 * 		'dupe_check' (Default: FALSE) Setting this to TRUE will check for duplicates
+	 * 
+	 * @return string Full path and filename of the file, use basepath() to just
+	 * 		get the filename
+	 */
+	function clean_filename($filename, $dir_id, $parameters = array())
 	{
 		$prefs = $this->fetch_upload_dir_prefs($dir_id);
 		
@@ -76,7 +89,11 @@ class Filemanager {
 		$path = $prefs['server_path'];
 		
 		// clean up the filename
-		$filename = preg_replace("/\s+/", "_", $filename);
+		if (isset($parameters['leave_spaces']) AND $parameters['leave_spaces'] === TRUE)
+		{
+			$filename = preg_replace("/\s+/", "_", $filename);
+		}
+
 		$filename = $this->EE->security->sanitize_filename($filename);
 		
 		if (strpos($filename, '.') !== FALSE)
@@ -92,7 +109,10 @@ class Filemanager {
 		$ext = '.'.$ext;
 		
 		// Figure out a unique filename
-		if ($dupe_check == TRUE)
+		if ( 
+			(! is_array($parameters) AND $parameters === TRUE)
+			OR ((isset($parameters['dupe_check'])) AND $parameters['dupe_check'] === TRUE)
+		)
 		{
 			$basename = $filename;
 			
