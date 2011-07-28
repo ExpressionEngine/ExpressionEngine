@@ -3157,7 +3157,7 @@ input#ip_address {
 	font-weight:		bold;
 	line-height: 1.3;
 	margin-bottom: 0;
-	padding:			3px 4px 3px 28px;
+	padding: 5px 10px;
 	text-align: left;
 	text-shadow:		#666 0px 1px 0px;
 
@@ -3169,10 +3169,9 @@ input#ip_address {
 	border-radius-topright: 5px;
 }
 
-/* TODO: Temporary Class */
-#mainContent table caption {
-	cursor: default;
-	padding: 5px 10px;
+#mainContent table h3.accordion {
+	cursor: pointer;
+	padding: 3px 4px 3px 28px;
 }
 
 #mainContent h3.accordion[aria-expanded=false] {
