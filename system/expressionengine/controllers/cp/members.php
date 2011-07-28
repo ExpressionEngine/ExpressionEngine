@@ -1320,7 +1320,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$default_id = $this->config->item('site_id');
 		
-		list($group_title, $group_description) = $this->_setup_title_desc($id, $group_data, $is_clone);
+		list($group_title, $group_description) = $this->_setup_title_desc($group_id, $group_data, $is_clone);
 		
 		$page_title_lang = ($is_clone OR ! $group_id) ? 'member_cfg' : 'member_cfg_existing';
 	
