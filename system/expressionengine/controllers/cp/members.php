@@ -1320,7 +1320,9 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$default_id = $this->config->item('site_id');
 		
-		list($group_title, $group_description) = $this->_setup_title_desc($id, $group_data);
+		list($group_title, $group_description) = $this->_setup_title_desc($id, $group_data, $is_clone);
+		
+		$page_title_lang = ($is_clone OR ! $group_id) ? 'member_cfg' : 'member_cfg_existing';
 	
 		$data = array(
 			'action'			=> ( ! $group_id) ? 'submit' : 'update',
@@ -1332,6 +1334,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			'group_description'	=> $group_description,
 			'group_id'			=> $group_id,
 			'group_title'		=> $group_title,
+			'page_title'		=> sprintf(lang($page_title_lang), $group_title),
 			'sites_dropdown'	=> $sites_dropdown,
 			'module_data'		=> $this->_setup_module_data($id)
 		);
@@ -1964,12 +1967,12 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 *
 	 * @return 	array
 	 */
-	private function _setup_title_desc($group_id, $group_data)
+	private function _setup_title_desc($group_id, $group_data, $is_clone)
 	{
 		$site_id = $this->config->item('site_id');
 		
-		$group_title = ( ! $group_id) ? '' : $group_data[$site_id]['group_title'];
-		$group_description = ( ! $group_id) ? '' : $group_data[$site_id]['group_description'];
+		$group_title = ( ! $group_id OR $is_clone) ? '' : $group_data[$site_id]['group_title'];
+		$group_description = ( ! $group_id OR $is_clone) ? '' : $group_data[$site_id]['group_description'];
 
 		// Can this be translated?
 		if (isset($this->english[$group_title]))
