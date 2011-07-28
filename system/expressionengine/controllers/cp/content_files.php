@@ -1341,7 +1341,7 @@ class Content_files extends CI_Controller {
 			$clean_filename = basename($this->filemanager->clean_filename(
 				$file['name'], 
 				$id,
-				array('leave_spaces' => TRUE)
+				array('convert_spaces' => FALSE)
 			));	
 
 			if ($file['name'] != $clean_filename)
@@ -1354,8 +1354,8 @@ class Content_files extends CI_Controller {
 						$clean_filename, 
 						$id, 
 						array(
-							'leave_spaces' => TRUE,
-							'dupe_check' => TRUE
+							'convert_spaces' => FALSE,
+							'ignore_dupes' => FALSE
 						)
 					)); 
 				} 

@@ -74,14 +74,21 @@ class Filemanager {
 	 * @param string $filename The filename to clean the name of
 	 * @param integer $dir_id The ID of the directory in which we'll check for duplicates
 	 * @param array $parameters Associative array containing optional parameters
-	 * 		'leave_spaces' (Default: FALSE) Setting this to TRUE will not remove spaces
-	 * 		'dupe_check' (Default: FALSE) Setting this to TRUE will check for duplicates
+	 * 		'convert_spaces' (Default: TRUE) Setting this to FALSE will not remove spaces
+	 * 		'ignore_dupes' (Default: TRUE) Setting this to FALSE will check for duplicates
 	 * 
 	 * @return string Full path and filename of the file, use basepath() to just
 	 * 		get the filename
 	 */
 	function clean_filename($filename, $dir_id, $parameters = array())
 	{
+		$default_parameters = array(
+			'convert_spaces' => TRUE,
+			'ignore_dupes' => TRUE
+		);
+
+		$parameters = array_merge($default_parameters, $parameters);
+
 		$prefs = $this->fetch_upload_dir_prefs($dir_id);
 		
 		$i = 1;
@@ -89,7 +96,7 @@ class Filemanager {
 		$path = $prefs['server_path'];
 		
 		// clean up the filename
-		if (isset($parameters['leave_spaces']) AND $parameters['leave_spaces'] === TRUE)
+		if ($parameters['convert_spaces'] === TRUE)
 		{
 			$filename = preg_replace("/\s+/", "_", $filename);
 		}
@@ -109,10 +116,7 @@ class Filemanager {
 		$ext = '.'.$ext;
 		
 		// Figure out a unique filename
-		if ( 
-			(! is_array($parameters) AND $parameters === TRUE)
-			OR ((isset($parameters['dupe_check'])) AND $parameters['dupe_check'] === TRUE)
-		)
+		if ($parameters['ignore_dupes'] === FALSE)
 		{
 			$basename = $filename;
 			
@@ -1866,7 +1870,11 @@ class Filemanager {
 		
 		$field = ($field_name) ? $field_name : 'userfile';
 		$original_filename = $_FILES[$field]['name'];
-		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id'], TRUE));
+		$clean_filename = basename($this->clean_filename(
+			$_FILES[$field]['name'],
+			$dir['id'], 
+			array('ignore_dupes' => FALSE)
+		));
 		
 		$config = array(
 			'file_name'		=> $clean_filename,
