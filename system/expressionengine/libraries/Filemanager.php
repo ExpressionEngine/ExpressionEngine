@@ -82,11 +82,19 @@ class Filemanager {
 	 */
 	function clean_filename($filename, $dir_id, $parameters = array())
 	{
+		// at one time the third parameter was (bool) $dupe_check
+		if ( ! is_array($parameters))
+		{
+			$parameters = array('ignore_dupes' => ! $parameters); 
+		}
+
+		// Establish the default parameters
 		$default_parameters = array(
 			'convert_spaces' => TRUE,
 			'ignore_dupes' => TRUE
 		);
 
+		// Get the actual set of parameters and go
 		$parameters = array_merge($default_parameters, $parameters);
 
 		$prefs = $this->fetch_upload_dir_prefs($dir_id);
