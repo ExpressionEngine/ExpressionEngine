@@ -1420,7 +1420,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 							$site->site_id
 						)
 					);
-					continue;
 				}
 				// Otherwise, loop through the keyed preferences
 				else if ($group_name != 'cp_template_access_privs' AND $group_name != 'cp_channel_post_privs')
