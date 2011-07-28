@@ -1313,7 +1313,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		}
 
 		$this->cp->set_variable('cp_page_title', 
-								($group_id != '' OR $group_id != 0) ? lang('edit_member_group') : lang('create_member_group'));
+								($group_id !== 0) ? lang('edit_member_group') : lang('create_member_group'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=members'.AMP.'M=member_group_manager', lang('member_groups'));
 		
 		$group_data = $this->_setup_group_data($id);
