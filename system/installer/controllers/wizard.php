@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.2.1';	// The version being installed
+	var $version			= '2.2.2';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.1.6';	// Minimum version required to run EE
 	var $full_install		= FALSE;	// Set dynamically.  Determines which version is being installed  (full or core)
