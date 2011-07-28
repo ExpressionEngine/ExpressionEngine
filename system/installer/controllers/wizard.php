@@ -172,19 +172,8 @@ class Wizard extends CI_Controller {
 		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
 		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);		
 
-		if (DEBUG == 1)
-		{
-			$this->output->enable_profiler(TRUE);
-		}
-		else
-		{
-			if ($this->config->item('debug') == 2)
-			{
-				$this->output->enable_profiler(TRUE);
-				error_reporting(E_ALL);
-			}
-		}
-		
+		$this->output->enable_profiler(FALSE); 		
+
 		$this->userdata['app_version'] = str_replace('.', '', $this->version);
 		
  		// Load the helpers we intend to use
