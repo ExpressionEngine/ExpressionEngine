@@ -25,6 +25,8 @@
  */
 class Updater {
 
+	var $version_suffix = '';
+
 	/**
 	 * Constructor
 	 */
