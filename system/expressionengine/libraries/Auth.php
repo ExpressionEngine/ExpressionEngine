@@ -282,7 +282,7 @@ class Auth {
 	 */
 	private function _authenticate(CI_DB_result $member, $password)
 	{
-		$always_disallowed = array(3, 4);
+		$always_disallowed = array(4);
 
 		if ($member->num_rows() !== 1)
 		{
