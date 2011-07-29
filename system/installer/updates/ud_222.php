@@ -24,10 +24,26 @@
  * @link        http://expressionengine.com
  */
 class Updater {
+
+	/**
+	 * Constructor
+	 */
 	public function __construct()
 	{
 
 	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Do Update
+	 *
+	 * @return TRUE
+	 */
+	public function do_update()
+    {
+		return TRUE;
+    }
 }   
 /* END CLASS */
 
