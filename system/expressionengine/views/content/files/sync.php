@@ -76,32 +76,34 @@ if ( ! $EE_view_disable)
 				</div>
 			</div>
 			
-			<div id="sync_complete_template">	
-				<p><?=lang('sync_complete')?></p>
-				<table cellspacing="0" cellpadding="0" class="padTable mainTable">
-					<tbody>
-						<tr>
-							<th><?=lang('directory')?></th>
-							<th><?=lang('files_processed')?></th>
-							<th><?=lang('error_count')?></th>
-							<th><?=lang('errors')?></th>
-						</tr>
-						<tr>
-							<td>${directory_name}</td>
-							<td>${files_processed}</td>
-							<td>${error_count}</td>
-							<td>
-								<ul>
-									{{each errors}}
-										<li>{{html $value}}</li>
-									{{/each}}
-								</ul>
-								<span><?=lang('no_errors')?></span>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
+			<script type="text/x-jquery-tmpl" id="sync_complete_template">
+				<div id="sync_complete">
+					<p><?=lang('sync_complete')?></p>
+					<table cellspacing="0" cellpadding="0" class="padTable mainTable">
+						<tbody>
+							<tr>
+								<th><?=lang('directory')?></th>
+								<th><?=lang('files_processed')?></th>
+								<th><?=lang('error_count')?></th>
+								<th><?=lang('errors')?></th>
+							</tr>
+							<tr>
+								<td>${directory_name}</td>
+								<td>${files_processed}</td>
+								<td>${error_count}</td>
+								<td>
+									<ul>
+										{{each errors}}
+											<li>{{html $value}}</li>
+										{{/each}}
+									</ul>
+									<span><?=lang('no_errors')?></span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</script>
 		</div>
 	</div>
 </div> 

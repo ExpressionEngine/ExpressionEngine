@@ -20,7 +20,7 @@ EE.file_manager.resize_ids = [];
 
 
 $(document).ready(function() {
-	$.template("sync_complete_template", $('<div />').append($('#sync_complete_template').remove()));
+	$.template("sync_complete_template", $('#sync_complete_template'));
 	
 	$('table#dimensions').toggle_all();
 	EE.file_manager.sync_listen();
@@ -146,7 +146,7 @@ EE.file_manager.finish_sync = function(upload_directory_id) {
 			'error_count':     EE.file_manager.sync_errors.length
 		};
 	
-		$.tmpl('sync_complete_template', sync_complete).attr('id', 'sync_complete').appendTo($('#sync'));
+		$.tmpl('sync_complete_template', sync_complete).appendTo($('#sync'));
 
         // You can't have a conditional template in a table because Firefox ignores anything in a table that's untablelike
         if (sync_complete.error_count == 0) {
