@@ -24,9 +24,12 @@
  */
 class Updater {
 
-	var $version_suffix = 'pb01';
-	var $mylang = 'english';
-
+	var $version_suffix			= 'pb01';
+	var $errors					= array();
+	
+	var $mylang					= 'english';
+	var $conversion_max_rows	= 0;
+	
 	function Updater()
 	{
 		$this->EE =& get_instance();
@@ -54,8 +57,124 @@ class Updater {
 
 	}
 
+	/**
+	 * Output Conversion file of DB to UTF8
+	 *
+	 * Used when the site has too many rows to reliable perform
+	 * this conversion over HTTP
+	 *
+	 * @access	public
+	 * @return	string
+	 */
+	function output_convert_file_db_to_utf8()
+	{
+		// this step can be a doozy.  Set time limit to infinity.
+		// Server process timeouts are out of our control, unfortunately
+		
+		$path = EE_APPPATH.'cache/';
+		$file = 'utf8_conversion.mysql';
+		
+		if ( ! @$fp = (fopen($path.$file, FOPEN_WRITE_CREATE_DESTRUCTIVE)))
+		{
+			$this->errors[] = sprintf($this->EE->lang->line('cannot_open_dump_file'), $path.$file);
+			$this->errors[] = sprintf($this->EE->lang->line('check_permissions'), EE_APPPATH.'cached');
+			return FALSE;
+		}
+		
+		@set_time_limit(0);
+		$this->EE->db->save_queries = FALSE;
+
+		$this->EE->progress->update_state('Writing Dump File for Converting Database Tables to UTF-8');
+
+		// make sure STRICT MODEs aren't in use, at least on servers that don't default to that
+		$this->EE->db->query('SET SESSION sql_mode=""');
+
+		$tables = $this->EE->db->list_tables(TRUE);
+		$batch = 100;
+
+		foreach ($tables as $table)
+		{
+			$progress	= "Converting Database Table {$table}: %s";
+			$count		= $this->EE->db->count_all($table);
+			$offset	 = 0;
+
+			if ($count > 0)
+			{
+				for ($i = 0; $i < $count; $i = $i + $batch)
+				{
+					$this->EE->progress->update_state(str_replace('%s', "{$offset} of {$count} queries", $progress));
+
+					// set charset to latin1 to read 1.x's written values properly
+					$this->EE->db->db_set_charset('latin1', 'latin1_swedish_ci');
+					$query = $this->EE->db->query("SELECT * FROM {$table} LIMIT $offset, $batch");
+					$data = $query->result_array();
+					$query->free_result();
+
+					// set charset to utf8 to write them back to the database properly
+					$this->EE->db->db_set_charset('utf8', 'utf8_general_ci');
+
+					foreach ($data as $row)
+					{
+						$where = array();
+						$update = FALSE;
+
+						foreach ($row as $field => $value)
+						{
+							// Wet the WHERE using all numeric fields to ensure accuracy
+							// since we have no clue what the keys for the current table are.
+							//
+							// Also check to see if this row contains any fields that have
+							// characters not shared between latin1 and utf8 (7-bit ASCII shared only).
+							// If it does, then we need to update this row.
+							if (is_numeric($value))
+							{
+								$where[$field] = $value;
+							}
+							elseif (preg_match('/[^\x00-\x7F]/S', $value) > 0)
+							{
+								$update = TRUE;
+							}
+						}
+
+						if ($update === TRUE)
+						{
+							$this->EE->db->where($where);
+
+							fwrite($fp, $this->EE->db->_update($this->EE->db->_protect_identifiers($table, TRUE, NULL, FALSE), $row, $this->EE->db->ar_where, $this->EE->db->ar_orderby, $this->EE->db->ar_limit));
+							$this->EE->db->_reset_write();
+//							fwrite($fp, implode("\n", $this->EE->db->ar_where));
+//							$this->EE->db->update($table, $row, $where);
+						}
+					}
+
+					$offset = $offset + $batch;		 
+				}
+			}
+
+			// finally, set the table's charset and collation in MySQL to utf8
+			fwrite($fp, "\nALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci\n\n");
+	//		$this->EE->db->query("ALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci");
+		}
+
+		// more work to do
+	//	return 'standardize_datetime';
+	return FALSE;
+	}
+
+	// --------------------------------------------------------------------
+	
 	function do_update()
 	{
+		$tables = $this->EE->db->list_tables(TRUE);
+
+		foreach ($tables as $table)
+		{
+			if ($this->EE->db->count_all($table) > $this->conversion_max_rows)
+			{
+				return 'output_convert_file_db_to_utf8';
+			}
+		}
+		
 		$ignore = FALSE;
 		$manual_move = FALSE;
 
@@ -443,6 +562,8 @@ class Updater {
 						if ($update === TRUE)
 						{
 							$this->EE->db->where($where);
+							
+							
 							$this->EE->db->update($table, $row, $where);
 						}
 					}

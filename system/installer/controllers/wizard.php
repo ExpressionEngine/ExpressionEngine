@@ -1367,7 +1367,14 @@ PAPAYA;
 		
 		if (($status = $UD->{$method}()) === FALSE)
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('update_error')));
+			$error_msg = $this->lang->line('update_error');
+			
+			if ( ! empty($UD->errors))
+			{
+				$error_msg .= "</p>\n\n<ul>\n\t<li>" . implode("</li>\n\t<li>", $UD->errors) . "</li>\n</ul>\n\n<p>";
+			}
+
+			$this->_set_output('error', array('error' => $error_msg));
 			return FALSE;
 		}
 

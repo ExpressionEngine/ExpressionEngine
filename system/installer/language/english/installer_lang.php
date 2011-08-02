@@ -177,5 +177,10 @@ $lang['template_folder_not_writeable'] = 'The template folder is not writeable, 
 $lang['unable_to_read_tmpl_file'] = 'Unable to read the following file:  %s Verify it exists.';
 $lang['could_not_create_folder'] = 'Could not create folder for %s.  Please make sure %s is writable';
 
+// UTF-8 / Localization converter Lang
+$lang['cannot_open_dump_file'] = 'Cannot open file: <em>%s</em>';
+$lang['check_permissions'] = 'Please check that PHP has write permission to the following directory: <em>%s</em>';
+
+
 /* End of file installer_lang.php */
 /* Location: ./system/expressionengine/installer/language/english/installer_lang.php */
