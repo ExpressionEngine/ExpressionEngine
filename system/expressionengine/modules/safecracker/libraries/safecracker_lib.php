@@ -1753,64 +1753,37 @@ class Safecracker_lib
 		{
 			return;
 		}
-		
-		$this->EE->db->order_by('group_id, cat_order');
-		$this->EE->db->where_in('group_id', explode('|', $this->channel('cat_group')));
-		
-		$query = $this->EE->db->get('categories');
-		
-		// list and reference list for tree walking
-		$refs = array();
-		$list = array();
 
-		foreach ($query->result_array() as $row)
+		// Load up the library and figure out what belongs and what's selected
+		$this->EE->load->library('api');
+		$this->EE->api->instantiate('channel_categories');
+		$category_list = $this->EE->api_channel_categories->category_tree(
+			$this->channel('cat_group'),
+			$this->entry('categories')
+		);
+
+		$categories = array();
+
+		foreach ($category_list as $category_id => $category_info)
 		{
-			$category = $row;
-
-			foreach ($row as $key => $value)
-			{
-				if (preg_match('/^cat_(.*)/', $key, $match))
-				{
-					$key = 'category_'.$match[1];
-				}
-
-				$category[$key] = $value;
+			// Indent category names
+			if ($category_info[5] > 1) {
+				$category_info[1] = str_repeat(NBS.NBS.NBS.NBS, $category_info[5] - 1) . $category_info[1];
 			}
-
-			$category['selected'] = (is_array($this->entry('categories')) && in_array($category['category_id'], $this->entry('categories'))) ? ' selected="selected"' : '';
-			$category['checked'] = (is_array($this->entry('categories')) && in_array($category['category_id'], $this->entry('categories'))) ? ' checked="checked"' : '';
-
-			// del: $this->categories[$row['cat_id']] = $category;
 			
-			// ins: Set up a list and a reference list for
-			// recursive building of the tree
+			// Translate response from API to something parse variables can understand
+			$categories[$category_id] = array(
+				'category_id' => $category_info[0],
+				'category_name' => $category_info[1],
+				'category_group_id' => $category_info[2],
+				'category_group' => $category_info[3],
 
-			$thisref = &$refs[ $row['cat_id'] ];
-			
-			$thisref['parent_id'] = $row['parent_id'];
-			$thisref['data'] = $category;
-
-			if ($row['parent_id'] == 0) {
-				$list[ $row['cat_id'] ] = &$thisref;
-			} else {
-				$refs[ $row['parent_id'] ]['children'][ $row['cat_id'] ] = &$thisref;
-			}
-
-		}
-		
-		// walk the list and make a linear list like SC did for $this->categories
-		
-		function tocats($arr, &$out) {
-			foreach ($arr as $v) {
-				$out[] = $v['data'];
-				if (array_key_exists('children', $v)) {
-					tocats($v['children'], $out);
-				}
-			}
+				'selected' => $category_info[4],
+				'checked' => $category_info[4]
+			);
 		}
 
-		tocats($list, $this->categories);
-		var_dump($this->categories);
+		$this->categories = $categories;
 	}
 
 	// --------------------------------------------------------------------
