@@ -1917,7 +1917,11 @@ class Moblog {
 				/**  Check and adjust for multiple files with same file name
 				/** ------------------------------*/
 
-				$file_path = $this->EE->filemanager->clean_filename($filename, $upload_dir_id, TRUE);
+				$file_path = $this->EE->filemanager->clean_filename(
+					$filename,
+					$upload_dir_id, 
+					array('ignore_dupes' => FALSE)
+				);
 				$filename = basename($file_path);
 
 				/** ---------------------------

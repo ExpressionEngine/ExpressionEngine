@@ -125,7 +125,11 @@ class Content_files extends CI_Controller {
 			));
 		}
 		
-		$no_files_message = sprintf(lang('no_uploaded_files'), BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences');
+		$no_files_message = sprintf(
+			lang('no_uploaded_files'), 
+			'http://expressionengine.com/user_guide/cp/content/files/sync_files.html',
+			BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+		);
 
 		$this->javascript->set_global(array(
 			'file' => array(
@@ -1337,17 +1341,28 @@ class Content_files extends CI_Controller {
 			}
 
 			// Clean filename
-			$clean_filename = basename($this->filemanager->clean_filename($file['name'], $id));
-			
+			$clean_filename = basename($this->filemanager->clean_filename(
+				$file['name'], 
+				$id,
+				array('convert_spaces' => FALSE)
+			));	
+
 			if ($file['name'] != $clean_filename)
 			{
-				// It is just remotely possible the new clean filename already exists
-				// So we check for that and increment if such is the case
-				if (file_exists($this->_upload_dirs[$id]['server_path'].$clean_filename))
-				{
-					$clean_filename = basename($this->filemanager->clean_filename($clean_filename, $id, TRUE));
-				}
-				
+				// It is just remotely possible the new clean filename already exists 
+				// So we check for that and increment if such is the case 
+				if (file_exists($this->_upload_dirs[$id]['server_path'].$clean_filename)) 
+				{ 
+					$clean_filename = basename($this->filemanager->clean_filename(
+						$clean_filename, 
+						$id, 
+						array(
+							'convert_spaces' => FALSE,
+							'ignore_dupes' => FALSE
+						)
+					)); 
+				} 
+
 				// Rename the file
         		if ( ! @copy($this->_upload_dirs[$id]['server_path'].$file['name'],
 	 						$this->_upload_dirs[$id]['server_path'].$clean_filename))

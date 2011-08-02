@@ -23,8 +23,11 @@ $lang = array(
 "custom_profile_fields" => 
 "Member Fields",
 
-"member_cfg" =>
+"member_cfg_existing" =>
 "Member Group \"%s\" Settings",
+
+"member_cfg" =>
+"Member Group Settings",
 
 "member_prefs" =>
 "Member Preferences",
