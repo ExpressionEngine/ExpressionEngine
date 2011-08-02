@@ -1759,25 +1759,58 @@ class Safecracker_lib
 		
 		$query = $this->EE->db->get('categories');
 		
+		// list and reference list for tree walking
+		$refs = array();
+		$list = array();
+
 		foreach ($query->result_array() as $row)
 		{
 			$category = $row;
-			
+
 			foreach ($row as $key => $value)
 			{
 				if (preg_match('/^cat_(.*)/', $key, $match))
 				{
 					$key = 'category_'.$match[1];
 				}
-				
+
 				$category[$key] = $value;
 			}
-			
+
 			$category['selected'] = (is_array($this->entry('categories')) && in_array($category['category_id'], $this->entry('categories'))) ? ' selected="selected"' : '';
 			$category['checked'] = (is_array($this->entry('categories')) && in_array($category['category_id'], $this->entry('categories'))) ? ' checked="checked"' : '';
+
+			// del: $this->categories[$row['cat_id']] = $category;
 			
-			$this->categories[] = $category;
+			// ins: Set up a list and a reference list for
+			// recursive building of the tree
+
+			$thisref = &$refs[ $row['cat_id'] ];
+			
+			$thisref['parent_id'] = $row['parent_id'];
+			$thisref['data'] = $category;
+
+			if ($row['parent_id'] == 0) {
+				$list[ $row['cat_id'] ] = &$thisref;
+			} else {
+				$refs[ $row['parent_id'] ]['children'][ $row['cat_id'] ] = &$thisref;
+			}
+
 		}
+		
+		// walk the list and make a linear list like SC did for $this->categories
+		
+		function tocats($arr, &$out) {
+			foreach ($arr as $v) {
+				$out[] = $v['data'];
+				if (array_key_exists('children', $v)) {
+					tocats($v['children'], $out);
+				}
+			}
+		}
+
+		tocats($list, $this->categories);
+		var_dump($this->categories);
 	}
 
 	// --------------------------------------------------------------------
