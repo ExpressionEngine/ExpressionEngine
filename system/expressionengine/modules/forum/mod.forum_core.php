@@ -9909,12 +9909,13 @@ class Forum_Core extends Forum {
 									  t.status, t.sticky, t.thread_views, 
 									  t.topic_date, t.thread_total, 
 									  t.last_post_author_id,  t.last_post_date,
-									  m.screen_name AS last_post_author,
-									  lp.screen_name AS author')										
+									  m.screen_name AS author,
+									  lp.screen_name AS last_post_author')										
 							->from('forum_topics t')									
 							->join('members m', 'm.member_id = t.author_id', 'left')
 							->join('members lp', 'lp.member_id = t.last_post_author_id', 'left')
 							->where_in('t.topic_id', array_unique($topic_ids))
+							->order_by('last_post_date','DESC')
 							->get();
 			
 		if ($query->num_rows() == 0)

@@ -67,8 +67,36 @@ class Filemanager {
 
 	// ---------------------------------------------------------------------
 
-	function clean_filename($filename, $dir_id, $dupe_check = FALSE)
+	/**
+	 * Cleans the filename to prep it for the system, mostly removing spaces
+	 * sanitizing the file name and checking for duplicates.
+	 *
+	 * @param string $filename The filename to clean the name of
+	 * @param integer $dir_id The ID of the directory in which we'll check for duplicates
+	 * @param array $parameters Associative array containing optional parameters
+	 * 		'convert_spaces' (Default: TRUE) Setting this to FALSE will not remove spaces
+	 * 		'ignore_dupes' (Default: TRUE) Setting this to FALSE will check for duplicates
+	 * 
+	 * @return string Full path and filename of the file, use basepath() to just
+	 * 		get the filename
+	 */
+	function clean_filename($filename, $dir_id, $parameters = array())
 	{
+		// at one time the third parameter was (bool) $dupe_check
+		if ( ! is_array($parameters))
+		{
+			$parameters = array('ignore_dupes' => ! $parameters); 
+		}
+
+		// Establish the default parameters
+		$default_parameters = array(
+			'convert_spaces' => TRUE,
+			'ignore_dupes' => TRUE
+		);
+
+		// Get the actual set of parameters and go
+		$parameters = array_merge($default_parameters, $parameters);
+
 		$prefs = $this->fetch_upload_dir_prefs($dir_id);
 		
 		$i = 1;
@@ -76,7 +104,11 @@ class Filemanager {
 		$path = $prefs['server_path'];
 		
 		// clean up the filename
-		$filename = preg_replace("/\s+/", "_", $filename);
+		if ($parameters['convert_spaces'] === TRUE)
+		{
+			$filename = preg_replace("/\s+/", "_", $filename);
+		}
+
 		$filename = $this->EE->security->sanitize_filename($filename);
 		
 		if (strpos($filename, '.') !== FALSE)
@@ -92,7 +124,7 @@ class Filemanager {
 		$ext = '.'.$ext;
 		
 		// Figure out a unique filename
-		if ($dupe_check == TRUE)
+		if ($parameters['ignore_dupes'] === FALSE)
 		{
 			$basename = $filename;
 			
@@ -1846,7 +1878,11 @@ class Filemanager {
 		
 		$field = ($field_name) ? $field_name : 'userfile';
 		$original_filename = $_FILES[$field]['name'];
-		$clean_filename = basename($this->clean_filename($_FILES[$field]['name'], $dir['id'], TRUE));
+		$clean_filename = basename($this->clean_filename(
+			$_FILES[$field]['name'],
+			$dir['id'], 
+			array('ignore_dupes' => FALSE)
+		));
 		
 		$config = array(
 			'file_name'		=> $clean_filename,
