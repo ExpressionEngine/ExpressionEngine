@@ -74,12 +74,21 @@ class Updater {
 		$path = EE_APPPATH.'cache/';
 		$file = 'utf8_conversion.mysql';
 		
-		if ( ! @$fp = (fopen($path.$file, FOPEN_WRITE_CREATE_DESTRUCTIVE)))
+		if ( ! $fp = (fopen($path.$file, FOPEN_WRITE_CREATE_DESTRUCTIVE)))
 		{
 			$this->errors[] = sprintf($this->EE->lang->line('cannot_open_dump_file'), $path.$file);
 			$this->errors[] = sprintf($this->EE->lang->line('check_permissions'), EE_APPPATH.'cached');
 			return FALSE;
 		}
+		
+		$binmap = array(
+			'char'			=> array('len' => 4, 	'type' => 'BINARY'),
+			'text'			=> array('len' => 4,	'type' => 'BLOB'),
+			'tinytext'		=> array('len' => 8,	'type' => 'TINYBLOB'),
+			'mediumtext'	=> array('len' => 10,	'type' => 'MEDIUMBLOB'),
+			'longtext'		=> array('len' => 8,	'type' => 'LONGBLOB'),
+			'varchar'		=> array('len' => 7,	'type' => 'VARBINARY')
+		);
 		
 		@set_time_limit(0);
 		$this->EE->db->save_queries = FALSE;
@@ -90,14 +99,36 @@ class Updater {
 		$this->EE->db->query('SET SESSION sql_mode=""');
 
 		$tables = $this->EE->db->list_tables(TRUE);
-		$batch = 100;
-
+		$start = time();
 		foreach ($tables as $table)
 		{
-			$progress	= "Converting Database Table {$table}: %s";
+			$progress	= "Converting Database Table {$table}";
 			$count		= $this->EE->db->count_all($table);
-			$offset	 = 0;
 
+			$fields = $this->EE->db->query("SHOW COLUMNS FROM {$table}");
+
+			foreach ($fields->result() as $field)
+			{
+				// see if we need to alter and remap the field
+				foreach ($binmap as $text => $bin)
+				{
+					if (strncasecmp($text, $field->Type, $bin['len']) === 0)
+					{
+						$elapsed = time() - $start;
+						$this->EE->progress->update_state($progress.': '.$elapsed.' seconds elapsed');
+						
+						$type = ('varchar' == $text) ? str_replace($text, $bin['type'], $field->Type): $bin['type'];
+//						fwrite($fp, "\nALTER TABLE {$table} CHANGE {$field->Field} {$field->Field} {$field->Type} CHARACTER SET latin1");
+//						fwrite($fp, "\nALTER TABLE {$table} CHANGE {$field->Field} {$field->Field} {$type}");
+//						fwrite($fp, "\nALTER TABLE {$table} CHANGE {$field->Field} {$field->Field} {$field->Type} CHARACTER SET utf8\n");
+						
+						$this->EE->db->query("ALTER TABLE `{$table}` CHANGE `{$field->Field}` `{$field->Field}` {$field->Type} CHARACTER SET latin1");
+						$this->EE->db->query("ALTER TABLE `{$table}` CHANGE `{$field->Field}` `{$field->Field}` {$type}");
+						$this->EE->db->query("ALTER TABLE `{$table}` CHANGE `{$field->Field}` `{$field->Field}` {$field->Type} CHARACTER SET utf8");
+					}
+				}
+			}
+/*
 			if ($count > 0)
 			{
 				for ($i = 0; $i < $count; $i = $i + $batch)
@@ -120,7 +151,7 @@ class Updater {
 
 						foreach ($row as $field => $value)
 						{
-							// Wet the WHERE using all numeric fields to ensure accuracy
+							// Set the WHERE using all numeric fields to ensure accuracy
 							// since we have no clue what the keys for the current table are.
 							//
 							// Also check to see if this row contains any fields that have
@@ -150,10 +181,10 @@ class Updater {
 					$offset = $offset + $batch;		 
 				}
 			}
-
+*/
 			// finally, set the table's charset and collation in MySQL to utf8
-			fwrite($fp, "\nALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci\n\n");
-	//		$this->EE->db->query("ALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci");
+		//	fwrite($fp, "\nALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci\n\n");
+			$this->EE->db->query("ALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci");
 		}
 
 		// more work to do
