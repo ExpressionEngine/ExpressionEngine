@@ -165,6 +165,115 @@ class Auth {
 		die('@todo');
 	}
 	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Run through the majority of the authentication checks
+	 * 
+	 * @param boolean $hook Whether to run the hook or not
+	 * 
+	 * @return array(
+	 *		username: from POST
+	 *		password: from POST
+	 *		incoming: from Auth library, using username and password
+	 *	)
+	 * 
+	 * Your best option is to use:
+	 * 		list($username, $password, $incoming) = $this->_verify()
+	 * 
+	 * But you might want to check that $this->_verify is returning an 
+	 * array and not errors or a view
+	 */
+	public function verify($hook = FALSE)
+	{
+		$username = $this->EE->input->post('username');
+
+		// No username/password?  Bounce them...
+		if ( ! $username)
+		{
+			return 'no_username';
+		}
+
+		$this->EE->session->set_flashdata('username', $username);
+
+		if ( ! $this->EE->input->get_post('password'))
+		{
+			return 'no_password';
+		}
+
+		if ($hook)
+		{
+			/* -------------------------------------------
+			/* 'login_authenticate_start' hook.
+			/*  - Take control of CP authentication routine
+			/*  - Added EE 1.4.2
+			*/
+				$edata = $this->EE->extensions->call('login_authenticate_start');
+				if ($this->EE->extensions->end_script === TRUE) return;
+			/*
+			/* -------------------------------------------*/
+		}
+
+		// Is IP and User Agent required for login?	
+		if ( ! $this->EE->auth->check_require_ip())
+		{
+			return 'unauthorized_request';
+		}
+
+		// Check password lockout status
+		if ($this->EE->session->check_password_lockout($username) === TRUE)
+		{
+			$line = lang('password_lockout_in_effect');
+			$line = str_replace("%x", $this->EE->config->item('password_lockout_interval'), $line);
+
+			if (AJAX_REQUEST)
+			{
+				$this->EE->output->send_ajax_response(array(
+					'messageType'	=> 'logout'
+				));
+			}
+
+			$this->EE->session->set_flashdata('message', $line);
+			$this->EE->functions->redirect(BASE.AMP.'C=login');
+		}
+
+
+		//  Check credentials
+		// ----------------------------------------------------------------
+
+		$password = $this->EE->input->post('password');
+		$incoming = $this->EE->auth->authenticate_username($username, $password);
+
+		// Not even close
+		if ( ! $incoming)
+		{
+			$this->EE->session->save_password_lockout($username);
+			return 'credential_missmatch';
+		}
+
+		// Banned
+		if ($incoming->is_banned())
+		{
+			return $this->EE->output->fatal_error(lang('not_authorized'));
+		}
+
+		// No cp access
+		if ( ! $incoming->has_permission('can_access_cp'))
+		{
+			return 'not_authorized';
+		}
+
+		// Do we allow multiple logins on the same account?		
+		if ($this->EE->config->item('allow_multi_logins') == 'n')
+		{
+			if ($incoming->has_other_session())
+			{
+				return 'multi_login_warning';
+			}
+		}
+		
+		return array($username, $password, $incoming);
+	}
 	
 	// --------------------------------------------------------------------
 

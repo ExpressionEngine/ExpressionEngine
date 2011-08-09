@@ -105,9 +105,10 @@ class Login extends CI_Controller {
 	{
 		// Run through basic verifications: authenticate, username and 
 		// password both exist, not banned, IP checking is okay, run hook
-		if ( ! is_array($verify_result = $this->_verify()))
+		if ( ! is_array($verify_result = $this->auth->verify(TRUE)))
 		{
-			return $verify_result;
+			// In the event it's a string, send it to return to login
+			$this->_return_to_login($verify_result);
 		}
 		list($username, $password, $incoming) = $verify_result;
 		$member_id = $incoming->member('member_id');
@@ -180,116 +181,6 @@ class Login extends CI_Controller {
 		}
 
 		$this->functions->redirect($return_path);
-	}
-	
-	// --------------------------------------------------------------------
-	
-	/**
-	 * Run through the majority of the authentication checks
-	 * 
-	 * @param boolean $hook Whether to run the hook or not
-	 * 
-	 * @return array(
-	 *		username: from POST
-	 *		password: from POST
-	 *		incoming: from Auth library, using username and password
-	 *	)
-	 * 
-	 * Your best option is to use:
-	 * 		list($username, $password, $incoming) = $this->_verify()
-	 * 
-	 * But you might want to check that $this->_verify is returning an 
-	 * array and not errors or a view
-	 */
-	private function _verify($hook = TRUE)
-	{
-		$username = $this->input->post('username');
-
-		// No username/password?  Bounce them...	
-		if ( ! $username)
-		{
-			$this->_return_to_login('no_username');
-		}
-
-		$this->session->set_flashdata('username', $username);
-
-		if ( ! $this->input->get_post('password'))
-		{
-			$this->_return_to_login('no_password');
-		}
-
-		if ($hook)
-		{
-			/* -------------------------------------------
-			/* 'login_authenticate_start' hook.
-			/*  - Take control of CP authentication routine
-			/*  - Added EE 1.4.2
-			*/
-				$edata = $this->extensions->call('login_authenticate_start');
-				if ($this->extensions->end_script === TRUE) return;
-			/*
-			/* -------------------------------------------*/
-		}
-
-		// Is IP and User Agent required for login?	
-		if ( ! $this->auth->check_require_ip())
-		{
-			$this->_return_to_login('unauthorized_request');
-		}
-
-		// Check password lockout status
-		if ($this->session->check_password_lockout($username) === TRUE)
-		{
-			$line = lang('password_lockout_in_effect');
-			$line = str_replace("%x", $this->config->item('password_lockout_interval'), $line);
-
-			if (AJAX_REQUEST)
-			{
-				$this->output->send_ajax_response(array(
-					'messageType'	=> 'logout'
-				));
-			}
-
-			$this->session->set_flashdata('message', $line);
-			$this->functions->redirect(BASE.AMP.'C=login');
-		}
-
-
-		//  Check credentials
-		// ----------------------------------------------------------------
-
-		$password = $this->input->post('password');
-		$incoming = $this->auth->authenticate_username($username, $password);
-
-		// Not even close
-		if ( ! $incoming)
-		{
-			$this->session->save_password_lockout($username);
-			$this->_return_to_login('credential_missmatch');
-		}
-
-		// Banned
-		if ($incoming->is_banned())
-		{
-			return $this->output->fatal_error(lang('not_authorized'));
-		}
-
-		// No cp access
-		if ( ! $incoming->has_permission('can_access_cp'))
-		{
-			$this->_return_to_login('not_authorized');
-		}
-
-		// Do we allow multiple logins on the same account?		
-		if ($this->config->item('allow_multi_logins') == 'n')
-		{
-			if ($incoming->has_other_session())
-			{
-				$this->_return_to_login('multi_login_warning');
-			}
-		}
-		
-		return array($username, $password, $incoming);
 	}
 	
 	// --------------------------------------------------------------------
@@ -378,9 +269,10 @@ class Login extends CI_Controller {
 		
 		// Run through basic verifications: authenticate, username and 
 		// password both exist, not banned, IP checking is okay
-		if ( ! is_array($verify_result = $this->_verify(FALSE)))
+		if ( ! is_array($verify_result = $this->auth->verify()))
 		{
-			return $verify_result;
+			// In the event it's a string, send it to return to login
+			$this->_return_to_login($verify_result);
 		}
 		list($username, $password, $incoming) = $verify_result;
 		$member_id = $incoming->member('member_id');
