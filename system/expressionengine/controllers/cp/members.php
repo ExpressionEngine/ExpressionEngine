@@ -1266,6 +1266,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 */		
 	public function edit_member_group()
 	{
+		$is_clone = FALSE;
+
 		if ($this->session->userdata('group_id') != 1)
 		{
 			show_error(lang('only_superadmins_can_admin_groups'));
@@ -1298,25 +1300,29 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 		$group_id = (int) $this->input->get_post('group_id');
 		$clone_id = (int) $this->input->get_post('clone_id');
 
+		// $id is the id we will use as group_id, but it may not be the actual 
+		// group_id depending on if this is a clone or if group_id was null
+		
 		$id = ( ! $group_id) ? 3 : $group_id;
 
 		// If we're cloning, set $id to the member group id that we clone
 		if ($clone_id)
 		{
+			$is_clone = TRUE;
 			$id = $clone_id;
 		}
 
-		
-		
 		$this->cp->set_variable('cp_page_title', 
-								($group_id != '') ? lang('edit_member_group') : lang('create_member_group'));
+								($group_id !== 0) ? lang('edit_member_group') : lang('create_member_group'));
 		$this->cp->set_breadcrumb(BASE.AMP.'C=members'.AMP.'M=member_group_manager', lang('member_groups'));
 		
 		$group_data = $this->_setup_group_data($id);
 
 		$default_id = $this->config->item('site_id');
 		
-		list($group_title, $group_description) = $this->_setup_title_desc($group_id, $group_data);
+		list($group_title, $group_description) = $this->_setup_title_desc($group_id, $group_data, $is_clone);
+		
+		$page_title_lang = ($is_clone OR ! $group_id) ? 'member_cfg' : 'member_cfg_existing';
 	
 		$data = array(
 			'action'			=> ( ! $group_id) ? 'submit' : 'update',
@@ -1324,12 +1330,13 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 				'clone_id'			=> ( ! $clone_id) ? '' : $clone_id,
 				'group_id'			=> $group_id
 			),
-			'group_data'		=> $this->_setup_final_group_data($sites, $group_data, $id),
+			'group_data'		=> $this->_setup_final_group_data($sites, $group_data, $id, $is_clone),
 			'group_description'	=> $group_description,
 			'group_id'			=> $group_id,
 			'group_title'		=> $group_title,
+			'page_title'		=> sprintf(lang($page_title_lang), $group_title),
 			'sites_dropdown'	=> $sites_dropdown,
-			'module_data'		=> $this->_setup_module_data($group_id)
+			'module_data'		=> $this->_setup_module_data($id)
 		);
 
 		$this->load->view('members/edit_member_group', $data);
@@ -1349,14 +1356,14 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 *
 	 * @return 	array 		
 	 */
-	private function _setup_final_group_data($sites, $group_data, $group_id)
+	private function _setup_final_group_data($sites, $group_data, $group_id, $is_clone = FALSE)
 	{
 		// Get the channel, module and template names and preferences
 		list($channel_names, $channel_perms) = $this->_setup_channel_names($group_id);
 		list($template_names, $template_perms) = $this->_setup_template_names($group_id);
 
 		// Build the structural array
-		$group_cluster = $this->_member_group_cluster($channel_perms, $template_perms, $group_id);
+		$group_cluster = $this->_member_group_cluster($channel_perms, $template_perms, $group_id, $is_clone);
 
 		$form = array();
 
@@ -1413,7 +1420,6 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 							$site->site_id
 						)
 					);
-					continue;
 				}
 				// Otherwise, loop through the keyed preferences
 				else if ($group_name != 'cp_template_access_privs' AND $group_name != 'cp_channel_post_privs')
@@ -1585,7 +1591,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 * NOTE: the associative value (y/n) is the default setting used
 	 * only when we are showing the "create new group" form
 	 */
-	private function _member_group_cluster($channel_perms, $template_perms, $group_id)
+	private function _member_group_cluster($channel_perms, $template_perms, $group_id, $is_clone = FALSE)
 	{
 		$G = array(
 			'security_lock'		=> array(
@@ -1693,7 +1699,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		// Super Admin Group can not be edited
 		// If the form being viewed is the Super Admin one we only allow the name to be changed.
-		if ($group_id === 1)
+		if ($group_id === 1 AND $is_clone === FALSE)
 		{
 			$G = array('mbr_account_privs' => array (
 				'include_in_authorlist' => 'n', 'include_in_memberlist' => 'n'
@@ -1960,12 +1966,12 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 	 *
 	 * @return 	array
 	 */
-	private function _setup_title_desc($group_id, $group_data)
+	private function _setup_title_desc($group_id, $group_data, $is_clone)
 	{
 		$site_id = $this->config->item('site_id');
 		
-		$group_title = ( ! $group_id) ? '' : $group_data[$site_id]['group_title'];
-		$group_description = ( ! $group_id) ? '' : $group_data[$site_id]['group_description'];
+		$group_title = ( ! $group_id OR $is_clone) ? '' : $group_data[$site_id]['group_title'];
+		$group_description = ( ! $group_id OR $is_clone) ? '' : $group_data[$site_id]['group_description'];
 
 		// Can this be translated?
 		if (isset($this->english[$group_title]))

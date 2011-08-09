@@ -9851,12 +9851,26 @@ class Forum_Core extends Forum {
 
 		// Load the template		
 		$str = $this->load_element('search_results');
+
+		// Determine the per page count
+		$this->EE->db->select('board_topics_perpage');
+		$this->EE->db->where('board_id', $this->fetch_pref('board_id'));
+		$per_page_query = $this->EE->db->get('forum_boards');
+		
+		// Note: yes this could be a ternary, but it'd be hideous
+		if ($per_page_query->num_rows() > 0 AND $per_page_query->row('board_topics_perpage') != '')
+		{
+			$topic_limit = $per_page_query->row('board_topics_perpage'); 
+		}
+		else
+		{
+			$topic_limit = 20;
+		}
 		
 		// Do we have pagination?		
 		$pagination 	= '';
 		$current_page	= 0;
 		$total_pages	= 1;		
-		$topic_limit 	= 20;
 		$total_rows	 	= count($topic_ids);
 		
 		if ($total_rows > $topic_limit)
@@ -9895,14 +9909,14 @@ class Forum_Core extends Forum {
 									  t.status, t.sticky, t.thread_views, 
 									  t.topic_date, t.thread_total, 
 									  t.last_post_author_id,  t.last_post_date,
-									  m.screen_name AS last_post_author,
-									  m.screen_name AS author')										
-							->from(array('forum_topics t', 'members m'))									
+									  m.screen_name AS author,
+									  lp.screen_name AS last_post_author')										
+							->from('forum_topics t')									
+							->join('members m', 'm.member_id = t.author_id', 'left')
+							->join('members lp', 'lp.member_id = t.last_post_author_id', 'left')
 							->where_in('t.topic_id', array_unique($topic_ids))
-							->where('t.last_post_author_id = m.member_id')
-							->where('m.member_id = t.author_id')
-							->where('t.announcement', 'n')
-							->get();		
+							->order_by('last_post_date','DESC')
+							->get();
 			
 		if ($query->num_rows() == 0)
 		{

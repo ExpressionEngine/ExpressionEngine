@@ -105,7 +105,6 @@ class Api_channel_structure extends Api {
 		
 		if ( ! $query OR $query->num_rows() == 0)
 		{
-			$this->_set_error('no_channels_available');
 			return FALSE;
 		}
 		

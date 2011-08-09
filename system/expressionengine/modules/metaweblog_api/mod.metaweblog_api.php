@@ -1634,7 +1634,7 @@ class Metaweblog_api {
 		$file_path = $this->EE->filemanager->clean_filename(
 			$parameters['3']['name'], 
 			$this->upload_dir,
-			TRUE
+			array('ignore_dupes' => FALSE)
 		);
 
 		$filename = basename($file_path);

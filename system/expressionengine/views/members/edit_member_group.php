@@ -16,7 +16,7 @@ if ($EE_view_disable !== TRUE)
 			<?php if ($this->config->item('multiple_sites_enabled') == 'y'):?>
 				<?=form_dropdown('sites_list_pulldown', $sites_dropdown, '', 'id="site_list_pulldown"')?>
 			<?php endif; ?>
-			<?=sprintf(lang('member_cfg'), $group_title);?></h2></div>
+			<?=$page_title?></h2></div>
 		<div class="pageContents">
 
 			<?php $this->load->view('_shared/message');?>
