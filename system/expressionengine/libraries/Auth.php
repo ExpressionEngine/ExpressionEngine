@@ -254,6 +254,21 @@ class Auth {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Update Username
+	 *
+	 * @access	public
+	 */
+	public function update_username($member_id, $username)
+	{
+		$this->EE->db->where('member_id', (int) $member_id);
+		$this->EE->db->set('username', $username);
+		$this->EE->db->update('members');
+		
+		return (bool) $this->EE->db->affected_rows();
+	}
+	// --------------------------------------------------------------------
+
+	/**
 	 * Update Password
 	 *
 	 * @access	public
