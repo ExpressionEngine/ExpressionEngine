@@ -171,8 +171,6 @@ class Auth {
 	/**
 	 * Run through the majority of the authentication checks
 	 * 
-	 * @param boolean $hook Whether to run the hook or not
-	 * 
 	 * @return array(
 	 *		username: from POST
 	 *		password: from POST
@@ -185,7 +183,7 @@ class Auth {
 	 * If an error results, the lang key will be added to $this->(auth->)errors[]
 	 * and this method will return FALSE
 	 */
-	public function verify($hook = FALSE)
+	public function verify()
 	{
 		$username = $this->EE->input->post('username');
 
@@ -204,7 +202,8 @@ class Auth {
 			return FALSE;
 		}
 
-		if ($hook)
+		// If this is being called from the CP, use the hook
+		if (REQ == 'CP')
 		{
 			/* -------------------------------------------
 			/* 'login_authenticate_start' hook.
