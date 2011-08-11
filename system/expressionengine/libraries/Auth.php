@@ -63,6 +63,7 @@ should always be as long as the best available hash.
 class Auth {
 
 	private $EE;
+	public $errors = array();
 
 	// Hashing algorithms to try with their respective
 	// byte sizes. The byte sizes are used to identify
@@ -181,8 +182,8 @@ class Auth {
 	 * Your best option is to use:
 	 * 		list($username, $password, $incoming) = $this->_verify()
 	 * 
-	 * But you might want to check that $this->_verify is returning an 
-	 * array and not errors or a view
+	 * If an error results, the lang key will be added to $this->(auth->)errors[]
+	 * and this method will return FALSE
 	 */
 	public function verify($hook = FALSE)
 	{
@@ -191,14 +192,16 @@ class Auth {
 		// No username/password?  Bounce them...
 		if ( ! $username)
 		{
-			return 'no_username';
+			$this->errors[] = 'no_username';
+			return FALSE;
 		}
 
 		$this->EE->session->set_flashdata('username', $username);
 
 		if ( ! $this->EE->input->get_post('password'))
 		{
-			return 'no_password';
+			$this->errors[] = 'no_password';
+			return FALSE;
 		}
 
 		if ($hook)
@@ -217,7 +220,8 @@ class Auth {
 		// Is IP and User Agent required for login?	
 		if ( ! $this->EE->auth->check_require_ip())
 		{
-			return 'unauthorized_request';
+			$this->errors[] = 'unauthorized_request';
+			return FALSE;
 		}
 
 		// Check password lockout status
@@ -248,7 +252,8 @@ class Auth {
 		if ( ! $incoming)
 		{
 			$this->EE->session->save_password_lockout($username);
-			return 'credential_missmatch';
+			$this->errors[] = 'credential_missmatch';
+			return FALSE;
 		}
 
 		// Banned
@@ -260,7 +265,8 @@ class Auth {
 		// No cp access
 		if ( ! $incoming->has_permission('can_access_cp'))
 		{
-			return 'not_authorized';
+			$this->errors[] = 'not_authorized';
+			return FALSE;
 		}
 
 		// Do we allow multiple logins on the same account?		
@@ -268,7 +274,8 @@ class Auth {
 		{
 			if ($incoming->has_other_session())
 			{
-				return 'multi_login_warning';
+				$this->errors[] = 'multi_login_warning';
+				return FALSE;
 			}
 		}
 		

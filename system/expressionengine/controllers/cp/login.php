@@ -105,10 +105,10 @@ class Login extends CI_Controller {
 	{
 		// Run through basic verifications: authenticate, username and 
 		// password both exist, not banned, IP checking is okay, run hook
-		if ( ! is_array($verify_result = $this->auth->verify(TRUE)))
+		if ( ! ($verify_result = $this->auth->verify()))
 		{
 			// In the event it's a string, send it to return to login
-			$this->_return_to_login($verify_result);
+			$this->_return_to_login(implode(', ', $this->auth->errors));
 		}
 		list($username, $password, $incoming) = $verify_result;
 		$member_id = $incoming->member('member_id');
@@ -269,10 +269,10 @@ class Login extends CI_Controller {
 		
 		// Run through basic verifications: authenticate, username and 
 		// password both exist, not banned, IP checking is okay
-		if ( ! is_array($verify_result = $this->auth->verify()))
+		if ( ! ($verify_result = $this->auth->verify()))
 		{
 			// In the event it's a string, send it to return to login
-			$this->_return_to_login($verify_result);
+			$this->_return_to_login(implode(', ', $this->auth->errors));
 		}
 		list($username, $password, $incoming) = $verify_result;
 		$member_id = $incoming->member('member_id');

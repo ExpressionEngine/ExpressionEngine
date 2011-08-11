@@ -2161,10 +2161,10 @@ UNGA;
 		// Run through basic verifications: authenticate, username and 
 		// password both exist, not banned, IP checking is okay
 		$this->EE->load->library('auth');
-		if ( ! is_array($verify_result = $this->EE->auth->verify()))
+		if ( ! ($verify_result = $this->EE->auth->verify()))
 		{
 			// In the event it's a string, send it to show_user_error
-			return $this->EE->output->show_user_error('submission', lang($verify_result));
+			return $this->EE->output->show_user_error('submission', implode(', ', $this->auth->errors));
 		}
 
 		list($username, $password, $incoming) = $verify_result;
