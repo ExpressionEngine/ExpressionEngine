@@ -277,9 +277,9 @@ class Login extends CI_Controller {
 		list($username, $password, $incoming) = $verify_result;
 		$member_id = $incoming->member('member_id');
 		
-		$new_un  = ($this->input->post('new_username')) ? $this->input->post('new_username') : '';
-		$new_pw  = ($this->input->post('new_password')) ? $this->input->post('new_password') : '';
-		$new_pwc = ($this->input->post('new_password_confirm')) ? $this->input->post('new_password_confirm') : '';
+		$new_un  = (string) $this->input->post('new_username');
+		$new_pw  = (string) $this->input->post('new_password');
+		$new_pwc = (string) $this->input->post('new_password_confirm');
 		
 		// Make sure validation library is available
 		if ( ! class_exists('EE_Validate'))
