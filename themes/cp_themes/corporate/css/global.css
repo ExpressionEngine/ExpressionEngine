@@ -4165,3 +4165,149 @@ td .markItUp{
 }
 
 th.hidden_col { display: none; } td.hidden_col { display: none; }
+
+/* @group File Uploader */
+
+#file_uploader {
+	padding: 			14px 14px 50px;
+	position: 			relative;
+	overflow: 			hidden;
+}
+
+#file_uploader .button_bar {
+	bottom:				0px;
+	left:				0;
+	min-height:			22px;
+	padding:			6px;
+	position:			absolute;
+	text-align:			right;
+	width:				586px;
+}
+
+.button_bar a.submit {
+	color: #fff;
+	font-weight: normal;
+	margin: 0 0 0 4px;
+	text-decoration: none;
+}
+
+.button_bar .loading {
+	position: relative;
+	right: 2px;
+	top: 3px;
+}
+
+.button_bar .loading.visualEscapism {
+	right: -9999px;
+}
+
+#file_uploader.before_upload .after_upload,
+#file_uploader.before_upload .file_exists {
+	display: none;
+}
+
+#file_uploader.file_exists .after_upload,
+#file_uploader.file_exists .before_upload {
+	display: none;
+}
+
+#file_uploader.after_upload .before_upload,
+#file_uploader.after_upload .file_exists {
+	display: none;
+}
+
+#file_uploader .cancel:link,
+#file_uploader .cancel:visited {
+	color: 				#e0e5e6;
+	color: 				rgba(255, 255, 255, 0.7);
+	line-height: 1.9;
+}
+
+#file_uploader .cancel:hover {
+	color: 				#fff;
+}
+
+#file_uploader iframe {
+	border:				0 none;
+	height:				290px;
+	width:				572px;
+}
+
+#file_uploader iframe,
+html#file_upload_iframe,
+html#file_upload_iframe body {
+	background:			#ecf1f4;
+}
+
+html#file_upload_iframe body {
+	min-width: 0;
+	padding: 0;
+	width: auto;
+}
+
+html#file_upload_iframe #upload_dir {
+	display:			block;
+	width:				auto;
+}
+
+html#file_upload_iframe p {
+	margin:				11px 0;
+}
+
+#file_upload_iframe .upload_rename input.text {
+	margin-right: 5px;
+	padding-right: 30px;
+	width: 400px;
+}
+
+#file_upload_iframe .upload_rename span.extension {
+	color: #999;
+	margin-left: -32px;
+}
+
+#file_upload_iframe .image {
+	float: left;
+	width: 85px;
+}
+
+#file_upload_iframe .image img {
+	border: 1px solid #cdd7e0;
+	display: block;
+	margin: 0 auto 5px;
+	padding: 5px;
+}
+
+#file_upload_iframe h2 {
+	margin-bottom: 		10px;
+}
+
+#file_upload_iframe .upload_success table,
+#file_upload_iframe .edit_controls {
+	border-collapse: collapse;
+	float: right;
+	width: 470px;
+}
+
+#file_upload_iframe .upload_success th,
+#file_upload_iframe .upload_success td {
+	border-bottom: 		1px solid #cdd7e0;
+	padding: 			4px;
+}
+
+#file_upload_iframe .upload_success tr:last-child th,
+#file_upload_iframe .upload_success tr:last-child td {
+	border-bottom: 		0 none;
+}
+
+#file_upload_iframe .upload_success th {
+	padding-right: 		25px;
+	text-align: 		left;
+}
+
+#file_upload_iframe .edit_controls {
+	overflow: hidden;
+	height: 265px;
+}
+
+/* @end */
+
