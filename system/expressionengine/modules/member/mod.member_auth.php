@@ -192,8 +192,8 @@ class Member_auth extends Member {
 				$this->basepath = $this->EE->input->get_post('mbase');
 				$trigger = $this->EE->input->get_post('trigger');
 			}
-
-			$path = 'unpw_update/'.$member_obj->member_id .'_'.$ulen.'_'.$plen;
+			
+			$path = 'unpw_update/' . $member_obj->member('member_id') . '_' . $ulen . '_' . $plen;
 
 			if ($trigger != '')
 			{

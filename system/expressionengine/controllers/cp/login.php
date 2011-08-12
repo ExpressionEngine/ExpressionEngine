@@ -102,89 +102,16 @@ class Login extends CI_Controller {
 	 * @return	mixed
 	 */	
 	public function authenticate()
-	{	
-		$username = $this->input->post('username');
-		
-		// No username/password?  Bounce them...	
-		if ( ! $username)
+	{
+		// Run through basic verifications: authenticate, username and 
+		// password both exist, not banned, IP checking is okay, run hook
+		if ( ! ($verify_result = $this->auth->verify()))
 		{
-			$this->_return_to_login('no_username');
+			// In the event it's a string, send it to return to login
+			$this->_return_to_login(implode(', ', $this->auth->errors));
 		}
-		
-		$this->session->set_flashdata('username', $username);
-		
-		if ( ! $this->input->get_post('password'))
-		{
-			$this->_return_to_login('no_password');
-		}
-
-		/* -------------------------------------------
-		/* 'login_authenticate_start' hook.
-		/*  - Take control of CP authentication routine
-		/*  - Added EE 1.4.2
-		*/
-			$edata = $this->extensions->call('login_authenticate_start');
-			if ($this->extensions->end_script === TRUE) return;
-		/*
-		/* -------------------------------------------*/
-		
-		// Is IP and User Agent required for login?	
-		if ( ! $this->auth->check_require_ip())
-		{
-			$this->_return_to_login('unauthorized_request');
-		}
-		
-		// Check password lockout status
-		if ($this->session->check_password_lockout($username) === TRUE)
-		{
-			$line = lang('password_lockout_in_effect');
-			$line = str_replace("%x", $this->config->item('password_lockout_interval'), $line);
-		
-			if (AJAX_REQUEST)
-			{
-				$this->output->send_ajax_response(array(
-					'messageType'	=> 'logout'
-				));
-			}
-		
-			$this->session->set_flashdata('message', $line);
-			$this->functions->redirect(BASE.AMP.'C=login');
-		}
-
-
-		//  Check credentials
-		// ----------------------------------------------------------------
-		
-		$password = $this->input->post('password');
-		$incoming = $this->auth->authenticate_username($username, $password);
-		
-		// Not even close
-		if ( ! $incoming)
-		{
-			$this->session->save_password_lockout($username);
-			$this->_return_to_login('credential_missmatch');
-		}
-		
-		// Banned
-		if ($incoming->is_banned())
-		{
-			return $this->output->fatal_error(lang('not_authorized'));
-		}
-		
-		// No cp access
-		if ( ! $incoming->has_permission('can_access_cp'))
-		{
-			$this->_return_to_login('not_authorized');
-		}
-				
-		// Do we allow multiple logins on the same account?		
-		if ($this->config->item('allow_multi_logins') == 'n')
-		{
-			if ($incoming->has_other_session())
-			{
-				$this->_return_to_login('multi_login_warning');
-			}
-		}  
+		list($username, $password, $incoming) = $verify_result;
+		$member_id = $incoming->member('member_id');
 		
 		
 		// Is the UN/PW the correct length?
@@ -337,57 +264,30 @@ class Login extends CI_Controller {
 		
 		if ( ! isset($_POST['new_username']) AND  ! isset($_POST['new_password']))
 		{
-			$missing = TRUE;
-		}
-			
-		if ($missing === TRUE)
-		{
 			return $this->_un_pw_update_form(lang('all_fields_required'));
 		}
 		
-		// Check password lockout status		
-		if ($this->session->check_password_lockout($this->input->post('username')) === TRUE)
-		{		
-			$line = str_replace("%x", $this->config->item('password_lockout_interval'), lang('password_lockout_in_effect'));	
-				
-			return $this->_un_pw_update_form($line);
-		}
-						
-		// Fetch member data		
-		$this->db->select('member_id, group_id');
-		$this->db->where('username', $this->input->post('username'));
-		$this->db->where('password', do_hash(base64_decode($this->input->post('password'))));
-		$query = $this->db->get('members');
-			
-		$member_id = $query->row('member_id') ;
-			
-		// Invalid Username or Password
-		if ($query->num_rows() == 0)
+		// Run through basic verifications: authenticate, username and 
+		// password both exist, not banned, IP checking is okay
+		if ( ! ($verify_result = $this->auth->verify()))
 		{
-			$this->session->save_password_lockout($this->input->post('username'));
-			return $this->_un_pw_update_form(lang('invalid_existing_un_pw'));
+			// In the event it's a string, send it to return to login
+			$this->_return_to_login(implode(', ', $this->auth->errors));
 		}
+		list($username, $password, $incoming) = $verify_result;
+		$member_id = $incoming->member('member_id');
 		
-		// Is the user banned?
-		// Super Admins can't be banned
-		if ($query->row('group_id')  != 1)
-		{
-			if ($this->session->ban_check())
-			{
-				return $this->output->fatal_error(lang('not_authorized'));
-			}
-		}
-				
-		// Instantiate validation class
+		$new_un  = (string) $this->input->post('new_username');
+		$new_pw  = (string) $this->input->post('new_password');
+		$new_pwc = (string) $this->input->post('new_password_confirm');
+		
+		// Make sure validation library is available
 		if ( ! class_exists('EE_Validate'))
 		{
 			require APPPATH.'libraries/Validate.php';
 		}
 		
-		$new_un  = ($this->input->post('new_username')) ? $this->input->post('new_username') : '';
-		$new_pw  = ($this->input->post('new_password')) ? $this->input->post('new_password') : '';
-		$new_pwc = ($this->input->post('new_password_confirm')) ? $this->input->post('new_password_confirm') : '';
-			
+		// Load it up with the information needed
 		$VAL = new EE_Validate(
 			array( 
 				'val_type'			=> 'new',
@@ -401,21 +301,21 @@ class Login extends CI_Controller {
 			)
 		);
 		
-		if ($this->input->post('new_username') && $this->input->post('new_username') != '')
+		if ($new_un !== '')
 		{
-			$un_exists = ($this->input->post('username') == $new_un) ? FALSE : TRUE;
+			$un_exists = ($this->input->post('username') === $new_un) ? FALSE : TRUE;
 		}
 		
-		$pw_exists = (isset($_POST['new_password']) AND $_POST['new_password'] != '') ? TRUE : FALSE;
-				
+		$pw_exists = ($new_pw !== '' AND $new_pwc !== '') ? TRUE : FALSE;
+		
 		if ($un_exists)
 		{
-			$VAL->validate_username();			
+			$VAL->validate_username();
 		}
 
 		if ($pw_exists)
 		{
-			$VAL->validate_password();			
+			$VAL->validate_password();
 		}
 		
 		// Display error is there are any
@@ -431,24 +331,19 @@ class Login extends CI_Controller {
 			return $this->_un_pw_update_form($er);
 		}
 		 
-		 
 		if ($un_exists)
 		{
-			$this->db->set('username', $this->input->post('new_username'));
-			$this->db->where('member_id', $member_id);
-			$this->db->update('members');
-		}
-						
-		if ($pw_exists)
-		{
-			$this->load->helper('security');
-			$this->db->set('password', do_hash($this->input->post('new_password')));
-			$this->db->where('member_id', $member_id);
-			$this->db->update('members');
+			$this->auth->update_username($member_id, $new_un);
 		}
 		
+		if ($pw_exists)
+		{
+			$this->auth->update_password($member_id, $new_pw);
+		}
+		
+		// Send them back to login with updated username and password
 		$this->session->set_flashdata('message', lang('unpw_updated'));
-		$this->functions->redirect(BASE.AMP.'C=login');			
+		$this->functions->redirect(BASE.AMP.'C=login');
 	}
 	
 	// --------------------------------------------------------------------

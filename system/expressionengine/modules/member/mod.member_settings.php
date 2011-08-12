@@ -2073,7 +2073,7 @@ UNGA;
 		{
 			return;
 		}
-
+		
 		foreach ($x as $val)
 		{
 			if ( ! is_numeric($val))
@@ -2087,7 +2087,7 @@ UNGA;
 		$plen	= $x['2'];
 
 		$tmpl = $this->_load_element('update_un_pw_form');
-
+		
 		$uml = $this->EE->config->item('un_min_len');
 		$pml = $this->EE->config->item('pw_min_len');
 
@@ -2115,16 +2115,16 @@ UNGA;
 			$data['action']	= $this->EE->functions->fetch_current_uri();
 		}
 
-		$this->_set_page_title($this->EE->lang->line('member_login'));
+		$this->_set_page_title(lang('member_login'));
 
-		return $this->_var_swap($tmpl,
-								array(
-										'form_declaration' 	=> $this->EE->functions->form_declaration($data),
-										'lang:username_length'	=> str_replace('%x', $this->EE->config->item('un_min_len'), $this->EE->lang->line('un_len')),
-										'lang:password_length'	=> sprintf($this->EE->lang->line('pw_len'),	
-																		$this->EE->config->item('pw_min_len'))
-									)
-								);
+		return $this->_var_swap(
+			$tmpl,
+			array(
+				'form_declaration'		=> $this->EE->functions->form_declaration($data),
+				'lang:username_length'	=> sprintf(lang('un_len'), $this->EE->config->item('un_min_len')),
+				'lang:password_length'	=> sprintf(lang('pw_len'), $this->EE->config->item('pw_min_len'))
+			)
+		);
 	}
 
 
@@ -2135,11 +2135,10 @@ UNGA;
 
 	function update_un_pw()
 	{
+
 		$missing = FALSE;
 		
-		
-
-		if ( ! isset($_POST['new_username']) AND  ! isset($_POST['new_password']))
+		if ( ! isset($_POST['new_username']) AND ! isset($_POST['new_password']))
 		{
 			$missing = TRUE;
 		}
@@ -2149,60 +2148,27 @@ UNGA;
 			$missing = TRUE;
 		}
 
-		if ($this->EE->input->post('username') == '' OR $this->EE->input->get_post('password') == '')
+		if ($this->EE->input->post('username') == '' OR $this->EE->input->post('password') == '')
 		{
 			$missing = TRUE;
 		}
-
+		
 		if ($missing == TRUE)
 		{
 			return $this->EE->output->show_user_error('submission', $this->EE->lang->line('all_fields_required'));
 		}
-
-		/** ----------------------------------------
-		/**  Check password lockout status
-		/** ----------------------------------------*/
-
-		if ($this->EE->session->check_password_lockout($this->EE->input->post('username')) === TRUE)
+		
+		// Run through basic verifications: authenticate, username and 
+		// password both exist, not banned, IP checking is okay
+		$this->EE->load->library('auth');
+		if ( ! ($verify_result = $this->EE->auth->verify()))
 		{
-			$line = str_replace("%x", $this->EE->config->item('password_lockout_interval'), $this->EE->lang->line('password_lockout_in_effect'));
-			return $this->EE->output->show_user_error('submission', $line);
+			// In the event it's a string, send it to show_user_error
+			return $this->EE->output->show_user_error('submission', implode(', ', $this->auth->errors));
 		}
 
-		/** ----------------------------------------
-		/**  Fetch member data
-		/** ----------------------------------------*/
-		$sql = "SELECT member_id, group_id
-				FROM	exp_members
-				WHERE  username = '".$this->EE->db->escape_str($this->EE->input->post('username'))."'
-				AND	password = '".$this->EE->functions->hash(stripslashes($this->EE->input->post('password')))."'";
-
-		$query = $this->EE->db->query($sql);
-
-		/** ----------------------------------------
-		/**  Invalid Username or Password
-		/** ----------------------------------------*/
-		if ($query->num_rows() == 0)
-		{
-			$this->EE->session->save_password_lockout($this->EE->input->post('username'));
-			return $this->EE->output->show_user_error('submission', $this->EE->lang->line('invalid_existing_un_pw'));
-		}
-
-		$member_id = $query->row('member_id') ;
-
-		/** ----------------------------------------
-		/**  Is the user banned?
-		/** ----------------------------------------*/
-
-		// Super Admins can't be banned
-
-		if ($query->row('group_id')  != 1)
-		{
-			if ($this->EE->session->ban_check())
-			{
-				return $this->EE->output->fatal_error($this->EE->lang->line('not_authorized'));
-			}
-		}
+		list($username, $password, $incoming) = $verify_result;
+		$member_id = $incoming->member('member_id');
 
 		/** -------------------------------------
 		/**  Instantiate validation class
@@ -2212,30 +2178,33 @@ UNGA;
 			require APPPATH.'libraries/Validate.php';
 		}
 
-		$new_un  = (isset($_POST['new_username'])) ? $_POST['new_username'] : '';
-		$new_pw  = (isset($_POST['new_password'])) ? $_POST['new_password'] : '';
-		$new_pwc = (isset($_POST['new_password_confirm'])) ? $_POST['new_password_confirm'] : '';
+		$new_un  = (string) $_POST['new_username'];
+		$new_pw  = (string) $_POST['new_password'];
+		$new_pwc = (string) $_POST['new_password_confirm'];
 
-		$VAL = new EE_Validate(
-								array(
-										'val_type'			=> 'new',
-										'fetch_lang' 		=> TRUE,
-										'require_cpw' 		=> FALSE,
-									 	'enable_log'		=> FALSE,
-										'username'			=> $new_un,
-										'password'			=> $new_pw,
-									 	'password_confirm'	=> $new_pwc,
-									 	'cur_password'		=> $_POST['password'],
-									 )
-							);
+		$VAL = new EE_Validate(array(
+			'val_type'			=> 'new',
+			'fetch_lang' 		=> TRUE,
+			'require_cpw' 		=> FALSE,
+			'enable_log'		=> FALSE,
+			'username'			=> $new_un,
+			'password'			=> $new_pw,
+			'password_confirm'	=> $new_pwc,
+			'cur_password'		=> $password,
+		));
 
-		$un_exists = (isset($_POST['new_username']) AND $_POST['new_username'] != '') ? TRUE : FALSE;
-		$pw_exists = (isset($_POST['new_password']) AND $_POST['new_password'] != '') ? TRUE : FALSE;
+		$un_exists = ($new_un !== '') ? TRUE : FALSE;
+		$pw_exists = ($new_pw !== '' AND $new_pwc !== '') ? TRUE : FALSE;
 
 		if ($un_exists)
+		{
 			$VAL->validate_username();
+		}
+		
 		if ($pw_exists)
+		{
 			$VAL->validate_password();
+		}
 
 		/** -------------------------------------
 		/**  Display error is there are any
@@ -2245,23 +2214,22 @@ UNGA;
 		{		 
 			return $this->EE->output->show_user_error('submission', $VAL->errors);
 		}
-
-
+		
 		if ($un_exists)
 		{
-			$this->EE->db->query("UPDATE exp_members SET username = '".$this->EE->db->escape_str($_POST['new_username'])."' WHERE member_id = '{$member_id}'");
+			$this->EE->auth->update_username($member_id, $new_un);
 		}
-
+		
 		if ($pw_exists)
 		{
-			$this->EE->db->query("UPDATE exp_members SET password = '".$this->EE->functions->hash(stripslashes($_POST['new_password']))."' WHERE member_id = '{$member_id}'");
+			$this->EE->auth->update_password($member_id, $new_pw);
 		}
-
+		
 		// Clear the tracker cookie since we're not sure where the redirect should go
 		$this->EE->functions->set_cookie('tracker');
-
+		
 		$return = $this->EE->functions->form_backtrack();
-
+		
 		if ($this->EE->config->item('user_session_type') != 'c')
 		{
 			if ($this->EE->config->item('force_query_string') == 'y' && substr($return, 0, -3) == "php")
@@ -2278,25 +2246,24 @@ UNGA;
 		if ($this->EE->uri->segment(5))
 		{
 			$link = $this->EE->functions->create_url($this->EE->uri->segment(5));
-			$line = $this->EE->lang->line('return_to_forum');
+			$line = lang('return_to_forum');
 		}
 		else
 		{
 			$link = $this->_member_path('login');
-			$line = $this->EE->lang->line('return_to_login');
+			$line = lang('return_to_login');
 		}
 
 		// We're done.
-		$data = array(	'title' 	=> $this->EE->lang->line('settings_update'),
-						'heading'	=> $this->EE->lang->line('thank_you'),
-						'content'	=> $this->EE->lang->line('unpw_updated'),
-						'link'		=> array($link, $line)
-						 );
+		$data = array(
+			'title' 	=> lang('settings_update'),
+			'heading'	=> lang('thank_you'),
+			'content'	=> lang('unpw_updated'),
+			'link'		=> array($link, $line)
+		);
 
 		$this->EE->output->show_message($data);
 	}
-
-
 }
 // END CLASS
 
