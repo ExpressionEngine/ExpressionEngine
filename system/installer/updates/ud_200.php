@@ -1637,8 +1637,6 @@ class Updater {
 	 */
 	private function _fetch_db_size()
 	{
-		$this->EE->load->helper('number');
-		
 		// db records and size
 		$query = $this->EE->db->query("SHOW TABLE STATUS FROM `{$this->EE->db->database}`");
 
