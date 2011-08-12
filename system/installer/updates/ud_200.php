@@ -24,11 +24,12 @@
  */
 class Updater {
 
-	var $version_suffix			= 'pb01';
+	var $version_suffix			= 'pb01';	
+	var $mylang					= 'english';
+	var $large_db				= FALSE;
+	var $large_db_threshold		= 150;	// database size in megabytes
 	var $errors					= array();
 	
-	var $mylang					= 'english';
-	var $conversion_max_rows	= 0;
 	
 	function Updater()
 	{
@@ -54,158 +55,18 @@ class Updater {
 		$this->EE->load->library('progress');
 
 		$this->config =& $config;
-
-	}
-
-	/**
-	 * Output Conversion file of DB to UTF8
-	 *
-	 * Used when the site has too many rows to reliable perform
-	 * this conversion over HTTP
-	 *
-	 * @access	public
-	 * @return	string
-	 */
-	function output_convert_file_db_to_utf8()
-	{
-		// this step can be a doozy.  Set time limit to infinity.
-		// Server process timeouts are out of our control, unfortunately
 		
-		$path = EE_APPPATH.'cache/';
-		$file = 'utf8_conversion.mysql';
-		
-		if ( ! $fp = (fopen($path.$file, FOPEN_WRITE_CREATE_DESTRUCTIVE)))
+		// we will use this conditionally to branch the update path
+		if ($this->_fetch_db_size() > $this->large_db_threshold)
 		{
-			$this->errors[] = sprintf($this->EE->lang->line('cannot_open_dump_file'), $path.$file);
-			$this->errors[] = sprintf($this->EE->lang->line('check_permissions'), EE_APPPATH.'cached');
-			return FALSE;
+			$this->large_db = TRUE;
 		}
-		
-		$binmap = array(
-			'char'			=> array('len' => 4, 	'type' => 'BINARY'),
-			'text'			=> array('len' => 4,	'type' => 'BLOB'),
-			'tinytext'		=> array('len' => 8,	'type' => 'TINYBLOB'),
-			'mediumtext'	=> array('len' => 10,	'type' => 'MEDIUMBLOB'),
-			'longtext'		=> array('len' => 8,	'type' => 'LONGBLOB'),
-			'varchar'		=> array('len' => 7,	'type' => 'VARBINARY')
-		);
-		
-		@set_time_limit(0);
-		$this->EE->db->save_queries = FALSE;
-
-		$this->EE->progress->update_state('Writing Dump File for Converting Database Tables to UTF-8');
-
-		// make sure STRICT MODEs aren't in use, at least on servers that don't default to that
-		$this->EE->db->query('SET SESSION sql_mode=""');
-
-		$tables = $this->EE->db->list_tables(TRUE);
-		$start = time();
-		foreach ($tables as $table)
-		{
-			$progress	= "Converting Database Table {$table}";
-			$count		= $this->EE->db->count_all($table);
-
-			$fields = $this->EE->db->query("SHOW COLUMNS FROM {$table}");
-
-			foreach ($fields->result() as $field)
-			{
-				// see if we need to alter and remap the field
-				foreach ($binmap as $text => $bin)
-				{
-					if (strncasecmp($text, $field->Type, $bin['len']) === 0)
-					{
-						$elapsed = time() - $start;
-						$this->EE->progress->update_state($progress.': '.$elapsed.' seconds elapsed');
-						
-						$type = ('varchar' == $text) ? str_replace($text, $bin['type'], $field->Type): $bin['type'];
-//						fwrite($fp, "\nALTER TABLE {$table} CHANGE {$field->Field} {$field->Field} {$field->Type} CHARACTER SET latin1");
-//						fwrite($fp, "\nALTER TABLE {$table} CHANGE {$field->Field} {$field->Field} {$type}");
-//						fwrite($fp, "\nALTER TABLE {$table} CHANGE {$field->Field} {$field->Field} {$field->Type} CHARACTER SET utf8\n");
-						
-						$this->EE->db->query("ALTER TABLE `{$table}` CHANGE `{$field->Field}` `{$field->Field}` {$field->Type} CHARACTER SET latin1");
-						$this->EE->db->query("ALTER TABLE `{$table}` CHANGE `{$field->Field}` `{$field->Field}` {$type}");
-						$this->EE->db->query("ALTER TABLE `{$table}` CHANGE `{$field->Field}` `{$field->Field}` {$field->Type} CHARACTER SET utf8");
-					}
-				}
-			}
-/*
-			if ($count > 0)
-			{
-				for ($i = 0; $i < $count; $i = $i + $batch)
-				{
-					$this->EE->progress->update_state(str_replace('%s', "{$offset} of {$count} queries", $progress));
-
-					// set charset to latin1 to read 1.x's written values properly
-					$this->EE->db->db_set_charset('latin1', 'latin1_swedish_ci');
-					$query = $this->EE->db->query("SELECT * FROM {$table} LIMIT $offset, $batch");
-					$data = $query->result_array();
-					$query->free_result();
-
-					// set charset to utf8 to write them back to the database properly
-					$this->EE->db->db_set_charset('utf8', 'utf8_general_ci');
-
-					foreach ($data as $row)
-					{
-						$where = array();
-						$update = FALSE;
-
-						foreach ($row as $field => $value)
-						{
-							// Set the WHERE using all numeric fields to ensure accuracy
-							// since we have no clue what the keys for the current table are.
-							//
-							// Also check to see if this row contains any fields that have
-							// characters not shared between latin1 and utf8 (7-bit ASCII shared only).
-							// If it does, then we need to update this row.
-							if (is_numeric($value))
-							{
-								$where[$field] = $value;
-							}
-							elseif (preg_match('/[^\x00-\x7F]/S', $value) > 0)
-							{
-								$update = TRUE;
-							}
-						}
-
-						if ($update === TRUE)
-						{
-							$this->EE->db->where($where);
-
-							fwrite($fp, $this->EE->db->_update($this->EE->db->_protect_identifiers($table, TRUE, NULL, FALSE), $row, $this->EE->db->ar_where, $this->EE->db->ar_orderby, $this->EE->db->ar_limit));
-							$this->EE->db->_reset_write();
-//							fwrite($fp, implode("\n", $this->EE->db->ar_where));
-//							$this->EE->db->update($table, $row, $where);
-						}
-					}
-
-					$offset = $offset + $batch;		 
-				}
-			}
-*/
-			// finally, set the table's charset and collation in MySQL to utf8
-		//	fwrite($fp, "\nALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci\n\n");
-			$this->EE->db->query("ALTER TABLE `{$table}` CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci");
-		}
-
-		// more work to do
-	//	return 'standardize_datetime';
-	return FALSE;
 	}
 
 	// --------------------------------------------------------------------
 	
 	function do_update()
 	{
-		$tables = $this->EE->db->list_tables(TRUE);
-
-		foreach ($tables as $table)
-		{
-			if ($this->EE->db->count_all($table) > $this->conversion_max_rows)
-			{
-				return 'output_convert_file_db_to_utf8';
-			}
-		}
-		
 		$ignore = FALSE;
 		$manual_move = FALSE;
 
@@ -213,7 +74,6 @@ class Updater {
 		{
 			$this->mylang = $this->EE->input->get_post('language');
 		}
-
 
 		if ($this->EE->input->get_post('templates') == 'ignore')
 		{
@@ -229,75 +89,20 @@ class Updater {
 		// turn off extensions
 		$this->EE->db->update('extensions', array('enabled' => 'n'));
 
-		// Load the string helper
-		$this->EE->load->helper('string');
-
-		// set charset to PHP default so non-latin characters stored in preferences are retreived correctly
-		// @todo - might do a little dance for people who hacked version 1.x to use utf8 charset with MySQL
-		$this->EE->db->db_set_charset('latin1', 'latin1_swedish_ci');
-		$query = $this->EE->db->query("SELECT es.* FROM exp_sites AS es");
-
-		// Update Flat File Templates if we have any
-		$this->_update_templates_saved_as_files($query, $ignore, $manual_move);
-
-		foreach($query->result_array() as $row)
-		{
-			foreach($row as $name => $data)
-			{
-				if (substr($name, -12) == '_preferences')
-				{
-					// base64 encode the serialized arrays
-					$data = strip_slashes(unserialize($data));
-
-					// one quick path adjustment if they were using the old default location for template files
-					if (isset($data['tmpl_file_basepath']) && trim($data['tmpl_file_basepath'], '/') == BASEPATH.'templates')
-					{
-						$data['tmpl_file_basepath'] = EE_APPPATH.'/templates/';
-					}
-					// also, make sure they start with the default cp theme
-					elseif (isset($data['cp_theme']) && $data['cp_theme'] != 'default')
-					{
-						$data['cp_theme'] = 'default';
-					}
-					// new name for a debugging preference
-					elseif (isset($data['show_queries']))
-					{
-						$data['show_profiler'] = $data['show_queries'];
-						unset($data['show_queries']);
-					}
-					// docs location
-					elseif (isset($data['doc_url']))
-					{
-						$data['doc_url'] = 'http://expressionengine.com/user_guide/';
-					}
-
-					$data = base64_encode(serialize($data));
-					$row[$name] = $data;
-				}
-			}
-
-			// change the charset back to utf-8
-			$this->EE->db->db_set_charset($this->EE->db->char_set, $this->EE->db->dbcollat);
-
-			$this->EE->db->query($this->EE->db->update_string('exp_sites', $row, "site_id = '".$this->EE->db->escape_str($row['site_id'])."'"));
-		}
-
- 		$trunc = array('captcha', 'sessions', 'security_hashes');
+ 		// truncate some tables
+		$trunc = array('captcha', 'sessions', 'security_hashes');
 
 		foreach ($trunc as $table_name)
 		{
-				$this->EE->db->truncate($table_name);
+			$this->EE->db->truncate($table_name);
 		}
-
-		// there's another step yet
-		return 'convert_db_to_utf8';
-
-
+		
+		// step 1, utf8 conversion
+		return ($this->large_db) ? 'convert_large_db_to_utf8' : 'convert_db_to_utf8';
 	}
 
-
 	// ------------------------------------------------------------------------
-
+	
 	/**
 	 * Look for any templates saved as files, sync them with the database
 	 * And move them out of the way.
@@ -531,6 +336,57 @@ class Updater {
 
 	// ------------------------------------------------------------------------ 
 
+	function convert_large_db_to_utf8()
+	{
+		if ( ! $this->EE->db->table_exists('utf8_conversion_completed'))
+		{
+			$tables = implode(' ', $this->EE->db->list_tables(TRUE));
+			
+			$this->errors[] = "Your database is too large to perform this part of the upgrade via a web request.
+								Please contact your system administrator and have them run the following commands,
+								then access this page again.<br /><br />
+
+								<code>mysqldump -h {$this->EE->db->hostname} -u {$this->EE->db->username} 
+									-p {$this->EE->db->password} --opt --quote-names --skip-set-charset
+									--default-character-set=latin1 {$this->EE->db->database} 
+									{$tables}
+									> {$this->EE->db->database}-pre-upgrade-dump.sql</code>
+
+								<br /><br />
+
+								<code>mysql -h {$this->EE->db->hostname} -u {$this->EE->db->username}
+									-p {$this->EE->db->password} --default-character-set=utf8
+									{$this->EE->db->database} < {$this->EE->db->database}-pre-upgrade-dump.sql</code>
+
+								<br /><br />
+
+								<code>mysql -h {$this->EE->db->hostname} -u {$this->EE->db->username}
+									-p {$this->EE->db->password} {$this->EE->db->database}
+									-e 'CREATE TABLE {$this->EE->db->dbprefix}utf8_conversion_completed(`id` int)'</code>";
+
+			return FALSE;
+		}
+		
+		@set_time_limit(0);
+		$this->EE->db->save_queries = FALSE;
+		
+		foreach ($this->EE->db->list_tables(TRUE) as $table)
+		{
+			$this->EE->progress->update_state("Altering character set of `{$table}` to UTF-8");
+			$this->EE->db->query("ALTER TABLE `{$table}` CHARACTER SET utf8 COLLATE utf8_general_ci");
+		}
+
+		$this->EE->progress->update_state("Altering character set of the `{$this->EE->db->database}` database to UTF-8");		
+		$this->EE->db->query("ALTER DATABASE `{$this->EE->db->database}` CHARACTER SET utf8 COLLATE utf8_general_ci");
+		
+		$this->EE->load->dbforge();
+		$this->EE->dbforge->drop_table('utf8_conversion_completed');
+		
+		exit('hi');
+	}
+	
+	// --------------------------------------------------------------------
+
 	function convert_db_to_utf8()
 	{
 		// this step can be a doozy.  Set time limit to infinity.
@@ -543,15 +399,15 @@ class Updater {
 		// make sure STRICT MODEs aren't in use, at least on servers that don't default to that
 		$this->EE->db->query('SET SESSION sql_mode=""');
 
-		$tables = $this->EE->db->list_tables(TRUE);
+		$tables = $this->EE->db->list_tables(TRUE); // TRUE prefix limit, only operate on EE tables
 		$batch = 100;
-
+					
 		foreach ($tables as $table)
 		{
 			$progress	= "Converting Database Table {$table}: %s";
 			$count		= $this->EE->db->count_all($table);
 			$offset	 = 0;
-
+			
 			if ($count > 0)
 			{
 				for ($i = 0; $i < $count; $i = $i + $batch)
@@ -609,8 +465,17 @@ class Updater {
 		}
 
 		// more work to do
-		return 'standardize_datetime';
+		return ($this->large_db) ? 'standardize_datetime_large_db' : 'standardize_datetime';
 	}
+
+	// --------------------------------------------------------------------
+
+	function standardize_datetime_large_db()
+	{
+		return $this->standardize_datetime();
+	}
+	
+	// --------------------------------------------------------------------
 
 	function standardize_datetime()
 	{
@@ -887,10 +752,67 @@ class Updater {
 			return $next_step;
 		}
 
-		// deal with trackbacks
+		// update site prefs
+		return 'update_site_prefs';
+	}
+	
+	// --------------------------------------------------------------------
+	
+	function update_site_prefs()
+	{		
+		// Load the string helper
+		$this->EE->load->helper('string');
+
+		$query = $this->EE->db->query("SELECT es.* FROM exp_sites AS es");
+
+		// Update Flat File Templates if we have any
+		$this->_update_templates_saved_as_files($query, $ignore, $manual_move);
+
+		foreach($query->result_array() as $row)
+		{
+			foreach($row as $name => $data)
+			{
+				if (substr($name, -12) == '_preferences')
+				{
+					// base64 encode the serialized arrays
+					$data = strip_slashes(unserialize($data));
+
+					// one quick path adjustment if they were using the old default location for template files
+					if (isset($data['tmpl_file_basepath']) && trim($data['tmpl_file_basepath'], '/') == BASEPATH.'templates')
+					{
+						$data['tmpl_file_basepath'] = EE_APPPATH.'/templates/';
+					}
+					// also, make sure they start with the default cp theme
+					elseif (isset($data['cp_theme']) && $data['cp_theme'] != 'default')
+					{
+						$data['cp_theme'] = 'default';
+					}
+					// new name for a debugging preference
+					elseif (isset($data['show_queries']))
+					{
+						$data['show_profiler'] = $data['show_queries'];
+						unset($data['show_queries']);
+					}
+					// docs location
+					elseif (isset($data['doc_url']))
+					{
+						$data['doc_url'] = 'http://expressionengine.com/user_guide/';
+					}
+
+					$data = base64_encode(serialize($data));
+					$row[$name] = $data;
+				}
+			}
+
+			$this->EE->db->query($this->EE->db->update_string('exp_sites', $row, "site_id = '".$this->EE->db->escape_str($row['site_id'])."'"));
+		}
+
+		// there's another step yet
 		return 'backup_trackbacks';
 	}
 
+	// --------------------------------------------------------------------
+	
 	function backup_trackbacks()
 	{
 		$has_duplicates = $this->dupe_check();
@@ -1043,6 +965,8 @@ class Updater {
 		return $next_step;
 	}
 
+	// --------------------------------------------------------------------
+
 	function dupe_check()
 	{
 		$has_duplicates = array();
@@ -1076,6 +1000,8 @@ class Updater {
 
 		return $has_duplicates;
 	}
+
+	// --------------------------------------------------------------------
 
 	function database_clean()
 	{
@@ -1698,6 +1624,44 @@ class Updater {
 		// Finished!
 		return TRUE;
 	}
+
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Fetch DB Size
+	 *
+	 * Returns the size of the db, in megabytes
+	 *
+	 * @access	private
+	 * @return	string
+	 */
+	private function _fetch_db_size()
+	{
+		$this->EE->load->helper('number');
+		
+		// db records and size
+		$query = $this->EE->db->query("SHOW TABLE STATUS FROM `{$this->EE->db->database}`");
+
+		$totsize = 0;
+		$records = 0;
+
+		$prefix_len = strlen($this->EE->db->dbprefix);
+		
+		foreach ($query->result_array() as $row)
+		{
+			if (strncmp($row['Name'], $this->EE->db->dbprefix, $prefix_len) != 0)
+			{
+				continue;
+			}
+			
+			$totsize += $row['Data_length'] + $row['Index_length'];
+		}
+		
+		return round($totsize / 1048576);
+	}
+
+	// --------------------------------------------------------------------
+
 }
 /* END CLASS */
 

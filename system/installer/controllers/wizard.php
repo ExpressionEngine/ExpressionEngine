@@ -1375,7 +1375,7 @@ PAPAYA;
 			}
 
 			$this->_set_output('error', array('error' => $error_msg));
-			return FALSE;
+			return FALSE;exit;
 		}
 
 		if ($status !== TRUE)
