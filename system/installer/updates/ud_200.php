@@ -782,19 +782,22 @@ class Updater {
 					{
 						$data['tmpl_file_basepath'] = EE_APPPATH.'/templates/';
 					}
+					
 					// also, make sure they start with the default cp theme
-					elseif (isset($data['cp_theme']) && $data['cp_theme'] != 'default')
+					if (isset($data['cp_theme']) && $data['cp_theme'] != 'default')
 					{
 						$data['cp_theme'] = 'default';
 					}
+					
 					// new name for a debugging preference
-					elseif (isset($data['show_queries']))
+					if (isset($data['show_queries']))
 					{
 						$data['show_profiler'] = $data['show_queries'];
 						unset($data['show_queries']);
 					}
+					
 					// docs location
-					elseif (isset($data['doc_url']))
+					if (isset($data['doc_url']))
 					{
 						$data['doc_url'] = 'http://expressionengine.com/user_guide/';
 					}
