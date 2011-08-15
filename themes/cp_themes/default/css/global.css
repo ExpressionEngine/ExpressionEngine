@@ -3150,16 +3150,17 @@ input#ip_address {
 #mainContent table caption {
 	border: 1px solid #37444D;
 	background: #2A3930 url('../images/backgrounds_sprite.png') repeat-x 0 -540px;
-	clear: 				left;
-	color:				#ffffff;
-	cursor:				pointer;
-	font-size:			14px;
-	font-weight:		bold;
+	clear: left;
+	color: #ffffff;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: bold;
 	line-height: 1.3;
 	margin-bottom: 0;
 	padding: 5px 10px;
+	position: relative;
 	text-align: left;
-	text-shadow:		#666 0px 1px 0px;
+	text-shadow: #666 0px 1px 0px;
 
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
@@ -3169,7 +3170,7 @@ input#ip_address {
 	border-radius-topright: 5px;
 }
 
-#mainContent table h3.accordion {
+#mainContent h3.accordion {
 	cursor: pointer;
 	padding: 3px 4px 3px 28px;
 }
