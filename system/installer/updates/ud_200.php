@@ -56,6 +56,14 @@ class Updater {
 
 		$this->config =& $config;
 		
+		// truncate some tables
+		$trunc = array('captcha', 'sessions', 'security_hashes');
+
+		foreach ($trunc as $table_name)
+		{
+			$this->EE->db->truncate($table_name);
+		}
+		
 		// we will use this conditionally to branch the update path
 		if ($this->_fetch_db_size() > $this->large_db_threshold)
 		{
@@ -88,14 +96,6 @@ class Updater {
 
 		// turn off extensions
 		$this->EE->db->update('extensions', array('enabled' => 'n'));
-
- 		// truncate some tables
-		$trunc = array('captcha', 'sessions', 'security_hashes');
-
-		foreach ($trunc as $table_name)
-		{
-			$this->EE->db->truncate($table_name);
-		}
 		
 		// step 1, utf8 conversion
 		return ($this->large_db) ? 'convert_large_db_to_utf8' : 'convert_db_to_utf8';
