@@ -1,3 +1,37 @@
+/* headings *
+.items h3 {
+	font-size:1.2em;
+	margin-bottom:10px;
+}
+
+/* Upload form *
+input#upload_file.field {
+	padding: 4px;
+	border: 1px solid #b6c0c2;
+	border-radius: 3px;
+  	-webkit-border-radius: 3px;
+  	-moz-border-radius:	3px;
+  	margin:0;
+  	color:	#5f6c74;
+}
+
+#upload_form .submit_alt {
+	border: 1px solid #b6c0c2;
+	padding:4px 12px 4px 8px;
+	border-radius: 3px;
+  	-webkit-border-radius: 3px;
+  	-moz-border-radius:	3px;
+}
+
+#upload_form .submit_alt img {
+	vertical-align:middle;
+}
+	
+#upload_form label {
+	margin-right:5px;
+}
+
+
 /* main vertical scroll */
 #file_manager_main {
 	position:relative;
@@ -182,3 +216,33 @@ p.custom_field_add {
 #file_manager_body button {
 	padding: 5px;
 }
+
+
+
+
+
+.image_edit_form_options #image_edit_form fieldset {
+	width:				440px;
+	padding:			6px 10px;
+}
+
+#image_edit_form fieldset {
+	background-color:	#ECF1F4;
+	padding:			12px 10px;
+	color:				#505050;
+	font-size:			11px;
+}
+
+.image_edit_form_options #image_edit_form fieldset#rotate_fieldset ul {
+	display: block;
+}
+
+#image_edit_form fieldset#rotate_fieldset ul {
+	display: none;
+}
+
+#image_edit_form fieldset#rotate_fieldset li {
+	display: inline;
+	cursor: pointer;
+}
+*/

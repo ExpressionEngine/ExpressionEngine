@@ -3159,8 +3159,8 @@ class Channel {
 			$row['signature_image']			= ($row['sig_img_filename'] == '' OR $this->EE->config->item('enable_signatures') == 'n' OR $this->EE->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
 			$row['avatar']					= ($row['avatar_filename'] == '' OR $this->EE->config->item('enable_avatars') == 'n' OR $this->EE->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
 			$row['photo']					= ($row['photo_filename'] == '' OR $this->EE->config->item('enable_photos') == 'n' OR $this->EE->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
-			$row['forum_topic']				= ($row['forum_topic_id'] == 0) ? 'FALSE' : 'TRUE';
-			$row['not_forum_topic']			= ($row['forum_topic_id'] != 0) ? 'FALSE' : 'TRUE';
+			$row['forum_topic']				= (empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
+			$row['not_forum_topic']			= ( ! empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
 			$row['category_request']		= ($this->cat_request === FALSE) ? 'FALSE' : 'TRUE';
 			$row['not_category_request']	= ($this->cat_request !== FALSE) ? 'FALSE' : 'TRUE';
 			$row['channel']					= $row['channel_title'];
@@ -3804,8 +3804,8 @@ class Channel {
 			$cond['signature_image']		= ($row['sig_img_filename'] == '' OR $this->EE->config->item('enable_signatures') == 'n' OR $this->EE->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
 			$cond['avatar']					= ($row['avatar_filename'] == '' OR $this->EE->config->item('enable_avatars') == 'n' OR $this->EE->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
 			$cond['photo']					= ($row['photo_filename'] == '' OR $this->EE->config->item('enable_photos') == 'n' OR $this->EE->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
-			$cond['forum_topic']			= ($row['forum_topic_id'] == 0) ? 'FALSE' : 'TRUE';
-			$cond['not_forum_topic']		= ($row['forum_topic_id'] != 0) ? 'FALSE' : 'TRUE';
+			$cond['forum_topic']			= (empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
+			$cond['not_forum_topic']		= ( ! empty($row['forum_topic_id'])) ? 'FALSE' : 'TRUE';
 			$cond['category_request']		= ($this->cat_request === FALSE) ? 'FALSE' : 'TRUE';
 			$cond['not_category_request']	= ($this->cat_request !== FALSE) ? 'FALSE' : 'TRUE';
 			$cond['channel']				= $row['channel_title'];
