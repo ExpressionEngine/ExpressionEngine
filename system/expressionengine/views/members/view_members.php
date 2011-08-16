@@ -54,6 +54,7 @@ if ($EE_view_disable !== TRUE)
 	
 	$this->table->set_template($cp_table_template);
 	$this->table->set_heading(
+		array('data' => lang('id'), 'width' => '4%'),
 		lang('username'), 
 		lang('screen_name'), 
 		lang('email_address'), 
@@ -65,18 +66,19 @@ if ($EE_view_disable !== TRUE)
 
 		foreach ($member_list->result() as $member)
 		{
-			$this->table->add_row(					
-									array('class' => 'username', 'data' => '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $member->member_id .'">'.$member->username.'</a>'),
-									array('class' => 'screen_name', 'data' => $member->screen_name),
-									'<a href="mailto:'.$member->email.'">'.$member->email.'</a>',
-									// localized date
-									$this->localize->convert_timestamp('%Y', $member->join_date).'-'.
-									$this->localize->convert_timestamp('%m', $member->join_date).'-'.
-									$this->localize->convert_timestamp('%d', $member->join_date),
-									($member->last_visit == 0) ? ' - ' : $this->localize->set_human_time($member->last_visit),
-									array('class' => 'group_'.$member->group_id, 'data' => $member_groups_dropdown[$member->group_id]),
-									'<input class="toggle" type="checkbox" name="toggle[]" value="'.$member->member_id.'" />'
-								);					
+			$this->table->add_row(
+				$member->member_id,
+				array('class' => 'username', 'data' => '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='. $member->member_id .'">'.$member->username.'</a>'),
+				array('class' => 'screen_name', 'data' => $member->screen_name),
+				'<a href="mailto:'.$member->email.'">'.$member->email.'</a>',
+				// localized date
+				$this->localize->convert_timestamp('%Y', $member->join_date).'-'.
+				$this->localize->convert_timestamp('%m', $member->join_date).'-'.
+				$this->localize->convert_timestamp('%d', $member->join_date),
+				($member->last_visit == 0) ? ' - ' : $this->localize->set_human_time($member->last_visit),
+				array('class' => 'group_'.$member->group_id, 'data' => $member_groups_dropdown[$member->group_id]),
+				'<input class="toggle" type="checkbox" name="toggle[]" value="'.$member->member_id.'" />'
+			);					
 		}		
 		
 	?>

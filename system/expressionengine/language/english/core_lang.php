@@ -60,6 +60,9 @@ $lang = array(
 'or' => 
 'or',
 
+'id' =>
+'ID',
+
 'encoded_email' =>
 '(JavaScript must be enabled to view this email address)',
 
