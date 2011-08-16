@@ -667,7 +667,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			// Find Valid Member Replacements
 			$this->db->select('member_id, username, screen_name');
 			$this->db->from('members');
-			$this->db->where_in('member_id', $group_ids);
+			$this->db->where_in('group_id', $group_ids);
 			$this->db->where_not_in('member_id', $damned);
 			$this->db->order_by('screen_name');
 			$heirs = $this->db->get();
