@@ -251,7 +251,7 @@ class Forum_tab {
 		$c_prefs = $this->EE->api_channel_entries->c_prefs;
 		
 		//mod_data[]
-
+		
 		if ((isset($params['mod_data']['forum_title'], $params['mod_data']['forum_body'],
 					  $params['mod_data']['forum_id'])
 			&& $params['mod_data']['forum_title'] !== '' && $params['mod_data']['forum_body'] !== ''))
@@ -329,12 +329,12 @@ class Forum_tab {
 			}
 		}
 		elseif ( ! empty($params['mod_data']['forum_topic_id']))
-        {
-            $topic_id = $params['mod_data']['forum_topic_id'];
-            
+		{
+			$topic_id = $params['mod_data']['forum_topic_id'];
+			
 			$this->EE->db->where('entry_id', (int) $params['entry_id'])
-                             ->update('channel_titles', array('forum_topic_id' => (int) $topic_id));
-        }  
+				->update('channel_titles', array('forum_topic_id' => (int) $topic_id));
+		}
 	}
 
 	function _allowed_forums()

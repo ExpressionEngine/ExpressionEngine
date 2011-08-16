@@ -341,7 +341,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			"bAutoWidth": false,
 			"iDisplayLength": '.$this->perpage.',  
 
-		"aoColumns": [null, null, null, null, null, { "bSortable" : false }, { "bSortable" : false } ],
+		"aoColumns": [null, null, null, null, null, null, { "bSortable" : false }, { "bSortable" : false } ],
 			
 			
 		"oLanguage": {
@@ -407,7 +407,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 
 		$this->output->enable_profiler(FALSE);
 		
-		$col_map = array('username', 'screen_name', 'email', 'join_date', 'last_visit');
+		$col_map = array('member_id', 'username', 'screen_name', 'email', 'join_date', 'last_visit');
 		
 		$search_value = ($this->input->get_post('k_search')) ? $this->input->get_post('k_search') : '';
 		$group_id = ($this->input->get_post('group')) ? $this->input->get_post('group') : '';		
@@ -461,6 +461,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			foreach ($members->result_array() as $k => $member)
 			{
 		
+				$m[] = $member['member_id'];
 				$m[] = '<a href="'.BASE.AMP.'C=myaccount'.AMP.'id='.$member['member_id'].'">'.$member['username'].'</a>';
 				$m[] = $member['screen_name'];
 				$m[] = '<a href="mailto:'.$member['email'].'">'.$member['email'].'</a>';
@@ -667,7 +668,7 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			// Find Valid Member Replacements
 			$this->db->select('member_id, username, screen_name');
 			$this->db->from('members');
-			$this->db->where_in('member_id', $group_ids);
+			$this->db->where_in('group_id', $group_ids);
 			$this->db->where_not_in('member_id', $damned);
 			$this->db->order_by('screen_name');
 			$heirs = $this->db->get();
@@ -1333,8 +1334,8 @@ function fnDataTablesPipeline ( sSource, aoData, fnCallback ) {
 			'group_data'		=> $this->_setup_final_group_data($sites, $group_data, $id, $is_clone),
 			'group_description'	=> $group_description,
 			'group_id'			=> $group_id,
-			'group_title'		=> $group_title,
 			'page_title'		=> sprintf(lang($page_title_lang), $group_title),
+			'group_title'		=> ($is_clone) ? '' : $group_title,
 			'sites_dropdown'	=> $sites_dropdown,
 			'module_data'		=> $this->_setup_module_data($id)
 		);

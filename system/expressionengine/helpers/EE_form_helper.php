@@ -65,5 +65,57 @@ if (REQ == 'CP')
 
 // ------------------------------------------------------------------------
 
+/**
+ * Parse the form attributes
+ *
+ * Helper function used by some of the form helpers
+ *
+ * @access	private
+ * @param	array
+ * @param	array
+ * @return	string
+ */
+function _parse_form_attributes($attributes, $default)
+{
+	if (is_array($attributes))
+	{
+		foreach ($default as $key => $val)
+		{
+			if (isset($attributes[$key]))
+			{
+				$default[$key] = $attributes[$key];
+				unset($attributes[$key]);
+			}
+		}
+
+		if (count($attributes) > 0)
+		{
+			$default = array_merge($default, $attributes);
+		}
+	}
+	
+	// EE addition
+	if (isset($default['name']) && ! isset($default['id']))
+	{
+		$default['id'] = $default['name'];
+	}
+
+	$att = '';
+
+	foreach ($default as $key => $val)
+	{
+		if ($key == 'value')
+		{
+			$val = form_prep($val, $default['name']);
+		}
+
+		$att .= $key . '="' . $val . '" ';
+	}
+
+	return $att;
+}
+
+// ------------------------------------------------------------------------
+
 /* End of file EE_form_helper.php */
 /* Location: ./system/expressionengine/helpers/EE_form_helper.php */
